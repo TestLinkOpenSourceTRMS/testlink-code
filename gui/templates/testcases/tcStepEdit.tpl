@@ -1,9 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.35 2010/11/06 11:42:47 amkhullar Exp $ 
+$Id: tcStepEdit.tpl,v 1.35.2.1 2011/01/06 14:43:01 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
+  20110106 - franciscom - BUGID 4136 - missing implementation on BUGID 3241
+  												layout was not used on CREATE
   20101016 - franciscom - added id to table rows with step data 
              BUGID 3901: Edit Test Case STEP - scroll window to show selected step
 	20100621 - eloff - BUGID 3241 - Implement vertical layout
@@ -180,6 +182,7 @@ DEBUG: $gui->action: {$gui->action} <br>
   		{/if}  
   	</tr>
   
+  {* this means we have steps to display *}
   {if $gui->tcaseSteps != ''}
    	{foreach from=$gui->tcaseSteps item=step_info}
   	  <tr id="step_row_{$step_info.step_number}">
@@ -206,63 +209,94 @@ DEBUG: $gui->action: {$gui->action} <br>
     {/foreach}
   {/if}
   {else} {* Vertical layout *}
-	{foreach from=$gui->tcaseSteps item=step_info}
-	<tr>
-		<th width="20">{$args_labels.step_number} {$step_info.step_number}</th>
-		<th>{$labels.step_actions}</th>
-		{if $session['testprojectOptions']->automationEnabled}
-		{if $step_info.step_number == $gui->step_number}
-		<th width="200">{$labels.execution_type_short_descr}:
-			<select name="exec_type" onchange="content_modified = true">
-				{html_options options=$gui->execution_types selected=$gui->step_exec_type}
-	        </select>
-		</th>
-		{else}
-			<th>{$labels.execution_type_short_descr}:
-				{$gui->execution_types[$step_info.execution_type]}</th>
-		{/if}
-		{else}
-		<th>&nbsp;</th>
-		{/if} {* automation *}
-		{if $edit_enabled}
-		<th>&nbsp;</th>
-		{/if}
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		{if $step_info.step_number == $gui->step_number}
-		<td colspan="2">{$steps}</td>
-		{else}
-		<td colspan="2"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
-		{/if}
-	</tr>
-	<tr>
-		<th style="background: transparent; border: none"></th>
-		<th colspan="2">{$labels.expected_results}</th>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		{if $step_info.step_number == $gui->step_number}
-		<td colspan="2">{$expected_results}</td>
-		{else}
-		<td colspan="2" style="padding: 0.5em 0.5em 2em 0.5em"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
-		{/if}
-	</tr>
-	{/foreach}
+		{foreach from=$gui->tcaseSteps item=step_info}
+			<tr>
+				<th width="20">{$args_labels.step_number} {$step_info.step_number}</th>
+				<th>{$labels.step_actions}</th>
+				{if $session['testprojectOptions']->automationEnabled}
+					{if $step_info.step_number == $gui->step_number}
+					<th width="200">{$labels.execution_type_short_descr}:
+						<select name="exec_type" onchange="content_modified = true">
+							{html_options options=$gui->execution_types selected=$gui->step_exec_type}
+			  	      </select>
+					</th>
+					{else}
+						<th>{$labels.execution_type_short_descr}:
+							{$gui->execution_types[$step_info.execution_type]}</th>
+					{/if}
+					{else}
+					<th>&nbsp;</th>
+				{/if} {* automation *}
+				{if $edit_enabled}
+					<th>&nbsp;</th>
+				{/if}
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				{if $step_info.step_number == $gui->step_number}
+					<td colspan="2">{$steps}</td>
+				{else}
+					<td colspan="2"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
+				{/if}
+			</tr>
+			<tr>
+				<th style="background: transparent; border: none"></th>
+				<th colspan="2">{$labels.expected_results}</th>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				{if $step_info.step_number == $gui->step_number}
+					<td colspan="2">{$expected_results}</td>
+				{else}
+					<td colspan="2" style="padding: 0.5em 0.5em 2em 0.5em">
+					<a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
+				{/if}
+			</tr>
+		{/foreach}
   {/if}
+
   {if $gui->action == 'createStep' || $gui->action == 'doCreateStep'}
-  	<tr>
-		  <td style="text-align:left;">{$gui->step_number}</td>
-  		<td>{$steps}</td>
-  		<td>{$expected_results}</td>
-		    {if $session['testprojectOptions']->automationEnabled}
-		    <td>
-		    	<select name="exec_type" onchange="content_modified = true">
-        	  	{html_options options=$gui->execution_types selected=$gui->step_exec_type}
-	        </select>
-      	</td>
-      	{/if}
-  	</tr>
+  	{* We have forgotten to manage layout here *}
+		{if $gui->steps_results_layout == "horizontal"}
+  		<tr>
+			  <td style="text-align:left;">{$gui->step_number}</td>
+  			<td>{$steps}</td>
+  			<td>{$expected_results}</td>
+			    {if $session['testprojectOptions']->automationEnabled}
+			    <td>
+			    	<select name="exec_type" onchange="content_modified = true">
+    	    	  	{html_options options=$gui->execution_types selected=$gui->step_exec_type}
+	  	      </select>
+    	  	</td>
+    	  	{/if}
+  		</tr>
+  	
+  	{else}
+			<tr>
+				<th width="20">{$args_labels.step_number} {$gui->step_number}</th>
+				<th>{$labels.step_actions}</th>
+				{if $session['testprojectOptions']->automationEnabled}
+					<th width="200">{$labels.execution_type_short_descr}:
+							<select name="exec_type" onchange="content_modified = true">
+								{html_options options=$gui->execution_types selected=$gui->step_exec_type}
+			  	    </select>
+					</th>
+    	  {/if}
+				<tr>
+					<td>&nbsp;</td>
+    	  	<td colspan="2">{$steps}</td>
+				</tr>
+				<tr>
+					<th style="background: transparent; border: none"></th>
+					<th colspan="2">{$labels.expected_results}</th>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+    	  	<td colspan="2" style="padding: 0.5em 0.5em 2em 0.5em"> {$expected_results}</td>
+				</tr>
+			<tr>
+  	{/if}
+  		
   {/if}
   </table>	
   <p>

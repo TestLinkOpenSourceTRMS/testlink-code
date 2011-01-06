@@ -5,6 +5,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - compare requirement versions
 
 @internal revision
+20110106 - Julian - Only 1 column for last change including localized timestamp and editor
 20101215 - Julian - Changed log message tooltip width to 500 (maximum) to avoid
                     visualization errors
 20101212 - franciscom - BUGID 4056: Requirement Revisioning
@@ -192,7 +193,6 @@ function validateForm() {
 	        <th width="12px" style="font-weight: bold; text-align: center;">&nbsp;{$labels.compare}</td>
 	        <th style="font-weight: bold; text-align: center;">{$labels.log_message}</td>
 	        <th style="font-weight: bold; text-align: center;">{$labels.timestamp_lastchange}</td>
-	        <th style="font-weight: bold; text-align: center;">{$labels.author}</td>
 	    </tr>
 	
 	{counter assign="mycount"}
@@ -208,10 +208,9 @@ function validateForm() {
 	        <td id="tooltip-{$req.item_id}">
         	{$req.log_message}
         	</td>
-        	<td style="text-align: center; cursor: pointer; color: rgb(0, 85, 153);" onclick="javascript:openReqRevisionWindow({$req.item_id});">
-	            <nobr>{$req.timestamp}</nobr>
+        	<td style="text-align: left; cursor: pointer; color: rgb(0, 85, 153);" onclick="javascript:openReqRevisionWindow({$req.item_id});">
+	            <nobr>{localize_timestamp ts = $req.timestamp}, {$req.last_editor}</nobr>
 	        </td>
-	        	<td style="text-align: center;"><nobr>{$req.author}</nobr></td>
 	    </tr>
 	{counter}
 	{/foreach}

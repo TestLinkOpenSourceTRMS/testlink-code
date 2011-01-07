@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCompareVersions.tpl,v 1.12 2011/01/06 14:12:09 mx-julian Exp $
+$Id: reqCompareVersions.tpl,v 1.13 2011/01/07 18:29:10 asimon83 Exp $
  
 Purpose: smarty template - compare requirement versions
 
 revisions
+  20110107 - asimon - added daisydiff (html diff engine which handles tags well)
   20110106 - Julian - Only 1 column for last change including localized timestamp and editor
   20101215 - Julian - Changed log message tooltip width to 500 (maximum) to avoid
                       visualization errors
@@ -57,13 +58,30 @@ Ext.onReady(function(){
 {/foreach}
 });
 
-function triggerTextfield(field)
+//20110107 - new diff engine
+function triggerContextInput(selected) {
+	var context = document.getElementById("context_input");
+	if (selected == 0) {
+		context.style.display = "none";
+	} else {
+		context.style.display = "table-row";;
+	}
+}
+
+function triggerField(field)
 {
 	if (field.disabled == true) {
     	field.disabled = false;
 	} else {
     	field.disabled = true;
 	}
+}
+
+function triggerRadio(radio, field) {
+    	radio[0].checked = false;
+    	radio[1].checked = false;
+    	radio[field].checked = true;
+    	triggerContextInput(field);
 }
 
 function valButton(btn) {
@@ -224,6 +242,20 @@ function validateForm() {
 	<input type="checkbox" id="context_show_all" name="context_show_all" 
 	onclick="triggerTextfield(this.form.context);"/> {$labels.show_all} </p><br/>
 	
+	{* 20110107 - new diff engine *}
+	<h2>{$labels.diff_method}</h2>
+	<table border="0" cellspacing="0" cellpadding="2" style="font-size:small;" width="100%">
+	<tr><td style="width:8px;">
+	
+	<input type="radio" id="use_html_comp" name="use_html_comp" 
+	       checked="checked" onclick="triggerRadio(this.form.use_html_comp, 0);"/> </td><td> {$labels.use_html_comp} </td></tr>
+	<tr><td><input type="radio" id="use_html_comp" name="use_html_code_comp"
+	       onclick="triggerRadio(this.form.use_html_comp, 1);"/> </td><td> {$labels.use_html_code_comp} </td></tr>
+	<tr id="context_input" style="display: none;"> <td>&nbsp;</td><td>
+		{$labels.context} <input type="text" name="context" id="context" maxlength="4" size="4" value="{$gui->context}" /> 
+		<input type="checkbox" id="context_show_all" name="context_show_all" 
+		       onclick="triggerField(this.form.context);"/> {$labels.show_all} 	</td></tr></table>
+		       
 	<p><input type="hidden" name="requirement_id" value="{$gui->req_id}" />
 	<input type="submit" name="compare_selected_versions" value="{$labels.btn_compare_selected_versions}" /></p>
 	

@@ -5,18 +5,20 @@
  *
  * @package 	TestLink
  * @author asimon
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tcCompareVersions.php,v 1.4 2010/04/23 14:02:42 asimon83 Exp $
+ * @copyright 	2005-2010, TestLink community 
+ * @version    	CVS: $Id: tcCompareVersions.php,v 1.4.6.1 2011/01/07 18:29:13 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected testcase versions with each other.
  *
  * @internal Revisions:
+ * 20110107 - asimon - added daisydiff (html diff engine which handles tags well)
  */
 
 require_once("../../config.inc.php");
 require_once("common.php");
 require('../../third_party/diff/diff.php');
+require('../../third_party/daisydiff/src/HTMLDiff.php');
 
 $templateCfg = templateConfiguration();
 testlinkInitPage($db);
@@ -54,10 +56,10 @@ if ($args->compare_selected_versions) {
 		}
 	}
 
-			foreach($diff_array as $key => $val) {
+	foreach($diff_array as $key => $val) {
 		//attach a line break so we can use that as separation character for explode
-		$diff_array[$key]["left"] = explode("\n", str_replace("</p>", "</p>\n", $left[$key]));
-		$diff_array[$key]["right"] = explode("\n", str_replace("</p>", "</p>\n", $right[$key]));
+		$diff_array[$key]["left"] = $left[$key];
+		$diff_array[$key]["right"] = $right[$key];
 	}
 	
 	//now for the new tcsteps feature
@@ -71,8 +73,8 @@ if ($args->compare_selected_versions) {
 			$steps .= str_replace("</p>", "</p>\n", $step['actions']);
 			$results .=str_replace("</p>", "</p>\n", $step['expected_results']);
 			}
-		$diff_array["steps"]["left"] = explode("\n", $steps);
-		$diff_array["expected_results"]["left"] = explode("\n", $results);
+		$diff_array["steps"]["left"] = $steps;
+		$diff_array["expected_results"]["left"] = $results;
 		}
 
 	if (is_array($right['steps'])) {
@@ -82,28 +84,43 @@ if ($args->compare_selected_versions) {
 			$steps .= str_replace("</p>", "</p>\n", $step['actions']);
 			$results .=str_replace("</p>", "</p>\n", $step['expected_results']);
 		}
-		$diff_array["steps"]["right"] = explode("\n", $steps);
-		$diff_array["expected_results"]["right"] = explode("\n", $results);
+		$diff_array["steps"]["right"] = $steps;
+		$diff_array["expected_results"]["right"] = $results;
 	}
 	
 	foreach($diff_array as $key => $val) {
+		// 20110107 - new diff engine
 		$localized_key = lang_get($key);
-		$diff_array[$key]["diff"] = $differ->inline($val["left"], $gui->version_short . 
-								$args->version_left, $val["right"], $gui->version_short . 
-								$args->version_right, $args->context);
-		$diff_array[$key]["count"] = count($differ->changes);
-		$diff_array[$key]["heading"] = $localized_key;
+		$gui->diff[$key]["count"] = 0;
 		
+		if ($args->use_daisydiff) {
+			// using daisydiff as diffing engine
+			$diff = new HTMLDiffer();
+			list($differences, $diffcount) = $diff->htmlDiff($val['left'], $val['right']);
+			$gui->diff[$key]["diff"] = $differences;
+			$gui->diff[$key]["count"] = $diffcount;
+		} else {
+			// insert line endings so diff is better readable and makes sense (not everything in one line)
+			// then cast to array with \n as separating character, differ needs that
+			$gui->diff[$key]["left"] = explode("\n", str_replace("</p>", "</p>\n", $val['left']));
+			$gui->diff[$key]["right"] = explode("\n", str_replace("</p>", "</p>\n", $val['right']));
+		
+			$gui->diff[$key]["diff"] = $differ->inline($gui->diff[$key]["left"], $gui->leftID, 
+			                                            $gui->diff[$key]["right"], $gui->rightID,$args->context);
+			$gui->diff[$key]["count"] = count($differ->changes);
+		}
+		
+		$gui->diff[$key]["heading"] = $localized_key;
+
 		//are there any changes? then display! if not, nothing to show here
-		if ($diff_array[$key]["count"] > 0) {
-			$diff_array[$key]["message"] = sprintf($labels["num_changes"], $localized_key, 
+		if ($gui->diff[$key]["count"] > 0) {
+			$gui->diff[$key]["message"] = sprintf($labels["num_changes"], $localized_key, 
 											$diff_array[$key]["count"]);
 		} else {
-			$diff_array[$key]["message"] = sprintf($labels["no_changes"], $localized_key);
+			$gui->diff[$key]["message"] = sprintf($labels["no_changes"], $localized_key);
 		}
 	}	
 
-	$gui->diff_array = $diff_array;
 	$gui->subtitle = sprintf(lang_get('diff_subtitle_tc'), $args->version_left, 
 										$args->version_left, $args->version_right, 
 										$args->version_right, $tcaseSet[0]['name']);
@@ -131,6 +148,9 @@ function init_args()
 		$args->context = (isset($_REQUEST['context']) && is_numeric($_REQUEST['context'])) ? 
 											$_REQUEST['context'] : $diffEngineCfg->context;	
 	}
+	
+	// 20110107 - new diff engine
+	$args->use_daisydiff = isset($_REQUEST['use_html_comp']);
 	
 	return $args;
 }

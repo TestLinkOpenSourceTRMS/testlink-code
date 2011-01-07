@@ -5,6 +5,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - compare requirement versions
 
 @internal revision
+20110107 - asimon - added daisydiff (html diff engine which handles tags well)
 20110106 - Julian - Only 1 column for last change including localized timestamp and editor
 20101215 - Julian - Changed log message tooltip width to 500 (maximum) to avoid
                     visualization errors
@@ -19,9 +20,10 @@ Purpose: smarty template - compare requirement versions
           btn_compare_selected_versions, context, show_all,author,timestamp,timestamp_lastchange,
           warning_context, warning_context_range, warning_empty_context,warning,custom_field, 
           warning_selected_versions, warning_same_selected_versions,revision,attribute,
-          custom_fields,attributes,log_message"}
+          custom_fields,attributes,log_message,use_html_code_comp,use_html_comp,diff_method"}
 
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/diff/diff.css">
+<link rel="stylesheet" type="text/css" href="{$basehref}third_party/daisydiff/css/diff.css">
 
 <script type="text/javascript">
 //BUGID 3943: Escape all messages (string)
@@ -53,13 +55,30 @@ Ext.onReady(function(){
 {literal}
 });
 
-function triggerTextfield(field)
+// 20110107 - new diff engine
+function triggerContextInput(selected) {
+	var context = document.getElementById("context_input");
+	if (selected == 0) {
+		context.style.display = "none";
+	} else {
+		context.style.display = "table-row";;
+	}
+}
+
+function triggerField(field)
 {
 	if (field.disabled == true) {
     	field.disabled = false;
 	} else {
     	field.disabled = true;
 	}
+}
+
+function triggerRadio(radio, field) {
+    	radio[0].checked = false;
+    	radio[1].checked = false;
+    	radio[field].checked = true;
+    	triggerContextInput(field);
 }
 
 function valButton(btn) {
@@ -217,9 +236,19 @@ function validateForm() {
 	
 	</table><br/>
 	
-	<p>{$labels.context} <input type="text" name="context" id="context" maxlength="4" size="4" value="{$gui->context}" />
-	<input type="checkbox" id="context_show_all" name="context_show_all" 
-	onclick="triggerTextfield(this.form.context);"/> {$labels.show_all} </p><br/>
+	{* 20110107 - new diff engine *}
+	<h2>{$labels.diff_method}</h2>
+	<table border="0" cellspacing="0" cellpadding="2" style="font-size:small;" width="100%">
+	<tr><td style="width:8px;">
+	
+	<input type="radio" id="use_html_comp" name="use_html_comp" 
+	       checked="checked" onclick="triggerRadio(this.form.use_html_comp, 0);"/> </td><td> {$labels.use_html_comp} </td></tr>
+	<tr><td><input type="radio" id="use_html_comp" name="use_html_code_comp"
+	       onclick="triggerRadio(this.form.use_html_comp, 1);"/> </td><td> {$labels.use_html_code_comp} </td></tr>
+	<tr id="context_input" style="display: none;"> <td>&nbsp;</td><td>
+		{$labels.context} <input type="text" name="context" id="context" maxlength="4" size="4" value="{$gui->context}" /> 
+		<input type="checkbox" id="context_show_all" name="context_show_all" 
+		       onclick="triggerField(this.form.context);"/> {$labels.show_all} 	</td></tr></table>
 	
 	<p><input type="hidden" name="requirement_id" value="{$gui->req_id}" />
 	<input type="submit" name="compare_selected_versions" value="{$labels.btn_compare_selected_versions}" /></p>

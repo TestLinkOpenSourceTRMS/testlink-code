@@ -5,13 +5,14 @@
  *
  * @package 	TestLink
  * @author asimon
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqCompareVersions.php,v 1.5.2.7 2010/12/15 08:23:43 mx-julian Exp $
+ * @copyright 	2005-2010, TestLink community 
+ * @version    	CVS: $Id: reqCompareVersions.php,v 1.5.2.8 2011/01/07 13:07:32 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected requirements versions with each other.
  *
  * @internal Revisions:
+ * 20110107 - asimon - added daisydiff (html diff engine which handles tags well)
  * 20101212 - franciscom - BUGID 4056: Requirement Revisioning
  * 20100831 - Julian - added requirement title to page heading
  */
@@ -19,6 +20,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require('../../third_party/diff/diff.php');
+require('../../third_party/daisydiff/src/HTMLDiff.php');
 
 $templateCfg = templateConfiguration();
 testlinkInitPage($db);
@@ -57,14 +59,24 @@ if ($args->compare_selected_versions)
 	$gui->diff = array("scope" => array());
 	foreach($gui->diff as $key => $val) 
 	{
-		// insert line endings so diff is better readable and makes sense (not everything in one line)
-		// then cast to array with \n as separating character, differ needs that
-		$gui->diff[$key]["left"] = explode("\n", str_replace("</p>", "</p>\n", $sbs['left_item'][$key]));
-		$gui->diff[$key]["right"] = explode("\n", str_replace("</p>", "</p>\n", $sbs['right_item'][$key]));
-		$gui->diff[$key]["diff"] = $differ->inline($gui->diff[$key]["left"], $gui->leftID, 
-		                                            $gui->diff[$key]["right"], $gui->rightID,$args->context);
-
-		$gui->diff[$key]["count"] = count($differ->changes);
+		// 20110107 - new diff engine
+		if ($args->use_daisydiff) {
+			// using daisydiff as diffing engine
+			$diff = new HTMLDiffer();
+			list($differences, $diffcount) = $diff->htmlDiff($sbs['left_item'][$key], $sbs['right_item'][$key]);
+			$gui->diff[$key]["diff"] = $differences;
+			$gui->diff[$key]["count"] = $diffcount;
+		} else {
+			// insert line endings so diff is better readable and makes sense (not everything in one line)
+			// then cast to array with \n as separating character, differ needs that
+			$gui->diff[$key]["left"] = explode("\n", str_replace("</p>", "</p>\n", $sbs['left_item'][$key]));
+			$gui->diff[$key]["right"] = explode("\n", str_replace("</p>", "</p>\n", $sbs['right_item'][$key]));
+		
+			$gui->diff[$key]["diff"] = $differ->inline($gui->diff[$key]["left"], $gui->leftID, 
+			                                            $gui->diff[$key]["right"], $gui->rightID,$args->context);
+			$gui->diff[$key]["count"] = count($differ->changes);
+		}
+		
 		$gui->diff[$key]["heading"] = lang_get($key);
 	
 		// are there any changes? then display! if not, nothing to show here
@@ -236,7 +248,8 @@ function init_args()
 	$args->left_item_id = isset($_REQUEST['left_item_id']) ? intval($_REQUEST['left_item_id']) : -1;
 	$args->right_item_id = isset($_REQUEST['right_item_id']) ? intval($_REQUEST['right_item_id']) :  -1;
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-
+    // 20110107 - new diff engine
+	$args->use_daisydiff = isset($_REQUEST['use_html_comp']);
 
 	$diffEngineCfg = config_get("diffEngine");
 	$args->context = null;
@@ -244,7 +257,7 @@ function init_args()
 	{
 		$args->context = (isset($_REQUEST['context']) && is_numeric($_REQUEST['context'])) ? $_REQUEST['context'] : $diffEngineCfg->context;
 	}
-
+	
 	return $args;
 }
 

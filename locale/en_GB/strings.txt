@@ -30,7 +30,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.751.2.20 2010/12/26 14:35:16 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.751.2.21 2011/01/07 13:07:33 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -3141,6 +3141,9 @@ $TLS_show_all = "show all";
 $TLS_version_short = "v";
 $TLS_version_revision = "v%s r%s";
 $TLS_empty_log_message = "<i>Log Message is empty</i>";
+$TLS_diff_method = "Select a comparison mode:";
+$TLS_use_html_comp = "HTML Compare (default)";
+$TLS_use_html_code_comp = "HTML Code Compare";
 
 $TLS_diff_subtitle_tc = "Differences between version %s (v%s) and version %s (v%s) of testcase %s";
 $TLS_diff_subtitle_req = "Differences between version %s (v%s) and version %s (v%s) of requirement %s";

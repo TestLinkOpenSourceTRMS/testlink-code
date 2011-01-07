@@ -3,9 +3,10 @@
  *
  * Smarty template - Edit existing Test project
  *
- * CVS: $Id: projectEdit.tpl,v 1.32 2010/11/13 08:48:21 franciscom Exp $
+ * CVS: $Id: projectEdit.tpl,v 1.33 2011/01/07 20:02:46 franciscom Exp $
  *
  * Revisions:
+ *  20110107 - franciscom - BUGID 4145
  *  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
  *  20100930 - franciscom - BUGID 2344: Private test project
  *  20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
@@ -183,7 +184,6 @@
 			    </td>
       		</tr>
 
-			<input type="hidden" name="is_public" value="1" />
 			<tr>
 				<td></td><td>
 			    	<input type="checkbox" name="is_public" {if $gui->is_public eq 1} checked="checked"	{/if} />

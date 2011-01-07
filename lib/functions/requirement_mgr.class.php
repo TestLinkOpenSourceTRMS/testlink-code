@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.122 $
- * @modified $Date: 2011/01/06 14:12:09 $ by $Author: mx-julian $
+ * @version $Revision: 1.123 $
+ * @modified $Date: 2011/01/07 13:39:04 $ by $Author: mx-julian $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -465,11 +465,10 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 	  	            " expected_coverage={$expected_coverage}, " . 
 	  	            " type='" . $this->db->prepare_string($type) . "', ";
 	  	
-	  	// if a new revision is created set user as author, reset modifier
-	  	if ($create_revision) {
-	  		$sql_temp .= " creation_ts = {$db_now} ,author_id = {$user_id}, modification_ts = '0000-00-00 00:00:00', modifier_id = null ";
-	  	} else {
-	  		$sql_temp .= " modifier_id={$user_id}, modification_ts={$db_now} ";
+	  	// only if no new revision is created set modifier and modification ts
+	  	// otherwise those values are handled by function create_new_revision()
+	  	if (!$create_revision) {
+	  		$sql_temp .= ", modifier_id={$user_id}, modification_ts={$db_now} ";
 	  	}
 	  	
 	  	$sql[] = $sql_temp . " WHERE id={$version_id}";
@@ -2504,9 +2503,11 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	  	$this->db->exec_query($sql);
 	  	
 	  	$new_rev = $current_rev+1;
+	  	$db_now = $this->db->db_now();
 	  	$sql = 	'/* $debugMsg */' .
 	  			" UPDATE {$this->tables['req_versions']} " .
-	  			" SET revision = {$new_rev}, log_message=' " . $this->db->prepare_string($log_msg) . "'" .
+	  			" SET revision = {$new_rev}, log_message=' " . $this->db->prepare_string($log_msg) . "'," .
+	  	        " creation_ts = {$db_now} ,author_id = {$user_id}, modification_ts = '0000-00-00 00:00:00', modifier_id = null " .
 	  			" WHERE id = {$parent_id} ";
 	  	$this->db->exec_query($sql);
 	  	return $ret;

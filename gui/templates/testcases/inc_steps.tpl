@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_steps.tpl,v 1.4.2.1 2010/11/18 16:27:52 mx-julian Exp $
+$Id: inc_steps.tpl,v 1.4.2.2 2011/01/08 09:43:16 franciscom Exp $
 Purpose: Show the steps for a testcase in vertical or horizontal layout
          Included from files tcView_viewer.tpl and inc_exec_test_spec.tpl
 Author : eloff, 2010
@@ -12,6 +12,7 @@ Author : eloff, 2010
 
 
 @internal revisions:
+  20110108 - franciscom - BUGID 4144 - missing insert step feature on VERTICAL layout
   20101016 - franciscom - added id to table rows with step data 
 	20100621 - eloff - initial commit
 
@@ -71,7 +72,8 @@ Author : eloff, 2010
 		</td>
 		
 		<td class="clickable_icon">
-			<img style="border:none;cursor: pointer;"  title="{$inc_steps_labels.insert_step}"    alt="{$inc_steps_labels.insert_step}"
+			<img style="border:none;cursor: pointer;"  title="{$inc_steps_labels.insert_step}"    
+					 alt="{$inc_steps_labels.insert_step}"
 			     onclick="launchInsertStep({$step_info.id});"    src="{$tlImages.insert_step}"/>
 		</td>
 		
@@ -122,6 +124,11 @@ Author : eloff, 2010
 			             '{$step_info.step_number|escape:'javascript'|escape}',
 			             '{$del_msgbox_title}','{$warning_msg}');"
 			     src="{$tlImages.delete}"/>
+			{* BUGID 4144 *}
+			<img style="border:none;cursor: pointer;"  title="{$inc_steps_labels.insert_step}"    
+					 alt="{$inc_steps_labels.insert_step}"
+			     onclick="launchInsertStep({$step_info.id});" src="{$tlImages.insert_step}"/>
+
 		</td>
 		{/if}
 	</tr>

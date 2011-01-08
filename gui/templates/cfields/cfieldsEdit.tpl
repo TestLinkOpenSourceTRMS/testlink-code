@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.27 2010/12/19 17:38:20 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.28 2011/01/08 09:19:34 franciscom Exp $
 
 
 Important Development note:
@@ -23,6 +23,7 @@ This is done to simplify logic.
 
 
 rev :
+		 20110108 - franciscom - BUGID 4000
      20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
      20100829 - franciscom - BUGID 3707 - Things that works with Firefox, 
                                           BUT NOT with Chrome and Internet Explorer
@@ -181,6 +182,7 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
   var option_item;
   var enabled_option_counter=0;
   var style_display;
+  var TCASE_NODE=3;   // Sorry MAGIC NUMBER
   
   keys2loop[0]='execution';
   keys2loop[1]='design';
@@ -214,7 +216,8 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
     style_display='none';
   }
   document.getElementById(enable_on_cfg['oid']['container']).style.display=style_display;
-  document.getElementById(enable_on_cfg['oid']['combobox']).value='design';
+  // responsible of BUGID 4000
+  // document.getElementById(enable_on_cfg['oid']['combobox']).value='design';
 
   // ------------------------------------------------------------
   // Display on
@@ -239,8 +242,20 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
       }
       else
       {
-        o_display[key].disabled='';
-        o_display_container[key].style.display='';
+				// this logic is used to HIDE 'Display On Test Execution' combo
+        if( o_nodetype.value == TCASE_NODE && key == 'execution' &&
+        		document.getElementById(enable_on_cfg['oid']['combobox']).value == key
+        )
+        {
+        	o_display[key].value=1;
+        	o_display[key].disabled='disabled';
+        	o_display_container[key].style.display='none';
+				}
+				else
+				{
+      		o_display[key].disabled='';
+      		o_display_container[key].style.display='';
+      	}
       }
     }
   }

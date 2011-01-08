@@ -30,7 +30,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.751.2.21 2011/01/07 13:07:33 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.751.2.22 2011/01/08 17:55:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2216,7 +2216,7 @@ $TLS_req_import_result_overwritten = "overwritten!";
 $TLS_req_import_result_skipped = "skipped";
 $TLS_warning_duplicate_reqdoc_id = "Duplicated document id %s";
 $TLS_req_import_result_skipped_is_frozen = "skipped (is frozen)";
-
+$TLS_warning_sibbling_req_with_same_title = "Duplicated req name %s";
 
 //  ----- lib/functions/requirement_spec_mgr.class.php -----
 $TLS_warning_duplicated_req_spec_doc_id = "There's already a req. spec (title:%s) with this doc id (%s)";
@@ -3184,6 +3184,8 @@ $TLS_import_req_created = 'Created - Requirement - Doc ID:%s';
 $TLS_import_req_skipped = 'Skipped - Requirement - Doc ID:%s - Already exists on other branch';
 $TLS_import_req_updated = 'Updated - Requirement - Doc ID:%s';
 $TLS_import_req_new_version_created = 'New version created - Requirement - Doc ID:%s';
+$TLS_import_req_new_version_failed = 'Request to create a New version has failed - %s';
+$TLS_import_req_update_last_version_failed = 'Request to update LAST version has failed - %s';
 
 $TLS_import_done = 'Import done';
 $TLS_import_req_conflicts_other_branch = 'Doc ID conflicts with req in othe branch';

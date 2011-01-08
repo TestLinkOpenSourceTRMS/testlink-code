@@ -5,11 +5,12 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2010/12/19 17:38:49 $ by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2011/01/08 09:21:34 $ by $Author: franciscom $
  *
  * @internal revisions
  *
+ * 20110108 - franciscom - changed default values on $emptyCF
  * 20101219 - franciscom - BUGID 4088: Required parameter for custom fields
  * 20090531 - franciscom - minor bug additional first char ' ' on name and label
  *                         while creating new custom field
@@ -41,12 +42,14 @@ $result_msg = null;
 $do_control_combo_display = 1;
 
 $cfieldCfg = cfieldCfgInit($cfield_mgr);
+
+// Changed default values
 $emptyCF = array('id' => $args->cfield_id,
 		         'name' => '','label' => '',
 				 'type' => 0,'possible_values' => '',
 		         'show_on_design' => 1,'enable_on_design' => 1,
-		         'show_on_execution' => 1,'enable_on_execution' => 1,
-		         'show_on_testplan_design' => 1,'enable_on_testplan_design' => 1,
+		         'show_on_execution' => 0,'enable_on_execution' => 0,
+		         'show_on_testplan_design' => 0,'enable_on_testplan_design' => 0,
 		         'required' => 0,
 		         'node_type_id' => $cfieldCfg->allowed_nodes['testcase']);
 

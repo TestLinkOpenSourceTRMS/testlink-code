@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.25 2010/11/06 11:42:47 amkhullar Exp $
+$Id: cfieldsEdit.tpl,v 1.25.2.1 2011/01/08 08:28:50 franciscom Exp $
 
 
 Important Development note:
@@ -23,6 +23,7 @@ This is done to simplify logic.
 
 
 rev :
+		 20110108 - franciscom - BUGID 4000
      20100829 - franciscom - BUGID 3707 - Things that works with Firefox, 
                                           BUT NOT with Chrome and Internet Explorer
                                           added body on load event, to initialize when
@@ -210,13 +211,15 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
       enabled_option_counter++;
     }
   }
+  
   // Set Always to Test Spec Design that is valid for TL elements
   if( enabled_option_counter == 0 )
   {
     style_display='none';
   }
   document.getElementById(enable_on_cfg['oid']['container']).style.display=style_display;
-  document.getElementById(enable_on_cfg['oid']['combobox']).value='design';
+  // responsible of BUGID 4000
+  // document.getElementById(enable_on_cfg['oid']['combobox']).value='design';
 
   // ------------------------------------------------------------
   // Display on

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.25.2.1 2011/01/08 08:28:50 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.25.2.2 2011/01/08 09:15:56 franciscom Exp $
 
 
 Important Development note:
@@ -184,6 +184,7 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
   var option_item;
   var enabled_option_counter=0;
   var style_display;
+  var TCASE_NODE=3;   // Sorry MAGIC NUMBER
   
   keys2loop[0]='execution';
   keys2loop[1]='design';
@@ -224,6 +225,10 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
   // ------------------------------------------------------------
   // Display on
   // ------------------------------------------------------------
+
+  // exception if node type = test case && enable_on == execution
+  // the display on execution combo has not to be displayed.
+
   for(idx=0;idx < keys2loop.length; idx++)
   {
     key=keys2loop[idx];
@@ -237,15 +242,26 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
       
       if( show_on_cfg[key][o_nodetype.value] == 0 )
       {
-        // 20071124 - need to understand if can not set to 0
-        o_display[key].value=0;
         o_display[key].disabled='disabled';
         o_display_container[key].style.display='none';
+        o_display[key].value=0;
       }
       else
       {
-        o_display[key].disabled='';
-        o_display_container[key].style.display='';
+				// this logic is used to HIDE 'Display On Test Execution' combo
+        if( o_nodetype.value == TCASE_NODE && key == 'execution' &&
+        		document.getElementById(enable_on_cfg['oid']['combobox']).value == key
+        )
+        {
+        	o_display[key].value=1;
+        	o_display[key].disabled='disabled';
+        	o_display_container[key].style.display='none';
+				}
+				else
+				{
+      		o_display[key].disabled='';
+      		o_display_container[key].style.display='';
+      	}
       }
     }
   }
@@ -303,6 +319,7 @@ function initShowOnExec(id_master,show_on_cfg)
   var o_combo=document.getElementById(combo_oid);
   
   var o_master=document.getElementById(id_master);
+  
   if( o_master.value == 'execution')
   {
     o_container.style.display='none';

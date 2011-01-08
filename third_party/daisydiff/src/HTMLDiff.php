@@ -20,6 +20,11 @@
  * @ingroup DifferenceEngine
  */
 
+/*
+  @internal revision by TestLink Dev Team
+  20110108 - franciscom - endElement() $img seems to be useless
+*/
+
 /**
  * When detecting the last common parent of two nodes, all results are stored as
  * a LastCommonParentResult.
@@ -135,7 +140,9 @@ class DomTreeBuilder {
                 // Insert a dummy leaf for the element
                 $tag = new VisibleTagNode($this->currentParent, $name, $this->currentParent->attributes);
                 $this->currentParent->children[] = $tag;
-                $img->whiteBefore = $this->whiteSpaceBeforeThis;
+                // 20110108 - franciscom - this generates warning on event viewer,
+                // and seems that $img is never used 
+                // $img->whiteBefore = $this->whiteSpaceBeforeThis;
                 $this->lastSibling = $tag;
                 $this->textNodes[] = $tag;
             }

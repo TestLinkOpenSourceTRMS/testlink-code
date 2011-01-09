@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.66 2011/01/09 14:59:15 franciscom Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.67 2011/01/09 15:02:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -856,7 +856,7 @@ class testcaseCommands
 		$guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
 
 		
-        if($userFeeback['status_ok'])
+        if($userFeedback['status_ok'])
 		{
 		    $guiObj->user_feedback = '';
   			$ENABLED = 1;
@@ -869,7 +869,7 @@ class testcaseCommands
 		}
 		else
 		{
-		    $guiObj->user_feedback = $userFeeback['msg'];
+		    $guiObj->user_feedback = $userFeedback['msg'];
 		}
 
 	    $viewer_args['refreshTree'] = $guiObj->refreshTree;

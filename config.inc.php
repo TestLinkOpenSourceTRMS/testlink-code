@@ -18,10 +18,13 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.333.2.7 2011/01/06 14:44:05 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.333.2.8 2011/01/09 09:24:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20110109 - franciscom - added $tlCfg->req_cfg->duplicated_name_algorithm
+ *								 $tlCfg->req_cfg->duplicated_docid_algorithm
+ *
  *	20110103 - franciscom - BUGID 4131: PHPMAILER - upgrade config options to use SSL or TLS - allows use gmail
  *	20101212 - franciscom - req_cfg->log_message_len
  *  20101118 - asimon - BUGID 4031: added $tlCfg->req_cfg->copy_req_scope_to_tc_summary
@@ -1131,6 +1134,16 @@ $tlCfg->req_cfg->external_req_management = DISABLED;
 //to insert the last defined Requirement Document ID within the same Project
 //into Document ID field
 $tlCfg->req_cfg->allow_insertion_of_last_doc_id = DISABLED;
+
+
+// used ONLY to configure the mask (text) .
+// algorithm type is fixed HARDCODED
+//
+$tlCfg->req_cfg->duplicated_name_algorithm = new stdClass();
+$tlCfg->req_cfg->duplicated_name_algorithm->text = " (%s)";
+
+$tlCfg->req_cfg->duplicated_docid_algorithm = new stdClass();
+$tlCfg->req_cfg->duplicated_docid_algorithm->text = " (%s)";
 
 
 // ----------------------------------------------------------------------------

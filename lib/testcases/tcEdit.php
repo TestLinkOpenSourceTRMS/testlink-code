@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.164 2010/09/10 19:21:48 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.165 2011/01/09 14:59:15 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *	20110109 - franciscom - BUGID 3952 - on Create stay here like Mantis does
  * 	20100910 - franciscom - some refactoring
  * 	20100901 - franciscom - work on insert step
  *  20100831 - asimon - BUGID 3532
@@ -94,7 +95,8 @@ switch($args->doAction)
 	case "create":  
 	case "doCreate":  
         $oWebEditorKeys = array_keys($oWebEditor->cfg);
-        $op = $commandMgr->$pfn($args,$opt_cfg,$oWebEditorKeys);
+        // BUGID 3952 - added arguments #4
+        $op = $commandMgr->$pfn($args,$opt_cfg,$oWebEditorKeys,$_REQUEST);
         $doRender = true;
     break;
     
@@ -426,6 +428,8 @@ function init_args(&$cfgObj,$otName)
 		$cfgObj->webEditorCfg = getWebEditorCfg('steps_design');	
 	}   
 
+	// BUGID 3952 - used Only on Create
+	$args->stay_here = isset($_REQUEST['stay_here']) ? 1 : 0;
     return $args;
 }
 
@@ -553,6 +557,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
     $guiObj->attachments = null;
 	$guiObj->parent_info = null;
 	$guiObj->user_feedback = '';
+	$guiObj->stay_here = $argsObj->stay_here;
 	$guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
 	
 	$guiObj->loadOnCancelURL = $_SESSION['basehref'] . 
@@ -653,8 +658,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
 		$smartyObj->assign($key, $of->CreateHTML($rows,$cols));
 	}
       
-	// manage tree refresh
-	// 3579
+	// manage tree refresh - BUGID 3579
     switch($argsObj->doAction) {
        	case "doDelete":
        		$guiObj->refreshTree = $argsObj->refreshTree;
@@ -683,14 +687,6 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
             foreach($key2loop as $key => $value)
             {
             	$guiObj->$key = $value;
-            	// if( isset($guiObj->webEditor[$key]) )
-            	// {
-            	// 	$guiObj->webEditor[$key] = $value;
-            	// }
-            	// else
-            	// {
-                // 	$guiObj->$key = $value;
-                // }
             }
             $guiObj->operation = $actionOperation[$argsObj->doAction];
             

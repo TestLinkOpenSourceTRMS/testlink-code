@@ -1,9 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.21 2010/12/25 20:23:24 franciscom Exp $
+$Id: tcNew.tpl,v 1.22 2011/01/09 14:59:15 franciscom Exp $
 Purpose: smarty template - create new testcase
 
-20101202 - asimon - BUGID 4067: Tree refreshes after every action taken in Test Specification when update tree is disabled
+20110109 - franciscom - BUGID 3952 - stay here like Mantis does
+20101202 - asimon - BUGID 4067: Tree refreshes after every action taken in Test Specification 
+																when update tree is disabled
 20101011 - franciscom - BUGID 3874 - custom fields type validation
 20101010 - franciscom - BUGID 3062 - Check for duplicate name via AJAX call - checkTCaseDuplicateName()
                         need to add input for testcase_id, to make checkTCaseDuplicateName() work OK
@@ -21,7 +23,7 @@ Purpose: smarty template - create new testcase
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var='labels' s='btn_create,cancel,warning,title_new_tc,warning_required_cf,
-                          warning_empty_tc_title'}
+                          warning_empty_tc_title,stay_here'}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -138,6 +140,10 @@ function validateForm(f)
 			<input type="hidden" id="do_create"  name="do_create" value="do_create" />
 			<input type="submit" id="do_create_button"  name="do_create_button" value="{$labels.btn_create}" />
 			<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript: history.back();"/>
+	</div>	
+	<div class="groupBtn">
+			<input type="checkbox" id="stay_here"  name="stay_here" 
+						{if $gui->stay_here} checked="checked" {/if}/>{$labels.stay_here}
 	</div>	
 	{include file="testcases/tcEdit_New_viewer.tpl"}
 

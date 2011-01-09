@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.123 $
- * @modified $Date: 2011/01/07 13:39:04 $ by $Author: mx-julian $
+ * @version $Revision: 1.124 $
+ * @modified $Date: 2011/01/09 10:09:31 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20110108 - franciscom - createFromMap() - check improvements
+ *						  	BUGID 4150 check for duplicate req title
  *	20110106 - Julian - update() - set author,modifier,creation_ts,modifier_ts depending on creation of new revision
  *                      get_history() - added last_editor to output
  *	20101218 - franciscom - BUGID 4100 createFromMap() - missing update of Req Title when creating new version
@@ -463,7 +465,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 	  	            " SET scope='" . $this->db->prepare_string($scope) . "', " .
 	  	            " status='" . $this->db->prepare_string($status) . "', " .
 	  	            " expected_coverage={$expected_coverage}, " . 
-	  	            " type='" . $this->db->prepare_string($type) . "', ";
+	  	            " type='" . $this->db->prepare_string($type) . "' ";
 	  	
 	  	// only if no new revision is created set modifier and modification ts
 	  	// otherwise those values are handled by function create_new_revision()
@@ -653,6 +655,13 @@ function get_coverage($id)
     function: check_basic_data
               do checks on title and reqdoc id, for a requirement
 
+			  Checks:
+			  empty title
+			  empty docid
+			  docid already exists inside test project (DOCID is Test Project WIDE)
+			  title alreday exists under same REQ SPEC (req. parent)
+			  	
+
     args: srs_id: req spec id (req parent)
           title
           reqdoc_id
@@ -663,17 +672,18 @@ function get_coverage($id)
              keys: status_ok
                    msg
 
+	 @internal revision
+	 20110108 - franciscom - check on duplicate title under same parent
   */
   function check_basic_data($srs_id,$tproject_id,$title,$reqdoc_id,$id = null)
   {
 
-  	$req_cfg = config_get('req_cfg');
-
-  	$my_srs_id=$srs_id;
-
   	$ret['status_ok'] = 1;
   	$ret['msg'] = '';
 
+	$title = trim($title);
+	$reqdoc_id = trim($reqdoc_id);
+	
   	if ($title == "")
   	{
   		$ret['status_ok'] = 0;
@@ -693,6 +703,21 @@ function get_coverage($id)
  		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
   		{
   			$ret['msg'] = sprintf(lang_get("warning_duplicate_reqdoc_id"),$reqdoc_id);
+  			$ret['status_ok'] = 0;
+  		}
+  	}
+  	
+  	// check for duplicate title
+  	// BUGID 4150
+  	if($ret['status_ok'])
+  	{
+  		$ret['msg'] = 'ok';
+  		$target = array('key' => 'title', 'value' => $title);
+    	$getOptions = array('output' => 'minimun');
+		$rs = $this->getByAttribute($target,$tproject_id,$srs_id,$getOptions);
+ 		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
+  		{
+  			$ret['msg'] = sprintf(lang_get("warning_sibling_req_with_same_title"),$title);
   			$ret['status_ok'] = 0;
   		}
   	}
@@ -1316,7 +1341,9 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 
 		$labels = array('import_req_created' => '','import_req_skipped' =>'', 'import_req_updated' => '', 
 						'frozen_req_unable_to_import' => '', 'requirement' => '', 
-						'import_req_new_version_created' => '');
+						'import_req_new_version_created' => '',
+						'import_req_update_last_version_failed' => '',
+						'import_req_new_version_failed' => '');
 		foreach($labels as $key => $dummy)
 		{
 			$labels[$key] = lang_get($key);
@@ -1326,6 +1353,8 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     $cf2insert=null;
 	$status_ok = true;
 	$user_feedback = null;
+    $dummy = '';				 	     
+	$result = null;
 
 	$newReq = null;
     $copy_req = null;
@@ -1348,6 +1377,11 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 	$msgID = 'import_req_skipped';
 
 	$target = array('key' => $my['options']['hitCriteria'], 'value' => $req[$my['options']['hitCriteria']]);
+
+    // IMPORTANT NOTICE
+    // When get is done by attribute that can not be unique (like seems to happen now 20110108 with
+    // title), we can get more than one hit and then on this context we can not continue
+    // with requested operation
 	$check_in_reqspec = $this->getByAttribute($target,$tproject_id,$parent_id,$getOptions);
 	
 	if(is_null($check_in_reqspec))
@@ -1380,37 +1414,71 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     		switch($my['options']['actionOnHit'])
 			{
 				case 'update_last_version':
-						$result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
-											    $author_id,$req['status'],$req['type'],$req['expected_coverage'],
-											    $req['node_order']);
+					$result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
+										    $author_id,$req['status'],$req['type'],$req['expected_coverage'],
+										    $req['node_order']);
+
+					$status_ok = ($result['status_ok'] == 1);
+					if( $status_ok)
+					{
 						$msgID = 'import_req_updated';
-						$status_ok = true;
+					}
+					else
+					{
+						$msgID = 'import_req_update_last_version_failed';
+					}	
 				break;
 				
 				case 'create_new_version':
-						$newItem = $this->create_new_version($reqID,$author_id);
-        	        	
-						// Set always new version to NOT Frozen
-						$this->updateOpen($newItem['id'],1);				
+					$newItem = $this->create_new_version($reqID,$author_id);
+        	    	
+					// Set always new version to NOT Frozen
+					$this->updateOpen($newItem['id'],1);				
 					
 					// BUGID 4100 - 20101218 - franciscom
 					// Need to update TITLE
-					$title = trim_and_limit($req['title'],$fieldSize->req_title);
-			  		$sql = 	"/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
-  		  	 				" SET name='" . $this->db->prepare_string($title) . "'" . 
-							" WHERE id={$reqID}";
-					$this->db->exec_query($sql);
+					// $title = trim_and_limit($req['title'],$fieldSize->req_title);
+			  		// $sql = 	"/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
+  		  	 		//		" SET name='" . $this->db->prepare_string($title) . "'" . 
+					//		" WHERE id={$reqID}";
+					// $this->db->exec_query($sql);
 					
-						$newReq['version_id'] = $newItem['id']; 
+					// hmm wrong implementation
+					// Need to update ALL fields on new version then why do not use
+					// update() ?
+					$newReq['version_id'] = $newItem['id']; 
+
+				    // IMPORTANT NOTICE:
+				    // We have to DO NOT UPDATE REQDOCID with info received from USER
+				    // Because ALL VERSION HAS TO HAVE docid, or we need to improve our checks
+				    // and if update fails => we need to delete new created version.
+									
+					$title = trim_and_limit($req['title'],$fieldSize->req_title);
+					$result = $this->update($reqID,$newItem['id'],$req['docid'],
+											$title,$req['description'],
+										    $author_id,$req['status'],$req['type'],$req['expected_coverage'],
+										    $req['node_order']);
+
+					$status_ok = ($result['status_ok'] == 1);
+					if( $status_ok)
+					{
 						$msgID = 'import_req_new_version_created';
-						$status_ok = true;
+					}
+					else
+					{
+						// failed -> removed just created version
+						$this->delete($reqID,$newItem['id']);	
+						$msgID = 'import_req_new_version_failed';
+					}	
 				break;	
 			}
 		}		
     }     
-    $user_feedback[] = array('doc_id' => $req['docid'],'title' => $req['title'], 
-    				 	     'import_status' => sprintf($labels[$msgID],$req['docid']));
+    $what2add = is_null($result) ? $req['docid'] : $result['msg'];
     
+    $user_feedback[] = array('doc_id' => $req['docid'],'title' => $req['title'], 
+    				 	     'import_status' => sprintf($labels[$msgID],$what2add));
+
     // 20100907 - Custom Fields import
     if( $status_ok && $doProcessCF && isset($req['custom_fields']) && !is_null($req['custom_fields']) )
     {
@@ -1771,12 +1839,24 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 			$target = $reqSpecMgr->get_by_id($parent_id);
 			$root = $target['testproject_id'];
 		}
+
+		// REQ DOCID is test project wide => can not exist duplicates inside
+		// a test project => we need to generate a new one using target as
+		// starting point
         $target_doc = $this->generateDocID($id,$root);		
 
 		$item_versions = $this->get_by_id($id);
 		if($item_versions)
 		{
-			$new_item = $this->create_req_only($parent_id,$target_doc,$item_versions[0]['title'],
+			// BUGID 4150
+			// If a sibling exists with same title => need to generate automatically
+			// a new one.
+			$title = $this->generateUniqueTitle($item_versions[0]['title'],$parent_id,$root);
+			
+			// $new_item = $this->create_req_only($parent_id,$target_doc,$item_versions[0]['title'],
+			//                                   $item_versions[0]['author_id'],$item_versions[0]['node_order']);
+
+			$new_item = $this->create_req_only($parent_id,$target_doc,$title,
 			                                   $item_versions[0]['author_id'],$item_versions[0]['node_order']);
 			
 			if ($new_item['status_ok'])
@@ -1863,7 +1943,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
  	 */
 	function generateDocID($id, $tproject_id)
 	{
-		$field_size = config_get('field_size');
+		
 		$item_info = $this->get_by_id($id);
         $item_info = $item_info[0]; 
 
@@ -1876,16 +1956,23 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 		$instance = 1;
 		if( !is_null($itemSet) )
 		{
+			$field_size = config_get('field_size');
+			$req_cfg = config_get('req_cfg');
+			$safety_len = 2; // use t
+			$mask = $req_cfg->duplicated_docid_algorithm->text;
+			
 			// req_doc_id has limited size then we need to be sure that generated id will
 			// not exceed DB size
     	    $nameSet = array_flip(array_keys($itemSet));
-		    // 6 magic from " [xxx]"
-		    $prefix = trim_and_limit($item_info['req_doc_id'],$field_size->req_docid-6);
-    	    $target_doc = $prefix . " [{$instance}]"; 
+		    $prefix = trim_and_limit($item_info['req_doc_id'],
+		    						 $field_size->req_docid-strlen($mask)-$safety_len);
+		    						 
+    	    // $target_doc = $prefix . " [{$instance}]"; 
+    	    $target_doc = $prefix . sprintf($mask,$instance);
     		while( isset($nameSet[$target_doc]) )
     		{
     			$instance++;
-    	    	$target_doc = $prefix . " [{$instance}]"; 
+    	    	$target_doc = $prefix . sprintf($mask,$instance); 
     		}
 		}
      	return $target_doc;
@@ -2372,7 +2459,10 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	
 
 	/**
-	 * 
+	 * getByAttribute
+	 * allows search (on this version) by one of following attributes
+	 * - title
+	 * - docid
  	 * 
  	 */
 	function getByAttribute($attr,$tproject_id=null,$parent_id=null, $options = null)
@@ -2397,6 +2487,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	    	break;
 	    	
 	    	case 'like':
+	    	case 'likeLeft':
 	    		$check_criteria = " LIKE '{$target}%' ";
 	    	break;
 	    }
@@ -2783,6 +2874,61 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   		}
 	}
 	
+
+
+    /**
+	 * 
+ 	 *
+ 	 */
+	function generateUniqueTitle($title2check, $parent_id, $tproject_id)
+	{
+		$generated = $title2check;
+  		$attr = array('key' => 'title', 'value' => $title2check);
+    	$getOptions = array('output' => 'minimun', 'check_criteria' => 'likeLeft');
+    	
+    	// search need to be done in like to the left
+		$itemSet = $this->getByAttribute($attr,$tproject_id,$parent_id,$getOptions);
+
+		// we borrow logic (may be one day we can put it on a central place) from
+		// testcase class create_tcase_only()
+		
+		if( !is_null($itemSet) && ($siblingQty=count($itemSet)) > 0 )
+		{
+			$fieldSize = config_get('field_size');
+			$reqCfg = config_get('req_cfg');
+			$mask = $reqCfg->duplicated_name_algorithm->text;
+			
+			$title_max_len = $fieldSize->requirement_title;
+          	$nameSet = array_flip(array_keys($itemSet));
+			$target = $title2check . ($suffix = sprintf($mask,++$siblingQty));
+			$final_len = strlen($target);
+			if( $final_len > $title_max_len)
+			{
+				$target = substr($target,strlen($suffix),$title_max_len);
+			}
+           	// Need to recheck if new generated name does not crash with existent name
+           	// why? Suppose you have created:
+           	// REQ [1]
+           	// REQ [2]
+           	// REQ [3]
+           	// Then you delete REQ [2].
+           	// When I got siblings  il will got 2 siblings, if I create new progressive using next,
+           	// it will be 3 => I will get duplicated name.
+           	while( isset($nameSet[$target]) )
+           	{
+					$target = $title2check . ($suffix = sprintf($mask,++$siblingQty));
+					$final_len = strlen($target);
+					if( $final_len > $title_max_len)
+					{
+						$target = substr($target,strlen($suffix),$title_max_len);
+					}
+           	}
+           	$generated = $target;
+		}
+		
+		return $generated;
+	}
+
 	
 } // class end
 ?>

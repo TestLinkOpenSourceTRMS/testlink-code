@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.338 2010/12/12 09:24:25 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.339 2011/01/09 09:33:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -425,7 +425,15 @@ class testcase extends tlObjectWithAttachments
 			            	case 'counterSuffix':
 			            	    $mask =  !is_null($algo_cfg->text) ? $algo_cfg->text : '#%s';
             	            	$nameSet = array_flip(array_keys($itemSet));
+
+            	            	// 20110109 - franciscom
+            	            	// does not understand why I've choosen time ago
+            	            	// to increment $siblingQty before using it
+            	            	// This way if TC X exists on target parent
+            	            	// I will create TC X [2] insteand of TC X [1]
+            	            	// Anyway right now I will not change.
 			            		$target = $name . ($suffix = sprintf($mask,++$siblingQty));
+
 								// BUGID 3367
 			            		$final_len = strlen($target);
 			            		if( $final_len > $name_max_len)

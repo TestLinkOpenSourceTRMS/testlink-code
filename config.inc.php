@@ -18,10 +18,12 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.342 2011/01/01 17:32:34 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.343 2011/01/09 09:31:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 	20110109 - franciscom - added $tlCfg->req_cfg->duplicated_name_algorithm
+ *		  						  $tlCfg->req_cfg->duplicated_docid_algorithm
  *	20110101 - franciscom - new config options for PHPMAILER
  *	20101212 - franciscom - req_cfg->log_message_len
  *  20101130 - Julian - BUGID 4027: set default height of ckeditor to 300
@@ -1142,6 +1144,15 @@ $tlCfg->req_cfg->external_req_management = DISABLED;
 //to insert the last defined Requirement Document ID within the same Project
 //into Document ID field
 $tlCfg->req_cfg->allow_insertion_of_last_doc_id = DISABLED;
+
+// used ONLY to configure the mask (text) .
+// algorithm type is fixed HARDCODED
+//
+$tlCfg->req_cfg->duplicated_name_algorithm = new stdClass();
+$tlCfg->req_cfg->duplicated_name_algorithm->text = " (%s)";
+
+$tlCfg->req_cfg->duplicated_docid_algorithm = new stdClass();
+$tlCfg->req_cfg->duplicated_docid_algorithm->text = " (%s)";
 
 
 // ----------------------------------------------------------------------------

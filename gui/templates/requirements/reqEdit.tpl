@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.33.2.4 2010/12/12 09:36:45 franciscom Exp $
+$Id: reqEdit.tpl,v 1.33.2.5 2011/01/09 17:38:34 mx-julian Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
+20110106 - Julian - BUGID 4152: do not set focus on req doc id if log message window is shown
 20101212 - franciscom - BUGID 4056: Requirement Revisioning
 20101130 - Julian - BUGID 4063: "Save" and "Cancel" Button at the top of the page
 20101124 - Julian - BUGID 4049: Ajax login on timeout for requirements to avoid data loss
@@ -181,7 +182,10 @@ internal revision
   {literal} 
 	window.onload = function()
   {
-	   focusInputField('reqDocId');
+     // BUGID 4152: do not set focus on req doc id if log message window is shown
+     if( document.getElementById('prompt4revision').value == 0 &&  document.getElementById('prompt4log').value == 0) {
+	  focusInputField('reqDocId');
+	 }
      {/literal}
      {* BUGID 3307 - disable this check if coverage management is disabled, to avoid javascript errors *}
      {if $gui->req_cfg->expected_coverage_management}

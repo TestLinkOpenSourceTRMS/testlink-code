@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.34.2.2 $
- * @modified $Date: 2010/12/12 09:48:34 $ by $Author: franciscom $
+ * @version $Revision: 1.34.2.3 $
+ * @modified $Date: 2011/01/10 15:38:59 $ by $Author: asimon83 $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -49,9 +49,6 @@ $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
  */
 function init_args()
 {
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	// BUGID 1748
 	// BUGID 4038
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
@@ -62,7 +59,10 @@ function init_args()
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
 	
-    $args->req_id = $args->requirement_id;
+    // BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
+	$args->req_id = $args->requirement_id;
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
     $user = $_SESSION['currentUser'];

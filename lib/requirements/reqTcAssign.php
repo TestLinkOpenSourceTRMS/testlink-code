@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.21.4.1 $
- * @modified $Date: 2010/12/01 14:37:05 $  $Author: asimon83 $
+ * @version $Revision: 1.21.4.2 $
+ * @modified $Date: 2011/01/10 15:38:59 $  $Author: asimon83 $
  * 
  * @author Martin Havlat
  *
@@ -102,9 +102,6 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	$iParams = array("id" => array(tlInputParameter::INT_N),
 			         "req_id" => array(tlInputParameter::ARRAY_INT),
 			         "req" => array(tlInputParameter::INT_N),
@@ -118,6 +115,9 @@ function init_args()
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
 
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+	
 	$args->idReqSpec = null;
     $args->idReq = $args->req;
     $args->reqIdSet = $args->req_id;

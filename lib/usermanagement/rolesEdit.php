@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.34.6.1 $
- * @modified $Date: 2010/12/01 14:37:04 $ by $Author: asimon83 $
+ * @version $Revision: 1.34.6.2 $
+ * @modified $Date: 2011/01/10 15:38:59 $ by $Author: asimon83 $
  *
  * @internal revision 
  *	20091124 - franciscom - added contribution item template
@@ -64,9 +64,6 @@ renderGui($smarty,$args,$templateCfg);
 
 function init_args()
 {
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	$iParams = array(
 			"rolename" => array("POST",tlInputParameter::STRING_N,0,100),
 			"roleid" => array("REQUEST",tlInputParameter::INT_N),
@@ -78,6 +75,9 @@ function init_args()
 	$args = new stdClass();
 	$pParams = I_PARAMS($iParams,$args);
 	
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$args->basehref = $_SESSION['basehref'];
 	
 	return $args;

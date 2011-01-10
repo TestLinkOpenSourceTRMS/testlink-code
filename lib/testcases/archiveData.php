@@ -2,7 +2,7 @@
 /** 
  * 	TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
- * 	@version 	$Id: archiveData.php,v 1.78.2.2 2011/01/06 13:41:07 franciscom Exp $
+ * 	@version 	$Id: archiveData.php,v 1.78.2.3 2011/01/10 15:38:59 asimon83 Exp $
  * 	@author 	Martin Havlat
  * 
  * 	Allows you to show test suites, test cases.
@@ -121,9 +121,6 @@ switch($args->feature)
  */
 function init_args(&$viewerCfg,$cfgObj)
 {
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	$iParams = array("edit" => array(tlInputParameter::STRING_N,0,50),
 			         "id" => array(tlInputParameter::INT_N),
 			         "tcase_id" => array(tlInputParameter::INT_N),
@@ -137,6 +134,9 @@ function init_args(&$viewerCfg,$cfgObj)
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
 	
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	// BUGID 3516
 	// For more information about the data accessed in session here, see the comment
 	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.

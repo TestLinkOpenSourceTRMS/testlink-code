@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.25.2.1 2010/12/01 14:37:04 asimon83 Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.25.2.2 2011/01/10 15:38:59 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -314,9 +314,6 @@ function init_args($dateFormat)
 {
 	$args = new stdClass();
 	
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	// BUGID 3716
 	$iParams = array("keyword_id" => array(tlInputParameter::INT_N),
 			         "version" => array(tlInputParameter::INT_N,999),
@@ -337,6 +334,9 @@ function init_args($dateFormat)
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
+
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;

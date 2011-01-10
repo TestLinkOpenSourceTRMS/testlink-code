@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2010/12/01 14:37:08 $ $Author: asimon83 $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2011/01/10 15:38:56 $ $Author: asimon83 $
  *
  * @author Martin Havlat
  *
@@ -59,9 +59,6 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg);
  */
 function init_args()
 {
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	$args = new stdClass();
 	$iParams = array("countReq" => array(tlInputParameter::INT_N,99999),
 			         "req_spec_id" => array(tlInputParameter::INT_N),
@@ -78,6 +75,9 @@ function init_args()
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
+
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsImport.php,v 1.7 2010/12/01 14:37:08 asimon83 Exp $
+ * @version    	CVS: $Id: platformsImport.php,v 1.8 2011/01/10 15:38:55 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -52,14 +52,15 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	$args = new stdClass();
 	$iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50),
 	 				 "goback_url" => array(tlInputParameter::STRING_N,0,2048));
 		
 	R_PARAMS($iParams,$args);
+	
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$args->userID = $_SESSION['userID'];
   	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';

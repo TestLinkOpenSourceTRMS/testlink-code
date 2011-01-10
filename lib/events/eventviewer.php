@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2010/12/06 10:03:12 $ by $Author: mx-julian $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2011/01/10 15:38:55 $ by $Author: asimon83 $
  *
  * rev:
  *
@@ -96,9 +96,6 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args()
 {
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	$iParams = array("startDate" => array("POST",tlInputParameter::STRING_N,0,10),
 					 "endDate" => array("POST",tlInputParameter::STRING_N,0,10),
 					 "doAction" => array("POST",tlInputParameter::STRING_N,0,100),
@@ -109,6 +106,10 @@ function init_args()
 
 	$args = new stdClass();
 	I_PARAMS($iParams,$args);
+	
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$args->currentUser = $_SESSION['currentUser'];
 	return $args;
 }

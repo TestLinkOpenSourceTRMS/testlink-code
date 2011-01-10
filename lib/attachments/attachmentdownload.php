@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdownload.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2010/12/01 14:37:08 $ by $Author: asimon83 $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2011/01/10 15:38:55 $ by $Author: asimon83 $
  *
  * Downloads the attachment by a given id
  */
@@ -48,9 +48,6 @@ $smarty->display('attachment404.tpl');
  */
 function init_args()
 {
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	//the id (attachments.id) of the attachment to be downloaded
 	$iParams = array(
 		"id" => array(tlInputParameter::INT_N),
@@ -58,6 +55,9 @@ function init_args()
 	$args = new stdClass();
 	G_PARAMS($iParams,$args);
 	
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	return $args;
 }
 

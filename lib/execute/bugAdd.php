@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: bugAdd.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2010/12/01 14:37:08 $ by $Author: asimon83 $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2011/01/10 15:38:55 $ by $Author: asimon83 $
  * 
  * rev:
  *	20100917 - amitkhullar - missing $gui param to smarty
@@ -60,14 +60,14 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args($bugInterface)
 {
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	$iParams = array("exec_id" => array("GET",tlInputParameter::INT_N),
 		             "bug_id" => array("POST",tlInputParameter::STRING_N,0,$bugInterface->getBugIDMaxLength()));
 	$args = new stdClass();
 	I_PARAMS($iParams,$args);
 	
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	if ($args->exec_id)
 	{
 		$_SESSION['bugAdd_execID'] = $args->exec_id;

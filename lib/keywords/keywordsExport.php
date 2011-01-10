@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsExport.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2010/12/01 14:37:08 $ by $Author: asimon83 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2011/01/10 15:38:55 $ by $Author: asimon83 $
  *
 **/
 require_once("../../config.inc.php");
@@ -39,9 +39,6 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	$iParams = array(
 			"doAction" => array("GET",tlInputParameter::STRING_N,0,50),
 			"export_filename" => array("POST", tlInputParameter::STRING_N,0,255),
@@ -50,6 +47,9 @@ function init_args()
 	$args = new stdClass();
 		
 	$pParams = I_PARAMS($iParams,$args);
+
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->testproject_name = $_SESSION['testprojectName'];

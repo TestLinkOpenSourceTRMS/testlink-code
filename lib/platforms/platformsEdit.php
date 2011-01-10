@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsEdit.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2010/12/01 14:37:08 $ by $Author: asimon83 $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2011/01/10 15:38:55 $ by $Author: asimon83 $
  *
  * allows users to manage platforms. 
  *
@@ -75,9 +75,6 @@ $smarty->display($templateCfg->template_dir . $default_template);
  */
 function init_args()
 {
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	$args = new stdClass();
 	$source = sizeof($_POST) ? "POST" : "GET";
 	$iParams = array("doAction" => array($source,tlInputParameter::STRING_N,0,50),
@@ -86,6 +83,9 @@ function init_args()
 			         "notes" => array($source, tlInputParameter::STRING_N));
 		
 	$pParams = I_PARAMS($iParams);
+
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	$args->doAction = $pParams["doAction"];
 	$args->platform_id = $pParams["id"];

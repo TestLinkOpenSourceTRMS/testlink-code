@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: bugDelete.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2010/12/01 14:37:08 $ by $Author: asimon83 $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2011/01/10 15:38:55 $ by $Author: asimon83 $
 **/
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
@@ -45,9 +45,6 @@ function init_args()
 {
 	global $g_bugInterface;
 
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	$iParams = array(
 		"exec_id" => array("GET",tlInputParameter::INT_N),
 		"bug_id" => array("GET",tlInputParameter::STRING_N,0,$g_bugInterface->getBugIDMaxLength()),
@@ -56,6 +53,9 @@ function init_args()
 	
 	$pParams = I_PARAMS($iParams,$args);
 	
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	return $args;
 }
 

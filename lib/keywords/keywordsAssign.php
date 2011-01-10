@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2010/12/01 14:37:08 $ $Author: asimon83 $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2011/01/10 15:38:55 $ $Author: asimon83 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -101,9 +101,6 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args(&$opt_cfg)
 {
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	$rl_html_name = $opt_cfg->js_ot_name . "_newRight";
 	
     $iParams = array(
@@ -116,6 +113,9 @@ function init_args(&$opt_cfg)
 		
 	$pParams = R_PARAMS($iParams);
     
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$args = new stdClass();
     $args->id = $pParams["id"];
     $args->keywordArray = null;

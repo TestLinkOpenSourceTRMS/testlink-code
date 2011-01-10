@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		-
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: userInfo.php,v 1.33 2010/12/01 14:37:08 asimon83 Exp $
+ * @version    	CVS: $Id: userInfo.php,v 1.34 2011/01/10 15:38:55 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -100,9 +100,6 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	$iParams = array("firstName" => array("POST",tlInputParameter::STRING_N,0,30),
 			         "lastName" => array("REQUEST",tlInputParameter::STRING_N,0,30),
 			         "emailAddress" => array("REQUEST",tlInputParameter::STRING_N,0,100),
@@ -113,6 +110,9 @@ function init_args()
 
 	$pParams = I_PARAMS($iParams);
 	
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$args = new stdClass();
     $args->user = new stdClass();
  	$args->user->firstName = $pParams["firstName"];

@@ -1,9 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.14 2010/12/26 08:49:46 franciscom Exp $
+$Id: containerEdit.tpl,v 1.15 2011/01/11 08:20:03 mx-julian Exp $
 Purpose: smarty template - edit test specification: containers 
 
 @internal revision
+20110110 - Julian - BUGID 4155: Warning message when navigating away from changed test
+                                suite without saving
 20101226 - franciscom - BUGID 4088: Required parameter for custom fields
 20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 20101012 - franciscom - BUGID 3887: CF Types validation
@@ -12,7 +14,8 @@ Purpose: smarty template - edit test specification: containers
 
 *}
 {lang_get var="labels"
-          s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,cancel,warning,warning_required_cf'}
+          s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,cancel,warning,warning_required_cf
+          warning_unsaved'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -83,6 +86,18 @@ function validateForm(f)
 }
 </script>
 
+{* BUGID 4155 *}
+{if $tlCfg->gui->checkNotSaved}
+  <script type="text/javascript">
+  var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
+  var tc_editor = "{$tlCfg->gui->text_editor.design.type}";
+  if(tc_editor == "") {
+  	tc_editor = "{$tlCfg->gui->text_editor.all.type}";
+  }
+  </script>
+  <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
+{/if}
+
 </head>
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('name')">
@@ -94,11 +109,14 @@ function validateForm(f)
 	<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$containerID}" 
 	      name="container_edit" id="container_edit"
         onSubmit="javascript:return validateForm(this);">
-
-		<div style="float: right;">
-			<input type="submit" name="update_testsuite" value="{$labels.btn_save}" />
-		<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript:history.back();"/>
-		</div>
+	
+	{* BUGID 4155  - when save or cancel is pressed do not show modification warning *}
+	<div>
+		<input type="submit" name="update_testsuite" value="{$labels.btn_save}" 
+		       onclick="show_modified_warning = false;" />
+		<input type="button" name="go_back" value="{$labels.cancel}" 
+		       onclick="javascript: show_modified_warning = false; history.back();"/>
+	</div>
 	 
 	 {include file="testcases/inc_testsuite_viewer_rw.tpl"}
 
@@ -116,9 +134,12 @@ function validateForm(f)
 	 {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 	 </div>
 	<br></br>
-	<div style="float: left;">
-		<input type="submit" name="update_testsuite" value="{$labels.btn_save}" />
-		<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript:history.back();"/>
+	{* BUGID 4155  - when save or cancel is pressed do not show modification warning *}
+	<div>
+		<input type="submit" name="update_testsuite" value="{$labels.btn_save}"
+		       onclick="show_modified_warning = false;" />
+		<input type="button" name="go_back" value="{$labels.cancel}" 
+		       onclick="javascript: show_modified_warning = false; history.back();"/>
 	</div>
 	</form>
 </div>

@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.41 2011/01/09 17:38:30 mx-julian Exp $
+$Id: reqEdit.tpl,v 1.42 2011/01/11 08:20:03 mx-julian Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
+20110110 - Julian - BUGID 4153: Warning message when navigating away from changed requirement without saving
 20110106 - Julian - BUGID 4152: do not set focus on req doc id if log message window is shown
 20101226 - franciscom - BUGID 4088: Required parameter for custom fields
 20101211 - franciscom - BUGID 4056: Requirement Revisioning
@@ -26,7 +27,8 @@ internal revision
              title,warning_expected_coverage,type,warning_expected_coverage_range,
              warning_empty_reqdoc_id,expected_coverage,warning_empty_req_title,
              insert_last_req_doc_id,suggest_create_revision,revision_log_title,warning_required_cf,
-             please_add_revision_log,suggest_create_revision_html,warning_suggest_create_revision'}
+             please_add_revision_log,suggest_create_revision_html,warning_suggest_create_revision,
+             warning_unsaved'}
              
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -256,6 +258,19 @@ function insert_last_doc_id()
 	field.value = last_id;
 }
 </script>
+
+{* BUGID 4153 *}
+{if $tlCfg->gui->checkNotSaved}
+  <script type="text/javascript">
+  var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
+  var tc_editor = "{$tlCfg->gui->text_editor.requirement.type}";
+  if(tc_editor == "") {
+  	tc_editor = "{$tlCfg->gui->text_editor.all.type}";
+  }
+  </script>
+  <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
+{/if}
+
 </head>
 
 <body>
@@ -284,11 +299,12 @@ function insert_last_doc_id()
 	<input type="hidden" name="prompt4revision" id="prompt4revision" value="{$gui->askForRevision}" />
 	
 	{* BUGID 4063 *}
+	{* BUGID 4153 - when save or cancel is pressed do not show modification warning *}
 	<div class="groupBtn">
 		<input type="submit" name="create_req" value="{$labels.btn_save}"
-	         onclick="doAction.value='{$gui->operation}';"/>
+	         onclick="show_modified_warning = false; doAction.value='{$gui->operation}';"/>
 		<input type="button" name="go_back" value="{$labels.cancel}" 
-			onclick="javascript: history.back();"/>
+			onclick="javascript: show_modified_warning = false; history.back();"/>
 	</div>
 	<br />
 	
@@ -382,12 +398,13 @@ function insert_last_doc_id()
   	{/if}
 
 	{* BUGID 3854 *}
+	{* BUGID 4153 - when save or cancel is pressed do not show modification warning *}
 	<div class="groupBtn">
 		<input type="hidden" name="doAction" id="doAction" value="{$gui->operation}" />
 		<input type="submit" name="create_req" value="{$labels.btn_save}"
-	         onclick="doAction.value='{$gui->operation}';"/>
+	         onclick="show_modified_warning = false; doAction.value='{$gui->operation}';"/>
 		<input type="button" name="go_back" value="{$labels.cancel}" 
-			onclick="javascript: history.back();"/>
+			onclick="javascript: show_modified_warning = false; history.back();"/>
 	</div>
 
   {if isset($gui->askForLog) && $gui->askForLog}

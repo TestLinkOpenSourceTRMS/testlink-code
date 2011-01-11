@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.35.2.1 2011/01/06 14:43:01 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.35.2.2 2011/01/11 08:19:59 mx-julian Exp $ 
 Purpose: create/edit test case step
 
 rev:
+  20110111 - Julian - Improved modified warning message when navigating away without saving
   20110106 - franciscom - BUGID 4136 - missing implementation on BUGID 3241
   												layout was not used on CREATE
   20101016 - franciscom - added id to table rows with step data 
@@ -89,15 +90,17 @@ function validateForm(the_form,step_set,step_number_on_edit)
 		  return false;
 		}
   }
-	show_modified_warning=false;
 	return Ext.ux.requireSessionAndSubmit(the_form);
 }
 {/literal}
 </script>
 {if $tlCfg->gui->checkNotSaved}
 <script type="text/javascript">
-var unload_msg = "{$labels.warning_unsaved}";
-var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
+var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
+var tc_editor = "{$tlCfg->gui->text_editor.steps_design.type}";
+if(tc_editor == "") {ldelim}
+  tc_editor = "{$tlCfg->gui->text_editor.all.type}";
+{rdelim}
 </script>
 <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
 {/if}
@@ -149,10 +152,10 @@ DEBUG: $gui->action: {$gui->action} <br>
 
 
 
-
+	{* when save or cancel is pressed do not show modification warning *}
 	<div class="groupBtn">
 		<input id="do_update_step" type="submit" name="do_update_step" 
-		       onclick="doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
+		       onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
 
     {if $gui->operation == 'doUpdateStep'}
 		  <input id="do_create_step" type="submit" name="do_create_step" 
@@ -163,8 +166,8 @@ DEBUG: $gui->action: {$gui->action} <br>
     {/if}
 
   	<input type="button" name="cancel" value="{$labels.btn_cancel}"
-    	     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
-    	     {else}  onclick="javascript:history.back();" {/if} />
+    	     {if $gui->goback_url != ''}  onclick="show_modified_warning=false; location='{$gui->goback_url}'"
+    	     {else}  onclick="show_modified_warning=false; javascript:history.back();" {/if} />
 	</div>	
 
   <table class="simple" style="width:99%;">
@@ -295,14 +298,14 @@ DEBUG: $gui->action: {$gui->action} <br>
     	  	<td colspan="2" style="padding: 0.5em 0.5em 2em 0.5em"> {$expected_results}</td>
 				</tr>
 			<tr>
-  	{/if}
-  		
+  	{/if}	
   {/if}
   </table>	
   <p>
+  {* when save or cancel is pressed do not show modification warning *}
 	<div class="groupBtn">
 		<input id="do_update_step" type="submit" name="do_update_step" 
-		       onclick="doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
+		       onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
 
     {if $gui->operation == 'doUpdateStep'}
 		  <input id="do_create_step" type="submit" name="do_create_step" 
@@ -313,8 +316,8 @@ DEBUG: $gui->action: {$gui->action} <br>
     {/if}
 
   	<input type="button" name="cancel" value="{$labels.btn_cancel}"
-    	     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
-    	     {else}  onclick="javascript:history.back();" {/if} />
+    	     {if $gui->goback_url != ''}  onclick="show_modified_warning=false; location='{$gui->goback_url}'"
+    	     {else}  onclick="show_modified_warning=false; javascript:history.back();" {/if} />
 	</div>	
 </form>
 

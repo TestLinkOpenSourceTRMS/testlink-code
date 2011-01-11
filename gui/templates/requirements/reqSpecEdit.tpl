@@ -1,9 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.24.2.1 2010/11/24 17:11:21 mx-julian Exp $
+$Id: reqSpecEdit.tpl,v 1.24.2.2 2011/01/11 08:19:59 mx-julian Exp $
 Purpose: smarty template - create a new req document
 
 rev:
+  20110111 - Julian - Added Save, Cancel Button on top of the page
+  20110110 - Julian - BUGID 4154: Warning message when navigating away from changed requirement
+                                  specification without saving
   20101124 - Julian - BUGID 4051: Ajax login on timeout for requirement specifications to avoid data loss
   20101006 - asimon - BUGID 3854
   20100810 - asimon - BUGID 3317: disabled total count of requirements by default
@@ -14,7 +17,8 @@ rev:
 
 {lang_get var="labels"
           s='warning,warning_empty_req_spec_title,title,scope,req_total,type,
-             doc_id,cancel,show_event_history,warning_empty_doc_id,warning_countreq_numeric'}
+             doc_id,cancel,show_event_history,warning_empty_doc_id,warning_countreq_numeric,
+             warning_unsaved'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -63,6 +67,19 @@ rev:
 	}
 	{/literal}
 	</script>
+
+{* BUGID 4154 *}
+{if $tlCfg->gui->checkNotSaved}
+  <script type="text/javascript">
+  var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
+  var tc_editor = "{$tlCfg->gui->text_editor.requirement_spec.type}";
+  if(tc_editor == "") {ldelim}
+    tc_editor = "{$tlCfg->gui->text_editor.all.type}";
+  {rdelim}
+  </script>
+  <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
+{/if}
+
 </head>
 
 <body>
@@ -77,6 +94,16 @@ rev:
 	<form name="reqSpecEdit" id="reqSpecEdit" method="post" onSubmit="javascript:return validateForm(this);">
 	    <input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
 
+	{* BUGID 3854 *}
+	{* BUGID 4154 - when save or cancel is pressed do not show modification warning *}
+	<div class="groupBtn">
+		<input type="hidden" name="doAction" value="" />
+		<input type="submit" name="createSRS" value="{$gui->submit_button_label}"
+	       onclick="show_modified_warning = false; doAction.value='{$gui->operation}';" />
+		<input type="button" name="go_back" value="{$labels.cancel}" 
+			onclick="javascript: show_modified_warning = false; history.back();"/>
+	</div>
+	<br />
   	<div class="labelHolder"><label for="doc_id">{$labels.doc_id}</label>
   	</div>
 	  <div><input type="text" name="doc_id" id="doc_id"
@@ -133,12 +160,12 @@ rev:
 		{/if}
 
 		{* BUGID 3854 *}
+		{* BUGID 4154 - when save or cancel is pressed do not show modification warning *}
 		<div class="groupBtn">
-			<input type="hidden" name="doAction" value="" />
 			<input type="submit" name="createSRS" value="{$gui->submit_button_label}"
-		       onclick="doAction.value='{$gui->operation}';" />
+		       onclick="show_modified_warning = false; doAction.value='{$gui->operation}';" />
 			<input type="button" name="go_back" value="{$labels.cancel}" 
-				onclick="javascript: history.back();"/>
+				onclick="javascript: show_modified_warning = false; history.back();"/>
 		</div>
 	</form>
 </div>

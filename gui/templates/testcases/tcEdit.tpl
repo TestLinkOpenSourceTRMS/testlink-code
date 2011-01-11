@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.33 2010/11/06 11:42:47 amkhullar Exp $ 
+$Id: tcEdit.tpl,v 1.33.2.1 2011/01/11 08:19:59 mx-julian Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 @internal Revisions:
+  20110111 - Julian - Improved modified warning message when navigating away without saving
   20101010 - franciscom - refactoring of BUGID 3062 -> gui/javascript/tcase_utils.js
                           added testsuite_id for same logic
   20100810 - asimon - BUGID 3579: solved tree refreshing problems
@@ -80,7 +81,6 @@ function validateForm(the_form)
 	      	return false;
 		}
 	}
-	show_modified_warning=false;
 	return Ext.ux.requireSessionAndSubmit(the_form);
 }
 {/literal}
@@ -88,8 +88,11 @@ function validateForm(the_form)
 
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">
-  var unload_msg = "{$labels.warning_unsaved}";
-  var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
+  var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
+  var tc_editor = "{$tlCfg->gui->text_editor.design.type}";
+  if(tc_editor == "") {ldelim}
+    tc_editor = "{$tlCfg->gui->text_editor.all.type}";
+  {rdelim}
   </script>
   <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
 {/if}
@@ -116,21 +119,23 @@ function validateForm(the_form)
 	<input type="hidden" name="version" value="{$gui->tc.version}" />
 	<input type="hidden" name="doAction" value="" />
   	<input type="hidden" name="show_mode" value="{$gui->show_mode}" />
-
+	
+	{* when save or cancel is pressed do not show modification warning *}
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 
-		       onclick="doAction.value='doUpdate'" value="{$labels.btn_save}" />
+		       onclick="show_modified_warning=false; doAction.value='doUpdate'" value="{$labels.btn_save}" />
 		
 		<input type="button" name="go_back" value="{$labels.cancel}" 
-		       onclick="history.back();"/>
+		       onclick="show_modified_warning=false; javascript: history.back();"/>
 	</div>	
 	{include file="testcases/tcEdit_New_viewer.tpl"}
 	
+	{* when save or cancel is pressed do not show modification warning *}
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 
-		       onclick="doAction.value='doUpdate'" value="{$labels.btn_save}" />
+		       onclick="show_modified_warning=false; doAction.value='doUpdate'" value="{$labels.btn_save}" />
 		<input type="button" name="go_back" value="{$labels.cancel}" 
-		       onclick="history.back();"/>
+		       onclick="show_modified_warning=false; javascript: history.back();"/>
 	</div>	
 </form>
 

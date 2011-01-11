@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.18.2.1 2010/12/02 10:23:41 asimon83 Exp $
+$Id: tcNew.tpl,v 1.18.2.2 2011/01/11 09:01:26 mx-julian Exp $
 Purpose: smarty template - create new testcase
 
+20110111 - Julian - Improved modified warning message when navigating away without saving
 20101202 - asimon - BUGID 4067: Tree refreshes after every action taken in Test Specification when update tree is disabled
 20101011 - franciscom - BUGID 3874 - custom fields type validation
 20101010 - franciscom - BUGID 3062 - Check for duplicate name via AJAX call - checkTCaseDuplicateName()
@@ -86,6 +87,17 @@ function validateForm(f)
 {/literal}
 </script>
 
+{if $tlCfg->gui->checkNotSaved}
+  <script type="text/javascript">
+  var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
+  var tc_editor = "{$tlCfg->gui->text_editor.design.type}";
+  if(tc_editor == "") {ldelim}
+    tc_editor = "{$tlCfg->gui->text_editor.all.type}";
+  {rdelim}
+  </script>
+  <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
+{/if}
+
 </head>
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('testcase_name')">
@@ -129,16 +141,20 @@ function validateForm(f)
 	<div class="groupBtn">
 	    {* BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed. *}
 			<input type="hidden" id="do_create"  name="do_create" value="do_create" />
-			<input type="submit" id="do_create_button"  name="do_create_button" value="{$labels.btn_create}" />
-			<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript: history.back();"/>
+			<input type="submit" id="do_create_button"  name="do_create_button" value="{$labels.btn_create}" 
+			       onclick="show_modified_warning=false;" />
+			<input type="button" name="go_back" value="{$labels.cancel}" 
+			       onclick="javascript: show_modified_warning=false; history.back();"/>
 	</div>	
 	{include file="testcases/tcEdit_New_viewer.tpl"}
 
 	<div class="groupBtn">
 	    {* BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed. *}
 			<input type="hidden" id="do_create_2"  name="do_create" value="do_create" />
-			<input type="submit" id="do_create_button_2"  name="do_create_button" value="{$labels.btn_create}" />
-			<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript: history.back();"/>
+			<input type="submit" id="do_create_button_2"  name="do_create_button" value="{$labels.btn_create}" 
+			       onclick="show_modified_warning=false;" />
+			<input type="button" name="go_back" value="{$labels.cancel}" 
+			       onclick="javascript: show_modified_warning=false; history.back();"/>
 	</div>	
   
 </form>

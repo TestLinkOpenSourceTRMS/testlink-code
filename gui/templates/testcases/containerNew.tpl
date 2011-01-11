@@ -1,14 +1,16 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.11.2.1 2010/12/06 08:20:59 asimon83 Exp $
+$Id: containerNew.tpl,v 1.11.2.2 2011/01/11 09:01:26 mx-julian Exp $
 Purpose: smarty template - create containers
 
+20110110 - Julian - BUGID 4155: Warning message when navigating away from changed test
+                                suite without saving
+                  - added cancel button on top / create,cancel button on bottom
 20101202 - asimon - BUGID 4067: refresh tree problems 
 20101012 - franciscom - BUGID 3887: CF Types validation
 20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
                         removed use of smarty.template to get current directory to include other
                         templates. On 3.0 RC smarty.template do not contains current dir
-
 20070214 - franciscom -
 BUGID 628: Name edit ï¿½ Invalid action parameter/other behaviours if ï¿½Enterï¿½ pressed.
 20061231 - franciscom - using parent_info
@@ -16,7 +18,7 @@ BUGID 628: Name edit ï¿½ Invalid action parameter/other behaviours if ï¿½Enterï¿
 *}
 {lang_get var="labels"
           s="warning_empty_testsuite_name,title_create,tc_keywords,
-             warning,btn_create_testsuite"}
+             warning,btn_create_testsuite,cancel"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 
@@ -80,6 +82,18 @@ function validateForm(f)
 </script>
 {/literal}
 
+{* BUGID 4155 *}
+{if $tlCfg->gui->checkNotSaved}
+  <script type="text/javascript">
+  var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
+  var tc_editor = "{$tlCfg->gui->text_editor.design.type}";
+  if(tc_editor == "") {ldelim}
+    tc_editor = "{$tlCfg->gui->text_editor.all.type}";
+  {rdelim}
+  </script>
+  <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
+{/if}
+
 </head>
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('name')">
@@ -103,10 +117,13 @@ function validateForm(f)
 
 
 	<div style="font-weight: bold;">
-		<div style="float: right;">
+		<div>
 		  {* BUGID 628: Name edit ï¿½ Invalid action parameter/other behaviours if ï¿½Enterï¿½ pressed. *}
       		<input type="hidden" name="add_testsuite" id="add_testsuite" />
-			<input type="submit" name="add_testsuite_button" value="{$labels.btn_create_testsuite}" />
+			<input type="submit" name="add_testsuite_button" value="{$labels.btn_create_testsuite}"
+			       onclick="show_modified_warning = false;" />
+			<input type="button" name="go_back" value="{$labels.cancel}" 
+		       onclick="javascript: show_modified_warning = false; history.back();"/>
 		</div>	
 	  {include file="testcases/inc_testsuite_viewer_rw.tpl"}
 
@@ -123,6 +140,14 @@ function validateForm(f)
    <a href={$gsmarty_href_keywordsView}>{$labels.tc_keywords}</a>
 	 {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 	 </div>
+	 <br />
+	<div>
+	  {* BUGID 628: Name edit ï¿½ Invalid action parameter/other behaviours if ï¿½Enterï¿½ pressed. *}
+		<input type="submit" name="add_testsuite_button" value="{$labels.btn_create_testsuite}" 
+		       onclick="show_modified_warning = false;" />
+		<input type="button" name="go_back" value="{$labels.cancel}" 
+		       onclick="javascript: show_modified_warning = false; history.back();"/>
+	</div>	
 
 </div>
 </form>

@@ -26,14 +26,12 @@ span.diff-tag-added {
 span.diff-html-added {
     font-size: 100%;
     background-color: #ccffcc; /* light green */
-    cursor: pointer;
 }
 
 span.diff-html-removed {
     font-size: 100%;
     text-decoration: line-through;
     background-color: #fdc6c6; /* light red */
-    cursor: pointer;
 }
 
 span.diff-html-changed {
@@ -72,7 +70,7 @@ span.diff-html-changed span.tip {
 span.diff-html-changed:hover span.tip {
     display: block;
     position: absolute;
-    top: 2em; left: 2em; width: 15em;
+    top: 20px; left: 0px; width: 500px;
     text-align: left;
     z-index: 100;
     padding: 3px 7px 4px 6px;

@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.226 2011/01/06 14:29:40 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.227 2011/01/11 08:20:56 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -79,7 +79,7 @@ $TLS_mandatory = "Pflichtfelder";
 $TLS_manual = "Manuell";
 $TLS_Milestone = "Meilenstein";
 $TLS_months	= "Monate";
-$TLS_monitor	= "Beobachten";
+$TLS_monitor = "Beobachten";
 $TLS_name = "Name";
 $TLS_needed = "Benötigt";
 $TLS_not_aplicable = "N/A";
@@ -175,7 +175,7 @@ $TLS_btn_find = "Suchen";
 $TLS_btn_goback = "zurück";
 $TLS_btn_generate_doc = "Dokument erstellen";
 $TLS_btn_import = "Importieren";
-$TLS_btn_monitor 	= "Beobachten";
+$TLS_btn_monitor = "Beobachten";
 $TLS_btn_move = "Verschieben";
 $TLS_btn_no = "Nein";
 $TLS_btn_new_revision = "Neue Revision erstellen";
@@ -863,7 +863,7 @@ $TLS_btn_check_all = "Alle auswählen";
 $TLS_btn_copy_requirements = "Kopieren";
 $TLS_btn_copy_req_spec = "Kopieren";
 $TLS_btn_delete_spec = "Löschen";
-$TLS_btn_edit_spec = "Editieren";
+$TLS_btn_edit_spec = "Bearbeiten";
 $TLS_btn_export_reqs = "Exportieren";
 $TLS_btn_export_req_spec = "Exportieren";
 $TLS_btn_import_reqs = "Importieren";
@@ -2787,7 +2787,7 @@ $TLS_warning_empty_req_spec_title = "Der Titel der Anforderungsspezifikation dar
 $TLS_warning_empty_doc_id = "Dokument ID darf nicht leer sein";
 $TLS_create_req_spec = "Neue Anforderungsspezifikation anlegen";
 $TLS_create_child_req_spec = "Neue Kind-Anforderungsspezifikation anlegen";
-$TLS_edit_req_spec = "Anforderungsspezifikation Editieren";
+$TLS_edit_req_spec = "Anforderungsspezifikation bearbeiten";
 
 
 // ----- reqEdit.php -----

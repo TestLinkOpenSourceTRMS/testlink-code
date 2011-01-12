@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2010/11/06 18:46:33 $ by $Author: amkhullar $
+ * @version $Revision: 1.45.2.1 $
+ * @modified $Date: 2011/01/12 21:31:26 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
  * Generate documentation Test report based on Test plan data.
  *
  * Revisions :
+ *  20110112 - franciscom - changes on methods related to estimated execution time
+ *	20110112 - franciscom - BUGID 
  * 	20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
  *  20100723 - asimon - BUGID 3459 - added platform ID to calls of 
  *                                   renderTestPlanForPrinting() and renderTestSpecTreeForPrinting()
@@ -190,11 +192,11 @@ switch ($doc_info->type)
             // 20100112 - franciscom
             $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
             $platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);   
-			$tcase_filter = null;
+			// $tcase_filter = null;
+			$items2use = null;
 			$execid_filter = null;
 			$executed_qty = 0;
 			$treeForPlatform = array();
-
 
 			switch($doc_info->content_range)
 			{
@@ -213,11 +215,6 @@ switch ($doc_info->type)
     	   	    	  {
     	   	    		   $tree['childNodes'] = null;
     	   	    	  }
-
-    	   	    	  //@TODO:REFACTOR	
-    	   	    	  // prepareNode($db,$tree,$decoding_hash,$dummy,$dummy,$tp_tcs,
-    	   	    	  //              SHOW_TESTCASES,null,null,0,1,0);
-
     	   	    	  $dummy = null;
                       $pnFilters = null;
                       $pnOptions =  array('hideTestCases' => 0, 'showTestCaseID' => 1,
@@ -231,10 +228,11 @@ switch ($doc_info->type)
             	break;
     	       
 				case 'testsuite':
+					$tsuite = new testsuite($db);
+					
 					foreach ($platforms as $platform_id => $platform_name)
 					{
-
-						$tsuite = new testsuite($db);
+    	            	$items2use[$platform_id] = null;
 						$tInfo = $tsuite->get_by_id($args->itemID);
                     	
 						$children_tsuites = $tree_manager->get_subtree_list($args->itemID,$hash_descr_id['testsuite']);
@@ -246,20 +244,31 @@ switch ($doc_info->type)
     	   	        	
     	   	        	$filters = array( 'tsuites_id' => $branch_tsuites,'platform_id' => $platform_id);
 	                	$tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters); 
-						$tcase_filter=!is_null($tp_tcs) ? array_keys((array)$tp_tcs): null;
+						
+						// 20110112 - 
+						// After architecture changes on how CF design values for Test Cases are
+						// managed, we need the test case version ID and not test case ID
+						// $tcase_filter = !is_null($tp_tcs) ? array_keys((array)$tp_tcs): null;
+						// In addition if we loop over Platforms we need to save this set each time!!!
+    	            	$items2loop = !is_null($tp_tcs) ? array_keys($tp_tcs) : null;
+    	            	if( !is_null($items2loop) )
+    	            	{ 
+							foreach($items2loop as $rdx)
+							{	
+    	            			$items2use[$platform_id][] = $tp_tcs[$rdx]['tcversion_id'];
+    	            		}		
+    	            	}
     	            	
+    	            		
 						$tInfo['node_type_id'] = $hash_descr_id['testsuite'];
 						$tInfo['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
     	   	        	
-						//@TODO: schlundus, can we speed up with NO_EXTERNAL?
 						$dummy = null;
 						$pnFilters = null;
                         $pnOptions =  array('hideTestCases' => 0);
 						
 						// BUGID 3624
                         $pnOptions = array_merge($pnOptions, $pnOptionsAdd);
-						
-						// prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,SHOW_TESTCASES);
 						prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,$pnFilters,$pnOptions);
 						
 						$doc_info->title = htmlspecialchars(isset($tInfo['name']) ? $tInfo['name'] : $doc_info->testplan_name);
@@ -281,13 +290,30 @@ switch ($doc_info->type)
 			    	{
 	    	         	if( $info['exec_status'] != $status_descr_code['not_run'] )
 	        	     	{  
-	            	 	    $execid_filter[] = $info['exec_id'];
-	                		 $executed_qty++;
+	            	 		$execid_filter[] = $info['exec_id'];
+	                		$executed_qty++;
 		             	}    
 		         	}    
     			}
 
-				$timeEstimatedDuration = $tplan_mgr->get_estimated_execution_time($args->tplan_id,$tcase_filter);
+				if( is_null($items2use) )
+				{
+					// will do calculus on ALL PLATFORMS present on Test Plan
+					$timeEstimatedDuration = $tplan_mgr->get_estimated_execution_time($args->tplan_id);
+				}
+				else
+				{	
+					// we are going to loop over platforms
+					foreach( $items2use as $items )
+					{	
+    	        		if( !is_null($items) )
+    	        		{	
+							$timeEstimatedDuration = $tplan_mgr->get_estimated_execution_time($args->tplan_id,$items);
+    	        		}
+    	        	}		
+				}
+
+
 				if ($timeEstimatedDuration != "0")
 				{
 		        	$doc_data->statistics['estimated_execution']['minutes'] = $timeEstimatedDuration; 
@@ -297,7 +323,7 @@ switch ($doc_info->type)
 				if( $executed_qty > 0)
         		{ 
 					$doc_data->statistics['real_execution']['minutes'] = 
-						$tplan_mgr->get_execution_time($args->tplan_id,$execid_filter);
+					$tplan_mgr->get_execution_time($args->tplan_id,$execid_filter);
              		$doc_data->statistics['real_execution']['tcase_qty'] = $executed_qty;
          		}
  			} // if ($printingOptions['metrics'])

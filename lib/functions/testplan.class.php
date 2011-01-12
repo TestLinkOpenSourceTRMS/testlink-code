@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.235.2.8 2011/01/04 14:14:55 asimon83 Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.235.2.9 2011/01/12 21:30:12 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20110112 - franciscom - changes on methods related to estimated execution time
  *  20110104 - asimon - BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
  *  20101221 - amitkhullar - BUGID 4115 Custom Field Filtering Issue 
  *  20101215 - asimon - BUGID 4023: correct filtering also with platforms
@@ -546,7 +547,12 @@ class testplan extends tlObjectWithAttachments
 	
 
 	/**
+	 * Ignores Platforms, then if a test case version is linked to a test plan
+	 * and two platforms, we will get item once. 
+	 * Need to understand if in context where we want to use this method this is
+	 * a problem
 	 *
+	 * 
 	 * @internal revisions:
 	 *   20100722 - asimon - added missing $debugMsg
 	 */
@@ -561,6 +567,23 @@ class testplan extends tlObjectWithAttachments
 		$linked_items = $this->db->fetchRowsIntoMap($sql,'parent_id');			     
 		return $linked_items;
 	}
+
+	/**
+	 * @internal revisions:
+	 * 
+	 */
+	function get_linked_tcvid($id,$platformID)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = " /* $debugMsg */ ". 
+			   " SELECT tcversion_id FROM {$this->tables['testplan_tcversions']} " .
+			   " WHERE testplan_id = " . intval($id) . 
+			   " AND platform_id = " . intval($platformID) ;
+			   
+		$linked_items = $this->db->fetchRowsIntoMap($sql,'tcversion_id');			     
+		return $linked_items;
+	}
+
 
 
 	/*
@@ -2616,13 +2639,23 @@ class testplan extends tlObjectWithAttachments
 	            
 	            
 	  args:id testplan id
-	       tcase_set: default null
+	       itemSet: default null  - can be an arry with test case VERSION ID
 	
 	  returns: sum of CF values for all testcases linked to testplan
 	
-	  rev: 20080820 - franciscom
+	  rev: 
+	  	   20110112 - franciscom - we missed refactoring of this method when have changed
+	  	   						   how CF values at design time are linked to test cases.
+	  	   						   Before 1.9 linked to Test Case ID
+	  	   						   After 1.9 linked to Test case VERSION ID
+	  	   						   
+	  	   						   Another think to consider is:
+	  	   						   After platform addition we need to consider all platforms
+	  	   						   
+	  	   						    		
+	  	   20080820 - franciscom
 	*/
-	function get_estimated_execution_time($id,$tcase_set=null)
+	function get_estimated_execution_time($id,$itemSet=null)
 	{
 		// Get list of test cases on test plan
 		$estimated=0;
@@ -2636,26 +2669,8 @@ class testplan extends tlObjectWithAttachments
 		
 		if( $status_ok)
 		{
-			if( is_null($tcase_set) )
-			{
-				// we will compute time for ALL linked test cases
-				// $linked_testcases=$this->get_linked_tcversions($id);  
-				// Test done due to BUGID 3434 has shown that:
-				// get_linked_items_id($id) has better performance than get_linked_tcversions($id);
-				$linked_testcases=$this->get_linked_items_id($id);  
-				if( ($status_ok=!is_null($linked_testcases)) )
-				{
-					$tcase_ids=array_keys($linked_testcases);
-				}    
-			}
-			else
-			{
-				$tcase_ids=$tcase_set;  
-			}
-		}  
-		
-		if($status_ok)
-		{
+			$tcVersionIDSet = array();
+			
 			$sql="SELECT SUM(CAST(value AS NUMERIC)) ";
 			if( DB_TYPE == 'mysql')
 			{
@@ -2664,12 +2679,60 @@ class testplan extends tlObjectWithAttachments
 			else if ( DB_TYPE == 'postgres')
 			{
 				$sql="SELECT SUM(CAST(value AS NUMERIC)) ";
-			}        
+			}       
+			// hmmm - on MSSQL we will have problems!!!
+			
+			// Important NOTICE
+			// we can found SOME LIMITS on number of elements on IN CLAUSE
+			//
 			$sql .= " AS SUM_VALUE FROM {$this->tables['cfield_design_values']} CFDV " .
-				" WHERE CFDV.field_id={$cfield_id} " .
-				" AND node_id IN (" . implode(',',$tcase_ids) . ")";
-			$estimated=$this->db->fetchOneValue($sql);
-			$estimated=is_null($estimated) ? 0 :$estimated;
+					" WHERE CFDV.field_id={$cfield_id} ";
+
+
+			if( is_null($itemSet) )
+			{
+				// we will compute time for ALL linked test cases
+				// $linked_testcases=$this->get_linked_tcversions($id);  
+				// Test done due to BUGID 3434 has shown that:
+				// get_linked_items_id($id) has better performance than get_linked_tcversions($id);
+				//
+				// 20110112 - franciscom
+				// we need to loop over all linked PLATFORMS (if any)
+				
+				// $linked_testcases = $this->get_linked_items_id($id); 
+				$getOpt = array('output' => 'mapAccessByID' , 'addIfNull' => true);
+				$platformSet = array_keys($this->getPlatforms($id,$getOpt));
+				
+				$tcVersionIDSet = array();
+				foreach($platformSet as $platformID)
+				{
+					$linkedItems = $this->get_linked_tcvid($id,$platformID);  
+					if( (!is_null($linkedItems)) )
+					{
+						$tcVersionIDSet[] = array_keys($linkedItems);
+					}
+				}	    
+			}
+			else
+			{
+				$tcVersionIDSet[] = $itemSet;  
+			}
+		}  
+		
+		if($status_ok)
+		{
+			// Important NOTICE
+			// we can found SOME LIMITS on number of elements on IN CLAUSE
+			//
+			$estimated = 0;
+			foreach($tcVersionIDSet as $items)
+			{	
+				$sql2exec = $sql . " AND node_id IN (" . implode(',',$items) . ")";
+
+
+				$dummy = $this->db->fetchOneValue($sql2exec);
+				$estimated += is_null($dummy) ? 0 : $dummy;
+			}	
 		}
 		
 		return $estimated;

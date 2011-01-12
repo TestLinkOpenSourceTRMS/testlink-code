@@ -1,9 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.38 2011/01/11 08:20:03 mx-julian Exp $ 
+$Id: tcStepEdit.tpl,v 1.39 2011/01/12 12:25:00 mx-julian Exp $ 
 Purpose: create/edit test case step
 
 rev:
+  20110112 - Julian - BUGID 3901 - Scroll window to step implemented for vertical layout and
+                                   newly added steps
   20110111 - Julian - Improved modified warning message when navigating away without saving
   20110106 - franciscom - BUGID 4136 - missing implementation on BUGID 3241
   												layout was not used on CREATE
@@ -106,7 +108,14 @@ if(tc_editor == "") {
 </head>
 
 {* BUGID 3901: Edit Test Case STEP - scroll window to show selected step *}
-<body onLoad="scrollToShowMe('step_row_{$gui->step_number}')">
+{if $gui->action == 'createStep' || $gui->action == 'doCreateStep'}
+	{assign var="scrollPosition" value='new_step'}
+{else}
+	{assign var="stepToScrollTo" value=$gui->step_number}
+	{assign var="scrollPosition" value="step_row_$stepToScrollTo"}
+{/if}
+
+<body onLoad="scrollToShowMe('{$scrollPosition}')">
 <h1 class="title">{$gui->main_descr}</h1> 
 
 <div class="workBack" style="width:98.6%;">
@@ -211,7 +220,7 @@ DEBUG: $gui->action: {$gui->action} <br>
   {/if}
   {else} {* Vertical layout *}
 	{foreach from=$gui->tcaseSteps item=step_info}
-	<tr>
+	<tr id="step_row_{$step_info.step_number}">
 		<th width="20">{$args_labels.step_number} {$step_info.step_number}</th>
 		<th>{$labels.step_actions}</th>
 		{if $session['testprojectOptions']->automationEnabled}
@@ -259,7 +268,7 @@ DEBUG: $gui->action: {$gui->action} <br>
   	{* BUGID 4136 *}
   	{* We have forgotten to manage layout here *}
 		{if $gui->steps_results_layout == "horizontal"}
-	  	<tr>
+	  	<tr id="new_step">
 			  <td style="text-align:left;">{$gui->step_number}</td>
 	  		<td>{$steps}</td>
 	  		<td>{$expected_results}</td>
@@ -272,7 +281,7 @@ DEBUG: $gui->action: {$gui->action} <br>
 	      	{/if}
 	  	</tr>
   	{else}
-			<tr>
+			<tr id="new_step">
 				<th width="20">{$args_labels.step_number} {$gui->step_number}</th>
 				<th>{$labels.step_actions}</th>
 				{if $session['testprojectOptions']->automationEnabled}

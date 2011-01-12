@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.117 2010/12/12 10:13:03 franciscom Exp $
+// $Id: testlink_library.js,v 1.118 2011/01/12 12:25:00 mx-julian Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -1400,12 +1400,15 @@ function storeWindowSize(windowname) {
  * @param oid: HTML element ID
  *
  * @internal Revisions
+ * 20110112 - added check if obj is not null to avoid warnings
  * 20101016 - franciscom - BUGID 3901: Edit Test Case STEP - scroll window to show selected step 
  */
 function scrollToShowMe(oid) {
 	obj = document.getElementById(oid);
-	obj.scrollIntoView();
-	obj.focus();
+	if (obj != null) {
+		obj.scrollIntoView();
+		obj.focus();
+	}
 }
 
 

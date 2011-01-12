@@ -8,11 +8,13 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.165 2011/01/09 14:59:15 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.166 2011/01/12 09:30:21 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *  20110112 - Julian - BUGID 4158 - CKEditor only working for the first two initialized editors
+                                     -> Reason is still not clear
  *	20110109 - franciscom - BUGID 3952 - on Create stay here like Mantis does
  * 	20100910 - franciscom - some refactoring
  * 	20100901 - franciscom - work on insert step
@@ -82,6 +84,7 @@ if($args->do_activate_this)
 }
 
 $doRender = false;
+$edit_steps = false;
 
 $pfn = $args->doAction;
 switch($args->doAction)
@@ -111,6 +114,7 @@ switch($args->doAction)
     case "doReorderSteps":
     case "doInsertStep":
         $op = $commandMgr->$pfn($args,$_REQUEST);
+        $edit_steps = true;
         $doRender = true;
     break;
 
@@ -118,7 +122,7 @@ switch($args->doAction)
 
 if( $doRender )
 {
-	renderGui($args,$gui,$op,$templateCfg,$cfg);
+	renderGui($args,$gui,$op,$templateCfg,$cfg,$edit_steps);
 	exit();
 }
 
@@ -473,7 +477,7 @@ function initializeOptionTransferCfg($otName,&$argsObj,&$tprojectMgr)
   
   rev: 20080902 - franciscom - manage column number as function of layout for tinymce
 */
-function createWebEditors($basehref,$editorCfg,$editorSet=null)
+function createWebEditors($basehref,$editorCfg,$editorSet=null,$edit_steps=false)
 {
     $specGUICfg=config_get('spec_cfg');
     $layout=$specGUICfg->steps_results_layout;
@@ -484,10 +488,16 @@ function createWebEditors($basehref,$editorCfg,$editorSet=null)
     $cols = array('steps' => array('horizontal' => 38, 'vertical' => 44),
                   'expected_results' => array('horizontal' => 38, 'vertical' => 44));
 
-    $owe->cfg = array('summary' => array('rows'=> null,'cols' => null),
-                      'preconditions' => array('rows'=> null,'cols' => null) ,
-                      'steps' => array('rows'=> null,'cols' => $cols['steps'][$layout]) ,
-                      'expected_results' => array('rows'=> null, 'cols' => $cols['expected_results'][$layout]));
+	// BUGID 4158 - CKEditor only working for the first two initialized editors
+    //              -> check which Editors really need to be initialized
+	$owe->cfg = null;
+	if($edit_steps == false) {
+		$owe->cfg = array('summary' => array('rows'=> null,'cols' => null),
+		                  'preconditions' => array('rows'=> null,'cols' => null) );
+	} else {
+		$owe->cfg = array('steps' => array('rows'=> null,'cols' => null) ,
+		                  'expected_results' => array('rows'=> null, 'cols' => null));
+	}
     
     $owe->editor = array();
     $force_create = is_null($editorSet);
@@ -583,7 +593,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
  *
  * BUGID 3359
  */
-function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
+function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$edit_steps)
 {
     $smartyObj = new TLSmarty();
     
@@ -615,7 +625,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
   	$key2work = 'cleanUpWebEditor';
 	$cleanUpWebEditor = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
 
-    $oWebEditor = createWebEditors($argsObj->basehref,$cfgObj->webEditorCfg); 
+    $oWebEditor = createWebEditors($argsObj->basehref,$cfgObj->webEditorCfg,null,$edit_steps); 
 	foreach ($oWebEditor->cfg as $key => $value)
   	{
   		$of = &$oWebEditor->editor[$key];

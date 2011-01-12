@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.343 2011/01/09 09:31:49 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.344 2011/01/12 09:27:50 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -539,6 +539,12 @@ $tlCfg->gui->text_editor['all'] = array('type' => 'ckeditor',
                                     	'toolbar' => 'Testlink',
                                     	'configFile' => 'cfg/tl_ckeditor_config.js',
                                         'height' => 300);
+
+// BUGID 4163: mini toolbar for test case steps edit
+$tlCfg->gui->text_editor['steps_design'] = array('type' => 'ckeditor',
+                                    	         'toolbar' => 'TestlinkMini',
+                                    	         'configFile' => 'cfg/tl_ckeditor_config.js',
+                                                 'height' => 200);
 					
 $tlCfg->gui->text_editor['execution'] = array('type' => 'none');
 

@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tl_ckeditor_config.js,v 1.11 2010/11/30 10:09:11 mx-julian Exp $
+$Id: tl_ckeditor_config.js,v 1.12 2011/01/12 09:27:50 mx-julian Exp $
 
 Configure CKEditor
 See: http://docs.cksource.com/ for more information
@@ -33,6 +33,15 @@ CKEDITOR.editorConfig = function( config )
 		 ['Format','Bold','Italic','Underline','Strike','-',
 		  'Subscript','Superscript','-','TextColor','BGColor','RemoveFormat','-',
 		  'Link','Image','Anchor','SpecialChar']
+	];
+	
+	// mini Toolbar - BUGID 4163
+	config.toolbar_TestlinkMini = 
+	[
+		['NumberedList','BulletedList','-',
+		 'JustifyLeft','JustifyCenter','JustifyRight','-',
+		 'Bold','Italic','TextColor','-',
+		 'Link','Image','Table']
 	];
 	
 	// Toolbar with all available features - can be used as template for custom toolbars

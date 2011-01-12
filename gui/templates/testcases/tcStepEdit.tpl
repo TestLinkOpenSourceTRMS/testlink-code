@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.35.2.3 2011/01/12 12:24:57 mx-julian Exp $ 
+$Id: tcStepEdit.tpl,v 1.35.2.4 2011/01/12 12:40:21 mx-julian Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -175,7 +175,7 @@ DEBUG: $gui->action: {$gui->action} <br>
     {/if}
 
   	<input type="button" name="cancel" value="{$labels.btn_cancel}"
-    	     {if $gui->goback_url != ''}  onclick="show_modified_warning=false; location='{$gui->goback_url}'"
+    	     {if $gui->goback_url != ''}  onclick="show_modified_warning=false; location='{$gui->goback_url}';"
     	     {else}  onclick="show_modified_warning=false; javascript:history.back();" {/if} />
 	</div>	
 
@@ -325,7 +325,7 @@ DEBUG: $gui->action: {$gui->action} <br>
     {/if}
 
   	<input type="button" name="cancel" value="{$labels.btn_cancel}"
-    	     {if $gui->goback_url != ''}  onclick="show_modified_warning=false; location='{$gui->goback_url}'"
+    	     {if $gui->goback_url != ''}  onclick="show_modified_warning=false; location='{$gui->goback_url}';"
     	     {else}  onclick="show_modified_warning=false; javascript:history.back();" {/if} />
 	</div>	
 </form>

@@ -4,14 +4,17 @@
  *
  * Filename $RCSfile: int_mantis.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2010/03/13 14:51:23 $ $Author: franciscom $
+ * @version $Revision: 1.18.6.1 $
+ * @modified $Date: 2011/01/12 18:33:49 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
  *
+ * @internal revision
+ *
+ * 20110110 - Contribution by KarlReichert - BUGID 3784
  * 20100313 - franciscom - BUGID 3195
  * 
  * 20080523 - franciscom - 
@@ -146,8 +149,13 @@ class mantisInterface extends bugtrackingInterface
 			// 	$str = "<del>" . $id . "</del>";
 			// 	
 			// }
-      		// 20080523 - franciscom - BUGID 1534
-     		$status_i18n = lang_get('issue_status_' . $status);
+			// this way if user configure status on mantis with blank
+            // we do not have problems
+			// 20110110 - KarlReichert - BUGID 3784
+			$status = str_replace(" ", "_", $status);
+
+			// 20080523 - franciscom - BUGID 1534
+			$status_i18n = lang_get('issue_status_' . $status);
 			$str = "[" . $status_i18n . "] " . $id . "";	
 		}
 		return $str;

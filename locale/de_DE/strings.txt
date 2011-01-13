@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.216.2.10 2011/01/11 08:20:53 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.216.2.11 2011/01/13 15:20:20 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.751.2.18
+ * Last Update according to en_GB string file version 1.751.2.24
  *
  **/
 
@@ -2209,6 +2209,7 @@ $TLS_req_import_result_overwritten = "Die Ergebnisse wurden überschrieben";
 $TLS_req_import_result_skipped = "Die Ergebnisse wurden übersprungen";
 $TLS_warning_duplicate_reqdoc_id = "Doppelte Dok. ID %s";
 $TLS_req_import_result_skipped_is_frozen = "übersprungen (ist eingefroren)";
+$TLS_warning_sibling_req_with_same_title = "Duplikat: Anforderung mit Titel %s";
 
 
 //  ----- lib/functions/requirement_spec_mgr.class.php -----
@@ -3130,6 +3131,9 @@ $TLS_show_all = "Zeige Alles";
 $TLS_version_short = "v";
 $TLS_version_revision = "v%s r%s";
 $TLS_empty_log_message = "<i>Änderungsprotokoll ist leer</i>";
+$TLS_diff_method = "Vergleichsmethode auswählen:";
+$TLS_use_html_comp = "HTML Vergleich";
+$TLS_use_html_code_comp = "HTML Code Vergleich";
 
 $TLS_diff_subtitle_tc = "Unterschiede zwischen Version %s (v%s) und Version %s (v%s) des Testfalls %s"; 
 $TLS_diff_subtitle_req = "Unterschiede zwischen Version %s (v%s) und Version %s (v%s) der Anforderung %s";
@@ -3170,6 +3174,8 @@ $TLS_import_req_created = 'Wurde erstellt - Anforderung - Dok ID:%s';
 $TLS_import_req_skipped = 'Wurde übersprungen - Anforderung - Dok ID:%s - Existiert bereits in anderem Zweig';
 $TLS_import_req_updated = 'Wurde aktualisiert - Anforderung - Dok ID:%s';
 $TLS_import_req_new_version_created = 'Neue Version erstellt - Anforderung - Dok ID:%s';
+$TLS_import_req_new_version_failed = 'Neue Version konnte nicht erstellt werden - %s';
+$TLS_import_req_update_last_version_failed = 'Letzte Version konnte nicht aktualisiert werden - %s';
 
 $TLS_import_done = 'Import erledigt';
 $TLS_import_req_conflicts_other_branch = 'Dok ID steht in Konflikt mit Anforderung im anderem Zweig';

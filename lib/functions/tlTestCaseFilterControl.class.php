@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.34 2010/11/10 17:46:07 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.35 2011/01/13 13:47:39 mx-julian Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,7 @@
  *
  * @internal Revisions:
  *
+ * 20110113 - asimon - BUGID 4166 - List also test plans without builds for "plan_mode"
  * 20101110 - asimon - BUGID 3822: Keywords combobox is absent on the Filters pane of 'Add / Remove Test Cases'
  * 20101103 - asimon - custom fields on test spec did not retain value after apply
  * 20101028 - asimon - BUGID 3933: Add test case to test plan - Left Pane filter uses 
@@ -1053,7 +1054,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		// For execution, don't take testplans into selection which have no (active/open) builds!
 		// For plan add mode, add every plan no matter if he has builds or not.
 		foreach ($testplans as $plan) {
-			$add_plan = $this->mode == 'plan_add_mode';
+			// BUGID 4166 - List also test plans without builds for "plan_mode"
+			$add_plan = $this->mode == 'plan_add_mode' || $this->mode == 'plan_mode';
 			if (!$add_plan) {
 				$builds = $this->testplan_mgr->get_builds($plan['id'],
 				                                          testplan::GET_ACTIVE_BUILD,

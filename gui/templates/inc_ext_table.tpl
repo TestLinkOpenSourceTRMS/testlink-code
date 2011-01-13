@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.49.2.1 2010/11/16 14:29:33 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.49.2.2 2011/01/13 17:57:19 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20110113 - Julian - BUGID 4169 - minor syntax error causing problems on IE6
 	 20101116 - Julian - Localized Menu Item for GridFilters
 	 20101022 - Julian - BUGID 3979 - Use grid filters for exttables
 	 20101018 - eloff - Refactor export/collapse button
@@ -198,10 +199,11 @@ Ext.onReady(function() {
 					expand_collapse_groups: '{$labels.expand_collapse_groups|escape:javascript}',
 					show_all_columns: '{$labels.show_all_columns|escape:javascript}',
 					show_all_columns_tooltip: '{$labels.show_all_columns_tooltip|escape:javascript}'
-				{rdelim},
+				{rdelim}
 				//init plugins for multisort
 				{if $matrix->allowMultiSort}
-					plugins: [
+					//BUGID 4169 - minor syntax error causing problems on IE6
+					,plugins: [
 						reorderer = new Ext.ux.ToolbarReorderer(),
 						droppable = new Ext.ux.ToolbarDroppable({ldelim}
 						

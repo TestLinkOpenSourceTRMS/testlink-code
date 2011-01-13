@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.45.2.1 $
- * @modified $Date: 2011/01/12 21:31:26 $ by $Author: franciscom $
+ * @version $Revision: 1.45.2.2 $
+ * @modified $Date: 2011/01/13 21:39:42 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
  * Generate documentation Test report based on Test plan data.
  *
  * Revisions :
+ *  20110113 - franciscom - BUGID 4170 - Test Report - When Test Plan Has platforms does not filter test cases
+ *							BUGID 4171: Test Report - estimated and real execution time functions made Platform aware
  *  20110112 - franciscom - changes on methods related to estimated execution time
  *	20110112 - franciscom - BUGID 
  * 	20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
@@ -210,18 +212,25 @@ switch ($doc_info->type)
     	   	    	  // We are in a loop and we use tree on prepareNode, that changes it,
     	   	    	  // then we can not use anymore a reference to test_spec
     	   	    	  // $tree = &$subtree;
-    	   	    	  $tree = $subtree;
+    	   	    	  $tree2work = $subtree;
+    	   	    	  
     	   	    	  if (!$tp_tcs)
     	   	    	  {
-    	   	    		   $tree['childNodes'] = null;
+    	   	    		   $tree2work['childNodes'] = null;
     	   	    	  }
     	   	    	  $dummy = null;
                       $pnFilters = null;
+                      
+                      // 20110113 - franciscom
+                      // BUGID 4170
+                      // due to Platforms we need to use 'viewType' => 'executionTree',
+                      // if not we get ALWAYS the same set of test cases linked to test plan
+                      // for each platform -> WRONG 
                       $pnOptions =  array('hideTestCases' => 0, 'showTestCaseID' => 1,
+                      					  'viewType' => 'executionTree',
 		                                  'getExternalTestCaseID' => 0, 'ignoreInactiveTestCases' => 0);
-    	   	    	  prepareNode($db,$tree,$decoding_hash,$dummy,$dummy,$tp_tcs,$pnFilters,$pnOptions);
-    	   	    	 
-    	   	    	  $treeForPlatform[$platform_id] = $tree;            
+    	   	    	  prepareNode($db,$tree2work,$decoding_hash,$dummy,$dummy,$tp_tcs,$pnFilters,$pnOptions);
+    	   	    	  $treeForPlatform[$platform_id] = $tree2work;            
     	   	    	  
     	   	    	  
     	   	    	}              
@@ -296,14 +305,15 @@ switch ($doc_info->type)
 		         	}    
     			}
 
+				// IMPORTANT NOTICE.
+				// 20110113 - franciscom
+				// get_estimated_execution_time() is platform aware!!
 				if( is_null($items2use) )
 				{
-					// will do calculus on ALL PLATFORMS present on Test Plan
 					$timeEstimatedDuration = $tplan_mgr->get_estimated_execution_time($args->tplan_id);
 				}
 				else
 				{	
-					// we are going to loop over platforms
 					foreach( $items2use as $items )
 					{	
     	        		if( !is_null($items) )
@@ -314,14 +324,21 @@ switch ($doc_info->type)
 				}
 
 
-				if ($timeEstimatedDuration != "0")
+				if ($timeEstimatedDuration['grandTotal'] != "0")
 				{
-		        	$doc_data->statistics['estimated_execution']['minutes'] = $timeEstimatedDuration; 
+					// This is OK when platforms exists ?
+		        	$doc_data->statistics['estimated_execution']['minutes'] = $timeEstimatedDuration['grandTotal']; 
     		    	$doc_data->statistics['estimated_execution']['tcase_qty'] = count($tp_tcs);
+    		    	
+    		    	foreach($timeEstimatedDuration['platform'] as $platformID => $elem)
+    		    	{
+    		    		$doc_data->statistics['estimated_execution']['platform'][$platformID] = $elem; 		 
+    		    	}	
 				}
          
 				if( $executed_qty > 0)
         		{ 
+					// hmm need to understand if also here we need to make changes due to platforms.
 					$doc_data->statistics['real_execution']['minutes'] = 
 					$tplan_mgr->get_execution_time($args->tplan_id,$execid_filter);
              		$doc_data->statistics['real_execution']['tcase_qty'] = $executed_qty;
@@ -383,13 +400,14 @@ if ($treeForPlatform)
 						$docText .= renderPlatformHeading($tocPrefix, $platform_id, $platforms[$platform_id], 
 						                                  $printingOptions);
 					}
-					// 3459 - added platform ID
+					// BUGID 3459 - added platform ID
 					$docText .= renderTestPlanForPrinting($db, $tree, $doc_info->content_range, 
 					                                      $printingOptions, $tocPrefix, 0, 1, $args->user_id,
 					                                      $args->tplan_id, $args->tproject_id, $platform_id);
+
 					if (($doc_info->type == DOC_TEST_REPORT) && ($printingOptions['metrics']))
 					{
-						$docText .= buildTestPlanMetrics($doc_data->statistics);
+						$docText .= buildTestPlanMetrics($doc_data->statistics,$platform_id);
 					}	
 				break;
 			}

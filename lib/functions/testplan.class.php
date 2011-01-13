@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.235.2.9 2011/01/12 21:30:12 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.235.2.10 2011/01/13 21:39:42 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -2655,10 +2655,10 @@ class testplan extends tlObjectWithAttachments
 	  	   						    		
 	  	   20080820 - franciscom
 	*/
-	function get_estimated_execution_time($id,$itemSet=null)
+	function get_estimated_execution_time($id,$itemSet=null,$platformID=null)
 	{
-		// Get list of test cases on test plan
-		$estimated=0;
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$estimated = array('platform' => array(), 'grandTotal' => 0);
 		$cf_info = $this->cfield_mgr->get_by_name('CF_ESTIMATED_EXEC_TIME');
 		
 		// CF exists ?
@@ -2670,15 +2670,17 @@ class testplan extends tlObjectWithAttachments
 		if( $status_ok)
 		{
 			$tcVersionIDSet = array();
+			$getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
+			$platformSet = array_keys($this->getPlatforms($id,$getOpt));
 			
-			$sql="SELECT SUM(CAST(value AS NUMERIC)) ";
+			$sql = " /* $debugMsg */ ";
 			if( DB_TYPE == 'mysql')
 			{
-				$sql="SELECT SUM(value) ";
+				$sql .= " SELECT SUM(value) ";
 			} 
 			else if ( DB_TYPE == 'postgres')
 			{
-				$sql="SELECT SUM(CAST(value AS NUMERIC)) ";
+				$sql .= " SELECT SUM(CAST(value AS NUMERIC)) ";
 			}       
 			// hmmm - on MSSQL we will have problems!!!
 			
@@ -2691,31 +2693,32 @@ class testplan extends tlObjectWithAttachments
 
 			if( is_null($itemSet) )
 			{
-				// we will compute time for ALL linked test cases
-				// $linked_testcases=$this->get_linked_tcversions($id);  
-				// Test done due to BUGID 3434 has shown that:
-				// get_linked_items_id($id) has better performance than get_linked_tcversions($id);
-				//
 				// 20110112 - franciscom
 				// we need to loop over all linked PLATFORMS (if any)
-				
-				// $linked_testcases = $this->get_linked_items_id($id); 
-				$getOpt = array('output' => 'mapAccessByID' , 'addIfNull' => true);
-				$platformSet = array_keys($this->getPlatforms($id,$getOpt));
-				
 				$tcVersionIDSet = array();
 				foreach($platformSet as $platformID)
 				{
 					$linkedItems = $this->get_linked_tcvid($id,$platformID);  
 					if( (!is_null($linkedItems)) )
 					{
-						$tcVersionIDSet[] = array_keys($linkedItems);
+						$tcVersionIDSet[$platformID]= array_keys($linkedItems);
 					}
 				}	    
 			}
 			else
 			{
-				$tcVersionIDSet[] = $itemSet;  
+				// need to make as many set as platforms linked to test plan
+				$sql4tplantcv = " /* $debugMsg */ SELECT tcversion_id, platform_id " .
+								" FROM {$this->tables['testplan_tcversions']} " .
+								" WHERE testplan_id=" . intval($id)  .
+								" AND tcversion_id IN (" . implode(',',$itemSet) . ")";
+
+				$rs = $this->db->fetchColumnsIntoMap($sql4tplantcv,'platform_id','tcversion_id',
+													 database::CUMULATIVE);
+				foreach($rs as $platformID => $elem)
+				{
+					$tcVersionIDSet[$platformID] = array_values($elem);  	
+				}	
 			}
 		}  
 		
@@ -2724,17 +2727,16 @@ class testplan extends tlObjectWithAttachments
 			// Important NOTICE
 			// we can found SOME LIMITS on number of elements on IN CLAUSE
 			//
-			$estimated = 0;
-			foreach($tcVersionIDSet as $items)
+			$estimated = array('platform' => array(), 'grandTotal' => 0);
+			foreach($tcVersionIDSet as $platformID => $items)
 			{	
 				$sql2exec = $sql . " AND node_id IN (" . implode(',',$items) . ")";
-
-
 				$dummy = $this->db->fetchOneValue($sql2exec);
-				$estimated += is_null($dummy) ? 0 : $dummy;
+				$estimated['platform'][$platformID]['tcase_qty'] = count($items);
+				$estimated['platform'][$platformID]['minutes'] = is_null($dummy) ? 0 : $dummy;
+				$estimated['grandTotal'] += $dummy;
 			}	
 		}
-		
 		return $estimated;
 	}    
 
@@ -2815,6 +2817,10 @@ class testplan extends tlObjectWithAttachments
 	}    
 
 
+
+
+
+
 	/*
 	  function: get_prev_builds() 
 	
@@ -2830,9 +2836,9 @@ class testplan extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-		$sql = " /* $debugMsg */ SELECT id,testplan_id, name, notes, active, is_open " .
-			" FROM {$this->tables['builds']} " . 
-			" WHERE testplan_id = {$id} AND id < {$build_id}" ;
+		$sql = 	" /* $debugMsg */ SELECT id,testplan_id, name, notes, active, is_open " .
+				" FROM {$this->tables['builds']} " . 
+				" WHERE testplan_id = {$id} AND id < {$build_id}" ;
 		
 		if( !is_null($active) )
 		{

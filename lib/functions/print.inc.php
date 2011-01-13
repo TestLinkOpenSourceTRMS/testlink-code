@@ -8,13 +8,12 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.120 2010/11/06 18:46:33 amkhullar Exp $
+ * @version $Id: print.inc.php,v 1.120.2.1 2011/01/13 21:39:42 franciscom Exp $
  * @uses printDocument.php
  *
  *
- * @internal 
- *
- * Revisions:
+ * @internal revisions:
+ * 	20110113 - franciscom - BUGID 4171: Test Report - estimated and real execution time functions made Platform aware
  *  20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
  *  20101015 - franciscom  - BUGID 3804 - contribution again
  *  20100923 - franciscom  - BUGID 3804 - contribution
@@ -817,7 +816,10 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
 	$exec_info = null;
 	$bGetExecutions = false;
 	if ($printingOptions["docType"] != DOC_TEST_SPEC)
+	{
 		$bGetExecutions = ($printingOptions['cfields'] || $printingOptions['passfail']);
+	}
+	
 	if ($bGetExecutions)
 	{
 		$sql =  " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
@@ -831,6 +833,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
 		  		" ORDER BY execution_id DESC";
 		$exec_info = $db->get_recordset($sql,null,1);
 	}
+	
 	// Added condition for the display on/off of the custom fields on test cases.
     if ($printingOptions['cfields'] && !is_null($exec_info))
     {
@@ -1133,14 +1136,18 @@ function renderTestPlanForPrinting(&$db, &$node, $item_type, &$printingOptions, 
  * based on contribution (BUGID 1670)
  * 
  * @param array_of_strings $statistics
+ * @param array_of_strings $statistics
  * @return string HTML code
+ *
+ * @internal revision
+ * 20110113 - franciscom - BUGID 4171: Test Report - estimated and real execution time functions made Platform aware
  */
-function renderTestDuration($statistics)
+function renderTestDuration($statistics,$platformID)
 {
     $output = '';
 	$estimated_string = '';
 	$real_string = '';
-	$bEstimatedTimeAvailable = isset($statistics['estimated_execution']);
+	$bEstimatedTimeAvailable = isset($statistics['estimated_execution']['platform']);
 	$bRealTimeAvailable = isset($statistics['real_execution']);
     
 	if( $bEstimatedTimeAvailable || $bRealTimeAvailable)
@@ -1149,8 +1156,8 @@ function renderTestDuration($statistics)
 	    
 		if($bEstimatedTimeAvailable) 
 		{
-			$estimated_minutes = $statistics['estimated_execution']['minutes'];
-	    	$tcase_qty = $statistics['estimated_execution']['tcase_qty'];
+			$estimated_minutes = $statistics['estimated_execution']['platform'][$platformID]['minutes'];
+	    	$tcase_qty = $statistics['estimated_execution']['platform'][$platformID]['tcase_qty'];
 		         
     	   	if($estimated_minutes > 60)
     	   	{
@@ -1165,6 +1172,7 @@ function renderTestDuration($statistics)
 			$output .= '<p>' . $estimated_string . "</p>\n";
 		}
 		  
+		// need refactoring!!  
 		if($bRealTimeAvailable) 
 		{
 			$real_minutes = $statistics['real_execution']['minutes'];
@@ -1206,10 +1214,10 @@ function renderEOF()
  * 
  * @return string html
  */
-function buildTestPlanMetrics($statistics)
+function buildTestPlanMetrics($statistics,$platformID)
 {
     $output = '<h1 class="doclevel">'.lang_get('title_nav_results')."</h1>\n";
-    $output .= renderTestDuration($statistics);
+    $output .= renderTestDuration($statistics,$platformID);
     
 	return $output;	
 }

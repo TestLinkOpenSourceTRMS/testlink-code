@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.15 2010/10/10 14:47:57 franciscom Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.15.2.1 2011/01/13 16:10:36 asimon83 Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -19,6 +19,7 @@
 *   - Assign requirements to test cases
 *
 *	@internal revision
+*   20110113 - asimon - 4168: BUGID Requirement Specifications navigator tree empty
 *	20101010 - franciscom - added custom node attribute: testlink_node_name
 *	20100306 - franciscom - BUGID 0003003: EXTJS does not count # req's
 *	20091208 - franciscom - added management of new attribute 'forbidden_parent'
@@ -74,13 +75,14 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     
     $nodes = null;
     $filter_node_type = $show_children ? '' : ",'requirement'";
+    // BUGID 4168 - added "NHA." to WHERE clause
     $sql = " SELECT NHA.*, NT.description AS node_type, RSPEC.doc_id " . 
            " FROM {$tables['nodes_hierarchy']} NHA JOIN {$tables['node_types']}  NT " .
            " ON NHA.node_type_id=NT.id " .
            " AND NT.description NOT IN ('testcase','testsuite','testcase_version','testplan'{$filter_node_type}) " .
            " LEFT OUTER JOIN {$tables['req_specs']} RSPEC " .
            " ON RSPEC.id = NHA.id " . 
-           " WHERE parent_id = {$parent} ";
+           " WHERE NHA.parent_id = {$parent} ";
     
     // file_put_contents('c:\getrequirementnodes.php.txt', $sql);                            
 

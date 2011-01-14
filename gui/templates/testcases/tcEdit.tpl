@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.33.2.1 2011/01/11 08:19:59 mx-julian Exp $ 
+$Id: tcEdit.tpl,v 1.33.2.2 2011/01/14 14:39:04 asimon83 Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 @internal Revisions:
+  20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
   20110111 - Julian - Improved modified warning message when navigating away without saving
   20101010 - franciscom - refactoring of BUGID 3062 -> gui/javascript/tcase_utils.js
                           added testsuite_id for same logic
@@ -89,10 +90,7 @@ function validateForm(the_form)
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">
   var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
-  var tc_editor = "{$tlCfg->gui->text_editor.design.type}";
-  if(tc_editor == "") {ldelim}
-    tc_editor = "{$tlCfg->gui->text_editor.all.type}";
-  {rdelim}
+  var tc_editor = "{$gui->editorType}";
   </script>
   <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
 {/if}

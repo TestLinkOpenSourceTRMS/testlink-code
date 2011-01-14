@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.11.2.2 2011/01/11 09:01:26 mx-julian Exp $
+$Id: containerNew.tpl,v 1.11.2.3 2011/01/14 14:39:04 asimon83 Exp $
 Purpose: smarty template - create containers
 
+20110114 - asimon - simplified checking for editor type by usage of $editorType
 20110110 - Julian - BUGID 4155: Warning message when navigating away from changed test
                                 suite without saving
                   - added cancel button on top / create,cancel button on bottom
@@ -86,10 +87,7 @@ function validateForm(f)
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">
   var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
-  var tc_editor = "{$tlCfg->gui->text_editor.design.type}";
-  if(tc_editor == "") {ldelim}
-    tc_editor = "{$tlCfg->gui->text_editor.all.type}";
-  {rdelim}
+  var tc_editor = "{$editorType}";
   </script>
   <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
 {/if}

@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.42 2011/01/11 08:20:03 mx-julian Exp $
+$Id: reqEdit.tpl,v 1.43 2011/01/14 14:39:02 asimon83 Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
+20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
 20110110 - Julian - BUGID 4153: Warning message when navigating away from changed requirement without saving
 20110106 - Julian - BUGID 4152: do not set focus on req doc id if log message window is shown
 20101226 - franciscom - BUGID 4088: Required parameter for custom fields
@@ -263,10 +264,7 @@ function insert_last_doc_id()
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">
   var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
-  var tc_editor = "{$tlCfg->gui->text_editor.requirement.type}";
-  if(tc_editor == "") {
-  	tc_editor = "{$tlCfg->gui->text_editor.all.type}";
-  }
+  var tc_editor = "{$gui->editorType}";
   </script>
   <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
 {/if}

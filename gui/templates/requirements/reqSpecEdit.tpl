@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.29 2011/01/11 08:20:03 mx-julian Exp $
+$Id: reqSpecEdit.tpl,v 1.30 2011/01/14 14:39:02 asimon83 Exp $
 Purpose: smarty template - create a new req document
 
 rev:
+  20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
   20110111 - Julian - Added Save, Cancel Button on top of the page
   20110110 - Julian - BUGID 4154: Warning message when navigating away from changed requirement
                                   specification without saving
@@ -103,10 +104,7 @@ rev:
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">
   var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
-  var tc_editor = "{$tlCfg->gui->text_editor.requirement_spec.type}";
-  if(tc_editor == "") {
-  	tc_editor = "{$tlCfg->gui->text_editor.all.type}";
-  }
+  var tc_editor = "{$gui->editorType}";
   </script>
   <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
 {/if}

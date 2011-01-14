@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.23 2011/01/11 09:01:29 mx-julian Exp $
+$Id: tcNew.tpl,v 1.24 2011/01/14 14:39:01 asimon83 Exp $
 Purpose: smarty template - create new testcase
 
+20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
 20110111 - Julian - Improved modified warning message when navigating away without saving
 20110109 - franciscom - BUGID 3952 - stay here like Mantis does
 20101202 - asimon - BUGID 4067: Tree refreshes after every action taken in Test Specification 
@@ -99,10 +100,7 @@ function validateForm(f)
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">
   var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
-  var tc_editor = "{$tlCfg->gui->text_editor.design.type}";
-  if(tc_editor == "") {ldelim}
-    tc_editor = "{$tlCfg->gui->text_editor.all.type}";
-  {rdelim}
+  var tc_editor = "{$editorType}";
   </script>
   <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
 {/if}

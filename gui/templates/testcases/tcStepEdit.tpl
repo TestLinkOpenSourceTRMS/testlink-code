@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.40 2011/01/12 12:40:24 mx-julian Exp $ 
+$Id: tcStepEdit.tpl,v 1.41 2011/01/14 14:39:01 asimon83 Exp $ 
 Purpose: create/edit test case step
 
 rev:
+  20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
   20110112 - Julian - BUGID 3901 - Scroll window to step implemented for vertical layout and
                                    newly added steps
   20110111 - Julian - Improved modified warning message when navigating away without saving
@@ -98,10 +99,7 @@ function validateForm(the_form,step_set,step_number_on_edit)
 {if $tlCfg->gui->checkNotSaved}
 <script type="text/javascript">
 var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
-var tc_editor = "{$tlCfg->gui->text_editor.steps_design.type}";
-if(tc_editor == "") {
-  tc_editor = "{$tlCfg->gui->text_editor.all.type}";
-}
+var tc_editor = "{$gui->editorType}";
 </script>
 <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
 {/if}

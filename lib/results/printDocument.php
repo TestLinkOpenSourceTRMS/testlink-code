@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.45.2.2 $
- * @modified $Date: 2011/01/13 21:39:42 $ by $Author: franciscom $
+ * @version $Revision: 1.45.2.3 $
+ * @modified $Date: 2011/01/15 11:12:57 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -14,7 +14,7 @@
  *
  * Revisions :
  *  20110113 - franciscom - BUGID 4170 - Test Report - When Test Plan Has platforms does not filter test cases
- *							BUGID 4171: Test Report - estimated and real execution time functions made Platform aware
+ *							BUGID 4171 - Test Report - estimated and real execution time functions made Platform aware
  *  20110112 - franciscom - changes on methods related to estimated execution time
  *	20110112 - franciscom - BUGID 
  * 	20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
@@ -36,115 +36,29 @@ require_once('common.php');
 require_once('print.inc.php');
 require_once('displayMgr.php');
 
-$dummy = null;
-$tree = null;
+$treeForPlatform = null;
 $docText = '';					
 $topText = '';
-
-$doc_info = new stdClass(); // gather title, author, product, test plan, etc.
 $doc_data = new stdClass(); // gather content and tests related data
 
 testlinkInitPage($db);
-$args = init_args();
-$doc_info->type = $args->doc_type;
-$doc_info->content_range = $args->level;
-
-// Elements in this array must be updated if $arrCheckboxes, in printDocOptions.php is changed.
-$printingOptions = array ( 'toc' => 0,'body' => 0,'summary' => 0, 'header' => 0,'headerNumbering' => 1,
-		                   'passfail' => 0, 'author' => 0, 'notes' => 0, 'requirement' => 0, 'keyword' => 0, 
-		                   'cfields' => 0, 'testplan' => 0, 'metrics' => 0,
-		                    'req_spec_scope' => 0,'req_spec_author' => 0,
-		                    'req_spec_overwritten_count_reqs' => 0,'req_spec_type' => 0,
-		                    'req_spec_cf' => 0,'req_scope' => 0,'req_author' => 0,
-		                    'req_status' => 0,'req_type' => 0,'req_cf' => 0,'req_relations' => 0,
-		                    'req_linked_tcs' => 0,'req_coverage' => 0);
-foreach($printingOptions as $opt => $val)
-{
-	$printingOptions[$opt] = (isset($_REQUEST[$opt]) && ($_REQUEST[$opt] == 'y'));
-}					
-$printingOptions['docType'] = $doc_info->type;
-$printingOptions['tocCode'] = ''; // to avoid warning because of undefined index
-$resultsCfg = config_get('results');
-$status_descr_code = $resultsCfg['status_code'];
-$status_code_descr = array_flip($status_descr_code);
-
 $tproject = new testproject($db);
 $tree_manager = &$tproject->tree_manager;
-$hash_descr_id = $tree_manager->get_available_node_types();
-$hash_id_descr = array_flip($hash_descr_id);
-$decoding_hash = array('node_id_descr' => $hash_id_descr,'status_descr_code' =>  $status_descr_code,
-                       'status_code_descr' =>  $status_code_descr);
 
-// can not be null
-$order_cfg = array("type" =>'spec_order'); // 20090309 - BUGID 2205
-$pnOptionsAdd = null;
-switch ($doc_info->type)
-{
-	case DOC_TEST_SPEC: 
-		$doc_info->type_name = lang_get('title_test_spec');
-		break;
-	
-	case DOC_TEST_PLAN: 
-		$doc_info->type_name = lang_get('test_plan');
-		$order_cfg = array("type" =>'exec_order',"tplan_id" => $args->tplan_id);
-		break;
-	
-	case DOC_TEST_REPORT: 
-		$doc_info->type_name = lang_get('test_report');
-		
-		// needed to filter spec by test plan
-		$order_cfg = array("type" =>'exec_order',"tplan_id" => $args->tplan_id);
-		
-		// BUGID 3451
-		$pnOptionsAdd = array('viewType' => 'executionTree');
-		break;
-		
-	case DOC_REQ_SPEC:
-		$doc_info->type_name = lang_get('req_spec');
-		break;
-}
-
-switch ($doc_info->type)
-{
-	case DOC_REQ_SPEC:
-		$my['options']=array('recursive' => true, 'order_cfg' => $order_cfg );
-		$my['filters'] = array('exclude_node_types' =>  array('testplan'=>'exclude me', 
-                                                      'testsuite'=>'exclude me',
-					                                  'testcase'=>'exclude me'),
-                       'exclude_children_of' => array('testcase'=>'exclude my children',
-		                                              'requirement'=>'exclude my children',
-                                                      'testsuite'=> 'exclude my children'));
-	break;
-		
-	default:
-		$my['options']=array('recursive' => true, 'order_cfg' => $order_cfg );
-		$my['filters'] = array('exclude_node_types' =>  array('testplan'=>'exclude me', 
-                                                      'requirement_spec'=>'exclude me', 
-					                                  'requirement'=>'exclude me'),
-                       'exclude_children_of' => array('testcase'=>'exclude my children',
-                                                      'requirement_spec'=> 'exclude my children'));     
-	break;
-}
+$args = init_args();
+$decode = getDecode($tree_manager);
+list($doc_info,$my) = initEnv($db,$args,$tproject,$_SESSION['userID']);
+$printingOptions = initPrintOpt($_REQUEST,$doc_info);
 
 $subtree = $tree_manager->get_subtree($args->itemID,$my['filters'],$my['options']);
 
-$tproject_info = $tproject->get_by_id($args->tproject_id);
-$doc_info->tproject_name = htmlspecialchars($tproject_info['name']);
-$doc_info->tproject_scope = $tproject_info['notes'];
-
-$user = tlUser::getById($db,$_SESSION['userID']);
-if ($user)
-{
-	$doc_info->author = htmlspecialchars($user->getDisplayName());
-}
-$treeForPlatform = null;
 switch ($doc_info->type)
 {
 	case DOC_REQ_SPEC:
 		switch($doc_info->content_range)
 		{
 			case 'testproject':
-				$tree = &$subtree;
+				$treeForPlatform[0] = &$subtree;
 				$doc_info->title = $doc_info->tproject_name;
 			break;
     	      
@@ -152,22 +66,25 @@ switch ($doc_info->type)
     	      	$spec_mgr = new requirement_spec_mgr($db);
     	  	    $spec = $spec_mgr->get_by_id($args->itemID);
     	  	    $spec['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
-    	  	    $spec['node_type_id'] = $hash_descr_id['requirement_spec'];
-    	  	    $tree['childNodes'][0] = &$spec;
+    	  	    $spec['node_type_id'] = $decode['node_descr_id']['requirement_spec'];
+
+				$treeForPlatform[0]['childNodes'][0] = &$spec;
+
 				$doc_info->title = htmlspecialchars($args->tproject_name . 
     	  	                                        $tlCfg->gui_title_separator_2 . $spec['title']);  	               
 			break;    
     	} // $doc_info->content_range
     	
-    	$treeForPlatform[0] = $tree;
+    	// When working with Requirements we do not consider Platforms.
+    	// $treeForPlatform[0] = $tree;
     	break;
 	break;
 		
-    case DOC_TEST_SPEC: // test specification
+    case DOC_TEST_SPEC:
 		switch($doc_info->content_range)
 		{
 			case 'testproject':
-				$tree = &$subtree;
+				$treeForPlatform[0] = &$subtree;
 				$doc_info->title = $doc_info->tproject_name;
 				break;
     	      
@@ -175,12 +92,15 @@ switch ($doc_info->type)
     	      	$tsuite = new testsuite($db);
     	  	    $tInfo = $tsuite->get_by_id($args->itemID);
     	  	    $tInfo['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
-    	  	    $tree['childNodes'] = array($tInfo);
+    
+    			// $tree = array();
+    	  	    $treeForPlatform[0]['childNodes'] = array($tInfo);
+
 				$doc_info->title = htmlspecialchars(isset($tInfo['name']) ? $args->tproject_name .
     	  	      	               $tlCfg->gui_title_separator_2.$tInfo['name'] : $args->tproject_name);
     	  	  	break;    
     	} // $doc_info->content_range
-    	$treeForPlatform[0] = $tree;
+    	// $treeForPlatform[0] = $tree;
     	break;
     
     case DOC_TEST_PLAN:
@@ -194,7 +114,6 @@ switch ($doc_info->type)
             // 20100112 - franciscom
             $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
             $platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);   
-			// $tcase_filter = null;
 			$items2use = null;
 			$execid_filter = null;
 			$executed_qty = 0;
@@ -205,84 +124,92 @@ switch ($doc_info->type)
 				case 'testproject':
 					foreach ($platforms as $platform_id => $platform_name)
 					{
-					  $filters = array('platform_id' => $platform_id);	
-    	   	    	  $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters);
+						$filters = array('platform_id' => $platform_id);	
+    	   	    		$linkedBy[$platform_id] = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters);
     	   	    	  
-    	   	    	  // IMPORTANTE NOTE:
-    	   	    	  // We are in a loop and we use tree on prepareNode, that changes it,
-    	   	    	  // then we can not use anymore a reference to test_spec
-    	   	    	  // $tree = &$subtree;
-    	   	    	  $tree2work = $subtree;
+    	   	    	  	// IMPORTANTE NOTE:
+    	   	    	  	// We are in a loop and we use tree on prepareNode, that changes it,
+    	   	    	  	// then we can not use anymore a reference BUT WE NEED A COPY.
+    	   	    	  	$tree2work = $subtree;
+    	   	    	  	if (!$linkedBy[$platform_id])
+    	   	    	  	{
+    	   	    			$tree2work['childNodes'] = null;
+    	   	    	  	}
     	   	    	  
-    	   	    	  if (!$tp_tcs)
-    	   	    	  {
-    	   	    		   $tree2work['childNodes'] = null;
-    	   	    	  }
-    	   	    	  $dummy = null;
-                      $pnFilters = null;
+    	   	    	  	// Prepare Node -> pn
+                      	$pnFilters = null;
                       
-                      // 20110113 - franciscom
-                      // BUGID 4170
-                      // due to Platforms we need to use 'viewType' => 'executionTree',
-                      // if not we get ALWAYS the same set of test cases linked to test plan
-                      // for each platform -> WRONG 
-                      $pnOptions =  array('hideTestCases' => 0, 'showTestCaseID' => 1,
-                      					  'viewType' => 'executionTree',
-		                                  'getExternalTestCaseID' => 0, 'ignoreInactiveTestCases' => 0);
-    	   	    	  prepareNode($db,$tree2work,$decoding_hash,$dummy,$dummy,$tp_tcs,$pnFilters,$pnOptions);
-    	   	    	  $treeForPlatform[$platform_id] = $tree2work;            
-    	   	    	  
+                      	// 20110113 - franciscom
+                      	// BUGID 4170
+                      	// due to Platforms we need to use 'viewType' => 'executionTree',
+                      	// if not we get ALWAYS the same set of test cases linked to test plan
+                      	// for each platform -> WRONG 
+                      	$pnOptions =  array('hideTestCases' => 0, 'showTestCaseID' => 1,
+                      						'viewType' => 'executionTree',
+		                					'getExternalTestCaseID' => 0, 'ignoreInactiveTestCases' => 0);
+
+						$dummy4reference = null;
+    	   	    	  	prepareNode($db,$tree2work,$decode,$dummy4reference,NULL,
+    	   	    	  				$linkedBy[$platform_id],$pnFilters,$pnOptions);
+    	   	    	  			  
+    	   	    	  	$treeForPlatform[$platform_id] = $tree2work;            
     	   	    	  
     	   	    	}              
             	break;
     	       
 				case 'testsuite':
 					$tsuite = new testsuite($db);
+					$linkedBy = array();
+					$tInfo = $tsuite->get_by_id($args->itemID);
+					$tInfo['node_type_id'] = $decode['node_descr_id']['testsuite'];
+					$tInfo['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
+
+					$children_tsuites = $tree_manager->get_subtree_list($args->itemID,$decode['node_descr_id']['testsuite']);
 					
+					$branch_tsuites = null();
+					if( !is_null($children_tsuites) and trim($children_tsuites) != "")
+					{
+						$branch_tsuites = explode(',',$children_tsuites);
+					}
+					$branch_tsuites[]=$args->itemID;
+					
+					$doc_info->title = htmlspecialchars(isset($tInfo['name']) ? $tInfo['name'] : $doc_info->testplan_name);
+					
+    	   	        $filters = array( 'tsuites_id' => $branch_tsuites);
 					foreach ($platforms as $platform_id => $platform_name)
 					{
     	            	$items2use[$platform_id] = null;
-						$tInfo = $tsuite->get_by_id($args->itemID);
-                    	
-						$children_tsuites = $tree_manager->get_subtree_list($args->itemID,$hash_descr_id['testsuite']);
-						if( !is_null($children_tsuites) and trim($children_tsuites) != "")
-						{
-							$branch_tsuites = explode(',',$children_tsuites);
-						}
-						$branch_tsuites[]=$args->itemID;
-    	   	        	
-    	   	        	$filters = array( 'tsuites_id' => $branch_tsuites,'platform_id' => $platform_id);
-	                	$tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters); 
+    	   	        	$filters['platform_id'] = $platform_id;
+						$linkedBy[$platform_id] = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters); 
 						
 						// 20110112 - 
 						// After architecture changes on how CF design values for Test Cases are
 						// managed, we need the test case version ID and not test case ID
-						// $tcase_filter = !is_null($tp_tcs) ? array_keys((array)$tp_tcs): null;
 						// In addition if we loop over Platforms we need to save this set each time!!!
-    	            	$items2loop = !is_null($tp_tcs) ? array_keys($tp_tcs) : null;
+    	            	$items2loop = !is_null($linkedBy[$platform_id]) ? array_keys($linkedBy[$platform_id]) : null;
     	            	if( !is_null($items2loop) )
     	            	{ 
 							foreach($items2loop as $rdx)
 							{	
-    	            			$items2use[$platform_id][] = $tp_tcs[$rdx]['tcversion_id'];
+    	            			$items2use[$platform_id][] = $linkedBy[$platform_id][$rdx]['tcversion_id'];
     	            		}		
     	            	}
-    	            	
-    	            		
-						$tInfo['node_type_id'] = $hash_descr_id['testsuite'];
-						$tInfo['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
     	   	        	
-						$dummy = null;
+						// Prepare Node -> pn
 						$pnFilters = null;
                         $pnOptions =  array('hideTestCases' => 0);
 						
 						// BUGID 3624
-                        $pnOptions = array_merge($pnOptions, $pnOptionsAdd);
-						prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,$pnFilters,$pnOptions);
+                        $pnOptions = array_merge($pnOptions, $my['options']['prepareNode']);
+						$dummy4reference = null;
+						prepareNode($db,$tInfo,$decode,$dummy4reference,NULL,
+									$linkedBy[$platform_id],$pnFilters,$pnOptions);
 						
-						$doc_info->title = htmlspecialchars(isset($tInfo['name']) ? $tInfo['name'] : $doc_info->testplan_name);
-						$tree['childNodes'] = array($tInfo);
-    	   	    	    $treeForPlatform[$platform_id] = $tree;            
+						// new dBug($tree);
+						// die();
+						
+						// $tree['childNodes'] = array($tInfo);
+    	   	    	    $treeForPlatform[$platform_id]['childNodes'] = array($tInfo);            
                     }
 				break;
 			}  // switch($doc_info->content_range)
@@ -292,18 +219,6 @@ switch ($doc_info->type)
 			$doc_data->statistics = null;                                            
 			if ($printingOptions['metrics'])
 			{
-				$executed_qty=0;
-    	 		if ($tp_tcs)
-    	 		{
-    	 			foreach($tp_tcs as $tcase_id => $info)
-			    	{
-	    	         	if( $info['exec_status'] != $status_descr_code['not_run'] )
-	        	     	{  
-	            	 		$execid_filter[] = $info['exec_id'];
-	                		$executed_qty++;
-		             	}    
-		         	}    
-    			}
 
 				// IMPORTANT NOTICE.
 				// 20110113 - franciscom
@@ -336,9 +251,39 @@ switch ($doc_info->type)
     		    	}	
 				}
          
+         		echo 'TRY TO GO FOR get_execution_time' . '<br>';
+         		echo '$executed_qty:' . $executed_qty . '<br>';
+				$executed_qty = 0;
+    	 		new dBug($linkedBy);
+    	 		
+    	 		// $execid_filter will have one element for each platform WHERE AT LEAST
+    	 		// one test case has been executed.
+    	 		if( count($linkedBy) > 0 )
+    	 		{
+    	 			$p2loop = array_keys($linkedBy);
+    	 			foreach($p2loop as $platfID)
+    	 			{
+			    		$i2loop = array_keys($linkedBy[$platfID]);
+    	 				foreach($i2loop as $xdx)
+    	 				{
+    	 					$info = &$linkedBy[$platfID][$xdx];
+	    	         		if( $info['exec_status'] != $decode['status_descr_code']['not_run'] )
+	        	     		{  
+	            	 			$execid_filter[$platfID][] = $info['exec_id'];
+	                			$executed_qty++;
+		             		}    
+			    		}	
+			    	}
+    			}
+
 				if( $executed_qty > 0)
         		{ 
 					// hmm need to understand if also here we need to make changes due to platforms.
+					
+					foreach($execid_filter as $platformID => $execSet)
+					{
+						$realExecTime[] = $tplan_mgr->get_execution_time($args->tplan_id,$execSet);
+					}			 
 					$doc_data->statistics['real_execution']['minutes'] = 
 					$tplan_mgr->get_execution_time($args->tplan_id,$execid_filter);
              		$doc_data->statistics['real_execution']['tcase_qty'] = $executed_qty;
@@ -359,15 +304,16 @@ if( ($showPlatforms = !isset($treeForPlatform[0]) ? true : false) )
 {
 	$tocPrefix = 0;
 }
+
 if ($treeForPlatform)
 {
-	foreach ($treeForPlatform as $platform_id => $tree)            
+	foreach ($treeForPlatform as $platform_id => $tree2work)            
 	{
-		if($tree)
+		if($tree2work)
 		{
-			$tree['name'] = $args->tproject_name;
-			$tree['id'] = $args->tproject_id;
-			$tree['node_type_id'] = $hash_descr_id['testproject'];
+			$tree2work['name'] = $args->tproject_name;
+			$tree2work['id'] = $args->tproject_id;
+			$tree2work['node_type_id'] = $decode['node_descr_id']['testproject'];
 			switch ($doc_info->type)
 			{
 				case DOC_REQ_SPEC:	
@@ -376,14 +322,14 @@ if ($treeForPlatform)
 					                                
 					$docText .= renderSimpleChapter(lang_get('requirement_specification_report'), " ");
 					                                
-					$docText .= renderReqSpecTreeForPrinting($db, $tree, $printingOptions, 
+					$docText .= renderReqSpecTreeForPrinting($db, $tree2work, $printingOptions, 
 					                                         null, 0, 1, $args->user_id,0,$args->tproject_id);
 				break;
 				
 				case DOC_TEST_SPEC:
 					$docText .= renderSimpleChapter(lang_get('scope'), $doc_info->tproject_scope);
 					// BUGID 3459 - added platform ID
-					$docText .= renderTestSpecTreeForPrinting($db, $tree, $doc_info->content_range,
+					$docText .= renderTestSpecTreeForPrinting($db, $tree2work, $doc_info->content_range,
 					            $printingOptions, null, 0, 1, $args->user_id,0,null,$args->tproject_id,$platform_id);
 				break;
 			
@@ -401,7 +347,7 @@ if ($treeForPlatform)
 						                                  $printingOptions);
 					}
 					// BUGID 3459 - added platform ID
-					$docText .= renderTestPlanForPrinting($db, $tree, $doc_info->content_range, 
+					$docText .= renderTestPlanForPrinting($db, $tree2work, $doc_info->content_range, 
 					                                      $printingOptions, $tocPrefix, 0, 1, $args->user_id,
 					                                      $args->tplan_id, $args->tproject_id, $platform_id);
 
@@ -455,4 +401,116 @@ function init_args()
 
 	return $args;
 }
+
+
+/** 
+ * 
+ * 
+ **/
+function initPrintOpt(&$UIhash,&$docInfo)
+{
+	// Elements in this array must be updated if $arrCheckboxes, in printDocOptions.php is changed.
+	$pOpt = array ( 'toc' => 0,'body' => 0,'summary' => 0, 'header' => 0,'headerNumbering' => 1,
+			        'passfail' => 0, 'author' => 0, 'notes' => 0, 'requirement' => 0, 'keyword' => 0, 
+			        'cfields' => 0, 'testplan' => 0, 'metrics' => 0,
+			        'req_spec_scope' => 0,'req_spec_author' => 0,
+			        'req_spec_overwritten_count_reqs' => 0,'req_spec_type' => 0,
+			        'req_spec_cf' => 0,'req_scope' => 0,'req_author' => 0,
+			        'req_status' => 0,'req_type' => 0,'req_cf' => 0,'req_relations' => 0,
+			        'req_linked_tcs' => 0,'req_coverage' => 0);
+	
+	foreach($pOpt as $opt => $val)
+	{
+		$pOpt[$opt] = (isset($UIhash[$opt]) && ($UIhash[$opt] == 'y'));
+	}					
+	$pOpt['docType'] = $docInfo->type;
+	$pOpt['tocCode'] = ''; // to avoid warning because of undefined index
+
+	return $pOpt;
+}
+
+
+/** 
+ * 
+ * 
+ **/
+function getDecode(&$treeMgr)
+{
+
+	$resultsCfg = config_get('results');
+
+	$dcd = array();
+	$dcd['node_descr_id'] = $treeMgr->get_available_node_types();
+	$dcd['node_id_descr'] = array_flip($dcd['node_descr_id']);
+
+	$dcd['status_descr_code'] = $resultsCfg['status_code'];
+	$dcd['status_code_descr'] = array_flip($dcd['status_descr_code']);
+
+	return $dcd;
+}
+
+/** 
+ * 
+ * 
+ **/
+function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
+{
+
+	$my = array();
+	$doc = new stdClass(); 
+
+	$my['options'] = array(	'recursive' => true, 'prepareNode' => null,
+							'order_cfg' => array("type" =>'spec_order') );
+	$my['filters'] = array(	'exclude_node_types' =>  array(	'testplan'=>'exclude me', 
+                                                      		'requirement_spec'=>'exclude me', 
+					                                  		'requirement'=>'exclude me'),
+							'exclude_children_of' => array(	'testcase'=>'exclude my children',
+                              		                        'requirement_spec'=> 'exclude my children'));     
+
+	$lblKey	= array(DOC_TEST_SPEC => 'title_test_spec', DOC_TEST_PLAN => 'test_plan',
+					DOC_TEST_REPORT => 'test_report', DOC_REQ_SPEC => 'req_spec');
+
+	$doc->content_range = $argsObj->level;
+	$doc->type = $argsObj->doc_type;
+	$doc->type_name = lang_get($lblKey[$doc->type]);
+	$doc->author = '';
+	$doc->title = '';
+	 
+	switch ($doc->type)
+	{
+		case DOC_TEST_PLAN: 
+			$my['options']['order_cfg'] = array("type" =>'exec_order',"tplan_id" => $argsObj->tplan_id);
+			break;
+		
+		case DOC_TEST_REPORT: 
+			$my['options']['order_cfg'] = array("type" =>'exec_order',
+												"prepareNode" => array('viewType' => 'executionTree'),
+												"tplan_id" => $argsObj->tplan_id);
+			break;
+			
+		case DOC_REQ_SPEC:
+			$my['filters'] = array(	'exclude_node_types' =>  array(	'testplan'=>'exclude me', 
+                                                      			  	'testsuite'=>'exclude me',
+					                                  				'testcase'=>'exclude me'),
+                       				'exclude_children_of' => array(	'testcase'=>'exclude my children',
+		                            				        		'testsuite'=> 'exclude my children',
+		                            				        		'requirement'=>'exclude my children'));
+			break;
+	}
+
+
+	$user = tlUser::getById($dbHandler,$userID);
+	if ($user)
+	{
+		$doc->author = htmlspecialchars($user->getDisplayName());
+	}
+	unset($user);
+
+	$dummy = $tprojectMgr->get_by_id($argsObj->tproject_id);
+	$doc->tproject_name = htmlspecialchars($dummy['name']);
+	$doc->tproject_scope = $dummy['notes'];
+
+	return array($doc,$my);
+}
+
 ?>

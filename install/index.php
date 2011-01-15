@@ -7,9 +7,10 @@
  *
  * @package 	TestLink
  * @copyright 	2007, TestLink community
- * @version    	CVS: $Id: index.php,v 1.17.6.2 2010/12/18 10:54:46 franciscom Exp $
+ * @version    	CVS: $Id: index.php,v 1.17.6.3 2011/01/15 18:50:40 franciscom Exp $
  *
  * @internal Revisions:
+ *	20110115 - franciscom - update message to 1.9.1
  *  20091103 - havlatm - Total GUI redesign
  *  20091003 - franciscom - removed option to upgrade/migrate from 1.6.x and 1.7.x
  *	20090127 - franciscom - removed upgrade block
@@ -50,7 +51,7 @@ $_SESSION['testlink_version'] = TL_VERSION;
 		<p><ul>
 		<li><a href="installIntro.php?type=new">New installation</a></li>
    		<li><a href="installIntro.php?type=upgrade_1.8_to_1.9">Upgrade from 1.8.x
-   		versions to 1.9.0/1.9.1 ONLY</a>. Older releases should be migrated to 1.8 version at first.
+   		versions to 1.9.1 ONLY</a>. Older releases should be migrated to 1.8 version at first.
    		</li>
 		</ul></p>
 </div>

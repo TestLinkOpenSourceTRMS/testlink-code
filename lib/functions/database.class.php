@@ -9,11 +9,12 @@
  * @copyright 	2006 TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.58 2010/12/12 08:20:15 franciscom Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.59 2011/01/15 20:01:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20110115 - franciscom - new method db_null_timestamp()
  * 20101212 - franciscom - BUGID 4093: MSSQL - Problems on fetch_array()
  * 20100111 - franciscon - BUGID - display debug_print_backtrace() when query fails
  * 20090720 - franciscom - fetchRowsIntoMap() - added some error management code 
@@ -812,6 +813,21 @@ class database
 			break;
 		}
 		return ($sql);
+	}
+
+	function db_null_timestamp()
+	{
+		$db_type = $this->db->databaseType;
+		$nullValue = NULL;
+		
+		switch($db_type)
+		{
+			case 'mysql':
+				// is not an error i put single quote on value			
+				$nullValue = " '0000-00-00 00:00:00' ";
+			break;
+		}
+		return $nullValue;
 	}
 
 	/**

@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.124 $
- * @modified $Date: 2011/01/09 10:09:31 $ by $Author: franciscom $
+ * @version $Revision: 1.125 $
+ * @modified $Date: 2011/01/15 20:01:55 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ * 	20110115 - franciscom - create_new_revision() - fixed insert of null on timestamp field
  *	20110108 - franciscom - createFromMap() - check improvements
  *						  	BUGID 4150 check for duplicate req title
  *	20110106 - Julian - update() - set author,modifier,creation_ts,modifier_ts depending on creation of new revision
@@ -2564,6 +2565,8 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	/**
 	 * 
  	 *
+ 	 * @internal revision
+ 	 * 20110115 - franciscom - fixed insert of null on timestamp field
  	 */
 	function create_new_revision($parent_id,$user_id,$tproject_id,$req = null,$log_msg = null)
 	{
@@ -2595,12 +2598,17 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	  	
 	  	$new_rev = $current_rev+1;
 	  	$db_now = $this->db->db_now();
-	  	$sql = 	'/* $debugMsg */' .
+	  	$sql = 	" /* $debugMsg */ " .
 	  			" UPDATE {$this->tables['req_versions']} " .
 	  			" SET revision = {$new_rev}, log_message=' " . $this->db->prepare_string($log_msg) . "'," .
-	  	        " creation_ts = {$db_now} ,author_id = {$user_id}, modification_ts = '0000-00-00 00:00:00', modifier_id = null " .
-	  			" WHERE id = {$parent_id} ";
+	  	        " creation_ts = {$db_now} ,author_id = {$user_id}, modifier_id = NULL, " .
+	  	        " modification_ts = ";
+	  	        
+	  	$nullTS = $this->db->db_null_timestamp();
+	  	$sql .= is_null($nullTS) ? " NULL " : " {$nullTS} ";
+	  	$sql .=	" WHERE id = {$parent_id} ";
 	  	$this->db->exec_query($sql);
+	  	
 	  	return $ret;
 	}
 

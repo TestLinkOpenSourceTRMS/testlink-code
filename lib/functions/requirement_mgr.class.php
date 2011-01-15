@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.114.2.12 $
- * @modified $Date: 2011/01/09 09:24:05 $ by $Author: franciscom $
+ * @version $Revision: 1.114.2.13 $
+ * @modified $Date: 2011/01/15 19:24:45 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -2600,11 +2600,15 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	  	
 	  	$new_rev = $current_rev+1;
 	  	$db_now = $this->db->db_now();
-	  	$sql = 	'/* $debugMsg */' .
+	  	$sql = 	" /* $debugMsg */ " .
 	  			" UPDATE {$this->tables['req_versions']} " .
 	  			" SET revision = {$new_rev}, log_message=' " . $this->db->prepare_string($log_msg) . "'," .
-	  	        " creation_ts = {$db_now} ,author_id = {$user_id}, modification_ts = '0000-00-00 00:00:00', modifier_id = null " .
-	  			" WHERE id = {$parent_id} ";
+	  	        " creation_ts = {$db_now} ,author_id = {$user_id}, modifier_id = NULL, " .
+	  	        " modification_ts = ";
+	  	        
+	  	$nullTS = $this->db->db_null_timestamp();
+	  	$sql .= is_null($nullTS) ? " NULL " : " {$nullTS} ";
+	  	$sql .=	" WHERE id = {$parent_id} ";
 	  	$this->db->exec_query($sql);
 	  	return $ret;
 	}

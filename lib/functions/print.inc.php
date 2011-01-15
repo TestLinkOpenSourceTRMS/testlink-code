@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.120.2.1 2011/01/13 21:39:42 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.120.2.2 2011/01/15 15:07:36 franciscom Exp $
  * @uses printDocument.php
  *
  *
@@ -1172,11 +1172,12 @@ function renderTestDuration($statistics,$platformID)
 			$output .= '<p>' . $estimated_string . "</p>\n";
 		}
 		  
-		// need refactoring!!  
 		if($bRealTimeAvailable) 
 		{
-			$real_minutes = $statistics['real_execution']['minutes'];
-			$tcase_qty = $statistics['real_execution']['tcase_qty'];
+			$real_minutes = $statistics['real_execution']['platform'][$platformID]['minutes'];
+	    	$tcase_qty = $statistics['real_execution']['platform'][$platformID]['tcase_qty'];
+
+
 			if($real_minutes > 0)
 		    {
 	        	if($real_minutes > 60)

@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.45.2.3 $
- * @modified $Date: 2011/01/15 11:12:57 $ by $Author: franciscom $
+ * @version $Revision: 1.45.2.4 $
+ * @modified $Date: 2011/01/15 15:07:36 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
  * Generate documentation Test report based on Test plan data.
  *
  * Revisions :
+ *  20110115 - franciscom - BUGID 4170 - Test Report - When Test Plan Has platforms does not filter test cases
+ *							BUGID 4171 - Test Report - estimated and real execution time functions made Platform aware
  *  20110113 - franciscom - BUGID 4170 - Test Report - When Test Plan Has platforms does not filter test cases
  *							BUGID 4171 - Test Report - estimated and real execution time functions made Platform aware
  *  20110112 - franciscom - changes on methods related to estimated execution time
@@ -52,19 +54,19 @@ $printingOptions = initPrintOpt($_REQUEST,$doc_info);
 
 $subtree = $tree_manager->get_subtree($args->itemID,$my['filters'],$my['options']);
 
+$treeForPlatform[0] = &$subtree;
+$doc_info->title = $doc_info->tproject_name;
+
 switch ($doc_info->type)
 {
 	case DOC_REQ_SPEC:
 		switch($doc_info->content_range)
 		{
-			case 'testproject':
-				$treeForPlatform[0] = &$subtree;
-				$doc_info->title = $doc_info->tproject_name;
-			break;
-    	      
 			case 'reqspec':
     	      	$spec_mgr = new requirement_spec_mgr($db);
     	  	    $spec = $spec_mgr->get_by_id($args->itemID);
+    	  	    unset($spec_mgr);
+    	  	    
     	  	    $spec['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
     	  	    $spec['node_type_id'] = $decode['node_descr_id']['requirement_spec'];
 
@@ -72,40 +74,30 @@ switch ($doc_info->type)
 
 				$doc_info->title = htmlspecialchars($args->tproject_name . 
     	  	                                        $tlCfg->gui_title_separator_2 . $spec['title']);  	               
+
 			break;    
     	} // $doc_info->content_range
-    	
-    	// When working with Requirements we do not consider Platforms.
-    	// $treeForPlatform[0] = $tree;
-    	break;
 	break;
 		
     case DOC_TEST_SPEC:
 		switch($doc_info->content_range)
 		{
-			case 'testproject':
-				$treeForPlatform[0] = &$subtree;
-				$doc_info->title = $doc_info->tproject_name;
-				break;
-    	      
 			case 'testsuite':
     	      	$tsuite = new testsuite($db);
     	  	    $tInfo = $tsuite->get_by_id($args->itemID);
     	  	    $tInfo['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
     
-    			// $tree = array();
     	  	    $treeForPlatform[0]['childNodes'] = array($tInfo);
 
 				$doc_info->title = htmlspecialchars(isset($tInfo['name']) ? $args->tproject_name .
     	  	      	               $tlCfg->gui_title_separator_2.$tInfo['name'] : $args->tproject_name);
     	  	  	break;    
-    	} // $doc_info->content_range
-    	// $treeForPlatform[0] = $tree;
-    	break;
+    	}
+    break;
     
     case DOC_TEST_PLAN:
     case DOC_TEST_REPORT:
-		    $tplan_mgr = new testplan($db);
+			$tplan_mgr = new testplan($db);
 		    $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 		    $doc_info->testplan_name = htmlspecialchars($tplan_info['name']);
 		    $doc_info->testplan_scope = $tplan_info['notes'];
@@ -119,6 +111,8 @@ switch ($doc_info->type)
 			$executed_qty = 0;
 			$treeForPlatform = array();
 
+			// IMPORTANT NOTICE:
+			// on get_linked_tcversions(), when getting exec status we will GET LAST exec status
 			switch($doc_info->content_range)
 			{
 				case 'testproject':
@@ -149,7 +143,7 @@ switch ($doc_info->type)
 		                					'getExternalTestCaseID' => 0, 'ignoreInactiveTestCases' => 0);
 
 						$dummy4reference = null;
-    	   	    	  	prepareNode($db,$tree2work,$decode,$dummy4reference,NULL,
+    	   	    	  	prepareNode($db,$tree2work,$decode,$dummy4reference,$dummy4reference,
     	   	    	  				$linkedBy[$platform_id],$pnFilters,$pnOptions);
     	   	    	  			  
     	   	    	  	$treeForPlatform[$platform_id] = $tree2work;            
@@ -158,18 +152,16 @@ switch ($doc_info->type)
             	break;
     	       
 				case 'testsuite':
-					$tsuite = new testsuite($db);
 					$linkedBy = array();
+					$branch_tsuites = null;
+
+					$tsuite = new testsuite($db);
 					$tInfo = $tsuite->get_by_id($args->itemID);
 					$tInfo['node_type_id'] = $decode['node_descr_id']['testsuite'];
-					$tInfo['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
-
 					$children_tsuites = $tree_manager->get_subtree_list($args->itemID,$decode['node_descr_id']['testsuite']);
-					
-					$branch_tsuites = null();
 					if( !is_null($children_tsuites) and trim($children_tsuites) != "")
 					{
-						$branch_tsuites = explode(',',$children_tsuites);
+							$branch_tsuites = explode(',',$children_tsuites);
 					}
 					$branch_tsuites[]=$args->itemID;
 					
@@ -178,11 +170,14 @@ switch ($doc_info->type)
     	   	        $filters = array( 'tsuites_id' => $branch_tsuites);
 					foreach ($platforms as $platform_id => $platform_name)
 					{
-    	            	$items2use[$platform_id] = null;
-    	   	        	$filters['platform_id'] = $platform_id;
-						$linkedBy[$platform_id] = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters); 
+						// IMPORTANTE NOTICE:
+						// This need to be initialized on each iteration because prepareNode() make changes on it.
+						$tInfo['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
 						
-						// 20110112 - 
+    	            	$filters['platform_id'] = $platform_id;
+						$items2use[$platform_id] = null;
+    	   	        	$linkedBy[$platform_id] = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters); 
+						
 						// After architecture changes on how CF design values for Test Cases are
 						// managed, we need the test case version ID and not test case ID
 						// In addition if we loop over Platforms we need to save this set each time!!!
@@ -202,14 +197,10 @@ switch ($doc_info->type)
 						// BUGID 3624
                         $pnOptions = array_merge($pnOptions, $my['options']['prepareNode']);
 						$dummy4reference = null;
-						prepareNode($db,$tInfo,$decode,$dummy4reference,NULL,
+						prepareNode($db,$tInfo,$decode,$dummy4reference,$dummy4reference,
 									$linkedBy[$platform_id],$pnFilters,$pnOptions);
 						
-						// new dBug($tree);
-						// die();
-						
-						// $tree['childNodes'] = array($tInfo);
-    	   	    	    $treeForPlatform[$platform_id]['childNodes'] = array($tInfo);            
+    	   	    	    $treeForPlatform[$platform_id]['childNodes'] = array($tInfo);   
                     }
 				break;
 			}  // switch($doc_info->content_range)
@@ -219,75 +210,12 @@ switch ($doc_info->type)
 			$doc_data->statistics = null;                                            
 			if ($printingOptions['metrics'])
 			{
+				$doc_data->statistics['estimated_execution'] = getStatsEstimatedExecTime($tplan_mgr,
+																				 		 $items2use,$args->tplan_id);
+         		
+				$doc_data->statistics['real_execution'] = getStatsRealExecTime(	$tplan_mgr,
+																			 	$items2use,$args->tplan_id);
 
-				// IMPORTANT NOTICE.
-				// 20110113 - franciscom
-				// get_estimated_execution_time() is platform aware!!
-				if( is_null($items2use) )
-				{
-					$timeEstimatedDuration = $tplan_mgr->get_estimated_execution_time($args->tplan_id);
-				}
-				else
-				{	
-					foreach( $items2use as $items )
-					{	
-    	        		if( !is_null($items) )
-    	        		{	
-							$timeEstimatedDuration = $tplan_mgr->get_estimated_execution_time($args->tplan_id,$items);
-    	        		}
-    	        	}		
-				}
-
-
-				if ($timeEstimatedDuration['grandTotal'] != "0")
-				{
-					// This is OK when platforms exists ?
-		        	$doc_data->statistics['estimated_execution']['minutes'] = $timeEstimatedDuration['grandTotal']; 
-    		    	$doc_data->statistics['estimated_execution']['tcase_qty'] = count($tp_tcs);
-    		    	
-    		    	foreach($timeEstimatedDuration['platform'] as $platformID => $elem)
-    		    	{
-    		    		$doc_data->statistics['estimated_execution']['platform'][$platformID] = $elem; 		 
-    		    	}	
-				}
-         
-         		echo 'TRY TO GO FOR get_execution_time' . '<br>';
-         		echo '$executed_qty:' . $executed_qty . '<br>';
-				$executed_qty = 0;
-    	 		new dBug($linkedBy);
-    	 		
-    	 		// $execid_filter will have one element for each platform WHERE AT LEAST
-    	 		// one test case has been executed.
-    	 		if( count($linkedBy) > 0 )
-    	 		{
-    	 			$p2loop = array_keys($linkedBy);
-    	 			foreach($p2loop as $platfID)
-    	 			{
-			    		$i2loop = array_keys($linkedBy[$platfID]);
-    	 				foreach($i2loop as $xdx)
-    	 				{
-    	 					$info = &$linkedBy[$platfID][$xdx];
-	    	         		if( $info['exec_status'] != $decode['status_descr_code']['not_run'] )
-	        	     		{  
-	            	 			$execid_filter[$platfID][] = $info['exec_id'];
-	                			$executed_qty++;
-		             		}    
-			    		}	
-			    	}
-    			}
-
-				if( $executed_qty > 0)
-        		{ 
-					// hmm need to understand if also here we need to make changes due to platforms.
-					
-					foreach($execid_filter as $platformID => $execSet)
-					{
-						$realExecTime[] = $tplan_mgr->get_execution_time($args->tplan_id,$execSet);
-					}			 
-					$doc_data->statistics['real_execution']['minutes'] = 
-					$tplan_mgr->get_execution_time($args->tplan_id,$execid_filter);
-             		$doc_data->statistics['real_execution']['tcase_qty'] = $executed_qty;
-         		}
  			} // if ($printingOptions['metrics'])
     break;
 }
@@ -483,9 +411,9 @@ function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
 			break;
 		
 		case DOC_TEST_REPORT: 
-			$my['options']['order_cfg'] = array("type" =>'exec_order',
-												"prepareNode" => array('viewType' => 'executionTree'),
+			$my['options']['order_cfg'] = array("type" =>'exec_order',											
 												"tplan_id" => $argsObj->tplan_id);
+			$my['options']['prepareNode'] = array('viewType' => 'executionTree');												
 			break;
 			
 		case DOC_REQ_SPEC:
@@ -512,5 +440,122 @@ function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
 
 	return array($doc,$my);
 }
+
+
+/** 
+ * 
+ * 
+ **/
+function getStatsEstimatedExecTime(&$tplanMgr,&$items2use,$tplanID)
+{
+
+	$min = array();
+	if( is_null($items2use) )
+	{
+		// will work on all test cases present on Test Project.
+		// these IDs will be searche inside get_estimated_execution_time()
+		$min = $tplanMgr->get_estimated_execution_time($tplanID);
+	}
+	else
+	{	
+		$min['totalMinutes'] = 0;
+		$min['totalTestCases'] = 0;
+		$min['platform'] = array();
+		foreach( $items2use as $platID => $itemsForPlat )
+		{	
+			if( !is_null($itemsForPlat) )
+			{	
+				$tmp = $tplanMgr->get_estimated_execution_time($tplanID,$itemsForPlat,$platID);
+				$min['platform'][$platID] = $tmp['platform'][$platID];
+				$min['totalMinutes'] += $tmp['totalMinutes']; 
+				$min['totalTestCases'] += $tmp['totalTestCases']; 
+			}
+		}		
+	}
+	
+	if ($min['totalMinutes'] != "0")
+	{
+		$stat['minutes'] = $min['totalMinutes']; 
+		$stat['tcase_qty'] = $min['totalTestCases']; 
+	
+		foreach($min['platform'] as $platformID => $elem)
+		{
+			$stat['platform'][$platformID] = $elem; 		 
+		}	
+	}
+	
+ 	return $stat;        
+}
+
+
+/** 
+ * 
+ * 
+ **/
+function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$tplanID)
+{
+   	$min = array();
+	$$executed_qty = 0;
+	$items2use = array();
+	
+	if( count($lastExecBy) > 0 )
+    {
+		// divide execution by Platform ID
+		$p2loop = array_keys($lastExecBy);
+   	 	foreach($p2loop as $platfID)
+   	 	{
+			$i2loop = array_keys($lastExecBy[$platfID]);
+   	 		foreach($i2loop as $xdx)
+   	 		{
+   	 			$info = &$lastExecBy[$platfID][$xdx];
+    	        if( $info['exec_status'] != $decode['status_descr_code']['not_run'] )
+        	    {  
+            		$items2use[$platfID][] = $info['exec_id'];
+                	$executed_qty++;
+	            }    
+		    }	
+		}
+		
+		if( $executed_qty > 0)
+	    { 
+			$min['totalMinutes'] = 0;
+			$min['totalTestCases'] = 0;
+			$min['platform'] = array();
+			
+			foreach( $items2use as $platID => $itemsForPlat )
+			{	
+				if( !is_null($itemsForPlat) )
+				{	
+					$tmp = $tplanMgr->get_execution_time($tplanID,$itemsForPlat,$platID);
+					$min['platform'][$platID] = $tmp['platform'][$platID];
+					$min['totalMinutes'] += $tmp['totalMinutes']; 
+					$min['totalTestCases'] += $tmp['totalTestCases']; 
+
+				}
+			}		
+		}
+	}
+	else
+   	{
+		$min = $tplanMgr->get_execution_time($tplanID);
+	}
+
+	// ----------------------------------------------------------
+	// Arrange data for caller
+	if ($min['totalMinutes'] != "0")
+	{
+		$stat['minutes'] = $min['totalMinutes']; 
+		$stat['tcase_qty'] = $min['totalTestCases']; 
+	
+		foreach($min['platform'] as $platformID => $elem)
+		{
+			$stat['platform'][$platformID] = $elem; 		 
+		}	
+	}
+	// ----------------------------------------------------------
+
+	return $stat;        
+}
+
 
 ?>

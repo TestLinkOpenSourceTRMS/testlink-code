@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.235.2.10 2011/01/13 21:39:42 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.235.2.11 2011/01/15 15:07:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
- *  20110112 - franciscom - changes on methods related to estimated execution time
+ *  20110115 - franciscom - BUGID 4171 - changes on methods related to estimated execution time
+ *  20110112 - franciscom - BUGID 4171 - changes on methods related to estimated execution time
  *  20110104 - asimon - BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
  *  20101221 - amitkhullar - BUGID 4115 Custom Field Filtering Issue 
  *  20101215 - asimon - BUGID 4023: correct filtering also with platforms
@@ -2463,8 +2464,6 @@ class testplan extends tlObjectWithAttachments
 	  	$method_name = "get_linked_cfields_at_{$method_suffix}";
 	  	$cf_map=$this->$method_name($id,$parent_id);
 
-		new dBug($cf_map);
-		
 		if(!is_null($cf_map))
 		{
 			$cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
@@ -2658,7 +2657,7 @@ class testplan extends tlObjectWithAttachments
 	function get_estimated_execution_time($id,$itemSet=null,$platformID=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$estimated = array('platform' => array(), 'grandTotal' => 0);
+		$estimated = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
 		$cf_info = $this->cfield_mgr->get_by_name('CF_ESTIMATED_EXEC_TIME');
 		
 		// CF exists ?
@@ -2678,46 +2677,52 @@ class testplan extends tlObjectWithAttachments
 			{
 				$sql .= " SELECT SUM(value) ";
 			} 
-			else if ( DB_TYPE == 'postgres')
+			else if ( DB_TYPE == 'postgres' || DB_TYPE == 'mssql' )
 			{
 				$sql .= " SELECT SUM(CAST(value AS NUMERIC)) ";
 			}       
-			// hmmm - on MSSQL we will have problems!!!
 			
-			// Important NOTICE
-			// we can found SOME LIMITS on number of elements on IN CLAUSE
-			//
 			$sql .= " AS SUM_VALUE FROM {$this->tables['cfield_design_values']} CFDV " .
 					" WHERE CFDV.field_id={$cfield_id} ";
-
 
 			if( is_null($itemSet) )
 			{
 				// 20110112 - franciscom
 				// we need to loop over all linked PLATFORMS (if any)
 				$tcVersionIDSet = array();
-				foreach($platformSet as $platformID)
+				foreach($platformSet as $platfID)
 				{
-					$linkedItems = $this->get_linked_tcvid($id,$platformID);  
-					if( (!is_null($linkedItems)) )
-					{
-						$tcVersionIDSet[$platformID]= array_keys($linkedItems);
-					}
-				}	    
+					if(is_null($platformID) || $platformID == $platfID )
+					{ 
+						$linkedItems = $this->get_linked_tcvid($id,$platfID);  
+						if( (!is_null($linkedItems)) )
+						{
+							$tcVersionIDSet[$platfID]= array_keys($linkedItems);
+						}
+					}	
+				}
 			}
 			else
 			{
+				// Important NOTICE
+				// we can found SOME LIMITS on number of elements on IN CLAUSE
+				//
 				// need to make as many set as platforms linked to test plan
 				$sql4tplantcv = " /* $debugMsg */ SELECT tcversion_id, platform_id " .
 								" FROM {$this->tables['testplan_tcversions']} " .
 								" WHERE testplan_id=" . intval($id)  .
 								" AND tcversion_id IN (" . implode(',',$itemSet) . ")";
-
+				
+				if( !is_null($platformID) )
+				{
+					$sql4tplantcv .= " AND platform_id= " . intval($platformID);
+				}				
+			
 				$rs = $this->db->fetchColumnsIntoMap($sql4tplantcv,'platform_id','tcversion_id',
 													 database::CUMULATIVE);
-				foreach($rs as $platformID => $elem)
+				foreach($rs as $platfID => $elem)
 				{
-					$tcVersionIDSet[$platformID] = array_values($elem);  	
+					$tcVersionIDSet[$platfID] = array_values($elem);  	
 				}	
 			}
 		}  
@@ -2727,14 +2732,16 @@ class testplan extends tlObjectWithAttachments
 			// Important NOTICE
 			// we can found SOME LIMITS on number of elements on IN CLAUSE
 			//
-			$estimated = array('platform' => array(), 'grandTotal' => 0);
-			foreach($tcVersionIDSet as $platformID => $items)
+			$estimated = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
+			foreach($tcVersionIDSet as $platfID => $items)
 			{	
 				$sql2exec = $sql . " AND node_id IN (" . implode(',',$items) . ")";
 				$dummy = $this->db->fetchOneValue($sql2exec);
-				$estimated['platform'][$platformID]['tcase_qty'] = count($items);
-				$estimated['platform'][$platformID]['minutes'] = is_null($dummy) ? 0 : $dummy;
-				$estimated['grandTotal'] += $dummy;
+				$estimated['platform'][$platfID]['minutes'] = is_null($dummy) ? 0 : $dummy;
+				$estimated['platform'][$platfID]['tcase_qty'] = count($items);
+				
+				$estimated['totalMinutes'] += $estimated['platform'][$platfID]['minutes'];
+				$estimated['totalTestCases'] += $estimated['platform'][$platfID]['tcase_qty'];
 			}	
 		}
 		return $estimated;
@@ -2743,9 +2750,8 @@ class testplan extends tlObjectWithAttachments
 
 	/*
 	  function: get_execution_time
-	            Takes all testcases (or a subset of executions) linked to testplan 
-	            that has been executed and computes SUM of values assigned AT EXECUTION TIME 
-	            to customa field named CF_EXEC_TIME
+	            Takes all executions or a subset of executions, regarding a testplan and 
+	            computes SUM of values assigned AT EXECUTION TIME to custom field named CF_EXEC_TIME
 	
 	            IMPORTANT:
 	            1. at time of this writting (20081207) this CF can be of type: string,numeric or float.
@@ -2753,15 +2759,20 @@ class testplan extends tlObjectWithAttachments
 	               sum will be wrong. 
 	            
 	  args:id testplan id
-	       $execution_set: default null
+	       $execIDSet: default null
 	
 	  returns: sum of CF values for all testcases linked to testplan
 	
-	  rev: 20081207 - franciscom
+	  rev: 
+	  @internal revision
+	  20120115 - franciscom - BUGID 4171
 	*/
-	function get_execution_time($id,$execution_set=null)
+	function get_execution_time($id,$execIDSet=null,$platformID=null)
 	{
-		$total_time=0;
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$total_time = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
+		$targetSet = array();
+		
 		$cf_info = $this->cfield_mgr->get_by_name('CF_EXEC_TIME');
 		
 		// CF exists ?
@@ -2772,47 +2783,90 @@ class testplan extends tlObjectWithAttachments
 		
 		if( $status_ok)
 		{
-			if( is_null($execution_set) )
-			{
-				// we will compute time for ALL linked and executed test cases,
-				// just for LAST executed TCVERSION
-				// $linked_executed=$this->get_linked_tcversions($id,null,0,'just_executed'); 
-				$options = array('only_executed' => true);
-				$linked_executed=$this->get_linked_tcversions($id,null,$options); 
-				if( ($status_ok=!is_null($linked_executed)) )
-				{
-					foreach($linked_executed as $tcase_id => $info)
-					{
-						$execution_ids[]=$info['exec_id'];
-					}    
-				}    
-			}
-			else
-			{
-				$execution_ids=$execution_set;  
-			}
-		}  
-		
-		if($status_ok)
-		{
+			$getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
+			$platformSet = array_keys($this->getPlatforms($id,$getOpt));
+
+			// ----------------------------------------------------------------------------
 			$sql="SELECT SUM(CAST(value AS NUMERIC)) ";
 			if( DB_TYPE == 'mysql')
 			{
 				$sql="SELECT SUM(value) ";
 			} 
-			else if ( DB_TYPE == 'postgres')
+			else if ( DB_TYPE == 'postgres' || DB_TYPE == 'mssql' )
 			{
 				$sql="SELECT SUM(CAST(value AS NUMERIC)) ";
 			}        
-			
 			$sql .= " AS SUM_VALUE FROM {$this->tables['cfield_execution_values']} CFEV " .
-				" WHERE CFEV.field_id={$cfield_id} " .
-				" AND testplan_id={$id} " .
-				" AND execution_id IN (" . implode(',',$execution_ids) . ")";
-			
-			$total_time=$this->db->fetchOneValue($sql);
-			$total_time=is_null($total_time) ? 0 :$total_time;
+					" WHERE CFEV.field_id={$cfield_id} " .
+					" AND testplan_id={$id} ";
+			// ----------------------------------------------------------------------------
+						
+			if( is_null($execIDSet) )
+			{
+				// we will compute time for ALL linked and executed test cases,
+				// just for LAST executed TCVERSION
+				// mapOfMap -> secondary key Platform ID
+				$options = array('only_executed' => true, 'output' => 'mapOfMap');
+				
+				$filters = null;
+				if( !is_null($platformID) )
+				{	 
+					$filters = array('platform_id' => $platformID);
+				}
+				$executed = $this->get_linked_tcversions($id,$filters,$options); 
+				if( ($status_ok=!is_null($executed)) )
+				{
+					$tc2loop = array_keys($executed);
+					foreach($tc2loop as $tcase_id)
+					{
+						$p2loop = array_keys($executed[$tcase_id]);
+						foreach($p2loop as $platf_id)
+						{
+							$targetSet[$platf_id][]=$executed[$tcase_id][$platf_id]['exec_id'];
+						}	
+					}    
+				}    
+			}
+			else
+			{
+				// 20110115 - franciscom
+				// If user has passed in a set of exec id, we assume that
+				// he has make a good work, i.e. if he/she wanted just analize 
+				// executions for just a PLATFORM he/she has filtered BEFORE
+				// passing in input to this method the item set.
+				// Then we will IGNORE value of argument platformID to avoid
+				// run a second (and probably useless query).
+				// We will use platformID JUST as index for output result
+				
+				if( is_null($platformID) )
+				{
+					throw new Exception(__FUNCTION_ . ' When you pass $execIDSet an YOU NEED TO PROVIDE a platform ID');
+				}	
+				$targetSet[$platformID] = $execIDSet;
+			}
+		}  
+	
+		if($status_ok)
+		{
+			// Important NOTICE
+			// we can found SOME LIMITS on number of elements on IN CLAUSE
+			//
+			$estimated = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
+			foreach($targetSet as $platfID => $items)
+			{	
+				$sql2exec = $sql . " AND execution_id IN (" . implode(',',$items) . ")";
+
+				$dummy = $this->db->fetchOneValue($sql2exec);
+				$total_time['platform'][$platfID]['minutes'] = is_null($dummy) ? 0 : $dummy;
+				$total_time['platform'][$platfID]['tcase_qty'] = count($items);
+
+				$total_time['totalMinutes'] += $total_time['platform'][$platfID]['minutes'];
+				$total_time['totalTestCases'] += $total_time['platform'][$platfID]['tcase_qty'];
+			}	
 		}
+
+		
+		
 		return $total_time;
 	}    
 
@@ -4172,7 +4226,6 @@ class testplan extends tlObjectWithAttachments
 		
 		if( isset($container['id']) )
 		{
-			// echo 'I am a Test Suite' . ' - my name is: ' . $container['name'] . '<br>';
 			$kwMap = $tsuiteMgr->getKeywords($container['id']);
 			if ($kwMap)
 			{

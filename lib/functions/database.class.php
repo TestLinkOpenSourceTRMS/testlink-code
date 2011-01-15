@@ -9,7 +9,7 @@
  * @copyright 	2006 TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.55.2.4 2010/12/12 08:19:25 franciscom Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.55.2.5 2011/01/15 19:23:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -810,6 +810,23 @@ class database
 		}
 		return ($sql);
 	}
+
+
+	function db_null_timestamp()
+	{
+		$db_type = $this->db->databaseType;
+		$nullValue = NULL;
+		
+		switch($db_type)
+		{
+			case 'mysql':
+				// is not an error i put single quote on value			
+				$nullValue = " '0000-00-00 00:00:00' ";
+			break;
+		}
+		return $nullValue;
+	}
+
 
 } // end of database class
 ?>

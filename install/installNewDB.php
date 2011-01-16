@@ -10,7 +10,7 @@
  * @copyright 	2008, TestLink community
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
- * @version    	CVS: $Id: installNewDB.php,v 1.61.2.1 2010/12/19 14:34:40 franciscom Exp $
+ * @version    	CVS: $Id: installNewDB.php,v 1.61.2.2 2011/01/16 09:43:31 franciscom Exp $
  *
  * @internal Revisions:
  *	20100911 - franciscom - drop_tables() - MS SQL does not like 'CASCADE'
@@ -322,6 +322,14 @@ if ($upgrade)
 				break;
 				
 			case 'DB 1.3':
+				echo "<p>Your DB Schema {$schema_version} NEED TO BE upgraded, but you have to do ";
+				echo " this MANUALLY using a SQL client and scripts you will find on ";
+				echo " directory install/sql/alter_tables/1.9.1 ";
+				echo "<br /></p>";
+				close_html_and_exit();          
+				break;
+
+			case 'DB 1.4':
 				echo "<p>Your DB Schema {$schema_version} is the last available, then you don't need to do any upgrade.";
 				echo "<br />Script is finished.</p>";
 				close_html_and_exit();          

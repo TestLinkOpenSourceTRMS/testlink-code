@@ -10,6 +10,11 @@ V5.10 10 Nov 2009   (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserv
   Latest version is available at http://adodb.sourceforge.net
   
   Library for basic performance monitoring and tuning 
+
+
+  20110116 - franciscom - due to E_STRICT
+  function Tables($orderby='1')
+
   
 */
 
@@ -117,7 +122,10 @@ class perf_mssql extends adodb_perf{
 		return $s;
 	}
 	
-	function Tables()
+	// function Tables()
+	// 20110116 - franciscom - due to E_STRICT
+	function Tables($orderby='1')
+
 	{
 	global $ADODB_FETCH_MODE;
 	

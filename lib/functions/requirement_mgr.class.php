@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.125 $
- * @modified $Date: 2011/01/15 20:01:55 $ by $Author: franciscom $
+ * @version $Revision: 1.126 $
+ * @modified $Date: 2011/01/16 17:38:28 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20110116 - franciscom - fixed Crash on MSSQL due to column name with MIXED case
+ *  						BUGID 4172 - MSSQL UNION text field issue
  * 	20110115 - franciscom - create_new_revision() - fixed insert of null on timestamp field
  *	20110108 - franciscom - createFromMap() - check improvements
  *						  	BUGID 4150 check for duplicate req title
@@ -1797,7 +1799,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   		
   		if( !is_null($tproject_id) )
   		{
-  			$sql .= " AND REQ_SPEC.testproject_ID={$tproject_id}";
+  			$sql .= " AND REQ_SPEC.testproject_id={$tproject_id}";
   		}
     	
   		if( !is_null($parent_id) )
@@ -2515,7 +2517,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   		
   		if( !is_null($tproject_id) )
   		{
-  			$sql .= " AND REQ_SPEC.testproject_ID={$tproject_id}";
+  			$sql .= " AND REQ_SPEC.testproject_id={$tproject_id}";
   		}
     	
   		if( !is_null($parent_id) )
@@ -2644,6 +2646,8 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	/**
 	 * used to create overwiew of changes between revisions
  	 *
+ 	 * @internal revision
+ 	 * 20110116 - franciscom - BUGID 4172 - MSSQL UNION text field issue
  	 */
 	function get_history($id,$options=null)
 	{
@@ -2683,8 +2687,16 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 				" WHERE NH_REQV.parent_id = {$id} ";
 				
 		if( $rs[0]['qta_rev'] > 0 )
-		{		
-			$sql .=	" UNION ( " .
+		{	
+			// 
+			// Important NOTICE - MSSQL
+			// 
+			// text fields can be used on union ONLY IF YOU USE UNION ALL
+			//
+			// UNION ALL returns ALSO duplicated rows.
+			// In this situation this is NOT A PROBLEM (because we will not have dups)
+			//
+			$sql .=	" UNION ALL ( " .
     				" SELECT REQV.id AS version_id, REQV.version, " .
     				"		 REQRV.creation_ts, REQRV.author_id, " .
 					"		 REQRV.modification_ts, REQRV.modifier_id, " . 

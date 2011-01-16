@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.114.2.14 $
- * @modified $Date: 2011/01/16 16:16:18 $ by $Author: franciscom $
+ * @version $Revision: 1.114.2.15 $
+ * @modified $Date: 2011/01/16 17:41:17 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -14,6 +14,7 @@
  *
  * rev:
  *	20110116 - franciscom - fixed Crash on MSSQL due to column name with MIXED case
+ *  						BUGID 4172 - MSSQL UNION text field issue
  *	20110108 - franciscom - createFromMap() - check improvements
  *						  	BUGID 4150 check for duplicate req title
  *	20110106 - Julian - update() - set author,modifier,creation_ts,modifier_ts depending on creation of new revision
@@ -2645,7 +2646,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	
 	/**
 	 * used to create overwiew of changes between revisions
- 	 *
+ 	 * 20110116 - franciscom - BUGID 4172 - MSSQL UNION text field issue
  	 */
 	function get_history($id,$options=null)
 	{
@@ -2686,7 +2687,15 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 				
 		if( $rs[0]['qta_rev'] > 0 )
 		{		
-			$sql .=	" UNION ( " .
+			// 
+			// Important NOTICE - MSSQL
+			// 
+			// text fields can be used on union ONLY IF YOU USE UNION ALL
+			//
+			// UNION ALL returns ALSO duplicated rows.
+			// In this situation this is NOT A PROBLEM (because we will not have dups)
+			//
+			$sql .=	" UNION ALL ( " .
     				" SELECT REQV.id AS version_id, REQV.version, " .
     				"		 REQRV.creation_ts, REQRV.author_id, " .
 					"		 REQRV.modification_ts, REQRV.modifier_id, " . 

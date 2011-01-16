@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.114.2.13 $
- * @modified $Date: 2011/01/15 19:24:45 $ by $Author: franciscom $
+ * @version $Revision: 1.114.2.14 $
+ * @modified $Date: 2011/01/16 16:16:18 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20110116 - franciscom - fixed Crash on MSSQL due to column name with MIXED case
  *	20110108 - franciscom - createFromMap() - check improvements
  *						  	BUGID 4150 check for duplicate req title
  *	20110106 - Julian - update() - set author,modifier,creation_ts,modifier_ts depending on creation of new revision
@@ -1799,7 +1800,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   		
   		if( !is_null($tproject_id) )
   		{
-  			$sql .= " AND REQ_SPEC.testproject_ID={$tproject_id}";
+  			$sql .= " AND REQ_SPEC.testproject_id={$tproject_id}";
   		}
     	
   		if( !is_null($parent_id) )
@@ -2519,7 +2520,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   		
   		if( !is_null($tproject_id) )
   		{
-  			$sql .= " AND REQ_SPEC.testproject_ID={$tproject_id}";
+  			$sql .= " AND REQ_SPEC.testproject_id={$tproject_id}";
   		}
     	
   		if( !is_null($parent_id) )

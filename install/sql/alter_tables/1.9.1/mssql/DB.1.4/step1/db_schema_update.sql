@@ -11,15 +11,8 @@
 --
 --
 -- rev: 
--- 20101219 - franciscom - MARKED operations THAT NEED TO BE DONE MANUALLY DUE TO MSSQL LIMITATION
---                         (search for string NEED TO BE DONE MANUALLY to FIND IT)
+-- 201101216 - franciscom - update to 1.9.1 DB 1.4
 --
--- 20101214 - franciscom - update to 1.9.1 DB 1.4
--- 20101123 - franciscom - fixed errors on builds ADD release_date 
--- 20101119 - franciscom - bad default for date (now() -> getdate())
--- 20100705 - asimon - added new column build_id to user_assignments
---
-
 -- update some config data
 SET IDENTITY_INSERT /*prefix*/node_types ON
 INSERT INTO /*prefix*/node_types (id,description) VALUES (10,'requirement_revision');

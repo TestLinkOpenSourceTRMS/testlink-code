@@ -15,10 +15,11 @@
  *  
  * Included on installNewDB.php
  *
- * $Id: migrate_18_to_19.php,v 1.12 2010/12/19 14:55:10 franciscom Exp $
+ * $Id: migrate_18_to_19.php,v 1.13 2011/01/17 11:06:26 mx-julian Exp $
  * Author: franciscom
  * 
  * @internal rev:
+ *  20110117 - Julian - BUGID 4174 - do not show each migrated test case on migration log
  *	20101219 - franciscom - BUGID 4040 - Check for MSSQL to skip some operations THAT HAVE
  *										 to be done MANUALLY
  *
@@ -378,7 +379,9 @@ function migrate_testcases(&$dbHandler,$tableSet)
         // STEP 2 - Create nodes for tcsteps on nodes_hierarchy table
 	    foreach($itemSet as $dummy => $item_info)
 	    {
-        	echo "Test Case:" . $item_info['name'] . " Version DBID: {$item_info['id']} <br>";
+        	
+	    	// BUGID 4174 - do not show each migrated test case on migration log
+	    	//echo "Test Case:" . $item_info['name'] . " Version DBID: {$item_info['id']} <br>";
 	    	
 	    	$item_id = $tree_mgr->new_node($item_info['id'],$node_types_descr_id['testcase_step']);
 	    	if( $item_id > 0 )

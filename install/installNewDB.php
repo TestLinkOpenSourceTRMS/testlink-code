@@ -10,9 +10,10 @@
  * @copyright 	2008, TestLink community
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
- * @version    	CVS: $Id: installNewDB.php,v 1.62 2010/12/19 14:51:41 franciscom Exp $
+ * @version    	CVS: $Id: installNewDB.php,v 1.63 2011/01/17 11:06:01 mx-julian Exp $
  *
  * @internal Revisions:
+ *  20110117 - Julian - BUGID 4174 - When testlink is updated do not show login data
  *	20100911 - franciscom - drop_tables() - MS SQL does not like 'CASCADE'
  *	20100815 - franciscom - BUGID 3654
  *  20100507 - Julian - changed time_limit for execution to umlimited
@@ -513,13 +514,20 @@ else
 }
 
 // 20080308 - franciscom
-important_reminder();     
+important_reminder();
 
-echo '</b><p /><br><div><span class="headers">' . "{$inst_type_verbose} was successful!" . '</span><br>' .
-     'You can now log into the <a href="../index.php">' .
-     'TestLink (using login name:admin / password:admin - Please Click Me!)</a>.</div>';
+// BUGID 4174 - When testlink is updated do not show login data admin/admin as they might not exist
+$successfull_message = '</b><p /><br><div><span class="headers">' . "{$inst_type_verbose} was successful!" . '</span><br>' .
+	                   'You can now log in to <a href="../index.php"> Testlink';
+if($create) {
+	$successfull_message .= ' (using login name:admin / password:admin - Please Click Me!)';
+}
+$successfull_message .= '</a>.</div>';
+
+echo $successfull_message;
+
 $db->close();
-close_html_and_exit();     
+close_html_and_exit();
 
 
 // -----------------------------------------------------------

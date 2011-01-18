@@ -7,10 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.96.2.5 2010/11/10 09:52:48 mx-julian Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.96.2.6 2011/01/18 21:17:48 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20110118 - franciscom - BUGID 4112 - MSSQL BLOCKING error on Report "Test Cases with Execution Details" 
+ *										due to reserved word EXEC
  * 20101109 - asimon - BUGID 3989: save custom field values only to db if they are not empty
  * 20101104 - amitkhullar - Updated Order By Clause in  get_linked_to_testproject()
  * 20101026 - asimon - BUGID 3930: changing date format according to given locale
@@ -1533,32 +1535,33 @@ function name_is_unique($id,$name)
         {
             $base_values ='';
 
+			// MSSQL BLOCKING error on Report "Test Cases with Execution Details" due to reserved word EXEC
             // asimon - 20100930 - added platform id to statement
             $additional_values .= ",CF.name,CF.label,CF.id,CFEV.value AS value,CFEV.tcversion_id AS node_id," .
-                                  "EXEC.id AS exec_id, EXEC.tcversion_id,EXEC.tcversion_number," .
-                                  "EXEC.execution_ts,EXEC.status AS exec_status,EXEC.notes AS exec_notes, " .
+                                  "EXECU.id AS exec_id, EXECU.tcversion_id,EXECU.tcversion_number," .
+                                  "EXECU.execution_ts,EXECU.status AS exec_status,EXECU.notes AS exec_notes, " .
                                   "NHB.id AS tcase_id, NHB.name AS tcase_name, TCV.tc_external_id, " .
                                   "B.id AS builds_id,B.name AS build_name, U.login AS tester, " .
                                   "PLAT.name AS platform_name, COALESCE(PLAT.id,0) AS platform_id";
             
             $additional_join .= " JOIN {$this->tables['cfield_execution_values']} CFEV ON CFEV.field_id=CF.id " .
                                 " AND CFEV.testplan_id={$testplan_id} " .
-                                " JOIN {$this->tables['executions']} EXEC ON CFEV.tcversion_id = EXEC.tcversion_id " .
-                                " AND CFEV.execution_id = EXEC.id " ;
+                                " JOIN {$this->tables['executions']} EXECU ON CFEV.tcversion_id = EXECU.tcversion_id " .
+                                " AND CFEV.execution_id = EXECU.id " ;
             
-            $additional_join .= " JOIN {$this->tables['builds']} B ON B.id = EXEC.build_id " .
-                                " AND B.testplan_id = EXEC.testplan_id " ;
+            $additional_join .= " JOIN {$this->tables['builds']} B ON B.id = EXECU.build_id " .
+                                " AND B.testplan_id = EXECU.testplan_id " ;
 
-            $additional_join .= " JOIN {$this->tables['tcversions']} TCV ON TCV.version = EXEC.tcversion_number " .
-			                          " AND TCV.id = EXEC.tcversion_id " ;
+            $additional_join .= " JOIN {$this->tables['tcversions']} TCV ON TCV.version = EXECU.tcversion_number " .
+			                          " AND TCV.id = EXECU.tcversion_id " ;
             
-            $additional_join .= " JOIN {$this->tables['users']} U ON  U.id = EXEC.tester_id " .
-                                " JOIN {$this->tables['nodes_hierarchy']} NHA ON NHA.id = EXEC.tcversion_id " .
+            $additional_join .= " JOIN {$this->tables['users']} U ON  U.id = EXECU.tester_id " .
+                                " JOIN {$this->tables['nodes_hierarchy']} NHA ON NHA.id = EXECU.tcversion_id " .
                                 " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHB.id = NHA.parent_id  " ;
 
             // Use left join, if platforms is not used platform_name will become null
-            $additional_join .= " LEFT JOIN {$this->tables['platforms']} PLAT ON EXEC.platform_id = PLAT.id";
-            $order_clause="ORDER BY EXEC.tcversion_id,exec_status,exec_id";
+            $additional_join .= " LEFT JOIN {$this->tables['platforms']} PLAT ON EXECU.platform_id = PLAT.id";
+            $order_clause="ORDER BY EXECU.tcversion_id,exec_status,exec_id";
             
             $fetchMethod='fetchArrayRowsIntoMap';
     
@@ -2218,7 +2221,7 @@ function getXMLServerParams($node_id)
         $additional_values .= ",CFTDV.value AS value, CFTDV.link_id AS node_id, " . 
                               "NHB.id AS tcase_id, NHB.name AS tcase_name, " .
                               "TCV.tc_external_id ";
-                               //"TCV.tc_external_id, exec.status ";
+                               //"TCV.tc_external_id, EXECU.status ";
                                
         $additional_join .= "JOIN {$this->tables['testplan_tcversions']} TPTC" .
                           " ON TPTC.testplan_id = {$testplan_id}" .
@@ -2231,7 +2234,7 @@ function getXMLServerParams($node_id)
          					" JOIN {$this->tables['nodes_hierarchy']} NHA ON NHA.id = TPTC.tcversion_id " .
                             " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHB.id = NHA.parent_id  " ;
         
-        //$additional_join .= " JOIN executions EXEC on TPTC.tcversion_id = EXEC.tcversion_id  ";
+        //$additional_join .= " JOIN executions EXECU on TPTC.tcversion_id = EXECU.tcversion_id  ";
         
         $order_by_clause = " ORDER BY node_id,display_order,CF.id "; 
         $fetchMethod = 'fetchArrayRowsIntoMap';

@@ -5,7 +5,7 @@
  * Smarty template - see and manage inventory table 
  *
  * Author: Martin Havlat
- * CVS: $Id: inventoryView.tpl,v 1.3 2010/11/13 11:24:25 franciscom Exp $
+ * CVS: $Id: inventoryView.tpl,v 1.4 2011/01/18 14:16:24 mx-julian Exp $
  *
  * @todo		escape shown text (renderer: Ext.util.Format.htmlEncode(???))
  * @todo           // Highlight the row for 3 seconds
@@ -22,7 +22,6 @@
  * Revision: None
  *
  *}
-<script type="text/javascript" src="../../ext-all-debug.js"></script>
 {lang_get var="labels" 
           s="inventory_title,inventory_empty,sort_table_by_column,
           inventory_name,inventory_notes,inventory_ipaddress,

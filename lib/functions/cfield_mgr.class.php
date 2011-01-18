@@ -7,10 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.107 2010/12/26 09:44:33 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.108 2011/01/18 21:20:23 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20110118 - franciscom - BUGID 4112 - MSSQL BLOCKING error on Report "Test Cases with Execution Details" 
+ *										due to reserved word EXEC
  * 20101226	- franciscom - create() changes to make it more resilent
  *						   update() - BUGID 4088: Required parameter for custom fields	
  * 20101219 - franciscom - BUGID 4088: Required parameter for custom fields
@@ -1566,7 +1568,7 @@ function name_is_unique($id,$name)
             
             $additional_join .= " JOIN {$this->tables['cfield_execution_values']} CFEV ON CFEV.field_id=CF.id " .
                                 " AND CFEV.testplan_id={$testplan_id} " .
-                                " JOIN {$this->tables['executions']} EXEC ON CFEV.tcversion_id = EXEC.tcversion_id " .
+                                " JOIN {$this->tables['executions']} EXECU ON CFEV.tcversion_id = EXEC.tcversion_id " .
                                 " AND CFEV.execution_id = EXEC.id " ;
             
             $additional_join .= " JOIN {$this->tables['builds']} B ON B.id = EXEC.build_id " .
@@ -2254,7 +2256,7 @@ function getXMLServerParams($node_id)
          					" JOIN {$this->tables['nodes_hierarchy']} NHA ON NHA.id = TPTC.tcversion_id " .
                             " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHB.id = NHA.parent_id  " ;
         
-        //$additional_join .= " JOIN executions EXEC on TPTC.tcversion_id = EXEC.tcversion_id  ";
+        //$additional_join .= " JOIN executions EXECU on TPTC.tcversion_id = EXEC.tcversion_id  ";
         
         $order_by_clause = " ORDER BY node_id,display_order,CF.id "; 
         $fetchMethod = 'fetchArrayRowsIntoMap';

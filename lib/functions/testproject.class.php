@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.181 2010/10/30 18:27:05 amkhullar Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.182 2011/01/18 20:01:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1363,7 +1363,7 @@ function setPublicStatus($id,$status)
 	    $fields = is_null($fields) ? $fields2get : implode(',',$fields);
     	$sql = "  /* $debugMsg */ SELECT {$fields} FROM {$this->tables['req_specs']} RSPEC, " .
        		   " {$this->tables['nodes_hierarchy']} NH , {$this->tables['requirements']} REQ " .
-           	   " WHERE testproject_id={$testproject_id} AND RSPEC.id=NH.id AND REQ.SRS_ID = RSPEC.id" ;
+           	   " WHERE testproject_id={$testproject_id} AND RSPEC.id=NH.id AND REQ.srs_id = RSPEC.id" ;
            
 		if (!is_null($id))
 	    {

@@ -7,10 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.96.2.6 2011/01/18 21:17:48 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.96.2.7 2011/01/20 15:44:05 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20110120 - Julian - BUGID 4164 - lists and multiselection lists do not use more space than
+ *                                  necessary anymore
  * 20110118 - franciscom - BUGID 4112 - MSSQL BLOCKING error on Report "Test Cases with Execution Details" 
  *										due to reserved word EXEC
  * 20101109 - asimon - BUGID 3989: save custom field values only to db if they are not empty
@@ -111,6 +113,7 @@ class cfield_mgr extends tlObject
 {
     const DEFAULT_INPUT_SIZE = 50;
     const MULTISELECTIONLIST_WINDOW_SIZE = 5;
+    const LISTBOX_WINDOW_SIZE = 5;
     const TEXTAREA_MAX_SIZE = 255;
 
     // EDIT HERE IF YOU CUSTOMIZE YOUR DB
@@ -608,6 +611,8 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     returns: html string
 
     rev :
+         20110120 - Julian - BUGID 4164 - lists and multiselection lists do not use more space than
+                                          necessary anymore
          20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
          20080816 - franciscom
          added code to manange user defined (and code developed) Custom Fields.
@@ -642,34 +647,43 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     	{
     	  $size=$field_size;
     	}
-
         
 		switch ($verbose_type)
 		{
   		case 'list':
   		case 'multiselection list':
    			$t_values = explode( '|', $p_field_def['possible_values']);
+   			$t_values_count = count($t_values);
         	if( $verbose_type == 'list' )
         	{
+        	   // get maximum allowed window size for lists
+        	   $window_size = intval($size) > 1 ? $size : self::LISTBOX_WINDOW_SIZE;
+        	   
         	   $t_multiple=' ';
-        	   $t_list_size = intval($size) > 0 ? $size :1;
+        	   
         	   // 20100701 - asimon - removed single space in next line, 
         	   // it was causing errors in field names on HTML because it somehow gets replaced
         	   // by an underscore somwhere and then the field name doesn't match anymore
         	   //$t_name_suffix=' ';
-        	   $t_name_suffix=''; 
+        	   $t_name_suffix='';
         	}
         	else
         	{
+        	   // get maximum allowed window size for mutliselection lists
         	   $window_size = intval($size) > 1 ? $size : self::MULTISELECTIONLIST_WINDOW_SIZE;
         	   $t_name_suffix='[]';
         	   $t_multiple=' multiple="multiple" ';
-        	   $t_list_size = count( $t_values );
-        	   if($t_list_size > $window_size)
-        	   {
-        	    $t_list_size=$window_size;
-        	   }
         	}
+        	
+        	// BUGID 4164 lists and multiselection lists do not use more space than necessary
+        	// set the list size to the number of possible values of custom field
+            // but respect the maximum window size
+        	$t_list_size = $t_values_count;
+		    if($t_list_size > $window_size)
+        	{
+        	   $t_list_size=$window_size;
+        	}
+        	
         	$html_identity=$input_name . $t_name_suffix;
   			$str_out .="<select name=\"{$html_identity}\" id=\"{$input_name}\" {$t_multiple}";
   			$str_out .= ' size="' . $t_list_size . '">';

@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.243 2011/01/04 14:14:51 asimon83 Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.244 2011/01/21 18:52:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *	20110121 - franciscom - BUGID 4184 - MSSQL Ambiguous column name platform_id
  *  20110104 - asimon - BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
  *  20101221 - amitkhullar - BUGID 4115 Custom Field Filtering Issue 
  *  20101215 - asimon - BUGID 4023: correct filtering also with platforms
@@ -969,7 +970,8 @@ class testplan extends tlObjectWithAttachments
 			$tsuiteSet = is_array($my['filters']['tsuites_id']) ? $my['filters']['tsuites_id'] : array($my['filters']['tsuites_id']);
 			$sql .= " AND NHB.parent_id IN (" . implode(',',$tsuiteSet) . ")";
 		}
-		$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,platform_id,E.id ASC";
+		// BUGID 4184 - MSSQL Ambiguous column name platform_id
+		$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,T.platform_id,E.id ASC";
 
  		switch($my['options']['output'])
 		{ 

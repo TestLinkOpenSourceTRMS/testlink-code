@@ -1,11 +1,15 @@
 /* 
-$Revision: 1.5 $
-$Date: 2010/03/05 10:57:13 $
-$Author: asimon83 $
+$Revision: 1.5.6.1 $
+$Date: 2011/01/21 19:12:44 $
+$Author: franciscom $
 $Name:  $
 
 z_final_step.sql
 MySQL
+
+@internal revision
+20111121 - franciscom - now migrates to 1.9.1 => DB has to be 1.4 and not 1.3 anymore
+
 */
 
 /* system data update */
@@ -27,4 +31,4 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,27);
 
 /* database version update */
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.3', 'TestLink 1.9',CURRENT_TIMESTAMP());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.4', 'TestLink 1.9.1',CURRENT_TIMESTAMP());

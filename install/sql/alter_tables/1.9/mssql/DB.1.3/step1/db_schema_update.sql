@@ -1,5 +1,5 @@
--- $Revision: 1.2.2.9 $
--- $Date: 2010/12/19 10:35:01 $
+-- $Revision: 1.2.2.10 $
+-- $Date: 2011/01/21 19:17:59 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: MSSQL
@@ -210,4 +210,4 @@ ALTER TABLE /*prefix*/cfield_testplan_design_values ALTER COLUMN value varchar(4
 -- ALTER TABLE /*prefix*/custom_fields ALTER COLUMN possible_values varchar(4000);
 -- ALTER TABLE /*prefix*/custom_fields ALTER COLUMN default_value varchar(4000);
 
-UPDATE /*prefix*/req_versions SET log_message='Requirement migrated from Testlink 1.8.x'; 
+UPDATE /*prefix*/req_versions SET log_message='Requirement version migrated from Testlink 1.8.x'; 

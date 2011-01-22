@@ -13,4 +13,6 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (27,'project_infrastructure
 set IDENTITY_INSERT rights off;
 
 */
+UPDATE /*prefix*/req_versions SET log_message='Requirement version migrated from Testlink 1.9.0'; 
+
 INSERT INTO /*prefix*/db_version (version,upgrade_ts,notes) VALUES ('DB 1.4',GETDATE(),'');

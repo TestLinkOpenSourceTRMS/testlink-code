@@ -56,5 +56,3 @@ CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/IX1_req_revisions ON  /*prefix*/req_r
 	parent_id,revision
 ) ON [PRIMARY];
 
--- Step 
-UPDATE /*prefix*/req_versions SET log_message='Requirement migrated from Testlink 1.9.0'; 

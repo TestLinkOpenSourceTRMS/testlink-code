@@ -1,5 +1,5 @@
--- $Revision: 1.1.2.3 $
--- $Date: 2011/01/15 18:29:35 $
+-- $Revision: 1.1.2.4 $
+-- $Date: 2011/01/22 13:47:31 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
@@ -101,7 +101,3 @@ CREATE TABLE /*prefix*/req_revisions(
   PRIMARY KEY ("id")
 ); 
 CREATE UNIQUE INDEX /*prefix*/req_revisions_uidx1 ON /*prefix*/req_revisions ("parent_id","revision");
-
-
--- Last step update some data
-UPDATE /*prefix*/req_versions SET log_message='Requirement version migrated from Testlink 1.9.0'; 

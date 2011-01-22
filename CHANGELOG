@@ -3,6 +3,77 @@
    TestLink  Change-log
 *******************************************************************************
 
+TestLink - 1.9.1 (Prague - Bugfix 1) (Released 2011-01-23)
+==========================================================
+0004184: [Database MS-SQL] Ambiguous column name ''platform_id'' (fman) - resolved.
+- 0004164: [Custom fields] Custom fields with "LIST" type remain wide open during use. (Julian) - resolved.
+- 0004079: [Test Execute] Cannot add attachment to execution [DB REPOSITORY / MSSQL] (fman) - resolved.
+- 0004100: [Requirement Management] Import Requirements - create new version for duplicate requirements (fman) - resolved.
+- 0004112: [Reports] IIS/MSSQL: Report "Test Cases with Execution Details" fails with an "Internal server error" (fman) - resolved.
+- 0002525: [Custom fields] No "CF_ESTIMATED_EXEC_TIME" in test report (fman) - resolved.
+- 0004176: [Inventory / Platforms] Wrong path for ext-all-debug.js in inventoryView.tpl (Julian) - resolved.
+- 0004172: [Requirement Revisioning] Req revision history - MSSQL UNION text field issue (fman) - resolved.
+- 0004174: [Installer] Wrong login credentials shown after migration procedure (Julian) - resolved.
+- 0004173: [Installer] migration process - every migrated test case shown on log (Julian) - resolved.
+- 0004170: [Reports] Test Report - When Test Plan Has platforms does not filter test cases (fman) - resolved.
+- 0004171: [Reports] Test Report - estimated and real execution time functions made Platform aware (fman) - resolved.
+- 0004169: [Users and Rights] Search results are not being displayed (Julian) - resolved.
+- 0004166: [Test Plan (builds, milestones, test assign)] missing Testplans on "Update Linked Test Case Versions" Testplan DropDown (Julian) - resolved.
+- 0004168: [Requirement Management] Requirement Specifications navigator tree empty (asimon) - resolved.
+- 0003784: [Bug Tracking Systems Integration] custom bug status in MantisBT causing error messages in TestLink (fman) - resolved.
+- 0004144: [Test Specification] VERTICAL LAYOUT - missing "insert step" column and icon in test case specification (fman) - resolved.
+- 0004145: [Test Project Management] deactivating "public" for a project in project management doesn't work after saving (fman) - resolved.
+- 0004153: [Requirement Management] Warning message when navigating away from changed requirement without saving (Julian) - resolved.
+- 0004154: [Requirement Management] Warning message when navigating away from changed requirement specification without saving (Julian) - resolved.
+- 0004155: [Test Specification] Warning message when navigating away from changed test suite without saving (Julian) - resolved.
+- 0004152: [User Interface General] [TL 1.9.1 on CVS] Focus is set to document id when log message dialog appears (Julian) - resolved.
+- 0004150: [Requirement Management] Add Check to assure tha Requirement Title is UNIQUE AMONG all children of a Req Spec (fman) - resolved.
+- 0004006: [Test Plan (builds, milestones, test assign)] Is_public flag on testplans not used as expected? (fman) - resolved.
+- 0004085: [General] Attachment Repository on Database - Can not get file after upload (fman) - resolved.
+- 0004136: [Test Specification] configuration $tlCfg->spec_cfg->steps_results_layout = 'vertical'; is not working when creating a test step the first time (fman) - resolved.
+- 0004133: [Test Plan (builds, milestones, test assign)] Filter on Test Case Title in Add / Remove Test Cases should not be case sensitive on right pane (asimon) - resolved.
+- 0003878: [Test Execute] "Save and move to next" does not respect filter settings (asimon) - resolved.
+- 0004070: [Reports] General Test Plan Metrics - Report generation so slow that is unusable (fman) - resolved.
+- 0004087: [Custom fields] Filtering Test Cases by more than one custom field gives zero results (amitkhullar) - resolved.
+- 0004118: [Test Plan (builds, milestones, test assign)] Copy Test plan feature is not copying test cases (asimon) - resolved.
+- 0004084: [User Interface General] Update tree after every operation ignored in Test Case editor (asimon) - resolved.
+- 0004131: [Third party components] PHPMAILER - upgrade config options to use SSL or TLS - allows use gmail (fman) - resolved.
+- 0004023: [Test Execute] Incorrect filtering of tests in exec tree (asimon) - resolved.
+- 0004123: [Localization] Spanish (Arg) (Julian) - resolved.
+- 0004121: [Reports] get_not_run_tc_count_per_build() crashes (fman) - resolved.
+- 0004097: [Test Plan (builds, milestones, test assign)] Test case assign crashes browser (fman) - resolved.
+- 0004115: [Test Specification] Custom Field Filters in Test case specs dont work in a corner condition (amitkhullar) - resolved.
+- 0004019: [TL API] API - getTestCasesForTestPlan can't filter by platform name (fman) - resolved.
+- 0004093: [Database General] MSSQL - Problems on fetch_array() (fman) - resolved.
+- 0004010: [Database Postgres] [MIGRATION] [POSTGRES] - updating from 1.8 to 1.9 rc1 fails (fman) - resolved.
+- 0004010: [Database Postgres] [MIGRATION] [POSTGRES] - updating from 1.8 to 1.9 rc1 fails (fman) - resolved.
+- 0004109: [Event viewer] Event logs not viewable in IE8 (Julian) - resolved.
+- 0004105: [0 - Undefined] Assign Test Plan roles crash (fman) - resolved.
+- 0004090: [Reports] Correct custom test result colors aren't shown in charts (fman) - resolved.
+- 0004082: [TL API] Missing check of overwrite parameter in function reportTCResult (xmlrpc.class.php) (fman) - resolved.
+- 0004086: [TL API] Unexpected result when overwriting reportTCResult (fman) - resolved.
+- 0003995: [Custom fields] Custom Field Filters in Test case Execution : Dont Work (amitkhullar) - resolved.
+- 0004024: [Test Plan (builds, milestones, test assign)] Add Test Case to Test Plan gives sql error on filtering the test cases on custom field value (amitkhullar) - resolved.
+- 0004083: [TL API] There is no mapping for the method uploadExecutionAttachment in TL API (fman) - resolved.
+- 0004067: [Test Specification] Tree refreshes after every action taken in Test Specification when update tree is disabled (asimon) - resolved.
+- 0003999: [User Interface General] Test Project list does not refresh after deleted (fman) - resolved.
+- 0004077: [User Interface General] Trees do not work on Internet Explorer (asimon) - resolved.
+- 0003837: [Test Specification] TL19RC1 - Test Specification - Test casee management - Copy test case - Bad message displayed. (Julian) - resolved.
+- 0004063: [User Interface General] Usability: Add "Save" and "Cancel" Button at the top of requirement edit page (Julian) - resolved.
+- 0004027: [Reports] Query metrics start date and end date are not working - getting all results (asimon) - resolved.
+- 0004065: [Users and Rights] errors from SQL (fman) - resolved.
+- 0004066: [Internal issue] Add $_REQUEST=strings_stripSlashes($_REQUEST); to common.php (asimon) - resolved.
+- 0004061: [User Interface General] wrong headline by copy a test case (Julian) - resolved.
+- 0004042: [User Interface General] "Expand/Collapse" Button for Trees (asimon) - resolved.
+- 0004041: [TL API] API - getTestCasesForTestPlan() -Platform Information not provided (fman) - resolved.
+- 0004030: [Installer] error log contains: PHP Notice: Undefined index: installationType in installCheck.php on line 40 (fman) - resolved.
+- 0003919: [Custom fields] CONTRIBUTION Enhanced custom fields script migration (fman) - resolved.
+- 0004038: [Requirement Management] Requirement Overview: Clicking Requirement Link does not open Requirement Version (asimon) - resolved.
+- 0004031: [Requirement Management] Prevent copying of req scope to test case summary when creating test cases from requirement (asimon) - resolved.
+- 0004007: [Test Plan (builds, milestones, test assign)] Strange empty TestPlan combo boxes in same navigator panes (asimon) - resolved.
+- 0004009: [Reports] "Test Case Assignment Overview" doesn't shows assignments in some situations (asimon) - closed.
+[67 issues]
+
 TestLink - 1.9 (Prague) (Released 2010-11-14)
 =============================================
 - 0000365: [Test Execute] Search in executed test notes (Julian) - closed.

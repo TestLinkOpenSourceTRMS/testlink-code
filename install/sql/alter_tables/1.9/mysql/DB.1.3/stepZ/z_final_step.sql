@@ -1,6 +1,6 @@
 /* 
-$Revision: 1.5.6.1 $
-$Date: 2011/01/21 19:12:44 $
+$Revision: 1.5.6.2 $
+$Date: 2011/01/22 13:53:26 $
 $Author: franciscom $
 $Name:  $
 
@@ -11,6 +11,13 @@ MySQL
 20111121 - franciscom - now migrates to 1.9.1 => DB has to be 1.4 and not 1.3 anymore
 
 */
+
+/*
+Important Notice:
+We are updating a column that we have ADDED as part of upgrade.
+At least for MySQL when this was done inside db_schema_update.sql update was not done.
+*/
+UPDATE /*prefix*/req_versions SET log_message='Requirement version migrated from Testlink 1.8.x' WHERE id > 0; 
 
 /* system data update */
 INSERT INTO /*prefix*/rights  (id,description) VALUES (24 ,'platform_management');

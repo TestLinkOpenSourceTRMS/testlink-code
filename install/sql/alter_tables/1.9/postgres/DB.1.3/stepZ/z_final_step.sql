@@ -1,9 +1,16 @@
 /* 
-$Revision: 1.5.6.1 $
-$Date: 2010/12/14 19:28:36 $
+$Revision: 1.5.6.2 $
+$Date: 2011/01/22 13:53:25 $
 $Author: franciscom $
 $Name:  $
 */
+
+/*
+Important Notice:
+We are updating a column that we have ADDED as part of upgrade.
+At least for MySQL when this was done inside db_schema_update.sql update was not done.
+*/
+UPDATE /*prefix*/req_versions SET log_message='Requirement version migrated from Testlink 1.8.x'; 
 
 -- update config data
 INSERT INTO /*prefix*/rights (id,description) VALUES (24 ,'platform_management');

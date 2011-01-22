@@ -5,7 +5,7 @@
  * SQL script: Update schema MySQL database for TestLink 1.9 from version 1.8 
  * "/ *prefix* /" - placeholder for tables with defined prefix, used by sqlParser.class.php.
  *
- * $Id: db_schema_update.sql,v 1.9.2.4 2011/01/22 13:47:31 franciscom Exp $
+ * $Id: db_schema_update.sql,v 1.9.2.5 2011/01/22 13:53:26 franciscom Exp $
  *
  * Important Warning: 
  * This file will be processed by sqlParser.class.php, that uses SEMICOLON to find end of SQL Sentences.
@@ -200,11 +200,4 @@ ALTER TABLE /*prefix*/req_specs COMMENT = 'Updated to TL 1.9.1 - DB 1.4';
 ALTER TABLE /*prefix*/requirements MODIFY COLUMN req_doc_id VARCHAR(64);
 ALTER TABLE /*prefix*/requirements COMMENT = 'Updated to TL 1.9.1 - DB 1.4';
 
-
-/* Update some data */
-/* 
-Some strange issue
-when doing update without WHERE clause seems that is not executed
-*/	 
-UPDATE /*prefix*/req_versions SET log_message='Requirement version migrated from Testlink 1.8.x' WHERE id > 0; 
 /* ----- END ----- */

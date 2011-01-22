@@ -1,5 +1,5 @@
 ===============================================================
-                    TestLink 1.9 RC1 - Read me
+                    TestLink 1.9.1 (Prague Bugfix 1) - Read me
 ===============================================================
 
 Contents
@@ -31,17 +31,10 @@ There is no hidden fee - 100% free for using!
 2. Release notes
 ===============================================================
 
-This is release candidate of final and stable release and we recommend 
-to update from older version.
-
-New features within 1.8: 
-    * Platforms - possibility to test with several configuration/environment
-    * Requirements versions, type
-    * Test case: Step-by-step structure
-    * Inventory
-    * Compatibility with PHP5.3 
-    
-See CHANGELOG file for detailed list.
+This release contains bugfixes for 1.9.0 and a new feature 
+(requirement revisioning).
+   
+See CHANGELOG file for detailed list of issues fixed.
 
 
 3. System Requirements - server
@@ -50,7 +43,7 @@ See CHANGELOG file for detailed list.
 Server environment should consists from:
 - web-server: Apache 1.2 , 2.x
 - PHP 5.2, 5.3
-- DBMS: MySQL 5.x , Postgres 8.x , MS-SQL 2005
+- DBMS: MySQL 5.x , Postgres 8.x,9.x , MS-SQL 2005/2008
 
 Supported client web-browsers: 
 - Firefox 3.x
@@ -106,7 +99,9 @@ Check Installation manual and TestLink forum if you meet a problem.
 When accessing Installer page you will found following options:
 
  - New Installation
- - Migration from 1.8 to 1.9
+ - Migration from 1.8 to 1.9.1
+
+If you are upgrading from 1.9.0 please go to section 'Upgrade from 1.9.0 to 1.9.1'.
 
  Steps
  - Make a Backup of your current database.
@@ -132,6 +127,25 @@ When accessing Installer page you will found following options:
    
  Always before login, after an upgrade/migration clear browser cookies.
 
+- Upgrade from 1.9.0 to 1.9.1
+To be able to use Testlink 1.9.1 with the new „Requirement Revisioning“ feature - 
+migration procedure requires some manual steps. 
+
+A.) Why does this release need manual steps on migration from 1.9.0?
+„Requirement Revisioning“ Feature requires database changes. 
+Manual migration is simple and should not be a problem for anyone. 
+No data needs to be migrated – it only requires to alter some tables and create a single new table.
+
+B.) What steps have to be executed for migration from 1.9.0 to 1.9.1?
+1. First of all make sure your testlink installation uses testlink 1.9.0 database scheme. 
+If you are still on Testlink 1.8.x use standard upgrade procedure.
+
+2. a) Execute install/sql/alter_tables/1.9.1/<your_db>/DB1.4/step1/db_schema_update.sql
+	 b) Execute install/sql/alter_tables/1.9.1/<your_db>/DB1.4/stepZ/z_final_step.sql
+	 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+
+	 Hint: When using MySQL Query Browser make sure you are not using a single command execution. 
+	      (open script or use special script tab to execute the whole script at once)
 
 6. TestLink Team 
 ===============================================================
@@ -140,11 +154,12 @@ This list comprise people that has helped
 
 --- Most Active on this release
 * Francisco Mancardi - Project lead, builds, core developer, contributors code reviewer
-* Julian Krien - Leader of testlink-qa group effort on 1.9 RC1 
+* Julian Krien - Leader of testlink-qa group effort on 1.9.x
 * Andreas Simon
-* Erik Eloff
+
 
 --- Contributors and developers active on other releases ---
+* Erik Eloff
 * Martin Havlat - Project lead, builds, infrastructure, developer
 * Andreas Morsing - core developer
 * Amit Khullar

@@ -7,11 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.110 2011/01/20 15:44:08 mx-julian Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.111 2011/01/23 18:14:19 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20110123 - franciscom - BUGID 3338 - getXMLServerParams() -> renamed getXMLRPCServerParams
  * 20110120 - Julian - BUGID 4164 - lists and multiselection lists do not use more space than
  *                                  necessary anymore
  * 20110118 - franciscom - BUGID 4112 - MSSQL BLOCKING error on Report "Test Cases with Execution Details" 
@@ -2016,68 +2017,85 @@ function name_is_unique($id,$name)
 
 
 /**
- * Retrieves the XML Server Parameters specified through custom fields.
+ * Retrieves the XML-RPC Server Parameters specified through custom fields.
  * 
  * @param integer $node_id Accepts current node id from nodes hierarchy level
  * @return mixed An array of config params if found, else returns null
  *
  * @internal rev:
- *     20071102 - franciscom - refactoring
- *     200710 - creation - Swanand
+ * 
+ * 20110123 - franciscom -	need refactoring after we have choose to link custom field
+ *							values to test case version not to test case
+ *
+ * 20071102 - franciscom - refactoring
+ * 200710 - creation - Swanand
  **/
-function getXMLServerParams($node_id)
+function getXMLRPCServerParams($node_id)
 {
+	static $node_type;
+	
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
 	$srv_cfg = new stdClass();
 	
-	$node_type=$this->tree_manager->get_available_node_types();
+	if( is_null($node_type) )
+	{
+		$node_type=$this->tree_manager->get_available_node_types();
+	}
+		
 	$node_info=$this->tree_manager->get_node_hierarchy_info($node_id);
 	$ret=null;
 	
 	if( !is_null($node_info) )
 	{
 		$prefix = "";
-		$ret = array( 'xml_server_host' => null,
-			'xml_server_port' => null,
-			'xml_server_path' => null);
-		
-		$node_info=$this->tree_manager->get_node_hierarchy_info($node_id);
-		
-		
-		if( $node_info['node_type_id'] == $node_type['testcase'])
+		$ret = array('xml_server_host' => null,	'xml_server_port' => null,
+					 'xml_server_path' => null);
+	
+	
+		if( $node_info['node_type_id'] == $node_type['tcversion'])
 		{
 			$prefix = "tc_";
 		}
-		$srv_cfg->host=$prefix . "server_host";
-		$srv_cfg->port=$prefix . "server_port";
-		$srv_cfg->path=$prefix . "server_path";
+		$srv_cfg->host = $prefix . "server_host";
+		$srv_cfg->port = $prefix . "server_port";
+		$srv_cfg->path = $prefix . "server_path";
 		
-		$sql = "SELECT cf.name, cfdv.value " .
-			"FROM {$this->tables['cfield_design_values']} cfdv," .
-			" {$this->tables['custom_fields']}  cf " .
-			"WHERE cfdv.field_id = cf.id AND cfdv.node_id = {$node_id}";
+		$sql = 	" /* $debugMsg */ SELECT cf.name, cfdv.value " .
+				" FROM {$this->tables['cfield_design_values']} cfdv," .
+				" {$this->tables['custom_fields']}  cf " .
+				" WHERE cfdv.field_id = cf.id AND cfdv.node_id = {$node_id}";
 		
 		$server_info = $this->db->fetchRowsIntoMap($sql,'name');
-		$server_cfg_is_ok=0;
+		// $server_cfg_is_ok=0;
 		$server_use_host_port=0;
 		$server_use_path=0;
 		
-		if( (isset($server_info[$srv_cfg->host]) && $server_info[$srv_cfg->host] != "") &&
-				(isset($server_info[$srv_cfg->port]) && $server_info[$srv_cfg->port] != "") )
+		if( (isset($server_info[$srv_cfg->host]) && $server_info[$srv_cfg->host]['value'] != "") &&
+			(isset($server_info[$srv_cfg->port]) && $server_info[$srv_cfg->port]['value'] != "") )
 		{
-			$server_cfg_is_ok=1;
-			$ret['xml_server_host'] = $server_info[$srv_cfg->host];
-			$ret['xml_server_port'] = $server_info[$srv_cfg->port];
+			// $server_cfg_is_ok=1;
+			$ret['xml_server_host'] = $server_info[$srv_cfg->host]['value'];
+			$ret['xml_server_port'] = $server_info[$srv_cfg->port]['value'];
 		}
-		else if (isset($server_info[$srv_cfg->path]) && $server_info[$srv_cfg->path] != "")
+		else if (isset($server_info[$srv_cfg->path]) && $server_info[$srv_cfg->path]['value'] != "")
 		{
-			$server_cfg_is_ok=1;
-			$ret['xml_server_path'] = $server_info[$srv_cfg->path];
+			// $server_cfg_is_ok=1;
+			$ret['xml_server_path'] = $server_info[$srv_cfg->path]['value'];
 		}
 		else
 		{
+			// 20110123 - franciscom
+			// At time of initial development this was thinked to try to get
+			// server info from Test Suite.
+			// Because with TL 1.9.x when working with test case  we will receive 
+			// Test Case Version ID, instead of Test Case ID (1.8.x), we will do 
+			// a call to reach Test Case and then another to reach Test Suite
+			// 
+			//
 			if($node_info['parent_id'] != "")
 			{
-				$ret=$this->getXMLServerParams($node_info['parent_id']);
+				$ret = $this->getXMLRPCServerParams($node_info['parent_id']);
 			}
 		}
 	} // if( !is_null($node_info) )

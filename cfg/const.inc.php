@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.171 2011/01/01 17:01:36 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.172 2011/01/26 09:02:01 mx-julian Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -22,7 +22,11 @@
 
 /** TestLink Release version (MUST BE changed before the release day) */
 define('TL_FACE_DIR', 'baires'); 
-define('TL_VERSION', '2.0 (Development)'); 
+define('TL_VERSION', '2.0 (Development)');
+
+/** Last Database version that is used to give users feedback about necesssary upgrades
+ * if you set this parameter also upgrade configCheck.php - checkSchemaVersion() */
+define('TL_LAST_DB_VERSION', 'DB 1.4');
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part

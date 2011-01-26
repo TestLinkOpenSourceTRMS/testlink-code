@@ -9,12 +9,14 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: configCheck.php,v 1.55 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: configCheck.php,v 1.55.4.1 2011/01/26 09:01:58 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * @see			sysinfo.php
  *
  * @internal Revisions:
  * 	
+ *  20110126 - Julian - BUGID 4186 - checkSchemaVersion() moved last_db_version to const.inc.php
+ *                                 - better log message for DB 1.3 to DB 1.4 upgrade
  *  20100617 - franciscom - domxml is not needed anymore
  *  20090713 - franciscom - tested is_writable() on windows with PHP 5.
  *                          minor refactoring
@@ -421,7 +423,7 @@ function checkForRepositoryDir($the_dir)
  */
 function checkSchemaVersion(&$db)
 {
-	$last_version = 'DB 1.3';  // havlatm: updated for 1.9
+	$last_version = TL_LAST_DB_VERSION;  // BUGID 4186: moved last db version to const.inc.php
 	$db_version_table= DB_TABLE_PREFIX . 'db_version';
 	
 	$sql = "SELECT * FROM {$db_version_table} ORDER BY upgrade_ts DESC";
@@ -433,6 +435,9 @@ function checkSchemaVersion(&$db)
 		
 	$myrow = $db->fetch_array($res);
 	$msg = "";
+	$upgrade_msg = "You need to upgrade your Testlink Database to {$last_version} - <br>" .
+				   '<a href="SCHEMA_CHANGES" style="color: white"> click here to see the Schema changes </a><br>' .
+				   '<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
 	switch (trim($myrow['version']))
 	{
 		case '1.7.0 Alpha':
@@ -445,11 +450,18 @@ function checkSchemaVersion(&$db)
 		case '1.7.0 RC 3':
 		case 'DB 1.1':
 		case 'DB 1.2':
-			$msg = "You need to upgrade your Testlink Database to {$last_version} - <br>" .
-				'<a href="SCHEMA_CHANGES" style="color: white"> click here to see the Schema changes </a><br>' .
-				'<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
+			$msg = $upgrade_msg;
 			break;
 
+		case 'DB 1.3':
+			// DB 1.3 to DB 1.4 requires manual steps
+			if ($last_version == 'DB 1.4') {
+				$msg = "Manual upgrade of your DB scheme necessary (1.9.0 -> 1.9.1) - Read README file!";
+			} else {
+				$msg = $upgrade_msg;
+			}
+			break;
+			
 		case $last_version:
 			break;
 		

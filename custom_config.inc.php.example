@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: custom_config.inc.php.example,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2011/02/10 21:36:43 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2011/02/10 22:42:33 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink DEFINED BY USERS.
@@ -108,8 +108,8 @@ $g_return_path_email  = 'francisco.mancardi@gmail.com';
 // $g_mail_priority = 5;   
 
 /** Configure only if SMTP server requires authentication */
-$g_smtp_username    = 'francisco.mancardi@gmail.com';  # user
-$g_smtp_password    = 'odelyabat';  # password
+$g_smtp_username    = '********@gmail.com';  # user
+$g_smtp_password    = '*********';  # password
 
 /**
  * This control the connection mode to SMTP server. 

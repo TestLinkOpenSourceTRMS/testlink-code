@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: custom_config.inc.php.example,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2010/08/19 19:08:34 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2011/02/10 21:36:43 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink DEFINED BY USERS.
@@ -97,24 +97,33 @@
 //
 //
 // SMTP server Configuration ("localhost" is enough in the most cases)
-//$g_smtp_host        = 'localhost';  # SMTP server MUST BE configured  
+$g_smtp_host        = 'smtp.gmail.com';  # SMTP server MUST BE configured  
 
 # Configure using custom_config.inc.php
-//$g_tl_admin_email     = 'tl_admin@127.0.0.1'; # for problem/error notification 
-//$g_from_email         = 'testlink@127.0.0.1';  # email sender
-//$g_return_path_email  = 'francisco@127.0.0.1';
+$g_tl_admin_email     = 'francisco.mancardi@gmail.com'; # for problem/error notification 
+$g_from_email         = 'francisco.mancardi@gmail.com';  # email sender
+$g_return_path_email  = 'francisco.mancardi@gmail.com';
 
 # Urgent = 1, Not Urgent = 5, Disable = 0
 // $g_mail_priority = 5;   
 
-# Taken from mantis for phpmailer config
-#define ("SMTP_SEND",2);
-#$g_phpMailer_method = SMTP_SEND;
+/** Configure only if SMTP server requires authentication */
+$g_smtp_username    = 'francisco.mancardi@gmail.com';  # user
+$g_smtp_password    = 'odelyabat';  # password
 
-// Configure only if SMTP server requires authentication
-//$g_smtp_username    = '';  # user  
-//$g_smtp_password    = '';  # password 
-//
+/**
+ * This control the connection mode to SMTP server. 
+ * Can be '', 'ssl','tls'
+ * @global string $g_smtp_connection_mode
+ */
+$g_smtp_connection_mode = 'ssl';
+
+/**
+ * The smtp port to use.  The typical SMTP ports are 25 and 587.  The port to use
+ * will depend on the SMTP server configuration and hence others may be used.
+ * @global int $g_smtp_port
+ */
+$g_smtp_port = 465;                        
 
 // TRUE  -> the whole execution history for the choosen build will be showed
 // FALSE -> just last execution for the choosen build will be showed [STANDARD BEHAVIOUR]

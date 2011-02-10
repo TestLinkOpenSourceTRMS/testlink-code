@@ -6,13 +6,15 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.339 2011/01/09 09:33:25 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.340 2011/02/10 21:36:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20110205 - franciscom - BUGID 4207 - set_step_number() - 
+ *						   MSSQL problems when table alias is used on SQL UPDATE 
  * 20101212 - franciscom - internal bug get_last_execution() empty where clause -> do not use $id
  *						   added new options getSteps	
- *   20101202 - asimon - BUGID 4067: refresh tree problems
+ * 20101202 - asimon - BUGID 4067: refresh tree problems
  * 20101110 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
  * 20101110 - franciscom - BUGID 3843 - get_id_by_custom_field() (WIP)
  * 20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown 
@@ -4648,6 +4650,8 @@ class testcase extends tlObjectWithAttachments
 	/**
      * 
      *
+     * @internal revision
+     * BUGID 4207 - MSSQL
      */
 	function set_step_number($step_number)
 	{
@@ -4655,8 +4659,8 @@ class testcase extends tlObjectWithAttachments
         
         foreach($step_number as $step_id => $value)
         {
-        	$sql = "/* $debugMsg */ UPDATE {$this->tables['tcsteps']} TC_STEP " . 
-        	 	   " SET step_number = {$value} WHERE TC_STEP.id = {$step_id} ";
+        	$sql = "/* $debugMsg */ UPDATE {$this->tables['tcsteps']} " . 
+        	 	   " SET step_number = {$value} WHERE id = {$step_id} ";
         	$this->db->exec_query($sql); 	    
         }
 

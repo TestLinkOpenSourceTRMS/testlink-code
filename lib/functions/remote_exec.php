@@ -4,20 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: remote_exec.php,v $
- * @version $Revision: 1.3 $ $Author: franciscom $
- * @modified $Date: 2010/01/02 16:54:34 $
- * @author 	Martin Havlat, Chad Rosen
+ * @version $Revision: 1.3.6.1 $ $Author: franciscom $
+ * @modified $Date: 2011/02/10 21:26:07 $
+ * @author 
  *
  * ----------------------------------------------------------------------------------- */
 
 require_once("../../config.inc.php");
-
-// Contributed code - manish
-$phpxmlrpc = TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'phpxmlrpc' . 
-             DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR;
-require_once($phpxmlrpc . 'xmlrpc.inc');
-require_once($phpxmlrpc . 'xmlrpcs.inc');
-require_once($phpxmlrpc . 'xmlrpc_wrappers.inc');
+require_once (TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'xml-rpc/class-IXR.php');
 
 /**
 * Initiate the execution of a testcase through XML Server RPCs.
@@ -27,73 +21,87 @@ require_once($phpxmlrpc . 'xmlrpc_wrappers.inc');
 * The fields are: server_host, server_port and server_path.
 * Precede 'tc_' for custom fields assigned to testcase level.
 *
-* @param $testcase_id: The testcase id of the testcase to be executed
-* @param $tree_manager: The tree manager object to read node values and testcase and parent ids.
-* @param $cfield_manager: Custom Field manager object, to read the XML-RPC server params.
+* @param $tcaseInfo: 
+* @param $serverCfg:
+* @param $context
+*
 * @return map:
 *         keys: 'result','notes','message'
 *         values: 'result' -> (Pass, Fail or Blocked)
 *                 'notes' -> Notes text
 *                 'message' -> Message from server
 */
-function executeTestCase($testcase_id,$tree_manager,$cfield_manager)
+function executeTestCase($tcaseInfo,$serverCfg,$context)
 {
+	// system: to give info about conection to remote execution server
+	// execution:
+	// 	scheduled: domain 'now', 'future'
+	//			   caller will use this attribute to write exec result (only if now)
+	//	timestampISO: can be used by server to say the scheduled time.
+	//				  To be used only if scheduled = 'future'
+	//
+	//   Complete date plus hours, minutes and seconds:
+	//      YYYY-MM-DDThh:mm:ssTZD (eg 1997-07-16T19:20:30+01:00)
+	//
+	// where:
+	//
+	//     YYYY = four-digit year
+	//     MM   = two-digit month (01=January, etc.)
+	//     DD   = two-digit day of month (01 through 31)
+	//     hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
+	//     mm   = two digits of minute (00 through 59)
+	//     ss   = two digits of second (00 through 59)
+	//     TZD  = time zone designator (Z or +hh:mm or -hh:mm)
 
-	//Fetching required params from the entire node hierarchy
-	$server_params = $cfield_manager->getXMLServerParams($testcase_id);
-
-  $ret=array('result'=>AUTOMATION_RESULT_KO,
-             'notes'=>AUTOMATION_NOTES_KO, 'message'=>'');
-
-	$server_host = "";
-	$server_port = "";
-	$server_path = "";
-  $do_it=false;
-  
-	if( ($server_params != null) or $server_params != ""){
-		$server_host = $server_params["xml_server_host"];
-		$server_port = $server_params["xml_server_port"];
-		$server_path = $server_params["xml_server_path"];
 	
-	  if( !is_null($server_host) ||  !is_null($server_path) )
-	  {
-	      $do_it=true;
-	  }    
+	$ret = array('system' => array('status' => 'ok', 'msg' => 'ok'),
+				 'execution' => array('scheduled' => '', 
+				 					  'result' => '',
+				 					  'notes' => '',
+				 					  'timestampISO' => '') );
+  
+
+	$do_it = (!is_null($serverCfg) && !is_null($serverCfg["url"]) );
+	if(!$do_it)
+	{ 
+		$ret['system']['status'] = 'configProblems';
+		$ret['system']['msg'] = lang_get('remoteExecServerConfigProblems');						
 	}
+	
+  	if($do_it)
+  	{
+		$xmlrpcClient = new IXR_Client($serverCfg["url"]);
+		if( is_null($xmlrpcClient) )
+		{
+			$do_it = false;
+			$ret['system']['status'] = 'connectionFailure';
+			$ret['system']['msg'] = lang_get('remoteExecServerConnectionFailure');						
+		}
 
-  if($do_it)
-  {
-  	// Make an object to represent our server.
-  	// If server config objects are null, it returns an array with appropriate values
-  	// (-1 for executions results, and fault code and error message for message.
-  	$xmlrpc_client = new xmlrpc_client($server_path,$server_host,$server_port);
+	}
+	
+ 	if($do_it)
+  	{
+  		$args4call = array();
+  		$args4call['testCaseName'] = $tcaseInfo['name'];
+  		$args4call['testCaseID'] = $tcaseInfo['id'];
+  		$args4call['testCaseVersionID'] = $context['version_id'];
+  		$args4call['testProjectID'] = $context['tproject_id'];
+  		$args4call['testPlanID'] = $context['tplan_id'];
+  		$args4call['platformID'] = $context['platform_id'];
+  		$args4call['buildID'] = $context['build_id'];
+  		$args4call['executionMode'] = 'now'; // domain: deferred,now
+		
+		$xmlrpcClient->query('executeTestCase',$args4call);
+		$response = $xmlrpcClient->getResponse();
 
-  	$tc_info = $tree_manager->get_node_hierarchy_info($testcase_id);
-  	$testcase_name = $tc_info['name'];
-
-  	//Create XML-RPC Objects to pass on to the the servers
-  	$myVar1 = new xmlrpcval($testcase_name,'string');
-  	$myvar2 = new xmlrpcval($testcase_id,'string');
-
-  	$messageToServer = new xmlrpcmsg('ExecuteTest', array($myVar1,$myvar2));
-  	$serverResp = $xmlrpc_client->send($messageToServer);
-
-  	$myResult=AUTOMATION_RESULT_KO;
-  	$myNotes=AUTOMATION_NOTES_KO;
-
-  	if(!$serverResp) {
-  		$message = lang_get('test_automation_server_conn_failure');
-  	} elseif ($serverResp->faultCode()) {
-  		$message = lang_get("XMLRPC_error_number") . $serverResp->faultCode() . ": ".$serverResp->faultString();
-  	}
-  	else {
-  		$message = lang_get('test_automation_exec_ok');
-  		$arrayVal = $serverResp->value();
-  		$myResult = $arrayVal->arraymem(0)->scalarval();
-  		$myNotes = $arrayVal->arraymem(1)->scalarval();
-  	}
-  	$ret = array('result'=>$myResult, 'notes'=>$myNotes, 'message'=>$message);
-  } //$do_it
+		// new dBug($response);
+		if( !is_null($response) )
+		{
+			$ret['execution'] = $response;
+		}
+		
+  	} 
 
 	return $ret;
 } // function end

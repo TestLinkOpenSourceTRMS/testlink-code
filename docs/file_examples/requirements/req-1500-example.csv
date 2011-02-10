@@ -1,0 +1,1558 @@
+#docid,title,description,type,status,expected_coverage,node_order
+"RQT_SSY_CAS-IPPV_0007_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_CAS-OPPV_0001_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_EASY-SMS_0001_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0037_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_CAS-IPPV_0008_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_CAS-IPPV_0009_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_CAS-OPPV_0002_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0019_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0020_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0021_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0022_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0023_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0024_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0025_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-PROMO_0001_v1","3.1 req3","test",1,"F",3,2
+"RQT_SSY_MMI-PROMO_0002_v1","3.1.1 req4","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0021_v1","3.2 req5","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0022_v1","3.2.1 req6","test",1,"F",3,2
+"RQT_SSY_MMI-OPPV_0001_v1","3.3 req7","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0030_v1","3.4 req8","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0029_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0050_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0023_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0024_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0026_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0027_v1","5.1 req10","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0028_v1","5.3 req11","test",1,"F",3,2
+"RQT_SSY_CAS-IPPV_0011_v1","5.4 req12","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0032_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0033_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0034_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0035_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0036_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0037_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0038_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0039_v1","2.2 req16","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0040_v1","2.3 req17","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0041_v1","2.4 req18","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0042_v1","2.5 req19","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0043_v1","2.6 req20","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0044_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0045_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_LDR_0001_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_LDR_0002_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_LDR_0003_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_LDR_0004_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_LDR_0005_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_LDR_0006_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_CAS_0001_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_LDR_0007_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_SSV_0001_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_SSV_0002_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_SSV_0003_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_STABILITY_0001_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0001_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0002_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0003_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0004_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0005_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0006_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_EPG_0014_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0026_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0027_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_WIDGETS_0008_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_EPG_0001_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_EPG_0002_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_EPG_0003_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_EPG_0004_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_EPG_0005_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_EPG_0006_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_EPG_0007_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_EPG_0008_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_EPG_0009_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-CHANNEL-NAME_0001_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-CHANNEL-NAME_0002_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-CHANNEL-NAME_0003_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-CHANNEL-NAME_0004_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-CHANNEL-NAME_0006_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-CHANNEL-NB_0001_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-CHANNEL-NB_0002_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-CHANNEL-NB_0003_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-CHANNEL-NB_0004_v1","5.2.1 Channel","test","prior","to","the","channel","number","(E.g.","if","the","channel","number","is",85,"then","it","will","be","present","as","85""""","not","as","085"""").","|5",,,,,"|6",,,,,"|7",,,,,"|8",,,,,"|9",,,,,,"|10",,,,,"|11","DEFINED",,,,"|12",,,,,"|13","DigiTurk",,,,"|14",,,,,"|15",,,,,"|16",,,,,"|17",,,,,"|18",,,,,"|19","X",,,,"|20","X",,,,"|21",,,,,"|22",,,,,"|23",,,,,"|24","X",,,,"|25",,,,,"|26",,,,,"|27",,,,,"|28","X",,,,"|29",,,,,"|30",,,,,"|31",,,,,"|32",,,,,"|33",,,,,"|34",,,,,"|35",,,,,"|36",,,,,"|37",,,,,"|38",,,,,"|39",,,,,,"|40",,,,,"|41",,,,,"|42","X",,,,"|43",,,,,"|44",,,,,"|45",,,,,"|46",,,,,"|47",,,,,"|48",,,,,"|49",,,,,"|50","X",,,,"|51",,,,,"|52",,,,,"|53",,,,,"|54",,,,,"|55",,,,,"|56",,,,,"|57","X""",1,"F",3,2
+"RQT_SSY_MMI-CHANNEL-NB_0005_v1","5.2.1 Channel","test","shall","also","be","supported","if","there","is","a","channel","with","channel","number","0.","|5",,,,,"|6",,,,,"|7",,,,,"|8",,,,,"|9",,,,,,"|10",,,,,"|11","DEFINED",,,,"|12",,,,,"|13","DigiTurk",,,,"|14",,,,,"|15",,,,,"|16",,,,,"|17",,,,,"|18",,,,,"|19",,,,,,"|20","X",,,,"|21",,,,,"|22",,,,,"|23",,,,,"|24",,,,,"|25",,,,,"|26",,,,,"|27",,,,,"|28","X",,,,"|29",,,,,"|30",,,,,"|31",,,,,"|32",,,,,"|33",,,,,"|34",,,,,"|35",,,,,"|36",,,,,"|37",,,,,"|38",,,,,"|39",,,,,,"|40",,,,,"|41",,,,,"|42","X",,,,"|43",,,,,"|44",,,,,"|45",,,,,"|46",,,,,"|47",,,,,"|48",,,,,"|49",,,,,"|50","X""",1,"F",3,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"RQT_SSY_MMI-EVENT-NAME_0001_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-EVENT-NAME_0002_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-EVENT-NAME_0003_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-EVENT-NAME_0004_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-EVENT-NAME_0005_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-EVENT-NAME_0006_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0001_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0002_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0003_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0004_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_EPG-SCALED-VID_0001_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_EPG-SCALED-VID_0002_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_EPG-SCALED-VID_0003_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_EPG-SCALED-VID_0004_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_EPG-SCALED-VID_0005_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_DATE_0001_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_DATE_0002_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_DATE_0003_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_DATE_0004_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_TAG_0001_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_TAG_0002_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_TAG_0003_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_TAG_0004_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_TAG_0005_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_TAG_0006_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_TAG_0007_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_TAG_0008_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_TAG_0009_v1","5.2.8 Remote","test",1,"F",3,2
+"RQT_SSY_TAG_0010_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_TAG_0011_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_TAG_0012_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_TAG_0013_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_TAG_0014_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_TAG_0015_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_TAG_0016_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_TAG_0017_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_TAG_0018_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_TAG_0019_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_TAG_0020_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_TAG_0021_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_TAG_0022_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_TAG_0023_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_TAG_0024_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_TAG_0025_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_TAG_0026_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_TAG_0027_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_TAG_0028_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PVR_0090_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_ADVERT_0001_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_ADVERT_0002_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_ADVERT_0003_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_ADVERT_0004_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_ADVERT_0005_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_ADVERT_0006_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_EPG-NAV_0001_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_EPG-NAV_0002_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_EPG-NAV_0003_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_EPG-NAV_0004_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0028_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-MAIL_0001_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0001_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0002_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0003_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0004_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0005_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0006_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0007_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0008_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_CHL_FILT_0001_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_CHL_FILT_0002_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_CHL_FILT_0003_v1","3.1 req3","test",1,"F",3,2
+"RQT_SSY_CHL_FILT_0004_v1","3.1.1 req4","test",1,"F",3,2
+"RQT_SSY_CHL_FILT_0005_v1","3.2 req5","test",1,"F",3,2
+"RQT_SSY_MUSIC_CHL_0001_v1","3.2.1 req6","test",1,"F",3,2
+"RQT_SSY_EPG-LIST_0001_v1","3.3 req7","test",1,"F",3,2
+"RQT_SSY_EPG-LIST_0002_v1","3.4 req8","test",1,"F",3,2
+"RQT_SSY_EPG-LIST_0003_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_EPG-LIST_0004_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_EPG-LIST_0005_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_EPG-LIST_0006_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_EPG-LIST_0007_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_EPG-LIST_0008_v1","5.1 req10","test",1,"F",3,2
+"RQT_SSY_EPG-LIST_0009_v1","5.3 req11","test",1,"F",3,2
+"RQT_SSY_EPG-THEME_0001_v1","5.4 req12","test",1,"F",3,2
+"RQT_SSY_EPG-THEME_0002_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_EPG-THEME_0003_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_EPG-THEME_0004_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_EPG-THEME_0005_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_EPG-RECOM-EVT_0001_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_EPG-RECOM-EVT_0002_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_EPG-RECOM-EVT_0003_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_EPG-RECOM-EVT_0004_v1","2.2 req16","test",1,"F",3,2
+"RQT_SSY_EPG-RECOM-EVT_0005_v1","2.3 req17","test",1,"F",3,2
+"RQT_SSY_EPG-RECOM-EVT_0006_v1","2.4 req18","test",1,"F",3,2
+"RQT_SSY_REC_0001_v1","2.5 req19","test",1,"F",3,2
+"RQT_SSY_REC_0002_v1","2.6 req20","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0001_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0002_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0003_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0004_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0005_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0006_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0007_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0008_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0009_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0010_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0011_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0012_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0013_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0014_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0015_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0016_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0017_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0018_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0019_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_REC-EVT_0020_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_REC-TIMER_0001_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_REC-TIMER_0002_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_REC-TIMER_0003_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_REC-TIMER_0004_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_CONFLITMNGT_0001_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CONFLITMNGT_0002_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_SERIES_0001_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_SERIES_0002_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_SERIES_0003_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_SERIES_0004_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_SERIES_0005_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_SERIES_0006_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_SERIES_0007_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_SERIES_0008_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_SERIES_0009_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_SERIES_0010_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_SERIES_0011_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_SERIES_0012_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_SERIES_0013_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_SERIES_0014_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0007_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0008_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_REMOTE-REC_0001_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_EPG_0010_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_EPG_0011_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_EPG_0012_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_EPG_0013_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_TIMESHARED-CHNL_0001_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_INSTALL-OMODE_0001_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_INSTALL-OMODE_0002_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_INSTALL-OMODE_0003_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_INSTALL-OMODE_0004_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_INSTALL-OMODE_0005_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0001_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0002_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0001_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0002_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0003_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0004_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0005_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0006_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0007_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0008_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0009_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0010_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0011_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0012_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0013_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0014_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0015_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0016_v1","5.2.8 Remote","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0017_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0018_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0019_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0020_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0021_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0022_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0023_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0024_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0025_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0026_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0027_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0028_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0029_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0030_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0031_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0032_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0033_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0034_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0035_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0036_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0037_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0038_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0039_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0040_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0041_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0042_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0043_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0044_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0045_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0046_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0047_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0048_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0049_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0050_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0051_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0052_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0053_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0054_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0055_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-PUSHVOD_0056_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0003_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0004_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0005_v1","3.1 req3","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0006_v1","3.1.1 req4","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0007_v1","3.2 req5","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0008_v1","3.2.1 req6","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0009_v1","3.3 req7","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0010_v1","3.4 req8","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0011_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0012_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0013_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0014_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0015_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0016_v1","5.1 req10","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0017_v1","5.3 req11","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0018_v1","5.4 req12","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0019_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0020_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0021_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0022_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0023_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0024_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0025_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0026_v1","2.2 req16","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0027_v1","2.3 req17","test",1,"F",3,2
+"RQT_SSY_AUTOREC_0001_v1","2.4 req18","test",1,"F",3,2
+"RQT_SSY_AUTOREC_0002_v1","2.5 req19","test",1,"F",3,2
+"RQT_SSY_AUTOREC_0003_v1","2.6 req20","test",1,"F",3,2
+"RQT_SSY_AUTOREC_0004_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_AUTOREC_0005_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_AUTOREC_0006_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_AUTOREC_0007_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-AUTOREC_0001_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-AUTOREC_0002_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-AUTOREC_0003_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-AUTOREC_0004_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-AUTOREC_0005_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_AUTOREC_0008_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_AUTOREC_0009_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_AUTOREC_0010_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_AUTOREC_0011_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0001_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0002_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0003_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0004_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0005_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0006_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0007_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0008_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0009_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0010_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0011_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0012_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_IP-STREAMING_0001_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_IP-STREAMING_0002_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_IP-STREAMING_0003_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_IP-STREAMING_0004_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_DLNA_0011_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PROGRESSIVE-DLD_0001_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PROGRESSIVE-DLD_0002_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PROGRESSIVE-DLD_0003_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PROGRESSIVE-DLD_0004_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_DLNA_0001_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_DLNA_0002_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_DLNA_0003_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_DLNA_0004_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_DLNA_0005_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_DLNA_0006_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_DLNA_0007_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_DLNA_0008_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_DLNA_0009_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_DLNA_0010_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_BROWSER_0001_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_BROWSER_0002_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_BROWSER_0003_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_BROWSER_0004_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_BROWSER_0005_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_BROWSER_0006_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_BROWSER_0007_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_BROWSER_0008_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_BROWSER_0009_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_BROWSER_0010_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_BROWSER_0011_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_FLASH-PLAYER_0001_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_INSTALL_0001_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_INSTALL_0002_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_INSTALL_0003_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_INSTALL_0004_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_EASY-INSTALL_0001_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_EASY-INSTALL_0002_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_EASY-INSTALL_0003_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0001_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0002_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0003_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0004_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0005_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0006_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0007_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0008_v1","5.2.8 Remote","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0009_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0010_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_DB-SI_0001_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_DB-SI_0002_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_DB-SI_0003_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_DB-SI_0004_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_DB-SI_0005_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0011_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0012_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0013_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0014_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0015_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0016_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_DB-SI_0006_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_DB-SI_0007_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_DB-SI_0008_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_DB-SI_0009_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_DB-SI_0010_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_DB-SI_0011_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_DB-SI_0012_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0017_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0018_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0019_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LNB-ALGORITHM_0001_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LNB-ALGORITHM_0002_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LNB-ALGORITHM_0003_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LNB-ALGORITHM_0004_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LNB-ALGORITHM_0005_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LNB-ALGORITHM_0006_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_LNB-ALGORITHM_0007_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-INSTALL_0001_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-INSTALL_0002_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_TIME_0001_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0001_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-TIME_0001_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-TIME_0002_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_TIME_0002_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_TIME_0003_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_TIME_0004_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DLD_0001_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DLD_0002_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DLD_0003_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-IP_0001_v1","3.1 req3","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-IP_0002_v1","3.1.1 req4","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-IP_0003_v1","3.2 req5","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-IP_0004_v1","3.2.1 req6","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-IP_0005_v1","3.3 req7","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DISPLAY_0001_v1","3.4 req8","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0002_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DISPLAY_0002_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0003_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DISPLAY_0003_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DISPLAY_0004_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0004_v1","5.1 req10","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DISPLAY_0005_v1","5.3 req11","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DISPLAY_0006_v1","5.4 req12","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DISPLAY_0007_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DISPLAY_0008_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0005_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DISPLAY_0009_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DISPLAY_0010_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0006_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0005_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DISPLAY_0011_v1","2.2 req16","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0007_v1","2.3 req17","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DISPLAY_0012_v1","2.4 req18","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0008_v1","2.5 req19","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DISPLAY_0013_v1","2.6 req20","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0009_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DISPLAY_0014_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0010_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0009_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0011_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-DISPLAY_0015_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0012_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-STARTUP_0001_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0001_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0002_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0013_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0003_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0004_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0005_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0006_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0007_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0008_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0014_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0009_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0010_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0011_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0012_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0015_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0013_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0014_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0015_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0016_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-AUDIO_0001_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-AUDIO_0002_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0016_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-AUDIO_0003_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-AUDIO_0004_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0017_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-STARTUP_0002_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-AUDIO_0005_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0018_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-STARTUP_0003_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-AUDIO_0006_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-SLEEP_0001_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0019_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_SLEEP-MODE_0001_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_SLEEP-MODE_0002_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_SLEEP-MODE_0003_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_REC_0003_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-REC_0001_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-REC_0002_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-REC_0003_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0020_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-REC_0004_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-REC_0005_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-REC_0006_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0021_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-REC_0007_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-REC_0008_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_REC_0004_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-REC_0009_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0022_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0009_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0010_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0011_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0012_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0013_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0014_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0015_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0016_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0017_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0018_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0019_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0020_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0021_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0022_v1","5.2.8 Remote","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0023_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0024_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0025_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_FAV-CHL_0026_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0001_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0002_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0003_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0004_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0005_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0006_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0023_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0007_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0008_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0009_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_PARENTAL-RATING_0001_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_PARENTAL-RATING_0002_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_FRONT-PANEL_0001_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_FRONT-PANEL_0002_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0024_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_CHL-LOCK_0001_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_CHL-LOCK_0002_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_CHL-LOCK_0003_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_CHL-LOCK_0004_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_CHL-LOCK_0005_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_CHL-LOCK_0006_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_CHL-LOCK_0007_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_CHL-LOCK_0008_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_CHL-LOCK_0009_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0001_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0002_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0003_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-IRDETO-STATUS_0001_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-IRDETO-STATUS_0002_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-IRDETO-STATUS_0003_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-HDD-SETTINGS_0001_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-POWER-CYCLE_0001_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-PURCHASE-LIST_0001_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-PURCHASE-LIST_0002_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-PURCHASE-LIST_0003_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-PURCHASE-LIST_0004_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-PURCHASE-LIST_0005_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-PURCHASE-LIST_0006_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-MAIL-LIST_0001_v1","3.1 req3","test",1,"F",3,2
+"RQT_SSY_MMI-MAIL-LIST_0002_v1","3.1.1 req4","test",1,"F",3,2
+"RQT_SSY_MMI-MAIL-LIST_0003_v1","3.2 req5","test",1,"F",3,2
+"RQT_SSY_MMI-MAIL-LIST_0004_v1","3.2.1 req6","test",1,"F",3,2
+"RQT_SSY_MMI-MAIL-LIST_0005_v1","3.3 req7","test",1,"F",3,2
+"RQT_SSY_MMI-MAIL-LIST_0006_v1","3.4 req8","test",1,"F",3,2
+"RQT_SSY_MMI-MAIL-LIST_0007_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-MAIL-LIST_0008_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-MAIL-LIST_0009_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-MAIL-LIST_0010_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-SERVICE-MENU_0001_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-SERVICE-MENU_0002_v1","5.1 req10","test",1,"F",3,2
+"RQT_SSY_MMI-SERVICE-MENU_0003_v1","5.3 req11","test",1,"F",3,2
+"RQT_SSY_MMI-FACTORY-SETTINGS_0001_v1","5.4 req12","test",1,"F",3,2
+"RQT_SSY_MMI-FACTORY-SETTINGS_0002_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_MMI-FACTORY-SETTINGS_0003_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_MMI-FACTORY-SETTINGS_0004_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_MMI-FACTORY-SETTINGS_0005_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0001_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0002_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0003_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0004_v1","2.2 req16","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0005_v1","2.3 req17","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0006_v1","2.4 req18","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0007_v1","2.5 req19","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0008_v1","2.6 req20","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0009_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0010_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0011_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0012_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-ALARM-LIST_0001_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-ALARM-LIST_0002_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-ALARM-LIST_0003_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-ALARM-LIST_0004_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-ALARM-LIST_0005_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0013_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0014_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0015_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0016_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0017_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0018_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0019_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0020_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0021_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0022_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0023_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0024_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_RECORD-CUT_0001_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_RECORD-MERGE_0001_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_RECORD-MERGE_0002_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_RECORD-COPY_0001_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_RECORD-COPY_0002_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0025_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0026_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0027_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0028_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0029_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0030_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0031_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0032_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0033_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-UPLOADED-LIST_0001_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-UPLOADED-LIST_0002_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-UPLOADED-LIST_0003_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-UPLOADED-LIST_0004_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-UPLOADED-LIST_0005_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-UPLOADED-LIST_0006_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-UPLOADED-LIST_0007_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-UPLOADED-LIST_0008_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_MMI-UPLOADED-LIST_0009_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-UPLOADED-LIST_0010_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-UPLOADED-LIST_0011_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-UPLOADED-LIST_0012_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-UPLOADED-LIST_0013_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-SEND-RECORDING_0001_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_MMI-SEND-RECORDING_0002_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_MMI-SEND-RECORDING_0003_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_MMI-SEND-RECORDING_0004_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_MMI-SEND-RECORDING_0005_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_MMI-SEND-RECORDING_0006_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0025_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_MMI-PLAYLIST_0001_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_MMI-PLAYLIST_0002_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_MMI-PLAYLIST_0003_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_MMI-PLAYLIST_0004_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_MMI-PLAYLIST_0005_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_MMI-PLAYLIST_0006_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_MMI-PLAYLIST_0007_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_MMI-PLAYLIST_0008_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-PLAYLIST_0009_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0001_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0002_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0003_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0004_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0005_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0006_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0007_v1","5.2.8 Remote","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0008_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0027_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0009_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0010_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0011_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0012_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0013_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0014_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0015_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0016_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0017_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0018_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0019_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0020_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0021_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0022_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0023_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0024_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0025_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0026_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0006_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0007_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0008_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0009_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0010_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0011_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0012_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0013_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0014_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0015_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0016_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0017_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0018_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0019_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0020_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0021_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0022_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0023_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0024_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0025_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0026_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0027_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0028_v1","3.1 req3","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0029_v1","3.1.1 req4","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0030_v1","3.2 req5","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0031_v1","3.2.1 req6","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0032_v1","3.3 req7","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0033_v1","3.4 req8","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0034_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0035_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0036_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0037_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_ADVERT_0007_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_ADVERT_0008_v1","5.1 req10","test",1,"F",3,2
+"RQT_SSY_ADVERT_0009_v1","5.3 req11","test",1,"F",3,2
+"RQT_SSY_ADVERT_0010_v1","5.4 req12","test",1,"F",3,2
+"RQT_SSY_ADVERT_0011_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_ADVERT_0012_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_ADVERT_0013_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_ADVERT_0014_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_SMARTSIGN_0001_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_SMARTSIGN_0002_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_SMARTSIGN_0003_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_SMARTSIGN_0004_v1","2.2 req16","test",1,"F",3,2
+"RQT_SSY_SMARTSIGN_0005_v1","2.3 req17","test",1,"F",3,2
+"RQT_SSY_CHANNEL-LIST_0001_v1","2.4 req18","test",1,"F",3,2
+"RQT_SSY_CHANNEL-LIST_0002_v1","2.5 req19","test",1,"F",3,2
+"RQT_SSY_CHANNEL-LIST_0003_v1","2.6 req20","test",1,"F",3,2
+"RQT_SSY_CHANNEL-LIST_0004_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_CHANNEL-LIST_0005_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_CHANNEL-LIST_0006_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MOSAIC-CHANNEL_0001_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MOSAIC-CHANNEL_0002_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MOSAIC-CHANNEL_0003_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MOSAIC-CHANNEL_0004_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0001_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0002_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0003_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0004_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0005_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0006_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0007_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0008_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0009_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0010_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0011_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0012_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0013_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0014_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0015_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0066_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0016_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0017_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PVR_0018_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PVR_0019_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PVR_0020_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PVR_0021_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PVR_0022_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PVR_0023_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PVR_0024_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PVR_0025_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PVR_0026_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PVR_0027_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PVR_0028_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PVR_0029_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PVR_0030_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PVR_0031_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PVR_0032_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PVR_0033_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PVR_0034_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PVR_0035_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PVR_0036_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0001_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0002_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0003_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0004_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0005_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0006_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0007_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0008_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0009_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0010_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0011_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0012_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0013_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0014_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0015_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0016_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0017_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0018_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0019_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0020_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_PVR-TRICKMODE_0021_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0001_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0002_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0003_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0004_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0005_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0006_v1","5.2.8 Remote","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0007_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0008_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0009_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0010_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0011_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0012_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0013_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0014_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0015_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0016_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_PVR-JUMP_0001_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_PVR-JUMP_0002_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_PVR-SLOWMOTION_0001_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_PVR-SLOWMOTION_0002_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_PVR-SLOWMOTION_0003_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_PVR-SLOWMOTION_0004_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_PVR-SLOWMOTION_0005_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_REC_0005_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_REC_0006_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_REC_0007_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_STANDBY_0001_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0034_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0035_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-RECORDING-LIST_0036_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PVR-LOCKEDEVENT_0001_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PVR-LOCKEDEVENT_0002_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PVR-LOCKEDEVENT_0003_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PVR-LOCKEDEVENT_0004_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PVR-LOCKEDEVENT_0005_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_PVR_0037_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_PVR_0038_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_PVR_0039_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0017_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0018_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0019_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0020_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0021_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0022_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PVR-STATUSBAR_0023_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PVR-JUMP_0003_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PVR-JUMP_0004_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PVR-BOOKMARK_0001_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_PVR-BOOKMARK_0002_v1","3.1 req3","test",1,"F",3,2
+"RQT_SSY_PVR-BOOKMARK_0003_v1","3.1.1 req4","test",1,"F",3,2
+"RQT_SSY_PVR-BOOKMARK_0004_v1","3.2 req5","test",1,"F",3,2
+"RQT_SSY_PVR-BOOKMARK_0005_v1","3.2.1 req6","test",1,"F",3,2
+"RQT_SSY_PVR-BOOKMARK_0006_v1","3.3 req7","test",1,"F",3,2
+"RQT_SSY_PVR-BOOKMARK_0007_v1","3.4 req8","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-LANGUAGE_0017_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-SETTINGS-AUDIO_0017_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_ADVERT_0015_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_ADVERT_0016_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_ADVERT_0017_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_ADVERT_0018_v1","5.1 req10","test",1,"F",3,2
+"RQT_SSY_ADVERT_0019_v1","5.3 req11","test",1,"F",3,2
+"RQT_SSY_ADVERT_0020_v1","5.4 req12","test",1,"F",3,2
+"RQT_SSY_ADVERT_0021_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_ADVERT_0022_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_ADVERT_0023_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_ADVERT_0024_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_PVR_0040_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_PVR_0041_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_PVR_0042_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_PVR_0043_v1","2.2 req16","test",1,"F",3,2
+"RQT_SSY_REC_0008_v1","2.3 req17","test",1,"F",3,2
+"RQT_SSY_PVR_0044_v1","2.4 req18","test",1,"F",3,2
+"RQT_SSY_BANNER_0038_v1","2.5 req19","test",1,"F",3,2
+"RQT_SSY_BANNER_0039_v1","2.6 req20","test",1,"F",3,2
+"RQT_SSY_ADVERT_0025_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0045_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0046_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0047_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0048_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0049_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0050_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0051_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0052_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0053_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0054_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0055_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0056_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0057_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_PVR_0058_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0059_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0060_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0061_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0010_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0062_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0063_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0064_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PVR_0065_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_CAS_0002_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_CAS_0003_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0001_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0002_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0003_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0004_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0005_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0006_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0007_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0008_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0009_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0010_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0011_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0012_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0013_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0014_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0015_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0016_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_INSTALL_0005_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_INSTALL_0006_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_INSTALL_0007_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0017_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_INSTALL_0008_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0018_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0019_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0020_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0021_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0022_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0023_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0024_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0025_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0026_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0027_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0028_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0029_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0030_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0031_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_REPORT_0001_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0032_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0033_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0034_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0035_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0036_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0037_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0038_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0039_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0040_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0041_v1","5.2.8 Remote","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0042_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0043_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0044_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0045_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0046_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0047_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0048_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0049_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0050_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0051_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_LOGGING_0001_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_LOGGING_0002_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_LOGGING_0003_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_LOGGING_0004_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_LOGGING_0005_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_LOGGING_0006_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_LOGGING_0007_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_LOGGING_0008_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LOGGING_0009_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LOGGING_0010_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LOGGING_0011_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LOGGING_0012_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LOGGING_0013_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LOGGING_0014_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LOGGING_0015_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LOGGING_0016_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LOGGING_0017_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LOGGING_0018_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_LOGGING_0019_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_LOGGING_0020_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_LOGGING_0021_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_LOGGING_0022_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_LOGGING_0023_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_LOGGING_0024_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_LOGGING_0025_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_LOGGING_0026_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_LOGGING_0027_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_LOGGING_0028_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_LOGGING_0029_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_LOGGING_0030_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_LOGGING_0031_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_LOGGING_0032_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_LOGGING_0033_v1","3.1 req3","test",1,"F",3,2
+"RQT_SSY_LOGGING_0034_v1","3.1.1 req4","test",1,"F",3,2
+"RQT_SSY_LOGGING_0035_v1","3.2 req5","test",1,"F",3,2
+"RQT_SSY_LOGGING_0036_v1","3.2.1 req6","test",1,"F",3,2
+"RQT_SSY_LOGGING_0037_v1","3.3 req7","test",1,"F",3,2
+"RQT_SSY_LOGGING_0038_v1","3.4 req8","test",1,"F",3,2
+"RQT_SSY_LOGGING_0039_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_LOGGING_0040_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_LOGGING_0041_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_LOGGING_0042_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_LOGGING_0043_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_LOGGING_0044_v1","5.1 req10","test",1,"F",3,2
+"RQT_SSY_LOGGING_0046_v1","5.3 req11","test",1,"F",3,2
+"RQT_SSY_LOGGING_0047_v1","5.4 req12","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0052_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0026_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0053_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_LOGGING_0048_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_LOGGING_0049_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0054_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_LOGGING_0050_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_LOGGING_0051_v1","2.2 req16","test",1,"F",3,2
+"RQT_SSY_LOGGING_0052_v1","2.3 req17","test",1,"F",3,2
+"RQT_SSY_LOGGING_0053_v1","2.4 req18","test",1,"F",3,2
+"RQT_SSY_LOGGING_0054_v1","2.5 req19","test",1,"F",3,2
+"RQT_SSY_LOGGING_0055_v1","2.6 req20","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0055_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0056_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_TAG_0029_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_TAG_0030_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_TAG_0031_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0057_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0058_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0059_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REMOTE-REC_0002_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_REMOTE-REC_0003_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0060_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_HDD_0001_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_HDD_0002_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_HDD_0003_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_HDD_0004_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0061_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0062_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0063_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0064_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0065_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0066_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0027_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0067_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0068_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0069_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0070_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0071_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0072_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0073_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0074_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0075_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0076_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0077_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0078_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0079_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0080_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0081_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_DEFAULT-PARAM_0028_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0001_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0002_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0003_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0004_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0005_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0006_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0007_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0082_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0083_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0084_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0085_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0086_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_CAS-DDEMM_0087_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_PRIVATE-DP-SI_0001_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_PRIVATE-DP-SI_0002_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_PRIVATE-DP-SI_0003_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_PRIVATE-DP-SI_0004_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_PRIVATE-DP-SI_0005_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_PRIVATE-DP-SI_0006_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_PRIVATE-DP-SI_0007_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_PRIVATE-DP-SI_0008_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_PRIVATE-DP-SI_0009_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_DB-SI_0013_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_DB-SI_0014_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_EVT-REC_0021_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_EVT-REC_0022_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_TAG_0032_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_TAG_0033_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_TAG_0034_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_SERIES_0015_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_SERIES_0016_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-BANNER_0038_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_INSTALL_0009_v1","5.2.8 Remote","test",1,"F",3,2
+"RQT_SSY_INSTALL_0010_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_INSTALL_0011_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_INSTALL_0012_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_INSTALL_0013_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_REPORTING_0001_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_REPORTING_0002_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_REPORTING_0003_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_REPORTING_0004_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_REPORTING_0005_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_REPORTING_0006_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_REPORTING_0007_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_REPORTING_0008_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_REPORTING_0009_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_REPORTING_0010_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_REPORTING-SCHEDULED_0001_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_REPORTING-SCHEDULED_0002_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_REPORTING-SCHEDULED_0003_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_REPORTING-SCHEDULED_0004_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_REPORTING-SCHEDULED_0005_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_REPORTING-SCHEDULED_0006_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_REPORTING-SCHEDULED_0007_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_REPORTING-SCHEDULED_0008_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_REPORTING-CREDIT-THRES_0001_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_REPORTING-CREDIT-THRES_0002_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_REPORTING-CREDIT-THRES_0003_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_REPORTING-CREDIT-THRES_0004_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_REPORTING-CREDIT-THRES_0005_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_REPORTING-CREDIT-THRES_0006_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_REPORTING-CREDIT-THRES_0007_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_REPORTING-CREDIT-THRES_0008_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_REPORTING-CREDIT-THRES_0009_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_REPORTING-FORCED_0001_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_REPORTING-FORCED_0002_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_REPORTING-FORCED_0003_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_REPORTING-FORCED_0004_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_REPORTING-FORCED_0005_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_REPORTING-FORCED_0006_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_REPORTING-STATUS_0001_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_STANDBY_0002_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_STANDBY_0003_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_STANDBY_0004_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_STANDBY_0005_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_STANDBY_0006_v1","3.1 req3","test",1,"F",3,2
+"RQT_SSY_STANDBY_0007_v1","3.1.1 req4","test",1,"F",3,2
+"RQT_SSY_STANDBY_0008_v1","3.2 req5","test",1,"F",3,2
+"RQT_SSY_TAPING-MODE_0001_v1","3.2.1 req6","test",1,"F",3,2
+"RQT_SSY_TAPING-MODE_0002_v1","3.3 req7","test",1,"F",3,2
+"RQT_SSY_TAPING-MODE_0003_v1","3.4 req8","test",1,"F",3,2
+"RQT_SSY_TAPING-MODE_0004_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_TAPING-MODE_0005_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_TAPING-MODE_0006_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_TAPING-MODE_0007_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_TAPING-MODE_0008_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_TAPING-MODE_0009_v1","5.1 req10","test",1,"F",3,2
+"RQT_SSY_TAPING-MODE_0010_v1","5.3 req11","test",1,"F",3,2
+"RQT_SSY_TAPING-MODE_0011_v1","5.4 req12","test",1,"F",3,2
+"RQT_SSY_TAPING-MODE_0012_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_TAPING-MODE_0013_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_TAPING-MODE_0014_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_CAS-IPPV_0001_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_CAS-IPPV_0002_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_CAS-IPPV_0003_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_CAS-IPPV_0004_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_CAS-IPPV_0005_v1","2.2 req16","test",1,"F",3,2
+"RQT_SSY_CAS-IPPV_0006_v1","2.3 req17","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0010_v1","2.4 req18","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0011_v1","2.5 req19","test",1,"F",3,2
+"RQT_SSY_DB-SI_0015_v1","2.6 req20","test",1,"F",3,2
+"RQT_SSY_DB-SI_0016_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_STANDBY_0009_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_STANDBY_0010_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_AV-OUTPUT_0001_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_AV-OUTPUT_0002_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_AV-OUTPUT_0003_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_AV-OUTPUT_0004_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_AV-OUTPUT_0005_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_FRONTEND_0001_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_FRONTEND_0002_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_FRONTEND_0003_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_FRONTEND_0004_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_DB-SI_0017_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0011_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0012_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0013_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0014_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0015_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_RESET_0001_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_RESET_0002_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0028_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0029_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0030_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_AUTOSHOW_0001_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_AUTOSHOW_0002_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_AUTOSHOW_0003_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PVR_0068_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PVR_0067_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0015_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0016_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0017_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0018_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_HDD_0005_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_HDD_0006_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_HDD_0007_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_CAS_0004_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_CAS_0005_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0031_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0032_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0033_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0034_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0035_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PUSHVOD_0036_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_USB_0001_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_USB_0002_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_USB_0003_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_WIDGETS_0001_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_WIDGETS_0009_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_WIDGETS_0010_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_WIDGETS_0011_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_WIDGETS_0012_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_WIDGETS_0002_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_WIDGETS_0003_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_WIDGETS_0004_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_WIDGETS_0005_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_WIDGETS_0006_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_WIDGETS_0007_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_COPY-PROTECT_0008_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_COPY-PROTECT_0009_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_COPY-PROTECT_0001_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_COPY-PROTECT_0002_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_COPY-PROTECT_0003_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_COPY-PROTECT_0004_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_COPY-PROTECT_0005_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_COPY-PROTECT_0006_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_COPY-PROTECT_0007_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0001_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0002_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0003_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0004_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0005_v1","5.2.8 Remote","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0006_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0007_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0008_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0009_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0010_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0011_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0012_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0013_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0014_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0015_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0016_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0017_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0018_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0019_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0020_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0021_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0022_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0023_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0024_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0012_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0013_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0014_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0015_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0016_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0017_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0018_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0019_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0020_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0021_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0022_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0023_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0024_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0025_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_PIN-CODE_0026_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0001_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0002_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0003_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0004_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0005_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0006_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0007_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0008_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0009_v1","3.1 req3","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0010_v1","3.1.1 req4","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0011_v1","3.2 req5","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0012_v1","3.2.1 req6","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0013_v1","3.3 req7","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0014_v1","3.4 req8","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0015_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0016_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0017_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0018_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0019_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_MMI-IPPV_0020_v1","5.1 req10","test",1,"F",3,2
+"RQT_SSY_CAS_0006_v1","5.3 req11","test",1,"F",3,2
+"RQT_SSY_CAS_0007_v1","5.4 req12","test",1,"F",3,2
+"RQT_SSY_CAS_0008_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_CAS_0009_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_CAS_0010_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_CAS_0011_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_CAS_0012_v1","1.3 req14","test",1,"F",3,2
+"RQT_SSY_CAS_0013_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_CAS_0014_v1","2.1 req15","test",1,"F",3,2
+"RQT_SSY_CAS_0015_v1","2.2 req16","test",1,"F",3,2
+"RQT_SSY_CAS_0016_v1","2.3 req17","test",1,"F",3,2
+"RQT_SSY_CAS_0017_v1","2.4 req18","test",1,"F",3,2
+"RQT_SSY_CAS_0018_v1","2.5 req19","test",1,"F",3,2
+"RQT_SSY_CAS_0019_v1","2.6 req20","test",1,"F",3,2
+"RQT_SSY_CAS_0020_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_CAS_0021_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0025_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0026_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0027_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0028_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-MESSAGES_0029_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0019_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0020_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0021_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0022_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0023_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0024_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_MMI-GLOBAL_0025_v1","2.7 req21","test",1,"F",3,2
+"RQT_SSY_FRONT-PANEL_0003_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_FRONT-PANEL_0004_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_FRONT-PANEL_0005_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_SSV_0004_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_SSV_0005_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_SSV_0006_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_SSV_0007_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_SSV_0008_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_SSV_0009_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_SSV_0010_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_SSV_0011_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_SSV_0012_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_SSV_0013_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_SSV_0014_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_SSV_0015_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_SSV_0016_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_SSV_0017_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_SSV_0018_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PERFO_0001_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_PERFO_0002_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PERFO_0003_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PERFO_0004_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PERFO_0005_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PERFO_0006_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PERFO_0007_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PERFO_0008_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PERFO_0009_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PERFO_0010_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PERFO_0011_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_PERFO_0012_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_PERFO_0013_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_PERFO_0014_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_PERFO_0015_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_PERFO_0016_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_PERFO_0017_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_PERFO_0018_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_RC_0001_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_RC_0002_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_RC_0003_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0008_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0009_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0010_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0011_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0012_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0013_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0014_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0015_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0016_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0017_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0018_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0019_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0020_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0021_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0022_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0023_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0024_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0025_v1","5.2.8 Remote","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0026_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0027_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0028_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0029_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0030_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0031_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0032_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0033_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0034_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0035_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0036_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0037_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0038_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0039_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0040_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0041_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0042_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0043_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0044_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0045_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0046_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0047_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0048_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_BOOTLOAD_0049_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_ADVANCED-INSTALL_0020_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_DVB-OVER-IP_0001_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_DVB-OVER-IP_0002_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_DVB-OVER-IP_0003_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_DVB-OVER-IP_0004_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_DVB-OVER-IP_0005_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_EPG_0014_v2","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-SEARCH_0028_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_SSV_0019_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_SSV_0020_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_SSV_0021_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_SSV_0022_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0013_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0014_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0015_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0016_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0017_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0018_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0019_v1","3.1 req3","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0020_v1","3.1.1 req4","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0021_v1","3.2 req5","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0022_v1","3.2.1 req6","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0023_v1","3.3 req7","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0024_v1","3.4 req8","test",1,"F",3,2
+"RQT_SSY_IP-PVOD_0025_v1","4.1 req9",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0026_v1","4.1 req9",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0027_v1","4.1 req9",,1,"F",3,2
+"RQT_SSY_PVOD-PES_0001_v1","4.1 req9",,1,"F",3,2
+"RQT_SSY_PVOD-PES_0002_v1","4.1 req9",,1,"F",3,2
+"RQT_SSY_PVOD-PES_0003_v1","5.1 req10",,1,"F",3,2
+"RQT_SSY_PVOD-PES_0004_v1","5.3 req11",,1,"F",3,2
+"RQT_SSY_PVOD-PES_0005_v1","5.4 req12",,1,"F",3,2
+"RQT_SSY_PVOD-PES_0006_v1","1.3 req14",,1,"F",3,2
+"RQT_SSY_PVOD-PES_0007_v1","1.3 req14",,1,"F",3,2
+"RQT_SSY_PVOD-PES_0008_v1","1.3 req14",,1,"F",3,2
+"RQT_SSY_PVOD-PES_0009_v1","1.3 req14",,1,"F",3,2
+"RQT_SSY_PVOD-PES_0010_v1","1.3 req14",,1,"F",3,2
+"RQT_SSY_VOD-CDS_0001_v1","2.1 req15",,1,"F",3,2
+"RQT_SSY_VOD-CDS_0002_v1","2.1 req15",,1,"F",3,2
+"RQT_SSY_VOD-CDS_0003_v1","2.2 req16",,1,"F",3,2
+"RQT_SSY_VOD-CDS_0004_v1","2.3 req17",,1,"F",3,2
+"RQT_SSY_VOD-CDS_0005_v1","2.4 req18",,1,"F",3,2
+"RQT_SSY_VOD-CDS_0006_v1","2.5 req19",,1,"F",3,2
+"RQT_SSY_VOD-CDS_0007_v1","2.6 req20",,1,"F",3,2
+"RQT_SSY_VOD-CDS_0008_v1","2.7 req21",,1,"F",3,2
+"RQT_SSY_VOD-CDS_0009_v1","2.7 req21",,1,"F",3,2
+"RQT_SSY_VOD-CDS_0010_v1","2.7 req21",,1,"F",3,2
+"RQT_SSY_VOD-STUDIO-REPORTER_0001_v1","2.7 req21",,1,"F",3,2
+"RQT_SSY_VOD-IP-CLIENT_0001_v1","2.7 req21",,1,"F",3,2
+"RQT_SSY_VOD-IP-CLIENT_0002_v1","2.7 req21",,1,"F",3,2
+"RQT_SSY_VOD-IP-CLIENT_0003_v1","2.7 req21",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0028_v1","2.7 req21",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0029_v1","2.7 req21",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0030_v1","2.7 req21",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0031_v1","2.7 req21",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0032_v1","2.7 req21",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0033_v1","2.7 req21",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0034_v1","2.7 req21",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0035_v1","5. ma1n ",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0036_v1","5. ma1n ",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0037_v1","5. ma1n ",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0038_v1","5. ma1n ",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0039_v1","5. ma1n ",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0040_v1","5. ma1n ",,1,"F",3,2
+"RQT_SSY_IP-PVOD_0041_v1","5. ma1n ",,1,"F",3,2
+"RQT_SSY_REPORTING-STATUS_0002_v1","5. ma1n ",,1,"F",3,2
+"RQT_SSY_REPORTING-STATUS_0003_v1","5. ma1n ",,1,"F",3,2
+"RQT_SSY_REPORTING-STATUS_0004_v1","5. ma1n ","test",1,"F",3,2
+"RQT_SSY_REPORTING-STATUS_0005_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_REPORTING-STATUS_0006_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_REPORTING-STATUS_0007_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_REPORTING-STATUS_0008_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_REPORTING-STATUS_0009_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_REPORTING-STATUS_0010_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_REPORTING-STATUS_0011_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_REPORTING-STATUS_0012_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0001_v1","5.1. EPG ","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0002_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0003_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0004_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0005_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0006_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0007_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0008_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0009_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0010_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0011_v1","5.2.1 Channel","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0012_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0013_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0014_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0015_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0016_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0017_v1"," 5.2.3 Event ","test",1,"F",3,2
+"RQT_SSY_60-DAYS-LIMIT_0018_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE_0001_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE_0002_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE_0003_v1","5.2.4 Banner","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE_0004_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE_0005_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE_0006_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE_0007_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-DISABLED_0001_v1","5.2.5 Video","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-DISABLED_0002_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-DISABLED_0003_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-DISABLED_0004_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-DISABLED_0005_v1","5.2.6  Info","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-DISABLED_0006_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-DISABLED_0007_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-ENABLED_0001_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-ENABLED_0002_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-ENABLED_0003_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-ENABLED_0004_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-ENABLED_0005_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-ENABLED_0006_v1","5.2.7  Icon","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-ENABLED_0007_v1","5.2.8 Remote","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-ENABLED_0008_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-ENABLED_0009_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-ENABLED_0010_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-ENABLED_0011_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-DISABLED_0008_v1","5.2.9 Series","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-ENABLED_0012_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-ENABLED_0013_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-ENABLED_0014_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_OTHER-MODE-ENABLED_0015_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0001_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0002_v1","5.2.10 Based","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0003_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0004_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0005_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0006_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0007_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0008_v1","5.2.11 List ","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0009_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0010_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0011_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0012_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0013_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0014_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0015_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0016_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0017_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_PROMO-CHANNEL_0018_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-ALARM-LIST_0006_v1","5.2.12 Conflicts","test",1,"F",3,2
+"RQT_SSY_MMI-ALARM-LIST_0007_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_MMI-ALARM-LIST_0011_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0004_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0005_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0006_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0007_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0008_v1","2.1 req1","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0009_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0010_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0011_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0012_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0013_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0014_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0015_v1","2.2 req2","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0016_v1","3.1 req3","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0017_v1","3.1.1 req4","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0018_v1","3.2 req5","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0019_v1","3.2.1 req6","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0020_v1","3.3 req7","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0021_v1","3.4 req8","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0022_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0023_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0024_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0025_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0026_v1","4.1 req9","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0027_v1","5.1 req10","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0028_v1","5.3 req11","test",1,"F",3,2
+"RQT_SSY_WATCHING-LIMIT_0029_v1","5.4 req12","test",1,"F",3,2

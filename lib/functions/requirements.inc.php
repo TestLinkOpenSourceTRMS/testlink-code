@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.115 2010/11/06 18:46:33 amkhullar Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.115.2.1 2011/02/10 21:25:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -233,7 +233,7 @@ function getReqDocIDs(&$db,$srs_id)
  */
 function loadImportedReq($fileName, $importType)
 {
-	$data = null;
+	$retVal = null;
 	switch($importType)
 	{
 		case 'csv':
@@ -248,11 +248,24 @@ function loadImportedReq($fileName, $importType)
 			$pfn = "importReqDataFromDocBook";
 			break;
 	}
+	
 	if ($pfn)
 	{
-		$data = $pfn($fileName);
+		$retVal = $pfn($fileName);
+		if($importType == 'DocBook')
+		{
+			// this structure if useful when importing from CSV
+    		// $retVal = array('userFeedback' => arra(),'info' => null);
+			//
+			// But we need to return same data structure ALWAYS
+			// for DocBook we do not use 'parsedCounter' and 'syntaxError'
+			//
+			$dummy = array('userFeedback' => null, 'info' => $retVal);
+			$retval = $dummy;			   
+		}
 	}
-	return $data;
+	 
+	return $retVal;
 
 }
 
@@ -262,15 +275,14 @@ function loadImportedReq($fileName, $importType)
  */
 function importReqDataFromCSV($fileName)
 {
-  	
   	// CSV line format
-	// $fieldMappings = array("req_doc_id","title","description","type","status","expected_coverage","order");
 	$fieldMappings = array("docid","title","description","type","status","expected_coverage","node_order");
   	
 
 	$options = array('delimiter' => ',' , 'fieldQty' => count($fieldMappings));
-	$reqData = importCSVData($fileName,$fieldMappings,$options);
-
+	$impData = importCSVData($fileName,$fieldMappings,$options);
+	
+	$reqData = &$impData['info'];
 	if($reqData)
 	{
   		// lenght will be adjusted to these values
@@ -289,7 +301,6 @@ function importReqDataFromCSV($fileName)
 				// Adjust Lenght 
 				if( isset($fieldLength[$fieldKey]) )
 				{
-	       			// $reqData[$ddx][$fieldKey] = trim_and_limit($reqData[$ddx][$fieldKey],$fieldLength[$fieldKey]);
 	       			$fieldValue = trim_and_limit($fieldValue,$fieldLength[$fieldKey]);
 				}
 				else if(isset($fieldDefault[$fieldKey]))
@@ -305,11 +316,14 @@ function importReqDataFromCSV($fileName)
 			}
 		}
 	}
-	return $reqData;
+	return $impData;
 }
 
 /**
  * importReqDataFromCSVDoors
+ *
+ * @internal revision
+ * 20110206 - franciscom - return data structure changed.
  *
  */
 function importReqDataFromCSVDoors($fileName)
@@ -319,9 +333,9 @@ function importReqDataFromCSVDoors($fileName)
 					       "Created By","Created On","Last Modified By","Last Modified On");
 	
 	$options = array('delimiter' => ',', 'fieldQty' => count($fieldMappings), 'processHeader' => true);
-	$reqData = importCSVData($fileName,$fieldMappings,$options);
+	$impData = importCSVData($fileName,$fieldMappings,$options);
 
-	return $reqData;
+	return $impData;
 }
 
 /**
@@ -519,6 +533,7 @@ function importReqDataFromDocBook($fileName)
 
 		$idx++;
 	}
+	
 	return $xmlData;
 }
 

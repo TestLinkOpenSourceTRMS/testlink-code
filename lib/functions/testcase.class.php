@@ -6,12 +6,16 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.331.2.6 2011/01/09 09:25:57 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.331.2.7 2011/02/10 21:25:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20110205 - franciscom - BUGID 4207 - set_step_number() - 
+ *						   MSSQL problems when table alias is used on SQL UPDATE 
+ *						   BUGID 4204 - update problem due to alias, declared as issue 3849 fixed on 	
+ *						   but not really fixed.
  * 20101212 - franciscom - internal bug get_last_execution() empty where clause -> do not use $id
- +						   added new options getSteps	
+ *						   added new options getSteps	
  * 20101202 - asimon - BUGID 4067: refresh tree problems
  * 20101118 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
  * 20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
@@ -3612,15 +3616,16 @@ class testcase extends tlObjectWithAttachments
 	  returns: 1 -> everything ok.
 	           0 -> some error
 	  rev:
-	  	  BUGID - 3849
+	  	  BUGID - 3849 -> not completely fixed -> BUGID 4204
 	*/
 	function update_active_status($id,$tcversion_id,$active_status)
 	{
-		$sql = " UPDATE {$this->tables['tcversions']} SET active={$active_status}" .
-			   " WHERE tcversions.id = {$tcversion_id}";
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = 	" /* $debugMsg */ UPDATE {$this->tables['tcversions']} " .
+				" SET active={$active_status}" .
+			   	" WHERE id = {$tcversion_id}";
 	
 		$result = $this->db->exec_query($sql);
-	
 		return $result ? 1: 0;
 	}
 	
@@ -3651,11 +3656,13 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function update_external_id($id,$external_id)
 	{
-	  $sql="UPDATE {$this->tables['tcversions']} " .
-	       "SET tc_external_id={$external_id} " .
-	       "WHERE id IN ( SELECT id FROM {$this->tables['nodes_hierarchy']} WHERE parent_id={$id} ) ";
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql =	"/* $debugMsg */ UPDATE {$this->tables['tcversions']} " .
+				" SET tc_external_id={$external_id} " .
+				" WHERE id IN (" .
+				" SELECT id FROM {$this->tables['nodes_hierarchy']} WHERE parent_id={$id} ) ";
 	      
-	  $result=$this->db->exec_query($sql);
+	  	$result=$this->db->exec_query($sql);
 		return $result ? 1: 0;
 	}
 	
@@ -4647,6 +4654,8 @@ class testcase extends tlObjectWithAttachments
 	/**
      * 
      *
+     * @internal revision
+     * BUGID 4207 - MSSQL
      */
 	function set_step_number($step_number)
 	{
@@ -4654,8 +4663,8 @@ class testcase extends tlObjectWithAttachments
         
         foreach($step_number as $step_id => $value)
         {
-        	$sql = "/* $debugMsg */ UPDATE {$this->tables['tcsteps']} TC_STEP " . 
-        	 	   " SET step_number = {$value} WHERE TC_STEP.id = {$step_id} ";
+        	$sql = "/* $debugMsg */ UPDATE {$this->tables['tcsteps']} " . 
+        	 	   " SET step_number = {$value} WHERE id = {$step_id} ";
         	$this->db->exec_query($sql); 	    
         }
 

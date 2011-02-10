@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.114.2.15 $
- * @modified $Date: 2011/01/16 17:41:17 $ by $Author: franciscom $
+ * @version $Revision: 1.114.2.16 $
+ * @modified $Date: 2011/02/10 21:25:25 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -675,8 +675,10 @@ function get_coverage($id)
     returns: map
              keys: status_ok
                    msg
+                   failure_reason
 
 	 @internal revision
+	 20110206 - franciscom - add new key on retval 'failure_reason'
 	 20110108 - franciscom - check on duplicate title under same parent
   */
   function check_basic_data($srs_id,$tproject_id,$title,$reqdoc_id,$id = null)
@@ -684,6 +686,7 @@ function get_coverage($id)
 
   	$ret['status_ok'] = 1;
   	$ret['msg'] = '';
+  	$ret['failure_reason'] = '';
 
 	$title = trim($title);
 	$reqdoc_id = trim($reqdoc_id);
@@ -692,12 +695,14 @@ function get_coverage($id)
   	{
   		$ret['status_ok'] = 0;
   		$ret['msg'] = lang_get("warning_empty_req_title");
+  		$ret['failure_reason'] = 'empty_req_title';
   	}
 
   	if ($reqdoc_id == "")
   	{
   		$ret['status_ok'] = 0;
   		$ret['msg'] .=  " " . lang_get("warning_empty_reqdoc_id");
+  		$ret['failure_reason'] = 'empty_reqdoc_id';
   	}
 
   	if($ret['status_ok'])
@@ -708,6 +713,7 @@ function get_coverage($id)
   		{
   			$ret['msg'] = sprintf(lang_get("warning_duplicate_reqdoc_id"),$reqdoc_id);
   			$ret['status_ok'] = 0;
+  			$ret['failure_reason'] = 'duplicate_reqdoc_id';
   		}
   	}
   	
@@ -721,6 +727,7 @@ function get_coverage($id)
 		$rs = $this->getByAttribute($target,$tproject_id,$srs_id,$getOptions);
  		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
   		{
+  			$ret['failure_reason'] = 'sibling_req_with_same_title';
   			$ret['msg'] = sprintf(lang_get("warning_sibling_req_with_same_title"),$title);
   			$ret['status_ok'] = 0;
   		}
@@ -1347,7 +1354,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 						'frozen_req_unable_to_import' => '', 'requirement' => '', 
 						'import_req_new_version_created' => '',
 						'import_req_update_last_version_failed' => '',
-						'import_req_new_version_failed' => '');
+						'import_req_new_version_failed' => '', 'import_req_skipped_plain' => '');
 		foreach($labels as $key => $dummy)
 		{
 			$labels[$key] = lang_get($key);
@@ -1388,6 +1395,14 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     // with requested operation
 	$check_in_reqspec = $this->getByAttribute($target,$tproject_id,$parent_id,$getOptions);
 
+
+	// 20110206 - franciscom
+	// while working on BUGID 4210, new details came to light.
+	//
+	// In addition to hit criteria there are also the criteria taht we use 
+	// when creating/update item using GUI, and these criteria have to be
+	// checked abd fullfilled.
+	//
 	if(is_null($check_in_reqspec))
 	{
 		$check_in_tproject = $this->getByAttribute($target,$tproject_id,null,$getOptions);
@@ -1396,7 +1411,17 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 			$newReq = $this->create($parent_id,$req['docid'],$req['title'],$req['description'],
 		    		         		$author_id,$req['status'],$req['type'],$req['expected_coverage'],
 		    		         		$req['node_order']);
-			$msgID = 'import_req_created';
+		
+			if( ($status_ok = ($newReq['status_ok'] == 1)) )
+			{
+				$msgID = 'import_req_created';
+			}
+			else
+			{
+				$msgID = 'import_req_skipped_plain';
+				$result['msg'] = $newReq['msg'];  // done to use what2add logic far below
+			}
+				
 		}             		 
         else
         {
@@ -1487,7 +1512,6 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     $user_feedback[] = array('doc_id' => $req['docid'],'title' => $req['title'], 
     				 	     'import_status' => sprintf($labels[$msgID],$what2add));
 
-    // 20100907 - Custom Fields import
     if( $status_ok && $doProcessCF && isset($req['custom_fields']) && !is_null($req['custom_fields']) )
     {
 		$req_version_id = !is_null($newReq) ? $newReq['version_id'] : $last_version['id'];

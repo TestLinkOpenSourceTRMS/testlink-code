@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.235.2.12 2011/01/21 18:49:01 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.235.2.13 2011/02/10 21:25:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -586,7 +586,25 @@ class testplan extends tlObjectWithAttachments
 		return $linked_items;
 	}
 
+	/**
+	 * @internal revisions:
+	 * 
+	 */
+	function getFeatureID($id,$platformID,$tcversionID)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = " /* $debugMsg */ ". 
+			   " SELECT id FROM {$this->tables['testplan_tcversions']} " .
+			   " WHERE testplan_id = " . intval($id) . 
+			   " AND tcversion_id = " . intval($tcversionID) . 
+			   " AND platform_id = " . intval($platformID) ;
+			   
+		$linked_items = $this->db->fetchRowsIntoMap($sql,'id');
+		return !is_null($linked_items) ? key($linked_items) : -1;
+	}
 
+	
+	
 
 	/*
   	function: get_linked_tcversions

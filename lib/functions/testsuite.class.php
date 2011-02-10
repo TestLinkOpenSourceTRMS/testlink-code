@@ -6,11 +6,14 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.106.2.1 2010/11/09 11:11:09 asimon83 Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.106.2.2 2011/02/10 21:25:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20110129 - franciscom - BUGID 4202 - 
+ *						   get_linked_cfields_at_execution() interface changes.
+ *	
  * 20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  * 20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
  * 20101009 - franciscom - exportTestSuiteDataToXML() - better checks on $optExport
@@ -450,7 +453,6 @@ class testsuite extends tlObjectWithAttachments
 
         // BUGID 0003233: After test suite edit, display of Test suite do not 
         //                have upload button enabled for attachment
-  	    // $my['options'] = array('show_mode' => 'readonly'); 	
   	    $my['options'] = array('show_mode' => 'readwrite'); 	
 	    $my['options'] = array_merge($my['options'], (array)$options);
 
@@ -1143,26 +1145,21 @@ class testsuite extends tlObjectWithAttachments
 	            
 	  args: $id
 	        [$parent_id]:
-	        [$show_on_execution]: default: null
-	                              1 -> filter on field show_on_execution=1
-	                              0 or null -> don't filter
-	        
+	        [$filtesr]: default: null
 	        
 	  returns: hash
 	  
 	  rev :
-	        20061231 - franciscom - added $parent_id
+	  20110129 - franciscom - BUGID 4202
 	*/
-		function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null,$tproject_id = null) 
+		function get_linked_cfields_at_design($id,$parent_id=null,$filters=null,$tproject_id = null) 
 		{
 			if (!$tproject_id)
 			{
 				$tproject_id = $this->getTestProjectFromTestSuite($id,$parent_id);
 			}
-	        $filters=array('show_on_execution' => $show_on_execution);    
-			$enabled = 1;
-			$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,$filters,
-			                                                          'testsuite',$id);
+			$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,
+																	  $filters,'testsuite',$id);
 			return $cf_map;
 		}
 		
@@ -1182,26 +1179,30 @@ class testsuite extends tlObjectWithAttachments
 	            
 	  args: $id
 	        [$parent_id]
-	        [$show_on_execution]: default: null
-	                              1 -> filter on field show_on_execution=1
-	                              0 or null -> don't filter
+	        [$filters]
+	        		  keys: $show_on_execution: default: null
+	                        1 -> filter on field show_on_execution=1
+	                        0 or null -> don't filter
 	        
 	        
 	  returns: hash
 	  
 	  rev :
-	        20061231 - franciscom - added $parent_id
+	 	 20110129 - franciscom - BUGID 4202
 	*/
-	function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null) 
+	function get_linked_cfields_at_execution($id,$parent_id=null,$filters=null,$tproject_id=null) 
 	{
-	  $filters=array('show_on_execution' => $show_on_execution);    
-	  $enabled=1;
-	  $the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
-	  $path_len=count($the_path);
-	  $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+		
+		if (!$tproject_id)
+		{
+			$the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
+			$path_len=count($the_path);
+			$tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+		}
 	
-	  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,$filters,'testsuite',$id);
-	  return($cf_map);
+		$cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,
+	  														    $filters,'testsuite',$id);
+		return($cf_map);
 	}
 	
 	
@@ -1279,7 +1280,8 @@ class testsuite extends tlObjectWithAttachments
 	    {
 	      // Important: remember that for Test Suite, custom field value CAN NOT BE changed 
 	      // at execution time just displayed.
-	      $cf_map=$this->get_linked_cfields_at_execution($id);
+	      // 20110129 - if we know test project id is better to use it
+	      $cf_map=$this->get_linked_cfields_at_execution($id,null,null,$tproject_id);
 	    }
 	      
 	    if( !is_null($cf_map) )

@@ -7,10 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.96.2.8 2011/01/23 18:11:37 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.96.2.9 2011/02/10 21:25:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20110205 - franciscom - BUGID 4222 - added sanitize() method
+ * 20110129 - franciscom - BUGID 3338 - getXMLRPCServerParams() - refactoring
  * 20110123 - franciscom - BUGID 3338 - getXMLServerParams() -> renamed getXMLRPCServerParams
  * 20110120 - Julian - BUGID 4164 - lists and multiselection lists do not use more space than
  *                                  necessary anymore
@@ -1194,64 +1196,112 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	}
 
 
+	/*
+	 *
+	 *	keys	name	-> trim will be applied
+     *			label	-> trim will be applied
+     *	   		type	-> intval() wil be applied
+     *	   		possible_values
+     *	   		show_on_design	-> trasformation on 1/0 using intval() [*]
+     *	   		enable_on_design	-> [*]
+     *	   		show_on_execute	-> [*]
+     *	   		enable_on_execute	-> [*]
+     *	   		show_on_testplan_design	-> [*]
+     *	   		enable_on_testplan_design	-> [*]
+     *
+	 */
+	function sanitize($cf)
+	{
+		$safe = $cf;
+		
+		// remove the standard set of characters considered harmful
+		// "\0" - NULL, "\t" - tab, "\n" - new line, "\x0B" - vertical tab
+		// "\r" - carriage return
+		// and spaces
+		// fortunatelly this is trim standard behaviour
+		$k2san = array('name','label');
+		foreach($k2san as $key)
+		{	
+			$safe[$key] = $this->db->prepare_string(trim($cf[$key]));
+		}	    
+		
+		// seems here is better do not touch.
+	    $safe['possible_values'] = $this->db->prepare_string($cf['possible_values']);
+
+		$onezero = array('show_on_design','enable_on_design','show_on_testplan_design',
+						 'enable_on_testplan_design','show_on_execution','enable_on_execution');
+	
+		foreach($onezero as $key)
+	    {
+	    	$safe[$key] = intval($cf[$key]) > 0 ? 1 : 0;
+	    }
+
+	    $safe['type'] = intval($cf['type']);
+		
+		return $safe;
+	}	
+	
   /*
     function: create a custom field
 
     args: $hash:
-          keys   name
-                 label
-                 type
+          keys   name	-> trim will be applied
+                 label	-> trim will be applied
+                 type	-> intval() wil be applied
                  possible_values
-                 show_on_design
-                 enable_on_design
-                 show_on_execute
-                 enable_on_execute
-                 show_on_testplan_design
-                 enable_on_testplan_design
+                 show_on_design	-> trasformation on 1/0 using intval() [*]
+                 enable_on_design	-> [*]
+                 show_on_execute	-> [*]
+                 enable_on_execute	-> [*]
+                 show_on_testplan_design	-> [*]
+                 enable_on_testplan_design	-> [*]
                  node_type_id
 
     returns: -
 
-    rev: 20080810 - franciscom - BUGID 1650
+    rev: 
+    @internal revision
+    20110205 - franciscom - improve management of 1/0 values to manage missing values
+    						using on import.
+    						
 
   */
 	function create($cf)
-  {
-    $ret = array('status_ok' => 0, 'id' => 0, 'msg' => 'ko');
-
-    $my_name=$this->db->prepare_string($cf['name']);
-    $my_label=$this->db->prepare_string($cf['label']);
-    $my_pvalues=$this->db->prepare_string($cf['possible_values']);
-
-
-    $sql="INSERT INTO {$this->object_table} " .
-         " (name,label,type,possible_values, " .
-         "  show_on_design,enable_on_design, " .
-         "  show_on_testplan_design,enable_on_testplan_design, " .
-         "  show_on_execution,enable_on_execution) " .
-         " VALUES('{$my_name}','{$my_label}',{$cf['type']},'{$my_pvalues}', " .
-         "        {$cf['show_on_design']},{$cf['enable_on_design']}," .
-         "        {$cf['show_on_testplan_design']},{$cf['enable_on_testplan_design']}," .
-         "        {$cf['show_on_execution']},{$cf['enable_on_execution']})";
-    $result=$this->db->exec_query($sql);
-
-   	if ($result)
   	{
-  	  // at least for Postgres DBMS table name is needed.
-  	  $field_id=$this->db->insert_id($this->object_table);
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	    $ret = array('status_ok' => 0, 'id' => 0, 'msg' => 'ko');
+	
+		$safecf = $this->sanitize($cf);	
+		
+	    $sql="/* $debugMsg */ INSERT INTO {$this->object_table} " .
+	         " (name,label,type,possible_values, " .
+	         "  show_on_design,enable_on_design, " .
+	         "  show_on_testplan_design,enable_on_testplan_design, " .
+	         "  show_on_execution,enable_on_execution) " .
+	         " VALUES('" . $safecf['name'] . "','" . $safecf['label'] . "'," . 
+	         		intval($safecf['type']) . ",'" . $safecf['possible_values'] . "', " .
+	         "		{$safecf['show_on_design']},{$safecf['enable_on_design']}," .
+	         "		{$safecf['show_on_testplan_design']},{$safecf['enable_on_testplan_design']}," .
+	         "		{$safecf['show_on_execution']},{$safecf['enable_on_execution']})";
+	    $result=$this->db->exec_query($sql);
 
-      $sql="INSERT INTO {$this->tables['cfield_node_types']} " .
-           " (field_id,node_type_id) " .
-           " VALUES({$field_id},{$cf['node_type_id']}) ";
-      $result=$this->db->exec_query($sql);
-    }
-
-    if ($result)
-	  {
-       $ret = array('status_ok' => 1, 'id' => $field_id, 'msg' => 'ok');
-    }
-    return($ret);
-  } //function end
+	   	if ($result)
+	  	{
+	  	  // at least for Postgres DBMS table name is needed.
+	  	  $field_id=$this->db->insert_id($this->object_table);
+	
+	      $sql="/* $debugMsg */ INSERT INTO {$this->tables['cfield_node_types']} " .
+	           " (field_id,node_type_id) " .
+	           " VALUES({$field_id},{$safecf['node_type_id']}) ";
+	      $result=$this->db->exec_query($sql);
+	    }
+	
+	    if ($result)
+		{
+	       $ret = array('status_ok' => 1, 'id' => $field_id, 'msg' => 'ok');
+	    }
+	    return $ret;
+	} //function end
 
 
   /*
@@ -1274,27 +1324,27 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   */
 	function update($cf)
 	{
-		$my_name = $this->db->prepare_string($cf['name']);
-		$my_label = $this->db->prepare_string($cf['label']);
-		$my_pvalues = $this->db->prepare_string($cf['possible_values']);
+		$safecf = $this->sanitize($cf);
 
-		$sql ="UPDATE {$this->tables['custom_fields']}  " .
-			 " SET name='{$my_name}',label='{$my_label}'," .
-			 "     type={$cf['type']},possible_values='{$my_pvalues}'," .
-			 "     show_on_design={$cf['show_on_design']}," .
-			 "     enable_on_design={$cf['enable_on_design']}," .
-			 "     show_on_testplan_design={$cf['show_on_testplan_design']}," .
-			 "     enable_on_testplan_design={$cf['enable_on_testplan_design']}," .
-			 "     show_on_execution={$cf['show_on_execution']}," .
-			 "     enable_on_execution={$cf['enable_on_execution']}" .
-			 " WHERE id={$cf['id']}";
+		$sql =	"UPDATE {$this->tables['custom_fields']}  " .
+			 	" SET	name='" . $safecf['name'] . "'," . 
+			 	"		label='" . $safecf['label'] . "'," .
+			 	"     	type={$safecf['type']}," .
+			 	"		possible_values='" . $safecf['possible_values'] . "'," .
+			 	"     	show_on_design={$safecf['show_on_design']}," .
+			 	"     	enable_on_design={$safecf['enable_on_design']}," .
+			 	"     	show_on_testplan_design={$safecf['show_on_testplan_design']}," .
+			 	"     	enable_on_testplan_design={$safecf['enable_on_testplan_design']}," .
+			 	"     	show_on_execution={$safecf['show_on_execution']}," .
+			 	"     	enable_on_execution={$safecf['enable_on_execution']}" .
+			 	" WHERE id={$safecf['id']}";
 		$result = $this->db->exec_query($sql);
 
 		if ($result)
 		{
-			$sql = "UPDATE {$this->tables['cfield_node_types']} " .
-				" SET node_type_id={$cf['node_type_id']}" .
-				" WHERE field_id={$cf['id']}";
+			$sql = 	"UPDATE {$this->tables['cfield_node_types']} " .
+					" SET node_type_id={$safecf['node_type_id']}" .
+					" WHERE field_id={$safecf['id']}";
 			$result = $this->db->exec_query($sql);
 		}
 		return $result ? 1 : 0;
@@ -1995,6 +2045,37 @@ function name_is_unique($id,$name)
 /**
  * Retrieves the XML-RPC Server Parameters specified through custom fields.
  * 
+ * Done searching CARVED in the stone Custom Field Names on different
+ * (AGAIN CARVED in the stone) CF value tables in this way:
+ *
+ * CF name will have 3 pieces separated by _ (underscore)
+ *
+ * XMLRPCRemoteExec_url_tsuite
+ * XMLRPCRemoteExec_url_tcase
+ * XMLRPCRemoteExec_url_link
+ *
+ * Part 1: 	XMLRPCRemoteExec FIXED value, used as search key to get automatically 
+ *			CF to be analised.
+ *
+ * Part 2: 	url will be key on retuned hash, and is part of 'contract' with caller,
+ *			i.e. caller will use this key.
+ *			This key is a FREE choice of developer of Remote Execute modules to use
+ *			with TL.
+ *
+ * Part 3:	this part domain (link,tcase,tsuite)
+ *			work this way:
+ *			To specify Remote Execution server parameters we have provided 3 choices
+ *			a. on test case version LINKED to Test Plan + Platform (Test Plan Design time)
+ *			b. on test case version BUT at Test Spec Design time.
+ *			   In this way if is OK to have always same parameters no matter 
+ *			   test plan + platform where test case version has been linked, we configure
+ *			   this just ONCE.
+ *			c. on test suite (can be done ONLY at Test Spec Design time), all test case versions
+ *			   contained on this test suite branch (and children Test suites) will share this
+ *			   configuration.
+ *	
+ *
+ *
  * @param integer $node_id Accepts current node id from nodes hierarchy level
  * @return mixed An array of config params if found, else returns null
  *
@@ -2003,12 +2084,12 @@ function name_is_unique($id,$name)
  * 20110123 - franciscom -	need refactoring after we have choose to link custom field
  *							values to test case version not to test case
  *
- * 20071102 - franciscom - refactoring
- * 200710 - creation - Swanand
  **/
-function getXMLRPCServerParams($node_id)
+function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
 {
 	static $node_type;
+	static $likeTarget;
+	static $CFGKEY_IDX;
 	
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -2017,50 +2098,45 @@ function getXMLRPCServerParams($node_id)
 	if( is_null($node_type) )
 	{
 		$node_type=$this->tree_manager->get_available_node_types();
+		$likeTarget = 'RE-XMLRPC_%';
+		$CFGKEY_IDX = 1;
 	}
 		
-	$node_info=$this->tree_manager->get_node_hierarchy_info($node_id);
-	$ret=null;
+	$node_info = $this->tree_manager->get_node_hierarchy_info($nodeID);
+	$ret = null;
 	
 	if( !is_null($node_info) )
 	{
-		$prefix = "";
-		$ret = array('xml_server_host' => null,	'xml_server_port' => null,
-					 'xml_server_path' => null);
-	
-	
-		if( $node_info['node_type_id'] == $node_type['tcversion'])
-		{
-			$prefix = "tc_";
+				
+		// First Search at test plan design time
+		if( !is_null($tplanLinkID) )
+		{					
+			$sql = 	" /* $debugMsg */ SELECT cf.name, cfv.value " .
+					" FROM {$this->tables['cfield_testplan_design_values']} cfv " .
+					" JOIN {$this->tables['custom_fields']}  cf ON " .
+					" cfv.field_id = cf.id " .
+					" WHERE cf.name LIKE '{$likeTarget}' " . 
+					" AND cfv.link_id = " . intval($tplanLinkID);
+
+			$server_info = $this->db->fetchRowsIntoMap($sql,'name');
 		}
-		$srv_cfg->host = $prefix . "server_host";
-		$srv_cfg->port = $prefix . "server_port";
-		$srv_cfg->path = $prefix . "server_path";
-		
-		$sql = 	" /* $debugMsg */ SELECT cf.name, cfdv.value " .
-				" FROM {$this->tables['cfield_design_values']} cfdv," .
-				" {$this->tables['custom_fields']}  cf " .
-				" WHERE cfdv.field_id = cf.id AND cfdv.node_id = {$node_id}";
-		
-		$server_info = $this->db->fetchRowsIntoMap($sql,'name');
-		// $server_cfg_is_ok=0;
-		$server_use_host_port=0;
-		$server_use_path=0;
-		
-		if( (isset($server_info[$srv_cfg->host]) && $server_info[$srv_cfg->host]['value'] != "") &&
-			(isset($server_info[$srv_cfg->port]) && $server_info[$srv_cfg->port]['value'] != "") )
-		{
-			// $server_cfg_is_ok=1;
-			$ret['xml_server_host'] = $server_info[$srv_cfg->host]['value'];
-			$ret['xml_server_port'] = $server_info[$srv_cfg->port]['value'];
+				 
+		if( is_null($server_info) )
+		{	
+			
+			$sql = 	" /* $debugMsg */ SELECT cf.name, cfv.value " .
+					" FROM {$this->tables['cfield_design_values']} cfv " .
+					" JOIN {$this->tables['custom_fields']}  cf ON " .
+					" cfv.field_id = cf.id " .
+					" WHERE cf.name LIKE '{$likeTarget}' " .
+					" AND cfv.node_id = " . intval($nodeID);
+
+			$server_info = $this->db->fetchRowsIntoMap($sql,'name');
 		}
-		else if (isset($server_info[$srv_cfg->path]) && $server_info[$srv_cfg->path]['value'] != "")
+		
+		if( is_null($server_info) )
 		{
-			// $server_cfg_is_ok=1;
-			$ret['xml_server_path'] = $server_info[$srv_cfg->path]['value'];
-		}
-		else
-		{
+			// Recurse
 			// 20110123 - franciscom
 			// At time of initial development this was thinked to try to get
 			// server info from Test Suite.
@@ -2072,6 +2148,15 @@ function getXMLRPCServerParams($node_id)
 			if($node_info['parent_id'] != "")
 			{
 				$ret = $this->getXMLRPCServerParams($node_info['parent_id']);
+			}
+		}
+		else
+		{
+			$key2loop = array_keys($server_info);
+			foreach($key2loop as $target)
+			{
+				$dummy = explode('_',$target);
+				$ret[$dummy[$CFGKEY_IDX]] = $server_info[$target]['value']; 	
 			}
 		}
 	} // if( !is_null($node_info) )

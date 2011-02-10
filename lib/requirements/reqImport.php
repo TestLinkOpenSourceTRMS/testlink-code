@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2010/10/26 20:03:30 $ by $Author: franciscom $
+ * @version $Revision: 1.29.2.1 $
+ * @modified $Date: 2011/02/10 21:25:25 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import ONLY requirements to a req specification. 
@@ -41,6 +41,7 @@ switch($args->doAction)
 		$gui->items = $dummy->items;        
 		$gui->file_check = $dummy->file_check;        
         $gui->importResult = lang_get('import_done');
+        $gui->userFeedback = $dummy->userFeedback;
         
         // BUGID 3761: requirement tree refresh after requirement import
         $gui->refreshTree = $args->refreshTree && $gui->file_check['status_ok'];	
@@ -65,6 +66,7 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
     $retval->items = array();
     $retval->msg = '';
     $retval->file_check=array('status_ok' => 1, 'msg' => 'ok');
+    $retval->userFeedback = null;
 
     $context = new stdClass();
     $context->tproject_id = $argsObj->tproject_id;
@@ -104,7 +106,10 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
 		}
 		else
 		{
-		    $retval->items = doReqImportOther($reqMgr,$fileName,$context,$opts);
+		    $dummy = doReqImportOther($reqMgr,$fileName,$context,$opts);
+		    $retval->items = $dummy['items'];
+		    $retval->userFeedback = $dummy['userFeedback'];
+
 		}
 		unlink($fileName);
 		$retval->msg = lang_get('req_import_finished');
@@ -301,18 +306,27 @@ function doReqImportFromXML(&$reqSpecMgr,&$reqMgr,&$simpleXMLObj,$importContext,
  */
 function doReqImportOther(&$reqMgr,$fileName,$importContext,$importOptions)
 {
-	$reqSet = loadImportedReq($fileName, $importContext->importType);
+	$impSet = loadImportedReq($fileName, $importContext->importType);
 	$items = array();
-	if( ($loop2do=count($reqSet)) )
-	{
-		for($kdx=0; $kdx < $loop2do; $kdx++)
-		{		
-			$dummy = $reqMgr->createFromMap($reqSet[$kdx],$importContext->tproject_id,$importContext->req_spec_id,
-											$importContext->user_id,null,$importOptions);
-			$items = array_merge($items,$dummy);
+	
+	if( !is_null($impSet) )
+	{ 
+		$reqSet = $impSet['info'];
+		// new dBug($reqSet);
+		// die();
+		
+		if( ($loop2do=count($reqSet)) )
+		{
+			for($kdx=0; $kdx < $loop2do; $kdx++)
+			{		
+				$dummy = $reqMgr->createFromMap($reqSet[$kdx],$importContext->tproject_id,
+												$importContext->req_spec_id,
+												$importContext->user_id,null,$importOptions);
+				$items = array_merge($items,$dummy);
+			}
 		}
 	}
-	return $items;
+	return array('items' => $items, 'userFeedback' => $impSet['userFeedback']);
 }
 
 

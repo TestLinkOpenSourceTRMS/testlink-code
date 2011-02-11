@@ -1,13 +1,13 @@
 {* 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: resultsByTesterPerBuild.tpl,v 1.3 2010/10/19 13:48:38 asimon83 Exp $
- *
- * Lists results and progress by tester per build in a grouping ExtJS table.
- * 
- * revisions:
- * 20101019 - asimon - BUGID 3911: show warning message instead of table if table is empty
- * 20100731 - asimon - initial commit
- *
+  TestLink Open Source Project - http://testlink.sourceforge.net/ 
+  $Id: resultsByTesterPerBuild.tpl,v 1.3.2.1 2011/02/11 07:50:51 mx-julian Exp $
+ 
+  Lists results and progress by tester per build in a grouping ExtJS table.
+  
+  revisions:
+  20101019 - asimon - BUGID 3911: show warning message instead of table if table is empty
+  20100731 - asimon - initial commit
+ 
  *}
  
 {lang_get var="labels"

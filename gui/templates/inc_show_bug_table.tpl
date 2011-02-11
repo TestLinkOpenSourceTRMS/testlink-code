@@ -1,8 +1,9 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_show_bug_table.tpl,v 1.10 2010/07/09 11:41:15 mx-julian Exp $
+$Id: inc_show_bug_table.tpl,v 1.11 2011/02/11 07:46:17 mx-julian Exp $
 
 rev :
+      20110127 - Julian - BUGID 3410 - Smarty 3.0 compatibility
       20100709 - Julian - show greyed delete icon if delete is not allowed
       20070304 - franciscom - added single quotes on bug_id on deleteBug_onClick() call
                               message improvement
@@ -10,10 +11,10 @@ rev :
 *}
 {* -------------------------------------------------------------------------------------- *}
 {* Manage missing arguments                                                               *}
-{if !isset($tableClassName) }
+{if !isset($tableClassName)}
     {assign var="tableClassName"  value="simple"}
 {/if}
-{if !isset($tableStyles) }
+{if !isset($tableStyles)}
     {assign var="tableStyles"  value="font-size:12px"}
 {/if}
 {* -------------------------------------------------------------------------------------- *}

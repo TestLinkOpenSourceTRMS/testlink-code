@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.163.2.2 2010/12/24 14:12:44 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.163.2.3 2011/02/11 08:16:35 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -250,7 +250,7 @@ class results extends tlObjectWithDB
 							&$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
 	{
 		$tstartOn = microtime(true);
-		echo ($tstartOn) . '<br>';
+		//echo ($tstartOn) . '<br>';
 
 		$this->priorityLevelsCfg = config_get('priority_levels');
 		$this->resultsCfg = config_get('results');
@@ -330,15 +330,15 @@ class results extends tlObjectWithDB
 			$all_results = $this->latest_results;
 			
 			$tstart = microtime(true);
-			echo ($tstart) . '<br>';
+			//echo ($tstart) . '<br>';
 			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, $platforms_to_query, 'a', $keywordId,
 			                                                 $owner, $startTime, $endTime, $executor,
 			                                                 $search_notes_string, $linkExecutionBuild,
 			                                                 $all_results);
 
 			$tend = microtime(true);
-			echo ($tend) . '<br>';
-            echo ($tend - $tstart) . ' seconds<br>';
+			//echo ($tend) . '<br>';
+            //echo ($tend - $tstart) . ' seconds<br>';
             
             // new dBug($this->executionsMap);
             
@@ -370,8 +370,8 @@ class results extends tlObjectWithDB
 		} // end if block
 
 			$tendOn = microtime(true);
-			echo ($tendOn) . '<br>';
-            echo ($tendOn - $tstartOn) . ' seconds<br>';
+			//echo ($tendOn) . '<br>';
+            //echo ($tendOn - $tstartOn) . ' seconds<br>';
 	} // end results constructor
 
 
@@ -1471,7 +1471,7 @@ class results extends tlObjectWithDB
 					$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
 					if( $queryCounter == 0)
 					{
-					  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+					  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 					}
 					$queryCounter++;
 					
@@ -1524,7 +1524,7 @@ class results extends tlObjectWithDB
 		
 		unset($infoToSave);
 		
-		echo 'Query Counter:' . $queryCounter . '<br>';
+		//echo 'Query Counter:' . $queryCounter . '<br>';
 		return $executionsMap;
 	} // end function
 

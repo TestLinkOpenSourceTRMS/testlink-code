@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: build_progress.class.php,v 1.9 2010/09/29 09:56:44 asimon83 Exp $
+ * @version CVS: $Id: build_progress.class.php,v 1.10 2011/02/11 14:51:07 asimon83 Exp $
  * 
  * @internal revisions:
  * 20100929 - asimon - corrected values for multiple platforms
@@ -33,6 +33,9 @@
  * 
  * @author Andreas Simon
  * @package TestLink
+ * 
+ * @internal revisions
+ * 20110211 - asimon - BUGID 4192: show only open builds by default
  */
 class build_progress extends tlObjectWithDB {
 	
@@ -121,6 +124,9 @@ class build_progress extends tlObjectWithDB {
 		
 		$this->labels = array('na' => lang_get('not_aplicable'));
 		
+		// BUGID 4192
+		$this->show_closed_builds = $show_closed_builds;
+		
 		$res_cfg = config_get('results');
 		foreach ($res_cfg['status_label_for_exec_ui'] as $status => $label) {
 			$this->status_map[$status] = $res_cfg['status_code'][$status];
@@ -147,6 +153,10 @@ class build_progress extends tlObjectWithDB {
 	 * @author Andreas Simon
 	 */
 	private function load_builds() {
+		// BUGID 3682
+		$option = $this->show_closed_builds ? null : testplan::GET_OPEN_BUILD;
+		$this->build_set = $this->tplan_mgr->get_builds($this->tplan_id, testplan::GET_ACTIVE_BUILD, $option);
+		
 		// BUGID 3682
 		$this->build_set = $this->tplan_mgr->get_builds($this->tplan_id, testplan::GET_ACTIVE_BUILD);
 		

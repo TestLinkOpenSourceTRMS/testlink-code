@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.333.2.8 2011/01/09 09:24:56 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.333.2.9 2011/02/11 08:28:40 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1028,7 +1028,7 @@ $tlCfg->req_cfg->expected_coverage_management = ENABLED;
 // This logic is implemented using following config parameter
 $tlCfg->req_cfg->coverageStatusAlgorithm['checkOrder']=array('atLeastOne','all');
 $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['atLeastOne']=array('failed','blocked');
-$tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['all']=array('not_run','passed');
+$tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['all']=array('passed');
 
 // Configure here what status has to get requirement when check of type 'all' fails like
 // in following situation (BUGID 2171)

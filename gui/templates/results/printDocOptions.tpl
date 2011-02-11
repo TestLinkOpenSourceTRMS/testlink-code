@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: printDocOptions.tpl,v 1.20.2.1 2011/02/11 08:20:53 mx-julian Exp $ 
+$Id: printDocOptions.tpl,v 1.20.2.2 2011/02/11 10:54:40 mx-julian Exp $ 
 Purpose: show tree on print feature
 
 rev:
@@ -20,21 +20,17 @@ rev:
 {if $gui->ajaxTree->loadFromChildren}
     {literal}
     <script type="text/javascript">
-    <!--
     treeCfg = {tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
-    //-->
     </script>
     {/literal}
     
     <script type="text/javascript">
-    <!--
 	    treeCfg.root_name = '{$gui->ajaxTree->root_node->name|escape:'javascript'}';
 	    treeCfg.root_id = {$gui->ajaxTree->root_node->id};
 	    treeCfg.root_href = '{$gui->ajaxTree->root_node->href}';
 	    treeCfg.children = {$gui->ajaxTree->children}
 	    treeCfg.cookiePrefix = '{$gui->ajaxTree->cookiePrefix}';
-    //-->
     </script>
 
     <script type="text/javascript" src='gui/javascript/execTree.js'></script>
@@ -47,14 +43,12 @@ rev:
     {/literal}
     
     <script type="text/javascript">
-    <!--
 		treeCfg.loader = '{$gui->ajaxTree->loader}';
 		treeCfg.root_name = '{$gui->ajaxTree->root_node->name|escape:'javascript'}';
 		treeCfg.root_id = {$gui->ajaxTree->root_node->id};
 		treeCfg.root_href = '{$gui->ajaxTree->root_node->href}';
 		treeCfg.enableDD = '{$gui->ajaxTree->dragDrop->enabled}';
 		treeCfg.dragDropBackEndUrl = '{$gui->ajaxTree->dragDrop->BackEndUrl}';
-    //-->
     </script>
     <script type="text/javascript" src='gui/javascript/treebyloader.js'></script>
 {/if} 

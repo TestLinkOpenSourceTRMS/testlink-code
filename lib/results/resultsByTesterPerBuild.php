@@ -8,11 +8,12 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.16 2010/10/19 13:48:38 asimon83 Exp $
+ * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.16.2.1 2011/02/11 14:51:10 asimon83 Exp $
  *
  * Lists results and progress by tester per build.
  * 
  * @internal revisions:
+ * 20110211 - asimon - BUGID 4192: show only open builds by default
  * 20101019 - asimon - BUGID 3911: show warning message instead of table if table is empty
  * 20100923 - eloff - refactored to use improved table interface
  * 20100923 - Julian - BUGID 3803
@@ -39,7 +40,8 @@ $gui = init_gui($args);
 $charset = config_get('charset');
 $results_config = config_get('results');
 
-$progress = new build_progress($db, $args->tplan_id);
+// BUGID 4192
+$progress = new build_progress($db, $args->tplan_id, $args->show_closed_builds);
 $matrix = $progress->get_results_matrix();
 $status_map = $progress->get_status_map();
 $build_set = $progress->get_build_set();
@@ -162,6 +164,19 @@ function init_args(&$tproject_mgr, &$tplan_mgr) {
 		
 	}
 	
+	// BUGID 4192
+	$selection = false;
+    $show_closed_builds = isset($_REQUEST['show_closed_builds']) ? true : false;
+	$show_closed_builds_hidden = isset($_REQUEST['show_closed_builds_hidden']) ? true : false;
+	if ($show_closed_builds) {
+		$selection = true;
+	} else if ($show_closed_builds_hidden) {
+		$selection = false;
+	} else if (isset($_SESSION['reports_show_closed_builds'])) {
+		$selection = $_SESSION['reports_show_closed_builds'];
+	}
+	$args->show_closed_builds = $_SESSION['reports_show_closed_builds'] = $selection;
+	
 	return $args;
 }
 
@@ -179,6 +194,9 @@ function init_gui(&$argsObj) {
 	$gui->warning_msg = '';
 	$gui->tproject_name = $argsObj->tproject_name;
 	$gui->tplan_name = $argsObj->tplan_info['name'];
+	
+	// BUGID 4192
+	$gui->show_closed_builds = $argsObj->show_closed_builds;
 	
 	return $gui;
 }

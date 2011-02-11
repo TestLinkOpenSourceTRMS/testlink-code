@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: printDocOptions.tpl,v 1.20 2010/11/06 18:46:33 amkhullar Exp $ 
+$Id: printDocOptions.tpl,v 1.20.2.1 2011/02/11 08:20:53 mx-julian Exp $ 
 Purpose: show tree on print feature
 
-rev: 
+rev:
+	20110211 - Julian - BUGID 4199 - tree div has to be named different than the tree variable
 	20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
 	20101027 - asimon - BUGID 3946: reqirement specification tree size
 	20080820 - franciscom - added code to manage EXTJS tree component
@@ -20,7 +21,7 @@ rev:
     {literal}
     <script type="text/javascript">
     <!--
-    treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+    treeCfg = {tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
     //-->
     </script>
@@ -40,7 +41,7 @@ rev:
 {else}
     {literal}
     <script type="text/javascript">
-    	treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+    	treeCfg = {tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                loader:"", enableDD:false, dragDropBackEndUrl:''};
     </script>
     {/literal}
@@ -101,7 +102,7 @@ rev:
 </form>
 </div>
 
-<div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
+<div id="tree_div" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 
 </body>
 </html>

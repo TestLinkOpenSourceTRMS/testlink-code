@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.118 2011/01/12 12:25:00 mx-julian Exp $
+// $Id: testlink_library.js,v 1.119 2011/02/11 10:49:18 mx-julian Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -1406,7 +1406,7 @@ function storeWindowSize(windowname) {
 function scrollToShowMe(oid) {
 	obj = document.getElementById(oid);
 	if (obj != null) {
-		obj.scrollIntoView();
+		obj.scrollIntoView(true);
 		obj.focus();
 	}
 }

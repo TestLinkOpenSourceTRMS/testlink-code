@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.52.2.3 2010/12/06 15:49:21 asimon83 Exp $ *}
+{* $Id: execNavigator.tpl,v 1.52.2.4 2011/02/11 08:21:22 mx-julian Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -90,6 +90,7 @@ function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build
 	treeCfg.root_id={$gui->ajaxTree->root_node->id};
 	treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
 	treeCfg.children={$gui->ajaxTree->children};
+	treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
 </script>
 
 <script type="text/javascript" src='gui/javascript/execTreeWithMenu.js'></script>

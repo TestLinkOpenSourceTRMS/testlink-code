@@ -8,11 +8,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: assignment_mgr.class.php,v 1.18 2010/12/22 20:11:22 franciscom Exp $
+ * @version    	CVS: $Id: assignment_mgr.class.php,v 1.19 2011/02/11 10:51:11 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal revisions:
  * 
+ * 20110207 - asimon - BUGID 4203 - use build_id when updating or deleting assignments because
+ *                                  of assignments per build
  * 20101222 - franciscom - BUGID 4121: get_not_run_tc_count_per_build() crashes
  * 20101206 - asimon - introduced new query for get_not_run_tc_count_per_build(), 
  *                     proposed by Francisco per mail
@@ -82,6 +84,28 @@ class assignment_mgr extends tlObjectWithDB
 		$sql = " DELETE FROM {$this->tables['user_assignments']}  {$where_clause}"; 
 		$result = $this->db->exec_query($sql);
 	}
+	
+	// BUGID 4203 - new function to delete assignments by feature id
+	//              and build_id
+	 
+	function delete_by_feature_id_and_build_id($feature_map) 
+	{
+		$feature_id_list = implode(",",array_keys($feature_map));
+		$where_clause = " WHERE feature_id IN ($feature_id_list) ";
+	    
+		$sql = " DELETE FROM {$this->tables['user_assignments']}  {$where_clause} ";
+		
+		// build_id is the same for all entries because of assignment form
+		// -> skip foreach after first iteration
+		$build_id = 0;
+		foreach ($feature_map as $key => $feature) {
+			$build_id = $feature['build_id'];
+			break;
+		}
+		
+		$sql .= " AND build_id = {$build_id} ";
+		$result = $this->db->exec_query($sql);
+	}
 
 
   	/**
@@ -132,7 +156,9 @@ class assignment_mgr extends tlObjectWithDB
 	 *                        that have the same name of user_assignment fields
 	 * 
 	 * @internal revisions:
-	 *   20100714 - asimon - BUGID 3406: modified to include build ID
+	 *   20110207 - asimon - BUGID 4203 - added build_id to where statement because of
+	 *                                   assignments per build
+	 *   20100714 - asimon - BUGID 3406 - modified to include build ID
 	 */
 	function update($feature_map) 
 	{
@@ -142,7 +168,7 @@ class assignment_mgr extends tlObjectWithDB
 			$sepa = "";
 			$sql = "UPDATE {$this->tables['user_assignments']} SET ";
 			// BUGID 3406 - added build_id
-			$simple_fields = array('user_id','assigner_id','type','status','build_id');
+			$simple_fields = array('user_id','assigner_id','type','status');
 			$date_fields = array('deadline_ts','creation_ts');  
 		
 			foreach($simple_fields as $idx => $field)
@@ -163,7 +189,7 @@ class assignment_mgr extends tlObjectWithDB
 				}
 			}
 			
-			$sql .= "WHERE feature_id={$feature_id}";
+			$sql .= "WHERE feature_id={$feature_id} AND build_id={$elem['build_id']}";
 			
 			$this->db->exec_query($sql);
 		}

@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tc_exec_assignment.php,v 1.61 2010/10/28 15:05:23 asimon83 Exp $
+ * @version    	CVS: $Id: tc_exec_assignment.php,v 1.62 2011/02/11 10:51:11 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
+ * 20110207 - asimon - BUGID 4203 - use new method to delete assignments to respect assignments per build
  * 20101028 - asimon - BUGID 3945: Assign Test Case Execution to a build shows all the test cases on applied filters
  * 20101024 - franciscom - method renamed to getFilteredSpecView() + changes in interface
  *						   BUGID 3934: Assign Test Case Execution - Execution type filter does not affect right pane	
@@ -68,7 +69,8 @@ if(!is_null($args->doAction))
 		$db_now = $db->db_now();
 
         $features2 = array( 'upd' => array(), 'ins' => array(), 'del' => array());
-	    $method2call = array( 'upd' => 'update', 'ins' => 'assign', 'del' => 'delete_by_feature_id');
+        // BUGID 4203 - use new method to delete assignments to respect assignments per build
+	    $method2call = array( 'upd' => 'update', 'ins' => 'assign', 'del' => 'delete_by_feature_id_and_build_id');
 	    $called = array( 'upd' => false, 'ins' => false, 'del' => false);
 
 		foreach($args->achecked_tc as $key_tc => $platform_tcversion)
@@ -124,14 +126,8 @@ if(!is_null($args->doAction))
 	    {
 	        if( count($features2[$key]) > 0 )
 	        {
-	            if( $key == 'del' )
-	            {
-	                $assignment_mgr->$method2call[$key](array_keys($values));
-	            }
-	            else
-	            {
-	           	    $assignment_mgr->$method2call[$key]($values);
-	           	}
+	           	$assignment_mgr->$method2call[$key]($values);
+	           	
 	           	$called[$key]=true;
 	        }  
 	    }

@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.35.2.5 2011/01/14 14:39:04 asimon83 Exp $ 
+$Id: tcStepEdit.tpl,v 1.35.2.6 2011/02/11 07:51:12 mx-julian Exp $ 
 Purpose: create/edit test case step
 
 rev:
+  20110209 - Julian - BUGID 4230 - removed old code to set focus on step
   20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
   20110112 - Julian - BUGID 3901 - Scroll window to step implemented for vertical layout and
                                    newly added steps
@@ -327,10 +328,6 @@ DEBUG: $gui->action: {$gui->action} <br>
     	     {else}  onclick="show_modified_warning=false; javascript:history.back();" {/if} />
 	</div>	
 </form>
-
-<script type="text/javascript" defer="1">
-   	document.forms[0].step_number.focus();
-</script>
 
 </div>
 </body>

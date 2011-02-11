@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: printDocOptions.tpl,v 1.21 2010/11/13 11:00:56 franciscom Exp $ 
+$Id: printDocOptions.tpl,v 1.22 2011/02/11 12:15:12 mx-julian Exp $ 
 Purpose: show tree on print feature
 
-rev: 
-  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+rev:
+	20110211 - Julian - BUGID 4199 - tree div has to be named different than the tree variable
+	20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 	20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
 	20101027 - asimon - BUGID 3946: reqirement specification tree size
 	20080820 - franciscom - added code to manage EXTJS tree component
@@ -19,7 +20,7 @@ rev:
 
 {if $gui->ajaxTree->loadFromChildren}
     <script type="text/javascript">
-    treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+    treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                 loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
 	  
 	  treeCfg.root_name = '{$gui->ajaxTree->root_node->name|escape:'javascript'}';
@@ -32,7 +33,7 @@ rev:
     <script type="text/javascript" src='gui/javascript/execTree.js'></script>
 {else}
     <script type="text/javascript">
-    	treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+    	treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                   loader:"", enableDD:false, dragDropBackEndUrl:'' };
 
 		treeCfg.loader = '{$gui->ajaxTree->loader}';
@@ -88,7 +89,7 @@ rev:
 </form>
 </div>
 
-<div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
+<div id="tree_div" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 
 </body>
 </html>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.45 $
- * @modified $Date: 2011/02/11 12:54:48 $ by $Author: mx-julian $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2011/02/11 13:32:14 $ by $Author: mx-julian $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -170,9 +170,6 @@ if (count($req_spec_map)) {
 
 
 $gui->summary = $eval_status_map;
-//echo "<pre>";
-//print_r($gui->summary);
-//echo "</pre>";
 $gui->total_reqs = $total_reqs;
 
 $smarty = new TLSmarty();

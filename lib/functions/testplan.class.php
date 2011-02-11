@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.244 2011/01/21 18:52:35 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.245 2011/02/11 12:54:49 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -877,6 +877,7 @@ class testplan extends tlObjectWithAttachments
 			$builds['join']=" LEFT OUTER JOIN {$this->tables['builds']} B ON B.id=E.build_id ";
 	    }
 		
+	    // BUGID 4206 - added exec_on_build to output
 	    // BUGID 3406 - assignments per build
 	    // BUGID 3492 - Added execution notes to sql statement of get_linked_tcversions
 		$sql = "/* $debugMsg */ " .
@@ -889,7 +890,7 @@ class testplan extends tlObjectWithAttachments
 			   " E.id AS exec_id, E.tcversion_number," .
 			   " E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, {$more_exec_fields}" .
 			   " E.execution_type AS execution_run_type, E.testplan_id AS exec_on_tplan, " .
-			   " E.execution_ts, E.tester_id, E.notes as execution_notes, ".
+			   " E.execution_ts, E.tester_id, E.notes as execution_notes, E.build_id as exec_on_build, ".
 		       " UA.build_id as assigned_build_id, " . // 3406
 			   " UA.user_id,UA.type,UA.status,UA.assigner_id,T.urgency, " .
 			   " COALESCE(E.status,'" . $status_not_run . "') AS exec_status, ".

@@ -30,7 +30,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.775 2011/01/13 15:19:06 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.776 2011/02/11 12:54:48 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1743,7 +1743,7 @@ $TLS_report_display_options = "Report display options";
 
 // ----- gui/templates/resultsReqs.tpl -----
 $TLS_no_srs_defined = "No Requirements Specification available for this Test Project.";
-$TLS_no_finished_reqs = "No finished Requirements available for this Test Project.";
+$TLS_no_matching_reqs = "No matching Requirements available.";
 $TLS_count_of_reqs = "Number of Requirements";
 $TLS_req_availability = "Requirement-Availability";
 $TLS_show_only_finished_reqs = "Show only finished Requirements";
@@ -1754,13 +1754,24 @@ $TLS_partially_passed = "Partially passed";
 $TLS_partially_passed_reqs = "Partially passed Requirements";
 $TLS_uncovered = "Not covered";
 $TLS_uncovered_reqs = "Not covered Requirements";
+$TLS_passed_nfc = "Passed (nfc)";
+$TLS_passed_nfc_reqs = "Passed Requirements (nfc)";
+$TLS_failed_nfc = "Failed (nfc)";
+$TLS_failed_nfc_reqs = "Failed Requirements (nfc)";
+$TLS_blocked_nfc = "Blocked (nfc)";
+$TLS_blocked_nfc_reqs = "Blocked Requirements (nfc)";
+$TLS_not_run_nfc = "Not Run (nfc)";
+$TLS_not_run_nfc_reqs = "Not Run Requirements (nfc)";
+$TLS_partially_passed_nfc = "Partially Passed (nfc)";
+$TLS_partially_passed_nfc_reqs = "Partially Passed Requirements (nfc)";
 $TLS_linked_tcs = "Linked test cases";
 $TLS_no_linked_tcs = "No linked test cases";
+$TLS_title_resultsReqsProgress = "Test Progress based on Requirements";
+$TLS_info_resultsReqsProgress = "<u>Hint:</u> nfc = not fully covered";
+$TLS_title_resultsReqs = "Detailed Test Progress based on Requirements";
 $TLS_info_resultsReqs = "This report shows existing requirements and provides information " .
                         "about their testing progress, expressed by the number of linked " .
-                        "test cases with the corresponding execution results. To see " .
-                        "the result for each linked test case of a requirement make the " .
-                        "hidden \"Linked test cases\" column visible.";
+                        "test cases with the corresponding execution results.";
 
 // IMPORTANT for dynamic generation of labels
 // $TLS_req_title_<test case status>

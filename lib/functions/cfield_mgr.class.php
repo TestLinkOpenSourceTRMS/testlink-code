@@ -12,6 +12,7 @@
  *
  * @internal Revisions:
  *
+ * 20110213 - franciscom - BUGID 4222 - added sanitize() method
  * 20110123 - franciscom - BUGID 3338 - getXMLServerParams() -> renamed getXMLRPCServerParams
  * 20110120 - Julian - BUGID 4164 - lists and multiselection lists do not use more space than
  *                                  necessary anymore
@@ -1200,6 +1201,51 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     	return($this->db->fetchRowsIntoMap($sql,'field_id'));
 	}
 
+	/*
+	 *
+	 *	keys	name	-> trim will be applied
+     *			label	-> trim will be applied
+     *	   		type	-> intval() wil be applied
+     *	   		possible_values
+     *	   		show_on_design	-> trasformation on 1/0 using intval() [*]
+     *	   		enable_on_design	-> [*]
+     *	   		show_on_execute	-> [*]
+     *	   		enable_on_execute	-> [*]
+     *	   		show_on_testplan_design	-> [*]
+     *	   		enable_on_testplan_design	-> [*]
+     *	   		required	-> [*]
+     *
+	 */
+	function sanitize($cf)
+	{
+		$safe = $cf;
+		
+		// remove the standard set of characters considered harmful
+		// "\0" - NULL, "\t" - tab, "\n" - new line, "\x0B" - vertical tab
+		// "\r" - carriage return
+		// and spaces
+		// fortunatelly this is trim standard behaviour
+		$k2san = array('name','label');
+		foreach($k2san as $key)
+		{	
+			$safe[$key] = $this->db->prepare_string(trim($cf[$key]));
+		}	    
+		
+		// seems here is better do not touch.
+	    $safe['possible_values'] = $this->db->prepare_string($cf['possible_values']);
+
+		$onezero = array('required','show_on_design','enable_on_design','show_on_testplan_design',
+						 'enable_on_testplan_design','show_on_execution','enable_on_execution');
+	
+		foreach($onezero as $key)
+	    {
+	    	$safe[$key] = (isset($cf[$key]) && intval($cf[$key])) > 0 ? 1 : 0;
+	    }
+
+	    $safe['type'] = intval($cf['type']);
+		
+		return $safe;
+	}	
 
   /*
     function: create a custom field
@@ -1228,11 +1274,8 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   */
 function create($cf)
 {
-    $ret = array('status_ok' => 0, 'id' => 0, 'msg' => 'ko');
-
-    $my_name=$this->db->prepare_string($cf['name']);
-    $my_label=$this->db->prepare_string($cf['label']);
-    $my_pvalues=$this->db->prepare_string($cf['possible_values']);
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	$ret = array('status_ok' => 0, 'id' => 0, 'msg' => 'ko');
 
 	// This method is also used to create CF using import.
 	// To avoid crash if people import using old format (previous to 2.0), 
@@ -1240,16 +1283,20 @@ function create($cf)
 	//
 	$default_values = array('required' => 0);
 	$cf = array_merge($default_values,$cf);
+	$safecf = $this->sanitize($cf);	
 
-    $sql="INSERT INTO {$this->object_table} " .
-         " (name,label,type,possible_values, " .
-         "  show_on_design,enable_on_design, " .
-         "  show_on_testplan_design,enable_on_testplan_design, " .
-         "  show_on_execution,enable_on_execution,required) " .
-         " VALUES('{$my_name}','{$my_label}',{$cf['type']},'{$my_pvalues}', " .
-         "        {$cf['show_on_design']},{$cf['enable_on_design']}," .
-         "        {$cf['show_on_testplan_design']},{$cf['enable_on_testplan_design']}," .
-         "        {$cf['show_on_execution']},{$cf['enable_on_execution']},{$cf['required']})";
+	$sql="/* $debugMsg */ INSERT INTO {$this->object_table} " .
+	     " (name,label,type,possible_values, " .
+	     "  show_on_design,enable_on_design, " .
+	     "  show_on_testplan_design,enable_on_testplan_design, " .
+	     "  show_on_execution,enable_on_execution,required) " .
+	     " VALUES('" . $safecf['name'] . "','" . $safecf['label'] . "'," . 
+	     		intval($safecf['type']) . ",'" . $safecf['possible_values'] . "', " .
+	     "		{$safecf['show_on_design']},{$safecf['enable_on_design']}," .
+	     "		{$safecf['show_on_testplan_design']},{$safecf['enable_on_testplan_design']}," .
+	     "		{$safecf['show_on_execution']},{$safecf['enable_on_execution']}," . 
+	     "		{$safecf['required']})";
+
     $result=$this->db->exec_query($sql);
 
    	if ($result)
@@ -1296,30 +1343,30 @@ function create($cf)
   */
 	function update($cf)
 	{
-		$my_name = $this->db->prepare_string($cf['name']);
-		$my_label = $this->db->prepare_string($cf['label']);
-		$my_pvalues = $this->db->prepare_string($cf['possible_values']);
 
-		$required = intval($cf['required']) > 0 ? 1 : 0;
-		
-		$sql ="UPDATE {$this->tables['custom_fields']}  " .
-			 " SET name='{$my_name}',label='{$my_label}'," .
-			 "     type={$cf['type']},possible_values='{$my_pvalues}'," .
-			 "     show_on_design={$cf['show_on_design']}," .
-			 "     enable_on_design={$cf['enable_on_design']}," .
-			 "     show_on_testplan_design={$cf['show_on_testplan_design']}," .
-			 "     enable_on_testplan_design={$cf['enable_on_testplan_design']}," .
-			 "     show_on_execution={$cf['show_on_execution']}," .
-			 "     enable_on_execution={$cf['enable_on_execution']}," .
-			 "     required={$required}" .
-			 " WHERE id={$cf['id']}";
+		$safecf = $this->sanitize($cf);
+		$sql =	"UPDATE {$this->tables['custom_fields']}  " .
+			 	" SET	name='" . $safecf['name'] . "'," . 
+			 	"		label='" . $safecf['label'] . "'," .
+			 	"     	type={$safecf['type']}," .
+			 	"		required={$safecf['required']}," .
+			 	"		possible_values='" . $safecf['possible_values'] . "'," .
+			 	"     	show_on_design={$safecf['show_on_design']}," .
+			 	"     	enable_on_design={$safecf['enable_on_design']}," .
+			 	"     	show_on_testplan_design={$safecf['show_on_testplan_design']}," .
+			 	"     	enable_on_testplan_design={$safecf['enable_on_testplan_design']}," .
+			 	"     	show_on_execution={$safecf['show_on_execution']}," .
+			 	"     	enable_on_execution={$safecf['enable_on_execution']}" .
+			 	" WHERE id={$safecf['id']}";
+			 
+			 
 		$result = $this->db->exec_query($sql);
 
 		if ($result)
 		{
-			$sql = "UPDATE {$this->tables['cfield_node_types']} " .
-				" SET node_type_id={$cf['node_type_id']}" .
-				" WHERE field_id={$cf['id']}";
+			$sql = 	"UPDATE {$this->tables['cfield_node_types']} " .
+					" SET node_type_id={$safecf['node_type_id']}" .
+					" WHERE field_id={$safecf['id']}";
 			$result = $this->db->exec_query($sql);
 		}
 		return $result ? 1 : 0;

@@ -12,6 +12,8 @@
  * @internal Revisions:
  * 20110205 - franciscom - BUGID 4207 - set_step_number() - 
  *						   MSSQL problems when table alias is used on SQL UPDATE 
+ *						   BUGID 4204 - update problem due to alias, declared as issue 3849 fixed on 	
+ *						   but not really fixed.
  * 20101212 - franciscom - internal bug get_last_execution() empty where clause -> do not use $id
  *						   added new options getSteps	
  * 20101202 - asimon - BUGID 4067: refresh tree problems
@@ -3615,12 +3617,14 @@ class testcase extends tlObjectWithAttachments
 	  returns: 1 -> everything ok.
 	           0 -> some error
 	  rev:
-	  	  BUGID - 3849
+	  	  BUGID - 3849 -> not completely fixed -> BUGID 4204
 	*/
 	function update_active_status($id,$tcversion_id,$active_status)
 	{
-		$sql = " UPDATE {$this->tables['tcversions']} SET active={$active_status}" .
-			   " WHERE tcversions.id = {$tcversion_id}";
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = 	" /* $debugMsg */ UPDATE {$this->tables['tcversions']} " .
+				" SET active={$active_status}" .
+			   	" WHERE id = {$tcversion_id}";
 	
 		$result = $this->db->exec_query($sql);
 	
@@ -3654,9 +3658,11 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function update_external_id($id,$external_id)
 	{
-	  $sql="UPDATE {$this->tables['tcversions']} " .
-	       "SET tc_external_id={$external_id} " .
-	       "WHERE id IN ( SELECT id FROM {$this->tables['nodes_hierarchy']} WHERE parent_id={$id} ) ";
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql =	"/* $debugMsg */ UPDATE {$this->tables['tcversions']} " .
+				" SET tc_external_id={$external_id} " .
+				" WHERE id IN (" .
+				" SELECT id FROM {$this->tables['nodes_hierarchy']} WHERE parent_id={$id} ) ";
 	      
 	  $result=$this->db->exec_query($sql);
 		return $result ? 1: 0;

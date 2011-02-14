@@ -1,5 +1,5 @@
 ===============================================================
-                    TestLink 1.9 RC1 - Read me
+                    TestLink 2.0 Development - Read me
 ===============================================================
 
 Contents
@@ -34,12 +34,7 @@ There is no hidden fee - 100% free for using!
 This is release candidate of final and stable release and we recommend 
 to update from older version.
 
-New features within 1.8: 
-    * Platforms - possibility to test with several configuration/environment
-    * Requirements versions, type
-    * Test case: Step-by-step structure
-    * Inventory
-    * Compatibility with PHP5.3 
+New features on 2.0: 
     
 See CHANGELOG file for detailed list.
 
@@ -54,7 +49,7 @@ Server environment should consists from:
 
 Supported client web-browsers: 
 - Firefox 3.x
-- Internet Explorer 6.x, 7.x, 8.x
+- Internet Explorer 7.x, 8.x
 - Chrome   
 
 
@@ -106,7 +101,7 @@ Check Installation manual and TestLink forum if you meet a problem.
 When accessing Installer page you will found following options:
 
  - New Installation
- - Migration from 1.8 to 1.9
+ - Migration from 1.9 to 2.0 ???
 
  Steps
  - Make a Backup of your current database.

@@ -11,7 +11,8 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *	20100213 - franciscom - new function getItemsFromSimpleXMLObj() 
+ *	20110205 - franciscom - improvements on getItemsFromSimpleXMLObj() 
+ *
  *
  */
 
@@ -76,6 +77,26 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
 /**
  * $simpleXMLItems
  * $itemStructure: keys elements, attributes
+ *
+ *				   both keys are maps:
+ *				   key: element/attribute type
+ *				   value: map 
+ *						  key: attribute name 
+ *						  value: options used to request special
+ *							     processing like trim(), intval(),etc.
+ *								
+ *				   Example:
+ *				   $tcXML['elements'] = array('string' => array("summary" => null,
+ *																"preconditions" => 'trim'),
+ *											  'integer' => array("node_order" => 'intval',
+ *																 "externalid" => null,
+ *			                                  				     "execution_type" => null,
+ *			                                  				     "importance" => null));
+ *
+ * 				   $tcXML['attributes'] = array('string' => array("name" => 'trim'), 
+ *                                              'integer' => array('internalid' => null));
+ *	
+ *											   		
  */
 function getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure)
 {
@@ -96,13 +117,17 @@ function getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure)
 			foreach($itemStructure['elements'] as $castType => $keyValues)
   			{
   				// new dBug($castType);	new dBug($keyValues); 
-				foreach($keyValues as $key)
+				foreach($keyValues as $key => $fn2apply)
   				{
   					$dummy[$key] = null;
   					if( property_exists($simpleXMLItems[$idx],$key) )
   					{
   						$dummy[$key] = $simpleXMLItems[$idx]->$key;
   				    	settype($dummy[$key],$castType);
+  				    	if(!is_null($fn2apply))
+  				    	{
+  				    		$dummy[$key] = $fn2apply($dummy[$key]);
+  				    	}		
   				    }
   				}
   			}	
@@ -111,13 +136,17 @@ function getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure)
 			{
 				foreach($itemStructure['attributes'] as $castType => $keyValues)
   				{
-					foreach($keyValues as $key)
+					foreach($keyValues as $key => $fn2apply)
   					{
   						$dummy[$key] = null;
   						if( isset($simpleXMLItems[$idx],$key) )
   						{
   							$dummy[$key] = $simpleXMLItems[$idx][$key];
   					    	settype($dummy[$key],$castType);
+  				    		if(!is_null($fn2apply))
+  				    		{
+  				    			$dummy[$key] = $fn2apply($dummy[$key]);
+  				    		}		
   					    }
   					}
   				}	

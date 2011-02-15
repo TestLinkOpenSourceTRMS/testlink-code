@@ -16,7 +16,7 @@
  * and text at the end.
  *
  * Warning: be careful about format - the file is parsed by script
- * 		comment only with "//" except header
+ * 		    comment only with "//" except header
  * Warning: for JS string you must use \\n to get \n for end of line
  * Note: API interface is not localized (except error messages)
  * 

@@ -385,3 +385,4 @@ function launchInsertStep(step_id)
 	  </table>
 	</div>
 {/if}
+</div>

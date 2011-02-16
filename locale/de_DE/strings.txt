@@ -27,7 +27,7 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.751.2.24
+ * Last Update according to en_GB string file with commit id cecf6dc9c3d963fac5f569c706983d5eb045ee21
  *
  **/
 
@@ -1743,7 +1743,7 @@ $TLS_report_display_options = "Report-Anzeigeoptionen";
 
 // ----- gui/templates/resultsReqs.tpl -----
 $TLS_no_srs_defined = "Keine Anforderungs-Definition für dieses Testprojekt vorhanden.";
-$TLS_no_finished_reqs = "Es sind keine fertigen Anforderungen für dieses Testprojekt verfügbar.";
+$TLS_no_matching_reqs = "Es sind keine passenden Anforderungen für dieses Testprojekt verfügbar.";
 $TLS_count_of_reqs = "Anzahl der Anforderungen";
 $TLS_req_availability = "Verfügbare Anforderungen";
 $TLS_show_only_finished_reqs = "Zeige nur fertige Anforderungen";
@@ -1754,14 +1754,25 @@ $TLS_partially_passed = "Teilweise erfüllt";
 $TLS_partially_passed_reqs = "Teilweise erfüllte Anforderungen";
 $TLS_uncovered = "nicht abgedeckt";
 $TLS_uncovered_reqs = "Nicht abgedeckte Anforderungen";
+$TLS_passed_nfc = "OK (nva)";
+$TLS_passed_nfc_reqs = "OK Anforderungen (nva)";
+$TLS_failed_nfc = "Fehlgeschlagen (nva)";
+$TLS_failed_nfc_reqs = "Fehlgeschlagene Anforderungen (nva)";
+$TLS_blocked_nfc = "Blockiert (nva)";
+$TLS_blocked_nfc_reqs = "Blockierte Anforderungen (nva)";
+$TLS_not_run_nfc = "Nicht ausgeführt (nva)";
+$TLS_not_run_nfc_reqs = "Nicht ausgeführte Anforderungen (nva)";
+$TLS_partially_passed_nfc = "Teilweise OK (nva)";
+$TLS_partially_passed_nfc_reqs = "Teilweise OK Anforderungen (nva)";
 $TLS_linked_tcs = "Zugewiesene Testfälle";
 $TLS_no_linked_tcs = "Keine zugewiesenen Testfälle";
+$TLS_title_resultsReqsProgress = "Test Progress based on Requirements";
+$TLS_info_resultsReqsProgress = "<u>Hinweis:</u> nva = nicht vollständig abgedeckt";
+$TLS_title_resultsReqs = "Detailed Test Progress based on Requirements";
 $TLS_info_resultsReqs = "Dieser Report zeigt die existierenden Anforderungen und stellt " .
                         "Informationen über ihren Testfortschritt bereit. Dieser wird " .
                         "durch die Anzahl der zugewiesenen Testfälle und deren Testergebnisse " .
-                        "ausgedrückt. Um die Testergebnisse für jeden zugewiesenen Testfall " .
-                        "sehen zu können machen sie die versteckte Spalte \"Zugewiesene " .
-                        "Testfälle\" sichtbar";
+                        "ausgedrückt.";
 
 // IMPORTANT for dynamic generation of labels
 // $TLS_req_title_<test case status>
@@ -3171,6 +3182,7 @@ $TLS_import_req_spec_ancestor_skipped = 'Wurde übersprungen - Anf. Spez. - Dok 
 
 $TLS_import_req_created = 'Wurde erstellt - Anforderung - Dok ID:%s';
 $TLS_import_req_skipped = 'Wurde übersprungen - Anforderung - Dok ID:%s - Existiert bereits in anderem Zweig';
+$TLS_import_req_skipped_plain = 'Wurde übersprungen - Grund: %s';
 $TLS_import_req_updated = 'Wurde aktualisiert - Anforderung - Dok ID:%s';
 $TLS_import_req_new_version_created = 'Neue Version erstellt - Anforderung - Dok ID:%s';
 $TLS_import_req_new_version_failed = 'Neue Version konnte nicht erstellt werden - %s';

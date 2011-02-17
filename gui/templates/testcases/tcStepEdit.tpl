@@ -4,17 +4,18 @@ $Id: tcStepEdit.tpl,v 1.42 2011/02/11 10:49:54 mx-julian Exp $
 Purpose: create/edit test case step
 
 rev:
-  20110209 - Julian - BUGID 4230 - removed old code to set focus on step
-  20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
-  20110112 - Julian - BUGID 3901 - Scroll window to step implemented for vertical layout and
-                                   newly added steps
-  20110111 - Julian - Improved modified warning message when navigating away without saving
-  20110106 - franciscom - BUGID 4136 - missing implementation on BUGID 3241
-  												layout was not used on CREATE
-  20101016 - franciscom - added id to table rows with step data 
-             BUGID 3901: Edit Test Case STEP - scroll window to show selected step
+	20110217 - Julian - BUGID 3737, 4002, 4250 - Cancel Button was not working properly
+	20110209 - Julian - BUGID 4230 - removed old code to set focus on step
+	20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
+	20110112 - Julian - BUGID 3901 - Scroll window to step implemented for vertical layout and
+	                                 newly added steps
+	20110111 - Julian - Improved modified warning message when navigating away without saving
+	20110106 - franciscom - BUGID 4136 - missing implementation on BUGID 3241
+	                                     layout was not used on CREATE
+	20101016 - franciscom - added id to table rows with step data 
+	                        BUGID 3901: Edit Test Case STEP - scroll window to show selected step
 	20100621 - eloff - BUGID 3241 - Implement vertical layout
-  20100529 - franciscom - BUGID 3493 - using escape:'url'
+	20100529 - franciscom - BUGID 3493 - using escape:'url'
 	20100403 - franciscom - added create step button while editing existent step
 	                        BUGID 3359 - copy test case step
 	20100327 - franciscom - improvements on goback logic
@@ -39,7 +40,7 @@ rev:
 
 {assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id&show_mode=$showMode"}
 {assign var="goBackAction" value="$basehref$tcViewAction"}
-{assign var="goBackActionURLencoded" value="$goBackAction|escape:'url'"}
+{assign var="goBackActionURLencoded" value=$goBackAction|escape:'url'}
 {assign var="url_args" value="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
 {assign var="url_args" value="$url_args&goback_url=$goBackActionURLencoded&step_id="}
 {assign var="hrefEditStep"  value="$basehref$module$url_args"}

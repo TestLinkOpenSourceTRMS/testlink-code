@@ -3,18 +3,21 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: index.php,v $
+ * Filename: index.php
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2010/06/24 17:25:53 $ by $Author: asimon83 $
  * @Author: francisco.mancardi@gmail.com
  *
- * rev: 
+ * @internal revision 
+ * 20110219 - franciscom - order file list using natsort()
+ *
  */
 require_once 'util.php';
 require_once 'sample.inc.php';
 
-define('DBUG_ON',1);  // ADDED to enable ALWAYS dBug()
+if( !defined('DBUG_ON') )
+{
+	define('DBUG_ON',1);  // ADDED to enable ALWAYS dBug()
+}    
 
 $target_dir = '.';
 $examples = null;
@@ -40,6 +43,10 @@ if ($handle = opendir($target_dir))
 		}
 	}
 	closedir($handle);
+	if(!is_null($examples))
+	{
+		natsort($examples);
+	}	
 }
 
 echo '<br><br>Click on file name to launch sample client<br><br>';

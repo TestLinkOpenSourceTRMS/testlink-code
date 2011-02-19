@@ -3,13 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.84 $
- * @modified $Date: 2010/11/06 11:43:10 $ by $Author: amkhullar $
+ * Filename tcImport.php
  * 
  * Scope: control test specification import
  * 
  * Revision:
+ *	20110219 - franciscom - fixed getItemsFromSimpleXMLObj() calls.
  *	20101106 - franciscom - fixed warning on event viewer when there are no keywords defined on test project
  *	20101002 - franciscom - BUGID 3801
  *  20100911 - amitkhullar - BUGID 3764 - Req Mapping Error while import of Test cases.
@@ -655,19 +654,19 @@ function create_xml_tcspec_from_xls($xls_filename,$xml_filename)
 	    
 		// $summary = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_SUMMARY]));
 	    // 20090117 - contribution - BUGID 1992  // 20090402 - BUGID 1519
-	    // $summary = str_replace('…',"...",$xls_rows[$idx][IDX_COL_SUMMARY]);  
+	    // $summary = str_replace('ï¿½',"...",$xls_rows[$idx][IDX_COL_SUMMARY]);  
 	    $summary = convert_special_char($xls_rows[$idx][IDX_COL_SUMMARY]);  
 		$summary = nl2p(htmlspecialchars($summary));
 		fwrite($xmlFileHandle,"<summary><![CDATA[" . $summary . "]]></summary>\n");
 	    
 	    // 20090117 - BUGID 1991,1992  // 20090402 - BUGID 1519
-	    // $steps = str_replace('…',"...",$xls_rows[$idx][IDX_COL_STEPS]);
+	    // $steps = str_replace('ï¿½',"...",$xls_rows[$idx][IDX_COL_STEPS]);
 	    $steps = convert_special_char($xls_rows[$idx][IDX_COL_STEPS]);
 	    $steps = nl2p(htmlspecialchars($steps));
 	    fwrite($xmlFileHandle,"<steps><![CDATA[".$steps."]]></steps>\n");
 	    
 	    // 20090117 - BUGID 1991,1992  // 20090402 - BUGID 1519
-	    // $expresults = str_replace('…',"...",$xls_rows[$idx][IDX_COL_EXPRESULTS]);
+	    // $expresults = str_replace('ï¿½',"...",$xls_rows[$idx][IDX_COL_EXPRESULTS]);
 		$expresults = convert_special_char($xls_rows[$idx][IDX_COL_EXPRESULTS]);
 		$expresults = nl2p(htmlspecialchars($expresults));
 	    fwrite($xmlFileHandle,"<expectedresults><![CDATA[".$expresults."]]></expectedresults>\n");
@@ -903,9 +902,13 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
 	$loops2do=sizeof($xmlTCs);
 	$tcaseSet = array();
 	
-	$tcXML['elements'] = array('string' => array("summary","preconditions"),
-			                   'integer' => array("node_order","externalid","execution_type","importance"));
-	$tcXML['attributes'] = array('string' => array("name"), 'integer' =>array('internalid'));
+	// 20110219 
+	$tcXML['elements'] = array('string' => array("summary" => null,"preconditions" => null),
+                               'integer' => array("node_order" => null,"externalid" => null,
+                               					  "execution_type" => null ,"importance" => null));
+	$tcXML['attributes'] = array('string' => array("name" => 'trim'), 
+	                             'integer' =>array('internalid' => null));
+
 
 	for($idx = 0; $idx < $loops2do; $idx++)
 	{
@@ -950,9 +953,11 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
  */
 function getStepsFromSimpleXMLObj($simpleXMLItems)
 {
-  	$itemStructure['elements'] = array('string' => array("actions","expectedresults"),
-				                       'integer' => array("step_number","execution_type"));
+  	$itemStructure['elements'] = array('string' => array("actions"=>null,"expectedresults" => null),
+				                       'integer' => array("step_number" => null,"execution_type" => null));
 				                       
+    // 20110205 - franciscom - seems key 'transformations' is not managed on
+    // getItemsFromSimpleXMLObj(), then ??? is useless???				                       
   	$itemStructure['transformations'] = array("expectedresults" => "expected_results");
 				                       
 	$items = getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure);
@@ -977,7 +982,7 @@ function getStepsFromSimpleXMLObj($simpleXMLItems)
 
 function getCustomFieldsFromSimpleXMLObj($simpleXMLItems)
 {
-  	$itemStructure['elements'] = array('string' => array("name","value"));
+  	$itemStructure['elements'] = array('string' => array("name" => 'trim',"value" => 'trim'));
 	$items = getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure);
 	return $items;
 
@@ -985,15 +990,16 @@ function getCustomFieldsFromSimpleXMLObj($simpleXMLItems)
 
 function getRequirementsFromSimpleXMLObj($simpleXMLItems)
 {
-  	$itemStructure['elements'] = array('string' => array("req_spec_title","doc_id","title"));
+  	$itemStructure['elements'] = array('string' => array("req_spec_title" => 'trim',
+  														 "doc_id" => 'trim' ,"title" => 'trim' ));
 	$items = getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure);
 	return $items;
 }
 
 function getKeywordsFromSimpleXMLObj($simpleXMLItems)
 {
-  	$itemStructure['elements'] = array('string' => array("notes"));
-  	$itemStructure['attributes'] = array('string' => array("name"));
+  	$itemStructure['elements'] = array('string' => array("notes" => null));
+  	$itemStructure['attributes'] = array('string' => array("name" => 'trim'));
 	$items = getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure);
 	return $items;
 }
@@ -1021,9 +1027,9 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 	if(is_null($tsuiteXML) )
 	{
 		$tsuiteXML = array();
-		$tsuiteXML['elements'] = array('string' => array("details"),
-			                           'integer' => array("node_order"));
-		$tsuiteXML['attributes'] = array('string' => array("name"));
+		$tsuiteXML['elements'] = array('string' => array("details" => null),
+			                           'integer' => array("node_order" => null));
+		$tsuiteXML['attributes'] = array('string' => array("name" => 'trim'));
 		
 		$tsuiteMgr = new testsuite($dbHandler);
 		

@@ -1,19 +1,15 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.24 2010/10/17 17:41:51 franciscom Exp $ 
-Purpose: smarty template - edit / delete Test Plan 
+Filename: planView.tpl
+smarty template - edit / delete Test Plan 
 
 Development hint:
      some smarty and javascript variables are created on the inc_*.tpl files.
      
 Rev:
+    20110220 - franciscom - use of thead abd tbody
     20101017 - franciscom - image access refactored (tlImages)
     20100925 - franciscom - BUGID 3649 - test plan export/import -> EXPORT
-    20080805 - franciscom - api config refactoring
-    20080116 - franciscom - added option to show/hide id useful for API 
-    20080109 - franciscom - added sort table by JS
-    20071006 - franciscom - added logic to use ext js confirm widget
-     
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -65,6 +61,7 @@ var del_action=fRoot+'{$deleteAction}';
 	{$labels.testplan_txt_empty_list}
 {else}
 	<table id='item_view'class="simple sortable" width="95%">
+		<thead>
 		<tr>
 			<th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.testplan_th_name}</th> 			
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_notes}</th>
@@ -74,6 +71,8 @@ var del_action=fRoot+'{$deleteAction}';
 			<th class="{$noSortableColumnClass}">{$labels.export}</th>
 			<th class="{$noSortableColumnClass}">{$labels.import}</th>
 		</tr>
+		</thead>
+		<tbody>
 		{foreach item=testplan from=$gui->tplans}
 		<tr>
 			<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testplan.id}</span>
@@ -125,7 +124,7 @@ var del_action=fRoot+'{$deleteAction}';
 			</td>
 		</tr>
 		{/foreach}
-
+		</tbody>
 	</table>
 
 {/if}

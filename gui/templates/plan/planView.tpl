@@ -8,6 +8,7 @@ Development hint:
      
 Rev:
     20110220 - franciscom - use of thead abd tbody
+    						BUGID 4246 - add simple table ruler via events
     20101017 - franciscom - image access refactored (tlImages)
     20100925 - franciscom - BUGID 3649 - test plan export/import -> EXPORT
 *}
@@ -74,7 +75,8 @@ var del_action=fRoot+'{$deleteAction}';
 		</thead>
 		<tbody>
 		{foreach item=testplan from=$gui->tplans}
-		<tr>
+		{* table ruler if colors on table style changes you need to change also colors here *}
+		<tr onMouseOver="this.bgColor='#CDDEF3';" onMouseOut="this.bgColor='#EEEEEE';">
 			<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testplan.id}</span>
 			    <a href="{$editAction}{$testplan.id}"> 
 				     {$testplan.name|escape} 

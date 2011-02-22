@@ -12,6 +12,8 @@
  *
  * @author Andreas Simon
  * @internal revision
+ *  20110222 - asimon - BUGID 4253: enable filter method selector before submitting 
+                                    the form so its value doesn't get lost
  *  20101121 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
  *  20101101 - franciscom - openExportTestPlan() interface changes
  *  20101009 - franciscom - fixed error viewer warning
@@ -38,7 +40,9 @@
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
-<form method="post" id="filter_panel_form" name="filter_panel_form">
+{* BUGID 4253: enable filter method selector before submitting the form so its value doesn't get lost *}
+<form method="post" id="filter_panel_form" name="filter_panel_form" 
+      onsubmit="document.getElementById('filter_result_method').disabled=false;">
 
 {* hidden input with token to manage transfer of data between left and right frame *}
 {if isset($control->form_token)}

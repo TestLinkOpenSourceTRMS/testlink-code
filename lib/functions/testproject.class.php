@@ -10,6 +10,9 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20110223 - asimon BUGID 4239: forgotten parameter $oldNewMappings for a function call in copy_as()  
+ *                               caused links between reqs in old project and testcases in new project
+ *                               when copying testprojects
  * 20101030 - amitkhullar - BUGID 3966 Added importance field in the query
  * 20101030 - francisco - show() BUGID 3937: No information when exporting all test suites when no test suites exists 
  *						  method for activating a test project was renamed	
@@ -2290,7 +2293,9 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 	$oldNewMappings['test_spec'] = array();
 	foreach($elements as $piece)
 	{
-		$op = $item_mgr['testsuites']->copy_to($piece['id'],$new_id,$user_id,$copyTSuiteOpt);				
+		// BUGID 4239: forgotten $mappings caused wrong requirement IDs to be assigned later
+		//$op = $item_mgr['testsuites']->copy_to($piece['id'],$new_id,$user_id,$copyTSuiteOpt);
+		$op = $item_mgr['testsuites']->copy_to($piece['id'],$new_id,$user_id,$copyTSuiteOpt,$oldNewMappings);				
 		$oldNewMappings['test_spec'] += $op['mappings'];
 	}
 

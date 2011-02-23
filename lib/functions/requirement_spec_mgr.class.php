@@ -12,6 +12,8 @@
  * Manager for requirement specification (requirement container)
  *
  * @internal revision:  
+ *  20110223 - asimon BUGID 4239: wrong last parameter of a function call in copy_to()  
+ *                                caused duplicated links between reqs and testcases when copying testproject
  *  20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  *	20100908 - franciscom - BUGID 3762 Import Req Spec - custom fields values are ignored
  *							createFromXML()
@@ -1660,8 +1662,12 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 					switch ($elem['node_type_id'])
 					{
 						case $this->node_types_descr_id['requirement']:
+							// BUGID 4239: wrong last parameter here caused duplicated links 
+							//             between reqs and testcases when copying testproject
+							//$ret = $reqMgr->copy_to($elem['id'],$the_parent_id,$user_id,
+							//                              $tproject_id,$my['options']['copy_also']);
 							$ret = $reqMgr->copy_to($elem['id'],$the_parent_id,$user_id,
-							                              $tproject_id,$my['options']['copy_also']);
+							                              $tproject_id,$my['options']);
 							$op['status_ok'] = $ret['status_ok'];    
 							$op['mappings'] += $ret['mappings'];
 							break;

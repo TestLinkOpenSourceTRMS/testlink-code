@@ -11,6 +11,8 @@
  *
  * @internal Revisions:
  *
+ * 20110223 - asimon - BUGID 4239: forgotten parameter $mappings in a function call in copy_to() caused
+ *                                 requirements to be assigned with wrong IDs when copying testprojects
  * 20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  * 20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
  * 20101009 - franciscom - exportTestSuiteDataToXML() - better checks on $optExport
@@ -678,8 +680,9 @@ class testsuite extends tlObjectWithAttachments
 				switch ($elem['node_type_id'])
 				{
 					case $this->node_types_descr_id['testcase']:
-						
-						$tcOp = $tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyTCaseOpt);
+						// BUGID 4239: forgotten parameter $mappings caused requirement assignments to use wrong IDs
+						//$tcOp = $tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyTCaseOpt);
+						$tcOp = $tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyTCaseOpt,$my['mappings']);
 						$op['mappings'] += $tcOp['mappings'];
 						break;
 						

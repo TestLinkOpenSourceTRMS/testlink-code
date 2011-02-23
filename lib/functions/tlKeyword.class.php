@@ -13,6 +13,7 @@
  *
  * @internal revisions
  *
+ * 20110223 - Julian - BUGID 4270 - Keywords are not ordered by name
  * 20100210 - franciscom - toXMLString() new method
  *
  **/
@@ -148,6 +149,10 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		{
 			$query .= " WHERE " . implode(" AND ",$clauses);
 		}
+				
+		// BUGID 4270 - Keywords are not ordered by name
+		$query .= " ORDER BY keyword ASC ";
+		
 		return $query;
 	}
 	

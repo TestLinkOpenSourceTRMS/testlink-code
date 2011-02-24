@@ -13,6 +13,7 @@
  * Generate documentation Test report based on Test plan data.
  *
  * Revisions :
+ *  20110224 - Julian - BUGID 4275 - Many Requirements are in the specification document twice
  *  20110115 - franciscom - BUGID 4170 - Test Report - When Test Plan Has platforms does not filter test cases
  *							BUGID 4171 - Test Report - estimated and real execution time functions made Platform aware
  *  20110113 - franciscom - BUGID 4170 - Test Report - When Test Plan Has platforms does not filter test cases
@@ -69,7 +70,9 @@ switch ($doc_info->type)
     	  	    
     	  	    $spec['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
     	  	    $spec['node_type_id'] = $decode['node_descr_id']['requirement_spec'];
-
+    	  	    
+    	  	    // BUGID 4275 - Many Requirements are in the specification document twice
+				unset($treeForPlatform[0]['childNodes']);
 				$treeForPlatform[0]['childNodes'][0] = &$spec;
 
 				$doc_info->title = htmlspecialchars($args->tproject_name . 

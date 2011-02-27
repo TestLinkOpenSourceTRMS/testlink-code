@@ -2,11 +2,13 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
- * Filename $RCSfile: int_seapine.php,v $
+ * Filename: int_seapine.php
  *
- * @version $Revision: 1.3 $
  *
  * @author needles - 20080207 - created
+ * 
+ * @internal revision
+ * 20110227 - franciscom - BUGID 4266 - contribution $m_ prefix removed
  * 20080207 - needles - created
 **/
 /** Interface name */
@@ -15,14 +17,14 @@ define('BUG_INTERFACE_CLASSNAME',"seapineInterface");
 class seapineInterface extends bugtrackingInterface
 {
 	//members to store the bugtracking information
-	var $m_dbHost = BUG_TRACK_DB_HOST;
-	var $m_dbProjectID = BUG_TRACK_PROJECT_ID;
-	var $m_dbName = BUG_TRACK_DB_NAME;
-	var $m_dbUser = BUG_TRACK_DB_USER;
-	var $m_dbPass = BUG_TRACK_DB_PASS;
-	var $m_dbType = BUG_TRACK_DB_TYPE;
-	var $m_showBugURL = BUG_TRACK_HREF;
-	var $m_enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
+	var $dbHost = BUG_TRACK_DB_HOST;
+	var $dbProjectID = BUG_TRACK_PROJECT_ID;
+	var $dbName = BUG_TRACK_DB_NAME;
+	var $dbUser = BUG_TRACK_DB_USER;
+	var $dbPass = BUG_TRACK_DB_PASS;
+	var $dbType = BUG_TRACK_DB_TYPE;
+	var $showBugURL = BUG_TRACK_HREF;
+	var $enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
 	
 	/**
 	 * Return the URL to the bugtracking page for viewing 
@@ -38,7 +40,7 @@ class seapineInterface extends bugtrackingInterface
 	 **/
 	function buildViewBugURL($id)
 	{
-		return $this->m_showBugURL.$id;		
+		return $this->showBugURL.$id;		
 	}
 	
 	/**
@@ -53,15 +55,15 @@ class seapineInterface extends bugtrackingInterface
 			return null;
 	
 		$status = null;
-		$query = "SELECT Name as bug_status from {$this->m_dbName}.defects, {$this->m_dbName}.states
+		$query = "SELECT Name as bug_status from {$this->dbName}.defects, {$this->dbName}.states
 				WHERE defects.status = states.idrecord AND DefectNum='" . $id."' 
-				AND states.projectid ='{$this->m_dbProjectID}' 
-				AND defects.projectid ='{$this->m_dbProjectID}'";
+				AND states.projectid ='{$this->dbProjectID}' 
+				AND defects.projectid ='{$this->dbProjectID}'";
 		
-		$result = $this->m_dbConnection->exec_query($query);
+		$result = $this->dbConnection->exec_query($query);
 		if ($result)
 		{
-			$status = $this->m_dbConnection->fetch_array($result);
+			$status = $this->dbConnection->fetch_array($result);
 			if ($status)
 			{
 				$status = $status['bug_status'];
@@ -90,14 +92,14 @@ class seapineInterface extends bugtrackingInterface
     }
     
 		$status = null;
-		$query = "SELECT Summary as shrt_desc FROM {$this->m_dbName}.defects WHERE DefectNum='" . $id."' 
-		AND defects.projectid ='{$this->m_dbProjectID}'";
+		$query = "SELECT Summary AS shrt_desc FROM {$this->dbName}.defects WHERE DefectNum='" . $id."' 
+		AND defects.projectid ='{$this->dbProjectID}'";
 
-		$result = $this->m_dbConnection->exec_query($query);
+		$result = $this->dbConnection->exec_query($query);
 		$summary = null;
 		if ($result)
 		{
-			$summary = $this->m_dbConnection->fetch_array($result);
+			$summary = $this->dbConnection->fetch_array($result);
 			if ($summary)
 			{
 				$summary = $summary[0];

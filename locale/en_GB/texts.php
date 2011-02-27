@@ -67,7 +67,7 @@ $TLS_htmltext['editTc'] 		= "<p>The <i>Test Specification</i> allows users to vi
 	<li>Select your <i>Test Project</i> in the navigation tree (the root node). <i>Please note: " .
 	"You can always change the active Test Project by selecting a different one from the " .
 	"drop-down list in the top-right corner.</i></li>
-	<li>Create a new Test Suite by clicking on <b>New Child Test Suite</b>. Test Suites can " .
+	<li>Create a new Test Suite by clicking on <b>Create</b> (Test Suite Operations). Test Suites can " .
 	"bring structure to your test documents according to your conventions (functional/non-functional " .
 	"tests, product components or features, change requests, etc.). The description of " .
 	"a Test Suite could hold the scope of the included test cases, default configuration, " .
@@ -78,7 +78,7 @@ $TLS_htmltext['editTc'] 		= "<p>The <i>Test Specification</i> allows users to vi
 	<li>Test Suites are scalable folders. Users can move or copy Test Suites within " .
 	"the Test project. Test Suites can be imported or exported (include Test Cases).
 	<li>Select your newly created Test Suite in the navigation tree and create " .
-	"a new Test Case by clicking on <b>Create Test Case</b>. A Test Case specifies " .
+	"a new Test Case by clicking on <b>Create</b> (Test Case Operations). A Test Case specifies " .
 	"a particular testing scenario, expected results and custom fields defined " .
 	"in the Test Project (refer to the user manual for more information). It is also possible " .
 	"to assign <b>keywords</b> for improved traceability.</li>

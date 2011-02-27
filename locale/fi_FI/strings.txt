@@ -279,7 +279,7 @@ $TLS_report_tplan_has_no_tcases = "Testaussuunnitelmalla ei ole yhteyttä testit
 "//suoritusdataa ei siten esiinny// //=>// //raporttia ei voida luoda//";//
 
 //----- tcEdit.php -----
-$TLS_tc_copied = "Testitapaus %s onnistui kopioida <br/> testitapausjaksoon %s";
+$TLS_tc_copied = "Testitapaus %s onnistui kopioida testitapausjaksoon %s";
 $TLS_tc_created = "Testitapaus %s luominen onnistui";
 $TLS_tc_deleted = "Testitapaus %s poistaminen onnistui";
 $TLS_tc_updated = "Testitapaus %s päivittäminen onnistui";

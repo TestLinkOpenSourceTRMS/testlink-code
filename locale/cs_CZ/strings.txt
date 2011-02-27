@@ -289,7 +289,7 @@ $TLS_report_tplan_has_no_tcases = "Testovací plán neobsahuje testovací příp
                                 "data o jejich provedení neexistují => Přehled nemohl být vytvořen";
 
 // ----- tcEdit.php -----
-$TLS_tc_copied = "Testovací případ %s byl úspěšně zkopírován do <br> testovací sady %s";
+$TLS_tc_copied = "Testovací případ %s byl úspěšně zkopírován do testovací sady %s";
 $TLS_tc_created = "Testovací případ %s byl úspěšně vytvořen";
 $TLS_tc_deleted = "Testovací případ %s byl úspěšně smazán";
 $TLS_tc_updated = "Testovací případ %s byl úspěšně aktualizován";

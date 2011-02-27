@@ -297,7 +297,7 @@ $TLS_report_tplan_has_no_tcases = "Test Plan has no Test Cases linked, <br />".
 // ----- tcEdit.php -----
 $TLS_copy_keyword_assignments = "Copy Keyword Assignments";
 $TLS_copy_requirement_assignments = "Copy Requirement Assignments";
-$TLS_tc_copied = "Test Case %s was successfully copied to <br /> Test Suite %s";
+$TLS_tc_copied = "Test Case %s was successfully copied to Test Suite %s";
 $TLS_tc_created = "Test Case %s was successfully created";
 $TLS_tc_deleted = "Test Case %s was successfully deleted";
 $TLS_tc_updated = "Test Case %s was successfully updated";

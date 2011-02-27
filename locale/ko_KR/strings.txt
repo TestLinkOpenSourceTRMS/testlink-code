@@ -300,7 +300,7 @@ $TLS_report_tplan_has_no_tcases = "테스트 계획에 연결된 테스트 케�
                                 "실행된 자료가 없습니다. => 보고서를 생성할 수 없습니다";
 
 // ----- tcEdit.php -----
-$TLS_tc_copied = "테스트 케이스 [%s] 가 <br />테스트 스위트 [%s]에 복사 되었습니다.";
+$TLS_tc_copied = "테스트 케이스 [%s] 가 테스트 스위트 [%s]에 복사 되었습니다.";
 $TLS_tc_created = "테스트 케이스 [%s] 가 생성 되었습니다.";
 $TLS_tc_deleted = "테스트 케이스 [%s] 가 삭제 되었습니다.";
 $TLS_tc_updated = "테스트 케이스 [%s] 가 업데이트 되었습니다.";

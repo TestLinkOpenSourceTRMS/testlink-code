@@ -250,7 +250,7 @@ $TLS_report_tplan_has_no_tcases = "Le plan de test n'a pas de cas de test lié, 
                                 "aucune donnéé d'exécution ne peut exister => aucun rapport ne peut être créé";
 
 // ----- tcEdit.php -----
-$TLS_tc_copied = "Le cas de test a bien été copié dans la<br> Test Suite %s";
+$TLS_tc_copied = "Le cas de test a bien été copié dans la Test Suite %s";
 $TLS_tc_created = "Le cas de test \"%s\" a été créé";
 $TLS_tc_deleted = "Le cas de test \"%s\" a été supprimé";
 $TLS_tc_updated = "Le cas de test \"%s\" est mis à  jour";

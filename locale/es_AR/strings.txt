@@ -424,7 +424,7 @@ $TLS_report_tplan_has_no_tcases = "El Plan de pruebas no tiene vínculos con Cas
 // ----- tcEdit.php -----
 $TLS_copy_keyword_assignments = "Copiar asignación de keywords";
 $TLS_copy_requirement_assignments = "Copiar asignación de requerimientos";
-$TLS_tc_copied = "El Caso de prueba %s fue copiado correctamente a la <br> Suite de pruebas %s";
+$TLS_tc_copied = "El Caso de prueba %s fue copiado correctamente a la Suite de pruebas %s";
 $TLS_tc_created = "El Caso de prueba %s fue creado correctamente";
 $TLS_tc_deleted = "El Caso de prueba %s fue borrado correctamente";
 $TLS_tc_new_version = "La Version %d del Caso de prueba %s fue creada correctamente";

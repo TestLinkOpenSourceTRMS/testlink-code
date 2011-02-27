@@ -396,7 +396,7 @@ $TLS_report_tplan_has_no_tcases = "Test Plan has no Test Cases linked, <br />".
                                 "then no execution data can exist => no report can be created";
 
 // ----- tcEdit.php -----
-$TLS_tc_copied = "El Test Case %s fue copiado correctamente a la <br> Test Suite %s";
+$TLS_tc_copied = "El Test Case %s fue copiado correctamente a la Test Suite %s";
 
 $TLS_tc_created = "El Test Case %s fue creado correctamente";
 

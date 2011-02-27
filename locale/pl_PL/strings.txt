@@ -396,7 +396,7 @@ $TLS_report_tplan_has_no_tcases = "Plan Testów nie ma podpietych Przypadków Te
 // ----- tcEdit.php -----
 $TLS_copy_keyword_assignments = "Copy Keyword Assignments";
 $TLS_copy_requirement_assignments = "Copy Requirement Assignments";
-$TLS_tc_copied = "Przypadek Testowy %s został pomyślnie skopiowany <br> Zestaw Testów %s";
+$TLS_tc_copied = "Przypadek Testowy %s został pomyślnie skopiowany Zestaw Testów %s";
 $TLS_tc_created = "Przypadek Testowy %s został pomyślnie utworzony";
 $TLS_tc_deleted = "Przypadek Testowy %s został pomyślnie usunięty";
 $TLS_tc_new_version = "Wersja Przypadku %d został pomyślnie utworzona";

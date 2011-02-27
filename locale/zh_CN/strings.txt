@@ -309,7 +309,7 @@ $TLS_report_tplan_has_no_tcases = "还没有任何测试套件关联到该计划
 // ----- tcEdit.php -----
 $TLS_copy_keyword_assignments = "复制关联的关键字";
 $TLS_copy_requirement_assignments = "复制关联的需求";
-$TLS_tc_copied = "测试用例 %s 成功复制到 <br> 套件 %s";
+$TLS_tc_copied = "测试用例 %s 成功复制到 套件 %s";
 $TLS_tc_created = "测试用例 %s 成功创建";
 $TLS_tc_deleted = "测试用例 %s 成功删除";
 $TLS_tc_new_version = "测试用例版本 %s 成功创建";

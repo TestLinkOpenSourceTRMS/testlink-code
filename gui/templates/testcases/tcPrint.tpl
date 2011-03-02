@@ -20,58 +20,11 @@ Revisions:
 <h1 class="title">{$gui->page_title|escape}</h1>
 
 <div class="workBack">
-
-{if $gui->do_it eq 1}
-  <form method="post" id="print_testcase" action="lib/testcases/tcPrint.php">
-    <table>
-    <tr>
-    <td>
-    {$labels.export_filename}
-    </td>
-    <td>
-  	<input type="text" name="export_filename" maxlength="{#FILENAME_MAXLEN#}" 
-			           value="{$gui->export_filename|escape}" size="{#FILENAME_SIZE#}"/>
-			  				{include file="error_icon.tpl" field="export_filename"}
-  	</td>
-  	<tr>
-  	<td>{$labels.file_type}</td>
-  	<td>
-  	<select name="exportType">
-  		{html_options options=$gui->exportTypes}
-  	</select>
-	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{lang_get s="view_file_format_doc"}</a>
-  	</td>
-  	</tr>
-    <tr>
-    <td>{$labels.title_req_export}</td>
-    <td><input type="checkbox" name="exportReqs" value="1" checked /></td>
-    </tr>  	
-    <tr>
-    <td>{$labels.export_cfields}</td>
-    <td><input type="checkbox" name="exportCFields" value="1" checked /></td>
-    </tr>
-    <tr>
-    <td>{$labels.export_with_keywords}</td>
-    <td><input type="checkbox" name="exportKeywords" value="0" /></td>
-    </tr>
-
-  	</table>
-  	
-  	<div class="groupBtn">
-  		<input type="hidden" name="testcase_id" value="{$gui->tcID}" />
-  		<input type="hidden" name="tcversion_id" value="{$gui->tcVersionID}" />
-  		<input type="hidden" name="containerID" value="{$gui->containerID}" />
-  		<input type="hidden" name="useRecursion" value="{$gui->useRecursion}" />
-  		<input type="submit" name="export" value="{$labels.btn_export}" />
-  		<input type="button" name="cancel" value="{$labels.btn_cancel}"
-    		     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
-    		     {else}  onclick="javascript:history.back();" {/if} />
-  	</div>
-  </form>
-{else}
-	{$gui->nothing_todo_msg|escape}
-{/if}
-
+<form method="post" id="print_testcase" action="lib/testcases/tcPrint.php">
+<select id="outputFormat" name="outputFormat" onchange='submit();'>
+	{html_options options=$gui->outputFormatDomain selected=''}
+</select>
+</form>
 </div>
 
 </body>

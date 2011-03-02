@@ -3237,5 +3237,8 @@ $TLS_export_execution_set = 'Export Execution Set';
 
 // ----- lib/results/resultsReqs.php -----
 $TLS_no_label_for_req_type = 'No req_type_labels configuration for type: %s';
+
+
+$TLS_print_testcase = 'Print Test Case: %s';
 // ----- END ------------------------------------------------------------------
 ?>

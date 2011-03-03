@@ -21,9 +21,12 @@ Revisions:
 
 <div class="workBack">
 <form method="post" id="print_testcase" action="lib/testcases/tcPrint.php">
-<select id="outputFormat" name="outputFormat" onchange='submit();'>
-	{html_options options=$gui->outputFormatDomain selected=''}
-</select>
+	<input type="hidden" name="testcase_id" value="{$gui->tcase_id}">
+	<input type="hidden" name="tcversion_id" value="{$gui->tcversion_id}">
+
+	<select id="outputFormat" name="outputFormat" onchange='submit();'>
+		{html_options options=$gui->outputFormatDomain selected=''}
+	</select>
 </form>
 </div>
 

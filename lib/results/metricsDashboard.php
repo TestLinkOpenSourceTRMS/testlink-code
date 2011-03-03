@@ -10,6 +10,7 @@
  * @author franciscom
  *
  * @internal revisions
+ * 20110303 - Julian - added more information to test project report
  * 20101022 - Julian - BUGID 3979 - Use grid filters for exttables
  * 20101015 - franciscom - code refactoring
  * 20101015 - Julian - refactored exttable column titles
@@ -126,12 +127,16 @@ if(count($gui->tplan_metrics) > 0) {
 	
 	// collect test project metrics
 	$gui->project_metrics = array();
-	$gui->project_metrics['progress_absolute'] = getPercentage($gui->tplan_metrics['total']['executed'], 
+	// get overall progress
+	$gui->project_metrics['executed']['value'] = getPercentage($gui->tplan_metrics['total']['executed'], 
 	                                                           $gui->tplan_metrics['total']['active'], $round_precision);
+	$gui->project_metrics['executed']['label_key'] = 'progress_absolute';
+	
 	foreach ($result_cfg['status_label'] as $key => $status)
 	{
-		$gui->project_metrics[$status] = getPercentage($gui->tplan_metrics['total'][$key], 
+		$gui->project_metrics[$key]['value'] = getPercentage($gui->tplan_metrics['total'][$key], 
 	                                                   $gui->tplan_metrics['total']['active'], $round_precision);
+	    $gui->project_metrics[$key]['label_key'] = $status;
 	}
 }
 

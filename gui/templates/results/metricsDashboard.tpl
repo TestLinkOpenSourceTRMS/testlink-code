@@ -63,7 +63,7 @@ Ext.onReady(function() {ldelim}
 	<br>
 	{foreach from=$gui->project_metrics key=key item=metric}
 		<div id="{$key}"></div>
-		{if $key == "progress_absolute"}
+		{if $key == "executed"}
 		<br />
 		{/if}
 	{/foreach}

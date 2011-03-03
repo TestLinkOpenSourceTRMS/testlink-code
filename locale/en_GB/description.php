@@ -257,12 +257,12 @@ you will see these in this page ONLY for Test Cases linked to Test Plan.
 
 
 // resultsByTesterPerBuild.tpl
-$TLS_hlp_results_by_tester_per_build_table = "<h3>More information about testers:</h3>
+$TLS_hlp_results_by_tester_per_build_table = "<b>More information about testers:</b><br />
 If you click on a tester name in this table, you will get a more detailed overview
 about all Test Cases assigned to that user and his testing progress.<br /><br />
-<h3>Note:</h3>
+<b>Note:</b><br />
 This Report shows those test cases, which are assigned to a specific user and have been executed 
-based on each build. Even if a test case has been executed by another user than the assigned user, 
+based on each active build. Even if a test case has been executed by another user than the assigned user, 
 the test case will appear as executed for the assigned user.
 ";
 

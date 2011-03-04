@@ -31,34 +31,23 @@ $gui->tproject_name=$args->tproject_name;
 $gui->tproject_id=$args->tproject_id;
 $gui->tcase_id=$args->tcase_id; 
 $gui->tcversion_id=$args->tcversion_id;
+   
+require_once("print.inc.php"); 
 
-if( is_null($args->outputFormat) )
-{
-	$smarty = new TLSmarty();
-	$smarty->assign('menuUrl', 'lib/testcases/tcPrint.php');
-	$smarty->assign('gui',$gui);
-	$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-}
-else
-{
-	require_once("print.inc.php"); 
+// Struture defined in printDocument.php	
+$printingOptions = array('toc' => 0,'body' => 1,'summary' => 1, 'header' => 0,'headerNumbering' => 0,
+	                     'passfail' => 0, 'author' => 1, 'notes' => 1, 'requirement' => 1, 'keyword' => 1, 
+	                     'cfields' => 1);
 
-	// Struture defined in printDocument.php	
-	$printingOptions = array('toc' => 0,'body' => 1,'summary' => 1, 'header' => 0,'headerNumbering' => 0,
-		                     'passfail' => 0, 'author' => 1, 'notes' => 1, 'requirement' => 1, 'keyword' => 1, 
-		                     'cfields' => 1);
-	
-	$level = 0;
-	$tplanID = 0;
-	$prefix = null;
-	$text2print = '';
-	$text2print .= renderHTMLHeader('',$_SESSION['basehref']);
-	$text2print .= renderTestCaseForPrinting($db,$node,$printingOptions, 
-											 $level,$tplanID,$prefix,$args->tproject_id);
-	
-	echo $text2print;
-	
-}
+$level = 0;
+$tplanID = 0;
+$prefix = null;
+$text2print = '';
+$text2print .= renderHTMLHeader('',$_SESSION['basehref']);
+$text2print .= renderTestCaseForPrinting($db,$node,$printingOptions, 
+										 $level,$tplanID,$prefix,$args->tproject_id);
+
+echo $text2print;
 
 /*
   function: init_args

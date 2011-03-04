@@ -5,6 +5,7 @@ Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 rev:
+  20110304 - asimon - added help icon with a description of some of the "new" features
   20101212 - franciscom - BUGID 4056: Requirement Revisioning
   20101026 - franciscom - BUGID 3927: Requirement can not be deleted due to JS error -> label has to be escaped
   20101017 - franciscom - image access refactored (tlImages)
@@ -177,6 +178,7 @@ var pF_delete_req_relation = delete_req_relation;
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
 {* fixed a little bug, here $gui->pageTitle was called instead of $gui->main_descr *}
 <h1 class="title">{$gui->main_descr|escape}{if isset($gui->show_match_count)} - {$labels.match_count}: {$gui->match_count}{/if}
+    {include file="inc_help.tpl" helptopic="hlp_req_view" show_help_icon=true}
 </h1>
 {if !isset($refresh_tree) }
   {assign var="refresh_tree" value=false}

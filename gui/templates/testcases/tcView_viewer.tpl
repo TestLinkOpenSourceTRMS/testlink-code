@@ -4,6 +4,7 @@ $Id: tcView_viewer.tpl,v 1.87 2010/12/25 11:40:29 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+	20110304 - franciscom - BUGID 4286: Option to print single test case
     20101225 - franciscom - added warning for excution type with message ONLY in english
     20101102 - asimon - BUGID 2864: replaced old open_top() by openLinkedReqWindow()
     20100901 - franciscom - refactoring using inc_tcbody.tpl
@@ -42,7 +43,7 @@ rev:
              title_last_mod,title_created,by,expected_results,keywords,
              btn_create_step,step_number,btn_reorder_steps,step_actions,
              execution_type_short_descr,delete_step,show_hide_reorder,
-             test_plan,platform,insert_step,btn_print,
+             test_plan,platform,insert_step,btn_print,btn_printer_friendly,
              execution_type,test_importance,none,preconditions,btn_compare_versions"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
@@ -201,11 +202,13 @@ rev:
 	</form>
 	</span>
 
+	
+	{* 20110304 - franciscom - BUGID 4286: Option to print single test case  *}
 	<span>
 	<form id="tcprint" name="tcprint" method="post" action="{$printTestCaseAction}" >
 		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-		<input type="submit" name="export_tc" style="margin-left: 3px;" value="{$tcView_viewer_labels.btn_print}" />
+		<input type="submit" name="tcPrinterFriendly" style="margin-left: 3px;" value="{$tcView_viewer_labels.btn_printer_friendly}" />
 	</form>
 	</span>
 	

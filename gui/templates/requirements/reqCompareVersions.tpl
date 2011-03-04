@@ -20,7 +20,8 @@ Purpose: smarty template - compare requirement versions
           btn_compare_selected_versions, context, show_all,author,timestamp,timestamp_lastchange,
           warning_context, warning_context_range, warning_empty_context,warning,custom_field, 
           warning_selected_versions, warning_same_selected_versions,revision,attribute,
-          custom_fields,attributes,log_message,use_html_code_comp,use_html_comp,diff_method"}
+          custom_fields,attributes,log_message,use_html_code_comp,use_html_comp,diff_method,
+          btn_cancel"}
 
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/diff/diff.css">
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/daisydiff/css/diff.css">
@@ -202,7 +203,11 @@ function validateForm() {
 	<form target="diffwindow" method="post" action="lib/requirements/reqCompareVersions.php" name="req_compare_versions" id="req_compare_versions"  
 			onsubmit="return validateForm();" />			
 	
-	<p><input onClick="test();" type="submit" name="compare_selected_versions" value="{$labels.btn_compare_selected_versions}" /></p><br/>
+	<p>
+		<input onClick="test();" type="submit" name="compare_selected_versions" value="{$labels.btn_compare_selected_versions}" />
+		<input type="button" name="cancel" value="{$labels.btn_cancel}" onclick="javascript:history.back();" />
+	</p>
+	<br/>
 	
 	<table border="0" cellspacing="0" cellpadding="2" style="font-size:small;" width="100%">
 	
@@ -250,8 +255,11 @@ function validateForm() {
 		<input type="checkbox" id="context_show_all" name="context_show_all" 
 		       onclick="triggerField(this.form.context);"/> {$labels.show_all} 	</td></tr></table>
 	
-	<p><input type="hidden" name="requirement_id" value="{$gui->req_id}" />
-	<input type="submit" name="compare_selected_versions" value="{$labels.btn_compare_selected_versions}" /></p>
+	<p>
+		<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
+		<input type="submit" name="compare_selected_versions" value="{$labels.btn_compare_selected_versions}" />
+		<input type="button" name="cancel" value="{$labels.btn_cancel}" onclick="javascript:history.back();" />
+	</p>
 	
 	</form>
 

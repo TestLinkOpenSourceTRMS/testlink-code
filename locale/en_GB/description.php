@@ -267,6 +267,63 @@ the test case will appear as executed for the assigned user.
 ";
 
 
+// req_edit
+$TLS_hlp_req_edit = "<h3>Internal links on scope:</h3>
+Internal links serve the purpose of creating links to other requirements/requirement specifications 
+with a special syntax. Internal Links behaviour can be changed on the config file.
+
+<h3>Usage:</h3>
+<p>Link to requirements: [req]req_doc_id[/req]
+Link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
+
+<p>The test project of the requirement / requirement specification and an anchor
+to jump to can also be specified:
+[req tproj=<tproj_prefix> anchor=<anchor_name>]req_doc_id[/req]
+This syntax also works for requirement specifications.</p>
+
+<h3>Log message for changes:</h3>
+<p>Whenever a change is made Testlink will ask for a log message. This log message served the purpose of traceability.
+If only the scope of the requirement has changed you are free to decide whether to create a new revision or not. 
+Whenever anything besides the scope is changed you are forced to create a new revision.</p>
+";
+
+
+// req_view
+$TLS_hlp_req_view = "<h3>Direct Links:</h3>
+<p>To easily share this document with others simply click the globe icon at the top of this document after saving to create a direct link.</p>
+
+<h3>View History:</h3>
+<p>This feature allows to compare revisions/versions of requirements if more than one revision/version of the requirement exists.
+The overview provides the Log message for each revision/version, a timestamp and the author of the last change.</p>
+
+<h3>Coverage:</h3>
+<p>Shows all linked test cases for this requirement.</p>
+
+<h3>Relations:</h3>
+<p>Requirement Relations are used to model relationships between requirements. 
+Custom relations and the option to allow relations between requirements of 
+different test projects can be configured on the config file.
+If you set the relation \"Requirement A is parent of Requirement B\", 
+Testlink will set the relation \"Requirement B is child of Requirement A\" implicitly.</p>
+";
+
+
+// req_spec_edit
+$TLS_hlp_req_spec_edit = "<h3>Internal Links on Scope:</h3>
+<p>Internal Links serve the purpose of creating links to other requirements with a special syntax. 
+Internal Links behaviour can be changed on config file.</p>
+
+<h3>Usage:</h3>
+<p>link to requirements: [req]req_doc_id[/req]
+link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
+
+<p>The test project of the requirement / requirement specification and an anchor
+to jump to can also be specified:
+[req tproj=<tproj_prefix> anchor=<anchor_name>]req_doc_id[/req]
+This syntax also works for requirement specifications.</p>
+";
+
+
 // xxx.html
 //$TLS_hlp_xxx = "";
 

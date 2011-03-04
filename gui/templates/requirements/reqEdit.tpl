@@ -3,6 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: reqEdit.tpl,v 1.43 2011/01/14 14:39:02 asimon83 Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
+20110304 - asimon - added help icon with a description of some of the "new" features
 20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
 20110110 - Julian - BUGID 4153: Warning message when navigating away from changed requirement without saving
 20110106 - Julian - BUGID 4152: do not set focus on req doc id if log message window is shown
@@ -276,6 +277,7 @@ function insert_last_doc_id()
 	{if $gui->action_descr != ''}
 		{$tlCfg->gui_title_separator_2}{$gui->action_descr|escape}
 	{/if}
+	{include file="inc_help.tpl" helptopic="hlp_req_edit" show_help_icon=true}
 </h1>
 
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}

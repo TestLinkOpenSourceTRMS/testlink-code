@@ -4,6 +4,7 @@ $Id: reqSpecEdit.tpl,v 1.30 2011/01/14 14:39:02 asimon83 Exp $
 Purpose: smarty template - create a new req document
 
 rev:
+  20110304 - asimon - added help icon with a description of some of the "new" features
   20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
   20110111 - Julian - Added Save, Cancel Button on top of the page
   20110110 - Julian - BUGID 4154: Warning message when navigating away from changed requirement
@@ -114,7 +115,7 @@ rev:
 <body>
 <h1 class="title">
 	{if $gui->action_descr != ''}{$gui->action_descr|escape}{/if} {$gui->main_descr|escape}
-	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage" show_help_icon=true}
+	{include file="inc_help.tpl" helptopic="hlp_req_spec_edit" show_help_icon=true}
 </h1>
 
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}

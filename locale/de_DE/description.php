@@ -205,6 +205,68 @@ which have a newest version is displayed (against the current set of the Test Pl
 </p>";
 
 
+// req_edit
+$TLS_hlp_req_edit = "<h3>Interne Links im Inhalt:</h3>
+<p>Interne Links können genutzt werden um Links zu anderen Anforderungen/Anforderungsspezifikation 
+mit einer speziellen Syntax zu erstellen. 
+Das Verhalten der internen Links kann über die Konfigurationsdatei angepasst werden.</p>
+
+<h3>Benutzung:</h3>
+<p>Link zu einer Anforderung: [req]Anf_Dokument_ID[/req]</p>
+<p>Link zu einer Anforderungsspezifikation: [req_spec]Anf_Spez_Dokument_ID[/req_spec]</p>
+
+<p>Das Testprojekt und ein Anker der zu verlinkenden Anforderung kann ebenfalls angegeben werden:</p>
+<p>[req tproj=<tproj_prefix> anchor=<anker_name>]Anf_DOkument_ID[/req]</p>
+<p>Diese Syntax funktioniert auch für Anforderungsspezifikationen.</p>
+
+<h3>Änderungsprotokoll/Revisionierung:</h3>
+<p>Immer wenn eine Änderung an einer Anforderung vorgenommen wird fragt Testlink nach einer Protokollierung der Änderung. 
+Das Änderungsprotokoll dient der Verfolgbarkeit.</p>
+<p>Wenn sich nur der Inhalt der Anforderung ändert, steht es dem Autor frei, 
+ob er eine neue Revision erstellen möchte oder nicht. Sollte sich etwas außer dem Inhalt ändern ist der Autor gezwungen, 
+eine neue Revision zu erstellen.</p>
+";
+
+
+// req_view
+$TLS_hlp_req_view = "<h3>Direkte Links:</h3>
+<p>Um Anforderungsdokumente so leicht wie möglich mit anderen teilen zu können 
+bietet TestLink die Möglichkeit einen direkten Link zu diesem Dokument zu erzeugen. 
+Klicken sie dazu das \"Globus-Icon\".</p>
+
+<h3>Verlauf anzeigen:</h3>
+<p>Dieses Feature erlaubt es Revisionen/Versionen von Anforderungen zu vergleichen, 
+sofern mehr als eine Revision/Version der Anforderung existiert.
+Die Übersicht zeigt das Änderungsprotokoll, das Datum und den Autor der letzten Änderung für jede Revision/Version.</p>
+
+<h3>Abdeckung:</h3>
+<p>Zeigt alle Testfälle die mit der Anforderung verknüpft wurden.</p>
+
+<h3>Beziehungen:</h3>
+<p>Beziehungen werden benutzt um Beziehungen zwischen Anforderungen zu modellieren. 
+Benutzerdefinierte Beziehungen und die Möglichkeit Beziehungen zwischen Anforderungen 
+in verschiedenen Projekten herstellen zu können, können in der Konfigurationsdatei konfiguriert werden.</p>
+<p>Setzt man die Beziehung \"Anforderung A ist Vater von Anforderung B\", 
+wird Testlink die Beziehung \"Anforderung B ist Kind von Anforderung A\" implizit setzen.</p>
+";
+
+
+// req_spec_edit
+$TLS_hlp_req_spec_edit = "<h3>Interne Links im Inhalt:</h3>
+<p>Interne Links können genutzt werden um Links zu anderen Anforderungen/Anforderungsspezifikation 
+mit einer speziellen Syntax zu erstellen. 
+Das Verhalten der internen Links kann über die Konfigurationsdatei angepasst werden.</p>
+
+<h3>Benutzung:</h3>
+<p>Link zu einer Anforderung: [req]Anf_Dokument_ID[/req]
+Link zu einer Anforderungsspezifikation: [req_spec]Anf_Spez_Dokument_ID[/req_spec]</p>
+
+<p>Das Testprojekt und ein Anker der zu verlinkenden Anforderung kann ebenfalls angegeben werden:
+[req tproj=<tproj_prefix> anchor=<anker_name>]Anf_DOkument_ID[/req]
+Diese Syntax funktioniert auch für Anforderungsspezifikationen.</p>
+";
+
+
 // requirementsCoverage.html
 $TLS_hlp_requirementsCoverage = "<h3>Requirements Coverage</h3>
 <br />

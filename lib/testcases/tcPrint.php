@@ -13,6 +13,8 @@
  * ----------------------------------------------------------------------------------- */
 
 require_once("../../config.inc.php");
+require_once("../../cfg/reports.cfg.php"); 
+require_once("print.inc.php"); 
 require_once("common.php");
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
@@ -31,13 +33,13 @@ $gui->tproject_name=$args->tproject_name;
 $gui->tproject_id=$args->tproject_id;
 $gui->tcase_id=$args->tcase_id; 
 $gui->tcversion_id=$args->tcversion_id;
-   
-require_once("print.inc.php"); 
+
 
 // Struture defined in printDocument.php	
 $printingOptions = array('toc' => 0,'body' => 1,'summary' => 1, 'header' => 0,'headerNumbering' => 0,
 	                     'passfail' => 0, 'author' => 1, 'notes' => 1, 'requirement' => 1, 'keyword' => 1, 
-	                     'cfields' => 1);
+	                     'cfields' => 1, 'displayVersion' => 1, 'displayDates' => 1, 'docType' => 'SINGLE_TC',
+	                     'importance' => 1);
 
 $level = 0;
 $tplanID = 0;

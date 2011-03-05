@@ -1,17 +1,18 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCompareVersions.tpl,v 1.13 2011/01/07 18:29:10 asimon83 Exp $
+Filename: reqCompareVersions.tpl
  
 Purpose: smarty template - compare requirement versions
 
 revisions
-  20110107 - asimon - added daisydiff (html diff engine which handles tags well)
-  20110106 - Julian - Only 1 column for last change including localized timestamp and editor
-  20101215 - Julian - Changed log message tooltip width to 500 (maximum) to avoid
-                      visualization errors
-  20101213 - franciscom - BUGID 4056: Requirement Revisioning - tooltip added
-  20101211 - franciscom - BUGID 4056: Requirement Revisioning
-  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  
+	20110305 - franciscom - fixed 'error viewer' warnings due to missing labels
+	20110107 - asimon - added daisydiff (html diff engine which handles tags well)
+	20110106 - Julian - Only 1 column for last change including localized timestamp and editor
+	20101215 - Julian - Changed log message tooltip width to 500 (maximum) to avoid
+	                    visualization errors
+	20101213 - franciscom - BUGID 4056: Requirement Revisioning - tooltip added
+	20101211 - franciscom - BUGID 4056: Requirement Revisioning
+	20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  
 
 *}
 
@@ -22,8 +23,8 @@ revisions
           s="select_versions,title_compare_versions_req,version,compare,modified,modified_by,
           btn_compare_selected_versions, context, show_all,author,timestamp,timestamp_lastchange,
           warning_context, warning_context_range, warning_empty_context,warning,custom_field, 
-          warning_selected_versions, warning_same_selected_versions,revision,attribute,
-          custom_fields,attributes,log_message,btn_cancel"}
+          warning_selected_versions, warning_same_selected_versions,revision,attribute,use_html_code_comp,
+          custom_fields,attributes,log_message,btn_cancel,use_html_comp,diff_method"}
 
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/diff/diff.css">
 

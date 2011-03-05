@@ -393,18 +393,18 @@ var pF_delete_req_relation = delete_req_relation;
                      show_hide_container_view_status_id=$memstatus_id}
   	          <div id="{$div_id}" class="workBack">
            		
-		          {include file="$this_template_dir/reqViewVersionsViewer.tpl" 
-		                   args_req_coverage=$gui->req_coverage
-		                   args_req=$my_req 
-           		         args_gui=$gui
-		                   args_grants=$gui->grants 
-		                   args_can_copy=false
-                       args_can_delete_req=false
-                       args_can_delete_version=true
-                       args_frozen_version=$frozen_version
-                       args_show_version=false 
-                       args_show_title=false
-                       args_cf=$gui->cfields_other_versions[idx][$rdx]}
+		          {include	file="$this_template_dir/reqViewVersionsViewer.tpl" 
+		               		args_req_coverage=$gui->req_coverage
+		                   	args_req=$my_req 
+           		           	args_gui=$gui
+		                   	args_grants=$gui->grants 
+		                   	args_can_copy=false
+                       		args_can_delete_req=false
+                       		args_can_delete_version=true
+                       		args_frozen_version=$frozen_version
+                       		args_show_version=false 
+                       		args_show_title=false
+                       		args_cf=$gui->cfields_other_versions[idx][$rdx]}
   	         </div>
   	         <br />
   	         

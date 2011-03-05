@@ -1,11 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewRevisionRO.tpl,v 1.2 2010/12/10 19:46:48 franciscom Exp $
+Filename: reqViewRevisionRO.tpl
 Purpose: view requirement with version + revision
          READ ONLY
 
 rev:
-  20101128 - franciscom - BUGID 
+	20110305 - franciscom - fixed unable to load template due to Smarty 3.0.7
 *}
 {lang_get var='labels' 
           s='relation_id, relation_type, relation_document, relation_status, relation_project,
@@ -21,12 +21,12 @@ rev:
     {assign var="my_style" value="background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
 {/if}
 
-{assign var=this_template_dir value=$smarty.template|dirname}
+{assign var=this_template_dir value=$smarty.current_dir}
 <body>
 <h1 class="title">{$gui->main_descr|escape}</h1>
 <div class="workBack">
 
-{if !$gui->show_title }
+{if !$gui->show_title}
   {$gui->item.req_doc_id|escape}:{$gui->item.title|escape}</h2>
 {/if}
 {include file="$this_template_dir/reqViewRevisionViewer.tpl" 

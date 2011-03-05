@@ -4,6 +4,7 @@ $Id: reqViewRevisionViewer.tpl,v 1.2 2010/12/10 19:46:48 franciscom Exp $
 viewer for requirement
 
 rev:
+20110306 - franciscom - BUGID 4045: Smarty 3.0 compatibility
 20101127 - franciscom - BUGID 4056: Requirement Revisioning
 *}
 {lang_get var="labels"
@@ -14,7 +15,7 @@ rev:
              btn_revisions,revision"}
 
              
-{if $args_show_title }
+{if $args_show_title}
     {if $args_tproject_name != ''}
      <h2>{$labels.testproject} {$args_tproject_name|escape} </h2>
     {/if}
@@ -72,7 +73,7 @@ rev:
 
 	<tr class="time_stamp_creation">
   		<td >
-      		{$labels.title_created}&nbsp;{localize_timestamp ts=$args_req.creation_ts }&nbsp;
+      		{$labels.title_created}&nbsp;{localize_timestamp ts=$args_req.creation_ts}&nbsp;
       		{$labels.by}&nbsp;{$args_req.author|escape}
   		</td>
   </tr>

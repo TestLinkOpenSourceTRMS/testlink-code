@@ -27,10 +27,10 @@
  *
  * ********************************************************************************************
  *
+ * @internal	filename: strings.txt
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.751.2.26 2011/02/11 08:28:40 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -186,6 +186,7 @@ $TLS_btn_no = "No";
 $TLS_btn_new_revision = "Create a new revision";
 $TLS_btn_ok = "Ok";
 $TLS_btn_print = "Print";
+$TLS_btn_printer_friendly = "Printer friendly";
 $TLS_btn_save = "Save";
 $TLS_btn_unassign = "Unassign";
 $TLS_btn_uncheck = "Uncheck";

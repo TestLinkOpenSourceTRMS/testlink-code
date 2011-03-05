@@ -48,6 +48,7 @@ $options = array('toc' => 0,
                  'displayVersion' => 1, 'displayDates' => 1, 
                  'displayLastEdit' => 1, 'docType' => 'SINGLE_REQ');
 
+$text2print = '';
 $text2print .= renderHTMLHeader('',$_SESSION['basehref']);
 $text2print .= renderReqForPrinting($db,$node,$options,null,0,$args->tproject_id);
 

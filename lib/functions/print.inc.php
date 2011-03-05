@@ -174,7 +174,7 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 
 	if( $force['displayVersion'] )
 	{
-		$output .= 	'<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
+		$output .= 	'<tr><td valign="top">' . 
 		         	'<span class="label">'.$labels['version'].':</span></td>' .
         		 	'<td>' . $req['version'] . ' ' .  $labels['revision'] . ' ' . $req['revision']; 				
 		$output .= "</td></tr>\n";
@@ -191,7 +191,7 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 
 	if ($options['req_author']) 
 	{
-		$output .= 	'<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
+		$output .= 	'<tr><td valign="top">' . 
 		         	'<span class="label">'.$labels['author'].':</span></td>' .
         		 	'<td>' . htmlspecialchars(gendocGetUserName($db, $req['author_id']));
 

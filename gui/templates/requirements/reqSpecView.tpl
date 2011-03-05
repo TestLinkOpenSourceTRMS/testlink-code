@@ -1,10 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.47 2010/11/13 09:28:00 franciscom Exp $ *}
+{* Filename: reqSpecView.tpl *}
 {*
    Purpose: view a requirement specification
    Author: Martin Havlat
 
    rev:
+   		20110305 - franciscom - unable to load buttons_template due to path problem
+   								probably related to Smarty 3.0 compatibility
         20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
         20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
                                         inside a req spec (recursively)
@@ -17,8 +19,8 @@
         20071106 - franciscom - added ext js library
         20070102 - franciscom - added javascript validation of checked requirements
 *}
-{lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,
-							            title_last_mod,title_created,no_records_found"}
+{lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,title_last_mod,
+						  title_created,no_records_found"}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -59,7 +61,7 @@
 {assign var="req_spec_copy_url" value="$basehref$req_module$url_args$reqSpecID"}
 
 
-{* used on inc_btn_reqSpecView.tpl *}
+{* used on inc_btn_reqSpecView.tpl -> buttons_template smarty variable *}
 {lang_get s='warning_delete_req_spec' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
 {lang_get s='warning_freeze_spec' var="freeze_warning_msg"}
@@ -102,11 +104,10 @@
    {if isset($gui->direct_link)}
    <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
    {/if}
-{* contribution by asimon *}
+
 {if $gui->req_spec.id}
-{* end contribution by asimon *}
-	
-{include file="$buttons_template"}
+
+{include file="./requirements/$buttons_template"}
 <table class="simple" style="width: 90%">
 	<tr>
 		<th>{$gui->main_descr|escape}</th>

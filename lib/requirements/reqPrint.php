@@ -25,7 +25,7 @@ $templateCfg = templateConfiguration();
 $tree_mgr = new tree($db);
 $args = init_args();
 $node = $tree_mgr->get_node_hierarchy_info($args->req_id);
-
+$node['version_id'] = $args->req_version_id;
 
 
 $gui = new stdClass();

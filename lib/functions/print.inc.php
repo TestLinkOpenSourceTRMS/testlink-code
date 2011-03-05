@@ -15,7 +15,8 @@
  *
  * @internal revisions:
  *	20110305 - franciscom - BUGID 4273: Option to print single requirement
- *							renderReqForPrinting()
+ *							renderReqForPrinting() - refactored to use version id.
+ *
  *
  *	20110304 - franciscom - BUGID 4286: Option to print single test case
  *							renderTestCaseForPrinting() added missing info.
@@ -117,6 +118,7 @@ if (config_get('interface_bugs') != 'NO')
  * @return string $output HTML Code
  *
  * @internal revisions
+ * 20110505 - franciscom - 	added logic to manage version id
  * 20110305 - franciscom -	BUGID 4273: Option to print single requirement
  *							enhancements on info displayed
  */
@@ -163,8 +165,12 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 		$tplan_mgr = new testplan($db);
 	}
 	
-	$arrReq = $req_mgr->get_by_id($node['id']);
-	$req = $arrReq[0];
+	$versionID = isset($node['version_id']) ? intval($node['version_id']) : requirement_mgr::LATEST_VERSION;
+	$dummy = $req_mgr->get_by_id($node['id'],$versionID);
+	$req = $dummy[0];
+	
+	// update versionID with valu got from req, this is needed if user did not provide it
+	$versionID = $req['version_id'];
 	
 	$name =  htmlspecialchars($req["req_doc_id"] . $title_separator . $req['title']);
 
@@ -842,7 +848,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
 	$cspan = ' colspan = "' . ($cfg['tableColspan']-1) . '" ';
 	$cfieldFormatting = array('label_css_style' => '',  'add_table' => false, 'value_css_style' => $cspan );
 
-	$versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : testcase::LATEST_VERSION;
+	$versionID = isset($node['tcversion_id']) ? intval($node['tcversion_id']) : testcase::LATEST_VERSION;
     $tcInfo = $tc_mgr->get_by_id($id,$versionID);
     
     if ($tcInfo)

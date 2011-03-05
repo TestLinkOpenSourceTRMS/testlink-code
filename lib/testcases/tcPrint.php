@@ -9,8 +9,10 @@
  * 
  * @internal revisions:
  *
- * 20100315 - franciscom - BUGID 4286
- * ----------------------------------------------------------------------------------- */
+ * 20110305 - franciscom - 	BUGID 4286 Option to print single test case
+ *							found issue regarding test case version
+ * 
+ */
 
 require_once("../../config.inc.php");
 require_once("../../cfg/reports.cfg.php"); 
@@ -22,6 +24,7 @@ $templateCfg = templateConfiguration();
 $tree_mgr = new tree($db);
 $args = init_args();
 $node = $tree_mgr->get_node_hierarchy_info($args->tcase_id);
+$node['tcversion_id'] = $args->tcversion_id;
 
 $gui = new stdClass();
 $gui->outputFormatDomain = $args->outputFormatDomain;
@@ -40,6 +43,8 @@ $printingOptions = array('toc' => 0,'body' => 1,'summary' => 1, 'header' => 0,'h
 	                     'passfail' => 0, 'author' => 1, 'notes' => 1, 'requirement' => 1, 'keyword' => 1, 
 	                     'cfields' => 1, 'displayVersion' => 1, 'displayDates' => 1, 'docType' => 'SINGLE_TC',
 	                     'importance' => 1);
+
+
 
 $level = 0;
 $tplanID = 0;

@@ -1,19 +1,21 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.27 2010/12/11 11:19:59 franciscom Exp $
+Filename: reqViewVersions.tpl,v 1.27 2010/12/11 11:19:59 franciscom Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 rev:
-  20110304 - asimon - added help icon with a description of some of the "new" features
-  20101211 - franciscom - BUGID 4056: Requirement Revisioning
-  20101113 - franciscom - BUGID 4045: Smarty 3.0 compatibility - Requirement Versions
-  20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
-  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-  20101026 - franciscom - BUGID 3927: Requirement can't be deleted due to JS error -> label has to be escaped
-  20101017 - franciscom - image access refactored (tlImages)
-  20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
-  20100319 - asimon - BUGID 1748, added requirement relations display
+	20110305 - franciscom -	fixed issue unable to include template due to changed 
+							behaviour of $smarty.template on Smarty 3.0.7
+	20110304 - asimon - added help icon with a description of some of the "new" features
+	20101211 - franciscom - BUGID 4056: Requirement Revisioning
+	20101113 - franciscom - BUGID 4045: Smarty 3.0 compatibility - Requirement Versions
+	20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
+	20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+	20101026 - franciscom - BUGID 3927: Requirement can't be deleted due to JS error -> label has to be escaped
+	20101017 - franciscom - image access refactored (tlImages)
+	20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
+	20100319 - asimon - BUGID 1748, added requirement relations display
 *}
 
 {lang_get s='warning_delete_requirement' var="warning_msg"}
@@ -173,7 +175,7 @@ var pF_delete_req_relation = delete_req_relation;
     {assign var="my_style" value="background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
 {/if}
 
-{assign var=this_template_dir value=$smarty.template|dirname}
+{assign var=this_template_dir value='./requirements'}
 
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
 {* fixed a little bug, here $gui->pageTitle was called instead of $gui->main_descr *}

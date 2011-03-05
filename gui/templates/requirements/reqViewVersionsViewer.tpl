@@ -4,6 +4,7 @@ Filename: reqViewVersionsViewer.tpl
 viewer for requirement
 
 rev:
+20110305 - franciscom - display printer friendly button always
 20110305 - franciscom - BUGID 4273: Option to print single requirement
 20101127 - franciscom - BUGID 4056: Requirement Revisioning
 20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
@@ -35,7 +36,7 @@ rev:
     {if $args_req_spec_name != ''}
      <h2>{$labels.req_spec} {$args_req_spec_name|escape} </h2>
     {/if}
-	  <h2>{$labels.title_test_case} {$args_req.title|escape} </h2>
+	<h2>{$labels.title_test_case} {$args_req.title|escape} </h2>
 {/if}
 {assign var="warning_edit_msg" value=""}
 
@@ -88,16 +89,20 @@ rev:
 	  	       onclick="doAction.value='doCreateVersion';javascript:ask4log('reqViewF','log_message','{$req_version_id}');"/>
 	  </form>
 	</div>
-	
-	<div>
-	{* BUGID 4273: Option to print single requirement *}
+{/if}
+
+{* BUGID 4273: Option to print single requirement *}
+<div>
 	<form method="post" action="lib/requirements/reqPrint.php" name="reqPrinterFriendly">
 		<input type="hidden" id='req_id' name="req_id" value="{$args_req.id}" />
 		<input type="hidden" id='req_version_id' name="req_version_id" value="{$args_req.version_id}" />
 		<input type="hidden" id='req_revision' name="req_revision" value="{$args_req.revision}" />
 		<input type="submit" name="printerFriendly" value="{$labels.btn_printer_friendly}" />
 	</form>
+</div>
 
+{if $args_grants->req_mgmt == "yes"}
+	<div>
 	{* compare versions *}
 	{if $gui->req_has_history}
 		<form method="post" action="lib/requirements/reqCompareVersions.php" name="version_compare">

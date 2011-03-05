@@ -3,16 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: requirement_mgr.class.php,v $
- *
- * @version $Revision: 1.126 $
- * @modified $Date: 2011/01/16 17:38:28 $ by $Author: franciscom $
- * @author Francisco Mancardi
+ * @internal filename: requirement_mgr.class.php
+ * @package  TestLink
+ * @author 	 Francisco Mancardi <francisco.mancardi@gmail.com>
+ * @copyright 2007-2011, TestLink community 
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * rev:
+ * @internal revisions:
  *	20110116 - franciscom - fixed Crash on MSSQL due to column name with MIXED case
  *  						BUGID 4172 - MSSQL UNION text field issue
  * 	20110115 - franciscom - create_new_revision() - fixed insert of null on timestamp field

@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.17 2010/12/13 08:27:04 mx-julian Exp $
+Filename: reqViewVersionsViewer.tpl
 viewer for requirement
 
 rev:
+20110305 - franciscom - BUGID 4273: Option to print single requirement
 20101127 - franciscom - BUGID 4056: Requirement Revisioning
 20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
 20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
@@ -14,7 +15,7 @@ rev:
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
              testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
-             revision,btn_view_history,btn_new_revision,"}
+             revision,btn_view_history,btn_new_revision,btn_printer_friendly"}
 
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
@@ -47,7 +48,7 @@ rev:
 	  	<input type="hidden" name="req_version_id" value="{$args_req.version_id}" />
 	  	<input type="hidden" name="doAction" value="" />
 	  	
-	  	{* IMPORTANT NOTICE: name can not be dynamic becasue PHP uses name not ID *}
+	  	{* IMPORTANT NOTICE: name can not be dynamic because PHP uses name not ID *}
 	  	<input type="hidden" name="log_message" id="log_message_{$req_version_id}" value="" />
 	  	
 	  	
@@ -59,8 +60,7 @@ rev:
 	  	<input type="button" name="delete_req" value="{$labels.btn_delete}"
 	  	       onclick="delete_confirmation({$args_req.id},
 	  	                                    '{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
-	  				                              '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req);"	/>
-
+	  	                                    '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req);"/>
 	  	{/if}
 	  	
 	  	{if $args_can_delete_version}
@@ -90,6 +90,14 @@ rev:
 	</div>
 	
 	<div>
+	{* BUGID 4273: Option to print single requirement *}
+	<form method="post" action="lib/requirements/reqPrint.php" name="reqPrinterFriendly">
+		<input type="hidden" id='req_id' name="req_id" value="{$args_req.id}" />
+		<input type="hidden" id='req_version_id' name="req_version_id" value="{$args_req.version_id}" />
+		<input type="hidden" id='req_revision' name="req_revision" value="{$args_req.revision}" />
+		<input type="submit" name="printerFriendly" value="{$labels.btn_printer_friendly}" />
+	</form>
+
 	{* compare versions *}
 	{if $gui->req_has_history}
 		<form method="post" action="lib/requirements/reqCompareVersions.php" name="version_compare">

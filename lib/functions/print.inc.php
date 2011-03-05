@@ -14,6 +14,9 @@
  *
  *
  * @internal revisions:
+ *	20110305 - franciscom - BUGID 4273: Option to print single requirement
+ *							renderReqForPrinting()
+ *
  *	20110304 - franciscom - BUGID 4286: Option to print single test case
  *							renderTestCaseForPrinting() added missing info.
  *
@@ -105,13 +108,20 @@ if (config_get('interface_bugs') != 'NO')
  * @param resource $db
  * @param array $node the node to be printed
  * @param array $options
+ *				displayDates: true display creation and last edit date (including hh:mm:ss)
+ *
  * @param string $tocPrefix Prefix to be printed in TOC before title of node
  * @param int $level
  * @param int $tprojectID
  * 
  * @return string $output HTML Code
+ *
+ * @internal revisions
+ * 20110305 - franciscom -	BUGID 4273: Option to print single requirement
+ *							enhancements on info displayed
  */
-function renderRequirementNodeForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tprojectID) {
+function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tprojectID) 
+{
 	
 	static $tableColspan;
 	static $firstColWidth;
@@ -121,23 +131,33 @@ function renderRequirementNodeForPrinting(&$db,$node, &$options, $tocPrefix, $le
 	static $tplan_mgr;
 	static $req_cfg;
 	static $req_spec_cfg;
-	static $reqStatusLabels;
-	static $reqTypeLabels;
+	static $decodeReq;
+    static $force = null;
 	
-	if (!$req_mgr) {
+	if (!$req_mgr) 
+	{
 		$req_cfg = config_get('req_cfg');
 		$req_spec_cfg = config_get('req_spec_cfg');
 		$firstColWidth = '20%';
 		$tableColspan = 2;
 		$labels = array('requirement' => 'requirement', 'status' => 'status', 
 		                'scope' => 'scope', 'type' => 'type', 'author' => 'author',
-		                'relations' => 'relations',
-		                'coverage' => 'coverage',
+		                'relations' => 'relations','not_aplicable' => 'not_aplicable',
+		                'coverage' => 'coverage','last_edit' => 'last_edit',
 		                'custom_field' => 'custom_field', 'relation_project' => 'relation_project',
-		                'related_tcs' => 'related_tcs');
+		                'related_tcs' => 'related_tcs', 'version' => 'version', 'revision' => 'revision');
+		                
 		$labels = init_labels($labels);
-		$reqStatusLabels = init_labels($req_cfg->status_labels);
-	    $reqTypeLabels = init_labels($req_cfg->type_labels);
+	    
+	    $decodeReq = array();
+	    $decodeReq['status'] = init_labels($req_cfg->status_labels);
+	    $decodeReq['type'] = init_labels($req_cfg->type_labels);
+	    
+	    
+	    $force['displayVersion'] = isset($options['displayVersion']) ? $options['displayVersion'] : false;
+		$force['displayLastEdit'] = isset($options['displayLastEdit']) ? $options['displayLastEdit'] : false;
+    
+	    
 		$title_separator = config_get('gui_title_separator_1');
 		$req_mgr = new requirement_mgr($db);
 		$tplan_mgr = new testplan($db);
@@ -145,48 +165,90 @@ function renderRequirementNodeForPrinting(&$db,$node, &$options, $tocPrefix, $le
 	
 	$arrReq = $req_mgr->get_by_id($node['id']);
 	$req = $arrReq[0];
+	
 	$name =  htmlspecialchars($req["req_doc_id"] . $title_separator . $req['title']);
-		
+
 	$output = "<table class=\"req\"><tr><th colspan=\"$tableColspan\">" .
 	          "<span class=\"label\">{$labels['requirement']}:</span> " . $name . "</th></tr>\n";	
 	
-	if ($options['toc']) {
+
+	if( $force['displayVersion'] )
+	{
+		$output .= 	'<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
+		         	'<span class="label">'.$labels['version'].':</span></td>' .
+        		 	'<td>' . $req['version'] . ' ' .  $labels['revision'] . ' ' . $req['revision']; 				
+		$output .= "</td></tr>\n";
+	}
+	
+	
+	if ($options['toc']) 
+	{
 		$options['tocCode'] .= '<p style="padding-left: ' . 
-	                                     (15*$level).'px;"><a href="#' . prefixToHTMLID('req'.$node['id']) . '">' .
-	       	                             $name . '</a></p>';
+	                           (15*$level).'px;"><a href="#' . prefixToHTMLID('req'.$node['id']) . '">' .
+	    	                   $name . '</a></p>';
 		$output .= '<a name="' . prefixToHTMLID('req'.$node['id']) . '"></a>';
 	}
 
-	if ($options['req_author']) {
-		$author = tlUser::getById($db,$req['author_id']);
-		$output .=  '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
-		            $labels['author'] . "</span></td><td> " . 
-		            htmlspecialchars($author->getDisplayName()) . "</td></tr>\n";
+	if ($options['req_author']) 
+	{
+		$output .= 	'<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
+		         	'<span class="label">'.$labels['author'].':</span></td>' .
+        		 	'<td>' . htmlspecialchars(gendocGetUserName($db, $req['author_id']));
+
+		if(isset($options['displayDates']) && $options['displayDates'])
+		{
+			$dummy = null;
+        	$output .= ' - ' . localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$req['creation_ts']);
+		}
+		$output .= "</td></tr>\n";
+
+		if ($req['modifier_id'] > 0) 
+		{
+			// add updater if available and differs from author OR forced
+			if (1 || $force['displayLastEdit'] || ($req['modifier_id'] != $req['modifier_id']) )
+			{
+				$output .= 	'<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
+		    	     	 	'<span class="label">'. $labels['last_edit'] . ':</span></td>' .
+						 	'<td>' . htmlspecialchars(gendocGetUserName($db, $req['modifier_id']));
+        					 	
+				if(isset($options['displayDates']) && $options['displayDates'])
+				{
+					$dummy = null;
+					$output .= ' - ' . localize_dateOrTimeStamp(null,$dummy,'timestamp_format',
+																$req['modification_ts']);
+				}	
+				$output .= "</td></tr>\n";
+			}	
+		}
+
+		
+
 	}
+
 	          	
-	if ($options['req_status']) {
-		$output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
-		           $labels['status'] . "</span></td>" .
-		           "<td>" . $reqStatusLabels[$req['status']] . "</td></tr>";
-	}
+	foreach(array('status','type') as $key)
+	{
+		if($options['req_' . $key])
+		{
+			$output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
+		    	       $labels[$key] . "</span></td>" .
+		        	   "<td>" . $decodeReq[$key][$req[$key]] . "</td></tr>";
+		}
+	}          	
 	
-	if ($options['req_type']) {
-		$output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
-		           $labels['type'] . "</span></td>" .
-		           "<td>" . $reqTypeLabels[$req['type']] . "</td></tr>";
-	} 
-	
-	if ($options['req_coverage']) {
+	if ($options['req_coverage']) 
+	{
 		$current = count($req_mgr->get_coverage($req['id']));
 		$expected = $req['expected_coverage'];
-    	$coverage = lang_get('not_aplicable') . " ($current/0)";
-    	if ($expected) {
+    	$coverage = $labels['not_aplicable'] . " ($current/0)";
+    	if ($expected) 
+    	{
     		$percentage = round(100 / $expected * $current, 2);
 			$coverage = "{$percentage}% ({$current}/{$expected})";
     	}
     	
-    	$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['coverage'] . "</span></td>" .
-		           "<td>$coverage</td></tr>";
+    	$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['coverage'] .
+    			   "</span></td>" . "<td>$coverage</td></tr>";
 	} 
 	
 	if ($options['req_scope']) {
@@ -194,21 +256,27 @@ function renderRequirementNodeForPrinting(&$db,$node, &$options, $tocPrefix, $le
 		           "</span><br/>" . $req['scope'] . "</td></tr>";
 	}
 		
-	if ($options['req_relations']) {
+	if ($options['req_relations']) 
+	{
 		$relations = $req_mgr->get_relations($req['id']);
 
-		if ($relations['num_relations']) {
-			$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['relations'] . "</span></td>" .
-			           "<td>";
-			
-			foreach ($relations['relations'] as $rel) {
-				$output .= "{$rel['type_localized']}: <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . 
+		if ($relations['num_relations']) 
+		{
+			$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['relations'] . 
+					   "</span></td><td>";
+	
+			$filler = str_repeat('&nbsp;',5); // MAGIC allowed		
+			foreach ($relations['relations'] as $rel) 
+			{
+				$output .= "{$rel['type_localized']}: <br/>{$filler}" . 
 				           htmlspecialchars($rel['related_req']['req_doc_id']) . $title_separator .
 			               htmlspecialchars($rel['related_req']['title']) . "</br>" .
-				           "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{$labels['status']}: " .
-				           "{$reqStatusLabels[$rel['related_req']['status']]} <br/>";
-				if ($req_cfg->relations->interproject_linking) {
-					$output .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{$labels['relation_project']}: " .
+				           "{$filler}{$labels['status']}: " .
+				           "{$decodeReq['status'][$rel['related_req']['status']]} <br/>";
+				           
+				if ($req_cfg->relations->interproject_linking) 
+				{
+					$output .= "{$filler}{$labels['relation_project']}: " .
 					           htmlspecialchars($rel['related_req']['testproject_name']) . " <br/>";
 				}
 			}
@@ -217,16 +285,18 @@ function renderRequirementNodeForPrinting(&$db,$node, &$options, $tocPrefix, $le
 		}
 	} 
 	
-	if ($options['req_linked_tcs']) {
+	if ($options['req_linked_tcs']) 
+	{
 		$req_coverage = $req_mgr->get_coverage($req['id']);
 		
-		if (count($req_coverage)) {
-			$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['related_tcs'] . "</span></td>" .
-			           "<td>";
+		if (count($req_coverage)) 
+		{
+			$output .=	"<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['related_tcs'] . 
+						"</span></td>" . "<td>";
 			           
-			foreach ($req_coverage as $tc) {
-				$output .= htmlentities($tc['tc_external_id'] . $title_separator .
-				                        $tc['name']) . "<br/>";
+			foreach ($req_coverage as $tc) 
+			{
+				$output .= htmlentities($tc['tc_external_id'] . $title_separator . $tc['name']) . "<br/>";
 			}
 			           
 			$output .= "</td></tr>";
@@ -245,8 +315,7 @@ function renderRequirementNodeForPrinting(&$db,$node, &$options, $tocPrefix, $le
 				$value = htmlspecialchars($cf['value']);
 				
 				$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . 
-				           $cflabel . "</span></td>" .
-				           "<td>$value</td></tr>";
+				           $cflabel . "</span></td>" . "<td>$value</td></tr>";
 			}
 		}
 	}
@@ -418,7 +487,7 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options,
 
 		case 'requirement':
 			$tocPrefix .= (!is_null($tocPrefix) ? "." : '') . $rsCnt;
-			$code .= renderRequirementNodeForPrinting($db, $node, $options,
+			$code .= renderReqForPrinting($db, $node, $options,
 			                              $tocPrefix, $level, $tprojectID);
 	    break;
 	}

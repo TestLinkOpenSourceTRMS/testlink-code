@@ -3,18 +3,19 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: requirement_mgr.class.php,v $
- *
- * @version $Revision: 1.114.2.16 $
- * @modified $Date: 2011/02/10 21:25:25 $ by $Author: franciscom $
- * @author Francisco Mancardi
+ * @internal filename: requirement_mgr.class.php
+ * @package  TestLink
+ * @author 	 Francisco Mancardi <francisco.mancardi@gmail.com>
+ * @copyright 2007-2011, TestLink community 
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * rev:
+ * @internal revisions:
+ *	20110306 - franciscom - get_revision() fixed wrong mapping for REQREV ID on output recordset.
  *	20110116 - franciscom - fixed Crash on MSSQL due to column name with MIXED case
  *  						BUGID 4172 - MSSQL UNION text field issue
+ * 	20110115 - franciscom - create_new_revision() - fixed insert of null on timestamp field
  *	20110108 - franciscom - createFromMap() - check improvements
  *						  	BUGID 4150 check for duplicate req title
  *	20110106 - Julian - update() - set author,modifier,creation_ts,modifier_ts depending on creation of new revision
@@ -2595,6 +2596,8 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	/**
 	 * 
  	 *
+ 	 * @internal revision
+ 	 * 20110115 - franciscom - fixed insert of null on timestamp field
  	 */
 	function create_new_revision($parent_id,$user_id,$tproject_id,$req = null,$log_msg = null)
 	{
@@ -2849,6 +2852,9 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	/**
 	 * 
 	 *
+	 * @internal revision
+	 * 20110306 - franciscom - fixed wrong mapping for REQREV ID on output recordset.
+	 *
  	 */
 	function get_revision($revision_id)
 	{
@@ -2856,9 +2862,10 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 
 		$sql = 	" /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
 		   		" REQRV.scope,REQRV.status,REQRV.type,REQRV.active," . 
-           		" REQRV.is_open,REQRV.author_id,REQV.version,REQRV.id AS version_id," .
+           		" REQRV.is_open,REQRV.author_id,REQV.version,REQRV.parent_id AS version_id," .
            		" REQRV.expected_coverage,REQRV.creation_ts,REQRV.modifier_id," .
-           		" REQRV.modification_ts,REQRV.revision,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+           		" REQRV.modification_ts,REQRV.revision, REQRV.id AS revision_id," .
+           		" NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
 	       		" NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
 	       		" FROM {$this->tables['req_revisions']} REQRV " .
 	       		" JOIN {$this->tables['req_versions']} REQV ON REQV.id = REQRV.parent_id ".

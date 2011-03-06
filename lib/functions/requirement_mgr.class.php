@@ -12,6 +12,7 @@
  * Requirements are children of a requirement specification (requirements container)
  *
  * @internal revisions:
+ *	20110306 - franciscom - get_revision() fixed wrong mapping for REQREV ID on output recordset.
  *	20110116 - franciscom - fixed Crash on MSSQL due to column name with MIXED case
  *  						BUGID 4172 - MSSQL UNION text field issue
  * 	20110115 - franciscom - create_new_revision() - fixed insert of null on timestamp field
@@ -260,7 +261,6 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
 	       " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
 	       " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
            $where_clause . $filter_clause . $my['options']['order_by'];
-
 
 	if ($version_id != self::LATEST_VERSION)
 	{
@@ -2830,6 +2830,9 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	/**
 	 * 
 	 *
+	 * @internal revision
+	 * 20110306 - franciscom - fixed wrong mapping for REQREV ID on output recordset.
+	 *
  	 */
 	function get_revision($revision_id)
 	{
@@ -2837,9 +2840,10 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 
 		$sql = 	" /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
 		   		" REQRV.scope,REQRV.status,REQRV.type,REQRV.active," . 
-           		" REQRV.is_open,REQRV.author_id,REQV.version,REQRV.id AS version_id," .
+           		" REQRV.is_open,REQRV.author_id,REQV.version,REQRV.parent_id AS version_id," .
            		" REQRV.expected_coverage,REQRV.creation_ts,REQRV.modifier_id," .
-           		" REQRV.modification_ts,REQRV.revision,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+           		" REQRV.modification_ts,REQRV.revision, REQRV.id AS revision_id," .
+           		" NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
 	       		" NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
 	       		" FROM {$this->tables['req_revisions']} REQRV " .
 	       		" JOIN {$this->tables['req_versions']} REQV ON REQV.id = REQRV.parent_id ".

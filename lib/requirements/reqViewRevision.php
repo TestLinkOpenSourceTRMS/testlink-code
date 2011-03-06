@@ -80,13 +80,14 @@ function initialize_gui(&$dbHandler,$argsObj)
     {
     	case 'requirement_version':
 			$info = $req_mgr->get_version($gui->item_id);
+			$info['getFromVersion'] = $gui->item_id;
     	break;
     	
     	case 'requirement_revision':
 			$info = $req_mgr->get_revision($gui->item_id);
+			$info['getFromRevision'] = $gui->item_id;
     	break;
     }
-    
     
     $gui->item = $info;
 	$gui->cfields = $req_mgr->html_table_of_custom_field_values(null,$gui->item_id,$argsObj->tproject_id);

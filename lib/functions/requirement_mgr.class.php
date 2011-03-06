@@ -12,7 +12,9 @@
  * Requirements are children of a requirement specification (requirements container)
  *
  * @internal revisions:
- *	20110306 - franciscom - get_revision() fixed wrong mapping for REQREV ID on output recordset.
+ *	20110306 - franciscom - new method: get_version_revision() 
+ *							get_revision() fixed wrong mapping for REQREV ID on output recordset.
+ *
  *	20110116 - franciscom - fixed Crash on MSSQL due to column name with MIXED case
  *  						BUGID 4172 - MSSQL UNION text field issue
  * 	20110115 - franciscom - create_new_revision() - fixed insert of null on timestamp field
@@ -2763,30 +2765,6 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   		if( $my['options']['decode_user'] && !is_null($history) )
   		{
   			$this->decode_users($history);
-  			// $userCache = null;  // key: user id, value: display name
-  			// $key2loop = array_keys($history);
-  			// $labels['undefined'] = lang_get('undefined');
-  			// $user_keys = array('author' => 'author_id', 'modifier' => 'modifier_id');
-  			// foreach( $key2loop as $key )
-  			// {
-  			// 	foreach( $user_keys as $ukey => $userid_field)
-  			// 	{
-  			// 		$history[$key][$ukey] = '';
-  			// 		if(trim($history[$key][$userid_field]) != "")
-  			// 		{
-  			// 			if( !isset($userCache[$history[$key][$userid_field]]) )
-  			// 			{
-  			// 				$user = tlUser::getByID($this->db,$history[$key][$userid_field]);
-  			// 				$history[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
-  			// 				$userCache[$history[$key][$userid_field]] = $history[$key][$ukey];
-  			// 			}
-  			// 			else
-  			// 			{
-  			// 				$history[$key][$ukey] = $userCache[$history[$key][$userid_field]];
-  			// 			}
-  			// 		}
-  			// 	}	
-  			// }
 		}
  
     	return $history;
@@ -2794,7 +2772,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	
 	
 	/**
-	 * 
+	 * get version with ONLY LAST REVISION info (only info is revision NUMBER)
 	 *
  	 */
 	function get_version($version_id)
@@ -2828,7 +2806,9 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 
 
 	/**
-	 * 
+	 * used to get info for revisions OTHER than LAST, because last revision
+	 * data is NOT STORED in REQ REVISION table, but in REQ VERSION table.
+	 *
 	 *
 	 * @internal revision
 	 * 20110306 - franciscom - fixed wrong mapping for REQREV ID on output recordset.
@@ -2862,6 +2842,84 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 		}
 		return is_null($dummy) ? null : $dummy;	
 	}	
+
+
+	/**
+	 * get info regarding a req version, using also revision as access criteria.
+	 *
+	 * @int version_id
+	 * @array revision_access possible keys 'id', 'number'
+	 *
+	 * @uses print.inc.php
+	 * @uses renderReqForPrinting()
+	 *
+	 * @internal revision
+	 * 20110306 - franciscom - created
+	 *
+ 	 */
+	function get_version_revision($version_id,$revision_access)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = 	"/* $debugMsg */";
+		
+		if( isset($revision_access['number']) )
+		{	
+			$rev_number = intval($revision_access['number']);
+
+			// we have to tables to search on
+			// Req Versions -> holds LATEST revision
+			// Req Revisions -> holds other revisions
+			$sql .= " SELECT NH_REQV.parent_id AS req_id, REQV.id AS version_id, REQV.version," .
+    				"		 REQV.creation_ts, REQV.author_id, " .
+					"		 REQV.modification_ts, REQV.modifier_id, " . 
+    						 self::NO_REVISION . " AS revision_id, " .
+    				" 		 REQV.revision, REQV.scope, " .
+    				" 		 REQV.status,REQV.type,REQV.expected_coverage,NH_REQ.name, REQ.req_doc_id, " .
+    				" COALESCE(REQV.log_message,'') AS log_message, NH_REQ.name AS title " .
+    				" FROM {$this->tables['req_versions']}  REQV " .
+					" JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
+					" JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+					" JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+					" WHERE NH_REQV.id = {$version_id} AND REQV.revision = {$rev_number} "; 
+
+			$sql .=	" UNION ALL ( " .
+    				" SELECT NH_REQV.parent_id AS req_id, REQV.id AS version_id, REQV.version, " .
+    				"		 REQRV.creation_ts, REQRV.author_id, " .
+					"		 REQRV.modification_ts, REQRV.modifier_id, " . 
+					"		 REQRV.id AS revision_id, " .
+					"		 REQRV.revision,REQRV.scope,REQRV.status,REQRV.type, " .
+    				"		 REQRV.expected_coverage,REQRV.name,REQRV.req_doc_id, " .
+    				"		 COALESCE(REQRV.log_message,'') as log_message, NH_REQ.name AS title " .
+					" FROM {$this->tables['req_versions']} REQV " .
+					" JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
+					" JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+					" JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+					" JOIN {$this->tables['req_revisions']} REQRV " .
+					" ON REQRV.parent_id = REQV.id " . 
+					" WHERE NH_REQV.id = {$version_id} AND REQRV.revision = {$rev_number} ) ";
+		
+		}	
+		else
+		{	
+			// revision_id is present ONLY on req revisions table, then we do not need UNION
+ 			$sql .=	" SELECT NH_REQV.parent_id AS req_id, REQV.id AS version_id, REQV.version, " .
+    				"		 REQRV.creation_ts, REQRV.author_id, " .
+					"		 REQRV.modification_ts, REQRV.modifier_id, " . 
+					"		 REQRV.id AS revision_id, " .
+					"		 REQRV.revision,REQRV.scope,REQRV.status,REQRV.type, " .
+    				"		 REQRV.expected_coverage,REQRV.name,REQRV.req_doc_id, " .
+    				"		 COALESCE(REQRV.log_message,'') as log_message, NH_REQ.name AS title " .
+					" FROM {$this->tables['req_versions']} REQV " .
+					" JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
+					" JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+					" JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+					" JOIN {$this->tables['req_revisions']} REQRV " .
+					" ON REQRV.parent_id = REQV.id " . 
+					" WHERE NH_REQV.id = {$version_id} AND REQRV.revision_id = " . intval($revision_access['id']);
+		}
+		$rs = $this->db->get_recordset($sql);
+		return $rs;
+	}
 
 	
 	

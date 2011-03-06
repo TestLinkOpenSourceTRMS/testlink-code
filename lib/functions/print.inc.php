@@ -14,9 +14,11 @@
  *
  *
  * @internal revisions:
+ *	20110306 - franciscom - BUGID 4273: Option to print single requirement
+ *							renderReqForPrinting()	new layout for version and revision
+ *
  *	20110305 - franciscom - BUGID 4273: Option to print single requirement
  *							renderReqForPrinting() - refactored to use version id.
- *
  *
  *	20110304 - franciscom - BUGID 4286: Option to print single test case
  *							renderTestCaseForPrinting() added missing info.
@@ -118,7 +120,14 @@ if (config_get('interface_bugs') != 'NO')
  * @return string $output HTML Code
  *
  * @internal revisions
- * 20110505 - franciscom - 	added logic to manage version id
+ *
+ * 20110306 - franciscom - 	BUGID 4273: Option to print single requirement 
+ *							added logic to manage revision number
+ *							layout changed to show revision on new row
+ *
+ * 20110305 - franciscom - 	BUGID 4273: Option to print single requirement 
+ *							added logic to manage version id
+ *
  * 20110305 - franciscom -	BUGID 4273: Option to print single requirement
  *							enhancements on info displayed
  */
@@ -147,7 +156,8 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 		                'relations' => 'relations','not_aplicable' => 'not_aplicable',
 		                'coverage' => 'coverage','last_edit' => 'last_edit',
 		                'custom_field' => 'custom_field', 'relation_project' => 'relation_project',
-		                'related_tcs' => 'related_tcs', 'version' => 'version', 'revision' => 'revision');
+		                'related_tcs' => 'related_tcs', 'version' => 'version', 
+		                'revision' => 'revision');
 		                
 		$labels = init_labels($labels);
 	    
@@ -166,12 +176,30 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 	}
 	
 	$versionID = isset($node['version_id']) ? intval($node['version_id']) : requirement_mgr::LATEST_VERSION;
-	$dummy = $req_mgr->get_by_id($node['id'],$versionID);
+	$revision = isset($node['revision']) ? intval($node['revision']) : null;
+
+	if( is_null($revision) )
+	{
+		// will get last revision of requested req version 
+		$dummy = $req_mgr->get_by_id($node['id'],$versionID);  
+	}
+	else
+	{
+		$dummy = $req_mgr->get_version_revision($versionID,array('number' => $revision));  
+		if(!is_null($dummy))
+		{
+			// do this way instead of using SQL alias on get_version_revision(), in order
+			// to avoid issues (potential not confirmed)on different DBMS.
+			$dummy[0]['id'] = $dummy[0]['req_id'];
+		}
+	}
+	
 	$req = $dummy[0];
-	
-	// update versionID with valu got from req, this is needed if user did not provide it
+
+	// update with values got from req, this is needed if user did not provide it
 	$versionID = $req['version_id'];
-	
+	$revision = $req['revision'];
+
 	$name =  htmlspecialchars($req["req_doc_id"] . $title_separator . $req['title']);
 
 	$output = "<table class=\"req\"><tr><th colspan=\"$tableColspan\">" .
@@ -180,10 +208,13 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 
 	if( $force['displayVersion'] )
 	{
-		$output .= 	'<tr><td valign="top">' . 
-		         	'<span class="label">'.$labels['version'].':</span></td>' .
-        		 	'<td>' . $req['version'] . ' ' .  $labels['revision'] . ' ' . $req['revision']; 				
-		$output .= "</td></tr>\n";
+		foreach(array('version','revision') as $key)
+		{
+			$output .= 	'<tr><td valign="top">' . 
+		    	     	'<span class="label">'.$labels[$key].':</span></td>' .
+        			 	'<td>' . $req[$key]. "</td></tr>\n";
+		
+		}		
 	}
 	
 	
@@ -213,7 +244,7 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 			// add updater if available and differs from author OR forced
 			if (1 || $force['displayLastEdit'] || ($req['modifier_id'] != $req['modifier_id']) )
 			{
-				$output .= 	'<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
+				$output .= 	'<tr><td valign="top">' . 
 		    	     	 	'<span class="label">'. $labels['last_edit'] . ':</span></td>' .
 						 	'<td>' . htmlspecialchars(gendocGetUserName($db, $req['modifier_id']));
         					 	
@@ -226,11 +257,7 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 				$output .= "</td></tr>\n";
 			}	
 		}
-
-		
-
 	}
-
 	          	
 	foreach(array('status','type') as $key)
 	{

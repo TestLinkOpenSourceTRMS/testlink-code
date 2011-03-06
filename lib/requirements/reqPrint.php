@@ -12,8 +12,11 @@
  * create printer friendly information for ONE requirement
  *
  * @internal revisions:
- * 20110305 - franciscom - BUGID 4273: Option to print single requirement
-*/
+ * 20110306 - franciscom - 	BUGID 4273: Option to print single requirement
+ *							added revision number 
+ *
+ * 20110305 - franciscom - 	BUGID 4273: Option to print single requirement
+ */
 
 require_once("../../config.inc.php");
 require_once("../../cfg/reports.cfg.php"); 
@@ -26,7 +29,7 @@ $tree_mgr = new tree($db);
 $args = init_args();
 $node = $tree_mgr->get_node_hierarchy_info($args->req_id);
 $node['version_id'] = $args->req_version_id;
-
+$node['revision'] = $args->req_revision;
 
 $gui = new stdClass();
 $gui->object_name='';

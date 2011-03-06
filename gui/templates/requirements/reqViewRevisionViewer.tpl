@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewRevisionViewer.tpl,v 1.2 2010/12/10 19:46:48 franciscom Exp $
-viewer for requirement
+@internal filename: reqViewRevisionViewer.tpl
+viewer for requirement revision
 
-rev:
-20110306 - franciscom - BUGID 4045: Smarty 3.0 compatibility
+@internal revisions:
+20110305 - franciscom - BUGID 4273: Option to print single requirement
+20110305 - franciscom - BUGID 4045: Smarty 3.0 compatibility
 20101127 - franciscom - BUGID 4056: Requirement Revisioning
 *}
 {lang_get var="labels"
@@ -12,7 +13,7 @@ rev:
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
              testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
-             btn_revisions,revision"}
+             btn_revisions,revision,btn_printer_friendly"}
 
              
 {if $args_show_title}
@@ -22,12 +23,20 @@ rev:
     {if $args_req_spec_name != ''}
      <h2>{$labels.req_spec} {$args_req_spec_name|escape} </h2>
     {/if}
-	  <h2>{$labels.title_test_case} {$args_req.title|escape} </h2>
+	<h2>{$args_req.title|escape} </h2>
 {/if}
 {assign var="warning_edit_msg" value=""}
 
+{* BUGID 4273: Option to print single requirement *}
+<div>
+	<form method="post" action="lib/requirements/reqPrint.php" name="reqPrinterFriendly">
+		<input type="hidden" id='req_id' name="req_id" value="{$args_req.id}" />
+		<input type="hidden" id='req_version_id' name="req_version_id" value="{$args_req.version_id}" />
+		<input type="hidden" id='req_revision' name="req_revision" value="{$args_req.revision}" />
+		<input type="submit" name="printerFriendly" value="{$labels.btn_printer_friendly}" />
+	</form>
+</div>
 
-{* <div class="messages" align="center">{$labels.showing_version} {$args_req.version}</div> *}
 
 <table class="simple">
   {if $args_show_title}

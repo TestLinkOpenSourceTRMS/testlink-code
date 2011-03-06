@@ -3,14 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: topLevelSuitesBarChart.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2010/09/12 17:09:17 $ by $Author: franciscom $
- *
- * @author	Kevin Levy
- *
+ * @internal filename: topLevelSuitesBarChart.php
+ * 
  * @internal revisions
  *
+ * 20101210 - franciscom - BUGID 4090 
  * 20100912 - franciscom - BUGID 2215
  * 20081116 - franciscom - refactored to display X axis ordered (alphabetical).
  * 20081113 - franciscom - BUGID 1848
@@ -86,7 +83,11 @@ function getDataAndScale(&$dbHandler)
     {
        $obj->chart_data[] = $values;
        $obj->series_label[] = lang_get($resultsCfg['status_label'][$status]);
-       $obj->series_color[] = $resultsCfg['charts']['status_colour'][$status];
+       // BUGID 4090
+ 	   if( isset($resultsCfg['charts']['status_colour'][$status]) )
+       {	
+			$obj->series_color[] = $resultsCfg['charts']['status_colour'][$status];
+       }	
     }
  
     return $obj;

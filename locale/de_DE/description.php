@@ -242,15 +242,16 @@ with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_
 $TLS_hlp_req_edit = "<h3>Interne Links im Inhalt:</h3>
 <p>Interne Links können genutzt werden um Links zu anderen Anforderungen/Anforderungsspezifikation 
 mit einer speziellen Syntax zu erstellen. 
-Das Verhalten der internen Links kann über die Konfigurationsdatei angepasst werden.</p>
+Das Verhalten der internen Links kann über die Konfigurationsdatei angepasst werden.
+<br /><br />
+<b>Benutzung:</b>
+<br />
+Link zu einer Anforderung: [req]Anf_Dokument_ID[/req]<br />
+Link zu einer Anforderungsspezifikation: [req_spec]Anf_Spez_Dokument_ID[/req_spec]</p>
 
-<h3>Benutzung:</h3>
-<p>Link zu einer Anforderung: [req]Anf_Dokument_ID[/req]</p>
-<p>Link zu einer Anforderungsspezifikation: [req_spec]Anf_Spez_Dokument_ID[/req_spec]</p>
-
-<p>Das Testprojekt und ein Anker der zu verlinkenden Anforderung kann ebenfalls angegeben werden:</p>
-<p>[req tproj=<tproj_prefix> anchor=<anker_name>]Anf_DOkument_ID[/req]</p>
-<p>Diese Syntax funktioniert auch für Anforderungsspezifikationen.</p>
+<p>Das Testprojekt und ein Anker der zu verlinkenden Anforderung kann ebenfalls angegeben werden:<br />
+[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anker_name&gt;]Anf_Dokument_ID[/req]<br />
+Diese Syntax funktioniert auch für Anforderungsspezifikationen.</p>
 
 <h3>Änderungsprotokoll/Revisionierung:</h3>
 <p>Immer wenn eine Änderung an einer Anforderung vorgenommen wird fragt Testlink nach einer Protokollierung der Änderung. 
@@ -288,14 +289,15 @@ wird Testlink die Beziehung \"Anforderung B ist Kind von Anforderung A\" implizi
 $TLS_hlp_req_spec_edit = "<h3>Interne Links im Inhalt:</h3>
 <p>Interne Links können genutzt werden um Links zu anderen Anforderungen/Anforderungsspezifikation 
 mit einer speziellen Syntax zu erstellen. 
-Das Verhalten der internen Links kann über die Konfigurationsdatei angepasst werden.</p>
-
-<h3>Benutzung:</h3>
-<p>Link zu einer Anforderung: [req]Anf_Dokument_ID[/req]
+Das Verhalten der internen Links kann über die Konfigurationsdatei angepasst werden.
+<br /><br />
+<b>Benutzung:</b>
+<br />
+Link zu einer Anforderung: [req]Anf_Dokument_ID[/req]<br />
 Link zu einer Anforderungsspezifikation: [req_spec]Anf_Spez_Dokument_ID[/req_spec]</p>
 
-<p>Das Testprojekt und ein Anker der zu verlinkenden Anforderung kann ebenfalls angegeben werden:
-[req tproj=<tproj_prefix> anchor=<anker_name>]Anf_DOkument_ID[/req]
+<p>Das Testprojekt und ein Anker der zu verlinkenden Anforderung kann ebenfalls angegeben werden:<br />
+[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anker_name&gt;]Anf_Dokument_ID[/req]<br />
 Diese Syntax funktioniert auch für Anforderungsspezifikationen.</p>
 ";
 

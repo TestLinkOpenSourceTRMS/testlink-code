@@ -239,7 +239,6 @@ with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_
 \"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
 ";
 
-
 $TLS_hlp_req_coverage_table = "<h3>Coverage:</h3>
 A value of e.g. \"40% (8/20)\" means that 20 Test Cases have to be created for this Requirement 
 to test it completely. 8 of those have already been created and linked to this Requirement, which 
@@ -249,16 +248,17 @@ makes a coverage of 40 percent.
 
 // req_edit
 $TLS_hlp_req_edit = "<h3>Internal links on scope:</h3>
-Internal links serve the purpose of creating links to other requirements/requirement specifications 
-with a special syntax. Internal Links behaviour can be changed on the config file.
-
-<h3>Usage:</h3>
-<p>Link to requirements: [req]req_doc_id[/req]
+<p>Internal links serve the purpose of creating links to other requirements/requirement specifications 
+with a special syntax. Internal Links behaviour can be changed in the config file.
+<br /><br />
+<b>Usage:</b>
+<br />
+Link to requirements: [req]req_doc_id[/req]<br />
 Link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
 
 <p>The test project of the requirement / requirement specification and an anchor
-to jump to can also be specified:
-[req tproj=<tproj_prefix> anchor=<anchor_name>]req_doc_id[/req]
+to jump to can also be specified:<br />
+[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt;]req_doc_id[/req]<br />
 This syntax also works for requirement specifications.</p>
 
 <h3>Log message for changes:</h3>
@@ -270,7 +270,7 @@ Whenever anything besides the scope is changed you are forced to create a new re
 
 // req_view
 $TLS_hlp_req_view = "<h3>Direct Links:</h3>
-<p>To easily share this document with others simply click the globe icon at the top of this document after saving to create a direct link.</p>
+<p>To easily share this document with others simply click the globe icon at the top of this document to create a direct link.</p>
 
 <h3>View History:</h3>
 <p>This feature allows to compare revisions/versions of requirements if more than one revision/version of the requirement exists.
@@ -289,17 +289,18 @@ Testlink will set the relation \"Requirement B is child of Requirement A\" impli
 
 
 // req_spec_edit
-$TLS_hlp_req_spec_edit = "<h3>Internal Links on Scope:</h3>
-<p>Internal Links serve the purpose of creating links to other requirements with a special syntax. 
-Internal Links behaviour can be changed on config file.</p>
-
-<h3>Usage:</h3>
-<p>link to requirements: [req]req_doc_id[/req]
-link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
+$TLS_hlp_req_spec_edit = "<h3>Internal links on scope:</h3>
+<p>Internal links serve the purpose of creating links to other requirements/requirement specifications 
+with a special syntax. Internal Links behaviour can be changed in the config file.
+<br /><br />
+<b>Usage:</b>
+<br />
+Link to requirements: [req]req_doc_id[/req]<br />
+Link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
 
 <p>The test project of the requirement / requirement specification and an anchor
-to jump to can also be specified:
-[req tproj=<tproj_prefix> anchor=<anchor_name>]req_doc_id[/req]
+to jump to can also be specified:<br />
+[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt;]req_doc_id[/req]<br />
 This syntax also works for requirement specifications.</p>
 ";
 

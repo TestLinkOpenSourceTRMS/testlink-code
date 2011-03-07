@@ -181,6 +181,7 @@ $TLS_btn_no = "Nein";
 $TLS_btn_new_revision = "Neue Revision erstellen";
 $TLS_btn_ok = "Ok";
 $TLS_btn_print = "Drucken";
+$TLS_btn_print_view = "Druckansicht";
 $TLS_btn_save = "Speichern";
 $TLS_btn_unassign = "Zuweisung entfernen";
 $TLS_btn_uncheck = "Markierung aufheben";
@@ -191,7 +192,6 @@ $TLS_btn_advanced_filters = "Erweiterte Filter";
 $TLS_btn_simple_filters = "Einfache Filter";
 $TLS_btn_reorder_steps = "Schritte neu ordnen";
 $TLS_btn_view_history = "Verlauf anzeigen";
-
 
 // Status (used wide)
 $TLS_test_status_all = "Alle";

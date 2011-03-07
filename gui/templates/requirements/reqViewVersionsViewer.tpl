@@ -4,7 +4,8 @@ Filename: reqViewVersionsViewer.tpl
 viewer for requirement
 
 rev:
-20110307 - asimon - moved req view button forms and divs around to align buttons in a single row
+20110307 - asimon - BUGID 4273: moved print preview to popup to make printing independent from browser easier for the users
+                                moved req view button forms and divs around to align buttons in a single row
 20110305 - franciscom - display printer friendly button always
 20110305 - franciscom - BUGID 4273: Option to print single requirement
 20101127 - franciscom - BUGID 4056: Requirement Revisioning
@@ -17,7 +18,7 @@ rev:
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
              testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
-             revision,btn_view_history,btn_new_revision,btn_printer_friendly"}
+             revision,btn_view_history,btn_new_revision,btn_print_view"}
 
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
@@ -100,10 +101,9 @@ rev:
 
 {* BUGID 4273: Option to print single requirement *}
 <form style="display: inline;" method="post" action="lib/requirements/reqPrint.php" name="reqPrinterFriendly">
-	<input type="hidden" id='req_id' name="req_id" value="{$args_req.id}" />
-	<input type="hidden" id='req_version_id' name="req_version_id" value="{$args_req.version_id}" />
-	<input type="hidden" id='req_revision' name="req_revision" value="{$args_req.revision}" />
-	<input type="submit" name="printerFriendly" value="{$labels.btn_printer_friendly}" />
+	<input type="button" name="printerFriendly" value="{$labels.btn_print_view}" 
+	       onclick="javascript:open_print_preview('req',{$args_req.id},{$args_req.version_id},
+		                                          {$args_req.revision},'lib/requirements/reqPrint.php');"/>
 </form>
 </div> {* class="groupBtn" *}
 <br/><br/>

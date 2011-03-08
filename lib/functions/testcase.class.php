@@ -3,13 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource 	testcase.class.php
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.331.2.7 2011/02/10 21:25:25 franciscom Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20110308 - franciscom - get_basic_info() interface changes	
  * 20110205 - franciscom - BUGID 4207 - set_step_number() - 
  *						   MSSQL problems when table alias is used on SQL UPDATE 
  *						   BUGID 4204 - update problem due to alias, declared as issue 3849 fixed on 	
@@ -4487,11 +4488,12 @@ class testcase extends tlObjectWithAttachments
 	 * this info is normally enough for user feednack.
  	 *
  	 * @param int $id test case id
- 	 * @param int $version test case version number
+ 	 * @param array $accessVersionBy 'number' 	=> contains test case version number
+ 	 *								 'id' 		=> contains test case version ID
  	 * 
  	 * @return array with one element with keys: name,version,tc_external_id
      */
-	function get_basic_info($id,$version)
+	function get_basic_info($id,$accessVersionBy)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$sql = "/* $debugMsg */ " .
@@ -4500,12 +4502,17 @@ class testcase extends tlObjectWithAttachments
 		       " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TCASE.id" .
 		       " JOIN {$this->tables['tcversions']} TCV ON  TCV.id = NH_TCV.id ";
 
-	    $where_clause = " WHERE TCV.version = {$version} AND NH_TCASE .id = {$id} ";
-		       
-	    // $where_clause = " WHERE TCV.id = {$version_id} ";
-	    // $where_clause .= (!is_null($id) && $id > 0) ? " AND NH_TCASE .id = {$id} " :  "";
+		$accessBy = array('number' => 'version', 'id' => 'id'); 
+		foreach( $accessBy as $key => $field) 
+		{
+			if( isset($accessVersionBy[$key]) )
+			{
+	    		$where_clause = " WHERE TCV.{$field} = " . intval($accessVersionBy[$key]) ;
+	    		break;
+			}	
+		}
+		$where_clause .= " AND NH_TCASE .id = {$id} ";
         $sql .= $where_clause;
-       
         $result = $this->db->get_recordset($sql);
         return $result;
     }

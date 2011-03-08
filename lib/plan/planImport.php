@@ -10,13 +10,14 @@
  *
  * works only if linked items ALREADY exist on system.
  *
+ * @filesource  planImport.php
  * @package 	TestLink
  * @author 		Francisco Mancardi
- * @copyright 	2003-2010, TestLink community 
- * @version    	CVS: $Id: planImport.php,v 1.8 2010/10/31 18:36:04 franciscom Exp $
+ * @copyright 	2003-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20110308 - franciscom - get_basic_info() interface changes
  * 20101031 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
  * 20101030 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
  * 20101017 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
@@ -351,8 +352,8 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 					if( isset($tcaseSet[$externalID] ) )
 					{
 						// now need to check if requested version exists
-						$dummy = $tcaseMgr->get_basic_info($tcaseSet[$externalID],$version);
-						// new dBug($dummy);
+						$dummy = $tcaseMgr->get_basic_info($tcaseSet[$externalID],array('number' => $version));
+
 						if( count($dummy) > 0 )
 						{
 							// Check :

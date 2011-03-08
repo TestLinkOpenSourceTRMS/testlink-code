@@ -16,9 +16,9 @@
  * replace values of TestLink configuration variables.
  * It saves your changes for the next upgrade in one extra file.
  *
+ * @internal	filename:config.inc.php
  * @package 	TestLink
- * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.333.2.9 2011/02/11 08:28:40 mx-julian Exp $
+ * @copyright 	2005-2011, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:

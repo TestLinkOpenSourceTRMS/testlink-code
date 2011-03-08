@@ -107,7 +107,7 @@
 {* end contribution by asimon *}
 	
 {include file="$buttons_template"}
-<table class="simple" style="width: 90%">
+<table class="simple">
 	<tr>
 		<th>{$gui->main_descr|escape}</th>
 	</tr>

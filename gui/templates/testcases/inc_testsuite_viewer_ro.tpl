@@ -5,7 +5,7 @@ $Id: inc_testsuite_viewer_ro.tpl,v 1.4 2010/01/02 18:19:34 franciscom Exp $
 20060805 - franciscom - added keywords management
 20080606 - havlatm - refactorization
 *}
-<table class="simple" style="width: 90%">
+<table class="simple">
 	<tr>
 		<th colspan="2">{$labels.test_suite}{$tlCfg->gui_title_separator_1}{$gui->container_data.name|escape}</th>
 	</tr>

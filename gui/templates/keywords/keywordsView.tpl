@@ -2,6 +2,10 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: keywordsView.tpl,v 1.18 2010/11/13 09:21:54 franciscom Exp $
 Purpose: smarty template - View all keywords 
+
+Revision:
+20110308 - Julian - BUGID 3410 - Smarty 3.0 compatibility
+
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -10,8 +14,8 @@ Purpose: smarty template - View all keywords
           s='th_notes,th_keyword,th_delete,btn_import,btn_export,
              menu_assign_kw_to_tc,btn_create_keyword'}
 
-{lang_get s='warning_delete_keyword' var="warning_msg" }
-{lang_get s='delete' var="del_msgbox_title" }
+{lang_get s='warning_delete_keyword' var="warning_msg"}
+{lang_get s='delete' var="del_msgbox_title"}
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
@@ -27,7 +31,7 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
 
 <div class="workBack">
 	{if $keywords neq ''}
-	<table class="simple sortable" style="width:98%">
+	<table class="simple sortable">
 		<tr>
 			<th width="30%">{$tlImages.sort_hint}{$labels.th_keyword}</th>
 			<th>{$tlImages.sort_hint}{$labels.th_notes}</th>

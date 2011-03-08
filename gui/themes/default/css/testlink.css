@@ -4,6 +4,7 @@ $Id: testlink.css,v 1.55 2010/12/01 12:34:17 mx-julian Exp $
 
 Purpose: Default TestLink CSS
 
+20110308 - Julian - default width for simple table is now 99%
 20101131 - Julian - added background color for "table.simple th"
 20101028 - eloff - reverted to strict table changes and added workaround for date picker
                    BUGID 3944 - do not style file uploads fields

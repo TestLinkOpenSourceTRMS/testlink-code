@@ -27,7 +27,7 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file with commit id cecf6dc9c3d963fac5f569c706983d5eb045ee21
+ * Last Update according to en_GB string file with commit id 14790ab942dfba72101f1a19f3d9e02f6d1fc7aa
  *
  **/
 
@@ -2081,6 +2081,10 @@ $TLS_title_test_plan_mgmt = "Testplan Verwaltung";
 
 
 // ----- gui/templates/metricsDashboard.tpl -----
+$TLS_info_metrics_dashboard_progress = "Der Projektfortschritt wird berechnet indem alle Ausführungen für ein " .
+                                       "spezifisches Ergebnis für alle Plattformenen innerhalb aller Testpläne " .
+                                       "aufsummiert wird. Diese Summe wird dann in Beziehung zur Summe aller " .
+                                       "aktiver Testfälle aller Plattformen innerhalb aller Testpläne gesetzt.";
 $TLS_info_metrics_dashboard = "Dieser Report zeigt den Fortschritt für das gesamte Projekt " .
                               "und alle (oder nur aktive) Testpläne innerhalb des Projekts<br />" .
                               "Der Gesamtfortschritt der Testpläne wird basierend auf dem Fortschritt " .
@@ -2580,13 +2584,13 @@ $TLS_tcversion_indicator = ' [v%s]';
 
 
 // ----- lib/results/testCasesWithCF.php -----
-$TLS_link_report_tcases_with_cf = "Testfälle mit Ausführungsdetails";
+$TLS_link_report_tcases_with_cf = "Ausgeführte Testfälle mit benutzerdef. Feldern";
 $TLS_caption_testCasesWithCF = $TLS_link_report_tcases_with_cf;
-$TLS_no_linked_tc_cf='Es existieren keine Testfälle mit benutzerdefinierten Feldern oder ' .
-                     'Ausführungsnotizen';
+$TLS_no_linked_tc_cf='Es existieren keine ausgeführten Testfälle mit benutzerdefinierten Feldern';
 $TLS_info_testCasesWithCF = "Dieser Report zeigt alle Testfälle, für die bei der " .
                             "Testausführung ein Wert für ein beliebiges benutzerdefiniertes " .
-                            "Feld oder eine Ausführungsnotiz gesetzt wurde";
+                            "Feld gesetzt wurde. Zusätzlich wird die Ausführungsnotiz für ".
+                            "entsprechende Testfälle angezeigt.";
 
 
 // ----- cfg/reports.cfg.php -----

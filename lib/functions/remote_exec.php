@@ -3,13 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @filesource $RCSfile: remote_exec.php,v $
- * @version $Revision: 1.3.6.1 $ $Author: franciscom $
- * @modified $Date: 2011/02/10 21:26:07 $
- * @author 
+ * @filesource	remote_exec.php
+ * @author		Francisco Mancardi <francisco.mancardi@gmail.com>
  *
- * ----------------------------------------------------------------------------------- */
-
+ * @internal revisions
+ * 20110308 - franciscom - refactoring 
+ */
 require_once("../../config.inc.php");
 require_once (TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'xml-rpc/class-IXR.php');
 
@@ -77,15 +76,18 @@ function executeTestCase($tcaseInfo,$serverCfg,$context)
 			$ret['system']['status'] = 'connectionFailure';
 			$ret['system']['msg'] = lang_get('remoteExecServerConnectionFailure');						
 		}
-
 	}
 	
  	if($do_it)
   	{
   		$args4call = array();
+  		
+  		// Execution Target
   		$args4call['testCaseName'] = $tcaseInfo['name'];
   		$args4call['testCaseID'] = $tcaseInfo['id'];
-  		$args4call['testCaseVersionID'] = $context['version_id'];
+  		$args4call['testCaseVersionID'] = $tcaseInfo['version_id'];
+  		
+  		// Context
   		$args4call['testProjectID'] = $context['tproject_id'];
   		$args4call['testPlanID'] = $context['tplan_id'];
   		$args4call['platformID'] = $context['platform_id'];
@@ -95,12 +97,10 @@ function executeTestCase($tcaseInfo,$serverCfg,$context)
 		$xmlrpcClient->query('executeTestCase',$args4call);
 		$response = $xmlrpcClient->getResponse();
 
-		// new dBug($response);
 		if( !is_null($response) )
 		{
 			$ret['execution'] = $response;
 		}
-		
   	} 
 
 	return $ret;

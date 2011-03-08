@@ -2,12 +2,11 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
- * Filename $RCSfile: execSetResults.php,v $
+ * @filesource	execSetResults.php
  *
- * @version $Revision: 1.172.2.3 $
- * @modified $Date: 2011/02/10 21:26:07 $ $Author: franciscom $
+ * @internal revisions:
  *
- * rev:
+ *	20110308 - franciscom - remote execution
  *	20110123 - franciscom - BUGID 3338 
  *  20110105 - asimon - BUGID 3878: "Save and move to next" does not respect filter settings
  *  20110104 - aismon - BUGID 3643: apply filters earlier in script instead of loading unnecessary data
@@ -127,8 +126,8 @@ if($args->doExec == 1)
 		// - notes
 		// - custom fields
 		//
-		$execContext = buildExecContext($args,$tplan_mgr);
-		$status_and_notes = do_remote_execution($db,$execContext);
+		$execContext = buildExecContext($args,$gui->tcasePrefix,$tplan_mgr,$tcase_mgr);
+		$remoteExecFeedback = do_remote_execution($db,$execContext);
 		
 		// IMPORTANT NOTICE
 		// need to understand what to do with feedback provided
@@ -259,8 +258,6 @@ if(!is_null($linked_tcversions))
     }
     $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
     
-    // new dBug($gui->map_last_exec);
-
     if ($args->doDelete)
     {
     	delete_execution($db,$args->exec_to_delete);
@@ -789,13 +786,13 @@ function exec_additional_info(&$db, $attachmentRepository, &$tcase_mgr, $other_e
   function: 
 
   args : context hash with following keys
-  		 tc_versions
-  		 version_id
-  		 tproject_id
-  		 tplan_id
-  		 platform_id
-  		 build_id
-  		 user_id
+  		 target => array('tc_versions' => array, 'version_id' =>, 'feature_id' => array) 
+  		 context => array with keys 
+  		 							tproject_id
+  		 							tplan_id
+  		 							platform_id
+  		 							build_id
+  		 							user_id
   
   
   returns: 
@@ -804,7 +801,6 @@ function exec_additional_info(&$db, $attachmentRepository, &$tcase_mgr, $other_e
 function do_remote_execution(&$dbHandler,$context)
 {
 	$debugMsg = "File:" . __FILE__ . " Function: " . __FUNCTION__;
-	// new dBug($debugMsg);
 	
 	$tables = array();
     $tables['executions'] = DB_TABLE_PREFIX . 'executions';
@@ -814,39 +810,34 @@ function do_remote_execution(&$dbHandler,$context)
     $tree_mgr = new tree($dbHandler);
     $cfield_mgr = new cfield_mgr($dbHandler);
   
-	$ret=array();
-    $ret["status"]=array();
-	$ret["notes"]=array();
-	$ret["systemStatus"]=array();
-
+	$ret = null;
 	$executionResults = array();
 
-	// new dBug($context);
 	$myResult = array();
 	$sql = 	" /* $debugMsg */ INSERT INTO {$tables['executions']} " . 
 			" (testplan_id,platform_id,build_id,tester_id,execution_type," .
 			"  tcversion_id,execution_ts,status,notes) ".
 			" VALUES ({$context['tplan_id']}, {$context['platform_id']}, {$context['build_id']}," .
 			" {$context['user_id']}," . TESTCASE_EXECUTION_TYPE_AUTO . ",";
-			
-			
-			// {$tplan_id},{$version_id},{$db_now},
-			// '{$my_result}','{$my_notes}',{$platform_id}, 2)";
 
-	// new dBug(__FUNCTION__);
-	// new dBug($context);		
-
-	// Can we get multiple test cases to execute ?
-	foreach($context['tc_versions'] as $version_id => $tcase_id)
+	// have we got multiple test cases to execute ?
+	$target = &$context['target'];
+	foreach($target['tc_versions'] as $version_id => $tcase_id)
 	{
+		$ret[$version_id] = array("verboseID" => null,
+								  "status" => null,"notes" => null,"system" => null,
+				 				  "scheduled" => null, "timestamp" => null);
+
 		$tcaseInfo = $tree_mgr->get_node_hierarchy_info($tcase_id);
+		$tcaseInfo['version_id'] = $version_id;
 		
 		// For each test case version we can have a different server config
-		$serverCfg = $cfield_mgr->getXMLRPCServerParams($version_id,$context['feature_id'][$version_id]);
-		$execResult[$tcase_id] = executeTestCase($tcaseInfo,$serverCfg,$context); // RPC call
+		$serverCfg = $cfield_mgr->getXMLRPCServerParams($version_id,$target['feature_id'][$version_id]);
+		$execResult[$version_id] = executeTestCase($tcaseInfo,$serverCfg,$context['context']); // RPC call
+
 		
 		$tryWrite = false;
-		switch($execResult[$tcase_id]['system']['status'])
+		switch($execResult[$version_id]['system']['status'])
 		{
 			case 'configProblems':
 				$tryWrite = false;
@@ -861,36 +852,38 @@ function do_remote_execution(&$dbHandler,$context)
 			break;	
 		}
 		
-		// echo '<br>$tryWrite:' . $tryWrite;
 		if( $tryWrite )
 		{
-			
-			$trun = &$execResult[$tcase_id]['execution'];
+			$trun = &$execResult[$version_id]['execution'];
 			if( $trun['scheduled'] == 'now' )
 			{
-				$ret["status"][$version_id] = strtolower($trun['result']);
-				$ret["notes"][$version_id] = trim($trun['notes']);
-				$notes = $dbHandler->prepare_string($ret["notes"][$version_id]);
+				$ret[$version_id]["status"] = strtolower($trun['result']);
+				$ret[$version_id]["notes"] = trim($trun['notes']);
+				
+				$notes = $dbHandler->prepare_string($ret[$version_id]["notes"]);
 
-				if( $ret["status"][$version_id] != $tc_status['passed'] && 
-					$ret["status"][$version_id] != $tc_status['failed'] && 
-				    $ret["status"][$version_id] != $tc_status['blocked'])
+				if( $ret[$version_id]["status"] != $tc_status['passed'] && 
+					$ret[$version_id]["status"] != $tc_status['failed'] && 
+				    $ret[$version_id]["status"] != $tc_status['blocked'])
 				{
-					  $ret["status"][$version_id] = $tc_status['blocked'];
+					  $ret[$version_id]["status"] = $tc_status['blocked'];
 				}
 				
 				//
 				$sql2exec = $sql . $version_id . "," . $dbHandler->db_now() . 
-							", '{$ret["status"][$version_id]}', '{$notes}' )"; 
+							", '{$ret[$version_id]["status"]}', '{$notes}' )"; 
 				$dbHandler->exec_query($sql2exec);
 			}
 			else
 			{
-				$ret["status"][$version_id] = '';
-				$ret["notes"][$version_id] = trim($execResult[$tcase_id]['notes']);
-				$ret["scheduled"][$version_id]=$execResult[$tcase_id]['scheduled'];
-				$ret["timestamp"][$version_id]=$execResult[$tcase_id]['timestampISO'];
+				$ret[$version_id]["notes"] = trim($execResult[$version_id]['notes']);
+				$ret[$version_id]["scheduled"] = $execResult[$version_id]['scheduled'];
+				$ret[$version_id]["timestamp"]= $execResult[$version_id]['timestampISO'];
 			}
+		}
+		else
+		{
+			$ret[$version_id]["system"] = $execResult[$version_id]['system'];
 		}
 	}
 	
@@ -1540,32 +1533,46 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
 
 
 
-function buildExecContext(&$argsObj,&$tplanMgr)
+
+
+function buildExecContext(&$argsObj,$tcasePrefix,&$tplanMgr,&$tcaseMgr)
 {
 	$debugMsg = "File:" . __FILE__ . "Function:" . __FUNCTION__;
-	
-	$context = array('tc_versions' => null,'version_id' => null,
-					 'tproject_id' => null,'tplan_id' => null,
-					 'platform_id' => null,'build_id' => null,'user_id' => null);
 
-	foreach($context as $key => $value)
-	{	
-		if( property_exists($argsObj,$key) )
-		{	
-			$context[$key] = $argsObj->$key;			
-		}
-	}
+	$ret = array();
+	$ret['target'] = array(	'tc_versions' => null,'version_id' => null, 
+							'feature_id' => null, 'basic_info' => null);
+	$ret['context'] = array('tproject_id' => null,'tplan_id' => null, 'platform_id' => null,
+					 	 	'build_id' => null,'user_id' => null);
 	
+	
+	foreach($ret as $area => &$value)
+	{	
+		foreach($value as $key => $dummy)
+		{	
+			echo $key . '<br>';
+			if( property_exists($argsObj,$key) )
+			{	
+				$value[$key] = $argsObj->$key;			
+			}
+		}	
+	}
+
 	// Now get another important information feature_id on testplan_tcversions
 	// needed to get remote execution server config if this config has been
 	// done with Custom Fields at Test Plan Design Time
-	foreach($context['tc_versions'] as $tcv_id => $tc_id)
+	foreach($ret['target']['tc_versions'] as $tcv_id => $tc_id)
 	{	
-		$context['feature_id'][$tcv_id] = $tplanMgr->getFeatureID($context['tplan_id'],
-																  $context['platform_id'],
-																  $context['version_id']);
+		$ret['target']['feature_id'][$tcv_id] = $tplanMgr->getFeatureID($ret['context']['tplan_id'],
+																  		$ret['context']['platform_id'],
+																  		$tcv_id);
+												
+		$dummy = $tcaseMgr->get_basic_info($tc_id,array('id' => $tcv_id));
+		$dummy[0]['tcasePrefix'] = $tcasePrefix;
+		$ret['target']['basic_info'][$tcv_id] = $dummy[0];
+																  		
 	}
-	return $context;
+	return $ret;
 }
 
 

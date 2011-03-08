@@ -32,7 +32,7 @@ rev :
 <h1 class="title">{$labels.title_cfields_mgmt}</h1>
 <div class="workBack">
 {if $gui->cf_map != '' }
-  <table class="simple" style="width: 90%">
+  <table class="simple">
   	<tr>
   		<th>{$labels.name}</th>
   		<th>{$labels.label}</th>

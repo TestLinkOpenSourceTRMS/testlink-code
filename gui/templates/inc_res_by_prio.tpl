@@ -6,7 +6,7 @@
 
 <h2>{lang_get s='title_res_by_prio'}</h2>
 <p>{lang_get s='tit_milestone'} {$arrDataPriority.milestone} ({lang_get s='tit_end_date'} {$arrDataPriority.deadline})</p>
-<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+<table class="simple" style="text-align: center; margin-left: 0px;">
 	<tr>
 	<th>{lang_get s='trep_prio'}</th>
 	<th>{lang_get s='trep_total'}</th>

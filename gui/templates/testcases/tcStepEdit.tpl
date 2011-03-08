@@ -179,7 +179,7 @@ DEBUG: $gui->action: {$gui->action} <br>
     	     {else}  onclick="show_modified_warning=false; javascript:history.back();" {/if} />
 	</div>	
 
-  <table class="simple" style="width:99%;">
+  <table class="simple">
 	{if $gui->steps_results_layout == "horizontal"}
   	<tr>
   		<th width="{$gui->tableColspan}">{$labels.step_number}</th>

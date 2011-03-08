@@ -11,7 +11,7 @@
 <p><h3>Description:</h3>{$classDescription}</p>
 <p><h3>How to Use this class</h3>{$classUsage}</p>
 
-<table class="simple" border="1" style="width: 100%, text-align: center; margin-left: 0px;">
+<table class="simple" border="1" style="text-align: center; margin-left: 0px;">
 
 <tr><th>method name</th><th>description</th><th>test parameters</th><th>return value</th><th>test result</th></tr>
 

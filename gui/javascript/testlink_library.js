@@ -24,6 +24,7 @@
 //                 on I.E. => generates a bug - BE CAREFUL
 //
 // ------ Revisions ---------------------------------------------------------------------
+// 20110308 - asimon - BUGID 4286, BUGID 4273: backported openPrintPreview() from master to 1.9 branch
 // 20101119 - asimon - added openLinkedReqVersionWindow()
 // 20101111 - asimon - now openTCaseWindow() also remembers popup size like other functions do
 // 20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
@@ -1450,3 +1451,35 @@ function openReqRevisionWindow(item_id, anchor)
 	window.open(fRoot+feature_url,"Requirement Revision",windowCfg);
 }
 
+/**
+ * Open print preview in popup window to enable simple printing for the user.
+ * 
+ * @author asimon
+ * @param type can be "req" or "tc"
+ * @param id
+ * @param version_id the version which shall be printed, if set
+ * @param revision_id only used for requirements, null in case of testcases
+ * @param print_action target url to open in popup
+ */
+function openPrintPreview(type, id, version_id, revision, print_action) {
+	// configure window size using cookies or default values if there are no cookies
+	var width = getCookie("ReqPopupWidth");
+	var height = getCookie("ReqPopupHeight");
+	if (width == null) {
+		width = "800";
+	}
+	if (height == null) {
+		height = "600";
+	}
+	var windowCfg='';
+	var feature_url = print_action;
+	
+	if (type == 'req') {
+		feature_url += "?req_id=" + id + "&req_version_id=" + version_id + "&req_revision=" + revision;
+	} else {
+		feature_url += "&testcase_id=" + id + "&tcversion_id=" + version_id;
+	}
+
+	windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,toolbar=yes,dependent=yes,menubar=yes";
+	window.open(fRoot+feature_url,"_blank",windowCfg); // TODO localize "Print Preview"!
+}

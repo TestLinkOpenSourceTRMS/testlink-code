@@ -61,7 +61,7 @@ var del_action=fRoot+'{$deleteAction}';
 {elseif $gui->tplans eq ''}
 	{$labels.testplan_txt_empty_list}
 {else}
-	<table id='item_view'class="simple sortable" width="95%">
+	<table id='item_view'class="simple sortable">
 		<thead>
 		<tr>
 			<th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.testplan_th_name}</th> 			

@@ -186,7 +186,7 @@ $TLS_btn_no = "No";
 $TLS_btn_new_revision = "Create a new revision";
 $TLS_btn_ok = "Ok";
 $TLS_btn_print = "Print";
-$TLS_btn_printer_friendly = "Printer friendly";
+$TLS_btn_print_view = "Print view";
 $TLS_btn_save = "Save";
 $TLS_btn_unassign = "Unassign";
 $TLS_btn_uncheck = "Uncheck";
@@ -812,7 +812,7 @@ $TLS_suggest_create_revision_html = "You changed ONLY the scope. " .
 $TLS_warning_suggest_create_revision = "Attention!! - Do you want to create a new revision?";
                             
 $TLS_revision_log_title = "Revision Log";
-$TLS_please_add_revision_log = "Please add a revision log";
+$TLS_please_add_revision_log = "Please add a log message";
 $TLS_commit_title = "Log message";
 $TLS_please_add_reason_log = "Please add reason for changes";
 

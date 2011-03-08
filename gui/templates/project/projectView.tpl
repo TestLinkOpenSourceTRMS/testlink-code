@@ -58,7 +58,7 @@ var del_action=fRoot+'{$deleteAction}';
 {if $gui->tprojects == ''}
 	{$labels.testproject_txt_empty_list}
 {else}
-	<table id="item_view" class="simple sortable" width="95%">
+	<table id="item_view" class="simple sortable">
 		<tr>
 			<th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_name}</th>
 			<th class="{$noSortableColumnClass}">{$labels.th_notes}</th>

@@ -3242,5 +3242,11 @@ $TLS_export_execution_set = 'Export Execution Set';
 
 // ----- lib/results/resultsReqs.php -----
 $TLS_no_label_for_req_type = 'No req_type_labels configuration for type: %s';
+
+
+// ----- lib/functions/remote_exec.php
+$TLS_remoteExecServerConfigProblems = 'Remote execution can not be launched due to missing configuration.\n' .
+									  'Please check if the required Custom Fields are defined and assigned ' .
+									  'to this test project'; 
 // ----- END ------------------------------------------------------------------
 ?>

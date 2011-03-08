@@ -35,7 +35,7 @@ progress();
 
 {if $gui->display->query_params}
 	<h2>{$labels.caption_user_selected_query_parameters}</h2>
-	<table class="simple" style="width: 100%; text-align:center; margin-left: 0px;" border="0">
+	<table class="simple" style="text-align:center; margin-left: 0px;" border="0">
 		<tr>
 			<th>{$labels.th_test_plan}</th>
 			<th>{$labels.th_builds}</th>
@@ -95,7 +95,7 @@ progress();
 
 
 {if $gui->display->totals}
-	<table class="simple" style="color: blue; width: 100%; text-align:center; margin-left: 0px;" border="0">
+	<table class="simple" style="color: blue; text-align:center; margin-left: 0px;" border="0">
 		<tr>
 		  {foreach item=l18n from=$gui->totals->labels}
 			<th>{$l18n}</th>
@@ -110,7 +110,7 @@ progress();
 {/if}
 
 	{if !$gui->display->suite_summaries}
-		<table class="simple sortable" style="color:blue; width: 100%; margin-left: 0px;" border="0">
+		<table class="simple sortable" style="color:blue; margin-left: 0px;" border="0">
 			<tr>
 				<th>{$tlImages.sort_hint}{$labels.th_test_case}</th>
 				{if $gui->showPlatforms}
@@ -164,7 +164,7 @@ progress();
 
 			{if $gui->display->suite_summaries}
 			<h2>{$suiteNameText}</h2>
-			<table class="simple" style="color:blue; width: 100%; text-align:center; margin-left: 0px;" border="0">
+			<table class="simple" style="color:blue; text-align:center; margin-left: 0px;" border="0">
 				<tr>
 				  {foreach  key=status item=figure  from=$gui->mapOfSuiteSummary[$currentSuiteId]}
               {if $status == 'total'} 
@@ -203,7 +203,7 @@ progress();
 			    	{* test to make sure there are test cases to diplay before  print table and headers *}
 			    	{if $gui->suiteList[$suiteId]}
 			    		{if $gui->display->suite_summaries}
-			    			<table class="simple sortable" style="width: 100%;margin-left: 0px;" border="0">
+			    			<table class="simple sortable" style="margin-left: 0px;" border="0">
 			    		{/if}
 			    
 			    		{if $gui->display->suite_summaries}

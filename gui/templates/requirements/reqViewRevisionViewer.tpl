@@ -4,6 +4,7 @@ $Id: reqViewRevisionViewer.tpl,v 1.2.2.2 2010/12/12 09:35:04 franciscom Exp $
 viewer for requirement
 
 rev:
+20110308 - asimon - BUGID 4273: printing of single requirement
 20101127 - franciscom - BUGID 4056: Requirement Revisioning
 *}
 {lang_get var="labels"
@@ -11,7 +12,7 @@ rev:
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
              testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
-             btn_revisions,revision"}
+             btn_revisions,revision,btn_print_view"}
 
              
 {if $args_show_title }
@@ -25,6 +26,14 @@ rev:
 {/if}
 {assign var="warning_edit_msg" value=""}
 
+{* BUGID 4273: Option to print single requirement *}
+<div>
+	<form method="post" action="" name="reqPrinterFriendly">
+		<input type="button" name="printerFriendly" value="{$labels.btn_print_view}"
+		       onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},
+		                                          {$args_req.revision},'lib/requirements/reqPrint.php');"/>
+	</form>
+</div>
 
 {* <div class="messages" align="center">{$labels.showing_version} {$args_req.version}</div> *}
 

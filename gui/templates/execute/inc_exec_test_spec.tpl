@@ -46,7 +46,7 @@ Rev:
 		 {/if}
      
     <div class="exec_test_spec">
-		<table class="simple" width="100%">
+		<table class="simple">
 		<tr>
 			<th colspan="{$tableColspan}" class="title">{$args_labels.test_exec_summary}</th>
 		</tr>

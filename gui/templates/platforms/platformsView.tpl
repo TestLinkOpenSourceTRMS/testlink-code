@@ -42,7 +42,7 @@ Purpose: smarty template - View all platforms
 {include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
 <div class="workBack">
 {if $gui->platforms != ''}
-	<table class="simple sortable" style="width:95%">
+	<table class="simple sortable">
 		<tr>
 			<th width="30%">{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_platform}</th>
 			<th>{$tlImages.sort_hint}{$labels.th_notes}</th>

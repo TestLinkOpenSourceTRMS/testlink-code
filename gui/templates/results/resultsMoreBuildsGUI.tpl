@@ -69,7 +69,7 @@ franciscom - may be in the future - 20090107
 <form action="lib/results/resultsMoreBuilds.php?report_type={$gui->report_type}" method="post">
   <input type="hidden" id="tplan_id" name="tplan_id" value="{$gui->tplan_id}" />
   <div>
-	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+	<table class="simple" style="text-align: center; margin-left: 0px;">
 		<tr>
 			<th>{$labels.select_builds_header}</th>
 			<th>{$labels.select_components_header}</th>

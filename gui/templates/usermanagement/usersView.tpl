@@ -87,7 +87,7 @@ function toggleRowByClass(oid,className,displayValue)
     {$labels.hide_inactive_users}
     <input name="hide_inactive_users" id="hide_inactive_users" type="checkbox" {$checked_hide_inactive_users} 
            value="on" onclick="toggleRowByClass('hide_inactive_users','inactive_user')">
-		<table class="simple" width="95%">
+		<table class="simple">
 			<tr>
 				<th {if $user_order_by == 'order_by_login'}style="background-color: #c8dce8;color: black;"{/if}>
 				    {$labels.th_login}

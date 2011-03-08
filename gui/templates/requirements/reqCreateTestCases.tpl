@@ -99,7 +99,7 @@ function check_action_precondition(form_id,action,msg)
         <input type="hidden" name="toggle_req"  id="toggle_req"  value="0" />
      
 
-     <table class="simple" style="width:99%">
+     <table class="simple">
     	 <tr>
     		{if $gui->grants->req_mgmt == "yes"}
     		<th style="width: 15px;">

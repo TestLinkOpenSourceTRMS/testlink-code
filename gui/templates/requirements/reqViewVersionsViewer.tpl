@@ -4,6 +4,7 @@ $Id: reqViewVersionsViewer.tpl,v 1.12.6.5 2010/12/13 08:27:07 mx-julian Exp $
 viewer for requirement
 
 rev:
+20110308 - asimon - BUGID 4273: backported printing of single req from master
 20101127 - franciscom - BUGID 4056: Requirement Revisioning
 20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
 20101111 - asimon - replaced openTCaseWindow() by openTCEditWindow() to save popup size
@@ -13,7 +14,7 @@ rev:
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
              testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
-             revision,btn_view_history,btn_new_revision,"}
+             revision,btn_view_history,btn_new_revision,btn_print_view"}
 
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
@@ -37,10 +38,9 @@ rev:
 {/if}
 {assign var="warning_edit_msg" value=""}
 
+<div style="display: inline;" class="groupBtn">
 {if $args_grants->req_mgmt == "yes"}
-  <div class="groupBtn">
-  <div style="margin-bottom: 5px;">
-	  <form id="reqViewF_{$req_version_id}" name="reqViewF_{$req_version_id}" 
+	  <form style="display: inline;" id="reqViewF_{$req_version_id}" name="reqViewF_{$req_version_id}" 
 	        action="lib/requirements/reqEdit.php" method="post">
 	  	<input type="hidden" name="requirement_id" value="{$args_req.id}" />
 	  	<input type="hidden" name="req_version_id" value="{$args_req.version_id}" />
@@ -86,19 +86,24 @@ rev:
 	  	<input type="button" name="new_version" id="new_version" value="{$labels.btn_new_version}" 
 	  	       onclick="doAction.value='doCreateVersion';javascript:ask4log('reqViewF','log_message','{$req_version_id}');"/>
 	  </form>
-	</div>
+{/if}
 	
-	<div>
 	{* compare versions *}
 	{if $gui->req_has_history}
-		<form method="post" action="lib/requirements/reqCompareVersions.php" name="version_compare">
+	<form style="display: inline;" method="post" action="lib/requirements/reqCompareVersions.php" name="version_compare">
 			<input type="hidden" name="requirement_id" value="{$args_req.id}" />
 			<input type="submit" name="compare_versions" value="{$labels.btn_view_history}" />
 		</form>
 	{/if}
 
+{* BUGID 4273: Option to print single requirement *}
+<form style="display: inline;" method="post" action="" name="reqPrinterFriendly">
+	<input type="button" name="printerFriendly" value="{$labels.btn_print_view}" 
+	       onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},
+		                                          {$args_req.revision},'lib/requirements/reqPrint.php');"/>
+</form>
   </div> {* class="groupBtn" *}
-{/if}
+<br/><br/>
 
 {* warning message when req is frozen *}
 {if $args_frozen_version neq null}

@@ -42,7 +42,7 @@ Revisions:
 	<form method="post" action="{$ownURL}" id="set_urgency_tc">
 	<input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
 	<input type="hidden" name="id" value="{$gui->node_id}" />
-	<table class="simple" style="width: 600px; text-align: center">
+	<table class="simple" style="text-align: center">
 	<tr>
 		<th style="text-align: left;">{$labels.th_testcase}</th>
 		<th colspan="3">{$labels.th_urgency}</th>

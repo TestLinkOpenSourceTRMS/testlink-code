@@ -25,6 +25,7 @@ $templateCfg = templateConfiguration();
 $tree_mgr = new tree($db);
 $args = init_args();
 $node = $tree_mgr->get_node_hierarchy_info($args->tcase_id);
+$node['tcversion_id'] = $args->tcversion_id;
 
 $gui = new stdClass();
 $gui->outputFormatDomain = $args->outputFormatDomain;

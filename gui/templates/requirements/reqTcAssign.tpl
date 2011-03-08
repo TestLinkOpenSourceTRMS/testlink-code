@@ -3,6 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Id: reqAssign.tpl,v 1.6 2006/07/15 19:55:30 schlundus Exp $
 Purpose: smarty template - assign REQ to one test case
 
+20110308 - Julian - BUGID 3410, BUGID 4190 - Smarty 3.0 compatibility
 20100403 - franciscom - SCOPE_SHORT_TRUNCATE
 20080512 - franciscom - added new parameter to manage "close window" button display.
                         Is used when this feature is called on a new window, not from menu.
@@ -56,7 +57,7 @@ function check_action_precondition(form_id,action)
 <div class="workBack">
 
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
-{if $gui->arrReqSpec eq "" }
+{if $gui->arrReqSpec eq ""}
    {$labels.warning_req_tc_assignment_impossible}
 {else}
 

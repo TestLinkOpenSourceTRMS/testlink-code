@@ -18,7 +18,7 @@ rev :
     {assign var="tableStyles"  value="font-size:12px"}
 {/if}
 {* -------------------------------------------------------------------------------------- *}
-<table class="simple" style="width:95%">
+<table class="simple">
   <tr>
 	  <th style="text-align:left">{lang_get s='build'}</th>
 	  <th style="text-align:left">{lang_get s='caption_bugtable'}</th>

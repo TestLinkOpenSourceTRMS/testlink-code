@@ -42,7 +42,7 @@
          arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}	
 
 {if $gui->warning_msg == ''}
-	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+	<table class="simple" style="text-align: center; margin-left: 0px;">
 	     <tr>
 	         <th>{$labels.bugs_open}</th>
 	         <th>{$labels.bugs_resolved}</th>

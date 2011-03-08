@@ -42,7 +42,7 @@ Revisions:
   	{* ----- results by builds -------------------------------------- *}
 	<h2>{$labels.title_metrics_x_build}</h1>
 
-	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+	<table class="simple" style="text-align: center; margin-left: 0px;">
   	<tr>
   		<th style="width: 10%;">{$labels.th_build}</th>
     	{* <th>{$labels.th_tc_total}</th> *}
@@ -134,7 +134,7 @@ Revisions:
 
 			<h2>{$labels.title_report_milestones}</h2>
 
-			<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+			<table class="simple" style="text-align: center; margin-left: 0px;">
 			<tr>
 				<th>{$labels.th_milestone}</th>
 				<th>{$labels.th_tc_priority_high}</th>
@@ -174,7 +174,7 @@ Revisions:
 	{elseif $gui->statistics->milestones != ""}
 		<h2>{$labels.title_report_milestones}</h2>
 
-		<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+		<table class="simple" style="text-align: center; margin-left: 0px;">
 		<tr>
 			<th>{$labels.th_milestone}</th>
 			<th>{$labels.th_tc_total}</th>

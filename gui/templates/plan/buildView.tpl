@@ -48,7 +48,7 @@ var del_action=fRoot+'{$deleteAction}';
 <div id="existing_builds">
   {if $gui->buildSet ne ""}
     {* table id MUST BE item_view to use show/hide API info *}
-  	<table id="item_view" class="simple  sortable" style="width:80%">
+  	<table id="item_view" class="simple sortable">
   		<tr>
   			<th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_title}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_description}</th>
@@ -68,7 +68,7 @@ var del_action=fRoot+'{$deleteAction}';
   					  </a>   
   				</td>
   				<td>{$build.notes|strip_tags|strip|truncate:#BUILD_NOTES_TRUNCATE_LEN#}</td>
-  				<td>{if $build.release_date != ''}{localize_date d=$build.release_date}{/if}</td>
+  				<td style="text-align: center;">{if $build.release_date != ''}{localize_date d=$build.release_date}{/if}</td>
   				<td class="clickable_icon">
   				   {if $build.active == 1} 
   				     <img style="border:none"  title="{$labels.alt_active_build}"  alt="{$labels.alt_active_build}" 

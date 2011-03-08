@@ -108,7 +108,7 @@
 {if $gui->req_spec.id}
 
 {include file="./requirements/$buttons_template"}
-<table class="simple" style="width: 90%">
+<table class="simple">
 	<tr>
 		<th>{$gui->main_descr|escape}</th>
 	</tr>

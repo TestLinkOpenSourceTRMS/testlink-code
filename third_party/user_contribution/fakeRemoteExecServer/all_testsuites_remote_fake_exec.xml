@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="" >
+<node_order><![CDATA[]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="TS1" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details>
+<testcase internalid="215" name="sayPassed">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[1]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>Fake Remote Execution XML-RPC&nbsp;Server provided with TestLink will return status passed if receives request to</p>
+<p>execute a test case with this name</p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="217" name="sayBlocked">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[2]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>Fake Remote Execution XML-RPC&nbsp;Server provided with TestLink will return status BLOCKED if receives request to</p>
+<p>execute a test case with this name</p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="219" name="sayFailed">
+	<node_order><![CDATA[102]]></node_order>
+	<externalid><![CDATA[3]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>Fake Remote Execution XML-RPC&nbsp;Server provided with TestLink will return status FAILED if receives request to</p>
+<p>execute a test case with this name</p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="221" name="sayScheduled">
+	<node_order><![CDATA[103]]></node_order>
+	<externalid><![CDATA[4]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>Fake Remote Execution XML-RPC&nbsp;Server provided with TestLink will return info to indicate that</p>
+<p>test case execution has been SCHEDULED&nbsp;=&gt;&nbsp;no test case results has been returned BACK&nbsp;=&gt;<br />
+no result can be WRITTEN&nbsp;TO&nbsp;DB</p>
+<p>if receives request to execute a test case with this name</p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+</testsuite></testsuite>

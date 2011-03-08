@@ -4,6 +4,7 @@ $Id: tcView_viewer.tpl,v 1.85.2.1 2010/12/25 11:38:57 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+    20110308 - asimon - BUGID 4286: moved print preview to popup to make printing independent from browser easier for the users
 	20110304 - franciscom - BUGID 4286: Option to print single test case
     20101225 - franciscom - added warning for execution type with message ONLY in english
     20101102 - asimon - BUGID 2864: replaced old open_top() by openLinkedReqWindow()
@@ -43,7 +44,7 @@ rev:
              title_last_mod,title_created,by,expected_results,keywords,
              btn_create_step,step_number,btn_reorder_steps,step_actions,
              execution_type_short_descr,delete_step,show_hide_reorder,
-             test_plan,platform,insert_step,btn_print,btn_printer_friendly,
+             test_plan,platform,insert_step,btn_print,btn_print_view,
              execution_type,test_importance,none,preconditions,btn_compare_versions"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
@@ -84,8 +85,7 @@ rev:
 {assign var="tcExportAction" value="lib/testcases/tcExport.php?goback_url=$goBackActionURLencoded&show_mode=$showMode"}
 {assign var="exportTestCaseAction" value="$basehref$tcExportAction"}
 
-{assign var="tcPrintAction" value="lib/testcases/tcPrint.php?goback_url=$goBackActionURLencoded&show_mode=$showMode"}
-{assign var="printTestCaseAction" value="$basehref$tcPrintAction"}
+{assign var="printTestCaseAction" value="lib/testcases/tcPrint.php?show_mode=$showMode"}
 
 
 {assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
@@ -106,6 +106,7 @@ rev:
 {/if}
 {assign var="warning_edit_msg" value=""}
 
+<div style="display: inline;" class="groupBtn">
 {if $args_can_do->edit == "yes"}
 
   {assign var="edit_enabled" value=0}
@@ -124,10 +125,8 @@ rev:
     {/if} 
   {/if}
 
-  <div class="groupBtn">
-	<div style="margin-bottom: 5px;">
 	<span style="float: left">
-	  <form id="topControls" name="topControls" method="post" action="lib/testcases/tcEdit.php">
+	  <form style="display: inline;" id="topControls" name="topControls" method="post" action="lib/testcases/tcEdit.php">
 	  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 	  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 	  <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
@@ -190,7 +189,7 @@ rev:
 	</span>
 
 	<span>
-	<form id="tcexport" name="tcexport" method="post" action="{$exportTestCaseAction}" >
+	<form style="display: inline;" id="tcexport" name="tcexport" method="post" action="{$exportTestCaseAction}" >
 		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 		<input type="submit" name="export_tc" style="margin-left: 3px;" value="{$tcView_viewer_labels.btn_export}" />
@@ -201,40 +200,36 @@ rev:
 		*}
 	</form>
 	</span>
-
-	
-	{* 20110304 - franciscom - BUGID 4286: Option to print single test case  *}
-	<span>
-	<form id="tcprint" name="tcprint" method="post" action="{$printTestCaseAction}" >
-		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
-		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-		<input type="submit" name="tcPrinterFriendly" style="margin-left: 3px;" value="{$tcView_viewer_labels.btn_printer_friendly}" />
-	</form>
-	</span>
-	
-	</div>
 {/if} {* user can edit *}
 
-	<div>
 	<span>
 	{* compare versions *}
 	{if $args_testcase.version > 1}
-	  <form id="version_compare" name="version_compare" method="post" action="lib/testcases/tcCompareVersions.php">
+	  <form style="display: inline;" id="version_compare" name="version_compare" method="post" action="lib/testcases/tcCompareVersions.php">
 	  		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 	  		<input type="submit" name="compare_versions" value="{$tcView_viewer_labels.btn_compare_versions}" />
 	  </form>
 	{/if}
 	</span>
+	{* 20110304 - franciscom - BUGID 4286: Option to print single test case  *}
+	<span>
+	<form style="display: inline;" id="tcprint" name="tcprint" method="post" action="" >
+		<input type="button" name="tcPrinterFriendly" style="margin-left: 3px;" value="{$tcView_viewer_labels.btn_print_view}" 
+		       onclick="javascript:openPrintPreview('tc',{$args_testcase.testcase_id},{$args_testcase.id},null,
+			                                          '{$printTestCaseAction}');"/>
+	</form>
+	</span>
   </div> {* class="groupBtn" *}
+<br/><br/>
 
 
 
 {* --------------------------------------------------------------------------------------- *}
   {if $args_testcase.active eq 0}
-    <br /><div class="messages" align="center">{$tcView_viewer_labels.tcversion_is_inactive_msg}</div>
+    <div class="messages" align="center">{$tcView_viewer_labels.tcversion_is_inactive_msg}</div>
   {/if}
  	{if $warning_edit_msg neq ""}
- 	    <br /><div class="messages" align="center">{$warning_edit_msg}</div>
+ 	    <div class="messages" align="center">{$warning_edit_msg}</div>
  	{/if}
 
 {literal}

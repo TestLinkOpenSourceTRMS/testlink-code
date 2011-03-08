@@ -1,27 +1,31 @@
 {*
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later.
- * 
- * Smarty template - see and manage inventory table 
- *
- * Author: Martin Havlat
- * CVS: $Id: inventoryView.tpl,v 1.4 2011/01/18 14:16:24 mx-julian Exp $
- *
- * @todo		escape shown text (renderer: Ext.util.Format.htmlEncode(???))
- * @todo           // Highlight the row for 3 seconds
+   TestLink Open Source Project - http://testlink.sourceforge.net/ 
+   This script is distributed under the GNU General Public License 2 or later.
+   
+   Smarty template - see and manage inventory table 
+   
+   Author: Martin Havlat
+   CVS: $Id: inventoryView.tpl,v 1.4 2011/01/18 14:16:24 mx-julian Exp $
+   
+   @todo		escape shown text (renderer: Ext.util.Format.htmlEncode(???))
+   @todo           // Highlight the row for 3 seconds
 	  Ext.fly(row).highlight("ffff9c", {
 			    attr: "background-color",
 			    easing: 'easeOut',
 			    duration: 3
  
 	  });
- * @todo tooltip for buttons:         
+   @todo tooltip for buttons:         
  		tooltip: {anchor: 'right', text:'Add new node to three menu.', title:'Add New Node'},
  
- *
- * Revision: None
- *
- *}
+   
+   Revision:
+      20110308 - Julian - BUGID 3410 - Smarty 3.0 compatibility
+                          TODO: get return /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(v); running
+                                with Smarty 3.x -> search for "TODO: insert line from revision log"
+                          
+   
+  *}
 {lang_get var="labels" 
           s="inventory_title,inventory_empty,sort_table_by_column,
           inventory_name,inventory_notes,inventory_ipaddress,
@@ -38,10 +42,10 @@
 {include file="inc_del_onclick.tpl"}
 
   	<style type="text/css">
-		.icon_device_copy {ldelim}background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_copy_16.png) !important;{rdelim}
-		.icon_device_create {ldelim}background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_new_16.png) !important;{rdelim}
-		.icon_device_delete {ldelim}background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_delete_16.png) !important;{rdelim}
-		.icon_device_edit {ldelim}background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_edit_16.png) !important; background-size: 50%;{rdelim}
+		.icon_device_copy { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_copy_16.png) !important; }
+		.icon_device_create { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_new_16.png) !important; }
+		.icon_device_delete { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_delete_16.png) !important; }
+		.icon_device_edit { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_edit_16.png) !important; background-size: 50%; }
 	</style>
 
 
@@ -63,21 +67,21 @@ var tls_dlg_select_txt = "{$labels.inventory_dlg_select_txt}";
 var tls_confirm = "{$labels.confirm}";
 var tls_warning = "{$labels.warning}";
 var tls_error = "{$labels.error}";
-var current_user_id = {$session.userID};
+var current_user_id = "{$session.userID}";
 
 Ext.onReady(function(){
 
 	/* ----- data inventory ---------------------------------------------------- */
 	var reader=new Ext.data.JsonReader
 	({},[
-			{name: 'id', type: 'int'}, 
-			{name: 'name', type: 'string'},            
-			{name: 'ipaddress', type: 'string'}, 
-			{name: 'purpose', type: 'string'}, 
-			{name: 'hardware', type: 'string'}, 
-			{name: 'owner', type: 'string'}, 
-			{name: 'owner_id', type: 'int'}, 
-			{name: 'notes', type: 'string'} 
+			{ name: 'id', type: 'int' }, 
+			{ name: 'name', type: 'string' },            
+			{ name: 'ipaddress', type: 'string' }, 
+			{ name: 'purpose', type: 'string' }, 
+			{ name: 'hardware', type: 'string' }, 
+			{ name: 'owner', type: 'string' }, 
+			{ name: 'owner_id', type: 'int' }, 
+			{ name: 'notes', type: 'string' } 
 		]
 	);
 		
@@ -135,12 +139,12 @@ Ext.onReady(function(){
         store: store,
         columns: 
         [
-            {header: tls_th_name, width: 120, dataIndex: 'name', sortable: true},
-            {header: tls_th_ip, dataIndex: 'ipaddress', sortable: true},
-            {header: tls_th_purpose, width: 360, dataIndex: 'purpose', sortable: true},
-            {header: tls_th_hw, width: 300, dataIndex: 'hardware', sortable: true},
-            {header: tls_th_owner, width: 100, dataIndex: 'owner', sortable: true},
-            {header: tls_th_notes, dataIndex: 'notes', sortable: true}
+            { header: tls_th_name, width: 120, dataIndex: 'name', sortable: true },
+            { header: tls_th_ip, dataIndex: 'ipaddress', sortable: true },
+            { header: tls_th_purpose, width: 360, dataIndex: 'purpose', sortable: true },
+            { header: tls_th_hw, width: 300, dataIndex: 'hardware', sortable: true },
+            { header: tls_th_owner, width: 100, dataIndex: 'owner', sortable: true },
+            { header: tls_th_notes, dataIndex: 'notes', sortable: true }
         ],
         renderTo:'inventoryTable',
 		autoWidth:true,
@@ -154,20 +158,20 @@ Ext.onReady(function(){
             iconCls: 'icon_device_create',
             text: tls_create,
 			scale: 'medium',
-			style: {padding: '0px 	10px'},
+			style: { padding: '0px 	10px' },
             handler: deviceNew
         },{
             iconCls: 'icon_device_edit',
             text: tls_edit,
 			scale: 'medium',
-			style: {padding: '0px 10px'},
+			style: { padding: '0px 10px' },
             handler: deviceEdit
         },{
 //            ref: '../removeBtn',
             iconCls: 'icon_device_delete',
             text: tls_delete,
  			scale: 'medium',
-			style: {padding: ' 0px 10px'},
+			style: { padding: ' 0px 10px' },
             handler: function()
             {
                 var rows = inventoryGrid.getSelectionModel().getSelections();
@@ -214,7 +218,8 @@ Ext.onReady(function(){
 	// custom Vtype for vtype:'IPAddress' (used in form)
 	Ext.apply(Ext.form.VTypes, {
 	    IPAddress:  function(v) {
-	        return /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(v);
+			// TODO: insert line from revision log
+			return 1;
 	    },
 	    IPAddressText: 'Must be a numeric IP address',
 	    IPAddressMask: /[\d\.]/i
@@ -255,7 +260,7 @@ Ext.onReady(function(){
 		method: 'POST',
         url:'lib/inventory/setInventory.php',
         defaultType: 'textfield',
-//		defaults: {width: 230},
+//		defaults: { width: 230 },
         items:  
 	    [
 	    	{

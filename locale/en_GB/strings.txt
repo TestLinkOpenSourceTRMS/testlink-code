@@ -812,7 +812,7 @@ $TLS_suggest_create_revision_html = "You changed ONLY the scope. " .
 $TLS_warning_suggest_create_revision = "Attention!! - Do you want to create a new revision?";
                             
 $TLS_revision_log_title = "Revision Log";
-$TLS_please_add_revision_log = "Please add a revision log";
+$TLS_please_add_revision_log = "Please add a log message";
 $TLS_commit_title = "Log message";
 $TLS_please_add_reason_log = "Please add reason for changes";
 

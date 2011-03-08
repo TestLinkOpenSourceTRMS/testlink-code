@@ -9,7 +9,7 @@
  *
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
- * @copyright 2007-2009, TestLink community 
+ * @copyright 2007-2011, TestLink community 
  * @uses printDocument.php
  *
  *
@@ -202,10 +202,15 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 
 	$name =  htmlspecialchars($req["req_doc_id"] . $title_separator . $req['title']);
 
-	$output = "<table class=\"req\"><tr><th colspan=\"$tableColspan\">" .
-	          "<span class=\"label\">{$labels['requirement']}:</span> " . $name . "</th></tr>\n";	
-	
+	// 20110308 - asimon - change table style in case of single req printing to not be indented
+	$table_style = "";
+	if (isset($options['docType']) && $options['docType'] == 'SINGLE_REQ') {
+		$table_style = "style=\"margin-left: 0;\"";
+	}
 
+    $output = "<table class=\"req\" $table_style><tr><th colspan=\"$tableColspan\">" .
+              "<span class=\"label\">{$labels['requirement']}:</span> " . $name . "</th></tr>\n"; 
+	
 	if( $force['displayVersion'] )
 	{
 		foreach(array('version','revision') as $key)
@@ -213,7 +218,6 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 			$output .= 	'<tr><td valign="top">' . 
 		    	     	'<span class="label">'.$labels[$key].':</span></td>' .
         			 	'<td>' . $req[$key]. "</td></tr>\n";
-		
 		}		
 	}
 	
@@ -346,7 +350,7 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 			{
 				$cflabel = htmlspecialchars($cf['label']);
 				$value = htmlspecialchars($cf['value']);
-				
+								
 				$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . 
 				           $cflabel . "</span></td>" . "<td>$value</td></tr>";
 			}
@@ -954,8 +958,14 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
 	       	                             $name . '</a></p>';
 		$code .= '<a name="' . prefixToHTMLID('tc'.$id) . '"></a>';
 	}
-      
- 	$code .= '<p>&nbsp;</p><div> <table class="tc" width="90%">';
+    
+	// 20110308 - asimon - change table style in case of single TC printing to not be indented
+	$table_style = "";
+	if (isset($options['docType']) && $options['docType'] == 'SINGLE_TC') {
+		$table_style = 'style="margin-left: 0;"';
+	}
+	
+ 	$code .= '<p>&nbsp;</p><div> <table class="tc" width="90%" ' . $table_style . '>';
  	$code .= '<tr><th colspan="' . $cfg['tableColspan'] . '">' . $labels['test_case'] . " " . 
  			htmlspecialchars($external_id) . ": " . $name;
 

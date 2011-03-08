@@ -213,9 +213,9 @@ rev:
 	</span>
 	{* 20110304 - franciscom - BUGID 4286: Option to print single test case  *}
 	<span>
-	<form style="display: inline;" id="tcprint" name="tcprint" method="post" action="{$printTestCaseAction}" >
+	<form style="display: inline;" id="tcprint" name="tcprint" method="post" action="" >
 		<input type="button" name="tcPrinterFriendly" style="margin-left: 3px;" value="{$tcView_viewer_labels.btn_print_view}" 
-		       onclick="javascript:open_print_preview('tc',{$args_testcase.testcase_id},{$args_testcase.id},null,
+		       onclick="javascript:openPrintPreview('tc',{$args_testcase.testcase_id},{$args_testcase.id},null,
 			                                          '{$printTestCaseAction}');"/>
 	</form>
 	</span>

@@ -24,7 +24,7 @@
 //                 on I.E. => generates a bug - BE CAREFUL
 //
 // ------ Revisions ---------------------------------------------------------------------
-// 20110307 - asimon - BUGID 4286, BUGID 4273: added open_print_preview()
+// 20110307 - asimon - BUGID 4286, BUGID 4273: added openPrintPreview()
 // 20101119 - asimon - added openLinkedReqVersionWindow()
 // 20101111 - asimon - now openTCaseWindow() also remembers popup size like other functions do
 // 20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
@@ -1461,7 +1461,7 @@ function openReqRevisionWindow(item_id, anchor)
  * @param revision_id only used for requirements, null in case of testcases
  * @param print_action target url to open in popup
  */
-function open_print_preview(type, id, version_id, revision_id, print_action) {
+function openPrintPreview(type, id, version_id, revision, print_action) {
 	// configure window size using cookies or default values if there are no cookies
 	var width = getCookie("ReqPopupWidth");
 	var height = getCookie("ReqPopupHeight");
@@ -1476,7 +1476,7 @@ function open_print_preview(type, id, version_id, revision_id, print_action) {
 	var feature_url = print_action;
 	
 	if (type == 'req') {
-		feature_url += "?req_id=" + id + "&req_version_id=" + version_id + "&req_revision=" + revision_id;
+		feature_url += "?req_id=" + id + "&req_version_id=" + version_id + "&req_revision=" + revision;
 	} else {
 		feature_url += "&testcase_id=" + id + "&tcversion_id=" + version_id;
 	}

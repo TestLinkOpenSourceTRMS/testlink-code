@@ -13,8 +13,7 @@ viewer for requirement revision
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
              testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
-             btn_revisions,revision,btn_printer_friendly"}
-
+             btn_revisions,revision,btn_print_view"}
              
 {if $args_show_title}
     {if $args_tproject_name != ''}
@@ -29,11 +28,10 @@ viewer for requirement revision
 
 {* BUGID 4273: Option to print single requirement *}
 <div>
-	<form method="post" action="lib/requirements/reqPrint.php" name="reqPrinterFriendly">
-		<input type="hidden" id='req_id' name="req_id" value="{$args_req.id}" />
-		<input type="hidden" id='req_version_id' name="req_version_id" value="{$args_req.version_id}" />
-		<input type="hidden" id='req_revision' name="req_revision" value="{$args_req.revision}" />
-		<input type="submit" name="printerFriendly" value="{$labels.btn_printer_friendly}" />
+	<form method="post" action="" name="reqPrinterFriendly">
+		<input type="button" name="printerFriendly" value="{$labels.btn_print_view}"
+		       onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},
+		                                          {$args_req.revision},'lib/requirements/reqPrint.php');"/>
 	</form>
 </div>
 

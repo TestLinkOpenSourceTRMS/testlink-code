@@ -2,12 +2,12 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
- * Filename $RCSfile: execSetResults.php,v $
+ * @filesource	execSetResults.php
  *
- * @version $Revision: 1.174 $
- * @modified $Date: 2011/01/05 12:42:03 $ $Author: asimon83 $
+ * @internal revisions:
  *
- * rev:
+ *	20110308 - franciscom - remote execution
+ *	20110123 - franciscom - BUGID 3338 
  *  20110105 - asimon - BUGID 3878: "Save and move to next" does not respect filter settings
  *  20110104 - aismon - BUGID 3643: apply filters earlier in script instead of loading unnecessary data
  *  20100927 - asimon - avoid warning in event log
@@ -69,6 +69,12 @@ require_once("web_editor.php");
 $cfg=getCfg();
 require_once(require_web_editor($cfg->editorCfg['type']));
 
+// BUGID 3338
+if( $cfg->exec_cfg->enable_test_automation )
+{
+  require_once('remote_exec.php');
+}
+
 // BUGID 3276
 // CRITIC:
 // If call to testlinkInitPage() is done AFTER require_once for BTS
@@ -114,22 +120,24 @@ if($args->doExec == 1)
 	/** @note get testcase ids in an array */
 	if(!is_null($args->tc_versions) && count($args->tc_versions))
 	{
-		$status_and_notes=do_remote_execution($db,$args->tc_versions);
-
-		// Need to be added to $_REQUEST, because we are using $_REQUEST as input
-		// for the function responsible of writing exec results. write_execution()
-		$status_map = $status_and_notes['status'];
-		$notes_map = $status_and_notes['notes'];
-
-		if(count($status_map))
-		{
-			foreach($status_map as $key => $value)
-			{
-				$_REQUEST['status'][$key] = $value;  
-				$_REQUEST['notes'][$key] = $notes_map[$key];  
-			} 
-		}
-	   
+		// 20110129 - franciscom
+		// IMPORTANT NOTICE
+		// Remote execution will NOT use ANY of data typed by user,
+		// - notes
+		// - custom fields
+		//
+		$execContext = buildExecContext($args,$gui->tcasePrefix,$tplan_mgr,$tcase_mgr);
+		$remoteExecFeedback = do_remote_execution($db,$execContext);
+		
+		// IMPORTANT NOTICE
+		// need to understand what to do with feedback provided
+		// by do_remote_execution().
+		// Right now no matter how things go, no feedback is given to user.
+		// May be this need to be improved in future.
+		//
+		// Only drawback i see is when remote exec is done on a test suite
+		// and amount of feedback can be high, then do not see what can be effect
+		// on GUI
 	}
 }	
 // -----------------------------------------------------------
@@ -207,7 +215,9 @@ if(!is_null($linked_tcversions))
    	$gui->tcversionSet = is_array($tcversion_id) ? implode(',',$tcversion_id) : $tcversion_id;
 
     // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
-    $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
+    //
+    // Can be DONE JUST ONCE AFTER write results to DB
+    // $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
     
     // --------------------------------------------------------------------------------------------
     // Results to DB
@@ -216,7 +226,10 @@ if(!is_null($linked_tcversions))
     	// this has to be done to do not break logic present on write_execution()
     	$args->save_results = $args->save_and_next ? $args->save_and_next : $args->save_results;
     	$_REQUEST['save_results'] = $args->save_results;
-    	$submitResult = write_execution($db,$args,$_REQUEST,$gui->map_last_exec);
+    	
+    	// 20110129 - franciscom - seems $gui->map_last_exec is USELESS on write_execution()
+    	// $submitResult = write_execution($db,$args,$_REQUEST,$gui->map_last_exec);
+        write_execution($db,$args,$_REQUEST);
         
         // Need to re-read to update test case status
         if ($args->save_and_next) 
@@ -237,9 +250,10 @@ if(!is_null($linked_tcversions))
 			}
 			
         }
-        $gui->map_last_exec=getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
+       // $gui->map_last_exec=getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
     }
-
+    $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
+    
     if ($args->doDelete)
     {
     	delete_execution($db,$args->exec_to_delete);
@@ -590,6 +604,7 @@ function manage_history_on($hash_REQUEST,$hash_SESSION,
 */
 function get_ts_name_details(&$db,$tcase_id)
 {
+	$tables = array();
     $tables['testsuites'] = DB_TABLE_PREFIX . 'testsuites';
     $tables['nodes_hierarchy'] = DB_TABLE_PREFIX . 'nodes_hierarchy';
 
@@ -766,53 +781,106 @@ function exec_additional_info(&$db, $attachmentRepository, &$tcase_mgr, $other_e
 /*
   function: 
 
-  args :
+  args : context hash with following keys
+  		 target => array('tc_versions' => array, 'version_id' =>, 'feature_id' => array) 
+  		 context => array with keys 
+  		 							tproject_id
+  		 							tplan_id
+  		 							platform_id
+  		 							build_id
+  		 							user_id
+  
   
   returns: 
 
 */
-function do_remote_execution(&$db,$tc_versions)
+function do_remote_execution(&$dbHandler,$context)
 {
+	$debugMsg = "File:" . __FILE__ . " Function: " . __FUNCTION__;
+	
+	$tables = array();
+    $tables['executions'] = DB_TABLE_PREFIX . 'executions';
+
     $resultsCfg = config_get('results');
     $tc_status = $resultsCfg['status_code'];
-    $tree_mgr = new tree($db);
-    $cfield_mgr = new cfield_mgr($db);
+    $tree_mgr = new tree($dbHandler);
+    $cfield_mgr = new cfield_mgr($dbHandler);
   
-	$ret=array();
-    $ret["status"]=array();
-	$ret["notes"]=array();
-
+	$ret = null;
 	$executionResults = array();
 
 	$myResult = array();
-	foreach($tc_versions as $version_id => $tcase_id)
+	$sql = 	" /* $debugMsg */ INSERT INTO {$tables['executions']} " . 
+			" (testplan_id,platform_id,build_id,tester_id,execution_type," .
+			"  tcversion_id,execution_ts,status,notes) ".
+			" VALUES ({$context['tplan_id']}, {$context['platform_id']}, {$context['build_id']}," .
+			" {$context['user_id']}," . TESTCASE_EXECUTION_TYPE_AUTO . ",";
+
+	// have we got multiple test cases to execute ?
+	$target = &$context['target'];
+	foreach($target['tc_versions'] as $version_id => $tcase_id)
 	{
-		// RPC call
-		$executionResults[$tcase_id] = executeTestCase($tcase_id,$tree_mgr,$cfield_mgr);
-		if($executionResults){
-			$myResult = $executionResults[$tcase_id]['result'];
-			$myNotes = $executionResults[$tcase_id]['notes'];
-			if ($myResult != -1 && $myNotes != -1) {
-				$db_now = $db->db_now();
-				$my_notes = $db->prepare_string(trim($myNotes));
-				$my_result = strtolower($myResult);
-				$my_result = $my_result{0};
-				if( $my_result != $tc_status['passed'] && 
-				    $my_result != $tc_status['failed'] && 
-				    $my_result != $tc_status['blocked'])
+		$ret[$version_id] = array("verboseID" => null,
+								  "status" => null,"notes" => null,"system" => null,
+				 				  "scheduled" => null, "timestamp" => null);
+
+		$tcaseInfo = $tree_mgr->get_node_hierarchy_info($tcase_id);
+		$tcaseInfo['version_id'] = $version_id;
+		
+		// For each test case version we can have a different server config
+		$serverCfg = $cfield_mgr->getXMLRPCServerParams($version_id,$target['feature_id'][$version_id]);
+		$execResult[$version_id] = executeTestCase($tcaseInfo,$serverCfg,$context['context']); // RPC call
+
+		
+		$tryWrite = false;
+		switch($execResult[$version_id]['system']['status'])
+		{
+			case 'configProblems':
+				$tryWrite = false;
+			break;
+			
+			case 'connectionFailure':
+				$tryWrite = false;
+			break;
+				
+			case 'ok';
+				$tryWrite = true;
+			break;	
+		}
+		
+		if( $tryWrite )
+		{
+			$trun = &$execResult[$version_id]['execution'];
+			if( $trun['scheduled'] == 'now' )
+			{
+				$ret[$version_id]["status"] = strtolower($trun['result']);
+				$ret[$version_id]["notes"] = trim($trun['notes']);
+				
+				$notes = $dbHandler->prepare_string($ret[$version_id]["notes"]);
+
+				if( $ret[$version_id]["status"] != $tc_status['passed'] && 
+					$ret[$version_id]["status"] != $tc_status['failed'] && 
+				    $ret[$version_id]["status"] != $tc_status['blocked'])
 				{
-					  $my_result = $tc_status['blocked'];
+					  $ret[$version_id]["status"] = $tc_status['blocked'];
 				}
-				// 
-				$ret["status"][$version_id] = $myResult;
-				$ret["notes"][$version_id] = $my_notes;
+				
 				//
-				$sql = "INSERT INTO executions (build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes) ".
-				       "VALUES ({$build_id},{$user_id},'{$my_result}',{$tplan_id},{$version_id},{$db_now},'{$my_notes}')";
-				$db->exec_query($sql);
+				$sql2exec = $sql . $version_id . "," . $dbHandler->db_now() . 
+							", '{$ret[$version_id]["status"]}', '{$notes}' )"; 
+				$dbHandler->exec_query($sql2exec);
+			}
+			else
+			{
+				$ret[$version_id]["notes"] = trim($execResult[$version_id]['notes']);
+				$ret[$version_id]["scheduled"] = $execResult[$version_id]['scheduled'];
+				$ret[$version_id]["timestamp"]= $execResult[$version_id]['timestampISO'];
 			}
 		}
-
+		else
+		{
+			$ret[$version_id]["system"] = $execResult[$version_id]['system'];
+		}
 	}
 	
 	return $ret;

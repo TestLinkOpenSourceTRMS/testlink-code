@@ -3,10 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *  
- * Filename $RCSfile: xmlrpc.class.php,v $
+ * @filesource	xmlrpc.class.php
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2010/12/12 09:25:16 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -21,7 +19,8 @@
  * @example sample_clients/python/clientSample.py python client sample
  * 
  *
- * rev : 
+ * @internal revisions 
+ *	20110309 - franciscom - BUGID 4311: typo error on uploadExecutionAttachment mapping
  *	20101212 - franciscom - BUGID 4086: Unexpected result when overwriting reportTCResult
  *							This bug is caused by an issue on get_last_execution()
  *	20101208 - franciscom - BUGID 4082 - reportTCResult() - no check on overwrite value
@@ -320,7 +319,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	                            'tl.createTestPlan' => 'this:createTestPlan',
 	                            'tl.createTestProject' => 'this:createTestProject',
 	                            'tl.createTestSuite' => 'this:createTestSuite',
-	                            'tl.uploadExecutionAttachment' => 'this::uploadExecutionAttachment',
+	                            'tl.uploadExecutionAttachment' => 'this:uploadExecutionAttachment',
 	                            'tl.uploadRequirementSpecificationAttachment' => 'this:uploadRequirementSpecificationAttachment',
 	                            'tl.uploadRequirementAttachment' => 'this:uploadRequirementAttachment',
 	                            'tl.uploadTestProjectAttachment' => 'this:uploadTestProjectAttachment',

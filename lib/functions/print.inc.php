@@ -14,6 +14,9 @@
  *
  *
  * @internal revisions:
+ *	20110309 - franciscom - renderReqForPrinting() fixed call to get custom fields, not
+ *							refactored after addition of req REVISIONS
+ *							
  *	20110306 - franciscom - BUGID 4273: Option to print single requirement
  *							renderReqForPrinting()	new layout for version and revision
  *
@@ -342,8 +345,8 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 	
 	if ($options['req_cf']) 
 	{
-		//BUGID 2877 - Custom Fields linked to Req versions
-		$linked_cf = $req_mgr->get_linked_cfields($req['id'], $req['version_id']);
+		$childID = (is_null($revision) || $req['revision_id'] < 0) ? $req['version_id'] : $req['revision_id'];
+		$linked_cf = $req_mgr->get_linked_cfields($req['id'], $childID);
 		if ($linked_cf)
 		{
 			foreach ($linked_cf as $key => $cf) 

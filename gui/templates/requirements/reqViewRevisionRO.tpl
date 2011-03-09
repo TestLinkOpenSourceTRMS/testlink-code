@@ -5,6 +5,7 @@ Purpose: view requirement with version + revision
          READ ONLY
 
 rev:
+  20110309 - Julian - removed duplicate title
   20101128 - franciscom - BUGID 
 *}
 {lang_get var='labels' 
@@ -26,9 +27,6 @@ rev:
 <h1 class="title">{$gui->main_descr|escape}</h1>
 <div class="workBack">
 
-{if !$gui->show_title }
-  {$gui->item.req_doc_id|escape}:{$gui->item.title|escape}</h2>
-{/if}
 {include file="$this_template_dir/reqViewRevisionViewer.tpl" 
          args_req=$gui->item 
          args_gui=$gui

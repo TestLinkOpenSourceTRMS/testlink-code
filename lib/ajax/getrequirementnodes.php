@@ -19,7 +19,8 @@
 *   - Assign requirements to test cases
 *
 *	@internal revision
-*   20110113 - asimon - 4168: BUGID Requirement Specifications navigator tree empty
+*	20110311 - Julian - Replaced seperator "::" with ":" for req spec text
+*	20110113 - asimon - 4168: BUGID Requirement Specifications navigator tree empty
 *	20101010 - franciscom - added custom node attribute: testlink_node_name
 *	20100306 - franciscom - BUGID 0003003: EXTJS does not count # req's
 *	20091208 - franciscom - added management of new attribute 'forbidden_parent'
@@ -138,7 +139,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	                $treeMgr->getAllItemsID($row['id'],$req_list,$peerTypes);
 
 	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
-	                $path['text'] = htmlspecialchars($row['doc_id'] . "::") . $path['text'];
+	                $path['text'] = htmlspecialchars($row['doc_id'] . ":") . $path['text'];
                     $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
    	        		if(!is_null($req_list))
 	        		{

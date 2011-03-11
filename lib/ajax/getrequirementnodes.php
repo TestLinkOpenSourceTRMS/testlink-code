@@ -144,7 +144,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
    	        		if(!is_null($req_list))
 	        		{
 	        			$item_qty = count($req_list);
-	        			$path['text'] .= "({$item_qty})";   
+	        			$path['text'] .= " ({$item_qty})";   
 	        		}
 					
 					

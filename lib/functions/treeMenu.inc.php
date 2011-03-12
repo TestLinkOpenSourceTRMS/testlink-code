@@ -13,6 +13,8 @@
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *  20110311 - asimon - BUGID 3765: Req Spec Doc ID disappeared for req specs without
+ *                                  direct requirement child nodes
  *  20101221 - amitkhullar - BUGID 4115 Custom Field Filtering Issue 
  *  20101215 - asimon - BUGID 4023: correct filtering also for platforms
  *  20101209 - asimon - allow correct filtering of test case name and other attributes also for right frame
@@ -1988,16 +1990,17 @@ function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testpr
 	                                     $my['filters'], $my['options']);
 	
 	$level = 1;
-	$req_spec = prepare_reqspec_treenode($level, $req_spec, $filtered_map, $map_id_nodetype,
+	$req_spec = prepare_reqspec_treenode($db, $level, $req_spec, $filtered_map, $map_id_nodetype,
 	                                     $map_nodetype_id, $my['filters'], $my['options']);
 		
 	$menustring = null;
 	$treeMenu = new stdClass();
 	$treeMenu->rootnode = new stdClass();
+	$treeMenu->rootnode->total_req_count = $req_spec['total_req_count'];
 	$treeMenu->rootnode->name = $req_spec['name'];
 	$treeMenu->rootnode->id = $req_spec['id'];
 	$treeMenu->rootnode->leaf = isset($req_spec['leaf']) ? $req_spec['leaf'] : false;
-	$treeMenu->rootnode->text = $req_spec['name'];
+	//$treeMenu->rootnode->text = $req_spec['name']; //not needed, accidentally duplicated
 	$treeMenu->rootnode->position = $req_spec['position'];	    
 	$treeMenu->rootnode->href = $req_spec['href'];
 		
@@ -2169,7 +2172,7 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
 	
 	$sql .= " ORDER BY RV.version DESC ";
 	$filtered_map = $db->fetchRowsIntoMap($sql, 'id');
-	
+		
 	return $filtered_map;
 }
 
@@ -2177,6 +2180,7 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
  * Prepares nodes for the filtered requirement tree.
  * Filters out those nodes which are not in the given map and counts the remaining subnodes.
  * @author Andreas Simn
+ * @param Database $db reference to database handler object
  * @param int $level gets increased by one for each sublevel in recursion
  * @param array $node the tree structure to traverse
  * @param array $filtered_map a map of filtered requirements, req that are not in this map will be deleted
@@ -2186,7 +2190,7 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
  * @param array $options
  * @return array tree structure after filtering out unneeded nodes
  */
-function prepare_reqspec_treenode($level, &$node, &$filtered_map, &$map_id_nodetype,
+function prepare_reqspec_treenode(&$db, $level, &$node, &$filtered_map, &$map_id_nodetype,
                                   &$map_nodetype_id, &$filters, &$options) {
 	$child_req_count = 0;
 	
@@ -2194,7 +2198,7 @@ function prepare_reqspec_treenode($level, &$node, &$filtered_map, &$map_id_nodet
 		// node has childs, must be a specification (or testproject)
 		foreach ($node['childNodes'] as $key => $childnode) {
 			$current_childnode = &$node['childNodes'][$key];
-			$current_childnode = prepare_reqspec_treenode($level + 1, $current_childnode, 
+			$current_childnode = prepare_reqspec_treenode($db, $level + 1, $current_childnode, 
 			                                             $filtered_map, $map_id_nodetype,
 			                                             $map_nodetype_id,
 			                                             $filters, $options);
@@ -2219,7 +2223,8 @@ function prepare_reqspec_treenode($level, &$node, &$filtered_map, &$map_id_nodet
 	$delete_node = false;
 	
 	switch ($node_type) {
-		case 'testproject':			
+		case 'testproject':
+			$node['total_req_count'] = $child_req_count;	
 		break;
 		
 		case 'requirement_spec':
@@ -2243,7 +2248,7 @@ function prepare_reqspec_treenode($level, &$node, &$filtered_map, &$map_id_nodet
 		unset($node);
 		$node = null;
 	} else {
-		$node = render_reqspec_treenode($node, $filtered_map, $map_id_nodetype);
+		$node = render_reqspec_treenode($db, $node, $filtered_map, $map_id_nodetype);
 	}
 	
 	return $node;
@@ -2252,12 +2257,13 @@ function prepare_reqspec_treenode($level, &$node, &$filtered_map, &$map_id_nodet
 /**
  * Prepares nodes in the filtered requirement tree for displaying with ExtJS.
  * @author Andreas Simon
+ * @param Database $db reference to database handler object
  * @param array $node the object to prepare
  * @param array $filtered_map a map of filtered requirements, req that are not in this map will be deleted
  * @param array $map_id_nodetype array with node type IDs as keys, node type descriptions as values
  * @return array tree object with all needed data for ExtJS tree
  */
-function render_reqspec_treenode(&$node, &$filtered_map, &$map_id_nodetype) {
+function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype) {
 	static $js_functions;
 	static $forbidden_parents;
 	
@@ -2270,8 +2276,7 @@ function render_reqspec_treenode(&$node, &$filtered_map, &$map_id_nodetype) {
 		$forbidden_parents['testproject'] = 'none';
 		$forbidden_parents['requirement'] = 'testproject';
 		$forbidden_parents['requirement_spec'] = 'requirement_spec';
-		if($req_cfg->child_requirements_mgmt)
-		{
+		if($req_cfg->child_requirements_mgmt) {
 			$forbidden_parents['requirement_spec'] = 'none';
 		} 
 	}
@@ -2281,7 +2286,6 @@ function render_reqspec_treenode(&$node, &$filtered_map, &$map_id_nodetype) {
 	
 	$node['href'] = "javascript:{$js_functions[$node_type]}({$node_id});";
 	$node['text'] = htmlspecialchars($node['name']);
-
 	$node['leaf'] = false; // will be set to true later for requirement nodes
 	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
 	$node['cls'] = 'folder';
@@ -2290,11 +2294,9 @@ function render_reqspec_treenode(&$node, &$filtered_map, &$map_id_nodetype) {
 	$node['testlink_node_type']	= $node_type;
 	$node['forbidden_parent'] = $forbidden_parents[$node_type];
 	$node['testlink_node_name'] = $node['text'];
-
 	
 	switch ($node_type) {
-		case 'testproject':
-			
+		case 'testproject':			
 		break;
 		
 		case 'requirement_spec':
@@ -2303,9 +2305,22 @@ function render_reqspec_treenode(&$node, &$filtered_map, &$map_id_nodetype) {
 			foreach($node['childNodes'] as $child) {
 				if (!is_null($child)) {
 					$child_id = $child['id'];
-					$doc_id = htmlspecialchars($filtered_map[$child_id]['req_spec_doc_id']);
+					if (isset($filtered_map[$child_id])) {
+						$doc_id = htmlspecialchars($filtered_map[$child_id]['req_spec_doc_id']);
+					}
 					break; // only need to get one child for this
 				}
+			}
+			// BUGID 3765: load doc ID with  if this req spec has no direct req child nodes.
+			// Reason: in these cases we do not have a parent doc ID in $filtered_map 
+			if ($doc_id == '') {
+				static $req_spec_mgr = null;
+				if (!$req_spec_mgr) {
+					$req_spec_mgr = new requirement_spec_mgr($db);
+				}
+				$tmp_spec = $req_spec_mgr->get_by_id($node_id);
+				$doc_id = $tmp_spec['doc_id'];
+				unset($tmp_spec);
 			}
 			
 			$count = $node['child_req_count'];

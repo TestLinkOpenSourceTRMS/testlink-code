@@ -16,6 +16,7 @@
  * 
  * @internal Revisions:
  *
+ * 20110311 - asimon - Show count for total requirements in tree on root node
  * 20101103 - asimon - custom fields on requirement filtering did not retain value after apply
  * 20101026 - asimon - BUGID 3930: changing date format according to given locale
  * 20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
@@ -234,6 +235,7 @@ class tlRequirementFilterControl extends tlFilterControl {
 			                                   $filters, $options);
 			
 			$root_node = $tree_menu->rootnode;
+			$root_node->name .= " ({$root_node->total_req_count})";
 			$children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
 
             // BUGID 3718: disable drag&drop if tree has been filtered
@@ -241,11 +243,13 @@ class tlRequirementFilterControl extends tlFilterControl {
 		} else {
 			$loader = $gui->basehref . 'lib/ajax/getrequirementnodes.php?' .
 			                         "root_node={$this->args->testproject_id}";
+			
+			$req_qty = count($this->testproject_mgr->get_all_requirement_ids($this->args->testproject_id));
 		
 			$root_node = new stdClass();
 			$root_node->href = "javascript:TPROJECT_REQ_SPEC_MGMT({$this->args->testproject_id})";
 			$root_node->id = $this->args->testproject_id;
-			$root_node->name = $this->args->testproject_name;
+			$root_node->name = $this->args->testproject_name . " ($req_qty)";
 			$root_node->testlink_node_type = 'testproject';
 		}	
 	

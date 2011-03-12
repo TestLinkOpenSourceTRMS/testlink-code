@@ -10,6 +10,8 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20110312 - franciscom - 	get_by_id() - id can be null, to allow get data 
+ *							when you now only version id (DB ID)
  * 20110308 - franciscom - get_basic_info() interface changes	
  * 20110205 - franciscom - BUGID 4207 - set_step_number() - 
  *						   MSSQL problems when table alias is used on SQL UPDATE 
@@ -1945,6 +1947,8 @@ class testcase extends tlObjectWithAttachments
 	
 	  returns: array 
 	
+	@internal revisions
+	20110312 - franciscom - now id can be null, to allow get just by version id
 	
 	*/
 
@@ -1960,8 +1964,14 @@ class testcase extends tlObjectWithAttachments
 		$tcid_list = null;
 		$where_clause = '';
 		$active_filter = '';
-	
-		if(is_array($id))
+		$versionSQLOp = ' AND ';
+		
+
+		if( ($accessByVersionID = is_null($id) && !is_null($version_id)) )
+		{
+			$versionSQLOp = ' WHERE ';
+		}
+		else if(is_array($id))
 		{
 			$tcid_list = implode(",",$id);
 			$where_clause = " WHERE NHTCV.parent_id IN ({$tcid_list}) ";
@@ -1974,20 +1984,22 @@ class testcase extends tlObjectWithAttachments
 		if( ($version_id_is_array=is_array($version_id)) )
 		{
 		    $versionid_list = implode(",",$version_id);
-		    $where_clause .= " AND TCV.id IN ({$versionid_list}) ";
+		    $where_clause .= $versionSQLOp . " TCV.id IN ({$versionid_list}) ";
 		}
 		else
 		{
 		    // 20090521 - franciscom - search by human version number
 		    if( is_null($version_id) )
 		    {
+		    	// when tcase ID has not been provided this can not be used
+		    	// will not do any check => leave it CRASH
 		        $where_clause .= " AND TCV.version = {$my['filters']['version_number']} ";
 		    }
 		    else 
 		    {
 			    if($version_id != self::ALL_VERSIONS && $version_id != self::LATEST_VERSION)
 			    {
-			    	$where_clause .= " AND TCV.id = {$version_id} ";
+			    	$where_clause .= $versionSQLOp .  " TCV.id = {$version_id} ";
 			    }
 	        }
 	        

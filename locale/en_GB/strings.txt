@@ -545,6 +545,10 @@ $TLS_copy_one_req = "Copy requirement";
 $TLS_copy_several_reqs = "Copy requirements";
 $TLS_copy_testcase_assignments = "Copy Test Case Assignments";
 
+// ----- gui/templates/requirements/reqCreateTestCases.tpl -----
+$TLS_toggle_create_testcase_amount = "Toggle between single test case creation and " .
+                                     "the creation of the required amount of test " .
+                                     "cases to fully cover the requirement(s)";
 
 // gui/templates/containerOrder.tpl
 $TLS_no_nodes_to_reorder = "I'm sorry there is nothing to reorder!";

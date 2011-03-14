@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!-- Custom fields used to implement XML-RPC remote execution -->
+<custom_fields>
+	<custom_field>
+		<name><![CDATA[RE-XMLRPC_url_link]]></name>
+		<label><![CDATA[XML-RPC Server URL @Test Plan Design Level]]></label>
+		<type><![CDATA[501]]></type>
+		<possible_values><![CDATA[]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[0]]></show_on_design>
+		<enable_on_design><![CDATA[0]]></enable_on_design>
+		<show_on_execution><![CDATA[1]]></show_on_execution>
+		<enable_on_execution><![CDATA[0]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[1]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[1]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[3]]></node_type_id>
+	</custom_field>
+	<custom_field>
+		<name><![CDATA[RE-XMLRPC_url_tcase]]></name>
+		<label><![CDATA[XML-RPC Server URL @Test Case level]]></label>
+		<type><![CDATA[0]]></type>
+		<possible_values><![CDATA[]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[1]]></show_on_design>
+		<enable_on_design><![CDATA[1]]></enable_on_design>
+		<show_on_execution><![CDATA[1]]></show_on_execution>
+		<enable_on_execution><![CDATA[0]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[0]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[0]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[3]]></node_type_id>
+	</custom_field>
+	<custom_field>
+		<name><![CDATA[RE-XMLRPC_url_tsuite]]></name>
+		<label><![CDATA[XML-RPC Server URL @Test Suite level]]></label>
+		<type><![CDATA[0]]></type>
+		<possible_values><![CDATA[]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[1]]></show_on_design>
+		<enable_on_design><![CDATA[1]]></enable_on_design>
+		<show_on_execution><![CDATA[1]]></show_on_execution>
+		<enable_on_execution><![CDATA[0]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[0]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[0]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[2]]></node_type_id>
+	</custom_field>
+</custom_fields>

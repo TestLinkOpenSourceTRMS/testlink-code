@@ -3252,5 +3252,7 @@ $TLS_no_label_for_req_type = 'No req_type_labels configuration for type: %s';
 $TLS_remoteExecServerConfigProblems = 'Remote execution can not be launched due to missing configuration.\n' .
 									  'Please check if the required Custom Fields are defined and assigned ' .
 									  'to this test project'; 
+
+$TLS_remoteExecServerConnectionFailure = 'Remote execution connection failure - check you config';
 // ----- END ------------------------------------------------------------------
 ?>

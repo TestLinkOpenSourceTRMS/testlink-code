@@ -2050,19 +2050,19 @@ function name_is_unique($id,$name)
  *
  * CF name will have 3 pieces separated by _ (underscore)
  *
- * XMLRPCRemoteExec_url_tsuite
- * XMLRPCRemoteExec_url_tcase
- * XMLRPCRemoteExec_url_link
+ * RE-XMLRPC_url_tsuite
+ * RE-XMLRPC_url_tcase
+ * RE-XMLRPC_url_link
  *
- * Part 1: 	XMLRPCRemoteExec FIXED value, used as search key to get automatically 
+ * Part 1: 	RE-XMLRPC_ FIXED value, used as search key to get automatically 
  *			CF to be analised.
  *
- * Part 2: 	url will be key on retuned hash, and is part of 'contract' with caller,
+ * Part 2: 	url will be key on returned hash, and is part of 'contract' with caller,
  *			i.e. caller will use this key.
  *			This key is a FREE choice of developer of Remote Execute modules to use
  *			with TL.
  *
- * Part 3:	this part domain (link,tcase,tsuite)
+ * Part 3:	this part is domain (link,tcase,tsuite)
  *			work this way:
  *			To specify Remote Execution server parameters we have provided 3 choices
  *			a. on test case version LINKED to Test Plan + Platform (Test Plan Design time)

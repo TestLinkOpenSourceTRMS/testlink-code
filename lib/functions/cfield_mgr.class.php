@@ -2107,6 +2107,7 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
 	
 	if( !is_null($node_info) )
 	{
+		$server_info = null;
 				
 		// First Search at test plan design time
 		if( !is_null($tplanLinkID) )

@@ -56,15 +56,20 @@ function executeTestCase($tcaseInfo,$serverCfg,$context)
 	$ret = array('system' => array('status' => 'ok', 'msg' => 'ok'),
 				 'execution' => array('scheduled' => '', 
 				 					  'result' => '',
+				 					  'resultVerbose' => '',
 				 					  'notes' => '',
 				 					  'timestampISO' => '') );
   
 
+	$labels = init_labels(array('remoteExecServerConfigProblems' => null,
+						 		'remoteExecServerConnectionFailure' => null));
+						  
+	
 	$do_it = (!is_null($serverCfg) && !is_null($serverCfg["url"]) );
 	if(!$do_it)
 	{ 
 		$ret['system']['status'] = 'configProblems';
-		$ret['system']['msg'] = lang_get('remoteExecServerConfigProblems');						
+		$ret['system']['msg'] = $labels['remoteExecServerConfigProblems'];						
 	}
 	
   	if($do_it)
@@ -74,7 +79,7 @@ function executeTestCase($tcaseInfo,$serverCfg,$context)
 		{
 			$do_it = false;
 			$ret['system']['status'] = 'connectionFailure';
-			$ret['system']['msg'] = lang_get('remoteExecServerConnectionFailure');						
+			$ret['system']['msg'] = $labels['remoteExecServerConnectionFailure'];						
 		}
 	}
 	
@@ -97,9 +102,29 @@ function executeTestCase($tcaseInfo,$serverCfg,$context)
 		$xmlrpcClient->query('executeTestCase',$args4call);
 		$response = $xmlrpcClient->getResponse();
 
-		if( !is_null($response) )
+		if( is_null($response) )
+		{
+			// Houston we have a problem!!! (Apollo 13)
+			$ret['system']['status'] = 'connectionFailure';
+			$ret['system']['msg'] = $labels['remoteExecServerConnectionFailure'];						
+			$ret['execution'] = null;
+		}
+		else
 		{
 			$ret['execution'] = $response;
+			$ret['execution']['resultVerbose'] = '';
+			
+			if(!is_null($response['result']))
+			{	
+				$code = trim($response['result']);
+				if( $code != '')
+				{
+					$resultsCfg = config_get('results');
+					$codeStatus = array_flip($resultsCfg['status_code']);
+					$dummy = trim($codeStatus[$code]);
+					$ret['execution']['resultVerbose'] = lang_get($resultsCfg['status_label'][$dummy]);
+				}
+			}
 		}
   	} 
 

@@ -1,24 +1,24 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.63 2010/11/06 11:42:47 amkhullar Exp $
-Purpose: smarty template - show tests to add results
-Rev:
-  20101008 - asimon - BUGID 3311
-  20100926 - franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
-  20100614 - eloff - BUGID 3522 - fix issue with multiple note panels
-  20100503 - franciscom - BUGID 3260: Import XML Results is not working with Internet Explorer
-                          reason: passing string without string separator to  openImportResult()
-  20090901 - franciscom - preconditions
-  20090815 - franciscom - platform feature
-  20090418 - franciscom - BUGID 2364 - added logic to refresh tree, 
-                          due to access to test spec to edit it.
 
-  20090329 - franciscom - when using bulk mode, user can access test case spec opening a new window.
+@filesource	execSetResults.tpl
+@internal smarty template - show tests to add results
+@internal revisions
+	20110314 - franciscom - remote execution improvements
+	20101008 - asimon - BUGID 3311
+	20100926 - franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
+	20100614 - eloff - BUGID 3522 - fix issue with multiple note panels
+	20100503 - franciscom - BUGID 3260: Import XML Results is not working with Internet Explorer
+                          reason: passing string without string separator to  openImportResult()
+	20090901 - franciscom - preconditions
+	20090815 - franciscom - platform feature
+	20090418 - franciscom - BUGID 2364 - added logic to refresh tree, due to access to test spec to edit it.
+	20090329 - franciscom - when using bulk mode, user can access test case spec opening a new window.
                           
-  20090212 - amitkhullar - BUGID 2068
-  20081231 - franciscom - new implementation of Bulk TC Status 
+	20090212 - amitkhullar - BUGID 2068
+	20081231 - franciscom - new implementation of Bulk TC Status 
                           BUGID 1635
-  20081210 - franciscom - BUGID 1905 
+	20081210 - franciscom - BUGID 1905 
 *}
 {assign var="attachment_model" value=$cfg->exec_cfg->att_model}
 {assign var="title_sep"  value=$smarty.const.TITLE_SEP}
@@ -34,22 +34,23 @@ Rev:
 
 {lang_get s='build' var='build_title'}
 
-{lang_get var='labels'
-          s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,
-             th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,
-             version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,
-             execution_type_short_descr,expected_results,testcase_customfields,
-             last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
-             test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
-	           attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,
-	           img_title_bug_mgmt,img_title_delete_execution,test_exec_summary,title_t_r_on_build,
-	           execution_type_manual,execution_type_auto,run_mode,or_unassigned_test_cases,
-	           no_data_available,import_xml_results,btn_save_all_tests_results,execution_type,
-	           testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
-	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
-             deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution, 
-             btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,
-             preconditions,platform,platform_description,exec_not_run_result_note'}
+{lang_get 
+  var='labels'
+  s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,
+	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,
+	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,
+	execution_type_short_descr,expected_results,testcase_customfields,
+	last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
+	test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
+	attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,
+	img_title_bug_mgmt,img_title_delete_execution,test_exec_summary,title_t_r_on_build,
+	execution_type_manual,execution_type_auto,run_mode,or_unassigned_test_cases,
+	no_data_available,import_xml_results,btn_save_all_tests_results,execution_type,
+	testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
+	test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
+	deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution, 
+	btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,
+	preconditions,platform,platform_description,exec_not_run_result_note,remoteExecFeeback'}
 
 
 
@@ -93,19 +94,19 @@ Set value for a group of combo (have same prefix).
 */
 function set_combo_group(formid,combo_id_prefix,value_to_assign)
 {
-  var f=document.getElementById(formid);
+	var f=document.getElementById(formid);
 	var all_comboboxes = f.getElementsByTagName('select');
 	var input_element;
 	var idx=0;
 		
 	for(idx = 0; idx < all_comboboxes.length; idx++)
 	{
-	  input_element=all_comboboxes[idx];
+		input_element=all_comboboxes[idx];
 		if( input_element.type == "select-one" && 
 		    input_element.id.indexOf(combo_id_prefix)==0 &&
 		   !input_element.disabled)
 		{
-       input_element.value=value_to_assign;
+			input_element.value=value_to_assign;
 		}	
 	}
 }
@@ -445,6 +446,22 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
       </table>
       </div>
   {else}
+
+	{if $tlCfg->exec_cfg->enable_test_automation && $gui->remoteExecFeedback != ''}
+		<b>{$labels.remoteExecFeeback}</b>
+		{if	$gui->remoteExecFeedback.system == ''}
+			<br>{$gui->remoteExecFeedback.statusVerbose|escape}
+			<br>{$gui->remoteExecFeedback.notes|escape}
+			{if $gui->remoteExecFeedback.status == ''}	
+				<br>{$gui->remoteExecFeedback.scheduled|escape}
+				<br>{$gui->remoteExecFeedback.timestamp|escape}
+			{/if}	
+		{else}
+			<br>{$gui->remoteExecFeedback.system.msg|escape}
+		{/if}
+		<p>
+	{/if}
+	
     {include file="execute/inc_exec_show_tc_exec.tpl"}
 
     {* 20090419 - BUGID 2364 - franciscom*}

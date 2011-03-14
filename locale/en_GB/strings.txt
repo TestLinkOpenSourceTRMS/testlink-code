@@ -1254,7 +1254,7 @@ $TLS_warning_delete_execution = "You are going to delete execution. Are you sure
 $TLS_warning_nothing_will_be_saved = "For the selected execution result nothing will be written to database";
 $TLS_edit_execution = "edit execution";
 $TLS_platform_description = "Platform description";
-
+$TLS_remoteExecFeeback = "Remote Test Case Execution Feedback";
 
 // ----- gui/templates/inc_testsuite_viewer_ro.tpl -----
 $TLS_keywords = "Keywords";

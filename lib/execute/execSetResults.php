@@ -127,7 +127,8 @@ if($args->doExec == 1)
 		// - custom fields
 		//
 		$execContext = buildExecContext($args,$gui->tcasePrefix,$tplan_mgr,$tcase_mgr);
-		$remoteExecFeedback = do_remote_execution($db,$execContext);
+		$gui->remoteExecFeedback = do_remote_execution($db,$execContext);
+		$gui->remoteExecFeedback = current($gui->remoteExecFeedback);
 		
 		// IMPORTANT NOTICE
 		// need to understand what to do with feedback provided
@@ -138,6 +139,8 @@ if($args->doExec == 1)
 		// Only drawback i see is when remote exec is done on a test suite
 		// and amount of feedback can be high, then do not see what can be effect
 		// on GUI
+		
+		
 	}
 }	
 
@@ -225,8 +228,6 @@ if(!is_null($linked_tcversions))
     // Results to DB
     if ($args->save_results || $args->do_bulk_save || $args->save_and_next)
     {
-		// echo __LINE__;
-		// die();
 		
     	// this has to be done to do not break logic present on write_execution()
     	$args->save_results = $args->save_and_next ? $args->save_and_next : $args->save_results;
@@ -816,9 +817,11 @@ function do_remote_execution(&$dbHandler,$context)
 	$myResult = array();
 	$sql = 	" /* $debugMsg */ INSERT INTO {$tables['executions']} " . 
 			" (testplan_id,platform_id,build_id,tester_id,execution_type," .
-			"  tcversion_id,execution_ts,status,notes) ".
-			" VALUES ({$context['tplan_id']}, {$context['platform_id']}, {$context['build_id']}," .
-			" {$context['user_id']}," . TESTCASE_EXECUTION_TYPE_AUTO . ",";
+			"  tcversion_id,execution_ts,status,notes) " .
+			" VALUES ({$context['context']['tplan_id']}, " . 
+			"		  {$context['context']['platform_id']}, " .
+			"		  {$context['context']['build_id']}," .
+			" {$context['context']['user_id']}," . TESTCASE_EXECUTION_TYPE_AUTO . ",";
 
 	// have we got multiple test cases to execute ?
 	$target = &$context['target'];
@@ -855,11 +858,11 @@ function do_remote_execution(&$dbHandler,$context)
 		if( $tryWrite )
 		{
 			$trun = &$execResult[$version_id]['execution'];
+			$ret[$version_id]["status"] = strtolower($trun['result']);
+			$ret[$version_id]["statusVerbose"] = $trun['resultVerbose'];
+			$ret[$version_id]["notes"] = trim($trun['notes']);
 			if( $trun['scheduled'] == 'now' )
 			{
-				$ret[$version_id]["status"] = strtolower($trun['result']);
-				$ret[$version_id]["notes"] = trim($trun['notes']);
-				
 				$notes = $dbHandler->prepare_string($ret[$version_id]["notes"]);
 
 				if( $ret[$version_id]["status"] != $tc_status['passed'] && 
@@ -876,9 +879,8 @@ function do_remote_execution(&$dbHandler,$context)
 			}
 			else
 			{
-				$ret[$version_id]["notes"] = trim($execResult[$version_id]['notes']);
-				$ret[$version_id]["scheduled"] = $execResult[$version_id]['scheduled'];
-				$ret[$version_id]["timestamp"]= $execResult[$version_id]['timestampISO'];
+				$ret[$version_id]["scheduled"] = $trun['scheduled'];
+				$ret[$version_id]["timestamp"]= $trun['timestampISO'];
 			}
 		}
 		else
@@ -1156,6 +1158,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
     $gui = new stdClass();
+    $gui->remoteExecFeedback = '';
     $gui->tplan_id=$argsObj->tplan_id;
     $gui->tproject_id=$argsObj->tproject_id;
     $gui->build_id = $argsObj->build_id;
@@ -1550,7 +1553,6 @@ function buildExecContext(&$argsObj,$tcasePrefix,&$tplanMgr,&$tcaseMgr)
 	{	
 		foreach($value as $key => $dummy)
 		{	
-			echo $key . '<br>';
 			if( property_exists($argsObj,$key) )
 			{	
 				$value[$key] = $argsObj->$key;			

@@ -136,7 +136,7 @@ function cs_all_coverage_in_div(div_id, input_id_prefix, default_id_prefix, memo
 		<input type="hidden" name="tc_cov_set"  id="tc_cov_set"  value="0" />
 		{* BUGID 4317 - END CONTRIB FRL *}
 
-	 <table class="simple" style="width:99%">
+	 <table class="simple">
 	<tr>
 		{if $gui->grants->req_mgmt == "yes"}
 			<th style="width: 15px;">

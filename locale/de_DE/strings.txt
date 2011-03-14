@@ -27,7 +27,7 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file with commit id 14790ab942dfba72101f1a19f3d9e02f6d1fc7aa
+ * Last Update according to en_GB string file with commit id e45f04e2d21c284fe4c5345f82b2adcfcbdc2029
  *
  **/
 
@@ -542,6 +542,10 @@ $TLS_copy_one_req = "Anforderung kopieren";
 $TLS_copy_several_reqs = "Anforderungen kopieren";
 $TLS_copy_testcase_assignments = "Testfallzuweisungen kopieren";
 
+// ----- gui/templates/requirements/reqCreateTestCases.tpl -----
+$TLS_toggle_create_testcase_amount = "Wechsle zwischen der Erstellung einzelner Testfälle " .
+                                     "und der Erstellung der nötigen Menge an Testfällen " .
+                                     "um die Anforderung(en) vollständig abzudecken";
 
 // gui/templates/containerOrder.tpl
 $TLS_no_nodes_to_reorder = "Keine Daten zum Sortieren vorhanden.";
@@ -3236,5 +3240,10 @@ $TLS_export_execution_set = 'Ausführungen exportieren';
 
 // ----- lib/results/resultsReqs.php -----
 $TLS_no_label_for_req_type = 'Keine req_type_labels Konfiguration für den Typ: %s';
+
+// ----- lib/functions/remote_exec.php
+$TLS_remoteExecServerConfigProblems = 'Die Fernausführung kann aufgrund fehlender Konfiguration nicht gestartet werden.\n' .
+									  'Überprüfen Sie ob die benötigten benutzerdefinierten Felder innerhalb dieses Testprojekts ' .
+									  'definiert und zugewiesen wurden'; 
 // ----- END ------------------------------------------------------------------
 ?>

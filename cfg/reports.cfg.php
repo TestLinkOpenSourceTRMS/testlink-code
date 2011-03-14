@@ -3,14 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: reports.cfg.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2010/09/03 11:25:53 $ by $Author: mx-julian $
+ * @filesource	reports.cfg.php
  * @author Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
  * 
- * Revision:
+ * @internal revisions:
+ *	20110312 - franciscom - added logic to include custom_reports.cfg.php
  *  20100903 - Julian - BUGID 37006 - disabled uncovered_testcases report 
  *  20100731 - asimon - added results by tester per build and assignment overview
  *  20090421 - amitkhullar- BUGID 2410 - Custom Field report for Test Plan
@@ -187,5 +186,13 @@ $tlCfg->reports_list['free_tcases'] = array(
 'enabled' => 'all',
 'format' => 'format_html'
 );
+
+
+clearstatcache();
+$f2inc = TL_ABS_PATH . 'cfg/custom_reports.cfg.php';
+if ( file_exists($f2inc) )
+{
+  require_once($f2inc);
+}
 // -------------------------------------------------------------------
 ?>

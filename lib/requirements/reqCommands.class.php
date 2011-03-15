@@ -486,12 +486,12 @@ class reqCommands
 	function doCreateTestCases(&$argsObj,$request)
 	{
 		$guiObj = $this->initGuiBean();
-		$guiObj = $this->createTestCases($argsObj);
+		$guiObj = $this->createTestCases($argsObj,$request);
 	    $msg = $this->reqMgr->create_tc_from_requirement($argsObj->arrReqIds,$argsObj->req_spec_id,
 	                                                     $argsObj->user_id,$argsObj->tproject_id,
 	                                                     $argsObj->testcase_count);
         // need to update results
-		$guiObj = $this->createTestCases($argsObj);
+		$guiObj = $this->createTestCases($argsObj,$request);
 		$guiObj->array_of_msg = $msg;
 	    return $guiObj;
 	}

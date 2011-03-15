@@ -21,7 +21,7 @@ BUGID 628: Name edit Invalid action parameter/other behaviours if �Enter� pr
 *}
 {lang_get var="labels"
           s="warning_empty_testsuite_name,title_create,tc_keywords,warning_required_cf,
-             warning,btn_create_testsuite,cancel"}
+             warning,btn_create_testsuite,cancel,warning_unsaved"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 

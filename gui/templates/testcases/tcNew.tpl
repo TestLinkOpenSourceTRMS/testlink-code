@@ -25,7 +25,7 @@ Purpose: smarty template - create new testcase
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var='labels' s='btn_create,cancel,warning,title_new_tc,warning_required_cf,
-                          warning_empty_tc_title,stay_here'}
+                          warning_empty_tc_title,stay_here,warning_unsaved'}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}

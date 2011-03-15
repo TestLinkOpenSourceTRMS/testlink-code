@@ -15,7 +15,7 @@ Purpose: smarty template - edit test specification: containers
 
 *}
 {lang_get var="labels"
-          s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,cancel,warning,warning_required_cf
+          s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,cancel,warning,warning_required_cf,
           warning_unsaved'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -91,7 +91,7 @@ function validateForm(f)
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">
   var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
-  var tc_editor = "{$gui->editorType}";
+  var tc_editor = "{$editorType}";
   </script>
   <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
 {/if}

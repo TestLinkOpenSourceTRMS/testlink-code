@@ -86,6 +86,8 @@ $a_init_opt_transfer=array('edit_testsuite' => 1,'new_testsuite'  => 1,'add_test
 
 $the_tpl = null;
 $action = null;
+$get_c_data = null;
+$init_opt_transfer = null;
 
 foreach ($a_actions as $the_key => $the_val)
 {
@@ -140,6 +142,10 @@ switch($action)
 	case 'new_testsuite':
 		keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list);
 		$smarty->assign('opt_cfg', $opt_cfg);
+		// 20110315 - asimon: refresh tree when creating new testsuite
+		$gui = new stdClass();
+		$gui->refreshTree = $args->refreshTree;
+		$smarty->assign('gui', $gui);
 		$tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames,$oWebEditor,$action,
 		                             $args->containerID, $args->testsuiteID,null,$webEditorTemplateKey);
 		break;
@@ -180,6 +186,7 @@ switch($action)
   	  	$guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
 	  	$guiObj->id = $args->testsuiteID;
 		$guiObj->page_title = lang_get('container_title_testsuite');
+		$guiObj->refreshTree = $args->refreshTree;
      	$tsuite_mgr->show($smarty,$guiObj,$template_dir,$args->testsuiteID,null,$msg);
     	break;
 

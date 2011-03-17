@@ -1,15 +1,15 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: metricsDashboard.php,v $
- *
- * @version $Revision: 1.28 $
- * @modified $Date: 2010/12/01 14:37:08 $ $Author: asimon83 $
- *
+ * @filesource	metricsDashboard.php
+ * @package 	TestLink
+ * @copyright 	2007-2011, TestLink community 
  * @author franciscom
  *
  * @internal revisions
+ * 20110317 - franciscom - BUGID 4328: Metrics dashboard - only active builds has to be used
  * 20110303 - Julian - added more information to test project report
  * 20101022 - Julian - BUGID 3979 - Use grid filters for exttables
  * 20101015 - franciscom - code refactoring
@@ -147,7 +147,9 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
  * 
+ *	@internal revisions
  *
+ *	BUGID 4328: Metrics dashboard - only active builds has to be used
  */
 function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 {
@@ -167,22 +169,16 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 	foreach($test_plans as $key => $value)
 	{
 		$tplan_id = $value['id'];
-		$filters=null;
-		$options = array('output' => 'mapOfMap', 'steps_info' => 0);
-		$linked_tcversions[$tplan_id] = $tplan_mgr->get_linked_tcversions($tplan_id,$filters,$options);
+		
+		$linked_tcversions[$tplan_id] = null;
 		$platformSet=$tplan_mgr->getPlatforms($tplan_id);
-
-		if( is_null($platformSet) )
+		if( !($show_platforms = !is_null($platformSet)) )
 		{
 			// Julian: replaced array(0=>'')
 			$platformSet=array(0=>array('id'=> 0));
 		}
-		else
-		{
-			$show_platforms = true;
-		}
 
-		# initlialize counters
+		# initialize counters
 		foreach($platformSet as $platform_id => $platform_name)
 		{
 			$metrics['testplans'][$tplan_id]['platforms'][$platform_name['id']]['tplan_name'] = $value['name'];
@@ -204,6 +200,55 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 				$metrics['total'][$key] = 0;			
 			}
 		}
+
+		
+		if( ($linkedItemsQty = $tplan_mgr->count_testcases($tplan_id)) > 0 )
+		{
+
+			$executed = null;		
+			$not_run = null;
+					
+			// get executions ON ACTIVE BUILDS
+			//
+			// IMPORTANTE NOTICE
+			// using 'output' => 'mapOfMap' means we will get JUST ONE exec record for test case / platform
+			// 
+			$options = array('output' => 'mapOfMap', 'steps_info' => 0, 'build_active_status' => 'active');
+			$filters=null;
+			$executed[$tplan_id] = $tplan_mgr->get_linked_tcversions($tplan_id,$filters,$options);
+	
+			// Simple test to cope with active/inactive build
+			if( is_null($executed[$tplan_id]) )
+			{	
+				// need a simple call to get linked items and set status to NOT RUN on all items.
+				$filters=null;
+				$options = array('output' => 'mapOfMap', 'steps_info' => 0, 
+								 'forced_exec_status' => $result_cfg['status_code']['not_run']);
+				$executed[$tplan_id] = $tplan_mgr->get_linked_tcversions($tplan_id,$filters,$options);
+			}
+			else
+			{		
+				// get NOT EXECUTED on ACTIVE BUILDS and EXECUTED on INACTIVE BUILDS
+				// EXECUTED on INACTIVE BUILDS are candidate to become NOT EXECUTED on ACTIVE BUILDS
+				//
+				$options = array('output' => 'mapOfMap', 'steps_info' => 0,
+								 'build_active_status' => 'active',
+								 'forced_exec_status' => $result_cfg['status_code']['not_run']);
+				$filters = array('exec_status' => $result_cfg['status_code']['not_run']);
+				$not_run[$tplan_id] = $tplan_mgr->get_linked_tcversions($tplan_id,$filters,$options);
+			}
+			
+			// Time to work on keys
+			$notRunKeys = array_keys($not_run[$tplan_id]);
+			foreach($notRunKeys as $key2copy)
+			{
+				if( !isset($executed[$tplan_id][$key2copy]) )
+				{
+					$executed[$tplan_id][$key2copy] = $not_run[$tplan_id][$key2copy];		
+				}
+			}
+			$linked_tcversions[$tplan_id] = (array)$executed[$tplan_id];
+		}  // test plan has linked items	
 	}
 	
 	// Get count of executed testcases
@@ -217,14 +262,14 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 				{
 					if($value['active'])
 					{
-						// count number of active test cases for each platform, each test plan and 
-						// the whole project
+						// count number of active test cases for each platform, each test plan 
+						// and whole project
 						$metrics['testplans'][$tplan_id]['platforms'][$platform_id]['active']++;
 						$metrics['testplans'][$tplan_id]['overall']['active']++;
 						$metrics['total']['active']++;
 						
 						// count number of test cases depending on execution status (result) for
-						// each platform, each test plan and the whole project
+						// each platform, each test plan and whole project
 						$status_key = array_keys($result_cfg['status_code'], $value['exec_status']);
 						$metrics['testplans'][$tplan_id]['platforms'][$platform_id][$status_key[0]]++;
 						$metrics['testplans'][$tplan_id]['overall'][$status_key[0]]++;
@@ -232,7 +277,13 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 						
 						// count number of executed test cases for each platform, each test plan and
 						// the whole project
-						if ($value['exec_id'] > 0) {
+						//
+						// 20110317 - do not know how we do not have tested for exec status <> not_run
+						// After change done to fix inactive build behaviour we need to check for
+						// execution status
+						// if ($value['exec_id'] > 0) 
+						if( $value['exec_status'] != $result_cfg['status_code']['not_run'] )
+						{
 							$metrics['testplans'][$tplan_id]['platforms'][$platform_id]['executed']++;
 							$metrics['testplans'][$tplan_id]['overall']['executed']++;
 							$metrics['total']['executed']++;

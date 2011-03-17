@@ -6,15 +6,24 @@
  * Manages test plan operations and related items like Custom fields, 
  * Builds, Custom fields, etc
  *
+ * @filesource	testplan.class.php
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.245 2011/02/11 12:54:49 mx-julian Exp $
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *	20110317 - franciscom - BUGID 4328: Metrics dashboard - only active builds has to be used
+ *							get_linked_tcversions() - new option forced_exec_status
+ *													  build_id now can be an array of id
+ *
+ *	20110316 - franciscom - BUGID 4328: Metrics dashboard - only active builds has to be used
+ *							get_linked_tcversions()
+ *
  *	20110121 - franciscom - BUGID 4184 - MSSQL Ambiguous column name platform_id
+ *  20110115 - franciscom - BUGID 4171 - changes on methods related to estimated execution time
+ *  20110112 - franciscom - BUGID 4171 - changes on methods related to estimated execution time
  *  20110104 - asimon - BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
  *  20101221 - amitkhullar - BUGID 4115 Custom Field Filtering Issue 
  *  20101215 - asimon - BUGID 4023: correct filtering also with platforms
@@ -105,26 +114,7 @@
  *  20090201 - franciscom - copy_milestones() - wrong SQL sentece 
  *                          A,B,C fields renamed to lower case a,b,c to avoid problems
  *                          between differnt database (case and no case sensitive)
- *  20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
- *                          get_same_status_for_build_set(), get_prev_builds()
- *
- *  20081214 - franciscom - Thanks to postgres found missing CAST() on SUM() 
- *  20081206 - franciscom - BUGID 1910 - get_estimated_execution_time() - added new filter
- *                                       get_linked_tcversions() - added test suites filter 
- *  20080820 - franciscom - added get_estimated_execution_time() as result of contributed idea.
- *
- *  20080811 - franciscom - BUGID 1650 (REQ)
- *  20080614 - franciscom - get_linked_and_newest_tcversions() - fixed bug  (thanks to PostGres)
- *  20080428 - franciscom - supporting multiple keywords in get_linked_tcversions()
- *                          (based on contribution by Eugenia Drosdezki)
- *  20080310 - sbouffard - contribution added NHB.name to recordset (useful for API methods).  
- *  20071010 - franciscom - BUGID     MSSQL reserved word problem - open
- *  20070927 - franciscom - BUGID 1069
- *                          added _natsort_builds() (see natsort info on PHP manual).
- *                          get_builds() add call to _natsort_builds()
- *                          get_builds_for_html_options() add call to natsort()
- *  20070310 - franciscom - BUGID 731
- *  20070306 - franciscom - BUGID 705 - changes in get_linked_tcversions()
+ *  
  **/
 
 /** related functionality */
@@ -547,6 +537,10 @@ class testplan extends tlObjectWithAttachments
 	
 
 	/**
+	 * Ignores Platforms, then if a test case version is linked to a test plan
+	 * and two platforms, we will get item once. 
+	 * Need to understand if in context where we want to use this method this is
+	 * a problem
 	 *
 	 * @internal revisions:
 	 *   20100722 - asimon - added missing $debugMsg
@@ -563,10 +557,61 @@ class testplan extends tlObjectWithAttachments
 		return $linked_items;
 	}
 
+	/**
+	 * @internal revisions:
+	 * 
+	 */
+	function get_linked_tcvid($id,$platformID)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = " /* $debugMsg */ ". 
+			   " SELECT tcversion_id FROM {$this->tables['testplan_tcversions']} " .
+			   " WHERE testplan_id = " . intval($id) . 
+			   " AND platform_id = " . intval($platformID) ;
+			   
+		$linked_items = $this->db->fetchRowsIntoMap($sql,'tcversion_id');			     
+		return $linked_items;
+	}
+
+	/**
+	 * @internal revisions:
+	 * 
+	 */
+	function getFeatureID($id,$platformID,$tcversionID)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = " /* $debugMsg */ ". 
+			   " SELECT id FROM {$this->tables['testplan_tcversions']} " .
+			   " WHERE testplan_id = " . intval($id) . 
+			   " AND tcversion_id = " . intval($tcversionID) . 
+			   " AND platform_id = " . intval($platformID) ;
+			   
+		$linked_items = $this->db->fetchRowsIntoMap($sql,'id');
+		return !is_null($linked_items) ? key($linked_items) : -1;
+	}
 
 	/*
   	function: get_linked_tcversions
             get information about testcases linked to a testplan.
+
+
+	IMPORTANT NOTICE
+	A new logic has to be implemented to manage in the right way
+	when caller reques NOT EXECUTED, but this info has to consider 
+	ONLY ACTIVE BUILDS.
+	We are going to implement a solution that will be good to solve
+	issue:
+	BUGID 4328: Metrics dashboard - only active builds has to be used
+	but on this first implementation we are not going to check that 
+	all options combinations (there are lots) produce coherent 
+	output.
+	We will (in future) to improve this.
+	
+	There are special situations like: 
+		When we have JUST ONE build and we set it to inactive, if we request
+		only NOT RUN test cases, all test cases has to be returned as NOT RUN.
+		OK, this is a very special situation similar to have NO BUILD created.
+		We need to add some logic to manage this.
 
   	args :
          id: testplan id
@@ -584,8 +629,8 @@ class testplan extends tlObjectWithAttachments
          	[exec_status]: default NULL => do not filter by execution status
          	               character or array => filter by execution status=character
          	
-         	[build_id]: default 0 => do not filter by build id
-         	            numeric   => filter by build id
+         	[build_id]: default 0 or null => do not filter by build id
+         	            numeric or array   => filter by build id / or list of build id
          	
          	[cf_hash]: default null => do not filter by Custom Fields values
          	
@@ -620,9 +665,18 @@ class testplan extends tlObjectWithAttachments
          	                  array -> indexed sequentially. 
          	                  
          	                            
-         	          
+			[build_active_status]:  values 'active', 'inactive', 'any' <- default
+							 		when <> 'any' only executions test case versions can be analized.
+							 		Remember that there is NO RECORD on executions table when
+							 		test case version has not been executed, and we get BUILD ID
+							 		from execution record.
+							          	          
          	[only_executed]: default false => get executed and NOT executed
          	                                  get only executed tcversions
+
+		 	[forced_exec_status] values null => does not force
+		 							   other => this value will be forced on
+		 						 			    output recordset.
          
          	[execution_details]: default NULL => by platftorm
          	                     add_build => by build AND platform
@@ -652,6 +706,17 @@ class testplan extends tlObjectWithAttachments
                            - tcversion_id if has executions.
 
 	rev :
+		 20110317 - franciscom - BUGID 4328: Metrics dashboard - only active builds has to be used
+		 						 add new option 
+		 						 'forced_exec_status' values null => does not force
+		 						 							other => this value will be forced on
+		 						 									 output recordset.
+								 'build_id' can be an array (to implement list of build id)
+
+		 20110316 - franciscom - BUGID 4328: Metrics dashboard - only active builds has to be used
+		 						 add new option 
+		 						 'build_active_status' values 'active', 'inactive', 'any'
+		 						 
 		 20100727 - asimon - BUGID 3629: modified statement
 		 20100721 - asimon - BUGID 3406: added user_assignments_per_build option
 		 20100520 - franciscom - added option steps_info, to try to solve perfomance problems
@@ -669,10 +734,14 @@ class testplan extends tlObjectWithAttachments
         $my = array ('filters' => '', 'options' => '');
 		$tcversion_exec_type = array('join' => '', 'filter' => '');
 		$tc_id = array('join' => '', 'filter' => '');
-		$builds = array('join' => '', 'filter' => '');
+		$builds = array('join' => '', 'filter' => '', 'left_join' => ' ');
 		$keywords = array('join' => '', 'filter' => '');
 		$executions = array('join' => '', 'filter' => '');
 		$platforms = array('join' => '', 'filter' => '');
+
+		$executions['filter'] = '';
+		$notrun['filter'] = null;
+		$otherexec['filter'] = null;
 		
         $my['filters'] = array('tcase_id' => null, 'keyword_id' => 0,
                                'assigned_to' => null, 'exec_status' => null,
@@ -680,9 +749,11 @@ class testplan extends tlObjectWithAttachments
                                'urgencyImportance' => null, 'tsuites_id' => null,
                                'platform_id' => null, 'exec_type' => null);
                                
-        $my['options'] = array('only_executed' => false, 'include_unassigned' => false,
+        $my['options'] = array('only_executed' => false, 'only_not_executed' => false,
+        					   'include_unassigned' => false,
                                'output' => 'map', 'details' => 'simple', 'steps_info' => false, 
-                               'execution_details' => null, 'last_execution' => false);
+                               'execution_details' => null, 'last_execution' => false,
+                               'build_active_status' => 'any', 'forced_exec_status' => null);
 
  		// Cast to array to handle $options = null
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
@@ -690,8 +761,8 @@ class testplan extends tlObjectWithAttachments
 		
 		// 20100830 - franciscom - bug found by Julian
 		// BUGID 3867
-		//$my['filters']['exec_status'] = (array)$my['filters']['exec_status'];
-		if (!is_null($my['filters']['exec_status'])) {
+		if (!is_null($my['filters']['exec_status'])) 
+		{
 			$my['filters']['exec_status'] = (array)$my['filters']['exec_status'];
 		}
 		$groupByPlatform=($my['options']['output']=='mapOfMap' || 
@@ -704,6 +775,9 @@ class testplan extends tlObjectWithAttachments
 		
 		// BUGID 3629
 		$ua_build_sql = $ua_build && is_numeric($ua_build) ? " AND UA.build_id={$ua_build} " : " ";
+		
+		$active_domain = array('active' => 1, 'inactive' => 0 , 'any' => null);
+		$active_status = $active_domain[$my['options']['build_active_status']];
 		
         // @TODO - 20091004 - franciscom
         // Think that this subquery in not good when we add execution filter
@@ -718,12 +792,20 @@ class testplan extends tlObjectWithAttachments
 		//
         // SUBQUERY CAN NOT HAVE ANY KIND OF FILTERING other that test plan.
         // Adding exec status, means that we will get last exec WITH THIS STATUS, and not THE LATEST EXEC   
+
+		// 20110316 - franciscom -
+		// BUGID 4328: Metrics dashboard - only active builds has to be used
+		// adding filtering by build_status is SAFE
 		$last_exec_subquery = " AND E.id IN ( SELECT MAX(id) " .
-			 		          "               FROM  {$this->tables['executions']} executions " .
-					          "               WHERE testplan_id={$id} " .
-					          " GROUP BY tcversion_id,testplan_id {$groupByPlatform} {$groupByBuild} )";
-           
-           
+			 		          "               FROM  {$this->tables['executions']} executions " ;
+		if(!is_null($active_status))
+		{
+			$last_exec_subquery .= 	" JOIN {$this->tables['builds']} buildexec ON " .
+									" buildexec.id = executions.build_id " .
+									" AND buildexec.active = " . intval($active_status) ;
+		}
+		$last_exec_subquery .= " WHERE testplan_id={$id} " . 
+					           " GROUP BY tcversion_id,testplan_id {$groupByPlatform} {$groupByBuild} )";
            
 		$resultsCfg = config_get('results');
 		$status_not_run=$resultsCfg['status_code']['not_run'];
@@ -736,15 +818,13 @@ class testplan extends tlObjectWithAttachments
 		if( $my['options']['last_execution'] )
 		{
 			$executions['filter'] = " {$last_exec_subquery} ";
-			// 20100417 - franciscom - BUGID 3356
-			// $executions['filter'] = str_ireplace("%EXECSTATUSFILTER%", "", $executions['filter']);
 		}
 		
 		if( !is_null($my['filters']['platform_id']) )
 		{
 			$platforms['filter'] = " AND T.platform_id = {$my['filters']['platform_id']} ";
 	    }
-		
+
 		// 20100417- Why to use a list ? - must be checked if is on
 		if( !is_null($my['filters']['exec_type']) )
 		{
@@ -776,6 +856,8 @@ class testplan extends tlObjectWithAttachments
 			$keywords['join'] = " JOIN {$this->tables['testcase_keywords']} TK ON NHA.parent_id = TK.testcase_id ";
 		}
 		
+		
+		
 		if (!is_null($my['filters']['tcase_id']) )
 		{
 			if( is_array($my['filters']['tcase_id']) )
@@ -787,13 +869,15 @@ class testplan extends tlObjectWithAttachments
 				$tc_id['filter'] = " AND NHA.parent_id = {$my['filters']['tcase_id']} ";
 			}
 		}
-		
-		// --------------------------------------------------------------
+
+		// 20110317
+		// not run && build_active_status = 'active', need special logic		
+		//
 		if(!is_null($my['filters']['exec_status']) )
 		{
-			$executions['filter'] = '';
-			$notrun['filter'] = null;
-			$otherexec['filter'] = null;
+			// $executions['filter'] = '';
+			// $notrun['filter'] = null;
+			// $otherexec['filter'] = null;
 			
 			$notRunPresent = array_search($status_not_run,$my['filters']['exec_status']); 
 			if($notRunPresent !== false)
@@ -805,17 +889,6 @@ class testplan extends tlObjectWithAttachments
 			if(count($my['filters']['exec_status']) > 0)
 			{
 				$otherexec['filter']=" E.status IN ('" . implode("','",$my['filters']['exec_status']) . "') ";
-				
-				// 20100417 - franciscom - BUGID 3356
-				// $status_filter=str_ireplace("E.", "executions.", $otherexec['filter']);
-			    // $sql_subquery = str_ireplace("%EXECSTATUSFILTER%", "AND {$status_filter}", $last_exec_subquery);
-
-				// code commented before BUGID 3356
-			    // $sql_subquery = str_ireplace("E.", "executions.", $sql_subquery);
-				// $sql_subquery = $last_exec_subquery;
-				
-				// 20100417 - franciscom - BUGID 3356
-				// $executions['filter'] = " ( {$otherexec['filter']} {$sql_subquery} ) ";  
 				$executions['filter'] = " ( {$otherexec['filter']} {$last_exec_subquery} ) ";  
 			}
 			if( !is_null($notrun['filter']) )
@@ -833,11 +906,64 @@ class testplan extends tlObjectWithAttachments
 				$executions['filter'] = " AND ({$executions['filter']} )";     
 			}
 		}
-		
 		// --------------------------------------------------------------
-		if( $my['filters']['build_id'] > 0 )
+
+
+		// --------------------------------------------------------------
+		// Order of following block of sentences is CRITIC => read it
+		// very, very carefully before do changes.
+		// --------------------------------------------------------------
+		// 20110317
+		if($my['options']['execution_details'] == 'add_build')
 		{
-			$builds['filter'] = " AND E.build_id={$my['filters']['build_id']} ";
+			$more_exec_fields .= 'E.build_id,B.name AS build_name, B.active AS build_is_active,';	
+
+			// following setting can be changed due to other process, triggered
+			// by other options
+			$builds['join']=" LEFT OUTER JOIN {$this->tables['builds']} B ON B.id=E.build_id ";
+	    }
+
+		// BUGID 4328: Metrics dashboard - only active builds has to be used			   
+		if( !is_null($active_status) )
+		{
+			if( is_null($notrun['filter']) )
+			{
+				$builds['join'] = " JOIN {$this->tables['builds']} B ON " .
+								  " B.id = E.build_id AND B.active = " . intval($active_status) ;	
+			}
+			else
+			{
+				// in this situation we need to add LEFT OUTER JOIN on builds
+				// and do not use $active_status
+				//
+				// When I have several builds, and I'm looking for not executed
+				// test cases ON ACTIVE BUILDS, if I get a record for an INACTIVE BUILD
+				// I will consider as a NON EXECUTION.
+				//
+				// Attention what will happends depend a LOT of output option,
+				// because certain options return LAST record in recordset
+				// and is in THIS situation when this explanation is valid.
+				//
+				$builds['join'] = " LEFT OUTER JOIN {$this->tables['builds']} B " .
+								  " ON B.id=E.build_id ";
+				$notrun['filter'] = " E.status IS NULL " .
+									" OR (E.status IS NOT NULL AND B.active = 0) ";		
+
+				$executions['filter'] = " AND ({$notrun['filter']} )";     
+			}
+		}
+		// --------------------------------------------------------------
+
+		// --------------------------------------------------------------
+		// accepts a list (as array)
+		if( !is_null($my['filters']['build_id']) )
+		{
+			// $builds['filter'] = " AND E.build_id={$my['filters']['build_id']} ";
+			$dummy = (array)$my['filters']['build_id'];
+			if( !in_array(0,$dummy) )
+			{
+				$builds['filter'] = " AND E.build_id IN (" . implode(",",$dummy) . ") ";
+			}
 		}
 		
 		// there are several situation where you need to use LEFT OUTER
@@ -871,11 +997,7 @@ class testplan extends tlObjectWithAttachments
 			break;
 		
 		}
-		if($my['options']['execution_details'] == 'add_build')
-		{
-			$more_exec_fields .= 'E.build_id,B.name AS build_name,';	
-			$builds['join']=" LEFT OUTER JOIN {$this->tables['builds']} B ON B.id=E.build_id ";
-	    }
+
 		
 	    // BUGID 4206 - added exec_on_build to output
 	    // BUGID 3406 - assignments per build
@@ -892,9 +1014,19 @@ class testplan extends tlObjectWithAttachments
 			   " E.execution_type AS execution_run_type, E.testplan_id AS exec_on_tplan, " .
 			   " E.execution_ts, E.tester_id, E.notes as execution_notes, E.build_id as exec_on_build, ".
 		       " UA.build_id as assigned_build_id, " . // 3406
-			   " UA.user_id,UA.type,UA.status,UA.assigner_id,T.urgency, " .
-			   " COALESCE(E.status,'" . $status_not_run . "') AS exec_status, ".
-			   " (urgency * importance) AS priority " .
+			   " UA.user_id,UA.type,UA.status,UA.assigner_id,T.urgency, ";
+	    
+	    // 20110317 - 150 years 'Unita Italia'
+	    if( is_null($my['options']['forced_exec_status']) )
+		{
+			$sql .=	 " COALESCE(E.status,'" . $status_not_run . "') AS exec_status, ";
+		}
+		else
+		{
+			$sql .=	 " '{$my['options']['forced_exec_status']}'  AS exec_status, ";
+		}	   		
+		
+		$sql .=" (urgency * importance) AS priority " .
 			   " FROM {$this->tables['nodes_hierarchy']} NHA " .
 			   " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id " .
 			   $join_for_parent .
@@ -905,15 +1037,12 @@ class testplan extends tlObjectWithAttachments
 			   " {$builds['join']} " .
 			   " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = T.platform_id " .
 			   " LEFT OUTER JOIN {$this->tables['user_assignments']} UA ON UA.feature_id = T.id " .
-			   " {$ua_build_sql} " . // 3406
-			   " WHERE T.testplan_id={$id} {$keywords['filter']} {$tc_id['filter']} {$platforms['filter']}" .
-			   " AND (UA.type={$this->assignment_types['testcase_execution']['id']} OR UA.type IS NULL) " . 
-			   $executions['filter'];
+			   " {$ua_build_sql} " ; // BUGID 3406
 		
-		// 20081220 - franciscom
-		// if (!is_null($assigned_to) && $assigned_to > 0)
-		// {
-		//
+		$sql .= " WHERE T.testplan_id={$id} {$keywords['filter']} {$tc_id['filter']} {$platforms['filter']}" .
+			    " AND (UA.type={$this->assignment_types['testcase_execution']['id']} OR UA.type IS NULL) " . 
+			    $executions['filter'];
+		
 		// If special user id TL_USER_ANYBODY is present in set of user id,
 		// we will DO NOT FILTER by user ID
 		if( !is_null($my['filters']['assigned_to']) && 
@@ -974,7 +1103,7 @@ class testplan extends tlObjectWithAttachments
 		// BUGID 4184 - MSSQL Ambiguous column name platform_id
 		$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,T.platform_id,E.id ASC";
 
- 		switch($my['options']['output'])
+		switch($my['options']['output'])
 		{ 
 			case 'array':
 			$recordset = $this->db->get_recordset($sql);
@@ -1051,6 +1180,10 @@ class testplan extends tlObjectWithAttachments
 
 		return $recordset;
 	}
+
+
+
+
 
 
 /*
@@ -2619,16 +2752,26 @@ class testplan extends tlObjectWithAttachments
 	            
 	            
 	  args:id testplan id
-	       tcase_set: default null
+	       itemSet: default null  - can be an arry with test case VERSION ID
 	
 	  returns: sum of CF values for all testcases linked to testplan
 	
-	  rev: 20080820 - franciscom
+	  rev: 
+	  	   20110112 - franciscom - we missed refactoring of this method when have changed
+	  	   						   how CF values at design time are linked to test cases.
+	  	   						   Before 1.9 linked to Test Case ID
+	  	   						   After 1.9 linked to Test case VERSION ID
+	  	   						   
+	  	   						   Another think to consider is:
+	  	   						   After platform addition we need to consider all platforms
+	  	   						   
+	  	   						    		
+	  	   20080820 - franciscom
 	*/
-	function get_estimated_execution_time($id,$tcase_set=null)
+	function get_estimated_execution_time($id,$itemSet=null,$platformID=null)
 	{
-		// Get list of test cases on test plan
-		$estimated=0;
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$estimated = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
 		$cf_info = $this->cfield_mgr->get_by_name('CF_ESTIMATED_EXEC_TIME');
 		
 		// CF exists ?
@@ -2639,51 +2782,90 @@ class testplan extends tlObjectWithAttachments
 		
 		if( $status_ok)
 		{
-			if( is_null($tcase_set) )
+			$tcVersionIDSet = array();
+			$getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
+			$platformSet = array_keys($this->getPlatforms($id,$getOpt));
+			
+			$sql = " /* $debugMsg */ ";
+			if( DB_TYPE == 'mysql')
 			{
-				// we will compute time for ALL linked test cases
-				// $linked_testcases=$this->get_linked_tcversions($id);  
-				// Test done due to BUGID 3434 has shown that:
-				// get_linked_items_id($id) has better performance than get_linked_tcversions($id);
-				$linked_testcases=$this->get_linked_items_id($id);  
-				if( ($status_ok=!is_null($linked_testcases)) )
+				$sql .= " SELECT SUM(value) ";
+			} 
+			else if ( DB_TYPE == 'postgres' || DB_TYPE == 'mssql' )
+			{
+				$sql .= " SELECT SUM(CAST(value AS NUMERIC)) ";
+			}       
+			
+			$sql .= " AS SUM_VALUE FROM {$this->tables['cfield_design_values']} CFDV " .
+					" WHERE CFDV.field_id={$cfield_id} ";
+
+			if( is_null($itemSet) )
+			{
+				// 20110112 - franciscom
+				// we need to loop over all linked PLATFORMS (if any)
+				$tcVersionIDSet = array();
+				foreach($platformSet as $platfID)
 				{
-					$tcase_ids=array_keys($linked_testcases);
-				}    
+					if(is_null($platformID) || $platformID == $platfID )
+					{ 
+						$linkedItems = $this->get_linked_tcvid($id,$platfID);  
+						if( (!is_null($linkedItems)) )
+						{
+							$tcVersionIDSet[$platfID]= array_keys($linkedItems);
+						}
+					}	
+				}
 			}
 			else
 			{
-				$tcase_ids=$tcase_set;  
+				// Important NOTICE
+				// we can found SOME LIMITS on number of elements on IN CLAUSE
+				//
+				// need to make as many set as platforms linked to test plan
+				$sql4tplantcv = " /* $debugMsg */ SELECT tcversion_id, platform_id " .
+								" FROM {$this->tables['testplan_tcversions']} " .
+								" WHERE testplan_id=" . intval($id)  .
+								" AND tcversion_id IN (" . implode(',',$itemSet) . ")";
+				
+				if( !is_null($platformID) )
+				{
+					$sql4tplantcv .= " AND platform_id= " . intval($platformID);
+				}				
+			
+				$rs = $this->db->fetchColumnsIntoMap($sql4tplantcv,'platform_id','tcversion_id',
+													 database::CUMULATIVE);
+				foreach($rs as $platfID => $elem)
+				{
+					$tcVersionIDSet[$platfID] = array_values($elem);  	
+				}	
 			}
 		}  
 		
 		if($status_ok)
 		{
-			$sql="SELECT SUM(CAST(value AS NUMERIC)) ";
-			if( DB_TYPE == 'mysql')
-			{
-				$sql="SELECT SUM(value) ";
-			} 
-			else if ( DB_TYPE == 'postgres')
-			{
-				$sql="SELECT SUM(CAST(value AS NUMERIC)) ";
-			}        
-			$sql .= " AS SUM_VALUE FROM {$this->tables['cfield_design_values']} CFDV " .
-				" WHERE CFDV.field_id={$cfield_id} " .
-				" AND node_id IN (" . implode(',',$tcase_ids) . ")";
-			$estimated=$this->db->fetchOneValue($sql);
-			$estimated=is_null($estimated) ? 0 :$estimated;
+			// Important NOTICE
+			// we can found SOME LIMITS on number of elements on IN CLAUSE
+			//
+			$estimated = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
+			foreach($tcVersionIDSet as $platfID => $items)
+			{	
+				$sql2exec = $sql . " AND node_id IN (" . implode(',',$items) . ")";
+				$dummy = $this->db->fetchOneValue($sql2exec);
+				$estimated['platform'][$platfID]['minutes'] = is_null($dummy) ? 0 : $dummy;
+				$estimated['platform'][$platfID]['tcase_qty'] = count($items);
+				
+				$estimated['totalMinutes'] += $estimated['platform'][$platfID]['minutes'];
+				$estimated['totalTestCases'] += $estimated['platform'][$platfID]['tcase_qty'];
+			}	
 		}
-		
 		return $estimated;
 	}    
 
 
 	/*
 	  function: get_execution_time
-	            Takes all testcases (or a subset of executions) linked to testplan 
-	            that has been executed and computes SUM of values assigned AT EXECUTION TIME 
-	            to customa field named CF_EXEC_TIME
+	            Takes all executions or a subset of executions, regarding a testplan and 
+	            computes SUM of values assigned AT EXECUTION TIME to custom field named CF_EXEC_TIME
 	
 	            IMPORTANT:
 	            1. at time of this writting (20081207) this CF can be of type: string,numeric or float.
@@ -2691,15 +2873,20 @@ class testplan extends tlObjectWithAttachments
 	               sum will be wrong. 
 	            
 	  args:id testplan id
-	       $execution_set: default null
+	       $execIDSet: default null
 	
 	  returns: sum of CF values for all testcases linked to testplan
 	
-	  rev: 20081207 - franciscom
+	  rev: 
+	  @internal revision
+	  20120115 - franciscom - BUGID 4171
 	*/
-	function get_execution_time($id,$execution_set=null)
+	function get_execution_time($id,$execIDSet=null,$platformID=null)
 	{
-		$total_time=0;
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$total_time = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
+		$targetSet = array();
+		
 		$cf_info = $this->cfield_mgr->get_by_name('CF_EXEC_TIME');
 		
 		// CF exists ?
@@ -2710,50 +2897,92 @@ class testplan extends tlObjectWithAttachments
 		
 		if( $status_ok)
 		{
-			if( is_null($execution_set) )
-			{
-				// we will compute time for ALL linked and executed test cases,
-				// just for LAST executed TCVERSION
-				// $linked_executed=$this->get_linked_tcversions($id,null,0,'just_executed'); 
-				$options = array('only_executed' => true);
-				$linked_executed=$this->get_linked_tcversions($id,null,$options); 
-				if( ($status_ok=!is_null($linked_executed)) )
-				{
-					foreach($linked_executed as $tcase_id => $info)
-					{
-						$execution_ids[]=$info['exec_id'];
-					}    
-				}    
-			}
-			else
-			{
-				$execution_ids=$execution_set;  
-			}
-		}  
-		
-		if($status_ok)
-		{
+			$getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
+			$platformSet = array_keys($this->getPlatforms($id,$getOpt));
+
+			// ----------------------------------------------------------------------------
 			$sql="SELECT SUM(CAST(value AS NUMERIC)) ";
 			if( DB_TYPE == 'mysql')
 			{
 				$sql="SELECT SUM(value) ";
 			} 
-			else if ( DB_TYPE == 'postgres')
+			else if ( DB_TYPE == 'postgres' || DB_TYPE == 'mssql' )
 			{
 				$sql="SELECT SUM(CAST(value AS NUMERIC)) ";
 			}        
-			
 			$sql .= " AS SUM_VALUE FROM {$this->tables['cfield_execution_values']} CFEV " .
-				" WHERE CFEV.field_id={$cfield_id} " .
-				" AND testplan_id={$id} " .
-				" AND execution_id IN (" . implode(',',$execution_ids) . ")";
-			
-			$total_time=$this->db->fetchOneValue($sql);
-			$total_time=is_null($total_time) ? 0 :$total_time;
+					" WHERE CFEV.field_id={$cfield_id} " .
+					" AND testplan_id={$id} ";
+			// ----------------------------------------------------------------------------
+						
+			if( is_null($execIDSet) )
+			{
+				// we will compute time for ALL linked and executed test cases,
+				// just for LAST executed TCVERSION
+				// mapOfMap -> secondary key Platform ID
+				$options = array('only_executed' => true, 'output' => 'mapOfMap');
+				
+				$filters = null;
+				if( !is_null($platformID) )
+				{	 
+					$filters = array('platform_id' => $platformID);
+				}
+				$executed = $this->get_linked_tcversions($id,$filters,$options); 
+				if( ($status_ok=!is_null($executed)) )
+				{
+					$tc2loop = array_keys($executed);
+					foreach($tc2loop as $tcase_id)
+					{
+						$p2loop = array_keys($executed[$tcase_id]);
+						foreach($p2loop as $platf_id)
+						{
+							$targetSet[$platf_id][]=$executed[$tcase_id][$platf_id]['exec_id'];
+						}	
+					}    
+				}    
+			}
+			else
+			{
+				// 20110115 - franciscom
+				// If user has passed in a set of exec id, we assume that
+				// he has make a good work, i.e. if he/she wanted just analize 
+				// executions for just a PLATFORM he/she has filtered BEFORE
+				// passing in input to this method the item set.
+				// Then we will IGNORE value of argument platformID to avoid
+				// run a second (and probably useless query).
+				// We will use platformID JUST as index for output result
+				
+				if( is_null($platformID) )
+				{
+					throw new Exception(__FUNCTION_ . ' When you pass $execIDSet an YOU NEED TO PROVIDE a platform ID');
+				}	
+				$targetSet[$platformID] = $execIDSet;
+			}
+		}  
+	
+		if($status_ok)
+		{
+			// Important NOTICE
+			// we can found SOME LIMITS on number of elements on IN CLAUSE
+			//
+			$estimated = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
+			foreach($targetSet as $platfID => $items)
+			{	
+				$sql2exec = $sql . " AND execution_id IN (" . implode(',',$items) . ")";
+
+				$dummy = $this->db->fetchOneValue($sql2exec);
+				$total_time['platform'][$platfID]['minutes'] = is_null($dummy) ? 0 : $dummy;
+				$total_time['platform'][$platfID]['tcase_qty'] = count($items);
+
+				$total_time['totalMinutes'] += $total_time['platform'][$platfID]['minutes'];
+				$total_time['totalTestCases'] += $total_time['platform'][$platfID]['tcase_qty'];
+			}	
 		}
+
+		
+		
 		return $total_time;
 	}    
-
 
 	/*
 	  function: get_prev_builds() 

@@ -19,7 +19,7 @@ BUGID 628: Name edit ï¿½ Invalid action parameter/other behaviours if ï¿½Enterï¿
 *}
 {lang_get var="labels"
           s="warning_empty_testsuite_name,title_create,tc_keywords,
-             warning,btn_create_testsuite,cancel"}
+             warning,btn_create_testsuite,cancel,warning_unsaved"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 

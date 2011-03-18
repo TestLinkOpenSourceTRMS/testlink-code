@@ -292,7 +292,8 @@ $g_removeEventsOlderThan = 30;
  * 'SEAPINE'   : edit configuration in TL_ABS_PATH/cfg/seapine.cfg.php
  * 'GFORGE'    : edit configuration in TL_ABS_PATH/cfg/gforge.cfg.php
  * 'FOGBUGZ'   : edit configuration in TL_ABS_PATH/cfg/fogbugz.cfg.php
- * 'YOUTRACK' : edit configuration in TL_ABS_PATH/cfg/youtrack.cfg.php
+ * 'YOUTRACK'  : edit configuration in TL_ABS_PATH/cfg/youtrack.cfg.php
+ * 'POLARION'  : edit configuration in TL_ABS_PATH/cfg/polarion.cfg.php
  * ]
  */
 $g_interface_bugs = 'NO';

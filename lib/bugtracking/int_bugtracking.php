@@ -2,10 +2,7 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
- * Filename $RCSfile: int_bugtracking.php,v $
- *
- * @version $Revision: 1.45 $
- * @modified $Date: 2010/08/23 18:02:39 $ $Author: franciscom $
+ * @filesource	int_bugtracking.php
  *
  * @author Andreas Morsing
  *
@@ -18,7 +15,8 @@
  * class . for an example look at the bugzilla.cfg.php and mantis.cfg.php
  *
  *
- * rev:
+ * @internal revisions
+ *	20110318 - franciscom - BUGID 
  *	20100823 - franciscom - BUGID 3699
  *	20100814 - franciscom - BUGID 3681 - new BTS youtrack (www.jetbrains.com)
  *	20100616 - eloff - Show error message if bts config is broken
@@ -41,7 +39,7 @@ require_once(TL_ABS_PATH. "/lib/functions/database.class.php");
 // Add new bugtracking interfaces here
 // If user configures an interface not declared here, pages trying to use bts
 // will give error message
-$btslist = array('BUGZILLA','MANTIS','JIRA', 'JIRASOAP', 'TRACKPLUS',
+$btslist = array('BUGZILLA','MANTIS','JIRA', 'JIRASOAP', 'TRACKPLUS','POLARION',
 		    	 'EVENTUM','TRAC','SEAPINE','REDMINE','GFORGE','FOGBUGZ','YOUTRACK');
 
 $bts = array_flip($btslist);

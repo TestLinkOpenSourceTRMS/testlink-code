@@ -3245,5 +3245,22 @@ $TLS_no_label_for_req_type = 'Keine req_type_labels Konfiguration für den Typ: 
 $TLS_remoteExecServerConfigProblems = 'Die Fernausführung kann aufgrund fehlender Konfiguration nicht gestartet werden.\n' .
 									  'Überprüfen Sie ob die benötigten benutzerdefinierten Felder innerhalb dieses Testprojekts ' .
 									  'definiert und zugewiesen wurden'; 
+
+
+// ----- int_polarion.php -----
+// Used to display at User interface label as title attribute
+// Attention must follow rule: issue_status_, because there is logic
+// build on this.
+//
+$TLS_issue_status_open = "Offen";
+$TLS_issue_status_accepted = "In Bearbeitung";
+$TLS_issue_status_inprogress = "In Bearbeitung";
+$TLS_issue_status_confirmed = "Bestätigt";
+$TLS_issue_status_assigned = "Zugeteilt";
+$TLS_issue_status_resolved = "Entwickelt";
+$TLS_issue_status_tested = "Getestet";
+$TLS_issue_status_delivered = "Geliefert";
+$TLS_issue_status_closed = "Geschlossen";
+$TLS_issue_status_held = "Im Wartezustand"; 
 // ----- END ------------------------------------------------------------------
 ?>

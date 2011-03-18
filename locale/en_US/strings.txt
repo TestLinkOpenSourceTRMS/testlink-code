@@ -2394,6 +2394,18 @@ $TLS_link_time_charts		= "Time Charts";
 $TLS_time_charts_metrics 	= "Time Charts Metrics";
 $TLS_time_charts_title 		= "Time Charts";
 
-
+// ----- int_polarion.php -----
+// Used to display at User interface label as title attribute
+// Attention must follow rule: issue_status_, because there is logic build on this.
+$TLS_issue_status_open = "Open";
+$TLS_issue_status_accepted = "Accepted";
+$TLS_issue_status_inprogress = "In progress";
+$TLS_issue_status_confirmed = "Confirmed";
+$TLS_issue_status_assigned = "Assigned";
+$TLS_issue_status_resolved = "Resolved";
+$TLS_issue_status_tested = "Tested";
+$TLS_issue_status_delivered = "Delivered";
+$TLS_issue_status_closed = "Closed";
+$TLS_issue_status_held = "Held";
 // ----- END ------------------------------------------------------------------
 ?>

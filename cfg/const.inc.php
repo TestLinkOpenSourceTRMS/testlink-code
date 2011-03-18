@@ -679,14 +679,16 @@ $tlCfg->req_cfg->status_labels = array(TL_REQ_STATUS_DRAFT => 'req_status_draft'
  * CRITIC: DO NOT REMOVE ANY OF THIS CONSTANTS, BECAUSE TL EXPECT THIS TO BE DEFINED
  *
  * @since TestLink 1.9
+ *
+ * IMPORTANT NOTICE: this value will be written on DB on field of type CHAR(1)
  **/
-define('TL_REQ_TYPE_INFO', 1);
-define('TL_REQ_TYPE_FEATURE',2);
-define('TL_REQ_TYPE_USE_CASE',3); 
-define('TL_REQ_TYPE_INTERFACE',4);
-define('TL_REQ_TYPE_NON_FUNCTIONAL',5);
-define('TL_REQ_TYPE_CONSTRAIN',6);
-define('TL_REQ_TYPE_SYSTEM_FUNCTION',7);
+define('TL_REQ_TYPE_INFO', '1');
+define('TL_REQ_TYPE_FEATURE','2');
+define('TL_REQ_TYPE_USE_CASE','3'); 
+define('TL_REQ_TYPE_INTERFACE','4');
+define('TL_REQ_TYPE_NON_FUNCTIONAL','5');
+define('TL_REQ_TYPE_CONSTRAIN','6');
+define('TL_REQ_TYPE_SYSTEM_FUNCTION','7');
 
 
 /** 
@@ -714,6 +716,8 @@ $tlCfg->req_cfg->type_labels = array(
  * Add you types ONLY AFTER LAST RESERVED
  *
  * @since TestLink 1.9
+ *
+ * IMPORTANT NOTICE this will be written on DB on an INT field
  **/
 define('TL_REQ_REL_TYPE_PARENT_CHILD', 1);
 define('TL_REQ_REL_TYPE_BLOCKS_DEPENDS', 2);
@@ -778,9 +782,10 @@ $tlCfg->req_cfg->type_expected_coverage = array(TL_REQ_TYPE_INFO => false);
 
 
 
-define('TL_REQ_SPEC_TYPE_SECTION', 1); 
-define('TL_REQ_SPEC_TYPE_USER_REQ_SPEC', 2);
-define('TL_REQ_SPEC_TYPE_SYSTEM_REQ_SPEC', 3);
+// IMPORTANT NOTICE: this value will be written on DB on field of type CHAR(1)
+define('TL_REQ_SPEC_TYPE_SECTION', '1'); 
+define('TL_REQ_SPEC_TYPE_USER_REQ_SPEC', '2');
+define('TL_REQ_SPEC_TYPE_SYSTEM_REQ_SPEC', '3');
 
 
 // define('TL_REQ_SPEC_TYPE_FUNCTIONAL_AND_DATA', 1);

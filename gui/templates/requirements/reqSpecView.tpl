@@ -1,23 +1,27 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.45 2010/10/28 12:44:03 asimon83 Exp $ *}
-{*
-   Purpose: view a requirement specification
-   Author: Martin Havlat
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
 
-   rev:
-        20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
-                                        inside a req spec (recursively)
-        20101017 - franciscom - image access refactored (tlImages)
-        20101008 - asimon - BUGID 3311
-        20101006 - asimon - BUGID 3854
-        20100810 - asimon - BUGID 3317: disabled total count of requirements by default
-        20100321 - franciscom - req_spec_import/export url
-        20071226 - franciscom - fieldset class added (thanks ext je team)
-        20071106 - franciscom - added ext js library
-        20070102 - franciscom - added javascript validation of checked requirements
+Purpose: view a requirement specification
+
+@filesource reqSpecView.tpl
+@author: Martin Havlat
+
+@internal revisions
+
+20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
+                                inside a req spec (recursively)
+20101017 - franciscom - image access refactored (tlImages)
+20101008 - asimon - BUGID 3311
+20101006 - asimon - BUGID 3854
+20100810 - asimon - BUGID 3317: disabled total count of requirements by default
+20100321 - franciscom - req_spec_import/export url
+20071226 - franciscom - fieldset class added (thanks ext je team)
+20071106 - franciscom - added ext js library
+20070102 - franciscom - added javascript validation of checked requirements
 *}
+
 {lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,
-							            title_last_mod,title_created,no_records_found"}
+						  title_last_mod,title_created,no_records_found"}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -106,7 +110,7 @@
 {if $gui->req_spec.id}
 {* end contribution by asimon *}
 	
-{include file="$buttons_template"}
+{include file="$buttons_template" args_reqspec_id=$reqSpecID}
 <table class="simple">
 	<tr>
 		<th>{$gui->main_descr|escape}</th>

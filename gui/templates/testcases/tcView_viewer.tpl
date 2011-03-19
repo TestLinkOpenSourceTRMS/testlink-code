@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.87 2010/12/25 11:40:29 franciscom Exp $
+@filesource	tcView_viewer.tpl
 viewer for test case in test specification
 
-rev:
+@internal revisions
+20110319 - franciscom - BUGID 4322: New Option to block delete of executed test cases
     20110307 - asimon - BUGID 4286: moved print preview to popup to make printing independent from browser easier for the users
                                     moved req view button forms and divs around to align buttons in a single row
 	20110304 - franciscom - BUGID 4286: Option to print single test case
@@ -105,24 +106,48 @@ rev:
 	  <h2>{$tcView_viewer_labels.title_test_case} {$args_testcase.name|escape} </h2>
 {/if}
 {assign var="warning_edit_msg" value=""}
+{assign var="warning_delete_msg" value=""}
 
 <div style="display: inline;" class="groupBtn">
 {if $args_can_do->edit == "yes"}
 
   {assign var="edit_enabled" value=0}
+  {assign var="delete_enabled" value=0}
+
   {* 20070628 - franciscom - Seems logical you can disable some you have executed before *}
   {assign var="active_status_op_enabled" value=1}
   {assign var="has_been_executed" value=0}
   {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
+  {lang_get s='system_blocks_delete_executed_tc' var="warning_delete_msg"}
+
   {if $args_status_quo == null || $args_status_quo[$args_testcase.id].executed == null}
       {assign var="edit_enabled" value=1}
+      {assign var="delete_enabled" value=1}
       {assign var="warning_edit_msg" value=""}
+      {assign var="warning_delete_msg" value=""}
   {else} 
-    {if isset($args_tcase_cfg) && $args_tcase_cfg->can_edit_executed eq 1}
+    {if isset($args_tcase_cfg) && $args_tcase_cfg->can_edit_executed == 1}
       {assign var="edit_enabled" value=1} 
       {assign var="has_been_executed"  value=1} 
       {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
     {/if} 
+    
+    {* 20110319 - BUGID 4322: New Option to block delete of executed test cases *}
+    {if isset($args_tcase_cfg)}
+		{if $args_tcase_cfg->can_delete_executed == 1}
+      		{assign var="delete_enabled" value=1} 
+      		{assign var="has_been_executed"  value=1} 
+      		{assign var="warning_delete_msg" value=""}
+    	{else}
+  			{if ($args_can_do->delete_testcase == "yes" &&  
+  				 $args_can_delete_testcase == "yes") ||
+  				($args_can_do->delete_version == "yes" && 
+  				 $args_can_delete_version == "yes")}
+				{lang_get s='system_blocks_delete_executed_tc' var="warning_delete_msg"}
+    		{/if}  
+    	{/if}  
+    {/if} 
+    
   {/if}
 
 	<span style="float: left">
@@ -143,7 +168,7 @@ rev:
 	  {* Double condition because for test case versions WE DO NOT DISPLAY this
 	     button, using $args_can_delete_testcase='no'
 	  *}
-		{if $args_can_do->delete_testcase == "yes" &&  $args_can_delete_testcase == "yes"}
+		{if $delete_enabled && $args_can_do->delete_testcase == "yes" &&  $args_can_delete_testcase == "yes"}
 			<input type="submit" name="delete_tc" value="{$tcView_viewer_labels.btn_delete}" />
 	  {/if}
 	
@@ -155,7 +180,7 @@ rev:
 	     	{assign var="go_newline" value="<br />"}
 	  {/if}
 	
-	 	{if $args_can_do->delete_version == "yes" && $args_can_delete_version == "yes"}
+	  {if $delete_enabled && $args_can_do->delete_version == "yes" && $args_can_delete_version == "yes"}
 			 <input type="submit" name="delete_tc_version" value="{$tcView_viewer_labels.btn_del_this_version}" />
 	  {/if}
 
@@ -228,9 +253,17 @@ rev:
   {if $args_testcase.active eq 0}
     <div class="messages" align="center">{$tcView_viewer_labels.tcversion_is_inactive_msg}</div>
   {/if}
- 	{if $warning_edit_msg neq ""}
- 	    <div class="messages" align="center">{$warning_edit_msg}</div>
+ 	{if $warning_edit_msg != ""}
+ 	    <div class="messages" align="center">
+ 	    	{$warning_edit_msg|escape}<br>
+ 	    </div>
  	{/if}
+ 	{if $warning_delete_msg != ""}
+ 	    <div class="messages" align="center">
+ 	    	{$warning_delete_msg|escape}<br>
+ 	    </div>
+ 	{/if}
+ 	
 
 <script type="text/javascript">
 /**

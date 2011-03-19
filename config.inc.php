@@ -16,12 +16,15 @@
  * replace values of TestLink configuration variables.
  * It saves your changes for the next upgrade in one extra file.
  *
+ * @filesource	config.inc.php
  * @package 	TestLink
- * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.345 2011/02/11 12:54:48 mx-julian Exp $
+ * @copyright 	2005-2011, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
+ *
+ *	20110319 - franciscom - BUGID 4322: New Option to block delete of executed test cases.
+ *							testcase_cfg->can_delete_executed
  * 	20110109 - franciscom - added $tlCfg->req_cfg->duplicated_name_algorithm
  *		  						  $tlCfg->req_cfg->duplicated_docid_algorithm
  *	20110101 - franciscom - new config options for PHPMAILER
@@ -293,7 +296,8 @@ $g_removeEventsOlderThan = 30;
  * 'SEAPINE'   : edit configuration in TL_ABS_PATH/cfg/seapine.cfg.php
  * 'GFORGE'    : edit configuration in TL_ABS_PATH/cfg/gforge.cfg.php
  * 'FOGBUGZ'   : edit configuration in TL_ABS_PATH/cfg/fogbugz.cfg.php
- * 'YOUTRACK' : edit configuration in TL_ABS_PATH/cfg/youtrack.cfg.php
+ * 'YOUTRACK'  : edit configuration in TL_ABS_PATH/cfg/youtrack.cfg.php
+ * 'POLARION'  : edit configuration in TL_ABS_PATH/cfg/polarion.cfg.php
  * ]
  */
 $g_interface_bugs = 'NO';
@@ -797,6 +801,12 @@ $tlCfg->testcase_cfg->can_edit_executed = DISABLED;
 // ENABLED -> user can removed from a testplan executed tc versions. [STANDARD BEHAVIOUR]
 // DISABLED -> user can NOT remove from a testplan executed tc versions.
 $tlCfg->testcase_cfg->can_remove_executed = ENABLED;
+
+
+// ENABLED -> user can DELETE a TEST CASE that has been executed. 
+// DISABLED -> [STANDARD BEHAVIOUR]
+// IMPORTANT: this is valid for any role => admin is also under this law.
+$tlCfg->testcase_cfg->can_delete_executed = DISABLED;
 
 
 // To avoid perfomance problems on search test case feature,

@@ -3,9 +3,55 @@
    TestLink  Change-log
 *******************************************************************************
 
+
+TestLink - 1.9.2 (2010 Q2 - bug fixing) (Released 2011-03-19)
+=============================================================
+- 0004186: [General] Log message on config_check.txt after upgrade to Testlink 1.9.1 (Julian) - closed.
+- 0004207: [Database MS-SQL] SQL error Class:testcase - Method: set_step_number */ UPDATE tcsteps TC_STEP SET step_number = 2 WHERE TC_STEP.id = 56 (fman) - closed.
+- 0004204: [Database General] Error query using prefix table (fman) - closed.
+- 0004222: [Export/Import] CUSTOM FIELDS - Remove \n from fields that are used on TestLink as identifiers. (fman) - closed.
+- 0004199: [General] No tree control below options box on Specification pages (Test Spec. & Req. Spec) after 1.9.0 >1.9.1 (Julian) - closed.
+- 0004230: [Test Specification] JS error when editing test case (step) (Julian) - closed.
+- 0004228: [Reports] Requirement based Report - Add more detailed requirement evalutation states for better analysis (Julian) - closed.
+- 0004206: [Requirement Management] Requirement based Report - Jump to latest execution for linked test cases (Julian) - closed.
+- 0004205: [Reports] Requirement based Report - Add progress bars for a quick Overview (Julian) - closed.
+- 0004220: [Localization] Translation in brazilian portuguese (pt-br) (Julian) - closed.
+- 0004194: [Reports] Debug messages on Test Result Matrix (fman) - closed.
+- 0004193: [Reports] Debug messages on Query Metrics report (fman) - closed.
+- 0004227: [Reports] Requirement based Report - Allow to choose status of requirements to be evaluated (asimon) - closed.
+- 0004192: [Reports] Results by Tester per Build - show only open builds per default to improve performance (asimon) - closed.
+- 0004244: [Reports] Test Cases with Execution Details does not show test with Notes (Julian) - closed.
+- 0004250: [Test Specification] Cannot cancel 'Create step' mode (Julian) - closed.
+- 0004002: [Test Specification] by edit test case the Cancel button does not work (Julian) - closed.
+- 0003737: [Test Specification] Step Edit - Cancel Button not working anymore (Julian) - closed.
+- 0004245: [Test Specification] Cannot view certain ver of case directly without view its prev ver (Julian) - closed.
+- 0004253: [Test Plan (builds, milestones, test assign)] Filter 'Result=Not Run' in page "Assign Test Case Execution" does not work if test plan has ONLY 1 build (asimon) - closed.
+- 0004246: [Test Plan (builds, milestones, test assign)] Suggest to add snap to grid in test plan management GUI (fman) - closed.
+- 0004233: [Reports] Query Metrics Report does not work in Internet Explorer 8.0 (Julian) - closed.
+- 0004239: [Test Project Management] Duplicated requirements in testcase layout and duplicated testcases in requirement layout when using testproject reuse feature (asimon) - closed.
+- 0004275: [Requirement Management] Generate Requirement Specification Document: Many Requirements are in the document twice (Julian) - closed.
+- 0004270: [Keywords] Keywords are not ordered by name (Julian) - closed.
+- 0004221: [Reports] Test Results matrix HTML: File does not exist: \\*gui\\ (Julian) - closed.
+- 0004269: [Reports] Test result matrix can not be display (Julian) - closed.
+- 0004276: [Reports] Debug information being displayed in the header of the report (Julian) - closed.
+- 0004203: [Test Plan (builds, milestones, test assign)] Test case become unassigned on a build when it is unassigned from another build (asimon) - closed.
+- 0004279: [Test Specification] After copying test case user feedback at top of frame has encoded HTML (Julian) - closed.
+- 0004277: [User Interface General] "New Child Test Suite" button is missing. (Julian) - closed.
+- 0004286: [Test Specification] Option to print single test case (fman) - closed.
+- 0004273: [Requirement Management] Option to print single requirement (fman) - closed.
+- 0004300: [Requirement Revisioning] The pop up window for Revision and Version have the same title (Julian) - closed.
+- 0004274: [Documentation (Install, User Manual, help)] Help-page for requirement editing needed (asimon) - closed.
+- 0003765: [Requirement Management] Req. Spec Doc ID disappears when you filter requirements (asimon) - closed.
+- 0004311: [Integration with Other Systems] Problem using uploadExecutionAttachment method with Testlink-java-api (fman) - closed.
+- 0004317: [Test Specification] Create Test Cases from Requirements do not use expected coverage data to set default nb TC to create. (Julian) - closed.
+- 0004285: [Reports] Test Metrics shows results from inactive builds (fman) - closed.
+- 0004021: [TL API] Remote execution of testcases doesn't work (fman) - closed.
+- 0003338: [TL API] Contribution: make execute_remote work (fman) - closed.
+- 0004328: [Reports] Metrics dashboard - only active builds has to be used (fman) - closed.
+
 TestLink - 1.9.1 (Prague - Bugfix 1) (Released 2011-01-23)
 ==========================================================
-0004184: [Database MS-SQL] Ambiguous column name ''platform_id'' (fman) - resolved.
+- 0004184: [Database MS-SQL] Ambiguous column name ''platform_id'' (fman) - resolved.
 - 0004164: [Custom fields] Custom fields with "LIST" type remain wide open during use. (Julian) - resolved.
 - 0004079: [Test Execute] Cannot add attachment to execution [DB REPOSITORY / MSSQL] (fman) - resolved.
 - 0004100: [Requirement Management] Import Requirements - create new version for duplicate requirements (fman) - resolved.

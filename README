@@ -1,5 +1,5 @@
 ===============================================================
-                    TestLink 1.9.1 (Prague Bugfix 1) - Read me
+                    TestLink 1.9.2 (Prague Bugfix 2) - Read me
 ===============================================================
 
 Contents
@@ -31,8 +31,7 @@ There is no hidden fee - 100% free for using!
 2. Release notes
 ===============================================================
 
-This release contains bugfixes for 1.9.0 and a new feature 
-(requirement revisioning).
+This release contains bugfixes for 1.9.0/1.9.1
    
 See CHANGELOG file for detailed list of issues fixed.
 
@@ -99,9 +98,10 @@ Check Installation manual and TestLink forum if you meet a problem.
 When accessing Installer page you will found following options:
 
  - New Installation
- - Migration from 1.8 to 1.9.1
+ - Migration from 1.8 to 1.9.1/2
 
-If you are upgrading from 1.9.0 please go to section 'Upgrade from 1.9.0 to 1.9.1'.
+If you are upgrading from 1.9.0 please go to section 'Upgrade from 1.9.0 to 1.9.1/2'.
+If you are upgrading from 1.9.1 NO DB upgrades will be needed.
 
  Steps
  - Make a Backup of your current database.
@@ -127,7 +127,7 @@ If you are upgrading from 1.9.0 please go to section 'Upgrade from 1.9.0 to 1.9.
    
  Always before login, after an upgrade/migration clear browser cookies.
 
-- Upgrade from 1.9.0 to 1.9.1
+- Upgrade from 1.9.0 to 1.9.1/2
 To be able to use Testlink 1.9.1 with the new „Requirement Revisioning“ feature - 
 migration procedure requires some manual steps. 
 

@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<custom_fields>
+<custom_field>
+					<name>
+<![CDATA[QAAQATrackSuiteID]]>
+</name>
+<label>
+								<![CDATA[TSC462-0.2]]>
+</label>
+		<type>
+			<![CDATA[501]]></type>
+		<node_type_id>
+			
+			
+			
+			
+			<![CDATA[3]]>																		
+																							</node_type_id>
+
+</custom_field>
+</custom_fields>

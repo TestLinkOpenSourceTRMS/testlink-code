@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<custom_fields>
+	<custom_field>
+		<name><![CDATA[Automated]]></name>
+		<label><![CDATA[Automated]]></label>
+		<type><![CDATA[5]]></type>
+		<possible_values><![CDATA[No | Yes]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[0]]></show_on_design>
+		<enable_on_design><![CDATA[0]]></enable_on_design>
+		<show_on_execution><![CDATA[1]]></show_on_execution>
+		<enable_on_execution><![CDATA[1]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[0]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[0]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[3]]></node_type_id>
+	</custom_field>
+	<custom_field>
+		<name><![CDATA[Controller Mode]]></name>
+		<label><![CDATA[Controller Mode]]></label>
+		<type><![CDATA[6]]></type>
+		<possible_values><![CDATA[Dual|Single]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[0]]></show_on_design>
+		<enable_on_design><![CDATA[0]]></enable_on_design>
+		<show_on_execution><![CDATA[1]]></show_on_execution>
+		<enable_on_execution><![CDATA[1]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[0]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[0]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[3]]></node_type_id>
+	</custom_field>
+	<custom_field>
+		<name><![CDATA[Priority]]></name>
+		<label><![CDATA[Priority]]></label>
+		<type><![CDATA[6]]></type>
+		<possible_values><![CDATA[Critical|Important|Required|Optional]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[1]]></show_on_design>
+		<enable_on_design><![CDATA[1]]></enable_on_design>
+		<show_on_execution><![CDATA[0]]></show_on_execution>
+		<enable_on_execution><![CDATA[0]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[0]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[0]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[3]]></node_type_id>
+	</custom_field>
+	<custom_field>
+		<name><![CDATA[IO Application]]></name>
+		<label><![CDATA[IO Application]]></label>
+		<type><![CDATA[7]]></type>
+		<possible_values><![CDATA[DT|Diskerciser|Iometer|JetStress|Medusa|N/A|Simple|SQLIOStress|WINTHRAX|Xdd]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[0]]></show_on_design>
+		<enable_on_design><![CDATA[0]]></enable_on_design>
+		<show_on_execution><![CDATA[1]]></show_on_execution>
+		<enable_on_execution><![CDATA[1]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[0]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[0]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[3]]></node_type_id>
+	</custom_field>
+	<custom_field>
+		<name><![CDATA[SFA Platform]]></name>
+		<label><![CDATA[SFA Platform]]></label>
+		<type><![CDATA[6]]></type>
+		<possible_values><![CDATA[Aspen | Snowmass | Beaver Creek | Dragon | S2A6620]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[0]]></show_on_design>
+		<enable_on_design><![CDATA[0]]></enable_on_design>
+		<show_on_execution><![CDATA[1]]></show_on_execution>
+		<enable_on_execution><![CDATA[1]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[0]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[0]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[3]]></node_type_id>
+	</custom_field>
+	<custom_field>
+		<name><![CDATA[Time To Test]]></name>
+		<label><![CDATA[Test Duration (HHH:MM)]]></label>
+		<type><![CDATA[1]]></type>
+		<possible_values><![CDATA[]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[0]]></show_on_design>
+		<enable_on_design><![CDATA[0]]></enable_on_design>
+		<show_on_execution><![CDATA[1]]></show_on_execution>
+		<enable_on_execution><![CDATA[1]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[0]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[0]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[3]]></node_type_id>
+	</custom_field>
+	<custom_field>
+		<name><![CDATA[Background Verify]]></name>
+		<label><![CDATA[Background Verify]]></label>
+		<type><![CDATA[5]]></type>
+		<possible_values><![CDATA[Off | On]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[0]]></show_on_design>
+		<enable_on_design><![CDATA[0]]></enable_on_design>
+		<show_on_execution><![CDATA[1]]></show_on_execution>
+		<enable_on_execution><![CDATA[1]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[0]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[0]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[3]]></node_type_id>
+	</custom_field>
+	<custom_field>
+		<name><![CDATA[FW Version]]></name>
+		<label><![CDATA[FW Version]]></label>
+		<type><![CDATA[0]]></type>
+		<possible_values><![CDATA[]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[0]]></show_on_design>
+		<enable_on_design><![CDATA[0]]></enable_on_design>
+		<show_on_execution><![CDATA[1]]></show_on_execution>
+		<enable_on_execution><![CDATA[1]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[0]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[0]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[3]]></node_type_id>
+	</custom_field>
+	<custom_field>
+		<name><![CDATA[Number of Shelves]]></name>
+		<label><![CDATA[Number of Shelves]]></label>
+		<type><![CDATA[6]]></type>
+		<possible_values><![CDATA[5 shelf | 10 shelf | 20 shelf]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[0]]></show_on_design>
+		<enable_on_design><![CDATA[0]]></enable_on_design>
+		<show_on_execution><![CDATA[1]]></show_on_execution>
+		<enable_on_execution><![CDATA[1]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[0]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[0]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[3]]></node_type_id>
+	</custom_field>
+</custom_fields>

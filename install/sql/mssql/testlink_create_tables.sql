@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.53.2.2 2010/12/12 14:55:07 franciscom Exp $
+-- @filesource testlink_create_tables.sql
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -10,8 +10,9 @@
 --            TEXTIMAGE Option can be used only tables that have fields of type:
 --            varchar(MAXSIZEALLOWED), nvarchar(MAXSIZEALLOWED), varbinary(MAXSIZEALLOWED), xml 
 -- 
--- Rev :
+-- @internal revisions
 --
+--  20110320 - franciscom - BUGID 4289 - req_revisions table missing
 --  20100911 - franciscom - updated schema to Test Link 1.9 DB
 --  20100705 - asimon - added column build_id to user_assignments
 --  20100123 - franciscom - is_open,active added to req_versions table
@@ -510,6 +511,36 @@ CREATE TABLE /*prefix*/req_versions(
 	  id
   ) ON [PRIMARY]
 ) ON [PRIMARY];
+
+--- Test Link 1.9.1
+CREATE TABLE /*prefix*/req_revisions(
+  parent_id int NOT NULL,
+    id int NOT NULL,
+  revision INTEGER NOT NULL DEFAULT '1',
+    req_doc_id varchar(64) NULL,
+    name varchar(100) NULL,
+  scope TEXT NULL DEFAULT NULL,
+  status CHAR(1) NOT NULL DEFAULT 'V',
+  type CHAR(1) NULL DEFAULT NULL,
+  active INT NOT NULL DEFAULT '1',
+  is_open INT NOT NULL DEFAULT '1',
+  expected_coverage INT NOT NULL DEFAULT 1,
+  log_message TEXT NULL DEFAULT NULL,
+  author_id INT NULL DEFAULT NULL,
+    creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_revisions_creation_ts DEFAULT (getdate()),
+  modifier_id INT NULL DEFAULT NULL,
+    modification_ts datetime NULL,
+  CONSTRAINT /*prefix*/PK_req_revisions PRIMARY KEY CLUSTERED
+  (
+      id
+  ) ON [PRIMARY]
+) ON [PRIMARY];
+
+CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/IX1_req_revisions ON /*prefix*/req_revisions
+(
+    parent_id,revision
+) ON [PRIMARY];
+
 
 CREATE TABLE /*prefix*/role_rights (
 	role_id int NOT NULL CONSTRAINT /*prefix*/DF_role_rights_role_id DEFAULT ((0)),

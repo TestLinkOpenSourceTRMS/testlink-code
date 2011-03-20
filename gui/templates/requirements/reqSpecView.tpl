@@ -1,23 +1,23 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* Filename: reqSpecView.tpl *}
-{*
-   Purpose: view a requirement specification
-   Author: Martin Havlat
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
 
-   rev:
-   		20110305 - franciscom - unable to load buttons_template due to path problem
-   								probably related to Smarty 3.0 compatibility
-        20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-        20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
-                                        inside a req spec (recursively)
-        20101017 - franciscom - image access refactored (tlImages)
-        20101008 - asimon - BUGID 3311
-        20101006 - asimon - BUGID 3854
-        20100810 - asimon - BUGID 3317: disabled total count of requirements by default
-        20100321 - franciscom - req_spec_import/export url
-        20071226 - franciscom - fieldset class added (thanks ext je team)
-        20071106 - franciscom - added ext js library
-        20070102 - franciscom - added javascript validation of checked requirements
+Purpose: view a requirement specification
+
+@filesource	reqSpecView.tpl
+@author		Martin Havlat
+
+@internal revisions
+20110320 - franciscom - BUGID 4321: Requirement Spec - add option to print single Req Spec
+20110305 - franciscom - unable to load buttons_template due to path problem
+						probably related to Smarty 3.0 compatibility
+20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
+                                inside a req spec (recursively)
+20101017 - franciscom - image access refactored (tlImages)
+20101008 - asimon - BUGID 3311
+20101006 - asimon - BUGID 3854
+20100810 - asimon - BUGID 3317: disabled total count of requirements by default
+20100321 - franciscom - req_spec_import/export url
 *}
 {lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,title_last_mod,
 						  title_created,no_records_found"}
@@ -107,7 +107,7 @@
 
 {if $gui->req_spec.id}
 
-{include file="./requirements/$buttons_template"}
+{include file="./requirements/$buttons_template" args_reqspec_id=$reqSpecID}
 <table class="simple">
 	<tr>
 		<th>{$gui->main_descr|escape}</th>

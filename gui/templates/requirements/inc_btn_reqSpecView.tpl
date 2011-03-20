@@ -1,20 +1,19 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.23 2010/11/13 09:21:54 franciscom Exp $
+@fielsource inc_btn_reqSpecView.tpl
 
-rev:
-     20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze requirements
-     20101022 - eloff - BUGID 3918 - work on buttons
-     20101007 - asimon - BUGID 3866 - removed analyse button
-     20100326 - asimon - removed print button
-     20090321 - franciscom 
-     20080925 - franciscom - child requirements/folder management 
-     20080924 - franciscom - if req spec has no requirements then disable certain features
+@internal revisions
+
+20110319 - franciscom - BUGID 4321: Requirement Spec - add option to print single Req Spec			
+20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze requirements
+20101022 - eloff - BUGID 3918 - work on buttons
+20101007 - asimon - BUGID 3866 - removed analyse button
+20100326 - asimon - removed print button
 *}
 {lang_get var='labels'
           s='btn_req_create,btn_new_req_spec,btn_export_req_spec,
              req_select_create_tc,btn_import_req_spec,btn_import_reqs,
-             btn_export_reqs,btn_edit_spec,btn_delete_spec,
+             btn_export_reqs,btn_edit_spec,btn_delete_spec,btn_print_view,
              btn_show_direct_link,btn_copy_requirements,btn_copy_req_spec,
              req_spec_operations, req_operations, btn_freeze_req_spec'}
              
@@ -50,8 +49,10 @@ rev:
                    onclick="delete_confirmation({$gui->req_spec.id},'{$gui->req_spec.title|escape:'javascript'|escape}',
                    '{$freeze_msgbox_title|escape:'javascript'|escape}', '{$freeze_warning_msg|escape:'javascript'|escape}',
                    pF_freeze_req_spec);"	/>
-
-  		{/if}
+	{/if}
+	<input type="button" name="printerFriendly" value="{$labels.btn_print_view}"
+		   onclick="javascript:openPrintPreview('reqSpec',{$args_reqspec_id},-1,-1,
+		                                        'lib/requirements/reqSpecPrint.php');"/>
 
 		</fieldset>
 

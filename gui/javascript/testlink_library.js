@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.119 2011/02/11 10:49:18 mx-julian Exp $
+// @filesource	testlink_library.js
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -24,7 +24,10 @@
 //                 on I.E. => generates a bug - BE CAREFUL
 //
 // ------ Revisions ---------------------------------------------------------------------
-// 20110307 - asimon - BUGID 4286, BUGID 4273: added openPrintPreview()
+// 20110219 - franciscom - 	BUGID 4321: Requirement Spec - add option to print single Req Spec
+//							openPrintPreview() refactoring
+//
+// 20110308 - asimon - BUGID 4286, BUGID 4273: backported openPrintPreview() from master to 1.9 branch
 // 20101119 - asimon - added openLinkedReqVersionWindow()
 // 20101111 - asimon - now openTCaseWindow() also remembers popup size like other functions do
 // 20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
@@ -1455,7 +1458,7 @@ function openReqRevisionWindow(item_id, anchor)
  * Open print preview in popup window to enable simple printing for the user.
  * 
  * @author asimon
- * @param type can be "req" or "tc"
+ * @param type can be "req","reqSpec", "tc"
  * @param id
  * @param version_id the version which shall be printed, if set
  * @param revision_id only used for requirements, null in case of testcases
@@ -1465,22 +1468,32 @@ function openPrintPreview(type, id, version_id, revision, print_action) {
 	// configure window size using cookies or default values if there are no cookies
 	var width = getCookie("ReqPopupWidth");
 	var height = getCookie("ReqPopupHeight");
+	var windowCfg='';
+	var feature_url = print_action;
+
 	if (width == null) {
 		width = "800";
 	}
 	if (height == null) {
 		height = "600";
 	}
-
-	var windowCfg='';
-	var feature_url = print_action;
 	
-	if (type == 'req') {
-		feature_url += "?req_id=" + id + "&req_version_id=" + version_id + "&req_revision=" + revision;
-	} else {
-		feature_url += "&testcase_id=" + id + "&tcversion_id=" + version_id;
-	}
+	switch(type)
+	{
 
+		case 'req':
+			feature_url += "?req_id=" + id + "&req_version_id=" + version_id + "&req_revision=" + revision;
+		break;
+
+		case 'reqSpec':
+			feature_url += "?reqspec_id=" + id;
+		break;
+		
+		case 'tc':
+			feature_url += "&testcase_id=" + id + "&tcversion_id=" + version_id;
+		break;
+		
+	}
 	windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,toolbar=yes,dependent=yes,menubar=yes";
 	window.open(fRoot+feature_url,"_blank",windowCfg); // TODO localize "Print Preview"!
 }

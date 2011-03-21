@@ -339,3 +339,19 @@ Ext.ux.requireSessionAndSubmit = function(form) {
 	}
 	return false;
 }
+
+/**
+ * Allows list filtering on status value. Status is a special column type
+ * and its value is a JS-object. The objects 'value' attribute (p/n/b/n) is
+ * used in filtering.
+ * (The standard ListFilter uses the raw object itself treating it like a string.)
+ *
+ * Introduced to fix BUGID 4125
+ * @author Eloff
+ */
+Ext.ux.grid.filter.StatusFilter = Ext.extend(Ext.ux.grid.filter.ListFilter, {
+    validateRecord: function (record) {
+        var status = record.get(this.dataIndex).value;
+        return ( this.getValue().indexOf(record.get(this.dataIndex).value) > -1);
+    }
+});

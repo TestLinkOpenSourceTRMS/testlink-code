@@ -168,7 +168,11 @@ class tlExtTable extends tlTable
 	public function __construct($columns, $data, $tableID)
 	{
 		parent::__construct($columns, $data, $tableID);
-		$this->addCustomBehaviour('status', array('render' => 'statusRenderer', 'sort' => 'statusCompare'));
+		$this->addCustomBehaviour('status', array(
+			'render' => 'statusRenderer',
+			'sort' => 'statusCompare',
+			'filter' => 'Status'
+		));
 
 		$this->showExportButton = config_get('enableTableExportButton');
 	}
@@ -242,7 +246,7 @@ class tlExtTable extends tlTable
 				// string filter is the most "basic" filter
 				$s .= ",filter: {type: 'string'}"; 
 			}
-			
+
             foreach($options as $opt_str)
             {
 				if (isset($column[$opt_str])) {
@@ -250,11 +254,19 @@ class tlExtTable extends tlTable
 				}
 			}
 
-			if( isset($column['type']) && isset($this->customBehaviour[$column['type']]) &&
-				isset($this->customBehaviour[$column['type']]['render']) )
+			if( isset($column['type']) && isset($this->customBehaviour[$column['type']]))
 			{
-				// Attach a custom renderer
-				$s .= ",renderer: {$this->customBehaviour[$column['type']]['render']}";
+				// BUGID 4125
+				$customBehaviour = $this->customBehaviour[$column['type']];
+				if (isset($customBehaviour['filter']) && $customBehaviour['filter'] == 'Status')
+				{
+					$s .= ",filter: " . $this->buildStatusFilterOptions();
+				}
+				if (isset($customBehaviour['render']) )
+				{
+					// Attach a custom renderer
+					$s .= ",renderer: {$customBehaviour['render']}";
+				}
 			}
 
 			$sortable = 'true';
@@ -460,5 +472,15 @@ class tlExtTable extends tlTable
 	function setSortByColumnName($name) {
 		$idx = $this->getColumnIdxByName($name);
 		$this->sortByColumn = $this->columns[$idx]['col_id'];
+	}
+
+	function buildStatusFilterOptions() {
+		$resultsCfg = config_get('results');
+		$statuses = array();
+		foreach ($resultsCfg["status_label"] as $status => $label) {
+			$code = $resultsCfg['status_code'][$status];
+			$statuses[] = array($code, lang_get($label));
+		}
+		return "{type: 'Status', options: " . json_encode($statuses) . "}";
 	}
 }

@@ -5,14 +5,17 @@
  *
  * testcases commands
  *
+ * @filesource	testcaseCommands.class.php
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.67 2011/01/09 15:02:11 franciscom Exp $
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *	20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
+ *							can be added to new test plans
+ *
  *	20110109 - franciscom - BUGID - doCreate() interface changes, new method show()
  *  20101202 - asimon - BUGID 4067: refresh tree problems
  *  20101001 - asimon - custom fields do not lose entered values on errors
@@ -205,7 +208,8 @@ class testcaseCommands
 		$tcase = $this->tcaseMgr->create($argsObj->container_id,$argsObj->name,$argsObj->summary,$argsObj->preconditions,
 		                            	 $argsObj->tcaseSteps,$argsObj->user_id,$argsObj->assigned_keywords_list,
 		                            	 $new_order,testcase::AUTOMATIC_ID,
-		                            	 $argsObj->exec_type,$argsObj->importance,$options);
+		                            	 $argsObj->exec_type,$argsObj->importance,$argsObj->workflow_status,
+		                            	 $options);
 
 		if($tcase['status_ok'])
 		{
@@ -266,6 +270,9 @@ class testcaseCommands
     	$otCfg->to->map = $this->tcaseMgr->get_keywords_map($argsObj->tcase_id," ORDER BY keyword ASC ");
     	keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
   		$tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
+
+		// new dbug($tc_data);
+		
   		foreach($oWebEditorKeys as $key)
    		{
    			$guiObj->$key = isset($tc_data[0][$key]) ?  $tc_data[0][$key] : '';
@@ -308,7 +315,8 @@ class testcaseCommands
         $ret = $this->tcaseMgr->update($argsObj->tcase_id, $argsObj->tcversion_id, $argsObj->name, 
 		                               $argsObj->summary, $argsObj->preconditions, $argsObj->tcaseSteps, 
 		                               $argsObj->user_id, $argsObj->assigned_keywords_list,
-		                               testcase::DEFAULT_ORDER, $argsObj->exec_type, $argsObj->importance);
+		                               testcase::DEFAULT_ORDER, $argsObj->exec_type, 
+		                               $argsObj->importance,$argsObj->workflow_status);
 
 		$this->show($argsObj,$request,$ret);
  

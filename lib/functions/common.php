@@ -18,6 +18,10 @@
  * @since 		TestLink 1.5
  *
  * @internal Revisions:
+ * 20110321 - franciscom - 	BUGID 4025: option to avoid that obsolete test cases 
+ *							can be added to new test plans
+ *							getConfigAndLabels($configKey,$accessMode='key')
+ *
  *  20101028 - asimon - BUGID 3951: Status and Type for requirements are not saved
  *  20101025 - Julian - BUGID 3930 - added function split_localized_date()
  *                                 - simplified function is_valid_date()
@@ -1096,4 +1100,51 @@ function buildExternalIdString($testCasePrefix, $external_id)
 	return $testCasePrefix . $glueChar . $external_id;
 
 }
+
+
+/*
+	return map with config values and strings translated (using lang_get()) 
+	to be used on user interface  for a Test link configuration option that 
+	is structure in this way:
+  	config_option = array( string_value => any_value, ...)
+
+  	All this works if TL_ strings defined on strings.txt follows this naming standard.  
+  	For a config option like:
+  	$tlCfg->workflowStatus=array('draft' => 1, 'review' => 2);
+  
+  	will exists:  $TL_workflowStatus_draft='...';
+    	          $TL_workflowStatus_review='...';
+ 
+  	@param string configKey: valus used on call to standard test link
+                           	 method to get configuration option
+  	@param string accessMode: two values allowed 'key', 'code'
+                              indicates how the returned map must be indexed.
+                              'key' => will be indexed by string                          
+                                       value that is key of config option
+                              'code' => will be indexed by value of config option         
+  @example
+   $tlCfg->workflowStatus=array('draft' => 1, 'review' => 2);
+   $i18nlabels = getLabels('workflowStatus','key');
+   array_keys($i18nlabels) will return array('draft','review');
+   
+   $tlCfg->workflowStatus=array('draft' => 1, 'review' => 2);
+   $i18nlabels = getLabels('workflowStatus','code');
+   array_keys($i18nlabels) will return array(1,2);
+   
+   @internal revisions
+   20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases can be added to new test plans
+*/
+function getConfigAndLabels($configKey,$accessMode='key')
+{
+    $stringKeyCode = config_get($configKey);
+    $labels=null;
+    foreach( $stringKeyCode as $accessKey => $code )
+    {
+      $index = ($accessMode == 'key') ? $accessKey : $code;
+      $labels[$index] = lang_get($configKey . '_' . $accessKey);
+    }
+    
+    return array('cfg' => $stringKeyCode, 'lbl' => $labels); 
+}
+
 ?>

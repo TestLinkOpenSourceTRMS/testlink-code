@@ -1,21 +1,20 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.37 2011/01/14 14:39:01 asimon83 Exp $ 
+@filesource tcEdit.tpl
 Purpose: smarty template - edit test specification: test case
 
 @internal Revisions:
-  20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
-  20110111 - Julian - Improved modified warning message when navigating away without saving
-  20101226 - franciscom - BUGID 
-  20101010 - franciscom - refactoring of BUGID 3062 -> gui/javascript/tcase_utils.js
-                          added testsuite_id for same logic
-  20100810 - asimon - BUGID 3579: solved tree refreshing problems
-  20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
-	20100306 - eloff - BUGID 3062 - Check for duplicate name via AJAX call - checkTCaseDuplicateName()
-	20100124 - eloff - BUGID 3088 - Check valid session before submit
-	20100110 - eloff - BUGID 2036 - Check modified content before exit
-	20090422 - franciscom - BUGID 2414
-	20090419 - franciscom - BUGID  - edit while executing
+
+20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
+20110111 - Julian - Improved modified warning message when navigating away without saving
+20101226 - franciscom - BUGID 
+20101010 - franciscom - refactoring of BUGID 3062 -> gui/javascript/tcase_utils.js
+                        added testsuite_id for same logic
+20100810 - asimon - BUGID 3579: solved tree refreshing problems
+20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
+20100306 - eloff - BUGID 3062 - Check for duplicate name via AJAX call - checkTCaseDuplicateName()
+20100124 - eloff - BUGID 3088 - Check valid session before submit
+20100110 - eloff - BUGID 2036 - Check modified content before exit
 *}
 
 {lang_get var="labels"

@@ -10,6 +10,10 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20110321 - franciscom - 	BUGID 4025: option to avoid that obsolete test cases 
+ *							can be added to new test plans.
+ *							create(), create_tcversion()
+ *
  * 20110312 - franciscom - 	get_by_id() - id can be null, to allow get data 
  *							when you now only version id (DB ID)
  * 20110308 - franciscom - get_basic_info() interface changes	
@@ -311,7 +315,7 @@ class testcase extends tlObjectWithAttachments
 	function create($parent_id,$name,$summary,$preconditions,$steps,$author_id,
 	                $keywords_id='',$tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
                     $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
-                    $importance=2,$options=null)
+                    $importance=2,$workflow_status=null, $options=null)
 	{
 		$status_ok = 1;
 
@@ -344,7 +348,8 @@ class testcase extends tlObjectWithAttachments
 			}
 			// Multiple Test Case Steps Feature
 			$op = $this->create_tcversion($ret['id'],$ret['external_id'],$version_number,$summary,
-			                              $preconditions,$steps,$author_id,$execution_type,$importance);
+			                              $preconditions,$steps,$author_id,$execution_type,
+			                              $importance,$workflow_status);
 			
 			$ret['msg'] = $op['status_ok'] ? $ret['msg'] : $op['msg'];
 			$ret['tcversion_id'] = $op['status_ok'] ? $op['id'] : -1;
@@ -528,24 +533,36 @@ class testcase extends tlObjectWithAttachments
 	  returns:
 	
 	  rev: 
-	  	   20100821 - franciscom - BUGID 3696 - test case step execution type ignored	
-	  	   20100106 - franciscom - Multiple Test Case Steps Feature
-	  	   20080113 - franciscom - interface changes added tc_ext_id
-	
+			20110321 - franciscom - BUGID 4025 - added workflow_status	  
+			20100821 - franciscom - BUGID 3696 - test case step execution type ignored	
+			20100106 - franciscom - Multiple Test Case Steps Feature
 	*/
 	function create_tcversion($id,$tc_ext_id,$version,$summary,$preconditions,$steps,
-	                          $author_id,$execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
+	                          $author_id,$execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
+	                          $importance=2,$workflow_status=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$tcase_version_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
 		$sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcversions']} " .
 		       " (id,tc_external_id,version,summary,preconditions," . 
-		       "author_id,creation_ts,execution_type,importance) " . 
-	  	       " VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .
-	  	       $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($preconditions) . "'," . 
-	  	       $this->db->prepare_int($author_id) . "," . $this->db->db_now() . 
-	  	       ", {$execution_type},{$importance} )";
+		       "author_id,creation_ts,execution_type,importance ";
+		       
+		$sqlValues = " VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .
+	  	       		 $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($preconditions) . "'," . 
+	  	       		 $this->db->prepare_int($author_id) . "," . $this->db->db_now() . 
+	  	       		 ", {$execution_type},{$importance} ";
 		
+		if( !is_null($workflow_status) )
+		{
+			$wf = intval($workflow_status);
+			$sql .= ',workflow_status';
+			$sqlValues .= ",{$wf}";
+		}
+			
+		$sql .= " )" . $sqlValues . " )";
+		
+		 	
+			
 		$result = $this->db->exec_query($sql);
 		$ret['msg']='ok';
 		$ret['id']=$tcase_version_id;
@@ -964,6 +981,12 @@ class testcase extends tlObjectWithAttachments
 		unset($userid_array['']);
 		$passeduserarray = array_keys($userid_array);
 
+		
+		$dummy = getConfigAndLabels('workflowStatus','code');
+    	$wfStatusCfg['status_code'] = $dummy['cfg'];
+    	$wfStatusCfg['code_label'] = $dummy['lbl'];
+		$gui->domainWFStatus = $wfStatusCfg['code_label'];
+		
 		$gui->cf = null; // $cf_current_version; // $cf_smarty;
 		$gui->cf_current_version = $cf_current_version; // $cf_smarty;
 		$gui->cf_other_versions = $cf_other_versions; // $cf_smarty;
@@ -980,6 +1003,7 @@ class testcase extends tlObjectWithAttachments
 		$gui->view_req_rights =  has_rights($this->db,"mgt_view_req");
 		$gui->keywords_map = $keywords_map;
 		$smarty->assign('gui',$gui);
+		echo $my_template;
 		$smarty->display($template_dir . $my_template);
 	}
 	
@@ -1007,7 +1031,8 @@ class testcase extends tlObjectWithAttachments
 	 */
 	function update($id,$tcversion_id,$name,$summary,$preconditions,$steps,
 	                $user_id,$keywords_id='',$tc_order=self::DEFAULT_ORDER,
-	                $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
+	                $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2,
+	                $workflow_status=null)
 	{
 		$ret['status_ok'] = 1;
 		$ret['msg'] = '';
@@ -1032,15 +1057,22 @@ class testcase extends tlObjectWithAttachments
 		
 			// test case version 
 			// BUGID - 3849
-		   	$sql[] = " UPDATE {$this->tables['tcversions']} " .
+		   	$dummy = " UPDATE {$this->tables['tcversions']} " .
 		             " SET summary='" . $this->db->prepare_string($summary) . "'," .
 		   		 	 " updater_id=" . $this->db->prepare_int($user_id) . ", " .
 		   		 	 " modification_ts = " . $this->db->db_now() . "," .
 		   		 	 " execution_type=" . $this->db->prepare_int($execution_type) . ", " . 
 		   		 	 " importance=" . $this->db->prepare_int($importance) . "," .
-		   		 	 " preconditions='" . $this->db->prepare_string($preconditions) . "' " .
-		   		 	 " WHERE id = " . $this->db->prepare_int($tcversion_id); 
-		
+		   		 	 " preconditions='" . $this->db->prepare_string($preconditions) . "' ";
+
+		   	if( !is_null($workflow_status) )	 	 
+			{
+				$dummy .= ", workflow_status=" . intval($workflow_status); 
+			}
+		   		 	 
+		   	$dummy .= " WHERE id = " . $this->db->prepare_int($tcversion_id); 
+			$sql[] = $dummy;
+			
 			foreach($sql as $stm)
 			{
 			    $result = $this->db->exec_query($stm);
@@ -1596,6 +1628,7 @@ class testcase extends tlObjectWithAttachments
 	 			foreach($tcase_info as $tcversion)
 				{
 					
+					// 20110321 - franciscom - BUGID 4025
 					// 20100221 - franciscom - 
 					// IMPORTANT NOTICE:
 					// In order to implement COPY to another test project, WE CAN NOT ASK
@@ -1604,7 +1637,8 @@ class testcase extends tlObjectWithAttachments
 					// 
 					$op = $this->create_tcversion($newTCObj['id'],$newTCObj['external_id'],$tcversion['version'],
 					                              $tcversion['summary'],$tcversion['preconditions'],null,
-					                              $tcversion['author_id'],$tcversion['execution_type'],$tcversion['importance']);
+					                              $tcversion['author_id'],$tcversion['execution_type'],
+					                              $tcversion['importance'],$tcversion['workflow_status']);
 					
 	    			if( $op['status_ok'] )
 	    			{

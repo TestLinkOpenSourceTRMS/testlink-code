@@ -3,11 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename tcImport.php
- * 
  * Scope: control test specification import
+ *
+ * @filesource	tcImport.php
+ * @package 	TestLink
+ * @copyright 	2007-2011, TestLink community 
+ * @link 		http://www.teamst.org/index.php
  * 
- * Revision:
+ * @internal revisions
  *	20110219 - franciscom - fixed getItemsFromSimpleXMLObj() calls.
  *	20101106 - franciscom - fixed warning on event viewer when there are no keywords defined on test project
  *	20101002 - franciscom - BUGID 3801
@@ -42,7 +45,6 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
-require_once('../../third_party/phpexcel/reader.php');
 
 testlinkInitPage($db);
 
@@ -63,7 +65,8 @@ $gui->resultMap = null;
 
 
 $dest_common = TL_TEMP_PATH . session_id(). "-importtcs";
-$dest_files = array('XML' => $dest_common . ".xml",'XLS' => $dest_common . ".xls");
+// $dest_files = array('XML' => $dest_common . ".xml",'XLS' => $dest_common . ".xls");
+$dest_files = array('XML' => $dest_common . ".xml");
 $dest=$dest_files['XML'];
 if(!is_null($args->importType))
 {

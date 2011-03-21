@@ -13,8 +13,11 @@
  *
  *
  *	@internal revisions
+ * 	20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
+ *							can be added to new test plans
+ * 
  *  20110112 - Julian - BUGID 4158 - CKEditor only working for the first two initialized editors
-                                     -> Reason is still not clear
+ *                                   -> Reason is still not clear
  *	20110109 - franciscom - BUGID 3952 - on Create stay here like Mantis does
  * 	20100910 - franciscom - some refactoring
  * 	20100901 - franciscom - work on insert step
@@ -292,6 +295,8 @@ if ($show_newTC_form)
   	$tc_default=array('id' => 0, 'name' => '');
   	$tc_default['importance'] = $init_inputs ? $tlCfg->testcase_importance_default : $args->importance;
   	$tc_default['execution_type'] = $init_inputs ? TESTCASE_EXECUTION_TYPE_MANUAL : $args->exec_type;
+  	$tc_default['workflow_status'] = $init_inputs ? TESTCASE_EXECUTION_TYPE_MANUAL : $args->workflow_status;
+
   	foreach ($oWebEditor->cfg as $key => $value)
   	{
   	    $of = &$oWebEditor->editor[$key];
@@ -334,15 +339,22 @@ if ($show_newTC_form)
   args:
 
   returns:
-
+  
+  @internal revisions
+  20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
+						  can be added to new test plans
+	
 */
 function init_args(&$cfgObj,$otName)
 {
     $tc_importance_default=config_get('testcase_importance_default');
     
+
     $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
+	//new dBug($_REQUEST);
+	
     $rightlist_html_name = $otName . "_newRight";
     $args->assigned_keywords_list = isset($_REQUEST[$rightlist_html_name])? $_REQUEST[$rightlist_html_name] : "";
     $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
@@ -362,6 +374,15 @@ function init_args(&$cfgObj,$otName)
     $args->has_been_executed = isset($_REQUEST['has_been_executed']) ? intval($_REQUEST['has_been_executed']) : 0;
     $args->exec_type = isset($_REQUEST['exec_type']) ? $_REQUEST['exec_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
     $args->importance = isset($_REQUEST['importance']) ? $_REQUEST['importance'] : $tc_importance_default;
+    
+    
+    $dummy = getConfigAndLabels('workflowStatus','code');
+    $args->wfStatusCfg['status_code'] = $dummy['cfg'];
+    $args->wfStatusCfg['code_label'] = $dummy['lbl'];
+    $args->workflow_status = isset($_REQUEST['workflow_status']) ? intval($_REQUEST['workflow_status']) : 
+    						 $args->wfStatusCfg['status_code']['draft'];
+
+
     
     $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : '';
 
@@ -584,6 +605,8 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
 	
 	$guiObj->direct_link = $tcaseMgr->buildDirectWebLink($_SESSION['basehref'],$argsObj->tcase_id,$argsObj->testproject_id);
 
+
+	$guiObj->domainWFStatus = $argsObj->wfStatusCfg['code_label'];
 	
 	return $guiObj;
 }
@@ -732,5 +755,4 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$edit_steps)
     }
 
 }
-
 ?>

@@ -1,21 +1,21 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.27 2010/10/11 18:11:29 franciscom Exp $
+@filesource	tcEdit_New_viewer.tpl
+
 Purpose: smarty template - create new testcase
 
 @internal Revisions:
-  20101011 - franciscom - equalizing ID for DIV that function as CF container
-  20101010 - franciscom - refactoring of BUGID 3062 -> call to checkTCaseDuplicateName() without global coupling
-	20100306 - eloff - BUGID 3062 - Check for duplicate name via JAXA using checkTCaseDuplicateName()
-	20090831 - franciscom - preconditions
-	20090718 - franciscom - added management of custom field location
-	20061231 - franciscom - viewer for tcEdit.tpl and tcNew.tpl
+20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
+						can be added to new test plans
+20101011 - franciscom - equalizing ID for DIV that function as CF container
+20101010 - franciscom - refactoring of BUGID 3062 -> call to checkTCaseDuplicateName() without global coupling
+20100306 - eloff - BUGID 3062 - Check for duplicate name via JAXA using checkTCaseDuplicateName()
 *}
 
 {* ---------------------------------------------------------------- *}
 {lang_get var='labels' 
           s='tc_title,alt_add_tc_name,summary,steps,expected_results,
-             preconditions,
+             preconditions,workflow_status,
              execution_type,test_importance,tc_keywords,assign_requirements'}
 
 {* Steps and results Layout management *}
@@ -96,6 +96,13 @@ Purpose: smarty template - create new testcase
 	    	</select>
 			</div>
 		{/if}
+		<div>
+		<span class="labelHolder">{$labels.workflow_status}</span>
+		<select name="workflow_status" id="workflow_status" 
+				onchange="content_modified = true">
+		{html_options options=$gui->domainWFStatus selected=$gui->tc.workflow_status}
+		</select>
+		</div>
     	
     </div>
 

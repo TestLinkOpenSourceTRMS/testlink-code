@@ -1,6 +1,7 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.68 2010/12/19 17:48:27 franciscom Exp $
+--
+-- @filesource	testlink_create_tables.sql
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -22,7 +23,11 @@
 --        convention regarding case and spaces between DDL keywords.
 --
 -- 
---  Rev :
+-- @internal revisions
+--	20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
+--							can be added to new test plans
+--							tcversions.workflow_status
+--
 --  20101219 - franciscom - BUGID 4111 - cfield_testprojects ALTER
 --  20101204 - franciscom - BUGID 4070 - changed executions_idx1
 --                          ("testplan_id","tcversion_id","platform_id","build_id");
@@ -192,6 +197,7 @@ CREATE TABLE /*prefix*/tcversions(
   "active" INT2 NOT NULL DEFAULT '1',
   "is_open" INT2 NOT NULL DEFAULT '1',
   "execution_type" INT2 NOT NULL DEFAULT '1',
+  "workflow_status" INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
 ); 
 

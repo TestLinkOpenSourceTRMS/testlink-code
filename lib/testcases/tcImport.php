@@ -3,13 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.84.2.1 $
- * @modified $Date: 2011/02/10 21:25:25 $ by $Author: franciscom $
- * 
  * Scope: control test specification import
+ *
+ * @filesource	tcImport.php
+ * @package 	TestLink
+ * @copyright 	2007-2011, TestLink community 
+ * @link 		http://www.teamst.org/index.php
  * 
- * Revision:
+ * @internal revisions
+ *
  *	20101106 - franciscom - fixed warning on event viewer when there are no keywords defined on test project
  *	20101002 - franciscom - BUGID 3801
  *  20100911 - amitkhullar - BUGID 3764 - Req Mapping Error while import of Test cases.
@@ -43,7 +45,6 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
-require_once('../../third_party/phpexcel/reader.php');
 
 testlinkInitPage($db);
 
@@ -64,7 +65,8 @@ $gui->resultMap = null;
 
 
 $dest_common = TL_TEMP_PATH . session_id(). "-importtcs";
-$dest_files = array('XML' => $dest_common . ".xml",'XLS' => $dest_common . ".xls");
+// $dest_files = array('XML' => $dest_common . ".xml",'XLS' => $dest_common . ".xls");
+$dest_files = array('XML' => $dest_common . ".xml");
 $dest=$dest_files['XML'];
 if(!is_null($args->importType))
 {
@@ -653,21 +655,14 @@ function create_xml_tcspec_from_xls($xls_filename,$xml_filename)
 		$name = htmlspecialchars($xls_rows[$idx][IDX_COL_NAME]);
 		fwrite($xmlFileHandle,"<testcase name=" . '"' . $name. '"'.">\n");
 	    
-		// $summary = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_SUMMARY]));
-	    // 20090117 - contribution - BUGID 1992  // 20090402 - BUGID 1519
-	    // $summary = str_replace('�',"...",$xls_rows[$idx][IDX_COL_SUMMARY]);  
 	    $summary = convert_special_char($xls_rows[$idx][IDX_COL_SUMMARY]);  
 		$summary = nl2p(htmlspecialchars($summary));
 		fwrite($xmlFileHandle,"<summary><![CDATA[" . $summary . "]]></summary>\n");
 	    
-	    // 20090117 - BUGID 1991,1992  // 20090402 - BUGID 1519
-	    // $steps = str_replace('�',"...",$xls_rows[$idx][IDX_COL_STEPS]);
 	    $steps = convert_special_char($xls_rows[$idx][IDX_COL_STEPS]);
 	    $steps = nl2p(htmlspecialchars($steps));
 	    fwrite($xmlFileHandle,"<steps><![CDATA[".$steps."]]></steps>\n");
 	    
-	    // 20090117 - BUGID 1991,1992  // 20090402 - BUGID 1519
-	    // $expresults = str_replace('�',"...",$xls_rows[$idx][IDX_COL_EXPRESULTS]);
 		$expresults = convert_special_char($xls_rows[$idx][IDX_COL_EXPRESULTS]);
 		$expresults = nl2p(htmlspecialchars($expresults));
 	    fwrite($xmlFileHandle,"<expectedresults><![CDATA[".$expresults."]]></expectedresults>\n");

@@ -14,6 +14,9 @@
  *
  *
  * @internal Revisions:
+ *	20110322 - franciscom - BUGID 4343: Reports Failed Test Cases / ... -> Build is not shown	
+ *							get_linked_tcversions() - error while refactoring.
+ *
  *	20110317 - franciscom - BUGID 4328: Metrics dashboard - only active builds has to be used
  *							get_linked_tcversions() - new option forced_exec_status
  *													  build_id now can be an array of id
@@ -87,33 +90,6 @@
  *  20100112 - franciscom - getPlatforms() - interface changes
  *	20100106 - franciscom - Multiple Test Case Steps Feature
  *                          Affected Methods: get_linked_tcversions()
- *	20091111 - franciscom - BUGID 2938 - getTestCaseSiblings(), getTestCaseNextSibling()
- *  20091031 - franciscom - tallyResultsForReport()
- *  20091027 - franciscom - BUGID 2500 - get_linked_tcversions()
- *  20091025 - franciscom - new method - getStatusTotalsByPlatform()
- *                          bug found on getNotExecutedLinkedTCVersionsDetailed()
- *                          missing testplan_id on execution join
- *
- *	20091010 - franciscom - getNotExecutedLinkedTCVersionsDetailed() new options
- *  20091004 - franciscom - get_linked_tcversions() - fixed query when requesting exec status filtering.
- *                                                  - added more columns to output record set
- *  20090923 - franciscom - link_tcversions() - will return data
- *  20090920 - franciscom - getStatusTotals(), will replace some result.class method
- *  20090919 - franciscom - copy_as(), copy_linked_tcversions() added contribution (refactored)
- *                          to copy user assignment.
- *
- * 	20090822 - franciscom - changeLinkedTCVersionsPlatform() - new method
- *                          countLinkedTCVersionsByPlatform() - new method
- *  20090814 - franciscom - link_tcversions() - interface changes - due to platform feature
- *  20090516 - franciscom - BUGID - is_public
- *                          create(),update() changed
- *  20090509 - franciscom - BUGID - build class manage release_date
- *  20090411 - franciscom - BUGID 2369 - link_tcversions() - interface changes
- *  20090214 - franciscom - BUGID 2099 - get_linked_tcversions() - added new columns in output recordset
- *  20090208 - franciscom - testplan class - new method get_build_by_id()
- *  20090201 - franciscom - copy_milestones() - wrong SQL sentece 
- *                          A,B,C fields renamed to lower case a,b,c to avoid problems
- *                          between differnt database (case and no case sensitive)
  **/
 
 /** related functionality */
@@ -745,6 +721,10 @@ class testplan extends tlObjectWithAttachments
 		$executions['filter'] = '';
 		$notrun['filter'] = null;
 		$otherexec['filter'] = null;
+		$more_tcase_fields = '';
+		$join_for_parent = '';
+		$more_parent_fields = '';
+		$more_exec_fields='';
 		
         $my['filters'] = array('tcase_id' => null, 'keyword_id' => 0,
                                'assigned_to' => null, 'exec_status' => null,
@@ -983,10 +963,6 @@ class testplan extends tlObjectWithAttachments
 			                   " E.testplan_id=T.testplan_id {$builds['filter']}) ";
 		// --------------------------------------------------------------
 		
-		$more_tcase_fields = '';
-		$join_for_parent = '';
-		$more_parent_fields = '';
-		$more_exec_fields='';
 		switch($my['options']['details'])
 		{
 			case 'full':

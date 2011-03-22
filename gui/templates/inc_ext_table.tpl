@@ -287,7 +287,7 @@ Ext.onReady(function() {
 				component: grid['{$tableID}'],
 				formatter: new Ext.ux.Exporter.CSVFormatter(),
 				text: '{$labels.export_to_csv}',
-				iconCls: 'tbar-reset-filters',
+				iconCls: 'tbar-export',
 				store: store['{$tableID}']
 			{rdelim});
 		{/if}

@@ -282,10 +282,14 @@ Ext.onReady(function() {
 
 		//Export Button
 		{if $matrix->showExportButton && $matrix->showToolbar}
-			tbar.add(new Ext.ux.Exporter.Button({ldelim}
+			tbar.add({ldelim}
+				xtype: 'exporttoolbarbutton',
 				component: grid['{$tableID}'],
+				formatter: new Ext.ux.Exporter.CSVFormatter(),
+				text: 'Export to CVS',
+				iconCls: 'tbar-reset-filters',
 				store: store['{$tableID}']
-			{rdelim}));
+			{rdelim});
 		{/if}
 		
 		// add button to reset filters

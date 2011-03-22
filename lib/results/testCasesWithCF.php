@@ -128,7 +128,8 @@ if( $args->doIt )
 
 	if (count($matrixData) > 0) {
 		$table = new tlExtTable($columns, $matrixData, 'tl_table_tc_with_cf');
-		$table->addCustomBehaviour('status', array('render' => 'statusRenderer'));
+		// BUGID 4125
+		// $table->addCustomBehaviour('status', array('render' => 'statusRenderer'));
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
 
 		$table->setGroupByColumnName(lang_get('build'));

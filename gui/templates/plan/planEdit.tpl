@@ -1,18 +1,14 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.19 2010/12/26 09:38:42 franciscom Exp $
+@filesource	planEdit.tpl
 
 Purpose: smarty template - create Test Plan
-Revisions:
+
+@internal revisions
+20110322 - franciscom - Smarty 3.x compatibility issue
 20101226 - franciscom - BUGID 4088: Required parameter for custom fields
 20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 20101012 - franciscom - BUGID 3892: CF Types validation
-20090513 - franciscom - added is_public
-
-20070214 - franciscom -
-BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed
-Bug confirmed on IE
-
 *}
 
 {lang_get var="labels"
@@ -102,11 +98,10 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$gui->main_descr|escape}</h1>
-
 <div class="workBack">
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 	{assign var='form_action' value='create'}
-	{if $gui->tplan_id neq 0}
+	{if $gui->tplan_id != 0}
 		<h2>
 		{$labels.testplan_title_edit} {$gui->testplan_name|escape}
 		{assign var='form_action' value='update'}
@@ -136,7 +131,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 		<tr><th style="background:none;">{$labels.testplan_th_notes}</th>
 			<td >{$gui->notes}</td>
 		</tr>
-		{if $gui->tplan_id eq 0}
+		{if $gui->tplan_id == 0}
 			{if $gui->tplans}
 				<tr><th style="background:none;">{$labels.testplan_question_create_tp_from}</th>
 				<td>
@@ -150,7 +145,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 
 			      <div id="copy_controls" style="display:none;">
 			      {assign var=this_template_dir value=$smarty.template|dirname}
-			      {include file="$this_template_dir/inc_controls_planEdit.tpl"}
+			      {include file="./plan/inc_controls_planEdit.tpl"}
 			      </div>
 				</td>
 				</tr>
@@ -168,8 +163,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 					  <input type="checkbox" name="is_public" {if $gui->is_public eq 1}	checked="checked"	{/if}	/>
       	  </td>
       </tr>
-
-	  {if $gui->cfields neq ''}
+	  {if $gui->cfields != ''}
 	  <tr>
 	    <td  colspan="2">
      <div id="custom_field_container" class="custom_field_container">
@@ -182,7 +176,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 
 	<div class="groupBtn">
 
-		{* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
+		{* BUGID 628: Name edit ï¿½ Invalid action parameter/other behaviours if ï¿½Enterï¿½ pressed. *}
 		{if $gui->tplan_id eq 0}
 		  <input type="hidden" name="do_action" value="do_create" />
 		  <input type="submit" name="do_create" value="{$labels.btn_testplan_create}"

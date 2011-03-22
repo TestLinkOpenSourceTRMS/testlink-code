@@ -46,7 +46,7 @@ Purpose: rendering of Ext Js table
  @url http://extjs.com/deploy/dev/examples/grid/array-grid.html
 *}
 {lang_get var="labels" s="expand_collapse_groups, show_all_columns,
-	show_all_columns_tooltip, default_state, multisort, multisort_tooltip,
+	show_all_columns_tooltip, default_state, multisort, multisort_tooltip, export_to_csv,
 	multisort_button_tooltip, button_refresh, btn_reset_filters, caption_nav_filters"}
 <script type="text/javascript" src="gui/javascript/ext_extensions.js" language="javascript"></script>
 <script type="text/javascript">
@@ -286,7 +286,7 @@ Ext.onReady(function() {
 				xtype: 'exporttoolbarbutton',
 				component: grid['{$tableID}'],
 				formatter: new Ext.ux.Exporter.CSVFormatter(),
-				text: 'Export to CVS',
+				text: '{$labels.export_to_csv}',
 				iconCls: 'tbar-reset-filters',
 				store: store['{$tableID}']
 			{rdelim});

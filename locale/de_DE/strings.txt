@@ -27,7 +27,7 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file with commit id e45f04e2d21c284fe4c5345f82b2adcfcbdc2029
+ * Last Update according to en_GB string file with commit id 5698cc23f170c24ca832338007fcd36579720171
  *
  **/
 
@@ -1253,6 +1253,8 @@ $TLS_warning_delete_execution = "Möchten Sie die Ausführung wirklich löschen?
 $TLS_warning_nothing_will_be_saved = "Für das ausgewählte Ausführungsergebnis muss nichts in die Datenbank geschrieben werden.";
 $TLS_edit_execution = "Ausführung editieren";
 $TLS_platform_description = "Plattform Beschreibung";
+$TLS_remoteExecFeeback = "Testfall Fernausführung Feedback";
+
 
 
 // ----- gui/templates/inc_testsuite_viewer_ro.tpl -----
@@ -1477,6 +1479,7 @@ $TLS_warning_req_tc_assignment_impossible = "Eine Zuweisung ist aus einem der fo
 $TLS_title_edit_tc = "Testfall bearbeiten";
 $TLS_warning_editing_executed_step = "Achtung! Dieser Testschritt wurde ausgeführt.";
 $TLS_warning_editing_executed_tc = "Achtung!: Diese Testfall Version wurde schon ausgeführt!";
+$TLS_warning_delete_executed_tc = "Achtung!: Diese Testfall Version wurde schon ausgeführt!";
 $TLS_warning_unsaved = "Nicht gespeicherte Änderungen gehen verloren!";
 
 
@@ -1505,6 +1508,7 @@ $TLS_deactivate_this_tcversion = "Version deaktivieren";
 $TLS_execution_type = "Ausführungstyp";
 $TLS_execution_type_short_descr = 'Ausführung';
 $TLS_tcversion_is_inactive_msg = "Diese Version ist inaktiv und ist dadurch in Testplänen nicht verfügbar";
+$TLS_system_blocks_delete_executed_tc = "Ihre Konfiguration verbietet es ausgeführte Testfälle zu löschen";
 
 
 
@@ -3246,6 +3250,7 @@ $TLS_remoteExecServerConfigProblems = 'Die Fernausführung kann aufgrund fehlend
 									  'Überprüfen Sie ob die benötigten benutzerdefinierten Felder innerhalb dieses Testprojekts ' .
 									  'definiert und zugewiesen wurden'; 
 
+$TLS_remoteExecServerConnectionFailure = 'Verbindungsfehler bei der Fernausführung - Überprüfen sie ihre Konfiguration';
 
 // ----- int_polarion.php -----
 // Used to display at User interface label as title attribute

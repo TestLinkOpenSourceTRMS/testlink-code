@@ -6,8 +6,9 @@
  *
  * @internal revisions:
  *
- *	20110308 - franciscom - remote execution
- *	20110123 - franciscom - BUGID 3338 
+ *  20110322 - eloff - BUGID 3643
+ *  20110308 - franciscom - remote execution
+ *  20110123 - franciscom - BUGID 3338
  *  20110105 - asimon - BUGID 3878: "Save and move to next" does not respect filter settings
  *  20110104 - aismon - BUGID 3643: apply filters earlier in script instead of loading unnecessary data
  *  20100927 - asimon - avoid warning in event log
@@ -356,8 +357,8 @@ smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproj
 //	$gui->map_last_exec = array_values($gui->map_last_exec);
 //}
 
-// $gui->can_use_bulk_op=$args->level == 'testsuite' && (!is_null($gui->map_last_exec) && count($gui->map_last_exec) > 1) ? 1 : 0;
-$gui->can_use_bulk_op = ($args->level == 'testsuite' && count($gui->map_last_exec) > 1) ? 1 : 0;
+// Bulk is possible when test suite is selected (and is allowed in config)
+$gui->can_use_bulk_op = ($args->level == 'testsuite');
 
 if( $gui->can_use_bulk_op )
 {
@@ -1578,4 +1579,4 @@ function buildExecContext(&$argsObj,$tcasePrefix,&$tplanMgr,&$tcaseMgr)
 }
 
 
-?>																																
+?>

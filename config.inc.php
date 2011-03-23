@@ -22,7 +22,8 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- *
+ *	20110323 - franciscom - BUGID 4025: option to avoid that obsolete test cases can be added 
+ *							to new test plans. -> $tlCfg->tplanDesign 
  *	20110319 - franciscom - BUGID 4322: New Option to block delete of executed test cases.
  *							testcase_cfg->can_delete_executed
  * 	20110109 - franciscom - added $tlCfg->req_cfg->duplicated_name_algorithm
@@ -59,70 +60,6 @@
  *  20100112 - asimon - BUGID 2976 - $tlCfg->req_cfg->search
  *  20100110 - eloff - BUGID 2036 - changed $tlCfg->gui->checkNotSaved to true
  *  20100106 - franciscom - added $tlCfg->diffEngine - diff for test case and req (Contribution)
- *  20091227 - franciscom - REMOVED - $tlCfg->req_cfg->reqdoc_id->is_system_wide
- *  20091217 - franciscom - $tlCfg->testcase_cfg->duplicated_name_algorithm
- *  20091205 - franciscom - BUGID 0002469: $tlCfg->exec_cfg->expand_collapse
- *  20091129 - franciscom - BUGID 2554 - gui->usersAssignGlobalRoleColoring
- *  20091126 - franciscom - added contribution req internal links
- * 	20091125 - franciscom - req_cfg->expected_coverage_management added
- *	20091121 - franciscom - added contribution by Julian - BUGID 0002968,0002961,0002962,0002963
- *                         (refactored)
- *
- *  20091018 - franciscom - added contribution LDAP with TLS
- *  20090926 - franciscom - new default for $tlCfg->req_cfg->child_requirements_mgmt
- *  20090912 - franciscom - BUGID 2796 - contribution reportsCfg->start_time
- *  20090901 - franciscom - new option exec_cfg->steps_results_layout
- *  20090823 - franciscom - new option custom_field_max_length
- *	20090815 - franciscom - new option exec_cfg->show_history_all_platforms
- *  20090804 - franciscom - moved report config here
- *  20090304 - franciscom - BUGID 2171
- *  20090211 - franciscom - added $tlCfg->exec_cfg->enable_tree_testcases_colouring
- *                                $tlCfg->exec_cfg->enable_tree_counters_colouring
- *
- *  20090126 - franciscom - show_config_check_warning -> config_check_warning_mode
- *  20090103 - franciscom - $tlCfg->req_cfg->coverageStatusAlgorithm
- *  20090103 - franciscom - BUGID 651 - $tlCfg->testcase_cfg->can_remove_executed
- *  20090101 - franciscom - changes in regex used to validate an email address
- *  20081228 - franciscom - gui->layoutMainPageLeft,gui->layoutMainPageRight
- *  20081217 - franciscom - exec_cfg->simple_tester_roles
- *  20081213 - franciscom - more remove of old $g_* config parameters.
- *  20081122 - franciscom - removed some old $g_* config parameters.
- *  20081115 - franciscom - $tlCfg->testcase_cfg->search
- *  20081104 - franciscom - Added FOGBUGZ as BTS type
- *  20081103 - franciscom - Added GFORGE as BTS type
- *  20081006 - franciscom - config for rounding via nifty corners
- *  20080925 - franciscom - refactoring of urgencyImportance config
- *                          $tlCfg->req_cfg->child_requirements_mgmt
- *
- *  20080805 - franciscom - api configuration refactoring
- *  20080805 - franciscom - BUGID 1660 - extjs tree is default
- *  20080504 - franciscom - removed gui->enable_custom_fields
- * 	20080419 - havlatm - documentation update; minor refactorization
- *  20080326 - franciscom - restored configuration parameters removed without reasons.
- *
- * 	20080423 - havlatm - added $tlCfg as standard configuration holder
- *  20080322 - franciscom - $g_exec_cfg->edit_notes
- *  20080308 - franciscom - changed initial values for email settings
- *  20080304 - franciscom - $g_exec_cfg->show_testsuite_contents
- *  20080208 - franciscom - added contribution seapine BTS (BUGID 1371)
- *  20071112 - franciscom - config changes due to upgrade of Smarty
- *  20071106 - franciscom - BUGID 1165 - $g_testcase_template
- *
- *  20071104 - franciscom - $g_exec_cfg->enable_test_automation
- *                          $g_gui->tprojects_combo_order_by (BUGID 498)
- *  20070930 - franciscom - BUGID 1086 - configure order by in attachment
- *  20070910 - franciscom - removed MAIN_PAGE_METRICS_ENABLED
- *  20070505 - franciscom - following mantis bug tracking style, if file
- *                          custom_config.inc.php exists, il will be included
- *                          allowing users to customize TL configurations
- *                          managed using global variables, without need
- *                          of changing this file.
- *
- *  20070429 - franciscom - added contribution by Seweryn Plywaczyk
- *                          text area custom field
- *
- *  20070415 - franciscom -  added config for drag and drop feature
- *  20070301 - franciscom - #695 - $g_user_self_signup (fawel contribute)
  *
  **/
 
@@ -148,6 +85,7 @@ $tlCfg->validation_cfg = new stdClass();
 $tlCfg->custom_fields = new stdClass();
 $tlCfg->req_spec_cfg = new stdClass();
 $tlCfg->diffEngine = new stdClass();
+$tlCfg->tplanDesign = new stdClass();
 
 /** @uses database access definition (generated automatically by TL installer) */
 
@@ -1277,6 +1215,12 @@ $tlCfg->tree_filter_cfg->requirements->advanced_filter_mode_choice = ENABLED;
 // DISABLED -> The tree will not be updated automatically, but  the user can update it manually.
 //             On graphical user interface any user will is able to change this setting.
 $tlCfg->tree_filter_cfg->requirements->automatic_tree_refresh = ENABLED;
+
+/* [Assign test cases to test plan] */
+$tlCfg->tplanDesign->hideTestCaseWithWFStatusIn = array($tlCfg->workflowStatus['obsolete'] => 'obsolete', 
+														$tlCfg->workflowStatus['future'] => 'future' );
+
+
 
 // ----------------------------------------------------------------------------
 /* [MISC FUNCTIONALITY] */

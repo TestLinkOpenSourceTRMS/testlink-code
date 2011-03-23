@@ -12,7 +12,7 @@
  * @internal Revisions:
  * 20110321 - franciscom - 	BUGID 4025: option to avoid that obsolete test cases 
  *							can be added to new test plans.
- *							create(), create_tcversion()
+ *							create(), create_tcversion(),get_last_active_version()
  *
  * 20110312 - franciscom - 	get_by_id() - id can be null, to allow get data 
  *							when you now only version id (DB ID)
@@ -1003,7 +1003,6 @@ class testcase extends tlObjectWithAttachments
 		$gui->view_req_rights =  has_rights($this->db,"mgt_view_req");
 		$gui->keywords_map = $keywords_map;
 		$smarty->assign('gui',$gui);
-		echo $my_template;
 		$smarty->display($template_dir . $my_template);
 	}
 	
@@ -4806,8 +4805,9 @@ class testcase extends tlObjectWithAttachments
 	 * @param map $filters OPTIONAL - now only 'cfields' key is supported
 	 * @param map $options OPTIONAL
 	 *
-	 * @internal Revisions
+	 * @internal revisions
 	 *
+	 * 20110322 - franciscom - BUGID 4025 - added filters['wkstatus']
 	 * 20101025 - franciscom - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
 	 * 20100417 - franciscom - added importance on output data
 	 */
@@ -4818,7 +4818,7 @@ class testcase extends tlObjectWithAttachments
 	    $itemSet = implode(',',(array)$id);
 
 		$my = array();
-	    $my['filters'] = array( 'cfields' => null);
+	    $my['filters'] = array( 'cfields' => null, 'wfstatus' => null);
 	    $my['filters'] = array_merge($my['filters'], (array)$filters);
 
 	    $my['options'] = array( 'max_field' => 'tcversion_id', 'access_key' => 'tcversion_id');
@@ -4840,11 +4840,30 @@ class testcase extends tlObjectWithAttachments
 	   		
 	   	}
 	    
+	    //
+	    $wfstatus['in'] = '';
+	    $wfstatus['not_in'] = '';
+	    if( !is_null($my['filters']['wfstatus']) && is_array($my['filters']['wfstatus']) )
+	    {
+	    	if( isset($my['filters']['wfstatus']['in']) )
+	    	{
+	    		$wfstatus['in'] = 'AND TCV.workflow_status IN (' . 
+	    						  implode(',',$my['filters']['wfstatus']['in']) . ')';
+	    	}
+	    	if( isset($my['filters']['wfstatus']['not_in']) )
+	    	{
+	    		$wfstatus['not_in'] = 'AND TCV.workflow_status NOT IN (' . 
+	    						  	  implode(',',$my['filters']['wfstatus']['not_in']) . ')';
+	    	}
+	    }
+	    
+	    
 		$sql = "/* $debugMsg */ " . 	    
 			   " {$maxClause}, NH_TCVERSION.parent_id AS testcase_id " .
 			   " FROM {$this->tables['tcversions']} TCV " .
 			   " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
 			   " ON NH_TCVERSION.id = TCV.id AND TCV.active=1 " .
+				$wfstatus['in'] . ' ' . $wfstatus['not_in'] .	
 			   " AND NH_TCVERSION.parent_id IN ({$itemSet}) " .
 			   " GROUP BY NH_TCVERSION.parent_id " .
 			   " ORDER BY NH_TCVERSION.parent_id ";
@@ -4908,7 +4927,7 @@ class testcase extends tlObjectWithAttachments
 			$keySet = implode(',',array_keys($recordset));
 			$sql = "/* $debugMsg */ " . 	    
 				   " {$selectClause}, NH_TCVERSION.parent_id AS testcase_id, " .
-				   " TCV.version,TCV.execution_type,TCV.importance {$cfSelect} " .
+				   " TCV.version,TCV.execution_type,TCV.importance,TCV.workflow_status {$cfSelect} " .
 				   " FROM {$this->tables['tcversions']} TCV " .
 				   " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
 				   " ON NH_TCVERSION.id = TCV.id {$cfJoin} " .

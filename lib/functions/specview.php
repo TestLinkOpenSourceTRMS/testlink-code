@@ -10,7 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *
+ *	20110323 - franciscom - BUGID 4025: option to avoid that obsolete test cases can be added to new test plans
  *  20101209 - asimon - exchanged strpos by stripos to make search case insensitive
  *	20101118 - amitkhullar - BUGID 4024 Filtering issue 
  *	20101101 - franciscom - improved $pfFilters contruction to avoid warning in event viewer
@@ -39,28 +39,6 @@
  *						to include functionality previously used on tc_exec_assignment.php
  * 						to show only testcases present in filter argument
  *	20100119 - franciscom - addCustomFieldsToView() - missing work on platforms
- *	20090808 - franciscom - gen_spec_view() interface changes + refactoring
- *	20090325 - franciscom - added new info about when and who has linked a tcversion
- *	20090325 - franciscom - BUGID - better implementation of BUGID 1497
- *	20081109 - franciscom - fixed filter on getTestSpecFromNode()
- *	                        fixed minor bug on $tsuite_tcqty processing
- *	                        added new value for spec_view_type='uncoveredtestcases'.
- *	
- *	20081030 - franciscom - created removeEmptyTestSuites(), removeEmptyBranches() to refactor.
- *	                        refactored use of tproject_id on gen_spec_view()
- *	
- *	20081019 - franciscom - removed new option to prune empty test suites
- *	                        till we understand were this will be used.
- *	                        In today implementation causes problems
- *	                        Added logic to compute total count of test cases
- *	                        for every test suite in a branch, to avoid use
- *	                        of map_node_tccount argument
- *
- *	20080919 - franciscom - BUGID 1716
- *	20080811 - franciscom - BUGID 1650 (REQ)
- *	20080422 - franciscom - BUGID 1497
- *	Suggested by Martin Havlat execution order will be set to external_id * 10
- *	for test cases not linked yet
  *           
  **/ 
 
@@ -173,23 +151,28 @@
  *     Warning:
  *     if the root element of the spec_view, has 0 test => then the default
  *     structure is returned ( $result = array('spec_view'=>array(), 'num_tc' => 0))
+ *
+ *	IMPORTANT NOTICE:
+ *	1) 	output: [tcversions_qty]
+ *  	used in the logic to filter out inactive tcversions, and inactive test cases.
+ *  	Counts the quantity of active versions of a test case.
+ *  	If 0 => test case is considered INACTIVE
+ *
+ *	2) 	added new logic to include in for inactive test cases, testcase version id.
+ *		This is needed to show testcases linked to testplans, but after be linked to
+ *		test plan, has been set to inactive on test project.
  * 
  * @internal Revisions:
  * 
  *  20100721 - asimon - BUGID 3406 - added user_assignments_per_build to options
  *  
  *  20090808 - franciscom - changed interface to reduce number of arguments
+ * 	20090625 - Eloff - added priority output
  *
  *	20070707 - franciscom - BUGID 921 - problems with display order in execution screen
  *	20070630 - franciscom - added new logic to include in for inactive test cases, testcase version id.
  *			This is needed to show testcases linked to testplans, but after be linked to
  *			test plan, has been set to inactive on test project.
- *	20061105 - franciscom - added new data on output: [tcversions_qty]
- *                        used in the logic to filter out inactive tcversions,
- *                        and inactive test cases.
- *                        Counts the quantity of active versions of a test case.
- *                        If 0 => test case is considered INACTIVE
- * 	20090625 - Eloff - added priority output
  */
 
 function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name, &$linked_items,
@@ -240,14 +223,6 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 	{
 		$pfFilters[$tk] = isset($my['filters'][$fk]) ? $my['filters'][$fk] : null;
 	}
-	
-	// $pfFilters = array('keyword_id' => $my['filters']['keywords'], 
-	//                    'tcase_id' => $my['filters']['testcases'], 
-	// 	               'tcase_node_type_id' => $hash_descr_id['testcase'],
-	// 	               'execution_type' => $my['filters']['exec_type'],
-	// 	               'importance' => $my['filters']['importance'],
-	// 	               'cfields' => $my['filters']['cfields'],'tcase_name' => $my['filters']['tcase_name'] );
-		             
 	$test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
 	
 	$platforms = getPlatforms($db,$tproject_id,$testplan_id);
@@ -334,7 +309,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 	//     }
 	// }
 	
-	// #1650 We want to manage custom fields when user is doing test case execution assigment
+	// BUGID 1650 We want to manage custom fields when user is doing test case execution assigment
 	if( count($result['spec_view']) > 0 && $my['options']['add_custom_fields'])
 	{    
 		addCustomFieldsToView($result['spec_view'],$tproject_id,$tcase_mgr);
@@ -537,14 +512,12 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 							 'tcase_name' => false, 'cfields' => false);
 	$zeroNullCheckFilter = array('execution_type' => false);
 	$useFilter = array('keyword_id' => false) + $nullCheckFilter + $zeroNullCheckFilter;
-
-	$applyFilters = false;
 	foreach($nullCheckFilter as $key => $value)
 	{
 		$useFilter[$key] = !is_null($filters[$key]);
-		
 		$applyFilters =	$applyFilters || $useFilter[$key];
 	}
+
 	foreach($zeroNullCheckFilter as $key => $value)
 	{
 		// need to check for > 0, because for some items 0 has same meaning that null -> no filter
@@ -575,18 +548,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 		$tck_map = $tobj_mgr->get_keywords_tcases($masterContainerId,$filters['keyword_id']);
 	}  
 	
-	// BUGID 3936 - Design Time Custom Field Filter
-	// if(($useFilter['cfields'] = !is_null($filters['cfields'])))
-	// {
-	// 	$applyFilters = true;
-	// }
-    // 
-	// if(($useFilter['tcase_name'] = !is_null($filters['tcase_name'])))
-	// {
-	// 	$applyFilters = true;
-	// }
-
-	
 	if( $applyFilters )
 	{
 		$key2loop = array_keys($test_spec);
@@ -614,7 +575,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 				unset($itemSet[$key]);
 			}
 		}
-
 		if( count($itemSet) > 0 && 
 			($useFilter['execution_type'] || $useFilter['importance'] || $useFilter['cfields']) )
 		{
@@ -623,6 +583,14 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 			
 			// BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
 			$getFilters = $useFilter['cfields'] ? array('cfields' => $filters['cfields']) : null;
+			
+			// BUGID 4025 - add workflow status filter
+			$wfstatus = config_get('tplanDesign')->hideTestCaseWithWFStatusIn;
+			if( !is_null($wfstatus) )
+			{
+				$getFilters['wfstatus'] = array('not_in' => array_keys($wfstatus));		
+			}
+			
 			$tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
 		
 			switch($specViewType)
@@ -1044,10 +1012,13 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
  * 
  *
  * @internal revisions:
+ *	20110323 - franciscom - BUGID 4025
  *  20100726 - asimon - BUGID 3628
  */
 function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 {
+	$wfstatus2exclude = config_get('tplanDesign')->hideTestCaseWithWFStatusIn;
+
     $optionalIntegerFields = array('user_id', 'feature_id','linked_by');
 	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 	$pivot_id=-1;
@@ -1064,9 +1035,11 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 		}
 		$parent_idx = $a_tsuite_idx[$tc_id];
 		
+		// 20110323
     	// Reference to make code reading more human friendly				
 		$outRef = &$out[$parent_idx]['testcases'][$tc_id];
-		if($testCase['active'] == 1 && !is_null($out[$parent_idx]) )
+		if(	$testCase['active'] == 1 && !isset($wfstatus2exclude[$testCase['workflow_status']]) &&
+			!is_null($out[$parent_idx]) )
 		{       
 			if( !isset($outRef['execution_order']) )
 			{

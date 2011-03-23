@@ -73,9 +73,10 @@ function createResultsMenu()
  * @internal Revisions:
  * 
  *
+ * 20110323 - Parameter map_last_exec not used within function -> removed
  * 20100522 - BUGID 3479 - Bulk Execution - Custom Fields Bulk Assignment
  */
-function write_execution(&$db,&$exec_signature,&$exec_data,$map_last_exec)
+function write_execution(&$db,&$exec_signature,&$exec_data)
 {
 	$executions_table = DB_TABLE_PREFIX . 'executions';
 	$resultsCfg = config_get('results');

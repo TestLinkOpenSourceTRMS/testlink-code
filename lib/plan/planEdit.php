@@ -5,14 +5,14 @@
  *
  * Manages test plans
  *
+ * @filesource	planEdit.php
  * @package 	TestLink
- * @author 		
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planEdit.php,v 1.56 2010/10/12 19:58:59 franciscom Exp $
+ * @author 		TestLink community
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  *
- * @internal Revisions:
+ * @internal revisions
  * 20101012 - franciscom - html_table_of_custom_field_inputs() interface changes
  *						   BUGID 3891: Do not lose Custom Field values if test plan can not be created due to duplicated name	
  * 20100602 - franciscom - BUGID 3485: "Create from existing Test Plan" always copies builds

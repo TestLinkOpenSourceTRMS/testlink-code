@@ -6,6 +6,7 @@
  *
  * @internal revisions:
  *
+ *  20110323 - Julian - BUGID 4324 - Julian - Encoding of Test Suite did not work properly
  *  20110322 - eloff - BUGID 3643
  *  20110308 - franciscom - remote execution
  *  20110123 - franciscom - BUGID 3338
@@ -658,7 +659,8 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
       foreach($value['name'] as $jdx => $elem)
       {
       	$str .= "<a href=\"javascript:openTestSuiteWindow(" . $value['node_id'][$jdx] . ")\"> ";
-      	$str .= htmlentities($elem) . '</a>/';
+      	// BUGID 4324 - Julian - Encoding did not work properly
+      	$str .= htmlspecialchars($elem,ENT_QUOTES) . '</a>/';
       }
       $tsuite_info[$key]['tsuite_name']=$str;  
   }

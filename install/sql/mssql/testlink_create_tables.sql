@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.57 2010/12/19 17:50:26 franciscom Exp $
+-- @filesource	testlink_create_tables.sql
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -10,53 +10,18 @@
 --            TEXTIMAGE Option can be used only tables that have fields of type:
 --            varchar(MAXSIZEALLOWED), nvarchar(MAXSIZEALLOWED), varbinary(MAXSIZEALLOWED), xml 
 -- 
--- Rev :
+-- @internal revisions
+--
+--	20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
+--							can be added to new test plans
+--							tcversions.workflow_status
 --
 --  20101219 - franciscom - BUGID 4111 - cfield_testprojects ALTER
 --  20101211 - franciscom - updated to 2.0
 --  20100911 - franciscom - updated schema to Test Link 1.9 DB
 --  20100705 - asimon - added column build_id to user_assignments
 --  20100123 - franciscom - is_open,active added to req_versions table
---  20091220 - franciscom - doc_id increased to 64 and setted NOT NULL
---  20091220 - franciscom - fields removed form req_spec and requirements 
---                          "title", "node_order" 
---
---  20090717 - franciscom - added cfield_testprojects.location field
---  20090411 - franciscom - BUGID 2369 - testplan_tcversions
---  20090103 - franciscom - changed case of unique fields in UPPER CASE (milestones table A,B,C)
---  20090103 - franciscom - milestones table - added new unique index
---  20081018 - franciscom - new indexes (suggested by schlundus) on events table 
---                          refactored index names
---
---  20080831 - franciscom - BUGID 1650 (REQ)
---             custom_fields.show_on_testplan_design
---             custom_fields.enable_on_testplan_design
---             new table cfield_testplan_design_values 
---
---  20080722 - franciscom - added missing tc_external_id
---  20080720 - franciscom - added missing option_automation field
---  20080719 - franciscom - schema upgrade - added transactions and event tables
---
---  20080713 - franciscom - schema upgrade
---
---  20080528 - franciscom - BUGID 1504 - added executions.tcversion_number
---  20080331 - franciscom - testplan_tcversions added node_order
---  20071202 - franciscom - added tcversions.execution_type
---  20071010 - franciscom - ntext,nvarchar,nchar -> text,varchar,char
---                          open -> is_open
---  20070519 - franciscom - milestones table date -> target_date, because
---                          date is reserved word for Oracle
---
---  20070414 - franciscom - table requirements: added field node_order 
---
---  20070228 - franciscom -  BUGID 697 - priority table
---  20070228 - franciscom -  BUGID 697 - builds table
---  20070131 - franciscom - requirements -> req_doc_id(32), 
---
---  20070120 - franciscom - following BUGID 458 ( really a new feature request)
---                          two new fields on builds table  active, open
---                          
---                          
+--           
 --  -----------------------------------------------------------------------------------
 --
 --
@@ -542,8 +507,8 @@ CREATE TABLE /*prefix*/tcversions (
 	tc_external_id int NULL,
 	version smallint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_version DEFAULT ((1)),
 	layout INT NOT NULL DEFAULT '1',
-  summary text  NULL,
-  preconditions TEXT NULL,
+	summary text  NULL,
+	preconditions TEXT NULL,
 	importance tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_importance DEFAULT ((2)),
 	author_id int NULL,
 	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_tcversions_creation_ts DEFAULT (getdate()),
@@ -552,6 +517,7 @@ CREATE TABLE /*prefix*/tcversions (
 	active tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_active DEFAULT ((1)),
 	is_open tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_open DEFAULT ((1)),
 	execution_type tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_execution_type DEFAULT ((1)),
+	workflow_status tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_workflow_status DEFAULT ((1)),
  CONSTRAINT /*prefix*/PK_tcversions PRIMARY KEY CLUSTERED 
 (
 	id ASC

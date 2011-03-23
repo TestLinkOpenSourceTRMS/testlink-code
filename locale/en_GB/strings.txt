@@ -245,6 +245,8 @@ $TLS_reserved_system_role_2 = 'reserved system role 2';
 $TLS_req_created_automatic_log = "Requirement Created";
 $TLS_elapsed_seconds = 'Processing time (seconds)';
 
+$TLS_export_to_csv = "Export to CSV";
+
 // ----- unsorted (TODO move) -------------------------------------
 $TLS_problems_loading_xml_content = "Unable to load XML data, Check your file.";
 $TLS_search_type_like = "Search on this value will be done on LIKE mode";

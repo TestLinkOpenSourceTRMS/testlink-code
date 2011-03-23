@@ -63,9 +63,7 @@ var Base64 = (function() {
             return output;
         }
     };
-})();
-
-/**
+})();/**
  * @class Ext.ux.Exporter
  * @author Ed Spencer (http://edspencer.net)
  * Class providing a common way of downloading data in .xls or .csv format
@@ -113,9 +111,7 @@ Ext.ux.Exporter = function() {
       return Base64.encode(formatter.format(store, config));
     }
   };
-}();
-
-/**
+}();/**
  * @class Ext.ux.Exporter.Button
  * @extends Ext.Button
  * @author Nige White, with modifications from Ed Spencer
@@ -133,11 +129,11 @@ Ext.ux.Exporter.Button = Ext.extend(Ext.Button, {
     
     Ext.applyIf(config, {
       exportFunction: 'exportGrid',
-      disabled      : false,
+      disabled      : true,
       text          : 'Download',
       cls           : 'download'
     });
-
+    
     if (config.store == undefined && config.component != undefined) {
       Ext.applyIf(config, {
         store: config.component.store
@@ -204,6 +200,59 @@ Ext.ux.Exporter.Button = Ext.extend(Ext.Button, {
 Ext.reg('exportbutton', Ext.ux.Exporter.Button);
 
 /**
+ * @class Ext.ux.Exporter.ToolButton
+ * @extends Ext.Button
+ * @author Erik Eloff, inspired of Ext.ux.Exporter.Button
+ *
+ * Specialised Button class that allows downloading of data via data: urls.
+ * This version integrates better within a toolbar and opens the exported
+ * data in a popup window.
+ *
+ * Pass it either an Ext.Component subclass with a 'store' property, or just a store:
+ * new Ext.ux.Exporter.Button({component: someGrid});
+ * new Ext.ux.Exporter.Button({store: someStore});
+ * @cfg {Ext.Component} component The component the store is bound to
+ * @cfg {Ext.data.Store} store The store to export (alternatively, pass a component with a store property)
+ */
+Ext.ux.Exporter.ToolbarButton = Ext.extend(Ext.Button, {
+  constructor: function(config) {
+    config = config || {};
+
+    Ext.applyIf(config, {
+      exportFunction: 'exportGrid',
+      formatter: null,
+      disabled: true,
+      text: 'Download',
+      cls: 'download'
+    });
+
+    if (config.store == undefined && config.component != undefined) {
+      Ext.applyIf(config, {
+        store: config.component.store
+      });
+    } else {
+      Ext.applyIf(config, {
+        component: {
+          store: config.store
+        }
+      });
+    }
+
+    Ext.ux.Exporter.Button.superclass.constructor.call(this, config);
+
+    if (this.store && Ext.isFunction(this.store.on)) {
+      this.handler = function () {
+        // todo: change mime type to allow download (does not work in many browsers)
+        // var popup = window.open('data:application/vnd.ms-excel;base64,' + Ext.ux.Exporter[config.exportFunction](this.component, null, config));
+        var popup = window.open('data:text/plain;base64,' + Ext.ux.Exporter[config.exportFunction](this.component, this.formatter, config));
+      };
+      this.enable();
+    }
+  }
+});
+
+Ext.reg('exporttoolbarbutton', Ext.ux.Exporter.ToolbarButton);
+/**
  * @class Ext.ux.Exporter.Formatter
  * @author Ed Spencer (http://edspencer.net)
  * @cfg {Ext.data.Store} store The store to export
@@ -221,9 +270,7 @@ Ext.ux.Exporter.Formatter.prototype = {
    * Performs the actual formatting. This must be overridden by a subclass
    */
   format: Ext.emptyFn
-};
-
-/**
+};/**
  * @class Ext.ux.Exporter.ExcelFormatter
  * @extends Ext.ux.Exporter.Formatter
  * Specialised Format class for outputting .xls files
@@ -237,7 +284,6 @@ Ext.ux.Exporter.ExcelFormatter = Ext.extend(Ext.ux.Exporter.Formatter, {
     return workbook.render();
   }
 });
-
 /**
  * @class Ext.ux.Exporter.ExcelFormatter.Workbook
  * @extends Object
@@ -493,7 +539,7 @@ Ext.ux.Exporter.ExcelFormatter.Workbook = Ext.extend(Object, {
           name: "Interior",
           properties: [
             {name: "Pattern", value: "Solid"},
-            {name: "Color",   value: "#B3B3B3"}
+            {name: "Color",   value: "#A3C9F1"}
           ]
         },
         {
@@ -518,7 +564,7 @@ Ext.ux.Exporter.ExcelFormatter.Workbook = Ext.extend(Object, {
           name: "Interior",
           properties: [
             {name: "Pattern", value: "Solid"},
-            {name: "Color",   value: "#FFFFFF"}
+            {name: "Color",   value: "#CCFFFF"}
           ]
         }
       ]
@@ -531,7 +577,7 @@ Ext.ux.Exporter.ExcelFormatter.Workbook = Ext.extend(Object, {
           name: "Interior",
           properties: [
             {name: "Pattern", value: "Solid"},
-            {name: "Color",   value: "#E6E6E6"}
+            {name: "Color",   value: "#CCCCFF"}
           ]
         }
       ]
@@ -562,9 +608,7 @@ Ext.ux.Exporter.ExcelFormatter.Workbook = Ext.extend(Object, {
       ]
     });
   }
-});
-
-/**
+});/**
  * @class Ext.ux.Exporter.ExcelFormatter.Worksheet
  * @extends Object
  * Represents an Excel worksheet
@@ -723,8 +767,7 @@ Ext.ux.Exporter.ExcelFormatter.Worksheet = Ext.extend(Object, {
   
   buildCell: function(value, type, style) {
     if (type == "DateTime" && Ext.isFunction(value.format)) value = value.format(this.dateFormatString);
-    //TODO
-	value=stripTags(value);
+    
     return new Ext.ux.Exporter.ExcelFormatter.Cell({
       value: value,
       type : type,
@@ -743,9 +786,7 @@ Ext.ux.Exporter.ExcelFormatter.Worksheet = Ext.extend(Object, {
     'float' : "Number",
     'date'  : "DateTime"
   }
-});
-
-/**
+});/**
  * @class Ext.ux.Exporter.ExcelFormatter.Cell
  * @extends Object
  * Represents a single cell in a worksheet
@@ -771,9 +812,7 @@ Ext.ux.Exporter.ExcelFormatter.Cell = Ext.extend(Object, {
       '<ss:Data ss:Type="{type}"><![CDATA[{value}]]></ss:Data>',
     '</ss:Cell>'
   )
-});
-
-/**
+});/**
  * @class Ext.ux.Exporter.ExcelFormatter.Style
  * @extends Object
  * Represents a style declaration for a Workbook (this is like defining CSS rules). Example:
@@ -874,18 +913,81 @@ Ext.ux.Exporter.ExcelFormatter.Style = Ext.extend(Object, {
     '</tpl>',
     '</ss:Style>'
   )
-});
-
-
-/**
- * Little helper function to strip tags from a string.
- * @param strMod
- * @return strMod
+});/**
+ * @class Ext.ux.Exporter.CSVFormatter
+ * @extends Ext.ux.Exporter.Formatter
+ * Specialised Format class for outputting .csv files
  */
-function stripTags(strMod){
-	strMod = strMod.replace(/<(.|\n)*?>/gi, '');
-	var	tarea = document.createElement('textarea');
-	tarea.innerHTML = strMod;
-	return tarea.value;
-	//return strMod;
-}
+Ext.ux.Exporter.CSVFormatter = Ext.extend(Ext.ux.Exporter.Formatter, {
+  format: function(store, config) {
+    console.log("Formatter");
+    console.log(store);
+    var items = store.data.items;
+    console.log(items);
+    var cols = this.buildColumns(config.columns);
+    return cols + "\n" + this.buildRows(config.columns, items);
+  },
+  buildColumns: function(columns) {
+    var cols = [];
+    Ext.each(columns, function(column) {
+      // todo: check hidden props
+      if (!column.hidden) {
+        var stripped = this.stripTags(column.header);
+        var escapedText = this.escapeTextSeperator(stripped);
+        cols.push(escapedText);
+      }
+    }, this);
+    return cols.join(",");
+  },
+  buildRows: function(columns, items) {
+    var rows = [];
+    Ext.each(items, function(row) {
+      rows.push(this.buildRow(columns, row));
+    }, this);
+    return rows.join("\n");
+  },
+  buildRow: function(columns, row) {
+    var cols = [];
+    Ext.each(columns, function(column) {
+      // todo: check hidden props
+      if (!column.hidden) {
+        var data = row.data[column.dataIndex];
+        // the cell has a custom object instead of a string, use its text attribute
+        if (data.text !== undefined) {
+          data = data.text;
+        }
+        var stripped = this.stripTags(data);
+        var escapedText = this.escapeTextSeperator(stripped);
+        cols.push(escapedText);
+      }
+    }, this);
+    return cols.join(",");
+  },
+  /**
+   * Little helper function to strip tags from a string.
+   * @param strMod
+   * @return strMod
+   */
+  stripTags: function(strMod){
+    if (typeof(strMod) === "string") {
+      strMod = strMod.replace(/<(.|\n)*?>/gi, '');
+    }
+    var	tarea = document.createElement('textarea');
+    tarea.innerHTML = strMod;
+    return tarea.value;
+  },
+
+  /**
+   * Little helper function to escape CSV Text Seperator.
+   * @param strMod
+   * @return strMod
+   */
+  escapeTextSeperator: function(strMod){
+    if (typeof(strMod) === "string") {
+      strMod = strMod.replace(/"/gi, '""');
+    }
+    var	tarea = document.createElement('textarea');
+    tarea.innerHTML = strMod;
+    return '"' + tarea.value + '"';
+  }
+});

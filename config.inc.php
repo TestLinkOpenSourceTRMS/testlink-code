@@ -1389,7 +1389,7 @@ $tlCfg->demoMode = OFF;
  * ATTENTION: This feature is fully experimental. Enable at your own risk!
  *            Enabling it can cause broken tables.
  */
-$tlCfg->enableTableExportButton = false;
+$tlCfg->enableTableExportButton = true;
 
 
 // ----- End of Config ------------------------------------------------------------------

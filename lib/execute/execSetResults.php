@@ -6,7 +6,7 @@
  *
  * @internal revisions:
  *
- *  20110323 - Julian - BUGID 4324 - Julian - Encoding of Test Suite did not work properly
+ *  20110323 - Julian - BUGID 4324 - Encoding of Test Suite did not work properly
  *  20110322 - eloff - BUGID 3643
  *  20110308 - franciscom - remote execution
  *  20110123 - franciscom - BUGID 3338

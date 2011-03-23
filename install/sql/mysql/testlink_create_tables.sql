@@ -407,7 +407,6 @@ CREATE TABLE /*prefix*/tcversions (
   `active` tinyint(1) NOT NULL default '1',
   `is_open` tinyint(1) NOT NULL default '1',
   `execution_type` tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
-  `workflow_status` tinyint(1) NOT NULL default '1' COMMENT '1 -> draft, for more values see on const.inc.php',
   PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8;
 

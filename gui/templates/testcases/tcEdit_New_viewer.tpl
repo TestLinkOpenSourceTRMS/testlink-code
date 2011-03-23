@@ -15,8 +15,7 @@ Purpose: smarty template - create new testcase
 {* ---------------------------------------------------------------- *}
 {lang_get var='labels' 
           s='tc_title,alt_add_tc_name,summary,steps,expected_results,
-             preconditions,workflow_status,
-             execution_type,test_importance,tc_keywords,assign_requirements'}
+             preconditions,status,execution_type,test_importance,tc_keywords,assign_requirements'}
 
 {* Steps and results Layout management *}
 {assign var="layout1" value="<br />"}
@@ -97,10 +96,10 @@ Purpose: smarty template - create new testcase
 			</div>
 		{/if}
 		<div>
-		<span class="labelHolder">{$labels.workflow_status}</span>
-		<select name="workflow_status" id="workflow_status" 
+		<span class="labelHolder">{$labels.status}</span>
+		<select name="tc_status" id="tc_status" 
 				onchange="content_modified = true">
-		{html_options options=$gui->domainWFStatus selected=$gui->tc.workflow_status}
+		{html_options options=$gui->domainTCStatus selected=$gui->tc.status}
 		</select>
 		</div>
     	

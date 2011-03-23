@@ -46,7 +46,7 @@ viewer for test case in test specification
              title_last_mod,title_created,by,expected_results,keywords,
              btn_create_step,step_number,btn_reorder_steps,step_actions,
              execution_type_short_descr,delete_step,show_hide_reorder,
-             test_plan,platform,insert_step,btn_print,btn_print_view,workflow_status,
+             test_plan,platform,insert_step,btn_print,btn_print_view,status,
              execution_type,test_importance,none,preconditions,btn_compare_versions"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
@@ -351,8 +351,8 @@ function launchInsertStep(step_id)
 	</div>
 {/if}
    <div {$addInfoDivStyle}>
-		<span class="labelHolder">{$tcView_viewer_labels.workflow_status} {$smarty.const.TITLE_SEP}</span>
-		{$gui->domainWFStatus[$args_testcase.workflow_status]}
+		<span class="labelHolder">{$tcView_viewer_labels.status} {$smarty.const.TITLE_SEP}</span>
+		{$gui->domainTCStatus[$args_testcase.status]}
 	</div>
 
   {* 20090718 - franciscom *}

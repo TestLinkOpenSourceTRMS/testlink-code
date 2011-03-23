@@ -26,7 +26,7 @@
 -- @internal revisions
 --	20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
 --							can be added to new test plans
---							tcversions.workflow_status
+--							tcversions.status
 --
 --  20101219 - franciscom - BUGID 4111 - cfield_testprojects ALTER
 --  20101204 - franciscom - BUGID 4070 - changed executions_idx1
@@ -197,7 +197,6 @@ CREATE TABLE /*prefix*/tcversions(
   "active" INT2 NOT NULL DEFAULT '1',
   "is_open" INT2 NOT NULL DEFAULT '1',
   "execution_type" INT2 NOT NULL DEFAULT '1',
-  "workflow_status" INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
 ); 
 

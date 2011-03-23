@@ -3278,6 +3278,13 @@ $TLS_issue_status_delivered = "Delivered";
 $TLS_issue_status_closed = "Closed";
 $TLS_issue_status_held = "Held";
 
+$TLS_testCaseStatus_draft = 'Draft';
+$TLS_testCaseStatus_readyForReview = 'Ready for review';
+$TLS_testCaseStatus_reviewInProgress = 'Review in progress';
+$TLS_testCaseStatus_rework = 'Rework';
+$TLS_testCaseStatus_obsolete = 'Obsolete';
+$TLS_testCaseStatus_future = 'Future';
+$TLS_testCaseStatus_final = 'Final';		
 
 $TLS_workflow_status = 'Workflow status';
 $TLS_workflowStatus_draft = 'Draft';

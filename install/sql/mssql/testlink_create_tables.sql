@@ -14,7 +14,7 @@
 --
 --	20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
 --							can be added to new test plans
---							tcversions.workflow_status
+--							tcversions.status
 --
 --  20101219 - franciscom - BUGID 4111 - cfield_testprojects ALTER
 --  20101211 - franciscom - updated to 2.0
@@ -507,6 +507,7 @@ CREATE TABLE /*prefix*/tcversions (
 	tc_external_id int NULL,
 	version smallint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_version DEFAULT ((1)),
 	layout INT NOT NULL DEFAULT '1',
+	status INT NOT NULL DEFAULT '1',
 	summary text  NULL,
 	preconditions TEXT NULL,
 	importance tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_importance DEFAULT ((2)),
@@ -517,7 +518,6 @@ CREATE TABLE /*prefix*/tcversions (
 	active tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_active DEFAULT ((1)),
 	is_open tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_open DEFAULT ((1)),
 	execution_type tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_execution_type DEFAULT ((1)),
-	workflow_status tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_workflow_status DEFAULT ((1)),
  CONSTRAINT /*prefix*/PK_tcversions PRIMARY KEY CLUSTERED 
 (
 	id ASC

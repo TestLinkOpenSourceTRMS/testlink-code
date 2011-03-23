@@ -208,7 +208,7 @@ class testcaseCommands
 		$tcase = $this->tcaseMgr->create($argsObj->container_id,$argsObj->name,$argsObj->summary,$argsObj->preconditions,
 		                            	 $argsObj->tcaseSteps,$argsObj->user_id,$argsObj->assigned_keywords_list,
 		                            	 $new_order,testcase::AUTOMATIC_ID,
-		                            	 $argsObj->exec_type,$argsObj->importance,$argsObj->workflow_status,
+		                            	 $argsObj->exec_type,$argsObj->importance,$argsObj->tc_status,
 		                            	 $options);
 
 		if($tcase['status_ok'])
@@ -316,7 +316,7 @@ class testcaseCommands
 		                               $argsObj->summary, $argsObj->preconditions, $argsObj->tcaseSteps, 
 		                               $argsObj->user_id, $argsObj->assigned_keywords_list,
 		                               testcase::DEFAULT_ORDER, $argsObj->exec_type, 
-		                               $argsObj->importance,$argsObj->workflow_status);
+		                               $argsObj->importance,$argsObj->tc_status);
 
 		$this->show($argsObj,$request,$ret);
  

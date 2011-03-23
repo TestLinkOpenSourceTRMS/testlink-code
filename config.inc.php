@@ -1217,8 +1217,8 @@ $tlCfg->tree_filter_cfg->requirements->advanced_filter_mode_choice = ENABLED;
 $tlCfg->tree_filter_cfg->requirements->automatic_tree_refresh = ENABLED;
 
 /* [Assign test cases to test plan] */
-$tlCfg->tplanDesign->hideTestCaseWithWFStatusIn = array($tlCfg->workflowStatus['obsolete'] => 'obsolete', 
-														$tlCfg->workflowStatus['future'] => 'future' );
+$tlCfg->tplanDesign->hideTestCaseWithStatusIn = array($tlCfg->testCaseStatus['obsolete'] => 'obsolete', 
+													  $tlCfg->testCaseStatus['future'] => 'future' );
 
 
 

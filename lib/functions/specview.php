@@ -584,11 +584,11 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 			// BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
 			$getFilters = $useFilter['cfields'] ? array('cfields' => $filters['cfields']) : null;
 			
-			// BUGID 4025 - add workflow status filter
-			$wfstatus = config_get('tplanDesign')->hideTestCaseWithWFStatusIn;
-			if( !is_null($wfstatus) )
+			// BUGID 4025 - add test case (specification) status filter
+			$tcstatus = config_get('tplanDesign')->hideTestCaseWithWFStatusIn;
+			if( !is_null($tcstatus) )
 			{
-				$getFilters['wfstatus'] = array('not_in' => array_keys($wfstatus));		
+				$getFilters['status'] = array('not_in' => array_keys($tcstatus));		
 			}
 			
 			$tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
@@ -1017,7 +1017,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
  */
 function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 {
-	$wfstatus2exclude = config_get('tplanDesign')->hideTestCaseWithWFStatusIn;
+	$tcStatus2exclude = config_get('tplanDesign')->hideTestCaseWithWFStatusIn;
 
     $optionalIntegerFields = array('user_id', 'feature_id','linked_by');
 	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
@@ -1038,7 +1038,7 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 		// 20110323
     	// Reference to make code reading more human friendly				
 		$outRef = &$out[$parent_idx]['testcases'][$tc_id];
-		if(	$testCase['active'] == 1 && !isset($wfstatus2exclude[$testCase['workflow_status']]) &&
+		if(	$testCase['active'] == 1 && !isset($tcStatus2exclude[$testCase['status']]) &&
 			!is_null($out[$parent_idx]) )
 		{       
 			if( !isset($outRef['execution_order']) )

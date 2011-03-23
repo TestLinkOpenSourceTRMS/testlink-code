@@ -315,7 +315,7 @@ class testcase extends tlObjectWithAttachments
 	function create($parent_id,$name,$summary,$preconditions,$steps,$author_id,
 	                $keywords_id='',$tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
                     $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
-                    $importance=2,$workflow_status=null, $options=null)
+                    $importance=2,$status=null, $options=null)
 	{
 		$status_ok = 1;
 
@@ -349,7 +349,7 @@ class testcase extends tlObjectWithAttachments
 			// Multiple Test Case Steps Feature
 			$op = $this->create_tcversion($ret['id'],$ret['external_id'],$version_number,$summary,
 			                              $preconditions,$steps,$author_id,$execution_type,
-			                              $importance,$workflow_status);
+			                              $importance,$status);
 			
 			$ret['msg'] = $op['status_ok'] ? $ret['msg'] : $op['msg'];
 			$ret['tcversion_id'] = $op['status_ok'] ? $op['id'] : -1;
@@ -533,13 +533,13 @@ class testcase extends tlObjectWithAttachments
 	  returns:
 	
 	  rev: 
-			20110321 - franciscom - BUGID 4025 - added workflow_status	  
+			20110321 - franciscom - BUGID 4025 - added status	  
 			20100821 - franciscom - BUGID 3696 - test case step execution type ignored	
 			20100106 - franciscom - Multiple Test Case Steps Feature
 	*/
 	function create_tcversion($id,$tc_ext_id,$version,$summary,$preconditions,$steps,
 	                          $author_id,$execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
-	                          $importance=2,$workflow_status=null)
+	                          $importance=2,$status=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$tcase_version_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
@@ -552,10 +552,10 @@ class testcase extends tlObjectWithAttachments
 	  	       		 $this->db->prepare_int($author_id) . "," . $this->db->db_now() . 
 	  	       		 ", {$execution_type},{$importance} ";
 		
-		if( !is_null($workflow_status) )
+		if( !is_null($status) )
 		{
-			$wf = intval($workflow_status);
-			$sql .= ',workflow_status';
+			$wf = intval($status);
+			$sql .= ',status';
 			$sqlValues .= ",{$wf}";
 		}
 			
@@ -982,10 +982,10 @@ class testcase extends tlObjectWithAttachments
 		$passeduserarray = array_keys($userid_array);
 
 		
-		$dummy = getConfigAndLabels('workflowStatus','code');
-    	$wfStatusCfg['status_code'] = $dummy['cfg'];
-    	$wfStatusCfg['code_label'] = $dummy['lbl'];
-		$gui->domainWFStatus = $wfStatusCfg['code_label'];
+		$dummy = getConfigAndLabels('testCaseStatus','code');
+    	$tcStatusCfg['status_code'] = $dummy['cfg'];
+    	$tcStatusCfg['code_label'] = $dummy['lbl'];
+		$gui->domainTCStatus = $tcStatusCfg['code_label'];
 		
 		$gui->cf = null; // $cf_current_version; // $cf_smarty;
 		$gui->cf_current_version = $cf_current_version; // $cf_smarty;
@@ -1031,7 +1031,7 @@ class testcase extends tlObjectWithAttachments
 	function update($id,$tcversion_id,$name,$summary,$preconditions,$steps,
 	                $user_id,$keywords_id='',$tc_order=self::DEFAULT_ORDER,
 	                $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2,
-	                $workflow_status=null)
+	                $status=null)
 	{
 		$ret['status_ok'] = 1;
 		$ret['msg'] = '';
@@ -1064,9 +1064,9 @@ class testcase extends tlObjectWithAttachments
 		   		 	 " importance=" . $this->db->prepare_int($importance) . "," .
 		   		 	 " preconditions='" . $this->db->prepare_string($preconditions) . "' ";
 
-		   	if( !is_null($workflow_status) )	 	 
+		   	if( !is_null($status) )	 	 
 			{
-				$dummy .= ", workflow_status=" . intval($workflow_status); 
+				$dummy .= ", status=" . intval($status); 
 			}
 		   		 	 
 		   	$dummy .= " WHERE id = " . $this->db->prepare_int($tcversion_id); 
@@ -1637,7 +1637,7 @@ class testcase extends tlObjectWithAttachments
 					$op = $this->create_tcversion($newTCObj['id'],$newTCObj['external_id'],$tcversion['version'],
 					                              $tcversion['summary'],$tcversion['preconditions'],null,
 					                              $tcversion['author_id'],$tcversion['execution_type'],
-					                              $tcversion['importance'],$tcversion['workflow_status']);
+					                              $tcversion['importance'],$tcversion['status']);
 					
 	    			if( $op['status_ok'] )
 	    			{
@@ -4818,7 +4818,7 @@ class testcase extends tlObjectWithAttachments
 	    $itemSet = implode(',',(array)$id);
 
 		$my = array();
-	    $my['filters'] = array( 'cfields' => null, 'wfstatus' => null);
+	    $my['filters'] = array( 'cfields' => null, 'status' => null);
 	    $my['filters'] = array_merge($my['filters'], (array)$filters);
 
 	    $my['options'] = array( 'max_field' => 'tcversion_id', 'access_key' => 'tcversion_id');
@@ -4841,19 +4841,19 @@ class testcase extends tlObjectWithAttachments
 	   	}
 	    
 	    //
-	    $wfstatus['in'] = '';
-	    $wfstatus['not_in'] = '';
-	    if( !is_null($my['filters']['wfstatus']) && is_array($my['filters']['wfstatus']) )
+	    $status['in'] = '';
+	    $status['not_in'] = '';
+	    if( !is_null($my['filters']['status']) && is_array($my['filters']['status']) )
 	    {
-	    	if( isset($my['filters']['wfstatus']['in']) )
+	    	if( isset($my['filters']['status']['in']) )
 	    	{
-	    		$wfstatus['in'] = 'AND TCV.workflow_status IN (' . 
-	    						  implode(',',$my['filters']['wfstatus']['in']) . ')';
+	    		$status['in'] = 'AND TCV.status IN (' . 
+	    						  implode(',',$my['filters']['status']['in']) . ')';
 	    	}
-	    	if( isset($my['filters']['wfstatus']['not_in']) )
+	    	if( isset($my['filters']['status']['not_in']) )
 	    	{
-	    		$wfstatus['not_in'] = 'AND TCV.workflow_status NOT IN (' . 
-	    						  	  implode(',',$my['filters']['wfstatus']['not_in']) . ')';
+	    		$status['not_in'] = 'AND TCV.status NOT IN (' . 
+	    						  	  implode(',',$my['filters']['status']['not_in']) . ')';
 	    	}
 	    }
 	    
@@ -4863,7 +4863,7 @@ class testcase extends tlObjectWithAttachments
 			   " FROM {$this->tables['tcversions']} TCV " .
 			   " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
 			   " ON NH_TCVERSION.id = TCV.id AND TCV.active=1 " .
-				$wfstatus['in'] . ' ' . $wfstatus['not_in'] .	
+				$status['in'] . ' ' . $status['not_in'] .	
 			   " AND NH_TCVERSION.parent_id IN ({$itemSet}) " .
 			   " GROUP BY NH_TCVERSION.parent_id " .
 			   " ORDER BY NH_TCVERSION.parent_id ";
@@ -4927,7 +4927,7 @@ class testcase extends tlObjectWithAttachments
 			$keySet = implode(',',array_keys($recordset));
 			$sql = "/* $debugMsg */ " . 	    
 				   " {$selectClause}, NH_TCVERSION.parent_id AS testcase_id, " .
-				   " TCV.version,TCV.execution_type,TCV.importance,TCV.workflow_status {$cfSelect} " .
+				   " TCV.version,TCV.execution_type,TCV.importance,TCV.status {$cfSelect} " .
 				   " FROM {$this->tables['tcversions']} TCV " .
 				   " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
 				   " ON NH_TCVERSION.id = TCV.id {$cfJoin} " .

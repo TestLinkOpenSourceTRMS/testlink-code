@@ -295,7 +295,8 @@ if ($show_newTC_form)
   	$tc_default=array('id' => 0, 'name' => '');
   	$tc_default['importance'] = $init_inputs ? $tlCfg->testcase_importance_default : $args->importance;
   	$tc_default['execution_type'] = $init_inputs ? TESTCASE_EXECUTION_TYPE_MANUAL : $args->exec_type;
-  	$tc_default['workflow_status'] = $init_inputs ? TESTCASE_EXECUTION_TYPE_MANUAL : $args->workflow_status;
+  	$tc_default['status'] = $init_inputs ? $args->tcStatusCfg['status_code']['draft'] : $args->tc_status;
+    
 
   	foreach ($oWebEditor->cfg as $key => $value)
   	{
@@ -376,11 +377,11 @@ function init_args(&$cfgObj,$otName)
     $args->importance = isset($_REQUEST['importance']) ? $_REQUEST['importance'] : $tc_importance_default;
     
     
-    $dummy = getConfigAndLabels('workflowStatus','code');
-    $args->wfStatusCfg['status_code'] = $dummy['cfg'];
-    $args->wfStatusCfg['code_label'] = $dummy['lbl'];
-    $args->workflow_status = isset($_REQUEST['workflow_status']) ? intval($_REQUEST['workflow_status']) : 
-    						 $args->wfStatusCfg['status_code']['draft'];
+    $dummy = getConfigAndLabels('testCaseStatus','code');
+    $args->tcStatusCfg['status_code'] = $dummy['cfg'];
+    $args->tcStatusCfg['code_label'] = $dummy['lbl'];
+    $args->tc_status = isset($_REQUEST['tc_status']) ? intval($_REQUEST['tc_status']) : 
+    						 $args->tcStatusCfg['status_code']['draft'];
 
 
     

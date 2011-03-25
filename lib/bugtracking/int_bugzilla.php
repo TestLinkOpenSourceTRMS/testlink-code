@@ -118,11 +118,6 @@ class bugzillaInterface extends bugtrackingInterface
 			if ($summary)
 			{
 				$summary = array_pop ($summary);
-			
-				if(tlStringLen($summary) > 45)
-				{
-					$summary = tlSubStr($summary, 0, 42) . "...";
-				}
 			}
 			else
 				$summary = null;

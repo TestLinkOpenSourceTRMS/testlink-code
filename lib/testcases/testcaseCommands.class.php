@@ -148,9 +148,11 @@ class testcaseCommands
     	$guiObj->initWebEditorFromTemplate = true;
     	
 		$importance_default = config_get('testcase_importance_default');
-		
+		$tcStatusConfig = getConfigAndLabels('testCaseStatus');
+
     	$tc_default=array('id' => 0, 'name' => '', 'importance' => $importance_default,
-  	                      'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL);
+  	                      'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL,
+  	                      'status' => $tcStatusConfig['cfg']['draft']);
 
         $guiObj->containerID = $argsObj->container_id;
 		if($argsObj->container_id > 0)
@@ -181,6 +183,7 @@ class testcaseCommands
     	$guiObj->opt_cfg=$otCfg;
 		$templateCfg = templateConfiguration('tcNew');
 		$guiObj->template=$templateCfg->default_template;
+		
     	return $guiObj;
 	}
 
@@ -271,7 +274,7 @@ class testcaseCommands
     	keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
   		$tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
 
-		// new dbug($tc_data);
+		new dbug($tc_data);
 		
   		foreach($oWebEditorKeys as $key)
    		{

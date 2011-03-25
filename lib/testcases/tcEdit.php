@@ -607,7 +607,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
 	$guiObj->direct_link = $tcaseMgr->buildDirectWebLink($_SESSION['basehref'],$argsObj->tcase_id,$argsObj->testproject_id);
 
 
-	$guiObj->domainWFStatus = $argsObj->wfStatusCfg['code_label'];
+	$guiObj->domainTCStatus = $argsObj->tcStatusCfg['code_label'];
 	
 	return $guiObj;
 }

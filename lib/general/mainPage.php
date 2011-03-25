@@ -3,9 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: mainPage.php,v $
- * @version $Revision: 1.62 $ $Author: havlat $
- * @modified $Date: 2010/02/18 21:52:10 $
+ * @filesource	mainPage.php
  * @author Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
@@ -15,19 +13,12 @@
  * based upon the login. 
  * There is also some javascript that handles the form information.
  *
- * Rev: 20090808 - franciscom - grants refactoring
- *      20090426 - franciscom - BUGID - new right testproject_user_role_assignment
- *      20081030 - franciscom - BUGID 1698 - refixed
- *      20080905 - franciscom - BUGID 1698
- *      20080322 - franciscom - changes in $tproject_mgr->get_all_testplans()
- *      20080120 - franciscom - added logic to enable/disable test case search link
- *
+ * @internal revisions
+ * 20110325 - franciscom - BUGID 4062
  **/
 
 require_once('../../config.inc.php');
 require_once('common.php');
-
-// BUGID 1698
 if(function_exists('memory_get_usage') && function_exists('memory_get_peak_usage'))
 {
     tlog("mainPage.php: Memory after common.php> Usage: ".memory_get_usage(), 'DEBUG');
@@ -39,6 +30,9 @@ $smarty = new TLSmarty();
 $tproject_mgr = new testproject($db);
 
 $testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+$testplanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
+
+
 $currentUser = $_SESSION['currentUser'];
 $userID = $currentUser->dbID;
 
@@ -92,8 +86,6 @@ $gui->num_active_tplans = sizeof($tproject_mgr->get_all_testplans($testprojectID
 // get Test Plans available for the user 
 $arrPlans = $currentUser->getAccessibleTestPlans($db,$testprojectID);
 
-// Need to set select test plan based on session information 
-$testplanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
 if($testplanID > 0)
 {
 	// if this test plan is present on $arrPlans
@@ -130,19 +122,16 @@ if ($testplanID && isset($currentUser->tplanRoles[$testplanID]))
 	$gui->testplanRole = $tlCfg->gui->role_separator_open . $role->getDisplayName() . $tlCfg->gui->role_separator_close;
 }
 
-
-$rights2check = array('testplan_execute','testplan_create_build',
-                    'testplan_metrics','testplan_planning',
-                    'testplan_user_role_assignment',
-                    'mgt_testplan_create','mgt_users',
-                    'cfield_view', 'cfield_management');
-                        
+$rights2check = array('testplan_execute','testplan_create_build','testplan_metrics','testplan_planning',
+                      'testplan_user_role_assignment','mgt_testplan_create','mgt_users',
+                      'cfield_view', 'cfield_management');
 foreach($rights2check as $key => $the_right)
 {
-    $gui->grants[$the_right] = $currentUser->hasRight($db,$the_right);
+	// trying to remove Evil global coupling
+    // $gui->grants[$the_right] = $currentUser->hasRight($db,$the_right);
+    $gui->grants[$the_right] = $currentUser->hasRight($db,$the_right,$testprojectID,$testplanID);
 }                         
 
-// 20090426 - franciscom - BUGID
 $gui->grants['tproject_user_role_assignment'] = "no";
 if( $currentUser->hasRight($db,"testproject_user_role_assignment",$testprojectID,-1) == "yes" ||
     $currentUser->hasRight($db,"user_role_assignment",null,-1) == "yes" )

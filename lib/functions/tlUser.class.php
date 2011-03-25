@@ -3,14 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  * 
+ * @filesource	tlUser.class.php
  * @package 	TestLink
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlUser.class.php,v 1.14 2010/11/11 19:50:30 franciscom Exp $
- * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions:
  *	
+ *  20110325 - franciscom - BUGID 4062 - hasRight() caused by bad access to $_SESSION
  *	20101111 - franciscom - BUGID 4006 - test plan is_public
  *	20100917 - Julian - getAccessibleTestPlans() - BUGID 3724 - new option "active"
  *	20100704 - franciscom - getAccessibleTestPlans() - BUGID 3526
@@ -18,10 +18,6 @@
  *	20100427 - franciscom - BUGID 3396 - writePasswordToDB() method
  *	20100326 - franciscom - setActive() method
  *	20100217 - franciscom - getNamesForProjectRight() - fixed error displayed on event viewer + refactoring
- *  20090726 - franciscom - new method getAccessibleTestPlans()
- * 	20090419 - franciscom - refactoring replace product with test project (where possible).
- *  20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
- *  20081213 - franciscom - removed global coupling to access config parameters
  */
  
 /**
@@ -713,6 +709,10 @@ class tlUser extends tlDBObject
      * means that check right on effective role.
      *
      * @return string|null 'yes' or null
+	 *
+	 * @internal revisions
+	 * 20110325 - franciscom - 	BUGID 4062 - caused by bad access to $_SESSION
+	 *							dammed global coupling	
      */
 	function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	{
@@ -733,8 +733,9 @@ class tlUser extends tlDBObject
 		{
 			//@TODO schlundus, should not be there
 			// 20090726 - franciscom -> yes must be moved ASAP
-			$testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+			$testPlanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
 		}
+		
 		
 		$userTestPlanRoles = $this->tplanRoles;
 		if (!is_null($tprojectID))

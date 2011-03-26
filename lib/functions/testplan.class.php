@@ -14,6 +14,7 @@
  *
  *
  * @internal Revisions:
+ *	20110326 - franciscom - filter_cf_selection() make it safer
  *	20110322 - franciscom - BUGID 4343: Reports Failed Test Cases / ... -> Build is not shown	
  *							get_linked_tcversions() - error while refactoring.
  *
@@ -2647,7 +2648,9 @@ class testplan extends tlObjectWithAttachments
 	
 	  returns: array filtered by selected custom fields.
 	
-	  rev :
+	  @internal revisions
+	  20110326 - franciscom - added some logic to avoid issues if cfvalue is ''
+	  
 	*/
 	function filter_cf_selection ($tp_tcs, $cf_hash)
 	{
@@ -2655,22 +2658,23 @@ class testplan extends tlObjectWithAttachments
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		
 		// BUGID 3809 - Radio button based Custom Fields not working		
+		// BUGID 3995 Custom Field Filters not working properly since the cf_hash is array	
 		$or_clause = '';
 		$cf_query = '';
-		//BUGID 3995 Custom Field Filters not working properly since the cf_hash is array	
+		$ignored = 0;
+		$doFilter = false;
+		$doIt = true;
+		
 		if (isset($cf_hash)) 
 		{
 			$countmain = 1;
 			foreach ($cf_hash as $cf_id => $cf_value) 
 			{
-				if ( $countmain != 1 ) 
-				{
-					$cf_query .= " OR ";
-				}
 				// single value or array?
 				if (is_array($cf_value)) 
 				{
 					$count = 1;
+					$cf_query .= $or_clause;
 					foreach ($cf_value as $value) 
 					{
 						if ($count > 1) 
@@ -2680,35 +2684,60 @@ class testplan extends tlObjectWithAttachments
 						$cf_query .= " ( CFD.value LIKE '%{$value}%' AND CFD.field_id = {$cf_id} )";
 						$count++;
 					}
-				} else 
+				} 
+				else 
 				{
-					$cf_query .= " ( CFD.value LIKE '%{$cf_value}%' ) ";
+					// Because cf value can NOT exists on DB depending on system config.
+					if( trim($cf_value) != '')
+					{
+						$cf_query .= $or_clause;
+						$cf_query .= " ( CFD.value LIKE '%{$cf_value}%' ) ";
+					}	
+					else
+					{
+						$ignored++;
+					}	
 				}
-					$countmain++;
+
+				if($or_clause == '')
+				{
+					$or_clause = ' OR ';
+				}
 			}
-					$cf_query =  " AND ({$cf_query}) ";
+			
+			// grand finale
+			if( $cf_query != '')
+			{
+				$cf_query =  " AND ({$cf_query}) ";
+				$doFilter = true;
+			}	
 		}
 		                              
-        $cf_qty = count($cf_hash);		                              		
+        $cf_qty = count($cf_hash) - $ignored;		                              		
+        $doIt = !$doFilter;
 		foreach ($tp_tcs as $tc_id => $tc_value)
 		{
-			// BUGID 2877 - Custom Fields linked to TC versions
-			$sql = " /* $debugMsg */ SELECT CFD.value FROM {$this->tables['cfield_design_values']} CFD," .
-				   " {$this->tables['nodes_hierarchy']} NH" .
-				   " WHERE CFD.node_id = NH.id " .
-				   " AND NH.parent_id = {$tc_value['tc_id']} " .
-				   " {$cf_query} ";
+			if( $doFilter )
+			{
+				// BUGID 2877 - Custom Fields linked to TC versions
+				$sql = " /* $debugMsg */ SELECT CFD.value FROM {$this->tables['cfield_design_values']} CFD," .
+					   " {$this->tables['nodes_hierarchy']} NH" .
+					   " WHERE CFD.node_id = NH.id " .
+					   " AND NH.parent_id = {$tc_value['tc_id']} " .
+					   " {$cf_query} ";
+				
+				$rows = $this->db->fetchColumnsIntoArray($sql,'value'); //BUGID 4115
 			
-			$rows = $this->db->fetchColumnsIntoArray($sql,'value'); //BUGID 4115
-			// if there exist as many rows as custom fields to be filtered by => tc does meet the criteria
-			if(count($rows) == $cf_qty) 
+				// if there exist as many rows as custom fields to be filtered by => tc does meet the criteria
+				$doIt = (count($rows) == $cf_qty);
+			}	
+			if( $doIt ) 
 			{
 				$new_tp_tcs[$tc_id] = $tp_tcs[$tc_id];
 			}
 		}
 		return ($new_tp_tcs);
 	}
-
 
 	/*
 	  function: get_estimated_execution_time

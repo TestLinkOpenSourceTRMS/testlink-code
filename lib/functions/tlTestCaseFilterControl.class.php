@@ -3,12 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * @filesource tlTestCaseFilterControl.class.php
  * @package    TestLink
  * @author     Andreas Simon
- * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.33.2.2 2011/01/13 13:47:42 mx-julian Exp $
+ * @copyright  2006-2011, TestLink community
  * @link       http://www.teamst.org/index.php
- * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
+ * 
  *
  * This class extends tlFilterPanel for the specific use with test case tree.
  * It holds the logic to be used at GUI level to manage a common set of settings and filters for test cases.
@@ -61,11 +61,6 @@
  * 20100713 - asimon - fixed Drag&Drop error caused by init_filter_custom_fields()
  * 20100702 - asimon - fixed error in init_setting_testplan()
  * 20100701 - asimon - BUGID 3414 - additional work in init_filter_custom_fields()
- * 20100628 - asimon - removal of constants
- * 20100624 - asimon - CVS merge (experimental branch to HEAD)
- * 20100503 - asimon - start of implementation of filter panel class hierarchy
- *                     to simplify/generalize filter panel handling
- *                     for test cases and requirements
  */
 
 /*
@@ -1418,7 +1413,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				
 				// BUGID 3716
 				// custom fields on test spec did not retain value after apply
-				$value = isset($_REQUEST[$cf_input_name]) ? $_REQUEST[$cf_input_name] : null;
+				$value = isset($_REQUEST[$cf_input_name]) ? trim($_REQUEST[$cf_input_name]) : null;
 
 				// BUGID 3884: added filtering for datetime custom fields
 				if ($verbose_type == 'datetime') {
@@ -1458,13 +1453,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				}
 				$cf['value'] = $value2display;
 
-				if ($value) {
+				if (!is_null($value) && $value !='') 
+				{
 					$this->do_filtering = true;
 					$selection[$id] = $value;
 				}
 
-				$label = str_replace(TL_LOCALIZE_TAG, '', lang_get($cf['label'],
-				                                                   null, $no_warning));
+				$label = str_replace(TL_LOCALIZE_TAG, '', lang_get($cf['label'], null, $no_warning));
 
 				$cf_size = self::CF_INPUT_SIZE;
 				// set special size for list inputs

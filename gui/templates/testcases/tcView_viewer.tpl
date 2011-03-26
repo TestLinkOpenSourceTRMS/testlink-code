@@ -1,10 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	tcView_viewer.tpl
+
 viewer for test case in test specification
 
+@filesource	tcView_viewer.tpl
+
 @internal revisions
-20110319 - franciscom - BUGID 4322: New Option to block delete of executed test cases
+	20110319 - franciscom - BUGID 4322: New Option to block delete of executed test cases
     20110307 - asimon - BUGID 4286: moved print preview to popup to make printing independent from browser easier for the users
                                     moved req view button forms and divs around to align buttons in a single row
 	20110304 - franciscom - BUGID 4286: Option to print single test case
@@ -204,8 +206,8 @@ viewer for test case in test specification
 	                           value="{lang_get s=$act_deact_value}" />
 	  {/if}
 
-  {* 20090306 - franciscom*}
-  {if $args_can_do->add2tplan == "yes" && $args_has_testplans}
+  {if $args_can_do->add2tplan == "yes" && $args_has_testplans && 
+  	  $args_testcase.enabledOnTestPlanDesign}
   <input type="button" id="addTc2Tplan_{$args_testcase.id}"  name="addTc2Tplan_{$args_testcase.id}" 
          value="{$tcView_viewer_labels.btn_add_to_testplans}" onclick="location='{$hrefAddTc2Tplan}'" />
 

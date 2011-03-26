@@ -10,6 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20110326 - franciscom - 	BUGID 4025 - show()
  * 20110321 - franciscom - 	BUGID 4025: option to avoid that obsolete test cases 
  *							can be added to new test plans.
  *							create(), create_tcversion(),get_last_active_version()
@@ -127,52 +128,6 @@
  *                         get_last_version_info() - interface changes
  * 20100103 - franciscom - getPrefix() - interface changes & refactoring
  *                         new methods - buildDirectWebLink(), getExternalID()
- * 20091229 - eloff - BUGID 3021  - getInternalID() - fixed error when tc prefix contains glue character
- * 20091220 - franciscom - copy_attachments() refactoring
- * 20091217 - franciscom - getDuplicatesByName() - new argument added
- * 20091215 - franciscom - getPrefix() - changed in return type, to avoid in some situations
- *                                       a double call.
- * 20091207 - franciscom - get_last_execution() - internal bug 
- * 20091127 - franciscom - getByPathName() new method
- * 20091118 - franciscom - get_last_execution() - still working ond fixing bug when using self::ALL_VERSIONS
- * 20091113 - franciscom - get_last_execution() - fixed bug when using self::ALL_VERSIONS
- * 20091003 - franciscom - show() changes in template get logic
- * 20090927 - franciscom - new methods: getPathLayered(),getPathTopSuite()
- * 20090922 - franciscom - get_last_execution() - used COALESCE() to return code
- *                                                also code for NOT RUN status.
- * 20090831 - franciscom - added management of new field: preconditions
- *                         create(),update(),exportTestCaseDataToXML()
- *
- * 20090815 - franciscom - get_executions() - added platform related info
- *                                            interface changes.
- *                         get_last_execution() - added platform related info
- *
- * 20090720 - franciscom - found bug in get_linked_cfields_at_execution()
- *                         when calling cfield_mgr class method
- *
- * 20090718 - franciscom - new method buildCFLocationMap();
- * 20090716 - franciscom - get_last_execution() - BUGID 2692 - interface changes.
- * 20090713 - franciscom - solved bug on get_executions() (bad SQL statement).
- * 20090530 - franciscom - html_table_of_custom_field_inputs() changes in interface
- * 20090526 - franciscom - html_table_of_custom_field_values() - added scope 'testplan_design'
- * 20090521 - franciscom - get_by_id() added version_number argument
- * 20090419 - franciscom - BUGID 2364 - show() changes on edit enabled logic
- * 20090414 - franciscom - BUGID 2378
- * 20090401 - franciscom - BUGID 2316 - changes to copy_to()
- * 20090308 - franciscom - BUGID 2204 - create() fixed return of new version number
- * 20090220 - franciscom - BUGID 2129
- * 20090106 - franciscom - BUGID - exportTestCaseDataToXML() - added export of custom fields values
- * 20081103 - franciscom - new method setKeywords() - added by schlundus
- *                         removed useless code from getTestProjectFromTestCase()
- * 20081015 - franciscom - delete() - improve controls to avoid bug if no children
- * 20080812 - franciscom - BUGID 1650 (REQ)
- *                         html_table_of_custom_field_inputs() interface changes
- *                         to manage custom fields with scope='testplan_design'
- *
- * 20080602 - franciscom - get_linked_versions() - internal changes due to BUG1504
- *                         get_exec_status() - interface and internal changes due to BUG1504
- *
- * 20080126 - franciscom - BUGID 1313
  */
 
 /** related functionality */
@@ -740,21 +695,6 @@ class testcase extends tlObjectWithAttachments
 	  returns:
 	
 	  rev :
-	       20090215 - franciscom - added info about links to test plans
-	       
-	       20081114 - franciscom -
-	       added arguments and options that are useful when this method is
-	       used to display test case search results.
-	       path_info: map: key: testcase id
-	                       value: array with path to test case, where:
-	                              element 0 -> test project name
-	                              other elements test suites name
-	       
-	       new options on viewer_args: hilite_testcase_name,show_match_count
-	       
-	       20070930 - franciscom - REQ - BUGID 1078
-	       added disable_edit argument
-	
 	*/
 	function show(&$smarty,$guiObj,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 	              $viewer_args = null,$path_info=null,$mode=null)
@@ -901,6 +841,9 @@ class testcase extends tlObjectWithAttachments
 	    	$cfx=0;
 		  	$allTCKeywords = $this->getKeywords($a_id,null,'testcase_id',' ORDER BY keyword ASC ');
 		  	$allReqs = $req_mgr->get_all_for_tcase($a_id);
+		  	
+		  	$tcStatus2exclude = config_get('tplanDesign')->hideTestCaseWithStatusIn;
+
 		  	foreach($a_id as $key => $tc_id)
 		  	{
 		  		$tc_array = $this->get_by_id($tc_id,$version_id);
@@ -917,7 +860,12 @@ class testcase extends tlObjectWithAttachments
 		  		$gui->linked_versions[] = $this->get_linked_versions($tc_id);
 		  		$keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
 		  		$tc_current = $tc_array[0];
-		  		$tcversion_id_current = $tc_array[0]['id']; 
+		  		
+		  		// add new attribute
+		  		// enabledOnTestPlanDesign
+		  		$tc_current['enabledOnTestPlanDesign'] = !isset($tcStatus2exclude[$tc_current['status']]);
+		  		
+		  		$tcversion_id_current = $tc_current['id']; 
 		  		$gui->tc_current_version[] = array($tc_current);
 		  		
 		  		//Get UserID and Updater ID for current Version
@@ -938,14 +886,13 @@ class testcase extends tlObjectWithAttachments
 		  		if(count($tc_array) > 1)
 		  		{
 		  			$tc_other_versions[] = array_slice($tc_array,1);
-					
 					$target_idx = count($tc_other_versions) - 1;
-					
-					// BUGID 3431
 					$loop2do = count($tc_other_versions[$target_idx]);
 					for($qdx=0; $qdx < $loop2do; $qdx++)
 					{
-						$target_tcversion = $tc_other_versions[$target_idx][$qdx]['id'];
+						$tcRef = &$tc_other_versions[$target_idx][$qdx];
+						$tcRef['enabledOnTestPlanDesign'] = !isset($tcStatus2exclude[$tcRef['status']]);
+						$target_tcversion = $tcRef['id'];
 	      				foreach($cfPlaces as $locationKey => $locationFilter)
 		  				{ 
 		  					// BUGID 3431
@@ -961,8 +908,9 @@ class testcase extends tlObjectWithAttachments
 		  			$cf_other_versions[$cfx]=null;
 		  		}	
 		  		$cfx++;
-		  		
+
 		  		// Get author and updater id for each version
+		  		// @TODO - franciscom - explain magic ZERO
 		  		if ($tc_other_versions[0])
 		  		{
 		  			foreach($tc_other_versions[0] as $key => $version)

@@ -585,7 +585,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 			$getFilters = $useFilter['cfields'] ? array('cfields' => $filters['cfields']) : null;
 			
 			// BUGID 4025 - add test case (specification) status filter
-			$tcstatus = config_get('tplanDesign')->hideTestCaseWithWFStatusIn;
+			$tcstatus = config_get('tplanDesign')->hideTestCaseWithStatusIn;
 			if( !is_null($tcstatus) )
 			{
 				$getFilters['status'] = array('not_in' => array_keys($tcstatus));		
@@ -1017,7 +1017,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
  */
 function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 {
-	$tcStatus2exclude = config_get('tplanDesign')->hideTestCaseWithWFStatusIn;
+	$tcStatus2exclude = config_get('tplanDesign')->hideTestCaseWithStatusIn;
 
     $optionalIntegerFields = array('user_id', 'feature_id','linked_by');
 	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);

@@ -3294,5 +3294,9 @@ $TLS_workflowStatus_rework = 'Rework';
 $TLS_workflowStatus_obsolete = 'Obsolete';
 $TLS_workflowStatus_future = 'Future';
 $TLS_workflowStatus_final = 'Final';		
+
+// this definition has to be placed AFTER $TLS_title_metrics_x_build
+$TLS_buildMetricsFeedback = $TLS_title_metrics_x_build . 
+							' data is computed using only test cases that have tester assignment on build';
 // ----- END ------------------------------------------------------------------
 ?>

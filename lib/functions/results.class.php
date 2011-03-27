@@ -3,15 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * @filesource	results.class.php
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
- * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.166 2010/12/27 08:15:01 amkhullar Exp $
+ * @copyright 	2004-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
  *
- * @internal Revisions:
+ * @internal revisions
+ * 20110326 - franciscom - BUGID 4355: 	General Test Plan Metrics - Build without executed 
+ *										test cases are not displayed.
  * 20101225 - franciscom - BUGID 4124: General Test Plan Metrics Fails (BLANK Page)
  *
  * 20101019 - eloff - BUGID 3794 - added contribution by rtessier
@@ -333,7 +335,6 @@ class results extends tlObjectWithDB
 			                                                 $all_results);
             
             // new dBug($this->executionsMap);
-            
 			$this->createMapOfLastResult($this->suiteStructure, $this->executionsMap, $lastResult);
 			$this->aggregateKeywordResults = $this->tallyKeywordResults($this->mapOfLastResultByKeyword, $keywords_in_tplan);
 			$this->aggregateOwnerResults = $this->tallyOwnerResults($this->mapOfLastResultByOwner, $arrOwners);
@@ -351,9 +352,7 @@ class results extends tlObjectWithDB
 			// BUGID 3682
    			$arrBuilds = $tplan_mgr->get_builds($this->testPlanID, testplan::GET_ACTIVE_BUILD);
 			
-			// 3406, 1508 - we need the totals per build here, not for the whole plan anymore
-			//$this->aggregateBuildResults = $this->tallyBuildResults($this->mapOfLastResultByBuild,
-			//                                                        $arrBuilds, $this->totalsForPlan);
+			// BUGID 3406, BUGID 1508 - we need the totals per build here, not for the whole plan anymore
 			$this->totalsForBuilds = $this->createTotalsForBuilds($arrBuilds);
 			$this->aggregateBuildResults = $this->tallyBuildResults($this->mapOfLastResultByBuild,
 			                                                        $arrBuilds, $this->totalsForBuilds);
@@ -528,46 +527,37 @@ class results extends tlObjectWithDB
 
 	/**
 	 *
-	 * parameter1 format:
-	 * Array ([owner id] => Array ( [test case id] => result ))
-	 *
-	 * @return array map
-	 * <code>Array ( [owner id] => Array ( total, passed, failed, blocked, not run))</code>
 	 * 
 	 * @internal revisions:
-	 *     20100721 - asimon - BUGID 3406, 1508
+	 * 20110326 - franciscom - BUGID 4355
+	 * 20100721 - asimon - BUGID 3406, 1508
 	 */
-	private function tallyBuildResults($buildResults, $arrBuilds, $finalResults)
+	private function tallyBuildResults($lastExecByBuild, $arrBuilds, $execTotalsByBuild)
 	{                     
-		if ($buildResults == null)
+		if ($lastExecByBuild == null)
 		{
 			return null;
 		}
 		
-		// OK go ahead
-		
-		// 3406, 1508
-		//$totalCases = $finalResults['total'];
 		$na_string = lang_get('not_aplicable');
 		
 		$rValue = null;
 		foreach($arrBuilds as $buildId => $buildInfo)
 		{
 			$item_name='build_name';
-			$results = isset($buildResults[$buildId]) ? $buildResults[$buildId] : array();
-			
-			// 3406, 1508 - total cases is now an array with totals for each build ID
-			$totalCases = $finalResults[$buildId]['total'];
-			
-			$element=$this->tallyResults($results,$totalCases,$item_name);
+			$results = isset($lastExecByBuild[$buildId]) ? $lastExecByBuild[$buildId] : array();
+			$totalCases = $execTotalsByBuild[$buildId]['total'];
+			$element = $this->tallyResults($results,$totalCases,$item_name);
 			if (!is_null ($element))
 			{
 				$element[$item_name]=$buildInfo['name'];
 				$rValue[$buildId] = $element;
 				
-				// 3406, 1508: here we need to insert the correct "not run" value now
+				// BUGID 3406 - BUGID 1508 
+				// here we need to insert the correct "not run" value now
 				// and the percentages need to be re-calculated after that of course
-				$not_run_count = $this->tplanMgr->assignment_mgr->get_not_run_tc_count_per_build($buildId);
+				$not_run_count = $execTotalsByBuild[$buildId]['not_run'];
+				
 				$not_run_percentage = ($totalCases != 0) ? 
 				                      number_format($not_run_count / $totalCases * 100, 2) : $na_string;
 				$rValue[$buildId]['details']['not_run']['qty'] = $not_run_count;
@@ -578,7 +568,6 @@ class results extends tlObjectWithDB
 		
 		unset($element);       
 		unset($results);
-		
 		return $rValue;
 	}
 
@@ -789,41 +778,57 @@ class results extends tlObjectWithDB
 	private function tallyResults($results,$totalCases,$item_name=null)
 	{
 		
-		if ($results == null)
+		static $na_string;
+		static $code_verbose;
+		if( is_null($na_string) ) 
 		{
-			return null;
+			$na_string = lang_get('not_aplicable');
+			$code_verbose = array_flip($this->tc_status_for_statistics);
 		}
-		
-		// OK go ahead
-		
-		// 3406
-		$na_string = lang_get('not_aplicable');
-		
-		$code_verbose=array_flip($this->tc_status_for_statistics);
-		$element = null;
+
+		// initalization area
+		// Because I want to have this as first key on map, just for easy reading.
+		// Value will be setted by caller.
+		if( !is_null($item_name) )
+		{
+			$element[$item_name]='';
+		}
+		$element['total_tc'] = $totalCases;
+		$element['percentage_completed'] = 0;
+		$element['details']=array();
+
 		foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
 		{
 			$total[$status_verbose]=0;
 			$percentage[$status_verbose]=0;
+
+			$element['details'][$status_verbose]['qty'] = 0;
+			$element['details'][$status_verbose]['percentage'] = 0;
+		}
+
+		if ($results == null)
+		{
+			// 20110326 - return a clean structure with all members
+			return $element;  // >>-----> Brute force bye bye. 
 		}
 		
+		// Normal processing
 		$dummy=0;
 		foreach($results as $tc_id => $tc_info)
 		{
-			foreach((array)$tc_info as $platform_id => $result_code) {
-			$status_verbose=$code_verbose[$result_code];
-			
-			// Check if user has configured and add not_run.
-			// Standard TestLink behavior:
-			// 1. do not show not_run as a choice on execute pages
-			// 2. do not save on DB not_run executions
-			//
-			if( $status_verbose !='' && $status_verbose != 'not_run')
+			foreach((array)$tc_info as $platform_id => $result_code) 
 			{
-				$total[$status_verbose]++;
-				$dummy++;
+				// Check if user has configured and add not_run.
+				// Standard TestLink behavior:
+				// 1. do not show not_run as a choice on execute pages
+				// 2. do not save on DB not_run executions
+				//
+				if( $code_verbose[$result_code] !='' && $code_verbose[$result_code] != 'not_run')
+				{
+					$total[$code_verbose[$result_code]]++;
+					$dummy++;
+				}
 			}
-		}
 		}
 		
 		// not_run is an special status
@@ -844,12 +849,6 @@ class results extends tlObjectWithDB
 		}
 		$percentCompleted = number_format($percentCompleted,2);
 		
-		// Because I want to have this as first key on map, just for easy reading.
-		// Value will be setted by caller.
-		if( !is_null($item_name) )
-		{
-			$element[$item_name]='';
-		}
 		$element['total_tc']=$totalCases;
 		$element['percentage_completed']=$percentCompleted;
 		
@@ -861,38 +860,6 @@ class results extends tlObjectWithDB
 		}
 		
 		return $element;
-	} // end function
-
-	function tallyResults2($results,$totalCases)
-	{
-		if ($results == null)
-		{
-			return null;
-		}
-		
-		// not_run is an special status
-		$total['not_run'] = abs($totalCases - $dummy);
-		$percentage['not_run']=number_format((($total['not_run']) / $totalCases) * 100,2);
-		
-		$keySet = array_keys($results);
-		foreach($keySet as $keyID)
-		{
-			$results[$keyID]['percentage_completed'] = 0;
-			$totalCases = $results[$keyID]['total_tc'];
-			$target = &$results[$keyID]['details']; 
-			if ($totalCases != 0)
-			{
-				$results[$keyID]['percentage_completed'] = 
-						number_format((($totalCases - $target['not_run']['qty']) / $totalCases) * 100,2);
-						
-			}
-			foreach($target as $status_verbose => $qty)
-			{
-				$target[$status_verbose]['percentage']=(($target[$status_verbose]['qty']) / $totalCases) * 100;
-				$target[$status_verbose]['percentage']=number_format($target[$status_verbose]['percentage'],2);
-			}
-		}
-		return $results;
 	} // end function
 
 

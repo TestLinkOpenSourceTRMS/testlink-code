@@ -3,15 +3,7 @@
  * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2010/06/24 17:25:56 $ by $Author: asimon83 $
- * @author Martin Havlat and reviewers from TestLink Community
- *
- * --------------------------------------------------------------------------------------
- *
- * Scope:
- * English (en_GB) texts for help/instruction pages. Strings for dynamic pages
+ * English (en_US) texts for help/instruction pages. Strings for dynamic pages
  * are stored in strings.txt pages.
  *
  * Here we are defining GLOBAL variables. To avoid override of other globals
@@ -22,19 +14,35 @@
  *
  *
  * Revisions history is not stored for the file
+ * 
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2003-2009, TestLink community 
+ * @link 		http://www.teamst.org/index.php
  *
- * ------------------------------------------------------------------------------------ */
+ * @internal Revisions:
+ * 20110327 - BUGID 4349 - Julian - Update with en_GB files
+ * 
+ **/
+
+
+// --------------------------------------------------------------------------------------
+$TLS_htmltext_title['error']	= "Application error";
+$TLS_htmltext['error'] 		= "<p>Unexpected error happens. Please check event viewer or " .
+		"logs for details.</p><p>You are welcome to report the problem. Please visit our " .
+		"<a href='http://www.teamst.org'>website</a>.</p>";
+
 
 
 $TLS_htmltext_title['assignReqs']	= "Assign Requirements to Test Case";
 $TLS_htmltext['assignReqs'] 		= "<h2>Purpose:</h2>
 <p>Users can set relations between requirements and test cases. A test designer could
-define relations 0..n to 0..n. For example, a test case could be assigned to one or more
-requirements, or none at all, and vice versa. Such traceability matrix helps to investigate test coverage
+define relations 0..n to 0..n. I.e. One test case could be assigned to none, one or more
+requirements and vice versa. Such traceability matrix helps to investigate test coverage
 of requirements and find out which ones successfully failed during a testing. This
-analysis serves as confirmation that all defined expectations are met.</p>
+analyse serves as confirmation that all defined expectations are met.</p>
 
-<h2>Get Started:</h2>
+<h2>Getting Started:</h2>
 <ol>
 	<li>Choose an Test Case in tree at the left. The combo box with list of Requirements
 	Specifications is shown at the top of the workarea.</li>
@@ -51,18 +59,17 @@ analysis serves as confirmation that all defined expectations are met.</p>
 
 // --------------------------------------------------------------------------------------
 $TLS_htmltext_title['editTc']	= "Test Specification";
-$TLS_htmltext['editTc'] 		= "<h2>Purpose:</h2>
-<h2>Purpose:</h2>
-<p>The <i>Test Specification</i> allows users to view and edit all of the existing " .
-		"<i>Test Suites</i> and <i>Test Cases</i>. Test Cases are versioned and all " .
-		"of the previous versions are available and can be viewed and managed here.</p>
-
+$TLS_htmltext['editTc'] 		= "<p>The <i>Test Specification</i> allows users to view " .
+		"and edit all of the existing <i>Test Suites</i> and <i>Test Cases</i>. " .
+		"Test Cases are versioned and all of the previous versions are available and can be " .
+		"viewed and managed here.</p>
+		
 <h2>Getting Started:</h2>
 <ol>
-	<li>Select your Test Project in the navigation tree (the root node). <i>Please note: " .
-	"You can always change the activate Test Project by selecting a different one from the " .
+	<li>Select your <i>Test Project</i> in the navigation tree (the root node). <i>Please note: " .
+	"You can always change the active Test Project by selecting a different one from the " .
 	"drop-down list in the top-right corner.</i></li>
-	<li>Create a new Test Suite by clicking on <b>New Child Test Suite</b>. Test Suites can " .
+	<li>Create a new Test Suite by clicking on <b>Create</b> (Test Suite Operations). Test Suites can " .
 	"bring structure to your test documents according to your conventions (functional/non-functional " .
 	"tests, product components or features, change requests, etc.). The description of " .
 	"a Test Suite could hold the scope of the included test cases, default configuration, " .
@@ -70,21 +77,21 @@ $TLS_htmltext['editTc'] 		= "<h2>Purpose:</h2>
 	"all annotations that are common to the Child Test Cases. Test Suites follow " .
 	"the &quot;folder&quot; metaphor, thus users can move and copy Test Suites within " .
 	"the Test project. Also, they can be imported or exported (including the contained Test cases).</li>
-	<li>Test suites are scalable folders. User can move or copy Test Suites within " .
-	"the Test project. Test suites could be imported or exported (include Test cases).
+	<li>Test Suites are scalable folders. Users can move or copy Test Suites within " .
+	"the Test project. Test Suites can be imported or exported (include Test Cases).
 	<li>Select your newly created Test Suite in the navigation tree and create " .
-	"a new Test Case by clicking on <b>Create Test Case</b>. A Test Case specifies " .
+	"a new Test Case by clicking on <b>Create</b> (Test Case Operations). A Test Case specifies " .
 	"a particular testing scenario, expected results and custom fields defined " .
 	"in the Test Project (refer to the user manual for more information). It is also possible " .
 	"to assign <b>keywords</b> for improved traceability.</li>
-	<li>Navigate via the tree view on the left side and edit data. Test cases stores own history.</li>
-	<li>Assign your created Test Specification to <span class=\"help\" onclick=
+	<li>Navigate via the tree view on the left side and edit data. Each Test case stores own history.</li>
+	<li>Assign your created Test Specification to a 	<span class=\"help\" onclick=
 	\"javascript:open_help_window('glosary','$locale');\">Test Plan</span> when your Test cases are ready.</li>
 </ol>
 
-<p>With TestLink you can organize test cases into test suites." .
-"Test suites can be nested within other test suites, enabling you to create hierarchies of test suites.
- You can then print this information together with the test cases.</p>";
+<p>With TestLink you can organize Test Cases into Test Suites." .
+"Test Suites can be nested within other test suites, enabling you to create hierarchies of Test Suites.
+ You can then print this information together with the Test Cases.</p>";
 
 
 // ------------------------------------------------------------------------------------------
@@ -100,8 +107,44 @@ case sensitive. Result include just test cases from actual Test Project.</p>
 	<li>Write searched string to an appropriate box. Left blank unused fields in form.</li>
 	<li>Choose required keyword or left value 'Not applied'.</li>
 	<li>Click the Search button.</li>
-	<li>All fulfilled test cases are shown. You can modify test cases via 'Title' link.</li>
+	<li>All fulfilled test cases are shown. You can modify Test Cases via 'Title' link.</li>
 </ol>";
+
+/* contribution by asimon for 2976 */
+// requirements search
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['searchReq']	= "Requirement Search Page";
+$TLS_htmltext['searchReq'] 		= "<h2>Purpose:</h2>
+
+<p>Navigation according to keywords and/or searched strings. The search is not
+case sensitive. Result includes just requirements from actual Test Project.</p>
+
+<h2>To search:</h2>
+
+<ol>
+	<li>Write searched string to an appropriate box. Leave unused fields in form blank.</li>
+	<li>Choose required keyword or leave value 'Not applied'.</li>
+	<li>Click the 'Find' button.</li>
+	<li>All fulfilling requirements are shown. You can modify requirements via 'Title' link.</li>
+</ol>";
+
+// requirement specification search
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['searchReqSpec']	= "Requirement Specification Search Page";
+$TLS_htmltext['searchReqSpec'] 		= "<h2>Purpose:</h2>
+
+<p>Navigation according to keywords and/or searched strings. The search is not
+case sensitive. Result includes just requirement specifications from actual Test Project.</p>
+
+<h2>To search:</h2>
+
+<ol>
+	<li>Write searched string to an appropriate box. Leave unused fields in form blank.</li>
+	<li>Choose required keyword or leave value 'Not applied'.</li>
+	<li>Click the 'Find' button.</li>
+	<li>All fulfilling requirements are shown. You can modify requirement specifications via 'Title' link.</li>
+</ol>";
+/* end contribution */
 
 
 // ------------------------------------------------------------------------------------------
@@ -116,7 +159,7 @@ or all the test cases in a test project or plan.</p>
 test suite, or the test project. A printable page will be displayed.</p>
 </li>
 <li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want 
-the information displayed as HTML, OpenOffice Writer or in a Microsoft Word document. 
+the information displayed as HTML, OpenOffice Writer or in a Micosoft Word document. 
 See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 '{$locale}');\">help</span> for more information.</p>
 </li>
@@ -134,9 +177,8 @@ $TLS_htmltext['reqSpecMgmt'] 			= "<p>You can manage Requirement Specification d
 
 <p>Requirements are grouped by <b>Requirements Specification document</b>, which is related to
 Test Project.<br /> TestLink doesn't support (yet) versions for both Requirements Specification
-and Requirements itself. So, a document version should be added after
-a Specification <b>Title</b>.
-A user can add a simple description or notes to the <b>Scope</b> field.</p>
+and Requirements itself. So, a document version should be added after a Specification <b>Title</b>.
+An user can add a simple description or notes to the <b>Scope</b> field.</p>
 
 <p><b><a name='total_count'>Overwritten count of REQs</a></b> serves for
 evaluating Req. coverage in case that not all requirements are added to TestLink.
@@ -147,9 +189,10 @@ coverage is 25% (assuming the 50 added requirements will actually be tested).</i
 
 <h2><a name='req'>Requirements</a></h2>
 
-<p>Click the title of an existing Requirements Specification. If none exist, click on the project node to create one. You can create, edit, delete
+<p>Click the title of an existing Requirements Specification. If none exist, " .
+		"click on the project node to create one. You can create, edit, delete
 or import requirements for the document. Each requirement has a title, scope and status.
-A status should either be 'Normal' or 'Not testable'. Not testable requirements are not counted
+A status should be either 'Normal' or 'Not testable'. Not testable requirements are not counted
 to metrics. This parameter should be used for both unimplemented features and
 wrong designed requirements.</p>
 
@@ -157,6 +200,28 @@ wrong designed requirements.</p>
 requirements within the specification screen. These Test Cases are created into Test Suite
 with name defined in configuration <i>(default is: \$tlCfg->req_cfg->default_testsuite_name =
 'Test suite created by Requirement - Auto';)</i>. Title and Scope are copied to these Test cases.</p>";
+
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['printReqSpec'] = "Print Requirement Specification"; //printReq
+$TLS_htmltext['printReqSpec'] = "<h2>Purpose:</h2>
+<p>From here you can print a single requirement, all the requirements within a requirement specification,
+or all the requirements in a test project.</p>
+<h2>Get Started:</h2>
+<ol>
+<li>
+<p>Select the parts of the requirements you want to display, and then click on a requirement, 
+requirement specification, or the test project. A printable page will be displayed.</p>
+</li>
+<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want 
+the information displayed as HTML, OpenOffice Writer or in a Micosoft Word document. 
+See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
+'{$locale}');\">help</span> for more information.</p>
+</li>
+<li><p>Use your browser's print functionality to actually print the information.<br />
+<i>Note: Make sure to only print the right-hand frame.</i></p>
+</li>
+</ol>";
 
 
 // ------------------------------------------------------------------------------------------
@@ -193,19 +258,22 @@ $TLS_htmltext_title['executeTest']	= "Test Case Execution";
 $TLS_htmltext['executeTest'] 		= "<h2>Purpose:</h2>
 
 <p>Allows user to execute Test cases. User can assign Test result
-to Test Case for Build. See help for more information about filter and settings " .
+to Test Case for a Build. See help for more information about filters and settings " .
 		"(click on the question mark icon).</p>
 
 <h2>Get started:</h2>
 
 <ol>
 	<li>User must have defined a Build for the Test Plan.</li>
-	<li>Select a Build from the drop down box and the \"Apply\" button in the navigation pane.</li>
+	<li>Select a Build from the drop down box</li>
+	<li>If you want to see only a few testcases instead of the whole tree,
+		you can choose which filters to apply. Click the \"Apply\"-Button 
+		after you have changed the filters.</li>	
 	<li>Click on a test case in the tree menu.</li>
 	<li>Fill out the test case result and any applicable notes or bugs.</li>
 	<li>Save results.</li>
 </ol>
-<p><i>Note: TestLink must be configurated to collaborate with your Bug tracker 
+<p><i>Note: TestLink must be configured to collaborate with your Bug tracker 
 if you would like to create/trace a problem report directly from the GUI.</i></p>";
 
 // ------------------------------------------------------------------------------------------
@@ -234,7 +302,7 @@ It includes Test cases together with test results.</p>
 
 <h3>General Test Plan Metrics</h3>
 <p>This page shows you only the most current status of a Test plan by test suite, owner, and keyword.
-The most 'current status' is determined by the most recent build for executed test cases. For
+The most 'current status' is determined by the most recent build test cases were executed on.  For
 instance, if a test case was executed over multiple builds, only the latest result is taken into account.</p>
 
 <p>'Last Test Result' is a concept used in many reports, and is determined as follows:</p>
@@ -270,7 +338,7 @@ twice on the same build, the most recent execution will be taken into account.</
 
 <h3>Query Metrics</h3>
 <p>This report consists of a query form page, and a query results page which contains the queried data.
-The Query Form Page presents a query page with 4 controls. Each control is set to a default which
+The Query Form Page presents with a query page with 4 controls. Each control is set to a default which
 maximizes the number of test cases and builds the query should be performed against. Altering the controls
 allows the user to filter the results and generate specific reports for specific owner, keyword, suite,
 and build combinations.</p>
@@ -363,7 +431,6 @@ $TLS_htmltext['tc_exec_assignment'] 		= "<h2>Purpose</h2>
 	<li>Open execution page to verify assignment. You can set-up a filter for users.</li>
 </ol>";
 
-
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['planUpdateTC']	= "Update Test Cases in the Test Plan";
 $TLS_htmltext['planUpdateTC'] 		= "<h2>Purpose</h2>
@@ -375,7 +442,7 @@ Specification is changed. It often happens that some functionality is clarified 
 <h2>Get Started</h2>
 <ol>
 	<li>Choose a Test case or Test Suite to test.</li>
-	<li>Choose a new version from the combobox menu for a particular Test case.</li>
+	<li>Choose a new version from the combo-box menu for a particular Test case.</li>
 	<li>Click the 'Update Test plan' button to submit changes.</li>
 	<li>To verify: Open execution page to view text of the test case(s).</li>
 </ol>";
@@ -384,7 +451,7 @@ Specification is changed. It often happens that some functionality is clarified 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['test_urgency']	= "Specify tests with high or low urgency";
 $TLS_htmltext['test_urgency'] 		= "<h2>Purpose</h2>
-<p>TestLink allows setting the urgency of a Test Suite to affect the testing Priority of test cases. 
+<p>TestLink allows setting the urgency of a Test Suite to affect the	 testing Priority of test cases. 
 		Test priority depends on both Importance of Test cases and Urgency defined in 
 		the Test Plan. Test leader should specify a set of test cases that could be tested
 		at first. It helps to ensure that testing will cover the most important tests

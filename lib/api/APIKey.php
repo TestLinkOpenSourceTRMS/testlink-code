@@ -1,13 +1,17 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIKey.php,v 1.6 2008/01/30 17:49:41 schlundus Exp $
- * 
+ *
  * Class that deals with API keys
  *
- * rev:
- *     20080129 - franciscom - generateKey
- *                refactoring
+ * @filesource	APIKey.php
+ * @package 	TestLink
+ * @author 		TestLink community
+ * @copyright 	2004-2011, TestLink community 
+ * @link 		http://www.teamst.org/index.php
+ *
+ * @internal revisions
+ * 20110327 - kinow - BUGID 4356 - Unable to generate developer key when using prefix in table names.
  *
  */
 require_once(dirname(__FILE__) . "/../../config.inc.php");
@@ -15,14 +19,16 @@ require_once('common.php');
 
 class APIKey extends tlObjectWithDB
 {	
-  private $object_table="users";
-
-
+	private $object_table = "";
+	
 	public function __construct()
 	{		
 		$db = null;
 		doDBConnect($db);				
 		parent::__construct($db);	
+		
+		// BUGID 4356
+		$this->object_table = $this->tables["users"];
 	}
 	
 	/*

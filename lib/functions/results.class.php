@@ -3,15 +3,18 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * @filesource	results.class.php
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
- * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.163.2.3 2011/02/11 08:16:35 mx-julian Exp $
+ * @copyright 	2004-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
  *
- * @internal Revisions:
+ * @internal revisions
+ * 20110326 - franciscom - BUGID 4355: 	General Test Plan Metrics - Build without executed 
+ *										test cases are not displayed.
+ *
  * 20101019 - eloff - BUGID 3794 - added contribution by rtessier
  * 20100821 - asimon - BUGID 3682
  * 20100721 - asimon - BUGID 3406, 1508: changed for user assignments per build:
@@ -360,8 +363,6 @@ class results extends tlObjectWithDB
    			$arrBuilds = $tplan_mgr->get_builds($this->testPlanID, testplan::GET_ACTIVE_BUILD);
 			
 			// 3406, 1508 - we need the totals per build here, not for the whole plan anymore
-			//$this->aggregateBuildResults = $this->tallyBuildResults($this->mapOfLastResultByBuild,
-			//                                                        $arrBuilds, $this->totalsForPlan);
 			$this->totalsForBuilds = $this->createTotalsForBuilds($arrBuilds);
 			$this->aggregateBuildResults = $this->tallyBuildResults($this->mapOfLastResultByBuild,
 			                                                        $arrBuilds, $this->totalsForBuilds);
@@ -542,46 +543,40 @@ class results extends tlObjectWithDB
 
 	/**
 	 *
-	 * parameter1 format:
-	 * Array ([owner id] => Array ( [test case id] => result ))
-	 *
-	 * @return array map
-	 * <code>Array ( [owner id] => Array ( total, passed, failed, blocked, not run))</code>
 	 * 
 	 * @internal revisions:
-	 *     20100721 - asimon - BUGID 3406, 1508
+	 * 20110326 - franciscom - BUGID 4355
+	 * 20100721 - asimon - BUGID 3406, 1508
 	 */
-	private function tallyBuildResults($buildResults, $arrBuilds, $finalResults)
+	// private function tallyBuildResults($buildResults, $arrBuilds, $finalResults)
+	private function tallyBuildResults($lastExecByBuild, $arrBuilds, $execTotalsByBuild)
 	{                     
-		if ($buildResults == null)
+		if ($lastExecByBuild == null)
 		{
 			return null;
 		}
 		
-		// OK go ahead
-		
-		// 3406, 1508
-		//$totalCases = $finalResults['total'];
 		$na_string = lang_get('not_aplicable');
 		
 		$rValue = null;
+		// echo __FUNCTION__;new dBug($arrBuilds);new dBug($lastExecByBuild);new dBug($execTotalsByBuild);
+		
 		foreach($arrBuilds as $buildId => $buildInfo)
 		{
 			$item_name='build_name';
-			$results = isset($buildResults[$buildId]) ? $buildResults[$buildId] : array();
-			
-			// 3406, 1508 - total cases is now an array with totals for each build ID
-			$totalCases = $finalResults[$buildId]['total'];
-			
-			$element=$this->tallyResults($results,$totalCases,$item_name);
+			$results = isset($lastExecByBuild[$buildId]) ? $lastExecByBuild[$buildId] : array();
+			$totalCases = $execTotalsByBuild[$buildId]['total'];
+			$element = $this->tallyResults($results,$totalCases,$item_name);
 			if (!is_null ($element))
 			{
 				$element[$item_name]=$buildInfo['name'];
 				$rValue[$buildId] = $element;
 				
-				// 3406, 1508: here we need to insert the correct "not run" value now
+				// BUGID 3406 - BUGID 1508 
+				// here we need to insert the correct "not run" value now
 				// and the percentages need to be re-calculated after that of course
-				$not_run_count = $this->tplanMgr->assignment_mgr->get_not_run_tc_count_per_build($buildId);
+				$not_run_count = $execTotalsByBuild[$buildId]['not_run'];
+				
 				$not_run_percentage = ($totalCases != 0) ? 
 				                      number_format($not_run_count / $totalCases * 100, 2) : $na_string;
 				$rValue[$buildId]['details']['not_run']['qty'] = $not_run_count;
@@ -592,7 +587,6 @@ class results extends tlObjectWithDB
 		
 		unset($element);       
 		unset($results);
-		
 		return $rValue;
 	}
 
@@ -803,41 +797,57 @@ class results extends tlObjectWithDB
 	private function tallyResults($results,$totalCases,$item_name=null)
 	{
 		
-		if ($results == null)
+		static $na_string;
+		static $code_verbose;
+		if( is_null($na_string) ) 
 		{
-			return null;
+			$na_string = lang_get('not_aplicable');
+			$code_verbose = array_flip($this->tc_status_for_statistics);
 		}
-		
-		// OK go ahead
-		
-		// 3406
-		$na_string = lang_get('not_aplicable');
-		
-		$code_verbose=array_flip($this->tc_status_for_statistics);
-		$element = null;
+
+		// initalization area
+		// Because I want to have this as first key on map, just for easy reading.
+		// Value will be setted by caller.
+		if( !is_null($item_name) )
+		{
+			$element[$item_name]='';
+		}
+		$element['total_tc'] = $totalCases;
+		$element['percentage_completed'] = 0;
+		$element['details']=array();
+
 		foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
 		{
 			$total[$status_verbose]=0;
 			$percentage[$status_verbose]=0;
+
+			$element['details'][$status_verbose]['qty'] = 0;
+			$element['details'][$status_verbose]['percentage'] = 0;
+		}
+
+		if ($results == null)
+		{
+			// 20110326 - return a clean structure with all members
+			return $element;  // >>-----> Brute force bye bye. 
 		}
 		
+		// Normal processing
 		$dummy=0;
 		foreach($results as $tc_id => $tc_info)
 		{
-			foreach((array)$tc_info as $platform_id => $result_code) {
-			$status_verbose=$code_verbose[$result_code];
-			
-			// Check if user has configured and add not_run.
-			// Standard TestLink behavior:
-			// 1. do not show not_run as a choice on execute pages
-			// 2. do not save on DB not_run executions
-			//
-			if( $status_verbose !='' && $status_verbose != 'not_run')
+			foreach((array)$tc_info as $platform_id => $result_code) 
 			{
-				$total[$status_verbose]++;
-				$dummy++;
+				// Check if user has configured and add not_run.
+				// Standard TestLink behavior:
+				// 1. do not show not_run as a choice on execute pages
+				// 2. do not save on DB not_run executions
+				//
+				if( $code_verbose[$result_code] !='' && $code_verbose[$result_code] != 'not_run')
+				{
+					$total[$code_verbose[$result_code]]++;
+					$dummy++;
+				}
 			}
-		}
 		}
 		
 		// not_run is an special status
@@ -858,12 +868,6 @@ class results extends tlObjectWithDB
 		}
 		$percentCompleted = number_format($percentCompleted,2);
 		
-		// Because I want to have this as first key on map, just for easy reading.
-		// Value will be setted by caller.
-		if( !is_null($item_name) )
-		{
-			$element[$item_name]='';
-		}
 		$element['total_tc']=$totalCases;
 		$element['percentage_completed']=$percentCompleted;
 		
@@ -876,6 +880,9 @@ class results extends tlObjectWithDB
 		
 		return $element;
 	} // end function
+
+
+
 
 	function tallyResults2($results,$totalCases)
 	{
@@ -956,9 +963,14 @@ class results extends tlObjectWithDB
 		$buildNumber = $exec['build_id'];
 		$result = $exec['status'];
 		$tcversion_id = $exec['tcversion_id'];
-		// echo __FUNCTION__ . 'tcversion id ' . $tcversion_id . '<br>';
+		$execution_ts = $exec['execution_ts'];
+		$notes = $exec['notes'];
+		$executions_id = $exec['executions_id'];
+		$name = $exec['name'];
+		$tester_id = $exec['tester_id'];
+		$feature_id = $exec['feature_id'];
+		$assigner_id = $exec['assigner_id'];
 		
-		// 20080602 - franciscom
 		// Maybe this check is not more needed, because $exec has been changed using same logic
 		if( isset($exec['tcversion_number']) && !is_null($exec['tcversion_number']) )
 		{
@@ -969,17 +981,16 @@ class results extends tlObjectWithDB
 			$version=$exec['version'];
 		}
 		
-		$execution_ts=$exec['execution_ts'];
-		$notes=$exec['notes'];
-		$executions_id=$exec['executions_id'];
-		$name=$exec['name'];
-		$tester_id=$exec['tester_id'];
-		$feature_id=$exec['feature_id'];
-		$assigner_id=$exec['assigner_id'];
+		// new dBug($testcase_id);
+		// new dBug($platform_id);
+		
+		//echo '$exec <br>';		new dBug($exec);
 		if ($buildNumber)
 		{
 			$this->mapOfLastResultByBuild[$buildNumber][$testcase_id][$platform_id] = $result;
 		}
+		
+		
 		$owner_id = $this->getUserForFeature($feature_id);
 		$associatedKeywords = null;
 		if ($this->keywordData != null && array_key_exists($testcase_id, $this->keywordData))
@@ -987,10 +998,11 @@ class results extends tlObjectWithDB
 			$associatedKeywords = $this->keywordData[$testcase_id];
 		}
 		
-		$doInsert = false;
+		$doInsert = true;
 		// handle case where suite has already been added to mapOfLastResult
 		if ($this->mapOfLastResult && array_key_exists($suiteId, $this->mapOfLastResult))
 		{
+			$doInsert = false;
 			// handle case where both suite and test case have been added to elmapOfLastResult
 			if (array_key_exists($testcase_id, $this->mapOfLastResult[$suiteId]))
 			{
@@ -1014,18 +1026,10 @@ class results extends tlObjectWithDB
 				$doInsert = true;
 			}
 		}
-		else 
-		{
-			$doInsert = true;
-		}
 		
 		if ($doInsert)
 		{
 			$this->mapOfLastResultByOwner[$owner_id][$testcase_id][$platform_id] = $result;
-
-			// priorities
-			// echo __FUNCTION__ . ' LINE::' . __LINE__  .'<br> - tcversion_id=' . $tcversion_id . '<br>';
-		
 			$prio = $this->getPriority($this->testPlanID, $tcversion_id);
 			
 			$this->mapOfLastResultByPrio[$prio][$testcase_id][$platform_id] = $result;
@@ -1056,6 +1060,10 @@ class results extends tlObjectWithDB
 				"name" => $name,
 				"tester_id" => $tester_id);
 		}
+		
+		// echo '$this->mapOfLastResultByBuild'; new dBug($this->mapOfLastResultByBuild);
+		
+		
 	} // end function
 
 	/**
@@ -1169,29 +1177,40 @@ class results extends tlObjectWithDB
 	} // end function
 
 	/**
+	 * Important Notice:
+	 * Totals are created using ONLY test cases that HAVE TESTER ASSIGNED.
+	 *
+	 * Example:
+	 * Create Test Plan with 6 test cases
+	 * Create Build B1 (DBID=3), assign to testers just 4.
+	 * Create Build B2 (DBID=5), assign to testers just 2.
+	 * DO NOT EXECUTE test cases in ANY BUILD.	
+	 *
+	 * output will be
+	 * counter[3] = array('total' => 4,'not_run' => 4,'passed' => 0,'failed' => 0,'blocked' => 0)
+	 * counter[5] = array('total' => 2,'not_run' => 2,'passed' => 0,'failed' => 0,'blocked' => 0)
+	 *
+	 *
 	 * For BUGID 3406, 1508: New function to get counts on build level instead of testplan level
 	 * 
 	 * @author Andreas Simon
 	 * @param array $arrBuilds Array with information about the builds for this testplan.
 	 * @return array $counters Array similar to $this->totalsForPlan, but with correct numbers per build 
 	 */
-	private function createTotalsForBuilds($arrBuilds) {
+	private function createTotalsForBuilds($arrBuilds) 
+	{
 		
 		$counters = array();
+		$buildSet = array_keys($arrBuilds);
+		$assignCounters = $this->tplanMgr->assignment_mgr->getExecAssignmentsCountByBuild($buildSet);
+		$notRunCounters = $this->tplanMgr->assignment_mgr->getNotRunAssignmentsCountByBuild($buildSet);
 		
-		// first get totals from plan, then replace "wrong" values
-		foreach ($arrBuilds as $build_id => $build_info) {
+		foreach($buildSet as $build_id)
+		{
 			$counters[$build_id] = $this->totalsForPlan;
-			
-			// replace "total" value
-			$total = $this->tplanMgr->assignment_mgr->get_count_of_assignments_for_build_id($build_id);
-			$counters[$build_id]['total'] = $total;
-			
-			// replace "not run" value
-			$not_run = $this->tplanMgr->assignment_mgr->get_not_run_tc_count_per_build($build_id);
-			$counters[$build_id]['not_run'] = $not_run;
+			$counters[$build_id]['total'] = $assignCounters[$build_id]['qty'];
+			$counters[$build_id]['not_run'] = $notRunCounters[$build_id]['qty'];
 		}
-		
 		return $counters;
 	} // end of method
 	

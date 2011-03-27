@@ -3,14 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.71.2.1 $
- * @modified $Date: 2010/12/25 10:23:17 $ by $Author: franciscom $
+ * @filesource resultsGeneral.php
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * Show Test Results over all Builds.
  *
- * Revisions:
+ * @internal revisions
+ *  20110326 - franciscom - BUGID 4355: 	General Test Plan Metrics - Build without executed 
+ *										test cases are not displayed.
  *  20101018 - Julian - BUGID 2236 - Milestones Report broken - removed useless code
  *  20100811 - asimon - removed "results by assigned testers" table,
  *                      was replaced by new report "results by tester per build"
@@ -215,6 +215,7 @@ else // do report
 	if($gui->do_report['status_ok'])
 	{
   		$results = $re->getAggregateBuildResults();
+  		
   		if ($results != null) 
   		{
 			// BUGID 0003123: General Test Plan Metrics - order of columns with test case exec results
@@ -261,6 +262,9 @@ else // do report
 } 
 
 // ----------------------------------------------------------------------------
+$gui->displayBuildMetrics = !is_null($results);
+$gui->buildMetricsFeedback = lang_get('buildMetricsFeedback');
+
 $timerOff = microtime(true);
 $gui->elapsed_time = round($timerOff - $timerOn,2);
 $smarty = new TLSmarty;

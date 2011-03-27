@@ -5,14 +5,16 @@
  *
  * Manager for assignment activities
  *
+ * @filesource  assignment_mgr.class.php
  * @package 	TestLink
  * @author 		Francisco Mancardi
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: assignment_mgr.class.php,v 1.15.2.4 2011/02/11 08:23:11 mx-julian Exp $
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal revisions:
- * 
+ * 20110326 - franciscom - new methods 	getExecAssignmentsCountByBuild($buildID)
+ *										getNotRunAssignmentsCountByBuild($buildID)
+ *
  * 20110207 - asimon - BUGID 4203 - use build_id when updating or deleting assignments because
  *                                  of assignments per build
  * 20101222 - franciscom - BUGID 4121: get_not_run_tc_count_per_build() crashes
@@ -215,6 +217,8 @@ class assignment_mgr extends tlObjectWithDB
 	    $sql = " SELECT COUNT(id) AS count FROM {$this->tables['user_assignments']} " .
 		       " WHERE build_id = {$build_id} {$user_sql} {$type_sql} ";
 	    
+	    // new dBug($sql);
+	    
 	    $count = $this->db->fetchOneValue($sql);
 	    
 		return $count;
@@ -252,6 +256,7 @@ class assignment_mgr extends tlObjectWithDB
 		       "     AND E.platform_id = TPTCV.platform_id " .
 		       "     AND E.build_id = UA.build_id " .
 		       " WHERE UA.build_id = {$build_id} AND E.status IS NULL {$type_sql} {$user_sql} ";		   
+		   
 		   
 		if (isset($build_id) && is_numeric($build_id)) {
 			$count = count($this->db->fetchRowsIntoMap($sql, 'assignment_id'));
@@ -325,5 +330,69 @@ class assignment_mgr extends tlObjectWithDB
 		
 		$this->db->exec_query($sql);
 	} // end of method
+
+
+
+	/**
+	 * get hash with build id and amount of test cases assigned to testers
+	 * 
+	 * @author Francisco Mancardi
+	 * @param mixed $buildID can be single value or array of build ID.
+	 */
+	function getExecAssignmentsCountByBuild($buildID)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$rs = null;
+		$types = $this->get_available_types();
+	    $execAssign = $types['testcase_execution']['id'];
+	    
+		$sql = 	"/* $debugMsg */ ".
+				" SELECT COUNT(id) AS qty, build_id " . 
+				" FROM {$this->tables['user_assignments']} " .
+				" WHERE build_id IN ( " . implode(",",(array)$buildID) . " ) " .
+				" AND type = {$execAssign} " .
+				" GROUP BY build_id ";
+	    $rs = $this->db->fetchRowsIntoMap($sql,'build_id');
+	    
+		return $rs;
+	}
+
+
+	/**
+	 * get hash with build id and amount of test cases assigned to testers,
+	 * but NOT EXECUTED.
+	 * 
+	 * 
+	 * @author Francisco Mancardi
+	 * @param mixed $buildID can be single value or array of build ID.
+	 */
+	function getNotRunAssignmentsCountByBuild($buildID)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$rs = null;
+		$types = $this->get_available_types();
+	    $execAssign = $types['testcase_execution']['id'];
+
+		$sql = 	"/* $debugMsg */ ".
+				" SELECT count(0) as qty, UA.build_id ".
+				" FROM {$this->tables['user_assignments']} UA " .
+				" JOIN {$this->tables['builds']}  BU ON UA.build_id = BU.id " .
+				" JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+				"     ON TPTCV.testplan_id = BU.testplan_id " .
+				"     AND TPTCV.id = UA.feature_id " .
+				" LEFT OUTER JOIN {$this->tables['executions']} E " .
+				"     ON E.testplan_id = TPTCV.testplan_id " . 
+				"     AND E.tcversion_id = TPTCV.tcversion_id " .
+				"     AND E.platform_id = TPTCV.platform_id " .
+				"     AND E.build_id = UA.build_id " .
+				" WHERE UA.build_id IN ( " . implode(",",(array)$buildID) . " ) " .
+				" AND E.status IS NULL " . 		   
+				" AND type = {$execAssign} " .
+				" GROUP BY build_id ";
+	    
+	    $rs = $this->db->fetchRowsIntoMap($sql,'build_id');
+	    
+		return $rs;
+	}
 }
 ?>

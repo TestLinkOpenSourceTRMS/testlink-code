@@ -5,14 +5,14 @@
  *  
  * This file generates tree menu for test specification and test execution.
  * 
+ * @filesource	treeMenu.inc.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.159 2010/12/21 12:01:25 amkhullar Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
- * @internal Revisions:
+ * @internal revisions
  *  20110311 - asimon - BUGID 3765: Req Spec Doc ID disappeared for req specs without
  *                                  direct requirement child nodes
  *  20101221 - amitkhullar - BUGID 4115 Custom Field Filtering Issue 
@@ -60,23 +60,6 @@
  *  20100415 - franciscom - BUGID 2797 - filter by test case execution type
  *  20100202 - asimon - changes for filtering, BUGID 2455, BUGID 3026
  *						added filter_by_* - functions, changed generateExecTree()
- *  20091212 - franciscom - prepareNode(), generateTestSpecTree() interface changes
- *                          added logic to do filtering on test spec for execution type
- *
- *  20090815 - franciscom - get_last_execution() call changes
- *  20090801 - franciscom - table prefix missed
- *  20090716 - franciscom - BUGID 2692
- *  20090328 - franciscom - BUGID 2299 - introduced on 20090308.
- *                          Added logic to remove Empty Top level test suites 
- *                          (have neither test cases nor test suites inside) when applying 
- *                          test case keyword filtering.
- *                          BUGID 2296
- *  20090308 - franciscom - generateTestSpecTree() - changes for EXTJS tree
- *  20090211 - franciscom - BUGID 2094 
- *  20090202 - franciscom - minor changes to avoid BUGID 2009
- *  20090118 - franciscom - replaced multiple calls config_get('testcase_cfg')
- *                          added extjs_renderTestSpecTreeNodeOnOpen(), to allow filtering 
- *
  */
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
 
@@ -100,27 +83,13 @@ function filterString($str)
 /** 
  * generate data for tree menu of Test Specification
  *
- * @param boolean $ignore_inactive_testcases if all test case versions are inactive, 
- *                            the test case will ignored.
- * @param array $exclude_branches map key=node_id
- * 
+ * workflow status will be used to exclude test cases.
+ * this will be a system wide configuration (on first development)
+ * 	 
  * @internal Revisions:
  * 20100810 - asimon - filtering by testcase ID
  * 20100428 - asimon - BUGID 3301, added filtering by custom fields
- * 20090328 - franciscom - BUGID 2299, that was generated during 20090308 
- *                         trying to fix another not reported bug.
- * 20090308 - franciscom - changed arguments in str_ireplace() call
- *                         Due to bug in Test Spec tree when using Keywords filter
- * 20080501 - franciscom - keyword_id can be an array
- * 20071014 - franciscom - $bForPrinting
- *                         used to choose Javascript function 
- *                         to call when clicking on a tree node
- * 20070922 - franciscom - interface changes added $tplan_id,
- * 20070217 - franciscom - added $exclude_branches
- * 20061105 - franciscom - added $ignore_inactive_testcases
  */
- 
- 
 function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
 	$tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));

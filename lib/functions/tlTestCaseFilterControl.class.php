@@ -34,7 +34,7 @@
  *    --> assign requirements
  *
  * @internal Revisions:
- *
+ * 20110328 - franciscom - init_filter_custom_fields() fixed issue introduced du to trim() on arrays.
  * 20110113 - asimon - BUGID 4166 - List also test plans without builds for "plan_mode"
  * 20101110 - asimon - BUGID 3822: Keywords combobox is absent on the Filters pane of 'Add / Remove Test Cases'
  * 20101103 - asimon - custom fields on test spec did not retain value after apply
@@ -1402,54 +1402,69 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->filters[$key] = false;
 		$this->active_filters[$key] = null;
 
-		if (!is_null($cfields)) {
+		if (!is_null($cfields)) 
+		{
 			// display and compute only when custom fields are in use
-			foreach ($cfields as $cf_id => $cf) {
+			foreach ($cfields as $cf_id => $cf) 
+			{
 				// has a value been selected?
 				$id = $cf['id'];
 				$type = $cf['type'];
 				$verbose_type = trim($this->cfield_mgr->custom_field_types[$type]);
 				$cf_input_name = "{$cf_prefix}{$type}_{$id}";
 				
+				
 				// BUGID 3716
 				// custom fields on test spec did not retain value after apply
-				$value = isset($_REQUEST[$cf_input_name]) ? trim($_REQUEST[$cf_input_name]) : null;
+				// IMPORTANT/CRITIC issue:  trim() on array makes array = null !!!
+				//
+				$value = isset($_REQUEST[$cf_input_name]) ? $_REQUEST[$cf_input_name] : null;
 
-				// BUGID 3884: added filtering for datetime custom fields
-				if ($verbose_type == 'datetime') {
-					// if cf is a date field, convert the three given values to unixtime format
-					if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != ''
-					&& isset($_REQUEST[$cf_input_name . '_hour']) && $_REQUEST[$cf_input_name . '_hour'] != ''
-					&& isset($_REQUEST[$cf_input_name . '_minute']) && $_REQUEST[$cf_input_name . '_minute'] != ''
-					&& isset($_REQUEST[$cf_input_name . '_second']) && $_REQUEST[$cf_input_name . '_second'] != '') {
-						$date = $_REQUEST[$cf_input_name . '_input'];
-						
-						$hour = $_REQUEST[$cf_input_name . '_hour'];
-						$minute = $_REQUEST[$cf_input_name . '_minute'];
-						$second = $_REQUEST[$cf_input_name . '_second'];
-
-						$date_array = split_localized_date($date, $date_format);
-						$value = mktime($hour, $minute, $second, $date_array['month'], $date_array['day'], $date_array['year']);
-					}
-				}
-
-				if ($verbose_type == 'date') {
-					// if cf is a date field, convert the three given values to unixtime format
-					// BUGID 3883: only set values if different from 0
-					if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != '') {
-						$date = $_REQUEST[$cf_input_name . '_input'];						
-						$date_array = split_localized_date($date, $date_format);
-						$value = mktime(0, 0, 0, $date_array['month'], $date_array['day'], $date_array['year']);
-					}
-				}
-
-				if ($this->args->reset_filters) {
+				if ($this->args->reset_filters) 
+				{
 					$value = null;
 				}
+				else
+				{
+					// BUGID 3884: added filtering for datetime custom fields
+					if ($verbose_type == 'datetime') {
+						// if cf is a date field, convert the three given values to unixtime format
+						if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != ''
+						&& isset($_REQUEST[$cf_input_name . '_hour']) && $_REQUEST[$cf_input_name . '_hour'] != ''
+						&& isset($_REQUEST[$cf_input_name . '_minute']) && $_REQUEST[$cf_input_name . '_minute'] != ''
+						&& isset($_REQUEST[$cf_input_name . '_second']) && $_REQUEST[$cf_input_name . '_second'] != '') {
+							$date = $_REQUEST[$cf_input_name . '_input'];
+							$hour = $_REQUEST[$cf_input_name . '_hour'];
+							$minute = $_REQUEST[$cf_input_name . '_minute'];
+							$second = $_REQUEST[$cf_input_name . '_second'];
+                	
+							$date_array = split_localized_date($date, $date_format);
+							$value = mktime($hour, $minute, $second, $date_array['month'], $date_array['day'], $date_array['year']);
+						}
+					}
+                	
+					if ($verbose_type == 'date') {
+						// if cf is a date field, convert the three given values to unixtime format
+						// BUGID 3883: only set values if different from 0
+						if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != '') {
+							$date = $_REQUEST[$cf_input_name . '_input'];						
+							$date_array = split_localized_date($date, $date_format);
+							$value = mktime(0, 0, 0, $date_array['month'], $date_array['day'], $date_array['year']);
+						}
+					}
+				}
 
+
+				
 				$value2display = $value;
-				if (!is_null($value2display) && is_array($value2display)){
+				if (!is_null($value2display) && is_array($value2display))
+				{
 					$value2display = implode("|", $value2display);
+				}
+				else 
+				{
+					$value = trim($value);
+					$value2display = $value;
 				}
 				$cf['value'] = $value2display;
 
@@ -1483,7 +1498,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}
 	} // end of method
 
-	private function init_filter_result() {
+
+	private function init_filter_result() 
+	{
 		$key = 'filter_result';
 		$result_key = 'filter_result_result';
 		$method_key = 'filter_result_method';

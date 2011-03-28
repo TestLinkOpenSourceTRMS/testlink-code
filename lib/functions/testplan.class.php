@@ -14,6 +14,7 @@
  *
  *
  * @internal Revisions:
+ *	20110328 - franciscom - filter_cf_selection() fixed issue regarding simple types
  *	20110326 - franciscom - filter_cf_selection() make it safer
  *	20110322 - franciscom - BUGID 4343: Reports Failed Test Cases / ... -> Build is not shown	
  *							get_linked_tcversions() - error while refactoring.
@@ -1118,8 +1119,6 @@ class testplan extends tlObjectWithAttachments
 			// Fisrt choice:
 			// Enable this feature only if recordset maintains original structured
 			//
-			// var_dump($my['filters']['cf_hash']);
-			
 			if (!is_null($my['filters']['cf_hash']) && !is_null($recordset)) {
 				$recordset = $this->filter_cf_selection($recordset, $my['filters']['cf_hash']);
 			}
@@ -2653,7 +2652,7 @@ class testplan extends tlObjectWithAttachments
 	  20110326 - franciscom - added some logic to avoid issues if cfvalue is ''
 	  
 	*/
-	function filter_cf_selection ($tp_tcs, $cf_hash)
+	function filter_cf_selection($tp_tcs, $cf_hash)
 	{
 		$new_tp_tcs = null;
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -2692,7 +2691,7 @@ class testplan extends tlObjectWithAttachments
 					if( trim($cf_value) != '')
 					{
 						$cf_query .= $or_clause;
-						$cf_query .= " ( CFD.value LIKE '%{$cf_value}%' ) ";
+						$cf_query .= " ( CFD.value LIKE '%{$cf_value}%' AND CFD.field_id = {$cf_id} ) ";
 					}	
 					else
 					{
@@ -2713,7 +2712,6 @@ class testplan extends tlObjectWithAttachments
 				$doFilter = true;
 			}	
 		}
-		                              
         $cf_qty = count($cf_hash) - $ignored;		                              		
         $doIt = !$doFilter;
 		foreach ($tp_tcs as $tc_id => $tc_value)
@@ -2726,7 +2724,7 @@ class testplan extends tlObjectWithAttachments
 					   " WHERE CFD.node_id = NH.id " .
 					   " AND NH.parent_id = {$tc_value['tc_id']} " .
 					   " {$cf_query} ";
-				
+
 				$rows = $this->db->fetchColumnsIntoArray($sql,'value'); //BUGID 4115
 			
 				// if there exist as many rows as custom fields to be filtered by => tc does meet the criteria

@@ -12,6 +12,8 @@
  * @uses		common.php 
  *
  * @internal revisions
+ * 20110329 - kinow - 	tallyBuildResults()
+ *						BUGID 4333: General Test Plan Metrics % complete did not round 
  * 20110326 - franciscom - BUGID 4355: 	General Test Plan Metrics - Build without executed 
  *										test cases are not displayed.
  * 20101225 - franciscom - BUGID 4124: General Test Plan Metrics Fails (BLANK Page)
@@ -529,6 +531,7 @@ class results extends tlObjectWithDB
 	 *
 	 * 
 	 * @internal revisions:
+	 * 20110329 - kinow - BUGID 4333
 	 * 20110326 - franciscom - BUGID 4355
 	 * 20100721 - asimon - BUGID 3406, 1508
 	 */
@@ -562,7 +565,8 @@ class results extends tlObjectWithDB
 				                      number_format($not_run_count / $totalCases * 100, 2) : $na_string;
 				$rValue[$buildId]['details']['not_run']['qty'] = $not_run_count;
 				$rValue[$buildId]['details']['not_run']['percentage'] = $not_run_percentage;
-				$rValue[$buildId]['percentage_completed'] = 100 - $not_run_percentage;
+				// BUGID 4333: General Test Plan Metrics % complete did not round
+				$rValue[$buildId]['percentage_completed'] = number_format( 100 - $not_run_percentage);
 			}
 		} // end  foreach
 		

@@ -2086,13 +2086,13 @@ $TLS_title_test_plan_mgmt = "Testplan Verwaltung";
 
 // ----- gui/templates/metricsDashboard.tpl -----
 $TLS_info_metrics_dashboard_progress = "Der Projektfortschritt wird berechnet indem alle Ausführungen für ein " .
-                                       "spezifisches Ergebnis für alle Plattformenen innerhalb aller Testpläne " .
+                                       "spezifisches Ergebnis für alle Plattformen innerhalb aller Testpläne " .
                                        "aufsummiert wird. Diese Summe wird dann in Beziehung zur Summe aller " .
                                        "aktiver Testfälle aller Plattformen innerhalb aller Testpläne gesetzt.";
 $TLS_info_metrics_dashboard = "Dieser Report zeigt den Fortschritt für das gesamte Projekt " .
                               "und alle (oder nur aktive) Testpläne innerhalb des Projekts<br />" .
                               "Der Gesamtfortschritt der Testpläne wird basierend auf dem Fortschritt " .
-                              "der einzelnen Plattformenen (sofern in Verwendung) berechnet.<br />" .
+                              "der einzelnen Plattformen (sofern in Verwendung) berechnet.<br />" .
                               "Der Testprojekt-Fortschritt wird basierend auf dem Fortschritt aller " .
                               "(oder nur der aktiven) Testpläne berechnet.";
 $TLS_overall_progress = "Gesamtfortschritt";

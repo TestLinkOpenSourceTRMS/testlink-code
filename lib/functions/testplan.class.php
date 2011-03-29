@@ -14,6 +14,7 @@
  *
  *
  * @internal Revisions:
+ *	20110328 - franciscom - filter_cf_selection() fixed issue regarding simple types
  *	20110326 - franciscom - filter_cf_selection() make it safer
  *	20110322 - franciscom - BUGID 4343: Reports Failed Test Cases / ... -> Build is not shown	
  *							get_linked_tcversions() - error while refactoring.
@@ -2652,7 +2653,7 @@ class testplan extends tlObjectWithAttachments
 	  20110326 - franciscom - added some logic to avoid issues if cfvalue is ''
 	  
 	*/
-	function filter_cf_selection ($tp_tcs, $cf_hash)
+	function filter_cf_selection($tp_tcs, $cf_hash)
 	{
 		$new_tp_tcs = null;
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -2691,7 +2692,7 @@ class testplan extends tlObjectWithAttachments
 					if( trim($cf_value) != '')
 					{
 						$cf_query .= $or_clause;
-						$cf_query .= " ( CFD.value LIKE '%{$cf_value}%' ) ";
+						$cf_query .= " ( CFD.value LIKE '%{$cf_value}%' AND CFD.field_id = {$cf_id} ) ";
 					}	
 					else
 					{

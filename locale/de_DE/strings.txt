@@ -27,7 +27,7 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file with commit id 5698cc23f170c24ca832338007fcd36579720171
+ * Last Update according to en_GB string file with commit id 9da5af7f251e549786cf1cadb01bd7b3f3799d9f
  *
  **/
 
@@ -1222,7 +1222,7 @@ $TLS_img_title_bug_mgmt = "Bug Management";
 $TLS_img_title_delete_execution = "Lösche Ausführung";
 $TLS_import_xml_results = "XML Ergebnisse importieren";
 $TLS_just_last_execution_for_this_build = "Letzte Ausführung für diesen Build";
-$TLS_last_execution = "Letzter Test";
+$TLS_last_execution = "Letzte Ausführung";
 $TLS_no_data_available = "Keine Daten verfügbar";
 $TLS_only_test_cases_assigned_to = "Nur Testfälle zugewiesen zu";
 $TLS_or_unassigned_test_cases = " oder ohne Testerzuweisung";
@@ -1610,7 +1610,7 @@ $TLS_all_reqspecs_in_tproject = "Alle Req. Specs im Testprojekt";
 // ----- gui/templates/resultsAllBuilds.tpl -----
 $TLS_th_build = "Build";
 $TLS_th_tc_total = "Anzahl Testfälle";
-$TLS_th_tc_assigned = "Assigned";
+$TLS_th_tc_assigned = "Zugewiesen";
 $TLS_title_met_of_build = "Build-Metriken";
 
 
@@ -1634,8 +1634,16 @@ $TLS_info_bugs_per_tc_report = "Dieser Report zeigt alle Bugs, die einem Testfal
 
 // ----- gui/templates/resultsTC.tpl -----
 $TLS_info_resultsTC_report = "Dieser Report zeigt die letzte Testfallausführung für jeden " .
-                             "Build. Zusätzlich zeigt die letzte Spalte die letzte " .
-                             "Testfallausführung für den zuletzt erstellten Build.";
+                             "Build.<br /><b>Beispiel:</b><br />Der Testfall wurde in folgender " .
+                             "Reihenfolge ausgeführt: <br />Build 1.0 - OK; Build 1.0 - Fehlgeschlagen " .
+                             "<br />-> Das letzte Ergebnis für den Build 1.0 ist Fehlgeschlagen, da die " .
+                             "zweite Ausführung die ältere Ausführung überschreibt.<br /><br />" .
+                             "Die Spalten \"[Letztes Build]\" und \"Letzte Ausführung\" werden wie im folgenden " .
+                             "Beispiel gefüllt:<br>Der Testfall wurde in folgender Reihenfolge ausgeführt:<br>".
+                             "Build 1.0 - OK; Build 1.0 - Fehlgeschlagen; Build 2.0 - Blockiert; " .
+                             "Build 1.0 - OK<br>-> \"[Letztes Build]\" : Blockiert, weil Build 2.0 das " .
+                             "zuletzt erstellte Build ist, für das ein Ergebnis gesetzt wurde.<br>" .
+                             "-> \"Letzte Ausführung\" : OK, weil Build 1.0 zuletzt ausgeführt wurde.";
 
 
 
@@ -2090,13 +2098,13 @@ $TLS_title_test_plan_mgmt = "Testplan Verwaltung";
 
 // ----- gui/templates/metricsDashboard.tpl -----
 $TLS_info_metrics_dashboard_progress = "Der Projektfortschritt wird berechnet indem alle Ausführungen für ein " .
-                                       "spezifisches Ergebnis für alle Plattformenen innerhalb aller Testpläne " .
+                                       "spezifisches Ergebnis für alle Plattformen innerhalb aller Testpläne " .
                                        "aufsummiert wird. Diese Summe wird dann in Beziehung zur Summe aller " .
                                        "aktiver Testfälle aller Plattformen innerhalb aller Testpläne gesetzt.";
 $TLS_info_metrics_dashboard = "Dieser Report zeigt den Fortschritt für das gesamte Projekt " .
                               "und alle (oder nur aktive) Testpläne innerhalb des Projekts<br />" .
                               "Der Gesamtfortschritt der Testpläne wird basierend auf dem Fortschritt " .
-                              "der einzelnen Plattformenen (sofern in Verwendung) berechnet.<br />" .
+                              "der einzelnen Plattformen (sofern in Verwendung) berechnet.<br />" .
                               "Der Testprojekt-Fortschritt wird basierend auf dem Fortschritt aller " .
                               "(oder nur der aktiven) Testpläne berechnet.";
 $TLS_overall_progress = "Gesamtfortschritt";
@@ -3266,6 +3274,11 @@ $TLS_issue_status_resolved = "Entwickelt";
 $TLS_issue_status_tested = "Getestet";
 $TLS_issue_status_delivered = "Geliefert";
 $TLS_issue_status_closed = "Geschlossen";
-$TLS_issue_status_held = "Im Wartezustand"; 
+$TLS_issue_status_held = "Im Wartezustand";
+
+// this definition has to be placed AFTER $TLS_title_metrics_x_build
+$TLS_buildMetricsFeedback = $TLS_title_metrics_x_build . 
+							' werden nur mit Testfällen berechnet, die einem Tester für das entsprechende Build'.
+							' zugewiesen wurden';
 // ----- END ------------------------------------------------------------------
 ?>

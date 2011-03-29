@@ -14,6 +14,11 @@
  *
  *
  * @internal Revisions:
+ *	20110328 - franciscom - filter_cf_selection() fixed issue regarding simple types
+ *	20110326 - franciscom - filter_cf_selection() make it safer
+ *	20110322 - franciscom - BUGID 4343: Reports Failed Test Cases / ... -> Build is not shown	
+ *							get_linked_tcversions() - error while refactoring.
+ *
  *	20110317 - franciscom - BUGID 4328: Metrics dashboard - only active builds has to be used
  *							get_linked_tcversions() - new option forced_exec_status
  *													  build_id now can be an array of id
@@ -87,33 +92,6 @@
  *  20100112 - franciscom - getPlatforms() - interface changes
  *	20100106 - franciscom - Multiple Test Case Steps Feature
  *                          Affected Methods: get_linked_tcversions()
- *	20091111 - franciscom - BUGID 2938 - getTestCaseSiblings(), getTestCaseNextSibling()
- *  20091031 - franciscom - tallyResultsForReport()
- *  20091027 - franciscom - BUGID 2500 - get_linked_tcversions()
- *  20091025 - franciscom - new method - getStatusTotalsByPlatform()
- *                          bug found on getNotExecutedLinkedTCVersionsDetailed()
- *                          missing testplan_id on execution join
- *
- *	20091010 - franciscom - getNotExecutedLinkedTCVersionsDetailed() new options
- *  20091004 - franciscom - get_linked_tcversions() - fixed query when requesting exec status filtering.
- *                                                  - added more columns to output record set
- *  20090923 - franciscom - link_tcversions() - will return data
- *  20090920 - franciscom - getStatusTotals(), will replace some result.class method
- *  20090919 - franciscom - copy_as(), copy_linked_tcversions() added contribution (refactored)
- *                          to copy user assignment.
- *
- * 	20090822 - franciscom - changeLinkedTCVersionsPlatform() - new method
- *                          countLinkedTCVersionsByPlatform() - new method
- *  20090814 - franciscom - link_tcversions() - interface changes - due to platform feature
- *  20090516 - franciscom - BUGID - is_public
- *                          create(),update() changed
- *  20090509 - franciscom - BUGID - build class manage release_date
- *  20090411 - franciscom - BUGID 2369 - link_tcversions() - interface changes
- *  20090214 - franciscom - BUGID 2099 - get_linked_tcversions() - added new columns in output recordset
- *  20090208 - franciscom - testplan class - new method get_build_by_id()
- *  20090201 - franciscom - copy_milestones() - wrong SQL sentece 
- *                          A,B,C fields renamed to lower case a,b,c to avoid problems
- *                          between differnt database (case and no case sensitive)
  **/
 
 /** related functionality */
@@ -745,6 +723,10 @@ class testplan extends tlObjectWithAttachments
 		$executions['filter'] = '';
 		$notrun['filter'] = null;
 		$otherexec['filter'] = null;
+		$more_tcase_fields = '';
+		$join_for_parent = '';
+		$more_parent_fields = '';
+		$more_exec_fields='';
 		
         $my['filters'] = array('tcase_id' => null, 'keyword_id' => 0,
                                'assigned_to' => null, 'exec_status' => null,
@@ -983,10 +965,6 @@ class testplan extends tlObjectWithAttachments
 			                   " E.testplan_id=T.testplan_id {$builds['filter']}) ";
 		// --------------------------------------------------------------
 		
-		$more_tcase_fields = '';
-		$join_for_parent = '';
-		$more_parent_fields = '';
-		$more_exec_fields='';
 		switch($my['options']['details'])
 		{
 			case 'full':
@@ -2670,30 +2648,33 @@ class testplan extends tlObjectWithAttachments
 	
 	  returns: array filtered by selected custom fields.
 	
-	  rev :
+	  @internal revisions
+	  20110326 - franciscom - added some logic to avoid issues if cfvalue is ''
+	  
 	*/
-	function filter_cf_selection ($tp_tcs, $cf_hash)
+	function filter_cf_selection($tp_tcs, $cf_hash)
 	{
 		$new_tp_tcs = null;
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		
 		// BUGID 3809 - Radio button based Custom Fields not working		
+		// BUGID 3995 Custom Field Filters not working properly since the cf_hash is array	
 		$or_clause = '';
 		$cf_query = '';
-		//BUGID 3995 Custom Field Filters not working properly since the cf_hash is array	
+		$ignored = 0;
+		$doFilter = false;
+		$doIt = true;
+		
 		if (isset($cf_hash)) 
 		{
 			$countmain = 1;
 			foreach ($cf_hash as $cf_id => $cf_value) 
 			{
-				if ( $countmain != 1 ) 
-				{
-					$cf_query .= " OR ";
-				}
 				// single value or array?
 				if (is_array($cf_value)) 
 				{
 					$count = 1;
+					$cf_query .= $or_clause;
 					foreach ($cf_value as $value) 
 					{
 						if ($count > 1) 
@@ -2703,35 +2684,59 @@ class testplan extends tlObjectWithAttachments
 						$cf_query .= " ( CFD.value LIKE '%{$value}%' AND CFD.field_id = {$cf_id} )";
 						$count++;
 					}
-				} else 
+				} 
+				else 
 				{
-					$cf_query .= " ( CFD.value LIKE '%{$cf_value}%' ) ";
+					// Because cf value can NOT exists on DB depending on system config.
+					if( trim($cf_value) != '')
+					{
+						$cf_query .= $or_clause;
+						$cf_query .= " ( CFD.value LIKE '%{$cf_value}%' AND CFD.field_id = {$cf_id} ) ";
+					}	
+					else
+					{
+						$ignored++;
+					}	
 				}
-					$countmain++;
+
+				if($or_clause == '')
+				{
+					$or_clause = ' OR ';
+				}
 			}
-					$cf_query =  " AND ({$cf_query}) ";
+			
+			// grand finale
+			if( $cf_query != '')
+			{
+				$cf_query =  " AND ({$cf_query}) ";
+				$doFilter = true;
+			}	
 		}
-		                              
-        $cf_qty = count($cf_hash);		                              		
+        $cf_qty = count($cf_hash) - $ignored;		                              		
+        $doIt = !$doFilter;
 		foreach ($tp_tcs as $tc_id => $tc_value)
 		{
-			// BUGID 2877 - Custom Fields linked to TC versions
-			$sql = " /* $debugMsg */ SELECT CFD.value FROM {$this->tables['cfield_design_values']} CFD," .
-				   " {$this->tables['nodes_hierarchy']} NH" .
-				   " WHERE CFD.node_id = NH.id " .
-				   " AND NH.parent_id = {$tc_value['tc_id']} " .
-				   " {$cf_query} ";
+			if( $doFilter )
+			{
+				// BUGID 2877 - Custom Fields linked to TC versions
+				$sql = " /* $debugMsg */ SELECT CFD.value FROM {$this->tables['cfield_design_values']} CFD," .
+					   " {$this->tables['nodes_hierarchy']} NH" .
+					   " WHERE CFD.node_id = NH.id " .
+					   " AND NH.parent_id = {$tc_value['tc_id']} " .
+					   " {$cf_query} ";
+
+				$rows = $this->db->fetchColumnsIntoArray($sql,'value'); //BUGID 4115
 			
-			$rows = $this->db->fetchColumnsIntoArray($sql,'value'); //BUGID 4115
-			// if there exist as many rows as custom fields to be filtered by => tc does meet the criteria
-			if(count($rows) == $cf_qty) 
+				// if there exist as many rows as custom fields to be filtered by => tc does meet the criteria
+				$doIt = (count($rows) == $cf_qty);
+			}	
+			if( $doIt ) 
 			{
 				$new_tp_tcs[$tc_id] = $tp_tcs[$tc_id];
 			}
 		}
 		return ($new_tp_tcs);
 	}
-
 
 	/*
 	  function: get_estimated_execution_time

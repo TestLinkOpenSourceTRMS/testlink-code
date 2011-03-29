@@ -3,12 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * @filesource tlTestCaseFilterControl.class.php
  * @package    TestLink
  * @author     Andreas Simon
- * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.33.2.2 2011/01/13 13:47:42 mx-julian Exp $
+ * @copyright  2006-2011, TestLink community
  * @link       http://www.teamst.org/index.php
- * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
+ * 
  *
  * This class extends tlFilterPanel for the specific use with test case tree.
  * It holds the logic to be used at GUI level to manage a common set of settings and filters for test cases.
@@ -34,7 +34,7 @@
  *    --> assign requirements
  *
  * @internal Revisions:
- *
+ * 20110328 - franciscom - init_filter_custom_fields() fixed issue introduced du to trim() on arrays.
  * 20110113 - asimon - BUGID 4166 - List also test plans without builds for "plan_mode"
  * 20101110 - asimon - BUGID 3822: Keywords combobox is absent on the Filters pane of 'Add / Remove Test Cases'
  * 20101103 - asimon - custom fields on test spec did not retain value after apply
@@ -61,11 +61,6 @@
  * 20100713 - asimon - fixed Drag&Drop error caused by init_filter_custom_fields()
  * 20100702 - asimon - fixed error in init_setting_testplan()
  * 20100701 - asimon - BUGID 3414 - additional work in init_filter_custom_fields()
- * 20100628 - asimon - removal of constants
- * 20100624 - asimon - CVS merge (experimental branch to HEAD)
- * 20100503 - asimon - start of implementation of filter panel class hierarchy
- *                     to simplify/generalize filter panel handling
- *                     for test cases and requirements
  */
 
 /*
@@ -1407,64 +1402,79 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->filters[$key] = false;
 		$this->active_filters[$key] = null;
 
-		if (!is_null($cfields)) {
+		if (!is_null($cfields)) 
+		{
 			// display and compute only when custom fields are in use
-			foreach ($cfields as $cf_id => $cf) {
+			foreach ($cfields as $cf_id => $cf) 
+			{
 				// has a value been selected?
 				$id = $cf['id'];
 				$type = $cf['type'];
 				$verbose_type = trim($this->cfield_mgr->custom_field_types[$type]);
 				$cf_input_name = "{$cf_prefix}{$type}_{$id}";
 				
+				
 				// BUGID 3716
 				// custom fields on test spec did not retain value after apply
+				// IMPORTANT/CRITIC issue:  trim() on array makes array = null !!!
+				//
 				$value = isset($_REQUEST[$cf_input_name]) ? $_REQUEST[$cf_input_name] : null;
 
-				// BUGID 3884: added filtering for datetime custom fields
-				if ($verbose_type == 'datetime') {
-					// if cf is a date field, convert the three given values to unixtime format
-					if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != ''
-					&& isset($_REQUEST[$cf_input_name . '_hour']) && $_REQUEST[$cf_input_name . '_hour'] != ''
-					&& isset($_REQUEST[$cf_input_name . '_minute']) && $_REQUEST[$cf_input_name . '_minute'] != ''
-					&& isset($_REQUEST[$cf_input_name . '_second']) && $_REQUEST[$cf_input_name . '_second'] != '') {
-						$date = $_REQUEST[$cf_input_name . '_input'];
-						
-						$hour = $_REQUEST[$cf_input_name . '_hour'];
-						$minute = $_REQUEST[$cf_input_name . '_minute'];
-						$second = $_REQUEST[$cf_input_name . '_second'];
-
-						$date_array = split_localized_date($date, $date_format);
-						$value = mktime($hour, $minute, $second, $date_array['month'], $date_array['day'], $date_array['year']);
-					}
-				}
-
-				if ($verbose_type == 'date') {
-					// if cf is a date field, convert the three given values to unixtime format
-					// BUGID 3883: only set values if different from 0
-					if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != '') {
-						$date = $_REQUEST[$cf_input_name . '_input'];						
-						$date_array = split_localized_date($date, $date_format);
-						$value = mktime(0, 0, 0, $date_array['month'], $date_array['day'], $date_array['year']);
-					}
-				}
-
-				if ($this->args->reset_filters) {
+				if ($this->args->reset_filters) 
+				{
 					$value = null;
 				}
+				else
+				{
+					// BUGID 3884: added filtering for datetime custom fields
+					if ($verbose_type == 'datetime') {
+						// if cf is a date field, convert the three given values to unixtime format
+						if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != ''
+						&& isset($_REQUEST[$cf_input_name . '_hour']) && $_REQUEST[$cf_input_name . '_hour'] != ''
+						&& isset($_REQUEST[$cf_input_name . '_minute']) && $_REQUEST[$cf_input_name . '_minute'] != ''
+						&& isset($_REQUEST[$cf_input_name . '_second']) && $_REQUEST[$cf_input_name . '_second'] != '') {
+							$date = $_REQUEST[$cf_input_name . '_input'];
+							$hour = $_REQUEST[$cf_input_name . '_hour'];
+							$minute = $_REQUEST[$cf_input_name . '_minute'];
+							$second = $_REQUEST[$cf_input_name . '_second'];
+                	
+							$date_array = split_localized_date($date, $date_format);
+							$value = mktime($hour, $minute, $second, $date_array['month'], $date_array['day'], $date_array['year']);
+						}
+					}
+                	
+					if ($verbose_type == 'date') {
+						// if cf is a date field, convert the three given values to unixtime format
+						// BUGID 3883: only set values if different from 0
+						if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != '') {
+							$date = $_REQUEST[$cf_input_name . '_input'];						
+							$date_array = split_localized_date($date, $date_format);
+							$value = mktime(0, 0, 0, $date_array['month'], $date_array['day'], $date_array['year']);
+						}
+					}
+				}
 
+
+				
 				$value2display = $value;
-				if (!is_null($value2display) && is_array($value2display)){
+				if (!is_null($value2display) && is_array($value2display))
+				{
 					$value2display = implode("|", $value2display);
+				}
+				else 
+				{
+					$value = trim($value);
+					$value2display = $value;
 				}
 				$cf['value'] = $value2display;
 
-				if ($value) {
+				if (!is_null($value) && $value !='') 
+				{
 					$this->do_filtering = true;
 					$selection[$id] = $value;
 				}
 
-				$label = str_replace(TL_LOCALIZE_TAG, '', lang_get($cf['label'],
-				                                                   null, $no_warning));
+				$label = str_replace(TL_LOCALIZE_TAG, '', lang_get($cf['label'], null, $no_warning));
 
 				$cf_size = self::CF_INPUT_SIZE;
 				// set special size for list inputs
@@ -1488,7 +1498,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}
 	} // end of method
 
-	private function init_filter_result() {
+
+	private function init_filter_result() 
+	{
 		$key = 'filter_result';
 		$result_key = 'filter_result_result';
 		$method_key = 'filter_result_method';

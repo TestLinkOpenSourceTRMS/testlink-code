@@ -1,17 +1,22 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.25.2.1 2010/12/25 10:28:07 franciscom Exp $
+
 Purpose: smarty template - show Test Results and Metrics
-Revisions:
-    20101018 - Julian - added info for milestone progress how percentage is calculated
-                      - BUGID 2236 - Milestones Report is broken
-                      - BUGID 2770 - Start date for milestones
-                      - "Test results according to test priorities" was not shown if
-                        test plan does not use platforms
-    20100811 - asimon - removed "results by assigned testers" table,
-                        was replaced by new report "results by tester per build"
-    20100722 - asimon - BUGID 3406, 1508 - overall build status,
-                        also replaced some unnecessary lang_get() calls by $labels-usage
+
+@filesource	resultsGeneral.tpl
+@internal revisions:
+20110326 - francisco - BUGID 4355: 	General Test Plan Metrics - 
+									Build without executed test cases are not displayed.
+
+20101018 - Julian - added info for milestone progress how percentage is calculated
+                  - BUGID 2236 - Milestones Report is broken
+                  - BUGID 2770 - Start date for milestones
+                  - "Test results according to test priorities" was not shown if
+                    test plan does not use platforms
+20100811 - asimon - removed "results by assigned testers" table,
+                    was replaced by new report "results by tester per build"
+20100722 - asimon - BUGID 3406, 1508 - overall build status,
+                    also replaced some unnecessary lang_get() calls by $labels-usage
 *}
 {lang_get var="labels"
      s='trep_kw,trep_owner,trep_comp,generated_by_TestLink_on, priority,
@@ -42,6 +47,12 @@ Revisions:
   	{* ----- results by builds -------------------------------------- *}
 	<h2>{$labels.title_metrics_x_build}</h1>
 
+	{* Display message explaining that only Active Builds with test cases *}
+	{* assigned to tester will be displayed *}
+	{if $gui->buildMetricsFeedback != ''}
+		{$gui->buildMetricsFeedback|escape}
+	{/if}
+	{if $gui->displayBuildMetrics}
 	<table class="simple" style="text-align: center; margin-left: 0px;">
   	<tr>
   		<th style="width: 10%;">{$labels.th_build}</th>
@@ -71,9 +82,8 @@ Revisions:
 	  	{/if}
   	</tr>
 	{/foreach}
-	
 	</table>
-
+	{/if}
   	{* ----- results by test suites -------------------------------------- *}
 
   	{* by TestSuite *}

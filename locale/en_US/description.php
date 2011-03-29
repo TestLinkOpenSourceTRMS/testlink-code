@@ -1,29 +1,30 @@
 <?php
-/** -------------------------------------------------------------------------------------
- * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
+/** 
+ * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  * 
- * Filename $RCSfile: description.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2010/06/24 17:25:56 $ $Author: asimon83 $
- * @author Martin Havlat
+ * Localization: English (en_US) text
  *
- * LOCALIZATION:
- * === English (en_GB) strings === - default development localization (World-wide English)
- *
- * @ABSTRACT
+ * 
  * The file contains global variables with html text. These variables are used as 
  * HELP or DESCRIPTION. To avoid override of other globals we are using "Test Link String" 
  * prefix '$TLS_hlp_' or '$TLS_txt_'. This must be a reserved prefix.
  * 
- * Contributors:
+ * Contributors howto:
  * Add your localization to TestLink tracker as attachment to update the next release
  * for your language.
+ * 
+ * 
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2003-2009, TestLink community 
+ * @link 		http://www.teamst.org/index.php
  *
- * No revision is stored for the the file - see CVS history
- * The initial data are based on help files stored in gui/help/<lang>/ directory. 
- * This directory is obsolete now. It serves as source for localization contributors only. 
- *
- * ----------------------------------------------------------------------------------- */
+ * @internal Revisions:
+ * 20110327 - BUGID 4349 - Julian - Update with en_GB files
+ * 
+ **/
+
 
 // printFilter.html
 $TLS_hlp_generateDocOptions = "<h2>Options for a generated document</h2>
@@ -123,7 +124,7 @@ $TLS_hlp_executeMain = "<h2>Executing Test Cases</h2>
 <p>Allows users to 'execute' test cases. Execution itself is merely
 assigning a test case a result (pass,fail,blocked) against a selected build.</p>
 <p>Access to a bug tracking system could be configured. User can directly add a new bugs
-and browse exesting ones then.</p>";
+and browse existing ones then. See Installation manual for more.</p>";
 
 //bug_add.html
 $TLS_hlp_btsIntegration = "<h2>Add Bugs to Test Case</h2>
@@ -150,52 +151,51 @@ After closing the add bug page, you will see relevant bug data on the execute pa
 </p>";
 
 // execFilter.html
-$TLS_hlp_executeFilter = "<h2>Setup Filter and Build for test execution</h2>
+$TLS_hlp_executeFilter = "<h2>Settings</h2>
 
-<p>The left pane consists from navigator through test cases assigned to the current " .
-"Test plan and table with settings and filter. These filters allows the user " .
-"to refine offered set of test cases before they are executed." .
-"Setup your filter, press the \"Apply\" button and select appropriate Test Case " .
-"from tree menu.</p>
+<p>Settings allows you to select the test plan, build and platform (if available) to
+be executed.</p>
 
-<h3>Build</h3>
-<p>Users must choose a build that will be connected with a test result. " .
-"Builds are the basic component for the current Test Plan. Each test case " .
-"may be run more times per build. However the last results is count only. 
-<br />Builds can be created by leads using the Create New Build page.</p>
+<h3>Test Plan</h3>
+<p>You can choose the required test plan. According to the chosen test plan the appropriate
+builds will be shown. After choosing a test plan filters will be reset.</p>
 
-<h3>Test Case ID filter</h3>
-<p>Users can filter test cases by unique identifier. This ID is created automatically 
-during create time. Empty box means that the filter doesn't apply.</p> 
+<h3>Platform</h3>
+<p>If the platforms feature is used, you must select the appropriate platform before execution.</p>
 
-<h3>Priority filter</h3>
-<p>Users can filter test cases by test priority. Each test case importance is combined" .
-"with test urgency within the current Test plan. For example 'HIGH' priority test case " .
-"is shown if importance or urgency is HIGH and second attribute is at least MEDIUM level.</p> 
+<h3>Build to execute</h3>
+<p>You can choose the build you whish to execute the test cases for.</p>
 
-<h2>Result filter</h2>
-<p>Users can filter test cases by results. Results are what happened to that test 
-case during a particular build. Test cases can pass, fail, be blocked, or not be run." .
-"This filter is disabled by default.</p>
+<h2>Filters</h2>
+<p>Filters provide the opportunity to further influence the set of shown test cases
+before the execution. You can reduce the set of shown test cases by specifying filters
+and click the \"Apply\" button.</p>
 
-<h3>User filter</h3>
-<p>Users can filter test cases by their assignee. The check-box allows to include also " .
-"\"unassigned\" tests into the resulted set in addtion.</p>";
-/*
-<h2>Most Current Result</h2>
-<p>By default or if the 'most current' checkbox is unchecked, the tree will be sorted 
-by the build that is chosen from the dropdown box. In this state the tree will display 
-the test cases status. 
-<br />Example: User selects build 2 from the dropdown box and doesn't check the 'most 
-current' checkbox. All test cases will be shown with their status from build 2. 
-So, if test case 1 passed in build 2 it will be colored green.
-<br />If the user decideds to check the 'most current' checkbox the tree will be 
-colored by the test cases most recent result.
-<br />Ex: User selects build 2 from the dropdown box and this time checks 
-the 'most current' checkbox. All test cases will be shown with most current 
-status. So, if test case 1 passed in build 3, even though the user has also selected 
-build 2, it will be colored green.</p>
- */
+<p> Advanced Filters will allow you to specify a set of values for applicable filters by
+using CTRL-Click inside the Multi-Select ListBox</p>
+
+
+<h3>Keyword Filter</h3>
+<p>You can filter test cases by the keywords that have been assigned. You can choose " .
+"multiple keywords by using CTRL-Click. If you chose more than one keyword you can " .
+"decide whether only test cases are shown that have all chosen keywords assigned " .
+"(radiobutton \"And\") or  at least one of the chosen keywords (radiobutton \"Or\").</p>
+
+<h3>Priority Filter</h3>
+<p>You can filter test cases by test priority. The test priority is \"test case importance\" " .
+"combined with \"test urgency\" within the current test plan.</p> 
+
+<h3>User Filter</h3>
+<p>You can filter test cases that are not assigned (\"Nobody\") or assigned to \"Somebody\". " .
+"You can also filter test cases that are assigned to a specific tester. If you chose a specific " .
+"tester you also have the possibility to show test cases that are unassigned in addition to " .
+"those test cases (advanced Filters are available). </p>
+
+<h3>Result Filter</h3>
+<p>You can filter test cases by result (advanced Filters are available). You can filter by " .
+"result \"on chosen build for execution\", \"on latest execution\", \"on ALL builds\", " .
+"\"on ANY build\" and \"on specific build\". If \"specific build\" is chosen you then can " .
+"specify the build. </p>";
 
 
 // newest_tcversions.html
@@ -237,6 +237,71 @@ with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_
 \"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
 ";
 
+$TLS_hlp_req_coverage_table = "<h3>Coverage:</h3>
+A value of e.g. \"40% (8/20)\" means that 20 Test Cases have to be created for this Requirement 
+to test it completely. 8 of those have already been created and linked to this Requirement, which 
+makes a coverage of 40 percent.
+";
+
+
+// req_edit
+$TLS_hlp_req_edit = "<h3>Internal links on scope:</h3>
+<p>Internal links serve the purpose of creating links to other requirements/requirement specifications 
+with a special syntax. Internal Links behaviour can be changed in the config file.
+<br /><br />
+<b>Usage:</b>
+<br />
+Link to requirements: [req]req_doc_id[/req]<br />
+Link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
+
+<p>The test project of the requirement / requirement specification and an anchor
+to jump to can also be specified:<br />
+[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt;]req_doc_id[/req]<br />
+This syntax also works for requirement specifications.</p>
+
+<h3>Log message for changes:</h3>
+<p>Whenever a change is made Testlink will ask for a log message. This log message served the purpose of traceability.
+If only the scope of the requirement has changed you are free to decide whether to create a new revision or not. 
+Whenever anything besides the scope is changed you are forced to create a new revision.</p>
+";
+
+
+// req_view
+$TLS_hlp_req_view = "<h3>Direct Links:</h3>
+<p>To easily share this document with others simply click the globe icon at the top of this document to create a direct link.</p>
+
+<h3>View History:</h3>
+<p>This feature allows to compare revisions/versions of requirements if more than one revision/version of the requirement exists.
+The overview provides the Log message for each revision/version, a timestamp and the author of the last change.</p>
+
+<h3>Coverage:</h3>
+<p>Shows all linked test cases for this requirement.</p>
+
+<h3>Relations:</h3>
+<p>Requirement Relations are used to model relationships between requirements. 
+Custom relations and the option to allow relations between requirements of 
+different test projects can be configured on the config file.
+If you set the relation \"Requirement A is parent of Requirement B\", 
+Testlink will set the relation \"Requirement B is child of Requirement A\" implicitly.</p>
+";
+
+
+// req_spec_edit
+$TLS_hlp_req_spec_edit = "<h3>Internal links on scope:</h3>
+<p>Internal links serve the purpose of creating links to other requirements/requirement specifications 
+with a special syntax. Internal Links behaviour can be changed in the config file.
+<br /><br />
+<b>Usage:</b>
+<br />
+Link to requirements: [req]req_doc_id[/req]<br />
+Link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
+
+<p>The test project of the requirement / requirement specification and an anchor
+to jump to can also be specified:<br />
+[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt;]req_doc_id[/req]<br />
+This syntax also works for requirement specifications.</p>
+";
+
 
 // planAddTC_m1.tpl
 $TLS_hlp_planAddTC = "<h2>Regarding 'Save Custom Fields'</h2>
@@ -246,6 +311,18 @@ Custom Fields with:<br />
  'Enable on test plan design=true'<br />
 you will see these in this page ONLY for Test Cases linked to Test Plan.
 ";
+
+
+// resultsByTesterPerBuild.tpl
+$TLS_hlp_results_by_tester_per_build_table = "<b>More information about testers:</b><br />
+If you click on a tester name in this table, you will get a more detailed overview
+about all Test Cases assigned to that user and his testing progress.<br /><br />
+<b>Note:</b><br />
+This Report shows those test cases, which are assigned to a specific user and have been executed 
+based on each active build. Even if a test case has been executed by another user than the assigned user, 
+the test case will appear as executed for the assigned user.
+";
+
 
 // xxx.html
 //$TLS_hlp_xxx = "";

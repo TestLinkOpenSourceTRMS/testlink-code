@@ -5,12 +5,12 @@
  *
  * Library for documents generation
  *
- * Filename: print.inc.php
+ * @filesource	print.inc.php
  *
- * @package TestLink
- * @author	Martin Havlat <havlat@users.sourceforge.net>
- * @copyright 2007-2011, TestLink community 
- * @uses printDocument.php
+ * @package 	TestLink
+ * @author		Martin Havlat <havlat@users.sourceforge.net>
+ * @copyright 	2007-2011, TestLink community 
+ * @uses 	printDocument.php
  *
  *
  * @internal revisions:
@@ -398,6 +398,7 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 		                'scope' => 'scope', 'type' => 'type', 'author' => 'author',
 		                'relations' => 'relations', 'overwritten_count' => 'req_total',
 		                'coverage' => 'coverage',
+		                'undefined_req_spec_type' => 'undefined_req_spec_type',
 		                'custom_field' => 'custom_field', 'not_aplicable' => 'not_aplicable');
 		$labels = init_labels($labels);
 		$reqSpecTypeLabels = init_labels($req_spec_cfg->type_labels);
@@ -435,11 +436,24 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 		            htmlspecialchars($author->getDisplayName()) . "</td></tr>\n";
 	}
 	
-	if ($options['req_spec_type']) {
+	if ($options['req_spec_type']) 
+	{
 		$output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
-		           $labels['type'] . "</span></td>" .
-		           "<td>" . $reqSpecTypeLabels[$spec['type']] . "</td></tr>";
+		           $labels['type'] . "</span></td>" . "<td>";
+		           
+		if( isset($reqSpecTypeLabels[$spec['type']]) )
+		{	 
+			$output .= $reqSpecTypeLabels[$spec['type']];
+		}
+		else
+		{
+			$output .= sprintf($labels['undefined_req_spec_type'],$spec['type']);		
+		}
+		$output .= "</td></tr>";
 	}
+	
+	
+	
 	
 	if ($options['req_spec_overwritten_count_reqs']) {
 		$current = $req_spec_mgr->get_requirements_count($spec['id']);

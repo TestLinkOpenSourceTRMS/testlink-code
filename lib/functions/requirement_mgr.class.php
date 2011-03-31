@@ -3,15 +3,18 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @internal filename: requirement_mgr.class.php
- * @package  TestLink
- * @author 	 Francisco Mancardi <francisco.mancardi@gmail.com>
- * @copyright 2007-2011, TestLink community 
+ * @filesource	requirement_mgr.class.php
+ * @package  	TestLink
+ * @author 	 	Francisco Mancardi <francisco.mancardi@gmail.com>
+ * @copyright 	2007-2011, TestLink community 
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * @internal revisions:
+ *	20110331 - franciscom - BUGID 4366: Custom Field when requirements reports is generated was empty
+ *							get_by_id()
+ *
  *	20110308 - aismon - backported method get_version_revision() from master to branch 1.9
  *	20110116 - franciscom - fixed Crash on MSSQL due to column name with MIXED case
  *  						BUGID 4172 - MSSQL UNION text field issue
@@ -192,6 +195,9 @@ class requirement_mgr extends tlObjectWithAttachments
   returns: null if query fails
            map with requirement info
 
+	@internal revisions
+	20110331 - franciscom - BUGID 4366	
+
 */
 function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options=null,$filters=null)
 {
@@ -247,12 +253,16 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
 		    }
 		}
     }
+
+  	// 20110331 - BUGID 4366
+  	// added -1 AS revision_id to make some process easier 
   
 	$sql = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
 		   " REQV.scope,REQV.status,REQV.type,REQV.active," . 
            " REQV.is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
            " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
-           " REQV.modification_ts,REQV.revision,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+           " REQV.modification_ts,REQV.revision, -1 AS revision_id, " .
+           " NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
 	       " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
 	       " FROM {$this->object_table} REQ " .
 	       " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .

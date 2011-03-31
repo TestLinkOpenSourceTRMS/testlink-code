@@ -36,10 +36,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   		<th>{$tlImages.sort_hint}{$labels.name}</th>
   		<th>{$tlImages.sort_hint}{$labels.label}</th>
   		<th>{$tlImages.sort_hint}{$labels.type}</th>
-  		<th>{$labels.enable_on_design}</th>
-  		<th>{$labels.show_on_exec}</th>
-  		<th>{$labels.enable_on_exec}</th>
-  		<th>{$labels.enable_on_testplan_design}</th>
+  		<th class="{$noSortableColumnClass}">{$labels.enable_on_design}</th>
+  		<th class="{$noSortableColumnClass}">{$labels.show_on_exec}</th>
+  		<th class="{$noSortableColumnClass}">{$labels.enable_on_exec}</th>
+  		<th class="{$noSortableColumnClass}">{$labels.enable_on_testplan_design}</th>
   		<th>{$tlImages.sort_hint}{$labels.available_on}</th>
   	</tr>
   

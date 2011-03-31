@@ -1,13 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsView.tpl,v 1.9 2010/10/17 09:46:37 franciscom Exp $ 
+@filesource cfieldsView.tpl
 
-rev :
-     20101017 - franciscom - image access refactored (tlImages)
-     20100315 - franciscom - added management on goback_url for export action
-     20090503 - franciscom - BUGID 2425 - commented show_on_design and show_on_testplan_design 
-                                          till new implementation
-     20080810 - franciscom - BUGID 1650 (REQ)
+@internal revisions
+20110331 - franciscom - make table sortable
+20101017 - franciscom - image access refactored (tlImages)
+20100315 - franciscom - added management on goback_url for export action
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -24,24 +22,25 @@ rev :
 {lang_get var="labels"
           s="name,label,type,title_cfields_mgmt,manage_cfield,btn_cfields_create,
              show_on_design,enable_on_design,show_on_exec,enable_on_exec,btn_export,
-             btn_import,btn_goback,
+             btn_import,btn_goback,sort_table_by_column,
              show_on_testplan_design,enable_on_testplan_design,available_on"}
 
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" enableTableSorting="yes"}
+
 <body>
 <h1 class="title">{$labels.title_cfields_mgmt}</h1>
 <div class="workBack">
 {if $gui->cf_map != '' }
-  <table class="simple">
+  <table id='item_view' class="simple sortable">
   	<tr>
-  		<th>{$labels.name}</th>
-  		<th>{$labels.label}</th>
-  		<th>{$labels.type}</th>
+  		<th>{$tlImages.sort_hint}{$labels.name}</th>
+  		<th>{$tlImages.sort_hint}{$labels.label}</th>
+  		<th>{$tlImages.sort_hint}{$labels.type}</th>
   		<th>{$labels.enable_on_design}</th>
   		<th>{$labels.show_on_exec}</th>
   		<th>{$labels.enable_on_exec}</th>
   		<th>{$labels.enable_on_testplan_design}</th>
-  		<th>{$labels.available_on}</th>
+  		<th>{$tlImages.sort_hint}{$labels.available_on}</th>
   	</tr>
   
    	{foreach key=cf_id item=cf_def from=$gui->cf_map}

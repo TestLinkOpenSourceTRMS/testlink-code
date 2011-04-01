@@ -77,6 +77,7 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (24,'platform_management');
 INSERT INTO /*prefix*/rights (id,description) VALUES (25,'platform_view');
 INSERT INTO /*prefix*/rights (id,description) VALUES (26,'project_infrastructure_edit');
 INSERT INTO /*prefix*/rights (id,description) VALUES (27,'project_infrastructure_view');
+INSERT INTO /*prefix*/rights (id,description) VALUES (28 ,'req_tcase_link_management');
 
 SET IDENTITY_INSERT /*prefix*/rights OFF
 

@@ -14,6 +14,7 @@
  * There is also some javascript that handles the form information.
  *
  * @internal revisions
+ * 20110401 - franciscom - BUGID 3615 - right to allow ONLY MANAGEMENT of requirements link to testcases
  * 20110325 - franciscom - BUGID 4062
  **/
 
@@ -54,6 +55,8 @@ if ($gui->grants['project_edit'] && !isset($_SESSION['testprojectID']))
 
 $gui->grants['reqs_view'] = $currentUser->hasRight($db,"mgt_view_req"); 
 $gui->grants['reqs_edit'] = $currentUser->hasRight($db,"mgt_modify_req"); 
+$gui->grants['req_tcase_assignment'] = $currentUser->hasRight($db,"req_tcase_link_management"); 
+
 $gui->grants['keywords_view'] = $currentUser->hasRight($db,"mgt_view_key");
 $gui->grants['keywords_edit'] = $currentUser->hasRight($db,"mgt_modify_key");
 $gui->grants['platform_management'] = $currentUser->hasRight($db,"platform_management");

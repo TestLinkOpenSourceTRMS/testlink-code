@@ -2,15 +2,13 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
- * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2011/01/10 15:38:56 $  $Author: asimon83 $
- * 
+ * @filesource	reqTcAssign.php
  * @author Martin Havlat
  *
+ * @internal revisions
+ * 20110401 - franciscom - BUGID 3615 - right to allow ONLY MANAGEMENT of requirements link to testcases
  * 20100602 - franciscom - BUGID 3495 - Requirements Bulk Assignment crash. (typo error)
  * 20100408 - franciscom - BUGID 3361 - FatalError after trying to assign requirements to an empty test suite
- * 20081130 - franciscom - BUGID 1852 - Bulk Assignment Feature
  *
 **/
 require_once("../../config.inc.php");
@@ -325,8 +323,12 @@ function processTestCase(&$dbHandler,&$argsObj,&$guiObj)
 	 return $guiObj;
 }
 
+// BUGID 3615
 function checkRights(&$db,&$user)
 {
-	return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
+
+	$canUse = 	$user->hasRight($db,'mgt_view_req') && 
+				($user->hasRight($db,'mgt_modify_req') || $user->hasRight($db,'req_tcase_link_management'));
+	return $canUse;
 }
 ?>

@@ -13,6 +13,7 @@
  *
  *
  *	@internal revisions
+ *  20110401 - franciscom - BUGID 3615 - right to allow ONLY MANAGEMENT of requirements link to testcases
  * 	20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
  *							can be added to new test plans
  * 
@@ -568,7 +569,10 @@ function getCfg()
 function getGrants(&$dbHandler)
 {
     $grants=new stdClass();
-    $grants->requirement_mgmt=has_rights($dbHandler,"mgt_modify_req"); 
+    
+    // BUGID 3615
+    $grants->requirement_mgmt = has_rights($dbHandler,"mgt_modify_req") || 
+								has_rights($dbHandler,"req_tcase_link_management"); 
     return $grants;
 }
 

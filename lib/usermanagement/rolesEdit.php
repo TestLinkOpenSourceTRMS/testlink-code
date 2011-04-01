@@ -77,6 +77,7 @@ function init_args()
 	
 	$args->basehref = $_SESSION['basehref'];
 	
+	// new dBug($args);
 	return $args;
 }
 
@@ -94,6 +95,8 @@ function doOperation(&$dbHandler,$argsObj,$operation)
 	$op->userFeedback = null;
 	$op->template = 'rolesEdit.tpl';
 
+	// new dBug($op->role->rights);
+	
 	$result = $op->role->writeToDB($dbHandler);
 	if ($result >= tl::OK)
 	{

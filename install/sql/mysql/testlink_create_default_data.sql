@@ -72,7 +72,7 @@ INSERT INTO /*prefix*/rights  (id,description) VALUES (24 ,'platform_management'
 INSERT INTO /*prefix*/rights  (id,description) VALUES (25 ,'platform_view');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (26 ,'project_inventory_management');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (27 ,'project_inventory_view');
-
+INSERT INTO /*prefix*/rights  (id,description) VALUES (28 ,'req_tcase_link_management');
 
 # Rights for Administrator role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,1 );

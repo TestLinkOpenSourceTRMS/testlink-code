@@ -2,21 +2,17 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
- * Filename $RCSfile: userRightMatrix.php,v $
+ * Configuration of the access rights needed for executing pages
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2010/03/07 10:06:28 $  $Author: franciscom $
+ * @filesource	userRightMatrix.php
  *
  * @author Andreas Morsing
  *
- * Configuration of the access rights needed for executing pages
  *
- * rev:
- *      20080120 - franciscom - buildnew -> buildedit 
- *      20071206 - franciscom - page name changes
- *
+ * @internal revisions:
  * 
 **/
+
 //user right matrix, 
 //for each file which calls testLinkInitPage it's 
 //possible to set the rights needed to execute the script

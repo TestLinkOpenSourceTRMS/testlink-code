@@ -30,10 +30,10 @@
  * 	mgt_modify_product, mgt_users - just Admin edits Products and Users
  *
  *
+ * @filesource	roles.inc.php
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
- * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: roles.inc.php,v 1.63 2010/11/12 20:29:58 franciscom Exp $
+ * @copyright 	2006-2011, TestLink community 
  * 
  *
  * @internal rev: 
@@ -102,6 +102,7 @@ function init_global_rights_maps()
 	$g_rights_req = array (	
 								"mgt_view_req" => lang_get('desc_mgt_view_req'),
 								"mgt_modify_req" => lang_get('desc_mgt_modify_req'),
+								"req_tcase_link_management" => lang_get('desc_req_tcase_link_management'),
 							);
 	
 	$g_rights_product = array("mgt_modify_product" => lang_get('desc_mgt_modify_product'),

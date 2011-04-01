@@ -1,14 +1,13 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.33 2010/11/13 11:17:27 franciscom Exp $     
- Purpose: smarty template - main page / site map                 
-                                                                 
- rev :
-    20100501 - Julian - blocks are not draggable anymore
-    20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
- 	  20100309 - asimon - BUGID 3227, added link for req overview page
- 	  20100106 - asimon - contribution for 2976 req/reqspec search                                    
-    20090808 - franciscom - grouping rights on gui->grants
+@filesource	mainPageLeft.tpl
+
+@internal revisions
+20110401 - franciscom - BUGID 3615 - right to allow ONLY MANAGEMENT of requirements link to testcases
+20100501 - Julian - blocks are not draggable anymore
+20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+20100309 - asimon - BUGID 3227, added link for req overview page
+20100106 - asimon - contribution for 2976 req/reqspec search                                    
 *}
 {lang_get var='labels' s='title_product_mgmt,href_tproject_management,href_admin_modules,
                           href_assign_user_roles,href_cfields_management,
@@ -29,9 +28,9 @@
 {assign var="display_left_block_4" value=false}
 {assign var="display_left_block_5" value=true}
 {if $gui->testprojectID && 
-	    ($gui->grants.project_edit == "yes" || $gui->grants.tproject_user_role_assignment == "yes" ||
-       $gui->grants.cfield_management == "yes" || $gui->grants.keywords_view == "yes")}
-    {assign var="display_left_block_1" value=true}
+	($gui->grants.project_edit == "yes" || $gui->grants.tproject_user_role_assignment == "yes" ||
+	$gui->grants.cfield_management == "yes" || $gui->grants.keywords_view == "yes")}
+	{assign var="display_left_block_1" value=true}
 
     <script  type="text/javascript">
     function display_left_block_1()
@@ -229,7 +228,7 @@
         
 	   	{/if}
 	   	
-		{if $gui->grants.reqs_edit == "yes"}
+		{if $gui->grants.reqs_edit == "yes" || $gui->grants.req_tcase_assignment}
 			<br />
   		<img src="{$tlImages.bullet}" />
        		<a href="lib/general/frmWorkArea.php?feature=assignReqs">{$labels.href_req_assign}</a>

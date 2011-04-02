@@ -10,6 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20110402 - franciscom - get_exec_status() - interface changes	
  * 20110312 - franciscom - 	get_by_id() - id can be null, to allow get data 
  *							when you now only version id (DB ID)
  * 20110308 - franciscom - get_basic_info() interface changes	
@@ -1159,6 +1160,10 @@ class testcase extends tlObjectWithAttachments
 		$linked_tcversions = $this->get_linked_versions($id);
 		$has_links_to_testplans = is_null($linked_tcversions) ? 0 : 1;
 	
+		// new dBug($linked_tcversions);
+		// $xx = $this->get_exec_status($id);
+		
+		// new dBug($xx);
 		if($has_links_to_testplans)
 		{
 			// check if executed
@@ -1319,12 +1324,11 @@ class testcase extends tlObjectWithAttachments
 				}	
 		  break;
 	
-	     case "EXECUTED":
-		      $recordset=$this->get_exec_status($id,$exec_status,$active_status,$tplan_id,$platform_id);
-		  break;
-	
+	      case "EXECUTED":
 		  case "NOT_EXECUTED":
-		      $recordset=$this->get_exec_status($id,$exec_status,$active_status,$tplan_id,$platform_id);
+				$getFilters = array('exec_status' => $exec_status,'active_status' => $active_status,
+									'tplan_id' => $tplan_id, 'platform_id' => $platform_id);
+		      	$recordset=$this->get_exec_status($id,$getFilters);
 	      break;
 	  }
 
@@ -2239,10 +2243,23 @@ class testcase extends tlObjectWithAttachments
 	       maintaining the really executed version in tcversion_number (version number displayed
 	       on User Interface) field we need to change algorithm.
 	*/
-	function get_exec_status($id,$exec_status="ALL",$active_status='ALL',$tplan_id=null,$platform_id=null)
+	function get_exec_status($id,$filters=null, $options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	    $active_status = strtoupper($active_status);
+
+		$my = array();
+		$my['filters'] = array(	'exec_status' => "ALL", 'active_status' => 'ALL',
+								'tplan_id' => null, 'platform_id' => null);
+		$my['options'] = array('addExecIndicator' => false);
+	
+	    $my['filters'] = array_merge($my['filters'], (array)$filters);
+	    $my['options'] = array_merge($my['options'], (array)$options);
+					  
+
+	    $active_status = strtoupper($my['filters']['active_status']);
+	    $exec_status = strtoupper($my['filters']['exec_status']);
+	  	$tplan_id = $my['filters']['tplan_id'];
+	  	$platform_id = $my['filters']['platform_id'];
 	  
 	    // Get info about tcversions of this test case
 	    $sqlx = "/* $debugMsg */ " .
@@ -2417,11 +2434,26 @@ class testcase extends tlObjectWithAttachments
 	    	   	    $active_status='INACTIVE' && $elem['active']==0 )
 	    	   	{    
 	    	   	    $recordset[$elem['tcversion_id']][$elem['testplan_id']][$elem['platform_id']]=$elem;
+	    	   	    
+	    	   	    if( $my['options']['addExecIndicator'] )
+	    	   	 	{
+	    	   	 		if( !is_null($elem['executed']) )
+	    	   	 		{
+	    	   	 			// $recordset[$elem['tcversion_id']]['executed'] = 1;
+	    	   	 			$recordset['executed'] = 1;
+	    	   	 		}
+	    	   	 		else if( !isset($recordset[$elem['tcversion_id']]['executed']))
+	    	   	 		{
+	    	   	 			// $recordset[$elem['tcversion_id']]['executed'] = 0;
+	    	   	 			$recordset['executed'] = 0;
+	    	   	 		}
+	    	   		}    
 	    	   	}    
 	    	}
 	    }		  
 	    if( !is_null($recordset) )
 	    {
+	    	// 20110402 - franciscom - unable to understand why is needed
 	        ksort($recordset);
 	    }
 	    return $recordset;

@@ -1,11 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerDeleteTC.tpl,v 1.4 2010/11/06 11:42:47 amkhullar Exp $
 
-Purpose:
+Viewer for massive delete of test cases inside a test suite
 
-rev :
-
+@filesource containerDeleteTC.tpl
+20110402 - franciscom - BUGID 4322: New Option to block delete of executed test cases
 20100910 - franciscom - BUGID 3047: Deleting multiple TCs
 *}
 {lang_get var='labels'
@@ -68,6 +67,10 @@ function check_action_precondition(container_id,action,msg)
       <div class="user_feedback">{$gui->user_feedback}</div>
       <br />
     {/if}
+    {if $gui->system_message != ''}
+      <div class="user_feedback">{$gui->system_message}</div>
+      <br />
+    {/if}
 
 		{* need to do JS checks*}
     {* used as memory for the check/uncheck all checkbox javascript logic *}
@@ -87,7 +90,9 @@ function check_action_precondition(container_id,action,msg)
         {foreach from=$gui->testCaseSet key=rowid item=tcinfo}
             <tr>
                 <td>
-                    <input type="checkbox" name="tcaseSet[]" id="tcaseSet_{$tcinfo.id}" value="{$tcinfo.id}" />
+					{if $tcinfo.draw_check}
+                    	<input type="checkbox" name="tcaseSet[]" id="tcaseSet_{$tcinfo.id}" value="{$tcinfo.id}" />
+                    {/if}	
                 </td>
                 <td>
                     {$tcinfo.external_id|escape}&nbsp;&nbsp;

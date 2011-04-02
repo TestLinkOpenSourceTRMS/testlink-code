@@ -3,11 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.132 $
- * @modified $Date: 2010/12/16 08:12:54 $ by $Author: asimon83 $
- * @author Martin Havlat
+ * @filesource	containerEdit.php
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2005-2011, TestLink community 
+ * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ *	20110402 - franciscom - BUGID 4322: New Option to block delete of executed test cases.	
  *  20101216 - asimon - refresh tree when creating new testsuite
  *	20101106 - franciscom - added check on $guiObj->testCaseSet and other variables that can be null
  *							to avoid event viewer warnings	when deleting test case in test suite 
@@ -60,6 +63,7 @@ $opt_cfg=new stdClass();
 $opt_cfg->js_ot_name = 'ot';
 
 $args = init_args($opt_cfg);
+$gui = new stdClass();
 
 $gui_cfg = config_get('gui');
 $smarty = new TLSmarty();
@@ -143,7 +147,6 @@ switch($action)
 		keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list);
 		$smarty->assign('opt_cfg', $opt_cfg);
 		// 20110315 - asimon: refresh tree when creating new testsuite
-		$gui = new stdClass();
 		$gui->refreshTree = $args->refreshTree;
 		$smarty->assign('gui', $gui);
 		$tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames,$oWebEditor,$action,
@@ -152,6 +155,9 @@ switch($action)
 
     case 'delete_testsuite':
    		$refreshTree = deleteTestSuite($smarty,$args,$tsuite_mgr,$tree_mgr,$tcase_mgr,$level);
+		$gui->refreshTree = $refreshTree;
+		$smarty->assign('gui', $gui);
+
     break;
 
     case 'move_testsuite_viewer':
@@ -331,11 +337,17 @@ function build_del_testsuite_warning_msg(&$tree_mgr,&$tcase_mgr,&$testcases,$tsu
     	                    	'linked_but_not_executed' => '',
     	                    	'no_links' => '');
 
+		$getOptions = array('addExecIndicator' => true);
   		foreach($testcases as $the_key => $elem)
   		{
   			$verbose[] = $tree_mgr->get_path($elem['id'],$tsuite_id);
-
-  			$status = $tcase_mgr->check_link_and_exec_status($elem['id']);
+  			// $status = $tcase_mgr->check_link_and_exec_status($elem['id']);
+			$xx = $tcase_mgr->get_exec_status($elem['id'],null,$getOptions);
+			$status = 'no_links';
+			if(!is_null($xx))
+			{
+				$status = $xx['executed'] ? 'linked_and_executed' : 'linked_but_not_executed';
+			}
   			$msg['link_msg'][] = $status;
 
   			if($status_warning[$status])
@@ -460,6 +472,9 @@ function writeCustomFieldsToDB(&$db,$tprojectID,$tsuiteID,&$hash)
 function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,$level)
 {
   	$feedback_msg = '';
+	$system_message = '';
+  	$testcase_cfg = config_get('testcase_cfg');
+
 	if($argsObj->bSure)
 	{
 	 	$tsuite = $tsuiteMgr->get_by_id($argsObj->objectID);
@@ -481,18 +496,35 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
 		$map_msg['link_msg'] = null;
 		$map_msg['delete_msg'] = null;
 
-		if(!is_null($testcases))
+		
+		if(is_null($testcases))
+		{
+			$can_delete = 1;
+		}
+		else
 		{
 			$map_msg = build_del_testsuite_warning_msg($treeMgr,$tcaseMgr,$testcases,$argsObj->testsuiteID);
+			if( in_array('linked_and_executed', $map_msg['link_msg']) )
+			{
+				$can_delete = $testcase_cfg->can_delete_executed;
+			}
 		}
 
 		// prepare to show the delete confirmation page
+		$smartyObj->assign('can_delete',$can_delete);
 		$smartyObj->assign('objectID',$argsObj->testsuiteID);
 		$smartyObj->assign('objectName', $argsObj->tsuite_name);
 		$smartyObj->assign('delete_msg',$map_msg['delete_msg']);
 		$smartyObj->assign('warning', $map_msg['warning']);
 		$smartyObj->assign('link_msg', $map_msg['link_msg']);
+
+		$system_message = '';
+		if(!$testcase_cfg->can_delete_executed)  
+		{
+			$system_message = lang_get('system_blocks_tsuite_delete_due_to_exec_tc');
+		}
 	}
+	$smartyObj->assign('system_message', $system_message);
 	$smartyObj->assign('page_title', lang_get('delete') . " " . lang_get('container_title_' . $level));
  	$smartyObj->assign('sqlResult',$feedback_msg);
 
@@ -900,6 +932,8 @@ function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
 
   returns: -
 
+	@internal revisions
+	20110402 - franciscom - BUGID 4322: New Option to block delete of executed test cases.	
 */
 function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&$tsuiteMgr,
 							   &$tcaseMgr,$argsObj,$feedback = null)
@@ -911,6 +945,12 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 	$tables = $tprojectMgr->getDBTables(array('nodes_hierarchy','node_types','tcversions'));
 	$testcase_cfg = config_get('testcase_cfg');
 	$glue = $testcase_cfg->glue_character;
+
+	$guiObj->system_message = '';
+	if(!$testcase_cfg->can_delete_executed)  
+	{
+		$guiObj->system_message = lang_get('system_blocks_delete_executed_tc');
+	}
 	
 	$containerID = isset($argsObj->testsuiteID) ? $argsObj->testsuiteID : $argsObj->objectID;
 	$containerName = $argsObj->tsuite_name;
@@ -934,7 +974,12 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 			// key level 1 : Test Case Version ID
 			// key level 2 : Test Plan  ID
 			// key level 3 : Platform ID
-			$guiObj->exec_status_quo[] = $tcaseMgr->get_exec_status($child['id']);	
+			$getOptions = array('addExecIndicator' => true);
+			$dummy = $tcaseMgr->get_exec_status($child['id'],null,$getOptions);	
+			$child['draw_check'] = $testcase_cfg->can_delete_executed || (!$dummy['executed']);
+
+			unset($dummy['executed']);
+			$guiObj->exec_status_quo[] = $dummy; 
 		} 
 	}
 	

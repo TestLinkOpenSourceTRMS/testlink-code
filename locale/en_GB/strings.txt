@@ -498,6 +498,8 @@ $TLS_th_link_exec_status = "Link and execution status";
 $TLS_testsuite_successfully_deleted = "The Test Suite was successfully deleted";
 $TLS_no_links = "No dependent data.";
 $TLS_linked_and_executed = "Test case was added into a Test Plan and has results.";
+$TLS_system_blocks_tsuite_delete_due_to_exec_tc = 
+	"Test suite can not be deleted, because system configuration blocks delete of executed test cases";
 
 
 // ----- gui/templates/containerNew.tpl -----
@@ -1483,6 +1485,7 @@ $TLS_warning_req_tc_assignment_impossible = "You <b>can't do</b> the assignment 
 $TLS_title_edit_tc = "Edit Test Case";
 $TLS_warning_editing_executed_step = "Warning! This Test Case Step has been executed.";
 $TLS_warning_editing_executed_tc = "Warning! This Test Case version has been executed.";
+$TLS_warning_delete_executed_tc = "Warning! This Test Case version has been executed.";
 $TLS_warning_unsaved = "You will lose any unsaved changes!";
 
 

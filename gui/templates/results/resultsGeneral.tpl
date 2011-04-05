@@ -5,6 +5,7 @@ Purpose: smarty template - show Test Results and Metrics
 
 @filesource	resultsGeneral.tpl
 @internal revisions:
+20110405 - Julian - BUGID 4377 - Add percentage for "Results by top level Test Suites"
 20110326 - francisco - BUGID 4355: 	General Test Plan Metrics - 
 									Build without executed test cases are not displayed.
 
@@ -91,7 +92,7 @@ Purpose: smarty template - show Test Results and Metrics
            args_title=$labels.title_res_by_top_level_suites
            args_first_column_header=$labels.trep_comp
            args_first_column_key='tsuite_name'
-           args_show_percentage=false
+           args_show_percentage=true
            args_column_definition=$gui->columnsDefinition->testsuites
            args_column_data=$gui->statistics->testsuites}
 

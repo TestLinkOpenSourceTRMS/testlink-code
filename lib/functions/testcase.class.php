@@ -9,7 +9,8 @@
  * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
+ * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
  * 20110402 - franciscom - get_exec_status() - interface changes	
  * 20110312 - franciscom - 	get_by_id() - id can be null, to allow get data 
  *							when you now only version id (DB ID)
@@ -122,52 +123,6 @@
  *                         get_last_version_info() - interface changes
  * 20100103 - franciscom - getPrefix() - interface changes & refactoring
  *                         new methods - buildDirectWebLink(), getExternalID()
- * 20091229 - eloff - BUGID 3021  - getInternalID() - fixed error when tc prefix contains glue character
- * 20091220 - franciscom - copy_attachments() refactoring
- * 20091217 - franciscom - getDuplicatesByName() - new argument added
- * 20091215 - franciscom - getPrefix() - changed in return type, to avoid in some situations
- *                                       a double call.
- * 20091207 - franciscom - get_last_execution() - internal bug 
- * 20091127 - franciscom - getByPathName() new method
- * 20091118 - franciscom - get_last_execution() - still working ond fixing bug when using self::ALL_VERSIONS
- * 20091113 - franciscom - get_last_execution() - fixed bug when using self::ALL_VERSIONS
- * 20091003 - franciscom - show() changes in template get logic
- * 20090927 - franciscom - new methods: getPathLayered(),getPathTopSuite()
- * 20090922 - franciscom - get_last_execution() - used COALESCE() to return code
- *                                                also code for NOT RUN status.
- * 20090831 - franciscom - added management of new field: preconditions
- *                         create(),update(),exportTestCaseDataToXML()
- *
- * 20090815 - franciscom - get_executions() - added platform related info
- *                                            interface changes.
- *                         get_last_execution() - added platform related info
- *
- * 20090720 - franciscom - found bug in get_linked_cfields_at_execution()
- *                         when calling cfield_mgr class method
- *
- * 20090718 - franciscom - new method buildCFLocationMap();
- * 20090716 - franciscom - get_last_execution() - BUGID 2692 - interface changes.
- * 20090713 - franciscom - solved bug on get_executions() (bad SQL statement).
- * 20090530 - franciscom - html_table_of_custom_field_inputs() changes in interface
- * 20090526 - franciscom - html_table_of_custom_field_values() - added scope 'testplan_design'
- * 20090521 - franciscom - get_by_id() added version_number argument
- * 20090419 - franciscom - BUGID 2364 - show() changes on edit enabled logic
- * 20090414 - franciscom - BUGID 2378
- * 20090401 - franciscom - BUGID 2316 - changes to copy_to()
- * 20090308 - franciscom - BUGID 2204 - create() fixed return of new version number
- * 20090220 - franciscom - BUGID 2129
- * 20090106 - franciscom - BUGID - exportTestCaseDataToXML() - added export of custom fields values
- * 20081103 - franciscom - new method setKeywords() - added by schlundus
- *                         removed useless code from getTestProjectFromTestCase()
- * 20081015 - franciscom - delete() - improve controls to avoid bug if no children
- * 20080812 - franciscom - BUGID 1650 (REQ)
- *                         html_table_of_custom_field_inputs() interface changes
- *                         to manage custom fields with scope='testplan_design'
- *
- * 20080602 - franciscom - get_linked_versions() - internal changes due to BUG1504
- *                         get_exec_status() - interface and internal changes due to BUG1504
- *
- * 20080126 - franciscom - BUGID 1313
  */
 
 /** related functionality */
@@ -1557,19 +1512,18 @@ class testcase extends tlObjectWithAttachments
 	}
 	
 	/*
-	20061008 - franciscom - added
-	                        [$check_duplicate_name]
-	                        [$action_on_duplicate_name]
-	
-	                        changed return type
-	
-		BUGID 3431
+
+	@internal revisions
+	20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
+							added option 'preserve_external_id'	
 	*/
 	function copy_to($id,$parent_id,$user_id,$options=null,$mappings=null)
 	{
 	    $newTCObj = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok', 'mappings' => null);
 	    $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
-	                            'action_on_duplicate_name' => 'generate_new', 'copy_also' => null);
+	                            'action_on_duplicate_name' => 'generate_new', 
+	                            'copy_also' => null, 'preserve_external_id' => false);
+
 
         // needed when Test Case is copied to a DIFFERENT Test Project,
         // added during Test Project COPY Feature implementation
@@ -1579,7 +1533,7 @@ class testcase extends tlObjectWithAttachments
 	    $my['mappings'] = array_merge($my['mappings'], (array)$mappings);
 	    $my['options'] = array_merge($my['options'], (array)$options);
 	
-	
+		
 	    if( is_null($my['options']['copy_also']) )
 	    {
 	        $my['options']['copy_also'] = array('keyword_assignments' => true,'requirement_assignments' => true);   
@@ -1595,19 +1549,26 @@ class testcase extends tlObjectWithAttachments
 			{
 		        $ret['status_ok']=1;
 		        $newTCObj['mappings'][$id] = $newTCObj['id'];
+		        $externalID = $newTCObj['external_id'];
+		        if( $my['options']['preserve_external_id'] )
+		        {
+		        	$externalID = $tcase_info[0]['tc_external_id'];
+		        }
 		        
 	 			foreach($tcase_info as $tcversion)
 				{
 					
+					// BUGID 4374: When copying a project, external TC ID is not preserved
 					// 20100221 - franciscom - 
 					// IMPORTANT NOTICE:
 					// In order to implement COPY to another test project, WE CAN NOT ASK
 					// to method create_tcversion() to create inside itself THE STEPS.
 					// Passing NULL as steps we instruct create_tcversion() TO DO NOT CREATE STEPS
 					// 
-					$op = $this->create_tcversion($newTCObj['id'],$newTCObj['external_id'],$tcversion['version'],
+					$op = $this->create_tcversion($newTCObj['id'],$externalID,$tcversion['version'],
 					                              $tcversion['summary'],$tcversion['preconditions'],null,
-					                              $tcversion['author_id'],$tcversion['execution_type'],$tcversion['importance']);
+					                              $tcversion['author_id'],$tcversion['execution_type'],
+					                              $tcversion['importance']);
 					
 	    			if( $op['status_ok'] )
 	    			{
@@ -1655,6 +1616,7 @@ class testcase extends tlObjectWithAttachments
 	            $this->copy_attachments($id,$newTCObj['id']);
 			}
 		}
+		
 		return($newTCObj);
 	}
 	

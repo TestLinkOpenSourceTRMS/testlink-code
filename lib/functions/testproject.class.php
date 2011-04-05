@@ -3,14 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  * 
+ * @filesource	testproject.class.php
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.181.2.1 2011/01/18 19:59:21 franciscom Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
- * 20110223 - asimon BUGID 4239: forgotten parameter $oldNewMappings for a function call in copy_as()  
+ * @internal revisions
+ * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
+ * 20110223 - asimon - BUGID 4239: forgotten parameter $oldNewMappings for a function call in copy_as()  
  *                               caused links between reqs in old project and testcases in new project
  *                               when copying testprojects
  * 20101030 - amitkhullar - BUGID 3966 Added importance field in the query
@@ -2237,6 +2238,9 @@ args: id: source testproject id
 
 
 returns: N/A
+
+@internal revisions
+20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved	
 */
 function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 {
@@ -2289,12 +2293,12 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 	$copyTSuiteOpt = array();
 	$copyTSuiteOpt['copyKeywords'] = 1;
 	$copyTSuiteOpt['copyRequirements'] = $my['options']['copy_requirements'];		
+	$copyTSuiteOpt['preserve_external_id'] = true; // BUGID 4374		
 	
 	$oldNewMappings['test_spec'] = array();
 	foreach($elements as $piece)
 	{
 		// BUGID 4239: forgotten $mappings caused wrong requirement IDs to be assigned later
-		//$op = $item_mgr['testsuites']->copy_to($piece['id'],$new_id,$user_id,$copyTSuiteOpt);
 		$op = $item_mgr['testsuites']->copy_to($piece['id'],$new_id,$user_id,$copyTSuiteOpt,$oldNewMappings);				
 		$oldNewMappings['test_spec'] += $op['mappings'];
 	}
@@ -2303,8 +2307,15 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 	$this->copy_testplans($id,$new_id,$user_id,$oldNewMappings);
 		
 	$this->copy_user_roles($id,$new_id);
-	
-	
+
+	// BUGID 4374: When copying a project, external TC ID is not preserved	
+	// need to update external test case id numerator
+	$sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
+			" SET tc_counter = {$rs_source['tc_counter']} " . 
+			" WHERE id = {$new_id}";
+		$recordset = $this->db->exec_query($sql);
+
+
 	
 } // end function copy_as
 

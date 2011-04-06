@@ -173,22 +173,24 @@
 	{* ------------------------------------------------------------------------------------------ *}
 	{if $display_right_block_2}
     <div id='test_execution_topics'>
-		  {if $gui->grants.testplan_execute == "yes"}
-		  	<img src="{$tlImages.bullet}" />
-	          <a href="{$gui->launcher}?feature=executeTest">{$labels.href_execute_test}</a>
-		  {/if} 
+		{if $gui->grants.testplan_execute == "yes"}
+			<img src="{$tlImages.bullet}" />
+			<a href="{$gui->launcher}?feature=executeTest">{$labels.href_execute_test}</a>
+			
+			<br /> 
+			<img src="{$tlImages.bullet}" />
+			<a href="{$gui->url.testcase_assignments}">{$labels.href_my_testcase_assignments}</a>
+			<br />
+		{/if} 
       
-  	  {if $gui->grants.testplan_metrics == "yes"}
-	          <br />
-		  	<img src="{$tlImages.bullet}" />
-	          <a href="{$gui->launcher}?feature=showMetrics">{$labels.href_rep_and_metrics}</a>
-		  {/if} 
- 	    <br />
- 		  <img src="{$tlImages.bullet}" />
-	         <a href="{$gui->url.metrics_dashboard}">{$labels.href_metrics_dashboard}</a>
- 	    <br />
- 		  <img src="{$tlImages.bullet}" />
-	         <a href="{$gui->url.testcase_assignments}">{$labels.href_my_testcase_assignments}</a>
+		{if $gui->grants.testplan_metrics == "yes"}
+			<img src="{$tlImages.bullet}" />
+			<a href="{$gui->launcher}?feature=showMetrics">{$labels.href_rep_and_metrics}</a>
+			
+			<br />
+			<img src="{$tlImages.bullet}" />
+			<a href="{$gui->url.metrics_dashboard}">{$labels.href_metrics_dashboard}</a>
+		{/if} 
     </div>
 	{/if}
   {* ------------------------------------------------------------------------------------------ *}

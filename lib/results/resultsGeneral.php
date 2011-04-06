@@ -321,7 +321,7 @@ function get_percentage($total, $parameter)
 	else 
    		$percentCompleted = 0;
 
-	return number_format($percentCompleted,1);
+	return number_format($percentCompleted,2);
 	
 }
 

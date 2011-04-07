@@ -104,7 +104,7 @@ function check_action_precondition(container_id,action,msg)
             <tr>
             <td colspan=2>&nbsp;</td>
             <td>
-	                      <table class="simple">
+	                      <table class="simple_tableruler">
 	                  		<tr>
 	                  			<th>{$labels.th_version}</th>
 	                  			<th>{$labels.th_linked_to_tplan}</th>

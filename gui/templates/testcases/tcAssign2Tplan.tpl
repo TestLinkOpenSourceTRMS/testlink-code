@@ -44,7 +44,7 @@ function check_action_precondition(container_id,action)
 <form method="post" action="lib/testcases/tcEdit.php?testcase_id={$gui->tcase_id}&tcversion_id={$gui->tcversion_id}">
 {$gui->tcaseIdentity|escape} {$gui->item_sep} {$labels.testplan_usage} 
 <div id='checkboxes'>
-<table class="simple" style="width:50%">
+<table class="simple_tableruler" style="width:50%">
   <th>&nbsp;</th><th>{$labels.version}</th><th>{$labels.test_plan}</th><th>{$labels.platform}</th>
   {foreach from=$gui->tplans item=link2tplan_platform}
     {foreach from=$link2tplan_platform item=link2tplan key=platform_id}

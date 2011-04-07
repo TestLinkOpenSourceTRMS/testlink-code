@@ -61,7 +61,7 @@ var del_action=fRoot+'{$deleteAction}';
 {elseif $gui->tplans eq ''}
 	{$labels.testplan_txt_empty_list}
 {else}
-	<table id='item_view'class="simple sortable">
+	<table id='item_view'class="simple_tableruler sortable">
 		<thead>
 			<tr>
 				<th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.testplan_th_name}</th> 			
@@ -75,8 +75,7 @@ var del_action=fRoot+'{$deleteAction}';
 		</thead>
 		<tbody>
 		{foreach item=testplan from=$gui->tplans}
-		{* table ruler if colors on table style changes you need to change also colors here *}
-		<tr onMouseOver="this.bgColor='#CDDEF3';" onMouseOut="this.bgColor='#EEEEEE';">
+		<tr>
 			<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testplan.id}</span>
 			    <a href="{$editAction}{$testplan.id}"> 
 				     {$testplan.name|escape} 

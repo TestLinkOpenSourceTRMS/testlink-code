@@ -31,7 +31,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 <h1 class="title">{$labels.title_cfields_mgmt}</h1>
 <div class="workBack">
 {if $gui->cf_map != ''}
-  <table id='item_view' class="simple sortable">
+  <table id='item_view' class="simple_tableruler sortable">
   	<tr>
   		<th>{$tlImages.sort_hint}{$labels.name}</th>
   		<th>{$tlImages.sort_hint}{$labels.label}</th>

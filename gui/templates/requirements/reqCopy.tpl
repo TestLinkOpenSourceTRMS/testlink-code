@@ -80,7 +80,7 @@ function check_action_precondition(container_id,action,msg)
     {* used as memory for the check/uncheck all checkbox javascript logic *}
     <input type="hidden" name="add_value_memory"  id="add_value_memory"  value="0" />
 		<div id="checkbox_region">
-        <table class="simple">
+        <table class="simple_tableruler">
           <tr>
           <th class="clickable_icon">
 			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"

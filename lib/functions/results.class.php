@@ -12,8 +12,11 @@
  * @uses		common.php 
  *
  * @internal revisions
+ * 20110407 - BUGID 4363: General Test Plan Metrics - Overall Build Status -> 
+ *						  empty line for a build shown with no test cases assigned to user
+ *
  * 20110329 - kinow - 	tallyBuildResults()
- *						BUGID 4333: General Test Plan Metrics % complete did not round
+ *						BUGID 4333: General Test Plan Metrics % complete did not roundgetAggregateBuildResults
  * 20110326 - franciscom - BUGID 4355: 	General Test Plan Metrics - Build without executed 
  *										test cases are not displayed.
  *
@@ -364,7 +367,7 @@ class results extends tlObjectWithDB
 			// BUGID 3682
    			$arrBuilds = $tplan_mgr->get_builds($this->testPlanID, testplan::GET_ACTIVE_BUILD);
 			
-			// 3406, 1508 - we need the totals per build here, not for the whole plan anymore
+			// BUGID 3406, BUGID 1508 - we need the totals per build here, not for the whole plan anymore
 			$this->totalsForBuilds = $this->createTotalsForBuilds($arrBuilds);
 			$this->aggregateBuildResults = $this->tallyBuildResults($this->mapOfLastResultByBuild,
 			                                                        $arrBuilds, $this->totalsForBuilds);
@@ -547,6 +550,8 @@ class results extends tlObjectWithDB
 	 *
 	 * 
 	 * @internal revisions:
+	 * 20110407 - BUGID 4363: General Test Plan Metrics - Overall Build Status -> 
+	 *						  empty line for a build shown with no test cases assigned to user
 	 * 20110329 - franciscom - BUGID 4333: General Test Plan Metrics % complete did not round
 	 * 20110326 - franciscom - BUGID 4355
 	 * 20100721 - asimon - BUGID 3406, 1508
@@ -557,17 +562,19 @@ class results extends tlObjectWithDB
 		{
 			return null;
 		}
-		
 		$na_string = lang_get('not_aplicable');
-		
 		$rValue = null;
-		// echo __FUNCTION__;new dBug($arrBuilds);new dBug($lastExecByBuild);new dBug($execTotalsByBuild);
 		
 		foreach($arrBuilds as $buildId => $buildInfo)
 		{
 			$item_name='build_name';
-			$results = isset($lastExecByBuild[$buildId]) ? $lastExecByBuild[$buildId] : array();
+			$results = array();
 			$totalCases = $execTotalsByBuild[$buildId]['total'];
+			if( isset($lastExecByBuild[$buildId]) && $totalCases > 0 )
+			{
+				$results = $lastExecByBuild[$buildId];
+			}
+
 			$element = $this->tallyResults($results,$totalCases,$item_name);
 			if (!is_null ($element))
 			{
@@ -1201,20 +1208,32 @@ class results extends tlObjectWithDB
 	 * @author Andreas Simon
 	 * @param array $arrBuilds Array with information about the builds for this testplan.
 	 * @return array $counters Array similar to $this->totalsForPlan, but with correct numbers per build 
+	 *
+	 * @internal revisions
+	 * 20110407 - franciscom - BUGID 4363
 	 */
 	private function createTotalsForBuilds($arrBuilds) 
 	{
-		
 		$counters = array();
 		$buildSet = array_keys($arrBuilds);
 		$assignCounters = $this->tplanMgr->assignment_mgr->getExecAssignmentsCountByBuild($buildSet);
 		$notRunCounters = $this->tplanMgr->assignment_mgr->getNotRunAssignmentsCountByBuild($buildSet);
-		
+
+		$fZero['assignedRunned'] = is_null($assignCounters);
+		$fZero['assignedNotRunned'] = is_null($notRunCounters);
+		$allZero = ($fZero['assignedRunned'] && $fZero['assignedNotRunned']);
 		foreach($buildSet as $build_id)
 		{
 			$counters[$build_id] = $this->totalsForPlan;
-			$counters[$build_id]['total'] = $assignCounters[$build_id]['qty'];
-			$counters[$build_id]['not_run'] = $notRunCounters[$build_id]['qty'];
+			if($allZero)
+			{
+				foreach($counters[$build_id] as &$cc)
+				{
+					$cc = 0;
+				}
+			}
+			$counters[$build_id]['total'] = $fZero['assignedRunned'] ? 0 : $assignCounters[$build_id]['qty'];
+			$counters[$build_id]['not_run'] = $fZero['assignedNotRunned'] ? 0 : $notRunCounters[$build_id]['qty'];
 		}
 		return $counters;
 	} // end of method

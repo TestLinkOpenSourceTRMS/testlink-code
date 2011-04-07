@@ -388,7 +388,7 @@ class assignment_mgr extends tlObjectWithDB
 				" WHERE UA.build_id IN ( " . implode(",",(array)$buildID) . " ) " .
 				" AND E.status IS NULL " . 		   
 				" AND type = {$execAssign} " .
-				" GROUP BY build_id ";
+				" GROUP BY UA.build_id ";
 	    
 	    $rs = $this->db->fetchRowsIntoMap($sql,'build_id');
 	    

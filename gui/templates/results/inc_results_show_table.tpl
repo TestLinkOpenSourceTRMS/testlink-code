@@ -1,6 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_results_show_table.tpl,v 1.1 2008/03/03 18:53:20 franciscom Exp $ 
+
+@internal revisions:
+20110407 - Julian - BUGID 4387 - Tables in "general testplan metrics" made sortable
+
 *}
 
 {assign var="args_title" value=$args_title|default:""}
@@ -10,7 +13,7 @@ $Id: inc_results_show_table.tpl,v 1.1 2008/03/03 18:53:20 franciscom Exp $
 {if $args_column_definition != ""}
 
 <h2>{$args_title|escape}</h2>
-<table class="simple_tableruler" style="text-align: center; margin-left: 0px;">
+<table class="simple_tableruler sortable" style="text-align: center; margin-left: 0px;">
 	<tr>
 		<th>{$args_first_column_header|escape}</th>
 		<th>{lang_get s='trep_total'}</th>

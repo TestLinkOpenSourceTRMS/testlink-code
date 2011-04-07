@@ -27,7 +27,7 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
 
 <div class="workBack">
 	{if $keywords neq ''}
-	<table class="simple sortable">
+	<table class="simple_tableruler sortable">
 		<tr>
 			<th width="30%">{$tlImages.sort_hint}{$labels.th_keyword}</th>
 			<th>{$tlImages.sort_hint}{$labels.th_notes}</th>

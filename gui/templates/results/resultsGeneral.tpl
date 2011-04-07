@@ -54,7 +54,7 @@ Purpose: smarty template - show Test Results and Metrics
 		{$gui->buildMetricsFeedback|escape}
 	{/if}
 	{if $gui->displayBuildMetrics}
-	<table class="simple" style="text-align: center; margin-left: 0px;">
+	<table class="simple_tableruler" style="text-align: center; margin-left: 0px;">
   	<tr>
   		<th style="width: 10%;">{$labels.th_build}</th>
     	{* <th>{$labels.th_tc_total}</th> *}
@@ -145,7 +145,7 @@ Purpose: smarty template - show Test Results and Metrics
 
 			<h2>{$labels.title_report_milestones}</h2>
 
-			<table class="simple" style="text-align: center; margin-left: 0px;">
+			<table class="simple_tableruler" style="text-align: center; margin-left: 0px;">
 			<tr>
 				<th>{$labels.th_milestone}</th>
 				<th>{$labels.th_tc_priority_high}</th>
@@ -185,7 +185,7 @@ Purpose: smarty template - show Test Results and Metrics
 	{elseif $gui->statistics->milestones != ""}
 		<h2>{$labels.title_report_milestones}</h2>
 
-		<table class="simple" style="text-align: center; margin-left: 0px;">
+		<table class="simple_tableruler" style="text-align: center; margin-left: 0px;">
 		<tr>
 			<th>{$labels.th_milestone}</th>
 			<th>{$labels.th_tc_total}</th>

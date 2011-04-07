@@ -81,7 +81,7 @@ function check_action_precondition(form_id,action)
                             id="memory_assigned_req"  value="0" />
 
     <input type="hidden" name="idSRS" value="{$gui->selectedReqSpec}" />
-    <table class="simple">
+    <table class="simple_tableruler">
     	<tr>
       		<th align="center"  style="width: 5px;background-color:#005498;">
       		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
@@ -130,7 +130,7 @@ function check_action_precondition(form_id,action)
                             id="memory_free_req"  value="0" />
 
       <input type="hidden" name="idSRS" value="{$gui->selectedReqSpec}" />
-      <table class="simple">
+      <table class="simple_tableruler">
       	<tr>
       		<th align="center"  style="width: 5px;background-color:#005498;">
       		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"

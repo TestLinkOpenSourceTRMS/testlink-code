@@ -9,6 +9,7 @@
 * Show Test Report by individual test case.
 *
 * @author
+* 20110329 - Julian - BUGID 4341 - added "Last Execution" column
 * 20101013 - asimon - use linkto.php for emailed links
 * 20101012 - Julian - added html comment to properly sort by test case column
 * 20101007 - asimon - BUGID 3857: Replace linked icons in reports if reports get sent by e-mail
@@ -190,6 +191,12 @@ if ($lastResultMap != null)
 				}
 
 				$suiteExecutions = $executionsMap[$suiteId];
+				
+				// BUGID 4341 - Remember the status of the latest execution based on highest execution_id
+				$latestExecution = array();
+				// reset exec_id for each test case
+				$latestExecution['exec_id'] = 0;
+				$latestExecution['status'] = null;
 			    
 			    // Remember the status of the last build that was executed
 				// Use array format for status as specified in tlTable::$data
@@ -238,6 +245,16 @@ if ($lastResultMap != null)
 								"cssClass" => $gui->map_status_css[$status]);
 
 							$lastStatus = $execution_array['status'];
+							
+							// BUGID 4341 - If execution_id for this test cases within this build
+							// has a higher value remember as latest execution
+							if ($execution_array['executions_id'] > $latestExecution['exec_id']) {
+								$latestExecution['exec_id'] = $execution_array['executions_id'];
+								$latestExecution['status'] = array(
+									"value" => $status,
+									"text" => $exec_link . $resultsForBuildText,
+									"cssClass" => $gui->map_status_css[$status]);
+							}
 						}
 					}
 					// If no execution was found => not run
@@ -251,6 +268,14 @@ if ($lastResultMap != null)
 							"value" => $resultsCfg['status_code']['not_run'],
 							"text" => $exec_link . $resultsForBuildText,
 							"cssClass" => $cssClass);
+						
+						// BUGID 4341 - if status has not been set for prior builds set it to not_run
+						if (!isset($latestExecution['status'])) {
+							$latestExecution['status'] = array(
+								"value" => $resultsCfg['status_code']['not_run'],
+								"text" => $exec_link . $resultsForBuildText,
+								"cssClass" => $cssClass);
+						}
 					}
 					
 					$buildExecStatus[$idx] = $resultsForBuild;
@@ -272,6 +297,10 @@ if ($lastResultMap != null)
 			    	$buildExecStatus = array_reverse($buildExecStatus);
 			    }
 			    $rowArray = array_merge($rowArray, $buildExecStatus);
+			    
+			    // BUGID 4341
+				$rowArray[] = $latestExecution['status'];
+				
 			    $gui->matrix[] = $rowArray;
   			    $indexOfArrData++;
         	}
@@ -339,6 +368,9 @@ function buildMatrix($buildSet, $dataSet, $format, $show_platforms, &$args)
 	{
 		$columns[] = array('title' => $build['name'], 'type' => 'status', 'width' => 100);
 	}
+	
+	// BUGID 4341 - add new column for last result
+	$columns[] = array('title_key' => 'last_execution', 'type' => 'status', 'width' => 100);
 	
 	if ($format == FORMAT_HTML) 
 	{

@@ -41,7 +41,7 @@ rev :
  	    {* used as memory for the check/uncheck all checkbox javascript logic *}
        <input type="hidden" name="memory_assigned_cf"  
                             id="memory_assigned_cf"  value="0" />
-      <table class="simple">
+      <table class="simple_tableruler">
       	<tr>
       		<th align="center"  style="width: 5px;background-color:#005498;"> 
       		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
@@ -117,7 +117,7 @@ rev :
        <input type="hidden" name="memory_free_cf"  
                             id="memory_free_cf"  value="0" />
 
-      <table class="simple" style="width: 50%;">
+      <table class="simple_tableruler" style="width: 50%;">
       	<tr>
       		<th align="center"  style="width: 5px;background-color:#005498;"> 
       		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"

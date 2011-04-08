@@ -493,6 +493,8 @@ $TLS_th_link_exec_status = "Link and execution status";
 $TLS_testsuite_successfully_deleted = "The Test Suite was successfully deleted";
 $TLS_no_links = "No dependent data.";
 $TLS_linked_and_executed = "Test case was added into a Test Plan and has results.";
+$TLS_system_blocks_tsuite_delete_due_to_exec_tc = 
+	"Test suite can not be deleted, because system configuration blocks delete of executed test cases";
 
 
 // ----- gui/templates/containerNew.tpl -----
@@ -1629,8 +1631,15 @@ $TLS_info_bugs_per_tc_report = "This report shows all bugs linked to test cases 
 
 // ----- gui/templates/resultsTC.tpl -----
 $TLS_info_resultsTC_report = "This report shows the last test case execution result for each " .
-                             "build. In addition the last column shows the last test case " .
-                             "execution result for the last created build.";
+                             "build.<br /><b>Example:</b><br />Test Case has been executed in this order: " .
+                             "<br />Build 1.0 - Passed; Build 1.0 - Failed<br />-> Last Result  for Build 1.0 " .
+                             "is Failed because second execution overrides older results.<br /><br />" .
+                             "\"[Last Build]\" and \"Last execution\" column show data according " .
+                             "to this <b>example:</b><br />Test Case has been executed in this order:<br />" .
+                             "Build 1.0 - Passed; Build 1.0 - Failed; Build 2.0 - Blocked; " .
+                             "Build 1.0 - Passed<br>-> [Last Build] : Blocked because Build 2.0 is " .
+                             "the last build created for which a result has been set.<br />-> \"Last Execution\" : " .
+                             "Passed because Build 1.0 has been executed at last.";
 
 
 
@@ -2272,7 +2281,7 @@ $TLS_passfail = "Test result";
 $TLS_testnotes = "Testing notes";
 $TLS_last_exec_result = "Last Result";
 $TLS_test_project_notes = "Test Project description";
-
+$TLS_undefined_req_spec_type = "Req Spec Type (%s) is undefined";
 
 // ----- lib/functions/users.inc.php -----
 $TLS_duplicate_login = "A user with that login already exists!";

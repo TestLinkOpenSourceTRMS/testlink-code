@@ -9,6 +9,7 @@
  * @author franciscom
  *
  * @internal revisions
+ * 20110330 - franciscom - BUGID 4362: metricsDashboard not working properly with platforms defined
  * 20110317 - franciscom - BUGID 4328: Metrics dashboard - only active builds has to be used
  * 20110303 - Julian - added more information to test project report
  * 20101022 - Julian - BUGID 3979 - Use grid filters for exttables
@@ -242,12 +243,20 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 			
 			// Time to work on keys
 			$notRunKeys = array_keys($not_run[$tplan_id]);
-			foreach($notRunKeys as $key2copy)
+			foreach($notRunKeys as $tcaseIDkey)
 			{
-				if( !isset($executed[$tplan_id][$key2copy]) )
+				// BUGID 4362
+				// Mistake was this:
+				// isset($executed[$tplan_id][$key2copy]) 
+				// just means we have found at least one execution.
+				// But inside the element we have a map indexed by platform id.
+				// If we have N platforms, and have exec on M, we have M elements
+				// and MISS TO ADD the N-M NOT EXECUTED generating the issue.
+				if( !isset($executed[$tplan_id][$tcaseIDkey]) )
 				{
-					$executed[$tplan_id][$key2copy] = $not_run[$tplan_id][$key2copy];		
+					$executed[$tplan_id][$tcaseIDkey] = array();
 				}
+				$executed[$tplan_id][$tcaseIDkey] += $not_run[$tplan_id][$tcaseIDkey];		
 			}
 			$linked_tcversions[$tplan_id] = (array)$executed[$tplan_id];
 		}  // test plan has linked items	

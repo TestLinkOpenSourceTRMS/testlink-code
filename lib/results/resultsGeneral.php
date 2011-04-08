@@ -9,6 +9,7 @@
  * Show Test Results over all Builds.
  *
  * @internal revisions
+ *  20110405 - Julian - BUGID 4377 - Add percentage for "Results by top level Test Suites"
  *  20110326 - franciscom - BUGID 4355: General Test Plan Metrics - Build without executed 
  *										test cases are not displayed.
  *  20101018 - Julian - BUGID 2236 - Milestones Report broken - removed useless code
@@ -147,11 +148,15 @@ else // do report
       		$element['percentage_completed'] = get_percentage($results['total'], 
       		$results['total'] - $results['not_run']);
 
-        	unset($results['total']);
+      		// BUGID 4377 - do not unset total now, because we need in foreach loop
+        	// unset($results['total']);
         	foreach($results as $key => $value)
         	{
       	    	$element['details'][$key]['qty'] = $results[$key];
+      	    	// add percentage for each result
+      	    	$element['details'][$key]['percentage'] = get_percentage($results['total'],$results[$key]);
       		}
+      		unset($element['details']['total']);
       		$element['details']['not_run']['qty'] = $results['not_run'];
       	   
       		$arrDataSuite[$arrDataSuiteIndex] = $element;
@@ -164,6 +169,8 @@ else // do report
     	$dummy = current($gui->statistics->testsuites);
       	foreach($dummy['details'] as $status_verbose => $value)
     	{
+          	$dummy['details'][$status_verbose]['percentage'] = 
+          			lang_get('in_percent');
           	$dummy['details'][$status_verbose]['qty'] = 
           			lang_get($tlCfg->results['status_label'][$status_verbose]);
       	}
@@ -315,7 +322,7 @@ function get_percentage($total, $parameter)
 	else 
    		$percentCompleted = 0;
 
-	return number_format($percentCompleted,1);
+	return number_format($percentCompleted,2);
 	
 }
 

@@ -5,10 +5,10 @@
  *
  * Test Case and Test Steps operations
  *
+ * @filesource  tcEdit.php
  * @package 	TestLink
  * @author 		TestLink community
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.164.2.1 2011/01/06 14:03:02 franciscom Exp $
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  *

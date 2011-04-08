@@ -9,6 +9,9 @@ rev :
      20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmation without Cancel or No option
 *}
 {include file="inc_head.tpl"}
+{lang_get var='labels'
+          s='test_case,th_link_exec_status,question_del_testsuite,
+          	 btn_yes_del_comp,btn_no'}
 
 <body>
 <h1 class="title">{$page_title}{$smarty.const.TITLE_SEP}{$objectName|escape}</h1> 
@@ -20,11 +23,15 @@ rev :
 <div class="workBack">
 
 {if $sqlResult == '' && $objectID != ''}
-	{if $warning neq ""}
+	{if $warning != ""}
+		{if $system_message != ""}
+		      <div class="user_feedback">{$system_message}</div>
+		      <br />
+		{/if}
 		<table class="link_and_exec">
 		<tr>
-			<th>{lang_get s='test_case'}</th>
-			<th>{lang_get s='th_link_exec_status'}</th>
+			<th>{$labels.test_case}</th>
+			<th>{$labels.th_link_exec_status}</th>
 		</tr>
 		{section name=idx loop=$warning}
 			<tr>
@@ -33,21 +40,20 @@ rev :
 			</tr>
 		{/section}
 		</table>
-		{if $delete_msg neq ''}  
+		{if $delete_msg != ''}  
 			<h2>{$delete_msg}</h2>
 		{/if}
 	{/if}
   
-	<p>{lang_get s='question_del_testsuite'}</p>
-		<form method="post" 
-			action="lib/testcases/containerEdit.php?sure=yes&amp;objectID={$objectID}">
-	    
-	<input type="submit" name="delete_testsuite" value="{lang_get s='btn_yes_del_comp'}" />
+	<form method="post" action="lib/testcases/containerEdit.php?sure=yes&amp;objectID={$objectID}">
+		{if $can_delete}
+			<p>{$labels.question_del_testsuite}</p>
+			<input type="submit" name="delete_testsuite" value="{$labels.btn_yes_del_comp}" />
 		
-	{* 20070213 - franciscom - BUGID 0000629 *}
-	<input type="button" name="cancel_delete_testsuite" value="{lang_get s='btn_no'}"
-			onclick='javascript: location.href=fRoot+
-			"lib/testcases/archiveData.php?&amp;edit=testsuite&amp;id={$objectID}";' />
+			<input  type="button" name="cancel_delete_testsuite" value="{$labels.btn_no}"
+					onclick='javascript: location.href=fRoot+
+					"lib/testcases/archiveData.php?&amp;edit=testsuite&amp;id={$objectID}";' />
+		{/if}
 	</form>
 {/if}
 

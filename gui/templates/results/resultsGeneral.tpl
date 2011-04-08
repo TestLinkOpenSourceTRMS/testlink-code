@@ -4,6 +4,7 @@ Purpose: smarty template - show Test Results and Metrics
 
 @filesource	resultsGeneral.tpl
 @internal revisions:
+20110408 - Julian - Added info text for all reports
 20110407 - Julian - BUGID 4387 - Tables in "general testplan metrics" made sortable
 20110405 - Julian - BUGID 4377 - Add percentage for "Results by top level Test Suites"
 20110326 - francisco - BUGID 4355: 	General Test Plan Metrics - 
@@ -27,7 +28,10 @@ Purpose: smarty template - show Test Results and Metrics
          title_report_tc_priorities,title_report_milestones,
          title_metrics_x_build,title_res_by_platform,th_platform,important_notice,
          report_tcase_platorm_relationship, th_tc_total, th_completed, th_goal,
-         th_build, th_tc_assigned, th_perc_completed, from, until'}
+         th_build, th_tc_assigned, th_perc_completed, from, until,
+         info_res_by_top_level_suites, info_report_tc_priorities, info_res_by_platform,
+         info_report_milestones_prio, info_report_milestones_no_prio, info_res_by_kw,
+         info_gen_test_rep'}
 
 {include file="inc_head.tpl"}
 <body>
@@ -48,11 +52,6 @@ Purpose: smarty template - show Test Results and Metrics
   	{* ----- results by builds -------------------------------------- *}
 	<h2>{$labels.title_metrics_x_build}</h1>
 
-	{* Display message explaining that only Active Builds with test cases *}
-	{* assigned to tester will be displayed *}
-	{if $gui->buildMetricsFeedback != ''}
-		{$gui->buildMetricsFeedback|escape}
-	{/if}
 	{if $gui->displayBuildMetrics}
 	<table class="simple_tableruler sortable" style="text-align: center; margin-left: 0px;">
   	<tr>
@@ -83,10 +82,15 @@ Purpose: smarty template - show Test Results and Metrics
 	  	{/if}
   	</tr>
 	{/foreach}
-	
 	</table>
 	{/if}
-
+	
+	{* Display message explaining that only Active Builds with test cases *}
+	{* assigned to tester will be displayed *}
+	{if $gui->buildMetricsFeedback != ''}
+		<p class="italic">{$gui->buildMetricsFeedback|escape}</p>
+	{/if}
+	<br />
   	{* ----- results by test suites -------------------------------------- *}
 
   	{* by TestSuite *}
@@ -97,6 +101,11 @@ Purpose: smarty template - show Test Results and Metrics
            args_show_percentage=true
            args_column_definition=$gui->columnsDefinition->testsuites
            args_column_data=$gui->statistics->testsuites}
+           
+    {if $gui->columnsDefinition->testsuites != ""}
+  	  <p class="italic">{$labels.info_res_by_top_level_suites}</p>
+  	  <br />
+  	{/if}
 
   
   	{* by ASSIGNED Tester that is not the same that EFFECTIVE TESTER 
@@ -116,7 +125,13 @@ Purpose: smarty template - show Test Results and Metrics
              args_show_percentage=true
              args_column_definition=$gui->columnsDefinition->platform
              args_column_data=$gui->statistics->platform}
+             
+      {if $gui->columnsDefinition->platform != ""}
+        <p class="italic">{$labels.info_res_by_platform}</p>
+        <br />
+      {/if}
     {/if}
+    
     {if $session['testprojectOptions']->testPriorityEnabled}
       {include file="results/inc_results_show_table.tpl"
              args_title=$labels.title_report_tc_priorities
@@ -125,6 +140,11 @@ Purpose: smarty template - show Test Results and Metrics
              args_show_percentage=true
              args_column_definition=$gui->columnsDefinition->priorities
              args_column_data=$gui->statistics->priorities}
+             
+      {if $gui->columnsDefinition->priorities != ""}
+        <p class="italic">{$labels.info_report_tc_priorities}</p>
+        <br />
+      {/if}
     {/if}
   
   	{* Keywords 
@@ -138,6 +158,11 @@ Purpose: smarty template - show Test Results and Metrics
            args_show_percentage=true
            args_column_definition=$gui->columnsDefinition->keywords
            args_column_data=$gui->statistics->keywords}
+           
+    {if $gui->columnsDefinition->keywords != ""}
+      <p class="italic">{$labels.info_res_by_kw}</p>
+      <br />
+    {/if}
 
 
   	{* ----- results by milestones / priorities -------------------------------------- *}
@@ -181,6 +206,8 @@ Purpose: smarty template - show Test Results and Metrics
   			</tr>
   			{/foreach}
 		</table>
+      <p class="italic">{$labels.info_report_milestones_prio}</p>
+      <br />
 
 	{/if}
 		
@@ -212,8 +239,11 @@ Purpose: smarty template - show Test Results and Metrics
   		</tr>
   		{/foreach}
 		</table>
+      <p class="italic">{$labels.info_report_milestones_no_prio}</p>
+      <br />
 	{/if}
 	
+	<p class="italic">{$labels.info_gen_test_rep}</p>
 	<p>{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}</p>
 
 {else}

@@ -441,12 +441,12 @@ $TLS_testplan_seems_empty = "Test plan seems to be empty - Nothing to do";
 $TLS_report_tspec_has_no_tsuites = "There are no Test Suites defined for Test Project, <br />".
                                  "then no execution data can exist => no report can be created";
 
-$TLS_report_tcase_platorm_relationship = "Platforms has been defined for this test plan.<br />" .
-                                         "Use of platforms has impact on metrics, because <br />" .
-                                         "a test case that must be executed in N platforms " .
+$TLS_report_tcase_platorm_relationship = "Platforms have been added to this test plan.<br />" .
+                                         "The use of platforms has impact on metrics, because <br />" .
+                                         "a test case that must be executed for N platforms " .
                                          "is considered as N test cases on metrics.<br />" .
-                                         "Example: if user U1 has been assigned execution of Test Case TC1 <br />" .
-                                         "on platform X and Y, then user U1 has TWO test cases to execute NOT ONE ";
+                                         "Example: if user U1 has been assigned to execute Test Case TC1 <br />" .
+                                         "on platform X and Y, then user U1 has to execute TWO test cases, NOT ONE.";
 
 // ----- resultsNavigator.php -----
 $TLS_title_nav_results = "Reports and Metrics";
@@ -1694,6 +1694,26 @@ $TLS_th_overall_platform = "Overall test platform";
 $TLS_title_res_by_platform = "Results by Platform";
 $TLS_th_expected = "Expected";
 $TLS_th_overall = "Overall";
+$TLS_info_res_by_top_level_suites = "This report shows results for each top level " .
+                                    "test suite. Results for subordinated test suites " .
+                                    "are count in for the corresponding top level test " .
+                                    "suite.";
+$TLS_info_report_tc_priorities = "This report shows results according to the test priorities " .
+                                 "The priority of a test case is calculated based on the test " .
+                                 "importance and test urgency. For further information about " .
+                                 "test priority read the manual and check your configuration.";
+$TLS_info_res_by_platform = "This report shows the result for each platform linked to this test " .
+                            "plan.";
+$TLS_info_report_milestones_prio = "This Report shows milestones defined for this test plan. " .
+                                   "A milestone has been reached when all \"sub-milestones\" for " .
+                                   "each priority are reached (dyed green).";
+$TLS_info_report_milestones_no_prio = "This Report shows milestones defined for this test plan. " .
+                                      "A milestone has been reached when Test Progress is dyed " .
+                                      "green (Test Progress > Execution goal).";
+$TLS_info_res_by_kw = "This report shows results for each keyword. If a test case has multiple " .
+                      "keywords assigned it will be count for each assigned keyword.";
+$TLS_info_gen_test_rep = "<b>General Information</b><br />" .
+                         "All reports only consider last execution of each test case.";
 
 
 
@@ -2289,7 +2309,6 @@ $TLS_testnotes = "Testing notes";
 $TLS_last_exec_result = "Last Result";
 $TLS_test_project_notes = "Test Project description";
 $TLS_undefined_req_spec_type = "Req Spec Type (%s) is undefined";
-
 
 // ----- lib/functions/users.inc.php -----
 $TLS_duplicate_login = "A user with that login already exists!";

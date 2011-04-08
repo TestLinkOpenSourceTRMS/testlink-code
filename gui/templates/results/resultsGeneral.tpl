@@ -101,7 +101,7 @@ Purpose: smarty template - show Test Results and Metrics
            args_column_definition=$gui->columnsDefinition->testsuites
            args_column_data=$gui->statistics->testsuites}
            
-    {if $gui->columnsDefinition->platform != ""}
+    {if $gui->columnsDefinition->testsuites != ""}
   	  <p class="italic">{$labels.info_res_by_top_level_suites}</p>
   	  <br />
   	{/if}

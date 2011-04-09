@@ -10,6 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
  * 20110402 - franciscom - get_exec_status() - interface changes	
  * 20110326 - franciscom - 	BUGID 4025 - show()
  * 20110321 - franciscom - 	BUGID 4025: option to avoid that obsolete test cases 
@@ -1533,19 +1534,16 @@ class testcase extends tlObjectWithAttachments
 	}
 	
 	/*
-	20061008 - franciscom - added
-	                        [$check_duplicate_name]
-	                        [$action_on_duplicate_name]
-	
-	                        changed return type
-	
-		BUGID 3431
+	@internal revisions
+	20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
+							added option 'preserve_external_id'		
 	*/
 	function copy_to($id,$parent_id,$user_id,$options=null,$mappings=null)
 	{
 	    $newTCObj = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok', 'mappings' => null);
 	    $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
-	                            'action_on_duplicate_name' => 'generate_new', 'copy_also' => null);
+								'action_on_duplicate_name' => 'generate_new', 
+								'copy_also' => null, 'preserve_external_id' => false);
 
         // needed when Test Case is copied to a DIFFERENT Test Project,
         // added during Test Project COPY Feature implementation
@@ -1572,6 +1570,13 @@ class testcase extends tlObjectWithAttachments
 		        $ret['status_ok']=1;
 		        $newTCObj['mappings'][$id] = $newTCObj['id'];
 		        
+		        // BUGID 4374
+				$externalID = $newTCObj['external_id'];
+				if( $my['options']['preserve_external_id'] )
+				{
+					$externalID = $tcase_info[0]['tc_external_id'];
+				}
+		        
 	 			foreach($tcase_info as $tcversion)
 				{
 					
@@ -1582,7 +1587,7 @@ class testcase extends tlObjectWithAttachments
 					// to method create_tcversion() to create inside itself THE STEPS.
 					// Passing NULL as steps we instruct create_tcversion() TO DO NOT CREATE STEPS
 					// 
-					$op = $this->create_tcversion($newTCObj['id'],$newTCObj['external_id'],$tcversion['version'],
+					$op = $this->create_tcversion($newTCObj['id'],$externalID,$tcversion['version'],
 					                              $tcversion['summary'],$tcversion['preconditions'],null,
 					                              $tcversion['author_id'],$tcversion['execution_type'],
 					                              $tcversion['importance'],$tcversion['status']);

@@ -3,14 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  * 
+ * @filesource	testsuite.class.php
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.107 2010/11/09 11:11:28 asimon83 Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
  *
+ * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
  * 20110223 - asimon - BUGID 4239: forgotten parameter $mappings in a function call in copy_to() caused
  *                                 requirements to be assigned with wrong IDs when copying testprojects
  * 20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
@@ -29,49 +30,6 @@
  * 20100209 - franciscom - changes in delete_subtree_objects() call due to BUGID 3147 
  * 20100204 - franciscom - copy_to() refactoring	
  * 20100201 - franciscom - get_testcases_deep() - added external_id in output
- * 20091122 - franciscom - item template logic refactored - read_file() removed
- * 20090821 - franciscom - BUGID 0002781
- * 20090801 - franciscom - BUGID 2767 Duplicate testsuite name error message issue 
- * 20090514 - franciscom - typo bug on html_table_of_custom_field_inputs()
- * 20090330 - franciscom - changes in calls to get_linked_cfields_at_design()
- * 20090329 - franciscom - html_table_of_custom_field_values()
- * 20090209 - franciscom - new method - get_children_testcases()
- * 20090208 - franciscom - get_testcases_deep() - interface changes
- * 20090207 - franciscom - update() - added duplicated name check
- *                         fixed problem in create() due new argument
- * 20090204 - franciscom - exportTestSuiteDataToXML() - added node_order
- * 20090106 - franciscom - BUGID - exportTestSuiteDataToXML()
- *                         export custom field values
- *  
- * 20080106 - franciscom - viewer_edit_new() changes to use user templates
- *                         to fill details when creating a new test suites.
- *                         new private method related to this feature:
- *                         _initializeWebEditors(), read_file()
- *
- * 20080105 - franciscom - copy_to() changed return type
- *                         minor bug on copy_to. (tcversion nodes were not excluded).
- *
- * 20071111 - franciscom - new method get_subtree();
- * 20071101 - franciscom - import_file_types, export_file_types
- * 
- * 20070826 - franciscom - minor fix html_table_of_custom_field_values()
- * 20070602 - franciscom - added  nt copy on copy_to() method
- *                         using testcase copy_attachment() method.
- *                         added delete attachments. 
- *                         added remove of custom field values 
- *                         (design) when removing test suite.
- *
- * 20070501 - franciscom - added localization of custom field labels
- *                         added use of htmlspecialchars() on labels
- *
- * 20070324 - franciscom - create() interface changes
- *                         get_by_id()changes in result set
- *
- * 20070204 - franciscom - fixed minor GUI bug on html_table_of_custom_field_inputs()
- *
- * 20070116 - franciscom - BUGID 543
- * 20070102 - franciscom - changes to delete_deep() to support custom fields
- * 20061230 - franciscom - custom field management
  */
 
 /** include support for attachments */
@@ -622,26 +580,29 @@ class testsuite extends tlObjectWithAttachments
 	           msg: 'ok' if status_ok == 1
 	           id: new created if everything OK, -1 if problems.
 	
-	  rev :
-           20090821 - franciscom - BUGID 0002781
-	       20070324 - BUGID 710
+	@internal revisions
+	20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
+							added option 'preserve_external_id'	needed by tcase copy_to()
 	*/
 	function copy_to($id, $parent_id, $user_id,$options=null,$mappings=null)
 	{
 
   	    $my['options'] = array('check_duplicate_name' => 0,
   	    					   'action_on_duplicate_name' => 'allow_repeat',
-  	    					   'copyKeywords' => 0, 'copyRequirements' => 0); 	
+  	    					   'copyKeywords' => 0, 'copyRequirements' => 0,
+  	    					   'preserve_external_id' => false); 	
+
 	    $my['options'] = array_merge($my['options'], (array)$options);
 
 	    $my['mappings'] = array();
 	    $my['mappings'] = array_merge($my['mappings'], (array)$mappings);
 
 
-		$copyTCaseOpt = array('copy_also' => 
-		                      array('keyword_assignments' => $my['options']['copyKeywords'],
-		                            'requirement_assignments' => $my['options']['copyRequirements']) ); 
-		                            
+		$copyTCaseOpt = array('preserve_external_id' => $my['options']['preserve_external_id'],
+							  'copy_also' => 
+ 		                      array('keyword_assignments' => $my['options']['copyKeywords'],
+ 		                            'requirement_assignments' => $my['options']['copyRequirements']) ); 
+      
     	$copyOptions = array('keyword_assignments' => $my['options']['copyKeywords']);
     	
 		$tcase_mgr = new testcase($this->db);
@@ -681,7 +642,6 @@ class testsuite extends tlObjectWithAttachments
 				{
 					case $this->node_types_descr_id['testcase']:
 						// BUGID 4239: forgotten parameter $mappings caused requirement assignments to use wrong IDs
-						//$tcOp = $tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyTCaseOpt);
 						$tcOp = $tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyTCaseOpt,$my['mappings']);
 						$op['mappings'] += $tcOp['mappings'];
 						break;

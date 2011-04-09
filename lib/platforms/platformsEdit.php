@@ -3,25 +3,27 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: platformsEdit.php,v $
- *
- * @version $Revision: 1.16.2.2 $
- * @modified $Date: 2011/01/10 15:38:59 $ by $Author: asimon83 $
+ * @filesourece platformsEdit.php
+ * @package 	TestLink
+ * @copyright 	2009-2011, TestLink community 
+ * @link 		http://www.teamst.org/index.php
  *
  * allows users to manage platforms. 
  *
- * This is a fully commented model of How I think we need to develop new
- * pages of this kind, and how we need to refactor old pages.
- *
  * @internal Revision:
+ * 20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor
  * 20101101 - franciscom - refactoring to remove event viewer warnings
- * 20091201 - franciscom - minor code layout and standard coding changes 
  *
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("csv.inc.php");
 require_once("xml.inc.php");
+
+require_once("web_editor.php");
+$editorCfg = getWebEditorCfg('build');
+require_once(require_web_editor($editorCfg['type']));
+
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -33,6 +35,11 @@ $op->status = 0;
 
 $args = init_args();
 $gui = init_gui($db,$args);
+
+$of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
+$of->Value = getItemTemplateContents('platform_template', $of->InstanceName, $args->notes);
+
+
 $platform_mgr = new tlPlatform($db, $args->testproject_id);
 
 $action = $args->doAction;
@@ -49,6 +56,7 @@ switch ($action)
 	case "edit":
 	case "create":
 		$op = $action($args,$gui,$platform_mgr);
+		$of->Value = $gui->notes;
 	break;
 }
 
@@ -63,6 +71,7 @@ else
 	$gui->user_feedback['type'] = 'ERROR';
 }
 $gui->platforms = $platform_mgr->getAll(array('include_linked_count' => true));
+$gui->notes = $of->CreateHTML();
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $default_template);

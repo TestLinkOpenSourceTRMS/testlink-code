@@ -22,7 +22,8 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- *
+ *	20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor for platform notes
+ *							$tlCfg->platform_template						
  *	20110319 - franciscom - BUGID 4322: New Option to block delete of executed test cases.
  *							testcase_cfg->can_delete_executed
  * 	20110109 - franciscom - added $tlCfg->req_cfg->duplicated_name_algorithm
@@ -858,6 +859,11 @@ $tlCfg->role_template->notes = new stdClass();
 $tlCfg->role_template->notes->type = 'none';
 $tlCfg->role_template->notes->value = '';
 
+
+$tlCfg->platform_template = new stdClass();
+$tlCfg->platform_template->notes = new stdClass();
+$tlCfg->platform_template->notes->type = 'none';
+$tlCfg->platform_template->notes->value = '';
 
 // ----------------------------------------------------------------------------
 /* [ATTACHMENTS] */

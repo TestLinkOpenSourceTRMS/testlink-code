@@ -22,6 +22,8 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ *	20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor for platform notes
+ *							$tlCfg->platform_template						
  *	20110323 - franciscom - BUGID 4025: option to avoid that obsolete test cases can be added 
  *							to new test plans. -> $tlCfg->tplanDesign 
  *	20110319 - franciscom - BUGID 4322: New Option to block delete of executed test cases.
@@ -852,6 +854,10 @@ $tlCfg->role_template->notes = new stdClass();
 $tlCfg->role_template->notes->type = 'none';
 $tlCfg->role_template->notes->value = '';
 
+$tlCfg->platform_template = new stdClass();
+$tlCfg->platform_template->notes = new stdClass();
+$tlCfg->platform_template->notes->type = 'none';
+$tlCfg->platform_template->notes->value = '';
 
 // ----------------------------------------------------------------------------
 /* [ATTACHMENTS] */

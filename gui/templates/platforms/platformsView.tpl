@@ -1,13 +1,14 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsView.tpl,v 1.15 2010/11/20 16:30:55 franciscom Exp $
+
 Purpose: smarty template - View all platforms
 
-20101120 - franciscom - 3410: Smarty 3.0 compatibility 
-20100119 - Eloff - added ability to show/hide platform id for API
-20091201 - Eloff - show grey trash icon on platforms that use used
-                   and show warning when deleting platforms
-20091010 - franciscom - export XML feature
+@filesource platformsView.tpl
+
+@internal revisions
+20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor for platform notes
+20101120 - franciscom - BUGID 3410: Smarty 3.0 compatibility 
+20100119 - Eloff	- added ability to show/hide platform id for API
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -63,8 +64,9 @@ Purpose: smarty template - View all platforms
 					</a>
 				{/if}
 			</td>
-			<td>{$gui->platforms[platform].notes|escape|nl2br}</td>
-			{if $gui->canManage ne ""}
+			{* when using rich webeditor strip_tags is needed - franciscom *}
+			<td>{$gui->platforms[platform].notes|strip_tags|strip|truncate:#PLATFORM_NOTES_TRUNCATE_LEN#}</td>
+			{if $gui->canManage != ""}
 			<td class="clickable_icon">
 				{if $gui->platforms[platform].linked_count eq 0}
 				<img style="border:none;cursor: pointer;"	alt="{$labels.alt_delete_platform}"

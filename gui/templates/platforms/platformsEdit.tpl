@@ -1,10 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsEdit.tpl,v 1.10 2010/11/13 09:21:54 franciscom Exp $
+@filesource	platformsEdit.tpl
 Purpose: smarty template - View all platforms
 
-rev:
-  20090806 - franciscom - refactoring
+@internal revisions
+20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor for platform notes
 *}
 {assign var="url_args" value="lib/platforms/platformsEdit.php"}
 {assign var="platform_edit_url" value="$basehref$url_args"}
@@ -71,7 +71,7 @@ function validateForm(f)
   		</tr>
   		<tr>
   			<th>{$labels.th_notes}</th>
-  			<td><textarea name="notes" rows="{#NOTES_ROWS#}" cols="{#NOTES_COLS#}">{$gui->notes|escape}</textarea></td>
+  			<td>{$gui->notes}</td>
   		</tr>
   	</table>
   	<div class="groupBtn">	

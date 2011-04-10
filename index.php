@@ -30,7 +30,7 @@ if( isset($_SESSION['currentUser']) )
 	// use Mantisbt approach
 	$securityCookie = tlUser::auth_get_current_user_cookie();
 	$redir2login = is_null($securityCookie);
-	if(!redir2login)
+	if(!$redir2login)
 	{
 		$dbSecurityCookie = $_SESSION['currentUser']->getSecurityCookie();
 		$redir2login = ( $securityCookie !=	$dbSecurityCookie );	

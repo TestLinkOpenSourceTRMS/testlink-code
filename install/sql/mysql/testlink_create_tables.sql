@@ -37,6 +37,7 @@
 # ---------------------------------------------------------------------------------------
 # @internal revisions
 #
+# 20110410 - franciscom - BUGID 4342
 # ---------------------------------------------------------------------------------------
 #
 #
@@ -109,8 +110,10 @@ CREATE TABLE /*prefix*/users (
   `default_testproject_id` int(10) default NULL,
   `active` tinyint(1) NOT NULL default '1',
   `script_key` varchar(32) NULL,
+  `cookie_string` varchar(64) NOT NULL DEFAULT '',  
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/users_login (`login`),
+  UNIQUE KEY /*prefix*/users_cookie_string (`cookie_string`),
   CONSTRAINT /*prefix*/users_roles_fk 
   FOREIGN KEY (`role_id`) REFERENCES /*prefix*/roles (id) 
   ON DELETE CASCADE ON UPDATE CASCADE 

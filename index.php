@@ -3,14 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: index.php,v $
+ * Main window. Include authorization of user and define frames (navBar and main).
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2009/04/28 19:22:33 $ by $Author: schlundus $
+ * @filesource	index.php
+ * @package 	TestLink
+ * @copyright 	2006-2011, TestLink community 
+ * @link 		http://www.teamst.org/index.php
  *
- * @author Martin Havlat
- *
- * This file is main window. Include authorization of user and define frames (navBar and main).
+ * @internal revisions
+ * 20110410 - franciscom - BUGID 4342
 **/
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
@@ -22,12 +23,25 @@ unset($_SESSION['basehref']);
 setPaths();
 $args = init_args();
 
-//verify the session during a work
-if (!isset($_SESSION['currentUser']))
+// verify the session during a work
+$redir2login = true;
+if( isset($_SESSION['currentUser']) )
+{
+	// use Mantisbt approach
+	$securityCookie = tlUser::auth_get_current_user_cookie();
+	$redir2login = is_null($securityCookie);
+	if(!redir2login)
+	{
+		$dbSecurityCookie = $_SESSION['currentUser']->getSecurityCookie();
+		$redir2login = ( $securityCookie !=	$dbSecurityCookie );	
+	}	
+}
+if($redir2login)
 {
 	redirect(TL_BASE_HREF ."login.php?note=expired");
 	exit;
 }
+
 $smarty = new TLSmarty();
 $smarty->assign('title', lang_get('main_page_title'));
 $smarty->assign('titleframe', 'lib/general/navBar.php');

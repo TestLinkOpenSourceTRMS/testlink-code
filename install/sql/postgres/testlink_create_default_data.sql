@@ -170,9 +170,9 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
 
 --  admin account 
 --  SECURITY: change password after first login
-INSERT INTO /*prefix*/users (login,password,role_id,email,first,last,locale,active)
-             VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 'Administrator', 'en_GB',1);
-
+INSERT INTO /*prefix*/users (login,password,role_id,email,first,last,locale,active,cookie_string)
+             VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 
+             		 'Administrator', 'en_GB',1,'21232f297a57a5a743894a0e4a801fc321232f297a57a5a743894a0e4a801fc3');
 
 -- assignment_status
 INSERT INTO /*prefix*/assignment_status ("id","description") VALUES (1,'open');

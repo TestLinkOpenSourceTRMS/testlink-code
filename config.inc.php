@@ -922,11 +922,6 @@ $g_attachments->order_by = " ORDER BY date_added DESC ";
 // ----------------------------------------------------------------------------
 /* [Requirements] */
 
-// HAS TO BE REMOVED - > req_doc_id UNIQUE INSIDE test project
-// true : you want req_doc_id UNIQUE IN THE WHOLE DB (system_wide)
-// false: you want req_doc_id UNIQUE INSIDE a SRS
-// $tlCfg->req_cfg->reqdoc_id->is_system_wide = FALSE;
-
 // 20101212 - truncate log message to this amount of chars for reqCompareVersions
 $tlCfg->req_cfg->log_message_len = 200;
 
@@ -1341,6 +1336,11 @@ $tlCfg->demoMode = OFF;
  */
 $tlCfg->enableTableExportButton = true;
 
+/**
+ * Taken from Mantis to implement better login security, and solve
+ * BUGID 4342
+ */
+ $tlCfg->auth_cookie = "TESTLINK_USER_AUTH_COOKIE";
 
 // ----- End of Config ------------------------------------------------------------------
 // --------------------------------------------------------------------------------------

@@ -24,10 +24,12 @@
 --
 -- 
 -- @internal revisions
+--	20110409 - franciscom - BUGID 4342
+--							using ideas from Mantis
 --	20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
 --							can be added to new test plans
 --							tcversions.status
---
+--u
 --  20101219 - franciscom - BUGID 4111 - cfield_testprojects ALTER
 --  20101204 - franciscom - BUGID 4070 - changed executions_idx1
 --                          ("testplan_id","tcversion_id","platform_id","build_id");
@@ -174,9 +176,11 @@ CREATE TABLE /*prefix*/users(
   "default_testproject_id" INTEGER NULL DEFAULT NULL,
   "active" INT2 NOT NULL DEFAULT '1',
   "script_key" VARCHAR(32) NULL,
+  "cookie_string" varchar(64) NOT NULL DEFAULT '',  
   PRIMARY KEY ("id")
 );
 CREATE UNIQUE INDEX /*prefix*/users_uidx1 ON /*prefix*/users ("login");
+CREATE UNIQUE INDEX /*prefix*/users_uidx2 ON /*prefix*/users ("cookie_string");
 
 --
 -- Table structure for table "tcversions"

@@ -5,15 +5,15 @@
  * 
  * This file handles the initial authentication for login and creates all user session variables.
  *
+ * @filesource 	doAuthorize.php
  * @package 	TestLink
- * @author 		Chad Rosen, Martin Havlat
- * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: doAuthorize.php,v 1.34 2010/02/12 08:47:12 erikeloff Exp $
+ * @copyright 	2003-2011, TestLink community 
  * @link 		http://www.teamst.org/
  *
  * @todo Setting up cookies so that the user can automatically login next time
  *
  * @internal revisions:
+ * 20110410 - franciscom - BUGID 4342
  * 20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
  * 20100202 - franciscom - refactoring of doAuthorize (BUGID 0003129: After login failure blank page is displayed)
  *
@@ -42,6 +42,12 @@ function doAuthorize(&$db,$login,$pwd)
 			$password_check = auth_does_password_match($user,$pwd);
 			if ($password_check->status_ok && $user->isActive)
 			{
+				// BUGID 4342 - 20110410 
+				// Need to do set COOKIE following Mantis model
+				$auth_cookie_name = config_get('auth_cookie');
+				$expireOnBrowserClose=false;
+				setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,'/');
+			
 				// 20051007 MHT Solved  0000024 Session confusion 
 				// Disallow two sessions within one browser
 				if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))

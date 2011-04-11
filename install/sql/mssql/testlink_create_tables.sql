@@ -633,16 +633,23 @@ CREATE TABLE /*prefix*/users (
 	default_testproject_id int NULL,
 	active tinyint NOT NULL CONSTRAINT /*prefix*/DF_users_active DEFAULT ((1)),
 	script_key varchar (32) NULL,
+	cookie_string varchar (64) NOT NULL,
  CONSTRAINT /*prefix*/PK_users PRIMARY KEY CLUSTERED 
 (
 	id ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY];
 
-CREATE NONCLUSTERED INDEX /*prefix*/IX_users_login ON  /*prefix*/users 
+CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/IX_users_login ON  /*prefix*/users 
 (
 	login ASC
 ) ON [PRIMARY];
+CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/IX_users_cookie_string ON  /*prefix*/users 
+(
+	cookie_string ASC
+) ON [PRIMARY];
+
+
 
 CREATE TABLE /*prefix*/cfield_design_values (
 	field_id int NOT NULL,

@@ -5,14 +5,17 @@
  *
  * create or update TestLink database 
  * 
+ * @filesource	installNewDB.php
  * @package 	TestLink
  * @author 		Francisco Mancardi
- * @copyright 	2008, TestLink community
+ * @copyright 	2008, 2011 TestLink community
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
- * @version    	CVS: $Id: installNewDB.php,v 1.63 2011/01/17 11:06:01 mx-julian Exp $
  *
- * @internal Revisions:
+ * @internal revisions
+ *	20110411 - franciscom - insert of admin user moved here due to need to generate
+ *							cookie_string for security issues
+ *
  *  20110117 - Julian - BUGID 4174 - When testlink is updated do not show login data
  *	20100911 - franciscom - drop_tables() - MS SQL does not like 'CASCADE'
  *	20100815 - franciscom - BUGID 3654
@@ -448,6 +451,7 @@ if ( count($a_sql_data > 0) )
 }
 
 
+
 // -------------------------------------------------
 if ($update_pwd)
 {
@@ -476,6 +480,15 @@ if($sqlParser->install_failed==true)
 } 
 else 
 {
+
+	// 20110411 - due to use of cookie_string
+	$t_val = mt_rand( 0, mt_getrandmax() ) + mt_rand( 0, mt_getrandmax() );
+	$t_val = md5( $t_val ) . md5( time() );
+	$sql = 	"INSERT INTO {$tables['users']} (login,password,role_id,email,first,last,locale,active,cookie_string) " .
+            "VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', " .
+            "'Administrator', 'en_GB',1,'{$t_val}')";
+	$db->exec_query($sql);
+
 	echo "<span class='ok'>OK!</span>";
 }
 

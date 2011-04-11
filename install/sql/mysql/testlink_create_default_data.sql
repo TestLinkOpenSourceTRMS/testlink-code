@@ -1,20 +1,13 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.39 2010/12/10 19:37:39 franciscom Exp $
+# @filesource testlink_create_default_data.sql
 # SQL script - create default data (rights & admin account)
 #
 # Database Type: MySQL 
 #
+# 20110411 - franciscom - removed sentence that create admin user
+#
 # 20101126 - franciscom - DB version increased
 #                         added requirement_revision node type
-# 20100106 - franciscom - added testcase_step node type
-# 20090426 - franciscom - new right testproject_user_role_assignment
-# 20090126 - havlatm - role definition update
-# 20081029 - franciscom - add events_mgt right
-#                         fixed typo error system_configuraton -> system_configuration
-# 20070724 - franciscom - BUGID 950 
-#            removed right with id=19
-#            renamed right with id=5 
-#            updated db version- due to changes in milestone table
 # ---------------------------------------------------------------------------------
 
 # Database version
@@ -153,12 +146,6 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,24);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
-
-# admin account 
-# SECURITY: change password after first login
-INSERT INTO /*prefix*/users (login,password,role_id,email,first,last,locale,active,cookie_string)
-            VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 
-            		'Administrator', 'en_GB',1,'21232f297a57a5a743894a0e4a801fc321232f297a57a5a743894a0e4a801fc3');
 
 # Assignment types
 INSERT INTO /*prefix*/assignment_types (id,fk_table,description) VALUES(1,'testplan_tcversions','testcase_execution');

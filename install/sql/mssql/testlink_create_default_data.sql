@@ -1,6 +1,6 @@
 --  -----------------------------------------------------------------------------------
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.26 2010/12/10 19:37:39 franciscom Exp $
+--  @filesource	testlink_create_default_data.sql
 --  SQL script - create default data (rights & admin account)
 --  
 -- IMPORTANT NOTE:
@@ -8,16 +8,10 @@
 --
 --  Database Type: Microsoft SQL Server
 --
+--	20110411 - franciscom - removed sentence that create admin user
+--
 --  20101126 - franciscom - DB version increased
 --                          added requirement_revision node type
---  20090426 - franciscom - new right testproject_user_role_assignment
---  20090126 - havlatm - role definition update
---  20080102 - franciscom - added note on db_version
---  20070724 - franciscom - BUGID 950 
---             removed right with id=19
---             renamed right with id=5 
---             updated db version- due to changes in milestone table
---
 --  -----------------------------------------------------------------------------------
 
 --  Database version
@@ -160,11 +154,6 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,24);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
-
---  admin account 
---  SECURITY: change password after first login
-INSERT INTO /*prefix*/users (login,password,role_id,email,first,last,locale,active)
-             VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 'Administrator', 'en_GB',1);
 
 -- Assignment types
 SET IDENTITY_INSERT /*prefix*/assignment_types ON

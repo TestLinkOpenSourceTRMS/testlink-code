@@ -443,7 +443,7 @@ function checkSchemaVersion(&$db)
 				   '<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
 	switch (trim($myrow['version']))
 	{
-		case '1.7.0 Alpha':
+		case '1.7.0 Alpha': 
 		case '1.7.0 Beta 1':
 		case '1.7.0 Beta 2':
 		case '1.7.0 Beta 3':
@@ -451,12 +451,15 @@ function checkSchemaVersion(&$db)
 		case '1.7.0 Beta 5':
 		case '1.7.0 RC 2':
 		case '1.7.0 RC 3':
-		case 'DB 1.1':
-		case 'DB 1.2':
+		case 'DB 1.1': // TL 1.7.1
+		case 'DB 1.2': // TL 1.8.x
+		case 'DB 1.4': // TL 1.9.1
 			$result['msg'] = $upgrade_msg;
 			break;
-
-		case 'DB 1.3':
+			
+		// this check is not necessary to maintain on 2.x but can serve as example how to handle
+		// non-automatic migration/update procedures
+		case 'DB 1.3': // TL 1.9.0
 			// DB 1.3 to DB 1.4 requires manual steps
 			if ($last_version == 'DB 1.4') {
 				$result['msg'] = "Manual upgrade of your DB scheme necessary (1.9.0 -> 1.9.1) - Read README file!";

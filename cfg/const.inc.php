@@ -26,7 +26,7 @@ define('TL_VERSION', '2.0 (Development)');
 
 /** Last Database version that is used to give users feedback about necesssary upgrades
  * if you set this parameter also upgrade configCheck.php - checkSchemaVersion() */
-define('TL_LAST_DB_VERSION', 'DB 1.4');
+define('TL_LAST_DB_VERSION', 'DB 2.0');
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part

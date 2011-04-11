@@ -15,6 +15,8 @@
  *
  * @internal Revisions:
  * 	
+ *  20110411 - Julian - BUGID 4398 - Prevent user-login when database scheme version does not fit 
+ *                                   required scheme
  *  20110126 - Julian - BUGID 4186 - checkSchemaVersion() moved last_db_version to const.inc.php
  *  20100617 - franciscom - domxml is not needed anymore
  *  20090713 - franciscom - tested is_writable() on windows with PHP 5.
@@ -272,7 +274,9 @@ function getSecurityNotes(&$db)
 
 	// 20070121 - needed when schemas change has been done
 	// This call can be removed when release is stable
-	$msg = checkSchemaVersion($db);
+	$res = checkSchemaVersion($db);
+	$msg = $res['msg'];
+	
 	if($msg != "")
 	{
 		$securityNotes[] = $msg;
@@ -422,6 +426,7 @@ function checkForRepositoryDir($the_dir)
  */
 function checkSchemaVersion(&$db)
 {
+	$result = array('status' => tl::ERROR, 'msg' => null);
 	$last_version = TL_LAST_DB_VERSION;  // BUGID 4186: moved last db version to const.inc.php
 	$db_version_table= DB_TABLE_PREFIX . 'db_version';
 	
@@ -429,11 +434,13 @@ function checkSchemaVersion(&$db)
 	$res = $db->exec_query($sql,1);  
 	if (!$res)
 	{
-		return $msg = "Failed to get Schema version from DB";
+		return $result['msg'] = "Failed to get Schema version from DB";
 	}
 		
 	$myrow = $db->fetch_array($res);
-	$msg = "";
+	
+	$upgrade_msg = "You need to upgrade your Testlink Database to {$last_version} - <br>" .
+				   '<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
 	switch (trim($myrow['version']))
 	{
 		case '1.7.0 Alpha':
@@ -446,22 +453,29 @@ function checkSchemaVersion(&$db)
 		case '1.7.0 RC 3':
 		case 'DB 1.1':
 		case 'DB 1.2':
-		case 'DB 1.3':
-			$msg = "You need to upgrade your Testlink Database to {$last_version} - <br>" .
-				'<a href="SCHEMA_CHANGES" style="color: white"> click here to see the Schema changes </a><br>' .
-				'<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
+			$result['msg'] = $upgrade_msg;
 			break;
 
+		case 'DB 1.3':
+			// DB 1.3 to DB 1.4 requires manual steps
+			if ($last_version == 'DB 1.4') {
+				$result['msg'] = "Manual upgrade of your DB scheme necessary (1.9.0 -> 1.9.1) - Read README file!";
+			} else {
+				$result['msg'] = $upgrade_msg;
+			}
+			break;
+			
 		case $last_version:
+			$result['status'] = tl::OK;
 			break;
 		
 		default:
-			$msg = "Unknown Schema version " .  trim($myrow['version']) . 
-			       ", please upgrade your Testlink Database to " . $last_version;
+			$result['msg'] = "Unknown Schema version " .  trim($myrow['version']) . 
+			                 ", please upgrade your Testlink Database to " . $last_version;
 			break;
 	}
 	
-	return $msg;
+	return $result;
 }
 
 /**

@@ -13,6 +13,8 @@
  *
  *
  *	@internal revisions
+ *	20110413 - franciscom - BUGID 4410 - "Save step" doesn't work just after "Copy Step"
+ * 							doCopyStep()
  *  20110401 - franciscom - BUGID 3615 - right to allow ONLY MANAGEMENT of requirements link to testcases
  *	20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
  *							can be added to new test plans
@@ -765,8 +767,9 @@ class testcaseCommands
 		$guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
 
 		// After copy I would like to return to target step in edit mode, 
-		// is enough to set $guiObj->step_number to target test step
+		// is enough to set $guiObj->step_number to target test step --> FOUND THIS is WRONG
 		$guiObj->step_number = $argsObj->step_number;
+		$guiObj->step_id = $argsObj->step_id;
 
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
 		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));

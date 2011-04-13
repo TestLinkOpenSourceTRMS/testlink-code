@@ -12,6 +12,7 @@
  * @uses		common.php 
  *
  * @internal revisions
+ * 20110408 - BUGID 4363: General Test Plan Metrics - Overall Build Status -> 
  * 20110407 - BUGID 4363: General Test Plan Metrics - Overall Build Status -> 
  *						  empty line for a build shown with no test cases assigned to user
  *
@@ -347,7 +348,6 @@ class results extends tlObjectWithDB
 			$tend = microtime(true);
 			//echo ($tend) . '<br>';
             //echo ($tend - $tstart) . ' seconds<br>';
-            
             // new dBug($this->executionsMap);
             
 			$this->createMapOfLastResult($this->suiteStructure, $this->executionsMap, $lastResult);
@@ -558,13 +558,13 @@ class results extends tlObjectWithDB
 	 */
 	private function tallyBuildResults($lastExecByBuild, $arrBuilds, $execTotalsByBuild)
 	{                     
-		if ($lastExecByBuild == null)
-		{
-			return null;
-		}
+		// if ($lastExecByBuild == null)
+		// {
+		// 	return null;
+		// }
+		
 		$na_string = lang_get('not_aplicable');
 		$rValue = null;
-		
 		foreach($arrBuilds as $buildId => $buildInfo)
 		{
 			$item_name='build_name';
@@ -576,24 +576,27 @@ class results extends tlObjectWithDB
 			}
 
 			$element = $this->tallyResults($results,$totalCases,$item_name);
-			if (!is_null ($element))
+			if (!is_null($element))
 			{
 				$element[$item_name]=$buildInfo['name'];
 				$rValue[$buildId] = $element;
 				
-				// BUGID 3406 - BUGID 1508 
-				// here we need to insert the correct "not run" value now
-				// and the percentages need to be re-calculated after that of course
-				$not_run_count = $execTotalsByBuild[$buildId]['not_run'];
-				
-				$not_run_percentage = ($totalCases != 0) ? 
-				                      number_format($not_run_count / $totalCases * 100, 2) : $na_string;
-				$rValue[$buildId]['details']['not_run']['qty'] = $not_run_count;
-				$rValue[$buildId]['details']['not_run']['percentage'] = $not_run_percentage;
-
-				// BUGID 4333: General Test Plan Metrics % complete did not round
-				$rValue[$buildId]['percentage_completed'] = number_format( 100 - $not_run_percentage);
-
+				$not_run_percentage = $na_string;
+				$rValue[$buildId]['percentage_completed'] = $na_string;
+				if( $totalCases > 0 )
+				{
+					// BUGID 3406 - BUGID 1508 
+					// here we need to insert the correct "not run" value now
+					// and the percentages need to be re-calculated after that of course
+					$not_run_count = $execTotalsByBuild[$buildId]['not_run'];
+					$not_run_percentage = number_format($not_run_count / $totalCases * 100, 2);
+					                      
+					$rValue[$buildId]['details']['not_run']['qty'] = $not_run_count;
+					$rValue[$buildId]['details']['not_run']['percentage'] = $not_run_percentage;
+                	
+					// BUGID 4333: General Test Plan Metrics % complete did not round
+					$rValue[$buildId]['percentage_completed'] = number_format( 100 - $not_run_percentage);
+				}
 			}
 		} // end  foreach
 		
@@ -1203,6 +1206,10 @@ class results extends tlObjectWithDB
 	 * counter[5] = array('total' => 2,'not_run' => 2,'passed' => 0,'failed' => 0,'blocked' => 0)
 	 *
 	 *
+	 * IMPORTANT QUESTION: 
+	 * How this have to work when there are platforms defined ?
+	 *
+	 *
 	 * For BUGID 3406, 1508: New function to get counts on build level instead of testplan level
 	 * 
 	 * @author Andreas Simon
@@ -1216,12 +1223,16 @@ class results extends tlObjectWithDB
 	{
 		$counters = array();
 		$buildSet = array_keys($arrBuilds);
-		$assignCounters = $this->tplanMgr->assignment_mgr->getExecAssignmentsCountByBuild($buildSet);
-		$notRunCounters = $this->tplanMgr->assignment_mgr->getNotRunAssignmentsCountByBuild($buildSet);
+		$qty['exec'] = $this->tplanMgr->assignment_mgr->getExecAssignmentsCountByBuild($buildSet);
+		$qty['notRun'] = $this->tplanMgr->assignment_mgr->getNotRunAssignmentsCountByBuild($buildSet);
 
-		$fZero['assignedRunned'] = is_null($assignCounters);
-		$fZero['assignedNotRunned'] = is_null($notRunCounters);
-		$allZero = ($fZero['assignedRunned'] && $fZero['assignedNotRunned']);
+		$allZero = true;
+		foreach($qty as $key => $value)
+		{
+			$fZero[$key] = is_null($value);
+			$allZero = $allZero && $fZero[$key];
+		}
+
 		foreach($buildSet as $build_id)
 		{
 			$counters[$build_id] = $this->totalsForPlan;
@@ -1232,8 +1243,8 @@ class results extends tlObjectWithDB
 					$cc = 0;
 				}
 			}
-			$counters[$build_id]['total'] = $fZero['assignedRunned'] ? 0 : $assignCounters[$build_id]['qty'];
-			$counters[$build_id]['not_run'] = $fZero['assignedNotRunned'] ? 0 : $notRunCounters[$build_id]['qty'];
+			$counters[$build_id]['total'] = isset($qty['exec'][$build_id]['qty']) ? $qty['exec'][$build_id]['qty'] : 0;
+			$counters[$build_id]['not_run'] = isset($qty['notRun'][$build_id]['qty']) ? $qty['notRun'][$build_id]['qty'] : 0;
 		}
 		return $counters;
 	} // end of method

@@ -14,6 +14,8 @@
  *
  *
  * @internal Revisions:
+ *	20110408 - franciscom - BUGID 4391: General Test Plan Metrics - 
+ *							Results by Keywords does not work properly when platforms are used
  *	20110328 - franciscom - filter_cf_selection() fixed issue regarding simple types
  *	20110326 - franciscom - filter_cf_selection() make it safer
  *	20110322 - franciscom - BUGID 4343: Reports Failed Test Cases / ... -> Build is not shown	
@@ -3606,6 +3608,9 @@ class testplan extends tlObjectWithAttachments
 	 * @return map: key: keyword id
 	 *              value: map with following structure
 	 *
+	 * @internal revision
+	 * 20110408 - franciscom - 	BUGID 4391: General Test Plan Metrics - 
+	 *							Results by Keywords does not work properly when platforms are used
 	 *
  	 */
 	public function getStatusTotalsByKeyword($tplan_id)
@@ -3613,7 +3618,7 @@ class testplan extends tlObjectWithAttachments
 		$code_verbose = $this->getStatusForReports();
 		$totals = null;
 		$filters=null;
-		$options=array('output' => 'map');
+		$options = array('output' => 'mapOfMap');  // this way we get info by platform
 		$execResults = $this->get_linked_tcversions($tplan_id,$filters,$options);
 
 		if( !is_null($execResults) )
@@ -3638,10 +3643,16 @@ class testplan extends tlObjectWithAttachments
 				foreach($keywordSet as $keywordID)
 				{
 					foreach($kw[$keywordID] as $kw_tcase)
-					{
-						$status = $execResults[$kw_tcase['testcase_id']]['exec_status'];
-						$totals[$keywordID]['total_tc']++;
-						$totals[$keywordID]['details'][$code_verbose[$status]]['qty']++;
+					{	
+						// BUGID 4391 
+						// here we need to do multiple loops according platforms
+						$platformSet = array_keys($execResults[$kw_tcase['testcase_id']]);
+						foreach($platformSet as $platID)
+						{
+							$status = $execResults[$kw_tcase['testcase_id']][$platID]['exec_status'];
+							$totals[$keywordID]['total_tc']++;
+							$totals[$keywordID]['details'][$code_verbose[$status]]['qty']++;
+						}
 					}
 				}
 			}

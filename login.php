@@ -13,6 +13,8 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions
+ * 20110411 - Julian - BUGID 4398 - Prevent user-login when database scheme version does not 
+ *                                  fit required scheme
  * 20100928 - Julian - Redirection after Login only for linkto.php
  * 20100904 - eloff - BUGID 3740 - redirect to destination after login
  * 20100202 - franciscom - BUGID 0003129: After login failure blank page is displayed
@@ -50,9 +52,16 @@ switch($args->action)
 		 doSessionStart();
 		 unset($_SESSION['basehref']);
 		 setPaths();
-		 $op = doAuthorize($db,$args->login,$args->pwd);
 		 
-		 if( $op['status'] < tl::OK)
+		 // BUGID 4398 - check if db scheme is up to date else deny login
+		 $op = checkSchemaVersion($db);
+		 
+		 // only try to authorize user if scheme version is OK
+		 if($op['status'] == tl::OK) {
+		 	$op = doAuthorize($db,$args->login,$args->pwd);
+		 }
+		 
+		 if($op['status'] < tl::OK)
 		 {
 		 	$gui->note = is_null($op['msg']) ? lang_get('bad_user_passwd') : $op['msg'];
 		 	if ($args->action == 'ajaxlogin') 

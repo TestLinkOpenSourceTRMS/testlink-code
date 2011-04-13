@@ -9,7 +9,8 @@
  * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
+ * 20110413 - franciscom - BUGID 4404 - copy_to() set author_id = user doing copy
  * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
  * 20110402 - franciscom - get_exec_status() - interface changes	
  * 20110326 - franciscom - 	BUGID 4025 - show()
@@ -1535,6 +1536,7 @@ class testcase extends tlObjectWithAttachments
 	
 	/*
 	@internal revisions
+	20110413 - franciscom - BUGID 4404 - set author_id = user doing copy
 	20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
 							added option 'preserve_external_id'		
 	*/
@@ -1587,9 +1589,10 @@ class testcase extends tlObjectWithAttachments
 					// to method create_tcversion() to create inside itself THE STEPS.
 					// Passing NULL as steps we instruct create_tcversion() TO DO NOT CREATE STEPS
 					// 
+					// BUGID 4404 - $tcversion['author_id'] -> user_id
 					$op = $this->create_tcversion($newTCObj['id'],$externalID,$tcversion['version'],
 					                              $tcversion['summary'],$tcversion['preconditions'],null,
-					                              $tcversion['author_id'],$tcversion['execution_type'],
+					                              $user_id,$tcversion['execution_type'],
 					                              $tcversion['importance'],$tcversion['status']);
 					
 	    			if( $op['status_ok'] )

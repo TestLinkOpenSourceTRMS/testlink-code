@@ -22,6 +22,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ *	20110414 - franciscom - moved $g_prefix_name_for_copy BEFORE use of custom config
  *	20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor for platform notes
  *							$tlCfg->platform_template						
  *	20110323 - franciscom - BUGID 4025: option to avoid that obsolete test cases can be added 
@@ -1342,6 +1343,14 @@ $tlCfg->enableTableExportButton = true;
  */
  $tlCfg->auth_cookie = "TESTLINK_USER_AUTH_COOKIE";
 
+
+/** Used when creating a Test Suite using copy
+   and you have choose  $g_action_on_duplicate_name = 'generate_new'
+   if the name exist.
+ */
+$g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
+
+
 // ----- End of Config ------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
 // DO NOT CHANGE NOTHING BELOW
@@ -1441,20 +1450,11 @@ test project, test suite and testcase names.
 $g_ereg_forbidden = "/[|]/i";
 
 
-/** @TODO martin: remove from configuration and use a number in brackets after name ("My Test Title(2)")
- * Used when creating a Test Suite using copy
-   and you have choose  $g_action_on_duplicate_name = 'generate_new'
-   if the name exist.
- */
-$g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
-
-
 /**
  * @TODO remove from TL - unfinished refactorization;
  * use $tlCfg instead of old variables and constants
  */
 define('TL_IMPORT_ROW_MAX', $tlCfg->import_max_row);
-// define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . $tlCfg->bullet_image);
 define('TL_TPL_CHARSET', $tlCfg->charset);
 define('TITLE_SEP',$tlCfg->gui_title_separator_1);
 define('TITLE_SEP_TYPE2',$tlCfg->gui_title_separator_2);

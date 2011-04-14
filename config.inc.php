@@ -22,6 +22,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ *	20110414 - franciscom - moved $g_prefix_name_for_copy BEFORE use of custom config
  *	20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor for platform notes
  *							$tlCfg->platform_template						
  *	20110319 - franciscom - BUGID 4322: New Option to block delete of executed test cases.
@@ -1342,6 +1343,14 @@ $tlCfg->demoMode = OFF;
 $tlCfg->enableTableExportButton = DISABLED;
 
 
+/** 
+Used when creating a Test Suite using copy
+and you have choose  $g_action_on_duplicate_name = 'generate_new'
+if the name exist.
+*/
+$g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
+
+
 // ----- End of Config ------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
 // DO NOT CHANGE NOTHING BELOW
@@ -1352,7 +1361,6 @@ $tlCfg->enableTableExportButton = DISABLED;
 require_once('configCheck.php');
 
 /** root of testlink directory location seen through the web server */
-// @TODO: basehref should be defined by installation script or stored from login in $_SESSION
 /*  20070106 - franciscom - this statement it's not 100% right
     better use $_SESSION['basehref'] in the scripts. */
 define('TL_BASE_HREF', get_home_url());
@@ -1441,20 +1449,12 @@ test project, test suite and testcase names.
 $g_ereg_forbidden = "/[|]/i";
 
 
-/** @TODO martin: remove from configuration and use a number in brackets after name ("My Test Title(2)")
- * Used when creating a Test Suite using copy
-   and you have choose  $g_action_on_duplicate_name = 'generate_new'
-   if the name exist.
- */
-$g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
-
 
 /**
  * @TODO remove from TL - unfinished refactorization;
  * use $tlCfg instead of old variables and constants
  */
 define('TL_IMPORT_ROW_MAX', $tlCfg->import_max_row);
-// define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . $tlCfg->bullet_image);
 define('TL_TPL_CHARSET', $tlCfg->charset);
 define('TITLE_SEP',$tlCfg->gui_title_separator_1);
 define('TITLE_SEP_TYPE2',$tlCfg->gui_title_separator_2);

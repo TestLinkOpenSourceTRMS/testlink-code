@@ -12,6 +12,7 @@
  * @uses		common.php 
  *
  * @internal revisions
+ * 20110415 - Julian - BUGID 4418 - Clean up priority usage within Testlink
  * 20110329 - kinow - 	tallyBuildResults()
  *						BUGID 4333: General Test Plan Metrics % complete did not round 
  * 20110326 - franciscom - BUGID 4355: 	General Test Plan Metrics - Build without executed 
@@ -92,7 +93,6 @@ class results extends tlObjectWithDB
 	private	$tprojectID = -1;
 	private	$testCasePrefix='';
 
-	private $priorityLevelsCfg='';
 	private $resultsCfg;
 	private $testCaseCfg='';
 	private $map_tc_status;
@@ -255,7 +255,6 @@ class results extends tlObjectWithDB
 							$executor = null, $search_notes_string = null, $linkExecutionBuild = null, 
 							&$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
 	{
-		$this->priorityLevelsCfg = config_get('priority_levels');
 		$this->resultsCfg = config_get('results');
 		$this->testCaseCfg = config_get('testcase_cfg');
 
@@ -1785,22 +1784,9 @@ class results extends tlObjectWithDB
 
 				$tmpResult = $this->db->fetchOneValue($sql);
 
-				// parse results into three levels of priority
-				if (($urgency*$importance) >= $this->priorityLevelsCfg[HIGH])
-				{
-					$output[HIGH] = $output[HIGH] + $tmpResult;
-					tLog("getPrioritizedTestCases> Result-priority HIGH: $urgency, $importance = " . $output[HIGH]);
-				}
-				elseif (($urgency*$importance) >= $this->priorityLevelsCfg[MEDIUM])
-				{
-					$output[MEDIUM] = $output[MEDIUM] + $tmpResult;	
-					tLog("getPrioritizedTestCases> Result-priority MEDIUM: $urgency, $importance = " . $output[MEDIUM]);
-				}
-				else
-				{
-					$output[LOW] = $output[LOW] + $tmpResult;
-					tLog("getPrioritizedTestCases> Result-priority LOW: $urgency, $importance = " . $output[LOW]);
-				}	
+				//BUGID 4418 - clean up priority usage
+				$priority = priority_to_level($urgency*$importance);
+				$output[$priority] = $output[$priority] + $tmpResult;
 			}
 		}
 					
@@ -1914,7 +1900,7 @@ class results extends tlObjectWithDB
 	public function getPriority($tplan_id, $tcversion_id)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$ret = LOW;
+		
 		$sql = "/* $debugMsg */ ";
 		$sql .=	" SELECT (urgency * importance) AS priority " .
 		        " FROM {$this->tables['testplan_tcversions']} TPTCV " .
@@ -1922,15 +1908,8 @@ class results extends tlObjectWithDB
 			    " WHERE TPTCV.testplan_id = {$tplan_id} AND TPTCV.tcversion_id = {$tcversion_id}";
 		$prio = $this->db->fetchOneValue($sql);
 		
-		if ($prio >= $this->priorityLevelsCfg[HIGH])
-		{
-			$ret = HIGH;
-		}
-		else if ($prio >= $this->priorityLevelsCfg[MEDIUM])
-		{
-			$ret = MEDIUM;
-		}
-        return $ret;
+		//BUGID 4418 - clean up priority usage
+		return priority_to_level($prio);
 	}
 
 

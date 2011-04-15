@@ -5,6 +5,7 @@ $Id: planUrgency.tpl,v 1.10 2009/06/17 22:10:17 havlat Exp $
 Smarty template - manage test case urgency
 
 Revisions: 
+	20110415 - Julian - BUGID 4419 - added columns "Importance" and "Priority"
 	20080901 - franciscom - display testcase external id
     20080721 - franciscom 
           1. if test suite has no test case, then give message and remove all controls
@@ -15,7 +16,8 @@ Revisions:
 {assign var="ownURL" value="lib/plan/planUrgency.php"}
 {lang_get var="labels" 
           s='title_plan_urgency, th_testcase, th_urgency, urgency_low, urgency_medium, urgency_high,
-             label_set_urgency_ts, btn_set_urgency_tc, urgency_description,testsuite_is_empty'}
+             label_set_urgency_ts, btn_set_urgency_tc, urgency_description,testsuite_is_empty,
+             priority, importance'}
 
 {include file="inc_head.tpl"}
 <body>
@@ -45,12 +47,16 @@ Revisions:
 	<table class="simple_tableruler" style="text-align: center">
 	<tr>
 		<th style="text-align: left;">{$labels.th_testcase}</th>
+		<th>{$labels.importance}</th>
 		<th colspan="3">{$labels.th_urgency}</th>
+		<th>{$labels.priority}</th>
 	</tr>
 
 	{foreach item=res from=$gui->listTestCases}
 	<tr>
 			<td style="text-align: left;">{$res.tcprefix|escape}{$res.tc_external_id}&nbsp;:&nbsp;{$res.name|escape}</td>
+			{assign var=importance value=$res.importance}
+			<td>{$gsmarty_option_importance.$importance}</td>
   			{assign var=urgencyCode value=$res.urgency}
 			<td><input type="radio"
 					   name="urgency[{$res.tcversion_id}]"
@@ -79,6 +85,8 @@ Revisions:
 						/>
 				<span style="vertical-align:middle;">{$labels.urgency_low}</span>
 			</td>
+			{assign var=priority value=$res.priority}
+			<td>{$gsmarty_option_priority.$priority}</td>
 	</tr>
 	{/foreach}
 	</table>

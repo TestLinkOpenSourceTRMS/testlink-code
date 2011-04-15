@@ -13,6 +13,8 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 		20110415 - Julian - BUGID 4419: Add columns "Importance" and "Priority" 
+ *  	                                to "Set urgent Tests"
  * 		20080925 - franciscom - BUGID 1746
  *      20080721 - franciscom
  *           code refactored to follow last development standard.
@@ -43,7 +45,6 @@ $gui = new stdClass();
 // new dBug($xx);
 
 $node_info = $tplan_mgr->tree_manager->get_node_hierarchy_info($args->node_id);
-$gui->urgencyCfg = config_get('urgency');
 $gui->node_name = $node_info['name'];
 $gui->user_feedback = null;
 $gui->node_id = $args->node_id;
@@ -69,6 +70,11 @@ if(isset($args->urgency_tc))
 
 // get the current urgency for child test cases
 $gui->listTestCases = $tplan_mgr->getSuiteUrgency($args->tplan_id, $args->node_id,$args->tproject_id);
+
+// get priority for each test case
+foreach ($gui->listTestCases as $id => $tcase) {
+	$gui->listTestCases[$id]['priority'] = priority_to_level($tcase['priority']);
+}
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);

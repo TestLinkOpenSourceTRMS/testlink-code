@@ -14,6 +14,7 @@
  *
  *
  * @internal Revisions:
+ *  20110415 - Julian - BUGID 4418 - Clean up priority usage within Testlink
  *	20110328 - franciscom - filter_cf_selection() fixed issue regarding simple types
  *	20110326 - franciscom - filter_cf_selection() make it safer
  *	20110322 - franciscom - BUGID 4343: Reports Failed Test Cases / ... -> Build is not shown	
@@ -3908,23 +3909,10 @@ class testplan extends tlObjectWithAttachments
      */
     public function urgencyImportanceToPriorityLevel($urgency, $importance=null)
     {
-        static $priorityLevelsCfg;
-        if ($priorityLevelsCfg == null) {
-            $priorityLevelsCfg = config_get('priority_levels');
-        }
-
         $urgencyImportance = intval($urgency) * (is_null($importance) ? 1 : intval($importance)) ;
-		
-        $levels2check = array(HIGH,MEDIUM,LOW);  // order is important for algorithm
-		foreach($levels2check as $level)
-		{
-			if($urgencyImportance >= $priorityLevelsCfg[$level])
-			{
-				break;
-			}
-		}		
-        return $level;
         
+        //BUGID 4418 - clean up priority usage
+        return priority_to_level($urgencyImportance);
     }
 
 

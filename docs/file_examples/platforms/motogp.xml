@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<platforms>
+	<platform>
+		<name><![CDATA[Yamaha Factory Racing]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[San Carlo Honda Gresini]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Rizla Suzuki MotoGP]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Repsol Honda Team]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Pramac Racing Team]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Monster Yamaha Tech 3]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Mapfre Aspar Team MotoGP]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[LCR Honda MotoGP]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Ducati Team]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Cardion AB Motoracing]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+</platforms>

@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<platforms>
+	<platform>
+		<name><![CDATA[RBR-Renault]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[McLaren-Mercedes]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Ferrari]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Renault]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Sauber-Ferrari]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[STR-Ferrari]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Force India-Mercedes]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Mercedes]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Lotus-Renault]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Virgin-Cosworth]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Williams-Cosworth]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[HRT-Cosworth]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+</platforms>

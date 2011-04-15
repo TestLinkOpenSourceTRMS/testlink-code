@@ -10,6 +10,8 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20110415 - Julian - BUGID 4418 - Clean up priority usage within Testlink
+ *                    - BUGID 4419 - Added priority to output of getSuiteUrgency()
  *	20100204 - eloff - fixed typo error $break => break
  *	20091017 - franciscom - moved method getPriority() from result.class.php
  *	20081212 - BUGID 1922 - franciscom 
@@ -121,7 +123,8 @@ class testPlanUrgency extends testPlan
 		$tcprefix = $this->db->prepare_string($tcprefix);
 		
 		$sql = " SELECT DISTINCT '{$tcprefix}' AS tcprefix, NHB.name, NHB.node_order," .
-			   " NHA.parent_id AS testcase_id, TCV.tc_external_id, testplan_tcversions.tcversion_id, testplan_tcversions.urgency".
+			   " NHA.parent_id AS testcase_id, TCV.tc_external_id, testplan_tcversions.tcversion_id,".
+			   " testplan_tcversions.urgency, TCV.importance, (TCV.importance * testplan_tcversions.urgency) AS priority" .
 			   " FROM {$this->tables['nodes_hierarchy']} NHA " .
 			   " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id " .
 			   " JOIN {$this->tables['testplan_tcversions']} testplan_tcversions " .
@@ -146,9 +149,6 @@ class testPlanUrgency extends testPlan
 	 */
 	public function getPriority($testplan_id, $filters=null, $options=null)
 	{
-		// Order is important for algorithm
-		$level2check=array(HIGH,MEDIUM);
-		$priorityLevelsCfg = config_get('priority_levels');
 		
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$rs = null;
@@ -198,14 +198,8 @@ class testPlanUrgency extends testPlan
 				case 'tcversion':
 					foreach($key2loop as $key)
 					{
-		                foreach( $level2check as $level)
-		                {
-		                	if($rs[$key]['priority'] >= $priorityLevelsCfg[$level])
-		                	{
-		                		$rs[$key]['priority_level']=$level;
-		                		break;
-		                	}
-		                }
+						//BUGID 4418 - clean up priority usage
+						$rs[$key]['priority_level'] = priority_to_level($rs[$key]['priority']);
 					}
 				break;
 
@@ -215,14 +209,8 @@ class testPlanUrgency extends testPlan
 						$platformSet = array_keys($rs[$key]);
 						foreach($platformSet as $platform_id) 
 						{
-		                	foreach( $level2check as $level)
-		                	{
-								if ( $rs[$key][$platform_id]['priority'] >= $priorityLevelsCfg[$level])
-								{
-									$rs[$key][$platform_id]['priority_level'] = $level;
-									break;
-								}
-                            } 
+							//BUGID 4418 - clean up priority usage
+							$rs[$key][$platform_id]['priority_level'] = priority_to_level($rs[$key][$platform_id]['priority']);
 						}
 					}
 				break;

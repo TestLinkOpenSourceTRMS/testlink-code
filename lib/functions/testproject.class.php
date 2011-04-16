@@ -10,6 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110416 - franciscom - setSessionProject() -> setCurrentProject()
  * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
  * 20110223 - asimon BUGID 4239: forgotten parameter $oldNewMappings for a function call in copy_as()  
  *                               caused links between reqs in old project and testcases in new project
@@ -168,7 +169,7 @@ function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_publi
 		// set project to session if not defined (the first project) or update the current
 		if (!isset($_SESSION['testprojectID']))
 		{
-			$this->setSessionProject($root_node_id);
+			$this->setCurrentProject($root_node_id);
 		}
 	}
 	else
@@ -241,8 +242,8 @@ function update($id, $name, $color, $notes,$options,$active=null,
 
 	if ($result)
 	{
-		// update session data
-		$this->setSessionProject($id);
+		// update current data
+		$this->setCurrentProject($id);
 	}
 	else
 	{
@@ -257,11 +258,11 @@ function update($id, $name, $color, $notes,$options,$active=null,
 }
 
 /**
- * Set session data related to a Test project
+ * Set data related to what we call Current Test project -> selected by user on GUI
  * 
  * @param integer $projectId Project ID; zero causes unset data
  */
-public function setSessionProject($projectId)
+public function setCurrentProject($projectId)
 {
 	$tproject_info = null;
 	
@@ -1718,7 +1719,7 @@ function setPublicStatus($id,$status)
 				$tproject_id_on_session = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : $id;
 				if ($id == $tproject_id_on_session)
 				{
-					$this->setSessionProject(null);
+					$this->setCurrentProject(null);
 				}	
 			}
 			else

@@ -10,15 +10,14 @@
  * Note: this file must uses only globally used functionality and cannot include 
  * a feature specific code because of performance and readability reasons
  *
+ * @filesource	common.php
  * @package 	TestLink
- * @author 		Martin Havlat, Chad Rosen
- * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.202 2010/10/28 13:51:13 mx-julian Exp $
+ * @copyright 	2005,2011 TestLink community 
  * @link 		http://www.teamst.org/index.php
- * @since 		TestLink 1.5
  *
- * @internal Revisions:
- *  20110415 - Julian - BUGID 4418: Clean up priority usage within Testlink
+ * @internal revisions
+ * 20110416 - franciscom - setSessionProject() -> setCurrentProject()
+ * 20110415 - Julian - BUGID 4418: Clean up priority usage within Testlink
  *                                  -> priority_to_level() uses urgencyImportance
  * 20110321 - franciscom - 	BUGID 4025: option to avoid that obsolete test cases 
  *							can be added to new test plans
@@ -323,7 +322,9 @@ function initProject(&$db,$hash_user_sel)
 	$user_sel["tproject_id"] = isset($hash_user_sel['testproject']) ? intval($hash_user_sel['testproject']) : 0;
 	$user_sel["tplan_id"] = isset($hash_user_sel['testplan']) ? intval($hash_user_sel['testplan']) : 0;
 
+	
 	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	$current_tproject_id = getCurrentTProjectID();
 
 	// test project is Test Plan container, then we start checking the container
 	if( $user_sel["tproject_id"] != 0 )
@@ -340,12 +341,13 @@ function initProject(&$db,$hash_user_sel)
 			$tproject_id = $tproject_data['id'];
 		}
 	}
-	$tproject->setSessionProject($tproject_id);
+	$tproject->setCurrentProject($tproject_id);
 	
 	// set a Test Plan
-	// Refresh test project id after call to setSessionProject
+	// Refresh test project id after call to setCurrentProject
 	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
+
 	// Now we need to validate the TestPlan
 	// dolezalz, havlatm: added remember the last selection by cookie
 	$cookieName = "TL_user${_SESSION['userID']}_proj${tproject_id}_testPlanId";
@@ -1149,6 +1151,24 @@ function getConfigAndLabels($configKey,$accessMode='key')
     }
     
     return array('cfg' => $stringKeyCode, 'lbl' => $labels); 
+}
+
+
+/*
+   @internal revisions
+   20110416 - franciscom - 
+*/
+function getCurrentTProjectID()
+{
+	$cookieID = config_get('current_tproject_id_cookie');
+	$ret = isset($_COOKIE[$cookieID]) ? $_COOKIE[$cookieID] : 0;
+	return $ret;
+}
+
+function setCurrentTProjectID($tprojectID)
+{
+	$cookieID = config_get('current_tproject_id_cookie');
+	setcookie($cookieID,$tprojectID,true,'/');
 }
 
 ?>

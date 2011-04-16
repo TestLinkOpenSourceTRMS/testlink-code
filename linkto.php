@@ -31,17 +31,15 @@
  * - if a user has no right to view item he is redirected to main page
  * - if item does not exist an errormessage shows
  * 
+ * @filesource	linkto.php
  * @package 	TestLink
  * @author 		asimon
- * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: linkto.php,v 1.7 2010/09/14 12:39:13 mx-julian Exp $
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
+ *	20110416 - franciscom - setSessionProject() -> setCurrentProject()
  *  20100223 - asimon - added anchor functionality
- *  20091215 - asimon - refactored process_req() with new method in requirement_mgr class
- *	20091215 - franciscom - refactored
- *	20091214 - asimon83 - refactoring like requested in issue comments
  */
 
 // use output buffer to prevent headers/data from being sent before 
@@ -114,7 +112,7 @@ else
 		$tproject_data = $tproject->get_by_prefix($tprojectPrefix);
 		if(($op['status_ok'] = !is_null($tproject_data))) 
 		{
-			$tproject->setSessionProject($tproject_data['id']);
+			$tproject->setCurrentProject($tproject_data['id']);
             $op['status_ok'] = isset($itemCode[$_GET['item']]);
 			$op['msg'] = sprintf(lang_get('invalid_item'),$_GET['item']);
         } 	    

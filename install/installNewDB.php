@@ -482,9 +482,13 @@ else
 {
 
 	// 20110411 - due to use of cookie_string
+	// Seems we can noy use tlObject::getDBTables(), because during install we have not set
+	// prefix yet => we use simple method -> concat $db_table_prefix
+	//
 	$t_val = mt_rand( 0, mt_getrandmax() ) + mt_rand( 0, mt_getrandmax() );
 	$t_val = md5( $t_val ) . md5( time() );
-	$sql = 	"INSERT INTO {$tables['users']} (login,password,role_id,email,first,last,locale,active,cookie_string) " .
+	$sql = 	"INSERT INTO " .  $db_table_prefix .'users' .
+			" (login,password,role_id,email,first,last,locale,active,cookie_string) " .
             "VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', " .
             "'Administrator', 'en_GB',1,'{$t_val}')";
 	$db->exec_query($sql);

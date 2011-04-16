@@ -2305,7 +2305,6 @@ class testcase extends tlObjectWithAttachments
 			    	
 			        // Save to generate record for linked but not executed if needed
 			        // (see below fix not executed section)
-			        // 20100111 - franciscom - PLATFORM REFACTORING
 			        // access key => (version,test plan, platform)
 			        $link_info[$elem['tcversion_id']][$elem['testplan_id']][$elem['platform_id']]=$elem;    
 		
@@ -2354,7 +2353,6 @@ class testcase extends tlObjectWithAttachments
 		      }
 		
 			 	// needed for logic to avoid miss not executed (see below fix not executed)
-			    // $in_set[$rs[$idx]['tcversion_id']][$rs[$idx]['testplan_id']]=$rs[$idx]['tcversion_id'];
 			    $in_set[$rs[$idx]['tcversion_id']][$rs[$idx]['testplan_id']][$rs[$idx]['platform_id']]=$rs[$idx]['tcversion_id'];
 			}
 	    }
@@ -2410,29 +2408,29 @@ class testcase extends tlObjectWithAttachments
 	    }
 	
 	    $recordset = null;
-	    if( !is_null($target) )   // minor fix - 20090716 - franciscom
+	    if( !is_null($target) )
 	    {
 	    	foreach($target as $idx)
 			{
-				$elem=$rs[$idx];
+				$wkitem=$rs[$idx];
 	    	   	if( $active_status=='ALL' ||
-	    	   	    $active_status='ACTIVE' && $elem['active'] ||
-	    	   	    $active_status='INACTIVE' && $elem['active']==0 )
+	    	   	    $active_status='ACTIVE' && $wkitem['active'] ||
+	    	   	    $active_status='INACTIVE' && $wkitem['active']==0 )
 	    	   	{    
-	    	   	    $recordset[$elem['tcversion_id']][$elem['testplan_id']][$elem['platform_id']]=$elem;
-	    	   	    
+	    	   	    $recordset[$wkitem['tcversion_id']][$wkitem['testplan_id']][$wkitem['platform_id']]=$wkitem;
 	    	   	    if( $my['options']['addExecIndicator'] )
 	    	   	 	{
-	    	   	 		if( !is_null($elem['executed']) )
+	    	   	 		if( !isset($recordset['executed']) )
 	    	   	 		{
-	    	   	 			// $recordset[$elem['tcversion_id']]['executed'] = 1;
-	    	   	 			$recordset['executed'] = 1;
-	    	   	 		}
-	    	   	 		else if( !isset($recordset[$elem['tcversion_id']]['executed']))
-	    	   	 		{
-	    	   	 			// $recordset[$elem['tcversion_id']]['executed'] = 0;
 	    	   	 			$recordset['executed'] = 0;
 	    	   	 		}
+	    	   	 		else if( $recordset['executed'] == 0 )
+	    	   	 		{ 
+	    	   	 			if( !is_null($wkitem['executed']) )
+	    	   	 			{
+	    	   	 				$recordset['executed'] = 1;
+	    	   	 			}
+	    	   	 		}	
 	    	   		}    
 	    	   	}    
 	    	}

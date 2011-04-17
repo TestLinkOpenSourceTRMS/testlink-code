@@ -2398,6 +2398,7 @@ $TLS_warning_enter_valid_date = "You have to enter a valid date!";
 $TLS_warning_invalid_percentage_value = "Percentage values must range from 0 to 100%";
 $TLS_warning_milestone_date = "Milestones have to be created at today's date or greater!";
 $TLS_warning_percentage_value_higher_than_100 = "All percentage values summed up cannot be higher than 100";
+$TLS_warning_target_before_start = "Target Date has to be chronologically after Start Date";
 
 
 

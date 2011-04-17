@@ -3,22 +3,21 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: frmWorkArea.php,v $
- * @version $Revision: 1.47 $
- * @modified $Date: 2011/01/10 15:38:55 $ by $Author: asimon83 $
- * @author Martin Havlat
+ * @filesource	frmWorkArea.php
+ * @package 	TestLink
+ * @copyright 	2005,2011 TestLink community 
+ * @author 		Martin Havlat
+ * @link 		http://www.teamst.org/index.php
  *
  * This page is window for navigation and working area (eg tree + edit page).
  *
- * rev:
+ * @internal revisions
+ *  20110417 - franciscom - added tproject id as new argument on links
  *  20101116 - asimon - BUGID 4007: Strange empty TestPlan combo boxes in same navigator panes
  *  20101013 - asimon - if execution is wanted, check for open builds in testplan
  *  20100822 - asimon - BUGID 3697: Assign Test Case execution - problems 
  *                                  when no build is defined on test plan
  *  20100106 - asimon - contribution for 2976 req/reqspec search
- * 	20080620 - havlatm - urgency support
- * 	20080501 - franciscom -
- *  20060809 - franciscom - changes in validateBuildAvailability()
  *
 **/
 require_once('../../config.inc.php');
@@ -26,6 +25,7 @@ require_once("common.php");
 testlinkInitPage($db);
 
 $args = init_args();
+
 // --------------------------------------------------------------------------------------
 // Important Notes for Developers
 // --------------------------------------------------------------------------------------
@@ -47,11 +47,8 @@ $aa_tfp = array(
      'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',
      'assignReqs' => 'lib/testcases/listTestCases.php?feature=assignReqs',
      'searchTc' => 'lib/testcases/tcSearchForm.php',
-	 
-	 /* contribution for 2976 req/reqspec search */
      'searchReq' => 'lib/requirements/reqSearchForm.php',
      'searchReqSpec' => 'lib/requirements/reqSpecSearchForm.php',
-	 
      'printTestSpec' => 'lib/results/printDocOptions.php?type=testspec',
      'printReqSpec' => 'lib/results/printDocOptions.php?type=reqspec',
      'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
@@ -60,7 +57,6 @@ $aa_tfp = array(
      'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=planUpdateTC',
      'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
      'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
-//            'priority' => 'lib/plan/planTCNavigator.php?feature=plan_risk_assignment',
      'test_urgency' => 'lib/plan/planTCNavigator.php?feature=test_urgency',
      'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment',
      'executeTest' => 'lib/execute/execNavigator.php',
@@ -107,14 +103,21 @@ if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'
 /// </enhancement>
 $smarty = new TLSmarty();
 
+$target = $aa_tfp[$showFeature];
+$target .= (strpos($target,"?") === false) ? "?" : "&"; 
+$target .= "tproject_id={$args->tproject_id}";
+
 if(isset($full_screen[$showFeature]))
 {
-	redirect($aa_tfp[$showFeature]);
+	// need to understand how to add tproject_id
+	// redirect($aa_tfp[$showFeature]);
+	redirect($target);
 }
 else
 {
 	$smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
-	$smarty->assign('treeframe', $aa_tfp[$showFeature]);
+	// $smarty->assign('treeframe', $aa_tfp[$showFeature]);
+	$smarty->assign('treeframe', $target);
 	$smarty->assign('workframe', 'lib/general/staticPage.php?key='.$showFeature);
 	$smarty->display('frmInner.tpl');
 }
@@ -167,15 +170,12 @@ function validateBuildAvailability(&$db,$tpID, $tpName, $prodName, $open)
 
 function init_args()
 {
-	$iParams = array(
-		"feature" => array(tlInputParameter::STRING_N),
-	);
-	$args = new stdClass();
-	$pParams = G_PARAMS($iParams,$args);
-	
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
+	$args = new stdClass();
 
+	$iParams = array("feature" => array(tlInputParameter::STRING_N),
+					 "tproject_id" => array(tlInputParameter::INT));
+	R_PARAMS($iParams,$args);
 	return $args;
 }
 ?>

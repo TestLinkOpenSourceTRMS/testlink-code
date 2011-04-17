@@ -33,7 +33,8 @@
  *    --> assign keywords
  *    --> assign requirements
  *
- * @internal Revisions:
+ * @internal revisions
+ * 20110411 - franciscom - BUGID 4339: issues when Working with two different projects within one Browser (same session).
  * 20110328 - franciscom - init_filter_custom_fields() fixed issue introduced du to trim() on arrays.
  * 20110113 - asimon - BUGID 4166 - List also test plans without builds for "plan_mode"
  * 20101110 - asimon - BUGID 3822: Keywords combobox is absent on the Filters pane of 'Add / Remove Test Cases'
@@ -390,11 +391,18 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * Does what init_args() usually does in all scripts: Reads the user input
 	 * from request ($_GET and $_POST). Later configuration,
 	 * settings and filters get modified according to that user input.
+	 *
+	 *
+	 * Developer note:
+	 * this method will be called by parent::__constructor()
+	 *
+	 * @internal revisions
+	 * 20110417 - franciscom - BUGID 4339 added dbHandler
 	 */
-	protected function init_args() {
+	protected function init_args(&$dbHandler) {
 		
 		// some common user input is already read in parent class
-		parent::init_args();
+		parent::init_args($dbHandler);
 
 		// add settings and filters to parameter info array for request parsers
 		$params = array();

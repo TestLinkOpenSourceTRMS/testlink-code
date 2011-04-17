@@ -1342,6 +1342,7 @@ $tlCfg->enableTableExportButton = true;
  * BUGID 4342
  */
  $tlCfg->auth_cookie = "TESTLINK_USER_AUTH_COOKIE";
+ $tlCfg->current_tproject_id_cookie = "TESTLINK_CURRENT_TPROJECT_ID";
 
 
 /** Used when creating a Test Suite using copy

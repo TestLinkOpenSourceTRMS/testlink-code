@@ -224,20 +224,20 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
         
         {* contribution for 2976 req/reqspec search *}
         <img src="{$tlImages.bullet}" />
-        <a href="{$gui->launcher}?feature=searchReq">{$labels.href_search_req}</a><br/>
+        <a href="{$gui->launcher}?feature=searchReq&tproject_id={$gui->testprojectID}">{$labels.href_search_req}</a><br/>
         <img src="{$tlImages.bullet}" />
-        <a href="{$gui->launcher}?feature=searchReqSpec">{$labels.href_search_req_spec}</a>
+        <a href="{$gui->launcher}?feature=searchReqSpec&tproject_id={$gui->testprojectID}">{$labels.href_search_req_spec}</a>
         
 	   	{/if}
 	   	
 		{if $gui->grants.reqs_edit == "yes" || $gui->grants.req_tcase_assignment}
 			<br />
   		<img src="{$tlImages.bullet}" />
-       		<a href="lib/general/frmWorkArea.php?feature=assignReqs">{$labels.href_req_assign}</a>
+       		<a href="lib/general/frmWorkArea.php?feature=assignReqs&tproject_id={$gui->testprojectID}">{$labels.href_req_assign}</a>
 
   	        <br />
   		<img src="{$tlImages.bullet}" />
-          	<a href="{$gui->launcher}?feature=printReqSpec">{$labels.href_print_req}</a>
+          	<a href="{$gui->launcher}?feature=printReqSpec&tproject_id={$gui->testprojectID}">{$labels.href_print_req}</a>
   		 {/if}
     </div>
   {/if}
@@ -248,7 +248,7 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
  	{if $display_left_block_4}
       <div id="testspecification_topics" >
   		<img src="{$tlImages.bullet}" />
-  		<a href="{$gui->launcher}?feature=editTc">
+  		<a href="{$gui->launcher}?feature=editTc&tproject_id={$gui->testprojectID}">
     		{if $gui->grants.modify_tc eq "yes"}
   	      {lang_get s='href_edit_tc'}
   	   {else}
@@ -258,7 +258,7 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
       {if $gui->hasTestCases}
       <br />
   		<img src="{$tlImages.bullet}" />
-          <a href="{$gui->launcher}?feature=searchTc">{$labels.href_search_tc}</a>
+          <a href="{$gui->launcher}?feature=searchTc&tproject_id={$gui->testprojectID}">{$labels.href_search_tc}</a>
       {/if}    
   		
 	  {* --- keywords management ---  *}
@@ -273,7 +273,7 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
   	 {if $gui->grants.modify_tc eq "yes"}
           <br />
   		  <img src="{$tlImages.bullet}" />
-          <a href="{$gui->launcher}?feature=printTestSpec">{$labels.href_print_tc}</a>
+          <a href="{$gui->launcher}?feature=printTestSpec&tproject_id={$gui->testprojectID}">{$labels.href_print_tc}</a>
   	 {/if}
 
 	  

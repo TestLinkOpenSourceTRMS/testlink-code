@@ -4,7 +4,10 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	mainPage.php
- * @author Martin Havlat
+ * @package 	TestLink
+ * @copyright 	2005,2011 TestLink community 
+ * @link 		http://www.teamst.org/index.php
+ * @author 		Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
  *
@@ -14,6 +17,7 @@
  * There is also some javascript that handles the form information.
  *
  * @internal revisions
+ * 20110417 - franciscom - BUGID 4429: Code refactoring to remove global coupling as much as possible
  * 20110401 - franciscom - BUGID 3615 - right to allow ONLY MANAGEMENT of requirements link to testcases
  * 20110325 - franciscom - BUGID 4062
  **/
@@ -25,27 +29,26 @@ if(function_exists('memory_get_usage') && function_exists('memory_get_peak_usage
     tlog("mainPage.php: Memory after common.php> Usage: ".memory_get_usage(), 'DEBUG');
 }
 
-testlinkInitPage($db,TRUE);
+testlinkInitPage($db,TL_UPDATE_ENVIRONMENT);
 
 $smarty = new TLSmarty();
 $tproject_mgr = new testproject($db);
-
-$testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-$testplanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
-
-
+$tprojectQty = $tproject_mgr->getTotalCount();
 $currentUser = $_SESSION['currentUser'];
 $userID = $currentUser->dbID;
 
 $gui = new stdClass();
 $gui->grants=array();
+$gui->testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+$gui->testplanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
 
-// User has test project rights
-$gui->grants['project_edit'] = $currentUser->hasRight($db,'mgt_modify_product'); 
+
+// User has test project rights ?
+$gui->grants['project_edit'] = $currentUser->hasRight($db,'mgt_modify_product',$gui->testprojectID,$gui->testplanID); 
 
 // ----------------------------------------------------------------------
 /** redirect admin to create testproject if not found */
-if ($gui->grants['project_edit'] && !isset($_SESSION['testprojectID']))
+if ($gui->grants['project_edit'] && ($tprojectQty == 0))
 {
 	tLog('No project found: Assume a new installation and redirect to create it','WARNING'); 
 	redirect($_SESSION['basehref'] . 'lib/project/projectEdit.php?doAction=create');
@@ -53,25 +56,17 @@ if ($gui->grants['project_edit'] && !isset($_SESSION['testprojectID']))
 }
 // ----------------------------------------------------------------------
 
-$gui->grants['reqs_view'] = $currentUser->hasRight($db,"mgt_view_req"); 
-$gui->grants['reqs_edit'] = $currentUser->hasRight($db,"mgt_modify_req"); 
-$gui->grants['req_tcase_assignment'] = $currentUser->hasRight($db,"req_tcase_link_management"); 
+$gui->grants = array_merge($gui->grants, initGrants($db,$currentUser,$gui->testprojectID,$gui->testplanID));
 
-$gui->grants['keywords_view'] = $currentUser->hasRight($db,"mgt_view_key");
-$gui->grants['keywords_edit'] = $currentUser->hasRight($db,"mgt_modify_key");
-$gui->grants['platform_management'] = $currentUser->hasRight($db,"platform_management");
-$gui->grants['configuration'] = $currentUser->hasRight($db,"system_configuraton");
-$gui->grants['usergroups'] = $currentUser->hasRight($db,"mgt_view_usergroups");
-$gui->grants['view_tc'] = $currentUser->hasRight($db,"mgt_view_tc");
 $gui->grants['project_inventory_view'] = ($_SESSION['testprojectOptions']->inventoryEnabled 
-	&& ($currentUser->hasRight($db,"project_inventory_view") == 'yes')) ? 1 : 0;
+	&& ($currentUser->hasRight($db,"project_inventory_view",$gui->testprojectID,$gui->testplanID) == 'yes')) ? 1 : 0;
 $gui->grants['modify_tc'] = null; 
 $gui->hasTestCases = false;
 
 if($gui->grants['view_tc'])
 { 
-    $gui->grants['modify_tc'] = $currentUser->hasRight($db,"mgt_modify_tc"); 
-	$gui->hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
+    // $gui->grants['modify_tc'] = $currentUser->hasRight($db,"mgt_modify_tc",$gui->testprojectID,$gui->testplanID); 
+	$gui->hasTestCases = $tproject_mgr->count_testcases($gui->testprojectID) > 0 ? 1 : 0;
 }
 
 $smarty->assign('opt_requirements', isset($_SESSION['testprojectOptions']->requirementsEnabled) 
@@ -84,12 +79,12 @@ $smarty->assign('opt_requirements', isset($_SESSION['testprojectOptions']->requi
  * or is enough just call to getAccessibleTestPlans()
  */
 $filters = array('plan_status' => ACTIVE);
-$gui->num_active_tplans = sizeof($tproject_mgr->get_all_testplans($testprojectID,$filters));
+$gui->num_active_tplans = sizeof($tproject_mgr->get_all_testplans($gui->testprojectID,$filters));
 
 // get Test Plans available for the user 
-$arrPlans = $currentUser->getAccessibleTestPlans($db,$testprojectID);
+$arrPlans = $currentUser->getAccessibleTestPlans($db,$gui->testprojectID);
 
-if($testplanID > 0)
+if($gui->testplanID > 0)
 {
 	// if this test plan is present on $arrPlans
 	//	  OK we will set it on $arrPlans as selected one.
@@ -101,7 +96,7 @@ if($testplanID > 0)
 	$loop2do=count($arrPlans);
 	for($idx=0; $idx < $loop2do; $idx++)
 	{
-    	if( $arrPlans[$idx]['id'] == $testplanID )
+    	if( $arrPlans[$idx]['id'] == $gui->testplanID )
     	{
         	$found = 1;
         	$index = $idx;
@@ -111,7 +106,7 @@ if($testplanID > 0)
     if( $found == 0 )
     {
         // update test plan id
-		$testplanID = $arrPlans[0]['id'];
+		$gui->testplanID = $arrPlans[0]['id'];
 		setSessionTestPlan($arrPlans[0]);     	
     } 
     $arrPlans[$index]['selected']=1;
@@ -119,9 +114,9 @@ if($testplanID > 0)
 
 
 $gui->testplanRole = null;
-if ($testplanID && isset($currentUser->tplanRoles[$testplanID]))
+if ($gui->testplanID && isset($currentUser->tplanRoles[$gui->testplanID]))
 {
-	$role = $currentUser->tplanRoles[$testplanID];
+	$role = $currentUser->tplanRoles[$gui->testplanID];
 	$gui->testplanRole = $tlCfg->gui->role_separator_open . $role->getDisplayName() . $tlCfg->gui->role_separator_close;
 }
 
@@ -131,12 +126,11 @@ $rights2check = array('testplan_execute','testplan_create_build','testplan_metri
 foreach($rights2check as $key => $the_right)
 {
 	// trying to remove Evil global coupling
-    // $gui->grants[$the_right] = $currentUser->hasRight($db,$the_right);
-    $gui->grants[$the_right] = $currentUser->hasRight($db,$the_right,$testprojectID,$testplanID);
+    $gui->grants[$the_right] = $currentUser->hasRight($db,$the_right,$gui->testprojectID,$gui->testplanID);
 }                         
 
 $gui->grants['tproject_user_role_assignment'] = "no";
-if( $currentUser->hasRight($db,"testproject_user_role_assignment",$testprojectID,-1) == "yes" ||
+if( $currentUser->hasRight($db,"testproject_user_role_assignment",$gui->testprojectID,-1) == "yes" ||
     $currentUser->hasRight($db,"user_role_assignment",null,-1) == "yes" )
 { 
     $gui->grants['tproject_user_role_assignment'] = "yes";
@@ -149,8 +143,6 @@ $gui->launcher = 'lib/general/frmWorkArea.php';
 $gui->arrPlans = $arrPlans;                   
 $gui->countPlans = count($gui->arrPlans);
 $gui->securityNotes = getSecurityNotes($db);
-$gui->testprojectID = $testprojectID;
-$gui->testplanID = $testplanID;
 $gui->docs = getUserDocumentation();
 
 $smarty->assign('gui',$gui);
@@ -182,6 +174,25 @@ function getUserDocumentation()
         closedir($handle);
     }
     return $documents;
+}
+
+
+function initGrants(&$dbHandler,&$userObj,$tprojectID,$testplanID)
+{
+	$grantKeys = array(	'reqs_view' => "mgt_view_req", 'reqs_edit' => "mgt_modify_req",
+						'req_tcase_assignment' => 'req_tcase_assignment',
+						'keywords_view'=> "mgt_view_key",'keywords_edit' => "mgt_modify_key",
+						'platform_management' => 'platform_management',
+						'configuration' => "system_configuraton",
+						'usergroups' => "mgt_view_usergroups",
+						'view_tc' => "mgt_view_tc", 'modify_tc' => 'mgt_modify_tc');
+					
+	$grants = array();		
+	foreach($grantKeys as $key => $right)
+	{
+		$grants[$key] = $userObj->hasRight($dbHandler,$right,$tprojectID,$testplanID);  
+	}
+	return $grants;
 }
 
 ?>

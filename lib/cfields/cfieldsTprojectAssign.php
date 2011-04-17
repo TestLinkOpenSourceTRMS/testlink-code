@@ -3,39 +3,42 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: cfieldsTprojectAssign.php,v $
+ * @filesource	cfieldsTprojectAssign.php
+ * @package 	TestLink
+ * @copyright 	2005,2011 TestLink community 
+ * @link 		http://www.teamst.org/index.php
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2010/01/21 22:04:18 $ by $Author: franciscom $
+ * @internal revisions
+ * 20110417 - franciscom - BUGID 4429: Code refactoring to remove global coupling as much as possible
  *
 **/
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
-$args = init_args();
 $cfield_mgr = new cfield_mgr($db);
+$args = init_args($cfield_mgr->tree_manager);
 
 switch($args->doAction)
 {
     case 'doAssign':
 	    $cfield_ids = array_keys($args->cfield);
-	    $cfield_mgr->link_to_testproject($args->testproject_id,$cfield_ids);
+	    $cfield_mgr->link_to_testproject($args->tproject_id,$cfield_ids);
 	    break;
 
     case 'doUnassign':
 	    $cfield_ids = array_keys($args->cfield);
-	    $cfield_mgr->unlink_from_testproject($args->testproject_id,$cfield_ids);
+	    $cfield_mgr->unlink_from_testproject($args->tproject_id,$cfield_ids);
 	    break;
 
     case 'doReorder':
 	    $cfield_ids = array_keys($args->display_order);
-	    $cfield_mgr->set_display_order($args->testproject_id,$args->display_order);
+	    $cfield_mgr->set_display_order($args->tproject_id,$args->display_order);
         if( !is_null($args->location) )
         {
-        	$cfield_mgr->setDisplayLocation($args->testproject_id,$args->location);
+        	$cfield_mgr->setDisplayLocation($args->tproject_id,$args->location);
         }
 	    break;
 
@@ -43,7 +46,7 @@ switch($args->doAction)
 		$my_cf = array_keys($args->hidden_active_cfield);
 		if(!isset($args->active_cfield))
 		{
-			$cfield_mgr->set_active_for_testproject($args->testproject_id,$my_cf,0);
+			$cfield_mgr->set_active_for_testproject($args->tproject_id,$my_cf,0);
 		}
 		else
 		{
@@ -63,11 +66,11 @@ switch($args->doAction)
 
 			if(!is_null($active))
 			{
-				$cfield_mgr->set_active_for_testproject($args->testproject_id,$active,1);
+				$cfield_mgr->set_active_for_testproject($args->tproject_id,$active,1);
 			}
 			if(!is_null($inactive))
 			{
-				$cfield_mgr->set_active_for_testproject($args->testproject_id,$inactive,0);
+				$cfield_mgr->set_active_for_testproject($args->tproject_id,$inactive,0);
 			}	
 		}
 		break;
@@ -81,8 +84,8 @@ $cfield_map = $cfield_mgr->get_all();
 
 $gui = new stdClass();
 $gui->locations=createLocationsMenu($cfield_mgr->getLocations());
-$gui->tproject_name = $args->testproject_name;
-$gui->my_cf = $cfield_mgr->get_linked_to_testproject($args->testproject_id);
+$gui->tproject_name = $args->tproject_name;
+$gui->my_cf = $cfield_mgr->get_linked_to_testproject($args->tproject_id);
 $cf2exclude = is_null($gui->my_cf) ? null :array_keys($gui->my_cf);
 $gui->other_cf = $cfield_mgr->get_all($cf2exclude);
 $gui->cf_available_types = $cfield_mgr->get_available_types();
@@ -101,8 +104,10 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 /**
  * create object with all user inputs
  *
+ * @internal revisions
+ * 20110417 - franciscom - BUGID 4429: Code refactoring to remove global coupling as much as possible
  */
-function init_args()
+function init_args(&$treeMgr)
 {
   	$_REQUEST = strings_stripSlashes($_REQUEST);
     $args = new stdClass();
@@ -120,8 +125,13 @@ function init_args()
 	  $args->cfield = array();
 	}
 	
-	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
+	$args->tproject_name = '';
+	if( $args->tproject_id > 0 )
+	{
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+	}
 
 	return $args;
 }

@@ -1,8 +1,10 @@
 {* 
- Testlink Open Source Project - http://testlink.sourceforge.net/ 
+Testlink Open Source Project - http://testlink.sourceforge.net/ 
 @filesource	mainPageLeft.tpl
 
 @internal revisions
+20110417 - franciscom - BUGID 4429: Code refactoring to remove global coupling as much as possible
+						on each link enviroment (test project ID,test plan ID) will be added
 20110401 - franciscom - BUGID 3615 - right to allow ONLY MANAGEMENT of requirements link to testcases
 20100501 - Julian - blocks are not draggable anymore
 20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
@@ -167,28 +169,28 @@
           	<a href="lib/cfields/cfieldsView.php">{$labels.href_cfields_management}</a>
 			<br />
          	<img src="{$tlImages.bullet}" />
-            <a href="lib/cfields/cfieldsTprojectAssign.php">{$labels.href_cfields_tproject_assign}</a>
+            <a href="lib/cfields/cfieldsTprojectAssign.php?tproject_id={$gui->testprojectID}">{$labels.href_cfields_tproject_assign}</a>
       {/if}
 	  
 	  {* --- keywords management ---  *}
 	  {if $gui->grants.keywords_view == "yes"}
 			<br />
 	  		<img src="{$tlImages.bullet}" />
-	        <a href="lib/keywords/keywordsView.php">{$labels.href_keywords_manage}</a>
+	        <a href="lib/keywords/keywordsView.php?tproject_id={$gui->testprojectID}">{$labels.href_keywords_manage}</a>
 	  {/if} {* view_keys_rights *}
 	  
  		{* --- platforms management ---  *}
 		{if $gui->grants.platform_management == "yes"}
 			<br />
 	  		<img src="{$tlImages.bullet}" />
-			<a href="lib/platforms/platformsView.php">{$labels.href_platform_management}</a>
+			<a href="lib/platforms/platformsView.php?tproject_id={$gui->testprojectID}">{$labels.href_platform_management}</a>
 		{/if}
 
  		{* --- inventory view ---  *}
 		{if $gui->grants.project_inventory_view}
 			<br />
 	  		<img src="{$tlImages.bullet}" />
-			<a href="lib/inventory/inventoryView.php">{$labels.href_inventory}</a>
+			<a href="lib/inventory/inventoryView.php?tproject_id={$gui->testprojectID}">{$labels.href_inventory}</a>
 		{/if}
 	  
     </div>
@@ -214,11 +216,11 @@
     <div id="requirements_topics" >
       {if $gui->grants.reqs_view == "yes"}
   		<img src="{$tlImages.bullet}" />
-        <a href="{$gui->launcher}?feature=reqSpecMgmt">{$labels.href_req_spec}</a><br/>
+        <a href="{$gui->launcher}?feature=reqSpecMgmt&tproject_id={$gui->testprojectID}">{$labels.href_req_spec}</a><br/>
         
         {* BUGID 3227 *}
         <img src="{$tlImages.bullet}" />
-        <a href="lib/requirements/reqOverview.php">{$labels.href_req_overview}</a><br/>
+        <a href="lib/requirements/reqOverview.php?tproject_id={$gui->testprojectID}">{$labels.href_req_overview}</a><br/>
         
         {* contribution for 2976 req/reqspec search *}
         <img src="{$tlImages.bullet}" />
@@ -264,7 +266,7 @@
 	    {if $gui->grants.keywords_edit == "yes"}
 	        <br />
   			<img src="{$tlImages.bullet}" />
-        	<a href="{$gui->launcher}?feature=keywordsAssign">{$labels.href_keywords_assign}</a>
+        	<a href="{$gui->launcher}?feature=keywordsAssign&tproject_id={$gui->testprojectID}">{$labels.href_keywords_assign}</a>
 		  {/if}
 	  {/if}
   		

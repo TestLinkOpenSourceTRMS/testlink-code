@@ -9,6 +9,7 @@
  * @author Francisco Mancardi
  * 
  * @internal revisions
+ *  20110417 - Julian - BUGID 3829 - check target date > start date
  *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
  *  20101026 - Julian - BUGID 3907 - unset start date on edit did not work
  *  20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
@@ -144,6 +145,19 @@ class planMilestonesCommands
 				$guiObj->user_feedback = lang_get('warning_milestone_date');
           	}
       	}
+      	
+      	// BUGID 3829 - check target date > start date
+      	if($op_ok && isset($argsObj->start_date)) {
+      		$timestamp['target'] = strtotime($argsObj->target_date . " 23:59:59");
+      		$timestamp['start'] = strtotime($argsObj->start_date . " 23:59:59");
+      		
+      		// target must be chronologically after start
+      		if( $timestamp['target'] < $timestamp['start'] )
+			{
+				$op_ok=0;
+				$guiObj->user_feedback = lang_get('warning_target_before_start');
+          	}
+      	}
 
 		if($op_ok)
 		{
@@ -226,6 +240,19 @@ class planMilestonesCommands
 				$obj->user_feedback = lang_get('warning_milestone_date');
 			}
 		}
+		
+	    // BUGID 3829 - check target date > start date
+      	if($op_ok && isset($argsObj->start_date)) {
+      		$timestamp['target'] = strtotime($argsObj->target_date . " 23:59:59");
+      		$timestamp['start'] = strtotime($argsObj->start_date . " 23:59:59");
+      		
+      		// target must be chronologically after start
+      		if( $timestamp['target'] < $timestamp['start'] )
+			{
+				$op_ok=0;
+				$obj->user_feedback = lang_get('warning_target_before_start');
+          	}
+      	}
 
 		if($op_ok)
 		{

@@ -10,6 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110417 - franciscom - new method getTotalCount()
  * 20110416 - franciscom - setSessionProject() -> setCurrentProject()
  * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
  * 20110223 - asimon BUGID 4239: forgotten parameter $oldNewMappings for a function call in copy_as()  
@@ -2512,6 +2513,17 @@ private function copy_requirements($source_id,$target_id,$user_id)
 	}
 	return $mappings;
 }
+
+
+function getTotalCount()
+{
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	// FYI - AS itemQty -> postgres returns 'itemqty' as key -> lower case
+	$sql = 	"/* $debugMsg */ SELECT count(0) AS item_qty FROM {$this->object_table} ";
+	$rs = $this->db->fetchFirstRow($sql);
+	return $rs['item_qty'];
+}
+
 
 } // end class
 ?>

@@ -3,6 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: planMilestonesEdit.tpl,v 1.14 2010/11/13 09:58:50 franciscom Exp $
 
 Rev:
+    20110417 - Julian - BUGID 3971 - Help for Milestones 
     20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
     20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
     20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
@@ -14,7 +15,7 @@ Rev:
                           btn_cancel,warning,start_date,info_milestones_start_date,
                           th_name,th_date_format,th_perc_a_prio,th_perc_b_prio,th_perc_c_prio,
                           th_perc_testcases,th_delete,alt_delete_milestone,show_calender,
-                          clear_date'}
+                          clear_date,info_milestone_create_prio,info_milestone_create_no_prio'}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -223,8 +224,15 @@ function validateForm(f)
 			     onclick="javascript: history.back();"/>
 	</div>
 	</form>
+	
+	{* BUGID 3971 - Help for Milestones *}
+	<br />
+	{if $session['testprojectOptions']->testPriorityEnabled}
+		<p class="italic">{$labels.info_milestone_create_prio}</p>
+	{else}
+		<p class="italic">{$labels.info_milestone_create_no_prio}</p>
+	{/if}
+	
 </div>
- 
-
 </body>
 </html>

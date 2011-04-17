@@ -173,6 +173,10 @@ define('TESTCASE_EXECUTION_TYPE_MANUAL', 1);
 define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
 
 
+/** @uses testlinkInitPage() */
+define('TL_UPDATE_ENVIRONMENT', true);
+define('TL_CHECK_SESSION_TIMEOUT', true);
+
 // --------------------------------------------------------------------------------------
 /* [GUI] */
 

@@ -1,9 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsAssign.tpl,v 1.8 2010/11/13 11:24:25 franciscom Exp $
+@filesource	platformsAssign.tpl
 Purpose: smarty template - assign platforms to testplans
 
-@internal Revisions:
+@internal revisions
 20100906 - eloff - BUGID 3738 - don't allow removing platform with linked TCs
 *}
 {lang_get var="labels"
@@ -79,7 +79,8 @@ Purpose: smarty template - assign platforms to testplans
 {if $gui->can_do}
 		<div style="margin-top: 25px;">
 			<form method="post" action="lib/platforms/platformsAssign.php?tplan_id={$gui->tplan_id}">
-			  <input type="hidden" name="doAction" value="">
+			  <input type="hidden" name="doAction" id="doAction" value="">
+			  <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
 				{include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 				<br />
 				<input type="submit" name="doAssignPlatforms" value="{$labels.btn_save}" 

@@ -43,7 +43,7 @@ function validateForm(f)
 
 {include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
 
-{if $gui->canManage ne ""}
+{if $gui->canManage != ""}
   <div class="workBack">
   
   <div>
@@ -76,10 +76,11 @@ function validateForm(f)
   	</table>
   	<div class="groupBtn">	
 	  	<input type="hidden" name="doAction" value="" />
+	  	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 	    <input type="submit" id="submitButton" name="submitButton" value="{$gui->submit_button_label}"
 		         onclick="doAction.value='{$gui->submit_button_action}'" />
 	  	<input type="button" value="{$labels.btn_cancel}"
-		         onclick="javascript:location.href=fRoot+'lib/platforms/platformsView.php'" />
+		         onclick="javascript:location.href=fRoot+'lib/platforms/platformsView.php?tproject_id={$gui->tproject_id}'" />
   	</div>
   	</form>
   </div>

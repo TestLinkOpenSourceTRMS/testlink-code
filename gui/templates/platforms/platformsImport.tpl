@@ -1,9 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: platformsImport.tpl,v 1.5 2010/11/13 09:21:54 franciscom Exp $
+
+@filesource	platformsImport.tpl
+
 Purpose: smarty template - manage import of platforms
 
-rev: 
+@internal revisions
+ 
 *}
 
 {lang_get var="labels"
@@ -52,6 +55,7 @@ function validateForm(f)
 	  {/if} 
 		<form method="post" action="{$SCRIPT_NAME}">
 			<br />
+    	    <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" /> 
 	  		<input type="button" name="goback" value="{$labels.btn_goback}"
     			{if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
     		    {else} onclick="javascript:history.back();" {/if} />
@@ -80,6 +84,7 @@ function validateForm(f)
     	</table>
     	<p>{$gui->max_size_import_file_msg}</p>
     	<div class="groupBtn">
+    	    <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" /> 
     		<input type="hidden" name="doAction" id="doAction" value="doImport" />
     		<input type="hidden" name="goback_url" value="{ $gui->goback_url|escape}" />
     		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />

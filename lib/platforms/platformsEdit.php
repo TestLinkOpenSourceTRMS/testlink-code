@@ -24,7 +24,7 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('build');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $smarty = new TLSmarty();
@@ -33,13 +33,13 @@ $default_template = $templateCfg->default_template;
 $op = new stdClass();
 $op->status = 0;
 
-$args = init_args();
+$args = init_args($db);
 $gui = init_gui($db,$args);
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
 $of->Value = getItemTemplateContents('platform_template', $of->InstanceName, $args->notes);
 
-$platform_mgr = new tlPlatform($db, $args->testproject_id);
+$platform_mgr = new tlPlatform($db, $args->tproject_id);
 
 $action = $args->doAction;
 switch ($action)
@@ -81,9 +81,11 @@ $smarty->display($templateCfg->template_dir . $default_template);
  * 
  *
  */
-function init_args()
+function init_args(&$dbHandler)
 {
 	$args = new stdClass();
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$source = sizeof($_POST) ? "POST" : "GET";
 	$iParams = array("doAction" => array($source,tlInputParameter::STRING_N,0,50),
 			         "id" => array($source, tlInputParameter::INT_N),
@@ -91,10 +93,6 @@ function init_args()
 			         "notes" => array($source, tlInputParameter::STRING_N));
 		
 	$pParams = I_PARAMS($iParams);
-
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	$args->doAction = $pParams["doAction"];
 	$args->platform_id = $pParams["id"];
 	$args->name = $pParams["name"];
@@ -110,11 +108,17 @@ function init_args()
 		$args->platform_id = $_SESSION['platform_id'];
 	}
 	
-	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
 	$args->currentUser = $_SESSION['currentUser'];
-	
-	
+
+	$args->tproject_name = '';
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	if( $args->tproject_id > 0 )
+	{
+		$treeMgr = new tree($dbHandler);
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+	}
+
 	return $args;
 }
 
@@ -245,7 +249,7 @@ function do_update(&$args,&$gui,&$platform_mgr)
 */
 function do_delete(&$args,&$gui,&$platform_mgr)
 {
-	$gui->main_descr = lang_get('testproject') . TITLE_SEP . $args->testproject_name;
+	$gui->main_descr = lang_get('testproject') . TITLE_SEP . $args->tproject_name;
 
 	$gui->submit_button_label = lang_get('btn_save');
 	$gui->submit_button_action = 'do_update';
@@ -291,12 +295,13 @@ function getErrorMessage($code,$platform_name)
 function init_gui(&$db,&$args)
 {
 	$gui = new stdClass();
-	$gui->canManage = $args->currentUser->hasRight($db,"platform_management");
-    $gui->mgt_view_events = $args->currentUser->hasRight($db,"mgt_view_events");
+	$gui->canManage = $args->currentUser->hasRight($db,"platform_management",$args->tproject_id);
+    $gui->mgt_view_events = $args->currentUser->hasRight($db,"mgt_view_events",$args->tproject_id);
 	$gui->user_feedback = array('type' => 'INFO', 'message' => '');
     $gui->name = $args->name;
     $gui->notes = $args->notes;
     $gui->platformID = $args->platform_id;
+    $gui->tproject_id = $args->tproject_id;
     
     return $gui;
 }

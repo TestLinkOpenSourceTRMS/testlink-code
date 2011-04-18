@@ -25,7 +25,7 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('testplan');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $tplan_mgr = new testplan($db);

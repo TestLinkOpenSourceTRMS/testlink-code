@@ -5,16 +5,13 @@
  *
  * Platform link/unlink from a test plan
  * 
+ * @filesource	platformsAssign.php
  * @package 	TestLink
  * @author 		eloff
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsAssign.php,v 1.13 2011/01/10 15:38:55 asimon83 Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * 
- * @internal Revisions:
- *  20091201 - Eloff - added function init_option_panels
- *	20090822 - franciscom - added logic to give warning to user when adding platforms
- *							to a test plan that has 0 platforms, but has linked test cases.
+ * @internal revisions
  *
  **/
 require_once("../../config.inc.php");
@@ -37,11 +34,13 @@ if ($args->edit == 'testproject')
 
 $smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
-$platform_mgr = new tlPlatform($db, $args->testproject_id);
+$platform_mgr = new tlPlatform($db, $args->tproject_id);
 
 $gui = new stdClass();
 $gui->platform_assignment_subtitle = null;
 $gui->tplan_id = $args->tplan_id;
+$gui->tproject_id = $args->tproject_id;
+
 $gui->can_do = isset($args->tplan_id);
 $gui->mainTitle = lang_get('add_remove_platforms');
 $gui->warning = '';
@@ -134,6 +133,8 @@ function init_option_panels(&$tplan_mgr, &$platform_mgr, &$opt_cfg, &$args)
  */
 function init_args(&$opt_cfg)
 {
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$added = $opt_cfg->js_ot_name . "_addedRight";
     $removed = $opt_cfg->js_ot_name . "_removedRight";
 
@@ -141,15 +142,15 @@ function init_args(&$opt_cfg)
 		              "edit" => array(tlInputParameter::STRING_N,0,100),
 		              "doAction" => array(tlInputParameter::STRING_N,0,20),
 		              $added => array(tlInputParameter::STRING_N),
-		              $removed => array(tlInputParameter::STRING_N));
+		              $removed => array(tlInputParameter::STRING_N),
+		              "tproject_id" => array(tlInputParameter::INT_N));
 
 	$pParams = R_PARAMS($iParams);
 
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
     $args = new stdClass();
 	$args->tplan_id = $pParams["tplan_id"];
+	$args->tproject_id = $pParams["tproject_id"];
+
     $args->platformsToAdd = null;
     $args->platformsToRemove = null;
     if ($pParams[$added] != "") {
@@ -160,7 +161,6 @@ function init_args(&$opt_cfg)
     }
 	$args->edit = $pParams["edit"];
 	$args->doAction = $pParams["doAction"];
-	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
 	return $args;
 }

@@ -5,10 +5,10 @@
  *  
  * Platforms import management
  *
+ * @filesource	platformsImport.php
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsImport.php,v 1.8 2011/01/10 15:38:55 asimon83 Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -18,53 +18,61 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('xml.inc.php');
-testlinkInitPage($db,false,false,"checkRights");
-$gui = new stdClass();
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+
 $templateCfg = templateConfiguration();
-$gui->page_title = lang_get('import_platforms');
-
-$args = init_args();
-
 $resultMap = null;
+
+
+$args = init_args($db);
+
+$gui = new stdClass();
+
+$gui->tproject_id = $args->tproject_id; 
+$gui->page_title = lang_get('import_platforms');
 $gui->goback_url = is_null($args->goback_url) ? '' : $args->goback_url; 
-$gui->file_check = array('show_results' => 0, 'status_ok' => 1, 
-                         'msg' => 'ok', 'filename' => '');
+$gui->file_check = array('show_results' => 0, 'status_ok' => 1, 'msg' => 'ok', 'filename' => '');
+$gui->importTypes = array('XML' => 'XML');
+$gui->importLimitBytes = config_get('import_file_max_size_bytes');
+$gui->max_size_import_file_msg = sprintf(lang_get('max_size_file_msg'), $gui->importLimitBytes/1024);
 
 switch($args->doAction)
 {
     case 'doImport':
-        $gui->file_check = doImport($db,$args->testproject_id);
+        $gui->file_check = doImport($db,$args->tproject_id);
     	break;  
     
     default:
     	break;  
 }
 
-$obj_mgr = new cfield_mgr($db);
-$gui->importTypes = array('XML' => 'XML');
-$gui->importLimitBytes = config_get('import_file_max_size_bytes');
-$gui->max_size_import_file_msg = sprintf(lang_get('max_size_file_msg'), $gui->importLimitBytes/1024);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);  
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
-function init_args()
+function init_args(&$dbHandler)
 {
 	$args = new stdClass();
-	$iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50),
-	 				 "goback_url" => array(tlInputParameter::STRING_N,0,2048));
-		
-	R_PARAMS($iParams,$args);
-	
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 
+	$iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50),
+	 				 "goback_url" => array(tlInputParameter::STRING_N,0,2048),
+ 					 "tproject_id" => array(tlInputParameter::INT));
+		
+	R_PARAMS($iParams,$args);
 	$args->userID = $_SESSION['userID'];
-  	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
+	$target = $args->goback_url;
+	if( strlen(trim($target)) > 0)
+	{
+		$target .= (strpos($target,"?") === false) ? "?" : "&"; 
+		$target .= "tproject_id={$args->tproject_id}";
+	}
+	$args->goback_url = $target;
+
+	new dBug($args);
 	return $args;
 }
 

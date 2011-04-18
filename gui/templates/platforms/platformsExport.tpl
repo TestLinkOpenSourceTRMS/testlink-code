@@ -1,8 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: platformsExport.tpl,v 1.4 2010/11/13 09:21:54 franciscom Exp $ 
+
+@filesource	platformsExport.tpl
+
 Purpose: smarty template - platforms export
-rev:
+
+@internal revisions
 
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
@@ -61,11 +64,12 @@ function validateForm(f)
   	</table>
   	
   	<div class="groupBtn">
+    	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" /> 
   	  	<input type="hidden" name="doAction" id="doAction" value="" />
   		<input type="submit" name="doExport" id="doExport" value="{$labels.btn_export}" 
   		                     onclick="doAction.value=this.id" />
     	<input type="button" name="cancel" value="{$labels.btn_cancel}"
-    		  {if $gui->goback_url  != ''}  onclick="location='{$gui->goback_url }'"
+    		  {if $gui->goback_url  != ''}  onclick="location='{$gui->goback_url}'"
     		  {else}  onclick="javascript:history.back();" {/if} />
   	</div>
   </form>

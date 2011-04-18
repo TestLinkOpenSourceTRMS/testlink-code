@@ -24,14 +24,12 @@ Purpose: smarty template - View all platforms
 {lang_get s='delete' var="del_msgbox_title"}
 
 {assign var="viewAction" value="lib/platforms/platformsView.php"}
-{assign var="dummy" value="lib/platforms/platformsImport.php?goback_url="}
-{assign var="importAction" value="$basehref$dummy$basehref$viewAction"}
-
 
 <script type="text/javascript">
 <!--
 	/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-	var del_action=fRoot+'lib/platforms/platformsEdit.php?doAction=do_delete&id=';
+	var del_action=fRoot+'lib/platforms/platformsEdit.php?tproject_id='+{$gui->tproject_id};
+	del_action +='&doAction=do_delete&id=';
 //-->
 </script>
  
@@ -57,7 +55,7 @@ Purpose: smarty template - View all platforms
 			<td>
 				<span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$gui->platforms[platform].id}</span>
 				{if $gui->canManage != ""}
-					<a href="lib/platforms/platformsEdit.php?doAction=edit&amp;id={$gui->platforms[platform].id}">
+					<a href="lib/platforms/platformsEdit.php?doAction=edit&id={$gui->platforms[platform].id}&tproject_id={$gui->tproject_id}">
 				{/if}
 				{$gui->platforms[platform].name|escape}
 				{if $gui->canManage != ""}
@@ -86,22 +84,32 @@ Purpose: smarty template - View all platforms
  {/if}
 	
 	<div class="groupBtn">	
-   		<form style="float:left" name="platform_view" id="platform_view" method="post" action="lib/platforms/platformsEdit.php">
+		{if $gui->canManage != ""}
+   		<form style="float:left" name="platform_view" id="platform_view" 
+   			  method="post" action="lib/platforms/platformsEdit.php">
 	  		<input type="hidden" name="doAction" value="" />
-		  	{if $gui->canManage ne ""}
-		    	<input type="submit" id="create_platform" name="create_platform" 	value="{$labels.btn_create_platform}"
-		           	 onclick="doAction.value='create'"/>
-			  {/if}	
+	  		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
+		    <input type="submit" id="create_platform" name="create_platform" value="{$labels.btn_create_platform}"
+		           onclick="doAction.value='create'"/>
 		</form>
-     	<form name="platformsExport" id="platformsExport" method="post" action="lib/platforms/platformsExport.php">
+		{/if}	
+		
+     	<form style="float:left" name="platExport" id="platExport" method="post" action="lib/platforms/platformsExport.php">
      		<input type="hidden" name="goback_url" value="{$basehref|escape}{$viewAction|escape}"/>
+	  		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 			<input type="submit" name="export_platforms" id="export_platforms"
-		         style="margin-left: 3px;" value="{$labels.btn_export}" />
-		  	{if $gui->canManage ne ""}       
-		  		<input type="button" name="import_platforms" id="import_platforms" 
-		         	   onclick="location='{$importAction}'" value="{$labels.btn_import}" />
-       	  	{/if}
+		           style="margin-left: 3px;" value="{$labels.btn_export}" />
 	  	</form>
+		
+		{if $gui->canManage != ""}       
+     	<form name="platImport" id="platImport" method="post" action="lib/platforms/platformsImport.php">
+     		<input type="hidden" name="goback_url" value="{$basehref|escape}{$viewAction|escape}"/>
+	  		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
+			<input type="submit" name="import_platforms" id="import_platforms"
+		           style="margin-left: 3px;" value="{$labels.btn_import}" />
+	  	</form>
+        {/if}
+
     </div>
 </div>
 </body>

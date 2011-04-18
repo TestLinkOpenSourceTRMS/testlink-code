@@ -196,7 +196,7 @@
 	{if $display_right_block_3}
     <div id='testplan_contents_topics'>
 		<img src="{$tlImages.bullet}" />
-	    <a href="lib/platforms/platformsAssign.php?tplan_id={$gui->testplanID}">{$labels.href_platform_assign}</a>
+	    <a href="lib/platforms/platformsAssign.php?tplan_id={$gui->testplanID}&tproject_id={$gui->testprojectID}">{$labels.href_platform_assign}</a>
 		  <br />
 		
 		<img src="{$tlImages.bullet}" />

@@ -31,7 +31,7 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $tplan_mgr = new testplan($db);
-$args = init_args();
+$args = init_args($tplan_mgr->tree_manager);
 $gui = initializeGui($args,$tplan_mgr);
 $dest_common = TL_TEMP_PATH . session_id(). "-planImport" ;
 $dest_files = array('XML' => $dest_common . ".xml");
@@ -102,7 +102,6 @@ if ($args->do_upload)
 	}
 }
 
-$gui->testprojectName = $_SESSION['testprojectName'];
 $gui->importTypes = $tplan_mgr->get_import_file_types();
 
 $smarty = new TLSmarty();
@@ -124,10 +123,10 @@ function checkRights(&$db,&$user)
  *
  * @global array _REQUEST
  *
- * @internal Revisions
+ * @internal revisions
  * 20101017 - franciscom - creation
  */
-function init_args()
+function init_args(&$treeMgr)
 {
     $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
@@ -137,8 +136,15 @@ function init_args()
     $args->do_upload = isset($_REQUEST['uploadFile']) ? 1 : 0;
     
     $args->userID = $_SESSION['userID'];
-    $args->tproject_id = $_SESSION['testprojectID'];
+    
+    $args->tproject_name = '';
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0 ;
+	if($args->tproject_id >0)
+	{
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+	}
     
     return $args;
 }
@@ -163,6 +169,7 @@ function initializeGui(&$argsObj,&$tplanMgr)
 	$guiObj->main_descr = lang_get('testplan') . ' ' . $info['name'];
 	$guiObj->tplan_id = $argsObj->tplan_id;
 	$guiObj->import_done = false;
+	$guiObj->testprojectName = $argsObj->tproject_name;
 	return $guiObj;
 }
 

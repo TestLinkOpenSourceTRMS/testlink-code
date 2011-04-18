@@ -13,10 +13,10 @@
  *   complete plan contents: 
  *   to be defined 	
  * 	 
+ * @filesource	planExport.php
  * @package 	TestLink
  * @author 		Francisco Mancardi
- * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planExport.php,v 1.11 2010/11/01 15:22:53 franciscom Exp $
+ * @copyright 	2003-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:

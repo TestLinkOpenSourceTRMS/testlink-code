@@ -1,4 +1,4 @@
-<?php
+i<?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
@@ -34,7 +34,7 @@ $tproject_mgr = new testproject($db);
 $smarty = new TLSmarty();
 $do_display=false;
 $template = null;
-$args = init_args($_REQUEST);
+$args = init_args($_REQUEST,$tproject_mgr->tree_manager);
 if (!$args->tproject_id)
 {
 	$smarty->assign('title', lang_get('fatal_page_title'));
@@ -82,6 +82,7 @@ switch($args->do_action)
 			logAuditEvent(TLS("audit_testplan_deleted",$args->tproject_name,$tplanInfo['name']),
 			              "DELETE",$args->tplan_id,"testplan");
 		}
+
 		//unset the session test plan if it is deleted
 		if (isset($_SESSION['testplanID']) && ($_SESSION['testplanID'] = $args->tplan_id))
 		{
@@ -227,11 +228,9 @@ if($do_display)
  * @return    object with html values tranformed and other
  *                   generated variables.
  *
- * 20060103 - fm
 */
-function init_args($request_hash)
+function init_args($request_hash,&$treeMgr)
 {
-	$session_hash = $_SESSION;
 	$args = new stdClass();
 	$request_hash = strings_stripSlashes($request_hash);
 
@@ -267,9 +266,16 @@ function init_args($request_hash)
 
 	$args->copy_assigned_to = isset($request_hash['copy_assigned_to']) ? 1 : 0;
 	$args->tcversion_type = isset($request_hash['tcversion_type']) ? $request_hash['tcversion_type'] : null;
-	$args->tproject_id = $session_hash['testprojectID'];
-	$args->tproject_name = $session_hash['testprojectName'];
-	$args->user_id = $session_hash['userID'];
+	$args->user_id = $_SESSION['userID'];
+
+	
+	$args->tproject_name = '';
+	$args->tproject_id = isset($request_hash['tproject_id']) ? intval($request_hash['tproject_id']) : 0;
+	if( $args->tproject_id > 0 )
+	{
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+	}
 
 	return $args;
 }
@@ -304,8 +310,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
     $guiObj->user_feedback = '';               
     
     $guiObj->grants = new stdClass();  
-    $guiObj->grants->testplan_create = $_SESSION['currentUser']->hasRight($dbHandler,"mgt_testplan_create");
-    $guiObj->grants->mgt_view_events = $_SESSION['currentUser']->hasRight($dbHandler,"mgt_view_events");
+    $guiObj->grants->testplan_create = $_SESSION['currentUser']->hasRight($dbHandler,"mgt_testplan_create",$argsObj->tproject_id);
+    $guiObj->grants->mgt_view_events = $_SESSION['currentUser']->hasRight($dbHandler,"mgt_view_events",$argsObj->tproject_id);
     $guiObj->notes = '';
     
     return $guiObj;

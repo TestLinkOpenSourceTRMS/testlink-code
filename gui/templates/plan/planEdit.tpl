@@ -118,6 +118,8 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 	      onSubmit="javascript:return validateForm(this);">
 
 	<input type="hidden" id="tplan_id" name="tplan_id" value="{$gui->tplan_id}" />
+	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
+
 	<table class="common" width="80%">
 
 		<tr><th style="background:none;">{$labels.testplan_th_name}</th>

@@ -3,13 +3,10 @@
  $Id: mainPageRight.tpl,v 1.26 2010/11/13 11:17:27 franciscom Exp $
  Purpose: smarty template - main page / site map
 
- rev :
-       20100825 - Julian - removed <p> tags from "test execution" and "test plan contents"
-                           blocks to eliminate unused space
-                         - blocks are not draggable anymore
-       20090807 - franciscom - platform feature
-       20090131 - franciscom - new link to access to test cases assigned to logged user
-       20081228 - franciscom - new feature user can choose vertical order of link groups
+@internal revisions
+20100825 - Julian - removed <p> tags from "test execution" and "test plan contents"
+					blocks to eliminate unused space
+					blocks are not draggable anymore
 *}
 {lang_get var="labels"
           s="current_test_plan,ok,testplan_role,msg_no_rights_for_tp,
@@ -145,13 +142,13 @@
     
       {if $gui->grants.mgt_testplan_create == "yes"}
 	    	<img src="{$tlImages.bullet}" />
-       		<a href="lib/plan/planView.php">{$labels.href_plan_management}</a>
+       		<a href="lib/plan/planView.php?tproject_id={$gui->testprojectID}">{$labels.href_plan_management}</a>
 	    {/if}
 	    
 	    {if $gui->grants.testplan_create_build == "yes" and $gui->countPlans > 0}
 	    	<br />
 	    	<img src="{$tlImages.bullet}" />
-           	<a href="lib/plan/buildView.php">{$labels.href_build_new}</a>
+           	<a href="lib/plan/buildView.php?tplan_id={$gui->testplanID}">{$labels.href_build_new}</a>
       {/if} {* testplan_create_build *}
 	    
 	    {if $gui->grants.testplan_user_role_assignment == "yes" && $gui->countPlans > 0}
@@ -163,7 +160,7 @@
 	    {if $gui->grants.testplan_planning == "yes" and $gui->countPlans > 0}
             <br />
         	<img src="{$tlImages.bullet}" />
-           	<a href="lib/plan/planMilestonesView.php">{$labels.href_plan_mstones}</a>
+           	<a href="lib/plan/planMilestonesView.php?tplan_id={$gui->testplanID}">{$labels.href_plan_mstones}</a>
 	    {/if}
 	    
     </div>
@@ -175,7 +172,7 @@
     <div id='test_execution_topics'>
 		{if $gui->grants.testplan_execute == "yes"}
 			<img src="{$tlImages.bullet}" />
-			<a href="{$gui->launcher}?feature=executeTest">{$labels.href_execute_test}</a>
+			<a href="{$gui->launcher}?feature=executeTest&tplan_id={$gui->testplanID}">{$labels.href_execute_test}</a>
 			
 			<br /> 
 			<img src="{$tlImages.bullet}" />
@@ -185,7 +182,7 @@
       
 		{if $gui->grants.testplan_metrics == "yes"}
 			<img src="{$tlImages.bullet}" />
-			<a href="{$gui->launcher}?feature=showMetrics">{$labels.href_rep_and_metrics}</a>
+			<a href="{$gui->launcher}?feature=showMetrics&tplan_id={$gui->testplanID}">{$labels.href_rep_and_metrics}</a>
 			
 			<br />
 			<img src="{$tlImages.bullet}" />
@@ -203,24 +200,24 @@
 		  <br />
 		
 		<img src="{$tlImages.bullet}" />
-	    <a href="{$gui->launcher}?feature=planAddTC">{$labels.href_add_remove_test_cases}</a>
+	    <a href="{$gui->launcher}?feature=planAddTC&tplan_id={$gui->testplanID}">{$labels.href_add_remove_test_cases}</a>
 	    <br />
 		
 		<img src="{$tlImages.bullet}" />
-	   	<a href="{$gui->launcher}?feature=planUpdateTC">{$labels.href_update_tplan}</a>
+	   	<a href="{$gui->launcher}?feature=planUpdateTC&tplan_id={$gui->testplanID}">{$labels.href_update_tplan}</a>
 	    <br />
 
 		<img src="{$tlImages.bullet}" />
-	   	<a href="{$gui->launcher}?feature=newest_tcversions">{$labels.href_newest_tcversions}</a>
+	   	<a href="{$gui->launcher}?feature=newest_tcversions&tplan_id={$gui->testplanID}">{$labels.href_newest_tcversions}</a>
 	    <br />
 
 		<img src="{$tlImages.bullet}" />
-	   	<a href="{$gui->launcher}?feature=tc_exec_assignment">{$labels.href_tc_exec_assignment}</a>
+	   	<a href="{$gui->launcher}?feature=tc_exec_assignment&tplan_id={$gui->testplanID}">{$labels.href_tc_exec_assignment}</a>
 	    <br />
 
 		{if $session['testprojectOptions']->testPriorityEnabled}
 			<img src="{$tlImages.bullet}" />
-	   		<a href="{$gui->launcher}?feature=test_urgency">{$labels.href_plan_assign_urgency}</a>
+	   		<a href="{$gui->launcher}?feature=test_urgency&tplan_id={$gui->testplanID}">{$labels.href_plan_assign_urgency}</a>
 		    <br />
 		{/if}
     </div>

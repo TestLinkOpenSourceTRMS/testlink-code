@@ -1783,7 +1783,7 @@ function extjs_renderTestSpecTreeNodeOnOpen(&$node,$nodeAttr,$options,$env)
 	$node['testlink_node_name'] = $name;
    	$node['testlink_node_type'] = $nodeAttr['node_type'];
 	$node['position']=isset($node['node_order']) ? $node['node_order'] : 0;
-	$node['href']=is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$env['tproject_id']})";
+	$node['href']=is_null($pfn)? '' : "javascript:{$pfn}({$env['tproject_id']},{$node['id']})";
 	
 	// Remove useless keys
 	$resultsCfg=config_get('results');

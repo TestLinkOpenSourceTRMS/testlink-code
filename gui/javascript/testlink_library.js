@@ -221,14 +221,14 @@ function SP()
   returns:
 
 */
-function EP(id)
+function EP(tproject_id,id)
 {
 	var _FUNCTION_NAME_="EP";
 
 	// get checkboxes status
 	var pParams = tree_getPrintPreferences();
 	var action_url = fRoot+menuUrl+"?print_scope=test_specification" + "&edit=testproject" +
-	                 "&level=testproject&id="+id+args+"&"+pParams;
+	                 "&level=testproject&tproject_id=" + tproject_id + "&id="+id+args+"&"+pParams;
 
 	//alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
@@ -255,7 +255,7 @@ function EP(id)
 
   rev :
 */
-function ETS(id,tproject_id)
+function ETS(tproject_id,id)
 {
   // get checkboxes status
 	var _FUNCTION_NAME_="ETS";
@@ -276,12 +276,12 @@ function ETS(id,tproject_id)
   returns:
 
 */
-function ET(id,v)
+function ET(tproject_id,id,v)
 {
   // get checkboxes status
  	var _FUNCTION_NAME_="ET";
   var pParams = tree_getPrintPreferences();
-	var my_location = fRoot+menuUrl+"?version_id="+v+"&edit=testcase&id="+id+args;
+	var my_location = fRoot+menuUrl+"?tproject_id="+ tproject_id +"&version_id="+v+"&edit=testcase&id="+id+args;
 	// alert(_FUNCTION_NAME_ + " " +my_location);
   
 	parent.workframe.location = my_location;
@@ -296,32 +296,32 @@ function TPROJECT_PTS(id)
 }
 
 /* Generate doc: all Test Specification */
-function TPROJECT_PTP(id)
+function TPROJECT_PTP(tproject_id,id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?type=testspec&level=testproject&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl + "?tproject_id=" + tproject_id + "&type=testspec&level=testproject&id="+id+args+"&"+pParams;
 }
 
 /* Generate doc: a selected Test Tase from Test Specification */
-function TPROJECT_PTC(id)
+function TPROJECT_PTC(tproject_id,id)
 {
-	parent.workframe.location = fRoot+menuUrl+"?type=testspec&level=tc&id="+id+args;
+	parent.workframe.location = fRoot+menuUrl + "?tproject_id=" + tproject_id + "&type=testspec&level=tc&id="+id+args;
 }
 
 
 /* Generate doc: all Req Specs, complete project */
-function TPROJECT_PTP_RS(id)
+function TPROJECT_PTP_RS(tproject_id,id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?type=reqspec&level=testproject&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl + "?tproject_id=" + tproject_id + "&type=reqspec&level=testproject&id="+id+args+"&"+pParams;
 }
 
 
 /* Generate doc: one Req Spec (with children) */
-function TPROJECT_PRS(id)
+function TPROJECT_PRS(tproject_id,id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?type=reqspec&level=reqspec&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl + "?tproject_id=" + tproject_id + "&type=reqspec&level=reqspec&id="+id+args+"&"+pParams;
 }
 
 

@@ -870,7 +870,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 					$tcase_qty = $this->testproject_mgr->count_testcases($this->args->testproject_id);
 					
 					$root_node = new stdClass();
-					$root_node->href = "javascript:EP({$this->args->testproject_id})";
+					$root_node->href = "javascript:EP({$this->args->testproject_id},{$this->args->testproject_id})";
 					$root_node->id = $this->args->testproject_id;
 					$root_node->name = $this->args->testproject_name . " ($tcase_qty)";
 					$root_node->testlink_node_type='testproject';
@@ -905,7 +905,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 							  "root_node={$this->args->testproject_id}&show_tcases=0";
 				
 					$root_node = new stdClass();
-					$root_node->href = "javascript:EP({$this->args->testproject_id})";
+					$root_node->href = "javascript:EP({$this->args->testproject_id},{$this->args->testproject_id})";
 					$root_node->id = $this->args->testproject_id;
 					$root_node->name = $this->args->testproject_name;
 					$root_node->testlink_node_type = 'testproject';

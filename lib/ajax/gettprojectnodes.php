@@ -68,7 +68,7 @@ function display_children($dbHandler,$tproject_id,$root_node,$parent,$filter_nod
     {
         case 'print':
             $js_function = array('testproject' => 'TPROJECT_PTP',
-                               'testsuite' =>'TPROJECT_PTS', 'testcase' => 'TPROJECT_PTS');
+                                 'testsuite' =>'TPROJECT_PTS', 'testcase' => 'TPROJECT_PTS');
        	 	break;
         
         case 'manage':
@@ -108,7 +108,7 @@ function display_children($dbHandler,$tproject_id,$root_node,$parent,$filter_nod
     }
     
     // print_r(array_values($nodeSet));
-    //file_put_contents('c:\austausch\sql_display_node.txt', serialize(array_values($nodeSet))); 
+    file_put_contents('/tmp/sql_display_node.txt', serialize(array_values($nodeSet))); 
 	if(!is_null($nodeSet)) 
 	{
 	    $tproject_mgr = new testproject($dbHandler);
@@ -132,16 +132,16 @@ function display_children($dbHandler,$tproject_id,$root_node,$parent,$filter_nod
 	        	case 'testproject':
 	                // 20080817 - franciscom - 
 	                // at least on Test Specification seems that we do not execute this piece of code.
-	                $path['href'] = "javascript:EP({$path['id']},{$tproject_id})";
+	                $path['href'] = "javascript:EP({$tproject_id},{$path['id']})";
 	                break;
 	              
 	           case 'testsuite':
 	                $tcase_qty = $tproject_mgr->count_testcases($row['id']);
-	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']},{$tproject_id})";
+	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$tproject_id},{$path['id']})";
 	                break;
 	              
 	           case 'testcase':
-		       		$path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']},{$tproject_id})";
+		       		$path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$tproject_id},{$path['id']})";
                   	// BUGID 1928
                   	if(is_null($showTestCaseID))
                   	{

@@ -1,6 +1,7 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.16 2011/01/14 14:39:01 asimon83 Exp $
+
+@filesource	containerNew.tpl
 Purpose: smarty template - create containers
 
 20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
@@ -14,10 +15,6 @@ Purpose: smarty template - create containers
                         removed use of smarty.template to get current directory to include other
                         templates. On 3.0 RC smarty.template do not contains current dir
 
-20070214 - franciscom -
-BUGID 628: Name edit Invalid action parameter/other behaviours if �Enter� pressed.
-20061231 - franciscom - using parent_info
-20060804 - franciscom - changes to add option transfer
 *}
 {lang_get var="labels"
           s="warning_empty_testsuite_name,title_create,tc_keywords,warning_required_cf,
@@ -116,14 +113,13 @@ function validateForm(f)
                                refresh=$gui->refreshTree}
 
 
-<form method="post" action="lib/testcases/containerEdit.php?containerID={$containerID}"
+<form method="post" action="lib/testcases/containerEdit.php?containerID={$containerID}&tproject_id={$gui->tproject_id}" 
 	      name="container_new" id="container_new"
         onSubmit="javascript:return validateForm(this);">
 
 
 	<div style="font-weight: bold;">
 		<div>
-		  {* BUGID 628: Name edit � Invalid action parameter/other behaviours if �Enter� pressed. *}
       		<input type="hidden" name="add_testsuite" id="add_testsuite" />
 			<input type="submit" name="add_testsuite_button" value="{$labels.btn_create_testsuite}"
 			       onclick="show_modified_warning = false;" />
@@ -133,7 +129,7 @@ function validateForm(f)
 	  {include file="testcases/inc_testsuite_viewer_rw.tpl"}
 
    {* Custom fields *}
-   {if $cf neq ""}
+   {if $cf != ""}
      <br />
      <div id="cfields_design_time" class="custom_field_container">
      {$cf}
@@ -147,7 +143,6 @@ function validateForm(f)
 	 </div>
 	 <br />
 	<div>
-	  {* BUGID 628: Name edit � Invalid action parameter/other behaviours if �Enter� pressed. *}
 		<input type="submit" name="add_testsuite_button" value="{$labels.btn_create_testsuite}" 
 		       onclick="show_modified_warning = false;" />
 		<input type="button" name="go_back" value="{$labels.cancel}" 

@@ -108,7 +108,7 @@ function display_children($dbHandler,$tproject_id,$root_node,$parent,$filter_nod
     }
     
     // print_r(array_values($nodeSet));
-    file_put_contents('/tmp/sql_display_node.txt', serialize(array_values($nodeSet))); 
+    // file_put_contents('/tmp/sql_display_node.txt', serialize(array_values($nodeSet))); 
 	if(!is_null($nodeSet)) 
 	{
 	    $tproject_mgr = new testproject($dbHandler);

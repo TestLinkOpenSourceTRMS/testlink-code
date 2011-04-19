@@ -1,9 +1,11 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.41 2010/12/02 17:58:58 asimon83 Exp $ *}
-{*
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+
+@filesource	containerView.tpl
+
 Purpose: smarty template - view test specification containers
 
-rev :
+@internal revisions
   20101202 - asimon - BUGID 4067: refresh tree problems
   20101030 - francisco - show() BUGID 3937: No information when exporting all test suites when no test suites exists 
   20101022 - eloff - BUGID 3917 - Work on buttons
@@ -13,17 +15,6 @@ rev :
   20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
   20100212 - asimon - BUGID 3049 - added removing of testplan assignment feature
   20100102 - franciscom - refactoring to use $gui
-  20080805 - franciscom - fixed undefined variable log warning.
-                          BUGID 1661 - removed reorder button if tree component support drag & drop
-                          
-  20080706 - franciscom - fixed refactorization bug that broke attachments feature
-  20080606 - havlatm - refactorization; layout update
-  20080403 - franciscom - BUGID  - problems with IE 7 and incomplete URL
-  20080329 - franciscom - added contribution by Eugenia Drosdezki
-                            choose testcases to move/copy inside a testsuite
-  20071102 - franciscom - added contribution
-
-  20070216 - franciscom  moved parameters from GET to hidden
 *}
 {lang_get var='labels' 
           s='th_product_name,edit_testproject_basic_data,th_notes,test_suite,details,none,
@@ -37,13 +28,15 @@ rev :
 	           testsuite_operations, testcase_operations'}
 
 {assign var="container_id" value=$gui->container_data.id}
+{assign var="tproject_id" value=$gui->tproject_id}
+
 {assign var="tcImportAction"
-        value="lib/testcases/tcImport.php?containerID=$container_id"}
+        value="lib/testcases/tcImport.php?tproject_id=$tproject_id&containerID=$container_id"}
 {assign var="importToTProjectAction"  value="$basehref$tcImportAction&amp;bIntoProject=1&amp;useRecursion=1&amp;"}
 {assign var="importToTSuiteAction"  value="$basehref$tcImportAction&amp;useRecursion=1"}
 {assign var="importTestCasesAction"  value="$basehref$tcImportAction"}
 {assign var="tcExportAction"
-        value="lib/testcases/tcExport.php?containerID=$container_id"}
+        value="lib/testcases/tcExport.php?tproject_id=$tproject_id&containerID=$container_id"}
 {assign var="exportTestCasesAction"  value="$basehref$tcExportAction"}
 {assign var="tsuiteExportAction" value="$basehref$tcExportAction&amp;useRecursion=1"}
 
@@ -76,7 +69,8 @@ rev :
 	<h2>{$labels.testsuite_operations}</h2>
 	<form method="post" action="lib/testcases/containerEdit.php">
 		<input type="hidden" name="doAction" id="doAction" value="" />
-		<input type="hidden" name="containerID" value="{$gui->container_data.id}" />
+		<input type="hidden" name="containerID" id="containerID" value="{$gui->container_data.id}" />
+		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 		
 		<input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />
 
@@ -143,6 +137,8 @@ rev :
 		<input type="hidden" name="doAction" value="doUnassignFromPlan" />
 		<input type="hidden" name="doUnassignFromPlan" value="doUnassignFromPlan" />
 		<input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
+
 		<input type="button" name="unassign_all_tcs" value="{$labels.btn_unassign_all_tcs}"
 			  	onclick="javascript: warn_unassign_tcs({$gui->tplan_id}, '{$gui->tplan_name}',
 			  	'{$labels.unassign_all_tcs_msgbox_title}', '{$gui->unassign_all_tcs_warning_msg}');"/>
@@ -201,6 +197,7 @@ rev :
 		<span style="float: left; margin-right: 5px;">
 		<form method="post" action="lib/testcases/containerEdit.php">
 			<input type="hidden" name="containerID" value="{$gui->container_data.id}" />
+			<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 			<input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />
 		</form>
 		</span>
@@ -208,6 +205,7 @@ rev :
 		<form method="post" action="lib/testcases/containerEdit.php">
 			<input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
 			<input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
+			<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 			<input type="submit" name="edit_testsuite" value="{$labels.btn_edit_testsuite}"
 				     title="{$labels.alt_edit_testsuite}" />
 			<input type="submit" name="move_testsuite_viewer" value="{$labels.btn_move_cp_testsuite}"
@@ -227,11 +225,13 @@ rev :
 		<fieldset class="groupBtn">
 		<h2>{$labels.testcase_operations}</h2>
 		<form method="post" action="lib/testcases/tcEdit.php">
-		  <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
+			<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
+		  	<input type="hidden" name="containerID" value="{$gui->container_data.id}" />
 			<input type="submit" accesskey="t" id="create_tc" name="create_tc" value="{$labels.btn_new_tc}" />
 		</form>
 
 		<form method="post" action="lib/testcases/containerEdit.php">
+			<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 			<input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
 			<input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
 	    <input type="submit" name="move_testcases_viewer" value="{$labels.btn_move_cp_testcases}"

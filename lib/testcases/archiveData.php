@@ -2,7 +2,7 @@
 /** 
  * 	TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
- * 	@version 	$Id: archiveData.php,v 1.80 2011/01/10 15:38:56 asimon83 Exp $
+ * 	@filesource	archiveData.php
  * 	@author 	Martin Havlat
  * 
  * 	Allows you to show test suites, test cases.
@@ -30,9 +30,11 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $viewerArgs = null;
+
 $args = init_args($viewerArgs);
 $smarty = new TLSmarty();
 $gui = new stdClass();
+$gui->tproject_id = $args->tproject_id;
 $gui->page_title = lang_get('container_title_' . $args->feature);
 
 switch($args->feature)
@@ -115,6 +117,8 @@ switch($args->feature)
  */
 function init_args(&$viewerCfg)
 {
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$iParams = array("edit" => array(tlInputParameter::STRING_N,0,50),
 			         "id" => array(tlInputParameter::INT_N),
 			         "tcase_id" => array(tlInputParameter::INT_N),
@@ -122,14 +126,11 @@ function init_args(&$viewerCfg)
 			         "targetTestCase" => array(tlInputParameter::STRING_N,0,24),
 			         "show_path" => array(tlInputParameter::INT_N),
 			         "show_mode" => array(tlInputParameter::STRING_N,0,50),
-			         "tcasePrefix" => array(tlInputParameter::STRING_N,0,16));
-	 				 //"setting_refresh_tree_on_action" => array(tlInputParameter::STRING_N,0,1));
+			         "tcasePrefix" => array(tlInputParameter::STRING_N,0,16),
+			         "tproject_id" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
-	
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	// BUGID 3516
 	// For more information about the data accessed in session here, see the comment
@@ -190,7 +191,7 @@ function init_args(&$viewerCfg)
     {
     	$args->targetTestCase = $args->tcasePrefix . $args->targetTestCase;
  	}
-   	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+   	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
     return $args;
 }
 ?>

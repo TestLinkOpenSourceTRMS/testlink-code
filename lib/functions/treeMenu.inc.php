@@ -94,15 +94,11 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 {
 	$tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
 
-	$my = array();
+	$env = array('tproject_id' => $tproject_id);
 	
-	// 20100412 - franciscom
-	// $my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0,'getArguments' => '', 
-	//                        'tc_action_enabled' => 1, 'ignore_inactive_testcases' => 0, 
-	//                        'exclude_branches' => null, 'viewType' => 'testSpecTree');
-//	$my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0, 
-//	                       'tc_action_enabled' => 1, 'ignore_inactive_testcases' => 0, 
-//	                       'exclude_branches' => null, 'viewType' => 'testSpecTree');
+	//var_dump($env);
+	
+	$my = array();
 	$my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0, 
 	                       'tc_action_enabled' => 1, 'ignore_inactive_testcases' => 0, 
 	                       'viewType' => 'testSpecTree');
@@ -179,37 +175,19 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 		// Important: prepareNode() will make changes to $test_spec like filtering by test case 
 		// keywords using $tck_map;
 		$pnFilters = null;
-	    
-//		$pnFilters['filter_testcase_name'] = 
-//			isset($my['filters']['filter_testcase_name']) ?
-//			$my['filters']['filter_testcase_name'] : null;
-//		
-//		$pnFilters['filter_execution_type'] = 
-//			isset($my['filters']['filter_execution_type']) ?
-//			$my['filters']['filter_execution_type'] : null;
-//		
-//		$pnFilters['filter_priority'] = 
-//			isset($my['filters']['filter_priority']) ?
-//			$my['filters']['filter_priority'] : null;
-		
-		$keys2init = array('filter_testcase_name',
-		                   'filter_execution_type',
-		                   'filter_priority',
-		                   'filter_tc_id');
-		
+		$keys2init = array('filter_testcase_name','filter_execution_type','filter_priority','filter_tc_id');
 		foreach ($keys2init as $keyname) {
 			$pnFilters[$keyname] = isset($my['filters'][$keyname]) ? $my['filters'][$keyname] : null;
 		}
 	    
-	    $pnFilters['setting_testplan'] = 
-	    	$my['filters']['setting_testplan'];
+	    $pnFilters['setting_testplan'] = $my['filters']['setting_testplan'];
 	    
 	    // BUGID 3301 - added filtering by custom field values
-	    if (isset($my['filters']['filter_custom_fields']) 
-	    && isset($test_spec['childNodes'])) {
-	    	$test_spec['childNodes'] = filter_by_cf_values($test_spec['childNodes'], 
-			                           $my['filters']['filter_custom_fields'], 
-			                           $db, $tsuite_node_type, $tcase_node_type);
+	    if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) 
+	    {
+	    	$test_spec['childNodes'] = filter_by_cf_values(	$test_spec['childNodes'], 
+			                           						$my['filters']['filter_custom_fields'], 
+			                           						$db, $tsuite_node_type, $tcase_node_type);
 	    }
 		
 	    // 20100412 - franciscom
@@ -225,7 +203,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 			$test_spec[$key]=$testcase_counters[$key];
 		}
 		
-		$menustring = renderTreeNode(1,$test_spec,$hash_id_descr,
+		$menustring = renderTreeNode($env,1,$test_spec,$hash_id_descr,
 			                         $my['options']['tc_action_enabled'],$linkto,$tcase_prefix,
 			                         $my['options']['forPrinting'],$showTestCaseID);
 	}
@@ -748,15 +726,22 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
  * @internal Revisions
  * 20100611 - franciscom - removed useless $getArguments
  */
-function renderTreeNode($level,&$node,$hash_id_descr,
+function renderTreeNode($env,$level,&$node,$hash_id_descr,
                         $tc_action_enabled,$linkto,$testCasePrefix,
                         $bForPrinting=0,$showTestCaseID)
 {
 	$menustring='';
 	$node_type = $hash_id_descr[$node['node_type_id']];
-	extjs_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,$bForPrinting,
-		                               $showTestCaseID,$testCasePrefix);
+
+	$nodeAttr = array('node_type' => $node_type, 'testCasePrefix' => $testCasePrefix);
+	$options = array('tc_action_enabled' => $tc_action_enabled, 'forPrinting' => $bForPrinting,
+					 'showTestCaseID' => $showTestCaseID);
+					 
+	// extjs_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,$bForPrinting,
+	//	                               $showTestCaseID,$testCasePrefix);
 	
+	extjs_renderTestSpecTreeNodeOnOpen($node,$nodeAttr,$options,$env);
+
 	
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
@@ -773,7 +758,7 @@ function renderTreeNode($level,&$node,$hash_id_descr,
 			{
 				continue;
 			}
-			$menustring .= renderTreeNode($level+1,$node['childNodes'][$idx],$hash_id_descr,
+			$menustring .= renderTreeNode($env,$level+1,$node['childNodes'][$idx],$hash_id_descr,
 				                          $tc_action_enabled,$linkto,$testCasePrefix,
 				                          $bForPrinting,$showTestCaseID);
 		}
@@ -1753,15 +1738,19 @@ function filter_not_run_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters
 
 
 /** VERY IMPORTANT: node must be passed BY REFERENCE */
-function extjs_renderTestSpecTreeNodeOnOpen(&$node,$node_type,$tc_action_enabled,$bForPrinting,
-											$showTestCaseID,$testCasePrefix)
+// function extjs_renderTestSpecTreeNodeOnOpen(&$node,$node_type,$tc_action_enabled,$bForPrinting,
+//											$showTestCaseID,$testCasePrefix)
+function extjs_renderTestSpecTreeNodeOnOpen(&$node,$nodeAttr,$options,$env)
 {
+	//var_dump($env);
+	// die();
+	
 	$name = filterString($node['name']);
 	$buildLinkTo = 1;
 	$pfn = "ET";
 	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
 	
-	switch($node_type)
+	switch($nodeAttr['node_type'])
 	{
 		case 'testproject':
 			$pfn = $bForPrinting ? 'TPROJECT_PTP' : 'EP';
@@ -1769,21 +1758,21 @@ function extjs_renderTestSpecTreeNodeOnOpen(&$node,$node_type,$tc_action_enabled
 			break;
 			
 		case 'testsuite':
-			$pfn = $bForPrinting ? 'TPROJECT_PTS' : 'ETS';
+			$pfn = $options['forPrinting'] ? 'TPROJECT_PTS' : 'ETS';
 			$label =  $name . " (" . $testcase_count . ")";	
 			break;
 			
 		case 'testcase':
-			$buildLinkTo = $tc_action_enabled;
+			$buildLinkTo = $options['tc_action_enabled'];
 			if (!$buildLinkTo)
 			{
 				$pfn = "void";
 			}
 			
 			$label = "";
-			if($showTestCaseID)
+			if($options['showTestCaseID'])
 			{
-				$label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
+				$label .= "<b>{$nodeAttr['testCasePrefix']}{$node['external_id']}</b>:";
 			} 
 			$label .= $name;
 			break;
@@ -1792,9 +1781,9 @@ function extjs_renderTestSpecTreeNodeOnOpen(&$node,$node_type,$tc_action_enabled
 	
 	$node['text']=$label;
 	$node['testlink_node_name'] = $name;
-   	$node['testlink_node_type'] = $node_type;
+   	$node['testlink_node_type'] = $nodeAttr['node_type'];
 	$node['position']=isset($node['node_order']) ? $node['node_order'] : 0;
-	$node['href']=is_null($pfn)? '' : "javascript:{$pfn}({$node['id']})";
+	$node['href']=is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$env['tproject_id']})";
 	
 	// Remove useless keys
 	$resultsCfg=config_get('results');

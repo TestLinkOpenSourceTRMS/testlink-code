@@ -1,6 +1,7 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.54 2010/12/15 08:22:40 mx-julian Exp $
+
+@filesource	planAddTC_m1.tpl
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
@@ -17,11 +18,6 @@ rev:
     20100122 - eloff - BUGID 3078 - check drawSavePlatformsButton first
     20100122 - eloff - BUGID 3084 - fixes alignment of columns
     20100121 - eloff - BUGID 3078 - moved buttons to top
-    20091109 - franciscom - BUGID 0002937 - add/remove test case hover over test case 
-                                            tooltip replacement with summary     
-    20090610 - franciscom - display date when test case version was linked to test plan
-    20090117 - franciscom - BUGID 1970 - introduced while implementing BUGID 651
-    20090103 - franciscom - BUGID 651 - $gui->can_remove_executed_testcases
 *}
 
 {lang_get var="labels" 
@@ -77,6 +73,9 @@ Ext.onReady(function(){
 </head>
 <body class="fixedheader">
 <form name="addTcForm" id="addTcForm" method="post">
+	<input type="hidden" name="tproject_id" id="tproject_id" {$gui->tproject_id}/>
+	<input type="hidden" name="tplan_id" id="tplan_id" {$gui->tplan_id}/>
+	
 
    <div id="header-wrap">
 	  	<h1 class="title">{$gui->pageTitle|escape}{$tlCfg->gui->title_separator_2}{$gui->actionTitle}

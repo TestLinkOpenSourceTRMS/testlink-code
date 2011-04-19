@@ -33,13 +33,6 @@
  *	20100204 - franciscom - changes in $tsuiteMgr->copy_to() call	
  *	20100202 - franciscom - BUGID 3130: TestSuite: Edit - rename Test Suite Name causes PHP Fatal Error
  *                          (bug created due change in show() interface
- *	20091206 - franciscom - addTestSuite() - new test suites are order set to last on tree branch
- *	20081225 - franciscom - Postgres SQL Error
- *	20080827 - franciscom - BUGID 1692
- *	20080329 - franciscom - added contribution by Eugenia Drosdezki - Move/copy testcases
- *	20080223 - franciscom - BUGID 1408
- *	20080129 - franciscom - contribution - tuergeist@gmail.com - doTestSuiteReorder() remove global coupling
- *	20080122 - franciscom - BUGID 1312
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -62,7 +55,7 @@ $level = null;
 $opt_cfg=new stdClass();
 $opt_cfg->js_ot_name = 'ot';
 
-$args = init_args($opt_cfg);
+$args = init_args($tree_mgr,$opt_cfg);
 $gui = new stdClass();
 
 $gui_cfg = config_get('gui');
@@ -395,13 +388,20 @@ function build_del_testsuite_warning_msg(&$tree_mgr,&$tcase_mgr,&$testcases,$tsu
   returns:
 
 */
-function init_args($optionTransferCfg)
+function init_args(&$treeMgr,$optionTransferCfg)
 {
    	$args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
-    $args->tprojectID = $_SESSION['testprojectID'];
-    $args->tprojectName = $_SESSION['testprojectName'];
+
+	$args->tprojectName = '';	
+    $args->tprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+    if($args->tprojectID)
+    {
+    	$dummy = $treeMgr->get_node_hierarchy_info($args->tprojectID);
+    	$args->tprojectName = $dummy['name'];
+    }
+    
     $args->userID = $_SESSION['userID'];
 
     $keys2loop=array('nodes_order' => null, 'tcaseSet' => null,

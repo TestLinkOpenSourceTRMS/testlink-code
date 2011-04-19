@@ -23,21 +23,11 @@
 * 	public property 'attributes' of object of Class Ext.tree.TreeNode 
 * 	
 *
-*   rev: 
-*		 20101010 - franciscom - added custom node attribute: testlink_node_name
-*		 20100908 - franciscom - added custom node attribute: testlink_node_type
-*		 20081213 - franciscom - BUGID 1928 - contribution
-*        20080820 - franciscom - added operation argument
-*                                values: 'manage','print'
-*                                used to change Javascript functions to call on item click.
+* @internal revisions 
 *
-*        20080817 - franciscom - added logic to display test case quantity on
-*                                test suites.
-*
-*        20080622 - franciscom - added new argument (show_tcases), 
-*                                to use this page on test plan add test case feature.
-*
-*        20080603 - franciscom - added external id on test case nodes
+* 20110419 - franciscom - BUGID 4429: Code refactoring to remove global coupling as much as possible
+* 20101010 - franciscom - added custom node attribute: testlink_node_name
+* 20100908 - franciscom - added custom node attribute: testlink_node_type
 *        
 */
 require_once('../../config.inc.php');
@@ -48,6 +38,8 @@ testlinkInitPage($db);
 $_REQUEST=strings_stripSlashes($_REQUEST);
 
 $root_node = isset($_REQUEST['root_node']) ? $_REQUEST['root_node']: null;
+$tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+
 $node = isset($_REQUEST['node']) ? $_REQUEST['node'] : $root_node;
 $filter_node = isset($_REQUEST['filter_node']) ? $_REQUEST['filter_node'] : null;
 $tcprefix = isset($_REQUEST['tcprefix']) ? $_REQUEST['tcprefix'] : '';
@@ -58,10 +50,10 @@ $show_tcases = isset($_REQUEST['show_tcases']) ? $_REQUEST['show_tcases'] : 1;
 $operation = isset($_REQUEST['operation']) ? $_REQUEST['operation']: 'manage';
 
 // for debug - file_put_contents('d:\request.txt', serialize($_REQUEST));                            
-$nodes = display_children($db,$root_node,$node,$filter_node,$tcprefix,$show_tcases,$operation);
+$nodes = display_children($db,$tproject_id,$root_node,$node,$filter_node,$tcprefix,$show_tcases,$operation);
 echo json_encode($nodes);
 
-function display_children($dbHandler,$root_node,$parent,$filter_node,
+function display_children($dbHandler,$tproject_id,$root_node,$parent,$filter_node,
                           $tcprefix,$show_tcases = 1,$operation = 'manage') 
 {             
     static $showTestCaseID;
@@ -140,16 +132,16 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	        	case 'testproject':
 	                // 20080817 - franciscom - 
 	                // at least on Test Specification seems that we do not execute this piece of code.
-	                $path['href'] = "javascript:EP({$path['id']})";
+	                $path['href'] = "javascript:EP({$path['id']},{$tproject_id})";
 	                break;
 	              
 	           case 'testsuite':
 	                $tcase_qty = $tproject_mgr->count_testcases($row['id']);
-	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']},{$tproject_id})";
 	                break;
 	              
 	           case 'testcase':
-		       		$path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+		       		$path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']},{$tproject_id})";
                   	// BUGID 1928
                   	if(is_null($showTestCaseID))
                   	{

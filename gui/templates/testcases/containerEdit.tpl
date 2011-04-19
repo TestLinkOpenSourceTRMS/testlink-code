@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.16 2011/01/14 14:39:01 asimon83 Exp $
+@filesource	containerEdit.tpl
 Purpose: smarty template - edit test specification: containers 
 
 @internal revision
@@ -11,7 +11,6 @@ Purpose: smarty template - edit test specification: containers
 20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 20101012 - franciscom - BUGID 3887: CF Types validation
 20100315 - amitkhullar - Added Cancel button
-20091122 - franciscom - refactoring to use alert_message() and $labels
 
 *}
 {lang_get var="labels"
@@ -104,7 +103,7 @@ function validateForm(f)
 
 <div class="workBack">
   <h1 class="title">{$labels.title_edit_level} {lang_get s=$level}</h1> 
-	<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$containerID}" 
+	<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$containerID}&tproject_id={$gui->tproject_id}" 
 	      name="container_edit" id="container_edit"
         onSubmit="javascript:return validateForm(this);">
 	

@@ -5,13 +5,12 @@
  *
  * link/unlink test cases to a test plan
  *
+ * @filesource	planAddTC.php
  * @package 	TestLink
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.109 2010/10/30 16:01:56 franciscom Exp $
- * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * 
- * @internal Revisions:
+ * @internal revisions
  * 20101026 - franciscom - BUGID 3889: Add Test Cases to Test plan - checks with test case id and test case name filters.
  * 20101025 - franciscom - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
  * 20101009 - franciscom - fixing event viewer warnings created for missing initialization of required
@@ -29,7 +28,6 @@
  * 20100225 - eloff - BUGID 3205 - Don't show "save platforms" when platforms aren't used
  * 20100129 - franciscom - moved here from template, logic to initialize:
  *                         drawSavePlatformsButton,drawSaveCFieldsButton
- * 20090922 - franciscom - add contribution - bulk tester assignment while adding test cases
  *
  **/
 
@@ -40,14 +38,13 @@ require_once("specview.php");
 
 testlinkInitPage($db);
 
-$tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 $tcase_mgr = new testcase($db);
 
 $templateCfg = templateConfiguration();
-$args = init_args();
+$args = init_args($tproject_mgr);
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 
 // BUGID 3406
@@ -291,6 +288,7 @@ if($do_display)
 		break;	
 	}
     
+    var_dump($gui);
 	$smarty->assign('gui', $gui);
 	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }
@@ -305,17 +303,19 @@ if($do_display)
   returns: object with some REQUEST and SESSION values as members
 
 */
-function init_args()
+function init_args(&$tprojectMgr)
 {
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
+	var_dump($_REQUEST);
+	
 	$args = new stdClass();
-	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
 	$args->object_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 	$args->item_level = isset($_REQUEST['edit']) ? trim($_REQUEST['edit']) : null;
 	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : "default";
-	$args->tproject_id = $_SESSION['testprojectID'];
-	$args->tproject_name = $_SESSION['testprojectName'];
+
+	
 	$args->testcases2add = isset($_REQUEST['achecked_tc']) ? $_REQUEST['achecked_tc'] : null;
 	$args->tcversion_for_tcid = isset($_REQUEST['tcversion_for_tcid']) ? $_REQUEST['tcversion_for_tcid'] : null;
 	$args->testcases2remove = isset($_REQUEST['remove_checked_tc']) ? $_REQUEST['remove_checked_tc'] : null;
@@ -377,6 +377,15 @@ function init_args()
 	
 	// BUGID 3406
 	$args->build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
+
+	$args->tproject_name = '';
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	if($args->tproject_id > 0)
+	{
+		$dummy = $tprojectMrg->get_by_id($tproject_id);
+		$args->tproject_name = $dummy['name'];
+	}	
+
 	
 	return $args;
 }
@@ -463,17 +472,17 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $title_separator = config_get('gui_title_separator_1');
 
     $gui = new stdClass();
+    $gui->tproject_id = $argsObj->tproject_id;
+    $gui->tplan_id = $argsObj->tplan_id;
+    
     $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->testCasePrefix .= $tcase_cfg->glue_character;
     
     $gui->can_remove_executed_testcases=$tcase_cfg->can_remove_executed;
 
-
-
-
     $gui->keywordsFilterType = $argsObj->keywordsFilterType;
-
     $gui->keywords_filter = '';
+
     $gui->has_tc = 0;
     $gui->items = null;
     $gui->has_linked_items = false;

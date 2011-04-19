@@ -2,13 +2,17 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 *
-* 	@version 	$Id: listTestCases.php,v 1.60 2010/09/15 20:55:12 franciscom Exp $
+* 	@filesource	listTestCases.php
+* 	@package 	TestLink
 * 	@author 	Martin Havlat
+* 	@copyright 	2007-2011, TestLink community 
+* 	@link 		http://www.teamst.org/index.php
+*
 *
 * 	Generates tree menu with test specification.
 *   It builds the javascript tree that allows the user to choose testsuite or testcase.
 *
-*	@internal revision
+*	@internal revisions
 *
 *   20100628 - asimon - removal of constants from filter control class
 *   20100624 - asimon - CVS merge (experimental branch to HEAD)

@@ -254,14 +254,13 @@ function EP(id)
   returns:
 
   rev :
-        20070218 - franciscom
 */
-function ETS(id)
+function ETS(id,tproject_id)
 {
   // get checkboxes status
 	var _FUNCTION_NAME_="ETS";
 	var pParams = tree_getPrintPreferences();
-	var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
+	var action_url=fRoot+menuUrl+"?tproject_id=" + tproject_id + "&print_scope=test_specification" +
 	               "&edit=testsuite&level=testsuite&id="+id+args+"&"+pParams;
 
 	// alert(_FUNCTION_NAME_ + " " +action_url);
@@ -541,9 +540,6 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
          20100617 - asimon - removed setting_refresh_tree_on_action
                              (is now handled by filter control class)
          20100325 - asimon - added additional fields for req spec document printing
-         20070509 - franciscom - added 'author'
-         20070218 - franciscom - added setting_refresh_tree_on_action
-                                 useful on test case specification edit NOT Printing
 */
 function tree_getPrintPreferences()
 {

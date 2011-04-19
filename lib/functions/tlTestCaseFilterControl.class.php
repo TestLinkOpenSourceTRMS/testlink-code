@@ -779,7 +779,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * @author Andreas Simon
 	 * @param object $gui Reference to GUI object (data will be written to it)
 	 */
-	public function build_tree_menu(&$gui) {
+	public function build_tree_menu(&$gui) 
+	{
 		
 		$tree_menu = null;
 		$filters = $this->get_active_filters();
@@ -843,7 +844,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 					$drag_and_drop->useBeforeMoveNode = false;
 				}
 									
-				if ($this->do_filtering) {
+				if ($this->do_filtering) 
+				{
 					$options = array('forPrinting' => NOT_FOR_PRINTING,
 					                 'hideTestCases' => SHOW_TESTCASES,
 						             'tc_action_enabled' => DO_ON_TESTCASE_CLICK,
@@ -857,11 +859,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 					$root_node = $tree_menu->rootnode;
 					$children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
 					$cookie_prefix = $this->args->feature;
-				} else {
+				} 
+				else 
+				{
 					$loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
+					          "tproject_id={$this->args->testproject_id}&" .
 					          "root_node={$this->args->testproject_id}&" .
-					          "tcprefix=" . urlencode($tc_prefix .
-					          $this->configuration->tc_cfg->glue_character);
+					          "tcprefix=" . urlencode($tc_prefix . $this->configuration->tc_cfg->glue_character);
 					
 					$tcase_qty = $this->testproject_mgr->count_testcases($this->args->testproject_id);
 					
@@ -897,7 +901,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				    $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
 				} else {
 					$loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
-					                    "root_node={$this->args->testproject_id}&show_tcases=0";
+							  "tproject_id={$this->args->testproject_id}&" .
+							  "root_node={$this->args->testproject_id}&show_tcases=0";
 				
 					$root_node = new stdClass();
 					$root_node->href = "javascript:EP({$this->args->testproject_id})";

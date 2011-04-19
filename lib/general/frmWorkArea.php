@@ -26,6 +26,9 @@ testlinkInitPage($db);
 
 $args = init_args();
 
+
+new dBug($args);
+
 // --------------------------------------------------------------------------------------
 // Important Notes for Developers
 // --------------------------------------------------------------------------------------
@@ -83,16 +86,15 @@ if (isset($aa_tfp[$showFeature]) === FALSE)
 if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment')))
 {
 	// Check if for test project selected at least a test plan exist (BUGID 623)
-	if( isset($_SESSION['testplanID']) )
+	if( $args->tplan_id > 0 )
 	{
 		// 20101013 - asimon - if execution is wanted, check for open builds
 		$open = ($showFeature == 'executeTest') ? true : null;
-  		validateBuildAvailability($db,$_SESSION['testplanID'],
-	    		$_SESSION['testplanName'], $_SESSION['testprojectName'], $open);
+  		validateBuildAvailability($db,$args->tplan_id,$args->tproject_id, $open);
 	}
   	else
 	{
-  		redirect('../plan/planView.php');
+  		redirect("../plan/planView.php?tproject_id=$tprojectID");
 		exit();
 	}   
 }
@@ -116,7 +118,6 @@ if(isset($full_screen[$showFeature]))
 else
 {
 	$smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
-	// $smarty->assign('treeframe', $aa_tfp[$showFeature]);
 	$smarty->assign('treeframe', $target);
 	$smarty->assign('workframe', 'lib/general/staticPage.php?key='.$showFeature);
 	$smarty->display('frmInner.tpl');
@@ -134,23 +135,23 @@ else
  *                          to create link feature
  *
  **/
-function validateBuildAvailability(&$db,$tpID, $tpName, $prodName, $open)
+function validateBuildAvailability(&$db,$tplanID, $tprojectID, $open)
 {
-	$tp = new testplan($db);
+	$tplanMrg = new testplan($db);
+	
 	// 20101013 - asimon - if execution is wanted, check for open builds
 	// BUGID 4007 - use open parameter also for active check
-	if (!$tp->getNumberOfBuilds($tpID, $open, $open))
+	if (!$tplanMrg->getNumberOfBuilds($tplanID, $open, $open))
 	{	           
-		$message = '<p>'  . lang_get('no_build_warning_part1') . 
-	          "<b> " . htmlspecialchars($tpName) . "</b>";
+		$message = '<p>' . lang_get('no_build_warning_part1') . "<b> " . htmlspecialchars($tpName) . "</b>";
 		
 		$link_to_op = '';
 		$hint_text = '';
-		if(has_rights($db,"testplan_create_build") == 'yes')
+		if($_SESSION['currentUser']->hasRight($db,"testplan_create_build",$tproject_id,$tplan_id) == 'yes')
 		{	
 			// final url will be composed adding to $basehref 
 			// (one TL variable available on smarty templates) to $link_to_op
-			$link_to_op = "lib/plan/buildEdit.php?do_action=create";
+			$link_to_op = "lib/plan/buildEdit.php?tproject_id=$tprojectID&tplan_id=$tplanID&do_action=create";
 			$hint_text = lang_get('create_a_build');
 		}  
   		else
@@ -168,13 +169,15 @@ function validateBuildAvailability(&$db,$tpID, $tpName, $prodName, $open)
 	}
 }
 
+
 function init_args()
 {
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 	$args = new stdClass();
 
 	$iParams = array("feature" => array(tlInputParameter::STRING_N),
-					 "tproject_id" => array(tlInputParameter::INT));
+					 "tproject_id" => array(tlInputParameter::INT),
+					 "tplan_id" => array(tlInputParameter::INT));
 	R_PARAMS($iParams,$args);
 	return $args;
 }

@@ -3,10 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: buildEdit.php,v $
- *
- * @version $Revision: 1.31 $
- * @modified $Date: 2010/10/26 14:16:32 $ $Author: mx-julian $
+ * @filesource	buildEdit.php
+ * @package 	TestLink
+ * @copyright 	2005-2011, TestLink community 
+ * @link 		http://www.teamst.org/index.php
  *
  * @internal revision
  *  20101025 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
@@ -17,17 +17,14 @@
  *  20100707 - asimon - BUGID 3406: copy user assignments from other builds
  *                                  on creation of new builds
  *	20100706 - franciscom - BUGID 3581 added better check on release date
- *	20091121 - franciscom - BUGID - contribution
- *  20090509 - franciscom - BUGID - release_date
- *  20080827 - franciscom - BUGID 1692
-*/
+ */
 require('../../config.inc.php');
 require_once("common.php");
 require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('build');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 $templateCfg = templateConfiguration();
 
 $date_format_cfg = config_get('date_format');
@@ -42,10 +39,16 @@ $smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
 $build_mgr = new build_mgr($db);
 
-$args = init_args($_REQUEST,$_SESSION,$date_format_cfg);
+$args = init_args($_REQUEST,$tplan_mgr->tree_manager,$date_format_cfg);
 $gui = new stdClass();
+$gui->tproject_id = $args->tproject_id;
+$gui->tplan_id = $args->tplan_id;
+
 $gui->main_descr = lang_get('title_build_2') . config_get('gui_title_separator_2') . 
                    lang_get('test_plan') . config_get('gui_title_separator_1') . $args->tplan_name;
+
+$gui->cancelAction = "lib/plan/buildView.php?tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}";
+
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
 $of->Value = getItemTemplateContents('build_template', $of->InstanceName, $args->notes);
@@ -109,7 +112,7 @@ renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of,$gui);
  * @internal revisions:
  *   20100707 - asimon - BUGID 3406 - added source_build_id and copy_tester_assignments
 */
-function init_args($request_hash, $session_hash,$date_format)
+function init_args($request_hash,&$treeMgr,$date_format)
 {
 	$args = new stdClass();
 	$request_hash = strings_stripSlashes($request_hash);
@@ -150,11 +153,26 @@ function init_args($request_hash, $session_hash,$date_format)
     
     $args->closed_on_date = isset($request_hash['closed_on_date']) ? $request_hash['closed_on_date'] : null;
     
-    $args->tplan_id	= isset($session_hash['testplanID']) ? $session_hash['testplanID']: 0;
-	$args->tplan_name = isset($session_hash['testplanName']) ? $session_hash['testplanName']: '';
-	$args->testprojectID = $session_hash['testprojectID'];
-	$args->testprojectName = $session_hash['testprojectName'];
-	$args->userID = $session_hash['userID'];
+	$args->userID = $_SESSION['userID'];
+
+	$args->tproject_name = '';
+	$args->tplan_name = '';
+
+    $args->tplan_id	= isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+
+	if( $args->tplan_id > 0 )
+	{
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tplan_id);
+		$args->tplan_name = $dummy['name'];
+	}
+
+	if( $args->tproject_id > 0 )
+	{
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+	}
+
 
 	return $args;
 }

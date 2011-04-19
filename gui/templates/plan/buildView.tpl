@@ -1,23 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.18 2010/10/17 09:46:37 franciscom Exp $
+@filesource	buildView.tpl
 
 Purpose: smarty template - Show existing builds
 
-Rev:
-    20101017 - franciscom - image access refactored (tlImages)
-    20090509 - franciscom - BUGID - display release_date
-    20070921 - franciscom - BUGID  - added strip_tags|strip to notes
+@internal revisions
+20101017 - franciscom - image access refactored (tlImages)
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
-
-{* Configure Actions *}
-{assign var="managerURL" value="lib/plan/buildEdit.php"}
-{assign var="editAction" value="$managerURL?do_action=edit&amp;build_id="}
-{assign var="deleteAction" value="$managerURL?do_action=do_delete&build_id="}
-{assign var="createAction" value="$managerURL?do_action=create"}
-
 
 {lang_get s='warning_delete_build' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -33,7 +24,7 @@ Rev:
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$deleteAction}';
+var del_action=fRoot+'{$gui->deleteAction}';
 </script>
 </head>
 
@@ -60,7 +51,7 @@ var del_action=fRoot+'{$deleteAction}';
   		{foreach item=build from=$gui->buildSet}
         	<tr>
   				<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$build.id}</span>
-  				    <a href="{$editAction}{$build.id}" title="{$labels.alt_edit_build}">{$build.name|escape}
+  				    <a href="{$gui->editAction}{$build.id}" title="{$labels.alt_edit_build}">{$build.name|escape}
   					     {if $gsmarty_gui->show_icon_edit}
   					         <img style="border:none" alt="{$labels.alt_edit_build}" title="{$labels.alt_edit_build}"
   					              src="{$tlImages.edit}"/>
@@ -102,7 +93,8 @@ var del_action=fRoot+'{$deleteAction}';
 {* ------------------------------------------------------------------------------------------- *}
 
  <div class="groupBtn">
-    <form method="post" action="{$createAction}" id="create_build">
+    <form method="post" action="{$gui->createAction}" id="create_build">
+      <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
       <input type="submit" name="create_build" value="{$labels.btn_build_create}" />
     </form>
   </div>

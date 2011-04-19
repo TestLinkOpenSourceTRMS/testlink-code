@@ -1,26 +1,18 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.23 2010/11/13 09:43:37 franciscom Exp $
+
+@filesource	buildEdit.tpl
 
 Purpose: smarty template - Add new build and show existing
 
-Rev:
-    20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility 
-    20101025 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
-    20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
-    20100820 - franciscom - refactored to use only $gui as interface from php code
-    20100707 - asimon - BUGID 3406: addition of items for copying user
-                        assignments from other builds
+@internal revisions
+20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility 
+20101025 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
+20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
+20100820 - franciscom - refactored to use only $gui as interface from php code
+20100707 - asimon - BUGID 3406: addition of items for copying user
+                    assignments from other builds
     
-    20080217 - franciscom
-    Problems with history.goback, using call to view builds on goback
-    
-    20071216 - franciscom
-    user feedback using ext_js
-    
-    20070214 - franciscom 
-    BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed. 
-
 *}
 {assign var="managerURL" value="lib/plan/buildEdit.php"}
 {assign var="cancelAction" value="lib/plan/buildView.php"}
@@ -74,7 +66,6 @@ function validateForm(f)
 	</h2>
 	<form method="post" id="create_build" name="create_build" 
 	      action="{$managerURL}" onSubmit="javascript:return validateForm(this);">
-	      
 	<table class="common" style="width:80%">
 		<tr>
 			<th style="background:none;">{$labels.enter_build}</th>
@@ -145,6 +136,8 @@ function validateForm(f)
     {* BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed. *}
 		<input type="hidden" name="do_action" value="{$gui->buttonCfg->name}" />
 		<input type="hidden" name="build_id" value="{$gui->build_id}" />
+      	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
+      	<input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}">
 		
 		<input type="submit" name="{$gui->buttonCfg->name}" value="{$gui->buttonCfg->value|escape}"
 				   onclick="do_action.value='{$gui->buttonCfg->name}'"/>

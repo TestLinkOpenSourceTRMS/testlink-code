@@ -1650,7 +1650,9 @@ $TLS_info_resultsTC_report = "This report shows the last test case execution res
                              "Build 1.0 - Passed; Build 1.0 - Failed; Build 2.0 - Blocked; " .
                              "Build 1.0 - Passed<br>-> [Last Build] : Blocked because Build 2.0 is " .
                              "the last build created for which a result has been set.<br />-> \"Last Execution\" : " .
-                             "Passed because Build 1.0 has been executed at last.";
+                             "Passed because Build 1.0 has been executed at last.<br /><br />The shown ".
+                             "priority is calculated based on the importance of the currently linked test case ".
+                             "version.";
 
 
 

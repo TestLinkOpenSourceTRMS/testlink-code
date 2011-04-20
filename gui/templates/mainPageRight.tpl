@@ -176,7 +176,7 @@
 			
 			<br /> 
 			<img src="{$tlImages.bullet}" />
-			<a href="{$gui->url.testcase_assignments}">{$labels.href_my_testcase_assignments}</a>
+			<a href="{$gui->url.testcase_assignments}?tproject_id={$gui->testprojectID}&tplan_id={$gui->testplanID}">{$labels.href_my_testcase_assignments}</a>
 			<br />
 		{/if} 
       
@@ -186,7 +186,7 @@
 			
 			<br />
 			<img src="{$tlImages.bullet}" />
-			<a href="{$gui->url.metrics_dashboard}">{$labels.href_metrics_dashboard}</a>
+			<a href="{$gui->url.metrics_dashboard}?tproject_id={$gui->testprojectID}">{$labels.href_metrics_dashboard}</a>
 		{/if} 
     </div>
 	{/if}

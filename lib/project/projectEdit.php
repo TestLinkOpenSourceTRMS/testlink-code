@@ -5,10 +5,10 @@
  *
  * edit/delete test projetcs.
  *
+ * @filesource	projectEdit.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectEdit.php,v 1.53 2010/12/07 17:33:45 franciscom Exp $
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan
@@ -30,12 +30,12 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('testproject');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,true,false,"checkRights");
+testlinkInitPage($db,TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $gui_cfg = config_get('gui');
 $templateCfg = templateConfiguration();
 
-$session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$gui->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 $template = null;
 
 
@@ -49,10 +49,10 @@ $user_feedback = '';
 $reloadType = 'none';
 
 $tproject_mgr = new testproject($db);
-$args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
+$args = init_args($tproject_mgr, $_REQUEST, $gui->tproject_id);
 
 $gui = $args;
-$gui->canManage = has_rights($db,"mgt_modify_product");
+$gui->canManage = $_SESSION['currentUser']->hasRight($db,"mgt_modify_product",$gui->tproject_id);
 $gui->found = 'yes';
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
@@ -159,10 +159,8 @@ switch($args->doAction)
  * @return singleton object with html values tranformed and other
  *                   generated variables.
  * @internal
- * rev:20080112 - franciscom -
- *     20070206 - franciscom - BUGID 617
  */
-function init_args($tprojectMgr,$request_hash, $session_tproject_id)
+function init_args($tprojectMgr,$request_hash, $tproject_id)
 {
     $args = new stdClass();
 	$request_hash = strings_stripSlashes($request_hash);
@@ -252,8 +250,8 @@ function doCreate($argsObj,&$tprojectMgr)
 	  	$options = prepareOptions($argsObj);
 	  	    
 		$new_id = $tprojectMgr->create($argsObj->tprojectName, $argsObj->color,
-					$options, $argsObj->notes, $argsObj->active, $argsObj->tcasePrefix,
-					$argsObj->is_public);
+									   $options, $argsObj->notes, $argsObj->active, $argsObj->tcasePrefix,
+									   $argsObj->is_public);
 									                 
 		if (!$new_id)
 		{

@@ -2,11 +2,12 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
- * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2010/11/16 09:49:04 $  $Author: asimon83 $
- * @author Francisco Mancardi - francisco.mancardi@gmail.com
- * 
+ * @filesource	tcAssignedToUser.php
+ * @package 	TestLink
+ * @copyright 	2005,2011 TestLink community 
+ * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
+ * @link 		http://www.teamst.org/index.php
+ *
  * @internal revisions:
  *  20101116 - asimon - BUGID 4009: "Test Case Assignment Overview" did not show assignments in some situations
  *  20101019 - Julian - use different exttable_id for different reports
@@ -40,21 +41,19 @@ $names = $user->getNames($db);
 
 $results_config = config_get('results');
 
-$args=init_args();
+$args=init_args($db);
 if ($args->user_id > 0) {
 	$args->user_name = $names[$args->user_id]['login'];
 }
 
 $tcase_mgr = new testcase($db);
-$tproject_mgr = new testproject($db);
-$tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
-unset($tproject_mgr);
+$tplan_mgr = new testplan($db);
 
 $gui=new stdClass();
 //20101013 - asimon - disable "show also closed builds" checkbox when a specific build is selected
 $gui->show_build_selector = ($args->build_id == 0);
 $gui->glueChar = config_get('testcase_cfg')->glue_character;
-$gui->tproject_name = $tproject_info['name'];
+$gui->tproject_name = $args->tproject_name;
 $gui->warning_msg = '';
 $gui->tableSet = null;
 $gui->show_closed_builds = $args->show_closed_builds;
@@ -62,7 +61,6 @@ $gui->show_closed_builds = $args->show_closed_builds;
 $exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
 $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
-$tplan_mgr = new testplan($db);
 
 $l18n = init_labels(array('tcversion_indicator' => null,'goto_testspec' => null, 'version' => null, 
 						  'testplan' => null, 'assigned_tc_overview' => null,'testcases_assigned_to_user' => null,
@@ -94,27 +92,8 @@ $options = new stdClass();
 $options->mode = 'full_path';
 
 $filters = array();
-
-// if opened by click on username from page "results by user per build", show all testplans
-//if (!$args->show_inactive_and_closed) {
-//	//BUGID 3575: show only assigned test cases for ACTIVE test plans
-//	$filters['tplan_status'] = 'active';
-//	// BUGID 3749
-//	$filters['build_status'] = 'open';
-//}
-
-$filters['tplan_status'] = 'active';
-
-// BUGID 4009
-if ($args->show_inactive_tplans) {
-	$filters['tplan_status'] = 'all';
-}
-
-if ($args->show_closed_builds) {
-	$filters['build_status'] = 'all';
-} else {
-	$filters['build_status'] = 'open';
-}
+$filters['tplan_status'] = $args->show_inactive_tplans ? 'all' : 'active';
+$filters['build_status'] = $args->show_closed_builds ? 'all' : 'open';
 
 // BUGID 3647
 if ($args->build_id) {
@@ -129,8 +108,7 @@ $tplan_param = ($args->tplan_id) ? array($args->tplan_id) : testcase::ALL_TESTPL
 $gui->resultSet=$tcase_mgr->get_assigned_to_user($args->user_id, $args->tproject_id,
                                                  $tplan_param, $options, $filters);
 
-$doIt = !is_null($gui->resultSet);
-if( $doIt )
+if( ($doIt = !is_null($gui->resultSet)) )
 {	
 	$tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy'));
 
@@ -273,30 +251,33 @@ function get_date_diff($date) {
  * 
  * @return object of stdClass
  *
- * @since 20090131 - franciscom
  * 
  * @internal revisions:
  *  20100731 - asimon - additional arguments show_all_users and show_inactive_and_closed
  */
-function init_args()
+function init_args(&$dbHandler)
 {
     $_REQUEST=strings_stripSlashes($_REQUEST);
     $args = new stdClass();
     
     $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
-    if( $args->tproject_id == 0)
-    {
-        $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    }
-
+	$args->tproject_name = '';
+	if($args->tproject_id >0)
+	{ 
+		$tproject_mgr = new testproject($dbHandler);
+		$dummy = $tproject_mgr->get_by_id($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+		$args->priority_enabled = $dummy['opt']->testPriorityEnabled ? true : false;
+		unset($tproject_mgr);
+	}
+	
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
 	$args->build_id = isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id']) ? 
-	                  $_REQUEST['build_id'] : 0;
+					  intval($_REQUEST['build_id']) : 0;
 
 	// BUGID 4009
 	$args->show_inactive_tplans = isset($_REQUEST['show_inactive_tplans']) ? true : false;
 	                  
-	// $args->show_all_users = isset($_REQUEST['show_all_users']) && $_REQUEST['show_all_users'] =! 0 ? true : false;
 	$args->show_all_users = (isset($_REQUEST['show_all_users']) && $_REQUEST['show_all_users'] =! 0);
 	$args->show_user_column = $args->show_all_users; 
 
@@ -310,15 +291,15 @@ function init_args()
 	// BUGID 3824
     $show_closed_builds = isset($_REQUEST['show_closed_builds']) ? true : false;
 	$show_closed_builds_hidden = isset($_REQUEST['show_closed_builds_hidden']) ? true : false;
+	$selection = false;
 	if ($show_closed_builds) {
 		$selection = true;
 	} else if ($show_closed_builds_hidden) {
 		$selection = false;
 	} else if (isset($_SESSION['show_closed_builds'])) {
 		$selection = $_SESSION['show_closed_builds'];
-	} else {
-		$selection = false;
 	}
+	
 	$args->show_closed_builds = $_SESSION['show_closed_builds'] = $selection;
 
 	if ($args->show_all_users) {
@@ -326,11 +307,9 @@ function init_args()
 	}
 	
 	
-	$args->show_inactive_and_closed = isset($_REQUEST['show_inactive_and_closed']) 
-	                                  && $_REQUEST['show_inactive_and_closed'] =! 0 ? 
-	                                  true : false;
+	$args->show_inactive_and_closed = isset($_REQUEST['show_inactive_and_closed']) && 
+									  $_REQUEST['show_inactive_and_closed'] =! 0 ? true : false;
 
-	$args->priority_enabled = $_SESSION['testprojectOptions']->testPriorityEnabled ? true : false;
 	
 	return $args;
 }

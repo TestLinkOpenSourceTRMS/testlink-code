@@ -18,7 +18,6 @@ require_once("csv.inc.php");
 require_once("xml.inc.php");
 testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
-new dBug($_REQUEST);
 $smarty = new TLSmarty();
 $templateCfg = templateConfiguration();
 $tprojectMgr = new testproject($db);

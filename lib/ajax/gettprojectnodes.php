@@ -38,7 +38,8 @@ testlinkInitPage($db);
 $_REQUEST=strings_stripSlashes($_REQUEST);
 
 $root_node = isset($_REQUEST['root_node']) ? $_REQUEST['root_node']: null;
-$tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+$env['tproject_id'] = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+$env['tplan_id'] = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
 
 $node = isset($_REQUEST['node']) ? $_REQUEST['node'] : $root_node;
 $filter_node = isset($_REQUEST['filter_node']) ? $_REQUEST['filter_node'] : null;
@@ -50,10 +51,10 @@ $show_tcases = isset($_REQUEST['show_tcases']) ? $_REQUEST['show_tcases'] : 1;
 $operation = isset($_REQUEST['operation']) ? $_REQUEST['operation']: 'manage';
 
 // for debug - file_put_contents('d:\request.txt', serialize($_REQUEST));                            
-$nodes = display_children($db,$tproject_id,$root_node,$node,$filter_node,$tcprefix,$show_tcases,$operation);
+$nodes = display_children($db,$env,$root_node,$node,$filter_node,$tcprefix,$show_tcases,$operation);
 echo json_encode($nodes);
 
-function display_children($dbHandler,$tproject_id,$root_node,$parent,$filter_node,
+function display_children($dbHandler,$env,$root_node,$parent,$filter_node,
                           $tcprefix,$show_tcases = 1,$operation = 'manage') 
 {             
     static $showTestCaseID;
@@ -132,16 +133,19 @@ function display_children($dbHandler,$tproject_id,$root_node,$parent,$filter_nod
 	        	case 'testproject':
 	                // 20080817 - franciscom - 
 	                // at least on Test Specification seems that we do not execute this piece of code.
-	                $path['href'] = "javascript:EP({$tproject_id},{$path['id']})";
+	                $path['href'] = "javascript:EP({$env['tproject_id']},{$env['tplan_id']},{$path['id']})";
 	                break;
 	              
 	           case 'testsuite':
 	                $tcase_qty = $tproject_mgr->count_testcases($row['id']);
-	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$tproject_id},{$path['id']})";
+	                $path['href'] = "javascript:" . $js_function[$row['node_type']] . 
+	                				"({$env['tproject_id']},{$env['tplan_id']},{$path['id']})";
 	                break;
 	              
 	           case 'testcase':
-		       		$path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$tproject_id},{$path['id']})";
+		       		$path['href'] = "javascript:" . $js_function[$row['node_type']] . 
+	                				"({$env['tproject_id']},{$env['tplan_id']},{$path['id']})";
+
                   	// BUGID 1928
                   	if(is_null($showTestCaseID))
                   	{

@@ -802,6 +802,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		
 		$tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id);
 					
+//		echo __FUNCTION__;			
+//		echo $this->mode;
+		$environment = array('tproject_id' => $this->args->testproject_id, 
+							 'tproject_name' => $this->args->testproject_name, 
+							 'tplan_id' => $this->args->testplan_id,
+							 'tplan_name' => $this->args->testplan_name);
+					
 		switch ($this->mode) {
 			
 			case 'plan_mode':
@@ -852,8 +859,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 						             'ignore_inactive_testcases' => DO_NOT_FILTER_INACTIVE_TESTCASES,
 					                 'exclude_branches' => null);
 				    
-					$tree_menu = generateTestSpecTree($this->db, $this->args->testproject_id,
-					                                  $this->args->testproject_name,
+					$tree_menu = generateTestSpecTree($this->db, $environment,
 					                                  $gui->menuUrl, $filters, $options);
 					
 					$root_node = $tree_menu->rootnode;
@@ -864,13 +870,15 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				{
 					$loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
 					          "tproject_id={$this->args->testproject_id}&" .
+					          "tplan_id={$this->args->testplan_id}&" .
 					          "root_node={$this->args->testproject_id}&" .
 					          "tcprefix=" . urlencode($tc_prefix . $this->configuration->tc_cfg->glue_character);
 					
 					$tcase_qty = $this->testproject_mgr->count_testcases($this->args->testproject_id);
 					
 					$root_node = new stdClass();
-					$root_node->href = "javascript:EP({$this->args->testproject_id},{$this->args->testproject_id})";
+					$root_node->href = "javascript:EP({$this->args->testproject_id}," .
+									   "{$this->args->testplan_id},{$this->args->testproject_id})";
 					$root_node->id = $this->args->testproject_id;
 					$root_node->name = $this->args->testproject_name . " ($tcase_qty)";
 					$root_node->testlink_node_type='testproject';
@@ -890,22 +898,20 @@ class tlTestCaseFilterControl extends tlFilterControl {
 					                 'ignore_inactive_testcases' => IGNORE_INACTIVE_TESTCASES,
 					                 'viewType' => 'testSpecTreeForTestPlan');
 			
-					$tree_menu = generateTestSpecTree($this->db,
-					                                  $this->args->testproject_id,
-					                                  $this->args->testproject_name,
-					                                  $gui->menuUrl,
-					                                  $filters,
-					                                  $options);
+					$tree_menu = generateTestSpecTree($this->db,$environment,$gui->menuUrl,
+					                                  $filters,$options);
 					
 					$root_node = $tree_menu->rootnode;
 				    $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
 				} else {
 					$loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
 							  "tproject_id={$this->args->testproject_id}&" .
+							  "tplan_id={$this->args->testplan_id}&" .
 							  "root_node={$this->args->testproject_id}&show_tcases=0";
 				
 					$root_node = new stdClass();
-					$root_node->href = "javascript:EP({$this->args->testproject_id},{$this->args->testproject_id})";
+					$root_node->href = 	"javascript:EP({$this->args->testproject_id}," .
+										"{$this->args->testplan_id},{$this->args->testproject_id})";
 					$root_node->id = $this->args->testproject_id;
 					$root_node->name = $this->args->testproject_name;
 					$root_node->testlink_node_type = 'testproject';

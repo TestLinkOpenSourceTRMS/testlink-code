@@ -221,14 +221,15 @@ function SP()
   returns:
 
 */
-function EP(tproject_id,id)
+function EP(tproject_id,tplan_id,id)
 {
 	var _FUNCTION_NAME_="EP";
 
 	// get checkboxes status
 	var pParams = tree_getPrintPreferences();
 	var action_url = fRoot+menuUrl+"?print_scope=test_specification" + "&edit=testproject" +
-	                 "&level=testproject&tproject_id=" + tproject_id + "&id="+id+args+"&"+pParams;
+	                 "&level=testproject" + "&tproject_id=" + tproject_id + "&tplan_id=" + tplan_id + 
+	                 "&id="+id+args+"&"+pParams;
 
 	//alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
@@ -255,13 +256,13 @@ function EP(tproject_id,id)
 
   rev :
 */
-function ETS(tproject_id,id)
+function ETS(tproject_id,tplan_id,id)
 {
   // get checkboxes status
 	var _FUNCTION_NAME_="ETS";
 	var pParams = tree_getPrintPreferences();
 	var action_url=fRoot+menuUrl+"?tproject_id=" + tproject_id + "&print_scope=test_specification" +
-	               "&edit=testsuite&level=testsuite&id="+id+args+"&"+pParams;
+								 "&tplan_id=" + tplan_id + "&edit=testsuite&level=testsuite&id="+id+args+"&"+pParams;
 
 	// alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;

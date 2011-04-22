@@ -90,13 +90,12 @@ function filterString($str)
  * 20100810 - asimon - filtering by testcase ID
  * 20100428 - asimon - BUGID 3301, added filtering by custom fields
  */
-function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
+function generateTestSpecTree(&$db,$env,$linkto,$filters=null,$options=null)
 {
 	$tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
 
-	$env = array('tproject_id' => $tproject_id);
-	
-	//var_dump($env);
+	// $env = array('tproject_id' => $tproject_id);
+	// new dBug($env); die(__FUNCTION__);
 	
 	$my = array();
 	$my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0, 
@@ -161,8 +160,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 		$tck_map = null;  // means no filter
 		if(!is_null($my['filters']['filter_keywords']))
 		{
-			//$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$my['filters']['keywords']->items,
-			//                                              $my['filters']['keywords']->type);
 			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,
 			           $my['filters']['filter_keywords'],
 			           $my['filters']['filter_keywords_filter_type']);
@@ -737,9 +734,6 @@ function renderTreeNode($env,$level,&$node,$hash_id_descr,
 	$options = array('tc_action_enabled' => $tc_action_enabled, 'forPrinting' => $bForPrinting,
 					 'showTestCaseID' => $showTestCaseID);
 					 
-	// extjs_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,$bForPrinting,
-	//	                               $showTestCaseID,$testCasePrefix);
-	
 	extjs_renderTestSpecTreeNodeOnOpen($node,$nodeAttr,$options,$env);
 
 	
@@ -1738,12 +1732,9 @@ function filter_not_run_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters
 
 
 /** VERY IMPORTANT: node must be passed BY REFERENCE */
-// function extjs_renderTestSpecTreeNodeOnOpen(&$node,$node_type,$tc_action_enabled,$bForPrinting,
-//											$showTestCaseID,$testCasePrefix)
 function extjs_renderTestSpecTreeNodeOnOpen(&$node,$nodeAttr,$options,$env)
 {
-	//var_dump($env);
-	// die();
+	// new dBug($env);	die(__FUNCTION__);
 	
 	$name = filterString($node['name']);
 	$buildLinkTo = 1;
@@ -1783,7 +1774,7 @@ function extjs_renderTestSpecTreeNodeOnOpen(&$node,$nodeAttr,$options,$env)
 	$node['testlink_node_name'] = $name;
    	$node['testlink_node_type'] = $nodeAttr['node_type'];
 	$node['position']=isset($node['node_order']) ? $node['node_order'] : 0;
-	$node['href']=is_null($pfn)? '' : "javascript:{$pfn}({$env['tproject_id']},{$node['id']})";
+	$node['href']=is_null($pfn)? '' : "javascript:{$pfn}({$env['tproject_id']},{$env['tplan_id']},{$node['id']})";
 	
 	// Remove useless keys
 	$resultsCfg=config_get('results');

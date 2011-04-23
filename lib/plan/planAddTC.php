@@ -47,9 +47,7 @@ $templateCfg = templateConfiguration();
 $args = init_args($tproject_mgr);
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 
-// BUGID 3406
-$gui->build = init_build_selector($tplan_mgr, $args);
-
+//new dBug($gui);die();
 $keywordsFilter = null;
 if(is_array($args->keyword_id))
 {
@@ -288,7 +286,6 @@ if($do_display)
 		break;	
 	}
     
-    var_dump($gui);
 	$smarty->assign('gui', $gui);
 	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }
@@ -305,9 +302,7 @@ if($do_display)
 */
 function init_args(&$tprojectMgr)
 {
-	$_REQUEST = strings_stripSlashes($_REQUEST);
-
-	var_dump($_REQUEST);
+	$_REQUEST = strings_stripSlashes($_REQUEST); // new dBug($_REQUEST);
 	
 	$args = new stdClass();
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
@@ -382,7 +377,7 @@ function init_args(&$tprojectMgr)
 	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 	if($args->tproject_id > 0)
 	{
-		$dummy = $tprojectMrg->get_by_id($tproject_id);
+		$dummy = $tprojectMgr->get_by_id($args->tproject_id);
 		$args->tproject_name = $dummy['name'];
 	}	
 
@@ -540,6 +535,11 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 	{
 		$gui->warning_msg->executed = lang_get('has_been_executed');
 	}
+	
+	// BUGID 3406
+	$gui->build = init_build_selector($tplanMgr, $argsObj);
+
+	
     return $gui;
 }
 

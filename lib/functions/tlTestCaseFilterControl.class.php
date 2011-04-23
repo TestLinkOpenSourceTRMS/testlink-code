@@ -805,9 +805,26 @@ class tlTestCaseFilterControl extends tlFilterControl {
 //		echo __FUNCTION__;			
 //		echo $this->mode;
 		$environment = array('tproject_id' => $this->args->testproject_id, 
-							 'tproject_name' => $this->args->testproject_name, 
-							 'tplan_id' => $this->args->testplan_id,
-							 'tplan_name' => $this->args->testplan_name);
+							 'tproject_name' => $this->args->testproject_name);, 
+							 'tplan_id' => 0,'tplan_name' => '');
+		if( property_exists($this->args,'testplan_id') ) 							 
+		{
+			$environment['tplan_id'] = $this->args->testplan_id;
+		}
+		else
+		{
+			$this->args->testplan_id = 0;
+		}
+		
+		if( property_exists($this->args,'testplan_name') ) 							 
+		{
+			$environment['tplan_name'] = $this->args->testplan_name;
+		}
+		else 
+		{
+			$this->args->testplan_name = '';
+		}
+				 
 					
 		switch ($this->mode) {
 			

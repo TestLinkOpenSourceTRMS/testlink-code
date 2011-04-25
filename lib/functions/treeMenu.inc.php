@@ -13,6 +13,7 @@
  * @uses 		config.inc.php
  *
  * @internal revisions
+ *	20110423 - franciscom - generateExecTree() interface changes + refactoring
  *  20110311 - asimon - BUGID 3765: Req Spec Doc ID disappeared for req specs without
  *                                  direct requirement child nodes
  *  20101221 - amitkhullar - BUGID 4115 Custom Field Filtering Issue 
@@ -92,6 +93,9 @@ function filterString($str)
  */
 function generateTestSpecTree(&$db,$env,$linkto,$filters=null,$options=null)
 {
+
+	// setUpTestSpecTree();
+	
 	$tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
 
 	// $env = array('tproject_id' => $tproject_id);
@@ -125,6 +129,7 @@ function generateTestSpecTree(&$db,$env,$linkto,$filters=null,$options=null)
 	$tree_manager = &$tproject_mgr->tree_manager;	
 	
 	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
+
 	// BUGID 3301
 	$tsuite_node_type = $tree_manager->node_descr_id['testsuite'];
 	$hash_descr_id = $tree_manager->get_available_node_types();
@@ -346,22 +351,11 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	{
   	    $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
         $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
-    }	
-	if (!$hash_id_descr)
-	{
+
 		$hash_id_descr = $decoding_info['node_id_descr'];
-	}
-	if (!$status_descr_code)
-	{
 		$status_descr_code = $decoding_info['status_descr_code'];
-	}
-	if (!$status_code_descr)
-	{
 		$status_code_descr = $decoding_info['status_code_descr'];
-	}
-	
-	if (!$my)
-	{
+
 		$my = array();
 		$my['options'] = array('hideTestCases' => 0, 'showTestCaseID' => 1, 'viewType' => 'testSpecTree',
 		                       'getExternalTestCaseID' => 1,'ignoreInactiveTestCases' => 0);
@@ -373,20 +367,11 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		
 		$my['options'] = array_merge($my['options'], (array)$options);
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
-	}
-	
-	if(!$enabledFiltersOn)
-	{
-		// 3301 - added filtering by testcase name
-		// 20100702 - and custom fields
-		// 20100810 - and testcase ID
-		$enabledFiltersOn['testcase_id'] = 
-			isset($my['filters']['filter_tc_id']);
-		$enabledFiltersOn['testcase_name'] = 
-			isset($my['filters']['filter_testcase_name']);
+
+		$enabledFiltersOn['testcase_id'] = isset($my['filters']['filter_tc_id']);
+		$enabledFiltersOn['testcase_name'] = isset($my['filters']['filter_testcase_name']);
 		$enabledFiltersOn['keywords'] = isset($tck_map);
-		$enabledFiltersOn['executionType'] = 
-			isset($my['filters']['filter_execution_type']);
+		$enabledFiltersOn['executionType'] = isset($my['filters']['filter_execution_type']);
 		$enabledFiltersOn['importance'] = isset($my['filters']['filter_priority']);
 		$enabledFiltersOn['custom_fields'] = isset($my['filters']['filter_custom_fields']);
 		$filterOnTCVersionAttribute = $enabledFiltersOn['executionType'] || $enabledFiltersOn['importance'];
@@ -423,13 +408,16 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		}
 		
 		// added filter by testcase name
-		if ($node && $enabledFiltersOn['testcase_name']) {
+		if ($node && $enabledFiltersOn['testcase_name']) 
+		{
 			$filter_name = $my['filters']['filter_testcase_name'];
+		
 			// IMPORTANT:
 			// checking with === here, because function stripos could return 0 when string
 			// is found at position 0, if clause would then evaluate wrong because 
 			// 0 would be casted to false and we only want to delete node if it really is false
-			if (stripos($node['name'], $filter_name) === FALSE) {
+			if (stripos($node['name'], $filter_name) === FALSE) 
+			{
 				// 20101209 - asimon - allow correct filtering also for right frame
 				unset($tplan_tcases[$node['id']]);
 				$node = null;
@@ -437,9 +425,11 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		}
 		
 		// filter by testcase ID
-		if ($node && $enabledFiltersOn['testcase_id']) {
+		if ($node && $enabledFiltersOn['testcase_id']) 
+		{
 			$filter_id = $my['filters']['filter_tc_id'];
-			if ($node['id'] != $filter_id) {
+			if ($node['id'] != $filter_id) 
+			{
 				// 20101209 - asimon - allow correct filtering also for right frame
 				unset($tplan_tcases[$node['id']]);
 				$node = null;
@@ -450,14 +440,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		{
 			
 			$tpNode = isset($tplan_tcases[$node['id']]) ? $tplan_tcases[$node['id']] : null;
-//			if (!$tpNode || (!is_null($my['filters']['assignedTo'])) && 
-//					((isset($my['filters']['assignedTo'][TL_USER_NOBODY]) && !is_null($tpNode['user_id'])) ||
-//							(!isset($my['filters']['assignedTo'][TL_USER_NOBODY]) && (!isset($my['filters']['assignedTo'][TL_USER_SOMEBODY])) && 
-//							 !isset($my['filters']['assignedTo'][$tpNode['user_id']]))) || 
-//							(!is_null($my['filters']['status']) && !isset($my['filters']['status'][$tpNode['exec_status']])) ||
-//							(isset($my['filters']['assignedTo'][TL_USER_SOMEBODY]) && !is_numeric($tpNode['user_id']))
-//			)
-//			{
 
 			// asimon - additional variables for better readability of following if condition.
 			// For original statement/condition see above commented out lines.
@@ -468,32 +450,32 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 			$results2filter = isset($my['filters']['filter_result_result']) ?
 			                        $my['filters']['filter_result_result'] : null;
 			
-			$wrong_result = !is_null($results2filter) 
-			                && !isset($results2filter[$tpNode['exec_status']]);
+			$wrong_result = !is_null($results2filter) && !isset($results2filter[$tpNode['exec_status']]);
 			
-			$somebody_wanted_but_nobody_there = !is_null($users2filter)
-			                                    && isset($users2filter[TL_USER_SOMEBODY])
-			                                    && !is_numeric($tpNode['user_id']);
+			$somebody_wanted_but_nobody_there = !is_null($users2filter) && 
+												isset($users2filter[TL_USER_SOMEBODY]) && 
+												!is_numeric($tpNode['user_id']);
 			
-			$unassigned_wanted_but_someone_assigned = !is_null($users2filter)
-			                                          && isset($users2filter[TL_USER_NOBODY])
-			                                          && !is_null($tpNode['user_id']);
+			$unassigned_wanted_but_someone_assigned = !is_null($users2filter) &&
+			                                          isset($users2filter[TL_USER_NOBODY]) &&
+			                                          !is_null($tpNode['user_id']);
 			
-			$wrong_user = !is_null($users2filter)
-			              && !isset($users2filter[TL_USER_NOBODY])
-			              && !isset($users2filter[TL_USER_SOMEBODY])
-			              && !isset($users2filter[$tpNode['user_id']]);
+			$wrong_user = !is_null($users2filter) &&
+			              !isset($users2filter[TL_USER_NOBODY]) &&
+			              !isset($users2filter[TL_USER_SOMEBODY]) &&
+			              !isset($users2filter[$tpNode['user_id']]);
 						
-			$delete_node = $unassigned_wanted_but_someone_assigned
-			               || $wrong_user
-			               || $wrong_result
-			               || $somebody_wanted_but_nobody_there;
+			$delete_node = $unassigned_wanted_but_someone_assigned || $wrong_user || $wrong_result ||
+			               $somebody_wanted_but_nobody_there;
 			
-			if (!$tpNode || $delete_node) {
+			if (!$tpNode || $delete_node) 
+			{
 				// 20101209 - asimon - allow correct filtering also for right frame
 				unset($tplan_tcases[$node['id']]);
 				$node = null;
-			} else {
+			} 
+			else 
+			{
 				$externalID='';
 				$node['tcversion_id'] = $tpNode['tcversion_id'];		
 				$node['version'] = $tpNode['version'];		
@@ -516,7 +498,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 					}	
 				}
 				$node['external_id'] = $externalID;
-				//unset($tplan_tcases[$node['id']]);
 			}
 		}
 		
@@ -668,7 +649,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		{
 			$current = &$childNodes[$idx];
 			// I use set an element to null to filter out leaf menu items
-			
 			if(is_null($current))
 			{
 				continue;
@@ -728,9 +708,9 @@ function renderTreeNode($env,$level,&$node,$hash_id_descr,
                         $bForPrinting=0,$showTestCaseID)
 {
 	$menustring='';
-	$node_type = $hash_id_descr[$node['node_type_id']];
-
-	$nodeAttr = array('node_type' => $node_type, 'testCasePrefix' => $testCasePrefix);
+	$nodeAttr = array('node_type' => $hash_id_descr[$node['node_type_id']], 
+					  'testCasePrefix' => $testCasePrefix);
+					  
 	$options = array('tc_action_enabled' => $tc_action_enabled, 'forPrinting' => $bForPrinting,
 					 'showTestCaseID' => $showTestCaseID);
 					 
@@ -770,258 +750,111 @@ function renderTreeNode($env,$level,&$node,$hash_id_descr,
  * @internal Revisions:
  *
  *	20101003 - franciscom - added option remove_empty_nodes_of_type on get_subtree() call
- *  20100820 - asimon - refactoring for less redundant checks and better readibility
- *  20100719 - asimon - BUGID 3406 - user assignments per build:
- *                                   filter assigned test cases by setting_build
- *	20080617 - franciscom - return type changed to use extjs tree component
- *	20080305 - franciscom - interface refactoring
- *	20080224 - franciscom - added include_unassigned
- *	20071002 - jbarchibald - BUGID 1051 - added cf element to parameter list
- *	20070204 - franciscom - changed $bForPrinting -> $bHideTCs
  */
-function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
-                          $tplan_name,$filters,$additionalInfo) 
+function generateExecTree(&$db,&$menuUrl,$env,$filters,$options) 
 {
-	$treeMenu = new stdClass(); 
-	$treeMenu->rootnode = null;
-	$treeMenu->menustring = '';
-	$resultsCfg = config_get('results');
-	$showTestCaseID = config_get('treemenu_show_testcase_id');
-	$glueChar=config_get('testcase_cfg')->glue_character;
-	
-	$menustring = null;
-	$any_exec_status = null;
 	$tplan_tcases = null;
 	$tck_map = null;
     $idx=0;
-    $testCaseQty=0;
-    $testCaseSet=null;
-    	
-	$keyword_id = 0;
-	$keywordsFilterType = 'Or';
-	if (property_exists($filters, 'filter_keywords') && !is_null($filters->{'filter_keywords'})) {
-		$keyword_id = $filters->{'filter_keywords'};
-		$keywordsFilterType = $filters->{'filter_keywords_filter_type'};
-	}
+    $apply_other_filters=true;
+    $map_node_tccount = array();
+	$renderOpt = array();
+	$renderAux = array();
 
-	// BUGID 3406 - user assignments per build
-	// can't use $build_id here because we need the build ID from settings panel
-	$build2filter_assignments = isset($filters->{'setting_build'}) ? $filters->{'setting_build'} : 0;
-	
-	$tc_id = isset($filters->filter_tc_id) ? $filters->filter_tc_id : null; 
-	$build_id = isset($filters->filter_result_build) ? $filters->filter_result_build : null;
-	$bHideTCs = isset($filters->hide_testcases) ? $filters->hide_testcases : false;
-	$assignedTo = isset($filters->filter_assigned_user) ? $filters->filter_assigned_user : null; 
-	$include_unassigned = isset($filters->filter_assigned_user_include_unassigned) ?
-	                      $filters->filter_assigned_user_include_unassigned : false;
-	$setting_platform = isset($filters->setting_platform) ? $filters->setting_platform : null;
-	$execution_type = isset($filters->filter_execution_type) ? $filters->filter_execution_type : null;
-	$status = isset($filters->filter_result_result) ? $filters->filter_result_result : null;
-	$cf_hash = isset($filters->filter_custom_fields) ? $filters->filter_custom_fields : null;
-	$show_testsuite_contents = isset($filters->show_testsuite_contents) ? 
-	                           $filters->show_testsuite_contents : true;
-	$urgencyImportance = isset($filters->filter_priority) ?
-	                     $filters->filter_priority : null;
-	
-	$useCounters=isset($additionalInfo->useCounters) ? $additionalInfo->useCounters : null;
-	$useColors=isset($additionalInfo->useColours) ? $additionalInfo->useColours : null;
-	$colorBySelectedBuild = isset($additionalInfo->testcases_colouring_by_selected_build) ? 
-	                        $additionalInfo->testcases_colouring_by_selected_build : null;
+	$resultsCfg = config_get('results');
+
 
 	$tplan_mgr = new testplan($db);
-	$tproject_mgr = new testproject($db);
 	$tcase_mgr = new testcase($db);
-	
-	$tree_manager = $tplan_mgr->tree_manager;
-	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
-	$hash_descr_id = $tree_manager->get_available_node_types();
-	
-	$hash_id_descr = array_flip($hash_descr_id);	    
-	$decoding_hash = array('node_id_descr' => $hash_id_descr,
+	$tproject_mgr = new testproject($db);
+
+	// ---------------------------------------------------------------------------------------------
+	// initialize configuration and options
+	// ---------------------------------------------------------------------------------------------
+	$tproject_id = $env['tproject_id'];
+	$tplan_id = $env['tplan_id'];
+
+    $my['filters'] = normalizeFilters($filters);
+
+	$node_types = $tproject_mgr->tree_manager->get_available_node_types();
+	$renderAux['hash_id_descr'] = array_flip($node_types);
+	$renderAux['testCasePrefix'] = $tproject_mgr->getTestCasePrefix($tproject_id) . config_get('testcase_cfg')->glue_character;
+
+	$decoding_hash = array('node_id_descr' => $renderAux['hash_id_descr'],
 		                   'status_descr_code' =>  $resultsCfg['status_code'],
 		                   'status_code_descr' =>  $resultsCfg['code_status']);
 	
-	$tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
+
+	$renderOpt['showTestCaseID'] = config_get('treemenu_show_testcase_id');
+	$renderOpt['hideTCs'] = isset($filters->hide_testcases) ? $filters->hide_testcases : false;
+	$renderOpt['showTestSuiteContents'] =  	isset($filters->show_testsuite_contents) ? 
+	                           			 	$filters->show_testsuite_contents : true;
+	$renderOpt['useCounters'] = isset($options->useCounters) ? $options->useCounters : false;
+	// $renderOpt['useColors'] = isset($options->useColours) ? $options->useColours : false;
+	$renderOpt['colorOptions'] = isset($options->colorOptions) ? $options->colorOptions : null;
+    $renderOpt['tc_action_enabled'] = isset($options->tc_action_enabled) ? $options->tc_action_enabled : false; 
+
+	$colorBySelectedBuild = isset($options->testcases_colouring_by_selected_build) ? 
+	                        $options->testcases_colouring_by_selected_build : false;
+	// ---------------------------------------------------------------------------------------------
+
+	$test_spec = getTestSpec4ExecTree(&$tplan_mgr->tree_manager,$env,$my['filters']);     
+	// new dBug($my['filters']);
+	// new dBug($test_spec);
 	
-	$nt2exclude = array('testplan' => 'exclude_me',
-		                'requirement_spec'=> 'exclude_me',
-		                'requirement'=> 'exclude_me');
-	
-	$nt2exclude_children = array('testcase' => 'exclude_my_children',
-		                         'requirement_spec'=> 'exclude_my_children');
-	
-  	// 20101003 - franciscom
-  	// remove test spec, test suites (or branches) that have ZERO test cases linked to test plan
-  	// 
-  	// IMPORTANT:
-  	// using 'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id))
-  	// makes the magic of ignoring test cases not linked to test plan.
-  	// This unexpected bonus can be useful on export test plan as XML.
-  	//
-  	$my['options']=array('recursive' => true, 'remove_empty_nodes_of_type' => $tree_manager->node_descr_id['testsuite'],
-  	                     'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id));
- 	$my['filters'] = array('exclude_node_types' => $nt2exclude,
- 	                       'exclude_children_of' => $nt2exclude_children);
-	
- 	// BUGID 3301 - added for filtering by toplevel testsuite
- 	if (isset($filters->{'filter_toplevel_testsuite'}) && is_array($filters->{'filter_toplevel_testsuite'})) {
- 		$my['filters']['exclude_branches'] = $filters->{'filter_toplevel_testsuite'};
- 	}
- 	
-    $test_spec = $tree_manager->get_subtree($tproject_id,$my['filters'],$my['options']);
-     
-	$test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
-	$test_spec['id'] = $tproject_id;
-	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
-	$map_node_tccount = array();
-	
-	$tplan_tcases = null;
-    $apply_other_filters=true;
-    
-	if($test_spec)
+	if( ($doIt = !is_null($test_spec)) )
 	{
-		if(is_null($tc_id) || $tc_id >= 0)
+		if(is_null($my['filters']->filter_tc_id) || $my['filters']->filter_tc_id >= 0)
 		{
-			$doFilterByKeyword = (!is_null($keyword_id) && $keyword_id > 0);
-			if($doFilterByKeyword)
-			{
-				$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id,$keywordsFilterType);
-			}
-			
-			// Multiple step algoritm to apply keyword filter on type=AND
-			// get_linked_tcversions filters by keyword ALWAYS in OR mode.
-			// BUGID 3406: user assignments per build
-			$opt = array('include_unassigned' => $include_unassigned, 'steps_info' => false,
-			             'user_assignments_per_build' => $build2filter_assignments);
-
-			// 20100417 - BUGID 3380 - execution type
-			$linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,
-                                   'assigned_to' => $assignedTo,
-                                   'cf_hash' =>  $cf_hash,
-                                   'platform_id' => $setting_platform,
-                                   'urgencyImportance' => $urgencyImportance,
-                                   'exec_type' => $execution_type);
-			
-			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
-			
-			// BUGID 3814: fixed keyword filtering with "and" selected as type
-			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'And')
-			{
-				$filteredSet = $tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);
-
-				// CAUTION: if $filteredSet is null,
-				// then get_linked_tcversions() thinks there are just no filters set,
-				// but really there are no testcases which match the wanted keyword criteria,
-				// so we have to set $tplan_tcases to null because there is no more filtering necessary
-				if ($filteredSet != null) {
-					$linkedFilters = array('tcase_id' => array_keys($filteredSet));
-					$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters);
-				} else {
-					$tplan_tcases = null;
-				}
-			}
+			list($tplan_tcases,$tck_map) = getTPlanTCases4ExecTree($db,$tproject_mgr,$tplan_mgr,$env,$my['filters']);
 		}   
+		
+		// new dBug($tplan_tcases);
+		// new dBug($tck_map);
 		
 		if (is_null($tplan_tcases))
 		{
 			$tplan_tcases = array();
 			$apply_other_filters=false;
 		}
-		
-		$filter_methods = config_get('execution_filter_methods');
-		
-		// 20100820 - asimon - refactoring for less redundant checks and better readibility
-		$ffn = array($filter_methods['status_code']['any_build'] => 'filter_by_status_for_any_build',
-			         $filter_methods['status_code']['all_builds'] => 'filter_by_same_status_for_all_builds',
-			         $filter_methods['status_code']['specific_build'] => 'filter_by_status_for_build',
-			         $filter_methods['status_code']['current_build'] => 'filter_by_status_for_build',
-			         $filter_methods['status_code']['latest_execution'] => 'filter_by_status_for_last_execution');
-		
-		$requested_filter_method = isset($filters->filter_result_method) ? $filters->filter_result_method : null;
-		$requested_filter_result = isset($filters->filter_result_result) ? $filters->filter_result_result : null;
-		
-		// if "any" was selected as filtering status, don't filter by status
-		$requested_filter_result = (array)$requested_filter_result;
-		if (in_array($resultsCfg['status_code']['all'], $requested_filter_result)) {
-			$requested_filter_result = null;
+		else
+		{
+			$tplan_tcases = applyFilters4ExeTree($tplan_mgr, $tplan_tcases, $env['tplan_id'], $resultsCfg, $filters); 
+			// new dBug($tplan_tcases);
 		}
-
-		if ($apply_other_filters && !is_null($requested_filter_method) && isset($ffn[$requested_filter_method])) {
-			// special case 1: when filtering by "not run" status in any build,
-			// we need another filter function
-			if (in_array($resultsCfg['status_code']['not_run'], $requested_filter_result)) {
-				$ffn[$filter_methods['status_code']['any_build']] = 'filter_not_run_for_any_build';
-			}
-			// special case 2: when filtering by "current build", we set the build to filter with
-			// to the build chosen in settings instead of the one in filters
-			if ($requested_filter_method == $filter_methods['status_code']['current_build']) {
-				$filters->filter_result_build = $filters->setting_build;
-			}
-			
-			// call the filter function and do the filtering
-			$tplan_tcases = $ffn[$requested_filter_method]($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
-
-			if (is_null($tplan_tcases)) {
-				$tplan_tcases = array();
-				$apply_other_filters=false;
-			}
-		}
-		// end 20100820 refactoring
 		
+		
+		$apply_other_filters = (!is_null($tplan_tcases) && (count($tplan_tcases) >0) );
+	
 		// BUGID 3450 - Change colors/counters in exec tree.
-		// Means: replace exec status in filtered array $tplan_tcases 
-		// by the one of last execution of selected build.
+		// Means: replace exec status in filtered array $tplan_tcases  by the one of last execution of selected build.
 		// Since this changes exec status, replacing is done after filtering by status.
-		// It has to be done before call to prepareNode() though,
-		// because that one sets the counters according to status.
-		if ($useColors && $colorBySelectedBuild) {
-			$tables = tlObject::getDBTables('executions');
-			foreach ($tplan_tcases as $id => $info) {
-				// get last execution result for selected build
-				$sql = " SELECT status FROM {$tables['executions']} E " .
-					   " WHERE tcversion_id = {$info['tcversion_id']} " .
-				       " AND testplan_id = {$tplan_id} " .
-					   " AND platform_id = {$info['platform_id']} " .
-					   " AND build_id = {$filters->setting_build} " .
-					   " ORDER BY execution_ts DESC ";
-				
-				// BUGID 3772: MS SQL - LIMIT CLAUSE can not be used
-				// get_recordset($sql,$fetch_mode = null,$limit = -1)
-				$result = null;
-				$rs = $db->get_recordset($sql,null,1);
-				if( !is_null($rs) )
-				{
-					$result = $rs[0]['status'];	
-				}
-				
-				if (is_null($result)) {
-					// if no value can be loaded it has to be set to not run
-					$result = $resultsCfg['status_code']['not_run'];
-				}
-				
-				if ($result != $info['exec_status']) {
-					$tplan_tcases[$id]['exec_status'] = $result;
-				}
-			}
+		// It has to be done before call to prepareNode() though, because that one sets the counters according to status.
+		if ($apply_other_filters && (!is_null($renderOpt['colorOptions']) && $colorBySelectedBuild) ) 
+		{
+			$tplan_tcases = updateStatus4ExecTree($db,$tplan_tcases,$env['tplan_id'],
+												  $filters->selected_build,$resultsCfg);
 		}
-		
+		// new dBug($tplan_tcases);
 		
 		// 20080224 - franciscom - 
 		// After reviewing code, seems that assignedTo has no sense because tp_tcs
 		// has been filtered.
 		// Then to avoid changes to prepareNode() due to include_unassigned,
 		// seems enough to set assignedTo to 0, if include_unassigned==true
-		$assignedTo = $include_unassigned ? null : $assignedTo;
+		$pnFilters['assignedTo'] = 	$my['filters']->filter_assigned_user_include_unassigned ? null : 
+									$my['filters']->filter_assigned_user;
 		
-		$pnFilters = array('assignedTo' => $assignedTo);
 		$keys2init = array('filter_testcase_name','filter_execution_type','filter_priority');
-		
 		foreach ($keys2init as $keyname) {
 			$pnFilters[$keyname] = isset($filters->{$keyname}) ? $filters->{$keyname} : null;
 		}
 	    		
-		// 20100412 - franciscom
-		$pnOptions = array('hideTestCases' => $bHideTCs, 'viewType' => 'executionTree');
+		$pnOptions = array('hideTestCases' => $renderOpt['hideTCs'], 'viewType' => 'executionTree');
+		
+		// new dBug($tplan_tcases); 
+		// new dBug($tck_map);
+		
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
 		                                 $tck_map,$tplan_tcases,$pnFilters,$pnOptions);
 
@@ -1029,19 +862,15 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		{
 			$test_spec[$key] = $testcase_counters[$key];
 		}
-	
-		
-		// BUGID 3516
-		// can now be left in form of array, will not be sent by URL anymore
-		//$keys = implode(array_keys($tplan_tcases), ",");
 		$keys = array_keys($tplan_tcases);
-		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,
-			                             $hash_id_descr,1,$menuUrl,$bHideTCs,$useCounters,$useColors,
-			                             $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
-        
+
+		// IMPORTANT NOTICE: process makes changes on $test_spec
+		renderExecTreeNode($env,1,$test_spec,$tplan_tcases,$menuUrl,$renderOpt,$renderAux);
 	}  // if($test_spec)
+
 	
-		
+	$treeMenu = new stdClass(); 
+	$treeMenu->menustring = '';
 	$treeMenu->rootnode=new stdClass();
 	$treeMenu->rootnode->name=$test_spec['text'];
 	$treeMenu->rootnode->id=$test_spec['id'];
@@ -1049,8 +878,11 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$treeMenu->rootnode->text=$test_spec['text'];
 	$treeMenu->rootnode->position=$test_spec['position'];	    
 	$treeMenu->rootnode->href=$test_spec['href'];
-	
-	if( !is_null($menustring) )
+	$menustring = '';
+
+
+	// new dBug($test_spec['childNodes']);
+	if( $doIt)
 	{  
 		// Change key ('childNodes')  to the one required by Ext JS tree.
 		$menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes']));
@@ -1061,11 +893,243 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		$menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
 	}  
 	
-	$treeMenu->menustring = $menustring;
+	// new dBug($treeMenu->rootnode->href);
 	
+	// $menustring = '[{"id":"12","name":"GABA","children":[{"id":"19","name":"API","children":[{"id":"20","name":"set execution result","children":[{"id":"21","name":"set exec result - test plan WITHOUT PLATFORMS","children":[],"leaf":true,"testlink_node_type":"testcase","testlink_node_name":"set exec result - test plan WITHOUT PLATFORMS","text":"PTW-1<\/b>:set exec result - test plan WITHOUT PLATFORMS<\/span>","position":"1000","href":"javascript:ST(21,22)"},{"id":"23","name":"set exec result - test plan WITH WRONG PLATFORM NAME","children":[],"leaf":true,"testlink_node_type":"testcase","testlink_node_name":"set exec result - test plan WITH WRONG PLATFORM NAME","text":"PTW-2<\/b>:set exec result - test plan WITH WRONG PLATFORM NAME<\/span>","position":"1010","href":"javascript:ST(23,24)"},{"id":"25","name":"set exec result - test plan WITH WRONG PLATFORM ID","children":[],"leaf":true,"testlink_node_type":"testcase","testlink_node_name":"set exec result - test plan WITH WRONG PLATFORM ID","text":"PTW-3<\/b>:set exec result - test plan WITH WRONG PLATFORM ID<\/span>","position":"1020","href":"javascript:ST(25,26)"}],"leaf":false,"testlink_node_type":"testsuite","testlink_node_name":"set execution result","text":"set execution result (3)","position":"1","href":"javascript:STS(20,0)"}],"leaf":false,"testlink_node_type":"testsuite","testlink_node_name":"API","text":"API (3)","position":"0","href":"javascript:STS(19,0)"},{"id":"32","name":"Custom Fields Management","children":[{"id":"33","name":"EXPORT - Go back management","children":[],"leaf":true,"testlink_node_type":"testcase","testlink_node_name":"EXPORT - Go back management","text":"PTW-6<\/b>:EXPORT - Go back management<\/span>","position":"1000","href":"javascript:ST(33,34)"},{"id":"35","name":"IMPORT - Go back management","children":[],"leaf":true,"testlink_node_type":"testcase","testlink_node_name":"IMPORT - Go back management","text":"PTW-7<\/b>:IMPORT - Go back management<\/span>","position":"1010","href":"javascript:ST(35,36)"}],"leaf":false,"testlink_node_type":"testsuite","testlink_node_name":"Custom Fields Management","text":"Custom Fields Management (2)","position":"2","href":"javascript:STS(32,0)"}],"leaf":false,"testlink_node_type":"testsuite","testlink_node_name":"GABA","text":"GABA (5)","position":"1","href":"javascript:STS(12,0)"}]';
+	$treeMenu->menustring = $menustring;
+
+	// new dBug($menustring);
+		
 	return array($treeMenu, $keys);
 }
 
+
+
+
+
+function getTestSpec4ExecTree(&$treeMgr,$enviro,$filters)
+{
+
+	$node_types = $treeMgr->get_available_node_types();
+
+  	// 20101003 - franciscom
+  	// remove test spec, test suites (or branches) that have ZERO test cases linked to test plan
+  	// 
+  	// IMPORTANT:
+  	// using 'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id))
+  	// makes the magic of ignoring test cases not linked to test plan.
+  	// This unexpected bonus can be useful on export test plan as XML.
+  	//
+  	$my['options']= array('recursive' => true, 'remove_empty_nodes_of_type' => $node_types['testsuite'],
+  	                      'order_cfg' => 
+  	                      array("type" =>'exec_order',"tplan_id" => $enviro['tplan_id']));
+  	                      
+ 	$my['filters'] = array('exclude_node_types' => array('testplan' => 'exclude_me',
+ 														 'requirement_spec'=> 'exclude_me',
+ 														 'requirement'=> 'exclude_me'),
+ 	                       'exclude_children_of' => array('testcase' => 'exclude_my_children',
+ 	                       								  'requirement_spec'=> 'exclude_my_children'));
+	$my['filters']['exclude_branches'] = null;
+
+ 	// BUGID 3301 - added for filtering by toplevel testsuite
+ 	if (isset($filters->filter_toplevel_testsuite) && is_array($filters->filter_toplevel_testsuite)) 
+ 	{
+ 		$my['filters']['exclude_branches'] = $filters->filter_toplevel_testsuite;
+ 	}
+ 	
+    $test_spec = $treeMgr->get_subtree($enviro['tproject_id'],$my['filters'],$my['options']);
+     
+	$test_spec['name'] = $enviro['tproject_name'] . " / " . $enviro['tplan_name'];  // To be discussed
+	$test_spec['id'] = $enviro['tproject_id'];
+	$test_spec['node_type_id'] = $node_types['testproject'];
+
+	return $test_spec;
+
+}
+
+
+
+function getTPlanTCases4ExecTree(&$dbHandler,&$tprojectMgr,&$tplanMgr,$enviro,$filters)
+{
+	$tcaseMgr = new testcase($dbHandler);
+	$tplan_tcases = null;
+	$tck_map = null;
+	
+	if( ($doFilterByKeyword = (!is_null($filters->filter_keywords) && $filters->filter_keywords > 0)) )
+	{
+		$tck_map = $tprojectMgr->get_keywords_tcases($enviro['tproject_id'],$filters->filter_keywords,
+													 $filters->filter_keywords_filter_type);
+	}
+	
+	// Multiple step algoritm to apply keyword filter on type=AND
+	// get_linked_tcversions filters by keyword ALWAYS in OR mode.
+	// BUGID 3406: user assignments per build
+	$opt = array('steps_info' => false,
+				 'include_unassigned' => $filters->filter_assigned_user_include_unassigned,
+	             'user_assignments_per_build' => $filters->setting_build);
+
+	$linkedFilters = array('tcase_id' => $filters->filter_tc_id, 
+						   'keyword_id' => $filters->filter_keywords,
+                           'assigned_to' => $filters->filter_assigned_user,
+                           'cf_hash' =>  $filters->filter_custom_fields,
+                           'platform_id' => $filters->setting_platform,
+                           'urgencyImportance' => $filters->filter_priority,
+                           'exec_type' => $filters->filter_execution_type);
+	
+	$tplan_tcases = $tplanMgr->get_linked_tcversions($enviro['tplan_id'],$linkedFilters,$opt);
+	
+	// BUGID 3814: fixed keyword filtering with "and" selected as type
+	if($tplan_tcases && $doFilterByKeyword && $filters->filter_keywords_filter_type == 'And')
+	{
+		$filteredSet = $tcaseMgr->filterByKeyword(array_keys($tplan_tcases),
+												  $filters->filter_keywords,
+												  $filters->filter_keywords_filter_type);
+
+		// CAUTION: 
+		// if $filteredSet is null, then get_linked_tcversions() thinks there are just no filters set,
+		// but really there are no testcases which match the wanted keyword criteria,
+		// so we have to set $tplan_tcases to null because there is no more filtering necessary
+		$tplan_tcases = null;
+		if ($filteredSet != null) 
+		{
+			$tplan_tcases = $tplanMgr->get_linked_tcversions($enviro['tplan_id'],
+															 array('tcase_id' => array_keys($filteredSet)) );
+		}
+	}
+	return array($tplan_tcases,$tck_map);
+}
+
+
+
+/**
+IMPORTANT NOTICE / CRITIC: if a new filter is defined it's key has to be defined here
+*/
+function normalizeFilters($fltrObj)
+{
+	
+	$key2null = array('filter_tc_id','filter_result_build','filter_assigned_user','setting_platform',
+					  'filter_execution_type','filter_result_result','filter_custom_fields','filter_priority');
+	foreach($key2null as $tkey)
+	{
+		$fltrObj->{$tkey} = isset($fltrObj->{$tkey}) ? $fltrObj->{$tkey} : null;
+	}	
+	
+	
+	// now special cases
+	$fltrObj->filter_assigned_user_include_unassigned = isset($fltrObj->filter_assigned_user_include_unassigned) ?
+	                      								$fltrObj->filter_assigned_user_include_unassigned : false;
+
+	$fltrObj->hide_testcases = isset($fltrObj->hide_testcases) ? $fltrObj->hide_testcases : false;
+	$fltrObj->show_testsuite_contents = isset($fltrObj->show_testsuite_contents) ? $fltrObj->show_testsuite_contents : true;
+
+	
+	// BUGID 3406 - user assignments per build
+	$fltrObj->setting_build = isset($fltrObj->setting_build) ? $fltrObj->setting_build : 0;
+
+	if (property_exists($fltrObj, 'filter_keywords') && !is_null($fltrObj->filter_keywords)) {
+		$keyword_id = $fltrObj->filter_keywords;
+		$keywordsFilterType = $fltrObj->filter_keywords_filter_type;
+	}
+	else
+	{
+		$fltrObj->filter_keywords = 0;
+		$fltrObj->filter_keywords_filter_type = 'Or';
+	}
+	
+	return $fltrObj;
+}	
+
+
+
+function applyFilters4ExeTree(&$tplanMgr, $tplan_tcases, $tplan_id, $resultsCfg, $filters) 
+{
+	// echo __FUNCTION__;
+	$items = $tplan_tcases;
+	
+	$filter_methods = config_get('execution_filter_methods');
+	
+	// 20100820 - asimon - refactoring for less redundant checks and better readibility
+	$ffn = array($filter_methods['status_code']['any_build'] => 'filter_by_status_for_any_build',
+		         $filter_methods['status_code']['all_builds'] => 'filter_by_same_status_for_all_builds',
+		         $filter_methods['status_code']['specific_build'] => 'filter_by_status_for_build',
+		         $filter_methods['status_code']['current_build'] => 'filter_by_status_for_build',
+		         $filter_methods['status_code']['latest_execution'] => 'filter_by_status_for_last_execution');
+	
+	$requested_filter_method = isset($filters->filter_result_method) ? $filters->filter_result_method : null;
+	$requested_filter_result = isset($filters->filter_result_result) ? $filters->filter_result_result : null;
+	
+	// if "any" was selected as filtering status, don't filter by status
+	$requested_filter_result = (array)$requested_filter_result;
+	
+	// new dBug($requested_filter_method);
+	// new dBug($requested_filter_result);
+	
+	if (in_array($resultsCfg['status_code']['all'], $requested_filter_result)) {
+		$requested_filter_result = null;
+	}
+
+	if (!is_null($requested_filter_method) && isset($ffn[$requested_filter_method])) 
+	{
+		// special case 1: when filtering by "not run" status in any build,
+		// we need another filter function
+		if (in_array($resultsCfg['status_code']['not_run'], $requested_filter_result)) {
+			$ffn[$filter_methods['status_code']['any_build']] = 'filter_not_run_for_any_build';
+		}
+		// special case 2: when filtering by "current build", we set the build to filter with
+		// to the build chosen in settings instead of the one in filters
+		if ($requested_filter_method == $filter_methods['status_code']['current_build']) {
+			$filters->filter_result_build = $filters->setting_build;
+		}
+		
+		// call the filter function and do the filtering
+		$items = $ffn[$requested_filter_method]($tplanMgr, $tplan_tcases, $tplan_id, $filters);
+
+		if (is_null($items)) {
+			$items = array();
+		}
+	}
+
+	return $items;
+}
+
+
+function updateStatus4ExecTree(&$dbHandler,$itemSet,$tplanID,$buildID,$resultsCfg)
+{
+
+	$colorizedItems = $itemSet;
+	$tables = tlObject::getDBTables('executions');
+
+	foreach ($itemSet as $id => $info) 
+	{
+		// get last execution result for selected build
+		$sql = " SELECT status FROM {$tables['executions']} E " .
+			   " WHERE tcversion_id = {$info['tcversion_id']} " .
+		       " AND testplan_id = {$tplan_id} " .
+			   " AND platform_id = {$info['platform_id']} " .
+			   " AND build_id = {$buildID} " .
+			   " ORDER BY execution_ts DESC ";
+		
+		// BUGID 3772: MS SQL - LIMIT CLAUSE can not be used
+		// get_recordset($sql,$fetch_mode = null,$limit = -1)
+		$result = null;
+		$rs = $dbHandler->get_recordset($sql,null,1);
+		if( !is_null($rs) )
+		{
+			$result = $rs[0]['status'];	
+		}
+		
+		if (is_null($result)) {
+			// if no value can be loaded it has to be set to not run
+			$result = $resultsCfg['status_code']['not_run'];
+		}
+		
+		if ($result != $info['exec_status']) {
+			$colorizedItems[$id]['exec_status'] = $result;
+		}
+	}
+	
+	return colorizedItems;
+}
 
 /**
  * 
@@ -1078,20 +1142,20 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
  * 
  * @return datatype description
  * 
- * @internal Revisions:
- *	20100611 - franciscom - removed useless $getArguments
- *	20071229 - franciscom -added $useCounters,$useColors
+ * @internal revisions
  */
-function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
-                            $tc_action_enabled,$linkto,$bHideTCs,$useCounters,$useColors,
-                            $showTestCaseID,$testCasePrefix,$showTestSuiteContents)
+// function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
+//                            $tc_action_enabled,$linkto,$bHideTCs,$useCounters,$useColors,
+//                            $showTestCaseID,$testCasePrefix,$showTestSuiteContents)
+                            
+function renderExecTreeNode($env,$level,&$node,&$tcase_node,$linkto,$options,$auxCfg)
 {
-	$node_type = $hash_id_descr[$node['node_type_id']];
-	$menustring = '';
-    extjs_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_enabled,$bHideTCs,
-                                   $useCounters,$useColors,$showTestCaseID,$testCasePrefix,
-                                   $showTestSuiteContents);
+	$node_type = $auxCfg['hash_id_descr'][$node['node_type_id']];
+	$nodeAttr = array('node_type' => $node_type, 'testCasePrefix' => $auxCfg['testCasePrefix']);
+    extjs_renderExecTreeNodeOnOpen($node,$nodeAttr,$tcase_node,$options,$env);
 	
+	// echo $node['id'] . '<br>';
+	// new dBug($tcase_node);
 	
 	if( isset($tcase_node[$node['id']]) )
 	{
@@ -1109,14 +1173,9 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
 			{
 				continue;
 			}
-			$menustring .= renderExecTreeNode($level+1,$node['childNodes'][$idx],$tcase_node,
-			                                  $hash_id_descr,
-			                                  $tc_action_enabled,$linkto,$bHideTCs,
-			                                  $useCounters,$useColors,$showTestCaseID,
-			                                  $testCasePrefix,$showTestSuiteContents);
+			renderExecTreeNode($env,$level+1,$node['childNodes'][$idx],$tcase_node,$linkto,$options,$auxCfg);
 		}
 	}
-	return $menustring;
 }
 
 
@@ -1269,12 +1328,9 @@ function create_counters_info(&$node,$useColors)
 /**
  * VERY IMPORTANT: node must be passed BY REFERENCE
  * 
- * @internal Revisions:
- *	20080629 - franciscom - fixed bug missing argument for call to ST
+ * @internal revisions:
  */
-function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action_enabled,
-                                        $bForPrinting,$useCounters=1,$useColors=null,
-                                        $showTestCaseID=1,$testCasePrefix,$showTestSuiteContents=1)
+function extjs_renderExecTreeNodeOnOpen(&$node,$nodeAttr,$tcase_node,$options,$env)
 {
 	static $resultsCfg;
 	static $status_descr_code;
@@ -1289,6 +1345,7 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 		$status_verbose=$resultsCfg['status_label'];
 	}
 	
+	$label = '';
 	$name = filterString($node['name']);
 	$buildLinkTo = 1;
 	$pfn = "ST";
@@ -1297,43 +1354,42 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	$versionID = 0;
 	$node['leaf']=false;
 	
-	$testcaseColouring=1;
-	$countersColouring=1;
-	if( !is_null($useColors) )
+	$useColorOn['testcases'] = true;
+	$useColorOn['counters'] = true;
+	if( !is_null($options['colorOptions']) )
 	{
-		$testcaseColouring=$useColors->testcases;
-		$countersColouring=$useColors->counters;
+		$useColorOn['testcases'] = $options['useColors']->testcases ? true : false;
+		$useColorOn['counters'] = $options['useColors']->counters ? true : false;
 	}
 	
-	// $doIt=true;
 	// custom Property that will be accessed by EXT-JS using node.attributes
-   	// 20100908 - tlNodeType -> 'testlink_node_type'
-   	$node['testlink_node_type'] = $node_type;
+   	// tlNodeType -> 'testlink_node_type'
+   	$node['testlink_node_type'] = $nodeAttr['node_type'];
 	$node['testlink_node_name'] = $name;
-	switch($node_type)
+	switch($nodeAttr['node_type'])
 	{
 		case 'testproject':
 			$create_counters=1;
-			$pfn = $bForPrinting ? 'TPLAN_PTP' : 'SP';
+			$pfn = $options['hideTCs'] ? 'TPLAN_PTP' : 'SP';
 			$label =  $name . " (" . $testcase_count . ")";
 		break;
 			
 		case 'testsuite':
 			$create_counters=1;
 			$label =  $name . " (" . $testcase_count . ")";	
-			if( $bForPrinting )
+			if( $options['hideTCs'] )
 			{
 				$pfn = 'TPLAN_PTS';
 			}
 			else
 			{
-				$pfn = $showTestSuiteContents ? 'STS' : null; 
+				$pfn = $options['showTestSuiteContents'] ? 'STS' : null; 
 			}
 		break;
 			
 		case 'testcase':
 			$node['leaf'] = true;
-			$buildLinkTo = $tc_action_enabled;
+			$buildLinkTo = $options['tc_action_enabled'];
 			if (!$buildLinkTo)
 			{
 				$pfn = null;
@@ -1343,12 +1399,12 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 			$status_code = $tcase_node[$node['id']]['exec_status'];
 			$status_descr = $status_code_descr[$status_code];
 			$status_text = lang_get($status_verbose[$status_descr]);
-			$css_class = $testcaseColouring ? (" class=\"light_{$status_descr}\" ") : '';   
+			$css_class = $useColorOn['testcases'] ? (" class=\"light_{$status_descr}\" ") : '';   
 			$label = "<span {$css_class} " . '  title="' . $status_text .	'" alt="' . $status_text . '">';
 			
-			if($showTestCaseID)
+			if($options['showTestCaseID'])
 			{
-				$label .= "<b>".htmlspecialchars($testCasePrefix.$node['external_id'])."</b>:";
+				$label .= "<b>".htmlspecialchars($nodeAttr['testCasePrefix'] . $node['external_id'])."</b>:";
 			} 
 			$label .= "{$name}</span>";
 			
@@ -1359,16 +1415,21 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	if($create_counters)
 	{
 		$label = $name ." (" . $testcase_count . ")";
-		if($useCounters)
+		if($options['useCounters'])
 		{
-			$add_html = create_counters_info($node,$countersColouring);        
+			$add_html = create_counters_info($node,$useColorOn['counters']);        
 			$label .= $add_html; 
 		}
 	}
     
 	$node['text'] = $label;
 	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
-	$node['href'] = is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$versionID})";
+	$node['href'] = '';
+	if( !is_null($pfn) )
+	{
+		$node['href'] = "javascript:{$pfn}({$env['tproject_id']},{$env['tplan_id']},{$node['id']},{$versionID})";
+	}
+
 	
 	// Remove useless keys
 	foreach($status_descr_code as $key => $code)
@@ -1744,7 +1805,7 @@ function extjs_renderTestSpecTreeNodeOnOpen(&$node,$nodeAttr,$options,$env)
 	switch($nodeAttr['node_type'])
 	{
 		case 'testproject':
-			$pfn = $bForPrinting ? 'TPROJECT_PTP' : 'EP';
+			$pfn = $options['forPrinting'] ? 'TPROJECT_PTP' : 'EP';
 			$label =  $name . " (" . $testcase_count . ")";
 			break;
 			
@@ -1974,6 +2035,8 @@ function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testpr
 	
 	return $treeMenu;
 }
+
+
 /**
  * Generate a filtered map with all fitting requirements in it.
  * 

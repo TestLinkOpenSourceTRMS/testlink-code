@@ -784,7 +784,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		
 		$tree_menu = null;
 		$filters = $this->get_active_filters();
-		$additional_info = null;
+		$treeOpt = null;
 		$options = null;
 		$loader = '';
 		$children = "[]";
@@ -805,7 +805,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 //		echo __FUNCTION__;			
 //		echo $this->mode;
 		$environment = array('tproject_id' => $this->args->testproject_id, 
-							 'tproject_name' => $this->args->testproject_name);, 
+							 'tproject_name' => $this->args->testproject_name, 
 							 'tplan_id' => 0,'tplan_name' => '');
 		if( property_exists($this->args,'testplan_id') ) 							 
 		{
@@ -825,38 +825,28 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			$this->args->testplan_name = '';
 		}
 				 
-					
+		// echo __LINE__ . ':' . $this->mode . '<br>'; die(__FILE__);			
 		switch ($this->mode) {
 			
 			case 'plan_mode':
 				// No lazy loading here.
-					
-				$additional_info = new stdClass();
-				$additional_info->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
-				$additional_info->useColours = COLOR_BY_TC_STATUS_OFF;
-				$additional_info->testcases_colouring_by_selected_build = DISABLED;
+				$treeOpt = new stdClass();
+				$treeOpt->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
+				$treeOpt->colorOptions = null;
+				$treeOpt->testcases_colouring_by_selected_build = DISABLED;
 				
 				$filters->show_testsuite_contents = 1;
-				$filters->hide_testcases = 0;
-	
-				if ($this->args->feature == 'test_urgency') {
-					$filters->hide_testcases = 1;
-				}
+				$filters->hide_testcases = ($this->args->feature == 'test_urgency') ? 1 : 0;
 				
-				list($tree_menu, $testcases_to_show) = generateExecTree($this->db,
-		                                                       $gui->menuUrl,
-		                                                       $this->args->testproject_id,
-		                                                       $this->args->testproject_name,
-		                                                       $this->args->testplan_id,
-		                                                       $this->args->testplan_name,
-		                                                       $filters,
-		                                                       $additional_info);
+				list($tree_menu, $testcases_to_show) = generateExecTree($this->db,$gui->menuUrl,
+		                                                       			$environment,$filters,$treeOpt);
 				
 				$this->set_testcases_to_show($testcases_to_show);
-				
 				$root_node = $tree_menu->rootnode;
 				$children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
 				$cookie_prefix = $this->args->feature;
+				// echo 'chi';
+				// new dBug($children);
 			break;
 			
 			case 'edit_mode':
@@ -940,27 +930,18 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				// No lazy loading here.
 				// Filtering is always done in execution mode, no matter if user enters data or not,
 				// since the user should usually never see the whole tree here.
-				$additional_info = new stdClass();
 				$filters->hide_testcases = false;
 				$filters->show_testsuite_contents = $this->configuration->exec_cfg->show_testsuite_contents;
-				$additional_info->useCounters = $this->configuration->exec_cfg->enable_tree_testcase_counters;
-				
-				$additional_info->useColours = new stdClass();
-				$additional_info->useColours->testcases = 
-					$this->configuration->exec_cfg->enable_tree_testcases_colouring;
-				$additional_info->useColours->counters = 
-					$this->configuration->exec_cfg->enable_tree_counters_colouring;
-				$additional_info->testcases_colouring_by_selected_build =
-					$this->configuration->exec_cfg->testcases_colouring_by_selected_build; 
+
+				$treeOpt = new stdClass();
+				$treeOpt->useCounters = $this->configuration->exec_cfg->enable_tree_testcase_counters;
+				$treeOpt->colourOptions = new stdClass();
+				$treeOpt->colourOptions->testcases = $this->configuration->exec_cfg->enable_tree_testcases_colouring;
+				$treeOpt->colourOptions->counters =  $this->configuration->exec_cfg->enable_tree_counters_colouring;
+				$treeOpt->testcases_colouring_by_selected_build = $this->configuration->exec_cfg->testcases_colouring_by_selected_build; 
 					
-				list($tree_menu, $testcases_to_show) = generateExecTree($this->db,
-				                                                        $gui->menuUrl,
-				                                                        $this->args->testproject_id,
-				                                                        $this->args->testproject_name,
-				                                                        $this->args->testplan_id,
-				                                                        $this->args->testplan_name,
-				                                                        $filters,
-				                                                        $additional_info);
+				list($tree_menu, $testcases_to_show) = generateExecTree($this->db,$gui->menuUrl,
+				                                                        $environment,$filters,treeOpt);
 					
 				$this->set_testcases_to_show($testcases_to_show);
 				
@@ -978,6 +959,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$gui->ajaxTree->children = $children;
 		$gui->ajaxTree->cookiePrefix = $cookie_prefix;
 		$gui->ajaxTree->dragDrop = $drag_and_drop;
+		
+		// new dBug($gui->ajaxTree);
+		
 	} // end of method
 	
 	private function init_setting_refresh_tree_on_action() {

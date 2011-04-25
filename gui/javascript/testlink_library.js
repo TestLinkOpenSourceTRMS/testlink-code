@@ -189,10 +189,11 @@ function ST(id,version)
   returns:
 
 */
-function STS(id)
+function STS(tproject_id,tplan_id,id)
 {
   var _FUNCTION_NAME_='STS';
-	var action_url = fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
+	var action_url = fRoot+'/'+menuUrl+'?tproject_id=' + tproject_id + '&tplan_id=' + tplan_id + 
+					 'level=testsuite&id='+id+args;
 	// alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
 }

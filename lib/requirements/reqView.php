@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2011/01/10 15:38:56 $ by $Author: asimon83 $
- * @author Martin Havlat
- * 
+ * @filesource	reqView.php,v $
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2008-2011, TestLink community 
+ * @link 		http://www.teamst.org/index.php
+ *
  * Screen to view content of requirement.
  *
  *	@internal revision
@@ -19,7 +20,6 @@
  *                                   as it is now used from multiple files
  *	20100319 - franciscom - refactoring of BUGID 1748 
  *  20100319 - asimon - BUGID 1748 - implemented display of req relations
- *	20091217 - franciscom - display type and expected coverage
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -30,7 +30,7 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
-$args = init_args();
+$args = init_args($db);
 $gui = initialize_gui($db,$args);
 $smarty = new TLSmarty();
 
@@ -47,24 +47,33 @@ $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
 /**
  *
  */
-function init_args()
+function init_args(&$dbHandler)
 {
+    // BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	// BUGID 1748
 	// BUGID 4038
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
 	                 "req_version_id" => array(tlInputParameter::INT_N),
+	                 "tproject_id" => array(tlInputParameter::INT_N),
 			         "showReqSpecTitle" => array(tlInputParameter::INT_N),
 			         "relation_add_result_msg" => array(tlInputParameter::STRING_N));	
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
-	
-    // BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	$args->req_id = $args->requirement_id;
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+
+	$args->tproject_name = '';
+    if($args->tproject_id > 0)
+    {
+    	$treeMgr = new tree($dbHandler);
+    	$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+    	$args->tproject_name = $dummy['name'];
+    }
+
+
     $user = $_SESSION['currentUser'];
 	$args->userID = $user->dbID;
 	

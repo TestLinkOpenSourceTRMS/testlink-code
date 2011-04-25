@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2010/10/26 20:03:30 $ by $Author: franciscom $
- * @author Martin Havlat
- * 
+ * @filesource	reqImport.php
+ * @package 	TestLink
+ * @copyright 	2008-2011, TestLink community 
+ * @author 		Martin Havlat
+ * @link 		http://www.teamst.org/index.php
+ *
  * Import ONLY requirements to a req specification. 
  * Supported: simple CSV, Doors CSV, XML, DocBook
  *
@@ -15,8 +16,6 @@
  * 20100914 - franciscom - manage option skip frozen requirements
  * 20100908 - asimon -  BUGID 3761: requirement tree refresh after requirement import
  * 20100321 - franciscom - work on import child requirements XML format - not finished
- * 20081103 - sisajr - DocBook XML extension
- * 20080504 - franciscom - removed tmp file after import
  *
  */
 require_once("../../config.inc.php");
@@ -25,14 +24,14 @@ require_once('requirements.inc.php');
 require_once('xml.inc.php');
 require_once('csv.inc.php');
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $req_spec_mgr = new requirement_spec_mgr($db);
 $req_mgr = new requirement_mgr($db);
 
 
-$args = init_args();
+$args = init_args($db);
 $gui = initializeGui($db,$args,$_SESSION,$req_spec_mgr,$req_mgr);
 switch($args->doAction)
 {
@@ -124,7 +123,7 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
   returns: 
 
 */
-function init_args()
+function init_args(&$dbHandler)
 {
     $args = new stdClass();
     $request = strings_stripSlashes($_REQUEST);
@@ -160,8 +159,18 @@ function init_args()
     }
     
     $args->achecked_req = isset($request['achecked_req']) ? $request['achecked_req'] : null;
-    $args->tproject_id = $_SESSION['testprojectID'];
-    $args->tproject_name = $_SESSION['testprojectName'];
+
+    $args->tproject_name = '';
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+    if($args->tproject_id > 0)
+    {
+    	$treeMgr = new tree($dbHandler);
+    	$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+    	$args->tproject_name = $dummy['name'];
+    }
+
+
+
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
    	$args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'items';
 

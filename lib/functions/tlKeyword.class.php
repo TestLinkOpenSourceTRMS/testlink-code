@@ -5,10 +5,9 @@
  * 
  * Management and assignment of keywords
  *
+ * @filesource	tlKeyword.class.php
  * @package 	TestLink
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlKeyword.class.php,v 1.4 2010/02/10 19:21:00 franciscom Exp $
- * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/keyword.class.php?view=markup
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions

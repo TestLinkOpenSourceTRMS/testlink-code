@@ -2,24 +2,23 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: reqSpecListTree.php,v 1.13 2010/08/07 22:43:12 asimon83 Exp $
+* 	@filesource	reqSpecListTree.php
 * 	@author 	Francisco Mancardi (francisco.mancardi@gmail.com)
 * 
 * 	Tree menu with requirement specifications.
 *
-*   @internal revisions: 
-*    20100808 - asimon - heavy refactoring for requirement filtering
-*    20080824 - franciscom - added code to manage EXTJS tree component
+*   @internal revisions
+*   20100808 - asimon - heavy refactoring for requirement filtering
 */
 
 require_once('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
 require_once('requirements.inc.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-$args = init_args();
+$args = init_args($db);
 $gui = initializeGui($args);
 
 // new class for filter controling/handling
@@ -30,15 +29,21 @@ $smarty = new TLSmarty();
 
 $smarty->assign('gui', $gui);
 $smarty->assign('control', $control);
-//$smarty->assign('tree', null);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
-function init_args()
+function init_args(&$dbHandler)
 {
     $args = new stdClass();
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'undefned';
+    $args->tproject_name = '';
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	if($args->tproject_id > 0) 
+	{
+		$treeMgr = new tree($dbHandler);
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+	}
+
     $args->basehref = $_SESSION['basehref'];
     
     return $args;

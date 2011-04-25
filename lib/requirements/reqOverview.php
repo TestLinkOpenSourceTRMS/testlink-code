@@ -1,19 +1,19 @@
 <?php
-
 /**
  * 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @package TestLink
- * @author Andreas Simon
- * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.41 2010/12/11 11:42:32 franciscom Exp $
+ * @filesource	reqOverview.php
+ * @package 	TestLink
+ * @author 		Andreas Simon
+ * @copyright 	2010, TestLink community
+ * @link 		http://www.teamst.org/index.php
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
- * rev:
+ * @internal revisions
  *
  * 20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
  * 20101116 - Julian - Added Author to Created column and Modifier to Last modified column
@@ -328,10 +328,10 @@ function init_args(&$tproject_mgr)
 	}
 	$args->all_versions = $_SESSION['all_versions'] = $selection;
 	
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
-
-	if($args->tproject_id > 0) {
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	$args->tproject_name = '';
+	if($args->tproject_id > 0) 
+	{
 		$tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 		$args->tproject_name = $tproject_info['name'];
 		$args->tproject_description = $tproject_info['notes'];

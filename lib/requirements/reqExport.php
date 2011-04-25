@@ -3,13 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: reqExport.php,v $
- *
- * @version $Revision: 1.10 $
- * @modified $Date: 2010/03/21 19:28:34 $ by $Author: franciscom $
+ * @filesource	reqExport.php
+ * @package 	TestLink
+ * @copyright 	2008-2011, TestLink community 
+ * @link 		http://www.teamst.org/index.php
  *
  * Allows users to export requirements.
  *
+ * @internal revisions
  * 20100321 - franciscom - manage export of :
  *			               req. spec => full tree or branch (new to 1.9)
  *                         child (direct children) requirements inside a req. spec
@@ -65,11 +66,8 @@ function init_args()
 	$args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
 	$args->export_filename = isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : "";
 	
-	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
-    if( $args->tproject_id == 0 )
-    {	
-		$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	}
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+
 	$args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'items';
 	return $args;  
 }

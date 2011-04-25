@@ -3,10 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource	reqCompareVersions.php
  * @package 	TestLink
- * @author asimon
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqCompareVersions.php,v 1.12 2011/01/07 18:29:10 asimon83 Exp $
+ * @author 		asimon
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected requirements versions with each other.
@@ -244,8 +244,10 @@ function init_args()
 	$args->compare_selected_versions = isset($_REQUEST['compare_selected_versions']);
 	$args->left_item_id = isset($_REQUEST['left_item_id']) ? intval($_REQUEST['left_item_id']) : -1;
 	$args->right_item_id = isset($_REQUEST['right_item_id']) ? intval($_REQUEST['right_item_id']) :  -1;
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	// 20110107 - new diff engine
+
+
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+
 	$args->use_daisydiff = isset($_REQUEST['use_html_comp']);
 
 	$diffEngineCfg = config_get("diffEngine");

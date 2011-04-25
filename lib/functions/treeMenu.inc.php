@@ -835,7 +835,6 @@ function generateExecTree(&$db,&$menuUrl,$env,$filters,$options)
 			$tplan_tcases = updateStatus4ExecTree($db,$tplan_tcases,$env['tplan_id'],
 												  $filters->selected_build,$resultsCfg);
 		}
-		// new dBug($tplan_tcases);
 		
 		// 20080224 - franciscom - 
 		// After reviewing code, seems that assignedTo has no sense because tp_tcs
@@ -1021,6 +1020,7 @@ function normalizeFilters($fltrObj)
 
 	$fltrObj->hide_testcases = isset($fltrObj->hide_testcases) ? $fltrObj->hide_testcases : false;
 	$fltrObj->show_testsuite_contents = isset($fltrObj->show_testsuite_contents) ? $fltrObj->show_testsuite_contents : true;
+	$fltrObj->tc_action_enabled = isset($fltrObj->tc_action_enabled) ? $fltrObj->tc_action_enabled : true;
 
 	
 	// BUGID 3406 - user assignments per build
@@ -1358,8 +1358,8 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$nodeAttr,$tcase_node,$options,$e
 	$useColorOn['counters'] = true;
 	if( !is_null($options['colorOptions']) )
 	{
-		$useColorOn['testcases'] = $options['useColors']->testcases ? true : false;
-		$useColorOn['counters'] = $options['useColors']->counters ? true : false;
+		$useColorOn['testcases'] = $options['colorOptions']->testcases ? true : false;
+		$useColorOn['counters'] = $options['colorOptions']->counters ? true : false;
 	}
 	
 	// custom Property that will be accessed by EXT-JS using node.attributes

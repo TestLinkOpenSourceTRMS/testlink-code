@@ -834,6 +834,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				$treeOpt->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
 				$treeOpt->colorOptions = null;
 				$treeOpt->testcases_colouring_by_selected_build = DISABLED;
+				$treeOpt->tc_action_enabled = true;
 				
 				$filters->show_testsuite_contents = 1;
 				$filters->hide_testcases = ($this->args->feature == 'test_urgency') ? 1 : 0;
@@ -845,8 +846,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				$root_node = $tree_menu->rootnode;
 				$children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
 				$cookie_prefix = $this->args->feature;
-				// echo 'chi';
-				// new dBug($children);
 			break;
 			
 			case 'edit_mode':
@@ -934,6 +933,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				$filters->show_testsuite_contents = $this->configuration->exec_cfg->show_testsuite_contents;
 
 				$treeOpt = new stdClass();
+				$treeOpt->tc_action_enabled = true;
 				$treeOpt->useCounters = $this->configuration->exec_cfg->enable_tree_testcase_counters;
 				$treeOpt->colourOptions = new stdClass();
 				$treeOpt->colourOptions->testcases = $this->configuration->exec_cfg->enable_tree_testcases_colouring;

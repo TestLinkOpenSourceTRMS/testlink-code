@@ -2,26 +2,20 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
- * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2011/01/10 15:38:56 $ $Author: asimon83 $
- *
- * @author Martin Havlat
+ * @filesource	reqSpecEdit.php
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2005-2011, TestLink community
+ * @link 		http://www.teamst.org/index.php
  *
  * View existing and create a new req. specification.
  *
- * rev:
+ * @internal revisions
  *  20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
  *                                  inside a req spec (recursively)
  *  20100908 - asimon - BUGID 3755: tree not refreshed when copying requirements
  *  20100810 - asimon - BUGID 3317: disabled total count of requirements by default
  *  20100808 - aismon - added logic to refresh filtered tree on action
- *	20091202 - franciscom - fixed bug on webeditor value init.
- *	20091119 - franciscom - doc_id
- *	20080830 - franciscom - added code to manage unlimited depth tree
- *                         (will be not enabled yet)
- *
- *  20080827 - franciscom - BUGID 1692 
  *
  */
 require_once("../../config.inc.php");
@@ -32,10 +26,10 @@ $editorCfg = getWebEditorCfg('requirement_spec');
 require_once(require_web_editor($editorCfg['type']));
 $req_cfg = config_get('req_cfg');
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-$args = init_args();
+$args = init_args($db);
 $commandMgr = new reqSpecCommands($db);
 
 $gui = initialize_gui($db,$commandMgr,$req_cfg);
@@ -57,8 +51,12 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg);
  * 
  *
  */
-function init_args()
+function init_args(&$dbHandler)
 {
+
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$args = new stdClass();
 	$iParams = array("countReq" => array(tlInputParameter::INT_N,99999),
 			         "req_spec_id" => array(tlInputParameter::INT_N),
@@ -71,23 +69,28 @@ function init_args()
 					 "containerID" => array(tlInputParameter::INT_N),
  			 		 "itemSet" => array(tlInputParameter::ARRAY_INT),
 					 "reqSpecType" => array(tlInputParameter::STRING_N,0,1),
-					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL));	
+					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL),
+					 "tproject_id" => array(tlInputParameter::INT_N));	
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
 
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
 
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
+	$args->tproject_name = '';
+	if($args->tproject_id > 0 )
+	{
+		$treeMgr = new tree($dbHandler);
+		$dummy = $treeManager->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];    
+	}
+
+
 	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 	$args->basehref = $_SESSION['basehref'];
 	$args->reqParentID = is_null($args->reqParentID) ? $args->tproject_id : $args->reqParentID;
 
 	// asimon - 20100808 - added logic to refresh filtered tree on action
-	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action'])
-	                     ? $_SESSION['setting_refresh_tree_on_action'] : 0;
+	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? $_SESSION['setting_refresh_tree_on_action'] : 0;
 	
 	if (is_null($args->countReq)) {
 		$args->countReq = 0;

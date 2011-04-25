@@ -3,25 +3,24 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: reqViewRevision.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2010/12/12 10:18:07 $ by $Author: franciscom $
- * @author francisco.mancardi@gmail.com
- * 
+ * @filesource	reqViewRevision.php
+ * @author 		francisco.mancardi@gmail.com
+ * @package 	TestLink
+ * @copyright 	2008-2011, TestLink community 
+ * @link 		http://www.teamst.org/index.php
  *
- *	@internal revision
- *	20091217 - franciscom - display type and expected coverage
+ *	@internal revisions
  */
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('attachments.inc.php');
 require_once('requirements.inc.php');
 require_once('users.inc.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
-$args = init_args();
+$args = init_args($db);
 $gui = initialize_gui($db,$args);
 $smarty = new TLSmarty();
 
@@ -31,16 +30,23 @@ $smarty->display($templateCfg->template_dir . 'reqViewRevisionRO.tpl');
 /**
  *
  */
-function init_args()
+function init_args(&$dbHandler)
 {
 	$iParams = array("item_id" => array(tlInputParameter::INT_N),
+			         "tproject_id" => array(tlInputParameter::INT_N),
 			         "showReqSpecTitle" => array(tlInputParameter::INT_N));	
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
 	
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+	$args->tproject_name = '';
+    if($args->tproject_id > 0)
+    {
+    	$treeMgr = new tree($dbHandler);
+    	$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+    	$args->tproject_name = $dummy['name'];
+    }
+
     $user = $_SESSION['currentUser'];
 	$args->userID = $user->dbID;
 	

@@ -3,13 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource	tc_exec_assignment.php
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tc_exec_assignment.php,v 1.62 2011/02/11 10:51:11 mx-julian Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
+ * 20110425 - franciscom - 	BUGID 4429: Code refactoring to remove global coupling as much as possible
+ *							BUGID 4339: Working with two different projects within one Browser (same session) 
+ *							is not possible without heavy side-effects
  * 20110207 - asimon - BUGID 4203 - use new method to delete assignments to respect assignments per build
  * 20101028 - asimon - BUGID 3945: Assign Test Case Execution to a build shows all the test cases on applied filters
  * 20101024 - franciscom - method renamed to getFilteredSpecView() + changes in interface
@@ -21,13 +24,6 @@
  * 20100225 - eloff - remove unnecessary call to platformVisibleForTestplan
  * 20100215 - asimon - BUGID 2455, BUGID 3026
  * 20100212 - eloff - BUGID 3157 - fixes reassignment to other user
- * 20090807 - franciscom - new feature platforms
- * 20090201 - franciscom - new feature send mail to tester
- * 20080312 - franciscom - BUGID 1427
- * 20080114 - franciscom - added testcase external_id management
- * 20071228 - franciscom - BUG build combo of users using only users
- *                         that can execute test cases in testplan.
- * 20070912 - franciscom - BUGID 1041
  */
          
 require_once(dirname(__FILE__)."/../../config.inc.php");
@@ -36,7 +32,7 @@ require_once("treeMenu.inc.php");
 require_once('email_api.php');
 require_once("specview.php");
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $tree_mgr = new tree($db); 
 $tplan_mgr = new testplan($db); 
@@ -45,7 +41,7 @@ $assignment_mgr = new assignment_mgr($db);
 
 $templateCfg = templateConfiguration();
 
-$args = init_args();
+$args = init_args($db);
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 $keywordsFilter = new stdClass();
 $keywordsFilter->items = null;
@@ -55,12 +51,13 @@ if(is_array($args->keyword_id))
     $keywordsFilter->items = $args->keyword_id;
     $keywordsFilter->type = $gui->keywordsFilterType;
 }
-$arrData = array();
+
 
 if(!is_null($args->doAction))
 {
 	if(!is_null($args->achecked_tc))
 	{
+
 		$types_map = $assignment_mgr->get_available_types();
 		$status_map = $assignment_mgr->get_available_status();
 
@@ -121,7 +118,7 @@ if(!is_null($args->doAction))
 			}
 			
 		}
-		
+
 	    foreach($features2 as $key => $values)
 	    {
 	        if( count($features2[$key]) > 0 )
@@ -181,16 +178,13 @@ switch($args->level)
 		// BUGID 3026
 		// BUGID 3516
 		// BUGID 3406
+		// BUGID 3945: tcaseFilter --> testcaseFilter
 		$filters = array();
 		$filters['keywordsFilter'] = $keywordsFilter;
-		// BUGID 3945: tcaseFilter --> testcaseFilter
 		$filters['testcaseFilter'] = (isset($args->testcases_to_show)) ? $args->testcases_to_show : null;
 		$filters['assignedToFilter'] = property_exists($args,'filter_assigned_to') ? $args->filter_assigned_to : null;
 		$filters['executionTypeFilter'] = $args->control_panel['filter_execution_type'];
 		$filters['cfieldsFilter'] = $args->control_panel['filter_custom_fields'];
-		
-		// new dBug($filters);
-		// die();
 		
 		$opt = array('user_assignments_per_build' => $args->build_id);
 		$out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);  
@@ -208,7 +202,7 @@ $gui->items_qty = is_null($gui->items) ? 0 : count($gui->items);
 $gui->has_tc = $out['num_tc'] > 0 ? 1:0;
 $gui->support_array = array_keys($gui->items);
 
-if ($_SESSION['testprojectOptions']->testPriorityEnabled) 
+if ($args->tprojectOptions->testPriorityEnabled) 
 {
 	$urgencyCfg = config_get('urgency');
 	$gui->priority_labels = init_labels($urgencyCfg["code_label"]);
@@ -227,13 +221,23 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   returns: 
 
 */
-function init_args()
+function init_args(&$dbHandler)
 {
-	  $_REQUEST = strings_stripSlashes($_REQUEST);
-	  $args = new stdClass();
-	  $args->user_id = $_SESSION['userID'];
-	  $args->tproject_id = $_SESSION['testprojectID'];
-	  $args->tproject_name = $_SESSION['testprojectName'];
+	$_REQUEST = strings_stripSlashes($_REQUEST);
+	$args = new stdClass();
+	$args->user_id = $_SESSION['userID'];
+
+	$args->tproject_name = '';
+	$args->tprojectOptions = new stdClass();
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	if($args->tproject_id > 0)
+	{
+		$tprojectMgr = new testproject($dbHandler);
+		$dummy = $tprojectMgr->get_by_id($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+		$args->tprojectOptions = $dummy['opt'];
+	}  
+	  
       
 	  $key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
 	    	              'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,
@@ -287,8 +291,9 @@ function init_args()
 	// BUGID 3406
 	$args->build_id = isset($session_data['setting_build']) ? $session_data['setting_build'] : 0;
 	$args->tplan_id = isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0;
-	if ($args->tplan_id) {
-		$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
+	if ($args->tplan_id) 
+	{
+		$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
 	}
 		
 	return $args;

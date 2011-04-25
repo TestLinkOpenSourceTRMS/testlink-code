@@ -171,13 +171,16 @@ function open_popup(page)
   returns:
 
 */
-function ST(id,version)
+function ST(tproject_id,tplan_id,id,version)
 {
   var _FUNCTION_NAME_='ST';
-  var action_url=fRoot+menuUrl+"?version_id="+version+"&level=testcase&id="+id+args;
-	// alert(_FUNCTION_NAME_ + " " +action_url);
-	parent.workframe.location = action_url;
+  var action_url=fRoot+menuUrl+"?tproject_id=" +tproject_id + "&tplan_id=" + tplan_id + 
+  				 "&version_id="+version+"&level=testcase&id="+id+args;
+  				 
+  // alert(_FUNCTION_NAME_ + " " +action_url);
+  parent.workframe.location = action_url;
 }
+
 
 
 /*

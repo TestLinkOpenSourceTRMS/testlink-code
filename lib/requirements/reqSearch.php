@@ -4,15 +4,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource	reqSearch.php
  * @package 	TestLink
  * @author		Andreas Simon
- * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.20 2010/10/26 12:21:25 mx-julian Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
  *
- * @internal Revisions:
+ * @internal revisions
  * 20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
  * 20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
  * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
@@ -365,7 +365,8 @@ function init_args($dateFormat)
 	}
 	
 	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-	$args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
+	$args->tprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 
 	return $args;
 }

@@ -44,7 +44,7 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $commandMgr = new reqCommands($db);
 
-$args = init_args();
+$args = init_args($db);
 $gui = initialize_gui($db,$args,$commandMgr);
 
 
@@ -62,8 +62,11 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg,$db);
  * init_args
  *
  */
-function init_args()
+function init_args(&$dbHandler)
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	// BUGID 1748
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
 					 "req_spec_id" => array(tlInputParameter::INT_N),
@@ -88,21 +91,27 @@ function init_args()
 					 "relation_destination_testproject_id" => array(tlInputParameter::INT_N),
 					 "save_rev" => array(tlInputParameter::INT_N),
 					 "do_save" => array(tlInputParameter::INT_N),
+					 "tproject_id" => array(tlInputParameter::INT_N),
 					 "log_message" => array(tlInputParameter::STRING_N));
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
 
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	$args->req_id = $args->requirement_id;
 	$args->title = $args->req_title;
 	$args->arrReqIds = $args->req_id_cbox;
 
 	$args->basehref = $_SESSION['basehref'];
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
+	
+	$args->tproject_name = '';
+	if($args->tproject_id > 0)
+	{
+		$treeMgr = new tree($dbHandler);
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+	}
+	
 	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 
 	// BUGID 3307 - set to 0 if null, to avoid database errors with null value

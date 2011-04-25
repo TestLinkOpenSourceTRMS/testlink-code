@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource	reqTcAssign.php
- * @author Martin Havlat
+ * @author 		Martin Havlat
  *
  * @internal revisions
  * 20110401 - franciscom - BUGID 3615 - right to allow ONLY MANAGEMENT of requirements link to testcases
@@ -100,6 +100,9 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$iParams = array("id" => array(tlInputParameter::INT_N),
 			         "req_id" => array(tlInputParameter::ARRAY_INT),
 			         "req" => array(tlInputParameter::INT_N),
@@ -108,13 +111,12 @@ function init_args()
 			         "edit" => array(tlInputParameter::STRING_N,0,100),
 			         "unassign" => array(tlInputParameter::STRING_N,0,1),
 			         "assign" => array(tlInputParameter::STRING_N,0,1),
-			         "idSRS" => array(tlInputParameter::INT_N));	
+			         "idSRS" => array(tlInputParameter::INT_N),
+			         "tproject_id" => array(tlInputParameter::INT_N) );	
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
 
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	$args->idReqSpec = null;
     $args->idReq = $args->req;
@@ -128,18 +130,19 @@ function init_args()
         $args->doAction = ($args->assign != "") ? "assign" : null;
     }
 
+	// using session creates issue when using TABBED BROWSING => has to be avoided
 	// 20081103 - sisajr - hold choosen SRS (saved for a session)
 	if ($args->idSRS)
 	{
 	  	$args->idReqSpec = $args->idSRS;
-	  	$_SESSION['currentSrsId'] = $args->idReqSpec;
+	  	// $_SESSION['currentSrsId'] = $args->idReqSpec;
 	}
-	else if(isset($_SESSION['currentSrsId']) && intval($_SESSION['currentSrsId']) > 0)
-	{
-		$args->idReqSpec = intval($_SESSION['currentSrsId']);
-	}
+	
+	// else if(isset($_SESSION['currentSrsId']) && intval($_SESSION['currentSrsId']) > 0)
+	// {
+	//	$args->idReqSpec = intval($_SESSION['currentSrsId']);
+	// }
 
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	
     return $args;
 }

@@ -1,13 +1,12 @@
 <?php
-
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource	reqSpecSearchForm.php
  * @package 	TestLink
  * @author		asimon
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSpecSearchForm.php,v 1.3 2010/08/07 22:43:12 asimon83 Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search formular for requiremnt specifications.
@@ -24,7 +23,7 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 
-$args = init_args();
+$args = init_args($tproject_mgr);
 $gui = new stdClass();
 $gui->tcasePrefix = '';
  
@@ -57,12 +56,16 @@ $smarty->display($templateCfg->template_dir . 'reqSpecSearchForm.tpl');
   returns: 
 
 */
-function init_args()
+function init_args(&$tprojectMgr)
 {              
   	$args = new stdClass();
-    $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
-       
+    $args->tprojectName = '';
+    $args->tprojectID = isset($_REQUEST['tproject_id']) ?  intval($_REQUEST['tproject_id']) : 0;
+	if($args->tprojectID > 0) 
+	{
+		$dummy = $tprojectMgr->tree_manager->get_node_hierarchy_info($args->tprojectID);
+		$args->tprojectName = $dummy['name'];
+	}       
     return $args;
 }
 ?>

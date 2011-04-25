@@ -93,7 +93,7 @@ $gui->closed_on_date = $args->closed_on_date;
 $gui->operation_descr = $op->operation_descr;
 $gui->user_feedback = $op->user_feedback;
 $gui->buttonCfg = $op->buttonCfg;
-$gui->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
+$gui->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events",$args->tproject_id,$args->tplan_id);
 $gui->editorType = $editorCfg['type'];
 
 renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of,$gui);

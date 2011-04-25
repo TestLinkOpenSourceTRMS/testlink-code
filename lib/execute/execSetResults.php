@@ -35,31 +35,6 @@
  *  20100313 - franciscom - BUGID 3276
  *  20100204 - asimon - BUGID 2455 & 3026, little changes for filtering
  *  20100121 - franciscom - missing platform feature refactoring
- *	20091205 - franciscom - BUGID 0002469: CFG-Parameters to show notes/details on test-execution
- *  20091111 - franciscom - BUGID 2938 - Feature: Save and Go to next test case in test suite.
- *  20090922 - franciscom - added contribution idea, when using bulk operation
- *                          display last execution status.
- *
- *	20090913 - franciscom - fixed bug on filter_status initialization
- *                          fixed bug on bulk execution due to bad option
- *                          on get_linked_tcversions() call.
- *                         
- *	20090815 - franciscom - platform feature	
- *  20090808 - franciscom - gen_spec_view call refactoring
- *  20090526 - franciscom - now custom fields for testplan_design are managed
- *
- *  20090419 - franciscom - BUGID 2364 - added management of refreshTree
- *                          initializeRights() refactored
- *  20090409 - amkhullar - updated code not written properly.
- *  20090330 - franciscom - fixed bug on test plan custom field get.
- *  20090325 - amkhullar - BUGID 2267
- *  20090210 - amkhullar - BUGID 2068
- *  20080827 - franciscom - BUGID 1692
- *  20080811 - franciscom - BUGID 1650 (REQ)
- *  
- *  20080104 - franciscom - REQ 1232 - web editor on execution notes
- *                          added createExecNotesWebEditor()
- *
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -543,10 +518,10 @@ function init_args($cfgObj)
     $args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
                          ? $session_data['setting_refresh_tree_on_action'] : 0;
 	
-	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 	
 	// BUGID 2267
-	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
 	$args->user = $_SESSION['currentUser'];
     $args->user_id = $args->user->dbID;
 

@@ -734,9 +734,10 @@ function openAssignmentOverviewWindow(user_id, build_id, tplan_id) {
  * Open testcase description in a popup window.
  * @author Andreas Simon
  * @param tc_id
+ * @param tproject_id
  */
-function openTCEditWindow(tc_id) {
-	var url = "lib/testcases/archiveData.php?edit=testcase&id=" + tc_id;
+function openTCEditWindow(tproject_id,tc_id) {
+	var url = "lib/testcases/archiveData.php?edit=testcase&id=" + tc_id + "&tproject_id=" + tproject_id;
 
 	// 20101008 - asimon - BUGID 3311
 	var width = getCookie("TCEditPopupWidth");
@@ -814,7 +815,8 @@ function open_help_window(help_page,locale)
 /*
   function: openTCaseWindow
 
-  args: tcase_id: test case id
+  args: tproject_id -> to have the enviroment
+  		tcase_id: test case id
         tcversion_id: test case version id
         show_mode: string used on testcase.show() to manage refresh 
                    logic of frames when Edit Test case page is closed.
@@ -825,19 +827,15 @@ function open_help_window(help_page,locale)
   returns:
 
   rev :
+  	   20110425 - franciscom - added tproject_id
   	   20101111 - asimon - now also remembers popup size like other functions do
-       20090715 - franciscom - added documentation
-       20070930 - franciscom - REQ - BUGID 1078
 
 */
-function openTCaseWindow(tcase_id,tcversion_id,show_mode)
+function openTCaseWindow(tproject_id,tcase_id,tcversion_id,show_mode)
 {
-	//@TODO schlundus, what is show_mode? not used in archiveData.php
-	//You are right: problem fixed see documentation added on header (franciscom)
-	// 
 	var feature_url = "lib/testcases/archiveData.php";
-	feature_url +="?allow_edit=0&show_mode="+show_mode+"&edit=testcase&id="+
-	tcase_id+"&tcversion_id="+tcversion_id;
+	feature_url +=	"?allow_edit=0&show_mode="+show_mode+"&edit=testcase&id="+ tcase_id+
+					"&tcversion_id="+tcversion_id + "&tproject_id=" + tproject_id;
 
 	// 20101111 - asimon - now also remembers popup size
 	var width = getCookie("TCEditPopupWidth");

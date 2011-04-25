@@ -1,13 +1,16 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.47 2010/10/24 14:30:26 franciscom Exp $
- *
- * Author: franciscom
  *
  * Allows for NON executed test cases linked to a test plan, update of Test Case versions
  * following user choices.
- * Test Case Execution assignments will be auto(magically) updated.
+ * 
+ *
+ * @filesource	planUpdateTC.php
+ * @package 	TestLink
+ * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
+ * @copyright 	2005-2011, TestLink community 
+ * @link 		http://www.teamst.org/index.php
  *
  * 	@internal revisions:
  *	20101024 - francisco - method renamed to getFilteredSpecView() + changes in interfa 
@@ -19,8 +22,6 @@
  *  20100624 - asimon - CVS merge (experimental branch to HEAD)
  *	20100131 - franciscom - BUGID 3008/3109	
  *	20100123 - franciscom - BUGID 2652 + missing refactoring for table prefix doUpdate()
- *	20091212 - franciscom - added contribution by asimon83 (refactored) - BUGID 2652
- *                          show newest testcase versions when updating all linked testcase versions
  *	
  */
 require_once("../../config.inc.php");
@@ -28,8 +29,6 @@ require_once("common.php");
 require_once("specview.php");
 testlinkInitPage($db,false,false,"checkRights");
 
-$tree_mgr = new tree($db);
-$tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db);
 
@@ -64,7 +63,7 @@ $gui->hasItems = 0;
 switch($args->level)
 {
 	case 'testcase':
-	    $out = processTestCase($db,$args,$keywordsFilter,$tplan_mgr,$tree_mgr);
+	    $out = processTestCase($db,$args,$keywordsFilter,$tplan_mgr);
 		break;
 
 	case 'testsuite':
@@ -123,26 +122,13 @@ function init_args(&$tplanMgr)
     $args->newVersionSet = isset($_REQUEST['new_tcversion_for_tcid']) ? $_REQUEST['new_tcversion_for_tcid'] : null;
     $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
 
-    // BUGID 3516
-    // Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
-//    $keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
-//    $args->keyword_id = is_null($keywordSet) ? 0 : explode(',',$keywordSet); 
-//    $args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
-    
-//    $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
-//    if($args->tplan_id == 0)
-//    {
-//        $args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
-//        $args->tplan_name = $_SESSION['testplanName'];
-//    }
-//    else
-//    {
-//        $tpi = $tplanMgr->get_by_id($args->tplan_id);  
-//        $args->tplan_name = $tpi['name'];
-//    }
-    
-    $args->tproject_id = $_SESSION['testprojectID'];
-    $args->tproject_name = $_SESSION['testprojectName'];
+    $args->tproject_name = '';
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	if($args->tproject_id > 0)
+	{
+		$dummy = $tplanMgr->tree_manager->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+	}  
 
     // BUGID 3516
 	// For more information about the data accessed in session here, see the comment
@@ -150,17 +136,20 @@ function init_args(&$tplanMgr)
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 	
 	$mode = 'plan_mode';
-	
 	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
 	                ? $_SESSION[$mode][$form_token] : null;
 	
 	$args->tplan_id = isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0;
-	if($args->tplan_id == 0) {
-		$args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
-		$args->tplan_name = $_SESSION['testplanName'];
-	} else {
-		$tpi = $tplanMgr->get_by_id($args->tplan_id);  
-		$args->tplan_name = $tpi['name'];
+	$args->tplan_name = '';
+	if($args->tplan_id == 0) 
+	{
+		$args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+	} 
+	
+	if($args->tplan_id > 0)
+	{
+		$dummy = $tplanMgr->get_by_id($args->tplan_id);  
+		$args->tplan_name = $dumy['name'];
 	}
 
 	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
@@ -229,16 +218,22 @@ function doUpdate(&$dbObj,&$argsObj)
 function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
     $tcase_cfg = config_get('testcase_cfg');
+
     $gui = new stdClass();
+
     $gui->refreshTree=false;
     $gui->instructions='';
-    $gui->buttonAction="doUpdate";
-    $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
-    $gui->testCasePrefix .= $tcase_cfg->glue_character;
     $gui->user_feedback = '';
-    $gui->testPlanName = $argsObj->tplan_name;
     $gui->items = null;
     $gui->has_tc = 1;  
+
+    $gui->buttonAction="doUpdate";
+    $gui->testCasePrefix = 	$tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id) . 
+    						$tcase_cfg->glue_character;
+
+    $gui->testPlanName = $argsObj->tplan_name;
+    $gui->tproject_id=$argsObj->tproject_id;
+    $gui->tplan_id=$argsObj->tplan_id;
     
     return $gui;
 }
@@ -330,9 +325,9 @@ function doUpdateAllToLatest(&$dbObj,$argsObj,&$tplanMgr)
  * 
  *
  */
-function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$treeMgr)
+function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr)
 {
-	$my_path = $treeMgr->get_path($argsObj->id);
+	$my_path = $tplanMgr->tree_manager->get_path($argsObj->id);
 	$idx_ts = count($my_path)-1;
 	$tsuite_data = $my_path[$idx_ts-1];
 	$filters = array('tcase_id' => $argsObj->id);

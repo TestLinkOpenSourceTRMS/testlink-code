@@ -1,56 +1,42 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: newest_tcversions.php,v 1.15 2010/05/06 20:30:26 franciscom Exp $ 
- * 
  *
- * rev :
- *      20070930 - franciscom - added tplan combo box
+ * @filesource	newest_tcversions.php
+ * @package 	TestLink
+ * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
+ * @copyright 	2005-2011, TestLink community 
+ * @link 		http://www.teamst.org/index.php
+ *
+ * @internal revisions:
+ * 20110425 - franciscom - 	BUGID 4429: Code refactoring to remove global coupling as much as possible
+ *							BUGID 4339: Working with two different projects within one Browser (same session) 
+ *							is not possible without heavy side-effects
+ *
  *
  */         
 require('../../config.inc.php');
 require_once("common.php");
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
 $testcase_cfg = config_get('testcase_cfg');
-$tree_mgr = new tree($db); 
-$tsuite_mgr = new testsuite($db); 
 $tplan_mgr = new testplan($db); 
-$tcase_mgr = new testcase($db); 
+$tproject_mgr = new testproject($db); 
+$args = init_args($tproject_mgr);
+$gui = initializeGui($db,$args,$_SESSION['currentUser'],$tproject_mgr);
 
-
-$args = init_args();
-$gui = new stdClass();
-$gui->can_manage_testplans=$_SESSION['currentUser']->hasRight($db,"mgt_testplan_create");
-$gui->tplans = array();
-$gui->show_details = 0;
-$gui->user_feedback = '';
-$gui->tcasePrefix = $tcase_mgr->tproject_mgr->getTestCasePrefix($args->tproject_id) .
-                    $testcase_cfg->glue_character;
-
-$tplan_info = $tcase_mgr->get_by_id($args->tplan_id);
-$gui->tplan_name = $tplan_info['name'];
-$gui->tplan_id=$args->tplan_id;
-$gui->tproject_name = $args->tproject_name;
-
-// $linked_tcases = $tplan_mgr->get_linked_tcversions($args->tplan_id);
-$linked_tcases = $tplan_mgr->get_linked_items_id($args->tplan_id);
-$qty_linked = count($linked_tcases);
-$gui->testcases = $tplan_mgr->get_linked_and_newest_tcversions($args->tplan_id);
-
-if($qty_linked)
+if($gui->doIt)
 {
-    $qty_newest = count($gui->testcases);
-    if($qty_newest)
+    if( ($qty_newest = count($gui->testcases)) > 0)
     {
         $gui->show_details = 1;
     
         // get path
         $tcaseSet=array_keys($gui->testcases);
-        $path_info=$tree_mgr->get_full_path_verbose($tcaseSet);
+        $path_info=$tproject_mgr->tree_manager->get_full_path_verbose($tcaseSet);
         foreach($gui->testcases as $tcase_id => $value)
         {
             $path=$path_info[$tcase_id];
@@ -69,11 +55,6 @@ else
     $gui->user_feedback = lang_get('no_linked_tcversions');  
 }
 
-$tplans = $_SESSION['currentUser']->getAccessibleTestPlans($db,$args->tproject_id);
-foreach($tplans as $key => $value)
-{
-	$gui->tplans[$value['id']] = $value['name'];
-}
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
@@ -85,26 +66,69 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * init_args
  *
  */
-function init_args()
+function init_args(&$tprojectMgr)
 {
 	$_REQUEST = strings_stripSlashes($_REQUEST);
     
     $args = new stdClass();
     $args->user_id = $_SESSION['userID'];
-    $args->tproject_id = $_SESSION['testprojectID'];
-    $args->tproject_name = $_SESSION['testprojectName'];
-    
-    $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
-    
+
     $args->id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
     $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
     $args->level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
     
     // Can be a list (string with , (comma) has item separator), 
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
+    
+    $args->tproject_name = '';
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	if( $args->tproject_id > 0 )
+	{
+		$dummy = $tprojectMgr->tree_manager->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+	}
+
+    
+    $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+    
 
     return $args;  
 }
+
+
+function initializeGui(&$dbHandler,&$argsObj,&$userObj,&$tprojectMgr)
+{
+	$guiObj = new stdClass();
+	$guiObj->can_manage_testplans=$userObj->hasRight($dbHandler,"mgt_testplan_create",
+													 $argsObj->tproject_id,$argsObj->tplan_id);
+	$guiObj->show_details = 0;
+	$guiObj->user_feedback = '';
+	$guiObj->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id) . $testcase_cfg->glue_character;
+	
+	$guiObj->tproject_name = $argsObj->tproject_name;
+
+	$tplanMgr = new testplan($dbHandler);
+	$tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
+	$guiObj->tplan_name = $tplan_info['name'];
+	$guiObj->tplan_id = $argsObj->tplan_id;
+	
+	$guiObj->testcases = $tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id);
+
+	$linked_tcases = $tplanMgr->get_linked_items_id($argsObj->tplan_id);
+	$guiObj->doIt = (count($linked_tcases) > 0);
+
+	$guiObj->tplans = array();
+	$tplans = $userObj->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id);
+	foreach($tplans as $key => $value)
+	{
+		$guiObj->tplans[$value['id']] = $value['name'];
+	}
+
+
+	return $guiObj;
+}
+
+
 
 function checkRights(&$db,&$user)
 {

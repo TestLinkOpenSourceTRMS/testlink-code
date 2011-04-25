@@ -6,13 +6,6 @@ Author: franciscom
 
 Purpose: generate a list of Test Cases linked to Test Plan 
          that have a newer available version.
-         
-rev:
-		20110105 - franciscom - BUGID 4135: Smarty 3.0 compatibility
-    20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-	  20100724 - asimon - added closing ">" for "<td class="clickable_icon">"
-    20091212 - franciscom - BUGID 2652 - contribution refactored
-    20080528 - franciscom - BUGID 1504 
 *}
 {lang_get var='labels'
           s='no_testcase_available,test_plan,update_testcase_versions,
@@ -157,7 +150,7 @@ function validateForm(f)
       				    {$gui->testCasePrefix|escape}{$tcase.external_id|escape}
       			      </td>
       				    <td title="{$labels.show_tcase_spec}">
-       				     <a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>
+       				     <a href="javascript:openTCaseWindow({$gui->tproject_id},{$tcase.id})">{$tcase.name|escape}</a>
       			      </td>
   
                   <td>

@@ -1,11 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.29 2010/12/06 12:07:45 asimon83 Exp $
-f
+@filesource	planAddTCNavigator.tpl
+
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
 
-Revisions:    
+@internal revisions  
   20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
   20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
   20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  On JS expression SPACE is NEED 
@@ -15,9 +15,6 @@ Revisions:
                       them with new included template inc_tc_filter_panel.tpl
   20100417 - franciscom - BUGID 2498 - filter by test case spec importance
   20100410 - franciscom - BUGID 2797 - filter by test case execution type
-  20080629 - franciscom - fixed missed variable bug
-  20080622 - franciscom - ext js tree support
-  20080429 - franciscom - keyword filter multiselect
 * ------------------------------------------------------------------------ *}
 
 {lang_get var="labels" 

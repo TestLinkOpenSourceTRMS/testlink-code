@@ -73,8 +73,8 @@ Ext.onReady(function(){
 </head>
 <body class="fixedheader">
 <form name="addTcForm" id="addTcForm" method="post">
-	<input type="hidden" name="tproject_id" id="tproject_id" {$gui->tproject_id}/>
-	<input type="hidden" name="tplan_id" id="tplan_id" {$gui->tplan_id}/>
+	<input type="hidden" name="tproject_id" id="tproject_id" value={$gui->tproject_id}/>
+	<input type="hidden" name="tplan_id" id="tplan_id" value={$gui->tplan_id}/>
 	
 
    <div id="header-wrap">

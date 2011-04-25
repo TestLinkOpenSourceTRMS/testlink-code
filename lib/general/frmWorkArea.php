@@ -27,7 +27,7 @@ testlinkInitPage($db);
 $args = init_args();
 
 
-new dBug($args);
+// new dBug($args);
 
 // --------------------------------------------------------------------------------------
 // Important Notes for Developers

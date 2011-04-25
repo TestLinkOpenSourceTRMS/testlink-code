@@ -3,10 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * @filesource	planAddTCNavigator.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: planAddTCNavigator.php,v 1.63 2010/09/08 16:54:23 franciscom Exp $
+ * @copyright 	2005-2011, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan.
@@ -25,9 +25,6 @@
  * 20100417 - franciscom - BUGID 2498: Add test case to test plan - Filter Test Cases based on Test Importance
  * 20100410 - franciscom - BUGID 2797 - filter by test case execution type
  * 20100228 - franciscom - BUGID 0001927: filter on keyword - Filter tree when add/remove testcases - KO
- * 20090415 - franciscom - BUGID 2384 - Tree doesnt load properly in Add / Remove Test Cases
- * 20090118 - franciscom - added logic to switch (for EXTJS tree type), how tree is builded
- *                         when there are filters
  */
 
 require('../../config.inc.php');
@@ -49,6 +46,8 @@ $smarty->assign('control', $control);
 $smarty->assign('args', $gui->args);
 $smarty->assign('menuUrl', $gui->menuUrl);
 
+// new dBug($templateCfg);
+
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
@@ -57,13 +56,19 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * @param tlTestCaseFilterControl $control
  * @return object $gui
  */
-function initializeGui($control) {
+function initializeGui($control) 
+{
 	$gui = new stdClass();
 	$gui->menuUrl = 'lib/plan/planAddTC.php';
 	$gui->args = $control->get_argument_string();
 	$gui->additional_string = '';
-	$gui->src_workframe = $control->args->basehref . $gui->menuUrl .
-	                "?edit=testproject&id={$control->args->testproject_id}" . $gui->args;
+
+	// Seems useless!!! 
+	// $gui->src_workframe = $control->args->basehref . $gui->menuUrl .
+	//                       "?edit=testproject&id={$control->args->testproject_id}&" . 
+	//                       "tproject_id={$control->args->testproject_id}&" . 
+	//                       "tplan_id={$control->args->testplan_id}" . 
+	//                       $gui->args;
 	
 	return $gui;
 }

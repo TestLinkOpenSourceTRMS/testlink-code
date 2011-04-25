@@ -88,9 +88,9 @@ function init_args(&$treeMgr)
     $args->reqspec_id = isset($_REQUEST['reqspec_id']) ? intval($_REQUEST['reqspec_id']) : 0;
 
 	$args->tproject_name = '';
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 	if($args->tproject_id > 0)
 	{
-    	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 		$dummy = $treeManager->get_node_hierarchy_info($args->tproject_id);
 		$args->tproject_name = $dummy['name'];    
 	}

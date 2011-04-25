@@ -4,10 +4,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filespurce	reqSpecSearch.php
  * @package 	TestLink
  * @author		asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSpecSearch.php,v 1.11 2010/10/15 11:43:26 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search results for requirement specifications.
@@ -48,7 +48,7 @@ $gui->tableSet = null;
 $map = null;
 $args = init_args();
 
-if ($args->tprojectID)
+if ($args->tproject_id)
 {
 	$tables = tlObjectWithDB::getDBTables(array("cfield_design_values", 'nodes_hierarchy', 'req_specs'));
 	$filter = null;
@@ -92,7 +92,7 @@ if ($args->tprojectID)
 		   " FROM {$tables['nodes_hierarchy']} NH, " . 
 		   " {$tables['req_specs']} RS {$from['by_custom_field']} " .
            " WHERE NH.id = RS.id " .
-    	   " AND RS.testproject_id = {$args->tprojectID} ";
+    	   " AND RS.testproject_id = {$args->tproject_id} ";
 	 
 	if ($filter)
 	{
@@ -209,7 +209,7 @@ function init_args()
 	}
 
 	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-	$args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 
 	return $args;
 }

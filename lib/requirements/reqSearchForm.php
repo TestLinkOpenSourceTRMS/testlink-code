@@ -4,15 +4,19 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource	reqSearchForm.php
  * @package 	TestLink
  * @author		asimon
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSearchForm.php,v 1.4 2010/10/21 14:57:07 asimon83 Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search formular for requirements.
  *
- * @internal Revisions:
+ * @internal revisions
+ * 20110425 - franciscom - 	BUGID 4429: Code refactoring to remove global coupling as much as possible
+ *							BUGID 4339: Working with two different projects within one Browser (same session) 
+ *							is not possible without heavy side-effects
+ *
  * 20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
  * 20100323 - asimon - added searching for req relation types (BUGID 1748)
  */
@@ -27,7 +31,7 @@ $tproject_mgr = new testproject($db);
 $req_mgr = new requirement_mgr($db);
 $tcase_cfg = config_get('testcase_cfg');
 
-$args = init_args();
+$args = init_args($tproject_mgr);
 $gui = new stdClass();
 
 $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
@@ -76,11 +80,17 @@ $smarty->display($templateCfg->template_dir . 'reqSearchForm.tpl');
 
 
 
-function init_args()
+function init_args(&$tprojectMgr)
 {              
   	$args = new stdClass();
-    $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
+    $args->tprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+    
+    $args->tprojectName = '';
+    if($args->tprojectID > 0 )
+    {
+		$dummy = $tprojectMgr->tree_manager->get_node_hierarchy_info($args->tprojectID);
+		$args->tprojectName = $dummy['name'];    
+    } 
        
     return $args;
 }

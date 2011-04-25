@@ -24,7 +24,7 @@ $templateCfg = templateConfiguration();
 
 $tree_mgr = new tree($db);
 $reqspec_mgr = new requirement_spec_mgr($db);
-$args = init_args();
+$args = init_args($tree_mgr);
 $node = $tree_mgr->get_node_hierarchy_info($args->reqspec_id);
 
 $gui = new stdClass();
@@ -80,15 +80,20 @@ echo $text2print;
   returns: 
 
 */
-function init_args()
+function init_args(&$treeMgr)
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
     $args = new stdClass();
     $args->reqspec_id = isset($_REQUEST['reqspec_id']) ? intval($_REQUEST['reqspec_id']) : 0;
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-    $args->tproject_name = $_SESSION['testprojectName'];
 
+	$args->tproject_name = '';
+	if($args->tproject_id > 0)
+	{
+    	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+		$dummy = $treeManager->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];    
+	}
     return $args;
 }
 ?>

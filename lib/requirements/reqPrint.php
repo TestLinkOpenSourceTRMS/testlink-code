@@ -26,7 +26,7 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $tree_mgr = new tree($db);
-$args = init_args();
+$args = init_args($tree_mgr);
 $node = $tree_mgr->get_node_hierarchy_info($args->req_id);
 $node['version_id'] = $args->req_version_id;
 $node['revision'] = $args->req_revision;
@@ -65,7 +65,7 @@ echo $text2print;
   returns: 
 
 */
-function init_args()
+function init_args(&$treeMgr)
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
@@ -74,8 +74,13 @@ function init_args()
     $args->req_version_id = isset($_REQUEST['req_version_id']) ? intval($_REQUEST['req_version_id']) : 0;
     $args->req_revision = isset($_REQUEST['req_revision']) ? intval($_REQUEST['req_revision']) : 0;
 
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-    $args->tproject_name = $_SESSION['testprojectName'];
+	$args->tproject_name = '';
+	if($args->tproject_id > 0)
+	{
+    	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+		$dummy = $treeManager->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];    
+	}
 
     return $args;
 }

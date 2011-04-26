@@ -5,12 +5,12 @@
  *
  * Results import from XML file
  * 
+ * @filesource 	resultsImport.php
  * @package 	TestLink
  * @author 		Kevin Levy
  * @copyright 	2010, TestLink community 
- * @version    	CVS: $Id: resultsImport.php,v 1.23 2010/11/10 18:10:59 franciscom Exp $
  *
- * @internal Revisions:
+ * @internal revisions
  *
  * 20101107 - franciscom - BUGID 3843 - Contribution - Match testcases on custom fields when importing test results
  * 20101004 - franciscom - added new checks other than	if( isset($tcase_exec['bug_id']) )
@@ -535,18 +535,11 @@ function init_args(&$dbHandler)
 	// Need to use REQUEST because sometimes data arrives on GET and other on POST (has hidden fields)
   	$args->buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : null;
   	$args->platformID = isset($_REQUEST['platformID']) ? intval($_REQUEST['platformID']) : null;
-  	$args->tplanID = isset($_REQUEST['tplanID']) ? intval($_REQUEST['tplanID']) : null;
-  	$args->tplanID = !is_null($args->tplanID) ? $args->tplanID : $_SESSION['testplanID'];
-
-  	$args->tprojectID = isset($_REQUEST['tprojectID']) ? intval($_REQUEST['tprojectID']) : null;
-  	if( is_null($args->tprojectID))
+  	$args->tplanID = isset($_REQUEST['tplanID']) ? intval($_REQUEST['tplanID']) : 0;
+  	$args->tprojectID = isset($_REQUEST['tprojectID']) ? intval($_REQUEST['tprojectID']) : 0;
+  	$args->testprojectName = '';
+  	if( $args->tprojectID > 0)
   	{
-  		$args->tprojectID = $_SESSION['testprojectID'];
-		$args->testprojectName = $_SESSION['testprojectName'];
-  		
-  	}
-	else
-	{
   		$tproject_mgr = new testproject($dbHandler);
   		$dummy = $tproject_mgr->get_by_id($args->tprojectID);
   		$args->testprojectName = $dummy['name'];

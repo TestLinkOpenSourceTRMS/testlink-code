@@ -6,17 +6,15 @@
  * Manages test plan operations and related items like Custom fields, 
  * Builds, Custom fields, etc
  *
+ * @filesource	resultsByStatus.php
  * @package 	TestLink
- * @author	Martin Havlat <havlat@users.sourceforge.net>
- * @author Chad Rosen
+ * @author		Martin Havlat <havlat@users.sourceforge.net>
  * @author 		kevyn levy
- *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.105 2010/11/01 17:15:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
- * @internal Revisions:
+ * @internal revisions
  *  20101013 - asimon - use linkto.php for emailed links
  *  20101012 - Julian - added html comment to properly sort by test case column
  *  20101007 - asimon - BUGID 3857: Replace linked icons in reports if reports get sent by e-mail
@@ -37,14 +35,6 @@
  *	                  else show exec notes
  *	20100425 - franciscom - BUGID 3356
  *	20100124 - eloff - use buildExternalIdString()
- *	20091016 - franciscom - work still is needed to display LINK to BUG
- *	20091011 - franciscom - refactoring to do not use result.class
- *	20090517 - franciscom - fixed management of deleted testers
- *	20090414 - amikhullar - BUGID: 2374 - Show Assigned User in the Not Run Test Cases Report 
- *	20090325 - amkhullar  - BUGID 2249
- *	20090325 - amkhullar  - BUGID 2267
- *	20080602 - franciscom - changes due to BUGID 1504
- *	20070623 - franciscom - BUGID 911
 */
 
 require('../../config.inc.php');
@@ -350,12 +340,12 @@ function buildTCLink($tcID,$tcversionID, $title, $buildID,$testCaseExternalId, $
 function init_args($statusCode)
 {
     $iParams = array("format" => array(tlInputParameter::INT_N),
+		             "tproject_id" => array(tlInputParameter::INT_N),
 		             "tplan_id" => array(tlInputParameter::INT_N),
     	             "type" => array(tlInputParameter::STRING_N,0,1));
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
 	
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 	$args->user = $_SESSION['currentUser'];
 	$args->basehref = $_SESSION['basehref'];
 

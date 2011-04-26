@@ -3,14 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: freeTestCases.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2010/10/19 09:05:06 $ by $Author: mx-julian $
- * @author Francisco Mancardi - francisco.mancardi@gmail.com
+ * @filesource	freeTestCases.php
+ * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list FREE test cases, i.e. not assigned to a test plan.
  * 
- * rev:
+ * @internal revisions
  * 20101019 - Julian - show importance column only if priority is enabled for project
  * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                     table state independent from localization
@@ -18,7 +16,6 @@
  * 20101005 - asimon - added linked icon for testcase editing
  * 20100920 - Julian - use exttable
  *                   - added importance column
- * 20090412 - franciscom - BUGID 2363
  *
  */
 require_once("../../config.inc.php");
@@ -31,13 +28,11 @@ $tcase_cfg = config_get('testcase_cfg');
 
 $importance_levels = config_get('importance_levels');
 
-$args = init_args();
 $tproject_mgr = new testproject($db);
-
-$priorityMgmtEnabled = $_SESSION['testprojectOptions']->testPriorityEnabled;
+$args = init_args($tproject_mgr);
+$priorityMgmtEnabled = $args->tprojectOptions->testPriorityEnabled;
 
 $msg_key = 'all_testcases_has_testplan';
-
 $edit_label = lang_get('design');
 $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
@@ -80,16 +75,20 @@ if(!is_null($gui->freeTestCases['items']))
 			$rowData[] = $tcLink;
 			
 			// only add importance column if 
-			if($priorityMgmtEnabled){
-				switch ($tcases['importance']) {
+			if($priorityMgmtEnabled)
+			{
+				switch ($tcases['importance']) 
+				{
 					case $importance_levels[LOW]:
-						$rowData[] = "<!-- 1 -->" . lang_get('low_importance');
+						$rowData[] = "<!-- " . LOW . " -->" . lang_get('low_importance');
 						break;
+			
 					case $importance_levels[MEDIUM]:
-						$rowData[] = "<!-- 2 -->" . lang_get('medium_importance');
+						$rowData[] = "<!-- " . MEDIUM . " -->" . lang_get('medium_importance');
 						break;
+			
 					case $importance_levels[HIGH]:
-						$rowData[] = "<!-- 3 -->" . lang_get('high_importance');
+						$rowData[] = "<!-- " . HIGH . " -->" . lang_get('high_importance');
 						break;
 				}
 			}
@@ -152,18 +151,22 @@ function getColumnsDefinition($priorityMgmtEnabled)
  * has been created for local use, and which have arrived on call.
  *
  */
-function init_args()
+function init_args(&$tprojectMgr)
 {
-    $iParams = array(
-		"tplan_id" => array(tlInputParameter::INT_N),
-		"format" => array(tlInputParameter::INT_N),
-	);
+    $iParams = array("tproject_id" => array(tlInputParameter::INT_N),
+    				 "tplan_id" => array(tlInputParameter::INT_N),
+					 "format" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
-	$pParams = G_PARAMS($iParams,$args);
+	R_PARAMS($iParams,$args);
 
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
+	$args->tproject_name = '';
+	if($args->tproject_id > 0)
+	{
+		$dummy = $tprojectMgr->get_by_id($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+		$args->tprojectOptions = $dummy['opt'];
+	}
 
     return $args;
 }
@@ -173,5 +176,3 @@ function checkRights(&$db,&$user)
 	return $user->hasRight($db,'testplan_metrics');
 }
 ?>
-
-

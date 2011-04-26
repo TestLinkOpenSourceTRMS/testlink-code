@@ -1,18 +1,17 @@
 <?php
-
 /**
  * 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @package TestLink
- * @author Andreas Simon
- * @copyright 2010, TestLink community
- * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.17 2011/02/11 14:51:07 asimon83 Exp $
+ * @filesource	resultsByTesterPerBuild.php
+ * @package		TestLink
+ * @author		Andreas Simon
+ * @copyright 	2010, TestLink community
  *
  * Lists results and progress by tester per build.
  * 
- * @internal revisions:
+ * @internal revisions
  * 20110211 - asimon - BUGID 4192: show only open builds by default
  * 20101019 - asimon - BUGID 3911: show warning message instead of table if table is empty
  * 20100923 - eloff - refactored to use improved table interface
@@ -144,24 +143,24 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * @param resource &$tproject_mgr reference to testproject manager
  * @return array $args array with user input information
  */
-function init_args(&$tproject_mgr, &$tplan_mgr) {
+function init_args(&$tproject_mgr, &$tplan_mgr) 
+{
 	$iParams = array("format" => array(tlInputParameter::INT_N),
+		             "tproject_id" => array(tlInputParameter::INT_N),
 		             "tplan_id" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
-    
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	
-	if($args->tproject_id > 0) {
+	if($args->tproject_id > 0) 
+	{
 		$args->tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 		$args->tproject_name = $args->tproject_info['name'];
 		$args->tproject_description = $args->tproject_info['notes'];
 	}
 	
-	if ($args->tplan_id > 0) {
+	if ($args->tplan_id > 0) 
+	{
 		$args->tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
-		
 	}
 	
 	// BUGID 4192

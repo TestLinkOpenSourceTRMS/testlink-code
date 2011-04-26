@@ -4,18 +4,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @package    TestLink
- * @author     Andreas Simon
- * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.19 2010/11/03 08:06:16 asimon83 Exp $
- * @link       http://www.teamst.org/index.php
- * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlRequirementFilterControl.class.php?view=markup
+ * @filesource	tlRequirementFilterControl.class.php
+ * @package    	TestLink
+ * @author     	Andreas Simon
+ * @copyright  	2006-2010, TestLink community
+ * @link       	http://www.teamst.org/index.php
  *
  * This class extends tlFilterPanel for the specific use with requirement tree.
  * It holds logic to be used at GUI level to manage a common set of settings and filters for requirements.
  * 
- * @internal Revisions:
- *
+ * @internal revisions
+ * 20110426 - franciscom - init_args() interface changes
  * 20110311 - asimon - Show count for total requirements in tree on root node
  * 20101103 - asimon - custom fields on requirement filtering did not retain value after apply
  * 20101026 - asimon - BUGID 3930: changing date format according to given locale
@@ -103,9 +102,10 @@ class tlRequirementFilterControl extends tlFilterControl {
 		return tl::OK;
 	}
 	
-	protected function init_args() {
+	protected function init_args(&$dbHandler) 
+	{
 		// some common user input is already read in parent class
-		parent::init_args();
+		parent::init_args($dbHandler);
 
 		// add settings and filters to parameter info array for request parsers
 		$params = array();

@@ -1000,13 +1000,14 @@ function TPROJECT_REQ_SPEC_MGMT(id)
   returns:
 
 */
-function REQ_SPEC_MGMT(id)
+function REQ_SPEC_MGMT(tproject_id,id)
 {
 	var _FUNCTION_NAME_="REQ_SPEC_MGMT";
 	var pParams = tree_getPrintPreferences();
-  var action_url = fRoot+req_spec_manager_url+"?item=req_spec&req_spec_id="+id+args+"&"+pParams;
+  	var action_url = fRoot+req_spec_manager_url + "?tproject_id=" + tproject_id + 
+  					 "&item=req_spec&req_spec_id="+id+args+"&"+pParams;
   
-  // alert(_FUNCTION_NAME_ + " " +action_url);
+    // alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
 }
 

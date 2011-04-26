@@ -26,7 +26,6 @@ $control = new tlRequirementFilterControl($db);
 $control->build_tree_menu($gui);
 
 $smarty = new TLSmarty();
-
 $smarty->assign('gui', $gui);
 $smarty->assign('control', $control);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);

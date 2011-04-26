@@ -242,7 +242,8 @@ class tlRequirementFilterControl extends tlFilterControl {
             $drag_and_drop->enabled = false;
 		} else {
 			$loader = $gui->basehref . 'lib/ajax/getrequirementnodes.php?' .
-			                         "root_node={$this->args->testproject_id}";
+			                           "root_node={$this->args->testproject_id}" .
+			                           "&tproject_id={$this->args->testproject_id}";
 			
 			$req_qty = count($this->testproject_mgr->get_all_requirement_ids($this->args->testproject_id));
 		
@@ -260,6 +261,7 @@ class tlRequirementFilterControl extends tlFilterControl {
 		$gui->ajaxTree->dragDrop = $drag_and_drop;
 		$gui->ajaxTree->cookiePrefix = 'requirement_spec' . $root_node->id . "_" ;
 	} // end of method
+	
 	
 	private function init_setting_refresh_tree_on_action() {
 		$key = 'setting_refresh_tree_on_action';

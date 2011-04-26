@@ -20,13 +20,9 @@
 *
 *	@internal revision
 *	20110311 - Julian - Replaced seperator "::" with ":" for req spec text
-*	20110113 - asimon - 4168: BUGID Requirement Specifications navigator tree empty
+*	20110113 - asimon - BUGID 4168:  Requirement Specifications navigator tree empty
 *	20101010 - franciscom - added custom node attribute: testlink_node_name
 *	20100306 - franciscom - BUGID 0003003: EXTJS does not count # req's
-*	20091208 - franciscom - added management of new attribute 'forbidden_parent'
-*                           to manage req spec movement when child req spec management is ENABLED.  
-*	20091122 - franciscom - manage rep spec doc id
-*	20090502 - franciscom - BUGID 2309 - display requirement doc id
 *        
 */
 require_once('../../config.inc.php');
@@ -41,15 +37,16 @@ $node=isset($_REQUEST['node']) ? $_REQUEST['node'] : $root_node;
 $filter_node=isset($_REQUEST['filter_node']) ? $_REQUEST['filter_node'] : null;
 $show_children=isset($_REQUEST['show_children']) ? $_REQUEST['show_children'] : 1;
 $operation=isset($_REQUEST['operation']) ? $_REQUEST['operation']: 'manage';
+$tproject_id=isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 
-// for debug - file_put_contents('d:\request.txt', serialize($_REQUEST));
-$nodes = display_children($db,$root_node,$node,$filter_node,$show_children,$operation);
+
+$nodes = display_children($db,$tproject_id,$root_node,$node,$filter_node,$show_children,$operation);
 echo json_encode($nodes);
 
 /*
 
 */
-function display_children($dbHandler,$root_node,$parent,$filter_node,
+function display_children($dbHandler,$tproject_id,$root_node,$parent,$filter_node,
                           $show_children=ON,$operation='manage') 
 {             
     $tables = tlObjectWithDB::getDBTables(array('requirements','nodes_hierarchy','node_types','req_specs'));
@@ -87,7 +84,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
            " ON RSPEC.id = NHA.id " . 
            " WHERE NHA.parent_id = {$parent} ";
     
-    // file_put_contents('c:\getrequirementnodes.php.txt', $sql);                            
+    // file_put_contents('/tmp/getrequirementnodes.php.txt', $sql);                            
 
     if(!is_null($filter_node) && $filter_node > 0 && $parent == $root_node)
     {
@@ -98,7 +95,6 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     $nodeSet = $dbHandler->get_recordset($sql);
 	if(!is_null($nodeSet)) 
 	{
-		
         // BUGID 2309
         $sql =  " SELECT DISTINCT req_doc_id AS doc_id,NHA.id" .
                 " FROM {$tables['requirements']} REQ JOIN {$tables['nodes_hierarchy']} NHA ON NHA.id = REQ.id  " .
@@ -140,7 +136,8 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
                     $req_list = array();
 	                $treeMgr->getAllItemsID($row['id'],$req_list,$peerTypes);
 
-	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+	                $path['href'] = "javascript:" . $js_function[$row['node_type']] . 
+	                				"({$tproject_id},{$path['id']})";
 	                $path['text'] = htmlspecialchars($row['doc_id'] . ":") . $path['text'];
                     $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
    	        		if(!is_null($req_list))
@@ -154,14 +151,14 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	                break;
 
                 case 'requirement':
-	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+	                $path['href'] = "javascript:" . $js_function[$row['node_type']] . 
+	                				"({$tproject_id},{$path['id']})";
 	                $path['text'] = htmlspecialchars($requirements[$row['id']]['doc_id'] . ":") . $path['text'];
 	                $path['leaf']	= true;
                     $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
 	                break;
             }
 
-            
             $nodes[] = $path;                                                                        
 	    }	// foreach	
     }

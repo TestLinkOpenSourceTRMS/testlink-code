@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource reqSpecView.php
- * @author Martin Havlat
+ * @filesource	reqSpecView.php
+ * @author 		Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
@@ -22,6 +22,8 @@ testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args($db);
+
+new dBug($args);
 $gui = initialize_gui($db,$args);
 
 $smarty = new TLSmarty();
@@ -32,7 +34,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 /**
  *
  */
-function init_args(&dbHandler)
+function init_args(&$dbHandler)
 {
 	$iParams = array("req_spec_id" => array(tlInputParameter::INT_N),
 					 "tproject_id" => array(tlInputParameter::INT_N));
@@ -44,7 +46,7 @@ function init_args(&dbHandler)
 	if($args->tproject_id > 0)
 	{
 		$treeMgr = new tree($dbHandler);
-		$dummy = $treeManager->get_node_hierarchy_info($args->tproject_id);
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
 		$args->tproject_name = $dummy['name'];    
 	}
     

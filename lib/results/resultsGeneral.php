@@ -20,16 +20,6 @@
  *  20100206 - eloff - BUGID 3060 - Show verbose priority statistics like other tables.
  *  20100201 - franciscom - BUGID 0003123: General Test Plan Metrics - order of columns
  *                                         with test case exec results
- *  20091103 - franciscom - keywords, assigned testers, platform results refactored,
- *                          noew use method from test plan class.
- *
- *  20090209 - franciscom - BUGID 2080
- *  20080928 - franciscom - removed useless requires
- * 	20050807 - fm - refactoring:  changes in getTestSuiteReport() call
- * 	20050905 - fm - reduce global coupling
- *  20070101 - KL - upgraded to 1.7
- * 	20080626 - mht - added milestomes, priority report, refactorization
- * 
  * ----------------------------------------------------------------------------------- */
 require('../../config.inc.php');
 require_once('common.php');
@@ -99,8 +89,6 @@ else // do report
 	$kwr = $tplan_mgr->getStatusTotalsByKeyword($args->tplan_id);
     $gui->statistics->keywords = $tplan_mgr->tallyResultsForReport($kwr);
 
-//    $usr=$tplan_mgr->getStatusTotalsByAssignedTester($args->tplan_id);
-//    $gui->statistics->assigned_testers = $tplan_mgr->tallyResultsForReport($usr);
 
 	if( $gui->showPlatforms )
 	{
@@ -108,7 +96,8 @@ else // do report
 		$platr = $tplan_mgr->getStatusTotalsByPlatform($args->tplan_id);
 		$gui->statistics->platform = $tplan_mgr->tallyResultsForReport($platr);
 	}
-	if($_SESSION['testprojectOptions']->testPriorityEnabled)
+	
+	if($tproject_info['opt']->testPriorityEnabled)
 	{
 		$items2loop[] = 'priorities';
 		$prios = $tplan_mgr->getStatusTotalsByPriority($args->tplan_id);
@@ -288,15 +277,13 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
 */
 function init_args()
 {
-	$iParams = array(
-		"tplan_id" => array(tlInputParameter::INT_N),
-		"format" => array(tlInputParameter::INT_N),
-	);
+	$iParams = array("tplan_id" => array(tlInputParameter::INT_N),
+					 "tproject_id" => array(tlInputParameter::INT_N),
+					 "format" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
-	$pParams = G_PARAMS($iParams,$args);
+	$pParams = R_PARAMS($iParams,$args);
 	
-    $args->tproject_id = $_SESSION['testprojectID'];
     
     if (is_null($args->format))
 	{

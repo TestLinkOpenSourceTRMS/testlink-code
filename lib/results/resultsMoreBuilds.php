@@ -6,22 +6,16 @@
  * This page will forward the user to a form where they can select
  * the builds they would like to query results against.
  * 
+ * @filesource	resultsMoreBuilds.php
  * @package 	TestLink
  * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.78 2010/12/21 12:00:32 amkhullar Exp $
  *
- * @internal Revisions:
+ * @internal revisions
  *  20101202 - asimon - BUGID 4027: Query metrics start date and end date are not working - getting all results
  *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
  *  20101022 - asimon - BUGID 3716 - replaced old separated inputs for day/month/year by ext js calendar
  *	20101019 - eloff - BUGID 3794 - added contribution by rtessier
- *	20091027 - franciscom - BUGID 2500
- *	20090409 - amitkhullar- code refactor for results object
- *	20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report.
- *	20090122 - franciscom - BUGID 2012 
- *	20080524 - franciscom - BUGID 1430
- *	20070901 - franciscom - refactoring
  * 
  **/
 require_once('../../config.inc.php');
@@ -29,11 +23,12 @@ require_once('common.php');
 require_once('results.class.php');
 require_once('users.inc.php');
 require_once('displayMgr.php');
-testlinkInitPage($db,false,false,"checkRights");
+
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 $templateCfg = templateConfiguration();
 $date_format_cfg = config_get('date_format');
 
-$args = init_args();
+$args = init_args($db);
 $gui = initializeGui($db,$args,$date_format_cfg);
 $mailCfg = buildMailCfg($gui);
 
@@ -226,12 +221,15 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
 /**
  * Initialize input data
  */
-function init_args()
+function init_args(&$dbHandler)
 {
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$iParams = array(
 		"format" => array(tlInputParameter::INT_N),
 		"report_type" => array(tlInputParameter::INT_N),
 		"tplan_id" => array(tlInputParameter::INT_N),
+		"tproject_id" => array(tlInputParameter::INT_N),
 		"build" => array(tlInputParameter::ARRAY_INT),
 		"platform" => array(tlInputParameter::ARRAY_INT),
 		"keyword" => array(tlInputParameter::INT_N),
@@ -248,14 +246,13 @@ function init_args()
 	);
 	$args = new stdClass();
 
-	$_REQUEST=strings_stripSlashes($_REQUEST);
 	$pParams = R_PARAMS($iParams);
 	
 	$args->format = $pParams["format"];
 	$args->report_type = $pParams["report_type"];
 	$args->tplan_id = $pParams["tplan_id"];
 	
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	$args->tproject_id = $pParams["tproject_id"];
     
     $args->display = new stdClass();
     $args->display->suite_summaries = $pParams["display_suite_summaries"];

@@ -22,16 +22,15 @@
  * 20100526 - Julian - fixed wrong access to platform array
  * 20100525 - Julian - added option 'step_info' => 0 to get_linked_tcversions call
  *                     to improve performance
- * 20090919 - franciscom - added platform info
  *
  **/
 require('../../config.inc.php');
 require_once('common.php');
 require_once('exttable.class.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 $templateCfg = templateConfiguration();
 
-$args = init_args();
+$args = init_args($db);
 $gui = new stdClass();
 $gui->tproject_name = $args->tproject_name;
 $gui->show_only_active = $args->show_only_active;
@@ -353,15 +352,22 @@ function getColumnsDefinition($showPlatforms, $result_cfg, $labels)
 
 }
 
-function init_args()
+function init_args(&$dbHandler)
 {
 	$args = new stdClass();
 
 	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+	$args->tproject_name = '';
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	if($args->tproject_id > 0)
+	{
+		$treeMgr = new tree($dbHandler);
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id); 
+		$args->tproject_name = $dummy['name'];
+	}
+
 	$args->currentUserID = $_SESSION['currentUser']->dbID;
 
 	$show_only_active = isset($_REQUEST['show_only_active']) ? true : false;

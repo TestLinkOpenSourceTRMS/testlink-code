@@ -11,8 +11,6 @@
  *
  * 20101210 - franciscom - BUGID 4090
  * 20100912 - franciscom - BUGID 2215
- * 20081116 - franciscom - refactored to display X axis ordered (alphabetical).
- * 20081113 - franciscom - BUGID 1848
  */
 require_once('../../config.inc.php');
 require_once('charts.inc.php');

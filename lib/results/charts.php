@@ -3,13 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource	charts.php
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: charts.php,v 1.31 2010/10/18 22:55:29 erikeloff Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
  * 20100716 - eloff - BUGID 3562: include bug tracking if activated
  * 20100221 - franciscom - fixed call to getPlatforms()	
  */
@@ -27,8 +27,8 @@ $gui=new stdClass();
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
-$gui->tplan_id=$_REQUEST['tplan_id'];
-$tproject_id=$_SESSION['testprojectID'];
+$gui->tplan_id = intval($_REQUEST['tplan_id']);
+$tproject_id = intval($_REQUEST['tproject_id']);
 $tplan_info = $tplan_mgr->get_by_id($gui->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($tproject_id);
 

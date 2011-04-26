@@ -3,27 +3,19 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: printDocument.php,v $
- *
- * @version $Revision: 1.45 $
- * @modified $Date: 2010/11/06 18:46:33 $ by $Author: amkhullar $
- * @author Martin Havlat
+ * @filesource	printDocument.php
+ * @author 		Martin Havlat
  *
  * SCOPE:
  * Generate documentation Test report based on Test plan data.
  *
- * Revisions :
+ * @internal revisions
  * 	20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
  *  20100723 - asimon - BUGID 3459 - added platform ID to calls of 
  *                                   renderTestPlanForPrinting() and renderTestSpecTreeForPrinting()
  *	20100520 - franciscom - BUGID 3451 - In the "Test reports and Metrics" 
  *                                       -> "Test report" the "Last Result" is always "Not Run"
  *  20100326 - asimon - BUGID 3067 - refactored to include requirement document printing
- *	20090906 - franciscom - added platform contribution
- *	20090922 - amkhullar - added a check box to enable/disable display of TC custom fields.
- *  20090309 - franciscom - BUGID 2205 - use test case execution while printing test plan
- * 	20090213 - havlatm - support for OpenOffice
- *	20081207 - franciscom - BUGID 1910 - fixed estimated execution time computation.  
  *
  */
 require_once('../../config.inc.php');
@@ -41,7 +33,11 @@ $doc_info = new stdClass(); // gather title, author, product, test plan, etc.
 $doc_data = new stdClass(); // gather content and tests related data
 
 testlinkInitPage($db);
-$args = init_args();
+
+$tproject = new testproject($db);
+$tree_manager = &$tproject->tree_manager;
+
+$args = init_args($tree_manager);
 $doc_info->type = $args->doc_type;
 $doc_info->content_range = $args->level;
 
@@ -64,15 +60,13 @@ $resultsCfg = config_get('results');
 $status_descr_code = $resultsCfg['status_code'];
 $status_code_descr = array_flip($status_descr_code);
 
-$tproject = new testproject($db);
-$tree_manager = &$tproject->tree_manager;
 $hash_descr_id = $tree_manager->get_available_node_types();
 $hash_id_descr = array_flip($hash_descr_id);
 $decoding_hash = array('node_id_descr' => $hash_id_descr,'status_descr_code' =>  $status_descr_code,
                        'status_code_descr' =>  $status_code_descr);
 
 // can not be null
-$order_cfg = array("type" =>'spec_order'); // 20090309 - BUGID 2205
+$order_cfg = array("type" =>'spec_order');
 $pnOptionsAdd = null;
 switch ($doc_info->type)
 {
@@ -395,7 +389,7 @@ echo $docText;
  * Process input data
  * @return singleton list of input parameters 
  **/
-function init_args()
+function init_args(&$treeMgr)
 {
 	$args = new stdClass();
 	$args->doc_type = $_REQUEST['type'];
@@ -405,8 +399,14 @@ function init_args()
 	$args->tplan_id = isset($_REQUEST['docTestPlanId']) ? $_REQUEST['docTestPlanId'] : 0;
 	
 	
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
+	$args->tproject_name = '';
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	if($args->tproject_id > 0)
+	{
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];	
+	}
+
 	$args->user_id = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
 
 	return $args;

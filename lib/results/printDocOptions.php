@@ -3,24 +3,20 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  *  
- * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2010/11/06 18:46:33 $ by $Author: amkhullar $
- * @author 	Martin Havlat
+ * @filesource	printDocOptions.php
+ * @author 		Martin Havlat
  * 
  *  Settings for generated documents
  * 	- Structure of a document 
  *	- It builds the javascript tree that allow the user select a required part 
  *		Test specification/ Test plan.
  *
- * rev :
+ * @internal revisions
  * 		20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
  *		20101003 - franciscom - init_checkboxes() refactored used common pattern
  *		20100723 - BUGID 3451 and related
  *  	20100326 - asimon - refactored to include requirement documents
  *                          added init_checkboxes()
- *		20090322 - amkhullar - added new option custom fields while printing Test plan/report
- * 		20090222 - havlatm - added new options 
  *
  */
 require_once("../../config.inc.php");
@@ -30,7 +26,7 @@ require_once("treeMenu.inc.php");
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-$args = init_args();
+$args = init_args($db);
 $gui = initializeGui($db,$args);
 $arrCheckboxes = init_checkboxes($args);
 
@@ -93,8 +89,9 @@ switch($args->doc_type)
 		// ----- BUGID 3451 and related ---------------------------------------
   	  	
   	  	$additionalInfo->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
-  	  	$additionalInfo->useColours = COLOR_BY_TC_STATUS_OFF;
+  	  	$additionalInfo->useColours = null;
         
+        // INTERFACE HAS TO BE CHANGED
         list($treeContents, $additionalArgs) = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
 				                                                $args->tplan_id,$testplan_name,$filters,$additionalInfo);
         
@@ -131,10 +128,11 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * get user input and create an object with properties representing this inputs.
  * @return stdClass object 
  */
-function init_args()
+function init_args(&$dbHandler)
 {
 	$args = new stdClass();
-	$iParams = array("tplan_id" => array(tlInputParameter::INT_N),
+	$iParams = array("tproject_id" => array(tlInputParameter::INT_N),
+					 "tplan_id" => array(tlInputParameter::INT_N),
 			         "format" => array(tlInputParameter::INT_N,999),
 					 "type" => array(tlInputParameter::STRING_N,0,100));	
 		
@@ -142,12 +140,16 @@ function init_args()
 	
 	//@TODO schlundus, rename request param to type
 	$args->doc_type = $args->type;
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
-
+    $args->tproject_name = '';
+    if($args->tproject_id > 0)
+    {
+    	$tprojectMgr = new testproject($dbHandler);
+    	$dummy = $tprojectMgr->get_by_id($dbHandler);
+    	$args->tproject_name = $dummy['name'];
+    	$args->testprojectOptReqs = $dummy['opt']->requirementsEnabled;
+    }
     $args->basehref = $_SESSION['basehref'];
-    $args->testprojectOptReqs = $_SESSION['testprojectOptions']->requirementsEnabled;
-    
+ 
     return $args;
 }
 

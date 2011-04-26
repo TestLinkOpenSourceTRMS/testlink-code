@@ -3,25 +3,22 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource $RCSfile: testPlanWithCF.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2010/10/15 11:43:25 $ by $Author: mx-julian $
- * @author Amit Khullar - amkhullar@gmail.com
+ * @filesource	testPlanWithCF.php
+ * @author 		Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list associated Custom Field Data
  *
- * rev:
+ * @internal revisions
  *      20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                          table state independent from localization
  *      20101012 - Julian - added html comment to properly sort by test case column
  *      20101001 - asimon - added linked icon for testcase editing
  *      20100921 - Julian - BUGID 3797 - use exttable
- * 		20090504 - amitkhullar - BUGID 2465
  */
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $cfield_mgr = new cfield_mgr($db);
 $templateCfg = templateConfiguration();
@@ -189,23 +186,21 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $gluechar,$charset
  */
 function init_args(&$tplan_mgr)
 {
-	$iParams = array(
-		"format" => array(tlInputParameter::INT_N),
-		"tplan_id" => array(tlInputParameter::INT_N),
-	);
+	$iParams = array("format" => array(tlInputParameter::INT_N),
+					 "tproject_id" => array(tlInputParameter::INT_N),
+					 "tplan_id" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
 	$pParams = R_PARAMS($iParams,$args);
 	
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
-
-    $args->tplan_name = '';
-    if(!$args->tplan_id)
+	$args->tproject_name = '';
+    if($args->tproject_id > 0)
     {
-        $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+    	$dummy = $tplan_mgr->tree_manager->get_node_hierarchy_info($args->tproject_id);
+    	$args->tproject_name = $dummy['name'];
     }
 
+    $args->tplan_name = '';
     if($args->tplan_id > 0)
     {
         $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);

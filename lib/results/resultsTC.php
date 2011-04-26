@@ -1,14 +1,12 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.80 2010/11/20 15:01:51 franciscom Exp $ 
 *
-* @author	Martin Havlat <havlat@users.sourceforge.net>
-* @author 	Chad Rosen
+* @filesource	resultsTC.php
 * 
 * Show Test Report by individual test case.
 *
-* @author
+* @internal revisions
 * 20110329 - Julian - BUGID 4341 - added "Last Execution" column
 * 20101013 - asimon - use linkto.php for emailed links
 * 20101012 - Julian - added html comment to properly sort by test case column
@@ -27,14 +25,6 @@
 * 20100503 - franciscom - BUGID 3419: In "Test result matrix", tests statuses or not colorized
 * 20100502 - Julian - BUGID 3418
 * 20100424 - franciscom - BUGID 3356	 
-* 20091223 - eloff - added HTML tables for reports where JS is unavailable
-* 20091221 - eloff - fixed bug when iterating over results
-*                    changed link to executed testcase to be an absolute url
-* 20091016 - franciscom - fix bug on URL to test case execution
-* 20090909 - franciscom - refactored to manage multiple tables when more that one
-*                         platform exists.
-*
-* 20090804 - franciscom - added Eloff contribution
 *
 */
 require('../../config.inc.php');
@@ -42,7 +32,7 @@ require_once('common.php');
 require_once('results.class.php');
 require_once('displayMgr.php');
 require_once('exttable.class.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
@@ -319,11 +309,11 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
 function init_args()
 {
 	$iParams = array("format" => array(tlInputParameter::INT_N),
+					 "tproject_id" => array(tlInputParameter::INT_N),
 		             "tplan_id" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->basehref = $_SESSION['basehref'];
 	
     return $args;

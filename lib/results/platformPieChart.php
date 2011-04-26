@@ -3,17 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filespurce	platformPieChart.php
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
- * @copyright 	
- * @version    	CVS: $Id: platformPieChart.php,v 1.4 2010/09/22 12:28:29 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 20100922 - Julian - BUGID 3798
- * 20091222 - eloff - fixed extraction of data to current data structures
- *
  *
 **/
 require_once('../../config.inc.php');
@@ -99,8 +96,8 @@ function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
     $args = new stdClass();
-    $args->tplan_id = $_REQUEST['tplan_id'];
-    $args->tproject_id = $_SESSION['testprojectID'];
+    $args->tplan_id = intval($_REQUEST['tplan_id']);
+    $args->tproject_id = intval($_REQUEST['tproject_id']);
     $args->platform_id = $_REQUEST['platform_id'];
     return $args;
 }

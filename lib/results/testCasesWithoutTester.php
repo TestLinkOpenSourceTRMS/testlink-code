@@ -3,10 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: testCasesWithoutTester.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2010/10/19 09:05:06 $ by $Author: mx-julian $
- * @author Francisco Mancardi - francisco.mancardi@gmail.com
+ * @filesource	testCasesWithoutTester.php
+ * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test plan, list test cases that has no tester assigned
  *
@@ -27,7 +25,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $tplan_mgr = new testplan($db);
@@ -159,26 +157,26 @@ function buildTable($data, $tproject_id, $show_platforms, $priorityMgmtEnabled)
 function init_args(&$tplan_mgr)
 {
 	$iParams = array("format" => array(tlInputParameter::INT_N),
+					 "tproject_id" => array(tlInputParameter::INT_N),
 					 "tplan_id" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
     
     $args->show_platforms = false;
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
-    $args->tplan_name = '';
-    if(!$args->tplan_id)
+    $args->tproject_name = '';
+    if($args->tproject_id > 0)
     {
-        $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+		$dummy = $tplan_mgr->tree_manager->get_node_hierarchy_info($args->tproject_id);
+    	$args->tproject_name = $dummy['name'];
     }
-    
+
+    $args->tplan_name = '';
     if($args->tplan_id > 0)
     {
 		$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 		$args->tplan_name = $tplan_info['name'];  
 		$args->show_platforms = $tplan_mgr->hasLinkedPlatforms($args->tplan_id);
-
     }
     
     return $args;

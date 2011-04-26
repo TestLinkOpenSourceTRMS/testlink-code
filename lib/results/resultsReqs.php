@@ -3,14 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.46 $
- * @modified $Date: 2011/02/11 13:32:14 $ by $Author: mx-julian $
- * @author Martin Havlat
+ * @filesource	resultsReqs.php
+ * @author 		Martin Havlat
  * 
  * Report requirement based results
  * 
- * rev:
+ * @internal revisions
  * 20110207 - asimon - BUGID 4227 - Allow to choose status of requirements to be evaluated
  * 20110207 - Julian - BUGID 4228 - Add more requirement evaluation states
  * 20110207 - Julian - BUGID 4206 - Jump to latest execution for linked test cases
@@ -29,24 +27,19 @@
  * 20100820 - asimon - BUGID 3439: little refactorizations
  * 20100819 - asimon - BUGIDs 3261, 3439, 3488, 3569, 3299, 3259, 3687: 
  *                     complete redesign/rewrite of requirement based report 
- * 20090506 - franciscom - requirements refactoring
- * 20090402 - amitkhullar - added TC version while displaying the Req -> TC Mapping 
- * 20090111 - franciscom - BUGID 1967 + improvements
- * 20060104 - fm - BUGID 0000311: Requirements based Report shows errors
  */
 
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
 require_once('exttable.class.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 $tplan_mgr = new testplan($db);
 $req_mgr = new requirement_mgr($db);
 $req_spec_mgr = new requirement_spec_mgr($db);
-// BUGID 3856
 $platform_mgr = new tlPlatform($db);
 
 $glue_char = config_get('gui_title_separator_1');
@@ -612,11 +605,16 @@ function init_args(&$tproject_mgr, &$req_cfg)
 	$args->states_to_show->items = array(0 => "[" . lang_get('any') . "]") + 
 	                              (array) init_labels($req_cfg->status_labels);
 	
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+	$args->tproject_name = '';
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	if($args->tproject_id > 0)
+	{
+		$dummy = $tproject_mgr->get_by_id($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+	}
 
+	// 20110626 - POTENTIAL PROBLEMS
 	$args->tplan_id = intval($_SESSION['resultsNavigator_testplanID']);
-	
 	$args->format = $_SESSION['resultsNavigator_format'];
 
 	// BUGID 3856
@@ -624,10 +622,13 @@ function init_args(&$tproject_mgr, &$req_cfg)
 	$platform = 0;
 	if (isset($_REQUEST['platform'])) {
 		$platform = $_REQUEST['platform'];
-	} else if (isset($_SESSION['platform'])) {
-		$platform = $_SESSION['platform'];
-	}
-	$args->platform = $_SESSION['platform'] = $platform;
+	} 
+	// else if (isset($_SESSION['platform'])) {
+	// 	$platform = $_SESSION['platform'];
+	// }
+	// $args->platform = $_SESSION['platform'] = $platform;
+	
+	$args->platform = $platform;
 	
 	return $args;
 }

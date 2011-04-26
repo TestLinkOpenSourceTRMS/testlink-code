@@ -3,14 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource	overallPieChart.php
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 	2005-2009, TestLink community
- * @copyright 	
- * @version    	CVS: $Id: overallPieChart.php,v 1.12 2010/09/12 17:09:17 franciscom Exp $
+ * @copyright 	2005-2011, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
  *
  *
 **/
@@ -98,8 +97,8 @@ function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
     $args = new stdClass();
-    $args->tplan_id = $_REQUEST['tplan_id'];
-    $args->tproject_id = $_SESSION['testprojectID'];
+    $args->tplan_id = intval($_REQUEST['tplan_id']);
+    $args->tproject_id = intval($_REQUEST['tproject_id']);
     return $args;
 }
 ?>

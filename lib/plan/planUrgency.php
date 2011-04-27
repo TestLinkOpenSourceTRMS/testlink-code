@@ -6,24 +6,21 @@
  * Define urgency of a Test Suite. 
  * It requires "prioritization" feature enabled.
  *
+ * @filesource	planUrgency.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planUrgency.php,v 1.16 2010/01/02 16:54:34 franciscom Exp $
+ * @copyright 	2003-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * 		20110415 - Julian - BUGID 4419: Add columns "Importance" and "Priority" 
+ * 20110415 - Julian - BUGID 4419: Add columns "Importance" and "Priority" 
  *  	                                to "Set urgent Tests"
- * 		20080925 - franciscom - BUGID 1746
- *      20080721 - franciscom
- *           code refactored to follow last development standard.
  **/
  
 require('../../config.inc.php');
 require_once('common.php');
-testlinkInitPage($db,false,false,"checkRights");
-$args = init_args();
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+$args = init_args($db);
 
 if($args->show_help)
 {
@@ -33,16 +30,6 @@ if($args->show_help)
 $templateCfg = templateConfiguration();
 $tplan_mgr = new testPlanUrgency($db);
 $gui = new stdClass();
-
-// $filters = null;
-// // $options = null;
-// $options = array('details' => 'platform');
-// $xx=$tplan_mgr->getPriority($args->tplan_id,$filters,$options);
-// new dBug($xx);
-
-// $options = null;
-// $xx=$tplan_mgr->getPriority($args->tplan_id,$filters,$options);
-// new dBug($xx);
 
 $node_info = $tplan_mgr->tree_manager->get_node_hierarchy_info($args->node_id);
 $gui->node_name = $node_info['name'];
@@ -82,7 +69,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /*
-  function: init_args()
+  function: init_args(&$dbHandler)
 
   args: -
   
@@ -96,13 +83,22 @@ function init_args()
     $args = new stdClass();
     $args->show_help = (isset($_REQUEST['level']) && $_REQUEST['level']=='testproject');
     
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
-    $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
-    $args->tplan_name = $_SESSION['testplanName'];
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+
+    $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+    $args->tplan_name = ''
+    if($args->tplan_id > 0)
+    {
+    	$treeMgr = new tree($dbHandler);
+    	$dummy = $treeMgr->get_node_hierarchy_info($args->tplan_id);
+    	$args->tplan_name = $dummy['name'];
+    }
+    
     $args->node_type = isset($_REQUEST['level']) ? $_REQUEST['level'] : OFF;
     $args->node_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : ERROR;
 
 	// Sets urgency for suite
+	
     if (isset($_REQUEST['high_urgency']))
     	$args->urgency = HIGH;
     elseif (isset($_REQUEST['medium_urgency']))
@@ -110,7 +106,7 @@ function init_args()
     elseif (isset($_REQUEST['low_urgency']))
     	$args->urgency = LOW;
     else
-    	$args->urgency = OFF;
+    	$args->urgency = OFF;	
 
 	// Sets urgency for every single tc
 	if (isset($_REQUEST['urgency'])) {

@@ -3,19 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource $RCSfile: planMilestonesEdit.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2010/10/26 08:10:25 $ by $Author: mx-julian $
- * @author Francisco Mancardi
+ * @filesource	planMilestonesEdit.php
+ * @author 		Francisco Mancardi
  *
- * rev:
+ * @internal revisions
  *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
  *  20101022 - asimon - BUGID 3716 - replaced old separated inputs for day/month/year by ext js calendar
  *
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 $date_format_cfg = config_get('date_format');
 
 $templateCfg = templateConfiguration();
@@ -79,19 +77,22 @@ function init_args(&$dbHandler,$dateFormat)
 	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
 
 	$args->basehref=$_SESSION['basehref'];
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
+
+
+	$treeMgr = new tree($dbHandler);
+	$args->tproject_name = '';
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	if( $args->tproject_id > 0 )
+	{
+	    $info = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+	    $args->tproject_name = $info['name'];
+  	}
 	
 	$args->tplan_name = '';
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
-	if( $args->tplan_id == 0 )
-	{
-	    $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
-	}
 	if( $args->tplan_id > 0 )
 	{
-	    $tplan_mgr = new testplan($dbHandler);
-	    $info = $tplan_mgr->get_by_id($args->tplan_id);
+	    $info = $treeMgr->get_node_hierarchy_info($args->tplan_id);
 	    $args->tplan_name = $info['name'];
   	}
   	 	

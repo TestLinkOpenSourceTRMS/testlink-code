@@ -7,10 +7,10 @@
  * Define urgency of a Test Suite. 
  * It requires "prioritization" feature enabled.
  *
+ * @filesource	planMilestonesView.php
  * @package 	TestLink
- * @author Francisco Mancardi
- * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planMilestonesView.php,v 1.10 2010/10/18 07:53:22 mx-julian Exp $
+ * @author 		Francisco Mancardi
+ * @copyright 	2003-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -20,10 +20,10 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("testplan.class.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-$args = init_args();
+$args = init_args($db);
 $gui = initialize_gui($db,$args);
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -37,16 +37,29 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   returns: 
 
 */
-function init_args()
+function init_args(&$dbHandler)
 {
 	$args = new stdClass();
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
-	$args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
-	$args->tplan_name = isset($_SESSION['testplanName']) ? $_SESSION['testplanName'] : "";
 
+	$treeMgr = new tree($dbHandler);
+	$args->tproject_name = '';
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	if( $args->tproject_id > 0 )
+	{
+	    $info = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+	    $args->tproject_name = $info['name'];
+  	}
+	
+	$args->tplan_name = '';
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
+	if( $args->tplan_id > 0 )
+	{
+	    $info = $treeMgr->get_node_hierarchy_info($args->tplan_id);
+	    $args->tplan_name = $info['name'];
+  	}
 	return $args;
 }
+
 
 /*
   function: initialize_gui

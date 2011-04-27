@@ -53,13 +53,15 @@ require_once("web_editor.php");
 $cfg = getCfg();
 testlinkInitPage($db);
 $optionTransferName = 'ot';
-$args = init_args($cfg,$optionTransferName);
-require_once(require_web_editor($cfg->webEditorCfg['type']));
 
 $tcase_mgr = new testcase($db);
 $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
+
+$args = init_args($cfg,$tproject_mgr,$optionTransferName);
+require_once(require_web_editor($cfg->webEditorCfg['type']));
+
 
 $templateCfg = templateConfiguration('tcEdit');
 
@@ -347,7 +349,7 @@ if ($show_newTC_form)
 						  can be added to new test plans
 	
 */
-function init_args(&$cfgObj,$otName)
+function init_args(&$cfgObj,&tprojectMgr,$otName)
 {
     $tc_importance_default=config_get('testcase_importance_default');
     
@@ -419,7 +421,6 @@ function init_args(&$cfgObj,$otName)
     }    
     
     
-    // 20090419 - franciscom - BUGID - edit while executing
     $args->show_mode = (isset($_REQUEST['show_mode']) && $_REQUEST['show_mode'] != '') ? $_REQUEST['show_mode'] : null;
 
     // Multiple Test Case Steps Feature
@@ -428,26 +429,16 @@ function init_args(&$cfgObj,$otName)
 	$args->step_set = isset($_REQUEST['step_set']) ? $_REQUEST['step_set'] : null;
 	$args->tcaseSteps = isset($_REQUEST['tcaseSteps']) ? $_REQUEST['tcaseSteps'] : null;
 
-        
-    // from session
-    $args->testproject_id = $_SESSION['testprojectID'];
-    $args->user_id = $_SESSION['userID'];
-
-    // BUGID 3579
-	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? $_SESSION['setting_refresh_tree_on_action'] : 0;
-    
+    $args->testproject_id = intval($_REQUEST['tproject_id']);
 	$args->opt_requirements = null;
-	if( isset($_SESSION['testprojectOptions']) )
-	{
-		$args->opt_requirements = $_SESSION['testprojectOptions']->requirementsEnabled;
-	} 
+	$dummy = $tprojectMgr->get_by_id($args->testproject_id);
+	$args->opt_requirements = $dummy['opt']->requirementsEnabled;
 
 	$args->basehref = $_SESSION['basehref'];
-
+    $args->user_id = $_SESSION['userID'];
+	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? $_SESSION['setting_refresh_tree_on_action'] : 0;
     $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 
-
-	// BUGID 3532
 	$action2check = array("editStep" => true,"createStep" => true, "doCreateStep" => true,
 						  "doUpdateStep" => true, "doInsertStep" => true);
 	if( isset($action2check[$args->doAction]) )
@@ -455,7 +446,6 @@ function init_args(&$cfgObj,$otName)
 		$cfgObj->webEditorCfg = getWebEditorCfg('steps_design');	
 	}   
 
-	// BUGID 3952 - used Only on Create
 	$args->stay_here = isset($_REQUEST['stay_here']) ? 1 : 0;
     return $args;
 }

@@ -11,23 +11,13 @@
  * @version    	CVS: $Id: users.inc.php,v 1.111 2010/10/23 16:13:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revision:
+ * @internal revisions
  * 
  *  20101023 - franciscom - BUGID 3931 getTestersForHtmlOptions()
  *	20101010 - franciscom - BUGID 3872: Admin should be able to set a new password for users 
  *							resetPassword() - interface changes and logic changes
  *	20100502 - franciscom - resetPassword() - fixed bad comparison to set $errorMsg
  *	20100427 - franciscom - BUGID 3396 
- *	20091215 - eloff - read active testplan from cookie into session
- *	20090817 - franciscom - getUsersForHtmlOptions() - implementation changes
- *	20090517 - franciscom - getTestersForHtmlOptions() interface changes
- *	                        buildUserMap() added prefix to tag inactive users
- *	20081221 - franciscom - buildUserMap() interface changes
- *	20081213 - franciscom - refactoring removing old config options 
- *	20080822 - franciscom - resetPassword() - added generatePassword()
- *	20080405 - franciscom - getGrantsForUserMgmt()
- *	20080315 - franciscom - added initalize_tabsmenu()
- *	20080210 - franciscom - fixed message for error tlUser::E_PWDDONTMATCH
  *
  */
 

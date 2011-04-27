@@ -5,13 +5,12 @@
  *
  * Get list of users with a project right
  * 
+ * @filesource	getUsersWithRight.php
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: getUsersWithRight.php,v 1.2 2010/12/01 14:37:08 asimon83 Exp $
  *
- * @internal Revisions:
- * None
+ * @internal revisions
  *
  **/
 
@@ -23,9 +22,7 @@ $data = array();
 // BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
 $_REQUEST=strings_stripSlashes($_REQUEST);
 
-$iParams = array(
-		"right" => array(tlInputParameter::STRING_N,0,100,'/^[a-z0-9_]+$/')
-		);
+$iParams = array("right" => array(tlInputParameter::STRING_N,0,100,'/^[a-z0-9_]+$/'));
 $args = G_PARAMS($iParams);
 
 
@@ -33,7 +30,7 @@ $args = G_PARAMS($iParams);
 if (has_rights($db,$args['right']))
 {
 	$tlUser = new tlUser($_SESSION['userID']);
-	$data['rows'] = $tlUser->getNamesForProjectRight($db,$args['right'],$_SESSION['testprojectID']);
+	$data['rows'] = $tlUser->getNamesForProjectRight($db,$args['right'],intval($_REQUEST['tproject_id']));
 	$data['rows'][] = array('id'=>'0','login'=>' ','first'=>' ','last'=>' '); // option for no owner
 }
 else
@@ -42,5 +39,4 @@ else
 }
 
 echo json_encode($data);
-
 ?>

@@ -739,29 +739,11 @@ class tlUser extends tlDBObject
 		{
 			$globalRights[] = $right->name;
 		}
-		if (!is_null($tplanID))
-		{
-			$testPlanID = $tplanID;
-		}
-		else
-		{
-			//@TODO schlundus, should not be there
-			// 20090726 - franciscom -> yes must be moved ASAP
-			$testPlanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
-		}
-		
-		
 		$userTestPlanRoles = $this->tplanRoles;
-		if (!is_null($tprojectID))
-		{
-			$testprojectID = $tprojectID;
-		}
-		else
-		{
-			//@TODO schlundus, should not be there
-			$testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-		}
-		
+
+		$testPlanID = $tplanID;
+		$testprojectID = $tprojectID;
+
 		$allRights = $globalRights;
 			
 		$userTestProjectRoles = $this->tprojectRoles;

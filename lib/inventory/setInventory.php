@@ -23,9 +23,9 @@ $data['userfeedback'] = lang_get('inventory_msg_no_action');
 $data['success'] = FALSE;
 $args = init_args();
 
-if ($_SESSION['currentUser']->hasRight($db,"project_inventory_management"))
+if ($_SESSION['currentUser']->hasRight($db,"project_inventory_management",$args->tproject_id))
 {
-	$tlIs = new tlInventory($_SESSION['testprojectID'], $db);
+	$tlIs = new tlInventory($args->tproject_id, $db);
 	$data['success'] = $tlIs->setInventory($args);
 	$data['success'] = ($data['success'] == 1 /*$tlIs->OK*/) ? true : false;
 	$data['userfeedback'] = $tlIs->getUserFeedback();
@@ -43,13 +43,13 @@ function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
 	$iParams = array("machineID" => array(tlInputParameter::INT_N),
-					"machineOwner" => array(tlInputParameter::INT_N),
-			        "machineName" => array(tlInputParameter::STRING_N,0,255),
-			        "machineIp" => array(tlInputParameter::STRING_N,0,50),
-			        "machineNotes" => array(tlInputParameter::STRING_N,0,2000),
-			        "machinePurpose" => array(tlInputParameter::STRING_N,0,2000),
-			        "machineHw" => array(tlInputParameter::STRING_N,0,2000),
-	 				);
+					 "machineOwner" => array(tlInputParameter::INT_N),
+			         "machineName" => array(tlInputParameter::STRING_N,0,255),
+			         "machineIp" => array(tlInputParameter::STRING_N,0,50),
+			         "machineNotes" => array(tlInputParameter::STRING_N,0,2000),
+			         "machinePurpose" => array(tlInputParameter::STRING_N,0,2000),
+			         "machineHw" => array(tlInputParameter::STRING_N,0,2000),
+			         "tproject_id" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
     R_PARAMS($iParams,$args);

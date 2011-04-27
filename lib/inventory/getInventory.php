@@ -5,13 +5,12 @@
  *
  * Get inventory data
  * 
+ * @filespurce	getInventory.php
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: getInventory.php,v 1.2 2010/02/20 09:27:29 franciscom Exp $
  *
  * @internal Revisions:
- * None
  *
  **/
 
@@ -19,7 +18,7 @@ require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 
-$tlIs = new tlInventory($_SESSION['testprojectID'], $db);
+$tlIs = new tlInventory(intval($_REQUEST['tproject_id']), $db);
 $data = $tlIs->getAll();
 
 $tlUser = new tlUser($_SESSION['userID']);

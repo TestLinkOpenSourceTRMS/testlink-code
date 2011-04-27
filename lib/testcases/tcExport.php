@@ -3,25 +3,20 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: tcExport.php,v $
- *
- * @version $Revision: 1.14 $
- * @modified $Date: 2010/03/15 22:21:20 $ by $Author: franciscom $
  *
  * Scope: test case and test suites export
  * 
- * Revisions:
+ * @filesource	tcExport.php
+ * @package 	TestLink
+ * @copyright 	2007-2011, TestLink community 
+ * @link 		http://www.teamst.org/index.php
+ * 
+ * @internal revisions
  *
  * 20100315 - franciscom - improvements on goback management
  * 20100315 - amitkhullar - Added checkboxes options for Requirements and CFields for Export.
- * 20081027 - martin - cleanup
- * 20070113 - franciscom - added logic to create message when there is nothing to export.
- *
- * 20061118 - franciscom - using different file name, depending type of exported elements.
  *
  * ----------------------------------------------------------------------------------- */
-/** @TODO martin: csv export is not available now - get it back */
-
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
 require_once("../functions/xml.inc.php");
@@ -29,7 +24,7 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $tree_mgr = new tree($db);
-$args = init_args();
+$args = init_args($tree_mgr);
 
 $gui = new stdClass();
 $gui->do_it = 1;
@@ -167,7 +162,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   returns: 
 
 */
-function init_args()
+function init_args(&$treeMgr)
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
     
@@ -181,11 +176,15 @@ function init_args()
     $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
     $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
     $args->useRecursion = isset($_REQUEST['useRecursion']) ? $_REQUEST['useRecursion'] : false;
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = $_SESSION['testprojectName'];
-    $args->export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
 
-	// 20100315 - franciscom
+    $args->tproject_name = '';
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	if($args->tproject_id > 0)
+	{
+	
+	}
+
+    $args->export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
     $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 
     return $args;

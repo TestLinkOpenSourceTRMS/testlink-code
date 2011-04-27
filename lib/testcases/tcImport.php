@@ -29,16 +29,6 @@
  *	20100317 - franciscom - BUGID 3236 - work in progress
  *	20100214 - franciscom - refactoring to use only simpleXML functions
  *	20100106 - franciscom - Multiple Test Case Steps Feature
- *	20090831 - franciscom - preconditions
- *  20090506 - Requirements refactoring
- *  20090221 - BUGID - Improvement on messages to user when XML file contains
- *                     Custom Field Information.
- *  20090206 - BUGID - Import TC-REQ relationship - franciscom
- *  20090117 - BUGID 1991 - franciscom
- *             BUGID 1992 - contribution for XLS import - franciscom
- *  20090106 - BUGID - franciscom - added logic to import Test Cases custom field values
- *  20081001 - franciscom - added logic to manage too long testcase name
- * 	20080813 - havlatm - added a few logging
  * 
  * *********************************************************************************** */
 require('../../config.inc.php');
@@ -51,9 +41,14 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $pcheck_fn=null;
-$args = init_args();
+
+$tree_mgr = new tree($db);
+$args = init_args($tree_mgr);
 
 $gui = new stdClass();
+$gui->tproject_id = $args->tproject_id;
+$gui->testprojectName = $args->tproject_name;
+
 $gui->importLimitBytes = config_get('import_file_max_size_bytes');
 $gui->importLimitKB = ($gui->importLimitBytes / 1024);
 $gui->hitCriteria = $args->hit_criteria;
@@ -65,7 +60,6 @@ $gui->resultMap = null;
 
 
 $dest_common = TL_TEMP_PATH . session_id(). "-importtcs";
-// $dest_files = array('XML' => $dest_common . ".xml",'XLS' => $dest_common . ".xls");
 $dest_files = array('XML' => $dest_common . ".xml");
 $dest=$dest_files['XML'];
 if(!is_null($args->importType))
@@ -89,7 +83,6 @@ else
 $gui->container_name = '';
 if($args->container_id)
 {
-	$tree_mgr = new tree($db);
 	$node_info = $tree_mgr->get_node_hierarchy_info($args->container_id);
 	unset($tree_mgr);    
 	$gui->container_name = $node_info['name'];
@@ -193,7 +186,6 @@ else
 
 }
 
-$gui->testprojectName = $_SESSION['testprojectName'];
 $gui->importTypes = $obj_mgr->get_import_file_types();
                           
 $gui->action_on_duplicated_name=$args->action_on_duplicated_name;
@@ -716,7 +708,7 @@ function nl2p($str)
   returns: 
   
 */
-function init_args()
+function init_args(&$treeMgr)
 {
     $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
@@ -738,7 +730,13 @@ function init_args()
     $args->do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
     
     $args->userID = $_SESSION['userID'];
-    $args->tproject_id = $_SESSION['testprojectID'];
+    $args->tproject_name = '';
+    $args->tproject_id = intval($_REQUEST['tproject_id']);
+    if($args->tproject_id > 0)
+    {
+    	$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id > 0);
+    	$args->tproject_name = $dummy['name'];
+    }
     
     return $args;
 }

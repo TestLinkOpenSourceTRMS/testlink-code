@@ -5,10 +5,10 @@
  *
  * Form to set test cases search criteria
  *
+ * @filesource	tcSearchForm.php
  * @package 	TestLink
  * @author 		TestLink community
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearchForm.php,v 1.6 2010/10/21 14:57:07 asimon83 Exp $
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  *	@internal revisions
@@ -27,9 +27,11 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 
-$args = init_args();
+$args = init_args($tproject_mgr->tree_manager);
 
 $gui = new stdClass();
+$gui->tprojectID = $args->tprojectID;
+
 $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID) . config_get('testcase_cfg')->glue_character;
 $gui->mainCaption = lang_get('testproject') . " " . $args->tprojectName;
 $gui->importance = config_get('testcase_importance_default');
@@ -70,11 +72,17 @@ $smarty->display($templateCfg->template_dir . 'tcSearchForm.tpl');
  * 
  *
  */
-function init_args()
+function init_args(&$treeMgr)
 {              
   	$args = new stdClass();
-    $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
+
+    $args->tprojectName = '';
+    $args->tprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	if($args->tprojectID > 0)
+	{
+    	$dummy = $treeMgr->get_node_hierarchy_info($args->tprojectID > 0);
+    	$args->tprojectName = $dummy['name'];
+	}
        
     return $args;
 }

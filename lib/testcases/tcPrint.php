@@ -3,11 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename: tcPrint.php
  *
  * Scope: test case print
  * 
- * @internal revisions:
+ * @filesource	tcPrint.php
+ * @package 	TestLink
+ * @author 		TestLink community
+ * @copyright 	2007-2011, TestLink community 
+ * @link 		http://www.teamst.org/index.php
+ *
+ * @internal revisions
  *
  * 20110305 - franciscom - 	BUGID 4286 Option to print single test case
  *							found issue regarding test case version
@@ -22,7 +27,7 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $tree_mgr = new tree($db);
-$args = init_args();
+$args = init_args($tree_mgr);
 $node = $tree_mgr->get_node_hierarchy_info($args->tcase_id);
 $node['tcversion_id'] = $args->tcversion_id;
 
@@ -64,15 +69,22 @@ echo $text2print;
   returns: 
 
 */
-function init_args()
+function init_args(&$treeMgr)
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
     $args = new stdClass();
     $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
     $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = $_SESSION['testprojectName'];
+
+    $args->tproject_name = '';
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	if($args->tproject_id > 0)
+	{
+    	$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id > 0);
+    	$args->tproject_name = $dummy['name'];
+	}
+    
     $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 	$args->outputFormat = isset($_REQUEST['outputFormat']) ? $_REQUEST['outputFormat'] : null;
 

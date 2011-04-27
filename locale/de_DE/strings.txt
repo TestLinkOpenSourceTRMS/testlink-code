@@ -8,6 +8,7 @@
  * This list of labels is defined as GLOBAL string variables. The first sections are general 
  * for strings used over all GUI. These definition should not be redefined. Next sections are 
  * related to particular pages. Comment with page filename indicate a begin of section. There 
+ * must be defined all other strings.
  * Do not use html elements in this file.
  *
  * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
@@ -15,19 +16,25 @@
  * prefix) should indicate usage (warning, title), the third one indicate the page relation
  * and text at the end.
  *
- * Warning: be careful about format - the file is parsed by script
- * 		comment only with "//" except header
- * Warning: for JS string you must use \\n to get \n for end of line
+ * ********************************************************************************************
+ * Warning - Warning - Warning - Warning - Warning - Warning - Warning - Warning - Warning
+ * ********************************************************************************************
+ *
+ * 1. Be careful about format - the file is parsed by script	comment only with "//" except header
+ * 2. for JS string you must use \\n to get \n for end of line
+ *
  * Note: API interface is not localized (except error messages)
+ *
+ * ********************************************************************************************
  * 
+ * @internal	filename: strings.txt
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.227 2011/01/11 08:20:56 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.772
+ * Last Update according to en_GB string file TL 1.9.2
  *
  **/
 
@@ -91,7 +98,7 @@ $TLS_priority		= "Priorität";
 $TLS_project		= "Projekt";
 $TLS_public = "Öffentlich";
 $TLS_requirement = "Anforderung";
-$TLS_req_monitoring = "Anforderungsbeobachtung";
+$TLS_req_monitoring = "Anforderungen beobachten";
 $TLS_req_short = "Anf.";
 $TLS_reqs = "Anforderungen";
 $TLS_req_spec = "Anforderungsspezifikation";
@@ -192,6 +199,7 @@ $TLS_btn_advanced_filters = "Erweiterte Filter";
 $TLS_btn_simple_filters = "Einfache Filter";
 $TLS_btn_reorder_steps = "Schritte neu ordnen";
 $TLS_btn_view_history = "Verlauf anzeigen";
+
 
 // Status (used wide)
 $TLS_test_status_all = "Alle";
@@ -543,6 +551,10 @@ $TLS_copy_one_req = "Anforderung kopieren";
 $TLS_copy_several_reqs = "Anforderungen kopieren";
 $TLS_copy_testcase_assignments = "Testfallzuweisungen kopieren";
 
+// ----- gui/templates/requirements/reqCreateTestCases.tpl -----
+$TLS_toggle_create_testcase_amount = "Wechsle zwischen der Erstellung einzelner Testfälle " .
+                                     "und der Erstellung der nötigen Menge an Testfällen " .
+                                     "um die Anforderung(en) vollständig abzudecken";
 
 // gui/templates/containerOrder.tpl
 $TLS_no_nodes_to_reorder = "Keine Daten zum Sortieren vorhanden.";
@@ -1219,7 +1231,7 @@ $TLS_img_title_bug_mgmt = "Bug Management";
 $TLS_img_title_delete_execution = "Lösche Ausführung";
 $TLS_import_xml_results = "XML Ergebnisse importieren";
 $TLS_just_last_execution_for_this_build = "Letzte Ausführung für diesen Build";
-$TLS_last_execution = "Letzter Test";
+$TLS_last_execution = "Letzte Ausführung";
 $TLS_no_data_available = "Keine Daten verfügbar";
 $TLS_only_test_cases_assigned_to = "Nur Testfälle zugewiesen zu";
 $TLS_or_unassigned_test_cases = " oder ohne Testerzuweisung";
@@ -1250,6 +1262,8 @@ $TLS_warning_delete_execution = "Möchten Sie die Ausführung wirklich löschen?
 $TLS_warning_nothing_will_be_saved = "Für das ausgewählte Ausführungsergebnis muss nichts in die Datenbank geschrieben werden.";
 $TLS_edit_execution = "Ausführung editieren";
 $TLS_platform_description = "Plattform Beschreibung";
+$TLS_remoteExecFeeback = "Testfall Fernausführung Feedback";
+
 
 
 // ----- gui/templates/inc_testsuite_viewer_ro.tpl -----
@@ -1474,6 +1488,7 @@ $TLS_warning_req_tc_assignment_impossible = "Eine Zuweisung ist aus einem der fo
 $TLS_title_edit_tc = "Testfall bearbeiten";
 $TLS_warning_editing_executed_step = "Achtung! Dieser Testschritt wurde ausgeführt.";
 $TLS_warning_editing_executed_tc = "Achtung!: Diese Testfall Version wurde schon ausgeführt!";
+$TLS_warning_delete_executed_tc = "Achtung!: Diese Testfall Version wurde schon ausgeführt!";
 $TLS_warning_unsaved = "Nicht gespeicherte Änderungen gehen verloren!";
 
 
@@ -1502,6 +1517,7 @@ $TLS_deactivate_this_tcversion = "Version deaktivieren";
 $TLS_execution_type = "Ausführungstyp";
 $TLS_execution_type_short_descr = 'Ausführung';
 $TLS_tcversion_is_inactive_msg = "Diese Version ist inaktiv und ist dadurch in Testplänen nicht verfügbar";
+$TLS_system_blocks_delete_executed_tc = "Ihre Konfiguration verbietet es ausgeführte Testfälle zu löschen";
 
 
 
@@ -1603,7 +1619,7 @@ $TLS_all_reqspecs_in_tproject = "Alle Req. Specs im Testprojekt";
 // ----- gui/templates/resultsAllBuilds.tpl -----
 $TLS_th_build = "Build";
 $TLS_th_tc_total = "Anzahl Testfälle";
-$TLS_th_tc_assigned = "Assigned";
+$TLS_th_tc_assigned = "Zugewiesen";
 $TLS_title_met_of_build = "Build-Metriken";
 
 
@@ -1627,8 +1643,16 @@ $TLS_info_bugs_per_tc_report = "Dieser Report zeigt alle Bugs, die einem Testfal
 
 // ----- gui/templates/resultsTC.tpl -----
 $TLS_info_resultsTC_report = "Dieser Report zeigt die letzte Testfallausführung für jeden " .
-                             "Build. Zusätzlich zeigt die letzte Spalte die letzte " .
-                             "Testfallausführung für den zuletzt erstellten Build.";
+                             "Build.<br /><b>Beispiel:</b><br />Der Testfall wurde in folgender " .
+                             "Reihenfolge ausgeführt: <br />Build 1.0 - OK; Build 1.0 - Fehlgeschlagen " .
+                             "<br />-> Das letzte Ergebnis für den Build 1.0 ist Fehlgeschlagen, da die " .
+                             "zweite Ausführung die ältere Ausführung überschreibt.<br /><br />" .
+                             "Die Spalten \"[Letztes Build]\" und \"Letzte Ausführung\" werden wie im folgenden " .
+                             "Beispiel gefüllt:<br>Der Testfall wurde in folgender Reihenfolge ausgeführt:<br>".
+                             "Build 1.0 - OK; Build 1.0 - Fehlgeschlagen; Build 2.0 - Blockiert; " .
+                             "Build 1.0 - OK<br>-> \"[Letztes Build]\" : Blockiert, weil Build 2.0 das " .
+                             "zuletzt erstellte Build ist, für das ein Ergebnis gesetzt wurde.<br>" .
+                             "-> \"Letzte Ausführung\" : OK, weil Build 1.0 zuletzt ausgeführt wurde.";
 
 
 
@@ -1745,7 +1769,7 @@ $TLS_report_display_options = "Report-Anzeigeoptionen";
 
 // ----- gui/templates/resultsReqs.tpl -----
 $TLS_no_srs_defined = "Keine Anforderungs-Definition für dieses Testprojekt vorhanden.";
-$TLS_no_finished_reqs = "Es sind keine fertigen Anforderungen für dieses Testprojekt verfügbar.";
+$TLS_no_matching_reqs = "Es sind keine passenden Anforderungen für dieses Testprojekt verfügbar.";
 $TLS_count_of_reqs = "Anzahl der Anforderungen";
 $TLS_req_availability = "Verfügbare Anforderungen";
 $TLS_show_only_finished_reqs = "Zeige nur fertige Anforderungen";
@@ -1756,14 +1780,25 @@ $TLS_partially_passed = "Teilweise erfüllt";
 $TLS_partially_passed_reqs = "Teilweise erfüllte Anforderungen";
 $TLS_uncovered = "nicht abgedeckt";
 $TLS_uncovered_reqs = "Nicht abgedeckte Anforderungen";
+$TLS_passed_nfc = "OK (nva)";
+$TLS_passed_nfc_reqs = "OK Anforderungen (nva)";
+$TLS_failed_nfc = "Fehlgeschlagen (nva)";
+$TLS_failed_nfc_reqs = "Fehlgeschlagene Anforderungen (nva)";
+$TLS_blocked_nfc = "Blockiert (nva)";
+$TLS_blocked_nfc_reqs = "Blockierte Anforderungen (nva)";
+$TLS_not_run_nfc = "Nicht ausgeführt (nva)";
+$TLS_not_run_nfc_reqs = "Nicht ausgeführte Anforderungen (nva)";
+$TLS_partially_passed_nfc = "Teilweise OK (nva)";
+$TLS_partially_passed_nfc_reqs = "Teilweise OK Anforderungen (nva)";
 $TLS_linked_tcs = "Zugewiesene Testfälle";
 $TLS_no_linked_tcs = "Keine zugewiesenen Testfälle";
+$TLS_title_resultsReqsProgress = "Test Progress based on Requirements";
+$TLS_info_resultsReqsProgress = "<u>Hinweis:</u> nva = nicht vollständig abgedeckt";
+$TLS_title_resultsReqs = "Detailed Test Progress based on Requirements";
 $TLS_info_resultsReqs = "Dieser Report zeigt die existierenden Anforderungen und stellt " .
                         "Informationen über ihren Testfortschritt bereit. Dieser wird " .
                         "durch die Anzahl der zugewiesenen Testfälle und deren Testergebnisse " .
-                        "ausgedrückt. Um die Testergebnisse für jeden zugewiesenen Testfall " .
-                        "sehen zu können machen sie die versteckte Spalte \"Zugewiesene " .
-                        "Testfälle\" sichtbar";
+                        "ausgedrückt.";
 
 // IMPORTANT for dynamic generation of labels
 // $TLS_req_title_<test case status>
@@ -2071,10 +2106,14 @@ $TLS_title_test_plan_mgmt = "Testplan Verwaltung";
 
 
 // ----- gui/templates/metricsDashboard.tpl -----
+$TLS_info_metrics_dashboard_progress = "Der Projektfortschritt wird berechnet indem alle Ausführungen für ein " .
+                                       "spezifisches Ergebnis für alle Plattformen innerhalb aller Testpläne " .
+                                       "aufsummiert wird. Diese Summe wird dann in Beziehung zur Summe aller " .
+                                       "aktiver Testfälle aller Plattformen innerhalb aller Testpläne gesetzt.";
 $TLS_info_metrics_dashboard = "Dieser Report zeigt den Fortschritt für das gesamte Projekt " .
                               "und alle (oder nur aktive) Testpläne innerhalb des Projekts<br />" .
                               "Der Gesamtfortschritt der Testpläne wird basierend auf dem Fortschritt " .
-                              "der einzelnen Plattformenen (sofern in Verwendung) berechnet.<br />" .
+                              "der einzelnen Plattformen (sofern in Verwendung) berechnet.<br />" .
                               "Der Testprojekt-Fortschritt wird basierend auf dem Fortschritt aller " .
                               "(oder nur der aktiven) Testpläne berechnet.";
 $TLS_overall_progress = "Gesamtfortschritt";
@@ -2211,7 +2250,7 @@ $TLS_req_import_result_overwritten = "Die Ergebnisse wurden überschrieben";
 $TLS_req_import_result_skipped = "Die Ergebnisse wurden übersprungen";
 $TLS_warning_duplicate_reqdoc_id = "Doppelte Dok. ID %s";
 $TLS_req_import_result_skipped_is_frozen = "übersprungen (ist eingefroren)";
-
+$TLS_warning_sibling_req_with_same_title = "Duplikat: Anforderung mit Titel %s";
 
 //  ----- lib/functions/requirement_spec_mgr.class.php -----
 $TLS_warning_duplicated_req_spec_doc_id = "Es existiert bereits eine Anf. Spez. (title:%s) mit dieser Dok. ID (%s)";
@@ -2570,13 +2609,13 @@ $TLS_tcversion_indicator = ' [v%s]';
 
 
 // ----- lib/results/testCasesWithCF.php -----
-$TLS_link_report_tcases_with_cf = "Testfälle mit Ausführungsdetails";
+$TLS_link_report_tcases_with_cf = "Ausgeführte Testfälle mit benutzerdef. Feldern";
 $TLS_caption_testCasesWithCF = $TLS_link_report_tcases_with_cf;
-$TLS_no_linked_tc_cf='Es existieren keine Testfälle mit benutzerdefinierten Feldern oder ' .
-                     'Ausführungsnotizen';
+$TLS_no_linked_tc_cf='Es existieren keine ausgeführten Testfälle mit benutzerdefinierten Feldern';
 $TLS_info_testCasesWithCF = "Dieser Report zeigt alle Testfälle, für die bei der " .
                             "Testausführung ein Wert für ein beliebiges benutzerdefiniertes " .
-                            "Feld oder eine Ausführungsnotiz gesetzt wurde";
+                            "Feld gesetzt wurde. Zusätzlich wird die Ausführungsnotiz für ".
+                            "entsprechende Testfälle angezeigt.";
 
 
 // ----- cfg/reports.cfg.php -----
@@ -3000,7 +3039,7 @@ $TLS_audit_req_assignment_removed_tc = "Die Zuweisung der Anforderung '{%1}' zum
 $TLS_audit_requirement_copy = "Anf 'DOCID:{%1}' wurde als Kopie von Anf. 'DOCID:{%2}' erstellt";
 $TLS_audit_req_version_deleted = " Version {%1} der Anf. 'DOCID:{%2}' - {%2} wurde gelöscht."; 
 $TLS_audit_req_version_frozen = " Version {%1} der Anf. 'DOCID:{%2}' - {%3} wurde eingefroren.";
-$TLS_audit_req_monitoring_started = "Anf 'DOCID:{%1}' - {%2} Beobachtung durch Benutzer {%3} eingerichtet.";
+$TLS_audit_req_monitoring_started = "Anforderung 'DOCID:{%1}' - {%2} Nutzer {%3} beobachtet nun.";
 
 
 $TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' wurde erstellt";
@@ -3132,6 +3171,9 @@ $TLS_show_all = "Zeige Alles";
 $TLS_version_short = "v";
 $TLS_version_revision = "v%s r%s";
 $TLS_empty_log_message = "<i>Änderungsprotokoll ist leer</i>";
+$TLS_diff_method = "Vergleichsmethode auswählen:";
+$TLS_use_html_comp = "HTML Vergleich";
+$TLS_use_html_code_comp = "HTML Code Vergleich";
 
 $TLS_diff_subtitle_tc = "Unterschiede zwischen Version %s (v%s) und Version %s (v%s) des Testfalls %s"; 
 $TLS_diff_subtitle_req = "Unterschiede zwischen Version %s (v%s) und Version %s (v%s) der Anforderung %s";
@@ -3170,8 +3212,11 @@ $TLS_import_req_spec_ancestor_skipped = 'Wurde übersprungen - Anf. Spez. - Dok 
 
 $TLS_import_req_created = 'Wurde erstellt - Anforderung - Dok ID:%s';
 $TLS_import_req_skipped = 'Wurde übersprungen - Anforderung - Dok ID:%s - Existiert bereits in anderem Zweig';
+$TLS_import_req_skipped_plain = 'Wurde übersprungen - Grund: %s';
 $TLS_import_req_updated = 'Wurde aktualisiert - Anforderung - Dok ID:%s';
 $TLS_import_req_new_version_created = 'Neue Version erstellt - Anforderung - Dok ID:%s';
+$TLS_import_req_new_version_failed = 'Neue Version konnte nicht erstellt werden - %s';
+$TLS_import_req_update_last_version_failed = 'Letzte Version konnte nicht aktualisiert werden - %s';
 
 $TLS_import_done = 'Import erledigt';
 $TLS_import_req_conflicts_other_branch = 'Dok ID steht in Konflikt mit Anforderung im anderem Zweig';
@@ -3216,5 +3261,33 @@ $TLS_export_execution_set = 'Ausführungen exportieren';
 
 // ----- lib/results/resultsReqs.php -----
 $TLS_no_label_for_req_type = 'Keine req_type_labels Konfiguration für den Typ: %s';
+
+// ----- lib/functions/remote_exec.php
+$TLS_remoteExecServerConfigProblems = 'Die Fernausführung kann aufgrund fehlender Konfiguration nicht gestartet werden.\n' .
+									  'Überprüfen Sie ob die benötigten benutzerdefinierten Felder innerhalb dieses Testprojekts ' .
+									  'definiert und zugewiesen wurden'; 
+
+$TLS_remoteExecServerConnectionFailure = 'Verbindungsfehler bei der Fernausführung - Überprüfen sie ihre Konfiguration';
+
+// ----- int_polarion.php -----
+// Used to display at User interface label as title attribute
+// Attention must follow rule: issue_status_, because there is logic
+// build on this.
+//
+$TLS_issue_status_open = "Offen";
+$TLS_issue_status_accepted = "In Bearbeitung";
+$TLS_issue_status_inprogress = "In Bearbeitung";
+$TLS_issue_status_confirmed = "Bestätigt";
+$TLS_issue_status_assigned = "Zugeteilt";
+$TLS_issue_status_resolved = "Entwickelt";
+$TLS_issue_status_tested = "Getestet";
+$TLS_issue_status_delivered = "Geliefert";
+$TLS_issue_status_closed = "Geschlossen";
+$TLS_issue_status_held = "Im Wartezustand";
+
+// this definition has to be placed AFTER $TLS_title_metrics_x_build
+$TLS_buildMetricsFeedback = $TLS_title_metrics_x_build . 
+							' werden nur mit Testfällen berechnet, die einem Tester für das entsprechende Build'.
+							' zugewiesen wurden';
 // ----- END ------------------------------------------------------------------
 ?>

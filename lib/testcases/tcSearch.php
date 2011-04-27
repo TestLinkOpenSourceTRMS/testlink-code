@@ -5,10 +5,10 @@
  *
  * Display test cases search results. 
  *
+ * @filesource	tcSearch.php
  * @package 	TestLink
  * @author 		TestLink community
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.27 2011/01/10 15:38:56 asimon83 Exp $
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -27,10 +27,6 @@
  *	20100326 - franciscom - BUGID 3334 - search fails if test case has 0 steps
  *  20100124 - franciscom - BUGID 3077 - search on preconditions
  *	20100106 - franciscom - Multiple Test Case Steps Feature
- *	20090228 - franciscom - if targetTestCase == test case prefix => 
- *                             consider as empty => means search all.
- *
- *	20090125 - franciscom - BUGID - search by requirement doc id
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -339,7 +335,7 @@ function init_args($dateFormat)
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-    $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $args->tprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 
 	// BUGID 3716
 	// convert "creation date from" to iso format for database usage

@@ -39,8 +39,15 @@ $userID = $currentUser->dbID;
 
 $gui = new stdClass();
 $gui->grants=array();
-$gui->testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-$gui->testplanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
+$gui->testprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+$gui->testplanID = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+
+$tprojectOptions = null;
+if($gui->testprojectID > 0)
+{
+	$dummy = $tproject_mgr->get_by_id($gui->testprojectID);
+	$tprojectOptions = $dummy['opt'];
+}
 
 
 // User has test project rights ?
@@ -58,19 +65,19 @@ if ($gui->grants['project_edit'] && ($tprojectQty == 0))
 
 $gui->grants = array_merge($gui->grants, initGrants($db,$currentUser,$gui->testprojectID,$gui->testplanID));
 
-$gui->grants['project_inventory_view'] = ($_SESSION['testprojectOptions']->inventoryEnabled 
-	&& ($currentUser->hasRight($db,"project_inventory_view",$gui->testprojectID,$gui->testplanID) == 'yes')) ? 1 : 0;
+$gui->grants['project_inventory_view'] = ($tprojectOptions->inventoryEnabled && 
+										 ($currentUser->hasRight($db,"project_inventory_view",
+										  $gui->testprojectID,$gui->testplanID) == 'yes')) ? 1 : 0;
 $gui->grants['modify_tc'] = null; 
 $gui->hasTestCases = false;
 
 if($gui->grants['view_tc'])
 { 
-    // $gui->grants['modify_tc'] = $currentUser->hasRight($db,"mgt_modify_tc",$gui->testprojectID,$gui->testplanID); 
 	$gui->hasTestCases = $tproject_mgr->count_testcases($gui->testprojectID) > 0 ? 1 : 0;
 }
 
-$smarty->assign('opt_requirements', isset($_SESSION['testprojectOptions']->requirementsEnabled) 
-		? $_SESSION['testprojectOptions']->requirementsEnabled : null); 
+$smarty->assign('opt_requirements', 
+				isset($tprojectOptions->requirementsEnabled) ? $tprojectOptions->requirementsEnabled : null); 
 
 
 // ----- Test Plan Section --------------------------------------------------------------

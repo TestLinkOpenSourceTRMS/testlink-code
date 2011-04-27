@@ -28,8 +28,9 @@ $args = init_args();
 $gui = new stdClass();
 $gui_cfg = config_get("gui");
 
-$gui->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$gui->tprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 $gui->tcasePrefix = '';
+
 // Julian: left magic here - do think this value will never be used as a project with a prefix
 //         has to be created after first login -> searchSize should be set dynamically.
 //         If any reviewer agrees on that feel free to change it.
@@ -54,8 +55,8 @@ if ($gui->tprojectID)
 	$testPlanSet = $user->getAccessibleTestPlans($db,$gui->tprojectID);
     $gui->TestPlanCount = sizeof($testPlanSet);
 
-	$tplanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
-    if( !is_null($tplanID) )
+	$tplanID = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+    if( $tplanID == 0 )
     {
     	// Need to set this info on session with first Test Plan from $testPlanSet
 		// if this test plan is present on $testPlanSet
@@ -110,7 +111,7 @@ if ($args->testproject)
 	setcookie('TL_lastTestProjectForUserID_'. $userID, $args->testproject, TL_COOKIE_KEEPTIME, '/');
 }
 
-$gui->grants = getGrants($db);
+$gui->grants = getGrants($db,$user,$gui->tprojectID,$tplanID);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -118,13 +119,11 @@ $smarty->display('navBar.tpl');
 
 
 /**
- * @todo havlatm: project rights should be get from $_SESSION
  */
-function getGrants(&$db)
+function getGrants(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
 {
     $grants = new stdClass();
-    $grants->view_testcase_spec = has_rights($db,"mgt_view_tc");
-    
+    $grants->view_testcase_spec = $userObj->hasRight($dbHandler,"mgt_view_tc",$tproject_id,$tplan_id);
     return $grants;  
 }
 

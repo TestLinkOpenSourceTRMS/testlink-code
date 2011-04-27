@@ -147,7 +147,7 @@
 				<tr>
 		   			<td colspan="2">
 	          <input type="button" id="doTestPlanExport" name="doTestPlanExport" value="{$labels.btn_export_testplan_tree}"
-         	         onclick="javascript: openExportTestPlan('export_testplan','{$session.testprojectID}',
+         	         onclick="javascript: openExportTestPlan('export_testplan','{$gui->tproject_id}',
          	                                                 '{$control->settings.setting_testplan.selected}','{$platformID}',
          	                                                 '{$control->settings.setting_build.selected}');" />
             </td>

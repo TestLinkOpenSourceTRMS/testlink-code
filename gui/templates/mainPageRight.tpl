@@ -215,7 +215,7 @@
 	   	<a href="{$gui->launcher}?feature=tc_exec_assignment&tplan_id={$gui->testplanID}&tproject_id={$gui->testprojectID}">{$labels.href_tc_exec_assignment}</a>
 	    <br />
 
-		{if $session['testprojectOptions']->testPriorityEnabled}
+		{if $gui->tprojectOptions->testPriorityEnabled}
 			<img src="{$tlImages.bullet}" />
 	   		<a href="{$gui->launcher}?feature=test_urgency&tplan_id={$gui->testplanID}&tproject_id={$gui->testprojectID}">{$labels.href_plan_assign_urgency}</a>
 		    <br />

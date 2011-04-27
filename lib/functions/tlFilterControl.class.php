@@ -301,11 +301,11 @@ abstract class tlFilterControl extends tlObjectWithDB {
 		
 		$this->args->testproject_id = intval(isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0);
 		$this->args->testproject_name = '';
-		if( $this->args->testproject_id == 0 )
-		{
-			// go the old way
-			$this->args->testproject_id = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
-		}
+		// if( $this->args->testproject_id == 0 )
+		// {
+		// 	// go the old way
+		// 	$this->args->testproject_id = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
+		// }
 		if( $this->args->testproject_id > 0 )
 		{
 			if(is_null($treeMgr))

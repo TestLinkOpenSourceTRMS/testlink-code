@@ -42,11 +42,13 @@ $gui->grants=array();
 $gui->testprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 $gui->testplanID = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
 
-$tprojectOptions = null;
+$gui->tprojectOptions = new stdClass();
+$gui->tprojectOptions->inventoryEnabled = 0;
+$gui->tprojectOptions->requirementsEnabled = 0;
 if($gui->testprojectID > 0)
 {
 	$dummy = $tproject_mgr->get_by_id($gui->testprojectID);
-	$tprojectOptions = $dummy['opt'];
+	$gui->tprojectOptions = $dummy['opt'];
 }
 
 
@@ -65,7 +67,7 @@ if ($gui->grants['project_edit'] && ($tprojectQty == 0))
 
 $gui->grants = array_merge($gui->grants, initGrants($db,$currentUser,$gui->testprojectID,$gui->testplanID));
 
-$gui->grants['project_inventory_view'] = ($tprojectOptions->inventoryEnabled && 
+$gui->grants['project_inventory_view'] = ($gui->tprojectOptions->inventoryEnabled && 
 										 ($currentUser->hasRight($db,"project_inventory_view",
 										  $gui->testprojectID,$gui->testplanID) == 'yes')) ? 1 : 0;
 $gui->grants['modify_tc'] = null; 
@@ -77,7 +79,7 @@ if($gui->grants['view_tc'])
 }
 
 $smarty->assign('opt_requirements', 
-				isset($tprojectOptions->requirementsEnabled) ? $tprojectOptions->requirementsEnabled : null); 
+				isset($gui->tprojectOptions->requirementsEnabled) ? $gui->tprojectOptions->requirementsEnabled : null); 
 
 
 // ----- Test Plan Section --------------------------------------------------------------
@@ -183,6 +185,75 @@ function getUserDocumentation()
     return $documents;
 }
 
+
+
+/**
+ */
+function initEnvironment(&$dbHandler,&$userObj)
+{
+	$argsObj = new stdClass();
+	$guiObj = new stdClass();
+	$cfg = config_get("gui");
+	$tprojectMgr = new testproject($dbHandler);
+	
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+	$iParams = array("tprojectIDNavBar" => array(tlInputParameter::INT_N),
+					 "tproject_id" => array(tlInputParameter::INT_N),
+					 "tplan_id" => array(tlInputParameter::INT_N));
+	R_PARAMS($iParams,$argsObj);
+	
+	$guiObj->tcasePrefix = '';
+	$guiObj->tplanCount = 0; 
+
+	$guiObj->tprojectSet = $tprojectMgr->get_accessible_for_user($userObj->dbID,'map',$cfg->tprojects_combo_order_by);
+	$guiObj->tprojectCount = sizeof($guiObj->tprojectSet);
+
+	// -----------------------------------------------------------------------------------------------------
+	// Important Logic 
+	// -----------------------------------------------------------------------------------------------------
+	$argsObj->tprojectIDNavBar = intval($argsObj->tprojectIDNavBar);
+	$argsObj->tproject_id = intval($argsObj->tproject_id);
+	$argsObj->tproject_id = ($argsObj->tproject_id > 0) ? $argsObj->tproject_id : $argsObj->tprojectIDNavBar;
+	if($argsObj->tproject_id == 0)
+	{
+		$argsObj->tproject_id = key($guiObj->tprojectSet);
+	} 
+	$guiObj->tprojectID = $argsObj->tproject_id;
+	$guiObj->tprojectOptions = null;
+	$guiObj->tprojectTopMenu = null;
+	if($guiObj->tprojectID > 0)
+	{
+		$dummy = $tprojectMgr->get_by_id($guiObj->tprojectID);
+		$guiObj->tprojectOptions = $dummy['opt'];
+		
+	} 
+	// -----------------------------------------------------------------------------------------------------
+
+	$argsObj->tplan_id = intval($argsObj->tplan_id);
+	$guiObj->tplanID = $argsObj->tplan_id;
+	
+	
+	// Julian: left magic here - do think this value will never be used as a project with a prefix
+	//         has to be created after first login -> searchSize should be set dynamically.
+	//         If any reviewer agrees on that feel free to change it.
+	$guiObj->searchSize = 8;
+	if($guiObj->tprojectID > 0)
+	{
+	    $guiObj->tcasePrefix = $tprojectMgr->getTestCasePrefix($guiObj->tprojectID) . 
+	    					   config_get('testcase_cfg')->glue_character;
+	    $guiObj->searchSize = tlStringLen($guiObj->tcasePrefix) + $cfg->dynamic_quick_tcase_search_input_size;
+
+		$guiObj->tplanSet = $userObj->getAccessibleTestPlans($dbHandler,$guiObj->tprojectID);
+	    $guiObj->tplanCount = sizeof($guiObj->tplanSet);
+	    if( $guiObj->tplanID == 0 )
+	    {
+	    	$guiObj->tplanID = $guiObj->tplanSet[0]['id'];
+	    	$guiObj->tplanSet[0]['selected']=1;
+	    }
+	}	
+	
+	return array($argsObj,$guiObj);
+}
 
 function initGrants(&$dbHandler,&$userObj,$tprojectID,$testplanID)
 {

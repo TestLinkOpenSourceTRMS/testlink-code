@@ -39,13 +39,13 @@ $gui->whoami = $user->getDisplayName() . ' ' . $tlCfg->gui->role_separator_open 
 
 // only when the user has changed project using the combo the _GET has this key.
 // Use this clue to launch a refresh of other frames present on the screen
-// using the onload HTML body attribute
-$gui->updateMainPage = 0;
-if ($args->tprojectIDNavBar > 0)
-{
-	$gui->updateMainPage = 1;
-	setcookie('TL_lastTestProjectForUserID_'. $userID, $args->tprojectIDNavBar, TL_COOKIE_KEEPTIME, '/');
-}
+/// using the onload HTML body attribute
+//$gui->updateMainPage = 0;
+//if ($args->tprojectIDNavBar > 0)
+//{
+//	$gui->updateMainPage = 1;
+//	setcookie('TL_lastTestProjectForUserID_'. $userID, $args->tprojectIDNavBar, TL_COOKIE_KEEPTIME, '/');
+//}
 
 $gui->grants = getGrants($db,$user,$gui->tprojectID,$gui->tplanID);
 
@@ -87,20 +87,45 @@ function initEnvironment(&$dbHandler,&$userObj)
 	// -----------------------------------------------------------------------------------------------------
 	// Important Logic 
 	// -----------------------------------------------------------------------------------------------------
+	// only when the user has changed test project using the combo in NavBar.tpl this key is present
+	// Use this clue to launch a refresh of other frames present on the screen
+	// using the onload HTML body attribute
 	$argsObj->tprojectIDNavBar = intval($argsObj->tprojectIDNavBar);
+
 	$argsObj->tproject_id = intval($argsObj->tproject_id);
+
+	$guiObj->updateMainPage = 0;
+	if( ($argsObj->tprojectIDNavBar == 0) && ($argsObj->tproject_id == 0) )
+	{
+		// we have this situation when doing refresh on browser with something similar
+		// http://localhost:8080/development/gitrepo/tlcode/index.php
+		// on browser URL
+		$guiObj->updateMainPage = 1;
+	}
+	
 	$argsObj->tproject_id = ($argsObj->tproject_id > 0) ? $argsObj->tproject_id : $argsObj->tprojectIDNavBar;
 	if($argsObj->tproject_id == 0)
 	{
 		$argsObj->tproject_id = key($guiObj->tprojectSet);
 	} 
 	$guiObj->tprojectID = $argsObj->tproject_id;
+	$guiObj->tprojectOptions = null;
+	$guiObj->tprojectTopMenu = null;
+	if($guiObj->tprojectID > 0)
+	{
+		$dummy = $tprojectMgr->get_by_id($guiObj->tprojectID);
+		$guiObj->tprojectOptions = $dummy['opt'];
+
+		if($guiObj->updateMainPage)
+		{
+			setcookie('TL_lastTestProjectForUserID_' . $userObj->dbID, $guiObj->tprojectID, TL_COOKIE_KEEPTIME, '/');
+		}
+	} 
 	// -----------------------------------------------------------------------------------------------------
 
 	$argsObj->tplan_id = intval($argsObj->tplan_id);
 	$guiObj->tplanID = $argsObj->tplan_id;
-	
-	
+
 	// Julian: left magic here - do think this value will never be used as a project with a prefix
 	//         has to be created after first login -> searchSize should be set dynamically.
 	//         If any reviewer agrees on that feel free to change it.

@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqImport.tpl,v 1.23 2010/11/21 17:50:01 franciscom Exp $
 
-rev:
+@filesource	reqImport.tpl
+
+@internal revisions
 20101121 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 *}
 
@@ -31,6 +32,7 @@ rev:
 {if  $gui->doAction == 'askFileName' || $gui->file_check.status_ok eq 0}
   <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}?req_spec_id={$gui->req_spec_id}">
   	<input type="hidden" name="scope" id="scope" value="{$gui->scope}" />
+  	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
     {include file="inc_gui_import_file.tpl" args=$gui->importFileGui}
   </form>
 {else}

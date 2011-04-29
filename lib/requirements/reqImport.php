@@ -12,6 +12,7 @@
  * Import ONLY requirements to a req specification. 
  * Supported: simple CSV, Doors CSV, XML, DocBook
  *
+ * @internal revisions
  * 20101026 - franciscom - fixed missing variable definitions that creates warnings on event viewer
  * 20100914 - franciscom - manage option skip frozen requirements
  * 20100908 - asimon -  BUGID 3761: requirement tree refresh after requirement import
@@ -33,6 +34,9 @@ $req_mgr = new requirement_mgr($db);
 
 $args = init_args($db);
 $gui = initializeGui($db,$args,$_SESSION,$req_spec_mgr,$req_mgr);
+
+new dBug($gui);
+
 switch($args->doAction)
 {
     case 'uploadFile':
@@ -193,6 +197,8 @@ function init_args(&$dbHandler)
 function initializeGui(&$dbHandler,&$argsObj,$session,&$reqSpecMgr,&$reqMgr)
 {
     $gui=new stdClass();
+
+    $gui->tproject_id = $argsObj->tproject_id;
     $gui->file_check = array('status_ok' => 1, 'msg' => 'ok');
     $gui->items=null;
 	$gui->try_upload = $argsObj->bUpload;
@@ -245,11 +251,13 @@ function initializeGui(&$dbHandler,&$argsObj,$session,&$reqSpecMgr,&$reqMgr)
     $gui->importFileGui->return_to_url=$session['basehref'];
     if( is_null($argsObj->req_spec_id) )
     {
-        $gui->importFileGui->return_to_url .= "lib/project/project_req_spec_mgmt.php?id=$argsObj->tproject_id";
+        $gui->importFileGui->return_to_url .= "lib/project/project_req_spec_mgmt.php?tproject_id=$argsObj->tproject_id" . 
+        									  "&id=$argsObj->tproject_id";
     }
     else
     {
-        $gui->importFileGui->return_to_url .= "lib/requirements/reqSpecView.php?req_spec_id=$argsObj->req_spec_id";
+        $gui->importFileGui->return_to_url .= "lib/requirements/reqSpecView.php?tproject_id=$argsObj->tproject_id" . 
+        									  "&req_spec_id=$argsObj->req_spec_id";
     } 
     
     $gui->actionOptions=array('update_last_version' => lang_get('update_last_requirement_version'),

@@ -22,6 +22,9 @@ $gui->tproject_id = $args->tproject_id;
 $gui->tproject_name = $args->tproject_name;
 $gui->refresh_tree = 'no';
 
+
+new dBug($gui);
+
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display('requirements/project_req_spec_mgmt.tpl');
@@ -39,6 +42,8 @@ function init_args(&$dbHandler)
 		$dummy = $treeMgr->get_node_hierarchy_info($argsObj->tproject_id);
 		$argsObj->tproject_name = $dummy['name'];
 	}
+	
+	new dbug($argsObj);
 	return $argsObj;
 }
 

@@ -32,7 +32,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
             	{if $tlCfg->req_cfg->child_requirements_mgmt == $smarty.const.ENABLED}
   	        <input type="button" name="btn_new_req_spec" 
   	               value="{$labels.btn_new_req_spec}"
-		               onclick="location='{$req_spec_new_url}'" />  
+		               onclick="location='{$gui->actions->req_spec_new}'" />  
         	{/if}
   		<input type="submit" name="edit_req_spec"  value="{$labels.btn_edit_spec}" 
   	         onclick="doAction.value='edit'"/>
@@ -41,9 +41,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
                                         '{$del_msgbox_title}','{$warning_msg}');"	/>
 
 		    <input type="button" name="importReqSpec" value="{$labels.btn_import_req_spec}"
-		           onclick="location='{$req_spec_import_url}'" />
+		           onclick="location='{$gui->actions->req_spec_import}'" />
  		    <input type="button" name="exportReq" value="{$labels.btn_export_req_spec}"
-		           onclick="location='{$req_spec_export_url}'" />
+		           onclick="location='{$gui->actions->req_spec_export}'" />
             {* BUGID 3954 *}
             <input type="button" name="freeze_req_spec" value="{$labels.btn_freeze_req_spec}"
                    onclick="delete_confirmation({$gui->req_spec.id},'{$gui->req_spec.title|escape:'javascript'|escape}',
@@ -60,18 +60,18 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 			<h2>{$labels.req_operations}</h2>
   		{if $gui->grants->req_mgmt == "yes"}
 	  	  <input type="button" name="create_req" value="{$labels.btn_req_create}"
-		           onclick="location='{$req_edit_url}'" />  
+		           onclick="location='{$gui->actions->req_edit}'" />  
 		    <input type="button" name="importReq" value="{$labels.btn_import_reqs}"
-		           onclick="location='{$req_import_url}'" />
+		           onclick="location='{$gui->actions->req_import}'" />
  		    <input type="button" name="exportReq" value="{$labels.btn_export_reqs}"
-		           onclick="location='{$req_export_url}'" />
+		           onclick="location='{$gui->actions->req_export}'" />
 
 	      {if $gui->requirements_count > 0}
   		  	      <input type="button" name="create_tcases" value="{$labels.req_select_create_tc}"
-		                   onclick="location='{$req_create_tc_url}'" />
+		                   onclick="location='{$gui->actions->req_create_tc}'" />
         
   		  	      <input type="button" name="copy_req" value="{$labels.btn_copy_requirements}"
-		                   onclick="location='{$req_spec_copy_req_url}'" />
+		                   onclick="location='{$gui->actions->req_spec_copy_req}'" />
     	  {/if}    
 	  	{/if}
 

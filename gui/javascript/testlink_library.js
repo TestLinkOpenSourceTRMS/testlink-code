@@ -983,9 +983,9 @@ function TPROJECT_REQ_SPEC_MGMT(id)
 {
 	var _FUNCTION_NAME_="TPROJECT_REQ_SPEC_MGMT";
 	var pParams = tree_getPrintPreferences();
-	var action_url = fRoot+"lib/project/project_req_spec_mgmt.php"+"?id="+id+args+"&"+pParams;
+	var action_url = fRoot+"lib/project/project_req_spec_mgmt.php" + "?tproject_id="+id+"&id="+id+args+"&"+pParams;
 
-  //alert(_FUNCTION_NAME_ + " " +action_url);
+  	// alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
 
 }

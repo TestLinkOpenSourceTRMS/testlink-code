@@ -1,8 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.43 2011/01/14 14:39:02 asimon83 Exp $
+@filesource	reqEdit.tpl
+
 Purpose: smarty template - create / edit a req  
-internal revision
+
+@internal revision
 20110304 - asimon - added help icon with a description of some of the "new" features
 20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
 20110110 - Julian - BUGID 4153: Warning message when navigating away from changed requirement without saving
@@ -17,10 +19,6 @@ internal revision
 20100808 - asimon - added logic to refresh filtered tree on changes
 20100502 - franciscom - BUGID 3413: removed debug info
 20100319 - asimon - BUGID 1748: added logic to add and remove requirement relations
-20091231 - franciscom - added logic to display and check expected coverage
-                        attribute based on req type, with configuration
-                        managed using $tlCfg->req_cfg->type_expected_coverage
-
 *}
 {* ------------------------------------------------------------------------- *}
 
@@ -287,6 +285,7 @@ function insert_last_doc_id()
       action="lib/requirements/reqEdit.php" 
       onSubmit="javascript:return validateForm(this,js_attr_cfg,{$gui->req_cfg->expected_coverage_management});">
 
+	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 	<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
 	<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
 	<input type="hidden" name="req_version_id" value="{$gui->req_version_id}" />

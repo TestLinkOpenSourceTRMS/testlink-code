@@ -3,21 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2010/10/28 12:44:03 $ by $Author: asimon83 $
+ * @filesource	reqSpecCommands.class.php
  * @author Francisco Mancardi
- * web command experiment
- *
  * 
  *	@internal revisions
  *  20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
  *                                  inside a req spec (recursively)
  *  20101006 - asimon - BUGID 3854
- *	20091223 - franciscom - new feature copy requirements
- *	20091207 - franciscom - logic to get order when creating new item 
- *	20090324 - franciscom - added logic to avoid losing user work if title already exists.
- *                            - fixed minor errors due to missing variables
  */
 
 class reqSpecCommands

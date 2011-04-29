@@ -93,6 +93,27 @@ function initialize_gui(&$dbHandler,&$argsObj)
 	$gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . 
 	                    '&item=reqspec&id=' . urlencode($gui->req_spec['doc_id']);
 
+
+
+	$context = "tproject_id=$gui->tproject_id&req_spec_id=$gui->req_spec_id";
+	$module = "lib/requirements/" . $_SESSION['basehref'];
+	$gui->actions = new stdClass();
+	$gui->actions->req_edit = $module . "reqEdit.php?doAction=create&$context";
+	$gui->actions->req_import = $module . "reqImport.php?doAction=create&$context";
+	$gui->actions->req_export = $module . "reqExport.php?doAction=create&$context";
+	$gui->actions->req_reorder = $module . "reqEdit.php?doAction=reorder&$context";
+	$gui->actions->req_create_tc = $module . "reqEdit.php?doAction=createTestCase&$context";
+
+	$gui->actions->req_spec_new = $module . "reqSpecEdit.php?doAction=createChild" .
+								  "&tproject_id=$gui->tproject_id&reqParentID=$gui->req_spec_id";
+
+	$gui->actions->req_spec_new = $module . "reqSpecEdit.php?doAction=copyRequirements&$context";
+	$gui->actions->req_spec_copy = $module . "reqSpecEdit.php?doAction=copy&$context";
+								  
+	$gui->actions->req_spec_import = $gui->actions->req_import . "&scope=branch";
+	$gui->actions->req_spec_export = $gui->actions->req_export . "&scope=branch";
+
+
     return $gui;
 }
 

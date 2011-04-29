@@ -32,7 +32,7 @@ $templateCfg = templateConfiguration();
 $args = init_args($db);
 $commandMgr = new reqSpecCommands($db);
 
-$gui = initialize_gui($db,$commandMgr,$req_cfg);
+$gui = initialize_gui($db,$commandMgr,$_SESSION['currentUser'],$args,$req_cfg);
 
 $auditContext = new stdClass();
 $auditContext->tproject = $args->tproject_name;
@@ -80,7 +80,7 @@ function init_args(&$dbHandler)
 	if($args->tproject_id > 0 )
 	{
 		$treeMgr = new tree($dbHandler);
-		$dummy = $treeManager->get_node_hierarchy_info($args->tproject_id);
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
 		$args->tproject_name = $dummy['name'];    
 	}
 
@@ -225,20 +225,19 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
  * 
  *
  */
-function initialize_gui(&$dbHandler, &$commandMgr, &$req_cfg)
+function initialize_gui(&$dbHandler, &$commandMgr, &$userObj,&$argsObj,&$req_cfg)
 {
     $gui = $commandMgr->initGuiBean();
+
+    $gui->tproject_id = $argsObj->tproject_id;
     $gui->user_feedback = null;
     $gui->main_descr = null;
     $gui->action_descr = null;
-    // BUGID 3755: misspelled variable refresh_tree instead of refreshTree
     $gui->refreshTree = 0;
-    
-    // 20100810 - asimon - BUGID 3317: disabled total count of requirements by default
 	$gui->external_req_management = ($req_cfg->external_req_management == ENABLED) ? 1 : 0;
     
     $gui->grants = new stdClass();
-    $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
+    $gui->grants->req_mgmt = $userObj->hasRight($dbHandler,"mgt_modify_req",$gui->tproject_id);
 
     return $gui;
 }

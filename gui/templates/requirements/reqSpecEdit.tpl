@@ -1,20 +1,20 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.30 2011/01/14 14:39:02 asimon83 Exp $
+
+@filesource	reqSpecEdit.tpl
 Purpose: smarty template - create a new req document
 
-rev:
-  20110304 - asimon - added help icon with a description of some of the "new" features
-  20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
-  20110111 - Julian - Added Save, Cancel Button on top of the page
-  20110110 - Julian - BUGID 4154: Warning message when navigating away from changed requirement
-                                  specification without saving
-  20101226 - franciscom - BUGID 4088: Required parameter for custom fields 
-  20101124 - Julian - BUGID 4051: Ajax login on timeout for requirement specifications to avoid data loss
-  20101006 - asimon - BUGID 3854
-  20100810 - asimon - BUGID 3317: disabled total count of requirements by default
-  20100808 - asimon - added logic to refresh filtered tree on changes
-  20091230 - franciscom - req spec type
+@internal revisions
+20110304 - asimon - added help icon with a description of some of the "new" features
+20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
+20110111 - Julian - Added Save, Cancel Button on top of the page
+20110110 - Julian - BUGID 4154: Warning message when navigating away from changed requirement
+                                specification without saving
+20101226 - franciscom - BUGID 4088: Required parameter for custom fields 
+20101124 - Julian - BUGID 4051: Ajax login on timeout for requirement specifications to avoid data loss
+20101006 - asimon - BUGID 3854
+20100810 - asimon - BUGID 3317: disabled total count of requirements by default
+20100808 - asimon - added logic to refresh filtered tree on changes
 *}
 {* ------------------------------------------------------------------------- *}
 
@@ -122,7 +122,8 @@ rev:
 
 <div class="workBack">
 	<form name="reqSpecEdit" id="reqSpecEdit" method="post" onSubmit="javascript:return validateForm(this);">
-	    <input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
+	    <input type="hidden" name="req_spec_id" id="req_spec_id" value="{$gui->req_spec_id}" />
+	    <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 
 	{* BUGID 3854 *}
 	{* BUGID 4154 - when save or cancel is pressed do not show modification warning *}

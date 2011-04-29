@@ -1,4 +1,4 @@
-<?php
+u<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
@@ -36,17 +36,6 @@ else
 $gui->whoami = $user->getDisplayName() . ' ' . $tlCfg->gui->role_separator_open . 
 	           $testprojectRole . $tlCfg->gui->role_separator_close;
                    
-
-// only when the user has changed project using the combo the _GET has this key.
-// Use this clue to launch a refresh of other frames present on the screen
-/// using the onload HTML body attribute
-//$gui->updateMainPage = 0;
-//if ($args->tprojectIDNavBar > 0)
-//{
-//	$gui->updateMainPage = 1;
-//	setcookie('TL_lastTestProjectForUserID_'. $userID, $args->tprojectIDNavBar, TL_COOKIE_KEEPTIME, '/');
-//}
-
 $gui->grants = getGrants($db,$user,$gui->tprojectID,$gui->tplanID);
 
 $smarty = new TLSmarty();
@@ -94,7 +83,7 @@ function initEnvironment(&$dbHandler,&$userObj)
 
 	$argsObj->tproject_id = intval($argsObj->tproject_id);
 
-	$guiObj->updateMainPage = 0;
+	$guiObj->updateMainPage = ($argsObj->tprojectIDNavBar > 0) ? 1 : 0;
 	if( ($argsObj->tprojectIDNavBar == 0) && ($argsObj->tproject_id == 0) )
 	{
 		// we have this situation when doing refresh on browser with something similar

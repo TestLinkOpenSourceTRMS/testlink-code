@@ -29,8 +29,9 @@ Purpose: view a requirement specification
 {assign var="buttons_template" value=$smarty.template|replace:"$bn":"inc_btn_$bn"}
 
 {assign var="reqSpecID" value=$gui->req_spec_id}
+{assign var="tprojectID" value=$gui->tproject_id}
 {assign var="req_module" value='lib/requirements/'}
-{assign var="url_args" value="reqEdit.php?doAction=create&amp;req_spec_id="}
+{assign var="url_args" value="reqEdit.php?doAction=create&tproject_id=$tprojectID&req_spec_id="}
 {assign var="req_edit_url" value="$basehref$req_module$url_args$reqSpecID"}
 
 {assign var="url_args" value="reqImport.php?req_spec_id="}

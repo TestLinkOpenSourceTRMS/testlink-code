@@ -1,20 +1,17 @@
 {*
-	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.55 2010/11/13 08:40:23 franciscom Exp $
-	Purpose: smarty template - title bar + menu
+Testlink Open Source Project - http://testlink.sourceforge.net/
 
-	rev :
-    20101113 - franciscom - removed useless keys on call to lang_get
-                            Smarty 3.0.x -> remove literal
-		20100212 - asimon - BUGID 3950 - changed navbar design -  test project selector
-		                                 was put more into user focus. no multiple lines
-		                                 on smaller screens (1280px) with large project names
-		20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
-		20100131 - franciscom - moved get_docs() to javascript library
-		20090902 - timeout warning 
-		20080504 - access to local documentation
-		20080211 - changes action for user management
-		20070331 - BUGID 760 - added truncate to fix
+@filesource	navBar.tpl
+Purpose: smarty template - title bar + menu
+
+@internal revisions
+20101113 - franciscom - removed useless keys on call to lang_get
+                        Smarty 3.0.x -> remove literal
+20100212 - asimon - BUGID 3950 - changed navbar design -  test project selector
+                                 was put more into user focus. no multiple lines
+                                 on smaller screens (1280px) with large project names
+20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
+20100131 - franciscom - moved get_docs() to javascript library
 *}
 {lang_get var="labels"
           s="testproject,title_edit_personal_data,link_logout,search_testcase"}
@@ -61,12 +58,13 @@
 	{/if}
 {/if}
 
-{if $gui->TestProjects != ""}
+{if $gui->tprojectSet != ""}
 	<div style="display: inline; float: right;">
-		<form style="display:inline" name="productForm" action="lib/general/navBar.php" method="get">
+		<form style="display:inline" name="tprojectChoice" action="lib/general/navBar.php" method="get">
 			 {$labels.testproject}
-			<select style="font-size: 80%;position:relative; top:-1px;" name="testproject" onchange="this.form.submit();">
-	      	{foreach key=tproject_id item=tproject_name from=$gui->TestProjects}
+			<select style="font-size: 80%;position:relative; top:-1px;" name="tprojectIDNavBar" 
+					onchange="this.form.submit();">
+	      	{foreach key=tproject_id item=tproject_name from=$gui->tprojectSet}
 	  		  <option value="{$tproject_id}" title="{$tproject_name|escape}"
 	  		    {if $tproject_id == $gui->tprojectID} selected="selected" {/if}>
 	  		    {$tproject_name|truncate:#TESTPROJECT_TRUNCATE_SIZE#|escape}</option>
@@ -80,7 +78,7 @@
 
 {if $gui->updateMainPage == 1}
 <script type="text/javascript">
-	parent.mainframe.location = "{$basehref}lib/general/mainPage.php";
+	parent.mainframe.location = "{$basehref}lib/general/mainPage.php?tproject_id={$gui->tprojectID}&tplan_id={$gui->tplanID}";
 </script>
 {/if}
 

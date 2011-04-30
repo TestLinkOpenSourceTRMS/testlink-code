@@ -58,6 +58,6 @@ function checkRights(&$db,&$userObj,$argsObj)
 {
 	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
 	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,argsObj,array('platform_management','platform_view'),'or');
+	checkSecurityClearance($db,$userObj,$env,array('platform_management','platform_view'),'or');
 }
 ?>

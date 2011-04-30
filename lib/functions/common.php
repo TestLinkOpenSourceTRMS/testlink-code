@@ -1202,7 +1202,8 @@ function checkSecurityClearance(&$dbHandler,&$userObj,$context,$rightsToCheck,$c
 	$doExit = false;
 	$action = 'any';
 	$myContext = array('tproject_id' => 0, 'tplan_id' => 0);
-	$myContext = array_merge(myContext, $context);
+	$myContext = array_merge($myContext, $context);
+
 	
 	if( $doExit = (is_null($myContext) || $myContext['tproject_id'] == 0) )
 	{
@@ -1216,7 +1217,9 @@ function checkSecurityClearance(&$dbHandler,&$userObj,$context,$rightsToCheck,$c
 		{
 			$status = $userObj->hasRight($dbHandler,$verboseRight,
 										 $myContext['tproject_id'],$myContext['tplan_id']);
-		
+	
+			new dBug($status);
+			die();	
 			if( ($doExit = !$status) && ($checkMode == 'and'))
 			{	
 				$action = 'any';

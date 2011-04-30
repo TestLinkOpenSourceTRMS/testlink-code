@@ -176,14 +176,14 @@ function propagateRights($fromRights,$propRights,&$toRights)
  * @since 20.02.2006, 20:30:07
  *
  **/
-function checkForRights($rights,$roleQuestion,$bAND = 1)
+function checkForRights($rights,$roleQuestion,$modeAND = 1)
 {
 	$ret = null;
 	//check to see if the $roleQuestion variable appears in the $roles variable
 	if (is_array($roleQuestion))
 	{
 		$r = array_intersect($roleQuestion,$rights);
-		if ($bAND)
+		if ($modeAND)
 		{
 			//for AND all rights must be present
 			if (sizeof($r) == sizeof($roleQuestion))

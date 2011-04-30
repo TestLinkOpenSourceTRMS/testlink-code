@@ -24,11 +24,12 @@ require_once('results.class.php');
 require_once('users.inc.php');
 require_once('displayMgr.php');
 
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $date_format_cfg = config_get('date_format');
-
 $args = init_args($db);
+checkRights($db,$_SESSION['currentUser'],$args);
+
 $gui = initializeGui($db,$args,$date_format_cfg);
 $mailCfg = buildMailCfg($gui);
 
@@ -273,9 +274,15 @@ function init_args(&$dbHandler)
     return $args;  
 }
 
-function checkRights(&$db,&$user)
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'testplan_metrics');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
 }
 
 /**

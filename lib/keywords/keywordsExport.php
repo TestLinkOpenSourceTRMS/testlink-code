@@ -13,10 +13,11 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("csv.inc.php");
 require_once("xml.inc.php");
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $args = init_args($db);
+checkRights($db,$_SESSION['currentUser'],$args);
 
 switch ($args->doAction)
 {
@@ -94,8 +95,14 @@ function do_export(&$db,&$smarty,&$args)
 	}
 }
 
-function checkRights(&$db,&$user)
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'mgt_view_key');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_view_key'),'and');
 }
 ?>

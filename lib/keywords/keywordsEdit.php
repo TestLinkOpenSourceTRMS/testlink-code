@@ -16,7 +16,7 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("csv.inc.php");
 require_once("xml.inc.php");
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 
 $smarty = new TLSmarty();
 $templateCfg = templateConfiguration();
@@ -26,6 +26,7 @@ $op = new stdClass();
 $op->status = 0;
 
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
 
 $gui = new stdClass();
 $gui->tproject_id = $args->tproject_id;
@@ -239,13 +240,13 @@ function getKeywordErrorMessage($code)
 }
 
 /**
- * @param $db resource the database connection handle
- * @param $user the current active user
- * 
- * @return boolean returns true if the page can be accessed
+ * checkRights
+ *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'mgt_modify_key') && $user->hasRight($db,'mgt_view_key');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_modify_key','mgt_view_key'),'and');
 }
 ?>

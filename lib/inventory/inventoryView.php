@@ -21,6 +21,9 @@ require_once("common.php");
 testlinkInitPage($db);
 
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
 $templateCfg = templateConfiguration();
 $gui = new stdClass();
 $gui->rightEdit = $_SESSION['currentUser']->hasRights($db,"project_inventory_management",$args->tproject_id);
@@ -40,5 +43,16 @@ function init_args()
 	
 	return $argsObj;
 
+}
+
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
+{
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('project_inventory_view'),'and');
 }
 ?>

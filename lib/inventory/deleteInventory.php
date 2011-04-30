@@ -21,6 +21,8 @@ testlinkInitPage($db);
 $data['userfeedback'] = lang_get('inventory_msg_no_action');
 $data['success'] = FALSE;
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
+
 
 if ($_SESSION['currentUser']->hasRight($db,"project_inventory_management",$args->tproject_id))
 {
@@ -47,20 +49,18 @@ function init_args()
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
     
-    // from session
     $args->userId = $_SESSION['userID'];
-
     return $args;
 }
 
 /**
- * @param $db resource the database connection handle
- * @param $user the current active user
- * 
- * @return boolean returns true if the page can be accessed
+ * checkRights
+ *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,"project_inventory_management");
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('project_inventory_management'),'and');
 }
 ?>

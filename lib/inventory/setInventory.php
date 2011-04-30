@@ -22,6 +22,7 @@ testlinkInitPage($db);
 $data['userfeedback'] = lang_get('inventory_msg_no_action');
 $data['success'] = FALSE;
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
 
 if ($_SESSION['currentUser']->hasRight($db,"project_inventory_management",$args->tproject_id))
 {
@@ -39,6 +40,11 @@ else
 
 echo json_encode($data);
 
+
+/**
+ * 
+ *
+ */
 function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
@@ -57,4 +63,14 @@ function init_args()
     return $args;
 }
 
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
+{
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('project_inventory_management'),'and');
+}
 ?>

@@ -64,8 +64,12 @@ function initEnvironment(&$dbHandler,&$userObj)
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 	$iParams = array("tprojectIDNavBar" => array(tlInputParameter::INT_N),
 					 "tproject_id" => array(tlInputParameter::INT_N),
-					 "tplan_id" => array(tlInputParameter::INT_N));
+					 "tplan_id" => array(tlInputParameter::INT_N),
+					 "updateMainPage" => array(tlInputParameter::INT_N));
 	R_PARAMS($iParams,$argsObj);
+	
+	
+	$argsObj->updateMainPage = intval($argsObj->updateMainPage);
 	
 	$guiObj->tcasePrefix = '';
 	$guiObj->tplanCount = 0; 
@@ -82,14 +86,17 @@ function initEnvironment(&$dbHandler,&$userObj)
 	$argsObj->tprojectIDNavBar = intval($argsObj->tprojectIDNavBar);
 
 	$argsObj->tproject_id = intval($argsObj->tproject_id);
-
-	$guiObj->updateMainPage = ($argsObj->tprojectIDNavBar > 0) ? 1 : 0;
-	if( ($argsObj->tprojectIDNavBar == 0) && ($argsObj->tproject_id == 0) )
+	$guiObj->updateMainPage = $argsObj->updateMainPage;
+	if( $guiObj->updateMainPage == 0)
 	{
-		// we have this situation when doing refresh on browser with something similar
-		// http://localhost:8080/development/gitrepo/tlcode/index.php
-		// on browser URL
-		$guiObj->updateMainPage = 1;
+		$guiObj->updateMainPage = ($argsObj->tprojectIDNavBar > 0) ? 1 : 0;
+		if( ($argsObj->tprojectIDNavBar == 0) && ($argsObj->tproject_id == 0) )
+		{
+			// we have this situation when doing refresh on browser with something similar
+			// http://localhost:8080/development/gitrepo/tlcode/index.php
+			// on browser URL
+			$guiObj->updateMainPage = 1;
+		}
 	}
 	
 	$argsObj->tproject_id = ($argsObj->tproject_id > 0) ? $argsObj->tproject_id : $argsObj->tprojectIDNavBar;
@@ -139,6 +146,8 @@ function initEnvironment(&$dbHandler,&$userObj)
 	$guiObj->topMenu = initTopMenu($dbHandler,$userObj,$guiObj->tprojectID,$guiObj->tplanID,
 								   $dummy['opt']->requirementsEnabled);
 	
+
+	// new dBug($guiObj);
 	return array($argsObj,$guiObj);
 }
 ?>

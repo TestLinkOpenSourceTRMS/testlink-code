@@ -18,13 +18,14 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('xml.inc.php');
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-$resultMap = null;
-
-
 $args = init_args($db);
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
+$resultMap = null;
 
 $gui = new stdClass();
 
@@ -138,8 +139,10 @@ function doImport(&$dbHandler,$testproject_id)
   	return $file_check;
 }
 
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,"platform_management");
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('platform_management'),'and');
 }
 ?>

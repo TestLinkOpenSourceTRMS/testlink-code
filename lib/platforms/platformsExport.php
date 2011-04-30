@@ -20,16 +20,16 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('../../third_party/adodb_xml/class.ADODB_XML.php');
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
-
-$gui = new stdClass();
+testlinkInitPage($db)
 $templateCfg = templateConfiguration();
 
+$args = init_args($db);
+checkRights($db,$_SESSION['currentUser'],$args);
+
+$gui = new stdClass();
 $gui->page_title = lang_get('export_platforms');
 $gui->do_it = 1;
 $gui->nothing_todo_msg = '';
-$args = init_args($db);
-
 $gui->goback_url = is_null($args->goback_url) ? '' : $args->goback_url; 
 $gui->export_filename = trim($args->export_filename);
 $gui->exportTypes = array('XML' => 'XML');
@@ -114,8 +114,10 @@ function doExport(&$db,$filename,$tproject_id)
 	exit();
 }
 
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,"platform_view");
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('platform_view'),'and');
 }
 ?>

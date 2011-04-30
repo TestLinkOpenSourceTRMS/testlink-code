@@ -55,18 +55,22 @@ if($redir2login)
 
 $smarty = new TLSmarty();
 $smarty->assign('title', lang_get('main_page_title'));
-$smarty->assign('titleframe', 'lib/general/navBar.php');
+$smarty->assign('titleframe', "lib/general/navBar.php?tproject_id={$args->tproject_id}&updateMainPage=1");
+// $smarty->assign('titleframe', "lib/general/navBar.php?tproject_id={$args->tproject_id}");
 $smarty->assign('mainframe', $args->reqURI);
 $smarty->display('main.tpl');
 
+
+
 function init_args()
 {
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+	$args = new stdClass();
+	
 	$iParams = array("reqURI" => array(tlInputParameter::STRING_N,0,4000));
 	$pParams = G_PARAMS($iParams);
-	
-	$args = new stdClass();
 	$args->reqURI = ($pParams["reqURI"] != '') ? $pParams["reqURI"] : 'lib/general/mainPage.php';
-	
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 	return $args;
 }
 ?>

@@ -45,7 +45,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $cfield_mgr = new cfield_mgr($db);
 $templateCfg = templateConfiguration();
@@ -53,8 +53,9 @@ $tproject_mgr = new testproject($db);
 $req_mgr = new requirement_mgr($db);
 
 $args = init_args($tproject_mgr);
-$gui = init_gui($args);
+checkRights($db,$_SESSION['currentUser'],$args);
 
+$gui = init_gui($args);
 $glue_char = config_get('gui_title_separator_1');
 $charset = config_get('charset');
 $req_cfg = config_get('req_cfg');
@@ -347,7 +348,8 @@ function init_args(&$tproject_mgr)
  * @param stdClass $argsObj reference to user input
  * @return stdClass $gui gui data
  */
-function init_gui(&$argsObj) {
+function init_gui(&$argsObj) 
+{
 	$gui = new stdClass();
 	
 	$gui->pageTitle = lang_get('caption_req_overview');
@@ -359,11 +361,16 @@ function init_gui(&$argsObj) {
 }
 
 
-/*
- * rights check function for testlinkInitPage()
+
+/**
+ * checkRights
+ *
  */
-function checkRights(&$db, &$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'mgt_view_req');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req'),'and');
 }
+
 ?>

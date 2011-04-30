@@ -25,6 +25,9 @@ $templateCfg = templateConfiguration();
 $tree_mgr = new tree($db);
 $reqspec_mgr = new requirement_spec_mgr($db);
 $args = init_args($tree_mgr);
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
 $node = $tree_mgr->get_node_hierarchy_info($args->reqspec_id);
 
 $gui = new stdClass();
@@ -95,5 +98,16 @@ function init_args(&$treeMgr)
 		$args->tproject_name = $dummy['name'];    
 	}
     return $args;
+}
+
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
+{
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req'),'and');
 }
 ?>

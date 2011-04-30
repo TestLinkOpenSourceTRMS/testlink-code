@@ -34,6 +34,8 @@ $labels = init_labels(array("num_changes" => null,"no_changes" => null,
 $reqMgr = new requirement_mgr($db);
 $differ = new diff();
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
+
 $gui = initializeGui($db,$args,$labels,$reqMgr);
 
 // if already two versions are selected, display diff
@@ -336,5 +338,16 @@ function getAttrDiff($leftSide,$rightSide,$labels)
 		}                   
 	}		
 	return $cmp;	
+}
+
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
+{
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req'),'and');
 }
 ?>

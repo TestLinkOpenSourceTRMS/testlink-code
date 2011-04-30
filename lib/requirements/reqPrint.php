@@ -27,6 +27,9 @@ $templateCfg = templateConfiguration();
 
 $tree_mgr = new tree($db);
 $args = init_args($tree_mgr);
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
 $node = $tree_mgr->get_node_hierarchy_info($args->req_id);
 $node['version_id'] = $args->req_version_id;
 $node['revision'] = $args->req_revision;
@@ -83,5 +86,17 @@ function init_args(&$treeMgr)
 	}
 
     return $args;
+}
+
+
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
+{
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req'),'and');
 }
 ?>

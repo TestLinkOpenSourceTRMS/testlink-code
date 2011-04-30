@@ -26,11 +26,13 @@ require_once('common.php');
 require_once('attachments.inc.php');
 require_once('requirements.inc.php');
 require_once('users.inc.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
 $args = init_args($db);
+checkRights($db,$_SESSION['currentUser'],$args);
+
 $gui = initialize_gui($db,$args);
 $smarty = new TLSmarty();
 
@@ -180,12 +182,14 @@ function initialize_gui(&$dbHandler,$argsObj)
 
 
 /**
- * 
+ * checkRights
  *
  */
-function checkRights(&$dbHandler,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($dbHandler,'mgt_view_req');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req'),'and');
 }
 
 

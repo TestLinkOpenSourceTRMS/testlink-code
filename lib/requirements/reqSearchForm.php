@@ -32,9 +32,10 @@ $req_mgr = new requirement_mgr($db);
 $tcase_cfg = config_get('testcase_cfg');
 
 $args = init_args($tproject_mgr);
-$gui = new stdClass();
+checkRights($db,$_SESSION['currentUser'],$args);
 
-$gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
+$gui = new stdClass();
+$gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
 $gui->tcasePrefix .= $tcase_cfg->glue_character;
 $gui->mainCaption = lang_get('testproject') . " " . $args->tprojectName;
 
@@ -47,11 +48,11 @@ $gui->creation_date_to = null;
 $gui->modification_date_from = null;
 $gui->modification_date_to = null;
 
-$gui->design_cf = $tproject_mgr->cfield_mgr->get_linked_cfields_at_design($args->tprojectID,$enabled,
+$gui->design_cf = $tproject_mgr->cfield_mgr->get_linked_cfields_at_design($args->tproject_id,$enabled,
                  $no_filters,'requirement');
 
-$gui->keywords = $tproject_mgr->getKeywords($args->tprojectID);
-$reqSpecSet = $tproject_mgr->getOptionReqSpec($args->tprojectID,testproject::GET_NOT_EMPTY_REQSPEC);
+$gui->keywords = $tproject_mgr->getKeywords($args->tproject_id);
+$reqSpecSet = $tproject_mgr->getOptionReqSpec($args->tproject_id,testproject::GET_NOT_EMPTY_REQSPEC);
 
 $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
 $gui->filter_by['keyword'] = !is_null($gui->keywords);
@@ -83,16 +84,26 @@ $smarty->display($templateCfg->template_dir . 'reqSearchForm.tpl');
 function init_args(&$tprojectMgr)
 {              
   	$args = new stdClass();
-    $args->tprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
     
     $args->tprojectName = '';
-    if($args->tprojectID > 0 )
+    if($args->tproject_id > 0 )
     {
-		$dummy = $tprojectMgr->tree_manager->get_node_hierarchy_info($args->tprojectID);
+		$dummy = $tprojectMgr->tree_manager->get_node_hierarchy_info($args->tproject_id);
 		$args->tprojectName = $dummy['name'];    
     } 
        
     return $args;
 }
 
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
+{
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req'),'and');
+}
 ?>

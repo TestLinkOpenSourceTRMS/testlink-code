@@ -326,12 +326,14 @@ function processTestCase(&$dbHandler,&$argsObj,&$guiObj)
 	 return $guiObj;
 }
 
-// BUGID 3615
-function checkRights(&$db,&$user)
-{
 
-	$canUse = 	$user->hasRight($db,'mgt_view_req') && 
-				($user->hasRight($db,'mgt_modify_req') || $user->hasRight($db,'req_tcase_link_management'));
-	return $canUse;
-}
-?>
+/**                                                                                        
+ * checkRights                                                                             ?>
+ *                                                                                         
+ */                                                                                        
+function checkRights(&$db,&$userObj,$argsObj)                                              
+{                                                                                          
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;        
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;                 
+	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req','req_tcase_link_management','mgt_modify_req'),'and');
+}                                                                                          

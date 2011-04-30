@@ -32,15 +32,16 @@ require_once("requirements.inc.php");
 require_once('exttable.class.php');
 testlinkInitPage($db);
 $date_format_cfg = config_get('date_format');
-
-$templateCfg = templateConfiguration();
 $tpl = 'reqSearchResults.tpl';
+$args = init_args($date_format_cfg);
+checkRights($db,$_SESSION['currentUser'],$args);
 
 $tproject_mgr = new testproject($db);
     	
 $req_cfg = config_get('req_cfg');
 $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
+$templateCfg = templateConfiguration();
 
 $commandMgr = new reqCommands($db);
 $gui = $commandMgr->initGuiBean();
@@ -55,12 +56,11 @@ $edit_label = lang_get('requirement');
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $map = null;
-$args = init_args($date_format_cfg);
 
-$gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
+$gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
 $gui->tcasePrefix .= $tcase_cfg->glue_character;
 
-if ($args->tprojectID)
+if ($args->tproject_id)
 {
 	$tables = tlObjectWithDB::getDBTables(
 							array('cfield_design_values', 'nodes_hierarchy', 'req_specs', 'req_relations', 
@@ -199,7 +199,7 @@ if ($args->tprojectID)
 		foreach ($map as $item) {
 			$id = $item['id'];
 			$pid = $tproject_mgr->tree_manager->getTreeRoot($id);
-			if ($pid != $args->tprojectID) {
+			if ($pid != $args->tproject_id) {
 				unset($map[$id]);
 			}
 		}
@@ -364,10 +364,21 @@ function init_args($dateFormat)
 		}
 	}
 	
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+
 	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-
-	$args->tprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-
 	return $args;
 }
+
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
+{
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req'),'and');
+}
+
 ?>

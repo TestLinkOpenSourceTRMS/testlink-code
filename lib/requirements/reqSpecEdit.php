@@ -26,10 +26,13 @@ $editorCfg = getWebEditorCfg('requirement_spec');
 require_once(require_web_editor($editorCfg['type']));
 $req_cfg = config_get('req_cfg');
 
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $args = init_args($db);
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
 $commandMgr = new reqSpecCommands($db);
 
 $gui = initialize_gui($db,$commandMgr,$_SESSION['currentUser'],$args,$req_cfg);
@@ -241,12 +244,15 @@ function initialize_gui(&$dbHandler, &$commandMgr, &$userObj,&$argsObj,&$req_cfg
     return $gui;
 }
 
+
 /**
- * 
+ * checkRights
  *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req','mgt_modify_req'),'and');
 }
 ?>

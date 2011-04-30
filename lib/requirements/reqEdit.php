@@ -40,9 +40,9 @@ $commandMgr = new reqCommands($db);
 
 // new dBug($_REQUEST);
 $args = init_args($db);
+checkRights($db,$_SESSION['currentUser'],$args);
+
 $gui = initialize_gui($db,$args,$commandMgr);
-
-
 $pFn = $args->doAction;
 
 $op = null;
@@ -289,8 +289,14 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 }
 
 
-function checkRights(&$db,&$user)
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req','mgt_modify_req'),'and');
 }
 ?>

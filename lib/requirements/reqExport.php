@@ -21,11 +21,13 @@ require_once("xml.inc.php");
 require_once("common.php");
 require_once("requirements.inc.php");
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $req_spec_mgr = new requirement_spec_mgr($db);
 
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
+
 $gui = initializeGui($args,$req_spec_mgr);
 
 switch($args->doAction)
@@ -47,9 +49,11 @@ switch($args->doAction)
  * checkRights
  *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'mgt_view_req');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req'),'and');
 }
 
 

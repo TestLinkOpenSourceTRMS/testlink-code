@@ -12,7 +12,7 @@
  * @version    	CVS: $Id: planTCNavigator.php,v 1.52 2010/10/03 15:34:15 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
  *  20100708 - asimon - BUGID 3406
  *  20100628 - asimon - removal of constants from filter control class
  *  20160625 - asimon - refactoring for new filter features
@@ -22,7 +22,6 @@
  *                      of some variables used in new common template,
  *                      added filtering by custom fields
  *	20100202 - asimon - BUGID 2455, BUGID 3026
- *  20081223 - franciscom - advanced/simple filter feature
  **/
 
 require('../../config.inc.php');

@@ -16,7 +16,7 @@
 require_once(dirname(__FILE__)."/../../config.inc.php");
 require_once("common.php");
 
-testlinkInitPage($db, !TL_UPDATE_ENVIRONMENT, false, "checkRights");
+testlinkInitPage($db);
 
 $assignment_mgr = new assignment_mgr($db);
 $testplan_mgr = new testplan($db);
@@ -24,6 +24,9 @@ $build_mgr = new build_mgr($db);
 $templateCfg = templateConfiguration();
 
 $args = init_args($testplan_mgr->tree_manager);
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
 $gui = init_gui($db, $args);
 
 $assignment_count = 0;
@@ -117,10 +120,14 @@ function init_gui(&$dbHandler, &$argsObj) {
 
 
 /**
+ * checkRights
  *
  */
-function checkRights(&$dbHandler,&$user) {
-	return $user->hasRight($dbHandler, 'testplan_planning');
+function checkRights(&$db,&$userObj,$argsObj)
+{
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_planning'),'and');
 }
 
 ?>

@@ -32,7 +32,7 @@ require_once("treeMenu.inc.php");
 require_once('email_api.php');
 require_once("specview.php");
 
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 
 $tree_mgr = new tree($db); 
 $tplan_mgr = new testplan($db); 
@@ -42,6 +42,8 @@ $assignment_mgr = new assignment_mgr($db);
 $templateCfg = templateConfiguration();
 
 $args = init_args($db);
+checkRights($db,$_SESSION['currentUser'],$args);
+
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 $keywordsFilter = new stdClass();
 $keywordsFilter->items = null;
@@ -351,8 +353,10 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 	    $gui->all_users = tlUser::getAll($dbHandler,null,"id",null);
 	   	$gui->users = getUsersForHtmlOptions($dbHandler,null,null,null,$gui->all_users);
 	   	$gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$tproject_info,$gui->all_users);
+	   	
+	   	
 	}
-
+	$gui->tproject_id = $argsObj->tproject_id;
     return $gui;
 }
 
@@ -441,8 +445,15 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
     }
 }
 
-function checkRights(&$db,&$user)
+
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'testplan_planning');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_planning'),'and');
 }
 ?>

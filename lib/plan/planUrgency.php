@@ -19,8 +19,9 @@
  
 require('../../config.inc.php');
 require_once('common.php');
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 $args = init_args($db);
+checkRights($db,$_SESSION['currentUser'],$args);
 
 if($args->show_help)
 {
@@ -37,6 +38,7 @@ $gui->user_feedback = null;
 $gui->node_id = $args->node_id;
 $gui->tplan_id = $args->tplan_id;
 $gui->tplan_name = $args->tplan_name;
+$gui->tproject_id = $args->tproject_id;
 
 
 // Set urgency for test suite
@@ -116,8 +118,15 @@ function init_args()
     return $args;
 }
 
-function checkRights(&$db,&$user)
+
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'testplan_planning');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_planning'),'and');
 }
 ?>

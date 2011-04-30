@@ -27,7 +27,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("specview.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db);
@@ -35,6 +35,8 @@ $tcase_mgr = new testcase($db);
 $templateCfg = templateConfiguration();
 
 $args = init_args($tplan_mgr);
+checkRights($db,$_SESSION['currentUser'],$args);
+
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 $keywordsFilter = null;
 if(is_array($args->keyword_id))
@@ -385,8 +387,14 @@ function processTestPlan(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr)
 }
 
 
-function checkRights(&$db,&$user)
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'testplan_planning');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_planning'),'and');
 }
 ?>

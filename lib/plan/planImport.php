@@ -16,7 +16,7 @@
  * @copyright 	2003-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * 
- * @internal Revisions:
+ * @internal revisions
  * 20110308 - franciscom - get_basic_info() interface changes
  * 20101031 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
  * 20101030 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
@@ -510,5 +510,4 @@ function checkRights(&$db,&$userObj,$argsObj)
 	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
 	checkSecurityClearance($db,$userObj,$env,array('mgt_testplan_create'),'and');
 }
-
 ?>

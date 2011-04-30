@@ -48,13 +48,16 @@ if (config_get('interface_bugs') != 'NO')
   require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' .
                DIRECTORY_SEPARATOR . 'int_bugtracking.php');
 }
-testlinkInitPage($db,true,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $resultsCfg = config_get('results');
 $statusCode = $resultsCfg['status_code'];
 
 $args = init_args($statusCode);
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
 $gui = initializeGui($statusCode,$args);
 
 $tplan_mgr = new testplan($db);
@@ -359,6 +362,8 @@ function init_args($statusCode)
 function initializeGui($statusCode,&$argsObj)
 {
     $guiObj = new stdClass();
+    $guiObj->tproject_id = $argsObj->tproject_id; 
+    $guiObj->tplan_id = $argsObj->tplan_id; 
     
     // Count for the Failed Issues whose bugs have to be raised/not linked. 
     $guiObj->without_bugs_counter = 0; 
@@ -385,9 +390,15 @@ function initializeGui($statusCode,&$argsObj)
     return $guiObj;    
 }
 
-function checkRights(&$db,&$user)
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'testplan_metrics');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
 }
 
 

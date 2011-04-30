@@ -16,8 +16,6 @@
  *	20100920 - Julian - use exttable
  *	20100616 - eloff - refactor out results class
  *	20100124 - eloff - BUGID 3012 - don't show internal id in report
- *	20080413 - franciscom - refactoring + BUGID 1477 
- *	20070827 - franciscom - BUGID 994
  */
 
 
@@ -32,13 +30,18 @@ if (config_get('interface_bugs') != 'NO')
   require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' .
                DIRECTORY_SEPARATOR . 'int_bugtracking.php');
 }
-testlinkInitPage($db,true,false,"checkRights");
-$gui = new stdClass();
-$gui->warning_msg = '';
-$gui->tableSet = null;
-
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
+$gui = new stdClass();
+$gui->tproject_id = $args->tproject_id;
+$gui->tplan_id = $args->tplan_id;
+
+$gui->warning_msg = '';
+$gui->tableSet = null;
 
 $edit_label = lang_get('design');
 $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
@@ -217,21 +220,28 @@ function getColumnsDefinition()
 */
 function init_args()
 {
-	$iParams = array(
-		"format" => array(tlInputParameter::INT_N),
-		"tplan_id" => array(tlInputParameter::INT_N),
-   	);
+	$iParams = array("format" => array(tlInputParameter::INT_N),
+					 "tplan_id" => array(tlInputParameter::INT_N),
+					 "tproject_id" => array(tlInputParameter::INT_N));
 	$args = new stdClass();
 	$pParams = R_PARAMS($iParams,$args);
 	
-	$args->tproject_id = $_SESSION['testprojectID'];
+	$args->tproject_id = intval($args->tproject_id);
+	$args->tplan_id = intval($args->tplan_id);
+	
 	$args->user = $_SESSION['currentUser'];
 
 	return $args;
 }
 
-function checkRights(&$db,&$user)
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'testplan_metrics');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
 }
 ?>

@@ -32,6 +32,8 @@ $templateCfg = templateConfiguration();
 
 $tplan_mgr = new testplan($db);
 $args = init_args($tplan_mgr->tree_manager);
+checkRights($db,$_SESSION['currentUser'],$args);
+
 $gui = initializeGui($args,$tplan_mgr);
 $dest_common = TL_TEMP_PATH . session_id(). "-planImport" ;
 $dest_files = array('XML' => $dest_common . ".xml");
@@ -497,4 +499,16 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 	}
 	return $ret;
  }
+
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
+{
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_testplan_create'),'and');
+}
+
 ?>

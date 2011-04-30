@@ -24,17 +24,17 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('build');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
-
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-$smarty = new TLSmarty();
 $default_template = $templateCfg->default_template;
+$args = init_args($db);
+checkRights($db,$_SESSION['currentUser'],$args);
 
+$gui = init_gui($db,$args);
+
+$smarty = new TLSmarty();
 $op = new stdClass();
 $op->status = 0;
-
-$args = init_args($db);
-$gui = init_gui($db,$args);
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
 $of->Value = getItemTemplateContents('platform_template', $of->InstanceName, $args->notes);
@@ -306,8 +306,10 @@ function init_gui(&$db,&$args)
     return $gui;
 }
 
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'platform_management');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('platform_management'),'and');
 }
 ?>

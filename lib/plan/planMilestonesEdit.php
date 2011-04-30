@@ -13,12 +13,14 @@
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 $date_format_cfg = config_get('date_format');
 
 $templateCfg = templateConfiguration();
 $args = init_args($db,$date_format_cfg);
-$gui = initialize_gui($db,$args);
+checkRights($db,$_SESSION['currentUser'],$args);
+
+$gui = initialize_gui($db,$_SESSION['currentUser'],$args);
 $commandMgr = new planMilestonesCommands($db);
 
 $pFn = $args->doAction;
@@ -89,7 +91,7 @@ function init_args(&$dbHandler,$dateFormat)
   	}
 	
 	$args->tplan_name = '';
-	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
 	if( $args->tplan_id > 0 )
 	{
 	    $info = $treeMgr->get_node_hierarchy_info($args->tplan_id);
@@ -181,25 +183,33 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg)
   returns:
 
 */
-function initialize_gui(&$dbHandler,&$argsObj)
+function initialize_gui(&$dbHandler,&$userObj,&$argsObj)
 {
-    $req_spec_mgr = new requirement_spec_mgr($dbHandler);
     $gui = new stdClass();
-    
+
+    $gui->tproject_id = $argsObj->tproject_id;
+    $gui->tplan_id = $argsObj->tplan_id;
     $gui->user_feedback = null;
     $gui->main_descr = lang_get('req_spec');
     $gui->action_descr = null;
 
     $gui->grants = new stdClass();
-    $gui->grants->milestone_mgmt = has_rights($dbHandler,"testplan_planning");
-	$gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
-	
+    $gui->grants->milestone_mgmt = $userObj->hasRight($dbHandler,"testplan_planning",
+    												  $gui->tproject_id,$gui->tplan_id);
+	$gui->grants->mgt_view_events = $userObj->hasRight($dbHandler,"mgt_view_events",
+													   $gui->tproject_id,$gui->tplan_id);
 	return $gui;
 }
 
 
-function checkRights(&$db,&$user)
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return ($user->hasRight($db,"testplan_planning"));
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_planning'),'and');
 }
 ?>

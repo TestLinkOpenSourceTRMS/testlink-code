@@ -30,10 +30,10 @@ require_once("../functions/common.php");
 require_once("../functions/xml.inc.php");
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
+$args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
 
 $tplan_mgr = new testplan($db);
-
-$args = init_args();
 $gui = initializeGui($args,$tplan_mgr);
 
 if ($args->doExport)
@@ -142,5 +142,16 @@ function initializeGui(&$argsObj,&$tplanMgr)
     $guiObj->exportContent = $argsObj->exportContent;
 
 	return $guiObj;
+}
+
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
+{
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_testplan_create'),'and');
 }
 ?>

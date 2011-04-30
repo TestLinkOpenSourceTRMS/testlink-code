@@ -25,7 +25,7 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('testplan');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $tplan_mgr = new testplan($db);
@@ -35,6 +35,9 @@ $smarty = new TLSmarty();
 $do_display=false;
 $template = null;
 $args = init_args($_REQUEST,$tproject_mgr->tree_manager);
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
 if (!$args->tproject_id)
 {
 	$smarty->assign('title', lang_get('fatal_page_title'));
@@ -284,9 +287,11 @@ function init_args($request_hash,&$treeMgr)
  * checkRights
  *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'mgt_testplan_create');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_testplan_create'),'and');
 }
 
 /**

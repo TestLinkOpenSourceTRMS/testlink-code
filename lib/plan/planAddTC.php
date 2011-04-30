@@ -45,6 +45,9 @@ $tcase_mgr = new testcase($db);
 
 $templateCfg = templateConfiguration();
 $args = init_args($tproject_mgr);
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 
 //new dBug($gui);die();
@@ -841,4 +844,16 @@ function init_build_selector(&$testplan_mgr, &$argsObj) {
 	
 	return $html_menu;
 } // end of method
+
+
+/**
+ * 
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
+{
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_testplan_create'),'and');
+}
 ?>

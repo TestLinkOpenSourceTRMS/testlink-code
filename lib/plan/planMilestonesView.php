@@ -51,7 +51,7 @@ function init_args(&$dbHandler)
   	}
 	
 	$args->tplan_name = '';
-	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
 	if( $args->tplan_id > 0 )
 	{
 	    $info = $treeMgr->get_node_hierarchy_info($args->tplan_id);
@@ -69,7 +69,7 @@ function init_args(&$dbHandler)
   returns:
 
 */
-function initialize_gui(&$dbHandler,&$argsObj)
+function initialize_gui(&$dbHandler,&$userObj,&$argsObj)
 {
     $manager = new milestone_mgr($dbHandler);
     $gui = new stdClass();
@@ -77,20 +77,32 @@ function initialize_gui(&$dbHandler,&$argsObj)
     $gui->user_feedback = null;
     $gui->main_descr = lang_get('title_milestones') . " " . $argsObj->tplan_name;
     $gui->action_descr = null;
+
     $gui->tplan_name = $argsObj->tplan_name;
     $gui->tplan_id = $argsObj->tplan_id;
+    $gui->tproject_name = $argsObj->tproject_name;
+    $gui->tproject_id = $argsObj->tproject_id;
+
 	$gui->items = $manager->get_all_by_testplan($argsObj->tplan_id);
 	
 	$gui->grants = new stdClass();
-    $gui->grants->milestone_mgmt = has_rights($dbHandler,"testplan_planning");
-	$gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
-	
+    $gui->grants->milestone_mgmt = $userObj->hasRight($dbHandler,"testplan_planning",
+     							   $gui->tproject_id,$gui->tplan_id);
+    
+	$gui->grants->mgt_view_events = $userObj->hasRight($dbHandler,"mgt_view_events",
+	 												   $gui->tproject_id,$gui->tplan_id);
 	return $gui;
 }
 
 
-function checkRights(&$db,&$user)
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return ($user->hasRight($db,"testplan_planning"));
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_planning'),'and');
 }
 ?>

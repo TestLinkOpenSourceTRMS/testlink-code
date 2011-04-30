@@ -51,8 +51,15 @@ function init_args(&$dbHandler)
 	return $args;
 }
 
-function checkRights(&$db,&$user)
+/**
+ * 
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,"cfield_view");
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('cfield_view'),'and');
 }
+
 ?>

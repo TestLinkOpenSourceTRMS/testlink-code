@@ -33,11 +33,12 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('requirement');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $commandMgr = new reqCommands($db);
 
+// new dBug($_REQUEST);
 $args = init_args($db);
 $gui = initialize_gui($db,$args,$commandMgr);
 
@@ -128,6 +129,9 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
 {
     $smartyObj = new TLSmarty();
     $renderType = 'none';
+    
+    // new dBug($argsObj); die();
+    
     // @TODO document
     $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
                              'doDelete' => '', 'doReorder' => '', 'reorder' => '',
@@ -191,7 +195,6 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
         case "doCopy":
         case "doCreateVersion":
         case "doDeleteVersion":
-        // BUGID 1748
         case "doAddRelation":
         case "doDeleteRelation":
         case "doCreateRevision":

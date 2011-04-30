@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@internal filename: reqViewRevisionViewer.tpl
+@filesource	reqViewRevisionViewer.tpl
 viewer for requirement revision
 
 @internal revisions:

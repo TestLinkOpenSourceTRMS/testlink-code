@@ -45,9 +45,9 @@
 	<input type="checkbox" name="all_versions" value="all_versions"
 	       {if $gui->all_versions} checked="checked" {/if}
 	       onclick="this.form.submit();" /> {$labels.show_all_versions_btn}
-	<input type="hidden"
-	       name="all_versions_hidden"
-	       value="{$gui->all_versions}" />
+	<input type="hidden" name="all_versions_hidden" value="{$gui->all_versions}" />
+	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
+
 	</form></p><br/>
 	
 	{foreach from=$gui->tableSet key=idx item=matrix}

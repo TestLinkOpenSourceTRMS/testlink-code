@@ -1,21 +1,22 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-Filename: reqViewVersions.tpl,v 1.27 2010/12/11 11:19:59 franciscom Exp $
+@filesource	reqViewVersions.tpl
+
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
-rev:
-	20110305 - franciscom -	fixed issue unable to include template due to changed 
-							behaviour of $smarty.template on Smarty 3.0.7
-	20110304 - asimon - added help icon with a description of some of the "new" features
-	20101211 - franciscom - BUGID 4056: Requirement Revisioning
-	20101113 - franciscom - BUGID 4045: Smarty 3.0 compatibility - Requirement Versions
-	20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
-	20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-	20101026 - franciscom - BUGID 3927: Requirement can't be deleted due to JS error -> label has to be escaped
-	20101017 - franciscom - image access refactored (tlImages)
-	20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
-	20100319 - asimon - BUGID 1748, added requirement relations display
+@internal revisions
+20110305 - franciscom -	fixed issue unable to include template due to changed 
+						behaviour of $smarty.template on Smarty 3.0.7
+20110304 - asimon - added help icon with a description of some of the "new" features
+20101211 - franciscom - BUGID 4056: Requirement Revisioning
+20101113 - franciscom - BUGID 4045: Smarty 3.0 compatibility - Requirement Versions
+20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
+20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+20101026 - franciscom - BUGID 3927: Requirement can't be deleted due to JS error -> label has to be escaped
+20101017 - franciscom - image access refactored (tlImages)
+20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
+20100319 - asimon - BUGID 1748, added requirement relations display
 *}
 
 {lang_get s='warning_delete_requirement' var="warning_msg"}
@@ -53,11 +54,12 @@ var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 function delete_req(btn, text, o_id)
 { 
-	var my_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement_id=';
-  if( btn == 'yes' )
-  {
-    my_action = my_action+o_id;
-	  window.location=my_action;
+	var my_action=fRoot+'lib/requirements/reqEdit.php?tproject_id={$gui->tproject_id}' + 
+				  '&doAction=doDelete&requirement_id=';
+	if( btn == 'yes' )
+	{
+		my_action = my_action+o_id;
+		window.location=my_action;
 	}
 }					
 
@@ -67,11 +69,12 @@ function delete_req(btn, text, o_id)
  */
 function delete_req_version(btn, text, o_id)
 { 
-	var my_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDeleteVersion&req_version_id=';
-  if( btn == 'yes' )
-  {
-    my_action = my_action+o_id;
-	  window.location=my_action;
+	var my_action=fRoot+'lib/requirements/reqEdit.php?tproject_id={$gui->tproject_id}' + 
+				  '&doAction=doDeleteVersion&req_version_id=';
+	if( btn == 'yes' )
+	{
+		my_action = my_action+o_id;
+		window.location=my_action;
 	}
 }					
 
@@ -81,7 +84,8 @@ function delete_req_version(btn, text, o_id)
  */
 function freeze_req_version(btn, text, o_id)
 {
-	var my_action=fRoot+'lib/requirements/reqEdit.php?doAction=doFreezeVersion&req_version_id=';
+	var my_action=fRoot+'lib/requirements/reqEdit.php?tproject_id={$gui->tproject_id}' +
+				  '&doAction=doFreezeVersion&req_version_id=';
 	if( btn == 'yes' )
 	{
 		my_action = my_action+o_id;
@@ -251,7 +255,6 @@ var pF_delete_req_relation = delete_req_relation;
 		<form method="post" action="lib/requirements/reqEdit.php" 
 				onSubmit="javascript:return validate_req_docid_input('relation_destination_req_doc_id', 
 				                                                     '{$labels.relation_destination_doc_id}');">
-		
 		<table class="simple" id="relations">
 		
 			<tr><th colspan="7">{$labels.relations}</th></tr>
@@ -283,6 +286,7 @@ var pF_delete_req_relation = delete_req_relation;
 				{/if}	
 				
 				<input type="hidden" name="doAction" value="doAddRelation" />
+				<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
 				<input type="hidden" name="relation_source_req_id" value="{$gui->req_id}" />
 				<input type="submit" name="relation_submit_btn" value="{$labels.btn_add}" />
 				

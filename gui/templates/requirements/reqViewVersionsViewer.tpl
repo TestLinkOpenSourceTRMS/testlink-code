@@ -48,6 +48,7 @@ rev:
 	        action="lib/requirements/reqEdit.php" method="post">
 	  	<input type="hidden" name="requirement_id" value="{$args_req.id}" />
 	  	<input type="hidden" name="req_version_id" value="{$args_req.version_id}" />
+		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
 	  	<input type="hidden" name="doAction" value="" />
 	  	
 	  	{* IMPORTANT NOTICE: name can not be dynamic because PHP uses name not ID *}

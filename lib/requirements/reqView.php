@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource	reqView.php,v $
+ * @filesource	reqView.php,v
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2008-2011, TestLink community 
@@ -92,6 +92,7 @@ function initialize_gui(&$dbHandler,$argsObj)
 
     $gui = $commandMgr->initGuiBean();
     $gui->req_cfg = config_get('req_cfg');
+    $gui->tproject_id = $argsObj->tproject_id;
     $gui->tproject_name = $argsObj->tproject_name;
 
     $gui->grants = new stdClass();

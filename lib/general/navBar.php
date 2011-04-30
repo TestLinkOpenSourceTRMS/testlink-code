@@ -121,8 +121,8 @@ function initEnvironment(&$dbHandler,&$userObj)
 	$guiObj->searchSize = 8;
 	if($guiObj->tprojectID > 0)
 	{
-	    $guiObj->tcasePrefix = $tprojectMgr->getTestCasePrefix($guiObj->tprojectID) . 
-	    					   config_get('testcase_cfg')->glue_character;
+		$dummy = $tprojectMgr->get_by_id($guiObj->tprojectID);
+	    $guiObj->tcasePrefix = $dummy['prefix'] . config_get('testcase_cfg')->glue_character;
 	    $guiObj->searchSize = tlStringLen($guiObj->tcasePrefix) + $cfg->dynamic_quick_tcase_search_input_size;
 
 		$guiObj->tplanSet = $userObj->getAccessibleTestPlans($dbHandler,$guiObj->tprojectID);
@@ -133,6 +133,11 @@ function initEnvironment(&$dbHandler,&$userObj)
 	    	$guiObj->tplanSet[0]['selected']=1;
 	    }
 	}	
+	
+	// new dBug();
+	// menu
+	$guiObj->topMenu = initTopMenu($dbHandler,$userObj,$guiObj->tprojectID,$guiObj->tplanID,
+								   $dummy['opt']->requirementsEnabled);
 	
 	return array($argsObj,$guiObj);
 }

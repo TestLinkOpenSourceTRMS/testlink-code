@@ -38,7 +38,8 @@ Purpose: smarty template - title bar + menu
 
 <div class="menu_bar" style="margin: 0px 5px 0px 135px;">
 
-	{$session.testprojectTopMenu}
+	{* {$session.testprojectTopMenu} *}
+	{$gui->topMenu}
 
 {if $gui->tprojectID}
 	{if $gui->grants->view_testcase_spec == "yes"}

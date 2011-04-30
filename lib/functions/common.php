@@ -260,43 +260,63 @@ function doSessionStart()
  * Initialize structure of top menu for the user and the project.
  * 
  * @param integer $db DB connection identifier
- * @uses $_SESSION Requires initialized project, test plan and user data.
+ * @param object $userObj user object
+ * @param integer $tproject_id test project identifier
+ * @param integer $tplan_id test plan identifier
+ * @param boolean $reqMgmtEnabled
+ * 
  * @since 1.9
  *
- * @internal Revisions
+ * @internal revisions
  *  20100714 - asimon - BUGID 3601: show req spec link only when req mgmt is enabled
  *	20091119 - franciscom - removed global coupling 
  */
-function initTopMenu(&$db)
+function initTopMenu(&$db,&$userObj,$tproject_id,$tplan_id,$reqMgmtEnabled)
 {
-	$_SESSION['testprojectTopMenu'] = '';
+	$menuString = '';
 	$guiTopMenu = config_get('guiTopMenu');
 
 	// check if Project is available
-	if (isset($_SESSION['testprojectID']) && $_SESSION['testprojectID'] > 0)
+	if ($tproject_id > 0)
 	{
 		$idx = 1;	
     	foreach ($guiTopMenu as $element)
 		{
 			// check if Test Plan is available
 			// BUGID 3601: check also if req mgmt is enabled
-			if ((!isset($element['condition'])) || ($element['condition'] == '') ||
-				(($element['condition'] == 'TestPlanAvailable') && 
-				  isset($_SESSION['testplanID']) && $_SESSION['testplanID'] > 0) ||
-				(($element['condition'] == 'ReqMgmtEnabled') && 
-				  isset($_SESSION['testprojectOptions']->requirementsEnabled) && 
-				    $_SESSION['testprojectOptions']->requirementsEnabled))
+			if( 
+				 ( !isset($element['condition']) || ($element['condition'] == '') ) ||
+				 ( ($element['condition'] == 'TestPlanAvailable') && $tplan_ID > 0 ) ||
+				 ( ($element['condition'] == 'ReqMgmtEnabled') && $reqMgmtEnabled )
+			  )
 			{
+				// IMPORTANT NOTICE
 				// (is_null($element['right']) => no right needed => display always
-				if (is_null($element['right']) || has_rights($db,$element['right']) == "yes")
+				if (is_null($element['right']) || $userObj->hasRight($db,$element['right'],$tproject_id,$tplan_id))
 				{
-					$_SESSION['testprojectTopMenu'] .= "<a href='{$element['url']}' " .
-						"target='{$element['target']}' accesskey='{$element['shortcut']}'" .
-	     				"tabindex=''" . $idx++ . "''>" . lang_get($element['label'])."</a> | ";
+				
+					$dummy = $element['url'];
+					if($element['addTProject'])
+					{
+						// need to understand how to add: with ? or &
+						$glue = (strpos($dummy,'?') === false) ? '?' : '&';
+						$dummy .= $glue . "tproject_id={$tproject_id}"; 
+					}
+					if($element['addTPlan'])
+					{
+						// need to understand how to add: with ? or &
+						$glue = (strpos($dummy,'?') === false) ? '?' : '&';
+						$dummy .= $glue . "tplan_id={$tplan_id}"; 
+					}
+					
+					$menuString .= 	"<a href='{$dummy}' " .
+									"target='{$element['target']}' accesskey='{$element['shortcut']}'" .
+	     							"tabindex=''" . $idx++ . "''>" . lang_get($element['label'])."</a> | ";
 				}
 			}
 		}
 	}
+	return $menuString;
 }
 
 
@@ -374,7 +394,7 @@ function initProject(&$db,$hash_user_sel)
 	}
 	
 	// initialize structure of top menu for the user and the project
-	initTopMenu($db);
+	initTopMenu($db,$tproject_id);
    
 }
 

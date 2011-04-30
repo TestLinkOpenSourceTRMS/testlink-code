@@ -229,7 +229,6 @@ $g_testsuite_sep='/';
 
 /**
  * using niftycorners 
- * @TODO havlatm: move to smarty templates - configuration should not contain HTML elements 
  **/
 define('MENU_ITEM_OPEN', '<div class="menu_bubble">');
 define('MENU_ITEM_CLOSE', '</div><br />');
@@ -895,8 +894,9 @@ $tlCfg->review_types = array(1 => 'undefined',
  * - condition: specific condition = ['','TestPlanAvailable','ReqMgmtEnabled']
  * - shortcut: keyboard HTML shortcut
  * - target: window/frame name (mainframe in the most of cases)
- * 
- * @since TestLink version 1.9 
+ * - addTProject: need to add test project ID on on url call
+ * - addTPlan: need to add test plan ID on on url call
+  * @since TestLink version 1.9 
  */
 $tlCfg->guiTopMenu[1] = array(
 		'label' => 'home',
@@ -904,55 +904,75 @@ $tlCfg->guiTopMenu[1] = array(
 		'right' => null,
 		'condition'=>'',
 		'shortcut'=>'h',
-		'target'=>'_parent'
+		'target'=>'_parent',
+		'addTProject' => true,
+		'addTPlan' => false		
 );
+
 $tlCfg->guiTopMenu[2] = array(
 		'label' => 'title_requirements',
 		'url' => 'lib/general/frmWorkArea.php?feature=reqSpecMgmt',
 		'right' => 'mgt_view_req',
 		'condition'=>'ReqMgmtEnabled',
 		'shortcut'=>'r',
-		'target'=>'mainframe'
+		'target'=>'mainframe',
+		'addTProject' => true,
+		'addTPlan' => false		
 ); 
+
 $tlCfg->guiTopMenu[3] = array(
 		'label' => 'title_specification',
 		'url' => 'lib/general/frmWorkArea.php?feature=editTc',
 		'right' => 'mgt_view_tc',
 		'condition'=>'',
 		'shortcut'=>'t',
-		'target'=>'mainframe'
+		'target'=>'mainframe',
+		'addTProject' => true,
+		'addTPlan' => false		
 ); 
+
 $tlCfg->guiTopMenu[4] = array(
 		'label' => 'title_execute',
 		'url' => 'lib/general/frmWorkArea.php?feature=executeTest',
 		'right' => 'testplan_execute',
 		'condition'=>'TestPlanAvailable',
 		'shortcut'=>'e',
-		'target'=>'mainframe'
+		'target'=>'mainframe',
+		'addTProject' => true,
+		'addTPlan' => true		
 ); 
+
 $tlCfg->guiTopMenu[5] = array(
 		'label' => 'title_results',
 		'url' => 'lib/general/frmWorkArea.php?feature=showMetrics',
 		'right' => 'testplan_metrics',
 		'condition'=>'TestPlanAvailable',
 		'shortcut'=>'r',
-		'target'=>'mainframe'
+		'target'=>'mainframe',
+		'addTProject' => true,
+		'addTPlan' => false		
 ); 
+
 $tlCfg->guiTopMenu[6] = array(
 		'label' => 'title_admin',
 		'url' => 'lib/usermanagement/usersView.php',
 		'right' => 'mgt_users',
 		'condition'=>'',
 		'shortcut'=>'u',
-		'target'=>'mainframe'
+		'target'=>'mainframe',
+		'addTProject' => true,
+		'addTPlan' => false		
 ); 
+
 $tlCfg->guiTopMenu[7] = array(
 		'label' => 'title_events',
 		'url' => 'lib/events/eventviewer.php',
 		'right' => 'events_mgt',
 		'condition'=>'',
 		'shortcut'=>'v',
-		'target'=>'mainframe'
+		'target'=>'mainframe',
+		'addTProject' => false,
+		'addTPlan' => false		
 ); 
 
 

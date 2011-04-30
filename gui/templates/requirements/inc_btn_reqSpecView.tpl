@@ -25,7 +25,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	<form id="req_spec" name="req_spec" action="{$req_module}reqSpecEdit.php" method="post">
 		<fieldset class="groupBtn">
 			<h2>{$labels.req_spec_operations}</h2>
-			<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
+			<input type="hidden" name="req_spec_id" id="req_spec_id" value="{$gui->req_spec_id}" />
+			<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 			<input type="hidden" name="doAction" value="" />
 
   		{if $gui->grants->req_mgmt == "yes"}

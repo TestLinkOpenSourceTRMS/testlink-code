@@ -1007,7 +1007,7 @@ function REQ_SPEC_MGMT(tproject_id,id)
   	var action_url = fRoot+req_spec_manager_url + "?tproject_id=" + tproject_id + 
   					 "&item=req_spec&req_spec_id="+id+args+"&"+pParams;
   
-    // alert(_FUNCTION_NAME_ + " " +action_url);
+    alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
 }
 
@@ -1020,11 +1020,12 @@ function REQ_SPEC_MGMT(tproject_id,id)
   returns:
 
 */
-function REQ_MGMT(id)
+function REQ_MGMT(tproject_id,id)
 {
 	var _FUNCTION_NAME_="REQ_MGMT";
 	var pParams = tree_getPrintPreferences();
-	var action_url = fRoot+req_manager_url+"?item=requirement&requirement_id="+id+args+"&"+pParams;
+	var action_url = fRoot+req_manager_url + "?item=requirement" + "&tproject_id=" + tproject_id +
+					 "&requirement_id="+id+args+"&"+pParams;
 
   //alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;

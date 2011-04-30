@@ -209,7 +209,8 @@ class reqSpecCommands
 		{
 			$guiObj->main_descr = '';
 			$guiObj->action_descr='';
-			$guiObj->template = "reqSpecView.php?req_spec_id={$guiObj->req_spec_id}";
+			$guiObj->template = "reqSpecView.php?tproject_id={$guiObj->tproject_id}" . 
+								"&req_spec_id={$guiObj->req_spec_id}";
 			$cf_map = $this->reqSpecMgr->get_linked_cfields($argsObj->req_spec_id);
 			$this->reqSpecMgr->values_to_db($request,$argsObj->req_spec_id,$cf_map);
 		

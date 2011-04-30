@@ -56,6 +56,7 @@ function init_args(&$dbHandler)
 
 	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
+	// new dBug($_REQUEST);
 
 	$args = new stdClass();
 	$iParams = array("countReq" => array(tlInputParameter::INT_N,99999),
@@ -92,10 +93,8 @@ function init_args(&$dbHandler)
 	// asimon - 20100808 - added logic to refresh filtered tree on action
 	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? $_SESSION['setting_refresh_tree_on_action'] : 0;
 	
-	if (is_null($args->countReq)) {
-		$args->countReq = 0;
-	}
-	
+	$args->countReq = is_null($args->countReq) ? 0 : intval($args->countReq);
+
 	return $args;
 }
 

@@ -23,7 +23,6 @@ testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
 $templateCfg = templateConfiguration();
 $args = init_args($db);
 
-new dBug($args);
 $gui = initialize_gui($db,$args);
 
 $smarty = new TLSmarty();
@@ -75,6 +74,7 @@ function initialize_gui(&$dbHandler,&$argsObj)
 	$gui->req_spec = $req_spec_mgr->get_by_id($argsObj->req_spec_id);
 	
 	$gui->req_spec_id = $argsObj->req_spec_id;
+	$gui->tproject_id = $argsObj->tproject_id;
 	$gui->tproject_name = $argsObj->tproject_name;
 	$gui->name = $gui->req_spec['title'];
 	
@@ -95,8 +95,8 @@ function initialize_gui(&$dbHandler,&$argsObj)
 
 
 
+	$module = $_SESSION['basehref'] . "lib/requirements/";
 	$context = "tproject_id=$gui->tproject_id&req_spec_id=$gui->req_spec_id";
-	$module = "lib/requirements/" . $_SESSION['basehref'];
 	$gui->actions = new stdClass();
 	$gui->actions->req_edit = $module . "reqEdit.php?doAction=create&$context";
 	$gui->actions->req_import = $module . "reqImport.php?doAction=create&$context";
@@ -107,8 +107,9 @@ function initialize_gui(&$dbHandler,&$argsObj)
 	$gui->actions->req_spec_new = $module . "reqSpecEdit.php?doAction=createChild" .
 								  "&tproject_id=$gui->tproject_id&reqParentID=$gui->req_spec_id";
 
-	$gui->actions->req_spec_new = $module . "reqSpecEdit.php?doAction=copyRequirements&$context";
 	$gui->actions->req_spec_copy = $module . "reqSpecEdit.php?doAction=copy&$context";
+	
+	$gui->actions->req_spec_copy_req = $module . "reqSpecEdit.php?doAction=copyRequirements&$context";
 								  
 	$gui->actions->req_spec_import = $gui->actions->req_import . "&scope=branch";
 	$gui->actions->req_spec_export = $gui->actions->req_export . "&scope=branch";

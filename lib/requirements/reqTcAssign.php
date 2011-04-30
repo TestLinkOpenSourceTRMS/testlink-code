@@ -14,10 +14,11 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
 
 $gui = new stdClass();
 $gui->showCloseButton = $args->showCloseButton;

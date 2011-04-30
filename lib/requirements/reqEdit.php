@@ -33,7 +33,7 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('requirement');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $commandMgr = new reqCommands($db);

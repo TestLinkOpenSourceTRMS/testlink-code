@@ -15,7 +15,7 @@ require_once('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
 require_once('requirements.inc.php');
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $args = init_args($db);

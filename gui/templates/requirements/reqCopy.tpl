@@ -1,16 +1,15 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCopy.tpl,v 1.11 2010/11/13 10:18:41 franciscom Exp $
+@filesource	reqCopy.tpl
 Purpose:
         Allow user to choose requirements inside a req spec to copy.
         Will be used also to implement copy from requirement view feature.
 
-rev :
-     20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-     20101006 - asimon - BUGID 3854
-     20100919 - franciscom -BUGID 3787 
-     20100908 - asimon - BUGID 3755: tree not refreshed when copying requirements
-     20091223 - franciscom - added checkbox for test case assignment copy
+@internal revisions
+20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+20101006 - asimon - BUGID 3854
+20100919 - franciscom -BUGID 3787 
+20100908 - asimon - BUGID 3755: tree not refreshed when copying requirements
 *}
 {lang_get var='labels'
           s='title_move_cp,title_move_cp_testcases,sorry_further,req_doc_id,
@@ -63,6 +62,7 @@ function check_action_precondition(container_id,action,msg)
 
 	<form id="copy_req" name="copy_req" method="post" action="{$gui->page2call}">
     <input type="hidden" name="req_spec_id"  id="req_spec_id"  value="{$gui->req_spec_id}" />
+    <input type="hidden" name="tproject_id"  id="tproject_id"  value="{$gui->tproject_id}" />
 	  
 		<p>{$labels.choose_target}:
 			<select name="containerID" id="containerID">

@@ -12,10 +12,13 @@
  */
 require_once('../../config.inc.php');
 require_once('common.php');
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 
 
 $args = init_args($db);
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
 $gui = new stdClass();
 $gui->main_descr = lang_get('testproject') .  TITLE_SEP . $args->tproject_name;
 $gui->tproject_id = $args->tproject_id;
@@ -47,8 +50,15 @@ function init_args(&$dbHandler)
 	return $argsObj;
 }
 
-function checkRights(&$db,&$user)
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_view_req','mgt_modify_req'),'and');
 }
+
 ?>

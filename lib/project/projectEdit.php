@@ -18,9 +18,6 @@
  * 20100313 - franciscom - reduced interface 'width' with smarty
  * 20100217 - franciscom - fixed errors showed on event viewer due to missing properties
  * 20100119 - franciscom - BUGID 3048
- * 20091227 - franciscom - BUGID 3020
- * 20091121 - franciscom - BUGID - Julian Contribution
- * 20080827 - franciscom - BUGID 1692
  *
  */
 
@@ -30,12 +27,17 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('testproject');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db,TL_UPDATE_ENVIRONMENT);
+$tproject_mgr = new testproject($db);
+$args = init_args($tproject_mgr);
+checkRights($db,$_SESSION['currentUser'],$args);
 
-$gui_cfg = config_get('gui');
 $templateCfg = templateConfiguration();
 
-$gui->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+$gui = new stdClass();
+$gui->tproject_id = $args->tproject_id;
+$gui_cfg = config_get('gui');
+
 $template = null;
 
 
@@ -47,9 +49,6 @@ $ui->main_descr = lang_get('title_testproject_management');
 
 $user_feedback = '';
 $reloadType = 'none';
-
-$tproject_mgr = new testproject($db);
-$args = init_args($tproject_mgr, $_REQUEST, $gui->tproject_id);
 
 $gui = $args;
 $gui->canManage = $_SESSION['currentUser']->hasRight($db,"mgt_modify_product",$gui->tproject_id);
@@ -160,25 +159,26 @@ switch($args->doAction)
  *                   generated variables.
  * @internal
  */
-function init_args($tprojectMgr,$request_hash, $tproject_id)
+function init_args(&$tprojectMgr)
 {
     $args = new stdClass();
-	$request_hash = strings_stripSlashes($request_hash);
+	$_REQUEST = strings_stripSlashes($_REQUEST);
+	
 	$nullable_keys = array('tprojectName','color','notes','doAction','tcasePrefix');
 	foreach ($nullable_keys as $value)
 	{
-		$args->$value = isset($request_hash[$value]) ? trim($request_hash[$value]) : null;
+		$args->$value = isset($_REQUEST[$value]) ? trim($_REQUEST[$value]) : null;
 	}
 
 	$intval_keys = array('tprojectID' => 0, 'copy_from_tproject_id' => 0);
 	foreach ($intval_keys as $key => $value)
 	{
-		$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
+		$args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
 	}
 
 	// get input from the project edit/create page
-	$checkbox_keys = array('is_public' => 0,'active' => 0,'optReq' => 0,
-				'optPriority' => 0,'optAutomation' => 0,'optInventory' => 0);
+	$checkbox_keys = array(	'is_public' => 0,'active' => 0,'optReq' => 0,
+							'optPriority' => 0,'optAutomation' => 0,'optInventory' => 0);
 	foreach ($checkbox_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? 1 : $value;
@@ -489,8 +489,15 @@ function doDelete($argsObj,&$tprojectMgr,$sessionTprojectID)
     return $op;
 }
 
-function checkRights(&$db,&$user)
+
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'mgt_modify_product');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_modify_product'),'and');
 }
 ?>

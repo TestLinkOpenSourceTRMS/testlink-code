@@ -16,10 +16,11 @@
 
 require_once('../../config.inc.php');
 require_once("common.php");
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
 
 $gui = new stdClass();
 $gui->canManage = $_SESSION['currentUser']->hasRight($db,"mgt_modify_product",$args->tproject_id);
@@ -57,8 +58,16 @@ function init_args()
    return $args;  
 }
 
-function checkRights(&$db,&$user)
+
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'mgt_modify_product');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_modify_product'),'and');
 }
+
 ?>

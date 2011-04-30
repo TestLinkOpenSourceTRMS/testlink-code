@@ -15,8 +15,7 @@
 */
 require('../../config.inc.php');
 require_once("common.php");
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
-
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $tplan_mgr = new testplan($db);
@@ -24,9 +23,11 @@ $build_mgr = new build_mgr($db);
 
 $gui = new StdClass();
 $gui->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-
 $gui->tplan_name = ' ';
 $gui->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+
+checkRights($db,$_SESSION['currentUser'],$gui);
+
 if($gui->tplan_id > 0)
 {
 	$dummy = $tplan_mgr->get_by_id($gui->tplan_id);
@@ -41,13 +42,18 @@ $gui->createAction = $gui->manageURL . "&do_action=create";
 $gui->buildSet = $tplan_mgr->get_builds($gui->tplan_id);
 $gui->user_feedback = null;
 
-new dBug($gui);
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-function checkRights(&$db,&$user)
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'testplan_create_build');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_create_build'),'and');
 }
 ?>

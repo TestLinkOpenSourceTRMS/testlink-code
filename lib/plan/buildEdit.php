@@ -24,10 +24,14 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('build');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-
 $date_format_cfg = config_get('date_format');
+$tplan_mgr = new testplan($db);
+$build_mgr = new build_mgr($db);
+$args = init_args($_REQUEST,$tplan_mgr->tree_manager,$date_format_cfg);
+checkRights($db,$_SESSION['currentUser'],$args);
+
 
 $op = new stdClass();
 $op->user_feedback = '';
@@ -35,11 +39,7 @@ $op->buttonCfg = new stdClass();
 $op->buttonCfg->name = "";
 $op->buttonCfg->value = "";
 
-$smarty = new TLSmarty();
-$tplan_mgr = new testplan($db);
-$build_mgr = new build_mgr($db);
 
-$args = init_args($_REQUEST,$tplan_mgr->tree_manager,$date_format_cfg);
 $gui = new stdClass();
 $gui->tproject_id = $args->tproject_id;
 $gui->tplan_id = $args->tplan_id;
@@ -96,6 +96,7 @@ $gui->buttonCfg = $op->buttonCfg;
 $gui->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events",$args->tproject_id,$args->tplan_id);
 $gui->editorType = $editorCfg['type'];
 
+$smarty = new TLSmarty();
 renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of,$gui);
 
 /*
@@ -334,7 +335,7 @@ function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor,&$g
     20100722 - asimon - BUGID 3406 - using assignment_mgr of tplan_mgr instead of new one
     20100707 - asimon - BUGID 3406 - added assignment_mgr to copy assignments
 */
-function doCreate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat) //,&$smartyObj)
+function doCreate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat)
 {
 	$op = new stdClass();
 	$op->operation_descr = '';
@@ -541,11 +542,6 @@ function doCopyToTestPlans(&$argsObj,&$buildMgr,&$tplanMgr)
     }
 }
 
-function checkRights(&$db,&$user)
-{
-	return $user->hasRight($db,'testplan_create_build');
-}
-
 /**
  * Initialize the HTML select box for selection of a source build when
  * user wants to copy the user assignments on creation of a new build.
@@ -583,4 +579,16 @@ function init_source_build_selector(&$testplan_mgr, &$argsObj) {
 
 	return $htmlMenu;
 } // end of method
+
+
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
+{
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_create_build'),'and');
+}
 ?>

@@ -438,8 +438,8 @@ function getGrantsForUserMgmt(&$dbHandler,&$userObj,$tprojectID=null,$tplanID=nu
 {
     $answers = new stdClass();
     $grants = new stdClass();
-    $grants->user_mgmt = $userObj->hasRight($dbHandler,"mgt_users");
-    $grants->role_mgmt = $userObj->hasRight($dbHandler,"role_management");
+    $grants->user_mgmt = $userObj->hasRight($dbHandler,"mgt_users",$tprojectID);
+    $grants->role_mgmt = $userObj->hasRight($dbHandler,"role_management",$tprojectID);
     $grants->tproject_user_role_assignment = "no";
     $grants->tplan_user_role_assignment = "no";
     

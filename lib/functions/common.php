@@ -16,6 +16,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110430 - franciscom - checkSecurityClearance()
  * 20110416 - franciscom - setSessionProject() -> setCurrentProject()
  * 20110415 - Julian - BUGID 4418: Clean up priority usage within Testlink
  *                                  -> priority_to_level() uses urgencyImportance
@@ -1007,7 +1008,7 @@ function checkUserRightsFor(&$db,$pfn)
 {
 	$script = basename($_SERVER['PHP_SELF']);
 	$currentUser = $_SESSION['currentUser'];
-	$bExit = false;
+	$doExit = false;
 	$action = null;
 	if (!$pfn($db,$currentUser,$action))
 	{
@@ -1017,9 +1018,9 @@ function checkUserRightsFor(&$db,$pfn)
 		}
 		logAuditEvent(TLS("audit_security_user_right_missing",$currentUser->login,$script,$action),
 					  $action,$currentUser->dbID,"users");
-		$bExit = true;
+		$doExit = true;
 	}
-	if ($bExit)
+	if ($doExit)
 	{  	
 		$myURL = $_SESSION['basehref'];
 	  	redirect($myURL,"top.location");
@@ -1191,4 +1192,44 @@ function setCurrentTProjectID($tprojectID)
 	setcookie($cookieID,$tprojectID,true,'/');
 }
 
+
+
+
+function checkSecurityClearance(&$dbHandler,&$userObj,$context,$rightsToCheck,$checkMode)
+{
+	$script = basename($_SERVER['PHP_SELF']);
+	$currentUser = $_SESSION['currentUser'];
+	$doExit = false;
+	$action = 'any';
+	$myContext = array('tproject_id' => 0, 'tplan_id' => 0);
+	$myContext = array_merge(myContext, $context);
+	
+	if( $doExit = (is_null($myContext) || $myContext['tproject_id'] == 0) )
+	{
+		logAuditEvent(TLS("audit_security_no_environment",$userObj->login,$script,$action),
+						  $action,$user->dbID,"users");
+	}
+	 
+	if( !$doExit )
+	{
+		foreach($rightToCheck as $verboseRight)
+		{
+			$status = $userObj->hasRight($dbHandler,$verboseRight,
+										 $myContext['tproject_id'],$myContext['tplan_id']);
+		
+			if( ($doExit = !$status) && ($checkMode == 'and'))
+			{	
+				$action = 'any';
+				logAuditEvent(TLS("audit_security_user_right_missing",$userObj->login,$script,$action),
+						  	  $action,$user->dbID,"users");
+				break;
+			}
+		}
+	}
+	if ($doExit)
+	{  	
+	  	redirect($_SESSION['basehref'],"top.location");
+		exit();
+	}
+}
 ?>

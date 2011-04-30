@@ -21,11 +21,11 @@
  */
 require_once("../../config.inc.php");
 require_once("users.inc.php");
-testlinkInitPage($db,false,false,"checkRights");
-
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $args = init_args();
-$grants = getGrantsForUserMgmt($db,$args->currentUser);
+checkRights($db,$_SESSION['currentUser'],$args);
+$grants = getGrantsForUserMgmt($db,$args->currentUser,$args->tproject_id);
 
 $sqlResult = null;
 $action = null;
@@ -259,8 +259,10 @@ function checkUserOrderBy($input)
 }
 
 
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'mgt_users');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,argsObj,array('mgt_users'),'and');
 }
 ?>

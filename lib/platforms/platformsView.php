@@ -13,14 +13,14 @@
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
-
+// testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $args = init_args();
-
-new dBug($args);
+checkRights($db,$_SESSION['currentUser'],$args);
 
 $gui = initializeGui($db,$args);
+new dBug($gui);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -54,8 +54,10 @@ function initializeGui(&$dbHandler,&$argsObj)
 	return $guiObj;
 }
 
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return ($user->hasRight($db,'platform_management') || $user->hasRight($db,'platform_view'));
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,argsObj,array('platform_management','platform_view'),'or');
 }
 ?>

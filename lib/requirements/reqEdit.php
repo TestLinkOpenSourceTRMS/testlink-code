@@ -3,14 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.58 $
- * @modified $Date: 2011/01/10 15:38:56 $ by $Author: asimon83 $
- * @author Martin Havlat
+ * @filesource	reqEdit.php
+ * @author 		Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
- * @internal revision
+ * @internal revisions
  *	20101210 - franciscom - BUGID 4056 - Req. Revisioning
  *  20100915 - Julian - BUGID 3777 - Allow to insert last req doc id when creating requirement
  *  20100811 - asimon - fixed two warnings because of undefined variables in template
@@ -20,10 +18,6 @@
  *  20100303 - asimon - bugfix, changed max length of req_doc_id in init_args() to 64 from 32
  *  					--> TODO why aren't the constants used here instead of magic numbers?
  *  20100205 - asimon - added requirement freezing
- *	20091217 - franciscom - added type management 
- *	20091202 - franciscom - fixed bug on webeditor value init.
- *	20080827 - franciscom - BUGID 1692
- *	20080411 - franciscom - BUGID 1476
  *
 **/
 require_once("../../config.inc.php");
@@ -260,6 +254,7 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
     $gui = $commandMgr->initGuiBean();
     $gui->req_cfg = config_get('req_cfg');
     
+  	$gui->tproject_id = $argsObj->tproject_id;
   	$gui->req_spec_id = $argsObj->req_spec_id;
 	if ($argsObj->req_spec_id)
 	{
@@ -281,6 +276,11 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 	// 20100811 - asimon - fixed two warnings because of undefined variables in template
 	$gui->req_version_id = $argsObj->req_version_id;
 	$gui->preSelectedType = TL_REQ_TYPE_USE_CASE;
+
+
+	$module = $_SESSION['basehref'] . 'lib/requirements/';
+	$context = "tproject_id=$gui->tproject_id&req_spec_id=$gui->req_spec_id";
+	$gui->actions->req_spec_view = $module . "reqSpecView.php?$context"; 
 
 	return $gui;
 }

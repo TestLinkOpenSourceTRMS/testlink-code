@@ -98,9 +98,9 @@ function initialize_gui(&$dbHandler,&$argsObj)
 	$module = $_SESSION['basehref'] . "lib/requirements/";
 	$context = "tproject_id=$gui->tproject_id&req_spec_id=$gui->req_spec_id";
 	$gui->actions = new stdClass();
+	$gui->actions->req_import = $module . "reqImport.php?doAction=import&$context";
+	$gui->actions->req_export = $module . "reqExport.php?doAction=export&$context";
 	$gui->actions->req_edit = $module . "reqEdit.php?doAction=create&$context";
-	$gui->actions->req_import = $module . "reqImport.php?doAction=create&$context";
-	$gui->actions->req_export = $module . "reqExport.php?doAction=create&$context";
 	$gui->actions->req_reorder = $module . "reqEdit.php?doAction=reorder&$context";
 	$gui->actions->req_create_tc = $module . "reqEdit.php?doAction=createTestCase&$context";
 

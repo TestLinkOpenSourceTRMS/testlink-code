@@ -112,6 +112,13 @@ function initializeGui(&$argsObj,&$req_spec_mgr)
 	{
 	    $gui->export_filename = $exportFileName;
 	}
+	
+	
+	$module = $_SESSION['basehref'] . 'lib/requirements/';
+	$context = "tproject_id=$gui->tproject_id&req_spec_id=$gui->req_spec_id";
+	$gui->actions->req_export = $module . "reqExport.php?$context"; 
+	$gui->actions->req_spec_view = $module . "reqSpecView.php?$context"; 
+
 	return $gui;  
 }
 

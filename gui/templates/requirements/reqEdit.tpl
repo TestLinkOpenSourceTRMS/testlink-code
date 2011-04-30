@@ -39,34 +39,33 @@ Purpose: smarty template - create / edit a req
 
 <script type="text/javascript">
 //BUGID 3943: Escape all messages (string)
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
-	var warning_empty_req_docid = "{$labels.warning_empty_reqdoc_id|escape:'javascript'}";
-	var warning_empty_req_title = "{$labels.warning_empty_req_title|escape:'javascript'}";
-	var warning_expected_coverage = "{$labels.warning_expected_coverage|escape:'javascript'}";
-	var warning_expected_coverage_range = "{$labels.warning_expected_coverage_range|escape:'javascript'}";
-  var log_box_title = "{$labels.revision_log_title|escape:'javascript'}";
-  var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
-  // var confirm_title = "{$labels.warning|escape:'javascript'}";
-  var confirm_title = "{$labels.warning_suggest_create_revision|escape:'javascript'}";
-  var confirm_text = "{$labels.suggest_create_revision_html}";
-  var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_req_docid = "{$labels.warning_empty_reqdoc_id|escape:'javascript'}";
+var warning_empty_req_title = "{$labels.warning_empty_req_title|escape:'javascript'}";
+var warning_expected_coverage = "{$labels.warning_expected_coverage|escape:'javascript'}";
+var warning_expected_coverage_range = "{$labels.warning_expected_coverage_range|escape:'javascript'}";
+var log_box_title = "{$labels.revision_log_title|escape:'javascript'}";
+var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
+var confirm_title = "{$labels.warning_suggest_create_revision|escape:'javascript'}";
+var confirm_text = "{$labels.suggest_create_revision_html}";
+var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
 
-  // To manage hide/show expected coverage logic, depending of req type
-  var js_expected_coverage_cfg = new Array();
+// To manage hide/show expected coverage logic, depending of req type
+var js_expected_coverage_cfg = new Array();
   
-  // DOM Object ID (oid)
-  // associative array with attributes
-  js_attr_cfg = new Array();
+// DOM Object ID (oid)
+// associative array with attributes
+js_attr_cfg = new Array();
   
-  // Configuration for expected coverage attribute
-  js_attr_cfg['expected_coverage'] = new Array();
-  js_attr_cfg['expected_coverage']['oid'] = new Array();
-  js_attr_cfg['expected_coverage']['oid']['input'] = 'expected_coverage';
-  js_attr_cfg['expected_coverage']['oid']['container'] = 'expected_coverage_container';
+// Configuration for expected coverage attribute
+js_attr_cfg['expected_coverage'] = new Array();
+js_attr_cfg['expected_coverage']['oid'] = new Array();
+js_attr_cfg['expected_coverage']['oid']['input'] = 'expected_coverage';
+js_attr_cfg['expected_coverage']['oid']['container'] = 'expected_coverage_container';
 
-  {foreach from=$gui->attrCfg.expected_coverage key=req_type item=cfg_def}
+{foreach from=$gui->attrCfg.expected_coverage key=req_type item=cfg_def}
     js_attr_cfg['expected_coverage'][{$req_type}]={$cfg_def};
-  {/foreach}
+{/foreach}
 
   /**
    * 
@@ -303,7 +302,7 @@ function insert_last_doc_id()
 		<input type="submit" name="create_req" value="{$labels.btn_save}"
 	         onclick="show_modified_warning = false; doAction.value='{$gui->operation}';"/>
 		<input type="button" name="go_back" value="{$labels.cancel}" 
-			onclick="javascript: show_modified_warning = false; history.back();"/>
+			 onclick="javascript: show_modified_warning = false; location.href='{$gui->actions->req_spec_view}';"/>
 	</div>
 	<br />
 	

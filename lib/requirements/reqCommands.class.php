@@ -3,12 +3,9 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.47 $
- * @modified $Date: 2010/12/10 19:50:52 $ by $Author: franciscom $
- * @author Francisco Mancardi
+ * @filesource	reqCommands.class.php
+ * @author 		Francisco Mancardi
  * 
- * web command experiment
  * @internal revision
  *
  *	20101210 - franciscom - BUGID 4056: Requirement Revisioning
@@ -22,9 +19,6 @@
  *  20100319 - asimon - BUGID 3307 - set coverage to 0 if null, to avoid database errors with null value
  *                      BUGID 1748 - added doAddRelation() and doDeleteRelation() for req relations
  *  20100205 - asimon - added doFreezeVersion()
- *	20091217 - franciscom - added reqTypeDomain
- *	20091216 - franciscom - create_tc_from_requirement() interface changes 
- *	20081213 - franciscom - fixed minor bug on doCreate()
  */
 
 class reqCommands
@@ -336,7 +330,7 @@ class reqCommands
 		{
         	$obj->main_descr = '';
 		    $obj->action_descr = '';
-          	$obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
+          	$obj->template = "reqView.php?tproject_id={$argsObj->tproject_id}&requirement_id={$argsObj->req_id}";
 
 	        // BUGID 2877 -  Custom Fields linked to Req versions 
 		  	$this->reqMgr->values_to_db($request,$argsObj->req_version_id,$cf_map);
@@ -516,6 +510,7 @@ class reqCommands
 		$obj->array_of_msg = '';
 		$obj->doActionButton = 'doCopy';
   		$obj->req_spec_id = $argsObj->req_spec_id;
+  		$obj->tproject_id = $argsObj->tproject_id;
   
   	    $exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
 	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me');
@@ -589,7 +584,7 @@ class reqCommands
 												 $argsObj->req_version_id,$argsObj->log_message);
 		$obj = $this->initGuiBean();
 		$obj->user_feedback = $ret['msg'];
-       	$obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
+       	$obj->template = "reqView.php?tproject_id={$argsObj->tproject_id}&requirement_id={$argsObj->req_id}";
       	$obj->req = null;
 		$obj->req_id = $argsObj->req_id;
 		return $obj;	
@@ -693,7 +688,8 @@ class reqCommands
 		
 		$obj = $this->initGuiBean();		
 		$op['msg']  = ($op['ok'] ? '<div class="info">' : '<div class="error">') . $op['msg'] . '</div>';
-		$obj->template = "reqView.php?requirement_id={$own_id}&relation_add_result_msg=" . $op['msg'];
+		$obj->template = "reqView.php?tproject_id={$argsObj->tproject_id}" .
+						 "&requirement_id={$own_id}&relation_add_result_msg=" . $op['msg'];
 		
 		return $obj;	
 	}
@@ -729,7 +725,8 @@ class reqCommands
 		}
 		
 		$obj = $this->initGuiBean();		
-		$obj->template = "reqView.php?requirement_id=$requirement_id&relation_add_result_msg=" . $op['msg'];
+		$obj->template = "reqView.php?tproject_id={$argsObj->tproject_id}" . 
+						 "&requirement_id=$requirement_id&relation_add_result_msg=" . $op['msg'];
 		
 		return $obj;
 	}
@@ -753,7 +750,7 @@ class reqCommands
 		
 		$obj = $this->initGuiBean();
 		$obj->user_feedback = $ret['msg'];
-       	$obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
+       	$obj->template = "reqView.php?tproject_id={$argsObj->tproject_id}&requirement_id={$argsObj->req_id}";
       	$obj->req = null;
 		$obj->req_id = $argsObj->req_id;
 		return $obj;	

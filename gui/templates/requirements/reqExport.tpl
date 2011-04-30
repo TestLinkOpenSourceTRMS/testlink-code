@@ -10,13 +10,6 @@
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{assign var="req_module" value='lib/requirements/'}
-{assign var="url_args" value="reqExport.php"}
-{assign var="req_export_url" value="$req_module$url_args"}
-
-{assign var="url_args" value="reqSpecView.php?req_spec_id="}
-{assign var="req_spec_view_url" value="$basehref$req_module$url_args"}
-
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
 
@@ -44,7 +37,7 @@ function validateForm(f)
 <div class="workBack">
 <h1 class="title">{$labels.title_req_export}</h1>
 
-<form method="post" enctype="multipart/form-data" action="{$req_export_url}"
+<form method="post" enctype="multipart/form-data" action="{$gui->actions->req_export}"
       onSubmit="javascript:return validateForm(this);">
     <table>
     <tr>
@@ -75,7 +68,7 @@ function validateForm(f)
 		<input type="submit" id="export" name="export" value="{$labels.btn_export}" 
 		       onclick="doAction.value='doExport'" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
-			onclick="javascript: location.href='{$req_spec_view_url}{$gui->req_spec_id}';" />
+			onclick="javascript: location.href='{$gui->actions->req_spec_view}';" />
 	 </div>
 </form>
 

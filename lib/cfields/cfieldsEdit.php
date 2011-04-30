@@ -3,33 +3,23 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: cfieldsEdit.php,v $
- *
- * @version $Revision: 1.21 $
- * @modified $Date: 2011/01/08 09:21:34 $ by $Author: franciscom $
+ * @filesource	cfieldsEdit.php
+ * @author		franciscom
  *
  * @internal revisions
  *
  * 20110108 - franciscom - changed default values on $emptyCF
  * 20101219 - franciscom - BUGID 4088: Required parameter for custom fields
- * 20090531 - franciscom - minor bug additional first char ' ' on name and label
- *                         while creating new custom field
- * 20090524 - franciscom - logic changes to give user a better understanding
- *                         of TL application areas where CF will be managed
- *                         request2cf() changed
- * 
- * 20090503 - franciscom - BUGID 2425
- * 20090408 - franciscom - BUGID 2352, BUGID 2359
- * 20080810 - franciscom - BUGID 1650 
  *
  */
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db,false,false,"checkRights");
-
+testlinkInitPage($db);
 $cfield_mgr = new cfield_mgr($db);
 $templateCfg = templateConfiguration();
 $args=init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
+
 
 $gui = new stdClass();
 $gui->cfield=null;
@@ -498,8 +488,11 @@ function renderGui(&$smartyObj,&$argsObj,&$guiObj,&$cfieldMgr,$templateCfg)
 	  }
 }
 
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,"cfield_management");
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('cfield_management'),'and');
 }
+
 ?>

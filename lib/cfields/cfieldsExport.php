@@ -22,11 +22,13 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once('../../third_party/adodb_xml/class.ADODB_XML.php');
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
 
 $gui = new stdClass();
+$gui->tproject_id = $args->tproject_id;
 $gui->page_title = lang_get('export_cfields');
 $gui->do_it = 1;
 $gui->nothing_todo_msg = '';
@@ -64,6 +66,7 @@ function init_args()
 
 	$iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50),
 	 				 "export_filename" => array(tlInputParameter::STRING_N,0,100),
+	 				 "tproject_id" =>array(tlInputParameter::INT_N),
 	 				 "goback_url" => array(tlInputParameter::STRING_N,0,2048));
 
 	R_PARAMS($iParams,$args);
@@ -104,8 +107,10 @@ function doExport(&$dbHandler,$filename)
 	exit();
 }
 
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,"cfield_view");
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('cfield_view'),'and');
 }
 ?>

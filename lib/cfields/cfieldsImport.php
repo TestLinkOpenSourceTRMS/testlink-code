@@ -21,13 +21,15 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('xml.inc.php');
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $resultMap = null;
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
 
 $gui=new stdClass();
+$gui->tproject_id = $args->tproject_id;
 $gui->page_title=lang_get('import_cfields');
 $gui->goback_url = !is_null($args->goback_url) ? $args->goback_url : ''; 
 $gui->file_check = array('show_results' => 0, 'status_ok' => 1, 
@@ -71,11 +73,6 @@ function init_args()
 	 				 "goback_url" => array(tlInputParameter::STRING_N,0,2048));
 
 	R_PARAMS($iParams,$args);
-
-  	// $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
-  	// $args->export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
-  	// $args->goback_url = isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
-
   	$args->userID = $_SESSION['userID'];
 
 	return $args;
@@ -141,8 +138,11 @@ function doImport(&$dbHandler)
  * 
  *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,"cfield_management");
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('cfield_management'),'and');
 }
+
 ?>

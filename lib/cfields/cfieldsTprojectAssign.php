@@ -14,12 +14,12 @@
 **/
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
-
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-
 $cfield_mgr = new cfield_mgr($db);
 $args = init_args($cfield_mgr->tree_manager);
+checkRights($db,$_SESSION['currentUser'],$args);
+
 
 switch($args->doAction)
 {
@@ -79,17 +79,17 @@ switch($args->doAction)
 // Get all available custom fields
 $cfield_map = $cfield_mgr->get_all();
 
-
-
-
 $gui = new stdClass();
 $gui->locations=createLocationsMenu($cfield_mgr->getLocations());
+$gui->tproject_id = $args->tproject_id;
 $gui->tproject_name = $args->tproject_name;
 $gui->my_cf = $cfield_mgr->get_linked_to_testproject($args->tproject_id);
+
 $cf2exclude = is_null($gui->my_cf) ? null :array_keys($gui->my_cf);
 $gui->other_cf = $cfield_mgr->get_all($cf2exclude);
 $gui->cf_available_types = $cfield_mgr->get_available_types();
 $gui->cf_allowed_nodes = array();
+
 $allowed_nodes = $cfield_mgr->get_allowed_nodes();
 foreach($allowed_nodes as $verbose_type => $type_id)
 {
@@ -125,7 +125,7 @@ function init_args(&$treeMgr)
 	  $args->cfield = array();
 	}
 	
-	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 	$args->tproject_name = '';
 	if( $args->tproject_id > 0 )
 	{
@@ -137,10 +137,17 @@ function init_args(&$treeMgr)
 }
 
 
-function checkRights(&$db,&$user)
+/**
+ * 
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,"cfield_management");
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('cfield_management'),'and');
 }
+
 
 /**
  * @parame map of maps with locations of CF

@@ -3,10 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: attachmentdownload.php,v $
+ * @filesource	attachmentdownload.php
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2011/01/10 15:38:55 $ by $Author: asimon83 $
  *
  * Downloads the attachment by a given id
  */
@@ -14,9 +12,12 @@
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
 if ($args->id)
 {
 	$attachmentRepository = tlAttachmentRepository::create($db);
@@ -62,12 +63,13 @@ function init_args()
 }
 
 /**
- * @param $db resource the database connection handle
- * @param $user the current active user
- * @return boolean returns true if the page can be accessed
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObjs)
 {
-	return (config_get("attachments")->enabled);
+	if(!(config_get("attachments")->enabled))
+	{
+		redirect($_SESSION['basehref'],"top.location");
+		exit();
+	}
 }
 ?>

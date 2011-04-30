@@ -27,14 +27,15 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 $tplan_mgr = new testplan($db);
 $user = new tlUser($db);
-
 $args = init_args($tproject_mgr, $tplan_mgr);
+checkRights($db,$_SESSION['currentUser'],$args);
+
 $gui = init_gui($args);
 $charset = config_get('charset');
 $results_config = config_get('results');
@@ -186,8 +187,11 @@ function init_args(&$tproject_mgr, &$tplan_mgr)
  * @param stdClass $argsObj reference to user input
  * @return stdClass $gui gui data
  */
-function init_gui(&$argsObj) {
+function init_gui(&$argsObj) 
+{
 	$gui = new stdClass();
+	$gui->tplan_id = $argsObj->tplan_id;
+	$gui->tproject_id = $argsObj->tproject_id;
 	
 	$gui->pageTitle = lang_get('caption_results_by_tester_per_build');
 	$gui->warning_msg = '';
@@ -201,11 +205,15 @@ function init_gui(&$argsObj) {
 }
 
 
-/*
- * rights check function for testlinkInitPage()
+/**
+ * checkRights
+ *
  */
-function checkRights(&$db, &$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'testplan_metrics');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
 }
+
 ?>

@@ -25,7 +25,7 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('results.class.php');
 require_once('displayMgr.php');
-testlinkInitPage($db,true,false,"checkRights");
+testlinkInitPage($db);
 
 $timerOn = microtime(true);
 
@@ -34,12 +34,18 @@ $tproject_mgr = new testproject($db);
 $templateCfg = templateConfiguration();
 
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 
 $arrDataSuite = array();
 
 $gui = new stdClass();
+$gui->tplan_id = $args->tplan_id;
+$gui->tproject_id = $args->tproject_id;
+
 $gui->title = lang_get('title_gen_test_rep');
 $gui->do_report = array();
 $gui->showPlatforms=true;
@@ -303,18 +309,19 @@ function init_args()
  */
 function get_percentage($total, $parameter)
 {
-    if ($total > 0) 
-   		$percentCompleted = ($parameter / $total) * 100;
-	else 
-   		$percentCompleted = 0;
-
+	$percentCompleted = ($total > 0) ? (($parameter / $total) * 100) : 0;
 	return number_format($percentCompleted,2);
-	
 }
 
-function checkRights(&$db,&$user)
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'testplan_metrics');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
 }
 
 /**

@@ -33,7 +33,7 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
 require_once('exttable.class.php');
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
@@ -116,6 +116,9 @@ foreach ($eval_status_map as $key => $status) {
 $total_reqs = 0;
 
 $args = init_args($tproject_mgr, $req_cfg);
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
 $gui = init_gui($args);
 
 // BUGID 3856
@@ -623,11 +626,6 @@ function init_args(&$tproject_mgr, &$req_cfg)
 	if (isset($_REQUEST['platform'])) {
 		$platform = $_REQUEST['platform'];
 	} 
-	// else if (isset($_SESSION['platform'])) {
-	// 	$platform = $_SESSION['platform'];
-	// }
-	// $args->platform = $_SESSION['platform'] = $platform;
-	
 	$args->platform = $platform;
 	
 	return $args;
@@ -641,15 +639,16 @@ function init_args(&$tproject_mgr, &$req_cfg)
  * @param stdClass $argsObj reference to user input
  * @return stdClass $gui gui data
  */
-function init_gui(&$argsObj) {
+function init_gui(&$argsObj) 
+{
 	$gui = new stdClass();
-	
+
+	$gui->tproject_id = $argsObj->tproject_id;
 	$gui->pageTitle = lang_get('title_result_req_testplan');
 	$gui->warning_msg = '';
 	$gui->tproject_name = $argsObj->tproject_name;
 	$gui->states_to_show = $argsObj->states_to_show;
 	$gui->tableSet = null;
-	// BUGID 3856
 	$gui->selected_platform = $argsObj->platform;
 
 	return $gui;
@@ -657,14 +656,13 @@ function init_gui(&$argsObj) {
 
 
 /**
- * Check if the user has the needed rights to view this page (testplan metrics).
- * 
- * @author Andreas Simon
- * @param Database $db reference to database object
- * @param tlUser $user reference to user object
+ * checkRights
+ *
  */
-function checkRights(&$db, &$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'testplan_metrics');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
 }
 ?>

@@ -17,11 +17,11 @@ if (config_get('interface_bugs') != 'NO')
 }
 require_once('exec.inc.php');
 
-testlinkInitPage($db,false,false,"checkRights");
-
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
+
 
 $msg = "";
 if ($args->exec_id && $args->bug_id != "")
@@ -61,21 +61,21 @@ function init_args()
 
 
 /**
- * Checks the user rights for viewing the page
+ * Checks the user rights for using the page
  * 
- * @param $db resource the database connection handle
- * @param $user tlUser the object of the current user
- *
- * @return boolean return true if the page can be viewed, false if not
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-    $hasRights = false;	
 	if( config_get('bugInterfaceOn') )
 	{
-		$hasRights = $user->hasRight($db,"testplan_execute");
+		$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+		$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+		checkSecurityClearance($db,$userObj,$env,array('testplan_execute'),'and');
 	}
-	return $hasRights;
-
+	else
+	{
+	  	redirect($_SESSION['basehref'],"top.location");
+		exit();
+	}
 }
 ?>

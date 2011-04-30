@@ -3,14 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: editExecution.php,v $
- *
- * @version $Revision: 1.6 $
- * @modified $Date: 2011/01/10 15:38:55 $ by $Author: asimon83 $
+ * @filesource	editExecution.php
  *
  * Edit an execution notes and custom fields
  *
- * rev: 20090530 - franciscom - BUGID 
+ * @internal revisions
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -20,12 +17,14 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('execution');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,false,false,"checkRights");
-$gui = new stdClass();
-
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $tcase_mgr = new testcase($db);
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
+$gui = new stdClass();
 $gui->exec_id = $args->exec_id;
 $gui->tcversion_id = $args->tcversion_id;
 $gui->tplan_id = $args->tplan_id;
@@ -84,19 +83,22 @@ function init_args()
 
 
 /**
- * Checks the user rights for viewing the page
+ * Checks the user rights for using the page
  * 
- * @param $db resource the database connection handle
- * @param $user tlUser the object of the current user
- *
- * @return boolean return true if the page can be viewed, false if not
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
 	$execCfg = config_get('exec_cfg');
-	if ($execCfg->edit_notes != 1)
-		return false;	
-		
-	return $user->hasRight($db,"testplan_execute");
+	if($execCfg->edit_notes)
+	{
+		$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+		$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+		checkSecurityClearance($db,$userObj,$env,array('testplan_execute'),'and');
+	}
+	else
+	{
+	  	redirect($_SESSION['basehref'],"top.location");
+		exit();
+	}
 }
 ?>

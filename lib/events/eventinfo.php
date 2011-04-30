@@ -10,13 +10,14 @@
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db,false,false,"checkRights");
+
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
+$args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
 
 $user = null;
 $event = null;
-
-$args = init_args();
 if ($args->id)
 {
 	$event = new tlEvent($args->id);
@@ -55,16 +56,21 @@ function init_args()
 	return $args;
 }
 
+
 /**
- * Checks the user rights for viewing the page
- * 
- * @param $db resource the database connection handle
- * @param $user tlUser the object of the current user
+ * Checks the user rights for using the page
  *
- * @return boolean return true if the page can be viewed, false if not
+ * checkRights
+ *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return ($user->hasRight($db,"mgt_view_events")) ? true : false;
+	$checkStatus = $userObj->hasRight($db,"mgt_view_events");
+	if(!$checkStatus)
+	{
+	  	redirect($_SESSION['basehref'],"top.location");
+		exit();
+	}
 }
+
 ?>

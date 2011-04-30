@@ -3,13 +3,9 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: eventviewer.php,v $
+ * @filesource	eventviewer.php
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2011/01/10 15:38:55 $ by $Author: asimon83 $
- *
- * rev:
- *
+ * @internal revisions
  *      20101026 - Julian - Localized dateformat for datepicker - validation MISSING
  *                        - BUGID 3908: reset filters after clearing events
  * 		20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
@@ -18,18 +14,17 @@
  *		20101008 - Julian - BUGID 3871: use exttable for event viewer
  *		20100508 - franciscom - BUGID 3445: Ability to delete events from selected class from event logs 
  *		20091005 - amitkhullar - improved function getEventsFor() - BUG 2862
- *      20081029 - franciscom - added 'clear' action to delete all events and transactions
- *                              present on database.
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
 require_once('exttable.class.php');
-testlinkInitPage($db,false,false,"checkRights");
-$date_format_cfg = config_get('date_format');
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
+
 $gui = initializeGui($db,$args);
 $filters = getFilters();
 $show_icon = TL_THEME_IMG_DIR . "plus.gif";
@@ -66,6 +61,7 @@ switch($args->doAction)
     
     case 'filter':
 	default:
+		$date_format_cfg = config_get('date_format');
 	    $filters = getFilters($args,$date_format_cfg);
     	break;
 }
@@ -122,9 +118,9 @@ function init_args()
  *
  * @return boolean return true if the page can be viewed, false if not
  */
-function checkRights(&$db,&$user,$action)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	$checkStatus = $user->hasRight($db,"mgt_view_events");
+	$checkStatus = $userObj->hasRight($db,"mgt_view_events");
 	if( !$checkStatus )
 	{
 		$iParams = array("doAction" => array(tlInputParameter::STRING_N,0,100));
@@ -134,7 +130,11 @@ function checkRights(&$db,&$user,$action)
 			$checkStatus = $user->hasRight($db,'events_mgt');
 		}
 	}
-	return $checkStatus;
+	if(!$checkStatus)
+	{
+	  	redirect($_SESSION['basehref'],"top.location");
+		exit();
+	}
 }
 
 

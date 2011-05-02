@@ -478,6 +478,9 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     
     $gui->can_remove_executed_testcases=$tcase_cfg->can_remove_executed;
 
+    $tprojectInfo = $tcaseMgr->tproject_mgr->get_by_id($argsObj->tproject_id);
+    $gui->priorityEnabled = $tprojectInfo['opt']->testPriorityEnabled;
+
     $gui->keywordsFilterType = $argsObj->keywordsFilterType;
     $gui->keywords_filter = '';
 

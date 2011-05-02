@@ -29,7 +29,7 @@ if(function_exists('memory_get_usage') && function_exists('memory_get_peak_usage
     tlog("mainPage.php: Memory after common.php> Usage: ".memory_get_usage(), 'DEBUG');
 }
 
-testlinkInitPage($db,TL_UPDATE_ENVIRONMENT);
+testlinkInitPage($db);
 
 $smarty = new TLSmarty();
 $tproject_mgr = new testproject($db);

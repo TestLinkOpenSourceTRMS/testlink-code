@@ -16,6 +16,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110502 - franciscom - testlinkInitPage() logic changed
  * 20110430 - franciscom - checkSecurityClearance()
  * 20110416 - franciscom - setSessionProject() -> setCurrentProject()
  * 20110415 - Julian - BUGID 4418: Clean up priority usage within Testlink
@@ -35,22 +36,6 @@
  * 	20100207 - havlatm - cleanup
  * 	20100124 - eloff - added $redirect parameter to checkSessionValid()
  * 	20100124 - eloff - BUGID 3012 - added buildExternalIdString()
- * 	20091215 - eloff - save active testplan_id to cookie
- * 	20091121 - franciscom - getItemTemplateContents() - contribution refactored
- * 	20090425 - amitkhullar - BUGID 2431 - Improper Session Handler	
- * 	20090409 - amitkhullar- BUGID 2354
- * 	20090111 - franciscom - commented some required_once and some global coupling
- * 	20081027 - havlatm - refactorization, description
- * 						removed unused $g_cache_config and some functions 
- * 	20080907 - franciscom - isValidISODateTime()
- * 	20080518 - franciscom - translate_tc_status()
- * 	20080412 - franciscom - templateConfiguration()
- * 	20080326 - franciscom - config_get() - refactored removed eval()
- * 	20071027 - franciscom - added ini_get_bool() from mantis code, needed to user
- *                         string_api.php, also from Mantis.
- * 	20071002 - jbarchibald - BUGID 1051
- * 	20070705 - franciscom - init_labels()
- * 	20070623 - franciscom - improved info in header of localize_dateOrTimeStamp()
  */
 
 /** core and parenthal classes */
@@ -197,7 +182,8 @@ function setPaths()
  * Verify if user is log in. Redirect to login page if not.
  * 
  * @param integer $db DB identifier 
- * @param boolean $redirect if true (default) redirects user to login page, otherwise returns true/false as login status
+ * @param boolean $redirect if true (default) redirects user to login page, 
+ * 							otherwise returns true/false as login status
  **/
 function checkSessionValid(&$db, $redirect=true)
 {
@@ -214,8 +200,7 @@ function checkSessionValid(&$db, $redirect=true)
 		 * c) this function check JUST session validity
 		 **/
 		$now = time();
-		$lastActivity = $_SESSION['lastActivity'];
-		if (($now - $lastActivity) <= (config_get("sessionInactivityTimeout") * 60))
+		if (($now - $_SESSION['lastActivity']) <= (config_get("sessionInactivityTimeout") * 60))
 		{
 			$_SESSION['lastActivity'] = $now;
 			$user = new tlUser($_SESSION['userID']);
@@ -232,7 +217,7 @@ function checkSessionValid(&$db, $redirect=true)
 		$fName = "login.php";
         $baseDir = dirname($_SERVER['SCRIPT_FILENAME']);
         
-        while(!file_exists($baseDir.DIRECTORY_SEPARATOR.$fName))
+        while(!file_exists($baseDir . DIRECTORY_SEPARATOR .$fName))
         {
             $fName = "../" . $fName;
         }
@@ -320,106 +305,19 @@ function initTopMenu(&$db,&$userObj,$tproject_id,$tplan_id,$reqMgmtEnabled)
 	return $menuString;
 }
 
-
-/**
- * Update Project and Test Plan data on Project change or startup
- * Data are stored in $_SESSION array
- * 
- * If we receive TestPlan ID in the _SESSION then do some checks and if everything OK
- * Update this value at Session Level, to set it available in other pieces of the application
- * 
- * @param integer $db DB connection identifier
- * @param array $hash_user_sel input data for the page ($_REQUEST)
- * 
- * @uses initMenu() 
- * @internal Revisions:
- * 	20091111 - havlatm - menu generation added, name changed (from upd_session_tplan_tproject)
- *	20090726 - franciscom - getAccessibleTestPlans() now is method on user class
- **/
-function initProject(&$db,$hash_user_sel)
-{
-	$tproject = new testproject($db);
-	$user_sel = array("tplan_id" => 0, "tproject_id" => 0 );
-	$user_sel["tproject_id"] = isset($hash_user_sel['testproject']) ? intval($hash_user_sel['testproject']) : 0;
-	$user_sel["tplan_id"] = isset($hash_user_sel['testplan']) ? intval($hash_user_sel['testplan']) : 0;
-
-	
-	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$current_tproject_id = getCurrentTProjectID();
-
-	// test project is Test Plan container, then we start checking the container
-	if( $user_sel["tproject_id"] != 0 )
-	{
-		$tproject_id = $user_sel["tproject_id"];
-	}
-	// We need to do checks before updating the SESSION to cover the case that not defined but exists
-	if (!$tproject_id)
-	{
-		$all_tprojects = $tproject->get_all();
-		if ($all_tprojects)
-		{
-			$tproject_data = $all_tprojects[0];
-			$tproject_id = $tproject_data['id'];
-		}
-	}
-	$tproject->setCurrentProject($tproject_id);
-	
-	// set a Test Plan
-	// Refresh test project id after call to setCurrentProject
-	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
-
-	// Now we need to validate the TestPlan
-	// dolezalz, havlatm: added remember the last selection by cookie
-	$cookieName = "TL_user${_SESSION['userID']}_proj${tproject_id}_testPlanId";
-	if($user_sel["tplan_id"] != 0)
-	{
-		$tplan_id = $user_sel["tplan_id"];
-		setcookie($cookieName, $tplan_id, time()+60*60*24*90, '/');
-	} elseif (isset($_COOKIE[$cookieName])) {
-		$tplan_id = intval($_COOKIE[$cookieName]);
-	}
-  
-	// check if the specific combination of testprojectid and testplanid is valid
-	$tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id,$tplan_id);
-	if(is_null($tplan_data))
-	{
-		// Need to get first accessible test plan for user, if any exists.
-		$tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id);
-    }
-	
-	if(!is_null($tplan_data))
-	{
-		$tplan_data = $tplan_data[0];
-		setSessionTestPlan($tplan_data);
-	}
-	
-	// initialize structure of top menu for the user and the project
-	initTopMenu($db,$tproject_id);
-   
-}
-
-
 /**
  * General GUI page initialization procedure
  * - init session
  * - init database
- * - check rights
- * - initialize project data (if requested)
  * 
  * @param integer $db DB connection identifier
- * @param boolean $initProject (optional) Set true if adjustment of Test Project or  
- *										  Test Plan is required; default is FALSE
- * @param boolean $dontCheckSession (optional) Set to true if no session should be started
- * @param string $userRightsCheckFunction (optional) name of function used to check user right needed
- *													 to execute the page
+ * @param boolean $checkSession (optional) 
  */
-function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,$userRightsCheckFunction = null)
+function testlinkInitPage(&$db,$checkSession=true)
 {
 	doSessionStart();
 	setPaths();
 	set_dt_formats();
-	
 	doDBConnect($db);
 	
 	static $pageStatistics = null;
@@ -428,22 +326,11 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
 		$pageStatistics = new tlPageStatistics($db);
 	}
 	
-	if (!$dontCheckSession)
+	if ($checkSession)
 	{
 		checkSessionValid($db);
 	}
 	
-	if ($userRightsCheckFunction)
-	{
-		checkUserRightsFor($db,$userRightsCheckFunction);
-	}
-		
-	// adjust Product and Test Plan to $_SESSION
-	if ($initProject)
-	{
-		initProject($db,$_REQUEST);
-    }
-   
 	// used to disable the attachment feature if there are problems with repository path
 	/** @TODO this check should not be done anytime but on login and using */
 	global $g_repositoryType;

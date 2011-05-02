@@ -21,10 +21,10 @@ require_once('users.inc.php');
 require_once('email_api.php');
 require_once('Zend/Validate/Hostname.php');
 
-testlinkInitPage($db,false,false,"checkRights");
-
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
 
 $passwordSendMethod = config_get('password_reset_send_method');
 
@@ -318,8 +318,15 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
     }    
 }
 
-function checkRights(&$db,&$user)
+
+/**
+ * 
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'mgt_users');
+	$env['tproject_id'] = $argsObj->tproject_id;
+	$env['tplan_id'] = $argsObj->tplan_id;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_users'),'and');
 }
 ?>

@@ -12,11 +12,12 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
 require_once("roles.inc.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 init_global_rights_maps();
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
 
 $affectedUsers = null;
 $doDelete = false;
@@ -65,10 +66,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args()
 {
-	$iParams = array(
-			"roleid" => array(tlInputParameter::INT_N),
-			"doAction" => array(tlInputParameter::STRING_N,0,100),
-		);
+	$iParams = array("roleid" => array(tlInputParameter::INT_N),
+					 "doAction" => array(tlInputParameter::STRING_N,0,100));
 
 	$args = new stdClass();
 	$pParams = R_PARAMS($iParams,$args);
@@ -80,13 +79,18 @@ function init_args()
 
 
 /**
- * @param $db resource the database connection handle
- * @param $user the current active user
  * 
- * @return boolean returns true if the page can be accessed
+ *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,"role_management");
+	// For this feature check must be done on Global Rights => those that belong to
+	// role assigned to user when user was created (Global/Default Role)
+	// => enviroment is ignored.
+	// To instruct method to ignore enviromente, we need to set enviroment but with INEXISTENT ID 
+	// (best option is negative value)
+	$env['tproject_id'] = -1;
+	$env['tplan_id'] = -1;
+	checkSecurityClearance($db,$userObj,$env,array('role_management'),'and');
 }
 ?>

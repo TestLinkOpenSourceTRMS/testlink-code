@@ -10,56 +10,41 @@
  * then to change Test Project user need to use main Test Project Combo
  * 
  * @package 	TestLink
- * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersAssign.php,v 1.34 2010/12/02 06:55:35 franciscom Exp $
+ * @copyright 	2005-2011, TestLink community
+ * @filesource	usersAssign.php
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
  *	20101202 - franciscom - BUGID 4065
  *	20101112 - franciscom - getTestPlanEffectiveRoles() fixed typo error -> errors on event viewer
  *  20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
  *  20100930 - franciscom - BUGID 2344: Private test project
  *	20100313 - erikeloff - BUGID 3271 - show only active users on assign to project/test plan
- *	20091129 - franciscom - ISSUE 2554 - colouring
  *
  */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
+$args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
+
 
 $assignRolesFor = null;
 $featureMgr = null;
 $userFeatureRoles = null;
 $doInitGui = true;
-$guiCfg = config_get('gui');
 
 $tprojectMgr = new testproject($db);
 $tplanMgr = new testplan($db);
 
-$args = init_args();
+$gui = initializeGui($db);
 
-$gui = new stdClass();
-$gui->highlight = initialize_tabsmenu();
-$gui->user_feedback = '';
-$gui->no_features = '';
-$gui->roles_updated = '';
-$gui->tproject_name = $args->testprojectName;
-$gui->optRights = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
-$gui->features = null;
-$gui->featureType = $args->featureType;
-$gui->featureID = null;
-
-$gui->role_colour = null;
-if($guiCfg->usersAssignGlobalRoleColoring == ENABLED) 
-{
-	$gui->role_colour = tlRole::getRoleColourCfg($db);
-}
 
 $target = new stdClass();
-$target->testprojectID = null;
-$target->testplanID = null;
+$target->tproject_id = null;
+$target->tplan_id = null;
 
 switch($args->featureType)
 {
@@ -68,7 +53,7 @@ switch($args->featureType)
     	$gui->roles_updated = lang_get("test_project_user_roles_updated");
     	$gui->not_for_you = lang_get("testproject_roles_assign_disabled");
     	$assignRolesFor = $args->featureType;
-    	$target->testprojectID = $args->featureID > 0 ? $args->featureID : null;
+    	$target->tproject_id = $args->featureID > 0 ? $args->featureID : null;
     	$featureMgr = &$tprojectMgr;
     break;
     
@@ -77,7 +62,7 @@ switch($args->featureType)
     	$gui->roles_updated = lang_get("test_plan_user_roles_updated");
     	$gui->not_for_you = lang_get("testplan_roles_assign_disabled");
     	$assignRolesFor = $args->featureType;
-    	$target->testprojectID = $args->testprojectID;
+    	$target->tproject_id = $args->tproject_id;
     	$featureMgr = &$tplanMgr;
     break;
 }
@@ -85,7 +70,7 @@ switch($args->featureType)
 
 if ($args->featureID && $args->doUpdate && $featureMgr)
 {
-    if(checkRightsForUpdate($db,$args->user,$args->testprojectID,$args->featureType,$args->featureID))
+    if(checkRightsForUpdate($db,$args->user,$args->tproject_id,$args->featureType,$args->featureID))
     {
         doUpdate($db,$args,$featureMgr);
         if( $gui->user_feedback == '' )
@@ -94,6 +79,7 @@ if ($args->featureID && $args->doUpdate && $featureMgr)
     }
 }
 }
+
 // --------------------------------------------------------------------------
 // Important: 
 // Must be done here after having done update, to get current information
@@ -107,7 +93,7 @@ switch($assignRolesFor)
     case 'testproject':
         $info = getTestProjectEffectiveRoles($db,$tprojectMgr,$args,$gui->users);
         list($gui->userFeatureRoles,$gui->features,$gui->featureID) = $info;
-        $target->testprojectID = $gui->featureID;
+        $target->tproject_id = $gui->featureID;
     break;
         
     case 'testplan':
@@ -123,7 +109,7 @@ switch($assignRolesFor)
 
 }
 
-$gui->grants = getGrantsForUserMgmt($db,$args->user,$target->testprojectID,-1);
+$gui->grants = getGrantsForUserMgmt($db,$args->user,$target->tproject_id,-1);
 if(is_null($gui->features) || count($gui->features) == 0)
 {
     $gui->features = null;
@@ -145,12 +131,10 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args()
 {
-	$iParams = array(
-			"featureType" => array(tlInputParameter::STRING_N,0,100),
-			"featureID" => array(tlInputParameter::INT_N),
-			"userRole" => array(tlInputParameter::ARRAY_INT),
-			"do_update" => array(tlInputParameter::STRING_N,0,100),
-	);
+	$iParams = array("featureType" => array(tlInputParameter::STRING_N,0,100),
+					 "featureID" => array(tlInputParameter::INT_N),
+					 "userRole" => array(tlInputParameter::ARRAY_INT),
+					 "do_update" => array(tlInputParameter::STRING_N,0,100));
 
 	$pParams = R_PARAMS($iParams);
     
@@ -162,9 +146,9 @@ function init_args()
    
     // Warning: 
     // This value is used when doing Test Plan role assignment
-    $args->testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->testprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
-    $args->testplanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+    $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
 
     $args->user = $_SESSION['currentUser'];
     $args->userID = $args->user->dbID;
@@ -177,49 +161,55 @@ function init_args()
  * checks runned when tyring to run this page, to be sure user has rights to use it.
  *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$userObj,$argsObj)
 {
 	$result = false;
-    $args = init_args();
     $answers = new stdClass();
-    $answers->role_management = $user->hasRight($db,"role_management");
+    $answers->role_management = $userObj->hasRight($db,"role_management");
     
     // Two checks needed:
     // First on current test without using test plan rights
     // if this fails then check again adding current test plan
-    $answers->testplan_user_role_assignment = $user->hasRight($db,"testplan_user_role_assignment",$args->testprojectID,-1);
+    $answers->testplan_user_role_assignment = $userObj->hasRight($db,"testplan_user_role_assignment",
+    															 $argsObj->tproject_id,-1);
     if($answers->testplan_user_role_assignment != "yes")
     {
         $targetTestPlanID = null;
-        if($args->featureType == 'testplan')
+        if($argsObj->featureType == 'testplan')
         {
-            $targetTestPlanID = $args->featureID;
+            $targetTestPlanID = $argsObj->featureID;
         }
-        $answers->testplan_user_role_assignment = $user->hasRight($db,"testplan_user_role_assignment",null,$targetTestPlanID);
+        $answers->testplan_user_role_assignment = $userObj->hasRight($db,"testplan_user_role_assignment",
+        															 null,$targetTestPlanID);
     }
     
-    $answers->user_role_assignment = $user->hasRight($db,"user_role_assignment",null,-1);
-    
+    $answers->user_role_assignment = $userObj->hasRight($db,"user_role_assignment",null,-1);
     foreach($answers as $key => $value)
     {
         $answers->$key = $value == "yes" ? true : false;
         $result = $result | $answers->$key; 
     }
 	
-	if(!$result && ($args->featureType == 'testproject'))
+	if(!$result && ($argsObj->featureType == 'testproject'))
 	{
-	    $feature2check = $args->featureID;
-	    if($args->featureID == 0 || is_null($args->featureID))
+	    $feature2check = $argsObj->featureID;
+	    if($argsObj->featureID == 0 || is_null($argsObj->featureID))
 	    {
-	        $feature2check = $args->testprojectID; 
+	        $feature2check = $argsObj->tproject_id; 
 	    } 
-        if($user->hasRight($db,"testproject_user_role_assignment",$feature2check,-1) == "yes") 	    
+        if($userObj->hasRight($db,"testproject_user_role_assignment",$feature2check,-1) == "yes") 	    
         {
             $result = true;
         }
 	}
 
-	return $result;
+	if( !$result )
+	{
+		logAuditEvent(TLS("audit_security_user_right_missing",$userObj->login,$script,'any'),
+						  'any',$userObj->dbID,"users");
+	  	redirect($_SESSION['basehref'],"top.location");
+		exit();
+	}
 }
 
 /**
@@ -285,9 +275,9 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
 	// Try with session info, if failed go to first test project available.
 	if (!$argsObj->featureID)
 	{
-		if ($argsObj->testprojectID)
+		if ($argsObj->tproject_id)
 		{
-			$argsObj->featureID = $argsObj->testprojectID;
+			$argsObj->featureID = $argsObj->tproject_id;
 		}
 		else if (sizeof($features))
 		{
@@ -326,7 +316,7 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
 function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj,&$users)
 {
 	$features = array();
-	$activeTestplans = $tprojectMgr->get_all_testplans($argsObj->testprojectID, array('plan_status' => 1));
+	$activeTestplans = $tprojectMgr->get_all_testplans($argsObj->tproject_id, array('plan_status' => 1));
 	
 	$ret = null;
 	$status_ok = !is_null($activeTestplans);
@@ -359,14 +349,14 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
 	{
 		if (sizeof($features))
 		{
-			if ($argsObj->testplanID)
+			if ($argsObj->tplan_id)
 			{
 			    $loop2do = sizeof($features);
 				for($idx = 0; $idx < $loop2do; $idx++)
 				{
-					if ($argsObj->testplanID == $features[$idx]['id'])
+					if ($argsObj->tplan_id == $features[$idx]['id'])
 					{
-						$argsObj->featureID = $argsObj->testplanID;
+						$argsObj->featureID = $argsObj->tplan_id;
 					}	
 				}
 			}
@@ -378,12 +368,12 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
 	}
 	foreach($users as &$user)
 	{
-		$user->readTestProjectRoles($dbHandler,$argsObj->testprojectID);
+		$user->readTestProjectRoles($dbHandler,$argsObj->tproject_id);
 		$user->readTestPlanRoles($dbHandler,$argsObj->featureID);
 	}
 
 	// 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
-	$tproject_info = $tprojectMgr->get_by_id($argsObj->testprojectID);
+	$tproject_info = $tprojectMgr->get_by_id($argsObj->tproject_id);
 
 	$effectiveRoles = get_tplan_effective_role($dbHandler,$argsObj->featureID,$tproject_info,null,$users);
  		$ret = array($effectiveRoles,$features,$argsObj->featureID);
@@ -403,4 +393,28 @@ function doUpdate(&$dbHandler,&$argsObj,&$featureMgr)
 		}	
 	}
 }
+
+
+function initializeGui(&$dbHandler,&$argsObj)
+{
+	$guiObj = new stdClass();
+	$guiObj->highlight = initialize_tabsmenu();
+	$guiObj->user_feedback = '';
+	$guiObj->no_features = '';
+	$guiObj->roles_updated = '';
+	$guiObj->tproject_name = $argsObj->tproject_name;
+	$guiObj->optRights = tlRole::getAll($dbHandler,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+	$guiObj->features = null;
+	$guiObj->featureType = $argsObj->featureType;
+	$guiObj->featureID = null;
+	
+	$guiObj->role_colour = null;
+	$guiCfg = config_get('gui');
+	if($guiCfg->usersAssignGlobalRoleColoring == ENABLED) 
+	{
+		$guiObj->role_colour = tlRole::getRoleColourCfg($dbHandler);
+	}
+	return $guiObj;
+}
+
 ?>

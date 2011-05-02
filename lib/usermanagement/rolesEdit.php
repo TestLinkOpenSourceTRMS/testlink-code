@@ -20,11 +20,13 @@ require_once("web_editor.php");
 
 $editorCfg = getWebEditorCfg('role');
 require_once(require_web_editor($editorCfg['type']));
-
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 init_global_rights_maps();
 $templateCfg = templateConfiguration();
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
+
+
 $gui = initialize_gui($editorCfg['type']);
 $op = initialize_op();
 
@@ -252,8 +254,19 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
     return $guiObj;
 }
 
-function checkRights(&$db,&$user)
+/**
+ * 
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,"role_management");
+	// For this feature check must be done on Global Rights => those that belong to
+	// role assigned to user when user was created (Global/Default Role)
+	// => enviroment is ignored.
+	// To instruct method to ignore enviromente, we need to set enviroment but with INEXISTENT ID 
+	// (best option is negative value)
+	$env['tproject_id'] = -1;
+	$env['tplan_id'] = -1;
+	checkSecurityClearance($db,$userObj,$env,array('role_management'),'and');
 }
 ?>

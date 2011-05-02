@@ -25,11 +25,12 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $tplan_mgr = new testplan($db);
 $args = init_args($tplan_mgr);
+checkRights($db,$_SESSION['currentUser'],$args);
 
 $gui = new stdClass();
 $gui->pageTitle = lang_get('caption_testCasesWithoutTester');
@@ -182,8 +183,14 @@ function init_args(&$tplan_mgr)
     return $args;
 }
 
-function checkRights(&$db,&$user)
+/**
+ * 
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'testplan_metrics');
+	$env['tproject_id'] = $argsObj->tproject_id;
+	$env['tplan_id'] = $argsObj->tplan_id;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
 }
 ?>

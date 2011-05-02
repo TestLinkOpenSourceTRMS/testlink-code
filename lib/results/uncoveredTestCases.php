@@ -14,14 +14,15 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("specview.php");
-testlinkInitPage($db,!TL_UPDATE_ENVIRONMENT,false,"checkRights");
-
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $tables = tlObjectWithDB::getDBTables(array('req_coverage','nodes_hierarchy',
                                             'tcversions','node_types'));
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr->tree_manager);
+checkRights($db,$_SESSION['currentUser'],$args);
+
 
 // get list of available Req Specification
 $reqSpec = $tproject_mgr->genComboReqSpec($args->tproject_id);
@@ -121,8 +122,15 @@ function init_args(&$treeMgr)
     return $args;
 }
 
-function checkRights(&$db,&$user)
+/**
+ * 
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'testplan_metrics');
+	$env['tproject_id'] = $argsObj->tproject_id;
+	$env['tplan_id'] = $argsObj->tplan_id;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
 }
+
 ?>

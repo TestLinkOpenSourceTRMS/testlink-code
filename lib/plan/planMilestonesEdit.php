@@ -82,12 +82,17 @@ function init_args(&$dbHandler,$dateFormat)
 
 
 	$treeMgr = new tree($dbHandler);
+	$tprojectMgr = new testproject($dbHandler);
+
+	$args->tproject_options = new stdClass();
+	$args->tproject_options->testPriorityEnabled = 0;
 	$args->tproject_name = '';
 	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 	if( $args->tproject_id > 0 )
 	{
-	    $info = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+	    $info = $tprojectMgr->get_by_id($args->tproject_id);
 	    $args->tproject_name = $info['name'];
+	    $args->tproject_options = $info['opt'];
   	}
 	
 	$args->tplan_name = '';
@@ -187,6 +192,7 @@ function initialize_gui(&$dbHandler,&$userObj,&$argsObj)
 {
     $gui = new stdClass();
 
+	$gui->tproject_options = $argsObj->tproject_options;
     $gui->tproject_id = $argsObj->tproject_id;
     $gui->tplan_id = $argsObj->tplan_id;
     $gui->user_feedback = null;

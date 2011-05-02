@@ -27,6 +27,7 @@ $args = init_args($db);
 checkRights($db,$_SESSION['currentUser'],$args);
 
 $gui = initialize_gui($db,$_SESSION['currentUser'],$args);
+
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
@@ -44,12 +45,17 @@ function init_args(&$dbHandler)
 	$args = new stdClass();
 
 	$treeMgr = new tree($dbHandler);
+	$tprojectMgr = new testproject($dbHandler);
+
 	$args->tproject_name = '';
+	$args->tproject_options = new stdClass();
+	$args->tproject_options->testPriorityEnabled = 0;
 	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 	if( $args->tproject_id > 0 )
 	{
-	    $info = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+	    $info = $tprojectMgr->get_by_id($args->tproject_id);
 	    $args->tproject_name = $info['name'];
+	    $args->tproject_options = $info['opt'];
   	}
 	
 	$args->tplan_name = '';
@@ -80,6 +86,7 @@ function initialize_gui(&$dbHandler,&$userObj,&$argsObj)
     $gui->main_descr = lang_get('title_milestones') . " " . $argsObj->tplan_name;
     $gui->action_descr = null;
 
+	$gui->tproject_options = $argsObj->tproject_options;
     $gui->tplan_name = $argsObj->tplan_name;
     $gui->tplan_id = $argsObj->tplan_id;
     $gui->tproject_name = $argsObj->tproject_name;

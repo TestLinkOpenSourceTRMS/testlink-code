@@ -167,7 +167,7 @@ function validateForm(f)
 		      	</td>
 		      </tr>
 
-          {if $session['testprojectOptions']->testPriorityEnabled}
+          {if $gui->tproject_options->testPriorityEnabled}
 		          <tr>
 		          	<th style="background:none;">{$labels.th_perc_a_prio}:</th>
 		          	<td>

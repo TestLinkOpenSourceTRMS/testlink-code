@@ -40,7 +40,7 @@ var del_action=fRoot+'{$gui->actions->delete}';
 			<th>{$labels.th_name}</th>
 			<th>{$labels.th_date_format}</th>
 			<th>{$labels.start_date}</th>
-			{if $session['testprojectOptions']->testPriorityEnabled}
+			{if $gui->tproject_options->testPriorityEnabled}
 				<th>{$labels.th_perc_a_prio}</th>
 				<th>{$labels.th_perc_b_prio}</th>
 				<th>{$labels.th_perc_c_prio}</th>
@@ -63,7 +63,7 @@ var del_action=fRoot+'{$gui->actions->delete}';
 				  {$milestone.start_date|date_format:$gsmarty_date_format}
 				{/if}
 			</td>
-			{if $session['testprojectOptions']->testPriorityEnabled}
+			{if $gui->tproject_options->testPriorityEnabled}
 				<td style="text-align: right">{$milestone.high_percentage|escape}</td>
 				<td style="text-align: right">{$milestone.medium_percentage|escape}</td>
 				<td style="text-align: right">{$milestone.low_percentage|escape}</td>

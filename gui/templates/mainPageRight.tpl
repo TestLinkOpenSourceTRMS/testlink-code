@@ -1,9 +1,11 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.26 2010/11/13 11:17:27 franciscom Exp $
+ 
+ @filesource	mainPageRight.tpl
  Purpose: smarty template - main page / site map
 
 @internal revisions
+20110502 - franciscom - added grant check in order to display test execution header
 20100825 - Julian - removed <p> tags from "test execution" and "test plan contents"
 					blocks to eliminate unused space
 					blocks are not draggable anymore
@@ -48,7 +50,7 @@
 
 {/if}
 
-{if $gui->countPlans > 0}
+{if $gui->countPlans > 0 && $gui->grants.testplan_execute == "yes"}
    {assign var="display_right_block_2" value=true}
 
     <script  type="text/javascript">

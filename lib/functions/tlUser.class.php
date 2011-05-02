@@ -301,19 +301,19 @@ class tlUser extends tlDBObject
 	 * Result could be limited to a certain testproject
 	 * 
 	 * @param resource &$db reference to database handler
-	 * @param integer $testProjectID Identifier of the testproject to read the roles for, 
+	 * @param integer $tprojectID Identifier of the testproject to read the roles for, 
 	 * 		if null all roles are read
 	 * 
 	 * @return integer returns tl::OK 
 	 */
-	public function readTestProjectRoles(&$db,$testProjectID = null)
+	public function readTestProjectRoles(&$db,$tprojectID = null)
 	{
 		$sql = "SELECT testproject_id,role_id " .
 		         " FROM {$this->tables['user_testproject_roles']} user_testproject_roles " .
 		         " WHERE user_id = {$this->dbID}";
-		if ($testProjectID)
+		if ($tprojectID)
 		{
-			$sql .= " AND testproject_id = {$testProjectID}";
+			$sql .= " AND testproject_id = {$tprojectID}";
 		}
 		$allRoles = $db->fetchColumnsIntoMap($sql,'testproject_id','role_id');
 		$this->tprojectRoles = null;
@@ -345,18 +345,18 @@ class tlUser extends tlDBObject
 	 * Result could be limited to a certain testplan
 	 * 
 	 * @param resource &$db reference to database handler
-	 * @param integer $testPlanID Identifier of the testplan to read the roles for, if null all roles are read
+	 * @param integer $tplanID Identifier of the testplan to read the roles for, if null all roles are read
 	 * 
 	 * @return integer returns tl::OK 
 	 */
-	public function readTestPlanRoles(&$db,$testPlanID = null)
+	public function readTestPlanRoles(&$db,$tplanID = null)
 	{
 		$sql = "SELECT testplan_id,role_id " . 
 		         " FROM {$this->tables['user_testplan_roles']} user_testplan_roles " .
 		         " WHERE user_id = {$this->dbID}";
-		if ($testPlanID)
+		if ($tplanID)
 		{
-			$sql .= " AND testplan_id = {$testPlanID}";
+			$sql .= " AND testplan_id = {$tplanID}";
         }
         
 		$allRoles = $db->fetchColumnsIntoMap($sql,'testplan_id','role_id');
@@ -643,17 +643,17 @@ class tlUser extends tlDBObject
      * 
      * @param integer $db DB Identifier
      * @param string $rightNick key corresponding with description in rights table
-     * @param integer $testprojectID Identifier of project
+     * @param integer $tprojectID Identifier of project
      *
      * @return array list of user IDs and names
      * 
      * @todo fix the case that user has default role with a right but project role without
      * 		i.e. he should be listed
      */
-	public function getNamesForProjectRight(&$db,$rightNick,$testprojectID = null)
+	public function getNamesForProjectRight(&$db,$rightNick,$tprojectID = null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		if (is_null($testprojectID))
+		if (is_null($tprojectID))
 		{
 			tLog( $debugMsg . ' requires Test Project ID defined','ERROR');
 			return null;
@@ -671,7 +671,7 @@ class tlUser extends tlDBObject
 		// get users for project roles
 		$sql = "/* $debugMsg */ SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
 			   " JOIN {$this->tables['user_testproject_roles']} p ON p.user_id=u.id" .
-			   " AND p.testproject_id=" . $testprojectID .
+			   " AND p.testproject_id=" . $tprojectID .
 			   " JOIN {$this->tables['role_rights']} a ON a.role_id=p.role_id" .
 			   " JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
 			   " WHERE b.description='{$rightNick}'";
@@ -739,18 +739,19 @@ class tlUser extends tlDBObject
 		{
 			$globalRights[] = $right->name;
 		}
-		$userTestPlanRoles = $this->tplanRoles;
 
-		$testPlanID = $tplanID;
-		$testprojectID = $tprojectID;
-
-		$allRights = $globalRights;
-			
 		$userTestProjectRoles = $this->tprojectRoles;
-		/* if $testprojectID == -1 we dont check rights at test project level! */
-		if (isset($userTestProjectRoles[$testprojectID]))
+		$userTestPlanRoles = $this->tplanRoles;
+		$allRights = $globalRights;
+
+		// if $tprojectID not present on specific roles  we dont check rights at test project level.
+		// IMPORTANTE NOTICE:
+		// To implement private test project feature, check that test project role is needed is done
+		// in other method NOT HERE
+		// 
+		if (isset($userTestProjectRoles[$tprojectID]))
 		{
-			$userTestProjectRights = (array)$userTestProjectRoles[$testprojectID]->rights;
+			$userTestProjectRights = (array)$userTestProjectRoles[$tprojectID]->rights;
 			$testProjectRights = array();
 			foreach($userTestProjectRights as $right)
 			{
@@ -765,9 +766,9 @@ class tlUser extends tlDBObject
 		}
 		
 		/* if $tplanID == -1 we dont check rights at tp level! */
-		if (isset($userTestPlanRoles[$testPlanID]))
+		if (isset($userTestPlanRoles[$tplanID]))
 		{
-			$userTestPlanRights = (array) $userTestPlanRoles[$testPlanID]->rights;
+			$userTestPlanRights = (array) $userTestPlanRoles[$tplanID]->rights;
 			$testPlanRights = array();
 			foreach($userTestPlanRights as $right)
 			{
@@ -788,8 +789,8 @@ class tlUser extends tlDBObject
      * analising user roles.
      *
      * @param resource $db database handler  
-     * @param int testprojectID 
-     * @param int testplanID: default null. 
+     * @param int tprojectID 
+     * @param int tplanID: default null. 
      *            Used as filter when you want to check if this test plan
      *            is accessible.
      *
@@ -806,7 +807,7 @@ class tlUser extends tlDBObject
      * @internal Revisions
      * 20101111 - franciscom - BUGID 4006 test plan is_public
      */
-	function getAccessibleTestPlans(&$db,$testprojectID,$testplanID=null, $options=null)
+	function getAccessibleTestPlans(&$db,$tprojectID,$tplanID=null, $options=null)
 	{
 		$debugTag = 'Class:' .  __CLASS__ . '- Method:' . __FUNCTION__ . '-';
 		
@@ -824,15 +825,15 @@ class tlUser extends tlDBObject
 		       " LEFT OUTER JOIN {$this->tables['user_testplan_roles']} USER_TPLAN_ROLES" .
 		       " ON TPLAN.id = USER_TPLAN_ROLES.testplan_id " .
 		       " AND USER_TPLAN_ROLES.user_id = $this->dbID WHERE " .
-		       " testproject_id = {$testprojectID} AND ";
+		       " testproject_id = {$tprojectID} AND ";
 		
 		if (!is_null($my['options']['active'])) {
 			$sql .= " active = {$my['options']['active']} AND ";
 		}
 	
-	  	if (!is_null($testplanID))
+	  	if (!is_null($tplanID))
 	  	{
-			$sql .= " NH.id = {$testplanID} AND ";
+			$sql .= " NH.id = {$tplanID} AND ";
 	  	}
 		
 		$globalNoRights = ($this->globalRoleID == TL_ROLES_NO_RIGHTS);
@@ -842,21 +843,21 @@ class tlUser extends tlDBObject
 		// 20100704 - franciscom
 		// BUGID 3526
 		// 
-		// If user has a role for $testprojectID, then we DO NOT HAVE to check for globalRole
-		// if( ($analyseGlobalRole = isset($this->tprojectRoles[$testprojectID]->dbID)) )
+		// If user has a role for $tprojectID, then we DO NOT HAVE to check for globalRole
+		// if( ($analyseGlobalRole = isset($this->tprojectRoles[$tprojectID]->dbID)) )
 		// {
-		// 	$projectNoRights = ($this->tprojectRoles[$testprojectID]->dbID == TL_ROLES_NO_RIGHTS); 
+		// 	$projectNoRights = ($this->tprojectRoles[$tprojectID]->dbID == TL_ROLES_NO_RIGHTS); 
 		// }
 		// Looking to the code on 1.8.5, seems this has been introduced on some refactoring
-		if( isset($this->tprojectRoles[$testprojectID]->dbID) )
+		if( isset($this->tprojectRoles[$tprojectID]->dbID) )
 		{
 			$analyseGlobalRole = 0;
-			$projectNoRights = ($this->tprojectRoles[$testprojectID]->dbID == TL_ROLES_NO_RIGHTS); 
+			$projectNoRights = ($this->tprojectRoles[$tprojectID]->dbID == TL_ROLES_NO_RIGHTS); 
 		}
 		
-		// User can have NO RIGHT on test project under analisys ($testprojectID), in this situation he/she 
+		// User can have NO RIGHT on test project under analisys ($tprojectID), in this situation he/she 
 		// has to have a role at Test Plan level in order to access one or more test plans 
-		// that belong to $testprojectID.
+		// that belong to $tprojectID.
 		//
 		// Other situation: he/she has been created with role without rights ($globalNoRights)
 		//
@@ -866,7 +867,7 @@ class tlUser extends tlDBObject
 	  	}	
 	  	else
 	  	{
-	  		// in this situation, do we are hineriting role from testprojectID ?	
+	  		// in this situation, do we are hineriting role from test project ID ?	
 	  	  	$sql .= "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
 	  	}
 			

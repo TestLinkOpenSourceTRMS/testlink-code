@@ -259,10 +259,19 @@ function checkUserOrderBy($input)
 }
 
 
+/**
+ * 
+ *
+ */
 function checkRights(&$db,&$userObj,$argsObj)
 {
-	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
-	checkSecurityClearance($db,$userObj,argsObj,array('mgt_users'),'and');
+	// For this feature check must be done on Global Rights => those that belong to
+	// role assigned to user when user was created (Global/Default Role)
+	// => enviroment is ignored.
+	// To instruct method to ignore enviromente, we need to set enviroment but with INEXISTENT ID 
+	// (best option is negative value)
+	$env['tproject_id'] = -1;
+	$env['tplan_id'] = -1;
+	checkSecurityClearance($db,$userObj,$env,array('mgt_users'),'and');
 }
 ?>

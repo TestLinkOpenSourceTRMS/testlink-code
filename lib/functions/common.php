@@ -1197,7 +1197,7 @@ function setCurrentTProjectID($tprojectID)
 
 function checkSecurityClearance(&$dbHandler,&$userObj,$context,$rightsToCheck,$checkMode)
 {
-	$script = basename($_SERVER['PHP_SELF']);
+	$script = basename($_SERVER['PHP_SELF']); // name of caller script
 	$currentUser = $_SESSION['currentUser'];
 	$doExit = false;
 	$action = 'any';
@@ -1207,8 +1207,7 @@ function checkSecurityClearance(&$dbHandler,&$userObj,$context,$rightsToCheck,$c
 	
 	if( $doExit = (is_null($myContext) || $myContext['tproject_id'] == 0) )
 	{
-		logAuditEvent(TLS("audit_security_no_environment",$userObj->login,$script,$action),
-						  $action,$user->dbID,"users");
+		logAuditEvent(TLS("audit_security_no_environment",$script), $action,$user->dbID,"users");
 	}
 	 
 	if( !$doExit )
@@ -1218,8 +1217,6 @@ function checkSecurityClearance(&$dbHandler,&$userObj,$context,$rightsToCheck,$c
 			$status = $userObj->hasRight($dbHandler,$verboseRight,
 										 $myContext['tproject_id'],$myContext['tplan_id']);
 	
-			new dBug($status);
-			die();	
 			if( ($doExit = !$status) && ($checkMode == 'and'))
 			{	
 				$action = 'any';

@@ -3053,6 +3053,7 @@ $TLS_audit_user_role_changed = "User '{%1}' role changed old='{%2}' new='{%3}'";
 $TLS_audit_user_active_status_changed = "User '{%1}' active status changed old='{%2}' new='{%3}'";
 
 $TLS_audit_security_user_right_missing = "User '{%1}' has insufficient rights for '{%3}' action on '{%2}'! Exit forced!";
+$TLS_audit_security_no_environment = "Use of '{%1}' requires enviroment (test project id) and is not set. Exit forced!";
 
 $TLS_audit_testproject_created = $TLS_testproject . " '{%1}' was created";
 $TLS_audit_testproject_saved = $TLS_testproject . " '{%1}' was saved";

@@ -802,8 +802,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		
 		$tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id);
 					
-//		echo __FUNCTION__;			
-//		echo $this->mode;
+		// echo __FUNCTION__; echo $this->mode;
 		$environment = array('tproject_id' => $this->args->testproject_id, 
 							 'tproject_name' => $this->args->testproject_name, 
 							 'tplan_id' => 0,'tplan_name' => '');
@@ -826,6 +825,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}
 				 
 		// echo __LINE__ . ':' . $this->mode . '<br>'; die(__FILE__);			
+
 		switch ($this->mode) {
 			
 			case 'plan_mode':
@@ -941,8 +941,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				$treeOpt->testcases_colouring_by_selected_build = $this->configuration->exec_cfg->testcases_colouring_by_selected_build; 
 					
 				list($tree_menu, $testcases_to_show) = generateExecTree($this->db,$gui->menuUrl,
-				                                                        $environment,$filters,treeOpt);
-					
+				                                                        $environment,$filters,$treeOpt);
+				
 				$this->set_testcases_to_show($testcases_to_show);
 				
 				$root_node = $tree_menu->rootnode;

@@ -18,12 +18,14 @@ require_once('common.php');
 define('PCHART_PATH','../../third_party/pchart');
 include(PCHART_PATH . "/pChart/pData.class");   
 include(PCHART_PATH . "/pChart/pChart.class");   
-testlinkInitPage($db,true,false,"checkRights");
+testlinkInitPage($db);
 
 $resultsCfg = config_get('results');
 $chart_cfg = $resultsCfg['charts']['dimensions']['platformPieChart'];
 
 $args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
+
 $tplan_mgr = new testplan($db);
 $totalsByPlatform = $tplan_mgr->getStatusTotalsByPlatform($args->tplan_id);
 
@@ -82,11 +84,17 @@ $Test->drawBasicPieGraph($graph->data,$graph->description,
 $Test->drawPieLegend($pChartCfg->legendX,$pChartCfg->legendY,$graph->data,$graph->description,250,250,250);                                
 $Test->Stroke();
 
-function checkRights(&$db,&$user)
-{
-	return $user->hasRight($db,'testplan_metrics');
-}
 
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
+{
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
+}
 
 /**
  * 

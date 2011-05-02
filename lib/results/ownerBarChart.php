@@ -13,7 +13,11 @@
 */
 require_once('../../config.inc.php');
 require_once('charts.inc.php');
-testlinkInitPage($db,true,false,"checkRights");
+testlinkInitPage($db);
+
+$args = init_args();
+checkRights($db,$_SESSION['currentUser'],$args);
+
 
 $cfg = new stdClass();
 $cfg->scale = new stdClass();
@@ -92,8 +96,15 @@ function getDataAndScale(&$dbHandler)
     return $obj;
 }
 
-function checkRights(&$db,&$user)
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'testplan_metrics');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
 }
+
 ?>

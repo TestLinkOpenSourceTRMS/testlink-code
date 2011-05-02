@@ -21,7 +21,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
-testlinkInitPage($db,true,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $tcase_cfg = config_get('testcase_cfg');
@@ -30,6 +30,8 @@ $importance_levels = config_get('importance_levels');
 
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr);
+checkRights($db,$_SESSION['currentUser'],$args);
+
 $priorityMgmtEnabled = $args->tprojectOptions->testPriorityEnabled;
 
 $msg_key = 'all_testcases_has_testplan';
@@ -171,8 +173,15 @@ function init_args(&$tprojectMgr)
     return $args;
 }
 
-function checkRights(&$db,&$user)
+/**
+ * checkRights
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
 {
-	return $user->hasRight($db,'testplan_metrics');
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
 }
+
 ?>

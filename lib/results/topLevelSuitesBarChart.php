@@ -3,19 +3,20 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @internal filename: topLevelSuitesBarChart.php
+ * @filesource	topLevelSuitesBarChart.php
  * 
  * @internal revisions
- *
  * 20101210 - franciscom - BUGID 4090 
  * 20100912 - franciscom - BUGID 2215
- * 20081116 - franciscom - refactored to display X axis ordered (alphabetical).
- * 20081113 - franciscom - BUGID 1848
  *
  */
 require_once('../../config.inc.php');
 require_once('charts.inc.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
+
+$args = init_args($db);
+checkRights($db,$_SESSION['currentUser'],$args);
+
 
 $cfg = new stdClass();
 $cfg->scale = new stdClass();
@@ -93,8 +94,42 @@ function getDataAndScale(&$dbHandler)
     return $obj;
 }
 
-function checkRights(&$db,&$user)
+
+
+function init_args(&$dbHanlder)
 {
-	return $user->hasRight($db,'testplan_metrics');
+	$iParams = array("tproject_id" => array(tlInputParameter::INT_N),
+					 "tplan_id" => array(tlInputParameter::INT_N));
+
+	$args = new stdClass();
+	R_PARAMS($iParams,$args);
+    $treeMgr = new tree($dbHanlder);
+    
+    $args->tproject_name = '';
+    if($args->tproject_id > 0)
+    {
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+    	$args->tproject_name = $dummy['name'];
+    }
+
+    $args->tplan_name = '';
+    if($args->tplan_id > 0)
+    {
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tplan_id);
+		$args->tplan_name = $dummy['name'];  
+    }
+    
+    return $args;
+}
+
+/**
+ * 
+ *
+ */
+function checkRights(&$db,&$userObj,$argsObj)
+{
+	$env['tproject_id'] = $argsObj->tproject_id;
+	$env['tplan_id'] = $argsObj->tplan_id;
+	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
 }
 ?>

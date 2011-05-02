@@ -1,11 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesView.tpl,v 1.12 2010/11/13 10:00:38 franciscom Exp $
+@fielsource	planMilestonesView.tpl
 
-Rev:
-  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-  20100427 - franciscom - BUGID 3402 - missing refactoring of test project options
-  20090910 - franciscom - added start_date
+@internal revisions
+20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+20100427 - franciscom - BUGID 3402 - missing refactoring of test project options
 *}
 {lang_get var='labels' s='no_milestones,title_milestones,title_existing_milestones,th_name,
                          th_date_format,th_perc_a_prio,th_perc_b_prio,th_perc_c_prio,
@@ -15,11 +14,6 @@ Rev:
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{* Configure Actions *}
-{assign var="managerURL" value="lib/plan/planMilestonesEdit.php"}
-{assign var="editAction" value="$managerURL?doAction=edit"}
-{assign var="deleteAction" value="$managerURL?doAction=doDelete&id="}
-{assign var="createAction" value="$managerURL?doAction=create&tplan_id="}
 
 {lang_get s='warning_delete_milestone' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -29,7 +23,7 @@ Rev:
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$deleteAction}';
+var del_action=fRoot+'{$gui->actions->delete}';
 </script>
 </head>
 
@@ -59,7 +53,7 @@ var del_action=fRoot+'{$deleteAction}';
 		{foreach item=milestone from=$gui->items}
 		<tr>
 			<td>
-				<a href="{$editAction}&id={$milestone.id}">{$milestone.name|escape}</a>
+				<a href="{$gui->actions->edit}&id={$milestone.id}">{$milestone.name|escape}</a>
 			</td>
 			<td>
 				{$milestone.target_date|date_format:$gsmarty_date_format}
@@ -93,7 +87,7 @@ var del_action=fRoot+'{$deleteAction}';
   {/if}
 
    <div class="groupBtn">
-    <form method="post" action="{$createAction}{$gui->tplan_id}">
+    <form method="post" action="{$gui->actions->create}">
       <input type="submit" name="create_milestone" value="{$labels.btn_new_milestone}" />
     </form>
   </div>

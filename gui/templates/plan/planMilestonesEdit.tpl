@@ -2,11 +2,11 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: planMilestonesEdit.tpl,v 1.14 2010/11/13 09:58:50 franciscom Exp $
 
-Rev:
-    20110417 - Julian - BUGID 3971 - Help for Milestones 
-    20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-    20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
-    20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
+@internal revisions
+20110417 - Julian - BUGID 3971 - Help for Milestones 
+20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
+20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
 *}
 {lang_get var='labels' s='show_event_history,warning_empty_milestone_name,
                           warning_empty_low_priority_tcases,warning_empty_medium_priority_tcases,
@@ -19,13 +19,6 @@ Rev:
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
-
-{* Configure Actions *}
-{assign var="managerURL" value="lib/plan/planMilestonesEdit.php"}
-{assign var="editAction" value="$managerURL?doAction=edit&tplan_id="}
-{assign var="deleteAction" value="$managerURL?doAction=doDelete&tplan_id="}
-{assign var="createAction" value="$managerURL?doAction=create&tplan_id="}
-
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
@@ -129,7 +122,9 @@ function validateForm(f)
 	<form method="post" action="lib/plan/planMilestonesEdit.php"
 	      name="milestone_mgr" onSubmit="javascript:return validateForm(this);">
 	
-	    <input type="hidden" name="id" value="{$gui->milestone.id}"/>
+	    <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}"/>
+	    <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}"/>
+	    <input type="hidden" name="id" id="id" value="{$gui->milestone.id}"/>
 	    <table class="common" style="width:80%">
 		      <tr>
 			    <th style="background:none;">{$labels.th_name}</th>

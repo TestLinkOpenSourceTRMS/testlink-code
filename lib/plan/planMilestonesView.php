@@ -26,7 +26,7 @@ $templateCfg = templateConfiguration();
 $args = init_args($db);
 checkRights($db,$_SESSION['currentUser'],$args);
 
-$gui = initialize_gui($db,$args);
+$gui = initialize_gui($db,$_SESSION['currentUser'],$args);
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
@@ -93,6 +93,15 @@ function initialize_gui(&$dbHandler,&$userObj,&$argsObj)
     
 	$gui->grants->mgt_view_events = $userObj->hasRight($dbHandler,"mgt_view_events",
 	 												   $gui->tproject_id,$gui->tplan_id);
+
+
+	$manager = "lib/plan/planMilestonesEdit.php?tproject_id={$gui->tproject_id}&doAction=";
+	$gui->actions = new stdClass();
+	$gui->actions->edit = $manager . 'edit';
+	$gui->actions->delete = $manager . 'doDelete&id=';
+	$gui->actions->create = $manager . "create&tplan_id={$gui->tplan_id}";
+
+
 	return $gui;
 }
 

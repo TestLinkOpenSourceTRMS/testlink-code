@@ -97,7 +97,7 @@ function init_args(&$dbHandler,$dateFormat)
 	    $info = $treeMgr->get_node_hierarchy_info($args->tplan_id);
 	    $args->tplan_name = $info['name'];
   	}
-  	 	
+  	
 	return $args;
 }
 
@@ -198,6 +198,14 @@ function initialize_gui(&$dbHandler,&$userObj,&$argsObj)
     												  $gui->tproject_id,$gui->tplan_id);
 	$gui->grants->mgt_view_events = $userObj->hasRight($dbHandler,"mgt_view_events",
 													   $gui->tproject_id,$gui->tplan_id);
+     
+     
+	//$manager = "lib/plan/planMilestonesEdit.php?tproject_id={$gui->tproject_id}&doAction=";
+	//$gui->actions = new stdClass();
+	//$gui->actions->edit = $manager . "edit&tplan_id={$gui->tplan_id}";
+	//$gui->actions->delete = $manager . 'doDelete&id=';
+	//$gui->actions->create = $manager . "create&tplan_id={$gui->tplan_id}";
+
 	return $gui;
 }
 

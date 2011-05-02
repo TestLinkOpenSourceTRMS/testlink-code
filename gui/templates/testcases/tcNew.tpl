@@ -120,6 +120,7 @@ function validateForm(f)
       onSubmit="javascript:return validateForm(this);">
       <input type="hidden" name="testcase_id" id="testcase_id" value=0>
       <input type="hidden" name="testsuite_id" id="testsuite_id" value="{$gui->containerID}">
+      <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->testproject_id}">
 
   {if $gui->steps != ''}
   <table class="simple">

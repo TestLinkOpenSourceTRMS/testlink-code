@@ -201,7 +201,7 @@ class testcaseCommands
 	{
         $guiObj = $this->create($argsObj,$otCfg,$oWebEditorKeys);
     	$tplKey = 'tcNew';
-		   
+		  
 		// compute order
 		$new_order = config_get('treemenu_default_testcase_order');
 		$nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
@@ -214,7 +214,8 @@ class testcaseCommands
 		}
 		$options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
 		                 'action_on_duplicate_name' => 'block');
-		$tcase = $this->tcaseMgr->create($argsObj->container_id,$argsObj->name,$argsObj->summary,$argsObj->preconditions,
+		$tcase = $this->tcaseMgr->create($argsObj->container_id,$argsObj->name,$argsObj->summary,
+										 $argsObj->preconditions,
 		                            	 $argsObj->tcaseSteps,$argsObj->user_id,$argsObj->assigned_keywords_list,
 		                            	 $new_order,testcase::AUTOMATIC_ID,
 		                            	 $argsObj->exec_type,$argsObj->importance,$argsObj->tc_status,

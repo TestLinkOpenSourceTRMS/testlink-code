@@ -1793,10 +1793,10 @@ function filter_not_run_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters
 
 
 /** VERY IMPORTANT: node must be passed BY REFERENCE */
+// IMPORTANT NOTICE:
+// Tree is also created via ajax using gettprojectnodes.php
 function extjs_renderTestSpecTreeNodeOnOpen(&$node,$nodeAttr,$options,$env)
 {
-	// new dBug($env);	die(__FUNCTION__);
-	
 	$name = filterString($node['name']);
 	$buildLinkTo = 1;
 	$pfn = "ET";
@@ -1835,7 +1835,20 @@ function extjs_renderTestSpecTreeNodeOnOpen(&$node,$nodeAttr,$options,$env)
 	$node['testlink_node_name'] = $name;
    	$node['testlink_node_type'] = $nodeAttr['node_type'];
 	$node['position']=isset($node['node_order']) ? $node['node_order'] : 0;
-	$node['href']=is_null($pfn)? '' : "javascript:{$pfn}({$env['tproject_id']},{$env['tplan_id']},{$node['id']})";
+	
+	$node['href']='';
+	if(!is_null($pfn))
+	{
+		echo $pfn;
+		if(	$pfn == 'ET' )
+		{
+			$node['href'] = "javascript:{$pfn}({$env['tproject_id']},{$node['id']})";
+		}
+		else
+		{
+			$node['href'] = "javascript:{$pfn}({$env['tproject_id']},{$env['tplan_id']},{$node['id']})";
+		}
+	}
 	
 	// Remove useless keys
 	$resultsCfg=config_get('results');

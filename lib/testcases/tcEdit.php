@@ -36,14 +36,6 @@
  *	20100104 - franciscom - fixed bug on create new version, now is created
  *                          from selected version and NOT FROM LATEST
  *	20100103 - franciscom - refactoring to use command class
- *	20090831 - franciscom - preconditions
- *	20090401 - franciscom - BUGID 2364 - edit while executing
- *  20090401 - franciscom - BUGID 2316
- *  20090325 - franciscom - BUGID - problems with add to testplan
- *  20090302 - franciscom - BUGID 2163 - Create test case with same title, after submit, all data lost 
- *  20080827 - franciscom - BUGID 1692 
- *  20080105 - franciscom - REQID 1248 - added logic to manage copy/move on top or bottom
- *  20071106 - BUGID 1165
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -61,8 +53,6 @@ $tsuite_mgr = new testsuite($db);
 
 $args = init_args($cfg,$tproject_mgr,$optionTransferName);
 require_once(require_web_editor($cfg->webEditorCfg['type']));
-
-
 $templateCfg = templateConfiguration('tcEdit');
 
 $commandMgr = new testcaseCommands($db);
@@ -104,7 +94,6 @@ switch($args->doAction)
 	case "create":  
 	case "doCreate":  
         $oWebEditorKeys = array_keys($oWebEditor->cfg);
-        // BUGID 3952 - added arguments #4
         $op = $commandMgr->$pfn($args,$opt_cfg,$oWebEditorKeys,$_REQUEST);
         $doRender = true;
     break;
@@ -349,16 +338,13 @@ if ($show_newTC_form)
 						  can be added to new test plans
 	
 */
-function init_args(&$cfgObj,&tprojectMgr,$otName)
+function init_args(&$cfgObj,&$tprojectMgr,$otName)
 {
     $tc_importance_default=config_get('testcase_importance_default');
     
 
     $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
-
-	//new dBug($_REQUEST);
-	
     $rightlist_html_name = $otName . "_newRight";
     $args->assigned_keywords_list = isset($_REQUEST[$rightlist_html_name])? $_REQUEST[$rightlist_html_name] : "";
     $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
@@ -574,6 +560,8 @@ function getGrants(&$dbHandler)
 function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
 {
 	$guiObj = new stdClass();
+	$guiObj->testproject_id = $argsObj->testproject_id;
+
 	$guiObj->editorType = $cfgObj->webEditorCfg['type'];
 	$guiObj->grants = getGrants($dbHandler);
 	$guiObj->opt_requirements = $argsObj->opt_requirements; 

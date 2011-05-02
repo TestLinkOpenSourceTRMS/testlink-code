@@ -143,8 +143,11 @@ function display_children($dbHandler,$env,$root_node,$parent,$filter_node,
 	                break;
 	              
 	           case 'testcase':
+		       		// $path['href'] = "javascript:" . $js_function[$row['node_type']] . 
+	                // 				"({$env['tproject_id']},{$env['tplan_id']},{$path['id']})";
+
 		       		$path['href'] = "javascript:" . $js_function[$row['node_type']] . 
-	                				"({$env['tproject_id']},{$env['tplan_id']},{$path['id']})";
+	                 				"({$env['tproject_id']},{$path['id']})";
 
                   	// BUGID 1928
                   	if(is_null($showTestCaseID))

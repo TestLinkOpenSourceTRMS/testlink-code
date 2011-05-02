@@ -286,7 +286,8 @@ function ET(tproject_id,id,v)
   // get checkboxes status
  	var _FUNCTION_NAME_="ET";
   var pParams = tree_getPrintPreferences();
-	var my_location = fRoot+menuUrl+"?tproject_id="+ tproject_id +"&version_id="+v+"&edit=testcase&id="+id+args;
+	var my_location = fRoot+menuUrl+"?tproject_id="+ tproject_id +"&version_id="+v+"&edit=testcase" + 
+					  "&id="+id+args;
 	// alert(_FUNCTION_NAME_ + " " +my_location);
   
 	parent.workframe.location = my_location;

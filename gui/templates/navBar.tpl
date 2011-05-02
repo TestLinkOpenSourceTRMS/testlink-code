@@ -27,7 +27,6 @@ Purpose: smarty template - title bar + menu
 </div>
 	
 <div class="menu_title">
-
 	<span class="bold">TestLink {$tlVersion|escape} : {$gui->whoami|escape}</span>
 		<span>[ <a href='lib/usermanagement/userInfo.php' target="mainframe" accesskey="i"
       		tabindex="6">{$labels.title_edit_personal_data}</a>
@@ -35,10 +34,7 @@ Purpose: smarty template - title bar + menu
 	</span>
 
 </div>
-
 <div class="menu_bar" style="margin: 0px 5px 0px 135px;">
-
-	{* {$session.testprojectTopMenu} *}
 	{$gui->topMenu}
 
 {if $gui->tprojectID}

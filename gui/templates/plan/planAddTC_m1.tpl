@@ -5,6 +5,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
+    20110415 - Julian - BUGID 2985 - added importance column
     20101215 - Julian - changed tc summary tooltip configuration
     20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
                             On JS expressions SPACE is NEED BEFORE Closing curly Bracket and 
@@ -28,7 +29,7 @@ rev:
              executed_can_not_be_removed,added_on_date,btn_save_platform,
              check_uncheck_all_checkboxes,removal_tc,show_tcase_spec,
              tester_assignment_on_add,adding_tc,check_uncheck_all_tc,for,
-             build_to_assign_on_add'}
+             build_to_assign_on_add,importance'}
 
 {* prefix for checkbox named , ADD and ReMove *}   
 {assign var="add_cb" value="achecked_tc"} 
@@ -57,6 +58,10 @@ function tTip(tcID,vID)
 function showTT(e)
 {
 	alert(e);
+}
+
+function updateImportance(tcID,importanceOptions,importance) {
+	document.getElementById("importance_"+tcID).firstChild.nodeValue = importanceOptions[importance];
 }
 
 Ext.onReady(function(){ 
@@ -193,9 +198,10 @@ Ext.onReady(function(){
   		    	    {/if}
   			     </td>
   
-             {if $gui->usePlatforms} <td>{$labels.th_platform}</td> {/if}
+                 {if $gui->usePlatforms} <td>{$labels.th_platform}</td> {/if}
   			     <td>{$labels.th_test_case}</td>
   			     <td>{$labels.version}</td>
+  			     {if $gui->priorityEnabled} <td>{$labels.importance}</td> {/if}
              <td align="center">
    				      <img src="{$smarty.const.TL_THEME_IMG_DIR}/timeline_marker.png" 
                      title="{$labels.execution_order}" />
@@ -218,7 +224,7 @@ Ext.onReady(function(){
              {/if}
             </tr>   
             
-  			    {foreach from=$ts.testcases item=tcase}
+  			    {foreach name="tCaseLoop" from=$ts.testcases item=tcase}
       			  {assign var='is_active' value=0}
               {assign var='linked_version_id' value=$tcase.linked_version_id}
               {assign var='tcID' value=$tcase.id}
@@ -278,10 +284,60 @@ Ext.onReady(function(){
        					      {$gui->testCasePrefix|escape}{$tcase.external_id}: <a href="javascript:openTCaseWindow({$tcID})">{$tcase.name|escape}</a>
       			        </td>
                   	<td>
-           				    <select name="tcversion_for_tcid[{$tcID}]"{if $linked_version_id != 0} disabled{/if}>
+                  	{if $gui->priorityEnabled}
+                  			<script type="text/javascript">
+                  			{* To be able to update importance when selecting another test case version
+                      		   we need to transform smarty arrays to javascript array *}
+                   		   
+                  				{* only set array once as this array will not change *}
+                  				{if $smarty.foreach.tCaseLoop.first}
+		          					js_option_importance = new Array();
+		          					{foreach key=key item=item from=$gsmarty_option_importance}
+		          						js_option_importance[{$key}] = "{$item}";
+		          					{/foreach}
+		          				{/if}
+
+			          			{* only initialize array on first loop *}
+			          			{if $smarty.foreach.tCaseLoop.first}
+                  					js_tcase_importance = new Array();
+                  				{/if}
+                      			js_tcase_importance[{$tcID}] = new Array();
+                  				{foreach key=version item=value from=$tcase.importance}
+                  					js_tcase_importance[{$tcID}][{$version}] = {$value};
+                  				{/foreach}
+                      		</script>
+           				    <select name="tcversion_for_tcid[{$tcID}]" 
+           				            onchange="javscript:updateImportance({$tcID},js_option_importance,js_tcase_importance[{$tcID}][this.options[this.selectedIndex].value]);"
+           				            {if $linked_version_id != 0} disabled{/if}>
            				            {html_options options=$tcase.tcversions selected=$linked_version_id}
            				    </select>
                   	</td>
+                  	
+                  	    {* BUGID - add Importance column *}
+      			        <td id="importance_{$tcID}">
+      			              {* $tcase.importance *}
+      			              {* $linked_version_id *}
+      			              {if $linked_version_id != 0} 
+      			                    {* set importance to importance of linked test case version *}
+      			                    {assign var=importance value=$tcase.importance.$linked_version_id}
+      			              {else}
+      			                    {* if no test case version is linked -> set to importance 
+      			                       of the first option from select box. only way to get first
+      			                       element of an array is this loop afaik *}
+      			                    {foreach name="oneLoop" from=$tcase.importance key=key item=item}
+      			                    	{if $smarty.foreach.oneLoop.first}
+      			                    		{assign var=firstElement value=$key}
+      			                    	{/if}
+      			                    {/foreach}
+      			                    {assign var=importance value=$tcase.importance.$firstElement}
+      			              {/if}
+      			              {$gsmarty_option_importance.$importance}
+      			        </td>
+           			{else}
+           				    <select name="tcversion_for_tcid[{$tcID}]"{if $linked_version_id != 0} disabled{/if}>
+           				            {html_options options=$tcase.tcversions selected=$linked_version_id}
+           				    </select>
+           			{/if}
                   	<td style="text-align:center;">
                     		<input name="exec_order[{$tcID}]" {$gui->exec_order_input_disabled}
                                style="text-align:right;" size="{#EXECUTION_ORDER_SIZE#}" maxlength="{#EXECUTION_ORDER_MAXLEN#}" 
@@ -313,7 +369,7 @@ Ext.onReady(function(){
                       {/if}
                       {if $is_active eq 0}&nbsp;&nbsp;&nbsp;{$labels.inactive_testcase}{/if}
             			  </td>
-            			  <td title="{$labels.info_added_on_date}">
+            			  <td align="center" title="{$labels.info_added_on_date}">
             			  	{if $tcase.linked_ts[0] != ''}{localize_date d=$tcase.linked_ts[0]}{else}&nbsp;{/if}  
             			  </td>
                   {/if}
@@ -323,7 +379,7 @@ Ext.onReady(function(){
                 {* This piece will be used ONLY when platforms are not used or not assigned yet *}
   			        {if isset($tcase.custom_fields[0])}
         			    <input type='hidden' name='linked_with_cf[{$tcase.feature_id}]' value='{$tcase.feature_id}' />
-                  <tr><td colspan="8">{$tcase.custom_fields[0]}</td></tr>
+                  <tr><td colspan="9">{$tcase.custom_fields[0]}</td></tr>
                 {/if}
               {/if}
               
@@ -347,6 +403,7 @@ Ext.onReady(function(){
       			        </td>
       			        <td>{$platform.name|escape}</td>
   				          <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+  				          {if $gui->priorityEnabled} <td>&nbsp;</td> {/if}
   				          
   				          {if $is_active == 1 && isset($tcase.feature_id[$platform.id])}
   	      			      <td>&nbsp;</td>
@@ -359,12 +416,12 @@ Ext.onReady(function(){
                             title="{$gui->warning_msg->executed}" />
                         {/if}
   	                  </td>
-  	                  <td title="{$labels.info_added_on_date}">{localize_date d=$tcase.linked_ts[$platform.id]}</td>
+  	                  <td align="center" title="{$labels.info_added_on_date}">{localize_date d=$tcase.linked_ts[$platform.id]}</td>
                     {/if}
                   </tr>
   			          {if isset($tcase.custom_fields[$platform.id])}
                     <tr>
-                      <td colspan="7">
+                      <td colspan="8">
                         <input type='hidden' name='linked_with_cf[{$tcase.feature_id}]' value='{$tcase.feature_id}' />
                         {$tcase.custom_fields[$platform.id]}
                       </td>
@@ -372,7 +429,7 @@ Ext.onReady(function(){
                   {/if}
                   
                 {/foreach}
-               	<tr><td colspan="9"><hr/></td></tr>
+               	<tr><td colspan="10"><hr/></td></tr>
               {/if}             
               {* ================================================================================================================ *} 
               

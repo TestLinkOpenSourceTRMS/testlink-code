@@ -27,7 +27,7 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('testproject');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,TL_UPDATE_ENVIRONMENT);
+testlinkInitPage($db);
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr);
 checkRights($db,$_SESSION['currentUser'],$args);

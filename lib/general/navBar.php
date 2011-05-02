@@ -16,7 +16,7 @@ u<?php
 **/
 require_once('../../config.inc.php');
 require_once("common.php");
-testlinkInitPage($db,TL_UPDATE_ENVIRONMENT);
+testlinkInitPage($db);
 
 $user = $_SESSION['currentUser'];
 $userID = $user->dbID;

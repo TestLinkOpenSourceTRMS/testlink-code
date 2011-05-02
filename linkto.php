@@ -56,7 +56,7 @@ require_once('requirements.inc.php');
 require_once('testcase.class.php');
 require_once('testproject.class.php');
 require_once('users.inc.php');
-testlinkInitPage($db, true);
+testlinkInitPage($db);
 
 $smarty = new TLSmarty();
 $smarty->assign('title', lang_get('main_page_title'));

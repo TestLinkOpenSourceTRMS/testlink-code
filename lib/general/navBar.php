@@ -1,4 +1,4 @@
-u<?php
+<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *

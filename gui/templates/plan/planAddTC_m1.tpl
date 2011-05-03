@@ -62,6 +62,17 @@ function showTT(e)
 	alert(e);
 }
 
+// BUGID 2985: variables to store importance informations for test cases
+js_option_importance = new Array();
+{/literal}
+{foreach key=key item=item from=$gsmarty_option_importance}
+	js_option_importance[{$key}] = "{$item}";
+{/foreach}
+{literal}
+
+js_tcase_importance = new Array();
+
+// BUGID 2985: function to update test case importance when selecting a different test case version
 function updateImportance(tcID,importanceOptions,importance) {
 	document.getElementById("importance_"+tcID).firstChild.nodeValue = importanceOptions[importance];
 }
@@ -169,7 +180,7 @@ Ext.onReady(function(){
     {* ======================================== *}
     {* Loop over Test Suites to draw test cases *}
   	{assign var="item_number" value=0}
-  	{foreach from=$gui->items item=ts}
+  	{foreach name="tSuiteLoop" from=$gui->items item=ts}
   		{assign var="item_number" value=$item_number+1}
   		{assign var="ts_id" value=$ts.testsuite.id}
   		{assign var="div_id" value="div_$ts_id"}
@@ -290,19 +301,7 @@ Ext.onReady(function(){
                   			<script type="text/javascript">
                   			{* To be able to update importance when selecting another test case version
                       		   we need to transform smarty arrays to javascript array *}
-                   		   
-                  				{* only set array once as this array will not change *}
-                  				{if $smarty.foreach.tCaseLoop.first}
-		          					js_option_importance = new Array();
-		          					{foreach key=key item=item from=$gsmarty_option_importance}
-		          						js_option_importance[{$key}] = "{$item}";
-		          					{/foreach}
-		          				{/if}
 
-			          			{* only initialize array on first loop *}
-			          			{if $smarty.foreach.tCaseLoop.first}
-                  					js_tcase_importance = new Array();
-                  				{/if}
                       			js_tcase_importance[{$tcID}] = new Array();
                   				{foreach key=version item=value from=$tcase.importance}
                   					js_tcase_importance[{$tcID}][{$version}] = {$value};

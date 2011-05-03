@@ -1094,12 +1094,12 @@ function checkSecurityClearance(&$dbHandler,&$userObj,$context,$rightsToCheck,$c
 	
 	if( $doExit = (is_null($myContext) || $myContext['tproject_id'] == 0) )
 	{
-		logAuditEvent(TLS("audit_security_no_environment",$script), $action,$user->dbID,"users");
+		logAuditEvent(TLS("audit_security_no_environment",$script), $action,$userObj->dbID,"users");
 	}
 	 
 	if( !$doExit )
 	{
-		foreach($rightToCheck as $verboseRight)
+		foreach($rightsToCheck as $verboseRight)
 		{
 			$status = $userObj->hasRight($dbHandler,$verboseRight,
 										 $myContext['tproject_id'],$myContext['tplan_id']);

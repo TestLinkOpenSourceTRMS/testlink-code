@@ -39,7 +39,7 @@ $doInitGui = true;
 $tprojectMgr = new testproject($db);
 $tplanMgr = new testplan($db);
 
-$gui = initializeGui($db);
+$gui = initializeGui($db,$args);
 
 
 $target = new stdClass();

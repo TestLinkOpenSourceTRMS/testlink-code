@@ -1,31 +1,23 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.48 2010/12/02 17:58:58 asimon83 Exp $
+@filesource	tcView.tpl
+
 Purpose: smarty template - view test case in test specification
 
-rev:
-    20101202 - asimon - BUGID 4067: refresh tree problems
-    20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-    20101017 - franciscom - image access refactored (tlImages)
-    20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
-                            use of: $gui->cf_current_version, $gui->cf_other_versions
-    20100814 - franciscom - improvement on user feecback when no record found.
-    20100315 - franciscom - fixed refresh tree issue 
-    20100106 - franciscom - Multiple Test Case Steps Feature
-    20090418 - franciscom - BUGID 2364 
-    20090414 - franciscom - BUGID 2378
-    20090308 - franciscom - added args_can_do
-    20090215 - franciscom - BUGID - show info about links to test plans
+@internal revisions
+20101202 - asimon - BUGID 4067: refresh tree problems
+20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+20101017 - franciscom - image access refactored (tlImages)
+20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
+                        use of: $gui->cf_current_version, $gui->cf_other_versions
+20100814 - franciscom - improvement on user feecback when no record found.
+20100315 - franciscom - fixed refresh tree issue 
+20100106 - franciscom - Multiple Test Case Steps Feature
 *}
 
 {config_load file="input_dimensions.conf"}
 {lang_get var='labels' 
           s='no_records_found,other_versions,show_hide_reorder,version,title_test_case,match_count'}
-
-{* Configure Actions *}
-{* BUGID 3493 *}
-{assign var="showMode" value=$gui->show_mode}
-{assign var="deleteStepAction" value="lib/testcases/tcEdit.php?show_mode=$showMode&doAction=doDeleteStep&step_id="}
 
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
@@ -33,7 +25,7 @@ rev:
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$deleteStepAction}';
+var del_action=fRoot+'{$gui->deleteStepAction}';
 </script>
 
 {include file="inc_ext_js.tpl" css_only=1}

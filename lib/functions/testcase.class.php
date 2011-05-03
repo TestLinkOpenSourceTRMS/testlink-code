@@ -699,7 +699,7 @@ class testcase extends tlObjectWithAttachments
 	
 	  rev :
 	*/
-	function show(&$smarty,$guiObj,$template_dir,$id,$version_id = self::ALL_VERSIONS,
+	function show(&$smarty,$grants,$guiObj,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 	              $viewer_args = null,$path_info=null,$mode=null)
 	{
 
@@ -719,19 +719,22 @@ class testcase extends tlObjectWithAttachments
 	    $gui->platforms = null;
 		$gui->tableColspan = 5; // sorry magic related to table to display steps
 		$gui->opt_requirements = false;
+		$gui->status_quo_map = array();
+		$gui->keywords_map = array();
+		$gui->arrReqs = array();
+		$gui->cf_current_version = null;
+		$gui->cf_other_versions = null;
+		
 	
 		$gui_cfg = config_get('gui');
 		$the_tpl = config_get('tpl');
 		$my_template = isset($the_tpl['tcView']) ? $the_tpl['tcView'] : 'tcView.tpl'; 
 
-		$tcase_cfg = config_get('testcase_cfg');
+		$gui->tcase_cfg = config_get('testcase_cfg');
 	
 		$req_mgr = new requirement_mgr($this->db);
 
 		$tc_other_versions = array();
-		$status_quo_map = array();
-		$keywords_map = array();
-		$arrReqs = array();
 	    $userid_array = array();
 
 	    
@@ -778,9 +781,7 @@ class testcase extends tlObjectWithAttachments
 	    }
 	
 	    // fine grain control of operations
-	    // if( $viewer_defaults['disable_edit'] == 1 || has_rights($this->db,"mgt_modify_tc") == 'no' )
-		// BUGID 3387
-	    if( $viewer_defaults['disable_edit'] == 1 || has_rights($this->db,"mgt_modify_tc") == false)
+	    if( $viewer_defaults['disable_edit'] == 1 || ($grants->mgt_modify_tc == false) )
 	    {
 	        $mode = 'editDisabled';
 	    }
@@ -801,7 +802,9 @@ class testcase extends tlObjectWithAttachments
 	        $path2root = $this->tree_manager->get_path($a_id[0]);
 	        $tproject_id = $path2root[0]['parent_id'];
 	        $info = $this->tproject_mgr->get_by_id($tproject_id);
+
 			$gui->opt_requirements = $info['opt']->requirementsEnabled;
+			$gui->requirementsEnabled = $info['opt']->requirementsEnabled;
 			
 			$platformMgr = new tlPlatform($this->db,$tproject_id);
 	        $gui->platforms = $platformMgr->getAllAsMap();
@@ -824,18 +827,19 @@ class testcase extends tlObjectWithAttachments
 	        $tcasePrefix = $this->tproject_mgr->getTestCasePrefix($tproject_id);
 	        if(trim($tcasePrefix) != "")
 	        {
-	        	// Add To Testplan button will be disabled if the testcase doesn't belong to the current selected testproject
+	        	// Add To Testplan button will be disabled if the testcase doesn't belong 
+	        	// to the current selected testproject
 	        	// $gui->can_do->add2tplan = 'no';
 	        	if ($_SESSION['testprojectPrefix'] == $tcasePrefix)
 	        	{
-		    		$gui->can_do->add2tplan = $gui->can_do->add2tplan == 'yes' ? has_rights($this->db,"testplan_planning") : 'no';
+		    		$gui->can_do->add2tplan = $gui->can_do->add2tplan == 'yes' ? $grants->testplan_planning : 'no';
 				}
 				else
 				{
 					$gui->can_do->add2tplan = 'no';
 				}
 
-				$tcasePrefix .= $tcase_cfg->glue_character;
+				$tcasePrefix .= $gui->tcase_cfg->glue_character;
 		   	}
 	    }
 	    
@@ -858,10 +862,10 @@ class testcase extends tlObjectWithAttachments
 		  		$tc_array[0]['tc_external_id'] = $tcasePrefix . $tc_array[0]['tc_external_id'];
 
 		  		// get the status quo of execution and links of tc versions
-		  		$status_quo_map[] = $this->get_versions_status_quo($tc_id);
+		  		$gui->status_quo_map[] = $this->get_versions_status_quo($tc_id);
 
 		  		$gui->linked_versions[] = $this->get_linked_versions($tc_id);
-		  		$keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
+		  		$gui->keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
 		  		$tc_current = $tc_array[0];
 		  		
 		  		// add new attribute
@@ -879,7 +883,7 @@ class testcase extends tlObjectWithAttachments
 	      		foreach($cfPlaces as $locationKey => $locationFilter)
 		  		{ 
 		  			// BUGID 3431
-		  			$cf_current_version[$cfx][$locationKey] = 
+		  			$gui->cf_current_version[$cfx][$locationKey] = 
 		  				$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
 		  			 	                                         null,null,$tproject_id,null,$tcversion_id_current);
 		  		}	
@@ -899,7 +903,7 @@ class testcase extends tlObjectWithAttachments
 	      				foreach($cfPlaces as $locationKey => $locationFilter)
 		  				{ 
 		  					// BUGID 3431
-		  					$cf_other_versions[$cfx][$qdx][$locationKey] = 
+		  					$gui->cf_other_versions[$cfx][$qdx][$locationKey] = 
 		  						$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
 		  					 	                                         null,null,$tproject_id,null,$target_tcversion);
 		  				}	
@@ -908,7 +912,7 @@ class testcase extends tlObjectWithAttachments
 		  		else
 		  		{
 		  			$tc_other_versions[] = null;
-		  			$cf_other_versions[$cfx]=null;
+		  			$gui->cf_other_versions[$cfx]=null;
 		  		}	
 		  		$cfx++;
 
@@ -923,7 +927,7 @@ class testcase extends tlObjectWithAttachments
 		  			}
 		  		}
 		  		$tcReqs = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
-		  		$arrReqs[] = $tcReqs;
+		  		$gui->arrReqs[] = $tcReqs;
 
 		  	} // foreach($a_id as $key => $tc_id)
 	    } // if (sizeof($a_id))
@@ -938,21 +942,20 @@ class testcase extends tlObjectWithAttachments
     	$tcStatusCfg['code_label'] = $dummy['lbl'];
 		$gui->domainTCStatus = $tcStatusCfg['code_label'];
 		
-		$gui->cf = null; // $cf_current_version; // $cf_smarty;
-		$gui->cf_current_version = $cf_current_version; // $cf_smarty;
-		$gui->cf_other_versions = $cf_other_versions; // $cf_smarty;
+		$gui->cf = null; 
 		$gui->refreshTree = isset($gui->refreshTree) ? $gui->refreshTree : $viewer_defaults['refreshTree'];
 		$gui->sqlResult = $viewer_defaults['msg_result'];
 		$gui->action = $viewer_defaults['action'];
 		$gui->user_feedback = $viewer_defaults['user_feedback'];
 		$gui->execution_types = $this->execution_types;
-		$gui->tcase_cfg = $tcase_cfg;
 		$gui->users = tlUser::getByIDs($this->db,$passeduserarray,'id');
-		$gui->status_quo = $status_quo_map;
 		$gui->testcase_other_versions = $tc_other_versions;
-		$gui->arrReqs = $arrReqs;
-		$gui->view_req_rights =  has_rights($this->db,"mgt_view_req");
-		$gui->keywords_map = $keywords_map;
+		$gui->view_req_rights =  $grants->mgt_view_req;
+		$gui->tproject_id = $tproject_id;
+		
+		$gui->deleteStepAction = "lib/testcases/tcEdit.php?tproject_id=$gui->tproject_id&show_mode=$gui->show_mode" . 
+								 "&doAction=doDeleteStep&step_id=";
+
 		$smarty->assign('gui',$gui);
 		$smarty->display($template_dir . $my_template);
 	}

@@ -153,7 +153,9 @@ viewer for test case in test specification
   {/if}
 
 	<span style="float: left">
-	  <form style="display: inline;" id="topControls" name="topControls" method="post" action="lib/testcases/tcEdit.php">
+	  <form style="display: inline;" id="topControls" name="topControls" 
+	  		method="post" action="lib/testcases/tcEdit.php">
+	  <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
 	  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 	  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 	  <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
@@ -217,6 +219,7 @@ viewer for test case in test specification
 
 	<span>
 	<form style="display: inline;" id="tcexport" name="tcexport" method="post" action="{$exportTestCaseAction}" >
+		<input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
 		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 		<input type="submit" name="export_tc" style="margin-left: 3px;" value="{$tcView_viewer_labels.btn_export}" />
@@ -232,7 +235,9 @@ viewer for test case in test specification
 	<span>
 	{* compare versions *}
 	{if $args_testcase.version > 1}
-	  <form style="display: inline;" id="version_compare" name="version_compare" method="post" action="lib/testcases/tcCompareVersions.php">
+	  <form style="display: inline;" id="version_compare" name="version_compare" 
+	  		method="post" action="lib/testcases/tcCompareVersions.php">
+	 		<input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
 	  		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 	  		<input type="submit" name="compare_versions" value="{$tcView_viewer_labels.btn_compare_versions}" />
 	  </form>
@@ -294,19 +299,22 @@ function launchInsertStep(step_id)
 </script>
 
 <form id="stepsControls" name="stepsControls" method="post" action="lib/testcases/tcEdit.php">
-  <input type="hidden" name="goback_url" value="{$goBackAction}" />
-  <input type="hidden" id="stepsControls_doAction" name="doAction" value="" />
+  <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
   <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
   <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+
   <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
+  <input type="hidden" name="goback_url" value="{$goBackAction}" />
+
   <input type="hidden" id="stepsControls_step_id" name="step_id" value="0" />
-	<input type="hidden" id="stepsControls_show_mode" name="show_mode" value="{$gui->show_mode}" />
+  <input type="hidden" id="stepsControls_show_mode" name="show_mode" value="{$gui->show_mode}" />
+  <input type="hidden" id="stepsControls_doAction" name="doAction" value="" />
 
 
 		{include file="testcases/inc_tcbody.tpl" 
              inc_tcbody_close_table=false
              inc_tcbody_testcase=$args_testcase
-		         inc_tcbody_show_title=$args_show_title
+		     inc_tcbody_show_title=$args_show_title
              inc_tcbody_tableColspan=$tableColspan
              inc_tcbody_labels=$tcView_viewer_labels
              inc_tcbody_author_userinfo=$author_userinfo

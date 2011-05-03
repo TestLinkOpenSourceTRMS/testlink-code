@@ -51,7 +51,7 @@ $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 
-$args = init_args($cfg,$tproject_mgr,$optionTransferName);
+$args = init_args($cfg,$tproject_mgr,$_SESSION['currentUser'],$optionTransferName);
 require_once(require_web_editor($cfg->webEditorCfg['type']));
 $templateCfg = templateConfiguration('tcEdit');
 
@@ -66,7 +66,7 @@ $init_inputs=true; // BUGID 2163 - Create test case with same title, after submi
 $show_newTC_form = 0;
 
 $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
-$gui = initializeGui($db,$args,$cfg,$tcase_mgr);
+$gui = initializeGui($db,$args,$cfg,$tcase_mgr,$_SESSION['currentUser']);
 
 $smarty = new TLSmarty();
 
@@ -81,6 +81,7 @@ if($args->do_activate_this)
 
 $doRender = false;
 $edit_steps = false;
+
 
 $pfn = $args->doAction;
 switch($args->doAction)
@@ -338,13 +339,13 @@ if ($show_newTC_form)
 						  can be added to new test plans
 	
 */
-function init_args(&$cfgObj,&$tprojectMgr,$otName)
+function init_args(&$cfgObj,&$tprojectMgr,&$userObj,$otName)
 {
     $tc_importance_default=config_get('testcase_importance_default');
     
-
     $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
+	
     $rightlist_html_name = $otName . "_newRight";
     $args->assigned_keywords_list = isset($_REQUEST[$rightlist_html_name])? $_REQUEST[$rightlist_html_name] : "";
     $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
@@ -415,10 +416,16 @@ function init_args(&$cfgObj,&$tprojectMgr,$otName)
 	$args->step_set = isset($_REQUEST['step_set']) ? $_REQUEST['step_set'] : null;
 	$args->tcaseSteps = isset($_REQUEST['tcaseSteps']) ? $_REQUEST['tcaseSteps'] : null;
 
-    $args->testproject_id = intval($_REQUEST['tproject_id']);
+    $args->tproject_id = intval($_REQUEST['tproject_id']);
+
 	$args->opt_requirements = null;
-	$dummy = $tprojectMgr->get_by_id($args->testproject_id);
+	$args->automationEnabled = 0;
+	$args->requirementsEnabled = 0;
+	
+	$dummy = $tprojectMgr->get_by_id($args->tproject_id);
 	$args->opt_requirements = $dummy['opt']->requirementsEnabled;
+	$args->requirementsEnabled = $dummy['opt']->requirementsEnabled;
+	$args->automationEnabled = $dummy['opt']->automationEnabled;
 
 	$args->basehref = $_SESSION['basehref'];
     $args->user_id = $_SESSION['userID'];
@@ -433,6 +440,13 @@ function init_args(&$cfgObj,&$tprojectMgr,$otName)
 	}   
 
 	$args->stay_here = isset($_REQUEST['stay_here']) ? 1 : 0;
+
+
+	$args->userGrants = new stdClass();
+	$args->userGrants->mgt_modify_tc = $userObj->hasRight($db,'mgt_modify_tc',$args->tproject_id);
+	$args->userGrants->mgt_view_req = $userObj->hasRight($db,"mgt_view_req",$args->tproject_id);
+	$args->userGrants->testplan_planning = $userObj->hasRight($db,"testplan_planning",$args->tproject_id);
+
     return $args;
 }
 
@@ -453,7 +467,7 @@ function initializeOptionTransferCfg($otName,&$argsObj,&$tprojectMgr)
         	$otCfg = opt_transf_empty_cfg();
         	$otCfg->global_lbl = '';
         	$otCfg->from->lbl = lang_get('available_kword');
-        	$otCfg->from->map = $tprojectMgr->get_keywords_map($argsObj->testproject_id);
+        	$otCfg->from->map = $tprojectMgr->get_keywords_map($argsObj->tproject_id);
         	$otCfg->to->lbl = lang_get('assigned_kword');
     	break;
     }
@@ -537,34 +551,24 @@ function getCfg()
     return $cfg;
 }
 
-/*
-  function: getGrants
-  args :
-  returns: object
-*/
-function getGrants(&$dbHandler)
-{
-    $grants=new stdClass();
-    
-    // BUGID 3615
-    $grants->requirement_mgmt = has_rights($dbHandler,"mgt_modify_req") || 
-								has_rights($dbHandler,"req_tcase_link_management"); 
-    return $grants;
-}
-
-
 /**
  * 
  *
  */
-function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
+function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$userObj)
 {
 	$guiObj = new stdClass();
-	$guiObj->testproject_id = $argsObj->testproject_id;
+	$guiObj->tproject_id = $argsObj->tproject_id;
 
 	$guiObj->editorType = $cfgObj->webEditorCfg['type'];
-	$guiObj->grants = getGrants($dbHandler);
+	$guiObj->grants = new stdClass();
+    $guiObj->grants->requirement_mgmt = $userObj->hasRight($dbHandler,"mgt_modify_req",$argsObj->tproject_id) || 
+										$userObj->hasRight($dbHandler,"req_tcase_link_management",$argsObj->tproject_id); 
+
 	$guiObj->opt_requirements = $argsObj->opt_requirements; 
+	$guiObj->requirementsEnabled = $argsObj->requirementsEnabled; 
+	$guiObj->automationEnabled = $argsObj->automationEnabled; 
+
 	$guiObj->action_on_duplicated_name = 'generate_new';
 	$guiObj->show_mode = $argsObj->show_mode;
     $guiObj->has_been_executed = $argsObj->has_been_executed;
@@ -586,9 +590,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
 		$guiObj->parent_info['description'] = lang_get($node_descr[$pnode_info['node_type_id']]);
 	}
 	
-	$guiObj->direct_link = $tcaseMgr->buildDirectWebLink($_SESSION['basehref'],$argsObj->tcase_id,$argsObj->testproject_id);
-
-
+	$guiObj->direct_link = $tcaseMgr->buildDirectWebLink($_SESSION['basehref'],$argsObj->tcase_id,$argsObj->tproject_id);
 	$guiObj->domainTCStatus = $argsObj->tcStatusCfg['code_label'];
 	
 	return $guiObj;

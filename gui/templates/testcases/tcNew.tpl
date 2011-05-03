@@ -113,14 +113,15 @@ function validateForm(f)
 <div class="workBack">
 
 {* BUGID 4067 *}
-{include file="inc_update.tpl" result=$gui->sqlResult item="testcase" name=$gui->name user_feedback=$gui->user_feedback refresh=$smarty.session.setting_refresh_tree_on_action}
+{include file="inc_update.tpl" result=$gui->sqlResult item="testcase" 
+name=$gui->name user_feedback=$gui->user_feedback refresh=$smarty.session.setting_refresh_tree_on_action}
 
 <form method="post" action="lib/testcases/tcEdit.php?containerID={$gui->containerID}"
       name="tc_new" id="tc_new"
       onSubmit="javascript:return validateForm(this);">
       <input type="hidden" name="testcase_id" id="testcase_id" value=0>
       <input type="hidden" name="testsuite_id" id="testsuite_id" value="{$gui->containerID}">
-      <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->testproject_id}">
+      <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
 
   {if $gui->steps != ''}
   <table class="simple">

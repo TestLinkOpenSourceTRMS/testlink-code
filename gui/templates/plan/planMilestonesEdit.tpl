@@ -222,7 +222,7 @@ function validateForm(f)
 	
 	{* BUGID 3971 - Help for Milestones *}
 	<br />
-	{if $session['testprojectOptions']->testPriorityEnabled}
+	{if $gui->tproject_options->testPriorityEnabled}
 		<p class="italic">{$labels.info_milestone_create_prio}</p>
 	{else}
 		<p class="italic">{$labels.info_milestone_create_no_prio}</p>

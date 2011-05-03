@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.42 2011/02/11 10:49:54 mx-julian Exp $ 
+@filesource	tcStepEdit.tpl
+
 Purpose: create/edit test case step
 
-rev:
+@internal revisions
 	20110217 - Julian - BUGID 3737, 4002, 4250 - Cancel Button was not working properly
 	20110209 - Julian - BUGID 4230 - removed old code to set focus on step
 	20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
@@ -35,13 +36,9 @@ rev:
 {assign var="tcversion_id" value=$gui->tcversion_id}
 
 {* Used on several operations to implement goback *}
-{* BUGID 3493 - added show_mode*}
-{assign var="showMode" value=$gui->show_mode} 
-
-{assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id&show_mode=$showMode"}
-{assign var="goBackAction" value="$basehref$tcViewAction"}
-{assign var="goBackActionURLencoded" value=$goBackAction|escape:'url'}
-{assign var="url_args" value="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
+{* {assign var="goBackAction" value="$basehref$tcViewAction"} *}
+{assign var="goBackActionURLencoded" value=$gui->goBackAction|escape:'url'}
+{assign var="url_args" value="tcEdit.php?doAction=editStep&tproject_id={$gui->tproject_id}&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
 {assign var="url_args" value="$url_args&goback_url=$goBackActionURLencoded&step_id="}
 {assign var="hrefEditStep"  value="$basehref$module$url_args"}
 
@@ -188,7 +185,7 @@ DEBUG: $gui->action: {$gui->action} <br>
   		 *}
 		<th width="45%">{$labels.step_actions}</th>
   		<th>{$labels.expected_results}</th>
-      {if $session['testprojectOptions']->automationEnabled}
+      {if $gui->automationEnabled}
   		  <th width="25">{$labels.execution_type_short_descr}</th>
   		{/if}  
   	</tr>
@@ -200,7 +197,7 @@ DEBUG: $gui->action: {$gui->action} <br>
 		    <td style="text-align:left;">{$gui->step_number}</td>
   		  <td>{$steps}</td>
   		  <td>{$expected_results}</td>
-		    {if $session['testprojectOptions']->automationEnabled}
+		    {if $gui->automationEnabled}
 		    <td>
 		    	<select name="exec_type" onchange="content_modified = true">
         	  	{html_options options=$gui->execution_types selected=$gui->step_exec_type}
@@ -211,7 +208,7 @@ DEBUG: $gui->action: {$gui->action} <br>
         <td style="text-align:left;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
   	  	<td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
   	  	<td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
-        {if $session['testprojectOptions']->automationEnabled}
+        {if $gui->automationEnabled}
   	  	  <td><a href="{$hrefEditStep}{$step_info.id}">{$gui->execution_types[$step_info.execution_type]}</a></td>
   	  	{/if}  
       {/if}
@@ -223,7 +220,7 @@ DEBUG: $gui->action: {$gui->action} <br>
 	<tr id="step_row_{$step_info.step_number}">
 		<th width="20">{$args_labels.step_number} {$step_info.step_number}</th>
 		<th>{$labels.step_actions}</th>
-		{if $session['testprojectOptions']->automationEnabled}
+		{if $gui->automationEnabled}
 		{if $step_info.step_number == $gui->step_number}
 		<th width="200">{$labels.execution_type_short_descr}:
 			<select name="exec_type" onchange="content_modified = true">
@@ -272,7 +269,7 @@ DEBUG: $gui->action: {$gui->action} <br>
 			  <td style="text-align:left;">{$gui->step_number}</td>
 	  		<td>{$steps}</td>
 	  		<td>{$expected_results}</td>
-			    {if $session['testprojectOptions']->automationEnabled}
+			    {if $gui->automationEnabled}
 			    <td>
 			    	<select name="exec_type" onchange="content_modified = true">
 	        	  	{html_options options=$gui->execution_types selected=$gui->step_exec_type}
@@ -284,7 +281,7 @@ DEBUG: $gui->action: {$gui->action} <br>
 			<tr id="new_step">
 				<th width="20">{$args_labels.step_number} {$gui->step_number}</th>
 				<th>{$labels.step_actions}</th>
-				{if $session['testprojectOptions']->automationEnabled}
+				{if $gui->automationEnabled}
 					<th width="200">{$labels.execution_type_short_descr}:
 							<select name="exec_type" onchange="content_modified = true">
 								{html_options options=$gui->execution_types selected=$gui->step_exec_type}

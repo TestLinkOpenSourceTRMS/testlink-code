@@ -4,7 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 Purpose: smarty template - create new testcase
 
-@internal Revisions:
+@internal revisions
 20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
 						can be added to new test plans
 20101011 - franciscom - equalizing ID for DIV that function as CF container
@@ -79,7 +79,7 @@ Purpose: smarty template - create new testcase
 {* <div>{$expected_results}</div>                                *} 
 {* {$layout3}                                                    *}
 
-		{if $session['testprojectOptions']->automationEnabled}
+		{if $gui->automationEnabled}
 			<div class="labelHolder">{$labels.execution_type}
 			<select name="exec_type" onchange="content_modified = true">
     	  	{html_options options=$gui->execution_types selected=$gui->tc.execution_type}
@@ -87,7 +87,7 @@ Purpose: smarty template - create new testcase
 			</div>
     	{/if}
 
-	    {if $session['testprojectOptions']->testPriorityEnabled}
+	    {if $gui->testPriorityEnabled}
 		   	<div>
 			<span class="labelHolder">{$labels.test_importance}</span>
 			<select name="importance" onchange="content_modified = true">
@@ -105,7 +105,6 @@ Purpose: smarty template - create new testcase
     	
     </div>
 
-	{* Custom fields - with standard location - 20090718 - franciscom *}
 	{if $gui->cf.standard_location neq ""}
 	     <br/>
 	     <div id="cfields_design_time" class="custom_field_container">

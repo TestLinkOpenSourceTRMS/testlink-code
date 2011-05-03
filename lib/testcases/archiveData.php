@@ -32,6 +32,13 @@ $templateCfg = templateConfiguration();
 $viewerArgs = null;
 
 $args = init_args($viewerArgs);
+$userObj = $_SESSION['currentUser'];
+
+$grants = new stdClass();
+$grants->mgt_modify_tc = $userObj->hasRight($db,'mgt_modify_tc',$args->tproject_id);
+$grants->mgt_view_req = $userObj->hasRight($db,"mgt_view_req",$args->tproject_id);
+$grants->testplan_planning = $userObj->hasRight($db,"testplan_planning",$args->tproject_id);
+
 $smarty = new TLSmarty();
 $gui = new stdClass();
 $gui->tproject_id = $args->tproject_id;
@@ -72,7 +79,7 @@ switch($args->feature)
 		$gui->direct_link = null;
 		$gui->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
 		// 20101008 - asimon - BUGID 3311
-		$gui->bodyOnUnload = 'storeWindowSize(\'TCEditPopup\')';
+		$gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
     	
    		// has been called from a test case search
 		if(!is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)
@@ -102,8 +109,10 @@ switch($args->feature)
 			$gui->direct_link = $item_mgr->buildDirectWebLink($_SESSION['basehref'],$args->id);
 		}
 	    $gui->id = $args->id;
-		$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id,$args->tcversion_id,
-		                $viewerArgs,$path_info,$args->show_mode);
+	    
+	    
+		$item_mgr->show($smarty,$grants,$gui,$templateCfg->template_dir,
+						$args->id,$args->tcversion_id,$viewerArgs,$path_info,$args->show_mode);
 		break;
 
 	default:

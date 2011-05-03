@@ -272,7 +272,7 @@ function initTopMenu(&$db,&$userObj,$tproject_id,$tplan_id,$reqMgmtEnabled)
 			// BUGID 3601: check also if req mgmt is enabled
 			if( 
 				 ( !isset($element['condition']) || ($element['condition'] == '') ) ||
-				 ( ($element['condition'] == 'TestPlanAvailable') && $tplan_ID > 0 ) ||
+				 ( ($element['condition'] == 'TestPlanAvailable') && $tplan_id > 0 ) ||
 				 ( ($element['condition'] == 'ReqMgmtEnabled') && $reqMgmtEnabled )
 			  )
 			{

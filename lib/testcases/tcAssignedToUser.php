@@ -38,7 +38,6 @@ $templateCfg = templateConfiguration();
 $user = new tlUser($db);
 $names = $user->getNames($db);
 
-$urgencyImportance = config_get('urgencyImportance');
 $results_config = config_get('results');
 
 $args=init_args();
@@ -75,7 +74,7 @@ if ($args->show_all_users) {
 	$gui->pageTitle=sprintf($l18n['testcases_assigned_to_user'],$gui->tproject_name, $args->user_name);
 }
 
-$priority = array('low' => lang_get('low_priority'),'medium' => lang_get('medium_priority'),'high' => lang_get('high_priority'));
+$priority = array(LOW => lang_get('low_priority'),MEDIUM => lang_get('medium_priority'),HIGH => lang_get('high_priority'));
 
 $map_status_code = $results_config['status_code'];
 $map_code_status = $results_config['code_status'];
@@ -181,13 +180,9 @@ if( $doIt )
 				}
 				
 				if ($args->priority_enabled) {
-					if ($tcase['priority'] >= $urgencyImportance->threshold['high']) {
-						$current_row[] = "<!-- " . $tcase['priority'] . " -->" . $priority['high'];
-					} else if ($tcase['priority'] < $urgencyImportance->threshold['low']) {
-						$current_row[] = "<!-- " . $tcase['priority'] . " -->" . $priority['low'];
-					} else {
-						$current_row[] = "<!-- " . $tcase['priority'] . " -->" . $priority['medium'];
-					}
+					
+					//BUGID 4418 - clean up priority usage
+					$current_row[] = "<!-- " . $tcase['priority'] . " -->" . $priority[priority_to_level($tcase['priority'])];
 				}
 				
 				$last_execution = $tcase_mgr->get_last_execution($tcase_id, $tcversion_id, $tplan_id, 

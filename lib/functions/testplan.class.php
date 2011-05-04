@@ -14,6 +14,7 @@
  *
  *
  * @internal Revisions:
+ *  20110415 - Julian - BUGID 4418 - Clean up priority usage within Testlink
  *	20110408 - franciscom - BUGID 4391: General Test Plan Metrics - 
  *							Results by Keywords does not work properly when platforms are used
  *	20110328 - franciscom - filter_cf_selection() fixed issue regarding simple types
@@ -3922,23 +3923,10 @@ class testplan extends tlObjectWithAttachments
      */
     public function urgencyImportanceToPriorityLevel($urgency, $importance=null)
     {
-        static $priorityLevelsCfg;
-        if ($priorityLevelsCfg == null) {
-            $priorityLevelsCfg = config_get('priority_levels');
-        }
-
         $urgencyImportance = intval($urgency) * (is_null($importance) ? 1 : intval($importance)) ;
-		
-        $levels2check = array(HIGH,MEDIUM,LOW);  // order is important for algorithm
-		foreach($levels2check as $level)
-		{
-			if($urgencyImportance >= $priorityLevelsCfg[$level])
-			{
-				break;
-			}
-		}		
-        return $level;
         
+        //BUGID 4418 - clean up priority usage
+        return priority_to_level($urgencyImportance);
     }
 
 

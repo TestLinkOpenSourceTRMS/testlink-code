@@ -5,14 +5,16 @@
  *
  * testcases commands
  *
+ * @filesource	testcaseCommands.class.php
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.64.2.2 2011/01/06 14:04:14 franciscom Exp $
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *	20110413 - franciscom - BUGID 4410 - "Save step" doesn't work just after "Copy Step"
+ *							doCopyStep()
  *  20101202 - asimon - BUGID 4067: refresh tree problems
  *  20101001 - asimon - custom fields do not lose entered values on errors
  *	20100927 - franciscom - BUGID 3810: Steps are manual by default, even when added to automatic test case
@@ -290,6 +292,7 @@ class testcaseCommands
         $smartyObj = new TLSmarty();
         $viewer_args=array();
 
+		
     	$guiObj = $this->initGuiBean($argsObj);
     	
     	// BUGID 4067
@@ -774,8 +777,10 @@ class testcaseCommands
 		$guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
 
 		// After copy I would like to return to target step in edit mode, 
-		// is enough to set $guiObj->step_number to target test step
+		// is enough to set $guiObj->step_number to target test step --> FOUND THIS is WRONG
+		// generated BUGID 4410
 		$guiObj->step_number = $argsObj->step_number;
+		$guiObj->step_id = $argsObj->step_id;
 
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
 		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));

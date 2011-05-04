@@ -12,6 +12,7 @@
  * @uses		common.php 
  *
  * @internal Revisions:
+ * 20110415 - Julian - BUGID 4418 - Clean up priority usage within Testlink
  * 20101018 - Julian - BUGID 2236 - Milestones Report broken
  *                     BUGID 3830 - Milestone is not shown on Report more than one milestone
                                     have the same target date
@@ -49,7 +50,6 @@ class tlTestPlanMetrics extends testPlan
 	 **/    
 	function __construct(&$db)
 	{
-    	$this->priorityLevelsCfg = config_get('priority_levels');
 		$this->resultsCfg = config_get('results');
 		$this->testCaseCfg = config_get('testcase_cfg');
 
@@ -109,21 +109,10 @@ class tlTestPlanMetrics extends testPlan
 				
 				$tmpResult = $this->db->fetchOneValue($sql);
 				// parse results into three levels of priority
-				if (($urgency*$importance) >= $this->priorityLevelsCfg[HIGH])
-				{
-					$output[HIGH] = $output[HIGH] + $tmpResult;
-					tLog("getPrioritizedResults> Result-priority HIGH: $urgency, $importance = " . $output[HIGH]);
-				}
-				elseif (($urgency*$importance) >= $this->priorityLevelsCfg[MEDIUM])
-				{
-					$output[MEDIUM] = $output[MEDIUM] + $tmpResult;	
-					tLog("getPrioritizedResults> Result-priority MEDIUM: $urgency, $importance = " . $output[MEDIUM]);
-				}
-				else
-				{
-					$output[LOW] = $output[LOW] + $tmpResult;
-					tLog("getPrioritizedResults> Result-priority LOW: $urgency, $importance = " . $output[LOW]);
-				}	
+				
+				//BUGID 4418 - clean up priority usage
+				$priority = priority_to_level($urgency*$importance);
+				$output[$priority] = $output[$priority] + $tmpResult;
 			}
 		}
 		
@@ -151,23 +140,10 @@ class tlTestPlanMetrics extends testPlan
 			    		" AND TCV.importance={$importance} AND TPTCV.urgency={$urgency}";
 
 				$tmpResult = $this->db->fetchOneValue($sql);
-
-				// parse results into three levels of priority
-				if (($urgency*$importance) >= $this->priorityLevelsCfg[HIGH])
-				{
-					$output[HIGH] = $output[HIGH] + $tmpResult;
-					tLog("getPrioritizedTestCases> Result-priority HIGH: $urgency, $importance = " . $output[HIGH]);
-				}
-				elseif (($urgency*$importance) >= $this->priorityLevelsCfg[MEDIUM])
-				{
-					$output[MEDIUM] = $output[MEDIUM] + $tmpResult;	
-					tLog("getPrioritizedTestCases> Result-priority MEDIUM: $urgency, $importance = " . $output[MEDIUM]);
-				}
-				else
-				{
-					$output[LOW] = $output[LOW] + $tmpResult;
-					tLog("getPrioritizedTestCases> Result-priority LOW: $urgency, $importance = " . $output[LOW]);
-				}	
+				
+				//BUGID 4418 - clean up priority usage
+				$priority = priority_to_level($urgency*$importance);
+				$output[$priority] = $output[$priority] + $tmpResult;
 			}
 		}
 					

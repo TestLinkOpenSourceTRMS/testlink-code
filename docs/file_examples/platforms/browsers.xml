@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<platforms>
+	<platform>
+		<name><![CDATA[Firefox]]></name>
+		<notes><![CDATA[Mozilla Firefox is probably one of the best known of the third-party browsers, and by this time just about everyone has one copy stashed away somewhere on their computer. Firefox is a Gecko-based browser with extensions, password management and a whole lot more.]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Flock]]></name>
+		<notes><![CDATA[Flock is considered an off shoot of Firefox that is built on Gecko and will run on Windows, Mac OS X, Linux and BSD. The major difference with Flock is that it is heavily focused on incorporating a social networking experience into the browser environment.]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Konqueror]]></name>
+		<notes><![CDATA[Konqueror is a part of the K Desktop Environment, but is also available for Unix systems, Mac OS X and is finally coming out for Windows systems. Besides being a browser, it can also be used for file management.]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Google Chrome]]></name>
+		<notes><![CDATA[Built on WebKit, Google Chrome has built a pretty loyal following in the relatively short time it has been out.  While it is not officially out yet for Mac OS X or Linux, both versions are supposed to be coming.  A lot of things are planned for the future versions of this particular application, but for now it is just an excellent browser without many bells or whistles.]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Sleipnir]]></name>
+		<notes><![CDATA[Sleipnir is a browser that is gaining in popularity in Japan, and has a heavy focus on customization that allows the user to create a browser that fits their specific needs. It is based around the Trident engine and features plugins, tabs, customizable skins and a lot more.]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Maxthon]]></name>
+		<notes><![CDATA[Maxthon is a China-based browser, but has gained a cult following in other parts of the world. Currently the browser runs on the Trident engine, but version 3, which is currently under testing, will run both Trident and WebKit. It includes features such as being skinable, undo for closed tabs, numerous extensions and a host of others.]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[K-Meleon]]></name>
+		<notes><![CDATA[Based on the Mozilla Gecko engine, K-Meleon is built around the concept of being lightweight and integrating tightly with the visual look of your Windows settings.
+]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Internet Explorer]]></name>
+		<notes><![CDATA[As much as designers bemoan the fact that Internet Explorer 6 haunts their nightmares, we’re talking about Internet Explorer 8 in this particular case. IE8 is more up-to-date on Web standards, handles AJAX and is a vast improvement over all of the previous versions of this mainstay of the browsing world.]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Avant]]></name>
+		<notes><![CDATA[Avant claims to be the fastest web browser, is available in 41 languages and has been downloaded over 22 million times. It uses the Trident layout engine to power itself, which makes it compatible with Internet Explorer toolbars and plugins. It also offers built-in features such as online profile storage that will allow you to log-in to your account from wherever you are, mouse gestures, auto-fill forms and a lot more.
+]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[SeaMonkey]]></name>
+		<notes><![CDATA[SeaMonkey is another browser in the Mozilla family, but is more of an application suite that features a browser, email and news reader.]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Safari]]></name>
+		<notes><![CDATA[While Safari is tightly associated with Macs as it is made by Apple and comes installed on every Mac, there is a Windows version that has gained some popularity. Built on WebKit, Safari goes with a minimalistic design that emphasizes the pages you are looking at, it also relies on numerous visual tricks to make mundane tasks like looking at your browsing history a bit more interesting.]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Opera]]></name>
+		<notes><![CDATA[Opera uses the Presto engine, and smaller versions of the browser are utilized in devices such as the Wii and Nintendo DS. It offers features such as data synchronization, in-line spell checking, mouse gestures and more.
+]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Shiira]]></name>
+		<notes><![CDATA[Shiira is an open source browser based out of Japan that is built on WebKit and aims “to create a browser that is better and more useful than Safari.”  At the time writing this there hasn’t been a new stable version released since 2007, so we’ll leave it up to you to decide if that mission was accomplished.]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[OmniWeb]]></name>
+		<notes><![CDATA[Developed by the well-known Omni Group, OmniWeb uses WebKit and includes some nice features such as workspaces, link viewing, ad blocking and a lot more]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[iCab]]></name>
+		<notes><![CDATA[iCab is based on WebKit and is available for free as “nag ware” that will remind you to register and upgrade to pro]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Camino]]></name>
+		<notes><![CDATA[Mozilla Power, Mac Style” is the tag line for this popular Mac-only web browser. Based on the Gecko engine, Camino is an open source browser project that tries to match its power to the Mac experience. Due to its open source nature, it also supports a number of add-ons that extend the usability of the program.]]></notes>
+	</platform>
+</platforms>
+ 
+
+ 
+
+

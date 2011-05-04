@@ -1082,6 +1082,7 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 			$outRef['tcversions_active_status'][$testCase['id']] = 1;
 			$outRef['external_id'] = $testCase['tc_external_id'];
 			$outRef['tcversions_execution_type'][$testCase['id']] = $testCase['execution_type'];
+			$outRef['importance'][$testCase['id']] = $testCase['importance'];
 			
 			if (!isset($outRef['tcversions_qty']))  
 			{
@@ -1104,6 +1105,7 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 						$outRef['tcversions_active_status'][$testCase['id']] = 0;
 						$outRef['external_id'] = $testCase['tc_external_id'];
 						$outRef['tcversions_execution_type'][$testCase['id']] = $testCase['execution_type'];
+						$outRef['importance'][$testCase['id']] = $testCase['importance'];
 					}
 					$exec_order= isset($linked_testcase[0]['execution_order'])? $linked_testcase[0]['execution_order']:0;
 					$outRef['execution_order'] = $exec_order;

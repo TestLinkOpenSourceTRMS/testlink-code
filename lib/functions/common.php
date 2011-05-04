@@ -18,6 +18,8 @@
  * @since 		TestLink 1.5
  *
  * @internal Revisions:
+ *  20110415 - Julian - BUGID 4418: Clean up priority usage within Testlink
+ *                                  -> priority_to_level() uses urgencyImportance
  *  20101028 - asimon - BUGID 3951: Status and Type for requirements are not saved
  *  20101025 - Julian - BUGID 3930 - added function split_localized_date()
  *                                 - simplified function is_valid_date()
@@ -643,13 +645,15 @@ function microtime_float()
  * @return integer HIGH, MEDUIM or LOW
  */
 function priority_to_level($priority) {
-	$levels = config_get('priority_levels');
-	if ($priority >= $levels[HIGH])
+	$urgencyImportance = config_get('urgencyImportance');
+	
+	if ($priority >= $urgencyImportance->threshold['high']) {
 		return HIGH;
-	else if ($priority >= $levels[MEDIUM])
-		return MEDIUM;
-	else
+	} else if ($priority < $urgencyImportance->threshold['low']) {
 		return LOW;
+	} else {
+		return MEDIUM;
+	}
 }
 
 

@@ -10,6 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110413 - franciscom - BUGID 4404 - copy_to() set author_id = user doing copy
  * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
  * 20110402 - franciscom - get_exec_status() - interface changes	
  * 20110312 - franciscom - 	get_by_id() - id can be null, to allow get data 
@@ -1514,6 +1515,7 @@ class testcase extends tlObjectWithAttachments
 	/*
 
 	@internal revisions
+	20110413 - franciscom - BUGID 4404 - set author_id = user doing copy
 	20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
 							added option 'preserve_external_id'	
 	*/
@@ -1565,9 +1567,10 @@ class testcase extends tlObjectWithAttachments
 					// to method create_tcversion() to create inside itself THE STEPS.
 					// Passing NULL as steps we instruct create_tcversion() TO DO NOT CREATE STEPS
 					// 
+					// BUGID 4404 - $tcversion['author_id'] -> user_id
 					$op = $this->create_tcversion($newTCObj['id'],$externalID,$tcversion['version'],
 					                              $tcversion['summary'],$tcversion['preconditions'],null,
-					                              $tcversion['author_id'],$tcversion['execution_type'],
+					                              $user_id,$tcversion['execution_type'],
 					                              $tcversion['importance']);
 					
 	    			if( $op['status_ok'] )
@@ -2265,7 +2268,7 @@ class testcase extends tlObjectWithAttachments
 
 	    $sql .= " ORDER BY version,tplan_name";
 		$rs = $this->db->get_recordset($sql);
-
+		
 	    // set right tcversion_id, based on tcversion_number,version comparison
 	    $item_not_executed = null;
 	    $item_executed = null;
@@ -2278,49 +2281,47 @@ class testcase extends tlObjectWithAttachments
 			{
 		    	if( $elem['tcversion_number'] != $elem['version'])
 			    {
-			    	
 			        // Save to generate record for linked but not executed if needed
 			        // (see below fix not executed section)
-			        // 20100111 - franciscom - PLATFORM REFACTORING
 			        // access key => (version,test plan, platform)
 			        $link_info[$elem['tcversion_id']][$elem['testplan_id']][$elem['platform_id']]=$elem;    
 		
-			      // We are working with a test case version, that was used in a previous life of this test plan
-			      // information about his tcversion_id is not anymore present in tables:
-			      //
-			      // testplan_tcversions
-			      // executions
-			      // cfield_execution_values.
-			      //
-			      // if has been executed, but after this operation User has choosen to upgrade tcversion 
-			      // linked to testplan to a different (may be a newest) test case version.
-			      //
-			      // We can get this information using table tcversions using tcase id and version number 
-			      // (value displayed at User Interface) as search key.
-			      //
-			      // Important:
-			      // executions.tcversion_number:  maintain info about RIGHT TEST case version executed
-			      // executions.tcversion_id    :  test case version linked to test plan. 
-			      //
-			      //
-			      if( is_null($elem['tcversion_number']) )
-			      {
-			      		// Not Executed
-			      		$rs[$idx]['executed']=null;
-		          		$rs[$idx]['tcversion_id']=$elem['tcversion_id'];
-		          		$rs[$idx]['version']=$elem['version'];
-		          		$rs[$idx]['linked']=$elem['tcversion_id'];
-		          		$item_not_executed[]=$idx;  
-			      }
-			      else
-			      {
-		        		// Get right tcversion_id
-		        		$rs[$idx]['executed']=$version_id[$elem['tcversion_number']]['id'];
-		        		$rs[$idx]['tcversion_id']=$rs[$idx]['executed'];
-		        		$rs[$idx]['version']=$elem['tcversion_number'];
-		        		$rs[$idx]['linked']=$rs[$idx]['executed'];
-		        		$item_executed[]=$idx;
-			      }
+			      	// We are working with a test case version, that was used in a previous life of this test plan
+			      	// information about his tcversion_id is not anymore present in tables:
+			      	//
+			      	// testplan_tcversions
+			      	// executions
+			      	// cfield_execution_values.
+			      	//
+			      	// if has been executed, but after this operation User has choosen to upgrade tcversion 
+			      	// linked to testplan to a different (may be a newest) test case version.
+			      	//
+			      	// We can get this information using table tcversions using tcase id and version number 
+			      	// (value displayed at User Interface) as search key.
+			      	//
+			      	// Important:
+			      	// executions.tcversion_number:  maintain info about RIGHT TEST case version executed
+			      	// executions.tcversion_id    :  test case version linked to test plan. 
+			      	//
+			      	//
+			      	if( is_null($elem['tcversion_number']) )
+			      	{
+			      			// Not Executed
+			      			$rs[$idx]['executed']=null;
+		          			$rs[$idx]['tcversion_id']=$elem['tcversion_id'];
+		          			$rs[$idx]['version']=$elem['version'];
+		          			$rs[$idx]['linked']=$elem['tcversion_id'];
+		          			$item_not_executed[]=$idx;  
+			      	}
+			      	else
+			      	{
+		        			// Get right tcversion_id
+		        			$rs[$idx]['executed']=$version_id[$elem['tcversion_number']]['id'];
+		        			$rs[$idx]['tcversion_id']=$rs[$idx]['executed'];
+		        			$rs[$idx]['version']=$elem['tcversion_number'];
+		        			$rs[$idx]['linked']=$rs[$idx]['executed'];
+		        			$item_executed[]=$idx;
+			      	}
 			      $version=$rs[$idx]['version'];
 		          $rs[$idx]['active']=$version_id[$version]['active'];	      
 		      }
@@ -2330,7 +2331,6 @@ class testcase extends tlObjectWithAttachments
 		      }
 		
 			 	// needed for logic to avoid miss not executed (see below fix not executed)
-			    // $in_set[$rs[$idx]['tcversion_id']][$rs[$idx]['testplan_id']]=$rs[$idx]['tcversion_id'];
 			    $in_set[$rs[$idx]['tcversion_id']][$rs[$idx]['testplan_id']][$rs[$idx]['platform_id']]=$rs[$idx]['tcversion_id'];
 			}
 	    }
@@ -2338,7 +2338,7 @@ class testcase extends tlObjectWithAttachments
 	    {
 	    	$rs = array();
 	    }
-	    
+
 	    // fix not executed
 	    //
 	    // need to add record for linked but not executed, that due to new
@@ -2386,33 +2386,38 @@ class testcase extends tlObjectWithAttachments
 	    }
 	
 	    $recordset = null;
-	    if( !is_null($target) )   // minor fix - 20090716 - franciscom
+	    if( !is_null($target) )
 	    {
 	    	foreach($target as $idx)
 			{
-				$elem=$rs[$idx];
+				$wkitem=$rs[$idx];
 	    	   	if( $active_status=='ALL' ||
-	    	   	    $active_status='ACTIVE' && $elem['active'] ||
-	    	   	    $active_status='INACTIVE' && $elem['active']==0 )
+	    	   	    $active_status='ACTIVE' && $wkitem['active'] ||
+	    	   	    $active_status='INACTIVE' && $wkitem['active']==0 )
 	    	   	{    
-	    	   	    $recordset[$elem['tcversion_id']][$elem['testplan_id']][$elem['platform_id']]=$elem;
-	    	   	    
+	    	   	    $recordset[$wkitem['tcversion_id']][$wkitem['testplan_id']][$wkitem['platform_id']]=$wkitem;
 	    	   	    if( $my['options']['addExecIndicator'] )
 	    	   	 	{
-	    	   	 		if( !is_null($elem['executed']) )
+	    	   	 		if( !isset($recordset['executed']) )
 	    	   	 		{
-	    	   	 			// $recordset[$elem['tcversion_id']]['executed'] = 1;
-	    	   	 			$recordset['executed'] = 1;
-	    	   	 		}
-	    	   	 		else if( !isset($recordset[$elem['tcversion_id']]['executed']))
-	    	   	 		{
-	    	   	 			// $recordset[$elem['tcversion_id']]['executed'] = 0;
 	    	   	 			$recordset['executed'] = 0;
 	    	   	 		}
+	    	   	 		else if( $recordset['executed'] == 0 )
+	    	   	 		{ 
+	    	   	 			if( !is_null($wkitem['executed']) )
+	    	   	 			{
+	    	   	 				$recordset['executed'] = 1;
+	    	   	 			}
+	    	   	 			// else if( !isset($recordset[$wkitem['tcversion_id']]['executed']))
+	    	   	 			// {
+	    	   	 			// 	$recordset['executed'] = 0;
+	    	   	 			// }
+	    	   	 		}	
 	    	   		}    
 	    	   	}    
 	    	}
 	    }		  
+    
 	    if( !is_null($recordset) )
 	    {
 	    	// 20110402 - franciscom - unable to understand why is needed

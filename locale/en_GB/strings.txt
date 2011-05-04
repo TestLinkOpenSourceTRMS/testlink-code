@@ -1407,7 +1407,18 @@ $TLS_popup_delete_milestones = "Are you sure you want to delete milestone %NAME%
 $TLS_warning_delete_milestone = "You are going to delete: %s <br /> <br /> Are you sure?";
 $TLS_warning_empty_milestone_name="Milestone name cannot be empty!";
 $TLS_warning_invalid_date = "This date is not a valid date.";
-
+$TLS_info_milestone_create_prio = "Milestones consider executions within a specified time period.<br />This period starts " .
+                                  "with the <b>Start Date</b> - if the Start Date is not specified all executions are " .
+                                  "taken into account - and ends with the <b>Target date</b>.<br />All executions after the " .
+                                  "Target Date are ignored.<br />Milestones are reached when all \"Sub-Milestones\" for the " .
+                                  "different <b>priorities</b> are reached. Status of Milestones can be found on General Test Plan " .
+                                  "Metrics.";
+$TLS_info_milestone_create_no_prio = "Milestones consider executions within a specified time period.<br />This period starts " .
+                                     "with the <b>Start Date</b> - if the Start Date is not specified all executions are " .
+                                     "taken into account - and ends with the <b>Target date</b>.<br />All executions after the " .
+                                     "Target Date are ignored.<br />Milestones are reached when the chosen percentage of " .
+                                     "<b>Completed tests</b> is reached. Status of Milestones can be found on General Test Plan " .
+                                     "Metrics.";
 
 $TLS_th_date_format = "Target Date";
 $TLS_th_perc_a_prio = "Completed tests with High Priority [0-100%]";
@@ -1639,7 +1650,9 @@ $TLS_info_resultsTC_report = "This report shows the last test case execution res
                              "Build 1.0 - Passed; Build 1.0 - Failed; Build 2.0 - Blocked; " .
                              "Build 1.0 - Passed<br>-> [Last Build] : Blocked because Build 2.0 is " .
                              "the last build created for which a result has been set.<br />-> \"Last Execution\" : " .
-                             "Passed because Build 1.0 has been executed at last.";
+                             "Passed because Build 1.0 has been executed at last.<br /><br />The shown ".
+                             "priority is calculated based on the importance of the currently linked test case ".
+                             "version.";
 
 
 
@@ -1708,7 +1721,8 @@ $TLS_info_report_milestones_no_prio = "This Report shows milestones defined for 
 $TLS_info_res_by_kw = "This report shows results for each keyword. If a test case has multiple " .
                       "keywords assigned it will be count for each assigned keyword.";
 $TLS_info_gen_test_rep = "<b>General Information</b><br />" .
-                         "All reports only consider last execution of each test case.";
+                         "All reports only consider last execution of each test case.<br />" .
+                         "You can sort tables by clicking the column header.";
 
 
 
@@ -2398,6 +2412,7 @@ $TLS_warning_enter_valid_date = "You have to enter a valid date!";
 $TLS_warning_invalid_percentage_value = "Percentage values must range from 0 to 100%";
 $TLS_warning_milestone_date = "Milestones have to be created at today's date or greater!";
 $TLS_warning_percentage_value_higher_than_100 = "All percentage values summed up cannot be higher than 100";
+$TLS_warning_target_before_start = "Target Date has to be chronologically after Start Date";
 
 
 

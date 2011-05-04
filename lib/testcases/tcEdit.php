@@ -70,14 +70,15 @@ $gui = initializeGui($db,$args,$cfg,$tcase_mgr,$_SESSION['currentUser']);
 
 $smarty = new TLSmarty();
 
-$active_status = 0;
 $name_ok = 1;
-$action_result = "deactivate_this_version";
-if($args->do_activate_this)
-{
-	$active_status = 1;
-	$action_result = "activate_this_version";
-}
+
+//$active_status = 0;
+//$viewer_args['action'] = "deactivate_this_version";
+//if($args->do_activate_this)
+//{
+//	$active_status = 1;
+//	$viewer_args['action'] = "activate_this_version";
+//}
 
 $doRender = false;
 $edit_steps = false;
@@ -165,10 +166,11 @@ if($args->delete_tc_version)
 else if($args->move_copy_tc)
 {
 	// need to get the testproject for the test case
-	$tproject_id = $tcase_mgr->get_testproject($args->tcase_id);
+	// new dBug($args);
+	// $tproject_id = $tcase_mgr->get_testproject($args->tcase_id);
 	$the_tc_node = $tree_mgr->get_node_hierarchy_info($args->tcase_id);
 	$tc_parent_id = $the_tc_node['parent_id'];
-	$the_xx = $tproject_mgr->gen_combo_test_suites($tproject_id);
+	$the_xx = $tproject_mgr->gen_combo_test_suites($args->tproject_id);
 
 	$the_xx[$the_tc_node['parent_id']] .= ' (' . lang_get('current') . ')';
 	$tc_info = $tcase_mgr->get_by_id($args->tcase_id);
@@ -186,6 +188,7 @@ else if($args->move_copy_tc)
 	$gui->array_container = $the_xx;
 	$gui->testcase_id = $args->tcase_id;
 	$gui->name = $tc_info[0]['name'];
+	$gui->tproject_id = $args->tproject_id;
 
 	$smarty->assign('gui', $gui);
     $templateCfg = templateConfiguration('tcMove');
@@ -204,7 +207,6 @@ else if($args->do_copy)
 {
 	$user_feedback='';
 	$msg = '';
-	$action_result = 'copied';
 	$options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
                      'action_on_duplicate_name' => config_get('action_on_duplicate_name'),
                      'copy_also' => $args->copy);
@@ -230,11 +232,11 @@ else if($args->do_copy)
     }
 
 	$gui->refreshTree = $args->refreshTree;
-	$viewer_args['action'] = $action_result;
+	$viewer_args['action'] = 'copied';
 	$viewer_args['refreshTree']=$args->refreshTree? 1 : 0;
 	$viewer_args['msg_result'] = $msg;
 	$viewer_args['user_feedback'] = $user_feedback;
-	$tcase_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->tcase_id,
+	$tcase_mgr->show($smarty,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
 	                 $args->tcversion_id,$viewer_args,null, $args->show_mode);
 
 }
@@ -242,7 +244,6 @@ else if($args->do_create_new_version)
 {
 	$user_feedback = '';
 	$show_newTC_form = 0;
-	$action_result = "do_update";
 	$msg = lang_get('error_tc_add');
 	$op = $tcase_mgr->create_new_version($args->tcase_id,$args->user_id,$args->tcversion_id);
 	if ($op['msg'] == "ok")
@@ -251,32 +252,40 @@ else if($args->do_create_new_version)
 		$msg = 'ok';
 	}
 
-	$viewer_args['action'] = $action_result;
+	$viewer_args['action'] = "do_update";
 	$viewer_args['refreshTree'] = DONT_REFRESH;
 	$viewer_args['msg_result'] = $msg;
 	$viewer_args['user_feedback'] = $user_feedback;
 	
-	// used to implement go back ??
-	// 20090419 - BUGID - 
-	$gui->loadOnCancelURL = $_SESSION['basehref'] . 
-	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id .
-	                        "&show_mode={$args->show_mode}";
+	// used to implement go back 
+	$gui->loadOnCancelURL = $_SESSION['basehref'] . "/lib/testcases/archiveData.php?tproject_id={$args->tproject_id}" . 
+							"&edit=testcase&id={$args->tcase_id}&show_mode={$args->show_mode}";
+
 	
 	$testcase_version = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
-	$tcase_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->tcase_id,$testcase_version, 
-	                 $viewer_args,null, $args->show_mode);
+	$tcase_mgr->show($smarty,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
+					 $testcase_version,$viewer_args,null, $args->show_mode);
 }
 else if($args->do_activate_this || $args->do_deactivate_this)
 {
-	$gui->loadOnCancelURL = $_SESSION['basehref'] . 
-	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id .
-	                        "&show_mode={$args->show_mode}";
+
+	$gui->loadOnCancelURL = $_SESSION['basehref'] . "/lib/testcases/archiveData.php?tproject_id={$args->tproject_id}" . 
+							"&edit=testcase&id={$args->tcase_id}&show_mode={$args->show_mode}";
+
+	$active_status = 0;
+	$viewer_args['action'] = "deactivate_this_version";
+	if($args->do_activate_this)
+	{
+		$active_status = 1;
+		$viewer_args['action'] = "activate_this_version";
+	}
+
 
 	$tcase_mgr->update_active_status($args->tcase_id, $args->tcversion_id, $active_status);
 	$viewer_args['action'] = $action_result;
 	$viewer_args['refreshTree']=DONT_REFRESH;
 
-	$tcase_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->tcase_id,
+	$tcase_mgr->show($smarty,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
 	                 testcase::ALL_VERSIONS,$viewer_args,null, $args->show_mode);
 }
 

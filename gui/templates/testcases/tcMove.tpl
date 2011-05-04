@@ -1,11 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcMove.tpl,v 1.9 2010/05/01 19:34:52 franciscom Exp $
+@filesource	tcMove.tpl
 Purpose: smarty template - move/copy test case
 
-rev: 20090401 - franciscom - BUGID 2316 - copy options
-     20080104 - franciscom - added radio to choose position
-                             on destination (top/bottom) container.
+@internal revisions
 *}
 {include file="inc_head.tpl"}
 
@@ -19,7 +17,7 @@ rev: 20090401 - franciscom - BUGID 2316 - copy options
 <div class="workBack">
 <h1 class="title">{$labels.title_mv_cp_tc}</h1>
 
-<form method="post" action="lib/testcases/tcEdit.php?testcase_id={$gui->testcase_id}">
+<form method="post" action="lib/testcases/tcEdit.php?tproject_id={$gui->tproject_id}&testcase_id={$gui->testcase_id}">
   <p>
   {if $gui->move_enabled}
 	  {$labels.inst_move}<br />

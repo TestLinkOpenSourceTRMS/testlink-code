@@ -13,7 +13,8 @@
  * @link 		http://www.teamst.org/index.php
  *
  *
- * @internal Revisions:
+ * @internal revisions
+ *  20110505 - franciscom - get_builds() - interface changes
  *  20110415 - Julian - BUGID 4418 - Clean up priority usage within Testlink
  *	20110328 - franciscom - filter_cf_selection() fixed issue regarding simple types
  *	20110326 - franciscom - filter_cf_selection() make it safer
@@ -2175,13 +2176,26 @@ class testplan extends tlObjectWithAttachments
 	  rev :
 	  20101101 - franciscom - added closed_on_date
 	*/
-	function get_builds($id,$active=null,$open=null)
+	function get_builds($id,$active=null,$open=null,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-		$sql = " /* $debugMsg */ " . 
-			   " SELECT id,testplan_id, name, notes, active, is_open,release_date,closed_on_date " .
-			   " FROM {$this->tables['builds']} WHERE testplan_id = {$id} " ;
+		$my['options'] = array('output' => 'items');
+		$my['options'] = array_merge($my['options'], (array)$options);
+		
+		$sql = " /* $debugMsg */ ";
+		$order_by = null;
+		if( $my['options']['output'] == 'items' )
+		{
+			$order_by = "  ORDER BY name ASC";
+			$sql .=	" SELECT id,testplan_id, name, notes, active, is_open,release_date,closed_on_date ";
+		}
+		else
+		{
+			$sql .=	" SELECT COUNT(0) AS qty ";
+		}
+		$sql .=	 " FROM {$this->tables['builds']} WHERE testplan_id = {$id} " ;
+	
 		
 		if( !is_null($active) )
 		{
@@ -2192,15 +2206,20 @@ class testplan extends tlObjectWithAttachments
 			$sql .= " AND is_open=" . intval($open) . " ";
 		}
 		
-		$sql .= "  ORDER BY name ASC";
-		
-		$recordset = $this->db->fetchRowsIntoMap($sql,'id');
-		
-		if( !is_null($recordset) )
+		if( !is_null($order_by) )
 		{
-			$recordset = $this->_natsort_builds($recordset);
+			$sql .= $order_by;
+			$recordset = $this->db->fetchRowsIntoMap($sql,'id');
+			if( !is_null($recordset) )
+			{
+				$recordset = $this->_natsort_builds($recordset);
+			}
 		}
-		
+		else
+		{
+			$recordset = $this->db->get_recordset($sql);
+			$recordset = $recordset[0];
+		}
 		return $recordset;
 	}
 

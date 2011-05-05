@@ -798,6 +798,7 @@ function generateExecTree(&$db,&$menuUrl,$env,$filters,$options)
 	                        $options->testcases_colouring_by_selected_build : false;
 	// ---------------------------------------------------------------------------------------------
 
+	// echo __LINE__;
 	$test_spec = getTestSpec4ExecTree(&$tplan_mgr->tree_manager,$env,$my['filters']);     
 	// new dBug($my['filters']);
 	// new dBug($test_spec);
@@ -935,6 +936,8 @@ function getTestSpec4ExecTree(&$treeMgr,$enviro,$filters)
  	{
  		$my['filters']['exclude_branches'] = $filters->filter_toplevel_testsuite;
  	}
+ 	
+ 	// new dBug($enviro);
  	
     $test_spec = $treeMgr->get_subtree($enviro['tproject_id'],$my['filters'],$my['options']);
      

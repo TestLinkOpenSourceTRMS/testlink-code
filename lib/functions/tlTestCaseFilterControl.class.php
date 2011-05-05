@@ -416,14 +416,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				$params[$name] = $info;
 			}
 		}
+		
 		I_PARAMS($params, $this->args);
-
 		$type = 'filter_keywords_filter_type';
 		$this->args->{$type} = (isset($_REQUEST[$type])) ? trim($_REQUEST[$type]) : 'Or';
 
-		$extra_keys = array('filter_result_result',
-		                    'filter_result_method',
-		                    'filter_result_build');
+		$extra_keys = array('filter_result_result','filter_result_method','filter_result_build');
 
 		foreach ($extra_keys as $ek) {
 			$this->args->{$ek} = (isset($_REQUEST[$ek])) ? $_REQUEST[$ek] : null;
@@ -498,9 +496,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$at_least_one_active = false;
 
 		foreach ($this->all_settings as $name => $info) {
-			$init_method = "init_$name";
-			if (in_array($name, $this->mode_setting_mapping[$this->mode])
-			&& method_exists($this, $init_method)) {
+			$init_method = "init_$name"; //	echo $init_method . '<br>';
+			if (in_array($name, $this->mode_setting_mapping[$this->mode]) && method_exists($this, $init_method)) {
 				// is valid, configured, exists and therefore can be used, so initialize this setting
 				$this->$init_method();
 				$at_least_one_active = true;
@@ -747,7 +744,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			}
 						
 			if ($this->active_filters['filter_assigned_user']) {
-				// 3630
 				$unassigned = $this->active_filters['filter_assigned_user_include_unassigned'] ? '1' : '0';
 				$string .= '&filter_assigned_user='. 
 				           serialize($this->active_filters['filter_assigned_user']) .
@@ -1036,30 +1032,36 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$_SESSION[$session_key] = $this->settings[$key]['selected'];
 	} // end of method
 
-	private function init_setting_testplan() {
+
+
+	private function init_setting_testplan() 
+	{
 
 		if (is_null($this->testplan_mgr)) {
 			$this->testplan_mgr = new testplan($this->db);
 		}
 		
 		$key = 'setting_testplan';
-		$testplans = $this->user->getAccessibleTestPlans($this->db, $this->args->testproject_id);
-
-		if (isset($_SESSION['testplanID']) && $_SESSION['testplanID'] != $this->args->{$key}) {
+		$tplanSet = $this->user->getAccessibleTestPlans($this->db, $this->args->testproject_id);
+		$tplan_id = $this->args->testplan_id;
+		if( intval($this->args->testplan_id) != $this->args->{$key}) 
+		{
 			// testplan was changed, we need to reset all filters
 			// --> they were chosen for another testplan, not this one!
 			$this->args->reset_filters = true;
 
 			// check if user is allowed to set chosen testplan before changing
-			foreach ($testplans as $plan) {
-				if ($plan['id'] == $this->args->{$key}) {
-					setSessionTestPlan($plan);
+			foreach ($tplanSet as $item) 
+			{
+				if ($item['id'] == $this->args->{$key}) 
+				{
+					$tplan_id = $item['id'];
+					break;
 				}
 			}
 		}
 
-		// now load info from session
-		$info = $this->testplan_mgr->get_by_id($_SESSION['testplanID']);
+		$info = $this->testplan_mgr->get_by_id($tplan_id);
 		$this->args->testplan_name = $info['name'];
 		$this->args->testplan_id = $info['id'];
 		$this->args->{$key} = $info['id'];
@@ -1068,21 +1070,23 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		// Now get all selectable testplans for the user to display.
 		// For execution, don't take testplans into selection which have no (active/open) builds!
 		// For plan add mode, add every plan no matter if he has builds or not.
-		foreach ($testplans as $plan) {
-			// BUGID 4166 - List also test plans without builds for "plan_mode"
+		// BUGID 4166 - List also test plans without builds for "plan_mode"
+		foreach ($tplanSet as $item) 
+		{
 			$add_plan = $this->mode == 'plan_add_mode' || $this->mode == 'plan_mode';
 			if (!$add_plan) {
-				$builds = $this->testplan_mgr->get_builds($plan['id'],
-				                                          testplan::GET_ACTIVE_BUILD,
-				                                          testplan::GET_OPEN_BUILD);
-				$add_plan =  (is_array($builds) && count($builds));
+				$buildCount = $this->testplan_mgr->get_builds($item['id'],testplan::GET_ACTIVE_BUILD,
+				                                          	  testplan::GET_OPEN_BUILD,array('output' => 'count') );
+				$add_plan =  ($buildCount['qty'] > 0);
 			}
 			
 			if ($add_plan) {
-				$this->settings[$key]['items'][$plan['id']] = $plan['name'];
+				$this->settings[$key]['items'][$item['id']] = $item['name'];
 			}
 		}
 	} // end of method
+
+
 
 	private function init_setting_platform() {
 		if (!$this->platform_mgr) {
@@ -1395,12 +1399,15 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}
 	} // end of method
 
-	private function init_filter_custom_fields() {
+
+	private function init_filter_custom_fields() 
+	{
 		$key = 'filter_custom_fields';
 		$no_warning = true;
 		
 		// BUGID 3930
 		global $g_locales_date_format;
+		
 		$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
 		$date_format = str_replace('%', '', $g_locales_date_format[$locale]);
 		

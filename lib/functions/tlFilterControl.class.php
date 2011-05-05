@@ -1,5 +1,4 @@
 <?php
-
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
@@ -217,11 +216,10 @@ abstract class tlFilterControl extends tlObjectWithDB {
 		// Then initialize and use only the remaining filters.
 		$this->read_config();
 		$this->init_args($dbHandler);
-
+		
 		// set filter mode to advanced or simple
-		$this->advanced_filter_mode = ($this->filter_mode_choice_enabled 
-		                              && $this->args->advanced_filter_mode
-		                              && !$this->args->simple_filter_mode);
+		$this->advanced_filter_mode = ($this->filter_mode_choice_enabled && 
+									   $this->args->advanced_filter_mode && !$this->args->simple_filter_mode);
 		
 		// init button labels
     	if ($this->advanced_filter_mode) {
@@ -284,7 +282,6 @@ abstract class tlFilterControl extends tlObjectWithDB {
 		static $treeMgr;
 		
 		$this->args = new stdClass();
-
 		$this->args->basehref = $_SESSION['basehref'];
 		
 		// get user's data
@@ -292,20 +289,8 @@ abstract class tlFilterControl extends tlObjectWithDB {
 		$this->args->user_id = $this->user->dbID;
 		$this->args->user_name = $this->user->getDisplayName();
 		
-		// $this->args->testproject_id = isset($_SESSION['testprojectID']) ?
-		//                               $_SESSION['testprojectID'] : 0;
-		// $this->args->testproject_name = isset($_SESSION['testprojectName']) ?
-		//                                $_SESSION['testprojectName'] : 0;
-		
-		// to do not break all till solution will completed
-		
 		$this->args->testproject_id = intval(isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0);
 		$this->args->testproject_name = '';
-		// if( $this->args->testproject_id == 0 )
-		// {
-		// 	// go the old way
-		// 	$this->args->testproject_id = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
-		// }
 		if( $this->args->testproject_id > 0 )
 		{
 			if(is_null($treeMgr))
@@ -314,8 +299,16 @@ abstract class tlFilterControl extends tlObjectWithDB {
 			}
 			$dummy = $treeMgr->get_node_hierarchy_info($this->args->testproject_id);
 			$this->args->testproject_name = $dummy['name'];
-		}
 
+
+			$this->args->testplan_id = intval(isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0);
+			$this->args->testplan_name = '';
+			if( $this->args->testplan_id > 0 )
+			{
+				$dummy = $treeMgr->get_node_hierarchy_info($this->args->testplan_id);
+				$this->args->testplan_name = $dummy['name'];
+			}
+		}
 		
 		$params = array();
 

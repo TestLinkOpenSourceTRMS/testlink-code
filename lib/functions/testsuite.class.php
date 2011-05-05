@@ -399,9 +399,10 @@ class testsuite extends tlObjectWithAttachments
 	 * returns: -
 	 *
 	 **/
-	function show(&$smarty,$guiObj,$template_dir, $id, $options=null,
+	function show(&$smarty,$tproject_id,$guiObj,$template_dir, $id, $options=null,
 	              $sqlResult = '', $action = 'update',$modded_item_id = 0)
 	{
+		// need to understand why sometimes $guiObj can be null
 		$gui = is_null($guiObj) ? new stdClass() : $guiObj;
 		$gui->cf = '';
 	    $gui->sqlResult = '';
@@ -439,6 +440,12 @@ class testsuite extends tlObjectWithAttachments
 		$gui->id = $id;
 	 	$gui->idpage_title = lang_get('testsuite');
 		$gui->level = 'testsuite';
+		$gui->tproject_id = $tproject_id;
+		
+		$gui->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id=$tproject_id " .
+						 		 ' target="mainframe" class="bold" ' .
+        			  	 		 ' title="' . lang_get('menu_manage_keywords') . '"';
+		
 		
 		$smarty->assign('gui',$gui);
 		$smarty->display($template_dir . 'containerView.tpl');
@@ -473,8 +480,8 @@ class testsuite extends tlObjectWithAttachments
 	       20080105 - franciscom - added $userTemplateCfg
 	       20071202 - franciscom - interface changes -> template_dir
 	*/
-	function viewer_edit_new(&$smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, $action, $parent_id, 
-	                         $id=null, $messages=null, $userTemplateKey=null, $userInput=null)
+	function viewer_edit_new($tproject_id,&$smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, 
+							 $action, $parent_id,$id=null, $messages=null, $userTemplateKey=null, $userInput=null)
 	{
 	
 		$internalMsg = array('result_msg' => null,  'user_feedback' => null);
@@ -499,6 +506,12 @@ class testsuite extends tlObjectWithAttachments
 						'add_testsuite'  => 'containerNew.tpl');
 		
 		$the_tpl = $a_tpl[$action];
+		
+		$gui = new stdClass();
+		$gui->containerID = $parent_id;
+		$gui->tproject_id = $tproject_id;
+
+		$smarty->assign('gui', $gui);
 		$smarty->assign('sqlResult', $internalMsg['result_msg']);
 		$smarty->assign('containerID',$parent_id);	 
 		$smarty->assign('user_feedback', $internalMsg['user_feedback'] );

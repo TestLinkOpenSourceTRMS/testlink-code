@@ -127,7 +127,7 @@ function validateForm(f)
    {/if}
    
   <div>
-   <a href={$gsmarty_href_keywordsView}>{$labels.tc_keywords}</a>
+   <a href={$gui->keywordsViewHREF}>{$labels.tc_keywords}</a>
 	 {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 	 </div>
 	<br></br>

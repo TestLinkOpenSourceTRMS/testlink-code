@@ -61,7 +61,7 @@ switch($args->feature)
 		}
 		else
 		{
-			$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id,array('show_mode' => $args->show_mode));
+			$item_mgr->show($smarty,$args->tproject_id,$gui,$templateCfg->template_dir,$args->id,array('show_mode' => $args->show_mode));
         }
         
 		break;

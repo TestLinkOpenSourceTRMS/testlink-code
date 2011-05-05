@@ -21,7 +21,7 @@ $Id: inc_testsuite_viewer_ro.tpl,v 1.4 2010/01/02 18:19:34 franciscom Exp $
 	{* ----- keywords -------------------------------------- *}
 	<tr>
 	  	<td style="width: 20%">
-    		<a href={$gsmarty_href_keywordsView}>{$labels.keywords}</a>{$tlCfg->gui_title_separator_1}
+    		<a href={$gui->keywordsViewHREF}>{$labels.keywords}</a>{$tlCfg->gui_title_separator_1}
     	</td>
     	<td>
     	  	{foreach item=keyword_item from=$gui->keywords_map}

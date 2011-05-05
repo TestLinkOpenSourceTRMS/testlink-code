@@ -65,31 +65,31 @@ viewer for test case in test specification
 {assign var="showMode" value=$gui->show_mode} 
 
 {* Used on several operations to implement goback *}
-{* BUGID 3493 - added show_mode *}
-{assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id&show_mode=$showMode"}
-             
-{assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
-{assign var="hrefReqSpecMgmt" value="$basehref$hrefReqSpecMgmt"}
-
-{assign var="hrefReqMgmt" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
-{assign var="hrefReqMgmt" value="$basehref$hrefReqMgmt"}
-
-{assign var="url_args" value="tcAssign2Tplan.php?tcase_id=$tcase_id&tcversion_id=$tcversion_id"}
-{assign var="hrefAddTc2Tplan"  value="$basehref$module$url_args"}
-
-
-{* BUGID 3493 *}
-{assign var="url_args" value="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
+{assign var="tcViewAction" value=$gui->tcViewAction}
+{assign var="tcViewAction" value="$tcViewAction$tcase_id"}
 {assign var="goBackAction" value="$basehref$tcViewAction"}
 {assign var="goBackActionURLencoded" value=$goBackAction|escape:'url'}
+
+
+{assign var="hrefReqSpecMgmt" value=$gui->reqSpecMgmtHREF}
+{assign var="hrefReqSpecMgmt" value="$basehref$hrefReqSpecMgmt"}
+
+{assign var="hrefReqMgmt" value=$gui->reqMgmtHREF}
+{assign var="hrefReqMgmt" value="$basehref$hrefReqMgmt"}
+
+{assign var="url_args" value="&tcase_id=$tcase_id&tcversion_id=$tcversion_id"}
+{assign var="hrefAddTc2Tplan"  value=$gui->addTc2TplanHREF}
+{assign var="hrefAddTc2Tplan"  value="$basehref$hrefAddTc2Tplan$url_args"}
+
+{assign var="url_args" value="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
 {assign var="url_args" value="$url_args&goback_url=$goBackActionURLencoded&show_mode=$showMode&step_id="}
 {assign var="hrefEditStep"  value="$basehref$module$url_args"}
 
 
-{assign var="tcExportAction" value="lib/testcases/tcExport.php?goback_url=$goBackActionURLencoded&show_mode=$showMode"}
+{assign var="tcExportAction" value=$gui->tcExportAction}
+{assign var="tcExportAction" value="$tcExportAction&goback_url=$goBackActionURLencoded"}
 {assign var="exportTestCaseAction" value="$basehref$tcExportAction"}
 
-{assign var="printTestCaseAction" value="lib/testcases/tcPrint.php?show_mode=$showMode"}
 
 {assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
 {assign var="updater_userinfo" value=""}
@@ -248,7 +248,7 @@ viewer for test case in test specification
 	<form style="display: inline;" id="tcprint" name="tcprint" method="post" action="" >
 		<input type="button" name="tcPrinterFriendly" style="margin-left: 3px;" value="{$tcView_viewer_labels.btn_print_view}" 
 		       onclick="javascript:openPrintPreview('tc',{$args_testcase.testcase_id},{$args_testcase.id},null,
-			                                          '{$printTestCaseAction}');"/>
+			                                          '{$gui->printTestCaseAction}');"/>
 	</form>
 	</span>
 </div> {* class="groupBtn" *}
@@ -375,7 +375,7 @@ function launchInsertStep(step_id)
 	<div {$addInfoDivStyle}>
 		<table cellpadding="0" cellspacing="0" style="font-size:100%;">
 			    <tr>
-			     	<td width="35%" style="vertical-align:top;"><a href={$gsmarty_href_keywordsView}>{$tcView_viewer_labels.keywords}</a>: &nbsp;
+			     	<td width="35%" style="vertical-align:top;"><a href={$gui->keywordsViewHREF}>{$tcView_viewer_labels.keywords}</a>: &nbsp;
 					</td>
 				 	<td style="vertical-align:top;">
 				 	  	{foreach item=keyword_item from=$args_keywords_map}

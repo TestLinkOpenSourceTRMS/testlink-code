@@ -712,7 +712,6 @@ class testcase extends tlObjectWithAttachments
 	    $gui->linked_versions=null;
 		$gui->tc_current_version = array();
 	    $gui->bodyOnLoad="";
-	    // 20101008 - asimon - BUGID 3311
 	    $gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
 	    $gui->submitCode="";
 	    $gui->dialogName = '';
@@ -724,6 +723,7 @@ class testcase extends tlObjectWithAttachments
 		$gui->arrReqs = array();
 		$gui->cf_current_version = null;
 		$gui->cf_other_versions = null;
+		
 		
 	
 		$gui_cfg = config_get('gui');
@@ -941,7 +941,27 @@ class testcase extends tlObjectWithAttachments
     	$tcStatusCfg['status_code'] = $dummy['cfg'];
     	$tcStatusCfg['code_label'] = $dummy['lbl'];
 		$gui->domainTCStatus = $tcStatusCfg['code_label'];
+
+
+		$gui->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id={$tproject_id} " .
+						 		 ' target="mainframe" class="bold" ' .
+        			  	 		 ' title="' . lang_get('menu_manage_keywords') . '"';
+
+
+		$gui->reqSpecMgmtHREF = "lib/general/frmWorkArea.php?tproject_id={$tproject_id}&feature=reqSpecMgmt";
+		$gui->reqMgmtHREF = "lib/requirements/reqView.php?tproject_id={$tproject_id}" . 
+							"&showReqSpecTitle=1&requirement_id=";
 		
+		$gui->addTc2TplanHREF = "lib/testcases/tcAssign2Tplan.php?tproject_id={$tproject_id}";
+		
+		$gui->tcViewAction = "lib/testcases/archiveData.php?tproject_id={$tproject_id}" . 
+							 "&show_mode=$gui->show_mode&tcase_id=";
+
+		$gui->printTestCaseAction = "lib/testcases/tcPrint.php?tproject_id=$tproject_id&show_mode=$gui->show_mode";
+
+		$gui->tcExportAction = "lib/testcases/tcExport.php?tproject_id=$tproject_id&show_mode=$gui->show_mode";
+
+
 		$gui->cf = null; 
 		$gui->refreshTree = isset($gui->refreshTree) ? $gui->refreshTree : $viewer_defaults['refreshTree'];
 		$gui->sqlResult = $viewer_defaults['msg_result'];

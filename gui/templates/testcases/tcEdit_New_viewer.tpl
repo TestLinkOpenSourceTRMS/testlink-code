@@ -113,7 +113,7 @@ Purpose: smarty template - create new testcase
 	{/if}
 
 	<div>
-	<a href={$gsmarty_href_keywordsView}>{$labels.tc_keywords}</a>
+	<a href={$gui->keywordsViewHREF}>{$labels.tc_keywords}</a>
 	{include file="opt_transfer.inc.tpl" option_transfer=$gui->opt_cfg}
 	</div>
 	

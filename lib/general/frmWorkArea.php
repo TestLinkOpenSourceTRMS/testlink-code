@@ -26,9 +26,6 @@ testlinkInitPage($db);
 
 $args = init_args();
 
-
-// new dBug($args);
-
 // --------------------------------------------------------------------------------------
 // Important Notes for Developers
 // --------------------------------------------------------------------------------------
@@ -62,7 +59,7 @@ $aa_tfp = array(
      'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
      'test_urgency' => 'lib/plan/planTCNavigator.php?feature=test_urgency',
      'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment',
-     'executeTest' => 'lib/execute/execNavigator.php',
+     'executeTest' => "lib/execute/execNavigator.php?tplan_id={$args->tplan_id}",
      'showMetrics' => 'lib/results/resultsNavigator.php',
      'reqSpecMgmt' => 'lib/requirements/reqSpecListTree.php'
 );

@@ -413,7 +413,13 @@ $tlCfg->frame_workarea_default_width = "30%";
 $tlCfg->gui->show_icon_edit = false;
 
 /**
- * Order to use when building a testproject combobox (value must be SQL compliant)
+ * Order to use when building:
+ * test project combobox (value must be SQL compliant)
+ * list of test projects on test project view feature
+ *
+ * IS CRITIC that order be the SAME on combo and list on project view because context logic
+ * (test project id is context) dependends on this.
+ *
  * For example:
  * 		'ORDER BY name'
  * 		'ORDER_BY nodes_hierarchy.id DESC' -> similar effect to order last created firts

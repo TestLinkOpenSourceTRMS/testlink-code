@@ -53,6 +53,7 @@ function init_args(&$dbHandler)
 		
 	R_PARAMS($iParams,$args);
 	
+	$args->tproject_name = '';
 	if( $args->tproject_id > 0 )
 	{
 		$treeMgr = new tree($dbHandler);

@@ -5,8 +5,8 @@ Purpose: smarty template - keyword export
 @internal revisions
 *}
 
-{assign var="action_url" value="lib/keywords/keywordsExport.php?tproject_id=$gui->tproject_id&doAction=do_export"}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$action_url = "lib/keywords/keywordsExport.php?doAction=do_export"}
+{$cfg_section = $smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 
@@ -64,6 +64,7 @@ function validateForm(f)
   	</table>
   	
   	<div class="groupBtn">
+  		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
   		<input type="submit" name="export" value="{$labels.btn_export}" />
   		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
 			onclick="javascript: location.href=fRoot+'lib/keywords/keywordsView.php?tproject_id={$gui->tproject_id}';" />

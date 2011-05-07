@@ -19,13 +19,11 @@
  		tooltip: {anchor: 'right', text:'Add new node to three menu.', title:'Add New Node'},
  
    
-   Revision:
+   @internal revisions
       20110308 - Julian - BUGID 3410 - Smarty 3.0 compatibility
                           TODO: get return /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(v); running
                                 with Smarty 3.x -> search for "TODO: insert line from revision log"
-                          
-   
-  *}
+*}
 {lang_get var="labels" 
           s="inventory_title,inventory_empty,sort_table_by_column,
           inventory_name,inventory_notes,inventory_ipaddress,
@@ -166,7 +164,6 @@ Ext.onReady(function(){
 			style: { padding: '0px 10px' },
             handler: deviceEdit
         },{
-//            ref: '../removeBtn',
             iconCls: 'icon_device_delete',
             text: tls_delete,
  			scale: 'medium',
@@ -188,7 +185,7 @@ Ext.onReady(function(){
 		                    	store.remove(rows[0]);
 		                    	Ext.Ajax.request
 		                    	({
-									url : 'lib/inventory/deleteInventory.php?machineID=' + id,
+									url : 'lib/inventory/deleteInventory.php?tproject_id={$gui->tproject_id}&machineID=' + id,
 									success: function ( result, request ) 
 									{
 										var jsonData = Ext.util.JSON.decode(result.responseText);
@@ -235,13 +232,11 @@ Ext.onReady(function(){
 				success:function(form, action, o) 
 				{
 					store.reload();
-	//				store.insert(action.result.record["machineID"],action.result.record);
 					if (action.result.success)
 					{
 						editWindow.hide();
 					}
 					showFeedback(action.result.success,action.result.userfeedback);
-	//				inventoryGrid.getView().refresh();
 				},
 				failure:function(form, action) 
 				{
@@ -259,7 +254,6 @@ Ext.onReady(function(){
 		method: 'POST',
         url:'lib/inventory/setInventory.php?tproject_id={$gui->tproject_id}',
         defaultType: 'textfield',
-//		defaults: { width: 230 },
         items:  
 	    [
 	    	{
@@ -384,18 +378,14 @@ Ext.onReady(function(){
         title: tls_dlg_set_title,
         width: 500,
         height: 400,
-//		autoHeight:true,
         minWidth: 300,
         minHeight: 200,
         layout: 'fit',
-//		layout:'absolute',
         plain: true,
         bodyStyle: 'padding:5px;',
         buttonAlign: 'center',
 		modal: true,
 		shadow: true,
-//		labelWidth: 80,
-//		frame: true,
         items: deviceEditForm,
         closeAction: 'hide',
 		buttons: 

@@ -58,7 +58,7 @@ switch ($action)
 }
 
 $templateResource = $templateCfg->default_template;
-if($op->status)
+if($op->status > 0)
 {
 	$templateResource = $op->template;
 }
@@ -74,6 +74,7 @@ if ($templateResource != $templateCfg->default_template)
 	$gui->keywords = $tprojectMgr->getKeywords($args->tproject_id);
 }
 
+// new dBug($gui);
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateResource);
@@ -193,6 +194,7 @@ function do_update(&$smarty,&$argsObj,&$guiObj,&$tproject_mgr)
 	$ret->status = $tproject_mgr->updateKeyword($argsObj->tproject_id,$argsObj->keyword_id,
 										  		$argsObj->keyword,$argsObj->notes);
 
+//	new dBug($ret);
 	return $ret;
 }
 

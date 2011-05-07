@@ -65,7 +65,7 @@ function validateForm(f)
     <input type="submit" name="actionButton" value="{$gui->submit_button_label}"
 	       onclick="doAction.value='{$gui->submit_button_action}'" />
   	<input type="button" value="{$labels.btn_cancel}"
-	         onclick="javascript:location.href=fRoot+'lib/keywords/keywordsView.php'" />
+	         onclick="javascript:location.href=fRoot+'lib/keywords/keywordsView.php?tproject_id={$gui->tproject_id}'" />
   	</div>
   	</form>
   </div>

@@ -14,6 +14,7 @@
  * @todo Verify dependency before delete testplan
  *
  * @internal revision
+ * 20110506 - franciscom - Refactoring for TABBED Browsing
  * 20101207 - franciscom - BUGID 3999: Test Project list does not refresh after deleted
  * 20100313 - franciscom - reduced interface 'width' with smarty
  * 20100217 - franciscom - fixed errors showed on event viewer due to missing properties
@@ -33,15 +34,11 @@ $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr);
 checkRights($db,$_SESSION['currentUser'],$args);
 
-new dBug($args);
-
 $gui = new stdClass();
 $gui = $args;
 $gui->tproject_id = $args->tprojectID;
 $gui->canManage = $_SESSION['currentUser']->hasRight($db,"mgt_modify_product",$gui->tproject_id);
 $gui->found = 'yes';
-
-new dBug($gui);
 
 $ui = new stdClass();
 $ui->doActionValue = '';
@@ -118,6 +115,9 @@ switch($args->doAction)
     case "doDelete":
     case "doUpdate":
         $gui->tprojects = getTprojectSet($tproject_mgr,$args->userID);
+
+        // Context Need to be updated using first test project on set
+        $gui->contextTprojectID = $gui->tprojects[0]['id'];
         $template= is_null($template) ? 'projectView.tpl' : $template;
         $smarty->assign('gui',$gui);
         $smarty->display($templateCfg->template_dir . $template);

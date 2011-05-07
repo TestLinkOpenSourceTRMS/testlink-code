@@ -1,11 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcImport.tpl,v 1.15 2010/11/06 11:42:47 amkhullar Exp $
+
 Purpose: smarty template - manage import of test cases and test suites
 
-rev:
-    20100821 - franciscom - refactoring to use $gui 
-    20091122 - franciscom - refactoring to use alert_message()
+@filesource	tcImport.tpl
+@internal revisions
+20100821 - franciscom - refactoring to use $gui 
 *}
 
 {lang_get var="labels"
@@ -14,7 +14,7 @@ rev:
              duplicate_criteria,action_for_duplicates,
              action_on_duplicated_name,warning,btn_cancel,title_imp_tc_data'}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes"}
@@ -64,13 +64,13 @@ rev:
 	</table>
 	<p>{$labels.max_size_cvs_file1} {$gui->importLimitKB} {$labels.max_size_cvs_file2}</p>
 	<div class="groupBtn">
+		<input type="hidden" id="tproject_id" name="tproject_id" value="{$gui->tproject_id}" />
 		<input type="hidden" name="useRecursion" value="{$gui->useRecursion}" />
 		<input type="hidden" name="bIntoProject" value="{$gui->bIntoProject}" />
 		<input type="hidden" name="containerID" value="{$gui->containerID}" />
 		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitBytes}" /> {* restrict file size *}
 		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
-		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
-			                   onclick="javascript:history.back();" />
+		<input type="button" name="cancel" value="{$labels.btn_cancel}" onclick="javascript:history.back();" />
 	</div>
 </form>
 {else}

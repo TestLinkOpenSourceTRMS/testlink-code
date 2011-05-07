@@ -82,6 +82,7 @@ $TLS_important_notice = "Important Notice";
 $TLS_keyword = "Keyword";
 $TLS_log_message = "Log message";
 $TLS_mandatory = "Mandatory fields";
+$TLS_mandatory_hint = "*";
 $TLS_manual = "Manual";
 $TLS_Milestone = "Milestone";
 $TLS_months	= "months";

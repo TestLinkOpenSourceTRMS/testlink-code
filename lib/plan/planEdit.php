@@ -1,4 +1,4 @@
-i<?php
+<?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
@@ -34,7 +34,9 @@ $tproject_mgr = new testproject($db);
 $smarty = new TLSmarty();
 $do_display=false;
 $template = null;
-$args = init_args($_REQUEST,$tproject_mgr->tree_manager);
+$args = init_args($tproject_mgr->tree_manager);
+// new dBug($args);die();
+
 checkRights($db,$_SESSION['currentUser'],$args);
 
 
@@ -232,27 +234,27 @@ if($do_display)
  *                   generated variables.
  *
 */
-function init_args($request_hash,&$treeMgr)
+function init_args(&$treeMgr)
 {
 	$args = new stdClass();
-	$request_hash = strings_stripSlashes($request_hash);
+	 $_REQUEST = strings_stripSlashes( $_REQUEST);
 
 	$nullable_keys = array('testplan_name','notes','rights','active','do_action');
 	foreach($nullable_keys as $value)
  	{
-		$args->$value = isset($request_hash[$value]) ? trim($request_hash[$value]) : null;
+		$args->$value = isset( $_REQUEST[$value]) ? trim( $_REQUEST[$value]) : null;
 	}
 
 	$checkboxes_keys = array('is_public' => 0,'active' => 0);
 	foreach($checkboxes_keys as $key => $value)
 	{
-		$args->$key = isset($request_hash[$key]) ? 1 : 0;
+		$args->$key = isset( $_REQUEST[$key]) ? 1 : 0;
     }
 
-	$intval_keys = array('copy_from_tplan_id' => 0,'tplan_id' => 0);
+	$intval_keys = array('copy_from_tplan_id' => 0,'tplan_id' => 0, 'tproject_id' => 0);
 	foreach($intval_keys as $key => $value)
 	{
-	    $args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
+	    $args->$key = isset( $_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
 	}
 	$args->source_tplanid = $args->copy_from_tplan_id;
 	$args->copy = ($args->copy_from_tplan_id > 0) ? TRUE : FALSE;
@@ -264,22 +266,26 @@ function init_args($request_hash,&$treeMgr)
 
 	foreach($boolean_keys as $key => $value)
 	{
-	    $args->copy_options[$key]=isset($request_hash[$key]) ? 1 : 0;
+	    $args->copy_options[$key]=isset( $_REQUEST[$key]) ? 1 : 0;
 	}
 
-	$args->copy_assigned_to = isset($request_hash['copy_assigned_to']) ? 1 : 0;
-	$args->tcversion_type = isset($request_hash['tcversion_type']) ? $request_hash['tcversion_type'] : null;
+	$args->copy_assigned_to = isset( $_REQUEST['copy_assigned_to']) ? 1 : 0;
+	$args->tcversion_type = isset( $_REQUEST['tcversion_type']) ?  $_REQUEST['tcversion_type'] : null;
 	$args->user_id = $_SESSION['userID'];
 
 	
 	$args->tproject_name = '';
-	$args->tproject_id = isset($request_hash['tproject_id']) ? intval($request_hash['tproject_id']) : 0;
+	if( $args->tproject_id == 0 && $args->tplan_id > 0 )
+	{
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tplan_id);
+		$args->tproject_id = $dummy['parent_id'];
+	}
+	
 	if( $args->tproject_id > 0 )
 	{
 		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
 		$args->tproject_name = $dummy['name'];
 	}
-
 	return $args;
 }
 

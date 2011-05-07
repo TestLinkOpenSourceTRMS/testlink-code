@@ -1,10 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planExport.tpl,v 1.8 2010/11/13 09:57:54 franciscom Exp $ 
+@filesource	planExport.tpl
 
 test plan export
 
-Revisions:
+@internal revisions
 20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 20101009 - franciscom - BUGID 3270 - improvements to avoid event viewer warnings
 20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
@@ -14,7 +14,7 @@ Revisions:
           s='export_filename,warning_empty_filename,file_type,warning,export_cfields,title_req_export,
              view_file_format_doc,export_with_keywords,btn_export,btn_cancel'} 
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section = $smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -67,7 +67,7 @@ function validateForm(f)
   	<select name="exportType">
   		{html_options options=$gui->exportTypes}
   	</select>
-	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{lang_get s="view_file_format_doc"}</a>
+	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{$labels.view_file_format_doc}</a>
   	</td>
   	</tr>
   	</table>

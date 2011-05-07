@@ -21,6 +21,7 @@ checkRights($db,$_SESSION['currentUser'],$args);
 
 $gui = new stdClass();
 $gui->tproject_id = $args->tproject_id;
+$gui->goback_url = "lib/plan/planView.php?tproject_id={$args->tproject_id}";
 $gui->user_feedback = '';
 $gui->grants = new stdClass();
 $gui->grants->testplan_create=has_rights($db,"mgt_testplan_create");

@@ -1,27 +1,29 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-Filename: planView.tpl
 smarty template - edit / delete Test Plan 
 
 Development hint:
-     some smarty and javascript variables are created on the inc_*.tpl files.
-     
-Rev:
-	20110220 - franciscom - use of thead and tbody on table
-							BUGID 4246 - add simple table ruler via events
-    20101017 - franciscom - image access refactored (tlImages)
-    20100925 - franciscom - BUGID 3649 - test plan export/import -> EXPORT
+some smarty and javascript variables are created on the inc_*.tpl files.
+
+@filesource	planView.tpl
+@internal revisions
+20110220 - franciscom - use of thead and tbody on table
+						BUGID 4246 - add simple table ruler via events
+20101017 - franciscom - image access refactored (tlImages)
+20100925 - franciscom - BUGID 3649 - test plan export/import -> EXPORT
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section = $smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}
-{assign var="managerURL" value="lib/plan/planEdit.php"}
-{assign var="editAction" value="$managerURL?do_action=edit&amp;tplan_id="}
-{assign var="deleteAction" value="$managerURL?do_action=do_delete&tplan_id="}
-{assign var="createAction" value="$managerURL?do_action=create"}
-{assign var="exportAction" value="lib/plan/planExport.php?tplan_id="}
-{assign var="importAction" value="lib/plan/planImport.php?tplan_id="}
+{$managerURL="lib/plan/planEdit.php"}
+
+{$goBackActionURLencoded=$gui->goback_url|escape:'url'}
+{$editAction="$managerURL?do_action=edit&tplan_id="}
+{$deleteAction="$managerURL?do_action=do_delete&tplan_id="}
+{$createAction="$managerURL?do_action=create"}
+{$exportAction="lib/plan/planExport.php?goback_url=$goBackActionURLencoded&tplan_id="}
+{$importAction="lib/plan/planImport.php?goback_url=$goBackActionURLencoded&tplan_id="}
 
 
 {lang_get var="labels" 

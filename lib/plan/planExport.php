@@ -30,10 +30,11 @@ require_once("../functions/common.php");
 require_once("../functions/xml.inc.php");
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-$args = init_args();
+$tplan_mgr = new testplan($db);
+
+$args = init_args($tplan_mgr->tree_manager);
 checkRights($db,$_SESSION['currentUser'],$args);
 
-$tplan_mgr = new testplan($db);
 $gui = initializeGui($args,$tplan_mgr);
 
 if ($args->doExport)
@@ -67,7 +68,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   returns: 
 
 */
-function init_args()
+function init_args(&$treeMgr)
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
     $args = new stdClass();
@@ -102,9 +103,20 @@ function init_args()
     	$args->export_filename = str_replace(' ','_',$args->export_filename);
     }
     
-    $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
+    $args->goback_url = isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
     $args->exportContent=isset($_REQUEST['exportContent']) ? $_REQUEST['exportContent'] : 'linkedItems';
 
+	if($args->tproject_id == 0 && $args->tplan_id > 0)
+	{
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tplan_id);
+		$args->tproject_id = $dummy['parent_id'];
+	}
+	
+	if( $args->tproject_id > 0 )
+	{
+		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+	}
 
     return $args;
 }

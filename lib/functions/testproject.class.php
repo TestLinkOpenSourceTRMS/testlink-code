@@ -890,7 +890,6 @@ function setPublicStatus($id,$status)
 	{
 		$kw = new tlKeyword($id);
 		$kw->initialize($id,$tprojectID,$keyword,$notes);
-		new dBug($kw);
 		
 		$result = $kw->writeToDB($this->db);
 		if ($result >= tl::OK)

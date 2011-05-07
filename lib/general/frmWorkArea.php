@@ -44,29 +44,29 @@ $args = init_args();
 $req_cfg = config_get('req_cfg');
 
 $aa_tfp = array( 
-     'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',
      'assignReqs' => 'lib/testcases/listTestCases.php?feature=assignReqs',
-     'searchTc' => 'lib/testcases/tcSearchForm.php',
-     'searchReq' => 'lib/requirements/reqSearchForm.php',
-     'searchReqSpec' => 'lib/requirements/reqSpecSearchForm.php',
-     'printTestSpec' => 'lib/results/printDocOptions.php?type=testspec',
-     'printReqSpec' => 'lib/results/printDocOptions.php?type=reqspec',
+     'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',
+     'executeTest' => "lib/execute/execNavigator.php?tplan_id={$args->tplan_id}",
      'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
+     'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
      'planAddTC'    => 'lib/plan/planAddTCNavigator.php',
      'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=planRemoveTC',
      'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=planUpdateTC',
+     'printTestSpec' => 'lib/results/printDocOptions.php?type=testspec',
+     'printReqSpec' => 'lib/results/printDocOptions.php?type=reqspec',
+     'reqSpecMgmt' => 'lib/requirements/reqSpecListTree.php',
+     'searchTc' => 'lib/testcases/tcSearchForm.php',
+     'searchReq' => 'lib/requirements/reqSearchForm.php',
+     'searchReqSpec' => 'lib/requirements/reqSpecSearchForm.php',
      'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
-     'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
-     'test_urgency' => 'lib/plan/planTCNavigator.php?feature=test_urgency',
-     'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment',
-     'executeTest' => "lib/execute/execNavigator.php?tplan_id={$args->tplan_id}",
      'showMetrics' => 'lib/results/resultsNavigator.php',
-     'reqSpecMgmt' => 'lib/requirements/reqSpecListTree.php'
+     'test_urgency' => 'lib/plan/planTCNavigator.php?feature=test_urgency',
+     'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment'
 );
 
 $full_screen = array('newest_tcversions' => 1);
 //cleanup session var
-$_SESSION['currentSrsId'] = null;
+$_SESSION['currentSrsId'] = null;  // need to be removed due to TABBED BROWSING
 
 /** feature to display */
 $showFeature = $args->feature;

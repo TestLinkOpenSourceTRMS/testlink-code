@@ -2896,6 +2896,7 @@ $TLS_testsuite_name_created = "Test Suite %s has been created";
 // ----- keywordsEdit.php -----
 $TLS_keyword_management = "Keyword management";
 $TLS_create_keyword = "Create keyword";
+$TLS_delete_keyword = "Delete keyword";
 $TLS_edit_keyword = "Edit keyword";
 $TLS_warning_empty_keyword = "Keyword must not be empty!";
 

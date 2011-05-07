@@ -1,10 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	keywordsEdit.tpl
-Purpose: smarty template - View all keywords 
 *}
-{assign var="url_args" value="lib/keywords/keywordsEdit.php"}
-{assign var="keyword_edit_url" value="$basehref$url_args"}
+{$url_args = "lib/keywords/keywordsEdit.php"}
+{$keyword_edit_url = "$basehref$url_args"}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {lang_get var='labels' s='th_keyword,show_event_history,th_notes,btn_cancel'}
@@ -26,17 +25,17 @@ function validateForm(f)
 </head>
 
 <body>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section = $smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$gui->main_descr|escape}</h1>
 
 {if $gui->canManage != ""}
   <div class="workBack">
-  
   <div class="action_descr">{$gui->action_descr|escape}
   	{if $gui->mgt_view_events eq "yes" && $gui->keywordID > 0}
-			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$gui->keywordID}','keywords')" 
+			<img style="margin-left:5px;" class="clickable" src="{$tlImages.info}" 
+				 onclick="showEventHistoryFor('{$gui->keywordID}','keywords')" 
 				 alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
 	{/if}
   
@@ -45,7 +44,6 @@ function validateForm(f)
 
   	<form name="addKey" method="post" action="{$keyword_edit_url}"
  		      onSubmit="javascript:return validateForm(this);">
-	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
   	<table class="common" style="width:50%">
   		<tr>
   			<th>{$labels.th_keyword}</th>
@@ -61,11 +59,13 @@ function validateForm(f)
   		</tr>
   	</table>
   	<div class="groupBtn">	
-  	<input type="hidden" name="doAction" value="" />
-    <input type="submit" name="create_req" value="{$gui->submit_button_label}"
-	         onclick="doAction.value='{$gui->submit_button_action}'" />
+	<input type="hidden" name="id" id="id" value="{$gui->keywordID}">
+	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
+  	<input type="hidden" id=="doAction" name="doAction" value="" />
+    <input type="submit" name="actionButton" value="{$gui->submit_button_label}"
+	       onclick="doAction.value='{$gui->submit_button_action}'" />
   	<input type="button" value="{$labels.btn_cancel}"
-	         onclick="javascript:location.href=fRoot+'lib/keywords/keywordsView.php?tproject_id={$gui->tproject_id}'" />
+	         onclick="javascript:location.href=fRoot+'lib/keywords/keywordsView.php'" />
   	</div>
   	</form>
   </div>

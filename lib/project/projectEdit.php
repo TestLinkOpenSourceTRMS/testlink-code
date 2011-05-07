@@ -79,7 +79,7 @@ switch($args->doAction)
     	break;
 
     case 'doUpdate':
-    	$op = doUpdate($args,$tproject_mgr,$session_tproject_id);
+    	$op = doUpdate($args,$tproject_mgr,$args->contextTprojectID);
     	$template= $op->status_ok ?  null : $templateCfg->default_template;
     	$ui = $op->ui;
 
@@ -264,7 +264,7 @@ function doCreate($argsObj,&$tprojectMgr)
 	if( $op->status_ok )
 	{
 	    logAuditEvent(TLS("audit_testproject_created",$argsObj->tprojectName),"CREATE",$op->id,"testprojects");
-    	$op->reloadType = 'reloadNavBar'; // BUGID 3048
+    	$op->reloadType = 'reloadNavBar';
     	
 		if($argsObj->copy_from_tproject_id > 0)
 		{
@@ -291,7 +291,7 @@ function doCreate($argsObj,&$tprojectMgr)
   returns:
 
 */
-function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
+function doUpdate($argsObj,&$tprojectMgr,$contextTprojectID)
 {
 	
     $key2get = array('status_ok','msg');
@@ -331,7 +331,7 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
 	}
     if($op->status_ok)
 	{
-		if($sessionTprojectID == $argsObj->tprojectID)
+		if($contextTprojectID == $argsObj->tprojectID)
 		{
 			$op->reloadType = 'reloadNavBar';
 		}	

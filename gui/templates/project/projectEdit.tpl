@@ -3,32 +3,23 @@
  *
  * Smarty template - Edit existing Test project
  *
- * CVS: $Id: projectEdit.tpl,v 1.33 2011/01/07 20:02:46 franciscom Exp $
+ * @filesource	projectEdit.tpl
  *
- * Revisions:
+ * @internal revisions
  *  20110107 - franciscom - BUGID 4145
  *  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
  *  20100930 - franciscom - BUGID 2344: Private test project
  *  20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
  *	20100212 - havlatm - inventory support
  *	20100204 - franciscom - test project copy
- *  20090512 - franciscom - is_public attribute
- *  20080117 - franciscom - removed displayy of ID -> use projectview feature
- *  20080112 - franciscom - added test case prefix management
- *  20070725 - franciscom - refactoring: if test project qty == 0 -> do not display 
- *   		the edit/delete tab, remove query string from url, to avoid redirect to home page.
- *  20070515 - franciscom - BUGID 0000854: Test project cannot be deleted 
- *   		if name contains a ' (single quote)
- *   		added escape type to escape modifier on onclick javascript event
- *	20070214 - franciscom - BUGID 628: Name edit � Invalid action parameter/other 
- *			behaviours if �Enter� pressed.
  *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}
-{assign var="managerURL" value="lib/project/projectEdit.php"}
-{assign var="editAction" value="$managerURL?doAction=edit&tprojectID="}
+{$contextID=$gui->contextTprojectID}
+{$managerURL="lib/project/projectEdit.php"}
+{$editAction="$managerURL?doAction=edit&contextTProjectID=$contextID&tprojectID="}
 
 {lang_get var="labels" 
 	s='show_event_history,th_active,cancel,info_failed_loc_prod,invalid_query,
@@ -36,7 +27,7 @@
 	title_testproject_management,testproject_enable_priority, testproject_enable_automation,
     public,testproject_color,testproject_alt_color,testproject_enable_requirements,
     testproject_enable_inventory,testproject_features,testproject_description,
-    testproject_prefix,availability,mandatory,warning,warning_empty_tcase_prefix,
+    testproject_prefix,availability,mandatory,mandatory_hint,warning,warning_empty_tcase_prefix,
     warning_empty_tproject_name'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
@@ -193,10 +184,9 @@
 			<tr><td cols="2">
 		    {if $gui->canManage == "yes"}
 				<div class="groupBtn">
-		    	{* BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed.
-                  added hidden   *}
     			<input type="hidden" name="doAction" value="{$doActionValue}" />
 				<input type="hidden" name="tprojectID" value="{$gui->tprojectID}" />
+				<input type="hidden" id="contextTprojectID" name="contextTprojectID" value="{$gui->contextTprojectID}" />
 			    <input type="submit" name="doActionButton" value="{$buttonValue}" />
 				<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript:history.back();"/>
 				</div>
@@ -205,7 +195,7 @@
 
 		</table>
 		</form>
-		<p>* {$labels.mandatory}</p>
+		<p>{$labels.mandatory_hint} {$labels.mandatory}</p>
 	</div>
 	{else}
 		<p class="info">

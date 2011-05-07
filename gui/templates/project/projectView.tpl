@@ -17,10 +17,11 @@ Rev :
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}
-{assign var="managerURL" value="lib/project/projectEdit.php"}
-{assign var="deleteAction" value="$managerURL?doAction=doDelete&tprojectID="}
-{assign var="editAction" value="$managerURL?doAction=edit&amp;tprojectID="}
-{assign var="createAction" value="$managerURL?doAction=create"}
+{$contextID=$gui->contextTprojectID}
+{$managerURL="lib/project/projectEdit.php"}
+{$deleteAction="$managerURL?doAction=doDelete&contextTprojectID=$contextID&tprojectID="}
+{$editAction="$managerURL?doAction=edit&contextTprojectID=$contextID&tprojectID="}
+{$createAction="$managerURL?doAction=create&contextTprojectID=$contextID"}
 
 {lang_get s='popup_product_delete' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -129,17 +130,17 @@ var del_action=fRoot+'{$deleteAction}';
 
 </div>
 
-{if $gui->doAction == "reloadAll"}
+{if $gui->reloadType == "reloadAll"}
 	<script type="text/javascript">
 	top.location = top.location;
 	</script>
 {else}
-  {if $gui->doAction == "reloadNavBar"}
+  {if $gui->reloadType == "reloadNavBar"}
 	<script type="text/javascript">
-  // remove query string to avoid reload of home page,
-  // instead of reload only navbar
-  var href_pieces=parent.titlebar.location.href.split('?');
-	parent.titlebar.location=href_pieces[0];
+  	// remove query string to avoid reload of home page,
+  	// instead of reload only navbar
+  	var href_pieces=parent.titlebar.location.href.split('?');
+	parent.titlebar.location=href_pieces[0]+"?debugCaller=projectView.tpl&runUpdateLogic=0";
 	</script>
   {/if}
 {/if}

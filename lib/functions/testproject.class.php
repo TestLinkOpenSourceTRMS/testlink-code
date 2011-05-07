@@ -10,6 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110507 - franciscom - get_accessible_for_user() default order by changed
  * 20110417 - franciscom - new method getTotalCount()
  * 20110416 - franciscom - setSessionProject() -> setCurrentProject()
  * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
@@ -36,41 +37,6 @@
  * 20100203 - franciscom - addKeyword() return type changed
  * 20100201 - franciscom - delete() - missing delete of platforms
  * 20100102 - franciscom - show() - interface changes
- * 20091206 - franciscom - fixed bug on get_subtree() created furing refactoring
- * 20090606 - franciscom - get_by_prefix() interface changes
- * 20090512 - franciscom - added setPublicStatus()
- * 20090412 - franciscom - BUGID 2363 - getTCasesLinkedToAnyTPlan()
- *                                      getFreeTestCases()
- *         
- * 20090205 - franciscom - getReqSpec() - interface additions
- * 20090125 - franciscom - added utility method _createHierarchyMap()
- * 20090106 - franciscom - get_by_prefix()
- * 20081103 - franciscom - get_all_testcases_id() minor refactoring
- * 20080518 - franciscom - create() interface changes
- * 20080507 - franciscom - get_keywords_tcases() - changed return type
- *                                                 add AND type filter 
- * 20080501 - franciscom - typo erro bug in get_keywords_tcases()
- * 20080322 - franciscom - get_keywords_tcases() - keyword_id can be array
- * 20080322 - franciscom - interface changes get_all_testplans()
- * 20080112 - franciscom - changed methods to manage prefix field
- *                         new methods getTestCasePrefix()
- *
- * 20080107 - franciscom - get_accessible_for_user(), added more data
- *                         for array_of_map output type
- * 20080106 - franciscom - checkName() method
- *                         delete() changed return type
- * 20080104 - franciscom - fixed bug on gen_combo_test_suites()
- *                         due to wrong exclusion in get_subtree().
- * 20071111 - franciscom - new method get_subtree();
- * 20071106 - franciscom - createReqSpec() - changed return type
- * 20071104 - franciscom - get_accessible_for_user
- *                         added optional arg to get_all()
- *
- * 20071002 - azl - added ORDER BY to get_all method
- * 20070620 - franciscom - BUGID 914  fixed delete() (no delete from nodes_hierarchy)
- * 20070603 - franciscom - added delete()
- * 20070219 - franciscom - fixed bug on get_first_level_test_suites()
- * 20070128 - franciscom - added check_tplan_name_existence()
  *
  **/
 
@@ -501,7 +467,7 @@ args:
 
 
                      default: map
-     [order_by]: default: ORDER BY name
+     [order_by]: default: value of config_get('gui')->tprojects_combo_order_by
 
 rev :
      20071104 - franciscom - added user_id,role_id to remove global coupling
@@ -510,8 +476,10 @@ rev :
      20060312 - franciscom - add nodes_hierarchy on join
 
 */
-function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER BY name ")
+function get_accessible_for_user($user_id,$output_type='map',$order_by=null)
 {
+
+	$my['order_by'] = is_null($order_by) ? config_get('gui')->tprojects_combo_order_by : $order_by;
     $items = array();
 
     // Get default role
@@ -553,7 +521,7 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 	{
 		$sql .= " AND active=1 ";
     }
-	$sql .= $order_by;
+	$sql .= $my['order_by'];
 
     if($output_type == 'array_of_map')
 	{

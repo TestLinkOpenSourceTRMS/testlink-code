@@ -204,8 +204,7 @@ function initEnvironment(&$dbHandler,&$userObj)
 	
 	$guiObj->tcasePrefix = '';
 	$guiObj->tplanCount = 0; 
-
-	$guiObj->tprojectSet = $tprojectMgr->get_accessible_for_user($userObj->dbID,'map',$cfg->tprojects_combo_order_by);
+	$guiObj->tprojectSet = $tprojectMgr->get_accessible_for_user($userObj->dbID);
 	$guiObj->tprojectCount = sizeof($guiObj->tprojectSet);
 
 	// -----------------------------------------------------------------------------------------------------

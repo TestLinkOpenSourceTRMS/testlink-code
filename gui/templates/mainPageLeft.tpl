@@ -146,7 +146,7 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
     <div id='testproject_topics'>
 	  {if $gui->grants.project_edit == "yes"}
   		<img src="{$tlImages.bullet}" />
-        <a href="lib/project/projectView.php">{$labels.href_tproject_management}</a>
+        <a href="lib/project/projectView.php?tproject_id={$gui->testprojectID}">{$labels.href_tproject_management}</a>
     {/if}
 
     {* 

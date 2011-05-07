@@ -13,7 +13,6 @@
  *
  */
 
-
 require_once('../../config.inc.php');
 require_once("common.php");
 testlinkInitPage($db);
@@ -23,13 +22,15 @@ $args = init_args();
 checkRights($db,$_SESSION['currentUser'],$args);
 
 $gui = new stdClass();
-$gui->canManage = $_SESSION['currentUser']->hasRight($db,"mgt_modify_product",$args->tproject_id);
+$gui->canManage = true;
+// $_SESSION['currentUser']->hasRight($db,"mgt_modify_product",$args->tproject_id);
 $gui->doAction = $args->doAction;
-$gui->tproject_id = $args->tproject_id;
+$gui->tproject_id = $args->contextTprojectID;
+$gui->contextTprojectID = $args->contextTprojectID;
+$gui->reloadType = 'none';
 
 $tproject_mgr = new testproject($db);
-$gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map', 
-                                                         " ORDER BY nodes_hierarchy.name ");
+$gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map');
 
 $template2launch = $templateCfg->default_template;
 if(count($gui->tprojects) == 0)
@@ -37,6 +38,8 @@ if(count($gui->tprojects) == 0)
     $template2launch = "projectEdit.tpl"; 
     $gui->doAction = "create";
 }
+
+// new dBug($gui);
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $template2launch);
@@ -48,14 +51,18 @@ $smarty->display($templateCfg->template_dir . $template2launch);
  */
 function init_args()
 {
-   $_REQUEST = strings_stripSlashes($_REQUEST);
-   
-   $args = new stdClass();
-   $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0 ;
-   $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : 'list' ;
-   $args->userID =isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-    
-   return $args;  
+	$_REQUEST = strings_stripSlashes($_REQUEST);
+	$args = new stdClass();
+	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : 'list' ;
+	$args->userID =isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+
+	// Important Notice
+	// this is value set by user on NavBar.php, that set the context.
+	// needed on refresh GUI logic, example: if user deleted this test project we need
+	// to reload NavBar to refresh test project COMOBO and set a new context test project id.
+	//
+	$args->contextTprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0 ;
+	return $args;  
 }
 
 

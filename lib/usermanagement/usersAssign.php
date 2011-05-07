@@ -246,11 +246,9 @@ function checkRightsForUpdate(&$dbHandler,&$user,$testprojectID,$featureType,$fe
 function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
 {
     $features = null;
-	$gui_cfg = config_get('gui');
-	$order_by = $gui_cfg->tprojects_combo_order_by;
 
     // Accessible means user has a role on test project
-	$testprojects = $objMgr->get_accessible_for_user($argsObj->userID,'array_of_map',$order_by);
+	$testprojects = $objMgr->get_accessible_for_user($argsObj->userID,'array_of_map');
 	
 	// Another more restrictive filter has to be applied, related to what we want to do
 	// user has to be right to manage roles on test project 

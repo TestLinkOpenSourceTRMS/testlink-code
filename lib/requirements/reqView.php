@@ -198,12 +198,10 @@ function checkRights(&$db,&$userObj,$argsObj)
  * 
  * @return array $htmlSelect array with info, needed to create testproject select box on template
  */
-function initTestprojectSelect($userID, $tprojectID, &$tprojectMgr) {
-	
-	$testprojects = $tprojectMgr->get_accessible_for_user($userID, 'map', 
-	                                                      config_get('gui')->tprojects_combo_order_by);	
+function initTestprojectSelect($userID, $tprojectID, &$tprojectMgr) 
+{
+	$testprojects = $tprojectMgr->get_accessible_for_user($userID);
 	$htmlSelect = array('items' => $testprojects, 'selected' => $tprojectID);
-	
 	return $htmlSelect;
 }
 

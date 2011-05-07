@@ -62,11 +62,20 @@ function initEnvironment(&$dbHandler,&$userObj)
 	$tprojectMgr = new testproject($dbHandler);
 	
 	$_REQUEST=strings_stripSlashes($_REQUEST);
+	
+	// new dBug($_REQUEST);
+	
 	$iParams = array("tprojectIDNavBar" => array(tlInputParameter::INT_N),
 					 "tproject_id" => array(tlInputParameter::INT_N),
 					 "tplan_id" => array(tlInputParameter::INT_N),
-					 "updateMainPage" => array(tlInputParameter::INT_N));
+					 "updateMainPage" => array(tlInputParameter::INT_N),
+					 "runUpdateLogic" => array(tlInputParameter::INT_N));
 	R_PARAMS($iParams,$argsObj);
+	
+	// @TODO in future refactor tlInput logic to allow pass default value
+	$argsObj->updateMainPage = is_null($argsObj->updateMainPage) ? 0 : $argsObj->updateMainPage;
+	$argsObj->runUpdateLogic = is_null($argsObj->runUpdateLogic) ? 1 : $argsObj->runUpdateLogic;
+	
 	
 	
 	$argsObj->updateMainPage = intval($argsObj->updateMainPage);
@@ -74,7 +83,7 @@ function initEnvironment(&$dbHandler,&$userObj)
 	$guiObj->tcasePrefix = '';
 	$guiObj->tplanCount = 0; 
 
-	$guiObj->tprojectSet = $tprojectMgr->get_accessible_for_user($userObj->dbID,'map',$cfg->tprojects_combo_order_by);
+	$guiObj->tprojectSet = $tprojectMgr->get_accessible_for_user($userObj->dbID);
 	$guiObj->tprojectCount = sizeof($guiObj->tprojectSet);
 
 	// -----------------------------------------------------------------------------------------------------
@@ -87,7 +96,7 @@ function initEnvironment(&$dbHandler,&$userObj)
 
 	$argsObj->tproject_id = intval($argsObj->tproject_id);
 	$guiObj->updateMainPage = $argsObj->updateMainPage;
-	if( $guiObj->updateMainPage == 0)
+	if( $guiObj->updateMainPage == 0 && $argsObj->runUpdateLogic )
 	{
 		$guiObj->updateMainPage = ($argsObj->tprojectIDNavBar > 0) ? 1 : 0;
 		if( ($argsObj->tprojectIDNavBar == 0) && ($argsObj->tproject_id == 0) )
@@ -126,9 +135,12 @@ function initEnvironment(&$dbHandler,&$userObj)
 	//         has to be created after first login -> searchSize should be set dynamically.
 	//         If any reviewer agrees on that feel free to change it.
 	$guiObj->searchSize = 8;
+	$reqMgmtEnabled = 0;
 	if($guiObj->tprojectID > 0)
 	{
 		$dummy = $tprojectMgr->get_by_id($guiObj->tprojectID);
+		$reqMgmtEnabled = $dummy['opt']->requirementsEnabled;
+		
 	    $guiObj->tcasePrefix = $dummy['prefix'] . config_get('testcase_cfg')->glue_character;
 	    $guiObj->searchSize = tlStringLen($guiObj->tcasePrefix) + $cfg->dynamic_quick_tcase_search_input_size;
 
@@ -140,14 +152,8 @@ function initEnvironment(&$dbHandler,&$userObj)
 	    	$guiObj->tplanSet[0]['selected']=1;
 	    }
 	}	
+	$guiObj->topMenu = initTopMenu($dbHandler,$userObj,$guiObj->tprojectID,$guiObj->tplanID,$reqMgmtEnabled);
 	
-	// new dBug();
-	// menu
-	$guiObj->topMenu = initTopMenu($dbHandler,$userObj,$guiObj->tprojectID,$guiObj->tplanID,
-								   $dummy['opt']->requirementsEnabled);
-	
-
-	// new dBug($guiObj);
 	return array($argsObj,$guiObj);
 }
 ?>

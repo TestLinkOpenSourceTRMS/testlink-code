@@ -28,46 +28,41 @@ $editorCfg = getWebEditorCfg('testproject');
 require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db);
+$templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr);
 checkRights($db,$_SESSION['currentUser'],$args);
 
-$templateCfg = templateConfiguration();
+new dBug($args);
 
 $gui = new stdClass();
+$gui = $args;
 $gui->tproject_id = $args->tprojectID;
-$gui_cfg = config_get('gui');
+$gui->canManage = $_SESSION['currentUser']->hasRight($db,"mgt_modify_product",$gui->tproject_id);
+$gui->found = 'yes';
 
-$template = null;
-
+new dBug($gui);
 
 $ui = new stdClass();
 $ui->doActionValue = '';
 $ui->buttonValue = '';
 $ui->caption = '';
 $ui->main_descr = lang_get('title_testproject_management');
-
 $user_feedback = '';
-$reloadType = 'none';
-
-$gui = $args;
-$gui->canManage = $_SESSION['currentUser']->hasRight($db,"mgt_modify_product",$gui->tproject_id);
-$gui->found = 'yes';
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
 $status_ok = 1;
-
+$template = null;
 switch($args->doAction)
 {
     case 'create':
     	$template = $templateCfg->default_template;
-      	$ui = create($args,$tproject_mgr);
-      	$gui->testprojects = $ui->testprojects;
+      	$ui = create($args,$gui,$tproject_mgr,$gui);
     	break;
 
     case 'edit':
     	$template = $templateCfg->default_template;
-    	$ui = edit($args,$tproject_mgr);
+    	$ui = edit($args,$gui,$tproject_mgr);
     	break;
 
     case 'doCreate':
@@ -76,7 +71,14 @@ switch($args->doAction)
     	$ui = $op->ui;
     	$status_ok = $op->status_ok;
     	$user_feedback = $op->msg;
-    	$reloadType = $op->reloadType;
+    	$gui->reloadType = $op->reloadType;
+    	
+    	if( $status_ok && $gui->contextTprojectID == 0)
+    	{
+    		// before this action there were ZERO test project on system 
+    		// need to update context
+    		$gui->contextTprojectID = $op->id;
+    	}
     	break;
 
     case 'doUpdate':
@@ -86,20 +88,21 @@ switch($args->doAction)
 
     	$status_ok = $op->status_ok;
     	$user_feedback = $op->msg;
-    	$reloadType = $op->reloadType;
+    	$gui->reloadType = $op->reloadType;
       break;
 
     case 'doDelete':
-        $op = doDelete($args,$tproject_mgr,$session_tproject_id);
+        $op = doDelete($args,$tproject_mgr,$args->contextTprojectID);
     	$status_ok = $op->status_ok;
     	$user_feedback = $op->msg;
-    	$reloadType = $op->reloadType;
+    	$gui->reloadType = $op->reloadType;
+    	$gui->contextTprojectID = $op->contextTprojectID;
       break;
 }
 
 $ui->main_descr = lang_get('title_testproject_management');
 $smarty = new TLSmarty();
-$smarty->assign('gui_cfg',$gui_cfg);
+$smarty->assign('gui_cfg',config_get('gui'));
 $smarty->assign('editorType',$editorCfg['type']);
 $smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
 
@@ -114,10 +117,7 @@ switch($args->doAction)
     case "doCreate":
     case "doDelete":
     case "doUpdate":
-        $gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map',
-                                                                 " ORDER BY nodes_hierarchy.name ");
-
-		$gui->doAction = $reloadType;
+        $gui->tprojects = getTprojectSet($tproject_mgr,$args->userID);
         $template= is_null($template) ? 'projectView.tpl' : $template;
         $smarty->assign('gui',$gui);
         $smarty->display($templateCfg->template_dir . $template);
@@ -153,24 +153,21 @@ switch($args->doAction)
  * Important: changes in HTML input elements on the Smarty template
  *            must be reflected here.
  *
- * @param array $request_hash the $_REQUEST
- * @param hash session_hash the $_SESSION
  * @return singleton object with html values tranformed and other
  *                   generated variables.
- * @internal
+ * @internal revisions
  */
 function init_args(&$tprojectMgr)
 {
     $args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
-	
 	$nullable_keys = array('tprojectName','color','notes','doAction','tcasePrefix');
 	foreach ($nullable_keys as $value)
 	{
 		$args->$value = isset($_REQUEST[$value]) ? trim($_REQUEST[$value]) : null;
 	}
 
-	$intval_keys = array('tprojectID' => 0, 'copy_from_tproject_id' => 0);
+	$intval_keys = array('tprojectID' => 0, 'contextTprojectID' => 0, 'copy_from_tproject_id' => 0);
 	foreach ($intval_keys as $key => $value)
 	{
 		$args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
@@ -181,9 +178,10 @@ function init_args(&$tprojectMgr)
 							'optPriority' => 0,'optAutomation' => 0,'optInventory' => 0);
 	foreach ($checkbox_keys as $key => $value)
 	{
-		$args->$key = isset($request_hash[$key]) ? 1 : $value;
+		$args->$key = isset($_REQUEST[$key]) ? 1 : $value;
 	}
 
+	
 	// Special algorithm for notes
 	// 20070206 - BUGID 617
 	if($args->doAction != 'doUpdate' && $args->doAction != 'doCreate')
@@ -252,7 +250,6 @@ function doCreate($argsObj,&$tprojectMgr)
 		$new_id = $tprojectMgr->create($argsObj->tprojectName, $argsObj->color,
 									   $options, $argsObj->notes, $argsObj->active, $argsObj->tcasePrefix,
 									   $argsObj->is_public);
-									                 
 		if (!$new_id)
 		{
 			$op->msg = lang_get('refer_to_log');
@@ -360,7 +357,7 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
   returns: -
 
 */
-function edit(&$argsObj,&$tprojectMgr)
+function edit(&$argsObj,&$guiObj,&$tprojectMgr)
 {
 	$tprojectInfo = $tprojectMgr->get_by_id($argsObj->tprojectID);
    
@@ -371,6 +368,8 @@ function edit(&$argsObj,&$tprojectMgr)
 	$argsObj->active = $tprojectInfo['active'];
 	$argsObj->tcasePrefix = $tprojectInfo['prefix'];
 	$argsObj->is_public = $tprojectInfo['is_public'];
+
+	$guiObj->reloadType = 'none';
 
 
 	$ui = new stdClass();
@@ -439,18 +438,21 @@ function crossChecks($argsObj,&$tprojectMgr)
   returns:
 
 */
-function create(&$argsObj,&$tprojectMgr)
+function create(&$argsObj,&$guiObj,&$tprojectMgr)
 {
+	$uiObj = new stdClass();
+	$uiObj->doActionValue = 'doCreate';
+	$uiObj->buttonValue = lang_get('btn_create');
+	$uiObj->caption = lang_get('caption_new_tproject');
+	$uiObj->testprojects = $tprojectMgr->get_all(null,array('access_key' => 'id'));
+
+	// update by refence
     $argsObj->active = 1;
     $argsObj->is_public = 1;
+	$guiObj->testprojects = $uiObj->testprojects;
+	$guiObj->reloadType = 'none';
 
-	$gui = new stdClass();
-	$gui->doActionValue = 'doCreate';
-	$gui->buttonValue = lang_get('btn_create');
-	$gui->caption = lang_get('caption_new_tproject');
-
-	$gui->testprojects = $tprojectMgr->get_all(null,array('access_key' => 'id'));
-    return $gui;
+    return $uiObj;
 }
 
 
@@ -462,22 +464,36 @@ function create(&$argsObj,&$tprojectMgr)
   returns:
 
 */
-function doDelete($argsObj,&$tprojectMgr,$sessionTprojectID)
+function doDelete($argsObj,&$tprojectMgr,$contextTprojectID)
 {
 
   	$ope_status = $tprojectMgr->delete($argsObj->tprojectID);
     $op = new stdClass();
 	$op->status_ok = $ope_status['status_ok'];
 	$op->reloadType = 'none';
-
+	$op->contextTprojectID = $contextTprojectID;
+	$op->runUpdateLogic = 0;
+	
 	if ($ope_status['status_ok'])
 	{
-        // BUGID 3999: Test Project list does not refresh after deleted
-		// if($sessionTprojectID == $argsObj->tprojectID)
-		// {
-		// 	$op->reloadType = 'reloadNavBar';
-        // }
-			$op->reloadType = 'reloadNavBar';
+		$op->reloadType = 'reloadNavBar';
+
+		// if we have deleted test project currently selected on test project Combo (Context)  
+		// on NavBar we need:
+		// a) reload NavBar in order to update the Combo
+		// b) need to update Project View template memory of Context, this info is present
+		//    on each URL on listing
+		if( intval($contextTprojectID) == intval($argsObj->tprojectID) )
+		{
+			$op->runUpdateLogic = 1;
+			// need to get test project set available AFTER delete
+        	$tprojectSet = getTprojectSet($tprojectMgr,$argsObj->userID);
+        	if( !is_null(tprojectSet) )
+        	{
+        		$op->contextTprojectID = key(tprojectSet);
+        	}
+		}	
+		
 		$op->msg = sprintf(lang_get('test_project_deleted'),$argsObj->tprojectName);
 		logAuditEvent(TLS("audit_testproject_deleted",$argsObj->tprojectName),"DELETE",$argsObj->tprojectID,"testprojects");
 	}
@@ -491,13 +507,30 @@ function doDelete($argsObj,&$tprojectMgr,$sessionTprojectID)
 
 
 /**
+ * helper
+ *
+ */
+function getTprojectSet(&$tprojectMgr,$userID)
+{
+	$items = $tprojectMgr->get_accessible_for_user($userID,'array_of_map');
+	return $items;
+}
+
+
+
+/**
  * checkRights
  *
  */
 function checkRights(&$db,&$userObj,$argsObj)
 {
-	$env['tproject_id'] = isset($argsObj->tprojectID) ? $argsObj->tprojectID : 0;
-	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	// Test Projects are System Wide items, for this reason for this feature
+	// check must be done on Global Rights => those that belong to role assigned to user 
+	// when user was created (Global/Default Role) => enviroment is ignored.
+	// To instruct method to ignore enviromente, we need to set enviroment but with INEXISTENT ID 
+	// (best option is negative value)
+	$env['tproject_id'] = -1;
+	$env['tplan_id'] = -1;
 	checkSecurityClearance($db,$userObj,$env,array('mgt_modify_product'),'and');
 }
 ?>

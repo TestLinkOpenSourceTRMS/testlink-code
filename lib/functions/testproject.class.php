@@ -132,12 +132,6 @@ function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_publi
 	if ($result)
 	{
 		tLog('The new testproject '.$name.' was succesfully created.', 'INFO');
-		
-		// set project to session if not defined (the first project) or update the current
-		if (!isset($_SESSION['testprojectID']))
-		{
-			$this->setCurrentProject($root_node_id);
-		}
 	}
 	else
 	{
@@ -240,45 +234,8 @@ public function setCurrentProject($projectId)
 
 	if ($tproject_info)
 	{
-		$_SESSION['testprojectID'] = $tproject_info['id'];
-		$_SESSION['testprojectName'] = $tproject_info['name'];
-		$_SESSION['testprojectColor'] = $tproject_info['color'];
-		$_SESSION['testprojectPrefix'] = $tproject_info['prefix'];
-
-        if(!isset($_SESSION['testprojectOptions']) )
-        {
-        	$_SESSION['testprojectOptions'] = new stdClass();
-        }
-		$_SESSION['testprojectOptions']->requirementsEnabled = 
-						isset($tproject_info['opt']->requirementsEnabled) 
-						? $tproject_info['opt']->requirementsEnabled : 0;
-		$_SESSION['testprojectOptions']->testPriorityEnabled = 
-						isset($tproject_info['opt']->testPriorityEnabled) 
-						? $tproject_info['opt']->testPriorityEnabled : 0;
-		$_SESSION['testprojectOptions']->automationEnabled = 
-						isset($tproject_info['opt']->automationEnabled) 
-						? $tproject_info['opt']->automationEnabled : 0;
-		$_SESSION['testprojectOptions']->inventoryEnabled = 
-						isset($tproject_info['opt']->inventoryEnabled) 
-						? $tproject_info['opt']->inventoryEnabled : 0;
-
-		tLog("Test Project was activated: [" . $tproject_info['id'] . "]" . 
-				$tproject_info['name'], 'INFO');
+		tLog("Test Project was activated: [" . $tproject_info['id'] . "]" . $tproject_info['name'], 'INFO');
 	}
-	else
-	{
-		if (isset($_SESSION['testprojectID']))
-		{
-			tLog("Test Project deactivated: [" . $_SESSION['testprojectID'] . "] " . 
-					$_SESSION['testprojectName'], 'INFO');
-		}
-		unset($_SESSION['testprojectID']);
-		unset($_SESSION['testprojectName']);
-		unset($_SESSION['testprojectColor']);
-		unset($_SESSION['testprojectOptions']);
-		unset($_SESSION['testprojectPrefix']);
-	}
-
 }
 
 
@@ -1683,15 +1640,7 @@ function setPublicStatus($id,$status)
 			$sql = "/* $debugMsg */ DELETE FROM {$this->object_table} WHERE id = {$id}";
 			
 			$result = $this->db->exec_query($sql);
-			if ($result)
-			{
-				$tproject_id_on_session = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : $id;
-				if ($id == $tproject_id_on_session)
-				{
-					$this->setCurrentProject(null);
-				}	
-			}
-			else
+			if (!$result)
 			{
 				$error .= lang_get('info_product_delete_fails');
 			}	

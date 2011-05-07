@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Scope: control test specification import
+ * Scope: control test specification import (test suites, test cases)
  *
  * @filesource	tcImport.php
  * @package 	TestLink
@@ -124,11 +124,6 @@ if ($args->do_upload)
 					$pcheck_fn = "check_xml_tc_tsuite";
 					$pimport_fn = "importTestCaseDataFromXML";
 					break;
-			
-				case 'XLS':
-					$pcheck_fn = null;
-					$pimport_fn = "importTestCaseDataFromSpreadsheet";
-					break;
 			}
 	      	if(!is_null($pcheck_fn))
 	      	{
@@ -159,12 +154,6 @@ if($args->useRecursion)
 {
 	// BUGID 3240 - Contribution 
 	$obj_mgr = new testsuite($db);
-	// $gui->actionOptions=null;
-	// $gui->hitOptions=null;
-	// $gui->actionOptions=array('update_last_version' => lang_get('update_last_testcase_version'),
-	// 						  'generate_new' => lang_get('new_testcase_under_new_testsuite'),
-    //                           'create_new_version' => lang_get('new_version_under_testsuite'));
-
   	$gui->actionOptions=array('update_last_version' => lang_get('update_last_testcase_version'),
                               'generate_new' => lang_get('generate_new_testcase'),
                               'create_new_version' => lang_get('create_new_testcase_version'));
@@ -186,8 +175,7 @@ else
 
 }
 
-$gui->importTypes = $obj_mgr->get_import_file_types();
-                          
+$gui->importTypes = $obj_mgr->get_import_file_types();                  
 $gui->action_on_duplicated_name=$args->action_on_duplicated_name;
 
 
@@ -199,6 +187,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 // --------------------------------------------------------------------------------------
 /*
   function: importTestCaseDataFromXML
+  			Manages also test suite import
   args :
   returns: 
 */
@@ -210,6 +199,7 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
 	$my = array();
 	$my['options'] = array('useRecursion' => false, 'importIntoProject' => 0,
 	                       'duplicateLogic' => array('hitCriteria' => 'name', 'actionOnHit' => null)); 
+	                       
     $my['options'] = array_merge($my['options'], (array)$options);
     foreach($my['options'] as $varname => $value)
     {
@@ -235,15 +225,16 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
 				$kwMap = is_null($kwMap) ? null : array_flip($kwMap);
 			}
 
-			if (!$useRecursion &&  ($xml->getName() == 'testcases') )
+			if (!$my['options']['useRecursion'] &&  ($xml->getName() == 'testcases') )
 			{
-				$resultMap = importTestCasesFromSimpleXML($db,$xml,$parentID,$tproject_id,$userID,$kwMap,$duplicateLogic);
+				$resultMap = importTestCasesFromSimpleXML($db,$xml,$parentID,$tproject_id,$userID,$kwMap,
+														  $my['options']['duplicateLogic']);
 			}
 			
 			if ($useRecursion && ($xml->getName() == 'testsuite'))
 			{
 				$resultMap = importTestSuitesFromSimpleXML($db,$xml,$parentID,$tproject_id,$userID,
-														   $kwMap,$importIntoProject,$duplicateLogic);
+														   $kwMap,$my['options']);
 			}
 
 		}
@@ -479,7 +470,6 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		    }
 		}
 		
-		// BUGID - 20090205 - franciscom
 		// Requirements Management
 		// Check if Requirement ...
 		// If Check fails => give message to user.
@@ -560,138 +550,10 @@ function check_xml_tc_tsuite($fileName,$recursiveMode)
 }
 
 
-// *****************************************************************************************
-// Contributed code - lightbulb
-// *****************************************************************************************
-/*
-  function: importTestCaseDataFromSpreadsheet
-            convert a XLS file to XML, and call importTestCaseDataFromXML() to do import.
-
-  args: db [reference]: db object
-        fileName: XLS file name
-        parentID: testcases parent node (container)
-        tproject_id: testproject where to import testcases 
-        userID: who is doing import.
-        useRecursion: 1 -> recursive, used when importing testsuites
-        [importIntoProject]: default 0
-        
-  
-  returns: map 
-
-  rev:
-      Original code by lightbulb.
-      Refactoring by franciscom
-*/
-function importTestCaseDataFromSpreadsheet(&$db,$fileName,$parentID,$tproject_id,
-                                           $userID,$useRecursion,$importIntoProject = 0)
-{
-	$xmlTCs = null;
-	$resultMap  = null;
-	$xml_filename=$fileName . '.xml';
-	create_xml_tcspec_from_xls($fileName,$xml_filename);
-	$resultMap=importTestCaseDataFromXML($db,$xml_filename,$parentID,$tproject_id,$userID,
-	                                     $useRecursion,$importIntoProject);
-	unlink($fileName);
-	unlink($xml_filename);
-	
-	return $resultMap;
-}
 
 
-// --------------------------------------------------------------------------------------
-/*
-  function: create_xml_tcspec_from_xls
-            Using an XSL file, that contains testcase specifications
-            creates an XML testlink test specification file.
-            
-            XLS format:
-            Column       Description
-              1          test case name
-              2          summary
-              3          steps
-              4          expectedresults
-              
-            First row contains header:  name,summary,steps,expectedresults
-            and must be skipped.
-            
-  args: xls_filename
-        xml_filename
-  
-  returns: 
-*/
-function create_xml_tcspec_from_xls($xls_filename,$xml_filename) 
-{
-	define('FIRST_DATA_ROW',2);
-	define('IDX_COL_NAME',1);
-	define('IDX_COL_SUMMARY',2);
-	define('IDX_COL_STEPS',3);
-	define('IDX_COL_EXPRESULTS',4);
-  
-	$xls_handle = new Spreadsheet_Excel_Reader(); 
-  
-	$xls_handle->setOutputEncoding(config_get('charset')); 
-	$xls_handle->read($xls_filename);
-	$xls_rows = $xls_handle->sheets[0]['cells'];
-	$xls_row_qty = sizeof($xls_rows);
-  
-	if($xls_row_qty < FIRST_DATA_ROW)
-	{
-    	return;  // >>>----> bye!
-  	}
-  
-	$xmlFileHandle = fopen($xml_filename, 'w') or die("can't open file");
-	fwrite($xmlFileHandle,"<testcases>\n");
 
-	for($idx = FIRST_DATA_ROW; $idx <= $xls_row_qty; $idx++ )
-	{                       
-		$name = htmlspecialchars($xls_rows[$idx][IDX_COL_NAME]);
-		fwrite($xmlFileHandle,"<testcase name=" . '"' . $name. '"'.">\n");
-	    
-		// $summary = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_SUMMARY]));
-	    // 20090117 - contribution - BUGID 1992  // 20090402 - BUGID 1519
-	    // $summary = str_replace('�',"...",$xls_rows[$idx][IDX_COL_SUMMARY]);  
-	    $summary = convert_special_char($xls_rows[$idx][IDX_COL_SUMMARY]);  
-		$summary = nl2p(htmlspecialchars($summary));
-		fwrite($xmlFileHandle,"<summary><![CDATA[" . $summary . "]]></summary>\n");
-	    
-	    // 20090117 - BUGID 1991,1992  // 20090402 - BUGID 1519
-	    // $steps = str_replace('�',"...",$xls_rows[$idx][IDX_COL_STEPS]);
-	    $steps = convert_special_char($xls_rows[$idx][IDX_COL_STEPS]);
-	    $steps = nl2p(htmlspecialchars($steps));
-	    fwrite($xmlFileHandle,"<steps><![CDATA[".$steps."]]></steps>\n");
-	    
-	    // 20090117 - BUGID 1991,1992  // 20090402 - BUGID 1519
-	    // $expresults = str_replace('�',"...",$xls_rows[$idx][IDX_COL_EXPRESULTS]);
-		$expresults = convert_special_char($xls_rows[$idx][IDX_COL_EXPRESULTS]);
-		$expresults = nl2p(htmlspecialchars($expresults));
-	    fwrite($xmlFileHandle,"<expectedresults><![CDATA[".$expresults."]]></expectedresults>\n");
-	    
-	    fwrite($xmlFileHandle,"</testcase>\n");
-	}
-	fwrite($xmlFileHandle,"</testcases>\n");
-	fclose($xmlFileHandle);
-	
-}
-
-// 20090402 - BUGID 1519: Extract this function from create_xml_tcspec_from_xls()
-function convert_special_char($target_string)
-{
-	$from_char = iconv("CP1252", config_get('charset'), '\205');
-	$to_char = "...";
-
-	if ($from_char)
-	{
-		return str_replace($from_char, $to_char, $target_string);
-	}
-	else
-	{
-		return $string;
-	}
-}
-
-
-/* 20090117 - 
- contribution by mirosvad - 
+/*  contribution by mirosvad - 
  Convert new line characters from XLS to HTML 
 */
 function nl2p($str)  
@@ -1016,17 +878,24 @@ function getKeywordsFromSimpleXMLObj($simpleXMLItems)
   
 */
 function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
-									   $userID,$kwMap,$importIntoProject = 0,$duplicateLogic)
+									   $userID,$kwMap,$options)
 {
 	static $tsuiteXML;
 	static $tsuiteMgr;
 	static $myself;
 	static $callCounter = 0;
+	static $my;
 	$resultMap = array();
     
 	// $callCounter++;
 	if(is_null($tsuiteXML) )
 	{
+		$my = array();
+		$my['options'] = array('importIntoProject' => 0,
+	                           'duplicateLogic' => array('hitCriteria' => 'name', 'actionOnHit' => null)); 
+	                       
+    	$my['options'] = array_merge($my['options'], (array)$options);
+	
 		$tsuiteXML = array();
 		$tsuiteXML['elements'] = array('string' => array("details" => null),
 			                           'integer' => array("node_order" => null));
@@ -1069,7 +938,7 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 				return null;
 			}	
 		}
-		else if($importIntoProject)
+		else if($my['options']['importIntoProject'])
 		{
 			$tsuiteID = $tproject_id;
 		}
@@ -1090,20 +959,20 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 					// echo 'Going to work on Test Case INSIDE Test Suite:' . $tsuite['name'] . '<br>';
 					$resultMap = array_merge($resultMap,
 											 saveImportedTCData($dbHandler,$tcData,$tproject_id,
-											                    $tsuiteID,$userID,$kwMap,$duplicateLogic));
+											                    $tsuiteID,$userID,$kwMap,
+											                    $my['options']['duplicateLogic']));
 					unset($tcData);
 				break;
 
 				case 'testsuite':
-					$resultMap = array_merge($resultMap,
-											 $myself($dbHandler,$target,$tsuiteID,
-											         $tproject_id,$userID,$kwMap,$importIntoProject,$duplicateLogic));
+					$resultMap = array_merge($resultMap,$myself($dbHandler,$target,$tsuiteID,$tproject_id,
+																$userID,$kwMap,$my['options']));
 				break;
 
 				// do not understand why we need to do this particular logic.
 				// Need to understand				
 				case 'details':
-					if (!$importIntoProject)
+					if (!$my['options']['importIntoProject'])
 					{
 						$keywords = getKeywordsFromSimpleXMLObj($target->xpath("//keyword"));
 						if($keywords)

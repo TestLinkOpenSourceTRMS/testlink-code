@@ -59,10 +59,10 @@ if ($args->edit == 'testsuite')
 	$testsuite = $tsuite_mgr->get_by_id($args->id);
 	$gui->keyword_assignment_subtitle = lang_get('test_suite') . TITLE_SEP . $testsuite['name'];
 	$tcs = $tsuite_mgr->get_testcases_deep($args->id,'only_id');
-	if(	($loop2do = sizeof($tcs) )
+	if(	($loop2do = sizeof($tcs)) )
 	{
 		$gui->can_do = 1;
-		if ($args->bAssignTestSuite)
+		if ($args->assignTestSuite)
 		{
 			$gui->sqlResult = 'ok';
 			for($idx = 0;$idx < $loop2do; $idx++)
@@ -83,7 +83,7 @@ else if($args->edit == 'testcase')
 		$tcData = $tcData[0];
    		$gui->keyword_assignment_subtitle = lang_get('test_case') . TITLE_SEP . $tcData['name'];
 	}
-	if($args->bAssignTestCase)
+	if($args->assignTestCase)
 	{
 		$gui->sqlResult = 'ok';
 		$tcase_mgr->setKeywords($args->id,$args->keywordArray);
@@ -126,8 +126,8 @@ function init_args(&$opt_cfg)
     $args->keywordArray = null;
     $args->keywordList = $pParams[$rl_html_name];
     $args->edit = $pParams["edit"];
-    $args->bAssignTestCase = ($pParams["assigntestcase"] != "") ? 1 : 0;
-    $args->bAssignTestSuite = ($pParams["assigntestsuite"] != "") ? 1 : 0;
+    $args->assignTestCase = ($pParams["assigntestcase"] != "") ? 1 : 0;
+    $args->assignTestSuite = ($pParams["assigntestsuite"] != "") ? 1 : 0;
     if ($args->keywordList != "")
     {
     	$args->keywordArray = explode(",",$args->keywordList);

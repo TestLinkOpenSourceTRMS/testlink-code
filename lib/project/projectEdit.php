@@ -488,9 +488,9 @@ function doDelete($argsObj,&$tprojectMgr,$contextTprojectID)
 			$op->runUpdateLogic = 1;
 			// need to get test project set available AFTER delete
         	$tprojectSet = getTprojectSet($tprojectMgr,$argsObj->userID);
-        	if( !is_null(tprojectSet) )
+        	if( !is_null($tprojectSet) )
         	{
-        		$op->contextTprojectID = key(tprojectSet);
+        		$op->contextTprojectID = key($tprojectSet);
         	}
 		}	
 		

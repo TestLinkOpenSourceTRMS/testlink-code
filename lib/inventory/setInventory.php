@@ -5,13 +5,12 @@
  *
  * Add or modify a device in inventory list
  * 
+ * @filesource	setInventory.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: setInventory.php,v 1.7 2010/10/17 09:46:37 franciscom Exp $
+ * @copyright 	2009,2011 TestLink community 
  *
- * @internal Revisions:
- * None
+ * @internal revisions
  *
  **/
 

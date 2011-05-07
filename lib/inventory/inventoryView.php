@@ -19,29 +19,33 @@
 require_once('../../config.inc.php');
 require_once("common.php");
 testlinkInitPage($db);
-
-$args = init_args();
+list($args,$gui) = init_args($db,$_SESSION['currentUser']);
 checkRights($db,$_SESSION['currentUser'],$args);
 
 
 $templateCfg = templateConfiguration();
-$gui = new stdClass();
-$gui->rightEdit = $_SESSION['currentUser']->hasRights($db,"project_inventory_management",$args->tproject_id);
-$gui->rightView = $_SESSION['currentUser']->hasRights($db,"project_inventory_view",$args->tproject_id);
-$gui->tproject_id = $args->tproject_id;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
-
-function init_args()
+/**
+ * init_args()
+ *
+ */
+function init_args(&$dbHandler,&$userObj)
 {
 	$argsObj = new stdClass();
 	$argsObj->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-	
-	return $argsObj;
+
+
+	$guiObj = new stdClass();
+	$guiObj->rightEdit = $userObj->hasRight($dbHandler,"project_inventory_management",$argsObj->tproject_id);
+	$guiObj->rightView = $userObj->hasRight($dbHandler,"project_inventory_view",$argsObj->tproject_id);
+	$guiObj->tproject_id = $argsObj->tproject_id;
+
+	return array($argsObj,$guiObj);
 
 }
 

@@ -10,7 +10,7 @@
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
  *
- * @internal Revisions:
+ * @internal revisions
  *
  **/
 

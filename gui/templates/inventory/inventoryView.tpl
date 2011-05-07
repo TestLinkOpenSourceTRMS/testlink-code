@@ -5,7 +5,7 @@
    Smarty template - see and manage inventory table 
    
    Author: Martin Havlat
-   CVS: $Id: inventoryView.tpl,v 1.4 2011/01/18 14:16:24 mx-julian Exp $
+   @filesource	inventoryView.tpl
    
    @todo		escape shown text (renderer: Ext.util.Format.htmlEncode(???))
    @todo           // Highlight the row for 3 seconds
@@ -34,18 +34,17 @@
           btn_create,btn_save,btn_edit,btn_delete,btn_cancel,
           inventory_create_title, inventory_dlg_select_txt,
           inventory_dlg_delete_txt,
-          confirm, warning, error
-          "}
+          confirm, warning, error"}
 
 {include file="inc_head.tpl" openHead="yes"}
 {config_load file="input_dimensions.conf" section="inventory"}
 {include file="inc_del_onclick.tpl"}
 
   	<style type="text/css">
-		.icon_device_copy { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_copy_16.png) !important; }
-		.icon_device_create { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_new_16.png) !important; }
-		.icon_device_delete { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_delete_16.png) !important; }
-		.icon_device_edit { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_edit_16.png) !important; background-size: 50%; }
+	.icon_device_copy { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_copy_16.png) !important; }
+	.icon_device_create { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_new_16.png) !important; }
+	.icon_device_delete { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_delete_16.png) !important; }
+	.icon_device_edit { background-image:url({$basehref}{$smarty.const.TL_THEME_IMG_DIR}data_edit_16.png) !important; background-size: 50%; }
 	</style>
 
 
@@ -87,7 +86,7 @@ Ext.onReady(function(){
 		
 	var store=new Ext.data.Store
 	({
-		url:'lib/inventory/getInventory.php',
+		url:'lib/inventory/getInventory.php?tproject_id={$gui->tproject_id}',
 		reader: reader,
 		idProperty: 'id',
 		autoLoad: true
@@ -97,7 +96,7 @@ Ext.onReady(function(){
 	/* ----- data owners ------------------------------------------------------------ */
 	/* @TODO params should be extracted from url */
 	var ownersStore =  new Ext.data.JsonStore({
-		url: 'lib/ajax/getUsersWithRight.php?right=project_inventory_view',
+		url: 'lib/ajax/getUsersWithRight.php?tproject_id={$gui->tproject_id}&right=project_inventory_view',
 		root: 'rows',
 		fields: ['id','login'],
         autoLoad: true
@@ -258,7 +257,7 @@ Ext.onReady(function(){
         baseCls: 'x-plain',
         layout:'absolute',
 		method: 'POST',
-        url:'lib/inventory/setInventory.php',
+        url:'lib/inventory/setInventory.php?tproject_id={$gui->tproject_id}',
         defaultType: 'textfield',
 //		defaults: { width: 230 },
         items:  

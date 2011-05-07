@@ -858,15 +858,15 @@ function setPublicStatus($id,$status)
 	/**
 	 * Adds a new keyword to the given test project
 	 *
-	 * @param int  $testprojectID
+	 * @param int  $tprojectID
 	 * @param string $keyword
 	 * @param string $notes
 	 *
 	 **/
-	public function addKeyword($testprojectID,$keyword,$notes)
+	public function addKeyword($tprojectID,$keyword,$notes)
 	{
 		$kw = new tlKeyword();
-		$kw->initialize(null,$testprojectID,$keyword,$notes);
+		$kw->initialize(null,$tprojectID,$keyword,$notes);
 		$op = array('status' => tlKeyword::E_DBERROR, 'id' => -1);
 		$op['status'] = $kw->writeToDB($this->db);
 		if ($op['status'] >= tl::OK)
@@ -880,19 +880,23 @@ function setPublicStatus($id,$status)
 	/**
 	 * updates the keyword with the given id
 	 *
-	 * @param type $testprojectID
+	 * @param type $tprojectID
 	 * @param type $id
 	 * @param type $keyword
 	 * @param type $notes
 	 *
 	 **/
-	function updateKeyword($testprojectID,$id,$keyword,$notes)
+	function updateKeyword($tprojectID,$id,$keyword,$notes)
 	{
 		$kw = new tlKeyword($id);
-		$kw->initialize($id,$testprojectID,$keyword,$notes);
+		$kw->initialize($id,$tprojectID,$keyword,$notes);
+		new dBug($kw);
+		
 		$result = $kw->writeToDB($this->db);
 		if ($result >= tl::OK)
+		{
 			logAuditEvent(TLS("audit_keyword_saved",$keyword),"SAVE",$kw->dbID,"keywords");
+		}
 		return $result;
 	}
 

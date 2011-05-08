@@ -14,8 +14,10 @@ Purpose: smarty template - Add new build and show existing
                     assignments from other builds
     
 *}
-{assign var="managerURL" value="lib/plan/buildEdit.php"}
-{assign var="cancelAction" value="lib/plan/buildView.php"}
+{$tproject_id=$gui->tproject_id}
+{$tplan_id=$gui->tplan_id}
+{$managerURL = "lib/plan/buildEdit.php"}
+{$cancelAction = "lib/plan/buildView.php?tproject_id=$tproject_id&tplan_id=$tplan_id"}
 
 {lang_get var="labels"
           s="warning,warning_empty_build_name,enter_build,enter_build_notes,active,
@@ -47,7 +49,7 @@ function validateForm(f)
 
 
 <body onload="showOrHideElement('closure_date',{$gui->is_open})">
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section = $smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$gui->main_descr|escape}</h1>

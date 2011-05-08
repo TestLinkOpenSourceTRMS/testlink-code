@@ -7,7 +7,7 @@ Purpose: smarty template - Show existing builds
 @internal revisions
 20101017 - franciscom - image access refactored (tlImages)
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section = $smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get s='warning_delete_build' var="warning_msg"}
@@ -22,9 +22,18 @@ Purpose: smarty template - Show existing builds
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
 
+{* Configure Actions *}
+{$tproject_id=$gui->tproject_id}
+{$tplan_id=$gui->tplan_id}
+{$managerURL = "lib/plan/buildEdit.php?tproject_id=$tproject_id&tplan_id=$tplan_id"}
+{$editAction = "$managerURL&do_action=edit&build_id="}
+{$deleteAction = "$managerURL&do_action=do_delete&build_id="}
+{$createAction = "$managerURL&do_action=create"}
+
+
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$gui->deleteAction}';
+var del_action=fRoot+'{$deleteAction}';
 </script>
 </head>
 
@@ -51,7 +60,7 @@ var del_action=fRoot+'{$gui->deleteAction}';
   		{foreach item=build from=$gui->buildSet}
         	<tr>
   				<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$build.id}</span>
-  				    <a href="{$gui->editAction}{$build.id}" title="{$labels.alt_edit_build}">{$build.name|escape}
+  				    <a href="{$editAction}{$build.id}" title="{$labels.alt_edit_build}">{$build.name|escape}
   					     {if $gsmarty_gui->show_icon_edit}
   					         <img style="border:none" alt="{$labels.alt_edit_build}" title="{$labels.alt_edit_build}"
   					              src="{$tlImages.edit}"/>
@@ -93,7 +102,7 @@ var del_action=fRoot+'{$gui->deleteAction}';
 {* ------------------------------------------------------------------------------------------- *}
 
  <div class="groupBtn">
-    <form method="post" action="{$gui->createAction}" id="create_build">
+    <form method="post" action="{$createAction}" id="create_build">
       <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
       <input type="submit" name="create_build" value="{$labels.btn_build_create}" />
     </form>

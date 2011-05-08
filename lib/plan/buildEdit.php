@@ -441,7 +441,7 @@ function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat)
 			$op->notes = '';
 			$op->template = null;
 			$op->status_ok = 1;
-			logAuditEvent(TLS("audit_build_saved",$argsObj->testprojectName,$argsObj->tplan_name,$argsObj->build_name),
+			logAuditEvent(TLS("audit_build_saved",$argsObj->tproject_name,$argsObj->tplan_name,$argsObj->build_name),
 			              "SAVE",$argsObj->build_id,"builds");
 		}
 	}

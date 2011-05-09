@@ -91,9 +91,13 @@ switch($args->doc_type)
   	  	$additionalInfo->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
   	  	$additionalInfo->useColours = null;
         
-        // INTERFACE HAS TO BE CHANGED
-        list($treeContents, $additionalArgs) = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
-				                                                $args->tplan_id,$testplan_name,$filters,$additionalInfo);
+  	  	$env = array("tproject_id" => $args->tproject_id,
+  	  	             "tplan_id" => $args->tplan_id,
+  	  	             "tproject_name" => $args->tproject_name,
+  	  	             "tplan_name" => $testplan_name);
+  	  	
+        list($treeContents, $additionalArgs) = generateExecTree($db,$workPath,$env,
+				                                                $filters,$additionalInfo);
         
       	$tree = $treeContents->menustring;
       	$gui->ajaxTree = new stdClass();
@@ -144,7 +148,7 @@ function init_args(&$dbHandler)
     if($args->tproject_id > 0)
     {
     	$tprojectMgr = new testproject($dbHandler);
-    	$dummy = $tprojectMgr->get_by_id($dbHandler);
+    	$dummy = $tprojectMgr->get_by_id($args->tproject_id);
     	$args->tproject_name = $dummy['name'];
     	$args->testprojectOptReqs = $dummy['opt']->requirementsEnabled;
     }

@@ -39,7 +39,7 @@ Purpose: smarty template - show Test Results and Metrics
 
 <div class="workBack">
 {include file="inc_result_tproject_tplan.tpl" 
-         arg_tproject_name=$session.testprojectName arg_tplan_name=$gui->tplan_name}	
+         arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}	
 
 {if $gui->do_report.status_ok}
 
@@ -132,7 +132,7 @@ Purpose: smarty template - show Test Results and Metrics
       {/if}
     {/if}
     
-    {if $session['testprojectOptions']->testPriorityEnabled}
+    {if $gui->testPriorityEnabled}
       {include file="results/inc_results_show_table.tpl"
              args_title=$labels.title_report_tc_priorities
              args_first_column_header=$labels.priority
@@ -167,7 +167,7 @@ Purpose: smarty template - show Test Results and Metrics
 
   	{* ----- results by milestones / priorities -------------------------------------- *}
 
-	{if $session['testprojectOptions']->testPriorityEnabled}
+	{if $gui->testPriorityEnabled}
 		{if $gui->statistics->milestones != ""}
 
 			<h2>{$labels.title_report_milestones}</h2>

@@ -59,6 +59,10 @@ $gui->statistics->testers = null;
 $gui->statistics->milestones = null;
 $gui->tplan_name = $tplan_info['name'];
 $gui->tproject_name = $tproject_info['name'];
+$gui->opt_requirements = $tproject_info['opt']->requirementsEnabled;
+$gui->requirementsEnabled = $tproject_info['opt']->requirementsEnabled;
+$gui->automationEnabled = $tproject_info['opt']->automationEnabled;
+$gui->testPriorityEnabled = $tproject_info['opt']->testPriorityEnabled;
 $gui->elapsed_time = 0; 
 
 $mailCfg = buildMailCfg($gui);

@@ -73,7 +73,7 @@ function pre_submit()
   {foreach from=$gui->menuItems item=menu}
     <span><img src="{$tlImages.bullet}" />
         {* BUGID 4009 *}
-	    <a href="{$menu.href}format={$selectedReportType}&amp;tplan_id={$gui->tplan_id}
+	    <a href="{$menu.href}format={$selectedReportType}&amp;tproject_id={$gui->tproject_id}&amp;tplan_id={$gui->tplan_id}
 	             {if $gui->checked_show_inactive_tplans}&amp;show_inactive_tplans=1{/if}" 
 	       target="workframe">{$menu.name}</a></span><br />
   

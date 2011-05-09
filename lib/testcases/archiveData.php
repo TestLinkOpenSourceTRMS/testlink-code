@@ -31,7 +31,9 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $viewerArgs = null;
 
-$args = init_args($viewerArgs);
+$tproject_mgr = new testproject($db);
+
+$args = init_args($viewerArgs,$tproject_mgr);
 $userObj = $_SESSION['currentUser'];
 
 $grants = new stdClass();
@@ -43,6 +45,10 @@ $smarty = new TLSmarty();
 $gui = new stdClass();
 $gui->tproject_id = $args->tproject_id;
 $gui->page_title = lang_get('container_title_' . $args->feature);
+$gui->opt_requirements = $args->opt_requirements; 
+$gui->requirementsEnabled = $args->requirementsEnabled; 
+$gui->automationEnabled = $args->automationEnabled; 
+$gui->testPriorityEnabled = $args->testPriorityEnabled;
 
 switch($args->feature)
 {
@@ -124,7 +130,7 @@ switch($args->feature)
  * 
  *
  */
-function init_args(&$viewerCfg)
+function init_args(&$viewerCfg,&$tprojectMgr)
 {
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 
@@ -157,6 +163,17 @@ function init_args(&$viewerCfg)
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     //@TODO schlundus, rename Parameter from edit to feature
     $args->feature = $args->edit;
+    
+    $args->opt_requirements = null;
+	$args->automationEnabled = 0;
+	$args->requirementsEnabled = 0;
+	$args->testPriorityEnabled = 0;
+	
+	$dummy = $tprojectMgr->get_by_id($args->tproject_id);
+	$args->opt_requirements = $dummy['opt']->requirementsEnabled;
+	$args->requirementsEnabled = $dummy['opt']->requirementsEnabled;
+	$args->automationEnabled = $dummy['opt']->automationEnabled;
+	$args->testPriorityEnabled = $dummy['opt']->testPriorityEnabled;
 
     
    	if (!$args->tcversion_id)

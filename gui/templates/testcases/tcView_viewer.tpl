@@ -343,7 +343,7 @@ function launchInsertStep(step_id)
 </div>
 </form>
 
-{if $session['testprojectOptions']->automationEnabled}
+{if $gui->automationEnabled}
   <div {$addInfoDivStyle}>
 		<span class="labelHolder">{$tcView_viewer_labels.execution_type} {$smarty.const.TITLE_SEP}</span>
 		{if isset($gui->execution_types[$args_testcase.execution_type])}
@@ -354,7 +354,7 @@ function launchInsertStep(step_id)
 	</div>
 {/if}
 
-{if $session['testprojectOptions']->testPriorityEnabled}
+{if $gui->testPriorityEnabled}
    <div {$addInfoDivStyle}>
 		<span class="labelHolder">{$tcView_viewer_labels.test_importance} {$smarty.const.TITLE_SEP}</span>
 		{$gsmarty_option_importance[$args_testcase.importance]}

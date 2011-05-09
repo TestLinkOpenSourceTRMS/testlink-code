@@ -73,7 +73,7 @@ if($gui->can_use_charts == 'OK')
     	foreach($platformIDSet as $platform_id)
     	{
     	    $description = $label .  ' ' . $platformSet[$platform_id];
-    		$gui->charts[$description] = $pathToScripts . "platformPieChart.php?tplan_id={$gui->tplan_id}&platform_id={$platform_id}";
+    		$gui->charts[$description] = $pathToScripts . "platformPieChart.php" . $tprojectTplanInfo . "&platform_id={$platform_id}";
     	}
     }
     

@@ -96,14 +96,15 @@ function getDataAndScale(&$dbHandler)
 
 
 
-function init_args(&$dbHanlder)
+function init_args(&$dbHandler)
 {
 	$iParams = array("tproject_id" => array(tlInputParameter::INT_N),
 					 "tplan_id" => array(tlInputParameter::INT_N));
-
+	
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
-    $treeMgr = new tree($dbHanlder);
+	
+    $treeMgr = new tree($dbHandler);
     
     $args->tproject_name = '';
     if($args->tproject_id > 0)

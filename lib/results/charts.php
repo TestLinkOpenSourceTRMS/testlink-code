@@ -28,9 +28,9 @@ $gui=new stdClass();
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 $gui->tplan_id = intval($_REQUEST['tplan_id']);
-$tproject_id = intval($_REQUEST['tproject_id']);
+$gui->tproject_id = intval($_REQUEST['tproject_id']);
 $tplan_info = $tplan_mgr->get_by_id($gui->tplan_id);
-$tproject_info = $tproject_mgr->get_by_id($tproject_id);
+$tproject_info = $tproject_mgr->get_by_id($gui->tproject_id);
 
 // ??
 // $tplan_mgr->getStatusTotalsByPlatform($gui->tplan_id);
@@ -56,11 +56,12 @@ if($gui->can_use_charts == 'OK')
     $_SESSION['statistics']['getAggregateKeywordResults']= $re->getAggregateKeywordResults();
     
     $pathToScripts = "lib/results/";
+    $tprojectTplanInfo = "?tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}";
     $chartsUrl=new stdClass();
-    $chartsUrl->overallPieChart = $pathToScripts . "overallPieChart.php?tplan_id={$gui->tplan_id}";
-    $chartsUrl->keywordBarChart = $pathToScripts . "keywordBarChart.php";
-    $chartsUrl->ownerBarChart = $pathToScripts . "ownerBarChart.php";
-    $chartsUrl->topLevelSuitesBarChart = $pathToScripts . "topLevelSuitesBarChart.php";
+    $chartsUrl->overallPieChart = $pathToScripts . "overallPieChart.php" . $tprojectTplanInfo;
+    $chartsUrl->keywordBarChart = $pathToScripts . "keywordBarChart.php" . $tprojectTplanInfo;
+    $chartsUrl->ownerBarChart = $pathToScripts . "ownerBarChart.php" . $tprojectTplanInfo;
+    $chartsUrl->topLevelSuitesBarChart = $pathToScripts . "topLevelSuitesBarChart.php" . $tprojectTplanInfo;
     
     $platformSet = $tplan_mgr->getPlatforms($gui->tplan_id,array('outputFormat' => 'map'));
     $platformIDSet = is_null($platformSet) ? array(0) : array_keys($platformSet);

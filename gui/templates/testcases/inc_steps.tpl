@@ -35,7 +35,7 @@ Author : eloff, 2010
 		</nobr></th>
 		<th>{$inc_steps_labels.step_actions}</th>
 		<th>{$inc_steps_labels.expected_results}</th>
-		{if $session['testprojectOptions']->automationEnabled}
+		{if $gui->automationEnabled}
 		<th width="25">{$inc_steps_labels.execution_type_short_descr}</th>
 		{/if}
 		{if $edit_enabled}
@@ -57,7 +57,7 @@ Author : eloff, 2010
 		</td>
 		<td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$step_info.actions}</td>
 		<td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$step_info.expected_results}</td>
-		{if $session['testprojectOptions']->automationEnabled}
+		{if $gui->automationEnabled}
 		<td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$gui->execution_types[$step_info.execution_type]}</td>
 		{/if}
 
@@ -99,7 +99,7 @@ Author : eloff, 2010
 		{include file="error_icon.tpl" field="step_number"}
 		</span>{$step_info.step_number}</nobr></th>
 		<th>{$inc_steps_labels.step_actions}</th>
-		{if $session['testprojectOptions']->automationEnabled}
+		{if $gui->automationEnabled}
 		<th>{$inc_steps_labels.execution_type_short_descr}:
 		    {$gui->execution_types[$step_info.execution_type]}</th>
 		{else}

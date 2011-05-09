@@ -70,7 +70,7 @@ $gui->grants = array_merge($gui->grants, initGrants($db,$currentUser,$gui->testp
 $gui->grants['project_inventory_view'] = ($gui->tprojectOptions->inventoryEnabled && 
 										 ($currentUser->hasRight($db,"project_inventory_view",
 										  $gui->testprojectID,$gui->testplanID) == 'yes')) ? 1 : 0;
-$gui->grants['modify_tc'] = null; 
+//$gui->grants['modify_tc'] = null; 
 $gui->hasTestCases = false;
 
 if($gui->grants['view_tc'])
@@ -267,7 +267,7 @@ function initGrants(&$dbHandler,&$userObj,$tprojectID,$testplanID)
 	$grants = array();		
 	foreach($grantKeys as $key => $right)
 	{
-		$grants[$key] = $userObj->hasRight($dbHandler,$right,$tprojectID,$testplanID);  
+		$grants[$key] = $userObj->hasRight($dbHandler,$right,$tprojectID,$testplanID);
 	}
 	return $grants;
 }

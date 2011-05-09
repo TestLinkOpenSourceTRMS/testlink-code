@@ -430,11 +430,13 @@ function init_args(&$cfgObj,&$tprojectMgr,&$userObj,$otName)
 	$args->opt_requirements = null;
 	$args->automationEnabled = 0;
 	$args->requirementsEnabled = 0;
+	$args->testPriorityEnabled = 0;
 	
 	$dummy = $tprojectMgr->get_by_id($args->tproject_id);
 	$args->opt_requirements = $dummy['opt']->requirementsEnabled;
 	$args->requirementsEnabled = $dummy['opt']->requirementsEnabled;
 	$args->automationEnabled = $dummy['opt']->automationEnabled;
+	$args->testPriorityEnabled = $dummy['opt']->testPriorityEnabled;
 
 	$args->basehref = $_SESSION['basehref'];
     $args->user_id = $_SESSION['userID'];
@@ -577,6 +579,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$userObj)
 	$guiObj->opt_requirements = $argsObj->opt_requirements; 
 	$guiObj->requirementsEnabled = $argsObj->requirementsEnabled; 
 	$guiObj->automationEnabled = $argsObj->automationEnabled; 
+	$guiObj->testPriorityEnabled = $argsObj->testPriorityEnabled;
 
 	$guiObj->action_on_duplicated_name = 'generate_new';
 	$guiObj->show_mode = $argsObj->show_mode;

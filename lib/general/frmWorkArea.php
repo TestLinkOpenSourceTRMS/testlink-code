@@ -91,7 +91,7 @@ if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'
 	}
   	else
 	{
-  		redirect("../plan/planView.php?tproject_id=$tprojectID");
+  		redirect("../plan/planView.php?tproject_id={$args->tproject_id}");
 		exit();
 	}   
 }
@@ -176,6 +176,7 @@ function init_args()
 					 "tproject_id" => array(tlInputParameter::INT),
 					 "tplan_id" => array(tlInputParameter::INT));
 	R_PARAMS($iParams,$args);
+	
 	return $args;
 }
 ?>

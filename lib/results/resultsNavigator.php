@@ -91,13 +91,13 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args(&$tprojectMgr)
 {
 	// BUGID 3370
-	R_PARAMS($iParams,$args);
 	$iParams = array("format" => array(tlInputParameter::INT_N),
 					 "tplan_id" => array(tlInputParameter::INT_N),
 					 "tproject_id" => array(tlInputParameter::INT_N),
 					 "show_inactive_tplans" => array(tlInputParameter::CB_BOOL));
-
 	$args = new stdClass();
+	R_PARAMS($iParams,$args);
+	
 	if (is_null($args->format))
 	{
 		$reports_formats = config_get('reports_formats');

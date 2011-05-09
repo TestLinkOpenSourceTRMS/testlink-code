@@ -107,4 +107,19 @@ function checkRights(&$db,&$userObj,$argsObj)
 	checkSecurityClearance($db,$userObj,$env,array('testplan_metrics'),'and');
 }
 
+/**
+ * 
+ *
+ */
+function init_args()
+{
+	$iParams = array("tproject_id" => array(tlInputParameter::INT_N),
+					 "tplan_id" => array(tlInputParameter::INT_N));
+	
+	$args = new stdClass();
+	R_PARAMS($iParams,$args);
+    
+    return $args;
+}
+
 ?>

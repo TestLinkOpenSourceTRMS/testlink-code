@@ -950,7 +950,7 @@ $tlCfg->guiTopMenu[5] = array(
 		'shortcut'=>'r',
 		'target'=>'mainframe',
 		'addTProject' => true,
-		'addTPlan' => false		
+		'addTPlan' => true		
 ); 
 
 $tlCfg->guiTopMenu[6] = array(

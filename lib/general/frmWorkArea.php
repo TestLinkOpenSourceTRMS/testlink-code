@@ -104,7 +104,7 @@ $smarty = new TLSmarty();
 
 $target = $aa_tfp[$showFeature];
 $target .= (strpos($target,"?") === false) ? "?" : "&"; 
-$target .= "tproject_id={$args->tproject_id}";
+$target .= "tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}";
 
 if(isset($full_screen[$showFeature]))
 {

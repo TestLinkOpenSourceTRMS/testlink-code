@@ -494,6 +494,7 @@ function initShowOnExec(id_master,show_on_cfg)
 
 	<div class="groupBtn">
 	<input type="hidden" name="do_action" value="" />
+	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 	{if $user_action eq 'edit'  or $user_action eq 'do_update'}
 		<input type="submit" name="do_update" value="{$labels.btn_upd}"
 		       onclick="do_action.value='do_update'"/>

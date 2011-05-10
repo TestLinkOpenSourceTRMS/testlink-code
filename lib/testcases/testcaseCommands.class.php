@@ -117,6 +117,10 @@ class testcaseCommands
 		// need to check where is used
         $obj->loadOnCancelURL = "archiveData.php?tproject_id={$obj->tproject_id}&edit=testcase" . 
         						"&show_mode={$obj->show_mode}&id=%s&version_id=%s";
+
+		$obj->goBackAction = $_SESSION['basehref'] . "lib/testcases/archiveData.php" . 
+							"?tproject_id={$obj->tproject_id}"; 
+
 		return $obj;
 	}
 	 
@@ -612,9 +616,6 @@ class testcaseCommands
      */
 	function editStep(&$argsObj,$request)
 	{
-	
-		new dBug($argsObj);
-		
 	    $guiObj = $this->initGuiBean($argsObj);
 		$guiObj->user_feedback = '';
 		$this->initTestCaseBasicInfo($argsObj,$guiObj);
@@ -650,9 +651,7 @@ class testcaseCommands
         $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
 
 		// 20110503
-		$guiObj->goBackAction = $_SESSION['basehref'] . "lib/testcases/archiveData.php" . 
-								"?tproject_id={$guiObj->tproject_id}" . 
-								"&tcase_id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+		$guiObj->goBackAction .= "&tcase_id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
 		return $guiObj;
 	}
@@ -785,6 +784,8 @@ class testcaseCommands
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
 		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
         $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
+
+		$guiObj->goBackAction .= "&tcase_id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;

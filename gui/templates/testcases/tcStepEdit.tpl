@@ -142,7 +142,7 @@ DEBUG: $gui->action: {$gui->action} <br>
  	<input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 	<input type="hidden" name="step_id" value="{$gui->step_id}" />
 	<input type="hidden" name="step_number" value="{$gui->step_number}" />
-	<input type="hidden" name="goback_url" value="{$goBackAction}" />
+	<input type="hidden" name="goback_url" value="{$gui->goBackAction}" />
 
 
 		{include file="testcases/inc_tcbody.tpl" 

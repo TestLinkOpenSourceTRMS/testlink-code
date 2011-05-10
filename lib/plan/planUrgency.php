@@ -30,9 +30,9 @@ if($args->show_help)
 }
 $templateCfg = templateConfiguration();
 $tplan_mgr = new testPlanUrgency($db);
-$gui = new stdClass();
 
 $node_info = $tplan_mgr->tree_manager->get_node_hierarchy_info($args->node_id);
+$gui = new stdClass();
 $gui->node_name = $node_info['name'];
 $gui->user_feedback = null;
 $gui->node_id = $args->node_id;
@@ -78,7 +78,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   returns: object with user input.
 
 */
-function init_args()
+function init_args(&$dbHandler)
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
     
@@ -86,9 +86,8 @@ function init_args()
     $args->show_help = (isset($_REQUEST['level']) && $_REQUEST['level']=='testproject');
     
     $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
-    $args->tplan_name = ''
+    $args->tplan_name = '';
     if($args->tplan_id > 0)
     {
     	$treeMgr = new tree($dbHandler);

@@ -265,7 +265,7 @@ function doDelete(&$argsObj,&$buildMgr)
 	}
 	else
 	{
-		logAuditEvent(TLS("audit_build_deleted",$argsObj->testprojectName,$argsObj->tplan_name,$build['name']),
+		logAuditEvent(TLS("audit_build_deleted",$argsObj->tproject_name,$argsObj->tplan_name,$build['name']),
 		              "DELETE",$argsObj->build_id,"builds");
     }
     return $op;
@@ -372,7 +372,7 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat)
 			$op->notes = '';
 			$op->template = null;
 			$op->status_ok = 1;
-			logAuditEvent(TLS("audit_build_created",$argsObj->testprojectName,$argsObj->tplan_name,$argsObj->build_name),
+			logAuditEvent(TLS("audit_build_created",$argsObj->tproject_name,$argsObj->tplan_name,$argsObj->build_name),
 							"CREATE",$buildID,"builds");
 		}
 	}
@@ -527,7 +527,7 @@ function doCopyToTestPlans(&$argsObj,&$buildMgr,&$tplanMgr)
 
     // exclude this testplan
     $filters = array('tplan2exclude' => $argsObj->tplan_id);
-    $tplanset = $tprojectMgr->get_all_testplans($argsObj->testprojectID,$filters);
+    $tplanset = $tprojectMgr->get_all_testplans($argsObj->tproject_id,$filters);
 
     if(!is_null($tplanset))
     {

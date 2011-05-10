@@ -602,6 +602,7 @@ class testcaseCommands
 
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
+  		
 		return $guiObj;
 	}
 

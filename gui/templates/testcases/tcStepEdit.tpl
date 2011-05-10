@@ -36,7 +36,6 @@ Purpose: create/edit test case step
 {assign var="tcversion_id" value=$gui->tcversion_id}
 
 {* Used on several operations to implement goback *}
-{* {assign var="goBackAction" value="$basehref$tcViewAction"} *}
 {assign var="goBackActionURLencoded" value=$gui->goBackAction|escape:'url'}
 {assign var="url_args" value="tcEdit.php?doAction=editStep&tproject_id={$gui->tproject_id}&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
 {assign var="url_args" value="$url_args&goback_url=$goBackActionURLencoded&step_id="}
@@ -136,6 +135,7 @@ DEBUG: $gui->action: {$gui->action} <br>
 <form method="post" action="lib/testcases/tcEdit.php" name="tcStepEdit"
       onSubmit="return validateForm(this,'{$gui->step_set}',{$gui->step_number});">
 
+	<input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
 	<input type="hidden" name="testcase_id" value="{$gui->tcase_id}" />
 	<input type="hidden" name="tcversion_id" value="{$gui->tcversion_id}" />
 	<input type="hidden" name="doAction" value="" />

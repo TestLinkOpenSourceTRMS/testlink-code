@@ -71,18 +71,8 @@ $gui = initializeGui($db,$args,$cfg,$tcase_mgr,$_SESSION['currentUser']);
 $smarty = new TLSmarty();
 
 $name_ok = 1;
-
-//$active_status = 0;
-//$viewer_args['action'] = "deactivate_this_version";
-//if($args->do_activate_this)
-//{
-//	$active_status = 1;
-//	$viewer_args['action'] = "activate_this_version";
-//}
-
 $doRender = false;
 $edit_steps = false;
-
 
 $pfn = $args->doAction;
 switch($args->doAction)

@@ -20,7 +20,6 @@ require_once("common.php");
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-$testcase_cfg = config_get('testcase_cfg');
 $tplan_mgr = new testplan($db); 
 $tproject_mgr = new testproject($db); 
 $args = init_args($tproject_mgr);
@@ -99,12 +98,14 @@ function init_args(&$tprojectMgr)
 
 function initializeGui(&$dbHandler,&$argsObj,&$userObj,&$tprojectMgr)
 {
+	$tcaseCfg = config_get('testcase_cfg');
+
 	$guiObj = new stdClass();
 	$guiObj->can_manage_testplans=$userObj->hasRight($dbHandler,"mgt_testplan_create",
 													 $argsObj->tproject_id,$argsObj->tplan_id);
 	$guiObj->show_details = 0;
 	$guiObj->user_feedback = '';
-	$guiObj->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id) . $testcase_cfg->glue_character;
+	$guiObj->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id) . $tcaseCfg->glue_character;
 	
 	$guiObj->tproject_name = $argsObj->tproject_name;
 

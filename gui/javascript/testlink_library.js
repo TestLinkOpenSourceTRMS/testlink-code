@@ -210,9 +210,9 @@ function STS(tproject_id,tplan_id,id)
   returns:
 
 */
-function SP()
+function SP(tproject_id,tplan_id)
 {
-    var action_url = fRoot+menuUrl;
+    var action_url = fRoot+menuUrl + "&tproject_id=" + tproject_id + "&tplan_id=" + tplan_id;
   	parent.workframe.location = action_url;
 }
 
@@ -327,7 +327,8 @@ function TPROJECT_PTP_RS(tproject_id,id)
 function TPROJECT_PRS(tproject_id,id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl + "?tproject_id=" + tproject_id + "&type=reqspec&level=reqspec&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl + "?tproject_id=" + tproject_id + 
+								"&type=reqspec&level=reqspec&id="+id+args+"&"+pParams;
 }
 
 
@@ -340,20 +341,22 @@ function TPROJECT_PRS(tproject_id,id)
   returns:
 
 */
-function TPLAN_PTS(id)
+function TPLAN_PTS(tproject_id,tplan_id,id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?level=testsuite&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?level=testsuite&tproject_id=" + tproject_id +
+								"&tplan_id=" + tplan_id + "&id="+id+args+"&"+pParams;
 }
 
 /*
   function: TPLAN_PTP
             Test PLAN Print Test Plan
 */
-function TPLAN_PTP(id)
+function TPLAN_PTP(tproject_id,tplan_id,id)
 {
 	var pParams = tree_getPrintPreferences();
-	var my_location = fRoot+menuUrl+"?level=testproject&id="+id+args+"&"+pParams;
+	var my_location =	fRoot+menuUrl+"?level=testproject&tproject_id=" + tproject_id +
+						"&tplan_id=" + tplan_id + "&id="+id+args+"&"+pParams;
 	parent.workframe.location =my_location;
 }
 

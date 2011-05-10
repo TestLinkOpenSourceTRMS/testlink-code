@@ -510,7 +510,7 @@ function initShowOnExec(id_master,show_on_cfg)
 		       onclick="do_action.value='do_add'"/>
 	{/if}
 		<input type="button" name="cancel" value="{$labels.btn_cancel}"
-			onclick="javascript: location.href=fRoot+'lib/cfields/cfieldsView.php';" />
+			onclick="javascript: location.href=fRoot+'lib/cfields/cfieldsView.php?tproject_id={$gui->tproject_id}';" />
 
 	</div>
 </form>

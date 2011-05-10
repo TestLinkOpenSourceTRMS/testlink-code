@@ -86,9 +86,8 @@ function validateForm(f)
     		{* restrict file size - input name must be UPPER CASE ??? *}
     		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitKB}" /> 
     		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
-    		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
     		<input type="button" name="cancel" value="{$labels.btn_cancel}"
-    		                     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
+    		                     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}?tproject_id={$gui->tproject_id}'"
     		                     {else}  onclick="javascript:history.back();" {/if} />
     	</div>
     </form> 

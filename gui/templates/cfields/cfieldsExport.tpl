@@ -68,7 +68,7 @@ function validateForm(f)
   		<input type="submit" name="doExport" id="doExport" value="{$labels.btn_export}" 
   		                     onclick="doAction.value=this.id" />
   		<input type="button" name="cancel" value="{$labels.btn_cancel}"
-    		     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
+    		     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}?tproject_id={$gui->tproject_id}'"
     		     {else}  onclick="javascript:history.back();" {/if} />
 
 

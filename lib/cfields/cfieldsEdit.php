@@ -27,6 +27,7 @@ $gui->cfield_is_used=0;
 $gui->cfield_is_linked=0;
 $gui->linked_tprojects=null;
 $gui->cfield_types=$cfield_mgr->get_available_types();
+$gui->tproject_id = $args->tproject_id;
 
 $result_msg = null;
 $do_control_combo_display = 1;

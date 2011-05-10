@@ -13,6 +13,7 @@
  * Lists results and progress by tester per build.
  * 
  * @internal revisions:
+ * 20110510 - Julian - set proper filters for table columns
  * 20110211 - asimon - BUGID 4192: show only open builds by default
  * 20101019 - asimon - BUGID 3911: show warning message instead of table if table is empty
  * 20100923 - eloff - refactored to use improved table interface
@@ -49,19 +50,24 @@ $names = $user->getNames($db);
 
 // build the table header
 $columns = array();
-$columns[] = array('title_key' => 'build', 'width' => 50);
-$columns[] = array('title_key' => 'user', 'width' => 50);
-$columns[] = array('title_key' => 'th_tc_assigned', 'width' => 50);
+$columns[] = array('title_key' => 'build', 'width' => 50, 'type' => 'text', 'sortType' => 'asText',
+	               'filter' => 'string');
+$columns[] = array('title_key' => 'user', 'width' => 50, 'type' => 'text', 'sortType' => 'asText',
+	               'filter' => 'string');
+$columns[] = array('title_key' => 'th_tc_assigned', 'width' => 50, 'sortType' => 'asFloat',
+                   'filter' => 'numeric');
 
 foreach ($status_map as $status => $code) {
 	$label = $results_config['status_label'][$status];
-	$columns[] = array('title_key' => $label, 'width' => 20);
+	$columns[] = array('title_key' => $label, 'width' => 20, 'sortType' => 'asInt',
+	                   'filter' => 'numeric');
 	$columns[] = array('title' => lang_get($label).' '.lang_get('in_percent'),
-	                   'col_id' => 'id_'.$label.'_percent',
-	                   'width' => 30);
+	                   'col_id' => 'id_'.$label.'_percent', 'width' => 30, 
+	                   'type' => 'float', 'sortType' => 'asFloat', 'filter' => 'numeric');
 }
 
-$columns[] = array('title_key' => 'progress', 'width' => 30);
+$columns[] = array('title_key' => 'progress', 'width' => 30, 'type' => 'float',
+                   'sortType' => 'asFloat', 'filter' => 'numeric');
 
 // build the content of the table
 $rows = array();
@@ -93,20 +99,15 @@ foreach ($matrix as $build_id => $build_execution_map) {
 			//use html comment to allow js sort this column properly
 			$status_percentage = is_numeric($statistics[$status]['percentage']) ? 
 			                     $statistics[$status]['percentage'] : -1;
-			$padded_status_percentage = sprintf("%010d", $status_percentage);
-			$commented_status_percentage = "<!-- $padded_status_percentage --> " .
-			                               "{$statistics[$status]['percentage']}";
 			
-			$current_row[] = $commented_status_percentage;
+			$current_row[] = $status_percentage;
 		}
 		
 		// add general progress for this user
 		// add html comment with which js can sort the column
 		$percentage = is_numeric($statistics['progress']) ? $statistics['progress'] : -1;
-		$padded_percentage = sprintf("%010d", $percentage); //bring all percentages to same length
-		$commented_progress = "<!-- $padded_percentage --> {$statistics['progress']}";
 		
-		$current_row[] = $commented_progress;
+		$current_row[] = $percentage;
 		
 		// add this row to the others
 		$rows[] = $current_row;

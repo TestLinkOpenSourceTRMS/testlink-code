@@ -70,6 +70,7 @@ function init_args()
 
 	$iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50),
 	 				 "export_filename" => array(tlInputParameter::STRING_N,0,100),
+	 				 "tproject_id" => array(tlInputParameter::INT_N),
 	 				 "goback_url" => array(tlInputParameter::STRING_N,0,2048));
 
 	R_PARAMS($iParams,$args);

@@ -241,6 +241,7 @@ function init_args()
     $args->cfield_id = isset($_REQUEST['cfield_id']) ? $_REQUEST['cfield_id']:0;
     $args->cf_name = isset($_REQUEST['cf_name']) ? $_REQUEST['cf_name']:null;
     $args->cf_required = isset($_REQUEST['cf_required']) ? intval($_REQUEST['cf_required']) : 0;
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
     
     return $args;
 }
@@ -487,6 +488,7 @@ function renderGui(&$smartyObj,&$argsObj,&$guiObj,&$cfieldMgr,$templateCfg)
 		    $smartyObj->display($templateCfg->template_dir . $tpl);
 	  }
 }
+
 
 function checkRights(&$db,&$userObj,$argsObj)
 {

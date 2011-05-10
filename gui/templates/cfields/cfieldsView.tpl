@@ -14,7 +14,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {assign var="cfViewAction" value="lib/cfields/cfieldsView.php"}
 
 {assign var="cfImportAction" value="lib/cfields/cfieldsImport.php?goback_url="}
-{assign var="importCfieldsAction" value="$basehref$cfImportAction$basehref$cfViewAction"}
+{assign var="importCfieldsAction" value="$basehref$cfImportAction$basehref$cfViewAction&tproject_id={$gui->tproject_id}"}
 
 {assign var="cfExportAction" value="lib/cfields/cfieldsExport.php?goback_url="}
 {assign var="exportCfieldsAction" value="$basehref$cfExportAction$basehref$cfViewAction"}
@@ -46,7 +46,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   
    	{foreach key=cf_id item=cf_def from=$gui->cf_map}
    	<tr>
-   	<td class="bold"><a href="lib/cfields/cfieldsEdit.php?do_action=edit&cfield_id={$cf_def.id}"
+   	<td class="bold"><a href="lib/cfields/cfieldsEdit.php?do_action=edit&cfield_id={$cf_def.id}&tproject_id={$gui->tproject_id}"
    	                    title="{$labels.manage_cfield}">{$cf_def.name|escape}</a></td>
    	<td>{$cf_def.label|escape}</td>
    	<td>{$gui->cf_types[$cf_def.type]}</td>
@@ -66,10 +66,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <span style="float: left">
     <form method="post" action="lib/cfields/cfieldsEdit.php?do_action=create">
       <input type="submit" name="create_cfield" value="{$labels.btn_cfields_create}" />
+      <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
     </form>
     </span>
     <span>
 	  <form method="post" action="{$exportCfieldsAction}" name="cfieldsExport">
+		  <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 		  <input type="submit" name="export_cf" id="export_cf"
 		         style="margin-left: 3px;" value="{$labels.btn_export}" />
 		         

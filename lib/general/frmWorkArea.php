@@ -173,8 +173,8 @@ function init_args()
 	$args = new stdClass();
 
 	$iParams = array("feature" => array(tlInputParameter::STRING_N),
-					 "tproject_id" => array(tlInputParameter::INT),
-					 "tplan_id" => array(tlInputParameter::INT));
+					 "tproject_id" => array(tlInputParameter::INT_N),
+					 "tplan_id" => array(tlInputParameter::INT_N));
 	R_PARAMS($iParams,$args);
 	
 	return $args;

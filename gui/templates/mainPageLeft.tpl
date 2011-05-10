@@ -166,7 +166,7 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
       {if $gui->grants.cfield_management == "yes"}
 	      	<br />
 	      	<img src="{$tlImages.bullet}" />
-          	<a href="lib/cfields/cfieldsView.php">{$labels.href_cfields_management}</a>
+          	<a href="lib/cfields/cfieldsView.php?tproject_id={$gui->testprojectID}">{$labels.href_cfields_management}</a>
 			<br />
          	<img src="{$tlImages.bullet}" />
             <a href="lib/cfields/cfieldsTprojectAssign.php?tproject_id={$gui->testprojectID}">{$labels.href_cfields_tproject_assign}</a>

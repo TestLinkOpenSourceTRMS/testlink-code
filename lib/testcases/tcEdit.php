@@ -226,7 +226,7 @@ else if($args->do_copy)
 	$viewer_args['refreshTree']=$args->refreshTree? 1 : 0;
 	$viewer_args['msg_result'] = $msg;
 	$viewer_args['user_feedback'] = $user_feedback;
-	$tcase_mgr->show($smarty,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
+	$tcase_mgr->show($smarty,$args->tproject_id,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
 	                 $args->tcversion_id,$viewer_args,null, $args->show_mode);
 
 }
@@ -253,7 +253,7 @@ else if($args->do_create_new_version)
 
 	
 	$testcase_version = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
-	$tcase_mgr->show($smarty,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
+	$tcase_mgr->show($smarty,$args->tproject_id,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
 					 $testcase_version,$viewer_args,null, $args->show_mode);
 }
 else if($args->do_activate_this || $args->do_deactivate_this)
@@ -275,7 +275,7 @@ else if($args->do_activate_this || $args->do_deactivate_this)
 	$viewer_args['action'] = $action_result;
 	$viewer_args['refreshTree']=DONT_REFRESH;
 
-	$tcase_mgr->show($smarty,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
+	$tcase_mgr->show($smarty,$args->tproject_id,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
 	                 testcase::ALL_VERSIONS,$viewer_args,null, $args->show_mode);
 }
 

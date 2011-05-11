@@ -3,16 +3,15 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: tcSearchForm.tpl,v 1.21 2010/10/26 13:11:34 mx-julian Exp $
 Purpose: show form for search through test cases in test specification
 
-rev :
-  20101026 - Julian - no validation for dates -> no manual input - input only via datepicker
-  20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
-  20100707 - Julian - BUGID 3584: replaced cf names by cf labels
-  20100609 - franciscom - BUGID 1627: Search Test Case by Date of Creation
-  20100409 - franciscom - BUGID 3371 Search Test Cases based on Test Importance
-  20100124 - franciscom - BUGID 3077 - search on preconditions
-  20090228 - franciscom - pre-fill test case id with testcase prefix
+@internal revisions
+20101026 - Julian - no validation for dates -> no manual input - input only via datepicker
+20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
+20100707 - Julian - BUGID 3584: replaced cf names by cf labels
+20100609 - franciscom - BUGID 1627: Search Test Case by Date of Creation
+20100409 - franciscom - BUGID 3371 Search Test Cases based on Test Importance
+20100124 - franciscom - BUGID 3077 - search on preconditions
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels" 
@@ -30,7 +29,7 @@ rev :
 
 <h1 class="title">{$gui->mainCaption|escape}</h1>
 <div style="margin: 1px;">
-<form method="post" action="lib/testcases/tcSearch.php" target="workframe">
+<form method="post" action="lib/testcases/tcSearch.php?tproject_id={$gui->tprojectID}" target="workframe">
 	<table class="smallGrey" style="width:100%">
 		<caption>{$labels.caption_search_form}</caption>
 		<tr>
@@ -79,9 +78,9 @@ rev :
                        name="creation_date_from" id="creation_date_from" 
 				       value="{$gui->creation_date_from}" 
 				       onclick="showCal('creation_date_from-cal','creation_date_from','{$gsmarty_datepicker_format}');" readonly />
-				<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+				<img title="{$labels.show_calender}" src="{$tlImages.calendar}"
 				     onclick="showCal('creation_date_from-cal','creation_date_from','{$gsmarty_datepicker_format}');" >
-				<img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+				<img title="{$labels.clear_date}" src="{$tlImages.delete}"
 			         onclick="javascript:var x = document.getElementById('creation_date_from'); x.value = '';" >
 				<div id="creation_date_from-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 		  </td>

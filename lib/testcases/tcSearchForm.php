@@ -27,10 +27,11 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 
-$args = init_args($tproject_mgr->tree_manager);
+$args = init_args($tproject_mgr);
 
 $gui = new stdClass();
 $gui->tprojectID = $args->tprojectID;
+$gui->testPriorityEnabled = $args->testPriorityEnabled;
 
 $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID) . config_get('testcase_cfg')->glue_character;
 $gui->mainCaption = lang_get('testproject') . " " . $args->tprojectName;
@@ -72,16 +73,18 @@ $smarty->display($templateCfg->template_dir . 'tcSearchForm.tpl');
  * 
  *
  */
-function init_args(&$treeMgr)
+function init_args(&$tprojectMgr)
 {              
   	$args = new stdClass();
 
+	$args->testPriorityEnabled = 0;
     $args->tprojectName = '';
     $args->tprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 	if($args->tprojectID > 0)
 	{
-    	$dummy = $treeMgr->get_node_hierarchy_info($args->tprojectID > 0);
+    	$dummy = $tprojectMgr->get_by_id($args->tprojectID > 0);
     	$args->tprojectName = $dummy['name'];
+    	$args->testPriorityEnabled = $dummy['opt']->testPriorityEnabled;
 	}
        
     return $args;

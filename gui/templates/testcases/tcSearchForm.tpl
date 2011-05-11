@@ -1,4 +1,4 @@
-{* 
+t{* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
 $Id: tcSearchForm.tpl,v 1.21 2010/10/26 13:11:34 mx-julian Exp $
 Purpose: show form for search through test cases in test specification
@@ -131,7 +131,7 @@ Purpose: show form for search through test cases in test specification
 		  </td>
 		</tr>
 		
-    {if $session['testprojectOptions']->testPriorityEnabled}
+    {if $gui->testPriorityEnabled}
 		  <tr>
 		  	<td>{$labels.test_importance}</td>
 		  	<td>

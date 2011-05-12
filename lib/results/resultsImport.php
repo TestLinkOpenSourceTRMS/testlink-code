@@ -12,6 +12,7 @@
  *
  * @internal revisions
  *
+ * 20110512 - franciscom - BUGID 4467: Import XML Results function do not import <bug_id> elements
  * 20101107 - franciscom - BUGID 3843 - Contribution - Match testcases on custom fields when importing test results
  * 20101004 - franciscom - added new checks other than	if( isset($tcase_exec['bug_id']) )
  *						   to avoid warnings on event viewer.	
@@ -655,16 +656,20 @@ function check_exec_values(&$db,$tproject_id,$cfields,&$tcase_mgr,&$user_mgr,$tc
 		}
     }
     
+    // BUGID 4467
     // BUGID 3331
-    $execValues['bug_id'] = isset($execValues['bug_id']) ? trim((string) $execValues['bug_id']) : '';
-    if($checks['status_ok'] && $execValues['bug_id'] != '' )
+	$execValues['bug_id'] = isset($execValues['bug_id']) ? $execValues['bug_id'] : null;
+    if($checks['status_ok'] && !is_null($execValues['bug_id']) && is_array($execValues['bug_id']) )
     {
-		if( ($field_len = strlen($execValues['bug_id'])) > $columnDef['bug_id']->max_length )
-		{
-		    $checks['status_ok']=false;
-		    $checks['msg'][]=sprintf(lang_get('bug_id_invalid_len'),$field_len,$columnDef['bug_id']->max_length); 
+    	foreach($execValues['bug_id'] as $bug_id )
+    	{
+			if( ($field_len = strlen(trim($bug_id))) > $columnDef['bug_id']->max_length )
+			{
+			    $checks['msg'][]=sprintf(lang_get('bug_id_invalid_len'),$field_len,$columnDef['bug_id']->max_length); 
+			    $checks['status_ok']=false;
+			    break;
+			}
 		}
-		
 	}
 	
 	// BUGID 3543

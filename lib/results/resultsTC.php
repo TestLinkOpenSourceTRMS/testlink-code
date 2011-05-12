@@ -7,6 +7,8 @@
 * Show Test Report by individual test case.
 *
 * @internal revisions
+* 20110512 - Julian - BUGID 4451 - remove version tag from not run test cases as the shown version
+*                                  is only taken from previous build and might not be right
 * 20110329 - Julian - BUGID 4341 - added "Last Execution" column
 * 20101013 - asimon - use linkto.php for emailed links
 * 20101012 - Julian - added html comment to properly sort by test case column
@@ -251,7 +253,10 @@ if ($lastResultMap != null)
 					{
 						$cssClass = $gui->map_status_css[$resultsCfg['status_code']['not_run']]; 
 						$resultsForBuildText = $not_run_label;
-						$resultsForBuildText .= sprintf($versionTag,$linkedTCVersion);
+						// BUGID 4451 - remove version tag from not run test cases as the
+						//              shown version is only taken from previous build and
+						//              might not be right
+						// $resultsForBuildText .= sprintf($versionTag,$linkedTCVersion);
 
 						$resultsForBuild = array(
 							"value" => $resultsCfg['status_code']['not_run'],

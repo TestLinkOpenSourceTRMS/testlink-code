@@ -1,19 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planUrgency.tpl,v 1.10 2009/06/17 22:10:17 havlat Exp $
+@filesource	planUrgency.tpl
 
 Smarty template - manage test case urgency
 
-Revisions: 
-	20110415 - Julian - BUGID 4419 - added columns "Importance" and "Priority"
-	20080901 - franciscom - display testcase external id
-    20080721 - franciscom 
-          1. if test suite has no test case, then give message and remove all controls
-          2. use labels instead of code to display urgency
-          3. remove feedback -> user get feedback seeing his/her changes has been applied
-          
+@internal revisions 
+20110415 - Julian - BUGID 4419 - added columns "Importance" and "Priority"
 *}
-{assign var="ownURL" value="lib/plan/planUrgency.php"}
+{$ownURL="lib/plan/planUrgency.php"}
 {lang_get var="labels" 
           s='title_plan_urgency, th_testcase, th_urgency, urgency_low, urgency_medium, urgency_high,
              label_set_urgency_ts, btn_set_urgency_tc, urgency_description,testsuite_is_empty,
@@ -35,6 +29,7 @@ Revisions:
     	<input type="submit" name="medium_urgency" value="{$labels.urgency_medium}" />
     	<input type="submit" name="low_urgency" value="{$labels.urgency_low}" />
 		<input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+		<input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
 		<input type="hidden" name="id" value="{$gui->node_id}" />
     </span>
     </form>
@@ -43,6 +38,7 @@ Revisions:
 {* ------------------------------------------------------------------------------------------- *}
 	<form method="post" action="{$ownURL}" id="set_urgency_tc">
 	<input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+	<input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
 	<input type="hidden" name="id" value="{$gui->node_id}" />
 	<table class="simple_tableruler" style="text-align: center">
 	<tr>

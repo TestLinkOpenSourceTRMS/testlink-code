@@ -1,23 +1,20 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.37 2010/12/15 21:18:00 franciscom Exp $
+@filesource	tc_exec_assignment.tpl
 generate the list of TC that can be removed from a Test Plan 
 
-rev :
-     20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-	   20101030 - amitkhullar - Adjusted the Checkbox column width
-     20100927 - franciscom - Added ext-js extension to transform tables in ext-js grid
-                             BUGID 3668: Test Case EXECUTION Assignment Page not displayed properly
-                             <div id="header-wrap" -> added height:110px;
-                             added z-index to avoid problems with scrolling when using EXT-JS and header-wrap
-     20100926 - franciscom - HTML improvements using <thead>,<tbody>
-     20100822 - franciscom - BUGID 3698
-     20100709 - asimon - BUGID 3406 - changed assignment logic to operate on build 
-                                      instead of testplan level
-     20100209 - franciscom - minor code layout refactoring
-     20100121 - eloff - BUGID 3078 - buttons always visible on top
-     20090215 - franciscom - BUGID 2114
-     20070120 - franciscom - BUGID 530
+@internal revisions
+20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+20101030 - amitkhullar - Adjusted the Checkbox column width
+20100927 - franciscom - Added ext-js extension to transform tables in ext-js grid
+                        BUGID 3668: Test Case EXECUTION Assignment Page not displayed properly
+                        <div id="header-wrap" -> added height:110px;
+                        added z-index to avoid problems with scrolling when using EXT-JS and header-wrap
+20100926 - franciscom - HTML improvements using <thead>,<tbody>
+20100822 - franciscom - BUGID 3698
+20100709 - asimon - BUGID 3406 - changed assignment logic to operate on build instead of testplan level
+20100209 - franciscom - minor code layout refactoring
+20100121 - eloff - BUGID 3078 - buttons always visible on top
 *}
 
 {lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
@@ -25,8 +22,7 @@ rev :
                           send_mail_to_tester,platform,no_testcase_available,
                           exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
                           th_test_case,version,assigned_to,assign_to,note_keyword_filter, priority,
-                          check_uncheck_all_tc
-                          '}
+                          check_uncheck_all_tc'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -152,7 +148,7 @@ function check_action_precondition(container_id,action)
               {if $gui->platforms != ''}
 			      	  <th>{$labels.platform}</th>
               {/if}	
-			      	{if $session['testprojectOptions']->testPriorityEnabled}
+			      	{if $gui->testPriorityEnabled}
 			      	  <th align="center">{$labels.priority}</th>
 			      	{/if}
               <th align="center">&nbsp;&nbsp;{$labels.assigned_to}</th>
@@ -193,13 +189,12 @@ function check_action_precondition(container_id,action)
 			      	        <td>{$gui->platforms[$platform_id]|escape}</td>
                     {/if}	
 
-            	    	{if $session['testprojectOptions']->testPriorityEnabled}
+            	    	{if $gui->testPriorityEnabled}
             	    		<td align="center">{if isset($gui->priority_labels[$tcase.priority])}{$gui->priority_labels[$tcase.priority]}{/if}</td>
             	    	{/if}
             	    	<td align="center">
             	    	{if isset($tcase.user_id[$platform_id])}
             	    	  {assign var="userID" value=$tcase.user_id[$platform_id]} 
-                      {*userID::{$userID}*}
             	    		{$gui->users[$userID]|escape}
             	    		{if $gui->users[$userID] != '' && $gui->testers[$userID] == ''}{$labels.can_not_execute}{/if}
             	    	{/if}
@@ -208,7 +203,6 @@ function check_action_precondition(container_id,action)
                   		  		<select name="tester_for_tcid[{$tcase.id}][{$platform_id}]" 
                   		  		        id="tester_for_tcid_{$tcase.id}_{$platform_id}"
                   		  		        onchange='javascript: set_checkbox("{$add_cb}_{$ts_id}_{$tcase.id}_{$platform_id}",1)' >
-                  			   	{*  {html_options options=$gui->testers selected=$tcase.user_id} *}
                   			   	{html_options options=$gui->testers selected=$userID}
                   				  </select>
                     </td>

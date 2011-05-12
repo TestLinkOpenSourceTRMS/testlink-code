@@ -369,7 +369,8 @@ class testcaseCommands
       	        	$tplan_mgr->link_tcversions($tplan_id,$item2link,$argsObj->user_id);  
       	        }
       	    }
-      	    $this->tcaseMgr->show($smartyObj,$argsObj->grants,$guiObj,$this->templateCfg->template_dir,
+      	    $this->tcaseMgr->show($smartyObj,$argsObj->tproject_id,$argsObj->grants,$guiObj,
+      	    					  $this->templateCfg->template_dir,
 	  	                          $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args);
       	}
       	return $guiObj;
@@ -904,7 +905,8 @@ class testcaseCommands
 
 	    $viewer_args['refreshTree'] = $guiObj->refreshTree;
  	    $viewer_args['user_feedback'] = $guiObj->user_feedback;
-	    $this->tcaseMgr->show($smartyObj,$argsObj->grants,$guiObj, $this->templateCfg->template_dir,
+	    $this->tcaseMgr->show($smartyObj,$argsObj->tproject_id,$argsObj->grants,$guiObj, 
+	    					  $this->templateCfg->template_dir,
 	                          $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args,null,$argsObj->show_mode);
 		exit();	
 	}

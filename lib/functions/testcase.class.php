@@ -699,7 +699,7 @@ class testcase extends tlObjectWithAttachments
 	
 	  rev :
 	*/
-	function show(&$smarty,$grants,$guiObj,$template_dir,$id,$version_id = self::ALL_VERSIONS,
+	function show(&$smarty,$env_tproject_id,$grants,$guiObj,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 	              $viewer_args = null,$path_info=null,$mode=null)
 	{
 
@@ -830,7 +830,9 @@ class testcase extends tlObjectWithAttachments
 	        	// Add To Testplan button will be disabled if the testcase doesn't belong 
 	        	// to the current selected testproject
 	        	// $gui->can_do->add2tplan = 'no';
-	        	if ($_SESSION['testprojectPrefix'] == $tcasePrefix)
+	        	// if ($_SESSION['testprojectPrefix'] == $tcasePrefix)
+	        	//
+	        	if($env_tproject_id != $tproject_id)
 	        	{
 		    		$gui->can_do->add2tplan = $gui->can_do->add2tplan == 'yes' ? $grants->testplan_planning : 'no';
 				}

@@ -117,7 +117,7 @@ switch($args->feature)
 	    $gui->id = $args->id;
 	    
 	    
-		$item_mgr->show($smarty,$grants,$gui,$templateCfg->template_dir,
+		$item_mgr->show($smarty,$args->tproject_id,$grants,$gui,$templateCfg->template_dir,
 						$args->id,$args->tcversion_id,$viewerArgs,$path_info,$args->show_mode);
 		break;
 

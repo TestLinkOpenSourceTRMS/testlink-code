@@ -46,8 +46,6 @@ $edit_label = lang_get('design');
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $gui = initializeGui($args);
-$map = null;
-
 if ($args->tprojectID)
 {
 	$tables = tlObjectWithDB::getDBTables(array('cfield_design_values','nodes_hierarchy',
@@ -147,7 +145,6 @@ if ($args->tprojectID)
         $args->custom_field_id = $db->prepare_string($args->custom_field_id);
         $args->custom_field_value = $db->prepare_string($args->custom_field_value);
         $from['by_custom_field']= " JOIN {$tables['cfield_design_values']} CFD " .
-                                  //BUGID 2877 - Custom Fields linked to TC versions
                                   " ON CFD.node_id=NH_TCV.id ";
         $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
                                      " AND CFD.value like '%{$args->custom_field_value}%' ";
@@ -204,12 +201,13 @@ if ($args->tprojectID)
     	// Count results
     	$sql = $sqlCount . $sqlPart2;
     	$gui->row_qty = $db->fetchOneValue($sql); 
+
     	if ($gui->row_qty)
     	{
     		if ($gui->row_qty <= $tcase_cfg->search->max_qty_for_display)
     		{
     	        $sql = $sqlFields . $sqlPart2;
-    			$map = $db->fetchRowsIntoMap($sql,'testcase_id');	
+				$gui->resultSet = $db->fetchRowsIntoMap($sql,'testcase_id');	
 			}
 			else
 			{
@@ -222,19 +220,19 @@ if ($args->tprojectID)
 $smarty = new TLSmarty();
 if($gui->row_qty > 0)
 {	
-	if ($map)
+	if(!is_null($gui->resultSet))
 	{
-		$tcase_mgr = new testcase($db);   
-	    $tcase_set = array_keys($map);
+	    $tcase_set = array_keys($gui->resultSet);
 	    $options = array('output_format' => 'path_as_string');
 	    $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set, $options);
-		$gui->resultSet = $map;
 	}
 }
 else
 {
 	$gui->warning_msg=lang_get('no_records_found');
 }
+
+// new dBug($gui->resultSet);
 
 $table = buildExtTable($gui, $charset, $edit_icon, $edit_label);
 
@@ -269,9 +267,6 @@ function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
 			$rowData[] = htmlentities($gui->path_info[$result['testcase_id']], ENT_QUOTES, $charset);
 			
 			// build test case link
-//			$rowData[] = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id={$result['testcase_id']}\">" .
-//			             htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . $titleSeperator .
-//			             htmlentities($result['name'], ENT_QUOTES, $charset);
 			$edit_link = "<a href=\"javascript:openTCEditWindow({$result['testcase_id']});\">" .
 						 "<img title=\"{$edit_label}\" src=\"{$edit_icon}\" /></a> ";
 			$tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . $titleSeperator .
@@ -379,7 +374,6 @@ function init_args($dateFormat)
 		}
 	}
     
-	new dBug($args);
     return $args;
 }
 

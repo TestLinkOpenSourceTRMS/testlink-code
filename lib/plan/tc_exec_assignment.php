@@ -356,6 +356,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 	   	
 	   	
 	}
+	$gui->testPriorityEnabled = $argsObj->tprojectOptions->testPriorityEnabled;
 	$gui->tproject_id = $argsObj->tproject_id;
     return $gui;
 }

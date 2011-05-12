@@ -70,7 +70,8 @@ class polarionInterface extends bugtrackingInterface
 		$path = '';
 		$workPackageId = split("-",$id);
 		$tmp_id = $workPackageId[1];
-		$tmp_id_Len = strlen($tmp_id);
+		// BUGID 4455
+		$tmp_id_len = strlen($tmp_id);
 		
 		switch ($tmp_id_len)
 		{

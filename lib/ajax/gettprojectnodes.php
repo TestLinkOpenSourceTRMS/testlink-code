@@ -164,7 +164,7 @@ function display_children($dbHandler,$env,$root_node,$parent,$filter_node,
 	        }
 	        if(!is_null($tcase_qty))
 	        {
-	        	$path['text'] .= "({$tcase_qty})";   
+	        	$path['text'] .= " ({$tcase_qty})";   
 	        }
           	$nodes[] = $path;                                                                        
 	    }

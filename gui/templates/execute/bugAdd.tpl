@@ -24,7 +24,7 @@ rev :
 			<a style="font-weight:normal" target="_blank" href="{$bts_url}">
 			{lang_get s='link_bts_create_bug'}({$gui->interface_bugs|lower|capitalize})</a>
 		</p>	
-	  	<p class="label">{$gsmarty_interface_bugs|lower|capitalize} {lang_get s='bug_id'}
+	  	<p class="label">{$gui->interface_bugs|lower|capitalize} {lang_get s='bug_id'}
   	 		<input type="text" id="bug_id" name="bug_id" size="{#BUGID_SIZE#}" maxlength="{$bugIDMaxLength}"/>
 		</p>	
 		<div class="groupBtn">

@@ -187,6 +187,7 @@ class TLSmarty extends Smarty
         $this->assign('gsmarty_spec_cfg',config_get('spec_cfg'));
         $this->assign('gsmarty_attachments',config_get('attachments'));
         $this->assign('gsmarty_bugInterfaceOn',config_get('bugInterfaceOn'));
+        $this->assign('gsmarty_interface_bugs',config_get('interface_bugs'));
 
         $this->assign('pageCharset',$tlCfg->charset);
         $this->assign('tlVersion',TL_VERSION);

@@ -91,7 +91,8 @@ require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
 function filterString($str)
 {
 	$str = str_replace(array("\n","\r"), array("",""), $str);
-	$str = addslashes($str);
+	// BUGID 4470 - avoid escaped characters in trees
+	// $str = addslashes($str);
 	$str = htmlspecialchars($str, ENT_QUOTES);	
 	
 	return $str;

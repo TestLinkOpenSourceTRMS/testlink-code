@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<platforms>
+	<platform>
+		<name><![CDATA[CRAY T3E/unicos]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[IBM SP/AIX]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Pentium-AMD/linux]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Compaq/OSF]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Compaq/linux]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Silicon Graphics/IRIX]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+</platforms>

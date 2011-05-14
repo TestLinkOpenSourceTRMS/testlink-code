@@ -1,19 +1,10 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.22 2010/11/13 11:24:25 franciscom Exp $ 
+@filesource	usersAssign.tpl
 
-rev:
-    20100930 - franciscom - BUGID 2344: Private test project
-    20100314 - eloff - BUGID 3272 - send assign form via POST to allow more data to be sent
-    20091129 - franciscom - ISSUE 2554 - coloruing
-    20090426 - franciscom - BUGID 2442- added bulk setting management
-    20070818 - franciscom
-    added logic to display effective role for test project and test plan
-    given user info about inheritenance.
-
-    20070829 - jbarchibald
-      -  bug 1000  - Testplan User Role Assignments
-    
+@internal revisions
+20100930 - franciscom - BUGID 2344: Private test project
+20100314 - eloff - BUGID 3272 - send assign form via POST to allow more data to be sent
 *}
 {lang_get var="labels" 
           s='TestProject,TestPlan,btn_change,title_user_mgmt,set_roles_to,show_only_authorized_users,
@@ -81,16 +72,11 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 
 <body>
 <h1 class="title">{$labels.title_user_mgmt} - {$labels.title_assign_roles}</h1>
-{assign var="umgmt" value="lib/usermanagement"}
-{assign var="my_feature_name" value=''}
+{$umgmt = "lib/usermanagement"}
+{$my_feature_name = ''}
 
 {***** TABS *****}
-{assign var="highlight" value=$gui->highlight}
-{assign var="grants" value=$gui->grants}
-
 {include file="usermanagement/tabsmenu.tpl"}
-
-
 <div class="workBack">
 
   {include file="inc_update.tpl" result=$result item="$gui->featureType" action="$action" user_feedback=$gui->user_feedback}
@@ -123,7 +109,7 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 		    	     <option value="{$f.id}" {if $gui->featureID == $f.id} selected="selected" {/if}>
 		    	     {$f.name|escape}</option>
 		    	     {if $gui->featureID == $f.id}
-		    	        {assign var="my_feature_name" value=$f.name}
+		    	        {$my_feature_name=$f.name}
 		    	     {/if}
 		    	   {/foreach}
 		    	   </select>
@@ -155,8 +141,8 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
    		<td class="labelHolder">{$labels.show_only_authorized_users}</td><td>&nbsp;</td>
       <td> 
           <input name="show_only_authorized_users" id="show_only_authorized_users" 
-                  type="checkbox" {$checked_hide_inactive_users} 
-           value="on" onclick="toggleRowByClass('show_only_authorized_users','not_authorized_user','none','table-row')">
+                  type="checkbox" {$gui->checked_hide_inactive_users} 
+           		value="on" onclick="toggleRowByClass('show_only_authorized_users','not_authorized_user','none','table-row')">
       </td>
 			</tr>
 
@@ -170,25 +156,25 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 	    <table class="common sortable" width="75%">
     	<tr>
     		<th>{$tlImages.sort_hint}{$labels.User}</th>
-    		{assign var="featureVerbose" value=$gui->featureType}
+    		{$featureVerbose=$gui->featureType}
     		<th>{$tlImages.sort_hint}{lang_get s="th_roles_$featureVerbose"} ({$my_feature_name|escape})</th>
     	</tr>
     	{foreach from=$gui->users item=user}
-    	    {assign var="globalRoleName" value=$user->globalRole->name}
-    			{assign var=uID value=$user->dbID}
+    	    {$globalRoleName = $user->globalRole->name}
+    		{$uID = $user->dbID}
 
           {* get role name to add to inherited in order to give better information to user *}
-          {assign var="effective_role_id" value=$gui->userFeatureRoles[$uID].effective_role_id}
+          {$effective_role_id = $gui->userFeatureRoles[$uID].effective_role_id}
           {if $gui->userFeatureRoles[$uID].is_inherited == 1}
-            {assign var="ikx" value=$effective_role_id}
+            {$ikx=$effective_role_id}
           {else}
-            {assign var="ikx" value=$gui->userFeatureRoles[$uID].uplayer_role_id}
+            {$ikx=$gui->userFeatureRoles[$uID].uplayer_role_id}
           {/if}
-          {assign var="inherited_role_name" value=$gui->optRights[$ikx]->name}
+          {$inherited_role_name=$gui->optRights[$ikx]->name}
 
-          {assign var="user_row_class" value=''}
+          {$user_row_class=''}
           {if $effective_role_id == $smarty.const.TL_ROLES_NO_RIGHTS}
-            {assign var="user_row_class" value='class="not_authorized_user"'}
+            {$user_row_class = 'class="not_authorized_user"'}
           {/if}
 
     	<tr {$user_row_class} bgcolor="{cycle values="#eeeeee,#d0d0d0"}">

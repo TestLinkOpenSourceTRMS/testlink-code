@@ -48,36 +48,33 @@ $target->tplan_id = null;
 
 switch($args->featureType)
 {
-    case "testproject":
-    	$gui->highlight->assign_users_tproject = 1;
-    	$gui->roles_updated = lang_get("test_project_user_roles_updated");
-    	$gui->not_for_you = lang_get("testproject_roles_assign_disabled");
-    	$assignRolesFor = $args->featureType;
-    	$target->tproject_id = $args->featureID > 0 ? $args->featureID : null;
-    	$featureMgr = &$tprojectMgr;
-    break;
-    
-    case "testplan":
-      	$gui->highlight->assign_users_tplan = 1;
-    	$gui->roles_updated = lang_get("test_plan_user_roles_updated");
-    	$gui->not_for_you = lang_get("testplan_roles_assign_disabled");
-    	$assignRolesFor = $args->featureType;
-    	$target->tproject_id = $args->tproject_id;
-    	$featureMgr = &$tplanMgr;
-    break;
+ case "testproject":
+ 	$gui->highlight->assign_users_tproject = 1;
+ 	$gui->roles_updated = lang_get("test_project_user_roles_updated");
+ 	$gui->not_for_you = lang_get("testproject_roles_assign_disabled");
+ 	$assignRolesFor = $args->featureType;
+ 	$target->tproject_id = $args->featureID > 0 ? $args->featureID : null;
+ 	$featureMgr = &$tprojectMgr;
+ break;
+ 
+ case "testplan":
+   	$gui->highlight->assign_users_tplan = 1;
+ 	$gui->roles_updated = lang_get("test_plan_user_roles_updated");
+ 	$gui->not_for_you = lang_get("testplan_roles_assign_disabled");
+ 	$assignRolesFor = $args->featureType;
+ 	$target->tproject_id = $args->tproject_id;
+ 	$featureMgr = &$tplanMgr;
+ break;
 }
 
 
 if ($args->featureID && $args->doUpdate && $featureMgr)
 {
-    if(checkRightsForUpdate($db,$args->user,$args->tproject_id,$args->featureType,$args->featureID))
-    {
-        doUpdate($db,$args,$featureMgr);
-        if( $gui->user_feedback == '' )
-        {
-        $gui->user_feedback = $gui->roles_updated;
-    }
-}
+	if(checkRightsForUpdate($db,$args->user,$args->tproject_id,$args->featureType,$args->featureID))
+ 	{
+		doUpdate($db,$args,$featureMgr);
+		$gui->user_feedback = ($gui->user_feedback == '') ? $gui->roles_updated : $gui->user_feedback;
+	}
 }
 
 // --------------------------------------------------------------------------
@@ -113,11 +110,7 @@ $gui->grants = getGrantsForUserMgmt($db,$args->user,$target->tproject_id,-1);
 if(is_null($gui->features) || count($gui->features) == 0)
 {
     $gui->features = null;
-	// 20101202 - franciscom - BUGID 4065
-	if( $gui->user_feedback == '' )
-	{
-	$gui->user_feedback = $gui->not_for_you;
-}
+	$gui->user_feedback = ($gui->user_feedback == '') ? $gui->not_for_you : $gui->user_feedback;
 }
 
 $smarty = new TLSmarty();
@@ -405,6 +398,7 @@ function initializeGui(&$dbHandler,&$argsObj)
 	$guiObj->features = null;
 	$guiObj->featureType = $argsObj->featureType;
 	$guiObj->featureID = null;
+	$guiObj->checked_hide_inactive_users = '';
 	
 	$guiObj->role_colour = null;
 	$guiCfg = config_get('gui');

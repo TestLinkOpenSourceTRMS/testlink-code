@@ -133,7 +133,7 @@ function contextAsXML(&$dbHandler,$contextSet,&$tplanMgr)
 	unset($buildMgr);
 	
 	$info['platform'] = null;
-	$plaftorm_template = '';
+	$platform_template = '';
 	if( $contextSet->platform_id > 0 )
 	{
 		$platformMgr = new tlPlatform($dbHandler, $contextSet->tproject_id);

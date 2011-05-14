@@ -1,17 +1,17 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: execExport.tpl,v 1.4 2010/11/13 09:21:54 franciscom Exp $ 
+@filesource	execExport.tpl
 
 execution test case set export
 
-Revisions:
+@internal revisions
 20100926- franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
 *}
 {lang_get var="labels" 
           s='export_filename,warning_empty_filename,file_type,warning,export_cfields,title_req_export,
              view_file_format_doc,export_with_keywords,btn_export,btn_cancel'} 
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -71,10 +71,6 @@ function validateForm(f)
   	</table>
   	
   	<div class="groupBtn">
-  		<input type="hidden" name="testcase_id" value="{$gui->tcID}" />
-  		<input type="hidden" name="tcversion_id" value="{$gui->tcVersionID}" />
-  		<input type="hidden" name="containerID" value="{$gui->containerID}" />
-  		<input type="hidden" name="useRecursion" value="{$gui->useRecursion}" />
   		<input type="submit" name="export" value="{$labels.btn_export}" />
       {if $gui->drawCancelButton}
   		<input type="button" name="cancel" value="{$labels.btn_cancel}"

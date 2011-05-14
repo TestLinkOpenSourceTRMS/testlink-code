@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel.tpl,v 1.14 2010/11/22 09:15:57 asimon83 Exp $
+ * @filesource	inc_filter_panel.tpl
  *
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -11,7 +11,7 @@
  * That template was also the base for most of the html code used in here.
  *
  * @author Andreas Simon
- * @internal revision
+ * @internal revisions
  *  20110222 - asimon - BUGID 4253: enable filter method selector before submitting 
                                     the form so its value doesn't get lost
  *  20101121 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
@@ -49,8 +49,7 @@
   <input type="hidden" name="form_token" value="{$control->form_token}">
 {/if}
 
-{assign var="platformID" value=0}
-
+{$platformID=0}
 {if $control->draw_tc_unassign_button}
 	<input type="button" 
 	       name="removen_all_tester_assignments"
@@ -67,7 +66,7 @@
 
 {* hidden feature input (mainly for testcase edit when refreshing frame) *}
 {if isset($gui->feature)}
-<input type="hidden" id="feature" name="feature" value="{$gui->feature}" />
+	<input type="hidden" id="feature" name="feature" value="{$gui->feature}" />
 {/if}
 
 {include file="inc_help.tpl" helptopic="hlp_executeFilter" show_help_icon=false}

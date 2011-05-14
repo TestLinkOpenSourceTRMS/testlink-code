@@ -47,9 +47,9 @@ require_once('treeMenu.inc.php');
 require_once('exec.inc.php');
 
 testlinkInitPage($db);
-
 $templateCfg = templateConfiguration();
 $control = new tlTestCaseFilterControl($db, 'execution_mode');
+
 $gui = initializeGui($control);
 $control->build_tree_menu($gui);
 $smarty = new TLSmarty();
@@ -70,11 +70,13 @@ function initializeGui(&$control)
 {
 	$gui = new stdClass();
 	
+	$gui->tproject_id = $control->args->testproject_id;
+	$gui->tplan_id = $control->args->testplan_id;
 	$gui->menuUrl = 'lib/execute/execSetResults.php';
 	$gui->args = $control->get_argument_string();
-	$gui->src_workframe = $control->args->basehref . $gui->menuUrl .
-	                "?edit=testproject&id={$control->args->testproject_id}" . 
-	                "&tplan_id={$control->args->testplan_id}" . $gui->args;
+	$gui->src_workframe = $control->args->basehref . $gui->menuUrl . 
+						  "?edit=testproject&id={$control->args->testproject_id}" . 
+	                	  "&tplan_id={$control->args->testplan_id}" . $gui->args;
 	
 	// BUGID 3270 - Export Test Plan in XML Format
 	$control->draw_export_testplan_button = true;

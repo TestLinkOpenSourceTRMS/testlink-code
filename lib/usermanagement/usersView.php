@@ -25,7 +25,7 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $args = init_args();
 checkRights($db,$_SESSION['currentUser'],$args);
-$grants = getGrantsForUserMgmt($db,$args->currentUser,$args->tproject_id);
+
 
 $sqlResult = null;
 $action = null;
@@ -64,31 +64,6 @@ switch($args->operation)
 		$orderBy->dir = $args->order_by_dir;
 	break;
 		
-	// case 'delete':
-	// 	//user cannot delete itself
-	// 	if ($args->user_id != $args->currentUserID)
-	// 	{
-	// 		$user = new tlUser($args->user_id);
-	// 		$sqlResult = $user->readFromDB($db);
-	// 		if ($sqlResult >= tl::OK)
-	// 		{
-	// 			$userLogin = $user->login;
-	// 			$sqlResult = $user->deleteFromDB($db);
-	// 			if ($sqlResult >= tl::OK)
-	// 			{
-	// 				logAuditEvent(TLS("audit_user_deleted",$user->login),"DELETE",$args->user_id,"users");
-	// 				$user_feedback = sprintf(lang_get('user_deleted'),$userLogin);
-	// 			}
-	// 		}
-	// 	}
-    // 
-	// 	if ($sqlResult != tl::OK)
-	// 		$user_feedback = lang_get('error_user_not_deleted');
-    // 
-	// 	$orderBy->type = $args->user_order_by;
-	// 	$orderBy->dir = $args->order_by_dir;
-	// 	break;
-
 	case 'order_by_role':
 	case 'order_by_login':
 		$orderBy->type = $args->operation;
@@ -105,30 +80,14 @@ switch($args->operation)
 		break;
 }
 
-// $body_onload = "onload=\"toggleRowByClass('hide_inactive_users','inactive_user','table-row')\"";
-$order_by_clause = get_order_by_clause($orderBy);
-$users = getAllUsersRoles($db,$order_by_clause);
 
-$highlight = initialize_tabsmenu();
-$highlight->view_users = 1;
+$gui = initializeGui($db,$args,$orderBy);
 
 $smarty = new TLSmarty();
-$smarty->assign('highlight',$highlight);
+$smarty->assign('gui',$gui);
 $smarty->assign('user_feedback',$user_feedback);
-$smarty->assign('user_order_by',$args->user_order_by);
-$smarty->assign('order_by_role_dir',$args->order_by_dir['order_by_role_dir']);
-$smarty->assign('order_by_login_dir',$args->order_by_dir['order_by_login_dir']);
-$smarty->assign('role_colour',getRoleColourCfg($db));
-$smarty->assign('update_title_bar',0);
-$smarty->assign('reload',0);
-$smarty->assign('users',$users);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
-$smarty->assign('base_href', $args->basehref);
-$smarty->assign('grants',$grants);
-$smarty->assign('body_onload',$args->body_onload);
-$smarty->assign('checked_hide_inactive_users',$args->checked_hide_inactive_users);
-
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
@@ -187,6 +146,8 @@ function init_args()
 			         "order_by_role_dir" => array(tlInputParameter::STRING_N,0,4),
 			         "order_by_login_dir" => array(tlInputParameter::STRING_N,0,4),
 			         "user" => array(tlInputParameter::INT_N),
+			         "tproject_id" => array(tlInputParameter::INT_N),
+			         "tplan_id" => array(tlInputParameter::INT_N),
 			         "hide_inactive_users" => array(tlInputParameter::CB_BOOL));
 
 	$pParams = R_PARAMS($iParams);
@@ -200,6 +161,8 @@ function init_args()
     $args->order_by_dir["order_by_role_dir"] = ($pParams["order_by_role_dir"] != '') ? $pParams["order_by_role_dir"] : 'asc';
     $args->order_by_dir["order_by_login_dir"] = ($pParams["order_by_login_dir"] != '') ? $pParams["order_by_login_dir"] : 'asc';
     $args->user_id = $pParams['user'];
+    $args->tproject_id = $pParams['tproject_id'];
+    $args->tplan_id = $pParams['tplan_id'];
 	
 	
 	// BUGID 3355: A user can not be deleted from the list
@@ -257,6 +220,31 @@ function checkUserOrderBy($input)
 	$status_ok = isset($domain[$input]) ? true : false;
 	return $status_ok;
 }
+
+
+function initializeGui(&$dbHandler,&$argsObj,$orderBy)
+{
+	$guiObj = new stdClass();
+	
+	$guiObj->highlight = initialize_tabsmenu();
+	$guiObj->highlight->view_users = 1;
+
+	$guiObj->update_title_bar = 0;
+	$guiObj->reload = 0;
+	$guiObj->user_order_by = $argsObj->user_order_by;
+	$guiObj->order_by_role_dir = $argsObj->order_by_dir['order_by_role_dir'];
+	$guiObj->order_by_login_dir = $argsObj->order_by_dir['order_by_login_dir'];
+	$guiObj->checked_hide_inactive_users = $argsObj->checked_hide_inactive_users;
+	$guiObj->base_href = $argsObj->basehref;
+	$guiObj->body_onload = $argsObj->body_onload;
+
+	$guiObj->role_colour = getRoleColourCfg($dbHandler);
+	$guiObj->users = getAllUsersRoles($dbHandler,get_order_by_clause($orderBy));
+	$guiObj->grants = getGrantsForUserMgmt($dbHandler,$argsObj->currentUser,$argsObj->tproject_id);
+
+	return $guiObj;
+}
+
 
 
 /**

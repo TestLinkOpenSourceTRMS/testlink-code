@@ -1,10 +1,10 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.27 2010/11/13 11:24:25 franciscom Exp $
+@filesource	usersView.tpl
 
 Purpose: smarty template - users overview
 
-rev:
+@internal revisions
   20101017 - franciscom - image access refactored (tlImages)
   20100923 - Julian - BUGID 3802
   20100426 - asimon - removed forgotten comment end sign (template syntax error)
@@ -14,9 +14,9 @@ rev:
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
 
-{assign var="userActionMgr" value="lib/usermanagement/usersEdit.php"}
-{assign var="createUserAction" value="$userActionMgr?doAction=create"}
-{assign var="editUserAction" value="$userActionMgr?doAction=edit&amp;user_id="}
+{$userActionMgr = "lib/usermanagement/usersEdit.php"}
+{$createUserAction ="$userActionMgr?doAction=create"}
+{$editUserAction ="$userActionMgr?doAction=edit&user_id="}
 
 {lang_get s='warning_disable_user' var="warning_msg"}
 {lang_get s='disable' var="del_msgbox_title"}
@@ -62,9 +62,9 @@ function toggleRowByClass(oid,className,displayValue)
              disable,alt_edit_user,Yes,No,alt_delete_user,no_permissions_for_action,btn_create,
              show_inactive_users,hide_inactive_users,alt_disable_user,order_by_login,order_by_login_dir,alt_active_user"}
 
-<body {$body_onload}>
+<body {$gui->body_onload}>
 
-{if $grants->user_mgmt == "yes"}
+{if $gui->grants->user_mgmt == "yes"}
 
 	<h1 class="title">{$labels.title_user_mgmt}</h1>
 	{***** TABS *****}
@@ -74,21 +74,21 @@ function toggleRowByClass(oid,className,displayValue)
 	<div class="workBack">
 		<form method="post" action="lib/usermanagement/usersView.php" name="usersview" id="usersview">
 		<input type="hidden" id="operation" name="operation" value="" />
-		<input type="hidden" id="order_by_role_dir" name="order_by_role_dir" value="{$order_by_role_dir}" />
-		<input type="hidden" id="order_by_login_dir" name="order_by_login_dir" value="{$order_by_login_dir}" />
-		<input type="hidden" id="user_order_by" name="user_order_by" value="{$user_order_by}" />
+		<input type="hidden" id="order_by_role_dir" name="order_by_role_dir" value="{$gui->order_by_role_dir}" />
+		<input type="hidden" id="order_by_login_dir" name="order_by_login_dir" value="{$gui->order_by_login_dir}" />
+		<input type="hidden" id="user_order_by" name="user_order_by" value="{$gui->user_order_by}" />
 
 	  {include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
     {$labels.hide_inactive_users}
-    <input name="hide_inactive_users" id="hide_inactive_users" type="checkbox" {$checked_hide_inactive_users} 
+    <input name="hide_inactive_users" id="hide_inactive_users" type="checkbox" {$gui->checked_hide_inactive_users} 
            value="on" onclick="toggleRowByClass('hide_inactive_users','inactive_user')">
 		<table class="simple">
 			<tr>
-				<th {if $user_order_by == 'order_by_login'}style="background-color: #c8dce8;color: black;"{/if}>
+				<th {if $gui->user_order_by == 'order_by_login'}style="background-color: #c8dce8;color: black;"{/if}>
 				    {$labels.th_login}
-				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/order_{$order_by_login_dir}.gif"
-				         title="{$labels.order_by_login} {lang_get s=$order_by_login_dir}"
-						     alt="{$labels.order_by_role_descr} {lang_get s=$order_by_role_dir}"
+				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/order_{$gui->order_by_login_dir}.gif"
+				         title="{$labels.order_by_login} {lang_get s=$gui->order_by_login_dir}"
+						     alt="{$labels.order_by_role_descr} {lang_get s=$gui->order_by_role_dir}"
 				         onclick="usersview.operation.value='order_by_login';
 				                  usersview.user_order_by.value='order_by_login';
 				                  usersview.submit();" />
@@ -98,11 +98,11 @@ function toggleRowByClass(oid,className,displayValue)
 				<th>{$labels.th_last_name}</th>
 				<th>{$labels.th_email}</th>
 
-				<th {if $user_order_by == 'order_by_role'}style="background-color: #c8dce8;color: black;"{/if}>
+				<th {if $gui->user_order_by == 'order_by_role'}style="background-color: #c8dce8;color: black;"{/if}>
 				    {$labels.th_role}
-	    			<img src="{$smarty.const.TL_THEME_IMG_DIR}/order_{$order_by_role_dir}.gif"
-	    			     title="{$labels.order_by_role_descr} {lang_get s=$order_by_role_dir}"
-						 alt="{$labels.order_by_role_descr} {lang_get s=$order_by_role_dir}"
+	    			<img src="{$smarty.const.TL_THEME_IMG_DIR}/order_{$gui->order_by_role_dir}.gif"
+	    			     title="{$labels.order_by_role_descr} {lang_get s=$gui->order_by_role_dir}"
+						 alt="{$labels.order_by_role_descr} {lang_get s=$gui->order_by_role_dir}"
 	    			     onclick="usersview.operation.value='order_by_role';
 	    			              usersview.user_order_by.value='order_by_role';
 	      			            usersview.submit();" />
@@ -113,15 +113,15 @@ function toggleRowByClass(oid,className,displayValue)
 				<th style="width:50px;">{$labels.disable}</th>
 			</tr>
 
-      {foreach from=$users item=userObj}
- 			  {assign var="r_n" value=$userObj->globalRole->name}
-				{assign var="r_d" value=$userObj->globalRole->getDisplayName()}
+      {foreach from=$gui->users item=userObj}
+		{$r_n =$userObj->globalRole->name}
+		{$r_d =$userObj->globalRole->getDisplayName()}
         {if $userObj->isActive eq 1}
-          {assign var="user_row_class" value=''}
+          {$user_row_class =''}
         {else}
-          {assign var="user_row_class" value='class="inactive_user"'}
+          {$user_row_class ='class="inactive_user"'}
         {/if}
-				<tr {$user_row_class} {if $role_colour[$r_n] neq ''} style="background-color: {$role_colour[$r_n]};" {/if}>
+				<tr {$user_row_class} {if $gui->role_colour[$r_n] != ''} style="background-color: {$gui->role_colour[$r_n]};" {/if}>
 				<td><a href="{$editUserAction}{$userObj->dbID}">
 				    {$userObj->login|escape}
 			      {if $gsmarty_gui->show_icon_edit}
@@ -136,7 +136,7 @@ function toggleRowByClass(oid,className,displayValue)
 				<td>{$r_d|escape}</td>
 				<td>
 				 {* BUGID 3802 *}
-				 {assign var="user_locale" value=$userObj->locale}
+				 {$user_locale = $userObj->locale}
 				 {$optLocale.$user_locale|escape}
 				</td>
 				<td align="center">
@@ -166,12 +166,12 @@ function toggleRowByClass(oid,className,displayValue)
 	</div>
 	
 	{*  BUGID 0000103: Localization is changed but not strings *}
-	{if $update_title_bar == 1}
+	{if $gui->update_title_bar == 1}
 	<script type="text/javascript">
 		parent.titlebar.location.reload();
 	</script>
 	{/if}
-	{if $reload == 1}
+	{if $gui->reload == 1}
 	<script type="text/javascript">
 		top.location.reload();
 	</script>

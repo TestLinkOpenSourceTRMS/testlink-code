@@ -9,15 +9,16 @@ include to generate menu when managing users and roles
 
 *}
 
-{$action_create_role ="lib/usermanagement/rolesEdit.php?doAction=create"}
-{$action_view_roles ="lib/usermanagement/rolesView.php"}
+{$tprojectID = $gui->tproject_id}
 
+{$action_create_role ="lib/usermanagement/rolesEdit.php?tproject_id=$tprojectID&doAction=create"}
+{$action_view_roles ="lib/usermanagement/rolesView.php?tproject_id=$tprojectID"}
 
-{$action_create_user ="lib/usermanagement/usersEdit.php?doAction=create"}
-{$action_edit_user ="lib/usermanagement/usersEdit.php?doAction=edit&amp;user_id="}
-{$action_view_users ="lib/usermanagement/usersView.php"}
-{$action_assign_users_tproject ="lib/usermanagement/usersAssign.php?featureType=testproject"}
-{$action_assign_users_tplan ="lib/usermanagement/usersAssign.php?featureType=testplan"}
+{$action_create_user ="lib/usermanagement/usersEdit.php?tproject_id=$tprojectID&doAction=create"}
+{$action_edit_user ="lib/usermanagement/usersEdit.php?tproject_id=$tprojectID&doAction=edit&user_id="}
+{$action_view_users ="lib/usermanagement/usersView.php?tproject_id=$tprojectID"}
+{$action_assign_users_tproject ="lib/usermanagement/usersAssign.php?tproject_id=$tprojectID&featureType=testproject"}
+{$action_assign_users_tplan ="lib/usermanagement/usersAssign.php?tproject_id=$tprojectID&featureType=testplan"}
 
 
 {lang_get var="tabsMenuLabels"

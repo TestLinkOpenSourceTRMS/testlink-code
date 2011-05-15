@@ -27,7 +27,9 @@ require_once('users.inc.php');
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
-$args = init_args();
+$tprojectMgr = new testproject($db);
+$tplanMgr = new testplan($db);
+$args = init_args($tprojectMgr->tree_manager);
 checkRights($db,$_SESSION['currentUser'],$args);
 
 
@@ -36,8 +38,6 @@ $featureMgr = null;
 $userFeatureRoles = null;
 $doInitGui = true;
 
-$tprojectMgr = new testproject($db);
-$tplanMgr = new testplan($db);
 
 $gui = initializeGui($db,$args);
 
@@ -122,10 +122,12 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * 
  *
  */
-function init_args()
+function init_args(&$treeMgr)
 {
 	$iParams = array("featureType" => array(tlInputParameter::STRING_N,0,100),
 					 "featureID" => array(tlInputParameter::INT_N),
+					 "tproject_id" => array(tlInputParameter::INT_N),
+					 "tplan_id" => array(tlInputParameter::INT_N),
 					 "userRole" => array(tlInputParameter::ARRAY_INT),
 					 "do_update" => array(tlInputParameter::STRING_N,0,100));
 
@@ -136,13 +138,16 @@ function init_args()
     $args->featureID = $pParams["featureID"];
     $args->map_userid_roleid = $pParams["userRole"];
     $args->doUpdate = ($pParams["do_update"] != "") ? 1 : 0;
+    $args->tproject_id = intval($pParams["tproject_id"]);
+    $args->tplan_id = intval($pParams["tplan_id"]);
    
-    // Warning: 
-    // This value is used when doing Test Plan role assignment
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
-    $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
-
+   	$args->tproject_name = '';
+   	if($args->tproject_id >0)
+   	{
+   		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+   		$args->tproject_name = $dummy['name'];
+   		
+   	}
     $args->user = $_SESSION['currentUser'];
     $args->userID = $args->user->dbID;
     
@@ -394,7 +399,8 @@ function initializeGui(&$dbHandler,&$argsObj)
 	$guiObj->no_features = '';
 	$guiObj->roles_updated = '';
 	$guiObj->tproject_name = $argsObj->tproject_name;
-	$guiObj->optRights = tlRole::getAll($dbHandler,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+	$guiObj->tproject_id = $argsObj->tproject_id;
+	$guiObj->optRoles = tlRole::getAll($dbHandler,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 	$guiObj->features = null;
 	$guiObj->featureType = $argsObj->featureType;
 	$guiObj->featureID = null;

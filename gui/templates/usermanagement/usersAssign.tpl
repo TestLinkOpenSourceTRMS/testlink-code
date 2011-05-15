@@ -122,7 +122,7 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
    		<td class="labelHolder">{$labels.set_roles_to}</td>{if $gui->featureType == 'testproject'} <td>&nbsp;</td> {/if}
       <td> 
         <select name="allUsersRole" id="allUsersRole">
-		      {foreach key=role_id item=role from=$gui->optRights}
+		      {foreach key=role_id item=role from=$gui->optRoles}
 		        <option value="{$role_id}">
                 {$role->getDisplayName()|escape}
 		        </option>
@@ -170,7 +170,7 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
           {else}
             {$ikx=$gui->userFeatureRoles[$uID].uplayer_role_id}
           {/if}
-          {$inherited_role_name=$gui->optRights[$ikx]->name}
+          {$inherited_role_name=$gui->optRoles[$ikx]->name}
 
           {$user_row_class=''}
           {if $effective_role_id == $smarty.const.TL_ROLES_NO_RIGHTS}
@@ -183,7 +183,7 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
     		    {$user->getDisplayName()|escape}</td>
     		<td>
           <select name="userRole[{$uID}]" id="userRole_{$uID}">
-		      {foreach key=role_id item=role from=$gui->optRights}
+		      {foreach key=role_id item=role from=$gui->optRoles}
 		        <option value="{$role_id}"
 		          {if ($gui->userFeatureRoles[$uID].effective_role_id == $role_id && 
 		               $gui->userFeatureRoles[$uID].is_inherited==0) || 

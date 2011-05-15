@@ -241,6 +241,7 @@ function initializeGui(&$dbHandler,&$argsObj,$orderBy)
 	$guiObj->role_colour = getRoleColourCfg($dbHandler);
 	$guiObj->users = getAllUsersRoles($dbHandler,get_order_by_clause($orderBy));
 	$guiObj->grants = getGrantsForUserMgmt($dbHandler,$argsObj->currentUser,$argsObj->tproject_id);
+	$guiObj->tproject_id = $argsObj->tproject_id;
 
 	return $guiObj;
 }

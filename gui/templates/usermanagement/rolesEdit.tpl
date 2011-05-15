@@ -1,22 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.23 2010/11/13 11:17:27 franciscom Exp $
-Purpose: smarty template - create/edit user role
 
-rev :
-     20081030 - franciscom - new area system rights
-     20080412 - franciscom - refactoring - reducing coupling with  php script
-     20080409 - franciscom - refactoring
-     20071227 - franciscom - look and feel.
+create/edit user role
 
-     20070725 - franciscom
-     - added js check on role name
-     - use of input_dimensions.conf
-
-     20070829 - jbarchibald
-      -  bug 1000  - Testplan User Role Assignments
+@filesource	rolesEdit.tpl
+@internal revisions
 *}
-
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
@@ -28,7 +17,7 @@ rev :
              error_role_no_rights,caption_possible_affected_users,enter_role_notes,
              title_user_mgmt,caption_define_role,th_mgttc_rights,th_req_rights,
              th_product_rights,th_user_rights,th_kw_rights,th_cf_rights,th_system_rights,
-             th_platform_rights,
+             th_platform_rights,warn_demo,
              th_rolename,th_tp_rights,btn_cancel'}
              
 //BUGID 3943: Escape all messages (string)
@@ -59,7 +48,7 @@ function validateForm(f)
 
 
 <body>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 
@@ -72,18 +61,18 @@ function validateForm(f)
 
 <div class="workBack">
 
-	<form name="rolesedit" id="rolesedit"
-		method="post" action="lib/usermanagement/rolesEdit.php"
-	{if $tlCfg->demoMode}
-		onsubmit="alert('{lang_get s="warn_demo"}'); return false;">
-	{else}
-		{if $gui->grants->role_mgmt == "yes"}
-		onSubmit="javascript:return validateForm(this);"
+	<form name="rolesedit" id="rolesedit" method="post" action="lib/usermanagement/rolesEdit.php"
+		{if $tlCfg->demoMode}
+			onsubmit="alert('{$labels.warn_demo}'); return false;">
 		{else}
-		onsubmit="return false"
+			{if $gui->grants->role_mgmt == "yes"}
+				onSubmit="javascript:return validateForm(this);"
+			{else}
+				onsubmit="return false"
+			{/if}
 		{/if}
-	{/if}
 	>
+	<input type="hidden" name="tproject_id" id="tproject_id"  value="{$gui->tproject_id}">
 	<input type="hidden" name="roleid" value="{$gui->role->dbID}" />
 	<table class="common">
 		<tr><th>{$labels.th_rolename}
@@ -182,7 +171,7 @@ function validateForm(f)
 		/>
 	{/if}
 		<input type="button" name="cancel" value="{$labels.btn_cancel}"
-			onclick="javascript: location.href=fRoot+'lib/usermanagement/rolesView.php';" />
+			onclick="javascript: location.href=fRoot+'lib/usermanagement/rolesView.php?tproject_id={$gui->tproject_id}';" />
 	</div>
 	<br />
 	{if $gui->affectedUsers neq null}

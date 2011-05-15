@@ -3,15 +3,9 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: rolesEdit.php,v $
+ * @filesource	rolesEdit.php
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2009/11/24 19:40:15 $ by $Author: franciscom $
- *
- * @internal revision 
- *	20091124 - franciscom - added contribution item template
- *	20081030 - franciscom - added system_mgmt member on getRightsCfg()
- *	20080827 - franciscom - BUGID 1692
+ * @internal revisions 
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -26,13 +20,12 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 checkRights($db,$_SESSION['currentUser'],$args);
 
-
-$gui = initialize_gui($editorCfg['type']);
+$gui = initialize_gui($args,$editorCfg['type']);
 $op = initialize_op();
 
 $owebeditor = web_editor('notes',$args->basehref,$editorCfg) ;
 $owebeditor->Value = getItemTemplateContents('role_template', $owebeditor->InstanceName, null);
-$canManage = has_rights($db,"role_management") ? true : false;
+$canManage = $_SESSION['currentUser']->hasRight($db,"role_management") ? true : false;
 
 switch($args->doAction)
 {
@@ -51,31 +44,29 @@ switch($args->doAction)
 	  	  	$templateCfg->template = $op->template;
         }
 		break;
+		
 	default:
 		break;
 }
 
 $gui = complete_gui($db,$gui,$args,$op->role,$owebeditor);
-
 $gui->userFeedback = $op->userFeedback;
 
-$smarty = new TLSmarty();
-$smarty->assign('gui',$gui);
-$smarty->assign('highlight',$gui->highlight);
-renderGui($smarty,$args,$templateCfg);
+renderGui($args,$gui,$templateCfg);
+
+
 
 function init_args()
 {
-	$iParams = array(
-			"rolename" => array("POST",tlInputParameter::STRING_N,0,100),
-			"roleid" => array("REQUEST",tlInputParameter::INT_N),
-			"doAction" => array("REQUEST",tlInputParameter::STRING_N,0,100),
-			"notes" => array("POST",tlInputParameter::STRING_N),
-			"grant" => array("POST",tlInputParameter::ARRAY_STRING_N),
-		);
+	$iParams = array("rolename" => array("POST",tlInputParameter::STRING_N,0,100),
+					 "roleid" => array("REQUEST",tlInputParameter::INT_N),
+		 			 "doAction" => array("REQUEST",tlInputParameter::STRING_N,0,100),
+					 "notes" => array("POST",tlInputParameter::STRING_N),
+					 "grant" => array("POST",tlInputParameter::ARRAY_STRING_N),
+					 "tproject_id" => array("REQUEST",tlInputParameter::INT_N));
 
 	$args = new stdClass();
-	$pParams = I_PARAMS($iParams,$args);
+	I_PARAMS($iParams,$args);
 	
 	$args->basehref = $_SESSION['basehref'];
 	
@@ -128,8 +119,11 @@ function doOperation(&$dbHandler,$argsObj,$operation)
 }
 
 
-function renderGui(&$smartyObj,&$argsObj,$templateCfg)
+function renderGui(&$argsObj,&$guiObj,$templateCfg)
 {
+	$smarty = new TLSmarty();
+	$smarty->assign('gui',$guiObj);
+
     $doRender = false;
     switch($argsObj->doAction)
     {
@@ -148,7 +142,7 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
         	}
         	else
         	{
- 	  			header("Location: rolesView.php");
+ 	  			header("Location: rolesView.php?tproject_id={$guiObj->tproject_id}");
 	  			exit();
         	}
     		break;
@@ -156,7 +150,7 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 
     if($doRender)
     {
-		$smartyObj->display($templateCfg->template_dir . $tpl);
+		$smarty->display($templateCfg->template_dir . $tpl);
 	}
 }
 
@@ -187,7 +181,7 @@ function getRightsCfg()
 }
 
 
-function initialize_gui($editorType)
+function initialize_gui(&$argsObj,$editorType)
 {
     $gui = new stdClass();
     $gui->checkboxStatus = null;
@@ -195,6 +189,7 @@ function initialize_gui($editorType)
     $gui->affectedUsers = null;
     $gui->highlight = initialize_tabsmenu();
     $gui->editorType = $editorType;
+    $gui->tproject_id = $argsObj->tproject_id;
 
     return $gui;
 }

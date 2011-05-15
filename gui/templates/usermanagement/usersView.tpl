@@ -1,4 +1,4 @@
-c{*
+{*
 Testlink Open Source Project - http://testlink.sourceforge.net/
 @filesource	usersView.tpl
 

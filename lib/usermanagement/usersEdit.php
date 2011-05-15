@@ -5,12 +5,12 @@
  *
  * Allows editing a user
  *
+ * @filesource	usersEdit.php
  * @package 	TestLink
- * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersEdit.php,v 1.43 2011/01/10 15:38:55 asimon83 Exp $
+ * @copyright 	2005-2011, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
  *	20101010 - franciscom - BUGID 3872: Admin should be able to set a new password for users
  *	20100502 - franciscom - BUGID 3417
  *
@@ -26,11 +26,15 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 checkRights($db,$_SESSION['currentUser'],$args);
 
-$passwordSendMethod = config_get('password_reset_send_method');
+$gui = new stdClass();
+$gui->highlight = initialize_tabsmenu();
+$gui->op = new stdClass();
+$gui->op->user_feedback = '';
+$gui->external_password_mgmt = tlUser::isPasswordMgtExternal();
+$gui->grants = getGrantsForUserMgmt($db,$_SESSION['currentUser']);
+$gui->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
 
-$op = new stdClass();
-$op->user_feedback = '';
-$highlight = initialize_tabsmenu();
+
 
 $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
                        'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
@@ -39,52 +43,45 @@ $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
 switch($args->doAction)
 {
 	case "edit":
-		$highlight->edit_user = 1;
-		$user = new tlUser($args->user_id);
-		$user->readFromDB($db);
+		$gui->highlight->edit_user = 1;
+		$gui->user = new tlUser($args->user_id);
+		$gui->user->readFromDB($db);
 		break;
 	
 	case "doCreate":
-		$highlight->create_user = 1;
-		$op = doCreate($db,$args);
-		$user = $op->user;
-		$templateCfg->template = $op->template;
+		$gui->highlight->create_user = 1;
+		$gui->op = doCreate($db,$args);
+		$gui->user = $gui->op->user;
+		$templateCfg->template = $gui->op->template;
 		break;
 	
 	case "doUpdate":
-		$highlight->edit_user = 1;
-		$sessionUserID = $_SESSION['currentUser']->dbID;
-		$op = doUpdate($db,$args,$sessionUserID);
-		$user = $op->user;
+		$gui->highlight->edit_user = 1;
+		$gui->op = doUpdate($db,$args,$_SESSION['currentUser']->dbID);
+		$gui->user = $gui->op->user;
 		break;
 
 	case "resetPassword":
-		$highlight->edit_user = 1;
-		$user = new tlUser($args->user_id);
-		$user->readFromDB($db);
-		$op = createNewPassword($db,$args,$user,$passwordSendMethod);
+		$gui->highlight->edit_user = 1;
+		$gui->user = new tlUser($args->user_id);
+		$gui->user->readFromDB($db);
+		$gui->op = createNewPassword($db,$args,$user,$passwordSendMethod);
 		break;
 	
 	case "create":
 	default:
-		$highlight->create_user = 1;
-		$user = new tlUser();
+		$gui->highlight->create_user = 1;
+		$gui->user = new tlUser();
 		break;
 }
 
-$op->operation = $actionOperation[$args->doAction];
-$roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
-unset($roles[TL_ROLES_UNDEFINED]);
+$gui->user_feedback = $gui->op->user_feedback;
+$gui->operation = $actionOperation[$args->doAction];
+$gui->optRoles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+unset($gui->optRoles[TL_ROLES_UNDEFINED]);
 
 $smarty = new TLSmarty();
-$smarty->assign('highlight',$highlight);
-$smarty->assign('operation',$op->operation);
-$smarty->assign('user_feedback',$op->user_feedback);
-$smarty->assign('external_password_mgmt', tlUser::isPasswordMgtExternal());
-$smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
-$smarty->assign('grants',getGrantsForUserMgmt($db,$_SESSION['currentUser']));
-$smarty->assign('optRights',$roles);
-$smarty->assign('userData', $user);
+$smarty->assign('gui',$gui);
 renderGui($smarty,$args,$templateCfg);
 
 
@@ -98,8 +95,7 @@ function init_args()
 			"delete" => array(tlInputParameter::INT_N),
 			"user" => array(tlInputParameter::INT_N),
 			"user_id" => array(tlInputParameter::INT_N),
-			"rights_id" => array(tlInputParameter::INT_N),
-	
+			"role_id" => array(tlInputParameter::INT_N),
 			"doAction" => array(tlInputParameter::STRING_N,0,30),
 			"firstName" => array(tlInputParameter::STRING_N,0,30),
 			"lastName" => array(tlInputParameter::STRING_N,0,100),
@@ -107,7 +103,6 @@ function init_args()
 			"locale" => array(tlInputParameter::STRING_N,0,10),
 			"login" => array(tlInputParameter::STRING_N,0,30),
 			"password" => array(tlInputParameter::STRING_N,0,32),
-	
 			"user_is_active" => array(tlInputParameter::CB_BOOL),
 	);
 
@@ -167,12 +162,13 @@ function doCreate(&$dbHandler,&$argsObj)
 }
 
 
-function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
+function doUpdate(&$dbHandler,&$argsObj,$currentUserID)
 {
     $op = new stdClass();
     $op->user_feedback = '';
     $op->user = new tlUser($argsObj->user_id);
 	$op->status = $op->user->readFromDB($dbHandler);
+
 	if ($op->status >= tl::OK)
 	{
 		initializeUserProperties($op->user,$argsObj);
@@ -181,12 +177,8 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
 		{
 			logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");
 
-			if ($sessionUserID == $argsObj->user_id)
+			if ($currentUserID == $argsObj->user_id)
 			{
-				$_SESSION['currentUser'] = $op->user;
-				setUserSession($dbHandler,$op->user->login, $argsObj->user_id,
-				               $op->user->globalRoleID, $op->user->emailAddress, $op->user->locale);
-	
 				if (!$argsObj->user_is_active)
 				{
 					header("Location: ../../logout.php");
@@ -205,8 +197,11 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
  * @internal revisions
  *	20100502 - franciscom - BUGID 3417
  */
-function createNewPassword(&$dbHandler,&$argsObj,&$userObj,$newPasswordSendMethod)
+function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 {
+
+	$passwordSendMethod = config_get('password_reset_send_method');
+
 	$op = new stdClass();
 	$op->user_feedback = '';
 	$op->new_password = '';
@@ -224,10 +219,10 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj,$newPasswordSendMetho
 	$validator = new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL);
 	$smtp_host = config_get( 'smtp_host' );
 	
-	$password_on_screen = ($newPasswordSendMethod == 'display_on_screen');
+	$password_on_screen = ($passwordSendMethod == 'display_on_screen');
 	if( $validator->isValid($smtp_host) || $password_on_screen )
 	{
-		$dummy = resetPassword($dbHandler,$argsObj->user_id,$newPasswordSendMethod);
+		$dummy = resetPassword($dbHandler,$argsObj->user_id,$passwordSendMethod);
 
 		$op->user_feedback = $dummy['msg'];
 		$op->status = $dummy['status'];
@@ -273,7 +268,7 @@ function initializeUserProperties(&$userObj,&$argsObj)
 	$userObj->emailAddress = $argsObj->emailAddress;
 	$userObj->firstName = $argsObj->firstName;
 	$userObj->lastName = $argsObj->lastName;
-	$userObj->globalRoleID = $argsObj->rights_id;
+	$userObj->globalRoleID = $argsObj->role_id;
 	$userObj->locale = $argsObj->locale;
 	$userObj->isActive = $argsObj->user_is_active;
 }
@@ -325,8 +320,13 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
  */
 function checkRights(&$db,&$userObj,$argsObj)
 {
-	$env['tproject_id'] = $argsObj->tproject_id;
-	$env['tplan_id'] = $argsObj->tplan_id;
+	// For this feature check must be done on Global Rights => those that belong to
+	// role assigned to user when user was created (Global/Default Role)
+	// => enviroment is ignored.
+	// To instruct method to ignore enviromente, we need to set enviroment but with INEXISTENT ID 
+	// (best option is negative value)
+	$env['tproject_id'] = -1;
+	$env['tplan_id'] = -1;
 	checkSecurityClearance($db,$userObj,$env,array('mgt_users'),'and');
 }
 ?>

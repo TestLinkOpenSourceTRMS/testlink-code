@@ -1,9 +1,8 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.30 2010/11/13 11:17:27 franciscom Exp $
+@filesource	usersEdit.tpl
 
-20080419 - franciscom - BUGID 1496
-         -  bug 1000  - Testplan User Role Assignments
+@internal revisions
 *}
 
 {config_load file="input_dimensions.conf" section='login'}
@@ -96,7 +95,7 @@ function validateForm(f,check_password)
   return true;
 }
 </script>
-{assign var="ext_location" value=$smarty.const.TL_EXTJS_RELATIVE_PATH}
+{$ext_location=$smarty.const.TL_EXTJS_RELATIVE_PATH}
 <link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/ext-all.css" />
 </head>
 
@@ -104,31 +103,29 @@ function validateForm(f,check_password)
 
 <h1 class="title">{$labels.title_user_mgmt} - {$labels.title_account_settings} </h1>
 
-{assign var="user_id" value=''}
-{assign var="user_login" value=''}
-{assign var="user_login_readonly" value=''}
-{assign var="reset_password_enabled" value=0}
-{assign var="show_password_field" value=1}
-
-
-{if $operation == 'doCreate'}
-   {assign var="check_password" value=1}
-   {if $userData neq null}
-       {assign var="user_login" value=$userData->login}
+{$user_id=''}
+{$user_login=''}
+{$user_login_readonly=''}
+{$reset_password_enabled=0}
+{$show_password_field=1}
+{if $gui->operation == 'doCreate'}
+   {$check_password=1}
+   {if $gui->user neq null}
+       {$user_login=$gui->user->login}
    {/if}
 {else}
-   {assign var="check_password" value=0}
-   {assign var="user_id" value=$userData->dbID}
-   {assign var="user_login" value=$userData->login}
-   {assign var="user_login_readonly" value='readonly="readonly" disabled="disabled"'}
-   {assign var="reset_password_enabled" value=1}
-   {assign var="show_password_field" value=0}
+   {$check_password=0}
+   {$user_id=$gui->user->dbID}
+   {$user_login=$gui->user->login}
+   {$user_login_readonly='readonly="readonly" disabled="disabled"'}
+   {$reset_password_enabled=1}
+   {$show_password_field=0}
 {/if}
 
-{if $external_password_mgmt eq 1}
-  {assign var="check_password" value=0}
-  {assign var="reset_password_enabled" value=0}
-  {assign var="show_password_field" value=0}
+{if $gui->external_password_mgmt == 1}
+  {$check_password=0}
+  {$reset_password_enabled=0}
+  {$show_password_field=0}
 {/if}
 
 
@@ -136,7 +133,7 @@ function validateForm(f,check_password)
 {***** TABS *****}
 {include file="usermanagement/tabsmenu.tpl"}
 
-{include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
+{include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$gui->user_feedback}
 
 <div class="workBack">
 <form method="post" action="lib/usermanagement/usersEdit.php" class="x-form" name="useredit" 
@@ -152,7 +149,7 @@ function validateForm(f,check_password)
   <fieldset class="x-fieldset x-form-label-left" style="width:50%;">
   <legend class="x-fieldset-header x-unselectable" style="-moz-user-select: none;">
   {$labels.caption_user_details}
-  {if $mgt_view_events eq "yes" && $user_id}
+  {if $gui->mgt_view_events eq "yes" && $user_id}
 	<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
 	     onclick="showEventHistoryFor('{$user_id}','users')"
 	     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
@@ -162,19 +159,19 @@ function validateForm(f,check_password)
 		<tr>
 			<th style="background:none;">{$labels.th_login}</th>
 			<td><input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}"
-			{$user_login_readonly} value="{$userData->login|escape}" />
+			{$user_login_readonly} value="{$gui->user->login|escape}" />
       {include file="error_icon.tpl" field="login"}
 			 </td>
 		</tr>
 		<tr>
 			<th style="background:none;">{$labels.th_first_name}</th>
-			<td><input type="text" name="firstName" value="{$userData->firstName|escape}"
+			<td><input type="text" name="firstName" value="{$gui->user->firstName|escape}"
 			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
 			     {include file="error_icon.tpl" field="firstName"}
 			</td></tr>
 		<tr>
 			<th style="background:none;">{$labels.th_last_name}</th>
-			<td><input type="text" name="lastName" value="{$userData->lastName|escape}"
+			<td><input type="text" name="lastName" value="{$gui->user->lastName|escape}"
 			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
  			     {include file="error_icon.tpl" field="lastName"}
 			     </td>
@@ -196,7 +193,7 @@ function validateForm(f,check_password)
 
 		<tr>
 			<th style="background:none;">{$labels.th_email}</th>
-			<td><input type="text" id="email" name="emailAddress" value="{$userData->emailAddress|escape}"
+			<td><input type="text" id="email" name="emailAddress" value="{$gui->user->emailAddress|escape}"
 			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" />
           {include file="error_icon.tpl" field="emailAddress"}
 			</td>
@@ -204,12 +201,12 @@ function validateForm(f,check_password)
 		<tr>
 			<th style="background:none;">{$labels.th_role}</th>
 			<td>
-		  	{assign var=selected_role value=$userData->globalRoleID}
-			  {if $userData->globalRoleID eq 0}
- 			      {assign var=selected_role value=$tlCfg->default_roleid}
+		  	{$selected_role=$gui->user->globalRoleID}
+			  {if $gui->user->globalRoleID eq 0}
+ 			      {$selected_role=$tlCfg->default_roleid}
 			  {/if}
-				<select name="rights_id">
-				{foreach key=role_id item=role from=$optRights}
+				<select name="role_id" id="role_id">
+				{foreach key=role_id item=role from=$gui->optRoles}
 		        <option value="{$role_id}" {if $role_id == $selected_role} selected="selected" {/if}>
 					{$role->getDisplayName()|escape}
 				</option>
@@ -221,9 +218,9 @@ function validateForm(f,check_password)
 		<tr>
 			<th style="background:none;">{$labels.th_locale}</th>
 			<td>
-        {assign var=selected_locale value=$userData->locale}
-        {if $userData->locale|count_characters eq 0}
-           {assign var=selected_locale value=$locale}
+        {$selected_locale=$gui->user->locale}
+        {if $gui->user->locale|count_characters eq 0}
+           {$selected_locale=$locale}
         {/if}
 
 				<select name="locale">
@@ -235,21 +232,21 @@ function validateForm(f,check_password)
 		<tr>
 			<th style="background:none;">{$labels.th_active}</th>
 			<td>
-			  <input type="checkbox"  name="user_is_active" {if $userData->isActive eq 1} checked {/if} />
+			  <input type="checkbox"  name="user_is_active" {if $gui->user->isActive == 1} checked {/if} />
 			</td>
 		</tr>
 
-    {if $external_password_mgmt eq 1}
+    {if $gui->external_password_mgmt == 1}
       <td>{$labels.password_mgmt_is_external}</td>
     {/if}
 
 	</table>
 
 	<div class="groupBtn">
-	<input type="hidden" name="doAction" id="doActionUserEdit" value="{$operation}" />
+	<input type="hidden" name="doAction" id="doActionUserEdit" value="{$gui->operation}" />
 	<input type="submit" name="do_update"   value="{$labels.btn_save}" />
 	<input type="button" name="cancel" value="{$labels.btn_cancel}"
-			onclick="javascript: location.href=fRoot+'lib/usermanagement/usersView.php';" />
+		   onclick="javascript: location.href=fRoot+'lib/usermanagement/usersView.php';" />
 
 	</div>
 </fieldset>

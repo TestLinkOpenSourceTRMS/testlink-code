@@ -3348,5 +3348,21 @@ $TLS_workflowStatus_final = 'Final';
 // this definition has to be placed AFTER $TLS_title_metrics_x_build
 $TLS_buildMetricsFeedback = $TLS_title_metrics_x_build . 
 							' data is computed using only test cases that have tester assignment on build';
+
+
+
+$TLS_xls_jmexport_testproject = 'Test Project';
+$TLS_xls_jmexport_testplan = 'Test Plan';
+$TLS_xls_jmexport_created = 'Created';
+$TLS_xls_jmexport_author = 'Author';
+$TLS_xls_jmexport_tester = 'Tester';
+$TLS_xls_jmexport_testcase = 'Test Case';
+$TLS_xls_jmexport_testobjectives = 'Test Objectives';
+$TLS_xls_jmexport_preconditions = 'Preconditions';
+$TLS_xls_jmexport_steps = 'Steps';
+$TLS_xls_jmexport_expected_result = 'Expected Result';
+$TLS_xls_jmexport_result = 'Result';
+$TLS_xls_jmexport_result_comment = 'Result comment';
+$TLS_link_report_test_plan_results_csv = 'Test Plan results (XLSX)';
 // ----- END ------------------------------------------------------------------
 ?>

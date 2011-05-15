@@ -9,15 +9,10 @@
  * SCOPE: Definition of report/metrics menu 
  * 
  * @internal revisions:
+ *	20110515 - franciscom - new xls report using codeplex
  *	20110312 - franciscom - added logic to include custom_reports.cfg.php
  *  20100903 - Julian - BUGID 37006 - disabled uncovered_testcases report 
  *  20100731 - asimon - added results by tester per build and assignment overview
- *  20090421 - amitkhullar- BUGID 2410 - Custom Field report for Test Plan
- *  20090414 - franciscom - BUGID 2363 - free test cases i.e. not assigned to a test plan.
- *  20081227 - franciscom - added tcases_without_tester
- *  20081213 - franciscom - replace of old $g_ variables
- *  20081109 - franciscom - added uncovered_testcases
- * 	20080813 - havlatm - removed metrics_tp_builds
  *
  * *********************************************************************************** */
 
@@ -188,11 +183,11 @@ $tlCfg->reports_list['free_tcases'] = array(
 );
 
 
-clearstatcache();
-$f2inc = TL_ABS_PATH . 'cfg/custom_reports.cfg.php';
-if ( file_exists($f2inc) )
-{
-  require_once($f2inc);
-}
+$tlCfg->reports_list['test_plan_results_csv'] = array( 
+'title' => 'link_report_test_plan_results_csv',
+'url' => 'lib/results/resultsTCCSV.php',
+'enabled' => 'all',
+'format' => 'format_xls'
+);
 // -------------------------------------------------------------------
 ?>

@@ -405,9 +405,10 @@ function modifyRoles_warning()
 
 /**
  * 
- * @param string feature the feature, could be testplan or product
+ * @param string feature the feature, could be test plan or test project
+ * @param tproject_id needed to set environment/context
  **/
-function changeFeature(feature)
+function changeFeature(feature,tproject_id)
 {
 	var tmp = document.getElementById('featureSel');
 	var fID = '';
@@ -418,7 +419,8 @@ function changeFeature(feature)
 	fID = tmp.value;
 	if(fID)
 	{
-		location = fRoot+"lib/usermanagement/usersAssign.php?featureType="+feature+"&featureID="+fID;
+		location = fRoot+"lib/usermanagement/usersAssign.php?tproject_id=" + tproject_id + 
+				   "&featureType="+feature+"&featureID="+fID;
 	}	
 }
 

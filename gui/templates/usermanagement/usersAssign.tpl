@@ -94,6 +94,7 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 	{/if}>
 	<input type="hidden" name="featureID" value="{$gui->featureID}" />
 	<input type="hidden" name="featureType" value="{$gui->featureType}" />
+	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 	<div>
 		<table border='0'>
     	{if $gui->featureType == 'testproject'}
@@ -104,7 +105,7 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 				<td class="labelHolder">{$labels.TestPlan}</td>
     	{/if}
 		    	<td>
-		        <select id="featureSel" onchange="changeFeature('{$gui->featureType}')">
+		        <select id="featureSel" onchange="changeFeature('{$gui->featureType}',{$gui->tproject_id})">
 		    	   {foreach from=$gui->features item=f}
 		    	     <option value="{$f.id}" {if $gui->featureID == $f.id} selected="selected" {/if}>
 		    	     {$f.name|escape}</option>
@@ -115,7 +116,7 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 		    	   </select>
 		    	</td>
 			<td>
-					<input type="button" value="{$labels.btn_change}" onclick="changeFeature('{$gui->featureType}');"/>
+					<input type="button" value="{$labels.btn_change}" onclick="changeFeature('{$gui->featureType}',{$gui->tproject_id});"/>
 		  </td>
 			</tr>
    		<tr>

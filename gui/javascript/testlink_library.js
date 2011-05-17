@@ -47,21 +47,6 @@
 // 20100216 - asimon - added triggerBuildChooser() and triggerAssignedBox() for BUGID 2455, BUGID 3026
 // 20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
 // 20100131 - franciscom - BUGID 3118: Help files are not getting opened when selected in the dropdown 
-// 20090906 - franciscom - added openTestSuiteWindow()
-// 20090821 - havlatm - added support for session timeout
-// 20090530 - franciscom - openExecEditWindow()
-// 20090419 - franciscom - BUGID 2364 - added std_dialog()
-//                         added some comments to explain how a bug has been solved
-//
-// 20090329 - franciscom - openTCaseWindow(), added second argument
-// 20081220 - franciscom - toggleInput()
-// 20080724 - havlatm - bug 1638, 1639
-// 20080322 - franciscom - openExecNotesWindow()
-// 20080118 - franciscom - showHideByClass()
-// 20070930 - franciscom - REQ - BUGID 1078 - openTCaseWindow()
-// 20070509 - franciscom - changes in tree_getPrintPreferences()
-//                         to support new options (Contribution)
-
 
 /*
   function: focusInputField
@@ -498,7 +483,6 @@ function attachmentDlg_onSubmit(allowEmptyTitle)
 		if (isWhitespace(titleField.value))
 		{
 			var aForm = document.getElementById('aForm');
-			alert_message(alert_box_title,warning_empty_title);
 		    selectField(aForm, 'title');
 		    bSuccess = false;
 		}
@@ -1012,8 +996,6 @@ function REQ_SPEC_MGMT(tproject_id,id)
 	var pParams = tree_getPrintPreferences();
   	var action_url = fRoot+req_spec_manager_url + "?tproject_id=" + tproject_id + 
   					 "&item=req_spec&req_spec_id="+id+args+"&"+pParams;
-  
-    alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
 }
 
@@ -1493,7 +1475,7 @@ function openPrintPreview(type, id, version_id, revision, print_action) {
 		break;
 
 		case 'reqSpec':
-			feature_url += "?reqspec_id=" + id;
+			feature_url += "&reqspec_id=" + id;
 		break;
 		
 		case 'tc':

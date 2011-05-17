@@ -17,7 +17,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              btn_show_direct_link,btn_copy_requirements,btn_copy_req_spec,
              req_spec_operations, req_operations, btn_freeze_req_spec'}
              
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <!--- inc_btn_reqSpecView.tpl -->
@@ -53,7 +53,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	{/if}
 	<input type="button" name="printerFriendly" value="{$labels.btn_print_view}"
 		   onclick="javascript:openPrintPreview('reqSpec',{$args_reqspec_id},-1,-1,
-		                                        'lib/requirements/reqSpecPrint.php');"/>
+		                                        'lib/requirements/reqSpecPrint.php?tproject_id={$gui->tproject_id}');"/>
 
 		</fieldset>
 

@@ -22,44 +22,44 @@ Purpose: view a requirement specification
 {lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,title_last_mod,
 						  title_created,no_records_found"}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{assign var="bn" value=$smarty.template|basename}
-{assign var="buttons_template" value=$smarty.template|replace:"$bn":"inc_btn_$bn"}
+{$bn=$smarty.template|basename}
+{$buttons_template=$smarty.template|replace:"$bn":"inc_btn_$bn"}
 
-{assign var="reqSpecID" value=$gui->req_spec_id}
-{assign var="tprojectID" value=$gui->tproject_id}
-{assign var="req_module" value='lib/requirements/'}
-{assign var="url_args" value="reqEdit.php?doAction=create&tproject_id=$tprojectID&req_spec_id="}
-{assign var="req_edit_url" value="$basehref$req_module$url_args$reqSpecID"}
+{$reqSpecID=$gui->req_spec_id}
+{$tprojectID=$gui->tproject_id}
+{$req_module='lib/requirements/'}
+{$url_args="reqEdit.php?doAction=create&tproject_id=$tprojectID&req_spec_id="}
+{$req_edit_url="$basehref$req_module$url_args$reqSpecID"}
 
-{assign var="url_args" value="reqImport.php?req_spec_id="}
-{assign var="req_import_url"  value="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqImport.php?req_spec_id="}
+{$req_import_url="$basehref$req_module$url_args$reqSpecID"}
 
-{assign var="url_args" value="reqExport.php?req_spec_id="}
-{assign var="req_export_url"  value="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqExport.php?req_spec_id="}
+{$req_export_url="$basehref$req_module$url_args$reqSpecID"}
 
-{assign var="url_args" value="reqImport.php?scope=branch&req_spec_id="}
-{assign var="req_spec_import_url"  value="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqImport.php?scope=branch&req_spec_id="}
+{$req_spec_import_url="$basehref$req_module$url_args$reqSpecID"}
 
-{assign var="url_args" value="reqExport.php?scope=branch&req_spec_id="}
-{assign var="req_spec_export_url"  value="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqExport.php?scope=branch&req_spec_id="}
+{$req_spec_export_url="$basehref$req_module$url_args$reqSpecID"}
 
-{assign var="url_args" value="reqEdit.php?doAction=reorder&amp;req_spec_id="}
-{assign var="req_reorder_url"  value="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqEdit.php?doAction=reorder&amp;req_spec_id="}
+{$req_reorder_url="$basehref$req_module$url_args$reqSpecID"}
 
-{assign var="url_args" value="reqEdit.php?doAction=createTestCases&amp;req_spec_id="}
-{assign var="req_create_tc_url"  value="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqEdit.php?doAction=createTestCases&amp;req_spec_id="}
+{$req_create_tc_url="$basehref$req_module$url_args$reqSpecID"}
 
-{assign var="url_args" value="reqSpecEdit.php?doAction=createChild&amp;reqParentID="}
-{assign var="req_spec_new_url" value="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqSpecEdit.php?doAction=createChild&amp;reqParentID="}
+{$req_spec_new_url="$basehref$req_module$url_args$reqSpecID"}
 
-{assign var="url_args" value="reqSpecEdit.php?doAction=copyRequirements&amp;req_spec_id="}
-{assign var="req_spec_copy_req_url" value="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqSpecEdit.php?doAction=copyRequirements&amp;req_spec_id="}
+{$req_spec_copy_req_url="$basehref$req_module$url_args$reqSpecID"}
 
-{assign var="url_args" value="reqSpecEdit.php?doAction=copy&amp;req_spec_id="}
-{assign var="req_spec_copy_url" value="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqSpecEdit.php?doAction=copy&amp;req_spec_id="}
+{$req_spec_copy_url="$basehref$req_module$url_args$reqSpecID"}
 
 
 {* used on inc_btn_reqSpecView.tpl -> buttons_template smarty variable *}
@@ -115,7 +115,7 @@ Purpose: view a requirement specification
 	</tr>
 	<tr>
 	  <td>{$labels.type}{$smarty.const.TITLE_SEP}
-	  {assign var="req_spec_type" value=$gui->req_spec.type}
+	  {$req_spec_type=$gui->req_spec.type}
 	  {if isset($gui->reqSpecTypeDomain.$req_spec_type)}
 	    {$gui->reqSpecTypeDomain.$req_spec_type}
 	  {else}
@@ -159,15 +159,15 @@ Purpose: view a requirement specification
   {/if}
 </table>
 
-{assign var="bDownloadOnly" value=true}
+{$downloadOnly=true}
 {if $gui->grants->req_mgmt == 'yes'}
-	{assign var="bDownloadOnly" value=false}
+	{$downloadOnly=false}
 {/if}
 {include file="inc_attachments.tpl" 
          attach_id=$gui->req_spec.id  
          attach_tableName="req_specs"
          attach_attachmentInfos=$gui->attachments  
-         attach_downloadOnly=$bDownloadOnly}
+         attach_downloadOnly=$downloadOnly}
 
 {else}
 	{$labels.no_records_found}

@@ -104,8 +104,8 @@ viewer for requirement
 {* BUGID 4273: Option to print single requirement *}
 <form style="display: inline;" method="post" action="" name="reqPrinterFriendly">
 	<input type="button" name="printerFriendly" value="{$labels.btn_print_view}" 
-	       onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},
-		                                          {$args_req.revision},'lib/requirements/reqPrint.php');"/>
+	       onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},{$args_req.revision},
+	       										'lib/requirements/reqPrint.php?tproject_id={$gui->tproject_id}');"/>
 </form>
 </div> {* class="groupBtn" *}
 <br/><br/>

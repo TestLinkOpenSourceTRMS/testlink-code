@@ -1489,7 +1489,7 @@ function openPrintPreview(type, id, version_id, revision, print_action) {
 	{
 
 		case 'req':
-			feature_url += "?req_id=" + id + "&req_version_id=" + version_id + "&req_revision=" + revision;
+			feature_url += "&req_id=" + id + "&req_version_id=" + version_id + "&req_revision=" + revision;
 		break;
 
 		case 'reqSpec':

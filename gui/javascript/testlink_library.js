@@ -855,21 +855,19 @@ function openTCaseWindow(tproject_id,tcase_id,tcversion_id,show_mode)
  * @param req_version_id Requirement Version ID
  * @param anchor string with anchor name
  */
-function openLinkedReqVersionWindow(req_id, req_version_id, anchor)
+function openLinkedReqVersionWindow(tproject_id,req_id, req_version_id, anchor)
 {
-	if (anchor == null) {
-		anchor = '';
-	} else {
-		anchor = '#' + anchor;
-	}
-	
 	var windowCfg='';
-	var feature_url = "lib/requirements/reqView.php";
-	feature_url += "?showReqSpecTitle=1&requirement_id=" + req_id + "&req_version_id=" + req_version_id + anchor;
-
-	// 20101008 - asimon - BUGID 3311
 	var width = getCookie("ReqPopupWidth");
 	var height = getCookie("ReqPopupHeight");
+	var feature_url = "lib/requirements/reqView.php?tproject_id=" + tproject_id;
+
+	if (anchor == null) 
+	{
+		anchor = '';
+	} 
+	anchor = '#' + anchor;
+	feature_url += "&showReqSpecTitle=1&requirement_id=" + req_id + "&req_version_id=" + req_version_id + anchor;
 
 	if (width == null)
 	{

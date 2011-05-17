@@ -138,8 +138,9 @@ if(count($gui->reqIDs) > 0) {
 	    	
 	    	// use html comment to sort properly by this columns (extjs)
 			// BUGID 4038
-	    	$linked_title = '<!-- ' . $title . ' -->' . '<a href="javascript:openLinkedReqVersionWindow(' . $id . ',' . $version['version_id'] . ')">' . 
-			                $title . '</a>';
+	    	$linked_title = '<!-- ' . $title . ' -->' . 
+	    					'<a href="javascript:openLinkedReqVersionWindow(' . $args->tproject_id . ',' .
+	    					$id . ',' . $version['version_id'] . ')">' .  $title . '</a>';
 	    	
 	    	$result[] = $linked_title;
 	    	

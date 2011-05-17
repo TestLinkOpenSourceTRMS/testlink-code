@@ -1,9 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-Filename: reqViewVersionsViewer.tpl
+@filesource	reqViewVersionsViewer.tpl
 viewer for requirement
 
-rev:
+@internal revisions
 20110307 - asimon - BUGID 4273: moved print preview to popup to make printing independent from browser easier for the users
                                 moved req view button forms and divs around to align buttons in a single row
 20110305 - franciscom - display printer friendly button always
@@ -21,15 +21,15 @@ rev:
              revision,btn_view_history,btn_new_revision,btn_print_view"}
 
              
-{assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
-{assign var="hrefReqSpecMgmt" value="$basehref$hrefReqSpecMgmt"}
+{$hrefReqSpecMgmt="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
+{$hrefReqSpecMgmt="$basehref$hrefReqSpecMgmt"}
 
-{assign var="hrefReqMgmt" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
-{assign var="hrefReqMgmt" value="$basehref$hrefReqMgmt"}
+{$hrefReqMgmt="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
+{$hrefReqMgmt="$basehref$hrefReqMgmt"}
 
-{assign var="module" value='lib/requirements/'}
-{assign var="req_id" value=$args_req.id}
-{assign var="req_version_id" value=$args_req.version_id}
+{$module='lib/requirements/'}
+{$req_id=$args_req.id}
+{$req_version_id=$args_req.version_id}
 
 {if $args_show_title}
     {if $args_tproject_name != ''}
@@ -40,7 +40,7 @@ rev:
     {/if}
 	<h2>{$labels.title_test_case} {$args_req.title|escape} </h2>
 {/if}
-{assign var="warning_edit_msg" value=""}
+{$warning_edit_msg=""}
 
 <div style="display: inline;" class="groupBtn">
 {if $args_grants->req_mgmt == "yes"}
@@ -96,6 +96,7 @@ rev:
 {if $gui->req_has_history}
 	<form style="display: inline;" method="post" action="lib/requirements/reqCompareVersions.php" name="version_compare">
 		<input type="hidden" name="requirement_id" value="{$args_req.id}" />
+		<input type="hidden" name="tproject_id" id="history_tproject_id" value="{$gui->tproject_id}">
 		<input type="submit" name="compare_versions" value="{$labels.btn_view_history}" />
 	</form>
 {/if}

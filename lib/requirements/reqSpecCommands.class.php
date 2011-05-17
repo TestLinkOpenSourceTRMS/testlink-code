@@ -197,6 +197,7 @@ class reqSpecCommands
  		$guiObj->submit_button_label=$this->submit_button_label;
 	    $guiObj->template = null;
 		$guiObj->req_spec_id = $argsObj->req_spec_id;
+		$guiObj->tproject_id = $argsObj->tproject_id;
 
 		$guiObj->req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
 

@@ -281,6 +281,7 @@ if($the_tpl)
 {
     $smarty->assign('gui', $gui);
 	$smarty->assign('refreshTree',$refreshTree && $args->refreshTree);
+
 	$smarty->display($template_dir . $the_tpl);
 }
 
@@ -495,9 +496,7 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
 		$map_msg['warning'] = null;
 		$map_msg['link_msg'] = null;
 		$map_msg['delete_msg'] = null;
-
-		
-		if(is_null($testcases))
+		if(is_null($testcases) || count($testcases) == 0)
 		{
 			$can_delete = 1;
 		}
@@ -517,9 +516,9 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
 		$smartyObj->assign('delete_msg',$map_msg['delete_msg']);
 		$smartyObj->assign('warning', $map_msg['warning']);
 		$smartyObj->assign('link_msg', $map_msg['link_msg']);
-
+	
 		$system_message = '';
-		if(!$testcase_cfg->can_delete_executed)  
+		if(!$can_delete && !$testcase_cfg->can_delete_executed)  
 		{
 			$system_message = lang_get('system_blocks_tsuite_delete_due_to_exec_tc');
 		}

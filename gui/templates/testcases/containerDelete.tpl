@@ -17,7 +17,6 @@ Purpose: smarty template - delete containers in test specification
 <body>
 <h1 class="title">{$page_title}{$smarty.const.TITLE_SEP}{$objectName|escape}</h1> 
 
-{* BUGID 4067 *}
 {include file="inc_update.tpl" result=$sqlResult item=$level action='delete' 
          refresh=$gui->refreshTree}
 
@@ -46,7 +45,8 @@ Purpose: smarty template - delete containers in test specification
 		{/if}
 	{/if}
   
-	<form method="post" action="lib/testcases/containerEdit.php?sure=yes&amp;objectID={$objectID}">
+	<form method="post" action="lib/testcases/containerEdit.php?sure=yes&objectID={$objectID}">
+		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
 		{if $can_delete}
 			<p>{$labels.question_del_testsuite}</p>
 			<input type="submit" name="delete_testsuite" value="{$labels.btn_yes_del_comp}" />
@@ -60,7 +60,6 @@ Purpose: smarty template - delete containers in test specification
 
 {if $refreshTree}
    	{include file="inc_refreshTreeWithFilters.tpl"}
-	{*include file="inc_refreshTree.tpl"*}
 {/if}
 
 </div>

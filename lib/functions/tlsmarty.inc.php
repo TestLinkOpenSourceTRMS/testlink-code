@@ -6,10 +6,10 @@
  * TLSmarty class is TestLink wraper for GUI templates processing. 
  * The class is loaded via common.php to all pages.
  * 
+ * @filesource	tlsmarty.inc.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.34 2010/11/12 21:24:18 franciscom Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
@@ -22,13 +22,10 @@
  * 	20100901 - franciscom - added new image 
  *	20100621 - eloff - added guard_header_smarty() function
  * 	20100121 - franciscom - added show_help_icon to remove error on event viewer
- * 	20090304 - franciscom - removed some MAGIC NUMBERS 
- * 	20081027 - havlatm - moved to include Smarty library
- * 	20080424 - havlatm - added $tlCfg
  */
 
 define('SMARTY_DIR', TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty'.  
-	            DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR);
+					 DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR);
 define('SMARTY_CORE_DIR', SMARTY_DIR . 'internals' . DIRECTORY_SEPARATOR);
 
 /** include parent extrenal component */
@@ -177,6 +174,7 @@ class TLSmarty extends Smarty
         
         $this->assign('basehref', $basehref);
         $this->assign('css', $basehref . TL_TESTLINK_CSS);
+        $this->assign('custom_css', $basehref . TL_TESTLINK_CUSTOM_CSS);
         $this->assign('locale', $my_locale);
           
           

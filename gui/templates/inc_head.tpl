@@ -1,21 +1,14 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.36 2010/08/28 14:47:54 franciscom Exp $
+
 Purpose: smarty template - HTML Common Header
 
-
 Critic Smarty Global Variables expected
-
 editorType: used to understand if code for tinymce need to be loaded 
 
-rev :
-     20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
-     20090801 - franciscom - moved include of prototype.js here because
-                             is not anymore included on EXT-JS distribution
-                             
-     20080326 - franciscom - restored $testproject_coloring logic
-     20080109 - franciscom - added sort table engine management
-     20071201 - franciscom - tinymce support
+@filesource	inc_head.tpl
+@internal revisions
+20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
 *}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
@@ -34,6 +27,8 @@ rev :
 	
 {* ----- load CSS ------------------------------------------------------------------- *} 
 	<style media="all" type="text/css">@import "{$css}";</style>
+	<style media="all" type="text/css">@import "{$custom_css}";</style>
+
 	{if $testproject_coloring eq 'background'}
   	<style type="text/css"> body {ldelim}background: {$testprojectColor};{rdelim}</style>
 	{/if}

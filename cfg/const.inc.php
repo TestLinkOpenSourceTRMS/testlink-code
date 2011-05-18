@@ -193,6 +193,8 @@ define('TL_STYLE_FOR_ADDED_TC', 'background-color:yellow;');
 define('TL_CSS_MAIN', 'testlink.css');
 define('TL_CSS_PRINT', 'tl_print.css');
 define('TL_CSS_DOCUMENTS', 'tl_documents.css');
+define('TL_CSS_CUSTOM', 'custom.css');
+
 /** @todo havlatm: remove - probably obsolete from 1.9 */
 define('TL_CSS_TREEMENU', 'tl_treemenu.css');
 

@@ -460,7 +460,7 @@ function checkSchemaVersion(&$db)
 		case 'DB 1.3':
 			// DB 1.3 to DB 1.4 requires manual steps
 			if ($last_version == 'DB 1.4') {
-				$result['msg'] = "Manual upgrade of your DB scheme necessary (1.9.0 -> 1.9.1) - Read README file!";
+				$result['msg'] = "Manual upgrade of your DB scheme necessary (1.9.0 -> {$last_version}) - Read README file!";
 			} else {
 				$result['msg'] = $upgrade_msg;
 			}

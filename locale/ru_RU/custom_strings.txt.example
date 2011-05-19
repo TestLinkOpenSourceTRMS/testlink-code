@@ -1,0 +1,20 @@
+<?php
+/**
+ * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
+ * Define your custom strings for this locale here.
+ * Custom strings need to be defined for each locale you plan to use
+ * Remove ".example" from filename to use this file
+ *
+ * @filesource	locale/en_GB/custom_strings.txt
+ * @package 	TestLink
+ * @author 		Julian Krien
+ * @copyright 	2003, TestLink community
+ * @link 		http://www.teamst.org/index.php
+ *
+ **/
+
+$TLS_test_status_my_status = "This is my custom result";
+
+?>

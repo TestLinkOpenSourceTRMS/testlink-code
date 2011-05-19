@@ -96,10 +96,9 @@
 // $tlCfg->gui->text_editor['requirement_spec'] = array( 'type' => 'none');
 //
 //
-// SMTP server Configuration ("localhost" is enough in the most cases)
+// E-Mail Configuration
 $g_smtp_host        = 'smtp.gmail.com';  # SMTP server MUST BE configured  
 
-# Configure using custom_config.inc.php
 $g_tl_admin_email     = 'francisco.mancardi@gmail.com'; # for problem/error notification 
 $g_from_email         = 'francisco.mancardi@gmail.com';  # email sender
 $g_return_path_email  = 'francisco.mancardi@gmail.com';
@@ -123,7 +122,7 @@ $g_smtp_connection_mode = 'ssl';
  * will depend on the SMTP server configuration and hence others may be used.
  * @global int $g_smtp_port
  */
-$g_smtp_port = 465;                        
+$g_smtp_port = 465;
 
 // TRUE  -> the whole execution history for the choosen build will be showed
 // FALSE -> just last execution for the choosen build will be showed [STANDARD BEHAVIOUR]
@@ -144,35 +143,57 @@ $g_smtp_port = 465;
 
 //$g_log_level='DEBUG';
 
-// $tlCfg->results['status_code'] = array ( 
-//         "failed"        => 'f', 
-//         "blocked"       => 'b', 
-//         "passed"        => 'p', 
-//         "not_run"       => 'n', 
-//         "not_available" => 'x', 
-//         "unknown"       => 'u', 
-//         "all"           => 'a' 
-// ); 
-// 
-// $tlCfg->results['status_label'] = array( 
-//         "passed"                => "test_status_passed", 
-//         "failed"                => "test_status_failed", 
-//         "blocked"               => "test_status_blocked", 
-//         "not_run"               => "test_status_not_run", 
-// //    "all"                   => "test_status_all_status", 
-//         "not_available"    => "test_status_not_available", 
-// //      "unknown"          => "test_status_unknown" 
-// ); 
-// 
-// $tlCfg->results['status_label_for_exec_ui'] = array( 
-//         "passed"  => "test_status_passed", 
-//         "failed"  => "test_status_failed", 
-//         "blocked" => "test_status_blocked", 
-//         "not_run" => "test_status_not_run",
-//         "not_available" => "test_status_not_available" 
-// ); 
-// 
-// $tlCfg->results['default_status'] = "not_run"; 
+/** Define your own test status(es) by modifying
+ *   - $tlCfg->results['status_code'] (in this file)
+ *   - $tlCfg->results['status_label'] (in this file)
+ *   - $tlCfg->results['status_label_for_exec_ui'] (in this file)
+ *   - $tlCfg->results['charts']['status_colour'] (in this file)
+ *   - /locale/<your_language>/custom_strings.txt (see custom_strings.txt.example)
+ *   - /gui/themes/default/css/custom.css (see custom.css.example)
+ */
+
+// This Example shows how to add the status 'my_status'
+
+//$tlCfg->results['status_code'] = array (
+//	'failed'        => 'f',
+//	'blocked'       => 'b',
+//	'passed'        => 'p',
+//	'not_run'       => 'n',
+//	'not_available' => 'x',
+//	'unknown'       => 'u',
+//	'all'           => 'a',
+//	'my_status'     => 'm'
+//); 
+//
+//// For localization example see /locale/<your_language>/custom_strings.txt.example
+//$tlCfg->results['status_label'] = array(
+//	'not_run'       => 'test_status_not_run',
+//	'passed'        => 'test_status_passed',
+//	'failed'        => 'test_status_failed',
+//	'blocked'       => 'test_status_blocked',
+//	'my_status'     => 'test_status_my_status'
+////	'all'           => 'test_status_all_status',
+////	'not_available' => 'test_status_not_available',
+////	'unknown'       => 'test_status_unknown'
+//);
+//
+//$tlCfg->results['status_label_for_exec_ui'] = array(
+//	'not_run'   => 'test_status_not_run',
+//	'passed'    => 'test_status_passed',
+//	'failed'    => 'test_status_failed',
+//	'blocked'   => 'test_status_blocked',
+//	'my_status' => 'test_status_my_status'
+//);
+//
+//$tlCfg->results['default_status'] = 'not_run';
+//
+//$tlCfg->results['charts']['status_colour'] = array(
+// 	'not_run'   => '000000',
+//	'passed'    => '006400',
+//	'failed'    => 'B22222',
+//	'blocked'   => '00008B',
+//	'my_status' => 'FF8C11'
+//);
 //
 // -------------------------------------------------------------------------------------------------
 // Item templates

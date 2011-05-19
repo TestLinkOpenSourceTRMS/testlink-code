@@ -34,6 +34,8 @@ rev :
 	
 {* ----- load CSS ------------------------------------------------------------------- *} 
 	<style media="all" type="text/css">@import "{$css}";</style>
+	<style media="all" type="text/css">@import "{$custom_css}";</style>
+
 	{if $testproject_coloring eq 'background'}
   	<style type="text/css"> body {ldelim}background: {$testprojectColor};{rdelim}</style>
 	{/if}

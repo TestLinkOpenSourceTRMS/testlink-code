@@ -176,6 +176,7 @@ class TLSmarty extends Smarty
         
         $this->assign('basehref', $basehref);
         $this->assign('css', $basehref . TL_TESTLINK_CSS);
+        $this->assign('custom_css', $basehref . TL_TESTLINK_CUSTOM_CSS);
         $this->assign('locale', $my_locale);
           
           

@@ -52,17 +52,20 @@ class testcaseCommands
 	private $execution_types;
 	private $grants;
 
-	function __construct(&$db)
+	function __construct(&$db,&$userObj,$tproject_id)
 	{
 	    $this->db=$db;
 	    $this->tcaseMgr = new testcase($db);
         $this->execution_types = $this->tcaseMgr->get_execution_types();
         $this->grants=new stdClass();
         
-        // BUGID 3615
-        $this->grants->requirement_mgmt = has_rights($db,"mgt_modify_req") ||
-        								  has_rights($dbHandler,"req_tcase_link_management");
+		$this->grants->mgt_modify_tc = $userObj->hasRight($db,'mgt_modify_tc',$tproject_id);
+		$this->grants->mgt_view_req = $userObj->hasRight($db,"mgt_view_req",$tproject_id);
+		$this->grants->testplan_planning = $userObj->hasRight($db,"testplan_planning",$tproject_id);
 
+        $this->grants->requirement_mgmt = $userObj->hasRight($db,"mgt_modify_req",$tproject_id) ||
+        								  $userObj->hasRight($db,"req_tcase_link_management",$tproject_id);
+	
 	}
 
 	function setTemplateCfg($cfg)
@@ -114,13 +117,26 @@ class testcaseCommands
         	$obj->$p2check = !is_null($argsObj->$p2check) ? $argsObj->$p2check : 'show'; 
         }
 
-		// need to check where is used
+		// need to check where is used -> on cancel button on tcStepEdit.tpl
         $obj->loadOnCancelURL = "archiveData.php?tproject_id={$obj->tproject_id}&edit=testcase" . 
         						"&show_mode={$obj->show_mode}&id=%s&version_id=%s";
 
-		$obj->goBackAction = $_SESSION['basehref'] . "lib/testcases/archiveData.php" . 
-							"?tproject_id={$obj->tproject_id}"; 
+		// Used on tcStepEdit.tpl to creare goback_url URL parameter
+		$obj->goBackAction = $_SESSION['basehref'] . "lib/testcases/" . $obj->loadOnCancelURL;
 
+
+		$obj->testPriorityEnabled = 0;
+		$obj->automationEnabled = 0;
+		if($obj->tproject_id > 0)
+		{
+			$tprojectMgr = new testproject($this->db);
+			$dummy = $tprojectMgr->get_by_id($obj->tproject_id);
+			$obj->testPriorityEnabled = $dummy['opt']->testPriorityEnabled;
+			$obj->automationEnabled = $dummy['opt']->automationEnabled;
+		} 
+		$obj->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id={$obj->tproject_id} " .
+						 		 ' target="mainframe" class="bold" ' .
+        			  	 		 ' title="' . lang_get('menu_manage_keywords') . '"';
 		return $obj;
 	}
 	 
@@ -285,8 +301,6 @@ class testcaseCommands
     	keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
   		$tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
 
-		new dbug($tc_data);
-		
   		foreach($oWebEditorKeys as $key)
    		{
    			$guiObj->$key = isset($tc_data[0][$key]) ?  $tc_data[0][$key] : '';
@@ -549,7 +563,9 @@ class testcaseCommands
 
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
 		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
+
         $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
+        $guiObj->goBackAction = sprintf($guiObj->goBackAction,$argsObj->tcase_id,$argsObj->tcversion_id);
         
    		// Get all existent steps
 		$guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
@@ -603,7 +619,13 @@ class testcaseCommands
 
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
 		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
+
+
+		// seems to be used as argument "attach_loadOnCancelURL"
+		// on {include file="inc_attachments.tpl"}
+		// on tcView.tpl
         $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
+		$guiObj->goBackAction = sprintf($guiObj->goBackAction,$argsObj->tcase_id,$argsObj->tcversion_id);
 
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
@@ -649,10 +671,12 @@ class testcaseCommands
 
 		$templateCfg = templateConfiguration('tcStepEdit');
 		$guiObj->template=$templateCfg->default_template;
-        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
 
+	
 		// 20110503
-		$guiObj->goBackAction .= "&tcase_id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+		// Need to understand if booth are needed
+        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
+		$guiObj->goBackAction = sprintf($guiObj->goBackAction,$argsObj->tcase_id,$argsObj->tcversion_id);
 
 		return $guiObj;
 	}
@@ -784,9 +808,9 @@ class testcaseCommands
 
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
 		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
-        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
 
-		$guiObj->goBackAction .= "&tcase_id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
+		$guiObj->goBackAction = sprintf($guiObj->goBackAction,$argsObj->tcase_id,$argsObj->tcversion_id);
 
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
@@ -905,7 +929,7 @@ class testcaseCommands
 
 	    $viewer_args['refreshTree'] = $guiObj->refreshTree;
  	    $viewer_args['user_feedback'] = $guiObj->user_feedback;
-	    $this->tcaseMgr->show($smartyObj,$argsObj->tproject_id,$argsObj->grants,$guiObj, 
+	    $this->tcaseMgr->show($smartyObj,$argsObj->tproject_id,$this->grants,$guiObj, 
 	    					  $this->templateCfg->template_dir,
 	                          $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args,null,$argsObj->show_mode);
 		exit();	

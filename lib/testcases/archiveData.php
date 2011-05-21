@@ -84,7 +84,6 @@ switch($args->feature)
 		$gui->attachments = null;
 		$gui->direct_link = null;
 		$gui->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
-		// 20101008 - asimon - BUGID 3311
 		$gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
     	
    		// has been called from a test case search

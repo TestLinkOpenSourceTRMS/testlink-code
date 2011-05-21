@@ -168,8 +168,7 @@ DEBUG: $gui->action: {$gui->action} <br>
     {/if}
 
   	<input type="button" name="cancel" value="{$labels.btn_cancel}"
-    	     {if $gui->goback_url != ''}  onclick="show_modified_warning=false; location='{$gui->goback_url}';"
-    	     {else}  onclick="show_modified_warning=false; javascript:history.back();" {/if} />
+    	   onclick="show_modified_warning=false; location='{$gui->goback_url}';" />
 	</div>	
 
   <table class="simple">
@@ -303,7 +302,7 @@ DEBUG: $gui->action: {$gui->action} <br>
   </table>	
   <p>
   {* when save or cancel is pressed do not show modification warning *}
-	<div class="groupBtn">
+	<div class="groupBtn" id="buttons_update_mode">
 		<input id="do_update_step" type="submit" name="do_update_step" 
 		       onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
 
@@ -315,9 +314,8 @@ DEBUG: $gui->action: {$gui->action} <br>
 		         onclick="doAction.value='doCopyStep'" value="{$labels.btn_copy_step}" />
     {/if}
 
-  	<input type="button" name="cancel" value="{$labels.btn_cancel}"
-    	     {if $gui->goback_url != ''}  onclick="show_modified_warning=false; location='{$gui->goback_url}';"
-    	     {else}  onclick="show_modified_warning=false; javascript:history.back();" {/if} />
+  	<input type="button" id="cancel_in_update_mode" name="cancel" value="{$labels.btn_cancel}"
+    	   onclick="show_modified_warning=false; location='{$gui->goback_url}';" />
 	</div>	
 </form>
 

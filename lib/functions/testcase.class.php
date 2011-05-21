@@ -718,7 +718,8 @@ class testcase extends tlObjectWithAttachments
 	    $gui->platforms = null;
 		$gui->tableColspan = 5; // sorry magic related to table to display steps
 		$gui->opt_requirements = false;
-		$gui->status_quo_map = array();
+		// $gui->status_quo_map = array();
+		$gui->status_quo = array();
 		$gui->keywords_map = array();
 		$gui->arrReqs = array();
 		$gui->cf_current_version = null;
@@ -864,8 +865,8 @@ class testcase extends tlObjectWithAttachments
 		  		$tc_array[0]['tc_external_id'] = $tcasePrefix . $tc_array[0]['tc_external_id'];
 
 		  		// get the status quo of execution and links of tc versions
-		  		$gui->status_quo_map[] = $this->get_versions_status_quo($tc_id);
-
+		  		// $gui->status_quo_map[] = $this->get_versions_status_quo($tc_id);
+				$gui->status_quo[] = $this->get_versions_status_quo($tc_id);
 		  		$gui->linked_versions[] = $this->get_linked_versions($tc_id);
 		  		$gui->keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
 		  		$tc_current = $tc_array[0];

@@ -1,11 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcStepEditViewer.tpl,v 1.9 2010/03/28 16:45:56 franciscom Exp $
+@filesource	tcStepEditViewer.tpl
 Purpose: test case step edit/create viewer
 
-Rev:
- 20100326 - franciscom - step number can not be edited anymore
- 20100111 - eloff - BUGID 2036 - Check modified content before exit
+@internal revisions
+20100326 - franciscom - step number can not be edited anymore
+20100111 - eloff - BUGID 2036 - Check modified content before exit
 *}
 
 {* ---------------------------------------------------------------- *}

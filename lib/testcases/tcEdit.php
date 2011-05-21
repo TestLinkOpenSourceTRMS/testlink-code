@@ -55,7 +55,7 @@ $args = init_args($cfg,$tproject_mgr,$_SESSION['currentUser'],$optionTransferNam
 require_once(require_web_editor($cfg->webEditorCfg['type']));
 $templateCfg = templateConfiguration('tcEdit');
 
-$commandMgr = new testcaseCommands($db);
+$commandMgr = new testcaseCommands($db,$_SESSION['currentUser'],$args->tproject_id);
 $commandMgr->setTemplateCfg(templateConfiguration());
 
 $testCaseEditorKeys = array('summary' => 'summary','preconditions' => 'preconditions');
@@ -232,6 +232,9 @@ else if($args->do_copy)
 }
 else if($args->do_create_new_version)
 {
+	// used to implement go back 
+	$gui->loadOnCancelURL = buildLoadOnCancelURL($args);
+
 	$user_feedback = '';
 	$show_newTC_form = 0;
 	$msg = lang_get('error_tc_add');
@@ -247,10 +250,6 @@ else if($args->do_create_new_version)
 	$viewer_args['msg_result'] = $msg;
 	$viewer_args['user_feedback'] = $user_feedback;
 	
-	// used to implement go back 
-	$gui->loadOnCancelURL = $_SESSION['basehref'] . "/lib/testcases/archiveData.php?tproject_id={$args->tproject_id}" . 
-							"&edit=testcase&id={$args->tcase_id}&show_mode={$args->show_mode}";
-
 	
 	$testcase_version = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
 	$tcase_mgr->show($smarty,$args->tproject_id,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
@@ -258,10 +257,8 @@ else if($args->do_create_new_version)
 }
 else if($args->do_activate_this || $args->do_deactivate_this)
 {
-
-	$gui->loadOnCancelURL = $_SESSION['basehref'] . "/lib/testcases/archiveData.php?tproject_id={$args->tproject_id}" . 
-							"&edit=testcase&id={$args->tcase_id}&show_mode={$args->show_mode}";
-
+	$gui->loadOnCancelURL = buildLoadOnCancelURL($args);
+	
 	$active_status = 0;
 	$viewer_args['action'] = "deactivate_this_version";
 	if($args->do_activate_this)
@@ -579,10 +576,8 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$userObj)
 	$guiObj->user_feedback = '';
 	$guiObj->stay_here = $argsObj->stay_here;
 	$guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
-	
-	$guiObj->loadOnCancelURL = $_SESSION['basehref'] . 
-	                           "/lib/testcases/archiveData.php?edit=testcase&id=" . $argsObj->tcase_id .
-	                           "&show_mode={$argsObj->show_mode}";
+
+	$guiObj->loadOnCancelURL = buildLoadOnCancelURL($argsObj);
 	
 	if($argsObj->container_id > 0)
 	{
@@ -741,5 +736,14 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$edit_steps)
        	break;
     }
 
+}
+
+
+function buildLoadOnCancelURL(&$argsObj)
+{
+
+	$ret_url = $_SESSION['basehref'] . "/lib/testcases/archiveData.php?tproject_id={$argsObj->tproject_id}" . 
+			   "&edit=testcase&id={$argsObj->tcase_id}&show_mode={$argsObj->show_mode}";
+	return $ret_url;
 }
 ?>

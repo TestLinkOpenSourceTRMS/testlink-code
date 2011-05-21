@@ -1,4 +1,4 @@
-{* 
+i{* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
 
 Purpose: view a requirement specification
@@ -69,16 +69,16 @@ Purpose: view a requirement specification
 {lang_get s='freeze' var="freeze_msgbox_title"}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
-{include file="inc_del_onclick.tpl"}
+{include file="inc_action_onclick.tpl"}
 
 <script type="text/javascript">
-	/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-	var del_action=fRoot+'{$req_module}reqSpecEdit.php?doAction=doDelete&req_spec_id=';
+  /* All this stuff is needed for logic contained in inc_action_onclick.tpl */
+  /* target_action name can not be CHANGED */
+  var target_action=fRoot+'{$req_module}reqSpecEdit.php?doAction=doDelete&tproject_id={$tprojectID}&req_spec_id=';
 
-  {* BUGID 3954: added contribution by Vincent *}
 	function freeze_req_spec(btn, text, o_id) 
 	{
-		var my_action=fRoot+'lib/requirements/reqSpecEdit.php?doAction=doFreeze&req_spec_id=';
+		var my_action=fRoot+'lib/requirements/reqSpecEdit.php?doAction=doFreeze&tproject_id={$tprojectID}&req_spec_id=';
 		if( btn == 'yes' ) 
 		{
 			my_action = my_action+o_id;

@@ -42,7 +42,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
     {$gsmarty_attachments->disabled_msg}
     </div>
 {/if}
-{include file="inc_del_onclick.tpl"}
+{include file="inc_action_onclick.tpl"}
 {if $gsmarty_attachments->enabled && ($attach_attachmentInfos != "" || $attach_show_upload_btn)}
 
 <table class="{$attach_tableClassName}" {if $attach_inheritStyle == 0} style="{$attach_tableStyles}" {/if}>
@@ -68,8 +68,8 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 			<td style="vertical-align:middle;"><a href="lib/attachments/attachmentdownload.php?id={$info.id}" target="_blank" class="bold">
 			{$my_link}</a> - <span class="italic">{$info.file_name|escape} ({$info.file_size|escape} bytes, {$info.file_type|escape}) {localize_date d=$info.date_added|escape}</span>
 				{if !$attach_downloadOnly}
-				<a href="javascript:delete_confirmation({$info.id},'{$info.file_name|escape:'javascript'|escape}',
-					                                '{$del_msgbox_title|escape:'javascript'|escape}','{$warning_msg|escape:'javascript'|escape}',deleteAttachment_onClick);">
+				<a href="javascript:action_confirmation({$info.id},'{$info.file_name|escape:'javascript'|escape}',
+					                                  '{$del_msgbox_title|escape:'javascript'|escape}','{$warning_msg|escape:'javascript'|escape}',deleteAttachment_onClick);">
 					<img style="border:none;" alt="{lang_get s='alt_delete_attachment'}"
 				                         title="{lang_get s='alt_delete_attachment'}"
 				                         src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" /></a>

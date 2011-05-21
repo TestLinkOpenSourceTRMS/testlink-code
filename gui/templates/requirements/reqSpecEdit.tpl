@@ -26,7 +26,7 @@ Purpose: smarty template - create a new req document
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
-{include file="inc_del_onclick.tpl"}
+{include file="inc_action_onclick.tpl"}
 <script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
 
 <script type="text/javascript">

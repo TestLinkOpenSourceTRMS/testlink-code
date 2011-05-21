@@ -269,6 +269,7 @@ class reqSpecCommands
 		$guiObj->user_feedback = sprintf(lang_get('req_spec_deleted'),$req_spec['title']);
 		$guiObj->refreshTree = 1; // needed to enable refresh_tree logic
 		$guiObj->result = 'ok';  
+		$guiObj->tproject_id = $argsObj->tproject_id;
       	
 		return $guiObj;	
   }

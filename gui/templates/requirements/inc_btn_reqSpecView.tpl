@@ -3,7 +3,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @fielsource inc_btn_reqSpecView.tpl
 
 @internal revisions
-
+20110521 - franciscom - changes to delete_confirmation() call in order to pass in simple
+						way context info.
+						
 20110319 - franciscom - BUGID 4321: Requirement Spec - add option to print single Req Spec			
 20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze requirements
 20101022 - eloff - BUGID 3918 - work on buttons
@@ -19,6 +21,15 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
+
+{* 20110521 *}
+{* 
+{$tprojecID=$gui->tproject}
+{$urlArgs=$gui->req_spec.id}
+{$urlArgs="$urlArgs&tproject_id=$tprojectID"}
+*}
+
+{$urlArgs=$gui->req_spec.id}
 
 <!--- inc_btn_reqSpecView.tpl -->
 <div class="groupBtn">
@@ -38,7 +49,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   		<input type="submit" name="edit_req_spec"  value="{$labels.btn_edit_spec}" 
   	         onclick="doAction.value='edit'"/>
   		<input type="button" name="deleteSRS" value="{$labels.btn_delete_spec}"
-  	       onclick="delete_confirmation({$gui->req_spec.id},'{$gui->req_spec.title|escape:'javascript'|escape}',
+  	       onclick="action_confirmation('{$urlArgs}','{$gui->req_spec.title|escape:'javascript'|escape}',
                                         '{$del_msgbox_title}','{$warning_msg}');"	/>
 
 		    <input type="button" name="importReqSpec" value="{$labels.btn_import_req_spec}"
@@ -47,9 +58,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 		           onclick="location='{$gui->actions->req_spec_export}'" />
             {* BUGID 3954 *}
             <input type="button" name="freeze_req_spec" value="{$labels.btn_freeze_req_spec}"
-                   onclick="delete_confirmation({$gui->req_spec.id},'{$gui->req_spec.title|escape:'javascript'|escape}',
-                   '{$freeze_msgbox_title|escape:'javascript'|escape}', '{$freeze_warning_msg|escape:'javascript'|escape}',
-                   pF_freeze_req_spec);"	/>
+                   onclick="action_confirmation({$urlArgs},'{$gui->req_spec.title|escape:'javascript'|escape}',
+                   								'{$freeze_msgbox_title|escape:'javascript'|escape}', 
+                   								'{$freeze_warning_msg|escape:'javascript'|escape}',
+                   								pF_freeze_req_spec);"/>
 	{/if}
 	<input type="button" name="printerFriendly" value="{$labels.btn_print_view}"
 		   onclick="javascript:openPrintPreview('reqSpec',{$args_reqspec_id},-1,-1,

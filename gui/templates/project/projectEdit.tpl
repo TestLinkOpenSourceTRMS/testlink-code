@@ -31,35 +31,33 @@
     warning_empty_tproject_name'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
-{include file="inc_del_onclick.tpl"}
-
-{if $gui_cfg->testproject_coloring neq 'none'}
+{if $gui_cfg->testproject_coloring != 'none'}
   {include file="inc_jsPicker.tpl"}
 {/if}
 
 <script type="text/javascript">
-//   BUGID 3943: Escape all messages (string)
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
-	var warning_empty_tcase_prefix = "{$labels.warning_empty_tcase_prefix|escape:'javascript'}";
-	var warning_empty_tproject_name = "{$labels.warning_empty_tproject_name|escape:'javascript'}";
-	function validateForm(f)
-	{
-	  if (isWhitespace(f.tprojectName.value))
-	  {
-	      alert_message(alert_box_title,warning_empty_tproject_name);
-	      selectField(f, 'tprojectName');
-	      return false;
-	  }
-	  if (isWhitespace(f.tcasePrefix.value))
-	  {
-	      alert_message(alert_box_title,warning_empty_tcase_prefix);
-	      selectField(f, 'tcasePrefix');
-	      return false;
-	  }
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_tcase_prefix = "{$labels.warning_empty_tcase_prefix|escape:'javascript'}";
+var warning_empty_tproject_name = "{$labels.warning_empty_tproject_name|escape:'javascript'}";
+
+function validateForm(f)
+{
+  if (isWhitespace(f.tprojectName.value))
+  {
+      alert_message(alert_box_title,warning_empty_tproject_name);
+      selectField(f, 'tprojectName');
+      return false;
+  }
+  if (isWhitespace(f.tcasePrefix.value))
+  {
+      alert_message(alert_box_title,warning_empty_tcase_prefix);
+      selectField(f, 'tcasePrefix');
+      return false;
+  }
 	
-	  return true;
-	}
-	</script>
+  return true;
+}
+</script>
 </head>
 
 <body>

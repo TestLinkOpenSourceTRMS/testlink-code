@@ -1,19 +1,16 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectView.tpl,v 1.23 2010/10/17 09:46:37 franciscom Exp $
+@filesource	projectView.tpl
 Purpose: smarty template - edit / delete Test Plan
 
 Development hint:
-     some variables smarty and javascript are created on the inc_*.tpl files.
+some variables smarty and javascript are created on the inc_*.tpl files.
 
-Rev :
-    20100930 - franciscom - BUGID 2344: Private test project
-    20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-    20080805 - franciscom - api config refactoring
-    20080116 - franciscom - added option to show/hide id useful for API
-
+@internal revisions
+20100930 - franciscom - BUGID 2344: Private test project
+20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}
@@ -34,11 +31,11 @@ Rev :
 
 
 {include file="inc_head.tpl" openHead="yes" enableTableSorting="yes"}
-{include file="inc_del_onclick.tpl"}
+{include file="inc_action_onclick.tpl"}
 
 <script type="text/javascript">
-/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$deleteAction}';
+/* All this stuff is needed for logic contained in inc_action_onclick.tpl */
+var target_action=fRoot+'{$deleteAction}';
 </script>
 </head>
 
@@ -115,7 +112,7 @@ var del_action=fRoot+'{$deleteAction}';
 			<td class="clickable_icon">
 				  <img style="border:none;cursor: pointer;"  alt="{$labels.testproject_alt_delete}"
 					     title="{$labels.testproject_alt_delete}"
-					     onclick="delete_confirmation({$testproject.id},'{$testproject.name|escape:'javascript'|escape}',
+					     onclick="action_confirmation({$testproject.id},'{$testproject.name|escape:'javascript'|escape}',
 					                                '{$del_msgbox_title}','{$warning_msg}');"
 				       src="{$tlImages.delete}"/>
 			</td>

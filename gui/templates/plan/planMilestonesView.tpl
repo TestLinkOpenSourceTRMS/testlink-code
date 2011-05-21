@@ -11,7 +11,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
                          btn_new_milestone,start_date,
                          th_perc_testcases,th_delete,alt_delete_milestone,no_milestones'}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 
@@ -22,8 +22,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$gui->actions->delete}';
+/* All this stuff is needed for logic contained in inc_action_onclick.tpl */
+var target_action=fRoot+'{$gui->actions->delete}';
 </script>
 </head>
 
@@ -74,7 +74,7 @@ var del_action=fRoot+'{$gui->actions->delete}';
 				       <img style="border:none;cursor: pointer;" 
   				            title="{$labels.alt_delete_milestone}" 
   				            alt="{$labels.alt_delete_milestone}" 
- 					            onclick="delete_confirmation({$milestone.id},'{$milestone.name|escape:'javascript'|escape}',
+ 					            onclick="action_confirmation({$milestone.id},'{$milestone.name|escape:'javascript'|escape}',
  					                                         '{$del_msgbox_title}','{$warning_msg}');"
   				            src="{$tlImages.delete}"/>
   				</td>

@@ -1,22 +1,20 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_unassign_all.tpl,v 1.4 2010/11/13 09:58:50 franciscom Exp $
+@filesource	tc_exec_unassign_all.tpl
 Purpose: show a confirmation before unassigning all testers from the test cases in a build.
 
-rev :
-    20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+@internal revisions
 *}
 
 {lang_get var="labels" s='btn_remove_all_tester_assignments'}
 
 {include file="inc_head.tpl" openHead='yes'}
 
-{assign var="ext_location" value=$smarty.const.TL_EXTJS_RELATIVE_PATH}
+{$ext_location=$smarty.const.TL_EXTJS_RELATIVE_PATH}
+
 <link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/ext-all.css" />
-{include file="inc_del_onclick.tpl" openHead="yes"}
 
 <script type="text/javascript">
-
 /**
  * submit the form to confirm deletion of all tester assignments
  *
@@ -44,9 +42,7 @@ function warn_remove_testers(msgbox_title, msgbox_content) {
 </head>
 
 <body>
-
 <h1 class="title">{$gui->title|escape}</h1>
-
 <div class="workBack">
 
 {$gui->message|escape}

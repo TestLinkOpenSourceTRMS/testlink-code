@@ -18,9 +18,10 @@ some smarty and javascript variables are created on the inc_*.tpl files.
 {* Configure Actions *}
 {$managerURL="lib/plan/planEdit.php"}
 
+{$tprojectID=$gui->tproject_id}
 {$goBackActionURLencoded=$gui->goback_url|escape:'url'}
 {$editAction="$managerURL?do_action=edit&tplan_id="}
-{$deleteAction="$managerURL?do_action=do_delete&tplan_id="}
+{$deleteAction="$managerURL?do_action=do_delete&tproject_id=$tprojectID&tplan_id="}
 {$createAction="$managerURL?do_action=create"}
 {$exportAction="lib/plan/planExport.php?goback_url=$goBackActionURLencoded&tplan_id="}
 {$importAction="lib/plan/planImport.php?goback_url=$goBackActionURLencoded&tplan_id="}
@@ -38,11 +39,11 @@ some smarty and javascript variables are created on the inc_*.tpl files.
 {lang_get s='delete' var="del_msgbox_title"}
 
 {include file="inc_head.tpl" openHead="yes" enableTableSorting="yes"}
-{include file="inc_del_onclick.tpl"}
+{include file="inc_action_onclick.tpl"}
 
 <script type="text/javascript">
-/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$deleteAction}';
+/* All this stuff is needed for logic contained in inc_action_onclick.tpl */
+var target_action=fRoot+'{$deleteAction}';
 </script>
 
 </head>
@@ -50,7 +51,7 @@ var del_action=fRoot+'{$deleteAction}';
 <body {$body_onload}>
 
 <h1 class="title">{$gui->main_descr|escape}</h1>
-{if $gui->user_feedback ne ""}
+{if $gui->user_feedback != ""}
 	<div>
 		<p class="info">{$gui->user_feedback}</p>
 	</div>
@@ -109,7 +110,7 @@ var del_action=fRoot+'{$deleteAction}';
 				  <img style="border:none;cursor: pointer;" 
 				       alt="{$labels.testplan_alt_delete_tp}"
 					   title="{$labels.testplan_alt_delete_tp}" 
-					   onclick="delete_confirmation({$testplan.id},'{$testplan.name|escape:'javascript'|escape}',
+					   onclick="action_confirmation({$testplan.id},'{$testplan.name|escape:'javascript'|escape}',
 					                                '{$del_msgbox_title}','{$warning_msg}');"
 				     src="{$tlImages.delete}"/>
 			</td>

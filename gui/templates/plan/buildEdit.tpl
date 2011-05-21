@@ -27,10 +27,8 @@ Purpose: smarty template - Add new build and show existing
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
-{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_build_name = "{$labels.warning_empty_build_name|escape:'javascript'}";
 

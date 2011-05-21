@@ -20,7 +20,7 @@ Purpose: smarty template - Show existing builds
              builds_description,sort_table_by_column,th_id,release_date'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" enableTableSorting="yes"}
-{include file="inc_del_onclick.tpl"}
+{include file="inc_action_onclick.tpl"}
 
 {* Configure Actions *}
 {$tproject_id=$gui->tproject_id}
@@ -32,8 +32,8 @@ Purpose: smarty template - Show existing builds
 
 
 <script type="text/javascript">
-/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$deleteAction}';
+/* All this stuff is needed for logic contained in inc_action_onclick.tpl */
+var target_action=fRoot+'{$deleteAction}';
 </script>
 </head>
 
@@ -88,7 +88,7 @@ var del_action=fRoot+'{$deleteAction}';
   				<td class="clickable_icon">
 				       <img style="border:none;cursor: pointer;"  title="{$labels.alt_delete_build}" 
   				            alt="{$labels.alt_delete_build}" 
- 					            onclick="delete_confirmation({$build.id},'{$build.name|escape:'javascript'|escape}',
+ 					            onclick="action_confirmation({$build.id},'{$build.name|escape:'javascript'|escape}',
  					                                         '{$del_msgbox_title}','{$warning_msg}');"
   				            src="{$tlImages.delete}"/>
   				</td>

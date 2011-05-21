@@ -26,12 +26,10 @@ generate the list of TC that can be removed from a Test Plan
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
-{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-  // BUGID 3943: Escape all messages (string)
-	var check_msg="{$labels.exec_assign_no_testcase|escape:'javascript'}";
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var check_msg="{$labels.exec_assign_no_testcase|escape:'javascript'}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
 
 loop2do=0;   // needed for the convert grid logic
 function check_action_precondition(container_id,action)

@@ -18,8 +18,8 @@ Revision:
 {lang_get s='delete' var="del_msgbox_title"}
 
 <script type="text/javascript">
-/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tproject_id}&doAction=do_delete&id=';
+/* All this stuff is needed for logic contained in inc_action_onclick.tpl */
+var target_action=fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tproject_id}&doAction=do_delete&id=';
 </script>
  
 </head>
@@ -56,7 +56,7 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tproject_
 			  		<img style="border:none;cursor: pointer;"
 			       		alt="{$labels.alt_delete_keyword}" title="{$labels.alt_delete_keyword}"   
              		src="{$tlImages.delete}"			     
-				     	 onclick="delete_confirmation({$gui->keywords[myKeyword]->dbID},
+				     	 onclick="action_confirmation({$gui->keywords[myKeyword]->dbID},
 				              '{$gui->keywords[myKeyword]->name|escape:'javascript'|escape}',
 				              '{$del_msgbox_title}','{$warning_msg}');" />
 				</td>

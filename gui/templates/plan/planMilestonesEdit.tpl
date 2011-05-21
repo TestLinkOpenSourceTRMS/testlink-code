@@ -17,16 +17,13 @@ $Id: planMilestonesEdit.tpl,v 1.14 2010/11/13 09:58:50 franciscom Exp $
                           th_perc_testcases,th_delete,alt_delete_milestone,show_calender,
                           clear_date,info_milestone_create_prio,info_milestone_create_no_prio'}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
-{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_invalid_percentage_value = "{$labels.warning_invalid_percentage_value|escape:'javascript'}";
 var warning_must_be_number = "{$labels.warning_must_be_number|escape:'javascript'}";

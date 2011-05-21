@@ -20,9 +20,8 @@ Purpose: smarty template - create Test Plan
 
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
-{include file="inc_del_onclick.tpl"}
+
 <script type="text/javascript">
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_tp_name = "{$labels.warning_empty_tp_name|escape:'javascript'}";
 var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";

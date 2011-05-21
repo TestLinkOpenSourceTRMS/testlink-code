@@ -1,9 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planImport.tpl,v 1.3 2010/11/06 11:42:47 amkhullar Exp $
+@filespurce	planImport.tpl
 Purpose: manage import of test plan links (test cases and platforms)
 
-rev:
+@internal revisions
 *}
 
 {lang_get var="labels"
@@ -12,11 +12,10 @@ rev:
              duplicate_criteria,action_for_duplicates,
              action_on_duplicated_name,warning,btn_cancel,title_imp_tc_data'}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_del_onclick.tpl"}
 </head>
 <body>
 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planUpdateTC.tpl,v 1.17 2011/01/05 19:32:06 franciscom Exp $
+@filesource planUpdateTC.tpl
 
 Author: franciscom
 
@@ -17,11 +17,9 @@ Purpose: generate a list of Test Cases linked to Test Plan
              update_to_version,inactive_testcase,btn_update_testplan_tcversions'}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_del_onclick.tpl"}
 {include file="inc_jsCheckboxes.tpl"}
 
 <script type="text/javascript">
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_no_testcase_checked = "{$labels.no_testcase_checked|escape:'javascript'}";
 
@@ -41,13 +39,13 @@ function validateForm(f)
 
 
 {if $gui->buttonAction=='doUpdate'}
-  {assign var="action_descr" value=$labels.update_testcase_versions}
+  {$action_descr=$labels.update_testcase_versions}
 {else}
-  {assign var="action_descr" value=$labels.update_all_testcase_versions}
+  {$action_descr=$labels.update_all_testcase_versions}
 {/if}
 
-{assign var="update_cb" value="achecked_tc"} {* prefix for checkboxs *}
-{assign var="item_number" value=0}
+{$update_cb="achecked_tc"} {* prefix for checkboxs *}
+{$item_number=0}
 
 <body class="testlink">
 <h1 class="title">{$labels.test_plan}{$smarty.const.TITLE_SEP}{$gui->testPlanName|escape}</h1>
@@ -71,9 +69,9 @@ function validateForm(f)
     <input type="hidden" name="update_all_value"  id="update_all_value"  value="0" />
 
   	{foreach from=$gui->items item=ts}
-  	  {assign var="item_number" value=$item_number+1}
-  	  {assign var="ts_id" value=$ts.testsuite.id}
-  	  {assign var="div_id" value="div_$ts_id"}
+  	  {$item_number=$item_number+1}
+  	  {$ts_id=$ts.testsuite.id}
+  	  {$div_id="div_$ts_id"}
   	
   	  <div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
   	    <h3 class="testlink">
@@ -111,7 +109,7 @@ function validateForm(f)
               {* some conditional design logic *}
               {assign var='is_active' value=0}
               {assign var='is_linked' value=0}
-              {assign var="draw_update_inputs" value=0}
+              {$draw_update_inputs=0}
               
               {if $tcase.linked_version_id != 0}
                  {assign var='is_linked' value=1}
@@ -129,7 +127,7 @@ function validateForm(f)
               
               {* BUGID 1504 - {if $tcase.executed == 'no' && $is_active==1} *}
               {if $is_active==1}    
-                  {assign var="draw_update_inputs" value=1}
+                  {$draw_update_inputs=1}
               {/if}    
               {* ------------------------------------------------ *}
   
@@ -214,7 +212,7 @@ function validateForm(f)
 	      </tr>   
 	    
 	      {foreach from=$gui->testcases item=tc}
-	     	{assign var="item_number" value=$item_number+1}
+	     	{$item_number=$item_number+1}
 	      <tr class="testlink">
 	      	<td width="20">
       		 	<input type='checkbox' name='{$update_cb}[{$tc.tc_id}]' id='{$update_cb}{$tc.tc_id}' 

@@ -67,8 +67,6 @@ var msg="{$labels.warning_delete_execution}";
 var import_xml_results="{$labels.import_xml_results}";
 </script>
 
-{include file="inc_del_onclick.tpl"}
-
 <script language="JavaScript" type="text/javascript">
 function load_notes(panel,exec_id)
 {
@@ -103,7 +101,6 @@ function set_combo_group(formid,combo_id_prefix,value_to_assign)
 </script>
 
 <script type="text/javascript">
-// BUGID 3943: Escape all messages (string)
 var alert_box_title="{$labels.warning|escape:'javascript'}";
 var warning_nothing_will_be_saved="{$labels.warning_nothing_will_be_saved|escape:'javascript'}";
 var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";

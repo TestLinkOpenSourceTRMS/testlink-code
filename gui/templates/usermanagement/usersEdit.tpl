@@ -8,7 +8,6 @@ Testlink: smarty template -
 {config_load file="input_dimensions.conf" section='login'}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
-{include file="inc_del_onclick.tpl"}
 
 {lang_get var="labels"
           s='warning_empty_login,warning_empty_first_name,warning,btn_save,
@@ -22,8 +21,6 @@ Testlink: smarty template -
              btn_upd_user_data,btn_add,btn_cancel,button_reset_password'}
 
 <script type="text/javascript">
-
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_login      = "{$labels.warning_empty_login|escape:'javascript'}";
 var warning_empty_first_name = "{$labels.warning_empty_first_name|escape:'javascript'}";

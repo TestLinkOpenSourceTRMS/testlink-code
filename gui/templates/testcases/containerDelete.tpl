@@ -4,11 +4,9 @@ Purpose: smarty template - delete containers in test specification
 
 @filesource containerDelete.tpl
 
-@internak revisions 
+@internal revisions 
 20110402 - franciscom - BUGID 4322: New Option to block delete of executed test cases
 20101202 - asimon - BUGID 4067: refresh tree problems
-20070218 - franciscom - changed refresh management
-20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmation without Cancel or No option
 *}
 {include file="inc_head.tpl"}
 {lang_get var='labels'
@@ -16,9 +14,7 @@ Purpose: smarty template - delete containers in test specification
 
 <body>
 <h1 class="title">{$page_title}{$smarty.const.TITLE_SEP}{$objectName|escape}</h1> 
-
-{include file="inc_update.tpl" result=$sqlResult item=$level action='delete' 
-         refresh=$gui->refreshTree}
+{include file="inc_update.tpl" result=$sqlResult item=$level action='delete' refresh=$gui->refreshTree}
 
 <div class="workBack">
 

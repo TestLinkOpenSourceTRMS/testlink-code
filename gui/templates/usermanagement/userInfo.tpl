@@ -1,10 +1,10 @@
 {* 
 Testlink: smarty template - Edit own account 
-$Id: userInfo.tpl,v 1.23 2010/11/22 21:34:13 mx-julian Exp $
+filesource	userInfo.tpl
 
-rev: 20080908 - franciscom - email validity check
+@internal revisions
 *}
-{assign var="cfg_section" value="login"}
+{$cfg_section="login"}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var='labels'
@@ -20,12 +20,9 @@ rev: 20080908 - franciscom - email validity check
 {assign var="action_mgmt" value="lib/usermanagement/userInfo.php"}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
-{include file="inc_del_onclick.tpl"}
 
 
 <script type="text/javascript">
-
-//BUGID 3943: Escape all messages (string)
 var warning_empty_pwd = "{$labels.warning_empty_pwd|escape:'javascript'}";
 var warning_different_pwd = "{$labels.warning_different_pwd|escape:'javascript'}";
 var warning_enter_less1 = "{$labels.warning_enter_less1|escape:'javascript'}";

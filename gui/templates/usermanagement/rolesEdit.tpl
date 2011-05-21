@@ -8,7 +8,6 @@ create/edit user role
 *}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
-{include file="inc_del_onclick.tpl"}
 {include file="inc_jsCheckboxes.tpl"}
 
 <script type="text/javascript">
@@ -20,7 +19,6 @@ create/edit user role
              th_platform_rights,warn_demo,
              th_rolename,th_tp_rights,btn_cancel'}
              
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_modify_role = "{$labels.warning_modify_role|escape:'javascript'}";
 var warning_empty_role_name = "{$labels.warning_empty_role_name|escape:'javascript'}";

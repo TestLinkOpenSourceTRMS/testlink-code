@@ -12,7 +12,7 @@ Purpose: smarty template - users overview
   20100326 - franciscom - BUGID 3324
 *}
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_del_onclick.tpl"}
+{include file="inc_action_onclick.tpl"}
 
 {$userActionMgr = "lib/usermanagement/usersEdit.php"}
 {$createUserAction ="$userActionMgr?doAction=create"}
@@ -22,7 +22,7 @@ Purpose: smarty template - users overview
 {lang_get s='disable' var="del_msgbox_title"}
 
 <script type="text/javascript">
-var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
+var target_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
 
 function toggleRowByClass(oid,className,displayValue)
 {
@@ -150,7 +150,7 @@ function toggleRowByClass(oid,className,displayValue)
 				<td align="center">
 				  <img style="border:none;cursor: pointer;" alt="{$labels.alt_disable_user}"
 					     title="{$labels.alt_disable_user}" src="{$tlImages.delete}"
-					     onclick="delete_confirmation({$userObj->dbID},'{$userObj->login|escape:'javascript'|escape}',
+					     onclick="action_confirmation({$userObj->dbID},'{$userObj->login|escape:'javascript'|escape}',
 					                                  '{$del_msgbox_title}','{$warning_msg}');" />
 				</td>
 			</tr>

@@ -21,11 +21,11 @@ Purpose: smarty template - view test case in test specification
 
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
-{include file="inc_del_onclick.tpl"}
+{include file="inc_action_onclick.tpl"}
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$gui->deleteStepAction}';
+var target_action=fRoot+'{$gui->deleteStepAction}';
 </script>
 
 {include file="inc_ext_js.tpl" css_only=1}
@@ -206,10 +206,10 @@ function validateStepsReorder(formOID)
 				      {*
 				      BE CAREFUL
 				      args_cf=$gui->cf_other_versions[idx][tdx]  - KO
-           		args_cf=$gui->cf_other_versions[$idx][$tdx]  - KO
-           		args_cf=$gui->cf_other_versions[$idx][tdx]  - KO
-           		args_cf=$gui->cf_other_versions[idx][$tdx] - OK 
-           		- do not know if there is info on smarty manuals
+           			  args_cf=$gui->cf_other_versions[$idx][$tdx]  - KO
+           			  args_cf=$gui->cf_other_versions[$idx][tdx]  - KO
+           			  args_cf=$gui->cf_other_versions[idx][$tdx] - OK 
+           			   - do not know if there is info on smarty manuals
 				      *}
 				      {include file="testcases/tcView_viewer.tpl" 
                        args_testcase=$my_testcase 
@@ -217,7 +217,7 @@ function validateStepsReorder(formOID)
                        args_reqs=$gui->arrReqs[idx]
                        args_status_quo=$gui->status_quo[idx]
                        args_can_do=$gui->can_do
-         		           args_can_move_copy="no" 
+         		       args_can_move_copy="no" 
                        args_can_delete_testcase='no'
                        args_can_delete_version="yes"
                        

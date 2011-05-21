@@ -5,41 +5,40 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: create/edit test case step
 
 @internal revisions
-	20110217 - Julian - BUGID 3737, 4002, 4250 - Cancel Button was not working properly
-	20110209 - Julian - BUGID 4230 - removed old code to set focus on step
-	20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
-	20110112 - Julian - BUGID 3901 - Scroll window to step implemented for vertical layout and
-	                                 newly added steps
-	20110111 - Julian - Improved modified warning message when navigating away without saving
-	20110106 - franciscom - BUGID 4136 - missing implementation on BUGID 3241
-	                                     layout was not used on CREATE
-	20101016 - franciscom - added id to table rows with step data 
-	                        BUGID 3901: Edit Test Case STEP - scroll window to show selected step
-	20100621 - eloff - BUGID 3241 - Implement vertical layout
-	20100529 - franciscom - BUGID 3493 - using escape:'url'
-	20100403 - franciscom - added create step button while editing existent step
-	                        BUGID 3359 - copy test case step
-	20100327 - franciscom - improvements on goback logic
-	20100125 - franciscom - fixed bug on checks on existence of step number
-	20100124 - eloff - BUGID 3088 - Check valid session before submit
-	20100123 - franciscom - checks on existence of step number
-	20100111 - eloff - BUGID 2036 - Check modified content before exit
-
+20110217 - Julian - BUGID 3737, 4002, 4250 - Cancel Button was not working properly
+20110209 - Julian - BUGID 4230 - removed old code to set focus on step
+20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
+20110112 - Julian - BUGID 3901 - Scroll window to step implemented for vertical layout and
+                                 newly added steps
+20110111 - Julian - Improved modified warning message when navigating away without saving
+20110106 - franciscom - BUGID 4136 - missing implementation on BUGID 3241
+                                     layout was not used on CREATE
+20101016 - franciscom - added id to table rows with step data 
+                        BUGID 3901: Edit Test Case STEP - scroll window to show selected step
+20100621 - eloff - BUGID 3241 - Implement vertical layout
+20100529 - franciscom - BUGID 3493 - using escape:'url'
+20100403 - franciscom - added create step button while editing existent step
+                        BUGID 3359 - copy test case step
+20100327 - franciscom - improvements on goback logic
+20100125 - franciscom - fixed bug on checks on existence of step number
+20100124 - eloff - BUGID 3088 - Check valid session before submit
+20100123 - franciscom - checks on existence of step number
+20100111 - eloff - BUGID 2036 - Check modified content before exit
 *}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 
-{assign var="module" value='lib/testcases/'}
-{assign var="tcase_id" value=$gui->tcase_id}
-{assign var="tcversion_id" value=$gui->tcversion_id}
+{$module='lib/testcases/'}
+{$tcase_id=$gui->tcase_id}
+{$tcversion_id=$gui->tcversion_id}
 
 {* Used on several operations to implement goback *}
-{assign var="goBackActionURLencoded" value=$gui->goBackAction|escape:'url'}
-{assign var="url_args" value="tcEdit.php?doAction=editStep&tproject_id={$gui->tproject_id}&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
-{assign var="url_args" value="$url_args&goback_url=$goBackActionURLencoded&step_id="}
-{assign var="hrefEditStep"  value="$basehref$module$url_args"}
+{$goBackActionURLencoded=$gui->goBackAction|escape:'url'}
+{$url_args="tcEdit.php?doAction=editStep&tproject_id={$gui->tproject_id}&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
+{$url_args="$url_args&goback_url=$goBackActionURLencoded&step_id="}
+{$hrefEditStep"  value="$basehref$module$url_args"}
 
 {lang_get var="labels"
           s="warning_step_number_already_exists,warning,warning_step_number,
@@ -48,11 +47,9 @@ Purpose: create/edit test case step
              title_created,version,by,summary,preconditions,title_last_mod"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
-{include file="inc_del_onclick.tpl"}
-
 <script type="text/javascript" src="gui/javascript/ext_extensions.js" language="javascript"></script>
+
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
 var warning_step_number = "{$labels.warning_step_number|escape:'javascript'}";
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_step_number_already_exists = "{$labels.warning_step_number_already_exists|escape:'javascript'}";
@@ -105,10 +102,10 @@ var tc_editor = "{$gui->editorType}";
 
 {* BUGID 3901: Edit Test Case STEP - scroll window to show selected step *}
 {if $gui->action == 'createStep' || $gui->action == 'doCreateStep'}
-	{assign var="scrollPosition" value='new_step'}
+	{$scrollPosition='new_step'}
 {else}
-	{assign var="stepToScrollTo" value=$gui->step_number}
-	{assign var="scrollPosition" value="step_row_$stepToScrollTo"}
+	{$stepToScrollTo=$gui->step_number}
+	{$scrollPosition="step_row_$stepToScrollTo"}
 {/if}
 
 <body onLoad="scrollToShowMe('{$scrollPosition}')">

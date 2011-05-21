@@ -61,14 +61,14 @@ viewer for requirement
 	  	
 	  	{if $args_can_delete_req}
 	  	<input type="button" name="delete_req" value="{$labels.btn_delete}"
-	  	       onclick="delete_confirmation({$args_req.id},
+	  	       onclick="action_confirmation({$args_req.id},
 	  	                                    '{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
 	  	                                    '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req);"/>
 	  	{/if}
 	  	
 	  	{if $args_can_delete_version}
 	  	<input type="button" name="delete_req_version" value="{$labels.btn_del_this_version}"
-	  	       onclick="delete_confirmation({$args_req.version_id},
+	  	       onclick="action_confirmation({$args_req.version_id},
 	  	                '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
 	  				                              '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req_version);"	/>
 	  				                                
@@ -77,7 +77,7 @@ viewer for requirement
 		{* freeze, BUGID 3089 *}
 		{if $args_frozen_version eq null}
 	  	<input type="button" name="freeze_req_version" value="{$labels.btn_freeze_this_version}"
-	  	       onclick="delete_confirmation({$args_req.version_id},
+	  	       onclick="action_confirmation({$args_req.version_id},
 	  	                '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
 	  				                              '{$freeze_msgbox_title}', '{$freeze_warning_msg}',pF_freeze_req_version);"	/>
 	  	{/if}

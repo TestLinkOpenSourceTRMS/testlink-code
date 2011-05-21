@@ -1,26 +1,23 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcExport.tpl,v 1.15 2010/11/13 11:07:58 franciscom Exp $ 
+@filesource	tcExport.tpl
 
 test case export initial page 
 
-Revisions:
+@internal revisions
 20100315 - franciscom - improvements on goback management
 20100315 - amitkhullar - Added checkboxes options for Requirements and CFields for Export.
-20091122 - franciscom - refacoting to use alert_message()
 
 * ----------------------------------------------------------------- *}
 {lang_get var="labels" 
           s='export_filename,warning_empty_filename,file_type,warning,export_cfields,title_req_export,
              view_file_format_doc,export_with_keywords,btn_export,btn_cancel'} 
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
-{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
 

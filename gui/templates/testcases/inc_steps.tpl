@@ -66,7 +66,7 @@ Author : eloff, 2010
 			<img style="border:none;cursor: pointer;"
 			     title="{$inc_steps_labels.delete_step}"
 			     alt="{$inc_steps_labels.delete_step}"
-			     onclick="delete_confirmation({$step_info.id},'{$step_info.step_number|escape:'javascript'|escape}',
+			     onclick="action_confirmation({$step_info.id},'{$step_info.step_number|escape:'javascript'|escape}',
 					                               '{$del_msgbox_title}','{$warning_msg}');"
 			     src="{$tlImages.delete}"/>
 		</td>

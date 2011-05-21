@@ -1,13 +1,8 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_show_bug_table.tpl,v 1.11 2011/02/11 07:46:17 mx-julian Exp $
+@filespurce	inc_show_bug_table.tpl
 
-rev :
-      20110127 - Julian - BUGID 3410 - Smarty 3.0 compatibility
-      20100709 - Julian - show greyed delete icon if delete is not allowed
-      20070304 - franciscom - added single quotes on bug_id on deleteBug_onClick() call
-                              message improvement
-                              added title on delete image. 
+@internal revisions
 *}
 {* -------------------------------------------------------------------------------------- *}
 {* Manage missing arguments                                                               *}
@@ -31,7 +26,7 @@ rev :
 		<td>{$bug_elem.link_to_bts}</td>
 		{if $can_delete}
 		  <td class="clickable_icon">
-		  	<img class="clickable" onclick="delete_confirmation('{$exec_id}-{$bug_id|escape:'javascript'|escape}','{$bug_id|escape:'javascript'|escape}',
+		  	<img class="clickable" onclick="action_confirmation('{$exec_id}-{$bug_id|escape:'javascript'|escape}','{$bug_id|escape:'javascript'|escape}',
 			            '{lang_get s='delete_bug'}','{lang_get s='del_bug_warning_msg'} ({lang_get s='bug_id'} {$bug_id})',deleteBug);" style="border:none" title="{lang_get s='delete_bug'}" alt="{lang_get s='delete_bug'}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/></td>
 		{else}
 		  <td class="clickable_icon">
@@ -40,5 +35,4 @@ rev :
 		{/if}
 	</tr>
 	{/foreach}
-</table>
-		
+</table>		

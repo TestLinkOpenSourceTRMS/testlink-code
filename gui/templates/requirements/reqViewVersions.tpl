@@ -37,6 +37,7 @@ Purpose: view requirement with version management
 
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
+{include file="inc_action_onclick.tpl"}
 
 {config_load file="input_dimensions.conf"}
 
@@ -48,7 +49,7 @@ var warning_empty_reqdoc_id = '{$warning_empty_reqdoc_id|escape:'javascript'}';
 var log_box_title = "{$labels.commit_title|escape:'javascript'}";
 var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
 
-/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
+/* All this stuff is needed for logic contained in inc_action_onclick.tpl */
 function delete_req(btn, text, o_id)
 { 
 	var my_action=fRoot+'lib/requirements/reqEdit.php?tproject_id={$gui->tproject_id}' + 

@@ -34,10 +34,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 </script>
 
 
-{include file="inc_del_onclick.tpl"}
-
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_container_name = "{$labels.warning_empty_testsuite_name|escape:'javascript'}";
 var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
@@ -99,7 +96,7 @@ function validateForm(f)
 </head>
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('name')">
-{config_load file="input_dimensions.conf" section="containerEdit"} {* Constant definitions *}
+{config_load file="input_dimensions.conf" section="containerEdit"}
 
 <h1 class="title">{$parent_info.description}{$smarty.const.TITLE_SEP}{$parent_info.name|escape}</h1>
 

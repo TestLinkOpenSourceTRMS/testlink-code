@@ -23,7 +23,6 @@ Purpose: smarty template - edit test specification: test case
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 
-{include file="inc_del_onclick.tpl"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 <script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
@@ -41,7 +40,6 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 </script>
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title|escape:'javascript'}";
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";

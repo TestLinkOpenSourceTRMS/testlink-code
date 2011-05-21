@@ -25,11 +25,11 @@ Purpose: smarty template - View defined roles
 {lang_get s='delete' var="del_msgbox_title"}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" enableTableSorting="yes"}
-{include file="inc_del_onclick.tpl"}
+{include file="inc_action_onclick.tpl"}
 
 <script type="text/javascript">
-/* All this stuff is need for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
+/* All this stuff is need for logic contained in inc_action_onclick.tpl */
+var target_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 </script>
 
 </head>
@@ -98,7 +98,7 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 				       <img style="border:none;cursor: pointer;"
 		  				            title="{$labels.alt_delete_role}"
 		  				            alt="{$labels.alt_delete_role}"
-		 					            onclick="delete_confirmation({$role->dbID},'{$role->getDisplayName()|escape:'javascript'|escape}',
+		 					            onclick="action_confirmation({$role->dbID},'{$role->getDisplayName()|escape:'javascript'|escape}',
 		 					                                         '{$del_msgbox_title}','{$warning_msg}');"
 		  				            src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
 					{else}

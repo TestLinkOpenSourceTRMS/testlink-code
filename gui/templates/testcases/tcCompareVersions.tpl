@@ -1,15 +1,13 @@
 {*
-
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
- 
-Purpose: smarty template - compare testcase versions
 
-Revisions:
+Compare testcase versions
+ 
+@filesource	tcCompareVersions.tpl
+
+@internal revisions
 20110107 - asimon - added daisydiff (html diff engine which handles tags well)
 *}
-
-{include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
-{include file="inc_del_onclick.tpl"}
 
 {lang_get var="labels"
           s="select_versions,title_compare_versions_tc,version,compare,modified,modified_by,
@@ -18,11 +16,11 @@ Revisions:
           warning_selected_versions, warning_same_selected_versions,
           use_html_code_comp,use_html_comp,diff_method"}
 
+{include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/diff/diff.css">
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/daisydiff/css/diff.css">
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_context = "{$labels.warning_empty_context|escape:'javascript'}";
 var warning_context_range = "{$labels.warning_context_range|escape:'javascript'}";

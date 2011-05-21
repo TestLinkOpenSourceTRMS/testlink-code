@@ -20,7 +20,6 @@ Purpose: smarty template - edit test specification: containers
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$editorType}
-{include file="inc_del_onclick.tpl"}
 
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
@@ -34,7 +33,6 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 </script>
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_container_name = "{$labels.warning_empty_testsuite_name|escape:'javascript'}";
 var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";

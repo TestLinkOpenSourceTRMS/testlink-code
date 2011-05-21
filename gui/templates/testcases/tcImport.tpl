@@ -18,7 +18,6 @@ Purpose: smarty template - manage import of test cases and test suites
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_del_onclick.tpl"}
 </head>
 <body>
 

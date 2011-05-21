@@ -27,43 +27,38 @@ Purpose: smarty template - view test specification containers
 	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name,
 	           testsuite_operations, testcase_operations'}
 
-{assign var="container_id" value=$gui->container_data.id}
-{assign var="tproject_id" value=$gui->tproject_id}
+{$container_id=$gui->container_data.id}
+{$tproject_id=$gui->tproject_id}
 
-{assign var="tcImportAction"
-        value="lib/testcases/tcImport.php?tproject_id=$tproject_id&containerID=$container_id"}
-{assign var="importToTProjectAction"  value="$basehref$tcImportAction&amp;bIntoProject=1&amp;useRecursion=1&amp;"}
-{assign var="importToTSuiteAction"  value="$basehref$tcImportAction&amp;useRecursion=1"}
-{assign var="importTestCasesAction"  value="$basehref$tcImportAction"}
-{assign var="tcExportAction"
-        value="lib/testcases/tcExport.php?tproject_id=$tproject_id&containerID=$container_id"}
-{assign var="exportTestCasesAction"  value="$basehref$tcExportAction"}
-{assign var="tsuiteExportAction" value="$basehref$tcExportAction&amp;useRecursion=1"}
+{$tcImportAction="lib/testcases/tcImport.php?tproject_id=$tproject_id&containerID=$container_id"}
+{$importToTProjectAction="$basehref$tcImportAction&amp;bIntoProject=1&amp;useRecursion=1&amp;"}
+{$importToTSuiteAction="$basehref$tcImportAction&amp;useRecursion=1"}
+{$importTestCasesAction="$basehref$tcImportAction"}
+{$tcExportAction="lib/testcases/tcExport.php?tproject_id=$tproject_id&containerID=$container_id"}
+{$exportTestCasesAction="$basehref$tcExportAction"}
+{$tsuiteExportAction="$basehref$tcExportAction&amp;useRecursion=1"}
 
 {include file="inc_head.tpl" openHead="yes"}
-{assign var="ext_location" value=$smarty.const.TL_EXTJS_RELATIVE_PATH}
+{$ext_location=$smarty.const.TL_EXTJS_RELATIVE_PATH}
 <link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/ext-all.css" />
 
-{include file="inc_del_onclick.tpl" openHead="yes"}
 </head>
 
 <body>
 <h1 class="title">{$gui->page_title}{$tlCfg->gui_title_separator_1}{$gui->container_data.name|escape}</h1>
 
 <div class="workBack">
-
-{* BUGID 4067 *}
 {include file="inc_update.tpl" result=$gui->sqlResult item=$gui->level
          name=$gui->moddedItem.name refresh=$gui->refreshTree}
 
-{assign var="bDownloadOnly" value=true}
-{assign var="drawReorderButton" value=true}
-{assign var="drawReorderButton" value=false}
+{$bDownloadOnly=true}
+{$drawReorderButton=true}
+{$drawReorderButton=false}
 
 {if $gui->level == 'testproject'}
 
 	{if $gui->modify_tc_rights == 'yes'}
-		{assign var="bDownloadOnly" value=false}
+		{$bDownloadOnly=false}
 
 	<fieldset class="groupBtn">
 	<h2>{$labels.testsuite_operations}</h2>
@@ -254,7 +249,7 @@ Purpose: smarty template - view test specification containers
 	{include file="testcases/inc_testsuite_viewer_ro.tpl"}
 
 	{if $gui->modify_tc_rights eq 'yes'}
-		{assign var="bDownloadOnly" value=false}
+		{$bDownloadOnly=false}
 	{/if}
 	{include file="inc_attachments.tpl" 
 	         attach_attachmentInfos=$gui->attachmentInfos

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.24 2011/01/14 14:39:01 asimon83 Exp $
+@filesource	tcNew.tpl
 Purpose: smarty template - create new testcase
 
 20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
@@ -16,19 +16,15 @@ Purpose: smarty template - create new testcase
                         added testsuite_id for same logic
 
 20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
-20100103 - franciscom - refactoring to use $gui
-20091122 - franciscom - refactoring to use ext-js alert
-20070214 - franciscom - BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed.
- ----------------------------------------------------------------- *}
+*}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var='labels' s='btn_create,cancel,warning,title_new_tc,warning_required_cf,
                           warning_empty_tc_title,stay_here,warning_unsaved'}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
-{include file="inc_del_onclick.tpl"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 <script language="javascript" src="gui/javascript/tcase_utils.js" type="text/javascript"></script>
@@ -45,7 +41,6 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 </script>
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title|escape:'javascript'}";
 var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
@@ -112,7 +107,6 @@ function validateForm(f)
 <h1 class="title">{$gui->main_descr|escape}</h1>
 <div class="workBack">
 
-{* BUGID 4067 *}
 {include file="inc_update.tpl" result=$gui->sqlResult item="testcase" 
 name=$gui->name user_feedback=$gui->user_feedback refresh=$smarty.session.setting_refresh_tree_on_action}
 

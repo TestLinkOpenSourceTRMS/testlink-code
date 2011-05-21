@@ -1,11 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcAssign2Tplan.tpl,v 1.9 2010/11/13 11:07:58 franciscom Exp $
+
+@filesource	tcAssign2Tplan.tpl
 Purpose: manage assignment of A test case version to N test plans 
          while working on test specification 
  
-rev: BUGID 2378
-    
+@internal revisions    
 *}
 {lang_get var='labels' 
           s='testproject,test_plan,th_id,please_select_one_testplan,platform,btn_cancel,
@@ -13,12 +13,10 @@ rev: BUGID 2378
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
-{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
-	var check_msg="{$labels.please_select_one_testplan|escape:'javascript'}";
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var check_msg="{$labels.please_select_one_testplan|escape:'javascript'}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
 
 function check_action_precondition(container_id,action)
 {
@@ -34,7 +32,6 @@ function check_action_precondition(container_id,action)
 
 <body>
 <h1 class="title"> {$gui->pageTitle|escape} 
-	{*  {include file="inc_help.tpl" helptopic="hlp_planTcModified" show_help_icon=true} *}
 </h1>
 
 <div class="workBack">

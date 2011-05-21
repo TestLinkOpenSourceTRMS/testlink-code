@@ -1,17 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerMoveTC.tpl,v 1.9 2010/11/13 11:07:57 franciscom Exp $
+@filesource	containerMoveTC.tpl
 Purpose:
         Allow user to choose testcases inside the choosen testsuite,
         to copy or move.
 
-rev :
-     20100314 - franciscom - added feedback when op ok (used when copy test cases)
-                             and logic to refresh left side tree 
-     20090425 - franciscom - BUGID 2422 - add checbox for bulk operation
-     20080329 - contributed by Eugenia Drosdezki
-                refactored by franciscom
-
+@internal revisions
+20100314 - franciscom - added feedback when op ok (used when copy test cases)
+                        and logic to refresh left side tree 
 *}
 {lang_get var='labels'
           s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,
@@ -22,10 +18,8 @@ rev :
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
-{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 
 /*

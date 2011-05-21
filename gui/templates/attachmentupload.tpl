@@ -1,18 +1,16 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: attachmentupload.tpl,v 1.14 2010/10/26 20:11:42 franciscom Exp $ *}
-{* Purpose: smarty template - template for attachment upload dialog 
+{* TestLink Open Source Project - http://testlink.sourceforge.net/
+@filesource	attachmentupload.tpl
+template for attachment upload dialog 
 
-   rev :
-         20101026 - BUGID 3943: Escape all messages (string) that has to be used on Javascript code
-         20070310 - BUGID 732 
-
+@internal revisions
+20101026 - BUGID 3943: Escape all messages (string) that has to be used on Javascript code
 *}
 {lang_get var='labels'
           s='title_upload_attachment,enter_attachment_title,btn_upload_file,warning,enter_attachment_title,
              local_file,attachment_upload_ok,title_choose_local_file,btn_cancel,max_size_file_upload'}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
-{include file="inc_del_onclick.tpl"}
+{include file="inc_action_onclick.tpl"}
 
 
 <script type="text/javascript">

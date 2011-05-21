@@ -1,10 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfieldsImport.tpl,v 1.4 2010/11/13 09:09:36 franciscom Exp $
-Purpose: smarty template - manage import of custom fields
 
-rev: 
-  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+manage import of custom fields
+
+@filesource cfieldsImport.tpl
 *}
 
 {lang_get var="labels"
@@ -12,13 +11,12 @@ rev:
              max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
              btn_goback,not_imported,imported,btn_cancel,title_imp_tc_data'}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
-{include file="inc_del_onclick.tpl"}
+
 <script type="text/javascript">
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
 function validateForm(f)
@@ -86,6 +84,7 @@ function validateForm(f)
     		{* restrict file size - input name must be UPPER CASE ??? *}
     		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitKB}" /> 
     		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
+    		<input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
     		<input type="button" name="cancel" value="{$labels.btn_cancel}"
     		                     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}?tproject_id={$gui->tproject_id}'"
     		                     {else}  onclick="javascript:history.back();" {/if} />

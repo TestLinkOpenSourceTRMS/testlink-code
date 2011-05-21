@@ -56,15 +56,14 @@ rev :
              btn_add,btn_cancel,show_on_design,show_on_testplan_design"}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
-{include file="inc_del_onclick.tpl"}
+{include file="inc_action_onclick.tpl"}
 
 <script type="text/javascript">
-/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$managerURL}'+'?do_action=do_delete&cfield_id=';
+/* All this stuff is needed for logic contained in inc_action_onclick.tpl */
+var target_action=fRoot+'{$managerURL}'+'?do_action=do_delete&cfield_id=';
 </script>
 
 <script type="text/javascript">
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_cfield_name = "{$labels.warning_empty_cfield_name|escape:'javascript'}";
 var warning_empty_cfield_label = "{$labels.warning_empty_cfield_label|escape:'javascript'}";
@@ -502,7 +501,7 @@ function initShowOnExec(id_master,show_on_cfg)
 		{*  {if $gui->cfield_is_used eq 0} *}
 		{* Allow delete , just give warning *}
   		<input type="button" name="do_delete" value="{$labels.btn_delete}"
-  		       onclick="delete_confirmation({$gui->cfield.id},'{$gui->cfield.name|escape:'javascript'|escape}',
+  		       onclick="action_confirmation({$gui->cfield.id},'{$gui->cfield.name|escape:'javascript'|escape}',
   		                                    '{$del_msgbox_title}','{$warning_msg}');">
     {* {/if} *}
 

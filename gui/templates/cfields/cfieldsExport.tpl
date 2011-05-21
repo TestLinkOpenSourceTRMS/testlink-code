@@ -1,16 +1,16 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfieldsExport.tpl,v 1.5 2010/11/13 09:09:36 franciscom Exp $ 
-Purpose: smarty template - custom fields export
-rev:
-  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-  20100315 - franciscom - improvement on goback management
+
+custom fields export
+
+@filesource	cfieldsExport.tpl
+@internal revisions
+20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+20100315 - franciscom - improvement on goback management
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
-{include file="inc_del_onclick.tpl"}
-
 {lang_get var="labels" 
           s='btn_export,btn_cancel,warning,export_filename,file_type,
              view_file_format_doc,export_with_keywords,warning_empty_filename'}
@@ -38,7 +38,7 @@ function validateForm(f)
 <div class="workBack">
 {if $gui->do_it eq 1}
   <form method="post" id="export_xml" enctype="multipart/form-data" 
-        action="lib/cfields/cfieldsExport.php"
+        action="lib/cfields/cfieldsExport.php?tproject_id={$gui->tproject_id}"
         onSubmit="javascript:return validateForm(this);">
   
     <table>

@@ -1,24 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcDelete.tpl,v 1.14 2010/09/08 21:13:23 franciscom Exp $
+@filesource	tcDelete.tpl
 Purpose: smarty template - delete test case in test specification
 
-rev :
-    20100908 - franciscom - improvements on platform name display
-    20100808 - franciscom - typo error refresh_tree -> refreshTree
-    20080701 - franciscom - Found bug related to javascript:history.go(-1)
-                            1. create a new tcversion
-                            2. click on delete
-                            3. click on no
-                            4. A new version is created due to re-post of old data
-                            
-                            Till a good solution is found -> cancel button removed
-    
-    20070502 - franciscom - solved problems on delete due to name of local variable
-                            equal to name of variable assigned on php page.
-    
-    20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmation without Cancel or No option
-
+@internal revisions
+20100908 - franciscom - improvements on platform name display
+20100808 - franciscom - typo error refresh_tree -> refreshTree
 *}
 {lang_get var="labels"
           s='btn_yes_iw2del,btn_no,th_version,th_linked_to_tplan,title_delete_testcases,
@@ -63,11 +50,11 @@ rev :
     
 	  <p>{$labels.question_del_tc}</p>
 	  <form method="post" 
-	        action="lib/testcases/tcEdit.php?testcase_id={$gui->testcase_id}&tcversion_id={$gui->tcversion_id}">
+	        action="lib/testcases/tcEdit.php?tproject_id={$gui->tproject_id}&testcase_id={$gui->testcase_id}&tcversion_id={$gui->tcversion_id}">
 	  	<input type="submit" id="do_delete" name="do_delete" value="{$labels.btn_yes_iw2del}" />
 	  	<input type="button" name="cancel_delete"
-	  	                     onclick='javascript: location.href=fRoot+"lib/testcases/archiveData.php?version_id=undefined&edit=testcase&id={$gui->testcase_id}";'
-	  	                     value="{$labels.btn_no}" />
+	  	       onclick='javascript: location.href=fRoot+"lib/testcases/archiveData.php?tproject_id={$gui->tproject_id}&version_id=undefined&edit=testcase&id={$gui->testcase_id}";'
+	  	       value="{$labels.btn_no}" />
 	  </form>
   
   
@@ -97,11 +84,11 @@ rev :
     
 	  <p>{$labels.question_del_tc}</p>
 	  <form method="post" 
-	        action="lib/testcases/tcEdit.php?testcase_id={$gui->testcase_id}&tcversion_id={$gui->tcversion_id}">
+	        action="lib/testcases/tcEdit.php?tproject_id={$gui->tproject_id}&testcase_id={$gui->testcase_id}&tcversion_id={$gui->tcversion_id}">
 	  	<input type="submit" id="do_delete" name="do_delete" value="{$labels.btn_yes_iw2del}" />
 	  	<input type="button" name="cancel_delete"
-	  	                     onclick='javascript: location.href=fRoot+"lib/testcases/archiveData.php?version_id=undefined&edit=testcase&id={$gui->testcase_id}";'
-	  	                     value="{$labels.btn_no}" />
+	  	       onclick='javascript: location.href=fRoot+"lib/testcases/archiveData.php?tproject_id={$gui->tproject_id}&version_id=undefined&edit=testcase&id={$gui->testcase_id}";'
+               value="{$labels.btn_no}" />
 	  </form>
   
   {/if}	  

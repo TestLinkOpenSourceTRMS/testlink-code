@@ -11,16 +11,15 @@ Purpose: smarty template - platforms export
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
-{include file="inc_del_onclick.tpl"}
 
 {lang_get var="labels" 
           s='btn_export,btn_cancel,warning,export_filename,file_type,
              view_file_format_doc,warning_empty_filename'}
 
 <script type="text/javascript">
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
+
 function validateForm(f)
 {
   if (isWhitespace(f.export_filename.value)) 

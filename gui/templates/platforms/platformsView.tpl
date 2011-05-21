@@ -27,15 +27,15 @@ Purpose: smarty template - View all platforms
 
 <script type="text/javascript">
 <!--
-	/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-	var del_action=fRoot+'lib/platforms/platformsEdit.php?tproject_id='+{$gui->tproject_id};
-	del_action +='&doAction=do_delete&id=';
+/* All this stuff is needed for logic contained in inc_action_onclick.tpl */
+var target_action=fRoot+'lib/platforms/platformsEdit.php?tproject_id='+{$gui->tproject_id};
+target_action +='&doAction=do_delete&id=';
 //-->
 </script>
  
 </head>
 <body {$body_onload}>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$labels.menu_manage_platforms}</h1>
@@ -69,7 +69,7 @@ Purpose: smarty template - View all platforms
 				{if $gui->platforms[platform].linked_count eq 0}
 				<img style="border:none;cursor: pointer;"	alt="{$labels.alt_delete_platform}"
 						title="{$labels.alt_delete_platform}"	src="{$tlImages.delete}"
-						onclick="delete_confirmation({$gui->platforms[platform].id},
+						onclick="action_confirmation({$gui->platforms[platform].id},
 							      '{$gui->platforms[platform].name|escape:'javascript'|escape}', '{$del_msgbox_title|escape:'javascript'}','{$warning_msg|escape:'javascript'}');" />
 				{else}
 					<img style="border:none;cursor: pointer;" 	alt="{$labels.alt_delete_platform}"

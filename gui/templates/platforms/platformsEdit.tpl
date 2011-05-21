@@ -15,10 +15,8 @@ Purpose: smarty template - View all platforms
 
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
-{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_platform = "{$labels.warning_empty_platform|escape:'javascript'}";
 

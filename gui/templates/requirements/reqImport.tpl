@@ -4,7 +4,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	reqImport.tpl
 
 @internal revisions
-20101121 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 *}
 
 {lang_get var="labels" 
@@ -19,11 +18,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              check_uncheck_all_checkboxes,remove_tc,show_tcase_spec,
              check_uncheck_all_checkboxes_for_rm'}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_del_onclick.tpl"}
 </head>
 <body>
 <h1 class="title">{$gui->main_descr|escape}</h1>

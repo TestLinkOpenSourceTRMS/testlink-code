@@ -1,20 +1,20 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqExport.tpl,v 1.9 2010/11/13 09:21:54 franciscom Exp $ *}
-{* Purpose: smarty template - req export initial page *}
-{* revisions:
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+@filesource	reqExport.tpl
+req export initial page
+
+@internal revisions
 *}
 {lang_get var="labels"
           s="warning_empty_filename,title_req_export,warning,btn_export,btn_cancel,
              view_file_format_doc,req_spec,export_filename,file_type"}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
-{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-// BUGID 3943: Escape all messages (string)
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
 var alert_box_title = "{$labels.warning}";
 

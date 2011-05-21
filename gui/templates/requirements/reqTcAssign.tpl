@@ -1,22 +1,14 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-Id: reqAssign.tpl,v 1.6 2006/07/15 19:55:30 schlundus Exp $
-Purpose: smarty template - assign REQ to one test case
+@filesource	reqAssign.tpl
 
+assign REQ to one test case
+
+@internal revisions
 20110308 - Julian - BUGID 3410, BUGID 4190 - Smarty 3.0 compatibility
 20100403 - franciscom - SCOPE_SHORT_TRUNCATE
-20080512 - franciscom - added new parameter to manage "close window" button display.
-                        Is used when this feature is called on a new window, not from menu.
-                        
-20070617 - franciscom - manage checkboxes as arrays
-                        added js logic to toggle/untoggle all
-
-20070104 - franciscom -
-1. added feedback message when there are not requirements
-2. added control via javascrit on quantity of checked checkboxes
-
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels"
@@ -28,12 +20,10 @@ Purpose: smarty template - assign REQ to one test case
           
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
-{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
-	var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
 
 function check_action_precondition(form_id,action)
 {

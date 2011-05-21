@@ -1,23 +1,21 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-Filename: reqCompareVersions.tpl
+@filesource	reqCompareVersions.tpl
  
-Purpose: smarty template - compare requirement versions
+Compare requirement versions
 
-revisions
-	20110305 - franciscom - fixed 'error viewer' warnings due to missing labels
-	20110107 - asimon - added daisydiff (html diff engine which handles tags well)
-	20110106 - Julian - Only 1 column for last change including localized timestamp and editor
-	20101215 - Julian - Changed log message tooltip width to 500 (maximum) to avoid
-	                    visualization errors
-	20101213 - franciscom - BUGID 4056: Requirement Revisioning - tooltip added
-	20101211 - franciscom - BUGID 4056: Requirement Revisioning
-	20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  
-
+@internal revisions
+20110305 - franciscom - fixed 'error viewer' warnings due to missing labels
+20110107 - asimon - added daisydiff (html diff engine which handles tags well)
+20110106 - Julian - Only 1 column for last change including localized timestamp and editor
+20101215 - Julian - Changed log message tooltip width to 500 (maximum) to avoid
+                    visualization errors
+20101213 - franciscom - BUGID 4056: Requirement Revisioning - tooltip added
+20101211 - franciscom - BUGID 4056: Requirement Revisioning
+20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  
 *}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
-{include file="inc_del_onclick.tpl"}
 
 {lang_get var="labels"
           s="select_versions,title_compare_versions_req,version,compare,modified,modified_by,
@@ -29,7 +27,6 @@ revisions
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/diff/diff.css">
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_context = "{$labels.warning_empty_context|escape:'javascript'}";
 var warning_context_range = "{$labels.warning_context_range|escape:'javascript'}";

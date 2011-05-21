@@ -30,15 +30,13 @@ Purpose: smarty template - create / edit a req
              please_add_revision_log,suggest_create_revision_html,warning_suggest_create_revision,
              warning_unsaved'}
              
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
-{include file="inc_del_onclick.tpl"}
 <script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_req_docid = "{$labels.warning_empty_reqdoc_id|escape:'javascript'}";
 var warning_empty_req_title = "{$labels.warning_empty_req_title|escape:'javascript'}";

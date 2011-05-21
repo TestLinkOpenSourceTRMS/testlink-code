@@ -1,21 +1,18 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.22 2010/11/19 12:13:25 asimon83 Exp $
+@filesource	reqCreateTestCases.tpl
 
-   Purpose: smarty template - view a requirement specification
-   Author: Martin Havlat 
-
-   rev:
-   20101111 - Julian - BUGID 4003 - Minor Improvements to table layout
-   20100403 - francisco - adding #SCOPE_TRUNCATE#
-   20091209 - asimon - contrib for testcase creation, BUGID 2996
-   20110314 - Julian - BUGID 4317 - Added Contribution from user frl for an easy
-                                    way to set amount of test cases to create to
-                                    the number of test cases still required to
-                                    fully cover the requirement(s)
+@internal revisions
+20101111 - Julian - BUGID 4003 - Minor Improvements to table layout
+20100403 - francisco - adding #SCOPE_TRUNCATE#
+20091209 - asimon - contrib for testcase creation, BUGID 2996
+20110314 - Julian - BUGID 4317 - Added Contribution from user frl for an easy
+                                 way to set amount of test cases to create to
+                                 the number of test cases still required to
+                                 fully cover the requirement(s)
 *}
-{assign var="req_module" value='lib/requirements/'}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$req_module='lib/requirements/'}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get s='select_at_least_one_req' var="check_msg"}
@@ -27,10 +24,8 @@ $Id: reqCreateTestCases.tpl,v 1.22 2010/11/19 12:13:25 asimon83 Exp $
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
-{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 
 /*

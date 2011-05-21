@@ -1,17 +1,16 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-Id: reqAssign.tpl,v 1.6 2006/07/15 19:55:30 schlundus Exp $
+@filesource	reqAssign.tpl
 
 Author: Francisco Mancardi
 
-Purpose: Requirements Bulk Assignment
+Requirements Bulk Assignment
          
-rev: 
-    20100408 - franciscom - BUGID 3361 FatalError after trying to assign requirements to an empty test suite
-    20100403 - franciscom - added config_load
-    20081130 - franciscom - BUGID 1852 - Bulk Assignment Feature         
+@internal revisions
+20100408 - franciscom - BUGID 3361 FatalError after trying to assign requirements to an empty test suite
+20100403 - franciscom - added config_load
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels"
@@ -24,12 +23,10 @@ rev:
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
-{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
-	var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
 
 function check_action_precondition(form_id,action)
 {
@@ -42,6 +39,7 @@ function check_action_precondition(form_id,action)
 }
 </script>
 </head>
+
 <body>
 <h1 class="title">
 	{$gui->pageTitle|escape}

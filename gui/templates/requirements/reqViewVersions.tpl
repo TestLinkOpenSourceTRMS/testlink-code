@@ -37,13 +37,10 @@ Purpose: view requirement with version management
 
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
-{include file="inc_del_onclick.tpl"}
 
 {config_load file="input_dimensions.conf"}
 
 <script type="text/javascript">
-
-// BUGID 3927: Requirement can not be deleted due to JS error -> label has to be escaped
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var delete_rel_msgbox_msg = '{$delete_rel_msgbox_msg|escape:'javascript'}';
 var delete_rel_msgbox_title = '{$delete_rel_msgbox_title|escape:'javascript'}';

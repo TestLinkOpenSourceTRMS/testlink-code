@@ -38,7 +38,7 @@ Purpose: create/edit test case step
 {$goBackActionURLencoded=$gui->goBackAction|escape:'url'}
 {$url_args="tcEdit.php?doAction=editStep&tproject_id={$gui->tproject_id}&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
 {$url_args="$url_args&goback_url=$goBackActionURLencoded&step_id="}
-{$hrefEditStep"  value="$basehref$module$url_args"}
+{$hrefEditStep="$basehref$module$url_args"}
 
 {lang_get var="labels"
           s="warning_step_number_already_exists,warning,warning_step_number,

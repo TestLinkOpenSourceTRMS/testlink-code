@@ -237,7 +237,10 @@ class TLSmarty extends Smarty
         
         // -----------------------------------------------------------------------------
         // Images
+        // add in alpha order please
         $tlImages = array('api_info' => TL_THEME_IMG_DIR . "brick.png",
+                          'bullet' => TL_THEME_IMG_DIR . "slide_gripper.gif",
+                          'calendar' => TL_THEME_IMG_DIR . "calendar.gif",
                           'checked' => TL_THEME_IMG_DIR . "apply_f2_16.png",
                           'delete' => TL_THEME_IMG_DIR . "trash.png",
                           'delete_disabled' => TL_THEME_IMG_DIR . "trash_greyed.png",
@@ -245,13 +248,12 @@ class TLSmarty extends Smarty
         				  'edit' => TL_THEME_IMG_DIR . "icon_edit.png",
                           'export' => TL_THEME_IMG_DIR . "export.png",
                           'export_import' => TL_THEME_IMG_DIR . "export_import.png",
+        				  'event_info' => TL_THEME_IMG_DIR . "question.gif",
                           'import' => TL_THEME_IMG_DIR . "door_in.png",
         				  'info' => TL_THEME_IMG_DIR . "question.gif",
                           'insert_step' => TL_THEME_IMG_DIR . "insert_step.png",
                           'reorder' => TL_THEME_IMG_DIR . "arrow_switch.png",
-                          'sort' => TL_THEME_IMG_DIR . "sort_hint.png",
-                          'calendar' => TL_THEME_IMG_DIR . "calendar.gif",
-                          'bullet' => TL_THEME_IMG_DIR . "slide_gripper.gif");
+                          'sort' => TL_THEME_IMG_DIR . "sort_hint.png");
 
         $msg = lang_get('show_hide_api_info');
         $tlImages['toggle_api_info'] =  "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .

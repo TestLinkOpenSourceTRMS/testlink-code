@@ -1,18 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
 
+Add new build and show existing
+
 @filesource	buildEdit.tpl
-
-Purpose: smarty template - Add new build and show existing
-
 @internal revisions
-20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility 
-20101025 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
-20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
-20100820 - franciscom - refactored to use only $gui as interface from php code
-20100707 - asimon - BUGID 3406: addition of items for copying user
-                    assignments from other builds
-    
+
 *}
 {$tproject_id=$gui->tproject_id}
 {$tplan_id=$gui->tplan_id}
@@ -60,7 +53,7 @@ function validateForm(f)
 	<h2>{$gui->operation_descr|escape}
 		{if $gui->mgt_view_events eq "yes" && $gui->build_id > 0}
 				<img style="margin-left:5px;" class="clickable" 
-				     src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$gui->build_id}','builds')" 
+				     src="{$tlImages.event_info}" onclick="showEventHistoryFor('{$gui->build_id}','builds')" 
 				     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
 		{/if}
 	</h2>
@@ -96,7 +89,6 @@ function validateForm(f)
     <tr>
 		    <th style="background:none;">{$labels.release_date}</th>
 		    <td>
-		    {* BUGID 3716, BUGID 3930 *}
                 <input type="text" 
                        name="release_date" id="release_date" 
 				       value="{$gui->release_date}" />
@@ -108,7 +100,6 @@ function validateForm(f)
         </td>
 		</tr>
 
-	{* BUGID 3406 *}
 	{* show this only if we create a new build and there are other builds to copy from *}
 	{if !$gui->build_id && $gui->source_build.build_count}
 		<tr>

@@ -1,14 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
+
+create/edit Test Plan
+
 @filesource	planEdit.tpl
-
-Purpose: smarty template - create Test Plan
-
 @internal revisions
-20110322 - franciscom - Smarty 3.x compatibility issue
-20101226 - franciscom - BUGID 4088: Required parameter for custom fields
-20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-20101012 - franciscom - BUGID 3892: CF Types validation
 *}
 
 {lang_get var="labels"
@@ -16,8 +12,6 @@ Purpose: smarty template - create Test Plan
              testplan_th_name,testplan_th_notes,testplan_question_create_tp_from,
              opt_no,testplan_th_active,btn_testplan_create,btn_upd,cancel,
              show_event_history,testplan_txt_notes,warning_required_cf"}
-
-
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 
@@ -93,19 +87,19 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 </head>
 
 <body>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$gui->main_descr|escape}</h1>
 <div class="workBack">
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
-	{assign var='form_action' value='create'}
+	{$form_action='create'}
 	{if $gui->tplan_id != 0}
 		<h2>
 		{$labels.testplan_title_edit} {$gui->testplan_name|escape}
-		{assign var='form_action' value='update'}
+		{$form_action='update'}
 		{if $gui->grants->mgt_view_events eq "yes"}
-			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
+			<img style="margin-left:5px;" class="clickable" src="{$tlImages.event_info}" 
 			     onclick="showEventHistoryFor('{$gui->tplan_id}','testplans')" alt="{$labels.show_event_history}" 
 			     title="{$labels.show_event_history}"/>
 		{/if}
@@ -176,8 +170,6 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 	</table>
 
 	<div class="groupBtn">
-
-		{* BUGID 628: Name edit � Invalid action parameter/other behaviours if �Enter� pressed. *}
 		{if $gui->tplan_id eq 0}
 		  <input type="hidden" name="do_action" value="do_create" />
 		  <input type="submit" name="do_create" value="{$labels.btn_testplan_create}"
@@ -187,11 +179,10 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 		  <input type="hidden" name="do_action" value="do_update" />
 		  <input type="submit" name="do_update" value="{$labels.btn_upd}"
 		         onclick="do_action.value='do_update'"/>
-
 		{/if}
 
 		<input type="button" name="go_back" value="{$labels.cancel}"
-		                     onclick="javascript: location.href=fRoot+'lib/plan/planView.php';" />
+		                     onclick="javascript: location.href=fRoot+'lib/plan/planView.php?tproject_id={$gui->tproject_id}';" />
 
 	</div>
 

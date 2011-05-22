@@ -22,7 +22,7 @@
 
 /** TestLink Release version (MUST BE changed before the release day) */
 define('TL_FACE_DIR', 'baires'); 
-define('TL_VERSION', '2.0 (Development)');
+define('TL_VERSION', '2.0 (Buenos Aires - Development)');
 
 /** Last Database version that is used to give users feedback about necesssary upgrades
  * if you set this parameter also upgrade configCheck.php - checkSchemaVersion() */

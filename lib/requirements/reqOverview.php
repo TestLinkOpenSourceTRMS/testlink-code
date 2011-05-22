@@ -52,6 +52,7 @@ $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 $req_mgr = new requirement_mgr($db);
 
+
 $args = init_args($tproject_mgr);
 checkRights($db,$_SESSION['currentUser'],$args);
 
@@ -357,6 +358,7 @@ function init_gui(&$argsObj)
 	$gui->warning_msg = '';
 	$gui->tproject_name = $argsObj->tproject_name;
 	$gui->all_versions = $argsObj->all_versions;
+	$gui->tproject_id = $argsObj->tproject_id;
 	
 	return $gui;
 }

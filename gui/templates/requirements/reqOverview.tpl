@@ -1,18 +1,14 @@
 {* 
-   TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: reqOverview.tpl,v 1.11 2010/11/17 09:12:23 mx-julian Exp $
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+@filesource reqOverview.tpl,v 1.11 2010/11/17 09:12:23 mx-julian Exp $
    
-   Purpose: List requirements with (or without) Custom Fields Data in an ExtJS Table.
-   See BUGID 3227 for a more detailed description of this feature.
+List requirements with (or without) Custom Fields Data in an ExtJS Table.
+See BUGID 3227 for a more detailed description of this feature.
    
-   revisions:
-   20100823 - asimon - replaced "onchange" in form by "onclick" to get
-                       it working in IE too
-   20100821 - asimon - replaced "show all versions" button by checkbox as requested per e-mail
-   20100310 - asimon - refactoring
-   20100309 - asimon - initial commit
-   
- *}
+@internal revisions
+20100823 - asimon - replaced "onchange" in form by "onclick" to get it working in IE too
+20100821 - asimon - replaced "show all versions" button by checkbox as requested per e-mail
+*}
 
 {lang_get var="labels" 
           s='testproject_has_no_reqspec, testproject_has_no_requirements, generated_by_TestLink_on,

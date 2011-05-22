@@ -17,11 +17,6 @@
  *  20100726 - asimon - fixed bug in processTestPlan(): "All linked Test Case Versions are current" 
  *                      was always displayed on bulk update of linked versions 
  *                      even when there were newer versions
- *  20100628 - asimon - removal of constants from filter control class
- *  20160625 - asimon - refactoring for new filter features and BUGID 3516
- *  20100624 - asimon - CVS merge (experimental branch to HEAD)
- *	20100131 - franciscom - BUGID 3008/3109	
- *	20100123 - franciscom - BUGID 2652 + missing refactoring for table prefix doUpdate()
  *	
  */
 require_once("../../config.inc.php");
@@ -151,7 +146,7 @@ function init_args(&$tplanMgr)
 	if($args->tplan_id > 0)
 	{
 		$dummy = $tplanMgr->get_by_id($args->tplan_id);  
-		$args->tplan_name = $dumy['name'];
+		$args->tplan_name = $dummy['name'];
 	}
 
 	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?

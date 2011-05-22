@@ -61,7 +61,7 @@
 {if $control->draw_bulk_update_button}
     <input type="button" value="{$labels.btn_bulk_update_to_latest_version}"
            name="doBulkUpdateToLatest"
-           onclick="update2latest({$gui->tPlanID})" />
+           onclick="update2latest({$gui->tprojectID},{$gui->tplanID})" />
 {/if}
 
 {* hidden feature input (mainly for testcase edit when refreshing frame) *}

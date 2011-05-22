@@ -15,7 +15,7 @@ Scope: show test specification tree for Test Plan related features
                       them with new included template inc_tc_filter_panel.tpl
   20100417 - franciscom - BUGID 2498 - filter by test case spec importance
   20100410 - franciscom - BUGID 2797 - filter by test case execution type
-* ------------------------------------------------------------------------ *}
+*}
 
 {lang_get var="labels" 
           s='keywords_filter_help,btn_apply_filter,execution_type,importance,

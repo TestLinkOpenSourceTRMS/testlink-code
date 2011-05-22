@@ -6,10 +6,9 @@
  * Test navigator for Test Plan
  *
  *
+ * @filesource	planTCNavigator.php
  * @package 	TestLink
- * @author 		Martin Havlat
- * @copyright 	2003-2009, TestLink community
- * @version    	CVS: $Id: planTCNavigator.php,v 1.52 2010/10/03 15:34:15 franciscom Exp $
+ * @copyright 	2003-2011, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
@@ -37,6 +36,7 @@ $templateCfg = templateConfiguration();
 $assignment_mgr = new assignment_mgr($db); // BUGID 3406
 $control = new tlTestCaseFilterControl($db, 'plan_mode');
 $gui = initializeGui($db, $control, $assignment_mgr);
+
 $control->build_tree_menu($gui);
 
 $smarty = new TLSmarty();
@@ -63,7 +63,9 @@ function initializeGui(&$dbHandler, &$control, &$assignmentMgr) {
 	$gui = new stdClass();
 	
 	$gui->feature = $control->args->feature;
-    $gui->tPlanID = $control->args->testplan_id;
+    $gui->tplanID = $control->args->testplan_id;
+    $gui->tprojectID = $control->args->testproject_id;
+
 	$gui->title = lang_get('title_test_plan_navigator');
 	$gui->src_workframe = '';
 	$gui->additional_string = '';

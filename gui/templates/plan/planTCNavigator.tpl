@@ -1,26 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.35 2010/12/06 12:07:45 asimon83 Exp $
-Scope: show test plan tree for execution
 
-Revisions : 
-    20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
-    20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
-    20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  On JS expression SPACE is NEED 
-                          BEFORE Closing curly Bracket and AFTER opening curly Bracket
+show test plan tree for execution
 
-	20101027 - asimon - BUGID 3946: reqirement specification tree size
-    20100708 - aismon - BUGDI 3406 - removed functionality and labels from 3049
-	20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
-	                    them with new included template inc_tc_filter_panel.tpl
-	20100412 - asimon - BUGID 3379, changed displaying of some filters
-	20100302 - asimon - BUGID 3049, added button in filter frame
-	20100218 - asimon - BUGID 3049, changed root_href
-	20100202 - asimon - BUGID 2455, BUGID 3026, changed filtering 
-	                    panel is now ext collapsible panel
-	20081223 - franciscom - advanced/simple filters
-	20080311 - franciscom - BUGID 1427
-* ---------------------------------------------------------------------- *}
+@filesource	planTCNavigator.tpl
+@internal revisions
+20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
+20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
+*}
 
 {lang_get var="labels" 
           s='btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,title_navigator,
@@ -28,18 +15,17 @@ Revisions :
              filter_owner,TestPlan,test_plan,caption_nav_filters,
              build,filter_tcID,filter_on,filter_result,platform, include_unassigned_testcases'}
 
-    {include file="inc_head.tpl" openHead="yes"}
-    {include file="inc_ext_js.tpl" bResetEXTCss=1}
+{include file="inc_head.tpl" openHead="yes"}
+{include file="inc_ext_js.tpl" bResetEXTCss=1}
 
-	{* includes Ext.ux.CollapsiblePanel *}
-	<script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
-	{* BUGID 3301 *}
-	<script type="text/javascript">
-	{* BUGID 4077 *}
-		  treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
-		              loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
-		  Ext.onReady(function() {
-			Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+{* includes Ext.ux.CollapsiblePanel *}
+<script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
+<script type="text/javascript">
+{* BUGID 4077 *}
+treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
+            loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
+Ext.onReady(function() {
+	Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 	
 			// Use a collapsible panel for filter settings
 			// and place a help icon in ther header
@@ -70,7 +56,7 @@ Revisions :
 	    treeCfg.root_name = '{$gui->ajaxTree->root_node->name}';
 	    treeCfg.root_id = {$gui->ajaxTree->root_node->id};
 	    // BUGID 3049
-	    // treeCfg.root_href = "javascript:PL({$gui->tPlanID})";
+	    // treeCfg.root_href = "javascript:PL({$gui->tplanID})";
 	    // BUGID 3406
 	    treeCfg.root_href = '{$gui->ajaxTree->root_node->href}';
 	    treeCfg.children = {$gui->ajaxTree->children};
@@ -91,9 +77,11 @@ function pre_submit()
   args :
   returns:
 */
-function update2latest(id)
+function update2latest(tproject_id,tplan_id)
 {
-	var action_url = fRoot+'/'+menuUrl+"?doAction=doBulkUpdateToLatest&level=testplan&id="+id+args;
+	var action_url = fRoot+'/'+menuUrl+
+				     "?doAction=doBulkUpdateToLatest&level=testplan&id="+tplan_id+
+				     '&tproject_id=' + tproject_id + args;
 	parent.workframe.location = action_url;
 }
 </script>

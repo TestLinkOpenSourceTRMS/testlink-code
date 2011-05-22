@@ -37,6 +37,7 @@ $level = null;
 $opt_cfg=new stdClass();
 $opt_cfg->js_ot_name = 'ot';
 
+$assign_gui = true;
 $args = init_args($tree_mgr,$opt_cfg);
 
 
@@ -226,11 +227,13 @@ switch($action)
 
     case 'delete_testcases':
         $args->refreshTree = false;
+    	$assign_gui = false;
     	deleteTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$tsuite_mgr,$tcase_mgr,$args);
     	break;
 
     case 'do_delete_testcases':
         $args->refreshTree = true;
+    	$assign_gui = false;
         doDeleteTestCases($db,$args->tcaseSet,$tcase_mgr);
     	deleteTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$tsuite_mgr,$tcase_mgr,$args,
     						  lang_get('all_testcases_have_been_deleted'));
@@ -278,7 +281,10 @@ switch($action)
 
 if($the_tpl)
 {
-    $smarty->assign('gui', $gui);
+	if( $assign_gui )
+	{
+    	$smarty->assign('gui', $gui);
+    }
 	$smarty->assign('refreshTree',$refreshTree && $args->refreshTree);
 	$smarty->display($template_dir . $the_tpl);
 }
@@ -1031,8 +1037,10 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 	$guiObj->objectID = $containerID;
 	$guiObj->object_name = $containerName;
 	$guiObj->refreshTree = $argsObj->refreshTree;
+	$guiObj->tproject_id = $argsObj->tproject_id;
 
 	$smartyObj->assign('gui', $guiObj);
+	return false;
 }
 
 

@@ -1,7 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
 
-
 Viewer for massive delete of test cases inside a test suite
 
 @filesource containerDeleteTC.tpl

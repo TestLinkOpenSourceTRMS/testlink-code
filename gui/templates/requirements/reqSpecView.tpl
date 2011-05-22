@@ -1,23 +1,11 @@
-i{* 
+{* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
 
-Purpose: view a requirement specification
+view a requirement specification
 
 @filesource	reqSpecView.tpl
-@author		Martin Havlat
-
 @internal revisions
 20110320 - franciscom - BUGID 4321: Requirement Spec - add option to print single Req Spec
-20110305 - franciscom - unable to load buttons_template due to path problem
-						probably related to Smarty 3.0 compatibility
-20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
-                                inside a req spec (recursively)
-20101017 - franciscom - image access refactored (tlImages)
-20101008 - asimon - BUGID 3311
-20101006 - asimon - BUGID 3854
-20100810 - asimon - BUGID 3317: disabled total count of requirements by default
-20100321 - franciscom - req_spec_import/export url
 *}
 {lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,title_last_mod,
 						  title_created,no_records_found"}

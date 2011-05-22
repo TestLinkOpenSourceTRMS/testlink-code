@@ -49,7 +49,7 @@ Purpose: smarty template - delete containers in test specification
 		
 			<input  type="button" name="cancel_delete_testsuite" value="{$labels.btn_no}"
 					onclick='javascript: location.href=fRoot+
-					"lib/testcases/archiveData.php?&amp;edit=testsuite&amp;id={$objectID}";' />
+					"lib/testcases/archiveData.php?tproject_id={$gui->tproject_id}&edit=testsuite&id={$objectID}";' />
 		{/if}
 	</form>
 {/if}

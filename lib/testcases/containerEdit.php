@@ -56,7 +56,13 @@ $opt_cfg=new stdClass();
 $opt_cfg->js_ot_name = 'ot';
 
 $args = init_args($tree_mgr,$opt_cfg);
+
+
 $gui = new stdClass();
+$gui->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id={$args->tproject_id} " .
+				 		 ' target="mainframe" class="bold" ' .
+   			  	 		 ' title="' . lang_get('menu_manage_keywords') . '"';
+
 $gui->tproject_id = $args->tproject_id;
 $gui->refreshTree = $args->refreshTree;
 
@@ -144,7 +150,11 @@ switch($action)
 	case 'new_testsuite':
 		keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list);
 		$smarty->assign('opt_cfg', $opt_cfg);
+		
+		$gui->containerID = $args->containerID;
+		$gui->tproject_id = $args->tproject_id;
 		$smarty->assign('gui', $gui);
+		
 		$tsuite_mgr->viewer_edit_new($args->tproject_id,$smarty,$template_dir,$webEditorHtmlNames,$oWebEditor,$action,
 		                             $args->containerID, $args->testsuiteID,null,$webEditorTemplateKey);
 		break;
@@ -207,7 +217,11 @@ switch($action)
         $assignedKeywords = $op['status'] ? "" : $args->assigned_keyword_list;
         keywords_opt_transf_cfg($opt_cfg, $assignedKeywords);
       	$smarty->assign('opt_cfg', $opt_cfg);
+      	
+		$gui->containerID = $args->containerID;
+		$gui->tproject_id = $args->tproject_id;
       	$smarty->assign('gui', $gui);
+
   	    $tsuite_mgr->viewer_edit_new($args->tproject_id,$smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, 
   	    							 $action,$args->containerID, null,$messages,
 	                                 $webEditorTemplateKey,$userInput);
@@ -475,6 +489,7 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
   	$feedback_msg = '';
 	$system_message = '';
   	$testcase_cfg = config_get('testcase_cfg');
+	$can_delete = 1;
 
 	if($argsObj->bSure)
 	{
@@ -496,6 +511,7 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
 		$map_msg['warning'] = null;
 		$map_msg['link_msg'] = null;
 		$map_msg['delete_msg'] = null;
+		
 		if(is_null($testcases) || count($testcases) == 0)
 		{
 			$can_delete = 1;
@@ -503,25 +519,26 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
 		else
 		{
 			$map_msg = build_del_testsuite_warning_msg($treeMgr,$tcaseMgr,$testcases,$argsObj->testsuiteID);
-			if( in_array('linked_and_executed', $map_msg['link_msg']) )
+			if( in_array('linked_and_executed', (array)$map_msg['link_msg']) )
 			{
 				$can_delete = $testcase_cfg->can_delete_executed;
 			}
 		}
 
-		// prepare to show the delete confirmation page
-		$smartyObj->assign('can_delete',$can_delete);
-		$smartyObj->assign('objectID',$argsObj->testsuiteID);
-		$smartyObj->assign('objectName', $argsObj->tsuite_name);
-		$smartyObj->assign('delete_msg',$map_msg['delete_msg']);
-		$smartyObj->assign('warning', $map_msg['warning']);
-		$smartyObj->assign('link_msg', $map_msg['link_msg']);
-	
 		$system_message = '';
 		if(!$can_delete && !$testcase_cfg->can_delete_executed)  
 		{
 			$system_message = lang_get('system_blocks_tsuite_delete_due_to_exec_tc');
 		}
+
+		// prepare to show the delete confirmation page
+		$smartyObj->assign('can_delete',$can_delete);
+		$smartyObj->assign('objectID', $argsObj->testsuiteID);
+		$smartyObj->assign('objectName', $argsObj->tsuite_name);
+		$smartyObj->assign('delete_msg',$map_msg['delete_msg']);
+		$smartyObj->assign('warning', $map_msg['warning']);
+		$smartyObj->assign('link_msg', $map_msg['link_msg']);
+	
 	}
 	$smartyObj->assign('system_message', $system_message);
 	$smartyObj->assign('page_title', lang_get('delete') . " " . lang_get('container_title_' . $level));

@@ -507,11 +507,11 @@ class testsuite extends tlObjectWithAttachments
 		
 		$the_tpl = $a_tpl[$action];
 		
-		$gui = new stdClass();
-		$gui->containerID = $parent_id;
-		$gui->tproject_id = $tproject_id;
-
-		$smarty->assign('gui', $gui);
+		// $gui = new stdClass();
+		// $gui->containerID = $parent_id;
+		// $gui->tproject_id = $tproject_id;
+		// $smarty->assign('gui', $gui);
+		
 		$smarty->assign('sqlResult', $internalMsg['result_msg']);
 		$smarty->assign('containerID',$parent_id);	 
 		$smarty->assign('user_feedback', $internalMsg['user_feedback'] );
@@ -533,7 +533,6 @@ class testsuite extends tlObjectWithAttachments
 	    	$webEditorData = $the_data;
 		}
 		
-	    // Custom fields - 20101012
 	    $cf_smarty = $this->html_table_of_custom_field_inputs($id,$parent_id,'design','',$userInput);
 		
 		// webeditor

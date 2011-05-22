@@ -376,7 +376,7 @@ var pF_delete_req_relation = delete_req_relation;
             {assign var="version_num" value=$my_req.version}
             {assign var="title" value=$labels.version}
             {assign var="title" value="$title $version_num"}
-            {assign var="div_id" value="v_$vid_"}
+            {assign var="div_id" value="v_{$vid}_"}
             {assign var="div_id" value="$div_id$version_num"}
             {assign var="memstatus_id" value="mem_$div_id"}
 

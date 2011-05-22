@@ -1,18 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	reqCompareVersions.tpl
- 
+
 Compare requirement versions
 
+@filesource	reqCompareVersions.tpl
 @internal revisions
 20110305 - franciscom - fixed 'error viewer' warnings due to missing labels
 20110107 - asimon - added daisydiff (html diff engine which handles tags well)
 20110106 - Julian - Only 1 column for last change including localized timestamp and editor
-20101215 - Julian - Changed log message tooltip width to 500 (maximum) to avoid
-                    visualization errors
-20101213 - franciscom - BUGID 4056: Requirement Revisioning - tooltip added
-20101211 - franciscom - BUGID 4056: Requirement Revisioning
-20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  
 *}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
@@ -199,11 +194,13 @@ function validateForm() {
 	
 	<div class="workBack" style="width:97%;">
 	
-	<form target="diffwindow" method="post" action="lib/requirements/reqCompareVersions.php" name="req_compare_versions" id="req_compare_versions"  
-			onsubmit="return validateForm();" />			
+	<form target="diffwindow" method="post" action="lib/requirements/reqCompareVersions.php" 
+		  name="req_compare_versions" id="req_compare_versions"  
+		  onsubmit="return validateForm();" />			
 	
 	<p>
-		<input onClick="test();" type="submit" name="compare_selected_versions" value="{$labels.btn_compare_selected_versions}" />
+		<input onclick="test();" type="submit" name="compare_selected_versions" 
+			   value="{$labels.btn_compare_selected_versions}" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" onclick="javascript:history.back();" />
 	</p>
 	<br/>
@@ -259,6 +256,7 @@ function validateForm() {
 		       onclick="triggerField(this.form.context);"/> {$labels.show_all} 	</td></tr></table>
 	
 	<p>
+		<input type="hidden" id="tproject_id" name="tproject_id" value="{$gui->tproject_id}" />
 		<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
 		<input type="submit" name="compare_selected_versions" value="{$labels.btn_compare_selected_versions}" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" onclick="javascript:history.back();" />

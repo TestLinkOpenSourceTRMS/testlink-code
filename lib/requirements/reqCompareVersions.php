@@ -13,13 +13,14 @@
  *
  * @internal Revisions:
  * 20110107 - asimon - added daisydiff (html diff engine which handles tags well)
- * 20101212 - franciscom - BUGID 4056: Requirement Revisioning
- * 20100831 - Julian - added requirement title to page heading
  */
 
 require_once("../../config.inc.php");
 require_once("common.php");
+
+// code for different diff engines
 require('../../third_party/diff/diff.php');
+require('../../third_party/daisydiff/src/HTMLDiff.php');
 
 $templateCfg = templateConfiguration();
 testlinkInitPage($db);
@@ -35,6 +36,8 @@ $reqMgr = new requirement_mgr($db);
 $differ = new diff();
 $args = init_args();
 checkRights($db,$_SESSION['currentUser'],$args);
+
+
 
 $gui = initializeGui($db,$args,$labels,$reqMgr);
 
@@ -292,6 +295,7 @@ function initializeGui(&$dbHandler,&$argsObj,$lbl,&$reqMgr)
 	$guiObj->context = $argsObj->context;
 	$guiObj->version_short = $lbl['version_short'];
 	$guiObj->diff = null;
+	$guiObj->tproject_id = $argsObj->tproject_id;
 	return $guiObj;
 }
 

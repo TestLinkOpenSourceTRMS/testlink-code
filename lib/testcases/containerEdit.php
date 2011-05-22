@@ -15,24 +15,6 @@
  *	20101106 - franciscom - added check on $guiObj->testCaseSet and other variables that can be null
  *							to avoid event viewer warnings	when deleting test case in test suite 
  *							that has ONLY one test case.
- *
- *	20101012 - franciscom - BUGID 3890: Create Test Suite with same name that existent sibling - BLOCK
- *  20101011 - asimon - BUGID 3875
- *  20100916 - franciscom - BUGID 3778, 3779 - Option to reorder ALL CHILDREN Test Suites
- *  20100916 - franciscom - BUGID 3639 - reworked
- *  20100914 - franciscom - BUGID 3639 - reorderTestCasesDictionary()
- *  20100909 - franciscom - BUGID 3047: Deleting multiple TCs
- *  20100811 - asimon - BUGID 3669
- *  20100722 - asimon - BUGID 3406, removal of changes for 3049
- *  20100628 - asimon - removal of constants from filter control class
- *  20100625 - asimon - refactoring for new filter features and BUGID 3516
- *  20100624 - asimon - CVS merge (experimental branch to HEAD)
- *  20100314 - franciscom - added logic to refresh tree when copying N test cases 	
- * 						    added logic to get user choice regarding refresh tree from SESSION.
- *  20100223 - asimon - added removeTestcaseAssignments() for BUGID 3049
- *	20100204 - franciscom - changes in $tsuiteMgr->copy_to() call	
- *	20100202 - franciscom - BUGID 3130: TestSuite: Edit - rename Test Suite Name causes PHP Fatal Error
- *                          (bug created due change in show() interface
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -115,9 +97,12 @@ foreach ($a_actions as $the_key => $the_val)
 
 $lblkey = ($sortCriteria = config_get('testcase_reorder_by')) == 'NAME' ? '_alpha' : '_externalid';
 $btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
+$gui->btn_reorder_testcases = $btn_reorder_testcases;
+
+$gui->page_title = lang_get('container_title_' . $level);
 
 $smarty->assign('level', $level);
-$smarty->assign('page_title',lang_get('container_title_' . $level));
+$smarty->assign('page_title',$gui->page_title);
 
 if($init_opt_transfer)
 {
@@ -180,11 +165,11 @@ switch($action)
     	break;
 
     case 'do_move':
-    	moveTestSuite($smarty,$template_dir,$tproject_mgr,$args);
+    	moveTestSuite($smarty,$template_dir,$tproject_mgr,$args,$gui);
     	break;
 
     case 'do_copy':
-    	copyTestSuite($smarty,$template_dir,$tsuite_mgr,$args);
+    	copyTestSuite($smarty,$template_dir,$tsuite_mgr,$args,$gui);
     	break;
 
     case 'update_testsuite':
@@ -295,7 +280,6 @@ if($the_tpl)
 {
     $smarty->assign('gui', $gui);
 	$smarty->assign('refreshTree',$refreshTree && $args->refreshTree);
-
 	$smarty->display($template_dir . $the_tpl);
 }
 
@@ -698,7 +682,7 @@ function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
   returns:
 
 */
-function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj)
+function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj,$guiObj)
 {
     $exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
   	
@@ -714,7 +698,6 @@ function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj)
 	                                                 $argsObj->target_position,$exclude_node_types);
 	}
 	
-	$guiObj = new stdClass();
 	$guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
 	$guiObj->id = $argsObj->objectID;
 	
@@ -729,7 +712,7 @@ function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj)
   returns:
 
 */
-function moveTestSuite(&$smartyObj,$template_dir,&$tprojectMgr,$argsObj)
+function moveTestSuite(&$smartyObj,$template_dir,&$tprojectMgr,$argsObj,$guiObj)
 {
 	$exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
 
@@ -737,9 +720,7 @@ function moveTestSuite(&$smartyObj,$template_dir,&$tprojectMgr,$argsObj)
   	$tprojectMgr->tree_manager->change_child_order($argsObj->containerID,$argsObj->objectID,
                                                    $argsObj->target_position,$exclude_node_types);
 
-	$guiObj = new stdClass();
 	$guiObj->id = $argsObj->tproject_id;
-
   	$tprojectMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->tproject_id,null,'ok');
 }
 

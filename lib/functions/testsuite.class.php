@@ -16,20 +16,6 @@
  *                                 requirements to be assigned with wrong IDs when copying testprojects
  * 20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  * 20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
- * 20101009 - franciscom - exportTestSuiteDataToXML() - better checks on $optExport
- * 20100920 - franciscom - html_table_of_custom_field_values() changed keys on $formatOptions
- * 20100904 - franciscom - BUGID 3571 - get_by_name() interface changes
- *						   update() - interface changes	
- * 20100602 - franciscom - BUGID 3498 - get_by_name() - missing JOIN
- * 20100328 - franciscom - get_by_id() interface and return set changes
- *						   get_children() - new method - contribution - BUGID 2645
- * 20100315 - amitkhullar - Added options for CFields for Export.
- * 20100227 - franciscom - BUGID 0003233: After test suite edit, display of Test suite do not 
- *                         have upload button enabled for attachment
- * 20100210	- franciscom - keywords XML export refactored
- * 20100209 - franciscom - changes in delete_subtree_objects() call due to BUGID 3147 
- * 20100204 - franciscom - copy_to() refactoring	
- * 20100201 - franciscom - get_testcases_deep() - added external_id in output
  */
 
 /** include support for attachments */
@@ -446,7 +432,6 @@ class testsuite extends tlObjectWithAttachments
 						 		 ' target="mainframe" class="bold" ' .
         			  	 		 ' title="' . lang_get('menu_manage_keywords') . '"';
 		
-		
 		$smarty->assign('gui',$gui);
 		$smarty->display($template_dir . 'containerView.tpl');
 	}
@@ -511,7 +496,8 @@ class testsuite extends tlObjectWithAttachments
 		// $gui->containerID = $parent_id;
 		// $gui->tproject_id = $tproject_id;
 		// $smarty->assign('gui', $gui);
-		
+
+	
 		$smarty->assign('sqlResult', $internalMsg['result_msg']);
 		$smarty->assign('containerID',$parent_id);	 
 		$smarty->assign('user_feedback', $internalMsg['user_feedback'] );

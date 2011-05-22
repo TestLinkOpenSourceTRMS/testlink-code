@@ -6,21 +6,13 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - view test specification containers
 
 @internal revisions
-  20101202 - asimon - BUGID 4067: refresh tree problems
-  20101030 - francisco - show() BUGID 3937: No information when exporting all test suites when no test suites exists 
-  20101022 - eloff - BUGID 3917 - Work on buttons
-  20100914 - franciscom - BUGID 3639 Reoder Test Cases
-  20100910 - franciscom - BUGID 3047: Deleting multiple TCs
-  20010708 - asimon - BUGID 3406: removed buttons and labels for 3049 
-  20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-  20100212 - asimon - BUGID 3049 - added removing of testplan assignment feature
-  20100102 - franciscom - refactoring to use $gui
+20101202 - asimon - BUGID 4067: refresh tree problems
 *}
 {lang_get var='labels' 
           s='th_product_name,edit_testproject_basic_data,th_notes,test_suite,details,none,
              keywords,alt_del_testsuite, alt_edit_testsuite, alt_move_cp_testcases, alt_move_cp_testsuite, 
              btn_new_testsuite, btn_reorder,btn_execute_automatic_testcases,
-	           btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,
+             btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,
 	           btn_del_testsuites_bulk,btn_delete_testcases,btn_reorder_testcases_alpha,
 	           btn_reorder_testcases_externalid,btn_reorder_testsuites_alpha,
 	           btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 

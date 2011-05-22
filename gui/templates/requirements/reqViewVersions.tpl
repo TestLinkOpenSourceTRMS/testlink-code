@@ -172,9 +172,9 @@ var pF_delete_req_relation = delete_req_relation;
 {/if}
 </head>
 
-{assign var="my_style" value=""}
+{$my_style=""}
 {if $gui->hilite_item_name}
-    {assign var="my_style" value="background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
+    {$my_style="background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
 {/if}
 
 {assign var=this_template_dir value='./requirements'}
@@ -185,7 +185,7 @@ var pF_delete_req_relation = delete_req_relation;
     {include file="inc_help.tpl" helptopic="hlp_req_view" show_help_icon=true}
 </h1>
 {if !isset($refresh_tree)}
-  {assign var="refresh_tree" value=false}
+  {$refresh_tree=false}
 {/if}
 {include file="inc_update.tpl" user_feedback=$user_feedback refresh=$refresh_tree}
 
@@ -194,19 +194,19 @@ var pF_delete_req_relation = delete_req_relation;
 {if isset($gui->current_version)}
 {section name=idx loop=$gui->current_version}
 
-	  {assign var="reqID" value=$gui->current_version[idx][0].id}
+	  {$reqID=$gui->current_version[idx][0].id}
     {* Current active version *}
     {if $gui->other_versions[idx] neq null}
-        {assign var="my_delete_version" value=true}
+        {$my_delete_version=true}
     {else}
-        {assign var="my_delete_version" value=false}
+        {$my_delete_version=false}
     {/if}
   
   	{* is it frozen? *}
     {if $gui->current_version[idx][0].is_open}
-        {assign var="frozen_version" value=false}
+        {$frozen_version=false}
     {else}
-        {assign var="frozen_version" value=true}
+        {$frozen_version=true}
     {/if}
   
     <h2 style="{$my_style}">
@@ -237,13 +237,13 @@ var pF_delete_req_relation = delete_req_relation;
 		         args_reqspec_name=$gui->current_version[idx][0]['req_spec_title']}
 		
 		
-		{assign var="downloadOnly" value=false}
+		{$downloadOnly=false}
 		{if $gui->grants->req_mgmt != 'yes'}
-			{assign var="downloadOnly" value=true}
+			{$downloadOnly=true}
 		{/if}
 		
 		{if !isset($loadOnCancelURL)}
- 	      {assign var="loadOnCancelURL" value=""}
+ 	      {$loadOnCancelURL=""}
     {/if} 
 		         
 	{* BUGID 1748 - req relations *}
@@ -359,9 +359,9 @@ var pF_delete_req_relation = delete_req_relation;
 		         
 	{* Other Versions *}
     {if $gui->other_versions[idx] neq null}
-        {assign var="vid" value=$gui->current_version[idx][0].id}
-        {assign var="div_id" value="vers_$vid"}
-        {assign var="memstatus_id" value="mem_$div_id"}
+        {$vid=$gui->current_version[idx][0].id}
+        {$div_id="vers_$vid"}
+        {$memstatus_id="mem_$div_id"}
 
         {include file="inc_show_hide_mgmt.tpl" 
                  show_hide_container_title=$labels.other_versions
@@ -373,18 +373,18 @@ var pF_delete_req_relation = delete_req_relation;
         <div id="vers_{$vid}" class="workBack">
         
   	    {foreach from=$gui->other_versions[idx] item=my_req key=rdx}
-            {assign var="version_num" value=$my_req.version}
-            {assign var="title" value=$labels.version}
-            {assign var="title" value="$title $version_num"}
-            {assign var="div_id" value="v_{$vid}_"}
-            {assign var="div_id" value="$div_id$version_num"}
-            {assign var="memstatus_id" value="mem_$div_id"}
+            {$version_num=$my_req.version}
+            {$title=$labels.version}
+            {$title="$title $version_num"}
+            {$div_id="v_{$vid}_"}
+            {$div_id="$div_id$version_num"}
+            {$memstatus_id="mem_$div_id"}
 
            	{* is this version frozen? *}
     		    {if $my_req.is_open}
-        		  {assign var="frozen_version" value=false}
+        		  {$frozen_version=false}
     		    {else}
-        		  {assign var="frozen_version" value=true}
+        		  {$frozen_version=true}
     		    {/if}
            
             {include file="inc_show_hide_mgmt.tpl" 

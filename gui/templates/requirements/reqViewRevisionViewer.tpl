@@ -1,8 +1,8 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	reqViewRevisionViewer.tpl
 viewer for requirement revision
 
+@filesource	reqViewRevisionViewer.tpl
 @internal revisions:
 20110305 - franciscom - BUGID 4273: Option to print single requirement
 20110305 - franciscom - BUGID 4045: Smarty 3.0 compatibility
@@ -24,14 +24,15 @@ viewer for requirement revision
     {/if}
 	<h2>{$args_req.title|escape} </h2>
 {/if}
-{assign var="warning_edit_msg" value=""}
+{$warning_edit_msg=""}
 
 {* BUGID 4273: Option to print single requirement *}
 <div>
 	<form method="post" action="" name="reqPrinterFriendly">
 		<input type="button" name="printerFriendly" value="{$labels.btn_print_view}"
 		       onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},
-		                                          {$args_req.revision},'lib/requirements/reqPrint.php');"/>
+		                                            {$args_req.revision},
+		                                            'lib/requirements/reqPrint.php?tproject_id={$args_gui->tproject_id}');"/>
 	</form>
 </div>
 

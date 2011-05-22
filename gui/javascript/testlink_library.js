@@ -1406,10 +1406,11 @@ function scrollToShowMe(oid) {
 /**
  * open a requirement in a popup window
  * 
+ * @param tproject_id Test project ID -> enviroment
  * @param req_id Requirement ID
  * @param anchor string with anchor name
  */
-function openReqRevisionWindow(item_id, anchor)
+function openReqRevisionWindow(tproject_id,item_id, anchor)
 {
 	var width = getCookie("ReqPopupWidth");
 	var height = getCookie("ReqPopupHeight");
@@ -1433,12 +1434,12 @@ function openReqRevisionWindow(item_id, anchor)
 		height = "600";
 	}
 
-	feature_url += "?showReqSpecTitle=1&item_id=" + item_id + anchor;
+	feature_url += "?showReqSpecTitle=1&item_id=" + item_id + "&tproject_id=" + tproject_id + anchor;
 	windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
 
   // Warning YOU CAN NOT HAVE spaces on windows title IE does not like it
-	windowTitle = " ";
-	window.open(fRoot+feature_url,"Requirement Revision",windowCfg);
+	windowTitle = "Requirement_Revision";
+	window.open(fRoot+feature_url,windowTitle,windowCfg);
 }
 
 /**
@@ -1451,7 +1452,8 @@ function openReqRevisionWindow(item_id, anchor)
  * @param revision_id only used for requirements, null in case of testcases
  * @param print_action target url to open in popup
  */
-function openPrintPreview(type, id, version_id, revision, print_action) {
+function openPrintPreview(type, id, version_id, revision, print_action) 
+{
 	// configure window size using cookies or default values if there are no cookies
 	var width = getCookie("ReqPopupWidth");
 	var height = getCookie("ReqPopupHeight");

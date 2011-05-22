@@ -194,7 +194,8 @@ function validateForm() {
 	
 	<div class="workBack" style="width:97%;">
 	
-	<form target="diffwindow" method="post" action="lib/requirements/reqCompareVersions.php" 
+	<form target="diffwindow" method="post" 
+		  action="lib/requirements/reqCompareVersions.php" 
 		  name="req_compare_versions" id="req_compare_versions"  
 		  onsubmit="return validateForm();" />			
 	
@@ -228,7 +229,8 @@ function validateForm() {
 	        <td id="tooltip-{$req.item_id}">
         	{$req.log_message}
         	</td>
-        	<td style="text-align: left; cursor: pointer; color: rgb(0, 85, 153);" onclick="javascript:openReqRevisionWindow({$req.item_id});">
+        	<td style="text-align: left; cursor: pointer; color: rgb(0, 85, 153);" 
+        		onclick="javascript:openReqRevisionWindow({$gui->tproject_id},{$req.item_id});">
 	            <nobr>{localize_timestamp ts = $req.timestamp}, {$req.last_editor}</nobr>
 	        </td>
 	    </tr>

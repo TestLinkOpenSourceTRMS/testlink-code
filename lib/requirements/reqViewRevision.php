@@ -9,7 +9,7 @@
  * @copyright 	2008-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- *	@internal revisions
+ * @internal revisions
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -69,6 +69,7 @@ function initialize_gui(&$dbHandler,$argsObj)
     $gui = $commandMgr->initGuiBean();
     $gui->req_cfg = config_get('req_cfg');
     $gui->tproject_name = $argsObj->tproject_name;
+    $gui->tproject_id = $argsObj->tproject_id;
 
     $gui->grants = new stdClass();
     $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");

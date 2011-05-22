@@ -1,37 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.31 2010/11/17 08:52:39 mx-julian Exp $
-Purpose: 
-Author: franciscom
+@filespurce	inc_exec_show_tc_exec.tpl
 
-Rev:
-  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  - {literal} {/literal} REMOVED
-
-	20101008 - Julian - avoid warnings on event viewer
-	20100708 - Julian - BUGID 3587 - executions of closed builds cannot be deleted anymore
-	                               - bugs cannot be added or deleted if build is closed
-	                               - new greyed icons used
-	20100617 - eloff - Row coloring in execution history should include notes and cf in same color
-	20100614 - eloff - BUGID 3522 - fix issue with multiple note panels
-	20100426 - Julian - BUGID 2454 - minor changes to properly show executions if exec
-						history was configured
-						
-	20100310 - Julian - BUGID 2454 - now showing lock-symbol for attachment column if
-						build is closed
-						
-    20090909 - franciscom - removed code regarding $gui->grants->edit_exec_notes,
-                            that on 1.11 was commented, and on 1.12 uncommented
-                            creating an empty row with icon and link to edit notes.
-                            
-    20090901 - franciscom - exec_cfg->steps_results_layout
-    20090713 - franciscom - refactoring of edit execution.
-                            layout changed, added check on buid is open
-    20090526 - franciscom -  inc_exec_test_spec.tpl, added args_testplan_design_time_cf
-    20090418 - franciscom - deleted user crash
-    20090418 - franciscom - BUGID 2364 - access to test spec to edit it.
-    20090212 - amitkhullar - BUGID 2068
+@internal revisions
 *}	
- 	{foreach item=tc_exec from=$gui->map_last_exec}
+{foreach item=tc_exec from=$gui->map_last_exec}
 
     {assign var="tc_id" value=$tc_exec.testcase_id}
 	  {assign var="tcversion_id" value=$tc_exec.id}
@@ -89,7 +62,7 @@ Rev:
 		<div class="exec_tc_title">
 		{* BUGID *}
 		{if $gui->grants->edit_testcase}
-		<a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')">
+		<a href="javascript:openTCaseWindow({$gui->tproject_id},{$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')">
 		<img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png"  title="{$labels.show_tcase_spec}">
 		</a>
 		{/if}

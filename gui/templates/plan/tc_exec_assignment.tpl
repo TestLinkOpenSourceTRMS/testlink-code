@@ -179,7 +179,7 @@ function check_action_precondition(container_id,action)
             	    		{$gui->testCasePrefix|escape}{$tcase.external_id|escape}
             	    	</td>
             	    	<td title="{$labels.show_tcase_spec}">
-            	    		&nbsp;<a href="javascript:openTCaseWindow({$tcase.id})"><strong>{$tcase.name|escape}</strong></a>
+            	    		&nbsp;<a href="javascript:openTCaseWindow({$gui->tproject_id},{$tcase.id})"><strong>{$tcase.name|escape}</strong></a>
             	    		&nbsp;{$gsmarty_gui->role_separator_open} {$tcase.tcversions[$tcase.linked_version_id]}
             	    		{$gsmarty_gui->role_separator_close}
             	    	</td>

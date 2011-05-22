@@ -40,7 +40,7 @@ rev: 20081109 - franciscom - BUGID 512
                 <tr>
        			      <td>
         				    {$gui->testCasePrefix|escape}{$tcase.external_id|escape} &nbsp;
-         				     <a href="javascript:openTCaseWindow({$tcID})">{$tcase.name|escape}</a>
+         				     <a href="javascript:openTCaseWindow({$gui->tproject_id},{$tcID})">{$tcase.name|escape}</a>
        			      </td>
                 </tr>
            {/foreach}

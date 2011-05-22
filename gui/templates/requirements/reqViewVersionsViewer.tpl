@@ -165,7 +165,7 @@ viewer for requirement
 	  {section name=row loop=$args_req_coverage}
 	    <span> {* BUGID 2521 *}
 	    {* replaced openTCaseWindow() by openTCEditWindow() to save popup size *}
-	    <a href="javascript:openTCEditWindow({$args_req_coverage[row].id})">
+	    <a href="javascript:openTCEditWindow({$gui->tproject_id},{$args_req_coverage[row].id})">
 	    {$args_gui->tcasePrefix|escape}{$args_gui->glueChar}{$args_req_coverage[row].tc_external_id}{$args_gui->pieceSep}{$args_req_coverage[row].name|escape}</a>
 	    </span><br />
 	   {sectionelse}

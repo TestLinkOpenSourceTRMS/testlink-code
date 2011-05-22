@@ -290,7 +290,7 @@ Ext.onReady(function(){
                     {/if}
       			     
       			        <td id="tooltip-{$tcID}">
-       					      {$gui->testCasePrefix|escape}{$tcase.external_id}: <a href="javascript:openTCaseWindow({$tcID})">{$tcase.name|escape}</a>
+       					      {$gui->testCasePrefix|escape}{$tcase.external_id}: <a href="javascript:openTCaseWindow({$gui->tproject_id},{$tcID})">{$tcase.name|escape}</a>
       			        </td>
                   	<td>
                   	{if $gui->priorityEnabled}

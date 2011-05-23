@@ -1,10 +1,10 @@
-// TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: checkboxes.js,v 1.12 2010/08/10 21:55:39 erikeloff Exp $ 
-//
-//
-// rev :
-//      20100209 - francisco- BUGID 0003150: "Bulk user assignment" on "Assign testcase execution" doesn't work anymore
-//
+/*
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+
+IMPORTANT NOTICE: ext js needed due to 
+
+@filesource checkboxes.js
+*/
 
 /*
   function: 
@@ -96,8 +96,6 @@ function checkOrUncheckAll(ml,bCheck)
   
   returns: number
 
-  rev :
-        20070102 - franciscom
 */
 function checkbox_count_checked(container_id)
 {
@@ -226,8 +224,7 @@ function checkbox_get_checked(oid)
 
 /*
   function:  cs_all_checkbox_in_div
-             Change Status of all checkboxes with a id prefix
-             on a div.
+             Change Status of all checkboxes with a id prefix  on a div.
 
   args :
         div_id: id of the div container of checkboxs
@@ -253,7 +250,7 @@ function cs_all_checkbox_in_div(div_id, cb_id_prefix,memory_id)
 		if(inputs[idx].type == "checkbox" && 
 		  (inputs[idx].id.indexOf(cb_id_prefix)==0) )
 		{
-      inputs[idx].checked = (memory.value == "1") ? false : true;
+      		inputs[idx].checked = (memory.value == "1") ? false : true;
 		}	
 	} // for
 	
@@ -283,4 +280,3 @@ function cs_all_checkbox_in_div_with_platform(div_id, prefix, platform_id) {
 		});
 	check_state[state] = !check_state[state];
 }
-

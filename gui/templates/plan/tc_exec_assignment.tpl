@@ -1,20 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-@filesource	tc_exec_assignment.tpl
+
 generate the list of TC that can be removed from a Test Plan 
 
+@filesource	tc_exec_assignment.tpl
 @internal revisions
-20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-20101030 - amitkhullar - Adjusted the Checkbox column width
-20100927 - franciscom - Added ext-js extension to transform tables in ext-js grid
-                        BUGID 3668: Test Case EXECUTION Assignment Page not displayed properly
-                        <div id="header-wrap" -> added height:110px;
-                        added z-index to avoid problems with scrolling when using EXT-JS and header-wrap
-20100926 - franciscom - HTML improvements using <thead>,<tbody>
-20100822 - franciscom - BUGID 3698
-20100709 - asimon - BUGID 3406 - changed assignment logic to operate on build instead of testplan level
-20100209 - franciscom - minor code layout refactoring
-20100121 - eloff - BUGID 3078 - buttons always visible on top
 *}
 
 {lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
@@ -41,27 +31,11 @@ function check_action_precondition(container_id,action)
 	}
 	return true;
 }
-
-// 20100927 - franciscom
-// Ext.onReady(function()
-// {
-//   // create the grid
-//   var idx=0;
-//   var gridSet = new Array();
-//   for(idx=1; idx <= loop2do; idx++)
-//   {
-//     gridSet[idx] = new Ext.ux.grid.TableGrid("the-table-"+idx, {
-//                        stripeRows: true // stripe alternate rows
-//                    });
-//     gridSet[idx].render();
-//   }
-// });
-
 </script>
 
 </head>
 {* prefix for checkbox name ADD*}   
-{assign var="add_cb" value="achecked_tc"}
+{$add_cb="achecked_tc"}
 
 <body class="fixedheader">
 <form id='tc_exec_assignment' name='tc_exec_assignment' method='post'>
@@ -82,7 +56,8 @@ function check_action_precondition(container_id,action)
 			{else}
 			<input type="hidden" id="select_platform" value="0">
 			{/if}
-			<button onclick="cs_all_checkbox_in_div_with_platform('tc_exec_assignment', '{$add_cb}', Ext.get('select_platform').getValue()); return false">{$labels.btn_do}</button>
+			<button onclick="cs_all_checkbox_in_div_with_platform('tc_exec_assignment', '{$add_cb}', 
+																														document.getElementById('select_platform').value); return false">{$labels.btn_do}</button>
 		</div>
 		<div>
 			{$labels.user_bulk_assignment}
@@ -91,7 +66,8 @@ function check_action_precondition(container_id,action)
 			</select>
 			<input type='button' name='bulk_user_assignment' id='bulk_user_assignment'
 				onclick='if(check_action_precondition("tc_exec_assignment","default"))
-						        set_combo_if_checkbox("tc_exec_assignment","tester_for_tcid_",Ext.get("bulk_tester_div").getValue())'
+						        set_combo_if_checkbox("tc_exec_assignment","tester_for_tcid_",
+						        											document.getElementById("bulk_tester_div").value)'
 				value="{$labels.btn_do}" />
 		</div>
 		<div>
@@ -111,8 +87,8 @@ function check_action_precondition(container_id,action)
 	  {assign var=table_counter value=0}
 	  {assign var=top_level value=$gui->items[0].level}
 	  {foreach from=$gui->items item=ts key=idx name="div_drawing"}
-	    {assign var="ts_id" value=$ts.testsuite.id}
-	    {assign var="div_id" value="div_$ts_id"}
+	    {$ts_id=$ts.testsuite.id}
+	    {$div_id="div_$ts_id"}
 	    {if $ts_id != ''}
 	      <div id="{$div_id}" style="margin-left:{$ts.level}0px; border:1;">
         <br />
@@ -128,7 +104,7 @@ function check_action_precondition(container_id,action)
 
     	  {if $ts.write_buttons eq 'yes'}
           {if $ts.testcase_qty gt 0}
-	          {assign var="table_counter" value=$table_counter+1}
+	          {$table_counter=$table_counter+1}
             <table cellspacing="0" style="font-size:small;" width="100%" id="the-table-{$table_counter}">
             {* ---------------------------------------------------------------------------------------------------- *}
 			      {* Heading *}
@@ -159,9 +135,9 @@ function check_action_precondition(container_id,action)
               {* loop over platforms *}
               {foreach from=$tcase.feature_id key=platform_id item=feature}
                 {if $tcase.linked_version_id != 0}
-                  {assign var="userID" value=0}
+                  {$userID=0}
            	    	{if isset($tcase.user_id[$platform_id])}
-            	    	  {assign var="userID" value=$tcase.user_id[$platform_id]} 
+            	    	  {$userID=$tcase.user_id[$platform_id]} 
                   {/if} 
             	    <tr>
             	    	<td>
@@ -192,7 +168,7 @@ function check_action_precondition(container_id,action)
             	    	{/if}
             	    	<td align="center">
             	    	{if isset($tcase.user_id[$platform_id])}
-            	    	  {assign var="userID" value=$tcase.user_id[$platform_id]} 
+            	    	  {$userID=$tcase.user_id[$platform_id]} 
             	    		{$gui->users[$userID]|escape}
             	    		{if $gui->users[$userID] != '' && $gui->testers[$userID] == ''}{$labels.can_not_execute}{/if}
             	    	{/if}
@@ -225,8 +201,8 @@ function check_action_precondition(container_id,action)
           {assign var=next_level value=$gui->items[$smarty.foreach.div_drawing.iteration].level}
       {/if}
       {if $ts.level gte $next_level}
-          {assign var="max_loop" value=$next_level}
-          {assign var="max_loop" value=$ts.level-$max_loop+1}
+          {$max_loop=$next_level}
+          {$max_loop=$ts.level-$max_loop+1}
           {section name="div_closure" loop=$gui->support_array max=$max_loop} </div> {/section}
       {/if}
       {if $smarty.foreach.div_drawing.last}</div> {/if}

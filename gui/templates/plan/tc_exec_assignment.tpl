@@ -4,7 +4,8 @@ $Id: tc_exec_assignment.tpl,v 1.35.2.1 2010/12/15 21:17:05 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
-	   20101030 - amitkhullar - Adjusted the Checkbox column width
+     20110523 - Julian - Added linked test case version to test case link
+     20101030 - amitkhullar - Adjusted the Checkbox column width
      20100927 - franciscom - Added ext-js extension to transform tables in ext-js grid
                              BUGID 3668: Test Case EXECUTION Assignment Page not displayed properly
                              <div id="header-wrap" -> added height:110px;
@@ -186,7 +187,7 @@ function check_action_precondition(container_id,action)
             	    		{$gui->testCasePrefix|escape}{$tcase.external_id|escape}
             	    	</td>
             	    	<td title="{$labels.show_tcase_spec}">
-            	    		&nbsp;<a href="javascript:openTCaseWindow({$tcase.id})"><strong>{$tcase.name|escape}</strong></a>
+            	    		&nbsp;<a href="javascript:openTCaseWindow({$tcase.id},{$tcase.linked_version_id})"><strong>{$tcase.name|escape}</strong></a>
             	    		&nbsp;{$gsmarty_gui->role_separator_open} {$tcase.tcversions[$tcase.linked_version_id]}
             	    		{$gsmarty_gui->role_separator_close}
             	    	</td>

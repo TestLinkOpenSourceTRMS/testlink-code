@@ -5,6 +5,7 @@ generate the list of TC that can be removed from a Test Plan
 
 @filesource	tc_exec_assignment.tpl
 @internal revisions
+20110523 - Julian - Added linked test case version to test case link
 *}
 
 {lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
@@ -57,7 +58,7 @@ function check_action_precondition(container_id,action)
 			<input type="hidden" id="select_platform" value="0">
 			{/if}
 			<button onclick="cs_all_checkbox_in_div_with_platform('tc_exec_assignment', '{$add_cb}', 
-																														document.getElementById('select_platform').value); return false">{$labels.btn_do}</button>
+																  document.getElementById('select_platform').value); return false">{$labels.btn_do}</button>
 		</div>
 		<div>
 			{$labels.user_bulk_assignment}
@@ -67,7 +68,7 @@ function check_action_precondition(container_id,action)
 			<input type='button' name='bulk_user_assignment' id='bulk_user_assignment'
 				onclick='if(check_action_precondition("tc_exec_assignment","default"))
 						        set_combo_if_checkbox("tc_exec_assignment","tester_for_tcid_",
-						        											document.getElementById("bulk_tester_div").value)'
+						        					  document.getElementById("bulk_tester_div").value)'
 				value="{$labels.btn_do}" />
 		</div>
 		<div>
@@ -155,7 +156,7 @@ function check_action_precondition(container_id,action)
             	    		{$gui->testCasePrefix|escape}{$tcase.external_id|escape}
             	    	</td>
             	    	<td title="{$labels.show_tcase_spec}">
-            	    		&nbsp;<a href="javascript:openTCaseWindow({$gui->tproject_id},{$tcase.id})"><strong>{$tcase.name|escape}</strong></a>
+            	    		&nbsp;<a href="javascript:openTCaseWindow({$gui->tproject_id},{$tcase.id},{$tcase.linked_version_id})"><strong>{$tcase.name|escape}</strong></a>
             	    		&nbsp;{$gsmarty_gui->role_separator_open} {$tcase.tcversions[$tcase.linked_version_id]}
             	    		{$gsmarty_gui->role_separator_close}
             	    	</td>

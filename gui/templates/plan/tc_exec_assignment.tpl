@@ -4,6 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 generate the list of TC that can be removed from a Test Plan 
 
 @internal revisions
+20110523 - Julian - Added linked test case version to test case link
 20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 20101030 - amitkhullar - Adjusted the Checkbox column width
 20100927 - franciscom - Added ext-js extension to transform tables in ext-js grid
@@ -179,7 +180,7 @@ function check_action_precondition(container_id,action)
             	    		{$gui->testCasePrefix|escape}{$tcase.external_id|escape}
             	    	</td>
             	    	<td title="{$labels.show_tcase_spec}">
-            	    		&nbsp;<a href="javascript:openTCaseWindow({$gui->tproject_id},{$tcase.id})"><strong>{$tcase.name|escape}</strong></a>
+            	    		&nbsp;<a href="javascript:openTCaseWindow({$gui->tproject_id},{$tcase.id},{$tcase.linked_version_id})"><strong>{$tcase.name|escape}</strong></a>
             	    		&nbsp;{$gsmarty_gui->role_separator_open} {$tcase.tcversions[$tcase.linked_version_id]}
             	    		{$gsmarty_gui->role_separator_close}
             	    	</td>

@@ -127,8 +127,8 @@ If you are upgrading from 1.9.1 NO DB upgrades will be needed.
    
  Always before login, after an upgrade/migration clear browser cookies.
 
-- Upgrade from 1.9.0 to 1.9.1/2
-To be able to use Testlink 1.9.1 with the new „Requirement Revisioning“ feature - 
+- Upgrade from 1.9.0 to 1.9.1+
+To be able to use Testlink 1.9.1+ with the new „Requirement Revisioning“ feature - 
 migration procedure requires some manual steps. 
 
 A.) Why does this release need manual steps on migration from 1.9.0?
@@ -136,7 +136,7 @@ A.) Why does this release need manual steps on migration from 1.9.0?
 Manual migration is simple and should not be a problem for anyone. 
 No data needs to be migrated – it only requires to alter some tables and create a single new table.
 
-B.) What steps have to be executed for migration from 1.9.0 to 1.9.1?
+B.) What steps have to be executed for migration from 1.9.0 to 1.9.1+?
 1. First of all make sure your testlink installation uses testlink 1.9.0 database scheme. 
 If you are still on Testlink 1.8.x use standard upgrade procedure.
 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: custom_config.inc.php.example,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2010/08/19 19:08:34 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2011/02/10 22:42:33 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink DEFINED BY USERS.
@@ -135,35 +135,57 @@
 
 //$g_log_level='DEBUG';
 
-// $tlCfg->results['status_code'] = array ( 
-//         "failed"        => 'f', 
-//         "blocked"       => 'b', 
-//         "passed"        => 'p', 
-//         "not_run"       => 'n', 
-//         "not_available" => 'x', 
-//         "unknown"       => 'u', 
-//         "all"           => 'a' 
-// ); 
-// 
-// $tlCfg->results['status_label'] = array( 
-//         "passed"                => "test_status_passed", 
-//         "failed"                => "test_status_failed", 
-//         "blocked"               => "test_status_blocked", 
-//         "not_run"               => "test_status_not_run", 
-// //    "all"                   => "test_status_all_status", 
-//         "not_available"    => "test_status_not_available", 
-// //      "unknown"          => "test_status_unknown" 
-// ); 
-// 
-// $tlCfg->results['status_label_for_exec_ui'] = array( 
-//         "passed"  => "test_status_passed", 
-//         "failed"  => "test_status_failed", 
-//         "blocked" => "test_status_blocked", 
-//         "not_run" => "test_status_not_run",
-//         "not_available" => "test_status_not_available" 
-// ); 
-// 
-// $tlCfg->results['default_status'] = "not_run"; 
+/** Define your own test status(es) by modifying
+ *   - $tlCfg->results['status_code'] (in this file)
+ *   - $tlCfg->results['status_label'] (in this file)
+ *   - $tlCfg->results['status_label_for_exec_ui'] (in this file)
+ *   - $tlCfg->results['charts']['status_colour'] (in this file)
+ *   - /locale/<your_language>/custom_strings.txt (see custom_strings.txt.example)
+ *   - /gui/themes/default/css/custom.css (see custom.css.example)
+ */
+
+// This Example shows how to add the status 'my_status'
+
+//$tlCfg->results['status_code'] = array (
+//	'failed'        => 'f',
+//	'blocked'       => 'b',
+//	'passed'        => 'p',
+//	'not_run'       => 'n',
+//	'not_available' => 'x',
+//	'unknown'       => 'u',
+//	'all'           => 'a',
+//	'my_status'     => 'm'
+//); 
+//
+//// For localization example see /locale/<your_language>/custom_strings.txt.example
+//$tlCfg->results['status_label'] = array(
+//	'not_run'       => 'test_status_not_run',
+//	'passed'        => 'test_status_passed',
+//	'failed'        => 'test_status_failed',
+//	'blocked'       => 'test_status_blocked',
+//	'my_status'     => 'test_status_my_status'
+////	'all'           => 'test_status_all_status',
+////	'not_available' => 'test_status_not_available',
+////	'unknown'       => 'test_status_unknown'
+//);
+//
+//$tlCfg->results['status_label_for_exec_ui'] = array(
+//	'not_run'   => 'test_status_not_run',
+//	'passed'    => 'test_status_passed',
+//	'failed'    => 'test_status_failed',
+//	'blocked'   => 'test_status_blocked',
+//	'my_status' => 'test_status_my_status'
+//);
+//
+//$tlCfg->results['default_status'] = 'not_run';
+//
+//$tlCfg->results['charts']['status_colour'] = array(
+//	'not_run'   => '000000',
+//	'passed'    => '006400',
+//	'failed'    => 'B22222',
+//	'blocked'   => '00008B',
+//	'my_status' => 'FF8C11'
+//);
 //
 // -------------------------------------------------------------------------------------------------
 // Item templates

@@ -1,7 +1,7 @@
 {
     "projectName": "Ext JS",
     "deployDir": "ext-3.3+",
-    "licenseText": "Ext JS Library 3.3.0\nCopyright(c) 2006-2010 Ext JS, Inc.\nlicensing@extjs.com\nhttp://www.extjs.com/license",
+    "licenseText": "Ext JS Library 3.3.3\nCopyright(c) 2006-2011 Sencha Inc.\nlicensing@sencha.com\nhttp://www.sencha.com/license",
     "pkgs": [{
         "name": "Ext Base",
         "file": "adapter/ext/ext-base.js",
@@ -131,6 +131,9 @@
         },
         {
             "text": "EventManager.js",
+            "path": "src/ext-core/src/core/"
+        },{
+            "text": "Loader.js",
             "path": "src/ext-core/src/core/"
         }]
     },{
@@ -1305,8 +1308,8 @@
            "text": "grid.css",
            "path": "resources/css/visual/"
        },{
-          "text": "pivotgrid.css",
-          "path": "resources/css/visual/"
+           "text": "pivotgrid.css",
+           "path": "resources/css/visual/"
        },{
            "text": "dd.css",
            "path": "resources/css/visual/"
@@ -1452,6 +1455,9 @@
            "path": "resources/css/theme-gray/"
        },{
            "text": "grid.css",
+           "path": "resources/css/theme-gray/"
+       },{
+           "text": "pivotgrid.css",
            "path": "resources/css/theme-gray/"
        },{
            "text": "dd.css",
@@ -1609,6 +1615,10 @@
     },{
         "src": "resources/",
         "dest": "resources/",
+        "filters": ".*"
+    },{
+        "src": "release-notes.html",
+        "dest": "release-notes.html",
         "filters": ".*"
     },{
         "src": "license.txt",

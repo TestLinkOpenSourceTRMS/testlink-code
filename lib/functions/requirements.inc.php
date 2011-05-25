@@ -849,17 +849,18 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 	{
 		case 'popup':
 			// use javascript to open popup window
-			$string2replace['req'] = '<a href="javascript:openLinkedReqVersionWindow(%s,%s,\'%s\')">%s%s%s</a>';
-			$string2replace['req_spec'] = '<a href="javascript:openLinkedReqSpecWindow(%s,\'%s\')">%s%s</a>';
+			$string2replace['req'] = '<a href="javascript:openLinkedReqVersionWindow(%s,%s,%s,\'%s\')">%s%s%s</a>';
+			$string2replace['req_spec'] = '<a href="javascript:openLinkedReqSpecWindow(%s,%s,\'%s\')">%s%s</a>';
 		break;
 		
 		case 'window':
 	    case 'frame':// open in same frame
 			$target = ($cfg->target == 'window') ? 'target="_blank"' : 'target="_self"';
 			$string2replace['req'] = '<a ' . $target . ' href="lib/requirements/reqView.php?' .
-						             'item=requirement&requirement_id=%s&req_version_id=%s#%s">%s%s%s</a>';
+			                         'tproject_id=%s&item=requirement&requirement_id=%s' .
+			                         '&req_version_id=%s#%s">%s%s%s</a>';
 			$string2replace['req_spec'] = '<a ' . $target . ' href="lib/requirements/reqSpecView.php?' .
-						                  'item=req_spec&req_spec_id=%s#%s">%s%s</a>';
+			                              'tproject_id=%s&item=req_spec&req_spec_id=%s#%s">%s%s</a>';
 		break;
     }
 
@@ -946,13 +947,13 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 			
 			if (count($rs) > 0) {
 				foreach($rs as $key => $value) {
-					// get root of linked node and check
-					$real_root = $tree_mgr->getTreeRoot($value['id']);
-					$matched_root_info = $tproject_mgr->get_by_prefix($matched['tproj']);
+					// get root (tproject_id) of linked node and check
+					$real_tproject_id = $tree_mgr->getTreeRoot($value['id']);
+					$matched_tproject_id = $tproject_mgr->get_by_prefix($matched['tproj']);
 					// do only continue if project with the specified project exists and
 					// if the requirement really belongs to the specified project (requirements
 					// with the same doc_id may exist within different projects)
-					if ($real_root == $matched_root_info['id']) {
+					if ($real_tproject_id == $matched_tproject_id['id']) {
 						if($accessKey == 'req') {
 							// add version to link title if set
 							$version = '';
@@ -968,11 +969,11 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 									$version = sprintf($version_indicator,$matched['version']);
 								}
 							}
-							$urlString = sprintf($string2replace[$accessKey], $value['id'], $req_version_id,
+							$urlString = sprintf($string2replace[$accessKey], $real_tproject_id, $value['id'], $req_version_id,
 							                     $matched['anchor'], $title[$accessKey], $value['doc_id'], $version);
 						} else {
 							// build urlString for req specs which do not have a version
-							$urlString = sprintf($string2replace[$accessKey], $value['id'],
+							$urlString = sprintf($string2replace[$accessKey], $real_tproject_id, $value['id'],
 							                     $matched['anchor'], $title[$accessKey], $value['doc_id']);
 						}
 						$scope = str_replace($matched_string,$urlString,$scope);

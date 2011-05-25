@@ -855,7 +855,7 @@ function openTCaseWindow(tproject_id,tcase_id,tcversion_id,show_mode)
  * @param req_version_id Requirement Version ID
  * @param anchor string with anchor name
  */
-function openLinkedReqVersionWindow(tproject_id,req_id, req_version_id, anchor)
+function openLinkedReqVersionWindow(tproject_id, req_id, req_version_id, anchor)
 {
 	var windowCfg='';
 	var width = getCookie("ReqPopupWidth");
@@ -890,13 +890,13 @@ function openLinkedReqVersionWindow(tproject_id,req_id, req_version_id, anchor)
  * @param req_id Requirement ID
  * @param anchor string with anchor name
  */
-function openLinkedReqWindow(req_id, anchor)
+function openLinkedReqWindow(tproject_id, req_id, anchor)
 {
 	// 20101008 - asimon - BUGID 3311
 	var width = getCookie("ReqPopupWidth");
 	var height = getCookie("ReqPopupHeight");
 	var windowCfg='';
-	var feature_url = "lib/requirements/reqView.php";
+	var feature_url = "lib/requirements/reqView.php?tproject_id=" + tproject_id;
 
 
 	if (anchor == null) {
@@ -915,7 +915,7 @@ function openLinkedReqWindow(req_id, anchor)
 		height = "600";
 	}
 
-	feature_url += "?showReqSpecTitle=1&requirement_id=" + req_id + anchor;
+	feature_url += "&showReqSpecTitle=1&requirement_id=" + req_id + anchor;
 	windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
 	window.open(fRoot+feature_url,"Requirement",windowCfg);
 }
@@ -927,7 +927,7 @@ function openLinkedReqWindow(req_id, anchor)
  * @param reqspec_id Requirement Specification ID
  * @param anchor string with anchor name
  */
-function openLinkedReqSpecWindow(reqspec_id, anchor)
+function openLinkedReqSpecWindow(tproject_id, reqspec_id, anchor)
 {
 	if (anchor == null) {
 		anchor = '';
@@ -936,8 +936,8 @@ function openLinkedReqSpecWindow(reqspec_id, anchor)
 	}
 	
 	var windowCfg='';
-	var feature_url = "lib/requirements/reqSpecView.php";
-	feature_url += "?req_spec_id=" + reqspec_id + anchor;
+	var feature_url = "lib/requirements/reqSpecView.php?tproject_id=" + tproject_id;
+	feature_url += "&req_spec_id=" + reqspec_id + anchor;
 
 	// 20101008 - asimon - BUGID 3311
 	var width = getCookie("ReqSpecPopupWidth");

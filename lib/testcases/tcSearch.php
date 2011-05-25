@@ -373,6 +373,7 @@ function initializeGui(&$argsObj)
 	$gui = new stdClass();
 
 	$gui->pageTitle = lang_get('caption_search_form');
+	$gui->tproject_id = $argsObj->tproject_id;
 	$gui->warning_msg = '';
 	$gui->tcasePrefix = '';
 	$gui->path_info = null;

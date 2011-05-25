@@ -6,10 +6,10 @@ viewer for test case in test specification
 @filesource	tcView_viewer.tpl
 
 @internal revisions
-	20110319 - franciscom - BUGID 4322: New Option to block delete of executed test cases
-    20110307 - asimon - BUGID 4286: moved print preview to popup to make printing independent from browser easier for the users
-                                    moved req view button forms and divs around to align buttons in a single row
-	20110304 - franciscom - BUGID 4286: Option to print single test case
+20110319 - franciscom - BUGID 4322: New Option to block delete of executed test cases
+20110307 - asimon - BUGID 4286: moved print preview to popup to make printing independent from browser easier for the users
+                                moved req view button forms and divs around to align buttons in a single row
+20110304 - franciscom - BUGID 4286: Option to print single test case
 *}
 {lang_get var="tcView_viewer_labels"
           s="requirement_spec,Requirements,tcversion_is_inactive_msg,
@@ -49,12 +49,12 @@ viewer for test case in test specification
 {$hrefReqMgmt="$basehref$hrefReqMgmt"}
 
 {$url_args="&tcase_id=$tcase_id&tcversion_id=$tcversion_id"}
-{$hrefAddTc2Tplan"  value=$gui->addTc2TplanHREF}
-{$hrefAddTc2Tplan"  value="$basehref$hrefAddTc2Tplan$url_args"}
+{$hrefAddTc2Tplan=$gui->addTc2TplanHREF}
+{$hrefAddTc2Tplan="$basehref$hrefAddTc2Tplan$url_args"}
 
 {$url_args="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
 {$url_args="$url_args&goback_url=$goBackActionURLencoded&show_mode=$showMode&step_id="}
-{$hrefEditStep"  value="$basehref$module$url_args"}
+{$hrefEditStep="$basehref$module$url_args"}
 
 
 {$tcExportAction=$gui->tcExportAction}
@@ -101,7 +101,7 @@ viewer for test case in test specification
   {else} 
     {if isset($args_tcase_cfg) && $args_tcase_cfg->can_edit_executed == 1}
       {$edit_enabled=1} 
-      {$has_been_executed"  value=1} 
+      {$has_been_executed=1} 
       {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
     {/if} 
     
@@ -109,7 +109,7 @@ viewer for test case in test specification
     {if isset($args_tcase_cfg)}
 		{if $args_tcase_cfg->can_delete_executed == 1}
       		{$delete_enabled=1} 
-      		{$has_been_executed"  value=1} 
+      		{$has_been_executed=1} 
       		{$warning_delete_msg=""}
     	{else}
   			{if ($args_can_do->delete_testcase == "yes" &&  

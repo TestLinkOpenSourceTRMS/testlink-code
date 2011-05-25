@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.3.0
- * Copyright(c) 2006-2010 Ext JS, Inc.
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.3.3
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 .x-combo-list {
     border:2px solid #232732;
@@ -16,7 +16,7 @@
 
 .x-combo-list-hd {
     font:bold 14px tahoma, arial, helvetica, sans-serif;
-    color:fff;
+    color:#fff;
     background-image: url(../images/default/layout/panel-title-light-bg.gif);
     border-bottom-color:#98c0f4;
 }

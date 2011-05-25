@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.3.0
- * Copyright(c) 2006-2010 Ext JS, Inc.
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.3.3
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /* all fields */
 .x-form-field{
@@ -34,6 +34,22 @@ textarea.x-form-field {
     margin:-1px 0; /* ie bogus margin bug */
     height:22px; /* ie quirks */
     line-height:18px;
+}
+
+.x-quirks .ext-ie9 .x-form-text {
+    height: 22px;
+    padding-top: 3px;
+    padding-bottom: 0px;
+}
+
+/* Ugly hacks for the bogus 1px margin bug in IE9 quirks */
+.x-quirks .ext-ie9 .x-input-wrapper .x-form-text,
+.x-quirks .ext-ie9 .x-form-field-trigger-wrap .x-form-text {
+    margin-top: -1px;
+    margin-bottom: -1px;
+}
+.x-quirks .ext-ie9 .x-input-wrapper .x-form-element {
+    margin-bottom: -1px;
 }
 
 .ext-ie6 .x-form-field-wrap .x-form-file-btn, .ext-ie7 .x-form-field-wrap .x-form-file-btn {
@@ -326,11 +342,11 @@ textarea {
     height:19px;
 }
 
-.ext-webkit .x-small-editor .x-form-field-wrap .x-form-trigger{
-    height:21px;
-}
-
 .ext-webkit .x-small-editor .x-form-text{padding-top:3px;font-size:100%;}
+
+.ext-strict .ext-webkit .x-small-editor .x-form-text{
+    height:14px !important;
+}
 
 .x-form-clear {
     clear:both;
@@ -473,6 +489,10 @@ textarea {
 
 .ext-ie .x-fieldset legend {
     margin-bottom:10px;
+}
+
+.ext-strict .ext-ie9 .x-fieldset legend.x-fieldset-header {
+    padding-top: 1px;
 }
 
 .ext-ie .x-fieldset {

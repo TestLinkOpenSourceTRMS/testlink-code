@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.3.0
- * Copyright(c) 2006-2010 Ext JS, Inc.
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.3.3
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /*
  * Italian translation
@@ -109,16 +109,16 @@ if(Ext.DatePicker){
       maxText           : "Data successiva alla data massima",
       disabledDaysText  : "",
       disabledDatesText : "",
-      monthNames		: Date.monthNames,
-      dayNames			: Date.dayNames,
+      monthNames        : Date.monthNames,
+      dayNames          : Date.dayNames,
       nextText          : 'Mese successivo (Ctrl+Destra)',
       prevText          : 'Mese precedente (Ctrl+Sinistra)',
       monthYearText     : 'Scegli un mese (Ctrl+Su/Giu per cambiare anno)',
       todayTip          : "{0} (Barra spaziatrice)",
       format            : "d/m/y",
-      cancelText		: "Annulla",
-	  okText            : "&#160;OK&#160;",
-	  startDay          : 1
+      cancelText        : "Annulla",
+      okText            : "&#160;OK&#160;",
+      startDay          : 1
    });
 }
 
@@ -148,6 +148,8 @@ if(Ext.form.TextField){
 
 if(Ext.form.NumberField){
    Ext.apply(Ext.form.NumberField.prototype, {
+      decimalSeparator : ",",
+      decimalPrecision : 2,
       minText : "Il valore minimo \u00E8 {0}",
       maxText : "Il valore massimo \u00E8 {0}",
       nanText : "{0} non \u00E8 un valore numerico corretto"
@@ -162,7 +164,8 @@ if(Ext.form.DateField){
       maxText           : "La data deve essere precedente al {0}",
       invalidText       : "{0} non \u00E8 una data valida. Deve essere nel formato {1}",
       format            : "d/m/y",
-      altFormats        : "d/m/Y|d-m-y|d-m-Y|d/m|d-m|dm|dmy|dmY|d|Y-m-d"
+      altFormats        : "d/m/Y|d-m-y|d-m-Y|d/m|d-m|dm|dmy|dmY|d|Y-m-d",
+      startDay          : 1
    });
 }
 

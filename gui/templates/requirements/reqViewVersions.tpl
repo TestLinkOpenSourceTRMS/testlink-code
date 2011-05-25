@@ -6,6 +6,7 @@ Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 @internal revisions
+20110525 - Julian - BUGID 4497 - show version and revision also for "Other versions"
 20110305 - franciscom -	fixed issue unable to include template due to changed 
 						behaviour of $smarty.template on Smarty 3.0.7
 20110304 - asimon - added help icon with a description of some of the "new" features
@@ -404,7 +405,7 @@ var pF_delete_req_relation = delete_req_relation;
                        		args_can_delete_req=false
                        		args_can_delete_version=true
                        		args_frozen_version=$frozen_version
-                       		args_show_version=false 
+                       		args_show_version=true 
                        		args_show_title=false
                        		args_cf=$gui->cfields_other_versions[idx][$rdx]}
   	         </div>

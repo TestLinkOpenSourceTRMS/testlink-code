@@ -1,24 +1,15 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.23 2010/11/18 15:17:48 mx-julian Exp $
-Purpose: draw execution controls (input for notes and results)
-Author : franciscom
 
-Rev:
-    20101024 - Julian - BUGID 3928 - Custom fields before steps not using complete width of table
-    20100917 - amitkhullar - BUGID 3780
-	20100802 - amitkhullar - Moved the Design time Custom Fields before Exec CF. 
-    20100621 - eloff - BUGID 3241 - Implement vertical layout
-    20100105 - franciscom - Test Case Steps
-    20090901 - franciscom - preconditions + exec_cfg->steps_results_layout
-    20090718 - franciscom - added design time custom field location management
-    20090526 - franciscom - added testplan_design custom field management
+draw execution controls (input for notes and results)
+
+@filesource	inc_exec_test_spec.tpl
+@internal revisions
 *}	
-    {assign var="tableColspan" value="4"}
-
-    {assign var="getReqAction" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
-	  {assign var="testcase_id" value=$args_tc_exec.testcase_id}
-    {assign var="tcversion_id" value=$args_tc_exec.id}
+    {$tableColspan="4"}
+    {$getReqAction="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
+	{$testcase_id=$args_tc_exec.testcase_id}
+    {$tcversion_id=$args_tc_exec.id}
     
     {if isset($args_req_details)}
 	  <div class="exec_test_spec">
@@ -32,7 +23,7 @@ Rev:
 		  	<td>
 		  	<span class="bold">
 		  	 {$tlCfg->gui_separator_open}{$req_elem.req_spec_title}{$tlCfg->gui_separator_close}&nbsp;
-		  	 <a href="javascript:openLinkedReqWindow({$req_elem.id})"  
+		  	 <a href="javascript:openLinkedReqWindow({$gui->tproject_id},{$req_elem.id})"  
 		  	    title="{$args_labels.click_to_open}">
 	  	    {$req_elem.req_doc_id|escape}{$tlCfg->gui_title_separator_1}{$req_elem.title|escape}
 	  	   </a>
@@ -67,10 +58,8 @@ Rev:
 			                {$args_execution_types[$args_tc_exec.execution_type]}</td>
 		</tr>
 
-		{* 20090718 - franciscom - CF location management*}
     {if $args_design_time_cf[$testcase_id].before_steps_results != ''}
 		<tr>
-			{* 20101024 - BUGID 3928 *}
         	<td colspan="{$tableColspan}"> {$args_design_time_cf[$testcase_id].before_steps_results}</td>
 		</tr>
 		{/if}
@@ -83,7 +72,6 @@ Rev:
 	{/if}
   	<tr>
 		  <td colspan="{$tableColspan}">
-		  {* 20090718 - franciscom - CF location management*}
       {if $args_design_time_cf[$testcase_id].standard_location != ''}
 					<div id="cfields_design_time_tcversionid_{$tcversion_id}" class="custom_field_container" 
 					style="background-color:#dddddd;">{$args_design_time_cf[$testcase_id].standard_location}

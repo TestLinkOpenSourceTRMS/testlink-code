@@ -33,6 +33,7 @@ $tproject_mgr = new testproject($db);
 $req_cfg = config_get('req_cfg');
 $charset = config_get('charset');
 
+$args = init_args();
 $commandMgr = new reqSpecCommands($db);
 $gui = $commandMgr->initGuiBean();
 
@@ -44,9 +45,9 @@ $gui->warning_msg = '';
 $gui->path_info = null;
 $gui->resultSet = null;
 $gui->tableSet = null;
+$gui->tproject_id = $args->tproject_id;
 
 $map = null;
-$args = init_args();
 
 if ($args->tproject_id)
 {
@@ -134,7 +135,8 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
 
-function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
+function buildExtTable($gui, $charset, $edit_icon, $edit_label) 
+{
 	$table = null;
 	if(count($gui->resultSet) > 0) {
 		$labels = array('req_spec' => lang_get('req_spec'));
@@ -156,7 +158,7 @@ function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
 //			             htmlentities($result['doc_id'], ENT_QUOTES, $charset) . ":" .
 //			             htmlentities($result['name'], ENT_QUOTES, $charset);
 
-			$edit_link = "<a href=\"javascript:openLinkedReqSpecWindow(" . $result['id'] . ")\">" .
+			$edit_link = "<a href=\"javascript:openLinkedReqSpecWindow({$gui->tproject_id}," . $result['id'] . ")\">" .
 						 "<img title=\"{$edit_label}\" src=\"{$edit_icon}\" /></a> ";
 			$title = htmlentities($result['doc_id'], ENT_QUOTES, $charset) . ":" .
 			         htmlentities($result['name'], ENT_QUOTES, $charset);

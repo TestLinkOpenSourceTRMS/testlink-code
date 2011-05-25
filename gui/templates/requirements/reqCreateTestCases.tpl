@@ -4,12 +4,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @internal revisions
 20101111 - Julian - BUGID 4003 - Minor Improvements to table layout
-20100403 - francisco - adding #SCOPE_TRUNCATE#
-20091209 - asimon - contrib for testcase creation, BUGID 2996
-20110314 - Julian - BUGID 4317 - Added Contribution from user frl for an easy
-                                 way to set amount of test cases to create to
-                                 the number of test cases still required to
-                                 fully cover the requirement(s)
 *}
 {$req_module='lib/requirements/'}
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -95,7 +89,7 @@ function cs_all_coverage_in_div(div_id, input_id_prefix, default_id_prefix, memo
 <body>
 
 
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":""}
+{cfg_section=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">
@@ -162,14 +156,14 @@ function cs_all_coverage_in_div(div_id, input_id_prefix, default_id_prefix, memo
 					   name="req_id_cbox[{$gui->all_reqs[row].id}]" 
 													   value="{$gui->all_reqs[row].id}"/></td>{/if}
 			<td style="padding:2px;">
-				<span onclick="javascript: openLinkedReqWindow({$gui->all_reqs[row].id});"
+				<span onclick="javascript: openLinkedReqWindow({$gui->tproject_id},{$gui->all_reqs[row].id});"
 					  style="cursor:  pointer;  color: #059;" >
 					{$gui->all_reqs[row].req_doc_id|escape} : {$gui->all_reqs[row].title|escape}
 				</span>
 			</td>
-			{assign var="req_status" value=$gui->all_reqs[row].status}
+			{$req_status=$gui->all_reqs[row].status}
 			<td style="padding:2px;">{$gui->reqStatusDomain.$req_status|escape}</td>
-			{assign var="req_type" value=$gui->all_reqs[row].type}
+			{$req_type=$gui->all_reqs[row].type}
 			<td style="padding:2px;">{$gui->reqTypeDomain.$req_type|escape}</td>
 			<td style="padding:2px;"><input name="testcase_count[{$gui->all_reqs[row].id}]" id="testcase_count{$gui->all_reqs[row].id}" type="text" size="3" maxlength="3" value="1"></td>
 			{if $gui->req_cfg->expected_coverage_management}

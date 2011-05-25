@@ -10,14 +10,6 @@ Purpose: view requirement with version management
 20110305 - franciscom -	fixed issue unable to include template due to changed 
 						behaviour of $smarty.template on Smarty 3.0.7
 20110304 - asimon - added help icon with a description of some of the "new" features
-20101211 - franciscom - BUGID 4056: Requirement Revisioning
-20101113 - franciscom - BUGID 4045: Smarty 3.0 compatibility - Requirement Versions
-20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
-20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-20101026 - franciscom - BUGID 3927: Requirement can't be deleted due to JS error -> label has to be escaped
-20101017 - franciscom - image access refactored (tlImages)
-20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
-20100319 - asimon - BUGID 1748, added requirement relations display
 *}
 
 {lang_get s='warning_delete_requirement' var="warning_msg"}
@@ -319,7 +311,7 @@ var pF_delete_req_relation = delete_req_relation;
 				<tr>
 					<td>{$relation.id}</td>
 					<td class="bold"><nobr>{$relation.type_localized|escape}</nobr></td>
-					<td colspan="{$colspan}"><a href="javascript:openLinkedReqWindow({$relation.related_req.id})">
+					<td colspan="{$colspan}"><a href="javascript:openLinkedReqWindow({$gui->tproject_id},{$relation.related_req.id})">
 						{$relation.related_req.req_doc_id|escape}:
 						{$relation.related_req.title|escape}</a></td>
 					<td><nobr>{$gui->reqStatus.$status|escape}</nobr></td>

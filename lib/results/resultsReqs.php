@@ -308,7 +308,7 @@ function build_rows($args, $status_code_map, $tproject_mgr, $req_spec_map, $req_
 			$title = htmlentities($req_info['req_doc_id'], ENT_QUOTES, $charset) . $glue_char . 
 			         htmlentities($req_info['title'], ENT_QUOTES, $charset);
 			
-			$edit_link = "<a href=\"javascript:openLinkedReqWindow(" . $req_id . ")\">" .
+			$edit_link = "<a href=\"javascript:openLinkedReqWindow({$args->tproject_id}," . $req_id . ")\">" .
 						 "<img title=\"{$labels['requirement']}\" src=\"{$edit_icon}\" /></a> ";
 
 		    $link = $edit_link . $title;

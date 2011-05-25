@@ -10,35 +10,6 @@ viewer for test case in test specification
     20110307 - asimon - BUGID 4286: moved print preview to popup to make printing independent from browser easier for the users
                                     moved req view button forms and divs around to align buttons in a single row
 	20110304 - franciscom - BUGID 4286: Option to print single test case
-    20101225 - franciscom - added warning for excution type with message ONLY in english
-    20101102 - asimon - BUGID 2864: replaced old open_top() by openLinkedReqWindow()
-    20100901 - franciscom - refactoring using inc_tcbody.tpl
-                            added launchInsertStep()
-    20100621 - eloff - BUGID 3241 - Implement vertical layout
-    20100615 - eloff - hide automation column if not enabled
-    20100530 - franciscom - new JS function launchEditStep()
-    20100529 - franciscom - BUGID 3493 - using escape:'url'
-    20100522 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-                            rename labels => tcView_viewer_labels to avoid overwrite of labels
-                            defined on template tcView.tpl (includes this template)
-                            
-    20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-    20100417 - franciscom - BUGID 3376: Remove link in test case action name
-    20100415 - franciscom - move compare version feature out of edit control, because seems OK
-                            that no user right is needed to compare.
-    20100327 - franciscom - fixed problem with goback from create step
-    20100301 - franciscom - BUGID 3181
-    20100125 - franciscom - added check to display info about steps only if test case has steps
-    20100124 - franciscom - fixed problem on display of test case version assignemt 
-                            to different test plans + add table sorting
-    20100123 - franciscom - BUGID 0003086: After execution of testcase, 
-                                           a new version should be created before editing test steps 
-    20090831 - franciscom - preconditions
-    20090418 - franciscom - BUGID 2364 - added fine grain control of button enable/disable
-    20090414 - franciscom - BUGID 2378 - check for active test plan existence to display btn_add_to_testplan
-    20090308 - franciscom - added logic to display button that allow assign test case version 
-                            to test plans. 
-    20090215 - franciscom - BUGID - show info about links to test plans
 *}
 {lang_get var="tcView_viewer_labels"
           s="requirement_spec,Requirements,tcversion_is_inactive_msg,
@@ -55,47 +26,47 @@ viewer for test case in test specification
 {lang_get s='delete' var="del_msgbox_title"}
 
 {* will be useful in future to semplify changes *}
-{assign var="tableColspan" value=$gui->tableColspan} 
-{assign var="addInfoDivStyle" value='style="padding: 5px 3px 4px 10px;"'}
+{$tableColspan=$gui->tableColspan} 
+{$addInfoDivStyle='style="padding: 5px 3px 4px 10px;"'}
 
 
-{assign var="module" value='lib/testcases/'}
-{assign var="tcase_id" value=$args_testcase.testcase_id}
-{assign var="tcversion_id" value=$args_testcase.id}
-{assign var="showMode" value=$gui->show_mode} 
+{$module='lib/testcases/'}
+{$tcase_id=$args_testcase.testcase_id}
+{$tcversion_id=$args_testcase.id}
+{$showMode=$gui->show_mode} 
 
 {* Used on several operations to implement goback *}
-{assign var="tcViewAction" value=$gui->tcViewAction}
-{assign var="tcViewAction" value="$tcViewAction$tcase_id"}
-{assign var="goBackAction" value="$basehref$tcViewAction"}
-{assign var="goBackActionURLencoded" value=$goBackAction|escape:'url'}
+{$tcViewAction=$gui->tcViewAction}
+{$tcViewAction="$tcViewAction$tcase_id"}
+{$goBackAction="$basehref$tcViewAction"}
+{$goBackActionURLencoded=$goBackAction|escape:'url'}
 
 
-{assign var="hrefReqSpecMgmt" value=$gui->reqSpecMgmtHREF}
-{assign var="hrefReqSpecMgmt" value="$basehref$hrefReqSpecMgmt"}
+{$hrefReqSpecMgmt=$gui->reqSpecMgmtHREF}
+{$hrefReqSpecMgmt="$basehref$hrefReqSpecMgmt"}
 
-{assign var="hrefReqMgmt" value=$gui->reqMgmtHREF}
-{assign var="hrefReqMgmt" value="$basehref$hrefReqMgmt"}
+{$hrefReqMgmt=$gui->reqMgmtHREF}
+{$hrefReqMgmt="$basehref$hrefReqMgmt"}
 
-{assign var="url_args" value="&tcase_id=$tcase_id&tcversion_id=$tcversion_id"}
-{assign var="hrefAddTc2Tplan"  value=$gui->addTc2TplanHREF}
-{assign var="hrefAddTc2Tplan"  value="$basehref$hrefAddTc2Tplan$url_args"}
+{$url_args="&tcase_id=$tcase_id&tcversion_id=$tcversion_id"}
+{$hrefAddTc2Tplan"  value=$gui->addTc2TplanHREF}
+{$hrefAddTc2Tplan"  value="$basehref$hrefAddTc2Tplan$url_args"}
 
-{assign var="url_args" value="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
-{assign var="url_args" value="$url_args&goback_url=$goBackActionURLencoded&show_mode=$showMode&step_id="}
-{assign var="hrefEditStep"  value="$basehref$module$url_args"}
-
-
-{assign var="tcExportAction" value=$gui->tcExportAction}
-{assign var="tcExportAction" value="$tcExportAction&goback_url=$goBackActionURLencoded"}
-{assign var="exportTestCaseAction" value="$basehref$tcExportAction"}
+{$url_args="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
+{$url_args="$url_args&goback_url=$goBackActionURLencoded&show_mode=$showMode&step_id="}
+{$hrefEditStep"  value="$basehref$module$url_args"}
 
 
-{assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
-{assign var="updater_userinfo" value=""}
+{$tcExportAction=$gui->tcExportAction}
+{$tcExportAction="$tcExportAction&goback_url=$goBackActionURLencoded"}
+{$exportTestCaseAction="$basehref$tcExportAction"}
+
+
+{$author_userinfo=$args_users[$args_testcase.author_id]}
+{$updater_userinfo=""}
 
 {if $args_testcase.updater_id != ''}
-  {assign var="updater_userinfo" value=$args_users[$args_testcase.updater_id]}
+  {$updater_userinfo=$args_users[$args_testcase.updater_id]}
 {/if}
 
 {if $args_show_title == "yes"}
@@ -107,39 +78,39 @@ viewer for test case in test specification
     {/if}
 	  <h2>{$tcView_viewer_labels.title_test_case} {$args_testcase.name|escape} </h2>
 {/if}
-{assign var="warning_edit_msg" value=""}
-{assign var="warning_delete_msg" value=""}
+{$warning_edit_msg=""}
+{$warning_delete_msg=""}
 
 <div style="display: inline;" class="groupBtn">
 {if $args_can_do->edit == "yes"}
 
-  {assign var="edit_enabled" value=0}
-  {assign var="delete_enabled" value=0}
+  {$edit_enabled=0}
+  {$delete_enabled=0}
 
   {* 20070628 - franciscom - Seems logical you can disable some you have executed before *}
-  {assign var="active_status_op_enabled" value=1}
-  {assign var="has_been_executed" value=0}
+  {$active_status_op_enabled=1}
+  {$has_been_executed=0}
   {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
   {lang_get s='system_blocks_delete_executed_tc' var="warning_delete_msg"}
 
   {if $args_status_quo == null || $args_status_quo[$args_testcase.id].executed == null}
-      {assign var="edit_enabled" value=1}
-      {assign var="delete_enabled" value=1}
-      {assign var="warning_edit_msg" value=""}
-      {assign var="warning_delete_msg" value=""}
+      {$edit_enabled=1}
+      {$delete_enabled=1}
+      {$warning_edit_msg=""}
+      {$warning_delete_msg=""}
   {else} 
     {if isset($args_tcase_cfg) && $args_tcase_cfg->can_edit_executed == 1}
-      {assign var="edit_enabled" value=1} 
-      {assign var="has_been_executed"  value=1} 
+      {$edit_enabled=1} 
+      {$has_been_executed"  value=1} 
       {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
     {/if} 
     
     {* 20110319 - BUGID 4322: New Option to block delete of executed test cases *}
     {if isset($args_tcase_cfg)}
 		{if $args_tcase_cfg->can_delete_executed == 1}
-      		{assign var="delete_enabled" value=1} 
-      		{assign var="has_been_executed"  value=1} 
-      		{assign var="warning_delete_msg" value=""}
+      		{$delete_enabled=1} 
+      		{$has_been_executed"  value=1} 
+      		{$warning_delete_msg=""}
     	{else}
   			{if ($args_can_do->delete_testcase == "yes" &&  
   				 $args_can_delete_testcase == "yes") ||
@@ -163,7 +134,7 @@ viewer for test case in test specification
 	  <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 
 
-	  {assign var="go_newline" value=""}
+	  {$go_newline=""}
 	  {if $edit_enabled}
 	 	    <input type="submit" name="edit_tc" 
 	 	           onclick="doAction.value='edit';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_edit}" />
@@ -181,7 +152,7 @@ viewer for test case in test specification
 	  *}
 	  {if $args_can_do->copy == "yes" && $args_can_move_copy == "yes"}
 	   		<input type="submit" name="move_copy_tc"   value="{$tcView_viewer_labels.btn_mv_cp}" />
-	     	{assign var="go_newline" value="<br />"}
+	     	{$go_newline="<br />"}
 	  {/if}
 	
 	  {if $delete_enabled && $args_can_do->delete_version == "yes" && $args_can_delete_version == "yes"}
@@ -196,13 +167,13 @@ viewer for test case in test specification
 		{* --------------------------------------------------------------------------------------- *}
 		{if $active_status_op_enabled eq 1 && $args_can_do->deactivate=='yes'}
 	        {if $args_testcase.active eq 0}
-				      {assign var="act_deact_btn" value="activate_this_tcversion"}
-				      {assign var="act_deact_value" value="activate_this_tcversion"}
-				      {assign var="version_title_class" value="inactivate_version"}
+				      {$act_deact_btn="activate_this_tcversion"}
+				      {$act_deact_value="activate_this_tcversion"}
+				      {$version_title_class="inactivate_version"}
 	      	{else}
-				      {assign var="act_deact_btn" value="deactivate_this_tcversion"}
-				      {assign var="act_deact_value" value="deactivate_this_tcversion"}
-				      {assign var="version_title_class" value="activate_version"}
+				      {$act_deact_btn="deactivate_this_tcversion"}
+				      {$act_deact_value="deactivate_this_tcversion"}
+				      {$version_title_class="activate_version"}
 	      	{/if}
 	      	<input type="submit" name="{$act_deact_btn}"
 	                           value="{lang_get s=$act_deact_value}" />
@@ -399,8 +370,7 @@ function launchInsertStep(step_id)
       			  </td>
       			  <td>
       				{section name=item loop=$args_reqs}
-      					{* BUGID 2684 *}
-      					<span onclick="javascript: openLinkedReqWindow({$args_reqs[item].id});"
+      					<span onclick="javascript: openLinkedReqWindow({$gui->tproject_id},{$args_reqs[item].id});"
       					style="cursor:  pointer;  color: #059; ">[{$args_reqs[item].req_spec_title|escape}]&nbsp;{$args_reqs[item].req_doc_id|escape}:{$args_reqs[item].title|escape}</span>
       					{if !$smarty.section.item.last}<br />{/if}
       				{sectionelse}

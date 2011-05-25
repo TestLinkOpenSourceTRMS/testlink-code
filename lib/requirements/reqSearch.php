@@ -13,17 +13,6 @@
  * Search results for requirements.
  *
  * @internal revisions
- * 20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
- * 20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
- * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                     table state independent from localization
- * 20101005 - asimon - replaced linked requirement title by linked icon
- * 20100929 - asimon - added req doc id to result table
- * 20100920 - Julian - BUGID 3793 - use exttable to display search results
- *                   - created function to build table
- * 20100920 - franciscom - minor refactoring
- * 20100908 - Julian - BUGID 2877 -  Custom Fields linked to Req versions
- * 20100324 - asimon - added searching for requirement relation type (BUGID 1748)
  */
 
 require_once("../../config.inc.php");
@@ -34,6 +23,7 @@ testlinkInitPage($db);
 $date_format_cfg = config_get('date_format');
 $tpl = 'reqSearchResults.tpl';
 $args = init_args($date_format_cfg);
+
 checkRights($db,$_SESSION['currentUser'],$args);
 
 $tproject_mgr = new testproject($db);
@@ -51,6 +41,8 @@ $gui->warning_msg = '';
 $gui->path_info = null;
 $gui->resultSet = null;
 $gui->tableSet = null;
+$gui->tproject_id = $args->tproject_id;
+
 
 $edit_label = lang_get('requirement');
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
@@ -258,7 +250,7 @@ function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
 			$rowData[] = htmlentities($gui->path_info[$result['id']], ENT_QUOTES, $charset);
 
 			// build requirement link
-			$edit_link = "<a href=\"javascript:openLinkedReqWindow(" . $result['id'] . ")\">" .
+			$edit_link = "<a href=\"javascript:openLinkedReqWindow({$gui->tproject_id}," . $result['id'] . ")\">" .
 						 "<img title=\"{$edit_label}\" src=\"{$edit_icon}\" /></a> ";
 			$title = htmlentities($result['req_doc_id'], ENT_QUOTES, $charset) . ":" .
 			         htmlentities($result['name'], ENT_QUOTES, $charset);

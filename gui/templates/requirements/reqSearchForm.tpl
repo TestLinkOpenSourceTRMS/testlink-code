@@ -1,16 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSearchForm.tpl,v 1.8 2010/11/13 09:21:54 franciscom Exp $
-Purpose: show form for requirement search.
 
-rev:
-  20101026 - Julian - no validation for dates -> no manual input - input only via datepicker
-  20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
-  20100707 - Julian - BUGID 3584: replaced cf names by cf labels
-  20100323 - asimon - added searching for req relation types (BUGID 1748)
+show form for requirement search.
+
+@filesource	reqSearchForm.tpl
+@internal revisions
 *}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels" 
@@ -30,7 +27,7 @@ rev:
 <h1 class="title">{$gui->mainCaption|escape}</h1>
 
 <div style="margin: 1px;">
-<form method="post" action="lib/requirements/reqSearch.php" target="workframe">
+<form method="post" action="lib/requirements/reqSearch.php?tproject_id={$gui->tproject_id}" target="workframe">
 	<table class="smallGrey" style="width:100%">
 		<caption>{$labels.caption_search_form_req}</caption>
 		<tr>

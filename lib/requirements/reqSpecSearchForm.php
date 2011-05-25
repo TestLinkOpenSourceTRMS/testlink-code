@@ -26,25 +26,23 @@ $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr);
 checkRights($db,$_SESSION['currentUser'],$args);
 
-
-
 $gui = new stdClass();
 $gui->tcasePrefix = '';
+$gui->tproject_id = $args->tproject_id;
  
-$gui->mainCaption = lang_get('testproject') . " " . $args->tprojectName;
+$gui->mainCaption = lang_get('testproject') . " " . $args->tproject_name;
 
 $enabled = 1;
 $no_filters = null;
 
-$gui->design_cf = $tproject_mgr->cfield_mgr->get_linked_cfields_at_design($args->tprojectID,$enabled,
+$gui->design_cf = $tproject_mgr->cfield_mgr->get_linked_cfields_at_design($args->tproject_id,$enabled,
                     $no_filters,'requirement_spec');
 
-$reqSpecSet = $tproject_mgr->getOptionReqSpec($args->tprojectID,testproject::GET_NOT_EMPTY_REQSPEC);
+$reqSpecSet = $tproject_mgr->getOptionReqSpec($args->tproject_id,testproject::GET_NOT_EMPTY_REQSPEC);
 
 $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
 $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
 
-// 20100806 - asimon - type displayed wrong selection: req types instead of req spec types
 $reqSpecCfg = config_get('req_spec_cfg');
 $gui->types = init_labels($reqSpecCfg->type_labels);
 
@@ -63,12 +61,12 @@ $smarty->display($templateCfg->template_dir . 'reqSpecSearchForm.tpl');
 function init_args(&$tprojectMgr)
 {              
   	$args = new stdClass();
-    $args->tprojectName = '';
-    $args->tprojectID = isset($_REQUEST['tproject_id']) ?  intval($_REQUEST['tproject_id']) : 0;
-	if($args->tprojectID > 0) 
+    $args->tproject_name = '';
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ?  intval($_REQUEST['tproject_id']) : 0;
+	if($args->tproject_id > 0) 
 	{
-		$dummy = $tprojectMgr->tree_manager->get_node_hierarchy_info($args->tprojectID);
-		$args->tprojectName = $dummy['name'];
+		$dummy = $tprojectMgr->tree_manager->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
 	}       
     return $args;
 }

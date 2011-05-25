@@ -277,10 +277,11 @@ with a special syntax. Internal Links behaviour can be changed in the config fil
 Link to requirements: [req]req_doc_id[/req]<br />
 Link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
 
-<p>The test project of the requirement / requirement specification and an anchor
+<p>The test project of the requirement / requirement specification, a version and an anchor 
 to jump to can also be specified:<br />
-[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt;]req_doc_id[/req]<br />
-This syntax also works for requirement specifications.</p>
+[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
+This syntax also works for requirement specifications (version attribute has no effect).<br />
+If you do not specify a version the whole requirement including all versions will be shown.</p>
 
 <h3>Log message for changes:</h3>
 <p>Whenever a change is made Testlink will ask for a log message. This log message served the purpose of traceability.
@@ -319,10 +320,11 @@ with a special syntax. Internal Links behaviour can be changed in the config fil
 Link to requirements: [req]req_doc_id[/req]<br />
 Link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
 
-<p>The test project of the requirement / requirement specification and an anchor
+<p>The test project of the requirement / requirement specification, a version and an anchor 
 to jump to can also be specified:<br />
-[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt;]req_doc_id[/req]<br />
-This syntax also works for requirement specifications.</p>
+[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
+This syntax also works for requirement specifications (version attribute has no effect).<br />
+If you do not specify a version the whole requirement including all versions will be shown.</p>
 ";
 
 

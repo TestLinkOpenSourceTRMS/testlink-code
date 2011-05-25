@@ -8,33 +8,11 @@
  *
  * @filesource	resultsByStatus.php
  * @package 	TestLink
- * @author		Martin Havlat <havlat@users.sourceforge.net>
- * @author 		kevyn levy
  * @copyright 	2007-2010, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal revisions
- *  20101013 - asimon - use linkto.php for emailed links
- *  20101012 - Julian - added html comment to properly sort by test case column
- *  20101007 - asimon - BUGID 3857: Replace linked icons in reports if reports get sent by e-mail
- *  20100927 - asimon - added mouseover information for the exec and edit icons
- *  20100923 - eloff - refactored to use improved table interface
- *  20100922 - asimon - removed testcase link, replaced by linked icons for editing and execution in popups
- *  20100901 - Julian - added test case edit link for test case column
- *  20100831 - Julian - BUGID 3722 - fixed not run report
- *                    - BUGID 3721 - added without_bugs_counter again
- *                    - BUGID 3731 - fixed failed blocked test cases report
- *  20100823 - Julian - changed default grouping and sorting
- *  20100823 - Julian - table now uses a unique table id per test project and report type
- *	20100816 - Julian - changed default width for table columns
- *	                  - added default sorting
- *	20100719 - Eloff - Implement extTable for this report
- *	20100617 - eloff - BUGID 3255 - fix bug links if available
- *	201005 - Julian - BUGID 3492 - show only test case summary for not run test cases
- *	                  else show exec notes
- *	20100425 - franciscom - BUGID 3356
- *	20100124 - eloff - use buildExternalIdString()
 */
 
 require('../../config.inc.php');
@@ -179,7 +157,7 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 				             "<img title=\"{$labels['execution']}\" src=\"{$exec_img}\" /></a> ";
 		    }
 
-			$edit_link = "<a href=\"javascript:openTCEditWindow({$testcase['tc_id']});\">" .
+			$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$testcase['tc_id']});\">" .
 						 "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
 
 		    $ext_id = buildExternalIdString($tproject_info['prefix'], $testcase['external_id']);

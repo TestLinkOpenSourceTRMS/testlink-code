@@ -3,19 +3,9 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.44 $
- * @modified $Date: 2010/10/15 11:43:25 $ by $Author: mx-julian $
- * @author kevinlevy
+ * @filesource	resultsBugs.php
  * 
- * rev :
- *  20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                      table state independent from localization
- *  20101012 - Julian - added html comment to properly sort by test case column
- *  20101005 - asimon - added linked icon for test case editing
- *	20100920 - Julian - use exttable
- *	20100616 - eloff - refactor out results class
- *	20100124 - eloff - BUGID 3012 - don't show internal id in report
+ * @internal revisions
  */
 
 
@@ -74,7 +64,7 @@ foreach ($results as $execution) {
 			$tc_name = buildExternalIdString($tproject_info['prefix'], $execution['external_id']) . ":" . $execution['name'];
 
 			// add linked icon for editing
-			$edit_link = "<a href=\"javascript:openTCEditWindow({$tc_id});\">" .
+			$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$tc_id});\">" .
 						 "<img title=\"{$edit_label}\" src=\"{$edit_img}\" /></a> ";
 			$tc_name = "<!-- " . sprintf("%010d", $execution['external_id']) . " -->" . $edit_link . $tc_name;
 

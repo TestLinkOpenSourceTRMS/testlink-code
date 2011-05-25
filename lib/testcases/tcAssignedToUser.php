@@ -9,26 +9,6 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
- *  20101116 - asimon - BUGID 4009: "Test Case Assignment Overview" did not show assignments in some situations
- *  20101019 - Julian - use different exttable_id for different reports
- *  20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                      table state independent from localization
- *  20101013 - asimon - disable "show also closed builds" checkbox when a specific build is selected
- *  20101012 - Julian - added html comment to properly sort by test case column
- *  20101004 - asimon - BUGID 3824: added checkbox do display closed builds
- *  20100927 - asimon - added mouseover information for the exec and edit icons
- *  20100922 - asimon - removed testcase link, replaced by linked icons for editing and execution
- *  20100922 - Julian - BUGID 3714 - refactored default grouping and sorting
- *  20100906 - asimon -  BUGID 3749
- *  20100826 - Julian - removed redundant version indication
- *  20100825 - Julian - make table collapsible if more than 1 table is shown
- *  20100825 - eloff - BUGID 3711 - Hide platform if not used
- *  20100823 - asimon - refactoring: $table_id
- *  20100822 - franciscom - refactoring - getColumnsDefinition()
- *  20100816 - asimon - if priority is enabled, enable default sorting by that column
- *  20100802 - asimon - BUGID 3647, filtering by build
- *  20100731 - asimon - heavy refactoring, modified to include more parameters and flexibility,
- *                      changed table to ExtJS format
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -53,6 +33,7 @@ $gui=new stdClass();
 //20101013 - asimon - disable "show also closed builds" checkbox when a specific build is selected
 $gui->show_build_selector = ($args->build_id == 0);
 $gui->glueChar = config_get('testcase_cfg')->glue_character;
+$gui->tproject_id = $args->tproject_id;
 $gui->tproject_name = $args->tproject_name;
 $gui->warning_msg = '';
 $gui->tableSet = null;
@@ -95,8 +76,8 @@ $filters = array();
 $filters['tplan_status'] = $args->show_inactive_tplans ? 'all' : 'active';
 $filters['build_status'] = $args->show_closed_builds ? 'all' : 'open';
 
-// BUGID 3647
-if ($args->build_id) {
+if ($args->build_id) 
+{
 	$filters['build_id'] = $args->build_id;
 	
 	// if build_id is set, show assignments regardless of build and tplan status
@@ -144,7 +125,7 @@ if( ($doIt = !is_null($gui->resultSet)) )
 				             "{$tcase['testplan_id']},{$tcase['platform_id']});\">" .
 						     "<img title=\"{$l18n['execution']}\" src=\"{$exec_img}\" /></a> ";
 
-				$edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id});\">" .
+				$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$tcase_id});\">" .
 				             "<img title=\"{$l18n['design']}\" src=\"{$edit_img}\" /></a> ";
 				
 				$current_row[] = "<!-- " . sprintf("%010d", $tcase['tc_external_id']) . " -->" . $exec_link .

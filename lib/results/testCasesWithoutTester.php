@@ -9,17 +9,6 @@
  * For a test plan, list test cases that has no tester assigned
  *
  * @internal Revisions:
- * 20101019 - Julian - show priority column only if priority is enabled for project
- * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                     table state independent from localization
- * 20101012 - Julian - added html comment to properly sort by test case column
- * 20101001 - asimon - added linked icon for testcase editing
- * 20100830 - Julian - Added test case summary column
- * 20100830 - franciscom - refactoring
- * 20100830 - Julian - BUGID 3723 - filter shown test cases by not run status
- * 20100825 - eloff - BUGID 3712 - show only platform if available
- * 20100823 - Julian - added unique table id, default sorting and grouping
- * 20100823 - eloff - Improve report with ext table and information on platforms and prio
  * 
  */
 require_once("../../config.inc.php");
@@ -35,6 +24,8 @@ checkRights($db,$_SESSION['currentUser'],$args);
 $gui = new stdClass();
 $gui->pageTitle = lang_get('caption_testCasesWithoutTester');
 $gui->warning_msg = '';
+
+$gui->tproject_id = $args->tproject_id;
 $gui->tproject_name = $args->tproject_name;
 $gui->tplan_name = $args->tplan_name;
 
@@ -76,7 +67,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 			$name = buildExternalIdString($prefix,$item['external_id'] . ': ' . $item['name']);
 
 			// create linked icons
-		    $edit_link = "<a href=\"javascript:openTCEditWindow({$item['tc_id']});\">" .
+		    $edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$item['tc_id']});\">" .
 						 "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
 
 		    $link = "<!-- " . sprintf("%010d", $item['external_id']) . " -->" . $edit_link . $name;

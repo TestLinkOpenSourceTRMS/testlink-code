@@ -9,13 +9,6 @@
  * For a test project, list FREE test cases, i.e. not assigned to a test plan.
  * 
  * @internal revisions
- * 20101019 - Julian - show importance column only if priority is enabled for project
- * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                     table state independent from localization
- * 20101012 - Julian - added html comment to properly sort by test case column
- * 20101005 - asimon - added linked icon for testcase editing
- * 20100920 - Julian - use exttable
- *                   - added importance column
  *
  */
 require_once("../../config.inc.php");
@@ -69,7 +62,7 @@ if(!is_null($gui->freeTestCases['items']))
 			$rowData[] = strip_tags($tsuites[$tcases['id']]);
 			//build test case link
 
-			$edit_link = "<a href=\"javascript:openTCEditWindow({$tcases['id']});\">" .
+			$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$tcases['id']});\">" .
 						 "<img title=\"{$edit_label}\" src=\"{$edit_img}\" /></a> ";
 			$tcaseName = $tcasePrefix . $tcases['tc_external_id'] . $titleSeperator .
 			             strip_tags($tcases['name']);

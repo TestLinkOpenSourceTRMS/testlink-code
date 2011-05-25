@@ -37,6 +37,7 @@ $gui->pageTitle = lang_get('caption_testPlanWithCF');
 $gui->warning_msg = '';
 $gui->path_info = null;
 $gui->resultSet = null;
+$gui->tproject_id = $args->tproject_id;
 $gui->tproject_name = $args->tproject_name;
 $gui->tplan_name = $args->tplan_name;
 $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
@@ -140,7 +141,7 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $gluechar,$charset
 			                              $gluechar . $item['tcase_name'];
 
 			// create linked icons
-			$edit_link = "<a href=\"javascript:openTCEditWindow({$item['tcase_id']});\">" .
+			$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$item['tcase_id']});\">" .
 						 "<img title=\"{$labels['design']}\" src=\"{$edit_icon}\" /></a> ";
 
 		    $link = "<!-- " . sprintf("%010d", $item['tc_external_id']) . " -->" . $edit_link . $name;

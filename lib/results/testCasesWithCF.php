@@ -11,22 +11,6 @@
  * For a test plan, list test cases with Execution Custom Field Data
  *
  * @internal Revisions:
- *  20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                      table state independent from localization
- *  20101012 - Julian - added html comment to properly sort by test case column
- *  20100930 - asimon - added icons for testcase execution and editing
- *  20100901 - Julian - added execution notes column
- *	20100830 - franciscom - fixed warnings on eventviewer
- *	20100828 - eloff - adapt to rendering of status column
- *	20100827 - franciscom - refactoring - removed unused variables
- *  20100827 - Julian - only show test case if at least one custom field has a value
- *	20100825 - eloff - add platform_name in table
- *	                   add test suite column
- *	20100823 - Julian - table now uses a unique table id per test project
- *	20100816 - Julian - added default column width
- *                    - added default sorting and grouping
- *	20100719 - eloff - Use tlExtTable
- *	20090504 - amitkhullar - BUGID 2465
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -68,7 +52,7 @@ if( $args->doIt )
 		             "{$args->tplan_id}, {$item['platform_id']});\">" .
 		             "<img title=\"{$labels['execution']}\" src=\"{$exec_img}\" /></a> ";
 
-		$edit_link = "<a href=\"javascript:openTCEditWindow({$item['tcase_id']});\">" .
+		$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$item['tcase_id']});\">" .
 					 "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
 
 		$tcaseName = buildExternalIdString($gui->tcasePrefix, $item['tc_external_id']) .
@@ -198,6 +182,7 @@ function initializeGui(&$dbHandler,&$argsObj)
 	$guiObj->path_info = null;
 	$guiObj->resultSet = null;
 	$guiObj->tproject_name = $argsObj->tproject_name;
+	$guiObj->tproject_id = $argsObj->tproject_id;
 	$guiObj->tplan_name = $argsObj->tplan_name;
 	$guiObj->tplan_id = $argsObj->tplan_id;
 

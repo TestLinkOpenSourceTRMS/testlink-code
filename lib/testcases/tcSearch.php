@@ -13,20 +13,6 @@
  *
  *
  *	@internal revisions
- *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
- *  20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
- *  20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                      table state independent from localization
- *  20101005 - asimon - replaced linked test case title by linked icon for editing
- *	20100920 - Julian - BUGID 3793 - use exttable to display search results
- *	20100908 - Julian - BUGID 2877 - Custom Fields linked to TC versions
- *	20100814 - franciscom - improvements on logic and feedback when user fill in test case id filter
- *	20100609 - franciscom - BUGID 1627: Search Test Case by Date of Creation
- *  20100526 - Julian - BUGID 3490 - Search Test Cases based on requirements
- *	20100409 - franciscom - BUGID 3371 - Search Test Cases based on Test Importance
- *	20100326 - franciscom - BUGID 3334 - search fails if test case has 0 steps
- *  20100124 - franciscom - BUGID 3077 - search on preconditions
- *	20100106 - franciscom - Multiple Test Case Steps Feature
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -46,13 +32,13 @@ $edit_label = lang_get('design');
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $gui = initializeGui($args);
-if ($args->tprojectID)
+if ($args->tproject_id)
 {
 	$tables = tlObjectWithDB::getDBTables(array('cfield_design_values','nodes_hierarchy',
 								                'requirements','req_coverage','tcsteps',
 								                'testcase_keywords','tcversions'));
 								                
-    $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
+    $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
     $gui->tcasePrefix .= $tcase_cfg->glue_character;
 
     $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '');
@@ -95,7 +81,7 @@ if ($args->tprojectID)
     }
     else
     {
-        $tproject_mgr->get_all_testcases_id($args->tprojectID,$a_tcid);
+        $tproject_mgr->get_all_testcases_id($args->tproject_id,$a_tcid);
         $filter['by_tc_id'] = " AND NH_TCV.parent_id IN (" . implode(",",$a_tcid) . ") ";
     }
     if($args->version)
@@ -267,7 +253,7 @@ function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
 			$rowData[] = htmlentities($gui->path_info[$result['testcase_id']], ENT_QUOTES, $charset);
 			
 			// build test case link
-			$edit_link = "<a href=\"javascript:openTCEditWindow({$result['testcase_id']});\">" .
+			$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$result['testcase_id']});\">" .
 						 "<img title=\"{$edit_label}\" src=\"{$edit_icon}\" /></a> ";
 			$tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . $titleSeperator .
 			             htmlentities($result['name'], ENT_QUOTES, $charset);
@@ -330,7 +316,7 @@ function init_args($dateFormat)
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-    $args->tprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 
 	// BUGID 3716
 	// convert "creation date from" to iso format for database usage

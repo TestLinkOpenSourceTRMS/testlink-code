@@ -13,20 +13,6 @@
  * 20110207 - Julian - BUGID 4228 - Add more requirement evaluation states
  * 20110207 - Julian - BUGID 4206 - Jump to latest execution for linked test cases
  * 20110207 - Julian - BUGID 4205 - Add Progress bars for a quick overview
- * 20101121 - asimon - refactorization
- * 20101120 - franciscom - BUGID 4034 + a little bit of refactoring
- * 20101102 - asimon - BUGID 3964: Evaluation of requirement is set to "Passed" 
- *                     even though all linked test cases aren't passed
- * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                     table state independent from localization
- * 20101007 - asimon - BUGID 3856: Requirement based report should regard platforms
- * 20101005 - asimon - added linked icon also for testcases linked to requirements
- * 20101001 - asimon - added icon for requirement editing
- * 20100902 - Julian - BUGID 3717 - show linked tcs and the results for each req
- * 20100823 - Julian - table now uses a unique table id per test project
- * 20100820 - asimon - BUGID 3439: little refactorizations
- * 20100819 - asimon - BUGIDs 3261, 3439, 3488, 3569, 3299, 3259, 3687: 
- *                     complete redesign/rewrite of requirement based report 
  */
 
 require_once("../../config.inc.php");
@@ -121,7 +107,6 @@ checkRights($db,$_SESSION['currentUser'],$args);
 
 $gui = init_gui($args);
 
-// BUGID 3856
 $gui_open = config_get('gui_separator_open');
 $gui_close = config_get('gui_separator_close');
 $platforms = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
@@ -385,7 +370,6 @@ function build_rows($args, $status_code_map, $tproject_mgr, $req_spec_map, $req_
 			// complete progress
 			$single_row[] = ($total_count) ? comment_percentage($progress_percentage) : $labels['na'];
 			
-			//BUGID 3717 - show all linked tcversions incl exec result
 			$linked_tcs_with_status = '';
 			if (count($req_info['linked_testcases']) > 0 ) {
 				foreach($req_info['linked_testcases'] as $testcase) {
@@ -402,9 +386,7 @@ function build_rows($args, $status_code_map, $tproject_mgr, $req_spec_map, $req_
 					$tc_name = $prefix . $glue_char_tc . $testcase['tc_external_id'] . $glue_char .
 					           $testcase['name'];
 					           
-					//$tc_edit_link = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id=" .
-					//                $tc_id . "\" title = \"{$labels['goto_testspec']}\">" . $tc_name . "</a>";
-					$edit_link = "<a href=\"javascript:openTCEditWindow({$tc_id});\">" .
+					$edit_link = "<a href=\"javascript:openTCEditWindow({$args->tproject_id},{$tc_id});\">" .
 								 "<img title=\"{$labels['design']}\" src=\"{$edit_icon}\" /></a> ";
 
 					

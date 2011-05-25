@@ -10,23 +10,6 @@
 * 20110512 - Julian - BUGID 4451 - remove version tag from not run test cases as the shown version
 *                                  is only taken from previous build and might not be right
 * 20110329 - Julian - BUGID 4341 - added "Last Execution" column
-* 20101013 - asimon - use linkto.php for emailed links
-* 20101012 - Julian - added html comment to properly sort by test case column
-* 20101007 - asimon - BUGID 3857: Replace linked icons in reports if reports get sent by e-mail
-* 20100930 - asimon - added icons for testcase editing and execution
-* 20100923 - eloff - refactored to use improved table interface
-* 20100828 - eloff - adapt to rendering of status column
-* 20100823 - Julian - table now uses a unique table id per test project and test plan
-* 20100816 - Julian - changed default column width
-                    - added default sorting
-* 20100723 - asimon - BUGID 3590: crash when clicking testcase link because of missing build id
-* 20100719 - eloff - Update due to changes in tlExtTable
-* 20100716 - eloff - group by platform column
-* 20100715 - eloff - use grouping on first column
-*                    Show only one table, group by platform is still possible
-* 20100503 - franciscom - BUGID 3419: In "Test result matrix", tests statuses or not colorized
-* 20100502 - Julian - BUGID 3418
-* 20100424 - franciscom - BUGID 3356	 
 *
 */
 require('../../config.inc.php');
@@ -60,6 +43,7 @@ $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 $gui->tplan_name = $tplan_info['name'];
 $gui->tproject_name = $tproject_info['name'];
+$gui->tproject_id = $args->tproject_id;
 
 $testCaseCfg = config_get('testcase_cfg');
 $testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
@@ -150,7 +134,7 @@ if ($lastResultMap != null)
 			    $tc_name = htmlspecialchars("{$external_id}:{$name}",ENT_QUOTES);
 
 				// create linked icons
-				$edit_link = "<a href=\"javascript:openTCEditWindow({$testCaseId});\">" .
+				$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$testCaseId});\">" .
 							 "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
 			    // 20101007 - asimon - BUGID 3857
 

@@ -924,7 +924,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
             // BUGID 4031 - copying of scope now is configurable
             $prefix = ($req_cfg->use_testcase_summary_prefix_with_title_and_version)
                     ? sprintf($req_cfg->testcase_summary_prefix_with_title_and_version, 
-                              $reqID, $reqData['version_id'], $reqData['title'], $reqData['version'])
+                              $tproject_id, $reqID, $reqData['version_id'], $reqData['title'], $reqData['version'])
                     : $req_cfg->testcase_summary_prefix;
             $content = ($req_cfg->copy_req_scope_to_tc_summary) ? $prefix . $reqData['scope'] : $prefix;
             

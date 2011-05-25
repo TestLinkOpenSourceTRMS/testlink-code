@@ -950,12 +950,12 @@ $tlCfg->req_cfg->testcase_summary_prefix = "<b>The Test Case was generated from 
 $tlCfg->req_cfg->use_testcase_summary_prefix_with_title_and_version = ENABLED;
 
 // If above option is enabled, the following string will be used as a template for the tc summary prefix.
-// It has to include four variables in the form of "%s". The first and second one will be used internally by the system.
-// The third one will then be replaced by the title of the originating Requirement,
-// the fourth one by its version number.
-// Attention: If there aren't exactly three variables in it, the operation will fail.
+// It has to include four variables in the form of "%s". The first,second and third one will be used internally by the system.
+// The fourth one will then be replaced by the title of the originating Requirement,
+// the fivth one by its version number.
+// Attention: If there aren't exactly four variables in it, the operation will fail.
 $tlCfg->req_cfg->testcase_summary_prefix_with_title_and_version = "<b>The Test Case was generated from the assigned" .
-    " requirement <a href=\"javascript:openLinkedReqVersionWindow(%s,%s)\">\"%s\" (version %s)</a>.</b><br />";
+    " requirement <a href=\"javascript:openLinkedReqVersionWindow(%s,%s,%s)\">\"%s\" (version %s)</a>.</b><br />";
 
 /**
  * ENABLED: When generating Test Cases from Requirements, copy the scope of the Requirement

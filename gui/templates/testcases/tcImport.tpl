@@ -18,6 +18,7 @@ Purpose: smarty template - manage import of test cases and test suites
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes"}
+{include file="inc_ext_js.tpl"}
 </head>
 <body>
 
@@ -28,6 +29,22 @@ Purpose: smarty template - manage import of test cases and test suites
 
 {if $gui->resultMap eq null}
 <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}">
+
+  {* restrict file size *}
+  {* 
+  	***** Info from PHP Manual *****
+  	The MAX_FILE_SIZE hidden field (measured in bytes) must precede the file input field, 
+  	and its value is the maximum filesize accepted by PHP. 
+  	This form element should always be used as it saves users the trouble of waiting for a big file being 
+  	transferred only to find that it was too large and the transfer failed. 
+  	Keep in mind: fooling this setting on the browser side is quite easy, 
+  	so never rely on files with a greater size being blocked by this feature. 
+  	It is merely a convenience feature for users on the client side of the application. 
+  	The PHP settings (on the server side) for maximum-size, however, cannot be fooled. 
+  *}
+  
+  
+  <input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitBytes}" /> 
 
   <table>
   <tr>
@@ -67,7 +84,6 @@ Purpose: smarty template - manage import of test cases and test suites
 		<input type="hidden" name="useRecursion" value="{$gui->useRecursion}" />
 		<input type="hidden" name="bIntoProject" value="{$gui->bIntoProject}" />
 		<input type="hidden" name="containerID" value="{$gui->containerID}" />
-		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitBytes}" /> {* restrict file size *}
 		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" onclick="javascript:history.back();" />
 	</div>
@@ -83,11 +99,10 @@ Purpose: smarty template - manage import of test cases and test suites
 	{include file="inc_refreshTree.tpl"}
 {/if}
 
-{if $gui->file_check.status_ok eq 0}
+{if $gui->file_check.status_ok == 0}
   <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
+  // just for debug alert("{$gui->file_check.msg}");
   alert_message("{$labels.warning|escape:'javascript'}","{$gui->file_check.msg|escape:'javascript'}");
-  // alert("{$gui->file_check.msg}");
   </script>
 {/if}  
 

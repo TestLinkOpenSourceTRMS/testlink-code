@@ -11,25 +11,8 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal revisions
+ *  20110128 - franciscom - refactoring -> checkUploadOperation()
  *	20110219 - franciscom - fixed getItemsFromSimpleXMLObj() calls.
- *	20101106 - franciscom - fixed warning on event viewer when there are no keywords defined on test project
- *	20101002 - franciscom - BUGID 3801
- *  20100911 - amitkhullar - BUGID 3764 - Req Mapping Error while import of Test cases.
- *	20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
- *							processCustomFields()
- *	20100904 - franciscom - BUGID 3571 - Add 'create new version' choice when Import Test Suite
- *	20100821 - franciscom - changes to getStepsFromSimpleXMLObj() due to:
- *							BUGID 3695: Test Case Steps - Export/Import - missing attribute execution type
- *								
- *  20100719 - amitkhullar - BUGID 3609 - fix for keyword import error
- *	20100620 - franciscom - Trying to reduce memory problems using statics on 
- *							saveImportedTCData() after issue 3521
- *	20100619 - franciscom - added file size control 
- *	20100409 - franciscom - added import importance and execution_type
- *	20100317 - franciscom - BUGID 3236 - work in progress
- *	20100214 - franciscom - refactoring to use only simpleXML functions
- *	20100106 - franciscom - Multiple Test Case Steps Feature
- * 
  * *********************************************************************************** */
 require('../../config.inc.php');
 require_once('common.php');
@@ -44,6 +27,9 @@ $pcheck_fn=null;
 
 $tree_mgr = new tree($db);
 $args = init_args($tree_mgr);
+
+// new dBug($args);
+
 
 $gui = new stdClass();
 $gui->tproject_id = $args->tproject_id;
@@ -97,24 +83,10 @@ if ($args->do_upload)
   
 	// check the uploaded file
 	$source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
+	$gui->file_check = checkUploadOperation($_FILES,$gui->importLimitBytes);
 	
-	tLog('Uploaded file: '.$source);
-	$doIt = false;
-	$gui->file_check = null;
-	if (($source != 'none') && ($source != ''))
+	if($gui->file_check['status_ok'])
 	{ 
-		// ATTENTION:
-		// MAX_FILE_SIZE hidden input is defined on form, but anyway we do not get error at least using
-		// Firefox and Chrome.
-		if( !($doIt = $_FILES['uploadedFile']['size'] <= $gui->importLimitBytes) )
-		{
-			$gui->file_check['status_ok'] = 0;
-			$gui->file_check['msg'] = sprintf(lang_get('file_size_exceeded'),$_FILES['uploadedFile']['size'],$gui->importLimitBytes);
-		}
-	}
-	if($doIt)
-	{ 
-		$gui->file_check['status_ok'] = 1;
 		if (move_uploaded_file($source, $dest))
 		{
 			tLog('Renamed uploaded file: '.$source);
@@ -179,6 +151,7 @@ $gui->importTypes = $obj_mgr->get_import_file_types();
 $gui->action_on_duplicated_name=$args->action_on_duplicated_name;
 
 
+// new dBug($gui);
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);  
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);

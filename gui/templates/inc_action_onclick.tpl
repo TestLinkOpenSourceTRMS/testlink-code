@@ -90,25 +90,4 @@ function do_action(btn, text, o_id)
 	window.location=my_action;
   }
 }					
-
-/*
-  function: 
-
-  args:
-  
-  returns: 
-
-*/
-function alert_message(title,msg)
-{
-  Ext.MessageBox.alert(title.escapeHTML(), msg.escapeHTML());
-}
-
-/**
- * Displays an alert message. title and message must be escaped.
- */
-function alert_message_html(title,msg)
-{
-  Ext.MessageBox.alert(title, msg);
-}
 </script>

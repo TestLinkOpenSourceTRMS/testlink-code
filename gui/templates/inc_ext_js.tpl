@@ -108,4 +108,27 @@ rev :
       <script type="text/javascript" src="{$basehref}{$ext_location}/ux/TableGrid.js" language="javascript"></script>
   {/if}
 
+  <script type="text/javascript">
+  /*
+    function: 
+  
+    args:
+    
+    returns: 
+  
+  */
+  function alert_message(title,msg)
+  {
+    Ext.MessageBox.alert(title.escapeHTML(), msg.escapeHTML());
+  }
+  
+  /**
+   * Displays an alert message. title and message must be escaped.
+   */
+  function alert_message_html(title,msg)
+  {
+    Ext.MessageBox.alert(title, msg);
+  }
+  </script>
+
 {/if}

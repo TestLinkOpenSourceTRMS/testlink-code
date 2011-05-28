@@ -1119,4 +1119,61 @@ function checkSecurityClearance(&$dbHandler,&$userObj,$context,$rightsToCheck,$c
 		exit();
 	}
 }
+
+
+function checkUploadOperation($PHP_files,$tlUploadSizeBytes=0)
+{
+	$ret = array('status_ok' => 0, 'msg' => '');
+	
+	$maxSize = $tlUploadSizeBytes > 0 ? $tlUploadSizeBytes : config_get('import_file_max_size_bytes'); 
+	switch($PHP_files['uploadedFile']['error'])
+	{
+		case UPLOAD_ERR_OK:
+			// There is no error, the file uploaded with success.
+			$ret['status_ok'] = 1;
+		break;
+
+		case UPLOAD_ERR_INI_SIZE:	
+			// The uploaded file exceeds the upload_max_filesize directive in php.ini.
+			$key = 'upload_max_filesize';
+			$val = ini_get($key);
+			$ret['msg'] = sprintf(lang_get('upload_err_ini_size'), " $key=$val " );
+		break;	
+
+		case UPLOAD_ERR_FORM_SIZE:
+			// The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.
+			$ret['msg'] = sprintf(lang_get('upload_err_form_size'),$maxSize);
+		break;
+
+		case UPLOAD_ERR_PARTIAL:
+		    // The uploaded file was only partially uploaded.
+			$ret['msg'] = lang_get('upload_err_partial');
+		break;
+		
+		case UPLOAD_ERR_NO_FILE:
+			// No file was uploaded.
+			$ret['msg'] = lang_get('upload_err_no_file');
+		break;
+		
+		case UPLOAD_ERR_NO_TMP_DIR:
+			// Missing a temporary folder.
+			$ret['msg'] = lang_get('upload_err_no_tmp_dir');
+		break;
+		
+		case UPLOAD_ERR_CANT_WRITE:
+			// Failed to write file to disk. Introduced in PHP 5.1.0.
+			$ret['msg'] = lang_get('upload_err_cant_write');
+		break;
+		
+		case UPLOAD_ERR_EXTENSION:
+			// A PHP extension stopped the file upload. 
+			// PHP does not provide a way to ascertain which extension caused the file upload to stop; 
+			// examining the list of loaded extensions with phpinfo() may help. Introduced in PHP 5.2.0.
+			$ret['msg'] = lang_get('upload_err_extension');
+		break;
+	}
+	
+	return $ret;
+}
+
 ?>

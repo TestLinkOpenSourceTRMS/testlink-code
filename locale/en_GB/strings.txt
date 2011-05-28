@@ -3364,5 +3364,14 @@ $TLS_xls_jmexport_expected_result = 'Expected Result';
 $TLS_xls_jmexport_result = 'Result';
 $TLS_xls_jmexport_result_comment = 'Result comment';
 $TLS_link_report_test_plan_results_csv = 'Test Plan results (XLSX)';
+
+
+$TLS_upload_err_ini_size ='The uploaded file exceeds the upload_max_filesize directive in php.ini. (%s)';
+$TLS_upload_err_form_size ='The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form (%s Bytes)';
+$TLS_upload_err_partial='The uploaded file was only partially uploaded.';
+$TLS_upload_err_no_file='No file was uploaded.';
+$TLS_upload_err_no_tmp_dir='Missing a temporary folder.';
+$TLS_upload_err_cant_write='Failed to write file to disk. Introduced in PHP 5.1.0.';
+$TLS_upload_err_extension='A PHP extension stopped the file upload.'; 
 // ----- END ------------------------------------------------------------------
 ?>

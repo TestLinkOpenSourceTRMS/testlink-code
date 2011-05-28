@@ -8,6 +8,7 @@ Testlink: smarty template -
 {config_load file="input_dimensions.conf" section='login'}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
+{include file="inc_ext_js.tpl"}
 
 {lang_get var="labels"
           s='warning_empty_login,warning_empty_first_name,warning,btn_save,

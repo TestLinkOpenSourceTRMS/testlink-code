@@ -31,6 +31,8 @@
     warning_empty_tproject_name'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
+{include file="inc_ext_js.tpl"}
+
 {if $gui_cfg->testproject_coloring != 'none'}
   {include file="inc_jsPicker.tpl"}
 {/if}

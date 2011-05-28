@@ -14,6 +14,7 @@ create/edit Test Plan
              show_event_history,testplan_txt_notes,warning_required_cf"}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
+{include file="inc_ext_js.tpl"}
 
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";

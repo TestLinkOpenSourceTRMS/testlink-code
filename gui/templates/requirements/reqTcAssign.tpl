@@ -19,7 +19,7 @@ assign REQ to one test case
              check_uncheck_all_checkboxes,req_msg_norequirement,btn_assign"}
           
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_jsCheckboxes.tpl"}
+{include file="inc_jsCheckboxes.tpl"} {* includes ext-js *}
 
 <script type="text/javascript">
 var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";

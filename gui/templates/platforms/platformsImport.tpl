@@ -14,10 +14,11 @@ Purpose: smarty template - manage import of platforms
              max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
              btn_goback,not_imported,warning_empty_filename,imported,btn_cancel'}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_ext_js.tpl"}
 
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";

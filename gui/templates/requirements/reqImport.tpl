@@ -22,6 +22,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes"}
+{include file="inc_ext_js.tpl"}
+
 </head>
 <body>
 <h1 class="title">{$gui->main_descr|escape}</h1>

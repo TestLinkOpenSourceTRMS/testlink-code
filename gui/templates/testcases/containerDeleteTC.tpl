@@ -5,7 +5,6 @@ Viewer for massive delete of test cases inside a test suite
 
 @filesource containerDeleteTC.tpl
 20110402 - franciscom - BUGID 4322: New Option to block delete of executed test cases
-20100910 - franciscom - BUGID 3047: Deleting multiple TCs
 *}
 {lang_get var='labels'
           s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,
@@ -15,7 +14,7 @@ Viewer for massive delete of test cases inside a test suite
 {lang_get s='select_at_least_one_testcase' var="check_msg"}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_jsCheckboxes.tpl"}
+{include file="inc_jsCheckboxes.tpl"} {* includes ext-js *}
 
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";

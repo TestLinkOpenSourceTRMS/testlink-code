@@ -6,16 +6,6 @@ Purpose: smarty template - create new testcase
 20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
 20110111 - Julian - Improved modified warning message when navigating away without saving
 20110109 - franciscom - BUGID 3952 - stay here like Mantis does
-20101202 - asimon - BUGID 4067: Tree refreshes after every action taken in Test Specification 
-																when update tree is disabled
-20101011 - franciscom - BUGID 3874 - custom fields type validation
-20101010 - franciscom - BUGID 3062 - Check for duplicate name via AJAX call - checkTCaseDuplicateName()
-                        need to add input for testcase_id, to make checkTCaseDuplicateName() work OK
-                        because edit and new test case are managed using common smarty template
-                        then can not have TWO different calls to checkTCaseDuplicateName()
-                        added testsuite_id for same logic
-
-20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
 *}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -25,6 +15,8 @@ Purpose: smarty template - create new testcase
                           warning_empty_tc_title,stay_here,warning_unsaved'}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
+{include file="inc_ext_js.tpl"}
+
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 <script language="javascript" src="gui/javascript/tcase_utils.js" type="text/javascript"></script>

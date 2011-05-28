@@ -10,15 +10,6 @@ Purpose: smarty template - create / edit a req
 20110110 - Julian - BUGID 4153: Warning message when navigating away from changed requirement without saving
 20110106 - Julian - BUGID 4152: do not set focus on req doc id if log message window is shown
 20101226 - franciscom - BUGID 4088: Required parameter for custom fields
-20101211 - franciscom - BUGID 4056: Requirement Revisioning
-20101130 - Julian - BUGID 4063: "Save" and "Cancel" Button at the top of the page
-20101124 - Julian - BUGID 4049: Ajax login on timeout for requirements to avoid data loss
-20101011 - franciscom - BUGID 3886: CF Types validation
-20101006 - asimon - BUGID 3854
-20100915 - Julian - BUGID 3777: Allow to insert last req doc id when creating requirement
-20100808 - asimon - added logic to refresh filtered tree on changes
-20100502 - franciscom - BUGID 3413: removed debug info
-20100319 - asimon - BUGID 1748: added logic to add and remove requirement relations
 *}
 {* ------------------------------------------------------------------------- *}
 
@@ -34,6 +25,8 @@ Purpose: smarty template - create / edit a req
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
+{include file="inc_ext_js.tpl"}
+
 <script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
 
 <script type="text/javascript">

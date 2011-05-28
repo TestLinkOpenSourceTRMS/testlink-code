@@ -30,7 +30,7 @@ Purpose: view requirement with version management
 
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
-{include file="inc_action_onclick.tpl"}
+{include file="inc_action_onclick.tpl"} {* includes ext-js *}
 
 {config_load file="input_dimensions.conf"}
 

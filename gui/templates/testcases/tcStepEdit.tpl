@@ -13,17 +13,6 @@ Purpose: create/edit test case step
 20110111 - Julian - Improved modified warning message when navigating away without saving
 20110106 - franciscom - BUGID 4136 - missing implementation on BUGID 3241
                                      layout was not used on CREATE
-20101016 - franciscom - added id to table rows with step data 
-                        BUGID 3901: Edit Test Case STEP - scroll window to show selected step
-20100621 - eloff - BUGID 3241 - Implement vertical layout
-20100529 - franciscom - BUGID 3493 - using escape:'url'
-20100403 - franciscom - added create step button while editing existent step
-                        BUGID 3359 - copy test case step
-20100327 - franciscom - improvements on goback logic
-20100125 - franciscom - fixed bug on checks on existence of step number
-20100124 - eloff - BUGID 3088 - Check valid session before submit
-20100123 - franciscom - checks on existence of step number
-20100111 - eloff - BUGID 2036 - Check modified content before exit
 *}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -47,6 +36,8 @@ Purpose: create/edit test case step
              title_created,version,by,summary,preconditions,title_last_mod"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
+{include file="inc_ext_js.tpl"}
+
 <script type="text/javascript" src="gui/javascript/ext_extensions.js" language="javascript"></script>
 
 <script type="text/javascript">

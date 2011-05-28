@@ -17,6 +17,8 @@ Compare testcase versions
           use_html_code_comp,use_html_comp,diff_method"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
+{include file="inc_ext_js.tpl"}
+
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/diff/diff.css">
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/daisydiff/css/diff.css">
 

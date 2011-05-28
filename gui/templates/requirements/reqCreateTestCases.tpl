@@ -17,7 +17,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_jsCheckboxes.tpl"}
+{include file="inc_jsCheckboxes.tpl"} {* includes ext-js *}
 
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";

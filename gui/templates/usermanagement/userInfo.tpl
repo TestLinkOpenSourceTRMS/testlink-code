@@ -18,8 +18,8 @@ filesource	userInfo.tpl
              warning_empty_last_name,passwd_dont_match,empty_old_passwd,show_event_history'}
 
 {assign var="action_mgmt" value="lib/usermanagement/userInfo.php"}
-
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
+{include file="inc_ext_js.tpl"}
 
 
 <script type="text/javascript">

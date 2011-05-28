@@ -5,10 +5,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 test case export initial page 
 
 @internal revisions
-20100315 - franciscom - improvements on goback management
-20100315 - amitkhullar - Added checkboxes options for Requirements and CFields for Export.
+*}
 
-* ----------------------------------------------------------------- *}
 {lang_get var="labels" 
           s='export_filename,warning_empty_filename,file_type,warning,export_cfields,title_req_export,
              view_file_format_doc,export_with_keywords,btn_export,btn_cancel'} 
@@ -16,6 +14,7 @@ test case export initial page
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_ext_js.tpl"}
 
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";

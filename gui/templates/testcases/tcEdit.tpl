@@ -7,14 +7,6 @@ Purpose: smarty template - edit test specification: test case
 
 20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
 20110111 - Julian - Improved modified warning message when navigating away without saving
-20101226 - franciscom - BUGID 
-20101010 - franciscom - refactoring of BUGID 3062 -> gui/javascript/tcase_utils.js
-                        added testsuite_id for same logic
-20100810 - asimon - BUGID 3579: solved tree refreshing problems
-20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
-20100306 - eloff - BUGID 3062 - Check for duplicate name via AJAX call - checkTCaseDuplicateName()
-20100124 - eloff - BUGID 3088 - Check valid session before submit
-20100110 - eloff - BUGID 2036 - Check modified content before exit
 *}
 
 {lang_get var="labels"
@@ -22,6 +14,7 @@ Purpose: smarty template - edit test specification: test case
              version,title_edit_tc,cancel,warning_unsaved"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
+{include file="inc_ext_js.tpl"}
 
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>

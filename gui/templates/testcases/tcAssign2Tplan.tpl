@@ -12,7 +12,7 @@ Purpose: manage assignment of A test case version to N test plans
              cancel,warning,version,btn_add,testplan_usage,no_test_plans'}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_jsCheckboxes.tpl"}
+{include file="inc_jsCheckboxes.tpl"} {* includes ext-js *}
 
 <script type="text/javascript">
 var check_msg="{$labels.please_select_one_testplan|escape:'javascript'}";

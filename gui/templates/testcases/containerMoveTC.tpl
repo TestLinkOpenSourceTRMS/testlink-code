@@ -17,7 +17,7 @@ Purpose:
 {lang_get s='select_at_least_one_testcase' var="check_msg"}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_jsCheckboxes.tpl"}
+{include file="inc_jsCheckboxes.tpl"} {* include ext-js *}
 
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";

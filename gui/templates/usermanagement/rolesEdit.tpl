@@ -8,7 +8,7 @@ create/edit user role
 *}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
-{include file="inc_jsCheckboxes.tpl"}
+{include file="inc_jsCheckboxes.tpl"} {* includes also ext.js *}
 
 <script type="text/javascript">
 {lang_get var="labels"

@@ -6,8 +6,8 @@ Purpose: smarty template - View all platforms
 @internal revisions
 20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor for platform notes
 *}
-{assign var="url_args" value="lib/platforms/platformsEdit.php"}
-{assign var="platform_edit_url" value="$basehref$url_args"}
+{$url_args="lib/platforms/platformsEdit.php"}
+{$platform_edit_url="$basehref$url_args"}
 
 {lang_get var="labels"
           s="warning,warning_empty_platform,show_event_history,
@@ -15,6 +15,8 @@ Purpose: smarty template - View all platforms
 
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
+{include file="inc_ext_js.tpl"}
+
 
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
@@ -34,7 +36,7 @@ function validateForm(f)
 </head>
 
 <body>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$gui->action_descr|escape}</h1>

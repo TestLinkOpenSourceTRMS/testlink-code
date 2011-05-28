@@ -20,6 +20,7 @@ Purpose: smarty template - edit test specification: containers
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$editorType}
+{include file="inc_ext_js.tpl"}
 
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">

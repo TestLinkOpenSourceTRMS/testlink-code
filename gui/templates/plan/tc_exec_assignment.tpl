@@ -16,7 +16,7 @@ generate the list of TC that can be removed from a Test Plan
                           check_uncheck_all_tc'}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_jsCheckboxes.tpl"}
+{include file="inc_jsCheckboxes.tpl"} {* includes ext-j *}
 
 <script type="text/javascript">
 var check_msg="{$labels.exec_assign_no_testcase|escape:'javascript'}";

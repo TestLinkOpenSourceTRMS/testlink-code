@@ -13,6 +13,7 @@ req export initial page
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_ext_js.tpl"}
 
 <script type="text/javascript">
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";

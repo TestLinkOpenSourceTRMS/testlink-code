@@ -11,10 +11,6 @@ Purpose: smarty template - create a new req document
 20110110 - Julian - BUGID 4154: Warning message when navigating away from changed requirement
                                 specification without saving
 20101226 - franciscom - BUGID 4088: Required parameter for custom fields 
-20101124 - Julian - BUGID 4051: Ajax login on timeout for requirement specifications to avoid data loss
-20101006 - asimon - BUGID 3854
-20100810 - asimon - BUGID 3317: disabled total count of requirements by default
-20100808 - asimon - added logic to refresh filtered tree on changes
 *}
 {* ------------------------------------------------------------------------- *}
 
@@ -22,20 +18,19 @@ Purpose: smarty template - create a new req document
           s='warning,warning_empty_req_spec_title,title,scope,req_total,type,warning_required_cf,
              doc_id,cancel,show_event_history,warning_empty_doc_id,warning_countreq_numeric,
              warning_unsaved'}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
-{include file="inc_action_onclick.tpl"}
+{include file="inc_action_onclick.tpl"} {* includes ext-js *}
 <script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
-	var warning_empty_req_spec_title = "{$labels.warning_empty_req_spec_title|escape:'javascript'}";
-	var warning_empty_doc_id = "{$labels.warning_empty_doc_id|escape:'javascript'}";
-	var warning_countreq_numeric = "{$labels.warning_countreq_numeric|escape:'javascript'}";
-	var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_req_spec_title = "{$labels.warning_empty_req_spec_title|escape:'javascript'}";
+var warning_empty_doc_id = "{$labels.warning_empty_doc_id|escape:'javascript'}";
+var warning_countreq_numeric = "{$labels.warning_countreq_numeric|escape:'javascript'}";
+var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
 
 	
 	function validateForm(f)

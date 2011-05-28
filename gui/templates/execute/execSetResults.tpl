@@ -4,16 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - show tests to add results
 
 @internal revisions
-  20101226 - franciscom - BUGID 4088: Required parameter for custom fields
-  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  - {literal} {/literal} REMOVED
-                          on JS section space is needed on {}
-                          panel.load({url:url2load}); ->   panel.load({ url:url2load });
-
-  20101008 - asimon - BUGID 3311
-  20100926 - franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
-  20100614 - eloff - BUGID 3522 - fix issue with multiple note panels
-  20100503 - franciscom - BUGID 3260: Import XML Results is not working with Internet Explorer
-                          reason: passing string without string separator to  openImportResult()
+20101226 - franciscom - BUGID 4088: Required parameter for custom fields
 *}
 {$attachment_model = $cfg->exec_cfg->att_model}
 {$title_sep = $smarty.const.TITLE_SEP}
@@ -54,6 +45,8 @@ Purpose: smarty template - show tests to add results
 {$exportAction ="lib/execute/execExport.php?tplan_id="}
 
 {include file="inc_head.tpl" popup='yes' openHead='yes' jsValidate="yes" editorType=$gui->editorType}
+{include file="inc_ext_js.tpl"}
+
 <script language="JavaScript" src="gui/javascript/radio_utils.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 

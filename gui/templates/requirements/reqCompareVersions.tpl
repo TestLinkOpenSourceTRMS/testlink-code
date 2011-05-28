@@ -11,6 +11,7 @@ Compare requirement versions
 *}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
+{include file="inc_ext_js.tpl"}
 
 {lang_get var="labels"
           s="select_versions,title_compare_versions_req,version,compare,modified,modified_by,

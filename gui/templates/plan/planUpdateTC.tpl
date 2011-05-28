@@ -17,7 +17,7 @@ Purpose: generate a list of Test Cases linked to Test Plan
              update_to_version,inactive_testcase,btn_update_testplan_tcversions'}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_jsCheckboxes.tpl"}
+{include file="inc_jsCheckboxes.tpl"} {* includes ext-js*}
 
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";

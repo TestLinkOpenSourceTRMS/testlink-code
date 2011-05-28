@@ -9,18 +9,13 @@ Purpose: smarty template - create containers
                                 suite without saving
                   - added cancel button on top / create,cancel button on bottom
 20101226 - franciscom - BUGID 4088: Required parameter for custom fields
-20101202 - asimon - BUGID 4067: refresh tree problems 
-20101012 - franciscom - BUGID 3887: CF Types validation
-20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-                        removed use of smarty.template to get current directory to include other
-                        templates. On 3.0 RC smarty.template do not contains current dir
-
 *}
 {lang_get var="labels"
           s="warning_empty_testsuite_name,title_create,tc_keywords,warning_required_cf,
              warning,btn_create_testsuite,cancel,warning_unsaved"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
+{include file="inc_ext_js.tpl"}
 
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">

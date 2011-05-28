@@ -8,9 +8,10 @@ Purpose: smarty template - platforms export
 @internal revisions
 
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_ext_js.tpl"}
 
 {lang_get var="labels" 
           s='btn_export,btn_cancel,warning,export_filename,file_type,

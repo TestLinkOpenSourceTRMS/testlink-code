@@ -7,11 +7,9 @@ Purpose: smarty template - View all platforms
 
 @internal revisions
 20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor for platform notes
-20101120 - franciscom - BUGID 3410: Smarty 3.0 compatibility 
-20100119 - Eloff	- added ability to show/hide platform id for API
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
-{include file="inc_del_onclick.tpl"}
+{include file="inc_action_onclick.tpl"} {* includes ext-js *}
 
 {lang_get var='labels'
           s='th_notes,th_platform,th_delete,btn_import,btn_export,
@@ -23,7 +21,7 @@ Purpose: smarty template - View all platforms
 {lang_get s='warning_cannot_delete_platform' var="warning_msg_cannot_del"}
 {lang_get s='delete' var="del_msgbox_title"}
 
-{assign var="viewAction" value="lib/platforms/platformsView.php"}
+{$viewAction="lib/platforms/platformsView.php"}
 
 <script type="text/javascript">
 <!--

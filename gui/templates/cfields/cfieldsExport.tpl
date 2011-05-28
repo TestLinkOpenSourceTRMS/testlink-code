@@ -5,12 +5,12 @@ custom fields export
 
 @filesource	cfieldsExport.tpl
 @internal revisions
-20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-20100315 - franciscom - improvement on goback management
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_ext_js.tpl"}
+
 {lang_get var="labels" 
           s='btn_export,btn_cancel,warning,export_filename,file_type,
              view_file_format_doc,export_with_keywords,warning_empty_filename'}

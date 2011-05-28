@@ -22,28 +22,15 @@ of columns present on custom fields tables.
 This is done to simplify logic.
 
 
-rev :
-		 20110108 - franciscom - BUGID 4000
-     20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-     20100829 - franciscom - BUGID 3707 - Things that works with Firefox, 
-                                          BUT NOT with Chrome and Internet Explorer
-                                          added body on load event, to initialize when
-                                          accessing in edit mode.
-
-     20100121 - franciscom - BUGID - layout change
-     20090524 - franciscom - Refactoring to have a better picture on User Interface of
-                             Custom Field application area usage
-     20090503 - franciscom - BUGID 2425
-     20090408 - franciscom - BUGID 2352 - removed delete block.
-                             BUGID 2359 - display test projects where custom field is assigned
-     20080810 - franciscom - BUGID 1650 (REQ)
+@internal revisions
+20110108 - franciscom - BUGID 4000
 *}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{assign var="managerURL" value="lib/cfields/cfieldsEdit.php"}
-{assign var="viewAction" value="lib/cfields/cfieldsView.php"}
+{$managerURL="lib/cfields/cfieldsEdit.php"}
+{$viewAction="lib/cfields/cfieldsView.php"}
 
 {lang_get s='warning_delete_cf' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -56,7 +43,7 @@ rev :
              btn_add,btn_cancel,show_on_design,show_on_testplan_design"}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
-{include file="inc_action_onclick.tpl"}
+{include file="inc_action_onclick.tpl"} {* includes ext-js *}
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_action_onclick.tpl */
@@ -376,7 +363,7 @@ function initShowOnExec(id_master,show_on_cfg)
 			<th style="background:none;">{$labels.available_on}</th>
 			<td>
 			  {if $gui->cfield_is_used} {* Type CAN NOT BE CHANGED *}
-			    {assign var="idx" value=$gui->cfield.node_type_id}
+			    {$idx=$gui->cfield.node_type_id}
 			    {$gui->cfieldCfg->cf_allowed_nodes.$idx}
 			    {$hidden_cf_node_type_id}
 			    <input type="hidden" id="combo_cf_node_type_id"
@@ -397,7 +384,7 @@ function initShowOnExec(id_master,show_on_cfg)
 			<th style="background:none;">{$labels.type}</th>
 			<td>
 			  {if $gui->cfield_is_used}
-			    {assign var="idx" value=$gui->cfield.type}
+			    {$idx=$gui->cfield.type}
 			    {$gui->cfield_types.$idx}
 			    <input type="hidden" id="hidden_cf_type"
 			           value={$gui->cfield.type} name="cf_type" />
@@ -413,10 +400,9 @@ function initShowOnExec(id_master,show_on_cfg)
 			</td>
 		</tr>
 
+    {$display_style="none"}
     {if $gui->show_possible_values}
-      {assign var="display_style" value=""}
-    {else}
-      {assign var="display_style" value="none"}
+      {$display_style=""}
 		{/if}
 		<tr id="possible_values" style="display:{$display_style};">
 			<th style="background:none;">{$labels.possible_values}</th>
@@ -437,7 +423,7 @@ function initShowOnExec(id_master,show_on_cfg)
 				<select name="cf_enable_on" id="cf_enable_on"
 				        onchange="initShowOnExec('cf_enable_on',js_show_on_cfg);">
         {foreach item=area_cfg key=area_name from=$gui->cfieldCfg->cf_enable_on}
-          {assign var="access_key" value="enable_on_$area_name"}
+          {$access_key="enable_on_$area_name"}
 				  <option value={$area_name} id="option_{$area_name}" 
 				          {if $area_cfg.value == 0} style="display:none;" {/if} 
 				  {if $gui->cfield.$access_key} selected="selected"	{/if}>{$area_cfg.label}</option>
@@ -451,9 +437,9 @@ function initShowOnExec(id_master,show_on_cfg)
     {*   Execution  *}
     {* 
     {if $gui->cfieldCfg->disabled_cf_show_on.execution != ''}
-      {assign var="display_style" value="none"}
+      {$display_style="none"}
     {else}
-      {assign var="display_style" value=""}
+      {$display_style=""}
     {/if}
     *}
     		<tr id="container_cf_show_on_execution" {$gui->cfieldCfg->cf_show_on.execution.style}>

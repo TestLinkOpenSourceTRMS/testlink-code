@@ -41,6 +41,10 @@ $gui = new stdClass();
 $gui->grants=array();
 $gui->testprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 $gui->testplanID = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+if($gui->testplanID == 0)
+{
+	$gui->testplanID = isset($_REQUEST['testplan']) ? intval($_REQUEST['testplan']) : 0;
+}
 
 $gui->tprojectOptions = new stdClass();
 $gui->tprojectOptions->inventoryEnabled = 0;

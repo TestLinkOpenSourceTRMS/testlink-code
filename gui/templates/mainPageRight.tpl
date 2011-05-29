@@ -1,8 +1,9 @@
 {*
- Testlink Open Source Project - http://testlink.sourceforge.net/
+Testlink Open Source Project - http://testlink.sourceforge.net/
+
+main page right side
  
- @filesource	mainPageRight.tpl
- Purpose: smarty template - main page / site map
+@filesource	mainPageRight.tpl
 
 @internal revisions
 20110502 - franciscom - added grant check in order to display test execution header
@@ -22,14 +23,14 @@
              href_metrics_dashboard,href_add_remove_test_cases"}
 
 
-{assign var="menuLayout" value=$tlCfg->gui->layoutMainPageRight}
-{assign var="display_right_block_1" value=false}
-{assign var="display_right_block_2" value=false}
-{assign var="display_right_block_3" value=false}
+{$menuLayout=$tlCfg->gui->layoutMainPageRight}
+{$display_right_block_1=false}
+{$display_right_block_2=false}
+{$display_right_block_3=false}
 
 {if $gui->grants.testplan_planning == "yes" || $gui->grants.mgt_testplan_create == "yes" ||
 	  $gui->grants.testplan_user_role_assignment == "yes" or $gui->grants.testplan_create_build == "yes"}
-   {assign var="display_right_block_1" value=true}
+   {$display_right_block_1=true}
 
     <script  type="text/javascript">
     function display_right_block_1()
@@ -51,7 +52,7 @@
 {/if}
 
 {if $gui->countPlans > 0 && $gui->grants.testplan_execute == "yes"}
-   {assign var="display_right_block_2" value=true}
+   {$display_right_block_2=true}
 
     <script  type="text/javascript">
     function display_right_block_2()
@@ -72,7 +73,7 @@
 {/if}
 
 {if $gui->countPlans > 0 && $gui->grants.testplan_planning == "yes"}
-   {assign var="display_right_block_3" value=true}
+   {$display_right_block_3=true}
 
     <script  type="text/javascript">
     function display_right_block_3()
@@ -100,13 +101,20 @@
 	  <div class="testproject_title">
      {lang_get s='help' var='common_prefix'}
      {lang_get s='test_plan' var="xx_alt"}
-     {assign var="text_hint" value="$common_prefix: $xx_alt"}
+     {$text_hint="$common_prefix: $xx_alt"}
      {include file="inc_help.tpl" helptopic="hlp_testPlan" show_help_icon=true 
               inc_help_alt="$text_hint" inc_help_title="$text_hint"  
               inc_help_style="float: right;vertical-align: top;"}
 
 
  	   <form name="testplanForm" action="lib/general/mainPage.php">
+ 	   
+ 	   {* 
+ 	   IMPORTANT NOTICE: 
+ 	   because we are using this.form.submit, seems that URL arguments if added on
+ 	   form action ARE IGNORED. 
+ 	   *}
+       <input type="hidden" name="tproject_id" value="{$gui->testprojectID}">	
        {if $gui->countPlans > 0}
 		     {$labels.current_test_plan}:<br/>
 		     <select style="z-index:1"  name="testplan" onchange="this.form.submit();">

@@ -1116,10 +1116,6 @@ class testcase extends tlObjectWithAttachments
 		$linked_tcversions = $this->get_linked_versions($id);
 		$has_links_to_testplans = is_null($linked_tcversions) ? 0 : 1;
 	
-		// new dBug($linked_tcversions);
-		// $xx = $this->get_exec_status($id);
-		
-		// new dBug($xx);
 		if($has_links_to_testplans)
 		{
 			// check if executed
@@ -2242,6 +2238,7 @@ class testcase extends tlObjectWithAttachments
 	    }    
 	    $sqlx .= $where_clause; 
 		$version_id = $this->db->fetchRowsIntoMap($sqlx,'version');
+	    
 	    $sql = "/* $debugMsg */ " .
 			   " SELECT DISTINCT NH.parent_id AS tcase_id, NH.id AS tcversion_id, " .
 			   " T.tcversion_id AS linked, T.platform_id, TCV.active, E.tcversion_id AS executed, " . 
@@ -2386,6 +2383,7 @@ class testcase extends tlObjectWithAttachments
 	    }
 	
 	    $recordset = null;
+    
 	    if( !is_null($target) )
 	    {
 	    	foreach($target as $idx)
@@ -2396,22 +2394,20 @@ class testcase extends tlObjectWithAttachments
 	    	   	    $active_status='INACTIVE' && $wkitem['active']==0 )
 	    	   	{    
 	    	   	    $recordset[$wkitem['tcversion_id']][$wkitem['testplan_id']][$wkitem['platform_id']]=$wkitem;
+	    	   	    
 	    	   	    if( $my['options']['addExecIndicator'] )
 	    	   	 	{
 	    	   	 		if( !isset($recordset['executed']) )
 	    	   	 		{
 	    	   	 			$recordset['executed'] = 0;
 	    	   	 		}
-	    	   	 		else if( $recordset['executed'] == 0 )
+	    	   	 		
+	    	   	 		if( $recordset['executed'] == 0 )
 	    	   	 		{ 
 	    	   	 			if( !is_null($wkitem['executed']) )
 	    	   	 			{
 	    	   	 				$recordset['executed'] = 1;
 	    	   	 			}
-	    	   	 			// else if( !isset($recordset[$wkitem['tcversion_id']]['executed']))
-	    	   	 			// {
-	    	   	 			// 	$recordset['executed'] = 0;
-	    	   	 			// }
 	    	   	 		}	
 	    	   		}    
 	    	   	}    

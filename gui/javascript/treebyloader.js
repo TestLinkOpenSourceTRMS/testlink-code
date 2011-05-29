@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: treebyloader.js,v 1.9.2.1 2010/11/21 16:54:44 asimon83 Exp $
+@filesource	treebyloader.js
 
 Created using EXT JS examples.
 This code has following features:
@@ -23,15 +23,15 @@ Ext.ux.tree.RemoteTreePanel by Saki - ver.: 1.0
 
 Author: franciscom - 20080525
 
-rev:
-    20101121 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
-    20100908 - franciscom - work on CTRL+Drag&Drop for copy (just started)
-    20100603 - franciscom - added context menu logic to solve partially 
-               BUGID 2408: Relation between internal testcaseid,testplanid,...
+@internal revisions
+20101121 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
+20100908 - franciscom - work on CTRL+Drag&Drop for copy (just started)
+20100603 - franciscom - added context menu logic to solve partially 
+           				BUGID 2408: Relation between internal testcaseid,testplanid,...
                
-    20080831 - franciscom - added beforemovenode() logic
+20080831 - franciscom - added beforemovenode() logic
     
-    Ext JS Forums > Ext JS General Forums > Ext: Examples and Extras > Saving tree state example
+Ext JS Forums > Ext JS General Forums > Ext: Examples and Extras > Saving tree state example
 */
 
 
@@ -435,14 +435,17 @@ Ext.onReady(function(){
         });                                          
     }   
     
-    // 20100908
-    tree.on(
-            'beforenodedrop', 
-            function(dropEvent)
-            { 
-                  return checkCtrlKey(dropEvent);                    
-            }
-    );                                          
+    // 20110529 - franciscom 
+    // Will comment till will be ready
+    //
+    // 20100908 - work on CTRL+Drag&Drop for copy (just started)
+    // tree.on(
+    //        'beforenodedrop', 
+    //        function(dropEvent)
+    //        { 
+    //              return checkCtrlKey(dropEvent);                    
+    //        }
+    // );                                          
     
     
     

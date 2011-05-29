@@ -47,6 +47,8 @@ Purpose: smarty template - delete test case in test specification
 	      </table>
       	{$gui->delete_message}
     {/if}
+
+    {if $gui->delete_enabled}
     
 	  <p>{$labels.question_del_tc}</p>
 	  <form method="post" 
@@ -56,6 +58,7 @@ Purpose: smarty template - delete test case in test specification
 	  	       onclick='javascript: location.href=fRoot+"lib/testcases/archiveData.php?tproject_id={$gui->tproject_id}&version_id=undefined&edit=testcase&id={$gui->testcase_id}";'
 	  	       value="{$labels.btn_no}" />
 	  </form>
+    {/if}
   
   
   {else}
@@ -82,6 +85,7 @@ Purpose: smarty template - delete test case in test specification
       	{$gui->delete_message}
     {/if}
     
+    {if $gui->delete_enabled}
 	  <p>{$labels.question_del_tc}</p>
 	  <form method="post" 
 	        action="lib/testcases/tcEdit.php?tproject_id={$gui->tproject_id}&testcase_id={$gui->testcase_id}&tcversion_id={$gui->tcversion_id}">
@@ -90,7 +94,8 @@ Purpose: smarty template - delete test case in test specification
 	  	       onclick='javascript: location.href=fRoot+"lib/testcases/archiveData.php?tproject_id={$gui->tproject_id}&version_id=undefined&edit=testcase&id={$gui->testcase_id}";'
                value="{$labels.btn_no}" />
 	  </form>
-  
+    {/if}
+    
   {/if}	  
 {/if}
 </div>

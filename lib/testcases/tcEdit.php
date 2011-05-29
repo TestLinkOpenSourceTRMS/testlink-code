@@ -20,22 +20,6 @@
  *  20110112 - Julian - BUGID 4158 - CKEditor only working for the first two initialized editors
  *                                   -> Reason is still not clear
  *	20110109 - franciscom - BUGID 3952 - on Create stay here like Mantis does
- * 	20100910 - franciscom - some refactoring
- * 	20100901 - franciscom - work on insert step
- *  20100831 - asimon - BUGID 3532
- * 	20100828 - franciscom - BUGID 3156 tinymce problems - OK Internet Explorer 8, Firefox
- *  20100810 - asimon - BUGID 3579: solved tree refreshing problems
- *  20100628 - asimon - removal of constants from filter control class
- *  20100625 - asimon - refactoring of filter feature
- *  20100624 - asimon - CVS merge (experimental branch to HEAD)
- *	20100621 - eloff - BUGID 3241 - Implement vertical layout
- *	20100605 - franciscom - BUGID 3377
- *	20100403 - franciscom - BUGID 3359: Copy Test Case Step
- *	20100124 - franciscom - fixed bug on copy test cases - do not obey to top or bottom user choice
- *	20100106 - franciscom - Multiple Test Case Steps Feature
- *	20100104 - franciscom - fixed bug on create new version, now is created
- *                          from selected version and NOT FROM LATEST
- *	20100103 - franciscom - refactoring to use command class
  **/
 require_once("../../config.inc.php");
 require_once("common.php");

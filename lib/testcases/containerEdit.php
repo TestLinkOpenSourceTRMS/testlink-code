@@ -327,19 +327,15 @@ function build_del_testsuite_warning_msg(&$tree_mgr,&$tcase_mgr,&$testcases,$tsu
   		$verbose = array();
   		$msg['link_msg'] = array();
 	
-    	$status_warning = array('linked_and_executed' => 1,
-    	                    	'linked_but_not_executed' => 1,
-    	                    	'no_links' => 0);
+    	$status_warning = array('linked_and_executed' => 1,'linked_but_not_executed' => 1,'no_links' => 0);
 
-		$delete_notice = array('linked_and_executed' => lang_get('delete_notice'),
-    	                    	'linked_but_not_executed' => '',
-    	                    	'no_links' => '');
+		$delete_notice = array(	'linked_and_executed' => lang_get('delete_notice'),
+    	                    	'linked_but_not_executed' => '','no_links' => '');
 
 		$getOptions = array('addExecIndicator' => true);
   		foreach($testcases as $the_key => $elem)
   		{
   			$verbose[] = $tree_mgr->get_path($elem['id'],$tsuite_id);
-  			// $status = $tcase_mgr->check_link_and_exec_status($elem['id']);
 			$xx = $tcase_mgr->get_exec_status($elem['id'],null,$getOptions);
 			$status = 'no_links';
 			if(!is_null($xx))

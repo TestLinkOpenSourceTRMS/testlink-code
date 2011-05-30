@@ -119,6 +119,6 @@ Purpose: smarty template - create new testcase
 	
 	{if $gui->opt_requirements==TRUE && $gui->grants->requirement_mgmt=='yes' && isset($gui->tc.testcase_id)}
 		<div>
-		<a href="javascript:openReqWindow({$gui->tc.testcase_id})">{$labels.assign_requirements}</a>    
+		<a href="javascript:openReqWindow({$gui->tproject_id},{$gui->tc.testcase_id})">{$labels.assign_requirements}</a>    
 		</div>
 	{/if}

@@ -1220,13 +1220,13 @@ function showEventHistoryFor(objectID,objectType)
   returns: 
 
 */
-function openReqWindow(tcase_id)
+function openReqWindow(tproject_id, tcase_id)
 { 
   var windowCfg='';                       
 	var feature_url = "lib/requirements/reqTcAssign.php";
 	
-	feature_url +="?edit=testcase&showCloseButton=1&id="+tcase_id;
-
+	feature_url +="?tproject_id="+tproject_id+"&edit=testcase&showCloseButton=1&id="+tcase_id;
+	
 	// second parameter(window name) with spaces generate bug on IE
 	windowCfg="width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes";
 	window.open(fRoot+feature_url,"TestCase_Requirement_link",windowCfg);

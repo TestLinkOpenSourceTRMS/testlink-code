@@ -247,11 +247,14 @@ if ($treeForPlatform)
 			$tree2work['node_type_id'] = $decode['node_descr_id']['testproject'];
 			switch ($doc_info->type)
 			{
-				case DOC_REQ_SPEC:	
-					$docText .= renderSimpleChapter(lang_get('testproject') . " " . lang_get('scope'), 
-					                                $doc_info->tproject_scope);
+				case DOC_REQ_SPEC:
+					// 20110530 - Julian - moved scope to summary
+					//                     removed chapter requirement_specification_report
+					
+					//$docText .= renderSimpleChapter(lang_get('testproject') . " " . lang_get('scope'), 
+					//                                $doc_info->tproject_scope);
 					                                
-					$docText .= renderSimpleChapter(lang_get('requirement_specification_report'), " ");
+					//$docText .= renderSimpleChapter(lang_get('requirement_specification_report'), " ");
 					                                
 					$docText .= renderReqSpecTreeForPrinting($db, $tree2work, $printingOptions, 
 					                                         null, 0, 1, $args->user_id,0,$args->tproject_id);

@@ -15,6 +15,12 @@ pre{
 	font-family : 		Arial, Helvetica, sans-serif;
 }
 
+h1.general {
+	text-align: 		left;
+	font-size:			120%;
+	font-weight:		bold;
+}
+
 h1 {
 	text-align: 		left;
 	font-size:			120%;
@@ -37,7 +43,7 @@ h4 {
 }
 
 
-doclevel h1 {
+h1.doclevel {
 	text-align: 		left;
 	font-size:			130%;
 	margin: 			50px 0px;
@@ -45,18 +51,18 @@ doclevel h1 {
 	page-break-before: 	always;
 }
 
-doclevel h2 {
+h2.doclevel {
 	font-size:			120%;
 	text-indent:		5px;
 }
 
-doclevel h3 {
+h3.doclevel {
 	font-size:			110%;
 	background: 		#CCC;
 	text-indent:		10px;
 }
 
-doclevel h4 {
+h4.doclevel {
 	font-size:			105%;
 	text-indent:		15px;
 }

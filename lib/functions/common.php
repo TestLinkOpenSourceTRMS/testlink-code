@@ -1108,7 +1108,7 @@ function checkSecurityClearance(&$dbHandler,&$userObj,$context,$rightsToCheck,$c
 			{	
 				$action = 'any';
 				logAuditEvent(TLS("audit_security_user_right_missing",$userObj->login,$script,$action),
-						  	  $action,$user->dbID,"users");
+						  	  $action,$userObj->dbID,"users");
 				break;
 			}
 		}

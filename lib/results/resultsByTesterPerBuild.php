@@ -85,7 +85,7 @@ foreach ($matrix as $build_id => $build_execution_map) {
 		} else {
 			$username = $names[$user_id]['login'];
 			$name = "<a href=\"javascript:openAssignmentOverviewWindow(" .
-			        "{$user_id}, {$build_id}, {$args->tplan_id});\">{$username}</a>";
+			        "{$user_id}, {$build_id}, {$args->tplan_id}, {$args->tproject_id});\">{$username}</a>";
 		}		
 		$current_row[] = $name;
 		

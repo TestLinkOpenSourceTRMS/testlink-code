@@ -697,9 +697,9 @@ function planRemoveTC(warning_msg)
  * @param build_id
  * @param tplan_id
  */
-function openAssignmentOverviewWindow(user_id, build_id, tplan_id) {
+function openAssignmentOverviewWindow(user_id, build_id, tplan_id, tproject_id) {
 	var url = "lib/testcases/tcAssignedToUser.php";
-	url += "?user_id=" + user_id + "&build_id=" + build_id + "&tplan_id=" + tplan_id;
+	url += "?user_id=" + user_id + "&build_id=" + build_id + "&tplan_id=" + tplan_id + "&tproject_id=" + tproject_id;
 
 	// 20101008 - asimon - BUGID 3311
 	var width = getCookie("AssignmentOverviewWidth");

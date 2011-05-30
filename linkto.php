@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Direct links to testlink items from the outside with frames for navigation and tree.
+ * Direct links for external access to testlink items with frames for navigation and tree.
  *
  * IMPORTANT - LIMITATIONS:
  * User has to login before clicking the link!
@@ -33,11 +33,11 @@
  * 
  * @package 	TestLink
  * @author 		asimon
- * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: linkto.php,v 1.7 2010/09/14 12:39:13 mx-julian Exp $
+ * @copyright 	2007-2011, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20110530 - asimon - BUGID 4298: added functionality to open specific requirement versions
  *  20100223 - asimon - added anchor functionality
  *  20091215 - asimon - refactored process_req() with new method in requirement_mgr class
  *	20091215 - franciscom - refactored
@@ -67,37 +67,30 @@ $smarty->assign('title', lang_get('main_page_title'));
 if (!isset($_GET['load'])) {
 	// display outer frame, pass parameters to next script call for inner frame
 	$item = isset($_GET['item']) ? "item=" . $_GET['item'] : '';
-	$id = isset($_GET['id']) ? "id=" . $_GET['id'] : '';
-	$tprojectPrefix = isset($_GET['tprojectPrefix']) ? "tprojectPrefix=" . $_GET['tprojectPrefix'] : '';
-	$anchor = isset($_GET['anchor']) ? 'anchor=' . $_GET['anchor'] : "";
+	$id = isset($_GET['id']) ? "&id=" . $_GET['id'] : '';
+	$tprojectPrefix = isset($_GET['tprojectPrefix']) ? "&tprojectPrefix=" . $_GET['tprojectPrefix'] : '';
+	$anchor = isset($_GET['anchor']) ? '&anchor=' . $_GET['anchor'] : "";
+	$version = isset($_GET['version']) ? "&version=" . $_GET['version'] : '';
 	$smarty->assign('titleframe', 'lib/general/navBar.php');
-	$smarty->assign('mainframe', 'linkto.php?' . $item . '&' . $id . '&' . $tprojectPrefix . '&load&' . $anchor);
+	$smarty->assign('mainframe', 'linkto.php?' . $item . $id . $version . $tprojectPrefix . '&load' . $anchor);
 	$smarty->display('main.tpl');
-} 
-else 
-{
-	// inner frame, parameters passed 
-	
-	// add anchor
-	$anchor = isset($_GET['anchor']) ? '#' . $_GET['anchor'] : "";
-	
+} else {
+	// inner frame, parameters passed
+
 	// figure out what to display 
 	//
 	// key: item, value: url to tree management page
 	$itemCode = array('req' => 'lib/requirements/reqSpecListTree.php', 
-	                  'reqspec' => 'lib/requirements/reqSpecListTree.php',
-	                  'testcase' => 'lib/testcases/listTestCases.php?feature=edit_tc' );
-	                  
+					  'reqspec' => 'lib/requirements/reqSpecListTree.php',
+					  'testcase' => 'lib/testcases/listTestCases.php?feature=edit_tc' );
+
 	$op = array('status_ok' => true, 'msg' => '');
-	
+
 	// First check for keys in _GET that MUST EXIST
 	// key: key on _GET, value: labelID defined on strings.txt
-    $mustKeys = array('tprojectPrefix' => 'testproject_not_set', 
-                      'item' => 'item_not_set', 'id' => 'id_not_set');
-                      
-    
-    $tprojectPrefix = isset($_GET['tprojectPrefix']) ? $_GET['tprojectPrefix'] : '';
-    
+	$mustKeys = array('tprojectPrefix' => 'testproject_not_set',
+					  'item' => 'item_not_set', 'id' => 'id_not_set');
+
 	foreach($mustKeys as $key => $labelID)
 	{
 		$op['status_ok'] = isset($_GET[$key]);
@@ -108,6 +101,12 @@ else
 		}
 	} 
 
+	$anchor = isset($_GET['anchor']) ? $_GET['anchor'] : null;
+	$version = isset($_GET['version']) ? $_GET['version'] : null;
+	$tprojectPrefix = isset($_GET['tprojectPrefix']) ? $_GET['tprojectPrefix'] : null;
+	$item = isset($_GET['item']) ? $_GET['item'] : null;
+	$id = isset($_GET['id']) ? $_GET['id'] : null;
+
 	if($op['status_ok'])
 	{
 		$tproject = new testproject($db);
@@ -115,36 +114,38 @@ else
 		if(($op['status_ok'] = !is_null($tproject_data))) 
 		{
 			$tproject->setSessionProject($tproject_data['id']);
-            $op['status_ok'] = isset($itemCode[$_GET['item']]);
-			$op['msg'] = sprintf(lang_get('invalid_item'),$_GET['item']);
-        } 	    
+			$op['status_ok'] = isset($itemCode[$item]);
+			$op['msg'] = sprintf(lang_get('invalid_item'),$item);
+		}
 		else 
 		{
-			$op['msg'] = sprintf(lang_get('testproject_not_found'),$_GET['tprojectPrefix']);
+			$op['msg'] = sprintf(lang_get('testproject_not_found'),$tprojectPrefix);
 		}
 	} 
 
-     
+
 	if($op['status_ok'])
 	{
 		// Build  name of function to call for doing the job.
-		$pfn = 'process_' . $_GET['item'];
-		$jump_to = $pfn($db,$_GET['id'],$tproject_data['id'], $tprojectPrefix);
-		
+		$pfn = 'process_' . $item;
+		$jump_to = $pfn($db, $id, $tproject_data['id'], $tprojectPrefix, $version);
+
 		$op['status_ok'] = !is_null($jump_to['url']);
 		$op['msg'] = $jump_to['msg'];
-    }
-	
+	}
+
 	if($op['status_ok'])
 	{
-		//add anchor
+		// add anchor to URL
 		$url = $jump_to['url'] . $anchor;
+
 		$smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
 		$smarty->assign('workframe', $url);
-		$smarty->assign('treeframe', $itemCode[$_GET['item']]);
+		$smarty->assign('treeframe', $itemCode[$item]);
+
 		$smarty->display('frmInner.tpl');
-    }
-    else
+	}
+	else
 	{
 		echo $op['msg'];
 		ob_end_flush();
@@ -159,49 +160,73 @@ ob_end_flush();
  * process_testcase
  *
  */
-function process_testcase(&$dbHandler,$externalID,$tprojectID, $tprojectPrefix)
+function process_testcase(&$dbHandler,$externalID, $tprojectID, $tprojectPrefix, $version)
 {
 	$ret = array();
 	$ret['url'] = null;
 	$ret['msg'] = sprintf(lang_get('testcase_not_found'), $externalID, $tprojectPrefix);
-    
+
 	$tcase_mgr = new testcase($dbHandler);
 	$tcaseID = $tcase_mgr->getInternalID($externalID);
 	if($tcaseID > 0)
 	{
 		$ret['url'] = "lib/testcases/archiveData.php?edit=testcase&id={$tcaseID}";
-        $cookie = buildCookie($dbHandler,$tcaseID,$tprojectID,'ys-tproject_');
+		$cookie = buildCookie($dbHandler,$tcaseID,$tprojectID,'ys-tproject_');
 		setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');
 	}
-    return $ret;
+	return $ret;
 }
 
 
 /**
  * process_req
  *
+ * @internal revisions:
+ * 20110530 - asimon - BUGID 4298: refactored this function to be able to operate with specific versions
  */
-function process_req(&$dbHandler,$docID,$tprojectID,$tprojectPrefix)
+function process_req(&$dbHandler, $docID, $tprojectID, $tprojectPrefix, $version)
 {
-	$tables = tlObjectWithDB::getDBTables(array('requirements','nodes_hierarchy', 
-	                                            'req_specs', 'tcversions'));
+	$ret = array('url' => null, 'msg' => null);
 
-	$ret = array();
-	$ret['url'] = null;
-    $ret['msg'] = sprintf(lang_get('req_not_found'), $docID,$tprojectPrefix);
+	// First step: get this requirement's database ID by its Doc-ID (only if this Doc-ID exists).
+	$req_mgr = new requirement_mgr($dbHandler);
+	$req = $req_mgr->getByDocID($docID, $tprojectID);
+	$req = is_null($req) ? null : current($req);
+	$req_id = is_null($req) ? null : $req['id'];
+	$version_id = null;
 
-    $req_mgr = new requirement_mgr($dbHandler);
-    $req = $req_mgr->getByDocID($docID,$tprojectID);
+	if (is_null($req_id)) {
+		$ret['msg'] = sprintf(lang_get('req_not_found'), $docID, $tprojectPrefix);
+	}
 
-    if( !is_null($req) )
-    {    
-		// link to open in requirement frame
-		$req = current($req);
-		$ret['url'] = "lib/requirements/reqView.php?item=requirement&requirement_id={$req['id']}";
+	// Second step: If the requirement exists and a version was given, we have to check here if this specific version exists, too.
+	if(!is_null($req_id) && !is_null($version) && is_numeric($version)) {
+		$req = $req_mgr->get_by_id($req_id, null, $version);
+		$req = is_null($req) ? null : current($req);
 
-        $cookie = buildCookie($dbHandler,$req['id'],$tprojectID,'ys-requirement_spec');
+		// does this requirement really have the correct version number?
+		$version_id = !is_null($req) && ($req['version'] == $version) ? $req['version_id'] : null;
+
+		if (is_null($version_id)) {
+			$ret['msg'] = sprintf(lang_get('req_version_not_found'), $version, $docID, $tprojectPrefix);
+			$req_id = null;
+		}
+	}
+
+	// Third and last step: set cookie and build the link (only if the requested item really was found).
+	if(!is_null($req_id)) {
+		if (!is_null($version_id)) {
+			// link to open in requirement frame must include version
+			$ret['url'] = "lib/requirements/reqView.php?item=requirement&requirement_id=$req_id&req_version_id=$version_id";
+		} else {
+			// link to open in requirement frame does not include a version, it was not requested
+			$ret['url'] = "lib/requirements/reqView.php?item=requirement&requirement_id=$req_id";
+		}
+
+		$cookie = buildCookie($dbHandler, $req_id, $tprojectID,'ys-requirement_spec');
 		setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');
-	} 
+	}
+
 	return $ret;
 }
 
@@ -211,24 +236,24 @@ function process_req(&$dbHandler,$docID,$tprojectID,$tprojectPrefix)
  * process_reqspec
  *
  */
-function process_reqspec(&$dbHandler,$docID,$tprojectID,$tprojectPrefix)
+function process_reqspec(&$dbHandler, $docID, $tprojectID, $tprojectPrefix, $version)
 {
 	$ret = array();
 	$ret['url'] = null;
-    $ret['msg'] = sprintf(lang_get('req_spec_not_found'), $docID,$tprojectPrefix);
+	$ret['msg'] = sprintf(lang_get('req_spec_not_found'), $docID,$tprojectPrefix);
 
-    $reqspec_mgr = new requirement_spec_mgr($dbHandler);
-    $reqSpec = $reqspec_mgr->getByDocID($docID,$tprojectID);
-    
-    if( !is_null($reqSpec) )
-    {
-    	$reqSpec = current($reqSpec);
-    	$id = $reqSpec['id'];
+	$reqspec_mgr = new requirement_spec_mgr($dbHandler);
+	$reqSpec = $reqspec_mgr->getByDocID($docID,$tprojectID);
+
+	if( !is_null($reqSpec) )
+	{
+		$reqSpec = current($reqSpec);
+		$id = $reqSpec['id'];
 		$ret['url'] = "lib/requirements/reqSpecView.php?req_spec_id={$id}";
 
-        $cookie = buildCookie($dbHandler,$id,$tprojectID,'ys-requirement_spec');
+		$cookie = buildCookie($dbHandler,$id,$tprojectID,'ys-requirement_spec');
 		setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');
-    }
+	}
 	return $ret;
 }
 

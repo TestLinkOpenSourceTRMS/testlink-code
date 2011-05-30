@@ -14,6 +14,7 @@
  * @link 		http://www.smarty.net/ 
  *
  * @internal Revisions:
+ *  20110530 - asimon - fixed use of wrong constant name in constructor TLSmarty()
  *	20101030 - franciscom - BUGID 3948: Every image link contain a double /
  *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker 
  * 	20101017 - franciscom - added new image -> import
@@ -176,7 +177,9 @@ class TLSmarty extends Smarty
         
         $this->assign('basehref', $basehref);
         $this->assign('css', $basehref . TL_TESTLINK_CSS);
-        $this->assign('custom_css', $basehref . TL_TESTLINK_CUSTOM_CSS);
+        // 20110530 - wrong constant name was used here
+        //$this->assign('custom_css', $basehref . TL_TESTLINK_CUSTOM_CSS);
+        $this->assign('custom_css', $basehref . TL_CSS_CUSTOM);
         $this->assign('locale', $my_locale);
           
           

@@ -5,6 +5,7 @@ Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 rev:
+  20110530 - asimon - BUGID 4298: added functionality for direct links to open specific requirement versions
   20110525 - Julian - BUGID 4497 - show version and revision also for "Other versions"
   20110304 - asimon - added help icon with a description of some of the "new" features
   20101212 - franciscom - BUGID 4056: Requirement Revisioning
@@ -28,7 +29,7 @@ rev:
              relation_set_by, relation_delete, relations, new_relation, by, title_created,
              relation_destination_doc_id, in, btn_add, img_title_delete_relation, current_req,
              no_records_found,other_versions,version,title_test_case,match_count,warning,
-             revision_log_title,please_add_revision_log,commit_title'}
+             revision_log_title,please_add_revision_log,commit_title,current_direct_link,specific_direct_link'}
 
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
@@ -216,7 +217,10 @@ var pF_delete_req_relation = delete_req_relation;
     {if !$gui->show_title }
 	    {$gui->current_version[idx][0].req_doc_id|escape}:{$gui->current_version[idx][0].title|escape}</h2>
     {/if}
-    <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
+    <div class="direct_link" style='display:none'>
+    <a href="{$gui->direct_link}" target="_blank">{$labels.current_direct_link}</a><br/>
+    <a href="{$gui->direct_link}&version={$gui->current_version[idx][0].version}" target="_blank">{$labels.specific_direct_link}</a><br/>
+    </div>
     
 		{include file="$this_template_dir/reqViewVersionsViewer.tpl" 
 		         args_req_coverage=$gui->req_coverage
@@ -231,8 +235,7 @@ var pF_delete_req_relation = delete_req_relation;
 		         args_show_title=$gui->show_title
 		         args_cf=$gui->cfields_current_version[idx] 
 		         args_tproject_name=$gui->tproject_name
-		         args_reqspec_name=$gui->current_version[idx][0]['req_spec_title']}
-		
+		         args_reqspec_name=$gui->current_version[idx][0]['req_spec_title']}		
 		
 		{assign var="downloadOnly" value=false}
 		{if $gui->grants->req_mgmt != 'yes'}
@@ -404,7 +407,7 @@ var pF_delete_req_relation = delete_req_relation;
                        args_can_delete_version=true
                        args_frozen_version=$frozen_version
                        args_show_version=true 
-                       args_show_title=false
+                       args_show_title=true
                        args_cf=$gui->cfields_other_versions[idx][$rdx]}
   	         </div>
   	         <br />

@@ -242,6 +242,9 @@ $TLS_req_status_finish = "Fertig";
 $TLS_req_status_implemented = "Implementiert";
 $TLS_req_status_obsolete = "Obsolet";
 
+$TLS_current_direct_link = "Direkter Link zum aktuellen Dokument.";
+$TLS_specific_direct_link = "Direkter Link zu dieser spezifischen Version des Dokumentes.";
+
 $TLS_reserved_system_role_1 = 'Vom System reservierte Rolle 1';
 $TLS_reserved_system_role_2 = 'Vom System reservierte Rolle 2';
 $TLS_req_created_automatic_log = "Anforderung erstellt";
@@ -3188,6 +3191,7 @@ $TLS_id_not_set = "ID nicht gesetzt.";
 $TLS_testcase_not_found = "Testfall %s konnte im Testprojekt (Präfix:%s) nicht gefunden werden.";
 $TLS_req_spec_not_found = "Anforderungsspezifikation %s konnte im Testprojekt (prefix:%s) nicht gefunden werden.";
 $TLS_req_not_found = "Anforderung %s konnte im Testprojekt (prefix:%s) nicht gefunden werden.";
+$TLS_req_version_not_found = "Version %s der Anforderung %s konnte im Testprojekt (prefix:%s) nicht gefunden werden.";
 $TLS_invalid_item = 'Ungültiges item (%s)';
 $TLS_btn_show_direct_link = "Zeige Permalink";
 
@@ -3327,5 +3331,4 @@ $TLS_buildMetricsFeedback = $TLS_title_metrics_x_build .
 							' werden nur mit Testfällen berechnet, die einem Tester für das entsprechende Build'.
 							' zugewiesen wurden';
 // ----- END ------------------------------------------------------------------
-?>
 ?>

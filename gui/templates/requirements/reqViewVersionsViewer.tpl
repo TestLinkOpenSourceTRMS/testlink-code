@@ -4,6 +4,7 @@ $Id: reqViewVersionsViewer.tpl,v 1.12.6.5 2010/12/13 08:27:07 mx-julian Exp $
 viewer for requirement
 
 rev:
+20110530 - asimon - BUGID 4298: added functionality for direct links to open specific requirement versions
 20110308 - asimon - BUGID 4273: backported printing of single req from master
 20101127 - franciscom - BUGID 4056: Requirement Revisioning
 20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
@@ -14,7 +15,7 @@ rev:
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
              testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
-             revision,btn_view_history,btn_new_revision,btn_print_view"}
+             revision,btn_view_history,btn_new_revision,btn_print_view,specific_direct_link"}
 
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
@@ -28,13 +29,16 @@ rev:
 {assign var="req_version_id" value=$args_req.version_id}
 
 {if $args_show_title }
-    {if $args_tproject_name != ''}
+    {if isset($args_tproject_name) && $args_tproject_name != ''}
      <h2>{$labels.testproject} {$args_tproject_name|escape} </h2>
     {/if}
     {if $args_req_spec_name != ''}
      <h2>{$labels.req_spec} {$args_req_spec_name|escape} </h2>
     {/if}
-	  <h2>{$labels.title_test_case} {$args_req.title|escape} </h2>
+	  <h2>{$tlImages.toggle_direct_link} &nbsp; {$labels.title_test_case} {$args_req.title|escape} </h2>
+	  <div class="direct_link" style='display:none'>
+		  <a href="{$gui->direct_link}&version={$args_req.version}" target="_blank">{$labels.specific_direct_link}</a><br/>
+	  </div>
 {/if}
 {assign var="warning_edit_msg" value=""}
 
@@ -117,12 +121,6 @@ rev:
 {/if}
 
 <table class="simple">
-  {if $args_show_title}
-	<tr>
-		<th colspan="2">
-		{$args_req.req_doc_id}{$smarty.const.TITLE_SEP}{$args_req.title|escape}</th>
-	</tr>
-  {/if}
 	<tr>
     <th>{$args_req.req_doc_id|escape}{$tlCfg->gui_title_separator_1}{$args_req.title|escape}</th>
 	</tr>

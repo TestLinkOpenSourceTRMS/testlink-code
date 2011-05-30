@@ -19,7 +19,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {lang_get s='delete' var="del_msgbox_title"}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" enableTableSorting="yes"}
-{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_action_onclick.tpl */

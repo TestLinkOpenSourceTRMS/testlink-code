@@ -920,10 +920,10 @@ Ext.ux.Exporter.ExcelFormatter.Style = Ext.extend(Object, {
  */
 Ext.ux.Exporter.CSVFormatter = Ext.extend(Ext.ux.Exporter.Formatter, {
   format: function(store, config) {
-    console.log("Formatter");
-    console.log(store);
+    //console.log("Formatter");
+    //console.log(store);
     var items = store.data.items;
-    console.log(items);
+    //console.log(items);
     var cols = this.buildColumns(config.columns);
     return cols + "\n" + this.buildRows(config.columns, items);
   },

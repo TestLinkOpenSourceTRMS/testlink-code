@@ -22,6 +22,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ *	20110530 - Julian - allow to define seperate logo for generated documents including height 
  *	20110414 - franciscom - moved $g_prefix_name_for_copy BEFORE use of custom config
  *	20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor for platform notes
  *							$tlCfg->platform_template						
@@ -594,6 +595,10 @@ $tlCfg->metrics_dashboard->show_test_plan_status = false;
 $tlCfg->document_generator->company_name = 'TestLink Community [configure $tlCfg->document_generator->company_name]';
 $tlCfg->document_generator->company_copyright = '2009 &copy; TestLink Community';
 $tlCfg->document_generator->confidential_msg = '';
+
+// Logo for generated documents
+$tlCfg->document_generator->company_logo = 'mobotix_logo_big.jpg';
+$tlCfg->document_generator->company_logo_height = '53';
 
 /** CSS used in printed html documents */
 
@@ -1469,9 +1474,6 @@ define('TITLE_SEP_TYPE2',$tlCfg->gui_title_separator_2);
 define('TITLE_SEP_TYPE3',$tlCfg->gui_title_separator_2); // obsolete: use type 1,2
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', $tlCfg->frame_workarea_default_width);
 define('TL_TEMP_PATH', $tlCfg->temp_dir);
-
-
-$tlCfg->document_generator->company_logo = $tlCfg->company_logo;
 
 $tlCfg->gui->title_separator_1 =  $tlCfg->gui_title_separator_1;
 $tlCfg->gui->title_separator_2 =  $tlCfg->gui_title_separator_2;

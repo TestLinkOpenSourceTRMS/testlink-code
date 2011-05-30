@@ -292,8 +292,8 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 	} 
 	
 	if ($options['req_scope']) {
-		$output .= "<tr><td colspan=\"$tableColspan\"><span class=\"label\">" . $labels['scope'] . 
-		           "</span><br/>" . $req['scope'] . "</td></tr>";
+		// 20110530 - Julian - removed scope label
+		$output .= "<tr><td colspan=\"$tableColspan\"> <br/>" . $req['scope'] . "</td></tr>";
 	}
 		
 	if ($options['req_relations']) 
@@ -397,7 +397,7 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 		$labels = array('requirements_spec' => 'requirements_spec', 
 		                'scope' => 'scope', 'type' => 'type', 'author' => 'author',
 		                'relations' => 'relations', 'overwritten_count' => 'req_total',
-		                'coverage' => 'coverage', 
+		                'coverage' => 'coverage',
 		                'undefined_req_spec_type' => 'undefined_req_spec_type',
 		                'custom_field' => 'custom_field', 'not_aplicable' => 'not_aplicable');
 		$labels = init_labels($labels);
@@ -416,9 +416,12 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 		$docHeadingNumbering = "$tocPrefix. ";
 	}
 	
-	$output = "<table class=\"req_spec\"><tr><th colspan=\"$tableColspan\">" .
-	        "<span class=\"label\">{$docHeadingNumbering}{$labels['requirements_spec']}:</span> " .
- 			$name . "</th></tr>\n";
+	// 20110530 - Julian - added page-break before each req spec
+	//                   - use doclevel class for req spec headings
+	$output = '<p style="page-break-before: always"></p>'.
+	        "<table class=\"req_spec\"><tr><th colspan=\"$tableColspan\">" .
+	        "<h{$level} class=\"doclevel\"> <span class=\"label\">{$docHeadingNumbering}{$labels['requirements_spec']}:</span> " .
+ 			$name . "</th></tr></h{$level}>\n";
  		
 	if ($options['toc'])
 	{
@@ -467,8 +470,8 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 	}
 
 	if ($options['req_spec_scope']) {
-		$output .= "<tr><td colspan=\"$tableColspan\"><span class=\"label\">" . $labels['scope'] . 
-		           "</span><br/>" . $spec['scope'] . "</td></tr>";
+	// 20110530 - Julian - removed scope label
+		$output .= "<tr><td colspan=\"$tableColspan\">" . $spec['scope'] . "</td></tr>";
 	}
 	
 	if ($options['req_spec_cf']) {
@@ -639,9 +642,15 @@ function renderFirstPage($doc_info)
     
 	if ($docCfg->company_logo != '' )
 	{
+		// 20110530 - Julian - allow to configure height via config file
+		$height = '';
+		if (isset($docCfg->company_logo_height) && $docCfg->company_logo_height != '') {
+			$height = "height=\"{$docCfg->company_logo_height}\"";
+		}
+		
 		// BUGID 3804 - contribution
 		$output .= '<p style="text-align: center;"><img alt="TestLink logo" ' .
-           		   'title="configure using $tlCfg->document_generator->company_logo" height="53" '.
+           		   'title="configure using $tlCfg->document_generator->company_logo" ' . $height .
            		   ' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo . '" />';
 	}
 	$output .= "</div>\n";
@@ -650,8 +659,10 @@ function renderFirstPage($doc_info)
 	$output .= "</div>\n";
     
 	// Print summary on the first page
+	// 20110530 - Julian - added project scope to summary
 	$output .= '<div class="summary">' .
-		         '<p id="prodname">'. lang_get('project') .": " . $doc_info->tproject_name . "</p>\n";
+		         '<p id="prodname">'. lang_get('project') .": " . $doc_info->tproject_name . "</p>\n" .
+	             '<p id="prodscope">' . lang_get('project') . " " .lang_get('scope') . ": " . $doc_info->tproject_scope . "</p>\n";
     
 	$output .= '<p id="author">' . lang_get('author').": " . $doc_info->author . "</p>\n" .
 		         '<p id="printedby">' . lang_get('printed_by_TestLink_on')." ".
@@ -1198,7 +1209,7 @@ function renderTOC(&$options)
 	$options['toc_numbers'][1] = 0;
 	if ($options['toc'])
 	{
-		$options['tocCode'] = '<h1 class="doclevel">' . lang_get('title_toc').'</h1><div class="toc">';
+		$options['tocCode'] = '<h1 class="general" style="page-break-before: always">' . lang_get('title_toc').'</h1><div class="toc">';
 		$code .= "{{INSERT_TOC}}";
 	}
 

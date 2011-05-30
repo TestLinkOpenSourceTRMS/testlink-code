@@ -13,6 +13,7 @@
  *
  *
  *	@internal revisions
+ *	20110529 - franciscom - TICKET 4322: New Option to block delete of executed test cases
  *	20110413 - franciscom - BUGID 4410 - "Save step" doesn't work just after "Copy Step"
  *							doCopyStep()
  *  20101202 - asimon - BUGID 4067: refresh tree problems
@@ -25,21 +26,6 @@
  *							initTestCaseBasicInfo() - new method to gather common logic
  *  20100808 - franciscom - initGuiBean() - added steps key to remove error display from event viewer
  *  20100716 - eloff - BUGID 3610 - fixes missing steps_results_layout in $gui
- *  20100625 - asimon - refactoring for new filter features,
- *                      replaced refresh_tree and do_refresh by refreshTree,
- *                      also replaced refreshTree values yes and no by 1 and 0 to avoid problems
- *	20100605 - franciscom - BUGID 3377 	
- *  20100403 - Julian - BUGID 3441 - Removed Call-time pass-by-reference on function call
- *  					editStep() in function doUpdateStep()
- *	20100403 - franciscom - BUGID 3359 - doCopyStep 	
- *	20100327 - franciscom - improvements in goback logic 	
- *	20100326 - franciscom - BUGID 3326: Editing a test step: execution type always "Manual"
- *	20100123 - franciscom - added logic to check for step number existence
- *                          added missing method doDeleteStep()
- *	20100106 - franciscom - Multiple Test Case Steps Feature
- *	20090831 - franciscom - preconditions 
- *	BUGID 2364 - changes in show() calls
- *  BUGID - doAdd2testplan() - added user id, con call to link_tcversions()
  **/
 
 class testcaseCommands
@@ -409,6 +395,8 @@ class testcaseCommands
   /**
    * 
    *
+   * @internal revisions
+   * 20110529 - franciscom - TICKET 4322	
    */
 	function delete(&$argsObj,$request)
 	{
@@ -416,8 +404,20 @@ class testcaseCommands
  		$guiObj->delete_message = '';
 		$cfg = config_get('testcase_cfg');
 
- 		// $my_ret = $this->tcaseMgr->check_link_and_exec_status($argsObj->tcase_id);
- 		$guiObj->exec_status_quo = $this->tcaseMgr->get_exec_status($argsObj->tcase_id);
+		// TICKET 4322
+ 		$guiObj->exec_status_quo = $this->tcaseMgr->get_exec_status($argsObj->tcase_id,null, 
+ 																	array('addExecIndicator' => true));
+
+		$guiObj->delete_enabled = 1;
+		if( $guiObj->exec_status_quo['executed'] && !$cfg->can_delete_executed )
+		{
+			$guiObj->delete_message = lang_get('system_blocks_delete_executed_tc_when');
+			$guiObj->delete_enabled = 0;
+ 		}
+ 		// need to remove 'executed' key, in order to do not have side effects on Viewer logic (template).
+ 		unset($guiObj->exec_status_quo['executed']);
+
+
  		$guiObj->delete_mode = 'single';
  		$guiObj->display_platform = false;
 		            
@@ -448,18 +448,6 @@ class testcaseCommands
 			}
 		}
 		                  
-  		// Need to be analysed seem wrong
-  		// switch($my_ret)
-		// {
-		// 	case "linked_and_executed":
-		// 		$guiObj->exec_status_quo = lang_get('warning') . TITLE_SEP . lang_get('delete_linked_and_exec');
-		// 		break;
-    	// 
-		// 	case "linked_but_not_executed":
-		// 		$guiObj->exec_status_quo = lang_get('warning') . TITLE_SEP . lang_get('delete_linked');
-		// 		break;
-		// }
-		
 		$tcinfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id);
 		list($prefix,$root) = $this->tcaseMgr->getPrefix($argsObj->tcase_id,$argsObj->testproject_id);
         $prefix .= $cfg->glue_character;

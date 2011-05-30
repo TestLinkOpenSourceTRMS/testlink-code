@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testcases>
+<testcase internalid="25" name="MGT-TC-1">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[1]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>MGT-TC-1</p>]]></summary>
+	<preconditions><![CDATA[<p>MGT-TC-1</p>]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+<steps>
+<step>
+	<step_number><![CDATA[1]]></step_number>
+	<actions><![CDATA[<p>MGT-TC-1-ACTION-STEP-1</p>]]></actions>
+	<expectedresults><![CDATA[<p>MGT-TC-1-EXRES-STEP-1</p>]]></expectedresults>
+	<execution_type><![CDATA[1]]></execution_type>
+</step>
+
+<step>
+	<step_number><![CDATA[2]]></step_number>
+	<actions><![CDATA[<p>MGT-TC-1-ACTION-STEP-2</p>]]></actions>
+	<expectedresults><![CDATA[<p>MGT-TC-1-EXRES-STEP-2</p>]]></expectedresults>
+	<execution_type><![CDATA[1]]></execution_type>
+</step>
+
+<step>
+	<step_number><![CDATA[3]]></step_number>
+	<actions><![CDATA[<p>MGT-TC-1-ACTION-STEP-3</p>]]></actions>
+	<expectedresults><![CDATA[<p>MGT-TC-1-EXRES-STEP-3</p>]]></expectedresults>
+	<execution_type><![CDATA[1]]></execution_type>
+</step>
+</steps>
+</testcase>
+</testcases>

@@ -86,7 +86,7 @@ function validateForm(f)
     	<div class="groupBtn">
     	    <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" /> 
     		<input type="hidden" name="doAction" id="doAction" value="doImport" />
-    		<input type="hidden" name="goback_url" value="{ $gui->goback_url|escape}" />
+    		<input type="hidden" name="goback_url" value="{$gui->goback_url|escape}" />
     		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
     		<input type="button" name="cancel" value="{$labels.btn_cancel}"
     		                     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"

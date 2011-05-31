@@ -202,7 +202,7 @@ function initializeGui(&$db,$args)
             
            	$gui->ajaxTree->loader =  $args->basehref . 'lib/ajax/getrequirementnodes.php?' .
                                    "root_node={$args->tproject_id}&" .
-                                   "show_children=0&operation=print";
+                                   "show_children=0&operation=print&tproject_id={$args->tproject_id}";
 	        
 	       	$gui->ajaxTree->loadFromChildren = 0;
 	       	$gui->ajaxTree->root_node->href = "javascript:TPROJECT_PTP_RS({$args->tproject_id})";
@@ -221,6 +221,8 @@ function initializeGui(&$db,$args)
            	$gui->ajaxTree->loader =  $args->basehref . 'lib/ajax/gettprojectnodes.php?' .
                                    "root_node={$args->tproject_id}&" .
                                    "show_tcases=0&operation=print&" .
+                                   "tproject_id={$args->tproject_id}&" .
+                                   "tplan_id={$args->tplan_id}&" .
                                    "tcprefix=". urlencode($tcasePrefix.$tcaseCfg->glue_character) ."}";
 	          
 	       	$gui->ajaxTree->loadFromChildren = 0;

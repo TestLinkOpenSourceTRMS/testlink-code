@@ -280,17 +280,17 @@ function ET(tproject_id,id,v)
 
 
 /* Generate doc: a selected Test Suite from Test Specification */
-function TPROJECT_PTS(id)
+function TPROJECT_PTS(tproject_id, tplan_id, id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?type=testspec&level=testsuite&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+ "?tproject_id=" + tproject_id + "&tplan_id=" + tplan_id + "&type=testspec&level=testsuite&id="+id+args+"&"+pParams;
 }
 
 /* Generate doc: all Test Specification */
-function TPROJECT_PTP(tproject_id,id)
+function TPROJECT_PTP(tproject_id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl + "?tproject_id=" + tproject_id + "&type=testspec&level=testproject&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl + "?tproject_id=" + tproject_id + "&type=testspec&level=testproject&id="+tproject_id+args+"&"+pParams;
 }
 
 /* Generate doc: a selected Test Tase from Test Specification */
@@ -301,10 +301,10 @@ function TPROJECT_PTC(tproject_id,id)
 
 
 /* Generate doc: all Req Specs, complete project */
-function TPROJECT_PTP_RS(tproject_id,id)
+function TPROJECT_PTP_RS(tproject_id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl + "?tproject_id=" + tproject_id + "&type=reqspec&level=testproject&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl + "?tproject_id=" + tproject_id + "&type=reqspec&level=testproject&id="+tproject_id+args+"&"+pParams;
 }
 
 

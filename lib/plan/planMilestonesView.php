@@ -102,11 +102,12 @@ function initialize_gui(&$dbHandler,&$userObj,&$argsObj)
 	 												   $gui->tproject_id,$gui->tplan_id);
 
 
-	$manager = "lib/plan/planMilestonesEdit.php?tproject_id={$gui->tproject_id}&doAction=";
+	$manager = "lib/plan/planMilestonesEdit.php?tproject_id={$gui->tproject_id}" .
+	           "&tplan_id={$gui->tplan_id}&doAction=";
 	$gui->actions = new stdClass();
 	$gui->actions->edit = $manager . 'edit';
 	$gui->actions->delete = $manager . 'doDelete&id=';
-	$gui->actions->create = $manager . "create&tplan_id={$gui->tplan_id}";
+	$gui->actions->create = $manager . "create";
 
 
 	return $gui;

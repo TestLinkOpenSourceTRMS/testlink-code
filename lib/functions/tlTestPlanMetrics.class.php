@@ -97,14 +97,18 @@ class tlTestPlanMetrics extends testPlan
 					" AND NOT E.status = '{$this->map_tc_status['not_run']}' " . 
 					" AND TCV.importance={$importance} AND TPTCV.urgency={$urgency}";
 				
+				// BUGID 4511 - Milestones did not handle start and target date properly
+				$end_of_the_day = " 23:59:59";
+				$beginning_of_the_day = " 00:00:00";
+				
 				if( !is_null($milestoneTargetDate) )
 				{
-					$sql .= " AND execution_ts < '{$milestoneTargetDate}'";
+					$sql .= " AND execution_ts < '" . $milestoneTargetDate . $end_of_the_day ."'";
 				}
 				
 				if( !is_null($milestoneStartDate) )
 				{
-					$sql .= " AND execution_ts > '{$milestoneStartDate}'";
+					$sql .= " AND execution_ts > '" . $milestoneStartDate . $beginning_of_the_day ."'";
 				}
 				
 				$tmpResult = $this->db->fetchOneValue($sql);

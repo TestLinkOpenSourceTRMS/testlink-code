@@ -597,7 +597,7 @@ $tlCfg->document_generator->company_copyright = '2009 &copy; TestLink Community'
 $tlCfg->document_generator->confidential_msg = '';
 
 // Logo for generated documents
-$tlCfg->document_generator->company_logo = 'mobotix_logo_big.jpg';
+$tlCfg->document_generator->company_logo = 'company_logo.png';
 $tlCfg->document_generator->company_logo_height = '53';
 
 /** CSS used in printed html documents */

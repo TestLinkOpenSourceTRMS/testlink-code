@@ -103,7 +103,7 @@ function initialize_gui(&$dbHandler,&$argsObj)
 	$gui->actions->req_export = $module . "reqExport.php?doAction=export&$context";
 	$gui->actions->req_edit = $module . "reqEdit.php?doAction=create&$context";
 	$gui->actions->req_reorder = $module . "reqEdit.php?doAction=reorder&$context";
-	$gui->actions->req_create_tc = $module . "reqEdit.php?doAction=createTestCase&$context";
+	$gui->actions->req_create_tc = $module . "reqEdit.php?doAction=createTestCases&$context";
 
 	$gui->actions->req_spec_new = $module . "reqSpecEdit.php?doAction=createChild" .
 								  "&tproject_id=$gui->tproject_id&reqParentID=$gui->req_spec_id";

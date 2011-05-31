@@ -89,7 +89,7 @@ function cs_all_coverage_in_div(div_id, input_id_prefix, default_id_prefix, memo
 <body>
 
 
-{cfg_section=$smarty.template|replace:".tpl":""}
+{$cfg_section=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">

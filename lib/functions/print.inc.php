@@ -455,9 +455,6 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 		$output .= "</td></tr>";
 	}
 	
-	
-	
-	
 	if ($options['req_spec_overwritten_count_reqs']) {
 		$current = $req_spec_mgr->get_requirements_count($spec['id']);
 		$expected = $spec['total_req'];

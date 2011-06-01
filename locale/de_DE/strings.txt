@@ -34,7 +34,7 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file with commit id 9a4b911b67f08b558c56a5b477a7bc553c62cfb5
+ * Last Update according to en_GB string file with commit id 8804ffcadd6daf90372fb4cb6fe5ebbc001cde8c
  *
  **/
 
@@ -1420,14 +1420,14 @@ $TLS_warning_delete_milestone = "Wollen Sie wirklich den Meilenstein %s löschen
 $TLS_warning_empty_milestone_name = "Sie müssen einen Namen für den Meilenstein eingeben!";
 $TLS_warning_invalid_date = "Das Datum ist ungültig.";
 $TLS_info_milestone_create_prio = "Meilensteine berücksichtigen Testausführungen innerhalb einer spezifizierten Zeitperiode." .
-                                  "<br />Diese Periode startet mit dem <b>Anfangsdatum</b> - ist kein Anfangsdatum festgelegt " .
-                                  "werden alle Testausführungen berücksichtigt - und endet mit dem <b>Zieldatum</b>.<br />" .
+                                  "<br />Diese Periode startet mit dem <b>Anfangsdatum 00:00:00</b> - ist kein Anfangsdatum festgelegt " .
+                                  "werden alle Testausführungen berücksichtigt - und endet mit dem <b>Zieldatum 23:59:59</b>.<br />" .
                                   "Alle Ausführung nach dem Zieldatum werden ignoriert.<br />Meilensteine sind erreicht wenn alle " .
                                   "\"Teil-Meilensteine\" für die verschiedenen <b>Prioritäten</b> erreicht sind. Der Status " .
                                   "der Meilensteine kann im Testplan Überblick (Testergebnisse) eingesehen werden.";
 $TLS_info_milestone_create_no_prio = "Meilensteine berücksichtigen Testausführungen innerhalb einer spezifizierten Zeitperiode." .
-                                     "<br />Diese Periode startet mit dem <b>Anfangsdatum</b> - ist kein Anfangsdatum festgelegt " .
-                                     "werden alle Testausführungen berücksichtigt - und endet mit dem <b>Zieldatum</b>.<br />" .
+                                     "<br />Diese Periode startet mit dem <b>Anfangsdatum 00:00:00</b> - ist kein Anfangsdatum festgelegt " .
+                                     "werden alle Testausführungen berücksichtigt - und endet mit dem <b>Zieldatum 23:59:59</b>.<br />" .
                                      "Alle Ausführung nach dem Zieldatum werden ignoriert.<br />Meilensteine sind erreicht wenn " .
                                      "der gewählte Prozentsatz an <b>durchgeführten Tests</b> erreicht ist.  Der Status der " .
                                      "Meilensteine kann im Testplan Überblick (Testergebnisse) eingesehen werden.";
@@ -1532,7 +1532,8 @@ $TLS_execution_type = "Ausführungstyp";
 $TLS_execution_type_short_descr = 'Ausführung';
 $TLS_tcversion_is_inactive_msg = "Diese Version ist inaktiv und ist dadurch in Testplänen nicht verfügbar";
 $TLS_system_blocks_delete_executed_tc = "Ihre Konfiguration verbietet es ausgeführte Testfälle zu löschen";
-
+$TLS_system_blocks_delete_executed_tc_when = "Ihre Konfiguration verbietet das Löschen von Testfällen, " .
+                                             "wenn ausgeführte Testfallversionen existieren.";
 
 
 // ----- gui/templates/planRemoveTC_m1.tpl -----

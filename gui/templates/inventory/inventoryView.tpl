@@ -35,6 +35,7 @@
           confirm, warning, error"}
 
 {include file="inc_head.tpl" openHead="yes"}
+{include file="inc_ext_js.tpl"}
 {config_load file="input_dimensions.conf" section="inventory"}
 
 <style type="text/css">

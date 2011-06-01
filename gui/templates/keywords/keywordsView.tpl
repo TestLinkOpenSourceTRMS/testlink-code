@@ -8,6 +8,7 @@ Revision:
 
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
+{include file="inc_action_onclick.tpl"}
 
 {lang_get var='labels'
           s='th_notes,th_keyword,th_delete,btn_import,btn_export,alt_delete_keyword,

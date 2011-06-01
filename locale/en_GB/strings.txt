@@ -1417,8 +1417,8 @@ $TLS_info_milestone_create_prio = "Milestones consider executions within a speci
                                   "different <b>priorities</b> are reached. Status of Milestones can be found on General Test Plan " .
                                   "Metrics.";
 $TLS_info_milestone_create_no_prio = "Milestones consider executions within a specified time period.<br />This period starts " .
-                                     "with the <b>Start Date</b> - if the Start Date is not specified all executions are " .
-                                     "taken into account - and ends with the <b>Target date</b>.<br />All executions after the " .
+                                     "with the <b>Start Date 00:00:00</b> - if the Start Date is not specified all executions are " .
+                                     "taken into account - and ends with the <b>Target date 23:59:59</b>.<br />All executions after the " .
                                      "Target Date are ignored.<br />Milestones are reached when the chosen percentage of " .
                                      "<b>Completed tests</b> is reached. Status of Milestones can be found on General Test Plan " .
                                      "Metrics.";

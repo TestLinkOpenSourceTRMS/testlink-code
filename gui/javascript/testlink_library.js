@@ -197,7 +197,7 @@ function STS(tproject_id,tplan_id,id)
 */
 function SP(tproject_id,tplan_id)
 {
-    var action_url = fRoot+menuUrl + "&tproject_id=" + tproject_id + "&tplan_id=" + tplan_id;
+    var action_url = fRoot+menuUrl + "?tproject_id=" + tproject_id + "&tplan_id=" + tplan_id;
   	parent.workframe.location = action_url;
 }
 

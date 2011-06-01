@@ -146,13 +146,13 @@ function generateTestSpecTree(&$db,$env,$linkto,$filters=null,$options=null)
 	                    && is_array($filters['filter_toplevel_testsuite']) ?
 	                    $filters['filter_toplevel_testsuite'] : null;
 	
-	$tcase_prefix=$tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
-	$test_spec = $tproject_mgr->get_subtree($tproject_id,testproject::RECURSIVE_MODE,
+	$tcase_prefix=$tproject_mgr->getTestCasePrefix($env['tproject_id']) . $glueChar;
+	$test_spec = $tproject_mgr->get_subtree($env['tproject_id'],testproject::RECURSIVE_MODE,
 		                                    testproject::INCLUDE_TESTCASES, $exclude_branches);
 	
 	// Added root node for test specification -> testproject
-	$test_spec['name'] = $tproject_name;
-	$test_spec['id'] = $tproject_id;
+	$test_spec['name'] = $env['tproject_name'];
+	$test_spec['id'] = $env['tproject_id'];
 	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
 	
 	$map_node_tccount=array();
@@ -166,7 +166,7 @@ function generateTestSpecTree(&$db,$env,$linkto,$filters=null,$options=null)
 		$tck_map = null;  // means no filter
 		if(!is_null($my['filters']['filter_keywords']))
 		{
-			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,
+			$tck_map = $tproject_mgr->get_keywords_tcases($env['tproject_id'],
 			           $my['filters']['filter_keywords'],
 			           $my['filters']['filter_keywords_filter_type']);
 			if( is_null($tck_map) )
@@ -1843,7 +1843,7 @@ function extjs_renderTestSpecTreeNodeOnOpen(&$node,$nodeAttr,$options,$env)
 	$node['href']='';
 	if(!is_null($pfn))
 	{
-		echo $pfn;
+		//echo $pfn;
 		if(	$pfn == 'ET' )
 		{
 			$node['href'] = "javascript:{$pfn}({$env['tproject_id']},{$node['id']})";

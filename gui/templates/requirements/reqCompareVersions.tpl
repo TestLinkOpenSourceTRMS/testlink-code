@@ -21,6 +21,7 @@ Compare requirement versions
           custom_fields,attributes,log_message,btn_cancel,use_html_comp,diff_method"}
 
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/diff/diff.css">
+<link rel="stylesheet" type="text/css" href="{$basehref}third_party/daisydiff/css/diff.css">
 
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
@@ -110,14 +111,14 @@ function validateForm() {
 		}
 	}
 	
-	if (!valButton(document.req_compare_versions.version_left)
-			|| !valButton(document.req_compare_versions.version_right)) {
+	if (!valButton(document.req_compare_versions.left_item_id)
+			|| !valButton(document.req_compare_versions.right_item_id)) {
 		alert_message(alert_box_title,warning_selected_versions);
 		return false;
 	}
 	
-	for (var i=document.req_compare_versions.version_left.length-1; i > -1; i--) {
-        if (document.req_compare_versions.version_left[i].checked && document.req_compare_versions.version_right[i].checked) {
+	for (var i=document.req_compare_versions.left_item_id.length-1; i > -1; i--) {
+        if (document.req_compare_versions.left_item_id[i].checked && document.req_compare_versions.right_item_id[i].checked) {
         	alert_message(alert_box_title,warning_same_selected_versions);
         	return false;
         }
@@ -201,7 +202,7 @@ function validateForm() {
 		  onsubmit="return validateForm();" />			
 	
 	<p>
-		<input onclick="test();" type="submit" name="compare_selected_versions" 
+		<input type="submit" name="compare_selected_versions" 
 			   value="{$labels.btn_compare_selected_versions}" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" onclick="javascript:history.back();" />
 	</p>
@@ -239,10 +240,6 @@ function validateForm() {
 	{/foreach}
 	
 	</table><br/>
-	
-	<p>{$labels.context} <input type="text" name="context" id="context" maxlength="4" size="4" value="{$gui->context}" />
-	<input type="checkbox" id="context_show_all" name="context_show_all" 
-	onclick="triggerTextfield(this.form.context);"/> {$labels.show_all} </p><br/>
 	
 	{* 20110107 - new diff engine *}
 	<h2>{$labels.diff_method}</h2>

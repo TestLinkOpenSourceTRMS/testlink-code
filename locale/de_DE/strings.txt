@@ -3194,6 +3194,7 @@ $TLS_req_not_found = "Anforderung %s konnte im Testprojekt (prefix:%s) nicht gef
 $TLS_req_version_not_found = "Version %s der Anforderung %s konnte im Testprojekt (prefix:%s) nicht gefunden werden.";
 $TLS_invalid_item = 'Ungültiges item (%s)';
 $TLS_btn_show_direct_link = "Zeige Permalink";
+$TLS_direct_link_on_wrong_version = "Klicken Sie hier, um die aktuelle Version des Dokumentes anzuzeigen.";
 
 // ----- testcase/req comparison -----
 $TLS_title_compare_versions_tc = "Vergleich von Testfallversionen";

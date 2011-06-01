@@ -37,6 +37,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20110601 - asimon - add a new (valid) direct link to output if a nonexistent version of a valid req is requested
  *  20110530 - asimon - BUGID 4298: added functionality to open specific requirement versions
  *  20100223 - asimon - added anchor functionality
  *  20091215 - asimon - refactored process_req() with new method in requirement_mgr class
@@ -182,6 +183,7 @@ function process_testcase(&$dbHandler,$externalID, $tprojectID, $tprojectPrefix,
  * process_req
  *
  * @internal revisions:
+ * 20110601 - asimon - add a new (valid) direct link to output if a nonexistent version of a valid req is requested
  * 20110530 - asimon - BUGID 4298: refactored this function to be able to operate with specific versions
  */
 function process_req(&$dbHandler, $docID, $tprojectID, $tprojectPrefix, $version)
@@ -208,7 +210,11 @@ function process_req(&$dbHandler, $docID, $tprojectID, $tprojectPrefix, $version
 		$version_id = !is_null($req) && ($req['version'] == $version) ? $req['version_id'] : null;
 
 		if (is_null($version_id)) {
+			// add direct link to current version to output
+			$req_url = $_SESSION['basehref'] . 'linkto.php?load&tprojectPrefix=' .
+			           urlencode($tprojectPrefix) . '&item=req&id=' . urlencode($docID);
 			$ret['msg'] = sprintf(lang_get('req_version_not_found'), $version, $docID, $tprojectPrefix);
+			$ret['msg'] .= sprintf(" <a href=\"$req_url\">%s</a>", lang_get('direct_link_on_wrong_version'));
 			$req_id = null;
 		}
 	}

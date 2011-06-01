@@ -36,7 +36,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
     <h1 class="title">{$labels.title_keywords}</h1>
     {* tabs *}
     <div class="tabMenu">
-    	<span class="unselected"><a href="lib/keywords/keywordsView.php?tproject_id={$tproject_id}"
+    	<span class="unselected"><a href="lib/keywords/keywordsView.php?tproject_id={$gui->tproject_id}"
     			target='mainframe'>{$labels.menu_manage_keywords}</a></span> 
     	<span class="selected">{$labels.menu_assign_kw_to_tc}</span> 
     </div>
@@ -51,7 +51,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
     
     {* data form *}
     <div style="margin-top: 25px;">
-    	<form method="post" action="lib/keywords/keywordsAssign.php?tproject_id={$tproject_id}&id={$gui->id}&edit={$gui->level}">
+    	<form method="post" action="lib/keywords/keywordsAssign.php?tproject_id={$gui->tproject_id}&id={$gui->id}&edit={$gui->level}">
       {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 	    <br />
     	<input type="submit" name="assign{$gui->level}" value="{$labels.btn_save}" />

@@ -114,14 +114,14 @@ function validateForm() {
 		}
 	}
 	
-	if (!valButton(document.req_compare_versions.version_left)
-			|| !valButton(document.req_compare_versions.version_right)) {
+	if (!valButton(document.req_compare_versions.left_item_id)
+			|| !valButton(document.req_compare_versions.right_item_id)) {
 		alert_message(alert_box_title,warning_selected_versions);
 		return false;
 	}
 	
-	for (var i=document.req_compare_versions.version_left.length-1; i > -1; i--) {
-        if (document.req_compare_versions.version_left[i].checked && document.req_compare_versions.version_right[i].checked) {
+	for (var i=document.req_compare_versions.left_item_id.length-1; i > -1; i--) {
+        if (document.req_compare_versions.left_item_id[i].checked && document.req_compare_versions.right_item_id[i].checked) {
         	alert_message(alert_box_title,warning_same_selected_versions);
         	return false;
         }
@@ -204,7 +204,7 @@ function validateForm() {
 			onsubmit="return validateForm();" />			
 	
 	<p>
-		<input onClick="test();" type="submit" name="compare_selected_versions" value="{$labels.btn_compare_selected_versions}" />
+		<input type="submit" name="compare_selected_versions" value="{$labels.btn_compare_selected_versions}" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" onclick="javascript:history.back();" />
 	</p>
 	<br/>

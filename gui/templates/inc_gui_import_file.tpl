@@ -1,13 +1,14 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_gui_import_file.tpl,v 1.3 2010/11/21 17:50:59 franciscom Exp $
+@filesource inc_gui_import_file.tpl
 
-rev :
-20101121 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+@internal revision
 *}
 {lang_get var="local_labels" 
           s='file_type,view_file_format_doc,local_file,btn_cancel,btn_upload_file,
              action_for_duplicates,skip_frozen_req'}
+
+
 
 <table>
 <tr>
@@ -20,8 +21,10 @@ rev :
 </tr>
 <tr>
   <td>{$local_labels.local_file} </td>
-  <td><input type="file" name="uploadedFile" size="{#FILENAME_SIZE#}" 
-             maxlength="{#FILENAME_MAXLEN#}"/></td>
+  <td>
+  <input type="hidden" name="MAX_FILE_SIZE" value="{$args->maxFileSize}" /> {* restrict file size How ?*}
+  <input type="file" name="uploadedFile" size="{#FILENAME_SIZE#}" maxlength="{#FILENAME_MAXLEN#}"/>
+  </td>
 </tr>
 
 <tr>
@@ -49,7 +52,6 @@ rev :
 </table>
 <p>{$args->fileSizeLimitMsg}</p>
 <div class="groupBtn">
-	<input type="hidden" name="MAX_FILE_SIZE" value="{$args->maxFileSize}" /> {* restrict file size How ?*}
 	<input type="submit" name="uploadFile" value="{$local_labels.btn_upload_file}" />
 	<input type="button" name="cancel" value="{$local_labels.btn_cancel}"
 		     onclick="javascript: location.href='{$args->return_to_url}';" />

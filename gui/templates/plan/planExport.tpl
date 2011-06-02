@@ -5,10 +5,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 test plan export
 
 @internal revisions
-20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-20101009 - franciscom - BUGID 3270 - improvements to avoid event viewer warnings
-20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
-
 *}
 {lang_get var="labels" 
           s='export_filename,warning_empty_filename,file_type,warning,export_cfields,title_req_export,
@@ -75,7 +71,7 @@ function validateForm(f)
   		<input type="submit" name="export" value="{$labels.btn_export}" />
   		<input type="button" name="cancel" value="{$labels.btn_cancel}"
     		     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
-    		     {else}  onclick="javascript:history.back();" {/if} />
+    		     {else}  onclick="javascript:window.close();" {/if} />
   	</div>
   </form>
 {else}

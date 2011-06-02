@@ -1,4 +1,4 @@
-l--  TestLink Open Source Project - http://testlink.sourceforge.net/
+--  TestLink Open Source Project - http://testlink.sourceforge.net/
 --  $Id: testlink_create_default_data.sql,v 1.32 2010/12/10 19:37:39 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --

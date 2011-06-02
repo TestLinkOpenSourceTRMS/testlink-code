@@ -11,6 +11,7 @@
  *
  * 
  *	@internal revisions
+ *  20110602 - franciscom - TICKET 4535: Tree is not refreshed after editing Requirement Specification
  *  20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
  *                                  inside a req spec (recursively)
  *  20101006 - asimon - BUGID 3854
@@ -217,7 +218,9 @@ class reqSpecCommands
 		{
 			$guiObj->main_descr = '';
 			$guiObj->action_descr='';
-			$guiObj->template = "reqSpecView.php?req_spec_id={$guiObj->req_spec_id}";
+			
+			// TICKET 4535: Tree is not refreshed after editing Requirement Specification
+			$guiObj->template = "reqSpecView.php?refreshTree={$argsObj->refreshTree}&req_spec_id={$guiObj->req_spec_id}";
 			$cf_map = $this->reqSpecMgr->get_linked_cfields($argsObj->req_spec_id);
 			$this->reqSpecMgr->values_to_db($request,$argsObj->req_spec_id,$cf_map);
 		

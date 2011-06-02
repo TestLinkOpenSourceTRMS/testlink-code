@@ -3,14 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2010/08/10 14:10:12 $ by $Author: asimon83 $
+ * @filesource	reqSpecView.php
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
- * rev: 20100810 - asimon - BUGID 3317: disabled total count of requirements by default
+ * rev: 20110602 - franciscom - TICKET 4535: Tree is not refreshed after editing Requirement Specification
+ * 		20100810 - asimon - BUGID 3317: disabled total count of requirements by default
  *      20080924 - franciscom - use requirements count to enable/disable features
  *      20070415 - franciscom - custom field manager
  *      20070415 - franciscom - added reorder feature
@@ -40,9 +39,11 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args()
 {
-	$iParams = array("req_spec_id" => array(tlInputParameter::INT_N));
+	$iParams = array("req_spec_id" => array(tlInputParameter::INT_N),
+					 "refreshTree" => array(tlInputParameter::INT_N) );
     $args = new stdClass();
     R_PARAMS($iParams,$args);
+    $args->refreshTree = intval($args->refreshTree);
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
     
@@ -60,6 +61,7 @@ function initialize_gui(&$dbHandler,&$argsObj)
 	$commandMgr = new reqSpecCommands($dbHandler);
 	
     $gui = $commandMgr->initGuiBean();
+    $gui->refreshTree = $argsObj->refreshTree;
 	$gui->req_spec_cfg = config_get('req_spec_cfg');
 	$gui->req_cfg = config_get('req_cfg');
 	

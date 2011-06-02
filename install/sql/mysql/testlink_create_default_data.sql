@@ -4,6 +4,8 @@
 #
 # Database Type: MySQL 
 #
+# 20110602 - franciscom - TICKET 4515: "Requirement-Test Case Assignment" should be set per default for roles 
+#						  admin / leader / test-designer / senior-tester
 # 20110411 - franciscom - removed sentence that create admin user
 #
 # 20101126 - franciscom - DB version increased
@@ -95,6 +97,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,24);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,28);
 
 # Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3 );
@@ -109,6 +112,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,8 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,9 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,10);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,11);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,28);
 
 # Rights for tester role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (7,1 );
@@ -127,6 +131,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,9 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,11);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,27);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,28);
 
 # Rights for leader role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,1 );
@@ -146,6 +151,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,24);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,28);
 
 # Assignment types
 INSERT INTO /*prefix*/assignment_types (id,fk_table,description) VALUES(1,'testplan_tcversions','testcase_execution');

@@ -9,15 +9,6 @@
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revisions
- *	20101210 - franciscom - BUGID 4056 - Req. Revisioning
- *  20100915 - Julian - BUGID 3777 - Allow to insert last req doc id when creating requirement
- *  20100811 - asimon - fixed two warnings because of undefined variables in template
- *  20100808 - aismon - added logic to refresh filtered tree on action
- *  20100319 - asimon - BUGID 3307 - set coverage to 0 if null, to avoid database errors with null value
- * 	                    BUGID 1748, requirement relations
- *  20100303 - asimon - bugfix, changed max length of req_doc_id in init_args() to 64 from 32
- *  					--> TODO why aren't the constants used here instead of magic numbers?
- *  20100205 - asimon - added requirement freezing
  *
 **/
 require_once("../../config.inc.php");
@@ -114,10 +105,10 @@ function init_args(&$dbHandler)
 		$args->expected_coverage = 0;
 	}
 	
-	// asimon - 20100808 - added logic to refresh filtered tree on action
 	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action'])
 	                     ? $_SESSION['setting_refresh_tree_on_action'] : 0;
-	
+
+
 	return $args;
 }
 
@@ -171,14 +162,25 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
 	$guiObj->scope = $owebEditor->CreateHTML();
     $guiObj->editorType = $editorCfg['type'];
       
-    // 20100808 - aismon - added logic to refresh filtered tree on action
-    switch($argsObj->doAction) {
+    switch($argsObj->doAction) 
+    {
        	case "doDelete":
+       		$guiObj->refreshTree = 1;  // has to be forced
+    	break;
+    
        	case "doCreate":
        		$guiObj->refreshTree = $argsObj->refreshTree;
     	break;
+
+      	case "doUpdate":
+      	// IMPORTANT NOTICE
+      	// we do not set tree refresh here, because on this situation
+      	// tree update has to be done when reqView page is called.
+      	// If we ask for tree refresh here we are going to do double refresh (useless and time consuming)
+    	break;
     }
-    
+
+	    
     switch($argsObj->doAction)
     {
         case "edit":
@@ -283,6 +285,7 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 
 	$module = $_SESSION['basehref'] . 'lib/requirements/';
 	$context = "tproject_id=$gui->tproject_id&req_spec_id=$gui->req_spec_id";
+	$gui->actions = new stdClass();
 	$gui->actions->req_spec_view = $module . "reqSpecView.php?$context"; 
 
 	return $gui;

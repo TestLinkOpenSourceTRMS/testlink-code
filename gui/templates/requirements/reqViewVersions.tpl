@@ -422,6 +422,10 @@ var pF_delete_req_relation = delete_req_relation;
 	{$labels.no_records_found}
 {/if}
 
+{if isset($gui->refreshTree) && $gui->refreshTree}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+{/if}
+
 </div>
 </body>
 </html>

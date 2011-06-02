@@ -7,18 +7,6 @@
  * @author 		Francisco Mancardi
  * 
  * @internal revision
- *
- *	20101210 - franciscom - BUGID 4056: Requirement Revisioning
- *  20101008 - asimon - BUGID 3311
- *  20101006 - asimon - BUGID 3854
- *	20101003 - franciscom - BUGID 3834: Create version source <>1 - Bad content used.
- *  20101001 - asimon - custom fields do not lose entered values on errors
- *	20100906 - franciscom - BUGID 2877 -  Custom Fields linked to Req versions
- *	20100719 - franciscom - BUGID 3327 - manage duplicated DOC ID when creating, without loosing filled-in data
- * 	20100323 - asimon - BUGID 3312 - fixed audit log message when freezing a req version
- *  20100319 - asimon - BUGID 3307 - set coverage to 0 if null, to avoid database errors with null value
- *                      BUGID 1748 - added doAddRelation() and doDeleteRelation() for req relations
- *  20100205 - asimon - added doFreezeVersion()
  */
 
 class reqCommands
@@ -286,7 +274,6 @@ class reqCommands
 		$obj->suggest_revision = false;	    
 
 	    $createRev = false;
-	    // new dBug($argsObj);
 	    if($diff['force'] && !$argsObj->do_save)
 	    {
 	    	$obj->prompt_for_log = true;
@@ -314,40 +301,34 @@ class reqCommands
 	    		$createRev = ($argsObj->save_rev == 1);
 	    	}
 	    
-	    	// echo 'INSIDE WRITE';
-	    	// new dBug($argsObj);	
-	    	// die();
-		$ret = $this->reqMgr->update($argsObj->req_id,$argsObj->req_version_id,
-		                             trim($argsObj->reqDocId),$argsObj->title,
-	  				                 $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus,
-	  					                 $argsObj->reqType,$argsObj->expected_coverage,
-	  					                 null,null,0,$createRev,$argsObj->log_message);
+			$ret = $this->reqMgr->update($argsObj->req_id,$argsObj->req_version_id,
+			                             trim($argsObj->reqDocId),$argsObj->title,
+		  				                 $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus,
+		  					             $argsObj->reqType,$argsObj->expected_coverage,
+		  					             null,null,0,$createRev,$argsObj->log_message);
+	
+	      	$obj->user_feedback = $ret['msg'];
+			$obj->template = null;
 
-      	$obj->user_feedback = $ret['msg'];
-		$obj->template = null;
-
-		if($ret['status_ok'])
-		{
-        	$obj->main_descr = '';
-		    $obj->action_descr = '';
-          	$obj->template = "reqView.php?tproject_id={$argsObj->tproject_id}&requirement_id={$argsObj->req_id}";
-
-	        // BUGID 2877 -  Custom Fields linked to Req versions 
-		  	$this->reqMgr->values_to_db($request,$argsObj->req_version_id,$cf_map);
-
-		  	logAuditEvent(TLS("audit_requirement_saved",$argsObj->reqDocId),"SAVE",$argsObj->req_id,"requirements");
-		}
-		else
-		{
-			// Action has failed => no change done on DB.
-	        $old = $this->reqMgr->get_by_id($argsObj->req_id,$argsObj->req_version_id);
-	        $obj->main_descr = $descr_prefix . $old['title'];
-	        
-	        // BUGID 2877 -  Custom Fields linked to Req versions 
-			$obj->cfields = $this->reqMgr->html_table_of_custom_field_values($argsObj->req_id,$argsObj->req_version_id,
-																			 $argsObj->tproject_id);
-
-		}
+			if($ret['status_ok'])
+			{
+	        	$obj->main_descr = '';
+			    $obj->action_descr = '';
+	          	$obj->template = "reqView.php?refreshTree={$argsObj->refreshTree}&tproject_id={$argsObj->tproject_id}" .
+	          					 "&requirement_id={$argsObj->req_id}";
+	
+			  	$this->reqMgr->values_to_db($request,$argsObj->req_version_id,$cf_map);
+			  	logAuditEvent(TLS("audit_requirement_saved",$argsObj->reqDocId),"SAVE",$argsObj->req_id,"requirements");
+			}
+			else
+			{
+				// Action has failed => no change done on DB.
+		        $old = $this->reqMgr->get_by_id($argsObj->req_id,$argsObj->req_version_id);
+		        $obj->main_descr = $descr_prefix . $old['title'];
+				$obj->cfields = $this->reqMgr->html_table_of_custom_field_values($argsObj->req_id,$argsObj->req_version_id,
+																				 $argsObj->tproject_id);
+	
+			}
 	    }
 	    else if( $diff['suggest'] )
 	    {
@@ -773,9 +754,6 @@ class reqCommands
                         		'expected_coverage' => 'expected_coverage', 	
                         		'req_doc_id'=> 'reqDocId', 'title' => 'title');
 
-
-		// new dBug($old);
-		// new dBug($new);
 		$ret = array('force' =>  false, 'suggest' => false, 'nochange' => false, 'changeon' => null);
 		foreach($force_revision as $access_key => $access_prop)
 		{

@@ -12,14 +12,6 @@
  * Screen to view content of requirement.
  *
  *	@internal revision
- *  20101210 - franciscom - BUGID 4056 - Req. Revisioning
- *  20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
- *	20101020 - franciscom - BUGID 3914 - typo error  
- *	20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
- *  20100324 - asimon - BUGID 1748 - Moved init_relation_type_select to requirement_mgr
- *                                   as it is now used from multiple files
- *	20100319 - franciscom - refactoring of BUGID 1748 
- *  20100319 - asimon - BUGID 1748 - implemented display of req relations
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -36,7 +28,6 @@ checkRights($db,$_SESSION['currentUser'],$args);
 $gui = initialize_gui($db,$args);
 $smarty = new TLSmarty();
 
-/* contribution BUGID 2999, show permanent link */
 $tproject_mgr = new testproject($db);
 $prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
 
@@ -51,22 +42,20 @@ $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
  */
 function init_args(&$dbHandler)
 {
-    // BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
-
-	// BUGID 1748
-	// BUGID 4038
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
 	                 "req_version_id" => array(tlInputParameter::INT_N),
 	                 "tproject_id" => array(tlInputParameter::INT_N),
 			         "showReqSpecTitle" => array(tlInputParameter::INT_N),
+			         "refreshTree" => array(tlInputParameter::INT_N),
 			         "relation_add_result_msg" => array(tlInputParameter::STRING_N));	
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
 
 	$args->req_id = $args->requirement_id;
-
+	$args->refreshTree = intval($args->refreshTree);
+	
 	$args->tproject_name = '';
     if($args->tproject_id > 0)
     {
@@ -74,7 +63,7 @@ function init_args(&$dbHandler)
     	$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
     	$args->tproject_name = $dummy['name'];
     }
-
+	
 
     $user = $_SESSION['currentUser'];
 	$args->userID = $user->dbID;
@@ -93,6 +82,7 @@ function initialize_gui(&$dbHandler,$argsObj)
     $commandMgr = new reqCommands($dbHandler);
 
     $gui = $commandMgr->initGuiBean();
+    $gui->refreshTree = $argsObj->refreshTree;
     $gui->req_cfg = config_get('req_cfg');
     $gui->tproject_id = $argsObj->tproject_id;
     $gui->tproject_name = $argsObj->tproject_name;

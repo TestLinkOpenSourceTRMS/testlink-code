@@ -13,10 +13,6 @@
  * Supported: simple CSV, Doors CSV, XML, DocBook
  *
  * @internal revisions
- * 20101026 - franciscom - fixed missing variable definitions that creates warnings on event viewer
- * 20100914 - franciscom - manage option skip frozen requirements
- * 20100908 - asimon -  BUGID 3761: requirement tree refresh after requirement import
- * 20100321 - franciscom - work on import child requirements XML format - not finished
  *
  */
 require_once("../../config.inc.php");
@@ -31,13 +27,10 @@ $templateCfg = templateConfiguration();
 $req_spec_mgr = new requirement_spec_mgr($db);
 $req_mgr = new requirement_mgr($db);
 
-
 $args = init_args($db);
 checkRights($db,$_SESSION['currentUser'],$args);
 
 $gui = initializeGui($db,$args,$_SESSION,$req_spec_mgr,$req_mgr);
-
-new dBug($gui);
 
 switch($args->doAction)
 {
@@ -45,10 +38,8 @@ switch($args->doAction)
         $dummy = doExecuteImport($gui->fileName,$args,$req_spec_mgr,$req_mgr);
 		$gui->items = $dummy->items;        
 		$gui->file_check = $dummy->file_check;        
-        $gui->importResult = lang_get('import_done');
-        
-        // BUGID 3761: requirement tree refresh after requirement import
-        $gui->refreshTree = $args->refreshTree && $gui->file_check['status_ok'];	
+        $gui->importResult = $dummy->msg;
+        $gui->refreshTree = $args->refreshTree && $dummy->refreshTree;	
         
     break;
 }
@@ -69,13 +60,15 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
     $retval = new stdClass();
     $retval->items = array();
     $retval->msg = '';
-    $retval->file_check=array('status_ok' => 1, 'msg' => 'ok');
+    $retval->file_check = array('status_ok' => 1, 'msg' => 'ok');
+    $retval->refreshTree = true;
 
     $context = new stdClass();
     $context->tproject_id = $argsObj->tproject_id;
     $context->req_spec_id =  $argsObj->req_spec_id;
     $context->user_id = $argsObj->user_id;
 	$context->importType = $argsObj->importType;
+	$context->scope = $argsObj->scope;
 
     $opts = array();
     $opts['skipFrozenReq'] = ($argsObj->skip_frozen_req ? true : false);
@@ -102,17 +95,30 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
 	
 	if($retval->file_check['status_ok'])
 	{
-
+		$import_ok = true;
 		if($argsObj->importType == 'XML')
 		{
-    		$retval->items = doReqImportFromXML($reqSpecMgr,$reqMgr,$xml,$context,$opts);
+			try 
+			{
+    			$retval->items = doReqImportFromXML($reqSpecMgr,$reqMgr,$xml,$context,$opts);
+    		}	
+			catch (Exception $e)
+			{
+				$import_ok = false;
+				$retval->items = null;
+				$retval->msg = $e->getMessage();
+				$retval->refreshTree=false;
+			}
 		}
 		else
 		{
 		    $retval->items = doReqImportOther($reqMgr,$fileName,$context,$opts);
 		}
 		unlink($fileName);
-		$retval->msg = lang_get('req_import_finished');
+		if($import_ok)
+		{
+			$retval->msg = lang_get('req_import_finished');
+		}
 	}
     return $retval;    
 }
@@ -295,6 +301,34 @@ function doReqImportFromXML(&$reqSpecMgr,&$reqMgr,&$simpleXMLObj,$importContext,
 {
 	$items = array();
 	$isReqSpec = property_exists($simpleXMLObj,'req_spec');
+	
+	// check to understand if user has provided an XML that is the requested for operation
+	// required.
+	$doIt = true;
+	switch($importContext->scope)
+	{
+		case 'tree':
+		case 'branch':
+			$doIt = $isReqSpec;
+		break;
+		
+		default:
+			$doIt = !$isReqSpec;
+		break;
+		
+	}
+	
+	if(!$doIt)
+	{
+		echo 'oo';
+	 	throw new Exception(lang_get('bad_file_format'));
+		echo 'ff';
+		die();
+		// return null;  // >>>----> Brute Force exit
+	}
+
+
+	// OK go ahead	
 	if($isReqSpec)
 	{
 		foreach($simpleXMLObj->req_spec as $xkm)

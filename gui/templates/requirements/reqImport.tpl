@@ -39,12 +39,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   {if $gui->importResult != '' && $gui->file_check.status_ok}
   	<p class="info">{$gui->importResult}</p>
   	<table class="simple">
+  	{if $gui->items != ''}
   	<tr>
   		<th>{$labels.doc_id_short}</th>
   		<th>{$labels.title}</th>
   		<th style="width: 20%;">{$labels.Result}</th>
   	</tr>
-  	{if $gui->items != ''}
  	    {foreach from=$gui->items key=idx item=import_feedback}
   	  <tr>
   	    <td>{$import_feedback.doc_id|escape}</td>
@@ -65,7 +65,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 {if $gui->file_check.status_ok eq 0}
   <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
   alert_message("{$labels.warning|escape:'javascript'}","{$gui->file_check.msg|escape:'javascript'}");
   </script>
 {/if}  

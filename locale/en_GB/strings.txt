@@ -728,6 +728,7 @@ $TLS_title_req_import_check_input = "Check import data";
 $TLS_title_req_spec_import = "Import Req. Spec.";
 $TLS_check_status = "Check Status";
 $TLS_skip_frozen_req = "Skip frozen requirements";
+$TLS_bad_file_format = "File content can not be imported, check format";
 
 
 // gui/templates/inc_attachments.tpl

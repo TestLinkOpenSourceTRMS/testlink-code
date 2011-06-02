@@ -10,14 +10,15 @@ filesource	userInfo.tpl
 {lang_get var='labels'
           s='title_account_settings,warning_empty_pwd,warning_different_pwd,never_logged,
              warning_enter_less1,warning_enter_at_least1,warning_enter_at_least2,
-             warning_enter_less2,th_login,th_first_name,th_last_name,
+             warning_enter_less2,th_login,th_first_name,th_last_name,title_personal_data,
              th_email,th_locale,btn_save,th_old_passwd,audit_login_history,none,
+             title_personal_passwd,title_api_interface,warn_demo,
              th_new_passwd,th_new_passwd_again,btn_change_passwd,audit_last_failed_logins,
              your_password_is_external,user_api_key,btn_apikey_generate,empty_email_address,
              audit_last_succesful_logins,warning,warning_empty_first_name,no_good_email_address,
              warning_empty_last_name,passwd_dont_match,empty_old_passwd,show_event_history'}
 
-{assign var="action_mgmt" value="lib/usermanagement/userInfo.php"}
+{$action_mgmt="lib/usermanagement/userInfo.php"}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {include file="inc_ext_js.tpl"}
 
@@ -108,15 +109,15 @@ function checkPasswords(oldp,newp,newp_check)
 
 <h1 class="title">{$labels.title_account_settings}</h1>
 
-{include file="inc_update.tpl" user_feedback=$user_feedback}
+{include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 
 <div class="workBack">
 
 
-<h2>{lang_get s="title_personal_data"}</h2>
+<h2>{$labels.title_personal_data}</h2>
 <form method="post" action="{$action_mgmt}"
 	{if $tlCfg->demoMode}
-		onsubmit="alert('{lang_get s="warn_demo"}'); return false;">
+		onsubmit="alert('{$labels.warn_demo}'); return false;">
 	{else}
 		onsubmit="return validatePersonalData(this)">
 	{/if}
@@ -162,11 +163,11 @@ function checkPasswords(oldp,newp,newp_check)
 </form>
 
 <hr />
-<h2>{lang_get s="title_personal_passwd"}</h2>
-{if $external_password_mgmt eq 0}
+<h2>{$labels.title_personal_passwd}</h2>
+{if $gui->external_password_mgmt eq 0}
 	<form name="changePass" method="post" action="{$action_mgmt}"
 		{if $tlCfg->demoMode}
-		onsubmit="alert('{lang_get s="warn_demo"}'); return false;">
+		onsubmit="alert('{$labels.warn_demo}'); return false;">
 		{else}
 		onsubmit="return checkPasswords('oldpassword','newpassword','newpassword_check');">
 		{/if}
@@ -192,7 +193,7 @@ function checkPasswords(oldp,newp,newp_check)
 
 {if $tlCfg->api->enabled}
 <hr />
-<h2>{lang_get s="title_api_interface"}</h2>
+<h2>{$labels.title_api_interface}</h2>
 <div>
 	<form name="genApi" method="post" action="{$action_mgmt}">
 		<input type="hidden" name="doAction" value="genAPIKey" />
@@ -207,35 +208,35 @@ function checkPasswords(oldp,newp,newp_check)
 
 <hr />
 <h2>{$labels.audit_login_history}
-	{if $mgt_view_events == "yes"}
+	{if $gui->mgt_view_events == "yes"}
 	<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$user->dbID}','users')" alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
 </h2>
 {/if}
 <div>
 	<h3>{$labels.audit_last_succesful_logins}</h3>
-	{if $loginHistory->ok != ''}
-	{foreach from=$loginHistory->ok item=event}
-	<span>{localize_timestamp ts=$event->timestamp}</span>
-	<span>{$event->description|escape}</span>
-	<br/>
-	{/foreach}
+	{if $gui->loginHistory->ok != ''}
+		{foreach from=$gui->loginHistory->ok item=event}
+			<span>{localize_timestamp ts=$event->timestamp}</span>
+			<span>{$event->description|escape}</span>
+			<br/>
+		{/foreach}
 	{else}
 	  {$labels.never_logged}
 	{/if}
 </div>
-  {if $loginHistory->failed != ''}
+  {if $gui->loginHistory->failed != ''}
 	<div>
 	  <h3>{$labels.audit_last_failed_logins}</h3>
-	  {foreach from=$loginHistory->failed item=event}
-	  <span>{localize_timestamp ts=$event->timestamp}</span>
-	  <span>{$event->description|escape}</span>
-	  <br/>
+	  {foreach from=$gui->loginHistory->failed item=event}
+	 	 <span>{localize_timestamp ts=$event->timestamp}</span>
+	  	<span>{$event->description|escape}</span>
+	  	<br/>
 	  {/foreach}
 	</div>
   {/if}
 
 </div>
-{if $update_title_bar == 1}
+{if $gui->update_title_bar == 1}
 <script type="text/javascript">
 	parent.titlebar.location.reload();
 </script>

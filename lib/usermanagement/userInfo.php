@@ -7,16 +7,13 @@
  *
  * @package 	TestLink
  * @author 		-
- * @copyright 	2007-2009, TestLink community 
+ * @copyright 	2007-2011, TestLink community 
  * @version    	CVS: $Id: userInfo.php,v 1.34 2011/01/10 15:38:55 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
- *
  *	20101008 - Julian - reload navBar after changing personal data (localization)
- *	20100106 - franciscom - security improvement - checkDoAction()
- *                        - BUGID 3043 -  genApiKey -> genAPIKey
  */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
@@ -29,11 +26,17 @@ $args = init_args();
 $user = new tlUser($args->userID);
 $user->readFromDB($db);
 
+$gui = new stdClass();
+$gui->tproject_id = $args->tproject_id; 
+$gui->update_title_bar = 0;
+$gui->external_password_mgmt = tlUser::isPasswordMgtExternal();
+$gui->mgt_view_events = $user->hasRight($db,"mgt_view_events",$gui->tproject_id);
+
+
 $op = new stdClass();
 $op->auditMsg = null;
 $op->user_feedback = null;
 $op->status = tl::OK;
-$update_title_bar = 0;
 
 $doUpdate = false;
 switch($args->doAction)
@@ -47,7 +50,7 @@ switch($args->doAction)
 		$op->status = tl::OK;
 		$op->auditMsg = "audit_user_saved";
 		$op->user_feedback = lang_get('result_user_changed');
-		$update_title_bar = 1;
+		$gui->update_title_bar = 1;
     	break;
 
     case 'changePassword':
@@ -71,9 +74,9 @@ if($doUpdate)
 	}
 }
 
-$loginHistory = new stdClass();
-$loginHistory->failed = $g_tlLogger->getAuditEventsFor($args->userID,"users","LOGIN_FAILED",10);
-$loginHistory->ok = $g_tlLogger->getAuditEventsFor($args->userID,"users","LOGIN",10);
+$gui->loginHistory = new stdClass();
+$gui->loginHistory->failed = $g_tlLogger->getAuditEventsFor($args->userID,"users","LOGIN_FAILED",10);
+$gui->loginHistory->ok = $g_tlLogger->getAuditEventsFor($args->userID,"users","LOGIN",10);
 
 if ($op->status != tl::OK)
 {
@@ -87,19 +90,18 @@ if (null == $user->userApiKey)
 	$user->userApiKey = TLS('none');
 }
 
+$gui->user_feedback = $op->user_feedback;
+
 $smarty = new TLSmarty();
-$smarty->assign('external_password_mgmt',tlUser::isPasswordMgtExternal());
+$smarty->assign('gui',$gui);
 $smarty->assign('user',$user);
-$smarty->assign('api_ui_show',$user);
-$smarty->assign('mgt_view_events',$user->hasRight($db,"mgt_view_events"));
-$smarty->assign('loginHistory', $loginHistory);
-$smarty->assign('user_feedback', $op->user_feedback);
-$smarty->assign('update_title_bar',$update_title_bar);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 function init_args()
 {
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$iParams = array("firstName" => array("POST",tlInputParameter::STRING_N,0,30),
 			         "lastName" => array("REQUEST",tlInputParameter::STRING_N,0,30),
 			         "emailAddress" => array("REQUEST",tlInputParameter::STRING_N,0,100),
@@ -110,8 +112,6 @@ function init_args()
 
 	$pParams = I_PARAMS($iParams);
 	
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	$args = new stdClass();
     $args->user = new stdClass();
@@ -122,6 +122,9 @@ function init_args()
 	$args->oldpassword = $pParams["oldpassword"];
 	$args->newpassword = $pParams["newpassword"];
 	$args->doAction = $pParams["doAction"];
+
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
 
 	$args->userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0;
         

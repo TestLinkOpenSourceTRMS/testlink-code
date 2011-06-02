@@ -5,6 +5,7 @@ Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 rev:
+  20110602 - franciscom - TICKET 4536: Tree is not refreshed after editing Requirement
   20110530 - asimon - BUGID 4298: added functionality for direct links to open specific requirement versions
   20110525 - Julian - BUGID 4497 - show version and revision also for "Other versions"
   20110304 - asimon - added help icon with a description of some of the "new" features
@@ -435,6 +436,10 @@ var pF_delete_req_relation = delete_req_relation;
 	{$labels.no_records_found}
 {/if}
 
+{* TICKET 4536: Tree is not refreshed after editing Requirement *}
+{if isset($gui->refreshTree) && $gui->refreshTree}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+{/if}
 </div>
 </body>
 </html>

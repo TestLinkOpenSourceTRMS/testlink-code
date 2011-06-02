@@ -3,14 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.34.2.3 $
- * @modified $Date: 2011/01/10 15:38:59 $ by $Author: asimon83 $
+ * @filesource	reqView.php
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
  *
  *	@internal revision
+ *  20110602 - franciscom - TICKET 4536: Tree is not refreshed after editing Requirement
  *  20101210 - franciscom - BUGID 4056 - Req. Revisioning
  *  20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
  *	20101020 - franciscom - BUGID 3914 - typo error  
@@ -49,19 +48,18 @@ $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
  */
 function init_args()
 {
-	// BUGID 1748
-	// BUGID 4038
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
 	                 "req_version_id" => array(tlInputParameter::INT_N),
 			         "showReqSpecTitle" => array(tlInputParameter::INT_N),
+			         "refreshTree" => array(tlInputParameter::INT_N),
 			         "relation_add_result_msg" => array(tlInputParameter::STRING_N));	
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
 	
-    // BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 
+	$args->refreshTree = intval($args->refreshTree);
 	$args->req_id = $args->requirement_id;
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
@@ -82,6 +80,7 @@ function initialize_gui(&$dbHandler,$argsObj)
     $commandMgr = new reqCommands($dbHandler);
 
     $gui = $commandMgr->initGuiBean();
+    $gui->refreshTree = $argsObj->refreshTree;
     $gui->req_cfg = config_get('req_cfg');
     $gui->tproject_name = $argsObj->tproject_name;
 

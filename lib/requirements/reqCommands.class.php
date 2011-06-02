@@ -11,6 +11,7 @@
  * web command experiment
  * @internal revision
  *
+ *  20110602 - franciscom - TICKET 4536: Tree is not refreshed after editing Requirement
  *	20101210 - franciscom - BUGID 4056: Requirement Revisioning
  *  20101008 - asimon - BUGID 3311
  *  20101006 - asimon - BUGID 3854
@@ -336,7 +337,9 @@ class reqCommands
 		{
         	$obj->main_descr = '';
 		    $obj->action_descr = '';
-          	$obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
+		    
+		    // TICKET 20110602 - franciscom - TICKET 4536: Tree is not refreshed after editing Requirement
+          	$obj->template = "reqView.php?refreshTree={$argsObj->refreshTree}&requirement_id={$argsObj->req_id}";
 
 	        // BUGID 2877 -  Custom Fields linked to Req versions 
 		  	$this->reqMgr->values_to_db($request,$argsObj->req_version_id,$cf_map);

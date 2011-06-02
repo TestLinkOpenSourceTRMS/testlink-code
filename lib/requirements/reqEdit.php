@@ -166,10 +166,20 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
       
     // 20100808 - aismon - added logic to refresh filtered tree on action
     switch($argsObj->doAction) {
-       	case "doDelete":
-       	case "doCreate":
-       		$guiObj->refreshTree = $argsObj->refreshTree;
-    	break;
+		case "doDelete":
+		$guiObj->refreshTree = 1; // has to be forced
+		break;
+		
+		case "doCreate":
+		$guiObj->refreshTree = $argsObj->refreshTree;
+		break;
+		
+		case "doUpdate":
+		// IMPORTANT NOTICE
+		// we do not set tree refresh here, because on this situation
+		// tree update has to be done when reqView page is called.
+		// If we ask for tree refresh here we are going to do double refresh (useless and time consuming)
+		break;
     }
     
     switch($argsObj->doAction)

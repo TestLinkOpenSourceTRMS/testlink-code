@@ -7,10 +7,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 						way context info.
 						
 20110319 - franciscom - BUGID 4321: Requirement Spec - add option to print single Req Spec			
-20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze requirements
-20101022 - eloff - BUGID 3918 - work on buttons
-20101007 - asimon - BUGID 3866 - removed analyse button
-20100326 - asimon - removed print button
 *}
 {lang_get var='labels'
           s='btn_req_create,btn_new_req_spec,btn_export_req_spec,

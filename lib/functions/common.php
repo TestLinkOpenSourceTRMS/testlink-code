@@ -16,6 +16,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110602 - franciscom - minor improvement on checkUploadOperation()
  * 20110502 - franciscom - testlinkInitPage() logic changed
  * 20110430 - franciscom - checkSecurityClearance()
  * 20110416 - franciscom - setSessionProject() -> setCurrentProject()
@@ -25,17 +26,6 @@
  *							can be added to new test plans
  *							getConfigAndLabels($configKey,$accessMode='key')
  *
- *  20101028 - asimon - BUGID 3951: Status and Type for requirements are not saved
- *  20101025 - Julian - BUGID 3930 - added function split_localized_date()
- *                                 - simplified function is_valid_date()
- *  20101022 - asimon - BUGID 3716: added is_valid_date()
- *	20100904 - eloff - BUGID 3740 - redirect to destination after login
- * 	20100714 - asimon - BUGID 3601: show req spec link only when req mgmt is enabled
- *	20100616 - eloff - config_get: log warning when requested option does not exist
- * 	20100310 - franciscom - changes to make code compatible with smarty 3
- * 	20100207 - havlatm - cleanup
- * 	20100124 - eloff - added $redirect parameter to checkSessionValid()
- * 	20100124 - eloff - BUGID 3012 - added buildExternalIdString()
  */
 
 /** core and parenthal classes */
@@ -1123,7 +1113,7 @@ function checkSecurityClearance(&$dbHandler,&$userObj,$context,$rightsToCheck,$c
 
 function checkUploadOperation($PHP_files,$tlUploadSizeBytes=0)
 {
-	$ret = array('status_ok' => 0, 'msg' => '');
+	$ret = array('status_ok' => 0, 'msg' => '', 'php_error_code' => $PHP_files['uploadedFile']['error']);
 	
 	$maxSize = $tlUploadSizeBytes > 0 ? $tlUploadSizeBytes : config_get('import_file_max_size_bytes'); 
 	switch($PHP_files['uploadedFile']['error'])
@@ -1172,7 +1162,6 @@ function checkUploadOperation($PHP_files,$tlUploadSizeBytes=0)
 			$ret['msg'] = lang_get('upload_err_extension');
 		break;
 	}
-	
 	return $ret;
 }
 

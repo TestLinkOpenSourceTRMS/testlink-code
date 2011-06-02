@@ -8,6 +8,17 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
           s='file_type,view_file_format_doc,local_file,btn_cancel,btn_upload_file,
              action_for_duplicates,skip_frozen_req'}
 
+{* 
+***** Info from PHP Manual *****
+The MAX_FILE_SIZE hidden field (measured in bytes) must precede the file input field, 
+and its value is the maximum filesize accepted by PHP. 
+This form element should always be used as it saves users the trouble of waiting for a big file being 
+transferred only to find that it was too large and the transfer failed. 
+Keep in mind: fooling this setting on the browser side is quite easy, 
+so never rely on files with a greater size being blocked by this feature. 
+It is merely a convenience feature for users on the client side of the application. 
+The PHP settings (on the server side) for maximum-size, however, cannot be fooled. 
+*}
 
 
 <table>
@@ -22,7 +33,7 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 <tr>
   <td>{$local_labels.local_file} </td>
   <td>
-  <input type="hidden" name="MAX_FILE_SIZE" value="{$args->maxFileSize}" /> {* restrict file size How ?*}
+  <input type="hidden" name="MAX_FILE_SIZE" value="{$args->maxFileSizeBytes}" />
   <input type="file" name="uploadedFile" size="{#FILENAME_SIZE#}" maxlength="{#FILENAME_MAXLEN#}"/>
   </td>
 </tr>

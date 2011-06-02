@@ -29,7 +29,6 @@ $req_mgr = new requirement_mgr($db);
 
 $args = init_args($db);
 checkRights($db,$_SESSION['currentUser'],$args);
-
 $gui = initializeGui($db,$args,$_SESSION,$req_spec_mgr,$req_mgr);
 
 switch($args->doAction)
@@ -76,8 +75,11 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
     $opts['actionOnHit'] = $argsObj->actionOnHit;
     
 	// manage file upload process
+	$file_size_limit = config_get('import_file_max_size_bytes');
     $source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
-	if (($source != 'none') && ($source != '' ))
+	$check = checkUploadOperation($_FILES,$file_size_limit);
+
+	if($check['status_ok'])
 	{ 
     	if (move_uploaded_file($source, $fileName))
 		{
@@ -89,7 +91,7 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
     }
     else
 	{
-		$retval->file_check=array('status_ok' => 0, 'msg' => lang_get('please_choose_req_file'));
+		$retval->file_check=array('status_ok' => 0, 'msg' => $check['msg']);
 	}	
 	// ----------------------------------------------------------------------------------------------
 	
@@ -248,9 +250,9 @@ function initializeGui(&$dbHandler,&$argsObj,$session,&$reqSpecMgr,&$reqMgr)
     $gui->importFileGui->importTypes = $gui->importTypes;
     $gui->importFileGui->importType = $argsObj->importType;
     
-    $file_size_limit = config_get('import_file_max_size_bytes');
-    $gui->importFileGui->maxFileSize=round(strval($file_size_limit)/1024);
-    $gui->importFileGui->fileSizeLimitMsg=sprintf(lang_get('max_file_size_is'), $gui->importFileGui->maxFileSize  . ' KB ');
+    $gui->importFileGui->maxFileSizeBytes=config_get('import_file_max_size_bytes');
+    $maxFileSizeKB=round(strval($gui->importFileGui->maxFileSizeBytes)/1024);
+    $gui->importFileGui->fileSizeLimitMsg=sprintf(lang_get('max_file_size_is'), $maxFileSizeKB  . ' KB ');
     
 
     $gui->importFileGui->skip_frozen_req_checked = $argsObj->skip_frozen_req ? ' checked="checked" ' : '';

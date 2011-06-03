@@ -3,12 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: lostPassword.php,v $
- *
- * @version $Revision: 1.40 $
- * @modified $Date: 2010/10/10 15:56:40 $ $Author: franciscom $
- *
- * 20101010 - francisco - changes due to resetPassword() refactoring
+ * @filesource	lostPassword.php
+ * @internal revisions
 **/
 require_once('config.inc.php');
 require_once('common.php');

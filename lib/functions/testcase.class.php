@@ -10,6 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110603 - franciscom - new methods getDuplicatesByExternalID(),getDuplicatesByCriteria()
  * 20110413 - franciscom - BUGID 4404 - copy_to() set author_id = user doing copy
  * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
  * 20110402 - franciscom - get_exec_status() - interface changes	
@@ -5120,6 +5121,45 @@ class testcase extends tlObjectWithAttachments
 
 		return $ret;    	
 	}
+
+
+
+	
+	// externalID but WITHOUT prefix
+	function getDuplicatesByExternalID($externalID, $parent_id, $options=null)
+	{
+		$criteria = " AND TCV.tc_external_id=" . intval($externalID);
+		$ret = $this->getDuplicatesByCriteria($parent_id, $criteria, $options);
+		return $ret;			
+			
+	}
+
+	function getDuplicatesByCriteria($parent_id, $criteria, $options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+	    $my['options'] = array('access_key' => 'id');
+	    $my['options'] = array_merge($my['options'], (array)$options);
+	    
+	    $sql = " SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id" .
+			   " FROM {$this->tables['nodes_hierarchy']} NHA, " .
+			   " {$this->tables['nodes_hierarchy']} NHB, {$this->tables['tcversions']} TCV  " .
+			   " WHERE NHA.node_type_id = {$this->my_node_type} " .
+			   " AND NHB.parent_id=NHA.id " .
+			   " AND TCV.id=NHB.id " .
+			   " AND NHB.node_type_id = {$this->node_types_descr_id['testcase_version']} " .
+			   " AND NHA.parent_id={$parent_id} {$criteria}";
+	
+		echo $sql;
+		$rs = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+	    if( is_null($rs) || count($rs) == 0 )
+	    {
+	        $rs=null;   
+	    }
+	    return $rs;
+	}
+	
+
 	 
 } // end class
 ?>

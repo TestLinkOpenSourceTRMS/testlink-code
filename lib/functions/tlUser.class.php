@@ -12,13 +12,6 @@
  *	20110410 - franciscom - BUGID 4342 - new methods from Mantisbt
  *							added securityCookie property
  *  20110325 - franciscom - BUGID 4062 - hasRight() caused by bad access to $_SESSION
- *	20101111 - franciscom - BUGID 4006 - test plan is_public
- *	20100917 - Julian - getAccessibleTestPlans() - BUGID 3724 - new option "active"
- *	20100704 - franciscom - getAccessibleTestPlans() - BUGID 3526
- *	20100522 - franciscom - getAccessibleTestPlans() - added arguments options
- *	20100427 - franciscom - BUGID 3396 - writePasswordToDB() method
- *	20100326 - franciscom - setActive() method
- *	20100217 - franciscom - getNamesForProjectRight() - fixed error displayed on event viewer + refactoring
  */
  
 /**

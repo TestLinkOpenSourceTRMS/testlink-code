@@ -601,9 +601,6 @@ $tlCfg->document_generator->company_logo = 'company_logo.png';
 $tlCfg->document_generator->company_logo_height = '53';
 
 /** CSS used in printed html documents */
-
-// BUGID 3424
-// $tlCfg->document_generator->css_template = $tlCfg->theme_dir . 'css/tl_documents.css';
 $tlCfg->document_generator->css_template = 'css/tl_documents.css';
 
 /** Misc settings */
@@ -1352,8 +1349,8 @@ $tlCfg->enableTableExportButton = true;
  * Taken from Mantis to implement better login security, and solve
  * BUGID 4342
  */
- $tlCfg->auth_cookie = "TESTLINK_USER_AUTH_COOKIE";
- $tlCfg->current_tproject_id_cookie = "TESTLINK_CURRENT_TPROJECT_ID";
+$tlCfg->auth_cookie = "TESTLINK_USER_AUTH_COOKIE";
+$tlCfg->current_tproject_id_cookie = "TESTLINK_CURRENT_TPROJECT_ID";
 
 
 /** Used when creating a Test Suite using copy
@@ -1361,6 +1358,15 @@ $tlCfg->enableTableExportButton = true;
    if the name exist.
  */
 $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
+
+
+/** Used when need to indicate to users via mail, people to contact */
+$tlCfg->admin_coordinates = 'testlink_admin (configure using $tlCfg->admin_coordinates)';
+
+// %locale% will be replaced with user locale
+$tlCfg->mail_templates = new stdClass();
+$tlCfg->mail_templates->change_password = TL_ABS_PATH . "docs/item_templates/%locale%/mail_change_password.txt";
+
 
 
 // ----- End of Config ------------------------------------------------------------------

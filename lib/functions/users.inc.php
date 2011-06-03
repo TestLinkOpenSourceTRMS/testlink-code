@@ -5,20 +5,13 @@
  *
  * Functions for usermanagement
  * 
+ * @filesource	users.inc.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: users.inc.php,v 1.111 2010/10/23 16:13:34 franciscom Exp $
+ * @copyright 	2006-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- * 
- *  20101023 - franciscom - BUGID 3931 getTestersForHtmlOptions()
- *	20101010 - franciscom - BUGID 3872: Admin should be able to set a new password for users 
- *							resetPassword() - interface changes and logic changes
- *	20100502 - franciscom - resetPassword() - fixed bad comparison to set $errorMsg
- *	20100427 - franciscom - BUGID 3396 
- *
  */
 
 /** core functions */
@@ -169,7 +162,7 @@ function buildUserMap($users,$add_options = false, $additional_options=null)
 		$userSet = array_keys($users);
 		$loops2do = count($userSet);
 		
-		// foreach($users as $id => $user)
+		// foreach($usersr as $id => $user)
 		// {
 		// 	$usersMap[$id] = $user->getDisplayName();
 		// 	if($user->isActive == 0)
@@ -203,7 +196,6 @@ function buildUserMap($users,$add_options = false, $additional_options=null)
  *         password: new password
  *		   msg: error message (if any)	
  */
-// function resetPassword(&$db,$userID,&$errorMsg)
 function resetPassword(&$db,$userID,$passwordSendMethod='send_password_by_mail')
 {
 	$retval = array('status' => tl::OK, 'password' => '', 'msg' => ''); 
@@ -227,7 +219,19 @@ function resetPassword(&$db,$userID,$passwordSendMethod='send_password_by_mail')
 				$mail_op->status_ok = false;
 				if( $passwordSendMethod == 'send_password_by_mail' )
 				{
-					$msgBody = lang_get('your_password_is') . "\n\n" . $newPassword . "\n\n" . lang_get('contact_admin');
+					$mail_templates = config_get('mail_templates');
+					$admin_contact = config_get('admin_coordinates');
+					$tags = array('%admin_coordinates%','%login_name%','%password%','%ipaddress%','%timestamp%');
+					$values = array($admin_contact,$user->login,$newPassword,get_ip_address(),date("r", time()));
+					
+					// try to use localized template
+					$file2get = str_replace('%locale%',$user->locale,$mail_templates->change_password);
+					$msgBody = getFileContents($file2get);
+					if(is_null($msgBody))
+					{
+						$msgBody = lang_get('change_password_mail_body');
+					}
+					$msgBody = str_replace($tags,$values,$msgBody);
 					$mail_op = @email_send(config_get('from_email'), 
 									       $user->emailAddress,lang_get('mail_passwd_subject'),$msgBody);
 				}

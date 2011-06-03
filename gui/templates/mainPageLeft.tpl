@@ -262,12 +262,10 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
       {/if}    
   		
 	  {* --- keywords management ---  *}
-	  {if $gui->grants.keywords_view == "yes"}
-	    {if $gui->grants.keywords_edit == "yes"}
+	  {if $gui->grants.keywords_view == "yes" && $gui->grants.keywords_assignment == "yes"}
 	        <br />
   			<img src="{$tlImages.bullet}" />
         	<a href="{$gui->launcher}?feature=keywordsAssign&tproject_id={$gui->testprojectID}">{$labels.href_keywords_assign}</a>
-		  {/if}
 	  {/if}
   		
   	 {if $gui->grants.modify_tc eq "yes"}

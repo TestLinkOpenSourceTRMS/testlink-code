@@ -98,6 +98,7 @@ function init_global_rights_maps()
 	$g_rights_kw = array (	
 								"mgt_view_key" => lang_get('desc_mgt_view_key'),
 								"mgt_modify_key" => lang_get('desc_mgt_modify_key'),
+								"keyword_assignment" => lang_get('desc_keyword_assignment'),
 							);
 	$g_rights_req = array (	
 								"mgt_view_req" => lang_get('desc_mgt_view_req'),

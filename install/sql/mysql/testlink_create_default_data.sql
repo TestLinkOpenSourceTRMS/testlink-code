@@ -4,6 +4,7 @@
 #
 # Database Type: MySQL 
 #
+# 20110603 - franciscom - TICKET 4557: New right Keyword Assignment
 # 20110602 - franciscom - TICKET 4515: "Requirement-Test Case Assignment" should be set per default for roles 
 #						  admin / leader / test-designer / senior-tester
 # 20110411 - franciscom - removed sentence that create admin user
@@ -62,12 +63,13 @@ INSERT INTO /*prefix*/rights  (id,description) VALUES (19,'system_configuration'
 INSERT INTO /*prefix*/rights  (id,description) VALUES (20,'mgt_view_events');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (21,'mgt_view_usergroups');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (22,'events_mgt');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (23 ,'testproject_user_role_assignment');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (24 ,'platform_management');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (25 ,'platform_view');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (26 ,'project_inventory_management');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (27 ,'project_inventory_view');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (28 ,'req_tcase_link_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (23,'testproject_user_role_assignment');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (24,'platform_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (25,'platform_view');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (26,'project_inventory_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (27,'project_inventory_view');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (28,'req_tcase_link_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (29,'keyword_assignment');
 
 # Rights for Administrator role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,1 );
@@ -98,6 +100,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,28);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,29);
 
 # Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3 );
@@ -113,6 +116,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,9 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,10);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,11);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,28);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,29);
 
 # Rights for tester role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (7,1 );
@@ -132,6 +136,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,11);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,27);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,28);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,29);
 
 # Rights for leader role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,1 );
@@ -152,6 +157,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,28);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,29);
 
 # Assignment types
 INSERT INTO /*prefix*/assignment_types (id,fk_table,description) VALUES(1,'testplan_tcversions','testcase_execution');

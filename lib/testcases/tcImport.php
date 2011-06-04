@@ -11,6 +11,7 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal revisions
+ *  20110604 - franciscom - TICKET 4564: Test Case Export/import - new field STATUS is not managed
  *  20110128 - franciscom - refactoring -> checkUploadOperation()
  *	20110219 - franciscom - fixed getItemsFromSimpleXMLObj() calls.
  * *********************************************************************************** */
@@ -27,9 +28,6 @@ $pcheck_fn=null;
 
 $tree_mgr = new tree($db);
 $args = init_args($tree_mgr);
-
-// new dBug($args);
-
 
 $gui = new stdClass();
 $gui->tproject_id = $args->tproject_id;
@@ -151,7 +149,6 @@ $gui->importTypes = $obj_mgr->get_import_file_types();
 $gui->action_on_duplicated_name=$args->action_on_duplicated_name;
 
 
-// new dBug($gui);
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);  
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
@@ -247,6 +244,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 	static $tprojectHas;
 	static $reqSpecSet;
 	static $getVersionOpt;
+	static $tcStatusConfig;
 	
 	if (!$tcData)
 	{
@@ -257,6 +255,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   	$hasCustomFieldsInfo=false;
   	$hasRequirements=false;
   	
+  	// init static data
 	if(is_null($messages))
 	{
 		$feedbackMsg = array();
@@ -278,6 +277,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 	    $messages['end_warning'] = lang_get('end_warning');
 	    $messages['testlink_warning'] = lang_get('testlink_warning');
 	    $messages['start_feedback'] = $messages['start_warning'] . "\n" . $messages['testlink_warning'] . "\n";
+	    $messages['create_new_version'] = lang_get('create_new_version');
   		
   		
   		
@@ -302,27 +302,36 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
         $linkedCustomFields = $tcase_mgr->cfield_mgr->get_linked_cfields_at_design($tproject_id,1,null,'testcase',null,'name');
         $tprojectHas['customFields']=!is_null($linkedCustomFields);                   
 
-        // BUGID - 20090205 - franciscom
 		$reqSpecSet = $tproject_mgr->getReqSpec($tproject_id,null,array('RSPEC.id','NH.name AS title','RSPEC.doc_id as rspec_doc_id', 'REQ.req_doc_id'),'req_doc_id');
 		$tprojectHas['reqSpec'] = (!is_null($reqSpecSet) && count($reqSpecSet) > 0);
 
 		$getVersionOpt = array('output' => 'minimun');
+
+		$tcStatusConfig = getConfigAndLabels('testCaseStatus');
+
     }
   
 	$resultMap = array();
 	$tc_qty = sizeof($tcData);
+	
+	// new dBug($tcData);
+	//$xx=$tcase_mgr->getDuplicatesByExternalID(1,$container_id);
+	//new dBug($xx);
+	//die();
+    //
 	for($idx = 0; $idx <$tc_qty ; $idx++)
 	{
 		$tc = $tcData[$idx];
 		$name = $tc['name'];
 		$summary = $tc['summary'];
 		$steps = $tc['steps'];
-		$node_order = isset($tc['node_order']) ? intval($tc['node_order']) : testcase::DEFAULT_ORDER;
 		$externalid = $tc['externalid'];
 		$internalid = $tc['internalid'];
 		$preconditions = $tc['preconditions'];
+		$node_order = isset($tc['node_order']) ? intval($tc['node_order']) : testcase::DEFAULT_ORDER;
 		$exec_type = isset($tc['execution_type']) ? $tc['execution_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
 		$importance = isset($tc['importance']) ? $tc['importance'] : MEDIUM;		
+		$status = isset($tc['status']) ? $tc['status'] : null; // $tcStatusConfig['cfg']['draft'];
     
 		$name_len = tlStringLen($name);  
 		if($name_len > $fieldSizeCfg->testcase_name)
@@ -342,64 +351,113 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 			$kwIDs = implode(",",buildKeywordList($kwMap,$tc['keywords']));
 		}	
 		
-		$doCreate=true;
-		if( $duplicatedLogic['actionOnHit'] == 'update_last_version' )
+		switch($duplicatedLogic['hitCriteria'])
 		{
-			switch($duplicatedLogic['hitCriteria'])
+			case 'name':
+				$info = $tcase_mgr->getDuplicatesByName($name,$container_id);
+			break;
+			
+			case 'internalID':
+				$dummy = $tcase_mgr->tree_manager->get_node_hierarchy_info($internalid,$container_id);
+				if( !is_null($dummy) )
+				{
+					$info[$internalid] = $dummy;
+				}
+			break;
+		
+			case 'externalID':
+				$info = $tcase_mgr->get_by_external($externalid,$container_id);
+			break;
+   		}
+   		
+		$doCreate=true;
+   		$doAnalisys = !is_null($info);
+   		$tcase_qty = $doAnalisys ? count($info) : 0;
+	
+		if($doAnalisys)
+		{ 
+			$tcase_id = key($info); 
+			switch($duplicatedLogic['actionOnHit'])
 			{
-				case 'name':
-					$info = $tcase_mgr->getDuplicatesByName($name,$container_id);
-				break;
-				
-				case 'internalID':
-					$dummy = $tcase_mgr->tree_manager->get_node_hierarchy_info($internalid,$container_id);
-					if( !is_null($dummy) )
-					{
-						$info[$internalid] = $dummy;
-					}
-				break;
-		
-				case 'externalID':
-					$info = $tcase_mgr->get_by_external($externalid,$container_id);
-				break;
-		
-				
-   		 	}
-
-   		 	if( !is_null($info) )
-   		 	{
-   		 		$tcase_qty = count($info);
-		 	    switch($tcase_qty)
-		 	    {
-		 	        case 1:
-		 	        	$doCreate=false;
-		 	        	$tcase_id = key($info); 
-         	        	$last_version = $tcase_mgr->get_last_version_info($tcase_id,$getVersionOpt);
-         	        	$tcversion_id = $last_version['id'];
-         	        	$ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
-         	        	                          $preconditions,$steps,$userID,$kwIDs,
-         	        	                          $node_order,$exec_type,$importance);
-
-
-						// BUGID 3801
+			
+				case 'update_last_version':
+			 	    switch($tcase_qty)
+			 	    {
+			 	        case 1:
+			 	        $doCreate=false;
+	      	        	$last_version = $tcase_mgr->get_last_version_info($tcase_id,$getVersionOpt);
+	      	        	$tcversion_id = $last_version['id'];
+	      	        	
+	      	        	// 20110604 - franciscom
+	      	        	// missing optional argument $status
+	      	        	$ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
+	      	        	                          $preconditions,$steps,$userID,$kwIDs,
+	      	        	                          $node_order,$exec_type,$importance,$status);
+	
 						$ret['id'] = $tcase_id;
 						$ret['tcversion_id'] = $tcversion_id;
-         	        	$resultMap[] = array($name,$messages['already_exists_updated']);
-
-	     	        break;
-		 	        
-		 	        case 0:
-		 	        	$doCreate=true; 
-		 	        break;
-		 	        
-		 	        default:
-		 	            $doCreate=false; 
-		 	        break;
-		 	    }
-		 	}
-
-		}
+	      	        	$resultMap[] = array($name,$messages['already_exists_updated']);
+	
+		     	        break;
+			 	        
+			 	        case 0:
+			 	        	$doCreate=true; 
+			 	        break;
+			 	        
+			 	        default:
+			 	            $doCreate=false; 
+			 	        break;
+			 	    }
+			 	break;
+			 	    
+				case 'create_new_version':
+			 	    switch($tcase_qty)
+			 	    {
+			 	        case 1:
+			 	        $doCreate=false;
+			 	        
+			 	        $tcase_id = key($info); 
+			 	        $ret = $tcase_mgr->create_new_version($tcase_id,$userID);
+			 	        $tcversion_id = $ret['id'];
+						$msg = sprintf($messages['create_new_version'],$ret['version']);
+						
+	      	        	$ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
+	      	        	                          $preconditions,$steps,$userID,$kwIDs,
+	      	        	                          $node_order,$exec_type,$importance,$status);
+	
+						$ret['id'] = $tcase_id;
+						$ret['tcversion_id'] = $tcversion_id;
+	      	        	$resultMap[] = array($name,$msg);
+		     	        break;
+			 	        
+			 	        case 0:
+			 	        	$doCreate=true; 
+			 	        break;
+			 	        
+			 	        default:
+			 	            $doCreate=false; 
+			 	        break;
+			 	    }
+			 	break;
+			 	    
+				case 'generate_new':
+					// trick
+					// create() will create a new test case with new name/title when
+					// we ask it:
+					//  'check_duplicate_name' => testcase::CHECK_DUPLICATE_NAME,
+					// we will IGNORE name provided on XML when 
+					if( $duplicatedLogic['hitCriteria'] != name)
+					{
+						$name = $info[$tcase_id]['name'];
+					}
+			 	break;
+			 	    
+			 	    
+			} // switch 
+			
+		}  // if doAnalisys
 		
+				
 		if( $doCreate )
 		{
 		    $createOptions = array( 'check_duplicate_name' => testcase::CHECK_DUPLICATE_NAME, 
@@ -407,13 +465,12 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 
 		    if ($ret = $tcase_mgr->create($container_id,$name,$summary,$preconditions,$steps,
 		                                  $userID,$kwIDs,$node_order,testcase::AUTOMATIC_ID,
-		                                  $exec_type,$importance,$createOptions))
+		                                  $exec_type,$importance,$status,$createOptions))
         	{
         	    $resultMap[] = array($name,$ret['msg']);
         	}                              
 		}
 			
-		// 20090106 - franciscom
 		// Custom Fields Management
 		// Check if CF with this name and that can be used on Test Cases is defined in current Test Project.
 		// If Check fails => give message to user.
@@ -423,11 +480,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$hasCustomFieldsInfo = (isset($tc['customfields']) && !is_null($tc['customfields']));
 		if($hasCustomFieldsInfo)
 		{
-			//new dBug($ret);
-			
 		    if($tprojectHas['customFields'])
 		    {                         
-				// BUGID 3431 - Custom Field values at Test Case VERSION Level
 		        $msg = processCustomFields(	$tcase_mgr,$name,$ret['id'],$ret['tcversion_id'],$tc['customfields'],
 		        							$linkedCustomFields,$feedbackMsg);
 		        if( !is_null($msg) )
@@ -738,10 +792,10 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
 	$loops2do=sizeof($xmlTCs);
 	$tcaseSet = array();
 	
-	// 20110219 
 	$tcXML['elements'] = array('string' => array("summary" => null,"preconditions" => null),
                                'integer' => array("node_order" => null,"externalid" => null,
-                               					  "execution_type" => null ,"importance" => null));
+                               					  "execution_type" => null ,"importance" => null,
+                               					  "status" => null));
 	$tcXML['attributes'] = array('string' => array("name" => 'trim'), 
 	                             'integer' =>array('internalid' => null));
 
@@ -785,7 +839,6 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
  * 
  *
  * @internal revisions
- * 20100821 - franciscom - BUGID 3695 - added "execution_type"
  */
 function getStepsFromSimpleXMLObj($simpleXMLItems)
 {
@@ -812,7 +865,6 @@ function getStepsFromSimpleXMLObj($simpleXMLItems)
 			}
 		}
 	}
-	// new dBug($items);
 	return $items;
 }
 

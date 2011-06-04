@@ -3,12 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * @filesource tlFilterControl.class.php
  * @package    TestLink
  * @author     Andreas Simon
- * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlFilterControl.class.php,v 1.8 2010/10/07 17:42:56 franciscom Exp $
+ * @copyright  2006-2011, TestLink community
  * @link       http://www.teamst.org/index.php
- * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlFilterControl.class.php?view=markup
  *
  * This class holds common logic to be used at GUI level to manage a common set of settings and filters.
  * It is used when filters or subviews of the test case or requirement tree are needed.

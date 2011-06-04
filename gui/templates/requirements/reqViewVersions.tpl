@@ -105,7 +105,8 @@ function validate_req_docid_input(input_id, original_value) {
  *
  */
 function delete_req_relation(btn, text, req_id, relation_id) {
-	var my_action=fRoot + 'lib/requirements/reqEdit.php?doAction=doDeleteRelation&requirement_id='
+	var my_action=fRoot + 'lib/requirements/reqEdit.php?tproject_id={$gui->tproject_id}'
+	                   + '&doAction=doDeleteRelation&requirement_id='
 	                   + req_id + '&relation_id=' + relation_id;
 	if( btn == 'yes' ) {
 		window.location=my_action;

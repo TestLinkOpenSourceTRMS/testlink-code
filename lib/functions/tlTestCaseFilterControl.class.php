@@ -492,15 +492,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * checked from templates and elsewhere.
 	 * Then calls the initializing method for each still active setting.
 	 */
-	protected function init_settings() {
-		$at_least_one_active = false;
-
+	protected function init_settings() 
+	{
 		foreach ($this->all_settings as $name => $info) {
 			$init_method = "init_$name"; //	echo $init_method . '<br>';
 			if (in_array($name, $this->mode_setting_mapping[$this->mode]) && method_exists($this, $init_method)) {
 				// is valid, configured, exists and therefore can be used, so initialize this setting
 				$this->$init_method();
-				$at_least_one_active = true;
+				$this->display_settings = true;
 			} else {
 				// is not needed, simply deactivate it by setting it to false in main array
 				$this->settings[$name] = false;
@@ -508,15 +507,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}
 		
 		// special situation: the build setting is in plan mode only needed for one feature
-		// BUGID 3406
 		if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') {
 			$this->settings['setting_build'] = false;
 		}
 		
-		// if at least one active setting is left to display, switch settings panel on
-		if ($at_least_one_active) {
-			$this->display_settings = true;
-		}
 	}
 
 	/**
@@ -529,31 +523,25 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	protected function init_filters() {
 		// In resulting data structure, all values have to be defined (at least initialized),
 		// no matter wether they are wanted for filtering or not.
-		$additional_filters_to_init = array('filter_keywords_filter_type',
-		                                    'filter_result_result',
-		                                    'filter_result_method',
-		                                    'filter_result_build',
-		                                    'filter_assigned_user_include_unassigned');
+		$items2init = array('filter_keywords_filter_type','filter_result_result',
+		                    'filter_result_method','filter_result_build',
+		                    'filter_assigned_user_include_unassigned');
 		
 		// now nullify them
-		foreach ($additional_filters_to_init as $filtername) {
+		foreach ($items2init as $filtername) {
 			$this->active_filters[$filtername] = null;
 		}
-		
 
 		// iterate through all filters and activate the needed ones
 		$this->display_filters = false;
 
 		foreach ($this->all_filters as $name => $info) {
 			$init_method = "init_$name";
-			// BUGID 3853
 			if (in_array($name, $this->mode_filter_mapping[$this->mode]) &&
 				method_exists($this, $init_method) && $this->configuration->{$name} == ENABLED &&
-				$this->configuration->show_filters == ENABLED) {
-
+				$this->configuration->show_filters == ENABLED) 
+			{
 				$this->$init_method();
-
-				// there is at least one filter item to display => switch panel on
 				$this->display_filters = true;
 
 			} else {
@@ -570,12 +558,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}
 
 		// add the important settings to active filter array
-		foreach ($this->all_settings as $name => $info) {
-			if ($this->settings[$name]) {
-				$this->active_filters[$name] = $this->settings[$name]['selected'];
-			} else {
-				$this->active_filters[$name] = null;
-			}
+		foreach ($this->all_settings as $name => $info) 
+		{
+			$this->active_filters[$name] = $this->settings[$name] ? $this->settings[$name]['selected'] : null;
 		}
 	} // end of method
 
@@ -960,6 +945,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		
 	} // end of method
 	
+	
+	/**
+	 * called magically by init_settings()	
+	 *
+	 * @internal revisions
+	 *
+	 */
 	private function init_setting_refresh_tree_on_action() {
 
 		$key = 'setting_refresh_tree_on_action';
@@ -986,6 +978,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$_SESSION[$key] = $selection;		
 	} // end of method
 
+	/**
+	 * called magically by init_settings()	
+	 *
+	 * @internal revisions
+	 *
+	 */
 	private function init_setting_build() {
 
 		$key = 'setting_build';
@@ -1033,7 +1031,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	} // end of method
 
 
-
+	/**
+	 * called magically by init_settings()	
+	 *
+	 * @internal revisions
+	 *
+	 */
 	private function init_setting_testplan() 
 	{
 
@@ -1087,7 +1090,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	} // end of method
 
 
-
+	/**
+	 * called magically by init_settings()	
+	 *
+	 * @internal revisions
+	 *
+	 */
 	private function init_setting_platform() {
 		if (!$this->platform_mgr) {
 			$this->platform_mgr = new tlPlatform($this->db);
@@ -1118,6 +1126,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$_SESSION[$session_key] = $this->settings[$key]['selected'];
 	} // end of method
 
+	/**
+	 * called by init_filters()
+	 *
+	 * @internal revisions
+	 *
+	 */
 	private function init_filter_tc_id() {
 		$key = 'filter_tc_id';
 		$selection = $this->args->{$key};
@@ -1144,7 +1158,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->filters[$key] = array('selected' => $selection ? $selection : $tc_prefix);
 		$this->active_filters[$key] = $internal_id;
 	} // end of method
-	
+
+	/**
+	 * called by init_filters()
+	 *
+	 * @internal revisions
+	 *
+	 */
 	private function init_filter_testcase_name() {
 		$key = 'filter_testcase_name';
 		$selection = $this->args->{$key};
@@ -1160,6 +1180,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	} // end of method
 
 
+	/**
+	 * called by init_filters()
+	 *
+	 * @internal revisions
+	 *
+	 */
 	private function init_filter_toplevel_testsuite() {
 		if (!$this->testproject_mgr) {
 			$this->testproject_mgr = new testproject($this->db);
@@ -1199,6 +1225,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}		
 	} // end of method
 
+	/**
+	 * called by init_filters()
+	 *
+	 * @internal revisions
+	 *
+	 */
 	private function init_filter_keywords() {
 		$key = 'filter_keywords';
 		$type = 'filter_keywords_filter_type';
@@ -1265,6 +1297,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->active_filters[$type] = $selection ? $type_selection : null;
 	} // end of method
 
+
+	/**
+	 * called by init_filters()
+	 *
+	 * @internal revisions
+	 *
+	 */
 	private function init_filter_priority() {
 		// This is a special case of filter: the menu items don't get initialized here,
 		// they are available as a global smarty variable. So the only thing to be managed
@@ -1296,6 +1335,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}		
 	} // end of method
 
+
+	/**
+	 * called by init_filters()
+	 *
+	 * @internal revisions
+	 *
+	 */
 	private function init_filter_execution_type() {
 		if (!$this->tc_mgr) {
 			$this->tc_mgr = new testcase($this->db);
@@ -1321,6 +1367,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->active_filters[$key] = $selection;
 	} // end of method
 
+
+	/**
+	 * called by init_filters()
+	 *
+	 * @internal revisions
+	 *
+	 */
 	private function init_filter_assigned_user() {
 		if (!$this->testproject_mgr) {
 			$this->testproject_mgr = new testproject($this->db);
@@ -1400,6 +1453,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	} // end of method
 
 
+	/**
+	 * called by init_filters()
+	 *
+	 * @internal revisions
+	 *
+	 */
 	private function init_filter_custom_fields() 
 	{
 		$key = 'filter_custom_fields';
@@ -1527,6 +1586,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	} // end of method
 
 
+	/**
+	 * called by init_filters()
+	 *
+	 * @internal revisions
+	 *
+	 */
 	private function init_filter_result() 
 	{
 		$key = 'filter_result';

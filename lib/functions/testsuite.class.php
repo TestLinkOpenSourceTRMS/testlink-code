@@ -12,10 +12,6 @@
  * @internal revisions
  *
  * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
- * 20110223 - asimon - BUGID 4239: forgotten parameter $mappings in a function call in copy_to() caused
- *                                 requirements to be assigned with wrong IDs when copying testprojects
- * 20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
- * 20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
  */
 
 /** include support for attachments */
@@ -388,6 +384,7 @@ class testsuite extends tlObjectWithAttachments
 	function show(&$smarty,$tproject_id,$guiObj,$template_dir, $id, $options=null,
 	              $sqlResult = '', $action = 'update',$modded_item_id = 0)
 	{
+		
 		// need to understand why sometimes $guiObj can be null
 		$gui = is_null($guiObj) ? new stdClass() : $guiObj;
 		$gui->cf = '';
@@ -395,13 +392,11 @@ class testsuite extends tlObjectWithAttachments
 		$gui->sqlAction = '';
 		$gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
 
-        // BUGID 0003233: After test suite edit, display of Test suite do not 
-        //                have upload button enabled for attachment
-  	    // $my['options'] = array('show_mode' => 'readonly'); 	
   	    $my['options'] = array('show_mode' => 'readwrite'); 	
 	    $my['options'] = array_merge($my['options'], (array)$options);
 
-        $gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc");
+		// 20110604
+        // $gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc");
         if($my['options']['show_mode'] == 'readonly')
         {  	    
 			$gui->modify_tc_rights = 'no';

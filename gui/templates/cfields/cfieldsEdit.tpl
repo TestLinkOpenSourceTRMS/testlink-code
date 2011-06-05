@@ -487,7 +487,7 @@ function initShowOnExec(id_master,show_on_cfg)
 		{*  {if $gui->cfield_is_used eq 0} *}
 		{* Allow delete , just give warning *}
   		<input type="button" name="do_delete" value="{$labels.btn_delete}"
-  		       onclick="action_confirmation({$gui->cfield.id},'{$gui->cfield.name|escape:'javascript'|escape}',
+  		       onclick="action_confirmation('{$gui->cfield.id}&tproject_id={$gui->tproject_id}','{$gui->cfield.name|escape:'javascript'|escape}',
   		                                    '{$del_msgbox_title}','{$warning_msg}');">
     {* {/if} *}
 

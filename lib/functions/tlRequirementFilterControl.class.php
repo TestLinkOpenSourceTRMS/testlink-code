@@ -16,23 +16,6 @@
  * @internal revisions
  * 20110426 - franciscom - init_args() interface changes
  * 20110311 - asimon - Show count for total requirements in tree on root node
- * 20101103 - asimon - custom fields on requirement filtering did not retain value after apply
- * 20101026 - asimon - BUGID 3930: changing date format according to given locale
- * 20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
- * 20101011 - asimon - BUGID 3883: fixed handling of unset date custom field inputs
- * 20101011 - asimon - BUGID 3884: added handling for datetime custom fields
- * 20101005 - asimon - BUGID 3853: show_filters disabled still shows panel
- * 20101005 - asimon - BUGID 3852: filter requirements by status resets on apply
- * 20100906 - franciscom - BUGID 2877 - Custom Fields linked to Req version
- * 20100827 - asimon - BUGID 3718 - enable drag&drop per default, disable only if filtering is done
- * 20100812 - asimon - fixed cf input field size
- * 20100812 - asimon - don't show textarea inputs on filter panel
- * 20100811 - asimon - BUGID 3566: show/hide CF
- * 20100808 - asimon - finished first implementation of requirement filtering
- * 20100624 - asimon - CVS merge (experimental branch to HEAD)
- * 20100503 - asimon - start of implementation of filter panel class hierarchy
- *                     to simplify/generalize filter panel handling
- *                     for test cases and requirements
  */
 
 /**
@@ -262,30 +245,52 @@ class tlRequirementFilterControl extends tlFilterControl {
 		$gui->ajaxTree->cookiePrefix = 'requirement_spec' . $root_node->id . "_" ;
 	} // end of method
 	
-	
-	private function init_setting_refresh_tree_on_action() {
+	/**
+	 * called magically by init_settings()	
+	 *
+	 * @internal revisions
+	 * 
+	 */
+	private function init_setting_refresh_tree_on_action() 
+	{
 		$key = 'setting_refresh_tree_on_action';
-		$hidden_key = 'hidden_setting_refresh_tree_on_action';
-		$selection = 0;
+		$hidden_key = "hidden_{$key}";
+		$setting = 'reqTreeRefreshOnAction';
 
 		$this->settings[$key] = array();
 		$this->settings[$key][$hidden_key] = 0;
 
+		$this->settings[$key] = array();
+		$this->settings[$key][$hidden_key] = false;
+	
 		// look where we can find the setting - POST, SESSION, config?
-		if (isset($this->args->{$key})) {
-			$selection = 1;
-		} else if (isset($this->args->{$hidden_key})) {
-			$selection = 0;
-		} else if (isset($_SESSION[$key])) {
-			$selection = $_SESSION[$key];
-		} else {
-			$selection = ($this->configuration->automatic_tree_refresh == ENABLED) ? 1 : 0;
-		}
+		$selection = isset($this->args->{$key}) ? 1 : 0;
+		if( $selection == 0 && !isset($this->args->{$hidden_key}))
+		{
 		
+			// look on $_SESSION using $mode and test project ID
+			// this is only way to cope with TABBED BROWSING
+			// we consider that test project set the enviroment
+			// then if we open N TABS with same test project 
+			// setting in ONE TAB => ALL TABS will be affected.
+			// IMHO this is a good compromise
+			// 
+			if(isset($_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode]))
+			{
+				$selection = $_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode];
+			} 
+			else
+			{
+				$selection = ($this->configuration->automatic_tree_refresh > 0) ? 1 : 0;
+			}
+		}
+
 		$this->settings[$key]['selected'] = $selection;
 		$this->settings[$key][$hidden_key] = $selection;
-		$_SESSION[$key] = $selection;
+		$_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode] = $selection;
 	} // end of method
+	
+	
 	
 	private function init_filter_doc_id() {
 		$key = 'filter_doc_id';

@@ -105,9 +105,13 @@ function init_args(&$dbHandler)
 		$args->expected_coverage = 0;
 	}
 	
-	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action'])
-	                     ? $_SESSION['setting_refresh_tree_on_action'] : 0;
-
+    // 20110604 - franciscom - TICKET 4566: TABBED BROWSING
+    $uk = 'setting_refresh_tree_on_action';
+    
+    // new dBug($_SESSION[$uk][$args->tproject_id]);   new dBug($_SESSION[$uk]);  new dBug($_SESSION);
+	// $args->refreshTree = isset($_SESSION[$uk][$args->tproject_id]) ? $_SESSION[$uk][$args->tproject_id] : 0;
+    $args->refreshTree = testproject::getUserChoice($args->tproject_id, 
+    												array('reqTreeRefreshOnAction'));
 
 	return $args;
 }

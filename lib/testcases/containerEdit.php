@@ -433,10 +433,10 @@ function init_args(&$treeMgr,$optionTransferCfg)
     	$args->containerID = $args->tproject_id;
     }
 
-    // BUGID 3669
-	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ?
-                         $_SESSION['setting_refresh_tree_on_action'] : 0;
-    
+    // 20110604 - franciscom - TICKET 4566: TABBED BROWSING
+    $args->refreshTree = testproject::getUserChoice($args->tproject_id, 
+    												array('tcaseTreeRefreshOnAction','edit_mode'));
+
     return $args;
 }
 

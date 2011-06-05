@@ -13,6 +13,7 @@
  *
  *
  *	@internal revisions
+ *	20110605 - franciscom - TICKET 4566: TABBED BROWSING - Update Tree option change affects all open projects
  *  20110604 - franciscom - TICKET 4562: Test Specification : Move of Test Case from "Testsuite1" to "Main TestSuite" 
  *							Leads to Fatal error
  *  20110401 - franciscom - BUGID 3615 - right to allow ONLY MANAGEMENT of requirements link to testcases
@@ -415,7 +416,11 @@ function init_args(&$cfgObj,&$tprojectMgr,&$userObj,$otName)
 
 	$args->basehref = $_SESSION['basehref'];
     $args->user_id = $_SESSION['userID'];
-	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? $_SESSION['setting_refresh_tree_on_action'] : 0;
+    
+    // 20110604 - franciscom - TICKET 4566: TABBED BROWSING
+    $args->refreshTree = testproject::getUserChoice($args->tproject_id, 
+    												array('tcaseTreeRefreshOnAction','edit_mode'));
+    
     $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 
 	$action2check = array("editStep" => true,"createStep" => true, "doCreateStep" => true,

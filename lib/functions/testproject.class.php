@@ -10,6 +10,10 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110605 - franciscom - 	added getUserChoice() to implement fix for:
+ *							TICKET 4566: TABBED BROWSING - Update Tree option change affects all open projects
+ *							and related issues.
+ *		
  * 20110507 - franciscom - get_accessible_for_user() default order by changed
  * 20110417 - franciscom - new method getTotalCount()
  * 20110416 - franciscom - setSessionProject() -> setCurrentProject()
@@ -2444,6 +2448,28 @@ function getTotalCount()
 	return $rs['item_qty'];
 }
 
+
+/**
+ * getUserChoice()
+ * used to recover user's choice while using different features, than has to be saved
+ * on $_SESSION. 
+ *
+ */
+static function getUserChoice($id,$accessKeys)
+{
+	$ret = 0;
+	
+	if( isset($_SESSION['env_for_tproject'][$id]) )
+	{
+		$ret = $_SESSION['env_for_tproject'][$id];
+		foreach($accessKeys as $key)
+		{
+			$ret = $ret[$key];
+		}
+	}
+	
+	return $ret;
+}
 
 } // end class
 ?>

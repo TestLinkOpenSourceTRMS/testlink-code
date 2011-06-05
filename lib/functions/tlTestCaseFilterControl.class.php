@@ -345,6 +345,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->delete_old_session_data();
 		
 		$this->save_session_data();
+		
 	}
 
 	public function __destruct() {
@@ -486,7 +487,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	} // end of method
 
 	/**
-	 * Initializes all settings.
+	 * Initializes all settings. (called on parent constructor)
 	 * Iterates through all available settings and adds an array to $this->settings
 	 * for the active ones, sets the rest to false so this can be
 	 * checked from templates and elsewhere.
@@ -625,6 +626,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			$_SESSION[$this->mode] = array();
 		}
 		
+		// $uk = 'setting_refresh_tree_on_action';	
+		// $_SESSION[$this->mode][$this->form_token][] = $this->settings[$uk]['selected'];
 		$_SESSION[$this->mode][$this->form_token] = $this->active_filters;
 		$_SESSION[$this->mode][$this->form_token]['timestamp'] = time();
 		
@@ -950,32 +953,45 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * called magically by init_settings()	
 	 *
 	 * @internal revisions
-	 *
+	 * 20110605 - franciscom - TICKET 4566: TABBED BROWSING - Update Tree option change affects all open projects
+	 * 
 	 */
-	private function init_setting_refresh_tree_on_action() {
+	private function init_setting_refresh_tree_on_action() 
+	{
 
 		$key = 'setting_refresh_tree_on_action';
-		$hidden_key = 'hidden_setting_refresh_tree_on_action';
-		$selection = 0;
-
+		$hidden_key = "hidden_{$key}";
+		$setting = 'tcaseTreeRefreshOnAction';
+		
 		$this->settings[$key] = array();
 		$this->settings[$key][$hidden_key] = false;
-
+	
 		// look where we can find the setting - POST, SESSION, config?
-		if (isset($this->args->{$key})) {
-			$selection = 1;
-		} else if (isset($this->args->{$hidden_key})) {
-			$selection = 0;
-		} else if (isset($_SESSION[$key])) {
-			$selection = $_SESSION[$key];
-		} else {
-			$spec_cfg = config_get('spec_cfg');
-			$selection = ($spec_cfg->automatic_tree_refresh > 0) ? 1 : 0;
-		}
+		$selection = isset($this->args->{$key}) ? 1 : 0;
+		if( $selection == 0 && !isset($this->args->{$hidden_key}))
+		{
 		
+			// look on $_SESSION using $mode and test project ID
+			// this is only way to cope with TABBED BROWSING
+			// we consider that test project set the enviroment
+			// then if we open N TABS with same test project 
+			// setting in ONE TAB => ALL TABS will be affected.
+			// IMHO this is a good compromise
+			// 
+			if(isset($_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode]))
+			{
+				$selection = $_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode];
+			} 
+			else
+			{
+				$selection = ($this->configuration->automatic_tree_refresh > 0) ? 1 : 0;
+			}
+		}
+
 		$this->settings[$key]['selected'] = $selection;
 		$this->settings[$key][$hidden_key] = $selection;
-		$_SESSION[$key] = $selection;		
+		$_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode] = $selection;
+		
 	} // end of method
 
 	/**
@@ -1458,6 +1474,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 *
 	 * @internal revisions
 	 *
+	 * 20110605 - franciscom - 	TICKET 4569: TABBED BROWSING - Show/Hide custom field choice affects 
+	 *							stored preference for all projects
 	 */
 	private function init_filter_custom_fields() 
 	{
@@ -1470,10 +1488,27 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
 		$date_format = str_replace('%', '', $g_locales_date_format[$locale]);
 		
-		// BUGID 3566: show/hide CF
-		$collapsed = isset($_SESSION['cf_filter_collapsed']) ? $_SESSION['cf_filter_collapsed'] : 0;
+		// this is only way to cope with TABBED BROWSING
+		// we consider that test project set the enviroment
+		// then if we open N TABS with same test project 
+		// setting in ONE TAB => ALL TABS will be affected.
+		// IMHO this is a good compromise
+		// 
+		// if(isset($_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode]))
+		
+		// $collapsed = isset($_SESSION['cf_filter_collapsed']) ? $_SESSION['cf_filter_collapsed'] : 0;
+		$setting = 'cf_filter_collapsed';
+		$collapsed = 0;
+		if(isset($_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode]))
+		{
+			$collapsed = $_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode];
+		}
+	
 		$collapsed = isset($_REQUEST['btn_toggle_cf']) ? !$collapsed : $collapsed;
-		$_SESSION['cf_filter_collapsed'] = $collapsed;	
+		
+		// $_SESSION['cf_filter_collapsed'] = $collapsed;	
+		$_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode] = $collapsed;	 
+	
 		$btn_label = $collapsed ? lang_get('btn_show_cf') : lang_get('btn_hide_cf');
 		
 		if (!$this->cfield_mgr) {

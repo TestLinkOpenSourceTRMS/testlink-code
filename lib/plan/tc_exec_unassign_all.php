@@ -81,9 +81,6 @@ function init_args(&$treeMgr)
 	$args->build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
 	$args->confirmed = isset($_REQUEST['confirmed']) && $_REQUEST['confirmed'] == 'yes' ? true : false;
 
-	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ?
-	                     $_SESSION['setting_refresh_tree_on_action'] : false;
-
 	
 	$args->user_id = $_SESSION['userID'];
 	$args->tproject_name = '';
@@ -93,6 +90,11 @@ function init_args(&$treeMgr)
 		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
 		$args->tproject_name = $dummy['name'];
 	}
+
+	// $args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ?
+	//                     $_SESSION['setting_refresh_tree_on_action'] : false;
+    $args->refreshTree = testproject::getUserChoice($args->tproject_id, 
+    												array('tcaseTreeRefreshOnAction','plan_mode'));
 	
 	return $args;
 }

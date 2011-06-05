@@ -907,7 +907,7 @@ $tlCfg->guiTopMenu[1] = array(
 		'shortcut'=>'h',
 		'target'=>'_parent',
 		'addTProject' => true,
-		'addTPlan' => false		
+		'addTPlan' => true		
 );
 
 $tlCfg->guiTopMenu[2] = array(

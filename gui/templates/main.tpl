@@ -25,7 +25,7 @@ $titleframe and $mainframe initialized in: index.php, linkto.php
 *}
 <frameset rows="70,*" frameborder="0" framespacing="0">
 	<frame src="{$titleframe}" name="titlebar" scrolling="no" noresize="noresize" />
-	<frame src="{$mainframe}" scrolling='auto' name='mainframe' />
+	<frame src="{$mainframe}" name="mainframe" scrolling='auto'  />
 	<noframes>
 		<body>TestLink required a frames supporting browser.</body>
 	</noframes>

@@ -393,7 +393,7 @@ function insert_last_doc_id()
 		<input type="submit" name="create_req" value="{$labels.btn_save}"
 	         onclick="show_modified_warning = false; doAction.value='{$gui->operation}';"/>
 		<input type="button" name="go_back" value="{$labels.cancel}" 
-			onclick="javascript: show_modified_warning = false; history.back();"/>
+			 onclick="javascript: show_modified_warning = false; location.href='{$gui->actions->req_spec_view}';"/>
 	</div>
 
   {if isset($gui->askForLog) && $gui->askForLog}

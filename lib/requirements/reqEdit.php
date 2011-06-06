@@ -265,6 +265,7 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
     
   	$gui->tproject_id = $argsObj->tproject_id;
   	$gui->req_spec_id = $argsObj->req_spec_id;
+  	$gui->requirement_id = $argsObj->requirement_id;
 	if ($argsObj->req_spec_id)
 	{
 		$gui->requirements_count = $req_spec_mgr->get_requirements_count($gui->req_spec_id);
@@ -286,11 +287,14 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 	$gui->req_version_id = $argsObj->req_version_id;
 	$gui->preSelectedType = TL_REQ_TYPE_USE_CASE;
 
+	echo "<pre>";
+	print_r($argsObj);
+	echo "</pre>";
 
 	$module = $_SESSION['basehref'] . 'lib/requirements/';
-	$context = "tproject_id=$gui->tproject_id&req_spec_id=$gui->req_spec_id";
+	$context = "tproject_id={$gui->tproject_id}&requirement_id={$gui->requirement_id}";
 	$gui->actions = new stdClass();
-	$gui->actions->req_spec_view = $module . "reqSpecView.php?$context"; 
+	$gui->actions->req_spec_view = $module . "reqView.php?{$context}"; 
 
 	return $gui;
 }

@@ -13,6 +13,7 @@
  *
  *
  *	@internal revisions
+ *  20110607 - Julian - BUGID 3952 - on Create stay here like Mantis does
  * 	20100910 - franciscom - some refactoring
  * 	20100901 - franciscom - work on insert step
  *  20100831 - asimon - BUGID 3532
@@ -94,7 +95,7 @@ switch($args->doAction)
 	case "create":  
 	case "doCreate":  
         $oWebEditorKeys = array_keys($oWebEditor->cfg);
-        $op = $commandMgr->$pfn($args,$opt_cfg,$oWebEditorKeys);
+        $op = $commandMgr->$pfn($args,$opt_cfg,$oWebEditorKeys,$_REQUEST);
         $doRender = true;
     break;
     
@@ -426,6 +427,8 @@ function init_args(&$cfgObj,$otName)
 		$cfgObj->webEditorCfg = getWebEditorCfg('steps_design');	
 	}   
 
+	$args->stay_here = isset($_REQUEST['stay_here']) ? 1 : 0;
+
     return $args;
 }
 
@@ -553,6 +556,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
     $guiObj->attachments = null;
 	$guiObj->parent_info = null;
 	$guiObj->user_feedback = '';
+	$guiObj->stay_here = $argsObj->stay_here;
 	$guiObj->steps_results_layout = $cfgObj->spec->steps_results_layout;
 	
 	$guiObj->loadOnCancelURL = $_SESSION['basehref'] . 
@@ -654,8 +658,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
 		$smartyObj->assign($key, $of->CreateHTML($rows,$cols));
 	}
       
-	// manage tree refresh
-	// 3579
+	// manage tree refresh - BUGID 3579
     switch($argsObj->doAction) {
        	case "doDelete":
        		$guiObj->refreshTree = $argsObj->refreshTree;
@@ -684,14 +687,6 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
             foreach($key2loop as $key => $value)
             {
             	$guiObj->$key = $value;
-            	// if( isset($guiObj->webEditor[$key]) )
-            	// {
-            	// 	$guiObj->webEditor[$key] = $value;
-            	// }
-            	// else
-            	// {
-                // 	$guiObj->$key = $value;
-                // }
             }
             $guiObj->operation = $actionOperation[$argsObj->doAction];
             

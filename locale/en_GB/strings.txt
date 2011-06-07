@@ -299,6 +299,7 @@ $TLS_prefix_does_not_exists="Test project prefix does not exist";
 $TLS_testcase_does_not_exists="Test Case does not exist";
 $TLS_testcase_name_length_exceeded = 'Original length (%s) > allowed length (%s)';
 
+$TLS_stay_here = 'check to create another test case after saving';
 
 
 

@@ -3,6 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: tcNew.tpl,v 1.18.2.3 2011/01/14 14:39:04 asimon83 Exp $
 Purpose: smarty template - create new testcase
 
+20110607 - Julian - BUGID 3952 - stay here like Mantis does
 20110114 - asimon - simplified checking for editor type by usage of $editorType
 20110111 - Julian - Improved modified warning message when navigating away without saving
 20101202 - asimon - BUGID 4067: Tree refreshes after every action taken in Test Specification when update tree is disabled
@@ -23,7 +24,7 @@ Purpose: smarty template - create new testcase
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var='labels' s='btn_create,cancel,warning,title_new_tc,
-                          warning_empty_tc_title,warning_unsaved'}
+                          warning_empty_tc_title,warning_unsaved,stay_here'}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -143,7 +144,12 @@ function validateForm(f)
 			       onclick="show_modified_warning=false;" />
 			<input type="button" name="go_back" value="{$labels.cancel}" 
 			       onclick="javascript: show_modified_warning=false; history.back();"/>
-	</div>	
+	</div>
+	<div class="groupBtn">
+	<input type="checkbox" id="stay_here"  name="stay_here" 
+	       {if $gui->stay_here} checked="checked" {/if}/>{$labels.stay_here}
+	</div>
+
 	{include file="testcases/tcEdit_New_viewer.tpl"}
 
 	<div class="groupBtn">

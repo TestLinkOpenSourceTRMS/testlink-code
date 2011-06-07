@@ -5,6 +5,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - create / edit a req  
 
 @internal revision
+20110607 - Julian - BUGID 3953: Checkbox to decide whether to create another requirement or not
 20110304 - asimon - added help icon with a description of some of the "new" features
 20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
 20110110 - Julian - BUGID 4153: Warning message when navigating away from changed requirement without saving
@@ -19,7 +20,7 @@ Purpose: smarty template - create / edit a req
              warning_empty_reqdoc_id,expected_coverage,warning_empty_req_title,
              insert_last_req_doc_id,suggest_create_revision,revision_log_title,warning_required_cf,
              please_add_revision_log,suggest_create_revision_html,warning_suggest_create_revision,
-             warning_unsaved'}
+             warning_unsaved,stay_here_req'}
              
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -295,6 +296,13 @@ function insert_last_doc_id()
 		<input type="button" name="go_back" value="{$labels.cancel}" 
 			 onclick="javascript: show_modified_warning = false; location.href='{$gui->actions->req_view}';"/>
 	</div>
+	{* BUGID 3953 - Only show checkbox to create another requirement on req creation *}
+	{if $gui->doAction == 'create' || $gui->doAction == 'doCreate'}
+	<div class="groupBtn">
+	<input type="checkbox" id="stay_here"  name="stay_here" 
+	       {if $gui->stay_here} checked="checked" {/if}/>{$labels.stay_here_req}
+	</div>
+	{/if}
 	<br />
 	
   	<div class="labelHolder"><label for="reqDocId">{$labels.req_doc_id}</label>

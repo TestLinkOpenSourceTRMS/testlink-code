@@ -7,6 +7,8 @@
  * @author 		Francisco Mancardi
  * 
  * @internal revision
+ *
+ *  20110607 - Julian - BUGID 3953 - Checkbox to decide whether to create another requirement or not
  */
 
 class reqCommands
@@ -224,8 +226,14 @@ class reqCommands
 			// BUGID 2877 -  Custom Fields linked to Req versions 
 			// $this->reqMgr->values_to_db($request,$ret['id'],$cf_map);
 			$this->reqMgr->values_to_db($request,$ret['version_id'],$cf_map);
-
-  			$obj->template = 'reqEdit.tpl';
+			
+			// BUGID 3952 - on Create stay here like Mantis does
+			if($argsObj->stay_here) {	 
+  				$obj->template = 'reqEdit.tpl';
+			} else {
+				$obj->template = "reqView.php?refreshTree={$argsObj->refreshTree}&tproject_id={$argsObj->tproject_id}" .
+	          					 "&requirement_id={$ret['id']}";
+			}
   			$obj->req_id = $ret['id'];
 			$argsObj->scope = '';
 		}

@@ -10,6 +10,8 @@
  *
  * @internal revisions
  *
+ *  20110607 - Julian - BUGID 3953 - Checkbox to decide whether to create another requirement or not
+ *  
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -112,7 +114,9 @@ function init_args(&$dbHandler)
 	// $args->refreshTree = isset($_SESSION[$uk][$args->tproject_id]) ? $_SESSION[$uk][$args->tproject_id] : 0;
     $args->refreshTree = testproject::getUserChoice($args->tproject_id, 
     												array('reqTreeRefreshOnAction'));
-
+	
+	$args->stay_here = isset($_REQUEST['stay_here']) ? 1 : 0;
+	
 	return $args;
 }
 
@@ -286,6 +290,8 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 	// 20100811 - asimon - fixed two warnings because of undefined variables in template
 	$gui->req_version_id = $argsObj->req_version_id;
 	$gui->preSelectedType = TL_REQ_TYPE_USE_CASE;
+	
+	$gui->stay_here = $argsObj->stay_here;
 
 	$module = $_SESSION['basehref'] . 'lib/requirements/';
 	$context = "tproject_id={$gui->tproject_id}&requirement_id={$gui->requirement_id}";

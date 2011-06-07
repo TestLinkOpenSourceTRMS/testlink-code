@@ -32,68 +32,6 @@
  *  20110115 - franciscom - BUGID 4171 - changes on methods related to estimated execution time
  *  20110112 - franciscom - BUGID 4171 - changes on methods related to estimated execution time
  *  20110104 - asimon - BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
- *  20101221 - amitkhullar - BUGID 4115 Custom Field Filtering Issue 
- *  20101215 - asimon - BUGID 4023: correct filtering also with platforms
- *  20101202 - asimon - fixed filtering issues when filtering for multiple statuses
- *  20101110 - amitkhullar - BUGID 3995 Refix->Custom Field Filters not working properly since the cf_hash is array
- *  20101114 - franciscom - Important Design Notes added on copy_as().	
- *                          BUGID 4017: Create plan as copy - Priorities are ALWAYS COPIED
- *
- *  20101110 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
- *  20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
- *	20101101 - franciscom - exportTestPlanDataToXML() interface changes + changes in output (more info added)
- *  20101030 - amitkhullar - BUGID 3845 delete() - Reordered deletion of tables due to error generated
- *							 when using this method as part of Test Project delete.
- *							 (Postgres complains due to use of Foreing Keys).
- *	20101024 - franciscom - filter_cf_selection() - fixed event viewer warning + refactoring 	
- *	20101017 - franciscom - new method get_import_file_types() 
- *	20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
- *	20101009 - franciscom - BUGID 3270: Export Test Plan in XML Format
- *	20101009 - franciscom - new method exportTestPlanDataToXML() (work in progress)
- *  20101007 - asimon - BUGID 3867
- *  20101006 - asimon - BUGID 3846: copy test plan does not copy tester assignments
- *  20100927 - amitkhullar - BUGID 3809 - Radio button based Custom Fields not working
- *  20100926 - amitkhullar - BUGID 3806 - Filter not working in tree menu for Assign TC Execution
- *  20100925 - franciscom - BUGID 3649 - new method exportLinkedItemsToXML();
- *  20100920 - franciscom - html_table_of_custom_field_values() changed keys on $formatOptions
- *  20100909 - Julian - BUGID 2877 - Custom Fields linked to TC versions
- *	20100830 - franciscom - get_linked_tcversions() - missing cast to array	$my['filters']['exec_status']
- *							urgencyImportanceToPriorityLevel() - refactored
- *	20100827 - franciscom - new method wrapper - hasLinkedPlatforms()
- *  20100727 - asimon - BUGID 3629: modified statement in get_linked_tcversions()
- *  20100725 - asimon - BUGID 3497 and hopefully also 3530 fixed in unlink_tcversions()
- *  20100723 - asimon - commented out some old debug message in copy_linked_tcversions()
- *  20100722 - asimon - added missing $debugMsg to get_linked_items()
- *  20100721 - asimon - BUGID 3406: added user_assignments_per_build option to get_linked_tcversions()
- *	20100711 - franciscom - BUGID 3564 -> getPlatforms()
- *	20100614 - eloff - refactor getStatusTotalsByPriority() to same style as the other getStatusTotals...()
- *	20100610 - eloff - BUGID 3515 - getStatusTotals() now takes platforms into account
- *	20100602 - franciscom - copy_as() - force Platforms Link copy when user choose Test Case Copy
- *  20100527 - Julian - BUGID 3492 - Added execution notes to sql statement of get_linked_tcversions
- *  20100525 - Julian - changed default for steps_info option on get_linked_tcversions() to false
- *  					-> performance improvement because not all steps are loaded per default
- *	20100520 - franciscom - getTestCaseSiblings() join bug
- *	20100518 - franciscom - BUGID 3473
- *	20100516 - franciscom - BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
- *	20100506 - franciscom - new method - get_linked_items_id(), that has perfomance advantages
- *							over get_linked_tcversions() when only info needed is test case id.
- *
- *	20100505 - franciscom - BUGID 3434 - get_keywords_map() - refactoring trying to improve performance
- *	20100505 - franciscom - BUGID 3430 - copy_milestones() - need to check if start date is NOT NULL
- *	20100425 - franciscom - BUGID 2463 - changes in getStatusTotalsByAssignedTesterPlatform()
- * 	20100417 - franciscom - get_linked_tcversions() added importance on output data
- *                          BUGID 3356: Failed Test Cases" report is not updated when a test case 
- *                                      has been changed from "Failed" to "Passed"		 
- *
- *  20100217 - asimon - added parameters open and active to getNumberOfBuilds()
- *  20100214 - franciscom - BUGID 2455, BUGID 3026 - Contribution by julian,asimon
- *  20100206 - eloff - BUGID 3060 - Adding getStatusTotalsByPriority()
- *  20100206 - eloff - BUGID 3060 - Adding urgencyImportanceToPriorityLevel() method
- *  20100201 - franciscom - BUGID 3121 - Adding Platform to test plan after the execution completed,
- *                                       reports are not shown appropriate 	
- *  20100112 - franciscom - getPlatforms() - interface changes
- *	20100106 - franciscom - Multiple Test Case Steps Feature
- *                          Affected Methods: get_linked_tcversions()
  **/
 
 /** related functionality */
@@ -576,7 +514,7 @@ class testplan extends tlObjectWithAttachments
 
 	IMPORTANT NOTICE
 	A new logic has to be implemented to manage in the right way
-	when caller reques NOT EXECUTED, but this info has to consider 
+	when caller request NOT EXECUTED, but this info has to consider 
 	ONLY ACTIVE BUILDS.
 	We are going to implement a solution that will be good to solve
 	issue:
@@ -696,15 +634,6 @@ class testplan extends tlObjectWithAttachments
 		 						 add new option 
 		 						 'build_active_status' values 'active', 'inactive', 'any'
 		 						 
-		 20100727 - asimon - BUGID 3629: modified statement
-		 20100721 - asimon - BUGID 3406: added user_assignments_per_build option
-		 20100520 - franciscom - added option steps_info, to try to solve perfomance problems
-		 						 allowing caller to ask for NO INFO ABOUT STEPS	
-		 20100417 - franciscom - added importance on output data
-		 		  				 BUGID 3356: "Failed Test Cases" report is not updated when a test case 
-		 		  				 			  has been changed from "Failed" to "Passed"		 
-		 		  				 			  
-         20090814 - franciscom - interface changes due to platform feature
 	*/
 	public function get_linked_tcversions($id,$filters=null,$options=null)
 	{
@@ -742,8 +671,6 @@ class testplan extends tlObjectWithAttachments
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
 		$my['options'] = array_merge($my['options'], (array)$options);
 		
-		// 20100830 - franciscom - bug found by Julian
-		// BUGID 3867
 		if (!is_null($my['filters']['exec_status'])) 
 		{
 			$my['filters']['exec_status'] = (array)$my['filters']['exec_status'];
@@ -752,11 +679,9 @@ class testplan extends tlObjectWithAttachments
 		                  $my['options']['output']=='mapOfMapExecPlatform') ? ',platform_id' : '';
 		$groupByBuild=($my['options']['execution_details'] == 'add_build') ? ',build_id' : '';
 
-		// BUGID 3406: user assignments per build 
 		$ua_build = isset($my['options']['user_assignments_per_build']) ? 
 		            $my['options']['user_assignments_per_build'] : 0;
 		
-		// BUGID 3629
 		$ua_build_sql = $ua_build && is_numeric($ua_build) ? " AND UA.build_id={$ua_build} " : " ";
 		
 		$active_domain = array('active' => 1, 'inactive' => 0 , 'any' => null);
@@ -815,7 +740,6 @@ class testplan extends tlObjectWithAttachments
 			                                 implode(",",(array)$my['filters']['exec_type']) . " ) ";     
 		}
 		
-		// Based on work by Eugenia Drosdezki
 		if( is_array($my['filters']['keyword_id']) )
 		{
 			// 0 -> no keyword, remove 
@@ -1109,7 +1033,6 @@ class testplan extends tlObjectWithAttachments
 			default:
 			$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
 			
-			// 20070913 - jbarchibald
 			// here we add functionality to filter out the custom field selections
 			//
 			// After addition of platform feature, this filtering can not be done
@@ -2500,7 +2423,6 @@ class testplan extends tlObjectWithAttachments
 	  returns: hash
 	
 	  rev :
-	        20061231 - franciscom - added $parent_id
 	*/
 	function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null)
 	{
@@ -2602,8 +2524,6 @@ class testplan extends tlObjectWithAttachments
 	  returns: html string
 	
 	  rev :
-	       20080811 - franciscom - BUGID 1650 (REQ)
-	       20070701 - franciscom - fixed return string when there are no custom fields.
 	*/
 	function html_table_of_custom_field_values($id,$scope='design',$filters=null,$formatOptions=null)
 	{
@@ -2678,8 +2598,6 @@ class testplan extends tlObjectWithAttachments
 		$new_tp_tcs = null;
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		
-		// BUGID 3809 - Radio button based Custom Fields not working		
-		// BUGID 3995 Custom Field Filters not working properly since the cf_hash is array	
 		$or_clause = '';
 		$cf_query = '';
 		$ignored = 0;
@@ -2740,7 +2658,6 @@ class testplan extends tlObjectWithAttachments
 		{
 			if( $doFilter )
 			{
-				// BUGID 2877 - Custom Fields linked to TC versions
 				$sql = " /* $debugMsg */ SELECT CFD.value FROM {$this->tables['cfield_design_values']} CFD," .
 					   " {$this->tables['nodes_hierarchy']} NH" .
 					   " WHERE CFD.node_id = NH.id " .

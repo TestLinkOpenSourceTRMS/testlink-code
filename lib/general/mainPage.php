@@ -263,6 +263,7 @@ function initGrants(&$dbHandler,&$userObj,$tprojectID,$testplanID)
 	$grantKeys = array(	'reqs_view' => "mgt_view_req", 'reqs_edit' => "mgt_modify_req",
 						'req_tcase_assignment' => 'req_tcase_assignment',
 						'keywords_view'=> "mgt_view_key",'keywords_edit' => "mgt_modify_key",
+						'keywords_assignment' => 'keyword_assignment',
 						'platform_management' => 'platform_management',
 						'configuration' => "system_configuraton",
 						'usergroups' => "mgt_view_usergroups",

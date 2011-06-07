@@ -6,6 +6,10 @@ main page right side
 @filesource	mainPageRight.tpl
 
 @internal revisions
+20110605 - franciscom - TICKET 4565: Current Test Plan resets every time portal page is loaded
+						1. added target to form in order to control on what frame is opened
+						2. changed action on form name="testplanForm"
+						
 20110502 - franciscom - added grant check in order to display test execution header
 20100825 - Julian - removed <p> tags from "test execution" and "test plan contents"
 					blocks to eliminate unused space
@@ -107,7 +111,7 @@ main page right side
               inc_help_style="float: right;vertical-align: top;"}
 
 
- 	   <form name="testplanForm" action="lib/general/mainPage.php">
+ 	   <form name="testplanForm" action="lib/general/navBar.php" target="titlebar">
  	   
  	   {* 
  	   IMPORTANT NOTICE: 
@@ -115,6 +119,7 @@ main page right side
  	   form action ARE IGNORED. 
  	   *}
        <input type="hidden" name="tproject_id" value="{$gui->testprojectID}">	
+       <input type="hidden" name="updateMainPage" value="1">	
        {if $gui->countPlans > 0}
 		     {$labels.current_test_plan}:<br/>
 		     <select style="z-index:1"  name="testplan" onchange="this.form.submit();">

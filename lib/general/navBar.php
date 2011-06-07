@@ -10,8 +10,7 @@
  * This file manages the navigation bar. 
  *
  * @internal revisions
- * 20110429 - franciscom - refactoring to remove global coupling
- * 20101028 - Julian - BUGID 3950 - use config parameter to dynamically set input size of quick tc search
+ * 20110605 - franciscom - TICKET 4565: Current Test Plan resets every time portal page is loaded
  *
 **/
 require_once('../../config.inc.php');
@@ -63,11 +62,10 @@ function initEnvironment(&$dbHandler,&$userObj)
 	
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 	
-	// new dBug($_REQUEST);
-	
 	$iParams = array("tprojectIDNavBar" => array(tlInputParameter::INT_N),
 					 "tproject_id" => array(tlInputParameter::INT_N),
 					 "tplan_id" => array(tlInputParameter::INT_N),
+					 "testplan" => array(tlInputParameter::INT_N),
 					 "updateMainPage" => array(tlInputParameter::INT_N),
 					 "runUpdateLogic" => array(tlInputParameter::INT_N));
 	R_PARAMS($iParams,$argsObj);
@@ -76,8 +74,7 @@ function initEnvironment(&$dbHandler,&$userObj)
 	$argsObj->updateMainPage = is_null($argsObj->updateMainPage) ? 0 : $argsObj->updateMainPage;
 	$argsObj->runUpdateLogic = is_null($argsObj->runUpdateLogic) ? 1 : $argsObj->runUpdateLogic;
 	
-	
-	
+
 	$argsObj->updateMainPage = intval($argsObj->updateMainPage);
 	
 	$guiObj->tcasePrefix = '';
@@ -129,6 +126,7 @@ function initEnvironment(&$dbHandler,&$userObj)
 	// -----------------------------------------------------------------------------------------------------
 
 	$argsObj->tplan_id = intval($argsObj->tplan_id);
+	$argsObj->tplan_id = ($argsObj->tplan_id > 0) ? $argsObj->tplan_id : intval($argsObj->testplan);  
 	$guiObj->tplanID = $argsObj->tplan_id;
 
 	// Julian: left magic here - do think this value will never be used as a project with a prefix

@@ -12,29 +12,6 @@
  *  20110123 - franciscom - BUGID 3338
  *  20110105 - asimon - BUGID 3878: "Save and move to next" does not respect filter settings
  *  20110104 - aismon - BUGID 3643: apply filters earlier in script instead of loading unnecessary data
- *  20100927 - asimon - avoid warning in event log
- *	20100926 - franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
- *							added $gui->tcversionSet
- *	
- *  20100922 - asimon - let this page be functional withouth a form token too, changed init_args()
- *	20100821 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
- *	20100821 - franciscom - code layout refactoring
- *  20100812 - asimon - BUGID 3672
- *  20100709 - asimon - BUGID 3590, BUGID 3574: build_id set to 0 as default instead of null
- *  20100628 - asimon - removal of constants from filter control class
- *  20100625 - asimon - added parameters $bugInterfaceOn, $bugInterface to exec_additional_info()
- *                      to avoid warnings in event log,
- *                      fixed a little bug in platform id initializing in init_args()
- *                      (now number 0 instead of value null)
- *  20100624 - asimon - CVS merge (experimental branch to HEAD)
- *  20100624 - asimon - refactoring for new filters
- *	20100527 - franciscom - BUGID 3479: Bulk Execution - Custom Fields Bulk Assignment
- *  20100527 - Julian - platform description is now shown/hidden according to setting on config
- *	20100520 - franciscom - BUGID 3478  Testcase ID not updated when using save and move next
- *  20100428 - asimon - BUGID 3301 and related, added logic to refresh tree after tc execution
- *  20100313 - franciscom - BUGID 3276
- *  20100204 - asimon - BUGID 2455 & 3026, little changes for filtering
- *  20100121 - franciscom - missing platform feature refactoring
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -378,7 +355,6 @@ function init_args($cfgObj)
 	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 	
-    // BUGID 3516
 	$mode = 'execution_mode';
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
@@ -435,7 +411,6 @@ function init_args($cfgObj)
     $key4cookies = array('tpn_view_status' => 'testplan_notes','bn_view_status' => 'build_description',
                          'platform_notes_view_status' => 'platform_description');
     
-    // BUGID 3516, 3590, 3574
 	$key2loop = array('id' => 0, 'exec_to_delete' => 0, 'version_id' => 0, 'tpn_view_status' => 0, 
 					  'bn_view_status' => 0, 'bc_view_status' => 1,'platform_notes_view_status' => 0);
 	
@@ -511,9 +486,7 @@ function init_args($cfgObj)
                                 && $session_data['filter_assigned_user_include_unassigned'] != 0 ? 1 : 0;
 	
 	
-    // 20090419 - franciscom - BUGID
-    // BUGID 3301 and related - asimon - changed refresh tree logic 
-    // to adapt behavior of other forms (like tc edit)
+    // changed refresh tree logic to adapt behavior of other forms (like tc edit)
     // additionally modified to only refresh on saving of test results, not on every click
     $args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
                          ? $session_data['setting_refresh_tree_on_action'] : 0;

@@ -532,9 +532,6 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
   returns:
 
   rev  : 
-         20100617 - asimon - removed setting_refresh_tree_on_action
-                             (is now handled by filter control class)
-         20100325 - asimon - added additional fields for req spec document printing
 */
 function tree_getPrintPreferences()
 {

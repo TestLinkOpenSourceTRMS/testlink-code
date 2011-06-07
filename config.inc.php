@@ -1188,6 +1188,8 @@ $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_execution_type = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_custom_fields = ENABLED;
 // filter mode choice disabled for this mode because there are no filters benefiting from it
 $tlCfg->tree_filter_cfg->testcases->edit_mode->advanced_filter_mode_choice = DISABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->automatic_tree_refresh = ENABLED;
+
 
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_testcase_name = ENABLED;
@@ -1199,6 +1201,7 @@ $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_assigned_user = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_result = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->advanced_filter_mode_choice = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->plan_mode->automatic_tree_refresh = ENABLED;
 
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_testcase_name = ENABLED;
@@ -1208,6 +1211,8 @@ $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_priority = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_execution_type = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->advanced_filter_mode_choice = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->plan_add_mode->automatic_tree_refresh = ENABLED;
+
 
 $tlCfg->tree_filter_cfg->requirements->filter_doc_id = ENABLED;
 $tlCfg->tree_filter_cfg->requirements->filter_title = ENABLED;

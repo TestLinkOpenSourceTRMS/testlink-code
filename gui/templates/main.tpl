@@ -1,7 +1,10 @@
-{* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: main.tpl,v 1.8 2009/06/29 10:45:24 havlat Exp $ *}
-{* Purpose: smarty template - main frame *}
-{*******************************************************************}
+{* 
+Testlink Open Source Project - http://testlink.sourceforge.net/
+
+main frame
+
+@filesource	main.tpl
+*}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -16,10 +19,13 @@
 	<link rel="icon" href="{$basehref}{$smarty.const.TL_THEME_IMG_DIR}favicon.ico" type="image/x-icon" />
 </head>
 
-{* 20060226 - franciscom - changes in dimensions due to logo on navbar*}
+{* 
+Development notes
+$titleframe and $mainframe initialized in: index.php, linkto.php
+*}
 <frameset rows="70,*" frameborder="0" framespacing="0">
 	<frame src="{$titleframe}" name="titlebar" scrolling="no" noresize="noresize" />
-	<frame src="{$mainframe}" scrolling='auto' name='mainframe' />
+	<frame src="{$mainframe}" name="mainframe" scrolling='auto'  />
 	<noframes>
 		<body>TestLink required a frames supporting browser.</body>
 	</noframes>

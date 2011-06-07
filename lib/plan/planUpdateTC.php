@@ -149,8 +149,8 @@ function init_args(&$tplanMgr)
 		$args->tplan_name = $dummy['name'];
 	}
 
-	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
-                         $session_data['setting_refresh_tree_on_action'] : 0;
+	$uk = 'setting_refresh_tree_on_action';
+	$args->refreshTree = isset($session_data[$uk]) ? $session_data[$uk] : 0;
     
     $args->keyword_id = 0;
 	$fk = 'filter_keywords';

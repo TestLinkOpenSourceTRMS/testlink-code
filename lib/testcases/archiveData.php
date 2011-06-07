@@ -43,6 +43,7 @@ $grants->testplan_planning = $userObj->hasRight($db,"testplan_planning",$args->t
 
 $smarty = new TLSmarty();
 $gui = new stdClass();
+$gui->modify_tc_rights = $grants->mgt_modify_tc;  // TICKET 
 $gui->tproject_id = $args->tproject_id;
 $gui->page_title = lang_get('container_title_' . $args->feature);
 $gui->opt_requirements = $args->opt_requirements; 

@@ -13,10 +13,8 @@
  * 
  * @internal revisions
  *
- * 20100315 - franciscom - improvements on goback management
- * 20100315 - amitkhullar - Added checkboxes options for Requirements and CFields for Export.
- *
- * ----------------------------------------------------------------------------------- */
+ */
+ 
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
 require_once("../functions/xml.inc.php");
@@ -60,19 +58,29 @@ else
 	// All test cases in test suite.
 	// One test case.
 	$exporting_just_one_tc = ($args->tcase_id && $args->tcversion_id);
-	$gui->export_filename = 'testcases.xml';
-	
+
 	if($exporting_just_one_tc)
 	{
+		$objMgr = new testcase($db);
+		$dummy = $objMgr->get_by_id($args->tcase_id,testcase::ALL_VERSIONS, null, array('output' => 'essential'));
+		$ext = $objMgr->getExternalID($args->tcase_id,$args->tproject_id);
+		
+		$gui->export_filename = 'testcase-' . $ext[0] . '-' . $dummy[0]['name'];
+
 		$node_id = $args->tcase_id;
 		$gui->page_title = lang_get('title_tc_export');
 	}
 	else
 	{
+		$dummy = $tree_mgr->get_node_hierarchy_info($args->container_id);
+		$gui->export_filename = $dummy['name'] . '-children-testcases';
+
 		$gui->page_title = lang_get('title_tc_export_all');
 		$check_children = 1;
 		$gui->nothing_todo_msg = lang_get('no_testcases_to_export');
 	}
+	$gui->export_filename = str_replace(' ','-',$gui->export_filename) . '.xml';
+
 }
 $gui->export_filename = is_null($args->export_filename) ? $gui->export_filename : $args->export_filename;
 

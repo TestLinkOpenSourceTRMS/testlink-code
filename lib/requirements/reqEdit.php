@@ -105,9 +105,13 @@ function init_args(&$dbHandler)
 		$args->expected_coverage = 0;
 	}
 	
-	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action'])
-	                     ? $_SESSION['setting_refresh_tree_on_action'] : 0;
-
+    // 20110604 - franciscom - TICKET 4566: TABBED BROWSING
+    $uk = 'setting_refresh_tree_on_action';
+    
+    // new dBug($_SESSION[$uk][$args->tproject_id]);   new dBug($_SESSION[$uk]);  new dBug($_SESSION);
+	// $args->refreshTree = isset($_SESSION[$uk][$args->tproject_id]) ? $_SESSION[$uk][$args->tproject_id] : 0;
+    $args->refreshTree = testproject::getUserChoice($args->tproject_id, 
+    												array('reqTreeRefreshOnAction'));
 
 	return $args;
 }
@@ -261,6 +265,7 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
     
   	$gui->tproject_id = $argsObj->tproject_id;
   	$gui->req_spec_id = $argsObj->req_spec_id;
+  	$gui->requirement_id = $argsObj->requirement_id;
 	if ($argsObj->req_spec_id)
 	{
 		$gui->requirements_count = $req_spec_mgr->get_requirements_count($gui->req_spec_id);
@@ -282,11 +287,10 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 	$gui->req_version_id = $argsObj->req_version_id;
 	$gui->preSelectedType = TL_REQ_TYPE_USE_CASE;
 
-
 	$module = $_SESSION['basehref'] . 'lib/requirements/';
-	$context = "tproject_id=$gui->tproject_id&req_spec_id=$gui->req_spec_id";
+	$context = "tproject_id={$gui->tproject_id}&requirement_id={$gui->requirement_id}";
 	$gui->actions = new stdClass();
-	$gui->actions->req_spec_view = $module . "reqSpecView.php?$context"; 
+	$gui->actions->req_view = $module . "reqView.php?{$context}"; 
 
 	return $gui;
 }

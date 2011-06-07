@@ -1,23 +1,12 @@
 {* 
- Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.46 2010/11/13 11:24:25 franciscom Exp $     
- Purpose: smarty template - main page / site map                 
-                                                                 
- rev :                                                 
-       20070523 - franciscom - nifty corners
-       20070113 - franciscom - truncate on test plan name combo box
-       20060908 - franciscom - removed assign risk and ownership
-                               added define priority
-                               added tc exec assignment
-                                   
-       20060819 - franciscom - changed css classes name
-                               removed old comments
-       
--------------------------------------------------------------------------------------- *}
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":""}
+Testlink Open Source Project - http://testlink.sourceforge.net/ 
+main page / site map                 
+@filesource	mainPage.tpl
+*}
+
+{$cfg_section=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" popup="yes" openHead="yes"}
-
 {include file="inc_ext_js.tpl"}
 
 <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>

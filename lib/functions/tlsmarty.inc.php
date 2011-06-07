@@ -113,7 +113,7 @@ class TLSmarty extends Smarty
         $this->template_dir = TL_ABS_PATH . 'gui/templates/';
         $this->compile_dir = TL_TEMP_PATH;
         $this->config_dir = TL_ABS_PATH . 'gui/templates/';
-        
+
         $testproject_coloring = $tlCfg->gui->testproject_coloring;
         $testprojectColor = $tlCfg->gui->background_color ; //TL_BACKGROUND_DEFAULT;
         
@@ -289,14 +289,6 @@ class TLSmarty extends Smarty
         $this->assign("tlImages",$tlImages);
         
         // Register functions
-        // $this->register_function("lang_get", "lang_get_smarty");
-        // $this->register_function("localize_date", "localize_date_smarty");
-        // $this->register_function("localize_timestamp", "localize_timestamp_smarty");
-        // $this->register_function("localize_tc_status","translate_tc_status_smarty");
-        // 
-        // $this->register_modifier("basename","basename");
-        // $this->register_modifier("dirname","dirname");
-        
         $this->registerPlugin("function","lang_get", "lang_get_smarty");
         $this->registerPlugin("function","localize_date", "localize_date_smarty");
         $this->registerPlugin("function","localize_timestamp", "localize_timestamp_smarty");

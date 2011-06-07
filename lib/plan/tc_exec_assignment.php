@@ -251,6 +251,10 @@ function init_args(&$dbHandler)
 	  }
     
 	
+	
+	new dBug($_REQUEST);
+	die();
+	
 	// BUGID 3516
 	// For more information about the data accessed in session here, see the comment
 	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
@@ -262,7 +266,6 @@ function init_args(&$dbHandler)
 		
 	$key2loop = array('refreshTree' => array('key' => 'setting_refresh_tree_on_action', 'value' => 0),
 					  'filter_assigned_to' => array('key' => 'filter_assigned_user', 'value' => null));
-	
 	foreach($key2loop as $key => $info)
 	{
 		$args->$key = isset($session_data[$info['key']]) ? $session_data[$info['key']] : $info['value']; 

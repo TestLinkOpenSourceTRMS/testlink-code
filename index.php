@@ -11,6 +11,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110605 - franciscom - TICKET 4565: Current Test Plan resets every time portal page is loaded
  * 20110410 - franciscom - BUGID 4342
 **/
 require_once('lib/functions/configCheck.php');
@@ -53,10 +54,16 @@ if($redir2login)
 	exit;
 }
 
+
+$titleFrameURL = "lib/general/navBar.php?tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
+				 "&updateMainPage=1";
+
+// $smarty->assign('titleframe', "lib/general/navBar.php?tproject_id={$args->tproject_id}&updateMainPage=1");
+// $smarty->assign('titleframe', "lib/general/navBar.php?tproject_id={$args->tproject_id}");
+				 
 $smarty = new TLSmarty();
 $smarty->assign('title', lang_get('main_page_title'));
-$smarty->assign('titleframe', "lib/general/navBar.php?tproject_id={$args->tproject_id}&updateMainPage=1");
-// $smarty->assign('titleframe', "lib/general/navBar.php?tproject_id={$args->tproject_id}");
+$smarty->assign('titleframe', $titleFrameURL);
 $smarty->assign('mainframe', $args->reqURI);
 $smarty->display('main.tpl');
 
@@ -71,6 +78,7 @@ function init_args()
 	$pParams = G_PARAMS($iParams);
 	$args->reqURI = ($pParams["reqURI"] != '') ? $pParams["reqURI"] : 'lib/general/mainPage.php';
 	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
 	return $args;
 }
 ?>

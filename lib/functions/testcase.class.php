@@ -10,6 +10,10 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110604 - franciscom - 	TICKET 4564: Test Case Export/import - new field STATUS is not managed
+ *							exportTestCaseDataToXML()
+ *
+ * 20110603 - franciscom - new methods getDuplicatesByExternalID(),getDuplicatesByCriteria()
  * 20110413 - franciscom - BUGID 4404 - copy_to() set author_id = user doing copy
  * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
  * 20110402 - franciscom - get_exec_status() - interface changes	
@@ -173,6 +177,8 @@ class testcase extends tlObjectWithAttachments
 
 	    $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME, 
 	                            'action_on_duplicate_name' => 'generate_new');
+	                            
+	                            
 	    $my['options'] = array_merge($my['options'], (array)$options);
 		
 		$ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id,$my['options']);
@@ -194,8 +200,6 @@ class testcase extends tlObjectWithAttachments
 				$last_version_info = $this->get_last_version_info($ret['id'],array('output' => 'minimun'));
 				$version_number = $last_version_info['version']+1;
 				$ret['msg'] = sprintf($ret['msg'],$version_number);       
-				
-				// BUGID 2204
 				$ret['version_number']=$version_number;
 			}
 			// Multiple Test Case Steps Feature
@@ -239,6 +243,9 @@ class testcase extends tlObjectWithAttachments
 	function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
 	                           $options=null)
 	{
+	
+		//echo __FUNCTION__;new dBug($options);die();
+		
 		$dummy = config_get('field_size');
 		$name_max_len = $dummy->testcase_name;
 		$name = trim($name);
@@ -704,7 +711,6 @@ class testcase extends tlObjectWithAttachments
 			$platformMgr = new tlPlatform($this->db,$tproject_id);
 	        $gui->platforms = $platformMgr->getAllAsMap();
 	        
-	        // BUGID 2378
 	        $testplans = $this->tproject_mgr->get_all_testplans($tproject_id,array('plan_status' =>1) );
 	        $gui->has_testplans = !is_null($testplans) && count($testplans) > 0 ? 1 : 0;
 	        
@@ -774,10 +780,8 @@ class testcase extends tlObjectWithAttachments
 		  		$userid_array[$tc_current['author_id']] = null;
 		  		$userid_array[$tc_current['updater_id']] = null;
 	    
-	    		// BUGID 3431
 	      		foreach($cfPlaces as $locationKey => $locationFilter)
 		  		{ 
-		  			// BUGID 3431
 		  			$gui->cf_current_version[$cfx][$locationKey] = 
 		  				$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
 		  			 	                                         null,null,$tproject_id,null,$tcversion_id_current);
@@ -1580,7 +1584,6 @@ class testcase extends tlObjectWithAttachments
 	
 	  rev : 20070701 - franciscom - added version key on return map.
 	*/
-	// BUGID 3431
 	function create_new_version($id,$user_id,$source_version_id=null, $options=null)
 	{
 	  $tcversion_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
@@ -3138,18 +3141,8 @@ class testcase extends tlObjectWithAttachments
 			
 	  returns:
 	
-	  rev:
-	   20101009	 - franciscom - better checks on $optExport
-	   20101009 - franciscom - BUGID 3868: Importing exported XML results - custom fields have unexpected NEW LINES		
-	   20100926 - franciscom - manage tcase_id not present, to allow export using 
-	   						   tcversion id as target
-	   						   
-	   20100908 - franciscom - testcase::LATEST_VERSION has problems
-	   20100315 - amitkhullar - Added options for Requirements and CFields for Export.
-	   20100105 - franciscom - added execution_type, importance
-	   20090204 - franciscom - added export of node_order
-	   20080206 - franciscom - added externalid
-	
+	  @internal revisions
+		20110604 - franciscom - TICKET 4564: Test Case Export/import - new field STATUS is not managed
 	*/
 	function exportTestCaseDataToXML($tcase_id,$tcversion_id,$tproject_id=null,
 	                                 $bNoXMLHeader = false,$optExport = array())
@@ -3180,10 +3173,10 @@ class testcase extends tlObjectWithAttachments
 		{
 			$tproject_id = $this->getTestProjectFromTestCase($tcase_id);
 		}
+
         // Get Custom Field Data
 		if (isset($optExport['CFIELDS']) && $optExport['CFIELDS'])
 		{
-			// BUGID 3431
 			$cfMap = $this->get_linked_cfields_at_design($tcase_id,$testCaseVersionID,null,null,$tproject_id);        	                                                                                  
         	
 	    	// ||yyy||-> tags,  {{xxx}} -> attribute 
@@ -3194,13 +3187,6 @@ class testcase extends tlObjectWithAttachments
 	    	//
 			if( !is_null($cfMap) && count($cfMap) > 0 )
 			{
-				// BUGID 3868
-				// $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
-			    // $cfElemTemplate = "\t" . "<custom_field>\n" .
-			    //                   "\t<name><![CDATA[||NAME||]]></name>\n" .
-			    //                   "\t<value><![CDATA[||VALUE||]]></value>\n</custom_field>\n";
-			    // $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
-			    // $tc_data[0]['xmlcustomfields'] = $cfieldMgr->exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
 				$tc_data[0]['xmlcustomfields'] = $cfieldMgr->exportValueAsXML($cfMap);
 			} 
 		}
@@ -3235,7 +3221,6 @@ class testcase extends tlObjectWithAttachments
 	  		}
 		}
 		// ------------------------------------------------------------------------------------
-		// BUGID 3695 - missing execution_type
         // Multiple Test Case Steps Feature
        	$stepRootElem = "<steps>{{XMLCODE}}</steps>";
         $stepTemplate = "\n" . '<step>' . "\n" .
@@ -3268,6 +3253,7 @@ class testcase extends tlObjectWithAttachments
 		               "\t<preconditions><![CDATA[||PRECONDITIONS||]]></preconditions>\n" .
 		               "\t<execution_type><![CDATA[||EXECUTIONTYPE||]]></execution_type>\n" .
 		               "\t<importance><![CDATA[||IMPORTANCE||]]></importance>\n" .
+		               "\t<status><![CDATA[||STATUS||]]></status>\n" .
 		               "||STEPS||\n" .
 		               "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||</testcase>\n";
 	
@@ -3287,6 +3273,7 @@ class testcase extends tlObjectWithAttachments
 		  			  "||PRECONDITIONS||" => "preconditions",
 		  			  "||EXECUTIONTYPE||" => "execution_type",
 		  			  "||IMPORTANCE||" => "importance",
+		  			  "||STATUS||" => "status",
 		  			  "||STEPS||" => "xmlsteps",
 		  	          "||KEYWORDS||" => "xmlkeywords",
 		  			  "||CUSTOMFIELDS||" => "xmlcustomfields",
@@ -4693,7 +4680,7 @@ class testcase extends tlObjectWithAttachments
 		}
 	   
 		$sql .= $add_filters;
-		$sql .= " AND NH_TCASE_PARENT.id = {$parent_id}" ;
+		$sql .= " AND NH_TCASE_PARENT.id = {$parent_id}"; // echo __FUNTION__; echo $sql;
 		$recordset = $this->db->fetchRowsIntoMap($sql,'id');
 	    return $recordset;
 	}
@@ -5120,6 +5107,45 @@ class testcase extends tlObjectWithAttachments
 
 		return $ret;    	
 	}
+
+
+
+	
+	// externalID but WITHOUT prefix
+	function getDuplicatesByExternalID($externalID, $parent_id, $options=null)
+	{
+		$criteria = " AND TCV.tc_external_id=" . intval($externalID);
+		$ret = $this->getDuplicatesByCriteria($parent_id, $criteria, $options);
+		return $ret;			
+			
+	}
+
+	function getDuplicatesByCriteria($parent_id, $criteria, $options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+	    $my['options'] = array('access_key' => 'id');
+	    $my['options'] = array_merge($my['options'], (array)$options);
+	    
+	    $sql = " SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id" .
+			   " FROM {$this->tables['nodes_hierarchy']} NHA, " .
+			   " {$this->tables['nodes_hierarchy']} NHB, {$this->tables['tcversions']} TCV  " .
+			   " WHERE NHA.node_type_id = {$this->my_node_type} " .
+			   " AND NHB.parent_id=NHA.id " .
+			   " AND TCV.id=NHB.id " .
+			   " AND NHB.node_type_id = {$this->node_types_descr_id['testcase_version']} " .
+			   " AND NHA.parent_id={$parent_id} {$criteria}";
+	
+		echo $sql;
+		$rs = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+	    if( is_null($rs) || count($rs) == 0 )
+	    {
+	        $rs=null;   
+	    }
+	    return $rs;
+	}
+	
+
 	 
 } // end class
 ?>

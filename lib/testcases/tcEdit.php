@@ -13,6 +13,9 @@
  *
  *
  *	@internal revisions
+ *	20110605 - franciscom - TICKET 4566: TABBED BROWSING - Update Tree option change affects all open projects
+ *  20110604 - franciscom - TICKET 4562: Test Specification : Move of Test Case from "Testsuite1" to "Main TestSuite" 
+ *							Leads to Fatal error
  *  20110401 - franciscom - BUGID 3615 - right to allow ONLY MANAGEMENT of requirements link to testcases
  * 	20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
  *							can be added to new test plans
@@ -175,7 +178,9 @@ else if($args->do_move)
                                   $args->target_position,$cfg->exclude_node_types);
 
     $gui->refreshTree = $args->refreshTree;
-	$tsuite_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->old_container_id);
+	// TICKET 4562
+    $gui->modify_tc_rights = $_SESSION['currentUser']->hasRight($db,"mgt_modify_tc",$args->tproject_id);
+	$tsuite_mgr->show($smarty,$args->tproject_id,$gui,$templateCfg->template_dir,$args->old_container_id);
 }
 else if($args->do_copy)
 {
@@ -411,7 +416,11 @@ function init_args(&$cfgObj,&$tprojectMgr,&$userObj,$otName)
 
 	$args->basehref = $_SESSION['basehref'];
     $args->user_id = $_SESSION['userID'];
-	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? $_SESSION['setting_refresh_tree_on_action'] : 0;
+    
+    // 20110604 - franciscom - TICKET 4566: TABBED BROWSING
+    $args->refreshTree = testproject::getUserChoice($args->tproject_id, 
+    												array('tcaseTreeRefreshOnAction','edit_mode'));
+    
     $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 
 	$action2check = array("editStep" => true,"createStep" => true, "doCreateStep" => true,

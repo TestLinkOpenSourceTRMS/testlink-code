@@ -41,7 +41,6 @@ $doInitGui = true;
 
 $gui = initializeGui($db,$args);
 
-
 $target = new stdClass();
 $target->tproject_id = null;
 $target->tplan_id = null;
@@ -63,11 +62,13 @@ switch($args->featureType)
  	$gui->not_for_you = lang_get("testplan_roles_assign_disabled");
  	$assignRolesFor = $args->featureType;
  	$target->tproject_id = $args->tproject_id;
+ 	$target->tplan_id = $args->tplan_id;
  	$featureMgr = &$tplanMgr;
  break;
 }
 
 
+new dBug($args);
 if ($args->featureID && $args->doUpdate && $featureMgr)
 {
 	if(checkRightsForUpdate($db,$args->user,$args->tproject_id,$args->featureType,$args->featureID))
@@ -135,12 +136,14 @@ function init_args(&$treeMgr)
     
 	$args = new stdClass();
 	$args->featureType = $pParams["featureType"];
-    $args->featureID = $pParams["featureID"];
+    $args->featureID = intval($pParams["featureID"]);
     $args->map_userid_roleid = $pParams["userRole"];
     $args->doUpdate = ($pParams["do_update"] != "") ? 1 : 0;
     $args->tproject_id = intval($pParams["tproject_id"]);
+
     $args->tplan_id = intval($pParams["tplan_id"]);
-   
+    $args->tplan_id = ($args->tplan_id == 0 && $args->featureType=='testplan') ? $args->featureID : $args->tplan_id;
+
    	$args->tproject_name = '';
    	if($args->tproject_id >0)
    	{
@@ -214,7 +217,7 @@ function checkRights(&$db,&$userObj,$argsObj)
  * checkRightsForUpdate
  *
  */
-function checkRightsForUpdate(&$dbHandler,&$user,$testprojectID,$featureType,$featureID)
+function checkRightsForUpdate(&$dbHandler,&$user,$tprojectID,$featureType,$featureID)
 {
     $yes_no = "no";
     switch($featureType)
@@ -228,14 +231,21 @@ function checkRightsForUpdate(&$dbHandler,&$user,$testprojectID,$featureType,$fe
         break;
             
         case 'testplan':
-            $yes_no = $user->hasRight($dbHandler,"testplan_user_role_assignment",
-                                       $testprojectID,$featureID);
+        
+			// 20110605 - franciscom            
+            // test plan id (featureID) can not be used to avoid "harakiri" in following use case
+            // user has defautl role Admin
+            // user assign himself on "Test plan A" role 'NO RIGHTS'
+            // Now user wants to change his role on "Test plan A" to tester
+            // HE CAN'T!!! because we are checking right on specific role and this role has NO RIGHT.
+            // 
+            // $yes_no = $user->hasRight($dbHandler,"testplan_user_role_assignment",$tprojectID,$featureID);
+            $yes_no = $user->hasRight($dbHandler,"testplan_user_role_assignment",$tprojectID);
         break;
     }
 
     return ($yes_no == 'yes');
 }
-
 
 /**
  * getTestProjectEffectiveRoles

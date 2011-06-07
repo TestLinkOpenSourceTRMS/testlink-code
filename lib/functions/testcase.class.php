@@ -801,7 +801,6 @@ class testcase extends tlObjectWithAttachments
 						$target_tcversion = $tcRef['id'];
 	      				foreach($cfPlaces as $locationKey => $locationFilter)
 		  				{ 
-		  					// BUGID 3431
 		  					$gui->cf_other_versions[$cfx][$qdx][$locationKey] = 
 		  						$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
 		  					 	                                         null,null,$tproject_id,null,$target_tcversion);
@@ -3899,8 +3898,6 @@ class testcase extends tlObjectWithAttachments
 	                                           $tproject_id = null,$filters=null, $input_values = null)
 	{
 		$cf_smarty = '';
-	
-	  	// BUGID 1650
 	  	$cf_scope=trim($scope);
 	  	$method_name='get_linked_cfields_at_' . $cf_scope;
 	  
@@ -3911,7 +3908,6 @@ class testcase extends tlObjectWithAttachments
 	  	    break;
 	  	
 	  	    case 'design':
-				// BUGID 3431 - 
 	  	    	$cf_map = $this->$method_name($id,$link_id,$parent_id,$filters,$tproject_id);    
 	  	    break;
 	  	    	
@@ -4029,7 +4025,6 @@ class testcase extends tlObjectWithAttachments
 	    switch($scope)
 	    {
 	        case 'design':
-	         	// BUGID 3431
 	            $cf_map = $this->get_linked_cfields_at_design($id,$link_id,null,$filters,$tproject_id);
 	        break;
 	    
@@ -4044,7 +4039,6 @@ class testcase extends tlObjectWithAttachments
 	        break;
 	    }   
 
-		// BUGID 3989
 	    $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
 
 		if(!is_null($cf_map))

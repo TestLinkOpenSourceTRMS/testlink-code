@@ -3206,8 +3206,10 @@ $TLS_id_not_set = "ID not set.";
 $TLS_testcase_not_found = "Testcase %s not found in test project (prefix:%s).";
 $TLS_req_spec_not_found = "Requirement specification %s not found in test project (prefix:%s).";
 $TLS_req_not_found = "Requirement %s not found in test project (prefix:%s).";
+$TLS_req_version_not_found = "Version %s of requirement %s not found in test project (prefix:%s).";
 $TLS_invalid_item = 'Invalid item (%s)';
 $TLS_btn_show_direct_link = "Show permanent link";
+$TLS_direct_link_on_wrong_version = "Click here to open the current version of this document.";
 
 // ----- testcase/req comparison -----
 $TLS_title_compare_versions_tc = "Testcase versions compare page";

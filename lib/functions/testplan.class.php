@@ -2436,9 +2436,8 @@ class testplan extends tlObjectWithAttachments
 		}
 		$tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id; 
 		
-		// 20081122 - franciscom - humm!! need to look better IMHO this call is done to wrong function
 		$cf_map=$this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,self::ENABLED,
-			$show_on_execution,'testplan',$id);
+																	$show_on_execution,'testplan',$id);
 		return($cf_map);
 	}
 
@@ -2543,9 +2542,7 @@ class testplan extends tlObjectWithAttachments
 			$table_style=isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
 		} 
 
-		// BUGID 3989
 	    $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
-
 		if( $scope=='design' )
 		{
 			$cf_map=$this->get_linked_cfields_at_design($id,$parent_id,$filters);
@@ -2560,7 +2557,6 @@ class testplan extends tlObjectWithAttachments
 			foreach($cf_map as $cf_id => $cf_info)
 			{
 				// if user has assigned a value, then node_id is not null
-				// BUGID 3989
 				if(isset($cf_info['node_id']) || $cf_info['node_id'] || $show_cf)
 				{
 					// true => do not create input in audit log

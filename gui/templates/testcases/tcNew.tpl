@@ -12,7 +12,7 @@ Purpose: smarty template - create new testcase
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var='labels' s='btn_create,cancel,warning,title_new_tc,warning_required_cf,
-                          warning_empty_tc_title,stay_here,warning_unsaved'}
+                          warning_empty_tc_title,stay_here_tc,warning_unsaved'}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 {include file="inc_ext_js.tpl"}
@@ -143,7 +143,7 @@ name=$gui->name user_feedback=$gui->user_feedback refresh=$smarty.session.settin
 	</div>	
 	<div class="groupBtn">
 			<input type="checkbox" id="stay_here"  name="stay_here" 
-						{if $gui->stay_here} checked="checked" {/if}/>{$labels.stay_here}
+						{if $gui->stay_here} checked="checked" {/if}/>{$labels.stay_here_tc}
 	</div>	
 	{include file="testcases/tcEdit_New_viewer.tpl"}
 

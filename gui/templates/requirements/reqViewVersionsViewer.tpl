@@ -4,8 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 viewer for requirement
 
 @internal revisions
-20110307 - asimon - BUGID 4273: moved print preview to popup to make printing independent from browser easier for the users
-                                moved req view button forms and divs around to align buttons in a single row
+20110603 - asimon - BUGID 4298: merged functionality for direct links to open specific requirement versions
 20110305 - franciscom - display printer friendly button always
 20110305 - franciscom - BUGID 4273: Option to print single requirement
 20101127 - franciscom - BUGID 4056: Requirement Revisioning
@@ -18,7 +17,7 @@ viewer for requirement
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
              testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
-             revision,btn_view_history,btn_new_revision,btn_print_view"}
+             revision,btn_view_history,btn_new_revision,btn_print_view,specific_direct_link"}
 
              
 {$hrefReqSpecMgmt="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
@@ -38,7 +37,10 @@ viewer for requirement
     {if $args_req_spec_name != ''}
      <h2>{$labels.req_spec} {$args_req_spec_name|escape} </h2>
     {/if}
-	<h2>{$labels.title_test_case} {$args_req.title|escape} </h2>
+	  <h2>{$tlImages.toggle_direct_link} &nbsp; {$labels.title_test_case} {$args_req.title|escape} </h2>
+	  <div class="direct_link" style='display:none'>
+		  <a href="{$gui->direct_link}&version={$args_req.version}" target="_blank">{$labels.specific_direct_link}</a><br/>
+	  </div>
 {/if}
 {$warning_edit_msg=""}
 

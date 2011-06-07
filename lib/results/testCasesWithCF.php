@@ -3,9 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2010/10/15 11:43:25 $ by $Author: mx-julian $
+ * @filesource	testCasesWithCF.php
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
@@ -25,7 +23,7 @@ $exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
 $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $tcase_mgr = new testcase($db);
-$args = init_args($db);
+$args = init_args($db,$tcase_mgr->tree_manager);
 $gui = initializeGui($db,$args);
 if( $args->doIt )
 {
@@ -60,10 +58,6 @@ if( $args->doIt )
 
 		$tcLink = "<!-- " . sprintf("%010d", $item['tc_external_id']) . " -->" . $exec_link . $edit_link . $tcaseName;
 		$rowData[] = $tcLink;
-
-		//$rowData[] = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' . $item['tcase_id'] . '">' .
-		//			 buildExternalIdString($gui->tcasePrefix, $item['tc_external_id']) .
-		//			 ' : ' . $item['tcase_name'] . '</a>';
 		$rowData[] = $item['tcversion_number'];
 		if ($args->showPlatforms)
 		{
@@ -75,29 +69,16 @@ if( $args->doIt )
 		// use html comment to be able to sort table by timestamp and not by link
 		// only link is visible in table but comment is used for sorting
 		$dummy = null;
-//		$rowData[] = "<!--{$item['execution_ts']}--><a href=\"lib/execute/execSetResults.php?" .
-//					 "level=testcase&build_id={$item['builds_id']}&id={$item['tcase_id']}" .
-//					 "&version_id={$item['tcversion_id']}&tplan_id={$gui->tplan_id}\">" .
-//					 localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $item['execution_ts']) . '</a>';
-
 		$rowData[] = "<!--{$item['execution_ts']}-->" .
 		             localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $item['execution_ts']);
 
 		// Use array for status to get correct rendering and sorting
-		$rowData[] = array(
-			'value' => $item['exec_status'],
-			'text' => $gui->status_code_labels[$item['exec_status']],
-			'cssClass' => $gui->code_status[$item['exec_status']] . '_text',
-		);
-		
-		$hasValue = false;
+		$rowData[] = array(	'value' => $item['exec_status'],'text' => $gui->status_code_labels[$item['exec_status']],
+							'cssClass' => $gui->code_status[$item['exec_status']] . '_text');
 		
 		$rowData[] = strip_tags($item['exec_notes']);
-		
-		if($item['exec_notes']) {
-			$hasValue = true;
-		}
-		
+		$hasValue = $item['exec_notes'] ? true : false;
+	
 		foreach ($item['cfields'] as $cf_value)
 		{
 			$rowData[] = preg_replace('!\s+!', ' ', htmlspecialchars($cf_value, ENT_QUOTES, $charset));;
@@ -112,10 +93,7 @@ if( $args->doIt )
 
 	if (count($matrixData) > 0) {
 		$table = new tlExtTable($columns, $matrixData, 'tl_table_tc_with_cf');
-		// BUGID 4125
-		// $table->addCustomBehaviour('status', array('render' => 'statusRenderer'));
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
-
 		$table->setGroupByColumnName(lang_get('build'));
 		$table->setSortByColumnName(lang_get('date'));
 		$table->sortDirection = 'DESC';
@@ -142,21 +120,27 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  returns:
 
  */
-function init_args(&$dbHandler)
+function init_args(&$dbHandler,&$treeMgr)
 {
+
+    $iParams = array("format" => array(tlInputParameter::INT_N),
+		             "tproject_id" => array(tlInputParameter::INT_N),
+		             "tplan_id" => array(tlInputParameter::INT_N),
+    	             "type" => array(tlInputParameter::STRING_N,0,1));
+
     $argsObj = new stdClass();
+
+	R_PARAMS($iParams,$argsObj);
 	$argsObj->doIt = false;
     $argsObj->showPlatforms = false;
-    $argsObj->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $argsObj->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
-
-    $argsObj->tplan_name = '';
-    $argsObj->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
-    if($argsObj->tplan_id == 0)
+    $argsObj->tproject_name = '';
+    if( $argsObj->tproject_id > 0)
     {
-        $argsObj->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+    	$dummy = $treeMgr->get_node_hierarchy_info($argsObj->tproject_id);
+    	$argsObj->tproject_name = $dummy['name'];
     }
-
+    
+    $argsObj->tplan_name = '';
     if($argsObj->tplan_id > 0)
     {
     	$tplan_mgr = new testplan($dbHandler);
@@ -216,6 +200,7 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
     // Get the custom fields linked/enabled on execution to a test project
     // This will be used on report to give name to header of columns that hold custom field value
     $guiObj->cfields = $cfieldMgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',null,null,null,'name');
+    $guiObj->cfields = $cfieldMgr->get_linked_cfields_at_execution($tproject_id,1,'testcase');
     
     // this way on caller can be used on array operations, without warnings
     $guiObj->cfields = (array)$guiObj->cfields;  

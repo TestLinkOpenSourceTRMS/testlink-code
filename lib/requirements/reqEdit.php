@@ -11,6 +11,7 @@
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revision
+ *  20110607 - Julian - BUGID 3953 - Checkbox to decide whether to create another requirement or not
  *	20101210 - franciscom - BUGID 4056 - Req. Revisioning
  *  20100915 - Julian - BUGID 3777 - Allow to insert last req doc id when creating requirement
  *  20100811 - asimon - fixed two warnings because of undefined variables in template
@@ -113,6 +114,8 @@ function init_args()
 	// asimon - 20100808 - added logic to refresh filtered tree on action
 	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action'])
 	                     ? $_SESSION['setting_refresh_tree_on_action'] : 0;
+	
+	$args->stay_here = isset($_REQUEST['stay_here']) ? 1 : 0;
 	
 	return $args;
 }
@@ -282,6 +285,8 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 	// 20100811 - asimon - fixed two warnings because of undefined variables in template
 	$gui->req_version_id = $argsObj->req_version_id;
 	$gui->preSelectedType = TL_REQ_TYPE_USE_CASE;
+	
+	$gui->stay_here = $argsObj->stay_here;
 
 	return $gui;
 }

@@ -24,7 +24,7 @@ Purpose: smarty template - create new testcase
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var='labels' s='btn_create,cancel,warning,title_new_tc,
-                          warning_empty_tc_title,warning_unsaved,stay_here'}
+                          warning_empty_tc_title,warning_unsaved,stay_here_tc'}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -147,7 +147,7 @@ function validateForm(f)
 	</div>
 	<div class="groupBtn">
 	<input type="checkbox" id="stay_here"  name="stay_here" 
-	       {if $gui->stay_here} checked="checked" {/if}/>{$labels.stay_here}
+	       {if $gui->stay_here} checked="checked" {/if}/>{$labels.stay_here_tc}
 	</div>
 
 	{include file="testcases/tcEdit_New_viewer.tpl"}

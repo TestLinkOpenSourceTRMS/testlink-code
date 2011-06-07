@@ -299,8 +299,6 @@ $TLS_prefix_does_not_exists="Test project prefix does not exist";
 $TLS_testcase_does_not_exists="Test Case does not exist";
 $TLS_testcase_name_length_exceeded = 'Original length (%s) > allowed length (%s)';
 
-$TLS_stay_here = 'check to create another test case after saving';
-
 
 
 // ----- JAVASCRIPT -----
@@ -800,6 +798,7 @@ $TLS_title_last_mod = "Last modified on ";
 $TLS_expected_coverage = "Number of test cases needed";
 $TLS_warning_expected_coverage = $TLS_expected_coverage . " must be a number ";
 $TLS_warning_expected_coverage_range = $TLS_expected_coverage . " must be > 0 ";
+$TLS_stay_here_req = 'check to create another requirement after saving';
 
 $TLS_current_coverage = "Connected";
 $TLS_coverage_number = "Create";
@@ -1089,6 +1088,7 @@ $TLS_th_version = "Version";
 // ----- gui/templates/tcNew.tpl -----
 $TLS_title_new_tc = "Create Test Case";
 $TLS_warning_empty_tc_title = "Please give a title to Test Case";
+$TLS_stay_here_tc = 'check to create another test case after saving';
 
 
 

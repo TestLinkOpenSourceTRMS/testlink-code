@@ -11,6 +11,7 @@
  * web command experiment
  * @internal revision
  *
+ *  20110607 - Julian - BUGID 3953 - Checkbox to decide whether to create another requirement or not
  *  20110602 - franciscom - TICKET 4536: Tree is not refreshed after editing Requirement
  *	20101210 - franciscom - BUGID 4056: Requirement Revisioning
  *  20101008 - asimon - BUGID 3311
@@ -243,8 +244,12 @@ class reqCommands
 			// BUGID 2877 -  Custom Fields linked to Req versions 
 			// $this->reqMgr->values_to_db($request,$ret['id'],$cf_map);
 			$this->reqMgr->values_to_db($request,$ret['version_id'],$cf_map);
-
-  			$obj->template = 'reqEdit.tpl';
+			// BUGID 3952 - on Create stay here like Mantis does
+			if($argsObj->stay_here) {	 
+  				$obj->template = 'reqEdit.tpl';
+			} else {
+				$obj->template = "reqView.php?refreshTree={$argsObj->refreshTree}&requirement_id={$ret['id']}";
+			}
   			$obj->req_id = $ret['id'];
 			$argsObj->scope = '';
 		}

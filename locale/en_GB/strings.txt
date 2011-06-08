@@ -1686,6 +1686,7 @@ $TLS_info_notrun_tc_report = "This report shows all test cases that have not bee
                              "for any build within this test plan";
 $TLS_no_blocked = "There are no blocked test cases";
 $TLS_no_notrun = "There are no test case that have not been run";
+$TLS_no_not_run = "There are no test case that have not been run";
 $TLS_no_failed = "There are no failed test cases";
 
 

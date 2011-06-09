@@ -469,7 +469,9 @@ function writeCustomFieldsToDB(&$db,$tprojectID,$tsuiteID,&$hash)
 function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,$level)
 {
   	$feedback_msg = '';
+	$system_message = '';
   	$testcase_cfg = config_get('testcase_cfg');
+	$can_delete = 1;
 
 	if($argsObj->bSure)
 	{
@@ -492,19 +494,25 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
 		$map_msg['link_msg'] = null;
 		$map_msg['delete_msg'] = null;
 
-		
-		if(is_null($testcases))
+		if(is_null($testcases) || count($testcases) == 0)
 		{
 			$can_delete = 1;
 		}
 		else
 		{
 			$map_msg = build_del_testsuite_warning_msg($treeMgr,$tcaseMgr,$testcases,$argsObj->testsuiteID);
-			if( in_array('linked_and_executed', $map_msg['link_msg']) )
+			if( in_array('linked_and_executed', (array)$map_msg['link_msg']) )
 			{
 				$can_delete = $testcase_cfg->can_delete_executed;
 			}
 		}
+
+		$system_message = '';
+		if(!$can_delete && !$testcase_cfg->can_delete_executed)  
+		{
+			$system_message = lang_get('system_blocks_tsuite_delete_due_to_exec_tc');
+		}
+	
 		// prepare to show the delete confirmation page
 		$smartyObj->assign('can_delete',$can_delete);
 		$smartyObj->assign('objectID',$argsObj->testsuiteID);
@@ -513,15 +521,8 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
 		$smartyObj->assign('warning', $map_msg['warning']);
 		$smartyObj->assign('link_msg', $map_msg['link_msg']);
 
-		$system_message = '';
-		if(!$testcase_cfg->can_delete_executed)  
-		{
-			$system_message = lang_get('system_blocks_tsuite_delete_due_to_exec_tc');
-		}
-		$smartyObj->assign('system_message', $system_message);
-
-
 	}
+	$smartyObj->assign('system_message', $system_message);
 	$smartyObj->assign('page_title', lang_get('delete') . " " . lang_get('container_title_' . $level));
  	$smartyObj->assign('sqlResult',$feedback_msg);
 
@@ -938,17 +939,13 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 
 	$guiObj = new stdClass();
     $guiObj->main_descr = lang_get('delete_testcases');
+	$guiObj->system_message = '';
+    
 
 	$tables = $tprojectMgr->getDBTables(array('nodes_hierarchy','node_types','tcversions'));
 	$testcase_cfg = config_get('testcase_cfg');
 	$glue = $testcase_cfg->glue_character;
 
-	$guiObj->system_message = '';
-	if(!$testcase_cfg->can_delete_executed)  
-	{
-		$guiObj->system_message = lang_get('system_blocks_delete_executed_tc');
-	}
-	
 	$containerID = isset($argsObj->testsuiteID) ? $argsObj->testsuiteID : $argsObj->objectID;
 	$containerName = $argsObj->tsuite_name;
 	if( is_null($containerName) )
@@ -960,6 +957,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 	$guiObj->testCaseSet = $tsuiteMgr->get_children_testcases($containerID);
 	$guiObj->exec_status_quo = null;
 	$tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID);
+	$hasExecutedTC = false;
 
 	if( !is_null($guiObj->testCaseSet) && count($guiObj->testCaseSet) > 0)
 	{
@@ -975,6 +973,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 			$dummy = $tcaseMgr->get_exec_status($child['id'],null,$getOptions);	
 			$child['draw_check'] = $testcase_cfg->can_delete_executed || (!$dummy['executed']);
 
+			$hasExecutedTC = $hasExecutedTC || $dummy['executed'];
 			unset($dummy['executed']);
 			$guiObj->exec_status_quo[] = $dummy; 
 		} 
@@ -1025,6 +1024,11 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 	    $guiObj->children = null;
 	    $guiObj->op_ok = false;
 	    $guiObj->user_feedback = is_null($guiObj->user_feedback) ? lang_get('no_testcases_available') : $guiObj->user_feedback;
+	}
+
+	if(!$testcase_cfg->can_delete_executed && $hasExecutedTC)  
+	{
+		$guiObj->system_message = lang_get('system_blocks_delete_executed_tc');
 	}
 
 	$guiObj->objectID = $containerID;

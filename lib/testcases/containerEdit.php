@@ -10,6 +10,9 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ *	20110609 - franciscom - TICKET 4322: New Option to block delete of executed test cases.	
+ *							improvements on messages following Julian advice.
+ *
  *	20110402 - franciscom - BUGID 4322: New Option to block delete of executed test cases.	
  *  20101216 - asimon - refresh tree when creating new testsuite
  *	20101106 - franciscom - added check on $guiObj->testCaseSet and other variables that can be null
@@ -420,7 +423,6 @@ function init_args(&$treeMgr,$optionTransferCfg)
 
 
     // integer values
-    // BUGID 3406 - removed 'tplan_id' => 0
     $keys2loop=array('testsuiteID' => null, 'containerID' => null,
                      'objectID' => null, 'copyKeywords' => 0);
     foreach($keys2loop as $key => $value)
@@ -946,11 +948,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 	$glue = $testcase_cfg->glue_character;
 
 	$guiObj->system_message = '';
-	if(!$testcase_cfg->can_delete_executed)  
-	{
-		$guiObj->system_message = lang_get('system_blocks_delete_executed_tc');
-	}
-	
+
 	$containerID = isset($argsObj->testsuiteID) ? $argsObj->testsuiteID : $argsObj->objectID;
 	$containerName = $argsObj->tsuite_name;
 	if( is_null($containerName) )
@@ -963,6 +961,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 	$guiObj->exec_status_quo = null;
 	$tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
 
+	$hasExecutedTC = false;
 	if( !is_null($guiObj->testCaseSet) && count($guiObj->testCaseSet) > 0)
 	{
 		foreach($guiObj->testCaseSet as &$child)
@@ -977,6 +976,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 			$dummy = $tcaseMgr->get_exec_status($child['id'],null,$getOptions);	
 			$child['draw_check'] = $testcase_cfg->can_delete_executed || (!$dummy['executed']);
 
+			$hasExecutedTC = $hasExecutedTC || $dummy['executed'];
 			unset($dummy['executed']);
 			$guiObj->exec_status_quo[] = $dummy; 
 		} 
@@ -1016,6 +1016,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 			}
 		}	
 	}
+
  	// check if operation can be done
 	$guiObj->user_feedback = $feedback;
 	if(!is_null($guiObj->testCaseSet) && (sizeof($guiObj->testCaseSet) > 0) )
@@ -1029,6 +1030,12 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 	    $guiObj->op_ok = false;
 	    $guiObj->user_feedback = is_null($guiObj->user_feedback) ? lang_get('no_testcases_available') : $guiObj->user_feedback;
 	}
+
+	if(!$testcase_cfg->can_delete_executed && $hasExecutedTC)  
+	{
+		$guiObj->system_message = lang_get('system_blocks_delete_executed_tc');
+	}
+
 
 	$guiObj->objectID = $containerID;
 	$guiObj->object_name = $containerName;

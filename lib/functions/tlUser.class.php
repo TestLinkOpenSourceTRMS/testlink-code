@@ -1058,7 +1058,7 @@ class tlUser extends tlDBObject
 		do {
 			$t_cookie_string = $this->auth_generate_cookie_string();
 		}
-		while( !$this->auth_is_cookie_string_unique(&$db,$t_cookie_string ) );
+		while( !$this->auth_is_cookie_string_unique($db,$t_cookie_string ) );
 	
 		return $t_cookie_string;
 	}

@@ -800,7 +800,7 @@ function generateExecTree(&$db,&$menuUrl,$env,$filters,$options)
 	// ---------------------------------------------------------------------------------------------
 
 	// echo __LINE__;
-	$test_spec = getTestSpec4ExecTree(&$tplan_mgr->tree_manager,$env,$my['filters']);     
+	$test_spec = getTestSpec4ExecTree($tplan_mgr->tree_manager,$env,$my['filters']);     
 	// new dBug($my['filters']);
 	// new dBug($test_spec);
 	

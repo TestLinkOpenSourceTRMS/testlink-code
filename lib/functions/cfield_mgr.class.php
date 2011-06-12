@@ -11,7 +11,10 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110612 - franciscom - 	fixed issue when user create checkbox WITHOUT Possible values
+ *							string_custom_field_input()
  *
+ * 20110611 - franciscom - TICKET 4597: Is required field doesn't work properly for some custom field type
  * 20110213 - franciscom - BUGID 4222 - added sanitize() method
  * 20110123 - franciscom - BUGID 3338 - getXMLServerParams() -> renamed getXMLRPCServerParams
  * 20110120 - Julian - BUGID 4164 - lists and multiselection lists do not use more space than
@@ -525,6 +528,10 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     
     20080815: some changes are done to add more flexibility, and idea
               was compared with 1.2.0a1 Mantis implementation.
+
+         added code to manange user defined (and code developed) Custom Fields.
+         Important: solution is a mix of own ideas and Mantis 1.2.0a1 approach
+
     ====================================================================          
 
     function: string_custom_field_input
@@ -541,28 +548,36 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
     returns: html string
 
-    rev :
-         20110120 - Julian - BUGID 4164 - lists and multiselection lists do not use more space than
-                                          necessary anymore
-         20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
-         20080816 - franciscom
-         added code to manange user defined (and code developed) Custom Fields.
-         Important: solution is a mix of own ideas and Mantis 1.2.0a1 approach
+	**************************************************************************************************
+	Development Note
+	**************************************************************************************************
+	User can define a CHECKBOX and give NO possible values:
+	
+		name: CBNOV
+		label: ACCEPT TERMS
+		Possibile values: <leave it EMPTY>
+	
+	in this situation on GUI he/she will get: 	ACCEPT TERMS: []
+	
+	in this situation when user CHECKS we get EMPTY string as input AND IS OK and have to be WRITTEN to DB
+	TO AVOID THIS SITUATION we have made changes here to force lang_get('Yes') as value
 
-         20071006 - francisco.mancardi@gruppotesi.com
-         Added field_size argument
+	
+	If user define a check box this way
+		name: CBWATER
+		label: WATER TYPES
+		Possibile values: NORMAL | SPARKLING
+	
+	in this situation on GUI he/she will get:	WATER TYPES: [] NORMAL [] SPARKLING
+	**************************************************************************************************
 
-         20070104 - franciscom - added 'multiselection list'
-
+    @internal revisions
+    
   */
 	function string_custom_field_input($p_field_def,$name_suffix='',$field_size=0,$show_on_filters=false)
 	{
 
 		$str_out='';
-		// $t_id = $p_field_def['id'];
-		// $t_type = $p_field_def['type'];
-    	// $input_name = "{$this->name_prefix}{$t_type}_{$t_id}{$name_suffix}";
-
 	  	$t_custom_field_value = $p_field_def['default_value'];
 	  	if( isset($p_field_def['value']) )
 		{
@@ -573,8 +588,10 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   		$t_custom_field_value = htmlspecialchars( $t_custom_field_value );
     	$input_name = $this->buildHTMLInputName($p_field_def,$name_suffix);
     	$size = isset($this->sizes[$verbose_type]) ? intval($this->sizes[$verbose_type]) : 0;
-    	
     	$required = $p_field_def['required'] ? ' class="required" ' : ' class="" ';
+		$dateOpt = array('default_disable' => false, 'allow_blank' => true, 'required' => $required,
+						 'show_on_filters' => $show_on_filters);
+
     	if( $field_size > 0)
     	{
     	  $size=$field_size;
@@ -594,7 +611,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         	   
         	   $t_multiple=' ';
         	   
-        	   // 20100701 - asimon - removed single space in next line, 
+        	   // removed single space in next line, 
         	   // it was causing errors in field names on HTML because it somehow gets replaced
         	   // by an underscore somwhere and then the field name doesn't match anymore
         	   //$t_name_suffix=' ';
@@ -608,7 +625,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         	   $t_multiple=' multiple="multiple" ';
         	}
         	
-        	// BUGID 4164 lists and multiselection lists do not use more space than necessary
+        	// lists and multiselection lists do not use more space than necessary
         	// set the list size to the number of possible values of custom field
             // but respect the maximum window size
         	$t_list_size = $t_values_count;
@@ -635,18 +652,24 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		case 'checkbox':
 			$t_values = explode( '|', $p_field_def['possible_values']);
         	$t_checked_values = explode( '|', $t_custom_field_value );
+
 			foreach( $t_values as $t_option )
 			{
-				$str_out .= '<input type="checkbox" name="' . $input_name . '[]"' . " id=\"{$input_name}\"";
+				$str_out .= '<input ' . $required . ' type="checkbox" name="' . $input_name . '[]"' . 
+							" id=\"{$input_name}\"";
+
+				// need to manage situation where user has not assigned possible values
+				// will force lang_get('yes')
+				$t_gui_value = ($t_option == '') ? lang_get('Yes') : $t_option;
 				
-				// 20100218 - franciscom - added check $t_option != '' to make check box start NOT CHECKED
-				if( $t_option != '' && in_array($t_option, $t_checked_values) )
+				// added check $t_option != '' to make check box start NOT CHECKED
+				if( $t_gui_value != '' && in_array($t_gui_value, $t_checked_values) )
 				{
-					  $str_out .= ' value="' . $t_option . '" checked="checked">&nbsp;' . $t_option . '&nbsp;&nbsp;';
+					  $str_out .= ' value="' . $t_gui_value . '" checked="checked">&nbsp;' . $t_option . '&nbsp;&nbsp;';
 				}
 				else
 				{
-					  $str_out .= ' value="' . $t_option . '">&nbsp;' . $t_option . '&nbsp;&nbsp;';
+					  $str_out .= ' value="' . $t_gui_value . '">&nbsp;' . $t_option . '&nbsp;&nbsp;';
 				}
 				
 			}
@@ -699,8 +722,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		break;
 
 		case 'date':
-      		$str_out .= create_date_selection_set($input_name,config_get('date_format'),
-                                                  $t_custom_field_value, false, true, $show_on_filters) ;
+      		$str_out .= create_date_selection_set($input_name,config_get('date_format'),$t_custom_field_value,$dateOpt);
 		break;
       
       case 'datetime':
@@ -712,8 +734,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
       	// for date_format on strftime() has no problem
       	// on date() calls (that are used in create_date_selection_set() ).
       	$datetime_format=config_get('date_format') . " " .$cfg->custom_fields->time_format;
-      	$str_out .=create_date_selection_set($input_name,$datetime_format,
-      	                                     $t_custom_field_value, false, true, $show_on_filters) ;
+      	$str_out .= create_date_selection_set($input_name,$datetime_format,$t_custom_field_value,$dateOpt);
       break;
       
 
@@ -763,12 +784,32 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
                               when has been deselected by user.
 
 
-    rev:
-         20070525 - franciscom - added [hash_type], to reuse this method on
-                                 class testcase method copy_cfields_design_values()
-         20070501 - franciscom - limiting lenght of value before writting
-         20070105 - franciscom - added $cf_map
-         20070104 - franciscom - need to manage multiselection in a different way
+	**************************************************************************************************
+	Development Note
+	**************************************************************************************************
+	User can define a CHECKBOX and give NO possible values:
+	
+		name: CBNOV
+		label: ACCEPT TERMS
+		Possibile values: <leave it EMPTY>
+	
+	in this situation on GUI he/she will get: 	ACCEPT TERMS: []
+	
+	in this situation when user CHECKS we get EMPTY string as input AND IS OK and have to be WRITTEN to DB
+	TO AVOID THIS SITUATION we have made changes on string_custom_field_input()
+	
+	
+	If user define a check box this way
+		name: CBWATER
+		label: WATER TYPES
+		Possibile values: NORMAL | SPARKLING
+	
+	in this situation on GUI he/she will get:	WATER TYPES: [] NORMAL [] SPARKLING
+	**************************************************************************************************
+
+	
+    @internal revisions
+	20110612 - franciscom - che
   */
   function design_values_to_db($hash,$node_id,$cf_map=null,$hash_type=null)
   {
@@ -785,6 +826,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     {
       $cfield=$hash;
     }
+
     if( !is_null($cfield) )
     {
       foreach($cfield as $field_id => $type_and_value)
@@ -804,7 +846,6 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         }
 
         $safe_value=$this->db->prepare_string($value);
-		// BUGID 3989
         if($this->db->num_rows( $result ) > 0 && $value != "")
         {
 
@@ -813,10 +854,9 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     	         " WHERE field_id={$field_id} AND	node_id={$node_id}";
 	      $this->db->exec_query($sql);
         }
-	    // BUGID 3989
 	    else if ($this->db->num_rows( $result ) == 0 && $value != "")
         {
-          # Remark got from Mantis code:
+          	# Remark got from Mantis code:
   		    # Always store the value, even if it's the dafault value
   		    # This is important, as the definitions might change but the
   		    #  values stored with a bug must not change
@@ -824,8 +864,8 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   				   " ( field_id, node_id, value ) " .
   				   " VALUES	( {$field_id}, {$node_id}, '{$safe_value}' )";
 		    $this->db->exec_query($sql);
-  		  // BUGID 3989
-        } else if ($this->db->num_rows( $result ) > 0 && $value == "") {
+        } 
+        else if ($this->db->num_rows( $result ) > 0 && $value == "") {
   			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_design_values']} " .
   				   " WHERE field_id={$field_id} AND	node_id={$node_id}";
 		    $this->db->exec_query($sql);

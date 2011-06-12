@@ -2351,9 +2351,10 @@ function getXMLRPCServerParams($node_id)
                                 argument by caller.
 
     returns: html string
+
+    Development Note: based on Mantis 1.2.0a1 code
   
-    rev: 20080816 - franciscom
-         based on Mantis 1.2.0a1 code
+    @internal revisions 
          
   */
   function string_input_radio($p_field_def, $p_input_name, $p_custom_field_value) 
@@ -2361,9 +2362,13 @@ function getXMLRPCServerParams($node_id)
     $str_out='';
     $t_values = explode( '|', $p_field_def['possible_values']);                                        
     $t_checked_values = explode( '|', $p_custom_field_value );                                         
+    $required = $p_field_def['required'] ? ' class="required" ' : ' class="" ';
+
     foreach( $t_values as $t_option )                                                                  
     {                                                                                                  
-      $str_out .= '<input type="radio" name="' . $p_input_name . '[]"';                               
+      $str_out .= '<input type="radio" ' . $required . 'name="' . $p_input_name . '[]"' .
+      			  'id="' . $p_input_name . '[]"' ;
+      			                                  
       if( in_array( $t_option, $t_checked_values ) )                                                   
       {                                                                                                
     	  $str_out .= ' value="' . $t_option . '" checked="checked">&nbsp;' . $t_option . '&nbsp;&nbsp;';

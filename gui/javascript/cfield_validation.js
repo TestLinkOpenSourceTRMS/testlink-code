@@ -132,34 +132,32 @@ function validateCustomFields(cfields_inputs)
  */
 function checkRequiredCustomFields(cfields_inputs)
 {
-  
-  var CFIELD_TYPE_IDX=2;
-  var cfields_container='';
-  var custom_field_types = new Array();
-  var checkStatus = {status_ok: true, msg_id: null, cfield_label: null};
-  var whitespace = " \t\n\r";
-
-  // Developer notes:
-  // If new custom field types are added in PHP code, you need to add it also here
-  // Not all types declared here will be validated.
-  custom_field_types[0]='string';
-  custom_field_types[1]='numeric';
-  custom_field_types[2]='float';
-  custom_field_types[4]='email';
-  custom_field_types[5]='checkbox';
-  custom_field_types[6]='list';
-  custom_field_types[7]='multiselection list';
-  custom_field_types[8]='date';
-  custom_field_types[9]='radio';
-  custom_field_types[10]='datetime';
-  custom_field_types[20]='text area';
-  custom_field_types[500]='script';
-  custom_field_types[501]='server';
-
-  // alert('CF to check:' + cfields_inputs.length);
- 
+	var CFIELD_TYPE_IDX=2;
+	var cfields_container='';
+	var custom_field_types = new Array();
+	var checkStatus = {status_ok: true, msg_id: null, cfield_label: null};
+	var whitespace = " \t\n\r";
+ 	var lbl;
  	var pivot;
- 	var cachedCheckStatus = new Array();
+ 	var cachedStatus = new Array();
+
+	// Developer notes:
+	// If new custom field types are added in PHP code, you need to add it also here
+	// Not all types declared here will be validated.
+	custom_field_types[0]='string';
+	custom_field_types[1]='numeric';
+	custom_field_types[2]='float';
+	custom_field_types[4]='email';
+	custom_field_types[5]='checkbox';
+	custom_field_types[6]='list';
+	custom_field_types[7]='multiselection list';
+	custom_field_types[8]='date';
+	custom_field_types[9]='radio';
+	custom_field_types[10]='datetime';
+	custom_field_types[20]='text area';
+	custom_field_types[500]='script';
+	custom_field_types[501]='server';
+
  	if( cfields_inputs.length > 0 )
  	{
  		pivot = cfields_inputs[0].name;
@@ -175,66 +173,74 @@ function checkRequiredCustomFields(cfields_inputs)
 		var nameParts=elemName.split("_");
 		var cfield_type=custom_field_types[nameParts[CFIELD_TYPE_IDX]];
 		var cfield_value=cfields_inputs[idx].value;
-    
-    
-    
-    if(cfields_inputs[idx].className == 'required')
-    {
-	    //alert(cfield_type);		alert(cfields_inputs[idx].id);		alert(cfields_inputs[idx].name);
-		switch(cfield_type)
-		{
-		    case 'checkbox':
-		        checkStatus.status_ok=cfields_inputs[idx].checked;
-				if(cachedCheckStatus[elemName] == undefined)
-				{
-					cachedCheckStatus[elemName] = checkStatus.status_ok;
-				}
-		    break; 
 
-			default:
-      			checkStatus.status_ok = !(cfield_value.length == 0);
-      			if(checkStatus.status_ok)
-      			{
-      			    // check each character for whitespace now!
-      			    for (var z = 0; z < cfield_value.length; z++) 
-      			    {
-      			        checkStatus.status_ok = false;
-      			        // Check that current character isn't whitespace.
-      			        var c = cfield_value.charAt(z);
-      			        if (whitespace.indexOf(c) == -1) 
-      			        {
-      			            // if I found at leat a char not present into
-      			            // whitespace set this means it will not be a String
-      			            // full of whitespaces 
-      			            checkStatus.status_ok = true;
-      			            break;  
-      			        }
-      			    }
-      			}
-		    break; 
+	    if(cfields_inputs[idx].className == 'required')
+	    {
+			if(cachedStatus[elemName] == undefined)
+			{
+				cachedStatus[elemName] = {status_ok: false, msg_id: null, cfield_label: null};
+				cachedStatus[elemName].cfield_label = document.getElementById('label_'+elemID).firstChild.nodeValue;
+			}
+		
+			switch(cfield_type)
+			{
+			    case 'checkbox':
+					cachedStatus[elemName].status_ok |= cfields_inputs[idx].checked;
+			    break; 
 
-    
-        }  
-
-	  //if( pivot != current )
-	  //{
-	  	       
-		  if( !checkStatus.status_ok )
-	      {
-	         // get label
-	         var cfield_label = document.getElementById('label_'+elemID).firstChild.nodeValue;
-	         checkStatus.cfield_label = cfield_label;
+			    case 'radio':
+					cachedStatus[elemName].status_ok |= cfields_inputs[idx].checked;
+			    break; 
 	
-			// USELESS, created just to maintain compatibility with validateCustomFields()
-	         checkStatus.msg_id='required_cf';  
-	         
-	         break;  // exit from for loop
-	      }
-	  //}    
-    }
+				default:
+	      			checkStatus.status_ok = !(cfield_value.length == 0);
+					cachedStatus[elemName].status_ok |= checkStatus.status_ok;
+	      			if(checkStatus.status_ok)
+	      			{
+	      			    // check each character for whitespace now!
+	      			    for (var z = 0; z < cfield_value.length; z++) 
+	      			    {
+	      			        checkStatus.status_ok = false;
+	      			        // Check that current character isn't whitespace.
+	      			        var c = cfield_value.charAt(z);
+	      			        if (whitespace.indexOf(c) == -1) 
+	      			        {
+	      			            // if I found at leat a char not present into whitespace set this means 
+	      			            // it will not be a String full of whitespaces 
+	      			            checkStatus.status_ok = true;
+	      			            break;  
+	      			        }
+	      			    }
+	      			}
+			    break; 
+	        }  
+	
+	    }
+	    else
+	    {
+			cachedStatus[elemName] = {status_ok: true, msg_id: null, cfield_label: null};
+	    }
+
+		// ========================================================================================    
+		if(pivot != elemName)
+		{
+			  if( !cachedStatus[pivot].status_ok )
+		      {
+		         checkStatus.status_ok = cachedStatus[pivot].status_ok
+		         checkStatus.cfield_label = cachedStatus[pivot].cfield_label;
+	
+				 // USELESS, created just to maintain compatibility with validateCustomFields()
+		         checkStatus.msg_id='required_cf';  
+		         
+		         break;  // exit from for loop
+		      }
+		      pivot = elemName;
+		      
+		}
+		// ========================================================================================    
+    
 	} /* end for */
 	
-	// alert(checkStatus.cfield_label);
 	return checkStatus;
 }
 
@@ -276,17 +282,12 @@ function checkCustomFields(cfContainerOID,alertBoxTitle,reqCFWarningMsg)
  
 	var tdx;
 	var checkOp;
-	// alert('ON NEW');
-	// alert(tags4required.length);
 
 	// Required Checks	
 	for(tdx=0; tdx < tags4required.length; tdx++) 
 	{ 
 		cfieldSet = matrioska.getElementsByTagName(tags4required[tdx]);
-
-		// alert(cfieldSet.length);
    		checkOp = checkRequiredCustomFields(cfieldSet);
-   		// alert(checkOp.status_ok); alert(checkOp.cfield_label);
 		if(!checkOp.status_ok)
 	  	{
 	    	alert_message(alertBoxTitle,reqCFWarningMsg.replace(/%s/, checkOp.cfield_label));
@@ -300,10 +301,8 @@ function checkCustomFields(cfContainerOID,alertBoxTitle,reqCFWarningMsg)
 	for(tdx=0; tdx < tags4validate.length; tdx++) 
 	{ 
 		cfieldSet = matrioska.getElementsByTagName(tags4validate[tdx]);
-
-		// alert(cfieldSet.length);
    		checkOp = validateCustomFields(cfieldSet);
-   		// alert(checkOp.status_ok); alert(checkOp.cfield_label);
+
 		if(!checkOp.status_ok)
 	  	{
 	    	var msg = cfMessages[checkOp.msg_id];

@@ -5,6 +5,7 @@ create/edit Test Plan
 
 @filesource	planEdit.tpl
 @internal revisions
+20110612 - franciscom - TICKET 4597: Is required field doesn't work properly for some custom field type
 *}
 
 {lang_get var="labels"
@@ -23,46 +24,17 @@ var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
 
 function validateForm(f)
 {
-	var cf_designTime = document.getElementById('custom_field_container');
   if (isWhitespace(f.testplan_name.value))
   {
       alert_message(alert_box_title,warning_empty_tp_name);
       selectField(f, 'testplan_name');
       return false;
   }
-  
-  /* Validation of a limited type of custom fields */
-	if (cf_designTime)
- 	{
- 		var cfields_container = cf_designTime.getElementsByTagName('input');
- 		
-    /* BUGID 4088: Required parameter for custom fields */
- 	 	var checkRequiredCF = checkRequiredCustomFields(cfields_container);
-		if(!checkRequiredCF.status_ok)
-	  {
-	    alert_message(alert_box_title,warning_required_cf.replace(/%s/, checkRequiredCF.cfield_label));
-	    return false;
-		}
- 		
- 		var cfieldsChecks = validateCustomFields(cfields_container);
-		if(!cfieldsChecks.status_ok)
-	  {
-	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	      return false;
-		}
-  
-    /* Text area needs a special access */
- 		cfields_container = cf_designTime.getElementsByTagName('textarea');
- 		cfieldsChecks = validateCustomFields(cfields_container);
-		if(!cfieldsChecks.status_ok)
-	  {
-	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	      return false;
-		}
-	}
- 
+
+  if(!checkCustomFields('custom_field_container',alert_box_title,warning_required_cf))
+  {
+	return false;
+  }
   
   return true;
 }

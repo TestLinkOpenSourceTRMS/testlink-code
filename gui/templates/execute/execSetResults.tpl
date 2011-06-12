@@ -4,7 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - show tests to add results
 
 @internal revisions
-20101226 - franciscom - BUGID 4088: Required parameter for custom fields
+20110612 - franciscom - TICKET 4597: Is required field doesn't work properly for some custom field type
 *}
 {$attachment_model = $cfg->exec_cfg->att_model}
 {$title_sep = $smarty.const.TITLE_SEP}
@@ -115,23 +115,10 @@ function validateForm(f)
 
   if( document.getElementById(access_key) != null )
   {    
- 	    cfields_inputs = document.getElementById(access_key).getElementsByTagName('input');
-   
-       /* BUGID 4088: Required parameter for custom fields */
- 	 	  var checkRequiredCF = checkRequiredCustomFields(cfields_inputs);
-		  if(!checkRequiredCF.status_ok)
-	    {
-	      alert_message(alert_box_title,warning_required_cf.replace(/%s/, checkRequiredCF.cfield_label));
-	      return false;
-		  }
-   
-      cfValidityChecks=validateCustomFields(cfields_inputs);
-      if( !cfValidityChecks.status_ok )
-      {
-          var warning_msg=cfMessages[cfValidityChecks.msg_id];
-          alert_message(alert_box_title,warning_msg.replace(/%s/, cfValidityChecks.cfield_label));
-          return false;
-      }
+		if(!checkCustomFields(access_key,alert_box_title,warning_required_cf))
+		{
+			return false;
+		}
   }
   return true;
 }

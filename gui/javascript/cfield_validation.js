@@ -14,12 +14,8 @@ IMPORTANT
 Global Dependencies:  cfChecks,cfMessages 
                       declared and initialized in inc_jsCfieldsValidation.tpl   
     
-rev:
-    20101226 - franciscom - BUGID 4088: Required parameter for custom fields
-                            checkRequiredCustomFields()
-    20090823 - franciscom - changed logic to for BUGID 2414
-    20090421 - franciscom - BUGID 2414 - check for text area character qty.
-    20090101 - franciscom - changes email_check regexp with one taken from EXT-JS Vtypes.js
+@internal revisions
+20110611 - franciscom - TICKET 4597: Is required field doesn't work properly for some custom field type
 */
 
 /*
@@ -67,7 +63,7 @@ function validateCustomFields(cfields_inputs)
 		var elemName = cfields_inputs[idx].name;		
 		var elemID = cfields_inputs[idx].id;		
 		
-    var nameParts=elemName.split("_");
+    	var nameParts=elemName.split("_");
 		var cfield_type=custom_field_types[nameParts[CFIELD_TYPE_IDX]];
 		var cfield_value=cfields_inputs[idx].value;
 		
@@ -95,12 +91,12 @@ function validateCustomFields(cfields_inputs)
 		    break; 
 		    
 		    case 'text area':
-		        // check qty of characters
+				// check qty of characters
 		        checkStatus.status_ok=true;
-            if( cfChecks.textarea_length > 0 )
-            {
-              checkStatus.status_ok=(cfield_value.length <= cfChecks.textarea_length );
-            }
+            	if( cfChecks.textarea_length > 0 )
+            	{
+              		checkStatus.status_ok=(cfield_value.length <= cfChecks.textarea_length );
+            	}
 		    break; 
 		    
 		    
@@ -141,7 +137,7 @@ function checkRequiredCustomFields(cfields_inputs)
   var cfields_container='';
   var custom_field_types = new Array();
   var checkStatus = {status_ok: true, msg_id: null, cfield_label: null};
-	var whitespace = " \t\n\r";
+  var whitespace = " \t\n\r";
 
   // Developer notes:
   // If new custom field types are added in PHP code, you need to add it also here
@@ -156,54 +152,166 @@ function checkRequiredCustomFields(cfields_inputs)
   custom_field_types[8]='date';
   custom_field_types[9]='radio';
   custom_field_types[10]='datetime';
-	custom_field_types[20]='text area';
-	custom_field_types[500]='script';
-	custom_field_types[501]='server';
+  custom_field_types[20]='text area';
+  custom_field_types[500]='script';
+  custom_field_types[501]='server';
 
+  // alert('CF to check:' + cfields_inputs.length);
  
+ 	var pivot;
+ 	var cachedCheckStatus = new Array();
+ 	if( cfields_inputs.length > 0 )
+ 	{
+ 		pivot = cfields_inputs[0].name;
+ 	}
+ 	
 	for(var idx = 0; idx < cfields_inputs.length; idx++)
 	{
-	  // Important:
-	  // elemName format for custom fields -> custom_field_<cfield_type>_<cfield_id>[_<testcase_id>]
+		// Important:
+		// elemName format for custom fields -> custom_field_<cfield_type>_<cfield_id>[_<testcase_id>]
 		var elemName = cfields_inputs[idx].name;		
 		var elemID = cfields_inputs[idx].id;		
 		
-    var nameParts=elemName.split("_");
+		var nameParts=elemName.split("_");
 		var cfield_type=custom_field_types[nameParts[CFIELD_TYPE_IDX]];
 		var cfield_value=cfields_inputs[idx].value;
     
+    
+    
     if(cfields_inputs[idx].className == 'required')
     {
-      checkStatus.status_ok = !(cfield_value.length == 0);
-      if(checkStatus.status_ok)
-      {
-          // check each character for whitespace now!
-          for (var z = 0; z < cfield_value.length; z++) 
-          {
-              checkStatus.status_ok = false;
-              // Check that current character isn't whitespace.
-              var c = cfield_value.charAt(z);
-              if (whitespace.indexOf(c) == -1) 
-              {
-                  // if I found at leat a char not present into
-                  // whitespace set this means it will not be a String
-                  // full of whitespaces 
-                  checkStatus.status_ok = true;
-                  break;  
-              }
-          }
-      }
-       
+	    //alert(cfield_type);		alert(cfields_inputs[idx].id);		alert(cfields_inputs[idx].name);
+		switch(cfield_type)
+		{
+		    case 'checkbox':
+		        checkStatus.status_ok=cfields_inputs[idx].checked;
+				if(cachedCheckStatus[elemName] == undefined)
+				{
+					cachedCheckStatus[elemName] = checkStatus.status_ok;
+				}
+		    break; 
+
+			default:
+      			checkStatus.status_ok = !(cfield_value.length == 0);
+      			if(checkStatus.status_ok)
+      			{
+      			    // check each character for whitespace now!
+      			    for (var z = 0; z < cfield_value.length; z++) 
+      			    {
+      			        checkStatus.status_ok = false;
+      			        // Check that current character isn't whitespace.
+      			        var c = cfield_value.charAt(z);
+      			        if (whitespace.indexOf(c) == -1) 
+      			        {
+      			            // if I found at leat a char not present into
+      			            // whitespace set this means it will not be a String
+      			            // full of whitespaces 
+      			            checkStatus.status_ok = true;
+      			            break;  
+      			        }
+      			    }
+      			}
+		    break; 
+
+    
+        }  
+
+	  //if( pivot != current )
+	  //{
+	  	       
 		  if( !checkStatus.status_ok )
-      {
-         // get label
-         var cfield_label = document.getElementById('label_'+elemID).firstChild.nodeValue;
-         checkStatus.msg_id='required_cf';  // USELESS
-         checkStatus.cfield_label = cfield_label;
-         break;  // exit from for loop
-      }
+	      {
+	         // get label
+	         var cfield_label = document.getElementById('label_'+elemID).firstChild.nodeValue;
+	         checkStatus.cfield_label = cfield_label;
+	
+			// USELESS, created just to maintain compatibility with validateCustomFields()
+	         checkStatus.msg_id='required_cf';  
+	         
+	         break;  // exit from for loop
+	      }
+	  //}    
     }
 	} /* end for */
 	
+	// alert(checkStatus.cfield_label);
 	return checkStatus;
+}
+
+
+/**
+  function: checkCustomFields
+  			all html elements INSIDE container OID provided (normally will be a DIV ID) with one of
+  			following characteristics
+  			
+  			is an input OR is a textarea OR is a select
+  			
+  			will be considered Custom Fields.
+
+  			Then for each custom field, do check (get class name) to understand if is a REQUIRED field.
+            IMPORTANT NOTICE: At first check failure, processing is aborted
+
+			If REQUIRED CHECK is passed FOR ALL custom fields, then a new loop is done to do this time
+			validation on Custom Field value.
+			Again -> IMPORTANT NOTICE: At first check failure, processing is aborted
+
+
+  ******************************************************************************
+  Global Dependencies:  cfChecks,cfMessages 
+                        declared and initialized in inc_jsCfieldsValidation.tpl   
+  ******************************************************************************
+ 
+  returns: object -> obj.status_ok: true if all check passed
+                     obj.msg_id: not used, maintained for compatobility with validateCustomFields()
+                                 
+                     obj.cfield_label: label of offending custom field, used on user's feedback
+                     
+ */
+function checkCustomFields(cfContainerOID,alertBoxTitle,reqCFWarningMsg)
+{
+ 	var tags4required = new Array("input","textarea","select");
+ 	var tags4validate = new Array("input","textarea");
+	var matrioska = document.getElementById(cfContainerOID);
+	var cfieldSet;
+ 
+	var tdx;
+	var checkOp;
+	// alert('ON NEW');
+	// alert(tags4required.length);
+
+	// Required Checks	
+	for(tdx=0; tdx < tags4required.length; tdx++) 
+	{ 
+		cfieldSet = matrioska.getElementsByTagName(tags4required[tdx]);
+
+		// alert(cfieldSet.length);
+   		checkOp = checkRequiredCustomFields(cfieldSet);
+   		// alert(checkOp.status_ok); alert(checkOp.cfield_label);
+		if(!checkOp.status_ok)
+	  	{
+	    	alert_message(alertBoxTitle,reqCFWarningMsg.replace(/%s/, checkOp.cfield_label));
+	    	return false;
+		}
+	}
+
+	// ----------------------------------------------------------------------------------------
+	// Checks on validity (example email value, integer,etc) custom field values, 
+	//
+	for(tdx=0; tdx < tags4validate.length; tdx++) 
+	{ 
+		cfieldSet = matrioska.getElementsByTagName(tags4validate[tdx]);
+
+		// alert(cfieldSet.length);
+   		checkOp = validateCustomFields(cfieldSet);
+   		// alert(checkOp.status_ok); alert(checkOp.cfield_label);
+		if(!checkOp.status_ok)
+	  	{
+	    	var msg = cfMessages[checkOp.msg_id];
+	    	alert_message(alertBoxTitle,msg.replace(/%s/, checkOp.cfield_label));
+	    	return false;
+		}
+	}
+	// ----------------------------------------------------------------------------------------
+	
+	return true;
 }

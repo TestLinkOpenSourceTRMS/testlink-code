@@ -3,7 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource tcEdit.tpl
 Purpose: smarty template - edit test specification: test case
 
-@internal Revisions:
+@internal revisions
 
 20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
 20110111 - Julian - Improved modified warning message when navigating away without saving
@@ -51,40 +51,12 @@ function validateForm(the_form)
 		selectField(the_form,'testcase_name');
 		return false;
 	}
-	var cf_designTime = document.getElementById('cfields_design_time');
 	
-	
-	if (cf_designTime)
- 	{
- 		var cfields_container = cf_designTime.getElementsByTagName('input');
-	  
-	  var checkRequiredCF = checkRequiredCustomFields(cfields_container);
-	  if(!checkRequiredCF.status_ok)
-	  {
-	      alert_message(alert_box_title,warning_required_cf.replace(/%s/, checkRequiredCF.cfield_label));
-	      return false;
-	  }
-
-
-
- 		var cfieldsChecks = validateCustomFields(cfields_container);
-		if(!cfieldsChecks.status_ok)
-	  	{
-	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	      	return false;
-		}
-
-        // 20090421 - franciscom - BUGID 
- 		cfields_container = cf_designTime.getElementsByTagName('textarea');
- 		cfieldsChecks = validateCustomFields(cfields_container);
-		if(!cfieldsChecks.status_ok)
-	  	{
-	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	      	return false;
-		}
+	if(!checkCustomFields('cfields_design_time',alert_box_title,warning_required_cf))
+	{
+		return false;
 	}
+
 	return Ext.ux.requireSessionAndSubmit(the_form);
 }
 </script>

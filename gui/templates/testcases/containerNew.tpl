@@ -3,12 +3,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @filesource	containerNew.tpl
 Purpose: smarty template - create containers
-
+20110612 - franciscom - TICKET 4597: Is required field doesn't work properly for some custom field type
 20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
 20110110 - Julian - BUGID 4155: Warning message when navigating away from changed test
                                 suite without saving
                   - added cancel button on top / create,cancel button on bottom
-20101226 - franciscom - BUGID 4088: Required parameter for custom fields
 *}
 {lang_get var="labels"
           s="warning_empty_testsuite_name,title_create,tc_keywords,warning_required_cf,
@@ -42,38 +41,11 @@ function validateForm(f)
       selectField(f, 'container_name');
       return false;
   }
-  
-  /* Validation of a limited type of custom fields */
-  var cf_designTime = document.getElementById('cfields_design_time');
-	if (cf_designTime)
- 	{
- 		var cfields_container = cf_designTime.getElementsByTagName('input');
- 		var checkRequiredCF = checkRequiredCustomFields(cfields_container);
-		if(!checkRequiredCF.status_ok)
-	  {
-	      alert_message(alert_box_title,warning_required_cf.replace(/%s/, checkRequiredCF.cfield_label));
-	      return false;
-		}
 
- 		var cfieldsChecks = validateCustomFields(cfields_container);
-		if(!cfieldsChecks.status_ok)
-	  	{
-	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	      	return false;
-		}
-
- 		cfields_container = cf_designTime.getElementsByTagName('textarea');
- 		cfieldsChecks = validateCustomFields(cfields_container);
-		if(!cfieldsChecks.status_ok)
-	  	{
-	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	      	return false;
-		}
-	}
-  
-  
+  if(!checkCustomFields('cfields_design_time',alert_box_title,warning_required_cf))
+  {
+  	return false;
+  }
   
   return true;
 }

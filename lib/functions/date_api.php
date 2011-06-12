@@ -5,28 +5,16 @@
  * 
  * Date API
  *
+ * @filesource	date_api.php
  * @package 	TestLink
  * @author 		franciscom; Piece copied form Mantis and adapted to TestLink needs
  * @copyright 	2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: date_api.php,v 1.11 2010/10/26 13:57:45 mx-julian Exp $
  * @link 		http://www.teamst.org/
  *
- * @internal Revisions:
- *  
- *  20101026 - asimon - clear hour,minute,second for datetime custom field with quick date delete button
- *  20101026 - Julian - no validation for date and datetime custom field
- *                      -> no manual input - input only via datepicker
- *  20101026 - asimon - BUGID 3930: changing date format according to given locale
- *  20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
- *	20100405 - franciscom - fixed problems found while trying to solve BUGID 3295
- *							some logic on create_range_option_list() was not clear
- *							and may be has never worked ok !!!.
- *							added BLANK option also for time.
- *
- *	20080816 - franciscom
- *	added code to manage datetime Custom Fields (Mantis contribution on 2005)
- *       
+ * @internal revisions
+ * 20110611 - franciscom - 	create_date_selection_set() interface changes
+ *							commented / deprecated functions removed       
  */
  
 /**
@@ -93,59 +81,24 @@ function create_year_option_list( $p_year = 0 )
 	return $year_option;
 }
 
-
-/* deprecated as calender is now used to select date on create_date_selection_set
-
-function create_year_range_option_list( $p_year = 0, $p_start = 0, $p_end = 0) 
-{
-	$year_option='';
-	
-	$t_current = date( "Y" ) ;
-	$t_forward_years = 2; // config_get( 'forward_year_count' ) ;
-	
-	$t_start_year = $p_start ;
-	if ($t_start_year == 0) {
-		$t_start_year = $t_current ;
-	}
-	if ( ( $p_year < $t_start_year ) && ( $p_year != 0 ) ) {
-		$t_start_year = $p_year ;
-	}
-	
-	$t_end_year = $p_end ;
-	if ($t_end_year == 0) {
-		$t_end_year = $t_current + $t_forward_years ;
-	}
-	if ($p_year > $t_end_year) {
-		$t_end_year = $p_year + $t_forward_years ;
-	}
-	
-	for ($i=$t_start_year; $i <= $t_end_year; $i++) {
-		if ($i == $p_year) {
-			$year_option .= "<option value=\"$i\" selected=\"selected\"> $i </option>" ;
-		} else {
-			$year_option .= "<option value=\"$i\"> $i </option>" ;
-		}
-	}
-	return $year_option;
-}
-*/
-
-
 // Added contribution (done on mantis) to manage datetime
 /** used in cfield_mgr.class.php only 
-20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface*/
-function create_date_selection_set( $p_name, $p_format, $p_date=0, 
-                                    $p_default_disable=false, $p_allow_blank=false, 
-                                    $show_on_filters=false)
+20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
+*/
+function create_date_selection_set( $p_name, $p_format, $p_date=0, $options=null)
 {
-	// BUGID 3930
-	global $g_locales_date_format;
+	$locales_date_format = config_get('locales_date_format');
+
+	$my['options'] = array('default_disable' =>false, 'allow_blank' => false, 
+						   'show_on_filters' => false, 'required' => false);
+	$my['options'] = array_merge($my['options'], (array)$options);
+	
 	$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
-	$date_format = $g_locales_date_format[$locale];
-	$date_format_without_percent = str_replace('%', '', $g_locales_date_format[$locale]);
+	$date_format = $locales_date_format[$locale];
+	$date_format_without_percent = str_replace('%', '', $locales_date_format[$locale]);
 	
 	// if calender shall be shown on filter position has to be fixed to fully display
-	$calender_div_position = ($show_on_filters) ? "fixed" : "absolute";
+	$calender_div_position = ($my['options']['show_on_filters']) ? "fixed" : "absolute";
 	
 	$str_out='';
 	$t_chars = preg_split('//', $p_format, -1, PREG_SPLIT_NO_EMPTY) ;
@@ -158,14 +111,12 @@ function create_date_selection_set( $p_name, $p_format, $p_date=0,
 		// $t_date = array( 0, 0, 0, 0, 0, 0 );
 		$t_date = array(-1, -1, -1, -1, -1, -1);
 	}
-	//$t_date = $p_date;
-	$t_disable = '' ;
-	if ( $p_default_disable == true ) {
-		$t_disable = 'disabled' ;
-	}
+	$t_disable = $my['options']['default_disable'] ? 'disabled' : '' ;
+	
 	$t_blank_line_date = '' ;
 	$t_blank_line_time = '' ;
-	if ( $p_allow_blank == true ) {
+	if($my['options']['allow_blank']) 
+	{
 		$t_blank_line_date = "<option value=\"0\"></option>" ;
 		$t_blank_line_time = "<option value=\"-1\"></option>" ;
 	}
@@ -177,7 +128,7 @@ function create_date_selection_set( $p_name, $p_format, $p_date=0,
 	$formatted_date = $time != 0 ? strftime($date_format, $time) : '';
 	
 	$str_out .= '<input type="text" name="' . $p_name.'_input" size="10" id="' . $p_name.'_input" ' .
-                'value="' . $formatted_date . 
+				$my['options']['required'] . 'value="' . $formatted_date . 
                 '" onclick=showCal(\'' . $p_name . '\',\'' . $p_name.'_input\',\'' . $date_format_without_percent . '\'); READONLY/>' .
                 '<img title="' . lang_get('show_calender') . '" src="' . TL_THEME_IMG_DIR . '/calendar.gif" ' .
                 'onclick=showCal(\'' . $p_name . '\',\'' . $p_name.'_input\',\'' . $date_format_without_percent . '\'); > ' .
@@ -188,52 +139,28 @@ function create_date_selection_set( $p_name, $p_format, $p_date=0,
 	            'var xs = document.getElementById(\'' . $p_name . '_second\'); if(xs!=null) xs.selectedIndex=-1;" > ' .
                 '<div id="' . $p_name . '" style="position:' . $calender_div_position . ';z-index:1;"></div>';
 	
-	foreach( $t_chars as $t_char ) {
-
-		/* not needed anymore - calender does this
-
-		if (strcmp( $t_char, "M") == 0) {
-			$str_out .= "<select name=\"" . $p_name . "_month\" $t_disable>" ;
-			$str_out .=  $t_blank_line_date ;
-			$str_out .= create_month_option_list( $t_date[1] ) ;
-			$str_out .= "</select>\n" ;
-		}
-		if (strcmp( $t_char, "m") == 0) {
-			$str_out .= "<select  name=\"" . $p_name . "_month\" $t_disable>" ;
-			$str_out .= $t_blank_line_date ;
-			$str_out .= create_numeric_month_option_list( $t_date[1] ) ;
-			$str_out .= "</select>\n" ;
-		}
-		if (strcasecmp( $t_char, "D") == 0) {
-			$str_out .= "<select  name=\"" . $p_name . "_day\" $t_disable>" ;
-			$str_out .= $t_blank_line_date ;
-			$str_out .= create_day_option_list( $t_date[2] ) ;
-			$str_out .= "</select>\n" ;
-		}
-		if (strcasecmp( $t_char, "Y") == 0) {
-			$str_out .= "<select  name=\"" . $p_name . "_year\" $t_disable>" ;
-			$str_out .= $t_blank_line_date ;
-			$str_out .= create_year_range_option_list( $t_date[0], $p_year_start, $p_year_end ) ;
-			$str_out .= "</select>\n" ;
-		}
-		*/
-		
+	foreach( $t_chars as $t_char ) 
+	{
 		// -----------------------------------------------------------------
-		if (strcasecmp( $t_char, "H") == 0) {
-			$str_out .= "<select name=\"" . $p_name . "_hour\" id=\"" . $p_name . "_hour\" $t_disable>" ;
-			$str_out .= $t_blank_line_time ;
+		$common = $my['options']['required'] . " $t_disable>" ;
+		if (strcasecmp( $t_char, "H") == 0) 
+		{
+			$mask = '<select name="%s_hour" id="%s_hour" ';    
+			$str_out .= sprintf($mask,$p_name,$p_name) . $common . $t_blank_line_time ;
 			$str_out .= create_range_option_list($t_date[3], 0, 23); 
 			$str_out .= "</select>\n" ;
 		}
-		if (strcasecmp( $t_char, "i") == 0) {
-			$str_out .= "<select name=\"" . $p_name . "_minute\" id=\"" . $p_name . "_minute\" $t_disable>" ;
-			$str_out .= $t_blank_line_time ;
+		if (strcasecmp( $t_char, "i") == 0) 
+		{
+			$mask = '<select name="%s_minute" id="%s_minute" ';    
+			$str_out .= sprintf($mask,$p_name,$p_name) . $common . $t_blank_line_time ;
 			$str_out .= create_range_option_list($t_date[4], 0, 59); 
 			$str_out .= "</select>\n" ;
 		}
-		if (strcasecmp( $t_char, "s") == 0) {
-			$str_out .= "<select name=\"" . $p_name . "_second\" id=\"" . $p_name . "_second\" $t_disable>" ;
-			$str_out .= $t_blank_line_time ;
+		if (strcasecmp( $t_char, "s") == 0) 
+		{
+			$mask = '<select name="%s_second" id="%s_second" ';    
+			$str_out .= sprintf($mask,$p_name,$p_name) . $common . $t_blank_line_time ;
 			$str_out .= create_range_option_list($t_date[5], 0, 59); 
 			$str_out .= "</select>\n" ;
 		}
@@ -253,7 +180,9 @@ function create_range_option_list($p_value, $p_min, $p_max )
 	{
 		$selected='';
 		$selected = ($idx == $p_value) ? ' selected="selected" ' :'';
-		$option_list .="<option value=\"$idx\" {$selected}> $idx </option>";
+
+		$num = ($idx < 10 ? '0' : '' ) . $idx; 
+		$option_list .="<option value=\"$idx\" {$selected}> $num </option>";
 	}
 	return $option_list;
 }

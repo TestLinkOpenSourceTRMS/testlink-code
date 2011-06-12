@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	tcNew.tpl
-Purpose: smarty template - create new testcase
+create new testcase
 
+20110612 - franciscom - TICKET 4597: Is required field doesn't work properly for some custom field type
 20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
 20110111 - Julian - Improved modified warning message when navigating away without saving
 20110109 - franciscom - BUGID 3952 - stay here like Mantis does
@@ -40,8 +41,6 @@ var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
 
 function validateForm(f)
 {
-  // get the div that contains the custom fields, accession by id
- 	var cf_designTime = document.getElementById('cfields_design_time');
   if (isWhitespace(f.testcase_name.value)) 
   {
       alert_message(alert_box_title,warning_empty_testcase_name);
@@ -49,36 +48,10 @@ function validateForm(f)
       return false;
   }
   
-  /* BUGID 3874 - custom fields type validation */
-  /* Validation of a limited type of custom fields */
-	if (cf_designTime)
- 	{
- 		var cfields_container = cf_designTime.getElementsByTagName('input');
- 		var checkRequiredCF = checkRequiredCustomFields(cfields_container);
-
-		if(!checkRequiredCF.status_ok)
-	  {
-	      alert_message(alert_box_title,warning_required_cf.replace(/%s/, checkRequiredCF.cfield_label));
-	      return false;
-		}
-
- 		var cfieldsChecks = validateCustomFields(cfields_container);
-		if(!cfieldsChecks.status_ok)
-	  {
-	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	      return false;
-		}
-
- 		cfields_container = cf_designTime.getElementsByTagName('textarea');
- 		cfieldsChecks = validateCustomFields(cfields_container);
-		if(!cfieldsChecks.status_ok)
-	  {
-	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	      return false;
-		}
-	}
+  if(!checkCustomFields('cfields_design_time',alert_box_title,warning_required_cf))
+  {
+  	return false;
+  }
 
   return true;
 }

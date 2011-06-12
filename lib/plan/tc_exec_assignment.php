@@ -252,8 +252,8 @@ function init_args(&$dbHandler)
     
 	
 	
-	new dBug($_REQUEST);
-	die();
+//	new dBug($_REQUEST);
+//	die();
 	
 	// BUGID 3516
 	// For more information about the data accessed in session here, see the comment

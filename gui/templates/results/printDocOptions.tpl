@@ -49,6 +49,7 @@ rev:
 		treeCfg.root_href = '{$gui->ajaxTree->root_node->href}';
 		treeCfg.enableDD = '{$gui->ajaxTree->dragDrop->enabled}';
 		treeCfg.dragDropBackEndUrl = '{$gui->ajaxTree->dragDrop->BackEndUrl}';
+		treeCfg.cookiePrefix = '{$gui->ajaxTree->cookiePrefix}';
     </script>
     <script type="text/javascript" src='gui/javascript/treebyloader.js'></script>
 {/if} 

@@ -104,7 +104,10 @@ switch($args->doc_type)
       	$gui->ajaxTree->root_node = $treeContents->rootnode;
         $gui->ajaxTree->children = $treeContents->menustring;
         $gui->ajaxTree->loadFromChildren = true;
-        $gui->ajaxTree->cookiePrefix .= $gui->ajaxTree->root_node->id . "_" ;
+        // BUGID 4613 - improved cookie prefix for test plan report and test report
+        $report = $args->doc_type == "testplan" ? "test_plan_report" : "test_report";
+        $gui->ajaxTree->cookiePrefix .= "{$report}_tplan_id_{$args->tplan_id}_";
+        
       	break;
 
     default:
@@ -190,8 +193,8 @@ function initializeGui(&$db,$args)
     $gui->ajaxTree->dragDrop->BackEndUrl = null;
     $gui->ajaxTree->children = '';
      
-    // Prefix for cookie used to save tree state
-    $gui->ajaxTree->cookiePrefix = 'print' . str_replace(' ', '_', $args->doc_type) . '_';
+    // BUGID 4613 - improved cookie prefix for test spec doc and req spec doc
+    $gui->ajaxTree->cookiePrefix = $args->doc_type . '_doc_';
     $gui->doc_type = $args->doc_type;
     
     switch($args->doc_type)
@@ -210,7 +213,7 @@ function initializeGui(&$db,$args)
 
             $req_qty = $tprojectMgr->count_all_requirements($args->tproject_id);
             $gui->ajaxTree->root_node->name = htmlspecialchars($args->tproject_name) . " ($req_qty)";
-            $gui->ajaxTree->cookiePrefix .= $gui->ajaxTree->root_node->id . "_" ;
+            $gui->ajaxTree->cookiePrefix .= "tproject_id_" . $gui->ajaxTree->root_node->id . "_" ;
 	        $gui->mainTitle = lang_get('requirement_specification_report');
     	break;
     	// end BUGID 3067
@@ -231,7 +234,7 @@ function initializeGui(&$db,$args)
 
             $tcase_qty = $tprojectMgr->count_testcases($args->tproject_id);
             $gui->ajaxTree->root_node->name = htmlspecialchars($args->tproject_name) . " ($tcase_qty)";
-            $gui->ajaxTree->cookiePrefix .= $gui->ajaxTree->root_node->id . "_" ;
+            $gui->ajaxTree->cookiePrefix .= "tproject_id_" . $gui->ajaxTree->root_node->id . "_" ;
 	        $gui->mainTitle = lang_get('testspecification_report');
 	    break;
 	    

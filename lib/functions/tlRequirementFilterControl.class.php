@@ -258,7 +258,8 @@ class tlRequirementFilterControl extends tlFilterControl {
 		$gui->ajaxTree->root_node = $root_node;
 		$gui->ajaxTree->children = $children;
 		$gui->ajaxTree->dragDrop = $drag_and_drop;
-		$gui->ajaxTree->cookiePrefix = 'requirement_spec' . $root_node->id . "_" ;
+		// BUGID 4613 - improved cookiePrefix for requirement specification tree
+		$gui->ajaxTree->cookiePrefix = 'req_specification_tproject_id_' . $root_node->id . "_" ;
 	} // end of method
 	
 	private function init_setting_refresh_tree_on_action() {

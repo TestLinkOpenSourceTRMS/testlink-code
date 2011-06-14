@@ -17,7 +17,7 @@ Revisions :
 	                    panel is now ext collapsible panel
 	20081223 - franciscom - advanced/simple filters
 	20080311 - franciscom - BUGID 1427
-* ---------------------------------------------------------------------- *}
+ ---------------------------------------------------------------------- *}
 
 {lang_get var="labels" 
           s='btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,title_navigator,
@@ -73,6 +73,7 @@ Revisions :
 	    // BUGID 3406
 	    treeCfg.root_href = '{$gui->ajaxTree->root_node->href}';
 	    treeCfg.children = {$gui->ajaxTree->children};
+	    treeCfg.cookiePrefix = "{$gui->ajaxTree->cookiePrefix}";
     </script>
     
     <script type="text/javascript" src='gui/javascript/execTree.js'>

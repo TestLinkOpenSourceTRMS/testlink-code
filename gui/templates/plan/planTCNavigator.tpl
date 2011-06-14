@@ -60,6 +60,7 @@ Ext.onReady(function() {
 	    // BUGID 3406
 	    treeCfg.root_href = '{$gui->ajaxTree->root_node->href}';
 	    treeCfg.children = {$gui->ajaxTree->children};
+	    treeCfg.cookiePrefix = "{$gui->ajaxTree->cookiePrefix}";
     </script>
     
     <script type="text/javascript" src='gui/javascript/execTree.js'>

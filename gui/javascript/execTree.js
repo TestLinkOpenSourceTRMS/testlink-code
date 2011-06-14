@@ -105,7 +105,8 @@ TreePanelState.prototype.restoreState = function(defaultPath)
         // activate all path strings from the state
         try 
         {
-            var path = this.state[i];
+        	// BUGID 4196 - tree not properly restored
+            var path = stateToRestore[i];
             this.mytree.expandPath(path);
         } 
         catch(e) 

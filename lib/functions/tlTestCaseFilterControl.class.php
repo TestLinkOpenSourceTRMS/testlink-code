@@ -834,7 +834,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 					                             'lib/ajax/dragdroptprojectnodes.php';
 					$drag_and_drop->useBeforeMoveNode = false;
 				}
-									
+				// BUGID 4613 - improved cookiePrefix - all trees in edit mode show test cases of
+				//              the whole test project -> store state for each feature and each project
+				$cookie_prefix = $this->args->feature . "_tproject_id_" . $this->args->testproject_id ."_";
+				
 				if ($this->do_filtering) {
 					$options = array('forPrinting' => NOT_FOR_PRINTING,
 					                 'hideTestCases' => SHOW_TESTCASES,
@@ -848,7 +851,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 					
 					$root_node = $tree_menu->rootnode;
 					$children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
-					$cookie_prefix = $this->args->feature;
 				} else {
 					$loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
 					          "root_node={$this->args->testproject_id}&" .
@@ -862,8 +864,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 					$root_node->id = $this->args->testproject_id;
 					$root_node->name = $this->args->testproject_name . " ($tcase_qty)";
 					$root_node->testlink_node_type='testproject';
-													
-					$cookie_prefix = 'tproject_' . $root_node->id . "_";
 				}
 			break;
 			

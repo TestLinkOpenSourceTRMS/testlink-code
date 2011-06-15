@@ -829,7 +829,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				$this->set_testcases_to_show($testcases_to_show);
 				$root_node = $tree_menu->rootnode;
 				$children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
-				$cookie_prefix = $this->args->feature;
+				// BUGID 4613 - improved cookiePrefix - all trees in plan mode show test cases
+				//              assigned to a specified test plan -> store state for each feature
+				//              and each project
+				$cookie_prefix = $this->args->feature . "_tplan_id_" . $this->args->testplan_id ."_";
 			break;
 			
 			case 'edit_mode':

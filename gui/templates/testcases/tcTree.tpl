@@ -63,6 +63,7 @@ rev:
         treeCfg.root_id={$gui->ajaxTree->root_node->id};
         treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
         treeCfg.children={$gui->ajaxTree->children};
+        treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
 	      // BUGID 0003664
 	      treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
         </script>

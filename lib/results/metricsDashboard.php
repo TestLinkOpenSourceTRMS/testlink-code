@@ -175,10 +175,16 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 		
 		$linked_tcversions[$tplan_id] = null;
 		$platformSet=$tplan_mgr->getPlatforms($tplan_id);
-		if( !($show_platforms = !is_null($platformSet)) )
+		$show_platforms_for_tplan = !is_null($platformSet);
+
+		if(!$show_platforms_for_tplan)
 		{
 			// Julian: replaced array(0=>'')
 			$platformSet=array(0=>array('id'=> 0));
+		} else {
+			// 20110615 - Julian - if at least 1 test plan of the test project uses platforms
+			//                     we need to display platform column on metrics dashboard
+			$show_platforms = true;
 		}
 
 		# initialize counters

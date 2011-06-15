@@ -69,6 +69,22 @@ foreach ($status_map as $status => $code) {
 $columns[] = array('title_key' => 'progress', 'width' => 30, 'type' => 'float',
                    'sortType' => 'asFloat', 'filter' => 'numeric');
 
+// get the progress of the whole build based on executions of single users
+$build_statistics = array();
+foreach ($matrix as $build_id => $build_execution_map) {
+	$build_statistics[$build_id]['total'] = 0;
+	$build_statistics[$build_id]['executed'] = 0;
+	foreach ($build_execution_map as $user_id => $statistics) {
+		// total assigned test cases
+		$build_statistics[$build_id]['total'] += $statistics['total'];
+		// total executed testcases
+		$executed = $statistics['total'] - $statistics['not_run']['count']; 
+		$build_statistics[$build_id]['executed'] += $executed;
+	}
+	// build progress
+	$build_statistics[$build_id]['progress'] = round($build_statistics[$build_id]['executed'] / $build_statistics[$build_id]['total'] * 100,2);
+}
+
 // build the content of the table
 $rows = array();
 
@@ -76,8 +92,9 @@ foreach ($matrix as $build_id => $build_execution_map) {
 	foreach ($build_execution_map as $user_id => $statistics) {
 		$current_row = array();
 		
-		// add build name to row
-		$current_row[] = $build_set[$build_id]['name'];
+		// add build name to row including Progress
+		$current_row[] = $build_set[$build_id]['name'] . " - " . lang_get('progress_absolute') . 
+		                 " {$build_statistics[$build_id]['progress']}%";
 		
 		// add username and link it to tcAssignedToUser.php
 		if ($user_id == TL_NO_USER) {

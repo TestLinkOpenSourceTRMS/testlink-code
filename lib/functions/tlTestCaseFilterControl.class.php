@@ -936,7 +936,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				
 				$root_node = $tree_menu->rootnode;
 				$children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
-				$cookie_prefix = 'exec_tplan_id_' . $this->args->testplan_id;
+				// BUGID 4613 - improved cookiePrefix - tree on test execution shows test cases
+				//              depending on test plan, platform and build. As test plan is
+				//              implcitily given with build -> store state for each platform-build
+				//              combination
+				$cookie_prefix = 'test_exec_build_id_' . $this->args->setting_build . '_';
+				if (isset($this->args->setting_platform)) {
+					$cookie_prefix .= 'platform_id_' . $this->args->setting_platform . '_';
+				}
 			break;
 		}
 		
@@ -1084,6 +1091,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		// BUGID 3726
 		$session_key = $testplan_id . '_stored_setting_platform';
 		$session_selection = isset($_SESSION[$session_key]) ? $_SESSION[$session_key] : null;
+		
+		// if no platform has been selected when entering the feature the first time set it
+		// according to preselected value on gui
+		$this->args->{$key} = $this->args->{$key} > 0 ? $this->args->{$key} : $session_selection;
 
 		if (!$this->settings[$key]['selected']) {
 			$this->settings[$key]['selected'] = $session_selection;
@@ -1095,6 +1106,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				   is_null($this->settings[$key]['selected'])) {
 					// platforms exist, but none has been selected yet, so select first one
 			$this->settings[$key]['selected'] =	key($this->settings[$key]['items']);
+			
 		}
 
 		$_SESSION[$session_key] = $this->settings[$key]['selected'];

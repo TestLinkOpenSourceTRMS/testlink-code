@@ -16,7 +16,7 @@ Revisions:
 	20080629 - franciscom - fixed missed variable bug
   20080622 - franciscom - ext js tree support
   20080429 - franciscom - keyword filter multiselect
-* ------------------------------------------------------------------------ *}
+ ------------------------------------------------------------------------ *}
 
 {lang_get var="labels" 
           s='keywords_filter_help,btn_apply_filter,execution_type,importance,
@@ -70,6 +70,7 @@ Revisions:
         treeCfg.root_id={$gui->ajaxTree->root_node->id};
         treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
         treeCfg.children={$gui->ajaxTree->children};
+        treeCfg.cookiePrefix = "{$gui->ajaxTree->cookiePrefix}";
         </script>
         <script type="text/javascript" src='gui/javascript/execTree.js'></script>
     {else}

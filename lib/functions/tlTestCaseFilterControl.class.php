@@ -871,8 +871,11 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			break;
 			
 			case 'plan_add_mode':
-				
-				$cookie_prefix = "planaddtc_{$this->args->testproject_id}_{$this->args->user_id}_";
+				// BUGID 4613 - improved cookiePrefix - tree in plan_add_mode is only used for
+				//              add/removed test cases features and shows all test cases defined
+				//              within test project, but as test cases are added to a specified
+				//              test plan -> store state for each test plan
+				$cookie_prefix = "add_remove_tc_tplan_id_{$this->args->testplan_id}_";
 				
 				if ($this->do_filtering) {
 					$options = array('forPrinting' => NOT_FOR_PRINTING,

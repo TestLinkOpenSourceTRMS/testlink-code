@@ -5,6 +5,7 @@ generate the list of TC that can be removed from a Test Plan
 
 @filesource	tc_exec_assignment.tpl
 @internal revisions
+20110618 - franciscom - TICKET 4624: bulk assignment KO if "Send mail notification to tester" is checked
 20110523 - Julian - Added linked test case version to test case link
 *}
 
@@ -39,7 +40,7 @@ function check_action_precondition(container_id,action)
 {$add_cb="achecked_tc"}
 
 <body class="fixedheader">
-<form id='tc_exec_assignment' name='tc_exec_assignment' method='post'>
+a<form id='tc_exec_assignment' name='tc_exec_assignment' method='post'>
 
   {* --------------------------------------------------------------------------------------------------------------- *}
   {* added z-index to avoid problems with scrolling when using EXT-JS *}
@@ -57,7 +58,8 @@ function check_action_precondition(container_id,action)
 			{else}
 			<input type="hidden" id="select_platform" value="0">
 			{/if}
-			<button onclick="cs_all_checkbox_in_div_with_platform('tc_exec_assignment', '{$add_cb}', 
+			{* TICKET 4624 *}
+			<button onclick="cs_all_checkbox_in_div_with_platform('tc_exec_assignment_cb', '{$add_cb}', 
 																  document.getElementById('select_platform').value); return false">{$labels.btn_do}</button>
 		</div>
 		<div>
@@ -65,9 +67,10 @@ function check_action_precondition(container_id,action)
 			<select name="bulk_tester_div"  id="bulk_tester_div">
 				{html_options options=$gui->testers selected=0}
 			</select>
+			{* TICKET 4624 *}
 			<input type='button' name='bulk_user_assignment' id='bulk_user_assignment'
 				onclick='if(check_action_precondition("tc_exec_assignment","default"))
-						        set_combo_if_checkbox("tc_exec_assignment","tester_for_tcid_",
+						        set_combo_if_checkbox("tc_exec_assignment_cb","tester_for_tcid_",
 						        					  document.getElementById("bulk_tester_div").value)'
 				value="{$labels.btn_do}" />
 		</div>
@@ -84,9 +87,9 @@ function check_action_precondition(container_id,action)
 	</div> <!-- header-wrap -->
 
   {if $gui->has_tc}
-   <div class="workBack">
-	  {assign var=table_counter value=0}
-	  {assign var=top_level value=$gui->items[0].level}
+   <div class="workBack" id="tc_exec_assignment_cb">  {* TICKET 4624 *}
+	  {$table_counter=0}
+	  {$top_level=$gui->items[0].level}
 	  {foreach from=$gui->items item=ts key=idx name="div_drawing"}
 	    {$ts_id=$ts.testsuite.id}
 	    {$div_id="div_$ts_id"}
@@ -197,9 +200,9 @@ function check_action_precondition(container_id,action)
       {/if} {* write buttons*}
 
       {if $gui->items_qty eq $smarty.foreach.div_drawing.iteration}
-          {assign var=next_level value=0}
+          {$next_level=0}
       {else}
-          {assign var=next_level value=$gui->items[$smarty.foreach.div_drawing.iteration].level}
+          {$next_level=$gui->items[$smarty.foreach.div_drawing.iteration].level}
       {/if}
       {if $ts.level gte $next_level}
           {$max_loop=$next_level}

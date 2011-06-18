@@ -1,23 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.35.2.1 2010/12/15 21:17:05 franciscom Exp $
+@filesource tc_exec_assignment.tpl
 generate the list of TC that can be removed from a Test Plan 
 
-rev :
-     20110523 - Julian - Added linked test case version to test case link
-     20101030 - amitkhullar - Adjusted the Checkbox column width
-     20100927 - franciscom - Added ext-js extension to transform tables in ext-js grid
-                             BUGID 3668: Test Case EXECUTION Assignment Page not displayed properly
-                             <div id="header-wrap" -> added height:110px;
-                             added z-index to avoid problems with scrolling when using EXT-JS and header-wrap
-     20100926 - franciscom - HTML improvements using <thead>,<tbody>
-     20100822 - franciscom - BUGID 3698
-     20100709 - asimon - BUGID 3406 - changed assignment logic to operate on build 
-                                      instead of testplan level
-     20100209 - franciscom - minor code layout refactoring
-     20100121 - eloff - BUGID 3078 - buttons always visible on top
-     20090215 - franciscom - BUGID 2114
-     20070120 - franciscom - BUGID 530
+@internal revisions
+20110618 - franciscom - TICKET 4624: bulk assignment KO if "Send mail notification to tester" is checked
+20110523 - Julian - Added linked test case version to test case link
 *}
 
 {lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
@@ -90,16 +78,18 @@ function check_action_precondition(container_id,action)
 			{else}
 			<input type="hidden" id="select_platform" value="0">
 			{/if}
-			<button onclick="cs_all_checkbox_in_div_with_platform('tc_exec_assignment', '{$add_cb}', Ext.get('select_platform').getValue()); return false">{$labels.btn_do}</button>
+			{* TICKET 4624 *}
+			<button onclick="cs_all_checkbox_in_div_with_platform('tc_exec_assignment_cb', '{$add_cb}', Ext.get('select_platform').getValue()); return false">{$labels.btn_do}</button>
 		</div>
 		<div>
 			{$labels.user_bulk_assignment}
 			<select name="bulk_tester_div"  id="bulk_tester_div">
 				{html_options options=$gui->testers selected=0}
 			</select>
+			{* TICKET 4624 *}
 			<input type='button' name='bulk_user_assignment' id='bulk_user_assignment'
 				onclick='if(check_action_precondition("tc_exec_assignment","default"))
-						        set_combo_if_checkbox("tc_exec_assignment","tester_for_tcid_",Ext.get("bulk_tester_div").getValue())'
+						        set_combo_if_checkbox("tc_exec_assignment_cb","tester_for_tcid_",Ext.get("bulk_tester_div").getValue())'
 				value="{$labels.btn_do}" />
 		</div>
 		<div>
@@ -115,7 +105,7 @@ function check_action_precondition(container_id,action)
 	</div> <!-- header-wrap -->
 
   {if $gui->has_tc}
-   <div class="workBack">
+   <div class="workBack" id="tc_exec_assignment_cb"> {* TICKET 4624 *}
 	  {assign var=table_counter value=0}
 	  {assign var=top_level value=$gui->items[0].level}
 	  {foreach from=$gui->items item=ts key=idx name="div_drawing"}

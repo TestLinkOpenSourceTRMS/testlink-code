@@ -40,7 +40,7 @@ function check_action_precondition(container_id,action)
 {$add_cb="achecked_tc"}
 
 <body class="fixedheader">
-a<form id='tc_exec_assignment' name='tc_exec_assignment' method='post'>
+<form id='tc_exec_assignment' name='tc_exec_assignment' method='post'>
 
   {* --------------------------------------------------------------------------------------------------------------- *}
   {* added z-index to avoid problems with scrolling when using EXT-JS *}

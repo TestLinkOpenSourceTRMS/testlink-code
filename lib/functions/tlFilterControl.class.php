@@ -19,6 +19,8 @@
  *
  * @internal Revisions:
  *
+ * 20110621 - asimon - changed access of field active_filters from private to protected because of some IDE warnings
+ *                     as well as some phpDoc comments
  * 20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
  * 20100808 - asimon - little changes for first implementation of requirement filtering
  * 20100803 - asimon - corrected error in parameter initializing in init_args()
@@ -96,9 +98,7 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	 * @var bool
 	 */
 	public $draw_export_testplan_button = false;  // BUGID 3270 - Export Test Plan in XML Format
-	
-	
-	
+		
 	/**
 	 * will hold the localized string options (any/none/somebody/...)
 	 * @var array
@@ -127,9 +127,9 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	/**
 	 * This array holds only the user selected values of active filters. It will be passed
 	 * to the underlying tree filter functions to set the values which are to be filtered.
-	 * @var unknown_type
+	 * @var array
 	 */
-	private $active_filters = array();
+	protected $active_filters = array();
 	
 	/**
 	 * will hold the configuration about settings (which ones are to be shown) and their values
@@ -252,6 +252,7 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	 * This function has to be implemented and extended also in extending classes to read specialized config
 	 * for either test cases or requirements.
 	 * Function has protected (in subclasses private) visibility because it will only be called by __construct().
+	 * @return bool
 	 */
 	protected function read_config() {
 		// opening and closing brackets

@@ -34,6 +34,8 @@
  *    --> assign requirements
  *
  * @internal Revisions:
+ * 20110621 - asimon - BUGID 4625: usage of wrong values in $this->args->xyz for cookiePrefix
+ *                                 instead of correct values in $filters->setting_xyz
  * 20110328 - franciscom - init_filter_custom_fields() fixed issue introduced du to trim() on arrays.
  * 20110113 - asimon - BUGID 4166 - List also test plans without builds for "plan_mode"
  * 20101110 - asimon - BUGID 3822: Keywords combobox is absent on the Filters pane of 'Add / Remove Test Cases'
@@ -359,7 +361,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	/**
 	 * Reads the configuration from the configuration file specific for test cases,
 	 * additionally to those parts of the config which were already loaded by parent class.
-	 *
+	 * @return bool
 	 */
 	protected function read_config() {
 
@@ -476,7 +478,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				}
 			break;
 		}
-	    
 	} // end of method
 
 	/**
@@ -772,15 +773,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * @param object $gui Reference to GUI object (data will be written to it)
 	 */
 	public function build_tree_menu(&$gui) {
-		
 		$tree_menu = null;
 		$filters = $this->get_active_filters();
-		$additional_info = null;
-		$options = null;
 		$loader = '';
 		$children = "[]";
 		$cookie_prefix = '';
-		
+
 		// by default, disable drag and drop, then later enable if needed
 		$drag_and_drop = new stdClass();
 		$drag_and_drop->enabled = false;
@@ -826,7 +824,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				// BUGID 4613 - improved cookiePrefix - all trees in plan mode show test cases
 				//              assigned to a specified test plan -> store state for each feature
 				//              and each project
-				$cookie_prefix = $this->args->feature . "_tplan_id_" . $this->args->testplan_id ."_";
+				// BUGID 4625 - usage of wrong values in $this->args->xyz for cookiePrefix
+				//              instead of correct values in $filters->setting_xyz
+				$cookie_prefix = $this->args->feature . "_tplan_id_" . $filters->setting_testplan ."_";
 			break;
 			
 			case 'edit_mode':
@@ -875,7 +875,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				//              add/removed test cases features and shows all test cases defined
 				//              within test project, but as test cases are added to a specified
 				//              test plan -> store state for each test plan
-				$cookie_prefix = "add_remove_tc_tplan_id_{$this->args->testplan_id}_";
+				// BUGID 4625 - usage of wrong values in $this->args->xyz for cookiePrefix
+				//              instead of correct values in $filters->setting_xyz
+				$cookie_prefix = "add_remove_tc_tplan_id_{$filters->setting_testplan}_";
 				
 				if ($this->do_filtering) {
 					$options = array('forPrinting' => NOT_FOR_PRINTING,
@@ -940,9 +942,11 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				//              depending on test plan, platform and build. As test plan is
 				//              implcitily given with build -> store state for each platform-build
 				//              combination
-				$cookie_prefix = 'test_exec_build_id_' . $this->args->setting_build . '_';
-				if (isset($this->args->setting_platform)) {
-					$cookie_prefix .= 'platform_id_' . $this->args->setting_platform . '_';
+				// BUGID 4625 - usage of wrong values in $this->args->xyz for cookiePrefix
+				//              instead of correct values in $filters->setting_xyz
+				$cookie_prefix = 'test_exec_build_id_' . $filters->setting_build . '_';
+				if (isset($filters->setting_platform)) {
+					$cookie_prefix .= 'platform_id_' . $filters->setting_platform . '_';
 				}
 			break;
 		}
@@ -1106,7 +1110,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				   is_null($this->settings[$key]['selected'])) {
 					// platforms exist, but none has been selected yet, so select first one
 			$this->settings[$key]['selected'] =	key($this->settings[$key]['items']);
-			
 		}
 
 		$_SESSION[$session_key] = $this->settings[$key]['selected'];

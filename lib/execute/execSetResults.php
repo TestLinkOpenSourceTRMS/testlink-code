@@ -6,6 +6,7 @@
  *
  * @internal revisions:
  *
+ *  20110622 - asimon - TICKET 4600: Blocked execution of testcases
  *  20110323 - Julian - BUGID 4324 - Encoding of Test Suite did not work properly
  *  20110322 - eloff - BUGID 3643
  *  20110308 - franciscom - remote execution
@@ -941,10 +942,11 @@ function initializeExecMode(&$db,$exec_cfg,$userObj,$tproject_id,$tplan_id)
   
   returns: 
   
-  rev: 20100121 - franciscom - platform refactoring
+  rev: 20110622 - asimon - TICKET 4600: Blocked execution of testcases
+       20100121 - franciscom - platform refactoring
 
 */
-function setTesterAssignment(&$db,$exec_info,&$tcase_mgr,$tplan_id,$platform_id)
+function setTesterAssignment(&$db,$exec_info,&$tcase_mgr,$tplan_id,$platform_id, $build_id)
 {     
 	foreach($exec_info as $version_id => $value)
 	{
@@ -952,7 +954,8 @@ function setTesterAssignment(&$db,$exec_info,&$tcase_mgr,$tplan_id,$platform_id)
 		$exec_info[$version_id]['assigned_user_id'] = 0;
 		
 		// map of map: main key version_id, secondary key: platform_id
-		$p3 = $tcase_mgr->get_version_exec_assignment($version_id,$tplan_id);
+		// TICKET 4600: Blocked execution of testcases
+		$p3 = $tcase_mgr->get_version_exec_assignment($version_id,$tplan_id, $build_id);
 		$assignedTesterId = intval($p3[$version_id][$platform_id]['user_id']);
 		
 		if($assignedTesterId)
@@ -1334,7 +1337,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
   
   returns: 
 
-  rev: 
+  rev: 20110622 - asimon - TICKET 4600: Blocked execution of testcases
 */
 function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tcaseMgr)
 {      
@@ -1345,8 +1348,9 @@ function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&
     
     if( !is_null($last_exec) )
     {
+	    // TICKET 4600: Blocked execution of testcases
         $last_exec=setTesterAssignment($dbHandler,$last_exec,$tcaseMgr,
-                                       $argsObj->tplan_id,$argsObj->platform_id);
+                                       $argsObj->tplan_id,$argsObj->platform_id, $argsObj->build_id);
         
         // Warning: setCanExecute() must be called AFTER setTesterAssignment()  
         $can_execute=$guiObj->grants->execute && ($guiObj->build_is_open);

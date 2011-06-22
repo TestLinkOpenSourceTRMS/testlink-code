@@ -10,6 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110622 - asimon - TICKET 4600: Blocked execution of testcases
  * 20110604 - franciscom - 	TICKET 4564: Test Case Export/import - new field STATUS is not managed
  *							exportTestCaseDataToXML()
  *
@@ -3321,13 +3322,14 @@ class testcase extends tlObjectWithAttachments
 	
 	
 	*/
-	function get_version_exec_assignment($tcversion_id,$tplan_id)
+	function get_version_exec_assignment($tcversion_id, $tplan_id, $build_id)
 	{
+		// 20110622 - asimon - TICKET 4600: Blocked execution of testcases
 		$sql =  "SELECT T.tcversion_id AS tcversion_id,T.id AS feature_id,T.platform_id, " .
 				"       UA.user_id,UA.type,UA.status,UA.assigner_id ".
 				" FROM {$this->tables['testplan_tcversions']}  T " .
 				" LEFT OUTER JOIN {$this->tables['user_assignments']}  UA ON UA.feature_id = T.id " .
-				" WHERE T.testplan_id={$tplan_id} " .
+				" WHERE T.testplan_id={$tplan_id} AND UA.build_id = {$build_id} " .
 				" AND   T.tcversion_id = {$tcversion_id} " .
 				" AND   (UA.type=" . $this->assignment_types['testcase_execution']['id'] .
 				"        OR UA.type IS NULL) ";

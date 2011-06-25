@@ -13,7 +13,7 @@ generate the list of TC that can be removed from a Test Plan
                           send_mail_to_tester,platform,no_testcase_available,
                           exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
                           th_test_case,version,assigned_to,assign_to,note_keyword_filter, priority,
-                          check_uncheck_all_tc
+                          check_uncheck_all_tc, execution, design
                           '}
 
 {include file="inc_head.tpl" openHead="yes"}
@@ -176,8 +176,15 @@ function check_action_precondition(container_id,action)
             	    	<td>
             	    		{$gui->testCasePrefix|escape}{$tcase.external_id|escape}
             	    	</td>
-            	    	<td title="{$labels.show_tcase_spec}">
-            	    		&nbsp;<a href="javascript:openTCaseWindow({$tcase.id},{$tcase.linked_version_id})"><strong>{$tcase.name|escape}</strong></a>
+            	    	<td>
+            	    		{* BUGID 4636 add execution and edit icon to open specific content in popup *}
+            	    		<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/exec_icon.png"
+            	    		     onclick="javascript:openExecutionWindow({$tcase.id},{$tcase.linked_version_id},{$gui->build_id},{$gui->tplan_id},{$platform_id});"
+            	    		     title="{$labels.execution}" />
+            	    		<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+            	    		     onclick="javascript:openTCaseWindow({$tcase.id},{$tcase.linked_version_id});"
+            	    		     title="{$labels.design}" />
+            	    		{$tcase.name|escape}
             	    		&nbsp;{$gsmarty_gui->role_separator_open} {$tcase.tcversions[$tcase.linked_version_id]}
             	    		{$gsmarty_gui->role_separator_close}
             	    	</td>

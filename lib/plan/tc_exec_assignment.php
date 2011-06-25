@@ -330,6 +330,10 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 									  
 	    $gui->keywordsFilterType = $argsObj->keywordsFilterType;
 	
+	    // BUGID 4636
+	    $gui->build_id = $argsObj->build_id;
+	    $gui->tplan_id = $argsObj->tplan_id;
+	    
 	    $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
 	    $gui->testPlanName = $tplan_info['name'];
 	    

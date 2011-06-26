@@ -6,6 +6,9 @@ Author: franciscom
 
 Purpose: generate a list of Test Cases linked to Test Plan 
          that have a newer available version.
+         
+rev:
+    20110626 - Julian - BUGID 3110 - Quick TC Version Compare for Bulk Update
 *}
 {lang_get var='labels'
           s='no_testcase_available,test_plan,update_testcase_versions,
@@ -14,7 +17,8 @@ Purpose: generate a list of Test Cases linked to Test Plan
              version,linked_version,newest_version,
              note_keyword_filter,check_uncheck_all,
              check_uncheck_all_checkboxes,th_id,has_been_executed,show_tcase_spec,
-             update_to_version,inactive_testcase,btn_update_testplan_tcversions'}
+             update_to_version,inactive_testcase,btn_update_testplan_tcversions,
+             compare'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"} {* includes ext-js*}
@@ -56,7 +60,7 @@ function validateForm(f)
      <h1 class="title">{$action_descr}</h1>
      {include file="inc_update.tpl" result=$sqlResult}
 
-    <div class="workBack" style="height: 380px; overflow-y: auto;">
+    <div class="workBack">
     {if $gui->instructions != ''}
       {$gui->instructions}
       {if $gui->user_feedback != ''}
@@ -195,8 +199,8 @@ function validateForm(f)
   {/if}  
 
   {if $gui->operationType == 'bulk'}
-  <div class="workBack" overflow-y: auto;">
-	    <br/><table border="0" cellspacing="0" cellpadding="2" style="font-size:small;" width="100%">
+  <div class="workBack">
+	    <br/><table class="simple_tableruler" border="0" cellspacing="0" cellpadding="2" style="font-size:small;" width="100%">
 	      <tr class="testlink" style="background-color:blue;font-weight:bold;color:white">
 			    
 			    <td class="clickable_icon">
@@ -208,7 +212,7 @@ function validateForm(f)
 			    <td>{$labels.th_test_case}</td>
 			    <td>{$labels.linked_version}</td>
 			    <td>{$labels.newest_version}</td>
-			    <td>&nbsp;</td>
+			    <td>{$labels.compare}</td>
 	      </tr>   
 	    
 	      {foreach from=$gui->testcases item=tc}
@@ -221,10 +225,14 @@ function validateForm(f)
     		</td>
 	      
 			  <td> {$tc.path}{$gui->testCasePrefix|escape}{$tc.tc_external_id|escape}:{$tc.name|escape} </td>  
-			  <td> {$tc.version|escape} </td>
-			  <td>
+			  <td align="center"> {$tc.version|escape} </td>
+			  <td align="center">
 			  {$tc.newest_version|escape} 
 			  <input type="hidden" name="new_tcversion_for_tcid[{$tc.tc_id}]" value="{$tc.newest_tcversion_id}" />
+			  </td>
+			  <td align="center">
+			  <a href="lib/testcases/tcCompareVersions.php?testcase_id={$tc.tc_id}&version_left={$tc.version}&version_right={$tc.newest_version}&compare_selected_versions=1&use_html_comp=1" target="diffwindow">
+			  <img src="{$smarty.const.TL_THEME_IMG_DIR}/magnifier.png"></img></a>
 			  </td>
 	      </tr>
 	  	  {/foreach}
@@ -232,12 +240,10 @@ function validateForm(f)
     </div>
   {/if}
  
-  <div class="workBack">
     <br>   
     <input type="submit" id="update_btn" name="update_btn" style="padding-right: 20px;"
            value='{$labels.btn_update_testplan_tcversions}'  />
     <input type="hidden" name="doAction" id="doAction" value="{$gui->buttonAction}" />  
-  </div>
 
   </form>
 {else}

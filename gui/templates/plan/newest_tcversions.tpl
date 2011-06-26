@@ -9,7 +9,8 @@ Purpose: smarty template -
 {include file="inc_jsCheckboxes.tpl"}
 
 {lang_get var='labels' 
-          s='testproject,test_plan,th_id,th_test_case,title_newest_tcversions,linked_version,newest_version'}
+          s='testproject,test_plan,th_id,th_test_case,title_newest_tcversions,
+             linked_version,newest_version,compare'}
 
 </head>
 <body>
@@ -37,21 +38,26 @@ Purpose: smarty template -
 </form>
 
 {if $gui->show_details}
-  <div class="workBack" style="height: 380px; overflow-y: auto;">
+  <div class="workBack">
 
-    <table cellspacing="0" style="font-size:small;" width="100%">
+    <table class="simple_tableruler" cellspacing="0" style="font-size:small;" width="100%">
       <tr style="background-color:blue;font-weight:bold;color:white">
 		    <td>{$labels.th_test_case}</td>
 		    <td>{$labels.linked_version}</td>
 		    <td>{$labels.newest_version}</td>
-		    <td>&nbsp;</td>
+		    <td>{$labels.compare}</td>
       </tr>   
     
       {foreach from=$gui->testcases item=tc}
       <tr>
 		<td> {$tc.path}{$gui->tcasePrefix|escape}{$tc.tc_external_id|escape}:{$tc.name|escape} </td>  
-		<td> {$tc.version|escape} </td>
-		<td> {$tc.newest_version|escape} </td>
+		<td align="center"> {$tc.version|escape} </td>
+		<td align="center"> {$tc.newest_version|escape} </td>
+		</td>
+		<td align="center">
+			<a href="lib/testcases/tcCompareVersions.php?testcase_id={$tc.tc_id}&version_left={$tc.version}&version_right={$tc.newest_version}&compare_selected_versions=1&use_html_comp=1" target="_blank">
+			<img src="{$smarty.const.TL_THEME_IMG_DIR}/magnifier.png"></img></a>
+		</td>
       </tr>
   	  {/foreach}
   	</table>

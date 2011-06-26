@@ -41,13 +41,13 @@ rev:
 {if $gui->show_details }
   <div class="workBack">
 
-    <table class="simple_tableruler" cellspacing="0" style="font-size:small;" width="100%">
-      <tr style="background-color:blue;font-weight:bold;color:white">
+    <table class="simple_tableruler">
+      <tr>
 		    {* <td>{$labels.th_id}</td>  *}
-		    <td>{$labels.th_test_case}</td>
-		    <td>{$labels.linked_version}</td>
-		    <td>{$labels.newest_version}</td>
-		    <td>{$labels.compare}</td>
+		    <th>{$labels.th_test_case}</th>
+		    <th>{$labels.linked_version}</th>
+		    <th>{$labels.newest_version}</th>
+		    <th>{$labels.compare}</th>
       </tr>   
     
       {foreach from=$gui->testcases item=tc}

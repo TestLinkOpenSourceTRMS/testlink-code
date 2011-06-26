@@ -208,19 +208,19 @@ function validateForm(f)
 
   {if $gui->operationType == 'bulk'}
   <div class="workBack">
-	    <br/><table class="simple_tableruler" border="0" cellspacing="0" cellpadding="2" style="font-size:small;" width="100%">
-	      <tr class="testlink" style="background-color:blue;font-weight:bold;color:white">
+	    <br/><table class="simple_tableruler">
+	      <tr>
 			    
-			    <td class="clickable_icon">
+			    <th class="clickable_icon">
              <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
 	                alt="{$labels.check_uncheck_all}" title="{$labels.check_uncheck_all}" 
                   onclick="cs_all_checkbox_in_div('updateTcForm','{$update_cb}','update_all_value');" />
        
-	        </td>
-			    <td>{$labels.th_test_case}</td>
-			    <td>{$labels.linked_version}</td>
-			    <td>{$labels.newest_version}</td>
-			    <td>{$labels.compare}</td>
+	        </th>
+			    <th>{$labels.th_test_case}</th>
+			    <th>{$labels.linked_version}</th>
+			    <th>{$labels.newest_version}</th>
+			    <th>{$labels.compare}</th>
 	      </tr>   
 	    
 	      {foreach from=$gui->testcases item=tc}

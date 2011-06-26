@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.3.3
+ * Ext JS Library 3.4.0
  * Copyright(c) 2006-2011 Sencha Inc.
  * licensing@sencha.com
  * http://www.sencha.com/license
@@ -61234,7 +61234,7 @@ var form = new Ext.form.FormPanel({
         }
         var restore = this.preventMark;
         this.preventMark = preventMark === true;
-        var v = this.validateValue(this.processValue(this.getRawValue()));
+        var v = this.validateValue(this.processValue(this.getRawValue()), preventMark);
         this.preventMark = restore;
         return v;
     },
@@ -65584,7 +65584,9 @@ Ext.form.CompositeField = Ext.extend(Ext.form.Field, {
 
         this.fieldErrors.replace(name, error);
 
-        field.el.addClass(field.invalidClass);
+        if (!field.preventMark) {
+            field.el.addClass(field.invalidClass);
+        }
     },
 
     /**
@@ -65631,11 +65633,13 @@ Ext.form.CompositeField = Ext.extend(Ext.form.Field, {
      * Performs validation checks on each subfield and returns false if any of them fail validation.
      * @return {Boolean} False if any subfield failed validation
      */
-    validateValue: function() {
+    validateValue: function(value, preventMark) {
         var valid = true;
 
         this.eachItem(function(field) {
-            if (!field.isValid()) valid = false;
+            if (!field.isValid(preventMark)) {
+                valid = false;
+            }
         });
 
         return valid;
@@ -77067,7 +77071,7 @@ Ext.grid.ActionColumn = Ext.extend(Ext.grid.Column, {
             meta.css += ' x-action-col-cell';
             for (i = 0; i < l; i++) {
                 item = items[i];
-                v += '<img alt="' + me.altText + '" src="' + (item.icon || Ext.BLANK_IMAGE_URL) +
+                v += '<img alt="' + (item.altText || me.altText) + '" src="' + (item.icon || Ext.BLANK_IMAGE_URL) +
                     '" class="x-action-col-icon x-action-col-' + String(i) + ' ' + (item.iconCls || '') +
                     ' ' + (Ext.isFunction(item.getClass) ? item.getClass.apply(item.scope||this.scope||this, arguments) : '') + '"' +
                     ((item.tooltip) ? ' ext:qtip="' + item.tooltip + '"' : '') + ' />';

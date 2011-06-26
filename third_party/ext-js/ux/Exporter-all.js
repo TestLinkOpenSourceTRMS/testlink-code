@@ -933,6 +933,7 @@ Ext.ux.Exporter.CSVFormatter = Ext.extend(Ext.ux.Exporter.Formatter, {
       // todo: check hidden props
       if (!column.hidden) {
         var stripped = this.stripTags(column.header);
+        var stripped = this.stripBlanks(stripped);
         var escapedText = this.escapeTextSeperator(stripped);
         cols.push(escapedText);
       }
@@ -957,6 +958,7 @@ Ext.ux.Exporter.CSVFormatter = Ext.extend(Ext.ux.Exporter.Formatter, {
           data = data.text;
         }
         var stripped = this.stripTags(data);
+        var stripped = this.stripBlanks(stripped);
         var escapedText = this.escapeTextSeperator(stripped);
         cols.push(escapedText);
       }
@@ -971,6 +973,20 @@ Ext.ux.Exporter.CSVFormatter = Ext.extend(Ext.ux.Exporter.Formatter, {
   stripTags: function(strMod){
     if (typeof(strMod) === "string") {
       strMod = strMod.replace(/<(.|\n)*?>/gi, '');
+    }
+    var	tarea = document.createElement('textarea');
+    tarea.innerHTML = strMod;
+    return tarea.value;
+  },
+  /**
+   * Little helper function to strip blanks at the beginning and the end of a string
+   * @param strMod
+   * @return strMod
+   */
+  stripBlanks: function(strMod){
+    if (typeof(strMod) === "string") {
+      strMod = strMod.replace(/^\s*/gi, '');
+      strMod = strMod.replace(/\s*$/gi, '');
     }
     var	tarea = document.createElement('textarea');
     tarea.innerHTML = strMod;

@@ -113,6 +113,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$userObj,&$tprojectMgr)
 	$tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
 	$guiObj->tplan_name = $tplan_info['name'];
 	$guiObj->tplan_id = $argsObj->tplan_id;
+	$guiObj->tproject_id = $argsObj->tproject_id;
 	
 	$guiObj->testcases = $tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id);
 

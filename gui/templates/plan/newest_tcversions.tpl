@@ -10,7 +10,7 @@ Purpose: smarty template -
 
 {lang_get var='labels' 
           s='testproject,test_plan,th_id,th_test_case,title_newest_tcversions,
-             linked_version,newest_version,compare'}
+             linked_version,newest_version,compare,design'}
 
 </head>
 <body>
@@ -50,7 +50,12 @@ Purpose: smarty template -
     
       {foreach from=$gui->testcases item=tc}
       <tr>
-		<td> {$tc.path}{$gui->tcasePrefix|escape}{$tc.tc_external_id|escape}:{$tc.name|escape} </td>  
+		<td> 
+			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+			     onclick="javascript:openTCaseWindow({$gui->tproject_id},{$tc.tc_id});"
+			     title="{$labels.design}" />
+			{$tc.path}{$gui->tcasePrefix|escape}{$tc.tc_external_id|escape}:{$tc.name|escape}
+		</td>
 		<td align="center"> {$tc.version|escape} </td>
 		<td align="center"> {$tc.newest_version|escape} </td>
 		</td>

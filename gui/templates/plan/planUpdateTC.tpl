@@ -235,7 +235,7 @@ function validateForm(f)
 			  <input type="hidden" name="new_tcversion_for_tcid[{$tc.tc_id}]" value="{$tc.newest_tcversion_id}" />
 			  </td>
 			  <td align="center">
-			  <a href="lib/testcases/tcCompareVersions.php?testcase_id={$tc.tc_id}&version_left={$tc.version}&version_right={$tc.newest_version}&compare_selected_versions=1&use_html_comp=1" target="diffwindow">
+			  <a href="lib/testcases/tcCompareVersions.php?testcase_id={$tc.tc_id}&version_left={$tc.version}&version_right={$tc.newest_version}&compare_selected_versions=1&use_html_comp=1" target="_blank">
 			  <img src="{$smarty.const.TL_THEME_IMG_DIR}/magnifier.png"></img></a>
 			  </td>
 	      </tr>

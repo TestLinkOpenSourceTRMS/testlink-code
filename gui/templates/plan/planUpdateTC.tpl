@@ -207,6 +207,7 @@ function validateForm(f)
   {/if}  
 
   {if $gui->operationType == 'bulk'}
+  <input type="hidden" name="update_all_value"  id="update_all_value"  value="0" />
   <div class="workBack">
 	    <br/><table class="simple_tableruler">
 	      <tr>

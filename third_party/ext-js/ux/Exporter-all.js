@@ -980,13 +980,18 @@ Ext.ux.Exporter.CSVFormatter = Ext.extend(Ext.ux.Exporter.Formatter, {
   },
   /**
    * Little helper function to strip blanks at the beginning and the end of a string
+   * In Addition replaces multiple blanks in a row with a single blank
    * @param strMod
    * @return strMod
    */
   stripBlanks: function(strMod){
     if (typeof(strMod) === "string") {
+      // replace all blanks at the beginning of a string
       strMod = strMod.replace(/^\s*/gi, '');
+      // replace all blanks at the end of a string
       strMod = strMod.replace(/\s*$/gi, '');
+      // replace multiple blanks in a row with a single blank
+      strMod = strMod.replace(/\s+/gi, ' ');
     }
     var	tarea = document.createElement('textarea');
     tarea.innerHTML = strMod;

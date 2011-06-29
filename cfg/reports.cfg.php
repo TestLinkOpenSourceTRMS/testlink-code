@@ -26,6 +26,9 @@ define('DOC_TEST_SPEC', 'testspec');
 define('DOC_TEST_PLAN', 'testplan');
 define('DOC_TEST_REPORT', 'testreport');
 define('DOC_REQ_SPEC', 'reqspec');
+define('SINGLE_TESTCASE', 'testcase');
+define('SINGLE_REQ', 'requirement');
+define('SINGLE_REQSPEC', 'single_reqspec');
 
 define('FORMAT_HTML', 0);
 define('FORMAT_ODT', 1);

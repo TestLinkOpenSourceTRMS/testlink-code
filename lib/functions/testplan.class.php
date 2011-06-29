@@ -13,7 +13,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  *
- * @internal Revisions:
+ * @internal revisions
  *  20110415 - Julian - BUGID 4418 - Clean up priority usage within Testlink
  *	20110408 - franciscom - BUGID 4391: General Test Plan Metrics - 
  *							Results by Keywords does not work properly when platforms are used
@@ -33,68 +33,6 @@
  *  20110115 - franciscom - BUGID 4171 - changes on methods related to estimated execution time
  *  20110112 - franciscom - BUGID 4171 - changes on methods related to estimated execution time
  *  20110104 - asimon - BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
- *  20101221 - amitkhullar - BUGID 4115 Custom Field Filtering Issue 
- *  20101215 - asimon - BUGID 4023: correct filtering also with platforms
- *  20101202 - asimon - fixed filtering issues when filtering for multiple statuses
- *  20101110 - amitkhullar - BUGID 3995 Refix->Custom Field Filters not working properly since the cf_hash is array
- *  20101114 - franciscom - Important Design Notes added on copy_as().	
- *                          BUGID 4017: Create plan as copy - Priorities are ALWAYS COPIED
- *
- *  20101110 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
- *  20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
- *	20101101 - franciscom - exportTestPlanDataToXML() interface changes + changes in output (more info added)
- *  20101030 - amitkhullar - BUGID 3845 delete() - Reordered deletion of tables due to error generated
- *							 when using this method as part of Test Project delete.
- *							 (Postgres complains due to use of Foreing Keys).
- *	20101024 - franciscom - filter_cf_selection() - fixed event viewer warning + refactoring 	
- *	20101017 - franciscom - new method get_import_file_types() 
- *	20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
- *	20101009 - franciscom - BUGID 3270: Export Test Plan in XML Format
- *	20101009 - franciscom - new method exportTestPlanDataToXML() (work in progress)
- *  20101007 - asimon - BUGID 3867
- *  20101006 - asimon - BUGID 3846: copy test plan does not copy tester assignments 
- *  20100927 - amitkhullar - BUGID 3809 - Radio button based Custom Fields not working
- *  20100926 - amitkhullar - BUGID 3806 - Filter not working in tree menu for Assign TC Execution
- *  20100925 - franciscom - BUGID 3649 - new method exportLinkedItemsToXML();
- *  20100920 - franciscom - html_table_of_custom_field_values() changed keys on $formatOptions
- *  20100909 - Julian - BUGID 2877 - Custom Fields linked to TC versions
- *	20100830 - franciscom - get_linked_tcversions() - missing cast to array	$my['filters']['exec_status']
- *							urgencyImportanceToPriorityLevel() - refactored
- *	20100827 - franciscom - new method wrapper - hasLinkedPlatforms()
- *  20100727 - asimon - BUGID 3629: modified statement in get_linked_tcversions()
- *  20100725 - asimon - BUGID 3497 and hopefully also 3530 fixed in unlink_tcversions()
- *  20100723 - asimon - commented out some old debug message in copy_linked_tcversions()
- *  20100722 - asimon - added missing $debugMsg to get_linked_items()
- *  20100721 - asimon - BUGID 3406: added user_assignments_per_build option to get_linked_tcversions()
- *	20100711 - franciscom - BUGID 3564 -> getPlatforms()
- *	20100614 - eloff - refactor getStatusTotalsByPriority() to same style as the other getStatusTotals...()
- *	20100610 - eloff - BUGID 3515 - getStatusTotals() now takes platforms into account
- *	20100602 - franciscom - copy_as() - force Platforms Link copy when user choose Test Case Copy
- *  20100527 - Julian - BUGID 3492 - Added execution notes to sql statement of get_linked_tcversions
- *  20100525 - Julian - changed default for steps_info option on get_linked_tcversions() to false
- *  					-> performance improvement because not all steps are loaded per default
- *	20100520 - franciscom - getTestCaseSiblings() join bug
- *	20100518 - franciscom - BUGID 3473
- *	20100516 - franciscom - BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
- *	20100506 - franciscom - new method - get_linked_items_id(), that has perfomance advantages
- *							over get_linked_tcversions() when only info needed is test case id.
- *
- *	20100505 - franciscom - BUGID 3434 - get_keywords_map() - refactoring trying to improve performance
- *	20100505 - franciscom - BUGID 3430 - copy_milestones() - need to check if start date is NOT NULL
- *	20100425 - franciscom - BUGID 2463 - changes in getStatusTotalsByAssignedTesterPlatform()
- * 	20100417 - franciscom - get_linked_tcversions() added importance on output data
- *                          BUGID 3356: Failed Test Cases" report is not updated when a test case 
- *                                      has been changed from "Failed" to "Passed"		 
- *
- *  20100217 - asimon - added parameters open and active to getNumberOfBuilds()
- *  20100214 - franciscom - BUGID 2455, BUGID 3026 - Contribution by julian,asimon
- *  20100206 - eloff - BUGID 3060 - Adding getStatusTotalsByPriority()
- *  20100206 - eloff - BUGID 3060 - Adding urgencyImportanceToPriorityLevel() method
- *  20100201 - franciscom - BUGID 3121 - Adding Platform to test plan after the execution completed,
- *                                       reports are not shown appropriate 	
- *  20100112 - franciscom - getPlatforms() - interface changes
- *	20100106 - franciscom - Multiple Test Case Steps Feature
- *                          Affected Methods: get_linked_tcversions()
  **/
 
 /** related functionality */

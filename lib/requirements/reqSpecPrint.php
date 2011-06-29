@@ -42,7 +42,7 @@ $options = array('toc' => 0, 'req_spec_scope' => 1, 'req_spec_author' => 1,'req_
 				);
             
 $text2print = '';
-$text2print .= renderHTMLHeader('',$_SESSION['basehref']) . '<body>' ;
+$text2print .= renderHTMLHeader('',$_SESSION['basehref'],SINGLE_REQSPEC) . '<body>' ;
 $text2print .= '<div><h2>' . lang_get('req_specification') . '</h2></div>';
 
 $text2print .= renderReqSpecNodeForPrinting($db, $node, $options,null,0,$args->tproject_id); 

@@ -593,12 +593,29 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options,
  * 
  * @return string html data
  */
-function renderHTMLHeader($title,$base_href)
+function renderHTMLHeader($title,$base_href,$doc_type)
 {
 	// BUGID 3424
 	$themeDir = config_get('theme_dir');
 	$docCfg = config_get('document_generator');
-    $cssFile = $base_href . $themeDir . $docCfg->css_template;
+	
+	// BUGID 4644 - different css files for test spec docs and req docs
+	$cssFile = $base_href . $themeDir;
+	switch ($doc_type) {
+		case DOC_TEST_SPEC:
+		case DOC_TEST_PLAN:
+		case DOC_TEST_REPORT:
+		case SINGLE_TESTCASE:
+			$cssFile .= $docCfg->css_template;
+		break;
+		case DOC_REQ_SPEC:
+		case SINGLE_REQ:
+		case SINGLE_REQSPEC:
+			$cssFile .= $docCfg->requirement_css_template;
+		break;
+		default:
+			$cssFile .= $docCfg->css_template;
+	}
 
 	$output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 	$output .= "<html>\n<head>\n";

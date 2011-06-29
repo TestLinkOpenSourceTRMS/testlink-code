@@ -225,7 +225,7 @@ switch ($doc_info->type)
 
 
 // ----- rendering logic -----
-$topText = renderHTMLHeader($doc_info->type.' '.$doc_info->title,$_SESSION['basehref']);
+$topText = renderHTMLHeader($doc_info->type.' '.$doc_info->title,$_SESSION['basehref'],$doc_info->type);
 $topText .= renderFirstPage($doc_info);
 
 // Init table of content (TOC) data

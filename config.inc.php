@@ -601,7 +601,12 @@ $tlCfg->document_generator->company_logo = 'company_logo.png';
 $tlCfg->document_generator->company_logo_height = '53';
 
 /** CSS used in printed html documents */
+// $tlCfg->document_generator->css_template = $tlCfg->theme_dir . 'css/tl_documents.css';
+// CSS file for Test Specification Document, Test Plan Report, Test Report and Test Case Print View
 $tlCfg->document_generator->css_template = 'css/tl_documents.css';
+
+// CSS file for Requirement Specification Document, Requirement and Requirement Spec Print View
+$tlCfg->document_generator->requirement_css_template = 'css/tl_documents.css';
 
 /** Misc settings */
 // Display test case version when creating test spec document

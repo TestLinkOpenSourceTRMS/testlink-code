@@ -55,7 +55,7 @@ $level = 0;
 $tplanID = 0;
 $prefix = null;
 $text2print = '';
-$text2print .= renderHTMLHeader('',$_SESSION['basehref']);
+$text2print .= renderHTMLHeader('',$_SESSION['basehref'],SINGLE_TESTCASE);
 $text2print .= renderTestCaseForPrinting($db,$node,$printingOptions, 
 										 $level,$tplanID,$prefix,$args->tproject_id);
 

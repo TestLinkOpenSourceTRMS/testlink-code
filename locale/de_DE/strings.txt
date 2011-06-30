@@ -34,7 +34,7 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file with commit id 8804ffcadd6daf90372fb4cb6fe5ebbc001cde8c
+ * Last Update according to en_GB string file with commit id 85ac3821fab44b57bfe4f1e5d53c34aa40744556
  *
  **/
 
@@ -802,6 +802,8 @@ $TLS_title_last_mod = "Letzte Änderung";
 $TLS_expected_coverage = "Anzahl benötigter Testfälle";
 $TLS_warning_expected_coverage = $TLS_expected_coverage . " muss ein numerischer Wert sein ";
 $TLS_warning_expected_coverage_range = $TLS_expected_coverage . " muss größer als 0 sein ";
+$TLS_stay_here_req = 'Nach dem Speichern weitere Anforderungen erstellen';
+
 
 $TLS_current_coverage = "Verknüpft";
 $TLS_coverage_number = "Erstellen";
@@ -1094,6 +1096,8 @@ $TLS_th_version = "Version";
 // ----- gui/templates/tcNew.tpl -----
 $TLS_title_new_tc = "Testfall erstellen";
 $TLS_warning_empty_tc_title = "Bitte geben Sie einen Titel für den Testfall ein!";
+$TLS_stay_here_tc = 'Nach dem Speichern weitere Testfälle erstellen';
+
 
 
 
@@ -3304,6 +3308,12 @@ $TLS_export_execution_set = 'Ausführungen exportieren';
 
 // ----- lib/results/resultsReqs.php -----
 $TLS_no_label_for_req_type = 'Keine req_type_labels Konfiguration für den Typ: %s';
+
+
+$TLS_print_testcase = 'Drucke Testfall: %s';
+$TLS_print_requirement = 'Drucke Anforderung: %s';
+$TLS_print_requirement_specification = 'Drucke Anforderungsspezifikation: %s';
+
 
 // ----- lib/functions/remote_exec.php
 $TLS_remoteExecServerConfigProblems = 'Die Fernausführung kann aufgrund fehlender Konfiguration nicht gestartet werden.\n' .

@@ -207,7 +207,7 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 
 	// 20110308 - asimon - change table style in case of single req printing to not be indented
 	$table_style = "";
-	if (isset($options['docType']) && $options['docType'] == 'SINGLE_REQ') {
+	if (isset($options['docType']) && $options['docType'] == SINGLE_REQ) {
 		$table_style = "style=\"margin-left: 0;\"";
 	}
 
@@ -1003,7 +1003,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
     
 	// 20110308 - asimon - change table style in case of single TC printing to not be indented
 	$table_style = "";
-	if (isset($options['docType']) && $options['docType'] == 'SINGLE_TC') {
+	if (isset($options['docType']) && $options['docType'] == SINGLE_TESTCASE) {
 		$table_style = 'style="margin-left: 0;"';
 	}
 	

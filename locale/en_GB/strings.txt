@@ -3317,6 +3317,9 @@ $TLS_no_label_for_req_type = 'No req_type_labels configuration for type: %s';
 
 
 $TLS_print_testcase = 'Print Test Case: %s';
+$TLS_print_requirement = 'Print Requirement: %s';
+$TLS_print_requirement_specification = 'Print Requirement Specification: %s';
+
 
 // ----- lib/functions/remote_exec.php
 $TLS_remoteExecServerConfigProblems = 'Remote execution can not be launched due to missing configuration.\n' .

@@ -37,7 +37,7 @@ $node['revision'] = $args->req_revision;
 $gui = new stdClass();
 $gui->object_name='';
 $gui->object_name = $node['name'];
-$gui->page_title = sprintf(lang_get('print_testcase'),$node['name']);
+$gui->page_title = sprintf(lang_get('print_requirement'),$node['name']);
 $gui->tproject_name=$args->tproject_name;
 $gui->tproject_id=$args->tproject_id;
 $gui->req_id=$args->req_id; 
@@ -52,10 +52,10 @@ $options = array('toc' => 0,
                  'req_scope' => 1, 'req_relations' => 1, 'req_coverage' => 1,
                  'req_status' => 1, 'req_type' => 1,'req_author'=> 1,
                  'displayVersion' => 1, 'displayDates' => 1, 
-                 'displayLastEdit' => 1, 'docType' => 'SINGLE_REQ');
+                 'displayLastEdit' => 1, 'docType' => SINGLE_REQ);
 
 $text2print = '';
-$text2print .= renderHTMLHeader('',$_SESSION['basehref'],SINGLE_REQ);
+$text2print .= renderHTMLHeader($gui->page_title,$_SESSION['basehref'],SINGLE_REQ);
 $text2print .= renderReqForPrinting($db,$node,$options,null,0,$args->tproject_id);
 
 echo $text2print;

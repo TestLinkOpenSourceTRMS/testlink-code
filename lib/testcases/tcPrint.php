@@ -46,7 +46,7 @@ $gui->tcversion_id=$args->tcversion_id;
 // Struture defined in printDocument.php	
 $printingOptions = array('toc' => 0,'body' => 1,'summary' => 1, 'header' => 0,'headerNumbering' => 0,
 	                     'passfail' => 0, 'author' => 1, 'notes' => 1, 'requirement' => 1, 'keyword' => 1, 
-	                     'cfields' => 1, 'displayVersion' => 1, 'displayDates' => 1, 'docType' => 'SINGLE_TC',
+	                     'cfields' => 1, 'displayVersion' => 1, 'displayDates' => 1, 'docType' => SINGLE_TESTCASE,
 	                     'importance' => 1);
 
 
@@ -55,7 +55,7 @@ $level = 0;
 $tplanID = 0;
 $prefix = null;
 $text2print = '';
-$text2print .= renderHTMLHeader('',$_SESSION['basehref'],SINGLE_TESTCASE);
+$text2print .= renderHTMLHeader($gui->page_title,$_SESSION['basehref'],SINGLE_TESTCASE);
 $text2print .= renderTestCaseForPrinting($db,$node,$printingOptions, 
 										 $level,$tplanID,$prefix,$args->tproject_id);
 

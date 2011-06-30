@@ -987,6 +987,11 @@ $tlCfg->req_cfg->child_requirements_mgmt = ENABLED;
 // DISABLED: do not ask, do not use
 $tlCfg->req_cfg->expected_coverage_management = ENABLED;
 
+// Show Child Requirements on Requirement Specification Print View
+// ENABLED: Requirement Specification including Child Requirements are shown
+// DIABLED: ONLY Requirement Specification is shown
+$tlCfg->req_cfg->show_child_reqs_on_reqspec_print_view = DISABLED;
+
 // 20090111 - franciscom
 // Order of test cases status in this array, is used to undestand
 // to what status set requirement in the requirements report.

@@ -804,6 +804,7 @@ $TLS_title_last_mod = "Letzte Änderung";
 $TLS_expected_coverage = "Anzahl benötigter Testfälle";
 $TLS_warning_expected_coverage = $TLS_expected_coverage . " muss ein numerischer Wert sein ";
 $TLS_warning_expected_coverage_range = $TLS_expected_coverage . " muss größer als 0 sein ";
+$TLS_stay_here_req = 'Nach dem Speichern weitere Anforderungen erstellen';
 
 $TLS_current_coverage = "Verknüpft";
 $TLS_coverage_number = "Erstellen";
@@ -1096,6 +1097,7 @@ $TLS_th_version = "Version";
 // ----- gui/templates/tcNew.tpl -----
 $TLS_title_new_tc = "Testfall erstellen";
 $TLS_warning_empty_tc_title = "Bitte geben Sie einen Titel für den Testfall ein!";
+$TLS_stay_here_tc = 'Nach dem Speichern weitere Testfälle erstellen';
 
 
 
@@ -1422,14 +1424,14 @@ $TLS_warning_delete_milestone = "Wollen Sie wirklich den Meilenstein %s löschen
 $TLS_warning_empty_milestone_name = "Sie müssen einen Namen für den Meilenstein eingeben!";
 $TLS_warning_invalid_date = "Das Datum ist ungültig.";
 $TLS_info_milestone_create_prio = "Meilensteine berücksichtigen Testausführungen innerhalb einer spezifizierten Zeitperiode." .
-                                  "<br />Diese Periode startet mit dem <b>Anfangsdatum</b> - ist kein Anfangsdatum festgelegt " .
-                                  "werden alle Testausführungen berücksichtigt - und endet mit dem <b>Zieldatum</b>.<br />" .
+                                  "<br />Diese Periode startet mit dem <b>Anfangsdatum 00:00:00</b> - ist kein Anfangsdatum festgelegt " .
+                                  "werden alle Testausführungen berücksichtigt - und endet mit dem <b>Zieldatum 23:59:59</b>.<br />" .
                                   "Alle Ausführung nach dem Zieldatum werden ignoriert.<br />Meilensteine sind erreicht wenn alle " .
                                   "\"Teil-Meilensteine\" für die verschiedenen <b>Prioritäten</b> erreicht sind. Der Status " .
                                   "der Meilensteine kann im Testplan Überblick (Testergebnisse) eingesehen werden.";
 $TLS_info_milestone_create_no_prio = "Meilensteine berücksichtigen Testausführungen innerhalb einer spezifizierten Zeitperiode." .
-                                     "<br />Diese Periode startet mit dem <b>Anfangsdatum</b> - ist kein Anfangsdatum festgelegt " .
-                                     "werden alle Testausführungen berücksichtigt - und endet mit dem <b>Zieldatum</b>.<br />" .
+                                     "<br />Diese Periode startet mit dem <b>Anfangsdatum 00:00:00</b> - ist kein Anfangsdatum festgelegt " .
+                                     "werden alle Testausführungen berücksichtigt - und endet mit dem <b>Zieldatum 23:59:59</b>.<br />" .
                                      "Alle Ausführung nach dem Zieldatum werden ignoriert.<br />Meilensteine sind erreicht wenn " .
                                      "der gewählte Prozentsatz an <b>durchgeführten Tests</b> erreicht ist.  Der Status der " .
                                      "Meilensteine kann im Testplan Überblick (Testergebnisse) eingesehen werden.";
@@ -1534,6 +1536,8 @@ $TLS_execution_type = "Ausführungstyp";
 $TLS_execution_type_short_descr = 'Ausführung';
 $TLS_tcversion_is_inactive_msg = "Diese Version ist inaktiv und ist dadurch in Testplänen nicht verfügbar";
 $TLS_system_blocks_delete_executed_tc = "Ihre Konfiguration verbietet es ausgeführte Testfälle zu löschen";
+$TLS_system_blocks_delete_executed_tc_when = "Ihre Konfiguration verbietet das Löschen von Testfällen, " .
+                                             "wenn ausgeführte Testfallversionen existieren.";
 
 
 
@@ -3305,6 +3309,12 @@ $TLS_export_execution_set = 'Ausführungen exportieren';
 
 // ----- lib/results/resultsReqs.php -----
 $TLS_no_label_for_req_type = 'Keine req_type_labels Konfiguration für den Typ: %s';
+
+
+$TLS_print_testcase = 'Drucke Testfall: %s';
+$TLS_print_requirement = 'Drucke Anforderung: %s';
+$TLS_print_requirement_specification = 'Drucke Anforderungsspezifikation: %s';
+
 
 // ----- lib/functions/remote_exec.php
 $TLS_remoteExecServerConfigProblems = 'Die Fernausführung kann aufgrund fehlender Konfiguration nicht gestartet werden.\n' .

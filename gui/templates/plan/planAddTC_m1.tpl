@@ -308,7 +308,7 @@ Ext.onReady(function(){
                   				{/foreach}
                       		</script>
            				    <select name="tcversion_for_tcid[{$tcID}]" 
-           				            onchange="javscript:updateImportance({$tcID},js_option_importance,js_tcase_importance[{$tcID}][this.options[this.selectedIndex].value]);"
+           				            onchange="javascript:updateImportance({$tcID},js_option_importance,js_tcase_importance[{$tcID}][this.options[this.selectedIndex].value]);"
            				            {if $linked_version_id != 0} disabled{/if}>
            				            {html_options options=$tcase.tcversions selected=$linked_version_id}
            				    </select>

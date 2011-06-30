@@ -52,11 +52,7 @@ if( !is_null($tcase_all_info) )
     } 
 }
 
-// 20100514 - franciscom
-// Why I'm filter on NOT_EXECUTED ??? -> this causes BUGID 3189
-// $link_info = $tcase_mgr->get_linked_versions($args->tcase_id,'NOT_EXECUTED');
 $link_info = $tcase_mgr->get_linked_versions($args->tcase_id);
-// 20100124 - work only on ACTIVE TEST PLANS => array('plan_status' => 1)
 if( !is_null($tplanSet = $tproject_mgr->get_all_testplans($args->tproject_id,array('plan_status' => 1))) )
 {
 	$has_links = array_fill_keys(array_keys($tplanSet),false);

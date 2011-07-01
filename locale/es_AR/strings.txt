@@ -27,18 +27,14 @@
  *
  * ********************************************************************************************
  *
- * @package 	TestLink
- * @author 		Fernando D. Vicente, Javier Peverelli
- * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.27.2.1 2010/12/23 13:41:13 mx-julian Exp $
- * @link 		http://www.teamst.org/index.php
- *
- * @internal Revisions:
  * Last Update according to en_GB string file version 1.751.2.3 (included in TL 1.9.0)
  **/
 
 // Define character set of strings (UTF-8 is common value)
 $TLS_STRINGFILE_CHARSET = "UTF-8";
+
+// Last Update of this file
+$TLS_last_update = "Last localization update: 23/12/2010 (Testlink 1.9.0)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_type_not_configured = "Mensaje del Sistema: Tipo no configurado";

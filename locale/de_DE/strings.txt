@@ -41,6 +41,8 @@
 // Define character set of this file (UTF-8 is common value)
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
+// Last Update of this file
+$TLS_last_update = "Letztes Übersetzungs-Update: 30.06.2011 (TestLink 1.9.3)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_type_not_configured = "Systemmeldung: Typ nicht konfiguriert";

@@ -3,69 +3,38 @@
  * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2010/06/24 17:25:53 $ by $Author: asimon83 $
+ * Japanese (ja_JP) strings (en_GB is default development language)
  *
- * @copyright Copyright (c) 2003-9, TestLink community
- * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
- * --------------------------------------------------------------------------------------
- * 
- * English (en_GB) strings (en_GB is default development language)
- *
- * This list of labels is defined as GLOBAL string variables. The first sections are general 
- * for strings used over all GUI. These definition should not be redefined. Next sections are 
- * related to particular pages. Comment with page filename indicate a begin of section. There 
- * must be defined all other strings. 
+ * This list of labels is defined as GLOBAL string variables. The first sections are general
+ * for strings used over all GUI. These definition should not be redefined. Next sections are
+ * related to particular pages. Comment with page filename indicate a begin of section. There
+ * must be defined all other strings.
+ * Do not use html elements in this file.
  *
  * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
- * This must be a reserved prefix. The second part of variable name (after 
+ * This must be a reserved prefix. The second part of variable name (after
  * prefix) should indicate usage (warning, title), the third one indicate the page relation
  * and text at the end.
- * 
- * Warning: be careful about format - the file is parsed by script
- * Warning: if JS string you must use \\n to get \n for end of line
+ *
+ * ********************************************************************************************
+ * Warning - Warning - Warning - Warning - Warning - Warning - Warning - Warning - Warning
+ * ********************************************************************************************
+ *
+ * 1. Be careful about format - the file is parsed by script	comment only with "//" except header
+ * 2. for JS string you must use \\n to get \n for end of line
+ *
  * Note: API interface is not localized (except error messages)
  *
- * --------------------------------------------------------------------------------------
- * Revisions:
- * 20071102 - franciscom - tcexecute strings
- * 20071101 - franciscom - view_file_format_doc
- * 20070930 - franciscom - show_tcase_spec
- * 20070520 - franciscom - milestones
- * 20070206 - franciscom - BUGID 618 - \n on JS messages
+ * ********************************************************************************************
  *
- *-------------------------------------------------------------------
- * Japanese translation
- *-------------------------------------------------------------------
- * Testing Engineer's Forum (TEF) in Japan
- * Working Group of TestLink Japanese Translation Project
- *
- * http://blues.se.uec.ac.jp/swtest/
- * http://testlinkjp.org/
- * http://sourceforge.jp/projects/testlinkjp/
- *
- * Adviser:
- * Yasuharu NISHI
- *
- * Core member:
- * Atsushi Nagata,       AZMA Daisuke,         Hiromi Nishiyama,
- * Kaname Mochizuki,     Kaoru Nakamura,       Kunio Murakami,
- * Lumina Nishihara,     Marino Suda,          Masahide Katsumata,
- * Masami Ichikawa,      Masataka Yoneta,      Sadahiko Hantani,
- * Shinichi Sugiyama,    Shinsuke Matsuki,     Shizuka Ban,
- * Takahiro Wada,        Toshinori Sawaguchi,  Toshiyuki Kawanishi,
- * Yasuhiko Okada,       Yoichi Kunihiro,      Yoshihiro Yoshimura,
- * Yukiko Kajino
- *
- * @modified $Date: 2010/06/24 17:25:53 $ $Author: asimon83 $
- *-------------------------------------------------------------------
-**/
+ **/
 
 // Define character set of this file (UTF-8 is common value)
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 $TLS_charset = 'utf-8';
 
+// Last Update of this file
+$TLS_last_update = "Last localization update: 2009/04/06";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active = "有効";

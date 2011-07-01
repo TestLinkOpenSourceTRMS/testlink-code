@@ -27,20 +27,16 @@
  *
  * ********************************************************************************************
  *
- * @internal	filename: strings.txt
- * @package 	TestLink
- * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
- * @copyright 	2003, TestLink community
- * @link 		http://www.teamst.org/index.php
- *
- * @internal Revisions:
-   20110327 - BUGID 4349 - Julian - Update with en_GB files
+ * Revisions:
+ * 20110327 - BUGID 4349 - Julian - Update with en_GB files
  *
  **/
 
 // Define character set of this file (UTF-8 is common value)
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
+// Last Update of this file
+$TLS_last_update = "Last localization update: 03/27/2011";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_type_not_configured = "system message: type not configured";

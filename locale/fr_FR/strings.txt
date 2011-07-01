@@ -27,13 +27,6 @@
  *
  * ********************************************************************************************
  *
- * @internal	filename: strings.txt
- * @package 	TestLink
- * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
- * @copyright 	2003, TestLink community
- * @link 		http://www.teamst.org/index.php
- *
- * @internal Revisions:
  * 20110427 - Julian - BUGID 4446 - Updated french localization according to TL 1.9.2 en_GB files
  *                                  contributed by Jean-Yves Boo 2011 - boojeanyves@gmail.com
  **/
@@ -41,6 +34,8 @@
 // Define character set of this file (UTF-8 is common value)
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
+// Last Update of this file
+$TLS_last_update = "Last localization update: 27/04/2011 (Testlink 1.9.2)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_type_not_configured = "message système: type non configuré";

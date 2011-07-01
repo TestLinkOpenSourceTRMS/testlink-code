@@ -3,35 +3,37 @@
  * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Finnish (fi_FI) (Finnish localization up to 90%)
+ * Finnish (fi_FI) strings (en_GB is default development language)
  *
- * This list of labels is defined as GLOBAL string variables. The first sections are general 
- * for strings used over all GUI. These definition should not be redefined. Next sections are 
- * related to particular pages. Comment with page filename indicate a begin of section. There 
- * must be defined all other strings. 
+ * This list of labels is defined as GLOBAL string variables. The first sections are general
+ * for strings used over all GUI. These definition should not be redefined. Next sections are
+ * related to particular pages. Comment with page filename indicate a begin of section. There
+ * must be defined all other strings.
+ * Do not use html elements in this file.
  *
  * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
- * This must be a reserved prefix. The second part of variable name (after 
+ * This must be a reserved prefix. The second part of variable name (after
  * prefix) should indicate usage (warning, title), the third one indicate the page relation
  * and text at the end.
  *
- * Warning: be careful about format - the file is parsed by script
- * Warning: if JS string you must use \\n to get \n for end of line
+ * ********************************************************************************************
+ * Warning - Warning - Warning - Warning - Warning - Warning - Warning - Warning - Warning
+ * ********************************************************************************************
+ *
+ * 1. Be careful about format - the file is parsed by script -> comment only with "//" except header
+ * 2. for JS string you must use \\n to get \n for end of line
+ *
  * Note: API interface is not localized (except error messages)
- * 
- * @package 	TestLink
- * @author 		Kirsi Mäkinen, Jan-Erik Finlander, Juho Kauppi
- * @author 		Heikki Alonen, Jari Ahonen, Otto Moilanen
- * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.4 2010/06/24 17:25:55 asimon83 Exp $
- * @link 		http://www.teamst.org/index.php
- * 
- * 
- * 
- */
+ *
+ * ********************************************************************************************
+ *
+ **/
 
 // Define character set of this file (UTF-8 is common value)
 $TLS_STRINGFILE_CHARSET = "UTF-8";
+
+// Last Update of this file
+$TLS_last_update = "Last localization update: 17/06/2009 (Testlink 1.8.2)";
 
 //----- General terms (used wide) ----------------------------
 $TLS_active = "Aktiivinen";

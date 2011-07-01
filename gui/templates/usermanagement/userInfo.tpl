@@ -105,6 +105,10 @@ function checkPasswords(oldp,newp,newp_check)
     return true;
 }
 
+function refreshLastUpdate (last_update) {
+	document.getElementById("last_update").firstChild.nodeValue = last_update;
+}
+
 
 </script>
 {/literal}
@@ -127,9 +131,9 @@ function checkPasswords(oldp,newp,newp_check)
 		onsubmit="return validatePersonalData(this)">
 	{/if}
 	<input type="hidden" name="doAction" value="editUser" />
-	<table class="common">
+	<table class="common" width="50%">
 		<tr>
-			<th>{$labels.th_login}</th>
+			<th width="20%">{$labels.th_login}</th>
 			<td>{$user->login}</td>
 		</tr>
 		<tr>
@@ -156,9 +160,18 @@ function checkPasswords(oldp,newp,newp_check)
 		<tr>
 			<th>{$labels.th_locale}</th>
 			<td>
-				<select name="locale">
+				{* BUGID 4645 - get last_update for each locale *}
+				<script type="text/javascript">
+					js_locale = new Array();
+					{foreach key=locale item=value from=$optLocale}
+						js_locale['{$locale}'] = "{lang_get s='last_update' locale=$locale}";
+					{/foreach}
+				</script>
+				
+				<select name="locale" onchange="javascript:refreshLastUpdate(js_locale[this.options[this.selectedIndex].value]);">
 				{html_options options=$optLocale selected=$user->locale}
 				</select>
+				<span id="last_update">{lang_get s='last_update'}</span>
 			</td>
 		</tr>
 	</table>

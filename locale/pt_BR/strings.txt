@@ -20,27 +20,20 @@
  * Warning - Warning - Warning - Warning - Warning - Warning - Warning - Warning - Warning
  * ********************************************************************************************
  *
- * 1. Be careful about format - the file is parsed by script	comment only with "//" except header
+ * 1. Be careful about format - the file is parsed by script -> comment only with "//" except header
  * 2. for JS string you must use \\n to get \n for end of line
  *
  * Note: API interface is not localized (except error messages)
  *
  * ********************************************************************************************
- * 
- * @internal	filename: strings.txt
- * @package 	TestLink
- * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
- * @copyright 	2003-2009, TestLink community 
- * @link 		http://www.teamst.org/index.php
- * 
- * @internal Revisions:
- * Last Update according to en_GB string file from TL 1.9.2 (BUGID 4448)
  *
  **/
-
+ 
 // Define character set of this file (UTF-8 is common value)
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
+// Last Update of this file
+$TLS_last_update = "Last localization update: 02/05/2011 (Testlink 1.9.2)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_type_not_configured = "mensagem do sistema: tipo não configurado";

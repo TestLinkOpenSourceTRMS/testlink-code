@@ -3,29 +3,37 @@
  * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2010/06/24 17:25:52 $ $Author: asimon83 $
- * @author Pavel Kalian
- * @author Martin Havlat
+ * Czech (cs_CZ) strings (en_GB is default development language)
  *
- * Czech (cs_CZ) strings
+ * This list of labels is defined as GLOBAL string variables. The first sections are general
+ * for strings used over all GUI. These definition should not be redefined. Next sections are
+ * related to particular pages. Comment with page filename indicate a begin of section. There
+ * must be defined all other strings.
+ * Do not use html elements in this file.
  *
- * N.B.:
- * Here we are defining GLOBAL variables.
  * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
- * This must be a reserved prefix.
+ * This must be a reserved prefix. The second part of variable name (after
+ * prefix) should indicate usage (warning, title), the third one indicate the page relation
+ * and text at the end.
  *
+ * ********************************************************************************************
+ * Warning - Warning - Warning - Warning - Warning - Warning - Warning - Warning - Warning
+ * ********************************************************************************************
  *
- * Revisions:
- * 20080114 - initial translation
- * Scripted update according en_GB string file (version: 1.395) 
- * Scripted update according en_GB string file (version: 1.413) 
- * ---------------------------------------------------------------------------------- */
+ * 1. Be careful about format - the file is parsed by script	comment only with "//" except header
+ * 2. for JS string you must use \\n to get \n for end of line
+ *
+ * Note: API interface is not localized (except error messages)
+ *
+ * ********************************************************************************************
+ *
+ **/
 
 // Define character set of this file (UTF-8 is common value)
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
+// Last Update of this file
+$TLS_last_update = "Last localization update: 22.03.2009";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active 		= "Aktivní";

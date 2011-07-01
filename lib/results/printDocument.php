@@ -217,7 +217,7 @@ switch ($doc_info->type)
 																				 		 $items2use,$args->tplan_id);
          		
 				$doc_data->statistics['real_execution'] = getStatsRealExecTime(	$tplan_mgr,
-																			 	$items2use,$args->tplan_id);
+																			 	$items2use,$args->tplan_id,$decode);
 
  			} // if ($printingOptions['metrics'])
     break;
@@ -498,7 +498,7 @@ function getStatsEstimatedExecTime(&$tplanMgr,&$items2use,$tplanID)
  * 
  * 
  **/
-function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$tplanID)
+function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$tplanID,$decode)
 {
    	$min = array();
 	$$executed_qty = 0;

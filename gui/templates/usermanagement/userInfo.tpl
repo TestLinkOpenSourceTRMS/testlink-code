@@ -125,9 +125,9 @@ function refreshLastUpdate (last_update) {
 		onsubmit="return validatePersonalData(this)">
 	{/if}
 	<input type="hidden" name="doAction" value="editUser" />
-	<table class="common">
+	<table class="common" width="50%">
 		<tr>
-			<th>{$labels.th_login}</th>
+			<th width="20%">{$labels.th_login}</th>
 			<td>{$user->login}</td>
 		</tr>
 		<tr>

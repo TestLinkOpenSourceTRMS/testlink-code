@@ -208,7 +208,6 @@ function validateForm(f)
 
   {if $gui->operationType == 'bulk'}
   <input type="hidden" name="update_all_value"  id="update_all_value"  value="1" />
-  <div class="workBack">
 	    <br/><table class="simple_tableruler">
 	      <tr>
 			    
@@ -250,14 +249,13 @@ function validateForm(f)
 	      </tr>
 	  	  {/foreach}
 	  	</table>
-    </div>
+
   {/if}
  
     <br>   
     <input type="submit" id="update_btn" name="update_btn" style="padding-right: 20px;"
            value='{$labels.btn_update_testplan_tcversions}'  />
     <input type="hidden" name="doAction" id="doAction" value="{$gui->buttonAction}" />  
-
   </form>
 {else}
   	<h2>{$gui->user_feedback}</h2>

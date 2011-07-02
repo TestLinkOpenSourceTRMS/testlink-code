@@ -144,7 +144,8 @@ if( $doIt )
 	foreach ($gui->resultSet as $tplan_id => $tcase_set) {
 
 		$show_platforms = !is_null($tplan_mgr->getPlatforms($tplan_id));
-		list($columns, $sortByColumn) = getColumnsDefinition($optColumns, $show_platforms);
+		$platforms = $tplan_mgr->getPlatforms($tplan_id);
+		list($columns, $sortByColumn) = getColumnsDefinition($optColumns, $show_platforms,$platforms);
 		$rows = array();
 
 		foreach ($tcase_set as $tcase_platform) {
@@ -192,9 +193,13 @@ if( $doIt )
 				if (!$status) {
 					$status = $map_status_code['not_run'];
 				}
-				$current_row[] = '<span class="' . $map_statuscode_css[$status]['css_class'] . '">' . 
-				                 $map_statuscode_css[$status]['translation'] . '</span>';
-
+				
+				$current_row[] = array (
+					"value" => $status,
+					"text" => $map_statuscode_css[$status]['translation'],
+					"cssClass" => $map_statuscode_css[$status]['css_class']
+				);
+				
 				$current_row[] = htmlspecialchars($tcase['creation_ts']) . 
 				                 " (" . get_date_diff($tcase['creation_ts']) . ")";
 				
@@ -340,7 +345,7 @@ function init_args()
  * get Columns definition for table to display
  *
  */
-function getColumnsDefinition($optionalColumns, $show_platforms)
+function getColumnsDefinition($optionalColumns, $show_platforms, $platforms)
 {
   	static $labels;
 	if( is_null($labels) )
@@ -367,7 +372,11 @@ function getColumnsDefinition($optionalColumns, $show_platforms)
 	$colDef[] = array('title_key' => 'testcase', 'width' => 130);
 	if ($show_platforms)
 	{
-		$colDef[] = array('title_key' => 'platform', 'width' => 50);
+		$platforms_for_filter = array();
+		foreach($platforms as $platform) {
+			$platforms_for_filter[] = $platform['name'];
+		}
+		$colDef[] = array('title_key' => 'platform', 'width' => 50, 'filter' => 'list', 'filterOptions' => $platforms_for_filter);
 	}
 	
 	// 20100816 - asimon - if priority is enabled, enable default sorting by that column
@@ -378,7 +387,7 @@ function getColumnsDefinition($optionalColumns, $show_platforms)
 		$colDef[] = array('title_key' => 'priority', 'width' => 50, 'filter' => 'ListSimpleMatch', 'filterOptions' => $prios_for_filter);
 	}
 	
-	$colDef[] = array('title_key' => 'status', 'width' => 50);
+	$colDef[] = array('title_key' => 'status', 'width' => 50, 'type' => 'status');
 	$colDef[] = array('title_key' => 'due_since', 'width' => 100);
 
 	return array($colDef, $sortByCol);

@@ -241,7 +241,7 @@ class tlExtTable extends tlTable
 				$s .= ",filter: {type: '{$column['filter']}',options: ['";
 				$s .= implode("','",$column['filterOptions']);
 				$s .= "']}";
-			} else {
+			} else if (!isset($this->customBehaviour[$column['type']]['filter'])) {
 				// if no filter is specified use string filter
 				// string filter is the most "basic" filter
 				$s .= ",filter: {type: 'string'}"; 
@@ -261,6 +261,10 @@ class tlExtTable extends tlTable
 				if (isset($customBehaviour['filter']) && $customBehaviour['filter'] == 'Status')
 				{
 					$s .= ",filter: " . $this->buildStatusFilterOptions();
+				}
+				if (isset($customBehaviour['filter']) && $customBehaviour['filter'] == 'Priority')
+				{
+					$s .= ",filter: " . $this->buildPriorityFilterOptions();
 				}
 				if (isset($customBehaviour['render']) )
 				{
@@ -482,5 +486,14 @@ class tlExtTable extends tlTable
 			$statuses[] = array($code, lang_get($label));
 		}
 		return "{type: 'Status', options: " . json_encode($statuses) . "}";
+	}
+	
+	function buildPriorityFilterOptions() {
+		$urgencyCfg = config_get('urgency');
+		$priorities = array();
+		foreach ($urgencyCfg['code_label'] as $prio => $label) {
+			$priorities[] = array($prio, lang_get($label));
+		}
+		return "{type: 'Priority', options: " . json_encode($priorities) . "}";
 	}
 }

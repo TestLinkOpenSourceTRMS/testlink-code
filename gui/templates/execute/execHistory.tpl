@@ -14,7 +14,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {include file="inc_head.tpl"}
 </head>
 
-<body>
+<body onUnload="storeWindowSize('execHistoryPopup')">
 {if $gui->main_descr != ''}
 {$gui->main_descr|escape}<br>
 {$gui->detailed_descr|escape}<br>

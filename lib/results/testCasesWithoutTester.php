@@ -132,7 +132,7 @@ function buildTable($data, $tproject_id, $show_platforms, $priorityMgmtEnabled)
 	
 	if($priorityMgmtEnabled) 
 	{
-		$matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer'));
+		$matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer', 'filter' => 'Priority'));
 		$matrix->setSortByColumnName($labels['priority']);
 	}
 	return $matrix;

@@ -28,6 +28,16 @@ $gui->execPlatformSet = null;
 if(!is_null($gui->execSet) )
 {
 	$gui->execPlatformSet = $tcase_mgr->getExecutedPlatforms($args->tcase_id);
+
+	// bugs
+	if(config_get('interface_bugs') != 'NO')
+	{
+		// need to understand why I need to do the include here and can not do
+		// it inside getIssues()
+		require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' . 
+				 	 DIRECTORY_SEPARATOR . 'int_bugtracking.php');
+		$gui->bugs = getIssues($db,$gui->execSet);
+	}
 }
 $gui->displayPlatformCol = !is_null($gui->execPlatformSet) ? 1 : 0;
 
@@ -36,6 +46,7 @@ $gui->detailed_descr = lang_get('test_case') . ' ' . $idCard;
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);  
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
 
 
 function init_args($cfgObj)
@@ -49,5 +60,30 @@ function init_args($cfgObj)
 	$args->tcase_id = intval($pParams["tcase_id"]);
 	
 	return $args;
+}
+
+function getIssues(&$dbHandler,&$execSet)
+{
+	
+	$bugInterfaceOn = config_get('bugInterfaceOn');
+	$bugInterface = config_get('bugInterface');
+
+	// we will see in future if we can use a better algorithm
+	$issues = array();
+	$tcv2loop = array_keys($execSet);
+	foreach($tcv2loop as $tcvid)
+	{
+		$execQty = count($execSet[$tcvid]);
+		for($idx=0; $idx < $execQty; $idx++)
+		{
+			$exec_id = $execSet[$tcvid][$idx]['execution_id'];
+			$dummy = get_bugs_for_exec($dbHandler,$bugInterface,$exec_id);
+			if(count($dummy) > 0)
+			{
+				$issues[$exec_id] = $dummy;
+			}	
+		} 
+	}
+	return $issues;
 }
 ?>

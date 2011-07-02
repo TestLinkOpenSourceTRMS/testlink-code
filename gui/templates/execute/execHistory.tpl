@@ -81,6 +81,14 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
        		  	{/if}
 				</td>
 			</tr>
+			{if isset($gui->bugs[$tcv_exec.execution_id])}
+				<tr style="background-color: {$bg_color}">
+	   			<td colspan="{$my_colspan}">
+	   				{include file="inc_show_bug_table.tpl"
+	   			         bugs_map=$gui->bugs[$tcv_exec.execution_id] can_delete=0 exec_id=$tcv_exec.execution_id}
+	   			</td>
+	   			</tr>
+			{/if}
 		{/foreach}
 	{/foreach}
 

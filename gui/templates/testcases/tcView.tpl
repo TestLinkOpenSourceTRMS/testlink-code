@@ -171,12 +171,10 @@ function validateStepsReorder(formOID)
  	      {assign var="loadOnCancelURL" value=""}
     {/if} 
     
-    {* TO BE RELEASED ON 1.9.4
     {if $gui->showExecHistory || TRUE}
   		<input type="button" onclick="javascript:openExecHistoryWindow({$tcID});"
    			   value="{$labels.btn_show_exec_history}" />
     {/if} 
-    *}
 		{include file="inc_attachments.tpl" 
 		         attach_id=$tcID  
 		         attach_tableName="nodes_hierarchy"

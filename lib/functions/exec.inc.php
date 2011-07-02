@@ -202,24 +202,27 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
 	$tables['builds'] = DB_TABLE_PREFIX . 'builds';
 	
 	$bug_list=array();
-	$sql = "SELECT execution_id,bug_id,builds.name AS build_name " .
-		"FROM {$tables['execution_bugs']}, {$tables['executions']} executions, " .
-		" {$tables['builds']} builds ".
-		"WHERE execution_id={$execution_id} " .
-		"AND   execution_id=executions.id " .
-		"AND   executions.build_id=builds.id " .
-		"ORDER BY builds.name,bug_id";
-	$map = $db->get_recordset($sql);
-	
-	// BUGID 3440 - added is_object() check
-	if( !is_null($map) && is_object($bug_interface))
-	{  	
-		foreach($map as $elem)
-		{
-			$bug_list[$elem['bug_id']]['link_to_bts'] = $bug_interface->buildViewBugLink($elem['bug_id'],GET_BUG_SUMMARY);
-			$bug_list[$elem['bug_id']]['build_name'] = $elem['build_name'];
+	if( is_object($bug_interface) )
+	{
+		$sql = 	"SELECT execution_id,bug_id,builds.name AS build_name " .
+				"FROM {$tables['execution_bugs']}, {$tables['executions']} executions, " .
+				" {$tables['builds']} builds ".
+				" WHERE execution_id={$execution_id} " .
+				" AND   execution_id=executions.id " .
+				" AND   executions.build_id=builds.id " .
+				" ORDER BY builds.name,bug_id";
+		$map = $db->get_recordset($sql);
+		
+		if( !is_null($map) )
+		{  	
+			foreach($map as $elem)
+			{
+				$bug_list[$elem['bug_id']]['link_to_bts'] = $bug_interface->buildViewBugLink($elem['bug_id'],GET_BUG_SUMMARY);
+				$bug_list[$elem['bug_id']]['build_name'] = $elem['build_name'];
+			}
 		}
 	}
+	
 	
 	return($bug_list);
 }

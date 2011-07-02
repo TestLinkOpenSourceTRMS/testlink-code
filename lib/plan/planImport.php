@@ -17,10 +17,8 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20110630 - franciscom - get_linked_versions() interface changes
  * 20110308 - franciscom - get_basic_info() interface changes
- * 20101031 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
- * 20101030 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
- * 20101017 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
  *
  **/
 require('../../config.inc.php');
@@ -360,7 +358,8 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 							// for same test plan there is a different version already linked ?
 							// if YES => error.
 							//
-							$linkedVersions = $tcaseMgr->get_linked_versions($dummy[0]['id'],'ALL','ALL',$contextObj->tplan_id);
+							$lvFilters = array('tplan_id' => $contextObj->tplan_id);
+							$linkedVersions = $tcaseMgr->get_linked_versions($dummy[0]['id'],$lvFilters);
 							$updateLink = false;
 							
 							// new dBug($linkedVersions);   

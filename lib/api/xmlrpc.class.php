@@ -20,90 +20,8 @@
  * 
  *
  * @internal revisions 
- *	20110309 - franciscom - BUGID 4311: typo error on uploadExecutionAttachment mapping
- *	20101212 - franciscom - BUGID 4086: Unexpected result when overwriting reportTCResult
- *							This bug is caused by an issue on get_last_execution()
- *	20101208 - franciscom - BUGID 4082 - reportTCResult() - no check on overwrite value
- *	20101120 - franciscom - getFullPath() - make user happy allowing array or simple value
- *							BUGID 3993: getFullPath can receive a list of node ids instead of one node
- *							BUGID 4041: API - getTestCasesForTestPlan() -Platform Information not provided
- *	20101110 - franciscom - BUGID 3992 - getTestCasesForTestPlan() keywords issue	 
- *							BUGID 3991 - getValidKeywordSetById() missing $this in return 
- *	20101023 - franciscom - BUGID 3916: getTestCaseCustomFieldDesignValue() - missing refactoring regarding
- *										custom field values linked to test case version
- *
- *							BUGID 3920: createTestProject() missing refactoring
- *
- * 	20100918 - franciscom - BUGID 1890 - uploadAttachment(), upload*Attachment - contribution by kinow	
- *  20100731 - asimon - BUGID 3644 (additional fix for BUGID 2607)
- *	20100715 - franciscom - BUGID 3604 - getTestCasesForTestPlan()
- *	20100711 - franciscom - BUGID 3564 - addTestCaseToTestPlan()
- *                          BUGID 2607 - UTF8 settings for MySQL
- *							BUGID 3544: deleteExecution doesn't handle missing execution id - checkExecutionID()
- *	20100705 - franciscom - BUGID  - getTestPlanPlatforms() typo error
- * 	20100704 - franciscom - BUGID 3565 - createTestPlan() typo and logic error
- *	20100618 - franciscom - contribution refactored doesUserExist(), checkDevKey()
- *  20100613 - franciscom - BUGID 2845: buildname option in reportTCResult will never be used
- *	20100610 - eloff - added getTotalsForTestPlan() method
- *	20100608 - franciscom - reportTCResult() writes always tcversion_number=1
- *	20100514 - franciscom - BUGID 3454 - Contribution refactor class to be able to be extended to create other server.
- *	20100513 - franciscom - fixed missing properties error on userHasRight()
- *							BUGID 3455 - BUGID 3456
- *							BUGID 3458
- *	20100415 - franciscom - BUGID 3385 - contribution - getTestPlanPlatforms() (refactored)
- *	20100328 - franciscom - BUGID 2645 - contribution - getTestSuitesForTestSuite()
- *	20100308 - franciscom - BUGID 3243 - checkPlatformIdentity()
- *	20100205 - franciscom - BUGID 3140 - _checkTCIDAndTPIDValid()	
- *	20091228 - franciscom - checkReqSpecQuality() - refactoring due to req versioning feature
- *	20091212 - franciscom - BUGID 2998 - contribution - getTestSuiteByID()
- *  20091128 - franciscom - getTestCaseIDBy() - added testcasepathname
- *  20091113 - franciscom - work for adding overwrite argument to reportTCResult() started.
- *  20090917 - franciscom - reportTCResult() manages platform info
- *	20090902 - franciscom - test case preconditions field
- *	20090804 - franciscom - deleteExecution() - new method (need more work)
- *	20090801 - franciscom - getTestCasesForTestPlan() allows keyword passed by name
- *	20090727 - franciscom - added contribution BUGID  - reportTCResult() accepts CF info
- *	20090726 - franciscom - added contribution BUGID 2719 - getFullPath()
- *	20090609 - franciscom - createTestPlan() - new method
- *	                        WORK TO BE DONE, limit lenght of any limited string (names, prefix, etc)
- *	
- *	20090521 - franciscom - refactoring to manage DB_TABLE_PREFIX
- *	20090521 - franciscom - getTestCase() - development started
- *	20090426 - franciscom - getLastExecutionResult(), changed return type when there is not execution.
- *	                        getTestCaseAttachments(), test case external id can be used on call
- *	                        BUGID 2441 - getTestProjectByName(), getTestPlanByName() - new methods.
- *	
- *	20090420 - franciscom - BUGID 2158 - full implementation of getTestCaseCustomFieldDesignValue()
- *	20090411 - franciscom - BUGID 2369 - changes in addTestCaseToTestPlan()
- *	20090314 - franciscom - createTestSuite()
- *	20090303 - franciscom - BUGID 2179
- *	20090218 - franciscom - Contribution by JaskaJ - BUGID 2127 - getTestCaseAttachments() Refactored 
- *	                         
- *	20090214 - franciscom - BUGID 2098 - getTestCasesForTestPlan() - added executiontype parameter
- *	20090209 - franciscom - getTestCasesForTestPlan()
- *	                        added summary,steps,expected_results,tsuite_name in returned info
- *	                        reportTCResult() - contribution by hnishiyama - optional bug id 
- *	
- *	20090209 - franciscom - getTestCasesForTestSuite() - refactoring
- *	20090208 - franciscom - reading status from configuration using config_get()
- *	                        fixed bad check on checkBuildID()
- *	20090126 - franciscom - added some contributions by hnishiyama. 
- *	20090125 - franciscom - getLastTestResult() -> getLastExecutionResult()
- *	20090122 - franciscom - assignRequirements()
- *	20090117 - franciscom - createTestProject()
- *	20090116 - franciscom - getFirstLevelTestSuitesForTestProject()
- *	                        getTestCaseIDByName() - added testprojectname param
- *	
- *	20090113 - franciscom - BUGID 1982 - addTestCaseToTestPlan()
- *	20090106 - franciscom - createTestCase() - first implementation
- *	20080409 - azl - implement using the testsuitename param with the getTestCaseIDByName method
- *	20080309 - sbouffard - contribution - BUGID 1420: added getTestCasesForTestPlan (refactored by franciscom)
- *	20080307 - franciscom - now is possible to use test case external or internal ID
- *	                        when calling reportTCResult()
- *	20080306 - franciscom - BUGID 1421
- *	20080305 - franciscom - minor code refactoring
- *	20080103 - franciscom - fixed minor bugs due to refactoring
- *	20080115 - havlatm - 0001296: API table refactoring 
+ * 20110630 - franciscom - get_linked_versions() interface changes
+ * 20110309 - franciscom - BUGID 4311: typo error on uploadExecutionAttachment mapping
  */
 
 /** 
@@ -1137,9 +1055,10 @@ class TestlinkXMLRPCServer extends IXR_Server
     	$tcase_id = $this->args[self::$testCaseIDParamName];
         $platform_id = !is_null($platformInfo) ? key($platformInfo) : null;
         
-    	$info = $this->tcaseMgr->get_linked_versions($tcase_id,"ALL","ALL",$tplan_id,$platform_id);
+        $filters = array('exec_status' => "ALL", 'active_status' => "ALL",
+        				 'tplan_id' => $tplan_id, 'platform_id' => $platform_id);
+    	$info = $this->tcaseMgr->get_linked_versions($tcase_id,$filters);
         $status_ok = !is_null($info);
-		// $this->errors[]=$info;
 		
 		        
         if( $status_ok )

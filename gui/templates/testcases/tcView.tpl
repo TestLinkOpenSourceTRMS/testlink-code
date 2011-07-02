@@ -19,10 +19,9 @@ rev:
 
 {config_load file="input_dimensions.conf"}
 {lang_get var='labels' 
-          s='no_records_found,other_versions,show_hide_reorder,version,title_test_case,match_count'}
+          s='no_records_found,other_versions,show_hide_reorder,version,title_test_case,match_count,btn_show_exec_history'}
 
 {* Configure Actions *}
-{* BUGID 3493 *}
 {assign var="showMode" value=$gui->show_mode}
 {assign var="deleteStepAction" value="lib/testcases/tcEdit.php?show_mode=$showMode&doAction=doDeleteStep&step_id="}
 
@@ -113,7 +112,6 @@ function validateStepsReorder(formOID)
 <h1 class="title">{$gui->pageTitle}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}
 </h1>
 
-{* 4067 *}
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback refresh=$gui->refreshTree}
 <div class="workBack">
 
@@ -172,6 +170,12 @@ function validateStepsReorder(formOID)
 		{if !isset($gui->loadOnCancelURL)}
  	      {assign var="loadOnCancelURL" value=""}
     {/if} 
+    
+    {if $gui->showExecHistory || TRUE}
+  		<input type="button" onclick="javascript:openExecHistoryWindow({$tcID});"
+   			   value="{$labels.btn_show_exec_history}" />
+    {/if} 
+    
 		{include file="inc_attachments.tpl" 
 		         attach_id=$tcID  
 		         attach_tableName="nodes_hierarchy"
@@ -267,7 +271,6 @@ function validateStepsReorder(formOID)
 {/if}
 
 </div>
-{* 20100315 - franciscom *}
 {if $gui->refreshTree}
 	{include file="inc_refreshTreeWithFilters.tpl"}
 {/if}

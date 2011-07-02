@@ -3325,5 +3325,8 @@ $TLS_issue_status_held = "Held";
 // this definition has to be placed AFTER $TLS_title_metrics_x_build
 $TLS_buildMetricsFeedback = $TLS_title_metrics_x_build . 
 							' data is computed using only test cases that have tester assignment on build';
+
+// execHistory.php
+$TLS_btn_show_exec_history = 'Show full execution history';
 // ----- END ------------------------------------------------------------------
 ?>

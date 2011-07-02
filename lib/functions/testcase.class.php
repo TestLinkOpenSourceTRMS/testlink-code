@@ -10,6 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110630 - franciscom - get_linked_versions() interface changes
  * 20110622 - asimon - TICKET 4600: Blocked execution of testcases
  * 20110413 - franciscom - BUGID 4404 - copy_to() set author_id = user doing copy
  * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
@@ -1016,7 +1017,7 @@ class testcase extends tlObjectWithAttachments
 		if($has_links_to_testplans)
 		{
 			// check if executed
-			$linked_not_exec = $this->get_linked_versions($id,"NOT_EXECUTED");
+			$linked_not_exec = $this->get_linked_versions($id,array('exec_status' => 'NOT_EXECUTED'));
 	
 			$status='linked_and_executed';
 			if(count($linked_tcversions) == count($linked_not_exec))
@@ -1114,22 +1115,51 @@ class testcase extends tlObjectWithAttachments
 	                  testplan_id
 	                  tplan_name
 	*/
-	function get_linked_versions($id,$exec_status="ALL",$active_status='ALL',$tplan_id=null,$platform_id=null)
+	function get_linked_versions($id,$filters=null,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		$my['filters'] = array(	'exec_status' => "ALL", 'active_status' => 'ALL',
+								'tplan_id' => null, 'platform_id' => null);
+	    $my['filters'] = array_merge($my['filters'], (array)$filters);
+
+		// 'output' => 'full', 'nosteps', 'minimal'
+		// 
+		$my['options'] = array('output' => "full");
+	    $my['options'] = array_merge($my['options'], (array)$options);
+
+
+		$exec_status = strtoupper($my['filters']['exec_status']);
+	  	$active_status = strtoupper($my['filters']['active_status']);
+	  	$tplan_id = $my['filters']['tplan_id'];
+	  	$platform_id = $my['filters']['platform_id'];
+
 	  	$active_filter='';
-	  	$active_status=strtoupper($active_status);
 		if($active_status !='ALL')
 		{
 		  $active_filter=' AND tcversions.active=' . $active_status=='ACTIVE' ? 1 : 0;
 	  	}
 	
+		$fields2get = 'tc_external_id,version,status,importance,active, is_open,execution_type,';
+					  
+		switch($my['options']['output'])
+		{
+			case 'full':
+			case 'nosteps':
+			$fields2get .= 	'layout,summary,preconditions,tcversions.author_id,tcversions.creation_ts,' .
+							'tcversions.updater_id,tcversions.modification_ts,';
+			break;
+			
+			case 'simple':
+			break;
+		}
+		
 		switch ($exec_status)
 		{
 			case "ALL":
 		        $sql = "/* $debugMsg */ " . 	    
-				       " SELECT NH.parent_id AS testcase_id, NH.id AS tcversion_id, " .
-					   " tcversions.*, TTC.testplan_id, TTC.tcversion_id, TTC.platform_id," . 
+				       " SELECT NH.parent_id AS testcase_id, TTC.tcversion_id, TTC.testplan_id,  TTC.platform_id," . 
+				       " tcversions.id, {$fields2get} " .
 					   " NHB.name AS tplan_name " .
 					   " FROM   {$this->tables['nodes_hierarchy']} NH," .
 					   " {$this->tables['tcversions']} tcversions," .
@@ -1145,14 +1175,13 @@ class testcase extends tlObjectWithAttachments
 	      		    $sql .= " AND TTC.testplan_id = {$tplan_id} ";  
 	      		}  					    
 	      		
-	      		// 20100308 - franciscom
 	      		if(!is_null($platform_id))
 	      		{
 	      		    $sql .= " AND TTC.platform_id = {$platform_id} ";  
 	      		}  					    
 	      		
 	        	$recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id',database::CUMULATIVE);
-				// 20100330 - eloff - BUGID 3329
+
 				if( !is_null($recordset) )
 				{
 					// changes third access key from sequential index to platform_id
@@ -1182,7 +1211,7 @@ class testcase extends tlObjectWithAttachments
 	  }
 
 	  // Multiple Test Case Steps
-		if( !is_null($recordset) )
+		if( !is_null($recordset) && ($my['options']['output'] == 'full') )
 		{
 			$version2loop = array_keys($recordset);
 			foreach( $version2loop as $accessKey)
@@ -4981,6 +5010,153 @@ class testcase extends tlObjectWithAttachments
 	 *
 	 *
 	 */
+	function getExecutionSet($id,$filters=null,$options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+	    $my['filters'] = array('version_id' => null,'tplan_id' => null,'platform_id' => null, 'build_id' => null); 	
+	    $my['filters'] = array_merge($my['filters'], (array)$filters);
+
+	    $my['options'] = array('exec_id_order' => 'DESC'); 	
+	    $my['options'] = array_merge($my['options'], (array)$options);
+		
+		$filterKeys = array('build_id','platform_id','tplan_id');
+        foreach($filterKeys as $key)
+        {
+        	$filterBy[$key] = '';
+        	if( !is_null($my['filters'][$key]) )
+        	{
+        		$itemSet = implode(',', (array)$$key);
+        		$filterBy[$key] = " AND e.{$key} IN ({$itemSet}) ";
+        	}
+        }
+	
+		// --------------------------------------------------------------------
+		if( is_array($id) )
+		{
+			$tcid_list = implode(",",$id);
+			$where_clause = " WHERE NHTCV.parent_id IN ({$tcid_list}) ";
+		}
+		else
+		{
+			$where_clause = " WHERE NHTCV.parent_id = {$id} ";
+		}
+	
+		if( is_array($version_id) )
+		{
+		    $versionid_list = implode(",",$version_id);
+		    $where_clause  .= " AND tcversions.id IN ({$versionid_list}) ";
+		}
+		else
+		{
+				if($version_id != self::ALL_VERSIONS)
+				{
+					$where_clause  .= " AND tcversions.id = {$version_id} ";
+				}
+		}
+	
+
+	  $sql="/* $debugMsg */ SELECT NHTC.name,NHTCV.parent_id AS testcase_id, tcversions.*,
+			    users.login AS tester_login,
+			    users.first AS tester_first_name,
+			    users.last AS tester_last_name,
+				e.tester_id AS tester_id,
+			    e.id AS execution_id, e.status,e.tcversion_number,
+			    e.notes AS execution_notes, e.execution_ts, e.execution_type AS execution_run_type,
+			    e.build_id AS build_id,
+			    b.name AS build_name, b.active AS build_is_active, b.is_open AS build_is_open,
+   			    e.platform_id,p.name AS platform_name,
+   			    e.testplan_id,NHTPLAN.name AS testplan_name
+		    FROM {$this->tables['nodes_hierarchy']} NHTCV
+	        JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTCV.parent_id = NHTC.id
+	        JOIN {$this->tables['tcversions']} tcversions ON NHTCV.id = tcversions.id
+	        JOIN {$this->tables['executions']} e ON NHTCV.id = e.tcversion_id
+	                                             {$filterBy['tplan_id']}
+	                                             {$filterBy['build_id']} {$filterBy['platform_id']}
+	        JOIN {$this->tables['builds']}  b ON e.build_id=b.id
+	        JOIN {$this->tables['testplans']} TPLAN ON TPLAN.id = e.testplan_id
+	        JOIN {$this->tables['nodes_hierarchy']} NHTPLAN ON NHTPLAN.id = TPLAN.id
+	        LEFT OUTER JOIN {$this->tables['users']} users ON users.id = e.tester_id
+	        LEFT OUTER JOIN {$this->tables['platforms']} p ON p.id = e.platform_id
+	        $where_clause " .
+	        " ORDER BY NHTCV.parent_id ASC, tcversions.version ASC, execution_id {$my['options']['exec_id_order']}";
+
+	        // " ORDER BY NHTCV.node_order ASC, NHTCV.parent_id ASC, execution_id {$my['options']['exec_id_order']}";
+	
+
+	
+	  // echo $sql;
+	  $recordset = $this->db->fetchArrayRowsIntoMap($sql,'id');
+	  return($recordset ? $recordset : null);
+	}
+
+
+
+	/**
+	 * for test case id and filter criteria return set with platforms 
+	 * where test case has a version that has been executed.
+	 *
+	 */
+	function getExecutedPlatforms($id,$filters=null,$options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+	    $my['filters'] = array(	'version_id' => null,'tplan_id' => null,
+	    						'platform_id' => null, 'build_id' => null); 	
+	    $my['filters'] = array_merge($my['filters'], (array)$filters);
+
+	    $my['options'] = array('exec_id_order' => 'DESC'); 	
+	    $my['options'] = array_merge($my['options'], (array)$options);
+		
+		$filterKeys = array('build_id','platform_id','tplan_id');
+        foreach($filterKeys as $key)
+        {
+        	$filterBy[$key] = '';
+        	if( !is_null($my['filters'][$key]) )
+        	{
+        		$itemSet = implode(',', (array)$$key);
+        		$filterBy[$key] = " AND e.{$key} IN ({$itemSet}) ";
+        	}
+        }
+	
+		// --------------------------------------------------------------------
+		if( is_array($id) )
+		{
+			$tcid_list = implode(",",$id);
+			$where_clause = " WHERE NHTCV.parent_id IN ({$tcid_list}) ";
+		}
+		else
+		{
+			$where_clause = " WHERE NHTCV.parent_id = {$id} ";
+		}
+	
+		if( is_array($version_id) )
+		{
+		    $versionid_list = implode(",",$version_id);
+		    $where_clause  .= " AND tcversions.id IN ({$versionid_list}) ";
+		}
+		else
+		{
+				if($version_id != self::ALL_VERSIONS)
+				{
+					$where_clause  .= " AND tcversions.id = {$version_id} ";
+				}
+		}
+	
+	  $sql = "/* $debugMsg */ SELECT DISTINCT e.platform_id,p.name " .
+		     " FROM {$this->tables['nodes_hierarchy']} NHTCV " . 
+	         " JOIN {$this->tables['tcversions']} tcversions ON NHTCV.id = tcversions.id " .
+	         " JOIN {$this->tables['executions']} e ON NHTCV.id = e.tcversion_id " .
+	         " {$filterBy['tplan_id']} {$filterBy['build_id']} {$filterBy['platform_id']} " .
+	         " JOIN {$this->tables['builds']}  b ON e.build_id=b.id " .
+	         " LEFT OUTER JOIN {$this->tables['platforms']} p ON p.id = e.platform_id " .
+	         $where_clause;
+
+	  // echo $sql;
+	  $recordset = $this->db->fetchRowsIntoMap($sql,'platform_id');
+	  return($recordset ? $recordset : null);
+	}
+
 	 
 } // end class
 ?>

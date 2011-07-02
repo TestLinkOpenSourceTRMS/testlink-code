@@ -3,6 +3,53 @@
    TestLink  Change-log
 *******************************************************************************
 
+TestLink - 1.9.3 (2011 Q3 - bug fixing) (Scheduled For Release 2011-07-01)
+==========================================================================
+- 0004511: [Reports] MIle stones are not getting updated (Julian) - resolved.
+- 0004419: [Test Importance / Urgency / Priority] Add columns "Importance" and "Priority" to "Set urgent Tests" (Julian) - closed.
+- 0004418: [Test Importance / Urgency / Priority] Clean up priority usage within Testlink (Julian) - closed.
+- 0004398: [Migration/Upgrade Testlink] Prevent user-login when database scheme version does not fit required scheme (Julian) - closed.
+- 0002985: [New Feature] Expose test case IMPORTANCE (NOT priority) as a column in the 'Add / Remove Test cases to Test Plan' frame. (Julian) - closed.
+- 0004486: [Test Plan (builds, milestones, test assign)] Assign test execution - Link shows incorrect Test Case Version (Julian) - closed.
+- 0004487: [Requirement Management] Add Req-Version to internal Requirement Links (Julian) - closed.
+- 0004497: [Requirement Revisioning] Revision is not shown for older Requirement Versions (Julian) - closed.
+- 0004481: [User Interface Customization] Allow custom configuration of CSS Styles when defining new statuses (fman) - closed.
+- 0004536: [Requirement Management] Tree is not refreshed after editing Requirement (fman) - closed.
+- 0004376: [User Interface General] Test Specification > {test suite | test case} > {ctrl, click, drag} > destination test suite (fman) - closed.
+- 0004535: [Requirement Management] Tree is not refreshed after editing Requirement Specification (fman) - closed.
+- 0004368: [Inventory / Platforms] Provide WYSIWYG Editor (FCKEditor) for Platform Description (fman) - closed.
+- 0004584: [Test Specification] Checkbox to decide whether to create another test case or not (Julian) - closed.
+- 0003953: [Test Specification] Checkbox to decide whether to create another requirement or not (Julian) - closed.
+- 0004305: [User Interface General] The test cases tree shows nothing when creating test cases (fman) - closed.
+- 0004613: [Test Plan (builds, milestones, test assign)] cookiePrefix needs to be improved for all trees within testlink (Julian) - closed.
+- 0004322: [Test Specification] New Option to block delete of executed test cases. (fman) - closed.
+- 0004196: [Test Execute] Usability: Tree is collapsed after execution (fman) - closed.
+- 0004625: [Test Execute] Settings not properly set on "args" when first entering test execution (asimon) - closed.
+- 0004600: [Test Plan (builds, milestones, test assign)] Block to execute test case because of updating new test case version (asimon) - closed.
+- 0003110: [Test Specification] Show Testcase newest version must have clickable TC and compare (Julian) - closed.
+- 0004636: [Test Plan (builds, milestones, test assign)] Add Edit Icon and Execution Icon to Test Execution Assingment Frame that opens Test Case Edit or Execution popup (Julian) - closed.
+- 0004494: [Third party components] Upgrade Extjs 3.3.0 to 3.4.0 to support Internet Explorer 9 (Julian) - closed.
+- 0004644: [User Interface General] Allow to configure different CSS-Files for Test Spec Documents and Requirement Spec Documents (Julian) - closed.
+- 0004298: [Requirement Management] Direct links for each requirement version (asimon) - closed.
+- 0004289: [Requirement Management] (MS SQL Server 2008) - Opening a requirement crashes (fman) - closed.
+- 0004321: [Requirement Management] Requirement Spec - add option to print single Req Spec (fman) - closed.
+- 0004125: [Reports] Filtering does not work in " Test result matrix" (Eloff) - closed.
+- 0004349: [Localization] Locale en_US outdated -> copy en_GB to en_US to update for now (Julian) - closed.
+- 0004062: [Users and Rights] General user rights overide user rigths at test plan level (after migration from 1.8.5 to 1.9.x) (fman) - closed.
+- 0004356: [TL API] Unable to generate developer key when using prefix in table names. (fman) - closed.
+- 0004303: [Test Execute] Filtering does NOT work (fman) - closed.
+- 0004333: [Reports] On General Test Plan Metrics % complete did not round (kinow) - closed.
+- 0004302: [Test Execute] Execute Test pane (fman) - closed.
+- 0004343: [Reports] Reports Failed Test Cases / Blocked Test Cases / Not Run Test Cases -> Build is not shown (fman) - closed.
+- 0004341: [Reports] New Column "Last Execuition Result" for Test Result Matrix (Julian) - closed.
+- 0004362: [Reports] metricsDashboard not working properly with platforms defined (fman) - closed.
+- 0004363: [Reports] General Test Plan Metrics - Overall Build Status -> empty line for a build shown with no test cases assigned to user (fman) - closed.
+- 0004391: [Reports] General Test Plan Metrics - Results by Keywords does not work properly when platforms are used (fman) - closed.
+- 0004387: [Reports] Tables in "general testplan metrics" should offer option to sort data (Julian) - closed.
+- 0004374: [Test Project Management] When copying a project, external TC ID is not preserved (fman) - closed.
+- 0004128: [Reports] Report->Overall Build Status:the Assigned field is not correct sometimes (fman) - closed.
+- 0004243: [Test Execute] When creating a new build without "Copy tester assignments", the test cases remain assigned to users of the previous build (Julian) - closed.
+- 0004336: [Reports] tl_documents.css not found due to wrong path in generated report (kinow) - closed.
 
 TestLink - 1.9.2 (2010 Q2 - bug fixing) (Released 2011-03-19)
 =============================================================

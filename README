@@ -1,5 +1,5 @@
 ===============================================================
-                    TestLink 1.9.2 (Prague Bugfix 2) - Read me
+                    TestLink 1.9.3 (Prague Bugfix 3) - Read me
 ===============================================================
 
 Contents
@@ -31,7 +31,7 @@ There is no hidden fee - 100% free for using!
 2. Release notes
 ===============================================================
 
-This release contains bugfixes for 1.9.0/1.9.1
+This release contains bugfixes for 1.9.0/1.9.1/1.9.2
    
 See CHANGELOG file for detailed list of issues fixed.
 
@@ -98,10 +98,10 @@ Check Installation manual and TestLink forum if you meet a problem.
 When accessing Installer page you will found following options:
 
  - New Installation
- - Migration from 1.8 to 1.9.1/2
+ - Migration from 1.8 to 1.9.1/2/3
 
-If you are upgrading from 1.9.0 please go to section 'Upgrade from 1.9.0 to 1.9.1/2'.
-If you are upgrading from 1.9.1 NO DB upgrades will be needed.
+If you are upgrading from 1.9.0 please go to section 'Upgrade from 1.9.0 to 1.9.1/2/3'.
+If you are upgrading from 1.9.1/2 NO DB upgrades will be needed.
 
  Steps
  - Make a Backup of your current database.
@@ -155,10 +155,9 @@ This list comprise people that has helped
 --- Most Active on this release
 * Francisco Mancardi - Project lead, builds, core developer, contributors code reviewer
 * Julian Krien - Leader of testlink-qa group effort on 1.9.x
-* Andreas Simon
-
 
 --- Contributors and developers active on other releases ---
+* Andreas Simon
 * Erik Eloff
 * Martin Havlat - Project lead, builds, infrastructure, developer
 * Andreas Morsing - core developer

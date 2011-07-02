@@ -391,7 +391,7 @@ function buildMatrix($buildSet, $dataSet, $format, $show_platforms, &$args)
 		// BUGID 3418: check if test priority is enabled
 		if($_SESSION['testprojectOptions']->testPriorityEnabled) 
 		{
-			$matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer'));
+			$matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer', 'filter' => 'Priority'));
 			//sort by priority
 			$matrix->setSortByColumnName(lang_get('priority'));
 		} else {

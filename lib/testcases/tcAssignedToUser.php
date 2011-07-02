@@ -374,7 +374,8 @@ function getColumnsDefinition($optionalColumns, $show_platforms)
 	if ($optionalColumns['priority']) 
 	{
 	  	$sortByCol = $labels['priority'];
-		$colDef[] = array('title_key' => 'priority', 'width' => 50);
+	  	$prios_for_filter = array(lang_get('low_priority'),lang_get('medium_priority'),lang_get('high_priority'));
+		$colDef[] = array('title_key' => 'priority', 'width' => 50, 'filter' => 'ListSimpleMatch', 'filterOptions' => $prios_for_filter);
 	}
 	
 	$colDef[] = array('title_key' => 'status', 'width' => 50);

@@ -366,3 +366,18 @@ Ext.ux.grid.filter.PriorityFilter = Ext.extend(Ext.ux.grid.filter.ListFilter, {
         return ( this.getValue().indexOf(priority) > -1);
     }
 });
+
+Ext.ux.grid.filter.ListSimpleMatchFilter = Ext.extend(Ext.ux.grid.filter.ListFilter, {
+    validateRecord: function (record) {
+        var value = record.get(this.dataIndex);
+        var filterArray= this.getValue();
+        var match = false;
+        for (var idx = 0; idx < filterArray.length; idx++) {
+            if (value.search(filterArray[idx]) > -1) {
+                match = true;
+                break;
+            }
+        }
+        return (match);
+    }
+});

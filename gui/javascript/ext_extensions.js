@@ -352,19 +352,17 @@ Ext.ux.requireSessionAndSubmit = function(form) {
 Ext.ux.grid.filter.StatusFilter = Ext.extend(Ext.ux.grid.filter.ListFilter, {
     validateRecord: function (record) {
         var status = record.get(this.dataIndex).value;
-        return ( this.getValue().indexOf(record.get(this.dataIndex).value) > -1);
+        return ( this.getValue().indexOf(status) > -1);
     }
 });
 
 /**
- * Allows list filtering on priority value. Status is a special column type
- * and its value is a JS-object. The objects 'value' attribute (1/2/3) is
- * used in filtering.
+ * Allows list filtering on priority.
  * (The standard ListFilter uses the raw object itself treating it like a string.)
  */
 Ext.ux.grid.filter.PriorityFilter = Ext.extend(Ext.ux.grid.filter.ListFilter, {
     validateRecord: function (record) {
-        var priority = record.get(this.dataIndex).value;
-        return ( this.getValue().indexOf(record.get(this.dataIndex).value) > -1);
+        var priority = record.get(this.dataIndex);
+        return ( this.getValue().indexOf(priority) > -1);
     }
 });

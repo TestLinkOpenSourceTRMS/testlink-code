@@ -241,7 +241,7 @@ class tlExtTable extends tlTable
 				$s .= ",filter: {type: '{$column['filter']}',options: ['";
 				$s .= implode("','",$column['filterOptions']);
 				$s .= "']}";
-			} else if (!isset($customBehaviour['filter'])) {
+			} else if (!isset($this->customBehaviour[$column['type']]['filter'])) {
 				// if no filter is specified use string filter
 				// string filter is the most "basic" filter
 				$s .= ",filter: {type: 'string'}"; 

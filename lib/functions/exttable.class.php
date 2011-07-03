@@ -241,10 +241,12 @@ class tlExtTable extends tlTable
 				$s .= ",filter: {type: '{$column['filter']}',options: ['";
 				$s .= implode("','",$column['filterOptions']);
 				$s .= "']}";
-			} else if (!isset($this->customBehaviour[$column['type']]['filter'])) {
+			} else if (isset($column['type']) && isset($this->customBehaviour[$column['type']]['filter'])) {
+				// do not define a filter in this case. Special filters are applied later
+			} else {
 				// if no filter is specified use string filter
 				// string filter is the most "basic" filter
-				$s .= ",filter: {type: 'string'}"; 
+				$s .= ",filter: {type: 'string'}";
 			}
 
             foreach($options as $opt_str)
@@ -492,7 +494,7 @@ class tlExtTable extends tlTable
 		$urgencyCfg = config_get('urgency');
 		$priorities = array();
 		foreach ($urgencyCfg['code_label'] as $prio => $label) {
-			$priorities[] = array($prio, lang_get($label));
+			$priorities[] = array("$prio", lang_get($label));
 		}
 		return "{type: 'Priority', options: " . json_encode($priorities) . "}";
 	}

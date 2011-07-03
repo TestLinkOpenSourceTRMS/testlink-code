@@ -248,9 +248,16 @@ if (count($req_spec_map)) {
 		$columns[] = array('title_key' => 'th_coverage', 'width' => 60, 'groupable' => 'false');
 	}
 	
-	$columns[] = array('title_key' => 'evaluation', 'width' => 80, 'groupable' => 'false');
-	$columns[] = array('title_key' => 'type', 'width' => 60, 'groupable' => 'false');
-	$columns[] = array('title_key' => 'status', 'width' => 60, 'groupable' => 'false');
+	$evaluation_for_filter = array();
+	foreach($eval_status_map as $eval) {
+		$evaluation_for_filter[] = $eval['label'];
+	}
+	$columns[] = array('title_key' => 'evaluation', 'width' => 80, 'groupable' => 'false',
+	                   'filter' => 'ListSimpleMatch', 'filterOptions' => $evaluation_for_filter);
+	$columns[] = array('title_key' => 'type', 'width' => 60, 'groupable' => 'false', 
+	                   'filter' => 'list', 'filterOptions' => $req_type_labels);
+	$columns[] = array('title_key' => 'status', 'width' => 60, 'groupable' => 'false',
+	                   'filter' => 'list', 'filterOptions' => $status_labels);
 	
 	foreach ($code_status_map as $status) {
 		$columns[] = array('title_key' => $results_cfg['status_label'][$status['status']], 

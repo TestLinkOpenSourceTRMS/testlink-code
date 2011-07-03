@@ -43,13 +43,14 @@ $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 $tcase_mgr = new testcase($db);
 $args = init_args($db);
 $gui = initializeGui($db,$args);
+
 if( $args->doIt )
 {
    	// Get executions with custom field values
    	buildResultSet($db,$gui,$args->tproject_id,$args->tplan_id);
 
 	// Create column headers
-	$columns = getColumnsDefinition($args->showPlatforms,$gui->cfields);
+	$columns = getColumnsDefinition($args->showPlatforms,$gui->cfields,$args->platforms);
 
 	// Extract the relevant data and build a matrix
 	$matrixData = array();
@@ -181,6 +182,8 @@ function init_args(&$dbHandler)
 
 		$argsObj->doIt = $tplan_mgr->count_testcases($argsObj->tplan_id) > 0;
 		$argsObj->showPlatforms = $tplan_mgr->hasLinkedPlatforms($argsObj->tplan_id);
+		$getOpt = array('outputFormat' => 'map');
+		$argsObj->platforms = $tplan_mgr->getPlatforms($argsObj->tplan_id,$getOpt);
 		unset($tplan_mgr);
     }
 
@@ -283,7 +286,7 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
  * get Columns definition for table to display
  *
  */
-function getColumnsDefinition($showPlatforms,$customFields)
+function getColumnsDefinition($showPlatforms,$customFields,$platforms)
 {
 
 	$colDef = array(array('title_key' => 'test_suite', 'width' => 80, 'type' => 'text'),
@@ -292,7 +295,7 @@ function getColumnsDefinition($showPlatforms,$customFields)
 		
 	if ($showPlatforms)
 	{
-		$colDef[] = array('title_key' => 'platform', 'width' => 40);
+		$colDef[] = array('title_key' => 'platform', 'width' => 40, 'filter' => 'list', 'filterOptions' => $platforms);
 	}
 	array_push( $colDef,
 				array('title_key' => 'build', 'width' => 35),

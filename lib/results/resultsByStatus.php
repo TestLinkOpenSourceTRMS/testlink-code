@@ -314,12 +314,12 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 	}
 }	
 
-$gui->tableSet[] = buildMatrix($gui->dataSet, $args, array(
-		'status_not_run' => ($args->type == $statusCode['not_run']),
-		'bugInterfaceOn' => $gui->bugInterfaceOn,
-		'format' => $args->format,
-		'show_platforms' => $show_platforms,
-	));
+$tableOptions = array('status_not_run' => ($args->type == $statusCode['not_run']),
+                      'bugInterfaceOn' => $gui->bugInterfaceOn,
+                      'format' => $args->format,
+                      'show_platforms' => $show_platforms);
+
+$gui->tableSet[] = buildMatrix($gui->dataSet, $args, $tableOptions ,$gui->platformSet);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui );
@@ -424,7 +424,7 @@ function buildMailCfg(&$guiObj)
  * return tlExtTable
  *
  */
-function buildMatrix($dataSet, &$args, $options = array())
+function buildMatrix($dataSet, &$args, $options = array(), $platforms)
 {
 	$default_options = array(
 		'bugInterfaceOn' => false,
@@ -439,7 +439,7 @@ function buildMatrix($dataSet, &$args, $options = array())
 	$columns[] = array('title_key' => 'version', 'width' => 30);
 	if ($options['show_platforms'])
 	{
-		$columns[] = array('title_key' => 'platform', 'width' => 60);
+		$columns[] = array('title_key' => 'platform', 'width' => 60, 'filter' => 'list', 'filterOptions' => $platforms);
 	}
 	if( $options['status_not_run'] )
 	{

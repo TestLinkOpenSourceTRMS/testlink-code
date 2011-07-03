@@ -44,7 +44,7 @@ $labels = init_labels(array('overall_progress' => null, 'test_plan' => null, 'pr
                             'no_testplans_available' => null, 'not_aplicable' => null,
                             'platform' => null, 'th_active_tc' => null, 'in_percent' => null));
 
-list($gui->tplan_metrics,$gui->show_platforms) = getMetrics($db,$_SESSION['currentUser'],$args,$result_cfg, $labels);
+list($gui->tplan_metrics,$gui->show_platforms, $platforms) = getMetrics($db,$_SESSION['currentUser'],$args,$result_cfg, $labels);
 
 $gui->warning_msg = $labels['no_testplans_available'];
 if(count($gui->tplan_metrics) > 0) 
@@ -53,7 +53,7 @@ if(count($gui->tplan_metrics) > 0)
 	$gui->warning_msg = '';
 	
 	// Create column headers
-	$columns = getColumnsDefinition($gui->show_platforms, $result_cfg, $labels);
+	$columns = getColumnsDefinition($gui->show_platforms, $result_cfg, $labels, $platforms);
 
 	// Extract the relevant data and build a matrix
 	$matrixData = array();
@@ -162,6 +162,7 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 	$metrics = array();
 	$tplan_mgr = new testplan($db);
 	$show_platforms = false;
+	$platforms = array();
 
 	// BUGID 1215
 	// get all tesplans accessibles  for user, for $tproject_id
@@ -175,6 +176,12 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 		
 		$linked_tcversions[$tplan_id] = null;
 		$platformSet=$tplan_mgr->getPlatforms($tplan_id);
+		
+		if (isset($platformSet)) {
+			$platforms = array_merge($platforms, $platformSet);
+		} else {
+			$platforms[]['name'] = $labels['not_aplicable'];
+		}
 		$show_platforms_for_tplan = !is_null($platformSet);
 
 		if(!$show_platforms_for_tplan)
@@ -310,7 +317,16 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 			}
 		}
 	}
-	return array($metrics, $show_platforms);
+	
+	// remove duplicate platform names
+	$platforms_no_duplicates = array();
+	foreach($platforms as $platform) {
+		if(!in_array($platform['name'], $platforms_no_duplicates)) {
+			$platforms_no_duplicates[] = $platform['name'];
+		}
+	}
+	
+	return array($metrics, $show_platforms, $platforms_no_duplicates);
 }
 
 /**
@@ -328,7 +344,7 @@ function getPercentage($denominator, $numerator, $round_precision)
  * get Columns definition for table to display
  *
  */
-function getColumnsDefinition($showPlatforms, $result_cfg, $labels)
+function getColumnsDefinition($showPlatforms, $result_cfg, $labels, $platforms)
 {
 	$colDef = array();
 
@@ -338,7 +354,7 @@ function getColumnsDefinition($showPlatforms, $result_cfg, $labels)
 	if ($showPlatforms)
 	{
 		$colDef[] = array('title_key' => 'platform', 'width' => 60, 'sortType' => 'asText',
-		                  'filter' => 'string');
+		                  'filter' => 'list', 'filterOptions' => $platforms);
 	}
 
 	$colDef[] = array('title_key' => 'th_active_tc', 'width' => 40, 'sortType' => 'asInt',

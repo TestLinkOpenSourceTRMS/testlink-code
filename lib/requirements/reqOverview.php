@@ -245,17 +245,22 @@ if(count($gui->reqIDs) > 0) {
         $columns[] = array('title_key' => 'version', 'width' => 30);
         $columns[] = array('title_key' => 'created_on', 'width' => 55);
         $columns[] = array('title_key' => 'modified_on','width' => 55);
-        $columns[] = array('title_key' => 'frozen', 'width' => 30);
+        
+        $frozen_for_filter = array($labels['yes'],$labels['no']);
+        $columns[] = array('title_key' => 'frozen', 'width' => 30, 'filter' => 'list',
+                           'filterOptions' => $frozen_for_filter);
         
         if ($coverage_enabled) {
 	    	$columns[] = array('title_key' => 'th_coverage', 'width' => 80);
 	    }
 	            
-        $columns[] = array('title_key' => 'type', 'width' => 60);
-        $columns[] = array('title_key' => 'status', 'width' => 60);
+        $columns[] = array('title_key' => 'type', 'width' => 60, 'filter' => 'list',
+                           'filterOptions' => $type_labels);
+        $columns[] = array('title_key' => 'status', 'width' => 60, 'filter' => 'list',
+                           'filterOptions' => $status_labels);
 	    
 		if ($relations_enabled) {
-	    	$columns[] = array('title_key' => 'th_relations', 'width' => 50);
+	    	$columns[] = array('title_key' => 'th_relations', 'width' => 50, 'filter' => 'numeric');
 	    }
         
 	    foreach($gui->cfields4req as $cf) {

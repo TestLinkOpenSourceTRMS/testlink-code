@@ -123,7 +123,7 @@ if(count($req_spec_map)) {
 
 if (count($req_spec_map)) {
 
-	$columns = build_columns($args, $code_status_map, $req_cfg, $results_cfg);
+	$columns = build_columns($args, $code_status_map, $req_cfg, $results_cfg, $labels, $eval_status_map);
 	$rows = build_rows($args, $status_code_map, $tproject_mgr, $req_spec_map, $req_mgr, $edit_icon,
 	                   $glue_char, $charset, $req_cfg, $labels, $eval_status_map, 
 	                   $glue_char_tc, $testcases, $exec_img);
@@ -414,7 +414,7 @@ function build_rows($args, $status_code_map, $tproject_mgr, $req_spec_map, $req_
 }
 
 
-function build_columns($args, $code_status_map, $req_cfg, $results_cfg) {
+function build_columns($args, $code_status_map, $req_cfg, $results_cfg, $labels, $eval_status_map) {
 	// headers
 	$columns = array();
 	$columns[] = array('title_key' => 'req_spec_short',
@@ -427,9 +427,17 @@ function build_columns($args, $code_status_map, $req_cfg, $results_cfg) {
 		$columns[] = array('title_key' => 'th_coverage', 'width' => 60, 'groupable' => 'false');
 	}
 	
-	$columns[] = array('title_key' => 'evaluation', 'width' => 80, 'groupable' => 'false');
-	$columns[] = array('title_key' => 'type', 'width' => 60, 'groupable' => 'false');
-	$columns[] = array('title_key' => 'status', 'width' => 60, 'groupable' => 'false');
+	$evaluation_for_filter = array();
+	foreach($eval_status_map as $eval) {
+		$evaluation_for_filter[] = $eval['label'];
+	}
+	
+	$columns[] = array('title_key' => 'evaluation', 'width' => 80, 'groupable' => 'false',
+	                   'filter' => 'ListSimpleMatch', 'filterOptions' => $evaluation_for_filter);
+	$columns[] = array('title_key' => 'type', 'width' => 60, 'groupable' => 'false', 
+	                   'filter' => 'list', 'filterOptions' => $labels['req_types']);
+	$columns[] = array('title_key' => 'status', 'width' => 60, 'groupable' => 'false',
+	                   'filter' => 'list', 'filterOptions' => $labels['status']);
 	
 	foreach ($code_status_map as $status) {
 		$columns[] = array('title_key' => $results_cfg['status_label'][$status['status']], 

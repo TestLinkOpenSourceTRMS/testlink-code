@@ -131,7 +131,8 @@ function getColumnsDefinition($priorityMgmtEnabled)
 	$colDef[] = array('title_key' => 'test_suite', 'type' => 'text');
 	$colDef[] = array('title_key' => 'test_case', 'type' => 'text');
 	if ($priorityMgmtEnabled) {
-		$colDef[] = array('title_key' => 'importance', 'width' => 20);
+		$urgencies_for_filter = array(lang_get('urgency_low'),lang_get('urgency_medium'),lang_get('urgency_high'));
+		$colDef[] = array('title_key' => 'importance', 'width' => 20, 'filter' => 'ListSimpleMatch', 'filterOptions' => $urgencies_for_filter);
 	}
 
 	return $colDef;

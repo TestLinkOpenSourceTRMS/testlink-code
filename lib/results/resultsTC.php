@@ -313,7 +313,7 @@ if ($lastResultMap != null)
     }
 } // end if
 
-$gui->tableSet[] =  buildMatrix($gui->buildInfoSet, $gui->matrix, $args->format, $show_platforms, $args);
+$gui->tableSet[] =  buildMatrix($gui->buildInfoSet, $gui->matrix, $args->format, $show_platforms, $args, $gui->platforms);
 $smarty = new TLSmarty;
 $smarty->assign('gui',$gui);
 displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format, $mailCfg);
@@ -354,13 +354,13 @@ function checkRights(&$db,&$user)
  * return tlExtTable
  *
  */
-function buildMatrix($buildSet, $dataSet, $format, $show_platforms, &$args)
+function buildMatrix($buildSet, $dataSet, $format, $show_platforms, &$args, $platforms)
 {
 	$columns = array(array('title_key' => 'title_test_suite_name', 'width' => 100),
 	                 array('title_key' => 'title_test_case_title', 'width' => 150));
 	if ($show_platforms)
 	{
-		$columns[] = array('title_key' => 'platform', 'width' => 60);
+		$columns[] = array('title_key' => 'platform', 'width' => 60, 'filter' => 'list', 'filterOptions' => $platforms);
 	}
 	
 	// BUGID 3418: check if test priority is enabled

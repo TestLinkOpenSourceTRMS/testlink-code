@@ -144,7 +144,8 @@ if( $doIt )
 	foreach ($gui->resultSet as $tplan_id => $tcase_set) {
 
 		$show_platforms = !is_null($tplan_mgr->getPlatforms($tplan_id));
-		$platforms = $tplan_mgr->getPlatforms($tplan_id);
+		$getOpt = array('outputFormat' => 'map');
+		$platforms = $tplan_mgr->getPlatforms($tplan_id,$getOpt);
 		list($columns, $sortByColumn) = getColumnsDefinition($optColumns, $show_platforms,$platforms);
 		$rows = array();
 
@@ -372,11 +373,7 @@ function getColumnsDefinition($optionalColumns, $show_platforms, $platforms)
 	$colDef[] = array('title_key' => 'testcase', 'width' => 130);
 	if ($show_platforms)
 	{
-		$platforms_for_filter = array();
-		foreach($platforms as $platform) {
-			$platforms_for_filter[] = $platform['name'];
-		}
-		$colDef[] = array('title_key' => 'platform', 'width' => 50, 'filter' => 'list', 'filterOptions' => $platforms_for_filter);
+		$colDef[] = array('title_key' => 'platform', 'width' => 50, 'filter' => 'list', 'filterOptions' => $platforms);
 	}
 	
 	// 20100816 - asimon - if priority is enabled, enable default sorting by that column

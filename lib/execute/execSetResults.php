@@ -1,4 +1,4 @@
-<?php
+c<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
@@ -13,53 +13,6 @@
  *  20110123 - franciscom - BUGID 3338
  *  20110105 - asimon - BUGID 3878: "Save and move to next" does not respect filter settings
  *  20110104 - aismon - BUGID 3643: apply filters earlier in script instead of loading unnecessary data
- *  20100927 - asimon - avoid warning in event log
- *	20100926 - franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
- *							added $gui->tcversionSet
- *	
- *  20100922 - asimon - let this page be functional withouth a form token too, changed init_args()
- *	20100821 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
- *	20100821 - franciscom - code layout refactoring
- *  20100812 - asimon - BUGID 3672
- *  20100709 - asimon - BUGID 3590, BUGID 3574: build_id set to 0 as default instead of null
- *  20100628 - asimon - removal of constants from filter control class
- *  20100625 - asimon - added parameters $bugInterfaceOn, $bugInterface to exec_additional_info()
- *                      to avoid warnings in event log,
- *                      fixed a little bug in platform id initializing in init_args()
- *                      (now number 0 instead of value null)
- *  20100624 - asimon - CVS merge (experimental branch to HEAD)
- *  20100624 - asimon - refactoring for new filters
- *	20100527 - franciscom - BUGID 3479: Bulk Execution - Custom Fields Bulk Assignment
- *  20100527 - Julian - platform description is now shown/hidden according to setting on config
- *	20100520 - franciscom - BUGID 3478  Testcase ID not updated when using save and move next
- *  20100428 - asimon - BUGID 3301 and related, added logic to refresh tree after tc execution
- *  20100313 - franciscom - BUGID 3276
- *  20100204 - asimon - BUGID 2455 & 3026, little changes for filtering
- *  20100121 - franciscom - missing platform feature refactoring
- *	20091205 - franciscom - BUGID 0002469: CFG-Parameters to show notes/details on test-execution
- *  20091111 - franciscom - BUGID 2938 - Feature: Save and Go to next test case in test suite.
- *  20090922 - franciscom - added contribution idea, when using bulk operation
- *                          display last execution status.
- *
- *	20090913 - franciscom - fixed bug on filter_status initialization
- *                          fixed bug on bulk execution due to bad option
- *                          on get_linked_tcversions() call.
- *                         
- *	20090815 - franciscom - platform feature	
- *  20090808 - franciscom - gen_spec_view call refactoring
- *  20090526 - franciscom - now custom fields for testplan_design are managed
- *
- *  20090419 - franciscom - BUGID 2364 - added management of refreshTree
- *                          initializeRights() refactored
- *  20090409 - amkhullar - updated code not written properly.
- *  20090330 - franciscom - fixed bug on test plan custom field get.
- *  20090325 - amkhullar - BUGID 2267
- *  20090210 - amkhullar - BUGID 2068
- *  20080827 - franciscom - BUGID 1692
- *  20080811 - franciscom - BUGID 1650 (REQ)
- *  
- *  20080104 - franciscom - REQ 1232 - web editor on execution notes
- *                          added createExecNotesWebEditor()
  *
 **/
 require_once('../../config.inc.php');
@@ -72,13 +25,11 @@ require_once("web_editor.php");
 $cfg=getCfg();
 require_once(require_web_editor($cfg->editorCfg['type']));
 
-// BUGID 3338
 if( $cfg->exec_cfg->enable_test_automation )
 {
   require_once('remote_exec.php');
 }
 
-// BUGID 3276
 // CRITIC:
 // If call to testlinkInitPage() is done AFTER require_once for BTS
 // log to event viewer fails, but log to file works ok
@@ -747,8 +698,6 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
 function exec_additional_info(&$db, $attachmentRepository, &$tcase_mgr, $other_execs, 
                               $tplan_id, $tproject_id, $bugInterfaceOn, $bugInterface)
 {
-//  $bugInterfaceOn = config_get('bugInterfaceOn');
-//  $bugInterface = config_get('bugInterface');
   $attachmentInfos = null;
   $bugs = null;
   $cfexec_values = null;

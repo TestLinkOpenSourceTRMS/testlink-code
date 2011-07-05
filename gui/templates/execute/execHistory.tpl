@@ -9,7 +9,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 
 {include file="inc_head.tpl"}
-{include file="inc_ext_js.tpl" bResetEXTCss=0}
 
 {assign var="attachment_model" value=$gui->exec_cfg->att_model}
 {assign var="my_colspan" value=$attachment_model->num_cols+2}

@@ -7,12 +7,13 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              exec_status,testcaseversion,attachment_mgmt,deleted_user,build,testplan,
              execution_type_manual,execution_type_auto,run_mode'}
 
-{assign var="my_colspan" value=$attachment_model->num_cols}
-{* DEBUG: - $my_colspan - {$my_colspan}<br> *}
 
 <html>
 {include file="inc_head.tpl"}
 </head>
+
+{assign var="attachment_model" value=$gui->exec_cfg->att_model}
+{assign var="my_colspan" value=$attachment_model->num_cols+2}
 
 <body onUnload="storeWindowSize('execHistoryPopup')">
 {if $gui->main_descr != ''}
@@ -33,19 +34,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 		<th style="text-align:left">{$labels.test_exec_by}</th>
 		<th style="text-align:center">{$labels.exec_status}</th>
 		<th style="text-align:center">{$labels.testcaseversion}</th>
-		{if $attachment_model->show_upload_column && $gsmarty_attachments->enabled}
-			<th style="text-align:center">{$labels.attachment_mgmt}</th>
-		{else}		
-			{assign var="my_colspan" value=$my_colspan-1}
-		{/if}
-		
-		{if $gsmarty_bugInterfaceOn}
-			<th style="text-align:left">{$labels.bug_mgmt}</th>
-			{assign var="my_colspan" value=$my_colspan+1}
-		{/if}
-
         <th style="text-align:left">{$labels.run_mode}</th>
-		{assign var="my_colspan" value=$my_colspan+2}
 	</tr>
 
 	{* Table data *}
@@ -81,6 +70,33 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
        		  	{/if}
 				</td>
 			</tr>
+
+			<tr style="background-color: {$bg_color}">
+  			<td colspan="{$my_colspan}">
+  				{assign var="cf_value_info" value=$gui->cfexec[$tcv_exec.execution_id]}
+          		{$cf_value_info}
+  			</td>
+  			</tr>
+
+  			{* Attachments *}
+			<tr style="background-color: {$bg_color}">
+  			<td colspan="{$my_colspan}">
+  				{assign var="attach_info" value=$gui->attachments[$tcv_exec.execution_id]}
+  				{include file="inc_attachments.tpl"
+  				         attach_attachmentInfos=$attach_info
+  				         attach_id=$tcv_exec.execution_id
+  				         attach_tableName="executions"
+  				         attach_show_upload_btn=$attachment_model->show_upload_btn
+  				         attach_show_title=$attachment_model->show_title
+  				         attach_downloadOnly=1 
+  				         attach_tableClassName=null
+                   		 attach_inheritStyle=0
+                   		 attach_tableStyles=null}
+  			</td>
+  			</tr>
+
+
+			
 			{if isset($gui->bugs[$tcv_exec.execution_id])}
 				<tr style="background-color: {$bg_color}">
 	   			<td colspan="{$my_colspan}">

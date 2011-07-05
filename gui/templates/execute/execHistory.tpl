@@ -8,9 +8,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              execution_type_manual,execution_type_auto,run_mode'}
 
 
-<html>
 {include file="inc_head.tpl"}
-</head>
+{include file="inc_ext_js.tpl" bResetEXTCss=0}
 
 {assign var="attachment_model" value=$gui->exec_cfg->att_model}
 {assign var="my_colspan" value=$attachment_model->num_cols+2}
@@ -45,9 +44,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 					<td>{localize_timestamp ts=$tcv_exec.execution_ts}</td>
 					<td>{$tcv_exec.testplan_name|escape}</td>
 					<td>
+					{*
 					{if !$tcv_exec.build_is_open}
 						<img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{$labels.closed_build}">
 					{/if}
+					*}
 					{$tcv_exec.build_name|escape}
 					</td>
 					{if $gui->displayPlatformCol}<td>{$tcv_exec.platform_name}</td>{/if}

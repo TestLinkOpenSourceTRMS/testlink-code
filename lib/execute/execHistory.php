@@ -62,7 +62,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 
-function init_args($cfgObj)
+function init_args()
 {
 	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);

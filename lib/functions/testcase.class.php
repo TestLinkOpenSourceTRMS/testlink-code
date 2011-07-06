@@ -5042,18 +5042,18 @@ class testcase extends tlObjectWithAttachments
 			$where_clause = " WHERE NHTCV.parent_id = {$id} ";
 		}
 	
-		if( is_array($version_id) )
-		{
-		    $versionid_list = implode(",",$version_id);
-		    $where_clause  .= " AND tcversions.id IN ({$versionid_list}) ";
-		}
-		else
-		{
-				if($version_id != self::ALL_VERSIONS)
-				{
-					$where_clause  .= " AND tcversions.id = {$version_id} ";
-				}
-		}
+		// if( is_array($version_id) )
+		// {
+		//     $versionid_list = implode(",",$version_id);
+		//     $where_clause  .= " AND tcversions.id IN ({$versionid_list}) ";
+		// }
+		// else
+		// {
+		// 		if($version_id != self::ALL_VERSIONS)
+		// 		{
+		// 			$where_clause  .= " AND tcversions.id = {$version_id} ";
+		// 		}
+		// }
 	
 
 	  $sql="/* $debugMsg */ SELECT NHTC.name,NHTCV.parent_id AS testcase_id, tcversions.*,
@@ -5128,20 +5128,20 @@ class testcase extends tlObjectWithAttachments
 		else
 		{
 			$where_clause = " WHERE NHTCV.parent_id = {$id} ";
-		}
-	
-		if( is_array($version_id) )
-		{
-		    $versionid_list = implode(",",$version_id);
-		    $where_clause  .= " AND tcversions.id IN ({$versionid_list}) ";
-		}
-		else
-		{
-				if($version_id != self::ALL_VERSIONS)
-				{
-					$where_clause  .= " AND tcversions.id = {$version_id} ";
-				}
-		}
+		}  
+	    
+		// if( is_array($version_id) )
+		// {
+		//     $versionid_list = implode(",",$version_id);
+		//     $where_clause  .= " AND tcversions.id IN ({$versionid_list}) ";
+		// }
+		// else
+		// {
+		// 		if($version_id != self::ALL_VERSIONS)
+		// 		{
+		// 			$where_clause  .= " AND tcversions.id = {$version_id} ";
+		// 		}
+		// }
 	
 	  $sql = "/* $debugMsg */ SELECT DISTINCT e.platform_id,p.name " .
 		     " FROM {$this->tables['nodes_hierarchy']} NHTCV " . 

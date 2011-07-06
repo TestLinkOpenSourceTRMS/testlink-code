@@ -5,10 +5,25 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {lang_get var='labels' 
           s='title_test_case,th_test_case_id,version,date_time_run,platform,test_exec_by,
              exec_status,testcaseversion,attachment_mgmt,deleted_user,build,testplan,
-             execution_type_manual,execution_type_auto,run_mode'}
+             execution_type_manual,execution_type_auto,run_mode,exec_notes'}
 
 
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead='yes'}
+
+{* 	Initialize note panels. 
+	The array panel_init_functions is filled with init functions (see below)
+	or inc_exec_show_tc_exec.tpl and executed from onReady below *}
+<script>
+{literal}
+panel_init_functions = new Array();
+Ext.onReady(function() {
+	for(var gdx=0; gdx<panel_init_functions.length;gdx++) {
+		panel_init_functions[gdx]();
+	}
+});
+{/literal}
+</script>
+</head>
 
 {assign var="attachment_model" value=$gui->exec_cfg->att_model}
 {assign var="my_colspan" value=$attachment_model->num_cols+2}
@@ -71,27 +86,62 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 					</td>
 				</tr>
 	
+	
+				{if $tcv_exec.execution_notes != ""}
+  				<script>
+				{* --------------------------------------------------------------------------	
+					Initialize panel if notes exists. 
+					There might be multiple note panels
+					visible at the same time, so we need to collect those init functions in
+					an array and execute them from Ext.onReady(). 
+					See execSetResults.tpl 
+				  --------------------------------------------------------------------------
+				*}
+				{literal}
+        		var panel_init = function(){
+            	var p = new Ext.Panel({
+            			title: {/literal}'{$labels.exec_notes}'{literal},
+            			collapsible:true, collapsed: true, baseCls: 'x-tl-panel',
+            			renderTo: {/literal}'exec_notes_container_{$tcv_exec.execution_id}'{literal},
+            			width:'100%',html:''
+            	});
+            	p.on({'expand' : function(){load_notes(this,{/literal}{$tcv_exec.execution_id}{literal});}});
+        		};
+        		panel_init_functions.push(panel_init);
+        		{/literal}
+	  			</script>
+				<tr style="background-color: {$bg_color}">
+  			 		<td colspan="{$my_colspan}" id="exec_notes_container_{$tcv_exec.execution_id}"
+  			     		style="padding:5px 5px 5px 5px;">
+  			 		</td>
+   				</tr>
+ 			  {/if}
+	
 				<tr style="background-color: {$bg_color}">
 				<td colspan="{$my_colspan}">
-					{assign var="cf_value_info" value=$gui->cfexec[$tcv_exec.execution_id]}
-					{$cf_value_info}
+					{if isset($gui->cfexec[$tcv_exec.execution_id])}
+						{assign var="cf_value_info" value=$gui->cfexec[$tcv_exec.execution_id]}
+						{$cf_value_info}
+					{/if}	
 				</td>
 				</tr>
 	
 				{* Attachments *}
 				<tr style="background-color: {$bg_color}">
 					<td colspan="{$my_colspan}">
-					{assign var="attach_info" value=$gui->attachments[$tcv_exec.execution_id]}
-					{include file="inc_attachments.tpl"
-					         attach_attachmentInfos=$attach_info
-					         attach_id=$tcv_exec.execution_id
-					         attach_tableName="executions"
-					         attach_show_upload_btn=$attachment_model->show_upload_btn
-					         attach_show_title=$attachment_model->show_title
-					         attach_downloadOnly=1 
-					         attach_tableClassName=null
-					         attach_inheritStyle=0
-					         attach_tableStyles=null}
+					{if isset($gui->attachments[$tcv_exec.execution_id])}
+						{assign var="attach_info" value=$gui->attachments[$tcv_exec.execution_id]}
+						{include file="inc_attachments.tpl"
+						         attach_attachmentInfos=$attach_info
+						         attach_id=$tcv_exec.execution_id
+						         attach_tableName="executions"
+						         attach_show_upload_btn=$attachment_model->show_upload_btn
+						         attach_show_title=$attachment_model->show_title
+						         attach_downloadOnly=1 
+						         attach_tableClassName=null
+						         attach_inheritStyle=0
+						         attach_tableStyles=null}
+					{/if}         
 				</td>
 				</tr>
 	

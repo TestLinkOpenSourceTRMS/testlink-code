@@ -217,7 +217,7 @@ viewer for test case in test specification
 	<form style="display: inline;" id="tcexport" name="tcexport" method="post" action="{$exportTestCaseAction}" >
 		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-		<input type="submit" name="export_tc" style="margin-left: 3px;" value="{$tcView_viewer_labels.btn_export}" />
+		<input type="submit" name="export_tc" value="{$tcView_viewer_labels.btn_export}" />
 		{* 20071102 - franciscom *}
 		{*
 		<input type="button" name="tstButton" value="{$tcView_viewer_labels.btn_execute_automatic_testcase}"
@@ -230,18 +230,22 @@ viewer for test case in test specification
 	<span>
 	{* compare versions *}
 	{if $args_testcase.version > 1}
-	  <form style="display: inline;" id="version_compare" name="version_compare" method="post" action="lib/testcases/tcCompareVersions.php">
-	  		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
-	  		<input type="submit" name="compare_versions" value="{$tcView_viewer_labels.btn_compare_versions}" />
-	  </form>
+		<form style="display: inline;" id="version_compare" name="version_compare" method="post" action="lib/testcases/tcCompareVersions.php">
+			<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
+			<input type="submit" name="compare_versions" value="{$tcView_viewer_labels.btn_compare_versions}" />
+		</form>
 	{/if}
+	</span>
+	<span>
+		<input type="button" onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id});"
+		       value="{$labels.btn_show_exec_history}" />
 	</span>
 	{* 20110304 - franciscom - BUGID 4286: Option to print single test case  *}
 	<span>
 	<form style="display: inline;" id="tcprint" name="tcprint" method="post" action="" >
-		<input type="button" name="tcPrinterFriendly" style="margin-left: 3px;" value="{$tcView_viewer_labels.btn_print_view}" 
+		<input type="button" name="tcPrinterFriendly" value="{$tcView_viewer_labels.btn_print_view}" 
 		       onclick="javascript:openPrintPreview('tc',{$args_testcase.testcase_id},{$args_testcase.id},null,
-			                                          '{$printTestCaseAction}');"/>
+		                                            '{$printTestCaseAction}');"/>
 	</form>
 	</span>
   </div> {* class="groupBtn" *}

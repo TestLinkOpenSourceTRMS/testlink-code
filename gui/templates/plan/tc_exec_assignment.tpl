@@ -4,6 +4,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 generate the list of TC that can be removed from a Test Plan 
 
 @internal revisions
+20110706 - Julian - BUGID 4652 - add link to test execution history
+                  - put test case id and test case name in one column to not waste space
 20110618 - franciscom - TICKET 4624: bulk assignment KO if "Send mail notification to tester" is checked
 20110523 - Julian - Added linked test case version to test case link
 *}
@@ -12,8 +14,8 @@ generate the list of TC that can be removed from a Test Plan
                           btn_update_selected_tc,show_tcase_spec,can_not_execute,
                           send_mail_to_tester,platform,no_testcase_available,
                           exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
-                          th_test_case,version,assigned_to,assign_to,note_keyword_filter, priority,
-                          check_uncheck_all_tc, execution, design
+                          th_test_case,version,assigned_to,assign_to,note_keyword_filter,priority,
+                          check_uncheck_all_tc,execution,design,execution_history
                           '}
 
 {include file="inc_head.tpl" openHead="yes"}
@@ -137,7 +139,6 @@ function check_action_precondition(container_id,action)
 			               onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_{$ts_id}_","add_value_{$ts_id}");'
                      title="{$labels.check_uncheck_all_checkboxes}" />
 			      	</th>
-              <th class="tcase_id_cell">{$labels.th_id}</th> 
               <th>{$labels.th_test_case}&nbsp;{$gsmarty_gui->role_separator_open}
               	{$labels.version}{$gsmarty_gui->role_separator_close}</th>
               	
@@ -174,9 +175,9 @@ function check_action_precondition(container_id,action)
                   			                     value="{$tcase.feature_id[$platform_id]}" />
             	    	</td>
             	    	<td>
-            	    		{$gui->testCasePrefix|escape}{$tcase.external_id|escape}
-            	    	</td>
-            	    	<td>
+            	    		<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+            	    		     onclick="javascript:openExecHistoryWindow({$tcase.id});"
+            	    		     title="{$labels.execution_history}" />
             	    		{* BUGID 4636 add execution and edit icon to open specific content in popup *}
             	    		<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/exec_icon.png"
             	    		     onclick="javascript:openExecutionWindow({$tcase.id},{$tcase.linked_version_id},{$gui->build_id},{$gui->tplan_id},{$platform_id});"
@@ -184,7 +185,7 @@ function check_action_precondition(container_id,action)
             	    		<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
             	    		     onclick="javascript:openTCaseWindow({$tcase.id},{$tcase.linked_version_id});"
             	    		     title="{$labels.design}" />
-            	    		{$tcase.name|escape}
+            	    		{$gui->testCasePrefix|escape}{$tcase.external_id|escape}{$gsmarty_gui->title_separator_1}{$tcase.name|escape}
             	    		&nbsp;{$gsmarty_gui->role_separator_open} {$tcase.tcversions[$tcase.linked_version_id]}
             	    		{$gsmarty_gui->role_separator_close}
             	    	</td>

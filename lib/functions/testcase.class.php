@@ -5079,7 +5079,7 @@ class testcase extends tlObjectWithAttachments
 	        LEFT OUTER JOIN {$this->tables['users']} users ON users.id = e.tester_id
 	        LEFT OUTER JOIN {$this->tables['platforms']} p ON p.id = e.platform_id
 	        $where_clause " .
-	        " ORDER BY NHTCV.parent_id ASC, tcversions.version ASC, execution_id {$my['options']['exec_id_order']}";
+	        " ORDER BY execution_id {$my['options']['exec_id_order']}";
 
 	        // " ORDER BY NHTCV.node_order ASC, NHTCV.parent_id ASC, execution_id {$my['options']['exec_id_order']}";
 	

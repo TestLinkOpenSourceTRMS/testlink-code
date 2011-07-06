@@ -34,7 +34,7 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file with commit id 85ac3821fab44b57bfe4f1e5d53c34aa40744556
+ * Last Update according to en_GB string file with commit id 4f75976f7887ae3984c304818a0fa323560cfd7b
  *
  **/
 
@@ -42,7 +42,7 @@
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Letztes Übersetzungs-Update: 30.06.2011 (TestLink 1.9.3)";
+$TLS_last_update = "Letztes Übersetzungs-Update: 06.07.2011 (TestLink 1.9.3)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_type_not_configured = "Systemmeldung: Typ nicht konfiguriert";
@@ -1232,7 +1232,7 @@ $TLS_exec_any_build = "(unabhängig vom Build)";
 $TLS_exec_current_build = "(aktueller Build)";
 $TLS_exec_notes = "Notizen";
 $TLS_exec_status = $TLS_status;
-$TLS_execution_history = "Ausführungs-Historie";
+$TLS_execution_history = "Ausführungshistorie";
 $TLS_execution_type_manual = "Manuell";
 $TLS_execution_type_auto = "Automatisch";
 $TLS_has_no_assignment = "Kein Tester zugewiesen";
@@ -3344,5 +3344,9 @@ $TLS_issue_status_held = "Im Wartezustand";
 $TLS_buildMetricsFeedback = $TLS_title_metrics_x_build . 
 							' werden nur mit Testfällen berechnet, die einem Tester für das entsprechende Build'.
 							' zugewiesen wurden';
+
+// execHistory.php
+$TLS_btn_show_exec_history = 'Ausführungshistorie';
+$TLS_tcase_never_executed = 'Dieser Testfall wurde nicht ausgeführt';
 // ----- END ------------------------------------------------------------------
 ?>

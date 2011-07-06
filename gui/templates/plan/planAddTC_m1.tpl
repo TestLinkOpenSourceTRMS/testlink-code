@@ -4,6 +4,7 @@ $Id: planAddTC_m1.tpl,v 1.52.2.1 2010/12/15 08:22:43 mx-julian Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
+    20110706 - Julian - BUGID 4652 - add link to test execution history
     20110415 - Julian - BUGID 2985 - added importance column
     20101215 - Julian - changed tc summary tooltip configuration
     20101028 - asimon - avoided a warning on event log
@@ -30,7 +31,7 @@ rev:
              executed_can_not_be_removed,added_on_date,btn_save_platform,
              check_uncheck_all_checkboxes,removal_tc,show_tcase_spec,
              tester_assignment_on_add,adding_tc,check_uncheck_all_tc,for,
-             build_to_assign_on_add,importance'}
+             build_to_assign_on_add,importance,execution,design,execution_history'}
 
 {* prefix for checkbox named , ADD and ReMove *}   
 {assign var="add_cb" value="achecked_tc"} 
@@ -293,8 +294,16 @@ Ext.onReady(function(){
                     	</td>
                     {/if}
       			     
-      			        <td id="tooltip-{$tcID}">
-       					      {$gui->testCasePrefix|escape}{$tcase.external_id}: <a href="javascript:openTCaseWindow({$tcID})">{$tcase.name|escape}</a>
+      			        <td>
+							<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+							     onclick="javascript:openExecHistoryWindow({$tcase.id});"
+							     title="{$labels.execution_history}" />
+							<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+							     onclick="javascript:openTCaseWindow({$tcase.id});"
+							     title="{$labels.design}" />
+							<span id="tooltip-{$tcID}">
+								{$gui->testCasePrefix|escape}{$tcase.external_id}{$gsmarty_gui->title_separator_1}{$tcase.name|escape}
+							</span>
       			        </td>
                   	<td>
                   	{if $gui->priorityEnabled}

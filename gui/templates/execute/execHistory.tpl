@@ -9,6 +9,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 
 {include file="inc_head.tpl" openHead='yes'}
+{include file="inc_ext_js.tpl"}
 
 {* 	Initialize note panels. 
 	The array panel_init_functions is filled with init functions (see below)
@@ -21,6 +22,12 @@ Ext.onReady(function() {
 		panel_init_functions[gdx]();
 	}
 });
+
+function load_notes(panel,exec_id)
+{
+  var url2load=fRoot+'lib/execute/getExecNotes.php?readonly=1&exec_id=' + exec_id;
+  panel.load({url:url2load});
+}
 {/literal}
 </script>
 </head>

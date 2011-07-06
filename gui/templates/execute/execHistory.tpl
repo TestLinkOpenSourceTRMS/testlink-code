@@ -63,7 +63,15 @@ function load_notes(panel,exec_id)
 		 		{foreach item=tcv_exec from=$tcv_exec_set}
 					{cycle values='#eeeeee,#d0d0d0' assign="bg_color"}
 					<tr style="border-top:1px solid black; background-color: {$bg_color}">
-						<td>{localize_timestamp ts=$tcv_exec.execution_ts}</td>
+						<td>
+							{* function openExecEditWindow(exec_id,tcversion_id,tplan_id,tproject_id) *}
+							{if $gui->user_is_admin}
+								<img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" style="vertical-align:middle" 
+								     title="{$labels.edit_execution}" onclick="javascript: openExecEditWindow(
+								     {$tcv_exec.execution_id},{$tcv_exec.id},{$tcv_exec.testplan_id},{$gui->tproject_id});">
+							{/if}
+							{localize_timestamp ts=$tcv_exec.execution_ts}
+						</td>
 						<td>{$tcv_exec.testplan_name|escape}</td>
 						<td>
 						{*

@@ -29,6 +29,8 @@ $idCard = $node['specific'][0] . ' : ' . $node['basic']['name'];
 $gui->execSet = $tcase_mgr->getExecutionSet($args->tcase_id);
 
 $gui->warning_msg = (!is_null($gui->execSet)) ? '' : lang_get('tcase_never_executed');
+$gui->user_is_admin = ($_SESSION['currentUser']->globalRole->name=='admin') ? true : false;
+$gui->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
 $gui->execPlatformSet = null;
 $gui->cfexec = null;

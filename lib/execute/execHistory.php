@@ -27,6 +27,9 @@ $idCard = $node['specific'][0] . ' : ' . $node['basic']['name'];
 
 // $linkedItems = $tcase_mgr->get_linked_versions($args->tcase_id,null,array('output' => 'minimal'));
 $gui->execSet = $tcase_mgr->getExecutionSet($args->tcase_id);
+
+$gui->warning_msg = (!is_null($gui->execSet)) ? '' : lang_get('tcase_never_executed');
+
 $gui->execPlatformSet = null;
 $gui->cfexec = null;
 $gui->attachments = null;

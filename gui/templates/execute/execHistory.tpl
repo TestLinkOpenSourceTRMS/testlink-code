@@ -5,7 +5,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {lang_get var='labels' 
           s='title_test_case,th_test_case_id,version,date_time_run,platform,test_exec_by,
              exec_status,testcaseversion,attachment_mgmt,deleted_user,build,testplan,
-             execution_type_manual,execution_type_auto,run_mode,exec_notes'}
+             execution_type_manual,execution_type_auto,run_mode,exec_notes,edit_execution'}
 
 
 {include file="inc_head.tpl" openHead='yes'}

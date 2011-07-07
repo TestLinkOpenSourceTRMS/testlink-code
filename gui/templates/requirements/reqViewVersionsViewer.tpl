@@ -15,7 +15,8 @@ rev:
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
              testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
-             revision,btn_view_history,btn_new_revision,btn_print_view,specific_direct_link"}
+             revision,btn_view_history,btn_new_revision,btn_print_view,specific_direct_link,
+             design,execution_history"}
 
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
@@ -156,10 +157,14 @@ rev:
 	  <fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.coverage}</legend>
 	  {if $args_req_coverage != ''}
 	  {section name=row loop=$args_req_coverage}
-	    <span> {* BUGID 2521 *}
-	    {* replaced openTCaseWindow() by openTCEditWindow() to save popup size *}
-	    <a href="javascript:openTCEditWindow({$args_req_coverage[row].id})">
-	    {$args_gui->tcasePrefix|escape}{$args_gui->glueChar}{$args_req_coverage[row].tc_external_id}{$args_gui->pieceSep}{$args_req_coverage[row].name|escape}</a>
+	    <span>
+	    <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+	         onclick="javascript:openExecHistoryWindow({$args_req_coverage[row].id});"
+	         title="{$labels.execution_history}" />
+	    <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+	         onclick="javascript:openTCaseWindow({$args_req_coverage[row].id});"
+	         title="{$labels.design}" />
+	    {$args_gui->tcasePrefix|escape}{$args_gui->glueChar}{$args_req_coverage[row].tc_external_id}{$args_gui->pieceSep}{$args_req_coverage[row].name|escape}
 	    </span><br />
 	   {sectionelse}
 	  <span>{$labels.req_msg_notestcase}</span>

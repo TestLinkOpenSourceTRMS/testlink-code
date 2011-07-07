@@ -70,8 +70,10 @@ $labels = init_labels( array('requirement' => null,'requirements' => null,
                 			 'goto_testspec' => null,'design' => null,
                 			 'no_label_for_req_type'  => null,
                 			 'na' => 'not_aplicable',
-                             'execution' => null));
-                
+                             'execution' => null,
+                             'execution_history' => null));
+
+$history_icon = TL_THEME_IMG_DIR . "history_small.png";
 $exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
@@ -393,9 +395,9 @@ if (count($req_spec_map)) {
 					
 					$tc_name = $prefix . $glue_char_tc . $testcase['tc_external_id'] . $glue_char .
 					           $testcase['name'];
-					           
-					//$tc_edit_link = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id=" .
-					//                $tc_id . "\" title = \"{$labels['goto_testspec']}\">" . $tc_name . "</a>";
+					
+					$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tc_id});\">" .
+					                     "<img title=\"{$labels['execution_history']}\" src=\"{$history_icon}\" /></a> ";
 					$edit_link = "<a href=\"javascript:openTCEditWindow({$tc_id});\">" .
 								 "<img title=\"{$labels['design']}\" src=\"{$edit_icon}\" /></a> ";
 					
@@ -407,7 +409,7 @@ if (count($req_spec_map)) {
 						             "<img title=\"{$labels['execution']}\" src=\"{$exec_img}\" /></a> ";
 					}
 
-					$linked_tcs_with_status .= "{$edit_link} {$exec_link} {$colored_status} {$tc_name}<br>";
+					$linked_tcs_with_status .= "{$exec_history_link} {$edit_link} {$exec_link} {$colored_status} {$tc_name}<br>";
 				}
 			} else  {
 				$linked_tcs_with_status = $labels['no_linked_tcs'];

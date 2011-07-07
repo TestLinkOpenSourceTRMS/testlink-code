@@ -20,7 +20,8 @@ viewer for test case in test specification
              btn_create_step,step_number,btn_reorder_steps,step_actions,
              execution_type_short_descr,delete_step,show_hide_reorder,
              test_plan,platform,insert_step,btn_print,btn_print_view,status,
-             execution_type,test_importance,none,preconditions,btn_compare_versions"}
+             execution_type,test_importance,none,preconditions,btn_compare_versions,
+             requirement"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -370,8 +371,11 @@ function launchInsertStep(step_id)
       			  </td>
       			  <td>
       				{section name=item loop=$args_reqs}
-      					<span onclick="javascript: openLinkedReqWindow({$gui->tproject_id},{$args_reqs[item].id});"
-      					style="cursor:  pointer;  color: #059; ">[{$args_reqs[item].req_spec_title|escape}]&nbsp;{$args_reqs[item].req_doc_id|escape}:{$args_reqs[item].title|escape}</span>
+      					<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+      					     onclick="javascript:openLinkedReqWindow({$gui->tproject_id},{$args_reqs[item].id});"
+      					     title="{$tcView_viewer_labels.requirement}" />
+      					{$gsmarty_gui->role_separator_open}{$args_reqs[item].req_spec_title|escape}{$gsmarty_gui->role_separator_close}
+      					{$args_reqs[item].req_doc_id|escape}{$gsmarty_gui->title_separator_1}{$args_reqs[item].title|escape}
       					{if !$smarty.section.item.last}<br />{/if}
       				{sectionelse}
       					{$tcView_viewer_labels.none}

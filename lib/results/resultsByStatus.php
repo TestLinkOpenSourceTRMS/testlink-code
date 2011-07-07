@@ -87,12 +87,14 @@ if ($gui->bugInterfaceOn) {
 	$bugInterface = config_get('bugInterface');
 }
 
-$labels = init_labels(array('deleted_user' => null, 'design' => null, 'execution' => null));
+$labels = init_labels(array('deleted_user' => null, 'design' => null, 'execution' => null,
+                            'execution_history' => null));
 
 $gui->tplan_name = $tplan_info['name'];
 $gui->tproject_name = $tproject_info['name'];
 $testCaseCfg = config_get('testcase_cfg');
 
+$history_img = TL_THEME_IMG_DIR . "history_small.png";
 $exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
 $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
@@ -179,6 +181,10 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 		    } else if (isset($testcase['assigned_build_id'])) {
 			    $build_id = $testcase['assigned_build_id'];
 		    }
+		    
+			$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$testcase['tc_id']});\">" .
+			                     "<img title=\"{$labels['execution_history']}\" src=\"{$history_img}\" /></a> ";
+		    
 		    if (!is_null($build_id)) {
 			    $exec_link = "<a href=\"javascript:openExecutionWindow(" .
 				             "{$testcase['tc_id']}, {$testcase['tcversion_id']}, {$build_id}, " .
@@ -193,7 +199,8 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 			$tcaseName = $ext_id . ':' . $testcase['name'];
 
 		    // 20101007 - asimon - BUGID 3857
-		    $image_link = "<!-- " . sprintf("%010d", $testcase['external_id']) . " -->" . $exec_link . $edit_link . $tcaseName;
+		    $image_link = "<!-- " . sprintf("%010d", $testcase['external_id']) . " -->" . 
+		                  $exec_history_link . $exec_link . $edit_link . $tcaseName;
 
 		    // 20101013 - asimon - use linkto.php for emailed links
 		    $dl = str_replace(" ", "%20", $args->basehref) . 'linkto.php?tprojectPrefix=' . urlencode($tproject_info['prefix']) .

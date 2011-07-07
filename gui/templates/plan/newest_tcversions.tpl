@@ -11,7 +11,7 @@ rev:
 
 {lang_get var='labels' 
           s='testproject,test_plan,th_id,th_test_case,title_newest_tcversions,
-             linked_version,newest_version,compare,design' }
+             linked_version,newest_version,compare,design,execution_history' }
 
 </head>
 <body>
@@ -54,6 +54,9 @@ rev:
       <tr>
 		{* <td style="align:right;"> {$gui->tcasePrefix|escape}{$tc.tc_external_id|escape} </td>  *} 
 		<td> 
+			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+			     onclick="javascript:openExecHistoryWindow({$tc.tc_id});"
+			     title="{$labels.execution_history}" />
 			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
 			     onclick="javascript:openTCaseWindow({$tc.tc_id});"
 			     title="{$labels.design}" />

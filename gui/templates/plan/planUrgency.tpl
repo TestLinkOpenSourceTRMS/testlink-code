@@ -17,7 +17,7 @@ Revisions:
 {lang_get var="labels" 
           s='title_plan_urgency, th_testcase, th_urgency, urgency_low, urgency_medium, urgency_high,
              label_set_urgency_ts, btn_set_urgency_tc, urgency_description,testsuite_is_empty,
-             priority, importance'}
+             priority, importance, execution_history, design'}
 
 {include file="inc_head.tpl"}
 <body>
@@ -54,39 +54,47 @@ Revisions:
 
 	{foreach item=res from=$gui->listTestCases}
 	<tr>
-			<td style="text-align: left;">{$res.tcprefix|escape}{$res.tc_external_id}&nbsp;:&nbsp;{$res.name|escape}</td>
-			{assign var=importance value=$res.importance}
-			<td>{$gsmarty_option_importance.$importance}</td>
-  			{assign var=urgencyCode value=$res.urgency}
-			<td><input type="radio"
-					   name="urgency[{$res.tcversion_id}]"
-					   value="{$smarty.const.HIGH}" 
-					   {if $urgencyCode == $smarty.const.HIGH}
-						checked="checked"
-					   {/if}
-						/>
-				<span style="vertical-align:middle;">{$labels.urgency_high}</span>
-			</td>
-			<td><input type="radio"
-					   name="urgency[{$res.tcversion_id}]"
-					   value="{$smarty.const.MEDIUM}" 
-					   {if $urgencyCode == $smarty.const.MEDIUM}
-						checked="checked"
-					   {/if}
-						/>
-				<span style="vertical-align:middle;">{$labels.urgency_medium}</span>
-			</td>
-			<td><input type="radio"
-					   name="urgency[{$res.tcversion_id}]"
-					   value="{$smarty.const.LOW}" 
-					   {if $urgencyCode == $smarty.const.LOW}
-						checked="checked"
-					   {/if}
-						/>
-				<span style="vertical-align:middle;">{$labels.urgency_low}</span>
-			</td>
-			{assign var=priority value=$res.priority}
-			<td>{$gsmarty_option_priority.$priority}</td>
+		<td style="text-align: left;">
+			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+			     onclick="javascript:openExecHistoryWindow({$res.testcase_id});"
+			     title="{$labels.execution_history}" />
+			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+			     onclick="javascript:openTCaseWindow({$res.testcase_id});"
+			     title="{$labels.design}" />
+				{$res.tcprefix|escape}{$res.tc_external_id}{$gsmarty_gui->title_separator_1}{$res.name|escape}
+		</td>
+		{assign var=importance value=$res.importance}
+		<td>{$gsmarty_option_importance.$importance}</td>
+  		{assign var=urgencyCode value=$res.urgency}
+		<td><input type="radio"
+				   name="urgency[{$res.tcversion_id}]"
+				   value="{$smarty.const.HIGH}" 
+				   {if $urgencyCode == $smarty.const.HIGH}
+					checked="checked"
+				   {/if}
+					/>
+			<span style="vertical-align:middle;">{$labels.urgency_high}</span>
+		</td>
+		<td><input type="radio"
+				   name="urgency[{$res.tcversion_id}]"
+				   value="{$smarty.const.MEDIUM}" 
+				   {if $urgencyCode == $smarty.const.MEDIUM}
+				       checked="checked"
+				   {/if}
+					/>
+			<span style="vertical-align:middle;">{$labels.urgency_medium}</span>
+		</td>
+		<td><input type="radio"
+				   name="urgency[{$res.tcversion_id}]"
+				   value="{$smarty.const.LOW}" 
+				   {if $urgencyCode == $smarty.const.LOW}
+				       checked="checked"
+				   {/if}
+					/>
+			<span style="vertical-align:middle;">{$labels.urgency_low}</span>
+		</td>
+		{assign var=priority value=$res.priority}
+		<td>{$gsmarty_option_priority.$priority}</td>
 	</tr>
 	{/foreach}
 	</table>

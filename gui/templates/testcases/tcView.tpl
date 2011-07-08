@@ -19,7 +19,7 @@ rev:
 
 {config_load file="input_dimensions.conf"}
 {lang_get var='labels' 
-          s='no_records_found,other_versions,show_hide_reorder,version,title_test_case,match_count,btn_show_exec_history'}
+          s='no_records_found,other_versions,show_hide_reorder,version,title_test_case,match_count'}
 
 {* Configure Actions *}
 {assign var="showMode" value=$gui->show_mode}

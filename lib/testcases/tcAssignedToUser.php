@@ -39,13 +39,14 @@ $gui->warning_msg = '';
 $gui->tableSet = null;
 $gui->show_closed_builds = $args->show_closed_builds;
 
+$history_img = TL_THEME_IMG_DIR . "history_small.png";
 $exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
 $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
 
 $l18n = init_labels(array('tcversion_indicator' => null,'goto_testspec' => null, 'version' => null, 
 						  'testplan' => null, 'assigned_tc_overview' => null,'testcases_assigned_to_user' => null,
-                           'design' => null, 'execution' => null));
+                           'design' => null, 'execution' => null, 'execution_history' => null));
 
 if ($args->show_all_users) {
 	$gui->pageTitle=sprintf($l18n['assigned_tc_overview'], $gui->tproject_name);
@@ -122,6 +123,10 @@ if( ($doIt = !is_null($gui->resultSet)) )
 				$current_row[] = htmlspecialchars($tcase['tcase_full_path']);
 
 				// create linked icons
+				
+				$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tcase_id});\">" .
+				                     "<img title=\"{$l18n['execution_history']}\" src=\"{$history_img}\" /></a> ";
+				
 				$exec_link = "<a href=\"javascript:openExecutionWindow(" .
 				             "{$tcase_id},{$tcversion_id},{$tcase['build_id']}," .
 				             "{$tcase['testplan_id']},{$tcase['platform_id']});\">" .
@@ -130,8 +135,8 @@ if( ($doIt = !is_null($gui->resultSet)) )
 				$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$tcase_id});\">" .
 				             "<img title=\"{$l18n['design']}\" src=\"{$edit_img}\" /></a> ";
 				
-				$current_row[] = "<!-- " . sprintf("%010d", $tcase['tc_external_id']) . " -->" . $exec_link .
-				                 $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . 
+				$current_row[] = "<!-- " . sprintf("%010d", $tcase['tc_external_id']) . " -->" . $exec_history_link .
+				                 $exec_link . $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . 
 				                 $tcase['tc_external_id'] . " : " . htmlspecialchars($tcase['name']) .
 				        		 sprintf($l18n['tcversion_indicator'],$tcase['version']);
 

@@ -30,9 +30,10 @@ $gui->printDate = '';
 $gui->matrixCfg  = config_get('resultMatrixReport');
 $gui->matrixData = array();
 
-$labels = init_labels(array('design' => null, 'execution' => null));
+$labels = init_labels(array('design' => null, 'execution' => null, 'execution_history' => null));
 $exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
 $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
+$history_img = TL_THEME_IMG_DIR . "history_small.png";
 
 $buildIDSet = null;
 $buildQty = 0;
@@ -134,8 +135,10 @@ if ($lastResultMap != null)
 			    $tc_name = htmlspecialchars("{$external_id}:{$name}",ENT_QUOTES);
 
 				// create linked icons
+				$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$testCaseId});\">" .
+				                     "<img title=\"{$labels['execution_history']}\" src=\"{$history_img}\" /></a> ";
 				$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$testCaseId});\">" .
-							 "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
+				             "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
 			    // 20101007 - asimon - BUGID 3857
 
 				// 20101013 - asimon - use linkto.php for emailed links
@@ -143,7 +146,8 @@ if ($lastResultMap != null)
 					  '&item=testcase&id=' . urlencode($external_id);
 				$mail_link = "<a href='{$dl}'>{$tc_name}</a> ";
 
-			    $tcLink = "<!-- " . sprintf("%010d", $tcase['external_id']) . " -->" . $edit_link . $tc_name;
+			    $tcLink = "<!-- " . sprintf("%010d", $tcase['external_id']) . " -->" .
+			              $exec_history_link .$edit_link . $tc_name;
 
 				$rowArray = null;
 				$rowArray[$cols['tsuite']] = $suiteName;

@@ -17,8 +17,10 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $charset = config_get('charset');
-$labels = init_labels(array('design' => null, 'execution' => null, 'no_linked_tc_cf' => null));
+$labels = init_labels(array('design' => null, 'execution' => null, 'no_linked_tc_cf' => null,
+                            'execution_history' => null));
 
+$history_img = TL_THEME_IMG_DIR . "history_small.png";
 $exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
 $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
@@ -45,6 +47,9 @@ if( $args->doIt )
 		$rowData[] = $dummy['value'];
 
 		// create linked icons
+		$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$item['tcase_id']});\">" .
+		                     "<img title=\"{$labels['execution_history']}\" src=\"{$history_img}\" /></a> ";
+		
 		$exec_link = "<a href=\"javascript:openExecutionWindow(" .
 		             "{$item['tcase_id']}, {$item['tcversion_id']}, {$item['builds_id']}, " .
 		             "{$args->tplan_id}, {$item['platform_id']});\">" .
@@ -56,7 +61,8 @@ if( $args->doIt )
 		$tcaseName = buildExternalIdString($gui->tcasePrefix, $item['tc_external_id']) .
 					 ' : ' . $item['tcase_name'];
 
-		$tcLink = "<!-- " . sprintf("%010d", $item['tc_external_id']) . " -->" . $exec_link . $edit_link . $tcaseName;
+		$tcLink = "<!-- " . sprintf("%010d", $item['tc_external_id']) . " -->" . $exec_history_link .
+		          $exec_link . $edit_link . $tcaseName;
 		$rowData[] = $tcLink;
 		$rowData[] = $item['tcversion_number'];
 		if ($args->showPlatforms)

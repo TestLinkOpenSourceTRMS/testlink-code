@@ -46,12 +46,14 @@ $labels = init_labels( array('requirement' => null,'requirements' => null,
                 			 'na' => 'not_aplicable',
                              'no_srs' => 'no_srs_defined', 
                              'no_matching_reqs' => null,
-                             'execution' => null));
+                             'execution' => null,
+                             'execution_history' => null));
 
 $labels['req_types'] = init_labels($req_cfg->type_labels);
 $labels['req_spec_types'] = init_labels($req_spec_cfg->type_labels);
 $labels['status'] = init_labels($req_cfg->status_labels);                
                
+$history_icon = TL_THEME_IMG_DIR . "history_small.png";
 $exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
@@ -126,7 +128,7 @@ if (count($req_spec_map)) {
 	$columns = build_columns($args, $code_status_map, $req_cfg, $results_cfg, $labels, $eval_status_map);
 	$rows = build_rows($args, $status_code_map, $tproject_mgr, $req_spec_map, $req_mgr, $edit_icon,
 	                   $glue_char, $charset, $req_cfg, $labels, $eval_status_map, 
-	                   $glue_char_tc, $testcases, $exec_img);
+	                   $glue_char_tc, $testcases, $exec_img, $history_icon);
 	
 	// create table object
 	$matrix = new tlExtTable($columns, $rows, 'tl_table_results_reqs');
@@ -268,7 +270,7 @@ function calculate($req_spec_map, $args, $tplan_mgr, $tc_ids, $status_code_map, 
 
 
 function build_rows($args, $status_code_map, $tproject_mgr, $req_spec_map, $req_mgr, $edit_icon, $glue_char, 
-                    $charset, $req_cfg, $labels, &$eval_status_map, $glue_char_tc, $testcases, $exec_img) {
+                    $charset, $req_cfg, $labels, &$eval_status_map, $glue_char_tc, $testcases, $exec_img, $history_icon) {
 	// data for rows
 	$rows = array();
 	$prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
@@ -385,7 +387,8 @@ function build_rows($args, $status_code_map, $tproject_mgr, $req_spec_map, $req_
 					
 					$tc_name = $prefix . $glue_char_tc . $testcase['tc_external_id'] . $glue_char .
 					           $testcase['name'];
-					           
+					$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tc_id});\">" .
+					                     "<img title=\"{$labels['execution_history']}\" src=\"{$history_icon}\" /></a> ";
 					$edit_link = "<a href=\"javascript:openTCEditWindow({$args->tproject_id},{$tc_id});\">" .
 								 "<img title=\"{$labels['design']}\" src=\"{$edit_icon}\" /></a> ";
 
@@ -398,7 +401,7 @@ function build_rows($args, $status_code_map, $tproject_mgr, $req_spec_map, $req_
 						             "<img title=\"{$labels['execution']}\" src=\"{$exec_img}\" /></a> ";
 					}
 
-					$linked_tcs_with_status .= "{$edit_link} {$exec_link} {$colored_status} {$tc_name}<br>";
+					$linked_tcs_with_status .= "{$exec_history_link} {$edit_link} {$exec_link} {$colored_status} {$tc_name}<br>";
 				}
 			} else  {
 				$linked_tcs_with_status = $labels['no_linked_tcs'];

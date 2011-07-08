@@ -33,7 +33,7 @@ $gui->tplan_id = $args->tplan_id;
 $gui->warning_msg = '';
 $gui->tableSet = null;
 
-$edit_label = lang_get('design');
+$history_img = TL_THEME_IMG_DIR . "history_small.png";
 $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $openBugs = array();
@@ -63,10 +63,13 @@ foreach ($results as $execution) {
 			$suiteName = $execution['tsuite_name'];
 			$tc_name = buildExternalIdString($tproject_info['prefix'], $execution['external_id']) . ":" . $execution['name'];
 
-			// add linked icon for editing
+			// add linked icons
+			$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tc_id});\">" .
+			                     "<img title=\"".lang_get('execution_history')."\" src=\"{$history_img}\" /></a> ";
 			$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$tc_id});\">" .
-						 "<img title=\"{$edit_label}\" src=\"{$edit_img}\" /></a> ";
-			$tc_name = "<!-- " . sprintf("%010d", $execution['external_id']) . " -->" . $edit_link . $tc_name;
+						 "<img title=\"".lang_get('design')."\" src=\"{$edit_img}\" /></a> ";
+			$tc_name = "<!-- " . sprintf("%010d", $execution['external_id']) . " -->" . $exec_history_link .
+			           $edit_link . $tc_name;
 
 			$testcase_bugs[$tc_id] = array($suiteName, $tc_name, array());
 		}

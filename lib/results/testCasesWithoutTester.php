@@ -29,8 +29,9 @@ $gui->tproject_id = $args->tproject_id;
 $gui->tproject_name = $args->tproject_name;
 $gui->tplan_name = $args->tplan_name;
 
-$labels = init_labels(array('design' => null, 'execution' => null));
+$labels = init_labels(array('design' => null, 'execution' => null, 'execution_history' => null));
 $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
+$history_img = TL_THEME_IMG_DIR . "history_small.png";
 
 $msg_key = 'no_linked_tcversions';
 if($tplan_mgr->count_testcases($args->tplan_id) > 0)
@@ -67,10 +68,13 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 			$name = buildExternalIdString($prefix,$item['external_id'] . ': ' . $item['name']);
 
 			// create linked icons
+			$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$item['tc_id']});\">" .
+			                     "<img title=\"{$labels['execution_history']}\" src=\"{$history_img}\" /></a> ";
 		    $edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$item['tc_id']});\">" .
-						 "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
+			             "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
 
-		    $link = "<!-- " . sprintf("%010d", $item['external_id']) . " -->" . $edit_link . $name;
+			$link = "<!-- " . sprintf("%010d", $item['external_id']) . " -->" . $exec_history_link .
+			        $edit_link . $name;
 
 			$row = array($verbosePath,$link);
 			if ($args->show_platforms)

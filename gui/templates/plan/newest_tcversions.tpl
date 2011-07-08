@@ -10,7 +10,7 @@ Purpose: smarty template -
 
 {lang_get var='labels' 
           s='testproject,test_plan,th_id,th_test_case,title_newest_tcversions,
-             linked_version,newest_version,compare,design'}
+             linked_version,newest_version,compare,design,execution_history'}
 
 </head>
 <body>
@@ -51,6 +51,9 @@ Purpose: smarty template -
       {foreach from=$gui->testcases item=tc}
       <tr>
 		<td> 
+			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+			     onclick="javascript:openExecHistoryWindow({$tc.tc_id});"
+			     title="{$labels.execution_history}" />
 			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
 			     onclick="javascript:openTCaseWindow({$gui->tproject_id},{$tc.tc_id});"
 			     title="{$labels.design}" />

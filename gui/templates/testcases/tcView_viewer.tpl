@@ -21,7 +21,7 @@ viewer for test case in test specification
              execution_type_short_descr,delete_step,show_hide_reorder,
              test_plan,platform,insert_step,btn_print,btn_print_view,status,
              execution_type,test_importance,none,preconditions,btn_compare_versions,
-             requirement"}
+             requirement,btn_show_exec_history"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -217,7 +217,7 @@ viewer for test case in test specification
 	</span>
 	<span>
 		<input type="button" onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id});"
-		       value="{$labels.btn_show_exec_history}" />
+		       value="{$tcView_viewer_labels.btn_show_exec_history}" />
 	</span>
 	{* 20110304 - franciscom - BUGID 4286: Option to print single test case  *}
 	<span>

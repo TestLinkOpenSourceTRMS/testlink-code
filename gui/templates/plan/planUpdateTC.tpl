@@ -18,7 +18,7 @@ rev:
              note_keyword_filter,check_uncheck_all,
              check_uncheck_all_checkboxes,th_id,has_been_executed,show_tcase_spec,
              update_to_version,inactive_testcase,btn_update_testplan_tcversions,
-             compare,design'}
+             compare,design,execution_history'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"} {* includes ext-js*}
@@ -101,7 +101,6 @@ function validateForm(f)
   			              onclick='cs_all_checkbox_in_div("{$div_id}","{$update_cb}","update_value_{$ts_id}");'
                       title="{$labels.check_uncheck_all_checkboxes}" />
   			     </th>
-  			     <th class="tcase_id_cell">{$labels.th_id}</th> 
   			     <th>{$labels.th_test_case}</th>
   			     <th>{$labels.version}</th>
   			     <th>{$labels.update_to_version}</th>
@@ -147,12 +146,14 @@ function validateForm(f)
         				    {/if}
         				    <input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.linked_version_id}' />
       			      </td>
-      			      
-      			      <td>
-      				    {$gui->testCasePrefix|escape}{$tcase.external_id|escape}
-      			      </td>
-      				    <td title="{$labels.show_tcase_spec}">
-       				     <a href="javascript:openTCaseWindow({$gui->tproject_id},{$tcase.id})">{$tcase.name|escape}</a>
+					<td>
+						<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+						     onclick="javascript:openExecHistoryWindow({$tcase.id});"
+						     title="{$labels.execution_history}" />
+						<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+						     onclick="javascript:openTCaseWindow({$gui->tproject_id},{$tcase.id});"
+						     title="{$labels.design}" />
+						{$gui->testCasePrefix|escape}{$tcase.external_id|escape}{$gsmarty_gui->title_separator_1}{$tcase.name|escape}
       			      </td>
   
                   <td>
@@ -225,9 +226,12 @@ function validateForm(f)
     		</td>
 	      
 			  <td>
+			  <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+			       onclick="javascript:openExecHistoryWindow({$tc.tc_id});"
+			       title="{$labels.execution_history}" />
 			  <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-			    onclick="javascript:openTCaseWindow({$gui->tproject_id},{$tc.tc_id});"
-			    title="{$labels.design}" />
+			       onclick="javascript:openTCaseWindow({$gui->tproject_id},{$tc.tc_id});"
+			       title="{$labels.design}" />
 			    {$tc.path}{$gui->testCasePrefix|escape}{$tc.tc_external_id|escape}:{$tc.name|escape} </td>  
 			  <td align="center"> {$tc.version|escape} </td>
 			  <td align="center">

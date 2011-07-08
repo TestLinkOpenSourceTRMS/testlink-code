@@ -14,7 +14,7 @@ generate the list of TC that can be removed from a Test Plan
                           send_mail_to_tester,platform,no_testcase_available,
                           exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
                           th_test_case,version,assigned_to,assign_to,note_keyword_filter, priority,
-                          check_uncheck_all_tc, execution, design'}
+                          check_uncheck_all_tc,execution,design,execution_history'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"} {* includes ext-j *}
@@ -119,7 +119,6 @@ function check_action_precondition(container_id,action)
 			               onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_{$ts_id}_","add_value_{$ts_id}");'
                      title="{$labels.check_uncheck_all_checkboxes}" />
 			      	</th>
-              <th class="tcase_id_cell">{$labels.th_id}</th> 
               <th>{$labels.th_test_case}&nbsp;{$gsmarty_gui->role_separator_open}
               	{$labels.version}{$gsmarty_gui->role_separator_close}</th>
               	
@@ -156,17 +155,17 @@ function check_action_precondition(container_id,action)
                   			                     value="{$tcase.feature_id[$platform_id]}" />
             	    	</td>
             	    	<td>
-            	    		{$gui->testCasePrefix|escape}{$tcase.external_id|escape}
-            	    	</td>
-            	    	<td>
-            	    		{* BUGID 4636 - add execution and edit icon to open specific content in popup *}
+            	    		<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+            	    		     onclick="javascript:openExecHistoryWindow({$tcase.id});"
+            	    		     title="{$labels.execution_history}" />
+            	    		{* BUGID 4636 add execution and edit icon to open specific content in popup *}
             	    		<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/exec_icon.png"
             	    		     onclick="javascript:openExecutionWindow({$tcase.id},{$tcase.linked_version_id},{$gui->build_id},{$gui->tplan_id},{$platform_id});"
             	    		     title="{$labels.execution}" />
             	    		<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
             	    		     onclick="javascript:openTCaseWindow({$gui->tproject_id},{$tcase.id},{$tcase.linked_version_id});"
             	    		     title="{$labels.design}" />
-            	    		{$tcase.name|escape}
+            	    		{$gui->testCasePrefix|escape}{$tcase.external_id|escape}{$gsmarty_gui->title_separator_1}{$tcase.name|escape}
             	    		&nbsp;{$gsmarty_gui->role_separator_open} {$tcase.tcversions[$tcase.linked_version_id]}
             	    		{$gsmarty_gui->role_separator_close}
             	    	</td>

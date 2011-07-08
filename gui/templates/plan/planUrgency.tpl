@@ -11,7 +11,7 @@ Smarty template - manage test case urgency
 {lang_get var="labels" 
           s='title_plan_urgency, th_testcase, th_urgency, urgency_low, urgency_medium, urgency_high,
              label_set_urgency_ts, btn_set_urgency_tc, urgency_description,testsuite_is_empty,
-             priority, importance'}
+             priority, importance, execution_history, design'}
 
 {include file="inc_head.tpl"}
 <body>
@@ -50,7 +50,15 @@ Smarty template - manage test case urgency
 
 	{foreach item=res from=$gui->listTestCases}
 	<tr>
-			<td style="text-align: left;">{$res.tcprefix|escape}{$res.tc_external_id}&nbsp;:&nbsp;{$res.name|escape}</td>
+		<td style="text-align: left;">
+			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+			     onclick="javascript:openExecHistoryWindow({$res.testcase_id});"
+			     title="{$labels.execution_history}" />
+			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+			     onclick="javascript:openTCaseWindow({$gui->tproject_id},{$res.testcase_id});"
+			     title="{$labels.design}" />
+				{$res.tcprefix|escape}{$res.tc_external_id}{$gsmarty_gui->title_separator_1}{$res.name|escape}
+		</td>
 			{assign var=importance value=$res.importance}
 			<td>{$gsmarty_option_importance.$importance}</td>
   			{assign var=urgencyCode value=$res.urgency}

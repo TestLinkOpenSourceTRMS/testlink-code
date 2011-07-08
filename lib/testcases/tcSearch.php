@@ -28,8 +28,8 @@ $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
 $args = init_args($date_format_cfg);
 
-$edit_label = lang_get('design');
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
+$history_icon = TL_THEME_IMG_DIR . "history_small.png";
 
 $gui = initializeGui($args);
 if ($args->tproject_id)
@@ -218,9 +218,7 @@ else
 	$gui->warning_msg=lang_get('no_records_found');
 }
 
-// new dBug($gui->resultSet);
-
-$table = buildExtTable($gui, $charset, $edit_icon, $edit_label);
+$table = buildExtTable($gui, $charset, $edit_icon, $history_icon);
 
 if (!is_null($table)) {
 	$gui->tableSet[] = $table;
@@ -234,7 +232,7 @@ $smarty->display($templateCfg->template_dir . $tpl);
  * 
  *
  */
-function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
+function buildExtTable($gui, $charset, $edit_icon, $history_icon) {
 	$table = null;
 	if(count($gui->resultSet) > 0) {
 		$labels = array('test_suite' => lang_get('test_suite'), 'test_case' => lang_get('test_case'));
@@ -252,12 +250,14 @@ function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
 			$rowData = array();
 			$rowData[] = htmlentities($gui->path_info[$result['testcase_id']], ENT_QUOTES, $charset);
 			
-			// build test case link
+			// create linked icons
+			$history_link = "<a href=\"javascript:openExecHistoryWindow({$result['testcase_id']});\">" .
+						 "<img title=\"". lang_get('execution_history') . "\" src=\"{$history_icon}\" /></a> ";
 			$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$result['testcase_id']});\">" .
-						 "<img title=\"{$edit_label}\" src=\"{$edit_icon}\" /></a> ";
+						 "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
 			$tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . $titleSeperator .
 			             htmlentities($result['name'], ENT_QUOTES, $charset);
-		    $tcLink = $edit_link . $tcaseName;
+		    $tcLink = $history_link . $edit_link . $tcaseName;
 			$rowData[] = $tcLink;
 
 			$matrixData[] = $rowData;

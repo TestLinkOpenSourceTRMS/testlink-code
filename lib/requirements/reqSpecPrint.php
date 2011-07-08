@@ -40,11 +40,11 @@ $gui->reqspec_id=$args->reqspec_id;
 // Struture defined in printDocument.php	
 $options = array('toc' => 0, 'req_spec_scope' => 1, 'req_spec_author' => 1,'req_spec_type' =>1,
 				 'req_spec_cf' => 1,'req_spec_overwritten_count_reqs' => 1,
-				 'headerNumbering' => 0);
+				 'headerNumbering' => 0, 'docType' => SINGLE_REQSPEC);
             
 $text2print = '';
 $text2print .= renderHTMLHeader($gui->page_title,$_SESSION['basehref'],SINGLE_REQSPEC) . '<body>' ;
-$text2print .= '<div><h2>' . lang_get('req_specification') . '</h2></div>';
+//$text2print .= '<div><h2>' . lang_get('req_specification') . '</h2></div>';
 
 $text2print .= renderReqSpecNodeForPrinting($db, $node, $options,null,0,$args->tproject_id); 
 

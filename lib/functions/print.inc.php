@@ -390,6 +390,8 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 	static $req_spec_cfg;
 	static $reqSpecTypeLabels;
 	
+	$level = ($level > 0) ? $level : 1;
+	
 	if (!$req_spec_mgr) {
 		$req_spec_cfg = config_get('req_spec_cfg');
 		$firstColWidth = '20%';
@@ -418,10 +420,13 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 	
 	// 20110530 - Julian - added page-break before each req spec
 	//                   - use doclevel class for req spec headings
-	$output = '<p style="page-break-before: always"></p>'.
-	        "<table class=\"req_spec\"><tr><th colspan=\"$tableColspan\">" .
-	        "<h{$level} class=\"doclevel\"> <span class=\"label\">{$docHeadingNumbering}{$labels['requirements_spec']}:</span> " .
- 			$name . "</th></tr></h{$level}>\n";
+	
+	if($options['docType'] != SINGLE_REQSPEC) {
+		$output = '<p style="page-break-before: always"></p>';
+	}
+	$output .= "<table class=\"req_spec\"><tr><th colspan=\"$tableColspan\">" .
+	          "<h{$level} class=\"doclevel\"> <span class=\"label\">{$docHeadingNumbering}{$labels['requirements_spec']}:</span> " .
+ 			  $name . "</th></tr></h{$level}>\n";
  		
 	if ($options['toc'])
 	{

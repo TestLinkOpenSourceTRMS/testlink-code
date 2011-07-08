@@ -1232,7 +1232,7 @@ $TLS_exec_any_build = "(unabhängig vom Build)";
 $TLS_exec_current_build = "(aktueller Build)";
 $TLS_exec_notes = "Notizen";
 $TLS_exec_status = $TLS_status;
-$TLS_execution_history = "Ausführungs-Historie";
+$TLS_execution_history = "Ausführungshistorie";
 $TLS_execution_type_manual = "Manuell";
 $TLS_execution_type_auto = "Automatisch";
 $TLS_has_no_assignment = "Kein Tester zugewiesen";
@@ -3345,5 +3345,9 @@ $TLS_issue_status_held = "Im Wartezustand";
 $TLS_buildMetricsFeedback = $TLS_title_metrics_x_build . 
 							' werden nur mit Testfällen berechnet, die einem Tester für das entsprechende Build'.
 							' zugewiesen wurden';
+
+// execHistory.php
+$TLS_btn_show_exec_history = 'Ausführungshistorie';
+$TLS_tcase_never_executed = 'Dieser Testfall wurde nicht ausgeführt';
 // ----- END ------------------------------------------------------------------
 ?>

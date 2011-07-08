@@ -194,7 +194,7 @@ viewer for test case in test specification
 		<input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
 		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-		<input type="submit" name="export_tc" style="margin-left: 3px;" value="{$tcView_viewer_labels.btn_export}" />
+		<input type="submit" name="export_tc" value="{$tcView_viewer_labels.btn_export}" />
 		{* 20071102 - franciscom *}
 		{*
 		<input type="button" name="tstButton" value="{$tcView_viewer_labels.btn_execute_automatic_testcase}"
@@ -215,10 +215,14 @@ viewer for test case in test specification
 	  </form>
 	{/if}
 	</span>
+	<span>
+		<input type="button" onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id});"
+		       value="{$labels.btn_show_exec_history}" />
+	</span>
 	{* 20110304 - franciscom - BUGID 4286: Option to print single test case  *}
 	<span>
 	<form style="display: inline;" id="tcprint" name="tcprint" method="post" action="" >
-		<input type="button" name="tcPrinterFriendly" style="margin-left: 3px;" value="{$tcView_viewer_labels.btn_print_view}" 
+		<input type="button" name="tcPrinterFriendly" value="{$tcView_viewer_labels.btn_print_view}" 
 		       onclick="javascript:openPrintPreview('tc',{$args_testcase.testcase_id},{$args_testcase.id},null,
 			                                          '{$gui->printTestCaseAction}');"/>
 	</form>

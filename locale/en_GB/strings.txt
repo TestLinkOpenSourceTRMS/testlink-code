@@ -3382,5 +3382,9 @@ $TLS_upload_err_no_file='No file was uploaded.';
 $TLS_upload_err_no_tmp_dir='Missing a temporary folder.';
 $TLS_upload_err_cant_write='Failed to write file to disk. Introduced in PHP 5.1.0.';
 $TLS_upload_err_extension='A PHP extension stopped the file upload.'; 
+
+// execHistory.php
+$TLS_btn_show_exec_history = 'Execution History';
+$TLS_tcase_never_executed = 'This Test Case has not been executed';
 // ----- END ------------------------------------------------------------------
 ?>

@@ -1483,3 +1483,27 @@ function openPrintPreview(type, id, version_id, revision, print_action)
 	windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,toolbar=yes,dependent=yes,menubar=yes";
 	window.open(fRoot+feature_url,"_blank",windowCfg); // TODO localize "Print Preview"!
 }
+
+
+
+function openExecHistoryWindow(tc_id) 
+{
+	var url = "lib/execute/execHistory.php?tcase_id=" + tc_id;
+
+	var width = getCookie("execHistoryPopupWidth");
+	var height = getCookie("execHistoryPopupHeight");
+
+	if (width == null)
+	{
+		width = "800";
+	}
+
+	if (height == null)
+	{
+		height = "600";
+	}
+	
+	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+	window.open(fRoot+url, '_blank', windowCfg);
+}
+

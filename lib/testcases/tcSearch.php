@@ -274,13 +274,10 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon) {
 			$rowData[] = htmlentities($gui->path_info[$result['testcase_id']], ENT_QUOTES, $charset);
 			
 			// build test case link
-//			$rowData[] = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id={$result['testcase_id']}\">" .
-//			             htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . $titleSeperator .
-//			             htmlentities($result['name'], ENT_QUOTES, $charset);
 			$history_link = "<a href=\"javascript:openExecHistoryWindow({$result['testcase_id']});\">" .
 						 "<img title=\"". lang_get('execution_history') . "\" src=\"{$history_icon}\" /></a> ";
 			$edit_link = "<a href=\"javascript:openTCEditWindow({$result['testcase_id']});\">" .
-						 "<img title=\"". lang_get('design') . "}\" src=\"{$edit_icon}\" /></a> ";
+						 "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
 			$tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . $titleSeperator .
 			             htmlentities($result['name'], ENT_QUOTES, $charset);
 		    $tcLink = $history_link . $edit_link . $tcaseName;

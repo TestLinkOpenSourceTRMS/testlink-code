@@ -33,7 +33,7 @@
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Last localization update: 02/05/2011 (Testlink 1.9.2)";
+$TLS_last_update = "Last localization update: 09/07/2011 (Testlink 1.9.3)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_type_not_configured = "mensagem do sistema: tipo não configurado";
@@ -232,6 +232,9 @@ $TLS_req_status_rework = "Retrabalho";
 $TLS_req_status_finish = "Terminado";
 $TLS_req_status_implemented = "Implementado";
 $TLS_req_status_obsolete = "Obsoleto";
+
+$TLS_current_direct_link = "Link direto para o documento atual.";
+$TLS_specific_direct_link = "Link direto para essa específica versão do documento atual.";
 
 $TLS_reserved_system_role_1 = 'perfil do sistema reservado 1';
 $TLS_reserved_system_role_2 = 'perfil do sistema reservado 2';
@@ -789,6 +792,7 @@ $TLS_title_last_mod = "Última modificação em ";
 $TLS_expected_coverage = "Número de Casos de Teste necessários";
 $TLS_warning_expected_coverage = $TLS_expected_coverage . " precisa ser um número ";
 $TLS_warning_expected_coverage_range = $TLS_expected_coverage . " precisa ser > 0 ";
+$TLS_stay_here_req = 'Selecione para criar um novo requisito após salvar';
 
 $TLS_current_coverage = "Conectado";
 $TLS_coverage_number = "Criado";
@@ -1077,6 +1081,7 @@ $TLS_th_version = "Versão";
 // ----- gui/templates/tcNew.tpl -----
 $TLS_title_new_tc = "Criar Teste";
 $TLS_warning_empty_tc_title = "Por favor, dê um título ao Caso de Teste";
+$TLS_stay_here_tc = 'Selecione para criar um novo Caso de Teste após salvar';
 
 
 
@@ -1514,6 +1519,7 @@ $TLS_execution_type= '<br />Tipo de Execução';
 $TLS_execution_type_short_descr = 'Execução';
 $TLS_tcversion_is_inactive_msg = "Esta versão está INATIVA => não estará disponivel para incluir no Plano de Teste";
 $TLS_system_blocks_delete_executed_tc = "System configuration blocks delete of executed versions";
+$TLS_system_blocks_delete_executed_tc_when = "A configuração do Sistema bloqueia a exclusão de casos de teste quando existem versões executadas";
 
 
 
@@ -3153,8 +3159,10 @@ $TLS_id_not_set = "ID não setado.";
 $TLS_testcase_not_found = "O Caso de Teste %s não foi encontrado no Projeto de Teste (prefix:%s).";
 $TLS_req_spec_not_found = "A Especificação de Requisitos %s não foi encontrada no Projeto de Teste (prefix:%s).";
 $TLS_req_not_found = "O Requisito %s não foi encontrado no Projeto de Teste (prefix:%s).";
+$TLS_req_version_not_found = "Versão %s do Requisito %s não foi encontrada no Projeto de Teste (prefix:%s).";
 $TLS_invalid_item = 'Item inválido (%s)';
 $TLS_btn_show_direct_link = "Exibir link permanente";
+$TLS_direct_link_on_wrong_version = "Clique aqui para abrir a versão atual deste documento.";
 
 // ----- testcase/req comparison -----
 $TLS_title_compare_versions_tc = "Página de comparação das versõe dos Casos de Teste";
@@ -3258,6 +3266,10 @@ $TLS_export_execution_set = 'Exportação de Execução definida';
 // ----- lib/results/resultsReqs.php -----
 $TLS_no_label_for_req_type = 'Não tem configuração req_type_labels para o tipo: %s';
 
+$TLS_print_testcase = 'Imprimir Caso de Teste: %s';
+$TLS_print_requirement = 'Imprimir Requisito: %s';
+$TLS_print_requirement_specification = 'Imprimir Especificação de Requisitos: %s';
+
 
 // ----- lib/functions/remote_exec.php
 $TLS_remoteExecServerConfigProblems = 'A execução remota não pode ser inciada devido à falta de configuração.\n' .
@@ -3285,5 +3297,9 @@ $TLS_issue_status_held = "Realizado";
 // this definition has to be placed AFTER $TLS_title_metrics_x_build
 $TLS_buildMetricsFeedback = $TLS_title_metrics_x_build . 
 							' data is computed using only test cases that have tester assignment on build';
+							
+// execHistory.php
+$TLS_btn_show_exec_history = 'Visualizar todo o hsitórico da execução';
+
 // ----- END ------------------------------------------------------------------
 ?>

@@ -1607,8 +1607,6 @@ class testplan extends tlObjectWithAttachments
 		{
 			$tcase_mgr = new testcase($this->db);
 			$doMappings = !is_null($mappings);
-
-			// BUGID 3846
 			$already_linked_versions = array();
 
 			foreach($rs as $elem)
@@ -1654,9 +1652,10 @@ class testplan extends tlObjectWithAttachments
 				}
 				$sql .= " ) " . $sql_values . " ) ";  
 					   
-				// BUGID 3846
-				// BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
-				if (!in_array($tcversion_id, $already_linked_versions[$platform_id])) {
+				// to avoid warnings
+				$doIt = !isset($already_linked_versions[$platform_id]);
+				if ($doIt || !in_array($tcversion_id, $already_linked_versions[$platform_id])) 
+				{
 					$this->db->exec_query($sql);
 					$new_feature_id = $this->db->insert_id($this->tables['testplan_tcversions']);
 					$already_linked_versions[$platform_id][] = $tcversion_id;

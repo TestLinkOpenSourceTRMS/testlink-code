@@ -1002,7 +1002,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$open = ($this->mode == 'plan_mode') ? null : testplan::GET_OPEN_BUILD;
 		
 		$this->settings[$key]['items'] = $this->testplan_mgr->get_builds_for_html_options($tplan_id, $active, $open);
-		$tplan_builds = array_keys($this->settings[$key]['items']);
+		$tplan_builds = array_keys((array)$this->settings[$key]['items']);
 
 		// BUGID 3406 - depending on mode, we need different labels for this selector on GUI
 		$label = ($this->mode == 'plan_mode') ? 'assign_build' : 'exec_build';
@@ -1022,7 +1022,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}
 		
 		// only take build ID into account if it really is a build from this testplan
-		$this->settings[$key]['selected'] = (in_array($this->args->{$key}, $tplan_builds)) ? 
+		$this->settings[$key]['selected'] = (in_array($this->args->{$key}, (array)$tplan_builds)) ? 
 		                                    $this->args->{$key} : $newest_build_id;
 
 		// still no build selected? take first one from selection.

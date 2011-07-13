@@ -1855,6 +1855,16 @@ $TLS_multisort_button_tooltip = 'Click to change sort DIRECTION. ' .
                                 'Shift-Click to REMOVE button. ' .
                                 'You can REORDER multisort buttons.';
 
+
+
+// ----- gui/templates/results/tcNotRunAnyPlatform.tpl -----
+$TLS_info_tcNotRunAnyPlatform = "This report shows test cases that have been linked to the current test plan " .
+                             "but have not been executed on any platform at all.<br /> " .
+                             "As soon as a test case has been executed on at least one platform, " .
+                             "it will not appear anymore in this report.";
+
+
+
 // ----- gui/templates/resultsImport.tpl -----
 $TLS_results_import_format = "XML File Must be in the following format: ";
 $TLS_title_results_import_to = "Import results";
@@ -2628,6 +2638,14 @@ $TLS_list_of_failed = "Failed Test Cases";
 $TLS_list_of_not_run = "Not Run Test Cases";
 
 
+
+// ----- lib/results/tcNotRunAnyPlatform.php -----
+$TLS_title_test_report_not_run_on_any_platform = "Test Report: Test Cases not run on any Platform";
+$TLS_not_run_any_platform_status_msg = "There are %d Test Cases linked to this Test Plan.<br/> " .
+                                       "%d of these Test Cases have not been executed on any platform.</p>";
+$TLS_not_run_any_platform_no_platforms = "There are no platforms linked to this testplan.";
+
+
 // ----- lib/results/testPlanWithCF----
 $TLS_link_report_tplans_with_cf = "Test Plan with Custom Field info";
 $TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
@@ -2661,6 +2679,7 @@ $TLS_link_assigned_tc_overview = "Test Case Assignment Overview";
 $TLS_link_report_metrics_active_build = "Metrics of Active Build";
 $TLS_link_report_metrics_more_builds = "Query Metrics";
 $TLS_link_report_not_run = "Not run Test Cases";
+$TLS_link_report_not_run_any_platform = "Test Cases not run on any Platform";
 $TLS_link_report_overall_build = "Overall Build Status";
 $TLS_link_report_reqs_coverage = "Requirements based Report";
 $TLS_link_report_tcases_without_tester = "Test Cases without Tester Assignment";

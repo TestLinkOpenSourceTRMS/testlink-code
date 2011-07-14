@@ -221,9 +221,10 @@ $TLS_hlp_req_spec_edit = "<h3>Liens internes dans le contexte:</h3>
 Lien vers des exigences: [req]req_doc_id[/req]<br />
 Lien vers des dossiers d’exigences: [req_spec]req_spec_doc_id[/req_spec]</p>
 
-<p>Le projet de test des exigences/dossiers d’exigences et une ancre pour sauter peut aussi être spécifié:<br />
-[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt;]req_doc_id[/req]<br />
-Cette syntaxe fonctionne également pour les dossiers d’exigences.</p>
+<p>Le projet de test des exigences/dossiers d’exigences, une version et une ancre pour sauter peut aussi être spécifié:<br />
+[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt;version=&lt;version_number&gt;]req_doc_id[/req]<br />
+Cette syntaxe fonctionne également pour les dossiers d’exigences (l’attribut de version n’a aucun effet).<br />
+Si vous ne voulez pas définir une version, l’exigence avec toutes ses versions est affichée.</p>
 ";
 
 

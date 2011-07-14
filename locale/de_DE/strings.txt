@@ -1882,6 +1882,16 @@ $TLS_multisort_button_tooltip = 'Klicken um die Richtung der Sortierung zu ände
                                 'Shift-Klick um den Button zu entfernen. ' .
                                 'Multisort Buttons können umgeordnet werden.';
 
+
+
+// ----- gui/templates/results/tcNotRunAnyPlatform.tpl -----
+$TLS_info_tcNotRunAnyPlatform = "Dieser Report zeigt alle Testfälle, die dem aktuellen Testplan hinzugefügt wurden " .
+                             "aber bisher auf keiner Plattform ausgeführt worden sind.<br /> " .
+                             "Sobald ein Testfall auf mindestens einer Plattform ausgeführt wurde, " .
+                             "wird er in dieser Tabelle nicht mehr erscheinen.";
+
+
+
 // ----- gui/templates/resultsImport.tpl -----
 $TLS_results_import_format = "Die XML Datei muss in folgendem Format sein: ";
 $TLS_title_results_import_to = "importiere Ergebnisse";
@@ -2641,6 +2651,15 @@ $TLS_list_of_failed = "Fehlgeschlagene Testfälle";
 $TLS_list_of_not_run = "Nicht ausgeführte Testfälle";
 
 
+
+// ----- lib/results/tcNotRunAnyPlatform.php -----
+$TLS_title_test_report_not_run_on_any_platform = "Testreport: Testfälle, die auf keiner Plattform durchgeführt wurden";
+$TLS_not_run_any_platform_status_msg = "%d Testfälle sind in diesem Testplan enthalten.<br/> " .
+                                       "%d dieser Testfälle wurden bisher auf keiner Plattform durchgeführt.</p>";
+$TLS_not_run_any_platform_no_platforms = "Diesem Testfall wurde noch keine Plattform hinzugefügt.";
+
+
+
 // ----- lib/results/testPlanWithCF----
 $TLS_link_report_tplans_with_cf = "Test Pläne mit benutzerdefinierten Feldern";
 $TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
@@ -2675,6 +2694,7 @@ $TLS_link_assigned_tc_overview = "Übersicht der Testzuweisungen";
 $TLS_link_report_metrics_active_build = "Testplan Überblick des Aktiven Build";
 $TLS_link_report_metrics_more_builds = "Abfrage Metriken";
 $TLS_link_report_not_run = "Nicht durchgeführte Testfälle";
+$TLS_link_report_not_run_any_platform = "Auf keiner Plattform durchgeführte Testfälle";
 $TLS_link_report_overall_build = "Der gesamte Build Status";
 $TLS_link_report_reqs_coverage = "Report basierend auf Anforderungen";
 $TLS_link_report_tcases_without_tester = "Testfälle ohne zugewiesene Tester";

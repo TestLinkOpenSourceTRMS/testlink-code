@@ -27,7 +27,7 @@
  *
  * ********************************************************************************************
  *
- * 20110427 - Julian - BUGID 4446 - Updated french localization according to TL 1.9.2 en_GB files
+ * 20110427 - Julian - BUGID 4663 - Updated french localization according to TL 1.9.3 en_GB files
  *                                  contributed by Jean-Yves Boo 2011 - boojeanyves@gmail.com
  **/
 
@@ -35,7 +35,7 @@
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Last localization update: 27/04/2011 (Testlink 1.9.2)";
+$TLS_last_update = "Last localization update: 14/07/2011 (Testlink 1.9.3)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_type_not_configured = "message système: type non configuré";
@@ -234,6 +234,9 @@ $TLS_req_status_rework = "En cours de rédaction";
 $TLS_req_status_finish = "Fini";
 $TLS_req_status_implemented = "Implementé";
 $TLS_req_status_obsolete = "Obsolète";
+
+$TLS_current_direct_link = "Lien direct au document courant.";
+$TLS_specific_direct_link = "Lien direct à cette version spécifique du document courant.";
 
 $TLS_reserved_system_role_1 = "rôle système 1 réservé";
 $TLS_reserved_system_role_2 = "rôle système 2 réservé";
@@ -489,6 +492,9 @@ $TLS_th_link_exec_status = "Lien et statut d’exécution";
 $TLS_testsuite_successfully_deleted = "La séquence de test a été supprimée.";
 $TLS_no_links = "Aucune donnée dépendante";
 $TLS_linked_and_executed = "Le cas de test a été ajouté à la campagne de test et a des résultats.";
+$TLS_system_blocks_tsuite_delete_due_to_exec_tc = 
+	"La séquence de test ne peut être supprimée, la configuration du système bloquant la suppression des cas de test exécutés.";
+c
 
 
 // ----- gui/templates/containerNew.tpl -----
@@ -790,6 +796,7 @@ $TLS_title_last_mod = "Dernière modification le";
 $TLS_expected_coverage = "Nombre de cas de test nécessaires";
 $TLS_warning_expected_coverage = $TLS_expected_coverage . " doit être un nombre.";
 $TLS_warning_expected_coverage_range = $TLS_expected_coverage . " doit être positif.";
+$TLS_stay_here_req = "Cocher pour créer une autre exigence après enregistrement";
 
 $TLS_current_coverage = "Connecté";
 $TLS_coverage_number = "Créer";
@@ -1079,7 +1086,7 @@ $TLS_th_version = "Version";
 // ----- gui/templates/tcNew.tpl -----
 $TLS_title_new_tc = "Créer un cas de test";
 $TLS_warning_empty_tc_title = "Le titre de cas de test est obligatoire.";
-
+$TLS_stay_here_tc = "Cocher pour créer un autre cas de test après enregistrement";
 
 
 // ----- gui/templates/tcImport.tpl -----
@@ -1401,6 +1408,16 @@ $TLS_popup_delete_milestones = "Etes-vous sûr de vouloir supprimer le jalon %NA
 $TLS_warning_delete_milestone = "Etes-vous sûr de vouloir supprimer le jalon %s ?";
 $TLS_warning_empty_milestone_name="Le nom de jalon est obligatoire.";
 $TLS_warning_invalid_date = "La date n’est pas valide.";
+$TLS_info_milestone_create_prio = "Les jalons prennent en compte les exécutions dans une période spécifiée.<br />Cette période débute " .
+                                  "avec la <b>Date de début 00:00:00</b> - si la date de début n’est pas spécifiée, toutes les exécutions sont " .
+                                  "prises en compte - et se termine avec la <b>Date cible 23:59:59</b>.<br />Toute exécution après la " .
+                                  "date cible est ignorée.<br />Les jalons sont atteints quand tous les \"Sous-jalons\" pour les " .
+                                  "différentes <b>priorités</b> sont atteints. Le statut des jalons peut être aperçu dans les métriques généraux de la campagne de test.";
+$TLS_info_milestone_create_no_prio = "Les jalons prennent en compte les exécutions dans une période spécifiée.<br />Cette période débute " .
+									"avec la <b>Date de début 00:00:00</b> - si la date de début n’est pas spécifiée, toutes les exécutions sont " .
+									"prises en compte - et se termine avec la <b>Date cible 23:59:59</b>.<br />Toute exécution après la " .
+									"date cible est ignorée.<br />Les jalons sont atteints quand le pourcentage de " .
+                                    "<b>tests complétés</b> est atteint. Le statut des jalons peut être aperçu dans les métriques généraux de la campagne de test.";
 
 
 $TLS_th_date_format = "Date cible";
@@ -1474,6 +1491,7 @@ $TLS_warning_req_tc_assignment_impossible = "L’affectation d’exigences n’e
 $TLS_title_edit_tc = "Modifier un cas de test";
 $TLS_warning_editing_executed_step = "Attention: le pas de test a été exécuté.";
 $TLS_warning_editing_executed_tc = "Atttention: la version du cas de test a été exécutée.";
+$TLS_warning_delete_executed_tc = "Atttention: la version du cas de test a été exécutée.";
 $TLS_warning_unsaved = "Les modifications sont pas enregistrées.";
 
 
@@ -1502,6 +1520,8 @@ $TLS_deactivate_this_tcversion = "Désactiver la version";
 $TLS_execution_type = "Type d’exécution";
 $TLS_execution_type_short_descr = "Exécution";
 $TLS_tcversion_is_inactive_msg = "La version est désactivée et n’est pas disponible pour l’affectation à une campagne de test.";
+$TLS_system_blocks_delete_executed_tc = "La configuration du système bloque la suppresion des versions exécutées.";
+$TLS_system_blocks_delete_executed_tc_when = "La configuration du système bloque la suppression de cas de test ayant des versions exécutées.";
 
 
 
@@ -1621,8 +1641,16 @@ $TLS_info_bugs_per_tc_report = "Le rapport affiche toutes les anomalies liées a
 
 // ----- gui/templates/resultsTC.tpl -----
 $TLS_info_resultsTC_report = "Le rapport affiche le résultat de la dernière exécution de cas de test pour " .
-                             "chaque build. La dernière colonne affiche le résultat de la dernière " .
-                             "exécution pour le dernier Build créé.";
+                             "chaque build.<br /><b>Exemple:</b><br />Le cas de test a été exécuté dans cet ordre: " .
+                             "<br />Build 1.0 - Réussi; Build 1.0 - Echoué<br />-> Le dernier résultat pour Build 1.0 " .
+                             "est échoué car la seconde exécution écrase les anciens résultats.<br /><br />" .
+                             "Les colonnes \"[Last Build]\" et \"Last execution\" affichent des données conformément " .
+                             "à cet exemple <b>Exemple:</b><br />Le cas de test a été exécuté dans cet ordre:<br />" .
+                             "Build 1.0 - Réussi; Build 1.0 - Echoué; Build 2.0 - Bloqué; " .
+                             "Build 1.0 - Réussi<br>-> [Last Build] : Bloqué car Build 2.0 est " .
+                             "le dernier build créé pour lequel un résultat a été défini.<br />-> \"Last Execution\" : " .
+                             "Réussi car Build 1.0 a été exécuté en dernier.<br /><br />La priorité ".
+                             "affichée est calculée sur la base de l’importance de la version du cas de test courant liée.";
 
 
 
@@ -1672,6 +1700,25 @@ $TLS_th_overall_platform = "Plateforme de test global";
 $TLS_title_res_by_platform = "Résultats par plateforme";
 $TLS_th_expected = "Attendu";
 $TLS_th_overall = "Global";
+$TLS_info_res_by_top_level_suites = "Ce rapport affiche les résultats pour chaque séquence de test " .
+                                    "de plus haut niveau. Les résultats pour les séquences de test enfants " .
+                                    "sont comptabilisés dans la séquence de test de plus haut niveau correspondant.";
+$TLS_info_report_tc_priorities = "Ce rapport affiche les résultats conformément aux priorités de test. " .
+                                 "La priorité d’un cas de test est calculée sur la base de la criticité " .
+                                 "et l’urgence de test. Pour d’avantage d’informations sur " .
+                                 "la priorité de test, veuillez vous reporter au manuel et vérifier votre configuration.";
+$TLS_info_res_by_platform = "Ce rapport affiche le résultat pour chaque plateforme lié à cette campagne de test.";
+$TLS_info_report_milestones_prio = "Ce rapport affiche les jalons définis pour cette campagne de test. " .
+                                   "Un jalon est atteint quand tous les \"sub-milestones\" pour chaque " .
+                                   "priorité sont atteints(colorisé en vert).";
+$TLS_info_report_milestones_no_prio = "Ce rapport affiche les jalons définis pour cette campagne de test. " .
+                                      "Un jalon est atteint quand la progression de test est colorée en vert " .
+                                      "(Progression de test > Objectif d’exécution).";
+$TLS_info_res_by_kw = "Ce rapport affiche les résultats pour chaque mot-clé. Si un cas de test a de multiples " .
+                      "mots-clés affectés, cela est comptabilisé pour chaque mot-clé affecté.";
+$TLS_info_gen_test_rep = "<b>Information générale</b><br />" .
+                         "Tous les rapports considèrent uniquement la dernière exécution pour chaque cas de test.<br />" .
+                         "Vous pouvez ordonner les tables en cliquant sur les titres de colonne.";
 
 
 
@@ -2263,6 +2310,7 @@ $TLS_passfail = "Résultats de test";
 $TLS_testnotes = "Notes d’exécution";
 $TLS_last_exec_result = "Dernier résultat";
 $TLS_test_project_notes = "Description du projet de test";
+$TLS_undefined_req_spec_type = "Le type du dossier d’exigences (%s) n’est pas défini.";
 
 
 // ----- lib/functions/users.inc.php -----
@@ -2360,6 +2408,7 @@ $TLS_warning_enter_valid_date = "Saisir une date valide";
 $TLS_warning_invalid_percentage_value = "Les valeurs de pourcentage vont de 0 à 100%";
 $TLS_warning_milestone_date = "Les jalons doivent être créés avec une date supérieure ou égale à la date courante.";
 $TLS_warning_percentage_value_higher_than_100 = "L’addition des valeurs de pourcentage ne peut dépasser 100%";
+$TLS_warning_target_before_start = "La date cible ne peut être supérieure à la date de début.";
 
 
 
@@ -3117,8 +3166,10 @@ $TLS_id_not_set = "ID non défini.";
 $TLS_testcase_not_found = "Cas de test %s inconnu du projet de texte (préfixe %s).";
 $TLS_req_spec_not_found = "Dossier d’exigences %s inconnu du projet de test (préfixe %s).";
 $TLS_req_not_found = "Exigence %s inconnue du projet de test (préfixe %s).";
+$TLS_req_version_not_found = "La version %s de l’exigence %s est inconnue du projet de test (préfixe %s).";
 $TLS_invalid_item = "Objet (%s) invalide";
 $TLS_btn_show_direct_link = "Afficher un lien permanent";
+$TLS_direct_link_on_wrong_version = "Cliquer ci-contre pour ouvrir la version courante de ce document.";
 
 // ----- testcase/req comparison -----
 $TLS_title_compare_versions_tc = "Page de comparaison des versions de cas de test";
@@ -3222,6 +3273,11 @@ $TLS_export_execution_set = "Exporter le jeu d’exécution";
 $TLS_no_label_for_req_type = "Aucune configuration req_type_labels pour le type: %s";
 
 
+$TLS_print_testcase = "Imprimer le cas de test: %s";
+$TLS_print_requirement = "Imprimer l’exigence: %s";
+$TLS_print_requirement_specification = "Imprimer le dossier d’exigences: %s";
+
+
 // ----- lib/functions/remote_exec.php
 $TLS_remoteExecServerConfigProblems = "L’exécution à distance ne peut être lancée par manque de configuration.\n" .
 									  "Veuillez vérifier que les champs personnalisés nécessaires sont définis " .
@@ -3243,5 +3299,12 @@ $TLS_issue_status_tested = "Testé";
 $TLS_issue_status_delivered = "Livré";
 $TLS_issue_status_closed = "Fermé";
 $TLS_issue_status_held = "Retenu";
+
+// this definition has to be placed AFTER $TLS_title_metrics_x_build
+$TLS_buildMetricsFeedback = $TLS_title_metrics_x_build . 
+							": les données sont calculées depuis les cas de test avec affectation d’un testeur au build";
+
+// execHistory.php
+$TLS_btn_show_exec_history = "Afficher toute l’historique d’exécution";
 // ----- END ------------------------------------------------------------------
 ?>

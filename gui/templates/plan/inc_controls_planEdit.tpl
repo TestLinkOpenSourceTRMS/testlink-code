@@ -14,60 +14,50 @@ Rev:
 <table style="float: left; text-align:left">
 	<tr>
 		<td align='left'>
+			<input type="checkbox" name="copy_tcases" checked="checked"/>
 			{$labels.testplan_copy_tcases}
 		</td>
+	</tr>
+	<tr>
 		<td align='left'>
-			<input type="checkbox" name="copy_tcases" checked="checked"/>
-			{$labels.testplan_copy_tcases_latest}<input type="radio" name="tcversion_type" value="latest" />
-			{$labels.testplan_copy_tcases_current}<input type="radio" name="tcversion_type" value="current" checked="1"/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="radio" name="tcversion_type" value="latest" />{$labels.testplan_copy_tcases_latest}
+		</td>
+	<tr>
+		<td>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="radio" name="tcversion_type" value="current" checked="1"/>{$labels.testplan_copy_tcases_current}
 		</td>
 	</tr>
 	<tr>
 		<td align='left'>
-			{$labels.testplan_copy_builds}
-		</td>
-		<td align='left'>
-			<input type="checkbox" name="copy_builds" checked="checked"/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="checkbox" name="copy_priorities" checked="checked"/>{$labels.testplan_copy_priorities}
 		</td>
 	</tr>
 	<tr>
 		<td align='left'>
-			{$labels.testplan_copy_priorities}
-		</td>
-		<td align='left'>
-			<input type="checkbox" name="copy_priorities" checked="checked"/>
+			<input type="checkbox" name="copy_builds" checked="checked"/>{$labels.testplan_copy_builds}
 		</td>
 	</tr>
 	<tr>
 		<td align='left'>
-			{$labels.testplan_copy_milestones}
-		</td>
-		<td align='left'>
-			<input type="checkbox" name="copy_milestones" checked="checked"/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="checkbox" name="copy_assigned_to" checked="checked"/>{$labels.testplan_copy_assigned_to}
 		</td>
 	</tr>
 	<tr>
 		<td align='left'>
-			{$labels.testplan_copy_user_roles}
-		</td>
-		<td align='left'>
-			<input type="checkbox" name="copy_user_roles" checked="checked"/>
+			<input type="checkbox" name="copy_milestones" checked="checked"/>{$labels.testplan_copy_milestones}
 		</td>
 	</tr>
 	<tr>
 		<td align='left'>
-			{$labels.testplan_copy_platforms_links}
-		</td>
-		<td align='left'>
-			<input type="checkbox" name="copy_platforms_links" checked="checked"/>
+			<input type="checkbox" name="copy_user_roles" checked="checked"/>{$labels.testplan_copy_user_roles}
 		</td>
 	</tr>
-	<tr>
-		<td align='left'>
-			{$labels.testplan_copy_assigned_to}
-		</td>
-		<td align='left'>
-			<input type="checkbox" name="copy_assigned_to" checked="checked"/>
-		</td>
-	</tr>
+	
+	{* always copy platform links *}
+	<input type="hidden" name="copy_platforms_links" value="1"/>
+
 </table>

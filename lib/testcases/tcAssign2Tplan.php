@@ -207,6 +207,7 @@ function initializeGui($argsObj)
 	$guiObj->tcversion_id=$argsObj->tcversion_id;
 	$guiObj->can_do=false;
 	$guiObj->item_sep=config_get('gui')->title_separator_2;
+	$guiObj->tproject_id = $argsObj->tproject_id;
     return $guiObj;
 }
 

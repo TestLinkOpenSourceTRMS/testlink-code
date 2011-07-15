@@ -65,6 +65,7 @@ $week_short = lang_get('calendar_week_short');
 $time_format_cfg = config_get('timestamp_format');
 $coverage_enabled = $req_cfg->expected_coverage_management;
 $relations_enabled = $req_cfg->relations->enable;
+$edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $gui->reqIDs = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
 
@@ -137,11 +138,10 @@ if(count($gui->reqIDs) > 0) {
 	    	
 	    	$result[] = $path;
 	    	
-	    	// use html comment to sort properly by this columns (extjs)
-			// BUGID 4038
-	    	$linked_title = '<!-- ' . $title . ' -->' . 
-	    					'<a href="javascript:openLinkedReqVersionWindow(' . $args->tproject_id . ',' .
-	    					$id . ',' . $version['version_id'] . ')">' .  $title . '</a>';
+			$edit_link = '<a href="javascript:openLinkedReqVersionWindow(' . $args->tproject_id . ',' . $id . ',' . $version['version_id'] . ')">' . 
+			             '<img title="' .$labels['requirement'] . '" src="' . $edit_img . '" /></a> ';
+			
+	    	$linked_title = '<!-- ' . $title . ' -->' . $edit_link . $title;
 	    	
 	    	$result[] = $linked_title;
 	    	

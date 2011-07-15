@@ -13,7 +13,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {lang_get var='labels' 
           s="req_doc_id,title,scope,coverage_number,expected_coverage,needed,warning,
              current_coverage,coverage,req_msg_norequirement,req_select_create_tc,
-             requirement,status,type,toggle_create_testcase_amount"} 
+             requirement,status,type,toggle_create_testcase_amount,requirement"} 
 
 
 {include file="inc_head.tpl" openHead="yes"}
@@ -156,10 +156,10 @@ function cs_all_coverage_in_div(div_id, input_id_prefix, default_id_prefix, memo
 					   name="req_id_cbox[{$gui->all_reqs[row].id}]" 
 													   value="{$gui->all_reqs[row].id}"/></td>{/if}
 			<td style="padding:2px;">
-				<span onclick="javascript: openLinkedReqWindow({$gui->tproject_id},{$gui->all_reqs[row].id});"
-					  style="cursor:  pointer;  color: #059;" >
-					{$gui->all_reqs[row].req_doc_id|escape} : {$gui->all_reqs[row].title|escape}
-				</span>
+				<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+				     onclick="javascript:openLinkedReqWindow({$gui->tproject_id},{$gui->all_reqs[row].id});"
+				     title="{$labels.requirement}" />
+				{$gui->all_reqs[row].req_doc_id|escape}{$gsmarty_gui->title_separator_1}{$gui->all_reqs[row].title|escape}
 			</td>
 			{$req_status=$gui->all_reqs[row].status}
 			<td style="padding:2px;">{$gui->reqStatusDomain.$req_status|escape}</td>

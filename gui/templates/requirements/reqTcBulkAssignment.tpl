@@ -19,7 +19,7 @@ Requirements Bulk Assignment
              req_spec,warning,req_title_available,req_title_assigned,
              check_uncheck_all_checkboxes,req_msg_norequirement,btn_unassign,
              req_title_unassigned,check_uncheck_all_checkboxes,
-             req_msg_norequirement,btn_assign"}
+             req_msg_norequirement,btn_assign,requirement"}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"} {* includes ext-js *}
@@ -91,9 +91,13 @@ function check_action_precondition(form_id,action)
           	<tr>
           		<td><input type="checkbox" id="assigned_req{$gui->requirements[row].id}"
           		                           name="req_id[{$gui->requirements[row].id}]" /></td>
-          		<td><span class="bold">{$gui->requirements[row].req_doc_id|escape}</span></td>
-          		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->requirements[row].id}">
-          			{$gui->requirements[row].title|escape}</a></span></td>
+          		<td><span>{$gui->requirements[row].req_doc_id|escape}</span></td>
+          		<td>
+          			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+          			     onclick="javascript:openLinkedReqWindow({$gui->tproject_id},{$gui->requirements[row].id});"
+          			     title="{$labels.requirement}" />
+          			{$gui->requirements[row].title|escape}
+          		</td>
           	  <td>{$gui->requirements[row].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
           	</tr>
           	{sectionelse}

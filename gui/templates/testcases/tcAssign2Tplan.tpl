@@ -9,7 +9,8 @@ Purpose: manage assignment of A test case version to N test plans
 *}
 {lang_get var='labels' 
           s='testproject,test_plan,th_id,please_select_one_testplan,platform,btn_cancel,
-             cancel,warning,version,btn_add,testplan_usage,no_test_plans'}
+             cancel,warning,version,btn_add,testplan_usage,no_test_plans,design,
+             execution_history'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"} {* includes ext-js *}
@@ -39,7 +40,17 @@ function check_action_precondition(container_id,action)
 
 {if $gui->tplans}
 <form method="post" action="lib/testcases/tcEdit.php?testcase_id={$gui->tcase_id}&tcversion_id={$gui->tcversion_id}">
-{$gui->tcaseIdentity|escape} {$gui->item_sep} {$labels.testplan_usage} 
+
+<br />
+<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+      onclick="javascript:openExecHistoryWindow({$gui->tcase_id});"
+      title="{$labels.execution_history}" />
+<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+     onclick="javascript:openTCaseWindow({$gui->tproject_id},{$gui->tcase_id});"
+     title="{$labels.design}" />
+{$gui->tcaseIdentity|escape}
+<br /><br />
+{$labels.testplan_usage}:
 <div id='checkboxes'>
 <table class="simple_tableruler" style="width:50%">
   <th>&nbsp;</th><th>{$labels.version}</th><th>{$labels.test_plan}</th><th>{$labels.platform}</th>

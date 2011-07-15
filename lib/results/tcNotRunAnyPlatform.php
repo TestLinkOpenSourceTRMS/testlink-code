@@ -64,6 +64,8 @@ $gui->number_of_testcases = 0;
 $gui->number_of_not_run_testcases = 0;
 
 $gui->matrix = array();
+$gui->tableSet = array();
+
 $cols = array_flip(array('tsuite', 'link', 'priority'));
 
 if ($lastResultMap != null && $platforms_enabled) {
@@ -144,9 +146,11 @@ if ($lastResultMap != null && $platforms_enabled) {
 $gui->status_message = $platforms_enabled ? sprintf(lang_get('not_run_any_platform_status_msg'),
                                                     $gui->number_of_testcases,
                                                     $gui->number_of_not_run_testcases)
-		                                  : lang_get('not_run_any_platform_no_platforms');
+                                          : lang_get('not_run_any_platform_no_platforms');
 
-$gui->tableSet[] = $gui->number_of_not_run_testcases ? buildMatrix($gui->matrix, $args->format) : array();
+if ($gui->number_of_not_run_testcases) {
+	$gui->tableSet[] = buildMatrix($gui->matrix, $args->format);
+}
 
 $smarty = new TLSmarty;
 $smarty->assign('gui',$gui);

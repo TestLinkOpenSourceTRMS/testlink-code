@@ -1,7 +1,4 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: resultsTC.tpl,v 1.14 2010/09/20 13:57:37 mx-julian Exp $ *}
- * Purpose: smarty template - show Test Results and Metrics *}
- *}
+{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
 
 {lang_get var="labels"
           s="title,date,printed_by,title_test_suite_name,platform,title_test_case_title,

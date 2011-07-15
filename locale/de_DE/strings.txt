@@ -2656,7 +2656,7 @@ $TLS_list_of_not_run = "Nicht ausgeführte Testfälle";
 $TLS_title_test_report_not_run_on_any_platform = "Testreport: Testfälle, die auf keiner Plattform durchgeführt wurden";
 $TLS_not_run_any_platform_status_msg = "%d Testfälle sind in diesem Testplan enthalten.<br/> " .
                                        "%d dieser Testfälle wurden bisher auf keiner Plattform durchgeführt.</p>";
-$TLS_not_run_any_platform_no_platforms = "Diesem Testfall wurde noch keine Plattform hinzugefügt.";
+$TLS_not_run_any_platform_no_platforms = "Diesem Testplan wurde noch keine Plattform hinzugefügt.";
 
 
 

@@ -40,7 +40,7 @@ $mailCfg = buildMailCfg($gui);
 
 $getOpt = array('outputFormat' => 'map');
 $gui->platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
-$platforms_enabled = !is_null($gui->platforms);
+$platforms_active = !is_null($gui->platforms);
 
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS,ALL_PLATFORMS);
 
@@ -62,13 +62,15 @@ $urgencyCfg = config_get('urgency');
 
 $gui->number_of_testcases = 0;
 $gui->number_of_not_run_testcases = 0;
+$gui->warning_msg = '';
+$gui->status_msg = '';
 
 $gui->matrix = array();
 $gui->tableSet = array();
 
 $cols = array_flip(array('tsuite', 'link', 'priority'));
 
-if ($lastResultMap != null && $platforms_enabled) {
+if ($lastResultMap != null && $platforms_active) {
 	$versionTag = lang_get('tcversion_indicator');
 
 	foreach ($lastResultMap as $suiteId => $tsuite)  {
@@ -143,13 +145,17 @@ if ($lastResultMap != null && $platforms_enabled) {
     }
 }
 
-$gui->status_message = $platforms_enabled ? sprintf(lang_get('not_run_any_platform_status_msg'),
-                                                    $gui->number_of_testcases,
-                                                    $gui->number_of_not_run_testcases)
-                                          : lang_get('not_run_any_platform_no_platforms');
-
+// create and show the table only if we have data to display
 if ($gui->number_of_not_run_testcases) {
 	$gui->tableSet[] = buildMatrix($gui->matrix, $args->format);
+}
+
+if ($platforms_active) {
+	$gui->status_message = sprintf(lang_get('not_run_any_platform_status_msg'),
+                                                    $gui->number_of_testcases,
+                                                    $gui->number_of_not_run_testcases);
+} else {
+	$gui->warning_msg = lang_get('not_run_any_platform_no_platforms');
 }
 
 $smarty = new TLSmarty;

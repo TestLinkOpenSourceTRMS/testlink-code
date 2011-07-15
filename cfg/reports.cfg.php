@@ -9,6 +9,7 @@
  * SCOPE: Definition of report/metrics menu 
  * 
  * @internal revisions:
+ *  20110713 - asimon - added test cases not run on any platform
  *	20110515 - franciscom - new xls report using codeplex
  *	20110312 - franciscom - added logic to include custom_reports.cfg.php
  *  20100903 - Julian - BUGID 37006 - disabled uncovered_testcases report 
@@ -135,7 +136,13 @@ $tlCfg->reports_list['list_tc_norun'] = array(
 	'enabled' => 'all',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
-$tlCfg->reports_list['tcases_without_tester'] = array( 
+$tlCfg->reports_list['list_tc_notrunanyplatform'] = array(
+	'title' => 'link_report_not_run_any_platform',
+	'url' => 'lib/results/tcNotRunAnyPlatform.php',
+	'enabled' => 'all',
+	'format' => 'format_html,format_ods,format_xls,format_mail_html'
+);
+$tlCfg->reports_list['tcases_without_tester'] = array(
 	'title' => 'link_report_tcases_without_tester',
 	'url' => 'lib/results/testCasesWithoutTester.php',
 	'enabled' => 'all',

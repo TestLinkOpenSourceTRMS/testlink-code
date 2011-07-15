@@ -15,7 +15,7 @@ rev :
 *}
 {lang_get var='labels'
           s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,
-             check_uncheck_all_checkboxes,warning,
+             check_uncheck_all_checkboxes,warning,execution_history,design,
              choose_target,copy_keywords,btn_move,btn_cp'}
 
 {lang_get s='select_at_least_one_testcase' var="check_msg"}
@@ -93,7 +93,6 @@ function check_action_precondition(container_id,action,msg)
 			              onclick='cs_all_checkbox_in_div("move_copy_checkboxes","tcaseSet_","add_value_memory");'
                     title="{$labels.check_uncheck_all_checkboxes}" />
 			    </th>
-          <th class="tcase_id_cell">{$labels.th_id}</th>
           <th>{$labels.th_test_case}</th>
           </tr>
           
@@ -103,10 +102,13 @@ function check_action_precondition(container_id,action,msg)
                     <input type="checkbox" name="tcaseSet[]" id="tcaseSet_{$tcinfo.tcid}" value="{$tcinfo.tcid}" />
                 </td>
                 <td>
-                    {$tcprefix|escape}{$tcinfo.tcexternalid|escape}&nbsp;&nbsp;
-                </td>
-                <td>
-                    {$tcinfo.tcname|escape}
+                    <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+                         onclick="javascript:openExecHistoryWindow({$tcinfo.tcid});"
+                         title="{$labels.execution_history}" />
+                    <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+                         onclick="javascript:openTCaseWindow({$tcinfo.tcid});"
+                         title="{$labels.design}" />
+                    {$tcprefix|escape}{$tcinfo.tcexternalid|escape}{$gsmarty_gui->title_separator_1}{$tcinfo.tcname|escape}
                 </td>
             </tr>
         {/foreach}

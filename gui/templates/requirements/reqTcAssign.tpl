@@ -23,7 +23,8 @@ Purpose: smarty template - assign REQ to one test case
              warning_req_tc_assignment_impossible,req_spec,warning,
              req_title_assigned,check_uncheck_all_checkboxes,
              req_msg_norequirement,btn_unassign,req_title_unassigned,
-             check_uncheck_all_checkboxes,req_msg_norequirement,btn_assign"}
+             check_uncheck_all_checkboxes,req_msg_norequirement,btn_assign,
+             requirement"}
           
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -96,9 +97,13 @@ function check_action_precondition(form_id,action)
     	<tr>
     		<td><input type="checkbox" id="assigned_req{$gui->arrAssignedReq[row].id}" value="{$gui->arrAssignedReq[row].id}"
     		                           name="req_id[{$gui->arrAssignedReq[row].id}]" /></td>
-    		<td><span class="bold">{$gui->arrAssignedReq[row].req_doc_id|escape}</span></td>
-    		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrAssignedReq[row].id}">
-    			{$gui->arrAssignedReq[row].title|escape}</a></span></td>
+    		<td><span>{$gui->arrAssignedReq[row].req_doc_id|escape}</span></td>
+    		<td>
+    			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+    			     onclick="javascript:openLinkedReqWindow({$gui->arrAssignedReq[row].id});"
+    			     title="{$labels.requirement}" />
+    			{$gui->arrAssignedReq[row].title|escape}
+    		</td>
     		<td>{$gui->arrAssignedReq[row].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
     	</tr>
     	{sectionelse}
@@ -148,9 +153,13 @@ function check_action_precondition(form_id,action)
       		           id="free_req{$gui->arrUnassignedReq[row2].id}" value="{$gui->arrUnassignedReq[row2].id}"
       		           name="req_id[{$gui->arrUnassignedReq[row2].id}]" /></td>
 
-      		<td><span class="bold">{$gui->arrUnassignedReq[row2].req_doc_id|escape}</span></td>
-      		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrUnassignedReq[row2].id}">
-      			{$gui->arrUnassignedReq[row2].title|escape}</a></span></td>
+      		<td>{$gui->arrUnassignedReq[row2].req_doc_id|escape}</td>
+      		<td>
+      			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+      			     onclick="javascript:openLinkedReqWindow({$gui->arrUnassignedReq[row2].id});"
+      			     title="{$labels.requirement}" />
+      			{$gui->arrUnassignedReq[row2].title|escape}
+      		</td>
       		<td>{$gui->arrUnassignedReq[row2].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
       	</tr>
       	{sectionelse}

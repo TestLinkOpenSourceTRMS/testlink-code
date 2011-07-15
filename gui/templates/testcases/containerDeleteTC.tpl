@@ -10,7 +10,8 @@ Viewer for massive delete of test cases inside a test suite
 {lang_get var='labels'
           s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,
              check_uncheck_all_checkboxes,btn_delete,th_linked_to_tplan,th_version,
-             platform,th_executed,choose_target,copy_keywords,btn_move,warning,btn_cp'}
+             platform,th_executed,choose_target,copy_keywords,btn_move,warning,btn_cp,
+             execution_history,design'}
 
 {lang_get s='select_at_least_one_testcase' var="check_msg"}
 
@@ -83,7 +84,6 @@ function check_action_precondition(container_id,action,msg)
 			              onclick='cs_all_checkbox_in_div("delete_checkboxes","tcaseSet_","add_value_memory");'
                     title="{$labels.check_uncheck_all_checkboxes}" />
 			    </th>
-          <th class="tcase_id_cell">{$labels.th_id}</th>
           <th>{$labels.th_test_case}</th>
           </tr>
           
@@ -95,15 +95,18 @@ function check_action_precondition(container_id,action,msg)
                     {/if}	
                 </td>
                 <td>
-                    {$tcinfo.external_id|escape}&nbsp;&nbsp;
-                </td>
-                <td>
-                    {$tcinfo.name|escape}
+                    <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+                         onclick="javascript:openExecHistoryWindow({$tcinfo.id});"
+                         title="{$labels.execution_history}" />
+                    <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+                         onclick="javascript:openTCaseWindow({$tcinfo.id});"
+                         title="{$labels.design}" />
+                    {$tcinfo.external_id|escape}{$gsmarty_gui->title_separator_1}{$tcinfo.name|escape}
                 </td>
             </tr>
             {if $gui->exec_status_quo[$rowid] != ''}
             <tr>
-            <td colspan=2>&nbsp;</td>
+            <td>&nbsp;</td>
             <td>
 	                      <table class="simple_tableruler">
 	                  		<tr>

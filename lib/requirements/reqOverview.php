@@ -78,7 +78,7 @@ if(count($gui->reqIDs) > 0) {
 	$labels2get = array('no' => 'No', 'yes' => 'Yes', 'not_aplicable' => null,
 	                    'req_spec_short' => null,'title' => null, 'version' => null, 'th_coverage' => null,
 	                    'frozen' => null, 'type'=> null,'status' => null,'th_relations' => null, 'requirements' => null,
-                        'number_of_reqs' => null, 'number_of_versions' => null
+                        'number_of_reqs' => null, 'number_of_versions' => null, 'requirement' => null
     );
 					
 	$labels = init_labels($labels2get);

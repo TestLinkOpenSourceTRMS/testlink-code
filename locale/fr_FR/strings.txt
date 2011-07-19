@@ -494,7 +494,6 @@ $TLS_no_links = "Aucune donnée dépendante";
 $TLS_linked_and_executed = "Le cas de test a été ajouté à la campagne de test et a des résultats.";
 $TLS_system_blocks_tsuite_delete_due_to_exec_tc = 
 	"La séquence de test ne peut être supprimée, la configuration du système bloquant la suppression des cas de test exécutés.";
-c
 
 
 // ----- gui/templates/containerNew.tpl -----

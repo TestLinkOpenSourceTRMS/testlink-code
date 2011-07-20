@@ -113,18 +113,10 @@ foreach ($matrix as $build_id => $build_execution_map) {
 		foreach ($status_map as $status => $code) {
 			$current_row[] = $statistics[$status]['count'];
 			
-			//use html comment to allow js sort this column properly
-			$status_percentage = is_numeric($statistics[$status]['percentage']) ? 
-			                     $statistics[$status]['percentage'] : -1;
-			
-			$current_row[] = $status_percentage;
+			$current_row[] = $statistics[$status]['percentage'];
 		}
 		
-		// add general progress for this user
-		// add html comment with which js can sort the column
-		$percentage = is_numeric($statistics['progress']) ? $statistics['progress'] : -1;
-		
-		$current_row[] = $percentage;
+		$current_row[] = $statistics['progress'];
 		
 		// add this row to the others
 		$rows[] = $current_row;

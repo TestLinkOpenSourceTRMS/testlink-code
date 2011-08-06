@@ -11,6 +11,7 @@
  *
  * @internal revisions
  *
+ * 20110806 - franciscom - TICKET 4692
  * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
  */
 
@@ -762,11 +763,13 @@ class testsuite extends tlObjectWithAttachments
 	  	    $rs=array();
 	  	    foreach($testcases as $idx => $value)
 	  	    {
-	  	       $item=$tcase_mgr->get_last_version_info($value['id']);
-	  	       $item['tcversion_id']=$item['id'];
-	  	       $tsuite['tsuite_name']=$parentNodes[$value['parent_id']]['name'];
-	  	       unset($item['id']);
-	  	       $rs[]=$value+$item+$tsuite;   
+	        	// 20110806 - franciscom - TICKET 4692
+				$item=$tcase_mgr->get_last_version_info($value['id'],
+														array('output' => full, 'get_steps' => true));
+	  	       	$item['tcversion_id']=$item['id'];
+	  	       	$tsuite['tsuite_name']=$parentNodes[$value['parent_id']]['name'];
+	  	       	unset($item['id']);
+	  	       	$rs[]=$value+$item+$tsuite;   
 	  	    }
 	  	    $testcases=$rs;
 	  	}
@@ -810,11 +813,13 @@ class testsuite extends tlObjectWithAttachments
 	        $tcase_mgr = new testcase($this->db);
 	        foreach($testcases as $idx => $value)
 	        {
-	           $item=$tcase_mgr->get_last_version_info($value['id']);
-	           $item['tcversion_id']=$item['id'];
-	           $parent['tsuite_name']=$tsuiteName;
-	           unset($item['id']);
-	           $rs[]=$value+$item+$tsuite;   
+	        	// 20110806 - franciscom - TICKET 4692
+				$item=$tcase_mgr->get_last_version_info($value['id'],
+														array('output' => full, 'get_steps' => true));
+	           	$item['tcversion_id']=$item['id'];
+	           	$parent['tsuite_name']=$tsuiteName;
+	           	unset($item['id']);
+	           	$rs[]=$value+$item+$tsuite;   
 	        }
 	        $testcases=$rs;
 	    }

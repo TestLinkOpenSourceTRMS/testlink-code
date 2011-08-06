@@ -20,6 +20,7 @@
  * 
  *
  * @internal revisions 
+ * 20110806 - franciscom - integration with refactoring of TICKET 4188
  * 20110630 - franciscom - get_linked_versions() interface changes
  * 20110309 - franciscom - BUGID 4311: typo error on uploadExecutionAttachment mapping
  */
@@ -143,8 +144,11 @@ class TestlinkXMLRPCServer extends IXR_Server
     public static $internalIDParamName = "internalid";
 	public static $keywordIDParamName = "keywordid";
     public static $keywordNameParamName = "keywords";
+	
+	public static $linkIDParamName = "linkid";
 
     public static $nodeIDParamName = "nodeid";
+	public static $nodeTypeParamName = "nodetype";
 	public static $noteParamName = "notes";
 
     public static $optionsParamName = "options";
@@ -157,7 +161,10 @@ class TestlinkXMLRPCServer extends IXR_Server
     public static $publicParamName = "public";
 
     public static $requirementsParamName = "requirements";
-
+    public static $requirementIDParamName = "requirementid";
+    public static $reqSpecIDParamName = "reqspecid";
+	
+	public static $scopeParamName = "scope";
 	public static $summaryParamName = "summary";
 	public static $statusParamName = "status";
 	public static $stepsParamName = "steps";
@@ -261,6 +268,12 @@ class TestlinkXMLRPCServer extends IXR_Server
 	                            'tl.getTestCasesForTestPlan' => 'this:getTestCasesForTestPlan',
 	                            'tl.getTestCaseIDByName' => 'this:getTestCaseIDByName',
                                 'tl.getTestCaseCustomFieldDesignValue' => 'this:getTestCaseCustomFieldDesignValue',
+	    						'tl.getTestCaseCustomFieldExecutionValue' => 'this:getTestCaseCustomFieldExecutionValue',
+	    						'tl.getTestCaseCustomFieldTestPlanDesignValue' => 'this:getTestCaseCustomFieldTestPlanDesignValue',
+	    						'tl.getTestSuiteCustomFieldDesignValue' => 'this:getTestSuiteCustomFieldDesignValue',
+	    						'tl.getTestPlanCustomFieldDesignValue' => 'this:getTestPlanCustomFieldDesignValue',
+	    						'tl.getReqSpecCustomFieldDesignValue' => 'this:getReqSpecCustomFieldDesignValue',
+	    						'tl.getRequirementCustomFieldDesignValue' => 'this:getRequirementCustomFieldDesignValue',
                                 'tl.getFirstLevelTestSuitesForTestProject' => 'this:getFirstLevelTestSuitesForTestProject',     
                                 'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
 	                            'tl.getTestCase' => 'this:getTestCase',
@@ -1744,8 +1757,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 		{		
 			$testSuiteID = $this->args[self::$testSuiteIDParamName];
             $tsuiteMgr = new testsuite($this->dbObj);
-
-            // BUGID 2179
 			if(!$this->_isDeepPresent() || $this->args[self::$deepParamName] )
 			{
 			    $pfn = 'get_testcases_deep';
@@ -1755,8 +1766,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 			    $pfn = 'get_children_testcases';
 			}
 			return $tsuiteMgr->$pfn($testSuiteID,$details);
-			
-			
 		}
 		else
 		{
@@ -4639,6 +4648,251 @@ protected function createAttachmentTempFile()
 	    // file_put_contents('c:\checkTestCaseVersionNumberAncestry.php.xmlrpc', $xx,FILE_APPEND); 
 	    return $ret;
 	} // function end
+
+
+    /**
+    * Helper method to see if the a provided scope is valid. Valids scopes are 
+    * design, execution and testplan_design
+    *
+    * @param string $messagePrefix used to be prepended to error message
+    *
+    * @return boolean
+    * @access protected
+    */
+    protected function checkCustomFieldScope($messagePrefix='')
+    {
+    	$status = false;
+    	$domain = array('design' => true,'execution' => true, 'testplan_design' => true);
+    	$scope = $this->args[self::$scopeParamName];
+
+		$status = is_null($scope) ? false : isset($domain[$scope]);
+    	return $status;
+    }
+
+
+    /**
+     * Gets value of a Custom Field for a entity in a given scope (e.g.: a custom
+     * field for a test case in design scope).
+     *
+     * BUGID-4188: feature request - new method - getTestSuiteCustomFieldValue
+     *
+     * @param struct $args
+     * @param string $args["devKey"]: used to check if operation can be done.
+     *                                if devKey is not valid => abort.
+     *
+     * @param string $args["customfieldname"]: custom field name
+     * @param int 	  $args["tprojectid"]: project id
+     * @param string $args["nodetype"]: note type (testcase, testsuite, ...)
+     * @param int    $args["nodeid"]: node id (test case version id, project id, ...)
+     * @param string $args["scope"]: cf scope (execution, design or testplan_design)
+     * @param int    $args["executionid"]: execution id
+     * @param int    $args["testplanid"]: test plan id
+     * @param int    $args["linkid"]: link id for nodes linked at test plan design scope
+     *
+     * @return mixed $resultInfo
+     *
+     * @access protected
+     */
+    protected function getCustomFieldValue($args)
+    {
+        $msg_prefix="(" .__FUNCTION__ . ") - ";
+        $this->_setArgs($args);
+
+        $checkFunctions = array('authenticate','checkTestProjectID','checkCustomField','checkCustomFieldScope');
+        $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+
+        if($status_ok && $this->userHasRight("mgt_view_tc"))
+        {
+            $cf_name = $this->args[self::$customFieldNameParamName];
+            $tproject_id = $this->args[self::$testProjectIDParamName];
+            $nodetype = $this->args[self::$nodeTypeParamName];
+            $nodeid = $this->args[self::$nodeIDParamName];
+            $scope = $this->args[self::$scopeParamName];
+            $executionid = $this->args[self::$executionIDParamName];
+            $testplanid = $this->args[self::$testPlanIDParamName];
+            $linkid = $this->args[self::$linkIDParamName];
+
+            $enabled = 1; // returning only enabled custom fields
+
+            $cfield_mgr = $this->tprojectMgr->cfield_mgr;
+            $cfinfo = $cfield_mgr->get_by_name($cf_name);
+            $cfield = current($cfinfo);
+
+      		switch($scope)
+      		{
+      			case 'design':
+      				$filters = array( 'cfield_id' => $cfield['id']);
+      				$cfieldSpec = $cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
+      																		$filters,$nodetype,$nodeid);
+      			break;
+      			
+				case 'execution' 
+      				$cfieldSpec = $cfield_mgr->get_linked_cfields_at_execution($tproject_id,$enabled,$nodetype,
+      																		   $nodeid,$executionid,$testplanid);
+      			break;
+
+				case 'testplan_design':
+     				$cfieldSpec = $cfield_mgr->get_linked_cfields_at_testplan_design($tproject_id,$enabled,$nodetype,
+     																				 $nodeid,$linkid,$testplanid );
+				break; 
+ 
+      		}
+      		return $cfieldSpec[$cfield['id']];
+      	}
+      	else
+      	{
+      		return $this->errors;
+      	}
+    }
+
+  	/**
+  	 * Gets a Custom Field of a Test Case in Execution Scope.
+  	 * 
+  	 * @param struct $args
+	 * @param string $args["devKey"]: used to check if operation can be done.
+	 *                                if devKey is not valid => abort.
+	 *
+	 * @param string $args["customfieldname"]: custom field name
+	 * @param int 	 $args["tprojectid"]: project id
+	 * @param int    $args["version"]: test case version id
+	 * @param int    $args["executionid"]: execution id
+	 * @param int    $args["testplanid"]: test plan id
+	 *
+	 * @return mixed $resultInfo
+	 *
+	 * @access public
+  	 */
+	public function getTestCaseCustomFieldExecutionValue($args)
+	{
+	    $args[self::$nodeTypeParamName] = 'testcase';
+	    $args[self::$nodeIDParamName] = $args[self::$versionNumberParamName];
+	    $args[self::$scopeParamName] = 'execution';
+	    
+	    return $this->getCustomFieldValue($args);
+	}
+    
+	/**
+ 	 * Gets a Custom Field of a Test Case in Test Plan Design Scope.
+	 *
+	 * @param struct $args
+	 * @param string $args["devKey"]: used to check if operation can be done.
+	 *                                 if devKey is not valid => abort.
+	 *
+	 * @param string $args["customfieldname"]: custom field name
+	 * @param int 	 $args["testcaseid"]: project id
+	 * @param int    $args["version"]: test case version id
+	 * @param int    $args["testplanid"]: test plan id
+	 * @param int    $args["linkid"]: link id (important!)
+	 *
+	 * @return mixed $resultInfo
+	 *
+	 * @access public
+	 */
+	public function getTestCaseCustomFieldTestPlanDesignValue($args)
+	{
+	    $args[self::$nodeTypeParamName] = 'testcase';
+	    $args[self::$nodeIDParamName] = $args[self::$versionNumberParamName];
+	    $args[self::$scopeParamName] = 'testplan_design';
+	
+	    return $this->getCustomFieldValue($args);
+	}
+	
+	/**
+	 * Gets a Custom Field of a Test Suite in Design Scope.
+	 *
+	 * @param struct $args
+ 	 * @param string $args["devKey"]: used to check if operation can be done.
+ 	 *                                 if devKey is not valid => abort.
+	 *
+	 * @param string $args["customfieldname"]: custom field name
+	 * @param int 	$args["tprojectid"]: project id
+ 	 * @param int    $args["testsuiteid"]: test suite id
+	 * 
+	 * @return mixed $resultInfo
+	 *
+	 * @access public
+	 */
+	public function getTestSuiteCustomFieldDesignValue($args)
+	{
+	    $args[self::$nodeTypeParamName] = 'testsuite';
+	    $args[self::$nodeIDParamName] = $args[self::$testSuiteIDParamName];
+	    $args[self::$scopeParamName] = 'design';
+	
+	    return $this->getCustomFieldValue($args);
+	}
+	
+	/**
+	 * Gets a Custom Field of a Test Plan in Design Scope.
+	 *
+	 * @param struct $args
+	 * @param string $args["devKey"]: used to check if operation can be done.
+	 *                                if devKey is not valid => abort.
+	 *
+	 * @param string $args["customfieldname"]: custom field name
+	 * @param int 	 $args["tprojectid"]: project id
+	 * @param int    $args["testplanid"]: test plan id
+	 *
+	 * @return mixed $resultInfo
+	 *
+	 * @access public
+	 */
+	public function getTestPlanCustomFieldDesignValue($args)
+	{
+	    $args[self::$nodeTypeParamName] = 'testplan';
+	    $args[self::$nodeIDParamName] = $args[self::$testPlanIDParamName];
+	    $args[self::$scopeParamName] = 'design';
+	
+	    return $this->getCustomFieldValue($args);
+	}
+	
+    /**
+     * Gets a Custom Field of a Requirement Specification in Design Scope.
+     * 
+     * @param struct $args
+     * @param string $args["devKey"]: used to check if operation can be done.
+     *                                if devKey is not valid => abort.
+     *
+     * @param string $args["customfieldname"]: custom field name
+     * @param int 	 $args["tprojectid"]: project id
+     * @param int    $args["reqspecid"]: requirement specification id
+     * 
+     * @return mixed $resultInfo
+     * 
+     * @access public
+     */
+    public function getReqSpecCustomFieldDesignValue($args)
+    {
+        $args[self::$nodeTypeParamName] = 'requirement_spec';
+        $args[self::$nodeIDParamName] = $args[self::$reqSpecIDParamName];
+        $args[self::$scopeParamName] = 'design';
+        
+        return $this->getCustomFieldValue($args);
+    }
+  
+    /**
+     * Gets a Custom Field of a Requirement in Design Scope.
+     * 
+     * @param struct $args
+     * @param string $args["devKey"]: used to check if operation can be done.
+     *                                if devKey is not valid => abort.
+     *
+     * @param string $args["customfieldname"]: custom field name
+     * @param int 	 $args["tprojectid"]: project id
+     * @param int    $args["requirementid"]: requirement id
+     * 
+     * @return mixed $resultInfo
+     * 
+     * @access public
+     */
+    public function getRequirementCustomFieldDesignValue($args)
+    {
+        $args['nodetype'] = 'requirement';
+        $args['nodeid'] = $args[self::$requirementIDParamName];
+        $args['scope'] = 'design';
+        
+        return $this->getCustomFieldValue($args);
+    }
+
 
 } // class end
 ?>

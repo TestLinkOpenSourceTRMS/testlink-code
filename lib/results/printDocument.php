@@ -3,16 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: printDocument.php,v $
- *
- * @version $Revision: 1.45.2.4 $
- * @modified $Date: 2011/01/15 15:07:36 $ by $Author: franciscom $
+ * @filesource printDocument.php
  * @author Martin Havlat
  *
  * SCOPE:
  * Generate documentation Test report based on Test plan data.
  *
- * Revisions :
+ * @interanl revisions:
  *  20110224 - Julian - BUGID 4275 - Many Requirements are in the specification document twice
  *  20110115 - franciscom - BUGID 4170 - Test Report - When Test Plan Has platforms does not filter test cases
  *							BUGID 4171 - Test Report - estimated and real execution time functions made Platform aware
@@ -26,11 +23,6 @@
  *	20100520 - franciscom - BUGID 3451 - In the "Test reports and Metrics" 
  *                                       -> "Test report" the "Last Result" is always "Not Run"
  *  20100326 - asimon - BUGID 3067 - refactored to include requirement document printing
- *	20090906 - franciscom - added platform contribution
- *	20090922 - amkhullar - added a check box to enable/disable display of TC custom fields.
- *  20090309 - franciscom - BUGID 2205 - use test case execution while printing test plan
- * 	20090213 - havlatm - support for OpenOffice
- *	20081207 - franciscom - BUGID 1910 - fixed estimated execution time computation.  
  *
  */
 require_once('../../config.inc.php');
@@ -71,7 +63,6 @@ switch ($doc_info->type)
     	  	    $spec['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
     	  	    $spec['node_type_id'] = $decode['node_descr_id']['requirement_spec'];
     	  	    
-    	  	    // BUGID 4275 - Many Requirements are in the specification document twice
 				unset($treeForPlatform[0]['childNodes']);
 				$treeForPlatform[0]['childNodes'][0] = &$spec;
 
@@ -106,7 +97,6 @@ switch ($doc_info->type)
 		    $doc_info->testplan_scope = $tplan_info['notes'];
 		    $doc_info->title = $doc_info->testplan_name;
 
-            // 20100112 - franciscom
             $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
             $platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);   
 			$items2use = null;
@@ -459,7 +449,7 @@ function getStatsEstimatedExecTime(&$tplanMgr,&$items2use,$tplanID)
 	if( is_null($items2use) )
 	{
 		// will work on all test cases present on Test Project.
-		// these IDs will be searche inside get_estimated_execution_time()
+		// these IDs will be searched inside get_estimated_execution_time()
 		$min = $tplanMgr->get_estimated_execution_time($tplanID);
 	}
 	else

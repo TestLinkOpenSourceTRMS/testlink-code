@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Req Spec Sample to test Req Spec Upgrade
+1. import reqspec-starttreck-example2
+2. import this file
+3. Title will be updated for Req Spec with DOC ID RS-STREK-001 and RS-STREK-001-02
+-->
+
+<requirement-specification>
+<req_spec title="***Intrepid-Class Production Vehicle"  doc_id="RS-STREK-001" >
+<type><![CDATA[1]]></type>
+<node_order><![CDATA[0]]></node_order>
+<total_req><![CDATA[10]]></total_req>
+<scope><![CDATA[<p>Req Specification</p><p>Star Trek Fleet </p><p>Comprising:</p><p><span style="border-collapse: separate; color: #000000; font-family: 'Times New Roman'; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; font-size: medium" class="Apple-style-span"><span style="color: #bfbfbf; font-family: verdana,arial,helvetica,sans-serif; font-size: 13px" class="Apple-style-span">&nbsp;Deck Layout&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Deck One Details&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Intrepid Class - Introduction&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Command Systems&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Tactical Systems&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Computer Systems&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Propulsion Systems&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Utilities and Auxiliary Systems&nbsp; &nbsp;<br />&nbsp;Science and Remote Sensing Systems<br />&nbsp;Crew Support Systems&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Auxiliary Spacecraft Systems&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Flight Operations&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Emergency Operations&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><br />&nbsp;</p> 
+]]> 
+</scope>
+	<req_spec title="***Deck Layout"  doc_id="RS-STREK-001-02" >
+	<type><![CDATA[2]]></type>
+	<node_order><![CDATA[0]]></node_order>
+	<total_req><![CDATA[1]]></total_req>
+	<scope><![CDATA[ ]]></scope>
+	</req_spec>
+</req_spec>
+</requirement-specification>

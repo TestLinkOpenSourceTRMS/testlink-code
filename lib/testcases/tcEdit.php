@@ -125,7 +125,11 @@ if($args->delete_tc_version)
 {
 	$status_quo_map = $tcase_mgr->get_versions_status_quo($args->tcase_id);
 	$exec_status_quo = $tcase_mgr->get_exec_status($args->tcase_id);
-    $gui->delete_mode = 'single'; 
+    $gui->delete_mode = 'single';
+    // BUGID 4650 - Delete single Test Case version did not work
+    // We do not need to check here if test case version has already been
+    // execute because "Delete this version" button is hidden in this case
+    $gui->delete_enabled = 1;
 
     $msg = '';
 	$sq = null;

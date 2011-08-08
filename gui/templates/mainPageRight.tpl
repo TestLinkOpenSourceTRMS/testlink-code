@@ -53,7 +53,7 @@
 
 {/if}
 
-{if $gui->countPlans > 0}
+{if $gui->countPlans > 0 && ($gui->grants.testplan_execute == "yes" || $gui->grants.testplan_metrics == "yes")}
    {assign var="display_right_block_2" value=true}
 
     <script  type="text/javascript">

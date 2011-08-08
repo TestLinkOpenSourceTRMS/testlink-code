@@ -5,33 +5,16 @@
  *
  * create or update TestLink database 
  * 
+ * @filesource	installNewDB.php
  * @package 	TestLink
  * @author 		Francisco Mancardi
- * @copyright 	2008, TestLink community
+ * @copyright 	2008,2011 TestLink community
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
- * @version    	CVS: $Id: installNewDB.php,v 1.61.2.3 2011/01/17 11:05:58 mx-julian Exp $
  *
- * @internal Revisions:
- *  20110117 - Julian - BUGID 4174 - When testlink is updated do not show login data
- *	20100911 - franciscom - drop_tables() - MS SQL does not like 'CASCADE'
- *	20100815 - franciscom - BUGID 3654
- *  20100507 - Julian - changed time_limit for execution to umlimited
- *	20100110 - franciscom - added drop_tables();
- * 	20091109 - havlatm - general layout, header, logic update
- * 	20091003 - franciscom - migration from 1.8.x (DB 1.2) to 1.9 Beta 1 (DB 1.3)
- *  20090715 - franciscom - changed way to manage replace of table prefix on SQL statements to run.
- *                          Improvements on Drop of table if Datat Base Exists
- *	20090603 - franciscom - write on config file table prefix
- *  20080102 - franciscom - added DB 1.2
- *  20071018 - franciscom - added DB 1.1 
- *  20070725 - franciscom - added 1.7.0 RC 3
- *  20070414 - franciscom - added 1.7.0 RC 2
- *  20070216 - franciscom - added dropping of all tables if DB exists
- *  20070204 - franciscom - added 1.7.0 Beta 5
- *  20070131 - franciscom - added 1.7.0 Beta 4
- *  20070121 - franciscom - upgrade code for 1.7 Beta
- *  20060523 - franciscom - adding postgres support
+ * @internal revisions:
+ * 20110808 - franciscom - check for db_version, issue due to not using db_prefix
+ * 20110117 - Julian - BUGID 4174 - When testlink is updated do not show login data
  * 
  **/
 
@@ -280,7 +263,7 @@ if ($upgrade)
 	$a_sql_upd_dir=array();
 	$a_sql_data_dir=array();
 	
-	$the_version_table=$my_ado->MetaTables('TABLES',false,'db_version');
+	$the_version_table=$my_ado->MetaTables('TABLES',false,$db_table_prefix . 'db_version');
 	if( count($the_version_table) == 0 )
 	{
 		echo "<p>You are trying to upgrade from a pre-release of TestLink 1.7" .
@@ -294,7 +277,15 @@ if ($upgrade)
         $migration_process = ''; 
 
 		// try to know what db version is installed
-		$sql = "SELECT * FROM {$tables['db_version']} ORDER BY upgrade_ts DESC";
+		// check if we need to use prefix but for some reason tlObjectWithDB::getDBTables
+		// have not returned prefix.
+		//
+		$dbVersionTable = $tables['db_version'];
+		if($dbVersionTable == 'db_version' &&  trim($db_table_prefix) != '')
+		{
+			$dbVersionTable = $db_table_prefix . $dbVersionTable;
+		}
+		$sql = "SELECT * FROM {$dbVersionTable} ORDER BY upgrade_ts DESC";
 		$res = $db->exec_query($sql);  
 		if (!$res)
 		{

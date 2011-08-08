@@ -55,7 +55,7 @@ main page right side
 
 {/if}
 
-{if $gui->countPlans > 0 && $gui->grants.testplan_execute == "yes"}
+{if $gui->countPlans > 0 && ($gui->grants.testplan_execute == "yes" || $gui->grants.testplan_metrics == "yes")}
    {$display_right_block_2=true}
 
     <script  type="text/javascript">

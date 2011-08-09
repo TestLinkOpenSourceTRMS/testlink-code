@@ -61,14 +61,16 @@ viewer for requirement
 	  	<input type="submit" name="edit_req" value="{$labels.btn_edit}" onclick="doAction.value='edit'"/>
 	  	{/if}
 	  	
-	  	{if $args_can_delete_req}
+	  	{* BUGID 4588 - If more than one version is displayed show "Delete" and "Delete this Version" button*}
+	  	{if $args_can_delete_req && !$gui->version_option}
 	  	<input type="button" name="delete_req" value="{$labels.btn_delete}"
 	  	       onclick="action_confirmation({$args_req.id},
 	  	                                    '{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
 	  	                                    '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req);"/>
 	  	{/if}
 	  	
-	  	{if $args_can_delete_version}
+	  	{* BUGID 4588 - If a single version is displayed do only show "Delete this Version" button *}
+	  	{if $args_can_delete_version || $gui->version_option}
 	  	<input type="button" name="delete_req_version" value="{$labels.btn_del_this_version}"
 	  	       onclick="action_confirmation({$args_req.version_id},
 	  	                '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',

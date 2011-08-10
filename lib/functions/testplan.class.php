@@ -1176,11 +1176,12 @@ class testplan extends tlObjectWithAttachments
 			" WHERE T.testplan_id={$id} AND NHB.id > NHA.id" . $tc_id_filter .
 			" GROUP BY NHA.parent_id, NHC.name, T.tcversion_id, TCVA.tc_external_id, TCVA.version  ";
 		
+		// BUGID 4682 - phidotnet - Newest version is smaller than Linked version
 		$sql2 = " SELECT SUBQ.name, SUBQ.newest_tcversion_id, SUBQ.tc_id, " .
 			    " SUBQ.tcversion_id, SUBQ.version, SUBQ.tc_external_id, " .
 			    " TCV.version AS newest_version " .
 			    " FROM {$this->tables['tcversions']} TCV, ( $sql ) AS SUBQ " .
-			    " WHERE SUBQ.newest_tcversion_id = TCV.id " .
+			    " WHERE SUBQ.newest_tcversion_id = TCV.id AND SUBQ.version < TCV.version " .
 			    " ORDER BY SUBQ.tc_id ";
 		
 		return $this->db->fetchRowsIntoMap($sql2,'tc_id');

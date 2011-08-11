@@ -9,15 +9,8 @@
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
- * 20101127 - franciscom - added req_revisions in getDBTables()
- * 20100314 - franciscom - added req_relations in getDBTables()
- * 20091227 - franciscom - new method getAttachmentTableName()
- * 20090806 - franciscom - platforms feature
- * 20090615 - franciscom - fixed bug on getDBTables()
- * 20090609 - franciscom - added method getDBTables()
- * 20090607 - franciscom - added array with tables names as property to be used on
- *                         all other classes, to manage table prefix
+ * @internal revisions
+ * 20110714 - franciscom - added req_spec_revisions in getDBTables()
  **/
  
 /** 
@@ -237,6 +230,7 @@ abstract class tlObject implements iSerialization
                         'req_coverage' => DB_TABLE_PREFIX . 'req_coverage',
                         'req_relations' => DB_TABLE_PREFIX . 'req_relations',
                         'req_specs' => DB_TABLE_PREFIX . 'req_specs',
+                        'req_specs_revisions' => DB_TABLE_PREFIX . 'req_specs_revisions',
                         'req_suites' => DB_TABLE_PREFIX . 'req_suites',
                         'requirements' => DB_TABLE_PREFIX . 'requirements',
                         'req_versions' => DB_TABLE_PREFIX . 'req_versions',

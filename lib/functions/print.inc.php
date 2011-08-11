@@ -14,6 +14,7 @@
  *
  *
  * @internal revisions:
+ *  20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
  *	20110309 - franciscom - renderReqForPrinting() fixed call to get custom fields, not
  *							refactored after addition of req REVISIONS
  *							
@@ -25,74 +26,6 @@
  *
  *	20110304 - franciscom - BUGID 4286: Option to print single test case
  *							renderTestCaseForPrinting() added missing info.
- *
- *  20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
- *  20101015 - franciscom  - BUGID 3804 - contribution again
- *  20100923 - franciscom  - BUGID 3804 - contribution
- *	20100920 - franciscom -  renderTestCaseForPrinting() - changed key on $cfieldFormatting
- *  20100914 - franciscom - BUGID 437: TC version not visible in generated test specification
- *  20100913 - Julian - BUGID 3754
- *	20100908 - Julian - BUGID 2877 - Custom Fields linked to Req versions
- *	20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
- *							renderTestCaseForPrinting()
- *
- *  20100803 - amitkhullar - Added condition check for null req. custom fields @line 230/346  
- *  20100723 - asimon - BUGID 3459: added platform ID to renderTestCaseForPrinting(),
- *                                  renderTestSpecTreeForPrinting() and
- *                                  renderTestPlanForPrinting()
- *  20100723 - asimon - BUGID 3451 and related: solved by changes in renderTestCaseForPrinting()
- *  20100326 - asimon - started refactoring and moving of requirement printing functions from 
- *                      req classes to this file for generation of req spec document
- *                      like it is done for testcases (BUGID 3067)
- *  20100306 - contribution by romans - BUGID 0003235: Printing Out Test Report Shows
- *                                     empty Column Headers for "Steps" and "Step Actions"
- *
- *  20100106 - franciscom - Multiple Test Case Steps Feature
- *  20100105 - franciscom - added tableColspan,firstColWidth config 
- *  20090906 - franciscom - added contribution by Eloff:
- *                          - regarding platforms feature
- *                          - Moved toc to be outside of report content
- *                          - Changed the anchor ids
- *
- *  20090902 - franciscom - preconditions (printed only if not empty).
- *  20090719 - franciscom - added Test Case CF location management 
- *                          added utility functions to clean up code
- *                          and have  a more modular design
- *
- *  20090330 - franciscom - fixed internal bug when decoding user names
- *	20090410 - amkhullar - BUGID 2368
- *  20090330 - franciscom - renderTestSpecTreeForPrinting() - 
- *                          added logic to print ALWAYS test plan custom fields
- *  20090329 - franciscom - renderTestCaseForPrinting() refactoring of code regarding custom fields
- *                          renderTestSuiteNodeForPrinting() - print ALWAYS custom fields
- * 	20090326 - amkhullar - BUGID 2207 - Code to Display linked bugs to a TC in Test Report
- *	20090322 - amkhullar - added check box for Test Case Custom Field display on Test Plan/Report
- *  20090223 - havlatm - estimated execution moved to extra chapter, refactoring a few functions
- * 	20090129 - havlatm - removed base tag from header (problems with internal links for some browsers)
- *  20081207 - franciscom - BUGID 1910 - changes on display of estimated execution time
- *                          added code to display CF with scope='execution'
- * 
- *  20080820 - franciscom - added contribution (BUGID 1670)
- *                         Test Plan report:
- *                         Total Estimated execution time will be printed
- *                         on table of contents. 
- *                         Compute of this time can be done if: 
- *                         - Custom Field with Name CF_ESTIMATED_EXEC_TIME exists
- *                         - Custom Field is managed at design time
- *                         - Custom Field is assigned to Test Cases
- *                         
- *                         Important Note:
- *                         Lots of controls must be developed to avoid problems 
- *                         presenting with results, when user use time with decimal part.
- *                         Example:
- *                         14.6 minutes what does means? 
- *                         a) 14 min and 6 seconds?  
- *                         b) 14 min and 6% of 1 minute => 14 min 3.6 seconds ?
- *
- *                         Implementation at (20080820) is very simple => is user
- *                         responsibility to use good times (may be always interger values)
- *                         to avoid problems.
- *                         Another choice: TL must round individual times before doing sum.
  *
  */ 
 
@@ -389,17 +322,20 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 	static $tplan_mgr;
 	static $req_spec_cfg;
 	static $reqSpecTypeLabels;
+	static $nodeTypes;
 	
+	$output = '';
 	$level = ($level > 0) ? $level : 1;
 	
-	if (!$req_spec_mgr) {
+	if (!$req_spec_mgr) 
+	{
 		$req_spec_cfg = config_get('req_spec_cfg');
 		$firstColWidth = '20%';
 		$tableColspan = 2;
 		$labels = array('requirements_spec' => 'requirements_spec', 
 		                'scope' => 'scope', 'type' => 'type', 'author' => 'author',
 		                'relations' => 'relations', 'overwritten_count' => 'req_total',
-		                'coverage' => 'coverage',
+		                'coverage' => 'coverage','revision' => 'revision',
 		                'undefined_req_spec_type' => 'undefined_req_spec_type',
 		                'custom_field' => 'custom_field', 'not_aplicable' => 'not_aplicable');
 		$labels = init_labels($labels);
@@ -407,10 +343,25 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 		$title_separator = config_get('gui_title_separator_1');
 		$req_spec_mgr = new requirement_spec_mgr($db);
 		$tplan_mgr = new testplan($db);
+		$nodeTypes = array_flip($tplan_mgr->tree_manager->get_available_node_types());
 	}
 	
-	$spec = $req_spec_mgr->get_by_id($node['id']);
-	
+	switch($nodeTypes[$node['node_type_id']])
+	{
+		case 'requirement_spec_revision':
+			$spec = $req_spec_mgr->getRevisionByID($node['id']);
+			$spec_id = $spec['parent_id'];
+			$who = array('parent_id' => $spec['parent_id'],'item_id' => $spec['id'],
+					     'tproject_id' => $spec['testproject_id']);
+		break;
+		
+		case 'requirement_spec':
+			$spec = $req_spec_mgr->get_by_id($node['id']);
+			$spec_id = $spec['id'];
+			$who = array('parent_id' => $spec['id'],'item_id' => $spec['revision_id'],
+					     'tproject_id' => $spec['testproject_id']);
+		break;
+	} 
 	$name = htmlspecialchars($spec['doc_id'] . $title_separator . $spec['title']);
 	
 	$docHeadingNumbering = '';
@@ -435,13 +386,18 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 				'<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . $name . "</a></p></b>\n";
 		$output .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
 	}
+	$output .=  '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
+	            $labels['revision'] . "</span></td><td> " . 
+	            $spec['revision'] . "</td></tr>\n";
 	
-	if ($options['req_spec_author']) {
+	if ($options['req_spec_author']) 
+	{
 		// get author name for node
 		$author = tlUser::getById($db, $spec['author_id']);
+		$whois = (is_null($author)) ? lang_get('undefined') : $author->getDisplayName();
 		$output .=  '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
 		            $labels['author'] . "</span></td><td> " . 
-		            htmlspecialchars($author->getDisplayName()) . "</td></tr>\n";
+		            htmlspecialchars($whois) . "</td></tr>\n";
 	}
 	
 	if ($options['req_spec_type']) 
@@ -460,8 +416,9 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 		$output .= "</td></tr>";
 	}
 	
-	if ($options['req_spec_overwritten_count_reqs']) {
-		$current = $req_spec_mgr->get_requirements_count($spec['id']);
+	if ($options['req_spec_overwritten_count_reqs']) 
+	{
+		$current = $req_spec_mgr->get_requirements_count($spec_id);   // NEEDS REFACTOR
 		$expected = $spec['total_req'];
     	$coverage = $labels['not_aplicable'] . " ($current/0)";
     	if ($expected) {
@@ -479,8 +436,13 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 		$output .= "<tr><td colspan=\"$tableColspan\">" . $spec['scope'] . "</td></tr>";
 	}
 	
-	if ($options['req_spec_cf']) {
-		$linked_cf = $req_spec_mgr->get_linked_cfields($spec['id']);
+	if ($options['req_spec_cf']) 
+	{
+	
+		// $linked_cf = $req_spec_mgr->get_linked_cfields($spec['id']);
+		//$who = array('parent_id' => $spec['id'],'item_id' => $spec['revision_id'],
+		//			 'tproject_id' => $spec['testproject_id']);
+		$linked_cf = $req_spec_mgr->get_linked_cfields($who);
 		if ($linked_cf){
 			foreach ($linked_cf as $key => $cf) {
 				$cflabel = htmlspecialchars($cf['label']);

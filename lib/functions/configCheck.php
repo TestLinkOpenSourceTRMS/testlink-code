@@ -6,27 +6,19 @@
  * Check configuration and system 
  * Using: Installer, sysinfo.php and Login
  * 
+ * @filesource	configCheck.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: configCheck.php,v 1.55.4.1 2011/01/26 09:01:58 mx-julian Exp $
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * @see			sysinfo.php
  *
  * @internal Revisions:
- * 	
+ * 	20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
  *  20110411 - Julian - BUGID 4398 - Prevent user-login when database scheme version does not fit 
  *                                   required scheme
  *  20110126 - Julian - BUGID 4186 - checkSchemaVersion() moved last_db_version to const.inc.php
  *                                 - better log message for DB 1.3 to DB 1.4 upgrade
- *  20100617 - franciscom - domxml is not needed anymore
- *  20090713 - franciscom - tested is_writable() on windows with PHP 5.
- *                          minor refactoring
- *  20090416 - havlatm - checking: database, GD lib and browser support
- *  20090126 - franciscom - check_php_extensions() refactoring
- *  20090109 - havlatm - import checking functions from Installer 
- * 	20081122 - franciscom - checkForExtensions() - added check of needed extensions to use pChart
- *  20081015 - franciscom - getSecurityNotes() - refactoring
  *
  **/
 // ---------------------------------------------------------------------------------------------------
@@ -157,14 +149,8 @@ function checkLibGd()
  * @todo Martin: it's used in getSecurityNotes() ... but it's not consistent with 
  * 		checkPhpExtensions() - refactore
  **/
-// * rev: 20081122 - franciscom - added gd2 check
 function checkForExtensions(&$msg)
 {
-	// if (!function_exists('domxml_open_file'))
-	// {
-	// 	$msg[] = lang_get("error_domxml_missing");
-	// }
-	
 	// without this pChart do not work
 	if( !extension_loaded('gd') )
 	{
@@ -227,9 +213,6 @@ function checkForLDAPExtension()
  * @author Andreas Morsing 
  *
  * @internal rev :
- *      20081015 - franciscom - LDAP checks refactored
- *      20080925 - franciscom - added option to not show results
- *      20070626 - franciscom - added LDAP checks  
  **/
 function getSecurityNotes(&$db)
 {
@@ -428,7 +411,7 @@ function checkForRepositoryDir($the_dir)
 function checkSchemaVersion(&$db)
 {
 	$result = array('status' => tl::ERROR, 'msg' => null);
-	$last_version = TL_LAST_DB_VERSION;  // BUGID 4186: moved last db version to const.inc.php
+	$last_version = TL_LAST_DB_VERSION; 
 	$db_version_table= DB_TABLE_PREFIX . 'db_version';
 	
 	$sql = "SELECT * FROM {$db_version_table} ORDER BY upgrade_ts DESC";
@@ -458,14 +441,23 @@ function checkSchemaVersion(&$db)
 			break;
 
 		case 'DB 1.3':
-			// DB 1.3 to DB 1.4 requires manual steps
-			if ($last_version == 'DB 1.4') {
-				$result['msg'] = "Manual upgrade of your DB scheme necessary (1.9.0 -> {$last_version}) - Read README file!";
-			} else {
-				$result['msg'] = $upgrade_msg;
+			// DB 1.3 to DB 1.4/1.5 requires manual steps
+			$result['msg'] = $upgrade_msg;
+			if ($last_version == 'DB 1.4' || $last_version == 'DB 1.5') 
+			{
+				$result['msg'] = "Manual upgrade of your DB scheme necessary (1.9.0 -> {$last_version}) " .
+								 " - Read README file!";
 			}
 			break;
 			
+		case 'DB 1.4':
+			if ($last_version == 'DB 1.5') 
+			{
+				$result['msg'] = "Manual upgrade of your DB scheme necessary (1.9.0 -> {$last_version}) " .
+								 " - Read README file!";
+			}
+			break;
+
 		case $last_version:
 			$result['status'] = tl::OK;
 			break;

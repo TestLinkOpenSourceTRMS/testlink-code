@@ -19,14 +19,9 @@
 *   - Assign requirements to test cases
 *
 *	@internal revision
+*	20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
 *	20110311 - Julian - Replaced seperator "::" with ":" for req spec text
 *	20110113 - asimon - 4168: BUGID Requirement Specifications navigator tree empty
-*	20101010 - franciscom - added custom node attribute: testlink_node_name
-*	20100306 - franciscom - BUGID 0003003: EXTJS does not count # req's
-*	20091208 - franciscom - added management of new attribute 'forbidden_parent'
-*                           to manage req spec movement when child req spec management is ENABLED.  
-*	20091122 - franciscom - manage rep spec doc id
-*	20090502 - franciscom - BUGID 2309 - display requirement doc id
 *        
 */
 require_once('../../config.inc.php');
@@ -76,11 +71,11 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     
     $nodes = null;
     $filter_node_type = $show_children ? '' : ",'requirement'";
-    // BUGID 4168 - added "NHA." to WHERE clause
     $sql = " SELECT NHA.*, NT.description AS node_type, RSPEC.doc_id " . 
            " FROM {$tables['nodes_hierarchy']} NHA JOIN {$tables['node_types']}  NT " .
            " ON NHA.node_type_id=NT.id " .
-           " AND NT.description NOT IN ('testcase','testsuite','testcase_version','testplan'{$filter_node_type}) " .
+           " AND NT.description NOT IN " . 
+           " ('testcase','testsuite','testcase_version','testplan','requirement_spec_revision' {$filter_node_type}) " .
            " LEFT OUTER JOIN {$tables['req_specs']} RSPEC " .
            " ON RSPEC.id = NHA.id " . 
            " WHERE NHA.parent_id = {$parent} ";

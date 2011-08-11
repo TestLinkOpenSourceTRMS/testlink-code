@@ -1,10 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecSearchForm.tpl,v 1.2 2010/07/07 08:46:24 mx-julian Exp $
-Purpose: show form for search through requirement specifications.
+@filesource	reqSpecSearchForm.tpl
+Form for searching through requirement specifications.
 
-rev :
-  20100707 - Julian - BUGID 3584: replaced cf names by cf labels
+@internal revisions
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -12,7 +11,7 @@ rev :
 
 {lang_get var="labels" 
           s='caption_search_form, custom_field, search_type_like,
-             custom_field_value,btn_find,req_spec_document_id, 
+             custom_field_value,btn_find,req_spec_document_id,log_message, 
              title_search_req_spec, reqid, reqversion, caption_search_form_req_spec,
              title, scope, coverage, status, type'}
 
@@ -68,6 +67,11 @@ rev :
 		    	</td>
 	      </tr>
 	  {/if}
+		<tr>
+			<td>{$labels.log_message}</td>
+			<td><input type="text" name="log_message" id="log_message" 
+					   size="{#LOGMSG_SIZE#}" maxlength="{#LOGMSG_MAXLEN#}" /></td>
+		</tr>
 	  		
 		
   			      

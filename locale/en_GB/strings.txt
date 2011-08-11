@@ -239,6 +239,8 @@ $TLS_specific_direct_link = "Direct link to this specific version of the current
 $TLS_reserved_system_role_1 = 'reserved system role 1';
 $TLS_reserved_system_role_2 = 'reserved system role 2';
 $TLS_req_created_automatic_log = "Requirement Created";
+$TLS_reqspec_created_automatic_log = "Requirement Specification Created";
+
 $TLS_elapsed_seconds = 'Processing time (seconds)'; 
 
 
@@ -3210,11 +3212,14 @@ $TLS_invalid_item = 'Invalid item (%s)';
 $TLS_btn_show_direct_link = "Show permanent link";
 $TLS_direct_link_on_wrong_version = "Click here to open the current version of this document.";
 
-// ----- testcase/req comparison -----
+// ----- testcase/req/req spec comparison -----
 $TLS_title_compare_versions_tc = "Testcase versions compare page";
 $TLS_title_compare_versions_req = "Requirement versions compare page";
+$TLS_title_compare_revisions_rspec = "Requirement Spec. revisions compare page";
 $TLS_btn_compare_versions = "Compare versions";
 $TLS_btn_compare_selected_versions = "Compare selected versions";
+$TLS_btn_compare_revisions = "Compare revisions";
+$TLS_btn_compare_selected_revisions = "Compare selected revisions";
 $TLS_select_versions = "Select Versions to compare:";
 $TLS_version = "Version ";
 $TLS_compare = "Compare ";
@@ -3235,11 +3240,16 @@ $TLS_diff_subtitle_tc = "Differences between version %s (v%s) and version %s (v%
 $TLS_diff_subtitle_req = "Differences between version %s (v%s) and version %s (v%s) of requirement %s";
 $TLS_diff_details_req = "Differences between version %s revision %s (v%s r%s) and " . 
                         "version %s revision %s (v%s r%s) of requirement %s";
+
+$TLS_diff_details_rev = "Differences between revision %s (r%s) and revision %s (r%s)";
+
 $TLS_warning_context = "Context (lines) must be a number.";
 $TLS_warning_context_range = "Context is out of range (must be a positive number).";
 $TLS_warning_empty_context = "Context (lines) must not be empty.";
 $TLS_warning_selected_versions = "You have to select two versions from the list.";
 $TLS_warning_same_selected_versions = "You have to select two different versions from the list.";
+$TLS_warning_selected_revisions = "You have to select two revisions from the list.";
+$TLS_warning_same_selected_revisions = "You have to select two different revisions from the list.";
 
 // ----- grab from not-systematic developers -----
 $TLS_step_actions = "Step actions";

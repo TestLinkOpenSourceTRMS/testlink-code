@@ -3,6 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Id: reqAssign.tpl,v 1.6 2006/07/15 19:55:30 schlundus Exp $
 Purpose: smarty template - assign REQ to one test case
 
+20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
 20100403 - franciscom - SCOPE_SHORT_TRUNCATE
 20080512 - franciscom - added new parameter to manage "close window" button display.
                         Is used when this feature is called on a new window, not from menu.
@@ -97,13 +98,9 @@ function check_action_precondition(form_id,action)
     	<tr>
     		<td><input type="checkbox" id="assigned_req{$gui->arrAssignedReq[row].id}" value="{$gui->arrAssignedReq[row].id}"
     		                           name="req_id[{$gui->arrAssignedReq[row].id}]" /></td>
-    		<td><span>{$gui->arrAssignedReq[row].req_doc_id|escape}</span></td>
-    		<td>
-    			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-    			     onclick="javascript:openLinkedReqWindow({$gui->arrAssignedReq[row].id});"
-    			     title="{$labels.requirement}" />
-    			{$gui->arrAssignedReq[row].title|escape}
-    		</td>
+    		<td><span class="bold">{$gui->arrAssignedReq[row].req_doc_id|escape}</span></td>
+    		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrAssignedReq[row].id}">
+    			{$gui->arrAssignedReq[row].title|escape}</a></span></td>
     		<td>{$gui->arrAssignedReq[row].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
     	</tr>
     	{sectionelse}
@@ -153,13 +150,9 @@ function check_action_precondition(form_id,action)
       		           id="free_req{$gui->arrUnassignedReq[row2].id}" value="{$gui->arrUnassignedReq[row2].id}"
       		           name="req_id[{$gui->arrUnassignedReq[row2].id}]" /></td>
 
-      		<td>{$gui->arrUnassignedReq[row2].req_doc_id|escape}</td>
-      		<td>
-      			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-      			     onclick="javascript:openLinkedReqWindow({$gui->arrUnassignedReq[row2].id});"
-      			     title="{$labels.requirement}" />
-      			{$gui->arrUnassignedReq[row2].title|escape}
-      		</td>
+      		<td><span class="bold">{$gui->arrUnassignedReq[row2].req_doc_id|escape}</span></td>
+      		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrUnassignedReq[row2].id}">
+      			{$gui->arrUnassignedReq[row2].title|escape}</a></span></td>
       		<td>{$gui->arrUnassignedReq[row2].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
       	</tr>
       	{sectionelse}

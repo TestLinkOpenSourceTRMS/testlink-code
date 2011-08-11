@@ -7,21 +7,12 @@ Purpose: view a requirement specification
 @author: Martin Havlat
 
 @internal revisions
-
-20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
-                                inside a req spec (recursively)
-20101017 - franciscom - image access refactored (tlImages)
-20101008 - asimon - BUGID 3311
-20101006 - asimon - BUGID 3854
-20100810 - asimon - BUGID 3317: disabled total count of requirements by default
-20100321 - franciscom - req_spec_import/export url
-20071226 - franciscom - fieldset class added (thanks ext je team)
-20071106 - franciscom - added ext js library
-20070102 - franciscom - added javascript validation of checked requirements
+20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
 *}
 
 {lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,
-						  title_last_mod,title_created,no_records_found"}
+						  title_last_mod,title_created,no_records_found,revision,
+						  commit_title,please_add_revision_log"}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -52,7 +43,7 @@ Purpose: view a requirement specification
 {assign var="url_args" value="reqEdit.php?doAction=createTestCases&amp;req_spec_id="}
 {assign var="req_create_tc_url"  value="$basehref$req_module$url_args$reqSpecID"}
 
-{assign var="url_args" value="reqSpecEdit.php?doAction=createChild&amp;reqParentID="}
+{assign var="url_args" value="reqSpecEdit.php?doAction=createChild&amp;parentID="}
 {assign var="req_spec_new_url" value="$basehref$req_module$url_args$reqSpecID"}
 
 {assign var="url_args" value="reqSpecEdit.php?doAction=copyRequirements&amp;req_spec_id="}
@@ -75,7 +66,10 @@ Purpose: view a requirement specification
 	/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 	var del_action=fRoot+'{$req_module}reqSpecEdit.php?doAction=doDelete&req_spec_id=';
 
-    {* BUGID 3954: added contribution by Vincent *}
+
+	var log_box_title = "{$labels.commit_title|escape:'javascript'}";
+	var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
+
 	{literal}
 	function freeze_req_spec(btn, text, o_id) {
 		var my_action=fRoot+'lib/requirements/reqSpecEdit.php?doAction=doFreeze&req_spec_id=';
@@ -84,6 +78,29 @@ Purpose: view a requirement specification
 			window.location=my_action;
 		}
 	}
+
+
+	/**
+	 * 
+	 *
+	 */
+	function ask4log(fid,tid)
+	{
+		// alert('reqSpecView.tpl => ' + fid);	
+	  var target = document.getElementById(tid);
+	  var my_form = document.getElementById(fid);
+	  // alert('reqSpecView.tpl => ' + my_form.action);
+	  // alert('reqSpecView.tpl => ' + tid);
+	  
+	  Ext.Msg.prompt(log_box_title, log_box_text, function(btn, text){
+	      if (btn == 'ok')
+	      {
+	          target.value=text;
+	          my_form.submit();
+	      }
+	  },this,true);    
+	  return false;    
+	} 
 	{/literal}
 
 	var pF_freeze_req_spec = freeze_req_spec;
@@ -106,14 +123,14 @@ Purpose: view a requirement specification
    {if isset($gui->direct_link)}
    <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
    {/if}
-{* contribution by asimon *}
 {if $gui->req_spec.id}
-{* end contribution by asimon *}
-	
 {include file="$buttons_template" args_reqspec_id=$reqSpecID}
 <table class="simple">
 	<tr>
 		<th>{$gui->main_descr|escape}</th>
+	</tr>
+	<tr>
+		<td><b>{$labels.revision}{$smarty.const.TITLE_SEP}{$gui->req_spec.revision}</b></td>
 	</tr>
 	<tr>
 	  <td>{$labels.type}{$smarty.const.TITLE_SEP}

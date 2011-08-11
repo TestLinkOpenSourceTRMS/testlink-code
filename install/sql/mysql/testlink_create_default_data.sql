@@ -3,22 +3,12 @@
 # SQL script - create default data (rights & admin account)
 #
 # Database Type: MySQL 
-#
-# 20101126 - franciscom - DB version increased
-#                         added requirement_revision node type
-# 20100106 - franciscom - added testcase_step node type
-# 20090426 - franciscom - new right testproject_user_role_assignment
-# 20090126 - havlatm - role definition update
-# 20081029 - franciscom - add events_mgt right
-#                         fixed typo error system_configuraton -> system_configuration
-# 20070724 - franciscom - BUGID 950 
-#            removed right with id=19
-#            renamed right with id=5 
-#            updated db version- due to changes in milestone table
+# 20110730 - franciscom - TICKET 4661 - DB version
+# 20110714 - franciscom - TICKET 4661
 # ---------------------------------------------------------------------------------
 
 # Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.4', 'TestLink 1.9.1',CURRENT_TIMESTAMP());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.5', 'TestLink 1.9.5',CURRENT_TIMESTAMP());
 
 # Node types -
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (1,'testproject');
@@ -31,6 +21,7 @@ INSERT INTO /*prefix*/node_types  (id,description) VALUES (7,'requirement');
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (8,'requirement_version');
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (9,'testcase_step');
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (10,'requirement_revision');
+INSERT INTO /*prefix*/node_types  (id,description) VALUES (11,'requirement_spec_revision');
 
 
 # Roles -

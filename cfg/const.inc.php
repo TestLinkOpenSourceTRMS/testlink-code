@@ -6,13 +6,13 @@
  * Global Constants used throughout TestLink 
  * The script is included via config.inc.php
  * 
+ * @filesource	const.inc.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.167.2.7 2011/01/26 09:01:58 mx-julian Exp $
+ * @copyright 	2007-2011, TestLink community 
  * @see 		config.inc.php
  *
- * @internal 
+ * @internal revisions
  * No revisions logged here but each parameter must be described!
  *
  **/

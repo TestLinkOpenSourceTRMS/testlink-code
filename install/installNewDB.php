@@ -5,7 +5,7 @@
  *
  * create or update TestLink database 
  * 
- * @filesource	installNewDB.php
+ * @filesource  installNewDB.php
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2008,2011 TestLink community
@@ -13,8 +13,8 @@
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
  *
  * @internal revisions:
- * 20110808 - franciscom - check for db_version, issue due to not using db_prefix
- * 20110117 - Julian - BUGID 4174 - When testlink is updated do not show login data
+ *  20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
+ *  20110117 - Julian - BUGID 4174 - When testlink is updated do not show login data
  * 
  **/
 
@@ -322,6 +322,14 @@ if ($upgrade)
 				break;
 
 			case 'DB 1.4':
+				echo "<p>Your DB Schema {$schema_version} NEED TO BE upgraded, but you have to do ";
+				echo " this MANUALLY using a SQL client and scripts you will find on ";
+				echo " directory install/sql/alter_tables/1.9.4 ";
+				echo "<br /></p>";
+				close_html_and_exit();          
+				break;
+
+			case 'DB 1.5':
 				echo "<p>Your DB Schema {$schema_version} is the last available, then you don't need to do any upgrade.";
 				echo "<br />Script is finished.</p>";
 				close_html_and_exit();          
@@ -350,8 +358,6 @@ if ($upgrade)
 // ------------------------------------------------------------------------------------------------
 // Now proceed with user checks and user creation (if needed)
 //
-// 20051217 - fm refactoring due to minor errors 
-// 20050910 - fm
 // Added support for different types of architecture/installations:
 // webserver and dbserver on same machines      => user will be created as user
 // webserver and dbserver on DIFFERENT machines => user must be created as user@webserver

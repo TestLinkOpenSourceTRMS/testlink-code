@@ -46,19 +46,9 @@ function filterString($str)
  * @param array $exclude_branches map key=node_id
  * 
  * @internal Revisions:
+ * 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
  * 20100810 - asimon - filtering by testcase ID
  * 20100428 - asimon - BUGID 3301, added filtering by custom fields
- * 20090328 - franciscom - BUGID 2299, that was generated during 20090308 
- *                         trying to fix another not reported bug.
- * 20090308 - franciscom - changed arguments in str_ireplace() call
- *                         Due to bug in Test Spec tree when using Keywords filter
- * 20080501 - franciscom - keyword_id can be an array
- * 20071014 - franciscom - $bForPrinting
- *                         used to choose Javascript function 
- *                         to call when clicking on a tree node
- * 20070922 - franciscom - interface changes added $tplan_id,
- * 20070217 - franciscom - added $exclude_branches
- * 20061105 - franciscom - added $ignore_inactive_testcases
  */
  
  
@@ -1870,10 +1860,12 @@ function buildImportanceFilter($importance)
  * @return stdClass $treeMenu object with which ExtJS can generate the graphical tree
  */
 function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testproject_name, 
-                             $filters = null, $options = null) {
+                             $filters = null, $options = null) 
+{
 
 	$tables = tlObjectWithDB::getDBTables(array('requirements', 'req_versions', 
 	                                            'req_specs', 'req_relations', 
+	                                            'req_specs_revisions',
 	                                            'req_coverage', 'nodes_hierarchy'));
 	
 	$tree_manager = &$testproject_mgr->tree_manager;
@@ -1894,12 +1886,13 @@ function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testpr
 	                       'recursive' => true,
 	                       'order_cfg' => array('type' => 'spec_order'));
 	
-	$my['filters'] = array('exclude_node_types' =>  array('testplan'=>'exclude me',
-	                                                      'testsuite'=>'exclude me',
-	                                                      'testcase'=>'exclude me'),
-	                       'exclude_children_of' => array('testcase'=>'exclude my children',
-	                                                      'requirement'=>'exclude my children',
-	                                                      'testsuite'=> 'exclude my children'),
+	$my['filters'] = array('exclude_node_types' =>  array('testplan' => 'exclude me',
+	                                                      'testsuite' => 'exclude me',
+	                                                      'testcase' => 'exclude me',
+	                                                      'requirement_spec_revision' => 'exclude me'),
+	                       'exclude_children_of' => array('testcase' => 'exclude my children',
+	                                                      'requirement' => 'exclude my children',
+	                                                      'testsuite' => 'exclude my children'),
 	                       'filter_doc_id' => null,
 	                       'filter_title' => null,
 	                       'filter_status' => null,

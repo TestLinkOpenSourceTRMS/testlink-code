@@ -3,38 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource	tree.class.php
  * @package 	TestLink
  * @author Francisco Mancardi
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.93.2.1 2010/11/20 17:00:18 franciscom Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
- * 20101120 - franciscom - get_full_path_verbose() refactoring return when error
- * 20101009 - franciscom - order_cfg config options, added filtering by platform_id when 
- *						   order done by exec_order on _get_subtree_rec()
- *
- * 20101009 - franciscom - _get_subtree_rec(), _get_subtree() added tcversion_id in output set
- * 20101003 - franciscom - and_not_in_clause -> additionalWhereClause
- *						   interface changes -> _get_subtree_rec(), _get_subtree()
- *						   Added new option on remove_empty_nodes_of_type on _get_subtree_rec()  	
- * 20100920 - Julian - get_full_path_verbose - added new output format
- * 20100918 - franciscom - BUGID 3790 - delete_subtree_objects()
- * 20100317 - franciscom - get_node_hierarchy_info() interface changes.
- * 20100306 - franciscom - get_subtree_list() new argument to change output type
- *						   new method() - getAllItemsID - BUGID 0003003: EXTJS does not count # req's
- * 20100209 - franciscom - BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
- * 20091220 - franciscom - new method createHierarchyMap()
- * 20090926 - franciscom - get_subtree() - interface changes
- * 20090923 - franciscom - get_full_path_verbose() - fixed bug
- * 20090905 - franciscom - get_full_path_verbose() new options
- * 20090801 - franciscom - new method nodeNameExists()
- * 20090726 - franciscom - BUGID 2728 
- * 20090607 - franciscom - refactoring to manage table prefix
- * 20090413 - franciscom - BUGID - get_full_path_verbose() interface changes
- * 20090313 - franciscom - added getTreeRoot()
- * 20090207 - franciscom - new method check_name_is_unique()
- * 20081227 - franciscom - new method - get_full_path_verbose()
+ * @internal revisions
+ * 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
  */
 
 /**
@@ -42,15 +18,19 @@
  */
 class tree extends tlObject
 {
+
+	// ORDER IS CRITIC
 	// configurable values - pseudoconstants
 	var $node_types = array( 1 => 'testproject','testsuite',
 	                              'testcase','tcversion','testplan',
-	                              'requirement_spec','requirement','req_version');
+	                              'requirement_spec','requirement','req_version',
+	                              'testcase_step','req_revision','requirement_spec_revision');
 
-  // key: node type id, value: class name
+	// key: node type id, value: class name
 	var $class_name = array( 1 => 'testproject','testsuite',
 	                              'testcase',null,'testplan',
-	                              'requirement_spec_mgr','requirement_mgr',null);
+	                              'requirement_spec_mgr','requirement_mgr',null,
+	                              null,null,null);
 	                              
 	var $node_descr_id = array();
 	
@@ -61,7 +41,8 @@ class tree extends tlObject
                              'tcversion' => 'tcversions',
                              'requirement_spec' =>'req_specs',
                              'requirement' => 'requirements',  
-                             'req_version' => 'req_versions');
+                             'req_version' => 'req_versions',
+                             'requirement_spec_revision' => 'req_specs_revisions');
   
 	var $ROOT_NODE_TYPE_ID = 1;
 	var $ROOT_NODE_PARENT_ID = NULL;

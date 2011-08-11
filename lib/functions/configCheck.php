@@ -451,6 +451,7 @@ function checkSchemaVersion(&$db)
 			break;
 			
 		case 'DB 1.4':
+			$result['msg'] = $upgrade_msg;
 			if ($last_version == 'DB 1.5') 
 			{
 				$result['msg'] = "Manual upgrade of your DB scheme necessary (1.9.0 -> {$last_version}) " .

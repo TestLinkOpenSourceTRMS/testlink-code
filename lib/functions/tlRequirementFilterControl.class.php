@@ -14,26 +14,9 @@
  * This class extends tlFilterPanel for the specific use with requirement tree.
  * It holds logic to be used at GUI level to manage a common set of settings and filters for requirements.
  * 
- * @internal Revisions:
+ * @internal Revisions
  *
  * 20110311 - asimon - Show count for total requirements in tree on root node
- * 20101103 - asimon - custom fields on requirement filtering did not retain value after apply
- * 20101026 - asimon - BUGID 3930: changing date format according to given locale
- * 20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
- * 20101011 - asimon - BUGID 3883: fixed handling of unset date custom field inputs
- * 20101011 - asimon - BUGID 3884: added handling for datetime custom fields
- * 20101005 - asimon - BUGID 3853: show_filters disabled still shows panel
- * 20101005 - asimon - BUGID 3852: filter requirements by status resets on apply
- * 20100906 - franciscom - BUGID 2877 - Custom Fields linked to Req version
- * 20100827 - asimon - BUGID 3718 - enable drag&drop per default, disable only if filtering is done
- * 20100812 - asimon - fixed cf input field size
- * 20100812 - asimon - don't show textarea inputs on filter panel
- * 20100811 - asimon - BUGID 3566: show/hide CF
- * 20100808 - asimon - finished first implementation of requirement filtering
- * 20100624 - asimon - CVS merge (experimental branch to HEAD)
- * 20100503 - asimon - start of implementation of filter panel class hierarchy
- *                     to simplify/generalize filter panel handling
- *                     for test cases and requirements
  */
 
 /**
@@ -94,10 +77,9 @@ class tlRequirementFilterControl extends tlFilterControl {
 		$this->configuration->req_cfg = config_get('req_cfg');
 		$this->configuration->req_spec_cfg = config_get('req_spec_cfg');
 		// is choice of advanced filter mode enabled?
+		$this->filter_mode_choice_enabled = false;
     	if ($this->configuration->advanced_filter_mode_choice) {
     		$this->filter_mode_choice_enabled = true;
-    	} else {
-    		$this->filter_mode_choice_enabled = false;
     	}
 		
 		return tl::OK;

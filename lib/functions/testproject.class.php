@@ -10,65 +10,11 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
  * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
  * 20110223 - asimon - BUGID 4239: forgotten parameter $oldNewMappings for a function call in copy_as()  
  *                               caused links between reqs in old project and testcases in new project
  *                               when copying testprojects
- * 20101030 - amitkhullar - BUGID 3966 Added importance field in the query
- * 20101030 - francisco - show() BUGID 3937: No information when exporting all test suites when no test suites exists 
- *						  method for activating a test project was renamed	
- *						  get_all_testcases_id() - new options
- *
- * 20101003 - franciscom - and_not_in_clause -> additionalWhereClause
- * 20100930 - franciscom - BUGID 2344: Private test project
- * 20100929 - asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
- * 20100920 - Julian - getFreeTestCases() added importance to output
- * 20100911 - amitkhullar - BUGID 3764
- * 20100821 - franciscom - get_all_testplans() - interface changes
- * 20100516 - franciscom - BUGID 3464 - delete()
- * 20100310 - asimon - BUGID 3227 - refactored get_all_requirement_ids() and count_all_requirements()
- *                                  to not be recursive and pascal-like anymore
- *                                  and to use new method on tree class
- * 20100309 - asimon - BUGID 3227 - added get_all_requirement_ids() and count_all_requirements()
- * 20100209 - franciscom - BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
- * 20100203 - franciscom - addKeyword() return type changed
- * 20100201 - franciscom - delete() - missing delete of platforms
- * 20100102 - franciscom - show() - interface changes
- * 20091206 - franciscom - fixed bug on get_subtree() created furing refactoring
- * 20090606 - franciscom - get_by_prefix() interface changes
- * 20090512 - franciscom - added setPublicStatus()
- * 20090412 - franciscom - BUGID 2363 - getTCasesLinkedToAnyTPlan()
- *                                      getFreeTestCases()
- *         
- * 20090205 - franciscom - getReqSpec() - interface additions
- * 20090125 - franciscom - added utility method _createHierarchyMap()
- * 20090106 - franciscom - get_by_prefix()
- * 20081103 - franciscom - get_all_testcases_id() minor refactoring
- * 20080518 - franciscom - create() interface changes
- * 20080507 - franciscom - get_keywords_tcases() - changed return type
- *                                                 add AND type filter 
- * 20080501 - franciscom - typo erro bug in get_keywords_tcases()
- * 20080322 - franciscom - get_keywords_tcases() - keyword_id can be array
- * 20080322 - franciscom - interface changes get_all_testplans()
- * 20080112 - franciscom - changed methods to manage prefix field
- *                         new methods getTestCasePrefix()
- *
- * 20080107 - franciscom - get_accessible_for_user(), added more data
- *                         for array_of_map output type
- * 20080106 - franciscom - checkName() method
- *                         delete() changed return type
- * 20080104 - franciscom - fixed bug on gen_combo_test_suites()
- *                         due to wrong exclusion in get_subtree().
- * 20071111 - franciscom - new method get_subtree();
- * 20071106 - franciscom - createReqSpec() - changed return type
- * 20071104 - franciscom - get_accessible_for_user
- *                         added optional arg to get_all()
- *
- * 20071002 - azl - added ORDER BY to get_all method
- * 20070620 - franciscom - BUGID 914  fixed delete() (no delete from nodes_hierarchy)
- * 20070603 - franciscom - added delete()
- * 20070219 - franciscom - fixed bug on get_first_level_test_suites()
- * 20070128 - franciscom - added check_tplan_name_existence()
  *
  **/
 
@@ -1233,7 +1179,8 @@ function setPublicStatus($id,$status)
 	{
 		$ret = array();
     	$exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
-	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me');
+	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me',
+	                              'requirement_spec_revision' => 'exclude_me');
 
  		$my['filters'] = array('exclude_node_types' => $exclude_node_types);
 

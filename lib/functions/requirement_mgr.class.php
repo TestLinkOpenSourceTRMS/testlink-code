@@ -1657,7 +1657,8 @@ function get_linked_cfields($id,$child_id,$parent_id=null)
 */
 function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name_suffix='', $input_values = null)
 {
-    $cf_map = $this->get_linked_cfields($id,$version_id,$parent_id,$name_suffix,$input_values);
+    // $cf_map = $this->get_linked_cfields($id,$version_id,$parent_id,$name_suffix,$input_values);
+    $cf_map = $this->get_linked_cfields($id,$version_id,$parent_id,$name_suffix);
 	$cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
     return $cf_smarty;
 }
@@ -2795,30 +2796,6 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   		if( $my['options']['decode_user'] && !is_null($history) )
   		{
   			$this->decode_users($history);
-  			// $userCache = null;  // key: user id, value: display name
-  			// $key2loop = array_keys($history);
-  			// $labels['undefined'] = lang_get('undefined');
-  			// $user_keys = array('author' => 'author_id', 'modifier' => 'modifier_id');
-  			// foreach( $key2loop as $key )
-  			// {
-  			// 	foreach( $user_keys as $ukey => $userid_field)
-  			// 	{
-  			// 		$history[$key][$ukey] = '';
-  			// 		if(trim($history[$key][$userid_field]) != "")
-  			// 		{
-  			// 			if( !isset($userCache[$history[$key][$userid_field]]) )
-  			// 			{
-  			// 				$user = tlUser::getByID($this->db,$history[$key][$userid_field]);
-  			// 				$history[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
-  			// 				$userCache[$history[$key][$userid_field]] = $history[$key][$ukey];
-  			// 			}
-  			// 			else
-  			// 			{
-  			// 				$history[$key][$ukey] = $userCache[$history[$key][$userid_field]];
-  			// 			}
-  			// 		}
-  			// 	}	
-  			// }
 		}
  
     	return $history;

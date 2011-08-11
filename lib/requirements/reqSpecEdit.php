@@ -10,18 +10,7 @@
  *
  * View existing and create a new req. specification.
  *
- * rev:
- *  20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
- *                                  inside a req spec (recursively)
- *  20100908 - asimon - BUGID 3755: tree not refreshed when copying requirements
- *  20100810 - asimon - BUGID 3317: disabled total count of requirements by default
- *  20100808 - aismon - added logic to refresh filtered tree on action
- *	20091202 - franciscom - fixed bug on webeditor value init.
- *	20091119 - franciscom - doc_id
- *	20080830 - franciscom - added code to manage unlimited depth tree
- *                         (will be not enabled yet)
- *
- *  20080827 - franciscom - BUGID 1692 
+ * @internal revisions
  *
  */
 require_once("../../config.inc.php");
@@ -38,7 +27,7 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $commandMgr = new reqSpecCommands($db);
 
-$gui = initialize_gui($db,$commandMgr,$req_cfg);
+$gui = initialize_gui($db,$args,$req_cfg,$commandMgr);
 
 $auditContext = new stdClass();
 $auditContext->tproject = $args->tproject_name;
@@ -60,9 +49,12 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 function init_args()
 {
 	$args = new stdClass();
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$iParams = array("countReq" => array(tlInputParameter::INT_N,99999),
 			         "req_spec_id" => array(tlInputParameter::INT_N),
-					 "reqParentID" => array(tlInputParameter::INT_N),
+			         "req_spec_revision_id" => array(tlInputParameter::INT_N),
+					 "parentID" => array(tlInputParameter::INT_N),
 					 "doAction" => array(tlInputParameter::STRING_N,0,250),
 					 "title" => array(tlInputParameter::STRING_N,0,100),
 					 "scope" => array(tlInputParameter::STRING_N),
@@ -71,28 +63,26 @@ function init_args()
 					 "containerID" => array(tlInputParameter::INT_N),
  			 		 "itemSet" => array(tlInputParameter::ARRAY_INT),
 					 "reqSpecType" => array(tlInputParameter::STRING_N,0,1),
-					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL));	
-		
+					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL),
+					 "save_rev" => array(tlInputParameter::INT_N),
+					 "do_save" => array(tlInputParameter::INT_N),
+					 "log_message" => array(tlInputParameter::STRING_N));
+
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
 
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
 	
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
 	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 	$args->basehref = $_SESSION['basehref'];
-	$args->reqParentID = is_null($args->reqParentID) ? $args->tproject_id : $args->reqParentID;
+	
+	$args->parentID = is_null($args->parentID) ? $args->tproject_id : $args->parentID;
 
-	// asimon - 20100808 - added logic to refresh filtered tree on action
 	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action'])
 	                     ? $_SESSION['setting_refresh_tree_on_action'] : 0;
 	
-	if (is_null($args->countReq)) {
-		$args->countReq = 0;
-	}
-	
+	$args->countReq = is_null($args->countReq) ? 0 : intval($args->countReq);
 	return $args;
 }
 
@@ -114,24 +104,42 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
                              'doCopy' => 'doCopy',
 	                         'doFreeze' => 'doFreeze',
                              'copyRequirements' => 'doCopyRequirements',
-                             'doCopyRequirements' => 'doCopyRequirements');
+                             'doCopyRequirements' => 'doCopyRequirements',
+                             'doCreateRevision' => 'doCreateRevision');
 
+
+	// ------------------------------------------------------------------------------------------------
+	// Web Editor Processing
     $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
 	switch($argsObj->doAction)
     {
         case "edit":
         case "doCreate":
-        $owebEditor->Value = $argsObj->scope;
+        	$owebEditor->Value = $argsObj->scope;
         break;
-        
+
         default:
-        $owebEditor->Value = getItemTemplateContents('req_spec_template',$owebEditor->InstanceName, $argsObj->scope);
+        // TICKET 4661
+        if($opObj->askForRevision || $opObj->askForLog || !$opObj->action_status_ok) 
+		{
+			$owebEditor->Value = $argsObj->scope;
+		}
+		else
+		{
+        	$owebEditor->Value = getItemTemplateContents('req_spec_template',$owebEditor->InstanceName, 
+        												 $argsObj->scope);
+        }												 
         break;
     }
 	$guiObj->scope = $owebEditor->CreateHTML();
-    $guiObj->editorType = $editorCfg['type'];  
 
-    // 20100808 - aismon - added logic to refresh filtered tree on action
+	// if($opObj->action_status_ok == false){new dBug($guiObj->scope);}
+    $guiObj->editorType = $editorCfg['type'];  
+	// ------------------------------------------------------------------------------------------------
+
+
+	// ------------------------------------------------------------------------------------------------
+	// Tree refresh Processing
 	switch($argsObj->doAction)
     {
         case "doCreate":
@@ -143,7 +151,11 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     		$guiObj->refreshTree = $argsObj->refreshTree;
     	break;
     }
+	// ------------------------------------------------------------------------------------------------
+
     
+	// ------------------------------------------------------------------------------------------------
+	// GUI rendering Processing
     switch($argsObj->doAction)
     {
         case "edit":
@@ -159,47 +171,42 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         case "copy":
         case "doCopy":
         case "doFreeze":
+        case "doCreateRevision":
         	$renderType = 'template';
             $key2loop = get_object_vars($opObj);
+            
+            if($opObj->action_status_ok == false)  // TICKET 4661
+            {
+				// Remember that scope normally is a WebRichEditor, and that
+				// we have already processed WebRichEditor
+				// Need to understand if remove of scope key can be done always
+				// no matter action_status_ok
+            	unset($key2loop['scope']);
+            }
             foreach($key2loop as $key => $value)
             {
                 $guiObj->$key = $value;
             }
+       
+       		// if($opObj->action_status_ok == false){new dBug($guiObj);}
+       		
             $guiObj->operation = $actionOperation[$argsObj->doAction];
             $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
             $tpd = isset($key2loop['template_dir']) ? $opObj->template_dir : $templateCfg->template_dir;
-    	break;
-    }
-    
-	switch($argsObj->doAction)
-    {
-        case "edit":
-        case "create":
-        case "createChild":
-        case "reorder":
-        case "doDelete":
-        case "doReorder":
-        case "copyRequirements":
-        case "copy":
-        	$tpl = $tpd . $tpl;
-            break;
-    
-        case "doCreate":
-	    case "doUpdate": 
-        case "doCopyRequirements":
-        case "doCopy":
+
 	    	$pos = strpos($tpl, '.php');
             if($pos === false)
             {
-            	$tpl = $templateCfg->template_dir . $tpl;      
+            	// $tpl = $templateCfg->template_dir . $tpl;      
+            	$tpl = $tpd . $tpl;
             }
             else
             {
                 $renderType = 'redirect';  
 			}
-			break;  
+    	break;
     }
-
+    
     switch($renderType)
     {
         case 'template':
@@ -214,6 +221,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         	break;
 
         default:
+        	echo 'Can not process RENDERING!!!';
         	break;
     }
 }
@@ -222,18 +230,15 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
  * 
  *
  */
-function initialize_gui(&$dbHandler, &$commandMgr, &$req_cfg)
+function initialize_gui(&$dbHandler, &$argsObj, &$req_cfg, &$commandMgr)
 {
     $gui = $commandMgr->initGuiBean();
+	$gui->parentID = $argsObj->parentID;
     $gui->user_feedback = null;
     $gui->main_descr = null;
     $gui->action_descr = null;
-    // BUGID 3755: misspelled variable refresh_tree instead of refreshTree
     $gui->refreshTree = 0;
-    
-    // 20100810 - asimon - BUGID 3317: disabled total count of requirements by default
 	$gui->external_req_management = ($req_cfg->external_req_management == ENABLED) ? 1 : 0;
-    
     $gui->grants = new stdClass();
     $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
 

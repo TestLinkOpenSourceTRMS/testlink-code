@@ -4,16 +4,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource	reqSpecSearchForm.php
  * @package 	TestLink
  * @author		asimon
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSpecSearchForm.php,v 1.3 2010/08/07 22:43:12 asimon83 Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- * This page presents the search formular for requiremnt specifications.
+ * This page presents the search form for requiremnt specifications.
  *
- * @internal Revisions:
- * 20100806 - asimon - type displayed wrong selection: req types instead of req spec types
+ * @internal revisions
  */
 
 require_once("../../config.inc.php");
@@ -41,7 +40,6 @@ $reqSpecSet = $tproject_mgr->getOptionReqSpec($args->tprojectID,testproject::GET
 $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
 $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
 
-// 20100806 - asimon - type displayed wrong selection: req types instead of req spec types
 $reqSpecCfg = config_get('req_spec_cfg');
 $gui->types = init_labels($reqSpecCfg->type_labels);
 

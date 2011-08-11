@@ -4,20 +4,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource	reqSpecSearch.php
  * @package 	TestLink
  * @author		asimon
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSpecSearch.php,v 1.11 2010/10/15 11:43:26 mx-julian Exp $
+ * @copyright 	2005-2011
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search results for requirement specifications.
  *
  * @internal Revisions:
- * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                     table state independent from localization
- * 20101005 - asimon - replaced linked req spec title by linked icon
- * 20100929 - asimon - added req doc id to result table
- * 20100920 - Julian - BUGID 3793 - use exttable for search result
  */
 
 require_once("../../config.inc.php");
@@ -45,71 +40,110 @@ $gui->path_info = null;
 $gui->resultSet = null;
 $gui->tableSet = null;
 
-$map = null;
+$itemSet = null;
 $args = init_args();
 
 if ($args->tprojectID)
 {
-	$tables = tlObjectWithDB::getDBTables(array("cfield_design_values", 'nodes_hierarchy', 'req_specs'));
+	$tables = tlObjectWithDB::getDBTables(array('cfield_design_values', 'nodes_hierarchy', 
+												'req_specs','req_specs_revisions'));
 	$filter = null;
-	$from = null;
+	$join = null;
+	
 
+
+	// we use same approach used on requirements search => search on revisions
 	if ($args->requirement_document_id) {
-		//search by id
 		$id=$db->prepare_string($args->requirement_document_id);
-		$filter['by_id'] = " AND RS.doc_id like '%{$id}%' ";
+		$filter['by_id'] = " AND RSPECREV.doc_id like '%{$id}%' ";
 	}
 	
 	if ($args->name) {
-		//search by name/title
 		$title=$db->prepare_string($args->name);
-		$filter['by_name'] = " AND NH.name like '%{$title}%' ";
+		$filter['by_name'] = " AND NHRSPEC.name like '%{$title}%' ";
 	}
 
 	if ($args->reqSpecType != "notype") {
-		//search by type
 		$type=$db->prepare_string($args->reqSpecType);
-		$filter['by_type'] = " AND RS.type='{$type}' ";
+		$filter['by_type'] = " AND RSPECREV.type='{$type}' ";
 	}
 	
 	if ($args->scope) {
-		//search by scope
 		$scope=$db->prepare_string($args->scope);
-		$filter['by_scope'] = " AND RS.scope like '%{$scope}%' ";
+		$filter['by_scope'] = " AND RSPECREV.scope like '%{$scope}%' ";
 	}
+
+	if ($args->log_message) {
+		$log_message = $db->prepare_string($args->log_message);
+		$filter['by_log_message'] = " AND RSPECREV.log_message like '%{$log_message}%' ";
+	}
+
 	
 	if($args->custom_field_id > 0) {
-		//search by custom fields
         $args->custom_field_id = $db->prepare_int($args->custom_field_id);
         $args->custom_field_value = $db->prepare_string($args->custom_field_value);
-        $from['by_custom_field'] = ", {$tables['cfield_design_values']} CFD "; 
+        $join['by_custom_field'] = " JOIN {$tables['cfield_design_values']} CFD " .
+         						   " ON CFD.node_id=RSPECREV.id ";
         $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
-                                     " AND CFD.node_id=NH.id " .
                                      " AND CFD.value like '%{$args->custom_field_value}%' ";
     }
 
-    $sql = " SELECT NH.id AS id,NH.name as name,RS.doc_id " .
-		   " FROM {$tables['nodes_hierarchy']} NH, " . 
-		   " {$tables['req_specs']} RS {$from['by_custom_field']} " .
-           " WHERE NH.id = RS.id " .
-    	   " AND RS.testproject_id = {$args->tprojectID} ";
+	$sql =	" SELECT NHRSPEC.name, NHRSPEC.id, RSPEC.doc_id, RSPECREV.id AS revision_id, RSPECREV.revision " .
+			" FROM {$tables['req_specs']} RSPEC JOIN {$tables['req_specs_revisions']} RSPECREV " .	 
+			" ON RSPEC.id=RSPECREV.parent_id " .
+			" JOIN {$tables['nodes_hierarchy']} NHRSPEC " .
+			" ON NHRSPEC.id = RSPEC.id ";
+
+	if(!is_null($join))
+	{
+		$sql .= implode("",$join);
+	}
+
+	$sql .= " AND RSPEC.testproject_id = {$args->tprojectID} ";
 	 
-	if ($filter)
+	if(!is_null($filter))
 	{
 		$sql .= implode("",$filter);
 	}
-	$map = $db->fetchRowsIntoMap($sql,'id');
+	
+	$itemSet = $db->fetchRowsIntoMap($sql,'id',database::CUMULATIVE);
+	
+	// $gui->resultSet=$itemSet;
+
+	// $itemSet = $db->get_recordset($sql);
+	// $rspecSet = null;
+	// $last_rev = null;
+	// if(!is_null($itemSet))
+	// {
+	// 	$loop2do = count($itemSet);
+	// 	for($rdx=0; $rdx < $loop2do; $rdx++)
+	// 	{
+	// 		if( !isset($rspecSet[$itemSet[$rdx]['id']]) )
+	// 		{
+	// 			$rspecSet[$itemSet[$rdx]['id']] = $itemSet[$rdx]['id']; 
+	// 		}	
+	// 	}
+	// 	$sql =	" SELECT MAX(RSPECREV.revision) AS max_rev, RSPECREV.parent_id AS rspec_id" . 
+	// 			" FROM {$tables['req_specs_revisions']} RSPECREV " .
+	// 			" WHERE RSPECREV.parent_id IN (" . implode(',',$rspecSet) . ")" .
+	// 			" GROUP BY RSPECREV.parent_id ";
+	// 		
+	// 	$last_rev = $db->fetchRowsIntoMap($sql,'rspec_id');
+	// }
+	// new dBug($last_rev);
+	// new dBug($map);
+	// new dBug($itemSet);
+	// new dBug($rspecSet);
 }
 
 $smarty = new TLSmarty();
-$gui->row_qty=count($map);
+$gui->row_qty=count($itemSet);
 if($gui->row_qty > 0)
 {
-
-	$gui->resultSet=$map;
+	$gui->resultSet = $itemSet;
 	if($gui->row_qty <= $req_cfg->search->max_qty_for_display)
 	{
-		$req_set=array_keys($map);
+		$req_set=array_keys($itemSet);
 		$options = array('output_format' => 'path_as_string');
 		$gui->path_info=$tproject_mgr->tree_manager->get_full_path_verbose($req_set, $options);
 	}
@@ -123,8 +157,7 @@ else
 	$gui->warning_msg=lang_get('no_records_found');
 }
 
-$table = buildExtTable($gui, $charset, $edit_icon, $edit_label);
-
+$table = buildExtTable($gui, $charset);
 if (!is_null($table)) {
 	$gui->tableSet[] = $table;
 }
@@ -134,48 +167,63 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
 
-function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
+function buildExtTable($gui, $charset) 
+{
+	$lbl = array('edit' => 'requirement_spec', 'rev' => 'revision_short','req_spec' => 'req_spec');
+	$labels = init_labels($lbl);
+	$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 	$table = null;
-	if(count($gui->resultSet) > 0) {
-		$labels = array('req_spec' => lang_get('req_spec'));
+
+	// $gui->resultSet - 
+	// key: reqspec_id 
+	// value: array of matches
+	// array
+	// {
+	// [232][0]=>{"name" => "QA","id" => "232","doc_id" => "QA",
+	//       	   "revision_id" => "251", "revision" => "4"}
+	//      [1]=>{"name" => "QA","id" => "232","doc_id" => "QA",
+	//       	   "revision_id" => "251", "revision" => "3"}
+	// ...
+	// }
+	//
+	//
+	if(count($gui->resultSet) > 0) 
+	{
+		$matrixData = array();
 		$columns = array();
 		$columns[] = array('title_key' => 'req_spec', 'type' => 'text', 'groupable' => 'false', 
 		                   'hideable' => 'false');
 	
-		// Extract the relevant data and build a matrix
-		$matrixData = array();
-		
-		foreach($gui->resultSet as $result) {
+		$key2loop = array_keys($gui->resultSet);
+		foreach($key2loop as $rspec_id)
+		{
 			$rowData = array();
-			$path = ($gui->path_info[$result['id']]) ? $gui->path_info[$result['id']] . " / " : "";
-			// use html comment to properly sort by full path
-			// build req spec link
-//			$rowData[] = "<!-- " . htmlentities($path, ENT_QUOTES, $charset) . htmlentities($result['name'], ENT_QUOTES, $charset) ." -->" .
-//			             htmlentities($path, ENT_QUOTES, $charset) .
-//			             "<a href=\"lib/requirements/reqSpecView.php?item=req_spec&req_spec_id={$result['id']}\">" .
-//			             htmlentities($result['doc_id'], ENT_QUOTES, $charset) . ":" .
-//			             htmlentities($result['name'], ENT_QUOTES, $charset);
 
-			$edit_link = "<a href=\"javascript:openLinkedReqSpecWindow(" . $result['id'] . ")\">" .
-						 "<img title=\"{$edit_label}\" src=\"{$edit_icon}\" /></a> ";
-			$title = htmlentities($result['doc_id'], ENT_QUOTES, $charset) . ":" .
-			         htmlentities($result['name'], ENT_QUOTES, $charset);
-			$link = $edit_link . $title;
-			$rowData[] = $link;
+			$itemSet = $gui->resultSet[$rspec_id];
+			$rfx = &$itemSet[0];
+			$path = ($gui->path_info[$rfx['id']]) ? $gui->path_info[$rfx['id']] . " / " : "";
+			$edit_link = "<a href=\"javascript:openLinkedReqSpecWindow(" . $rfx['id'] . ")\">" .
+						 "<img title=\"{$labels['edit']}\" src=\"{$edit_icon}\" /></a> ";
 
+			$title = htmlentities($rfx['doc_id'], ENT_QUOTES, $charset) . ":" .
+				     htmlentities($rfx['name'], ENT_QUOTES, $charset);
+			$cm = '<a href="javascript:openReqSpecRevisionWindow(%s)">(rev:%s) </a>'; 
+			// $link = $edit_link;
+			$matches = '';
+			foreach($itemSet as $rx) 
+			{
+				$matches .= sprintf($cm,$rx['revision_id'],$rx['revision']);
+			}
+			$rowData[] = $edit_link . $title . ' ' . $matches;
 			$matrixData[] = $rowData;
-		}
-
+		} 
+			
 		$table = new tlExtTable($columns, $matrixData, 'tl_table_req_spec_search');
-		
 		$table->setSortByColumnName($labels['req_spec']);
 		$table->sortDirection = 'ASC';
 		
 		$table->showToolbar = false;
-		
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
-		
-		// dont save settings for this table
 		$table->storeTableState = false;
 	}
 	return($table);
@@ -195,7 +243,8 @@ function init_args()
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
 	$strnull = array('requirement_document_id', 'name', 'scope', 'coverage',
-						'custom_field_value', 'reqSpecType');
+					 'custom_field_value', 'reqSpecType', 'log_message');
+
 	foreach($strnull as $keyvar)
 	{
 		$args->$keyvar = isset($_REQUEST[$keyvar]) ? trim($_REQUEST[$keyvar]) : null;

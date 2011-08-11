@@ -3,29 +3,19 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2010/10/28 12:44:03 $ by $Author: asimon83 $
+ * @filesource	reqSpecCommands.class.php
  * @author Francisco Mancardi
  * web command experiment
  *
  * 
  *	@internal revisions
- *  20110602 - franciscom - TICKET 4535: Tree is not refreshed after editing Requirement Specification
- *  20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
- *                                  inside a req spec (recursively)
- *  20101006 - asimon - BUGID 3854
- *	20091223 - franciscom - new feature copy requirements
- *	20091207 - franciscom - logic to get order when creating new item 
- *	20090324 - franciscom - added logic to avoid losing user work if title already exists.
- *                            - fixed minor errors due to missing variables
  */
-
 class reqSpecCommands
 {
 	private $db;
 	private $reqSpecMgr;
 	private $reqMgr;
+	private $treeMgr;
 	private $commandMgr;
 	private $defaultTemplate='reqSpecEdit.tpl';
 	private $submit_button_label;
@@ -33,11 +23,15 @@ class reqSpecCommands
     private $getRequirementsOptions;
     private $reqSpecTypeDomain;
 
+	const OVERWRITESCOPE=true;
+
 	function __construct(&$db)
 	{
 	    $this->db=$db;
 	    $this->reqSpecMgr = new requirement_spec_mgr($db);
 	    $this->reqMgr = new requirement_mgr($db);
+	    $this->treeMgr = $this->reqMgr->tree_mgr;
+
 	    $req_spec_cfg = config_get('req_spec_cfg');
         $this->reqSpecTypeDomain = init_labels($req_spec_cfg->type_labels);
 		$this->commandMgr = new reqCommands($db);
@@ -55,7 +49,7 @@ class reqSpecCommands
 	 * common properties needed on gui
 	 *
 	 */
-	function initGuiBean()
+	function initGuiBean($options=null)
 	{
 		$obj = new stdClass();
 		$obj->pageTitle = '';
@@ -69,11 +63,29 @@ class reqSpecCommands
 		$obj->cfields = null;
       	$obj->template = '';
 		$obj->submit_button_label = '';
+		$obj->action_status_ok = true;
+		
 		$obj->req_spec_id = null;
+		$obj->req_spec_revision_id = null;
 		$obj->req_spec = null;
+		
 		$obj->expected_coverage = null;
 		$obj->total_req_counter=null;
 		$obj->reqSpecTypeDomain = $this->reqSpecTypeDomain;
+		
+		// TICKET 4661
+		$obj->askForRevision = false;
+		$obj->askForLog = false;
+		$obj->req_spec = null;
+		if(!is_null($options))
+		{
+			if(isset($options['getReqSpec']))
+			{
+				$ref = &$options['getReqSpec'];
+				$obj->req_spec = $this->reqSpecMgr->get_by_id($ref['id'],$ref['options']);
+			}
+		}
+		
         return $obj;
     }
 
@@ -90,11 +102,12 @@ class reqSpecCommands
   */
 	function create(&$argsObj)
 	{
+		// echo __CLASS__ . '.' . __FUNCTION__ . '()<br>';
       	$guiObj = $this->initGuiBean(); 
       	$guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
       	$guiObj->action_descr = lang_get('create_req_spec');
 
-		$guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
+		$guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id);
       	$guiObj->template = $this->defaultTemplate;
 		$guiObj->submit_button_label=$this->submit_button_label;
  	    $guiObj->req_spec_id=null;
@@ -113,23 +126,37 @@ class reqSpecCommands
     returns: 
 
   */
-	function edit(&$argsObj)
+  // following req command model
+	function edit(&$argsObj,$request,$overwriteArgs=true)
 	{
+		// echo __CLASS__ . '.' . __FUNCTION__ . '()<br>';
+
       	$guiObj = $this->initGuiBean(); 
 
 		$guiObj->req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
 		$guiObj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $guiObj->req_spec['title'];
+
+		$guiObj->req_spec_doc_id = $guiObj->req_spec['doc_id'];
+		$guiObj->req_spec_title = $guiObj->req_spec['title'];
+		$guiObj->total_req_counter = $guiObj->req_spec['total_req'];
+
+		$guiObj->req_spec_id = $argsObj->req_spec_id;
+		$guiObj->req_spec_revision_id = $argsObj->req_spec_revision_id;
+
 		$guiObj->action_descr = lang_get('edit_req_spec');
       	$guiObj->template = $this->defaultTemplate;
 		$guiObj->submit_button_label=$this->submit_button_label;
       
-		$guiObj->req_spec_id=$argsObj->req_spec_id;
-		$guiObj->req_spec_doc_id=$guiObj->req_spec['doc_id'];
-		$guiObj->req_spec_title=$guiObj->req_spec['title'];
-		$guiObj->total_req_counter=$guiObj->req_spec['total_req'];
-		$guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs($argsObj->req_spec_id,$argsObj->tproject_id);
+		$guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs($argsObj->req_spec_id,
+																				$argsObj->req_spec_revision_id,
+																				$argsObj->tproject_id);
 		
-		$argsObj->scope = $guiObj->req_spec['scope'];
+		// not really clear		
+		if( $overwriteArgs )
+		{
+			$argsObj->scope = $guiObj->req_spec['scope'];
+		}
+		
       	return $guiObj;	
 	}
 
@@ -143,6 +170,8 @@ class reqSpecCommands
   */
 	function doCreate(&$argsObj,$request)
 	{
+		// echo __CLASS__ . '.' . __FUNCTION__ . '()<br>';
+	
       	$guiObj = $this->initGuiBean(); 
 
 		$guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
@@ -154,29 +183,35 @@ class reqSpecCommands
 		$guiObj->req_spec_title=null;
 		$guiObj->total_req_counter=null;
 
-		$guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
-		
+		$guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id,
+																				$request);
 		// manage new order
 		$order = 0;
     	$nt2exclude = array('testplan' => 'exclude_me','testsuite'=> 'exclude_me',
     	                    'testcase'=> 'exclude_me');
-    	$siblings = $this->reqSpecMgr->tree_mgr->get_children($argsObj->reqParentID,$nt2exclude);
+    	$siblings = $this->treeMgr->get_children($argsObj->parentID,$nt2exclude);
     	if( !is_null($siblings) )
     	{
     		$dummy = end($siblings);
     		$order = $dummy['node_order']+1;
     	}
-		$ret = $this->reqSpecMgr->create($argsObj->tproject_id,$argsObj->reqParentID,
+    	
+		$ret = $this->reqSpecMgr->create($argsObj->tproject_id,$argsObj->parentID,
 		                                 $argsObj->doc_id,$argsObj->title,$argsObj->scope,
 		                                 $argsObj->countReq,$argsObj->user_id,$argsObj->reqSpecType,$order);
 
 		$guiObj->user_feedback = $ret['msg'];
+		
+		// new dBug($ret);
+		
 		if($ret['status_ok'])
 		{
 		  	$argsObj->scope = "";
 			$guiObj->user_feedback = sprintf(lang_get('req_spec_created'),$argsObj->title);
-			$cf_map = $this->reqSpecMgr->get_linked_cfields(null,$argsObj->tproject_id) ;
-			$this->reqSpecMgr->values_to_db($request,$ret['id'],$cf_map);
+			$idCard = array('tproject_id' => $argsObj->tproject_id);
+			$cf_map = $this->reqSpecMgr->get_linked_cfields($idCard);
+			
+			$this->reqSpecMgr->values_to_db($request,$ret['revision_id'],$cf_map);
 			logAuditEvent(TLS("audit_req_spec_created",$this->auditContext->tproject,$argsObj->title),
 			              "CREATE",$ret['id'],"req_specs");
 		}
@@ -206,50 +241,46 @@ class reqSpecCommands
  		$guiObj->submit_button_label=$this->submit_button_label;
 	    $guiObj->template = null;
 		$guiObj->req_spec_id = $argsObj->req_spec_id;
-
-		$guiObj->req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
-
-		$ret = $this->reqSpecMgr->update($argsObj->req_spec_id,$argsObj->doc_id,$argsObj->title,
-		                                 $argsObj->scope,$argsObj->countReq,$argsObj->user_id,
-		                                 $argsObj->reqSpecType);
-		$guiObj->user_feedback = $ret['msg'];
-        
-		if($ret['status_ok'])
-		{
-			$guiObj->main_descr = '';
-			$guiObj->action_descr='';
-			
-			// TICKET 4535: Tree is not refreshed after editing Requirement Specification
-			$guiObj->template = "reqSpecView.php?refreshTree={$argsObj->refreshTree}&req_spec_id={$guiObj->req_spec_id}";
-			$cf_map = $this->reqSpecMgr->get_linked_cfields($argsObj->req_spec_id);
-			$this->reqSpecMgr->values_to_db($request,$argsObj->req_spec_id,$cf_map);
+	
+      	$guiObj = $this->edit($argsObj,null,!self::OVERWRITESCOPE);
+      	$guiObj->user_feedback = '';
+		$guiObj->template = null;
+		$guiObj->askForRevision = false;	    
 		
-			if( $argsObj->title == $guiObj->req_spec['title'] )
-			{
-			    $audit_msg= TLS("audit_req_spec_saved",$this->auditContext->tproject,$argsObj->title);
-			}    
-			else
-			{
-			    $audit_msg= TLS("audit_req_spec_renamed",$this->auditContext->tproject,
-			                                             $guiObj->req_spec['title'],$argsObj->title);
-			}
-			logAuditEvent($audit_msg,"SAVE",$argsObj->req_spec_id,"req_specs");
+		// why can not do the check now ? 20110730 
+		$chk = $this->reqSpecMgr->check_main_data($argsObj->title,$argsObj->doc_id,
+												  $argsObj->tproject_id,$argsObj->parentID,
+												  $argsObj->req_spec_id);
+	
+		if( $chk['status_ok'] )
+		{
+			$guiObj = $this->process_revision($guiObj,$argsObj,$request);
 		}
 		else
 		{
-		   // Action has failed => no change done on DB.
-		   $guiObj->main_descr = $descr_prefix . $guiObj->req_spec['title'];
-		   $guiObj->action_descr = lang_get('edit_req_spec');
-		   $guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_values($argsObj->req_spec_id,$argsObj->tproject_id);
+			// need to manage things in order to NOT LOOSE user input
+			$user_inputs = array('title' => array('prefix' => 'req_spec_'),
+								 'scope' => array('prefix' => ''),
+								 'doc_id' => array('prefix' => 'req_spec_'),
+								 'reqSpecType' => array(prefix => '', 'item_key' => 'type') );
 
-           // Do not loose user's input
-		   $guiObj->req_spec_doc_id=$argsObj->doc_id;
-		   $guiObj->req_spec_title=$argsObj->title;
-		   $guiObj->total_req_counter=$argsObj->countReq;
+			foreach($user_inputs as $from => $convert_to)
+			{
+				$prefix_to = isset($convert_to['prefix_to']) ? $convert_to['prefix_to'] : '';
+				$to = $prefix_to . $from;
+				$guiObj->$to = $argsObj->$from;
+
+				$item_key = isset($convert_to['item_key']) ? $convert_to['item_key'] : $from;
+				$guiObj->req_spec[$item_key] = $argsObj->$from;
+			}
+		
+			$guiObj->action_status_ok = false; 
+			$guiObj->user_feedback = $chk['msg'];
+			$guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id, 
+																			        null, null,$request);
 		}
-
-
-      return $guiObj;	
+		
+		return $guiObj;	
   }
 
 
@@ -343,12 +374,12 @@ class reqSpecCommands
   */
 	function createChild(&$argsObj)
 	{
-		$reqParent=$this->reqSpecMgr->get_by_id($argsObj->reqParentID);
+		$reqParent=$this->reqSpecMgr->get_by_id($argsObj->parentID);
       	$guiObj = $this->initGuiBean(); 
 		$guiObj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $reqParent['title'];
 		$guiObj->action_descr = lang_get('create_child_req_spec');
 
-		$guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
+		$guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id);
       	$guiObj->template = $this->defaultTemplate;
 		$guiObj->submit_button_label=$this->submit_button_label;
 		$guiObj->req_spec_id=null;
@@ -393,10 +424,10 @@ class reqSpecCommands
 	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me');
         
  		$my['filters'] = array('exclude_node_types' => $exclude_node_types);
-	  	$subtree = $this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,$my['filters']);
+	  	$subtree = $this->treeMgr->get_subtree($argsObj->tproject_id,$my['filters']);
  		if(count($subtree))
 		{
-		  $obj->containers = $this->reqMgr->tree_mgr->createHierarchyMap($subtree);
+		  $obj->containers = $this->treeMgr->createHierarchyMap($subtree);
         }
 		return $obj;
 	}
@@ -476,12 +507,12 @@ class reqSpecCommands
 	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me');
         
  		$my['filters'] = array('exclude_node_types' => $exclude_node_types);
-	  	$root = $this->reqMgr->tree_mgr->get_node_hierarchy_info($argsObj->tproject_id);
-	  	$subtree = array_merge(array($root),$this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,$my['filters']));
+	  	$root = $this->treeMgr->get_node_hierarchy_info($argsObj->tproject_id);
+	  	$subtree = array_merge(array($root),$this->treeMgr->get_subtree($argsObj->tproject_id,$my['filters']));
 
  		if(count($subtree))
 		{
-		  $obj->containers = $this->reqMgr->tree_mgr->createHierarchyMap($subtree);
+		  $obj->containers = $this->treeMgr->createHierarchyMap($subtree);
         }
 		return $obj;
 	}
@@ -535,12 +566,12 @@ class reqSpecCommands
 	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me');
         
  		$my['filters'] = array('exclude_node_types' => $exclude_node_types);
-	  	$root = $this->reqSpecMgr->tree_mgr->get_node_hierarchy_info($argsObj->tproject_id);
-	  	$subtree = array_merge(array($root),$this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,$my['filters']));
+	  	$root = $this->treeMgr->get_node_hierarchy_info($argsObj->tproject_id);
+	  	$subtree = array_merge(array($root),$this->treeMgr->get_subtree($argsObj->tproject_id,$my['filters']));
 
  		if(count($subtree))
 		{
-		  $obj->containers = $this->reqMgr->tree_mgr->createHierarchyMap($subtree);
+		  $obj->containers = $this->treeMgr->createHierarchyMap($subtree);
         }
 		return $obj;
 	}
@@ -580,6 +611,186 @@ class reqSpecCommands
 		$obj->result = 'ok';  // needed to enable refresh_tree logic
 		return $obj;
 	}
+
+
+	/**
+	 * THIS METHOD NEED to be moved to common class because is also used
+	 * on reqCommand.class.php
+	 *
+ 	 */
+	function simpleCompare($old,$new,$oldCF,$newCF)
+	{
+		// - log message is only forced to be entered when a custom field, title or document ID is changed
+		// - when only changes where made to scope user is free to create a new revision or 
+		//	 overwrite the old revision (Cancel -> overwrite)
+		$ret = array('force' =>  false, 'suggest' => false, 'nochange' => false, 'changeon' => null);
+	
+		// key: var name to be used on $old
+		// value: var name to be used on $new
+		// Then to compare old and new
+		// $old[$key] compare to $new[$value]
+		//
+		$suggest_revision = array('scope' => 'scope'); 
+		$force_revision = array('type' => 'reqSpecType', 'doc_id'=> 'doc_id', 'title' => 'title');
+
+		foreach($force_revision as $access_key => $access_prop)
+		{
+			if( $ret['force'] = ($old[$access_key] != $new->$access_prop) )
+			{
+				$ret['changeon'] = 'attribute:' . $access_key;
+				break;
+			}
+		}
+		
+		if( !$ret['force'] )
+		{
+			if( !is_null($newCF) )
+			{
+				foreach($newCF as $cf_key => $cf)
+				{
+					if( $ret['force'] = ($oldCF[$cf_key]['value'] != $cf['cf_value']) )
+					{
+						$ret['changeon'] = 'custom field:' . $oldCF[$cf_key]['name'];
+						break;
+					}
+				}
+			}		
+		}
+		
+		if( !$ret['force'] )
+		{
+			foreach($suggest_revision as $access_key => $access_prop)
+			{
+				if( $ret['suggest'] = ($old[$access_key] != $new->$access_prop) )
+				{
+					$ret['changeon'] = 'attribute:' . $access_key;
+					break;
+				}
+			}
+		
+		}
+		$ret['nochange'] = ($ret['force'] == false && $ret['suggest'] == false);
+		return $ret;
+	}
+
+  /*
+    function: doCreateRevision
+
+    args:
+    
+    returns: 
+
+   	@internal revisions
+
+  */
+	function doCreateRevision(&$argsObj,$request)
+	{
+		$item = array('log_message' => $argsObj->log_message, 'author_id' => $argsObj->user_id);		
+		$ret = $this->reqSpecMgr->clone_revision($argsObj->req_spec_id,$item);
+		
+		$obj = $this->initGuiBean();
+		$obj->user_feedback = $ret['msg'];
+       	$obj->template = "reqSpecView.php?req_spec_id={$argsObj->req_spec_id}";
+      	$obj->req_spec = null;
+      	$obj->req_spec_id=$argsObj->req_spec_id;
+		$obj->req_spec_revision_id = $ret['id'];
+		return $obj;	
+	}
+
+
+
+
+	function process_revision(&$guiObj,&$argsObj,&$userInput)
+	{
+	
+		// TICKET 4661
+		$itemOnDB = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+		$who = array('tproject_id' => $argsObj->tproject_id);
+		$cf_map = $this->reqSpecMgr->get_linked_cfields($who);
+		$newCFields = $this->reqSpecMgr->cfield_mgr->_build_cfield($userInput,$cf_map);
+
+		$who['item_id'] = $argsObj->req_spec_revision_id;
+		$oldCFields = $this->reqSpecMgr->get_linked_cfields($who);
+		$diff = $this->simpleCompare($itemOnDB,$argsObj,$oldCFields,$newCFields);
+	
+	
+	    $createRev = false;
+	    if($diff['force'] && !$argsObj->do_save)
+	    {
+			$guiObj->askForLog = true;
+			$guiObj->refreshTree = false;
+			
+	    	// Need Change several values with user input data, to match logic on 
+	    	// edit php page on function renderGui()
+	    	// $map = array('status' => 'reqStatus', 'type' => 'reqSpecType','scope' => 'scope',
+	    	$map = array('type' => 'reqSpecType','scope' => 'scope',
+                         'doc_id'=> 'doc_id', 'title' => 'title');
+
+	    	foreach($map as $k => $w)
+	    	{
+	    		$guiObj->req_spec[$k] = $argsObj->$w;
+	    	}
+			$guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id, 
+																			        null, null,$userInput);
+
+		}
+	    else if( $diff['nochange'] || ( ($createRev = $diff['force'] && !$guiObj->askForLog) || $argsObj->do_save ) )
+	    {
+	    	
+			if( $argsObj->do_save == 1)
+	    	{
+	    		$createRev = ($argsObj->save_rev == 1);
+	    	}
+			
+			$item = array();
+			$item['id'] = $argsObj->req_spec_id;
+			$item['revision_id'] = $createRev ? -1 : $argsObj->req_spec_revision_id;
+			$item['doc_id'] = $argsObj->doc_id;
+			$item['name'] = $argsObj->title;
+			$item['scope'] = $argsObj->scope;
+			$item['countReq'] = $argsObj->countReq;
+			$item['type'] = $argsObj->reqSpecType;
+		
+			$user_key = $createRev ? 'author_id' : 'modifier_id';
+			$item[$user_key] = $argsObj->user_id;
+			
+			$opt = array('skip_controls' => true, 'create_rev' => $createRev, 'log_message' => $argsObj->log_message);                                 
+			$ret = $this->reqSpecMgr->update($item,$opt);
+		
+	      	$guiObj->user_feedback = $ret['msg'];
+			$guiObj->template = null;
+				
+			if($ret['status_ok'])
+			{
+				// custom fields update
+			  	$this->reqSpecMgr->values_to_db($userInput,$ret['revision_id'],$cf_map);
+
+	        	$guiObj->main_descr = '';
+			    $guiObj->action_descr = '';
+	          	$guiObj->template = "reqSpecView.php?refreshTree={$argsObj->refreshTree}&" .
+	          						"req_spec_id={$guiObj->req_spec_id}";
+	
+			  	// TODO 
+			  	// logAuditEvent(TLS("audit_requirement_saved",$argsObj->reqDocId),"SAVE",$argsObj->req_id,"requirements");
+			}
+			else
+			{
+				// Action has failed => no change done on DB.
+		        $old = $this->reqSpecMgr->get_by_id($argsObj->req_id);
+		        $guiObj->main_descr = $descr_prefix . $old['title'];
+				$guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_values($argsObj->req_spec_id,
+																				        $argsObj->req_spec_revision_id,
+																				        $argsObj->tproject_id);
+			}
+		}
+	    else if( $diff['suggest'] )
+	    {
+			$guiObj->askForRevision = true;	    
+	    }
+
+		return $guiObj;
+	}
+
 
 }
 ?>

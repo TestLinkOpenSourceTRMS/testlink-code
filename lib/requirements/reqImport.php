@@ -3,20 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.29.2.1 $
- * @modified $Date: 2011/02/10 21:25:25 $ by $Author: franciscom $
+ * @filesource	reqImport.php
  * @author Martin Havlat
  * 
  * Import ONLY requirements to a req specification. 
  * Supported: simple CSV, Doors CSV, XML, DocBook
  *
- * 20101026 - franciscom - fixed missing variable definitions that creates warnings on event viewer
- * 20100914 - franciscom - manage option skip frozen requirements
- * 20100908 - asimon -  BUGID 3761: requirement tree refresh after requirement import
- * 20100321 - franciscom - work on import child requirements XML format - not finished
- * 20081103 - sisajr - DocBook XML extension
- * 20080504 - franciscom - removed tmp file after import
  *
  */
 require_once("../../config.inc.php");
@@ -42,8 +34,6 @@ switch($args->doAction)
 		$gui->file_check = $dummy->file_check;        
         $gui->importResult = lang_get('import_done');
         $gui->userFeedback = $dummy->userFeedback;
-        
-        // BUGID 3761: requirement tree refresh after requirement import
         $gui->refreshTree = $args->refreshTree && $gui->file_check['status_ok'];	
         
     break;

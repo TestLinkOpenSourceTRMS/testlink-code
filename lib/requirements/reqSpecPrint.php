@@ -26,7 +26,12 @@ $req_cfg = config_get('req_cfg');
 $tree_mgr = new tree($db);
 $reqspec_mgr = new requirement_spec_mgr($db);
 $args = init_args();
-$node = $tree_mgr->get_node_hierarchy_info($args->reqspec_id);
+
+$target_id = $args->reqspec_revision_id;
+$target_id = ($target_id <= 0) ? $args->reqspec_id : $target_id;
+
+// $node = $tree_mgr->get_node_hierarchy_info($args->reqspec_id);
+$node = $tree_mgr->get_node_hierarchy_info($target_id);
 
 $gui = new stdClass();
 $gui->object_name='';
@@ -87,6 +92,7 @@ function init_args()
 
     $args = new stdClass();
     $args->reqspec_id = isset($_REQUEST['reqspec_id']) ? intval($_REQUEST['reqspec_id']) : 0;
+    $args->reqspec_revision_id = isset($_REQUEST['reqspec_revision_id']) ? intval($_REQUEST['reqspec_revision_id']) : 0;
     $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
     $args->tproject_name = $_SESSION['testprojectName'];
 

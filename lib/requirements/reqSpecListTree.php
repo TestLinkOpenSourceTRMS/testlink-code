@@ -2,14 +2,12 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: reqSpecListTree.php,v 1.13 2010/08/07 22:43:12 asimon83 Exp $
+* 	@filesource reqSpecListTree.php
 * 	@author 	Francisco Mancardi (francisco.mancardi@gmail.com)
 * 
 * 	Tree menu with requirement specifications.
 *
-*   @internal revisions: 
-*    20100808 - asimon - heavy refactoring for requirement filtering
-*    20080824 - franciscom - added code to manage EXTJS tree component
+*   @internal revisions
 */
 
 require_once('../../config.inc.php');
@@ -22,6 +20,7 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($args);
 
+// echo __FILE__;
 // new class for filter controling/handling
 $control = new tlRequirementFilterControl($db);
 $control->build_tree_menu($gui);
@@ -30,7 +29,6 @@ $smarty = new TLSmarty();
 
 $smarty->assign('gui', $gui);
 $smarty->assign('control', $control);
-//$smarty->assign('tree', null);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 

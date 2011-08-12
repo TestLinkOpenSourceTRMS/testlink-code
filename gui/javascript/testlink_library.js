@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.112.2.6 2011/02/11 08:03:14 mx-julian Exp $
+// @filesource testlink_library.js
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -23,44 +23,12 @@
 // window.open() - on Firefox is window name contains blank nothing happens (no good)
 //                 on I.E. => generates a bug - BE CAREFUL
 //
-// ------ Revisions ---------------------------------------------------------------------
+// @internal revisions
+// 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
 // 20110219 - franciscom - 	BUGID 4321: Requirement Spec - add option to print single Req Spec
 //							openPrintPreview() refactoring
 //
 // 20110308 - asimon - BUGID 4286, BUGID 4273: backported openPrintPreview() from master to 1.9 branch
-// 20101119 - asimon - added openLinkedReqVersionWindow()
-// 20101111 - asimon - now openTCaseWindow() also remembers popup size like other functions do
-// 20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
-// 20101102 - asimon - BUGID 2864: commented out old open_top(), replaced by openLinkedReqWindow()
-// 20101025 - Julian - BUGID 3930: added new parameter dateFormat to showCal() to be able to use
-//                                 localized date formats. Preselecting datepicker with existing
-//                                 date works for all localized date formats
-// 20101016 - franciscom - BUGID 3901: Edit Test Case STEP - scroll window to show selected step 
-// 20101008 - asimon - BUGID 3311
-// 20100922 - asimon - added openExecutionWindow() und openTCEditWindow()
-// 20100811 - asimon - fixed IE JS error on openAssignmentOverviewWindow()
-// 20100731 - asimon - added openAssignmentOverviewWindow()
-// 20100708 - asimon - BUGID 3406 - removed PL()
-// 20100518 - franciscom - BUGID 3471 - spaces on window.open() name parameter
-// 20100301 - asimon - added openLinkedReqWindow() and openLinkedReqSpecWindow()
-// 20100223 - asimon - added PL() for BUGID 3049
-// 20100216 - asimon - added triggerBuildChooser() and triggerAssignedBox() for BUGID 2455, BUGID 3026
-// 20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
-// 20100131 - franciscom - BUGID 3118: Help files are not getting opened when selected in the dropdown 
-// 20090906 - franciscom - added openTestSuiteWindow()
-// 20090821 - havlatm - added support for session timeout
-// 20090530 - franciscom - openExecEditWindow()
-// 20090419 - franciscom - BUGID 2364 - added std_dialog()
-//                         added some comments to explain how a bug has been solved
-//
-// 20090329 - franciscom - openTCaseWindow(), added second argument
-// 20081220 - franciscom - toggleInput()
-// 20080724 - havlatm - bug 1638, 1639
-// 20080322 - franciscom - openExecNotesWindow()
-// 20080118 - franciscom - showHideByClass()
-// 20070930 - franciscom - REQ - BUGID 1078 - openTCaseWindow()
-// 20070509 - franciscom - changes in tree_getPrintPreferences()
-//                         to support new options (Contribution)
 
 
 /*
@@ -836,7 +804,7 @@ function openTCaseWindow(tcase_id,tcversion_id,show_mode)
 	// 
 	var feature_url = "lib/testcases/archiveData.php";
 	feature_url +="?allow_edit=0&show_mode="+show_mode+"&edit=testcase&id="+
-	tcase_id+"&tcversion_id="+tcversion_id;
+				  tcase_id+"&tcversion_id="+tcversion_id;
 
 	// 20101111 - asimon - now also remembers popup size
 	var width = getCookie("TCEditPopupWidth");
@@ -1464,7 +1432,8 @@ function openReqRevisionWindow(item_id, anchor)
  * @param revision_id only used for requirements, null in case of testcases
  * @param print_action target url to open in popup
  */
-function openPrintPreview(type, id, version_id, revision, print_action) {
+function openPrintPreview(type, id, child_id, revision, print_action) 
+{
 	// configure window size using cookies or default values if there are no cookies
 	var width = getCookie("ReqPopupWidth");
 	var height = getCookie("ReqPopupHeight");
@@ -1482,15 +1451,15 @@ function openPrintPreview(type, id, version_id, revision, print_action) {
 	{
 
 		case 'req':
-			feature_url += "?req_id=" + id + "&req_version_id=" + version_id + "&req_revision=" + revision;
+			feature_url += "?req_id=" + id + "&req_version_id=" + child_id + "&req_revision=" + revision;
 		break;
 
 		case 'reqSpec':
-			feature_url += "?reqspec_id=" + id;
+			feature_url += "?reqspec_id=" + id + "&reqspec_revision_id=" + child_id;
 		break;
 		
 		case 'tc':
-			feature_url += "&testcase_id=" + id + "&tcversion_id=" + version_id;
+			feature_url += "&testcase_id=" + id + "&tcversion_id=" + child_id;
 		break;
 		
 	}
@@ -1521,3 +1490,58 @@ function openExecHistoryWindow(tc_id)
 	window.open(fRoot+url, '_blank', windowCfg);
 }
 
+/**
+ * open a requirement in a popup window
+ * 
+ * @param item_id Req Spec Revision ID
+ * @param anchor string with anchor name
+ */
+function openReqSpecRevisionWindow(item_id, anchor)
+{
+	var cfg = new Object();
+
+	cfg.width = getCookie("ReqPopupWidth");
+	cfg.height = getCookie("ReqPopupHeight");
+	cfg.feature_url = "lib/requirements/reqSpecViewRevision.php";
+
+	if (anchor == null) {
+		anchor = '';
+	} 
+	else 
+	{
+		anchor = '#' + anchor;
+	}
+
+	cfg.feature_url += "?showReqSpecTitle=1&item_id=" + item_id + anchor;
+	cfg.windowTitle = "ReqSpecRevisionView";
+	openItemWindow(cfg);
+}
+
+
+
+// function openItemWindow(feature_url, window_title, item_id, anchor)
+function openItemWindow(cfg)
+{
+
+	var width = cfg.width;
+	var height = cfg.height;
+
+	if (cfg.anchor == null) {
+		anchor = '';
+	} else {
+		anchor = '#' + cfg.anchor;
+	}
+
+	if (width == null)
+	{
+		width = "800";
+	}
+
+	if (height == null)
+	{
+		height = "600";
+	}
+
+	windowCfg = "width=" + cfg.width + ",height=" + cfg.height + ",resizable=yes,scrollbars=yes,dependent=yes";
+	window.open(fRoot+cfg.feature_url,cfg.windowTitle,windowCfg);
+}

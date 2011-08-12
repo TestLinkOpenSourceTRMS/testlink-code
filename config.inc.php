@@ -1036,6 +1036,12 @@ $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['all']=array('passed');
 //$tlCfg->req_cfg->coverageStatusAlgorithm['displayOrder']=array('passed','failed','blocked','not_run');
 
 
+
+
+// TICKET 4661 - truncate log message to this amount of chars for reqSpecCompareRevisions
+$tlCfg->req_spec_cfg->log_message_len = 200;
+
+
 // Linking between requirements/requirement specifications
 //
 $tlCfg->internal_links =  new stdClass();

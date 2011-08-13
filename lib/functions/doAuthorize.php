@@ -5,18 +5,17 @@
  * 
  * This file handles the initial authentication for login and creates all user session variables.
  *
+ * @filesource	doAuthorize.php
  * @package 	TestLink
  * @author 		Chad Rosen, Martin Havlat
- * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: doAuthorize.php,v 1.34 2010/02/12 08:47:12 erikeloff Exp $
+ * @copyright 	2003-2011, TestLink community 
  * @link 		http://www.teamst.org/
  *
  * @todo Setting up cookies so that the user can automatically login next time
  *
- * @internal revisions:
- * 20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
- * 20100202 - franciscom - refactoring of doAuthorize (BUGID 0003129: After login failure blank page is displayed)
- *
+ * @internal revisions
+ * @since 1.9.4
+ * 20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server
  */
 
 /** TBD */ 
@@ -42,7 +41,12 @@ function doAuthorize(&$db,$login,$pwd)
 			$password_check = auth_does_password_match($user,$pwd);
 			if ($password_check->status_ok && $user->isActive)
 			{
-				// 20051007 MHT Solved  0000024 Session confusion 
+				// TICKET 4342 
+				// Need to do set COOKIE following Mantis model
+				$auth_cookie_name = config_get('auth_cookie');
+				$expireOnBrowserClose=false;
+				setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,'/');			
+
 				// Disallow two sessions within one browser
 				if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
 				{
@@ -59,13 +63,15 @@ function doAuthorize(&$db,$login,$pwd)
 					global $g_tlLogger;
 					$g_tlLogger->endTransaction();
 					$g_tlLogger->startTransaction();
-					setUserSession($db,$user->login, $user->dbID,$user->globalRoleID,$user->emailAddress, $user->locale,null);
+					setUserSession(	$db,$user->login, $user->dbID,$user->globalRoleID,$user->emailAddress, 
+									$user->locale,null);
 					$result['status'] = tl::OK;
 				}
 			}
 			else
 			{
-				logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
+				logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",
+							  $user->dbID,"users");
 			}	
 		}
 	}

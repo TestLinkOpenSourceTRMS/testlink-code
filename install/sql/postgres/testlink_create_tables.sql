@@ -22,70 +22,9 @@
 --        convention regarding case and spaces between DDL keywords.
 --
 -- 
---  Rev :
---  20101204 - franciscom - BUGID 4070 - changed executions_idx1
---                          ("testplan_id","tcversion_id","platform_id","build_id");
---
---  20100912 - franciscom - requirements index ("srs_id","req_doc_id") changed to UNIQUE
---  20100705 - asimon - added column build_id to user_assignments
---  20100308 - franciscom - req_relations table added
---  20100124 - franciscom - is_open,active added to req_versions table
---  20100113 - franciscom - doc_id increased to 64 and setted NOT NULL
---  20100106 - franciscom - Test Case Step feature
---
---  20091228 - franciscom - requirements table changes and new table req_versions
---                          to implement requirements versioning.
--- 
---  20091124 - franciscom - requirements table - new field expected_coverage
---  20091119 - franciscom - req_specs added doc_id field
---  20091010 - franciscom - added testplan_platforms,platforms
---                          platform_id to tables
---  20090910 - franciscom - tcversions.preconditions
---                          milestones.start_date
---  20090717 - franciscom - added cfield_testprojects.location field
---  20090611 - franciscom - builds.closed_on_date 
---  20090512 - franciscom - BUGID - is_public attribute for testprojects and testplans
---  20090507 - franciscom - BUGID  new builds structure
---  20090411 - franciscom - BUGID 2369 - testplan_tcversions
+--  @internal revisions
+--	20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server 
 --  
---  20090315 - franciscom - req_spec, requirements id can not be big serial
---                          because are nodes on nodes_hierarchy.
---  
---  20090204 - franciscom - object_keywords - bad type for ID column
---  20090103 - franciscom - milestones table - added new unique index
---                          custom_fields - added missing unique constraint
---  20081018 - franciscom - new indexes (suggested by schlundus) on events table 
---  20080831 - franciscom - BUGID 1650 (REQ)
---             custom_fields.show_on_testplan_design
---             custom_fields.enable_on_testplan_design
---             new table cfield_testplan_design_values 
---  
---  20080709 - franciscom - Added Foreing Keys (REFERENCES)
---  20080102 - franciscom - added changes for API feature (DB 1.2)
---                          added notes fields on db_version
---  
---  20071202 - franciscom - added tcversions.execution_type
---  20071010 - franciscom - open -> is_open due to MSSQL reserved word problem
---  20070519 - franciscom - milestones table date -> target_date, because
---                          date is reserved word for Oracle
---  
---  20070414 - franciscom - table requirements: added field node_order 
---  20070204 - franciscom - changes in tables priorities, risk_assignments 
---  20070131 - franciscom - requirements -> req_doc_id(32), 
---  
---  20070120 - franciscom - following BUGID 458 ( really a new feature request)
---                          two new fields on builds table
---                          active, open
---  
---  20070117 - franciscom - create_ts -> creation_ts
---  
---  20070116 - franciscom - fixed BUGID 545
---  
---  20070113 - franciscom - table cfield_testprojects added fields
---                          required_on_design,required_on_execution
---  20060515 - franciscom - creation
---
-
 --
 -- Table structure for table "node_types"
 --
@@ -156,6 +95,8 @@ CREATE UNIQUE INDEX /*prefix*/roles_uidx1 ON /*prefix*/roles ("description");
 --
 -- Table structure for table "users"
 --
+-- TICKET 4342 - cookie_string
+--
 CREATE TABLE /*prefix*/users(  
   "id" BIGSERIAL NOT NULL ,
   "login" VARCHAR(30) NOT NULL DEFAULT '',
@@ -168,9 +109,11 @@ CREATE TABLE /*prefix*/users(
   "default_testproject_id" INTEGER NULL DEFAULT NULL,
   "active" INT2 NOT NULL DEFAULT '1',
   "script_key" VARCHAR(32) NULL,
+  "cookie_string" varchar(64) NOT NULL DEFAULT '', 
   PRIMARY KEY ("id")
 );
 CREATE UNIQUE INDEX /*prefix*/users_uidx1 ON /*prefix*/users ("login");
+CREATE UNIQUE INDEX /*prefix*/users_uidx2 ON /*prefix*/users ("cookie_string");
 
 --
 -- Table structure for table "tcversions"

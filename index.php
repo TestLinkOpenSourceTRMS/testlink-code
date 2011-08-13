@@ -3,14 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: index.php,v $
+ * @filesource index.php
+ * @package TestLink
+ * @copyright 2006-2011, TestLink community
+ * @link http://www.teamst.org/index.php*
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2009/04/28 19:22:33 $ by $Author: schlundus $
+ * @internal revisions
  *
- * @author Martin Havlat
- *
- * This file is main window. Include authorization of user and define frames (navBar and main).
+ * 20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server
 **/
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
@@ -23,11 +23,32 @@ setPaths();
 $args = init_args();
 
 //verify the session during a work
-if (!isset($_SESSION['currentUser']))
+$redir2login = true;
+if( isset($_SESSION['currentUser']) )
 {
+	// use Mantisbt approach
+	$securityCookie = tlUser::auth_get_current_user_cookie();
+	$redir2login = is_null($securityCookie);
+
+	if(!$redir2login)
+	{
+		// need to get fresh info from db, before asking for securityCookie
+		doDBConnect($db);
+		$user = new tlUser();
+		$user->dbID = $_SESSION['currentUser']->dbID;
+		$user->readFromDB($db);
+		$dbSecurityCookie = $user->getSecurityCookie();
+		$redir2login = ( $securityCookie !=	$dbSecurityCookie );	
+	}	
+}
+if($redir2login)
+{
+	// destroy user in session as security measure
+	unset($_SESSION['currentUser']);
 	redirect(TL_BASE_HREF ."login.php?note=expired");
 	exit;
 }
+
 $smarty = new TLSmarty();
 $smarty->assign('title', lang_get('main_page_title'));
 $smarty->assign('titleframe', 'lib/general/navBar.php');

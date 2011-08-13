@@ -22,6 +22,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ *	20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server
  *	20110530 - Julian - allow to define seperate logo for generated documents including height 
  *	20110414 - franciscom - moved $g_prefix_name_for_copy BEFORE use of custom config
  *	20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor for platform notes
@@ -32,59 +33,6 @@
  *								  $tlCfg->req_cfg->duplicated_docid_algorithm
  *
  *	20110103 - franciscom - BUGID 4131: PHPMAILER - upgrade config options to use SSL or TLS - allows use gmail
- *	20101212 - franciscom - req_cfg->log_message_len
- *  20101118 - asimon - BUGID 4031: added $tlCfg->req_cfg->copy_req_scope_to_tc_summary
- *  20101109 - asimon - added $tlCfg->custom_fields->show_custom_fields_without_value
- *	20101030 - franciscom - bullet image config removed
- *  20101028 - Julian - BUGID 3950 - added $tlCfg->gui->dynamic_quick_tcase_search_input_size
- *  20101014 - Julian - BUGID 3893 - added $tlCfg->metrics_dashboard->show_test_plan_status
- *	20101010 - franciscom - BUGID 3872 - Admin should be able to set a new password for users - $tlCfg->password_reset_send_method
- *  20100924 - asimon - added $tlCfg->enableTableExportButton
- *  20100915 - amitkhullar - BUGID 3639 - added $tlcfg->testcase_reorder_by for Reorder Test Cases
- *  20100915 - Julian - BUGID 3777 - added $tlCfg->req_cfg->allow_insertion_of_last_doc_id
- *  20100901 - asimon - re-enabled filter for assigned user when assigning testcases
- *	20100814 - franciscom - BUGID 3681 - new BTS youtrack (www.jetbrains.com)	
- *  20100810 - asimon - BUGID 3317 - added $tlCfg->req_cfg->external_req_management
- *  20100810 - asimon - added TC ID filter for Test Cases to $tlCfg->tree_filter_cfg
- *  20100809 - asimon - BUGID 3662 - disabled advanced filter mode choice for TC editing mode
- *  20100808 - asimon - added requirement filtering options to $tlCfg->tree_filter_cfg
- *  20100625 - asimon - added $tlCfg->tree_filter_cfg for configuration of available filters on JS tree
- *                      and $tlCfg->exec_cfg->testcases_colouring_by_selected_build for BUGID 3450
- *	20100620 - franciscom - fix strict messages after usign PHPDesigner.
- *	20100619 - franciscom - define always $g_bugInterfaceOn = false,$g_bugInterface = null;
- *	20100617 - franciscom - $tlCfg->req_cfg->importDocBook - new configuration for importing req in docbook format
- *  20100616 - eloff - BUGID 3255 - Cleaned up bts configuration
- *  20100527 - Julian - added $tlCfg->exec_cfg->expand_collapse->platform_description
- *  20100504 - franciscom - BUGID 3424 Custom CSS path is being overwritten by config.inc.php value 
- *  20100311 - asimon - BUGID 1748 - $tlCfg->req_cfg->relations
- *	20100313 - franciscom - BUGID 0003275
- *  20100112 - asimon - BUGID 2976 - $tlCfg->req_cfg->search
- *  20100110 - eloff - BUGID 2036 - changed $tlCfg->gui->checkNotSaved to true
- *  20100106 - franciscom - added $tlCfg->diffEngine - diff for test case and req (Contribution)
- *  20091227 - franciscom - REMOVED - $tlCfg->req_cfg->reqdoc_id->is_system_wide
- *  20091217 - franciscom - $tlCfg->testcase_cfg->duplicated_name_algorithm
- *  20091205 - franciscom - BUGID 0002469: $tlCfg->exec_cfg->expand_collapse
- *  20091129 - franciscom - BUGID 2554 - gui->usersAssignGlobalRoleColoring
- *  20091126 - franciscom - added contribution req internal links
- * 	20091125 - franciscom - req_cfg->expected_coverage_management added
- *	20091121 - franciscom - added contribution by Julian - BUGID 0002968,0002961,0002962,0002963
- *                         (refactored)
- *
- *  20091018 - franciscom - added contribution LDAP with TLS
- *  20090926 - franciscom - new default for $tlCfg->req_cfg->child_requirements_mgmt
- *  20090912 - franciscom - BUGID 2796 - contribution reportsCfg->start_time
- *  20090901 - franciscom - new option exec_cfg->steps_results_layout
- *  20090823 - franciscom - new option custom_field_max_length
- *	20090815 - franciscom - new option exec_cfg->show_history_all_platforms
- *  20090804 - franciscom - moved report config here
- *  20090304 - franciscom - BUGID 2171
- *  20090211 - franciscom - added $tlCfg->exec_cfg->enable_tree_testcases_colouring
- *                                $tlCfg->exec_cfg->enable_tree_counters_colouring
- *
- *  20090126 - franciscom - show_config_check_warning -> config_check_warning_mode
- *  20090103 - franciscom - $tlCfg->req_cfg->coverageStatusAlgorithm
- *  20090103 - franciscom - BUGID 651 - $tlCfg->testcase_cfg->can_remove_executed
- *  20090101 - franciscom - changes in regex used to validate an email address
  *
  **/
 
@@ -1362,6 +1310,12 @@ $tlCfg->demoMode = OFF;
  */
 $tlCfg->enableTableExportButton = DISABLED;
 
+
+/**
+ * Taken from Mantis to implement better login security, and solve
+ * TICKET 4342
+ */
+$tlCfg->auth_cookie = "TESTLINK_USER_AUTH_COOKIE";
 
 /** 
 Used when creating a Test Suite using copy

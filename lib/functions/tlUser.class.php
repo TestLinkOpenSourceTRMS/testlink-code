@@ -9,19 +9,10 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
- *	
- *  20110325 - franciscom - BUGID 4062 - hasRight() caused by bad access to $_SESSION
- *	20101111 - franciscom - BUGID 4006 - test plan is_public
- *	20100917 - Julian - getAccessibleTestPlans() - BUGID 3724 - new option "active"
- *	20100704 - franciscom - getAccessibleTestPlans() - BUGID 3526
- *	20100522 - franciscom - getAccessibleTestPlans() - added arguments options
- *	20100427 - franciscom - BUGID 3396 - writePasswordToDB() method
- *	20100326 - franciscom - setActive() method
- *	20100217 - franciscom - getNamesForProjectRight() - fixed error displayed on event viewer + refactoring
- *  20090726 - franciscom - new method getAccessibleTestPlans()
- * 	20090419 - franciscom - refactoring replace product with test project (where possible).
- *  20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
- *  20081213 - franciscom - removed global coupling to access config parameters
+ * @since 1.9.4
+ * 20110813 - franciscom - 	TICKET 4342 - new methods from Mantisbt
+ * 							added securityCookie property
+ * 20110325 - franciscom - BUGID 4062 - hasRight() caused by bad access to $_SESSION
  */
  
 /**
@@ -106,8 +97,14 @@ class tlUser extends tlDBObject
 	 */
 	protected $password;
 	
+	/**
+	 * @var string security cookie (security) of the user
+	 * @access protected
+	 */
+	protected $securityCookie;
+
+	
 	/** configuration options */
-	//@TODO should be moved inside a tlConfig class
 	protected $usernameFormat;
 	protected $loginMethod;
 	protected $maxLoginLength;
@@ -178,6 +175,7 @@ class tlUser extends tlDBObject
 		$this->tprojectRoles = null;
 		$this->tplanRoles = null;
 		$this->userApiKey = null;
+		$this->securityCookie = null;
 
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
 		{
@@ -244,7 +242,7 @@ class tlUser extends tlDBObject
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
-		$sql = "SELECT id,login,password,first,last,email,role_id,locale, " .
+		$sql = "SELECT id,login,password,cookie_string,first,last,email,role_id,locale, " .
 		         " login AS fullname, active,default_testproject_id, script_key " .
 		         " FROM {$this->object_table}";
 		$clauses = null;
@@ -271,6 +269,7 @@ class tlUser extends tlDBObject
 			$this->emailAddress = $info['email'];
 			$this->globalRoleID = $info['role_id'];
 			$this->userApiKey = $info['script_key'];
+			$this->securityCookie = $info['cookie_string'];
 			
 			if ($this->globalRoleID)
 			{
@@ -405,9 +404,15 @@ class tlUser extends tlDBObject
 			}
 			else
 			{
-				$sql = "INSERT INTO {$this->tables['users']} (login,password,first,last,email,role_id,locale,active) 
-					   VALUES ('" . 
+				// TICKET 4342
+				$t_seed = $this->emailAddress . $this->login;
+				$t_cookie_string = $this->auth_generate_unique_cookie_string($db);
+			
+				$sql = "INSERT INTO {$this->tables['users']} " .
+					   " (login,password,cookie_string,first,last,email,role_id,locale,active) " .
+					   " VALUES ('" . 
 					   $db->prepare_string($this->login) . "','" . $db->prepare_string($this->password) . "','" . 
+					   $db->prepare_string($t_cookie_string) . "','" .
 					   $db->prepare_string($this->firstName) . "','" . $db->prepare_string($this->lastName) . "','" . 
 					   $db->prepare_string($this->emailAddress) . "'," . $this->globalRoleID. ",'". 
 					   $db->prepare_string($this->locale). "'," . $this->isActive . ")";
@@ -1024,6 +1029,124 @@ class tlUser extends tlDBObject
 		$result = $result ? tl::OK : self::E_DBERROR;
 		return $result;
 	}	
+
+
+	/**
+	 * Generate a string to use as the identifier for the login cookie
+	 * It is not guaranteed to be unique and should be checked
+	 * The string returned should be 64 characters in length
+	 * @return string 64 character cookie string
+	 * @access public
+	 */
+	function auth_generate_cookie_string() 
+	{
+		$t_val = mt_rand( 0, mt_getrandmax() ) + mt_rand( 0, mt_getrandmax() );
+		$t_val = md5( $t_val ) . md5( time() );
+		return $t_val;
+	}
+
+	/**
+	 * Return true if the cookie login identifier is unique, false otherwise
+	 * @param string $p_cookie_string
+	 * @return bool indicating whether cookie string is unique
+	 * @access public
+	 */
+	function auth_is_cookie_string_unique(&$db,$p_cookie_string) 
+	{
+		$sql = 	"SELECT COUNT(0) AS hits FROM $this->object_table " .
+				"WHERE cookie_string = '" . $db->prepare_string($p_cookie_string) . "'" ;
+		$rs = $db->fetchFirstRow($sql);
+	
+		if( !is_array($rs) )
+		{
+			// better die because this method is used in a do/while
+			// that can create infinite loop
+			die();  
+		}
+		$status = ($rs['hits'] == 0);
+		return $status;
+	}
+
+	/**
+	 * (from Mantisbt)
+	 *
+	 * Generate a UNIQUE string to use as the identifier for the login cookie
+	 * The string returned should be 64 characters in length
+	 *
+	 * @return string 64 character cookie string
+	 * @access public
+	 *
+	 * @since 1.9.4
+	 */
+	function auth_generate_unique_cookie_string(&$db) 
+	{
+		do {
+			$t_cookie_string = $this->auth_generate_cookie_string();
+		}
+		while( !$this->auth_is_cookie_string_unique(&$db,$t_cookie_string ) );
+	
+		return $t_cookie_string;
+	}
+
+
+	/**
+	 * (from Mantisbt)
+	 *
+	 * @since 1.9.4
+	 */
+	static function auth_get_current_user_cookie() 
+	{
+		$t_cookie_name = config_get('auth_cookie');
+		$t_cookie = isset($_COOKIE[$t_cookie_name]) ? $_COOKIE[$t_cookie_name] : null;  
+		return $t_cookie;
+	}
+
+	/**
+	 * (from Mantisbt)
+	 *
+	 * is cookie valid?
+	 * @param string $p_cookie_string
+	 * @return bool
+	 * @access public
+	 *
+	 * @since 1.9.4
+	 */
+	function auth_is_cookie_valid(&$db,$p_cookie_string) 
+	{
+		# fail if cookie is blank
+		$status = ('' === $p_cookie_string) ? false : true;
+		
+		if( $status )
+		{
+			# look up cookie in the database to see if it is valid
+			$sql = 	"SELECT COUNT(0) AS hits FROM $this->object_table " .
+					"WHERE cookie_string = '" . $db->prepare_string($p_cookie_string) . "'" ;
+			$rs = $db->fetchFirstRow($sql);
+	    	
+			if( !is_array($rs) )
+			{
+				// better die because this method is used in a do/while
+				// that can create infinite loop
+				die();  
+			}
+			$status = ($rs['hits'] == 1);
+		}
+		return $status;
+	}
+
+	/**
+	 * (from Mantisbt)
+	 * 
+	 * Getter 
+	 * 
+	 * @return string 
+	 *
+	 * @since 1.9.4
+	 */
+	public function getSecurityCookie()
+	{
+		return $this->securityCookie;
+	}
 
 }
 ?>

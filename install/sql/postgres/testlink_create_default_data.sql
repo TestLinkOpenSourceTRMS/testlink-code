@@ -3,29 +3,13 @@
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
---
---  20101126 - franciscom - DB version increased
---                          added requirement_revision node type
---  20100106 - franciscom - added testcase_step node type
---  20091228 - franciscom - added new rights for project 
---  20091010 - franciscom - platform feature
---  20090126 - havlatm - role definition update
---  20090101 - franciscom - found some problem with serial column fo role table.
---                          Postgers 8.2 Windows, seem do not increment serial
---                          when explicit insert like done here.
---                          Solved working on roles_id_seq
---
---  20080628 - franciscom - 
---  20070724 - franciscom - BUGID 950 
---             removed right with id=19
---             renamed right with id=5 
---             updated db version- due to changes in milestone table
+--	20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server 
 --
 --  --------------------------------------------------------
 
 
 --  Database version -
-INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 1.4',now(),'TestLink 1.9.1');
+INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 1.5',now(),'TestLink 1.9.4');
 
 
 --  Node types -
@@ -168,9 +152,10 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
 
 --  admin account 
 --  SECURITY: change password after first login
-INSERT INTO /*prefix*/users (login,password,role_id,email,first,last,locale,active)
-             VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 'Administrator', 'en_GB',1);
-
+--	TICKET 4342: Security problem with multiple Testlink installations on the same server 
+INSERT INTO /*prefix*/users (login,password,role_id,email,first,last,locale,active,cookie_string)
+			VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink',
+			'Administrator', 'en_GB',1,'21232f297a57a5a743894a0e4a801fc321232f297a57a5a743894a0e4a801fc3');
 
 -- assignment_status
 INSERT INTO /*prefix*/assignment_status ("id","description") VALUES (1,'open');

@@ -7,19 +7,12 @@
 -- each NEW TABLE added here NEED TO BE DEFINED in object.class.php getDBTables()
 --
 --  Database Type: Microsoft SQL Server
---
---  20090426 - franciscom - new right testproject_user_role_assignment
---  20090126 - havlatm - role definition update
---  20080102 - franciscom - added note on db_version
---  20070724 - franciscom - BUGID 950 
---             removed right with id=19
---             renamed right with id=5 
---             updated db version- due to changes in milestone table
+-- 20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server 
 --
 --  -----------------------------------------------------------------------------------
 
 --  Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.4','Test Link 1.9.1',GETDATE());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.5','Test Link 1.9.4',GETDATE());
 
 --  Node types -
 SET IDENTITY_INSERT /*prefix*/node_types ON
@@ -160,8 +153,11 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
 
 --  admin account 
 --  SECURITY: change password after first login
-INSERT INTO /*prefix*/users (login,password,role_id,email,first,last,locale,active)
-             VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 'Administrator', 'en_GB',1);
+INSERT INTO /*prefix*/users (login,password,role_id,email,first,last,locale,active,cookie_string)
+             VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 'Administrator', 
+             		 'en_GB',1,'21232f297a57a5a743894a0e4a801fc321232f297a57a5a743894a0e4a801fc3');
+
+
 
 -- Assignment types
 SET IDENTITY_INSERT /*prefix*/assignment_types ON

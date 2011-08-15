@@ -218,7 +218,6 @@ function buildUserMap($users,$add_options = false, $additional_options=null)
  *         password: new password
  *		   msg: error message (if any)	
  */
-// function resetPassword(&$db,$userID,&$errorMsg)
 function resetPassword(&$db,$userID,$passwordSendMethod='send_password_by_mail')
 {
 	$retval = array('status' => tl::OK, 'password' => '', 'msg' => ''); 
@@ -236,8 +235,6 @@ function resetPassword(&$db,$userID,$passwordSendMethod='send_password_by_mail')
 			if ($retval['status'] >= tl::OK)
 			{
 				$retval['password'] = $newPassword;
-				
-				// BUGID 3396
 				$mail_op = new stdClass();
 				$mail_op->status_ok = false;
 				if( $passwordSendMethod == 'send_password_by_mail' )

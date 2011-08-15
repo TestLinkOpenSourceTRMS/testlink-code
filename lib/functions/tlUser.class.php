@@ -10,6 +10,9 @@
  *
  * @internal revisions:
  * @since 1.9.4
+ *
+ * 20110815 - franciscom - 	TICKET 4342 - fixing missing update of cookie_string when password changes.
+ *							
  * 20110813 - franciscom - 	TICKET 4342 - new methods from Mantisbt
  * 							added securityCookie property
  * 20110325 - franciscom - BUGID 4062 - hasRight() caused by bad access to $_SESSION
@@ -389,25 +392,45 @@ class tlUser extends tlDBObject
 		$result = $this->checkDetails($db);
 		if ($result >= tl::OK)
 		{		
+			// TICKET 4342
+			$t_cookie_string = $this->auth_generate_unique_cookie_string($db); 	
+
+			// After addition of cookie_string, and following Mantisbt pattern,
+			// seems we need to check if password has changed.
+			//
+			// IMPORTANT NOTICE: 
+			// this implementation works ONLY when password is under TestLink control
+			// i.e. is present on TestLink Database.
+			//
+			// if answer is yes => change also cookie_string.
 			if($this->dbID)
 			{
+				$gsql = " SELECT password FROM {$this->object_table} WHERE id = " . $this->dbID;
+				$rs = $db->get_recordset($gsql);
+				if(strcmp($rs[0]['password'],$this->password) == 0) 
+				{
+					// NO password change
+					$t_cookie_string = null;
+				}		
+
 				$sql = "UPDATE {$this->tables['users']} " .
 			       	   "SET first = '" . $db->prepare_string($this->firstName) . "'" .
 			       	   ", last = '" .  $db->prepare_string($this->lastName)    . "'" .
 			       	   ", email = '" . $db->prepare_string($this->emailAddress)   . "'" .
 				   	   ", locale = ". "'" . $db->prepare_string($this->locale) . "'" . 
-				   	   ", password = ". "'" . $db->prepare_string($this->password) . "'" .
+				   	   ", password = " . "'" . $db->prepare_string($this->password) . "'" .
 				   	   ", role_id = ". $db->prepare_string($this->globalRoleID) . 
 				   	   ", active = ". $db->prepare_string($this->isActive);
+
+				if(!is_null($t_cookie_string) )
+				{   	   
+					$sql .= ", cookie_string = " .  "'" . $db->prepare_string($t_cookie_string) . "'";
+				}   	   
 				$sql .= " WHERE id = " . $this->dbID;
 				$result = $db->exec_query($sql);
 			}
 			else
 			{
-				// TICKET 4342
-				$t_seed = $this->emailAddress . $this->login;
-				$t_cookie_string = $this->auth_generate_unique_cookie_string($db);
-			
 				$sql = "INSERT INTO {$this->tables['users']} " .
 					   " (login,password,cookie_string,first,last,email,role_id,locale,active) " .
 					   " VALUES ('" . 
@@ -1016,13 +1039,43 @@ class tlUser extends tlDBObject
 	 * 
 	 * @param resource &$db reference to database handler
 	 * @return integer tl::OK if no problem written to the db, else error code
+	 *
+	 * (ideas regarding cookie_string -> from Mantisbt).
+	 *
+	 * @internal revisions
+	 * 20110815 - franciscom - 	TICKET 4342: Security problem with multiple Testlink installations 
+	 *							on the same server.
+	 *							
 	 */
 	public function writePasswordToDB(&$db)
 	{
 		if($this->dbID)
 		{
+			// After addition of cookie_string, and following Mantisbt pattern,
+			// seems we need to check if password has changed.
+			//
+			// IMPORTANT NOTICE: 
+			// this implementation works ONLY when password is under TestLink control
+			// i.e. is present on TestLink Database.
+			//
+			// if answer is yes => change also cookie_string.
+			$t_cookie_string = null;
+
+			$gsql = " SELECT password FROM {$this->object_table} WHERE id = " . $this->dbID;
+			$rs = $db->get_recordset($gsql);
+			if(strcmp($rs[0]['password'],$this->password) != 0) 
+			{
+				// Password HAS CHANGED
+				$t_cookie_string = $this->auth_generate_unique_cookie_string($db); 	
+			}		
+			
 			$sql = "UPDATE {$this->tables['users']} " .
 		       	   " SET password = ". "'" . $db->prepare_string($this->password) . "'";
+			
+			if(!is_null($t_cookie_string) )
+			{   	   
+				$sql .= ", cookie_string = " .  "'" . $db->prepare_string($t_cookie_string) . "'";
+			}   	   
 			$sql .= " WHERE id = " . $this->dbID;
 			$result = $db->exec_query($sql);
 		}
@@ -1032,6 +1085,8 @@ class tlUser extends tlDBObject
 
 
 	/**
+	 * (from Mantisbt)
+	 *
 	 * Generate a string to use as the identifier for the login cookie
 	 * It is not guaranteed to be unique and should be checked
 	 * The string returned should be 64 characters in length
@@ -1046,6 +1101,8 @@ class tlUser extends tlDBObject
 	}
 
 	/**
+	 * (from Mantisbt)
+	 *
 	 * Return true if the cookie login identifier is unique, false otherwise
 	 * @param string $p_cookie_string
 	 * @return bool indicating whether cookie string is unique

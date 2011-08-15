@@ -14,6 +14,7 @@
  *
  * @internal revisions:
  *
+ * 20110815 - franciscom - improvements on cookie_string generation (after Julian indications)
  * 20110808 - franciscom - manual migration from 1.9.1 (DB 1.4) to 1.9.4 (DB 1.5)
  */
 
@@ -73,7 +74,7 @@ ALTER TABLE /*prefix*/req_specs COMMENT = 'Updated to TL 1.9.4 - DB 1.5';
 
 /* users */
 ALTER TABLE /*prefix*/users ADD COLUMN cookie_string varchar(64) NOT NULL DEFAULT '' AFTER script_key;
-UPDATE /*prefix*/users SET cookie_string=MD5(login);
+UPDATE /*prefix*/users SET cookie_string=CONCAT(MD5(RAND()),MD5(login));
 ALTER TABLE /*prefix*/users ADD UNIQUE KEY /*prefix*/users_cookie_string (`cookie_string`);
 ALTER TABLE /*prefix*/users COMMENT = 'Updated to TL 1.9.4 - DB 1.5';
 /* ----- END ----- */

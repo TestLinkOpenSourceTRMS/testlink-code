@@ -7,6 +7,8 @@ Purpose: view a requirement specification
 @author: Martin Havlat
 
 @internal revisions
+@since 1.9.4
+20110817 - franciscom - TICKET 4703: Req. Spec. View - display log message 
 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
 *}
 
@@ -71,6 +73,29 @@ Purpose: view a requirement specification
 	var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
 
 	{literal}
+	Ext.onReady(function(){ 
+	{/literal}
+	tip4log({$gui->req_spec.revision_id});
+	{literal}
+	});
+	
+	
+	/**
+	 * 
+	 * @since 1.9.4
+	 */
+	function tip4log(itemID)
+	{
+		var fUrl = fRoot+'lib/ajax/getreqspeclog.php?item_id=';
+		new Ext.ToolTip({
+	        target: 'tooltip-'+itemID,
+	        width: 500,
+	        autoLoad:{url: fUrl+itemID},
+	        dismissDelay: 0,
+	        trackMouse: true
+	    });
+	}
+	
 	function freeze_req_spec(btn, text, o_id) {
 		var my_action=fRoot+'lib/requirements/reqSpecEdit.php?doAction=doFreeze&req_spec_id=';
 		if( btn == 'yes' ) {
@@ -130,7 +155,10 @@ Purpose: view a requirement specification
 		<th>{$gui->main_descr|escape}</th>
 	</tr>
 	<tr>
-		<td><b>{$labels.revision}{$smarty.const.TITLE_SEP}{$gui->req_spec.revision}</b></td>
+		<td class="bold" id="tooltip-{$gui->req_spec.revision_id}">
+			{$labels.revision}{$smarty.const.TITLE_SEP}{$gui->req_spec.revision}
+			 <img src="{$tlImages.log_message_small}" style="border:none" />
+			</td>
 	</tr>
 	<tr>
 	  <td>{$labels.type}{$smarty.const.TITLE_SEP}

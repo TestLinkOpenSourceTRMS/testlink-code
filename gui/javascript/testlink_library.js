@@ -1387,7 +1387,7 @@ function scrollToShowMe(oid) {
 /**
  * open a requirement in a popup window
  * 
- * @param req_id Requirement ID
+ * @param item_id Requirement REVISION ID
  * @param anchor string with anchor name
  */
 function openReqRevisionWindow(item_id, anchor)

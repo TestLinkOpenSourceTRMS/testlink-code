@@ -232,8 +232,9 @@ function init_args()
 	$args->doCompare = isset($_REQUEST['doCompare']) ? true : false;
 	$args->left_item_id = isset($_REQUEST['left_item_id']) ? intval($_REQUEST['left_item_id']) : -1;
 	$args->right_item_id = isset($_REQUEST['right_item_id']) ? intval($_REQUEST['right_item_id']) :  -1;
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->useDaisyDiff = isset($_REQUEST['useDaisyDiff']);
+	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	$args->useDaisyDiff = ($_REQUEST['diff_method'] == 'htmlCompare') ? 1 : 0;
+	
 
 	$diffEngineCfg = config_get("diffEngine");
 	$args->context = null;

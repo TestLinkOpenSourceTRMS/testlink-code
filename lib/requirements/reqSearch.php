@@ -1,18 +1,23 @@
 <?php
-
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource  reqSearch.php
  * @package 	TestLink
  * @author		Andreas Simon
- * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.20 2010/10/26 12:21:25 mx-julian Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
  *
  * @internal Revisions:
+ *
+ * @since 1.9.4
+ * 20110815 - franciscom - 	TICKET 4700: Req Search Improvements - search on log message and 
+ *							provide link/url to multiple results
+ *
+ * @since 1.9.3
  * 20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
  * 20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
  * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
@@ -31,13 +36,13 @@ require_once("common.php");
 require_once("requirements.inc.php");
 require_once('exttable.class.php');
 testlinkInitPage($db);
-$date_format_cfg = config_get('date_format');
 
 $templateCfg = templateConfiguration();
 $tpl = 'reqSearchResults.tpl';
 
 $tproject_mgr = new testproject($db);
     	
+$date_format_cfg = config_get('date_format');
 $req_cfg = config_get('req_cfg');
 $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
@@ -51,9 +56,6 @@ $gui->path_info = null;
 $gui->resultSet = null;
 $gui->tableSet = null;
 
-$edit_label = lang_get('requirement');
-$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
-
 $map = null;
 $args = init_args($date_format_cfg);
 
@@ -62,172 +64,50 @@ $gui->tcasePrefix .= $tcase_cfg->glue_character;
 
 if ($args->tprojectID)
 {
-	$tables = tlObjectWithDB::getDBTables(
-							array('cfield_design_values', 'nodes_hierarchy', 'req_specs', 'req_relations', 
-								'req_versions', 'requirements', 'req_coverage', 'tcversions'));
-	$filter = null;
-    $from = array('by_custom_field' => null, 'by_relation_type' => null, 'by_tcid' => null);
+	$sql = build_search_sql($db,$args,$gui);
 
-	
-	if ($args->requirement_document_id) {
-		//search by id
-		$id=$db->prepare_string($args->requirement_document_id);
-		$filter['by_id'] = " AND REQ.req_doc_id like '%{$id}%'";
-	}
-	
-	if ($args->name) {
-		//search by name/title
-		$title=$db->prepare_string($args->name);
-		$filter['by_name'] = " AND NHP.name like '%{$title}%' ";
-	}
+	// key: req id (db id)
+	// value: array of versions and revisions
+	//
+	$map = $db->fetchRowsIntoMap($sql,'id',database::CUMULATIVE);
 
-	if ($args->version) {
-		//search by version
-		$version = $db->prepare_int($args->version);
-		$filter['by_version'] = " AND RV.version = {$version} ";
-	}
-	
-	if ($args->reqType != "notype") {
-		//search by type
-		$type=$db->prepare_string($args->reqType);
-		$filter['by_type'] = " AND RV.type='{$type}' ";
-	}
-	
-	if ($args->scope) {
-		//search by scope
-		$scope=$db->prepare_string($args->scope);
-		$filter['by_scope'] = " AND RV.scope like '%{$scope}%' ";
-	}
-	
-	if ($args->coverage) {
-		//search by expected coverage of testcases
-		$coverage=$db->prepare_int($args->coverage);
-		$filter['by_coverage'] = " AND RV.expected_coverage={$coverage} ";
-	}
-	
-	// BUGID 3716	
-	// creation date
-    if($args->creation_date_from)
-    {
-        $filter['by_creation_date_from'] = " AND RV.creation_ts >= '{$args->creation_date_from}' ";
-	}
-
-    if($args->creation_date_to)
-    {
-        $filter['by_creation_date_to'] = " AND RV.creation_ts <= '{$args->creation_date_to}' ";
-	}
-	
-	// modification date
-    if($args->modification_date_from)
-    {
-        $filter['by_modification_date_from'] = " AND RV.modification_ts >= '{$args->modification_date_from}' ";
-	}
-
-    if($args->modification_date_to)
-    {
-        $filter['by_modification_date_to'] = " AND RV.modification_ts <= '{$args->modification_date_to}' ";
-	}
-	
-	if ($args->relation_type != "notype") {
-		
-		// search by relation type		
-		// $args->relation_type is a string in following form
-		// e.g. 3_destination or 2_source or only 4
-		// must be treated different
-		
-		$relation_type = (int)current((explode('_',$args->relation_type)));
-		
-		if (strpos($args->relation_type, "_destination")) {
-			$relation_side = "destination_id=NHP.id ";
-		} else if (strpos($args->relation_type, "_source")) {
-			$relation_side = "source_id=NHP.id ";
-		} else {
-			$relation_side = " source_id=NHP.id OR destination_id=NHP.id ";
-		}		
-		
-		$from['by_relation_type'] = " , {$tables['req_relations']} RR "; 
-        $filter['by_relation_type'] = " AND RR.relation_type={$relation_type} " .
-                                      " AND ( $relation_side ) ";
-	}
-	
-	if($args->custom_field_id > 0) {
-        $args->custom_field_id = $db->prepare_string($args->custom_field_id);
-        $args->custom_field_value = $db->prepare_string($args->custom_field_value);
-        $from['by_custom_field'] = " , {$tables['cfield_design_values']} CFD "; 
-
-        // BUGID 2877 -  Custom Fields linked to Req versions
-        $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
-                                     " AND CFD.node_id=RV.id " .
-                                     " AND CFD.value like '%{$args->custom_field_value}%' ";
-    } 
-    
-    if ($args->tcid != "" && strcmp($args->tcid, $gui->tcasePrefix) != 0) {
-    	//search for reqs linked to this testcase
-    	$tcid = $db->prepare_string($args->tcid);
-    	$tcid = str_replace($gui->tcasePrefix, "", $tcid);
-    	
-    	$from['by_tcid'] = ", {$tables['req_coverage']} RC " .  
-                           ", {$tables['tcversions']} TCV " .
-    					   ", {$tables['nodes_hierarchy']} NHA " .
-    					   ", {$tables['nodes_hierarchy']} NHAP ";
-    					   
-    	$filter['by_tcid'] = "AND TCV.tc_external_id='$tcid' AND TCV.id = NHA.id " .
-    						" AND NHA.parent_id = NHAP.id AND RC.testcase_id = NHAP.id " .
-    						" AND RC.req_id = NHP.id ";
-    }
-    
-	if ($args->reqStatus != "nostatus") {
-		//search by status
-		$status=$db->prepare_string($args->reqStatus);
-		$filter['by_status'] = " AND RV.status='{$status}' ";
-	}
-	
-	$sql = "SELECT DISTINCT NHP.id, NHP.name, REQ.req_doc_id FROM {$tables['nodes_hierarchy']} NH," .
-  			"{$tables['nodes_hierarchy']} NHP, {$tables['requirements']} REQ," .
-			"{$tables['req_versions']} RV {$from['by_custom_field']} {$from['by_tcid']} {$from['by_relation_type']} " .
-			"WHERE NH.parent_id = NHP.id AND RV.id=NH.id AND REQ.id=NHP.id ";
-	
-	if ($filter)
+	// dont show requirements from different testprojects than the selected one
+	if (count($map)) 
 	{
-		$sql .= implode("",$filter);
-	}
-	
-	$map = $db->fetchRowsIntoMap($sql,'id');
-
-	//dont show requirements from different testprojects than the selected one
-	if (count($map)) {
-		foreach ($map as $item) {
-			$id = $item['id'];
-			$pid = $tproject_mgr->tree_manager->getTreeRoot($id);
-			if ($pid != $args->tprojectID) {
-				unset($map[$id]);
+		$reqIDSet = array_keys($map);
+		foreach ($reqIDSet as $item) 
+		{
+			$pid = $tproject_mgr->tree_manager->getTreeRoot($item);
+			if ($pid != $args->tprojectID) 
+			{
+				unset($map[$item]);
 			}
 		}
 	}
 }
 
 $smarty = new TLSmarty();
-$gui->row_qty=count($map);
+$gui->row_qty = count($map);
 if($gui->row_qty > 0)
 {
-	$gui->resultSet=$map;
+	$gui->resultSet = $map;
 	if($gui->row_qty <= $req_cfg->search->max_qty_for_display)
 	{
-		$req_set=array_keys($map);
+		$req_set = array_keys($map);
 		$options = array('output_format' => 'path_as_string');
-		$gui->path_info=$tproject_mgr->tree_manager->get_full_path_verbose($req_set,$options);
+		$gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($req_set,$options);
 	}
 	else
 	{
-		$gui->warning_msg=lang_get('too_wide_search_criteria');
+		$gui->warning_msg = lang_get('too_wide_search_criteria');
 	}
 }
 else
 {
-	$gui->warning_msg=lang_get('no_records_found');
+	$gui->warning_msg = lang_get('no_records_found');
 }
 
-$table = buildExtTable($gui, $charset, $edit_icon, $edit_label);
+$table = buildExtTable($gui, $charset);
 
 if (!is_null($table)) {
 	$gui->tableSet[] = $table;
@@ -241,10 +121,34 @@ $smarty->display($templateCfg->template_dir . $tpl);
  * 
  *
  */
-function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
+function buildExtTable($gui, $charset)
+{
 	$table = null;
-	if(count($gui->resultSet) > 0) {
-		$labels = array('req_spec' => lang_get('req_spec'), 'requirement' => lang_get('requirement'));
+	$lbl = array('edit' => 'requirement', 'rev' => 'revision_short', 'ver' => 'version_short', 
+				 'req_spec' => 'req_spec', 'requirement' => 'requirement');
+
+	$labels = init_labels($lbl);
+	$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
+	
+	// $gui->resultSet - 
+	// key: reqspec_id 
+	// value: array of matches
+	// array
+	// {
+	// [4][0]=>{"name" => "QAZ MNNN","id" => "4","req_doc_id" => "QAZ",
+	//       	"version_id" => 5, "version" => 1, 
+	//			"revision_id" => -1, "revision" => 2}   -> revisio_id < 0 => lives on REQ VERSIONS TABLE
+    //
+	//    [1]=>{"name" => "QAZ MNNN","id" => "4","req_doc_id" => "QAZ",
+	//       	"version_id" => 5, "version" => 1, 
+	//			"revision_id" => 6, "revision" => 1}   
+	// ...
+	// }
+	//
+	//
+
+	if(count($gui->resultSet) > 0) 
+	{
 		$columns = array();
 		
 		$columns[] = array('title_key' => 'req_spec');
@@ -253,22 +157,40 @@ function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
 		// Extract the relevant data and build a matrix
 		$matrixData = array();
 		
-		foreach($gui->resultSet as $result) {
+		$key2loop = array_keys($gui->resultSet);
+		$img = "<img title=\"{$labels['edit']}\" src=\"{$edit_icon}\" />";
+		// req_id, req_version_id
+		$reqVerHref = '<a href="javascript:openLinkedReqVersionWindow(%s,%s)">[v:%s r:%s] </a>'; 
+		// req_revision_id
+		$reqRevHref = '<a href="javascript:openReqRevisionWindow(%s)">[v:%s r:%s] </a>'; 
+		
+		foreach($key2loop as $req_id)
+		{
 			$rowData = array();
-			$rowData[] = htmlentities($gui->path_info[$result['id']], ENT_QUOTES, $charset);
-
-			// build requirement link
-			$edit_link = "<a href=\"javascript:openLinkedReqWindow(" . $result['id'] . ")\">" .
-						 "<img title=\"{$edit_label}\" src=\"{$edit_icon}\" /></a> ";
-			$title = htmlentities($result['req_doc_id'], ENT_QUOTES, $charset) . ":" .
-			         htmlentities($result['name'], ENT_QUOTES, $charset);
-			$link = $edit_link . $title;
-			$rowData[] = $link;
-
-//			$rowData[] = "<a href=\"lib/requirements/reqView.php?item=requirement&requirement_id={$result['id']}\">" .
-//			             htmlentities($result['req_doc_id'], ENT_QUOTES, $charset) . ":" .
-//			             htmlentities($result['name'], ENT_QUOTES, $charset);
+			$itemSet = $gui->resultSet[$req_id];
+			$rfx = &$itemSet[0];
 			
+			// We Group by Requirement path
+			$rowData[] = htmlentities($gui->path_info[$rfx['id']], ENT_QUOTES, $charset);
+
+			$edit_link = "<a href=\"javascript:openLinkedReqWindow(" . $rfx['id'] . ")\">" . "{$img}</a> ";
+			$title = htmlentities($rfx['req_doc_id'], ENT_QUOTES, $charset) . ":" .
+			         htmlentities($rfx['name'], ENT_QUOTES, $charset);
+
+			$matches = '';
+			foreach($itemSet as $rx) 
+			{
+				if($rx['revision_id'] > 0)
+				{
+					$dummy = sprintf($reqRevHref,$rx['revision_id'],$rx['version'],$rx['revision']);
+				}
+				else
+				{
+					$dummy = sprintf($reqVerHref,$req_id,$rx['version_id'],$rx['version'],$rx['revision']);
+				} 
+				$matches .= $dummy;
+			}
+			$rowData[] = $edit_link . $title . ' ' . $matches;
 			$matrixData[] = $rowData;
 		}
 	
@@ -282,11 +204,9 @@ function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
 		$table->allowMultiSort = false;
 		$table->toolbarRefreshButton = false;
 		$table->toolbarShowAllColumnsButton = false;
+		$table->storeTableState = false;
 		
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
-		
-		// dont save settings for this table
-		$table->storeTableState = false;
 	}
 	return($table);
 }
@@ -304,11 +224,10 @@ function init_args($dateFormat)
 	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
-	// BUGID 3716
 	$strnull = array('requirement_document_id', 'name','scope', 'reqStatus',
 	                 'custom_field_value', 'targetRequirement',
 	                 'version', 'tcid', 'reqType', 'relation_type',
-	                 'creation_date_from','creation_date_to',
+	                 'creation_date_from','creation_date_to','log_message',
 	                 'modification_date_from','modification_date_to');
 	
 	foreach($strnull as $keyvar) {
@@ -322,7 +241,6 @@ function init_args($dateFormat)
 		$args->$keyvar = isset($_REQUEST[$keyvar]) ? intval($_REQUEST[$keyvar]) : 0;
 	}
 	
-	// BUGID 3716
 	// convert "creation date from" to iso format for database usage
     if (isset($args->creation_date_from) && $args->creation_date_from != '') {
 		$date_array = split_localized_date($args->creation_date_from, $dateFormat);
@@ -368,5 +286,210 @@ function init_args($dateFormat)
 	$args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
 	return $args;
+}
+
+
+
+/**
+ * 
+ *
+ */
+function build_search_sql(&$dbHandler,&$argsObj,&$guiObj)
+{
+	$tables = tlObjectWithDB::getDBTables(array('cfield_design_values', 'nodes_hierarchy', 'req_specs', 
+												'req_relations', 'req_versions', 'req_revisions','requirements', 
+												'req_coverage', 'tcversions'));
+	$filter = array();
+	$filter['ver'] = null;
+	$filter['rev'] = null;
+
+	// -----------------------------------------------------------------------------------
+	// date filters can be build using algorithm
+	$date_fields = array('creation_ts' => 'ts' ,'modification_ts' => 'ts');
+	$date_keys = array('date_from' => '>=' ,'date_to' => '<=');
+	foreach($date_fields as $fx => $needle)
+	{
+		foreach($date_keys as $fk => $op)
+		{
+			$fkey = str_replace($needle,$fk,$fx);
+			if($argsObj->$fkey)
+			{
+        		$filter['ver'][$fkey] = " AND REQV.$fx $op '{$argsObj->$fkey}' ";
+        		$filter['rev'][$fkey] = " AND REQR.$fx $op '{$argsObj->$fkey}' ";
+			}
+		}		
+	}
+    // -----------------------------------------------------------------------------------
+
+	// key: args key
+	// value: map
+	//		  key: table field
+	//		  value: map 
+	//				 key: filter scope, will identify with part of SQL affects
+	//				 value: table alias
+	//	
+	$like_keys = array(	'name' => array('name' => array('ver' => "NH_REQ", 'rev' => "REQR")),
+						'requirement_document_id' => array('req_doc_id' => array('ver' => 'REQ', 'rev' => 'REQR')),
+						'scope' => array('scope' => array('ver' => 'REQV', 'rev' => 'REQR')),
+						'log_message' => array('log_message'=> array('ver' => 'REQV','rev' =>'REQR')));
+
+	foreach($like_keys as $key => $fcfg)
+	{
+		if($argsObj->$key)
+		{
+			$value = $dbHandler->prepare_string($argsObj->$key);
+			$field = key($fcfg);
+			foreach($fcfg[$field] as $table => $alias)
+			{
+				$filter[$table][$field] = " AND {$alias}.{$field} like '%{$value}%' ";
+			}
+		}
+	}						
+
+	$char_keys = array(	'reqType' => array('type' => array('ver' => "REQV", 'rev' => "REQR")),
+						'reqStatus' => array('status' => array('ver' => 'REQV', 'rev' => 'REQR')));
+
+	foreach($char_keys as $key => $fcfg)
+	{
+		if($argsObj->$key)
+		{
+			$value = $dbHandler->prepare_string($argsObj->$key);
+			$field = key($fcfg);
+			foreach($fcfg[$field] as $table => $alias)
+			{
+				$filter[$table][$field] = " AND {$alias}.{$field} = '{$value}' ";
+			}
+		}
+	}						
+
+	if ($argsObj->version) {
+		$version = $dbHandler->prepare_int($argsObj->version);
+		$filter['ver']['version'] = " AND REQV.version = {$version} ";
+		$filter['rev']['version'] = $filter['versions']['by_version'];
+	}
+	
+	if ($argsObj->coverage) 
+	{
+		//search by expected coverage of testcases
+		$coverage=$dbHandler->prepare_int($argsObj->coverage);
+		$filter['ver']['coverage'] = " AND REQV.expected_coverage = {$coverage} ";
+		$filter['rev']['coverage'] = " AND REQR.expected_coverage = {$coverage} ";
+	}
+	
+	
+	// Complex processing
+	if(!is_null($argsObj->relation_type)) 
+	{
+		// search by relation type		
+		// $argsObj->relation_type is a string in following form
+		// e.g. 3_destination or 2_source or only 4
+		// must be treated different
+		$dummy = explode('_',$argsObj->relation_type);
+		$rel_type = $dummy[0];
+		$side = isset($dummy[1]) ? " RR.{$dummy[1]}_id = NH_REQ.id " : 
+				" RR.source_id = NH_REQ.id OR RR.destination_id = NH_REQ.id ";
+
+        // $filter['ver']['relation_type'] = " AND RR.relation_type={$rel_type}  AND ( $side ) ";
+		// $filter['rev']['relation_type'] = $filter['rev']['relation_type'];                                      	  
+
+
+		$from['ver']['relation_type'] = " JOIN {$tables['req_relations']} RR " .
+										" ON ($side) AND RR.relation_type = {$rel_type} "; 
+		$from['rev']['relation_type'] = $from['ver']['relation_type'];
+
+	}	
+
+	if($argsObj->custom_field_id > 0) 
+	{
+        $cfield_id = $dbHandler->prepare_string($argsObj->custom_field_id);
+        $cfield_value = $dbHandler->prepare_string($argsObj->custom_field_value);
+        $from['ver']['custom_field'] = 	" JOIN {$tables['cfield_design_values']} CFD " .
+        								" ON CFD.node_id = REQV.id "; 
+
+        $from['rev']['custom_field'] = 	" JOIN {$tables['cfield_design_values']} CFD " .
+        								" ON CFD.node_id = REQR.id "; 
+
+        $filter['ver']['custom_field'] = " AND CFD.field_id = {$cfield_id} " .
+                                  		 " AND CFD.value like '%{$cfield_value}%' ";
+                                  		 
+        $filter['rev']['custom_field'] = $filter['ver']['custom_field'];                          		 
+    } 
+
+    if ($argsObj->tcid != "" && strcmp($argsObj->tcid, $guiObj->tcasePrefix) != 0) 
+    {
+    	// search for reqs linked to this testcase
+    	$tcid = $dbHandler->prepare_string($argsObj->tcid);
+    	$tcid = str_replace($guiObj->tcasePrefix, "", $tcid);
+
+    	$filter['ver']['tcid'] = " AND TCV.tc_external_id = '$tcid' ";
+    	$filter['rev']['tcid'] = $filter['ver']['by_tcid'];
+    	
+    	$from['ver']['tcid'] = 	" /* Look for Req Coverage info */ ".
+    							" JOIN {$tables['req_coverage']} RC ON RC.req_id = NH_REQ.id " .  
+    							" /* Need Test case children => test case versions */ ".
+    					   		" JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = RC.testcase_id " .
+    							" /* Needed to search using External ID  */ ".
+                           		" JOIN {$tables['tcversions']} TCV ON TCV.id = NH_TCV.id ";
+
+    	$from['rev']['tcid'] = $from['ver']['tcid']; 
+    }
+
+	$common = " SELECT NH_REQ.name, REQ.id, REQ.req_doc_id,"; 
+	$sql = 	$common .
+			" REQV.id as version_id, REQV.version, REQV.revision, -1 AS revision_id " .
+			" /*  */" .
+			" /* Main table to get Last Version REQ_DOC_ID */" .
+			" FROM {$tables['requirements']} REQ " .
+			" JOIN {$tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id=REQ.id " .
+			" /* */ " .
+			" /* Need to get all REQ children => REQ Versions */ " .
+			" JOIN {$tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id " .  
+			" /* */ " .
+			" /* Go for REQ REV data */ " .
+			" JOIN {$tables['req_versions']} REQV ON REQV.id=NH_REQV.id " .
+			" /* */ ";
+			
+	$map2use = array('from','filter'); // ORDER IS CRITIC to build SQL statement
+	foreach($map2use as $vv)
+	{
+		$ref = &$$vv;
+		if(!is_null($ref['ver']))
+		{
+			$sql .= ($vv == 'filter') ? ' WHERE 1=1 ' : '';
+			$sql .= implode("",$ref['ver']);
+		}		
+	}		
+	$stm['ver'] = $sql;
+	
+	$sql = 	$common .
+			" REQR.parent_id AS version_id, REQV.version, REQR.revision, REQR.id AS revision_id " .
+			" /* */ " .
+			" /* Main table to get Last Version REQ_DOC_ID */" .
+			" FROM {$tables['requirements']} REQ " .
+			" JOIN {$tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id=REQ.id " .
+			" /* */ " .
+			" /* Need to get all REQ children => REQ Versions because they are parent of REVISIONS */ " .
+			" JOIN {$tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id " .  
+			" /* */ " .
+			" /* Go for REQ REV data */" .
+			" JOIN {$tables['req_versions']} REQV ON REQV.id=NH_REQV.id " .
+			" /* */ " .
+			" /* Now need to go for revisions */ " .
+			" JOIN {$tables['req_revisions']} REQR ON REQR.parent_id=REQV.id ";
+
+	foreach($map2use as $vv)
+	{
+		$ref = &$$vv;
+		if(!is_null($ref['rev']))
+		{
+			$sql .= ($vv == 'filter') ? ' WHERE 1=1 ' : '';
+			$sql .= implode("",$ref['rev']);
+		}		
+	}		
+
+
+	// add additional joins that depends on user search criteria
+	$sql = $stm['ver'] . " UNION ({$sql}) ORDER BY id ASC, version DESC, revision DESC ";
+	return $sql;
 }
 ?>

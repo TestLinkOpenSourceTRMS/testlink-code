@@ -9,6 +9,10 @@
  * Screen to view content of requirement.
  *
  *	@internal revision
+ *	@since 1.9.4
+ *	20110816 - franciscom - TICKET 4702: Requirement View - display log message
+ *
+ *	@since 1.9.3
  *  20110602 - franciscom - TICKET 4536: Tree is not refreshed after editing Requirement
  *  20101210 - franciscom - BUGID 4056 - Req. Revisioning
  *  20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
@@ -39,7 +43,9 @@ $prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
 
 $gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . 
                     urlencode($prefix) . '&item=req&id=' . urlencode($gui->req['req_doc_id']);
-		
+
+
+// new dBug($gui);		
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
 
@@ -93,12 +99,20 @@ function initialize_gui(&$dbHandler,$argsObj)
     
     $gui->req_id = $argsObj->req_id;
         
-    // BUGID 4038
     /* if wanted, show only the given version */
     $gui->version_option = ($argsObj->req_version_id) ? $argsObj->req_version_id : requirement_mgr::ALL_VERSIONS;
         
     $gui->req_versions = $req_mgr->get_by_id($gui->req_id, $gui->version_option);
 
+	// TICKET 4702: Requirement View - display log message
+	$gui->log_target = null;
+	$loop2do = count($gui->req_versions);
+	for($rqx = 0; $rqx < $loop2do; $rqx++)
+	{
+		$gui->log_target[] = ($gui->req_versions[$rqx]['revision_id'] > 0) ?  $gui->req_versions[$rqx]['revision_id'] :  
+							 $gui->req_versions[$rqx]['version_id'];
+	}
+	
 	// 20101128 - BUGID 4056    
     $gui->req_has_history = count($req_mgr->get_history($gui->req_id, array('output' => 'array'))) > 1; 
     

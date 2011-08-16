@@ -1,9 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.12.6.5 2010/12/13 08:27:07 mx-julian Exp $
+@filesource	reqViewVersionsViewer.tpl
 viewer for requirement
 
-rev:
+@internal revisions
+@since 1.9.4
+20110816 - franciscom - TICKET 4702: Requirement View - display log message
+
+@since 1.9.3
 20110530 - asimon - BUGID 4298: added functionality for direct links to open specific requirement versions
 20110308 - asimon - BUGID 4273: backported printing of single req from master
 20101127 - franciscom - BUGID 4056: Requirement Revisioning
@@ -18,7 +22,6 @@ rev:
              revision,btn_view_history,btn_new_revision,btn_print_view,specific_direct_link,
              design,execution_history"}
 
-             
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
 {assign var="hrefReqSpecMgmt" value=$basehref$hrefReqSpecMgmt}
 
@@ -129,7 +132,12 @@ rev:
 
   {if $args_show_version}
 	  <tr>
-	  	<td class="bold" colspan="2">{$labels.version}
+	    {if $args_req.revision_id gt 0}
+	    	{assign var="tpt" value=$args_req.revision_id}
+	    {else}
+	    	{assign var="tpt" value=$args_req.version_id}
+	    {/if}
+	  	<td class="bold" colspan="2" id="tooltip-{$tpt}">{$labels.version}
 	  	{$args_req.version} {$labels.revision} {$args_req.revision}
 	  	</td>
 	  </tr>

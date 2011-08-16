@@ -1,10 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.19.2.2 2010/12/12 09:38:55 franciscom Exp $
+@filesource	reqViewVersions.tpl
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
-rev:
+@internal revisions
+@since 1.9.4
+20110816 - franciscom - TICKET 4702: Requirement View - display log message
+
+@since 1.9.3
   20110602 - franciscom - TICKET 4536: Tree is not refreshed after editing Requirement
   20110530 - asimon - BUGID 4298: added functionality for direct links to open specific requirement versions
   20110525 - Julian - BUGID 4497 - show version and revision also for "Other versions"
@@ -48,8 +52,16 @@ var warning_empty_reqdoc_id = '{$warning_empty_reqdoc_id|escape:'javascript'}';
 var log_box_title = "{$labels.commit_title|escape:'javascript'}";
 var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
 
-
 {literal}
+Ext.onReady(function(){ 
+{/literal}
+{foreach from=$gui->log_target key=idx item=item_id}
+  tip4log({$item_id});
+{/foreach}
+{literal}
+});
+
+
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 function delete_req(btn, text, o_id)
 { 
@@ -148,6 +160,22 @@ function ask4log(fid_prefix,tid_prefix,idx)
   },this,true);    
   return false;    
 } 
+
+/**
+ * 
+ * @since 1.9.4
+ */
+function tip4log(itemID)
+{
+	var fUrl = fRoot+'lib/ajax/getreqlog.php?item_id=';
+	new Ext.ToolTip({
+        target: 'tooltip-'+itemID,
+        width: 500,
+        autoLoad:{url: fUrl+itemID},
+        dismissDelay: 0,
+        trackMouse: true
+    });
+}
 {/literal}
 
 // **************************************************************************
@@ -169,6 +197,7 @@ var pF_delete_req_relation = delete_req_relation;
   var {$gui->dialogName} = new std_dialog('&refreshTree');
 </script>  
 {/if}
+
 </head>
 
 {assign var="my_style" value=""}

@@ -5,13 +5,16 @@
  *
  * link/unlink test cases to a test plan
  *
+ * @filesource	planAddTC.php
  * @package 	TestLink
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.109 2010/10/30 16:01:56 franciscom Exp $
- * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * @since 1.9.4
+ * 20110817 - franciscom -
+ *
+ * @since 1.9.3
  * 20101026 - franciscom - BUGID 3889: Add Test Cases to Test plan - checks with test case id and test case name filters.
  * 20101025 - franciscom - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
  * 20101009 - franciscom - fixing event viewer warnings created for missing initialization of required
@@ -353,9 +356,11 @@ function init_args()
 	$getFromSession = !is_null($session_data);
 	$booleankeys = array('refreshTree' => 'setting_refresh_tree_on_action','importance' => 'filter_priority',
 						 'executionType' => 'filter_execution_type');
+
+	// TICKET 4704,4708
     foreach($booleankeys as $key => $value)
     {
-    	$args->$key = ($getFromSession && isset($session_data[$key])) ? $session_data[$key] : 0;
+    	$args->$key = ($getFromSession && isset($session_data[$value])) ? $session_data[$value] : 0;
     }						 
 	$args->importance = ($args->importance > 0) ? $args->importance : null;
 

@@ -10,6 +10,8 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * @since 1.9.4
+ * 20110817 - franciscom - TICKET 4708: When adding testcases to test plan, filtering by execution type does not work.
  *
  * @since 1.9.3
  * 20110630 - franciscom - get_linked_versions() interface changes
@@ -4690,7 +4692,10 @@ class testcase extends tlObjectWithAttachments
 	 * @param map $options OPTIONAL
 	 *
 	 * @internal Revisions
-	 *
+	 * @since 1.9.4
+	 * 20110817 - franciscom - TICKET 4708: When adding testcases to test plan, filtering by execution type does not work.
+	 * 
+	 * @since 1.9.3
 	 * 20101025 - franciscom - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
 	 * 20100417 - franciscom - added importance on output data
 	 */
@@ -4745,11 +4750,15 @@ class testcase extends tlObjectWithAttachments
 		{
 			$or_clause = '';
 			$cf_query = '';
+			// new dBug($recordset);
+			// new dBug($my['filters']['cfields']);
+			
 			if( !is_null($my['filters']['cfields']) )
 			{
 				$cf_hash = &$my['filters']['cfields'];
 				$cfQty = count($cf_hash);
 				$countmain = 1;
+
 				// 20101025 - build custom fields filter
 				// do not worry!! it seems that filter criteria is OR, but really is an AND,
 				// OR is needed to do a simple query.
@@ -4799,23 +4808,38 @@ class testcase extends tlObjectWithAttachments
 
 			$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key'],database::CUMULATIVE);
 
-			// now loop over result, entries whose count() < number of custom fields has to be removed
-			if( !is_null($recordset) && $cfQty > 0)
+			// now loop over result, 
+			// Processing has to be done no matter value of cfQty
+			// (not doing this has produced in part TICKET 4704,4708)
+			// entries whose count() < number of custom fields has to be removed
+			// TICKET 4708
+			if( !is_null($recordset) )
 			{
 				$key2loop = array_keys($recordset);
-				foreach($key2loop as $key)
+				if($cfQty > 0)
 				{
-					if( count($recordset[$key]) < $cfQty)
+					foreach($key2loop as $key)
 					{
-						unset($recordset[$key]); // remove
-					}
-					else
-					{
-						$recordset[$key] = $recordset[$key][0]; 
-						unset($recordset[$key]['value']);
-						unset($recordset[$key]['field_id']);
+						if( count($recordset[$key]) < $cfQty)
+						{
+							unset($recordset[$key]); // remove
+						}
+						else
+						{
+							$recordset[$key] = $recordset[$key][0]; 
+							unset($recordset[$key]['value']);
+							unset($recordset[$key]['field_id']);
+						}
 					}
 				}
+				else
+				{
+					foreach($key2loop as $key)
+					{
+						$recordset[$key] = $recordset[$key][0]; 
+					}
+				} 
+				
 				if( count($recordset) <= 0 )
 				{
 					$recordset = null;

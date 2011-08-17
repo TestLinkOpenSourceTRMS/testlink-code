@@ -12,7 +12,10 @@
  *
  * This page presents the search results for requirement specifications.
  *
- * @internal Revisions:
+ * @internal revisions
+ * @since 1.9.4
+ * 20110817 - franciscom - added ORDER BY 
+ *
  */
 
 require_once("../../config.inc.php");
@@ -105,35 +108,10 @@ if ($args->tprojectID)
 	{
 		$sql .= implode("",$filter);
 	}
-	
+
+	$sql .= ' ORDER BY id ASC, revision DESC ';	
 	$itemSet = $db->fetchRowsIntoMap($sql,'id',database::CUMULATIVE);
 	
-	// $gui->resultSet=$itemSet;
-
-	// $itemSet = $db->get_recordset($sql);
-	// $rspecSet = null;
-	// $last_rev = null;
-	// if(!is_null($itemSet))
-	// {
-	// 	$loop2do = count($itemSet);
-	// 	for($rdx=0; $rdx < $loop2do; $rdx++)
-	// 	{
-	// 		if( !isset($rspecSet[$itemSet[$rdx]['id']]) )
-	// 		{
-	// 			$rspecSet[$itemSet[$rdx]['id']] = $itemSet[$rdx]['id']; 
-	// 		}	
-	// 	}
-	// 	$sql =	" SELECT MAX(RSPECREV.revision) AS max_rev, RSPECREV.parent_id AS rspec_id" . 
-	// 			" FROM {$tables['req_specs_revisions']} RSPECREV " .
-	// 			" WHERE RSPECREV.parent_id IN (" . implode(',',$rspecSet) . ")" .
-	// 			" GROUP BY RSPECREV.parent_id ";
-	// 		
-	// 	$last_rev = $db->fetchRowsIntoMap($sql,'rspec_id');
-	// }
-	// new dBug($last_rev);
-	// new dBug($map);
-	// new dBug($itemSet);
-	// new dBug($rspecSet);
 }
 
 $smarty = new TLSmarty();
@@ -169,7 +147,8 @@ $smarty->display($templateCfg->template_dir . $tpl);
 
 function buildExtTable($gui, $charset) 
 {
-	$lbl = array('edit' => 'requirement_spec', 'rev' => 'revision_short','req_spec' => 'req_spec');
+	$lbl = array('edit' => 'requirement_spec', 'rev' => 'revision_short','req_spec' => 'req_spec',
+				 'revision_tag' => 'revision_tag', 'open_on_new_window' => 'open_on_new_window');
 	$labels = init_labels($lbl);
 	$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 	$table = null;
@@ -207,7 +186,8 @@ function buildExtTable($gui, $charset)
 
 			$title = htmlentities($rfx['doc_id'], ENT_QUOTES, $charset) . ":" .
 				     htmlentities($rfx['name'], ENT_QUOTES, $charset);
-			$cm = '<a href="javascript:openReqSpecRevisionWindow(%s)">(rev:%s) </a>'; 
+			$cm = '<a href="javascript:openReqSpecRevisionWindow(%s)" title="' . $labels['open_on_new_window'] .'" >' . 
+				  $labels['revision_tag'] . '</a>'; 
 			// $link = $edit_link;
 			$matches = '';
 			foreach($itemSet as $rx) 

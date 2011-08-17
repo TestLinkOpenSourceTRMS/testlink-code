@@ -87,6 +87,8 @@ $TLS_nobody = "Nobody";
 $TLS_not_imported = "Not imported";
 $TLS_none = "None";
 $TLS_ok = "OK";
+$TLS_open_on_new_window = "open on new window";
+
 $TLS_priority	= "Priority";
 $TLS_project = "Project";
 $TLS_public = "Public";
@@ -100,6 +102,9 @@ $TLS_requirements_spec = "Requirements Spec.";
 $TLS_req_specification = "Req. Specification";
 $TLS_revision = "revision";
 $TLS_revision_short = "rev";
+$TLS_revision_tag = "[r%s]";
+$TLS_version_tag = "[v%s]";
+$TLS_version_revision_tag = "[v%sr%s]";
 
 $TLS_srs = "SRS";
 $TLS_Role = "Role";

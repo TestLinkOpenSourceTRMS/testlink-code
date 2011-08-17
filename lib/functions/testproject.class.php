@@ -10,7 +10,12 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * @since 1.9.4
+ * 20110817 - franciscom - TICKET 4360
+ * 20110817 - franciscom - added missed user_id on copy_requirements() call
  * 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
+ *
+ * @since 1.9.3
  * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
  * 20110223 - asimon - BUGID 4239: forgotten parameter $oldNewMappings for a function call in copy_as()  
  *                               caused links between reqs in old project and testcases in new project
@@ -1586,7 +1591,8 @@ function setPublicStatus($id,$status)
 		$this->deleteKeywords($id);
 		$this->deleteAttachments($id);
 		
-		$reqSpecSet=$reqspec_mgr->get_all_in_testproject($id);
+		// 20110817
+		$reqSpecSet=$reqspec_mgr->get_all_id_in_testproject($id);
 		if( !is_null($reqSpecSet) && count($reqSpecSet) > 0 )
 		{
 			foreach($reqSpecSet as $reqSpec)
@@ -1615,7 +1621,6 @@ function setPublicStatus($id,$status)
 			             'info_resetting_default_project_fails');
 
 
-		// BUGID 3464
 		$inventory_mgr = new tlInventory($id,$this->db);
 		$invOpt = array('detailLevel' => 'minimun', 'accessKey' => 'id');
 		$inventorySet = $inventory_mgr->getAll($invOpt);
@@ -2223,10 +2228,9 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 	// Requirements
 	if( $my['options']['copy_requirements'] )
 	{
-		$oldNewMappings['requirements'] = $this->copy_requirements($id,$new_id);
+		$oldNewMappings['requirements'] = $this->copy_requirements($id,$new_id,$user_id);
 	}
 
-	
 	// need to get subtree and create a new one
 	$filters = array();
 	$filters['exclude_node_types'] = array('testplan' => 'exclude_me','requirement_spec' => 'exclude_me');
@@ -2238,14 +2242,15 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 	// Copy Test Specification
     $item_mgr['testsuites'] = new testsuite($this->db);
 	$copyTSuiteOpt = array();
+	$copyTSuiteOpt['preserve_external_id'] = true;
 	$copyTSuiteOpt['copyKeywords'] = 1;
+
+	// Attention: copyRequirements really means copy requirement to testcase assignments
 	$copyTSuiteOpt['copyRequirements'] = $my['options']['copy_requirements'];		
-	$copyTSuiteOpt['preserve_external_id'] = true; // BUGID 4374		
 	
 	$oldNewMappings['test_spec'] = array();
 	foreach($elements as $piece)
 	{
-		// BUGID 4239: forgotten $mappings caused wrong requirement IDs to be assigned later
 		$op = $item_mgr['testsuites']->copy_to($piece['id'],$new_id,$user_id,$copyTSuiteOpt,$oldNewMappings);				
 		$oldNewMappings['test_spec'] += $op['mappings'];
 	}
@@ -2255,13 +2260,12 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 		
 	$this->copy_user_roles($id,$new_id);
 
-	// BUGID 4374: When copying a project, external TC ID is not preserved	
+	// When copying a project, external TC ID is not preserved	
 	// need to update external test case id numerator
 	$sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
 			" SET tc_counter = {$rs_source['tc_counter']} " . 
 			" WHERE id = {$new_id}";
-		$recordset = $this->db->exec_query($sql);
-
+	$recordset = $this->db->exec_query($sql);
 
 	
 } // end function copy_as
@@ -2450,15 +2454,23 @@ private function copy_requirements($source_id,$target_id,$user_id)
 	{
 		$mappings = array();
 		$reqSpecMgr = new requirement_spec_mgr($this->db);
+		
+		// Development Note - 20110817
+		// why we choose to do not copy testcase_assignments ?
+		// Because due to order used to copy different items, when we ask to copy
+		// requirements WE DO NOT HAVE TEST CASES on new test project.
+		//
 		$options = array('copy_also' => array('testcase_assignments' => false) );
 		foreach($elements as $piece)
 		{
-			// function copy_to($id, $parent_id, $tproject_id, $user_id,$options = null)
+			// copy_to($id, $parent_id, $tproject_id, $user_id,$options = null)
 			$op = $reqSpecMgr->copy_to($piece['id'],$target_id,$target_id,$user_id,$options);
 			$mappings += $op['mappings'];
 		}
 	}
-	return $mappings;
+	
+	// TICKET 4360
+	return $mappings['req'];
 }
 
 } // end class

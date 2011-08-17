@@ -8,9 +8,16 @@
  *
  * Manager for requirement specification (requirement container)
  *
- * @internal revision: 
+ * @internal revision
  *
- * TICKET 4661 
+ * @since 19.4
+ * 20110817 - franciscom - TICKET 4360
+ * 20110817 - franciscom - 	get_all_in_testproject() issue due to TICKET 4661
+ *							get_by_title() issues with SCOPE and other fields moved to
+ *							req revisions table.
+ *	
+ * 20110812 - franciscom - TICKET 4661: Req. Spec Revisions
+ * 
  */
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
 require_once( dirname(__FILE__) . '/requirements.inc.php' );
@@ -1135,18 +1142,17 @@ function xmlToMapReqSpec($xml_item,$level=0)
             has to be linked to a testproject, in order to be used.
 
 
-		THIS DOCUMENTATION IS NOT VALID - 20110806
-  args: id: requirement spec id
-  		$child_id: requirement spec REVISION ID
+  args: credentials, map with following keys
+			item_id: Req. Spec REVISION ID (can be NULL if parent_id IS NOT NULL)
+  			parent_id: Req. Spec ID (can be NULL if item_id IS NOT NULL)
+        	tproject_id:node id of parent testproject of requirement spec.
+						need to understand to which testproject requirement spec belongs.
+						this information is vital, to get the linked custom fields.
+						Presence /absence of this value changes starting point
+						on procedure to build tree path to get testproject id.
 
-        [tproject_id]: node id of parent testproject of requirement spec.
-                       need to understand to which testproject requirement spec belongs.
-                       this information is vital, to get the linked custom fields.
-                       Presence /absence of this value changes starting point
-                       on procedure to build tree path to get testproject id.
-
-                       null -> use requirement spec id as starting point.
-                       !is_null -> use this value as starting point.
+						null -> use requirement spec id as starting point.
+						!is_null -> use this value as starting point.
 
   returns: map/hash
            key: custom field id
@@ -1645,6 +1651,7 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	           id: new created if everything OK, -1 if problems.
 	
 	  rev :
+	  20110817 - franciscom - TICKET 4360
 	*/
 	function copy_to($id, $parent_id, $tproject_id, $user_id,$options = null)
 	{
@@ -1653,7 +1660,7 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 		$op = array('status_ok' => 1, 'msg' => 'ok', 'id' => -1 , 'mappings' => null);
 		$my['options'] = array('copy_also' => null);
 		$my['options'] = array_merge($my['options'], (array)$options);
-
+		
 
 		$field_size = config_get('field_size');
 		$item_info = $this->get_by_id($id);
@@ -1666,8 +1673,16 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	    if( $new_item['status_ok'] )
 	    {
 	    	$op['mappings'][$id] = $new_item['id'];
+	    	$op['mappings']['req_spec'] = array();
+	    	$op['mappings']['req'] = array();
+	    	$op['mappings']['req_version'] = array();
 	    		
-			$this->copy_cfields($id,$new_item['id']);
+			// $this->copy_cfields($id,$new_item['id']);
+			// Important notice
+			// 
+			$idCard = array('parent_id' => $id, 'tproject_id' => $tproject_id); 
+        	$this->copy_cfields($idCard,$new_item['id']);
+        	
         	
         	// Now loop to copy all items inside it    	
  			$my['filters'] = null;
@@ -1679,7 +1694,6 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 			  	$parent_decode[$id]=$new_item['id'];
 				foreach($subtree as $the_key => $elem)
 				{
-					// 20100311 - franciscom
 				  	$the_parent_id=isset($parent_decode[$elem['parent_id']]) ? $parent_decode[$elem['parent_id']] : null;
 					switch ($elem['node_type_id'])
 					{
@@ -1688,10 +1702,11 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 							//             between reqs and testcases when copying testproject
 							//$ret = $reqMgr->copy_to($elem['id'],$the_parent_id,$user_id,
 							//                              $tproject_id,$my['options']['copy_also']);
-							$ret = $reqMgr->copy_to($elem['id'],$the_parent_id,$user_id,
-							                              $tproject_id,$my['options']);
-							$op['status_ok'] = $ret['status_ok'];    
-							$op['mappings'] += $ret['mappings'];
+							$ret = $reqMgr->copy_to($elem['id'],$the_parent_id,$user_id,$tproject_id,$my['options']);
+							$op['status_ok'] = $ret['status_ok'];
+							
+							$op['mappings']['req'] += $ret['mappings']['req'];
+							$op['mappings']['req_version'] += $ret['mappings']['req_version'];
 							break;
 							
 						case $this->node_types_descr_id['requirement_spec']:
@@ -1702,11 +1717,13 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 			                                     $item_info['author_id'],$item_info['type'],$item_info['node_order']);
 
 					    	$parent_decode[$elem['id']]=$ret['id'];
-				      		$op['mappings'][$elem['id']] = $ret['id'];
+				      		$op['mappings']['req_spec'][$elem['id']] = $ret['id'];
 
 				      		if( ($op['status_ok'] = $ret['status_ok']) )
 				      		{
-				      			$this->copy_cfields($elem['id'],$ret['id']);
+				      			$idCard = array('parent_id' => $elem['id'], 'tproject_id' => $tproject_id);
+				      			// $this->copy_cfields($elem['id'],$ret['id']);
+				      			$this->copy_cfields($idCard,$ret['id']);
 							}
 							break;
 					}
@@ -1726,7 +1743,9 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	            Get all cfields linked to item with the values presents for $from_id, 
 	            item we are using as source for our copy.
 	
-	  args: from_id: source credentianls (complex type)
+	  args: from_identity: source credentianls (complex type)
+	  						array('parent_id' => , 'item_id' => , 'tproject_id' => );	
+
 	        to_id: target item id (simple type)
 	
 	  returns: -
@@ -1735,7 +1754,8 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	function copy_cfields($from_identity,$to_id)
 	{
   		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	  	$cfmap_from=$this->get_linked_cfields($from_identity);
+		$cfmap_from=$this->get_linked_cfields($from_identity);
+
 	  	$cfield=null;
 	  	if( !is_null($cfmap_from) )
 	  	{
@@ -2166,6 +2186,15 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 				" WHERE id={$targetID} ";
 		$ret = $this->db->exec_query($sql);
 	}	
+
+
+	function get_all_id_in_testproject($tproject_id)
+	{
+	   	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = "/* $debugMsg */ " . 
+		       " SELECT RSPEC.id FROM {$this->object_table} RSPEC WHERE testproject_id={$tproject_id}";
+		return $this->db->get_recordset($sql);
+	}
 
 
 } // class end

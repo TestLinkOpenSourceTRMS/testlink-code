@@ -12,6 +12,10 @@
  * Requirements are children of a requirement specification (requirements container)
  *
  * @internal revisions:
+ * @since 1.9.4
+ * 20110817 - franciscom - TICKET 4360 copy_to()
+ *
+ * @since 1.9.3
  *	20110331 - franciscom - BUGID 4366: Custom Field when requirements reports is generated was empty
  *							get_by_id()
  *
@@ -1861,6 +1865,10 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	 * @param integer $tproject_id: optional, is null will be computed here
 	 * @param array $options: map
 	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 * 20110817 - franciscom - TICKET 4360
+	 *
 	 */
 	function copy_to($id,$parent_id,$user_id,$tproject_id=null,$options=null)
 	{
@@ -1894,16 +1902,15 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 			// a new one.
 			$title = $this->generateUniqueTitle($item_versions[0]['title'],$parent_id,$root);
 			
-			// $new_item = $this->create_req_only($parent_id,$target_doc,$item_versions[0]['title'],
-			//                                   $item_versions[0]['author_id'],$item_versions[0]['node_order']);
-
 			$new_item = $this->create_req_only($parent_id,$target_doc,$title,
 			                                   $item_versions[0]['author_id'],$item_versions[0]['node_order']);
 			
 			if ($new_item['status_ok'])
 			{
 		        $ret['status_ok']=1;
-   		        $new_item['mappings'][$id] = $new_item['id'];
+		        // TICKET 4360
+   		        // $new_item['mappings'][$id] = $new_item['id'];
+   		        $new_item['mappings']['req'][$id] = $new_item['id'];
 		        
 	 			foreach($item_versions as $req_version)
 				{
@@ -1912,9 +1919,12 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 					                            $req_version['status'],$req_version['type'],
 					                            $req_version['expected_coverage']);
 
-	    			$new_item['mappings'][$req_version['id']] = $op['id'];
-	    			
-	    			// BUGID 2877 - CF on version
+	    			// need to explain how this mappings are used outside this method
+	    			// first thing that can see here, we are mixing req id and req version id on same hash.
+	    			// 
+	    			$new_item['mappings']['req_version'][$req_version['version_id']] = $op['id'];
+					//$new_item['mappings'][$req_version['id']] = $op['id'];
+
 	        		$this->copy_cfields(array('id' => $req_version['id'], 'version_id' =>  $req_version['version_id']),
 	        							array('id' => $new_item['id'], 'version_id' => $op['id']));
 	    			

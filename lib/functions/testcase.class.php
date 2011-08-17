@@ -10,6 +10,8 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ *
+ * @since 1.9.3
  * 20110630 - franciscom - get_linked_versions() interface changes
  * 20110622 - asimon - TICKET 4600: Blocked execution of testcases
  * 20110413 - franciscom - BUGID 4404 - copy_to() set author_id = user doing copy
@@ -1533,11 +1535,6 @@ class testcase extends tlObjectWithAttachments
 					$this->copyReqAssignmentTo($id,$newTCObj['id'],$my['mappings']['requirements']);
 				}
 				
-				// BUGID 3431 
-				// $this->copy_cfields_design_values($id,$newTCObj['id']);
-				// $this->copy_cfields_design_values(array('id' => $id, 'tcversion_id' =>),
-				// 								  array('id' => $newTCObj['id'],));
-	            
 	            $this->copy_attachments($id,$newTCObj['id']);
 			}
 		}

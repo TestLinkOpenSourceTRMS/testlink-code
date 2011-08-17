@@ -10,6 +10,8 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 
+ * @since 1.9.3
  * 20110806 - franciscom - TICKET 4692
  * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
  * 20110223 - asimon - BUGID 4239: forgotten parameter $mappings in a function call in copy_to() caused

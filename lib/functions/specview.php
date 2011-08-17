@@ -9,8 +9,10 @@
  * @version    	CVS: $Id: specview.php,v 1.72.2.2 2010/12/09 15:25:30 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
+ * @since 1.9.4
  *
+ * @since 1.9.3
  *  20101209 - asimon - exchanged strpos by stripos to make search case insensitive
  *	20101118 - amitkhullar - BUGID 4024 Filtering issue 
  *	20101101 - franciscom - improved $pfFilters contruction to avoid warning in event viewer
@@ -178,18 +180,6 @@
  * 
  *  20100721 - asimon - BUGID 3406 - added user_assignments_per_build to options
  *  
- *  20090808 - franciscom - changed interface to reduce number of arguments
- *
- *	20070707 - franciscom - BUGID 921 - problems with display order in execution screen
- *	20070630 - franciscom - added new logic to include in for inactive test cases, testcase version id.
- *			This is needed to show testcases linked to testplans, but after be linked to
- *			test plan, has been set to inactive on test project.
- *	20061105 - franciscom - added new data on output: [tcversions_qty]
- *                        used in the logic to filter out inactive tcversions,
- *                        and inactive test cases.
- *                        Counts the quantity of active versions of a test case.
- *                        If 0 => test case is considered INACTIVE
- * 	20090625 - Eloff - added priority output
  */
 
 function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name, &$linked_items,
@@ -241,16 +231,9 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 		$pfFilters[$tk] = isset($my['filters'][$fk]) ? $my['filters'][$fk] : null;
 	}
 	
-	// $pfFilters = array('keyword_id' => $my['filters']['keywords'], 
-	//                    'tcase_id' => $my['filters']['testcases'], 
-	// 	               'tcase_node_type_id' => $hash_descr_id['testcase'],
-	// 	               'execution_type' => $my['filters']['exec_type'],
-	// 	               'importance' => $my['filters']['importance'],
-	// 	               'cfields' => $my['filters']['cfields'],'tcase_name' => $my['filters']['tcase_name'] );
-		             
 	$test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
-	
 	$platforms = getPlatforms($db,$tproject_id,$testplan_id);
+
 	$idx = 0;
 	$a_tcid = array();
 	$a_tsuite_idx = array();
@@ -515,6 +498,9 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
  * @return array map with view (test cases subtree)
  * 
  * @internal revisions
+ * @since 1.9.4
+ *
+ * @since 1.9.3
  * 20101024 - franciscom - BUGID 3932: Add test case to test plan - Execution type filter does not affect right pane
  *						   BUGID 3936: Assign Test Case Execution - Right pane does not reflect custom field filter.
  *
@@ -542,7 +528,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 	foreach($nullCheckFilter as $key => $value)
 	{
 		$useFilter[$key] = !is_null($filters[$key]);
-		
 		$applyFilters =	$applyFilters || $useFilter[$key];
 	}
 	foreach($zeroNullCheckFilter as $key => $value)
@@ -574,19 +559,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 		}
 		$tck_map = $tobj_mgr->get_keywords_tcases($masterContainerId,$filters['keyword_id']);
 	}  
-	
-	// BUGID 3936 - Design Time Custom Field Filter
-	// if(($useFilter['cfields'] = !is_null($filters['cfields'])))
-	// {
-	// 	$applyFilters = true;
-	// }
-    // 
-	// if(($useFilter['tcase_name'] = !is_null($filters['tcase_name'])))
-	// {
-	// 	$applyFilters = true;
-	// }
 
-	
 	if( $applyFilters )
 	{
 		$key2loop = array_keys($test_spec);

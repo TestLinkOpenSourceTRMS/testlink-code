@@ -34,7 +34,7 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file with commit id d75dd5c4fcd649ea762077514fac4ec8cd9986b7
+ * Last Update according to en_GB string file with commit id 6a798e65c6de6d953e39649c857fa0d445b31704
  *
  **/
 
@@ -2143,6 +2143,17 @@ $TLS_req_specs = "Anf. Spez.";
 $TLS_req_expected_coverage = "Benötigte Anzahl Testfälle";
 $TLS_has_relation_type = "Hat Beziehung vom Typ";
 $TLS_reqid = "AnforderungsID";
+$TLS_info_search_req = "Diese Liste zeigt alle Anforderungen, die den Suchkritieren " .
+                       "entsprechen.<br />Sie können eine übereinstimmende Version/Revision " .
+                       "der Anforderung durch Klicken eines Links rechts neben dem Titel " .
+                       "der Anforderung öffnen.<br />Um die gesamte Anforderung einzusehen " .
+                       "benutzen sie das \"Ändern-Icon\" auf der linken Seite.";
+$TLS_info_search_req_spec = "Diese Liste zeigt alle Anforderungsspezifikationen, die den " .
+                            "Suchkritieren entsprechen.<br />Sie können eine übereinstimmende " .
+                            "Revision der Anforderungsspezifikation durch Klicken eines " .
+                            "Links rechts neben dem Titel der Anforderungsspezifikation " .
+                            "öffnen.<br />Um die gesamte Anforderungsspezifikation einzusehen " .
+                            "benutzen sie das \"Ändern-Icon\" auf der linken Seite.";
 
 
 // ----- gui/templates/mainPage_right.tpl -----

@@ -125,7 +125,8 @@ function buildExtTable($gui, $charset)
 {
 	$table = null;
 	$lbl = array('edit' => 'requirement', 'rev' => 'revision_short', 'ver' => 'version_short', 
-				 'req_spec' => 'req_spec', 'requirement' => 'requirement');
+				 'req_spec' => 'req_spec', 'requirement' => 'requirement',
+				 'version_revision_tag' => 'version_revision_tag');
 
 	$labels = init_labels($lbl);
 	$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
@@ -160,9 +161,9 @@ function buildExtTable($gui, $charset)
 		$key2loop = array_keys($gui->resultSet);
 		$img = "<img title=\"{$labels['edit']}\" src=\"{$edit_icon}\" />";
 		// req_id, req_version_id
-		$reqVerHref = '<a href="javascript:openLinkedReqVersionWindow(%s,%s)">[v:%s r:%s] </a>'; 
+		$reqVerHref = '<a href="javascript:openLinkedReqVersionWindow(%s,%s)">' . $labels['version_revision_tag'] . ' </a>'; 
 		// req_revision_id
-		$reqRevHref = '<a href="javascript:openReqRevisionWindow(%s)">[v:%s r:%s] </a>'; 
+		$reqRevHref = '<a href="javascript:openReqRevisionWindow(%s)">' . $labels['version_revision_tag'] . ' </a>'; 
 		
 		foreach($key2loop as $req_id)
 		{

@@ -187,7 +187,7 @@ function buildExtTable($gui, $charset)
 			$title = htmlentities($rfx['doc_id'], ENT_QUOTES, $charset) . ":" .
 				     htmlentities($rfx['name'], ENT_QUOTES, $charset);
 			$cm = '<a href="javascript:openReqSpecRevisionWindow(%s)" title="' . $labels['open_on_new_window'] .'" >' . 
-				  $labels['revision_tag'] . '</a>'; 
+				  $labels['revision_tag'] . ' </a>'; 
 			// $link = $edit_link;
 			$matches = '';
 			foreach($itemSet as $rx) 

@@ -226,6 +226,7 @@ function getCFDiff($cfields,&$itemMgr)
 function init_args()
 {
 	$_REQUEST=strings_stripSlashes($_REQUEST);
+	
 
 	$args = new stdClass();
 	$args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : 0;
@@ -233,7 +234,7 @@ function init_args()
 	$args->left_item_id = isset($_REQUEST['left_item_id']) ? intval($_REQUEST['left_item_id']) : -1;
 	$args->right_item_id = isset($_REQUEST['right_item_id']) ? intval($_REQUEST['right_item_id']) :  -1;
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->useDaisyDiff = ($_REQUEST['diff_method'] == 'htmlCompare') ? 1 : 0;
+	$args->useDaisyDiff = (isset($_REQUEST['diff_method']) && ($_REQUEST['diff_method'] == 'htmlCompare')) ? 1 : 0;
 	
 
 	$diffEngineCfg = config_get("diffEngine");

@@ -34,7 +34,7 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file with commit id 4f75976f7887ae3984c304818a0fa323560cfd7b
+ * Last Update according to en_GB string file with commit id d75dd5c4fcd649ea762077514fac4ec8cd9986b7
  *
  **/
 
@@ -42,7 +42,7 @@
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Letztes Übersetzungs-Update: 06.07.2011 (TestLink 1.9.3)";
+$TLS_last_update = "Letztes Übersetzungs-Update: 18.08.2011 (TestLink 1.9.4)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_type_not_configured = "Systemmeldung: Typ nicht konfiguriert";
@@ -96,6 +96,8 @@ $TLS_nobody = "niemand";
 $TLS_not_imported = "Nicht importiert";
 $TLS_none = "Keine";
 $TLS_ok = "OK";
+$TLS_open_on_new_window = "In neuem Fenster öffnen";
+
 $TLS_priority		= "Priorität";
 $TLS_project		= "Projekt";
 $TLS_public = "Öffentlich";
@@ -109,6 +111,9 @@ $TLS_requirements_spec = "Anforderungsspez.";
 $TLS_req_specification = "Anf. Spezifikation";
 $TLS_revision = "revision";
 $TLS_revision_short = "rev";
+$TLS_revision_tag = "[r%s]";
+$TLS_version_tag = "[v%s]";
+$TLS_version_revision_tag = "[v%sr%s]";
 
 $TLS_srs = "SRS";
 $TLS_Role = "Rolle";
@@ -250,6 +255,8 @@ $TLS_specific_direct_link = "Direkter Link zu dieser spezifischen Version des Do
 $TLS_reserved_system_role_1 = 'Vom System reservierte Rolle 1';
 $TLS_reserved_system_role_2 = 'Vom System reservierte Rolle 2';
 $TLS_req_created_automatic_log = "Anforderung erstellt";
+$TLS_reqspec_created_automatic_log = "Anforderungsspezifikation erstellt";
+
 $TLS_elapsed_seconds = 'Ausführungsdauer (Sekunden)';
 
 
@@ -1886,9 +1893,9 @@ $TLS_multisort_button_tooltip = 'Klicken um die Richtung der Sortierung zu ände
 
 // ----- gui/templates/results/tcNotRunAnyPlatform.tpl -----
 $TLS_info_tcNotRunAnyPlatform = "Dieser Report zeigt alle Testfälle, die dem aktuellen Testplan hinzugefügt wurden " .
-                             "aber bisher auf keiner Plattform ausgeführt worden sind.<br /> " .
-                             "Sobald ein Testfall auf mindestens einer Plattform ausgeführt wurde, " .
-                             "wird er in dieser Tabelle nicht mehr erscheinen.";
+                                "aber bisher auf keiner Plattform ausgeführt worden sind.<br /> " .
+                                "Sobald ein Testfall auf mindestens einer Plattform ausgeführt wurde, " .
+                                "wird er in dieser Tabelle nicht mehr erscheinen.";
 
 
 
@@ -3226,8 +3233,11 @@ $TLS_direct_link_on_wrong_version = "Klicken Sie hier, um die aktuelle Version d
 // ----- testcase/req comparison -----
 $TLS_title_compare_versions_tc = "Vergleich von Testfallversionen";
 $TLS_title_compare_versions_req = "Vergleich von Anforderungsversionen";
+$TLS_title_compare_revisions_rspec = "Vergleich von Anforderungsspezifikations-Revisionen";
 $TLS_btn_compare_versions = "Vergleiche Versionen";
 $TLS_btn_compare_selected_versions = "Vergleiche ausgewählte Versionen";
+$TLS_btn_compare_revisions = "Vergleiche Revisionen";
+$TLS_btn_compare_selected_revisions = "Vergleiche ausgewählte Revisionen";
 $TLS_select_versions = "Wähle Versionen zum Vergleich:";
 $TLS_version = "Version";
 $TLS_compare = "vergleiche";
@@ -3248,11 +3258,14 @@ $TLS_diff_subtitle_tc = "Unterschiede zwischen Version %s (v%s) und Version %s (
 $TLS_diff_subtitle_req = "Unterschiede zwischen Version %s (v%s) und Version %s (v%s) der Anforderung %s";
 $TLS_diff_details_req = "Unterschiede zwischen Version %s Revision %s (v%s r%s) und " . 
                         "Version %s Revision %s (v%s r%s) der Anforderung %s";
+$TLS_diff_details_rev = "Unterschiede zwischen Revision %s (r%s) und Revision %s (r%s)";
 $TLS_warning_context = "Kontext (Zeilen) muss numerisch sein.";
 $TLS_warning_context_range = "Kontext ist außerhalb des zulässigen Bereichts (muss eine positive Zahl sein).";
 $TLS_warning_empty_context = "Kontext (Zeilen) darf nicht leer sein.";
 $TLS_warning_selected_versions = "Sie müssen 2 Versionen aus der Liste wählen.";
 $TLS_warning_same_selected_versions = "Sie müssen 2 unterschiedliche Versionen aus der Liste wählen.";
+$TLS_warning_selected_revisions = "Sie müssen 2 Revisionen aus der Liste wählen.";
+$TLS_warning_same_selected_revisions = "Sie müssen 2 unterschiedliche Revisionen aus der Liste wählen.";
 
 // ----- grab from not-systematic developers -----
 $TLS_step_actions = "Schritt Aktionen";

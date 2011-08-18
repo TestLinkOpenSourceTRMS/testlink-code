@@ -23,6 +23,8 @@
 --
 -- 
 --  @internal revisions
+--	@since 1.9.4
+--	20110818 - franciscom - TICKET 4661
 --	20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server 
 --  
 --
@@ -442,17 +444,11 @@ CREATE TABLE /*prefix*/object_keywords(
 --
 -- Table structure for table "req_specs"
 --
+-- TICKET 4661
 CREATE TABLE /*prefix*/req_specs(  
   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
   "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),  
   "doc_id" VARCHAR(64) NOT NULL,
-  "scope" TEXT NULL DEFAULT NULL,
-  "total_req" INTEGER NOT NULL DEFAULT '0',
-  "type" CHAR(1) NULL DEFAULT 'N',
-  "author_id" BIGINT NULL DEFAULT NULL,
-  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
-  "modifier_id" BIGINT NULL DEFAULT NULL,
-  "modification_ts" TIMESTAMP NULL,
   PRIMARY KEY ("id")
 ); 
 CREATE UNIQUE INDEX /*prefix*/req_specs_uidx1 ON /*prefix*/req_specs ("doc_id","testproject_id");
@@ -701,3 +697,27 @@ CREATE TABLE /*prefix*/req_revisions(
   PRIMARY KEY ("id")
 ); 
 CREATE UNIQUE INDEX /*prefix*/req_revisions_uidx1 ON /*prefix*/req_revisions ("parent_id","revision");
+
+
+
+-- TICKET 4661
+CREATE TABLE /*prefix*/req_specs_revisions (
+  "parent_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_specs (id),
+  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
+  "revision" INTEGER NOT NULL DEFAULT '1',
+  "doc_id" VARCHAR(64) NULL,   /* it's OK to allow a simple update query on code */
+  "name" VARCHAR(100) NULL,
+  "scope" TEXT NULL DEFAULT NULL,
+  "total_req" INTEGER NOT NULL DEFAULT '0',
+  "status" INTEGER NOT NULL DEFAULT '1',
+  "type" CHAR(1) NULL DEFAULT 'N',
+  "author_id" BIGINT NULL DEFAULT NULL,
+  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+  "modifier_id" BIGINT NULL DEFAULT NULL,
+  "modification_ts" TIMESTAMP NULL,
+  "log_message" TEXT NULL DEFAULT NULL,
+  PRIMARY KEY  ("id")
+);
+CREATE UNIQUE INDEX /*prefix*/req_specs_revisions_uidx1 ON /*prefix*/req_revisions ("parent_id","revision");
+
+

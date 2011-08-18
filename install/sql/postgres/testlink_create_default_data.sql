@@ -3,6 +3,8 @@
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
+--  @since 1.9.4
+--	20110818 - franciscom - TICKET 4661
 --	20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server 
 --
 --  --------------------------------------------------------
@@ -23,6 +25,7 @@ INSERT INTO /*prefix*/node_types (id,description) VALUES (7,'requirement');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (8,'requirement_version');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (9,'testcase_step');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (10,'requirement_revision');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (11,'requirement_spec_revision');
 
 
 --  Roles -

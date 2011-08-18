@@ -17,7 +17,7 @@
  * 
  *  @since 1.9.4
  *  20110818 - Julian - Ticket 4696 - Create Test Plan from existing Test Plan does not preserve linked 
-					                  Test Case Versions (keep currently linked version is checked)
+ *                                    Test Case Versions (keep currently linked version is checked)
  * 
  *  @since 1.9.3
  *  20110415 - Julian - BUGID 4418 - Clean up priority usage within Testlink

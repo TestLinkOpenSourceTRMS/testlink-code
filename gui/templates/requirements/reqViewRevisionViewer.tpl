@@ -1,9 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewRevisionViewer.tpl,v 1.2.2.2 2010/12/12 09:35:04 franciscom Exp $
+@filesource	reqViewRevisionViewer.tpl
 viewer for requirement
 
-rev:
+@internal revisions
+@since 1.9.4
+20110817 - franciscom - TICKET 4702: Requirement View - display log message
+
+@since 1.9.3
 20110308 - asimon - BUGID 4273: printing of single requirement
 20101127 - franciscom - BUGID 4056: Requirement Revisioning
 *}
@@ -26,7 +30,7 @@ rev:
 {/if}
 {assign var="warning_edit_msg" value=""}
 
-{* BUGID 4273: Option to print single requirement *}
+{* Option to print single requirement *}
 <div>
 	<form method="post" action="" name="reqPrinterFriendly">
 		<input type="button" name="printerFriendly" value="{$labels.btn_print_view}"
@@ -34,8 +38,6 @@ rev:
 		                                          {$args_req.revision},'lib/requirements/reqPrint.php');"/>
 	</form>
 </div>
-
-{* <div class="messages" align="center">{$labels.showing_version} {$args_req.version}</div> *}
 
 <table class="simple">
   {if $args_show_title}
@@ -50,8 +52,9 @@ rev:
 
   {if $args_show_version}
 	  <tr>
-	  	<td class="bold" colspan="2">{$labels.version}
+	  	<td class="bold" id="tooltip-{$args_req.target_id}" colspan="2">{$labels.version}
 	  	{$args_req.version} {$labels.revision} {$args_req.revision}
+	  	<img src="{$tlImages.log_message_small}" style="border:none" />
 	  	</td>
 	  </tr>
 	{/if}

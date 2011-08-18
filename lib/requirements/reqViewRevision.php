@@ -9,8 +9,9 @@
  * @author francisco.mancardi@gmail.com
  * 
  *
- *	@internal revision
- *	20091217 - franciscom - display type and expected coverage
+ * @internal revision
+ * @since 1.9.4
+ * 20110818 - franciscom - TICKET 4702: Requirement View - display log message
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -75,18 +76,23 @@ function initialize_gui(&$dbHandler,$argsObj)
     $node_id_type = array_flip($node_type_id);
     $item = $req_mgr->tree_mgr->get_node_hierarchy_info($gui->item_id);
     
+    // TICKET 4702
+    // target_is is db id of item, item['id'] is the REQ ID.
+    // for several logics we need to DB id (target_id)
     $info = null;
     switch ($node_id_type[$item['node_type_id']])
     {
     	case 'requirement_version':
 			$info = $req_mgr->get_version($gui->item_id);
+			$info['revision_id'] = -1;
+			$info['target_id'] = $info['version_id'];
     	break;
     	
     	case 'requirement_revision':
 			$info = $req_mgr->get_revision($gui->item_id);
+			$info['target_id'] = $info['revision_id'];
     	break;
     }
-    
     
     $gui->item = $info;
 	$gui->cfields = $req_mgr->html_table_of_custom_field_values(null,$gui->item_id,$argsObj->tproject_id);

@@ -5,6 +5,7 @@ viewer for requirement
 
 @internal revisions
 @since 1.9.4
+20110817 - franciscom - TICKET 4702: Requirement View - display log message - image added
 20110816 - franciscom - TICKET 4702: Requirement View - display log message
 
 @since 1.9.3
@@ -139,6 +140,7 @@ viewer for requirement
 	    {/if}
 	  	<td class="bold" colspan="2" id="tooltip-{$tpt}">{$labels.version}
 	  	{$args_req.version} {$labels.revision} {$args_req.revision}
+	  	<img src="{$tlImages.log_message_small}" style="border:none" />
 	  	</td>
 	  </tr>
 	{/if}

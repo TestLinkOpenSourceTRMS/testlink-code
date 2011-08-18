@@ -15,7 +15,7 @@
  *
  * @internal revisions
  *  20110818 - Julian - Ticket 4696 - Create Test Plan from existing Test Plan does not preserve linked 
-					                  Test Case Versions (keep currently linked version is checked)
+ *                      Test Case Versions (keep currently linked version is checked)
  *  20110505 - franciscom - get_builds() - interface changes
  *  20110415 - Julian - BUGID 4418 - Clean up priority usage within Testlink
  *	20110328 - franciscom - filter_cf_selection() fixed issue regarding simple types

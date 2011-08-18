@@ -124,7 +124,13 @@ case sensitive. Result includes just requirements from actual Test Project.</p>
 	<li>Choose required keyword or leave value 'Not applied'.</li>
 	<li>Click the 'Find' button.</li>
 	<li>All fulfilling requirements are shown. You can modify requirements via 'Title' link.</li>
-</ol>";
+</ol>
+
+<h2>Hinweis:</h2>
+
+<p>- Only requirements within the current project will be searched.<br>
+- The search is case-insensitive.<br>
+- Empty fields are not considered.</p>";
 
 // requirement specification search
 // ------------------------------------------------------------------------------------------
@@ -141,7 +147,13 @@ case sensitive. Result includes just requirement specifications from actual Test
 	<li>Choose required keyword or leave value 'Not applied'.</li>
 	<li>Click the 'Find' button.</li>
 	<li>All fulfilling requirements are shown. You can modify requirement specifications via 'Title' link.</li>
-</ol>";
+</ol>
+
+<h2>Note:</h2>
+
+<p>- Only requirement specifications within the current project will be searched.<br>
+- The search is case-insensitive.<br>
+- Empty fields are not considered.</p>";
 /* end contribution */
 
 

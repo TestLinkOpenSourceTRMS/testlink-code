@@ -14,6 +14,12 @@
  *
  *
  * @internal revisions
+ * 
+ *  @since 1.9.4
+ *  20110818 - Julian - Ticket 4696 - Create Test Plan from existing Test Plan does not preserve linked 
+					                  Test Case Versions (keep currently linked version is checked)
+ * 
+ *  @since 1.9.3
  *  20110415 - Julian - BUGID 4418 - Clean up priority usage within Testlink
  *	20110408 - franciscom - BUGID 4391: General Test Plan Metrics - 
  *							Results by Keywords does not work properly when platforms are used
@@ -1620,8 +1626,11 @@ class testplan extends tlObjectWithAttachments
 				{
 					$sql="/* $debugMsg */ SELECT * FROM {$this->tables['nodes_hierarchy']} WHERE id={$tcversion_id} ";
 					$rs2=$this->db->get_recordset($sql);
-					$last_version_info = $tcase_mgr->get_last_version_info($rs2[0]['parent_id']);
-					$tcversion_id = $last_version_info ? $last_version_info['id'] : $tcversion_id ;
+					// Ticket 4696 - if tcversion_type is set to latest -> update linked version
+					if ($my['options']['tcversion_type'] == 'latest') {
+						$last_version_info = $tcase_mgr->get_last_version_info($rs2[0]['parent_id']);
+						$tcversion_id = $last_version_info ? $last_version_info['id'] : $tcversion_id ;
+					}
 				}
 				
 				// mapping need to be done with:

@@ -10,7 +10,8 @@
  *
  * @internal revision
  *
- * @since 19.4
+ * @since 1.9.4
+ * 20110818 - franciscom - getByDocID() - fix SQL with bad MAX()
  * 20110817 - franciscom - TICKET 4360
  * 20110817 - franciscom - 	get_all_in_testproject() issue due to TICKET 4661
  *							get_by_title() issues with SCOPE and other fields moved to
@@ -1592,45 +1593,63 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 		break;
 	}
 
-
-	$sql =	" /* $debugMsg */ SELECT RSPEC.id,RSPEC.testproject_id,RSPEC.doc_id,NH_RSPEC.name AS title, " .
-			" MAX(RSPEC_REV.revision) ";
-
-	switch($my['options']['output'])
-	{
-		case 'standard':
-  			 $sql .= " ,RSPEC_REV.total_req, RSPEC_REV.scope,RSPEC_REV.type," .
-           			 " RSPEC_REV.author_id,RSPEC_REV.creation_ts, " .
-           			 " RSPEC_REV.modifier_id,RSPEC_REV.modification_ts";
-        break;
-           			 
-		case 'minimun':
-        break;
-		
-	}
-
-	$sql .=	" FROM {$this->tables['req_specs']} RSPEC " .
-			" JOIN {$this->tables['req_specs_revisions']} RSPEC_REV " .
-			" ON RSPEC_REV.parent_id = RSPEC.id " .
-			" JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC " .
-			" ON NH_RSPEC.id = RSPEC.id ";
-			
-	$groupBy = " GROUP BY RSPEC.id ";
-
-	$sql .= " WHERE RSPEC.doc_id {$check_criteria} ";
-
+	$where = " WHERE RSPEC.doc_id {$check_criteria} ";
   	if( !is_null($tproject_id) )
   	{
-  	  $sql .= " AND RSPEC.testproject_id={$tproject_id}";
+		$where  .= " AND RSPEC.testproject_id={$tproject_id}";
     }
-
   	if( !is_null($parent_id) )
   	{
-  	  $sql .= " AND NH_RSPEC.parent_id={$parent_id}";
+		$where  .= " AND NH_RSPEC.parent_id={$parent_id}";
     }
 
-    $sql .= $groupBy;
-	$output = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+
+	// Developer Note:
+	// a mix of SQL ignorance and MySQL relaxed SQL on GROUP BY
+	// Fortunatelly Postgres do the right job
+	//
+	//
+	// First step get MAX revision
+	// will trust in this that max(revision) has also always max(revision_id)
+	// ( but really can be on a differente way ? ), in order to use a simple logic.
+	//
+	$sql_max =	" /* $debugMsg */ SELECT MAX(RSPEC_REV.id) AS rev_id" .
+				" FROM {$this->tables['req_specs']} RSPEC " .
+				" JOIN {$this->tables['req_specs_revisions']} RSPEC_REV " .
+				" ON RSPEC_REV.parent_id = RSPEC.id " .
+				" JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC " .
+				" ON NH_RSPEC.id = RSPEC.id " .
+				$where . ' GROUP BY RSPEC_REV.parent_id ';
+
+	$maxi = (array)$this->db->fetchRowsIntoMap($sql_max,'rev_id');;
+	if( count($maxi) > 0)
+	{
+		$sql =	" /* $debugMsg */ SELECT RSPEC.id,RSPEC.testproject_id,RSPEC.doc_id,NH_RSPEC.name AS title, " .
+				" RSPEC_REV.revision ";
+	
+		switch($my['options']['output'])
+		{
+			case 'standard':
+	  			 $sql .= " ,RSPEC_REV.total_req, RSPEC_REV.scope,RSPEC_REV.type," .
+	           			 " RSPEC_REV.author_id,RSPEC_REV.creation_ts, " .
+	           			 " RSPEC_REV.modifier_id,RSPEC_REV.modification_ts";
+	        break;
+	           			 
+			case 'minimun':
+	        break;
+			
+		}
+	
+		$sql .=	" FROM {$this->tables['req_specs']} RSPEC " .
+				" JOIN {$this->tables['req_specs_revisions']} RSPEC_REV " .
+				" ON RSPEC_REV.parent_id = RSPEC.id " .
+				" JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC " .
+				" ON NH_RSPEC.id = RSPEC.id ";
+				
+		$sql .= $where . ' AND RSPEC_REV.id IN (' . implode(",",array_keys($maxi)) . ') '; 
+		$output = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+  	}
+  	
   	return $output;
   }
 
@@ -1909,7 +1928,7 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
  	 *
  	 *	@return  
      */
-	function get_last_child_info($id, $options=null) //$child_type='revision')
+	function get_last_child_info($id, $options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 

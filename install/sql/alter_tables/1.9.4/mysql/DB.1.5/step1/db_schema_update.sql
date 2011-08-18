@@ -51,7 +51,7 @@ SELECT RSP.id,NHRSP.name,11
 FROM /*prefix*/req_specs RSP JOIN /*prefix*/nodes_hierarchy NHRSP ON NHRSP.id = RSP.id;
 
 /* Populate Req Spec Revisions Table */
-INSERT INTO/*prefix*/req_specs_revisions 
+INSERT INTO /*prefix*/req_specs_revisions 
 (parent_id,doc_id,scope,total_req,type,author_id,creation_ts,id,name)
 SELECT RSP.id,RSP.doc_id,RSP.scope,RSP.total_req,RSP.type,RSP.author_id,RSP.creation_ts,
 NHRSPREV.id,NHRSPREV.name

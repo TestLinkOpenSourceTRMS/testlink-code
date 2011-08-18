@@ -31,6 +31,8 @@ rev:
     {$matrix->renderBodySection($tableID)}
   {/foreach}
   <br />
+  <p class="italic">{lang_get s='info_search_req'}</p>
+  <br />
   {lang_get s='generated_by_TestLink_on'} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}
   <div class="user_feedback">

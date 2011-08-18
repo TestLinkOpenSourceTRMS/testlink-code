@@ -126,7 +126,7 @@ case sensitive. Result includes just requirements from actual Test Project.</p>
 	<li>All fulfilling requirements are shown. You can modify requirements via 'Title' link.</li>
 </ol>
 
-<h2>Hinweis:</h2>
+<h2>Note:</h2>
 
 <p>- Only requirements within the current project will be searched.<br>
 - The search is case-insensitive.<br>

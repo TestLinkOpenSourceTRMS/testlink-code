@@ -2133,8 +2133,8 @@ $TLS_info_search_req = "This list shows all requirements which match the search 
 $TLS_info_search_req_spec = "This list shows all requirement specifications which match the " .
                             "search criteria.<br />You can open a matching revision of the " .
                             "requirement specification by clicking a link to the right of " .
-                            "the requirement title.<br />To open the whole requirement " .
-                            "specification use the edit icon on the left.";
+                            "the requirement specification title.<br />To open the whole " .
+                            "requirement specification use the edit icon on the left.";
 
 // ----- gui/templates/mainPage_right.tpl -----
 $TLS_href_add_remove_test_cases = "Add / Remove Test Cases";

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="" >
+<node_order><![CDATA[]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="TS.1" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="TS.1.1" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="TS.1.1.1" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="TS.1.1.1.1" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details>
+<testcase internalid="23581" name="TC01-TS.1.1.1.1">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[1]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>&nbsp;Test at lower level</p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+</testsuite></testsuite></testsuite></testsuite><testsuite name="TS.2" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[ 
+]]> 
+</details><testsuite name="TS.2.1" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[ 
+]]> 
+</details><testsuite name="TS.2.1.1" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[ 
+]]> 
+</details><testsuite name="TS.2.1.1.1" >
+<node_order><![CDATA[0]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite></testsuite></testsuite></testsuite></testsuite>

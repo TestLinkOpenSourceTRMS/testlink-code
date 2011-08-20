@@ -3,14 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * @filesource	specview.php
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.72.2.2 2010/12/09 15:25:30 asimon83 Exp $
+ * @copyright 	2004-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
  * @since 1.9.4
+ * 	20110820 - franciscom - TICKET 4701 - getFilteredLinkedVersions()	
  *
  * @since 1.9.3
  *  20101209 - asimon - exchanged strpos by stripos to make search case insensitive
@@ -346,10 +347,15 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
  * @param ref $argsObj: stdClass object with information about filters
  * @param ref $tplanMgr: test plan manager object
  * @param ref $tcaseMgr: test case manager object
+ * @param map $options:  default null   (at today 20110820 seems not be used).
  *  
+ * 
  *
- * @internal Revisions:
- *	
+ * @internal revisions
+ * @since 1.9.4
+ * 20110820 - TICKET 4701 - changes on get_linked_tcversions() call	
+ *
+ * @since 1.9.3
  *  20100721 - asimon - BUGID 3046, added $options
  *	20080919 - franciscom - BUGID 2716
  *
@@ -362,9 +368,10 @@ function getFilteredLinkedVersions(&$argsObj, &$tplanMgr, &$tcaseMgr, $options =
 	// get_linked_tcversions filters by keyword ALWAYS in OR mode.
 	//
 	// BUGID 2797 - filter by test case execution type
-	// $filters = array('keyword_id' => $argsObj->keyword_id, 'exec_type' => $argsObj->executionType);
 	$filters = array('keyword_id' => $argsObj->keyword_id);
-	$options = array('output' => 'mapOfArray') + (array)$options;
+	// $options = array('output' => 'mapOfArray') + (array)$options;
+	// TICKET 4701
+	$options = array('output' => 'mapOfArray', 'details' => 'spec_essential') + (array)$options;
 	$tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id, $filters, $options);
 	
 	// BUGID 2716

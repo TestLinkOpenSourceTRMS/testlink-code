@@ -10,9 +10,9 @@
  * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * 
- * @internal Revisions:
+ * @internal revisions
  * @since 1.9.4
- * 20110817 - franciscom -
+ * 20110817 - franciscom - TICKET 4704,4708
  *
  * @since 1.9.3
  * 20101026 - franciscom - BUGID 3889: Add Test Cases to Test plan - checks with test case id and test case name filters.

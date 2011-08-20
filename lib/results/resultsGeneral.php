@@ -9,6 +9,9 @@
  * Show Test Results over all Builds.
  *
  * @internal revisions
+ * @since 1.9.4
+ *
+ * @since 1.9.3
  *  20110405 - Julian - BUGID 4377 - Add percentage for "Results by top level Test Suites"
  *  20110326 - franciscom - BUGID 4355: General Test Plan Metrics - Build without executed 
  *										test cases are not displayed.
@@ -19,16 +22,6 @@
  *  20100206 - eloff - BUGID 3060 - Show verbose priority statistics like other tables.
  *  20100201 - franciscom - BUGID 0003123: General Test Plan Metrics - order of columns
  *                                         with test case exec results
- *  20091103 - franciscom - keywords, assigned testers, platform results refactored,
- *                          noew use method from test plan class.
- *
- *  20090209 - franciscom - BUGID 2080
- *  20080928 - franciscom - removed useless requires
- * 	20050807 - fm - refactoring:  changes in getTestSuiteReport() call
- * 	20050905 - fm - reduce global coupling
- *  20070101 - KL - upgraded to 1.7
- * 	20080626 - mht - added milestomes, priority report, refactorization
- * 
  * ----------------------------------------------------------------------------------- */
 require('../../config.inc.php');
 require_once('common.php');
@@ -89,8 +82,9 @@ if(is_null($topLevelSuites))
 	$gui->do_report['msg'] = lang_get('report_tspec_has_no_tsuites');
 	tLog('Overall Metrics page: no test cases defined');
 }
-else // do report
+else
 {
+	 // do report
 	$gui->do_report['status_ok'] = 1;
 	$gui->do_report['msg'] = '';
 
@@ -99,9 +93,6 @@ else // do report
 	
 	$kwr = $tplan_mgr->getStatusTotalsByKeyword($args->tplan_id);
     $gui->statistics->keywords = $tplan_mgr->tallyResultsForReport($kwr);
-
-//    $usr=$tplan_mgr->getStatusTotalsByAssignedTester($args->tplan_id);
-//    $gui->statistics->assigned_testers = $tplan_mgr->tallyResultsForReport($usr);
 
 	if( $gui->showPlatforms )
 	{
@@ -179,44 +170,6 @@ else // do report
 
 	// ----------------------------------------------------------------------------
   	/* BUILDS REPORT */
-    // $buildSet = $tplan_mgr->get_builds($args->tplan_id); //,testplan::ACTIVE_BUILDS);
-    // 
-    // 
-    // $filters=null;
-    // $options=array('output' => 'array' , 'last_execution' => true, 'only_executed' => true, 'execution_details' => 'add_build');
-    // $myRBB = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
-    // $loop2do=count($myRBB);
-    // $code_verbose=$tplan_mgr->getStatusForReports();
-    // foreach($buildSet as $key => $elem )
-    // {
-    // 	foreach($code_verbose as $code => $verbose)
-    // 	{
-    // 		$buildResults[$key][$code]=0;		
-    // 	}	
-    // }
-    // 
-    // for($idx=0; $idx < $loop2do; $idx++)
-    // {
-    // 	$buildID=$myRBB[$idx]['build_id'];
-    // 	$exec_status=$myRBB[$idx]['exec_status'];
-    // 	$buildResults[$buildID][$exec_status]++;
-    // 	// $buildResults[$buildID]	
-    // }  
-    // 
-    // foreach($buildResults as $key => $value)
-    // {
-    // 
-    // }
-    //      
-    // new dBug($buildResults);
-    // 
-    // new dBug($options);
-    // new dBug($myRBB);
-    // 
-	// $results = $re->getAggregateBuildResults();
-    // new dBug($results);    
-    
-
 	$colDefinition = null;
 	$results = null;
 	if($gui->do_report['status_ok'])
@@ -243,24 +196,6 @@ else // do report
 
 	
   	/* MILESTONE & PRIORITY REPORT */
-	/* what is this ?
-    $planMetrics = $tplan_mgr->getStatusTotals($args->tplan_id);
-
-	$filters=null;
-	$options=array('output' => 'map', 'only_executed' => true, 'execution_details' => 'add_build');
-    $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
-
-    $options=array('output' => 'mapOfArray', 'only_executed' => true, 'execution_details' => 'add_build');
-    $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
-    
-    $options=array('output' => 'mapOfMap', 'only_executed' => true, 'execution_details' => 'add_build');
-    $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
-    
-    $options=array('output' => 'array', 'only_executed' => true, 'execution_details' => 'add_build');
-    $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
-    */
-   
-
 	$milestonesList = $tplan_mgr->get_milestones($args->tplan_id);
 	if (!empty($milestonesList))
 	{

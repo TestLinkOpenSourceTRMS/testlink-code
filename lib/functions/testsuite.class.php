@@ -10,7 +10,9 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- * 
+ * @since 1.9.4
+ * 20110820 - franciscom - get_children() interface changes
+ *
  * @since 1.9.3
  * 20110806 - franciscom - TICKET 4692
  * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
@@ -1339,9 +1341,12 @@ class testsuite extends tlObjectWithAttachments
 	 * get test suites with parent = testsuite with given id
 	 *
 	 */
-	function get_children($id)
+	function get_children($id,$options=null)
 	{
 	    $itemSet = null;
+	    $my['options'] = array('details' => 'full');
+	    $my['options'] = array_merge($my['options'], (array)$options);
+	    
 	    $subtree = $this->tree_manager->get_children($id, array('testcase' => 'exclude_me'));
 	    if(!is_null($subtree) && count($subtree) > 0)
 	    {
@@ -1349,7 +1354,15 @@ class testsuite extends tlObjectWithAttachments
 			{
 	    		$itemKeys[] = $elem['id'];
 			}
-	    	$itemSet = $this->get_by_id($itemKeys, 'ORDER BY node_order');
+			
+			if($my['options']['details'] == 'full')
+			{
+	    		$itemSet = $this->get_by_id($itemKeys, 'ORDER BY node_order');
+	    	}
+	    	else
+	    	{
+	    		$itemSet = $itemKeys;
+	    	}	
 	    }
 	    return $itemSet;
 	}

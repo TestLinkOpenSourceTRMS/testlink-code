@@ -4,9 +4,13 @@
  *
  * @filesource	execSetResults.php
  *
- * @internal revisions:
+ * @internal revisions
  *
- *  20110622 - asimon - TICKET 4600: Blocked execution of testcases
+ * @since 1.9.4
+ * 20110820 - franciscom - TICKET 4714: retrieve big amount of useless data
+ * 20110622 - asimon - TICKET 4600: Blocked execution of testcases
+ *
+ * @since 1.9.3
  *  20110323 - Julian - BUGID 4324 - Encoding of Test Suite did not work properly
  *  20110322 - eloff - BUGID 3643
  *  20110308 - franciscom - remote execution
@@ -45,7 +49,7 @@ $templateCfg = templateConfiguration();
 
 $tcversion_id = null;
 $submitResult = null;
-$args = init_args($cfg);
+$args = init_args($db,$cfg);
 
 $smarty = new TLSmarty();
 $tree_mgr = new tree($db);
@@ -93,8 +97,6 @@ if($args->doExec == 1)
 		// Only drawback i see is when remote exec is done on a test suite
 		// and amount of feedback can be high, then do not see what can be effect
 		// on GUI
-		
-		
 	}
 }	
 
@@ -123,13 +125,6 @@ if($args->doExec == 1)
 //
 // I will add logic to nullify filter_status on init_args()
 // 
-// 20080224 - franciscom - BUGID 1056
-// 20070306 - franciscom - BUGID 705
-// 20070914 - jbarchibald - added $cf_selected parameter
-//
-
-// 20081221 - franciscom                              
-// BUGID 3406
 $options = array('only_executed' => true, 'output' => 'mapOfArray',
 				 'include_unassigned' => $args->include_unassigned,
                  'user_assignments_per_build' => $args->build_id);
@@ -140,13 +135,11 @@ if(is_null($args->filter_status) || in_array($cfg->tc_status['not_run'],$args->f
     $options['only_executed'] = false;
 }
 
-// Added platform_id filter
-// BUGID 3643 - don't apply filters further down below, do the filtering already here
-//$filters = array('tcase_id' => $args->tc_id,  'keyword_id' => $args->keyword_id,
-$filters = array('tcase_id' => $args->testcases_to_show,  'keyword_id' => $args->keyword_id,
+// TICKET 4714
+$filters = array('tcase_id' => $args->tc_id,  'keyword_id' => $args->keyword_id,
                  'assigned_to' => $args->filter_assigned_to, 'exec_status' => $args->filter_status,
                  'build_id' => $args->build_id, 'cf_hash' => $args->cf_selected,
-                 'platform_id' => $args->platform_id);
+                 'platform_id' => $args->platform_id, 'tsuites_id' => $args->tsuites_id);
 
 $linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
 $tcase_id = 0;
@@ -169,8 +162,7 @@ if(!is_null($linked_tcversions))
                                                          $tree_mgr,$tcase_mgr,$attachmentRepository);
     }
 
-	// 20100927 - asimon - check if value is an array before calling implode
-	// to avoid warnings in event log
+	// check if value is an array before calling implode to avoid warnings in event log
    	$gui->tcversionSet = is_array($tcversion_id) ? implode(',',$tcversion_id) : $tcversion_id;
 
     // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
@@ -261,7 +253,9 @@ if(!is_null($linked_tcversions))
     	
 		  // asimon - added $g_bugInterfaceOn, $g_bugInterface
     	  $other_info=exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,
-    	  $args->tplan_id,$args->tproject_id, $g_bugInterfaceOn, $g_bugInterface);
+    	  								   $args->tplan_id,$args->tproject_id, 
+    	  								   $g_bugInterfaceOn, $g_bugInterface);
+    	  								   
     	  $gui->attachments=$other_info['attachment'];
     	  $gui->bugs=$other_info['bugs'];
     	  $gui->other_exec_cfields=$other_info['cfexec_values'];
@@ -295,20 +289,6 @@ if ($userid_array)
 	}
 }
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id);
-
-// BUGID 3643 - don't apply filters here
-// BUGID 2455, BUGID 3026
-// BUGID 3516
-// remove testcases which shall not be displayed because they were filtered out
-//if (!is_null($args->testcases_to_show) && $args->level == 'testsuite') {
-//	foreach($gui->map_last_exec as $key => $tc) {
-//		if (!in_array($tc['testcase_id'], $args->testcases_to_show)) {
-//			unset($gui->map_last_exec[$key]); // tc shall not be displayed
-//		}
-//	}
-//	// fix indexes for smarty
-//	$gui->map_last_exec = array_values($gui->map_last_exec);
-//}
 
 // Bulk is possible when test suite is selected (and is allowed in config)
 $gui->can_use_bulk_op = ($args->level == 'testsuite');
@@ -349,13 +329,11 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   
   returns: 
   
-  rev:
-    20100922 - asimon - let this page be functional withouth a form token too
-	20100625 - asimon - fixed a little bug in platform id initializing when no platform is used
-	                    (now number 0 instead of value null)
-	20090913 - franciscom - fixed bug on filter_status initialization
+  @internal revisions
+  @since 1.9.4
+  20110820 - franciscom - TICKET 4714  
 */
-function init_args($cfgObj)
+function init_args(&$dbHandler,$cfgObj)
 {
 	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
@@ -364,6 +342,7 @@ function init_args($cfgObj)
 	$mode = 'execution_mode';
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
+	
 	
 	$args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
 	$args->doDelete = isset($_REQUEST['do_delete']) ? $_REQUEST['do_delete'] : 0;
@@ -452,26 +431,46 @@ function init_args($cfgObj)
 		}
 	}
 
-	
+	// TICKET 4714
     switch($args->level)
     {
         case 'testcase':
-        $args->tc_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
-        // some problems with $_GET that has impact on logic 'Save and Go to next test case';
-        if( !is_null($args->tc_versions) )
-        {
-        	$args->tc_id = current($args->tc_versions);
-        	$args->id = $args->tc_id;
-        	$args->version_id = key($args->tc_versions);
-        } 
-        $args->tsuite_id = null;
+	        $args->tc_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
+	        if( !is_null($args->tc_versions) )
+	        {
+	        	$args->tc_id = current($args->tc_versions);
+	        	$args->id = $args->tc_id;
+	        	$args->version_id = key($args->tc_versions);
+	        } 
+	        $args->tsuite_id = null;
         break;
           
         case 'testsuite':
-        $args->tsuite_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
-        $args->tc_id = null;
+	        $args->tsuite_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
+	        $args->tc_id = null;
         break;
     }
+    
+ 	// BUGID 3516
+	// BUGID 2455,BUGID 3026
+	if (isset($session_data['testcases_to_show'])) {
+		$args->testcases_to_show = $session_data['testcases_to_show'];
+	}
+	
+	// TICKET 4714 - Memory usage improvement
+	$args->tsuites_id = null; 
+	if( !is_null($args->tsuite_id) )
+	{
+		// will get all test suites in this branch, in order to limit amount of data returned by get_linked_tcversions
+		$tsuite_mgr = New testsuite($dbHandler);
+		$xx = $tsuite_mgr->get_children($args->tsuite_id,array('details' => 'id'));
+		$ldx = count($xx);
+		$xx[$ldx] = $args->tsuite_id;
+		$args->tsuites_id = $xx;
+		unset($tsuite_mgr);
+	}
+
+
 
 
 	// BUGID 3516
@@ -507,12 +506,6 @@ function init_args($cfgObj)
 	$args->user = $_SESSION['currentUser'];
     $args->user_id = $args->user->dbID;
 
-    // BUGID 3516
-   	// BUGID 2455,BUGID 3026
-   	$args->testcases_to_show = null;
-	if (isset($session_data['testcases_to_show'])) {
-		$args->testcases_to_show = $session_data['testcases_to_show'];
-	}
 	return $args;
 }
 

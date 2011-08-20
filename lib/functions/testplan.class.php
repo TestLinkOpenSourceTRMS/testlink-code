@@ -624,7 +624,8 @@ class testplan extends tlObjectWithAttachments
          	           'full': add summary, steps and expected_results, and test suite name
          	           'summary': add summary
          	           'spec_essential': no info about executions and user assignments
-         	            
+         	           'exec_tree_optimized': some JOINS are done ONLY if exists filters that need it.
+         	           
 		 	[steps_info]: controls if step info has to be added on output    
          	           default true
 		 	[user_assignments_per_build]: contains a build ID, for which the
@@ -813,99 +814,130 @@ class testplan extends tlObjectWithAttachments
 		$ua_filter = " AND (UA.type={$this->assignment_types['testcase_execution']['id']} OR UA.type IS NULL) ";
 		// ---------------------------------------------------------------------------------------------------
 
+		$sql = null;
+		
 		switch($my['options']['details'])
 		{
 			case 'full':
-			$more_tcase_fields .= 'TCV.summary,';
-			$join_for_parent = " JOIN {$this->tables['nodes_hierarchy']} NH_TSUITE ON NH_TCASE.parent_id = NH_TSUITE.id ";
-			$more_parent_fields = 'NH_TSUITE.name as tsuite_name,';
+				$more_tcase_fields .= 'TCV.summary,';
+				$more_parent_fields = 'NH_TSUITE.name as tsuite_name,';
+				$join_for_parent = 	" JOIN {$this->tables['nodes_hierarchy']} NH_TSUITE " . 
+									" ON NH_TCASE.parent_id = NH_TSUITE.id ";
 			break;
 			
 			case 'summary':
-			$more_tcase_fields = 'TCV.summary,';
+				$more_tcase_fields = 'TCV.summary,';
 			break;
 
 			case 'spec_essential':   // TICKET 4710
-			$exec_fields = '';
-			$executions['join'] = '';
-			$executions['filter'] = '';
-			$exec_order_by = '';
-			$builds['join'] = '';
-			$ua_fields = '';
-			$ua_filter = '';
+				$exec_fields = '';
+				$executions['join'] = '';
+				$executions['filter'] = '';
+				$exec_order_by = '';
+				$builds['join'] = '';
+				$ua_fields = '';
+				$ua_filter = '';
 			break;
 			
+			case 'exec_tree_optimized':   // TICKET 4710
+				// if all following filters are NOT USED, then we will REMOVE executions JOIN
+				if($builds['filter'] == '' && $executions['filter'] == '')
+				{
+					$exec_fields = '';
+					$executions['join'] = '';
+					$executions['filter'] = '';
+					$exec_order_by = '';
+					$builds['join'] = '';
+					$ua_fields = '';
+					$ua_filter = '';
+				}			
+			break;
+		
 		}
-
+		/*
+		new dBug($tcversion_exec_type);
+		new dBug($tc_id);
+		new dBug($builds);
+		new dBug($keywords);
+		new dBug($executions);
+		new dBug($platforms);
+		*/
 
 	    // BUGID 4206 - added exec_on_build to output
 	    // BUGID 3406 - assignments per build
 	    // BUGID 3492 - Added execution notes to sql statement of get_linked_tcversions
-		$sql = "/* $debugMsg */ " .
-		       " SELECT NH_TCASE.parent_id AS testsuite_id, {$more_tcase_fields} {$more_parent_fields}" .
-			   " NH_TCV.parent_id AS tc_id, NH_TCASE.node_order AS z, NH_TCASE.name," .
-			   " T.platform_id, PLAT.name as platform_name ,T.id AS feature_id, T.tcversion_id AS tcversion_id,  " .
-			   " T.node_order AS execution_order, T.creation_ts AS linked_ts, T.author_id AS linked_by,T.urgency," .
-			   " TCV.version AS version, TCV.active," .
-			   " TCV.tc_external_id AS external_id, TCV.execution_type,TCV.importance," .  $exec_fields;
-	    
-	    // 20110317 - 150 years 'Unita Italia'
-	    // Performance issues - August 2011
-		if( $exec_fields != '' )
-		{
-		    if( is_null($my['options']['forced_exec_status']) )
+	    if( is_null($sql) )
+	    {
+			$sql = "/* $debugMsg */ " .
+			       " SELECT NH_TCASE.parent_id AS testsuite_id, {$more_tcase_fields} {$more_parent_fields}" .
+				   " NH_TCV.parent_id AS tc_id, NH_TCASE.node_order AS z, NH_TCASE.name," .
+				   " T.platform_id, PLAT.name as platform_name ,T.id AS feature_id, T.tcversion_id AS tcversion_id,  " .
+				   " T.node_order AS execution_order, T.creation_ts AS linked_ts, T.author_id AS linked_by,T.urgency," .
+				   " TCV.version AS version, TCV.active," .
+				   " TCV.tc_external_id AS external_id, TCV.execution_type,TCV.importance," .  $exec_fields;
+		    
+		    // 20110317 - 150 years 'Unita Italia'
+		    // Performance issues - August 2011
+			if( $exec_fields != '' )
 			{
-				$sql .=	 " COALESCE(E.status,'" . $status_not_run . "') AS exec_status, ";
+			    if( is_null($my['options']['forced_exec_status']) )
+				{
+					$sql .=	 " COALESCE(E.status,'" . $status_not_run . "') AS exec_status, ";
+				}
+				else
+				{
+					$sql .=	 " '{$my['options']['forced_exec_status']}'  AS exec_status, ";
+				}
+			}	   		
+	
+			$sql .= $ua_fields;
+			
+			$sql .=" (urgency * importance) AS priority " .
+				   " FROM {$this->tables['nodes_hierarchy']} NH_TCV " .
+				   " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCV.parent_id = NH_TCASE.id " .
+				   $join_for_parent .
+				   " JOIN {$this->tables['testplan_tcversions']} T ON NH_TCV.id = T.tcversion_id " .
+				   " JOIN  {$this->tables['tcversions']} TCV ON NH_TCV.id = TCV.id {$tcversion_exec_type['filter']} " .
+				   " {$executions['join']} " .
+				   " {$keywords['join']} " .
+				   " {$builds['join']} " .
+				   " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = T.platform_id ";
+			if(	$ua_fields != '' )
+			{   
+				// TICKET 4710
+				$sql .=	" LEFT OUTER JOIN {$this->tables['user_assignments']} UA  ON UA.feature_id = T.id " .
+						"AND UA.build_id = E.build_id " .  $ua_build_sql ; 
 			}
-			else
+			$sql .= " WHERE T.testplan_id={$id} {$keywords['filter']} {$tc_id['filter']} {$platforms['filter']} " .
+				    $ua_filter . $executions['filter'];
+			
+			// If special user id TL_USER_ANYBODY is present in set of user id,
+			// we will DO NOT FILTER by user ID
+			if( !is_null($my['filters']['assigned_to']) && 
+			    !in_array(TL_USER_ANYBODY,(array)$my['filters']['assigned_to']) )
+			{  
+				$sql .= " AND " . $this->helper_assigned_to_sql($my['filters']['assigned_to'],$my['options']);
+			}
+			
+			if (!is_null($my['filters']['urgencyImportance']))
 			{
-				$sql .=	 " '{$my['options']['forced_exec_status']}'  AS exec_status, ";
+				$sql .= $this->helper_urgency_sql($my['filters']['urgencyImportance']);
 			}
-		}	   		
+			
+			// test suites filter
+			if (!is_null($my['filters']['tsuites_id']))
+			{
+				$tsuiteSet = is_array($my['filters']['tsuites_id']) ? $my['filters']['tsuites_id'] : 
+							 array($my['filters']['tsuites_id']);
+				$sql .= " AND NH_TCASE.parent_id IN (" . implode(',',$tsuiteSet) . ")";
+			}
+			$sql .= " ORDER BY testsuite_id,NH_TCASE.node_order,tc_id,T.platform_id {$exec_order_by}";
+		}
 
-		$sql .= $ua_fields;
-		
-		$sql .=" (urgency * importance) AS priority " .
-			   " FROM {$this->tables['nodes_hierarchy']} NH_TCV " .
-			   " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCV.parent_id = NH_TCASE.id " .
-			   $join_for_parent .
-			   " JOIN {$this->tables['testplan_tcversions']} T ON NH_TCV.id = T.tcversion_id " .
-			   " JOIN  {$this->tables['tcversions']} TCV ON NH_TCV.id = TCV.id {$tcversion_exec_type['filter']} " .
-			   " {$executions['join']} " .
-			   " {$keywords['join']} " .
-			   " {$builds['join']} " .
-			   " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = T.platform_id ";
-		if(	$ua_fields != '' )
-		{   
-			// TICKET 4710
-			$sql .=	" LEFT OUTER JOIN {$this->tables['user_assignments']} UA  ON UA.feature_id = T.id " .
-					"AND UA.build_id = E.build_id " .  $ua_build_sql ; 
-		}
-		$sql .= " WHERE T.testplan_id={$id} {$keywords['filter']} {$tc_id['filter']} {$platforms['filter']} " .
-			    $ua_filter . $executions['filter'];
-		
-		// If special user id TL_USER_ANYBODY is present in set of user id,
-		// we will DO NOT FILTER by user ID
-		if( !is_null($my['filters']['assigned_to']) && 
-		    !in_array(TL_USER_ANYBODY,(array)$my['filters']['assigned_to']) )
-		{  
-			$sql .= " AND " . $this->helper_assigned_to_sql($my['filters']['assigned_to'],$my['options']);
-		}
-		
-		if (!is_null($my['filters']['urgencyImportance']))
-		{
-			$sql .= $this->helper_urgency_sql($my['filters']['urgencyImportance']);
-		}
-		
-		// test suites filter
-		if (!is_null($my['filters']['tsuites_id']))
-		{
-			$tsuiteSet = is_array($my['filters']['tsuites_id']) ? $my['filters']['tsuites_id'] : 
-						 array($my['filters']['tsuites_id']);
-			$sql .= " AND NH_TCASE.parent_id IN (" . implode(',',$tsuiteSet) . ")";
-		}
-		$sql .= " ORDER BY testsuite_id,NH_TCASE.node_order,tc_id,T.platform_id {$exec_order_by}";
 
+
+		// die($sql);
+		
 		switch($my['options']['output'])
 		{ 
 			case 'array':

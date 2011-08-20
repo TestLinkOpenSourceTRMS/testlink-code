@@ -13,9 +13,14 @@
  * @uses 		config.inc.php
  *
  * @internal revisions
- *  20110709 - franciscom - fixed event viewer warning due to missing isset() check generateExecTree()
- *  20110311 - asimon - BUGID 3765: Req Spec Doc ID disappeared for req specs without
- *                                  direct requirement child nodes
+ * @since 1.9.4
+ * 20110820 - franciscom - 	TICKET 4710: Performance/Filter Problem on big project
+ *							generateExecTree() - changes in call to get_linked_tcversions()
+ *
+ * 20110709 - franciscom - fixed event viewer warning due to missing isset() check generateExecTree()
+ *
+ * @since 1.9.3
+ * 20110311 - asimon - BUGID 3765: Req Spec Doc ID disappeared for req specs without direct requirement child nodes
  *
  */
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
@@ -752,6 +757,8 @@ function renderTreeNode($level,&$node,$hash_id_descr,
  * 
  * @internal revisions
  *
+ * @since 1.9.4
+ * 20110820 - franciscom - 	TICKET 4710: Performance/Filter Problem on big project
  */
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                           $tplan_name,$filters,$additionalInfo) 
@@ -876,6 +883,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                                    'urgencyImportance' => $urgencyImportance,
                                    'exec_type' => $execution_type);
 			
+			// TICKET 4710
+			$opt['details'] = 'exec_tree_optimized'; 
 			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
 			
 			// BUGID 3814: fixed keyword filtering with "and" selected as type
@@ -889,7 +898,10 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 				// so we have to set $tplan_tcases to null because there is no more filtering necessary
 				if ($filteredSet != null) {
 					$linkedFilters = array('tcase_id' => array_keys($filteredSet));
-					$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters);
+					
+					// TICKET 4710
+					$opt['details'] = 'exec_tree_optimized';
+					$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
 				} else {
 					$tplan_tcases = null;
 				}
@@ -1159,7 +1171,7 @@ function get_testproject_nodes_testcount(&$db,$tproject_id, $tproject_name,
  * 
  *                   node name (useful only for debug purpouses).
  */
-function get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
+function DEPRECATED_201108_get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
                                       $tplan_id,$tplan_name,$keywordsFilter=null)
 {
 	$tplan_mgr = new testplan($db);
@@ -1177,6 +1189,8 @@ function get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
 	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
 	
 	$linkedFilters = array('keyword_id' => $keywordsFilter->items);
+	// TICKET 4710
+	$opt['details'] = 'to_count_items';
 	$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters);
 	if (is_null($tplan_tcases))
 	{
@@ -1193,8 +1207,7 @@ function get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
 		
 		if(!is_null($keywordsFilter))
 		{
-			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,
-				$keywordsFilter->items,$keywordsFilter->type);
+			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keywordsFilter->items,$keywordsFilter->type);
 		}	
 		//@TODO: schlundus, can we speed up with NO_EXTERNAL?
 		$filters = null;

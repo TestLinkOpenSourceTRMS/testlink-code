@@ -49,7 +49,6 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 function init_args()
 {
 	$args = new stdClass();
-	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	$iParams = array("countReq" => array(tlInputParameter::INT_N,99999),
 			         "req_spec_id" => array(tlInputParameter::INT_N),
@@ -70,7 +69,9 @@ function init_args()
 
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
-
+	// i guess due to required revison log it is necessary to strip slashes
+	// after R_PARAMS call - at least this fixed the problem
+	$_REQUEST=strings_stripSlashes($_REQUEST);
 	
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";

@@ -269,7 +269,8 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 			           
 			foreach ($req_coverage as $tc) 
 			{
-				$output .= htmlentities($tc['tc_external_id'] . $title_separator . $tc['name']) . "<br/>";
+				// TICKET 4716 - Improper encoding of test case title
+				$output .= htmlspecialchars($tc['tc_external_id'] . $title_separator . $tc['name']) . "<br/>";
 			}
 			           
 			$output .= "</td></tr>";

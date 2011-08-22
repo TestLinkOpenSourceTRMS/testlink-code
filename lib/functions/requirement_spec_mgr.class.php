@@ -428,10 +428,9 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
     
     	if ($chk['status_ok'] || $my['options']['skip_controls'])
     	{
-			$scope = $item['scope'];
 			if( config_get('internal_links')->enable  ) 
 			{
-				$scope = req_link_replace($this->db, $item['scope'], $tproject_id);
+				$item['scope'] = req_link_replace($this->db, $item['scope'], $tproject_id);
 			}
 
 			$cnr = null;

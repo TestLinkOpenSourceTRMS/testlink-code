@@ -1,28 +1,25 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.52.2.1 2010/12/15 08:22:43 mx-julian Exp $
+@filesource planAddTC_m1.tpl
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
-rev:
-    20110706 - Julian - BUGID 4652 - add link to test execution history
-    20110415 - Julian - BUGID 2985 - added importance column
-    20101215 - Julian - changed tc summary tooltip configuration
-    20101028 - asimon - avoided a warning on event log
-    20100721 - asimon - BUGID 3406: added build selector to assign users to chosen build 
-                                    on addition of testcases to testplan
-    20100227 - franciscom - changed logic to hide diwv with buttons when test suite has not test cases
-    20100225 - eloff - changes custom fields to span all 8 columns
-    20100129 - franciscom - drawSavePlatformsButton logic moved to planAddTC.php
-    20100122 - eloff - BUGID 3078 - check drawSavePlatformsButton first
-    20100122 - eloff - BUGID 3084 - fixes alignment of columns
-    20100121 - eloff - BUGID 3078 - moved buttons to top
-    20091109 - franciscom - BUGID 0002937 - add/remove test case hover over test case 
-                                            tooltip replacement with summary     
-    20090610 - franciscom - display date when test case version was linked to test plan
-    20090117 - franciscom - BUGID 1970 - introduced while implementing BUGID 651
-    20090103 - franciscom - BUGID 651 - $gui->can_remove_executed_testcases
-*}
+@since 1.9.4
+20110823 - franciscom - TICKET 4715: can_remove_executed doesn't work when Platforms are used
+20110706 - Julian - BUGID 4652 - add link to test execution history
 
+@since 1.9.3
+20110415 - Julian - BUGID 2985 - added importance column
+20101215 - Julian - changed tc summary tooltip configuration
+20101028 - asimon - avoided a warning on event log
+20100721 - asimon - BUGID 3406: added build selector to assign users to chosen build 
+                                on addition of testcases to testplan
+20100227 - franciscom - changed logic to hide diwv with buttons when test suite has not test cases
+20100225 - eloff - changes custom fields to span all 8 columns
+20100129 - franciscom - drawSavePlatformsButton logic moved to planAddTC.php
+20100122 - eloff - BUGID 3078 - check drawSavePlatformsButton first
+20100122 - eloff - BUGID 3084 - fixes alignment of columns
+20100121 - eloff - BUGID 3078 - moved buttons to top
+*}
 {lang_get var="labels" 
           s='note_keyword_filter, check_uncheck_all_for_remove,
              th_id,th_test_case,version,execution_order,th_platform,
@@ -216,10 +213,9 @@ Ext.onReady(function(){
   			     <td>{$labels.th_test_case}</td>
   			     <td>{$labels.version}</td>
   			     {if $gui->priorityEnabled} <td>{$labels.importance}</td> {/if}
-             <td align="center">
-   				      <img src="{$smarty.const.TL_THEME_IMG_DIR}/timeline_marker.png" 
-                     title="{$labels.execution_order}" />
-  				   </td>
+             		<td align="center">
+   				      <img src="{$tlImages.execution_order}" title="{$labels.execution_order}" />
+  				   	</td>
 
              
              
@@ -240,7 +236,7 @@ Ext.onReady(function(){
             
   			    {foreach name="tCaseLoop" from=$ts.testcases item=tcase}
       			  {assign var='is_active' value=0}
-              {assign var='linked_version_id' value=$tcase.linked_version_id}
+              	{assign var='linked_version_id' value=$tcase.linked_version_id}
               {assign var='tcID' value=$tcase.id}
   				    {if $linked_version_id != 0}
                 {if $tcase.tcversions_active_status[$linked_version_id] eq 1}             
@@ -295,7 +291,7 @@ Ext.onReady(function(){
                     {/if}
       			     
       			        <td>
-							<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+							<img class="clickable" src="{$tlImages.history_small}"
 							     onclick="javascript:openExecHistoryWindow({$tcase.id});"
 							     title="{$labels.execution_history}" />
 							<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
@@ -361,24 +357,27 @@ Ext.onReady(function(){
                   {* ---------------------------------------------------------------------------------------------------------- *}      
                   {if $ts.linked_testcase_qty gt 0 && $drawPlatformChecks==0}
             			  <td>&nbsp;</td>
-            			  <td>{assign var="show_remove_check" value=0}
+            			  
+            			  <td>
+            			    {assign var="show_remove_check" value=0}
             			  	{if $linked_version_id}
             			  		{assign var="show_remove_check" value=1}
          				        {if $tcase.executed[0] == 'yes'}
          				          	{assign var="show_remove_check" value=$gui->can_remove_executed_testcases}
-            			  	  {/if}      
-                      {/if} 
-            			  	{if $show_remove_check}
-            			  		<input type='checkbox' name='{$rm_cb}[{$tcID}][0]' id='{$rm_cb}{$tcID}[0]' value='{$linked_version_id}' />
-  						        {else}
-            			  		&nbsp;
-            			  	{/if}
-                      {if $tcase.executed[0] eq 'yes'}&nbsp;&nbsp;&nbsp;
-   				                  <img src="{$smarty.const.TL_THEME_IMG_DIR}/lightning.png" 
-                            title="{$gui->warning_msg->executed}" />
-                      {/if}
-                      {if $is_active eq 0}&nbsp;&nbsp;&nbsp;{$labels.inactive_testcase}{/if}
+            			  	  	{/if}      
+                   			{/if} 
+            	   			{if $show_remove_check}
+            					<input type='checkbox' name='{$rm_cb}[{$tcID}][0]' id='{$rm_cb}{$tcID}[0]' value='{$linked_version_id}' />
+  				   			{else}
+            		    		&nbsp;
+            	   			{/if}
+            	   
+                   			{if $tcase.executed[0] eq 'yes'}&nbsp;&nbsp;&nbsp;
+   				                  <img src="{$tlImages.executed} title="{$gui->warning_msg->executed}" />
+                      		{/if}
+                      		{if $is_active eq 0}&nbsp;&nbsp;&nbsp;{$labels.inactive_testcase}{/if}
             			  </td>
+            			  
             			  <td align="center" title="{$labels.info_added_on_date}">
             			  	{if $tcase.linked_ts[0] != ''}{localize_date d=$tcase.linked_ts[0]}{else}&nbsp;{/if}  
             			  </td>
@@ -400,7 +399,7 @@ Ext.onReady(function(){
                 {foreach from=$gui->platforms item=platform}
                   <tr {if isset($tcase.feature_id[$platform.id])}	style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if} >
                   	<td>
-      				       {if $gui->full_control}
+      				    {if $gui->full_control}
   	      		        {if $is_active == 0 || isset($tcase.feature_id[$platform.id])}
   	      		      	  &nbsp;&nbsp;
   	      		        {else}
@@ -418,13 +417,24 @@ Ext.onReady(function(){
   				          {if $is_active == 1 && isset($tcase.feature_id[$platform.id])}
   	      			      <td>&nbsp;</td>
   	   				        <td>
-  	   				          <input type='checkbox' name='{$rm_cb}[{$tcID}][{$platform.id}]' id='{$rm_cb}{$tcID}[{$platform.id}]' 
-  	      			  		         value='{$linked_version_id}' />
-  	      			    {* added isset() on next line to avoid warning on event log *}
-                        {if isset($tcase.executed[$platform.id]) && $tcase.executed[$platform.id] eq 'yes'}&nbsp;&nbsp;&nbsp;
-   				                  <img src="{$smarty.const.TL_THEME_IMG_DIR}/lightning.png" 
-                            title="{$gui->warning_msg->executed}" />
-                        {/if}
+  	      			    	{* added isset() on next section to avoid warning on event log *}
+							{* TICKET 4715: can_remove_executed doesn't work when Platforms are used *}	
+            			    {assign var="show_remove_check" value=0}
+            			  	{if $linked_version_id}
+            			  		{assign var="show_remove_check" value=1}
+         				        {if isset($tcase.executed[$platform.id]) && $tcase.executed[$platform.id] eq 'yes'}
+         				          	{assign var="show_remove_check" value=$gui->can_remove_executed_testcases}
+            			  	  	{/if}      
+                   			{/if} 
+            	   			{if $show_remove_check}
+  	   				            <input type='checkbox' name='{$rm_cb}[{$tcID}][{$platform.id}]' id='{$rm_cb}{$tcID}[{$platform.id}]' 
+  	      			  		           value='{$linked_version_id}' />
+  				   			{else}
+            		    		&nbsp;&nbsp;
+            	   			{/if}
+                        	{if isset($tcase.executed[$platform.id]) && $tcase.executed[$platform.id] eq 'yes'}&nbsp;&nbsp;&nbsp;
+   				                  <img src="{$tlImages.executed}" title="{$gui->warning_msg->executed}" />
+                        	{/if}
   	                  </td>
   	                  <td align="center" title="{$labels.info_added_on_date}">{localize_date d=$tcase.linked_ts[$platform.id]}</td>
                     {/if}

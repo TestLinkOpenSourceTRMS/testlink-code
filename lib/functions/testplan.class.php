@@ -1223,7 +1223,7 @@ class testplan extends tlObjectWithAttachments
 			}
 			$sql .= " ORDER BY testsuite_id,NH_TCASE.node_order,tc_id,T.platform_id {$exec_order_by}";
 		}
-		die($sql);
+		// die($sql);
 
 
 		// die($sql);
@@ -3493,7 +3493,7 @@ class testplan extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-		$node_types=$this->tree_manager->get_available_node_types();
+		$node_types = $this->tree_manager->get_available_node_types();
 		$resultsCfg = config_get('results');
 
 		$build_in = implode(",", $buildSet);

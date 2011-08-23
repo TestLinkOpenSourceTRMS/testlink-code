@@ -11,7 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
- * 	20110820 - franciscom - TICKET 4701 - getFilteredLinkedVersions()	
+ * 	20110820 - franciscom - TICKET 4710 - getFilteredLinkedVersions()	
  *
  * @since 1.9.3
  *  20101209 - asimon - exchanged strpos by stripos to make search case insensitive
@@ -344,6 +344,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
  * But do no make considerations regarding versions linked to test plan
  * DEV NOTE: may be this has to be changed in future ?	
  *
+ * @param ref $dbHandler:
  * @param ref $argsObj: stdClass object with information about filters
  * @param ref $tplanMgr: test plan manager object
  * @param ref $tcaseMgr: test case manager object
@@ -353,36 +354,64 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
  *
  * @internal revisions
  * @since 1.9.4
- * 20110820 - TICKET 4701 - changes on get_linked_tcversions() call	
+ * 20110820 - TICKET 4710 - use of get_ln_tcversions()
+ * 20110820 - TICKET 4710 - changes on get_linked_tcversions() call	
  *
  * @since 1.9.3
  *  20100721 - asimon - BUGID 3046, added $options
  *	20080919 - franciscom - BUGID 2716
  *
  */
-function getFilteredLinkedVersions(&$argsObj, &$tplanMgr, &$tcaseMgr, $options = null)
+function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr, $options = null)
 {
 	$doFilterByKeyword=(!is_null($argsObj->keyword_id) && $argsObj->keyword_id > 0) ? true : false;
 	
 	// Multiple step algoritm to apply keyword filter on type=AND
-	// get_linked_tcversions filters by keyword ALWAYS in OR mode.
+	// get_*_tcversions filters by keyword ALWAYS in OR mode.
 	//
 	// BUGID 2797 - filter by test case execution type
 	$filters = array('keyword_id' => $argsObj->keyword_id);
+	
+	// get test suites in branch to limit search
+	if( !is_null($argsObj->object_id) )
+	{
+		// will get all test suites in this branch, in order to limit amount of data returned by 
+		// get_*_tcversions
+		$tsuite_mgr = new testsuite($dbHandler);
+		$xx = $tsuite_mgr->get_children($argsObj->object_id,array('details' => 'id'));
+		$ldx = count($xx);
+		$xx[$ldx] = $argsObj->object_id;
+		$filters['tsuites_id'] = $xx;
+		unset($tsuite_mgr);
+	}
+	
+	// , 'tsuites_id' => $argsObj->object_id);
+
+
 	// $options = array('output' => 'mapOfArray') + (array)$options;
 	// TICKET 4701
-	$options = array('output' => 'mapOfArray', 'details' => 'spec_essential') + (array)$options;
-	$tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id, $filters, $options);
+	// , 'last_execution' => true
+	$options = array('output' => 'mapOfArray', 
+					 'details' => 'spec_essential') +   (array)$options;
+	//$tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id, $filters, $options);
+	
+	new dBug($argsObj);
+	//new dBug($tplan_tcases);
+	$opx = array('output' => 'mapOfArray', 'last_execution' => true) +   (array)$options;
+	$tplan_tcases = $tplanMgr->get_ln_tcversions($argsObj->tplan_id, $filters, $opx);
+	new dBug($tplan_tcases);
+	// die();
 	
 	// BUGID 2716
 	if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
 	{
-		$filteredSet=$tcaseMgr->filterByKeyword(array_keys($tplan_tcases),
+		$filteredSet = $tcaseMgr->filterByKeyword(array_keys($tplan_tcases),
 			                                    $argsObj->keyword_id,$argsObj->keywordsFilterType);
 		
 		$testCaseSet=array_keys($filteredSet);   
 	    $filters = array('tcase_id' => $testCaseSet);
-		$tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id, $filters, $options);
+		// $tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id, $filters, $options);
+		$tplan_tcases = $tplanMgr->get_ln_tcversions($argsObj->tplan_id, $filters, $opx);
 	}
 	
 	return $tplan_tcases; 

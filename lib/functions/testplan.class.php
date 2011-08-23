@@ -1,4 +1,28 @@
 <?php
+/*
+SELECT NHB.parent_id AS testsuite_id, NHA.parent_id AS tc_id, NHB.node_order AS z, NHB.name, 
+T.platform_id, PLAT.name as platform_name ,T.id AS feature_id, T.tcversion_id AS tcversion_id, 
+T.node_order AS execution_order, T.creation_ts AS linked_ts, T.author_id AS linked_by, 
+TCV.version AS version, TCV.active, TCV.tc_external_id AS external_id, TCV.execution_type,TCV.importance, 
+E.id AS exec_id, E.tcversion_number, E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, 
+E.execution_type AS execution_run_type, E.testplan_id AS exec_on_tplan, E.execution_ts, E.tester_id, 
+E.notes as execution_notes, E.build_id as exec_on_build,
+T.urgency, COALESCE(E.status,'n') AS exec_status, 
+(urgency * importance) AS priority 
+FROM nodes_hierarchy NHA 
+JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id 
+JOIN testplan_tcversions T ON NHA.id = T.tcversion_id 
+JOIN tcversions TCV ON NHA.id = TCV.id 
+LEFT OUTER JOIN platforms PLAT ON PLAT.id = T.platform_id 
+JOIN (SELECT MAX(E2.id) AS maxid, testplan_id,tcversion_id,platform_id FROM executions 
+	  E2 WHERE E2.testplan_id=5023 GROUP BY E2.tcversion_id,E2.testplan_id) AS EX
+ON EX.testplan_id = T.testplan_id AND EX.tcversion_id = T.tcversion_id
+AND EX.platform_id = T.platform_id
+JOIN executions E ON E.id=EX.maxid AND 
+(EX.tcversion_id = E.tcversion_id AND E.platform_id=EX.platform_id AND E.testplan_id=EX.testplan_id )
+WHERE T.testplan_id=5023
+*/
+
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
@@ -520,6 +544,275 @@ class testplan extends tlObjectWithAttachments
 
 	
 	
+	/**
+	 * 
+ 	 * 
+ 	 */
+	function get_ln_tcversions($id,$filters=null,$options=null)
+	{
+		$debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
+	
+		list($my,$join,$sql_filter,$left_join,$extra_fields) = $this->init_get_ln_tcversions($filters,$options);
+		
+		list($join['keywords'],$sql_filter['keywords']) = $this->helper_keywords_sql($my['filters']['keyword_id'],
+																					 array('output' => 'array'));
+		 
+		$domain = array('active' => 1, 'inactive' => 0 , 'any' => null);
+		$build_active_value = $domain[$my['options']['build_active_status']];
+
+		$this->helper_sql_filters($sql_filter,$my['filters'],$my['options']);
+		
+		new dBug($sql_filter);
+		$this->helper_joins($join,$sql_filter,$my['options'],$id);
+		$hx = 'user_assignment';
+		$extra_fields[$hx] = $join[$hx] == '' ? '' : $extra_fields[$hx];
+
+		$hx = 'executions';
+		
+		new dBug($extra_fields[$hx]);
+		$extra_fields[$hx] = $join[$hx] == '' ? '' : $extra_fields[$hx];
+
+		
+		$sql = "/* $debugMsg */ " .
+		       " SELECT NH_TCASE.parent_id AS testsuite_id, {$extra_fields['tsuite']} {$extra_fields['tcase']} " .
+			   " NH_TCV.parent_id AS tc_id, NH_TCASE.node_order AS z, NH_TCASE.name," .
+			   " T.platform_id, PLAT.name as platform_name ,T.id AS feature_id, T.tcversion_id AS tcversion_id,  " .
+			   " T.node_order AS execution_order, T.creation_ts AS linked_ts, T.author_id AS linked_by,T.urgency," .
+			   " TCV.version AS version, TCV.active," .
+			   " TCV.tc_external_id AS external_id, TCV.execution_type,TCV.importance," .
+			   $extra_fields['executions'] . $extra_fields['user_assignment'];
+
+		$sql .=	" (urgency * importance) AS priority " .
+			   	" FROM {$this->tables['nodes_hierarchy']} NH_TCV " .
+			   	" JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCV.parent_id = NH_TCASE.id " .
+			   	" {$join['tsuite']} " .
+			   	" JOIN {$this->tables['testplan_tcversions']} T ON NH_TCV.id = T.tcversion_id " .
+			   	" JOIN  {$this->tables['tcversions']} TCV ON NH_TCV.id = TCV.id {$sql_filter['exec_type']} " .
+			   	" {$join['keywords']} " .	
+			   	" LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = T.platform_id " .
+			   	" {$join['executions']} {$join['user_assignment']} " ;
+	
+		$sql .= " WHERE T.testplan_id = {$id} {$sql_filter['keywords']} {$sql_filter['tcase']} " .
+				$sql_filter['platforms'] . $sql_filter['assigned_on_build'] . $sql_filter['user_assignment'] . 
+				$sql_filter['tsuites'];
+
+		$sql .= " ORDER BY testsuite_id,NH_TCASE.node_order,tc_id,T.platform_id ";
+
+		echo __FUNCTION__ . '<br>';
+		echo $sql;
+		
+		switch($my['options']['output'])
+		{ 
+			case 'array':
+			$recordset = $this->db->get_recordset($sql);
+			break;
+
+			case 'mapOfArray':
+			$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id',database::CUMULATIVE);
+			break;
+			
+			case 'mapOfMap':
+			$recordset = $this->db->fetchMapRowsIntoMap($sql,'tc_id','platform_id');
+			break;
+			
+			case 'map':   
+			default:
+				// 20110821 - PROBABLY NONSENSE because retreive lots of records
+				// to generate one
+				$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
+				
+				// 20070913 - jbarchibald
+				// here we add functionality to filter out the custom field selections
+				//
+				// After addition of platform feature, this filtering can not be done
+				// always with original filter_cf_selection().
+				// Fisrt choice:
+				// Enable this feature only if recordset maintains original structure
+				//
+				if (!is_null($my['filters']['cf_hash']) && !is_null($recordset)) {
+					$recordset = $this->filter_cf_selection($recordset, $my['filters']['cf_hash']);
+				}
+			break;
+		}
+		
+        // Multiple Test Case Steps Feature
+        // added after Julian mail regarding perf problems building exec tree
+        if( !is_null($recordset) && $my['options']['steps_info'])
+        {
+		    $itemSet = array_keys($recordset);
+			switch($my['options']['output'])
+			{ 
+        	
+				case 'mapOfArray':
+				case 'mapOfMap':
+	  				foreach($itemSet as $itemKey)
+	  				{
+	  					$keySet = array_keys($recordset[$itemKey]);
+	  					$target = &$recordset[$itemKey];
+	  					foreach($keySet as $accessKey)
+	  					{
+	  						$step_set = $this->tcase_mgr->get_steps($target[$accessKey]['tcversion_id']);
+	  						$target[$accessKey]['steps'] = $step_set;
+	  					}
+	  				}
+				break;
+				
+				case 'array':
+				case 'map':
+				default:
+  					foreach($itemSet as $accessKey)
+  					{
+	  					$step_set = $this->tcase_mgr->get_steps($recordset[$accessKey]['tcversion_id']);
+	  					$recordset[$accessKey]['steps'] = $step_set;
+	  				} 
+				break;
+			}
+        }
+
+		return $recordset;
+	}
+
+	/**
+	 * 
+ 	 * 
+ 	 */
+	function helper_sql_filters(&$sqlfx,$filters,$options)
+	{
+		if( !is_null($filters['platform_id']) )
+		{
+			$sqlfx['platforms'] = " AND T.platform_id = {$filters['platform_id']} ";
+	    }
+
+		if( !is_null($filters['exec_type']) )
+		{
+			$sqlfx['exec_type'] = " AND TCV.execution_type IN (" . implode(",",(array)$filters['exec_type']) . ") ";     
+		}
+
+		if (!is_null($filters['tcase_id']) )
+		{
+			$sqlfx['tcase'] = " AND NH_TCV.parent_id ";
+			if( is_array($filters['tcase_id']) )
+			{
+				$sqlfx['tcase'] .= " IN (" . implode(',',$filters['tcase_id']) . ")";          	
+			}
+			else if ($my['filters']['tcase_id'] > 0 )
+			{
+				$sqlfx['tcase'] .= " = {$filters['tcase_id']} ";
+			}
+		}
+
+		if (!is_null($filters['tsuites_id']))
+		{
+			$sqlfx['tsuites'] = " AND NH_TCASE.parent_id IN (" . implode(',',(array)$filters['tsuites_id']) . ")";
+		}
+
+		// ------------------------------------------------------------------------------------------------
+		// IMPORTANT NOTICE
+		// since implementation of User Assignment AT (test plan,platform,build)
+		// filters: assigned_to AND assigned_on_build do TEAMWORK.
+		// $dk = 'assigned_on_build';
+		if( ($filters['assigned_on_build'] = intval($filters['assigned_on_build'])) > 0 )
+		{
+			$sqlfx['assigned_on_build'] = " AND UA.build_id = {$filters['assigned_on_build']} ";		
+
+			//
+			// If special user id TL_USER_ANYBODY is present in set of user id,
+			// we will DO NOT FILTER by user ID
+			// $dk = 'assigned_to';
+			if( !is_null($filters['assigned_to']) && 
+			    !in_array(TL_USER_ANYBODY,(array)$filters['assigned_to']) )
+			{  
+				$sqlfx['user_assignment'] = " AND " . $this->helper_assigned_to_sql($filters['assigned_to'],$options);
+			}
+			else
+			{
+				$sqlfx['assigned_on_build'] = '';
+			}
+		}
+		
+		if (!is_null($filters['urgencyImportance']))
+		{
+			$sqlfx['urgencyImportance'] = $this->helper_urgency_sql($filters['urgencyImportance']);
+		}
+	}
+
+	/**
+	 * 
+ 	 * 
+ 	 */
+	function helper_joins(&$join,&$sqlfx,$options,$tplanID)
+	{
+		if( $sqlfx['assigned_on_build'] != '' )
+		// if( $sqlfx['user_assignment'] != '' )
+		{
+			// Why I've removed LEFT OUTER ?
+			// if $sqlfx['assigned_on_build'] != '' => I will filter by UA.BUILD_ID then all
+			// records returned from LEFT will be removed because UA.BUILD_ID will be NULL
+			// " LEFT OUTER "
+			$join['user_assignment'] =	" JOIN {$this->tables['user_assignments']} UA " .
+					        			" ON UA.feature_id = T.id " . 
+					        			" AND UA.type = {$this->assignment_types['testcase_execution']['id']} ";
+		}
+		
+		if($options['last_execution'])
+		{ 		
+			$join['executions'] = 	" JOIN (SELECT MAX(E2.id) AS lastexecid, testplan_id,tcversion_id,platform_id " .
+								  	" FROM {$this->tables['executions']} E2 " .
+								  	" WHERE E2.testplan_id = {$tplanID} " .
+								  	" GROUP BY E2.tcversion_id,E2.testplan_id) AS EX " .
+									" ON EX.testplan_id = T.testplan_id AND EX.tcversion_id = T.tcversion_id " .
+									" AND EX.platform_id = T.platform_id " .
+									" JOIN {$this->tables['executions']} E " .
+									" ON E.id = EX.lastexecid AND EX.tcversion_id = E.tcversion_id " .
+									" AND E.platform_id=EX.platform_id AND E.testplan_id=EX.testplan_id ";
+		}
+		
+	}
+	
+	
+	
+	function init_get_ln_tcversions($filtersCfg,$optionsCfg)
+	{
+        $ic['filters'] = array('tcase_id' => null, 'keyword_id' => 0,
+                               'assigned_to' => null,'assigned_on_build' => 0 ,
+                               'exec_status' => null,
+                               'build_id' => 0, 'cf_hash' => null,
+                               'urgencyImportance' => null, 'tsuites_id' => null,
+                               'platform_id' => null, 'exec_type' => null);
+
+        $ic['options'] = array('output' => 'map', 'details' => 'simple',
+        					   'include_unassigned' => false,'last_execution' => false,
+                               'steps_info' => false,'build_active_status' => 'any');
+        
+        
+ 		// Cast to array to handle $options = null
+		$ic['filters'] = array_merge($ic['filters'], (array)$filtersCfg);
+		$ic['options'] = array_merge($ic['options'], (array)$optionsCfg);
+
+		new dBug($ic['options']);
+				
+		$extra_fields = array('tcase' => '', 'tsuite' => '', 'executions' => '', 'user_assignment' => '');		
+		$extra_fields['user_assignment'] = " UA.build_id AS assigned_build_id, UA.user_id,UA.status,UA.assigner_id, ";
+		$extra_fields['executions'] = " E.id AS exec_id, E.tcversion_number, E.tcversion_id AS executed, " .
+									  " E.testplan_id AS exec_on_tplan, E.execution_type AS execution_run_type, " .
+									  " E.testplan_id AS exec_on_tplan, E.execution_ts, E.tester_id, " .
+									  " E.notes as execution_notes, E.build_id as exec_on_build, " .
+									  " COALESCE(E.status,'n') AS exec_status, "; 
+
+		$join = array('exec_type' => '', 'tcase' => '', 'builds' => '', 'keywords' => '' ,
+					  'executions' => '' , 'platforms' => '', 'tsuite' => '', 'user_assignment' => '');
+
+		$left_join = $join;
+		$sql_filter = $join + 
+					  array('tsuites' => null, 'build_active_status' => null, 'assigned_on_build' => '');
+
+
+
+		return array($ic,$join,$sql_filter,$left_join,$extra_fields);
+	}
+
+	
+// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&	
 
 	/*
   	function: get_linked_tcversions
@@ -687,11 +980,14 @@ class testplan extends tlObjectWithAttachments
 		$more_exec_fields='';
 
 		$resultsCfg = config_get('results');
-		$status_not_run=$resultsCfg['status_code']['not_run'];
+		$status_not_run = $resultsCfg['status_code']['not_run'];
 		
-		list($my,$active_status,$ua_build_sql) = $this->init_get_linked_tcversions($filters,$options);
+		//$const['status_not_run']
+		//$const['buils_not_run']
+		
+		list($my,$build_active_status,$ua_build_sql) = $this->init_get_linked_tcversions($filters,$options);
 	
-		$last_exec_subquery = $this->helper_last_exec_sql($my['options'],$active_status,$id);
+		$last_exec_subquery = $this->helper_last_exec_sql($my['options'],$build_active_status,$id);
 		$keywords = $this->helper_keywords_sql($my['filters']['keyword_id']);
 		 
 		if( !is_null($my['filters']['platform_id']) )
@@ -731,7 +1027,8 @@ class testplan extends tlObjectWithAttachments
 		if(!is_null($my['filters']['exec_status']) )
 		{
 			list($executions['filter'],$notrun['filter']) = $this->helper_exec_status_filter($my['filters']['exec_status'],
-																					 		$last_exec_subquery);
+																							 $status_not_run,
+																					 		 $last_exec_subquery);
 		}
 		// --------------------------------------------------------------
 
@@ -750,17 +1047,17 @@ class testplan extends tlObjectWithAttachments
 	    }
 
 		// BUGID 4328: Metrics dashboard - only active builds has to be used			   
-		if( !is_null($active_status) )
+		if( !is_null($build_active_status) )
 		{
 			if( is_null($notrun['filter']) )
 			{
 				$builds['join'] = " JOIN {$this->tables['builds']} B ON " .
-								  " B.id = E.build_id AND B.active = " . intval($active_status) ;	
+								  " B.id = E.build_id AND B.active = " . intval($build_active_status) ;	
 			}
 			else
 			{
 				// in this situation we need to add LEFT OUTER JOIN on builds
-				// and do not use $active_status
+				// and do not use $build_active_status
 				//
 				// When I have several builds, and I'm looking for not executed
 				// test cases ON ACTIVE BUILDS, if I get a record for an INACTIVE BUILD
@@ -797,9 +1094,14 @@ class testplan extends tlObjectWithAttachments
 			$executions['join'] = " LEFT OUTER ";
 		}
 		$executions['join'] .= " JOIN {$this->tables['executions']} E ON " .
-			                   " (NH_TCV.id = E.tcversion_id AND " .
-			                   " E.platform_id=T.platform_id AND " .
-			                   " E.testplan_id=T.testplan_id {$builds['filter']}) ";
+			                   " (E.testplan_id = T.testplan_id AND " .
+			                   "  E.tcversion_id = T.tcversion_id AND " .
+			                   "  E.platform_id = T.platform_id " .
+			                   "  {$builds['filter']}) ";
+
+		// Important Notice
+		// when $my['options']['only_executed'] == false
+		// options['last_execution'] has NO SENSE
 
 		// ---------------------------------------------------------------------------------------------------
 		// TICKET 4710
@@ -830,10 +1132,16 @@ class testplan extends tlObjectWithAttachments
 			break;
 
 			case 'spec_essential':   // TICKET 4710
-				$exec_fields = '';
+				/*$exec_fields = '';
 				$executions['join'] = '';
 				$executions['filter'] = '';
 				$exec_order_by = '';
+				$exec_fields = 	" E.id AS exec_id, E.tcversion_number," .
+			   					" E.tcversion_id AS executed," .
+			   					" E.execution_type AS execution_run_type, " .
+			   					" E.execution_ts, E.tester_id,";
+				*/
+
 				$builds['join'] = '';
 				$ua_fields = '';
 				$ua_filter = '';
@@ -852,6 +1160,12 @@ class testplan extends tlObjectWithAttachments
 					$ua_filter = '';
 				}			
 			break;
+
+			case 'report':   // Results Performance
+				$ua_fields = '';
+				$ua_filter = '';
+			break;
+
 		
 		}
 		/*
@@ -898,15 +1212,15 @@ class testplan extends tlObjectWithAttachments
 				   $join_for_parent .
 				   " JOIN {$this->tables['testplan_tcversions']} T ON NH_TCV.id = T.tcversion_id " .
 				   " JOIN  {$this->tables['tcversions']} TCV ON NH_TCV.id = TCV.id {$tcversion_exec_type['filter']} " .
-				   " {$executions['join']} " .
-				   " {$keywords['join']} " .
+				   " {$executions['join']} " .  
+				   " {$keywords['join']} " .	
 				   " {$builds['join']} " .
 				   " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = T.platform_id ";
 			if(	$ua_fields != '' )
 			{   
 				// TICKET 4710
 				$sql .=	" LEFT OUTER JOIN {$this->tables['user_assignments']} UA  ON UA.feature_id = T.id " .
-						"AND UA.build_id = E.build_id " .  $ua_build_sql ; 
+						" AND UA.build_id = E.build_id " .  $ua_build_sql ; 
 			}
 			$sql .= " WHERE T.testplan_id={$id} {$keywords['filter']} {$tc_id['filter']} {$platforms['filter']} " .
 				    $ua_filter . $executions['filter'];
@@ -933,7 +1247,7 @@ class testplan extends tlObjectWithAttachments
 			}
 			$sql .= " ORDER BY testsuite_id,NH_TCASE.node_order,tc_id,T.platform_id {$exec_order_by}";
 		}
-
+		die($sql);
 
 
 		// die($sql);
@@ -1024,7 +1338,8 @@ class testplan extends tlObjectWithAttachments
                                'assigned_to' => null, 'exec_status' => null,
                                'build_id' => 0, 'cf_hash' => null,
                                'urgencyImportance' => null, 'tsuites_id' => null,
-                               'platform_id' => null, 'exec_type' => null);
+                               'platform_id' => null, 'exec_type' => null,
+                               'assigned_on_build' => 0);
                                
         $ic['options'] = array('only_executed' => false, 'only_not_executed' => false,
         					   'include_unassigned' => false,
@@ -1043,7 +1358,7 @@ class testplan extends tlObjectWithAttachments
 		}
 
 		$domain = array('active' => 1, 'inactive' => 0 , 'any' => null);
-		$active_status = $domain[$ic['options']['build_active_status']];
+		$build_active_status = $domain[$ic['options']['build_active_status']];
 
 
 		// BUGID 3406: user assignments per build 
@@ -1053,13 +1368,18 @@ class testplan extends tlObjectWithAttachments
 		// BUGID 3629
 		$ua_build_sql = ($ua_build > 0 && is_numeric($ua_build)) ? " AND UA.build_id={$ua_build} " : " ";
 	
-		return array($ic,$active_status,$ua_build_sql);
+		return array($ic,$build_active_status,$ua_build_sql);
 	}
 
 
+	/**
+	 * 
+ 	 * 
+ 	 */
 	function helper_last_exec_sql($cfgOpt,$activeStatus,$tplanID)
 	{
 
+		// DO NOT REMOVE THESE COMMENTS - can be useful to avoid repeat same errors
         // @TODO - 20091004 - franciscom
         // Think that this subquery in not good when we add execution filter
 		// $last_exec_subquery = " AND E.id IN ( SELECT MAX(id) " .
@@ -1069,7 +1389,7 @@ class testplan extends tlObjectWithAttachments
 
 		// I've had confirmation of BAD query;
 		// BUGID 3356: "Failed Test Cases" report is not updated when a test case 
-		// 		  				 			  has been changed from "Failed" to "Passed"		 
+		// 		  				 		has been changed from "Failed" to "Passed"		 
 		//
         // SUBQUERY CAN NOT HAVE ANY KIND OF FILTERING other that test plan.
         // Adding exec status, means that we will get last exec WITH THIS STATUS, and not THE LATEST EXEC   
@@ -1077,30 +1397,42 @@ class testplan extends tlObjectWithAttachments
 		// 20110316 - franciscom -
 		// BUGID 4328: Metrics dashboard - only active builds has to be used
 		// adding filtering by build_status is SAFE
+		//
+		$groupByBuild = ($cfgOpt['execution_details'] == 'add_build') ? ',build_id' : '';
 
-
-		$groupByBuild=($cfgOpt['execution_details'] == 'add_build') ? ',build_id' : '';
-
-		$groupByPlatform=($cfgOpt['output']=='mapOfMap' || 
-		                  $cfgOpt['output']=='mapOfMapExecPlatform') ? ',platform_id' : '';
+		$groupByPlatform = ($cfgOpt['output']=='mapOfMap' || 
+		                   $cfgOpt['output']=='mapOfMapExecPlatform') ? ',platform_id' : '';
 	
-		 
-		$sql = " AND E.id IN ( SELECT MAX(id) FROM  {$this->tables['executions']} executions " ;
+		// -------------------------------------------------------------------------------
+		$sql = 	" JOIN (SELECT MAX(E2.id) AS E2.maxid, E2.testplan_id, E2.tcversion_id, " .
+				" E2.platform_id FROM {$this->tables['executions']} E2 ";
+				
 		if(!is_null($activeStatus))
 		{
-			$sql .=	" JOIN {$this->tables['builds']} buildexec ON " .
-					" buildexec.id = executions.build_id " .
-					" AND buildexec.active = " . intval($activeStatus) ;
+			$sql .=	" JOIN {$this->tables['builds']} B2 ON " .
+					" B2.id = E2.build_id AND B2.active = " . intval($activeStatus) ;
 		}
-		$sql .= " WHERE testplan_id={$tplanID} " . 
-			    " GROUP BY tcversion_id,testplan_id {$groupByPlatform} {$groupByBuild} )";
+		$sql .=	" WHERE testplan_id = {$tplanID} " .
+				" GROUP BY testplan_id,tcversion_id {$groupByPlatform} {$groupByBuild}";
+
+		$sql .= ") AS EX ";		 
+
+		$sql .= " ON EX.testplan_id = T.testplan_id AND EX.tcversion_id = T.tcversion_id " .
+				" AND EX.platform_id = T.platform_id " .
+				" JOIN {$this->tables['executions']} E ON " .
+				" E.id=EX.maxid AND E.tcversion_id = EX.tcversion_id " .
+				" AND EX.platform_id = E.platform_id AND EX.testplan_id = E.testplan_id ) ";
 
 		return $sql;
 	}
 	
-
-	function helper_keywords_sql($filter)
+	/**
+	 * 
+ 	 * 
+ 	 */
+	function helper_keywords_sql($filter,$options=null)
 	{
+		
 		$sql = array('filter' => '', 'join' => '');
 
 		if( is_array($filter) )
@@ -1123,13 +1455,18 @@ class testplan extends tlObjectWithAttachments
 		
 		if( $sql['filter'] != '' )
 		{
-			$sql['join'] = " JOIN {$this->tables['testcase_keywords']} TK ON NH_TCV.parent_id = TK.testcase_id ";
+			$sql['join'] = " JOIN {$this->tables['testcase_keywords']} TK ON TK.testcase_id = NH_TCV.parent_id ";
 		}
 
-		return $sql;
+		$ret = is_null($options) ? $sql : array($sql['join'],$sql['filter']);
+		return $ret;
 	}
 	
 	
+	/**
+	 * 
+ 	 * 
+ 	 */
 	function helper_urgency_sql($filter)
 	{
 			
@@ -1153,6 +1490,10 @@ class testplan extends tlObjectWithAttachments
 	}
 	
 	
+	/**
+	 * 
+ 	 * 
+ 	 */
 	function helper_assigned_to_sql($filter,$opt)
 	{	
 		// Warning!!!:
@@ -1167,7 +1508,7 @@ class testplan extends tlObjectWithAttachments
 		else if( in_array(TL_USER_SOMEBODY,$ff) )
 		{
 			// BUGID 2455
-        	// new user filter "somebody" --> all asigned testcases
+        	// new user filter "somebody" --> all assigned testcases
 			$sql .= " IS NOT NULL "; 
 		}
 		else
@@ -1187,7 +1528,11 @@ class testplan extends tlObjectWithAttachments
 
 
 
-	function helper_exec_status_filter($filter,$statusNotRun)
+	/**
+	 * 
+ 	 * 
+ 	 */
+	function helper_exec_status_filter($filter,$statusNotRun,$lastExecSql)
 	{
 		$notRunFilter = null;	
 		$execFilter = '';
@@ -4453,6 +4798,40 @@ class testplan extends tlObjectWithAttachments
 		return $xmlTC;
 	}
 
+
+	function getFeatureAssignments($tplan_id,$filters=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = "/* $debugMsg */ ";
+
+		$my['filters'] = array('build' => null, 'tcversion' => null);
+		$my['filters'] = array_merge($my['filters'], (array)$filters);
+
+		$sql .=	" SELECT COALESCE(UA.user_id,-1) AS user_id, " . 
+				" TPTCV.id AS feature_id, B.id AS build_id, TPTCV.platform_id " .
+				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+				" JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id " .
+				
+				" LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
+				" ON UA.feature_id = TPTCV.id AND UA.build_id = B.id " .
+				" WHERE TPTCV.testplan_id={$tplan_id} ";
+				
+		if(!is_null($my['filters']['build']))
+		{
+			$sql .= " AND B.id IN (" . implode(',',(array)$my['filters']['build']) . ") "; 
+		}		
+		if(!is_null($my['filters']['tcversion']))
+		{
+			$sql .= " AND TPTCV.tcversion_id IN (" . implode(',',(array)$my['filters']['tcversion']) . ") "; 
+		}		
+
+		$rs =  $this->db->fetchMapRowsIntoMap($sql,'feature_id','build_id');
+		return $rs;
+	}	// end function
+
+
+
+
 } // end class testplan
 
 
@@ -4885,3 +5264,5 @@ class milestone_mgr extends tlObject
 
 } // end class milestone_mgr
 ?>
+
+

@@ -14,6 +14,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20110823 - franciscom - filter_by_cf_values() interface changes
  * 20110820 - franciscom - 	TICKET 4710: Performance/Filter Problem on big project
  *							generateExecTree() - changes in call to get_linked_tcversions()
  *
@@ -63,13 +64,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 
 	$my = array();
 	
-	// 20100412 - franciscom
-	// $my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0,'getArguments' => '', 
-	//                        'tc_action_enabled' => 1, 'ignore_inactive_testcases' => 0, 
-	//                        'exclude_branches' => null, 'viewType' => 'testSpecTree');
-//	$my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0, 
-//	                       'tc_action_enabled' => 1, 'ignore_inactive_testcases' => 0, 
-//	                       'exclude_branches' => null, 'viewType' => 'testSpecTree');
 	$my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0, 
 	                       'tc_action_enabled' => 1, 'ignore_inactive_testcases' => 0, 
 	                       'viewType' => 'testSpecTree');
@@ -96,9 +90,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	$tproject_mgr = new testproject($db);
 	$tree_manager = &$tproject_mgr->tree_manager;	
 	
-	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
-	// BUGID 3301
-	$tsuite_node_type = $tree_manager->node_descr_id['testsuite'];
 	$hash_descr_id = $tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
 	$status_descr_code=$resultsCfg['status_code'];
@@ -132,8 +123,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 		$tck_map = null;  // means no filter
 		if(!is_null($my['filters']['filter_keywords']))
 		{
-			//$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$my['filters']['keywords']->items,
-			//                                              $my['filters']['keywords']->type);
 			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,
 			           $my['filters']['filter_keywords'],
 			           $my['filters']['filter_keywords_filter_type']);
@@ -146,37 +135,18 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 		// Important: prepareNode() will make changes to $test_spec like filtering by test case 
 		// keywords using $tck_map;
 		$pnFilters = null;
-	    
-//		$pnFilters['filter_testcase_name'] = 
-//			isset($my['filters']['filter_testcase_name']) ?
-//			$my['filters']['filter_testcase_name'] : null;
-//		
-//		$pnFilters['filter_execution_type'] = 
-//			isset($my['filters']['filter_execution_type']) ?
-//			$my['filters']['filter_execution_type'] : null;
-//		
-//		$pnFilters['filter_priority'] = 
-//			isset($my['filters']['filter_priority']) ?
-//			$my['filters']['filter_priority'] : null;
-		
-		$keys2init = array('filter_testcase_name',
-		                   'filter_execution_type',
-		                   'filter_priority',
-		                   'filter_tc_id');
-		
+		$keys2init = array('filter_testcase_name','filter_execution_type','filter_priority','filter_tc_id');
 		foreach ($keys2init as $keyname) {
 			$pnFilters[$keyname] = isset($my['filters'][$keyname]) ? $my['filters'][$keyname] : null;
 		}
 	    
-	    $pnFilters['setting_testplan'] = 
-	    	$my['filters']['setting_testplan'];
+	    $pnFilters['setting_testplan'] = $my['filters']['setting_testplan'];
 	    
 	    // BUGID 3301 - added filtering by custom field values
-	    if (isset($my['filters']['filter_custom_fields']) 
-	    && isset($test_spec['childNodes'])) {
-	    	$test_spec['childNodes'] = filter_by_cf_values($test_spec['childNodes'], 
-			                           $my['filters']['filter_custom_fields'], 
-			                           $db, $tsuite_node_type, $tcase_node_type);
+	    if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) 
+	    {
+	    	$test_spec['childNodes'] = filter_by_cf_values($db, $test_spec['childNodes'],
+	    												   $my['filters']['filter_custom_fields'],$hash_descr_id);
 	    }
 		
 	    // 20100412 - franciscom
@@ -815,8 +785,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	
 	$tree_manager = $tplan_mgr->tree_manager;
 	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
+
 	$hash_descr_id = $tree_manager->get_available_node_types();
-	
 	$hash_id_descr = array_flip($hash_descr_id);	    
 	$decoding_hash = array('node_id_descr' => $hash_id_descr,
 		                   'status_descr_code' =>  $resultsCfg['status_code'],
@@ -878,15 +848,21 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			// 20100417 - BUGID 3380 - execution type
 			$linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,
                                    'assigned_to' => $assignedTo,
+                                   'assigned_on_build' => $build2filter_assignments,
                                    'cf_hash' =>  $cf_hash,
                                    'platform_id' => $setting_platform,
                                    'urgencyImportance' => $urgencyImportance,
                                    'exec_type' => $execution_type);
 			
 			// TICKET 4710
-			$opt['details'] = 'exec_tree_optimized'; 
-			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
-			
+			//$opt['details'] = 'exec_tree_optimized'; 
+			//$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
+			// new dBug($tplan_tcases);
+			$tplan_tcases = $tplan_mgr->get_ln_tcversions($tplan_id,$linkedFilters,$opt);
+			// new dBug(array_keys($tt));
+
+			// die(__LINE__);
+						
 			// BUGID 3814: fixed keyword filtering with "and" selected as type
 			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'And')
 			{
@@ -1387,9 +1363,9 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
  * @author Andreas Simon
  * @since 1.9
  * 
+ * @param resource &$db reference to DB handler object
  * @param array &$tcase_tree reference to test case set/tree to filter
  * @param array &$cf_hash reference to selected custom field information
- * @param resource &$db reference to DB handler object
  * @param int $node_type_testsuite ID of node type for testsuites
  * @param int $node_type_testcase ID of node type for testcase
  * 
@@ -1399,13 +1375,19 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
  * 
  * 20100702 - did some changes to logic in here and added a fix for array indexes
  */
-function filter_by_cf_values(&$tcase_tree, &$cf_hash, &$db, $node_type_testsuite, $node_type_testcase) {
+function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
+{
 	static $tables = null;
 	static $debugMsg = null;
+	static $node_type_testsuite;
+	static $node_type_testcase;
+	
 	$rows = null;
 	if (!$debugMsg) {
 		$tables = tlObject::getDBTables(array('cfield_design_values','nodes_hierarchy'));
 		$debugMsg = 'Function: ' . __FUNCTION__;
+		$node_type_testsuite = $node_types['testsuite'];
+		$node_type_testcase)
 	}
 	
 	$node_deleted = false;
@@ -1422,8 +1404,8 @@ function filter_by_cf_values(&$tcase_tree, &$cf_hash, &$db, $node_type_testsuite
 			
 			if (isset($node['childNodes']) && is_array($node['childNodes'])) {
 				// node is a suite and has children, so recurse one level deeper			
-				$tcase_tree[$key]['childNodes'] = filter_by_cf_values($tcase_tree[$key]['childNodes'], 
-				                                                      $cf_hash, $db, 
+				$tcase_tree[$key]['childNodes'] = filter_by_cf_values($db,$tcase_tree[$key]['childNodes'], 
+				                                                      $cf_hash,$node_types); 
 				                                                      $node_type_testsuite,
 				                                                      $node_type_testcase);
 				

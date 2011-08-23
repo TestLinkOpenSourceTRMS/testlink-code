@@ -1,28 +1,4 @@
 <?php
-/*
-SELECT NHB.parent_id AS testsuite_id, NHA.parent_id AS tc_id, NHB.node_order AS z, NHB.name, 
-T.platform_id, PLAT.name as platform_name ,T.id AS feature_id, T.tcversion_id AS tcversion_id, 
-T.node_order AS execution_order, T.creation_ts AS linked_ts, T.author_id AS linked_by, 
-TCV.version AS version, TCV.active, TCV.tc_external_id AS external_id, TCV.execution_type,TCV.importance, 
-E.id AS exec_id, E.tcversion_number, E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, 
-E.execution_type AS execution_run_type, E.testplan_id AS exec_on_tplan, E.execution_ts, E.tester_id, 
-E.notes as execution_notes, E.build_id as exec_on_build,
-T.urgency, COALESCE(E.status,'n') AS exec_status, 
-(urgency * importance) AS priority 
-FROM nodes_hierarchy NHA 
-JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id 
-JOIN testplan_tcversions T ON NHA.id = T.tcversion_id 
-JOIN tcversions TCV ON NHA.id = TCV.id 
-LEFT OUTER JOIN platforms PLAT ON PLAT.id = T.platform_id 
-JOIN (SELECT MAX(E2.id) AS maxid, testplan_id,tcversion_id,platform_id FROM executions 
-	  E2 WHERE E2.testplan_id=5023 GROUP BY E2.tcversion_id,E2.testplan_id) AS EX
-ON EX.testplan_id = T.testplan_id AND EX.tcversion_id = T.tcversion_id
-AND EX.platform_id = T.platform_id
-JOIN executions E ON E.id=EX.maxid AND 
-(EX.tcversion_id = E.tcversion_id AND E.platform_id=EX.platform_id AND E.testplan_id=EX.testplan_id )
-WHERE T.testplan_id=5023
-*/
-
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 

@@ -384,24 +384,9 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
 		$filters['tsuites_id'] = $xx;
 		unset($tsuite_mgr);
 	}
-	
-	// , 'tsuites_id' => $argsObj->object_id);
-
-
-	// $options = array('output' => 'mapOfArray') + (array)$options;
-	// TICKET 4701
-	// , 'last_execution' => true
-	$options = array('output' => 'mapOfArray', 
-					 'details' => 'spec_essential') +   (array)$options;
-	//$tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id, $filters, $options);
-	
-	// new dBug($argsObj);
-	//new dBug($tplan_tcases);
 	$opx = array('output' => 'mapOfArray', 'last_execution' => true) +   (array)$options;
 	$tplan_tcases = $tplanMgr->get_ln_tcversions($argsObj->tplan_id, $filters, $opx);
-	// new dBug($tplan_tcases);
-	// die();
-	
+
 	// BUGID 2716
 	if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
 	{
@@ -410,7 +395,6 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
 		
 		$testCaseSet=array_keys($filteredSet);   
 	    $filters = array('tcase_id' => $testCaseSet);
-		// $tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id, $filters, $options);
 		$tplan_tcases = $tplanMgr->get_ln_tcversions($argsObj->tplan_id, $filters, $opx);
 	}
 	

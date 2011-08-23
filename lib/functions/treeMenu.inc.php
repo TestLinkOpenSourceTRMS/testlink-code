@@ -1379,15 +1379,11 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
 {
 	static $tables = null;
 	static $debugMsg = null;
-	static $node_type_testsuite;
-	static $node_type_testcase;
 	
 	$rows = null;
 	if (!$debugMsg) {
 		$tables = tlObject::getDBTables(array('cfield_design_values','nodes_hierarchy'));
 		$debugMsg = 'Function: ' . __FUNCTION__;
-		$node_type_testsuite = $node_types['testsuite'];
-		$node_type_testcase)
 	}
 	
 	$node_deleted = false;
@@ -1406,8 +1402,6 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
 				// node is a suite and has children, so recurse one level deeper			
 				$tcase_tree[$key]['childNodes'] = filter_by_cf_values($db,$tcase_tree[$key]['childNodes'], 
 				                                                      $cf_hash,$node_types); 
-				                                                      $node_type_testsuite,
-				                                                      $node_type_testcase);
 				
 				// now remove testsuite node if it is empty after coming back from recursion
 				if (!count($tcase_tree[$key]['childNodes'])) {

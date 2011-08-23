@@ -574,8 +574,7 @@ class testplan extends tlObjectWithAttachments
 
 		$sql .= " ORDER BY testsuite_id,NH_TCASE.node_order,tc_id,T.platform_id ";
 
-		// echo __FUNCTION__ . '<br>';
-		// echo $sql;
+		// echo __FUNCTION__ . '<br>'; die($sql);
 		
 		switch($my['options']['output'])
 		{ 
@@ -732,13 +731,16 @@ class testplan extends tlObjectWithAttachments
 		
 		if($options['last_execution'])
 		{ 		
-			$join['executions'] = 	" JOIN (SELECT MAX(E2.id) AS lastexecid, testplan_id,tcversion_id,platform_id " .
+			// If we do not use LEFT OUTER, then we will not get NON executed
+			// this generate an issue on feature add/remove test cases to test plan.
+			$join['executions'] = 	" LEFT OUTER JOIN (SELECT MAX(E2.id) AS lastexecid, testplan_id," . 
+									" tcversion_id,platform_id " .
 								  	" FROM {$this->tables['executions']} E2 " .
 								  	" WHERE E2.testplan_id = {$tplanID} " .
 								  	" GROUP BY E2.tcversion_id,E2.testplan_id) AS EX " .
 									" ON EX.testplan_id = T.testplan_id AND EX.tcversion_id = T.tcversion_id " .
 									" AND EX.platform_id = T.platform_id " .
-									" JOIN {$this->tables['executions']} E " .
+									" LEFT OUTER JOIN {$this->tables['executions']} E " .
 									" ON E.id = EX.lastexecid AND EX.tcversion_id = E.tcversion_id " .
 									" AND E.platform_id=EX.platform_id AND E.testplan_id=EX.testplan_id ";
 		}

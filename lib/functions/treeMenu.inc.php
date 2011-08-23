@@ -14,7 +14,10 @@
  *
  * @internal revisions
  * @since 1.9.4
- * 20110823 - franciscom - filter_by_cf_values() interface changes
+ * 20110823 - franciscom - 	filter_by_cf_values() interface changes
+ * 							TICKET 4710: Performance/Filter Problem on big project - get_ln_tcversions()
+ *							new functions apply_status_filters(); update_status_for_colors();
+ *
  * 20110820 - franciscom - 	TICKET 4710: Performance/Filter Problem on big project
  *							generateExecTree() - changes in call to get_linked_tcversions()
  *
@@ -731,7 +734,7 @@ function renderTreeNode($level,&$node,$hash_id_descr,
  * 20110820 - franciscom - 	TICKET 4710: Performance/Filter Problem on big project
  */
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
-                          $tplan_name,$filters,$additionalInfo) 
+                          $tplan_name,$filters,$options) 
 {
 	$treeMenu = new stdClass(); 
 	$treeMenu->rootnode = null;
@@ -774,10 +777,12 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$urgencyImportance = isset($filters->filter_priority) ?
 	                     $filters->filter_priority : null;
 	
-	$useCounters=isset($additionalInfo->useCounters) ? $additionalInfo->useCounters : null;
-	$useColors=isset($additionalInfo->useColours) ? $additionalInfo->useColours : null;
-	$colorBySelectedBuild = isset($additionalInfo->testcases_colouring_by_selected_build) ? 
-	                        $additionalInfo->testcases_colouring_by_selected_build : null;
+	$useCounters=isset($options->useCounters) ? $options->useCounters : null;
+	$useColors=isset($options->useColours) ? $options->useColours : null;
+	$colorBySelectedBuild = isset($options->testcases_colouring_by_selected_build) ? 
+	                        $options->testcases_colouring_by_selected_build : null;
+
+	// 20110823
 
 	$tplan_mgr = new testplan($db);
 	$tproject_mgr = new testproject($db);
@@ -840,12 +845,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			}
 			
 			// Multiple step algoritm to apply keyword filter on type=AND
-			// get_linked_tcversions filters by keyword ALWAYS in OR mode.
-			// BUGID 3406: user assignments per build
-			$opt = array('include_unassigned' => $include_unassigned, 'steps_info' => false,
-			             'user_assignments_per_build' => $build2filter_assignments);
+			// get_*_tcversions filters by keyword ALWAYS in OR mode.
 
-			// 20100417 - BUGID 3380 - execution type
 			$linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,
                                    'assigned_to' => $assignedTo,
                                    'assigned_on_build' => $build2filter_assignments,
@@ -854,30 +855,34 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                                    'urgencyImportance' => $urgencyImportance,
                                    'exec_type' => $execution_type);
 			
+			$opt = array('include_unassigned' => $include_unassigned, 'steps_info' => false);
 			// TICKET 4710
-			//$opt['details'] = 'exec_tree_optimized'; 
-			//$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
-			// new dBug($tplan_tcases);
-			$tplan_tcases = $tplan_mgr->get_ln_tcversions($tplan_id,$linkedFilters,$opt);
-			// new dBug(array_keys($tt));
-
-			// die(__LINE__);
+			if( ($opt['last_execution'] = $useColors && $colorBySelectedBuild) )
+			{
+				$linkedFilters['build_id'] = $filters->setting_build;
+			}
+			else
+			{
+				$opt['last_execution'] = isset($options->absolute_last_execution) ? 
+	                        			 $options->absolute_last_execution : false;
+			}
+				
 						
-			// BUGID 3814: fixed keyword filtering with "and" selected as type
+			$tplan_tcases = $tplan_mgr->get_ln_tcversions($tplan_id,$linkedFilters,$opt);
 			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'And')
 			{
 				$filteredSet = $tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);
 
 				// CAUTION: if $filteredSet is null,
-				// then get_linked_tcversions() thinks there are just no filters set,
+				// then get_*_tcversions() thinks there are just no filters set,
 				// but really there are no testcases which match the wanted keyword criteria,
 				// so we have to set $tplan_tcases to null because there is no more filtering necessary
 				if ($filteredSet != null) {
 					$linkedFilters = array('tcase_id' => array_keys($filteredSet));
 					
 					// TICKET 4710
-					$opt['details'] = 'exec_tree_optimized';
-					$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
+					$tplan_tcases = $tplan_mgr->get_ln_tcversions($tplan_id,$linkedFilters,$opt);
+					
 				} else {
 					$tplan_tcases = null;
 				}
@@ -890,45 +895,18 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			$apply_other_filters=false;
 		}
 		
-		$filter_methods = config_get('execution_filter_methods');
-		
-		// 20100820 - asimon - refactoring for less redundant checks and better readibility
-		$ffn = array($filter_methods['status_code']['any_build'] => 'filter_by_status_for_any_build',
-			         $filter_methods['status_code']['all_builds'] => 'filter_by_same_status_for_all_builds',
-			         $filter_methods['status_code']['specific_build'] => 'filter_by_status_for_build',
-			         $filter_methods['status_code']['current_build'] => 'filter_by_status_for_build',
-			         $filter_methods['status_code']['latest_execution'] => 'filter_by_status_for_last_execution');
-		
-		$requested_filter_method = isset($filters->filter_result_method) ? $filters->filter_result_method : null;
-		$requested_filter_result = isset($filters->filter_result_result) ? $filters->filter_result_result : null;
 
-		// if "any" was selected as filtering status, don't filter by status
-		$requested_filter_result = (array)$requested_filter_result;
-		if (in_array($resultsCfg['status_code']['all'], $requested_filter_result)) {
-			$requested_filter_result = null;
-		}
-
-		if ($apply_other_filters && !is_null($requested_filter_method) && isset($ffn[$requested_filter_method])) {
-			// special case 1: when filtering by "not run" status in any build,
-			// we need another filter function
-			if (in_array($resultsCfg['status_code']['not_run'], $requested_filter_result)) {
-				$ffn[$filter_methods['status_code']['any_build']] = 'filter_not_run_for_any_build';
-			}
-			// special case 2: when filtering by "current build", we set the build to filter with
-			// to the build chosen in settings instead of the one in filters
-			if ($requested_filter_method == $filter_methods['status_code']['current_build']) {
-				$filters->filter_result_build = $filters->setting_build;
-			}
-
-			// call the filter function and do the filtering
-			$tplan_tcases = $ffn[$requested_filter_method]($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
-
-			if (is_null($tplan_tcases)) {
+		// 20110823 - refactoring		
+		if( $apply_other_filters )
+		{
+			$tplan_tcases = apply_status_filters($tplan_id,$tplan_tcases,$filters,$tplan_mgr,$resultsCfg['status_code']);
+			if (is_null($tplan_tcases))
+			{
 				$tplan_tcases = array();
 				$apply_other_filters=false;
 			}
 		}
-		// end 20100820 refactoring
+		// end - 20110823 - refactoring		
 
 		// BUGID 3450 - Change colors/counters in exec tree.
 		// Means: replace exec status in filtered array $tplan_tcases 
@@ -936,37 +914,19 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		// Since this changes exec status, replacing is done after filtering by status.
 		// It has to be done before call to prepareNode() though,
 		// because that one sets the counters according to status.
-		if ($useColors && $colorBySelectedBuild) {
-			$tables = tlObject::getDBTables('executions');
-			foreach ($tplan_tcases as $id => $info) {
-				// get last execution result for selected build
-				$sql = " SELECT status FROM {$tables['executions']} E " .
-					   " WHERE tcversion_id = {$info['tcversion_id']} " .
-				       " AND testplan_id = {$tplan_id} " .
-					   " AND platform_id = {$info['platform_id']} " .
-					   " AND build_id = {$filters->setting_build} " .
-					   " ORDER BY execution_ts DESC ";
-				
-				// BUGID 3772: MS SQL - LIMIT CLAUSE can not be used
-				// get_recordset($sql,$fetch_mode = null,$limit = -1)
-				$result = null;
-				$rs = $db->get_recordset($sql,null,1);
-				if( !is_null($rs) )
-				{
-					$result = $rs[0]['status'];	
-				}
-				
-				if (is_null($result)) {
-					// if no value can be loaded it has to be set to not run
-					$result = $resultsCfg['status_code']['not_run'];
-				}
-				
-				if ($result != $info['exec_status']) {
-					$tplan_tcases[$id]['exec_status'] = $result;
-				}
-			}
+		//
+		// 20110823 - franciscom
+		// A minor analysis need to be done regarding use of platform on following code.
+		// Up today exec tree display data for ONLY a SELECTED platform 
+		// this happens on EXECUTION FEATURE (execution_mode on tlTestCaseFilterControl.class.php).
+		// We never display a tree where we have one test case occurrence for each platform.
+		// Under this context query can be simplified, using a fixed value for platform_id filter.
+		// 
+		if ($useColors && $colorBySelectedBuild) 
+		{
+			$context = array('tplanID' => $tplan_id, 'buildID' => $filters->setting_build); 
+			update_status_for_colors($db,$tplan_tcases,$context,$resultsCfg['status_code']);
 		}
-		
 		
 		// 20080224 - franciscom - 
 		// After reviewing code, seems that assignedTo has no sense because tp_tcs
@@ -995,7 +955,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		
 		// BUGID 3516
 		// can now be left in form of array, will not be sent by URL anymore
-		//$keys = implode(array_keys($tplan_tcases), ",");
 		$keys = array_keys($tplan_tcases);
 		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,
 			                             $hash_id_descr,1,$menuUrl,$bHideTCs,$useCounters,$useColors,
@@ -2251,5 +2210,99 @@ function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype
 	}
 	
 	return $node;       
+}
+
+
+/**
+ * 
+ * 
+ */
+function apply_status_filters($tplan_id,&$items,&$fobj,&$tplan_mgr,$statusCfg)
+{
+	$methods = config_get('execution_filter_methods');
+	$methods = $methods['status_code'];
+	
+	$ffn = array($methods['any_build'] => 'filter_by_status_for_any_build',
+		         $methods['all_builds'] => 'filter_by_same_status_for_all_builds',
+		         $methods['specific_build'] => 'filter_by_status_for_build',
+		         $methods['current_build'] => 'filter_by_status_for_build',
+		         $methods['latest_execution'] => 'filter_by_status_for_last_execution');
+	
+	$f_method = isset($fobj->filter_result_method) ? $fobj->filter_result_method : null;
+	$f_result = isset($fobj->filter_result_result) ? $fobj->filter_result_result : null;
+	$f_result = (array)$f_result;
+
+	// if "any" was selected as filtering status, don't filter by status
+	if (in_array($statusCfg['all'], $f_result)) {
+		$f_result = null;
+	}
+
+	if (!is_null($f_method) && isset($ffn[$f_method])) 
+	{
+		// special case 1: when filtering by "not run" status in any build,
+		// we need another filter function
+		if (in_array($statusCfg['not_run'], $f_result)) {
+			$ffn[$methods['any_build']] = 'filter_not_run_for_any_build';
+		}
+		
+		// special case 2: when filtering by "current build", we set the build to filter with
+		// to the build chosen in settings instead of the one in filters
+		if ($f_method == $methods['current_build']) {
+			$fobj->filter_result_build = $fobj->setting_build;
+		}
+
+		// call the filter function and do the filtering
+		$items = $ffn[$f_method]($tplan_mgr, $tplan_tcases, $tplan_id, $fobj);
+	}
+	return $items; 
+}
+
+/**
+ * 
+ * 
+ */
+function update_status_for_colors(&$dbHandler,&$items,$context,$statusCfg)
+{
+	$tables = tlObject::getDBTables(array('executions','nodes_hierarchy'));
+	$dummy = current($items);
+	$key2scan = array_keys($items);
+	$keySet = null;
+	foreach($key2scan as $fx)
+	{
+		$keySet[] = $items[$fx]['tcversion_id'];
+	}
+	
+	extract($context);  // magic to create single variables
+	
+	$sql = 	" SELECT E.status, NH_TCV.parent_id AS tcase_id " .
+			" FROM {$tables['executions']} E " .
+			" JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = E.tcversion_id " .
+			" JOIN " .
+			" ( SELECT MAX(E2.id) AS last_exec_id " .
+			"   FROM {$tables['executions']} E2 " .
+			"   WHERE testplan_id = {$tplanID} " .
+			" 	AND tcversion_id IN (" . implode(',', $keySet) . ") " .
+			" 	AND platform_id = {$dummy['platform_id']} " .
+			" 	AND build_id = {$buildID} " .
+			" 	GROUP BY testplan_id,tcversion_id,platform_id,build_id ) AS EY " .
+			" ON E.id = EY.last_exec_id ";
+
+	$result = null;
+	$rs = $dbHandler->fetchRowsIntoMap($sql,'tcase_id');
+	
+	if( !is_null($rs) )
+	{
+		foreach($key2scan as $tcase_id)
+		{
+			$rr = isset($rs[$tcase_id]['status']) && !is_null($rs[$tcase_id]['status']) ? 
+				  $rs[$tcase_id]['status'] : $statusCfg['not_run'];
+
+			if ($rr != $items[$tcase_id]['exec_status']) 
+			{
+				$items[$tcase_id]['exec_status'] = $rr;
+			}
+		}
+	}
+	
 }
 ?>

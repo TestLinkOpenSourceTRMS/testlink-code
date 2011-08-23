@@ -562,14 +562,14 @@ class testplan extends tlObjectWithAttachments
 
 		$this->helper_sql_filters($sql_filter,$my['filters'],$my['options']);
 		
-		new dBug($sql_filter);
+		// new dBug($sql_filter);
 		$this->helper_joins($join,$sql_filter,$my['options'],$id);
 		$hx = 'user_assignment';
 		$extra_fields[$hx] = $join[$hx] == '' ? '' : $extra_fields[$hx];
 
 		$hx = 'executions';
 		
-		new dBug($extra_fields[$hx]);
+		// new dBug($extra_fields[$hx]);
 		$extra_fields[$hx] = $join[$hx] == '' ? '' : $extra_fields[$hx];
 
 		
@@ -598,8 +598,8 @@ class testplan extends tlObjectWithAttachments
 
 		$sql .= " ORDER BY testsuite_id,NH_TCASE.node_order,tc_id,T.platform_id ";
 
-		echo __FUNCTION__ . '<br>';
-		echo $sql;
+		// echo __FUNCTION__ . '<br>';
+		// echo $sql;
 		
 		switch($my['options']['output'])
 		{ 
@@ -789,7 +789,7 @@ class testplan extends tlObjectWithAttachments
 		$ic['filters'] = array_merge($ic['filters'], (array)$filtersCfg);
 		$ic['options'] = array_merge($ic['options'], (array)$optionsCfg);
 
-		new dBug($ic['options']);
+		// new dBug($ic['options']);
 				
 		$extra_fields = array('tcase' => '', 'tsuite' => '', 'executions' => '', 'user_assignment' => '');		
 		$extra_fields['user_assignment'] = " UA.build_id AS assigned_build_id, UA.user_id,UA.status,UA.assigner_id, ";

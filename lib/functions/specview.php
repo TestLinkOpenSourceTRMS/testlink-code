@@ -395,11 +395,11 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
 					 'details' => 'spec_essential') +   (array)$options;
 	//$tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id, $filters, $options);
 	
-	new dBug($argsObj);
+	// new dBug($argsObj);
 	//new dBug($tplan_tcases);
 	$opx = array('output' => 'mapOfArray', 'last_execution' => true) +   (array)$options;
 	$tplan_tcases = $tplanMgr->get_ln_tcversions($argsObj->tplan_id, $filters, $opx);
-	new dBug($tplan_tcases);
+	// new dBug($tplan_tcases);
 	// die();
 	
 	// BUGID 2716

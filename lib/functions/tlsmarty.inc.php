@@ -246,6 +246,8 @@ class TLSmarty extends Smarty
         				  'edit' => TL_THEME_IMG_DIR . "icon_edit.png",
                           'export' => TL_THEME_IMG_DIR . "export.png",
                           'export_import' => TL_THEME_IMG_DIR . "export_import.png",
+                          'executed' => TL_THEME_IMG_DIR . "lightning.png",
+                          'execution_order' => TL_THEME_IMG_DIR . "timeline_marker.png",
                           'history' => TL_THEME_IMG_DIR . "history.png",
                           'history_small' => TL_THEME_IMG_DIR . "history_small.png",
                           'log_message' => TL_THEME_IMG_DIR . "history.png",

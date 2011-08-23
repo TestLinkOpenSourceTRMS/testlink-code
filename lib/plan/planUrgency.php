@@ -6,18 +6,17 @@
  * Define urgency of a Test Suite. 
  * It requires "prioritization" feature enabled.
  *
+ * @filesource	planUrgency.php
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planUrgency.php,v 1.16 2010/01/02 16:54:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
- * @internal Revisions:
- * 		20110415 - Julian - BUGID 4419: Add columns "Importance" and "Priority" 
- *  	                                to "Set urgent Tests"
- * 		20080925 - franciscom - BUGID 1746
- *      20080721 - franciscom
- *           code refactored to follow last development standard.
+ * @internal revisions
+ * @since 1.9.4
+ *
+ * @since 1.9.3
+ * 20110415 - Julian - BUGID 4419: Add columns "Importance" and "Priority" to "Set urgent Tests"
  **/
  
 require('../../config.inc.php');
@@ -72,7 +71,8 @@ if(isset($args->urgency_tc))
 $gui->listTestCases = $tplan_mgr->getSuiteUrgency($args->tplan_id, $args->node_id,$args->tproject_id);
 
 // get priority for each test case
-foreach ($gui->listTestCases as $id => $tcase) {
+foreach ((array)$gui->listTestCases as $id => $tcase) 
+{
 	$gui->listTestCases[$id]['priority'] = priority_to_level($tcase['priority']);
 }
 

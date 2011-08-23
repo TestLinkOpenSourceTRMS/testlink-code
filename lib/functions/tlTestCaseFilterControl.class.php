@@ -872,9 +872,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				//              test plan -> store state for each test plan
 				// BUGID 4625 - usage of wrong values in $this->args->xyz for cookiePrefix
 				//              instead of correct values in $filters->setting_xyz
-				$cookie_prefix = "add_remove_tc_tplan_id_{$filters->setting_testplan}_";
+				$cookie_prefix = "add_remove_tc_tplan_id_{$filters['setting_testplan']}_";
 				
-				if ($this->do_filtering) {
+				if ($this->do_filtering) 
+				{
 					$options = array('forPrinting' => NOT_FOR_PRINTING,
 					                 'hideTestCases' => HIDE_TESTCASES,
 					                 'tc_action_enabled' => ACTION_TESTCASE_DISABLE,
@@ -884,13 +885,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 					$tree_menu = generateTestSpecTree($this->db,
 					                                  $this->args->testproject_id,
 					                                  $this->args->testproject_name,
-					                                  $gui->menuUrl,
-					                                  $filters,
-					                                  $options);
+					                                  $gui->menuUrl,$filters,$options);
 					
 					$root_node = $tree_menu->rootnode;
 				    $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
-				} else {
+				} 
+				else 
+				{
 					$loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
 					                    "root_node={$this->args->testproject_id}&show_tcases=0";
 				

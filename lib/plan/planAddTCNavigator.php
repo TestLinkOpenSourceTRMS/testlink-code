@@ -3,10 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * @filesource	planAddTCNavigator.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: planAddTCNavigator.php,v 1.63 2010/09/08 16:54:23 franciscom Exp $
+ * @copyright 	2005-2011, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan.
@@ -14,7 +14,9 @@
  *	Test specification. Keywords should be used for filter.
  *
  * @internal Revisions:
+ * @since 1.9.4
  *
+ * @since 1.9.3
  * 20100628 - asimon - removal of constants from filter control class
  * 20100625 - asimon - refactoring for new filter features and BUGID 3516
  * 20100624 - asimon - CVS merge (experimental branch to HEAD)
@@ -25,9 +27,6 @@
  * 20100417 - franciscom - BUGID 2498: Add test case to test plan - Filter Test Cases based on Test Importance
  * 20100410 - franciscom - BUGID 2797 - filter by test case execution type
  * 20100228 - franciscom - BUGID 0001927: filter on keyword - Filter tree when add/remove testcases - KO
- * 20090415 - franciscom - BUGID 2384 - Tree doesnt load properly in Add / Remove Test Cases
- * 20090118 - franciscom - added logic to switch (for EXTJS tree type), how tree is builded
- *                         when there are filters
  */
 
 require('../../config.inc.php');

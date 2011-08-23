@@ -796,26 +796,21 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			case 'plan_mode':
 				// No lazy loading here.
 					
-				$additional_info = new stdClass();
-				$additional_info->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
-				$additional_info->useColours = COLOR_BY_TC_STATUS_OFF;
-				$additional_info->testcases_colouring_by_selected_build = DISABLED;
+				$opt_etree = new stdClass();
+				$opt_etree->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
+				$opt_etree->useColours = COLOR_BY_TC_STATUS_OFF;
+				$opt_etree->testcases_colouring_by_selected_build = DISABLED;
+				$opt_etree->absolute_last_execution = true;
 				
 				$filters->show_testsuite_contents = 1;
-				$filters->hide_testcases = 0;
-	
-				if ($this->args->feature == 'test_urgency') {
-					$filters->hide_testcases = 1;
-				}
+				$filters->hide_testcases = ($this->args->feature == 'test_urgency') ? 1 : 0;
 				
-				list($tree_menu, $testcases_to_show) = generateExecTree($this->db,
-		                                                       $gui->menuUrl,
-		                                                       $this->args->testproject_id,
-		                                                       $this->args->testproject_name,
-		                                                       $this->args->testplan_id,
-		                                                       $this->args->testplan_name,
-		                                                       $filters,
-		                                                       $additional_info);
+				list($tree_menu, $testcases_to_show) = generateExecTree($this->db,$gui->menuUrl,
+		                                                       			$this->args->testproject_id,
+		                                                       			$this->args->testproject_name,
+		                                                       			$this->args->testplan_id,
+		                                                       			$this->args->testplan_name,
+		                                                       			$filters,$opt_etree);
 				
 				$this->set_testcases_to_show($testcases_to_show);
 				
@@ -912,27 +907,25 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				// No lazy loading here.
 				// Filtering is always done in execution mode, no matter if user enters data or not,
 				// since the user should usually never see the whole tree here.
-				$additional_info = new stdClass();
 				$filters->hide_testcases = false;
 				$filters->show_testsuite_contents = $this->configuration->exec_cfg->show_testsuite_contents;
-				$additional_info->useCounters = $this->configuration->exec_cfg->enable_tree_testcase_counters;
+		
+		
+				$exec_cfg = &$this->configuration->exec_cfg;
+				$opt_etree = new stdClass();
+				$opt_etree->useCounters = $exec_cfg->enable_tree_testcase_counters;
 				
-				$additional_info->useColours = new stdClass();
-				$additional_info->useColours->testcases = 
-					$this->configuration->exec_cfg->enable_tree_testcases_colouring;
-				$additional_info->useColours->counters = 
-					$this->configuration->exec_cfg->enable_tree_counters_colouring;
-				$additional_info->testcases_colouring_by_selected_build =
-					$this->configuration->exec_cfg->testcases_colouring_by_selected_build; 
+				$opt_etree->useColours = new stdClass();
+				$opt_etree->useColours->testcases = $exec_cfg->enable_tree_testcases_colouring;
+				$opt_etree->useColours->counters =	$exec_cfg->enable_tree_counters_colouring;
+				$opt_etree->testcases_colouring_by_selected_build =	$exec_cfg->testcases_colouring_by_selected_build; 
 					
-				list($tree_menu, $testcases_to_show) = generateExecTree($this->db,
-				                                                        $gui->menuUrl,
+				list($tree_menu, $testcases_to_show) = generateExecTree($this->db,$gui->menuUrl,
 				                                                        $this->args->testproject_id,
 				                                                        $this->args->testproject_name,
 				                                                        $this->args->testplan_id,
 				                                                        $this->args->testplan_name,
-				                                                        $filters,
-				                                                        $additional_info);
+				                                                        $filters,$opt_etree);
 					
 				$this->set_testcases_to_show($testcases_to_show);
 				

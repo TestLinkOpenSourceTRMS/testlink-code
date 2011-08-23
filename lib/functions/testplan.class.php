@@ -538,14 +538,11 @@ class testplan extends tlObjectWithAttachments
 
 		$this->helper_sql_filters($sql_filter,$my['filters'],$my['options']);
 		
-		// new dBug($sql_filter);
-		$this->helper_joins($join,$sql_filter,$my['options'],$id);
+		$this->helper_joins($join,$sql_filter,$my['filters'],$my['options'],$id);
 		$hx = 'user_assignment';
 		$extra_fields[$hx] = $join[$hx] == '' ? '' : $extra_fields[$hx];
 
 		$hx = 'executions';
-		
-		// new dBug($extra_fields[$hx]);
 		$extra_fields[$hx] = $join[$hx] == '' ? '' : $extra_fields[$hx];
 
 		
@@ -715,7 +712,7 @@ class testplan extends tlObjectWithAttachments
 	 * 
  	 * 
  	 */
-	function helper_joins(&$join,&$sqlfx,$options,$tplanID)
+	function helper_joins(&$join,&$sqlfx,$filters,$options,$tplanID)
 	{
 		if( $sqlfx['assigned_on_build'] != '' )
 		// if( $sqlfx['user_assignment'] != '' )
@@ -733,22 +730,72 @@ class testplan extends tlObjectWithAttachments
 		{ 		
 			// If we do not use LEFT OUTER, then we will not get NON executed
 			// this generate an issue on feature add/remove test cases to test plan.
-			$join['executions'] = 	" LEFT OUTER JOIN (SELECT MAX(E2.id) AS lastexecid, testplan_id," . 
-									" tcversion_id,platform_id " .
+			
+			// IMPORTANT NOTICE
+			// we need to change fields and group by on SELECT FROM E2, depending on 
+			// data get_ln_tcversions() receives.
+			// 
+			// Developer Guide - Begin
+			// 
+			// Platform NEED TO BE USED Always. 
+			// Q1. Why ? 
+			// Q2. Why the same logic is not applied to build ?
+			// Answer to both question:
+			// when a build is created ( due to TL architecture ) is "inherited" to
+			// all test case versions present on test plan.
+			// Platform do not work same way, a test case version can have 1,2, .. N
+			// of platforms linked to tesplan.
+			// We can think that use of platforms create N isolated set of test case versions
+			// inside test plan, then when we are looking for LAST EXECUTION we need to do
+			// the search on EACH set (platform).
+			// One test case version for a test plan can belong to 0,1 or more platforms.
+			// Builds ARE NOT ABLE TO CREATE N isolated sets inside the (platforms) sets.
+			// Builds work on (test plan, test case version)
+			//
+			// Developer Guide - End
+			// -------------------------------------------------------------------------------
+			// Use Cases
+			// -------------------------------------------------------------------------------
+			// Use case - we want absolutely LAST EXEC on Platform IGNORING Build
+			// GROUP BY E2.tcversion_id,E2.testplan_id,E2.platform_id
+			//
+			// Use case - we want absolutely LAST EXEC on Platform AND Build
+			// GROUP BY E2.tcversion_id,E2.testplan_id,E2.platform_id,E2.build_id
+			// 
+			$e2_extra_fields = ',platform_id';
+			$e2_extra_where = '';
+			$ex_extra_where = ' AND EX.platform_id = T.platform_id ';
+			$e_extra_where = ' AND E.platform_id = EX.platform_id ';
+
+			if( $filters['build_id'] > 0 )
+			{
+				$e2_extra_fields .= ",build_id";
+				$e2_extra_where .= ' AND E2.build_id = ' . $filters['build_id'];
+				$e_extra_where .= ' AND E.build_id = EX.build_id ';
+			}
+			
+			$join['executions'] = 	" LEFT OUTER JOIN (" .
+									" SELECT MAX(E2.id) AS lastexecid, testplan_id," . 
+									" tcversion_id {$e2_extra_fields}" .
 								  	" FROM {$this->tables['executions']} E2 " .
-								  	" WHERE E2.testplan_id = {$tplanID} " .
-								  	" GROUP BY E2.tcversion_id,E2.testplan_id) AS EX " .
+								  	" WHERE testplan_id = {$tplanID} {$e2_extra_where}" .
+								  	" GROUP BY tcversion_id,testplan_id {$e2_extra_fields}) AS EX " .
+								  	" " . 
 									" ON EX.testplan_id = T.testplan_id AND EX.tcversion_id = T.tcversion_id " .
-									" AND EX.platform_id = T.platform_id " .
+									" {$ex_extra_where} " .
 									" LEFT OUTER JOIN {$this->tables['executions']} E " .
 									" ON E.id = EX.lastexecid AND EX.tcversion_id = E.tcversion_id " .
-									" AND E.platform_id=EX.platform_id AND E.testplan_id=EX.testplan_id ";
+									" AND E.testplan_id=EX.testplan_id {$e_extra_where}  ";
 		}
 		
 	}
 	
 	
 	
+	/**
+	 * 
+ 	 * 
+ 	 */
 	function init_get_ln_tcversions($filtersCfg,$optionsCfg)
 	{
         $ic['filters'] = array('tcase_id' => null, 'keyword_id' => 0,
@@ -767,8 +814,6 @@ class testplan extends tlObjectWithAttachments
 		$ic['filters'] = array_merge($ic['filters'], (array)$filtersCfg);
 		$ic['options'] = array_merge($ic['options'], (array)$optionsCfg);
 
-		// new dBug($ic['options']);
-				
 		$extra_fields = array('tcase' => '', 'tsuite' => '', 'executions' => '', 'user_assignment' => '');		
 		$extra_fields['user_assignment'] = " UA.build_id AS assigned_build_id, UA.user_id,UA.status,UA.assigner_id, ";
 		$extra_fields['executions'] = " E.id AS exec_id, E.tcversion_number, E.tcversion_id AS executed, " .
@@ -1146,14 +1191,6 @@ class testplan extends tlObjectWithAttachments
 
 		
 		}
-		/*
-		new dBug($tcversion_exec_type);
-		new dBug($tc_id);
-		new dBug($builds);
-		new dBug($keywords);
-		new dBug($executions);
-		new dBug($platforms);
-		*/
 
 	    // BUGID 4206 - added exec_on_build to output
 	    // BUGID 3406 - assignments per build
@@ -3410,8 +3447,7 @@ class testplan extends tlObjectWithAttachments
 	 * returns set of tcversions that has same execution status
 	 * in every build present on buildSet.
 	 * ATTENTION!!!: this does not work for not_run status
-	 */
-	 /*           
+
 	  args: id: testplan id
 	        buildSet: builds to analise.
 	        status: status code
@@ -3488,10 +3524,14 @@ class testplan extends tlObjectWithAttachments
 	 * @param array $buildSet build set to check
 	 * @param array $status status to look for
 	 * @return array $recordset set of builds which match the search criterium
-	 * @internal revisions:
-	 *		20101215 - asimon - BUGID 4023: correct filtering also with platforms
+	 *
+	 * @internal revisions
+	 * @since 1.9,4
+	 *
+	 * @since 1.9.1
+	 * 20101215 - asimon - BUGID 4023: correct filtering also with platforms
 	 */
-	function get_status_for_any_build($id, $buildSet, $status, $platformid=NULL) 
+	function get_status_for_any_build($id, $buildSet, $status, $platformID=NULL) 
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -3501,42 +3541,52 @@ class testplan extends tlObjectWithAttachments
 		$build_in = implode(",", $buildSet);
 		$status_in = implode("','", (array)$status);
 		
-		// BUGID 4023
-		$tcversionPlatformString = "";
-		$executionPlatformString = "";
-		
-		if($platformid) {
-			$tcversionPlatformString = "AND T.platform_id=$platformid";
-			$executionPlatformString = "AND E.platform_id=$platformid";
+		$wherePlatform = "";
+		$execOnPlatform = "";
+		$e_extra_fields = "";
+		$sq1_extra_fields = "";
+		if(!is_null($platformID)) 
+		{
+			$wherePlatform = " AND T.platform_id = $platformID ";
+			$execOnPlatform = " AND E.platform_id = $platformID ";
+			$e_extra_fields = ",E.platform_id ";
+			$sq1_extra_fields = ",SQ1.platform_id ";
 		}	
 
 		// 20101202 - asimon - fixed filtering issues when filtering for multiple statuses
 		$first_results = null;
-		
-		if( in_array($resultsCfg['status_code']['not_run'], (array)$status) ) {
-			//not run status
-			// BUGID 4023
-			$sql = "/* $debugMsg */ SELECT distinct T.tcversion_id,E.build_id,NH.parent_id AS tcase_id " .
-				   " FROM {$this->tables['testplan_tcversions']}  T " .
-				   " JOIN {$this->tables['nodes_hierarchy']}  NH ON T.tcversion_id=NH.id " .
-				   " AND NH.node_type_id={$node_types['testcase_version']} " .
-				   " LEFT OUTER JOIN {$this->tables['executions']} E ON T.tcversion_id = E.tcversion_id $executionPlatformString " .
-				   " AND T.testplan_id=E.testplan_id AND E.build_id IN ({$build_in}) " .
-				   " WHERE T.testplan_id={$id} $tcversionPlatformString AND E.build_id IS NULL ";
+		if( in_array($resultsCfg['status_code']['not_run'], (array)$status) ) 
+		{
+			$sql = 	"/* $debugMsg */ " . 
+					" SELECT distinct T.tcversion_id,E.build_id,NH_TCV.parent_id AS tcase_id " .
+				   	" FROM {$this->tables['testplan_tcversions']}  T " .
+				   	" JOIN {$this->tables['nodes_hierarchy']}  NH_TCV " .
+				   	" ON T.tcversion_id=NH_TCV.id AND NH_TCV.node_type_id={$node_types['testcase_version']} " .
+				   	" LEFT OUTER JOIN {$this->tables['executions']} E " . 
+				   	" ON T.tcversion_id = E.tcversion_id $execOnPlatform " .
+				   	" AND T.testplan_id = E.testplan_id AND E.build_id IN ({$build_in}) " .
+				   	" WHERE T.testplan_id={$id} {$wherePlatform} AND E.build_id IS NULL ";
 			$first_results = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		} 
 		
-		//anything else
-		$sql = "/* $debugMsg */ SELECT EE.status,SQ1.tcversion_id, NH.parent_id AS tcase_id," .
-		       " COUNT(EE.status) AS exec_qty " .
-			   " FROM {$this->tables['executions']} EE, {$this->tables['nodes_hierarchy']} NH," .
-			   " (SELECT E.tcversion_id,E.build_id,MAX(E.id) AS last_exec_id " .
-			   "  FROM {$this->tables['executions']} E " .
-			   "  WHERE E.build_id IN ({$build_in}) GROUP BY E.tcversion_id,E.build_id) AS SQ1 " .
-			   " WHERE EE.build_id IN ({$build_in}) " .
-			   " AND EE.status IN ('" . $status_in . "') AND NH.node_type_id={$node_types['testcase_version']} " .
-			   " AND SQ1.last_exec_id=EE.id AND SQ1.tcversion_id=NH.id " .
-			   " GROUP BY status,SQ1.tcversion_id,NH.parent_id";
+		// 20110823 - here platforms has been ignored
+		// anything else
+		$sql = 	"/* $debugMsg */ " . 
+				" SELECT COUNT(EE.status) AS exec_qty, " .
+				" EE.status,SQ1.tcversion_id, NH_TCV.parent_id AS tcase_id {$sq1_extra_fields}" .
+			   	" FROM {$this->tables['executions']} EE, {$this->tables['nodes_hierarchy']} NH_TCV," .
+			   	" (SELECT MAX(E.id) AS last_exec_id, E.tcversion_id,E.build_id {$e_extra_fields}  " .
+			   	"  FROM {$this->tables['executions']} E " .
+			   	"  WHERE E.build_id IN ({$build_in}) " . 
+			   	"  GROUP BY E.tcversion_id,E.build_id {$e_extra_fields}) AS SQ1 " .
+			   	" " .
+			   	" WHERE EE.build_id IN ({$build_in}) " .
+			   	" AND EE.status IN ('" . $status_in . "') AND NH_TCV.node_type_id={$node_types['testcase_version']} " .
+			   	" AND SQ1.last_exec_id = EE.id AND SQ1.tcversion_id=NH_TCV.id " .
+			   	" GROUP BY status,SQ1.tcversion_id,NH_TCV.parent_id {$sq1_extra_fields}";
+		
+		
+		// echo($sql);
 		
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		
@@ -5242,5 +5292,3 @@ class milestone_mgr extends tlObject
 
 } // end class milestone_mgr
 ?>
-
-

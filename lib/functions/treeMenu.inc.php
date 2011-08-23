@@ -899,8 +899,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		// 20110823 - refactoring		
 		if( $apply_other_filters )
 		{
-			$tplan_tcases = apply_status_filters($tplan_id,$tplan_tcases,$filters,$tplan_mgr,$resultsCfg['status_code']);
-			if (is_null($tplan_tcases))
+			$tplan_tcases = (array)apply_status_filters($tplan_id,$tplan_tcases,$filters,$tplan_mgr,$resultsCfg['status_code']);
+			if( count($tplan_tcases) == 0)
 			{
 				$tplan_tcases = array();
 				$apply_other_filters=false;
@@ -922,7 +922,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		// We never display a tree where we have one test case occurrence for each platform.
 		// Under this context query can be simplified, using a fixed value for platform_id filter.
 		// 
-		if ($useColors && $colorBySelectedBuild) 
+		if ($apply_other_filters && $useColors && $colorBySelectedBuild) 
 		{
 			$context = array('tplanID' => $tplan_id, 'buildID' => $filters->setting_build); 
 			update_status_for_colors($db,$tplan_tcases,$context,$resultsCfg['status_code']);
@@ -1545,22 +1545,31 @@ function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 	$buildSet = array($filters->$build_key => $tplan_mgr->get_build_by_id($tplan_id,$filters->$build_key));
 	
 	// BUGID 4023
-	if( !is_null($buildSet) ) {
-		$tcase_build_set = $tplan_mgr->get_status_for_any_build($tplan_id,
-		                                                array_keys($buildSet),$filters->$result_key, $filters->setting_platform);  
-		if( is_null($tcase_build_set) ) {
+	if( !is_null($buildSet) ) 
+	{
+		$tcase_build_set = $tplan_mgr->get_status_for_any_build($tplan_id,array_keys($buildSet),
+																$filters->$result_key, $filters->setting_platform);  
+
+		if( is_null($tcase_build_set) ) 
+		{
 			$tcase_set = array();
-		} else {
+		} 
+		else 
+		{
 			$key2remove=null;
-			foreach($tcase_set as $key_tcase_id => $value) {
-				if( !isset($tcase_build_set[$key_tcase_id]) ) {
+			foreach($tcase_set as $key_tcase_id => $value) 
+			{
+				if( !isset($tcase_build_set[$key_tcase_id]) ) 
+				{
 					$key2remove[]=$key_tcase_id;
 				}
 			}
 		}
 
-		if( !is_null($key2remove) ) {
-			foreach($key2remove as $key) {
+		if( !is_null($key2remove) ) 
+		{
+			foreach($key2remove as $key) 
+			{
 				unset($tcase_set[$key]); 
 			}
 		}
@@ -2250,9 +2259,9 @@ function apply_status_filters($tplan_id,&$items,&$fobj,&$tplan_mgr,$statusCfg)
 		if ($f_method == $methods['current_build']) {
 			$fobj->filter_result_build = $fobj->setting_build;
 		}
-
+		
 		// call the filter function and do the filtering
-		$items = $ffn[$f_method]($tplan_mgr, $tplan_tcases, $tplan_id, $fobj);
+		$items = $ffn[$f_method]($tplan_mgr, $items, $tplan_id, $fobj);
 	}
 	return $items; 
 }

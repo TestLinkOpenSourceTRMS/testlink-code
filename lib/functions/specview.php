@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 	20110824 - franciscom - fixed issue using get_branch()	
  * 	20110820 - franciscom - TICKET 4710 - getFilteredLinkedVersions()	
  *
  * @since 1.9.3
@@ -378,10 +379,9 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
 		// will get all test suites in this branch, in order to limit amount of data returned by 
 		// get_*_tcversions
 		$tsuite_mgr = new testsuite($dbHandler);
-		$xx = $tsuite_mgr->get_children($argsObj->object_id,array('details' => 'id'));
-		$ldx = count($xx);
-		$xx[$ldx] = $argsObj->object_id;
-		$filters['tsuites_id'] = $xx;
+		$xx = $tsuite_mgr->get_branch($argsObj->object_id);
+		$xx .= ($xx == '') ? $argsObj->object_id : ',' . $argsObj->object_id;
+		$filters['tsuites_id'] = explode(',',$xx);
 		unset($tsuite_mgr);
 	}
 	$opx = array('output' => 'mapOfArray', 'last_execution' => true) +   (array)$options;

@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20110824 - franciscom - get_branch() new method
  * 20110820 - franciscom - get_children() interface changes
  *
  * @since 1.9.3
@@ -80,7 +81,7 @@ class testsuite extends tlObjectWithAttachments
 	 * 
 	 * @param resource &$db reference to database handler
 	 */
-	function testsuite(&$db)
+	function __construct(&$db)
 	{
 		$this->db = &$db;	
 		
@@ -1366,6 +1367,18 @@ class testsuite extends tlObjectWithAttachments
 	    }
 	    return $itemSet;
 	}
+
+	/**
+	 * get_branch
+	 * get ONLY test suites (no other kind of node) ON BRANCH with ROOT = testsuite with given id
+	 *
+	 */
+	function get_branch($id)
+	{
+		$branch = $this->tree_manager->get_subtree_list($id,$this->my_node_type);
+	  	return $branch;
+	}
+
 
 } // end class
 

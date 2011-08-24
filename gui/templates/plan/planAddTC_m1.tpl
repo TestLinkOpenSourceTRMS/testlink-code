@@ -373,7 +373,7 @@ Ext.onReady(function(){
             	   			{/if}
             	   
                    			{if $tcase.executed[0] eq 'yes'}&nbsp;&nbsp;&nbsp;
-   				                  <img src="{$tlImages.executed} title="{$gui->warning_msg->executed}" />
+   				                  <img src="{$tlImages.executed}" title="{$gui->warning_msg->executed}" />
                       		{/if}
                       		{if $is_active eq 0}&nbsp;&nbsp;&nbsp;{$labels.inactive_testcase}{/if}
             			  </td>

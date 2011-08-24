@@ -373,14 +373,17 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
 	// BUGID 2797 - filter by test case execution type
 	$filters = array('keyword_id' => $argsObj->keyword_id);
 	
+	//new dBug($argsObj);
+	// die();
 	// get test suites in branch to limit search
-	if( !is_null($argsObj->object_id) )
+	$itemID = property_exists($argsObj,'object_id') ? $argsObj->object_id : $argsObj->id;
+	if( !is_null($itemID) )
 	{
 		// will get all test suites in this branch, in order to limit amount of data returned by 
 		// get_*_tcversions
 		$tsuite_mgr = new testsuite($dbHandler);
-		$xx = $tsuite_mgr->get_branch($argsObj->object_id);
-		$xx .= ($xx == '') ? $argsObj->object_id : ',' . $argsObj->object_id;
+		$xx = $tsuite_mgr->get_branch($itemID);
+		$xx .= ($xx == '') ? $itemID : ',' . $itemID;
 		$filters['tsuites_id'] = explode(',',$xx);
 		unset($tsuite_mgr);
 	}
@@ -442,7 +445,7 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
 	
 	// This does filter on keywords ALWAYS in OR mode.
 	// BUGID 3406: added $options
-	$tplan_linked_tcversions = getFilteredLinkedVersions($argsObj, $tplanMgr, $tcaseMgr, $options);
+	$tplan_linked_tcversions = getFilteredLinkedVersions($dbHandler,$argsObj, $tplanMgr, $tcaseMgr, $options);
 
 	// With these pieces we implement the AND type of keyword filter.
 	$testCaseSet = null;

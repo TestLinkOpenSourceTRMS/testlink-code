@@ -178,6 +178,11 @@ DEBUG: $gui->action: {$gui->action} <br>
   	</tr>
   
   {if $gui->tcaseSteps != ''}
+  
+    {* BUGID 3583 - Amit - horizintal row between test case steps *}
+    {$rowCount=$gui->tcaseSteps|@count} 
+    {$row=0}
+    
    	{foreach from=$gui->tcaseSteps item=step_info}
   	  <tr id="step_row_{$step_info.step_number}">
       {if $step_info.step_number == $gui->step_number}
@@ -199,6 +204,19 @@ DEBUG: $gui->action: {$gui->action} <br>
   	  	  <td><a href="{$hrefEditStep}{$step_info.id}">{$gui->execution_types[$step_info.execution_type]}</a></td>
   	  	{/if}  
       {/if}
+		{* BUGID 3583 - Amit - horizintal row between test case steps *}
+		{$rCount=$row+$step_info.step_number}
+		{if ($rCount < $rowCount) && ($rowCount>=1)}
+			<tr width="100%">
+				{if $gui->automationEnabled}
+				<td colspan=6>
+				{else}
+				<td colspan=5>
+				{/if}
+				<hr align="center" width="100%" color="grey" size="1">
+				</td>
+			</tr>
+		{/if}
   	  </tr>
     {/foreach}
   {/if}

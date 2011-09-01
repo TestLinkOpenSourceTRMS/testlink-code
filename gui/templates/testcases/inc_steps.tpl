@@ -12,6 +12,7 @@ Author : eloff, 2010
 
 
 @internal revisions:
+  20110901 - amitkhullar - BUGID 3583 - horizintal row between test case steps
   20110108 - franciscom - BUGID 4144 - missing insert step feature on VERTICAL layout
   20101016 - franciscom - added id to table rows with step data 
 	20100621 - eloff - initial commit
@@ -43,7 +44,11 @@ Author : eloff, 2010
 		<th>&nbsp;</th>
 		{/if}
 	</tr>
-	{* BUGID 3376 *}
+	
+	{* BUGID 3583 - Amit - horizintal row between test case steps *}
+	{assign var=rowCount value=$steps|@count} 
+	{assign var=row value=0}
+	
 	{foreach from=$steps item=step_info}
 	<tr id="step_row_{$step_info.step_number}">
 		<td style="text-align:left;">
@@ -77,6 +82,19 @@ Author : eloff, 2010
 			     onclick="launchInsertStep({$step_info.id});"    src="{$tlImages.insert_step}"/>
 		</td>
 		
+		{/if}
+		{* BUGID 3583 - Amit - horizintal row between test case steps *}
+		{assign var=rCount value=$row+$step_info.step_number}
+		{if ($rCount < $rowCount) && ($rowCount>=1)}
+			<tr width="100%">
+				{if $session['testprojectOptions']->automationEnabled}
+				<td colspan=6>
+				{else}
+				<td colspan=5>
+				{/if}
+				<hr align="center" width="100%" color="grey" size="1">
+				</td>
+			</tr>
 		{/if}
 	</tr>
 	{/foreach}

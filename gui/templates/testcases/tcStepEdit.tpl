@@ -4,6 +4,7 @@ $Id: tcStepEdit.tpl,v 1.35.2.6 2011/02/11 07:51:12 mx-julian Exp $
 Purpose: create/edit test case step
 
 rev:
+	20110901 - amitkhullar - BUGID 3583 - horizintal row between test case steps
 	20110217 - Julian - BUGID 3737, 4002, 4250 - Cancel Button was not working properly
 	20110209 - Julian - BUGID 4230 - removed old code to set focus on step
 	20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
@@ -196,6 +197,11 @@ DEBUG: $gui->action: {$gui->action} <br>
   
   {* this means we have steps to display *}
   {if $gui->tcaseSteps != ''}
+  
+    {* BUGID 3583 - Amit - horizintal row between test case steps *}
+    {assign var=rowCount value=$gui->tcaseSteps|@count} 
+    {assign var=row value=0}
+    
    	{foreach from=$gui->tcaseSteps item=step_info}
   	  <tr id="step_row_{$step_info.step_number}">
       {if $step_info.step_number == $gui->step_number}
@@ -217,6 +223,19 @@ DEBUG: $gui->action: {$gui->action} <br>
   	  	  <td><a href="{$hrefEditStep}{$step_info.id}">{$gui->execution_types[$step_info.execution_type]}</a></td>
   	  	{/if}  
       {/if}
+		{* BUGID 3583 - Amit - horizintal row between test case steps *}
+		{assign var=rCount value=$row+$step_info.step_number}
+		{if ($rCount < $rowCount) && ($rowCount>=1)}
+			<tr width="100%">
+				{if $session['testprojectOptions']->automationEnabled}
+				<td colspan=6>
+				{else}
+				<td colspan=5>
+				{/if}
+				<hr align="center" width="100%" color="grey" size="1">
+				</td>
+			</tr>
+		{/if}
   	  </tr>
     {/foreach}
   {/if}

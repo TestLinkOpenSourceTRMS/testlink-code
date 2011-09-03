@@ -6,23 +6,25 @@
  * Test navigator for Test Plan
  *
  *
+ * @filesource	planTCNavigator.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2003-2009, TestLink community
- * @version    	CVS: $Id: planTCNavigator.php,v 1.52 2010/10/03 15:34:15 franciscom Exp $
+ * @copyright 	2003-2011, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
- *  20100708 - asimon - BUGID 3406
- *  20100628 - asimon - removal of constants from filter control class
- *  20160625 - asimon - refactoring for new filter features
- *  20100624 - asimon - CVS merge (experimental branch to HEAD)
- *  20100622 - asimon - huge refactorization for new tlTestCaseFilterControl class
- *  20100428 - asimon - BUGID 3301 and related issues - changed name or case
- *                      of some variables used in new common template,
- *                      added filtering by custom fields
- *	20100202 - asimon - BUGID 2455, BUGID 3026
- *  20081223 - franciscom - advanced/simple filter feature
+ * @internal revisions
+ * @since 1.9.4	
+ * 20110824 - franciscom - TICKET 4721: Left side tree manu - add specific navigator titles
+ *
+ * @since 1.9.1	
+ * 20100708 - asimon - BUGID 3406
+ * 20100628 - asimon - removal of constants from filter control class
+ * 20160625 - asimon - refactoring for new filter features
+ * 20100624 - asimon - CVS merge (experimental branch to HEAD)
+ * 20100622 - asimon - huge refactorization for new tlTestCaseFilterControl class
+ * 20100428 - asimon - BUGID 3301 and related issues - changed name or case
+ *                     of some variables used in new common template, added filtering by custom fields
+ * 20100202 - asimon - BUGID 2455, BUGID 3026
  **/
 
 require('../../config.inc.php');
@@ -70,17 +72,21 @@ function initializeGui(&$dbHandler, &$control, &$assignmentMgr) {
 	$gui->additional_string = '';
 	
 	// configure target URLs and clickable buttons
-	switch($control->args->feature) {
+	switch($control->args->feature) 
+	{
 		case 'planUpdateTC':
 			$gui->menuUrl = "lib/plan/planUpdateTC.php";
+			$gui->title_navigator = lang_get('navigator_update_linked_tcversions');
 			$control->draw_bulk_update_button = true;
 		break;
 		
 		case 'test_urgency':
+			$gui->title_navigator = lang_get('navigator_test_urgency');
 			$gui->menuUrl = "lib/plan/planUrgency.php";
 		break;
 
 		case 'tc_exec_assignment':
+			$gui->title_navigator = lang_get('navigator_tc_exec_assignment');
 			$gui->menuUrl = "lib/plan/tc_exec_assignment.php";
 			// BUGID 3406 - check for assignments before displaying the unassign button
 			$build_id = $control->settings['setting_build']['selected'];

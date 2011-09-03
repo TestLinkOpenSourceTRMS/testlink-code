@@ -13,18 +13,10 @@
  *	It builds the javascript tree that allow the user select a required part
  *	Test specification. Keywords should be used for filter.
  *
- * @internal Revisions:
+ * @internal revisions
+ * @since 2.0
+ * 20110824 - franciscom - TICKET 4721: Left side tree manu - add specific navigator titles
  *
- * 20100628 - asimon - removal of constants from filter control class
- * 20100625 - asimon - refactoring for new filter features and BUGID 3516
- * 20100624 - asimon - CVS merge (experimental branch to HEAD)
- * 20100622 - asimon - huge refactorization for new tlTestCaseFilterControl class
- * 20100428 - asimon - BUGID 3301 and related issues - changed name or case
- *                     of some variables used in new common template,
- *                     added custom field filtering logic
- * 20100417 - franciscom - BUGID 2498: Add test case to test plan - Filter Test Cases based on Test Importance
- * 20100410 - franciscom - BUGID 2797 - filter by test case execution type
- * 20100228 - franciscom - BUGID 0001927: filter on keyword - Filter tree when add/remove testcases - KO
  */
 
 require('../../config.inc.php');
@@ -70,6 +62,7 @@ function initializeGui($control)
 	//                       "tplan_id={$control->args->testplan_id}" . 
 	//                       $gui->args;
 	
+	$gui->title_navigator = lang_get('navigator_add_remove_tcase_to_tplan');
 	return $gui;
 }
 ?>

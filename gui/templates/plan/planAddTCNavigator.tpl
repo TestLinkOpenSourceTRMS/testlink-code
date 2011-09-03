@@ -5,16 +5,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
 
-@internal revisions  
-  20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
-  20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
-  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  On JS expression SPACE is NEED 
-                          BEFORE Closing curly Bracket and AFTER opening curly Bracket
-  20101027 - asimon - BUGID 3946: reqirement specification tree size     
-  20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
-                      them with new included template inc_tc_filter_panel.tpl
-  20100417 - franciscom - BUGID 2498 - filter by test case spec importance
-  20100410 - franciscom - BUGID 2797 - filter by test case execution type
+@internal revisions
+@since 2.0
+20110824 - franciscom - TICKET 4721: Left side tree manu - add specific navigator titles
 *}
 
 {lang_get var="labels" 
@@ -105,7 +98,7 @@ function pre_submit()
  *}
 
 	
-<h1 class="title">{$labels.title_navigator}</h1>
+<h1 class="title">{$gui->title_navigator}</h1>
 <div style="margin: 3px;">
 
 {* BUGID 3301 *}

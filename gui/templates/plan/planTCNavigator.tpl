@@ -5,8 +5,9 @@ show test plan tree for execution
 
 @filesource	planTCNavigator.tpl
 @internal revisions
-20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
-20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
+@since 2.0
+20110824 - franciscom - TICKET 4721: Left side tree manu - add specific navigator titles
+
 *}
 
 {lang_get var="labels" 
@@ -100,7 +101,7 @@ function update2latest(tproject_id,tplan_id)
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1 class="title">{$labels.title_navigator} {$labels.TestPlan} {$gui->additional_string|escape}</h1>
+<h1 class="title">{$gui->title_navigator} {$gui->additional_string|escape}</h1>
 
 {*
 {assign var="keywordsFilterDisplayStyle" value=""}

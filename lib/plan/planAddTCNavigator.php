@@ -13,8 +13,9 @@
  *	It builds the javascript tree that allow the user select a required part
  *	Test specification. Keywords should be used for filter.
  *
- * @internal Revisions:
+ * @internal revisions
  * @since 1.9.4
+ * 20110824 - franciscom - TICKET 4721: Left side tree manu - add specific navigator titles
  *
  * @since 1.9.3
  * 20100628 - asimon - removal of constants from filter control class
@@ -56,7 +57,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * @param tlTestCaseFilterControl $control
  * @return object $gui
  */
-function initializeGui($control) {
+function initializeGui($control) 
+{
 	$gui = new stdClass();
 	$gui->menuUrl = 'lib/plan/planAddTC.php';
 	$gui->args = $control->get_argument_string();
@@ -64,6 +66,7 @@ function initializeGui($control) {
 	$gui->src_workframe = $control->args->basehref . $gui->menuUrl .
 	                "?edit=testproject&id={$control->args->testproject_id}" . $gui->args;
 	
+	$gui->title_navigator = lang_get('navigator_add_remove_tcase_to_tplan');
 	return $gui;
 }
 ?>

@@ -1,22 +1,23 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.26.2.3 2010/12/06 15:49:22 asimon83 Exp $
-f
+@filesource planAddTCNavigator.tpl
+
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
 
-Revisions:    
-  20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
-  20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
-  20101027 - asimon - BUGID 3946: reqirement specification tree size     
-  20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
-                      them with new included template inc_tc_filter_panel.tpl
-  20100417 - franciscom - BUGID 2498 - filter by test case spec importance
-  20100410 - franciscom - BUGID 2797 - filter by test case execution type
-	20080629 - franciscom - fixed missed variable bug
-  20080622 - franciscom - ext js tree support
-  20080429 - franciscom - keyword filter multiselect
- ------------------------------------------------------------------------ *}
+@internal revisions
+@since 1.9.4
+20110824 - franciscom - TICKET 4721: Left side tree manu - add specific navigator titles
+
+@since 1.9.3    
+20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
+20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
+20101027 - asimon - BUGID 3946: reqirement specification tree size     
+20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
+                    them with new included template inc_tc_filter_panel.tpl
+20100417 - franciscom - BUGID 2498 - filter by test case spec importance
+20100410 - franciscom - BUGID 2797 - filter by test case execution type
+*}
 
 {lang_get var="labels" 
           s='keywords_filter_help,btn_apply_filter,execution_type,importance,
@@ -114,7 +115,7 @@ function pre_submit()
  *}
 
 	
-<h1 class="title">{$labels.title_navigator}</h1>
+<h1 class="title">{$gui->title_navigator}</h1>
 <div style="margin: 3px;">
 
 {* BUGID 3301 *}

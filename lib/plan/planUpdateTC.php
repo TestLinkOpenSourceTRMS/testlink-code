@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.47 2010/10/24 14:30:26 franciscom Exp $
+ * @filesource planUpdateTC.php
  *
  * Author: franciscom
  *
@@ -10,6 +10,9 @@
  * Test Case Execution assignments will be auto(magically) updated.
  *
  * 	@internal revisions:
+ *	@since 1.9.4
+ *
+ *	@since 1.9.3
  *	20101024 - francisco - method renamed to getFilteredSpecView() + changes in interfa 
  *  20100726 - asimon - fixed bug in processTestPlan(): "All linked Test Case Versions are current" 
  *                      was always displayed on bulk update of linked versions 
@@ -19,8 +22,6 @@
  *  20100624 - asimon - CVS merge (experimental branch to HEAD)
  *	20100131 - franciscom - BUGID 3008/3109	
  *	20100123 - franciscom - BUGID 2652 + missing refactoring for table prefix doUpdate()
- *	20091212 - franciscom - added contribution by asimon83 (refactored) - BUGID 2652
- *                          show newest testcase versions when updating all linked testcase versions
  *	
  */
 require_once("../../config.inc.php");

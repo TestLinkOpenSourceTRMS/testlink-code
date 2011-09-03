@@ -81,6 +81,11 @@ $TLS_Milestone = "Milestone";
 $TLS_months	= "months";
 $TLS_monitor	= "Monitor";
 $TLS_name	= "Name";
+$TLS_navigator_add_remove_tcase_to_tplan	= "Add/Remove Test Cases";
+$TLS_navigator_tc_exec_assignment = "Execution assignment";
+$TLS_navigator_test_urgency = "Test Case urgency assignment";
+$TLS_navigator_update_linked_tcversions = "Update Linked Test Case Versions";
+
 $TLS_needed = "Needed";
 $TLS_not_aplicable = "N/A";
 $TLS_nobody = "Nobody";

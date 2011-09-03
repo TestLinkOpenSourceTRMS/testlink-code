@@ -14,6 +14,10 @@
  * It holds logic to be used at GUI level to manage a common set of settings and filters for requirements.
  * 
  * @internal revisions
+ * @since 2.0
+ * 20110903 - franciscom - 	added mode private property to avoid event viewer warnings.
+ *							may be issue was created while refactoring to allow TABBED BROWSING
+ *
  * 20110426 - franciscom - init_args() interface changes
  * 20110311 - asimon - Show count for total requirements in tree on root node
  */
@@ -30,6 +34,9 @@ class tlRequirementFilterControl extends tlFilterControl {
 	
 	public $req_mgr = null;
 	
+	// 20110903 - franciscom - added to remove warning from event viewer
+	private $mode = 'req_edit';
+
 	/**
 	 * This array contains all possible filters.
 	 * It is used as a helper to iterate over all the filters in some loops.
@@ -75,12 +82,9 @@ class tlRequirementFilterControl extends tlFilterControl {
 		// load req and req spec config (for types, filters, status, ...)
 		$this->configuration->req_cfg = config_get('req_cfg');
 		$this->configuration->req_spec_cfg = config_get('req_spec_cfg');
+
 		// is choice of advanced filter mode enabled?
-    	if ($this->configuration->advanced_filter_mode_choice) {
-    		$this->filter_mode_choice_enabled = true;
-    	} else {
-    		$this->filter_mode_choice_enabled = false;
-    	}
+		$this->filter_mode_choice_enabled = $this->configuration->advanced_filter_mode_choice;
 		
 		return tl::OK;
 	}

@@ -348,6 +348,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->save_session_data();
 	}
 
+	/**
+	 * 
+	 * 
+	 */
 	public function __destruct() {
 		parent::__destruct(); //destroys testproject manager
 		
@@ -606,10 +610,15 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		return $value;
 	} // end of method
 
-	public function set_testcases_to_show($testcases_to_show = null) {
+	/**
+	 * 
+	 * 
+	 */
+	public function set_testcases_to_show($value = null) 
+	{
 		// update active_filters
 		if (!is_null($testcases_to_show)) {
-			$this->active_filters['testcases_to_show'] = $testcases_to_show;
+			$this->active_filters['testcases_to_show'] = $value;
 		}
 		
 		// Since a new filter in active_filters has been set from outside class after
@@ -670,6 +679,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}
 	}
 	
+	/**
+	 * 
+	 * 
+	 */
 	public function delete_own_session_data() {
 		if (isset($_SESSION[$this->mode]) && isset($_SESSION[$this->mode][$this->form_token])) {
 			unset($_SESSION[$this->mode][$this->form_token]);
@@ -804,6 +817,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				
 				$filters->show_testsuite_contents = 1;
 				$filters->hide_testcases = ($this->args->feature == 'test_urgency') ? 1 : 0;
+				
+				//new dBug($opt_etree);
+				//new dBug($filters);
 				
 				list($tree_menu, $testcases_to_show) = generateExecTree($this->db,$gui->menuUrl,
 		                                                       			$this->args->testproject_id,
@@ -955,7 +971,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$gui->ajaxTree->dragDrop = $drag_and_drop;
 	} // end of method
 	
-	private function init_setting_refresh_tree_on_action() {
+	/**
+	 * 
+	 * 
+	 */
+	private function init_setting_refresh_tree_on_action() 
+	{
 
 		$key = 'setting_refresh_tree_on_action';
 		$hidden_key = 'hidden_setting_refresh_tree_on_action';
@@ -981,7 +1002,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$_SESSION[$key] = $selection;		
 	} // end of method
 
-	private function init_setting_build() {
+
+
+	/**
+	 * 
+	 * 
+	 */
+	private function init_setting_build() 
+	{
 
 		$key = 'setting_build';
 		if (is_null($this->testplan_mgr)) {
@@ -1027,7 +1055,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$_SESSION[$session_key] = $this->settings[$key]['selected'];
 	} // end of method
 
-	private function init_setting_testplan() {
+
+	/**
+	 * 
+	 * 
+	 */
+	private function init_setting_testplan() 
+	{
 
 		if (is_null($this->testplan_mgr)) {
 			$this->testplan_mgr = new testplan($this->db);
@@ -1075,7 +1109,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}
 	} // end of method
 
-	private function init_setting_platform() {
+	/**
+	 * 
+	 * 
+	 */
+	private function init_setting_platform() 
+	{
 		if (!$this->platform_mgr) {
 			$this->platform_mgr = new tlPlatform($this->db);
 		}
@@ -1109,6 +1148,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$_SESSION[$session_key] = $this->settings[$key]['selected'];
 	} // end of method
 
+	/**
+	 * 
+	 * 
+	 */
 	private function init_filter_tc_id() {
 		$key = 'filter_tc_id';
 		$selection = $this->args->{$key};
@@ -1136,6 +1179,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->active_filters[$key] = $internal_id;
 	} // end of method
 	
+	/**
+	 * 
+	 * 
+	 */
 	private function init_filter_testcase_name() {
 		$key = 'filter_testcase_name';
 		$selection = $this->args->{$key};
@@ -1151,6 +1198,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	} // end of method
 
 
+	/**
+	 * 
+	 * 
+	 */
 	private function init_filter_toplevel_testsuite() {
 		if (!$this->testproject_mgr) {
 			$this->testproject_mgr = new testproject($this->db);
@@ -1190,6 +1241,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}		
 	} // end of method
 
+	/**
+	 * 
+	 * 
+	 */
 	private function init_filter_keywords() {
 		$key = 'filter_keywords';
 		$type = 'filter_keywords_filter_type';
@@ -1198,8 +1253,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
 		switch ($this->mode) {
 			case 'edit_mode':
-			// BUGID 3822
-			case 'plan_add_mode':
+			case 'plan_add_mode':  	// BUGID 3822
 				// we need the keywords for the whole testproject
 				if (!$this->testproject_mgr) {
 					$this->testproject_mgr = new testproject($this->db);

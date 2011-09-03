@@ -13,6 +13,10 @@
  * This page presents the search formular for requirements.
  *
  * @internal revisions
+ * @since 2.0
+ * 20110815 - franciscom - 	TICKET 4700: Req Search Improvements - search on log message and 
+ *							provide link/url to multiple results
+ *
  * 20110425 - franciscom - 	BUGID 4429: Code refactoring to remove global coupling as much as possible
  *							BUGID 4339: Working with two different projects within one Browser (same session) 
  *							is not possible without heavy side-effects
@@ -35,7 +39,7 @@ checkRights($db,$_SESSION['currentUser'],$args);
 $gui = new stdClass();
 $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
 $gui->tcasePrefix .= $tcase_cfg->glue_character;
-$gui->mainCaption = lang_get('testproject') . " " . $args->tprojectName;
+$gui->mainCaption = lang_get('testproject') . " " . $args->tproject_name;
 $gui->tproject_id = $args->tproject_id;
 $gui->creation_date_from = null;
 $gui->creation_date_to = null;
@@ -61,7 +65,6 @@ $gui->filter_by['expected_coverage'] = !is_null($coverageManagement);
 
 $gui->reqStatus = init_labels($reqCfg->status_labels);
 
-//BUGID 1748
 $gui->filter_by['relation_type'] = $reqCfg->relations->enable;
 $gui->req_relation_select = $req_mgr->init_relation_type_select();
 foreach ($gui->req_relation_select['equal_relations'] as $key => $oldkey) 

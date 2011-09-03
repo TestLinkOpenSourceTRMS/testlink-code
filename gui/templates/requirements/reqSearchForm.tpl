@@ -5,6 +5,10 @@ show form for requirement search.
 
 @filesource	reqSearchForm.tpl
 @internal revisions
+
+@since 2.0
+20110815 - franciscom - TICKET 4700: Req Search Improvements
+
 *}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -16,7 +20,7 @@ show form for requirement search.
              title_search_req, reqid, reqversion, caption_search_form_req, title, scope,
              coverage, status, type, version, th_tcid, has_relation_type,
              modification_date_from,modification_date_to,creation_date_from,creation_date_to,
-             show_calender,clear_date'}
+             show_calender,clear_date,log_message'}
 
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
@@ -55,7 +59,7 @@ show form for requirement search.
 		<tr>
 			<td>{$labels.status}</td>
      		<td><select name="reqStatus">
-     		<option value="nostatus">&nbsp;</option>
+     		<option value="">&nbsp;</option>
   			{html_options options=$gui->reqStatus}
   			</select></td>
   		</tr>
@@ -64,7 +68,7 @@ show form for requirement search.
 			<td>{$labels.type}</td>
 			<td>
 				<select name="reqType" id="reqType">
-					<option value="notype">&nbsp;</option>
+					<option value="">&nbsp;</option>
   					{html_options options=$gui->types}
   				</select>
   			</td>
@@ -82,7 +86,7 @@ show form for requirement search.
 				<td>{$labels.has_relation_type}</td>
 				<td>
 					<select id="relation_type" name="relation_type" />
-						<option value="notype">&nbsp;</option>
+						<option value="">&nbsp;</option>
 						{html_options options=$gui->req_relation_select.items}
 					</select>
 				</td>				
@@ -154,7 +158,17 @@ show form for requirement search.
 				<div id="modification_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 		  </td>
 		</tr>
-		
+		<tr>
+			<td>{$labels.th_tcid}</td>
+			<td><input type="text" name="tcid" value="{$gui->tcasePrefix}" 
+			           size="{#TC_ID_SIZE#}" maxlength="{#TC_ID_MAXLEN#}" /></td>
+		</tr>
+		<tr>
+			<td>{$labels.log_message}</td>
+			<td><input type="text" name="log_message" id="log_message" 
+					   size="{#LOGMSG_SIZE#}" maxlength="{#LOGMSG_MAXLEN#}" /></td>
+		</tr>
+	
 		{if $gui->filter_by.design_scope_custom_fields}
 		    <tr>
    	    	<td>{$labels.custom_field}</td>
@@ -174,16 +188,6 @@ show form for requirement search.
 		    	</td>
 	      </tr>
 	  {/if}
-	  
-		<tr>
-			<td>{$labels.th_tcid}</td>
-			<td><input type="text" name="tcid" value="{$gui->tcasePrefix}" 
-			           size="{#TC_ID_SIZE#}" maxlength="{#TC_ID_MAXLEN#}" /></td>
-		</tr>
-		
-	  		
-		
-  			      
 	</table>
 	
 	<p style="padding-left: 20px;">

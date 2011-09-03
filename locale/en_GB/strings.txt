@@ -90,12 +90,19 @@ $TLS_Milestone = "Milestone";
 $TLS_months	= "months";
 $TLS_monitor	= "Monitor";
 $TLS_name	= "Name";
+$TLS_navigator_add_remove_tcase_to_tplan	= "Add/Remove Test Cases";
+$TLS_navigator_tc_exec_assignment = "Execution assignment";
+$TLS_navigator_test_urgency = "Test Case urgency assignment";
+$TLS_navigator_update_linked_tcversions = "Update Linked Test Case Versions";
+
 $TLS_needed = "Needed";
 $TLS_not_aplicable = "N/A";
 $TLS_nobody = "Nobody";
 $TLS_not_imported = "Not imported";
 $TLS_none = "None";
 $TLS_ok = "OK";
+$TLS_open_on_new_window = "open on new window";
+
 $TLS_priority	= "Priority";
 $TLS_project = "Project";
 $TLS_public = "Public";
@@ -110,6 +117,9 @@ $TLS_required = "Required";
 $TLS_req_specification = "Req. Specification";
 $TLS_revision = "revision";
 $TLS_revision_short = "rev";
+$TLS_revision_tag = "[r%s]";
+$TLS_version_tag = "[v%s]";
+$TLS_version_revision_tag = "[v%sr%s]";
 
 $TLS_srs = "SRS";
 $TLS_Role = "Role";
@@ -249,9 +259,10 @@ $TLS_specific_direct_link = "Direct link to this specific version of the current
 $TLS_reserved_system_role_1 = 'reserved system role 1';
 $TLS_reserved_system_role_2 = 'reserved system role 2';
 $TLS_req_created_automatic_log = "Requirement Created";
-$TLS_elapsed_seconds = 'Processing time (seconds)';
+$TLS_reqspec_created_automatic_log = "Requirement Specification Created";
 
-$TLS_export_to_csv = "Export to CSV";
+$TLS_elapsed_seconds = 'Processing time (seconds)'; 
+
 
 // ----- unsorted (TODO move) -------------------------------------
 $TLS_problems_loading_xml_content = "Unable to load XML data, Check your file.";
@@ -1874,6 +1885,16 @@ $TLS_multisort_button_tooltip = 'Click to change sort DIRECTION. ' .
                                 'Shift-Click to REMOVE button. ' .
                                 'You can REORDER multisort buttons.';
 
+
+
+// ----- gui/templates/results/tcNotRunAnyPlatform.tpl -----
+$TLS_info_tcNotRunAnyPlatform = "This report shows test cases that have been linked to the current test plan " .
+                             "but have not been executed on any platform at all.<br /> " .
+                             "As soon as a test case has been executed on at least one platform, " .
+                             "it will not appear anymore in this report.";
+
+
+
 // ----- gui/templates/resultsImport.tpl -----
 $TLS_results_import_format = "XML File Must be in the following format: ";
 $TLS_title_results_import_to = "Import results";
@@ -2127,7 +2148,16 @@ $TLS_req_specs = "Req. Specs";
 $TLS_req_expected_coverage = "Expected no. of testcases";
 $TLS_has_relation_type = "Has relation of type";
 $TLS_reqid = "Requirement ID";
-
+$TLS_info_search_req = "This list shows all requirements which match the search " .
+                       "criteria.<br />You can open a matching version/revision " .
+                       "of the requirement by clicking a link to the right of " .
+                       "the requirement title.<br />To open the whole requirement " .
+                       "use the edit icon on the left.";
+$TLS_info_search_req_spec = "This list shows all requirement specifications which match the " .
+                            "search criteria.<br />You can open a matching revision of the " .
+                            "requirement specification by clicking a link to the right of " .
+                            "the requirement specification title.<br />To open the whole " .
+                            "requirement specification use the edit icon on the left.";
 
 // ----- gui/templates/mainPage_right.tpl -----
 $TLS_href_add_remove_test_cases = "Add / Remove Test Cases";
@@ -2650,6 +2680,14 @@ $TLS_list_of_failed = "Failed Test Cases";
 $TLS_list_of_not_run = "Not Run Test Cases";
 
 
+
+// ----- lib/results/tcNotRunAnyPlatform.php -----
+$TLS_title_test_report_not_run_on_any_platform = "Test Report: Test Cases not run on any Platform";
+$TLS_not_run_any_platform_status_msg = "There are %d Test Cases linked to this Test Plan.<br/> " .
+                                       "%d of these Test Cases have not been executed on any platform.</p>";
+$TLS_not_run_any_platform_no_platforms = "There are no platforms linked to this testplan.";
+
+
 // ----- lib/results/testPlanWithCF----
 $TLS_link_report_tplans_with_cf = "Test Plan with Custom Field info";
 $TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
@@ -2683,6 +2721,7 @@ $TLS_link_assigned_tc_overview = "Test Case Assignment Overview";
 $TLS_link_report_metrics_active_build = "Metrics of Active Build";
 $TLS_link_report_metrics_more_builds = "Query Metrics";
 $TLS_link_report_not_run = "Not run Test Cases";
+$TLS_link_report_not_run_any_platform = "Test Cases not run on any Platform";
 $TLS_link_report_overall_build = "Overall Build Status";
 $TLS_link_report_reqs_coverage = "Requirements based Report";
 $TLS_link_report_tcases_without_tester = "Test Cases without Tester Assignment";
@@ -3215,11 +3254,14 @@ $TLS_invalid_item = 'Invalid item (%s)';
 $TLS_btn_show_direct_link = "Show permanent link";
 $TLS_direct_link_on_wrong_version = "Click here to open the current version of this document.";
 
-// ----- testcase/req comparison -----
+// ----- testcase/req/req spec comparison -----
 $TLS_title_compare_versions_tc = "Testcase versions compare page";
 $TLS_title_compare_versions_req = "Requirement versions compare page";
+$TLS_title_compare_revisions_rspec = "Requirement Spec. revisions compare page";
 $TLS_btn_compare_versions = "Compare versions";
 $TLS_btn_compare_selected_versions = "Compare selected versions";
+$TLS_btn_compare_revisions = "Compare revisions";
+$TLS_btn_compare_selected_revisions = "Compare selected revisions";
 $TLS_select_versions = "Select Versions to compare:";
 $TLS_version = "Version ";
 $TLS_compare = "Compare ";
@@ -3240,11 +3282,16 @@ $TLS_diff_subtitle_tc = "Differences between version %s (v%s) and version %s (v%
 $TLS_diff_subtitle_req = "Differences between version %s (v%s) and version %s (v%s) of requirement %s";
 $TLS_diff_details_req = "Differences between version %s revision %s (v%s r%s) and " . 
                         "version %s revision %s (v%s r%s) of requirement %s";
+
+$TLS_diff_details_rev = "Differences between revision %s (r%s) and revision %s (r%s)";
+
 $TLS_warning_context = "Context (lines) must be a number.";
 $TLS_warning_context_range = "Context is out of range (must be a positive number).";
 $TLS_warning_empty_context = "Context (lines) must not be empty.";
 $TLS_warning_selected_versions = "You have to select two versions from the list.";
 $TLS_warning_same_selected_versions = "You have to select two different versions from the list.";
+$TLS_warning_selected_revisions = "You have to select two revisions from the list.";
+$TLS_warning_same_selected_revisions = "You have to select two different revisions from the list.";
 
 // ----- grab from not-systematic developers -----
 $TLS_step_actions = "Step actions";

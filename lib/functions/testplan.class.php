@@ -584,6 +584,8 @@ class testplan extends tlObjectWithAttachments
 			break;
 			
 			case 'mapOfMap':
+			// attention!! with this option we are doing some sort of PSEUDO distinct
+			// at platform level, need to understand when and where is used.
 			$recordset = $this->db->fetchMapRowsIntoMap($sql,'tc_id','platform_id');
 			break;
 			
@@ -641,6 +643,9 @@ class testplan extends tlObjectWithAttachments
 			}
         }
 
+		//new dbug($my['options']['output']);
+		//new dBug($recordset);
+		//die();
 		return $recordset;
 	}
 
@@ -767,12 +772,22 @@ class testplan extends tlObjectWithAttachments
 			$ex_extra_where = ' AND EX.platform_id = T.platform_id ';
 			$e_extra_where = ' AND E.platform_id = EX.platform_id ';
 
+			// new dBug($filters);
 			if( $filters['build_id'] > 0 )
 			{
 				$e2_extra_fields .= ",build_id";
 				$e2_extra_where .= ' AND E2.build_id = ' . $filters['build_id'];
 				$e_extra_where .= ' AND E.build_id = EX.build_id ';
+			
+				// new dBug($filters['exec_status']);
+				// if(!is_null($filters['exec_status']))
+				// {
+			    // 
+				// }
+
+			
 			}
+
 			
 			$join['executions'] = 	" LEFT OUTER JOIN (" .
 									" SELECT MAX(E2.id) AS lastexecid, testplan_id," . 

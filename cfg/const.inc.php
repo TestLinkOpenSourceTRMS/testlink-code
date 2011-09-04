@@ -6,13 +6,13 @@
  * Global Constants used throughout TestLink 
  * The script is included via config.inc.php
  * 
+ * @filesource	const.inc.php
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.172 2011/01/26 09:02:01 mx-julian Exp $
  * @see 		config.inc.php
  *
- * @internal 
+ * @internal revisions
  * No revisions logged here but each parameter must be described!
  *
  **/
@@ -24,8 +24,9 @@
 define('TL_FACE_DIR', 'baires'); 
 define('TL_VERSION', '2.0 (Buenos Aires - Development)');
 
-/** Last Database version that is used to give users feedback about necesssary upgrades
- * if you set this parameter also upgrade configCheck.php - checkSchemaVersion() */
+// Last Database version:
+// used to give users feedback about necesssary upgrades
+// if you set this parameter also upgrade configCheck.php - checkSchemaVersion() 
 define('TL_LAST_DB_VERSION', 'DB 2.0');
 
 // needed to avoid problems in install scripts that do not include config.inc.php
@@ -39,7 +40,6 @@ if (!defined('TL_ABS_PATH'))
 ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . '.' . PATH_SEPARATOR . 
 		TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR);
 
-// BUGID 3432
 ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . 
         TL_ABS_PATH . 'third_party' . DIRECTORY_SEPARATOR);
 
@@ -180,12 +180,8 @@ define('TL_CHECK_SESSION_TIMEOUT', true);
 /* [GUI] */
 
 /** 
- * @todo havlatm: remove (must be solved via css)
  * @uses planAddTC_m1-tpl 
  * 
- * @internal Francisco: DISAGREE, if we want give user possibility to reconfigure
- *                 how we can do this with CSS 
- * 		Havlatm: User can create own theme with own colours
  **/
 define('TL_STYLE_FOR_ADDED_TC', 'background-color:yellow;');
 
@@ -418,7 +414,11 @@ $att_model_m2->show_upload_column = true;
 
 /** 
  * @var array List of Test Case execution results (status_key -> DB code). 
- * The code is used in DB to store results (not GUI).  
+ * code is used in DB to store results (not GUI).
+ * CRITIC: 
+ * DB field size is CHAR(1) => a new status can be ONLY 1 char.
+ * Use only lower case.
+ *
  * Do not do localisation here, i.e do not change "passed" by your national language.
  */ 
 $tlCfg->results['status_code'] = array (
@@ -455,7 +455,7 @@ $tlCfg->results['status_label'] = array(
 //	'unknown'       => 'test_status_unknown'
 );
 
-// Is RIGHT to have this configurationDIFFERENT from $tlCfg->results['status_label'],
+// Is RIGHT to have this configuration DIFFERENT from $tlCfg->results['status_label'],
 // because you must choose to not allow some of previous status be available
 // on execution page.
 // See this as a subset of $tlCfg->results['status_label']
@@ -579,14 +579,6 @@ define( 'ERROR_LDAP_BIND_FAILED',				1404 );
 
 // --------------------------------------------------------------------------------------
 /* [Priority, Urgency, Importance] */
-
-/** @deprecated 1.9.3 use urgencyImportance instead
-    @var array descriptionPriority is computed as Importance x Urgency
-$tlCfg->priority_levels = array( 
-	HIGH => 6, // high priority include 6 and more
-	MEDIUM => 3,
-	LOW => 1
-); */
 
 /** @var array importance levels */
 $tlCfg->importance_levels = array( 
@@ -844,7 +836,6 @@ define('VALID_REQ', 'v');
 
 
 
-// 20080815 - franciscom
 // Use this variable (on custom_config.inc.php) to define new Custom Field types.
 // IMPORTANT:
 //           check $custom_field_types property on cfield_mgr.class.php 
@@ -998,8 +989,7 @@ $tlCfg->results['charts']['dimensions'] =
 	);							
 	
 
-// BUGID 4025
-// if you need to define new start on 20 please.
+// if you need to define new one, start on 20 please.
 $tlCfg->testCaseStatus = array(	'draft' => 1, 'readyForReview' => 2, 
 								'reviewInProgress' => 3, 'rework' => 4, 
  								'obsolete' => 5, 'future' => 6, 'final' => 7 );		

@@ -36,8 +36,7 @@
 # 
 # ---------------------------------------------------------------------------------------
 # @internal revisions
-#
-# 20110410 - franciscom - BUGID 4342
+# 20110903 - franciscom - TICKET 4661 - req spec revisions
 # ---------------------------------------------------------------------------------------
 #
 #
@@ -448,16 +447,32 @@ CREATE TABLE /*prefix*/object_keywords (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
 
 
+# CREATE TABLE /*prefix*/req_specs (
+#   `id` int(10) unsigned NOT NULL,
+#   `testproject_id` int(10) unsigned NOT NULL,
+#   `doc_id` varchar(64) NOT NULL,
+#   `scope` text,
+#   `total_req` int(10) NOT NULL default '0',
+#   `type` char(1) default 'n',
+#   `author_id` int(10) unsigned default NULL,
+#    creation_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+#   `modifier_id` int(10) unsigned default NULL,
+#   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+#   PRIMARY KEY  (`id`), 
+#   UNIQUE KEY /*prefix*/req_spec_uk1(`doc_id`,`testproject_id`),
+#   CONSTRAINT /*prefix*/req_specs_testprojects_fk 
+#   FOREIGN KEY (`testproject_id`) REFERENCES /*prefix*/testprojects (id) 
+#   ON DELETE CASCADE ON UPDATE CASCADE, 
+#   CONSTRAINT /*prefix*/req_specs_nodes_hierarchy_fk 
+#   FOREIGN KEY (`id`) REFERENCES /*prefix*/nodes_hierarchy (id) 
+#   ON DELETE CASCADE ON UPDATE CASCADE 
+# ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
+
+# TICKET 4661
 CREATE TABLE /*prefix*/req_specs (
   `id` int(10) unsigned NOT NULL,
   `testproject_id` int(10) unsigned NOT NULL,
   `doc_id` varchar(64) NOT NULL,
-  `scope` text,
-  `total_req` int(10) NOT NULL default '0',
-  `type` char(1) default 'n',
-  `author_id` int(10) unsigned default NULL,
-   creation_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `modifier_id` int(10) unsigned default NULL,
   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`), 
   UNIQUE KEY /*prefix*/req_spec_uk1(`doc_id`,`testproject_id`),
@@ -468,6 +483,8 @@ CREATE TABLE /*prefix*/req_specs (
   FOREIGN KEY (`id`) REFERENCES /*prefix*/nodes_hierarchy (id) 
   ON DELETE CASCADE ON UPDATE CASCADE 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
+
+
 
 
 CREATE TABLE /*prefix*/requirements (
@@ -736,3 +753,24 @@ CREATE TABLE /*prefix*/req_revisions (
   ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+# ----------------------------------------------------------------------------------
+# TICKET 4661
+# ----------------------------------------------------------------------------------
+CREATE TABLE /*prefix*/req_specs_revisions (
+  `parent_id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL,
+  `revision` smallint(5) unsigned NOT NULL default '1',
+  `doc_id` varchar(64) NULL,   /* it's OK to allow a simple update query on code */
+  `name` varchar(100) NULL,
+  `scope` text,
+  `total_req` int(10) NOT NULL default '0',  
+  `status` int(10) unsigned default '1',
+  `type` char(1) default NULL,
+  `log_message` text,
+  `author_id` int(10) unsigned default NULL,
+  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modifier_id` int(10) unsigned default NULL,
+  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY /*prefix*/req_specs_revisions_uidx1 (`parent_id`,`revision`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -5,8 +5,12 @@ view a requirement specification
 
 @filesource	reqSpecView.tpl
 @internal revisions
-20110320 - franciscom - BUGID 4321: Requirement Spec - add option to print single Req Spec
+@since 2.0
+20110817 - franciscom - TICKET 4703: Req. Spec. View - display log message 
+20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
+20110320 - franciscom - TICKET 4321: Requirement Spec - add option to print single Req Spec
 *}
+
 {lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,title_last_mod,
 						  title_created,no_records_found"}
 
@@ -60,33 +64,87 @@ view a requirement specification
 {include file="inc_action_onclick.tpl"}
 
 <script type="text/javascript">
-  /* All this stuff is needed for logic contained in inc_action_onclick.tpl */
-  /* target_action name can not be CHANGED */
-  var target_action=fRoot+'{$req_module}reqSpecEdit.php?doAction=doDelete&tproject_id={$tprojectID}&req_spec_id=';
+/* All this stuff is needed for logic contained in inc_action_onclick.tpl */
+/* target_action name can not be CHANGED */
+var target_action=fRoot+'{$req_module}reqSpecEdit.php?doAction=doDelete&tproject_id={$tprojectID}&req_spec_id=';
 
-	function freeze_req_spec(btn, text, o_id) 
+/* TICKET 4661 */
+var log_box_title = "{$labels.commit_title|escape:'javascript'}";
+var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
+
+
+/**
+ * 
+ */
+function freeze_req_spec(btn, text, o_id) 
+{
+	var my_action=fRoot+'lib/requirements/reqSpecEdit.php?doAction=doFreeze&tproject_id={$tprojectID}&req_spec_id=';
+	if( btn == 'yes' ) 
 	{
-		var my_action=fRoot+'lib/requirements/reqSpecEdit.php?doAction=doFreeze&tproject_id={$tprojectID}&req_spec_id=';
-		if( btn == 'yes' ) 
-		{
-			my_action = my_action+o_id;
-			window.location=my_action;
-		}
+		my_action = my_action+o_id;
+		window.location=my_action;
 	}
-	var pF_freeze_req_spec = freeze_req_spec;
+}
+var pF_freeze_req_spec = freeze_req_spec;
+
+
+/**
+ * 
+ * @since 2.0
+ * TICKET 4703
+ */
+/*
+function tip4log(itemID)
+{
+	var fUrl = fRoot+'lib/ajax/getreqspeclog.php?item_id=';
+	new Ext.ToolTip({
+        target: 'tooltip-'+itemID,
+        width: 500,
+        autoLoad:{ url: fUrl+itemID },
+        dismissDelay: 0,
+        trackMouse: true
+    });
+}
+
+/**
+ * 
+ * @since 2.0
+ * TICKET 4661
+ */
+function ask4log(fid,tid)
+{
+	var target = document.getElementById(tid);
+	var my_form = document.getElementById(fid);
+
+	Ext.Msg.prompt(	log_box_title, log_box_text, 
+					function(btn, text)
+					{
+						if (btn == 'ok')
+   						{
+       						target.value=text;
+       						my_form.submit();
+   						}
+					},this,true);    
+	return false;    
+} 
+
+{* 
+Developer NOTICE: on smarty 3.0 and up:
+if we remove space in "{ tip4log(" smarty compiler will generate an error because
+when it found a curly brackets WITHOUT space, consider this SMARTY CODE
+not JS code
+*}
+Ext.onReady( function(){ tip4log({$gui->req_spec.revision_id}); } );
 </script>
 </head>
 
-{* 20101008 - asimon - BUGID 3311 *}
 <body {$body_onload} onUnload="storeWindowSize('ReqSpecPopup')" >
 <h1 class="title">
-  {if isset($gui->direct_link)}
-    {$tlImages.toggle_direct_link} &nbsp;
-  {/if}
-	{$gui->main_descr|escape}
-	{if $gui->req_spec.id}
+  {if isset($gui->direct_link)}{$tlImages.toggle_direct_link} &nbsp;{/if}
+  {$gui->main_descr|escape}
+  {if $gui->req_spec.id}
 	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage" show_help_icon=true}
-	{/if}
+  {/if}
 </h1>
 
 <div class="workBack">
@@ -95,12 +153,20 @@ view a requirement specification
    {/if}
 
 {if $gui->req_spec.id}
-
 {include file="./requirements/$buttons_template" args_reqspec_id=$reqSpecID}
 <table class="simple">
 	<tr>
 		<th>{$gui->main_descr|escape}</th>
 	</tr>
+	
+	{* TICKET 4703 *}
+	<tr>
+		<td class="bold" id="tooltip-{$gui->req_spec.revision_id}">
+			{$labels.revision}{$smarty.const.TITLE_SEP}{$gui->req_spec.revision}
+			 <img src="{$tlImages.log_message_small}" style="border:none" />
+		</td>
+	</tr>
+
 	<tr>
 	  <td>{$labels.type}{$smarty.const.TITLE_SEP}
 	  {$req_spec_type=$gui->req_spec.type}

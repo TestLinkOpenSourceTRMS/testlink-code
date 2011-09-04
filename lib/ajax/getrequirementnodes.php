@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.17 2011/01/13 16:10:38 asimon83 Exp $
+* 	@filesource getrequirementnodes.php
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -19,17 +19,13 @@
 *   - Assign requirements to test cases
 *
 *	@internal revision
-*	20110311 - Julian - Replaced seperator "::" with ":" for req spec text
-*	20110113 - asimon - BUGID 4168:  Requirement Specifications navigator tree empty
-*	20101010 - franciscom - added custom node attribute: testlink_node_name
-*	20100306 - franciscom - BUGID 0003003: EXTJS does not count # req's
-*        
+*   @since 2.0
+*	20110903 - franciscom - TICKET 4661 - req spec revisions     
 */
 require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 
-// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
 $_REQUEST=strings_stripSlashes($_REQUEST);
 
 $root_node=isset($_REQUEST['root_node']) ? $_REQUEST['root_node']: null;
@@ -74,18 +70,18 @@ function display_children($dbHandler,$tproject_id,$root_node,$parent,$filter_nod
     }
     
     $nodes = null;
-    $filter_node_type = $show_children ? '' : ",'requirement'";
-    // BUGID 4168 - added "NHA." to WHERE clause
+	$node2exclude =	"'testcase','testsuite','testcase_version','testplan','requirement_spec_revision'";
+    $node2exclude .= $show_children ? '' : ",'requirement'";
+
     $sql = " SELECT NHA.*, NT.description AS node_type, RSPEC.doc_id " . 
            " FROM {$tables['nodes_hierarchy']} NHA JOIN {$tables['node_types']}  NT " .
            " ON NHA.node_type_id=NT.id " .
-           " AND NT.description NOT IN ('testcase','testsuite','testcase_version','testplan'{$filter_node_type}) " .
+           " AND NT.description NOT IN ({$node2exclude}) " .
            " LEFT OUTER JOIN {$tables['req_specs']} RSPEC " .
            " ON RSPEC.id = NHA.id " . 
            " WHERE NHA.parent_id = {$parent} ";
     
-    // file_put_contents('/tmp/getrequirementnodes.php.txt', $sql);                            
-
+    // DEBUG file_put_contents('/tmp/getrequirementnodes.php.txt', $sql);                            
     if(!is_null($filter_node) && $filter_node > 0 && $parent == $root_node)
     {
        $sql .= " AND NHA.id = {$filter_node} ";  
@@ -95,7 +91,6 @@ function display_children($dbHandler,$tproject_id,$root_node,$parent,$filter_nod
     $nodeSet = $dbHandler->get_recordset($sql);
 	if(!is_null($nodeSet)) 
 	{
-        // BUGID 2309
         $sql =  " SELECT DISTINCT req_doc_id AS doc_id,NHA.id" .
                 " FROM {$tables['requirements']} REQ JOIN {$tables['nodes_hierarchy']} NHA ON NHA.id = REQ.id  " .
                 " JOIN {$tables['nodes_hierarchy']}  NHB ON NHA.parent_id = NHB.id " . 

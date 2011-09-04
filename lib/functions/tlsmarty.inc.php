@@ -13,15 +13,10 @@
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
- * @internal Revisions:
- *	20101112 - franciscom - work started to migrate to Smarty 3.0.1
- *	20101030 - franciscom - BUGID 3948: Every image link contain a double /
- *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker 
- * 	20101017 - franciscom - added new image -> import
- *							reorder of image definition to remove duplicates and use only tlImages
- * 	20100901 - franciscom - added new image 
- *	20100621 - eloff - added guard_header_smarty() function
- * 	20100121 - franciscom - added show_help_icon to remove error on event viewer
+ * @internal revisions
+ * @since 2.0
+ * 20110816 - franciscom - TICKET 4703: Req. Spec. View - display log message 
+ *
  */
 
 define('SMARTY_DIR', TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty'.  
@@ -248,7 +243,11 @@ class TLSmarty extends Smarty
         				  'edit' => TL_THEME_IMG_DIR . "icon_edit.png",
                           'export' => TL_THEME_IMG_DIR . "export.png",
                           'export_import' => TL_THEME_IMG_DIR . "export_import.png",
-        				  'event_info' => TL_THEME_IMG_DIR . "question.gif",
+						  'event_info' => TL_THEME_IMG_DIR . "question.gif",
+                          'history' => TL_THEME_IMG_DIR . "history.png",
+                          'history_small' => TL_THEME_IMG_DIR . "history_small.png",
+                          'log_message' => TL_THEME_IMG_DIR . "history.png",
+                          'log_message_small' => TL_THEME_IMG_DIR . "history_small.png",
                           'import' => TL_THEME_IMG_DIR . "door_in.png",
         				  'info' => TL_THEME_IMG_DIR . "question.gif",
                           'insert_step' => TL_THEME_IMG_DIR . "insert_step.png",

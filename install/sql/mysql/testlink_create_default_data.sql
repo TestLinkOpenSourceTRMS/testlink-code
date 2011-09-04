@@ -4,6 +4,8 @@
 #
 # Database Type: MySQL 
 #
+# @internal revisions
+# 20110903 - franciscom - TICKET 4661 - req spec revisions 
 # 20110603 - franciscom - TICKET 4557: New right Keyword Assignment
 # 20110602 - franciscom - TICKET 4515: "Requirement-Test Case Assignment" should be set per default for roles 
 #						  admin / leader / test-designer / senior-tester
@@ -27,6 +29,7 @@ INSERT INTO /*prefix*/node_types  (id,description) VALUES (7,'requirement');
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (8,'requirement_version');
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (9,'testcase_step');
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (10,'requirement_revision');
+INSERT INTO /*prefix*/node_types  (id,description) VALUES (11,'requirement_spec_revision');
 
 
 # Roles -

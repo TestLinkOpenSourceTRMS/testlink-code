@@ -3,54 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: requirement_spec_mgr.class.php,v $
+ * @filesource	requirement_mgr.class.php
+ * @package  	TestLink
+ * @author 	 	Francisco Mancardi <francisco.mancardi@gmail.com>
+ * @copyright 	2007-2011, TestLink community 
  *
- * @version $Revision: 1.89 $
- * @modified $Date: 2010/12/26 10:25:13 $ by $Author: franciscom $
- * @author Francisco Mancardi
- *
+ * 
  * Manager for requirement specification (requirement container)
  *
- * @internal revision:
- *  20110223 - asimon BUGID 4239: wrong last parameter of a function call in copy_to()  
- *                                caused duplicated links between reqs and testcases when copying testproject
- *	20101226 - franciscom - html_table_of_custom_field_inputs() refactored
- *  20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
- *	20100908 - franciscom - BUGID 3762 Import Req Spec - custom fields values are ignored
- *							createFromXML()
- *	20100320 - franciscom - xmlToMapReqSpec() added attributes: type,total_req 
- *	20100311 - franciscom - fixed bug due to missed isset() control
- *  20100307 - amitkhullar - small bug fix for Requirements based report.
- *  20100209 - franciscom - changes in delete_subtree_objects() call due to BUGID 3147 
- * 	20091228 - franciscom - get_requirements() - refactored to manage req versions
- *                          get_coverage() - refactored to manage req versions
- * 	20091225 - franciscom - new method - generateDocID()
- * 	20091223 - franciscom - new method - copy_to() + changes to check_main_data()
- *  20091209 - asimon     - contrib for testcase creation, BUGID 2996
- *	20091202 - franciscom - create(), update() 
- *                          added contribution by asimon83/mx-julian that creates
- *                          links inside scope field.
- *
- *  20091122 - franciscom - new methods getByDocID(), check_main_data()
- *	20091119 - franciscom - added doc_id management
- *
- *  20090525 - franciscom - avoid getDisplayName() crash due to deleted user 
- *  20090514 - franciscom - BUGID 2491
- *  20090427 - amitkhullar- BUGID : 2439 Modified query to handle lower case status codes.
- *  20090322 - franciscom - create() - added node_order.
- *                          check_title() - improvements now manages test project id and parent id.
- *                          get_by_title() - improvements now manages test project id and parent id.
- *
- *  20090322 - franciscom - xmlToMapReqSpec()
- *  20090321 - franciscom - added customFieldValuesAsXML() to improve exportReqSpecToXML()
- *
- *  20090315 - franciscom - added delete_deep();
- *
- *  20090222 - franciscom - added getReqTree(), get_by_id() added node_order in result
- *                          exportReqSpecToXML() (will be available on TL 1.9)
- *
- *  20090111 - franciscom - BUGID 1967 - html_table_of_custom_field_inputs()
- *                                       get_linked_cfields()
+ * @internal revisions
+ * 20110903 - franciscom - TICKET 4661: Req. Spec Revisions
+ * 20110817 - franciscom - TICKET 4360
  *
 */
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
@@ -148,17 +111,14 @@ class requirement_spec_mgr extends tlObjectWithAttachments
              msg -> some simple message, useful when status_ok ==0
              id -> id of requirement specification
 
-    rev:
-    	20091202 - franciscom -  added contribution by asimon83/mx-julian 
-    	20080830 - franciscom -  added new argument parent_id
-        20080318 - franciscom - removed code to get last inserted id
-
+	@internal revisions
+	20110903 - franciscom - TICKET 4661
   */
 function create($tproject_id,$parent_id,$doc_id,$title, $scope,$countReq,$user_id, 
 				$type = TL_REQ_SPEC_TYPE_FEATURE,$node_order=null, $options=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $result=array('status_ok' => 0, 'msg' => 'ko', 'id' => 0);
+    $result=array('status_ok' => 0, 'msg' => 'ko', 'id' => -1, 'revision_id' => -1);
     $title=trim($title);
     $chk=$this->check_main_data($title,$doc_id,$tproject_id,$parent_id);
     $result['msg']=$chk['msg'];
@@ -168,32 +128,35 @@ function create($tproject_id,$parent_id,$doc_id,$title, $scope,$countReq,$user_i
 
     if ($chk['status_ok'])
     {
-    	/* contribution by asimon83/mx-julian */
 		if( config_get('internal_links')->enable ) 
 		{
 			$scope = req_link_replace($this->db, $scope, $tproject_id);
 		}
-		/* end contribution by asimon83/mx-julian */
 
     	
         $req_spec_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$title,$node_order);
+		// TICKET 4661
         $sql = "/* $debugMsg */ INSERT INTO {$this->object_table} " .
-			   " (id, testproject_id, doc_id, scope, type, total_req, author_id, creation_ts) " .
-               " VALUES (" . $req_spec_id . "," . $tproject_id . ",'" . 
-               $this->db->prepare_string($doc_id) . "','" .
-               $this->db->prepare_string($scope) .  "','" . $this->db->prepare_string($type) . "','" .
-               $this->db->prepare_string($countReq) . "'," . $user_id . ", " . $this->db->db_now() . ")";
-            
-            
+			   " (id, testproject_id, doc_id) " .
+               " VALUES (" . $req_spec_id . "," . $tproject_id . ",'" . $this->db->prepare_string($doc_id) . "')";
+
         if (!$this->db->exec_query($sql))
         {
         	$result['msg']=lang_get('error_creating_req_spec');
         }
         else
         {
-		    $result['id']=$req_spec_id;
-            $result['status_ok'] = 1;
-		    $result['msg'] = 'ok';
+        	// TICKET 4661
+			$revItem = array('revision' => 1, 'doc_id' => $doc_id, 'name' => $title,
+							 'scope' => $scope, 'type' => $type, 'status' => 1,
+							 'total_req' => $countReq,'author_id' => $user_id,
+							 'log_message' => lang_get('reqspec_created_automatic_log'));
+			
+			$op = $this->create_revision($req_spec_id,$revItem);
+			$result['status_ok'] = $op['status_ok'];
+			$result['msg'] = $op['status_ok'] ? $result['msg'] : $op['msg'];
+			$result['revision_id'] = $op['status_ok'] ? $op['id'] : -1;
+			$result['id'] = $op['status_ok'] ? $req_spec_id : -1;
 		}
 	}
     return $result;
@@ -205,55 +168,92 @@ function create($tproject_id,$parent_id,$doc_id,$title, $scope,$countReq,$user_i
 
 
   args : id: requirement spec id
-
+		 options:
+		 		 key: output
+		 		 values: 'full','credentials'
+		 		 	
   returns: null if query fails
            map with requirement spec info
 
+
+@internal revisions
+20110903 - franciscom - TICKET 4661
 */
-function get_by_id($id)
+function get_by_id($id,$options=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $sql = "/* $debugMsg */ " . 
-    	   " SELECT '' AS author, '' AS modifier, NH.node_order, " .
-    	   " RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
-           " RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
-           " RSPEC.modification_ts,NH.name AS title,RSPEC.doc_id " .
-    	   " FROM {$this->object_table} RSPEC,  {$this->tables['nodes_hierarchy']} NH" .
-    	   " WHERE RSPEC.id = NH.id " . 
-    	   " AND RSPEC.id = {$id}";
+ 
        
+	$my['options'] = array('output' => 'full');       
+	$my['options'] = array_merge($my['options'], (array)$options);
+       
+    // new dBug($my['options']);   
+       
+    // First Step get ID of LATEST revision   
+	$info = $this->get_last_child_info($id,array('output' => 'credentials') );       
+    $childID = $info['id'];
+       
+       
+    $sql =	"/* $debugMsg */ SELECT RSPEC.id,RSPEC.doc_id, RSPEC.testproject_id, " .
+			" RSPEC_REV.id AS revision_id, RSPEC_REV.revision ";
+
+    switch($my['options']['output'])
+    {
+    	case 'credentials':
+    		$doUserDecode = false;
+    	break;
+		
+		case 'full':
+		default:
+				$sql .= " , '' AS author, '' AS modifier, NH_RSPEC.node_order, " .
+						" RSPEC_REV.scope,RSPEC_REV.total_req,RSPEC_REV.type," .
+						" RSPEC_REV.author_id,RSPEC_REV.creation_ts,RSPEC_REV.modifier_id," .
+						" RSPEC_REV.modification_ts,NH_RSPEC.name AS title ";
+    			$doUserDecode = true;
+    	break;
+    }
+    $sql .= " FROM {$this->object_table} RSPEC " .
+			" JOIN {$this->tables['req_specs_revisions']} RSPEC_REV " .
+			" ON RSPEC_REV.parent_id = RSPEC.id " .
+			" JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC " .
+			" ON RSPEC.id = NH_RSPEC.id " .
+			" WHERE RSPEC.id = NH_RSPEC.id " .
+			" AND RSPEC_REV.id = {$childID} " .
+			" AND RSPEC.id = {$id} ";
+       
+       
+    // echo $sql;   
 	$recordset = $this->db->get_recordset($sql);
     $rs = null;
     if(!is_null($recordset))
     {
         // Decode users
         $rs = $recordset[0];
-        if(trim($rs['author_id']) != "")
+        
+        if($doUserDecode)
         {
-            $user = tlUser::getByID($this->db,$rs['author_id']);
-            // need to manage deleted users
-            if($user) 
-            {
-                $rs['author'] = $user->getDisplayName();
-            }
-            else
-            {
-                $rs['author'] = lang_get('undefined');
-            }    
-        }
-      
-        if(trim($rs['modifier_id']) != "")
-        {
-            $user = tlUser::getByID($this->db,$rs['modifier_id']);
-            // need to manage deleted users
-            if($user) 
-            {
-                $rs['modifier'] = $user->getDisplayName();
-            }
-            else
-            {
-                $rs['modifier'] = lang_get('undefined');
-            }    
+        	$lbl_undef = lang_get('undefined');
+	        if(trim($rs['author_id']) != "")
+	        {
+	            $user = tlUser::getByID($this->db,$rs['author_id']);
+	            // need to manage deleted users
+	            $rs['author'] = $lbl_undef;
+	            if($user) 
+	            {
+	                $rs['author'] = $user->getDisplayName();
+	            }
+	        }
+	      
+	        if(trim($rs['modifier_id']) != "")
+	        {
+	            $user = tlUser::getByID($this->db,$rs['modifier_id']);
+	            // need to manage deleted users
+	            $rs['modifier'] = $lbl_undef;
+	            if($user) 
+	            {
+	                $rs['modifier'] = $user->getDisplayName();
+	            }
+	        }
         }
     }  	
     return $rs;
@@ -395,74 +395,84 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
   /*
     function: update
 
-    args: id
-          title
-          scope
-          countReq
-          user_id,
-          [type]
+    args: item => map with following keys
+    	  id,doc_id,name,scope,countReq,user_id,type,node_order
 
     returns: map with following keys:
              status_ok -> 1/0
              msg -> some simple message, useful when status_ok ==0
+             revision_id -> useful when user request create new revision on update
 
   */
-  function update($id,$doc_id,$title, $scope, $countReq,$user_id,
-  				  $type = TL_REQ_SPEC_TYPE_FEATURE,$node_order = null)
+  function update($item,$options=null)
   {
-		$result['status_ok'] = 1;
-	  	$result['msg'] = 'ok';
+  	
+		$result = array('status_ok' => 1, 'msg' => 'ok', 'revision_id' => -1);
+		$my['options'] = array('skip_controls' => false, 'create_rev' => false, 'log_message' => '');
+		$my['options'] = array_merge($my['options'], (array)$options);
 
-		$title=trim_and_limit($title);
-    	$doc_id=trim_and_limit($doc_id);
+		$title=trim_and_limit($item['name']);
+    	$doc_id=trim_and_limit($item['doc_id']);
      
-    	$path=$this->tree_mgr->get_path($id); 
+    	$path=$this->tree_mgr->get_path($item['id']); 
     	$tproject_id = $path[0]['parent_id'];
     	$last_idx=count($path)-1;
     	$parent_id = $last_idx==0 ? null : $path[$last_idx]['parent_id'];
-    	$chk=$this->check_main_data($title,$doc_id,$path[0]['parent_id'],$parent_id,$id);
+    	$chk=$this->check_main_data($title,$doc_id,$path[0]['parent_id'],$parent_id,$item['id']);
     
-    	if ($chk['status_ok'])
+    
+    	if ($chk['status_ok'] || $my['options']['skip_controls'])
     	{
-    		
-    		/* contribution by asimon83/mx-julian */
 			if( config_get('internal_links')->enable  ) 
 			{
-				$scope = req_link_replace($this->db, $scope, $tproject_id);
+				$item['scope'] = req_link_replace($this->db, $item['scope'], $tproject_id);
 			}
-			/* end contribution by asimon83/mx-julian */
-    	
+
+			$cnr = null;
+			if( $my['options']['create_rev'])
+			{	
+				$cnr = $this->create_new_revision($item['id'],$item+$my['options']);
+			}
+			else
+			{
+				// missing piece, need to update all fields on last revision
+				$cnr = $this->update_revision($item);
+			}
     		
 		    $db_now = $this->db->db_now();
     	    $sql = " UPDATE {$this->object_table} " .
-    	           " SET scope='" . $this->db->prepare_string($scope) . "', " .
-			       " doc_id='" . $this->db->prepare_string($doc_id) . "', " .
-			       " type='" . $this->db->prepare_string($type) . "', " .
-			       " total_req ='" . $this->db->prepare_string($countReq) . "', " .
-			       " modifier_id={$user_id},modification_ts={$db_now} ";
-			$sql .= "WHERE id={$id}";
+    	           " SET doc_id='" . $this->db->prepare_string($doc_id) . "' " .
+				   " WHERE id={$item['id']}";
+
     	    if (!$this->db->exec_query($sql))
 			{
     	        $result['msg']=lang_get('error_updating_reqspec');
   		        $result['status_ok'] = 0;
 		    }
+		    
     	    if( $result['status_ok'] )
     	    {
   		        // need to update node on tree
     	        $sql = " UPDATE {$this->tables['nodes_hierarchy']} " .
   		    	       " SET name='" . $this->db->prepare_string($title) . "'";
-				if( !is_null($node_order) )
+				if(isset($item['node_order']) &&  !is_null($item['node_order']) )
 				{
-					$sql .= ",node_order=" . intval($node_order);
+					$sql .= ",node_order=" . intval($item['node_order']);
 				}       
-  		    	$sql .= " WHERE id={$id}";
+  		    	$sql .= " WHERE id={$item['id']}";
     	    
+    	    	// echo __FUNCTION__ . '::' .  $sql . '<br>';
   		    	if (!$this->db->exec_query($sql))
   		    	{
   		    		$result['msg']=lang_get('error_updating_reqspec');
     	    	    $result['status_ok'] = 0;
   		        }
 		    }
+		    
+		    if( $result['status_ok'] && !is_null($cnr))
+    	    {
+    	    	$result['revision_id'] = $cnr['id'];
+  		    }
     	}    
 		else
 		{
@@ -497,6 +507,7 @@ function delete($id)
 {
     $req_mgr = new requirement_mgr($this->db);
 	
+	// ATTENTION: CF linked to REVISION 
 	// Delete Custom fields
 	$this->cfield_mgr->remove_all_design_values_from_node($id);
 	$result = $this->attachmentRepository->deleteAttachmentsFor($id,"req_specs");
@@ -513,6 +524,11 @@ function delete($id)
 		}
 		$req_mgr->delete($items);
 	}
+	
+	// TICKET 4661
+	// delete revisions
+	$sql = "DELETE FROM {$this->tables['req_specs_revisions']} WHERE parent_id = {$id}";
+	$result = $this->db->exec_query($sql);
 		  
 	// delete specification itself
 	$sql = "DELETE FROM {$this->object_table} WHERE id = {$id}";
@@ -798,8 +814,6 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
   {
   	$cfg = config_get('req_cfg');
   	
-  	// 20091223 - this has to be removed if we remove unique index
-  	// $my_parent_id = $cfg->child_requirements_mgmt == ENABLED ? null : $parent_id;
     $my_parent_id = $parent_id;
 
     $ret['status_ok'] = 1;
@@ -820,21 +834,6 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
   		$ret['msg'] = lang_get("warning_empty_doc_id");
   	}
   	
-  	// 20091223 - franciscom -
-  	// Now that req spec has doc id, IMHO this check has not to be done
-  	// or must be improved
-  	//
-  	// if($ret['status_ok'])
-  	// {
-	// 	$ret['msg']='ok';
-    //   	$rs = $this->get_by_title($title,$tproject_id,$my_parent_id,$case_analysis);
-  	// 	if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
-    //   	{
-    //   		$info = current($rs);
-  	// 		$ret['msg'] = sprintf(lang_get("warning_duplicated_req_spec_title"),$info['doc_id'],$title);
-    //     	$ret['status_ok'] = 0;
-  	// 	}
-	// }
 
   	if($ret['status_ok'])
   	{
@@ -953,8 +952,7 @@ function getReqTree($id)
  * Developed using exportTestSuiteDataToXML() as model
  *
  * @internal revision
- * 20100320 - franciscom - added TYPE
- * 20091122 - franciscom - added doc id management  
+ * 20110903 - franciscom - TICKET 4661 - added REVISION
  */
 function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 {
@@ -974,7 +972,8 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 	  	$cfXML = $this->customFieldValuesAsXML($id,$tproject_id);
 		$containerData = $this->get_by_id($id);
 	  	$xmlData = "<req_spec title=\"" . htmlspecialchars($containerData['title']) . '" ' .
-	  	           " doc_id=\"" . htmlspecialchars($containerData['doc_id']) . '" >' .
+	  	           " doc_id=\"" . htmlspecialchars($containerData['doc_id']) . '" ' . ' >' .
+	  	           "\n<revision><![CDATA[{$containerData['revision']}]]></revision>\n" .
 	               "\n<type><![CDATA[{$containerData['type']}]]></type>\n" .
 	               "\n<node_order><![CDATA[{$containerData['node_order']}]]></node_order>\n" .
 	               "\n<total_req><![CDATA[{$containerData['total_req']}]]></total_req>\n" .
@@ -1138,12 +1137,14 @@ function xmlToMapReqSpec($xml_item,$level=0)
             has to be linked to a testproject, in order to be used.
 
 
-  args: id: requirement spec id
-        [tproject_id]: node id of parent testproject of requirement spec.
-                       need to understand to which testproject requirement spec belongs.
-                       this information is vital, to get the linked custom fields.
-                       Presence /absence of this value changes starting point
-                       on procedure to build tree path to get testproject id.
+  args: credentials, map with following keys
+			item_id: Req. Spec REVISION ID (can be NULL if parent_id IS NOT NULL)
+  			parent_id: Req. Spec ID (can be NULL if item_id IS NOT NULL)
+        	tproject_id:node id of parent testproject of requirement spec.
+						need to understand to which testproject requirement spec belongs.
+						this information is vital, to get the linked custom fields.
+						Presence /absence of this value changes starting point
+						on procedure to build tree path to get testproject id.
 
                        null -> use requirement spec id as starting point.
                        !is_null -> use this value as starting point.
@@ -1174,19 +1175,26 @@ function xmlToMapReqSpec($xml_item,$level=0)
             			         null if for this  req spec, custom field was never edited.
 
 
-  rev :
-       20070302 - check for $id not null, is not enough, need to check is > 0
-
+  @internal revisions
+  20110903 - franciscom - TICKET 4661
 */
-function get_linked_cfields($id,$tproject_id=null)
+function get_linked_cfields($credentials)
 {
-	if (!is_null($id) && $id > 0)
+	$who = array('item_id' => null, 'parent_id' => null, 'tproject_id' => null);
+	$who = array_merge($who, (array)$credentials);
+
+	$tproject_id = $who['tproject_id'];
+	$hasParentInfo = !is_null($who['parent_id']) && ($who['parent_id'] > 0);
+	
+	if($hasParentInfo && (is_null($tproject_id) || is_null($who['item_id']) ))
 	{
-		$req_spec_info = $this->get_by_id($id);
-		$tproject_id = $req_spec_info['testproject_id'];
-	}
+		// will get info for LAST revision
+		$info = $this->get_by_id($who['parent_id'],array('output' => 'credentials'));
+		$tproject_id = $info['testproject_id'];
+		$who['item_id'] = $info['revision_id'];
+	} 
 	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,null,
-	                                                          'requirement_spec',$id);
+	                                                          'requirement_spec',$who['item_id']);
 	return $cf_map;
 }
 
@@ -1218,14 +1226,20 @@ function get_linked_cfields($id,$tproject_id=null)
   returns: html string
   
   @internal revision
-  20101226 - franciscom - refactored to use same logic that other similar method on other objects
+  20110903 - franciscom - TICKET 4661
 
 */
-function html_table_of_custom_field_inputs($id,$tproject_id=null,$parent_id=null,$name_suffix='', $input_values = null)
+function html_table_of_custom_field_inputs(	$id,$child_id,$tproject_id=null,$parent_id=null,
+											$name_suffix='',$input_values = null)
 {
+    $NO_WARNING_IF_MISSING=true;
     $cf_smarty = '';
-    $cf_map = $this->get_linked_cfields($id,$tproject_id);
+
+	// TICKET 4661
+	$idCard = array('parent_id' => $id, 'item_id' => $child_id, 'tproject_id' => $tproject_id);
+	$cf_map = $this->get_linked_cfields($idCard);
 	$cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
+
 	return $cf_smarty;
 }
 
@@ -1244,21 +1258,21 @@ function html_table_of_custom_field_inputs($id,$tproject_id=null,$parent_id=null
   returns: html string
 
 */
-function html_table_of_custom_field_values($id,$tproject_id)
+function html_table_of_custom_field_values($id,$child_id,$tproject_id)
 {
     $NO_WARNING_IF_MISSING=true;    
 	$cf_smarty = '';
-  	$cf_map = $this->get_linked_cfields($id,$tproject_id);
 
-    // BUGID 3989
-    $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
-
+  	// $cf_map = $this->get_linked_cfields($id,$child_id,$tproject_id);
+	$idCard = array('parent_id' => $id, 'item_id' => $child_id, 'tproject_id' => $tproject_id);
+	$cf_map = $this->get_linked_cfields($idCard);
+	$show_cf = config_get('custom_fields')->show_custom_fields_without_value;
+	  	
   	if(!is_null($cf_map))
 	{
 		foreach($cf_map as $cf_id => $cf_info)
 		{
 			// if user has assigned a value, then node_id is not null
-			// BUGID 3989
 			if($cf_info['node_id'] || $show_cf)
 			{
         		$label = str_replace(TL_LOCALIZE_TAG,'',
@@ -1318,12 +1332,17 @@ function html_table_of_custom_field_values($id,$tproject_id)
   * @param $id: requirement spec id
   * @param $tproject_id: test project id
   *
-  *
+  * @internal revisions
+  * 20110903 - franciscom - TICKET 4661
   */
  function customFieldValuesAsXML($id,$tproject_id)
  {
 	$xml = null;
-	$cfMap = $this->get_linked_cfields($id,$tproject_id);
+	
+	// TICKET 4661
+    // custom fields are linked to revision_id
+    $idCard = array('parent_id' => $id, 'item_id' => null, 'tproject_id' => $tproject_id); 
+	$cfMap = $this->get_linked_cfields($idCard);
 	if( !is_null($cfMap) && count($cfMap) > 0 )
 	{
 		$xml = $this->cfield_mgr->exportValueAsXML($cfMap);
@@ -1337,7 +1356,6 @@ function html_table_of_custom_field_values($id,$tproject_id)
   *
   *
   * @internal revisions
-  * 20100908 - franciscom - BUGID 3762 Import Req Spec - custom fields values are ignored 
   */
 function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$options=null)
 {
@@ -1443,15 +1461,20 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
         {
         	$msgID = 'import_req_spec_updated';
 		    $reqSpecID = key($check_in_container);
-			$result = $this->update($reqSpecID,$rspec['doc_id'],$rspec['title'],$rspec['scope'],
-									$rspec['total_req'],$author_id,$rspec['type'],$req_spec_order);
+
+			// TICKET 4661
+			$item = array('id' => $reqSpecID, 'name' => $rspec['title'], 
+						  'doc_id' => $rspec['doc_id'], 'scope' => $rspec['scope'],
+						  'total_req' => $rspec['total_req'],'modifier_id' => $author_id, 
+						  'type' => $rspec['type'],'node_order' => $req_spec_order); 
+			$result = $this->update($item);
        		$result['id'] = $reqSpecID;
         }
         $user_feedback[] = array('doc_id' => $rspec['doc_id'],'title' => $rspec['title'],
                                  'import_status' => sprintf($labels[$msgID],$rspec['doc_id']));
 
 
-        // 20100908 - Custom Fields
+
         if( $result['status_ok'] && $doProcessCF && 
         	isset($rspec['custom_fields']) && !is_null($rspec['custom_fields']) )
         {	
@@ -1538,6 +1561,10 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
                     creation_ts
                     modifier_id
                     modification_ts
+                    
+@internal revisions:
+20110716 - franciscom - TICKET 4661
+
   */
 function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 {
@@ -1561,36 +1588,64 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 			$check_criteria = " LIKE '{$the_doc_id}%' ";
 		break;
 	}
-	$sql = " /* $debugMsg */ SELECT ";
-	switch($my['options']['output'])
-	{
-		case 'standard':
-  			 $sql .= " RSPEC.id,testproject_id,RSPEC.doc_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
-           			 " RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
-           			 " RSPEC.modification_ts,NH.name AS title ";
-        break;
-           			 
-		case 'minimun':
-  			 $sql .= " RSPEC.id,testproject_id,RSPEC.doc_id,NH.name AS title ";
-        break;
-		
-	}
 
-	$sql .= " FROM {$this->object_table} RSPEC, {$this->tables['nodes_hierarchy']} NH " .
- 		    " WHERE RSPEC.doc_id {$check_criteria} ";
-
+	$where = " WHERE RSPEC.doc_id {$check_criteria} ";
   	if( !is_null($tproject_id) )
   	{
-  	  $sql .= " AND RSPEC.testproject_id={$tproject_id}";
+		$where  .= " AND RSPEC.testproject_id={$tproject_id}";
     }
-
   	if( !is_null($parent_id) )
   	{
-  	  $sql .= " AND NH.parent_id={$parent_id}";
+		$where  .= " AND NH_RSPEC.parent_id={$parent_id}";
     }
 
-    $sql .= " AND RSPEC.id=NH.id ";
-	$output = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+
+	// Developer Note:
+	// a mix of SQL ignorance and MySQL relaxed SQL on GROUP BY
+	// Fortunatelly Postgres do the right job
+	//
+	//
+	// First step get MAX revision
+	// will trust in this that max(revision) has also always max(revision_id)
+	// ( but really can be on a differente way ? ), in order to use a simple logic.
+	//
+	$sql_max =	" /* $debugMsg */ SELECT MAX(RSPEC_REV.id) AS rev_id" .
+				" FROM {$this->tables['req_specs']} RSPEC " .
+				" JOIN {$this->tables['req_specs_revisions']} RSPEC_REV " .
+				" ON RSPEC_REV.parent_id = RSPEC.id " .
+				" JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC " .
+				" ON NH_RSPEC.id = RSPEC.id " .
+				$where . ' GROUP BY RSPEC_REV.parent_id ';
+
+	$maxi = (array)$this->db->fetchRowsIntoMap($sql_max,'rev_id');;
+	if( count($maxi) > 0)
+	{
+		$sql =	" /* $debugMsg */ SELECT RSPEC.id,RSPEC.testproject_id,RSPEC.doc_id,NH_RSPEC.name AS title, " .
+				" RSPEC_REV.revision ";
+	
+		switch($my['options']['output'])
+		{
+			case 'standard':
+	  			 $sql .= " ,RSPEC_REV.total_req, RSPEC_REV.scope,RSPEC_REV.type," .
+	           			 " RSPEC_REV.author_id,RSPEC_REV.creation_ts, " .
+	           			 " RSPEC_REV.modifier_id,RSPEC_REV.modification_ts";
+	        break;
+	           			 
+			case 'minimun':
+	        break;
+			
+		}
+	
+		$sql .=	" FROM {$this->tables['req_specs']} RSPEC " .
+				" JOIN {$this->tables['req_specs_revisions']} RSPEC_REV " .
+				" ON RSPEC_REV.parent_id = RSPEC.id " .
+				" JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC " .
+				" ON NH_RSPEC.id = RSPEC.id ";
+				
+		$sql .= $where . ' AND RSPEC_REV.id IN (' . implode(",",array_keys($maxi)) . ') '; 
+		$output = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+  	}
+  	
   	return $output;
   }
 
@@ -1610,7 +1665,8 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	           msg: 'ok' if status_ok == 1
 	           id: new created if everything OK, -1 if problems.
 	
-	  rev :
+	  @internal revisions
+	  20110903 - franciscom - TICKET 4360
 	*/
 	function copy_to($id, $parent_id, $tproject_id, $user_id,$options = null)
 	{
@@ -1632,8 +1688,16 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	    if( $new_item['status_ok'] )
 	    {
 	    	$op['mappings'][$id] = $new_item['id'];
+	    	$op['mappings']['req_spec'] = array();
+	    	$op['mappings']['req'] = array();
+	    	$op['mappings']['req_version'] = array();
 	    		
-			$this->copy_cfields($id,$new_item['id']);
+			// $this->copy_cfields($id,$new_item['id']);
+			// Important notice
+			// 
+			$idCard = array('parent_id' => $id, 'tproject_id' => $tproject_id); 
+        	$this->copy_cfields($idCard,$new_item['id']);
+        	
         	
         	// Now loop to copy all items inside it    	
  			$my['filters'] = null;
@@ -1645,7 +1709,6 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 			  	$parent_decode[$id]=$new_item['id'];
 				foreach($subtree as $the_key => $elem)
 				{
-					// 20100311 - franciscom
 				  	$the_parent_id=isset($parent_decode[$elem['parent_id']]) ? $parent_decode[$elem['parent_id']] : null;
 					switch ($elem['node_type_id'])
 					{
@@ -1654,10 +1717,11 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 							//             between reqs and testcases when copying testproject
 							//$ret = $reqMgr->copy_to($elem['id'],$the_parent_id,$user_id,
 							//                              $tproject_id,$my['options']['copy_also']);
-							$ret = $reqMgr->copy_to($elem['id'],$the_parent_id,$user_id,
-							                              $tproject_id,$my['options']);
-							$op['status_ok'] = $ret['status_ok'];    
-							$op['mappings'] += $ret['mappings'];
+							$ret = $reqMgr->copy_to($elem['id'],$the_parent_id,$user_id,$tproject_id,$my['options']);
+							$op['status_ok'] = $ret['status_ok'];
+							
+							$op['mappings']['req'] += $ret['mappings']['req'];
+							$op['mappings']['req_version'] += $ret['mappings']['req_version'];
 							break;
 							
 						case $this->node_types_descr_id['requirement_spec']:
@@ -1668,11 +1732,12 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 			                                     $item_info['author_id'],$item_info['type'],$item_info['node_order']);
 
 					    	$parent_decode[$elem['id']]=$ret['id'];
-				      		$op['mappings'][$elem['id']] = $ret['id'];
+				      		$op['mappings']['req_spec'][$elem['id']] = $ret['id'];
 
 				      		if( ($op['status_ok'] = $ret['status_ok']) )
 				      		{
-				      			$this->copy_cfields($elem['id'],$ret['id']);
+				      			$idCard = array('parent_id' => $elem['id'], 'tproject_id' => $tproject_id);
+				      			$this->copy_cfields($idCard,$ret['id']);
 							}
 							break;
 					}
@@ -1689,20 +1754,22 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 
 	/*
 	  function: copy_cfields
-	            Get all cfields linked to any testcase of this testproject
-	            with the values presents for $from_id, testcase we are using as
-	            source for our copy.
+	            Get all cfields linked to item with the values presents for $from_id, 
+	            item we are using as source for our copy.
 	
-	  args: from_id: source item id
-	        to_id: target item id
+	  args: from_identity: source credentianls (complex type)
+	  						array('parent_id' => , 'item_id' => , 'tproject_id' => );	
+
+	        to_id: target item id (simple type)
 	
 	  returns: -
 	
 	*/
-	function copy_cfields($from_id,$to_id)
+	function copy_cfields($from_identity,$to_id)
 	{
   		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	  	$cfmap_from=$this->get_linked_cfields($from_id);
+		$cfmap_from=$this->get_linked_cfields($from_identity);
+
 	  	$cfield=null;
 	  	if( !is_null($cfmap_from) )
 	  	{
@@ -1759,6 +1826,388 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	  	       " ORDER BY node_order,id";
 		$rs = $this->db->fetchRowsIntoMap($sql,'id');
 		return $rs;
+	}
+
+
+
+
+	// TICKET 4661
+	/**
+	 * IMPORTANT NOTICE
+	 * Only information regarding basic tables is created.
+	 * This means THAT NOTHING is done (example) on custom fields, or other
+	 * items that are related/linked to revisions.
+ 	 *
+ 	 */
+	function create_revision($rspecID,$item)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$ret = array('msg' => 'ok','status_ok' => 1,'id' => -1);
+	  	$ret['id'] = $this->tree_mgr->new_node($rspecID,$this->node_types_descr_id['requirement_spec_revision']);
+		
+		$optActorPairs = array('author_id' => 'creation_ts', 'modifier_id' => 'modification_ts');
+		$val2add = '';
+		$fields2insert = 'parent_id,id,revision,status,doc_id,name,scope,type,log_message';
+
+		// echo __FUNCTION__;new dBug($item);
+		
+		foreach($optActorPairs as $main => $sec)
+		{
+			if( isset($item[$main]) && is_numeric($item[$main]) )
+			{
+				$fields2insert .= ',' . $main . ',' . $sec;
+				$ts = isset($item[$sec]) ? $item[$sec] : $this->db->db_now();
+				$val2add .= ',' . intval($item[$main]) . ',' . $ts;
+			}
+		}
+		$optIntKeys = array('status' => 1);
+		foreach($optIntKeys as $field => $default)
+		{
+			$item[$field] = isset($item[$field]) ? $item[$field] : $default; 
+		}
+
+		$sql = "/* $debugMsg */ INSERT INTO {$this->tables['req_specs_revisions']} " .
+		       " ($fields2insert) " . 
+	  	       " VALUES({$rspecID}" . "," . $ret['id'] . "," . intval($item['revision']) . "," .
+	  	       intval($item['status']) . ",'" . 
+	  	       $this->db->prepare_string($item['doc_id']) . "','" . 
+	  	       $this->db->prepare_string($item['name']) . "','" . 
+	  	       $this->db->prepare_string($item['scope']) . "','" . 
+	  	       $this->db->prepare_string($item['type']) . "','" . 
+	  	       $this->db->prepare_string($item['log_message']) . "'" . $val2add . ")";
+	  	// echo $sql . '<br>'; die();   		
+
+		$result = $this->db->exec_query($sql);
+		if ($result)
+		{
+			$sql = 	"/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
+					" SET name='" . $this->db->prepare_string($item['name']) . "' " .
+	  	       		" WHERE id={$ret['id']} ";
+	  	    // echo $sql . '<br>';   		
+			$this->db->exec_query($sql);
+		}
+		else 
+		{	
+			$ret['msg'] = $this->db->error_msg();
+		  	$ret['status_ok'] = 0;
+		  	$ret['id'] = -1;
+		}
+ 		  	
+	  	return $ret;
+	}
+
+
+	// TICKET 4661
+	function create_new_revision($rspecID,$item)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$ret = array('msg' => 'ok','status_ok' => 1,'id' => -1);
+
+	  	// Needed to get higher revision NUMBER, to generata new NUMBER      
+	  	$source_info =  $this->get_last_child_info($rspecID);
+	  	$current_rev = 0;
+	  	if( !is_null($source_info) )
+	  	{
+	  		$current_rev = $source_info['revision']; 
+	  	}
+	  	$current_rev++;
+		$item['revision'] = $current_rev++;
+		
+		$ret = $this->create_revision($rspecID,$item);
+		return $ret;
+	}
+
+	/**
+	 *	@param id: parent id
+ 	 *	@param child_type: 'revision'
+ 	 *
+ 	 *	@return  
+     */
+	function get_last_child_info($id, $options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		$my['options'] = array('child_type' => 'revision', 'output' => 'full');
+		$my['options'] = array_merge($my['options'], (array)$options);
+		 
+		$info = null;
+		$target_cfg = array('revision' => array('table'=> 'req_specs_revisions', 'field' => 'revision'));
+
+		$child_type = $my['options']['child_type'];  // just for readability 
+		$table = $target_cfg[$child_type]['table'];
+		$field = $target_cfg[$child_type]['field'];
+		
+		$sql = " /* $debugMsg */ SELECT COALESCE(MAX($field),-1) AS $field " .
+		       " FROM {$this->tables[$table]} CHILD," .
+		       " {$this->tables['nodes_hierarchy']} NH WHERE ".
+		       " NH.id = CHILD.id ".
+		       " AND NH.parent_id = {$id} ";
+
+		$max_verbose = $this->db->fetchFirstRowSingleColumn($sql,$field);
+		if ($max_verbose >= 0)
+		{
+			$sql = "/* $debugMsg */ SELECT ";
+
+			switch($my['options']['output'])
+			{
+				case 'credentials':
+					$sql .= " CHILD.parent_id,CHILD.id,CHILD.revision,CHILD.doc_id ";
+				break;
+				
+				case 'full':
+				default:
+					$sql .= " CHILD.* ";
+				break;
+			}
+		
+			$sql .= " FROM {$this->tables[$table]} CHILD," .
+			        " {$this->tables['nodes_hierarchy']} NH ".
+			        " WHERE $field = {$max_verbose} AND NH.id = CHILD.id AND NH.parent_id = {$id}";
+	
+			$info = $this->db->fetchFirstRow($sql);
+		}
+		return $info;
+	}
+
+	/**
+	 *	@param id: parent id
+ 	 *	@param child_type: 'revision'
+ 	 *
+ 	 *	@return  
+     */
+	function getRevisionsCount($id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$qty = 0;
+
+		$sql = 	" /* $debugMsg */ SELECT COUNT(0) AS qty" .
+				" FROM {$this->tables['req_specs_revisions']} RSPEC_REV" .
+				" WHERE RSPEC_REV.parent_id = {$id} ";
+		
+		$dummy = $this->db->get_recordset($sql);
+		return $dummy[0]['qty'];
+	}
+	
+
+	/**
+	 * used to create overwiew of changes between revisions
+ 	 */
+	function get_history($id,$options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$my['options'] = array('output' => "map", 'decode_user' => false, 'order_by_dir' => 'DESC');
+    	$my['options'] = array_merge($my['options'], (array)$options);
+
+		$labels['undefined'] = lang_get('undefined');
+		$sql = 	"/* $debugMsg */" .
+    			" SELECT RSREV.id AS revision_id, RSREV.revision," .
+    			"		 RSREV.creation_ts, RSREV.author_id, " .
+				"		 RSREV.modification_ts, RSREV.modifier_id, " . 
+    			" 		 RSREV.revision, RSREV.scope, " .
+    			" 		 RSREV.status,RSREV.type,RSREV.name, RSREV.doc_id, " .
+    			" COALESCE(RSREV.log_message,'') AS log_message" .
+    			" FROM {$this->tables['req_specs_revisions']}  RSREV " .
+				" WHERE RSREV.parent_id = {$id} " .
+				" ORDER BY RSREV.revision {$my['options']['order_by_dir']} ";
+				
+		
+		switch($my['options']['output'])
+		{
+			case 'map':
+    			$rs = $this->db->fetchRowsIntoMap($sql,'revision_id');
+			break;
+			
+			case 'array':
+				$rs = $this->db->get_recordset($sql);
+			break;
+		}
+  		
+  		if( !is_null($rs) )
+  		{
+  			$key2loop = array_keys($rs);
+  			foreach($key2loop as $ap)
+  			{
+  				$rs[$ap]['item_id'] = $rs[$ap]['revision_id'];
+  				
+  				// IMPORTANT NOTICE
+  				// each DBMS uses a different (unfortunatelly) way to signal NULL DATE
+  				//
+  				// We need to Check with ALL DB types
+				// MySQL    NULL DATE -> "0000-00-00 00:00:00" 
+				// Postgres NULL DATE -> NULL
+				// MSSQL    NULL DATE - ???
+				$key4date = 'creation_ts';
+				$key4user = 'author_id';
+				if( ($rs[$ap]['modification_ts'] != '0000-00-00 00:00:00') && !is_null($rs[$ap]['modification_ts']) )
+				{
+					$key4date = 'modification_ts';
+					$key4user = 'modifier_id';
+				}
+  				$rs[$ap]['timestamp'] = $rs[$ap][$key4date];
+  				$rs[$ap]['last_editor'] = $rs[$ap][$key4user];
+  				// decode user_id for last_editor
+  				$user = tlUser::getByID($this->db,$rs[$ap]['last_editor']);
+  				$rs[$ap]['last_editor'] = $user ? $user->getDisplayName() : $labels['undefined'];
+  			}
+  		}
+  		
+  		$history = $rs;
+  		if( $my['options']['decode_user'] && !is_null($history) )
+  		{
+  			$this->decode_users($history);
+		}
+ 
+    	return $history;
+	}
+
+	/**
+	 * 
+ 	 *
+ 	 */
+	function decode_users(&$rs)
+	{
+  		$userCache = null;  // key: user id, value: display name
+  		$key2loop = array_keys($rs);
+  		$labels['undefined'] = lang_get('undefined');
+  		$user_keys = array('author' => 'author_id', 'modifier' => 'modifier_id');
+  		foreach( $key2loop as $key )
+  		{
+  			foreach( $user_keys as $ukey => $userid_field)
+  			{
+  				$rs[$key][$ukey] = '';
+  				if(trim($rs[$key][$userid_field]) != "")
+  				{
+  					if( !isset($userCache[$rs[$key][$userid_field]]) )
+  					{
+  						$user = tlUser::getByID($this->db,$rs[$key][$userid_field]);
+  						$rs[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
+  						$userCache[$rs[$key][$userid_field]] = $rs[$key][$ukey];
+  					}
+  					else
+  					{
+  						$rs[$key][$ukey] = $userCache[$rs[$key][$userid_field]];
+  					}
+  				}
+  			}	
+  		}
+	}
+
+	function getRevisionTemplate()
+	{
+		$tpl = array('revision' => 1, 'doc_id' => null, 'name' => null,
+					 'scope' => null, 'type' => null, 'status' => 1,
+					 'total_req' => 0, 'log_message' => '', 'author_id' => -1);
+		return $tpl;
+	}
+
+
+
+	function clone_revision($rspecID,$item)
+	{
+	
+		$fields2copy = "parent_id,id,revision,doc_id,name,scope,total_req,status,type,log_message";
+		// author_id,creation_ts,modifier_id,modification_ts
+		
+		// Create a new revision node on db
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$ret = array('msg' => 'ok','status_ok' => 1,'id' => -1);
+	  	$ret['id'] = $this->tree_mgr->new_node($rspecID,$this->node_types_descr_id['requirement_spec_revision']);
+
+		if( !isset($item['source_id']) || ($item['source_id'] < 0) )
+		{
+	  		$dummy = $this->get_last_child_info($rspecID);
+	  		$source_id = $dummy['id'];
+		}
+		else
+		{
+			$source_id = $item['source_id'];		
+		}
+		
+		// get data to clone
+		$sourceItem = $this->getRevisionByID($source_id);
+		$sourceItem['log_message'] = $item['log_message'];
+		$sourceItem['author_id'] = $item['author_id'];
+		$sourceItem['revision']++;
+
+		unset($sourceItem['modifier_id']);
+		unset($sourceItem['modification_ts']);
+		unset($sourceItem['creation_ts']);
+	
+		$ret = $this->create_revision($rspecID,$sourceItem);		
+		if( $ret['status_ok'] )
+		{
+  			$source = array('parent_id' => $rspecID, 'item_id' => $source_id, 
+  							'tproject_id' => $sourceItem['testproject_id']);
+  			$dest_id = $ret['id'];
+	    	$this->copy_cfields($source,$ret['id']);
+		}
+
+		return $ret;
+  		
+	} 
+
+
+	/**
+	 * 
+ 	 *
+ 	 */
+	function getRevisionByID($id,$options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		$my['options'] = array('decode_user' => false);
+    	$my['options'] = array_merge($my['options'], (array)$options);
+		
+		$sql = 	'/* $debugMsg */' .
+				" SELECT RSPEC_REV.*, RSPEC.testproject_id " .
+				" FROM {$this->tables['req_specs_revisions']} RSPEC_REV " .
+				" JOIN {$this->tables['req_specs']} RSPEC " .
+				" ON RSPEC.id = RSPEC_REV.parent_id " .
+				" WHERE RSPEC_REV.id={$id} ";
+				
+		$ret = $this->db->get_recordset($sql);
+		if( !is_null($ret) && $my['options']['decode_user'])
+		{
+			$this->decode_users($ret);
+		}
+		return (!is_null($ret) ? $ret[0] : null);		
+	}	
+
+
+	/**
+	 * 
+ 	 *
+ 	 */
+	function update_revision($item)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		if( !isset($item['revision_id']) || is_null($item['revision_id']) )
+		{
+			// will go to update LATEST
+			$info = $this->get_last_child_info($item['id'],array('output' => 'credentials'));       
+    		$targetID = $info['id'];
+		} 
+		else
+		{
+			$targetID = $item['revision_id'];
+		}
+		
+		$sql = 	'/* $debugMsg */' .
+				" UPDATE {$this->tables['req_specs_revisions']} " .
+				" SET scope = '" . $this->db->prepare_string($item['scope']) . "', " .
+				"     modifier_id = " . $item['modifier_id'] . ", " .
+				"     modification_ts = " . $this->db->db_now() . 	
+				" WHERE id={$targetID} ";
+		$ret = $this->db->exec_query($sql);
+	}	
+
+
+	function get_all_id_in_testproject($tproject_id)
+	{
+	   	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = "/* $debugMsg */ " . 
+		       " SELECT RSPEC.id FROM {$this->object_table} RSPEC WHERE testproject_id={$tproject_id}";
+		return $this->db->get_recordset($sql);
 	}
 
 

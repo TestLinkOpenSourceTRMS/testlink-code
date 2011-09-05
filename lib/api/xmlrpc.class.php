@@ -20,90 +20,9 @@
  * 
  *
  * @internal revisions 
- *	20110309 - franciscom - BUGID 4311: typo error on uploadExecutionAttachment mapping
- *	20101212 - franciscom - BUGID 4086: Unexpected result when overwriting reportTCResult
- *							This bug is caused by an issue on get_last_execution()
- *	20101208 - franciscom - BUGID 4082 - reportTCResult() - no check on overwrite value
- *	20101120 - franciscom - getFullPath() - make user happy allowing array or simple value
- *							BUGID 3993: getFullPath can receive a list of node ids instead of one node
- *							BUGID 4041: API - getTestCasesForTestPlan() -Platform Information not provided
- *	20101110 - franciscom - BUGID 3992 - getTestCasesForTestPlan() keywords issue	 
- *							BUGID 3991 - getValidKeywordSetById() missing $this in return 
- *	20101023 - franciscom - BUGID 3916: getTestCaseCustomFieldDesignValue() - missing refactoring regarding
- *										custom field values linked to test case version
- *
- *							BUGID 3920: createTestProject() missing refactoring
- *
- * 	20100918 - franciscom - BUGID 1890 - uploadAttachment(), upload*Attachment - contribution by kinow	
- *  20100731 - asimon - BUGID 3644 (additional fix for BUGID 2607)
- *	20100715 - franciscom - BUGID 3604 - getTestCasesForTestPlan()
- *	20100711 - franciscom - BUGID 3564 - addTestCaseToTestPlan()
- *                          BUGID 2607 - UTF8 settings for MySQL
- *							BUGID 3544: deleteExecution doesn't handle missing execution id - checkExecutionID()
- *	20100705 - franciscom - BUGID  - getTestPlanPlatforms() typo error
- * 	20100704 - franciscom - BUGID 3565 - createTestPlan() typo and logic error
- *	20100618 - franciscom - contribution refactored doesUserExist(), checkDevKey()
- *  20100613 - franciscom - BUGID 2845: buildname option in reportTCResult will never be used
- *	20100610 - eloff - added getTotalsForTestPlan() method
- *	20100608 - franciscom - reportTCResult() writes always tcversion_number=1
- *	20100514 - franciscom - BUGID 3454 - Contribution refactor class to be able to be extended to create other server.
- *	20100513 - franciscom - fixed missing properties error on userHasRight()
- *							BUGID 3455 - BUGID 3456
- *							BUGID 3458
- *	20100415 - franciscom - BUGID 3385 - contribution - getTestPlanPlatforms() (refactored)
- *	20100328 - franciscom - BUGID 2645 - contribution - getTestSuitesForTestSuite()
- *	20100308 - franciscom - BUGID 3243 - checkPlatformIdentity()
- *	20100205 - franciscom - BUGID 3140 - _checkTCIDAndTPIDValid()	
- *	20091228 - franciscom - checkReqSpecQuality() - refactoring due to req versioning feature
- *	20091212 - franciscom - BUGID 2998 - contribution - getTestSuiteByID()
- *  20091128 - franciscom - getTestCaseIDBy() - added testcasepathname
- *  20091113 - franciscom - work for adding overwrite argument to reportTCResult() started.
- *  20090917 - franciscom - reportTCResult() manages platform info
- *	20090902 - franciscom - test case preconditions field
- *	20090804 - franciscom - deleteExecution() - new method (need more work)
- *	20090801 - franciscom - getTestCasesForTestPlan() allows keyword passed by name
- *	20090727 - franciscom - added contribution BUGID  - reportTCResult() accepts CF info
- *	20090726 - franciscom - added contribution BUGID 2719 - getFullPath()
- *	20090609 - franciscom - createTestPlan() - new method
- *	                        WORK TO BE DONE, limit lenght of any limited string (names, prefix, etc)
- *	
- *	20090521 - franciscom - refactoring to manage DB_TABLE_PREFIX
- *	20090521 - franciscom - getTestCase() - development started
- *	20090426 - franciscom - getLastExecutionResult(), changed return type when there is not execution.
- *	                        getTestCaseAttachments(), test case external id can be used on call
- *	                        BUGID 2441 - getTestProjectByName(), getTestPlanByName() - new methods.
- *	
- *	20090420 - franciscom - BUGID 2158 - full implementation of getTestCaseCustomFieldDesignValue()
- *	20090411 - franciscom - BUGID 2369 - changes in addTestCaseToTestPlan()
- *	20090314 - franciscom - createTestSuite()
- *	20090303 - franciscom - BUGID 2179
- *	20090218 - franciscom - Contribution by JaskaJ - BUGID 2127 - getTestCaseAttachments() Refactored 
- *	                         
- *	20090214 - franciscom - BUGID 2098 - getTestCasesForTestPlan() - added executiontype parameter
- *	20090209 - franciscom - getTestCasesForTestPlan()
- *	                        added summary,steps,expected_results,tsuite_name in returned info
- *	                        reportTCResult() - contribution by hnishiyama - optional bug id 
- *	
- *	20090209 - franciscom - getTestCasesForTestSuite() - refactoring
- *	20090208 - franciscom - reading status from configuration using config_get()
- *	                        fixed bad check on checkBuildID()
- *	20090126 - franciscom - added some contributions by hnishiyama. 
- *	20090125 - franciscom - getLastTestResult() -> getLastExecutionResult()
- *	20090122 - franciscom - assignRequirements()
- *	20090117 - franciscom - createTestProject()
- *	20090116 - franciscom - getFirstLevelTestSuitesForTestProject()
- *	                        getTestCaseIDByName() - added testprojectname param
- *	
- *	20090113 - franciscom - BUGID 1982 - addTestCaseToTestPlan()
- *	20090106 - franciscom - createTestCase() - first implementation
- *	20080409 - azl - implement using the testsuitename param with the getTestCaseIDByName method
- *	20080309 - sbouffard - contribution - BUGID 1420: added getTestCasesForTestPlan (refactored by franciscom)
- *	20080307 - franciscom - now is possible to use test case external or internal ID
- *	                        when calling reportTCResult()
- *	20080306 - franciscom - BUGID 1421
- *	20080305 - franciscom - minor code refactoring
- *	20080103 - franciscom - fixed minor bugs due to refactoring
- *	20080115 - havlatm - 0001296: API table refactoring 
+ * 20110903 - franciscom - integration with refactoring of TICKET 4188
+ * 20110903 - franciscom - get_linked_versions() interface changes
+ * 20110903 - franciscom - TICKET 4311: typo error on uploadExecutionAttachment mapping
  */
 
 /** 
@@ -225,8 +144,11 @@ class TestlinkXMLRPCServer extends IXR_Server
     public static $internalIDParamName = "internalid";
 	public static $keywordIDParamName = "keywordid";
     public static $keywordNameParamName = "keywords";
+	
+	public static $linkIDParamName = "linkid";
 
     public static $nodeIDParamName = "nodeid";
+	public static $nodeTypeParamName = "nodetype";
 	public static $noteParamName = "notes";
 
     public static $optionsParamName = "options";
@@ -239,7 +161,10 @@ class TestlinkXMLRPCServer extends IXR_Server
     public static $publicParamName = "public";
 
     public static $requirementsParamName = "requirements";
-
+    public static $requirementIDParamName = "requirementid";
+    public static $reqSpecIDParamName = "reqspecid";
+	
+	public static $scopeParamName = "scope";
 	public static $summaryParamName = "summary";
 	public static $statusParamName = "status";
 	public static $stepsParamName = "steps";
@@ -343,6 +268,12 @@ class TestlinkXMLRPCServer extends IXR_Server
 	                            'tl.getTestCasesForTestPlan' => 'this:getTestCasesForTestPlan',
 	                            'tl.getTestCaseIDByName' => 'this:getTestCaseIDByName',
                                 'tl.getTestCaseCustomFieldDesignValue' => 'this:getTestCaseCustomFieldDesignValue',
+	    						'tl.getTestCaseCustomFieldExecutionValue' => 'this:getTestCaseCustomFieldExecutionValue',
+	    						'tl.getTestCaseCustomFieldTestPlanDesignValue' => 'this:getTestCaseCustomFieldTestPlanDesignValue',
+	    						'tl.getTestSuiteCustomFieldDesignValue' => 'this:getTestSuiteCustomFieldDesignValue',
+	    						'tl.getTestPlanCustomFieldDesignValue' => 'this:getTestPlanCustomFieldDesignValue',
+	    						'tl.getReqSpecCustomFieldDesignValue' => 'this:getReqSpecCustomFieldDesignValue',
+	    						'tl.getRequirementCustomFieldDesignValue' => 'this:getRequirementCustomFieldDesignValue',
                                 'tl.getFirstLevelTestSuitesForTestProject' => 'this:getFirstLevelTestSuitesForTestProject',     
                                 'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
 	                            'tl.getTestCase' => 'this:getTestCase',
@@ -1137,9 +1068,10 @@ class TestlinkXMLRPCServer extends IXR_Server
     	$tcase_id = $this->args[self::$testCaseIDParamName];
         $platform_id = !is_null($platformInfo) ? key($platformInfo) : null;
         
-    	$info = $this->tcaseMgr->get_linked_versions($tcase_id,"ALL","ALL",$tplan_id,$platform_id);
+        $filters = array('exec_status' => "ALL", 'active_status' => "ALL",
+        				 'tplan_id' => $tplan_id, 'platform_id' => $platform_id);
+    	$info = $this->tcaseMgr->get_linked_versions($tcase_id,$filters);
         $status_ok = !is_null($info);
-		// $this->errors[]=$info;
 		
 		        
         if( $status_ok )
@@ -1825,8 +1757,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 		{		
 			$testSuiteID = $this->args[self::$testSuiteIDParamName];
             $tsuiteMgr = new testsuite($this->dbObj);
-
-            // BUGID 2179
 			if(!$this->_isDeepPresent() || $this->args[self::$deepParamName] )
 			{
 			    $pfn = 'get_testcases_deep';
@@ -2347,19 +2277,16 @@ class TestlinkXMLRPCServer extends IXR_Server
 		if( is_null($keywordSet) )
 		{
 			$keywordSet = null;
-        	$keywordList=$this->getKeywordSet($tplanInfo['parent_id']);
+        	$keywordList = $this->getKeywordSet($tplanInfo['parent_id']);
         	if( !is_null($keywordList) )
         	{
         		$keywordSet = explode(",",$keywordList);
         	}
 		}
-		// BUGID 4041
-		// BUGID 3604
         $options = array('executed_only' => $opt[self::$executedParamName], 
         				 'steps_info' => $opt[self::$getStepsInfoParamName],
         				 'details' => 'full','output' => 'mapOfMap' );
-        				 
-        // BUGID 3992				 
+
 		$filters = array('tcase_id' => $opt[self::$testCaseIDParamName],
 			             'keyword_id' => $keywordSet,
 			             'assigned_to' => $opt[self::$assignedToParamName],
@@ -4720,6 +4647,251 @@ protected function createAttachmentTempFile()
 	    // file_put_contents('c:\checkTestCaseVersionNumberAncestry.php.xmlrpc', $xx,FILE_APPEND); 
 	    return $ret;
 	} // function end
+
+
+    /**
+    * Helper method to see if the a provided scope is valid. Valids scopes are 
+    * design, execution and testplan_design
+    *
+    * @param string $messagePrefix used to be prepended to error message
+    *
+    * @return boolean
+    * @access protected
+    */
+    protected function checkCustomFieldScope($messagePrefix='')
+    {
+    	$status = false;
+    	$domain = array('design' => true,'execution' => true, 'testplan_design' => true);
+    	$scope = $this->args[self::$scopeParamName];
+
+		$status = is_null($scope) ? false : isset($domain[$scope]);
+    	return $status;
+    }
+
+
+    /**
+     * Gets value of a Custom Field for a entity in a given scope (e.g.: a custom
+     * field for a test case in design scope).
+     *
+     * @param struct $args
+     * @param string $args["devKey"]: used to check if operation can be done.
+     *                                if devKey is not valid => abort.
+     *
+     * @param string $args["customfieldname"]: custom field name
+     * @param int 	  $args["tprojectid"]: project id
+     * @param string $args["nodetype"]: note type (testcase, testsuite, ...)
+     * @param int    $args["nodeid"]: node id (test case version id, project id, ...)
+     * @param string $args["scope"]: cf scope (execution, design or testplan_design)
+     * @param int    $args["executionid"]: execution id
+     * @param int    $args["testplanid"]: test plan id
+     * @param int    $args["linkid"]: link id for nodes linked at test plan design scope
+     *
+     * @return mixed $resultInfo
+     *
+     * @access protected
+     * @internal revisions
+     * 20110903 - franciscom - TICKET 4188: getTestSuiteCustomFieldValue()
+     */
+    protected function getCustomFieldValue($args)
+    {
+        $msg_prefix="(" .__FUNCTION__ . ") - ";
+        $this->_setArgs($args);
+
+        $checkFunctions = array('authenticate','checkTestProjectID','checkCustomField','checkCustomFieldScope');
+        $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+
+        if($status_ok && $this->userHasRight("mgt_view_tc"))
+        {
+            $cf_name = $this->args[self::$customFieldNameParamName];
+            $tproject_id = $this->args[self::$testProjectIDParamName];
+            $nodetype = $this->args[self::$nodeTypeParamName];
+            $nodeid = $this->args[self::$nodeIDParamName];
+            $scope = $this->args[self::$scopeParamName];
+            $executionid = $this->args[self::$executionIDParamName];
+            $testplanid = $this->args[self::$testPlanIDParamName];
+            $linkid = $this->args[self::$linkIDParamName];
+
+            $enabled = 1; // returning only enabled custom fields
+
+            $cfield_mgr = $this->tprojectMgr->cfield_mgr;
+            $cfinfo = $cfield_mgr->get_by_name($cf_name);
+            $cfield = current($cfinfo);
+
+      		switch($scope)
+      		{
+      			case 'design':
+      				$filters = array( 'cfield_id' => $cfield['id']);
+      				$cfieldSpec = $cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
+      																		$filters,$nodetype,$nodeid);
+      			break;
+      			
+				case 'execution' 
+      				$cfieldSpec = $cfield_mgr->get_linked_cfields_at_execution($tproject_id,$enabled,$nodetype,
+      																		   $nodeid,$executionid,$testplanid);
+      			break;
+
+				case 'testplan_design':
+     				$cfieldSpec = $cfield_mgr->get_linked_cfields_at_testplan_design($tproject_id,$enabled,$nodetype,
+     																				 $nodeid,$linkid,$testplanid );
+				break; 
+ 
+      		}
+      		return $cfieldSpec[$cfield['id']];
+      	}
+      	else
+      	{
+      		return $this->errors;
+      	}
+    }
+
+  	/**
+  	 * Gets a Custom Field of a Test Case in Execution Scope.
+  	 * 
+  	 * @param struct $args
+	 * @param string $args["devKey"]: used to check if operation can be done.
+	 *                                if devKey is not valid => abort.
+	 *
+	 * @param string $args["customfieldname"]: custom field name
+	 * @param int 	 $args["tprojectid"]: project id
+	 * @param int    $args["version"]: test case version id
+	 * @param int    $args["executionid"]: execution id
+	 * @param int    $args["testplanid"]: test plan id
+	 *
+	 * @return mixed $resultInfo
+	 *
+	 * @access public
+  	 */
+	public function getTestCaseCustomFieldExecutionValue($args)
+	{
+	    $args[self::$nodeTypeParamName] = 'testcase';
+	    $args[self::$nodeIDParamName] = $args[self::$versionNumberParamName];
+	    $args[self::$scopeParamName] = 'execution';
+	    
+	    return $this->getCustomFieldValue($args);
+	}
+    
+	/**
+ 	 * Gets a Custom Field of a Test Case in Test Plan Design Scope.
+	 *
+	 * @param struct $args
+	 * @param string $args["devKey"]: used to check if operation can be done.
+	 *                                 if devKey is not valid => abort.
+	 *
+	 * @param string $args["customfieldname"]: custom field name
+	 * @param int 	 $args["testcaseid"]: project id
+	 * @param int    $args["version"]: test case version id
+	 * @param int    $args["testplanid"]: test plan id
+	 * @param int    $args["linkid"]: link id (important!)
+	 *
+	 * @return mixed $resultInfo
+	 *
+	 * @access public
+	 */
+	public function getTestCaseCustomFieldTestPlanDesignValue($args)
+	{
+	    $args[self::$nodeTypeParamName] = 'testcase';
+	    $args[self::$nodeIDParamName] = $args[self::$versionNumberParamName];
+	    $args[self::$scopeParamName] = 'testplan_design';
+	
+	    return $this->getCustomFieldValue($args);
+	}
+	
+	/**
+	 * Gets a Custom Field of a Test Suite in Design Scope.
+	 *
+	 * @param struct $args
+ 	 * @param string $args["devKey"]: used to check if operation can be done.
+ 	 *                                 if devKey is not valid => abort.
+	 *
+	 * @param string $args["customfieldname"]: custom field name
+	 * @param int 	$args["tprojectid"]: project id
+ 	 * @param int    $args["testsuiteid"]: test suite id
+	 * 
+	 * @return mixed $resultInfo
+	 *
+	 * @access public
+	 */
+	public function getTestSuiteCustomFieldDesignValue($args)
+	{
+	    $args[self::$nodeTypeParamName] = 'testsuite';
+	    $args[self::$nodeIDParamName] = $args[self::$testSuiteIDParamName];
+	    $args[self::$scopeParamName] = 'design';
+	
+	    return $this->getCustomFieldValue($args);
+	}
+	
+	/**
+	 * Gets a Custom Field of a Test Plan in Design Scope.
+	 *
+	 * @param struct $args
+	 * @param string $args["devKey"]: used to check if operation can be done.
+	 *                                if devKey is not valid => abort.
+	 *
+	 * @param string $args["customfieldname"]: custom field name
+	 * @param int 	 $args["tprojectid"]: project id
+	 * @param int    $args["testplanid"]: test plan id
+	 *
+	 * @return mixed $resultInfo
+	 *
+	 * @access public
+	 */
+	public function getTestPlanCustomFieldDesignValue($args)
+	{
+	    $args[self::$nodeTypeParamName] = 'testplan';
+	    $args[self::$nodeIDParamName] = $args[self::$testPlanIDParamName];
+	    $args[self::$scopeParamName] = 'design';
+	
+	    return $this->getCustomFieldValue($args);
+	}
+	
+    /**
+     * Gets a Custom Field of a Requirement Specification in Design Scope.
+     * 
+     * @param struct $args
+     * @param string $args["devKey"]: used to check if operation can be done.
+     *                                if devKey is not valid => abort.
+     *
+     * @param string $args["customfieldname"]: custom field name
+     * @param int 	 $args["tprojectid"]: project id
+     * @param int    $args["reqspecid"]: requirement specification id
+     * 
+     * @return mixed $resultInfo
+     * 
+     * @access public
+     */
+    public function getReqSpecCustomFieldDesignValue($args)
+    {
+        $args[self::$nodeTypeParamName] = 'requirement_spec';
+        $args[self::$nodeIDParamName] = $args[self::$reqSpecIDParamName];
+        $args[self::$scopeParamName] = 'design';
+        
+        return $this->getCustomFieldValue($args);
+    }
+  
+    /**
+     * Gets a Custom Field of a Requirement in Design Scope.
+     * 
+     * @param struct $args
+     * @param string $args["devKey"]: used to check if operation can be done.
+     *                                if devKey is not valid => abort.
+     *
+     * @param string $args["customfieldname"]: custom field name
+     * @param int 	 $args["tprojectid"]: project id
+     * @param int    $args["requirementid"]: requirement id
+     * 
+     * @return mixed $resultInfo
+     * 
+     * @access public
+     */
+    public function getRequirementCustomFieldDesignValue($args)
+    {
+        $args['nodetype'] = 'requirement';
+        $args['nodeid'] = $args[self::$requirementIDParamName];
+        $args['scope'] = 'design';
+        
+        return $this->getCustomFieldValue($args);
+    }
+
 
 } // class end
 ?>

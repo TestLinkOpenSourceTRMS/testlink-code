@@ -11,9 +11,6 @@
  * Allows users to export requirements.
  *
  * @internal revisions
- * 20100321 - franciscom - manage export of :
- *			               req. spec => full tree or branch (new to 1.9)
- *                         child (direct children) requirements inside a req. spec
 **/
 require_once("../../config.inc.php");
 require_once("csv.inc.php");

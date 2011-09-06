@@ -10,6 +10,8 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20110903 - franciscom - get_branch() new method
+ * 20110903 - franciscom - get_children() interface changes
  *
  * 20110806 - franciscom - TICKET 4692
  * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
@@ -58,7 +60,7 @@ class testsuite extends tlObjectWithAttachments
 	 * 
 	 * @param resource &$db reference to database handler
 	 */
-	function testsuite(&$db)
+	function __construct(&$db)
 	{
 		$this->db = &$db;	
 		
@@ -1104,26 +1106,21 @@ class testsuite extends tlObjectWithAttachments
 	            
 	  args: $id
 	        [$parent_id]:
-	        [$show_on_execution]: default: null
-	                              1 -> filter on field show_on_execution=1
-	                              0 or null -> don't filter
-	        
+	        [$filters]: default: null
 	        
 	  returns: hash
 	  
 	  rev :
-	        20061231 - franciscom - added $parent_id
+	  20110129 - franciscom - BUGID 4202
 	*/
-		function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null,$tproject_id = null) 
+		function get_linked_cfields_at_design($id,$parent_id=null,$filters=null,$tproject_id = null) 
 		{
 			if (!$tproject_id)
 			{
 				$tproject_id = $this->getTestProjectFromTestSuite($id,$parent_id);
 			}
-	        $filters=array('show_on_execution' => $show_on_execution);    
-			$enabled = 1;
-			$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,$filters,
-			                                                          'testsuite',$id);
+			$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,
+																	  $filters,'testsuite',$id);
 			return $cf_map;
 		}
 		
@@ -1143,26 +1140,30 @@ class testsuite extends tlObjectWithAttachments
 	            
 	  args: $id
 	        [$parent_id]
-	        [$show_on_execution]: default: null
-	                              1 -> filter on field show_on_execution=1
-	                              0 or null -> don't filter
+	        [$filters]
+	        		  keys: $show_on_execution: default: null
+	                        1 -> filter on field show_on_execution=1
+	                        0 or null -> don't filter
 	        
 	        
 	  returns: hash
 	  
 	  rev :
-	        20061231 - franciscom - added $parent_id
+	 	 20110129 - franciscom - BUGID 4202
 	*/
-	function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null) 
+	function get_linked_cfields_at_execution($id,$parent_id=null,$filters=null,$tproject_id=null) 
 	{
-	  $filters=array('show_on_execution' => $show_on_execution);    
-	  $enabled=1;
-	  $the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
-	  $path_len=count($the_path);
-	  $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+		
+		if (!$tproject_id)
+		{
+			$the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
+			$path_len=count($the_path);
+			$tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+		}
 	
-	  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,$filters,'testsuite',$id);
-	  return($cf_map);
+		$cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,
+	  														    $filters,'testsuite',$id);
+		return($cf_map);
 	}
 	
 	
@@ -1240,7 +1241,8 @@ class testsuite extends tlObjectWithAttachments
 	    {
 	      // Important: remember that for Test Suite, custom field value CAN NOT BE changed 
 	      // at execution time just displayed.
-	      $cf_map=$this->get_linked_cfields_at_execution($id);
+	      // 20110129 - if we know test project id is better to use it
+	      $cf_map=$this->get_linked_cfields_at_execution($id,null,null,$tproject_id);
 	    }
 	      
 	    if( !is_null($cf_map) )
@@ -1330,9 +1332,12 @@ class testsuite extends tlObjectWithAttachments
 	 * get test suites with parent = testsuite with given id
 	 *
 	 */
-	function get_children($id)
+	function get_children($id,$options=null)
 	{
 	    $itemSet = null;
+	    $my['options'] = array('details' => 'full');
+	    $my['options'] = array_merge($my['options'], (array)$options);
+	    
 	    $subtree = $this->tree_manager->get_children($id, array('testcase' => 'exclude_me'));
 	    if(!is_null($subtree) && count($subtree) > 0)
 	    {
@@ -1340,10 +1345,30 @@ class testsuite extends tlObjectWithAttachments
 			{
 	    		$itemKeys[] = $elem['id'];
 			}
-	    	$itemSet = $this->get_by_id($itemKeys, 'ORDER BY node_order');
+			
+			if($my['options']['details'] == 'full')
+			{
+	    		$itemSet = $this->get_by_id($itemKeys, 'ORDER BY node_order');
+	    	}
+	    	else
+	    	{
+	    		$itemSet = $itemKeys;
+	    	}	
 	    }
 	    return $itemSet;
 	}
+
+	/**
+	 * get_branch
+	 * get ONLY test suites (no other kind of node) ON BRANCH with ROOT = testsuite with given id
+	 *
+	 */
+	function get_branch($id)
+	{
+		$branch = $this->tree_manager->get_subtree_list($id,$this->my_node_type);
+	  	return $branch;
+	}
+
 
 } // end class
 

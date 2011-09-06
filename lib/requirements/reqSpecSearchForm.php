@@ -11,8 +11,7 @@
  *
  * This page presents the search formular for requiremnt specifications.
  *
- * @internal Revisions:
- * 20100806 - asimon - type displayed wrong selection: req types instead of req spec types
+ * @internal revisions
  */
 
 require_once("../../config.inc.php");

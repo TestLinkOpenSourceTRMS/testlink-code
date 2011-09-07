@@ -1,18 +1,17 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-
-show form for search through requirement specifications.
-
 @filesource	reqSpecSearchForm.tpl
+Form for searching through requirement specifications.
+
 @internal revisions
 *}
 
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{cfg_section = $smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels" 
           s='caption_search_form, custom_field, search_type_like,
-             custom_field_value,btn_find,req_spec_document_id, 
+             custom_field_value,btn_find,req_spec_document_id,log_message, 
              title_search_req_spec, reqid, reqversion, caption_search_form_req_spec,
              title, scope, coverage, status, type'}
 
@@ -43,7 +42,7 @@ show form for search through requirement specifications.
 			<td>{$labels.type}</td>
 			<td>
 				<select name="reqSpecType" id="reqSpecType">
-					<option value="notype">&nbsp;</option>
+					<option value="">&nbsp;</option>
   					{html_options options=$gui->types}
   				</select>
   			</td>
@@ -68,19 +67,19 @@ show form for search through requirement specifications.
 		    	</td>
 	      </tr>
 	  {/if}
-	  		
-		
-  			      
+		<tr>
+			<td>{$labels.log_message}</td>
+			<td><input type="text" name="log_message" id="log_message" 
+					   size="{#LOGMSG_SIZE#}" maxlength="{#LOGMSG_MAXLEN#}" /></td>
+		</tr>
 	</table>
 	
 	<p style="padding-left: 20px;">
-		
 		<input type="submit" name="doSearch" value="{$labels.btn_find}" />
 	</p>
 </form>
 
 </div>
-
 
 
 </body>

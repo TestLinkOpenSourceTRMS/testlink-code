@@ -70,17 +70,20 @@ function initialize_gui(&$dbHandler,&$argsObj)
 	$gui->req_spec_cfg = config_get('req_spec_cfg');
 	$gui->req_cfg = config_get('req_cfg');
 	
-	// 20100810 - asimon - BUGID 3317: disabled total count of requirements by default
 	$gui->external_req_management = ($gui->req_cfg->external_req_management == ENABLED) ? 1 : 0;
 	
 	$gui->grants = new stdClass();
 	$gui->grants->req_mgmt = has_rights($db,"mgt_modify_req");
+
 	$gui->req_spec = $req_spec_mgr->get_by_id($argsObj->req_spec_id);
-	
+	$gui->revCount = $req_spec_mgr->getRevisionsCount($argsObj->req_spec_id);
 	$gui->req_spec_id = $argsObj->req_spec_id;
+	$gui->parentID = $argsObj->req_spec_id;
+	$gui->req_spec_revision_id = $gui->req_spec['revision_id'];
+	$gui->name = $gui->req_spec['title'];
+	
 	$gui->tproject_id = $argsObj->tproject_id;
 	$gui->tproject_name = $argsObj->tproject_name;
-	$gui->name = $gui->req_spec['title'];
 	
 	$gui->main_descr = lang_get('req_spec_short') . config_get('gui_title_separator_1') . 
 	                   "[{$gui->req_spec['doc_id']}] :: " .$gui->req_spec['title'];

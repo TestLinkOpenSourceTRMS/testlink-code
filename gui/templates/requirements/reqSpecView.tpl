@@ -11,7 +11,7 @@ view a requirement specification
 20110320 - franciscom - TICKET 4321: Requirement Spec - add option to print single Req Spec
 *}
 
-{lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,title_last_mod,
+{lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,title_last_mod,revision,
 						  title_created,no_records_found,commit_title,please_add_revision_log"}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}

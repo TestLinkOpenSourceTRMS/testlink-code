@@ -5,15 +5,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - create a new req document
 
 @internal revisions
-20110612 - franciscom - TICKET 4597: Is required field doesn't work properly for some custom field type
-20110304 - asimon - added help icon with a description of some of the "new" features
-20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
-20110111 - Julian - Added Save, Cancel Button on top of the page
-20110110 - Julian - BUGID 4154: Warning message when navigating away from changed requirement
-                                specification without saving
-20101226 - franciscom - BUGID 4088: Required parameter for custom fields 
 *}
-{* ------------------------------------------------------------------------- *}
 
 {lang_get var="labels"
           s='warning,warning_empty_req_spec_title,title,scope,req_total,type,warning_required_cf,
@@ -90,17 +82,17 @@ var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
 
 <div class="workBack">
 	<form name="reqSpecEdit" id="reqSpecEdit" method="post" onSubmit="javascript:return validateForm(this);">
+
+	<div class="groupBtn">
+		<input type="hidden" name="parentID" value="{$gui->parentID}" />
 	    <input type="hidden" name="req_spec_id" id="req_spec_id" value="{$gui->req_spec_id}" />
 	    <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 
-	{* BUGID 3854 *}
-	{* BUGID 4154 - when save or cancel is pressed do not show modification warning *}
-	<div class="groupBtn">
 		<input type="hidden" name="doAction" value="" />
 		<input type="submit" name="createSRS" value="{$gui->submit_button_label}"
-	       onclick="show_modified_warning = false; doAction.value='{$gui->operation}';" />
+	       	   onclick="show_modified_warning = false; doAction.value='{$gui->operation}';" />
 		<input type="button" name="go_back" value="{$labels.cancel}" 
-			onclick="javascript: show_modified_warning = false; history.back();"/>
+			   onclick="javascript: show_modified_warning = false; history.back();"/>
 	</div>
 	<br />
   	<div class="labelHolder"><label for="doc_id">{$labels.doc_id}</label>

@@ -168,6 +168,9 @@ class reqSpecCommands
 	{
       	$guiObj = $this->initGuiBean(); 
 
+
+		new dBug($argsObj);
+		
 		$guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
 		$guiObj->action_descr = lang_get('create_req_spec');
 		$guiObj->submit_button_label=$this->submit_button_label;

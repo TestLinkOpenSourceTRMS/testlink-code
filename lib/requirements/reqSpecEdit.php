@@ -11,12 +11,6 @@
  * View existing and create a new req. specification.
  *
  * @internal revisions
- *  20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
- *                                  inside a req spec (recursively)
- *  20100908 - asimon - BUGID 3755: tree not refreshed when copying requirements
- *  20100810 - asimon - BUGID 3317: disabled total count of requirements by default
- *  20100808 - aismon - added logic to refresh filtered tree on action
- *
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -32,6 +26,7 @@ $templateCfg = templateConfiguration();
 $args = init_args($db);
 checkRights($db,$_SESSION['currentUser'],$args);
 
+new dBug($args);
 
 $commandMgr = new reqSpecCommands($db);
 
@@ -64,7 +59,7 @@ function init_args(&$dbHandler)
 	$args = new stdClass();
 	$iParams = array("countReq" => array(tlInputParameter::INT_N,99999),
 			         "req_spec_id" => array(tlInputParameter::INT_N),
-					 "reqParentID" => array(tlInputParameter::INT_N),
+					 "parentID" => array(tlInputParameter::INT_N),
 					 "doAction" => array(tlInputParameter::STRING_N,0,250),
 					 "title" => array(tlInputParameter::STRING_N,0,100),
 					 "scope" => array(tlInputParameter::STRING_N),
@@ -91,11 +86,9 @@ function init_args(&$dbHandler)
 
 	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 	$args->basehref = $_SESSION['basehref'];
-	$args->reqParentID = is_null($args->reqParentID) ? $args->tproject_id : $args->reqParentID;
+	$args->parentID = is_null($args->parentID) ? $args->tproject_id : $args->parentID;
 
-	// asimon - 20100808 - added logic to refresh filtered tree on action
 	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? $_SESSION['setting_refresh_tree_on_action'] : 0;
-	
 	$args->countReq = is_null($args->countReq) ? 0 : intval($args->countReq);
 
 	return $args;
@@ -232,6 +225,8 @@ function initialize_gui(&$dbHandler, &$commandMgr, &$userObj,&$argsObj,&$req_cfg
     $gui = $commandMgr->initGuiBean();
 
     $gui->tproject_id = $argsObj->tproject_id;
+    $gui->parentID = $argsObj->parentID;
+
     $gui->user_feedback = null;
     $gui->main_descr = null;
     $gui->action_descr = null;

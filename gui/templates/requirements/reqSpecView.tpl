@@ -88,12 +88,17 @@ function freeze_req_spec(btn, text, o_id)
 var pF_freeze_req_spec = freeze_req_spec;
 
 
+function momo(a)
+{
+ var b=a;
+}
+
+
 /**
  * 
  * @since 2.0
  * TICKET 4703
  */
-/*
 function tip4log(itemID)
 {
 	var fUrl = fRoot+'lib/ajax/getreqspeclog.php?item_id=';
@@ -105,6 +110,7 @@ function tip4log(itemID)
         trackMouse: true
     });
 }
+
 
 /**
  * 
@@ -134,7 +140,7 @@ if we remove space in "{ tip4log(" smarty compiler will generate an error becaus
 when it found a curly brackets WITHOUT space, consider this SMARTY CODE
 not JS code
 *}
-Ext.onReady( function(){ tip4log({$gui->req_spec.revision_id}); } );
+Ext.onReady(function(){ tip4log({$gui->req_spec.revision_id}); });
 </script>
 </head>
 

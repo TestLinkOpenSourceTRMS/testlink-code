@@ -15,7 +15,7 @@ Global Dependencies:  cfChecks,cfMessages
                       declared and initialized in inc_jsCfieldsValidation.tpl   
     
 @internal revisions
-20110611 - franciscom - TICKET 4597: Is required field doesn't work properly for some custom field type
+20110910 - franciscom - code improvement thanks to firefox+firebug - avoid use of undefined var
 */
 
 /*
@@ -283,18 +283,22 @@ function checkCustomFields(cfContainerOID,alertBoxTitle,reqCFWarningMsg)
 	var tdx;
 	var checkOp;
 
-	// Required Checks	
+	// Required Checks
+	if( typeof(matrioska) === "undefined")
+	{
+		return true;  // >>---> brute force exit
+	}
+
 	for(tdx=0; tdx < tags4required.length; tdx++) 
 	{ 
 		cfieldSet = matrioska.getElementsByTagName(tags4required[tdx]);
-   		checkOp = checkRequiredCustomFields(cfieldSet);
+		checkOp = checkRequiredCustomFields(cfieldSet);
 		if(!checkOp.status_ok)
 	  	{
 	    	alert_message(alertBoxTitle,reqCFWarningMsg.replace(/%s/, checkOp.cfield_label));
 	    	return false;
 		}
 	}
-
 	// ----------------------------------------------------------------------------------------
 	// Checks on validity (example email value, integer,etc) custom field values, 
 	//

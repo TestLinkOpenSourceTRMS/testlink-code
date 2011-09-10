@@ -26,7 +26,7 @@ $templateCfg = templateConfiguration();
 $args = init_args($db);
 checkRights($db,$_SESSION['currentUser'],$args);
 
-new dBug($args);
+// new dBug($args);
 
 $commandMgr = new reqSpecCommands($db);
 
@@ -51,14 +51,12 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg);
  */
 function init_args(&$dbHandler)
 {
-
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
-	// new dBug($_REQUEST);
 
 	$args = new stdClass();
 	$iParams = array("countReq" => array(tlInputParameter::INT_N,99999),
 			         "req_spec_id" => array(tlInputParameter::INT_N),
+			         "req_spec_revision_id" => array(tlInputParameter::INT_N),
 					 "parentID" => array(tlInputParameter::INT_N),
 					 "doAction" => array(tlInputParameter::STRING_N,0,250),
 					 "title" => array(tlInputParameter::STRING_N,0,100),
@@ -69,21 +67,21 @@ function init_args(&$dbHandler)
  			 		 "itemSet" => array(tlInputParameter::ARRAY_INT),
 					 "reqSpecType" => array(tlInputParameter::STRING_N,0,1),
 					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL),
-					 "tproject_id" => array(tlInputParameter::INT_N));	
+					 "tproject_id" => array(tlInputParameter::INT_N),
+					 "save_rev" => array(tlInputParameter::INT_N),
+					 "do_save" => array(tlInputParameter::INT_N),
+					 "log_message" => array(tlInputParameter::STRING_N));
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
-
-
-	$args->tproject_name = '';
-	if($args->tproject_id > 0 )
-	{
-		$treeMgr = new tree($dbHandler);
-		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
-		$args->tproject_name = $dummy['name'];    
-	}
-
-
+	
+	// TO BE CHECKED
+	// i guess due to required revison log it is necessary to strip slashes
+	// after R_PARAMS call - at least this fixed the problem
+	// $_REQUEST=strings_stripSlashes($_REQUEST);
+	
+	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
 	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 	$args->basehref = $_SESSION['basehref'];
 	$args->parentID = is_null($args->parentID) ? $args->tproject_id : $args->parentID;
@@ -112,8 +110,12 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
                              'doCopy' => 'doCopy',
 	                         'doFreeze' => 'doFreeze',
                              'copyRequirements' => 'doCopyRequirements',
-                             'doCopyRequirements' => 'doCopyRequirements');
+                             'doCopyRequirements' => 'doCopyRequirements',
+                             'doCreateRevision' => 'doCreateRevision');
 
+
+	// ------------------------------------------------------------------------------------------------
+	// Web Editor Processing
     $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
 	switch($argsObj->doAction)
     {
@@ -123,13 +125,24 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         break;
         
         default:
-        $owebEditor->Value = getItemTemplateContents('req_spec_template',$owebEditor->InstanceName, $argsObj->scope);
+        // TICKET 4661
+        if($opObj->askForRevision || $opObj->askForLog || !$opObj->action_status_ok) 
+		{
+			$owebEditor->Value = $argsObj->scope;
+		}
+		else
+		{
+        	$owebEditor->Value = getItemTemplateContents('req_spec_template',$owebEditor->InstanceName, 
+        												 $argsObj->scope);
+        }												 
         break;
     }
 	$guiObj->scope = $owebEditor->CreateHTML();
     $guiObj->editorType = $editorCfg['type'];  
+	// ------------------------------------------------------------------------------------------------
 
-    // 20100808 - aismon - added logic to refresh filtered tree on action
+	// ------------------------------------------------------------------------------------------------
+	// Tree refresh Processing
 	switch($argsObj->doAction)
     {
         case "doCreate":
@@ -141,7 +154,11 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     		$guiObj->refreshTree = $argsObj->refreshTree;
     	break;
     }
+	// ------------------------------------------------------------------------------------------------
+
     
+	// ------------------------------------------------------------------------------------------------
+	// GUI rendering Processing
     switch($argsObj->doAction)
     {
         case "edit":
@@ -157,8 +174,18 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         case "copy":
         case "doCopy":
         case "doFreeze":
+        case "doCreateRevision":
         	$renderType = 'template';
             $key2loop = get_object_vars($opObj);
+            
+            if($opObj->action_status_ok == false)  // TICKET 4661
+            {
+				// Remember that scope normally is a WebRichEditor, and that
+				// we have already processed WebRichEditor
+				// Need to understand if remove of scope key can be done always
+				// no matter action_status_ok
+            	unset($key2loop['scope']);
+            }
             foreach($key2loop as $key => $value)
             {
                 $guiObj->$key = $value;
@@ -212,6 +239,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         	break;
 
         default:
+        	echo 'Can not process RENDERING!!!';
         	break;
     }
 }

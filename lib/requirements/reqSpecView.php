@@ -86,7 +86,8 @@ function initialize_gui(&$dbHandler,&$argsObj)
 	                   "[{$gui->req_spec['doc_id']}] :: " .$gui->req_spec['title'];
 
 	$gui->refresh_tree = 'no';
-	$gui->cfields = $req_spec_mgr->html_table_of_custom_field_values($argsObj->req_spec_id,$argsObj->tproject_id);
+	$gui->cfields = $req_spec_mgr->html_table_of_custom_field_values($argsObj->req_spec_id,$gui->req_spec_revision_id,
+																	 $argsObj->tproject_id);
 	$gui->attachments = getAttachmentInfosFrom($req_spec_mgr,$argsObj->req_spec_id);
 	$gui->requirements_count = $req_spec_mgr->get_requirements_count($argsObj->req_spec_id);
 	

@@ -169,7 +169,7 @@ class reqSpecCommands
       	$guiObj = $this->initGuiBean(); 
 
 
-		new dBug($argsObj);
+		// new dBug($argsObj);
 		
 		$guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
 		$guiObj->action_descr = lang_get('create_req_spec');
@@ -689,6 +689,8 @@ class reqSpecCommands
       	$obj->req_spec = null;
       	$obj->req_spec_id=$argsObj->req_spec_id;
 		$obj->req_spec_revision_id = $ret['id'];
+		
+// 		new dBug($obj);
 		return $obj;	
 	}
 

@@ -26,40 +26,40 @@ var warning_countreq_numeric = "{$labels.warning_countreq_numeric|escape:'javasc
 var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
 
 	
-	function validateForm(f)
-	{
- 
-		if (isWhitespace(f.doc_id.value)) 
-  		{
-    		alert_message(alert_box_title,warning_empty_doc_id);
-			selectField(f, 'doc_id');
-			return false;
-		}
+function validateForm(f)
+{
 
-		if (isWhitespace(f.title.value))
+	if (isWhitespace(f.doc_id.value)) 
 		{
-			alert_message(alert_box_title,warning_empty_req_spec_title);
-			selectField(f,'title');
-			return false;
-		}
-		
-		{if $gui->external_req_management}
-		  if (isNaN(parseInt(f.countReq.value)))
-		  {
-		  	alert_message(alert_box_title,warning_countreq_numeric);
-		  	selectField(f,'countReq');
-		  	return false;
-		  }
-		{/if}
-
-  		if(!checkCustomFields('custom_field_container',alert_box_title,warning_required_cf))
-  		{
-			return false;
-  		}
-
-		return Ext.ux.requireSessionAndSubmit(f);
+		alert_message(alert_box_title,warning_empty_doc_id);
+		selectField(f, 'doc_id');
+		return false;
 	}
-	</script>
+
+	if (isWhitespace(f.title.value))
+	{
+		alert_message(alert_box_title,warning_empty_req_spec_title);
+		selectField(f,'title');
+		return false;
+	}
+	
+	{if $gui->external_req_management}
+	  if (isNaN(parseInt(f.countReq.value)))
+	  {
+	  	alert_message(alert_box_title,warning_countreq_numeric);
+	  	selectField(f,'countReq');
+	  	return false;
+	  }
+	{/if}
+
+		if(!checkCustomFields('custom_field_container',alert_box_title,warning_required_cf))
+		{
+		return false;
+		}
+
+	return Ext.ux.requireSessionAndSubmit(f);
+}
+</script>
 
 {* BUGID 4154 *}
 {if $tlCfg->gui->checkNotSaved}
@@ -150,8 +150,6 @@ var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
 		<br />
 		{/if}
 
-		{* BUGID 3854 *}
-		{* BUGID 4154 - when save or cancel is pressed do not show modification warning *}
 		<div class="groupBtn">
 			<input type="submit" name="createSRS" value="{$gui->submit_button_label}"
 		       onclick="show_modified_warning = false; doAction.value='{$gui->operation}';" />

@@ -12,7 +12,7 @@ view a requirement specification
 *}
 
 {lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,title_last_mod,
-						  title_created,no_records_found"}
+						  title_created,no_records_found,commit_title,please_add_revision_log"}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}

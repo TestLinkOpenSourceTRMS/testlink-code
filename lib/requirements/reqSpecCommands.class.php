@@ -685,12 +685,11 @@ class reqSpecCommands
 		
 		$obj = $this->initGuiBean();
 		$obj->user_feedback = $ret['msg'];
-       	$obj->template = "reqSpecView.php?req_spec_id={$argsObj->req_spec_id}";
+       	$obj->template = "reqSpecView.php?tproject_id={$argsObj->tproject_id}&req_spec_id={$argsObj->req_spec_id}";
       	$obj->req_spec = null;
       	$obj->req_spec_id=$argsObj->req_spec_id;
 		$obj->req_spec_revision_id = $ret['id'];
 		
-// 		new dBug($obj);
 		return $obj;	
 	}
 

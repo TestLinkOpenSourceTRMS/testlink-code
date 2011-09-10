@@ -193,38 +193,20 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
             $guiObj->operation = $actionOperation[$argsObj->doAction];
             $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
             $tpd = isset($key2loop['template_dir']) ? $opObj->template_dir : $templateCfg->template_dir;
-    	break;
-    }
-    
-	switch($argsObj->doAction)
-    {
-        case "edit":
-        case "create":
-        case "createChild":
-        case "reorder":
-        case "doDelete":
-        case "doReorder":
-        case "copyRequirements":
-        case "copy":
-        	$tpl = $tpd . $tpl;
-            break;
-    
-        case "doCreate":
-	    case "doUpdate": 
-        case "doCopyRequirements":
-        case "doCopy":
+            
 	    	$pos = strpos($tpl, '.php');
             if($pos === false)
             {
-            	$tpl = $templateCfg->template_dir . $tpl;      
+            	$tpl = $tpd . $tpl;
             }
             else
             {
                 $renderType = 'redirect';  
 			}
-			break;  
+            
+    	break;
     }
-
+    
     switch($renderType)
     {
         case 'template':

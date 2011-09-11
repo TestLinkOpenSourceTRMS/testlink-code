@@ -221,7 +221,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         	break;
 
         default:
-        	echo 'Can not process RENDERING!!!';
+        	echo '$argsObj->doAction:' . $argsObj->doAction . ' Can not process RENDERING!!!';
         	break;
     }
 }

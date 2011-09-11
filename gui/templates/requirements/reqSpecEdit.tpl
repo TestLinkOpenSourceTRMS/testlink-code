@@ -146,7 +146,7 @@ function validateForm(f)
 	    <input type="hidden" name="req_spec_id" id="req_spec_id" value="{$gui->req_spec_id}" />
 	    <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 
-		<input type="hidden" name="doAction" value="" />
+		<input type="hidden" name="doAction" value="{$gui->operation}" />
 
 		{* BEGIN - Revision Log Logic *}
 		<input type="hidden" name="save_rev" id="save_rev" value="0" />
@@ -158,6 +158,16 @@ function validateForm(f)
 		{* END - Revision Log Logic *}
 
 		{* Actions that are displayed ON TOP and BOTTOM of page for usability *}
+		{* 
+			IMPORTANT/CRITIC Development NOTICE - 20110911
+			Changing value of an INPUT on the ONCLICK event of an input of type='submit',
+			DO NOT RESULT on value of INPUT setted to requested value.
+			PHP continue to receive value setted on INPUT BEFORE submit is done.
+			BE CAREFUL.
+			May be following line of code need to be changed => set removed.
+			Probably this action WORKS OK (need to be tested) is input is a button,
+			and you call form.submit.
+		*}
 		<input type="submit" name="createSRS" value="{$gui->submit_button_label}"
 	       	   onclick="show_modified_warning = false; doAction.value='{$gui->operation}';" />
 		<input type="button" name="go_back" value="{$labels.cancel}" 

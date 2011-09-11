@@ -5,6 +5,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - create a new req document
 
 @internal revisions
+20110903 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
 *}
 
 {lang_get var="labels"
@@ -52,16 +53,63 @@ function validateForm(f)
 	  }
 	{/if}
 
-		if(!checkCustomFields('custom_field_container',alert_box_title,warning_required_cf))
-		{
+	alert('INSIDE validateForm(56)');
+	if(!checkCustomFields('custom_field_container',alert_box_title,warning_required_cf))
+	{
+		alert('INSIDE validateForm(58)');
 		return false;
-		}
+	}
+	alert('INSIDE validateForm(60)');
+
+	// ---------------------------------------------------------
+	// Revision Log Logic
+	if(f.prompt4log.value == 1)
+	{
+		Ext.Msg.prompt(	log_box_title, log_box_text, 
+						function(btn, text)
+						{
+							if (btn == 'ok')
+							{
+								f.goaway.value=1;
+								f.prompt4log.value=0;
+								f.do_save.value=1;
+								f.save_rev.value=1;
+								f.log_message.value=text;
+								f.submit();
+							}
+						},
+						this,true);    
+		
+		return false;    
+	} 
+	else if(f.prompt4revision.value == 1)
+	{
+		Ext.Msg.prompt(	confirm_title, confirm_text, 
+						function(btn, text)
+						{
+							if (btn == 'ok')
+							{
+								f.save_rev.value=1;
+								f.log_message.value=text;
+							}
+							else
+							{
+								f.save_rev.value=0;
+								f.log_message.value='';
+							}
+							f.goaway.value=1;
+							f.prompt4log.value=0;
+							f.do_save.value=1;
+							f.submit();
+						},this,true);    
+		return false;    
+	}
+	// -----------------------------------------------------------------
 
 	return Ext.ux.requireSessionAndSubmit(f);
 }
 </script>
 
-{* BUGID 4154 *}
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">
   var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
@@ -89,6 +137,17 @@ function validateForm(f)
 	    <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 
 		<input type="hidden" name="doAction" value="" />
+
+		{* BEGIN - Revision Log Logic *}
+		<input type="hidden" name="save_rev" id="save_rev" value="0" />
+		<input type="hidden" name="log_message" id="log_message" value="" />
+		<input type="hidden" name="goaway" id="goaway" value="0" />
+		<input type="hidden" name="prompt4log" id="prompt4log" value="{$gui->askForLog}" />
+		<input type="hidden" name="do_save" id="do_save" value="{$gui->askForRevision}" />
+		<input type="hidden" name="prompt4revision" id="prompt4revision" value="{$gui->askForRevision}" />
+		{* END - Revision Log Logic *}
+
+		{* Actions that are displayed ON TOP and BOTTOM of page for usability *}
 		<input type="submit" name="createSRS" value="{$gui->submit_button_label}"
 	       	   onclick="show_modified_warning = false; doAction.value='{$gui->operation}';" />
 		<input type="button" name="go_back" value="{$labels.cancel}" 
@@ -143,19 +202,41 @@ function validateForm(f)
 
 		
 	    <br />
-		{if $gui->cfields neq ""}
+		{if $gui->cfields != ""}
 			<div class="custom_field_container" id="custom_field_container">
 		    	{$gui->cfields}
 		    </div>
 		<br />
 		{/if}
 
+		{* Actions that are displayed ON TOP and BOTTOM of page for usability *}
 		<div class="groupBtn">
 			<input type="submit" name="createSRS" value="{$gui->submit_button_label}"
 		       onclick="show_modified_warning = false; doAction.value='{$gui->operation}';" />
 			<input type="button" name="go_back" value="{$labels.cancel}" 
 				onclick="javascript: show_modified_warning = false; history.back();"/>
 		</div>
+
+
+	{* Revision Log Logic *}
+	{if isset($gui->askForLog) && $gui->askForLog}
+		<script>
+		if( document.getElementById('prompt4log').value == 1 )
+		{
+		  	validateForm(document.forms['reqSpecEdit'],'askforlog');
+		}
+		</script>
+	{/if}
+	
+	{if isset($gui->askForRevision) && $gui->askForRevision}
+		<script>
+		if( document.getElementById('prompt4revision').value == 1 )
+		{
+		  validateForm(document.forms['reqSpecEdit'],'askforrevision');
+		}
+		</script>
+	{/if}
+
 	</form>
 </div>
 

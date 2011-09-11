@@ -284,11 +284,12 @@ function checkCustomFields(cfContainerOID,alertBoxTitle,reqCFWarningMsg)
 	var checkOp;
 
 	// Required Checks
-	if( typeof(matrioska) === "undefined")
+	if( matrioska == null)
 	{
 		return true;  // >>---> brute force exit
 	}
 
+	
 	for(tdx=0; tdx < tags4required.length; tdx++) 
 	{ 
 		cfieldSet = matrioska.getElementsByTagName(tags4required[tdx]);
@@ -299,6 +300,7 @@ function checkCustomFields(cfContainerOID,alertBoxTitle,reqCFWarningMsg)
 	    	return false;
 		}
 	}
+
 	// ----------------------------------------------------------------------------------------
 	// Checks on validity (example email value, integer,etc) custom field values, 
 	//

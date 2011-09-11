@@ -11,7 +11,9 @@ Purpose: smarty template - create a new req document
 {lang_get var="labels"
           s='warning,warning_empty_req_spec_title,title,scope,req_total,type,warning_required_cf,
              doc_id,cancel,show_event_history,warning_empty_doc_id,warning_countreq_numeric,
-             warning_unsaved'}
+             warning_unsaved,revision_log_title,please_add_revision_log,warning_suggest_create_revision,
+             suggest_create_revision_html'}
+             
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -25,6 +27,12 @@ var warning_empty_req_spec_title = "{$labels.warning_empty_req_spec_title|escape
 var warning_empty_doc_id = "{$labels.warning_empty_doc_id|escape:'javascript'}";
 var warning_countreq_numeric = "{$labels.warning_countreq_numeric|escape:'javascript'}";
 var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
+
+// TICKET 4661
+var log_box_title = "{$labels.revision_log_title|escape:'javascript'}";
+var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
+var confirm_title = "{$labels.warning_suggest_create_revision|escape:'javascript'}";
+var confirm_text = "{$labels.suggest_create_revision_html}";
 
 	
 function validateForm(f)
@@ -53,16 +61,18 @@ function validateForm(f)
 	  }
 	{/if}
 
-	alert('INSIDE validateForm(56)');
+	// alert('INSIDE validateForm(56)');
 	if(!checkCustomFields('custom_field_container',alert_box_title,warning_required_cf))
 	{
-		alert('INSIDE validateForm(58)');
+		// alert('INSIDE validateForm(58)');
 		return false;
 	}
-	alert('INSIDE validateForm(60)');
+	// alert('INSIDE validateForm(60)');
 
 	// ---------------------------------------------------------
 	// Revision Log Logic
+	// alert(f.prompt4log.value);
+	// alert(f.prompt4revision.value);
 	if(f.prompt4log.value == 1)
 	{
 		Ext.Msg.prompt(	log_box_title, log_box_text, 

@@ -785,12 +785,8 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
               3. does already exist a req spec with this title?
               4. does already exist a req spec with this doc id?
               
-              VERY IMPORTANT:
-  	          $tlCfg->req_cfg->child_requirements_mgmt has effects on check on already
-  	          existent title or doc id.
-  	          
-              $tlCfg->req_cfg->child_requirements_mgmt == ENABLED  => N level tree
-                             title and doc id can not repited on ANY level of tree
+			     IMPORTANT NOTICE: 
+			     N level tree title and doc id can not the SAME on ANY level of tree
                  
               This is important due to unique index present on Database
               ATTENTION:

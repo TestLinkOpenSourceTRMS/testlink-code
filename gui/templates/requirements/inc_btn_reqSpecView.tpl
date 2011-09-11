@@ -28,11 +28,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 			<input type="hidden" name="log_message" id="log_message" value="" />
 
   			{if $gui->grants->req_mgmt == "yes"}
-            	{if $tlCfg->req_cfg->child_requirements_mgmt == $smarty.const.ENABLED}
-  	        		<input type="button" name="btn_new_req_spec" 
-  	               	   	   value="{$labels.btn_new_req_spec}"
-		           	       onclick="location='{$gui->actions->req_spec_new}'" />  
-        		{/if}
+  	        	<input type="button" id="btn_new_req_spec" name="btn_new_req_spec"
+  	        		   value="{$labels.btn_new_req_spec}"
+		           	   onclick="location='{$gui->actions->req_spec_new}'" />  
+		           	   
   				<input type="submit" name="edit_req_spec"  value="{$labels.btn_edit_spec}" 
   	         		   onclick="doAction.value='edit'"/>
   				<input type="button" name="deleteSRS" value="{$labels.btn_delete_spec}"

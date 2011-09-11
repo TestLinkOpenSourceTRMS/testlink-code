@@ -49,11 +49,7 @@ function display_children($dbHandler,$tproject_id,$root_node,$parent,$filter_nod
 	$cfg = config_get('req_cfg');
 	$forbidden_parent['testproject'] = 'none';
 	$forbidden_parent['requirement'] = 'testproject';
-	$forbidden_parent['requirement_spec'] = 'requirement_spec';
-	if($cfg->child_requirements_mgmt)
-	{
-		$forbidden_parent['requirement_spec'] = 'none';
-	} 
+	$forbidden_parent['requirement_spec'] = 'none';
     
     switch($operation)
     {

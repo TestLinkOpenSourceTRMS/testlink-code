@@ -2295,11 +2295,13 @@ function prepare_reqspec_treenode(&$db, $level, &$node, &$filtered_map, &$map_id
  * @param array $map_id_nodetype array with node type IDs as keys, node type descriptions as values
  * @return array tree object with all needed data for ExtJS tree
  */
-function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype) {
+function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype) 
+{
 	static $js_functions;
 	static $forbidden_parents;
 	
-	if (!$js_functions) {
+	if (!$js_functions) 
+	{
 		$js_functions = array('testproject' => 'TPROJECT_REQ_SPEC_MGMT',
 		                      'requirement_spec' =>'REQ_SPEC_MGMT',
 		                      'requirement' => 'REQ_MGMT');
@@ -2307,10 +2309,7 @@ function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype
 		$req_cfg = config_get('req_cfg');
 		$forbidden_parents['testproject'] = 'none';
 		$forbidden_parents['requirement'] = 'testproject';
-		$forbidden_parents['requirement_spec'] = 'requirement_spec';
-		if($req_cfg->child_requirements_mgmt) {
-			$forbidden_parents['requirement_spec'] = 'none';
-		} 
+		$forbidden_parents['requirement_spec'] = 'none';
 	}
 	
 	$node_type = $map_id_nodetype[$node['node_type_id']];

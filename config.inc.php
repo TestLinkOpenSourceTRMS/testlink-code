@@ -978,11 +978,6 @@ $tlCfg->req_cfg->search=new stdClass();
 $tlCfg->req_cfg->search->max_qty_for_display=200;
 
 
-// ENABLED: allow N level depth tree
-// DISABLED: just one level
-$tlCfg->req_cfg->child_requirements_mgmt = ENABLED;
-
-
 // ENABLED: ask for this value on user interface and use on several features
 // DISABLED: do not ask, do not use
 $tlCfg->req_cfg->expected_coverage_management = ENABLED;
@@ -1028,6 +1023,9 @@ $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['all']=array('passed');
 //$tlCfg->req_cfg->coverageStatusAlgorithm['checkFail']['all']='failed';
 //$tlCfg->req_cfg->coverageStatusAlgorithm['displayOrder']=array('passed','failed','blocked','not_run');
 
+
+// TICKET 4661 - truncate log message to this amount of chars for reqSpecCompareRevisions
+$tlCfg->req_spec_cfg->log_message_len = 200;
 
 // Linking between requirements/requirement specifications
 //

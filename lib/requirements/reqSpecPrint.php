@@ -12,13 +12,13 @@
  * create printer friendly information for ONE requirement
  *
  * @internal revisions:
- * 20110319 - franciscom - BUGID 4321: Requirement Spec - add option to print single Req Spec
  */
 
 require_once("../../config.inc.php");
 require_once("../../cfg/reports.cfg.php"); 
 require_once("print.inc.php"); 
 require_once("common.php");
+
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $req_cfg = config_get('req_cfg');

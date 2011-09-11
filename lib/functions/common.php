@@ -65,7 +65,6 @@ require_once("exec_cfield_mgr.class.php");
  * Automatic loader for PHP classes
  * See PHP Manual for details 
  */
-// function __autoload($class_name) 
 function tlAutoload($class_name) 
 {
 	// exceptions

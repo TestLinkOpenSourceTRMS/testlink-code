@@ -42,11 +42,8 @@
  *
  *
  */ 
-
-/** uses get_bugs_for_exec() */
-require_once("exec.inc.php");
+require_once("exec.inc.php");  /** needed because we use get_bugs_for_exec() */
 require_once("lang_api.php");
-
 if (config_get('interface_bugs') != 'NO')
 {
   require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' .
@@ -1475,7 +1472,6 @@ function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info,$colspan,$show
 	$bug_interface = config_get('bugInterfaceOn'); //BUGFIX for error logs.
 	if ($bug_interface) 
 	{
-    	// amitkhullar-BUGID 2207 - Code to Display linked bugs to a TC in Test Report
 		$bugs = get_bugs_for_exec($dbHandler,$bug_interface,$exec_info[0]['execution_id']);
 		if ($bugs) 
 		{

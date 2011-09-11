@@ -25,6 +25,10 @@ class reqSpecCommands
 
 	const OVERWRITESCOPE=true;
 
+	/**
+	 * 
+	 *
+	 */
 	function __construct(&$db)
 	{
 	    $this->db=$db;
@@ -40,6 +44,10 @@ class reqSpecCommands
 		
 	}
 
+	/**
+	 * 
+	 *
+	 */
 	function setAuditContext($auditContext)
 	{
 	    $this->auditContext=$auditContext;
@@ -167,10 +175,6 @@ class reqSpecCommands
 	function doCreate(&$argsObj,$request)
 	{
       	$guiObj = $this->initGuiBean(); 
-
-
-		// new dBug($argsObj);
-		
 		$guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
 		$guiObj->action_descr = lang_get('create_req_spec');
 		$guiObj->submit_button_label=$this->submit_button_label;
@@ -695,39 +699,27 @@ class reqSpecCommands
 
 
 
-
+	/**
+	 * 
+	 *
+	 */
 	function process_revision(&$guiObj,&$argsObj,&$userInput)
 	{
-	
 		// TICKET 4661
-		$itemOnDB = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
 		$who = array('tproject_id' => $argsObj->tproject_id);
 		$cf_map = $this->reqSpecMgr->get_linked_cfields($who);
-		$newCFields = $this->reqSpecMgr->cfield_mgr->_build_cfield($userInput,$cf_map);
-
-		$who['item_id'] = $argsObj->req_spec_revision_id;
-		$oldCFields = $this->reqSpecMgr->get_linked_cfields($who);
-		$diff = $this->simpleCompare($itemOnDB,$argsObj,$oldCFields,$newCFields);
-	
+		$diff = $this->smartCompare($argsObj,$userInput,$cf_map);
 	
 	    $createRev = false;
 	    if($diff['force'] && !$argsObj->do_save)
 	    {
-			$guiObj->askForLog = true;
-			$guiObj->refreshTree = false;
-			
-	    	// Need Change several values with user input data, to match logic on 
-	    	// edit php page on function renderGui()
-	    	// $map = array('status' => 'reqStatus', 'type' => 'reqSpecType','scope' => 'scope',
-	    	$map = array('type' => 'reqSpecType','scope' => 'scope',
-                         'doc_id'=> 'doc_id', 'title' => 'title');
-
-	    	foreach($map as $k => $w)
-	    	{
-	    		$guiObj->req_spec[$k] = $argsObj->$w;
-	    	}
-			$guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id, 
-																			        null, null,$userInput);
+			// Actions
+			// Prepare values to be displayed on GUI. 
+			// ATTENTION: 
+			// these values HAVE NOT BE WRITTEN to DB yet, we are setting logic
+			// to ask for confirmation to user.
+			// 
+			$this->setEnv2AskUser($guiObj,$argsObj,$userInput);
 
 		}
 	    else if( $diff['nochange'] || ( ($createRev = $diff['force'] && !$guiObj->askForLog) || $argsObj->do_save ) )
@@ -763,8 +755,8 @@ class reqSpecCommands
 
 	        	$guiObj->main_descr = '';
 			    $guiObj->action_descr = '';
-	          	$guiObj->template = "reqSpecView.php?refreshTree={$argsObj->refreshTree}&" .
-	          						"req_spec_id={$guiObj->req_spec_id}";
+	          	$guiObj->template = "reqSpecView.php?tproject_id={$argsObj->tproject_id}" .
+	          						"&refreshTree={$argsObj->refreshTree}&req_spec_id={$guiObj->req_spec_id}";
 	
 			  	// TODO 
 			  	// logAuditEvent(TLS("audit_requirement_saved",$argsObj->reqDocId),"SAVE",$argsObj->req_id,"requirements");
@@ -788,5 +780,45 @@ class reqSpecCommands
 	}
 
 
+
+	/**
+	 * 
+	 *
+	 */
+	private function setEnv2AskUser(&$guiObj,&$argsObj,&$userInput)
+	{
+		$guiObj->askForLog = true;
+		$guiObj->refreshTree = false;
+		
+ 		// Need to change several values with user input data, to match logic 
+ 		// on edit php page function renderGui()
+ 		$map = array('type' => 'reqSpecType','scope' => 'scope','doc_id'=> 'doc_id', 'title' => 'title');
+
+ 		foreach($map as $k => $w)
+ 		{
+ 			$guiObj->req_spec[$k] = $argsObj->$w;
+ 		}
+		$guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id, 
+																		        null, null,$userInput);
+	}
+	
+
+	/**
+	 * 
+	 *
+	 */
+	private function smartCompare(&$argsObj,&$userInput,$cf)
+	{
+		$who = array('tproject_id' => $argsObj->tproject_id, 
+					 'item_id' => $argsObj->req_spec_revision_id);
+		$oldCF = $this->reqSpecMgr->get_linked_cfields($who);
+
+		$newCF = $this->reqSpecMgr->cfield_mgr->_build_cfield($userInput,$cf);
+
+		$itemOnDB = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+		$opStatus = $this->simpleCompare($itemOnDB,$argsObj,$oldCF,$newCF);
+
+		return $opStatus;	
+	}
 }
 ?>

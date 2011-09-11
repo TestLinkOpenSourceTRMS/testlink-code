@@ -26,8 +26,6 @@ $templateCfg = templateConfiguration();
 $args = init_args($db);
 checkRights($db,$_SESSION['currentUser'],$args);
 
-// new dBug($args);
-
 $commandMgr = new reqSpecCommands($db);
 
 $gui = initialize_gui($db,$commandMgr,$_SESSION['currentUser'],$args,$req_cfg);

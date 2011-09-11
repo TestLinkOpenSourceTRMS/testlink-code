@@ -178,14 +178,14 @@ function validateForm(f)
   	</div>
 	  <div><input type="text" name="doc_id" id="doc_id"
   		        size="{#REQSPEC_DOCID_SIZE#}" maxlength="{#REQSPEC_DOCID_MAXLEN#}"
-  		        value="{$gui->req_spec_doc_id|escape}" />
+  		        value="{$gui->req_spec.doc_id|escape}" />
   				{include file="error_icon.tpl" field="doc_id"}
   	</div>
 	
 		<div class="labelHolder"><label for="req_spec_title">{$labels.title}</label>
 	   		{if $mgt_view_events eq "yes" and $gui->req_spec_id}
 				<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
-				     onclick="showEventHistoryFor('{$gui->req_spec_id}','req_specs')" 
+				     onclick="showEventHistoryFor('{$gui->req_spec.id}','req_specs')" 
 				     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
 			{/if}
 	   	</div>
@@ -193,8 +193,8 @@ function validateForm(f)
 		    <input type="text" id="title" name="title"
 		           size="{#REQ_SPEC_TITLE_SIZE#}"
 				   maxlength="{#REQ_SPEC_TITLE_MAXLEN#}"
-		           value="{$gui->req_spec_title|escape}" />
-		  	{include file="error_icon.tpl" field="req_spec_title"}
+		           value="{$gui->req_spec.title|escape}" />
+		  	{include file="error_icon.tpl" field="title"}
 	   	</div>
 	   	<br />
 		<div class="labelHolder">

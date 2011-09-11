@@ -7,7 +7,7 @@ Compare requirement specifications revisions
 *}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
-{include file="inc_del_onclick.tpl"}
+{include file="inc_ext_js.tpl"}
 
 {lang_get var="labels"
           s="title_compare_revisions_rspec,compare,modified,modified_by,
@@ -28,13 +28,20 @@ var warning_selected_items = "{$labels.warning_selected_revisions|escape:'javasc
 var warning_same_selected_items = "{$labels.warning_same_selected_revisions|escape:'javascript'}";
 var warning_context = "{$labels.warning_context|escape:'javascript'}";
 
+
+{* 
+Developer NOTICE: on smarty 3.0 and up:
+if we remove space in "autoLoad:{ url: fUrl+itemID }," smarty compiler will generate an error because
+when it found a curly brackets WITHOUT space, consider this SMARTY CODE not JS code
+*}
+
 function tip4log(itemID)
 {
 	var fUrl = fRoot+'lib/ajax/getreqspeclog.php?item_id=';
 	new Ext.ToolTip({
         target: 'tooltip-'+itemID,
         width: 500,
-        autoLoad:{url: fUrl+itemID},
+        autoLoad:{ url: fUrl+itemID },
         dismissDelay: 0,
         trackMouse: true
     });

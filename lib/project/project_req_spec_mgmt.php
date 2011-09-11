@@ -26,7 +26,7 @@ $gui->tproject_name = $args->tproject_name;
 $gui->refresh_tree = 'no';
 
 
-new dBug($gui);
+// new dBug($gui, array('calledFrom' => __FILE__));
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
@@ -46,7 +46,7 @@ function init_args(&$dbHandler)
 		$argsObj->tproject_name = $dummy['name'];
 	}
 	
-	new dbug($argsObj);
+	// new dbug($argsObj, array('calledFrom' => ' file: ' . basename(__FILE__) . ' -  function: ' . __FUNCTION__));
 	return $argsObj;
 }
 

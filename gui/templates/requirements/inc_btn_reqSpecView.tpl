@@ -19,7 +19,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 <div class="groupBtn">
  	<form style="display: inline;" id="req_spec" name="req_spec" 
  		  action="lib/requirements/reqSpecEdit.php" method="post">
-		<fieldset class="groupBtn">
 			<h2>{$labels.req_spec_operations}</h2>
 			<input type="hidden" name="req_spec_id" id="req_spec_id" value="{$gui->req_spec_id}" />
 			<input type="hidden" name="req_spec_revision_id" value="{$gui->req_spec_revision_id}" />
@@ -54,8 +53,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
        					onclick="doAction.value='doCreateRevision';javascript:ask4log('req_spec','log_message');"/>
 
 			{/if}
-			</fieldset>
-
 	</form>
 	
 	{* TICKET 4661 *}
@@ -75,7 +72,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	<br>
 	
 	<form id="req_operations" name="req_operations">
-		<fieldset class="groupBtn">
 			<h2>{$labels.req_operations}</h2>
 	  		{if $gui->grants->req_mgmt == "yes"}
 		  	  <input type="button" name="create_req" value="{$labels.btn_req_create}"
@@ -95,6 +91,5 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 			                   onclick="location='{$gui->actions->req_spec_copy_req}'" />
 	    	  {/if}    
 		  	{/if}
-		</fieldset>
 	</form>
 </div>

@@ -264,15 +264,12 @@ function insert_last_doc_id()
 	<input type="hidden" name="do_save" id="do_save" value="{$gui->askForRevision}" />
 	<input type="hidden" name="prompt4revision" id="prompt4revision" value="{$gui->askForRevision}" />
 	
-	{* BUGID 4063 *}
-	{* BUGID 4153 - when save or cancel is pressed do not show modification warning *}
 	<div class="groupBtn">
 		<input type="submit" name="create_req" value="{$labels.btn_save}"
 	         onclick="show_modified_warning = false; doAction.value='{$gui->operation}';"/>
 		<input type="button" name="go_back" value="{$labels.cancel}" 
 			 onclick="javascript: show_modified_warning = false; location.href='{$gui->actions->req_view}';"/>
 	</div>
-	{* BUGID 3953 - Only show checkbox to create another requirement on req creation *}
 	{if $gui->doAction == 'create' || $gui->doAction == 'doCreate'}
 	<div class="groupBtn">
 	<input type="checkbox" id="stay_here"  name="stay_here" 
@@ -370,8 +367,6 @@ function insert_last_doc_id()
      <br />
   	{/if}
 
-	{* BUGID 3854 *}
-	{* BUGID 4153 - when save or cancel is pressed do not show modification warning *}
 	<div class="groupBtn">
 		<input type="hidden" name="doAction" id="doAction" value="{$gui->operation}" />
 		<input type="submit" name="create_req" value="{$labels.btn_save}"

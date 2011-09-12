@@ -31,10 +31,8 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $commandMgr = new reqCommands($db);
 
-// new dBug($_REQUEST);
 $args = init_args($db);
 checkRights($db,$_SESSION['currentUser'],$args);
-
 $gui = initialize_gui($db,$args,$commandMgr);
 $pFn = $args->doAction;
 
@@ -109,9 +107,6 @@ function init_args(&$dbHandler)
 	
     // 20110604 - franciscom - TICKET 4566: TABBED BROWSING
     $uk = 'setting_refresh_tree_on_action';
-    
-    // new dBug($_SESSION[$uk][$args->tproject_id]);   new dBug($_SESSION[$uk]);  new dBug($_SESSION);
-	// $args->refreshTree = isset($_SESSION[$uk][$args->tproject_id]) ? $_SESSION[$uk][$args->tproject_id] : 0;
     $args->refreshTree = testproject::getUserChoice($args->tproject_id, 
     												array('reqTreeRefreshOnAction'));
 	
@@ -128,8 +123,6 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
 {
     $smartyObj = new TLSmarty();
     $renderType = 'none';
-    
-    // new dBug($argsObj); die();
     
     // @TODO document
     $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
@@ -287,14 +280,15 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
     $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
 	$gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
 	
-	// 20100811 - asimon - fixed two warnings because of undefined variables in template
 	$gui->req_version_id = $argsObj->req_version_id;
 	$gui->preSelectedType = TL_REQ_TYPE_USE_CASE;
 	
 	$gui->stay_here = $argsObj->stay_here;
 
 	$module = $_SESSION['basehref'] . 'lib/requirements/';
-	$context = "tproject_id={$gui->tproject_id}&requirement_id={$gui->requirement_id}";
+	$context = "tproject_id={$gui->tproject_id}&requirement_id={$gui->requirement_id}" .
+			   "&req_spec_id={$gui->req_spec_id}";
+
 	$gui->actions = new stdClass();
 	$gui->actions->req_view = $module . "reqView.php?{$context}"; 
 

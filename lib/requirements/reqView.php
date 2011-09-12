@@ -46,6 +46,7 @@ function init_args(&$dbHandler)
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
 	                 "req_version_id" => array(tlInputParameter::INT_N),
 	                 "tproject_id" => array(tlInputParameter::INT_N),
+	                 "req_spec_id" => array(tlInputParameter::INT_N),
 			         "showReqSpecTitle" => array(tlInputParameter::INT_N),
 			         "refreshTree" => array(tlInputParameter::INT_N),
 			         "relation_add_result_msg" => array(tlInputParameter::STRING_N));	
@@ -87,22 +88,40 @@ function initialize_gui(&$dbHandler,$argsObj)
     $gui->tproject_id = $argsObj->tproject_id;
     $gui->tproject_name = $argsObj->tproject_name;
 
+
     $gui->grants = new stdClass();
     $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
-    
+
+    // IMPORTANT NOTICE
+    // We can arrive here after following operation
+    // 1. user click on left pane tree on REQ SPEC NODE
+    // 2. on right pane screen user click on CREATE button on Requirements Operations
+    // 3. on new screen user CLICK CANCEL
+    // In this situation $argsObj->req_id is 0 OR EMPTY
+    $gui->req_id = $argsObj->req_id;
+
+	if( $gui->req_id <= 0)
+	{
+		// Quick Exit
+		// is not too clear why do not need to add lib/requirements/ on target
+		$target = "reqSpecView.php?tproject_id={$gui->tproject_id}" .
+				  "&req_spec_id={$argsObj->req_spec_id}"; 
+		header("Location: {$target}");
+	  	exit();
+	}	
+
+
+	// everything is fine - standard processing    
     $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->glueChar = config_get('testcase_cfg')->glue_character;
     $gui->pieceSep = config_get('gui_title_separator_1');
     
-    $gui->req_id = $argsObj->req_id;
+    
         
-    // BUGID 4038
     /* if wanted, show only the given version */
     $gui->version_option = ($argsObj->req_version_id) ? $argsObj->req_version_id : requirement_mgr::ALL_VERSIONS;
         
     $gui->req_versions = $req_mgr->get_by_id($gui->req_id, $gui->version_option);
-
-	// 20101128 - BUGID 4056    
     $gui->req_has_history = count($req_mgr->get_history($gui->req_id, array('output' => 'array'))) > 1; 
     
     $gui->req = current($gui->req_versions);
@@ -113,7 +132,6 @@ function initialize_gui(&$dbHandler,$argsObj)
     // requirements. This logic has been borrowed from test case versions management
     $gui->current_version[0] = array($gui->req);
 	
-	// BUGID 2877 - Custom Fields linked to Requirement Versions
 	$gui->cfields_current_version[0] = $req_mgr->html_table_of_custom_field_values($gui->req_id,$gui->req['version_id'],
 																				  $argsObj->tproject_id);
 
@@ -141,9 +159,6 @@ function initialize_gui(&$dbHandler,$argsObj)
         $gui->parent_descr = lang_get('req_spec_short') . $gui->pieceSep . $gui->req['req_spec_title'];
     }
     
-    // BUGID 2877 - Custom Fields linked to Requirement Versions
-    // $gui->cfields = array();
-    // $gui->cfields[] = $req_mgr->html_table_of_custom_field_values($gui->req_id,$argsObj->tproject_id);
    	$gui->attachments[$gui->req_id] = getAttachmentInfosFrom($req_mgr,$gui->req_id);
     
     $gui->attachmentTableName = $req_mgr->getAttachmentTableName();

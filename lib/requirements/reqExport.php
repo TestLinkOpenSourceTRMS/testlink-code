@@ -118,8 +118,17 @@ function initializeGui(&$argsObj,&$req_spec_mgr)
 	$module = $_SESSION['basehref'] . 'lib/requirements/';
 	$context = "tproject_id=$gui->tproject_id&req_spec_id=$gui->req_spec_id";
 	$gui->actions->req_export = $module . "reqExport.php?$context"; 
+	
+	// IMPORTANT NOTICE
+	// When user click on ROOT node of req spec tree (that is the testproject node)
+	// $argsObj->req_spec_id will be 0
+	// This happens when $argsObj->scope == tree.
+	// In this situation reqSpecView.php CAN NOT BE USED
 	$gui->actions->req_spec_view = $module . "reqSpecView.php?$context"; 
-
+	if($argsObj->scope == 'tree')
+	{
+		$gui->actions->req_spec_view = "lib/project/project_req_spec_mgmt.php?$context"; 
+	}
 	return $gui;  
 }
 

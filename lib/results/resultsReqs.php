@@ -3,35 +3,19 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.42.2.3 $
- * @modified $Date: 2011/02/11 08:28:40 $ by $Author: mx-julian $
+ * @filesource	resultsReqs.php
  * @author Martin Havlat
  * 
  * Report requirement based results
  * 
- * rev:
+ * internal revisions
+ * @since 1.9.3
+ *
+ * @since 1.9.3
  * 20110207 - asimon - BUGID 4227 - Allow to choose status of requirements to be evaluated
  * 20110207 - Julian - BUGID 4228 - Add more requirement evaluation states
  * 20110207 - Julian - BUGID 4206 - Jump to latest execution for linked test cases
  * 20110207 - Julian - BUGID 4205 - Add Progress bars for a quick overview
- * 20101120 - franciscom - BUGID 4034 + a little bit of refactoring
- * 20101102 - asimon - BUGID 3964: Evaluation of requirement is set to "Passed" 
- *                     even though all linked test cases aren't passed
- * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                     table state independent from localization
- * 20101007 - asimon - BUGID 3856: Requirement based report should regard platforms
- * 20101005 - asimon - added linked icon also for testcases linked to requirements
- * 20101001 - asimon - added icon for requirement editing
- * 20100902 - Julian - BUGID 3717 - show linked tcs and the results for each req
- * 20100823 - Julian - table now uses a unique table id per test project
- * 20100820 - asimon - BUGID 3439: little refactorizations
- * 20100819 - asimon - BUGIDs 3261, 3439, 3488, 3569, 3299, 3259, 3687: 
- *                     complete redesign/rewrite of requirement based report 
- * 20090506 - franciscom - requirements refactoring
- * 20090402 - amitkhullar - added TC version while displaying the Req -> TC Mapping 
- * 20090111 - franciscom - BUGID 1967 + improvements
- * 20060104 - fm - BUGID 0000311: Requirements based Report shows errors
  */
 
 require_once("../../config.inc.php");
@@ -46,13 +30,11 @@ $tplan_mgr = new testplan($db);
 $req_mgr = new requirement_mgr($db);
 $req_spec_mgr = new requirement_spec_mgr($db);
 
-// BUGID 3856
 $platform_mgr = new tlPlatform($db);
 
 $glue_char = config_get('gui_title_separator_1');
 $glue_char_tc = config_get('testcase_cfg')->glue_character;
 
-// BUGID 3439
 $no_srs_msg_key = 'no_srs_defined';
 $no_matching_reqs_msg_key = 'no_matching_reqs';
 $charset = config_get('charset');
@@ -125,7 +107,7 @@ $total_reqs = 0;
 
 $args = init_args($tproject_mgr, $req_cfg);
 $gui = init_gui($args);
-// BUGID 3856
+
 $gui_open = config_get('gui_separator_open');
 $gui_close = config_get('gui_separator_close');
 $platforms = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
@@ -182,7 +164,6 @@ if(count($req_spec_map)) {
 	$testcases = array();
 	if (count($tc_ids)) {
 		$filters = array('tcase_id' => $tc_ids);
-		// BUGID 3856
 		if ($args->platform != 0) {
 			$filters['platform_id'] = $args->platform;
 		}

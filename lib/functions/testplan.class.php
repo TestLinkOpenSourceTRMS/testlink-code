@@ -1434,24 +1434,15 @@ class testplan extends tlObjectWithAttachments
 		                   $cfgOpt['output']=='mapOfMapExecPlatform') ? ',platform_id' : '';
 	
 		// -------------------------------------------------------------------------------
-		$sql = 	" JOIN (SELECT MAX(E2.id) AS E2.maxid, E2.testplan_id, E2.tcversion_id, " .
-				" E2.platform_id FROM {$this->tables['executions']} E2 ";
-				
+		$sql = " AND E.id IN ( SELECT MAX(id) FROM  {$this->tables['executions']} E2 " ;
 		if(!is_null($activeStatus))
 		{
 			$sql .=	" JOIN {$this->tables['builds']} B2 ON " .
 					" B2.id = E2.build_id AND B2.active = " . intval($activeStatus) ;
+
 		}
-		$sql .=	" WHERE testplan_id = {$tplanID} " .
-				" GROUP BY testplan_id,tcversion_id {$groupByPlatform} {$groupByBuild}";
-
-		$sql .= ") AS EX ";		 
-
-		$sql .= " ON EX.testplan_id = T.testplan_id AND EX.tcversion_id = T.tcversion_id " .
-				" AND EX.platform_id = T.platform_id " .
-				" JOIN {$this->tables['executions']} E ON " .
-				" E.id=EX.maxid AND E.tcversion_id = EX.tcversion_id " .
-				" AND EX.platform_id = E.platform_id AND EX.testplan_id = E.testplan_id ) ";
+		$sql .=	" WHERE E2.testplan_id = {$tplanID} " .
+		 		" GROUP BY testplan_id,tcversion_id {$groupByPlatform} {$groupByBuild} )";
 
 		return $sql;
 	}

@@ -34,36 +34,6 @@
  *    --> assign requirements
  *
  * @internal revisions
- * 20110621 - asimon - BUGID 4625: usage of wrong values in $this->args->xyz for cookiePrefix
- *                                 instead of correct values in $filters->setting_xyz
- * 20110411 - franciscom - BUGID 4339: issues when Working with two different projects within one Browser (same session).
- * 20110328 - franciscom - init_filter_custom_fields() fixed issue introduced du to trim() on arrays.
- * 20110113 - asimon - BUGID 4166 - List also test plans without builds for "plan_mode"
- * 20101110 - asimon - BUGID 3822: Keywords combobox is absent on the Filters pane of 'Add / Remove Test Cases'
- * 20101103 - asimon - custom fields on test spec did not retain value after apply
- * 20101028 - asimon - BUGID 3933: Add test case to test plan - Left Pane filter uses 
- *                     priority concept to filter test spec where priority does not exist
- * 20101026 - asimon - BUGID 3930: changing date format according to given locale
- * 20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
- * 20101019 - asimon - BUGID 3910: show filter only if test priority management is enabled
- * 20101011 - asimon - BUGID 3883: fixed handling of unset date custom field inputs
- * 20101011 - asimon - BUGID 3884: added handling for datetime custom fields
- * 20101005 - asimon - BUGID 3853: show_filters disabled still shows panel
- * 20100929 - asimon - BUGID 3817
- * 20100972 - asimon - additional fix to BUGID 3809
- * 20100927 - amitkhullar - BUGID 3809 - Radio button based Custom Fields not working
- * 20100901 - asimon - show button "show/hide cf" only when there are cfields
- * 20100901 - asimon - re-enabled filter for assigned user when assigning testcases
- * 20100901 - asimon - re-enable option "user_filter_default"
- * 20100830 - asimon - BUGID 3726: store user's selection of build and platform
- * 20100811 - asimon - BUGID 3566: show/hide CF
- * 20100810 - asimon - added TC ID filter for Test Cases
- * 20100807 - franciscom - BUGID 3660
- * 20100727 - asimon - BUGID 3630 - syntax error in get_argument_string()
- * 20100716 - asimon - BUGID 3406 - changes on init_settings() and $mode_setting_mapping
- * 20100713 - asimon - fixed Drag&Drop error caused by init_filter_custom_fields()
- * 20100702 - asimon - fixed error in init_setting_testplan()
- * 20100701 - asimon - BUGID 3414 - additional work in init_filter_custom_fields()
  */
 
 /*
@@ -184,15 +154,17 @@
  *
  * @author Andreas Simon
  * @package TestLink
- * @uses testplan
- * @uses exec_cf_mgr
- * @uses tlPlatform
- * @uses testcase
+ * @uses testplan.class.php
+ * @uses exec_cf_mgr.class.php
+ * @uses tlPlatform.class.php
+ * @uses testcase.class.php
+ * @uses tlTreeMenu.class.php
  */
-class tlTestCaseFilterControl extends tlFilterControl {
+class tlTestCaseFilterControl extends tlFilterControl 
+{
 
 	/**
-	 * Testcase manager object.
+	 * Test case manager object.
 	 * Initialized not in constructor, only on first use to save resources.
 	 * @var testcase
 	 */
@@ -213,11 +185,19 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	private $cfield_mgr = null;
 	
 	/**
-	 * Testplan manager object.
+	 * Test plan manager object.
 	 * Initialized not in constructor, only on first use to save resources.
-	 * @var testplan
+	 * @var testplan_mgr
 	 */
 	private $testplan_mgr = null;
+	
+	
+	/**
+	 * Tree Menu manager object.
+	 * Initialized not in constructor, only on first use to save resources.
+	 * @var $treemenu_mgr
+	 */
+	private $treemenu_mgr = null;
 	
 	/**
 	 * This array contains all possible filters.
@@ -233,6 +213,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	                             'filter_toplevel_testsuite' => array("POST", tlInputParameter::STRING_N),
 	                             'filter_keywords' => array("POST", tlInputParameter::ARRAY_INT),
 	                             'filter_priority' => array("POST", tlInputParameter::INT_N),
+	                             'filter_importance' => array("POST", tlInputParameter::INT_N),
 	                             'filter_execution_type' => array("POST", tlInputParameter::INT_N),
 	                             'filter_assigned_user' => array("POST", tlInputParameter::ARRAY_INT),
 	                             'filter_custom_fields' => array("POST", tlInputParameter::ARRAY_STRING_N),
@@ -278,8 +259,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	                                                              'filter_testcase_name',
 	                                                              'filter_toplevel_testsuite',
 	                                                              'filter_keywords',
-	                                                              // BUGID 3933 - no priority here
-		                                                          //'filter_priority',
+		                                                          'filter_importance',
 	                                                              'filter_execution_type',
 	                                                              'filter_custom_fields'));
 
@@ -304,7 +284,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	                                                                'setting_platform',
 	                                                                'setting_refresh_tree_on_action'),
 	                                      'plan_mode' => array('setting_testplan',
-	                                                           // BUGID 3406
 	                                                           'setting_build',
 	                                                           'setting_refresh_tree_on_action'),
 	                                      'plan_add_mode' => array('setting_testplan',
@@ -357,6 +336,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		unset($this->testplan_mgr);
 		unset($this->platform_mgr);
 		unset($this->cfield_mgr);
+		unset($this->treemenu_mgr);
 	}
 
 	/**
@@ -777,19 +757,21 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		// by default, disable drag and drop, then later enable if needed
 		$drag_and_drop = new stdClass();
 		$drag_and_drop->enabled = false;
+		$drag_and_drop->useBeforeMoveNode = false;
 		$drag_and_drop->BackEndUrl = '';
-		$drag_and_drop->useBeforeMoveNode = FALSE;
 				
 		if (!$this->testproject_mgr) {
 			$this->testproject_mgr = new testproject($this->db);
 		}
+		if (is_null($this->treemenu_mgr)) {
+			$this->treemenu_mgr = new tlTreeMenu($this->db);
+		}
 		
 		$tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id);
-					
-		// echo __FUNCTION__; echo $this->mode;
 		$environment = array('tproject_id' => $this->args->testproject_id, 
 							 'tproject_name' => $this->args->testproject_name, 
 							 'tplan_id' => 0,'tplan_name' => '');
+
 		if( property_exists($this->args,'testplan_id') ) 							 
 		{
 			$environment['tplan_id'] = $this->args->testplan_id;
@@ -810,7 +792,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				 
 		// echo __LINE__ . ':' . $this->mode . '<br>'; die(__FILE__);			
 
-		switch ($this->mode) {
+		switch ($this->mode) 
+		{
 			
 			case 'plan_mode':
 				// No lazy loading here.
@@ -849,11 +832,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				//              the whole test project -> store state for each feature and each project
 				$cookie_prefix = $this->args->feature . "_tproject_id_" . $this->args->testproject_id ."_";
 				
-				if ($this->do_filtering) {
-					$options = array('forPrinting' => NOT_FOR_PRINTING,
-					                 'hideTestCases' => SHOW_TESTCASES,
-						             'tc_action_enabled' => DO_ON_TESTCASE_CLICK,
-						             'ignore_inactive_testcases' => DO_NOT_FILTER_INACTIVE_TESTCASES,
+				if ($this->do_filtering) 
+				{
+					$options = array('forPrinting' => 0,'hideTestCases' => 0,
+						             'tc_action_enabled' => 1,'ignore_inactive_testcases' => 0,
 					                 'exclude_branches' => null);
 				    
 					$tree_menu = generateTestSpecTree($this->db, $environment,
@@ -882,39 +864,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			break;
 			
 			case 'plan_add_mode':
-				// BUGID 4613 - improved cookiePrefix - tree in plan_add_mode is only used for
-				//              add/removed test cases features and shows all test cases defined
-				//              within test project, but as test cases are added to a specified
-				//              test plan -> store state for each test plan
-				// BUGID 4625 - usage of wrong values in $this->args->xyz for cookiePrefix
-				//              instead of correct values in $filters->setting_xyz
-				$cookie_prefix = "add_remove_tc_tplan_id_{$filters->setting_testplan}_";
-				
-				if ($this->do_filtering) {
-					$options = array('forPrinting' => NOT_FOR_PRINTING,
-					                 'hideTestCases' => HIDE_TESTCASES,
-					                 'tc_action_enabled' => ACTION_TESTCASE_DISABLE,
-					                 'ignore_inactive_testcases' => IGNORE_INACTIVE_TESTCASES,
-					                 'viewType' => 'testSpecTreeForTestPlan');
-			
-					$tree_menu = generateTestSpecTree($this->db,$environment,$gui->menuUrl,
-					                                  $filters,$options);
-					
-					$root_node = $tree_menu->rootnode;
-				    $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
-				} else {
-					$loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
-							  "tproject_id={$this->args->testproject_id}&" .
-							  "tplan_id={$this->args->testplan_id}&" .
-							  "root_node={$this->args->testproject_id}&show_tcases=0";
-				
-					$root_node = new stdClass();
-					$root_node->href = 	"javascript:EP({$this->args->testproject_id}," .
-										"{$this->args->testplan_id},{$this->args->testproject_id})";
-					$root_node->id = $this->args->testproject_id;
-					$root_node->name = $this->args->testproject_name;
-					$root_node->testlink_node_type = 'testproject';
-				}
+				$this->build_tree_plan_add($environment,$gui,$filters);
 			break;
 			
 			case 'execution_mode':
@@ -953,14 +903,17 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			break;
 		}
 		
-		$gui->tree = $tree_menu;
-		
-		$gui->ajaxTree = new stdClass();
-		$gui->ajaxTree->loader = $loader;
-		$gui->ajaxTree->root_node = $root_node;
-		$gui->ajaxTree->children = $children;
-		$gui->ajaxTree->cookiePrefix = $cookie_prefix;
-		$gui->ajaxTree->dragDrop = $drag_and_drop;
+		if( $this->mode != 'plan_add_mode' ) 
+		{
+			$gui->tree = $tree_menu;
+			
+			$gui->ajaxTree = new stdClass();
+			$gui->ajaxTree->loader = $loader;
+			$gui->ajaxTree->root_node = $root_node;
+			$gui->ajaxTree->children = $children;
+			$gui->ajaxTree->cookiePrefix = $cookie_prefix;
+			$gui->ajaxTree->dragDrop = $drag_and_drop;
+		}
 	} // end of method
 	
 	
@@ -1737,5 +1690,61 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			$this->active_filters[$build_key] = $build_selection;
 		}
 	} // end of method
+	
+	
+	
+	/**
+	 *
+	 *
+	 */
+	function build_tree_plan_add($env,&$guiObj,$filters)
+	{
+		$guiObj->ajaxTree = new stdClass();
+		$guiObj->ajaxTree->dragDrop = new stdClass();
+		$guiObj->ajaxTree->dragDrop->enabled = false;
+		$guiObj->ajaxTree->dragDrop->useBeforeMoveNode = false;
+		$guiObj->ajaxTree->dragDrop->BackEndUrl = '';
+
+		$guiObj->ajaxTree->loader = null;
+		$guiObj->ajaxTree->root_node = null;
+		$guiObj->ajaxTree->children = null;
+		
+		// improved cookiePrefix - 
+		// tree in plan_add_mode is only used for add/removed test cases features and 
+		// shows all test cases defined in test project, but as test cases are added 
+		// to a specified test plan -> we need store state for each test plan
+		// usage of wrong values in $this->args->xyz for cookiePrefix
+		// instead of correct values in $filters->setting_xyz
+		$guiObj->ajaxTree->cookiePrefix = "add_remove_tc_tplan_id_{$filters->setting_testplan}_";
+	
+		if ($this->do_filtering) 
+		{
+			$options = array('forPrinting' => 0,'hideTestCases' => 1,'tc_action_enabled' => 0,
+							 'ignore_inactive_testcases' => 1,'viewType' => 'testSpecTreeForTestPlan');
+	
+			$guiObj->tree_menu = $this->treemenu_mgr->generateTestSpecTree($this->db,$env,$guiObj->menuUrl,
+			                                  					  		   $filters,$options);
+			
+			$guiObj->ajaxTree->root_node = $guiObj->tree_menu->rootnode;
+		    $guiObj->ajaxTree->children = $guiObj->tree_menu->menustring ? $guiObj->tree_menu->menustring : "[]";
+		} 
+		else 
+		{
+			$guiObj->ajaxTree->loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
+					  			"tproject_id={$this->args->testproject_id}&" .
+					  			"tplan_id={$this->args->testplan_id}&" .
+					  			"root_node={$this->args->testproject_id}&show_tcases=0";
+		
+			$guiObj->ajaxTree->root_node = new stdClass();
+			$guiObj->ajaxTree->root_node->id = $this->args->testproject_id;
+			$guiObj->ajaxTree->root_node->name = $this->args->testproject_name;
+			$guiObj->ajaxTree->root_node->testlink_node_type = 'testproject';
+
+			$guiObj->ajaxTree->root_node->href = "javascript:EP({$this->args->testproject_id}," .
+										 		 "{$this->args->testplan_id},{$this->args->testproject_id})";
+		}
+
+	}	
+
 } // end of class tlTestCaseFilterControl
 ?>

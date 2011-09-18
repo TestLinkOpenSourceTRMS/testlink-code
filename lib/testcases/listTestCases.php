@@ -14,18 +14,6 @@
 *
 *	@internal revisions
 *
-*   20100628 - asimon - removal of constants from filter control class
-*   20100624 - asimon - CVS merge (experimental branch to HEAD)
-*   20100622 - asimon - huge refactorization for new tlTestCaseFilterControl class
-*   20100517 - asimon - BUGID 3301 and related - huge refactoring for first implementation
-*                       of filter panel class hierarchy to simplify/standardize
-*                       filter panel handling for test cases and requirements
-*   20100428 - asimon - BUGID 3301 and related issues - changed name or case
-*                       of some variables used in new common template,
-*                       added custom field filtering logic
-*	20091210 - franciscom - test case execution type filter
-*   20090308 - franciscom - added option Any in keywords filter
-*   20090210 - BUGID 2062 - franciscom -
 */
 require_once('../../config.inc.php');
 require_once("common.php");
@@ -33,10 +21,9 @@ require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
-
-// new class for filter controlling/handling
 $control = new tlTestCaseFilterControl($db, 'edit_mode');
 
+// new dBug($control,array('calledFrom' => 'File:' . __FILE__));
 $gui = initializeGui($db, $control);
 $control->build_tree_menu($gui);
 

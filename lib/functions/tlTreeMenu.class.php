@@ -730,7 +730,7 @@ class tlTreeMenu
 	 */
 	function renderTestSpecNode(&$node,$nodeAttr,$options,$env)
 	{
-		$name = filterString($node['name']);
+		$name = $this->filterString($node['name']);
 		$pfn = "ET";
 		$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
 		
@@ -783,6 +783,18 @@ class tlTreeMenu
 			}  
 		}
 		
+	}
+
+	/**
+	 *
+	 * @internal revisions
+	 */
+	function filterString($str)
+	{
+		$str = str_replace(array("\n","\r"), array("",""), $str);
+		$str = htmlspecialchars($str, ENT_QUOTES);	
+		
+		return $str;
 	}
 
 } // Class End

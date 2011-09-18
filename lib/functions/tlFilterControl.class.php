@@ -108,7 +108,7 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	 * holds the configuration that will be read from config file
 	 * @var stdClass
 	 */
-	public $configuration = null;
+	public $cfg = null;
 
 	/**
 	 * holds the user input read from request
@@ -240,10 +240,10 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	 * Destructor: deletes all member object which have to be deleted after use.
 	 * 
 	 */
-	public function __destruct() {
-		// delete member objects
+	public function __destruct() 
+	{
 		unset($this->testproject_mgr);
-	} // end of method
+	}
 	
 	/**
 	 * Reads the configuration from the configuration file, which is not dependent on type of objects in tree.

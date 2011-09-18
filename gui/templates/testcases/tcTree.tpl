@@ -1,20 +1,10 @@
 {* 
-   TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.28 2010/12/06 12:07:45 asimon83 Exp $ 
-   Purpose: smarty template - show test specification tree menu 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
 
-rev: 
-  20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
-  20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
-  20100809 - franciscom - BUGID 0003664 -  treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
+Purpose: smarty template - show test specification tree menu 
 
-  20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
-                      them with new included template inc_tc_filter_panel.tpl,
-                      also added filtering by custom fields
-  20091210 - franciscom - exec type filter 
-  20080831 - franciscom - treeCfg
-                          manage testlink_node_type, useBeforeMoveNode
-  20080805 - franciscom - BUGID 1656
+@filesource tcTree.tpl
+@internal revisions 
 *}
 {lang_get var="labels"
           s="caption_nav_filter_settings,testsuite,do_auto_update,keywords_filter_help,
@@ -24,11 +14,9 @@ rev:
     {include file="inc_head.tpl" openHead="yes"}
     {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
-	{* BUGID 3301 *}
 	{* Ext Collapsible Panel *}
 	<script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
 	<script type="text/javascript">
-	{* BUGID 4077 *}
 		treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
 		            loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
 		Ext.onReady(function() {
@@ -55,7 +43,6 @@ rev:
 
     {if $gui->ajaxTree->loader == ''}
         <script type="text/javascript">
-        {* BUGID 4077 *}
         treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                     loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
 
@@ -64,14 +51,12 @@ rev:
         treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
         treeCfg.children={$gui->ajaxTree->children};
         treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
-	      // BUGID 0003664
-	      treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
+        treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
         </script>
         <script type="text/javascript" src='gui/javascript/execTree.js'></script>
     
     {else}
         <script type="text/javascript">
-        {* BUGID 4077 *}
           treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                       root_testlink_node_type:'',useBeforeMoveNode:false,
                       loader:"", enableDD:false, dragDropBackEndUrl:'' };
@@ -91,13 +76,12 @@ rev:
     {/if}
 
 
-{* BUGID 3301 - js include file for simpler code, filter refactoring/redesign *}
 {include file='inc_filter_panel_js.tpl'}
 
-{* 
- * !!!!! IMPORTANT !!!!!
- * Above included file closes <head> tag and opens <body>, so this is not done here.
- *}
+{* *********************************************************************************** *}
+{* IMPORTANT - Above included file closes <head> tag and opens <body>,                 *}
+{* so this is not done here.                                                           *}
+{* *********************************************************************************** *}
 
 
 <h1 class="title">{$gui->treeHeader}</h1>

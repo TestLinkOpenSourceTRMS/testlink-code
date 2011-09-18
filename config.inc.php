@@ -1194,6 +1194,8 @@ $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_toplevel_testsuite = ENABL
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_keywords = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_execution_type = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_custom_fields = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_importance = ENABLED;
+
 // filter mode choice disabled for this mode because there are no filters benefiting from it
 $tlCfg->tree_filter_cfg->testcases->edit_mode->advanced_filter_mode_choice = DISABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->automatic_tree_refresh = ENABLED;
@@ -1216,6 +1218,7 @@ $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_testcase_name = ENABLE
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_toplevel_testsuite = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_keywords = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_priority = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_importance = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_execution_type = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->advanced_filter_mode_choice = ENABLED;

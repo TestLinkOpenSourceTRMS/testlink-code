@@ -12,18 +12,6 @@
  *
  * @author Andreas Simon
  * @internal revisions
- *  20110222 - asimon - BUGID 4253: enable filter method selector before submitting 
-                                    the form so its value doesn't get lost
- *  20101121 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
- *  20101101 - franciscom - openExportTestPlan() interface changes
- *  20101009 - franciscom - fixed error viewer warning
- *  20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
- *  20100811 - asimon - BUGID 3566: show/hide CF
- *  20100810 - asimon - added TC ID filter for Test Cases
- *  20100808 - asimon - additional fields for requirement filtering
- *  20100709 - asimon - BUGID 3406: changes to unassign button
- *  20100610 - asimon - first implementation of filter control class hierarchy
- *  20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
  *}
 
 {lang_get var=labels s='caption_nav_settings, caption_nav_filters, platform, test_plan,
@@ -34,13 +22,12 @@
                         btn_remove_all_tester_assignments, execution_type, 
                         do_auto_update, testsuite, btn_reset_filters,
                         btn_bulk_update_to_latest_version, priority, tc_title,
-                        custom_field, search_type_like,
+                        custom_field, search_type_like,importance,
                         document_id, req_expected_coverage, title,
                         status, req_type, req_spec_type, th_tcid, has_relation_type,btn_export_testplan_tree'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
-{* BUGID 4253: enable filter method selector before submitting the form so its value doesn't get lost *}
 <form method="post" id="filter_panel_form" name="filter_panel_form" 
       onsubmit="document.getElementById('filter_result_method').disabled=false;">
 
@@ -216,6 +203,19 @@
 			{html_radios name='filter_keywords_filter_type'
 	                   options=$control->filters.filter_keywords.filter_keywords_filter_type.items
 	                   selected=$control->filters.filter_keywords.filter_keywords_filter_type.selected}
+				</td>
+			</tr>
+		{/if}
+
+		{if $control->filters.filter_importance}
+			<tr>
+				<th width="75">{$labels.importance}</th>
+				<td>
+					<select name="filter_importance">
+					<option value="">{$control->option_strings.any}</option>
+					{html_options options=$gsmarty_option_importance
+                                  selected=$control->filters.filter_importance.selected}
+					</select>
 				</td>
 			</tr>
 		{/if}

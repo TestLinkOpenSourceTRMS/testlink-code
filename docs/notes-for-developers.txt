@@ -1,0 +1,16 @@
+Notes for development
+
+ * General GUI page initialization procedure
+ * - init session
+ * - init database
+ * - check rights
+ * - initialize project data (if requested)
+ * 
+ * @param integer $db DB connection identifier
+ * @param boolean $initProject (optional) Set true if adjustment of Test Project or  
+ *										  Test Plan is required; default is FALSE
+ * @param boolean $dontCheckSession (optional) Set to true if no session should be started
+ * @param string $userRightsCheckFunction (optional) name of function used to check user right needed
+ *													 to execute the page
+ */
+function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,$userRightsCheckFunction = null)

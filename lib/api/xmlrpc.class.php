@@ -20,6 +20,7 @@
  * 
  *
  * @internal revisions 
+ * 20110924 - franciscom - improvements on error message provided for missing parameters
  * 20110903 - franciscom - integration with refactoring of TICKET 4188
  * 20110903 - franciscom - get_linked_versions() interface changes
  * 20110903 - franciscom - TICKET 4311: typo error on uploadExecutionAttachment mapping
@@ -537,14 +538,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     protected function checkTestPlanID($messagePrefix='')
     {
-        $status=true;
-    	if(!$this->_isTestPlanIDPresent())
-    	{
-    	    $msg = $messagePrefix . NO_TPLANID_STR;
-    		$this->errors[] = new IXR_Error(NO_TPLANID, $msg);
-    		$status = false;
-    	}
-    	else
+		$status = $this->_isParamPresent(self::$testPlanIDParamName,$messagePrefix,self::SET_ERROR);
+    	if ($status)
     	{    		
     		// See if this TPID exists in the db
 		    $tplanid = $this->dbObj->prepare_int($this->args[self::$testPlanIDParamName]);
@@ -1072,6 +1067,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         				 'tplan_id' => $tplan_id, 'platform_id' => $platform_id);
     	$info = $this->tcaseMgr->get_linked_versions($tcase_id,$filters);
         $status_ok = !is_null($info);
+		// $this->errors[]=$info;
 		
 		        
         if( $status_ok )
@@ -2286,7 +2282,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         $options = array('executed_only' => $opt[self::$executedParamName], 
         				 'steps_info' => $opt[self::$getStepsInfoParamName],
         				 'details' => 'full','output' => 'mapOfMap' );
-
+        				 
 		$filters = array('tcase_id' => $opt[self::$testCaseIDParamName],
 			             'keyword_id' => $keywordSet,
 			             'assigned_to' => $opt[self::$assignedToParamName],
@@ -4668,7 +4664,6 @@ protected function createAttachmentTempFile()
     	return $status;
     }
 
-
     /**
      * Gets value of a Custom Field for a entity in a given scope (e.g.: a custom
      * field for a test case in design scope).
@@ -4700,7 +4695,7 @@ protected function createAttachmentTempFile()
         $checkFunctions = array('authenticate','checkTestProjectID','checkCustomField','checkCustomFieldScope');
         $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
 
-        if($status_ok && $this->userHasRight("mgt_view_tc"))
+        if($status_ok)
         {
             $cf_name = $this->args[self::$customFieldNameParamName];
             $tproject_id = $this->args[self::$testProjectIDParamName];
@@ -4713,7 +4708,7 @@ protected function createAttachmentTempFile()
 
             $enabled = 1; // returning only enabled custom fields
 
-            $cfield_mgr = $this->tprojectMgr->cfield_mgr;
+            $cfield_mgr = &$this->tprojectMgr->cfield_mgr;
             $cfinfo = $cfield_mgr->get_by_name($cf_name);
             $cfield = current($cfinfo);
 
@@ -4724,18 +4719,18 @@ protected function createAttachmentTempFile()
       				$cfieldSpec = $cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
       																		$filters,$nodetype,$nodeid);
       			break;
-      			
-				case 'execution' 
+
+				case 'execution': 
       				$cfieldSpec = $cfield_mgr->get_linked_cfields_at_execution($tproject_id,$enabled,$nodetype,
       																		   $nodeid,$executionid,$testplanid);
       			break;
 
 				case 'testplan_design':
      				$cfieldSpec = $cfield_mgr->get_linked_cfields_at_testplan_design($tproject_id,$enabled,$nodetype,
-     																				 $nodeid,$linkid,$testplanid );
+     																				 $nodeid,$linkid,$testplanid);
 				break; 
- 
-      		}
+			}
+			
       		return $cfieldSpec[$cfield['id']];
       	}
       	else
@@ -4743,6 +4738,7 @@ protected function createAttachmentTempFile()
       		return $this->errors;
       	}
     }
+
 
   	/**
   	 * Gets a Custom Field of a Test Case in Execution Scope.
@@ -4769,7 +4765,7 @@ protected function createAttachmentTempFile()
 	    
 	    return $this->getCustomFieldValue($args);
 	}
-    
+
 	/**
  	 * Gets a Custom Field of a Test Case in Test Plan Design Scope.
 	 *

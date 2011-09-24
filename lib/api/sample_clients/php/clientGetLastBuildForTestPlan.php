@@ -14,7 +14,7 @@ require_once 'util.php';
 require_once 'sample.inc.php';
 show_api_db_sample_msg();
 
-$method='getLastBuildForTestPlan';
+$method='getLatestBuildForTestPlan';
 $unitTestDescription="Test - {$method} - using BAD KEY on Calling parameters for for test plan";
 
 $args = array();

@@ -71,7 +71,7 @@ class dBug {
 		
 		if( !defined('DBUG_ON') ) return; // >>----> Bye!
 
-        $my['options'] = array('forceType' => '', 'collapsed' => true, 'label'=> '');
+        $my['options'] = array('forceType' => '', 'collapsed' => true, 'label'=> '', 'calledFrom' => '');
    	    $my['options'] = array_merge($my['options'], (array)$options);
         $forceType =  $my['options']['forceType'];
         

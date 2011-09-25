@@ -236,8 +236,6 @@ class TestlinkXMLRPCServer extends IXR_Server
         }   
         $this->codeStatus=array_flip($this->statusCode);
     	
-        
-	    
 	    $this->methods = array( 'tl.reportTCResult' => 'this:reportTCResult',
 	                            'tl.setTestCaseExecutionResult' => 'this:reportTCResult',
 	                            'tl.createBuild' => 'this:createBuild',
@@ -285,7 +283,6 @@ class TestlinkXMLRPCServer extends IXR_Server
                                 'tl.checkDevKey' => 'this:checkDevKey',
 			                    'tl.about' => 'this:about',
 			                    'tl.setTestMode' => 'this:setTestMode',
-                    			// ping is an alias for sayHello
                     			'tl.ping' => 'this:sayHello', 
                     			'tl.sayHello' => 'this:sayHello',
                     			'tl.repeat' => 'this:repeat'
@@ -330,7 +327,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */
 	protected function _setTestCaseID($tcaseID)
 	{		
-			$this->args[self::$testCaseIDParamName] = $tcaseID;			
+		$this->args[self::$testCaseIDParamName] = $tcaseID;			
 	}
 	
 	/**
@@ -393,16 +390,16 @@ class TestlinkXMLRPCServer extends IXR_Server
     {   
              	
 	    // check that the key was given as part of the args
-	    if(!$this->_isDevKeyPresent())
+	    $this->authenticated = $this->_isParamPresent(self::$devKeyParamName,$messagePrefix,self::SET_ERROR);
+		if($this->authenticated)
+		{
+			$this->devKey = $this->args[self::$devKeyParamName];
+		}
+		else
 	    {
-	    	$this->errors[] = new IXR_ERROR(NO_DEV_KEY, $messagePrefix . NO_DEV_KEY_STR);
-	    	$this->authenticated = false;
 	    	return false;
 	    }
-	    else
-	    {
-	    	$this->devKey = $this->args[self::$devKeyParamName];
-	    }
+	    
 	    // make sure the key we have is valid
 	    if(!$this->_isDevKeyValid($this->devKey))
 	    {
@@ -412,7 +409,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    }
 	    else
 	    {
-	    	//Load User
+	    	// Load User
 	    	$this->user = tlUser::getByID($this->dbObj,$this->userID);	
 	    	$this->authenticated = true;	    	
 	    	return true;
@@ -450,23 +447,10 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @return boolean
 	 * @access protected
 	 */        
-    protected function checkTestCaseName()
+    protected function checkTestCaseName($messagePrefix='')
     {
-        $status = true;
-    	if(!$this->_isTestCaseNamePresent())
-    	{
-    	  	$this->errors[] = new IXR_Error(NO_TESTCASENAME, NO_TESTCASENAME_STR);
-    	  	$status=false;
-    	}
-    	else
-    	{
-    	    $testCaseName = $this->args[self::$testCaseNameParamName];
-    	    if(!is_string($testCaseName))
-    	    {
-    	    	$this->errors[] = new IXR_Error(TESTCASENAME_NOT_STRING, TESTCASENAME_NOT_STRING_STR);
-    	    	$status=false;
-    	    }
-    	}
+    	$errorCode = str_replace('check','',__FUNCTION__);
+        $status = $this->checkMandatoryStringParam(self::$testCaseNameParamName,$errorCode,$messagePrefix);
     	return $status;
     }
     
@@ -480,20 +464,19 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     protected function checkStatus()
     {
-		    if( ($status=$this->_isStatusPresent()) )
-		    {
-		        if( !($status=$this->_isStatusValid($this->args[self::$statusParamName])))
-		        {
-		        	// BUGID 3455
-		        	$msg = sprintf(INVALID_STATUS_STR,$this->args[self::$statusParamName]);
-		        	$this->errors[] = new IXR_Error(INVALID_STATUS, $msg);
-		        }    	
-        	}
-        	else
-        	{
-        	    $this->errors[] = new IXR_Error(NO_STATUS, NO_STATUS_STR);
-        	}
-        	return $status;
+	    if( ($status = $this->_isParamPresent(self::$statusParamName,$messagePrefix,self::SET_ERROR)) )
+	    {
+	        if( !($status=$this->_isStatusValid($this->args[self::$statusParamName])))
+	        {
+	        	$msg = sprintf(INVALID_STATUS_STR,$this->args[self::$statusParamName]);
+	        	$this->errors[] = new IXR_Error(INVALID_STATUS, $msg);
+	        }    	
+    	}
+    	else
+    	{
+    	    $this->errors[] = new IXR_Error(NO_STATUS, NO_STATUS_STR);
+    	}
+    	return $status;
     }       
     
 	/**
@@ -509,7 +492,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     protected function checkTestCaseID($messagePrefix='')
     {
         $msg = $messagePrefix;
-        $status_ok=$this->_isTestCaseIDPresent();
+        $status_ok = $this->_isTestCaseIDPresent();
         if( $status_ok)
         {
             $tcaseid = $this->args[self::$testCaseIDParamName];
@@ -579,14 +562,12 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     protected function checkTestProjectID($messagePrefix='')
     {
-    	if(!($status=$this->_isTestProjectIDPresent()))
-    	{
-    		  $this->errors[] = new IXR_Error(NO_TESTPROJECTID, $messagePrefix . NO_TESTPROJECTID_STR);
-    	}
-    	else
+		$me = self::$testProjectIDParamName;
+		$status = $this->_isParamPresent($me,$messagePrefix,self::SET_ERROR);
+    	if($status)
     	{    		
             // See if this Test Project ID exists in the db
-		    $testprojectid = $this->dbObj->prepare_int($this->args[self::$testProjectIDParamName]);
+		    $testprojectid = $this->dbObj->prepare_int($this->args[$me]);
         	$query = "SELECT id FROM {$this->tables['testprojects']} WHERE id={$testprojectid}";
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
@@ -611,19 +592,17 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     protected function checkTestSuiteID($messagePrefix='')
     {
-    	if(!($status=$this->_isTestSuiteIDPresent()))
-    	{
-    		$this->errors[] = new IXR_Error(NO_TESTSUITEID, $messagePrefix . NO_TESTSUITEID_STR);
-    	}
-    	else
+		$me = self::$testSuiteIDParamName;    	
+		$status = $this->_isParamPresent($me,$messagePrefix,self::SET_ERROR);
+    	if($status)
     	{    		
             // See if this Test Suite ID exists in the db
             $tsuiteMgr = new testsuite($this->dbObj);
-	        $node_info = $tsuiteMgr->get_by_id($this->args[self::$testSuiteIDParamName]);
-	        if( !($status=!is_null($node_info)) )
+	        $node_info = $tsuiteMgr->get_by_id($this->args[$me]);
+	        if( !($status = !is_null($node_info)) )
   		    {
   		        $msg=$messagePrefix;
-  		        $msg .= sprintf(INVALID_TESTSUITEID_STR, $this->args[self::$testSuiteIDParamName]);
+  		        $msg .= sprintf(INVALID_TESTSUITEID_STR, $this->args[$me]);
  	            $this->errors[] = new IXR_Error(INVALID_TESTSUITEID, $msg);
         	}
     	}
@@ -642,7 +621,9 @@ class TestlinkXMLRPCServer extends IXR_Server
     protected function checkGuess()
     {    	
     	// if guess is set return its value otherwise return true to guess by default
-    	return($this->_isGuessPresent() ? $this->args[self::$guessParamName] : self::BUILD_GUESS_DEFAULT_MODE);	
+		$me = self::$guessParamName;
+    	$canGuess = isset($this->args[$me]) ? true : false;
+    	return($CanGuess ? $this->args[$me] : self::BUILD_GUESS_DEFAULT_MODE);	
     }   	
     
 	/**
@@ -761,52 +742,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 	}
 
     /**
-	 * Helper method to see if the status provided is valid 
-	 * 	
-	 * @return boolean
-	 * @access protected
-	 */  	     
-    protected function _isStatusValid($status)
-    {
-    	return(in_array($status, $this->statusCode));
-    }           
-
-    /**
-	 * Helper method to see if a testcasename is given as one of the arguments 
-	 * 	
-	 * @return boolean
-	 * @access protected
-	 */          
-	 protected function _isTestCaseNamePresent()
-	 {
-		    return (isset($this->args[self::$testCaseNameParamName]) ? true : false);
-	 }
-
-    /**
-	 * Helper method to see if a testcasename is given as one of the arguments 
-	 * 	
-	 * @return boolean
-	 * @access protected
-	 */          
-	 protected function _isTestCaseExternalIDPresent()
-	 {
-	      $status=isset($this->args[self::$testCaseExternalIDParamName]) ? true : false;
-		    return $status;
-	 }
-
-
-    /**
-	 * Helper method to see if a timestamp is given as one of the arguments 
-	 * 	
-	 * @return boolean
-	 * @access protected
-	 */    
-    protected function _isTimeStampPresent()
-    {
-    	return (isset($this->args[self::$timeStampParamName]) ? true : false);
-    }
-
-    /**
 	 * Helper method to see if a buildID is given as one of the arguments 
 	 * 	
 	 * @return boolean
@@ -829,94 +764,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     	return $status;
     }
     
-	/**
-	 * Helper method to see if build notes are given as one of the arguments 
-	 * 	
-	 * @return boolean
-	 * @access protected
-	 */    
-    protected function _isBuildNotePresent()
-    {
-    	return (isset($this->args[self::$buildNotesParamName]) ? true : false);
-    }
-    
-	/**
-	 * Helper method to see if testsuiteid is given as one of the arguments
-	 * 	
-	 * @return boolean
-	 * @access protected
-	 */    
-	protected function _isTestSuiteIDPresent()
-	{
-		return (isset($this->args[self::$testSuiteIDParamName]) ? true : false);
-	}    
-    
-    /**
-	 * Helper method to see if a note is given as one of the arguments 
-	 * 	
-	 * @return boolean
-	 * @access protected
-	 */    
-    protected function _isNotePresent()
-    {
-    	return (isset($this->args[self::$noteParamName]) ? true : false);
-    }        
-    
-    /**
-	 * Helper method to see if a tplanid is given as one of the arguments 
-	 * 	
-	 * @return boolean
-	 * @access protected
-	 */    
-    protected function _isTestPlanIDPresent()
-    {    	
-    	return (isset($this->args[self::$testPlanIDParamName]) ? true : false);    	
-    }
-
-    /**
-	 * Helper method to see if a TestProjectID is given as one of the arguments 
-	 * 	
-	 * @return boolean
-	 * @access protected
-	 */    
-    protected function _isTestProjectIDPresent()
-    {    	
-    	return (isset($this->args[self::$testProjectIDParamName]) ? true : false);    	
-    }        
-    
-    /**
-	 * Helper method to see if automated is given as one of the arguments 
-	 * 	
-	 * @return boolean
-	 * @access protected
-	 */    
-    protected function _isAutomatedPresent()
-    {    	
-    	return (isset($this->args[self::$automatedParamName]) ? true : false);    	
-    }        
-    
-    /**
-	 * Helper method to see if testMode is given as one of the arguments 
-	 * 	
-	 * @return boolean
-	 * @access protected
-	 */    
-    protected function _isTestModePresent()
-    {
-    	return (isset($this->args[self::$testModeParamName]) ? true : false);      
-    }
-    
-    /**
-	 * Helper method to see if a devKey is given as one of the arguments 
-	 * 	 
-	 * @return boolean
-	 * @access protected
-	 */
-    protected function _isDevKeyPresent()
-    {
-    	return (isset($this->args[self::$devKeyParamName]) ? true : false);
-    }
-    
+ 
     /**
 	 * Helper method to see if a tcid is given as one of the arguments 
 	 * 	
@@ -928,51 +776,18 @@ class TestlinkXMLRPCServer extends IXR_Server
 		return (isset($this->args[self::$testCaseIDParamName]) ? true : false);
     }  
     
-	/**
-	 * Helper method to see if the guess param is given as one of the arguments 
-	 * 	
-	 * @return boolean
-	 * @access protected
-	 */
-    protected function _isGuessPresent()
-    {
-		$status=isset($this->args[self::$guessParamName]) ? true : false;
-		return $status;
-    }
-    
+
     /**
-	 * Helper method to see if the testsuitename param is given as one of the arguments 
+	 * Helper method to see if the status provided is valid 
 	 * 	
 	 * @return boolean
 	 * @access protected
-	 */
-    protected function _isTestSuiteNamePresent()
+	 */  	     
+    protected function _isStatusValid($status)
     {
-		    return (isset($this->args[self::$testSuiteNameParamName]) ? true : false);
-    }    
-    
-	/**
-	 * Helper method to see if the deep param is given as one of the arguments 
-	 * 	
-	 * @return boolean
-	 * @access protected
-	 */
-    protected function _isDeepPresent()
-    {
-		return (isset($this->args[self::$deepParamName]) ? true : false);
-    }      
-    
-	/**
-	 * Helper method to see if the status param is given as one of the arguments 
-	 * 	
-	 * @return boolean
-	 * @access protected
-	 */
-    protected function _isStatusPresent()
-    {
-		return (isset($this->args[self::$statusParamName]) ? true : false);
-    }      
-    
+    	return(in_array($status, $this->statusCode));
+    }           
+  
 	/**
 	 * Helper method to see if the tcid provided is valid 
 	 * 	
@@ -985,7 +800,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */
     protected function _isTestCaseIDValid($tcaseid,$messagePrefix='',$setError=false)
     {
-        $status_ok=is_numeric($tcaseid);
+        $status_ok = is_numeric($tcaseid);
     	if($status_ok)
         {
     	    // must be of type 'testcase' and show up in the nodes_hierarchy    	
@@ -1076,10 +891,6 @@ class TestlinkXMLRPCServer extends IXR_Server
             $dummy = current($info);
         	$plat = is_null($platform_id) ? 0 : $platform_id; 
             $this->versionNumber = $dummy[$tplan_id][$plat]['version'];
-            
-            // $this->errors[] = $this->tcVersionID;
-            // $this->errors[] = $this->versionNumber;
-        	// $status_ok = false;    
         }
         else
         {
@@ -1217,7 +1028,8 @@ class TestlinkXMLRPCServer extends IXR_Server
         $builds = $this->_getBuildsForTestPlan($args);
         $maxid = -1;
 		$maxkey = -1;
-		foreach ($builds as $key => $build) {
+		foreach ($builds as $key => $build) 
+		{
     		if ($build['id'] > $maxid)
     		{
     			$maxkey = $key;
@@ -1326,8 +1138,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$notes='';
         $notes_field="";
         $notes_value="";  
-
-		if($this->_isNotePresent())
+		if( isset($this->args[self::$noteParamName]) )
 		{
 			$notes = $this->dbObj->prepare_string($this->args[self::$noteParamName]);
 		}
@@ -1424,7 +1235,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 			$testPlanID = $this->args[self::$testPlanIDParamName];
 			$buildName = $this->args[self::$buildNameParamName];					
 			$buildNotes = "";
-			if($this->_isBuildNotePresent())
+			if($this->_isParamPresent(self::$buildNotesParamName))
 			{			
 				$buildNotes = $this->dbObj->prepare_string($this->args[self::$buildNotesParamName]);
 			}
@@ -1752,18 +1563,13 @@ class TestlinkXMLRPCServer extends IXR_Server
 		if($status_ok && $this->userHasRight("mgt_view_tc"))
 		{		
 			$testSuiteID = $this->args[self::$testSuiteIDParamName];
-            $tsuiteMgr = new testsuite($this->dbObj);
-			if(!$this->_isDeepPresent() || $this->args[self::$deepParamName] )
+			$pfn = 'get_children_testcases';
+			if(!isset($this->args[self::$deepParamName]) || $this->args[self::$deepParamName] )
 			{
 			    $pfn = 'get_testcases_deep';
 			}	
-			else
-			{
-			    $pfn = 'get_children_testcases';
-			}
+            $tsuiteMgr = new testsuite($this->dbObj);
 			return $tsuiteMgr->$pfn($testSuiteID,$details);
-			
-			
 		}
 		else
 		{
@@ -2116,7 +1922,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	{
 		$this->_setArgs($args);
 		
-		if(!$this->_isTestModePresent())
+		if(!isset($this->args[self::$testModeParamName]))
 		{
 			$this->errors[] = new IXR_ERROR(NO_TEST_MODE, NO_TEST_MODE_STR);
 			return false;
@@ -2155,13 +1961,13 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$fromExternal=false;
 		$fromInternal=false;
 
-	    if($this->_isTestCaseIDPresent())
+	    if($this->_isParamPresent(self::$testCaseIDParamName))
 	    {
 		      $fromInternal=true;
 		      $tcaseID = $this->args[self::$testCaseIDParamName];
 		      $status = true;
 	    }
-		elseif ($this->_isTestCaseExternalIDPresent())
+		elseif ($this->_isParamPresent(self::$testCaseExternalIDParamName,$messagePrefix,self::SET_ERROR))
 		{
             $fromExternal = true;
 			$tcaseExternalID = $this->args[self::$testCaseExternalIDParamName]; 
@@ -2170,7 +1976,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		    $tcaseID=$this->tcaseMgr->getInternalID($tcaseExternalID,$glueCharacter);
             $status = $tcaseID > 0 ? true : false;
             
-            //Invalid TestCase ID
+            // Invalid TestCase ID
             if( !$status )
             {
               	$my_errors[] = new IXR_Error(INVALID_TESTCASE_EXTERNAL_ID, 
@@ -3366,25 +3172,10 @@ public function getTestCaseAttachments($args)
 	 */        
     protected function checkTestSuiteName($messagePrefix='')
     {
-        $status_ok=isset($this->args[self::$testSuiteNameParamName]) ? true : false;
-        if($status_ok)
-        {
-    	      $name = $this->args[self::$testSuiteNameParamName];
-    	      if(!is_string($name))
-    	      {
-                $msg=$messagePrefix . TESTSUITENAME_NOT_STRING_STR;
-    	      	$this->errors[] = new IXR_Error(TESTSUITENAME_NOT_STRING, $msg);
-    	      	$status_ok=false;
-    	      }
-        }
-        else
-        {
-       	  	$this->errors[] = new IXR_Error(NO_TESTSUITENAME, $messagePrefix . NO_TESTSUITENAME_STR);
-        }
-        return $status_ok;
+    	$errorCode = str_replace('check','',__FUNCTION__);
+        $status = $this->checkMandatoryStringParam(self::$testSuiteNameParamName,$errorCode,$messagePrefix);
+    	return $status;
     }
-
-
 
 
     /**
@@ -3973,7 +3764,7 @@ public function getTestCase($args)
 			$notes = '';
     		$notes_update = '';
 			
-			if($this->_isNotePresent())
+			if(isset($this->args[self::$noteParamName]))
 			{
 				$notes = $this->dbObj->prepare_string($this->args[self::$noteParamName]);
 			}
@@ -4881,13 +4672,33 @@ protected function createAttachmentTempFile()
      */
     public function getRequirementCustomFieldDesignValue($args)
     {
-        $args['nodetype'] = 'requirement';
-        $args['nodeid'] = $args[self::$requirementIDParamName];
-        $args['scope'] = 'design';
+        $args[self::$nodeTypeParamName] = 'requirement';
+        $args[self::$nodeIDParamName] = $args[self::$requirementIDParamName];
+        $args[self::$scopeParamName] = 'design';
         
         return $this->getCustomFieldValue($args);
     }
 
+	/**
+	 * @return boolean
+	 * @access protected
+	 */        
+    protected function checkMandatoryStringParam($key,$errorCode,$messagePrefix)
+    {
+    	$status = $this->_isParamPresent($key,$messagePrefix,self::SET_ERROR);
+		if($status)
+    	{
+			$item = $this->args[$key];
+			if( !($status = is_string($item)) )
+			{
+				$dummy = strtoupper($errorCode) . '_NOT_STRING';
+				$code = constant($dummy);
+				$msg = constant($dummy . '_STR');
+				$this->errors[] = new IXR_Error($code, $msg);
+			}
+	    }
+	    return $status;
+    }
 
 } // class end
 ?>

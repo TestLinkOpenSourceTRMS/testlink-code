@@ -16,54 +16,71 @@ require_once 'util.php';
 require_once 'sample.inc.php';
 show_api_db_sample_msg();
 
+$client = new IXR_Client($server_url);
+
 $tcCounter = 1;
-$method='createTestCase';
-$unitTestDescription = "Test #{$tcCounter}- {$method} - With NAME exceeding limit";
-$tcCounter++;
-
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["testprojectid"]=280;
-$args["testsuiteid"]=297;
-$args["testcasename"]=
-'TEST CASE NAME IS LONGER THAT ALLOWED SIZE - 100 CHARACTERS - The quick brown fox jumps over the X % lazydog (bye bye dog)';
-$args["summary"]='Test Case created via API';
-$args["preconditions"]='Test Link API Up & Running';
-$args["steps"][]=array('step_number' => 1, 'actions' => 'Start Server', 'expected_results' => 'green light');
-$args["authorlogin"]='admin';
-$args["checkduplicatedname"]=1;
+// ..................................................................................
+tc_a($client,$tcCounter);
+tc_b($client,$tcCounter);
+tc_c($client,$tcCounter);
+tc_d($client,$tcCounter);
+tc_e($client,$tcCounter);
+// ..................................................................................
 
 
-$debug=true;
-echo $unitTestDescription;
-$client = new IXR_Client($server_url);
-$client->debug=$debug;
-runTest($client,$method,$args);
-
-
+// ..................................................................................
+function tc_b(&$client,&$tcCounter)
+{
+	global $server_url;
+	$method='createTestCase';
+	$unitTestDescription = "Test #{$tcCounter}- {$method} - With NAME exceeding limit";
+	$tcCounter++;
+	
+	$args=array();
+	$args["devKey"]=DEV_KEY;
+	$args["testprojectid"]=280;
+	$args["testsuiteid"]=297;
+	$args["testcasename"]=
+	'TEST CASE NAME IS LONGER THAT ALLOWED SIZE - 100 CHARACTERS - The quick brown fox jumps over the X % lazydog (bye bye dog)';
+	$args["summary"]='Test Case created via API';
+	$args["preconditions"]='Test Link API Up & Running';
+	$args["steps"][]=array('step_number' => 1, 'actions' => 'Start Server', 'expected_results' => 'green light');
+	$args["authorlogin"]='admin';
+	$args["checkduplicatedname"]=1;
+	
+	
+	$debug=true;
+	echo $unitTestDescription;
+	$client->debug=$debug;
+	runTest($client,$method,$args);
+}
 // ----------------------------------------------------------------------------------------------------
-$method='createTestCase';
-$unitTestDescription="Test #{$tcCounter}- {$method}";
-$tcCounter++;
-
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["testprojectid"]=620;
-$args["testsuiteid"]=621;
-$args["testcasename"]='Network Interface Card (NIC) driver update';
-$args["summary"]='Test Case created via API';
-$args["authorlogin"]='admin';
-$args["checkduplicatedname"]=1;
-$args["keywordid"]='1,2,3,4';
-
-
-$debug=true;
-echo $unitTestDescription;
-$client = new IXR_Client($server_url);
-$client->debug=$debug;
-runTest($client,$method,$args);
-
 // ----------------------------------------------------------------------------------------------------
+function tc_c(&$client,&$tcCounter)
+{
+	$method='createTestCase';
+	$unitTestDescription="Test #{$tcCounter}- {$method}";
+	$tcCounter++;
+	
+	$args=array();
+	$args["devKey"]=DEV_KEY;
+	$args["testprojectid"]=620;
+	$args["testsuiteid"]=621;
+	$args["testcasename"]='Network Interface Card (NIC) driver update';
+	$args["summary"]='Test Case created via API';
+	$args["authorlogin"]='admin';
+	$args["checkduplicatedname"]=1;
+	$args["keywordid"]='1,2,3,4';
+	
+	
+	$debug=true;
+	echo $unitTestDescription;
+	$client->debug=$debug;
+	runTest($client,$method,$args);
+}
+// ----------------------------------------------------------------------------------------------------
+function tc_d(&$client,&$tcCounter)
+{
 $method='createTestCase';
 $unitTestDescription="Test #{$tcCounter}- {$method}";
 $tcCounter++;
@@ -81,11 +98,13 @@ $args["checkduplicatedname"]=1;
 
 $debug=true;
 echo $unitTestDescription;
-$client = new IXR_Client($server_url);
 $client->debug=$debug;
 runTest($client,$method,$args);
+}
 
 // ----------------------------------------------------------------------------------------------------
+function tc_e(&$client,&$tcCounter)
+{
 $method='createTestCase';
 $unitTestDescription="Test #{$tcCounter}- {$method}";
 $tcCounter++;
@@ -102,8 +121,32 @@ $args["actiononduplicatedname"]="create_new_version";
 
 $debug=true;
 echo $unitTestDescription;
-$client = new IXR_Client($server_url);
 $client->debug=$debug;
 runTest($client,$method,$args);
+}
+// ----------------------------------------------------------------------------------------------------
+
+
+// ----------------------------------------------------------------------------------------------------
+function tc_a(&$client,&$tcCounter)
+{
+	$method='createTestCase';
+	$unitTestDescription="Test #{$tcCounter}- {$method} - Test Case IS NOT STRING";
+	$tcCounter++;
+	
+	$args=array();
+	$args["devKey"]=DEV_KEY;
+	$args["testprojectid"]=378;
+	$args["testsuiteid"]=379;
+	$args["testcasename"]=1000;
+	$args["summary"]='Test Case created via API';
+	$args["authorlogin"]='admin';
+	
+	
+	$debug=true;
+	echo $unitTestDescription;
+	$client->debug=$debug;
+	runTest($client,$method,$args);
+}
 // ----------------------------------------------------------------------------------------------------
 ?>

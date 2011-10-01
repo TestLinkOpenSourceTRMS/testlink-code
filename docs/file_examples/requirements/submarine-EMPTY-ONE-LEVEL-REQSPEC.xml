@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+TestLink - Open Source Test Management System
+Generated: 2011-10-01 16:30
+-->
+<requirement-specification>
+	<req_spec title="Diving and Surfacing"  doc_id="RS-NTL-001"  >
+	<revision><![CDATA[1]]></revision>
+	<type><![CDATA[1]]></type>
+	<node_order><![CDATA[1]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope>
+	<![CDATA[]]>
+	</scope>
+	</req_spec>
+
+	<req_spec title="Life Support"  doc_id="RS-NTL-002"  >
+	<revision><![CDATA[1]]></revision>
+	<type><![CDATA[1]]></type>
+	<node_order><![CDATA[2]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope>
+	<![CDATA[]]>
+	</scope>
+	</req_spec>
+
+	<req_spec title="Power Supply"  doc_id="RS-NTL-003"  >
+	<revision><![CDATA[1]]></revision>
+	<type><![CDATA[1]]></type>
+	<node_order><![CDATA[2]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope>
+	<![CDATA[]]>
+	</scope>
+	</req_spec>
+
+	<req_spec title="Navigation"  doc_id="RS-NTL-004"  >
+	<revision><![CDATA[1]]></revision>
+	<type><![CDATA[1]]></type>
+	<node_order><![CDATA[2]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope>
+	<![CDATA[]]>
+	</scope>
+	</req_spec>
+
+	<req_spec title="Rescue"  doc_id="RS-NTL-005"  >
+	<revision><![CDATA[1]]></revision>
+	<type><![CDATA[1]]></type>
+	<node_order><![CDATA[2]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope>
+	<![CDATA[]]>
+	</scope>
+	</req_spec>
+</requirement-specification>

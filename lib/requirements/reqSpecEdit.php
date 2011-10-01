@@ -78,14 +78,19 @@ function init_args(&$dbHandler)
 	// after R_PARAMS call - at least this fixed the problem
 	// $_REQUEST=strings_stripSlashes($_REQUEST);
 	
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
 	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 	$args->basehref = $_SESSION['basehref'];
 	$args->parentID = is_null($args->parentID) ? $args->tproject_id : $args->parentID;
 
 	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? $_SESSION['setting_refresh_tree_on_action'] : 0;
 	$args->countReq = is_null($args->countReq) ? 0 : intval($args->countReq);
+
+	if( $args->tproject_id > 0)
+	{
+		$nm = new tree($dbHandler);
+		$dummy = $nm->get_node_hierarchy_info($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+	}
 
 	return $args;
 }

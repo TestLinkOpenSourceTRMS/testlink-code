@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="" >
+<node_order><![CDATA[]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="Diving and Surfacing" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="ballast tanks" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="hydroplanes" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite></testsuite><testsuite name="Life Support" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="air quality" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="fresh water supply" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="temperature" >
+<node_order><![CDATA[3]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite></testsuite><testsuite name="Power Supply" >
+<node_order><![CDATA[3]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="diesel engines" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="nuclear reactors" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="batteries" >
+<node_order><![CDATA[3]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Propeller shafts" >
+<node_order><![CDATA[4]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite></testsuite><testsuite name="Navigation" >
+<node_order><![CDATA[4]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="global positioning system (GPS)" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="inertial guidance systems" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="gyroscopes" >
+<node_order><![CDATA[3]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="SONAR (sound navigation and ranging)" >
+<node_order><![CDATA[4]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Periscopes" >
+<node_order><![CDATA[5]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite></testsuite><testsuite name="Rescue" >
+<node_order><![CDATA[5]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="Deep-Submergence Rescue Vehicles (DSRV)" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Diving bells" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite></testsuite><testsuite name="Scuba" >
+<node_order><![CDATA[6]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="Scuba Breathing Apparatus" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Wet Suits, Dry Suits, and Buoyancy Control" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite></testsuite></testsuite>

@@ -21,26 +21,6 @@
  * 20110223 - asimon BUGID 4239: forgotten parameter $oldNewMappings for a function call in copy_as()  
  *                               caused links between reqs in old project and testcases in new project
  *                               when copying testprojects
- * 20101030 - amitkhullar - BUGID 3966 Added importance field in the query
- * 20101030 - francisco - show() BUGID 3937: No information when exporting all test suites when no test suites exists 
- *						  method for activating a test project was renamed	
- *						  get_all_testcases_id() - new options
- *
- * 20101003 - franciscom - and_not_in_clause -> additionalWhereClause
- * 20100930 - franciscom - BUGID 2344: Private test project
- * 20100929 - asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
- * 20100920 - Julian - getFreeTestCases() added importance to output
- * 20100911 - amitkhullar - BUGID 3764
- * 20100821 - franciscom - get_all_testplans() - interface changes
- * 20100516 - franciscom - BUGID 3464 - delete()
- * 20100310 - asimon - BUGID 3227 - refactored get_all_requirement_ids() and count_all_requirements()
- *                                  to not be recursive and pascal-like anymore
- *                                  and to use new method on tree class
- * 20100309 - asimon - BUGID 3227 - added get_all_requirement_ids() and count_all_requirements()
- * 20100209 - franciscom - BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
- * 20100203 - franciscom - addKeyword() return type changed
- * 20100201 - franciscom - delete() - missing delete of platforms
- * 20100102 - franciscom - show() - interface changes
  *
  **/
 
@@ -104,17 +84,7 @@ class testproject extends tlObjectWithAttachments
  *
  * @return integer test project id or 0 (if fails)
  *
- * @internal Revisions:
- *	20100213 - havlatm - support for options serialization, renamed
- *	20060709 - franciscom - return type changed
- *                         added new optional argument active
- *	20080112 - franciscom - added $tcasePrefix
- *	20090601 - havlatm - update session if required
- * 
- * @TODO havlatm: rollback node if create fails (DB consistency req.)
- * @TODO havlatm: $is_public parameter need review (do not agreed in team)
- * @TODO havlatm: described return parameter differs from reality
- * @TODO havlatm: parameter $options should be 
+ * @internal revisions
  */
 function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)
 {
@@ -133,15 +103,17 @@ function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_publi
 		                 $this->db->prepare_string($tcprefix) . "')";
 	$result = $this->db->exec_query($sql);
 
+    $tLogMsg = 'The new testproject ' . $name;
 	if ($result)
 	{
-		tLog('The new testproject '.$name.' was succesfully created.', 'INFO');
+		$tLogMsg .= ' was succesfully created.';
 	}
 	else
 	{
-		tLog('The new testproject '.$name.' was not created.', 'INFO');
+		$tLogMsg .= ' was not created.';
 		$root_node_id = 0;
 	}
+	tLog($tLogMsg, 'INFO');
 
 	return($root_node_id);
 }
@@ -281,10 +253,8 @@ protected function getTestProject($condition = null)
 	{
 		$sql .= " AND " . $condition;
     }
-    
 	$recordset = $this->db->get_recordset($sql);
 	$this->parseTestProjectRecordset($recordset);
-
 	return $recordset;
 }
 
@@ -301,7 +271,6 @@ public function get_by_name($name, $addClause = null)
 {
 	$condition = "nodes_hierarchy.name='" . $this->db->prepare_string($name) . "'";
 	$condition .= is_null($addClause) ? '' : " AND {$addClause} ";
-
 	return $this->getTestProject($condition);
 }
 
@@ -1573,7 +1542,7 @@ function setPublicStatus($id,$status)
 		$this->deleteKeywords($id);
 		$this->deleteAttachments($id);
 		
-		$reqSpecSet=$reqspec_mgr->get_all_in_testproject($id);
+		$reqSpecSet = $reqspec_mgr->get_all_id_in_testproject($id);
 		if( !is_null($reqSpecSet) && count($reqSpecSet) > 0 )
 		{
 			foreach($reqSpecSet as $reqSpec)
@@ -2175,19 +2144,16 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 	$my['options'] = array('copy_requirements' => 1,'copy_user_roles' => 1,'copy_platforms' => 1);
 	$my['options'] = array_merge($my['options'], (array)$options);
 
-	
-	// get source test project general info
-	$rs_source=$this->get_by_id($id);
-	
 	if(!is_null($new_name))
 	{
 		$sql="/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
 			 "SET name='" . $this->db->prepare_string(trim($new_name)) . "' " .
-			 "WHERE id={$new_id}";
+			 "WHERE id = {$new_id}";
 		$this->db->exec_query($sql);
 	}
-
-
+	
+	// get source test project general info
+	$rs_source = $this->get_by_id($id);
 
 	// Copy elements that can be used by other elements
 	// Custom Field assignments
@@ -2199,10 +2165,9 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 	// Platforms
 	$oldNewMappings['platforms'] = $this->copy_platforms($id,$new_id);
 	
-	// Requirements
 	if( $my['options']['copy_requirements'] )
 	{
-		$oldNewMappings['requirements'] = $this->copy_requirements($id,$new_id);
+		$oldNewMappings['requirements'] = $this->copy_requirements($id,$new_id,$user_id);
 	}
 
 	
@@ -2219,12 +2184,11 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 	$copyTSuiteOpt = array();
 	$copyTSuiteOpt['copyKeywords'] = 1;
 	$copyTSuiteOpt['copyRequirements'] = $my['options']['copy_requirements'];		
-	$copyTSuiteOpt['preserve_external_id'] = true; // BUGID 4374
+	$copyTSuiteOpt['preserve_external_id'] = true;
 	
 	$oldNewMappings['test_spec'] = array();
 	foreach($elements as $piece)
 	{
-		// BUGID 4239: forgotten $mappings caused wrong requirement IDs to be assigned later
 		$op = $item_mgr['testsuites']->copy_to($piece['id'],$new_id,$user_id,$copyTSuiteOpt,$oldNewMappings);					
 		$oldNewMappings['test_spec'] += $op['mappings'];
 	}
@@ -2419,8 +2383,8 @@ private function copy_requirements($source_id,$target_id,$user_id)
 	$mappings = null;
 	// need to get subtree and create a new one
 	$filters = array();
-	$filters['exclude_node_types'] = array('testplan' => 'exclude','testcase' => 'exclude',
-	                                       'testsuite' => 'exclude','requirement' => 'exclude');
+	$filters['exclude_node_types'] = array('testplan' => 'exclude','testcase' => 'exclude','testsuite' => 'exclude',
+	                                       'requirement' => 'exclude', 'requirement_spec_revision' => 'exclude');
 	                 
 	$elements = $this->tree_manager->get_children($source_id,$filters['exclude_node_types']);
 	if( !is_null($elements) )
@@ -2430,7 +2394,6 @@ private function copy_requirements($source_id,$target_id,$user_id)
 		$options = array('copy_also' => array('testcase_assignments' => false) );
 		foreach($elements as $piece)
 		{
-			// function copy_to($id, $parent_id, $tproject_id, $user_id,$options = null)
 			$op = $reqSpecMgr->copy_to($piece['id'],$target_id,$target_id,$user_id,$options);
 			$mappings += $op['mappings'];
 		}

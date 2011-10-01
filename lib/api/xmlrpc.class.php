@@ -169,6 +169,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public static $summaryParamName = "summary";
 	public static $statusParamName = "status";
 	public static $stepsParamName = "steps";
+	public static $sourceNameParamName = "sourcename";
 
 	public static $testCaseIDParamName = "testcaseid";
 	public static $testCaseExternalIDParamName = "testcaseexternalid";
@@ -1396,6 +1397,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param string $args["testprojectname"]
 	 * @param string $args["testcaseprefix"]
 	 * @param string $args["notes"] OPTIONAL
+	 * @param string $args["sourcename"] OPTIONAL test project name to use as source/template
+	 *											  when creating the new test project.
+	 *
 	 * @param map $args["options"] OPTIONAL ALL int treated as boolean
 	 *				keys  requirementsEnabled,testPriorityEnabled,automationEnabled,inventoryEnabled
 	 *
@@ -1406,14 +1410,13 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */
 	public function createTestProject($args)
 	{
+		$resultInfo = null;
 	    $this->_setArgs($args);
-        $msg_prefix="(" . __FUNCTION__ . ") - ";
+        $msg_prefix = "(" . __FUNCTION__ . ") - ";
 	    $checkRequestMethod='_check' . ucfirst(__FUNCTION__) . 'Request';
 	
 	    if( $this->$checkRequestMethod($msg_prefix) && $this->userHasRight("mgt_modify_product"))
 	    {
-	        // function create($name,$color,$options,$notes,$active=1,$tcasePrefix='')
-	        
 	        // Now go for options (is any)
 			// all enabled by DEFAULT
 	        $options = new stdClass();
@@ -1422,7 +1425,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 			$options->automationEnabled = 1;
 			$options->inventoryEnabled = 1;
 
-			if( $this->_isParamPresent(self::$optionsParamName,$messagePrefix) )
+			if( $this->_isParamPresent(self::$optionsParamName,$msg_prefix) )
 			{
 				// has to be an array ?
 				$dummy = $this->args[self::$optionsParamName];
@@ -1454,18 +1457,39 @@ class TestlinkXMLRPCServer extends IXR_Server
             $active = $active > 0 ? 1 : 0;
       		$public = $public > 0 ? 1 : 0;
       
-	        $info=$this->tprojectMgr->create($name,'',$options,$notes,$active,$prefix,$public);
-		    $resultInfo = array();
-		    $resultInfo[]= array("operation" => __FUNCTION__,
-			                    "additionalInfo" => null,
-			                    "status" => true, "id" => $info, "message" => GENERAL_SUCCESS_STR);
-	        return $resultInfo;
-	    }
-	    else
-	    {
-	        return $this->errors;
-	    }    
       
+      		// TICKET 4742
+			$status_ok = true;
+			$source = null;
+      		if(isset($this->args[self::$sourceNameParamName]))
+      		{
+      			$source = $this->tprojectMgr->get_by_name($this->args[self::$sourceNameParamName]);
+				if( !($status_ok = !is_null($source)) ) 
+				{
+					$msg = 'Operation:' . __FUNCTION__ . ' - ';
+					$msg .= sprintf(TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST_STR,
+									$this->args[self::$sourceNameParamName]);
+					$this->errors[] = new IXR_Error(TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST, $msg);
+				}
+				
+      		}
+			
+			if( $status_ok) 
+			{	        
+		        $info = $this->tprojectMgr->create($name,'',$options,$notes,$active,$prefix,$public);
+		        if( !is_null($source) )
+		        {
+		        	$this->tprojectMgr->copy_as($source[0]['id'],$info,$this->userID);
+		        }
+		        
+			    $resultInfo = array();
+			    $resultInfo[]= array("operation" => __FUNCTION__,
+				                    "additionalInfo" => null,
+				                    "status" => true, "id" => $info, "message" => GENERAL_SUCCESS_STR);
+	        }
+	    }
+
+        return !is_null($resultInfo) ? $resultInfo : $this->errors;
 	}
 	
   /**

@@ -29,6 +29,7 @@ test_a($client,$test_num);
 // test_f($client,$test_num);
 // test_g($client,$test_num);
 test_h($client,$test_num);
+test_i($client,$test_num);
 
 // ------------------------------------------------------------------------------------
 function test_a(&$client,&$test_num)
@@ -291,6 +292,32 @@ function test_h(&$client,&$test_num)
 	$args["testcaseprefix"] = $prefix . $test_num;
 	$args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
 	$args["sourcename"] = "NON EXISTENT TPROJECT";
+	
+	$dummy = '';
+	$additionalInfo = $dummy;
+	$args["notes"]="test project created using XML-RPC-API - <br> {$additionalInfo}";
+	
+	echo $unitTestDescription . ' ' . $additionalInfo;
+	
+	$debug=true;
+	$client->debug=$debug;
+	runTest($client,$method,$args,$test_num);
+}
+// ------------------------------------------------------------------------------------
+
+function test_i(&$client,&$test_num)
+{
+	$method='createTestProject';
+
+	$test_num++;
+	$unitTestDescription="Test {$test_num} - {$method}() ::: COPY AS ";
+	$prefix = 'QAZ';
+	
+	$args=array();
+	$args["devKey"]=DEV_KEY;
+	$args["testcaseprefix"] = substr(md5($prefix . $test_num . rand()),0,12);
+	$args["sourcename"] = "NAUTILUS";
+	$args["testprojectname"] = "API - COPY OF " . $args["sourcename"] . ' ' . $args["testcaseprefix"];
 	
 	$dummy = '';
 	$additionalInfo = $dummy;

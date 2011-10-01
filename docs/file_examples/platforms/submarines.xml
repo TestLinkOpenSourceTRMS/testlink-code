@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<platforms>
+	<platform>
+		<name><![CDATA[Triton 1000]]></name>
+		<notes><![CDATA[This 305-meter capable, 2- or 3-passenger submersible is an aesthically pleasing minimum volume design with excellent visibility designed for launch and recovery from megayachts, but it is lightweight enough to be trailered.]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Discovery 1000]]></name>
+		<notes><![CDATA[The smallest of our luxury submarines, the four passenger Discovery has a pressure hull composed of transparent acrylic and is the most advanced small submarine in the world today.]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Nomad 1000]]></name>
+		<notes><![CDATA[The 20-meter (65 ft.) long Nomad has a luxurious interior similar in size to that of an executive aircraft. This is the original personal luxury submarine.]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Seattle 1000]]></name>
+		<notes><![CDATA[At 36-meters (118 ft.) in length the Seattle is the submarine equivalent of a luxury yacht with spacious staterooms on two decks.]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[USS Sturgeon (SSN-637)]]></name>
+		<notes><![CDATA[Nuclear-powered Fast Attack Submarine Sturgeon was the first of a 37-boat class commissioned from March 1967 to August 1975. She was 292 feet (89 m) long and displaced 4,762 tons submerged. Her crew numbered 107. Power came from a single S5W (Submarine, Model 5, Westinghouse) pressurized-water nuclear reactor driving two steam turbines connected to a single propeller shaft. Sturgeon could make better than 20 knots (37 km/hr) on the surface, over 25 knots (46 km/hr) submerged (the exact figure remains classified).]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[USS Birmingham (SSN-695)]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[USS Los Angeles (SSN-688)]]></name>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Soviet Alfa-Class Nuclear-powered Attack Submarine]]></name>
+		<notes><![CDATA[After the prolonged testing of a 1970 prototype, the Soviet Union built six Alfa-class boats between 1979 and 1983. These highly automated boats require only small, 30-man crews. Combining a liquid-metal cooled reactor propulsion system with a titanium hull, Alfa-class boats achieve exceptionally high underwater performance, a top speed of 43 knots (80 km/hr) and an operational depth of 2,000 feet (600 m).]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Soviet Typhoon-Class Nuclear-powered Ballistic Missile Submarine]]></name>
+		<notes><![CDATA[The largest submarines ever built, the first Typhoon-class ships entered service in 1977. They are 563 feet (172 m) long, have a beam of 81 feet (25 m). Performance figures can only be estimated: speed submerged, 30 knots (56 km/hr) and operational depth, 1,300 feet (400 m). Typhoons carry 20 SS-N-20 "Sturgeon" underwater-launched ballistic missiles.]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Soviet Kilo-Class Diesel-Electric Attack Submarine]]></name>
+		<notes><![CDATA[Unlike the United States, the Soviet Union continued to build diesel-electric submarines throughout the Cold War. Shown here is one of the most recent, a Kilo-class attack submarine photographed by a NATO aircraft. Kilo-class boats began to enter service in 1979 and are still being built for export. They have a surface speed of 12 knots (22 km/hr) and can make well over 16 knots (30 km/hr) submerged.
+
+Diesel-electric submarines can be effective for missions such as coastal defense, where high speed and long range are not crucial. Operating on virtually silent electric motors underwater, they are inherently quieter than nuclear-powered boats with their coolant pumps. Diesel-electric submarines are also less costly to build and maintain]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Soviet Charlie-Class Nuclear-powered Cruise Missile Submarine]]></name>
+		<notes><![CDATA[This Soviet Charlie-class SSGN in the South China Sea was photographed from the air in 1974. Note the shadow of the aircraft, a U.S. P-3 Orion, on the water. Charlies were the world's first submarines able to launch cruise missiles while submerged]]></notes>
+	</platform>
+</platforms>

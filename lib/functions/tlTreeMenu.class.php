@@ -26,7 +26,8 @@ class tlTreeMenu
 		$this->db = $dbHandler;
 		$this->tprojectMgr = new testproject($dbHandler);
 
-        $this->tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
+        $this->tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy',
+        												  'testplan_tcversions','cfield_design_values'));
 
 		$this->cfg = new stdClass();
 		
@@ -249,7 +250,7 @@ class tlTreeMenu
 				{
 					// node is a suite and has children, so recurse one level deeper			
 					$tcaseSet[$key]['childNodes'] = $this->filterByCFValues($tcaseSet[$key]['childNodes'], 
-					                                                      	$cf_hash);
+					                                                      	$cfSet);
 					
 					// now remove testsuite node if it is empty after coming back from recursion
 					$doDel = count($tcaseSet[$key]['childNodes']) == 0 ? true : false;
@@ -261,7 +262,7 @@ class tlTreeMenu
 					$doReindex = true;
 				}			
 			} 
-			else if ($node['node_type_id'] == $node_type_testcase) 
+			else if ($node['node_type_id'] == $this->cfg->nodeTypeCode['testcase']) 
 			{
 				// node is testcase, check if we need to delete it
 				$doDel = true;
@@ -274,7 +275,7 @@ class tlTreeMenu
 				{	
 					$cf_sql = '';
 					$sqlOR = '';
-					foreach ($cfHash as $cf_id => $cf_value) 
+					foreach ($cfSet as $cf_id => $cf_value) 
 					{
 						$cf_sql .= $sqlOR;
 
@@ -302,7 +303,7 @@ class tlTreeMenu
 				// if there exist as many rows as custom fields to be filtered by
 				// tc does meet the criteria
 				// $doDel = (count($rows) != count($cf_hash)) ? true : false;
-				if ((count($rows) != cfQty)) 
+				if ((count($rows) != $cfQty)) 
 				{
 					unset($tcaseSet[$key]);
 					$doReindex = true;

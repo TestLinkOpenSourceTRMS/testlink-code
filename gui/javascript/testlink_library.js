@@ -23,30 +23,7 @@
 // window.open() - on Firefox is window name contains blank nothing happens (no good)
 //                 on I.E. => generates a bug - BE CAREFUL
 //
-// ------ Revisions ---------------------------------------------------------------------
-// 20110219 - franciscom - 	BUGID 4321: Requirement Spec - add option to print single Req Spec
-//							openPrintPreview() refactoring
-//
-// 20110308 - asimon - BUGID 4286, BUGID 4273: backported openPrintPreview() from master to 1.9 branch
-// 20101119 - asimon - added openLinkedReqVersionWindow()
-// 20101111 - asimon - now openTCaseWindow() also remembers popup size like other functions do
-// 20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
-// 20101102 - asimon - BUGID 2864: commented out old open_top(), replaced by openLinkedReqWindow()
-// 20101025 - Julian - BUGID 3930: added new parameter dateFormat to showCal() to be able to use
-//                                 localized date formats. Preselecting datepicker with existing
-//                                 date works for all localized date formats
-// 20101016 - franciscom - BUGID 3901: Edit Test Case STEP - scroll window to show selected step 
-// 20101008 - asimon - BUGID 3311
-// 20100922 - asimon - added openExecutionWindow() und openTCEditWindow()
-// 20100811 - asimon - fixed IE JS error on openAssignmentOverviewWindow()
-// 20100731 - asimon - added openAssignmentOverviewWindow()
-// 20100708 - asimon - BUGID 3406 - removed PL()
-// 20100518 - franciscom - BUGID 3471 - spaces on window.open() name parameter
-// 20100301 - asimon - added openLinkedReqWindow() and openLinkedReqSpecWindow()
-// 20100223 - asimon - added PL() for BUGID 3049
-// 20100216 - asimon - added triggerBuildChooser() and triggerAssignedBox() for BUGID 2455, BUGID 3026
-// 20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
-// 20100131 - franciscom - BUGID 3118: Help files are not getting opened when selected in the dropdown 
+// @internal revisions
 
 /*
   function: focusInputField
@@ -541,9 +518,11 @@ function tree_getPrintPreferences()
 	              'req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
 	              'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
 	              'req_type','req_cf','req_relations','req_linked_tcs','req_coverage', 
-	              'headerNumbering'];
+	              'headerNumbering','displayVersion'];
 
-  for (var idx= 0;idx < fields.length;idx++)
+	var f = document.getElementById('format');
+
+	for (var idx= 0;idx < fields.length;idx++)
 	{
 		var v = tree_getCheckBox(fields[idx]);
 		if (v)
@@ -551,11 +530,11 @@ function tree_getPrintPreferences()
 			params.push(v);
 		}	
 	}
-	var f = document.getElementById('format');
+	
 	if(f)
 	{
 		params.push("format="+f.value);
-  }
+  	}
 	params = params.join('&');
 
 	return params;

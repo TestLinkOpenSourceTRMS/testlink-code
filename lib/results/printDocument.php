@@ -10,13 +10,6 @@
  * Generate documentation Test report based on Test plan data.
  *
  * @internal revisions
- * 	20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
- *  20100723 - asimon - BUGID 3459 - added platform ID to calls of 
- *                                   renderTestPlanForPrinting() and renderTestSpecTreeForPrinting()
- *	20100520 - franciscom - BUGID 3451 - In the "Test reports and Metrics" 
- *                                       -> "Test report" the "Last Result" is always "Not Run"
- *  20100326 - asimon - BUGID 3067 - refactored to include requirement document printing
- *
  */
 require_once('../../config.inc.php');
 require('../../cfg/reports.cfg.php');
@@ -37,19 +30,25 @@ testlinkInitPage($db);
 $tproject = new testproject($db);
 $tree_manager = &$tproject->tree_manager;
 
+
 $args = init_args($tree_manager);
 $doc_info->type = $args->doc_type;
 $doc_info->content_range = $args->level;
 
+// CRITIC DEVELOPMENT NOTE
 // Elements in this array must be updated if $arrCheckboxes, in printDocOptions.php is changed.
+// Also you need to add key on JS function tree_getPrintPreferences() on testlink_library.js
+//
 $printingOptions = array ( 'toc' => 0,'body' => 0,'summary' => 0, 'header' => 0,'headerNumbering' => 1,
 		                   'passfail' => 0, 'author' => 0, 'notes' => 0, 'requirement' => 0, 'keyword' => 0, 
 		                   'cfields' => 0, 'testplan' => 0, 'metrics' => 0,
-		                    'req_spec_scope' => 0,'req_spec_author' => 0,
-		                    'req_spec_overwritten_count_reqs' => 0,'req_spec_type' => 0,
-		                    'req_spec_cf' => 0,'req_scope' => 0,'req_author' => 0,
-		                    'req_status' => 0,'req_type' => 0,'req_cf' => 0,'req_relations' => 0,
-		                    'req_linked_tcs' => 0,'req_coverage' => 0);
+		                   'req_spec_scope' => 0,'req_spec_author' => 0,
+		                   'req_spec_overwritten_count_reqs' => 0,'req_spec_type' => 0,
+		                   'req_spec_cf' => 0,'req_scope' => 0,'req_author' => 0,
+		                   'req_status' => 0,'req_type' => 0,'req_cf' => 0,'req_relations' => 0,
+		                   'req_linked_tcs' => 0,'req_coverage' => 0, 'displayVersion' => 0);
+
+
 foreach($printingOptions as $opt => $val)
 {
 	$printingOptions[$opt] = (isset($_REQUEST[$opt]) && ($_REQUEST[$opt] == 'y'));
@@ -84,8 +83,6 @@ switch ($doc_info->type)
 		
 		// needed to filter spec by test plan
 		$order_cfg = array("type" =>'exec_order',"tplan_id" => $args->tplan_id);
-		
-		// BUGID 3451
 		$pnOptionsAdd = array('viewType' => 'executionTree');
 		break;
 		
@@ -181,7 +178,6 @@ switch ($doc_info->type)
 		    $doc_info->testplan_scope = $tplan_info['notes'];
 		    $doc_info->title = $doc_info->testplan_name;
 
-            // 20100112 - franciscom
             $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
             $platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);   
 			$tcase_filter = null;
@@ -198,7 +194,7 @@ switch ($doc_info->type)
 					  $filters = array('platform_id' => $platform_id);	
     	   	    	  $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters);
     	   	    	  
-    	   	    	  // IMPORTANTE NOTE:
+    	   	    	  // IMPORTANT NOTE:
     	   	    	  // We are in a loop and we use tree on prepareNode, that changes it,
     	   	    	  // then we can not use anymore a reference to test_spec
     	   	    	  // $tree = &$subtree;
@@ -207,10 +203,6 @@ switch ($doc_info->type)
     	   	    	  {
     	   	    		   $tree['childNodes'] = null;
     	   	    	  }
-
-    	   	    	  //@TODO:REFACTOR	
-    	   	    	  // prepareNode($db,$tree,$decoding_hash,$dummy,$dummy,$tp_tcs,
-    	   	    	  //              SHOW_TESTCASES,null,null,0,1,0);
 
     	   	    	  $dummy = null;
                       $pnFilters = null;
@@ -245,15 +237,11 @@ switch ($doc_info->type)
 						$tInfo['node_type_id'] = $hash_descr_id['testsuite'];
 						$tInfo['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
     	   	        	
-						//@TODO: schlundus, can we speed up with NO_EXTERNAL?
 						$dummy = null;
 						$pnFilters = null;
                         $pnOptions =  array('hideTestCases' => 0);
-						
-						// BUGID 3624
                         $pnOptions = array_merge($pnOptions, $pnOptionsAdd);
 						
-						// prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,SHOW_TESTCASES);
 						prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,$pnFilters,$pnOptions);
 						
 						$doc_info->title = htmlspecialchars(isset($tInfo['name']) ? $tInfo['name'] : $doc_info->testplan_name);
@@ -322,21 +310,13 @@ if ($treeForPlatform)
 			switch ($doc_info->type)
 			{
 				case DOC_REQ_SPEC:
-					// 20110530 - Julian - moved scope to summary
-					//                     removed chapter requirement_specification_report
-					
-					//$docText .= renderSimpleChapter(lang_get('testproject') . " " . lang_get('scope'), 
-					//                                $doc_info->tproject_scope);
-					                                
-					//$docText .= renderSimpleChapter(lang_get('requirement_specification_report'), " ");
-					                                
+					new dBug($printingOptions);
 					$docText .= renderReqSpecTreeForPrinting($db, $tree, $printingOptions, 
 					                                         null, 0, 1, $args->user_id,0,$args->tproject_id);
 				break;
 				
 				case DOC_TEST_SPEC:
 					$docText .= renderSimpleChapter(lang_get('scope'), $doc_info->tproject_scope);
-					// BUGID 3459 - added platform ID
 					$docText .= renderTestSpecTreeForPrinting($db, $tree, $doc_info->content_range,
 					            $printingOptions, null, 0, 1, $args->user_id,0,null,$args->tproject_id,$platform_id);
 				break;

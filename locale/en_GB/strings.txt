@@ -2526,6 +2526,7 @@ $TLS_unknown_platform="Warning/Critic<br>" .
 						          " without platorms, all linked test cases will be updated with this platform ";
 
 // ----- lib/results/printDocOptions.php -----
+$TLS_opt_displayVersion = "Req Spec and Requirements Version/Revision";
 $TLS_opt_show_hdrNumbering = "Header Numbering";
 $TLS_opt_show_toc = "Table of Contents";
 $TLS_opt_show_suite_txt = "Test Suite description";

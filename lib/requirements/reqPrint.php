@@ -12,10 +12,6 @@
  * create printer friendly information for ONE requirement
  *
  * @internal revisions:
- * 20110306 - franciscom - 	BUGID 4273: Option to print single requirement
- *							added revision number 
- *
- * 20110305 - franciscom - 	BUGID 4273: Option to print single requirement
  */
 
 require_once("../../config.inc.php");

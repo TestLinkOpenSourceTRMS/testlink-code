@@ -9,7 +9,7 @@
  * @copyright 	2005-2011, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
- * create printer friendly information for ONE requirement
+ * create printer friendly information for ONE Requirement Specification
  *
  * @internal revisions:
  */

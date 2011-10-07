@@ -9,20 +9,9 @@
  * SCOPE:
  * Generate documentation Test report based on Test plan data.
  *
- * @interanl revisions:
- *  20110224 - Julian - BUGID 4275 - Many Requirements are in the specification document twice
- *  20110115 - franciscom - BUGID 4170 - Test Report - When Test Plan Has platforms does not filter test cases
- *							BUGID 4171 - Test Report - estimated and real execution time functions made Platform aware
- *  20110113 - franciscom - BUGID 4170 - Test Report - When Test Plan Has platforms does not filter test cases
- *							BUGID 4171 - Test Report - estimated and real execution time functions made Platform aware
- *  20110112 - franciscom - changes on methods related to estimated execution time
- *	20110112 - franciscom - BUGID 
- * 	20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
- *  20100723 - asimon - BUGID 3459 - added platform ID to calls of 
- *                                   renderTestPlanForPrinting() and renderTestSpecTreeForPrinting()
- *	20100520 - franciscom - BUGID 3451 - In the "Test reports and Metrics" 
- *                                       -> "Test report" the "Last Result" is always "Not Run"
- *  20100326 - asimon - BUGID 3067 - refactored to include requirement document printing
+ * @interanl revisions
+ * @since 1.9.4
+ * 20111007 - franciscom - TICKET 4766: Requirements Report - Display Revision and Version
  *
  */
 require_once('../../config.inc.php');
@@ -238,14 +227,6 @@ if ($treeForPlatform)
 			switch ($doc_info->type)
 			{
 				case DOC_REQ_SPEC:
-					// 20110530 - Julian - moved scope to summary
-					//                     removed chapter requirement_specification_report
-					
-					//$docText .= renderSimpleChapter(lang_get('testproject') . " " . lang_get('scope'), 
-					//                                $doc_info->tproject_scope);
-					                                
-					//$docText .= renderSimpleChapter(lang_get('requirement_specification_report'), " ");
-					                                
 					$docText .= renderReqSpecTreeForPrinting($db, $tree2work, $printingOptions, 
 					                                         null, 0, 1, $args->user_id,0,$args->tproject_id);
 				break;
@@ -270,7 +251,6 @@ if ($treeForPlatform)
 						$docText .= renderPlatformHeading($tocPrefix, $platform_id, $platforms[$platform_id], 
 						                                  $printingOptions);
 					}
-					// BUGID 3459 - added platform ID
 					$docText .= renderTestPlanForPrinting($db, $tree2work, $doc_info->content_range, 
 					                                      $printingOptions, $tocPrefix, 0, 1, $args->user_id,
 					                                      $args->tplan_id, $args->tproject_id, $platform_id);
@@ -341,7 +321,7 @@ function initPrintOpt(&$UIhash,&$docInfo)
 			        'req_spec_overwritten_count_reqs' => 0,'req_spec_type' => 0,
 			        'req_spec_cf' => 0,'req_scope' => 0,'req_author' => 0,
 			        'req_status' => 0,'req_type' => 0,'req_cf' => 0,'req_relations' => 0,
-			        'req_linked_tcs' => 0,'req_coverage' => 0);
+			        'req_linked_tcs' => 0,'req_coverage' => 0,'displayVersion' => 0);
 	
 	foreach($pOpt as $opt => $val)
 	{

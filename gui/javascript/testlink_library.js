@@ -24,12 +24,8 @@
 //                 on I.E. => generates a bug - BE CAREFUL
 //
 // @internal revisions
-// 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
-// 20110219 - franciscom - 	BUGID 4321: Requirement Spec - add option to print single Req Spec
-//							openPrintPreview() refactoring
-//
-// 20110308 - asimon - BUGID 4286, BUGID 4273: backported openPrintPreview() from master to 1.9 branch
-
+// @since 1.9.4
+// 20111007 - franciscom - TICKET 4766: Requirements Report - Display Revision and Version
 
 /*
   function: focusInputField
@@ -506,12 +502,7 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
   returns:
 
   rev  : 
-         20100617 - asimon - removed setting_refresh_tree_on_action
-                             (is now handled by filter control class)
-         20100325 - asimon - added additional fields for req spec document printing
-         20070509 - franciscom - added 'author'
-         20070218 - franciscom - added setting_refresh_tree_on_action
-                                 useful on test case specification edit NOT Printing
+
 */
 function tree_getPrintPreferences()
 {
@@ -521,7 +512,7 @@ function tree_getPrintPreferences()
 	              'req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
 	              'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
 	              'req_type','req_cf','req_relations','req_linked_tcs','req_coverage', 
-	              'headerNumbering'];
+	              'headerNumbering','displayVersion'];
 
   for (var idx= 0;idx < fields.length;idx++)
 	{

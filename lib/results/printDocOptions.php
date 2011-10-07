@@ -13,14 +13,9 @@
  *	- It builds the javascript tree that allow the user select a required part 
  *		Test specification/ Test plan.
  *
- * rev :
- * 		20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
- *		20101003 - franciscom - init_checkboxes() refactored used common pattern
- *		20100723 - BUGID 3451 and related
- *  	20100326 - asimon - refactored to include requirement documents
- *                          added init_checkboxes()
- *		20090322 - amkhullar - added new option custom fields while printing Test plan/report
- * 		20090222 - havlatm - added new options 
+ * @internal revisions
+ * @since 1.9.4
+ * 20111007 - franciscom - TICKET 4766: Requirements Report - Display Revision and Version
  *
  */
 require_once("../../config.inc.php");
@@ -278,7 +273,7 @@ function init_checkboxes(&$args) {
 		case 'reqspec':
 			$key2init= array('req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
 						     'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
-							 'req_type','req_cf','req_relations','req_linked_tcs','req_coverage');
+							 'req_type','req_cf','req_relations','req_linked_tcs','req_coverage','displayVersion');
 
 			$key2init2yes = array('req_spec_scope' => 'y','req_scope' => 'y');
 			foreach($key2init as $key)

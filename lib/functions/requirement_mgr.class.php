@@ -13,6 +13,7 @@
  *
  * @internal revisions:
  * @since 1.9.4
+ * 20111008 - franciscom - TICKET 4768: Requirements Export - Export Version and Revision
  * 20110817 - franciscom - TICKET 4360 copy_to()
  *
  * @since 1.9.3
@@ -27,71 +28,6 @@
  *						  	BUGID 4150 check for duplicate req title
  *	20110106 - Julian - update() - set author,modifier,creation_ts,modifier_ts depending on creation of new revision
  *                      get_history() - added last_editor to output
- *	20101218 - franciscom - BUGID 4100 createFromMap() - missing update of Req Title when creating new version
- *  20101211 - franciscom - get_history() fixed code to check for NULL dates
- *	20101126 - franciscom - BUGID get_last_version_info() -> get_last_child_info();
- *  20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
- *  20101118 - asimon - BUGID 4031: Prevent copying of req scope to test case summary when creating test cases from requirement
- *  20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
- *	20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
- *	20101011 - franciscom - BUGID 3886: CF Types validation - changes in html_table_of_custom_field_inputs()
- *	20101011 - Julian - BUGID 3876: Values of custom fields are not displayed when editing requirement
- *	20101003 - franciscom - BUGID 3834: Create version source <>1 - Bad content used.
- *							create_new_version() interface changed
- *
- *  20101001 - asimon - extended html_table_of_custom_field_inputs() to not lose entered custom field values on errors.
- *  20100920 - franciscom - 3686: When importing requirements, provide the option to 'create new version'
- *  20100915 - Julian - BUGID 3777 - Added get_last_doc_id_for_testproject()
- *	20100914 - franciscom - createFromMap() - added new option 'skipFrozenReq'
- *  20100908 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
- *							createFromXML(),copy_to()
- *							new method createFromMap()
- *
- *  20100907 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
- *							delete(),exportReqToXML()
- *
- *	20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
- *							create(), html_table_of_custom_field_inputs(),copy_version()
- *
- *	20100904 - franciscom - BUGID 3685: XML Requirements Import Updates Frozen Requirement
- *	20100520 - franciscom - BUGID 2169 - customFieldValuesAsXML() new method_exists
- *	20100511 - franciscom - createFromXML() new method
- *	20100509 - franciscom - update() interface changes.
- *  20100324 - asimon - BUGID 1748 - Moved init_relation_type_select here from reqView.php
- *                                   as it is now used from multiple files.
- *  20100323 - asimon - BUGID 1748 - added count_relations()
- *  20100319 - asimon - BUGID 1748 - added functions for requirement relations: 
- *	                    get_relations(), get_all_relation_labels(), delete_relation(),
- *	                    add_relation(), check_if_relation_exists(), delete_all_relations()
- *                      modified delete() to also delete all relations with req
- *	20100309 - franciscom - get_by_id() removed useless code pointed by BUGID 3254
- *	20100124 - franciscom - BUGID 0003089: Req versions new attributes - active and open 
- *							new methods updateActive(),updateOpen()
- *  20091228 - franciscom - exportReqToXML() - added expected_coverage
- *                          refactoring for feature req versioning
- *  20091227 - franciscom - delete() now manage version_id 
- * 	20091225 - franciscom - new method - generateDocID()
- *  20091216 - franciscom - create_tc_from_requirement() interface changes
- *  20091215 - asimon     - added new method getByDocID()  
- *  20091209 - asimon     - contrib for testcase creation, BUGID 2996
- *  20091208 - franciscom - contrib by julian - BUGID 2995
- *  20091207 - franciscom - create() added node_order
- *	20091202 - franciscom - create(), update() 
- *                          added contribution by asimon83/mx-julian that creates
- *                          links inside scope field.
- *	20091125 - franciscom - expected_coverage management 
- *  20090525 - franciscom - avoid getDisplayName() crash due to deleted user 
- *  20090514 - franciscom - BUGID 2491
- *  20090506 - franciscom - refactoring continued
- *  20090505 - franciscom - refactoring started.
- *                          removed use of REQ.node_order and title.
- *                          this fields must be managed on NH table
- *  
- *  20090401 - franciscom - BUGID 2316
- *  20090315 - franciscom - added require_once '/attachments.inc.php' to avoid autoload() bug
- *                          delete() - fixed delete order due to FK.
- *  20090222 - franciscom - exportReqToXML() - (will be available for TL 1.9)
- *  20081129 - franciscom - BUGID 1852 - bulk_assignment() 
  */
 
 // Needed to use extends tlObjectWithAttachments, If not present autoload fails.
@@ -1220,17 +1156,13 @@ function set_order($map_id_order)
  *
  * @return  string with XML code
  *
+ * 20111008 - franciscom - TICKET 4768: Requirements Export - Export Version and Revision
  */
 function exportReqToXML($id,$tproject_id=null)
 {            
 
 	$req = $this->get_by_id($id,requirement_mgr::LATEST_VERSION);
 	$reqData[] = $req[0]; 
-
-	
-	// BUGID 2169
-	// BUGID 2877 - Custom Fields linked to Requirement Versions 
-	// $cfXML = $this->customFieldValuesAsXML($id,$tproject_id);
 	$cfXML = $this->customFieldValuesAsXML($id,$req[0]['version_id'],$tproject_id);
 	
 
@@ -1238,7 +1170,9 @@ function exportReqToXML($id,$tproject_id=null)
 	$elemTpl = "\t" .   "<requirement>" .
 	           "\n\t\t" . "<docid><![CDATA[||DOCID||]]></docid>" .
 	           "\n\t\t" . "<title><![CDATA[||TITLE||]]></title>" .
-	           "\n\t\t" . "<node_order><![CDATA[||NODE_ORDER||]]></node_order>".
+	           "\n\t\t" . "<version>||VERSION||</version>" .
+	           "\n\t\t" . "<revision>||REVISION||</revision>" .
+	           "\n\t\t" . "<node_order>||NODE_ORDER||</node_order>".
 			   "\n\t\t" . "<description><![CDATA[\n||DESCRIPTION||\n]]></description>".
 			   "\n\t\t" . "<status><![CDATA[||STATUS||]]></status>" .
 			   "\n\t\t" . "<type><![CDATA[||TYPE||]]></type>" .
@@ -1246,16 +1180,11 @@ function exportReqToXML($id,$tproject_id=null)
 			   "\n\t\t" . $cfXML . 
 			   "\n\t" . "</requirement>" . "\n";
 					   
-	$info = array (	"||DOCID||" => "req_doc_id",
-							    "||TITLE||" => "title",
-							    "||DESCRIPTION||" => "scope",
-							    "||STATUS||" => "status",
-							    "||TYPE||" => "type",
-							    "||NODE_ORDER||" => "node_order",
-							    "||EXPECTED_COVERAGE||" => "expected_coverage",
-							    );
-	
-	
+	$info = array (	"||DOCID||" => "req_doc_id","||TITLE||" => "title",
+					"||DESCRIPTION||" => "scope","||STATUS||" => "status",
+					"||TYPE||" => "type","||NODE_ORDER||" => "node_order",
+					"||EXPECTED_COVERAGE||" => "expected_coverage",
+					"||VERSION||" => "version","||REVISION||" => "revision");
 	
 	$xmlStr = exportDataToXML($reqData,$rootElem,$elemTpl,$info,true);						    
 	return $xmlStr;

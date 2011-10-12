@@ -237,10 +237,15 @@ class TLSmarty extends Smarty
                           'bullet' => TL_THEME_IMG_DIR . "slide_gripper.gif",
                           'calendar' => TL_THEME_IMG_DIR . "calendar.gif",
                           'checked' => TL_THEME_IMG_DIR . "apply_f2_16.png",
+                          'date' => TL_THEME_IMG_DIR . "date.png",
                           'delete' => TL_THEME_IMG_DIR . "trash.png",
                           'delete_disabled' => TL_THEME_IMG_DIR . "trash_greyed.png",
         				  'direct_link' => TL_THEME_IMG_DIR . "world_link.png",
+        				  'disconnect' => TL_THEME_IMG_DIR . 'disconnect.png',
         				  'edit' => TL_THEME_IMG_DIR . "icon_edit.png",
+        				  'edit_type2' => TL_THEME_IMG_DIR . "edit_icon.png",
+                          'exec_order' => TL_THEME_IMG_DIR . 'timeline_marker.png',
+                          'executed' => TL_THEME_IMG_DIR . 'lightning.png',
                           'export' => TL_THEME_IMG_DIR . "export.png",
                           'export_import' => TL_THEME_IMG_DIR . "export_import.png",
 						  'event_info' => TL_THEME_IMG_DIR . "question.gif",
@@ -253,7 +258,9 @@ class TLSmarty extends Smarty
                           'insert_step' => TL_THEME_IMG_DIR . "insert_step.png",
                           'reorder' => TL_THEME_IMG_DIR . "arrow_switch.png",
                           'search' => TL_THEME_IMG_DIR . "magnifier.png",
-                          'sort' => TL_THEME_IMG_DIR . "sort_hint.png");
+                          'sort' => TL_THEME_IMG_DIR . "sort_hint.png",
+                          'toggle_all' => TL_THEME_IMG_DIR . "toggle_all.gif"
+                          );
 
         $msg = lang_get('show_hide_api_info');
         $tlImages['toggle_api_info'] =  "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .

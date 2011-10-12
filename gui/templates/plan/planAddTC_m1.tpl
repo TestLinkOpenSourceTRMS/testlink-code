@@ -4,6 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 @since 1.9.4
+20111012 - franciscom - TICKET 3939: Add warning message when removing EXECUTED test cases from a test plan
 20110823 - franciscom - TICKET 4715: can_remove_executed doesn't work when Platforms are used
 20110706 - Julian - BUGID 4652 - add link to test execution history
 
@@ -28,7 +29,8 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
              executed_can_not_be_removed,added_on_date,btn_save_platform,
              check_uncheck_all_checkboxes,removal_tc,show_tcase_spec,
              tester_assignment_on_add,adding_tc,check_uncheck_all_tc,for,
-             build_to_assign_on_add,importance,execution,design,execution_history'}
+             build_to_assign_on_add,importance,execution,design,execution_history,
+             warning_remove_executed'}
 
 {* prefix for checkbox named , ADD and ReMove *}   
 {assign var="add_cb" value="achecked_tc"} 
@@ -42,7 +44,39 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 {include file="inc_ext_js.tpl"}
 {literal}
 <script type="text/javascript">
+{/literal}
 <!--
+js_warning_remove_executed = '{$labels.warning_remove_executed}';
+
+{literal}
+js_remove_executed_counter = 0;
+
+function updateRemoveExecCounter(oid)
+{
+	var obj = document.getElementById(oid)
+	if( obj.checked )
+	{
+		js_remove_executed_counter++;
+	}
+	else
+	{
+		js_remove_executed_counter--;
+	}
+}
+
+function checkDelete(removeExecCounter)
+{
+	if(js_remove_executed_counter > 0)
+	{
+		return confirm(js_warning_remove_executed);
+	}
+	else
+	{
+		return true;
+	}
+}
+
+
 function tTip(tcID,vID)
 {
 	var fUrl = fRoot+'lib/ajax/gettestcasesummary.php?tcase_id=';
@@ -91,7 +125,8 @@ Ext.onReady(function(){
 
 </head>
 <body class="fixedheader">
-<form name="addTcForm" id="addTcForm" method="post">
+<form name="addTcForm" id="addTcForm" method="post" 
+      onSubmit="javascript:return checkDelete(js_remove_executed_counter);">
 
    <div id="header-wrap">
 	  	<h1 class="title">{$gui->pageTitle|escape}{$tlCfg->gui->title_separator_2}{$gui->actionTitle}
@@ -360,6 +395,11 @@ Ext.onReady(function(){
             			  
             			  <td>
             			    {assign var="show_remove_check" value=0}
+            			    {assign var="executed" value=0}
+         				    {if $tcase.executed[0] == 'yes'}
+            			    	{assign var="executed" value=1}
+            			    {/if}
+            			    
             			  	{if $linked_version_id}
             			  		{assign var="show_remove_check" value=1}
          				        {if $tcase.executed[0] == 'yes'}
@@ -367,7 +407,12 @@ Ext.onReady(function(){
             			  	  	{/if}      
                    			{/if} 
             	   			{if $show_remove_check}
-            					<input type='checkbox' name='{$rm_cb}[{$tcID}][0]' id='{$rm_cb}{$tcID}[0]' value='{$linked_version_id}' />
+            					<input type='checkbox' name='{$rm_cb}[{$tcID}][0]' id='{$rm_cb}{$tcID}[0]' 
+            					       value='{$linked_version_id}' 
+            						   {if $executed}	
+            						   	 onclick="updateRemoveExecCounter('{$rm_cb}{$tcID}[0]')"
+            						   {/if}	
+            					/>
   				   			{else}
             		    		&nbsp;
             	   			{/if}

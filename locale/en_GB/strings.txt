@@ -73,6 +73,8 @@ $TLS_destination_bottom = "Destination position bottom";
 $TLS_error = "Error";
 $TLS_export = "Export";
 $TLS_export_to_csv = "Export to CSV";
+$TLS_estimated_execution_duration = "Estimated exec. duration (min)";
+$TLS_execution_duration = "Execution duration (min)";
 $TLS_file_type = 'File type';
 $TLS_filter_mode_and = 'Attention: Filter fields works in AND mode';
 $TLS_goto_testspec = 'Open test case specification';
@@ -1350,6 +1352,10 @@ $TLS_title_add_remove_test_to_plan = "Add/Remove Test Cases to/from Test Plan";
 $TLS_title_add_test_to_plan = "Add Test Cases to Test Plan";
 $TLS_warning_add_remove_selected_tc = "Warning! Are you sure to remove the selected Test Cases from Test Plan?";
 
+$TLS_warning_remove_executed = "You are going to remove test cases from this test plan \\n" .
+		                       "Some test cases have been executed, \\n" .
+					           "with this action you will delete ALL execution results.\\n" .
+					           "Are you sure ?";
 
 // ----- gui/templates/planAddTCNavigator.tpl -----
 $TLS_title_navigator = "Navigator";

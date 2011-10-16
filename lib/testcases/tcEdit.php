@@ -5,24 +5,13 @@
  *
  * Test Case and Test Steps operations
  *
+ * @filesource	tcEdit.php
  * @package 	TestLink
  * @author 		TestLink community
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.166 2011/01/12 09:30:21 mx-julian Exp $
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- *
- *	@internal revisions
- *	20110605 - franciscom - TICKET 4566: TABBED BROWSING - Update Tree option change affects all open projects
- *  20110604 - franciscom - TICKET 4562: Test Specification : Move of Test Case from "Testsuite1" to "Main TestSuite" 
- *							Leads to Fatal error
- *  20110401 - franciscom - BUGID 3615 - right to allow ONLY MANAGEMENT of requirements link to testcases
- * 	20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
- *							can be added to new test plans
- * 
- *  20110112 - Julian - BUGID 4158 - CKEditor only working for the first two initialized editors
- *                                   -> Reason is still not clear
- *	20110109 - franciscom - BUGID 3952 - on Create stay here like Mantis does
+ * @internal revisions
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -362,6 +351,8 @@ function init_args(&$cfgObj,&$tprojectMgr,&$userObj,$otName)
     $args->tc_status = isset($_REQUEST['tc_status']) ? intval($_REQUEST['tc_status']) : 
     						 $args->tcStatusCfg['status_code']['draft'];
 
+	$dk = 'estimated_execution_duration';
+    $args->$dk = trim(isset($_REQUEST[$dk]) ? $_REQUEST[$dk] : '');
 
     
     $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : '';
@@ -389,7 +380,6 @@ function init_args(&$cfgObj,&$tprojectMgr,&$userObj,$otName)
     $args->do_deactivate_this = isset($_REQUEST['deactivate_this_tcversion']) ? 1 : 0;
     $args->target_position = isset($_REQUEST['target_position']) ? $_REQUEST['target_position'] : 'bottom';
     
-    // BUGID 2316
     $key2loop=array("keyword_assignments","requirement_assignments");
     foreach($key2loop as $key)
     {

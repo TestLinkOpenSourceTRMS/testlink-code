@@ -6,10 +6,7 @@ viewer for test case in test specification
 @filesource	tcView_viewer.tpl
 
 @internal revisions
-20110319 - franciscom - BUGID 4322: New Option to block delete of executed test cases
-20110307 - asimon - BUGID 4286: moved print preview to popup to make printing independent from browser easier for the users
-                                moved req view button forms and divs around to align buttons in a single row
-20110304 - franciscom - BUGID 4286: Option to print single test case
+20111016 - franciscom - TICKET 4769: estimated execution duration
 *}
 {lang_get var="tcView_viewer_labels"
           s="requirement_spec,Requirements,tcversion_is_inactive_msg,
@@ -21,7 +18,7 @@ viewer for test case in test specification
              execution_type_short_descr,delete_step,show_hide_reorder,
              test_plan,platform,insert_step,btn_print,btn_print_view,status,
              execution_type,test_importance,none,preconditions,btn_compare_versions,
-             requirement,btn_show_exec_history"}
+             requirement,btn_show_exec_history,estimated_execution_duration"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -88,7 +85,7 @@ viewer for test case in test specification
   {$edit_enabled=0}
   {$delete_enabled=0}
 
-  {* 20070628 - franciscom - Seems logical you can disable some you have executed before *}
+  {* Seems logical you can disable some you have executed before *}
   {$active_status_op_enabled=1}
   {$has_been_executed=0}
   {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
@@ -341,7 +338,13 @@ function launchInsertStep(step_id)
 		{$gui->domainTCStatus[$args_testcase.status]}
 	</div>
 
-  {* 20090718 - franciscom *}
+   <div {$addInfoDivStyle}>
+		<span class="labelHolder">{$tcView_viewer_labels.estimated_execution_duration} {$smarty.const.TITLE_SEP}</span>
+		{$args_testcase.estimated_execution_duration}
+	</div>
+
+
+
 	{if $args_cf.standard_location neq ''}
 	<div {$addInfoDivStyle}>
         <div id="cfields_design_time" class="custom_field_container">{$args_cf.standard_location}</div>

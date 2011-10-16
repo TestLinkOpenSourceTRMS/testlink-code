@@ -36,6 +36,8 @@
 # 
 # ---------------------------------------------------------------------------------------
 # @internal revisions
+# 20111008 - franciscom - TICKET 4769: Test Case versions table - add field to specify estimated execution duration
+#						  TICKET 4770: Test Case EXECUTIONS table - add field to specify execution duration
 # 20110903 - franciscom - TICKET 4661 - req spec revisions
 # ---------------------------------------------------------------------------------------
 #
@@ -135,6 +137,7 @@ CREATE TABLE /*prefix*/tcversions (
   `active` tinyint(1) NOT NULL default '1',
   `is_open` tinyint(1) NOT NULL default '1',
   `execution_type` tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
+  `estimated_execution_duration` decimal(6,2) NULL COMMENT 'NULL will be considered as NO DATA Provided by user',
   PRIMARY KEY  (`id`), 
   CONSTRAINT /*prefix*/tcversions_nodes_hierarchy_fk 
   FOREIGN KEY (`id`) REFERENCES /*prefix*/nodes_hierarchy (id) 
@@ -207,6 +210,7 @@ CREATE TABLE /*prefix*/executions (
   tcversion_number smallint(5) unsigned NOT NULL default '1',
   platform_id int(10) unsigned NOT NULL default '0',
   execution_type tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
+  execution_duration decimal(6,2) NULL COMMENT 'NULL will be considered as NO DATA Provided by user',
   notes text,
   PRIMARY KEY  (id), 
   KEY /*prefix*/testplan_id_tcversion_id(testplan_id,tcversion_id),

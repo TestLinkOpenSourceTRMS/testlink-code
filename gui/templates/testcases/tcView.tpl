@@ -5,14 +5,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - view test case in test specification
 
 @internal revisions
-20101202 - asimon - BUGID 4067: refresh tree problems
-20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-20101017 - franciscom - image access refactored (tlImages)
-20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
-                        use of: $gui->cf_current_version, $gui->cf_other_versions
-20100814 - franciscom - improvement on user feecback when no record found.
-20100315 - franciscom - fixed refresh tree issue 
-20100106 - franciscom - Multiple Test Case Steps Feature
 *}
 
 {config_load file="input_dimensions.conf"}
@@ -104,7 +96,6 @@ function validateStepsReorder(formOID)
 <h1 class="title">{$gui->pageTitle}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}
 </h1>
 
-{* 4067 *}
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback refresh=$gui->refreshTree}
 <div class="workBack">
 

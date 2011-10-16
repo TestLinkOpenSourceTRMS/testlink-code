@@ -10,26 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- * 20110622 - asimon - TICKET 4600: Blocked execution of testcases
- * 20110604 - franciscom - 	TICKET 4564: Test Case Export/import - new field STATUS is not managed
- *							exportTestCaseDataToXML()
- *
- * 20110603 - franciscom - new methods getDuplicatesByExternalID(),getDuplicatesByCriteria()
- * 20110413 - franciscom - BUGID 4404 - copy_to() set author_id = user doing copy
- * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
- * 20110402 - franciscom - get_exec_status() - interface changes	
- * 20110326 - franciscom - 	BUGID 4025 - show()
- * 20110321 - franciscom - 	BUGID 4025: option to avoid that obsolete test cases 
- *							can be added to new test plans.
- *							create(), create_tcversion(),get_last_active_version()
- *
- * 20110312 - franciscom - 	get_by_id() - id can be null, to allow get data 
- *							when you now only version id (DB ID)
- * 20110308 - franciscom - get_basic_info() interface changes	
- * 20110205 - franciscom - BUGID 4207 - set_step_number() - 
- *						   MSSQL problems when table alias is used on SQL UPDATE 
- *						   BUGID 4204 - update problem due to alias, declared as issue 3849 fixed on 	
- *						   but not really fixed.
+ * 20111009 - franciscom - TICKET 4769: Test Case versions table - add field to specify estimated execution duration
  */
 
 /** related functionality */
@@ -162,6 +143,25 @@ class testcase extends tlObjectWithAttachments
 	}
 
 
+
+	function create($item,$options=null)
+	{
+		// transform item into old interface
+	    $keywords_id = '';
+	    $tc_order = self::DEFAULT_ORDER;
+	    $id = self::AUTOMATIC_ID;
+        $execution_type = TESTCASE_EXECUTION_TYPE_MANUAL;
+        $importance = 2;
+        $status = null;
+        $estimated_execution_duration = null;
+	    extract($item);
+
+		return $this->_create($parent_id,$name,$summary,$preconditions,$steps,$author_id,
+	                   		  $keywords_id,$tc_order,$id,$execution_type,$importance,
+	                   		  $status,$estimated_execution_duration,$options);
+	}
+	
+	
 	/**
 	 * create a test case
 	 *
@@ -169,10 +169,16 @@ class testcase extends tlObjectWithAttachments
 	 *
 	 * 20100905 - franciscom - added new key on ret value 'tcversion_id';
 	 */
-	function create($parent_id,$name,$summary,$preconditions,$steps,$author_id,
-	                $keywords_id='',$tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
-                    $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
-                    $importance=2,$status=null, $options=null)
+	// function create($parent_id,$name,$summary,$preconditions,$steps,$author_id,
+	//                 $keywords_id='',$tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
+    //                 $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
+    //                 $importance=2,$status=null, $options=null)
+
+	function _create($parent_id,$name,$summary,$preconditions,$steps,$author_id,
+	                 $keywords_id='',$tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
+                     $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
+                     $importance=2,$status=null, $options=null)
+
 	{
 		$status_ok = 1;
 
@@ -831,6 +837,7 @@ class testcase extends tlObjectWithAttachments
 		  	} // foreach($a_id as $key => $tc_id)
 	    } // if (sizeof($a_id))
 
+		
 	    // Removing duplicate and NULL id's
 		unset($userid_array['']);
 		$passeduserarray = array_keys($userid_array);
@@ -879,6 +886,32 @@ class testcase extends tlObjectWithAttachments
 		$smarty->display($template_dir . $my_template);
 	}
 	
+
+
+
+	function update($item)
+	{
+
+
+		// transform item into old interface
+		// THIS are mandatory
+		// $id,$tcversion_id,$name,$summary,$preconditions,$steps,$user_id,
+		//
+		
+	    $keywords_id = '';
+	    $tc_order = self::DEFAULT_ORDER;
+        $execution_type = TESTCASE_EXECUTION_TYPE_MANUAL;
+        $importance = 2;
+        $status = null;
+        $estimated_execution_duration = null;
+	    extract($item);
+
+		return $this->_update($id,$tcversion_id,$name,$summary,$preconditions,$steps,
+	                 		  $user_id,$keywords_id,$tc_order,
+	                 		  $execution_type,$importance,
+	                 		  $status,$estimated_execution_duration);
+	}
+
 	
 	
 	/**
@@ -901,10 +934,10 @@ class testcase extends tlObjectWithAttachments
 	 *
 	 *
 	 */
-	function update($id,$tcversion_id,$name,$summary,$preconditions,$steps,
-	                $user_id,$keywords_id='',$tc_order=self::DEFAULT_ORDER,
-	                $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2,
-	                $status=null)
+	function _update($id,$tcversion_id,$name,$summary,$preconditions,$steps,
+	                 $user_id,$keywords_id='',$tc_order=self::DEFAULT_ORDER,
+	                 $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2,
+	                 $status=null,$estimated_execution_duration=null)
 	{
 		$ret['status_ok'] = 1;
 		$ret['msg'] = '';
@@ -928,7 +961,6 @@ class testcase extends tlObjectWithAttachments
 					 $this->db->prepare_string($name) . "' WHERE id= {$id}";
 		
 			// test case version 
-			// BUGID - 3849
 		   	$dummy = " UPDATE {$this->tables['tcversions']} " .
 		             " SET summary='" . $this->db->prepare_string($summary) . "'," .
 		   		 	 " updater_id=" . $this->db->prepare_int($user_id) . ", " .
@@ -941,6 +973,15 @@ class testcase extends tlObjectWithAttachments
 			{
 				$dummy .= ", status=" . intval($status); 
 			}
+			
+		   	if( !is_null($estimated_execution_duration) )	 	 
+			{
+				$dummy .= ", estimated_execution_duration=";
+				$v = trim($estimated_execution_duration);
+				
+				$dummy .= ($v == '') ? "NULL" : floatval($v);
+			}
+
 		   		 	 
 		   	$dummy .= " WHERE id = " . $this->db->prepare_int($tcversion_id); 
 			$sql[] = $dummy;
@@ -1899,7 +1940,7 @@ class testcase extends tlObjectWithAttachments
 		}
 		else
 		{
-		    // 20090521 - franciscom - search by human version number
+		    // search by human version number
 		    if( is_null($version_id) )
 		    {
 		    	// when tcase ID has not been provided this can not be used
@@ -1975,7 +2016,7 @@ class testcase extends tlObjectWithAttachments
 		{
 			$recordset = $this->db->get_recordset($sql);
 	    }
-	
+		
 	    // Multiple Test Case Steps
 	    if( !is_null($recordset) && $my['options']['output'] == 'full')
 	    {

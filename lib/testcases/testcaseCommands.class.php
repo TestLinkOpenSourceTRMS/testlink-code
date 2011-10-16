@@ -12,14 +12,8 @@
  * @link 		http://www.teamst.org/index.php
  *
  *
- *	@internal revisions
- *	20110413 - franciscom - BUGID 4410 - "Save step" doesn't work just after "Copy Step"
- * 							doCopyStep()
- *  20110401 - franciscom - BUGID 3615 - right to allow ONLY MANAGEMENT of requirements link to testcases
- *	20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
- *							can be added to new test plans
- *
- *	20110109 - franciscom - BUGID - doCreate() interface changes, new method show()
+ * @internal revisions
+ * 20111116 - franciscom - TICKET 4769 - estimated execution duration
  **/
 
 class testcaseCommands
@@ -211,13 +205,26 @@ class testcaseCommands
 		}
 		$options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
 		                 'action_on_duplicate_name' => 'block');
-		$tcase = $this->tcaseMgr->create($argsObj->container_id,$argsObj->name,$argsObj->summary,
-										 $argsObj->preconditions,
-		                            	 $argsObj->tcaseSteps,$argsObj->user_id,$argsObj->assigned_keywords_list,
-		                            	 $new_order,testcase::AUTOMATIC_ID,
-		                            	 $argsObj->exec_type,$argsObj->importance,$argsObj->tc_status,
-		                            	 $options);
+		                 
+		$item = array('parent_id' => $argsObj->container_id, 'name' => $argsObj->name,
+					  'summary' => $argsObj->summary, 'preconditions' => $argsObj->preconditions,
+					  'steps' => $argsObj->tcaseSteps, 'author_id' => $argsObj->user_id,
+					  'keywords_id' => $argsObj->assigned_keywords_list,
+					  'tc_order' => $new_order, 'execution_type' => $argsObj->exec_type,
+					  'importance' => $argsObj->importance, 'status' => $argsObj->tc_status,
+					  'estimated_execution_duration' => $argsObj->estimated_execution_duration);
+		                 
+		//$tcase = $this->tcaseMgr->create($argsObj->container_id,$argsObj->name,$argsObj->summary,
+		//								 $argsObj->preconditions,
+		//                            	 $argsObj->tcaseSteps,$argsObj->user_id,$argsObj->assigned_keywords_list,
+		//                            	 $new_order,testcase::AUTOMATIC_ID,
+		//                            	 $argsObj->exec_type,$argsObj->importance,$argsObj->tc_status,
+		//                            	 $options);
+        //
 
+		$tcase = $this->tcaseMgr->create($item,$options);
+
+		
 		if($tcase['status_ok'])
 		{
 			if($argsObj->stay_here)
@@ -312,12 +319,17 @@ class testcaseCommands
   */
     function doUpdate(&$argsObj,$request)
 	{
-        $ret = $this->tcaseMgr->update($argsObj->tcase_id, $argsObj->tcversion_id, $argsObj->name, 
-		                               $argsObj->summary, $argsObj->preconditions, $argsObj->tcaseSteps, 
-		                               $argsObj->user_id, $argsObj->assigned_keywords_list,
-		                               testcase::DEFAULT_ORDER, $argsObj->exec_type, 
-		                               $argsObj->importance,$argsObj->tc_status);
-
+	
+		$item = array('id' => $argsObj->tcase_id, 'tcversion_id' => $argsObj->tcversion_id,
+					  'name' => $argsObj->name,
+					  'summary' => $argsObj->summary, 'preconditions' => $argsObj->preconditions,
+					  'steps' => $argsObj->tcaseSteps, 'user_id' => $argsObj->user_id,
+					  'keywords_id' => $argsObj->assigned_keywords_list,
+					  'execution_type' => $argsObj->exec_type,
+					  'importance' => $argsObj->importance, 'status' => $argsObj->tc_status,
+					  'estimated_execution_duration' => $argsObj->estimated_execution_duration);
+		
+		$ret = $this->tcaseMgr->update($item);	
 		$this->show($argsObj,$request,$ret);  // CF are written to db here
  
         return $guiObj;

@@ -266,6 +266,9 @@ $TLS_reqspec_created_automatic_log = "Requirement Specification Created";
 
 $TLS_elapsed_seconds = 'Processing time (seconds)'; 
 
+$TLS_warning_float_value = "%s accepts only numeric or float values";
+
+
 
 // ----- unsorted (TODO move) -------------------------------------
 $TLS_problems_loading_xml_content = "Unable to load XML data, Check your file.";
@@ -1525,8 +1528,7 @@ $TLS_warning_editing_executed_step = "Warning! This Test Case Step has been exec
 $TLS_warning_editing_executed_tc = "Warning! This Test Case version has been executed.";
 $TLS_warning_delete_executed_tc = "Warning! This Test Case version has been executed.";
 $TLS_warning_unsaved = "You will lose any unsaved changes!";
-
-
+$TLS_warning_estimated_execution_duration_format = "Estimated execution duration accepts only numeric or float values";
 
 // ----- gui/templates/planOwner.tpl -----
 $TLS_assign_ownership = "Assign ownership";

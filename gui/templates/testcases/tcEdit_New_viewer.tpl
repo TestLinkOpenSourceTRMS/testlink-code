@@ -5,16 +5,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - create new testcase
 
 @internal revisions
-20110321 - franciscom - BUGID 4025: option to avoid that obsolete test cases 
-						can be added to new test plans
-20101011 - franciscom - equalizing ID for DIV that function as CF container
-20101010 - franciscom - refactoring of BUGID 3062 -> call to checkTCaseDuplicateName() without global coupling
-20100306 - eloff - BUGID 3062 - Check for duplicate name via JAXA using checkTCaseDuplicateName()
 *}
 
 {* ---------------------------------------------------------------- *}
 {lang_get var='labels' 
-          s='tc_title,alt_add_tc_name,summary,steps,expected_results,
+          s='tc_title,alt_add_tc_name,summary,steps,expected_results,estimated_execution_duration,
              preconditions,status,execution_type,test_importance,tc_keywords,assign_requirements'}
 
 {* Steps and results Layout management *}
@@ -71,14 +66,6 @@ Purpose: smarty template - create new testcase
 	  {/if}
 		{$layout1}
 
-{* Multiple Test Case Steps Feature                              *}   
-{* <div class="labelHolder">{$labels.steps}</div>                *}
-{* <div>{$steps}</div>                                           *}
-{* {$layout2}                                                    *} 
-{* <div class="labelHolder">{$labels.expected_results}</div>     *}
-{* <div>{$expected_results}</div>                                *} 
-{* {$layout3}                                                    *}
-
 		{if $gui->automationEnabled}
 			<div class="labelHolder">{$labels.execution_type}
 			<select name="exec_type" onchange="content_modified = true">
@@ -101,6 +88,13 @@ Purpose: smarty template - create new testcase
 				onchange="content_modified = true">
 		{html_options options=$gui->domainTCStatus selected=$gui->tc.status}
 		</select>
+		</div>
+		<div>
+		<span class="labelHolder">{$labels.estimated_execution_duration}</span>
+		<input type="text" name="estimated_execution_duration" id="estimated_execution_duration"
+			   size="{#EXEC_DURATION_SIZE#}" maxlength="{#EXEC_DURATION_MAXLEN#}"
+			   title="{$labels.estimated_execution_duration}" 
+			   value={$gui->tc.estimated_execution_duration}>
 		</div>
     	
     </div>

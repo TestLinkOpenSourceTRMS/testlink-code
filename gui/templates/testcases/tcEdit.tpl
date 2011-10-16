@@ -4,14 +4,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - edit test specification: test case
 
 @internal revisions
-
-20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
-20110111 - Julian - Improved modified warning message when navigating away without saving
+20111016 - franciscom - logic to check estimated_execution_duration
 *}
 
 {lang_get var="labels"
           s="warning,warning_empty_tc_title,btn_save,warning_required_cf,
-             version,title_edit_tc,cancel,warning_unsaved"}
+             version,title_edit_tc,cancel,warning_unsaved,warning_estimated_execution_duration_format"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_ext_js.tpl"}
@@ -36,6 +34,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title|escape:'javascript'}";
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
+var warning_estimated_execution_duration_format = "{$labels.warning_estimated_execution_duration_format|escape:'javascript'}";
 
 /**
  * validate certain form controls before submitting
@@ -49,6 +48,13 @@ function validateForm(the_form)
 	{
 		alert_message(alert_box_title,warning_empty_testcase_name);
 		selectField(the_form,'testcase_name');
+		return false;
+	}
+	
+	val2check = the_form.estimated_execution_duration.value;
+	if( isNaN(val2check) || /^\s+$/.test(val2check.trim()))
+	{
+		alert_message(alert_box_title,warning_estimated_execution_duration_format);
 		return false;
 	}
 	

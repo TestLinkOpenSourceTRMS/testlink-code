@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfield_validation.js,v 1.7 2010/12/26 10:00:37 franciscom Exp $
+@filesource cfield_validation.js
 
 functions to validate custom field contents
 
@@ -11,10 +11,15 @@ regular expressions was taken from:
     Version 1.5.4.1 (2007-01-05)
    
 IMPORTANT
+Needs EXT-JS due to use of trim()
+
 Global Dependencies:  cfChecks,cfMessages 
                       declared and initialized in inc_jsCfieldsValidation.tpl   
     
 @internal revisions
+20111016 - franciscom - improvements on validateCustomFields() for numeric & float types
+						trim() done before test, this way I can accept empty and full of blanks
+						as empty
 20110910 - franciscom - code improvement thanks to firefox+firebug - avoid use of undefined var
 */
 
@@ -74,15 +79,15 @@ function validateCustomFields(cfields_inputs)
 		    break; 
 		
 		    case 'numeric':
-            checkStatus.status_ok=!/[^\d]/.test(cfield_value);
+            checkStatus.status_ok=!/[^\d]/.test(cfield_value.trim());
 		    break; 
 
 		    case 'float':
-            checkStatus.status_ok=(!isNaN(cfield_value) && !/^\s+$/.test(cfield_value));
+            checkStatus.status_ok=(!isNaN(cfield_value) && !/^\s+$/.test(cfield_value.trim()));
 		    break; 
 		    
 		    case 'email':
-		        // mail empty is ok
+		    // mail empty is ok
             var doNextCheck=!((cfield_value == null) || (cfield_value.length == 0));
             if(doNextCheck)
             {		    

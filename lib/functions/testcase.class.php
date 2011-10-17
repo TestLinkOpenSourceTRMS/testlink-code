@@ -177,7 +177,7 @@ class testcase extends tlObjectWithAttachments
 	function _create($parent_id,$name,$summary,$preconditions,$steps,$author_id,
 	                 $keywords_id='',$tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
                      $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
-                     $importance=2,$status=null, $options=null)
+                     $importance=2,$status=null,$estimated_execution_duration=null,$options=null)
 
 	{
 		$status_ok = 1;
@@ -212,7 +212,7 @@ class testcase extends tlObjectWithAttachments
 			// Multiple Test Case Steps Feature
 			$op = $this->create_tcversion($ret['id'],$ret['external_id'],$version_number,$summary,
 			                              $preconditions,$steps,$author_id,$execution_type,
-			                              $importance,$status);
+			                              $importance,$status,$estimated_execution_duration);
 			
 			$ret['msg'] = $op['status_ok'] ? $ret['msg'] : $op['msg'];
 			$ret['tcversion_id'] = $op['status_ok'] ? $op['id'] : -1;
@@ -405,7 +405,7 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function create_tcversion($id,$tc_ext_id,$version,$summary,$preconditions,$steps,
 	                          $author_id,$execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
-	                          $importance=2,$status=null)
+	                          $importance=2,$status=null,$estimated_execution_duration=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$tcase_version_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
@@ -423,6 +423,16 @@ class testcase extends tlObjectWithAttachments
 			$wf = intval($status);
 			$sql .= ',status';
 			$sqlValues .= ",{$wf}";
+		}
+			
+		if( !is_null($estimated_execution_duration) )	 	 
+		{
+			$v = trim($estimated_execution_duration);
+			if($v != '')
+			{
+				$sql .= ", estimated_execution_duration";
+				$sqlValues .= "," . floatval($v);
+			}
 		}
 			
 		$sql .= " )" . $sqlValues . " )";

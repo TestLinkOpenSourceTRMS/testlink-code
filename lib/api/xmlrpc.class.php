@@ -20,6 +20,7 @@
  * 
  *
  * @internal revisions 
+ * 20111018 - franciscom - TICKET 4774: New methods to manage test case steps
  * 20110924 - franciscom - improvements on error message provided for missing parameters
  * 20110903 - franciscom - integration with refactoring of TICKET 4188
  * 20110903 - franciscom - get_linked_versions() interface changes
@@ -241,9 +242,11 @@ class TestlinkXMLRPCServer extends IXR_Server
 	                            'tl.setTestCaseExecutionResult' => 'this:reportTCResult',
 	                            'tl.createBuild' => 'this:createBuild',
 	                            'tl.createTestCase' => 'this:createTestCase',
+	                            'tl.createTestCaseSteps' => 'this:createTestCaseSteps',
 	                            'tl.createTestPlan' => 'this:createTestPlan',
 	                            'tl.createTestProject' => 'this:createTestProject',
 	                            'tl.createTestSuite' => 'this:createTestSuite',
+								'tl.deleteTestCaseSteps' => 'this:deleteTestCaseSteps',
 	                            'tl.uploadExecutionAttachment' => 'this:uploadExecutionAttachment',
 	                            'tl.uploadRequirementSpecificationAttachment' => 'this:uploadRequirementSpecificationAttachment',
 	                            'tl.uploadRequirementAttachment' => 'this:uploadRequirementAttachment',
@@ -4724,5 +4727,266 @@ protected function createAttachmentTempFile()
 	    return $status;
     }
 
+
+	/**
+	 * createTestCaseSteps
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param string $args["testcaseexternalid"]
+	 * @param string $args["version"] - optional if not provided LAST ACTIVE version will be used
+	 * @param string $args["action"]
+	 *								possible values
+	 *								'create','update','push'
+	 *								create: if step exist NOTHING WILL BE DONE
+	 *								update: if step DOES NOT EXIST will be created
+	 *									    else will be updated.
+	 *								push: shift down all steps with step number >= step number provided
+	 *									  and use provided data to create step number requested.
+	 *									  NOT IMPLEMENTED YET	
+	 * @param array  $args["steps"]:
+	 *								each element is a hash with following keys
+	 *								step_number,actions,expected_results,execution_type
+	 * 
+	 * @return mixed $resultInfo
+	 *
+	 * @internal revisions
+	 * 20111018 - franciscom - TICKET 4774: New methods to manage test case steps
+	 */
+	function createTestCaseSteps($args)
+	{
+	    $operation=__FUNCTION__;
+ 	    $msg_prefix="({$operation}) - ";
+        $resultInfo=array();
+		$useLatestVersion = true;
+		$version = -1;
+	    $item = null;
+	    $stepSet = null;
+	    $stepNumbers = null;
+	    
+	    $this->_setArgs($args);
+        $checkFunctions = array('authenticate','checkTestCaseIdentity');
+        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_modify_tc");
+
+        if( $status_ok )
+        {
+        	// Important Notice: method checkTestCaseIdentity sets
+        	// $this->args[self::$testCaseIDParamName]
+        	$tcaseID = $this->args[self::$testCaseIDParamName];
+        	$resultInfo[self::$testCaseIDParamName] = $tcaseID;
+			$resultInfo['item'] = null;
+        
+			// if parameter version does not exits or is < 0 
+			// then we will on latest version active or not
+			if( $this->_isParamPresent(self::$versionNumberParamName) )
+			{
+				$version = $this->args[self::$versionNumberParamName];
+			}
+		
+			$resultInfo['version'] = 'exists';
+			if( $version > 0)
+			{
+				$item = $this->tcaseMgr->get_basic_info($tcaseID,array('number' => $version));
+			}
+			else
+			{
+				$resultInfo['version'] = 'DOES NOT ' . $resultInfo['version'];
+				$item = $this->tcaseMgr->get_last_active_version($tcaseID);
+			}
+			
+			if( is_null($item) )
+			{
+				$status_ok = false;
+				$msg = sprintf(VERSION_NOT_VALID_STR,$version);
+				$this->errors[] = new IXR_Error(VERSION_NOT_VALID,$msg);
+			}
+			// $resultInfo['item'] = is_null($item) ? $msg : $item;
+		
+			if( $status_ok)
+			{
+				
+				// $resultInfo['steps'] = $this->args[self::$stepsParamName];
+				
+				$tcversion_id = $item[0]['tcversion_id'];
+				$step_id = 0;
+				$stepSet = null;
+				$action = isset($this->args,self::$actionParamName) ? $this->args[self::$actionParamName] : 'create';
+				
+
+				// 
+				// id,step_number,actions,expected_results,active,execution_type
+				$opt = array('accessKey' => 'step_number');
+				$stepSet = (array)$this->tcaseMgr->get_steps($tcversion_id,0,$opt);
+				$stepNumberIDSet = array_flip(array_keys($stepSet));
+				foreach($stepNumberIDSet as $sn => $dummy)
+				{
+					$stepNumberIDSet[$sn] = $stepSet[$sn]['id'];
+				}
+
+				$resultInfo['stepSet'] = $stepSet;
+				$resultInfo['stepNumberIDSet'] = $stepNumberIDSet;
+				
+				
+				foreach($this->args[self::$stepsParamName] as $si)
+				{
+					$execution_type = isset($si['execution_type']) ? $si['execution_type'] : 
+									  TESTCASE_EXECUTION_TYPE_MANUAL;
+					$stepExists = isset($stepSet[$si['step_number']]);
+					if($stepExists)
+					{
+						// needed for update op.
+						$step_id = $stepSet[$si['step_number']]['id'];
+					}
+					// DEBUG
+					$resultInfo['stepID'][] = array($step_id,$si['step_number']);
+					switch($action)
+					{
+						case 'update':
+							$op = $stepExists ? $action : 'create'; 
+						break;
+						
+						case 'push':
+							$op = $stepExists ? $action : 'skip';
+						break;
+                	
+						case 'create':
+							$op = $stepExists ? 'skip' : $action; 
+						break;
+					}
+
+					// echo 'OP:::' . $op;
+					switch($op)
+					{
+						case 'update':
+							$this->tcaseMgr->update_step($step_id,$si['step_number'],$si['actions'],
+													     $si['expected_results'],$execution_type);
+						break;
+
+
+						case 'create':
+							$this->tcaseMgr->create_step($tcversion_id,$si['step_number'],$si['actions'],
+													 	 $si['expected_results'],$execution_type);
+						break;
+	    			
+	    				case 'push':
+	    					// First action renumber existent steps
+	    					$renumberedSet = null;
+	    					foreach($stepNumberIDSet as $tsn => $dim)
+	    					{
+	    						// echo $tsn;
+	    						if($tsn < $si['step_number'])
+	    						{
+	    						   unset($stepNumberIDSet[$tsn]);
+	    						} 
+	    						else
+	    						{
+	    							$renumberedSet[$dim] = $tsn+1;
+	    						}
+	    					}
+	    					// $dummy = array_flip($stepNumberIDSet);
+							// $resultInfo['push'] = array('old' => $stepNumberIDSet, 'new' => $renumberedSet);
+							$this->tcaseMgr->set_step_number($renumberedSet);							
+							$this->tcaseMgr->create_step($tcversion_id,$si['step_number'],$si['actions'],
+													 	 $si['expected_results'],$execution_type);
+	    				break;
+
+	    				case 'skip':
+	    				default:
+	    				break;
+	    			}
+				}				
+				
+			}
+		}
+        return ($status_ok ? $resultInfo : $this->errors);
+	}
+
+
+	/**
+	 * deleteTestCaseSteps
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param string $args["testcaseexternalid"]
+	 * @param string $args["version"] - optional if not provided LAST ACTIVE version will be used
+	 * @param array  $args["steps"]: each element is a step_number
+	 * 
+	 * @return mixed $resultInfo
+	 *
+	 * @internal revisions
+	 * 20111018 - franciscom - TICKET 4774: New methods to manage test case steps
+	 */
+	function deleteTestCaseSteps($args)
+	{
+	    $operation=__FUNCTION__;
+ 	    $msg_prefix="({$operation}) - ";
+        $resultInfo=array();
+		$version = -1;
+	    $item = null;
+	    $stepSet = null;
+	    $stepNumberIDSet = null;
+	    
+	    $this->_setArgs($args);
+        $checkFunctions = array('authenticate','checkTestCaseIdentity');
+        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_modify_tc");
+
+        if( $status_ok )
+        {
+        	// Important Notice: method checkTestCaseIdentity sets
+        	// $this->args[self::$testCaseIDParamName]
+        	$tcaseID = $this->args[self::$testCaseIDParamName];
+        	$resultInfo[self::$testCaseIDParamName] = $tcaseID;
+			$resultInfo['item'] = null;
+        
+			// if parameter version does not exits or is < 0 
+			// then we will on latest version active or not
+			if( $this->_isParamPresent(self::$versionNumberParamName) )
+			{
+				$version = $this->args[self::$versionNumberParamName];
+			}
+		
+			$resultInfo['version'] = 'exists';
+			if( $version > 0)
+			{
+				$item = $this->tcaseMgr->get_basic_info($tcaseID,array('number' => $version));
+			}
+			else
+			{
+				$resultInfo['version'] = 'DOES NOT ' . $resultInfo['version'];
+				$item = $this->tcaseMgr->get_last_active_version($tcaseID);
+			}
+			
+			if( is_null($item) )
+			{
+				$status_ok = false;
+				$msg = sprintf(VERSION_NOT_VALID_STR,$version);
+				$this->errors[] = new IXR_Error(VERSION_NOT_VALID,$msg);
+			}
+			// $resultInfo['item'] = is_null($item) ? $msg : $item;
+		
+			if( $status_ok)
+			{
+				
+				// $resultInfo['steps'] = $this->args[self::$stepsParamName];
+				
+				$tcversion_id = $item[0]['tcversion_id'];
+				$step_id = 0;
+				$stepSet = null;
+				// 
+				// id,step_number,actions,expected_results,active,execution_type
+				$opt = array('accessKey' => 'step_number');
+				$stepSet = (array)$this->tcaseMgr->get_steps($tcversion_id,0,$opt);
+				$resultInfo['stepSet'] = $stepSet;
+	
+				foreach($this->args[self::$stepsParamName] as $step_number)
+				{
+					if(isset($stepSet[$step_number]))
+					{
+						$this->tcaseMgr->delete_step_by_id($stepSet[$step_number]['id']);
+					}
+				}				
+				
+			}
+		}
+        return ($status_ok ? $resultInfo : $this->errors);
+	}
 } // class end
 ?>

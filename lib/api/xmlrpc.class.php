@@ -20,8 +20,13 @@
  * 
  *
  * @internal revisions 
+ * @since 1.9.4
+ * 20111023 - franciscom - getTestCase(), added key on result 'full_tc_external_id' that will hold
+ *						   external ID as is displayed on GUI (with prefix and glue character)	
  * 20110806 - franciscom - integration with refactoring of TICKET 4188
  * 20110630 - franciscom - get_linked_versions() interface changes
+ *
+ * @since 1.9.3
  * 20110309 - franciscom - BUGID 4311: typo error on uploadExecutionAttachment mapping
  */
 
@@ -3548,6 +3553,20 @@ public function getTestCase($args)
                                             $msg_prefix . NO_TESTCASE_FOUND_STR);
             return $this->errors;
         }
+        else
+        {
+        	if( isset($this->args[self::$testCaseExternalIDParamName]) )
+        	{
+        		$result[0]['full_tc_external_id']=$this->args[self::$testCaseExternalIDParamName];
+        	}
+        	else
+        	{
+	        	$dummy = $this->tcaseMgr->getPrefix($id);
+    	    	$result[0]['full_tc_external_id'] = $dummy[0] . config_get('testcase_cfg')->glue_character .
+        											$result[0]['tc_external_id'];
+        	}
+        	
+        }
     }
 
     return $status_ok ? $result : $this->errors; 
@@ -4726,10 +4745,10 @@ protected function createAttachmentTempFile()
       																		$filters,$nodetype,$nodeid);
       			break;
       			
-				case 'execution' 
-      				$cfieldSpec = $cfield_mgr->get_linked_cfields_at_execution($tproject_id,$enabled,$nodetype,
-      																		   $nodeid,$executionid,$testplanid);
-      			break;
+				//case 'execution' 
+      			//	$cfieldSpec = $cfield_mgr->get_linked_cfields_at_execution($tproject_id,$enabled,$nodetype,
+      			//															   $nodeid,$executionid,$testplanid);
+      			//break;
 
 				case 'testplan_design':
      				$cfieldSpec = $cfield_mgr->get_linked_cfields_at_testplan_design($tproject_id,$enabled,$nodetype,

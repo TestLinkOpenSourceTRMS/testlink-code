@@ -20,6 +20,8 @@
  * 
  *
  * @internal revisions 
+ * 20111023 - franciscom - getTestCase(), added key on result 'full_tc_external_id' that will hold
+ *						   external ID as is displayed on GUI (with prefix and glue character)	
  * 20111018 - franciscom - TICKET 4774: New methods to manage test case steps
  * 20110924 - franciscom - improvements on error message provided for missing parameters
  * 20110903 - franciscom - integration with refactoring of TICKET 4188
@@ -3360,6 +3362,20 @@ public function getTestCase($args)
             $this->errors[] = new IXR_ERROR(NO_TESTCASE_FOUND, 
                                             $msg_prefix . NO_TESTCASE_FOUND_STR);
             return $this->errors;
+        }
+        else
+        {
+        	if( isset($this->args[self::$testCaseExternalIDParamName]) )
+        	{
+        		$result[0]['full_tc_external_id'] = $this->args[self::$testCaseExternalIDParamName];
+        	}
+        	else
+        	{
+	        	$dummy = $this->tcaseMgr->getPrefix($id);
+    	    	$result[0]['full_tc_external_id'] = $dummy[0] . config_get('testcase_cfg')->glue_character .
+        											$result[0]['tc_external_id'];
+        	}
+        	
         }
     }
 

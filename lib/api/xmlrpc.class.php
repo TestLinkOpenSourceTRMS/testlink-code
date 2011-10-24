@@ -4748,8 +4748,11 @@ protected function createAttachmentTempFile()
 	 * createTestCaseSteps
 	 * @param struct $args
 	 * @param string $args["devKey"]
-	 * @param string $args["testcaseexternalid"]
+	 * @param string $args["testcaseexternalid"] optional if you provide $args["testcaseid"]
+	 * @param string $args["testcaseid"] optional if you provide $args["testcaseexternalid"]
 	 * @param string $args["version"] - optional if not provided LAST ACTIVE version will be used
+	 *											 if all versions are INACTIVE, then latest version
+	 *											 will be used. 	
 	 * @param string $args["action"]
 	 *								possible values
 	 *								'create','update','push'
@@ -4781,7 +4784,7 @@ protected function createAttachmentTempFile()
 	    
 	    $this->_setArgs($args);
         $checkFunctions = array('authenticate','checkTestCaseIdentity');
-        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_modify_tc");
+        $status_ok = $this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_modify_tc");
 
         if( $status_ok )
         {
@@ -4807,6 +4810,17 @@ protected function createAttachmentTempFile()
 			{
 				$resultInfo['version'] = 'DOES NOT ' . $resultInfo['version'];
 				$item = $this->tcaseMgr->get_last_active_version($tcaseID);
+				if( is_null($item) )
+				{
+					// get last version no matter if is active
+					$dummy = $this->tcaseMgr->get_last_version_info($tcaseID);
+					$dummy['tcversion_id'] = $dummy['id'];
+					$item[0] = $dummy;
+				}
+				else
+				{
+					$item = current($item);
+				}
 			}
 			
 			if( is_null($item) )
@@ -4815,18 +4829,15 @@ protected function createAttachmentTempFile()
 				$msg = sprintf(VERSION_NOT_VALID_STR,$version);
 				$this->errors[] = new IXR_Error(VERSION_NOT_VALID,$msg);
 			}
-			// $resultInfo['item'] = is_null($item) ? $msg : $item;
-		
 			if( $status_ok)
 			{
 				
 				// $resultInfo['steps'] = $this->args[self::$stepsParamName];
-				
 				$tcversion_id = $item[0]['tcversion_id'];
+				$resultInfo['tcversion_id'] = $tcversion_id;
 				$step_id = 0;
 				$stepSet = null;
 				$action = isset($this->args,self::$actionParamName) ? $this->args[self::$actionParamName] : 'create';
-				
 
 				// 
 				// id,step_number,actions,expected_results,active,execution_type

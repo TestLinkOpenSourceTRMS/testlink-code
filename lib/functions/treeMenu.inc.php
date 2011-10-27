@@ -5,17 +5,77 @@
  *  
  * This file generates tree menu for test specification and test execution.
  * 
- * @filesource	treeMenu.inc.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2005-2011, TestLink community 
+ * @copyright 	2005-2009, TestLink community 
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.154.2.5 2010/12/21 12:01:02 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
- * @internal revisions
- *  20110709 - franciscom - fixed event viewer warning due to missing isset() check generateExecTree()
+ * @internal Revisions:
  *  20110311 - asimon - BUGID 3765: Req Spec Doc ID disappeared for req specs without
  *                                  direct requirement child nodes
+ *  20101221 - amitkhullar - BUGID 4115 Custom Field Filtering Issue 
+ *  20101215 - asimon - BUGID 4023: correct filtering also for platforms
+ *  20101209 - asimon - allow correct filtering of test case name and other attributes also for right frame
+ *  20101118 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
+ *  20101010 - franciscom - added testlink_node_name as new attribute to be accessed while working with EXT-JS tree
+ *  20101003 - franciscom - generateExecTree() - added option remove_empty_nodes_of_type on get_subtree() call
+ *  20100929 - asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
+ *  20100926 - amitkhullar - BUGID 3806 - Filter not working in tree menu for Assign TC Execution
+ *  20100912 - franciscom - BUGID 3772: MS SQL - LIMIT CLAUSE can not be used
+ *  20100908 - Julian - BUGID 2877 - Custom Fields linked to Req versions
+ *                                 - Custom Fields linked to TC versions
+ *  20100908 - franciscom - extjs_renderExecTreeNodeOnOpen() - 'tlNodeType' -> testlink_node_type				 	 
+ *  20100820 - asimon - refactoring for less redundant checks and better readibility of code
+ *                      in generateExecTree()
+ *  20100812 - franciscom - get_filtered_req_map() - BUGID 3671
+ *  20100810 - asimon - added filtering by TC ID on prepareNode() and generateTestSpecTree()
+ *  20100808 - asimon - generate_reqspec_tree() implemented to generate statically filtered
+ *                      requirement specification tree, plus additional functions
+ *                      get_filtered_req_map(), prepare_reqspec_treenode(),
+ *                      render_reqspec_treenode()
+ *  20100702 - asimon - fixed custom field filtering problem caused by 
+ *                      wrong array indexes and little logic errors
+ *  20100701 - asimon - replaced is_null in renderTreeNode() by !isset 
+ *                      because of warnings in event log
+ *  20100701 - asimon - added some additional isset() checks to avoid warnings
+ *  20100628 - asimon - removal of constants from filter control class
+ *  20160625 - asimon - refactoring for new filter features and BUGID 3516
+ *  20100624 - asimon - CVS merge (experimental branch to HEAD)
+ *  20100622 - asimon - refactoring of following functions for new filter classes:
+ *                      generateExecTree, renderExecTreeNode(), prepareNode(), 
+ *                      generateTestSpecTree, renderTreeNode(), filter_by_*()
+ *  20100611 - franciscom - renderExecTreeNode(), renderTreeNode() interface changes
+ *							generateExecTree() - interface changes and output changes
+ *  20100602 - franciscom - extjs_renderExecTreeNodeOnOpen() - added 'tlNodeType' 	
+ *  20100428 - asimon - BUGID 3301 and related: 
+ *                      added filtering by custom fields to generateTestSpecTree(),
+ *                      added importance setting in prepareNode() because of 
+ *                      "undefined" error in event log,
+ *                      added function filter_by_cfield_values() 
+ *                      which is used from generateTestSpecTree()
+ *  20100417 - franciscom - BUGID 2498 - spec tree  - filter by test case spec importance
+ *  20100417 - franciscom - BUGID 3380 - execution tree - filter by test case execution type
+ *  20100415 - franciscom - BUGID 2797 - filter by test case execution type
+ *  20100202 - asimon - changes for filtering, BUGID 2455, BUGID 3026
+ *						added filter_by_* - functions, changed generateExecTree()
+ *  20091212 - franciscom - prepareNode(), generateTestSpecTree() interface changes
+ *                          added logic to do filtering on test spec for execution type
+ *
+ *  20090815 - franciscom - get_last_execution() call changes
+ *  20090801 - franciscom - table prefix missed
+ *  20090716 - franciscom - BUGID 2692
+ *  20090328 - franciscom - BUGID 2299 - introduced on 20090308.
+ *                          Added logic to remove Empty Top level test suites 
+ *                          (have neither test cases nor test suites inside) when applying 
+ *                          test case keyword filtering.
+ *                          BUGID 2296
+ *  20090308 - franciscom - generateTestSpecTree() - changes for EXTJS tree
+ *  20090211 - franciscom - BUGID 2094 
+ *  20090202 - franciscom - minor changes to avoid BUGID 2009
+ *  20090118 - franciscom - replaced multiple calls config_get('testcase_cfg')
+ *                          added extjs_renderTestSpecTreeNodeOnOpen(), to allow filtering 
  *
  */
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
@@ -760,8 +820,17 @@ function renderTreeNode($level,&$node,$hash_id_descr,
  * - Execution of Test Cases
  * - Remove Test cases from test plan
  * 
- * @internal revisions
+ * @internal Revisions:
  *
+ *	20101003 - franciscom - added option remove_empty_nodes_of_type on get_subtree() call
+ *  20100820 - asimon - refactoring for less redundant checks and better readibility
+ *  20100719 - asimon - BUGID 3406 - user assignments per build:
+ *                                   filter assigned test cases by setting_build
+ *	20080617 - franciscom - return type changed to use extjs tree component
+ *	20080305 - franciscom - interface refactoring
+ *	20080224 - franciscom - added include_unassigned
+ *	20071002 - jbarchibald - BUGID 1051 - added cf element to parameter list
+ *	20070204 - franciscom - changed $bForPrinting -> $bHideTCs
  */
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                           $tplan_name,$filters,$additionalInfo) 
@@ -788,7 +857,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		$keywordsFilterType = $filters->{'filter_keywords_filter_type'};
 	}
 
-	// user assignments per build
+	// BUGID 3406 - user assignments per build
 	// can't use $build_id here because we need the build ID from settings panel
 	$build2filter_assignments = isset($filters->{'setting_build'}) ? $filters->{'setting_build'} : 0;
 	
@@ -876,11 +945,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			// get_linked_tcversions filters by keyword ALWAYS in OR mode.
 			// BUGID 3406: user assignments per build
 			$opt = array('include_unassigned' => $include_unassigned, 'steps_info' => false,
-			// BUGID 4491 - phidotnet - Filtering in Test Case Assignment doesnt work for Assigned to Field in some cases.
-			// If 'any' is selected, use build id from settings panel, $build2filter_assignments
-			// since $build_id = null in tlTestCaseFilterControl.class.php (line 1599). 
-			// Otherwise, always use build id from filter result selected which is $build_id
-			             'user_assignments_per_build' => ($build_id==null) ? $build2filter_assignments : $build_id);
+			             'user_assignments_per_build' => $build2filter_assignments);
 
 			// 20100417 - BUGID 3380 - execution type
 			$linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,
@@ -1040,10 +1105,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	if( !is_null($menustring) )
 	{  
 		// Change key ('childNodes')  to the one required by Ext JS tree.
-		if(isset($test_spec['childNodes'])) 
-		{
-			$menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes']));
-		}
+		$menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes']));
 		
 		// Remove null elements (Ext JS tree do not like it ).
 		// :null happens on -> "children":null,"text" that must become "children":[],"text"
@@ -1089,7 +1151,8 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
 	}
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
-	    // need to work always original object in order to change it's values using reference .
+	    // 20080615 - franciscom - need to work always original object
+	    //                         in order to change it's values using reference .
 	    // Can not assign anymore to intermediate variables.
         $nodes_qty = sizeof($node['childNodes']);
 		for($idx = 0;$idx <$nodes_qty ;$idx++)

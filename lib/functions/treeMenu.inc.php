@@ -945,7 +945,11 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			// get_linked_tcversions filters by keyword ALWAYS in OR mode.
 			// BUGID 3406: user assignments per build
 			$opt = array('include_unassigned' => $include_unassigned, 'steps_info' => false,
-			             'user_assignments_per_build' => $build2filter_assignments);
+			// BUGID 4491 - phidotnet - Filtering in Test Case Assignment doesnt work for Assigned to Field in some cases.
+			// If 'any' is selected, use build id from settings panel, $build2filter_assignments
+			// since $build_id = null in tlTestCaseFilterControl.class.php (line 1599). 
+			// Otherwise, always use build id from filter result selected which is $build_id
+			             'user_assignments_per_build' => ($build_id == null) ? $build2filter_assignments : $build_id);
 
 			// 20100417 - BUGID 3380 - execution type
 			$linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,

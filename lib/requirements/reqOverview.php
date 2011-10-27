@@ -15,6 +15,7 @@
  * 
  * @internal revisions
  *
+ * 20111027 - Julian - Added requirement revision to version column
  * 20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
  * 20101116 - Julian - Added Author to Created column and Modifier to Last modified column
  * 20101020 - Julian - BUGID 3915 - added columns for creation and modification timestamp
@@ -78,7 +79,8 @@ if(count($gui->reqIDs) > 0) {
 	$labels2get = array('no' => 'No', 'yes' => 'Yes', 'not_aplicable' => null,
 	                    'req_spec_short' => null,'title' => null, 'version' => null, 'th_coverage' => null,
 	                    'frozen' => null, 'type'=> null,'status' => null,'th_relations' => null, 'requirements' => null,
-                        'number_of_reqs' => null, 'number_of_versions' => null, 'requirement' => null
+                        'number_of_reqs' => null, 'number_of_versions' => null, 'requirement' => null,
+	                    'version_revision_tag' => null
     );
 					
 	$labels = init_labels($labels2get);
@@ -145,10 +147,11 @@ if(count($gui->reqIDs) > 0) {
 	    	
 	    	$result[] = $linked_title;
 	    	
-	    	// version number
-	    	$padded_data = sprintf("%010d", $version['version']);
+	    	// version and revision number
+	    	$version_revison = sprintf($labels['version_revision_tag'],$version['version'],$version['revision']);
+	    	$padded_data = sprintf("%05d%05d", $version['version'], $version['revision']);
 	    	// use html comment to sort properly by this columns (extjs)
-	    	$result[] = "<!-- $padded_data -->{$version['version']}";
+	    	$result[] = "<!-- $padded_data -->{$version_revison}";
 	    	
 	    	// $dummy necessary to avoid warnings on event viewer because localize_dateOrTimeStamp expects
 	    	// second parameter to be passed by reference

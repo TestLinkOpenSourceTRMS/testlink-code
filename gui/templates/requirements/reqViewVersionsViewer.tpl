@@ -5,6 +5,7 @@ viewer for requirement
 
 @internal revisions
 @since 1.9.4
+20111029 - franciscom - TICKET 4786: Add right to allow UNFREEZE a requirement
 20110817 - franciscom - TICKET 4702: Requirement View - display log message - image added
 20110816 - franciscom - TICKET 4702: Requirement View - display log message
 
@@ -21,7 +22,7 @@ viewer for requirement
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
              testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
              revision,btn_view_history,btn_new_revision,btn_print_view,specific_direct_link,
-             design,execution_history"}
+             design,execution_history,btn_unfreeze_this_version"}
 
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
 {assign var="hrefReqSpecMgmt" value=$basehref$hrefReqSpecMgmt}
@@ -80,12 +81,19 @@ viewer for requirement
 	  				                                
 	  	{/if}
 
-		{* freeze, BUGID 3089 *}
 		{if $args_frozen_version eq null}
 	  	<input type="button" name="freeze_req_version" value="{$labels.btn_freeze_this_version}"
 	  	       onclick="delete_confirmation({$args_req.version_id},
 	  	                '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
 	  				                              '{$freeze_msgbox_title}', '{$freeze_warning_msg}',pF_freeze_req_version);"	/>
+
+		{else}
+			{if $args_grants->unfreeze_req}
+	  		<input type="button" name="unfreeze_req_version" value="{$labels.btn_unfreeze_this_version}"
+	  	       onclick="delete_confirmation({$args_req.version_id},
+	  	                '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
+	  				                              '{$unfreeze_msgbox_title}', '{$unfreeze_warning_msg}',pF_unfreeze_req_version);"	/>
+			{/if}
 	  	{/if}
 
 	    {if $args_can_copy}  				                                

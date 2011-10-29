@@ -7,7 +7,7 @@
  * This script provides the get_rights and has_rights functions for
  * verifying user level permissions.
  *
- * Default Role definition (1.6 version):
+ * Default Role definition (1.6 version and UP):
  *
  * 'guest' 	- testplan_metrics, mgt_view_tc, mgt_view_key
  * 'tester' - testplan_execute, testplan_metrics
@@ -30,13 +30,17 @@
  * 	mgt_modify_product, mgt_users - just Admin edits Products and Users
  *
  *
+ * @filesource	roles.inc.php
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
- * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: roles.inc.php,v 1.61.2.3 2010/11/12 19:52:37 franciscom Exp $
+ * @copyright 	2006-2011, TestLink community 
  * 
  *
- * @internal rev: 
+ * @internal revisions
+ * @since 1.9.4
+ * 	20111029 - franciscom - TICKET 4786: Add right to allow UNFREEZE a requirement
+ *
+ * @since 1.9.?	 
  *	20101112 - franciscom - BUGID 4006: get_tplan_effective_role() fixed bad variable usage -> error on event viewer
  *	20101111 - franciscom - BUGID 4006: test plan is_public
  *	20100930 - franciscom - BUGID 2344: Private test project
@@ -102,6 +106,7 @@ function init_global_rights_maps()
 	$g_rights_req = array (	
 								"mgt_view_req" => lang_get('desc_mgt_view_req'),
 								"mgt_modify_req" => lang_get('desc_mgt_modify_req'),
+								"mgt_unfreeze_req" => lang_get('desc_mgt_unfreeze_req')
 							);
 	
 	$g_rights_product = array("mgt_modify_product" => lang_get('desc_mgt_modify_product'),

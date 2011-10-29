@@ -6,7 +6,7 @@ Purpose: view requirement with version management
 
 @internal revisions
 @since 1.9.4
-20110816 - franciscom - TICKET 4702: Requirement View - display log message
+  20110816 - franciscom - TICKET 4702: Requirement View - display log message
 
 @since 1.9.3
   20110602 - franciscom - TICKET 4536: Tree is not refreshed after editing Requirement
@@ -22,8 +22,11 @@ Purpose: view requirement with version management
 
 {lang_get s='warning_delete_requirement' var="warning_msg" }
 {lang_get s='warning_freeze_requirement' var="freeze_warning_msg" }
+{lang_get s='warning_unfreeze_requirement' var="unfreeze_warning_msg" }
+
 {lang_get s='delete' var="del_msgbox_title" }
 {lang_get s='freeze' var="freeze_msgbox_title" }
+{lang_get s='unfreeze' var="unfreeze_msgbox_title" }
 
 {lang_get s='delete_rel_msgbox_msg' var='delete_rel_msgbox_msg'}
 {lang_get s='delete_rel_msgbox_title' var='delete_rel_msgbox_title'}
@@ -94,6 +97,20 @@ function delete_req_version(btn, text, o_id)
 function freeze_req_version(btn, text, o_id)
 {
 	var my_action=fRoot+'lib/requirements/reqEdit.php?doAction=doFreezeVersion&req_version_id=';
+	if( btn == 'yes' )
+	{
+		my_action = my_action+o_id;
+		window.location=my_action;
+	}
+}
+
+/**
+ * 
+ *
+ */
+function unfreeze_req_version(btn, text, o_id)
+{
+	var my_action=fRoot+'lib/requirements/reqEdit.php?doAction=doUnfreezeVersion&req_version_id=';
 	if( btn == 'yes' )
 	{
 		my_action = my_action+o_id;
@@ -187,6 +204,7 @@ var pF_delete_req = delete_req;
 var pF_delete_req_version = delete_req_version; 
 var pF_freeze_req_version = freeze_req_version;
 var pF_delete_req_relation = delete_req_relation;
+var pF_unfreeze_req_version = unfreeze_req_version;
 </script>
 
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>

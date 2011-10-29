@@ -11,6 +11,10 @@
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revision
+ * @since 1.9.4
+ *  20111029 - franciscom - TICKET 4786: Add right to allow UNFREEZE a requirement
+ *
+ * @since 1.9.3
  *  20110607 - Julian - BUGID 3953 - Checkbox to decide whether to create another requirement or not
  *	20101210 - franciscom - BUGID 4056 - Req. Revisioning
  *  20100915 - Julian - BUGID 3777 - Allow to insert last req doc id when creating requirement
@@ -65,7 +69,6 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg,$db);
  */
 function init_args()
 {
-	// BUGID 1748
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
 					 "req_spec_id" => array(tlInputParameter::INT_N),
 					 "containerID" => array(tlInputParameter::INT_N),
@@ -93,8 +96,6 @@ function init_args()
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
-
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 		
 	$args->req_id = $args->requirement_id;
@@ -106,12 +107,10 @@ function init_args()
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
 	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 
-	// BUGID 3307 - set to 0 if null, to avoid database errors with null value
 	if (!is_numeric($args->expected_coverage)) {
 		$args->expected_coverage = 0;
 	}
 	
-	// asimon - 20100808 - added logic to refresh filtered tree on action
 	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action'])
 	                     ? $_SESSION['setting_refresh_tree_on_action'] : 0;
 	
@@ -137,7 +136,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
                              'copy' => 'doCopy', 'doCopy' => 'doCopy',
                              'doCreateVersion' => 'doCreateVersion','doCreateRevision' => 'doCreateRevision',
                              'doDeleteVersion' => '', 'doFreezeVersion' => 'doFreezeVersion',
-                             'doAddRelation' => 'doAddRelation', 'doDeleteRelation' => 'doDeleteRelation');
+                             'doAddRelation' => 'doAddRelation', 'doDeleteRelation' => 'doDeleteRelation',
+                             'doUnfreezeVersion' => 'doUnfreezeVersion');
 
     $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
 	switch($argsObj->doAction)
@@ -168,7 +168,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
     $guiObj->editorType = $editorCfg['type'];
       
     // 20100808 - aismon - added logic to refresh filtered tree on action
-    switch($argsObj->doAction) {
+    switch($argsObj->doAction) 
+    {
 		case "doDelete":
 		$guiObj->refreshTree = 1; // has to be forced
 		break;
@@ -196,6 +197,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
         case "doCreateTestCases":
 		case "doCreate":
 		case "doFreezeVersion":
+		case "doUnfreezeVersion":
       	case "doUpdate":
         case "copy":
         case "doCopy":

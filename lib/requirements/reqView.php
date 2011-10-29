@@ -10,6 +10,7 @@
  *
  *	@internal revision
  *	@since 1.9.4
+ *	20111029 - franciscom - TICKET 4786: Add right to allow UNFREEZE a requirement
  *	20110816 - franciscom - TICKET 4702: Requirement View - display log message
  *
  *	@since 1.9.3
@@ -69,8 +70,8 @@ function init_args()
 	$args->req_id = $args->requirement_id;
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
-    $user = $_SESSION['currentUser'];
-	$args->userID = $user->dbID;
+    $args->user = $_SESSION['currentUser'];
+	$args->userID = $args->user->dbID;
 	
     return $args;
 }
@@ -91,7 +92,9 @@ function initialize_gui(&$dbHandler,$argsObj)
     $gui->tproject_name = $argsObj->tproject_name;
 
     $gui->grants = new stdClass();
-    $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
+    $gui->grants->req_mgmt = $argsObj->user->hasRight($dbHandler,"mgt_modify_req",$argsObj->tproject_id);
+    $gui->grants->unfreeze_req = $argsObj->user->hasRight($dbHandler,"mgt_unfreeze_req",$argsObj->tproject_id);
+   
     
     $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->glueChar = config_get('testcase_cfg')->glue_character;

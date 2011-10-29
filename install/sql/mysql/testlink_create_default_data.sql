@@ -2,8 +2,15 @@
 # $Id: testlink_create_default_data.sql,v 1.37.6.2 2010/12/11 17:31:47 franciscom Exp $
 # SQL script - create default data (rights & admin account)
 #
-# Database Type: MySQL 
+# Database Type: MySQL
+# @since 1.9.4
+# 20111029 - franciscom - added new rights.
+#						  IMPORTANT NOTICE: 
+#						  some rights are useless with 1.9.x, because will be implemented on 2.0
+#						  but we need to FILLING the gaps at ID level.	
+#							  
 # 20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server 
+#
 # 20110730 - franciscom - TICKET 4661 - DB version
 # 20110714 - franciscom - TICKET 4661
 # ---------------------------------------------------------------------------------
@@ -59,11 +66,14 @@ INSERT INTO /*prefix*/rights  (id,description) VALUES (19,'system_configuration'
 INSERT INTO /*prefix*/rights  (id,description) VALUES (20,'mgt_view_events');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (21,'mgt_view_usergroups');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (22,'events_mgt');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (23 ,'testproject_user_role_assignment');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (24 ,'platform_management');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (25 ,'platform_view');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (26 ,'project_inventory_management');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (27 ,'project_inventory_view');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (23,'testproject_user_role_assignment');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (24,'platform_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (25,'platform_view');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (26,'project_inventory_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (27,'project_inventory_view');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (28,'req_tcase_link_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (29,'keyword_assignment');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (30,'mgt_unfreeze_req');
 
 
 # Rights for Administrator role
@@ -94,6 +104,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,24);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
 
 # Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3 );

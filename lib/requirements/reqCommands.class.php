@@ -3,14 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.46.2.1 $
- * @modified $Date: 2010/12/12 09:48:34 $ by $Author: franciscom $
+ * @filesource	reqCommands.class.php
  * @author Francisco Mancardi
  * 
  * web command experiment
  * @internal revision
  *
+ * @since 1.9.4
+ *  20111029 - franciscom - TICKET 4786: Add right to allow UNFREEZE a requirement
+ *	
+ * @since 1.9.3
  *  20110607 - Julian - BUGID 3953 - Checkbox to decide whether to create another requirement or not
  *  20110602 - franciscom - TICKET 4536: Tree is not refreshed after editing Requirement
  *	20101210 - franciscom - BUGID 4056: Requirement Revisioning
@@ -399,28 +401,26 @@ class reqCommands
 	 * 
  	 * 
      */
-	function doFreezeVersion(&$argsObj,$request)
+	function doUnfreezeVersion(&$argsObj,$request)
 	{
 		$obj = $this->initGuiBean();
 		$node = $this->reqMgr->tree_mgr->get_node_hierarchy_info($argsObj->req_version_id);
 		$req_version = $this->reqMgr->get_by_id($node['parent_id'],$argsObj->req_version_id);
         $req_version = $req_version[0];
 
-		$this->reqMgr->updateOpen($req_version['version_id'], false);
-		
-		// BUGID 3312
-		logAuditEvent(TLS("audit_req_version_frozen",$req_version['version'],
+		$this->reqMgr->updateOpen($req_version['version_id'], true);
+		logAuditEvent(TLS("audit_req_version_unfrozen",$req_version['version'],
 		                  $req_version['req_doc_id'],$req_version['title']),
-		                  "FREEZE",$argsObj->req_version_id,"req_version");
+		                  "UNFREEZE",$argsObj->req_version_id,"req_version");
   
 		$obj->template = 'show_message.tpl';
 		$obj->template_dir = '';
 		
-		$obj->user_feedback = sprintf(lang_get('req_version_frozen'),$req_version['req_doc_id'],
+		$obj->user_feedback = sprintf(lang_get('req_version_unfrozen'),$req_version['req_doc_id'],
 		                              $req_version['title'],$req_version['version']);
 		
-		$obj->main_descr=lang_get('requirement') . TITLE_SEP . $req_version['title'];
-		$obj->title=lang_get('freeze_req');
+		$obj->main_descr = lang_get('requirement') . TITLE_SEP . $req_version['title'];
+		$obj->title = lang_get('unfreeze_req');
 		$obj->refreshTree = 0;
 		$obj->result = 'ok';  // needed to enable refresh_tree logic
 		return $obj;
@@ -828,6 +828,39 @@ class reqCommands
 		$ret['nochange'] = ($ret['force'] == false && $ret['suggest'] == false);
 		return $ret;
 	}
+
+
+	/**
+	 * 
+ 	 * 
+     */
+	function doFreezeVersion(&$argsObj,$request)
+	{
+		$obj = $this->initGuiBean();
+		$node = $this->reqMgr->tree_mgr->get_node_hierarchy_info($argsObj->req_version_id);
+		$req_version = $this->reqMgr->get_by_id($node['parent_id'],$argsObj->req_version_id);
+        $req_version = $req_version[0];
+
+		$this->reqMgr->updateOpen($req_version['version_id'], false);
+		
+		// BUGID 3312
+		logAuditEvent(TLS("audit_req_version_frozen",$req_version['version'],
+		                  $req_version['req_doc_id'],$req_version['title']),
+		                  "FREEZE",$argsObj->req_version_id,"req_version");
+  
+		$obj->template = 'show_message.tpl';
+		$obj->template_dir = '';
+		
+		$obj->user_feedback = sprintf(lang_get('req_version_frozen'),$req_version['req_doc_id'],
+		                              $req_version['title'],$req_version['version']);
+		
+		$obj->main_descr=lang_get('requirement') . TITLE_SEP . $req_version['title'];
+		$obj->title=lang_get('freeze_req');
+		$obj->refreshTree = 0;
+		$obj->result = 'ok';  // needed to enable refresh_tree logic
+		return $obj;
+  	}
+
 	
 }
 

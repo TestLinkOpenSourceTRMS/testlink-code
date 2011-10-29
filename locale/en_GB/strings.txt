@@ -947,6 +947,10 @@ $TLS_freeze_req = "Freeze Requirement";
 $TLS_req_frozen = "Requirements have been frozen.";
 $TLS_showing_version = "Displaying version ";
 $TLS_btn_revisions = "Revisions";
+$TLS_btn_unfreeze_this_version = "Unfreeze this version";
+$TLS_warning_unfreeze_requirement = "You are going to unfreeze: %s <br /><br /> Are you sure?";
+$TLS_req_version_unfrozen = "Requirement version has been unfrozen.";
+$TLS_unfreeze_req = "Unfreeze Requirement";
 
 
 
@@ -2279,6 +2283,7 @@ $TLS_desc_testplan_create_build = "Build create/edit";
 $TLS_desc_testplan_execute = "Test Plan execute";
 $TLS_desc_testplan_metrics = "Test Plan metrics";
 $TLS_desc_testplan_planning = "Test Plan planning";
+$TLS_desc_mgt_unfreeze_req = "Unfreeze requirement";
 $TLS_desc_user_role_assignment = "Role assignment";
 $TLS_error_duplicate_rolename = "There's already a role with that name!";
 $TLS_error_role_no_rights = "You cannot save roles without any rights!";
@@ -3120,6 +3125,7 @@ $TLS_audit_requirement_copy = "Req 'DOCID:{%1}' was created as a copy of Req 'DO
 $TLS_audit_req_version_deleted = " Version {%1} of Req 'DOCID:{%2}' - {%3} was deleted.";
 $TLS_audit_req_version_frozen = " Version {%1} of Req 'DOCID:{%2}' - {%3} was frozen.";
 $TLS_audit_req_monitoring_started = "Req 'DOCID:{%1}' - {%2} monitoring for user {%3} started.";
+$TLS_audit_req_version_unfrozen = " Version {%1} of Req 'DOCID:{%2}' - {%3} was unfrozen.";
 
 
 $TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was created";

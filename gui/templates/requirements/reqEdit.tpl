@@ -1,8 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.33.2.7 2011/01/14 14:39:04 asimon83 Exp $
+@filesource	reqEdit.tpl
 Purpose: smarty template - create / edit a req  
-internal revision
+@internal revisions
+
+@since 1.9.3
 20110607 - Julian - BUGID 3953: Checkbox to decide whether to create another requirement or not
 20110304 - asimon - added help icon with a description of some of the "new" features
 20110114 - asimon - simplified checking for editor type by usage of $gui->editorType

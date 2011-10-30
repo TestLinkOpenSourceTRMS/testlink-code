@@ -1,0 +1,93 @@
+How Remote Execution FROM TL works
+
+
+Needed pieces
+lib/functions/remote_exec.php
+lib/execute/execSetResults.php
+
+remote_exec.php
+this file is include on execSetResults.php this way
+
+if( $cfg->exec_cfg->enable_test_automation )
+{
+  require_once('remote_exec.php');
+}
+
+Function to launch remote execution executeTestCase() is present on remote_exec.php.
+Configuration to access Remote execution server is done via Custom Fields.
+This config is retrieved using method:
+getXMLRPCServerParams() from class cfield_mgr.class.php
+
+Here method documentation:
+
+/**
+ * Retrieves the XML-RPC Server Parameters specified through custom fields.
+ * 
+ * Done searching CARVED in the stone Custom Field Names on different
+ * (AGAIN CARVED in the stone) CF value tables in this way:
+ *
+ * CF name will have 3 pieces separated by _ (underscore)
+ *
+ * RE-XMLRPC_url_tsuite
+ * RE-XMLRPC_url_tcase
+ * RE-XMLRPC_url_link
+ *
+ * Part 1: 	RE-XMLRPC_ FIXED value (prefix), used as search key to get automatically 
+ *			CF to be analised.
+ *
+ * Part 2: 	url will be key on returned hash, and is part of 'contract' with caller,
+ *			i.e. caller will use this key.
+ *			This key is a FREE choice of developer of Remote Execute modules to use
+ *			with TL.
+ *
+ * Part 3:	this part is domain (link,tcase,tsuite)
+ *			work this way:
+ *			To specify Remote Execution server parameters we have provided 3 choices
+ *			a. on test case version LINKED to Test Plan + Platform (Test Plan Design time)
+ *			   custom field	'RE-XMLRPC_url_link'
+ *
+ *			b. on test case version BUT at Test Spec Design time.
+ *			   In this way if is OK to have always same parameters no matter 
+ *			   test plan + platform where test case version has been linked, we configure
+ *			   this just ONCE.
+ *			   custom field	'RE-XMLRPC_url_tcase'
+ *
+ *			c. on test suite (can be done ONLY at Test Spec Design time), all test case versions
+ *			   contained on this test suite branch (and children Test suites) will share this
+ *			   configuration.
+ *			   custom field	'RE-XMLRPC_url_tsuite'
+ *
+ **/
+
+Now a couple of examples to try to make clear configuration
+
+Example 1. configure Remote Execution Server for EACH test case
+
+1. create a new test project
+2. import Custom Fields provided with TestLink distribution 1.9.3 and up
+docs/file_examples/custom_fields/RE-XMLRPC-customFields.xml
+
+3. assign to your test project
+4. import test suites provided on
+third_party/user_contribution/fakeRemoteExecServer/all_testsuites_remote_fake_exec.xml 
+
+5. Give a look to
+third_party/user_contribution/fakeRemoteExecServer/ 
+you will find a simple do nothing server.
+
+so some tests to see you can call it using:
+third_party/user_contribution/client4fakeXMLRPCTestRunner.php
+
+When everyting work ok then you can continue your configuration
+
+6. edit each test case to add the Remote Exec Server URL
+7. create a Test Plan
+8. create at least one build
+9. add all test cases
+10. enable remote execution on your custom config
+11. Go to execute feature, open left side tree, click on test case 'sayPassed'.
+12. on right side screen you will find 'Execute and save results' button.
+13. click it, screen will be updated with execution result
+
+
+ 

@@ -25,9 +25,11 @@ else
     $prefix = "http://" . $_SERVER['HTTP_HOST'] . ":" . $_SERVER['SERVER_PORT'];
 } 
 $serverURL = $prefix . $target . "fakeXMLRPCTestRunner.php";
+echo 'Our Fake server will be called using:<br>' . $serverURL;
 $client = new IXR_Client($serverURL);
 
 // -------------------------------------------------------------------
+$callCounter = 1;
 $args=array();
 $args["testCaseName"]='My TEST';
 $args["testCaseID"]=1;
@@ -38,12 +40,20 @@ $args["platformID"]=33;
 $args["buildID"]=44;
 $args["executionMode"]='now';
 
-$client->query('executeTestCase',$args);
+echo '<br><b>Call number ' . $callCounter .'</b>';
+echo '<br><b>Arguments</b>';
 echo '<pre>';
-var_dump($client->getResponse());
+var_dump($args);
 echo '</pre>';
 
+echo '<b><pre>';
+echo '<br>Server response:<br>';
+$client->query('executeTestCase',$args);
+var_dump($client->getResponse());
+echo '</pre></b>';
+
 // -----------------------------------------------
+$callCounter++;
 $args=array();
 $args["testCaseName"]='sayPassed';
 $args["testCaseID"]=1;
@@ -54,12 +64,20 @@ $args["platformID"]=33;
 $args["buildID"]=44;
 $args["executionMode"]='now';
 
-$client->query('executeTestCase',$args);
+echo '<br><b>Call number ' . $callCounter .'</b>';
+echo '<br><b>Arguments</b>';
 echo '<pre>';
-var_dump($client->getResponse());
+var_dump($args);
 echo '</pre>';
 
+echo '<b><pre>';
+echo '<br>Server response:<br>';
+$client->query('executeTestCase',$args);
+var_dump($client->getResponse());
+echo '</pre></b>';
+
 // -----------------------------------------------
+$callCounter++;
 $args=array();
 $args["testCaseName"]='sayBlocked';
 $args["testCaseID"]=1;
@@ -70,12 +88,20 @@ $args["platformID"]=33;
 $args["buildID"]=44;
 $args["executionMode"]='now';
 
-$client->query('executeTestCase',$args);
+echo '<br><b>Call number ' . $callCounter .'</b>';
+echo '<br><b>Arguments</b>';
 echo '<pre>';
-var_dump($client->getResponse());
+var_dump($args);
 echo '</pre>';
 
+echo '<b><pre>';
+echo '<br>Server response:<br>';
+$client->query('executeTestCase',$args);
+var_dump($client->getResponse());
+echo '</pre></b>';
+
 // -----------------------------------------------
+$callCounter++;
 $args=array();
 $args["testCaseName"]='sayFailed';
 $args["testCaseID"]=1;
@@ -86,12 +112,20 @@ $args["platformID"]=33;
 $args["buildID"]=44;
 $args["executionMode"]='now';
 
-$client->query('executeTestCase',$args);
+echo '<br><b>Call number ' . $callCounter .'</b>';
+echo '<br><b>Arguments</b>';
 echo '<pre>';
-var_dump($client->getResponse());
+var_dump($args);
 echo '</pre>';
 
+echo '<b><pre>';
+echo '<br>Server response:<br>';
+$client->query('executeTestCase',$args);
+var_dump($client->getResponse());
+echo '</pre></b>';
+
 // -----------------------------------------------
+$callCounter++;
 $args=array();
 $args["testCaseName"]='sayScheduled';
 $args["testCaseID"]=1;
@@ -102,10 +136,15 @@ $args["platformID"]=33;
 $args["buildID"]=44;
 $args["executionMode"]='now';
 
-$client->query('executeTestCase',$args);
+echo '<br><b>Call number ' . $callCounter .'</b>';
+echo '<br><b>Arguments</b>';
 echo '<pre>';
-var_dump($client->getResponse());
+var_dump($args);
 echo '</pre>';
 
+echo '<b><pre>';
+echo '<br>Server response:<br>';
+$client->query('executeTestCase',$args);
+var_dump($client->getResponse());
+echo '</pre></b>';
 ?>
-

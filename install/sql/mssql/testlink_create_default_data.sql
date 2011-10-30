@@ -66,8 +66,13 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (22,'events_mgt');
 INSERT INTO /*prefix*/rights (id,description) VALUES (23,'testproject_user_role_assignment');
 INSERT INTO /*prefix*/rights (id,description) VALUES (24,'platform_management');
 INSERT INTO /*prefix*/rights (id,description) VALUES (25,'platform_view');
-INSERT INTO /*prefix*/rights (id,description) VALUES (26,'project_infrastructure_edit');
-INSERT INTO /*prefix*/rights (id,description) VALUES (27,'project_infrastructure_view');
+INSERT INTO /*prefix*/rights (id,description) VALUES (26,'project_inventory_management');
+INSERT INTO /*prefix*/rights (id,description) VALUES (27,'project_inventory_view');
+INSERT INTO /*prefix*/rights (id,description) VALUES (28,'req_tcase_link_management');
+INSERT INTO /*prefix*/rights (id,description) VALUES (29,'keyword_assignment');
+INSERT INTO /*prefix*/rights (id,description) VALUES (30,'mgt_unfreeze_req');
+
+
 
 SET IDENTITY_INSERT /*prefix*/rights OFF
 
@@ -99,6 +104,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,24);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
 
 --  Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3);

@@ -82,4 +82,12 @@ ALTER TABLE /*prefix*/users ADD COLUMN cookie_string varchar(64) NOT NULL DEFAUL
 UPDATE /*prefix*/users SET cookie_string=(MD5(RANDOM()::text) || MD5(login));
 CREATE UNIQUE INDEX /*prefix*/users_cookie_string ON /*prefix*/users ("cookie_string") ;
 COMMENT ON TABLE /*prefix*/users  IS 'Updated to TL 1.9.4 - DB 1.5';
+
+/* new rights */
+INSERT INTO /*prefix*/rights  (id,description) VALUES (28,'req_tcase_link_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (29,'keyword_assignment');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (30,'mgt_unfreeze_req');
+
+/* update rights on admin role */
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
 /* ----- END ----- */

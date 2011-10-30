@@ -77,4 +77,14 @@ ALTER TABLE /*prefix*/users ADD COLUMN cookie_string varchar(64) NOT NULL DEFAUL
 UPDATE /*prefix*/users SET cookie_string=CONCAT(MD5(RAND()),MD5(login));
 ALTER TABLE /*prefix*/users ADD UNIQUE KEY /*prefix*/users_cookie_string (`cookie_string`);
 ALTER TABLE /*prefix*/users COMMENT = 'Updated to TL 1.9.4 - DB 1.5';
+
+
+
+/* new rights */
+INSERT INTO /*prefix*/rights  (id,description) VALUES (28,'req_tcase_link_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (29,'keyword_assignment');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (30,'mgt_unfreeze_req');
+
+/* update rights on admin role */
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
 /* ----- END ----- */

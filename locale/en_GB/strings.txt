@@ -677,6 +677,7 @@ $TLS_TestPlan = $TLS_testplan;
 $TLS_btn_update_menu = "Update menu";
 $TLS_caption_nav_filter_settings = "Filters & Settings";
 $TLS_test_status_all_status = $TLS_test_status_all;
+$TLS_block_filter_not_run_latest_exec='Result: not run,  can not be used in combination with on:latest execution';
 
 
 // ----- gui/templates/mainPage.tpl -----

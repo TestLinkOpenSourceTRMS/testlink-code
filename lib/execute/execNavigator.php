@@ -58,7 +58,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * 
  *
  */
-function initializeGui(&$control) {
+function initializeGui(&$control) 
+{
 	$gui = new stdClass();
 	
 	$gui->menuUrl = 'lib/execute/execSetResults.php';
@@ -66,8 +67,15 @@ function initializeGui(&$control) {
 	$gui->src_workframe = $control->args->basehref . $gui->menuUrl .
 	                "?edit=testproject&id={$control->args->testproject_id}" . $gui->args;
 	
-	// BUGID 3270 - Export Test Plan in XML Format
 	$control->draw_export_testplan_button = true;
+	
+	
+	$dummy = config_get('results');
+	$gui->not_run = $dummy['status_code']['not_run'];
+	
+	$dummy = config_get('execution_filter_methods');
+	$gui->lastest_exec_method = $dummy['status_code']['latest_execution'];
+
 	return $gui;
 }
 ?>

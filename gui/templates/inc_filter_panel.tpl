@@ -11,9 +11,15 @@
  * That template was also the base for most of the html code used in here.
  *
  * @author Andreas Simon
- * @internal revision
+ * @internal revisions
+ *
+ * @since 1.9.4 
+ *  20111031 - franciscom - TICKET 4788: Test Case Execution - 
+ *							Give feedback when filter combination 'Result' + 'on' can not be used
+ *
+ * @since 1.9.3
  *  20110222 - asimon - BUGID 4253: enable filter method selector before submitting 
-                                    the form so its value doesn't get lost
+ *                                  the form so its value doesn't get lost
  *  20101121 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
  *  20101101 - franciscom - openExportTestPlan() interface changes
  *  20101009 - franciscom - fixed error viewer warning
@@ -40,9 +46,8 @@
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
-{* BUGID 4253: enable filter method selector before submitting the form so its value doesn't get lost *}
 <form method="post" id="filter_panel_form" name="filter_panel_form" 
-      onsubmit="document.getElementById('filter_result_method').disabled=false;">
+      onsubmit="return validateForm(this);document.getElementById('filter_result_method').disabled=false;">
 
 {* hidden input with token to manage transfer of data between left and right frame *}
 {if isset($control->form_token)}
@@ -306,12 +311,12 @@
 	   		<tr>
 				<th>{$labels.filter_result}</th>
 				<td>
+				<select id="filter_result_result" 
 				{if $control->advanced_filter_mode}
-				  	<select name="filter_result_result[]" 
-				  	        multiple="multiple"
-				  	        size="{$control->filter_item_quantity}">
+				  		name="filter_result_result[]" multiple="multiple"
+				  	    size="{$control->filter_item_quantity}">
 				{else}
-				  	<select name="filter_result_result">
+				  		name="filter_result_result">
 				{/if}
 				{html_options options=$control->filters.filter_result.filter_result_result.items
 				              selected=$control->filters.filter_result.filter_result_result.selected}

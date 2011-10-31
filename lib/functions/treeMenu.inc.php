@@ -14,6 +14,9 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20111031 - franciscom - 	TICKET 4790: Setting & Filters panel - Wrong use of BUILD on settings area
+ *							generateExecTree().
+ *
  * 20110823 - franciscom - 	filter_by_cf_values() interface changes
  * 							TICKET 4710: Performance/Filter Problem on big project - get_ln_tcversions()
  *							new functions apply_status_filters(); update_status_for_colors();
@@ -750,21 +753,22 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $idx=0;
     $testCaseQty=0;
     $testCaseSet=null;
-    	
+   
+  	
 	$keyword_id = 0;
 	$keywordsFilterType = 'Or';
 	if (property_exists($filters, 'filter_keywords') && !is_null($filters->{'filter_keywords'})) {
 		$keyword_id = $filters->{'filter_keywords'};
 		$keywordsFilterType = $filters->{'filter_keywords_filter_type'};
 	}
-
-	// user assignments per build
-	// can't use $build_id here because we need the build ID from settings panel
-	$build2filter_assignments = isset($filters->{'setting_build'}) ? $filters->{'setting_build'} : 0;
+	
+	// @since 1.9.4 - TICKET 4790: Setting & Filters panel - Wrong use of BUILD on settings area	
+	$buildSettingsPanel = isset($filters->setting_build) ? $filters->setting_build : 0;
+	$buildFiltersPanel = isset($filters->filter_result_build) ? $filters->filter_result_build : null;
+	$build2filter_assignments = is_null($buildFiltersPanel) ? $buildSettingsPanel : $buildFiltersPanel;
+	
 	
 	$tc_id = isset($filters->filter_tc_id) ? $filters->filter_tc_id : null; 
-	$build_id = isset($filters->filter_result_build) ? $filters->filter_result_build : null;
-	$bHideTCs = isset($filters->hide_testcases) ? $filters->hide_testcases : false;
 	$assignedTo = isset($filters->filter_assigned_user) ? $filters->filter_assigned_user : null; 
 	$include_unassigned = isset($filters->filter_assigned_user_include_unassigned) ?
 	                      $filters->filter_assigned_user_include_unassigned : false;
@@ -833,7 +837,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	
 	$tplan_tcases = null;
     $apply_other_filters=true;
-    
+
+
 	if($test_spec)
 	{
 		if(is_null($tc_id) || $tc_id >= 0)
@@ -847,6 +852,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			// Multiple step algoritm to apply keyword filter on type=AND
 			// get_*_tcversions filters by keyword ALWAYS in OR mode.
 
+
+			
 			$linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,
                                    'assigned_to' => $assignedTo,
                                    'assigned_on_build' => $build2filter_assignments,
@@ -867,7 +874,10 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	                        			 $options->absolute_last_execution : false;
 			}
 				
-						
+
+			//new dBug($linkedFilters);
+			//new dBug($opt);
+									
 			$tplan_tcases = $tplan_mgr->get_ln_tcversions($tplan_id,$linkedFilters,$opt);
 			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'And')
 			{

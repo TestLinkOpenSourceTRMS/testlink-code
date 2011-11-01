@@ -1349,9 +1349,12 @@ $tlCfg->urgencyImportance->threshold['high'] = 6;
 
 /**
  * @var boolean Demo mode disables some functionality
- * @TODO list with feature are disabled.
+ *
+ * user creation,update,reset password - disabled
  */
 $tlCfg->demoMode = OFF;
+
+
 
 /**
  * If true, every Ext JS table in TestLink will offer an export button,

@@ -18,7 +18,7 @@ Testlink: smarty template -
              menu_assign_testproject_roles,warning_empty_last_name,
              menu_assign_testplan_roles,caption_user_details,show_event_history,
              th_login,th_first_name,th_last_name,th_password,th_email,
-             th_role,th_locale,th_active,password_mgmt_is_external,
+             th_role,th_locale,th_active,password_mgmt_is_external,demo_update_user_disabled,
              btn_upd_user_data,btn_add,btn_cancel,button_reset_password'}
 
 <script type="text/javascript">
@@ -135,12 +135,7 @@ function validateForm(f,check_password)
 
 <div class="workBack">
 <form method="post" action="lib/usermanagement/usersEdit.php" class="x-form" name="useredit" 
-	{if $tlCfg->demoMode}
-		onsubmit="alert('{lang_get s="warn_demo"}'); return false;">
-	{else}
 		onSubmit="javascript:return validateForm(this,{$check_password});">
-	{/if}
-
 	<input type="hidden" name="user_id" value="{$user_id}" />
 	<input type="hidden" id="user_login" name="user_login" value="{$user_login}" />
 
@@ -242,7 +237,12 @@ function validateForm(f,check_password)
 
 	<div class="groupBtn">
 	<input type="hidden" name="doAction" id="doActionUserEdit" value="{$gui->operation}" />
-	<input type="submit" name="do_update"   value="{$labels.btn_save}" />
+
+	{if $tlCfg->demoMode}
+		{$labels.demo_update_user_disabled}<br>
+	{else}
+		<input type="submit" name="do_update"   value="{$labels.btn_save}" />
+	{/if}
 	<input type="button" name="cancel" value="{$labels.btn_cancel}"
 		   onclick="javascript: location.href=fRoot+'lib/usermanagement/usersView.php';" />
 
@@ -252,13 +252,14 @@ function validateForm(f,check_password)
 
 {if $reset_password_enabled}
 <br />
-<form method="post" action="lib/usermanagement/usersEdit.php" name="user_reset_password"
-	{if $tlCfg->demoMode}
-		onsubmit="alert('{lang_get s="warn_demo"}'); return false;"
-	{/if}>
+<form method="post" action="lib/usermanagement/usersEdit.php" name="user_reset_password">
 	<input type="hidden" name="doAction" id="doActionResetPassword" value="resetPassword" />
 	<input type="hidden" name="user_id" value="{$user_id}" />
-	<input type="submit" id="do_reset_password" name="do_reset_password" value="{$labels.button_reset_password}" />
+
+	{if !$tlCfg->demoMode}
+		<input type="submit" id="do_reset_password" name="do_reset_password" value="{$labels.button_reset_password}" />
+	{/if}
+		
 </form>
 {/if}
 

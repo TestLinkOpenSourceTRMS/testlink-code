@@ -60,7 +60,8 @@ function toggleRowByClass(oid,className,displayValue)
           s="title_user_mgmt,th_login,title_user_mgmt,th_login,th_first_name,th_last_name,th_email,
              th_role,order_by_role_descr,order_by_role_dir,th_locale,th_active,th_api,th_delete,
              disable,alt_edit_user,Yes,No,alt_delete_user,no_permissions_for_action,btn_create,
-             show_inactive_users,hide_inactive_users,alt_disable_user,order_by_login,order_by_login_dir,alt_active_user"}
+             show_inactive_users,hide_inactive_users,alt_disable_user,order_by_login,
+             order_by_login_dir,alt_active_user,demo_create_user_disabled"}
 
 <body {$gui->body_onload}>
 
@@ -160,7 +161,11 @@ function toggleRowByClass(oid,className,displayValue)
 
 		<div class="groupBtn">
 		<form method="post" action="{$createUserAction}" name="launch_create">
-		<input type="submit" name="doCreate"  value="{$labels.btn_create}" />
+		{if $tlCfg->demoMode}
+			{$labels.demo_create_user_disabled}
+		{else}
+			<input type="submit" name="doCreate"  value="{$labels.btn_create}" />
+		{/if}	
   		</form>
 		</div>
 	</div>

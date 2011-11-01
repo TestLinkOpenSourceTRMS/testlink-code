@@ -16,7 +16,8 @@ filesource	userInfo.tpl
              th_new_passwd,th_new_passwd_again,btn_change_passwd,audit_last_failed_logins,
              your_password_is_external,user_api_key,btn_apikey_generate,empty_email_address,
              audit_last_succesful_logins,warning,warning_empty_first_name,no_good_email_address,
-             warning_empty_last_name,passwd_dont_match,empty_old_passwd,show_event_history'}
+             warning_empty_last_name,passwd_dont_match,empty_old_passwd,show_event_history,
+             demo_update_user_disabled'}
 
 {$action_mgmt="lib/usermanagement/userInfo.php"}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
@@ -118,12 +119,7 @@ function refreshLastUpdate (last_update) {
 
 
 <h2>{$labels.title_personal_data}</h2>
-<form method="post" action="{$action_mgmt}"
-	{if $tlCfg->demoMode}
-		onsubmit="alert('{$labels.warn_demo}'); return false;">
-	{else}
-		onsubmit="return validatePersonalData(this)">
-	{/if}
+<form method="post" action="{$action_mgmt}"	onsubmit="return validatePersonalData(this)">
 	<input type="hidden" name="doAction" value="editUser" />
 	<table class="common" width="50%">
 		<tr>
@@ -154,7 +150,6 @@ function refreshLastUpdate (last_update) {
 		<tr>
 			<th>{$labels.th_locale}</th>
 			<td>
-				{* BUGID 4645 - get last_update for each locale *}
 				<script type="text/javascript">
 					js_locale = new Array();
 					{foreach key=locale item=value from=$optLocale}
@@ -170,7 +165,11 @@ function refreshLastUpdate (last_update) {
 		</tr>
 	</table>
 	<div class="groupBtn">
-		<input type="submit" value="{$labels.btn_save}" />
+		{if $tlCfg->demoMode}
+				{$labels.demo_update_user_disabled}
+		{else}
+			<input type="submit" value="{$labels.btn_save}" />
+		{/if}
 	</div>
 </form>
 
@@ -178,11 +177,7 @@ function refreshLastUpdate (last_update) {
 <h2>{$labels.title_personal_passwd}</h2>
 {if $gui->external_password_mgmt eq 0}
 	<form name="changePass" method="post" action="{$action_mgmt}"
-		{if $tlCfg->demoMode}
-		onsubmit="alert('{$labels.warn_demo}'); return false;">
-		{else}
 		onsubmit="return checkPasswords('oldpassword','newpassword','newpassword_check');">
-		{/if}
 		<input type="hidden" name="doAction" value="changePassword" />
 		<table class="common">
 			<tr><th>{$labels.th_old_passwd}</th>
@@ -196,7 +191,11 @@ function refreshLastUpdate (last_update) {
 				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
 		</table>
 		<div class="groupBtn">
-			<input type="submit" value="{$labels.btn_change_passwd}" />
+			{if $tlCfg->demoMode}
+				{$labels.demo_update_user_disabled}
+			{else}
+				<input type="submit" value="{$labels.btn_change_passwd}" />
+			{/if}
 		</div>
 	</form>
 {else}

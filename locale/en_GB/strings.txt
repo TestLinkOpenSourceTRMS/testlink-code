@@ -322,6 +322,8 @@ $TLS_testcase_does_not_exists="Test Case does not exist";
 $TLS_testcase_name_length_exceeded = 'Original length (%s) > allowed length (%s)';
 
 
+$TLS_demo_create_user_disabled = 'Demo mode enabled => Create User DISABLE';
+$TLS_demo_update_user_disabled = 'Demo mode enabled => Update User DISABLE';
 
 
 // ----- JAVASCRIPT -----

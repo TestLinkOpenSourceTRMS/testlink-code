@@ -13,17 +13,19 @@
  * @uses 		config.inc.php
  *
  * @internal revisions
+ * 20111031 - franciscom - TICKET 4790: Setting & Filters panel - Wrong use of BUILD on settings area
+ *
  */
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
 
 /**
-*	strip potential newlines and other unwanted chars from strings
-*	Mainly for stripping out newlines, carriage returns, and quotes that were 
-*	causing problems in javascript using jtree
-*
-*	@param string $str
-*	@return string string with the newlines removed
-*/
+ *	strip potential newlines and other unwanted chars from strings
+ *	Mainly for stripping out newlines, carriage returns, and quotes that were 
+ *	causing problems in javascript using jtree
+ *
+ *	@param string $str
+ *	@return string string with the newlines removed
+ */
 function filterString($str)
 {
 	$str = str_replace(array("\n","\r"), array("",""), $str);
@@ -515,7 +517,7 @@ function renderTreeNode($env,$level,&$node,$hash_id_descr,
  * 
  * @internal Revisions:
  *
- *	20101003 - franciscom - added option remove_empty_nodes_of_type on get_subtree() call
+ * 20111031 - franciscom - TICKET
  */
 function generateExecTree(&$db,&$menuUrl,$env,$filters,$options) 
 {
@@ -556,7 +558,6 @@ function generateExecTree(&$db,&$menuUrl,$env,$filters,$options)
 	$renderOpt['showTestSuiteContents'] =  	isset($filters->show_testsuite_contents) ? 
 	                           			 	$filters->show_testsuite_contents : true;
 	$renderOpt['useCounters'] = isset($options->useCounters) ? $options->useCounters : false;
-	// $renderOpt['useColors'] = isset($options->useColours) ? $options->useColours : false;
 	$renderOpt['colorOptions'] = isset($options->colorOptions) ? $options->colorOptions : null;
     $renderOpt['tc_action_enabled'] = isset($options->tc_action_enabled) ? $options->tc_action_enabled : false; 
 
@@ -672,7 +673,12 @@ function generateExecTree(&$db,&$menuUrl,$env,$filters,$options)
 
 
 
-
+/** 
+ *
+ *
+ *
+ *
+ */
 function getTestSpec4ExecTree(&$treeMgr,$enviro,$filters)
 {
 
@@ -697,7 +703,6 @@ function getTestSpec4ExecTree(&$treeMgr,$enviro,$filters)
  	                       								  'requirement_spec'=> 'exclude_my_children'));
 	$my['filters']['exclude_branches'] = null;
 
- 	// BUGID 3301 - added for filtering by toplevel testsuite
  	if (isset($filters->filter_toplevel_testsuite) && is_array($filters->filter_toplevel_testsuite)) 
  	{
  		$my['filters']['exclude_branches'] = $filters->filter_toplevel_testsuite;
@@ -717,6 +722,13 @@ function getTestSpec4ExecTree(&$treeMgr,$enviro,$filters)
 
 
 
+
+/** 
+ *
+ *
+ *
+ *
+ */
 function getTPlanTCases4ExecTree(&$dbHandler,&$tprojectMgr,&$tplanMgr,$enviro,$filters)
 {
 	$tcaseMgr = new testcase($dbHandler);
@@ -731,10 +743,11 @@ function getTPlanTCases4ExecTree(&$dbHandler,&$tprojectMgr,&$tplanMgr,$enviro,$f
 	
 	// Multiple step algoritm to apply keyword filter on type=AND
 	// get_linked_tcversions filters by keyword ALWAYS in OR mode.
-	// BUGID 3406: user assignments per build
+	//
+	// TICKET 4790: Setting & Filters panel - Wrong use of BUILD on settings area 
 	$opt = array('steps_info' => false,
 				 'include_unassigned' => $filters->filter_assigned_user_include_unassigned,
-	             'user_assignments_per_build' => $filters->setting_build);
+	             'user_assignments_per_build' => $filters->user_assignments_per_build);
 
 	$linkedFilters = array('tcase_id' => $filters->filter_tc_id, 
 						   'keyword_id' => $filters->filter_keywords,
@@ -770,8 +783,8 @@ function getTPlanTCases4ExecTree(&$dbHandler,&$tprojectMgr,&$tplanMgr,$enviro,$f
 
 
 /**
-IMPORTANT NOTICE / CRITIC: if a new filter is defined it's key has to be defined here
-*/
+ * IMPORTANT NOTICE / CRITIC: if a new filter is defined it's key has to be defined here
+ */
 function normalizeFilters($fltrObj)
 {
 	
@@ -792,9 +805,12 @@ function normalizeFilters($fltrObj)
 	$fltrObj->tc_action_enabled = isset($fltrObj->tc_action_enabled) ? $fltrObj->tc_action_enabled : true;
 
 	
-	// BUGID 3406 - user assignments per build
 	$fltrObj->setting_build = isset($fltrObj->setting_build) ? $fltrObj->setting_build : 0;
 
+	// TICKET 4790: Setting & Filters panel - Wrong use of BUILD on settings area
+	$fltrObj->user_assignments_per_build =	is_null($fltrObj->filter_result_build) ? $fltrObj->setting_build : 
+											$fltrObj->filter_result_build;
+	
 	if (property_exists($fltrObj, 'filter_keywords') && !is_null($fltrObj->filter_keywords)) {
 		$keyword_id = $fltrObj->filter_keywords;
 		$keywordsFilterType = $fltrObj->filter_keywords_filter_type;
@@ -809,7 +825,14 @@ function normalizeFilters($fltrObj)
 }	
 
 
-
+/**
+ *	
+ *	
+ *	
+ *
+ *
+ *
+ */
 function applyFilters4ExeTree(&$tplanMgr, $tplan_tcases, $tplan_id, $resultsCfg, $filters) 
 {
 	// echo __FUNCTION__;
@@ -841,12 +864,15 @@ function applyFilters4ExeTree(&$tplanMgr, $tplan_tcases, $tplan_id, $resultsCfg,
 	{
 		// special case 1: when filtering by "not run" status in any build,
 		// we need another filter function
-		if (in_array($resultsCfg['status_code']['not_run'], $requested_filter_result)) {
+		if (in_array($resultsCfg['status_code']['not_run'], $requested_filter_result)) 
+		{
 			$ffn[$filter_methods['status_code']['any_build']] = 'filter_not_run_for_any_build';
 		}
+		
 		// special case 2: when filtering by "current build", we set the build to filter with
 		// to the build chosen in settings instead of the one in filters
-		if ($requested_filter_method == $filter_methods['status_code']['current_build']) {
+		if ($requested_filter_method == $filter_methods['status_code']['current_build']) 
+		{
 			$filters->filter_result_build = $filters->setting_build;
 		}
 		
@@ -861,7 +887,14 @@ function applyFilters4ExeTree(&$tplanMgr, $tplan_tcases, $tplan_id, $resultsCfg,
 	return $items;
 }
 
-
+/**
+ *	
+ *	
+ *	
+ *
+ *
+ *
+ */
 function updateStatus4ExecTree(&$dbHandler,$itemSet,$tplanID,$buildID,$resultsCfg)
 {
 

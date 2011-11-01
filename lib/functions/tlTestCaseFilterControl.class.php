@@ -1345,7 +1345,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 	 * @internal revisions
 	 *
 	 */
-	private function init_filter_assigned_user() {
+	private function init_filter_assigned_user() 
+	{
 		if (!$this->testproject_mgr) {
 			$this->testproject_mgr = new testproject($this->db);
 		}
@@ -1400,8 +1401,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 			}
 		}
 		
-		$this->filters[$key] = array('items' => $visible_testers,
-		                             'selected' => $selection,
+		$this->filters[$key] = array('active' => true,
+									 'items' => $visible_testers,'selected' => $selection,
 		                             $unassigned_key => $this->args->{$unassigned_key});
 		
 		// which value shall be passed to tree generation class?
@@ -1635,7 +1636,9 @@ class tlTestCaseFilterControl extends tlFilterControl
 		}
 		
 		// init array structure
-		$this->filters[$key] = array($result_key => array('items' => null,
+		// 20111101 - added active key to make clear logic on inc_filter_panel_js.tpl
+		$this->filters[$key] = array('active' => true,
+									 $result_key => array('items' => null,
 		                                                  'selected' => $result_selection),
 		                             $method_key => array('items' => array(),
 		                                                  'selected' => $method_selection,

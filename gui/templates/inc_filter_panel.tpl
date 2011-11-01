@@ -78,7 +78,7 @@
 				<tr>
 					<th>{$labels.test_plan}</th>
 					<td>
-						<select name="setting_testplan" onchange="this.form.submit()">
+						<select name="setting_testplan" id="setting_testplan" onchange="this.form.submit()">
 						{html_options options=$control->settings.setting_testplan.items
 						              selected=$control->settings.setting_testplan.selected}
 						</select>
@@ -91,7 +91,7 @@
 				<tr>
 					<th>{$labels.platform}</th>
 					<td>
-						<select name="setting_platform" onchange="this.form.submit()">
+						<select name="setting_platform" id="setting_platform" onchange="this.form.submit()">
 						{html_options options=$control->settings.setting_platform.items
 						              selected=$control->settings.setting_platform.selected}
 						</select>
@@ -103,7 +103,7 @@
 				<tr>
 					<th>{$control->settings.setting_build.label}</th>
 					<td>
-						<select name="setting_build" onchange="this.form.submit()">
+						<select name="setting_build" id="setting_build" onchange="this.form.submit()">
 						{html_options options=$control->settings.setting_build.items
 						              selected=$control->settings.setting_build.selected}
 						</select>
@@ -260,8 +260,7 @@
 				              selected=$control->filters.filter_assigned_user.selected}
 				</select>
 		    {else}
-				<select name="filter_assigned_user" 
-				        id="filter_assigned_user"
+				<select name="filter_assigned_user" id="filter_assigned_user"
 				        onchange="javascript: triggerAssignedBox('filter_assigned_user',
 	                                                             'filter_assigned_user_include_unassigned',
 	                                                             '{$control->option_strings.any}',
@@ -298,19 +297,19 @@
 
 
 	{* result filtering parts *}
-	{if $control->filters.filter_result}
+	{if $control->filters.filter_result.active}
 
 		<tr><td>&nbsp;</td></tr> {* empty row for a little separation *}
 
 	   		<tr>
 				<th>{$labels.filter_result}</th>
 				<td>
+				<select id="filter_result_result" 
 				{if $control->advanced_filter_mode}
-				  	<select name="filter_result_result[]" 
-				  	        multiple="multiple"
-				  	        size="{$control->filter_item_quantity}">
+				  	name="filter_result_result[]" multiple="multiple"
+				  	size="{$control->filter_item_quantity}">
 				{else}
-				  	<select name="filter_result_result">
+				  	name="filter_result_result">
 				{/if}
 				{html_options options=$control->filters.filter_result.filter_result_result.items
 				              selected=$control->filters.filter_result.filter_result_result.selected}
@@ -324,7 +323,7 @@
 				  	<select name="filter_result_method" id="filter_result_method"
 				  		      onchange="javascript: triggerBuildChooser('filter_result_build_row',
 						                                                'filter_result_method',
-						      {$control->configuration->filter_methods.status_code.specific_build});">
+						      {$control->cfg->filter_methods.status_code.specific_build});">
 					{html_options options=$control->filters.filter_result.filter_result_method.items
 					              selected=$control->filters.filter_result.filter_result_method.selected}
 				  	</select>

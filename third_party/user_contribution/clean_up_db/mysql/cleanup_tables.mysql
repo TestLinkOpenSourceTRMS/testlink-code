@@ -1,0 +1,243 @@
+# --------------------------------------------------------------------------
+# Important Notice
+# truncate / delete has to be done to avoid issues with foreing keys.
+#
+SET FOREIGN_KEY_CHECKS = 0;
+# --------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------
+# Set here your table prefix, is you have used it
+SET @prefix := 'm4_';
+# --------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------
+# Now work starts
+SET @tablename := CONCAT(@prefix,'transactions');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+
+SET @tablename := CONCAT(@prefix,'events');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'attachments');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+
+# -------------------------------------------------------------------------
+# Execution related data
+SET @tablename := CONCAT(@prefix,'execution_bugs');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'cfield_execution_values');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'executions');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+# -------------------------------------------------------------------------
+
+SET @tablename := CONCAT(@prefix,'tcsteps');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'tcversions');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'testplan_tcversions');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+
+SET @tablename := CONCAT(@prefix,'cfield_testplan_design_values');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+
+SET @tablename := CONCAT(@prefix,'cfield_design_values');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'cfield_testprojects');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'cfield_node_types');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+
+SET @tablename := CONCAT(@prefix,'testcase_keywords');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'testplan_platforms');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'user_assignments');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'user_testplan_roles');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'user_testproject_roles');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+
+# Main items
+SET @tablename := CONCAT(@prefix,'risk_assignments');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'user_group_assign');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'user_group');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+
+
+
+SET @tablename := CONCAT(@prefix,'custom_fields');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'object_keywords');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'keywords');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+
+SET @tablename := CONCAT(@prefix,'milestones');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'builds');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'platforms');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'testplans');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'testsuites');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'testprojects');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+
+
+# =====================================================
+SET @tablename := CONCAT(@prefix,'req_specs_revisions');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+
+SET @tablename := CONCAT(@prefix,'req_specs');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+
+
+SET @tablename := CONCAT(@prefix,'req_relations');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'req_coverage');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'req_revisions');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'req_versions');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'requirements');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+SET @tablename := CONCAT(@prefix,'inventory');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+
+
+SET @tablename := CONCAT(@prefix,'users');
+SET @dummystm := CONCAT('DELETE FROM ',@tablename, " WHERE login <> 'admin'");
+PREPARE deletestm FROM @dummystm;
+EXECUTE deletestm;
+
+
+# -----------------------------------------------------------------------------------
+# Must be last one to die
+SET @tablename := CONCAT(@prefix,'nodes_hierarchy');
+SET @dummystm := CONCAT('TRUNCATE ',@tablename);
+PREPARE truncatestm FROM @dummystm;
+EXECUTE truncatestm;
+# -----------------------------------------------------------------------------------
+
+
+# -----------------------------------------------------------------------------------
+SET FOREIGN_KEY_CHECKS = 1;
+# -----------------------------------------------------------------------------------

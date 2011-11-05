@@ -10,17 +10,8 @@
  *	Also called when search option on Navigation Bar is used
  *
  *	@internal revision
- *  20101008 - asimon - BUGID 3311
- *  20100916 - amitkhullar - BUGID 3639
- *  20100628 - asimon - BUGID 3406: removed old logic from BUGID 3049,
- *                      functionality will be changed because of user assigments per build
- *  20100628 - asimon - removal of constants from filter control class
- *  20160625 - asimon - refactoring for new filter features and BUGID 3516
- *  20100624 - asimon - CVS merge (experimental branch to HEAD)
- *	20100621 - eloff - BUGID 3241 - Implement vertical layout
- *	20100502 - franciscom - BUGID 3405: Navigation Bar - Test Case Search - Crash when search a nonexistent testcase	
- *  20100315 - franciscom - fixed refesh tree logic	
- *  20100223 - asimon - BUGID 3049
+ *	@since 1.9.4
+ *  20111105 - franciscom - TICKET 4796: Test Case reuse - Quick & Dirty Approach 
  */
 
 require_once('../../config.inc.php');
@@ -34,7 +25,7 @@ $cfg = array('testcase' => config_get('testcase_cfg'),
 			 'testcase_reorder_by' => config_get('testcase_reorder_by'),
 			 'spec' => config_get('spec_cfg'));                         
 
-$args = init_args($viewerArgs,$cfg);
+$args = init_args($db,$viewerArgs,$cfg);
 $smarty = new TLSmarty();
 $gui = new stdClass();
 $gui->page_title = lang_get('container_title_' . $args->feature);
@@ -119,7 +110,7 @@ switch($args->feature)
  * 
  *
  */
-function init_args(&$viewerCfg,$cfgObj)
+function init_args(&$dbHandler,&$viewerCfg,$cfgObj)
 {
 	$iParams = array("edit" => array(tlInputParameter::STRING_N,0,50),
 			         "id" => array(tlInputParameter::INT_N),
@@ -128,16 +119,14 @@ function init_args(&$viewerCfg,$cfgObj)
 			         "targetTestCase" => array(tlInputParameter::STRING_N,0,24),
 			         "show_path" => array(tlInputParameter::INT_N),
 			         "show_mode" => array(tlInputParameter::STRING_N,0,50),
-			         "tcasePrefix" => array(tlInputParameter::STRING_N,0,16));
-	 				 //"setting_refresh_tree_on_action" => array(tlInputParameter::STRING_N,0,1));
+			         "tcasePrefix" => array(tlInputParameter::STRING_N,0,16),
+					 "tcaseExternalID" => array(tlInputParameter::STRING_N,0,16),
+					 "tcaseVersionNumber" => array(tlInputParameter::INT_N));			         
 
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
-	
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 
-	// BUGID 3516
 	// For more information about the data accessed in session here, see the comment
 	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
@@ -151,15 +140,40 @@ function init_args(&$viewerCfg,$cfgObj)
                          $session_data['setting_refresh_tree_on_action'] : 0;
 	
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-    //@TODO schlundus, rename Parameter from edit to feature
     $args->feature = $args->edit;
 
-    
-   	if (!$args->tcversion_id)
-   	{
-   		 $args->tcversion_id = testcase::ALL_VERSIONS;
-    }
-  
+
+	// -------------------
+	if( strlen($args->tcaseExternalID) > 0 )
+	{
+		// parse to get JUST prefix
+		$gluePos = strrpos($args->tcaseExternalID, $cfg->glue_character); // Find the last glue char
+		$status_ok = ($gluePos !== false);
+		if($status_ok)
+		{
+			$tcasePrefix = substr($args->tcaseExternalID, 0, $gluePos);
+		}
+		
+		$tprojectMgr = new testproject($dbHandler);
+		$tcaseMgr = new testcase($dbHandler);
+		$dummy = $tprojectMgr->get_by_prefix($tcasePrefix);
+		$args->tcase_id = $tcaseMgr->getInternalID($args->tcaseExternalID);
+		$tcinfo = $tcaseMgr->get_basic_info($args->tcase_id,array('number' => $args->tcaseVersionNumber));
+		if(!is_null($tcinfo))
+		{
+			$args->tcversion_id = $tcinfo[0]['tcversion_id'];
+		}
+		unset($tprojectMgr);
+		unset($tcaseMgr);
+	}
+    else
+    {
+	   	if (!$args->tcversion_id)
+	   	{
+	   		 $args->tcversion_id = testcase::ALL_VERSIONS;
+	    }
+  	}
+
   	// used to manage goback  
     if(intval($args->tcase_id) > 0)
     {

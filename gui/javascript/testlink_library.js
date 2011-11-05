@@ -25,6 +25,7 @@
 //
 // @internal revisions
 // @since 1.9.4
+// 20111105 - franciscom - TICKET 4796: Test Case reuse - Quick & Dirty Approach 
 // 20111007 - franciscom - TICKET 4766: Requirements Report - Display Revision and Version
 
 /*
@@ -1510,7 +1511,6 @@ function openReqSpecRevisionWindow(item_id, anchor)
 
 
 
-// function openItemWindow(feature_url, window_title, item_id, anchor)
 function openItemWindow(cfg)
 {
 
@@ -1535,4 +1535,42 @@ function openItemWindow(cfg)
 
 	windowCfg = "width=" + cfg.width + ",height=" + cfg.height + ",resizable=yes,scrollbars=yes,dependent=yes";
 	window.open(fRoot+cfg.feature_url,cfg.windowTitle,windowCfg);
+}
+
+/*
+  function: openTCW
+  			another open Test Case Window function
+  			Intended to be used for adding reference to a Test Case 
+  			inside other Test Case for some sort of reuse
+
+  args: tcase_external_id: example TER-23
+  		version_number: example 2
+
+  returns: - 
+
+*/
+function openTCW(tcase_external_id,version_number)
+{
+	var __FUNCTION__ = 'openTCW';
+	var windowCfg = '';
+	var width = getCookie("TCEditPopupWidth");
+	var height = getCookie("TCEditPopupHeight");
+	var feature_url = "lib/testcases/archiveData.php";
+
+	feature_url +=	"?allow_edit=0&show_mode=editDisabled"+"&edit=testcase&tcaseExternalID="+tcase_external_id+
+					"&tcaseVersionNumber="+version_number;
+
+	if (width == null)
+	{
+		var width = "800";
+	}
+
+	if (height == null)
+	{
+		var height = "600";
+	}
+	windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+
+	// second parameter(window name) with spaces caused bug on IE
+	window.open(fRoot+feature_url,__FUNCTION__,windowCfg);
 }

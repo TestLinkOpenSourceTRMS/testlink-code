@@ -2794,8 +2794,13 @@ class TestlinkXMLRPCServer extends IXR_Server
 	*  @param int $args["testcaseexternalid"]
 	*  @param int $args["testprojectid"] 
     *  @param string $args["requirements"] 
+    *
+    *  example:
+    *  req. spec with INTERNAL (DBID=1), container of requirements with INTERNAL ID (2,4)
+    *  req. spec with INTERNAL (DBID=3), container of requirements with INTERNAL ID (22,42)
+    *
     *                array(array('req_spec' => 1,'requirements' => array(2,4)),
-    *                array('req_spec' => 3,'requirements' => array(22,42))
+    *                	   array('req_spec' => 3,'requirements' => array(22,42))
     *
     */
    public function assignRequirements($args)

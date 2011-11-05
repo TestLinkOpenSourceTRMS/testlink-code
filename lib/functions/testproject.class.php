@@ -10,18 +10,6 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- * 20110605 - franciscom - 	added getUserChoice() to implement fix for:
- *							TICKET 4566: TABBED BROWSING - Update Tree option change affects all open projects
- *							and related issues.
- *		
- * 20110507 - franciscom - get_accessible_for_user() default order by changed
- * 20110417 - franciscom - new method getTotalCount()
- * 20110416 - franciscom - setSessionProject() -> setCurrentProject()
- * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
- * 20110223 - asimon BUGID 4239: forgotten parameter $oldNewMappings for a function call in copy_as()  
- *                               caused links between reqs in old project and testcases in new project
- *                               when copying testprojects
- *
  **/
 
 /** related functions */ 

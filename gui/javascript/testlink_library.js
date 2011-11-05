@@ -24,6 +24,7 @@
 //                 on I.E. => generates a bug - BE CAREFUL
 //
 // @internal revisions
+// 20111105 - franciscom - TICKET 4796: Test Case reuse - Quick & Dirty Approach  - openTCW()
 
 /*
   function: focusInputField
@@ -1486,3 +1487,41 @@ function openExecHistoryWindow(tc_id)
 	window.open(fRoot+url, '_blank', windowCfg);
 }
 
+
+/*
+  function: openTCW
+  			another open Test Case Window function
+  			Intended to be used for adding reference to a Test Case 
+  			inside other Test Case for some sort of reuse
+
+  args: tcase_external_id: example TER-23
+  		version_number: example 2
+
+  returns: - 
+
+*/
+function openTCW(tcase_external_id,version_number)
+{
+	var __FUNCTION__ = 'openTCW';
+	var windowCfg = '';
+	var width = getCookie("TCEditPopupWidth");
+	var height = getCookie("TCEditPopupHeight");
+	var feature_url = "lib/testcases/archiveData.php";
+
+	feature_url +=	"?allow_edit=0&show_mode=editDisabled"+"&edit=testcase&tcaseExternalID="+tcase_external_id+
+					"&tcaseVersionNumber="+version_number;
+
+	if (width == null)
+	{
+		var width = "800";
+	}
+
+	if (height == null)
+	{
+		var height = "600";
+	}
+	windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+
+	// second parameter(window name) with spaces caused bug on IE
+	window.open(fRoot+feature_url,__FUNCTION__,windowCfg);
+}

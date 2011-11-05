@@ -10,17 +10,7 @@
  *	Also called when search option on Navigation Bar is used
  *
  *	@internal revision
- *  20101008 - asimon - BUGID 3311
- *  20100916 - amitkhullar - BUGID 3639
- *  20100628 - asimon - BUGID 3406: removed old logic from BUGID 3049,
- *                      functionality will be changed because of user assigments per build
- *  20100628 - asimon - removal of constants from filter control class
- *  20160625 - asimon - refactoring for new filter features and BUGID 3516
- *  20100624 - asimon - CVS merge (experimental branch to HEAD)
- *	20100621 - eloff - BUGID 3241 - Implement vertical layout
- *	20100502 - franciscom - BUGID 3405: Navigation Bar - Test Case Search - Crash when search a nonexistent testcase	
- *  20100315 - franciscom - fixed refesh tree logic	
- *  20100223 - asimon - BUGID 3049
+ *  20111105 - franciscom - TICKET 4796: Test Case reuse - Quick & Dirty Approach
  */
 
 require_once('../../config.inc.php');
@@ -33,8 +23,8 @@ $viewerArgs = null;
 
 $tproject_mgr = new testproject($db);
 
-$args = init_args($viewerArgs,$tproject_mgr);
 $userObj = $_SESSION['currentUser'];
+$args = init_args($viewerArgs,$tproject_mgr);
 
 $grants = new stdClass();
 $grants->mgt_modify_tc = $userObj->hasRight($db,'mgt_modify_tc',$args->tproject_id);
@@ -68,9 +58,9 @@ switch($args->feature)
 		}
 		else
 		{
-			$item_mgr->show($smarty,$args->tproject_id,$gui,$templateCfg->template_dir,$args->id,array('show_mode' => $args->show_mode));
+			$item_mgr->show($smarty,$args->tproject_id,$gui,$templateCfg->template_dir,
+							$args->id,array('show_mode' => $args->show_mode));
         }
-        
 		break;
 		
 	case 'testcase':
@@ -136,23 +126,25 @@ function init_args(&$viewerCfg,&$tprojectMgr)
 
 	$iParams = array("edit" => array(tlInputParameter::STRING_N,0,50),
 			         "id" => array(tlInputParameter::INT_N),
-			         "tcase_id" => array(tlInputParameter::INT_N),
-			         "tcversion_id" => array(tlInputParameter::INT_N),
-			         "targetTestCase" => array(tlInputParameter::STRING_N,0,24),
 			         "show_path" => array(tlInputParameter::INT_N),
 			         "show_mode" => array(tlInputParameter::STRING_N,0,50),
+			         "tcase_id" => array(tlInputParameter::INT_N),
+			         "tcversion_id" => array(tlInputParameter::INT_N),
+			         "tproject_id" => array(tlInputParameter::INT_N),
+			         "targetTestCase" => array(tlInputParameter::STRING_N,0,24),
 			         "tcasePrefix" => array(tlInputParameter::STRING_N,0,16),
-			         "tproject_id" => array(tlInputParameter::INT_N));
+			         "tcaseExternalID" => array(tlInputParameter::STRING_N,0,16),
+			         "tcaseVersionNumber" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
 
-	// BUGID 3516
 	// For more information about the data accessed in session here, see the comment
 	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 	
 	$mode = 'edit_mode';
+    $cfg = config_get('testcase_cfg');
 	
 	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
 	                ? $_SESSION[$mode][$form_token] : null;
@@ -161,15 +153,43 @@ function init_args(&$viewerCfg,&$tprojectMgr)
                          $session_data['setting_refresh_tree_on_action'] : 0;
 	
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-    //@TODO schlundus, rename Parameter from edit to feature
     $args->feature = $args->edit;
     
     $args->opt_requirements = null;
 	$args->automationEnabled = 0;
 	$args->requirementsEnabled = 0;
 	$args->testPriorityEnabled = 0;
+	$args->tcasePrefix = trim($args->tcasePrefix);
+
+	if($args->tproject_id <= 0 &&  strlen($args->tcaseExternalID) > 0 )
+	{
+		// parse to get JUST prefix
+		$gluePos = strrpos($args->tcaseExternalID, $cfg->glue_character); // Find the last glue char
+		$status_ok = ($gluePos !== false);
+		if($status_ok)
+		{
+			$tcasePrefix = substr($args->tcaseExternalID, 0, $gluePos);
+		}
+		$dummy = $tprojectMgr->get_by_prefix($tcasePrefix);	
+		$tcaseMgr = new testcase($tprojectMgr->db);
+		$args->tcase_id = $tcaseMgr->getInternalID($args->tcaseExternalID);
+		$tcinfo = $tcaseMgr->get_basic_info($args->tcase_id,array('number' => $args->tcaseVersionNumber));
+		if(!is_null($tcinfo))
+		{
+			$args->tcversion_id = $tcinfo[0]['tcversion_id'];
+		}
+		unset($tcaseMgr); 
+	}
+	else
+	{
+		$dummy = $tprojectMgr->get_by_id($args->tproject_id);
+	}	
 	
-	$dummy = $tprojectMgr->get_by_id($args->tproject_id);
+	if(!is_null($dummy))
+	{
+		$args->tproject_id = $dummy['id'];
+	}
+	
 	$args->opt_requirements = $dummy['opt']->requirementsEnabled;
 	$args->requirementsEnabled = $dummy['opt']->requirementsEnabled;
 	$args->automationEnabled = $dummy['opt']->automationEnabled;
@@ -212,12 +232,10 @@ function init_args(&$viewerCfg,&$tprojectMgr)
             $viewerCfg['refreshTree'] = 0;
 			break;
     }
-    $cfg = config_get('testcase_cfg');
     if (strpos($args->targetTestCase,$cfg->glue_character) === false)
     {
     	$args->targetTestCase = $args->tcasePrefix . $args->targetTestCase;
  	}
-   	$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
     return $args;
 }
 ?>

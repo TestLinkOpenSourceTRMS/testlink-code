@@ -10,6 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20111106 - franciscom - TICKET 4797: Test case step reuse - renderGhostSteps()
  * 20111009 - franciscom - TICKET 4769: Test Case versions table - add field to specify estimated execution duration
  */
 
@@ -4538,7 +4539,6 @@ class testcase extends tlObjectWithAttachments
      * 
      *
      *	@internal Revisions
-     *	20100821 - franciscom - added options
      */
 	function get_steps($tcversion_id,$step_number=0,$options=null)
 	{
@@ -4564,6 +4564,12 @@ class testcase extends tlObjectWithAttachments
 		else
 		{
 			$result = $this->db->fetchRowsIntoMap($sql,$my['options']['accessKey']);
+		}
+
+		// TICKET 4797: Test case step reuse		
+		if(!is_null($result))
+		{
+			$this->renderGhostSteps($result);
 		}
 		return $result;
 	}
@@ -5344,6 +5350,57 @@ class testcase extends tlObjectWithAttachments
 	  return($recordset ? $recordset : null);
 	}
 
-	 
+	/**
+	 *
+	 */
+	function renderGhostSteps(&$steps2render)
+	{
+		$loop2do = count($steps2render);
+		$tlBeginMark = '[ghost]';
+		$tlEndMark = '[/ghost]';
+		
+		// I've discovered that working with Web Rich Editor generates 
+		// some additional not wanted entities, that disturb a lot
+		// when trying to use json_decode().
+		// Hope this set is enough.
+		$replaceSet = array($tlEndMark, '</p>', '<p>','&nbsp;');
+		
+		$rse = &$steps2render;
+		for($gdx=0; $gdx < $loop2do; $gdx++)
+		{
+			$start = strpos($rse[$gdx]['actions'],$tlBeginMark);
+			$action = $rse[$gdx]['actions'];
+			if($start > 0)
+			{
+				$xx = explode($tlBeginMark,$rse[$gdx]['actions']);
+				$xx2do = count($xx);
+				$action = '';
+				for($xdx=0; $xdx < $xx2do; $xdx++)
+				{
+					if(strpos($xx[$xdx],$tlEndMark) > 0)
+					{
+						$dx = trim(str_replace($replaceSet,'',$xx[$xdx]));
+						$dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
+						$dx = json_decode($dx,true);
+						$xid = $this->getInternalID($dx['TestCase']);
+						// echo('xdi::' . $xid);
+						if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
+						{
+							$fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
+							if(!is_null($fi))
+							{
+								$stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
+								$action .= $stx[0]['actions'];
+							}
+						}	
+					}
+				}
+			}
+			if($action != '')
+			{
+				$rse[$gdx]['actions'] = $action;
+			}					
+		}
+	}		
 } // end class
 ?>

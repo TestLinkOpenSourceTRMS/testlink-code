@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20111106 - franciscom - TICKET 4797: Test case step reuse - renderGhostSteps()
  * 20110817 - franciscom - TICKET 4708: When adding testcases to test plan, filtering by execution type does not work.
  *
  * @since 1.9.3
@@ -608,7 +609,6 @@ class testcase extends tlObjectWithAttachments
 	    $gui->linked_versions=null;
 		$gui->tc_current_version = array();
 	    $gui->bodyOnLoad="";
-	    // 20101008 - asimon - BUGID 3311
 	    $gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
 	    $gui->submitCode="";
 	    $gui->dialogName = '';
@@ -673,9 +673,6 @@ class testcase extends tlObjectWithAttachments
 	        $gui->match_count=count($path_info);  
 	    }
 	
-	    // fine grain control of operations
-	    // if( $viewer_defaults['disable_edit'] == 1 || has_rights($this->db,"mgt_modify_tc") == 'no' )
-		// BUGID 3387
 	    if( $viewer_defaults['disable_edit'] == 1 || has_rights($this->db,"mgt_modify_tc") == false)
 	    {
 	        $mode = 'editDisabled';
@@ -702,7 +699,6 @@ class testcase extends tlObjectWithAttachments
 			$platformMgr = new tlPlatform($this->db,$tproject_id);
 	        $gui->platforms = $platformMgr->getAllAsMap();
 	        
-	        // BUGID 2378
 	        $testplans = $this->tproject_mgr->get_all_testplans($tproject_id,array('plan_status' =>1) );
 	        $gui->has_testplans = !is_null($testplans) && count($testplans) > 0 ? 1 : 0;
 	        
@@ -765,10 +761,8 @@ class testcase extends tlObjectWithAttachments
 		  		$userid_array[$tc_current['author_id']] = null;
 		  		$userid_array[$tc_current['updater_id']] = null;
 	    
-	    		// BUGID 3431
 	      		foreach($cfPlaces as $locationKey => $locationFilter)
 		  		{ 
-		  			// BUGID 3431
 		  			$cf_current_version[$cfx][$locationKey] = 
 		  				$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
 		  			 	                                         null,null,$tproject_id,null,$tcversion_id_current);
@@ -779,17 +773,13 @@ class testcase extends tlObjectWithAttachments
 		  		if(count($tc_array) > 1)
 		  		{
 		  			$tc_other_versions[] = array_slice($tc_array,1);
-					
 					$target_idx = count($tc_other_versions) - 1;
-					
-					// BUGID 3431
 					$loop2do = count($tc_other_versions[$target_idx]);
 					for($qdx=0; $qdx < $loop2do; $qdx++)
 					{
 						$target_tcversion = $tc_other_versions[$target_idx][$qdx]['id'];
 	      				foreach($cfPlaces as $locationKey => $locationFilter)
 		  				{ 
-		  					// BUGID 3431
 		  					$cf_other_versions[$cfx][$qdx][$locationKey] = 
 		  						$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
 		  					 	                                         null,null,$tproject_id,null,$target_tcversion);
@@ -822,9 +812,10 @@ class testcase extends tlObjectWithAttachments
 		unset($userid_array['']);
 		$passeduserarray = array_keys($userid_array);
 
-		$gui->cf = null; // $cf_current_version; // $cf_smarty;
-		$gui->cf_current_version = $cf_current_version; // $cf_smarty;
-		$gui->cf_other_versions = $cf_other_versions; // $cf_smarty;
+
+		$gui->cf = null;
+		$gui->cf_current_version = $cf_current_version;
+		$gui->cf_other_versions = $cf_other_versions;
 		$gui->refreshTree = isset($gui->refreshTree) ? $gui->refreshTree : $viewer_defaults['refreshTree'];
 		$gui->sqlResult = $viewer_defaults['msg_result'];
 		$gui->action = $viewer_defaults['action'];
@@ -837,6 +828,7 @@ class testcase extends tlObjectWithAttachments
 		$gui->arrReqs = $arrReqs;
 		$gui->view_req_rights =  has_rights($this->db,"mgt_view_req");
 		$gui->keywords_map = $keywords_map;
+
 		$smarty->assign('gui',$gui);
 		$smarty->display($template_dir . $my_template);
 	}
@@ -4515,6 +4507,13 @@ class testcase extends tlObjectWithAttachments
 		{
 			$result = $this->db->fetchRowsIntoMap($sql,$my['options']['accessKey']);
 		}
+
+		// TICKET 4797: Test case step reuse		
+		if(!is_null($result))
+		{
+			$this->renderGhostSteps($result);
+		}
+		
 		return $result;
 	}
 
@@ -5177,6 +5176,61 @@ class testcase extends tlObjectWithAttachments
 	  $recordset = $this->db->fetchRowsIntoMap($sql,'platform_id');
 	  return($recordset ? $recordset : null);
 	}
+
+
+
+	/**
+	 *
+	 */
+	function renderGhostSteps(&$steps2render)
+	{
+		$loop2do = count($steps2render);
+		$tlBeginMark = '[ghost]';
+		$tlEndMark = '[/ghost]';
+		
+		// I've discovered that working with Web Rich Editor generates 
+		// some additional not wanted entities, that disturb a lot
+		// when trying to use json_decode().
+		// Hope this set is enough.
+		$replaceSet = array($tlEndMark, '</p>', '<p>','&nbsp;');
+		
+		$rse = &$steps2render;
+		for($gdx=0; $gdx < $loop2do; $gdx++)
+		{
+			$start = strpos($rse[$gdx]['actions'],$tlBeginMark);
+			$action = $rse[$gdx]['actions'];
+			if($start > 0)
+			{
+				$xx = explode($tlBeginMark,$rse[$gdx]['actions']);
+				$xx2do = count($xx);
+				$action = '';
+				for($xdx=0; $xdx < $xx2do; $xdx++)
+				{
+					if(strpos($xx[$xdx],$tlEndMark) > 0)
+					{
+						$dx = trim(str_replace($replaceSet,'',$xx[$xdx]));
+						$dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
+						$dx = json_decode($dx,true);
+						$xid = $this->getInternalID($dx['TestCase']);
+						// echo('xdi::' . $xid);
+						if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
+						{
+							$fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
+							if(!is_null($fi))
+							{
+								$stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
+								$action .= $stx[0]['actions'];
+							}
+						}	
+					}
+				}
+			}
+			if($action != '')
+			{
+				$rse[$gdx]['actions'] = $action;
+			}					
+		}
+	}		
 
 	 
 } // end class

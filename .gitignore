@@ -2,3 +2,5 @@ gui/templates_c/
 logs/
 config_db.inc.php
 custom_config.inc.php
+.project
+config.inc.php

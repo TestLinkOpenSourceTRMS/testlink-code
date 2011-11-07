@@ -199,5 +199,12 @@ $tlCfg->reports_list['test_plan_results_csv'] = array(
 'enabled' => 'all',
 'format' => 'format_xls'
 );
+
+$tlCfg->reports_list['test_cases_created_per_tester'] = array(
+'title' => 'Test cases created per tester',
+'url' => 'lib/testcases/tcCreatedPerTester.php',
+'enabled' => 'all',
+'format' => 'format_html'
+);
 // -------------------------------------------------------------------
 ?>

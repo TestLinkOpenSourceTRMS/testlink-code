@@ -197,6 +197,12 @@ $tlCfg->reports_list['free_tcases'] = array(
 'format' => 'format_html'
 );
 
+$tlCfg->reports_list['test_cases_created_per_tester'] = array(
+'title' => 'Test cases created per tester',
+'url' => 'lib/testcases/tcCreatedPerTester.php',
+'enabled' => 'all',
+'format' => 'format_html'
+);
 
 clearstatcache();
 $f2inc = TL_ABS_PATH . 'cfg/custom_reports.cfg.php';

@@ -86,7 +86,7 @@ if ($args->build_id)
 }
 
 $tplan_param = ($args->tplan_id) ? array($args->tplan_id) : testcase::ALL_TESTPLANS;
-$gui->resultSet=$tcase_mgr->get_assigned_to_user($args->user_id, $args->tproject_id,
+$gui->resultSet=$tcase_mgr->get_created_by_user($args->user_id, $args->tproject_id,
                                                  $tplan_param, $options, $filters);
 
 if( ($doIt = !is_null($gui->resultSet)) )

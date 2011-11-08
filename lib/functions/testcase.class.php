@@ -5231,7 +5231,12 @@ class testcase extends tlObjectWithAttachments
 			}					
 		}
 	}		
-
-	 
+	
+	function get_created_by_user($user_id,$tproject_id,$tplan_id=null)
+	{
+		// TBD: implement query to retrieve tc
+		return null;
+	}	
+	
 } // end class
 ?>

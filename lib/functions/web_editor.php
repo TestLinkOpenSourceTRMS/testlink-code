@@ -5,18 +5,17 @@
  *  
  * Support for web editor switching
  * 
+ * @filesource	web_editor.php
  * @package 	TestLink
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: web_editor.php,v 1.15 2010/11/22 22:13:39 mx-julian Exp $
+ * @copyright 	2005-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  * @uses 		common.php
  *
- * @internal Revisions:
- *  20101122 - Julian - BUGID 4047 - CKEditor Language according to chosen Testlink language
- *	20101122 - amitkhullar - BUGID 3998 Added ckeditor 
- * 	20080826 - franciscom - BUGID 1692
- *      refactoring to allow use of different editor type in different TL features/areas
+ * @internal revisions
+ * 20111107 - franciscom - 	ckeditor - added explicit configuration of basePath
+ *							to avoid issue that produce bad URL when ckeditor 
+ *							try to guess basePath
  **/
 
 require_once(dirname(__FILE__)."/../../config.inc.php");
@@ -140,6 +139,7 @@ function web_editor($html_input_id,$base_path,$editor_cfg=null)
 			}
 			
 			$of = new ckeditorInterface($html_input_id) ;
+			$of->Editor->basePath = $base_path . 'third_party/ckeditor/';
 			$of->Editor->config['customConfig'] = $base_path . $webEditorCfg['configFile'];
 			$of->Editor->config['toolbar'] = $webEditorCfg['toolbar'];
 			$of->Editor->config['language'] = $ckeditorLang;
@@ -147,7 +147,6 @@ function web_editor($html_input_id,$base_path,$editor_cfg=null)
 				$of->Editor->config['height'] = $webEditorCfg['height'];
 			if (isset($webEditorCfg['width']))
 				$of->Editor->config['width'] = $webEditorCfg['width'];
-
 		break;
 		    
 		case 'tinymce':

@@ -12,6 +12,7 @@
  * Requirements are children of a requirement specification (requirements container)
  *
  * @internal revisions
+ * 20111110 - franciscom - TICKET 4802: Exporting large amount of requirements ( qty > 1900) fails
  * 20111008 - franciscom - TICKET 4768: Requirements Export - Export Version and Revision
  */
 
@@ -1132,18 +1133,13 @@ function set_order($map_id_order)
  * @return  string with XML code
  *
  * @internal revisions
+ * 20111110 - franciscom - TICKET 4802: Exporting large amount of requirements ( qty > 1900) fails
  * 20111008 - franciscom - TICKET 4768: Requirements Export - Export Version and Revision
  */
 function exportReqToXML($id,$tproject_id=null)
 {            
 
 	$req = $this->get_by_id($id,requirement_mgr::LATEST_VERSION);
-	$reqData[] = $req[0]; 
-	
-	$cfXML = $this->customFieldValuesAsXML($id,$req[0]['version_id'],$tproject_id);
-	
-
- 	$rootElem = "{{XMLCODE}}";
 	$elemTpl = "\t" .   "<requirement>" .
 	           "\n\t\t" . "<docid><![CDATA[||DOCID||]]></docid>" .
 	           "\n\t\t" . "<title><![CDATA[||TITLE||]]></title>" .
@@ -1154,7 +1150,7 @@ function exportReqToXML($id,$tproject_id=null)
 			   "\n\t\t" . "<status><![CDATA[||STATUS||]]></status>" .
 			   "\n\t\t" . "<type><![CDATA[||TYPE||]]></type>" .
 			   "\n\t\t" . "<expected_coverage>||EXPECTED_COVERAGE||</expected_coverage>" .			   
-			   "\n\t\t" . $cfXML . 
+			   "\n\t\t" . $this->customFieldValuesAsXML($id,$req[0]['version_id'],$tproject_id) . 
 			   "\n\t" . "</requirement>" . "\n";
 					   
 	$info = array(	"||DOCID||" => "req_doc_id","||TITLE||" => "title",
@@ -1163,9 +1159,7 @@ function exportReqToXML($id,$tproject_id=null)
 					"||EXPECTED_COVERAGE||" => "expected_coverage",
 					"||VERSION||" => "version","||REVISION||" => "revision");
 	
-	
-	
-	$xmlStr = exportDataToXML($reqData,$rootElem,$elemTpl,$info,true);						    
+	$xmlStr = exportDataToXML(array($req),"{{XMLCODE}}",$elemTpl,$info,true);						    
 	return $xmlStr;
 }
 
@@ -1492,23 +1486,21 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 
 	
 
-  rev :
-	   20101011 - franciscom - refactoring for	
-       20070302 - check for $id not null, is not enough, need to check is > 0
+  @internal revisions
+  20111110 - franciscom - TICKET 4802: Exporting large amount of requirements ( qty > 1900) fails
 
 */
 function get_linked_cfields($id,$child_id,$parent_id=null)
 {
-	$enabled = 1;
-	if (!is_null($id) && $id > 0)
+	if( !is_null($parent_id) )
+	{
+	  	$tproject_id = $parent_id;
+	}
+	else
 	{
     	$req_info = $this->get_by_id($id);
 	  	$tproject_id = $req_info[0]['testproject_id'];
 	  	unset($req_info);
-	}
-	else
-	{
-	  	$tproject_id = $parent_id;
 	}
 	
 	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::ENABLED,null,
@@ -1651,11 +1643,10 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   *
   *
   */
- // function customFieldValuesAsXML($id,$tproject_id)
  function customFieldValuesAsXML($id,$version_id,$tproject_id)
  {
     $xml = null;
-    $cfMap=$this->get_linked_cfields($id,$version_id,$tproject_id);
+    $cfMap = $this->get_linked_cfields($id,$version_id,$tproject_id);
 	if( !is_null($cfMap) && count($cfMap) > 0 )
 	{
         $xml = $this->cfield_mgr->exportValueAsXML($cfMap);

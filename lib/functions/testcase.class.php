@@ -5403,7 +5403,7 @@ class testcase extends tlObjectWithAttachments
 		}
 	}		
 	
-	function get_created_by_user($tproject_id,$tplan_id, $options)
+	function get_created_per_user($tproject_id,$tplan_id, $options)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	    
@@ -5417,7 +5417,9 @@ class testcase extends tlObjectWithAttachments
 				"TCV.version, ".
 				"TCV.tc_external_id,". 
 				"NHTC.id  AS testcase_id,". 
-				"NHTC.name, ".
+				"NHTC.name, ". 
+				"TCV.creation_ts, " . 
+				"TCV.modification_ts, " .
 				"TPROJ.prefix, ".
 				"U.first  AS first_name,". 
 				"U.last   AS last_name, ".

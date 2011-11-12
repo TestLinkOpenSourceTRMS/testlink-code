@@ -61,7 +61,7 @@ foreach($map_code_status as $code => $status) {
 $options = new stdClass();
 $options->mode = 'full_path';
 
-$gui->resultSet=$tcase_mgr->get_created_by_user($args->tproject_id, $args->tplan_id, $options);
+$gui->resultSet=$tcase_mgr->get_created_per_user($args->tproject_id, $args->tplan_id, $options);
 
 if( ($doIt = !is_null($gui->resultSet)) )
 {	
@@ -119,6 +119,9 @@ if( ($doIt = !is_null($gui->resultSet)) )
 					"text" => $map_statuscode_css[$status]['translation'],
 					"cssClass" => $map_statuscode_css[$status]['css_class']
 				);
+				
+				$current_row[] = $tcase['creation_ts'];
+				$current_row[] = $tcase['modification_ts'];
 				
 				// add this row to the others
 				$rows[] = $current_row;
@@ -221,7 +224,8 @@ function getColumnsDefinition($optionalColumns)
 	if( is_null($labels) )
 	{
 		$lbl2get = array('user' => null, 'testsuite' => null,'testcase' => null,
-		       			 'priority' => null,'status' => null, 'version' => null);
+		       			 'priority' => null,'status' => null, 'version' => null, 
+						'title_created' => null);
 		$labels = init_labels($lbl2get);
 	}
 
@@ -242,6 +246,8 @@ function getColumnsDefinition($optionalColumns)
 	}
 	
 	$colDef[] = array('title_key' => 'status', 'width' => 50, 'type' => 'status');
+	$colDef[] = array('title_key' => 'title_created', 'width' => 75);
+	$colDef[] = array('title_key' => 'title_last_mod', 'width' => 75);
 
 	return array($colDef, $sortByCol);
 }

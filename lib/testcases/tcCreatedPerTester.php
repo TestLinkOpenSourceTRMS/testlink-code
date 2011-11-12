@@ -16,15 +16,9 @@ require_once("exttable.class.php");
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-$user = new tlUser($db);
-$names = $user->getNames($db);
-
 $results_config = config_get('results');
 
 $args=init_args($db);
-if ($args->user_id > 0) {
-	$args->user_name = $names[$args->user_id]['login'];
-}
 
 $tcase_mgr = new testcase($db);
 $tplan_mgr = new testplan($db);
@@ -36,7 +30,6 @@ $gui->tproject_id = $args->tproject_id;
 $gui->tproject_name = $args->tproject_name;
 $gui->warning_msg = '';
 $gui->tableSet = null;
-$gui->show_closed_builds = $args->show_closed_builds;
 
 $history_img = TL_THEME_IMG_DIR . "history_small.png";
 $exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
@@ -47,11 +40,7 @@ $l18n = init_labels(array('tcversion_indicator' => null,'goto_testspec' => null,
 						  'testplan' => null, 'assigned_tc_overview' => null,'testcases_assigned_to_user' => null,
                            'design' => null, 'execution' => null, 'execution_history' => null));
 
-if ($args->show_all_users) {
-	$gui->pageTitle=sprintf($l18n['assigned_tc_overview'], $gui->tproject_name);
-} else {
-	$gui->pageTitle=sprintf($l18n['testcases_assigned_to_user'],$gui->tproject_name, $args->user_name);
-}
+$gui->pageTitle=sprintf($l18n['testcases_assigned_to_user'],$gui->tproject_name, $args->user_name);
 
 $priority = array(LOW => lang_get('low_priority'),MEDIUM => lang_get('medium_priority'),HIGH => lang_get('high_priority'));
 
@@ -68,26 +57,12 @@ foreach($map_code_status as $code => $status) {
 	}
 }
 
-// Get all test cases assigned to user without filtering by execution status
+// Get all test cases created by user in the current project
+
 $options = new stdClass();
 $options->mode = 'full_path';
 
-$filters = array();
-$filters['tplan_status'] = $args->show_inactive_tplans ? 'all' : 'active';
-$filters['build_status'] = $args->show_closed_builds ? 'all' : 'open';
-
-if ($args->build_id) 
-{
-	$filters['build_id'] = $args->build_id;
-	
-	// if build_id is set, show assignments regardless of build and tplan status
-	$filters['build_status'] = 'all';
-	$filters['tplan_status'] = 'all';
-}
-
-$tplan_param = ($args->tplan_id) ? array($args->tplan_id) : testcase::ALL_TESTPLANS;
-$gui->resultSet=$tcase_mgr->get_created_by_user($args->user_id, $args->tproject_id,
-                                                 $tplan_param, $options, $filters);
+$gui->resultSet=$tcase_mgr->get_created_by_user($args->tproject_id, $args->tplan_id, $options);
 
 if( ($doIt = !is_null($gui->resultSet)) )
 {	
@@ -98,7 +73,7 @@ if( ($doIt = !is_null($gui->resultSet)) )
          "WHERE id IN (" . implode(',',$tplanSet) . ")";
     $gui->tplanNames=$db->fetchRowsIntoMap($sql,'id');
 
-	$optColumns = array('user' => $args->show_user_column, 'priority' => $args->priority_enabled);
+	$optColumns = array('priority' => $args->priority_enabled);
 
 	foreach ($gui->resultSet as $tplan_id => $tcase_set) {
 
@@ -113,12 +88,8 @@ if( ($doIt = !is_null($gui->resultSet)) )
 				$current_row = array();
 				$tcase_id = $tcase['testcase_id'];
 				$tcversion_id = $tcase['tcversion_id'];
-				
-				if ($args->show_user_column) {
-					$current_row[] = htmlspecialchars($names[$tcase['user_id']]['login']);
-				}
-		
-				$current_row[] = htmlspecialchars($tcase['build_name']);
+
+				$current_row[] = '';
 				$current_row[] = htmlspecialchars($tcase['tcase_full_path']);
 
 				// create linked icons
@@ -138,14 +109,8 @@ if( ($doIt = !is_null($gui->resultSet)) )
 				                 $exec_link . $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . 
 				                 $tcase['tc_external_id'] . " : " . htmlspecialchars($tcase['name']) .
 				        		 sprintf($l18n['tcversion_indicator'],$tcase['version']);
-
-				if ($show_platforms)
-				{
-					$current_row[] = htmlspecialchars($tcase['platform_name']);
-				}
 				
 				if ($args->priority_enabled) {
-					
 					//BUGID 4418 - clean up priority usage
 					$current_row[] = "<!-- " . $tcase['priority'] . " -->" . $priority[priority_to_level($tcase['priority'])];
 				}
@@ -164,8 +129,7 @@ if( ($doIt = !is_null($gui->resultSet)) )
 					"cssClass" => $map_statuscode_css[$status]['css_class']
 				);
 				
-				$current_row[] = htmlspecialchars($tcase['creation_ts']) . 
-				                 " (" . get_date_diff($tcase['creation_ts']) . ")";
+				$current_row[] = htmlspecialchars($tcase['login']);
 				
 				// add this row to the others
 				$rows[] = $current_row;
@@ -178,13 +142,7 @@ if( ($doIt = !is_null($gui->resultSet)) )
 		 * - Test Cases assigned to me else
 		 */
 		$table_id = "tl_table_tc_assigned_to_me_for_tplan_";
-		if($args->show_all_users) {
-			$table_id = "tl_table_tc_assignment_overview_for_tplan_";
-		}
-		if($args->build_id) {
-			$table_id = "tl_table_tc_assigned_to_user_for_tplan_";
-		}
-		
+
 		// add test plan id to table id
 		$table_id .= $tplan_id;
 		
@@ -239,7 +197,10 @@ function get_date_diff($date) {
  *
  * @author franciscom - francisco.mancardi@gmail.com
  * @args - used global coupling accessing $_REQUEST and $_SESSION
- * 
+ * 	if ($show_platforms)
+	{
+		$colDef[] = array('title_key' => 'platform', 'width' => 50, 'filter' => 'list', 'filterOptions' => $platforms);
+	}
  * @return object of stdClass
  *
  * 
@@ -263,14 +224,6 @@ function init_args(&$dbHandler)
 	}
 	
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
-	$args->build_id = isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id']) ? 
-					  intval($_REQUEST['build_id']) : 0;
-
-	// BUGID 4009
-	$args->show_inactive_tplans = isset($_REQUEST['show_inactive_tplans']) ? true : false;
-	                  
-	$args->show_all_users = (isset($_REQUEST['show_all_users']) && $_REQUEST['show_all_users'] =! 0);
-	$args->show_user_column = $args->show_all_users; 
 
     $args->user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : 0;
     if( $args->user_id == 0)
@@ -279,29 +232,6 @@ function init_args(&$dbHandler)
         $args->user_name = $_SESSION['currentUser']->login;
     }	
 
-	// BUGID 3824
-    $show_closed_builds = isset($_REQUEST['show_closed_builds']) ? true : false;
-	$show_closed_builds_hidden = isset($_REQUEST['show_closed_builds_hidden']) ? true : false;
-	$selection = false;
-	if ($show_closed_builds) {
-		$selection = true;
-	} else if ($show_closed_builds_hidden) {
-		$selection = false;
-	} else if (isset($_SESSION['show_closed_builds'])) {
-		$selection = $_SESSION['show_closed_builds'];
-	}
-	
-	$args->show_closed_builds = $_SESSION['show_closed_builds'] = $selection;
-
-	if ($args->show_all_users) {
-		$args->user_id = TL_USER_ANYBODY;
-	}
-	
-	
-	$args->show_inactive_and_closed = isset($_REQUEST['show_inactive_and_closed']) && 
-									  $_REQUEST['show_inactive_and_closed'] =! 0 ? true : false;
-
-	
 	return $args;
 }
 
@@ -315,8 +245,8 @@ function getColumnsDefinition($optionalColumns, $show_platforms, $platforms)
   	static $labels;
 	if( is_null($labels) )
 	{
-		$lbl2get = array('build' => null,'testsuite' => null,'testcase' => null,'platform' => null,
-		       			 'user' => null, 'priority' => null,'status' => null, 'version' => null, 'due_since' => null);
+		$lbl2get = array('user' => null, 'testsuite' => null,'testcase' => null,
+		       			 'priority' => null,'status' => null, 'version' => null);
 		$labels = init_labels($lbl2get);
 	}
 
@@ -324,21 +254,9 @@ function getColumnsDefinition($optionalColumns, $show_platforms, $platforms)
 	// sort by test suite per default
 	$sortByCol = $labels['testsuite'];
 	
-	// user column is only shown for assignment overview
-	if ($optionalColumns['user']) 
-	{
-		$colDef[] = array('title_key' => 'user', 'width' => 80);
-		// for assignment overview sort by build
-		$sortByCol = $labels['build'];
-	}
-	
-	$colDef[] = array('title_key' => 'build', 'width' => 80);
+	$colDef[] = array('title_key' => '', 'width' => 80);
 	$colDef[] = array('title_key' => 'testsuite', 'width' => 130);
 	$colDef[] = array('title_key' => 'testcase', 'width' => 130);
-	if ($show_platforms)
-	{
-		$colDef[] = array('title_key' => 'platform', 'width' => 50, 'filter' => 'list', 'filterOptions' => $platforms);
-	}
 	
 	// 20100816 - asimon - if priority is enabled, enable default sorting by that column
 	if ($optionalColumns['priority']) 
@@ -349,7 +267,7 @@ function getColumnsDefinition($optionalColumns, $show_platforms, $platforms)
 	}
 	
 	$colDef[] = array('title_key' => 'status', 'width' => 50, 'type' => 'status');
-	$colDef[] = array('title_key' => 'due_since', 'width' => 100);
+	$colDef[] = array('title_key' => 'user', 'width' => 100);
 
 	return array($colDef, $sortByCol);
 }

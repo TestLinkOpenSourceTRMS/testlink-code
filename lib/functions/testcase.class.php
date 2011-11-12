@@ -5403,10 +5403,118 @@ class testcase extends tlObjectWithAttachments
 		}
 	}		
 	
-	function get_created_by_user($user_id,$tproject_id,$tplan_id=null)
+	function get_created_by_user($tproject_id,$tplan_id, $options)
 	{
-		// TBD: implement query to retrieve tc
-		return null;
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	    
+		$has_options=!is_null($options);
+	    $access_key=array('testplan_id','testcase_id');
+
+	    $sql = "/* $debugMsg */ SELECT ".
+				"TPROJ.id AS testproject_id, ".
+				"TPTCV.testplan_id, ".
+				"TCV.id   AS tcversion_id,". 
+				"TCV.version, ".
+				"TCV.tc_external_id,". 
+				"NHTC.id  AS testcase_id,". 
+				"NHTC.name, ".
+				"TPROJ.prefix, ".
+				"U.first  AS first_name,". 
+				"U.last   AS last_name, ".
+				"U.login,  " .
+				"(TPTCV.urgency * TCV.importance) AS priority " .
+	    		"FROM " .
+					"users U " . 
+						"JOIN tcversions TCV " . 
+						"ON U.id = TCV.author_id  " .
+							"JOIN nodes_hierarchy NHTCV " . 
+							"ON TCV.id = NHTCV.id " . 
+								"JOIN nodes_hierarchy NHTC " . 
+								"ON NHTCV.parent_id = NHTC.id " . 
+									"JOIN testplan_tcversions TPTCV " . 
+									"ON TCV.id = TPTCV.tcversion_id " . 
+										"JOIN testplans TPLAN " . 
+										"ON TPTCV.testplan_id = TPLAN.id " . 
+											"JOIN testprojects TPROJ " . 
+											"ON TPLAN.testproject_id = TPROJ.id " . 
+				"WHERE " .
+					"TPROJ.id = \"$tproject_id\" AND " .
+					"TPTCV.testplan_id = \"$tplan_id\"";
+	    
+	    if( $has_options && isset($options->access_keys) )
+	    {
+	        switch($options->access_keys)
+	        {
+	            case 'testplan_testcase':
+	            break;
+	            
+	            case 'testcase_testplan':   
+	                $access_key=array('testcase_id','testplan_id');
+	            break;
+	        }
+	    }
+	    
+	    $rs=$this->db->fetchMapRowsIntoMap($sql,$access_key[0],$access_key[1],database::CUMULATIVE);
+	    
+	    if( $has_options && !is_null($rs))
+	    {
+	    	if( isset($options->mode) )
+	    	{
+	    		switch($options->mode)
+	    		{
+	    			case 'full_path':
+	    				if( !isset($options->access_keys) ||
+	    				(is_null($options->access_keys) || $options->access_keys='testplan_testcase') )
+	    				{
+	    					$tcaseSet=null;
+	    					$main_keys = array_keys($rs);
+	    					foreach($main_keys as $maccess_key)
+	    					{
+	    						$sec_keys = array_keys($rs[$maccess_key]);
+	    						foreach($sec_keys as $saccess_key)
+	    						{
+	    							// is enough I process first element
+	    							$item = $rs[$maccess_key][$saccess_key][0];
+	    							if(!isset($tcaseSet[$item['testcase_id']]))
+	    							{
+	    								$tcaseSet[$item['testcase_id']]=$item['testcase_id'];
+	    							}
+	    						}
+	    					}
+	    
+	    					$path_info = $this->tree_manager->get_full_path_verbose($tcaseSet);
+	    
+	    					// Remove test project piece and convert to string
+	    					$flat_path=null;
+	    					foreach($path_info as $tcase_id => $pieces)
+	    					{
+	    						unset($pieces[0]);
+	    						// 20100813 - asimon - deactivated last slash on path
+	    						// to remove it from test suite name in "tc assigned to user" tables
+	    						$flat_path[$tcase_id]=implode('/',$pieces);
+	    					}
+	    					$main_keys = array_keys($rs);
+	    
+	    					foreach($main_keys as $idx)
+	    					{
+	    						$sec_keys = array_keys($rs[$idx]);
+	    						foreach($sec_keys as $jdx)
+	    						{
+	    							$third_keys = array_keys($rs[$idx][$jdx]);
+	    							foreach($third_keys as $tdx)
+	    							{
+	    								$fdx = $rs[$idx][$jdx][$tdx]['testcase_id'];
+	    								$rs[$idx][$jdx][$tdx]['tcase_full_path']=$flat_path[$fdx];
+	    							}
+	    						}
+	    					}
+	    				}
+	    				break;
+	    		}
+	    	}
+	    }
+	    
+	    return $rs;
 	}	
 	
 } // end class

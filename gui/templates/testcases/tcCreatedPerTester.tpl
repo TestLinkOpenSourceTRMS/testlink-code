@@ -31,21 +31,6 @@ rev:
 <h1 class="title">{$gui->pageTitle}</h1>
 <div class="workBack">
 
-{* 20101013 - asimon - disable "show also closed builds" checkbox when a specific build is selected *}
-{if $gui->show_build_selector}
-<p>
-<form method="post">
-	<input type="checkbox" name="show_closed_builds" value="show_closed_builds"
-		   {if $gui->show_closed_builds} checked="checked" {/if}
-		   onclick="this.form.submit();" /> {$labels.show_closed_builds_btn}
-	<input type="hidden"
-		   name="show_closed_builds_hidden"
-		   value="{$gui->show_closed_builds}" />
-</form>
-</p>
-<br />
-{/if}
-
 {if $gui->warning_msg == ''}
 	{if $gui->resultSet}
 		{foreach from=$gui->tableSet key=idx item=matrix}

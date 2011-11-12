@@ -21,7 +21,6 @@ $results_config = config_get('results');
 $args=init_args($db);
 
 $tcase_mgr = new testcase($db);
-$tplan_mgr = new testplan($db);
 
 $gui=new stdClass();
 $gui->show_build_selector = ($args->build_id == 0);
@@ -37,10 +36,10 @@ $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
 
 $l18n = init_labels(array('tcversion_indicator' => null,'goto_testspec' => null, 'version' => null, 
-						  'testplan' => null, 'assigned_tc_overview' => null,'testcases_assigned_to_user' => null,
+						  'testplan' => null, 'assigned_tc_overview' => null,'testcases_created_per_user' => null,
                            'design' => null, 'execution' => null, 'execution_history' => null));
 
-$gui->pageTitle=sprintf($l18n['testcases_assigned_to_user'],$gui->tproject_name, $args->user_name);
+$gui->pageTitle=sprintf($l18n['testcases_created_per_user'],$gui->tproject_name);
 
 $priority = array(LOW => lang_get('low_priority'),MEDIUM => lang_get('medium_priority'),HIGH => lang_get('high_priority'));
 
@@ -77,10 +76,7 @@ if( ($doIt = !is_null($gui->resultSet)) )
 
 	foreach ($gui->resultSet as $tplan_id => $tcase_set) {
 
-		$show_platforms = !is_null($tplan_mgr->getPlatforms($tplan_id));
-		$getOpt = array('outputFormat' => 'map');
-		$platforms = $tplan_mgr->getPlatforms($tplan_id,$getOpt);
-		list($columns, $sortByColumn) = getColumnsDefinition($optColumns, $show_platforms,$platforms);
+		list($columns, $sortByColumn) = getColumnsDefinition($optColumns);
 		$rows = array();
 
 		foreach ($tcase_set as $tcase_platform) {
@@ -89,24 +85,19 @@ if( ($doIt = !is_null($gui->resultSet)) )
 				$tcase_id = $tcase['testcase_id'];
 				$tcversion_id = $tcase['tcversion_id'];
 
-				$current_row[] = '';
+				$current_row[] = htmlspecialchars($tcase['login']);
 				$current_row[] = htmlspecialchars($tcase['tcase_full_path']);
 
 				// create linked icons
 				
 				$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tcase_id});\">" .
 				                     "<img title=\"{$l18n['execution_history']}\" src=\"{$history_img}\" /></a> ";
-				
-				$exec_link = "<a href=\"javascript:openExecutionWindow(" .
-				             "{$tcase_id},{$tcversion_id},{$tcase['build_id']}," .
-				             "{$tcase['testplan_id']},{$tcase['platform_id']});\">" .
-						     "<img title=\"{$l18n['execution']}\" src=\"{$exec_img}\" /></a> ";
 
 				$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$tcase_id});\">" .
 				             "<img title=\"{$l18n['design']}\" src=\"{$edit_img}\" /></a> ";
 				
-				$current_row[] = "<!-- " . sprintf("%010d", $tcase['tc_external_id']) . " -->" . $exec_history_link .
-				                 $exec_link . $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . 
+				$current_row[] = "<!-- " . sprintf("%010d", $tcase['tc_external_id']) . " -->" . $exec_history_link . 
+								 $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . 
 				                 $tcase['tc_external_id'] . " : " . htmlspecialchars($tcase['name']) .
 				        		 sprintf($l18n['tcversion_indicator'],$tcase['version']);
 				
@@ -128,8 +119,6 @@ if( ($doIt = !is_null($gui->resultSet)) )
 					"text" => $map_statuscode_css[$status]['translation'],
 					"cssClass" => $map_statuscode_css[$status]['css_class']
 				);
-				
-				$current_row[] = htmlspecialchars($tcase['login']);
 				
 				// add this row to the others
 				$rows[] = $current_row;
@@ -172,20 +161,6 @@ if( ($doIt = !is_null($gui->resultSet)) )
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-
-
-/**
- * Replacement for the smarty helper function to get that functionality outside of templates.
- * Returns difference between a given date and the current time in days.
- * @author Andreas Simon
- * @param $date
- */
-function get_date_diff($date) {
-	$date = (is_string($date)) ? strtotime($date) : $date;
-	$i = 1/60/60/24;
-	return floor((time() - $date) * $i);
-}
-
 
 /**
  * init_args()
@@ -240,7 +215,7 @@ function init_args(&$dbHandler)
  * get Columns definition for table to display
  *
  */
-function getColumnsDefinition($optionalColumns, $show_platforms, $platforms)
+function getColumnsDefinition($optionalColumns)
 {
   	static $labels;
 	if( is_null($labels) )
@@ -267,7 +242,6 @@ function getColumnsDefinition($optionalColumns, $show_platforms, $platforms)
 	}
 	
 	$colDef[] = array('title_key' => 'status', 'width' => 50, 'type' => 'status');
-	$colDef[] = array('title_key' => 'user', 'width' => 100);
 
 	return array($colDef, $sortByCol);
 }

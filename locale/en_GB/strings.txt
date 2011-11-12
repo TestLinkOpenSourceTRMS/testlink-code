@@ -2784,6 +2784,12 @@ $TLS_show_closed_builds_btn = "Show also closed builds";
 
 
 
+// ----- lib/testcases/tcCreatedPerTester.php -----
+$TLS_link_report_test_cases_created_per_tester = "Test Cases created per User";
+$TLS_testcases_created_per_user = 'Test Project: %s - Test Cases created per User';
+
+
+
 // ----- lib/testcases/tcImport.php -----
 $TLS_action_on_duplicated_name = "Action for duplicated names";
 $TLS_action_for_duplicates = "Action for duplicates";

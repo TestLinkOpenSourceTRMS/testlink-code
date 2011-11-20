@@ -239,7 +239,9 @@ class TLSmarty extends Smarty
         // -----------------------------------------------------------------------------
         // Images
         $tlImages = array('api_info' => TL_THEME_IMG_DIR . "brick.png",
+                          'calendar' => TL_THEME_IMG_DIR . "calendar.gif",
                           'checked' => TL_THEME_IMG_DIR . "apply_f2_16.png",
+                          'clear' => TL_THEME_IMG_DIR . "trash.png",
                           'delete' => TL_THEME_IMG_DIR . "trash.png",
                           'delete_disabled' => TL_THEME_IMG_DIR . "trash_greyed.png",
         				  'direct_link' => TL_THEME_IMG_DIR . "world_link.png",

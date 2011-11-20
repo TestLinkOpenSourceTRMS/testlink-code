@@ -3,37 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
+ * @filesource	database.class.php
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @author 		Mantis Team
- * @copyright 	2006 TestLink community 
+ * @copyright 	2006-2011 TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.55.2.5 2011/01/15 19:23:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
  *
- * 20101212 - franciscon - BUGID 4093: MSSQL - Problems on fetch_array() 
- * 20100111 - franciscon - BUGID - display debug_print_backtrace() when query fails
- * 20090720 - franciscom - fetchRowsIntoMap() - added some error management code 
- * 20090202 - franciscom - BUGID 1318 - fetchFirstRowSingleColumn() added new control
- * 20081129 - franciscom - Added CUMULATIVE constant
- * 20081116 - franciscom - fetchColumnsIntoMap() added cumulative argument
- *
- * 20080722 - franciscom -  trying to solve memory usage problems, have add option
- *                          to enable/disable query execution log.
- *                          Setted to DISABLE by default.
- *
- * 20080722 - franciscom -  problems with MSSQL and ADODB_FETCH_ASSOC
- * 20080315 - franciscom -  due to problems with PostGres with $ADODB_COUNTRECS=FALSE;
- *                          return to default mode ($ADODB_COUNTRECS=TRUE;)
- *
- * 20080204 - franciscom -  setting ADODB_FETCH_ASSOC as default fetch mode
- * 20060708 - franciscom -  changed Connect() to NConnect(), to avoid
- *                          problems due to connection reuse, when
- *                          you wanto to connect to more than one database at once
- *                          See ADODB manuals
  */
  
 /** 
@@ -58,6 +38,7 @@ require_once( dirname(__FILE__). '/logging.inc.php' );
 class database 
 {
 	const CUMULATIVE=1;
+	const ONERROREXIT=1;
 	
 	var $db;
 	var $queries_array = array();

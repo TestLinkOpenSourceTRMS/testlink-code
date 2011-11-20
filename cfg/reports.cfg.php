@@ -197,9 +197,9 @@ $tlCfg->reports_list['free_tcases'] = array(
 'format' => 'format_html'
 );
 
-$tlCfg->reports_list['test_cases_created_per_tester'] = array(
-'title' => 'link_report_test_cases_created_per_tester',
-'url' => 'lib/testcases/tcCreatedPerTester.php',
+$tlCfg->reports_list['test_cases_created_per_user'] = array(
+'title' => 'link_report_test_cases_created_per_user',
+'url' => 'lib/testcases/tcCreatedPerUser.php',
 'enabled' => 'all',
 'format' => 'format_html'
 );

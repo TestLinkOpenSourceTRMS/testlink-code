@@ -2,13 +2,18 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
- * @filesource	tcAssignedToUser.php
+ * @filesource	tcCreatedPerUser.php
  * @package 	TestLink
  * @copyright 	2005,2011 TestLink community 
- * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
+ * @author 		Bruno P. Kinoshita - brunodepaulak@yahoo.com.br
  * @link 		http://www.teamst.org/index.php
- *
+ * @since 		1.9.4
+ * 
+ * Generates report of test cases created per user. It produces a report with 
+ * all test cases created within a project. 
+ * 
  * @internal revisions:
+ * 20111120 - kinow - BUGID 1761
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -18,8 +23,10 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $results_config = config_get('results');
 
+// init arguments
 $args=init_args($db);
 
+// used to retrieve test cases from 
 $tcase_mgr = new testcase($db);
 
 $gui=new stdClass();
@@ -34,14 +41,14 @@ $history_img = TL_THEME_IMG_DIR . "history_small.png";
 $exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
 $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
-
 $l18n = init_labels(array('tcversion_indicator' => null,'goto_testspec' => null, 'version' => null, 
 						  'testplan' => null, 'assigned_tc_overview' => null,'testcases_created_per_user' => null,
-                           'design' => null, 'execution' => null, 'execution_history' => null));
+                           'design' => null, 'execution' => null, 'execution_history' => null, 
+						   'low_priority' => null, 'medium_priority' => null, 'high_priority' => null));
 
 $gui->pageTitle=sprintf($l18n['testcases_created_per_user'],$gui->tproject_name);
 
-$priority = array(LOW => lang_get('low_priority'),MEDIUM => lang_get('medium_priority'),HIGH => lang_get('high_priority'));
+$priority = array(LOW => $l18n['low_priority'],MEDIUM => $l18n['medium_priority'],HIGH => $l18n['high_priority']);
 
 $map_status_code = $results_config['status_code'];
 $map_code_status = $results_config['code_status'];
@@ -55,8 +62,6 @@ foreach($map_code_status as $code => $status) {
 		$map_statuscode_css[$code]['css_class'] = $map_code_status[$code] . '_text';
 	}
 }
-
-// Get all test cases created by user in the current project
 
 $options = new stdClass();
 $options->mode = 'full_path';
@@ -73,9 +78,9 @@ if( ($doIt = !is_null($gui->resultSet)) )
     $gui->tplanNames=$db->fetchRowsIntoMap($sql,'id');
 
 	$optColumns = array('priority' => $args->priority_enabled);
-
+	
+	// For each test case set under a test plan ID, create the rows and columns
 	foreach ($gui->resultSet as $tplan_id => $tcase_set) {
-
 		list($columns, $sortByColumn) = getColumnsDefinition($optColumns);
 		$rows = array();
 
@@ -88,7 +93,7 @@ if( ($doIt = !is_null($gui->resultSet)) )
 				$current_row[] = htmlspecialchars($tcase['login']);
 				$current_row[] = htmlspecialchars($tcase['tcase_full_path']);
 
-				// create linked icons
+				// Create linked icons
 				
 				$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tcase_id});\">" .
 				                     "<img title=\"{$l18n['execution_history']}\" src=\"{$history_img}\" /></a> ";
@@ -102,7 +107,7 @@ if( ($doIt = !is_null($gui->resultSet)) )
 				        		 sprintf($l18n['tcversion_indicator'],$tcase['version']);
 				
 				if ($args->priority_enabled) {
-					//BUGID 4418 - clean up priority usage
+					// Clean up priority usage
 					$current_row[] = "<!-- " . $tcase['priority'] . " -->" . $priority[priority_to_level($tcase['priority'])];
 				}
 				
@@ -128,29 +133,25 @@ if( ($doIt = !is_null($gui->resultSet)) )
 			}
 		}
 		
-		/* different table id for different reports:
-		 * - Assignment Overview if $args->show_all_users is set
-		 * - Test Cases assigned to user if $args->build_id > 0
-		 * - Test Cases assigned to me else
-		 */
-		$table_id = "tl_table_tc_assigned_to_me_for_tplan_";
+		// Different table ID for different reports:
+		$table_id = "tl_table_tc_created_per_user_";
 
-		// add test plan id to table id
+		// Add test plan ID to table ID
 		$table_id .= $tplan_id;
 		
 		$matrix = new tlExtTable($columns, $rows, $table_id);
 		$matrix->title = $l18n['testplan'] . ": " . htmlspecialchars($gui->tplanNames[$tplan_id]['name']);
 		
-		// default grouping by first column, which is user for overview, build otherwise
+		// Default grouping by first column, which is user for overview, build otherwise
 		$matrix->setGroupByColumnName(lang_get($columns[0]['title_key']));
 		
-		// make table collapsible if more than 1 table is shown and surround by frame
+		// Make table collapsible if more than 1 table is shown and surround by frame
 		if (count($tplanSet) > 1) {
 			$matrix->collapsible = true;
 			$matrix->frame = true;
 		}
 		
-		// define toolbar
+		// Define toolbar
 		$matrix->showToolbar = true;
 		$matrix->toolbarExpandCollapseGroupsButton = true;
 		$matrix->toolbarShowAllColumnsButton = true;
@@ -166,31 +167,23 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
- * init_args()
- * Get in an object all data that has arrived to page through _REQUEST or _SESSION.
- * If you think this page as a function, you can consider this data arguments (args)
- * to a function call.
- * Using all this data as one object property will help developer to understand
- * if data is received or produced on page.
- *
- * @author franciscom - francisco.mancardi@gmail.com
- * @args - used global coupling accessing $_REQUEST and $_SESSION
- * 	if ($show_platforms)
-	{
-		$colDef[] = array('title_key' => 'platform', 'width' => 50, 'filter' => 'list', 'filterOptions' => $platforms);
-	}
- * @return object of stdClass
- *
+ * Gets the arguments used to create the report. 
  * 
- * @internal revisions:
- *  20100731 - asimon - additional arguments show_all_users and show_inactive_and_closed
+ * Some of these arguments are set in the $_REQUEST, and some in $_SESSION. Having 
+ * these arguments in hand, the init_args method will use TestLink objects, such 
+ * as a Test Project Manager (testproject class) to retrieve other information 
+ * that is displayed on the screen (e.g.: project name).
+ * 
+ * @param $dbHandler handler to TestLink database
+ * 
+ * @return object of stdClass
  */
 function init_args(&$dbHandler)
 {
     $_REQUEST=strings_stripSlashes($_REQUEST);
     $args = new stdClass();
     
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->tproject_name = '';
 	if($args->tproject_id >0)
 	{ 
@@ -215,8 +208,11 @@ function init_args(&$dbHandler)
 
 
 /**
- * get Columns definition for table to display
- *
+ * Gets the columns definitions used in the report table.
+ * 
+ * @param $optionalColumns optional columns (e.g.: priority)
+ * 
+ * @return array containing columns and sort information
  */
 function getColumnsDefinition($optionalColumns)
 {
@@ -237,7 +233,7 @@ function getColumnsDefinition($optionalColumns)
 	$colDef[] = array('title_key' => 'testsuite', 'width' => 130);
 	$colDef[] = array('title_key' => 'testcase', 'width' => 130);
 	
-	// 20100816 - asimon - if priority is enabled, enable default sorting by that column
+	// if priority is enabled
 	if ($optionalColumns['priority']) 
 	{
 	  	$sortByCol = $labels['priority'];

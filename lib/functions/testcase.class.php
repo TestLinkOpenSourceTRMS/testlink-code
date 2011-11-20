@@ -27,6 +27,8 @@
  *						   MSSQL problems when table alias is used on SQL UPDATE 
  *						   BUGID 4204 - update problem due to alias, declared as issue 3849 fixed on 	
  *						   but not really fixed.
+ * 20111120 - kinow - BUGID 1761 - created method get_created_per_user() to retrieve 
+ * 					  test cases created per user and generate a report to end user.
  */
 
 /** related functionality */
@@ -5232,6 +5234,18 @@ class testcase extends tlObjectWithAttachments
 		}
 	}		
 	
+	/**
+	 * Gets test cases created per user. The test cases are restricted to a 
+	 * test plan of a test project. This method performs a query to database 
+	 * using the given arguments.
+	 * 
+	 * Optional values may be passed in the options array. 
+	 * 
+	 * @param integer $tproject_id Test project ID
+	 * @param integer $tplan_id Test plan ID
+	 * @param mixed $options Optional array of options
+	 * @return mixed Array of test cases created per user
+	 */
 	function get_created_per_user($tproject_id,$tplan_id, $options)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -5240,37 +5254,17 @@ class testcase extends tlObjectWithAttachments
 	    $access_key=array('testplan_id','testcase_id');
 
 	    $sql = "/* $debugMsg */ SELECT ".
-				"TPROJ.id AS testproject_id, ".
-				"TPTCV.testplan_id, ".
-				"TCV.id   AS tcversion_id,". 
-				"TCV.version, ".
-				"TCV.tc_external_id,". 
-				"NHTC.id  AS testcase_id,". 
-				"NHTC.name, ". 
-				"TCV.creation_ts, " . 
-				"TCV.modification_ts, " .
-				"TPROJ.prefix, ".
-				"U.first  AS first_name,". 
-				"U.last   AS last_name, ".
-				"U.login,  " .
-				"(TPTCV.urgency * TCV.importance) AS priority " .
-	    		"FROM " .
-					"users U " . 
-						"JOIN tcversions TCV " . 
-						"ON U.id = TCV.author_id  " .
-							"JOIN nodes_hierarchy NHTCV " . 
-							"ON TCV.id = NHTCV.id " . 
-								"JOIN nodes_hierarchy NHTC " . 
-								"ON NHTCV.parent_id = NHTC.id " . 
-									"JOIN testplan_tcversions TPTCV " . 
-									"ON TCV.id = TPTCV.tcversion_id " . 
-										"JOIN testplans TPLAN " . 
-										"ON TPTCV.testplan_id = TPLAN.id " . 
-											"JOIN testprojects TPROJ " . 
-											"ON TPLAN.testproject_id = TPROJ.id " . 
-				"WHERE " .
-					"TPROJ.id = \"$tproject_id\" AND " .
-					"TPTCV.testplan_id = \"$tplan_id\"";
+				"TPROJ.id AS testproject_id, TPTCV.testplan_id, TCV.id AS tcversion_id," .
+				"TCV.version, TCV.tc_external_id, NHTC.id  AS testcase_id, NHTC.name, ". 
+				"TCV.creation_ts, TCV.modification_ts, TPROJ.prefix, U.first  AS first_name,". 
+				"U.last AS last_name, U.login, (TPTCV.urgency * TCV.importance) AS priority " .
+	    		"FROM users U JOIN tcversions TCV ON U.id = TCV.author_id " . 
+	    		"JOIN nodes_hierarchy NHTCV ON TCV.id = NHTCV.id " . 
+	    		"JOIN nodes_hierarchy NHTC ON NHTCV.parent_id = NHTC.id " .
+				"JOIN testplan_tcversions TPTCV ON TCV.id = TPTCV.tcversion_id " . 
+				"JOIN testplans TPLAN ON TPTCV.testplan_id = TPLAN.id " . 
+				"JOIN testprojects TPROJ ON TPLAN.testproject_id = TPROJ.id " . 
+				"WHERE TPROJ.id = {$tproject_id} AND TPTCV.testplan_id = {$tplan_id}";
 	    
 	    if( $has_options && isset($options->access_keys) )
 	    {

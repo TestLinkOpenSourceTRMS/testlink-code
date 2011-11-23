@@ -12,12 +12,6 @@
  * This page is window for navigation and working area (eg tree + edit page).
  *
  * @internal revisions
- *  20110417 - franciscom - added tproject id as new argument on links
- *  20101116 - asimon - BUGID 4007: Strange empty TestPlan combo boxes in same navigator panes
- *  20101013 - asimon - if execution is wanted, check for open builds in testplan
- *  20100822 - asimon - BUGID 3697: Assign Test Case execution - problems 
- *                                  when no build is defined on test plan
- *  20100106 - asimon - contribution for 2976 req/reqspec search
  *
 **/
 require_once('../../config.inc.php');
@@ -78,8 +72,6 @@ if (isset($aa_tfp[$showFeature]) === FALSE)
 }
 
 // features that need to run the validate build function
-// BUGID 3697: added "Assign Test Case execution to list of features for
-// which build availability needs to be checked
 if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment')))
 {
 	// Check if for test project selected at least a test plan exist (BUGID 623)
@@ -126,18 +118,11 @@ else
  *  If no valid build is found give feedback to user and exit.
  *
  * 	@author Martin Havlat
- *  20101013 - asimon - new parameter $open: if execution is wanted, check for open builds
- *  20060809 - franciscom - check if user can create builds,
- *                          then put a link on the message page
- *                          to create link feature
- *
  **/
 function validateBuildAvailability(&$db,$tplanID, $tprojectID, $open)
 {
 	$tplanMrg = new testplan($db);
 	
-	// 20101013 - asimon - if execution is wanted, check for open builds
-	// BUGID 4007 - use open parameter also for active check
 	if (!$tplanMrg->getNumberOfBuilds($tplanID, $open, $open))
 	{	           
 		$message = '<p>' . lang_get('no_build_warning_part1') . "<b> " . htmlspecialchars($tpName) . "</b>";

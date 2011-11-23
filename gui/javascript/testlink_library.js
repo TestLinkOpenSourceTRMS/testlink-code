@@ -25,6 +25,7 @@
 //
 // @internal revisions
 // @since 1.9.4
+// 20111123 - franciscom - TICKET 4814: bug deletion may fails if bugID string contains special characters 
 // 20111105 - franciscom - TICKET 4796: Test Case reuse - Quick & Dirty Approach 
 // 20111007 - franciscom - TICKET 4766: Requirements Report - Display Revision and Version
 
@@ -623,16 +624,30 @@ function dialog_onUnload(odialog)
  */
 function deleteBug(btn,text,combinedBugID)
 {
+	var idx;
+	var executionID;
+	var bugID;
+	
 	if (btn != 'yes')
+	{
 		return;
-	var idx = combinedBugID.indexOf('-');
+	}
+	
+	idx = combinedBugID.indexOf('-');
 	if (idx < 0)
+	{
 		return;
+	}
+	
+	executionID = combinedBugID.substr(0,idx)
 
-	var executionID = combinedBugID.substr(0,idx)
-	var bugID = combinedBugID.substr(idx+1);
+	// TICKET 4814: bug deletion may fails if bugID string contains special characters ('#', '&' , ...)
+	// bugID string may contain special characters : 
+	// must escape it to get correct bugID value in bugDelete.php
+	bugID = escape(combinedBugID.substr(idx+1));
+	
 	window.open(fRoot+"lib/execute/bugDelete.php?exec_id="+executionID+"&bug_id="+bugID,
-		            "Delete","width=510,height=150,resizable=yes,dependent=yes");
+		            "DeleteBug","width=510,height=150,resizable=yes,dependent=yes");
 }
 
 // seems is not used => do more checks and remove

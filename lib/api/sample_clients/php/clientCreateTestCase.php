@@ -3,13 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: clientCreateTestCase.php,v $
+ * @filesource clientCreateTestCase.php
+ * @author: francisco.mancardi@gmail.com
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2010/08/31 19:59:48 $ by $Author: franciscom $
- * @Author: francisco.mancardi@gmail.com
- *
- * rev: 
+ * @internal revisions
  */
  
 require_once 'util.php';
@@ -18,13 +15,29 @@ show_api_db_sample_msg();
 
 $client = new IXR_Client($server_url);
 
+// Get user input
+$run = isset($_REQUEST['run']) ? $_REQUEST['run'] : 'all';
+
+
 $tcCounter = 1;
+$dummy = explode(',',$run);
+$tc2run = array_flip($dummy);
+
 // ..................................................................................
+//if( isset($tc2run['all'] )
+//{
+//	$tc2
+//}
+
+//$suffix = $run == 'all' ? 
+/*
 tc_a($client,$tcCounter);
 tc_b($client,$tcCounter);
 tc_c($client,$tcCounter);
 tc_d($client,$tcCounter);
 tc_e($client,$tcCounter);
+*/
+tc_sushi_rise($client,$tcCounter);
 // ..................................................................................
 
 
@@ -140,6 +153,40 @@ function tc_a(&$client,&$tcCounter)
 	$args["testsuiteid"]=379;
 	$args["testcasename"]=1000;
 	$args["summary"]='Test Case created via API';
+	$args["authorlogin"]='admin';
+	
+	
+	$debug=true;
+	echo $unitTestDescription;
+	$client->debug=$debug;
+	runTest($client,$method,$args);
+}
+// ----------------------------------------------------------------------------------------------------
+
+
+function tc_sushi(&$client,&$tcCounter)
+{
+	$method='createTestCase';
+	$unitTestDescription="Test #{$tcCounter}- {$method} - Test Case OK - Sushi Rice recipe";
+	$tcCounter++;
+	
+	$args=array();
+	$args["devKey"]=DEV_KEY;
+	$args["testprojectid"]=378;
+	$args["testsuiteid"]=379;
+	$args["testcasename"]='Sushi Rice recipe';
+	$args["summary"] = "When making authentic sushi, it is important to first create authentic sushi rice " .
+	                   " -- it is, after all, the base flavor and texture of the rolls you create. "  .
+	                   " While it may seem difficult to make this recipe for the first time, " .
+	                   " it is well worth perfecting. " .
+	                   " It adds sweet, tangy flavor to sushi rolls, and the sticky texture is necessary " .
+	                   " to hold the rolls together. Use this rice whenever cooked sushi rice is called for.";	
+
+	$args["prerequisites"] = "3 cups uncooked sushi or sticky rice<br/>" .
+							 "3 cups water<br/>" .
+							 "1/2 cup rice vinegar<br/>" . 
+							 "1/2cup sugar<br/>" . "1 teaspoon salt";	
+
 	$args["authorlogin"]='admin';
 	
 	

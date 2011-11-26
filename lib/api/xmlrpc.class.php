@@ -20,6 +20,7 @@
  * 
  *
  * @internal revisions 
+ * 20111123 - franciscom - updateTestCase(), work started
  * 20111023 - franciscom - getTestCase(), added key on result 'full_tc_external_id' that will hold
  *						   external ID as is displayed on GUI (with prefix and glue character)	
  * 20111018 - franciscom - TICKET 4774: New methods to manage test case steps
@@ -828,7 +829,9 @@ class TestlinkXMLRPCServer extends IXR_Server
     }    
     
     /**
-	 * Helper method to see if a devKey is valid 
+	 * Helper method: 
+	 * check is a devKey is valid 
+	 * if test OK => get user ID
 	 * 	
 	 * @param string $devKey	 
 	 * @return boolean
@@ -1770,7 +1773,7 @@ class TestlinkXMLRPCServer extends IXR_Server
             $options = array( 'check_duplicate_name' => $opt[self::$checkDuplicatedNameParamName],
 	                          'action_on_duplicate_name' => $opt[self::$actionOnDuplicatedNameParamName]);
    
-            $op_result=$this->tcaseMgr->create($this->args[self::$testSuiteIDParamName],
+            $op_result=$this->tcaseMgr->_create($this->args[self::$testSuiteIDParamName],
                                                $this->args[self::$testCaseNameParamName],
                                                $this->args[self::$summaryParamName],
                                                $opt[self::$preconditionsParamName],
@@ -1793,10 +1796,41 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 
 	 /**
 	  * Update an existing test case
+  	  * @param struct $args
+  	  * @param string $args["devKey"]
+  	  * @param string $args["testcaseexternalid"] format PREFIX-NUMBER
+  	  * @param string $args["version"] version NUMBER (human readable) 
+  	  *
+  	  * @param string $args["summary"] - optional
+  	  * @param string $args["preconditions"] - optional
+      * @param string $args["importance"] - optional - see const.inc.php for domain
+      * @param string $args["execution"] - optional - see ... for domain
+      * @param string $args["order'] - optional
 	  */
 	 public function updateTestCase($args)
 	 {
-	 	// TODO: Implement
+		// Check test case identity
+		// Check if user (devkey) has grants to do operation
+		//
+		// Check that configuration allow changes on Test Case
+		// Check that new test case name do not collide with existent one
+		
+		$resultInfo = array();
+        $operation=__FUNCTION__;
+	    $msg_prefix="({$operation}) - ";
+
+		$this->_setArgs($args);              
+		
+        $checkFunctions = array('authenticate','checkTestCaseIdentity','checkTestCaseVersionNumber');
+        $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
+
+   	    if($status_ok)
+   	    {
+			// get internal ID			   	    	
+   	    	
+   	    	
+   	    }
+		
 	 } 	 	
 
 

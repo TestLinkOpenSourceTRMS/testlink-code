@@ -1,9 +1,10 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.29 2010/11/06 11:42:47 amkhullar Exp $
+@filesource	usersEdit.tpl
 
-20080419 - franciscom - BUGID 1496
-         -  bug 1000  - Testplan User Role Assignments
+@internal revisions
+@since 1.9.4
+20111127 - franciscom - demoMode behaviour changes
 *}
 
 {config_load file="input_dimensions.conf" section='login'}
@@ -19,8 +20,8 @@ $Id: usersEdit.tpl,v 1.29 2010/11/06 11:42:47 amkhullar Exp $
              menu_assign_testproject_roles,warning_empty_last_name,
              menu_assign_testplan_roles,caption_user_details,show_event_history,
              th_login,th_first_name,th_last_name,th_password,th_email,
-             th_role,th_locale,th_active,password_mgmt_is_external,
-             btn_upd_user_data,btn_add,btn_cancel,button_reset_password'}
+             th_role,th_locale,th_active,password_mgmt_is_external,demo_update_user_disabled,
+             btn_upd_user_data,btn_add,btn_cancel,button_reset_password,demo_reset_password_disabled'}
 
 {literal}
 <script type="text/javascript">
@@ -146,12 +147,7 @@ function validateForm(f,check_password)
 
 <div class="workBack">
 <form method="post" action="lib/usermanagement/usersEdit.php" class="x-form" name="useredit" 
-	{if $tlCfg->demoMode}
-		onsubmit="alert('{lang_get s="warn_demo"}'); return false;">
-	{else}
 		onSubmit="javascript:return validateForm(this,{$check_password});">
-	{/if}
-
 	<input type="hidden" name="user_id" value="{$user_id}" />
 	<input type="hidden" id="user_login" name="user_login" value="{$user_login}" />
 
@@ -251,9 +247,19 @@ function validateForm(f,check_password)
 
 	</table>
 
+	{assign var="submitEnabled" value="1"}
+	{if $tlCfg->demoMode}
+		{if $operation == 'doUpdate'}
+			{assign var="submitEnabled" value="0"}
+		{/if}	
+	{/if}
 	<div class="groupBtn">
-	<input type="hidden" name="doAction" id="doActionUserEdit" value="{$operation}" />
-	<input type="submit" name="do_update"   value="{$labels.btn_save}" />
+	{if $submitEnabled}
+		<input type="hidden" name="doAction" id="doActionUserEdit" value="{$operation}" />
+		<input type="submit" name="do_update"   value="{$labels.btn_save}" />
+	{else}
+		{$labels.demo_update_user_disabled}<br>
+	{/if}
 	<input type="button" name="cancel" value="{$labels.btn_cancel}"
 			onclick="javascript: location.href=fRoot+'lib/usermanagement/usersView.php';" />
 
@@ -263,13 +269,14 @@ function validateForm(f,check_password)
 
 {if $reset_password_enabled}
 <br />
-<form method="post" action="lib/usermanagement/usersEdit.php" name="user_reset_password"
+<form method="post" action="lib/usermanagement/usersEdit.php" name="user_reset_password">
 	{if $tlCfg->demoMode}
-		onsubmit="alert('{lang_get s="warn_demo"}'); return false;"
-	{/if}>
-	<input type="hidden" name="doAction" id="doActionResetPassword" value="resetPassword" />
-	<input type="hidden" name="user_id" value="{$user_id}" />
-	<input type="submit" id="do_reset_password" name="do_reset_password" value="{$labels.button_reset_password}" />
+		{$labels.demo_reset_password_disabled}
+	{else}
+		<input type="hidden" name="doAction" id="doActionResetPassword" value="resetPassword" />
+		<input type="hidden" name="user_id" value="{$user_id}" />
+		<input type="submit" id="do_reset_password" name="do_reset_password" value="{$labels.button_reset_password}" />
+	{/if}	
 </form>
 {/if}
 

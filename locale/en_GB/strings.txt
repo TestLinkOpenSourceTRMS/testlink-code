@@ -305,7 +305,12 @@ $TLS_prefix_does_not_exists="Test project prefix does not exist";
 $TLS_testcase_does_not_exists="Test Case does not exist";
 $TLS_testcase_name_length_exceeded = 'Original length (%s) > allowed length (%s)';
 
-
+$TLS_demo_create_user_disabled = 'Demo mode enabled => Create User DISABLED';
+$TLS_demo_update_user_disabled = 'Demo mode enabled => Update User DISABLED';
+$TLS_demo_update_role_disabled = 'Demo mode enabled => Update Role DISABLED';
+$TLS_demo_reset_password_disabled = 'Demo mode enabled => Password Reset DISABLED';
+$TLS_demo_special_user = "Demo mode enabled - user has been configured as special " .
+ 						 "(see config.inc.php demoSpecialUsers)";
 
 // ----- JAVASCRIPT -----
 // Used on javascript logic to validate Custom Field values

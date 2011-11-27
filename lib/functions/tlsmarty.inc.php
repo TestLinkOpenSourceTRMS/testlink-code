@@ -243,6 +243,7 @@ class TLSmarty extends Smarty
                           'checked' => TL_THEME_IMG_DIR . "apply_f2_16.png",
                           'clear' => TL_THEME_IMG_DIR . "trash.png",
                           'delete' => TL_THEME_IMG_DIR . "trash.png",
+                          'demo_mode' => TL_THEME_IMG_DIR . "emoticon_tongue.png",
                           'delete_disabled' => TL_THEME_IMG_DIR . "trash_greyed.png",
         				  'direct_link' => TL_THEME_IMG_DIR . "world_link.png",
         				  'edit' => TL_THEME_IMG_DIR . "icon_edit.png",

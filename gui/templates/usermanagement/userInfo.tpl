@@ -1,8 +1,11 @@
 {* 
 Testlink: smarty template - Edit own account 
-$Id: userInfo.tpl,v 1.21 2010/11/06 11:42:47 amkhullar Exp $
+@filesource	userInfo.tpl
 
-rev: 20080908 - franciscom - email validity check
+@internal revisions
+@since 1.9.4
+20111127 - franciscom - demoMode behaviour changes
+
 *}
 {assign var="cfg_section" value="login"}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -15,7 +18,8 @@ rev: 20080908 - franciscom - email validity check
              th_new_passwd,th_new_passwd_again,btn_change_passwd,audit_last_failed_logins,
              your_password_is_external,user_api_key,btn_apikey_generate,empty_email_address,
              audit_last_succesful_logins,warning,warning_empty_first_name,no_good_email_address,
-             warning_empty_last_name,passwd_dont_match,empty_old_passwd,show_event_history'}
+             warning_empty_last_name,passwd_dont_match,empty_old_passwd,show_event_history,
+             demo_update_user_disabled'}
 
 {assign var="action_mgmt" value="lib/usermanagement/userInfo.php"}
 
@@ -26,7 +30,6 @@ rev: 20080908 - franciscom - email validity check
 {literal}
 <script type="text/javascript">
 {/literal}
-//BUGID 3943: Escape all messages (string)
 var warning_empty_pwd = "{$labels.warning_empty_pwd|escape:'javascript'}";
 var warning_different_pwd = "{$labels.warning_different_pwd|escape:'javascript'}";
 var warning_enter_less1 = "{$labels.warning_enter_less1|escape:'javascript'}";
@@ -124,12 +127,7 @@ function refreshLastUpdate (last_update) {
 
 
 <h2>{lang_get s="title_personal_data"}</h2>
-<form method="post" action="{$action_mgmt}"
-	{if $tlCfg->demoMode}
-		onsubmit="alert('{lang_get s="warn_demo"}'); return false;">
-	{else}
-		onsubmit="return validatePersonalData(this)">
-	{/if}
+<form method="post" action="{$action_mgmt}"	onsubmit="return validatePersonalData(this)">
 	<input type="hidden" name="doAction" value="editUser" />
 	<table class="common" width="50%">
 		<tr>
@@ -160,7 +158,6 @@ function refreshLastUpdate (last_update) {
 		<tr>
 			<th>{$labels.th_locale}</th>
 			<td>
-				{* BUGID 4645 - get last_update for each locale *}
 				<script type="text/javascript">
 					js_locale = new Array();
 					{foreach key=locale item=value from=$optLocale}
@@ -176,7 +173,11 @@ function refreshLastUpdate (last_update) {
 		</tr>
 	</table>
 	<div class="groupBtn">
-		<input type="submit" value="{$labels.btn_save}" />
+		{if $tlCfg->demoMode}
+			{$labels.demo_update_user_disabled}
+		{else}
+			<input type="submit" value="{$labels.btn_save}" />
+		{/if}	
 	</div>
 </form>
 
@@ -184,11 +185,7 @@ function refreshLastUpdate (last_update) {
 <h2>{lang_get s="title_personal_passwd"}</h2>
 {if $external_password_mgmt eq 0}
 	<form name="changePass" method="post" action="{$action_mgmt}"
-		{if $tlCfg->demoMode}
-		onsubmit="alert('{lang_get s="warn_demo"}'); return false;">
-		{else}
 		onsubmit="return checkPasswords('oldpassword','newpassword','newpassword_check');">
-		{/if}
 		<input type="hidden" name="doAction" value="changePassword" />
 		<table class="common">
 			<tr><th>{$labels.th_old_passwd}</th>
@@ -202,7 +199,11 @@ function refreshLastUpdate (last_update) {
 				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
 		</table>
 		<div class="groupBtn">
+		{if $tlCfg->demoMode}
+			{$labels.demo_update_user_disabled}
+		{else}
 			<input type="submit" value="{$labels.btn_change_passwd}" />
+		{/if}	
 		</div>
 	</form>
 {else}

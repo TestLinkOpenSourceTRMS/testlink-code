@@ -22,17 +22,10 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * @since 1.9.4
+ *	20111127 - franciscom - demo mode - new config option demoSpecialUsers
  *	20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server
- *	20110530 - Julian - allow to define seperate logo for generated documents including height 
- *	20110414 - franciscom - moved $g_prefix_name_for_copy BEFORE use of custom config
- *	20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor for platform notes
- *							$tlCfg->platform_template						
- *	20110319 - franciscom - BUGID 4322: New Option to block delete of executed test cases.
- *							testcase_cfg->can_delete_executed
- * 	20110109 - franciscom - added $tlCfg->req_cfg->duplicated_name_algorithm
- *								  $tlCfg->req_cfg->duplicated_docid_algorithm
  *
- *	20110103 - franciscom - BUGID 4131: PHPMAILER - upgrade config options to use SSL or TLS - allows use gmail
  *
  **/
 
@@ -1298,9 +1291,13 @@ $tlCfg->urgencyImportance->threshold['high'] = 6;
 
 /**
  * @var boolean Demo mode disables some functionality
- * @TODO list with feature are disabled.
+ * user edit disable
+ * role create ENABLED
+ * user create ENABLED
+ * special users manage DISABLE
  */
 $tlCfg->demoMode = OFF;
+$tlCfg->demoSpecialUsers = array('admin');
 
 /**
  * If enabled, every Ext JS table in TestLink will offer an export button,

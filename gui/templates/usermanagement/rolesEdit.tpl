@@ -1,22 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.22 2010/11/06 11:42:47 amkhullar Exp $
+@filesource	rolesEdit.tpl
 Purpose: smarty template - create/edit user role
 
-rev :
-     20081030 - franciscom - new area system rights
-     20080412 - franciscom - refactoring - reducing coupling with  php script
-     20080409 - franciscom - refactoring
-     20071227 - franciscom - look and feel.
-
-     20070725 - franciscom
-     - added js check on role name
-     - use of input_dimensions.conf
-
-     20070829 - jbarchibald
-      -  bug 1000  - Testplan User Role Assignments
+@internal revisions
+@since 1.9.4
+20111127 - franciscom - demoMode behaviour changes
 *}
-
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
@@ -30,10 +20,9 @@ rev :
              error_role_no_rights,caption_possible_affected_users,enter_role_notes,
              title_user_mgmt,caption_define_role,th_mgttc_rights,th_req_rights,
              th_product_rights,th_user_rights,th_kw_rights,th_cf_rights,th_system_rights,
-             th_platform_rights,
+             th_platform_rights,demo_update_role_disabled,
              th_rolename,th_tp_rights,btn_cancel'}
              
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_modify_role = "{$labels.warning_modify_role|escape:'javascript'}";
 var warning_empty_role_name = "{$labels.warning_empty_role_name|escape:'javascript'}";
@@ -77,15 +66,11 @@ function validateForm(f)
 
 	<form name="rolesedit" id="rolesedit"
 		method="post" action="lib/usermanagement/rolesEdit.php"
-	{if $tlCfg->demoMode}
-		onsubmit="alert('{lang_get s="warn_demo"}'); return false;">
-	{else}
 		{if $gui->grants->role_mgmt == "yes"}
-		onSubmit="javascript:return validateForm(this);"
+			onSubmit="javascript:return validateForm(this);"
 		{else}
-		onsubmit="return false"
+			onsubmit="return false"
 		{/if}
-	{/if}
 	>
 	<input type="hidden" name="roleid" value="{$gui->role->dbID}" />
 	<table class="common">
@@ -176,13 +161,28 @@ function validateForm(f)
 		</tr>
 
 	</table>
+	
+	{assign var="submitEnabled" value="1"}
+	{if $tlCfg->demoMode}
+		{if $gui->operation == 'doUpdate'}
+			{assign var="submitEnabled" value="0"}
+		{/if}	
+	{/if}
+	
 	<div class="groupBtn">
 	{if $gui->grants->role_mgmt == "yes" && $gui->role->dbID != $smarty.const.TL_ROLES_NO_RIGHTS}
 
+		
+		{if $submitEnabled}
 		<input type="hidden" name="doAction" value="{$gui->operation}" />
 		<input type="submit" name="role_mgmt" value="{$labels.btn_save}"
 		         {if $gui->role != null && $gui->affectedUsers neq null} onClick="return modifyRoles_warning()"{/if}
 		/>
+		{else}
+			{$labels.demo_update_role_disabled}<br>
+		{/if}
+		
+		
 	{/if}
 		<input type="button" name="cancel" value="{$labels.btn_cancel}"
 			onclick="javascript: location.href=fRoot+'lib/usermanagement/rolesView.php';" />

@@ -1,19 +1,7 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.21 2010/10/17 09:46:37 franciscom Exp $ 
+@filesource usersAssign.tpl
 
-rev:
-    20100930 - franciscom - BUGID 2344: Private test project
-    20100314 - eloff - BUGID 3272 - send assign form via POST to allow more data to be sent
-    20091129 - franciscom - ISSUE 2554 - coloruing
-    20090426 - franciscom - BUGID 2442- added bulk setting management
-    20070818 - franciscom
-    added logic to display effective role for test project and test plan
-    given user info about inheritenance.
-
-    20070829 - jbarchibald
-      -  bug 1000  - Testplan User Role Assignments
-    
 *}
 {lang_get var="labels" 
           s='TestProject,TestPlan,btn_change,title_user_mgmt,set_roles_to,show_only_authorized_users,
@@ -223,9 +211,15 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
     	{/foreach}
     	</table>
    </div> 	
-    	<div class="groupBtn">	
+   	
+   	
+   	<div class="groupBtn">	
+    	{if $tlCfg->demoMode}
+			{$labels.warn_demo}
+		{else}	
     		<input type="submit" name="do_update" value="{$labels.btn_upd_user_data}" />
-    	</div>
+		{/if}
+	</div>
   </form>
 {/if} {* if $gui->features *}
 </div>

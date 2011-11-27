@@ -65,7 +65,8 @@ function toggleRowByClass(oid,className,displayValue)
           s="title_user_mgmt,th_login,title_user_mgmt,th_login,th_first_name,th_last_name,th_email,
              th_role,order_by_role_descr,order_by_role_dir,th_locale,th_active,th_api,th_delete,
              disable,alt_edit_user,Yes,No,alt_delete_user,no_permissions_for_action,btn_create,
-             show_inactive_users,hide_inactive_users,alt_disable_user,order_by_login,order_by_login_dir,alt_active_user"}
+             show_inactive_users,hide_inactive_users,alt_disable_user,order_by_login,
+             order_by_login_dir,alt_active_user,demo_special_user"}
 
 <body {$body_onload}>
 
@@ -140,7 +141,6 @@ function toggleRowByClass(oid,className,displayValue)
 				<td>{$userObj->emailAddress|escape}</td>
 				<td>{$r_d|escape}</td>
 				<td>
-				 {* BUGID 3802 *}
 				 {assign var="user_locale" value=$userObj->locale}
 				 {$optLocale.$user_locale|escape}
 				</td>
@@ -153,10 +153,16 @@ function toggleRowByClass(oid,className,displayValue)
         	{/if}
 				</td>
 				<td align="center">
+				 {if $userObj->isDemoSpecial}
+				  <img style="border:none;cursor: pointer;" alt="{$labels.demo_special_user}"
+					   title="{$labels.demo_special_user}" src="{$tlImages.demo_mode}">
+
+				 {else}
 				  <img style="border:none;cursor: pointer;" alt="{$labels.alt_disable_user}"
 					     title="{$labels.alt_disable_user}" src="{$tlImages.delete}"
 					     onclick="delete_confirmation({$userObj->dbID},'{$userObj->login|escape:'javascript'|escape}',
 					                                  '{$del_msgbox_title}','{$warning_msg}');" />
+				 {/if}
 				</td>
 			</tr>
 			{/foreach}

@@ -7,17 +7,14 @@
  *
  * @package 	TestLink
  * @author 		-
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: usersView.php,v 1.35.6.2 2011/01/10 15:38:59 asimon83 Exp $
+ * @copyright 	2007-2011, TestLink community 
+ * @filesource	usersView.php
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
- *  20100419 - franciscom - BUGID 3355: A user can not be deleted from the list
- *	20100326 - franciscom - BUGID 3324
- *	20100106 - franciscom - security improvement - checkUserOrderBy()
- *                         (after scanning with Acunetix Web Security Scanner)
- *                          
+ * @since 1.9.4
+ * 20111127 - franciscom - use of demoSpecialUsers                          
  */
 require_once("../../config.inc.php");
 require_once("users.inc.php");
@@ -64,31 +61,6 @@ switch($args->operation)
 		$orderBy->dir = $args->order_by_dir;
 	break;
 		
-	// case 'delete':
-	// 	//user cannot delete itself
-	// 	if ($args->user_id != $args->currentUserID)
-	// 	{
-	// 		$user = new tlUser($args->user_id);
-	// 		$sqlResult = $user->readFromDB($db);
-	// 		if ($sqlResult >= tl::OK)
-	// 		{
-	// 			$userLogin = $user->login;
-	// 			$sqlResult = $user->deleteFromDB($db);
-	// 			if ($sqlResult >= tl::OK)
-	// 			{
-	// 				logAuditEvent(TLS("audit_user_deleted",$user->login),"DELETE",$args->user_id,"users");
-	// 				$user_feedback = sprintf(lang_get('user_deleted'),$userLogin);
-	// 			}
-	// 		}
-	// 	}
-    // 
-	// 	if ($sqlResult != tl::OK)
-	// 		$user_feedback = lang_get('error_user_not_deleted');
-    // 
-	// 	$orderBy->type = $args->user_order_by;
-	// 	$orderBy->dir = $args->order_by_dir;
-	// 	break;
-
 	case 'order_by_role':
 	case 'order_by_login':
 		$orderBy->type = $args->operation;
@@ -105,9 +77,10 @@ switch($args->operation)
 		break;
 }
 
-// $body_onload = "onload=\"toggleRowByClass('hide_inactive_users','inactive_user','table-row')\"";
 $order_by_clause = get_order_by_clause($orderBy);
 $users = getAllUsersRoles($db,$order_by_clause);
+
+new dBug($users);
 
 $highlight = initialize_tabsmenu();
 $highlight->view_users = 1;

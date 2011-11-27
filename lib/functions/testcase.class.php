@@ -10,6 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20111127 - franciscom - TICKET XML-RPC API - updateTestCase() method - updateSimpleFields()
  * 20111106 - franciscom - TICKET 4797: Test case step reuse - renderGhostSteps()
  * 20111009 - franciscom - TICKET 4769: Test Case versions table - add field to specify estimated execution duration
  */
@@ -5518,6 +5519,48 @@ class testcase extends tlObjectWithAttachments
 	    
 	    return $rs;
 	}	
+
+
 	
+	/**
+	 * updateSimpleFields
+	 * used to update fields of type int, string on test case version
+	 *
+	 * @param int	$tcversionID	item ID to update
+	 * @param hash	$fieldsValues	key DB field to update
+	 *							   	supported fields:
+	 *								summary,preconditions,execution_type,importance,status
+	 *
+	 * @internal revisions
+	 *
+	 */
+	function updateSimpleFields($tcversionID,$fieldsValues)
+	{
+		//echo 'DD';
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$fieldsConvertions = array('summary' => 'prepare_string','preconditions' => 'prepare_string',
+								   'execution_type' => 'prepare_int', 'importance' => 'prepare_int',
+								   'status' => 'prepare_int');
+		$dummy = null;
+		$ddx=0;
+		foreach($fieldsConvertions as $fkey => $fmethod)
+		{
+			if( isset($fieldsValues[$fkey]) )
+			{
+				$dummy[$ddx] = $fkey . " = ";
+				$sep = ($fmethod == 'prepare_string') ? "'" : "";
+				$dummy[$ddx] .= $sep . $this->db->$fmethod($fieldsValues[$fkey]) . $sep; 
+				$ddx++;
+			}
+		}
+		if( !is_null($dummy) )
+		{
+			$sqlSET = implode(",",$dummy);
+			$sql = "/* {$debugMsg} */ UPDATE {$this->tables['tcversions']} " .
+				   "SET {$sqlSET} ";				
+			$this->db->exec_query($sql);
+		}
+	}
+
 } // end class
 ?>

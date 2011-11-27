@@ -15,6 +15,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20111127 - franciscom - doAuthorize() interface changed
  * 20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server
  */
 
@@ -26,11 +27,17 @@ require_once("roles.inc.php");
  * authorization function verifies login & password and set user session data 
  * return map
  *
+ * we need an option to skip existent session block, in order to use
+ * feature that requires login when session has expired and user has some data
+ * not saved. (ajaxlogin on login.php page)
  */
-function doAuthorize(&$db,$login,$pwd)
+function doAuthorize(&$db,$login,$pwd,$options=null)
 {
 	$result = array('status' => tl::ERROR, 'msg' => null);
 	$_SESSION['locale'] = TL_DEFAULT_LOCALE; 
+	
+	$my['options'] = array('doSessionExistsCheck' => true); 
+	$my['options'] = array_merge($my['options'], (array)$options);
 	if (!is_null($pwd) && !is_null($login))
 	{
 		$user = new tlUser();
@@ -48,15 +55,16 @@ function doAuthorize(&$db,$login,$pwd)
 				setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,'/');			
 
 				// Disallow two sessions within one browser
-				if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
+				if ($my['options']['doSessionExistsCheck'] && 
+						isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
 				{
-					$result['msg'] = lang_get('login_msg_session_exists1') . 
-					                 ' <a style="color:white;" href="logout.php">' . 
-						             lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
+						$result['msg'] = lang_get('login_msg_session_exists1') . 
+						                 ' <a style="color:white;" href="logout.php">' . 
+							             lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
 				}
 				else
 				{ 
-					//Setting user's session information
+					// Setting user's session information
 					$_SESSION['currentUser'] = $user;
 					$_SESSION['lastActivity'] = time();
 					
@@ -84,7 +92,6 @@ function doAuthorize(&$db,$login,$pwd)
  *         obj->status_ok = true/false
  *         obj->msg = message to explain what has happened to a human being.
  */
-// 20060507 - franciscom - based on mantis function
 function auth_does_password_match(&$user,$cleartext_password)
 {
 	$authCfg = config_get('authentication');
@@ -113,6 +120,4 @@ function auth_does_password_match(&$user,$cleartext_password)
 	
 	return $ret;
 }
-
-
 ?>

@@ -13,13 +13,8 @@
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions
- * 20110411 - Julian - BUGID 4398 - Prevent user-login when database scheme version does not 
- *                                  fit required scheme
- * 20100928 - Julian - Redirection after Login only for linkto.php
- * 20100904 - eloff - BUGID 3740 - redirect to destination after login
- * 20100202 - franciscom - BUGID 0003129: After login failure blank page is displayed
- * 20100127 - eloff - Send localized login form strings with response to ajaxcheck
- * 20100124 - eloff - Added login functionality via ajax
+ * @since 1.9.4
+ * 20111127 - franciscom - ajaxlogin has to avoid existent session check
  **/
 
 require_once('lib/functions/configCheck.php');
@@ -29,7 +24,7 @@ require_once('common.php');
 require_once('doAuthorize.php');
 
 $templateCfg = templateConfiguration();
-$doRender = false; // BUGID 0003129
+$doRender = false;
 
 $op = doDBConnect($db);
 if (!$op['status'])
@@ -48,15 +43,13 @@ $gui = init_gui($db,$args);
 switch($args->action) 
 {
 	case 'doLogin':
-	case 'ajaxlogin':
 		 doSessionStart();
 		 unset($_SESSION['basehref']);
 		 setPaths();
 		 
-		 // BUGID 4398 - check if db scheme is up to date else deny login
-		 $op = checkSchemaVersion($db);
-		 
+		 // check if db scheme is up to date else deny login
 		 // only try to authorize user if scheme version is OK
+		 $op = checkSchemaVersion($db);
 		 if($op['status'] == tl::OK) {
 		 	$op = doAuthorize($db,$args->login,$args->pwd);
 		 }
@@ -64,14 +57,7 @@ switch($args->action)
 		 if($op['status'] < tl::OK)
 		 {
 		 	$gui->note = is_null($op['msg']) ? lang_get('bad_user_passwd') : $op['msg'];
-		 	if ($args->action == 'ajaxlogin') 
-		 	{
-		 		echo json_encode(array('success' => false,'reason' => $gui->note));
-		 	}
-		 	else
-		 	{
-		 		$doRender = true;
-		 	}
+	 		$doRender = true;
 		 }
 		 else
 		 {
@@ -79,19 +65,43 @@ switch($args->action)
 		 	$args->currentUser = $_SESSION['currentUser'];
 		 	logAuditEvent(TLS("audit_login_succeeded",$args->login,
 		 	                  $_SERVER['REMOTE_ADDR']),"LOGIN",$args->currentUser->dbID,"users");
-		 	if ($args->action == 'ajaxlogin') {
-		 		echo json_encode(array('success' => true));
-		 	} else {
-				// If destination param is set redirect to given page ...
-				if (!empty($args->destination) && preg_match("/linkto.php/", $args->destination)) {
+			// If destination param is set redirect to given page ...
+			if (!empty($args->destination) && preg_match("/linkto.php/", $args->destination)) 
+			{
 					redirect($args->destination);
-				}
-				// ... or show main page
-		 		redirect($_SESSION['basehref']."index.php".($args->preqURI ? "?reqURI=".urlencode($args->preqURI) :""));
-				exit();
-		 	}
+			}
+			// ... or show main page
+		 	redirect($_SESSION['basehref']."index.php".($args->preqURI ? "?reqURI=".urlencode($args->preqURI) :""));
+			exit();
 		 }
 		 break;
+	
+	
+	case 'ajaxlogin':
+
+		 // When doing ajax login we need to skip control regarding session already open
+		 // that we use when doing normal login.
+		 // If we do not proceed this way we will enter an infiniti loop
+		 doSessionStart();
+		 unset($_SESSION['basehref']);
+		 setPaths();
+		 
+	 	 $op = doAuthorize($db,$args->login,$args->pwd,array('doSessionExistsCheck' => false));
+		 if($op['status'] < tl::OK)
+		 {
+		 	$gui->note = is_null($op['msg']) ? lang_get('bad_user_passwd') : $op['msg'];
+	 		echo json_encode(array('success' => false,'reason' => $gui->note));
+		 }
+		 else
+		 {
+			 // Login successful, redirect to destination
+		 	$args->currentUser = $_SESSION['currentUser'];
+		 	logAuditEvent(TLS("audit_login_succeeded",$args->login,
+		 	                  $_SERVER['REMOTE_ADDR']),"LOGIN",$args->currentUser->dbID,"users");
+		 	echo json_encode(array('success' => true));
+		 }
+		 break;
+	
 	
 	case 'ajaxcheck':
 		 doSessionStart();
@@ -112,7 +122,6 @@ switch($args->action)
 		 break;
 }
 
-// BUGID 0003129
 if( $doRender )
 {
 	$logPeriodToDelete = config_get('removeEventsOlderThan');
@@ -131,7 +140,7 @@ if( $doRender )
  */
 function init_args()
 {
-	// 2010904 - eloff - Why is req and reqURI parameters to the login?
+	// we need to understand Why is req and reqURI parameters to the login?
 	$iParams = array("note" => array(tlInputParameter::STRING_N,0,255),
 		             "tl_login" => array(tlInputParameter::STRING_N,0,30),
 		             "tl_password" => array(tlInputParameter::STRING_N,0,32),

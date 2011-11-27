@@ -4167,7 +4167,6 @@ class testcase extends tlObjectWithAttachments
 	
 	
 	
-	-- BUGID 3431 NO CHANGE
 	*/
 	function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null,
 	                                         $execution_id=null,$testplan_id=null,
@@ -4275,7 +4274,6 @@ class testcase extends tlObjectWithAttachments
 	          				display_order
 	
 	
-	BUGID 3431 NO CHANGE - because ONLY ONE VERSION CAN BE LINKED to test plan
 	*/
 	function get_linked_cfields_at_testplan_design($id,$parent_id=null,$filters=null,
 	                                               $link_id=null,$testplan_id=null,$tproject_id = null)
@@ -5536,20 +5534,28 @@ class testcase extends tlObjectWithAttachments
 	 */
 	function updateSimpleFields($tcversionID,$fieldsValues)
 	{
-		//echo 'DD';
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$fieldsConvertions = array('summary' => 'prepare_string','preconditions' => 'prepare_string',
 								   'execution_type' => 'prepare_int', 'importance' => 'prepare_int',
-								   'status' => 'prepare_int');
+								   'status' => 'prepare_int', 
+								   'estimated_execution_duration' => null);
 		$dummy = null;
-		$ddx=0;
+		$sql = null;
+		$ddx = 0;
 		foreach($fieldsConvertions as $fkey => $fmethod)
 		{
 			if( isset($fieldsValues[$fkey]) )
 			{
 				$dummy[$ddx] = $fkey . " = ";
-				$sep = ($fmethod == 'prepare_string') ? "'" : "";
-				$dummy[$ddx] .= $sep . $this->db->$fmethod($fieldsValues[$fkey]) . $sep; 
+				if( !is_null($fmethod) )
+				{
+					$sep = ($fmethod == 'prepare_string') ? "'" : "";
+					$dummy[$ddx] .= $sep . $this->db->$fmethod($fieldsValues[$fkey]) . $sep; 
+				}
+				else
+				{
+					$dummy[$ddx] .= $fieldsValues[$fkey];
+				}
 				$ddx++;
 			}
 		}
@@ -5557,9 +5563,11 @@ class testcase extends tlObjectWithAttachments
 		{
 			$sqlSET = implode(",",$dummy);
 			$sql = "/* {$debugMsg} */ UPDATE {$this->tables['tcversions']} " .
-				   "SET {$sqlSET} ";				
+				   "SET {$sqlSET} WHERE id={$tcversionID}";
+				   		
 			$this->db->exec_query($sql);
 		}
+		return $sql;
 	}
 
 } // end class

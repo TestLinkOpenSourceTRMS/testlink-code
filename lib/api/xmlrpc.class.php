@@ -1743,16 +1743,22 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 
 	 /**
 	  * Update an existing test case
+	  * Not all test case attributes will be able to be updated using this method
+	  * See details below
+	  * 
   	  * @param struct $args
   	  * @param string $args["devKey"]
   	  * @param string $args["testcaseexternalid"] format PREFIX-NUMBER
   	  * @param string $args["version"] optional version NUMBER (human readable) 
   	  *
+  	  * detail of test case attributes managed for this method
+  	  *
   	  * @param string $args["summary"] - optional
   	  * @param string $args["preconditions"] - optional
       * @param string $args["importance"] - optional - see const.inc.php for domain
-      * @param string $args["execution"] - optional - see ... for domain
-      * @param string $args["order'] - optional
+      * @param string $args["execution_type"] - optional - see ... for domain
+      * @param string $args["status'] - optional
+      * @param string $args["estimated_execution_duration'] - optional
 	  */
 	 public function updateTestCase($args)
 	 {
@@ -1762,10 +1768,12 @@ class TestlinkXMLRPCServer extends IXR_Server
 		// Check that configuration allow changes on Test Case
 		// Check that new test case name do not collide with existent one
 		
-		$updKeys = array("summary","preconditions","importance","execution","order");
+		$updKeys = array("summary","preconditions","importance","execution_type",
+						 "status","estimated_execution_duration");
 		$resultInfo = array();
         $operation=__FUNCTION__;
 	    $msg_prefix="({$operation}) - ";
+	    $debug_info = null;
 
 		$this->_setArgs($args);              
 		
@@ -1783,15 +1791,34 @@ class TestlinkXMLRPCServer extends IXR_Server
    	    	// no matter if active or not
    	    	if(isset($this->args[self::$versionNumberParamName]))
    	    	{
-   	    		//'checkTestCaseVersionNumber'
+   	    		if( ($status_ok = $this->checkTestCaseVersionNumber()) )
+   	    		{
+	            	// Check if version number exists for Test Case
+	            	$ret = $this->checkTestCaseVersionNumberAncestry();
+	            	if( !($status_ok = $ret['status_ok']) )
+	            	{
+	                	$this->errors[] = new IXR_Error($ret['error_code'], $msg_prefix . $ret['error_msg']); 
+	            	}
+            	}
+            	if( $status_ok )
+            	{
+            		$dummy = $this->tcaseMgr->get_basic_info($tcaseID,
+            												 array('number' => $this->args[self::$versionNumberParamName]));
+            	
+            		$tcversion_id = $dummy[0]['tcversion_id'];
+            	}
 			}
 			else
 			{
 				// get latest version info
 				$dummy = $this->tcaseMgr->get_last_version_info($tcaseID);
 				$dummy['tcversion_id'] = $dummy['id'];
+				$tcversion_id = $dummy['tcversion_id'];
+				$status_ok = true;
+			}
 
-				//return $updKeys;				
+			if(status_ok)
+			{
 				$fv = null;
 				foreach($updKeys as $k2s)
 				{
@@ -1800,16 +1827,22 @@ class TestlinkXMLRPCServer extends IXR_Server
 						$fv[$k2s] = $this->args[$k2s];
 					}
 				}
+				$debug_info = array('sql' => $sql, 'fv' => $fv);
 				
 				if(!is_null($fv))
 				{
-					$this->tcaseMgr->updateSimpleFields($dummy['tcversion_id'],$fv);
+					$sql = $this->tcaseMgr->updateSimpleFields($tcversion_id,$fv);
+					$debug_info = array('sql' => $sql, 'fv' => $fv);
 				}
-
-				return $this->args;
 			}
-   	    	
    	    }
+
+
+		if($status_ok)
+		{
+			$this->args['debug'] = $debug_info;
+			return $this->args;
+		}
 		else
 		{
 			return $this->errors;			
@@ -2498,7 +2531,6 @@ class TestlinkXMLRPCServer extends IXR_Server
             $version = $this->args[self::$versionNumberParamName];
             if( !($status = is_int($version)) )
             {
-            	// BUGID 3456
             	$msg = sprintf(PARAMETER_NOT_INT_STR,self::$versionNumberParamName,$version);
             	$this->errors[] = new IXR_Error(PARAMETER_NOT_INT, $msg);
             }

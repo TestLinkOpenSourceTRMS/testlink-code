@@ -19,7 +19,7 @@ Testlink: smarty template -
              menu_assign_testplan_roles,caption_user_details,show_event_history,
              th_login,th_first_name,th_last_name,th_password,th_email,
              th_role,th_locale,th_active,password_mgmt_is_external,demo_update_user_disabled,
-             btn_upd_user_data,btn_add,btn_cancel,button_reset_password'}
+             btn_upd_user_data,btn_add,btn_cancel,button_reset_password,demo_reset_password_disabled'}
 
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
@@ -235,14 +235,21 @@ function validateForm(f,check_password)
 
 	</table>
 
-	<div class="groupBtn">
-	<input type="hidden" name="doAction" id="doActionUserEdit" value="{$gui->operation}" />
-
+	{$submitEnabled="1"}
 	{if $tlCfg->demoMode}
-		{$labels.demo_update_user_disabled}<br>
-	{else}
+		{if $gui->operation == 'doUpdate'}
+			{$submitEnabled="0"}
+		{/if}
+    {/if}
+
+	<div class="groupBtn">
+	{if $submitEnabled}
+		<input type="hidden" name="doAction" id="doActionUserEdit" value="{$gui->operation}" />
 		<input type="submit" name="do_update"   value="{$labels.btn_save}" />
+	{else}
+		{$labels.demo_update_user_disabled}<br>
 	{/if}
+	
 	<input type="button" name="cancel" value="{$labels.btn_cancel}"
 		   onclick="javascript: location.href=fRoot+'lib/usermanagement/usersView.php';" />
 

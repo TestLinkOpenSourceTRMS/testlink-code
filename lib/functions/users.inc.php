@@ -335,6 +335,13 @@ function getAllUsersRoles(&$db,$order_by = null)
 	$sql .= is_null($order_by) ? " ORDER BY login " : $order_by;
 
 	$users = tlDBObject::createObjectsFromDBbySQL($db,$sql,"id","tlUser",false,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+
+	$loop2do = count($users);
+	$specialK = array_flip((array)config_get('demoSpecialUsers'));
+	for($idx=0; $idx < $loop2do; $idx++)
+	{
+		$users[$idx]->isDemoSpecial = isset($specialK[$users[$idx]->login]);
+	}
 	return $users;
 }
 

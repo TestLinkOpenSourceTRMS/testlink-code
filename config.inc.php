@@ -22,49 +22,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- *	20110530 - Julian - allow to define seperate logo for generated documents including height 
- *	20110414 - franciscom - moved $g_prefix_name_for_copy BEFORE use of custom config
- *	20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor for platform notes
- *							$tlCfg->platform_template						
- *	20110323 - franciscom - BUGID 4025: option to avoid that obsolete test cases can be added 
- *							to new test plans. -> $tlCfg->tplanDesign 
- *	20110319 - franciscom - BUGID 4322: New Option to block delete of executed test cases.
- *							testcase_cfg->can_delete_executed
- * 	20110109 - franciscom - added $tlCfg->req_cfg->duplicated_name_algorithm
- *		  						  $tlCfg->req_cfg->duplicated_docid_algorithm
- *	20110101 - franciscom - new config options for PHPMAILER
- *	20101212 - franciscom - req_cfg->log_message_len
- *  20101130 - Julian - BUGID 4027: set default height of ckeditor to 300
- *  20101122 - amitkhullar - BUGID 3998: added ckeditor option instead of fckeditor.
- *  20101118 - asimon - BUGID 4031: added $tlCfg->req_cfg->copy_req_scope_to_tc_summary
- *  20101109 - asimon - added $tlCfg->custom_fields->show_custom_fields_without_value
- *	20101030 - franciscom - bullet image config removed
- *  20101028 - Julian - BUGID 3950 - added $tlCfg->gui->dynamic_quick_tcase_search_input_size
- *  20101014 - Julian - BUGID 3893 - added $tlCfg->metrics_dashboard->show_test_plan_status
- *	20101010 - franciscom - BUGID 3872 - Admin should be able to set a new password for users - $tlCfg->password_reset_send_method
- *  20100924 - asimon - added $tlCfg->enableTableExportButton
- *  20100915 - amitkhullar - BUGID 3639 - added $tlcfg->testcase_reorder_by for Reorder Test Cases
- *  20100915 - Julian - BUGID 3777 - added $tlCfg->req_cfg->allow_insertion_of_last_doc_id
- *  20100901 - asimon - re-enabled filter for assigned user when assigning testcases
- *	20100814 - franciscom - BUGID 3681 - new BTS youtrack (www.jetbrains.com)	
- *  20100810 - asimon - BUGID 3317 - added $tlCfg->req_cfg->external_req_management
- *  20100810 - asimon - added TC ID filter for Test Cases to $tlCfg->tree_filter_cfg
- *  20100809 - asimon - BUGID 3662 - disabled advanced filter mode choice for TC editing mode
- *  20100808 - asimon - added requirement filtering options to $tlCfg->tree_filter_cfg
- *  20100625 - asimon - added $tlCfg->tree_filter_cfg for configuration of available filters on JS tree
- *                      and $tlCfg->exec_cfg->testcases_colouring_by_selected_build for BUGID 3450
- *	20100620 - franciscom - fix strict messages after usign PHPDesigner.
- *	20100619 - franciscom - define always $g_bugInterfaceOn = false,$g_bugInterface = null;
- *	20100617 - franciscom - $tlCfg->req_cfg->importDocBook - new configuration for importing req in docbook format
- *  20100616 - eloff - BUGID 3255 - Cleaned up bts configuration
- *  20100527 - Julian - added $tlCfg->exec_cfg->expand_collapse->platform_description
- *  20100504 - franciscom - BUGID 3424 Custom CSS path is being overwritten by config.inc.php value 
- *  20100311 - asimon - BUGID 1748 - $tlCfg->req_cfg->relations
- *	20100313 - franciscom - BUGID 0003275
- *  20100112 - asimon - BUGID 2976 - $tlCfg->req_cfg->search
- *  20100110 - eloff - BUGID 2036 - changed $tlCfg->gui->checkNotSaved to true
- *  20100106 - franciscom - added $tlCfg->diffEngine - diff for test case and req (Contribution)
- *
+ * 20111127 - franciscom - demo mode - new config option demoSpecialUsers
  **/
 
 // ----------------------------------------------------------------------------
@@ -1350,10 +1308,14 @@ $tlCfg->urgencyImportance->threshold['high'] = 6;
 /**
  * @var boolean Demo mode disables some functionality
  *
- * user creation,update,reset password - disabled
+ * reset password disabled
+ * user edit disable
+ * role create ENABLED
+ * user create ENABLED
+ * special users manage DISABLE
  */
 $tlCfg->demoMode = OFF;
-
+$tlCfg->demoSpecialUsers = array('admin');
 
 
 /**

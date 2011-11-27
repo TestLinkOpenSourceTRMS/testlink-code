@@ -5,11 +5,6 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - users overview
 
 @internal revisions
-  20101017 - franciscom - image access refactored (tlImages)
-  20100923 - Julian - BUGID 3802
-  20100426 - asimon - removed forgotten comment end sign (template syntax error)
-  20100419 - franciscom - BUGID 3355: A user can not be deleted from the list
-  20100326 - franciscom - BUGID 3324
 *}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_action_onclick.tpl"}
@@ -61,7 +56,7 @@ function toggleRowByClass(oid,className,displayValue)
              th_role,order_by_role_descr,order_by_role_dir,th_locale,th_active,th_api,th_delete,
              disable,alt_edit_user,Yes,No,alt_delete_user,no_permissions_for_action,btn_create,
              show_inactive_users,hide_inactive_users,alt_disable_user,order_by_login,
-             order_by_login_dir,alt_active_user,demo_create_user_disabled"}
+             order_by_login_dir,alt_active_user,demo_create_user_disabled,demo_special_user"}
 
 <body {$gui->body_onload}>
 
@@ -149,10 +144,15 @@ function toggleRowByClass(oid,className,displayValue)
         	{/if}
 				</td>
 				<td align="center">
+				{if $userObj->isDemoSpecial}
+					<img style="border:none;cursor: pointer;" alt="{$labels.demo_special_user}"
+						 title="{$labels.demo_special_user}" src="{$tlImages.demo_mode}">	
+				{else}		
 				  <img style="border:none;cursor: pointer;" alt="{$labels.alt_disable_user}"
 					     title="{$labels.alt_disable_user}" src="{$tlImages.delete}"
 					     onclick="action_confirmation({$userObj->dbID},'{$userObj->login|escape:'javascript'|escape}',
 					                                  '{$del_msgbox_title}','{$warning_msg}');" />
+			    {/if}		                                  
 				</td>
 			</tr>
 			{/foreach}
@@ -161,11 +161,7 @@ function toggleRowByClass(oid,className,displayValue)
 
 		<div class="groupBtn">
 		<form method="post" action="{$createUserAction}" name="launch_create">
-		{if $tlCfg->demoMode}
-			{$labels.demo_create_user_disabled}
-		{else}
 			<input type="submit" name="doCreate"  value="{$labels.btn_create}" />
-		{/if}	
   		</form>
 		</div>
 	</div>

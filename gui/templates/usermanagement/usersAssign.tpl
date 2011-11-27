@@ -3,8 +3,6 @@ Testlink: smarty template -
 @filesource	usersAssign.tpl
 
 @internal revisions
-20100930 - franciscom - BUGID 2344: Private test project
-20100314 - eloff - BUGID 3272 - send assign form via POST to allow more data to be sent
 *}
 {lang_get var="labels" 
           s='TestProject,TestPlan,btn_change,title_user_mgmt,set_roles_to,show_only_authorized_users,
@@ -88,10 +86,7 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
    during refresh feature, and then we have a bad refresh on page getting a bug.
 *}
 {if $gui->features neq ''}
-<form method="post" action="{$umgmt}/usersAssign.php"
-	{if $tlCfg->demoMode}
-		onsubmit="alert('{$labels.warn_demo}'); return false;"
-	{/if}>
+<form method="post" action="{$umgmt}/usersAssign.php">
 	<input type="hidden" name="featureID" value="{$gui->featureID}" />
 	<input type="hidden" name="featureType" value="{$gui->featureType}" />
 	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
@@ -204,7 +199,11 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
     	</table>
    </div> 	
     	<div class="groupBtn">	
-    		<input type="submit" name="do_update" value="{$labels.btn_upd_user_data}" />
+			{if $tlCfg->demoMode}
+				{$labels.warn_demo}
+			{else}
+    			<input type="submit" name="do_update" value="{$labels.btn_upd_user_data}" />
+			{/if}	
     	</div>
   </form>
 {/if} {* if $gui->features *}

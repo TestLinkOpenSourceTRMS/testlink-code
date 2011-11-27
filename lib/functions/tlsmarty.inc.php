@@ -240,6 +240,7 @@ class TLSmarty extends Smarty
                           'date' => TL_THEME_IMG_DIR . "date.png",
                           'delete' => TL_THEME_IMG_DIR . "trash.png",
                           'delete_disabled' => TL_THEME_IMG_DIR . "trash_greyed.png",
+                          'demo_mode' => TL_THEME_IMG_DIR . "emoticon_tongue.png",
         				  'direct_link' => TL_THEME_IMG_DIR . "world_link.png",
         				  'disconnect' => TL_THEME_IMG_DIR . 'disconnect.png',
         				  'edit' => TL_THEME_IMG_DIR . "icon_edit.png",

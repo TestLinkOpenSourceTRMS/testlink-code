@@ -538,7 +538,7 @@ class testcase extends tlObjectWithAttachments
 	    $recordset = null;
 	    $filters_on = array('tsuite_name' => false, 'tproject_name' => false);
 	
-		// BUGID 3729 - limit all names
+		// limit all names
 		$field_size = config_get('field_size');
 	    $tsuite_name = tlSubStr(trim($tsuite_name),0, $field_size->testsuite_name);
 	    $tproject_name = tlSubStr(trim($tproject_name),0,$field_size->testproject_name);
@@ -1009,7 +1009,6 @@ class testcase extends tlObjectWithAttachments
 			    }
 			}
 		    
-		    // BUGID 3634 - missing update.
 		    if( $ret['status_ok'] && !is_null($steps) )
 		    {
 		    	$this->update_tcversion_steps($tcversion_id,$steps);
@@ -5568,6 +5567,68 @@ class testcase extends tlObjectWithAttachments
 			$this->db->exec_query($sql);
 		}
 		return $sql;
+	}
+
+	
+	/**
+	 * updateName
+	 * check for duplicate name under same parent
+	 *
+	 * @param int	 $id test case id
+	 * @param string $name
+	 *
+	 * @internal revisions
+	 *
+	 */
+	function updateName($id,$name)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$ret['status_ok'] = true; 
+		$ret['msg'] = 'ok'; 
+		$ret['debug'] = '';
+		$ret['API_error_code'] = 0; 
+
+		$field_size = config_get('field_size');
+	    $new_name = trim($name);
+
+		if( ($nl = strlen($new_name)) <= 0 )
+		{
+			$ret['status_ok'] = false; 
+			$ret['API_error_code'] = 'TESTCASE_EMPTY_NAME';
+			$ret['msg'] = lang_get('API_' . $ret['API_error_code']); 
+		}
+
+		if( $ret['status_ok'] && $nl > $field_size->testcase_name)
+		{
+			$ret['status_ok'] = false; 
+			$ret['API_error_code'] = 'TESTCASE_NAME_LEN_EXCEEDED';
+			$ret['msg'] = sprintf(lang_get('API_' . $ret['API_error_code']),$nl,$field_size->testcase_name); 
+		}
+				
+		if( $ret['status_ok'] )
+		{
+			// Go ahead
+			$check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$id);
+			$ret['status_ok'] = !$check['status']; 
+			$ret['API_error_code'] = 'TESTCASE_SIBLING_WITH_SAME_NAME_EXISTS';
+			$ret['msg'] = sprintf(lang_get('API_' . $ret['API_error_code']),$name); 
+			$ret['debug'] = ''; 
+		}
+
+		if($ret['status_ok'])
+		{    
+			
+			$rs = $this->tree_manager->get_node_hierarchy_info($id);
+			if( !is_null($rs) && $rs['node_type_id'] == $this->my_node_type)
+			{
+				$sql = "/* {$debugMsg} */ UPDATE {$this->tables['nodes_hierarchy']} " .
+				       " SET name='" . $this->db->prepare_string($name) . "' " .
+				       " WHERE id= {$id}";
+				$this->db->exec_query($sql);
+				$ret['debug'] = "Old name:{$rs['name']} - new name:{$name}";
+			}
+		}
+		return $ret;
 	}
 
 } // end class

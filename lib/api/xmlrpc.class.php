@@ -1753,6 +1753,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   	  *
   	  * detail of test case attributes managed for this method
   	  *
+  	  * @param string $args["name"] - optional
   	  * @param string $args["summary"] - optional
   	  * @param string $args["preconditions"] - optional
       * @param string $args["importance"] - optional - see const.inc.php for domain
@@ -1817,7 +1818,22 @@ class TestlinkXMLRPCServer extends IXR_Server
 				$status_ok = true;
 			}
 
-			if(status_ok)
+			if($status_ok)
+			{
+				// if name update requested, it will be first thing to be udpated
+				// because if we got duplicate name, we will not do update
+				if(isset($this->args['name']))
+				{
+					$ret = $this->tcaseMgr->updateName($tcaseID,trim($this->args['name']));
+	            	if( !($status_ok = $ret['status_ok']) )
+	            	{
+	                	$this->errors[] = new IXR_Error(constant($ret['API_error_code']), 
+	                									$msg_prefix . $ret['msg']); 
+	            	}
+				}
+			}
+			
+			if($status_ok)
 			{
 				$fv = null;
 				foreach($updKeys as $k2s)

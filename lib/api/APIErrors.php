@@ -11,12 +11,7 @@
  * @package 	TestlinkAPI
  * @link      http://testlink.org/api/
  *
- * rev: 
- *		20100918 - franciscom - BUGID 1890
- *		20090420 - franciscom - BUGID 2158
- *      20090304 - franciscom - BUGID 2191
- *      20080518 - franciscom - TestLink Development team - www.teamst.org
- *      suppress log for missing localization strings.
+ * @internal revisions 
  */
  
  /**
@@ -205,6 +200,18 @@ define('VERSION_NOT_VALID',5052);
 define('VERSION_NOT_VALID_STR', lang_get('API_VERSION_NOT_VALID',null,1));
 define('NO_TESTCASE_FOUND', 5053);
 define('NO_TESTCASE_FOUND_STR', lang_get('API_NO_TESTCASE_FOUND',null,1));
+
+define('TESTCASE_EMPTY_NAME', 5054);
+define('TESTCASE_EMPTY_NAME_STR', lang_get('API_TESTCASE_EMPTY_NAME',null,1));
+
+define('TESTCASE_NAME_LEN_EXCEEDED', 5055);
+define('TESTCASE_NAME_LEN_EXCEEDED_STR', lang_get('API_TESTCASE_NAME_LEN_EXCEEDED',null,1));
+
+define('TESTCASE_SIBLING_WITH_SAME_NAME_EXISTS', 5056);
+define('TESTCASE_SIBLING_WITH_SAME_NAME_EXISTS_STR', lang_get('API_TESTCASE_SIBLING_WITH_SAME_NAME_EXISTS',null,1));
+
+
+
 
 
 /**

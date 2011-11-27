@@ -29,7 +29,7 @@ $tc2run = array_flip($dummy);
 // then to disable a test just add any letter before single letter on this list
 // example na => tc_a() will not be found => not executed
 // 
-$f_list = 'na,nb,nc,nd,ne,nf,ng,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z';
+$f_list = 'na,nb,nc,nd,ne,nf,ng,nh,ni,nj,nk,nl,m,n,o,p,q,r,s,t,u,v,w,x,y,z';
 $f_list = explode(',',$f_list);
 foreach($f_list as $sfx)
 {
@@ -200,6 +200,111 @@ function tc_h(&$client,&$tcCounter)
 	$args["testcaseexternalid"] = 'TPAFR-1';
 	$args["version"] = 4;
 	$args["estimated_execution_duration"] = 2.78;
+	
+	$unitTestDescription .= ' ' . $args["version"];
+	$debug=true;
+	echo $unitTestDescription;
+	$client->debug=$debug;
+	runTest($client,$method,$args,$tcCounter);
+}
+// ----------------------------------------------------------------------------------------------------
+// ..................................................................................
+function tc_i(&$client,&$tcCounter)
+{
+	$method='updateTestCase';
+	$unitTestDescription = "Test #{$tcCounter}- {$method} - " .
+					       "TRY TO Update NAME with empty string ACCESS WITH VERSION NUMBER";
+	$tcCounter++;
+	
+	$args=array();
+	$args["devKey"]=DEV_KEY;
+	$args["testcaseexternalid"] = 'TPAFR-1';
+	$args["version"] = 4;
+	$args["name"] = '';
+	
+	$unitTestDescription .= ' ' . $args["version"];
+	$debug=true;
+	echo $unitTestDescription;
+	$client->debug=$debug;
+	runTest($client,$method,$args,$tcCounter);
+}
+// ----------------------------------------------------------------------------------------------------
+// ..................................................................................
+function tc_j(&$client,&$tcCounter)
+{
+	$method='updateTestCase';
+	$unitTestDescription = "Test #{$tcCounter}- {$method} - " .
+					       "TRY TO Update NAME FULL OF BLANKS ACCESS WITH VERSION NUMBER";
+	$tcCounter++;
+	
+	$args=array();
+	$args["devKey"]=DEV_KEY;
+	$args["testcaseexternalid"] = 'TPAFR-1';
+	$args["version"] = 4;
+	$args["name"] = '           ';
+	
+	$unitTestDescription .= ' ' . $args["version"];
+	$debug=true;
+	echo $unitTestDescription;
+	$client->debug=$debug;
+	runTest($client,$method,$args,$tcCounter);
+}
+// ----------------------------------------------------------------------------------------------------
+// ..................................................................................
+function tc_k(&$client,&$tcCounter)
+{
+	$method='updateTestCase';
+	$unitTestDescription = "Test #{$tcCounter}- {$method} - " .
+					       "TRY TO Update NAME TO LONG ACCESS WITH VERSION NUMBER";
+	$tcCounter++;
+	
+	$args=array();
+	$args["devKey"]=DEV_KEY;
+	$args["testcaseexternalid"] = 'TPAFR-1';
+	$args["version"] = 4;
+	$args["name"] = str_repeat('X',2000);
+	
+	$unitTestDescription .= ' ' . $args["version"];
+	$debug=true;
+	echo $unitTestDescription;
+	$client->debug=$debug;
+	runTest($client,$method,$args,$tcCounter);
+}
+// ----------------------------------------------------------------------------------------------------
+// ..................................................................................
+function tc_l(&$client,&$tcCounter)
+{
+	$method='updateTestCase';
+	$unitTestDescription = "Test #{$tcCounter}- {$method} - " .
+					       "TRY TO Update NAME :: ACCESS WITH VERSION NUMBER";
+	$tcCounter++;
+	
+	$args=array();
+	$args["devKey"]=DEV_KEY;
+	$args["testcaseexternalid"] = 'TPAFR-1';
+	$args["version"] = 4;
+	$args["name"] = 'My name is Bond, James Bond - 007';
+	
+	$unitTestDescription .= ' ' . $args["version"];
+	$debug=true;
+	echo $unitTestDescription;
+	$client->debug=$debug;
+	runTest($client,$method,$args,$tcCounter);
+}
+// ----------------------------------------------------------------------------------------------------
+// ..................................................................................
+function tc_m(&$client,&$tcCounter)
+{
+	$method='updateTestCase';
+	$unitTestDescription = "Test #{$tcCounter}- {$method} - " .
+					       "TRY TO Update NAME CREATING DUPLICATE HIT :: ACCESS WITH VERSION NUMBER";
+	$tcCounter++;
+	
+	$args=array();
+	$args["devKey"]=DEV_KEY;
+	$args["testcaseexternalid"] = 'TPAFR-2';
+	$args["version"] = 1;
+	$args["name"] = 'My name is Bond, James Bond - 007';
 	
 	$unitTestDescription .= ' ' . $args["version"];
 	$debug=true;

@@ -299,7 +299,7 @@ $TLS_supported_file_formats = "Supported file formats";
 $TLS_no_permissions_for_action = "You do not have permissions to perform this action!" .
                                  " Please contact your administrator.";
 
-$TLS_name_already_exists = "Name:%s already exists";
+$TLS_name_already_exists = "Name: %s already exists";
 $TLS_created_with_new_name = "Create with name:%s, because name:%s already exists";
 
 
@@ -3089,6 +3089,10 @@ $TLS_API_ATTACH_INVALID_ATTACHMENT = "Invalid attachment info parameters: FILE_N
 
 $TLS_API_NODEID_INVALID_DATA_TYPE = "Invalid Data Type - Node ID can be Array of Positive Integer, or Positive Integer";
 $TLS_API_TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST = "Test Project Source Name: %s - does not exist";
+
+$TLS_API_TESTCASE_EMPTY_NAME = "Empty test case name is not allowed";
+$TLS_API_TESTCASE_NAME_LEN_EXCEEDED = "Test Case name len (%s) exceeds max allowed len (%s)";
+$TLS_API_TESTCASE_SIBLING_WITH_SAME_NAME_EXISTS = "Test Case Sibling with same name (%s) exists";
 
 
 // ----- audit log entries -----

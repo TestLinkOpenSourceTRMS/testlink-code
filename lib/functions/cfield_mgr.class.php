@@ -6,21 +6,12 @@
  * @filesource	cfield_mgr.class.php
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 	2005-2009, TestLink community
+ * @copyright 	2005-2011, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- * 20110612 - franciscom - 	fixed issue when user create checkbox WITHOUT Possible values
- *							string_custom_field_input()
  *
- * 20110611 - franciscom - TICKET 4597: Is required field doesn't work properly for some custom field type
- * 20110213 - franciscom - BUGID 4222 - added sanitize() method
- * 20110123 - franciscom - BUGID 3338 - getXMLServerParams() -> renamed getXMLRPCServerParams
- * 20110120 - Julian - BUGID 4164 - lists and multiselection lists do not use more space than
- *                                  necessary anymore
- * 20110118 - franciscom - BUGID 4112 - MSSQL BLOCKING error on Report "Test Cases with Execution Details" 
- *										due to reserved word EXEC
 **/
 
 /** load conversion functions */
@@ -45,13 +36,27 @@ if( count($cf_files) > 0 )
  */
 class cfield_mgr extends tlObject
 {
+
+    /** 
+     * Will be used ONLY if config options:
+     * config_get('custom_fields')->sizes
+     * is not defined
+     *
+     */
     const DEFAULT_INPUT_SIZE = 50;
     const MULTISELECTIONLIST_WINDOW_SIZE = 5;
     const LISTBOX_WINDOW_SIZE = 5;
-    const TEXTAREA_MAX_SIZE = 255;
 
-    // EDIT HERE IF YOU CUSTOMIZE YOUR DB
-    /** for text area custom field  40 x 6 -> 240 chars <= 255 chars table field size */
+    /** 
+     * for text area custom field  40 x 6 -> 240 chars <= 255 chars table field size 
+     * Will be used ONLY if config options:
+     * 
+     * (config_get('custom_fields')->sizes)['text area']['cols']
+     * (config_get('custom_fields')->sizes)['text area']['rows']
+     * 
+     * are not defined
+     *
+     */
     const TEXTAREA_DEFAULT_COLS = 70;
     const TEXTAREA_DEFAULT_ROWS = 4;
 
@@ -85,7 +90,6 @@ class cfield_mgr extends tlObject
 	 * Values will be displayed in "Custom Field Type" combo box when
 	 * users create custom fields. No localization is applied
 	 */ 
-    // 20080809 - franciscom
     // Added specific type for test automation related custom fields.
     // Start at code 500
     var $custom_field_types = array(0=>'string',
@@ -146,23 +150,20 @@ class cfield_mgr extends tlObject
     var $locations = array( 'testcase' => 
                             array( 1 => 'standard_location', 2 => 'before_steps_results'));
 
-    // 20090523 - changes in configuration
-    //
     // Needed to manage user interface, when creating Custom Fields.
     // When user choose a item type (test case, etc), a javascript logic
     // uses this information to hide/show enable_on, and show_on combos.
     //
     // 0 => combo will not displayed
     //
-    // BUGID 3707,3708
     // May be need a review, because after the changes, seems a little bit silly.
     var $enable_on_cfg = array(	'execution' => array('testsuite' => 0,
                                                     'testplan'  => 0,
                                                     'testcase'  => 1,
                                                     'requirement_spec' => 0,
                                                     'requirement' => 0),
-								'design' => array('testsuite' => 0,	 //	
-                                                  'testplan'  => 0,  //
+								'design' => array('testsuite' => 0,
+                                                  'testplan'  => 0,
                                                   'testcase'  => 1,
                                                   'requirement_spec' => 0,
                                                   'requirement' => 0),
@@ -197,10 +198,12 @@ class cfield_mgr extends tlObject
     var $sizes = null;
     
     // must be equal to the lenght of:
-    // value column on cfield_*_values tables
+    // value 		 column on cfield_*_values tables
     // default_value column on custom_fields table
     // 0 -> no limit
-    // Is used on text area types
+    // is used on text area types
+    // Used on JS logic to provide feedback to user (how many chars still can be entered)
+    // when typing on a Text Area Custom Field
     var $max_length_value;
     
     // must be equal to the lenght of:
@@ -610,11 +613,6 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         	   $window_size = intval($size) > 1 ? $size : self::LISTBOX_WINDOW_SIZE;
         	   
         	   $t_multiple=' ';
-        	   
-        	   // removed single space in next line, 
-        	   // it was causing errors in field names on HTML because it somehow gets replaced
-        	   // by an underscore somwhere and then the field name doesn't match anymore
-        	   //$t_name_suffix=' ';
         	   $t_name_suffix=''; 
         	}
         	else
@@ -726,14 +724,14 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		break;
       
       case 'datetime':
-      	$cfg=config_get('gui');
+      	$cfg = config_get('gui');
       	
       	// Important
       	// We can do this mix (get date format configuration from standard variable 
       	// and time format from an specific custom field config) because string used 
       	// for date_format on strftime() has no problem
       	// on date() calls (that are used in create_date_selection_set() ).
-      	$datetime_format=config_get('date_format') . " " .$cfg->custom_fields->time_format;
+      	$datetime_format=config_get('date_format') . " " . $cfg->custom_fields->time_format;
       	$str_out .= create_date_selection_set($input_name,$datetime_format,$t_custom_field_value,$dateOpt);
       break;
       
@@ -2427,7 +2425,6 @@ function getXMLRPCServerParams($node_id)
 
     returns: html string
   
-    rev: 20080817 - franciscom
          
   */
   function string_input_string($p_field_def, $p_input_name, $p_custom_field_value, $p_size) 

@@ -815,52 +815,6 @@ define('VALID_REQ', 'v');
 
 
 // --------------------------------------------------------------------------------------
-/* [CUSTOM FIELDS] */
-
-// /**
-//  * Custom field constrains for HTML inputs use values to created to get/show custom field contents
-//  * <ul>
-//  * <li>for string,numeric,float,email: size & maxlenght of the input type text.</li>
-//  * <li>for list,email size of the select input.</li>
-//  * </ul>
-//  */
-// $tlCfg->gui->custom_fields->sizes = array( 
-// 	'string' => 50,
-// 	'numeric'=> 10,
-// 	'float'  => 10,
-// 	'email'  => 50,
-// 	'list'   => 1,
-// 	'multiselection list' => 5,
-// 	'text area' => array('cols' => 40, 'rows' => 6)
-// );
-
-
-
-// Use this variable (on custom_config.inc.php) to define new Custom Field types.
-// IMPORTANT:
-//           check $custom_field_types property on cfield_mgr.class.php 
-//           to avoid overwrite of standard types.
-//
-// $tlCfg->gui->custom_fields->types = null;
-
-// Use this variable (on custom_config.inc.php)
-// to define possible values behaviour for new Custom Field types.
-//
-// IMPORTANT:
-//           check $possible_values_cfg property on cfield_mgr.class.php 
-//           to avoid overwrite of standard values.
-//
-// $tlCfg->gui->custom_fields->possible_values_cfg = null;
-
-// Format string follows date() spec - see PHP Manual
-// We can not use $g_timestamp_format, because format strings for date() and strftime() 
-// uses same LETTER with different meanings (Bad Luck!)
-$tlCfg->gui = new stdClass();
-$tlCfg->gui->custom_fields = new stdClass();
-$tlCfg->gui->custom_fields->time_format = 'H:i:s';                                                       
-
-
-// --------------------------------------------------------------------------------------
 /* [MISC] */
 
 /** 

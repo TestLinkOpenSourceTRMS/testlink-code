@@ -1262,6 +1262,12 @@ $tlCfg->gui->custom_fields->types = null;
 //
 $tlCfg->gui->custom_fields->possible_values_cfg = null;
 
+// Format string follows date() spec - see PHP Manual
+// We can not use $g_timestamp_format, because format strings for date() and strftime() 
+// uses same LETTER with different meanings (Bad Luck!)
+$tlCfg->gui->custom_fields->time_format = 'H:i:s';                                                       
+
+
 
 /**
  * Check unique titles of Test Project, Test Suite and Test Case

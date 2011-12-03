@@ -3,10 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: ldap_api.php,v $
+ * @filesource	ldap_api.php
  * 
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/10/18 16:26:09 $ by $Author: franciscom $
  * @author This piece of software has been copied and adapted from:
  * 		Mantis - a php based bugtracking system (GPL)
  * 		Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
@@ -16,67 +14,76 @@
  * LDAP API (authentication)
  *
  *
- * Revisions:
- *  20091018 - franciscom - BUGID - contribution to use TLS as secure method
- * 	20080807 - havlatm - config update, refactorization
- * 
- ************************************************************************************* */
+ * @internal revisions
+ *
+ */
 	
-	// Connect and bind to the LDAP directory
-	function ldap_connect_bind( $p_binddn = '', $p_password = '' ) 
-	{
+// Connect and bind to the LDAP directory
+function ldap_connect_bind( $p_binddn = '', $p_password = '' ) 
+{
+	$ret = new stdClass();
+	$ret->status = 0;
+	$ret->handler = null;
+	$ret->info 	= 'LDAP CONNECT OK';
 
-   		$ret = new stdClass();
-    	$ret->status 	= 0;
-		$ret->handler 	= null;
-	  
-		$authCfg = config_get('authentication');
-		$t_ds = ldap_connect ( $authCfg['ldap_server'], $authCfg['ldap_port'] );
-		
-		// BUGID 1247
-		ldap_set_option($t_ds, LDAP_OPT_PROTOCOL_VERSION, $authCfg['ldap_version']);
-    	ldap_set_option($t_ds, LDAP_OPT_REFERRALS, 0);
-
-        // Contribution 
-        $bind_method = 'ldap_bind';
-        if ($authCfg['ldap_tls'])
+	$authCfg = config_get('authentication');
+	
+    $t_message = "Attempting connection to LDAP ";
+    $t_ldap_uri = parse_url($authCfg['ldap_server']);
+    if(count( $t_ldap_uri ) > 1) 
+    {
+        $t_message .= "URI {$authCfg['ldap_server']}.";
+        $t_ds = ldap_connect($authCfg['ldap_server']);
+    } 
+    else 
+    {
+        $t_message .= "server {$authCfg['ldap_server']} port {$authCfg['ldap_port']}.";
+        if(is_numeric($authCfg['ldap_port'])) 
         {
-        	$bind_method = 'ldap_start_tls';	
-        }
+            $t_ds = ldap_connect($authCfg['ldap_server'],$authCfg['ldap_port']);
+        } 
+    }
 
-		if ( $t_ds > 0 ) 
-		{
-			$ret->handler=$t_ds;
-	  
-			# If no Bind DN and Password is set, attempt to login as the configured
-			#  Bind DN.
-			if ( is_blank( $p_binddn ) && is_blank( $p_password ) ) 
-			{
-				$p_binddn	= $authCfg['ldap_bind_dn'];
-				$p_password	= $authCfg['ldap_bind_passwd'];
-			}
+	if( $t_ds !== false && $t_ds > 0 ) 
+	{
+		ldap_set_option($t_ds, LDAP_OPT_PROTOCOL_VERSION, $authCfg['ldap_version']);
+		ldap_set_option($t_ds, LDAP_OPT_REFERRALS, 0);
+	    $bind_method = $authCfg['ldap_tls'] ? 'ldap_start_tls' :'ldap_bind'; 
 
-			if ( !is_blank( $p_binddn ) && !is_blank( $p_password ) ) 
-			{
-				$t_br = $bind_method( $t_ds, $p_binddn, $p_password );
-			} else {
-				# Either the Bind DN or the Password are empty, so attempt an anonymous bind.
-				$t_br = $bind_method( $t_ds );
-			}
-			
-			if ( !$t_br ) 
-			{
-        		$ret->status = ERROR_LDAP_BIND_FAILED;
-			}
-			
-		} 
-		else 
+
+		$ret->handler=$t_ds;
+
+		# If no Bind DN and Password is set, attempt to login as the configured
+		#  Bind DN.
+		if( is_blank( $p_binddn ) && is_blank( $p_password ) ) 
 		{
-			$ret->status=ERROR_LDAP_SERVER_CONNECT_FAILED;
+			$p_binddn	= $authCfg['ldap_bind_dn'];
+			$p_password	= $authCfg['ldap_bind_passwd'];
 		}
-    
-		return $ret;
+
+		if ( !is_blank( $p_binddn ) && !is_blank( $p_password ) ) 
+		{
+			$t_br = $bind_method( $t_ds, $p_binddn, $p_password );
+		} else {
+			# Either the Bind DN or the Password are empty, so attempt an anonymous bind.
+			$t_br = $bind_method( $t_ds );
+		}
+		
+		if ( !$t_br ) 
+		{
+    		$ret->status = ERROR_LDAP_BIND_FAILED;
+			$ret->info 	= 'ERROR_LDAP_BIND_FAILED';
+		}
+		
+	} 
+	else 
+	{
+		$ret->status = ERROR_LDAP_SERVER_CONNECT_FAILED;
+		$ret->info = 'ERROR_LDAP_SERVER_CONNECT_FAILED';
 	}
+
+	return $ret;
+}
 
 
 // ----------------------------------------------------------------------------
@@ -93,17 +100,21 @@
    		$t_authenticated = new stdClass();
    		$t_authenticated->status_ok = TRUE;
        	$t_authenticated->status_code = null;
+       	$t_authenticated->status_verbose = '';
+
 		$authCfg = config_get('authentication');
+
 		$t_ldap_organization = $authCfg['ldap_organization'];
 		$t_ldap_root_dn = $authCfg['ldap_root_dn'];
 		$t_ldap_uid_field = $authCfg['ldap_uid_field'];	// 'uid' by default
 
 		$t_username = $p_login_name;
+
 		$t_search_filter = "(&$t_ldap_organization($t_ldap_uid_field=$t_username))";
 		$t_search_attrs = array( $t_ldap_uid_field, 'dn' );
 		$t_connect = ldap_connect_bind();
 
-    	if( !is_null($t_connect->handler) )
+    	if( $t_connect->status == 0 )
     	{
         	$t_ds = $t_connect->handler;
         
@@ -113,15 +124,19 @@
     
     		$t_authenticated->status_ok = false;
         	$t_authenticated->status_code = ERROR_LDAP_AUTH_FAILED;
+       		$t_authenticated->status_verbose = 'ERROR_LDAP_AUTH_FAILED';
         
         
-    		if ( $t_info ) {
+    		if ( $t_info ) 
+    		{
     			# Try to authenticate to each until we get a match
-    			for ( $i = 0 ; $i < $t_info['count'] ; $i++ ) {
-    				$t_dn = $t_info[$i]['dn'];
+    			for ( $idx = 0 ; $idx < $t_info['count'] ; $idx++ ) 
+    			{
+    				$t_dn = $t_info[$idx]['dn'];
     
     				# Attempt to bind with the DN and password
-    				if ( @ldap_bind( $t_ds, $t_dn, $p_password ) ) {
+    				if ( @ldap_bind( $t_ds, $t_dn, $p_password ) ) 
+    				{
     					$t_authenticated->status_ok = true;
     					break; # Don't need to go any further
     				}
@@ -135,9 +150,27 @@
     	{
        		$t_authenticated->status_ok = false;
        		$t_authenticated->status_code = $t_connect->status;
+       		$t_authenticated->status_verbose = 'LDAP CONNECT FAILED';
     	}
     	
     	return $t_authenticated;
 	}
+
+
+/**
+ * Escapes the LDAP string to disallow injection.
+ *
+ * @param string $p_string The string to escape.
+ * @return string The escaped string.
+ */
+function ldap_escape_string( $p_string ) 
+{
+	$t_find = array( '\\', '*', '(', ')', '/', "\x00" );
+	$t_replace = array( '\5c', '\2a', '\28', '\29', '\2f', '\00' );
+
+	$t_string = str_replace( $t_find, $t_replace, $p_string );
+
+	return $t_string;
+}
 
 ?>

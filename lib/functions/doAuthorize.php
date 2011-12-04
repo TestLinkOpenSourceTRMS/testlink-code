@@ -40,6 +40,14 @@ function doAuthorize(&$db,$login,$pwd)
 		if ($login_exists)
 		{
 			$password_check = auth_does_password_match($user,$pwd);
+
+			if(!$password_check->status_ok)
+			{
+				$result = array('status' => tl::ERROR, 'msg' => $password_check->msg);
+			}
+			
+
+
 			if ($password_check->status_ok && $user->isActive)
 			{
 				// BUGID 4342 - 20110410 

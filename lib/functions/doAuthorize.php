@@ -46,6 +46,13 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
 		if ($login_exists)
 		{
 			$password_check = auth_does_password_match($user,$pwd);
+			
+			// This is right way to go, we provide better message
+			if(!$password_check->status_ok)
+			{
+				$result = array('status' => tl::ERROR, 'msg' => $password_check->msg);
+			}
+			
 			if ($password_check->status_ok && $user->isActive)
 			{
 				// TICKET 4342 

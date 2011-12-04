@@ -16,6 +16,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20111204 - franciscom - TICKET 4830: Login Failure message has to be improved when using LDAP
  * 20111203 - franciscom - some minor improvements on info when connect/auth fail
  *						   based again on Mantis code	
  *
@@ -47,6 +48,17 @@ function ldap_connect_bind( $p_binddn = '', $p_password = '' )
         } 
     }
 
+	// IMPORTANT NOTICE from PHP Manual 
+	// ldap_connect()
+	// Returns a positive LDAP link identifier on success, or FALSE on error. 
+	// When OpenLDAP 2.x.x is used, ldap_connect() will always return a resource as it does not 
+	// actually connect but just initializes the connecting parameters. 
+	// The actual connect happens with the next calls to ldap_* funcs, usually with ldap_bind(). 
+	// 
+	// For TestLink Developers
+	// if you use -  echo 'ldap_errno:' . ldap_err2str(ldap_errno($t_ds ));
+	// you will get Success!!!, no matter what has happened
+	//
 	if( $t_ds !== false && $t_ds > 0 ) 
 	{
 		ldap_set_option($t_ds, LDAP_OPT_PROTOCOL_VERSION, $authCfg['ldap_version']);
@@ -67,7 +79,9 @@ function ldap_connect_bind( $p_binddn = '', $p_password = '' )
 		if ( !is_blank( $p_binddn ) && !is_blank( $p_password ) ) 
 		{
 			$t_br = $bind_method( $t_ds, $p_binddn, $p_password );
-		} else {
+		} 
+		else 
+		{
 			# Either the Bind DN or the Password are empty, so attempt an anonymous bind.
 			$t_br = $bind_method( $t_ds );
 		}
@@ -81,9 +95,31 @@ function ldap_connect_bind( $p_binddn = '', $p_password = '' )
 	} 
 	else 
 	{
+		// IMPORTANT NOTICE from PHP Manual
+		// ldap_connect()
+		// When OpenLDAP 2.x.x is used, ldap_connect() will always return a resource as it does not 
+		// actually connect but just initializes the connecting parameters. 
+		//
+		// For TestLink Developers: 
+		// previous notice means that we will enter this section depending LDAP server we are using.
+		//
 		$ret->status = ERROR_LDAP_SERVER_CONNECT_FAILED;
 		$ret->info = 'ERROR_LDAP_SERVER_CONNECT_FAILED';
 	}
+
+	// TICKET 4830: Login Failure message has to be improved when using LDAP
+	// now we can check for errors because we have done an operation OTHER THAN ldap-connect()
+	// See notice about PHP Manual
+	$ret->errno = ldap_errno($t_ds);
+	$ret->error = ldap_err2str($ret->errno);
+
+	// Check for negative after have done test configuring UNREACHEABLE LDAP server
+	// and check value returned by ldap_errno($t_ds);
+	if($ret->errno < 0)  
+	{
+		$ret->status = ERROR_LDAP_SERVER_CONNECT_FAILED;
+		$ret->info = 'ERROR_LDAP_SERVER_CONNECT_FAILED';
+	} 
 
 	return $ret;
 }

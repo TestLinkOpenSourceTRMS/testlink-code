@@ -14,25 +14,6 @@
  * @since 1.9.4
  * 20110817 - franciscom - TICKET 4704,4708
  *
- * @since 1.9.3
- * 20101026 - franciscom - BUGID 3889: Add Test Cases to Test plan - checks with test case id and test case name filters.
- * 20101025 - franciscom - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
- * 20101009 - franciscom - fixing event viewer warnings created for missing initialization of required
- *						   properties of gui object
- *	
- * 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
- * 20100927 - asimon - refresh tree only when action is done
- * 20100721 - asimon - BUGID 3406: assign users per build when adding testcases to plan,
- *                                 added init_build_selector()
- * 20100628 - asimon - removal of constants from filter control class
- * 20100625 - asimon - refactoring for new filter features and BUGID 3516
- * 20100624 - asimon - CVS merge (experimental branch to HEAD)
- * 20100417 - BUGDID 2498 - filter by test case importance
- * 20100411 - BUGID 2797 - filter by test case execution type
- * 20100225 - eloff - BUGID 3205 - Don't show "save platforms" when platforms aren't used
- * 20100129 - franciscom - moved here from template, logic to initialize:
- *                         drawSavePlatformsButton,drawSaveCFieldsButton
- * 20090922 - franciscom - add contribution - bulk tester assignment while adding test cases
  *
  **/
 
@@ -53,7 +34,6 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 
-// BUGID 3406
 $gui->build = init_build_selector($tplan_mgr, $args);
 
 $keywordsFilter = null;
@@ -130,8 +110,6 @@ switch($args->doAction)
 						$features2['add'][$feature_id]['tcversion_id'] = $tcversion_id;
 					    $features2['add'][$feature_id]['creation_ts'] = $db_now;
 					    $features2['add'][$feature_id]['platform_name'] = $platformSet[$platform_id];
-					    
-					    // BUGID 3406 
 					    $features2['add'][$feature_id]['build_id'] = $args->build_id;
 					}
             	}
@@ -284,8 +262,9 @@ if($do_display)
     // This has to be done ONLY AFTER has all data needed => after gen_spec_view() call
 	setAdditionalGuiData($gui);
 
-	// 20100927 - asimon - refresh tree only when action is done
-	switch ($args->doAction) {
+	// refresh tree only when action is done
+	switch ($args->doAction) 
+	{
 		case 'doReorder':
 		case 'doSavePlatforms':
 		case 'doSaveCustomFields':
@@ -337,17 +316,6 @@ function init_args()
 	$args->testerID = isset($_REQUEST['testerID']) ? intval($_REQUEST['testerID']) : 0;
     $args->send_mail = isset($_REQUEST['send_mail']) ? $_REQUEST['send_mail'] : false;
 
-    // BUGID 3516
-	//	// BUGID 2797 - filter by test case execution type
-	//	// 0 -> Any, but has to be converter to null to be used on call to other functions
-	//	$args->executionType = isset($_REQUEST['executionType']) ? intval($_REQUEST['executionType']) : 0;
-	//	$args->executionType = ($args->executionType > 0) ? $args->executionType : null;
-	//
-	//	// 0 -> Any, but has to be converter to null to be used on call to other functions
-	//	$args->importance = isset($_REQUEST['importance']) ? intval($_REQUEST['importance']) : 0;
-	//	$args->importance = ($args->importance > 0) ? $args->importance : null;
-
-	// BUGID 3516
 	// For more information about the data accessed in session here, see the comment
 	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
@@ -361,7 +329,6 @@ function init_args()
 	$booleankeys = array('refreshTree' => 'setting_refresh_tree_on_action','importance' => 'filter_priority',
 						 'executionType' => 'filter_execution_type');
 
-	// TICKET 4704,4708
     foreach($booleankeys as $key => $value)
     {
     	$args->$key = ($getFromSession && isset($session_data[$value])) ? $session_data[$value] : 0;
@@ -371,22 +338,23 @@ function init_args()
 
 	$args->keyword_id = 0;
 	$ak = 'filter_keywords';
-	if (isset($session_data[$ak])) {
+	if (isset($session_data[$ak])) 
+	{
 		$args->keyword_id = $session_data[$ak];
-		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
+		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) 
+		{
 			$args->keyword_id = $args->keyword_id[0];
 		}
 	}
 	
 	$args->keywordsFilterType = null;
 	$ak = 'filter_keywords_filter_type';
-	if (isset($session_data[$ak])) {
+	if (isset($session_data[$ak])) 
+	{
 		$args->keywordsFilterType = $session_data[$ak];
 	}
 	
-	// BUGID 3406
 	$args->build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
-	
 	return $args;
 }
 

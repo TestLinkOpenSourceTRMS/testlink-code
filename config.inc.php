@@ -23,6 +23,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ *	20111210 - franciscom - TICKET 4711: Apache Webserver - SSL Client Certificate Authentication (Single Sign-on?)
  *	20111127 - franciscom - demo mode - new config option demoSpecialUsers
  *	20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server
  *
@@ -268,6 +269,19 @@ $g_smtp_port = 25;
  *	'LDAP' => use password from LDAP Server
  */
 $tlCfg->authentication['method'] = 'MD5';
+
+
+/**
+ * Single Sign On authentication
+ * This will be used with $tlCfg->authentication['method']
+ * 
+ * TICKET 4711	
+ */
+$tlCfg->authentication['SSO_enabled'] = false; 
+$tlCfg->authentication['SSO_method'] = 'CLIENT_CERTIFICATE';
+$tlCfg->authentication['SSO_uid_field'] = 'SSL_CLIENT_S_DN_Email';
+
+
 
 /** LDAP authentication credentials */
 $tlCfg->authentication['ldap_server'] = 'localhost';

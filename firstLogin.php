@@ -3,17 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource	firstLogin.php
  * @package 	TestLink
- * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: firstLogin.php,v 1.35 2010/10/02 14:01:38 franciscom Exp $
+ * @copyright 	2004-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
- * 
- *	20101002 - franciscom - BUGID 3828: TL19RC1 - User self signup - Too many warnings in event log.
- *	20090927 - franciscom - added feature: 
- *                          send mail notification to users with administrator role, 
- *                          when user creates her/his acccount.
+ * @internal revisions
+ * @since 1.9.4
+ *  20111210 - franciscom - TICKET 4813: doDBConnect() - user feedback improvements
  * 
  */
 require_once('config.inc.php');
@@ -33,7 +30,8 @@ if (!config_get('user_self_signup'))
 	exit();
 }
 $args = init_args();
-doDBConnect($db);
+doDBConnect($db,database::ONERROREXIT);
+
 
 $message = lang_get('your_info_please');
 if($args->doEditUser)

@@ -124,11 +124,11 @@ function init_gui(&$db,$args)
 {
 	$gui = new stdClass();
 	
-	$authCfg = config_get('authentication');
-	$gui->securityNotes = getSecurityNotes($db);
-	$gui->external_password_mgmt = ('LDAP' == $authCfg['method']) ? 1 : 0;
-	$gui->login_disabled = ($gui->external_password_mgmt && !checkForLDAPExtension()) ? 1 : 0;
+	$gui->authCfg = config_get('authentication');
 	$gui->user_self_signup = config_get('user_self_signup');
+	$gui->securityNotes = getSecurityNotes($db);
+	$gui->external_password_mgmt = ('LDAP' == $gui->authCfg['method']) ? 1 : 0;
+	$gui->login_disabled = ($gui->external_password_mgmt && !checkForLDAPExtension()) ? 1 : 0;
 
 	switch($args->note)
     {

@@ -10,14 +10,18 @@
  * Note: this file must uses only globally used functionality and cannot include 
  * a feature specific code because of performance and readability reasons
  *
+ * @filesource	common.php
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
- * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.202 2010/10/28 13:51:13 mx-julian Exp $
+ * @copyright 	2005,2011 TestLink community 
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.5
  *
- * @internal Revisions:
+ * @internal revisions
+ * @since 1.9.4
+ *  20111120 - franciscom - TICKET 4813: doDBConnect() - user feedback improvements
+ *
+ * @since 1.9.3
  *  20110415 - Julian - BUGID 4418: Clean up priority usage within Testlink
  *                                  -> priority_to_level() uses urgencyImportance
  *  20101028 - asimon - BUGID 3951: Status and Type for requirements are not saved
@@ -31,22 +35,6 @@
  * 	20100207 - havlatm - cleanup
  * 	20100124 - eloff - added $redirect parameter to checkSessionValid()
  * 	20100124 - eloff - BUGID 3012 - added buildExternalIdString()
- * 	20091215 - eloff - save active testplan_id to cookie
- * 	20091121 - franciscom - getItemTemplateContents() - contribution refactored
- * 	20090425 - amitkhullar - BUGID 2431 - Improper Session Handler	
- * 	20090409 - amitkhullar- BUGID 2354
- * 	20090111 - franciscom - commented some required_once and some global coupling
- * 	20081027 - havlatm - refactorization, description
- * 						removed unused $g_cache_config and some functions 
- * 	20080907 - franciscom - isValidISODateTime()
- * 	20080518 - franciscom - translate_tc_status()
- * 	20080412 - franciscom - templateConfiguration()
- * 	20080326 - franciscom - config_get() - refactored removed eval()
- * 	20071027 - franciscom - added ini_get_bool() from mantis code, needed to user
- *                         string_api.php, also from Mantis.
- * 	20071002 - jbarchibald - BUGID 1051
- * 	20070705 - franciscom - init_labels()
- * 	20070623 - franciscom - improved info in header of localize_dateOrTimeStamp()
  */
 
 /** core and parenthal classes */
@@ -86,7 +74,6 @@ require_once("exec_cfield_mgr.class.php");
  * Automatic loader for PHP classes
  * See PHP Manual for details 
  */
-// function __autoload($class_name) 
 function tlAutoload($class_name) 
 {
 	// exceptions
@@ -112,11 +99,14 @@ $db = 0;
 /**
  * TestLink connects to the database
  *
+ * @param &$db reference to resource, here resource pointer will be returned.
+ * @param $onErrorExit default false, true standard page will be displayed
+ *
  * @return array
  *         aa['status'] = 1 -> OK , 0 -> KO
  *         aa['dbms_msg''] = 'ok', or $db->error_msg().
  */
-function doDBConnect(&$db)
+function doDBConnect(&$db,$onErrorExit=false)
 {
 	global $g_tlLogger;
 	
@@ -130,7 +120,22 @@ function doDBConnect(&$db)
 	{
 		echo $result['dbms_msg'];
 		$result['status'] = 0;
-		tLog('Connect to database fails!!! ' . $result['dbms_msg'], 'ERROR');
+		$search = array('<b>','</b>','<br>');
+		$replace = array('',''," :: ");
+		$logtext = ' Connect to database <b>' . DB_NAME . '</b> on Host <b>' . DB_HOST . '</b> fails <br>';
+		$logtext .= 'DBMS Error Message: ' . $result['dbms_msg'];
+		
+		$logmsg  = $logtext . ($onErrorExit ? '<br>Redirection to connection fail screen.' : '');
+		tLog(str_replace($search,$replace,$logmsg), 'ERROR');
+		if( $onErrorExit )
+		{
+			$smarty = new TLSmarty();
+			$smarty->assign('title', lang_get('fatal_page_title'));
+			$smarty->assign('content', $logtext);
+			$smarty->assign('link_to_op', null);
+			$smarty->display('workAreaSimple.tpl'); 
+			exit();
+		}
 	}
 	else
 	{
@@ -177,8 +182,7 @@ function setSessionTestPlan($tplan_info)
 
 /**
  * Set home URL path
- * @internal Revisions:
- * 200806 - havlatm - removed rpath
+ * @internal revisions
  */
 function setPaths()
 {
@@ -200,18 +204,8 @@ function checkSessionValid(&$db, $redirect=true)
 	$isValidSession = false;
 	if (isset($_SESSION['userID']) && $_SESSION['userID'] > 0)
 	{
-		/** @TODO martin: 
-		    Talk with Andreas to understand:
-		    1. advantages of this approach
-		    2. do we need to recreate it every time ? why ?
-		   
-		 * a) store just data -not all object
-		 * b) do not read again and again the same data from DB
-		 * c) this function check JUST session validity
-		 **/
 		$now = time();
-		$lastActivity = $_SESSION['lastActivity'];
-		if (($now - $lastActivity) <= (config_get("sessionInactivityTimeout") * 60))
+		if (($now - $_SESSION['lastActivity']) <= (config_get("sessionInactivityTimeout") * 60))
 		{
 			$_SESSION['lastActivity'] = $now;
 			$user = new tlUser($_SESSION['userID']);
@@ -222,13 +216,12 @@ function checkSessionValid(&$db, $redirect=true)
 	}
 	if (!$isValidSession && $redirect)
 	{
-        $ip = $_SERVER["REMOTE_ADDR"];
-	    tLog('Invalid session from ' . $ip . '. Redirected to login page.', 'INFO');
+	    tLog('Invalid session from ' . $_SERVER["REMOTE_ADDR"] . '. Redirected to login page.', 'INFO');
 		
 		$fName = "login.php";
         $baseDir = dirname($_SERVER['SCRIPT_FILENAME']);
         
-        while(!file_exists($baseDir.DIRECTORY_SEPARATOR.$fName))
+        while(!file_exists($baseDir . DIRECTORY_SEPARATOR . $fName))
         {
             $fName = "../" . $fName;
         }
@@ -243,12 +236,18 @@ function checkSessionValid(&$db, $redirect=true)
 /**
  * Start session
  */
-function doSessionStart()
+function doSessionStart($setPaths=false)
 {
 	session_set_cookie_params(99999);
 	if(!isset($_SESSION))
 	{
 		session_start();
+	}
+	
+	if($setPaths)
+	{
+		unset($_SESSION['basehref']);
+		setPaths();
 	}
 }
 
@@ -260,9 +259,7 @@ function doSessionStart()
  * @uses $_SESSION Requires initialized project, test plan and user data.
  * @since 1.9
  *
- * @internal Revisions
- *  20100714 - asimon - BUGID 3601: show req spec link only when req mgmt is enabled
- *	20091119 - franciscom - removed global coupling 
+ * @internal revisions
  */
 function initTopMenu(&$db)
 {
@@ -276,7 +273,6 @@ function initTopMenu(&$db)
     	foreach ($guiTopMenu as $element)
 		{
 			// check if Test Plan is available
-			// BUGID 3601: check also if req mgmt is enabled
 			if ((!isset($element['condition'])) || ($element['condition'] == '') ||
 				(($element['condition'] == 'TestPlanAvailable') && 
 				  isset($_SESSION['testplanID']) && $_SESSION['testplanID'] > 0) ||
@@ -686,93 +682,6 @@ function ini_get_bool( $p_name ) {
 		return (bool)$result;
 	}
 }
-
-
-/** @TODO martin: this is specific library and cannot be loaded via common.php
- * USE EXTRA LIBRARY             
-// Contributed code - manish
-$phpxmlrpc = TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'phpxmlrpc' . 
-             DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR;
-require_once($phpxmlrpc . 'xmlrpc.inc');
-require_once($phpxmlrpc . 'xmlrpcs.inc');
-require_once($phpxmlrpc . 'xmlrpc_wrappers.inc');
-*/
-
-
-/**
-* Initiate the execution of a testcase through XML Server RPCs.
-* All the object instantiations are done here.
-* XML-RPC Server Settings need to be configured using the custom fields feature.
-* Three fields each for testcase level and testsuite level are required.
-* The fields are: server_host, server_port and server_path.
-* Precede 'tc_' for custom fields assigned to testcase level.
-*
-* @param $testcase_id: The testcase id of the testcase to be executed
-* @param $tree_manager: The tree manager object to read node values and testcase and parent ids.
-* @param $cfield_manager: Custom Field manager object, to read the XML-RPC server params.
-* @return map:
-*         keys: 'result','notes','message'
-*         values: 'result' -> (Pass, Fail or Blocked)
-*                 'notes' -> Notes text
-*                 'message' -> Message from server
-*/
-/*
-function executeTestCase($testcase_id,$tree_manager,$cfield_manager){
-
-	//Fetching required params from the entire node hierarchy
-	$server_params = $cfield_manager->getXMLServerParams($testcase_id);
-
-  $ret=array('result'=>AUTOMATION_RESULT_KO,
-             'notes'=>AUTOMATION_NOTES_KO, 'message'=>'');
-
-	$server_host = "";
-	$server_port = "";
-	$server_path = "";
-  $do_it=false;
-	if( ($server_params != null) or $server_params != ""){
-		$server_host = $server_params["xml_server_host"];
-		$server_port = $server_params["xml_server_port"];
-		$server_path = $server_params["xml_server_path"];
-	  $do_it=true;
-	}
-
-  if($do_it)
-  {
-  	// Make an object to represent our server.
-  	// If server config objects are null, it returns an array with appropriate values
-  	// (-1 for executions results, and fault code and error message for message.
-  	$xmlrpc_client = new xmlrpc_client($server_path,$server_host,$server_port);
-
-  	$tc_info = $tree_manager->get_node_hierarchy_info($testcase_id);
-  	$testcase_name = $tc_info['name'];
-
-  	//Create XML-RPC Objects to pass on to the the servers
-  	$myVar1 = new xmlrpcval($testcase_name,'string');
-  	$myvar2 = new xmlrpcval($testcase_id,'string');
-
-  	$messageToServer = new xmlrpcmsg('ExecuteTest', array($myVar1,$myvar2));
-  	$serverResp = $xmlrpc_client->send($messageToServer);
-
-  	$myResult=AUTOMATION_RESULT_KO;
-  	$myNotes=AUTOMATION_NOTES_KO;
-
-  	if(!$serverResp) {
-  		$message = lang_get('test_automation_server_conn_failure');
-  	} elseif ($serverResp->faultCode()) {
-  		$message = lang_get("XMLRPC_error_number") . $serverResp->faultCode() . ": ".$serverResp->faultString();
-  	}
-  	else {
-  		$message = lang_get('test_automation_exec_ok');
-  		$arrayVal = $serverResp->value();
-  		$myResult = $arrayVal->arraymem(0)->scalarval();
-  		$myNotes = $arrayVal->arraymem(1)->scalarval();
-  	}
-  	$ret = array('result'=>$myResult, 'notes'=>$myNotes, 'message'=>$message);
-  } //$do_it
-
-	return $ret;
-} // function end
-*/
 
 
 /**

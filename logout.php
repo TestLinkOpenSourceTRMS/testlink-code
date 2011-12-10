@@ -3,14 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
- * Filename $RCSfile: logout.php,v $
+ * @filesource	logout.php
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2009/08/11 19:48:50 $
+ * @internal revisions
+ * @since 1.9.4
+ *
 **/
 require_once('config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
+
 $args = init_args();
 if ($args->userID)
 {
@@ -18,9 +20,9 @@ if ($args->userID)
 }
 session_unset();
 session_destroy();
-
-redirect("login.php");
+redirect("login.php?note=logout");
 exit();
+
 
 function init_args()
 {

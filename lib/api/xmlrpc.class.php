@@ -2129,6 +2129,11 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param string $args["executestatus"] - optional
 	 * @param array $args["executiontype"] - optional
 	 * @param array $args["getstepinfo"] - optional - default false
+	 * @param boolean $args["details"] - optional (default is 'full')
+	 *                                use 'simple' if you don't want to get 
+	 *                                summary,steps & expected_results
+	 *                                or 'details' if you don't want to get
+	 *                                steps & expected_results
 	 *
 	 * @return mixed $resultInfo
 	 */
@@ -2181,9 +2186,18 @@ class TestlinkXMLRPCServer extends IXR_Server
         		$keywordSet = explode(",",$keywordList);
         	}
 		}
+		
+		$details='full';
+		$key2search=self::$detailsParamName;
+		if( $this->_isParamPresent($key2search) )
+		{
+		    $details=$this->args[$key2search];  
+		}
+		
         $options = array('executed_only' => $opt[self::$executedParamName], 
         				 'steps_info' => $opt[self::$getStepsInfoParamName],
-        				 'details' => 'full','output' => 'mapOfMap' );
+        				 'details' => $details,
+        				 'output' => 'mapOfMap' );
         				 
 		$filters = array('tcase_id' => $opt[self::$testCaseIDParamName],
 			             'keyword_id' => $keywordSet,

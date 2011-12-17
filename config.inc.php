@@ -311,6 +311,7 @@ $tlCfg->password_reset_send_method = 'send_password_by_mail';
  * The regular expression to use when validating new user login names
  * The default regular expression allows a-z, A-Z, 0-9, +, -, dot, @ and underscore. 	 
  * For testing regular expressions, use http://rubular.com/.
+ * For regular expression to englihs, use http://xenon.stanford.edu/~xusch/regexp/analyzer.html
  */
 $tlCfg->validation_cfg->user_login_valid_regex='/^([a-z\d\-.+_@]+(@[a-z\d\-.]+\.[a-z]{2,4})?)$/i';
 

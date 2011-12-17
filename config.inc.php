@@ -23,6 +23,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ *	20111217 - franciscom - $tlCfg->validation_cfg->user_login_valid_regex updated using mantisbt 1.2.5
  *	20111210 - franciscom - TICKET 4711: Apache Webserver - SSL Client Certificate Authentication (Single Sign-on?)
  *	20111127 - franciscom - demo mode - new config option demoSpecialUsers
  *	20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server
@@ -303,8 +304,15 @@ $tlCfg->user_self_signup = TRUE;
 */
 $tlCfg->password_reset_send_method = 'send_password_by_mail';
 
-/** Validating new user login names */
-$tlCfg->validation_cfg->user_login_valid_regex='/^[\w \- .]+$/';
+/** 
+ * Validating new user login names
+ * Taken mantisbt version 1.2.5 - www.mantisbt.org and adapted
+ *
+ * The regular expression to use when validating new user login names
+ * The default regular expression allows a-z, A-Z, 0-9, +, -, dot, @ and underscore. 	 
+ * For testing regular expressions, use http://rubular.com/.
+ */
+$tlCfg->validation_cfg->user_login_valid_regex='/^([a-z\d\-.+_@]+(@[a-z\d\-.]+\.[a-z]{2,4})?)$/i';
 
 /**
  * Validating user email addresses

@@ -366,7 +366,8 @@ $TLS_urgency_low 		= "Low";
 $TLS_test_importance 	= "Test importance";
 $TLS_testcases_assigned_to_user = 'Test Project: %s - Test Cases Assigned to User: %s';
 $TLS_assigned_on = 'Assigment date';
-
+$TLS_access_denied = 'Access denied';
+$TLS_access_denied_feedback = 'In order to access requested item you need one of following rights/grants:';
 
 // ----- index.php -----
 $TLS_main_page_title = "TestLink ::: Main Page";
@@ -1080,6 +1081,8 @@ $TLS_creation_date_from = 'Creation Date From:';
 $TLS_creation_date_to = 'Creation Date To:';
 $TLS_modification_date_from = 'Modification Date From:';
 $TLS_modification_date_to = 'Modification Date To:';
+$TLS_search_important_notice = 'Important Notice: search is done only on test project %s.';
+$TLS_search_prefix_ignored = 'Test case prefix will be ignored';
 
 
 

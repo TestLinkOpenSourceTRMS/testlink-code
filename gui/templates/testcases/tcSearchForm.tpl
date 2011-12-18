@@ -3,14 +3,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: tcSearchForm.tpl,v 1.21 2010/10/26 13:11:34 mx-julian Exp $
 Purpose: show form for search through test cases in test specification
 
-rev :
-  20101026 - Julian - no validation for dates -> no manual input - input only via datepicker
-  20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
-  20100707 - Julian - BUGID 3584: replaced cf names by cf labels
-  20100609 - franciscom - BUGID 1627: Search Test Case by Date of Creation
-  20100409 - franciscom - BUGID 3371 Search Test Cases based on Test Importance
-  20100124 - franciscom - BUGID 3077 - search on preconditions
-  20090228 - franciscom - pre-fill test case id with testcase prefix
+@internal revisions
+@since 1.9.4
+20111218 - franciscom - added new user hints
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -18,7 +13,7 @@ rev :
 {lang_get var="labels" 
           s='title_search_tcs,caption_search_form,th_tcid,th_tcversion,
              th_title,summary,steps,expected_results,keyword,custom_field,
-             search_type_like,preconditions,filter_mode_and,test_importance,
+             search_type_like,preconditions,filter_mode_and,test_importance,search_prefix_ignored,
              creation_date_from,creation_date_to,modification_date_from,modification_date_to,
              custom_field_value,btn_find,requirement_document_id,show_calender,clear_date'}
 
@@ -35,6 +30,12 @@ rev :
 		<caption>{$labels.caption_search_form}</caption>
 		<tr>
 		 <td colspan="2"><img src="{$tlImages.info}"> {$labels.filter_mode_and} </td>
+		</tr>
+		<tr>
+		 <td colspan="2">{$gui->search_important_notice|escape}<br>{$labels.search_prefix_ignored|escape}</td>
+		</tr>
+		<tr>
+		 <td colspan="2">&nbsp;</td>
 		</tr>
 		<tr>
 			<td>{$labels.th_tcid}</td>

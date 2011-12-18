@@ -11,6 +11,7 @@
  *
  *	@internal revision
  *	@since 1.9.4
+ *	20111218 - franciscom - TICKET 4842: Test Case search - add check of user rights when trying to access test case
  *  20111105 - franciscom - TICKET 4796: Test Case reuse - Quick & Dirty Approach 
  */
 
@@ -31,6 +32,11 @@ $gui = new stdClass();
 $gui->page_title = lang_get('container_title_' . $args->feature);
 
 
+// User right at test project level has to be done
+// Because this script can be called requesting an item that CAN BELONG
+// to a test project DIFFERENT that value present on SESSION,
+// we need to use requested item to get its right Test Project
+// We will start with Test Cases ONLY
 switch($args->feature)
 {
 	case 'testproject':
@@ -66,23 +72,53 @@ switch($args->feature)
 		$gui->attachments = null;
 		$gui->direct_link = null;
 		$gui->steps_results_layout = $cfg['spec']->steps_results_layout;
-		// 20101008 - asimon - BUGID 3311
-		$gui->bodyOnUnload = 'storeWindowSize(\'TCEditPopup\')';
+		$gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
     	
-   		// has been called from a test case search
+   		// we use $args->targetTestCase, to understand if this script has been called from a test case search
 		if(!is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)
 		{
 			$viewerArgs['show_title'] = 'no';
 			$viewerArgs['display_testproject'] = 1;
 			$viewerArgs['display_parent_testsuite'] = 1;
 			$args->id = $item_mgr->getInternalID($args->targetTestCase);
-            
 			if( !($get_path_info = ($args->id > 0)) )
 			{
 				$gui->warning_msg = $args->id == 0 ? lang_get('testcase_does_not_exists') : lang_get('prefix_does_not_exists');
  			} 
-			
 		}
+
+		if( $args->id > 0 )
+		{
+			// Get Test Project in order to check user rights
+			if( !is_null($args->tcaseTestProject) )
+			{
+				$grant2check = array('mgt_view_tc','mgt_modify_tc');
+				foreach($grant2check as $grant)
+				{
+						$grantlbl['desc_' . $grant] = null;
+				}
+
+				$check = $_SESSION['currentUser']->hasRight($db,$grant2check,$args->tcaseTestProject['id']);
+				if( is_null($check) )
+				{
+					$grantLabels = init_labels($grantlbl);
+					$logtext = lang_get('access_denied_feedback');
+					foreach($grantLabels as $lbl)
+					{
+						$logtext .= "'" . $lbl . "',";
+					}
+					$logtext = trim($logtext,",");
+					
+					$dummy = 
+					$smarty->assign('title', lang_get('access_denied'));
+					$smarty->assign('content', $logtext);
+					$smarty->assign('link_to_op', null);
+					$smarty->display('workAreaSimple.tpl'); 
+					exit();
+				}
+			}
+		}
+
 
 		if( $args->id > 0 )
 		{
@@ -141,30 +177,47 @@ function init_args(&$dbHandler,&$viewerCfg,$cfgObj)
 	
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     $args->feature = $args->edit;
+	$args->tcaseTestProject = null;
+
+	$tprojectMgr = new testproject($dbHandler);
+	$tcaseMgr = new testcase($dbHandler);
 
 
-	// -------------------
-	if( strlen($args->tcaseExternalID) > 0 )
+    // For lazy users that do not provide test case external id as PREFIX-NN, but just NN
+    // we try to help adding $args->tcasePrefix, that we can get on call
+    // need to understand in what situation call provides this argument
+	$tcasePrefix = $args->tcasePrefix;
+    if (strpos($args->targetTestCase,$cfgObj['testcase']->glue_character) === false)
+    {
+    	$args->targetTestCase = $args->tcasePrefix . $args->targetTestCase;
+ 	}
+
+
+	// TICKET 4842: Test Case search - add check of user rights when trying to access test case 
+	$verboseTCID = strlen($args->tcaseExternalID) > 0 ? $args->tcaseExternalID : null;
+	if( is_null($verboseTCID) )
+	{
+		$verboseTCID = strlen($args->targetTestCase) > 0  ? $args->targetTestCase : null;
+	}
+	
+	if( !is_null($verboseTCID) )
 	{
 		// parse to get JUST prefix
-		$gluePos = strrpos($args->tcaseExternalID, $cfg->glue_character); // Find the last glue char
+		$gluePos = strrpos($verboseTCID, $cfgObj['testcase']->glue_character); // Find the last glue char
 		$status_ok = ($gluePos !== false);
 		if($status_ok)
 		{
-			$tcasePrefix = substr($args->tcaseExternalID, 0, $gluePos);
+			$tcasePrefix = substr($verboseTCID, 0, $gluePos);
 		}
 		
-		$tprojectMgr = new testproject($dbHandler);
-		$tcaseMgr = new testcase($dbHandler);
-		$dummy = $tprojectMgr->get_by_prefix($tcasePrefix);
-		$args->tcase_id = $tcaseMgr->getInternalID($args->tcaseExternalID);
+		$args->tcaseTestProject = $tprojectMgr->get_by_prefix($tcasePrefix);
+				
+		$args->tcase_id = $tcaseMgr->getInternalID($verboseTCID);
 		$tcinfo = $tcaseMgr->get_basic_info($args->tcase_id,array('number' => $args->tcaseVersionNumber));
 		if(!is_null($tcinfo))
 		{
 			$args->tcversion_id = $tcinfo[0]['tcversion_id'];
 		}
-		unset($tprojectMgr);
-		unset($tcaseMgr);
 	}
     else
     {
@@ -192,13 +245,20 @@ function init_args(&$dbHandler,&$viewerCfg,$cfgObj)
 			$viewerCfg = array('action' => '', 'msg_result' => '','user_feedback' => '');
 			$viewerCfg['disable_edit'] = 0;
             $viewerCfg['refreshTree'] = 0;
+            
+            if( is_null($args->tcaseTestProject) )
+            {
+            	$id = $tcaseMgr->get_testproject($args->id);
+            	$args->tcaseTestProject = $tprojectMgr->get_by_id($id);
+            }
 			break;
     }
-    if (strpos($args->targetTestCase,$cfgObj['testcase']->glue_character) === false)
-    {
-    	$args->targetTestCase = $args->tcasePrefix . $args->targetTestCase;
- 	}
+    
    	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
+
+	unset($tcaseMgr);
+	unset($tprojectMgr);
     return $args;
 }
 ?>

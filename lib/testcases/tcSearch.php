@@ -4,34 +4,20 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Display test cases search results. 
+ * Search is done ONLY ON CURRENT test project
  *
+ *
+ * @filesource	tcSearch.php
  * @package 	TestLink
  * @author 		TestLink community
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.25.2.2 2011/01/10 15:38:59 asimon83 Exp $
+ * @copyright 	2007-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *	@since 1.9.4
  *  20110706 - Julian - BUGID 4652 - Added link to execution history
- *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
- *  20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
- *  20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                      table state independent from localization
- *  20101005 - asimon - replaced linked test case title by linked icon for editing
- *	20100920 - Julian - BUGID 3793 - use exttable to display search results
- *	20100908 - Julian - BUGID 2877 - Custom Fields linked to TC versions
- *	20100814 - franciscom - improvements on logic and feedback when user fill in test case id filter
- *	20100609 - franciscom - BUGID 1627: Search Test Case by Date of Creation
- *  20100526 - Julian - BUGID 3490 - Search Test Cases based on requirements
- *	20100409 - franciscom - BUGID 3371 - Search Test Cases based on Test Importance
- *	20100326 - franciscom - BUGID 3334 - search fails if test case has 0 steps
- *  20100124 - franciscom - BUGID 3077 - search on preconditions
- *	20100106 - franciscom - Multiple Test Case Steps Feature
- *	20090228 - franciscom - if targetTestCase == test case prefix => 
- *                             consider as empty => means search all.
  *
- *	20090125 - franciscom - BUGID - search by requirement doc id
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -66,8 +52,6 @@ if ($args->tprojectID)
     $filter = null;
 	$tcaseID = null;
     
-	// BUGID 3716	
-	// creation date
     if($args->creation_date_from)
     {
         $filter['by_creation_date_from'] = " AND TCV.creation_ts >= '{$args->creation_date_from}' ";
@@ -78,7 +62,6 @@ if ($args->tprojectID)
         $filter['by_creation_date_to'] = " AND TCV.creation_ts <= '{$args->creation_date_to}' ";
 	}
 	
-	// modification date
     if($args->modification_date_from)
     {
         $filter['by_modification_date_from'] = " AND TCV.modification_ts >= '{$args->modification_date_from}' ";
@@ -168,7 +151,6 @@ if ($args->tprojectID)
     	$filter['by_requirement_doc_id'] = " AND REQ.req_doc_id like '%{$args->requirement_doc_id}%' ";
     }   
 
-	// BUGID 3371 
    	if( $args->importance > 0)
     {
         $filter['importance'] = " AND TCV.importance = {$args->importance} ";
@@ -179,8 +161,7 @@ if ($args->tprojectID)
     
     $sqlCount  = "SELECT COUNT(NH_TC.id) ";
     
-    // BUGID 3334 - search fails if test case has 0 steps
-    // Added LEFT OUTER
+    // search fails if test case has 0 steps - Added LEFT OUTER
     $sqlPart2 = " FROM {$tables['nodes_hierarchy']} NH_TC " .
                 " JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TC.id  " .
                 " JOIN {$tables['tcversions']} TCV ON NH_TCV.id = TCV.id " .
@@ -190,7 +171,6 @@ if ($args->tprojectID)
                 " WHERE 1=1 ";
            
            
-    // 20100814 - franciscom
     // if user fill in test case [external] id filter, and we were not able to get tcaseID, do any query is useless
     $applyFilters = true;
     if( !is_null($filter) && isset($filter['by_tc_id']) && !is_null($tcaseID) && ($tcaseID <= 0) )

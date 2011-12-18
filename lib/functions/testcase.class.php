@@ -4431,6 +4431,7 @@ class testcase extends tlObjectWithAttachments
 		       " JOIN {$this->tables['tcversions']} TCV ON  TCV.id = NH_TCV.id ";
 
 		$accessBy = array('number' => 'version', 'id' => 'id'); 
+		$where_clause = '';
 		foreach( $accessBy as $key => $field) 
 		{
 			if( isset($accessVersionBy[$key]) )

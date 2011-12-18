@@ -743,8 +743,6 @@ class tlUser extends tlDBObject
      * @return string|null 'yes' or null
 	 *
 	 * @internal revisions
-	 * 20110325 - franciscom - 	BUGID 4062 - caused by bad access to $_SESSION
-	 *							dammed global coupling	
      */
 	function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	{

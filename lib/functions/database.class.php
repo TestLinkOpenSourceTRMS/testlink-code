@@ -101,7 +101,7 @@ class database
 	
 	
 	/** Make a connection to the database */
-	# 20060708 - franciscom -  changed Connect() to NConnect() see ADODB Manuals
+	# changed Connect() to NConnect() see ADODB Manuals
 	function connect( $p_dsn, $p_hostname = null, $p_username = null, 
 	                          $p_password = null, $p_database_name = null ) 
 	{

@@ -617,7 +617,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	public function set_testcases_to_show($value = null) 
 	{
 		// update active_filters
-		if (!is_null($testcases_to_show)) {
+		if (!is_null($value)) {
 			$this->active_filters['testcases_to_show'] = $value;
 		}
 		

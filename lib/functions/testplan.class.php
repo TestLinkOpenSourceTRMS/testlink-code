@@ -16,6 +16,9 @@
  * @internal revisions
  * 
  *  @since 1.9.4
+ *  20111226 - franciscom - get_linked_tcversions() 
+ *							when options['details'] = 'full' => force $my['options']['steps_info'] = true
+ *							
  *	20110820 - franciscom - TICKET 4710: Performance/Filter Problem on big project
  *							get_linked_tcversions() refactoring, helper_ methods
  *						
@@ -953,12 +956,15 @@ class testplan extends tlObjectWithAttachments
          	[details]: controls columns returned (and some JOINS)
          	           default 'simple'
          	           'full': add summary, steps and expected_results, and test suite name
+         	           		   this value will force option steps_info to TRUE
+         	           		   	
          	           'summary': add summary
          	           'spec_essential': no info about executions and user assignments
          	           'exec_tree_optimized': some JOINS are done ONLY if exists filters that need it.
          	           
 		 	[steps_info]: controls if step info has to be added on output    
-         	           default true
+         	              default true
+         	              
 		 	[user_assignments_per_build]: contains a build ID, for which the
 		 	                              assigned user shall get loaded    
 		 	    
@@ -1163,6 +1169,7 @@ class testplan extends tlObjectWithAttachments
 				$more_parent_fields = 'NH_TSUITE.name as tsuite_name,';
 				$join_for_parent = 	" JOIN {$this->tables['nodes_hierarchy']} NH_TSUITE " . 
 									" ON NH_TCASE.parent_id = NH_TSUITE.id ";
+				$my['options']['steps_info'] = true;
 			break;
 			
 			case 'summary':
@@ -1170,7 +1177,8 @@ class testplan extends tlObjectWithAttachments
 			break;
 
 			case 'spec_essential':   // TICKET 4710
-				/*$exec_fields = '';
+				/*
+				$exec_fields = '';
 				$executions['join'] = '';
 				$executions['filter'] = '';
 				$exec_order_by = '';
@@ -1203,7 +1211,6 @@ class testplan extends tlObjectWithAttachments
 				$ua_fields = '';
 				$ua_filter = '';
 			break;
-
 		
 		}
 

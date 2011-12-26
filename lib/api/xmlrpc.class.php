@@ -21,6 +21,7 @@
  *
  * @internal revisions 
  * @since 1.9.4
+ * 20111226 - franciscom - TICKET 4843: 'getTestCasesForTestPlan' - add support for new argument 'details'
  * 20111024 - franciscom - TICKET 4774: New methods to manage test case steps
  * 20111023 - franciscom - getTestCase(), added key on result 'full_tc_external_id' that will hold
  *						   external ID as is displayed on GUI (with prefix and glue character)	
@@ -2220,7 +2221,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    return $status;
     }   
 
-	 /**
+	/**
 	 * getTestCasesForTestPlan
 	 * List test cases linked to a test plan
 	 * 
@@ -2237,16 +2238,25 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param string $args["executestatus"] - optional
 	 * @param array $args["executiontype"] - optional
 	 * @param array $args["getstepinfo"] - optional - default false
-	 *
+	 * @param string $args["details"] - optional 
+	 *									'full': (default) get summary,steps,expected_results,test suite name
+	 * 									'simple':
+	 * 									'details':
 	 * @return mixed $resultInfo
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 * 20111226 - franciscom - TICKET 4843: 'getTestCasesForTestPlan' - add support for new argument 'details'
 	 */
 	 public function getTestCasesForTestPlan($args)
 	 {
 
+
 	    $operation=__FUNCTION__;
  	    $msg_prefix="({$operation}) - ";
          
-        // Optional parameters that are not mutual exclusive
+        // Optional parameters that are not mutual exclusive, 
+        // DEFAULT value to use if parameter was not provided
         $opt=array(self::$testCaseIDParamName => null,
                    self::$buildIDParamName => null,
                    self::$keywordIDParamName => null,
@@ -2254,7 +2264,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                    self::$assignedToParamName => null,
                    self::$executeStatusParamName => null,
                    self::$executionTypeParamName => null,
-                   self::$getStepsInfoParamName => false);
+                   self::$getStepsInfoParamName => false,
+                   self::$detailsParamName => 'full');
          	
         $optMutualExclusive=array(self::$keywordIDParamName => null,
                                   self::$keywordNameParamName => null); 	
@@ -2277,8 +2288,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 		    }   
 		}
 		
-		// 20101110 - franciscom
-		// honors what has been written in documentation
 		$keywordSet = $opt[self::$keywordIDParamName];
 		if( is_null($keywordSet) )
 		{
@@ -2289,13 +2298,12 @@ class TestlinkXMLRPCServer extends IXR_Server
         		$keywordSet = explode(",",$keywordList);
         	}
 		}
-		// BUGID 4041
-		// BUGID 3604
+
         $options = array('executed_only' => $opt[self::$executedParamName], 
         				 'steps_info' => $opt[self::$getStepsInfoParamName],
-        				 'details' => 'full','output' => 'mapOfMap' );
+        				 'details' => $opt[self::$detailsParamName],
+        				 'output' => 'mapOfMap' );
         	
-        // BUGID 3992				 
 		$filters = array('tcase_id' => $opt[self::$testCaseIDParamName],
 			             'keyword_id' => $keywordSet,
 			             'assigned_to' => $opt[self::$assignedToParamName],

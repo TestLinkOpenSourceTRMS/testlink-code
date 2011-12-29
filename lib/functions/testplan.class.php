@@ -1079,6 +1079,7 @@ class testplan extends tlObjectWithAttachments
 	public function get_linked_tcversions($id,$filters=null,$options=null)
 	{
 		$debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
+		echo $debugMsg . '<br>';
 		
         $my = array('filters' => '', 'options' => '');
 
@@ -1097,7 +1098,9 @@ class testplan extends tlObjectWithAttachments
 		
 		list($my,$build_active_status,$ua_build_sql) = $this->init_get_linked_tcversions($filters,$options);
 
-		new dBug($ua_build_sql);
+		new dBug($my);
+		
+		// new dBug($ua_build_sql, array('label' => '$ua_build_sql'));
 		
 		 
 		// not run && build_active_status = 'active', need special logic		
@@ -1207,8 +1210,6 @@ class testplan extends tlObjectWithAttachments
 				$ua_fields = '';
 				$ua_filter = '';
 			break;
-
-		
 		}
 
 		if( !is_null($my['options']['exclude_info']) )
@@ -1218,6 +1219,7 @@ class testplan extends tlObjectWithAttachments
 				switch($victim)
 				{
 					case 'exec_info':
+						echo 'HER';
 						$exec_fields = '';
 						$exec_order_by = " ";
 						$more_exec_fields = '';
@@ -1227,6 +1229,13 @@ class testplan extends tlObjectWithAttachments
 					case 'priority':
 						$priority_field = '';
 					break;
+
+					case 'assigned_on_build':
+					case 'assigned_to':
+						$ua_fields = '';
+						$ua_filter = '';
+					break;
+
 				}
 			
 			}
@@ -1247,8 +1256,8 @@ class testplan extends tlObjectWithAttachments
 				   " T.node_order AS execution_order, T.creation_ts AS linked_ts, T.author_id AS linked_by,T.urgency," .
 				   " TCV.version AS version, TCV.active," .
 				   " TCV.tc_external_id AS external_id, TCV.execution_type,TCV.importance," .  
-				   " $concat AS full_external_id, " .
-				   $exec_fields .
+				   " $concat AS full_external_id" .
+				   ($exec_fields != '' ? ',' . $exec_fields : '') .
 				   $priority_field ;
 		    
 		    // Performance issues - August 2011
@@ -1388,8 +1397,8 @@ class testplan extends tlObjectWithAttachments
 	 */
 	function init_get_linked_tcversions($filtersCfg,$optionsCfg)
 	{
-		new dBug($filtersCfg);
-		new dBug($optionsCfg);
+		//echo __FUNCTION__ .'<br>'; new dBug($filtersCfg);
+		//echo __FUNCTION__ .'<br>';new dBug($optionsCfg);
 		
         $dummy = array('exec_type','tc_id','builds','keywords','executions','platforms');
         $ic['join'] = array_fill_keys($dummy,null);
@@ -1440,7 +1449,7 @@ class testplan extends tlObjectWithAttachments
 			$dummy = $ic['where']['builds'];
 			$ic['where']['builds'] = '';
 		}
-		$my['join']['executions'] .= " JOIN {$this->tables['executions']} E ON " .
+		$ic['join']['executions'] .= " JOIN {$this->tables['executions']} E ON " .
 			                   		 " (E.testplan_id = T.testplan_id AND " .
 			                   		 "  E.tcversion_id = T.tcversion_id AND " .
 			                   		 "  E.platform_id = T.platform_id " .

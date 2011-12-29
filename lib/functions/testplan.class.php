@@ -1247,7 +1247,7 @@ class testplan extends tlObjectWithAttachments
 				   " T.node_order AS execution_order, T.creation_ts AS linked_ts, T.author_id AS linked_by,T.urgency," .
 				   " TCV.version AS version, TCV.active," .
 				   " TCV.tc_external_id AS external_id, TCV.execution_type,TCV.importance," .  
-				   " $concat AS full_external_id " .
+				   " $concat AS full_external_id, " .
 				   $exec_fields .
 				   $priority_field ;
 		    

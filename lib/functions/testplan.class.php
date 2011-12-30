@@ -1302,8 +1302,8 @@ class testplan extends tlObjectWithAttachments
 				// TICKET 4710
 				$sql .=	" /* \$ua_fields != '' */ " . 
 						" LEFT OUTER JOIN {$this->tables['user_assignments']} UA ON UA.feature_id = T.id " .
-						$ua_build_sql ; 
-						// my['sql']['ua_build']
+						$my['sql']['ua_build']; 
+						
 				// Want to check if requested build is on ua_build_sql exists the use JOIN
 				$sql .= " JOIN {$this->tables['builds']} B ON B.id = " . intval($my['filters']['assigned_on_build']);		
 			}

@@ -11,61 +11,9 @@
  *
  * @internal revisions
  * @since 1.9.4
+ *	20111230 - franciscom - refactoring to use current() instead of fixed access to element with index 0
  * 	20110824 - franciscom - fixed issue using get_branch()	
  * 	20110820 - franciscom - TICKET 4710 - getFilteredLinkedVersions()	
- *
- * @since 1.9.3
- *  20101209 - asimon - exchanged strpos by stripos to make search case insensitive
- *	20101118 - amitkhullar - BUGID 4024 Filtering issue 
- *	20101101 - franciscom - improved $pfFilters contruction to avoid warning in event viewer
- *	20101026 - franciscom - BUGID 3889: Add Test Cases to Test plan - checks with test case id and 
- *										test case name filters.
- *	20101025 - franciscom - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
- *	20101024 - franciscom - getTestSpecFromNode() refactoring
- *							BUGID 3932: Add test case to test plan - Execution type filter does not affect right pane
- *
- *							method renamed to getFilteredSpecView()
- *							BUGID 3934: Assign Test Case Execution - Execution type filter does not affect right pane
- *							BUGID 3936: Assign Test Case Execution - Right pane does not reflect custom field filter.
- *
- *
- *  20100911 - asimon - BUGID 3768
- *  20100726 - asimon - BUGID 3628: in addLinkedVersionsInfo(), a missing [0] in condition 
- *                                  caused missing priority
- *  20100721 - asimon - BUGID 3406 - added $options for new user assignments per build to 
- *                                   gen_spec_view(), getFilteredLinkedVersions(), 
- *                                   and keywordFilteredSpecView()
- *  
- *	20100417 - franciscom - BUGID 2498  Add test case to test plan - Filter Test Cases based on Test Importance
- *  20100411 - franciscom - BUGID 2797 - filter by test case execution type
- *
- *  20100218 - asimon - BUGID 3026 - added parameter $testcaseFilter on keywordFilteredSpecView
- *						to include functionality previously used on tc_exec_assignment.php
- * 						to show only testcases present in filter argument
- *	20100119 - franciscom - addCustomFieldsToView() - missing work on platforms
- *	20090808 - franciscom - gen_spec_view() interface changes + refactoring
- *	20090325 - franciscom - added new info about when and who has linked a tcversion
- *	20090325 - franciscom - BUGID - better implementation of BUGID 1497
- *	20081109 - franciscom - fixed filter on getTestSpecFromNode()
- *	                        fixed minor bug on $tsuite_tcqty processing
- *	                        added new value for spec_view_type='uncoveredtestcases'.
- *	
- *	20081030 - franciscom - created removeEmptyTestSuites(), removeEmptyBranches() to refactor.
- *	                        refactored use of tproject_id on gen_spec_view()
- *	
- *	20081019 - franciscom - removed new option to prune empty test suites
- *	                        till we understand were this will be used.
- *	                        In today implementation causes problems
- *	                        Added logic to compute total count of test cases
- *	                        for every test suite in a branch, to avoid use
- *	                        of map_node_tccount argument
- *
- *	20080919 - franciscom - BUGID 1716
- *	20080811 - franciscom - BUGID 1650 (REQ)
- *	20080422 - franciscom - BUGID 1497
- *	Suggested by Martin Havlat execution order will be set to external_id * 10
- *	for test cases not linked yet
- *           
  **/ 
 
 /**
@@ -370,7 +318,6 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
 	// Multiple step algoritm to apply keyword filter on type=AND
 	// get_*_tcversions filters by keyword ALWAYS in OR mode.
 	//
-	// BUGID 2797 - filter by test case execution type
 	$filters = array('keyword_id' => $argsObj->keyword_id);
 	
 	//new dBug($argsObj);
@@ -388,7 +335,11 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
 		unset($tsuite_mgr);
 	}
 	$opx = array('output' => 'mapOfArray', 'last_execution' => true) +   (array)$options;
+
+	// new dBug($opx);
 	$tplan_tcases = $tplanMgr->get_ln_tcversions($argsObj->tplan_id, $filters, $opx);
+
+	// new dBug($tplan_tcases);
 
 	// BUGID 2716
 	if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
@@ -419,15 +370,7 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
  * @param map $options:  keys  ??
  *						 USED TO PASS options to other method called here -> see these method docs.
  *
- * @internal revisions:
- *
- * 20101024 - franciscom - name changed because was misleading, this do lot of filters
- *						   interface changed.
- *
- * 20100721 - asimon - BUGID 3406 - added $options for new user assignments per build
- * 20100218 - asimon - BUGID 3026 - added parameter $testcaseFilter to include functionality
- * 						previously used on tc_exec_assignment.php
- * 						to show only testcases present in filter argument
+ * @internal revisions
  *
  */
 function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $filters=null, $options=null) 
@@ -444,9 +387,10 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
 	$my['options'] = array_merge($my['options'],(array)$options);
 	
 	// This does filter on keywords ALWAYS in OR mode.
-	// BUGID 3406: added $options
 	$tplan_linked_tcversions = getFilteredLinkedVersions($dbHandler,$argsObj, $tplanMgr, $tcaseMgr, $options);
 
+	// new dBug($tplan_linked_tcversions);
+	
 	// With these pieces we implement the AND type of keyword filter.
 	$testCaseSet = null;
 	if(!is_null($my['filters']['keywordsFilter']) && !is_null($my['filters']['keywordsFilter']->items))
@@ -456,7 +400,6 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
 		$testCaseSet = array_keys($keywordsTestCases);
 	}
 
-	// BUGID 3026 - added $testcaseFilter
 	if( !is_null($my['filters']['testcaseFilter']) )
 	{
 		if (is_null($testCaseSet) )
@@ -470,12 +413,7 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
 	}
 	
 	
-	// now get values as keys
-	// 20100722 - asimon - additional check here because of warning from array_combine when $testCaseSet is null 
 	$testCaseSet = !is_null($testCaseSet) ? array_combine($testCaseSet, $testCaseSet) : null;
-	
-    // BUGID 3406 
-	// BUGID 3936: Assign Test Case Execution - Right pane does not reflect custom field filter.
 	$genSpecFilters = array('keywords' => $argsObj->keyword_id, 'testcases' => $testCaseSet,
 							'exec_type' => $my['filters']['executionTypeFilter'],
 							'cfields' =>  $my['filters']['cfieldsFilter']);
@@ -541,7 +479,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 	$key2loop = null;
 	$useAllowed = false;
 	
-	// 20100411 - BUGID 2797 - filter by test case execution type
 	$nullCheckFilter = array('tcase_id' => false, 'importance' => false, 
 							 'tcase_name' => false, 'cfields' => false);
 	$zeroNullCheckFilter = array('execution_type' => false);
@@ -566,7 +503,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 		$testCaseSet = is_array($filters['tcase_id']) ? $filters['tcase_id'] : array($filters['tcase_id']);
 	}
 	
-	// BUGID 3768
 	if(!is_array($filters['keyword_id']) ) {
 		$filters['keyword_id'] = array($filters['keyword_id']);
 	}
@@ -600,7 +536,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 
 		foreach($itemKeys as $key => $tspecKey)
 		{
-			// 20101209 - asimon - exchanged strpos by stripos to make search case insensitive
+			// case insensitive search 
 			if( ($useFilter['keyword_id'] && !isset($tck_map[$test_spec[$tspecKey]['id']]) ) ||
 				($useFilter['tcase_id'] && !in_array($test_spec[$tspecKey]['id'],$testCaseSet)) ||
 				($useFilter['tcase_name'] && (stripos($test_spec[$tspecKey]['name'],$filters['tcase_name']) === false))				
@@ -617,7 +553,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 			$targetSet = array_keys($itemSet);
 			$options = ($specViewType == 'testPlanLinking') ? array( 'access_key' => 'testcase_id') : null;
 			
-			// BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
 			$getFilters = $useFilter['cfields'] ? array('cfields' => $filters['cfields']) : null;
 			$tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
 		
@@ -629,10 +564,9 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 					{
 						$targetTestCase = isset($tcversionSet[$key]) ? $tcversionSet[$key]['testcase_id'] : null;			
 
-						// BUGID 3936 - Design Time Custom Field Filter
 						if( is_null($targetTestCase) )
 						{
-							$test_spec[$itemSet[$key]]=null; //BUGID 4024
+							$test_spec[$itemSet[$key]]=null;
 							$item = null;
 						}
 						else 
@@ -667,8 +601,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 				default:
 					$tcvidSet = array_keys($tcversionSet);
 					$options = null;
-					
-					// BUGID 3934
 					$doFilter = true;
 					$allowedSet = null;
 					if( $useFilter['execution_type'] )
@@ -680,7 +612,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 					if( $doFilter )
 					{
 						// Add another filter on cascade mode
-						// BUGID 3936: Assign Test Case Execution - Right pane does not reflect custom field filter.
 						if( $useFilter['cfields'] )
 						{
 							$filteredSet = (!is_null($allowedSet) &&  count($allowedSet) > 0) ? array_keys($allowedSet) : $tcvidSet;
@@ -1091,8 +1022,10 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 		{
 			foreach($linked_items as $linked_testcase)
 			{
-				if(($linked_testcase[0]['tc_id'] == $testCase['testcase_id']) &&
-				   ($linked_testcase[0]['tcversion_id'] == $testCase['id']) )
+				// refactoring $linked_testcase[0] => current($linked_testcase)
+				$target = current($linked_testcase);
+				if(($target['tc_id'] == $testCase['testcase_id']) &&
+				   ($target['tcversion_id'] == $testCase['id']) )
 				{
 					// This can be written only once no matter platform qty
 					if( !isset($outRef['tcversions'][$testCase['id']]) )
@@ -1103,14 +1036,11 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 						$outRef['tcversions_execution_type'][$testCase['id']] = $testCase['execution_type'];
 						$outRef['importance'][$testCase['id']] = $testCase['importance'];
 					}
-					$exec_order= isset($linked_testcase[0]['execution_order'])? $linked_testcase[0]['execution_order']:0;
+					$exec_order= isset($target['execution_order'])? $target['execution_order']:0;
 					$outRef['execution_order'] = $exec_order;
-					// 20090625 - Eloff
-					// 20100726 - BUGID 3628 - asimon - missing [0] in condition 
-					// caused missing priority in GUI
-					if( isset($linked_testcase[0]['priority']) )
+					if( isset($target['priority']) )
 					{
-						$outRef['priority'] = priority_to_level($linked_testcase[0]['priority']);
+						$outRef['priority'] = priority_to_level($target['priority']);
 					}
 					$outRef['linked_version_id']= $testCase['id'];
 					$out[$parent_idx]['write_buttons'] = 'yes';

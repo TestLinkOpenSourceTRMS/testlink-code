@@ -8,6 +8,9 @@
  *
  * @since 1.9.4
  * 20111230 - franciscom - TICKET 4854: Save and Next - Issues with display CF for test plan design - always EMPTY	
+ *						   changes related to get_linked_tcversions() refactoring aimed to improve performance
+ *						   and memory usage
+ *	
  * 20110820 - franciscom - TICKET 4714: retrieve big amount of useless data
  * 20110622 - asimon - TICKET 4600: Blocked execution of testcases
  *
@@ -71,34 +74,11 @@ if ($do_show_instructions)
     exit();
 }
 
-// ---------------------------------------------------------
-// Testplan executions and result archiving. Checks whether execute cases button was clicked
-//
-if($args->doExec == 1)
+// Testplan executions and result archiving. 
+// Checks whether execute cases button was clicked
+if($args->doExec == 1 && !is_null($args->tc_versions) && count($args->tc_versions))
 {
-
-	if(!is_null($args->tc_versions) && count($args->tc_versions))
-	{
-		// 20110129 - franciscom
-		// IMPORTANT NOTICE
-		// Remote execution will NOT use ANY of data typed by user,
-		// - notes
-		// - custom fields
-		//
-		$execContext = buildExecContext($args,$gui->tcasePrefix,$tplan_mgr,$tcase_mgr);
-		$gui->remoteExecFeedback = do_remote_execution($db,$execContext);
-		$gui->remoteExecFeedback = current($gui->remoteExecFeedback);
-		
-		// IMPORTANT NOTICE
-		// need to understand what to do with feedback provided
-		// by do_remote_execution().
-		// Right now no matter how things go, no feedback is given to user.
-		// May be this need to be improved in future.
-		//
-		// Only drawback i see is when remote exec is done on a test suite
-		// and amount of feedback can be high, then do not see what can be effect
-		// on GUI
-	}
+	$gui->remoteExecFeedback = launchRemoteExec($db,$args,$gui->tcasePrefix,$tplan_mgr,$tcase_mgr);
 }	
 
 
@@ -130,8 +110,11 @@ if($args->doExec == 1)
 // $options = array('only_executed' => true, 'output' => 'mapOfArray',
 //				 'include_unassigned' => $args->include_unassigned,
 //                 'user_assignments_per_build' => $args->build_id);
-$options = array('only_executed' => true, 'output' => 'mapOfArray',
-				 'include_unassigned' => $args->include_unassigned);
+$options = array('only_executed' => true, 'output' => $gui->history_on ? 'mapOfArray' : 'mapOfMap',
+				 'include_unassigned' => $args->include_unassigned,
+				 'group_by_build' => 'add_build',
+				 'last_execution' => !$gui->history_on);
+
 
 
 if(is_null($args->filter_status) || in_array($cfg->tc_status['not_run'],$args->filter_status))
@@ -184,7 +167,7 @@ if(!is_null($linked_tcversions))
         
         // Need to re-read to update test case status
         if ($args->save_and_next) 
-        {
+        {	
 			$nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$tcversion_id,$args->platform_id);
 			while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $args->testcases_to_show)) 
 			{
@@ -339,7 +322,6 @@ function init_args(&$dbHandler,$cfgObj)
 	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 	
-    // BUGID 3516
 	$mode = 'execution_mode';
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
@@ -352,7 +334,6 @@ function init_args(&$dbHandler,$cfgObj)
 	// can be a list, will arrive via form POST
 	$args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;  
   
-	// BUGID 3516,3590, 3574, 3672
 	$key2null = array('filter_status' => 'filter_result_result','filter_assigned_to' => 'filter_assigned_user', 
 					  'build_id' => 'setting_build', 'platform_id' => 'setting_platform');
 	
@@ -397,7 +378,6 @@ function init_args(&$dbHandler,$cfgObj)
     $key4cookies = array('tpn_view_status' => 'testplan_notes','bn_view_status' => 'build_description',
                          'platform_notes_view_status' => 'platform_description');
     
-    // BUGID 3516, 3590, 3574
 	$key2loop = array('id' => 0, 'exec_to_delete' => 0, 'version_id' => 0, 'tpn_view_status' => 0, 
 					  'bn_view_status' => 0, 'bc_view_status' => 1,'platform_notes_view_status' => 0);
 	
@@ -452,8 +432,6 @@ function init_args(&$dbHandler,$cfgObj)
         break;
     }
     
- 	// BUGID 3516
-	// BUGID 2455,BUGID 3026
 	if (isset($session_data['testcases_to_show'])) {
 		$args->testcases_to_show = $session_data['testcases_to_show'];
 	}
@@ -532,7 +510,7 @@ function manage_history_on($hash_REQUEST,$hash_SESSION,
     {
         $history_on = $exec_cfg->history_on;
     }
-    return $history_on;
+    return $history_on ? true : false;
 }
 /*
   function: get_ts_name_details
@@ -1196,12 +1174,23 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
   	$guiObj->testplan_design_time_cfields='';
   	
   	$tcase_id = isset($tcase['tcase_id']) ? $tcase['tcase_id'] : $argsObj->id;
-  	$items_to_exec[$tcase_id] = $linked_tcversions[$tcase_id][0]['tcversion_id'];    
+  	
+  	// Development Notice:
+  	// accessing a FIXED index like in:
+  	//
+  	// $items_to_exec[$tcase_id] = $linked_tcversions[$tcase_id][0]['tcversion_id'];    
+  	// $link_id = $linked_tcversions[$tcase_id][0]['feature_id'];
+	//
+  	// has a latent danger (has happened during refactoring changing output type
+  	// por get_linked_tcversions().
+  	// Because we want to access FIRTS element is better to use current.
+  	//
+  	$target = current($linked_tcversions[$tcase_id]);
+  	$items_to_exec[$tcase_id] = $target['tcversion_id'];    
+  	$link_id = $target['feature_id'];
   	$tcversion_id = isset($tcase['tcversion_id']) ? $tcase['tcversion_id'] : $items_to_exec[$tcase_id];
   	
-  	$link_id = $linked_tcversions[$tcase_id][0]['feature_id'];
   	$guiObj->tcAttachments[$tcase_id] = getAttachmentInfos($docRepository,$tcase_id,'nodes_hierarchy',1);
-
 	foreach($locationFilters as $locationKey => $filterValue)
 	{
 		$finalFilters=$cf_filters+$filterValue;
@@ -1473,4 +1462,31 @@ function buildExecContext(&$argsObj,$tcasePrefix,&$tplanMgr,&$tcaseMgr)
 	}
 	return $ret;
 }
+
+
+
+function launchRemoteExec(&$dbHandler,&$argsObj,$tcasePrefix,&$tplanMgr,&$tcaseMgr)
+{
+		// IMPORTANT NOTICE
+		// Remote execution will NOT use ANY of data typed by user,
+		// - notes
+		// - custom fields
+		//
+		// IMPORTANT NOTICE
+		// need to understand what to do with feedback provided
+		// by do_remote_execution().
+		// Right now no matter how things go, no feedback is given to user.
+		// May be this need to be improved in future.
+		//
+		// Only drawback i see is when remote exec is done on a test suite
+		// and amount of feedback can be high, then do not see what can be effect
+		// on GUI
+
+
+		$execContext = buildExecContext($argsObj,$tcasePrefix,$tplanMgr,$tcaseMgr);
+		$feedback = do_remote_execution($dbHandler,$execContext);
+		$feedback = current($feedback);
+		return $feedback;
+}
+
 ?>

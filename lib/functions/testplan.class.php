@@ -796,7 +796,7 @@ class testplan extends tlObjectWithAttachments
 			//
 			// As usual doubts start ..
 			// Giving a look to places (on GUI) where this function is used,
-			// seems tha trying to get LAST execution has to be done ONLY when USER
+			// seems that trying to get LAST execution has to be done ONLY when USER
 			// has requested a RESULT SPECIFIC value.
 			// 			
 			$join['executions'] = 	" LEFT OUTER JOIN (" .
@@ -1091,14 +1091,14 @@ class testplan extends tlObjectWithAttachments
 	public function get_linked_tcversions($id,$filters=null,$options=null)
 	{
 		$debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
-		echo $debugMsg . '<br>';
+		// echo $debugMsg . '<br>';
 		
         $my = array('filters' => '', 'options' => '');
 
 		$builds = array('join' => '', 'filter' => '', 'left_join' => ' ');
 		$executions = array('join' => '', 'filter' => '');
 
-		$notrun['filter'] = null;
+		// $notrun['filter'] = null;
 		$more_tcase_fields = '';
 		$join_for_parent = '';
 		$more_parent_fields = '';
@@ -1108,19 +1108,12 @@ class testplan extends tlObjectWithAttachments
 		
 		$priority_field = " (urgency * importance) AS priority ";
 		
-		list($my,$build_active_status,$ua_build_sql) = $this->init_get_linked_tcversions($filters,$options);
+		list($my,$build_active_status) = $this->init_get_linked_tcversions($id,$filters,$options);
 
 		// new dBug($my);
 		
-		// new dBug($ua_build_sql, array('label' => '$ua_build_sql'));
-		
-		 
+		// IMPORTANT NOTICE:
 		// not run && build_active_status = 'active', need special logic		
-		if( $my['options']['last_execution'] || !is_null($my['filters']['exec_status']))
-		{
-			$last_exec_subquery = $this->helper_last_exec_sql($my['filters'],$my['options'],$build_active_status,$id);
-		}
-		// --------------------------------------------------------------
 
 
 		// --------------------------------------------------------------
@@ -1132,12 +1125,14 @@ class testplan extends tlObjectWithAttachments
 			$more_exec_fields = 'E.build_id,B.name AS build_name, B.active AS build_is_active,';	
 
 			// following setting can be changed due to other process, triggered by other options
+			// Left is needed for NOT executed ???? (I need to check)
 			$my['join']['builds']=" LEFT OUTER JOIN {$this->tables['builds']} B ON B.id=E.build_id ";
 	    }
 
 		if( !is_null($build_active_status) )
 		{
-			if( is_null($notrun['filter']) )
+			// if( is_null($notrun['filter']) )
+			if( is_null($my['sql']['notrun']) )
 			{
 				$my['join']['builds'] = " JOIN {$this->tables['builds']} B ON " .
 								  		" B.id = E.build_id AND B.active = " . intval($build_active_status) ;	
@@ -1157,10 +1152,14 @@ class testplan extends tlObjectWithAttachments
 				//
 				$my['join']['builds'] = " LEFT OUTER JOIN {$this->tables['builds']} B " .
 								  		" ON B.id=E.build_id ";
-				$notrun['filter'] = " E.status IS NULL " .
-									" OR (E.status IS NOT NULL AND B.active = 0) ";		
+				//$notrun['filter'] = " E.status IS NULL " .
+				//					" OR (E.status IS NOT NULL AND B.active = 0) ";		
+				// $executions['filter'] = " AND ({$notrun['filter']} )";     
 
-				$executions['filter'] = " AND ({$notrun['filter']} )";     
+				$my['sql']['notrun'] = " E.status IS NULL " .
+									   " OR (E.status IS NOT NULL AND B.active = 0) ";		
+
+				$executions['filter'] = " AND ({$my['sql']['notrun']} )";     
 			}
 		}
 		// --------------------------------------------------------------
@@ -1301,12 +1300,10 @@ class testplan extends tlObjectWithAttachments
 			if(	$ua_fields != '' )
 			{   
 				// TICKET 4710
-				// $sql .=	" LEFT OUTER JOIN {$this->tables['user_assignments']} UA  ON UA.feature_id = T.id " .
-				//		" AND UA.build_id = E.build_id " .  $ua_build_sql ; 
-				// 20111227
 				$sql .=	" /* \$ua_fields != '' */ " . 
 						" LEFT OUTER JOIN {$this->tables['user_assignments']} UA ON UA.feature_id = T.id " .
 						$ua_build_sql ; 
+						// my['sql']['ua_build']
 				// Want to check if requested build is on ua_build_sql exists the use JOIN
 				$sql .= " JOIN {$this->tables['builds']} B ON B.id = " . intval($my['filters']['assigned_on_build']);		
 			}
@@ -1326,7 +1323,8 @@ class testplan extends tlObjectWithAttachments
 		}
 
 		// die($sql);
-		echo($sql);
+		// echo($sql);
+		// echo($my['options']['output']);
 
 		// Build Outpout
 		switch($my['options']['output'])
@@ -1337,16 +1335,24 @@ class testplan extends tlObjectWithAttachments
 
 			case 'mapOfArray':
 			$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id',database::CUMULATIVE);
+			// new dBug($recordset);
 			break;
 			
 			case 'mapOfMap':
 			// with this option we got just one record for each (testcase,platform)
-			// no matter how many executions has been done
+			// no matter how many executions has been done.
+			// And the record we get IS THE LAST in recordset 
+			// Dev Note
+			// We need to try to generate a BETTER QUERY on this situation in order to 
+			// 1. avoid transfer lot of USELESS data FROM DBServer to APP server
+			// 2. avoid use too much memory
+			//
 			$recordset = $this->db->fetchMapRowsIntoMap($sql,'tc_id','platform_id');
 			break;
 			
 			case 'mapOfMapExecPlatform':
 			// with this option we got just one record for each (platform, build)
+			// And the record we get IS THE LAST in recordset 
 			$recordset = $this->db->fetchMapRowsIntoMap($sql,'exec_id','platform_id');
 			break;
 			
@@ -1410,15 +1416,19 @@ class testplan extends tlObjectWithAttachments
 	/**
 	 *
 	 */
-	function init_get_linked_tcversions($filtersCfg,$optionsCfg)
+	function init_get_linked_tcversions($tplanID,$filtersCfg,$optionsCfg)
 	{
 		//echo __FUNCTION__ .'<br>'; new dBug($filtersCfg);
 		//echo __FUNCTION__ .'<br>';new dBug($optionsCfg);
+
 		
         $dummy = array('exec_type','tc_id','builds','keywords','executions','platforms');
+
+        $ic['sql'] = array('ua_build' => '', 'notrun' => '');
         $ic['join'] = array_fill_keys($dummy,null);
         $ic['left_join'] = array_fill_keys($dummy,null);
-        $ic['where'] = array_fill_keys($dummy,null);
+        // $ic['where'] = array_fill_keys($dummy,null);
+        $ic['where'] = array_fill_keys($dummy,'');
         $ic['where']['where'] = '';
         
 
@@ -1434,44 +1444,14 @@ class testplan extends tlObjectWithAttachments
                                'output' => 'map', 'details' => 'simple', 'steps_info' => false, 
                                'execution_details' => null, 'last_execution' => false,
                                'build_active_status' => 'any', 'forced_exec_status' => null,
-                               'exclude_info' => null);
+                               'exclude_info' => null, 'group_by_build' => true);
 
  		// Cast to array to handle $options = null
 		$ic['filters'] = array_merge($ic['filters'], (array)$filtersCfg);
 		$ic['options'] = array_merge($ic['options'], (array)$optionsCfg);
 
-		// -----------------------------------------------------------------------------------
-		$ic['where']['builds'] = '';
-		if( !is_null($ic['filters']['build_id']) )
-		{
-			$dummy = (array)$ic['filters']['build_id'];
-			if( !in_array(0,$dummy) )
-			{
-				$ic['where']['builds'] = " AND E.build_id IN (" . implode(",",$dummy) . ") ";
-			}
-		}
-		
-		// there are several situation where you need to use LEFT OUTER
-		$ic['join']['executions'] = ' /* Executions Join */ ';
-		if($ic['options']['only_executed'])
-		{
-			$dummy = '';
-			$ic['where']['where'] .= $ic['where']['builds'];
-		}
-		else
-		{
-			$ic['join']['executions'] .= " LEFT OUTER ";
-			$dummy = $ic['where']['builds'];
-			$ic['where']['builds'] = '';
-		}
-		$ic['join']['executions'] .= " JOIN {$this->tables['executions']} E ON " .
-			                   		 " (E.testplan_id = T.testplan_id AND " .
-			                   		 "  E.tcversion_id = T.tcversion_id AND " .
-			                   		 "  E.platform_id = T.platform_id " .
-			                   		 "  {$dummy}) ";
-		// -----------------------------------------------------------------------------------
 
-
+		// new dBug($ic['filters']);
 
 		// ------------------------------------------------------------------------------------------
 		// Try to build the where clause		
@@ -1526,13 +1506,102 @@ class testplan extends tlObjectWithAttachments
 		// ------------------------------------------------------------------------------------------
 
 
+		
+		// -----------------------------------------------------------------------------------
+		$domain = array('active' => 1, 'inactive' => 0 , 'any' => null);
+		$build_active_status = $domain[$ic['options']['build_active_status']];
+
+
+		$ic['where']['builds'] = '';
+		if( !is_null($ic['filters']['build_id']) )
+		{
+			$dummy = (array)$ic['filters']['build_id'];
+			if( !in_array(0,$dummy) )
+			{
+				$ic['where']['builds'] = " AND E.build_id IN (" . implode(",",$dummy) . ") ";
+			}
+		}
+		
+		// there are several situation where you need to use LEFT OUTER
+		$ic['join']['executions'] = ' /* Executions Join */ ';
+		if($ic['options']['only_executed'])
+		{
+			$leftOuter = '';
+			$dummy = '';
+			$ic['where']['where'] .= $ic['where']['builds'];
+		}
+		else
+		{
+			$leftOuter = " LEFT OUTER ";
+			// $ic['join']['executions'] .= " LEFT OUTER ";
+			$dummy = $ic['where']['builds'] . $ic['where']['platforms'] . 
+					' AND T.testplan_id =' . intval($tplanID);
+			$ic['where']['builds'] = '';
+		}
+		
+		/*
+		$ic['join']['executions'] .= " JOIN {$this->tables['executions']} E ON " .
+			                   		 " (E.testplan_id = T.testplan_id AND " .
+			                   		 "  E.tcversion_id = T.tcversion_id AND " .
+			                   		 "  E.platform_id = T.platform_id " .
+		    	               		 "  {$dummy}) ";
+		*/
+		
+		$ic['join']['executions'] .= $leftOuter;			                   		 
+		
+		if( $ic['options']['last_execution'] || !is_null($ic['filters']['exec_status']) )
+		{
+			list($fi,$jo,$ic['sql']['notrun']) = $this->helper_last_exec_sql($ic['filters'],$ic['options'],
+																		     $build_active_status,$tplanID);
+			//$ic['join']['executions'] = $leftOuter;
+			echo ($ic['join']['executions']);
+			echo ('<br>' . $dummy);
+			if( $dummy != '')
+			{
+				// to reuse SQL need to change table aliases
+				// $kimosawi = dummy; 
+				$kimosawi = str_replace(array('E.','T.'),'E2.',$dummy);
+				echo ('<br>' . $kimosawi);
+	
+				$kimosawi = 'WHERE 1=1 ' . $kimosawi;
+				echo ('<br>' . $kimosawi);
+
+				$jo = str_replace('/*whereplaceholder*/',$kimosawi,$jo);
+				$ic['join']['executions'] .= $jo . " ON ";
+			}
+			else
+			{
+				$ic['join']['executions'] .= " JOIN {$this->tables['executions']} E ON ";
+					                   		 //" (E.testplan_id = T.testplan_id AND " .
+			    		               		 //"  E.tcversion_id = T.tcversion_id AND " .
+			            		       		 //"  E.platform_id = T.platform_id " .
+		    	               				 //"  {$dummy}) ";
+			}
+			$ic['join']['executions'] .= " (E.testplan_id = T.testplan_id AND " .
+			    		               	 "  E.tcversion_id = T.tcversion_id AND " .
+			            		       	 "  E.platform_id = T.platform_id " .
+		    	               			 "  {$dummy}) ";
+			echo ($jo);
+			echo($ic['join']['executions']);
+
+			/*
+			SELECT E.*
+FROM (SELECT MAX(E2.id) AS lastexecid, testplan_id,tcversion_id,platform_id,build_id 
+      FROM executions E2 
+      GROUP BY testplan_id,tcversion_id,platform_id,build_id) AS EX
+JOIN executions E ON E.id = EX.lastexecid AND E.tcversion_id=EX.tcversion_id
+AND E.platform_id = EX.platform_id AND E.build_id = EX.build_id
+*/
+			
+		}	                   
+		// -----------------------------------------------------------------------------------
+
+
+
 		if (!is_null($ic['filters']['exec_status'])) 
 		{
 			$ic['filters']['exec_status'] = (array)$ic['filters']['exec_status'];
 		}
-
-		$domain = array('active' => 1, 'inactive' => 0 , 'any' => null);
-		$build_active_status = $domain[$ic['options']['build_active_status']];
 
 
 		// $ua_build = isset($ic['options']['assignments_per_build']) ? 
@@ -1542,12 +1611,12 @@ class testplan extends tlObjectWithAttachments
 		$ua_build = isset($ic['filters']['assigned_on_build']) ? 
 		            intval($ic['filters']['assigned_on_build']) : 0;
 		
-		$ua_build_sql = ($ua_build > 0 && is_numeric($ua_build)) ? " AND UA.build_id={$ua_build} " : " ";
+		$ic['sql']['ua_build'] = ($ua_build > 0 && is_numeric($ua_build)) ? " AND UA.build_id={$ua_build} " : " ";
 
 
 		// new dBug($ic);	
 		// new dBug($ua_build_sql);	
-		return array($ic,$build_active_status,$ua_build_sql);
+		return array($ic,$build_active_status);
 	}
 
 
@@ -1579,7 +1648,7 @@ class testplan extends tlObjectWithAttachments
 		// BUGID 4328: Metrics dashboard - only active builds has to be used
 		// adding filtering by build_status is SAFE
 		//
-		$groupByBuild = ($cfgOpt['execution_details'] == 'add_build') ? ',build_id' : '';
+		$groupByBuild = ($cfgOpt['execution_details'] == 'add_build' || $cfgOpt['group_by_build']) ? ',build_id' : '';
 
 		$groupByPlatform = ($cfgOpt['output']=='mapOfMap' || 
 		                   $cfgOpt['output']=='mapOfMapExecPlatform') ? ',platform_id' : '';
@@ -1602,7 +1671,19 @@ class testplan extends tlObjectWithAttachments
 			list($sql,$notrun_filter) = $this->helper_exec_status_filter($cfgFilters['exec_status'],sql);
 		}
 
-		return array($sql,$notrun_filter);
+		// May be we can be used a view instead of SELECT MAX(E2.id) AS lastexecid ...
+		// Idea is:
+		// Get LASTEST EXEC then JOIN with executions table to get all other fields
+		// 
+		$join = " JOIN " .
+				" (SELECT E1.* " .
+				" FROM (SELECT MAX(E2.id) AS lastexecid, testplan_id,tcversion_id,platform_id,build_id " .
+      			"       FROM executions E2 /*whereplaceholder*/ " .
+      			"       GROUP BY testplan_id,tcversion_id,platform_id,build_id) AS EX " .
+				" JOIN executions E1 ON E1.id = EX.lastexecid AND E1.tcversion_id=EX.tcversion_id ".
+				" AND E1.platform_id = EX.platform_id AND E1.build_id = EX.build_id) AS E ";
+
+		return array($sql,$join,$notrun_filter);
 	}
 	
 	/**

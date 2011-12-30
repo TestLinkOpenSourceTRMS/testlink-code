@@ -1553,46 +1553,23 @@ class testplan extends tlObjectWithAttachments
 		{
 			list($fi,$jo,$ic['sql']['notrun']) = $this->helper_last_exec_sql($ic['filters'],$ic['options'],
 																		     $build_active_status,$tplanID);
-			//$ic['join']['executions'] = $leftOuter;
-			echo ($ic['join']['executions']);
-			echo ('<br>' . $dummy);
 			if( $dummy != '')
 			{
 				// to reuse SQL need to change table aliases
 				// $kimosawi = dummy; 
 				$kimosawi = str_replace(array('E.','T.'),'E2.',$dummy);
-				echo ('<br>' . $kimosawi);
-	
 				$kimosawi = 'WHERE 1=1 ' . $kimosawi;
-				echo ('<br>' . $kimosawi);
-
 				$jo = str_replace('/*whereplaceholder*/',$kimosawi,$jo);
 				$ic['join']['executions'] .= $jo . " ON ";
 			}
 			else
 			{
 				$ic['join']['executions'] .= " JOIN {$this->tables['executions']} E ON ";
-					                   		 //" (E.testplan_id = T.testplan_id AND " .
-			    		               		 //"  E.tcversion_id = T.tcversion_id AND " .
-			            		       		 //"  E.platform_id = T.platform_id " .
-		    	               				 //"  {$dummy}) ";
 			}
 			$ic['join']['executions'] .= " (E.testplan_id = T.testplan_id AND " .
 			    		               	 "  E.tcversion_id = T.tcversion_id AND " .
 			            		       	 "  E.platform_id = T.platform_id " .
 		    	               			 "  {$dummy}) ";
-			echo ($jo);
-			echo($ic['join']['executions']);
-
-			/*
-			SELECT E.*
-FROM (SELECT MAX(E2.id) AS lastexecid, testplan_id,tcversion_id,platform_id,build_id 
-      FROM executions E2 
-      GROUP BY testplan_id,tcversion_id,platform_id,build_id) AS EX
-JOIN executions E ON E.id = EX.lastexecid AND E.tcversion_id=EX.tcversion_id
-AND E.platform_id = EX.platform_id AND E.build_id = EX.build_id
-*/
-			
 		}	                   
 		// -----------------------------------------------------------------------------------
 

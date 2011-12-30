@@ -7,6 +7,7 @@
  * @internal revisions
  *
  * @since 1.9.4
+ * 20111230 - franciscom - TICKET 4854: Save and Next - Issues with display CF for test plan design - always EMPTY	
  * 20110820 - franciscom - TICKET 4714: retrieve big amount of useless data
  * 20110622 - asimon - TICKET 4600: Blocked execution of testcases
  *
@@ -125,9 +126,12 @@ if($args->doExec == 1)
 //
 // I will add logic to nullify filter_status on init_args()
 // 
+
+// $options = array('only_executed' => true, 'output' => 'mapOfArray',
+//				 'include_unassigned' => $args->include_unassigned,
+//                 'user_assignments_per_build' => $args->build_id);
 $options = array('only_executed' => true, 'output' => 'mapOfArray',
-				 'include_unassigned' => $args->include_unassigned,
-                 'user_assignments_per_build' => $args->build_id);
+				 'include_unassigned' => $args->include_unassigned);
 
 
 if(is_null($args->filter_status) || in_array($cfg->tc_status['not_run'],$args->filter_status))
@@ -139,12 +143,12 @@ if(is_null($args->filter_status) || in_array($cfg->tc_status['not_run'],$args->f
 $filters = array('tcase_id' => $args->tc_id,  'keyword_id' => $args->keyword_id,
                  'assigned_to' => $args->filter_assigned_to, 'exec_status' => $args->filter_status,
                  'build_id' => $args->build_id, 'cf_hash' => $args->cf_selected,
-                 'platform_id' => $args->platform_id, 'tsuites_id' => $args->tsuites_id);
+                 'platform_id' => $args->platform_id, 'tsuites_id' => $args->tsuites_id,
+                 'assigned_on_build' => $args->build_id);
 
 $linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
 $tcase_id = 0;
 $userid_array = null;
-
 if(!is_null($linked_tcversions))
 {
 	$items_to_exec = array();
@@ -168,8 +172,6 @@ if(!is_null($linked_tcversions))
     // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
     //
     // Can be DONE JUST ONCE AFTER write results to DB
-    // $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
-    
     // --------------------------------------------------------------------------------------------
     // Results to DB
     if ($args->save_results || $args->do_bulk_save || $args->save_and_next)
@@ -178,18 +180,14 @@ if(!is_null($linked_tcversions))
     	// this has to be done to do not break logic present on write_execution()
     	$args->save_results = $args->save_and_next ? $args->save_and_next : $args->save_results;
     	$_REQUEST['save_results'] = $args->save_results;
-    	
-    	// 20110129 - franciscom - seems $gui->map_last_exec is USELESS on write_execution()
-    	// $submitResult = write_execution($db,$args,$_REQUEST,$gui->map_last_exec);
         write_execution($db,$args,$_REQUEST);
         
         // Need to re-read to update test case status
         if ($args->save_and_next) 
         {
 			$nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$tcversion_id,$args->platform_id);
-			
-			// BUGID 3878
-			while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $args->testcases_to_show)) {
+			while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $args->testcases_to_show)) 
+			{
 				$nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$nextItem['tcversion_id'],$args->platform_id);
 			}
 			
@@ -197,10 +195,13 @@ if(!is_null($linked_tcversions))
 			{
 				$tcase_id = $nextItem['tcase_id'];
 				$tcversion_id = $nextItem['tcversion_id'];
-				// BUGID 3478
-         		processTestCase($nextItem,$gui,$args,$cfg,$linked_tcversions,$tree_mgr,$tcase_mgr,$attachmentRepository);
+				
+				// TICKET 4854: Save and Next - Issues with display CF for test plan design - always EMPTY	
+				// need info about this test case => need to update linked_tcversions info
+				$filters['tcase_id'] = $tcase_id; 
+				$lt = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
+         		processTestCase($nextItem,$gui,$args,$cfg,$lt,$tree_mgr,$tcase_mgr,$attachmentRepository);
 			}
-			
         }
     }
     $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
@@ -470,10 +471,6 @@ function init_args(&$dbHandler,$cfgObj)
 		unset($tsuite_mgr);
 	}
 
-
-
-
-	// BUGID 3516
 	$args->keyword_id = 0;
 	if (isset($session_data['filter_keywords'])) {
 		$args->keyword_id = $session_data['filter_keywords'];
@@ -492,16 +489,10 @@ function init_args(&$dbHandler,$cfgObj)
                                 && $session_data['filter_assigned_user_include_unassigned'] != 0 ? 1 : 0;
 	
 	
-    // 20090419 - franciscom - BUGID
-    // BUGID 3301 and related - asimon - changed refresh tree logic 
-    // to adapt behavior of other forms (like tc edit)
-    // additionally modified to only refresh on saving of test results, not on every click
     $args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
                          ? $session_data['setting_refresh_tree_on_action'] : 0;
 	
 	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
-	
-	// BUGID 2267
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
 	$args->user = $_SESSION['currentUser'];
     $args->user_id = $args->user->dbID;
@@ -683,10 +674,7 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
   
   returns: 
 
-@internal revisions:
-  20100625 - asimon - added parameters $bugInterfaceOn, $bugInterface 
-                      to get rid of warning in event log
-
+  @internal revisions:
 */
 function exec_additional_info(&$db, $attachmentRepository, &$tcase_mgr, $other_execs, 
                               $tplan_id, $tproject_id, $bugInterfaceOn, $bugInterface)
@@ -853,15 +841,6 @@ function initializeExecMode(&$db,$exec_cfg,$userObj,$tproject_id,$tplan_id)
     $simple_tester_roles=array_flip($exec_cfg->simple_tester_roles);
     $effective_role = $userObj->getEffectiveRole($db,$tproject_id,$tplan_id);
     
-	// SCHLUNDUS: hmm, for user defined roles, this wont work correctly
-	// 20080104 - franciscom - Please explain why do you think will not work ok ?
-	//                         do you prefer to check for exec right ?
-	//
-	// SCHLUNDUS: jep, exactly. If a user defines it own roles than a check for the tester
-	// role will not do the desired effect of putting the logged in user in tester-view-mode
-	// instead we must check for presence (and or absence) the right(s) which mades a user a tester 
-	//
-	// 20080310 - franciscom - 
 	// Role is considered tester if:
 	// role == TL_ROLES_TESTER OR Role has Test Plan execute but not Test Plan planning
 	//
@@ -869,8 +848,6 @@ function initializeExecMode(&$db,$exec_cfg,$userObj,$tproject_id,$tplan_id)
 	$can_execute = $effective_role->hasRight('testplan_execute');
 	$can_manage = $effective_role->hasRight('testplan_planning');
     
-	// 20081217 - franciscom
-	// $use_exec_cfg = $effective_role->dbID == TL_ROLES_TESTER || ($can_execute && !$can_manage);
     $use_exec_cfg = isset($simple_tester_roles[$effective_role->dbID]) || ($can_execute && !$can_manage);
     
     return  $use_exec_cfg ? $exec_cfg->exec_mode->tester : 'all';
@@ -884,9 +861,6 @@ function initializeExecMode(&$db,$exec_cfg,$userObj,$tproject_id,$tplan_id)
   
   returns: 
   
-  rev: 20110622 - asimon - TICKET 4600: Blocked execution of testcases
-       20100121 - franciscom - platform refactoring
-
 */
 function setTesterAssignment(&$db,$exec_info,&$tcase_mgr,$tplan_id,$platform_id, $build_id)
 {     
@@ -896,7 +870,6 @@ function setTesterAssignment(&$db,$exec_info,&$tcase_mgr,$tplan_id,$platform_id,
 		$exec_info[$version_id]['assigned_user_id'] = 0;
 		
 		// map of map: main key version_id, secondary key: platform_id
-		// TICKET 4600: Blocked execution of testcases
 		$p3 = $tcase_mgr->get_version_exec_assignment($version_id,$tplan_id, $build_id);
 		$assignedTesterId = intval($p3[$version_id][$platform_id]['user_id']);
 		
@@ -1084,7 +1057,6 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
     // Execution right must be present to consider this configuration option.
     $grants->edit_exec_notes = $grants->execute && $exec_cfg->edit_notes;
     
-    // 20090419 - franciscom - BUGID 
     $grants->edit_testcase = $userObj->hasRight($dbHandler,"mgt_modify_tc",$tproject_id,$tplan_id);
     $grants->edit_testcase = $grants->edit_testcase=="yes" ? 1 : 0;
     return $grants;
@@ -1098,7 +1070,6 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
   
   returns: 
 
-  rev: 20080429 - franciscom
 */
 function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
 {
@@ -1141,7 +1112,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
 
     	
     // 20081122 - franciscom
-    // Just for the record:	
+    // Just for the records:	
     // doing this here, we avoid to do on processTestSuite() and processTestCase(),
     // but absolutely this will not improve in ANY WAY perfomance, because we do not loop
     // over these two functions. 	
@@ -1212,11 +1183,6 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
   
   returns: 
 
-  rev: 
-    20090913 - franciscom - changes due to platform feature
-  	20090718 - franciscom - cfield location management
-  	20080811 - franciscom - BUGID 1650 (REQ)
-  
 */
 function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
                          &$treeMgr,&$tcaseMgr,&$docRepository)
@@ -1230,9 +1196,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
   	$guiObj->testplan_design_time_cfields='';
   	
   	$tcase_id = isset($tcase['tcase_id']) ? $tcase['tcase_id'] : $argsObj->id;
-
   	$items_to_exec[$tcase_id] = $linked_tcversions[$tcase_id][0]['tcversion_id'];    
-  	// $tcversion_id = $linked_tcversions[$tcase_id][0]['tcversion_id'];
   	$tcversion_id = isset($tcase['tcversion_id']) ? $tcase['tcversion_id'] : $items_to_exec[$tcase_id];
   	
   	$link_id = $linked_tcversions[$tcase_id][0]['feature_id'];
@@ -1240,21 +1204,16 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
 
 	foreach($locationFilters as $locationKey => $filterValue)
 	{
-
-		// BUGID 3431 - Custom Field values at Test Case VERSION Level
 		$finalFilters=$cf_filters+$filterValue;
     	$guiObj->design_time_cfields[$tcase_id][$locationKey] = 
   		         $tcaseMgr->html_table_of_custom_field_values($tcase_id,'design',$finalFilters,null,null,
   		         											  $argsObj->tproject_id,null,$tcversion_id);
     	
-    	// 20090718 - franciscom - TO BE refactored
     	$guiObj->testplan_design_time_cfields[$tcase_id] = 
   		         $tcaseMgr->html_table_of_custom_field_values($tcversion_id,'testplan_design',$cf_filters,
   		                                                      null,null,$argsObj->tproject_id,null,$link_id);
-
     }
 
-    // BUGID 856: Guest user can execute test case
   	if($guiObj->grants->execute)
   	{
   	   $guiObj->execution_time_cfields[$tcase_id] = 
@@ -1279,7 +1238,6 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
   
   returns: 
 
-  rev: 20110622 - asimon - TICKET 4600: Blocked execution of testcases
 */
 function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tcaseMgr)
 {      
@@ -1290,7 +1248,6 @@ function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&
     
     if( !is_null($last_exec) )
     {
-	    // TICKET 4600: Blocked execution of testcases
         $last_exec=setTesterAssignment($dbHandler,$last_exec,$tcaseMgr,
                                        $argsObj->tplan_id,$argsObj->platform_id, $argsObj->build_id);
         
@@ -1368,8 +1325,6 @@ function getOtherExecutions(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj
   
   returns: 
 
-  rev: 20080811 - franciscom - BUGID 1650 (REQ)
-
 */
 function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
                           &$treeMgr,&$tcaseMgr,&$docRepository)
@@ -1440,11 +1395,6 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
 	            	foreach($locationFilters as $locationKey => $filterValue)
 	            	{
                         $finalFilters=$cf_filters+$filterValue;
-                        
-                        // 
-						// BUGID 3431 - Custom Field values at Test Case VERSION Level
-            			// $guiObj->design_time_cfields[$testcase_id][$locationKey] = 
-            			// 	$tcaseMgr->html_table_of_custom_field_values($testcase_id,'design',$finalFilters);
             			$guiObj->design_time_cfields[$testcase_id][$locationKey] = 
             				$tcaseMgr->html_table_of_custom_field_values($testcase_id,'design',$finalFilters,null,null,
   		         											             $argsObj->tproject_id,null,$testSet->tcversion_id[$gdx]);
@@ -1454,8 +1404,6 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
   	            		                                                     null,null,$argsObj->tproject_id);
             			                                                                        
             		}	                     
-
-                	// BUGID 856: Guest user can execute test case
                 	if($guiObj->grants->execute)
                 	{
             				$guiObj->execution_time_cfields[$testcase_id] = 
@@ -1525,6 +1473,4 @@ function buildExecContext(&$argsObj,$tcasePrefix,&$tplanMgr,&$tcaseMgr)
 	}
 	return $ret;
 }
-
-
 ?>

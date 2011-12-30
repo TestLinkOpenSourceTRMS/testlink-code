@@ -11,84 +11,8 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * 20110205 - franciscom - BUGID 4222 - added sanitize() method
- * 20110129 - franciscom - BUGID 3338 - getXMLRPCServerParams() - refactoring
- * 20110123 - franciscom - BUGID 3338 - getXMLServerParams() -> renamed getXMLRPCServerParams
- * 20110120 - Julian - BUGID 4164 - lists and multiselection lists do not use more space than
- *                                  necessary anymore
- * 20110118 - franciscom - BUGID 4112 - MSSQL BLOCKING error on Report "Test Cases with Execution Details" 
- *										due to reserved word EXEC
- * 20101109 - asimon - BUGID 3989: save custom field values only to db if they are not empty
- * 20101104 - amitkhullar - Updated Order By Clause in  get_linked_to_testproject()
- * 20101026 - asimon - BUGID 3930: changing date format according to given locale
- * 20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
- * 20101012 - franciscom - new methods html_table_inputs(),getValuesFromUserInput();
- * 20101011 - franciscom - new method buildHTMLInputName()
- * 20100930 - asimon - added platform_id to get_linked_cfields_at_execution()
- * 20100908 - franciscom - exportValueAsXML() - removed \n placed in wrong place
- * 20100829 - franciscom - BUGID 3707,3708 usability issue + browser different behaviour
- * 20100825 - eloff - BUGID 3713 - add platform_name to output of get_linked_cfields_at_execution()
- * 20100726 - amitkhullar - BUGID 3555 - sort order while displaying custom fields.
- * 20100701 - asimon - BUGID 3414: removed a single space character in string_custom_field_input() 
- *                     because of an error that was caused by it 
- * 20100218 - franciscom - string_custom_field_input() changes on checkbox management
- * 20100204 - franciscom - getByLinkID() - new method
- * 20090823 - franciscom - added logic to remove 255 size limit
- * 20090718 - franciscom - buildLocationMap()
- * 20090717 - franciscom - get_linked_cfields_at_design() - added filter by location
- *                         get_linked_cfields_at_execution() - location argument
- *                         
- * 20090607 - franciscom - refactoring to manage table prefix
- * 20090530 - franciscom - execution_values_to_db() added logic to manage insert or update.
- * 20090523 - franciscom - changes on show_on, enable_on logics
- * 20090426 - franciscom - new method getSizeLimit()
- * 20090420 - amitkhullar- BUGID-2410 - get_linked_cfields_at_testplan_design() - added logic to get data
- * 					                    for custom field values stores at test plan level.
- * 20090420 - franciscom - BUGID 2158 - get_linked_cfields_at_design() added filter on custom field id 
- *
- * 20090408 - franciscom - BUGID 2352 - added new method remove_all_scopes_values();
- *                                      changes in delete()
- *
- * 20090321 - franciscom - fixed bug due to missing code on get_linked_cfields_at_design()
- * 20090321 - franciscom - exportValueAsXML()
- * 20090303 - franciscom - get_linked_cfields_at_execution() - fixed bugs on query
- *                         and added logic to change fetch method.
- *
- * 20090223 - franciscom - get_linked_cfields_at_execution() - added logic
- *                         to use this method on report created by:
- *                         Amit Khullar - amkhullar@gmail.com
- *
- * 20080817 - franciscom - added logic give default logic to manage 
- *                         new custom field types that have no specific code.
- *
- * 20080816 - franciscom - new feature: user defined Custom Fields.
- *                         Important: 
- *                         solution is a mix of own ideas and Mantis 1.2.0a1 approach.
- *                         string_custom_field_input(), _build_cfield()
- *
- *                         added radio type, datetime type.
- *
- *
- * 20080810 - franciscom - documentation improvements
- *                         BUGID 1650 (REQ)
- *                         get_linked_cfields_at_design() - interface changes
- *
- * 20080304 - franciscom - prepare_string() before insert
- * 20080216 - franciscom - added testproject name to logAudit recorded information
- * 20071102 - franciscom - BUGID - Feature
- *            addition and refactoring of contributed code
- *
- * 20071027 - franciscom - using Mantis (a php based bugtracking system)
- *                         logic, to improve custom field management
- *                         adding support for url on string custom fields.
- *
- *
- * 20070617 - franciscom - BUGID     insert_id() problems for Postgres and Oracle?
- * 20070501 - franciscom - limiting length of values while writting to db.
- * 20070429 - franciscom - added text area custom field
- *                         code contributed by Seweryn Plywaczyk
- *
- * 20070227 - franciscom - BUGID 677
+ * @since 1.9.4
+ * 20111230 - franciscom - string_custom_field_value() - fixed warning on event viewer
  *
 **/
 
@@ -1450,7 +1374,7 @@ function name_is_unique($id,$name)
 
 
 
-  # --------------------
+  	# --------------------
 	# Adapted from Mantis code
 	# Prepare a string containing a custom field value for display
 	# $p_field_def 		  definition of the custom field
@@ -1460,10 +1384,12 @@ function name_is_unique($id,$name)
 	function string_custom_field_value( $p_field_def, $p_node_id,$p_value_field='value')
 	{
 
-		$t_custom_field_value=htmlspecialchars($p_field_def[$p_value_field]);
+		// @TODO - 20111230 - fix on 2.0
+		$t_value = isset($p_field_def[$p_value_field]) ? $p_field_def[$p_value_field] : null;
+		$t_custom_field_value = htmlspecialchars($t_value);
 
 		switch ($this->custom_field_types[$p_field_def['type']])
-  	{
+  		{
 			case 'email':
 				return "<a href=\"mailto:$t_custom_field_value\">$t_custom_field_value</a>";
 				break;

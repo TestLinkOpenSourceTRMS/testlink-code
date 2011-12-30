@@ -159,7 +159,6 @@ if(!is_null($linked_tcversions))
     // Results to DB
     if ($args->save_results || $args->do_bulk_save || $args->save_and_next)
     {
-		
     	// this has to be done to do not break logic present on write_execution()
     	$args->save_results = $args->save_and_next ? $args->save_and_next : $args->save_results;
     	$_REQUEST['save_results'] = $args->save_results;
@@ -438,7 +437,7 @@ function init_args(&$dbHandler,$cfgObj)
 	
 	// TICKET 4714 - Memory usage improvement
 	$args->tsuites_id = null; 
-	if( !is_null($args->tsuite_id) )
+	if( !is_null($args->tsuites_id) )
 	{
 		// will get all test suites in this branch, in order to limit amount of data returned by get_linked_tcversions
 		$tsuite_mgr = New testsuite($dbHandler);
@@ -1230,7 +1229,6 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
 */
 function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tcaseMgr)
 {      
-	// 20090716 - franciscom - get_last_execution() interface changes
 	$options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
     $last_exec = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
                                                $argsObj->build_id,$argsObj->platform_id,$options);

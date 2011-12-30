@@ -918,6 +918,18 @@ class testplan extends tlObjectWithAttachments
         								   access user_assignments table.
         								   With new feature [assigned_on_build] was needed.		
 										   HAS NO DIRECT interaction with EXECUTIONS
+
+										   ATTENTION:
+										   assigned_on_build IS NOT REALLY a filter.
+										   it's use is:
+										   Give me test cases THAT:
+										   HAS TESTER ASSIGNED on requested BUILD ID (present on
+										   argument assigned_on_build)
+										   OR 
+										   HAS NOT TESTER ASSIGNED on requested BUILD ID.
+										   There is NO WAY TO EXCLUDE test cases WITHOUT tester
+										   assignment on requested BUILD.
+				
 										   	
 		Dynamic view (execution related)
         [build_id]: HAS NO EFFECT on testplan_tcversions.
@@ -1098,7 +1110,7 @@ class testplan extends tlObjectWithAttachments
 		
 		list($my,$build_active_status,$ua_build_sql) = $this->init_get_linked_tcversions($filters,$options);
 
-		new dBug($my);
+		// new dBug($my);
 		
 		// new dBug($ua_build_sql, array('label' => '$ua_build_sql'));
 		
@@ -1219,7 +1231,6 @@ class testplan extends tlObjectWithAttachments
 				switch($victim)
 				{
 					case 'exec_info':
-						echo 'HER';
 						$exec_fields = '';
 						$exec_order_by = " ";
 						$more_exec_fields = '';
@@ -1247,6 +1258,8 @@ class testplan extends tlObjectWithAttachments
 	    	// Get test case prefix
 	    	$io = $this->tree_manager->get_node_hierarchy_info($id);
 	    	list($prefix,$garbage) = $this->tcase_mgr->getPrefix(null,$io['parent_id']);
+	    	$tcase_cfg = config_get('testcase_cfg');
+	    	$prefix .= $tcase_cfg->glue_character;
 	    	$concat = $this->db->db->concat("'{$prefix}'",'TCV.tc_external_id');
 	    		
 			$sql = "/* $debugMsg */ " .
@@ -1294,6 +1307,8 @@ class testplan extends tlObjectWithAttachments
 				$sql .=	" /* \$ua_fields != '' */ " . 
 						" LEFT OUTER JOIN {$this->tables['user_assignments']} UA ON UA.feature_id = T.id " .
 						$ua_build_sql ; 
+				// Want to check if requested build is on ua_build_sql exists the use JOIN
+				$sql .= " JOIN {$this->tables['builds']} B ON B.id = " . intval($my['filters']['assigned_on_build']);		
 			}
 			$sql .= " WHERE T.testplan_id={$id} {$my['where']['where']} " .
 			        " {$ua_filter} {$executions['filter']} ";
@@ -1311,7 +1326,7 @@ class testplan extends tlObjectWithAttachments
 		}
 
 		// die($sql);
-		// die($sql);
+		echo($sql);
 
 		// Build Outpout
 		switch($my['options']['output'])
@@ -1525,7 +1540,7 @@ class testplan extends tlObjectWithAttachments
 		
 		// 20111227 - need to understand if is right to consider Option or Filter
 		$ua_build = isset($ic['filters']['assigned_on_build']) ? 
-		            $ic['filters']['assigned_on_build'] : 0;
+		            intval($ic['filters']['assigned_on_build']) : 0;
 		
 		$ua_build_sql = ($ua_build > 0 && is_numeric($ua_build)) ? " AND UA.build_id={$ua_build} " : " ";
 

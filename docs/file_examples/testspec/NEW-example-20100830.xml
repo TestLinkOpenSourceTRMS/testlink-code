@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. -->
+<testsuite name="">
+  <node_order/>
+  <details/>
+  <testsuite name="TSUITE 1">
+    <node_order><![CDATA[1]]></node_order>
+    <details/>
+    <testsuite name="SUB-TSUITE-1.1">
+      <node_order><![CDATA[1]]></node_order>
+      <details/>
+      <testcase internalid="269" name="TC-1.1">
+        <node_order><![CDATA[100]]></node_order>
+        <externalid><![CDATA[3]]></externalid>
+        <summary/>
+        <preconditions/>
+        <execution_type><![CDATA[1]]></execution_type>
+        <importance><![CDATA[2]]></importance>
+      </testcase>
+    </testsuite>
+    <testcase internalid="267" name="TC-1">
+      <node_order><![CDATA[2]]></node_order>
+      <externalid><![CDATA[2]]></externalid>
+      <summary/>
+      <preconditions/>
+      <execution_type><![CDATA[1]]></execution_type>
+      <importance><![CDATA[2]]></importance>
+    </testcase>
+    <testcase internalid="267" name="TC-1">
+      <node_order><![CDATA[2]]></node_order>
+      <externalid><![CDATA[34]]></externalid>
+      <summary>This is the summary of this test case</summary>
+      <preconditions><![CDATA[Precon]]></preconditions>
+      <execution_type><![CDATA[1]]></execution_type>
+      <importance><![CDATA[2]]></importance>
+    </testcase>
+  </testsuite>
+  <testsuite name="TSUITE 2">
+    <node_order><![CDATA[2]]></node_order>
+    <details/>
+    <testcase internalid="271" name="TC-2">
+      <node_order><![CDATA[100]]></node_order>
+      <externalid><![CDATA[4]]></externalid>
+      <summary/>
+      <preconditions/>
+      <execution_type><![CDATA[1]]></execution_type>
+      <importance><![CDATA[2]]></importance>
+    </testcase>
+  </testsuite>
+  <testsuite name="TSUITE 3">
+    <node_order><![CDATA[3]]></node_order>
+    <details/>
+    <testsuite name="SUB-TSUITE-3.1">
+      <node_order><![CDATA[1]]></node_order>
+      <details/>
+      <testcase internalid="275" name="TC-3.1">
+        <node_order><![CDATA[101]]></node_order>
+        <externalid><![CDATA[6]]></externalid>
+        <summary/>
+        <preconditions/>
+        <execution_type><![CDATA[1]]></execution_type>
+        <importance><![CDATA[2]]></importance>
+      </testcase>
+      <testsuite name="SUB-TSUITE-3.1.1">
+        <node_order><![CDATA[102]]></node_order>
+        <details/>
+        <testcase internalid="265" name="TC-3.1.1">
+          <node_order><![CDATA[100]]></node_order>
+          <externalid><![CDATA[1]]></externalid>
+          <summary/>
+          <preconditions/>
+          <execution_type><![CDATA[1]]></execution_type>
+          <importance><![CDATA[2]]></importance>
+        </testcase>
+      </testsuite>
+    </testsuite>
+    <testcase internalid="273" name="TC-3">
+      <node_order><![CDATA[2]]></node_order>
+      <externalid><![CDATA[5]]></externalid>
+      <summary/>
+      <preconditions/>
+      <execution_type><![CDATA[1]]></execution_type>
+      <importance><![CDATA[2]]></importance>
+    </testcase>
+  </testsuite>
+</testsuite>

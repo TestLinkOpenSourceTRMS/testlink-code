@@ -1,0 +1,12 @@
+ require_once('config.inc.php');
+@@ -29,9 +32,8 @@ if (!config_get('user_self_signup'))
+ 	$smarty->display('workAreaSimple.tpl');
+ 	exit();
+ }
+-
+ $args = init_args();
+-doDBConnect($db,database::ONERROREXIT);
++doDBConnect($db);
+ 
+ $message = lang_get('your_info_please');
+ if($args->doEditUser)

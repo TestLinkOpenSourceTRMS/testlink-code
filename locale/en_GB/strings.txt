@@ -2214,7 +2214,7 @@ $TLS_error_ldap_server_connect_failed = "Connecting to the LDAP server failed ".
 		"(check hostname, port and LDAP version).";
 $TLS_error_ldap_update_failed = "Updating LDAP failed";
 $TLS_error_ldap_user_not_found = "LDAP user not found";
-
+$TLS_unknown_authentication_method = "Do not know how to handle %s authentication method";
 
 
 // ----- lib/functions/product.inc.php -----

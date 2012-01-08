@@ -23,6 +23,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ *	20120108 - franciscom - TICKET 4821: Bugzilla integration via XMLRPC (BUGZILLAXMLRPC)
  *	20120107 - franciscom - TICKET 4857: Add SOAP integration for Mantis (MANTISSOAP)
  *	20111217 - franciscom - $tlCfg->validation_cfg->user_login_valid_regex updated using mantisbt 1.2.5
  *	20111210 - franciscom - TICKET 4711: Apache Webserver - SSL Client Certificate Authentication (Single Sign-on?)
@@ -192,19 +193,20 @@ $g_removeEventsOlderThan = 30;
  * connection. The variable bugInterfaceOn is only set when a connection is made
  *
  * @var string $g_interface_bugs = [
- * 'NO'        : no bug tracking system integration (DEFAULT)
- * 'BUGZILLA'  : edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
- * 'EVENTUM'   : edit configuration in TL_ABS_PATH/cfg/eventum.cfg.php
- * 'FOGBUGZ'   : edit configuration in TL_ABS_PATH/cfg/fogbugz.cfg.php
- * 'GFORGE'    : edit configuration in TL_ABS_PATH/cfg/gforge.cfg.php
- * 'JIRA'      : edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
- * 'JIRASOAP'  : edit configuration in TL_ABS_PATH/cfg/jirasoap.cfg.php
- * 'MANTIS'    : edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
- * 'MANTISSOAP': edit configuration in TL_ABS_PATH/cfg/mantissoap.cfg.php
- * 'POLARION'  : edit configuration in TL_ABS_PATH/cfg/polarion.cfg.php
- * 'SEAPINE'   : edit configuration in TL_ABS_PATH/cfg/seapine.cfg.php
- * 'TRACKPLUS' : edit configuration in TL_ABS_PATH/cfg/trackplus.cfg.php
- * 'YOUTRACK'  : edit configuration in TL_ABS_PATH/cfg/youtrack.cfg.php
+ * 'NO'        		: no bug tracking system integration (DEFAULT)
+ * 'BUGZILLA'  		: edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
+ * 'BUGZILLAXMLRPC'	: edit configuration in TL_ABS_PATH/cfg/bugzillaxmlrpc.cfg.php
+ * 'EVENTUM'   		: edit configuration in TL_ABS_PATH/cfg/eventum.cfg.php
+ * 'FOGBUGZ'   		: edit configuration in TL_ABS_PATH/cfg/fogbugz.cfg.php
+ * 'GFORGE'    		: edit configuration in TL_ABS_PATH/cfg/gforge.cfg.php
+ * 'JIRA'      		: edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
+ * 'JIRASOAP'  		: edit configuration in TL_ABS_PATH/cfg/jirasoap.cfg.php
+ * 'MANTIS'    		: edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
+ * 'MANTISSOAP'		: edit configuration in TL_ABS_PATH/cfg/mantissoap.cfg.php
+ * 'POLARION'  		: edit configuration in TL_ABS_PATH/cfg/polarion.cfg.php
+ * 'SEAPINE'   		: edit configuration in TL_ABS_PATH/cfg/seapine.cfg.php
+ * 'TRACKPLUS' 		: edit configuration in TL_ABS_PATH/cfg/trackplus.cfg.php
+ * 'YOUTRACK'  		: edit configuration in TL_ABS_PATH/cfg/youtrack.cfg.php
  * ]
  */
 $g_interface_bugs = 'NO';

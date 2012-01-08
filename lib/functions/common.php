@@ -62,6 +62,7 @@ require_once('tlsmarty.inc.php');
 spl_autoload_register('tlAutoload');
 
 
+
 /** Input data validation */
 require_once("inputparameter.inc.php");
 
@@ -80,13 +81,21 @@ function tlAutoload($class_name)
 	$tlClasses = null;
 	$tlClassPrefixLen = 2;
 	$classFileName = $class_name;
+
+	// 20120108 - franciscom - 
+	// this way Zend_Loader_Autoloader will take care of these classes.
+	// Needed in order to make work bugzillaxmlrpc interface
+	if( strstr($class_name,'Zend_') !== FALSE )
+	{
+		return false;
+	}
     
 	if (isset($tlClasses[$classFileName]))
 	{
     	$len = tlStringLen($classFileName) - $tlClassPrefixLen;
 		$classFileName = strtolower(tlSubstr($classFileName,$tlClassPrefixLen,$len));
 	} 
-    require_once $classFileName . '.class.php';
+   	require_once $classFileName . '.class.php';
 }
 
 
@@ -1009,4 +1018,7 @@ function buildExternalIdString($testCasePrefix, $external_id)
 	return $testCasePrefix . $glueChar . $external_id;
 
 }
+
+// var_dump(spl_autoload_functions());
+
 ?>

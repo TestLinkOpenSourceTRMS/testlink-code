@@ -7,8 +7,6 @@
  * @author Andreas Morsing
  *
  * Baseclass for connection to additional bug tracking interfaces
- * TestLink uses bugzilla to check if displayed bugs resolved, verified,
- * and closed bugs. If they are it will strike through them
  *
  * For supporting a bug tracking system this class has to be extended
  * All bug tracking customization should be done in a sub class of this
@@ -16,39 +14,24 @@
  *
  *
  * @internal revisions
- *	20110318 - franciscom - BUGID 
- *	20100823 - franciscom - BUGID 3699
- *	20100814 - franciscom - BUGID 3681 - new BTS youtrack (www.jetbrains.com)
- *	20100616 - eloff - Show error message if bts config is broken
- *	20100311 - Julian - BUGID 3256, BUGID 3098
- *						function checkBugID_existence() has to return true
- *						in this parent class to be able to add bugs if
- *						function has not been overloaded in child classes
- *
- *	20081217 - franciscom - BUGID 1939
- *							removed global coupling, usign config_get()
- *	20081102 - franciscom - refactored to ease configuration
- *	20080207 - needles - added notation for Seapine's TestTrackPro
- *	20070505 - franciscom - TL_INTERFACE_BUGS -> $g_interface_bugs
- *	20070304 - franciscom - added new method checkBugID_existence()
- *
  *
 **/
-require_once(TL_ABS_PATH. "/lib/functions/database.class.php");
+require_once(TL_ABS_PATH . "/lib/functions/database.class.php");
 
 // Add new bugtracking interfaces here
 // If user configures an interface not declared here, pages trying to use bts
 // will give error message
-$btslist = array('BUGZILLA','MANTIS','JIRA', 'JIRASOAP', 'TRACKPLUS','POLARION',
-		    	 'EVENTUM','TRAC','SEAPINE','REDMINE','GFORGE','FOGBUGZ','YOUTRACK');
+$btslist = array('BUGZILLA','MANTIS','JIRA', 'JIRASOAP', 'TRACKPLUS','POLARION','EVENTUM',
+				 'TRAC','SEAPINE','REDMINE','GFORGE','FOGBUGZ','YOUTRACK','MANTISSOAP',
+				 'BUGZILLAXMLRPC');
 
 $bts = array_flip($btslist);
 
 //Set the bug tracking system Interface
 class bugtrackingInterface
 {
-	//members to store the bugtracking information, these values are
-	//set in the actual subclasses of this class
+	// members to store the bugtracking information, these values are
+	// set in the actual subclasses of this class
 	var $dbHost = null;
 	var $dbName = null;
 	var $dbUser = null;
@@ -59,7 +42,7 @@ class bugtrackingInterface
 	var $dbCharSet = null;
 	var $tlCharSet = null;
 
-	//private vars don't touch
+	// private vars don't touch
 	var $dbConnection = null;
 	var $Connected = false;
 
@@ -124,7 +107,6 @@ class bugtrackingInterface
 			$msg = sprintf(lang_get('BTS_connect_to_database_fails'),$connection_args);
 			tLog($msg  . $result['dbms_msg'], 'ERROR');
 		}
-
 		elseif (BUG_TRACK_DB_TYPE == 'mysql')
 		{
 			if ($this->dbCharSet == 'UTF-8')
@@ -308,7 +290,6 @@ class bugtrackingInterface
 	 * @author Andreas Morsing
 	 * @author Raphael Bosshard
 	 * @author Arjen van Summeren
-	 * @since 28.09.2005, 16:02:25
 	 **/
 	function buildViewBugLink($bugID,$bWithSummary = false)
 	{
@@ -321,7 +302,10 @@ class bugtrackingInterface
 			$link .= $status;
 		}
 		else
+		{
 			$link .= $bugID;
+		}
+		
 		if ($bWithSummary)
 		{
 			$summary = $this->getBugSummaryString($bugID);
@@ -347,7 +331,6 @@ class bugtrackingInterface
 	**/
 	function checkBugID_existence($id)
 	{
-		// BUGID 3256, BUGID 3098
 		return true;
 	}
 }
@@ -371,11 +354,16 @@ if (isset($bts[$bts_type]))
 	$g_bugInterface = new $g_bugInterfaceName();
 	if ($g_bugInterface)
 	{
+		// new dBug($g_bugInterface);
 		$g_bugInterface->connect();
 	}
 	
 	// Important: connect() do log if something fails
+	// new dBug($g_bugInterface);
+	// new dBug($g_bugInterface->isConnected());
+	// echo $g_bugInterface->isConnected() ? 'SIII' : 'nein';
 	$g_bugInterfaceOn = ($g_bugInterface && $g_bugInterface->isConnected());
+	// echo __FILE__ . '::' . __LINE__ . '<br><hr>';
 }
 else if ($bts_type != 'NO') {
     $errorMsg = sprintf(lang_get('BTS_integration_failure'),$bts_type);

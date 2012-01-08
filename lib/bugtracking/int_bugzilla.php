@@ -93,7 +93,7 @@ class bugzillaInterface extends bugtrackingInterface
 	}
 	
 	/**
-	 * Returns the bug summary in a human redable format, cutted down to 45 chars
+	 * Returns the bug summary in a human readable format
 	 *
 	 * @return string returns the summary (in readable form) of the given bug
 	 *

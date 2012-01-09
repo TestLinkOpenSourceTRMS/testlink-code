@@ -309,22 +309,22 @@ class testcase extends tlObjectWithAttachments
                                 
                                 // Need to recheck if new generated name does not crash with existent name
                                 // why? Suppose you have created:
-            					// TC [1]
-            					// TC [2]
-            					// TC [3]
-            					// Then you delete TC [2].
-            					// When I got siblings  il will got 2 siblings, if I create new progressive using next,
-            					// it will be 3 => I will get duplicated name.
-            					while( isset($nameSet[$target]) )
-            					{
+        	// TC [1]
+        	// TC [2]
+        	// TC [3]
+        	// Then you delete TC [2].
+        	// When I got siblings  il will got 2 siblings, if I create new progressive using next,
+        	// it will be 3 => I will get duplicated name.
+        	while( isset($nameSet[$target]) )
+        	{
 			            			$target = $name . ($suffix = sprintf($mask,++$siblingQty));
 									// BUGID 3367
 			            			$final_len = strlen($target);
 			            			if( $final_len > $name_max_len)
 			            			{
-			            				$target = substr($target,strlen($suffix),$name_max_len);
+			        $target = substr($target,strlen($suffix),$name_max_len);
 			            			}
-            					}
+        	}
                                 $name = $target;
 			            	break;
 			            } 
@@ -780,7 +780,7 @@ class testcase extends tlObjectWithAttachments
 					for($qdx=0; $qdx < $loop2do; $qdx++)
 					{
 						$target_tcversion = $tc_other_versions[$target_idx][$qdx]['id'];
-	      				foreach($cfPlaces as $locationKey => $locationFilter)
+	  foreach($cfPlaces as $locationKey => $locationFilter)
 		  				{ 
 		  					$cf_other_versions[$cfx][$qdx][$locationKey] = 
 		  						$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
@@ -1495,7 +1495,7 @@ class testcase extends tlObjectWithAttachments
 					
 	    			if( $op['status_ok'] )
 	    			{
-	    				$newTCObj['mappings'][$tcversion['id']] = $op['id'];
+	$newTCObj['mappings'][$tcversion['id']] = $op['id'];
 
 						// ATTENTION:  NEED TO UNDERSTAND HOW TO MANAGE COPY TO OTHER TEST PROJECTS
 						// 
@@ -1503,18 +1503,18 @@ class testcase extends tlObjectWithAttachments
 						$this->copy_cfields_design_values(array('id' => $id, 'tcversion_id' => $tcversion['id']),
 						  								  array('id' => $newTCObj['id'], 'tcversion_id' => $op['id']));
 
-	    				
-	    				// Need to get all steps
-	    				$stepsSet = $this->get_steps($tcversion['id']);
-	    				$to_tcversion_id = $op['id'];
-	    				if( !is_null($stepsSet) )
-	    				{
-	    					foreach($stepsSet as $key => $step)
-	    					{
-        						$op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
-        						                         $step['expected_results'],$step['execution_type']);			
-	    					}
-	    				}
+	
+	// Need to get all steps
+	$stepsSet = $this->get_steps($tcversion['id']);
+	$to_tcversion_id = $op['id'];
+	if( !is_null($stepsSet) )
+	{
+		foreach($stepsSet as $key => $step)
+		{
+    		$op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
+    		                         $step['expected_results'],$step['execution_type']);			
+		}
+	}
 					}                       
 				}
 				
@@ -1827,7 +1827,7 @@ class testcase extends tlObjectWithAttachments
 	
 			 [options]:		
 	         			[output]: default 'full'
-	         					  domain 'full','essential','full_without_steps'        
+	     	  domain 'full','essential','full_without_steps'        
 	
 	  returns: array 
 	
@@ -3485,19 +3485,19 @@ class testcase extends tlObjectWithAttachments
 	                    { 
 	                        $tcaseSet=null;
 	                        $main_keys = array_keys($rs);
-	       					foreach($main_keys as $maccess_key)
-	       					{
-	       						$sec_keys = array_keys($rs[$maccess_key]);
-	       						foreach($sec_keys as $saccess_key)
-	       						{
-	       							// is enough I process first element
-	       							$item = $rs[$maccess_key][$saccess_key][0];
+	   	foreach($main_keys as $maccess_key)
+	   	{
+	   		$sec_keys = array_keys($rs[$maccess_key]);
+	   		foreach($sec_keys as $saccess_key)
+	   		{
+	   			// is enough I process first element
+	   			$item = $rs[$maccess_key][$saccess_key][0];
 	                                if(!isset($tcaseSet[$item['testcase_id']]))
 	                                {
 	                                    $tcaseSet[$item['testcase_id']]=$item['testcase_id'];  
 	                                }  
-	       						}
-	       					}
+	   		}
+	   	}
 
 	                        $path_info = $this->tree_manager->get_full_path_verbose($tcaseSet);
 
@@ -3512,19 +3512,19 @@ class testcase extends tlObjectWithAttachments
 	                        }
 	                        $main_keys = array_keys($rs);
 
-	       					foreach($main_keys as $idx)
-	       					{
-	       						$sec_keys = array_keys($rs[$idx]);
-	       						foreach($sec_keys as $jdx)
-	       						{
+	   	foreach($main_keys as $idx)
+	   	{
+	   		$sec_keys = array_keys($rs[$idx]);
+	   		foreach($sec_keys as $jdx)
+	   		{
 									$third_keys = array_keys($rs[$idx][$jdx]);
-	       							foreach($third_keys as $tdx)
-	       							{
-	       								$fdx = $rs[$idx][$jdx][$tdx]['testcase_id'];
+	   			foreach($third_keys as $tdx)
+	   			{
+	   				$fdx = $rs[$idx][$jdx][$tdx]['testcase_id'];
 	                                	$rs[$idx][$jdx][$tdx]['tcase_full_path']=$flat_path[$fdx];
 									}
-	       						}
-	       					}
+	   		}
+	   	}
 	                    }
 	                break;  
 	            }  
@@ -4093,19 +4093,19 @@ class testcase extends tlObjectWithAttachments
 	           value: map with custom field definition, with keys:
 	
 					          id: custom field id
-	          				name
-	          				label
-	          				type
-	          				possible_values
-	          				default_value
-	          				valid_regexp
-	          				length_min
-	          				length_max
-	          				show_on_design
-	          				enable_on_design
-	          				show_on_execution
-	          				enable_on_execution
-	          				display_order
+	      name
+	      label
+	      type
+	      possible_values
+	      default_value
+	      valid_regexp
+	      length_min
+	      length_max
+	      show_on_design
+	      enable_on_design
+	      show_on_execution
+	      enable_on_execution
+	      display_order
 	
 	
 	
@@ -4203,19 +4203,19 @@ class testcase extends tlObjectWithAttachments
 	           value: map with custom field definition, with keys:
 	
 					          id: custom field id
-	          				name
-	          				label
-	          				type
-	          				possible_values
-	          				default_value
-	          				valid_regexp
-	          				length_min
-	          				length_max
-	          				show_on_design
-	          				enable_on_design
-	          				show_on_execution
-	          				enable_on_execution
-	          				display_order
+	      name
+	      label
+	      type
+	      possible_values
+	      default_value
+	      valid_regexp
+	      length_min
+	      length_max
+	      show_on_design
+	      enable_on_design
+	      show_on_execution
+	      enable_on_execution
+	      display_order
 	
 	
 	BUGID 3431 NO CHANGE - because ONLY ONE VERSION CAN BE LINKED to test plan
@@ -5125,7 +5125,7 @@ class testcase extends tlObjectWithAttachments
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
 	    $my['filters'] = array(	'version_id' => null,'tplan_id' => null,
-	    						'platform_id' => null, 'build_id' => null); 	
+			'platform_id' => null, 'build_id' => null); 	
 	    $my['filters'] = array_merge($my['filters'], (array)$filters);
 
 	    $my['options'] = array('exec_id_order' => 'DESC'); 	
@@ -5240,104 +5240,117 @@ class testcase extends tlObjectWithAttachments
 	 * test plan of a test project. This method performs a query to database 
 	 * using the given arguments.
 	 * 
-	 * Optional values may be passed in the options array. 
+	 * Optional values may be passed in the options array. These optional 
+	 * values include tplan_id - Test plan ID.
 	 * 
-	 * @param integer $tproject_id Test project ID
-	 * @param integer $tplan_id Test plan ID
+	 * @param integer $user_id User ID
+	 * @param integer $tproject_id Test Project ID
 	 * @param mixed $options Optional array of options
 	 * @return mixed Array of test cases created per user
 	 */
-	function get_created_per_user($tproject_id,$tplan_id, $options)
+	function get_created_per_user($user_id, $tproject_id, $options)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	    
 		$has_options=!is_null($options);
-	    $access_key=array('testplan_id','testcase_id');
 
 	    $sql = "/* $debugMsg */ SELECT ".
 				"TPROJ.id AS testproject_id, TPTCV.testplan_id, TCV.id AS tcversion_id," .
 				"TCV.version, TCV.tc_external_id, NHTC.id  AS testcase_id, NHTC.name, ". 
 				"TCV.creation_ts, TCV.modification_ts, TPROJ.prefix, U.first  AS first_name,". 
 				"U.last AS last_name, U.login, (TPTCV.urgency * TCV.importance) AS priority " .
-	    		"FROM users U JOIN tcversions TCV ON U.id = TCV.author_id " . 
+	    		"FROM testprojects TPROJ, users U JOIN tcversions TCV ON U.id = TCV.author_id " . 
 	    		"JOIN nodes_hierarchy NHTCV ON TCV.id = NHTCV.id " . 
 	    		"JOIN nodes_hierarchy NHTC ON NHTCV.parent_id = NHTC.id " .
-				"JOIN testplan_tcversions TPTCV ON TCV.id = TPTCV.tcversion_id " . 
-				"JOIN testplans TPLAN ON TPTCV.testplan_id = TPLAN.id " . 
-				"JOIN testprojects TPROJ ON TPLAN.testproject_id = TPROJ.id " . 
-				"WHERE TPROJ.id = {$tproject_id} AND TPTCV.testplan_id = {$tplan_id}";
+				"LEFT OUTER JOIN testplan_tcversions TPTCV ON TCV.id = TPTCV.tcversion_id " . 
+				"LEFT OUTER JOIN testplans TPLAN ON TPTCV.testplan_id = TPLAN.id " . 
+				"LEFT OUTER JOIN testprojects TPROJ_TPLAN ON TPLAN.testproject_id = TPROJ_TPLAN.id " . 
+				"WHERE TPROJ.id = {$tproject_id}";
 	    
+	    if($user_id !== 0) {
+	    	$sql .= " AND U.id = {$user_id}";
+	    }
+
+		if( $has_options && isset($options->tplan_id)) {
+			$sql .= " AND TPTCV.testplan_id = {$options->tplan_id}";
+		}
+		
+		if( $has_options && isset($options->startTime) ) {
+			$sql .= " AND TCV.creation_ts >= '{$options->startTime}'";
+		}
+		
+		if( $has_options && isset($options->endTime) ) {
+			$sql .= " AND TCV.creation_ts <= '{$options->endTime}'";
+		}
+	    
+	    $access_key=array('testplan_id','testcase_id');
 	    if( $has_options && isset($options->access_keys) )
 	    {
 	        switch($options->access_keys)
 	        {
 	            case 'testplan_testcase':
+	            	$access_key=array('testplan_id','testcase_id');
 	            break;
 	            
 	            case 'testcase_testplan':   
 	                $access_key=array('testcase_id','testplan_id');
+	            break;
+	            
+	            default:
+	            	$access_key=array('testplan_id','testcase_id');
 	            break;
 	        }
 	    }
 	    
 	    $rs=$this->db->fetchMapRowsIntoMap($sql,$access_key[0],$access_key[1],database::CUMULATIVE);
 	    
-	    if( $has_options && !is_null($rs))
+	    if( $has_options && !is_null($rs)) // TBD: Check if we can remove it
 	    {
-	    	if( isset($options->mode) )
-	    	{
-	    		switch($options->mode)
-	    		{
-	    			case 'full_path':
-	    				if( !isset($options->access_keys) ||
-	    				(is_null($options->access_keys) || $options->access_keys='testplan_testcase') )
-	    				{
-	    					$tcaseSet=null;
-	    					$main_keys = array_keys($rs);
-	    					foreach($main_keys as $maccess_key)
-	    					{
-	    						$sec_keys = array_keys($rs[$maccess_key]);
-	    						foreach($sec_keys as $saccess_key)
-	    						{
-	    							// is enough I process first element
-	    							$item = $rs[$maccess_key][$saccess_key][0];
-	    							if(!isset($tcaseSet[$item['testcase_id']]))
-	    							{
-	    								$tcaseSet[$item['testcase_id']]=$item['testcase_id'];
-	    							}
-	    						}
-	    					}
-	    
-	    					$path_info = $this->tree_manager->get_full_path_verbose($tcaseSet);
-	    
-	    					// Remove test project piece and convert to string
-	    					$flat_path=null;
-	    					foreach($path_info as $tcase_id => $pieces)
-	    					{
-	    						unset($pieces[0]);
-	    						// 20100813 - asimon - deactivated last slash on path
-	    						// to remove it from test suite name in "tc assigned to user" tables
-	    						$flat_path[$tcase_id]=implode('/',$pieces);
-	    					}
-	    					$main_keys = array_keys($rs);
-	    
-	    					foreach($main_keys as $idx)
-	    					{
-	    						$sec_keys = array_keys($rs[$idx]);
-	    						foreach($sec_keys as $jdx)
-	    						{
-	    							$third_keys = array_keys($rs[$idx][$jdx]);
-	    							foreach($third_keys as $tdx)
-	    							{
-	    								$fdx = $rs[$idx][$jdx][$tdx]['testcase_id'];
-	    								$rs[$idx][$jdx][$tdx]['tcase_full_path']=$flat_path[$fdx];
-	    							}
-	    						}
-	    					}
-	    				}
-	    				break;
-	    		}
-	    	}
+			if( !isset($options->access_keys) ||
+			(is_null($options->access_keys) || $options->access_keys='testplan_testcase') )
+			{
+				$tcaseSet=null;
+				$main_keys = array_keys($rs);
+				foreach($main_keys as $maccess_key)
+				{
+					$sec_keys = array_keys($rs[$maccess_key]);
+					foreach($sec_keys as $saccess_key)
+					{
+						// is enough I process first element
+						$item = $rs[$maccess_key][$saccess_key][0];
+						if(!isset($tcaseSet[$item['testcase_id']]))
+						{
+							$tcaseSet[$item['testcase_id']]=$item['testcase_id'];
+						}
+					}
+				}
+			    
+				$path_info = $this->tree_manager->get_full_path_verbose($tcaseSet);
+			    
+				// Remove test project piece and convert to string
+				$flat_path=null;
+				foreach($path_info as $tcase_id => $pieces)
+				{
+					unset($pieces[0]);
+					$flat_path[$tcase_id]=implode('/',$pieces);
+				}
+				$main_keys = array_keys($rs);
+			    
+				foreach($main_keys as $idx)
+				{
+					$sec_keys = array_keys($rs[$idx]);
+					foreach($sec_keys as $jdx)
+					{
+						$third_keys = array_keys($rs[$idx][$jdx]);
+						foreach($third_keys as $tdx)
+						{
+							$fdx = $rs[$idx][$jdx][$tdx]['testcase_id'];
+							$rs[$idx][$jdx][$tdx]['tcase_full_path']=$flat_path[$fdx];
+						}
+					}
+					break;
+				}
+			}
 	    }
 	    
 	    return $rs;

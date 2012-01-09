@@ -26,19 +26,19 @@ rev:
           s='no_records_found,testplan,testcase,version,assigned_on,due_since,platform,goto_testspec,priority,
              high_priority,medium_priority,low_priority,build,testsuite,generated_by_TestLink_on,show_closed_builds_btn'}
 
-{* 20101008 - asimon - BUGID 3311 *}
 <body onUnload="storeWindowSize('AssignmentOverview')">
-<h1 class="title">{$gui->pageTitle}</h1>
-<div class="workBack">
+	<h1 class="title">{$gui->pageTitle}</h1>
+	<div class="workBack">
 
 {if $gui->warning_msg == ''}
 	{if $gui->resultSet}
 		{foreach from=$gui->tableSet key=idx item=matrix}
 		
-			<p>
+		<p>
 			{assign var="tableID" value="table_$idx"}
 			{$matrix->renderBodySection($tableID)}
-			<br /></p>
+			<br />
+		</p>
 		
 		{/foreach}
 		
@@ -48,10 +48,10 @@ rev:
         	{$labels.no_records_found}
     {/if}
 {else}
-	<div class="user_feedback">
-    {$gui->warning_msg}
-    </div>
+		<div class="user_feedback">
+	    {$gui->warning_msg}
+	    </div>
 {/if}   
-</div>
+	</div>
 </body>
 </html>

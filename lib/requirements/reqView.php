@@ -10,6 +10,8 @@
  *
  *	@internal revision
  *	@since 1.9.4
+ *	20120111 - franciscom - TICKET 4862: Users rights on requirements are bypassed 
+ *										 with interproject requirements relations
  *	20111029 - franciscom - TICKET 4786: Add right to allow UNFREEZE a requirement
  *	20110816 - franciscom - TICKET 4702: Requirement View - display log message
  *
@@ -34,19 +36,18 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
+$tproject_mgr = new testproject($db);
+
 $args = init_args();
-$gui = initialize_gui($db,$args);
+$gui = initialize_gui($db,$args,$tproject_mgr);
 $smarty = new TLSmarty();
 
-/* contribution BUGID 2999, show permanent link */
-$tproject_mgr = new testproject($db);
 $prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
 
 $gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . 
                     urlencode($prefix) . '&item=req&id=' . urlencode($gui->req['req_doc_id']);
 
 
-// new dBug($gui);		
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
 
@@ -80,9 +81,8 @@ function init_args()
  * 
  *
  */
-function initialize_gui(&$dbHandler,$argsObj)
+function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr)
 {
-    $tproject_mgr = new testproject($dbHandler);
     $req_mgr = new requirement_mgr($dbHandler);
     $commandMgr = new reqCommands($dbHandler);
 
@@ -91,11 +91,23 @@ function initialize_gui(&$dbHandler,$argsObj)
     $gui->req_cfg = config_get('req_cfg');
     $gui->tproject_name = $argsObj->tproject_name;
 
+
+	// TICKET 4862: Users rights on requirements are bypassed 
+	//				with interproject requirements relations	
+	// ATTENTION
+	// when this script is called from openLinkedReqWindow() we need to get test project
+	// from requirement.
+	//
+	$tproject_id = $req_mgr->getTestProjectID($argsObj->requirement_id);
+	$target_id = $argsObj->tproject_id; 
+	if( ($isAlien = ($tproject_id != $argsObj->tproject_id)) )
+	{
+		$target_id = $tproject_id;
+	} 
     $gui->grants = new stdClass();
-    $gui->grants->req_mgmt = $argsObj->user->hasRight($dbHandler,"mgt_modify_req",$argsObj->tproject_id);
-    $gui->grants->unfreeze_req = $argsObj->user->hasRight($dbHandler,"mgt_unfreeze_req",$argsObj->tproject_id);
+    $gui->grants->req_mgmt = $argsObj->user->hasRight($dbHandler,"mgt_modify_req",$target_id);
+    $gui->grants->unfreeze_req = $argsObj->user->hasRight($dbHandler,"mgt_unfreeze_req",$target_id);
    
-    
     $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->glueChar = config_get('testcase_cfg')->glue_character;
     $gui->pieceSep = config_get('gui_title_separator_1');
@@ -116,7 +128,6 @@ function initialize_gui(&$dbHandler,$argsObj)
 							 $gui->req_versions[$rqx]['version_id'];
 	}
 	
-	// 20101128 - BUGID 4056    
     $gui->req_has_history = count($req_mgr->get_history($gui->req_id, array('output' => 'array'))) > 1; 
     
     $gui->req = current($gui->req_versions);
@@ -126,8 +137,6 @@ function initialize_gui(&$dbHandler,$argsObj)
     // This seems weird but is done to adapt template than can display multiple
     // requirements. This logic has been borrowed from test case versions management
     $gui->current_version[0] = array($gui->req);
-	
-	// BUGID 2877 - Custom Fields linked to Requirement Versions
 	$gui->cfields_current_version[0] = $req_mgr->html_table_of_custom_field_values($gui->req_id,$gui->req['version_id'],
 																				  $argsObj->tproject_id);
 
@@ -155,16 +164,12 @@ function initialize_gui(&$dbHandler,$argsObj)
         $gui->parent_descr = lang_get('req_spec_short') . $gui->pieceSep . $gui->req['req_spec_title'];
     }
     
-    // BUGID 2877 - Custom Fields linked to Requirement Versions
-    // $gui->cfields = array();
-    // $gui->cfields[] = $req_mgr->html_table_of_custom_field_values($gui->req_id,$argsObj->tproject_id);
    	$gui->attachments[$gui->req_id] = getAttachmentInfosFrom($req_mgr,$gui->req_id);
     
     $gui->attachmentTableName = $req_mgr->getAttachmentTableName();
     $gui->reqStatus = init_labels($gui->req_cfg->status_labels);
     $gui->reqTypeDomain = init_labels($gui->req_cfg->type_labels);
 
-    // added req relations for BUGID 1748
     $gui->req_relations = FALSE;
     $gui->req_relation_select = FALSE;
     $gui->testproject_select = FALSE;
@@ -174,13 +179,14 @@ function initialize_gui(&$dbHandler,$argsObj)
     if ($gui->req_cfg->relations->enable) 
     {
     	$gui->req_relations = $req_mgr->get_relations($gui->req_id);
+    	$gui->req_relations['rw'] = !$isAlien;
     	$gui->req_relation_select = $req_mgr->init_relation_type_select();
     	if ($gui->req_cfg->relations->interproject_linking) 
     	{
     		$gui->testproject_select = initTestprojectSelect($argsObj->userID, $argsObj->tproject_id,$tproject_mgr);
     	}
     }
-    
+
     return $gui;
 }
 

@@ -13,6 +13,10 @@
  *
  * @internal revisions:
  * @since 1.9.4
+ * 20120111 - franciscom - TICKET 4862: Users rights on requirements are bypassed 
+ *										with interproject requirements relations. 
+ *						   				new method getTestProjectID()		
+ *
  * 20111110 - franciscom - TICKET 4802: Exporting large amount of requirements ( qty > 1900) fails
  * 20111008 - franciscom - TICKET 4768: Requirements Export - Export Version and Revision
  * 20110817 - franciscom - TICKET 4360 copy_to()
@@ -2975,6 +2979,23 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 		return $generated;
 	}
 
+
+    /**
+	 * 
+ 	 *
+ 	 */
+	function getTestProjectID($id, $reqSpecID=null)
+	{
+		$reqSpecMgr = new requirement_spec_mgr($this->db);
+		$parent = $reqSpecID;
+		if( is_null($parent) )
+		{
+			$dummy = $this->tree_mgr->get_node_hierarchy_info($id);
+			$parent = $dummy['parent_id']; 
+		}
+		$target = $reqSpecMgr->get_by_id($parent);
+		return $target['testproject_id'];
+	}
 	
 } // class end
 ?>

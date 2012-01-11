@@ -6,6 +6,8 @@ Purpose: view requirement with version management
 
 @internal revisions
 @since 1.9.4
+  20120111 - franciscom - TICKET 4862: Users rights on requirements are bypassed 
+									   with interproject requirements relations
   20110816 - franciscom - TICKET 4702: Requirement View - display log message
 
 @since 1.9.3
@@ -312,6 +314,7 @@ var pF_unfreeze_req_version = unfreeze_req_version;
 				</td></tr>
 			{/if}
 		
+			{if $gui->req_relations.rw}
 			<tr style="height:40px; vertical-align: middle;"><td style="height:40px; vertical-align: middle;" colspan="7">
 			
 				<span class="bold">{$labels.new_relation}:</span> {$labels.current_req}
@@ -336,8 +339,9 @@ var pF_unfreeze_req_version = unfreeze_req_version;
 				<input type="hidden" name="relation_source_req_id" value="{$gui->req_id}" />
 				<input type="submit" name="relation_submit_btn" value="{$labels.btn_add}" />
 				
-				</td></tr>
-			
+				</td>
+			</tr>
+			{/if}			
 		{if $gui->req_relations.num_relations}
 			
 			<tr>
@@ -358,7 +362,9 @@ var pF_unfreeze_req_version = unfreeze_req_version;
 				{/if}
 				
 				<th><nobr>{$labels.relation_set_by}</nobr></th>
+				{if $gui->req_relations.rw}
 				<th><nobr>{$labels.relation_delete}</nobr></th>
+				{/if}
 			</tr>
 			
 			{foreach item=relation from=$gui->req_relations.relations}
@@ -380,11 +386,13 @@ var pF_unfreeze_req_version = unfreeze_req_version;
 						{$relation.author|escape}</span></nobr></td>
 
 					<td align="center">
+					{if $gui->req_relations.rw}
 	             	<a href="javascript:relation_delete_confirmation({$gui->req_relations.req.id}, {$relation.id}, 
 	             	                                                 delete_rel_msgbox_title, delete_rel_msgbox_msg, 
 	             	                                                 pF_delete_req_relation);">
 	      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" 
 	      			    	   title="{$labels.img_title_delete_relation}"  style="border:none" /></a>
+	              	{/if}
 	              </td>
 				</tr>
 			{/foreach}

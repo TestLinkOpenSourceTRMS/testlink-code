@@ -3,12 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  *  
- * This file generates tree menu for test specification and test execution.
+ * functions related to tree menu building for test specification and test execution.
  * 
  * @filesource	treeMenu.inc.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2005-2011, TestLink community 
+ * @copyright 	2005-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -952,8 +952,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			$pnFilters[$keyname] = isset($filters->{$keyname}) ? $filters->{$keyname} : null;
 		}
 	    		
-		// 20100412 - franciscom
-		$pnOptions = array('hideTestCases' => $bHideTCs, 'viewType' => 'executionTree');
+		$pnOptions = array('hideTestCases' => false, 'viewType' => 'executionTree');
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
 		                                 $tck_map,$tplan_tcases,$pnFilters,$pnOptions);
 
@@ -962,12 +961,9 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			$test_spec[$key] = $testcase_counters[$key];
 		}
 	
-		
-		// BUGID 3516
-		// can now be left in form of array, will not be sent by URL anymore
 		$keys = array_keys($tplan_tcases);
 		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,
-			                             $hash_id_descr,1,$menuUrl,$bHideTCs,$useCounters,$useColors,
+			                             $hash_id_descr,1,$menuUrl,false,$useCounters,$useColors,
 			                             $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
 	}  // if($test_spec)
 	
@@ -1225,7 +1221,6 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	$name = filterString($node['name']);
 	$buildLinkTo = 1;
 	$pfn = "ST";
-	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
 	$create_counters=0;
 	$versionID = 0;
 	$node['leaf']=false;
@@ -1238,9 +1233,7 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 		$countersColouring=$useColors->counters;
 	}
 	
-	// $doIt=true;
 	// custom Property that will be accessed by EXT-JS using node.attributes
-   	// 20100908 - tlNodeType -> 'testlink_node_type'
    	$node['testlink_node_type'] = $node_type;
 	$node['testlink_node_name'] = $name;
 	switch($node_type)
@@ -1248,12 +1241,12 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 		case 'testproject':
 			$create_counters=1;
 			$pfn = $bForPrinting ? 'TPLAN_PTP' : 'SP';
-			$label =  $name . " (" . $testcase_count . ")";
+			// $label =  $name . " (" . $testcase_count . ")";
 		break;
 			
 		case 'testsuite':
 			$create_counters=1;
-			$label =  $name . " (" . $testcase_count . ")";	
+			// $label =  $name . " (" . $testcase_count . ")";	
 			if( $bForPrinting )
 			{
 				$pfn = 'TPLAN_PTS';
@@ -1291,6 +1284,7 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	
 	if($create_counters)
 	{
+		$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
 		$label = $name ." (" . $testcase_count . ")";
 		if($useCounters)
 		{
@@ -1303,24 +1297,30 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
 	$node['href'] = is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$versionID})";
 	
-	// Remove useless keys
-	foreach($status_descr_code as $key => $code)
-	{
-		if(isset($node[$key]))
-		{
-			unset($node[$key]); 
-		}  
-	}
-	
-	$key2del = array('node_type_id','parent_id','node_order','node_table',
-		             'tcversion_id','external_id','version','testcase_count');  
-	foreach($key2del as $key)
-	{
-		if(isset($node[$key]))
-		{
-			unset($node[$key]); 
-		}  
-	}
+	// 20120114 - 
+	// without these lines when high amount of nodes (5000) there is good performance improvement
+	//
+	//          
+	// /* ======================================================
+	// // Remove useless keys
+	// foreach($status_descr_code as $key => $code)
+	// {
+	// 	if(isset($node[$key]))
+	// 	{
+	// 		unset($node[$key]); 
+	// 	}  
+	// }
+	// 
+	// $key2del = array('node_type_id','parent_id','node_order','node_table',
+	// 	             'tcversion_id','external_id','version','testcase_count');  
+	// foreach($key2del as $key)
+	// {
+	// 	if(isset($node[$key]))
+	// 	{
+	// 		unset($node[$key]); 
+	// 	}  
+	// }
+	// */
 }
 
 

@@ -1158,26 +1158,27 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
                                         $showTestCaseID=1,$testCasePrefix,$showTestSuiteContents=1)
 {
 	static $resultsCfg;
-	static $status_descr_code;
-	static $status_code_descr;
-	static $status_verbose;
-	static $labelCache;	
+	static $l18n;	
 	static $pf;	
 	static $doColouringOn;
+	static $cssClasses;
 	
 	if(!$resultsCfg)
 	{ 
-		$resultsCfg=config_get('results');
-		$status_descr_code=$resultsCfg['status_code'];
-		$status_code_descr=$resultsCfg['code_status'];
-		$status_verbose=$resultsCfg['status_label'];
-		
 		$doColouringOn['testcase'] = 1;
 		$doColouringOn['counters'] = 1;
 		if( !is_null($useColors) )
 		{
 			$doColouringOn['testcase'] = $useColors->testcases;
 			$doColouringOn['counters'] = $useColors->counters;
+		}
+
+		$resultsCfg = config_get('results');
+		$status_descr_code = $resultsCfg['status_code'];
+		foreach($resultsCfg['status_label'] as $key => $value)
+		{
+			$l18n[$status_descr_code[$key]] = lang_get($value);
+			$cssClasses[$status_descr_code[$key]] = $doColouringOn['testcase'] ? ('class="light_' . $value . '"') : ''; 
 		}
 		
 		$pf['testproject'] = $bForPrinting ? 'TPLAN_PTP' : 'SP';
@@ -1212,17 +1213,14 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 			$versionID = $node['tcversion_id'];
 
 			$status_code = $tcase_node[$node['id']]['exec_status'];
-			$status_descr = $status_code_descr[$status_code];
-			$status_text = lang_get($status_verbose[$status_descr]);
-			$css_class = $doColouringOn['testcase'] ? (" class=\"light_{$status_descr}\" ") : '';   
-			$label = "<span {$css_class} " . '  title="' . $status_text .	'" alt="' . $status_text . '">';
+			$label = "<span {$cssClasses[$status_code]} " . '  title="' .  $l18n[$status_code] . 
+					 '" alt="' . $l18n[$status_code] . '">';
 			
 			if($showTestCaseID)
 			{
-				$label .= "<b>".htmlspecialchars($testCasePrefix.$node['external_id'])."</b>:";
+				$label .= "<b>" . htmlspecialchars($testCasePrefix . $node['external_id']) . "</b>:";
 			} 
 			$label .= "{$name}</span>";
-			
 		break;
 
 		default:

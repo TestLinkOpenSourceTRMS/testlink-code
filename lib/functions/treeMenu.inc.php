@@ -1080,8 +1080,8 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
 			$cssClasses[$status_descr_code[$key]] = $doColouringOn['testcase'] ? ('class="light_' . $value . '"') : ''; 
 		}
 		
-		$pf['testproject'] = $bForPrinting ? 'TPLAN_PTP' : 'SP';
-		$pf['testsuite'] = $bForPrinting ? 'TPLAN_PTS' : ($showTestSuiteContents ? 'STS' : null); 
+		$pf['testproject'] = $bHideTCs ? 'TPLAN_PTP' : 'SP';
+		$pf['testsuite'] = $bHideTCs ? 'TPLAN_PTS' : ($showTestSuiteContents ? 'STS' : null); 
 		
 	}
 	

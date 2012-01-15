@@ -1013,7 +1013,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
  *	20100611 - franciscom - removed useless $getArguments
  *	20071229 - franciscom -added $useCounters,$useColors
  */
-function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
+function renderExecTreeNodeOri($level,&$node,&$tcase_node,$hash_id_descr,
                             $tc_action_enabled,$linkto,$bHideTCs,$useCounters,$useColors,
                             $showTestCaseID,$testCasePrefix,$showTestSuiteContents)
 {
@@ -1024,6 +1024,115 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
                                    $showTestSuiteContents);
 	
 	
+	if( isset($tcase_node[$node['id']]) )
+	{
+		unset($tcase_node[$node['id']]);
+	}
+	if (isset($node['childNodes']) && $node['childNodes'])
+	{
+	    // need to work always original object in order to change it's values using reference .
+	    // Can not assign anymore to intermediate variables.
+        $nodes_qty = sizeof($node['childNodes']);
+		for($idx = 0;$idx <$nodes_qty ;$idx++)
+		{
+			if(is_null($node['childNodes'][$idx]))
+			{
+				continue;
+			}
+			$menustring .= renderExecTreeNode($level+1,$node['childNodes'][$idx],$tcase_node,
+			                                  $hash_id_descr,
+			                                  $tc_action_enabled,$linkto,$bHideTCs,
+			                                  $useCounters,$useColors,$showTestCaseID,
+			                                  $testCasePrefix,$showTestSuiteContents);
+		}
+	}
+	return $menustring;
+}
+
+function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
+                            $tc_action_enabled,$linkto,$bHideTCs,$useCounters,$useColors,
+                            $showTestCaseID,$testCasePrefix,$showTestSuiteContents)
+{
+	static $resultsCfg;
+	static $l18n;	
+	static $pf;	
+	static $doColouringOn;
+	static $cssClasses;
+
+	$node_type = $hash_id_descr[$node['node_type_id']];
+	$menustring = '';
+    
+	if(!$resultsCfg)
+	{ 
+		$doColouringOn['testcase'] = 1;
+		$doColouringOn['counters'] = 1;
+		if( !is_null($useColors) )
+		{
+			$doColouringOn['testcase'] = $useColors->testcases;
+			$doColouringOn['counters'] = $useColors->counters;
+		}
+
+		$resultsCfg = config_get('results');
+		$status_descr_code = $resultsCfg['status_code'];
+		foreach($resultsCfg['status_label'] as $key => $value)
+		{
+			$l18n[$status_descr_code[$key]] = lang_get($value);
+			$cssClasses[$status_descr_code[$key]] = $doColouringOn['testcase'] ? ('class="light_' . $value . '"') : ''; 
+		}
+		
+		$pf['testproject'] = $bForPrinting ? 'TPLAN_PTP' : 'SP';
+		$pf['testsuite'] = $bForPrinting ? 'TPLAN_PTS' : ($showTestSuiteContents ? 'STS' : null); 
+		
+	}
+	
+	$name = filterString($node['name']);
+
+	// custom Property that will be accessed by EXT-JS using node.attributes
+	$node['testlink_node_name'] = $name;
+   	$node['testlink_node_type'] = $node_type;
+
+	switch($node_type)
+	{
+		case 'testproject':
+		case 'testsuite':
+			$node['leaf'] = false;
+			$versionID = 0;
+			$pfn = $pf[$node_type];
+			$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
+			$node['text'] = $name ." (" . $testcase_count . ")";
+			if($useCounters)
+			{
+				$node['text'] .= create_counters_info($node,$doColouringOn['counters']);
+			}
+		break;
+			
+		case 'testcase':
+			$node['leaf'] = true;
+			$pfn = $tc_action_enabled ? 'ST' :null;
+			$versionID = $node['tcversion_id'];
+
+			$status_code = $tcase_node[$node['id']]['exec_status'];
+			$node['text'] = "<span {$cssClasses[$status_code]} " . '  title="' .  $l18n[$status_code] . 
+					 		'" alt="' . $l18n[$status_code] . '">';
+			
+			if($showTestCaseID)
+			{
+				$node['text'] .= "<b>" . htmlspecialchars($testCasePrefix . $node['external_id']) . "</b>:";
+			} 
+			$node['text'] .= "{$name}</span>";
+		break;
+
+		default:
+			$pfn = "ST";
+		break;
+	}
+	
+	// $node['text'] = $label;
+	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
+	$node['href'] = is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$versionID})";
+
+	
+	// ----------------------------------------------------------------------------------------------
 	if( isset($tcase_node[$node['id']]) )
 	{
 		unset($tcase_node[$node['id']]);

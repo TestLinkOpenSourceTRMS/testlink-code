@@ -1200,10 +1200,10 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 			$versionID = 0;
 			$pfn = $pf[$node_type];
 			$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
-			$label = $name ." (" . $testcase_count . ")";
+			$node['text'] = $name ." (" . $testcase_count . ")";
 			if($useCounters)
 			{
-				$label .= create_counters_info($node,$doColouringOn['counters']);
+				$node['text'] .= create_counters_info($node,$doColouringOn['counters']);
 			}
 		break;
 			
@@ -1213,14 +1213,14 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 			$versionID = $node['tcversion_id'];
 
 			$status_code = $tcase_node[$node['id']]['exec_status'];
-			$label = "<span {$cssClasses[$status_code]} " . '  title="' .  $l18n[$status_code] . 
-					 '" alt="' . $l18n[$status_code] . '">';
+			$node['text'] = "<span {$cssClasses[$status_code]} " . '  title="' .  $l18n[$status_code] . 
+					 		'" alt="' . $l18n[$status_code] . '">';
 			
 			if($showTestCaseID)
 			{
-				$label .= "<b>" . htmlspecialchars($testCasePrefix . $node['external_id']) . "</b>:";
+				$node['text'] .= "<b>" . htmlspecialchars($testCasePrefix . $node['external_id']) . "</b>:";
 			} 
-			$label .= "{$name}</span>";
+			$node['text'] .= "{$name}</span>";
 		break;
 
 		default:
@@ -1228,7 +1228,7 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 		break;
 	}
 	
-	$node['text'] = $label;
+	// $node['text'] = $label;
 	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
 	$node['href'] = is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$versionID})";
 }

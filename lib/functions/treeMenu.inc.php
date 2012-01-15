@@ -14,6 +14,8 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20110115 - franciscom -	work on extjs_renderExecTreeNodeOnOpen() and related functions
+ *							trying to improve performance
  * 20111031 - franciscom - 	TICKET 4790: Setting & Filters panel - Wrong use of BUILD on settings area
  *							generateExecTree().
  *
@@ -1102,95 +1104,45 @@ function get_testproject_nodes_testcount(&$db,$tproject_id, $tproject_name,
 	return $map_node_tccount;
 }
 
-
 /**
- * @return array a map:
- *         key    => node_id
- *         values => node test case count considering test cases presents
- *                   in the nodes of the subtree that starts on node_id
- *                   Means test case can not be sons/daughters of node_id.
- * 
- *                   node name (useful only for debug purpouses).
+ *
+ *
+ *
  */
-function DEPRECATED_201108_get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
-                                      $tplan_id,$tplan_name,$keywordsFilter=null)
-{
-	$tplan_mgr = new testplan($db);
-	$tproject_mgr = new testproject($db);
-	
-	$tree_manager = $tplan_mgr->tree_manager;
-	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
-	$hash_descr_id = $tree_manager->get_available_node_types();
-	$hash_id_descr = array_flip($hash_descr_id);
-	
-	$resultsCfg=config_get('results');
-	$decoding_hash=array('node_id_descr' => $hash_id_descr, 'status_descr_code' =>  $resultsCfg['status_code'],
-		                 'status_code_descr' =>  $resultsCfg['code_status']);
-	
-	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
-	
-	$linkedFilters = array('keyword_id' => $keywordsFilter->items);
-	// TICKET 4710
-	$opt['details'] = 'to_count_items';
-	$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters);
-	if (is_null($tplan_tcases))
-	{
-		$tplan_tcases = array();
-	}
-	$test_spec['name'] = $tproject_name;
-	$test_spec['id'] = $tproject_id;
-	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
-	$map_node_tccount=array(); 
-	
-	if($test_spec)
-	{
-		$tck_map = null;
-		
-		if(!is_null($keywordsFilter))
-		{
-			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keywordsFilter->items,$keywordsFilter->type);
-		}	
-		//@TODO: schlundus, can we speed up with NO_EXTERNAL?
-		$filters = null;
-		$options = array('hideTestCases' => 0, 'viewType' => 'executionTree');
-		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
-			                             $tck_map,$tplan_tcases,$filters,$options);
-		
-		$test_spec['testcase_count'] = $testcase_counters['testcase_count'];
-	}
-	
-	return($map_node_tccount);
-}
-
-
 function create_counters_info(&$node,$useColors)
 {
-	$resultsCfg=config_get('results');
-	
-	// I will add not_run if not exists
-	$keys2display=array('not_run' => 'not_run');
-	
-	foreach($resultsCfg['status_label_for_exec_ui'] as $key => $value)
+	static $keys2display;
+	static $labelCache;
+
+	if(!$labelCache)
 	{
-		if( $key != 'not_run')
+		$resultsCfg = config_get('results');
+		$status_label = $resultsCfg['status_label'];
+		
+		// I will add not_run if not exists
+		$keys2display = array('not_run' => 'not_run');
+		foreach( $resultsCfg['status_label_for_exec_ui'] as $key => $value)
 		{
-			$keys2display[$key]=$key;  
-		}  
-	}
-	$status_verbose=$resultsCfg['status_label'];
-	
+			if( $key != 'not_run')
+			{
+				$keys2display[$key]=$key;  
+			}  
+			$labelCache[$key] = lang_get($status_label[$key]);
+		}
+	} 
+
 	$add_html='';
-	foreach($keys2display as $key => $value)
+	foreach($keys2display as $key)
 	{
 		if( isset($node[$key]) )
 		{
-			$css_class= $useColors ? (" class=\"light_{$key}\" ") : '';   
-			$add_html .= "<span {$css_class} " . ' title="' . lang_get($status_verbose[$key]) . '">' . 
-				         $node[$key] . ",</span>";
+			$css_class = $useColors ? (" class=\"light_{$key}\" ") : '';   
+			$add_html .= "<span {$css_class} " . ' title="' . $labelCache[$key] . 
+						 '">' . $node[$key] . ",</span>";
 		}
 	}
+
 	$add_html = "(" . rtrim($add_html,",</span>") . "</span>)"; 
-	
 	return $add_html;
 }
 
@@ -1209,6 +1161,9 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	static $status_descr_code;
 	static $status_code_descr;
 	static $status_verbose;
+	static $labelCache;	
+	static $pf;	
+	static $doColouringOn;
 	
 	if(!$resultsCfg)
 	{ 
@@ -1216,60 +1171,50 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 		$status_descr_code=$resultsCfg['status_code'];
 		$status_code_descr=$resultsCfg['code_status'];
 		$status_verbose=$resultsCfg['status_label'];
+		
+		$doColouringOn['testcase'] = 1;
+		$doColouringOn['counters'] = 1;
+		if( !is_null($useColors) )
+		{
+			$doColouringOn['testcase'] = $useColors->testcases;
+			$doColouringOn['counters'] = $useColors->counters;
+		}
+		
+		$pf['testproject'] = $bForPrinting ? 'TPLAN_PTP' : 'SP';
+		$pf['testsuite'] = $bForPrinting ? 'TPLAN_PTS' : ($showTestSuiteContents ? 'STS' : null); 
+		
 	}
 	
 	$name = filterString($node['name']);
-	$buildLinkTo = 1;
-	$pfn = "ST";
-	$create_counters=0;
-	$versionID = 0;
-	$node['leaf']=false;
-	
-	$testcaseColouring=1;
-	$countersColouring=1;
-	if( !is_null($useColors) )
-	{
-		$testcaseColouring=$useColors->testcases;
-		$countersColouring=$useColors->counters;
-	}
-	
+
 	// custom Property that will be accessed by EXT-JS using node.attributes
-   	$node['testlink_node_type'] = $node_type;
 	$node['testlink_node_name'] = $name;
+   	$node['testlink_node_type'] = $node_type;
+
 	switch($node_type)
 	{
 		case 'testproject':
-			$create_counters=1;
-			$pfn = $bForPrinting ? 'TPLAN_PTP' : 'SP';
-			// $label =  $name . " (" . $testcase_count . ")";
-		break;
-			
 		case 'testsuite':
-			$create_counters=1;
-			// $label =  $name . " (" . $testcase_count . ")";	
-			if( $bForPrinting )
+			$node['leaf'] = false;
+			$versionID = 0;
+			$pfn = $pf[$node_type];
+			$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
+			$label = $name ." (" . $testcase_count . ")";
+			if($useCounters)
 			{
-				$pfn = 'TPLAN_PTS';
-			}
-			else
-			{
-				$pfn = $showTestSuiteContents ? 'STS' : null; 
+				$label .= create_counters_info($node,$doColouringOn['counters']);
 			}
 		break;
 			
 		case 'testcase':
 			$node['leaf'] = true;
-			$buildLinkTo = $tc_action_enabled;
-			if (!$buildLinkTo)
-			{
-				$pfn = null;
-			}
-			
-			//echo "DEBUG - Test Case rendering: \$node['id']:{$node['id']}<br>";
+			$pfn = $tc_action_enabled ? 'ST' :null;
+			$versionID = $node['tcversion_id'];
+
 			$status_code = $tcase_node[$node['id']]['exec_status'];
 			$status_descr = $status_code_descr[$status_code];
 			$status_text = lang_get($status_verbose[$status_descr]);
-			$css_class = $testcaseColouring ? (" class=\"light_{$status_descr}\" ") : '';   
+			$css_class = $doColouringOn['testcase'] ? (" class=\"light_{$status_descr}\" ") : '';   
 			$label = "<span {$css_class} " . '  title="' . $status_text .	'" alt="' . $status_text . '">';
 			
 			if($showTestCaseID)
@@ -1278,49 +1223,16 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 			} 
 			$label .= "{$name}</span>";
 			
-			$versionID = $node['tcversion_id'];
+		break;
+
+		default:
+			$pfn = "ST";
 		break;
 	}
 	
-	if($create_counters)
-	{
-		$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
-		$label = $name ." (" . $testcase_count . ")";
-		if($useCounters)
-		{
-			$add_html = create_counters_info($node,$countersColouring);        
-			$label .= $add_html; 
-		}
-	}
-    
 	$node['text'] = $label;
 	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
 	$node['href'] = is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$versionID})";
-	
-	// 20120114 - 
-	// without these lines when high amount of nodes (5000) there is good performance improvement
-	//
-	//          
-	// /* ======================================================
-	// // Remove useless keys
-	// foreach($status_descr_code as $key => $code)
-	// {
-	// 	if(isset($node[$key]))
-	// 	{
-	// 		unset($node[$key]); 
-	// 	}  
-	// }
-	// 
-	// $key2del = array('node_type_id','parent_id','node_order','node_table',
-	// 	             'tcversion_id','external_id','version','testcase_count');  
-	// foreach($key2del as $key)
-	// {
-	// 	if(isset($node[$key]))
-	// 	{
-	// 		unset($node[$key]); 
-	// 	}  
-	// }
-	// */
 }
 
 

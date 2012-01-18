@@ -77,9 +77,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	                       'viewType' => 'testSpecTree');
 	
 
-	// 20100412 - franciscom
 	// testplan => only used if opetions['viewType'] == 'testSpecTreeForTestPlan'
-	// 20100417 - franciscom - BUGID 2498
 	$my['filters'] = array('keywords' => null, 'executionType' => null, 'importance' => null,
 	                       'testplan' => null, 'filter_tc_id' => null);
 
@@ -157,7 +155,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	    												   $my['filters']['filter_custom_fields'],$hash_descr_id);
 	    }
 		
-	    // 20100412 - franciscom
 	    $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'], 
 	    				   'viewType' => $my['options']['viewType'],	
 		                   'ignoreInactiveTestCases' => $my['options']['ignore_inactive_testcases']);
@@ -291,18 +288,13 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
  *         'blocked'
  *         'not run'
  *
- * @internal Revisions
- * 20100810 - asimon - filtering by testcase ID
- * 20100417 - franciscom -  BUGID 2498 - filter by test case importance
- * 20100415 - franciscom -  BUGID 2797 - filter by test case execution type
+ * @internal revisions
  */
 function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = null,
                      &$tplan_tcases = null,$filters=null, $options=null)
 {
 	
-	static $hash_id_descr;
-	static $status_descr_code;
-	static $status_code_descr;
+	static $status_descr_list;
 	static $debugMsg;
     static $tables;
     static $my;
@@ -310,28 +302,18 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     static $activeVersionClause;
     static $filterOnTCVersionAttribute;
     static $filtersApplied;
+    static $users2filter;
+    static $results2filter;
 
     $tpNode = null;
 	if (!$tables)
 	{
   	    $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
         $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
-    }	
-	if (!$hash_id_descr)
-	{
-		$hash_id_descr = $decoding_info['node_id_descr'];
-	}
-	if (!$status_descr_code)
-	{
-		$status_descr_code = $decoding_info['status_descr_code'];
-	}
-	if (!$status_code_descr)
-	{
-		$status_code_descr = $decoding_info['status_code_descr'];
-	}
-	
-	if (!$my)
-	{
+
+		$status_descr_list = array_keys($decoding_info['status_descr_code']);
+		$status_descr_list[] = 'testcase_count';
+		
 		$my = array();
 		$my['options'] = array('hideTestCases' => 0, 'showTestCaseID' => 1, 'viewType' => 'testSpecTree',
 		                       'getExternalTestCaseID' => 1,'ignoreInactiveTestCases' => 0);
@@ -343,22 +325,15 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		
 		$my['options'] = array_merge($my['options'], (array)$options);
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
-	}
-	
-	if(!$enabledFiltersOn)
-	{
-		// 3301 - added filtering by testcase name
-		// 20100702 - and custom fields
-		// 20100810 - and testcase ID
-		$enabledFiltersOn['testcase_id'] = 
-			isset($my['filters']['filter_tc_id']);
-		$enabledFiltersOn['testcase_name'] = 
-			isset($my['filters']['filter_testcase_name']);
-		$enabledFiltersOn['keywords'] = isset($tck_map);
-		$enabledFiltersOn['executionType'] = 
-			isset($my['filters']['filter_execution_type']);
+
+		$enabledFiltersOn['testcase_id'] = isset($my['filters']['filter_tc_id']);
+		$enabledFiltersOn['testcase_name'] = isset($my['filters']['filter_testcase_name']);
+		$enabledFiltersOn['executionType'] = isset($my['filters']['filter_execution_type']);
 		$enabledFiltersOn['importance'] = isset($my['filters']['filter_priority']);
 		$enabledFiltersOn['custom_fields'] = isset($my['filters']['filter_custom_fields']);
+		$enabledFiltersOn['keywords'] = isset($tck_map);
+
+
 		$filterOnTCVersionAttribute = $enabledFiltersOn['executionType'] || $enabledFiltersOn['importance'];
 					
 		$filtersApplied = false;
@@ -368,168 +343,138 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		}
 		
 		$activeVersionClause = $filterOnTCVersionAttribute ? " AND TCV.active=1 " : '';
+		
+		$users2filter = isset($my['filters']['filter_assigned_user']) ?
+		                      $my['filters']['filter_assigned_user'] : null;
+		                      
+		$results2filter = isset($my['filters']['filter_result_result']) ?
+		                  		$my['filters']['filter_result_result'] : null;
+		
 	}
 		
-	$tcase_counters = array('testcase_count' => 0);
-	foreach($status_descr_code as $status_descr => $status_code)
-	{
-		$tcase_counters[$status_descr]=0;
-	}
+	// $tcase_counters = array('testcase_count' => 0);
+	//foreach($status_descr_code as $status_descr => $status_code)
+	//{
+	//	$tcase_counters[$status_descr]=0;
+	//}
+	// $tcase_counters['testcase_count']=0;
+	$tcase_counters = array_fill_keys($status_descr_list, 0);
 	
-	$node_type = isset($node['node_type_id']) ? $hash_id_descr[$node['node_type_id']] : null;
-	$tcase_counters['testcase_count']=0;
+	$node_type = isset($node['node_type_id']) ? $decoding_info['node_id_descr'][$node['node_type_id']] : null;
 
 	if($node_type == 'testcase')
 	{
-		$viewType = $my['options']['viewType'];
-		if ($enabledFiltersOn['keywords'])
+		if( ($enabledFiltersOn['keywords'] && !isset($tck_map[$node['id']])) ||
+			($enabledFiltersOn['testcase_name'] && 
+				 stripos($node['name'], $my['filters']['filter_testcase_name']) === FALSE)  ||
+			($enabledFiltersOn['testcase_id'] && ($node['id'] != $my['filters']['filter_tc_id']) ) 
+		  ) 	
 		{
-			if (!isset($tck_map[$node['id']]))
+			unset($tplan_tcases[$node['id']]);
+			$node = null;
+		}
+		else
+		{
+			if($my['options']['viewType'] == 'executionTree')
 			{
-				// 20101209 - asimon - allow correct filtering also for right frame
-				unset($tplan_tcases[$node['id']]);
-				$node = null;
-			}	
-		}
-		
-		// added filter by testcase name
-		if ($node && $enabledFiltersOn['testcase_name']) {
-			$filter_name = $my['filters']['filter_testcase_name'];
-			// IMPORTANT:
-			// checking with === here, because function stripos could return 0 when string
-			// is found at position 0, if clause would then evaluate wrong because 
-			// 0 would be casted to false and we only want to delete node if it really is false
-			if (stripos($node['name'], $filter_name) === FALSE) {
-				// 20101209 - asimon - allow correct filtering also for right frame
-				unset($tplan_tcases[$node['id']]);
-				$node = null;
-			}
-		}
-		
-		// filter by testcase ID
-		if ($node && $enabledFiltersOn['testcase_id']) {
-			$filter_id = $my['filters']['filter_tc_id'];
-			if ($node['id'] != $filter_id) {
-				// 20101209 - asimon - allow correct filtering also for right frame
-				unset($tplan_tcases[$node['id']]);
-				$node = null;
-			}
-		}
-		
-		if ($node && $viewType == 'executionTree')
-		{
-			
-			$tpNode = isset($tplan_tcases[$node['id']]) ? $tplan_tcases[$node['id']] : null;
-//			if (!$tpNode || (!is_null($my['filters']['assignedTo'])) && 
-//					((isset($my['filters']['assignedTo'][TL_USER_NOBODY]) && !is_null($tpNode['user_id'])) ||
-//							(!isset($my['filters']['assignedTo'][TL_USER_NOBODY]) && (!isset($my['filters']['assignedTo'][TL_USER_SOMEBODY])) && 
-//							 !isset($my['filters']['assignedTo'][$tpNode['user_id']]))) || 
-//							(!is_null($my['filters']['status']) && !isset($my['filters']['status'][$tpNode['exec_status']])) ||
-//							(isset($my['filters']['assignedTo'][TL_USER_SOMEBODY]) && !is_numeric($tpNode['user_id']))
-//			)
-//			{
+				$tpNode = isset($tplan_tcases[$node['id']]) ? $tplan_tcases[$node['id']] : null;
+				if( !($delete_node=is_null($tpNode)) )
+				{			
+					$delete_node =  !is_null($results2filter) && 
+									!isset($results2filter[$tpNode['exec_status']]);
+				
+					if(!$delete_node && !is_null($users2filter))
+					{ 
+						$somebody_wanted_but_nobody_there = isset($users2filter[TL_USER_SOMEBODY]) && 
+															!is_numeric($tpNode['user_id']);
+				
+						$unassigned_wanted_but_someone_assigned = isset($users2filter[TL_USER_NOBODY]) && 
+															  	  !is_null($tpNode['user_id']);
+				
+						$wrong_user = !isset($users2filter[TL_USER_NOBODY]) && 
+									  !isset($users2filter[TL_USER_SOMEBODY]) && 
+				    	    	      !isset($users2filter[$tpNode['user_id']]);
 
-			// asimon - additional variables for better readability of following if condition.
-			// For original statement/condition see above commented out lines.
-			// This is longer, but MUCH better readable and easier to extend for new filter conditions.
-			
-			$users2filter = isset($my['filters']['filter_assigned_user']) ?
-			                      $my['filters']['filter_assigned_user'] : null;
-			$results2filter = isset($my['filters']['filter_result_result']) ?
-			                        $my['filters']['filter_result_result'] : null;
-			
-			$wrong_result = !is_null($results2filter) 
-			                && !isset($results2filter[$tpNode['exec_status']]);
-			
-			$somebody_wanted_but_nobody_there = !is_null($users2filter)
-			                                    && isset($users2filter[TL_USER_SOMEBODY])
-			                                    && !is_numeric($tpNode['user_id']);
-			
-			$unassigned_wanted_but_someone_assigned = !is_null($users2filter)
-			                                          && isset($users2filter[TL_USER_NOBODY])
-			                                          && !is_null($tpNode['user_id']);
-			
-			$wrong_user = !is_null($users2filter)
-			              && !isset($users2filter[TL_USER_NOBODY])
-			              && !isset($users2filter[TL_USER_SOMEBODY])
-			              && !isset($users2filter[$tpNode['user_id']]);
-						
-			$delete_node = $unassigned_wanted_but_someone_assigned
-			               || $wrong_user
-			               || $wrong_result
-			               || $somebody_wanted_but_nobody_there;
-			
-			if (!$tpNode || $delete_node) {
-				// 20101209 - asimon - allow correct filtering also for right frame
-				unset($tplan_tcases[$node['id']]);
-				$node = null;
-			} else {
-				$externalID='';
-				$node['tcversion_id'] = $tpNode['tcversion_id'];		
-				$node['version'] = $tpNode['version'];		
-				if ($my['options']['getExternalTestCaseID'])
-				{
-					if (!isset($tpNode['external_id']))
-					{
-						$sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
-						       " SELECT TCV.tc_external_id AS external_id " .
-							   " FROM {$tables['tcversions']}  TCV " .
-							   " WHERE TCV.id=" . $node['tcversion_id'];
-						
-						$result = $db->exec_query($sql);
-						$myrow = $db->fetch_array($result);
-						$externalID = $myrow['external_id'];
+						$delete_node = $unassigned_wanted_but_someone_assigned || $wrong_user  || 
+								   	   $somebody_wanted_but_nobody_there;
 					}
-					else
-					{
-						$externalID = $tpNode['external_id'];
-					}	
 				}
-				$node['external_id'] = $externalID;
-				//unset($tplan_tcases[$node['id']]);
+
+				if($delete_node) 
+				{
+					unset($tplan_tcases[$node['id']]);
+					$node = null;
+				} 
+				else 
+				{
+					$externalID='';
+					$node['tcversion_id'] = $tpNode['tcversion_id'];		
+					$node['version'] = $tpNode['version'];		
+					if ($my['options']['getExternalTestCaseID'])
+					{
+						if (!isset($tpNode['external_id']))
+						{
+							$sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
+						   	       " SELECT TCV.tc_external_id AS external_id " .
+							       " FROM {$tables['tcversions']}  TCV " .
+							   	   " WHERE TCV.id=" . $node['tcversion_id'];
+						
+							$result = $db->exec_query($sql);
+							$myrow = $db->fetch_array($result);
+							$externalID = $myrow['external_id'];
+						}
+						else
+						{
+							$externalID = $tpNode['external_id'];
+						}	
+					}
+					$node['external_id'] = $externalID;
+				}
 			}
-		}
 		
-		if ($node && $my['options']['ignoreInactiveTestCases'])
-		{
-			// there are active tcversions for this node ???
-			// I'm doing this instead of creating a test case manager object, because
-			// I think is better for performance.
-			//
-			// =======================================================================================
-			// 20070106 - franciscom
-			// Postgres Problems
-			// =======================================================================================
-			// Problem 1 - SQL Syntax
-			//   While testing with postgres
-			//   SELECT count(TCV.id) NUM_ACTIVE_VERSIONS   -> Error
-			//
-			//   At least for what I remember using AS to create COLUMN ALIAS IS REQUIRED and Standard
-			//   while AS is NOT REQUIRED (and with some DBMS causes errors) when you want to give a 
-			//   TABLE ALIAS
-			//
-			// Problem 2 - alias case
-			//   At least in my installation the aliases column name is returned lower case, then
-			//   PHP fails when:
-			//                  if($myrow['NUM_ACTIVE_VERSIONS'] == 0)
-			//
-			//
-			$sql=" /* $debugMsg - line:" . __LINE__ . " */ " . 
-			     " SELECT count(TCV.id) AS num_active_versions " .
-				 " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
-				 " WHERE NH.parent_id=" . $node['id'] .
-				 " AND NH.id = TCV.id AND TCV.active=1";
-			
-			$result = $db->exec_query($sql);
-			$myrow = $db->fetch_array($result);
-			if($myrow['num_active_versions'] == 0)
+			if ($node && $my['options']['ignoreInactiveTestCases'])
 			{
-				$node = null;
+				// there are active tcversions for this node ???
+				// I'm doing this instead of creating a test case manager object, because
+				// I think is better for performance.
+				//
+				// =======================================================================================
+				// 20070106 - franciscom
+				// Postgres Problems
+				// =======================================================================================
+				// Problem 1 - SQL Syntax
+				//   While testing with postgres
+				//   SELECT count(TCV.id) NUM_ACTIVE_VERSIONS   -> Error
+				//
+				//   At least for what I remember using AS to create COLUMN ALIAS IS REQUIRED and Standard
+				//   while AS is NOT REQUIRED (and with some DBMS causes errors) when you want to give a 
+				//   TABLE ALIAS
+				//
+				// Problem 2 - alias case
+				//   At least in my installation the aliases column name is returned lower case, then
+				//   PHP fails when:
+				//                  if($myrow['NUM_ACTIVE_VERSIONS'] == 0)
+				//
+				//
+				$sql=" /* $debugMsg - line:" . __LINE__ . " */ " . 
+				     " SELECT count(TCV.id) AS num_active_versions " .
+					 " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
+					 " WHERE NH.parent_id=" . $node['id'] .
+					 " AND NH.id = TCV.id AND TCV.active=1";
+				
+				$result = $db->exec_query($sql);
+				$myrow = $db->fetch_array($result);
+				if($myrow['num_active_versions'] == 0)
+				{
+					$node = null;
+				}
 			}
 		}
+		// -------------------------------------------------------------------
 		
 		// -------------------------------------------------------------------
-		if ($node && ($viewType=='testSpecTree' || $viewType=='testSpecTreeForTestPlan') )
+		if ($node && ($my['options']['viewType']=='testSpecTree' || 
+					  $my['options']['viewType'] =='testSpecTreeForTestPlan') )
 		{
 			$sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
 			       " SELECT COALESCE(MAX(TCV.id),0) AS targetid, TCV.tc_external_id AS external_id" .
@@ -549,8 +494,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 				
 				if( $filterOnTCVersionAttribute )
 				{
-					// BUGID 2797 
-					switch ($viewType)
+					switch ($my['options']['viewType'])
 					{
 						case 'testSpecTreeForTestPlan':
 							// Try to get info from linked tcversions
@@ -603,31 +547,32 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		}
 		// -------------------------------------------------------------------
 		
-		
+		// ========================================================================
 		foreach($tcase_counters as $key => $value)
 		{
 			$tcase_counters[$key]=0;
 		}
 		if(isset($tpNode['exec_status']) )
 		{
-			$tc_status_code = $tpNode['exec_status'];
-			$tc_status_descr = $status_code_descr[$tc_status_code];   
+			$tc_status_descr = $decoding_info['status_code_descr'][$tpNode['exec_status']];   
 		}
 		else
 		{
 			$tc_status_descr = "not_run";
-			$tc_status_code = $status_descr_code[$tc_status_descr];
 		}
 		
 		$init_value = $node ? 1 : 0;
-		$tcase_counters[$tc_status_descr]=$init_value;
-		$tcase_counters['testcase_count']=$init_value;
+		$tcase_counters[$tc_status_descr] = $init_value;
+		$tcase_counters['testcase_count'] = $init_value;
 		if ( $my['options']['hideTestCases'] )
 		{
 			$node = null;
-		} 
+		}
+		// ========================================================================
 	}  // if($node_type == 'testcase')
 	
+	
+	// ========================================================================
 	if (isset($node['childNodes']) && is_array($node['childNodes']))
 	{
 		// node has to be a Test Suite ?
@@ -638,7 +583,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		{
 			$current = &$childNodes[$idx];
 			// I use set an element to null to filter out leaf menu items
-			
 			if(is_null($current))
 			{
 				continue;
@@ -662,7 +606,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 				                                    'name' => $node['name']);
 		}
 
-        // node must be dstroyed if empty had we have using filtering conditions
+        // node must be destroyed if empty had we have using filtering conditions
 		if( ($filtersApplied || !is_null($tplan_tcases)) && 
 			!$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
 		{
@@ -741,6 +685,10 @@ function renderTreeNode($level,&$node,$hash_id_descr,
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                           $tplan_name,$filters,$options) 
 {
+
+ 	$chronos[] = microtime(true);
+
+
 	$treeMenu = new stdClass(); 
 	$treeMenu->rootnode = null;
 	$treeMenu->menustring = '';
@@ -812,7 +760,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$nt2exclude_children = array('testcase' => 'exclude_my_children',
 		                         'requirement_spec'=> 'exclude_my_children');
 	
-  	// 20101003 - franciscom
   	// remove test spec, test suites (or branches) that have ZERO test cases linked to test plan
   	// 
   	// IMPORTANT:
@@ -830,7 +777,21 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
  		$my['filters']['exclude_branches'] = $filters->{'filter_toplevel_testsuite'};
  	}
  	
+ 	// Take Time
+ 	//$chronos[] = microtime(true);
+	//$tnow = end($chronos);
+	//$tprev = prev($chronos);
+    
     $test_spec = $tree_manager->get_subtree($tproject_id,$my['filters'],$my['options']);
+ 	
+ 	// Take Time
+ 	//$chronos[] = microtime(true);
+	//$tnow = end($chronos);
+	//$tprev = prev($chronos);
+	//$t_elapsed = number_format( $tnow - $tprev, 4);
+	//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
+	//reset($chronos);	
+
      
 	$test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
 	$test_spec['id'] = $tproject_id;
@@ -853,9 +814,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			
 			// Multiple step algoritm to apply keyword filter on type=AND
 			// get_*_tcversions filters by keyword ALWAYS in OR mode.
-
-
-			
 			$linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,
                                    'assigned_to' => $assignedTo,
                                    'assigned_on_build' => $build2filter_assignments,
@@ -881,6 +839,17 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			//new dBug($opt);
 									
 			$tplan_tcases = $tplan_mgr->get_ln_tcversions($tplan_id,$linkedFilters,$opt);
+			//new dBug($tplan_tcases);
+			
+		 	// Take Time
+		 	//$chronos[] = microtime(true);
+			//$tnow = end($chronos);
+			//$tprev = prev($chronos);
+			//$t_elapsed = number_format( $tnow - $tprev, 4);
+			//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER get_ln_tcversions()</b>):' . $t_elapsed .'<br>';
+			//reset($chronos);	
+
+
 			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'And')
 			{
 				$filteredSet = $tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);
@@ -900,6 +869,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 				}
 			}
 		}   
+
 		
 		if (is_null($tplan_tcases))
 		{
@@ -907,6 +877,13 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			$apply_other_filters=false;
 		}
 		
+		// Take time
+	 	//$chronos[] = microtime(true);
+		//$tnow = end($chronos);
+		//$tprev = prev($chronos);
+		//$t_elapsed = number_format( $tnow - $tprev, 4);
+		//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>FROM get_subtree()</b>):' . $t_elapsed .'<br>';
+		//reset($chronos);	
 
 		// 20110823 - refactoring		
 		if( $apply_other_filters )
@@ -940,7 +917,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			update_status_for_colors($db,$tplan_tcases,$context,$resultsCfg['status_code']);
 		}
 		
-		// 20080224 - franciscom - 
 		// After reviewing code, seems that assignedTo has no sense because tp_tcs
 		// has been filtered.
 		// Then to avoid changes to prepareNode() due to include_unassigned,
@@ -953,10 +929,27 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		foreach ($keys2init as $keyname) {
 			$pnFilters[$keyname] = isset($filters->{$keyname}) ? $filters->{$keyname} : null;
 		}
+
+		// Take time
+	 	//$chronos[] = microtime(true);
+		//$tnow = end($chronos);
+		//$tprev = prev($chronos);
+		//$t_elapsed = number_format( $tnow - $tprev, 4);
+		//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>BEFORE prepareNode()</b>):' . $t_elapsed .'<br>';
+		//reset($chronos);	
 	    		
 		$pnOptions = array('hideTestCases' => false, 'viewType' => 'executionTree');
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
 		                                 $tck_map,$tplan_tcases,$pnFilters,$pnOptions);
+
+		// Take time
+	 	// $chronos[] = microtime(true);
+		// $tnow = end($chronos);
+		// $tprev = prev($chronos);
+		// $t_elapsed = number_format( $tnow - $tprev, 4);
+		// echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER prepareNode()</b>):' . $t_elapsed .'<br>';
+		// reset($chronos);	
+
 
 		foreach($testcase_counters as $key => $value)
 		{

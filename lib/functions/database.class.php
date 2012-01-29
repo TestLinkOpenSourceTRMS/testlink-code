@@ -13,6 +13,9 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * @since 1.9.4 
+ * 20120129 - franciscom - TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for 
+ *										PHP on WINDOWS version 5.3 and higher
  *
  */
  
@@ -76,18 +79,33 @@ class database
 	    return $this->logQueries;
 	}
 
-  
+ 	// TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for PHP on WINDOWS version 5.3 and higher
 	function database($db_type)
 	{
-		$this->dbType = $db_type;
+		$this->dbType = $adodb_driver = $db_type;
 		$fetch_mode = ADODB_FETCH_ASSOC;
-		$this->db = NewADOConnection($this->dbType);
 		
 		// added to reduce memory usage (before this setting we used ADODB_FETCH_BOTH)
 		if($this->dbType == 'mssql')
 		{
 			$fetch_mode = ADODB_FETCH_BOTH;
+			if(PHP_OS == 'WINNT')
+			{
+				// Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
+				// From PHP MANUAL - reganding mssql_* functions
+				// These functions allow you to access MS SQL Server database.
+				// This extension is not available anymore on Windows with PHP 5.3 or later.
+				// SQLSRV, an alternative driver for MS SQL is available from Microsoft:
+				// http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx. 			
+			    //
+				// PHP_VERSION_ID is available as of PHP 5.2.7
+				if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300)  
+				{
+					$adodb_driver = 'mssqlnative';
+				}			
+			}	
 		}
+		$this->db = NewADOConnection($adodb_driver);
 		$this->db->SetFetchMode($fetch_mode);
 	}
 
@@ -188,25 +206,26 @@ class database
 	}
 
 
+	// TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for PHP on WINDOWS version 5.3 and higher
 	function fetch_array( &$p_result ) 
 	{
 		if ( $p_result->EOF ) {
 			return false;
 		}		
 		
-		// 20101212 - BUGID 4093: MSSQL - Problems on fetch_array()
 		// mysql obeys FETCH_MODE_BOTH, hence ->fields works, other drivers do not support this
-		// 20090713 - pmo - add oci8po
 		switch ($this->db->databaseType) 
 		{
 			case "mysql":
 			case "oci8po":
 			case "mssql":
+			case "mssqlnative":
 				$t_array = $p_result->fields;
 				break;
 				
 			default:
 				$t_array = $p_result->GetRowAssoc(false);
+				break;
 		}
 		
 		$p_result->MoveNext();
@@ -767,20 +786,20 @@ class database
 	}
 
 	/** 
-	 * 
+	 *	TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for PHP on WINDOWS version 5.3 and higher
 	 **/
 	function build_sql_create_db($db_name)
 	{
-		$db_type = $this->db->databaseType;
 		$sql='';
 		
-		switch($db_type)
+		switch($this->db->databaseType)
 		{
 			case 'postgres7':
 				$sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' "; 
 				break;
 				
 			case 'mssql':
+			case 'mssqlnative':
 				$sql = 'CREATE DATABASE [' . $this->prepare_string($db_name) . '] '; 
 				break;
 				

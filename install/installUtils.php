@@ -3,27 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: installUtils.php,v $
- * @version $Revision: 1.38.6.3 $
- * @modified $Date: 2010/11/20 11:48:19 $ by $Author: franciscom $
+ * @filesource	installUtils.php
+ * @package 	TestLink
+ * @author 		Francisco Mancardi
  * 
  * Functions for installation process
  *
- * Revisions :
- *	 20101120 - franciscom - check_mysql_version() minimun version increased
- *
- *   20090120 - havlatm - some functions moved to checkConfig.php. 
- *                         fixed reader
- *   20090101 - franciscom - check_php_version() - minimun version 5.2.0.
- *                           this is version need to use ext-js tree due to
- *                           need of json_* functions.
- *                           
- *   20080914 - franciscom - check_php_resource_settings()
- *   20080219 - franciscom - improvements on getDirSqlFiles
- *   20080102 - franciscom - fix bug with postgres on check_db_loaded_extension()
- *   20071021 - franciscom - getDirFiles() -> getDirSqlFiles()
- *   20070302 - franciscom - changed PHP minimun required versions
- *
+ * internal revisions
+ * @since 1.9.4
+ * 20120129 - franciscom - TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for 
+ *										PHP on WINDOWS version 5.3 and higher
  * ----------------------------------------------------------------------------------- */
 
 
@@ -31,14 +20,6 @@
  * @author fman
  * @author Code extracted from several places
  */
-//
-// rev:
-//     20080219 - franciscom - after having problems with some directories
-//                             added directory to file before using is_dir.
-//                             Hint found on PHP Manual notes.
-//
-//     20071021 - franciscom - get only files with .sql extension
-//     20070131 - franciscom - now returns an array
 function getDirSqlFiles($dirPath, $add_dirpath=0)
 {
 $aFileSets=array(); 
@@ -110,10 +91,6 @@ function getTableList($db)
   returns: map or null
   
   rev :
-       20071104 - franciscom
-       added code for mssql
-       added trim() to avoid problems with mssql,
-       while creating values for return map.
 
 */
 function getUserList(&$db,$db_type)
@@ -130,6 +107,7 @@ function getUserList(&$db,$db_type)
       break;
    
       case 'mssql':
+	  case 'mssqlnative':
       // info about running store procedures, get form adodb manuals
       // Important:
       // From ADODB manual - Prepare() documentation
@@ -159,13 +137,19 @@ function getUserList(&$db,$db_type)
       // If anyone else has problems running multiple stored procedures on the same connection, 
       // I hope this helps them out.
       //
-      // franciscom - 20071104
       // Without this was not possible to call other functions that use store procedures,
       // because I've got:
       // a) wrong results
       // b) mssql_init() errors
       //
-      mssql_free_statement($stmt[1]);
+	  if (function_exists('mssql_free_statement')) 
+	  {
+		mssql_free_statement($stmt[1]);
+	  }	  
+	  else
+	  {      
+	  	sqlsrv_free_stmt($stmt[1]);
+	  }
       break;
    
    }
@@ -533,12 +517,29 @@ return ($ret);
   returns: 
 
   rev :
-       20080102 - franciscom - fix to check postgres
+
+  TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for PHP on WINDOWS version 5.3 and higher
 */
 function check_db_loaded_extension($db_type)
 {
-    $ext2search=$db_type;  
-    $dbType2PhpExtension=array('postgres' => 'pgsql');
+	$ext2search = $db_type;  
+    $dbType2PhpExtension = array('postgres' => 'pgsql');
+	if(PHP_OS == 'WINNT')
+	{
+		// Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
+		// From PHP MANUAL - reganding mssql_* functions
+		// These functions allow you to access MS SQL Server database.
+		// This extension is not available anymore on Windows with PHP 5.3 or later.
+		// SQLSRV, an alternative driver for MS SQL is available from Microsoft:
+		// http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx. 			
+		//
+		// PHP_VERSION_ID is available as of PHP 5.2.7
+		if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300)  
+		{
+			$dbType2PhpExtension['mssql'] = 'sqlsrv';
+		}			
+	}	
+
     
     if( isset($dbType2PhpExtension[$db_type]) )
     {

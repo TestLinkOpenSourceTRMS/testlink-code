@@ -411,7 +411,7 @@ CREATE TABLE /*prefix*/req_specs (
 	(
 		id ASC
 	) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_req_specs_testproject_id ON  /*prefix*/req_specs 
 (
@@ -839,11 +839,11 @@ CREATE TABLE /*prefix*/req_specs_revisions (
   	revision INTEGER NOT NULL DEFAULT '1',
 	doc_id VARCHAR(64) NOT NULL,
 	scope text  NULL,
-	total_req int NOT NULL CONSTRAINT /*prefix*/DF_req_specs_total_req DEFAULT ((0)),
-	type char(1)  NOT NULL CONSTRAINT /*prefix*/DF_req_specs_type DEFAULT (N'n'),
+	total_req int NOT NULL CONSTRAINT /*prefix*/DF_req_specs_revisions_total_req DEFAULT ((0)),
+	type char(1)  NOT NULL CONSTRAINT /*prefix*/DF_req_specs_revisions_type DEFAULT (N'n'),
 	status int NULL DEFAULT ((1)),
 	author_id int NULL,
-	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_specs_creation_ts DEFAULT (getdate()),
+	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_specs_revisions_creation_ts DEFAULT (getdate()),
 	modifier_id int NULL,
 	modification_ts datetime NULL,
   	log_message TEXT NULL DEFAULT NULL,
@@ -852,4 +852,3 @@ CREATE TABLE /*prefix*/req_specs_revisions (
 		id ASC
 	) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
-

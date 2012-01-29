@@ -161,7 +161,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
 --  admin account 
 --  SECURITY: change password after first login
 INSERT INTO /*prefix*/users (login,password,role_id,email,first,last,locale,active,cookie_string)
-             VALUES ('admin',HashBytes('MD5','admin'), 8,'', 'Testlink', 'Administrator', 
+             VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 'Administrator', 
              		 'en_GB',1,HashBytes('MD5',CAST(RAND() AS CHAR)) + HashBytes('MD5','admin') );
 
 

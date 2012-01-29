@@ -10,6 +10,11 @@
 --            TEXTIMAGE Option can be used only tables that have fields of type:
 --            varchar(MAXSIZEALLOWED), nvarchar(MAXSIZEALLOWED), varbinary(MAXSIZEALLOWED), xml 
 -- 
+--			  Find issue with custom_fields table if two fields were char(4000)
+--			  changed to varchar(4000) everything goes OK
+--            http://www.mssqltips.com/sqlservertip/2242/row-sizes-exceeding-8060-bytes-in-sql-2005/
+-- 
+--
 -- @internal revisions
 -- 20120129 - franciscom - new table req_specs_revisions & changes to req_specs
 -- 20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server 
@@ -144,8 +149,8 @@ CREATE TABLE /*prefix*/custom_fields (
 	name char(64)  NOT NULL default '',
 	label char(64)  NOT NULL default '',
 	type smallint NOT NULL default '',
-	possible_values char(4000)  NOT NULL default '',
-	default_value char(4000)  NOT NULL default '',
+	possible_values varchar(4000)  NOT NULL default '',
+	default_value varchar(4000)  NOT NULL default '',
 	valid_regexp char(255)  NOT NULL default '',
 	length_min int NOT NULL default '',
 	length_max int NOT NULL default '',

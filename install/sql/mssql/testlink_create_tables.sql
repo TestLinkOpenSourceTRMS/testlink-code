@@ -11,8 +11,8 @@
 --            varchar(MAXSIZEALLOWED), nvarchar(MAXSIZEALLOWED), varbinary(MAXSIZEALLOWED), xml 
 -- 
 -- @internal revisions
+-- 20120129 - franciscom - new table req_specs_revisions & changes to req_specs
 -- 20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server 
---                          
 --                          
 --  -----------------------------------------------------------------------------------
 --
@@ -407,24 +407,16 @@ CREATE TABLE /*prefix*/req_specs (
 	id int NOT NULL,
 	testproject_id int NOT NULL,
 	doc_id VARCHAR(64) NOT NULL,
-	scope text  NULL,
-	total_req int NOT NULL CONSTRAINT /*prefix*/DF_req_specs_total_req DEFAULT ((0)),
-	type char(1)  NOT NULL CONSTRAINT /*prefix*/DF_req_specs_type DEFAULT (N'n'),
-	author_id int NULL,
-	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_specs_creation_ts DEFAULT (getdate()),
-	modifier_id int NULL,
-	modification_ts datetime NULL,
- CONSTRAINT /*prefix*/PK_req_specs PRIMARY KEY CLUSTERED 
-(
-	id ASC
-) ON [PRIMARY]
+ 	CONSTRAINT /*prefix*/PK_req_specs PRIMARY KEY CLUSTERED 
+	(
+		id ASC
+	) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_req_specs_testproject_id ON  /*prefix*/req_specs 
 (
 	testproject_id ASC
 ) ON [PRIMARY];
-
 
 CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/UIX_req_specs ON  /*prefix*/req_specs 
 (
@@ -839,3 +831,25 @@ CREATE TABLE /*prefix*/req_relations (
 		id
 	)  ON [PRIMARY]
 ) ON [PRIMARY];
+
+
+CREATE TABLE /*prefix*/req_specs_revisions (
+  	parent_id int NOT NULL,
+	id int NOT NULL,
+  	revision INTEGER NOT NULL DEFAULT '1',
+	doc_id VARCHAR(64) NOT NULL,
+	scope text  NULL,
+	total_req int NOT NULL CONSTRAINT /*prefix*/DF_req_specs_total_req DEFAULT ((0)),
+	type char(1)  NOT NULL CONSTRAINT /*prefix*/DF_req_specs_type DEFAULT (N'n'),
+	status int NULL DEFAULT ((1)),
+	author_id int NULL,
+	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_specs_creation_ts DEFAULT (getdate()),
+	modifier_id int NULL,
+	modification_ts datetime NULL,
+  	log_message TEXT NULL DEFAULT NULL,
+ 	CONSTRAINT /*prefix*/PK_req_specs_revisions PRIMARY KEY CLUSTERED 
+	(
+		id ASC
+	) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+

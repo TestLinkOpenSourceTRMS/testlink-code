@@ -144,8 +144,8 @@ CREATE TABLE /*prefix*/custom_fields (
 	name char(64)  NOT NULL default '',
 	label char(64)  NOT NULL default '',
 	type smallint NOT NULL default '',
-	possible_values char(255)  NOT NULL default '',
-	default_value char(255)  NOT NULL default '',
+	possible_values char(4000)  NOT NULL default '',
+	default_value char(4000)  NOT NULL default '',
 	valid_regexp char(255)  NOT NULL default '',
 	length_min int NOT NULL default '',
 	length_max int NOT NULL default '',
@@ -677,7 +677,7 @@ CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/IX_users_cookie_string ON  /*prefix*/
 CREATE TABLE /*prefix*/cfield_design_values (
 	field_id int NOT NULL,
 	node_id int NOT NULL CONSTRAINT /*prefix*/DF_cfield_design_values_node_id DEFAULT ((0)),
-	value varchar(255)  NOT NULL CONSTRAINT /*prefix*/DF_cfield_design_values_value DEFAULT ((0)),
+	value varchar(4000)  NOT NULL CONSTRAINT /*prefix*/DF_cfield_design_values_value DEFAULT ((0)),
  CONSTRAINT /*prefix*/PK_cfield_design_values PRIMARY KEY CLUSTERED 
 (
 	field_id ASC,
@@ -694,7 +694,7 @@ CREATE NONCLUSTERED INDEX /*prefix*/IX_cfield_design_values ON  /*prefix*/cfield
 CREATE TABLE /*prefix*/cfield_testplan_design_values (
 	field_id int NOT NULL,
 	link_id int NOT NULL CONSTRAINT /*prefix*/DF_cfield_testplan_design_values_node_id DEFAULT ((0)),
-	value varchar(255)  NOT NULL CONSTRAINT /*prefix*/DF_cfield_testplan_design_values_value DEFAULT (''),
+	value varchar(4000)  NOT NULL CONSTRAINT /*prefix*/DF_cfield_testplan_design_values_value DEFAULT (''),
  CONSTRAINT /*prefix*/PK_cfield_testplan_design_values PRIMARY KEY CLUSTERED 
 (
 	field_id ASC,
@@ -723,7 +723,7 @@ CREATE TABLE /*prefix*/cfield_execution_values (
 	execution_id int NOT NULL CONSTRAINT /*prefix*/DF_cfield_execution_values_execution_id DEFAULT ((0)),
 	testplan_id int NOT NULL CONSTRAINT /*prefix*/DF_cfield_execution_values_testplan_id DEFAULT ((0)),
 	tcversion_id int NOT NULL CONSTRAINT /*prefix*/DF_cfield_execution_values_tcversion_id DEFAULT ((0)),
-	value varchar(255)  NOT NULL,
+	value varchar(4000)  NOT NULL,
  CONSTRAINT /*prefix*/PK_cfield_execution_values PRIMARY KEY CLUSTERED 
 (
 	field_id ASC,

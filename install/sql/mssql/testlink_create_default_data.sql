@@ -26,6 +26,7 @@ INSERT INTO /*prefix*/node_types (id,description) VALUES (7,'requirement');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (8,'requirement_version');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (9,'testcase_step');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (10,'requirement_revision');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (11,'requirement_spec_revision');
 SET IDENTITY_INSERT /*prefix*/node_types OFF
 
 --  Roles -
@@ -160,8 +161,8 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
 --  admin account 
 --  SECURITY: change password after first login
 INSERT INTO /*prefix*/users (login,password,role_id,email,first,last,locale,active,cookie_string)
-             VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 'Administrator', 
-             		 'en_GB',1,'21232f297a57a5a743894a0e4a801fc321232f297a57a5a743894a0e4a801fc3');
+             VALUES ('admin',HashBytes('MD5','admin'), 8,'', 'Testlink', 'Administrator', 
+             		 'en_GB',1,HashBytes('MD5',CAST(RAND() AS CHAR)) + HashBytes('MD5','admin') );
 
 
 

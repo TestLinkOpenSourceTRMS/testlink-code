@@ -1,7 +1,7 @@
 <?php
 /*
 
-  version V5.06 16 Oct 2008  (c) 2000-2009 John Lim. All rights reserved.
+  version V5.15 19 Jan 2012 (c) 2000-2012 John Lim. All rights reserved.
 
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
@@ -65,10 +65,22 @@ class ADODB_oci8 extends ADOConnection {
 	var $_initdate = true; // init date to YYYY-MM-DD
 	var $metaTablesSQL = "select table_name,table_type from cat where table_type in ('TABLE','VIEW') and table_name not like 'BIN\$%'"; // bin$ tables are recycle bin tables
 	var $metaColumnsSQL = "select cname,coltype,width, SCALE, PRECISION, NULLS, DEFAULTVAL from col where tname='%s' order by colno"; //changed by smondino@users.sourceforge. net
+	var $metaColumnsSQL2 = "select column_name,data_type,data_length, data_scale, data_precision, 
+    case when nullable = 'Y' then 'NULL'
+    else 'NOT NULL' end as nulls,
+    data_default from all_tab_cols 
+  where owner='%s' and table_name='%s' order by column_id"; // when there is a schema
 	var $_bindInputArray = true;
 	var $hasGenID = true;
-	var $_genIDSQL = "SELECT (%s.nextval) FROM DUAL";
-	var $_genSeqSQL = "CREATE SEQUENCE %s START WITH %s";
+	var $_genIDSQL = "SELECT (%s.nextval) FROM DUAL";	
+	var $_genSeqSQL = "
+DECLARE
+  PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+	execute immediate 'CREATE SEQUENCE %s START WITH %s';
+END;
+";
+
 	var $_dropSeqSQL = "DROP SEQUENCE %s";
 	var $hasAffectedRows = true;
 	var $random = "abs(mod(DBMS_RANDOM.RANDOM,10000001)/10000000)";
@@ -100,13 +112,19 @@ class ADODB_oci8 extends ADOConnection {
 	function MetaColumns($table, $normalize=true) 
 	{
 	global $ADODB_FETCH_MODE;
-	
+		
+		$schema = '';
+		$this->_findschema($table, $schema);
+		
 		$false = false;
 		$save = $ADODB_FETCH_MODE;
 		$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
 		if ($this->fetchMode !== false) $savem = $this->SetFetchMode(false);
-		
-		$rs = $this->Execute(sprintf($this->metaColumnsSQL,strtoupper($table)));
+
+		if ($schema)
+			$rs = $this->Execute(sprintf($this->metaColumnsSQL2, strtoupper($schema), strtoupper($table)));
+		else
+			$rs = $this->Execute(sprintf($this->metaColumnsSQL,strtoupper($table)));
 		
 		if (isset($savem)) $this->SetFetchMode($savem);
 		$ADODB_FETCH_MODE = $save;
@@ -114,7 +132,7 @@ class ADODB_oci8 extends ADOConnection {
 			return $false;
 		}
 		$retarr = array();
-		while (!$rs->EOF) { //print_r($rs->fields);
+		while (!$rs->EOF) {
 			$fld = new ADOFieldObject();
 	   		$fld->name = $rs->fields[0];
 	   		$fld->type = $rs->fields[1];
@@ -280,7 +298,11 @@ NATSOFT.DOMAIN =
 	function DBDate($d,$isfld=false)
 	{
 		if (empty($d) && $d !== 0) return 'null';
-		if ($isfld) return 'TO_DATE('.$d.",'".$this->dateformat."')";
+		
+		if ($isfld) {
+			$d = _adodb_safedate($d);
+			return 'TO_DATE('.$d.",'".$this->dateformat."')";
+		}
 		
 		if (is_string($d)) $d = ADORecordSet::UnixDate($d);
 		
@@ -315,14 +337,14 @@ NATSOFT.DOMAIN =
 		if (empty($ts) && $ts !== 0) return 'null';
 		if ($isfld) return 'TO_DATE(substr('.$ts.",1,19),'RRRR-MM-DD, HH24:MI:SS')";
 		if (is_string($ts)) $ts = ADORecordSet::UnixTimeStamp($ts);
-		
+	
 		if (is_object($ts)) $tss = $ts->format("'Y-m-d H:i:s'");
-		else $tss = adodb_date("'Y-m-d H:i:s'",$ts);
+		else $tss = date("'Y-m-d H:i:s'",$ts);
 		
 		return 'TO_DATE('.$tss.",'RRRR-MM-DD, HH24:MI:SS')";
 	}
 	
-	function RowLock($tables,$where,$col='1 as ignore') 
+	function RowLock($tables,$where,$col='1 as adodbignore') 
 	{
 		if ($this->autoCommit) $this->BeginTrans();
 		return $this->GetOne("select $col from $tables where $where for update");
@@ -587,10 +609,13 @@ NATSOFT.DOMAIN =
 	{
 		// seems that oracle only supports 1 hint comment in 8i
 		if ($this->firstrows) {
+			if ($nrows > 500 && $nrows < 1000) $hint = "FIRST_ROWS($nrows)";
+			else $hint = 'FIRST_ROWS';
+			
 			if (strpos($sql,'/*+') !== false)
-				$sql = str_replace('/*+ ','/*+FIRST_ROWS ',$sql);
+				$sql = str_replace('/*+ ',"/*+$hint ",$sql);
 			else
-				$sql = preg_replace('/^[ \t\n]*select/i','SELECT /*+FIRST_ROWS*/',$sql);
+				$sql = preg_replace('/^[ \t\n]*select/i',"SELECT /*+$hint*/",$sql);
 		}
 		
 		if ($offset == -1 || ($offset < $this->selectOffsetAlg1 && 0 < $nrows && $nrows < 1000)) {
@@ -777,11 +802,14 @@ NATSOFT.DOMAIN =
 		if ($inputarr) {
 			#if (!is_array($inputarr)) $inputarr = array($inputarr);
 			
-			$element0 = reset($inputarr);
+			$element0 = reset($inputarr); 
+			$array2d =  $this->bulkBind && is_array($element0) && !is_object(reset($element0));
 			
-			if (!$this->_bindInputArray) {
+			# see http://phplens.com/lens/lensforum/msgs.php?id=18786
+			if ($array2d || !$this->_bindInputArray) {
+			
 			# is_object check because oci8 descriptors can be passed in
-			if (is_array($element0) && !is_object(reset($element0))) {
+			if ($array2d && $this->_bindInputArray) {
 				if (is_string($sql))
 					$stmt = $this->Prepare($sql);
 				else
@@ -791,6 +819,7 @@ NATSOFT.DOMAIN =
 					$ret = $this->_Execute($stmt,$arr);
 					if (!$ret) return $ret;
 				}
+				return $ret;
 			} else {
 				$sqlarr = explode(':',$sql);
 				$sql = '';
@@ -972,7 +1001,7 @@ NATSOFT.DOMAIN =
 					ADOConnection::outp("<b>Bind</b>: LOB has been written to temp");
 				}
 			} else {
-				$this->_refLOBs[$numlob]['VAR'] = $var;
+				$this->_refLOBs[$numlob]['VAR'] = &$var;
 			}
 			$rez = $tmp;
 		} else {
@@ -1398,6 +1427,7 @@ class ADORecordset_oci8 extends ADORecordSet {
 	 		$p = OCIColumnPrecision($this->_queryID, $fieldOffset);
 			$sc = OCIColumnScale($this->_queryID, $fieldOffset);
 			if ($p != 0 && $sc == 0) $fld->type = 'INT';
+			$fld->scale = $p;
 			break;
 		
 	 	case 'CLOB':

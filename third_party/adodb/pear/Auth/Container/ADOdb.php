@@ -1,24 +1,16 @@
 <?php
-//
-// +----------------------------------------------------------------------+
-// | PHP Version 4                                                        |
-// +----------------------------------------------------------------------+
-// |                                                                      |
-// +----------------------------------------------------------------------+
-// | This source file is subject to version 2.02 of the PHP license,      |
-// | that is bundled with this package in the file LICENSE, and is        |
-// | available at through the world-wide-web at                           |
-// | http://www.php.net/license/2_02.txt.                                 |
-// | If you did not receive a copy of the PHP license and are unable to   |
-// | obtain it through the world-wide-web, please send a note to          |
-// | license@php.net so we can mail you a copy immediately.               |
-// +----------------------------------------------------------------------+
-// | Authors: Martin Jansen <mj@php.net>
-// |	Richard Tango-Lowy <richtl@arscognita.com>                                  |
-// +----------------------------------------------------------------------+
-//
-// $Id: ADOdb.php,v 1.4 2009/06/10 10:31:49 franciscom Exp $
-//
+/* 
+V5.15 19 Jan 2012  (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved.
+  Released under both BSD license and Lesser GPL library license. 
+  Whenever there is any discrepancy between the two licenses, 
+  the BSD license will take precedence. See License.txt. 
+  Set tabs to 4 for best viewing.
+  
+  Latest version is available at http://adodb.sourceforge.net
+  
+	Original Authors: Martin Jansen <mj#php.net>
+	Richard Tango-Lowy <richtl#arscognita.com>                          
+*/
 
 require_once 'Auth/Container.php';
 require_once 'adodb.inc.php';
@@ -35,7 +27,7 @@ require_once 'adodb-errorpear.inc.php';
  *
  * @author   Richard Tango-Lowy <richtl@arscognita.com>
  * @package  Auth
- * @version  $Revision: 1.4 $
+ * @version  $Revision: 1.3 $
  */
 class Auth_Container_ADOdb extends Auth_Container
 {

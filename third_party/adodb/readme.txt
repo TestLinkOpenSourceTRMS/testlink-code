@@ -1,6 +1,6 @@
->> ADODB Library for PHP4
+>> ADODB Library for PHP5
 
-(c) 2000-2004 John Lim (jlim@natsoft.com.my)
+(c) 2000-2011 John Lim (jlim@natsoft.com)
 
 Released under both BSD and GNU Lesser GPL library license. 
 This means you can use it in proprietary products.

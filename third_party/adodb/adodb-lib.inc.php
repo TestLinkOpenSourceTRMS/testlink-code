@@ -1,8 +1,4 @@
 <?php
-
-
-
-
 // security - hide paths
 if (!defined('ADODB_DIR')) die();
 
@@ -10,7 +6,7 @@ global $ADODB_INCLUDED_LIB;
 $ADODB_INCLUDED_LIB = 1;
 
 /* 
- @version V5.06 16 Oct 2008  (c) 2000-2009 John Lim (jlim\@natsoft.com.my). All rights reserved.
+  @version V5.15 19 Jan 2012  (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. See License.txt. 
@@ -455,9 +451,13 @@ function _adodb_getcount(&$zthis, $sql,$inputarr=false,$secs2cache=0)
 	
 	if (preg_match('/\sLIMIT\s+[0-9]+/i',$sql,$limitarr)) $rewritesql .= $limitarr[0];
 		
-	$rstest = $zthis->Execute($rewritesql,$inputarr);
-	if (!$rstest) $rstest = $zthis->Execute($sql,$inputarr);
-	
+	if ($secs2cache) {
+		$rstest = $zthis->CacheExecute($secs2cache,$rewritesql,$inputarr);
+		if (!$rstest) $rstest = $zthis->CacheExecute($secs2cache,$sql,$inputarr);
+	} else {
+		$rstest = $zthis->Execute($rewritesql,$inputarr);
+		if (!$rstest) $rstest = $zthis->Execute($sql,$inputarr);
+	}
 	if ($rstest) {
 	  		$qryRecs = $rstest->RecordCount();
 		if ($qryRecs == -1) { 
@@ -643,9 +643,17 @@ function _adodb_getupdatesql(&$zthis,&$rs, $arrFields,$forceUpdate=false,$magicq
 						$type = 'C';
 					}
 					
-					if ((strpos($upperfname,' ') !== false) || ($ADODB_QUOTE_FIELDNAMES))
-						$fnameq = $zthis->nameQuote.$upperfname.$zthis->nameQuote;
-					else
+					if ((strpos($upperfname,' ') !== false) || ($ADODB_QUOTE_FIELDNAMES)) {
+						switch (ADODB_QUOTE_FIELDNAMES) {
+						case 'LOWER':
+							$fnameq = $zthis->nameQuote.strtolower($field->name).$zthis->nameQuote;break;
+						case 'NATIVE':
+							$fnameq = $zthis->nameQuote.$field->name.$zthis->nameQuote;break;
+						case 'UPPER':
+						default:
+							$fnameq = $zthis->nameQuote.$upperfname.$zthis->nameQuote;break;
+						}
+					} else
 						$fnameq = $upperfname;
 					
 					
@@ -807,9 +815,17 @@ static $cacheCols;
 		$upperfname = strtoupper($field->name);
 		if (adodb_key_exists($upperfname,$arrFields,$force)) {
 			$bad = false;
-			if ((strpos($upperfname,' ') !== false) || ($ADODB_QUOTE_FIELDNAMES))
-				$fnameq = $zthis->nameQuote.$upperfname.$zthis->nameQuote;
-			else
+			if ((strpos($upperfname,' ') !== false) || ($ADODB_QUOTE_FIELDNAMES)) {
+				switch (ADODB_QUOTE_FIELDNAMES) {
+				case 'LOWER':
+					$fnameq = $zthis->nameQuote.strtolower($field->name).$zthis->nameQuote;break;
+				case 'NATIVE':
+					$fnameq = $zthis->nameQuote.$field->name.$zthis->nameQuote;break;
+				case 'UPPER':
+				default:
+					$fnameq = $zthis->nameQuote.$upperfname.$zthis->nameQuote;break;
+				}
+			} else
 				$fnameq = $upperfname;
 			
 			$type = $recordSet->MetaType($field->type);

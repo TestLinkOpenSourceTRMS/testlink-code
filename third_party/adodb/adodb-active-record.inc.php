@@ -1,7 +1,7 @@
 <?php
 /*
 
-@version V5.10 10 Nov 2009   (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserved.
+@version V5.15 19 Jan 2012   (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved.
   Latest version is available at http://adodb.sourceforge.net
  
   Released under both BSD license and Lesser GPL library license. 
@@ -87,6 +87,8 @@ class ADODB_Active_Record {
 
 	var $foreignName; // CFR: class name when in a relationship
 
+	var $lockMode = ' for update '; // you might want to change to 
+	
 	static function UseDefaultValues($bool=null)
 	{
 	global $ADODB_ACTIVE_DEFVALS;
@@ -345,8 +347,8 @@ class ADODB_Active_Record {
 		$tableat = $this->_tableat;
 		if (!$forceUpdate && !empty($tables[$tableat])) {
 
-			$tobj = $tables[$tableat];
-			foreach($tobj->flds as $name => $fld) {
+			$acttab = $tables[$tableat];
+			foreach($acttab->flds as $name => $fld) {
 			if ($ADODB_ACTIVE_DEFVALS && isset($fld->default_value)) 
 				$this->$name = $fld->default_value;
 			else
@@ -364,6 +366,14 @@ class ADODB_Active_Record {
 			if ($acttab->_created + $ADODB_ACTIVE_CACHESECS - (abs(rand()) % 16) > time()) { 
 				// abs(rand()) randomizes deletion, reducing contention to delete/refresh file
 				// ideally, you should cache at least 32 secs
+				
+				foreach($acttab->flds as $name => $fld) {
+					if ($ADODB_ACTIVE_DEFVALS && isset($fld->default_value)) 
+						$this->$name = $fld->default_value;
+					else
+						$this->$name = null;
+				}
+	
 				$activedb->tables[$table] = $acttab;
 				
 				//if ($db->debug) ADOConnection::outp("Reading cached active record file: $fname");
@@ -621,17 +631,19 @@ class ADODB_Active_Record {
 	function doquote(&$db, $val,$t)
 	{
 		switch($t) {
-		case 'D':
+		case 'L':
+			if (strpos($db->databaseType,'postgres') !== false) return $db->qstr($val);
+		case 'D':	
 		case 'T':
 			if (empty($val)) return 'null';
 		
-		case 'B':
+		case 'B':	
 		case 'N':
 		case 'C':
 		case 'X':
 			if (is_null($val)) return 'null';
 			
-			if (strlen($val)>1 && 
+			if (strlen($val)>0 && 
 				(strncmp($val,"'",1) != 0 || substr($val,strlen($val)-1,1) != "'")) { 
 				return $db->qstr($val);
 				break;
@@ -667,7 +679,7 @@ class ADODB_Active_Record {
 	
 	//------------------------------------------------------------ Public functions below
 	
-	function Load($where=null,$bindarr=false)
+	function Load($where=null,$bindarr=false, $lock = false)
 	{
 	global $ADODB_FETCH_MODE;
 	
@@ -679,16 +691,23 @@ class ADODB_Active_Record {
 		if ($db->fetchMode !== false) $savem = $db->SetFetchMode(false);
 		
 		$qry = "select * from ".$this->_table;
-
+		
 		if($where) {
 			$qry .= ' WHERE '.$where;
 		}
+		if ($locked) $qry .= $this->lockMode;
+		
 		$row = $db->GetRow($qry,$bindarr);
 		
 		if (isset($savem)) $db->SetFetchMode($savem);
 		$ADODB_FETCH_MODE = $save;
 		
 		return $this->Set($row);
+	}
+	
+	function LoadLocked($where=null, $bindarr=false)
+	{
+		$this->Load($where,$bindarr,true);
 	}
 	
 	# useful for multiple record inserts
@@ -889,10 +908,11 @@ class ADODB_Active_Record {
 					}
 				}
 			}
+
+			if (isset($this->_original[$i]) && strcmp($val,$this->_original[$i]) == 0) continue;
 			
-			if (isset($this->_original[$i]) && $val == $this->_original[$i]) {
-				continue;
-			}			
+			if (is_null($this->_original[$i]) && is_null($val)) continue;
+			
 			$valarr[] = $val;
 			$pairs[] = $this->_QName($name,$db).'='.$db->Param($cnt);
 			$cnt += 1;

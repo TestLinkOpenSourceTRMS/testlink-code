@@ -1,6 +1,6 @@
 <?php
 /* 
-V5.10 10 Nov 2009   (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserved.
+V5.15 19 Jan 2012  (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. 
@@ -156,6 +156,7 @@ class ADODB_mssqlnative extends ADOConnection {
 		} else 
 			$savem = $this->SetFetchMode(ADODB_FETCH_NUM);
 		$arrServerInfo = sqlsrv_server_info($this->_connectionID);
+		$ADODB_FETCH_MODE = $savem;
 		$arr['description'] = $arrServerInfo['SQLServerName'].' connected to '.$arrServerInfo['CurrentDatabase'];
 		$arr['version'] = $arrServerInfo['SQLServerVersion'];//ADOConnection::_findvers($arr['description']);
 		return $arr;
@@ -330,8 +331,9 @@ class ADODB_mssqlnative extends ADOConnection {
 		
 		See http://www.swynk.com/friends/achigrik/SQL70Locks.asp
 	*/
-	function RowLock($tables,$where,$col='top 1 null as ignore') 
+	function RowLock($tables,$where,$col='1 as adodbignore') 
 	{
+		if ($col == '1 as adodbignore') $col = 'top 1 null as ignore';
 		if (!$this->transCnt) $this->BeginTrans();
 		return $this->GetOne("select $col from $tables with (ROWLOCK,HOLDLOCK) where $where");
 	}
@@ -460,15 +462,7 @@ class ADODB_mssqlnative extends ADOConnection {
 		} else {
 			$rez = sqlsrv_query($this->_connectionID,$sql);
 		}
-        if ($this->debug) error_log("<hr>running query: ".var_export($sql,true)."<hr>input array: ".var_export($inputarr,true)."<hr>result: ".var_export($rez,true));//"<hr>connection: ".serialize($this->_connectionID)
-        //fix for returning true on anything besides select statements
-        if (is_array($sql)) $sql = $sql[1];
-        $sql = ltrim($sql);
-        if(stripos($sql, 'SELECT') !== 0 && $rez !== false) {
-            if ($this->debug) error_log(" isn't a select query, returning boolean true");
-            return true;
-        }
-        //end fix
+        if ($this->debug) error_log("<hr>running query: ".var_export($sql,true)."<hr>input array: ".var_export($inputarr,true)."<hr>result: ".var_export($rez,true));
         if(!$rez) $rez = false;
 		return $rez;
 	}
@@ -485,15 +479,15 @@ class ADODB_mssqlnative extends ADOConnection {
 	// mssql uses a default date like Dec 30 2000 12:00AM
 	static function UnixDate($v)
 	{
-		return ADORecordSet_array_mssql::UnixDate($v);
+		return ADORecordSet_array_mssqlnative::UnixDate($v);
 	}
 	
 	static function UnixTimeStamp($v)
 	{
-		return ADORecordSet_array_mssql::UnixTimeStamp($v);
+		return ADORecordSet_array_mssqlnative::UnixTimeStamp($v);
 	}	
 
-	function &MetaIndexes($table,$primary=false)
+	function &MetaIndexes($table,$primary=false, $owner = false)
 	{
 		$table = $this->qstr($table);
 
@@ -591,7 +585,7 @@ class ADODB_mssqlnative extends ADOConnection {
 
 	// "Stein-Aksel Basma" <basma@accelero.no>
 	// tested with MSSQL 2000
-	function &MetaPrimaryKeys($table)
+	function MetaPrimaryKeys($table, $owner=false)
 	{
     	global $ADODB_FETCH_MODE;
 	
@@ -701,21 +695,28 @@ class ADORecordset_mssqlnative extends ADORecordSet {
 		fields in a certain query result. If the field offset isn't specified, the next field that wasn't yet retrieved by
 		fetchField() is retrieved.	*/
 
-	function &FetchField($fieldOffset = -1) 
+	function FetchField($fieldOffset = -1) 
 	{
         if ($this->connection->debug) error_log("<hr>fetchfield: $fieldOffset, fetch array: <pre>".print_r($this->fields,true)."</pre> backtrace: ".adodb_backtrace(false));
 		if ($fieldOffset != -1) $this->fieldOffset = $fieldOffset;
-		$arrKeys = array_keys($this->fields);
+		/*$arrKeys = array_keys($this->fields);
 		if(array_key_exists($this->fieldOffset,$arrKeys) && !array_key_exists($arrKeys[$this->fieldOffset],$this->fields)) {
 			$f = false;
 		} else {
-			$f = $this->fields[ $arrKeys[$this->fieldOffset] ];
+			$f = new ADOFetchObj();
+			$f->name = $arrKeys[$this->fieldOffset];
 			if($fieldOffset == -1) $this->fieldOffset++;
 		}
 
         if (empty($f)) {
             $f = false;//PHP Notice: Only variable references should be returned by reference
-        }
+        }*/
+		$fieldMeta = @sqlsrv_field_metadata($this->_queryID);
+		$f = new ADOFieldObject();
+		$f->name = $fieldMeta[$this->fieldOffset]['Name'];
+		$f->type = $fieldMeta[$this->fieldOffset]['Type'];
+		$f->max_length = $fieldMeta[$this->fieldOffset]['Size'];
+
 		return $f;
 	}
 	
@@ -747,7 +748,7 @@ class ADORecordset_mssqlnative extends ADORecordSet {
 	function _fetch($ignore_fields=false) 
 	{
         if ($this->connection->debug) error_log("_fetch()");
-		if ($this->fetchMode & ADODB_FETCH_ASSOC) {
+		if ($this->fetchMode & ADODB_FETCH_BOTH) {
 			if ($this->fetchMode & ADODB_FETCH_NUM) {
                 if ($this->connection->debug) error_log("fetch mode: both");
 				$this->fields = @sqlsrv_fetch_array($this->_queryID,SQLSRV_FETCH_BOTH);
@@ -756,13 +757,15 @@ class ADORecordset_mssqlnative extends ADORecordSet {
 				$this->fields = @sqlsrv_fetch_array($this->_queryID,SQLSRV_FETCH_ASSOC);
 			}
 			
-			if (ADODB_ASSOC_CASE == 0) {
-				foreach($this->fields as $k=>$v) {
-					$this->fields[strtolower($k)] = $v;
-				}
-			} else if (ADODB_ASSOC_CASE == 1) {
-				foreach($this->fields as $k=>$v) {
-					$this->fields[strtoupper($k)] = $v;
+			if (is_array($this->fields)) {
+				if (ADODB_ASSOC_CASE == 0) {
+					foreach($this->fields as $k=>$v) {
+						$this->fields[strtolower($k)] = $v;
+					}
+				} else if (ADODB_ASSOC_CASE == 1) {
+					foreach($this->fields as $k=>$v) {
+						$this->fields[strtoupper($k)] = $v;
+					}
 				}
 			}
 		} else {
@@ -850,7 +853,7 @@ class ADORecordSet_array_mssqlnative extends ADORecordSet_array {
 		$themth = $ADODB_mssql_mths[$themth];
 		if ($themth <= 0) return false;
 		// h-m-s-MM-DD-YY
-		return  mktime(0,0,0,$themth,$theday,$rr[3]);
+		return  adodb_mktime(0,0,0,$themth,$theday,$rr[3]);
 	}
 	
 	static function UnixTimeStamp($v)
@@ -891,7 +894,7 @@ class ADORecordSet_array_mssqlnative extends ADORecordSet_array {
 			break;
 		}
 		// h-m-s-MM-DD-YY
-		return  mktime($rr[4],$rr[5],0,$themth,$theday,$rr[3]);
+		return  adodb_mktime($rr[4],$rr[5],0,$themth,$theday,$rr[3]);
 	}
 }
 

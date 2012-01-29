@@ -1,6 +1,6 @@
 <?php
 /* 
-V4.80 8 Mar 2006  (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserved.
+V4.80 8 Mar 2006  (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. 
@@ -146,11 +146,12 @@ FROM `nuke_stories` `t1`, `nuke_authors` `t2`, `nuke_stories_cat` `t3`, `nuke_to
 	echo "Date=",$db->UserDate('2002-04-07'),'<br>';
 	print "<i>date1</i> (1969-02-20) = ".$db->DBDate('1969-2-20');
 	print "<br><i>date1</i> (1999-02-20) = ".$db->DBDate('1999-2-20');
-	print "<br><i>date1.1</i> 1999 = ".$db->DBDate("'1999'");
+	print "<br><i>date1.1</i> 1999 injection attack= ".$db->DBDate("'1999', ' injection attack '");
 	print "<br><i>date2</i> (1970-1-2) = ".$db->DBDate(24*3600)."<p>";
 	print "<i>ts1</i> (1999-02-20 13:40:50) = ".$db->DBTimeStamp('1999-2-20 1:40:50 pm');
 	print "<br><i>ts1.1</i> (1999-02-20 13:40:00) = ".$db->DBTimeStamp('1999-2-20 13:40');
 	print "<br><i>ts2</i> (1999-02-20) = ".$db->DBTimeStamp('1999-2-20');
+	print "<br><i>ts2</i> (1999-02-20) = ".$db->DBTimeStamp("'1999-2-20', 'injection attack'");
 	print "<br><i>ts3</i> (1970-1-2 +/- timezone) = ".$db->DBTimeStamp(24*3600);
 	print "<br> Fractional TS (1999-2-20 13:40:50.91): ".$db->DBTimeStamp($db->UnixTimeStamp('1999-2-20 13:40:50.91+1'));
 	 $dd = $db->UnixDate('1999-02-20');
@@ -637,11 +638,18 @@ END Adodb;
 	);
 	//$db->debug=1;
 	print "<p>Testing Bulk Insert of 3 rows</p>";
+	
+//	$db->debug=1;
+//	$db->Execute('select * from table where val=? AND value=?', array('val'=>'http ://www.whatever.com/test?=21', 'value'=>'blabl'));
+
 
 	$sql = "insert into ADOXYZ (id,firstname,lastname) values (".$db->Param('0').",".$db->Param('1').",".$db->Param('2').")";
+	$db->bulkBind = true;
 	$db->StartTrans();
+	$db->debug=99;
 	$db->Execute($sql,$arr);
 	$db->CompleteTrans();
+	$db->bulkBind = false;
 	$rs = $db->Execute('select * from ADOXYZ order by id');
 	if (!$rs || $rs->RecordCount() != 3) Err("Bad bulk insert");
 	
@@ -1743,6 +1751,6 @@ echo "<br>vers=",ADOConnection::Version();
 
 
 ?>
-<p><i>ADODB Database Library  (c) 2000-2009 John Lim. All rights reserved. Released under BSD and LGPL, PHP <?php echo PHP_VERSION ?>.</i></p>
+<p><i>ADODB Database Library  (c) 2000-2012 John Lim. All rights reserved. Released under BSD and LGPL, PHP <?php echo PHP_VERSION ?>.</i></p>
 </body>
 </html>

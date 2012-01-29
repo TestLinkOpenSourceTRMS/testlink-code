@@ -1,7 +1,7 @@
 <?php
 
 /* 
-V5.10 10 Nov 2009   (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserved.
+V5.15 19 Jan 2012  (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. See License.txt. 
@@ -10,11 +10,6 @@ V5.10 10 Nov 2009   (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserv
   Latest version is available at http://adodb.sourceforge.net
   
   Library for basic performance monitoring and tuning 
-
-
-  20110116 - franciscom - due to E_STRICT
-  function Tables($orderby='1')
-
   
 */
 
@@ -104,7 +99,7 @@ class perf_mssql extends adodb_perf{
 		$rs = $this->conn->Execute($sql);
 		//adodb_printr($rs);
 		$ADODB_FETCH_MODE = $save;
-		if ($rs) {
+		if ($rs && !$rs->EOF) {
 			$rs->MoveNext();
 			$s .= '<table bgcolor=white border=0 cellpadding="1" callspacing=0><tr><td nowrap align=center> Rows<td nowrap align=center> IO<td nowrap align=center> CPU<td align=left> &nbsp; &nbsp; Plan</tr>';
 			while (!$rs->EOF) {
@@ -122,10 +117,7 @@ class perf_mssql extends adodb_perf{
 		return $s;
 	}
 	
-	// function Tables()
-	// 20110116 - franciscom - due to E_STRICT
-	function Tables($orderby='1')
-
+	function Tables()
 	{
 	global $ADODB_FETCH_MODE;
 	

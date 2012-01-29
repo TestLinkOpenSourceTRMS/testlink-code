@@ -21,7 +21,7 @@ font-size: 8pt;
 <body style="background-color: rgb(255, 255, 255);">
 <h1>ADODB Session 2 Management Manual</h1>
 <p>
-V5.06 16 Oct 2008  (c) 2000-2009 John Lim (jlim#natsoft.com)
+V5.11 5 May 2010  (c) 2000-2010 John Lim (jlim#natsoft.com)
 </p>
 <p> <font size="1">This software is dual licensed using BSD-Style and
 LGPL. This means you can use it in compiled proprietary and commercial
@@ -44,7 +44,8 @@ session, as the user moves from page to page. </p>
 <p>To use session variables, call session_start() at the beginning of
 your web page, before your HTTP headers are sent. Then for every
 variable you want to keep alive for the duration of the session, call
-session_register($variable_name). By default, the session handler will
+variable you want to keep alive for the duration of the session, use $_SESSION['variablename']. 
+ By default, the session handler will
 keep track of the session by using a cookie. You can save objects or
 arrays in session variables also.
 </p>
@@ -131,9 +132,15 @@ including adodb-cryptsession2.php instead of adodb-session2.php. </li>
  <font color="#004040">
 include_once("adodb/session/adodb-session2.php");
 $driver = 'mysql'; $host = 'localhost'; $user = 'auser'; $pwd = 'secret'; $database = 'sessiondb';
-ADOdb_Session::config($driver, $host, $user, $password, $database,$options=false);<b><br>ADOdb_session::Persist($connectMode=false);</b>
-session_start();<br> </font>
-</pre>
+ADOdb_Session::config($driver, $host, $user, $password, $database, $options=false);<b><br>ADOdb_session::Persist($connectMode=false);</b>
+session_start();<br> 
+
+# or, using DSN support so you can set other options such as port (since 5.11)
+include_once("adodb/session/adodb-session2.php");
+$dsn = 'mysql://root:pwd@localhost/mydb?persist=1&port=5654';
+ADOdb_Session::config($dsn, '', '', '');
+session_start();
+</font></pre>
 <p> The parameter to the Persist( ) method sets the connection mode. You can
   pass the following:</p>
 <table width="50%" border="1">

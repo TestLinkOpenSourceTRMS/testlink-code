@@ -1,6 +1,6 @@
 <?php
 /*
-V5.10 10 Nov 2009   (c) 2000-2009 John Lim. All rights reserved.
+V5.15 19 Jan 2012  (c) 2000-2012 John Lim. All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence.
@@ -47,6 +47,11 @@ class ADODB_oci8po extends ADODB_oci8 {
 			$sql .=  ':'.($i-1) . $sqlarr[$i];
 		} 
 		return ADODB_oci8::Prepare($sql,$cursor);
+	}
+	
+	function Execute($sql,$inputarr=false) 
+	{
+		return ADOConnection::Execute($sql,$inputarr);
 	}
 	
 	// emulate handling of parameters ? ?, replacing with :bind0 :bind1

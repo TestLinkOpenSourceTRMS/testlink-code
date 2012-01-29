@@ -73,6 +73,9 @@ These should be posted to the ADOdb forums at
 
 FUNCTION DESCRIPTIONS
 
+** FUNCTION adodb_time()
+
+Returns the current time measured in the number of seconds since the Unix Epoch (January 1 1970 00:00:00 GMT) as an unsigned integer.
 
 ** FUNCTION adodb_getdate($date=false)
 
@@ -241,6 +244,14 @@ b. Implement daylight savings, which looks awfully complicated, see
 
 
 CHANGELOG
+- 16 Jan 2011 0.36
+Added adodb_time() which returns current time. If > 2038, will return as float
+
+- 7 Feb 2011 0.35
+Changed adodb_date to be symmetric with adodb_mktime. See $jan1_71. fix for bc. 
+
+- 13 July 2010 0.34
+Changed adodb_get_gm_diff to use DateTimeZone().
 
 - 11 Feb 2008 0.33
 * Bug in 0.32 fix for hour handling. Fixed.
@@ -386,7 +397,7 @@ First implementation.
 /*
 	Version Number
 */
-define('ADODB_DATE_VERSION',0.33);
+define('ADODB_DATE_VERSION',0.35);
 
 $ADODB_DATETIME_CLASS = (PHP_VERSION >= 5.2);
 
@@ -601,6 +612,12 @@ function adodb_date_test()
 	else print "<p><b>Failed</b> :-(</p>";
 }
 
+function adodb_time()
+{
+	$d = new DateTime();
+	return $d->format('U');
+}
+
 /**
 	Returns day of week, 0 = Sunday,... 6=Saturday. 
 	Algorithm from PEAR::Date_Calc
@@ -729,9 +746,17 @@ global $ADODB_DATETIME_CLASS;
 	} else {
 		if (isset($TZ)) return $TZ;
 		$y = date('Y');
-		$TZ = mktime(0,0,0,12,2,$y,0) - gmmktime(0,0,0,12,2,$y,0);
+		/*
+		if (function_exists('date_default_timezone_get') && function_exists('timezone_offset_get')) {
+			$tzonename = date_default_timezone_get();
+			if ($tzonename) {
+				$tobj = new DateTimeZone($tzonename);
+				$TZ = -timezone_offset_get($tobj,new DateTime("now",$tzo));
+			}
+		} 
+		*/
+		if (empty($TZ)) $TZ = mktime(0,0,0,12,2,$y) - gmmktime(0,0,0,12,2,$y);
 	}
-	
 	return $TZ;
 }
 
@@ -1040,11 +1065,19 @@ function adodb_date($fmt,$d=false,$is_gmt=false)
 {
 static $daylight;
 global $ADODB_DATETIME_CLASS;
+static $jan1_1971;
 
+
+	if (!isset($daylight)) {
+		$daylight = function_exists('adodb_daylight_sv');
+		if (empty($jan1_1971)) $jan1_1971 = mktime(0,0,0,1,1,1971); // we only use date() when > 1970 as adodb_mktime() only uses mktime() when > 1970
+	}
+	
 	if ($d === false) return ($is_gmt)? @gmdate($fmt): @date($fmt);
 	if (!defined('ADODB_TEST_DATES')) {
 		if ((abs($d) <= 0x7FFFFFFF)) { // check if number in 32-bit signed range
-			if (!defined('ADODB_NO_NEGATIVE_TS') || $d >= 0) // if windows, must be +ve integer
+		
+			if (!defined('ADODB_NO_NEGATIVE_TS') || $d >= $jan1_1971) // if windows, must be +ve integer
 				return ($is_gmt)? @gmdate($fmt,$d): @date($fmt,$d);
 
 		}
@@ -1053,7 +1086,6 @@ global $ADODB_DATETIME_CLASS;
 	
 	$arr = _adodb_getdate($d,true,$is_gmt);
 	
-	if (!isset($daylight)) $daylight = function_exists('adodb_daylight_sv');
 	if ($daylight) adodb_daylight_sv($arr, $is_gmt);
 	
 	$year = $arr['year'];
@@ -1074,6 +1106,9 @@ global $ADODB_DATETIME_CLASS;
 	*/
 	for ($i=0; $i < $max; $i++) {
 		switch($fmt[$i]) {
+		case 'e':
+			$dates .= date('e');
+			break;
 		case 'T': 
 			if ($ADODB_DATETIME_CLASS) {
 				$dt = new DateTime();

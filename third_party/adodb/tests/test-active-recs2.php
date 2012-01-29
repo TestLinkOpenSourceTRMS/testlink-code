@@ -9,6 +9,8 @@ include('../adodb-active-record.inc.php');
 $ADODB_ACTIVE_CACHESECS = 36;
 
 $DBMS = @$_GET['db'];
+
+$DBMS = 'mysql';
 if ($DBMS == 'mysql') {
 	$db = NewADOConnection('mysql://root@localhost/northwind');
 } else if ($DBMS == 'postgres') {

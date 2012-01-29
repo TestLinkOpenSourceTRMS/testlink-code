@@ -843,6 +843,7 @@ CREATE TABLE /*prefix*/req_specs_revisions (
 	id int NOT NULL,
   	revision INTEGER NOT NULL DEFAULT '1',
 	doc_id VARCHAR(64) NOT NULL,
+	name varchar(100) NULL,
 	scope text  NULL,
 	total_req int NOT NULL CONSTRAINT /*prefix*/DF_req_specs_revisions_total_req DEFAULT ((0)),
 	type char(1)  NOT NULL CONSTRAINT /*prefix*/DF_req_specs_revisions_type DEFAULT (N'n'),

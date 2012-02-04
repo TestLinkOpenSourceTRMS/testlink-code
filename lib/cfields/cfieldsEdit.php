@@ -3,21 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: cfieldsEdit.php,v $
+ * @filesource	cfieldsEdit.php
  *
- * @version $Revision: 1.19.6.1 $
- * @modified $Date: 2011/01/08 08:30:14 $ by $Author: franciscom $
+ * @internal revisions
+ * @since 1.9.4
+ * 20120204 - franciscom - TICKET 4906: Several security issues       
  *
- * rev: 20110108 - franciscom - changed default values on $emptyCF
- *		20090531 - franciscom - minor bug additional first char ' ' on name and label
- *                              while creating new custom field
- *      20090524 - franciscom - logic changes to give user a better understanding
- *                              of TL application areas where CF will be managed
- *                              request2cf() changed
- *  
- *      20090503 - franciscom - BUGID 2425
- *      20090408 - franciscom - BUGID 2352, BUGID 2359
- *      20080810 - franciscom - BUGID 1650 
  *
  */
 require_once(dirname(__FILE__) . "/../../config.inc.php");
@@ -248,9 +239,9 @@ function init_args()
 {
     $_REQUEST=strings_stripSlashes($_REQUEST);
     $args = new stdClass();
-    $args->do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action']:null;
-    $args->cfield_id = isset($_REQUEST['cfield_id']) ? $_REQUEST['cfield_id']:0;
-    $args->cf_name = isset($_REQUEST['cf_name']) ? $_REQUEST['cf_name']:null;
+    $args->do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action'] : null;
+    $args->cfield_id = isset($_REQUEST['cfield_id']) ? intval($_REQUEST['cfield_id']) : 0;
+    $args->cf_name = isset($_REQUEST['cf_name']) ? $_REQUEST['cf_name'] : null;
     return $args;
 }
 

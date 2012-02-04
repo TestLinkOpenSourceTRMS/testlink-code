@@ -3,14 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource $RCSfile: planMilestonesEdit.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2010/10/26 08:10:25 $ by $Author: mx-julian $
+ * @filesource	planMilestonesEdit.php
  * @author Francisco Mancardi
  *
- * rev:
- *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
- *  20101022 - asimon - BUGID 3716 - replaced old separated inputs for day/month/year by ext js calendar
+ * @internal revisions
+ * @since 1.9.4
+ * 20120204 - franciscom - TICKET 4906: Several security issues       
  *
  */
 require_once("../../config.inc.php");
@@ -46,7 +44,6 @@ function init_args(&$dbHandler,$dateFormat)
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 	$args = new stdClass();
 
-	// BUGID 3716
 	$args->target_date_original = isset($_REQUEST['target_date']) ? $_REQUEST['target_date'] : null;
 	$args->start_date_original = isset($_REQUEST['start_date']) ? $_REQUEST['start_date'] : null;
 	
@@ -74,19 +71,19 @@ function init_args(&$dbHandler,$dateFormat)
   	    $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : 0;     
   	}
 
-	$args->id = isset($_REQUEST['id']) ? $_REQUEST['id'] : 0;
+	$args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 	$args->name = isset($_REQUEST['milestone_name']) ? $_REQUEST['milestone_name'] : null;
 	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
 
 	$args->basehref=$_SESSION['basehref'];
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
 	
 	$args->tplan_name = '';
-	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
 	if( $args->tplan_id == 0 )
 	{
-	    $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+	    $args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
 	}
 	if( $args->tplan_id > 0 )
 	{

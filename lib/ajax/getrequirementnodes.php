@@ -19,9 +19,9 @@
 *   - Assign requirements to test cases
 *
 *	@internal revision
+*	@since 1.9.4
+* 	20120204 - franciscom - TICKET 4906: Several security issues       
 *	20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
-*	20110311 - Julian - Replaced seperator "::" with ":" for req spec text
-*	20110113 - asimon - 4168: BUGID Requirement Specifications navigator tree empty
 *        
 */
 require_once('../../config.inc.php');
@@ -29,10 +29,11 @@ require_once('common.php');
 testlinkInitPage($db);
 
 
-$root_node=isset($_REQUEST['root_node']) ? $_REQUEST['root_node']: null;
-$node=isset($_REQUEST['node']) ? $_REQUEST['node'] : $root_node;
-$filter_node=isset($_REQUEST['filter_node']) ? $_REQUEST['filter_node'] : null;
-$show_children=isset($_REQUEST['show_children']) ? $_REQUEST['show_children'] : 1;
+$root_node=isset($_REQUEST['root_node']) ? intval($_REQUEST['root_node']): null;
+$node=isset($_REQUEST['node']) ? intval($_REQUEST['node']) : $root_node;
+$filter_node=isset($_REQUEST['filter_node']) ? intval($_REQUEST['filter_node']) : null;
+
+$show_children=isset($_REQUEST['show_children']) ? intval($_REQUEST['show_children']) : 1;
 $operation=isset($_REQUEST['operation']) ? $_REQUEST['operation']: 'manage';
 
 // for debug - file_put_contents('d:\request.txt', serialize($_REQUEST));
@@ -78,26 +79,24 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
            " ('testcase','testsuite','testcase_version','testplan','requirement_spec_revision' {$filter_node_type}) " .
            " LEFT OUTER JOIN {$tables['req_specs']} RSPEC " .
            " ON RSPEC.id = NHA.id " . 
-           " WHERE NHA.parent_id = {$parent} ";
+           " WHERE NHA.parent_id = " . intval($parent);
     
     // file_put_contents('c:\getrequirementnodes.php.txt', $sql);                            
 
     if(!is_null($filter_node) && $filter_node > 0 && $parent == $root_node)
     {
-       $sql .= " AND NHA.id = {$filter_node} ";  
+       $sql .= " AND NHA.id = " . intval($filter_node);  
     }
     $sql .= " ORDER BY NHA.node_order ";    
 
     $nodeSet = $dbHandler->get_recordset($sql);
 	if(!is_null($nodeSet)) 
 	{
-		
-        // BUGID 2309
         $sql =  " SELECT DISTINCT req_doc_id AS doc_id,NHA.id" .
                 " FROM {$tables['requirements']} REQ JOIN {$tables['nodes_hierarchy']} NHA ON NHA.id = REQ.id  " .
                 " JOIN {$tables['nodes_hierarchy']}  NHB ON NHA.parent_id = NHB.id " . 
                 " JOIN {$tables['node_types']} NT ON NT.id = NHA.node_type_id " .
-                " WHERE NHB.id = {$parent} AND NT.description = 'requirement'";
+                " WHERE NHB.id = " . intval($parent) . " AND NT.description = 'requirement'";
         $requirements = $dbHandler->fetchRowsIntoMap($sql,'id');
 
 	    $treeMgr = new tree($dbHandler);
@@ -129,7 +128,6 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	                break;
 
                 case 'requirement_spec':
-                	// BUGID 0003003: EXTJS does not count # req's
                     $req_list = array();
 	                $treeMgr->getAllItemsID($row['id'],$req_list,$peerTypes);
 
@@ -141,9 +139,6 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	        			$item_qty = count($req_list);
 	        			$path['text'] .= " ({$item_qty})";   
 	        		}
-					
-					
-	        		
 	                break;
 
                 case 'requirement':

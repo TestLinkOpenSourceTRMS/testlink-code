@@ -9,6 +9,9 @@
  * Import ONLY requirements to a req specification. 
  * Supported: simple CSV, Doors CSV, XML, DocBook
  *
+ * @internal revisions
+ * @since 1.9.4
+ * 20120204 - franciscom - TICKET 4906: Several security issues       
  *
  */
 require_once("../../config.inc.php");
@@ -132,7 +135,7 @@ function init_args()
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'docid';
    
    
-    $args->req_spec_id = isset($request['req_spec_id']) ? $request['req_spec_id'] : null;
+    $args->req_spec_id = isset($request['req_spec_id']) ? intval($request['req_spec_id']) : null;
     $args->importType = isset($request['importType']) ? $request['importType'] : null;
     $args->emptyScope = isset($request['noEmpty']) ? $request['noEmpty'] : null;
     $args->conflictSolution = isset($request['conflicts']) ? $request['conflicts'] : null;

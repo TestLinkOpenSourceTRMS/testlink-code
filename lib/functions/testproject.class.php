@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120205 - franciscom - new methods _get_subtree_rec(), getTestSpec()
  * 20110817 - franciscom - TICKET 4360
  * 20110817 - franciscom - added missed user_id on copy_requirements() call
  * 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
@@ -83,17 +84,8 @@ class testproject extends tlObjectWithAttachments
  *
  * @return integer test project id or 0 (if fails)
  *
- * @internal Revisions:
- *	20100213 - havlatm - support for options serialization, renamed
- *	20060709 - franciscom - return type changed
- *                         added new optional argument active
- *	20080112 - franciscom - added $tcasePrefix
- *	20090601 - havlatm - update session if required
+ * @internal revisions
  * 
- * @TODO havlatm: rollback node if create fails (DB consistency req.)
- * @TODO havlatm: $is_public parameter need review (do not agreed in team)
- * @TODO havlatm: described return parameter differs from reality
- * @TODO havlatm: parameter $options should be 
  */
 function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)
 {
@@ -568,8 +560,7 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
                      $exclude_branches=null, $additionalWhereClause='')
 {
-  
-  	$my['options']=array('recursive' => $recursive_mode);
+	$my['options']=array('recursive' => $recursive_mode);
  	$my['filters'] = array('exclude_node_types' => $this->nt2exclude,
  	                       'exclude_children_of' => $this->nt2exclude_children,
  	                       'exclude_branches' => $exclude_branches,
@@ -581,7 +572,7 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
   	}
   	
 	$subtree = $this->tree_manager->get_subtree($id,$my['filters'],$my['options']);
-	return $subtree;
+	return $subtree; 	
 }
 
 
@@ -2472,6 +2463,188 @@ private function copy_requirements($source_id,$target_id,$user_id)
 	// TICKET 4360
 	return $mappings['req'];
 }
+
+
+
+
+
+
+
+
+/**
+ * getTestSpec
+ * 
+ * get structure with Test suites and Test Cases
+ * Filters that act on test cases work on attributes that are common to all
+ * test cases versions: test case name
+ *
+ * Development Note:
+ * Due to the tree structure is not so easy to try to do as much as filter as
+ * possibile using SQL.
+ *
+ *
+ * @param int id test project ID
+ * @param mixed filters
+ * @param mixed options
+ *				recursive true/false changes output format
+ *				testcase_name filter in LIKE %string%, if will be case sensitive or not
+ *				will depend of DBMS.
+ *
+ * 
+ * @return
+ *
+ * @internal revisions
+ *
+ */
+function getTestSpec($id,$filters=null,$options=null)
+{
+
+	$items = array();
+  
+  	$my['options'] = array('recursive' => false, 'exclude_testcases' => false, 
+  						   'remove_empty_branches' => false);
+  						   
+ 	$my['filters'] = array('exclude_node_types' => $this->nt2exclude,
+ 	                       'exclude_children_of' => $this->nt2exclude_children,
+ 	                       'exclude_branches' => null,
+ 	                       'testcase_name' => null,
+ 	                       'additionalWhereClause' => null);      
+ 
+	$my['filters'] = array_merge($my['filters'], (array)$filters);
+	$my['options'] = array_merge($my['options'], (array)$options);
+ 
+  	if( $my['options']['exclude_testcases'])
+  	{
+		$my['filters']['exclude_node_types']['testcase']='exclude me';
+	}
+	
+	// transform some of our options/filters on something the 'worker' will understand
+	// when user has request filter by test case name, we do not want to display empty branches
+	if( !is_null($my['filters']['testcase_name']) || !is_null($my['filters']['testcase_id']) ||
+		$my['options']['remove_empty_branches'] )
+	{
+		$my['options']['remove_empty_nodes_of_type'] = 'testsuite';
+	}
+	
+	// new dBug($my['options']);
+	
+    $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
+	$qnum = $this->$method2call($id,$items,$my['filters'],$my['options']);
+ 	return $items;
+}
+
+
+/**
+ *
+ * 
+ * @return
+ *
+ * @internal revisions
+ *
+ */
+function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
+{
+	static $qnum;
+	static $my;
+	static $exclude_branches;
+	static $exclude_children_of;
+	static $node_types;
+	static $tcaseFilter;
+	
+	if (!$my)
+	{
+	  	$qnum=0;
+
+		$node_types = array_flip($this->tree_manager->get_available_node_types());
+    	$my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
+    					   	   'additionalWhereClause' => '', 'testcase_name' => null);
+                           
+    	$my['options'] = array('remove_empty_nodes_of_type' => null);
+
+		$my['filters'] = array_merge($my['filters'], (array)$filters);
+		$my['options'] = array_merge($my['options'], (array)$options);
+
+		$exclude_branches = $my['filters']['exclude_branches'];
+		$exclude_children_of = $my['filters']['exclude_children_of'];	
+
+
+		$tcaseFilter['name'] = !is_null($my['filters']['testcase_name']);
+		$tcaseFilter['id'] = !is_null($my['filters']['testcase_id']);
+		$tcaseFilter['enabled'] = $tcaseFilter['name'] || $tcaseFilter['id'];
+
+		if( !is_null($my['options']['remove_empty_nodes_of_type']) )
+		{
+			// this way I can manage code or description			
+			if( !is_numeric($my['options']['remove_empty_nodes_of_type']) )
+			{
+				$my['options']['remove_empty_nodes_of_type'] = 
+							  $this->tree_manager->node_descr_id[$my['options']['remove_empty_nodes_of_type']];
+			}
+		}
+	}
+
+	$sql = 	" SELECT NH.id, NH.parent_id, NH.name, NH.node_type_id, NH.node_order " .
+			" FROM {$this->tables['nodes_hierarchy']} NH " .
+			" WHERE parent_id = {$node_id} ";
+
+	if( $tcaseFilter['enabled'] )
+	{
+		$sql .= " AND (" .
+            	"      NH.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} ";
+
+		if ($tcaseFilter['name'])
+        {
+        	$sql .=	" OR (NH.node_type_id = {$this->tree_manager->node_descr_id['testcase']} " . 
+            		"     AND NH.name LIKE '%{$my['filters']['testcase_name']}%') ";
+        }
+        if ($tcaseFilter['id'])
+        {
+        	
+        	$sql .=	" OR (NH.node_type_id = {$this->tree_manager->node_descr_id['testcase']} " . 
+            		"     AND NH.id = {$my['filters']['testcase_id']}) ";
+        }
+        $sql .= " ) ";
+	}
+	
+	$sql .= " ORDER BY NH.node_order,NH.id";
+	
+	$result = $this->db->exec_query($sql);
+	while($row = $this->db->fetch_array($result))
+ 	{
+		if(!isset($exclude_branches[$row['id']]))
+		{  
+			$node = $row + array('childNodes' => null,
+                        		 'node_table' => $this->tree_manager->node_tables_by['id'][$row['node_type_id']]);
+			
+			// why we use exclude_children_of ?
+	        // 1. Sometimes we don't want the children if the parent is a testcase,
+	        //    due to the version management
+	        //
+	        if(!isset($exclude_children_of[$node_types[$row['node_type_id']]]))
+	        {
+	        	// Keep walking (Johny Walker Whisky)
+	        	$this->_get_subtree_rec($row['id'],$node,$my['filters'],$my['options']);
+	        }
+
+         
+			// Have added this logic, because when export test plan will be developed
+			// having a test spec tree where test suites that do not contribute to test plan
+			// are pruned/removed is very important, to avoid additional processing
+			//		        
+			// If node has no childNodes, we check if this kind of node without children
+			// can be removed.
+			//
+		    $doRemove = is_null($node['childNodes']) && 
+		        	    ($node['node_type_id'] == $my['options']['remove_empty_nodes_of_type']);
+		    if(!$doRemove)
+		    {
+	  				$pnode['childNodes'][] = $node;
+	  		}	
+		} // if(!isset($exclude_branches[$rowID]))
+	} //while
+	return $qnum;
+}
+
 
 } // end class
 ?>

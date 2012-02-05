@@ -3,31 +3,23 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: tcExport.php,v $
- *
- * @version $Revision: 1.14 $
- * @modified $Date: 2010/03/15 22:21:20 $ by $Author: franciscom $
+ * @filesource	tcExport.php
  *
  * Scope: test case and test suites export
  * 
- * Revisions:
+ * @internal revisions
+ * @since 1.9.4
+ * 20120205 - franciscom - TICKET 4907: Test Case / Test Suite export - suggested filename improvements
  *
- * 20100315 - franciscom - improvements on goback management
- * 20100315 - amitkhullar - Added checkboxes options for Requirements and CFields for Export.
- * 20081027 - martin - cleanup
- * 20070113 - franciscom - added logic to create message when there is nothing to export.
- *
- * 20061118 - franciscom - using different file name, depending type of exported elements.
- *
- * ----------------------------------------------------------------------------------- */
-/** @TODO martin: csv export is not available now - get it back */
-
+ * 
+ */
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
 require_once("../functions/xml.inc.php");
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
+$tcase_mgr = null;
 $tree_mgr = new tree($db);
 $args = init_args();
 
@@ -43,21 +35,28 @@ $exporting_just_one_tc = 0;
 $node_id = $args->container_id;
 $check_children = 0;
 
+//
 if($args->useRecursion)
 {
 	// Exporting situations:
 	// All test suites in test project
 	// One test suite 
+	// $dummy = array_flip($tree_mgr->get_available_node_types());
+	$node_info = $tree_mgr->get_node_hierarchy_info($node_id);
+	$gui->export_filename = $node_info['name'];
+
 	$gui->page_title=lang_get('title_tsuite_export');
 
-	$gui->export_filename = 'testsuites.xml';
+	$dummy = '.testsuite-deep.xml';
 	if($node_id == $args->tproject_id)
 	{
-		$gui->page_title=lang_get('title_tsuite_export_all');
-		$gui->export_filename = 'all_testsuites.xml';
+		$gui->page_title = lang_get('title_tsuite_export_all');
+		$dummy = '.testproject-deep.xml';
 		$check_children=1; 
 		$gui->nothing_todo_msg=lang_get('no_testsuites_to_export');
 	}
+	$gui->export_filename .= $dummy;
+
 } 
 else
 {
@@ -65,15 +64,19 @@ else
 	// All test cases in test suite.
 	// One test case.
 	$exporting_just_one_tc = ($args->tcase_id && $args->tcversion_id);
-	$gui->export_filename = 'testcases.xml';
-	
 	if($exporting_just_one_tc)
 	{
+		$tcase_mgr = new testcase($db);
+		$tcinfo = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id,null,array('output' => 'essential'));
+		$tcinfo = $tcinfo[0];
 		$node_id = $args->tcase_id;
+		$gui->export_filename = $tcinfo['name'] . '.version' . $tcinfo['version'] . '.testcase.xml';
 		$gui->page_title = lang_get('title_tc_export');
 	}
 	else
 	{
+		$node_info = $tree_mgr->get_node_hierarchy_info($args->container_id);
+		$gui->export_filename = $node_info['name'] . '.testsuite-children-testcases.xml';
 		$gui->page_title = lang_get('title_tc_export_all');
 		$check_children = 1;
 		$gui->nothing_todo_msg = lang_get('no_testcases_to_export');
@@ -101,7 +104,10 @@ $node = $tree_mgr->get_node_hierarchy_info($node_id);
 
 if ($args->doExport)
 {
-	$tcase_mgr = new testcase($db);
+	if( is_null($tcase_mgr) )
+	{
+		$tcase_mgr = new testcase($db);
+	}
 	$tsuite_mgr = new testsuite($db);
 	
 	$optExport = array('REQS' => $args->exportReqs, 'CFIELDS' => $args->exportCFields,

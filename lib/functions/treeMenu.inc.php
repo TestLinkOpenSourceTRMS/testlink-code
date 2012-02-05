@@ -14,6 +14,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120205 - franciscom - 	remove deprecated method
  * 20110115 - franciscom -	work on extjs_renderExecTreeNodeOnOpen() and related functions
  *							trying to improve performance
  * 20111031 - franciscom - 	TICKET 4790: Setting & Filters panel - Wrong use of BUILD on settings area
@@ -1152,59 +1153,6 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
 }
 
 
-/**
- * @return array a map:
- *         key    => node_id
- *         values => node test case count considering test cases presents
- *                   in the nodes of the subtree that starts on node_id
- *                   Means test case can not be sons/daughters of node_id.
- *                   node name (useful only for debug purpouses).
- */
-function get_testproject_nodes_testcount(&$db,$tproject_id, $tproject_name,
-                                         $keywordsFilter=null)
-{
-	$tproject_mgr = new testproject($db);
-	$tree_manager = &$tproject_mgr->tree_manager;
-
-	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
-	$hash_descr_id = $tree_manager->get_available_node_types();
-	$hash_id_descr = array_flip($hash_descr_id);
-
-	$resultsCfg = config_get('results');
-	$decoding_hash = array('node_id_descr' => $hash_id_descr,
-                           'status_descr_code' =>  $resultsCfg['status_code'],
-                       	   'status_code_descr' =>  $resultsCfg['code_status']);
-	
-	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
-	
-	$test_spec['name'] = $tproject_name;
-	$test_spec['id'] = $tproject_id;
-	$test_spec['node_type_id'] = 1;
-	
-	$map_node_tccount = array(); 
-	$tplan_tcases = null;
-	
-	if($test_spec)
-	{
-		$tck_map = null;
-		if( !is_null($keywordsFilter) )
-		{
-			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,
-			                                              $keywordsFilter->items,$keywordsFilter->type);
-		}	
-		
-		//@TODO: schlundus, can we speed up with NO_EXTERNAL?
-		$filters = null;
-		
-		// 20100412 - franciscon
- 	    $options = array('hideTestCases' => 0, 'viewType' => 'testSpecTree');
-		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
-		                                 $tck_map,$tplan_tcases,$filters,$options);
-		$test_spec['testcase_count'] = $testcase_counters['testcase_count'];
-	}
-
-	return $map_node_tccount;
-}
 
 /**
  *

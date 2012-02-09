@@ -725,11 +725,31 @@ CREATE UNIQUE INDEX /*prefix*/req_specs_revisions_uidx1 ON /*prefix*/req_revisio
 --
 -- TICKET 4914: Create View - tcversions_last_active
 --
-CREATE VIEW /*prefix*/tcversions_last_active AS 
+CREATE OR REPLACE VIEW /*prefix*/tcversions_last_active AS 
 (
-	SELECT NHTCV.parent_id AS tcase_id, MAX(TCV.id) AS tcversion_id
-	FROM /*prefix*/nodes_hierarchy NHTCV 
-	JOIN /*prefix*/tcversions TCV ON TCV.id = NHTCV.id 
-	WHERE TCV.active = 1
-	GROUP BY NHTCV.parent_id,TCV.tc_external_id
+  SELECT tcv.id, tcv.tc_external_id, tcv.version, tcv.layout, tcv.status, 
+  		 tcv.summary, tcv.preconditions, tcv.importance, tcv.author_id, tcv.creation_ts, 
+  		 tcv.updater_id, tcv.modification_ts, tcv.active, tcv.is_open, tcv.execution_type, 
+  		 ac.tcase_id
+  FROM /*prefix*/tcversions tcv
+  JOIN( 
+	  SELECT nhtcv.parent_id AS tcase_id, max(tcv.id) AS tcversion_id
+	  FROM /*prefix*/nodes_hierarchy nhtcv
+	  JOIN /*prefix*/tcversions tcv ON tcv.id = nhtcv.id
+	  WHERE tcv.active = 1
+	  GROUP BY nhtcv.parent_id, tcv.tc_external_id
+	  ) ac 
+  ON tcv.id = ac.tcversion_id
 );
+
+
+CREATE OR REPLACE VIEW /*prefix*/tcases_active AS 
+(
+	SELECT DISTINCT nhtcv.parent_id AS tcase_id
+	FROM /*prefix*/nodes_hierarchy nhtcv
+	JOIN /*prefix*/tcversions tcv ON tcv.id = nhtcv.id
+	WHERE tcv.active = 1
+);
+
+
+				

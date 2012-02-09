@@ -13,7 +13,10 @@ require_once('../../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 
-define('DBUG_ON',1);
+if( !defined('DBUG_ON') )
+{
+	define('DBUG_ON',1);
+}
 
 $object_item="Testplan Manager";
 $object_class="testplan";

@@ -65,7 +65,7 @@ class testproject extends tlObjectWithAttachments
 		$this->tree_manager = new tree($this->db);
 		$this->cfield_mgr=new cfield_mgr($this->db);
 		tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
-        $this->object_table=$this->tables['testprojects'];
+        $this->object_table = $this->tables['testprojects'];
 	}
 
 
@@ -2500,7 +2500,7 @@ function getTestSpec($id,$filters=null,$options=null)
 {
 
 	$items = array();
-  
+
   	$my['options'] = array('recursive' => false, 'exclude_testcases' => false, 
   						   'remove_empty_branches' => false);
   						   
@@ -2520,8 +2520,15 @@ function getTestSpec($id,$filters=null,$options=null)
 	
 	// transform some of our options/filters on something the 'worker' will understand
 	// when user has request filter by test case name, we do not want to display empty branches
+
+
+	// echo '<hr>';
+	// echo __FUNCTION__;
+	// new dBug($my['filters']);
+	// echo '<hr>';
+	
 	if( !is_null($my['filters']['testcase_name']) || !is_null($my['filters']['testcase_id']) ||
-		$my['options']['remove_empty_branches'] )
+		!is_null($my['filters']['execution_type']) || $my['options']['remove_empty_branches'] )
 	{
 		$my['options']['remove_empty_nodes_of_type'] = 'testsuite';
 	}
@@ -2550,6 +2557,9 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 	static $exclude_children_of;
 	static $node_types;
 	static $tcaseFilter;
+	static $tcversionFilter;
+	static $childFilterOn;
+	static $staticSql;
 	
 	if (!$my)
 	{
@@ -2557,7 +2567,8 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 
 		$node_types = array_flip($this->tree_manager->get_available_node_types());
     	$my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
-    					   	   'additionalWhereClause' => '', 'testcase_name' => null);
+    					   	   'additionalWhereClause' => '', 'testcase_name' => null,
+    					   	   'testcase_id' => null,'active_testcase' => false);
                            
     	$my['options'] = array('remove_empty_nodes_of_type' => null);
 
@@ -2570,7 +2581,17 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 
 		$tcaseFilter['name'] = !is_null($my['filters']['testcase_name']);
 		$tcaseFilter['id'] = !is_null($my['filters']['testcase_id']);
-		$tcaseFilter['enabled'] = $tcaseFilter['name'] || $tcaseFilter['id'];
+		
+		$tcaseFilter['is_active'] = !is_null($my['filters']['active_testcase']) && $my['filters']['active_testcase'];
+		$tcaseFilter['enabled'] = $tcaseFilter['name'] || $tcaseFilter['id'] || $tcaseFilter['is_active'];
+
+
+		$tcversionFilter['execution_type'] = !is_null($my['filters']['execution_type']);
+		$tcversionFilter['enabled'] = $tcversionFilter['execution_type'];
+
+		$childFilterOn = $tcaseFilter['enabled'] || $tcversionFilter['enabled'];
+		
+	
 
 		if( !is_null($my['options']['remove_empty_nodes_of_type']) )
 		{
@@ -2581,29 +2602,87 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 							  $this->tree_manager->node_descr_id[$my['options']['remove_empty_nodes_of_type']];
 			}
 		}
+
+		// Create invariant sql sentences
+		$tfields = "NH.id, NH.parent_id, NH.name, NH.node_type_id, NH.node_order";
+		if($tcversionFilter['enabled'])
+		{
+			$staticSql = " SELECT DISTINCT {$tfields} " .
+						 " FROM {$this->tables['nodes_hierarchy']} NH " .
+						 " JOIN {$this->tables['nodes_hierarchy']} NHCHILD " .
+						 " ON NHCHILD.parent_id = NH.id " .
+						 " LEFT OUTER JOIN {$this->views['tcversions_last_active']} TCVLA " .
+						 " ON TCVLA.id = NHCHILD.id ";
+		}
+		else if($tcaseFilter['is_active'])
+		{
+			$staticSql = " SELECT DISTINCT {$tfields} " .
+						 " FROM {$this->tables['nodes_hierarchy']} NH " .
+						 " LEFT OUTER JOIN {$this->views['tcases_active']} TCA " .
+						 " ON TCA.id = NH.id ";
+		}
+		else
+		{
+			$staticSql = " SELECT {$tfields}  " .
+						 " FROM {$this->tables['nodes_hierarchy']} NH ";
+		}
+		
+		
+		// new dBug($my['options']);
 	}
 
-	$sql = 	" SELECT NH.id, NH.parent_id, NH.name, NH.node_type_id, NH.node_order " .
-			" FROM {$this->tables['nodes_hierarchy']} NH " .
-			" WHERE parent_id = {$node_id} ";
-
-	if( $tcaseFilter['enabled'] )
+	$sql =	$staticSql . " WHERE NH.parent_id = {$node_id} ";
+	
+	if( $childFilterOn )
 	{
 		$sql .= " AND (" .
-            	"      NH.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} ";
+            	"      NH.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} " .
+	    		" 	   OR (NH.node_type_id = {$this->tree_manager->node_descr_id['testcase']} ";
 
-		if ($tcaseFilter['name'])
-        {
-        	$sql .=	" OR (NH.node_type_id = {$this->tree_manager->node_descr_id['testcase']} " . 
-            		"     AND NH.name LIKE '%{$my['filters']['testcase_name']}%') ";
-        }
-        if ($tcaseFilter['id'])
-        {
-        	
-        	$sql .=	" OR (NH.node_type_id = {$this->tree_manager->node_descr_id['testcase']} " . 
-            		"     AND NH.id = {$my['filters']['testcase_id']}) ";
-        }
-        $sql .= " ) ";
+
+		if( $tcaseFilter['enabled'] )
+		{
+			foreach($tcaseFilter as $key => $apply)
+			{
+				if( $apply )
+				{
+					switch($key)
+					{
+						case 'name':
+							 $sql .= " AND NH.name LIKE '%{$my['filters']['testcase_name']}%' ";
+						break;
+						
+						case 'id':
+			            	 $sql .= " AND NH.id = {$my['filters']['testcase_id']} ";
+						break;
+						
+						case 'is_active':
+			            	 $sql .= " AND NH.id = TCA.id ";
+						break;
+						
+					}
+				}
+			}
+		}
+		
+		if( $tcversionFilter['enabled'] )
+		{
+			foreach($tcversionFilter as $key => $apply)
+			{
+				if( $apply )
+				{
+					switch($key)
+					{
+						case 'execution_type':
+						case 'importance':
+							 $sql .= " AND TCVLA.{$key} = {$my['filters'][$key]} ";
+						break;
+					}
+				}
+			}
+		}
+
+        $sql .= " )) ";
 	}
 	
 	$sql .= " ORDER BY NH.node_order,NH.id";
@@ -2613,8 +2692,12 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
  	{
 		if(!isset($exclude_branches[$row['id']]))
 		{  
-			$node = $row + array('childNodes' => null,
-                        		 'node_table' => $this->tree_manager->node_tables_by['id'][$row['node_type_id']]);
+			$node = $row + array('node_table' => $this->tree_manager->node_tables_by['id'][$row['node_type_id']]);
+			$node['childNodes'] = null;
+			if($node['node_table'] == 'testcases')
+			{
+				$node['leaf'] = true; 
+			}			
 			
 			// why we use exclude_children_of ?
 	        // 1. Sometimes we don't want the children if the parent is a testcase,
@@ -2638,7 +2721,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 		        	    ($node['node_type_id'] == $my['options']['remove_empty_nodes_of_type']);
 		    if(!$doRemove)
 		    {
-	  				$pnode['childNodes'][] = $node;
+	  			$pnode['childNodes'][] = $node;
 	  		}	
 		} // if(!isset($exclude_branches[$rowID]))
 	} //while

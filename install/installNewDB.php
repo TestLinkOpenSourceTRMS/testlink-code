@@ -12,9 +12,11 @@
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
  *
- * @internal revisions:
- *  20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
- *  20110117 - Julian - BUGID 4174 - When testlink is updated do not show login data
+ * @internal revisions
+ * @since 1.9.4
+ * 20120209 - franciscom - TICKET 4914: Create View - tcversions_last_active - new function drop_views()
+ * 20120129 - franciscom - TICKET
+ * 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
  * 
  **/
 
@@ -411,7 +413,7 @@ switch($db_type)
 // --------------------------------------------------------------------------------------------
 if( $install && $conn_result['status'] != 0 )
 {
-	// BUGID 3654
+	drop_views($db,$db_table_prefix,$db_type);
 	drop_tables($db,$db_table_prefix,$db_type);
 }  
 
@@ -582,7 +584,6 @@ function write_config_db($filename, $data)
 
 
 // Drop tables to allow re-run Installation
-// BUGID 3654
 function drop_tables(&$dbHandler,$dbTablePrefix,$dbType)
 {
 	// From 1.9 and up we have detail of tables.
@@ -596,16 +597,39 @@ function drop_tables(&$dbHandler,$dbTablePrefix,$dbType)
 		echo "<br />Dropping all TL existent tables:<br />";
 		foreach($schema as $tablePlainName => $tableFullName)
 		{
-			// echo 'DEBUG - $tablePlainName:' . $tablePlainName . '<br>';
-			// echo 'DEBUG - $tableFullName:' . $tableFullName . '<br>';
-			// BUGID 3654
 			$targetTable = $dbTablePrefix . $tablePlainName;
 			if( in_array($targetTable,$tablesOnDB) )
 			{
 				// Need to add option (CASCADE ?) to delete dependent object
 				echo "Droping $targetTable" . "<br />";
 				$sql="DROP TABLE $targetTable";
-				$sql .= $dbType != 'mssql' ? " CASCADE " : ' ';
+				$sql .= (($dbType != 'mssql') && ($dbType != 'sqlsrv')) ? " CASCADE " : ' ';
+				$dbHandler->exec_query($sql);
+			}  	
+		}
+		echo "<span class='ok'>Done!</span>";
+	}
+}
+
+function drop_views(&$dbHandler,$dbItemPrefix,$dbType)
+{
+	$schema = tlObjectWithDB::getDBViews();
+	
+	// views present on target db
+	$my_ado = $dbHandler->get_dbmgr_object();
+	$itemsOnDB =$my_ado->MetaTables('VIEWS');  
+	if( count($itemsOnDB) > 0 && isset($itemsOnDB[0]))
+	{
+		echo "<br />Dropping all TL existent views:<br />";
+		foreach($schema as $itemPlainName => $itemFullName)
+		{
+			$target = $dbItemPrefix . $itemPlainName;
+			if( in_array($itemTable,$itemsOnDB) )
+			{
+				// Need to add option (CASCADE ?) to delete dependent object
+				echo "Droping $target" . "<br />";
+				$sql="DROP VIEW $target";
+				$sql .= (($dbType != 'mssql') && ($dbType != 'sqlsrv')) ? " CASCADE " : ' ';
 				$dbHandler->exec_query($sql);
 			}  	
 		}

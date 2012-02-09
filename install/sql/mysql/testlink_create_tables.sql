@@ -38,6 +38,7 @@
 # ---------------------------------------------------------------------------------------
 # @internal revisions
 # @since 1.9.4
+# 20120209 - franciscom - TICKET 4914: Create View - tcversions_last_active
 # 20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server
 # 20110810 - franciscom - Requirement Specification Revisions feature
 #
@@ -626,3 +627,16 @@ CREATE TABLE /*prefix*/req_specs_revisions (
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/req_specs_revisions_uidx1 (`parent_id`,`revision`)
 ) DEFAULT CHARSET=utf8;
+
+# ----------------------------------------------------------------------------------
+# TICKET 4914: Create View - tcversions_last_active
+# ----------------------------------------------------------------------------------
+CREATE VIEW /*prefix*/tcversions_last_active AS 
+(
+	SELECT NHTCV.parent_id AS tcase_id, MAX(TCV.id) AS tcversion_id
+	FROM /*prefix*/nodes_hierarchy NHTCV 
+	JOIN /*prefix*/tcversions TCV ON TCV.id = NHTCV.id 
+	WHERE TCV.active = 1
+	GROUP BY NHTCV.parent_id,TCV.tc_external_id
+);
+

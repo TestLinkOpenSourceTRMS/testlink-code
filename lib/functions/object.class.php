@@ -3,13 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource	object.class.php
  * @package 	TestLink
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.50.6.1 2010/12/12 09:57:23 franciscom Exp $
- * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
+ * @copyright 	2007-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * @since 1.9.4
+ * 20120209 - franciscom - new method getDBViews()
  * 20110714 - franciscom - added req_spec_revisions in getDBTables()
  **/
  
@@ -202,7 +203,6 @@ abstract class tlObject implements iSerialization
      * @param $tableNames array of tablenames, to get only some of the tables
 	 * @return map key=table name without prefix, value=table name on db
 	 *
-	 * @since 20090615 - franciscom - fixed bug that render useless function when using $tableNames argument
     */
 	static public function getDBTables($tableNames = null)
 	{
@@ -262,11 +262,33 @@ abstract class tlObject implements iSerialization
             $tableNames = array_flip($tableNames);			
 			$tables = array_intersect_key($tables,$tableNames);
 			if (sizeof($tables) != sizeof($tableNames))
+			{
 				throw new Exception("Wrong table name(s) for getDBTables() detected!");
+			}	
 		}
 		
 	    return $tables;
 	}
+
+	static public function getDBViews($itemNames = null)
+	{
+		$items = array('tcversions_last_active' => DB_TABLE_PREFIX . 'tcversions_last_active'); 
+
+		if ($itemNames != null)
+		{	
+			$itemNames = (array)$itemNames;
+            $itemNames = array_flip($itemNames);			
+			$items = array_intersect_key($items,$itemNames);
+			if (sizeof($items) != sizeof($itemNames))
+			{
+				$msg = "Wrong view name(s) for " . __FUNCTION__ . " detected!";
+				throw new Exception($msg);
+			}	
+		}
+		
+	    return $items;
+	}
+
 };
 
 

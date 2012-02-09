@@ -79,18 +79,31 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	
 
 	// testplan => only used if opetions['viewType'] == 'testSpecTreeForTestPlan'
+	
+	// 20120205 - franciscom - hmm seems this code is INCOMPLETE
+	// may be we can remove ?
 	$my['filters'] = array('keywords' => null, 'executionType' => null, 'importance' => null,
 	                       'testplan' => null, 'filter_tc_id' => null);
 
 	$my['options'] = array_merge($my['options'], (array)$options);
 	$my['filters'] = array_merge($my['filters'], (array)$filters);
 	
+	
+	if( $my['options']['viewType'] == 'testSpecTree' )
+	{
+	
+		return generateTestSpecTreeNew($db,$tproject_id,$tproject_name,$linkto,$filters,$options);
+	}
+	
+	
+	new dBug($filters);
+	new dBug($my['filters']);
+	
 	$treeMenu = new stdClass(); 
 	$treeMenu->rootnode = null;
 	$treeMenu->menustring = '';
 	
 	$resultsCfg = config_get('results');
-	$showTestCaseID = config_get('treemenu_show_testcase_id');
 	$glueChar = config_get('testcase_cfg')->glue_character;
 	$menustring = null;
 	
@@ -106,24 +119,35 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 		                 'status_descr_code' =>  $status_descr_code,
 		                 'status_code_descr' =>  $status_code_descr);
 	
-	$exclude_branches = isset($filters['filter_toplevel_testsuite'])
-	                    && is_array($filters['filter_toplevel_testsuite']) ?
+	// IMPORTANT NOTICE
+	// $filters['filter_toplevel_testsuite'] is managed in REVERSE form
+	// it contains NOT WHAT user wants, but all that we need to exclude
+	// in order provide what user WANTS.
+	// This is right way to go.
+	// 
+	$exclude_branches = isset($filters['filter_toplevel_testsuite']) && 
+						is_array($filters['filter_toplevel_testsuite']) ?
 	                    $filters['filter_toplevel_testsuite'] : null;
 	
-	$tcase_prefix=$tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
+	$tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
+
+	/*
 	$test_spec = $tproject_mgr->get_subtree($tproject_id,testproject::RECURSIVE_MODE,
 		                                    testproject::INCLUDE_TESTCASES, $exclude_branches);
-	
+
+	*/	
+	new dBug($filters);
+	$test_spec = getTestSpecTree($tproject_id,$tproject_mgr,$filters);
+
+
 	// Added root node for test specification -> testproject
 	$test_spec['name'] = $tproject_name;
 	$test_spec['id'] = $tproject_id;
 	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
+
 	
 	$map_node_tccount=array();
 	$tplan_tcs=null;
-	
-	DEFINE('DONT_FILTER_BY_TESTER',0);
-	DEFINE('DONT_FILTER_BY_EXEC_STATUS',null);
 	
 	if($test_spec)
 	{
@@ -148,8 +172,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 		}
 	    
 	    $pnFilters['setting_testplan'] = $my['filters']['setting_testplan'];
-	    
-	    // BUGID 3301 - added filtering by custom field values
 	    if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) 
 	    {
 	    	$test_spec['childNodes'] = filter_by_cf_values($db, $test_spec['childNodes'],
@@ -165,9 +187,11 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 
 		foreach($testcase_counters as $key => $value)
 		{
-			$test_spec[$key]=$testcase_counters[$key];
+			$test_spec[$key] = $testcase_counters[$key];
 		}
 		
+		
+		$showTestCaseID = config_get('treemenu_show_testcase_id');
 		$menustring = renderTreeNode(1,$test_spec,$hash_id_descr,
 			                         $my['options']['tc_action_enabled'],$linkto,$tcase_prefix,
 			                         $my['options']['forPrinting'],$showTestCaseID);
@@ -309,6 +333,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     $tpNode = null;
 	if (!$tables)
 	{
+		new dBug($tplan_tcases);
+		
   	    $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
         $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
 
@@ -2284,4 +2310,298 @@ function update_status_for_colors(&$dbHandler,&$items,$context,$statusCfg)
 	}
 	
 }
+
+
+
+
+function generateTestSpecTreeNEW(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
+{
+	echo __FUNCTION__;
+	
+	$tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
+
+	$my = array();
+	
+	$my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0, 
+	                       'tc_action_enabled' => 1, 'viewType' => 'testSpecTree');
+	
+
+	$my['filters'] = array('keywords' => null, 'testplan' => null);
+
+	$my['options'] = array_merge($my['options'], (array)$options);
+	$my['filters'] = array_merge($my['filters'], (array)$filters);
+	new dBug($my['filters']);
+	
+	$treeMenu = new stdClass(); 
+	$treeMenu->rootnode = null;
+	$treeMenu->menustring = '';
+	
+	$resultsCfg = config_get('results');
+	$glueChar = config_get('testcase_cfg')->glue_character;
+	$menustring = null;
+	
+	$tproject_mgr = new testproject($db);
+	$tree_manager = &$tproject_mgr->tree_manager;	
+	
+	$hash_descr_id = $tree_manager->get_available_node_types();
+	$hash_id_descr = array_flip($hash_descr_id);
+	$status_descr_code=$resultsCfg['status_code'];
+	$status_code_descr=$resultsCfg['code_status'];
+	
+	$decoding_hash=array('node_id_descr' => $hash_id_descr,
+		                 'status_descr_code' =>  $status_descr_code,
+		                 'status_code_descr' =>  $status_code_descr);
+	
+
+	$tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
+	$test_spec = getTestSpecTree($tproject_id,$tproject_mgr,$filters);
+	new dBug($test_spec);
+	
+
+	// Added root node for test specification -> testproject
+	$test_spec['name'] = $tproject_name;
+	$test_spec['id'] = $tproject_id;
+	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
+
+	
+	$map_node_tccount=array();
+	$tplan_tcs=null;
+	
+	if($test_spec)
+	{
+		$tck_map = null;  // means no filter
+		if(!is_null($my['filters']['filter_keywords']))
+		{
+			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,
+			           $my['filters']['filter_keywords'],
+			           $my['filters']['filter_keywords_filter_type']);
+			if( is_null($tck_map) )
+			{
+				$tck_map=array();  // means filter everything
+			}
+		}
+		
+		// Important: prepareNode() will make changes to $test_spec like filtering by test case 
+		// keywords using $tck_map;
+		$pnFilters = null;
+	    $pnFilters['setting_testplan'] = $my['filters']['setting_testplan'];
+	    if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) 
+	    {
+	    	$test_spec['childNodes'] = filter_by_cf_values($db, $test_spec['childNodes'],
+	    												   $my['filters']['filter_custom_fields'],$hash_descr_id);
+	    }
+		
+	    $pnOptions = array('hideTestCases' => $my['options']['hideTestCases']);
+		
+		$testcase_counters = prepareTestSpecNode($db,$test_spec,$decoding_hash,$map_node_tccount,$pnOptions);
+
+		foreach($testcase_counters as $key => $value)
+		{
+			$test_spec[$key] = $testcase_counters[$key];
+		}
+
+		
+		$showTestCaseID = config_get('treemenu_show_testcase_id');
+		$menustring = renderTreeNode(1,$test_spec,$hash_id_descr,
+			                         $my['options']['tc_action_enabled'],$linkto,$tcase_prefix,
+			                         $my['options']['forPrinting'],$showTestCaseID);
+	}
+	
+	$menustring ='';
+	$treeMenu->rootnode = new stdClass();
+	$treeMenu->rootnode->name = $test_spec['text'];
+	$treeMenu->rootnode->id = $test_spec['id'];
+	$treeMenu->rootnode->leaf = isset($test_spec['leaf']) ? $test_spec['leaf'] : false;
+	$treeMenu->rootnode->text = $test_spec['text'];
+	$treeMenu->rootnode->position = $test_spec['position'];	    
+	$treeMenu->rootnode->href = $test_spec['href'];
+	
+	
+	// Change key ('childNodes')  to the one required by Ext JS tree.
+	if(isset($test_spec['childNodes']))
+	{
+		$menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
+	}
+	// 20090328 - franciscom - BUGID 2299
+	// More details about problem found on 20090308 and fixed IN WRONG WAY
+	// TPROJECT
+	//    |______ TSA
+	//            |__ TC1
+	//            |__ TC2
+	//    | 
+	//    |______ TSB
+	//            |______ TSC
+	// 
+	// Define Keyword K1,K2
+	//
+	// NO TEST CASE HAS KEYWORD ASSIGNED
+	// Filter by K1
+	// Tree will show root that spins Forever
+	// menustring before str_ireplace : [null,null]
+	// menustring AFTER [null] 
+	//
+	// Now fixed.
+	//
+	// Some minor fix to do
+	// Il would be important exclude Top Level Test suites.
+	// 
+	// 
+	// 20090308 - franciscom
+	// Changed because found problem on:
+	// Test Specification tree when applying Keyword filter using a keyword NOT PRESENT
+	// in test cases => Tree root shows loading icon and spin never stops.
+	//
+	// Attention: do not know if in other situation this will generate a different bug
+	// 
+	if(!is_null($menustring))
+	{
+		// Remove null elements (Ext JS tree do not like it ).
+		// :null happens on -> "children":null,"text" that must become "children":[],"text"
+		// $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
+		$menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
+	}
+	$treeMenu->menustring = $menustring; 
+	
+	return $treeMenu;
+}
+
+
+/**
+ * 
+ * 
+ */
+function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
+{
+	
+	$flt = array();
+	$flt['exclude_branches'] = isset($fObj['filter_toplevel_testsuite']) && is_array($fObj['filter_toplevel_testsuite']) ?
+	                    	   $fObj['filter_toplevel_testsuite'] : null;
+	
+	
+
+	$flt['testcase_name'] = null;
+	$flt['testcase_id'] = null;
+	$flt['execution_type'] = null;
+
+	if( isset($fObj['filter_testcase_name']) && !is_null($fObj['filter_testcase_name']) )
+	{
+		if( ($dummy = trim($fObj['filter_testcase_name'])) != '' )
+		{
+			$flt['testcase_name'] = $dummy;
+		}
+	}
+	
+	if( isset($fObj['filter_tc_id']) && !is_null($fObj['filter_tc_id']) )
+	{
+		$flt['testcase_id'] = intval($fObj['filter_tc_id']);
+	}
+	
+	if( isset($fObj['filter_execution_type']) && !is_null($fObj['filter_execution_type']) )
+	{
+		$flt['execution_type'] = intval($fObj['filter_execution_type']);
+	}
+	
+	new dBug($fObj);
+	
+	$opt = array('recursive' => true,'exclude_testcases' => false);
+	$items = $tprojectMgr->getTestSpec($tprojectID,$flt,$opt); 
+
+	new dBug($items);
+	// die();
+	return $items;
+}
+
+
+
+function prepareTestSpecNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$options=null)
+{
+	
+	static $status_descr_list;
+	static $debugMsg;
+    static $tables;
+    static $my;
+    static $filtersApplied;
+
+	if (!$tables)
+	{
+  	    $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
+        $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
+
+		$my = array();
+		$my['options'] = array('hideTestCases' => 0, 'showTestCaseID' => 1, 'viewType' => 'testSpecTree',
+		                       'getExternalTestCaseID' => 1,'ignoreInactiveTestCases' => 0);
+
+		$my['options'] = array_merge($my['options'], (array)$options);
+	}
+		
+	$tcase_counters['testcase_count'] = 0;
+	$node_type = isset($node['node_type_id']) ? $decoding_info['node_id_descr'][$node['node_type_id']] : null;
+
+	if($node_type == 'testcase')
+	{
+		
+		if ( $my['options']['hideTestCases'] )
+		{
+			$node = null;
+		}
+		else
+		{
+			// needed to avoid problems when using json_encode with EXTJS
+			unset($node['childNodes']);
+			$node['leaf']=true;
+		}
+	}  // if($node_type == 'testcase')
+	
+	
+	// ================================================================================
+	if( !is_null($node) && isset($node['childNodes']) && is_array($node['childNodes']) )
+	{
+		// node has to be a Test Suite ?
+		$childNodes = &$node['childNodes'];
+		$childNodesQty = count($childNodes);
+		
+		for($idx = 0;$idx < $childNodesQty ;$idx++)
+		{
+			$current = &$childNodes[$idx];
+			// I use set an element to null to filter out leaf menu items
+			if(is_null($current))
+			{
+				continue;
+			}
+			
+			$counters_map = prepareTestSpecNode($db,$current,$decoding_info,$map_node_tccount,
+				                        		$my['options']);
+			$tcase_counters['testcase_count'] += $counters_map['testcase_count'];   
+		}
+		$node['testcase_count'] = $tcase_counters['testcase_count'];
+		
+		if (isset($node['id']))
+		{
+			$map_node_tccount[$node['id']] = array(	'testcount' => $node['testcase_count'],
+				                                    'name' => $node['name']);
+		}
+
+        // node must be destroyed if empty had we have using filtering conditions
+		if( $filtersApplied && 
+			!$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
+		{
+			$node = null;
+		}
+	}
+	else if ($node_type == 'testsuite')
+	{
+		// does this means is an empty test suite ??? - franciscom 20080328
+		$map_node_tccount[$node['id']] = array(	'testcount' => 0,'name' => $node['name']);
+		
+        // If is an EMPTY Test suite and we have added filtering conditions,
+        // We will destroy it.
+		if( $filtersApplied )
+		{
+			$node = null;
+		}	
+	}
+
+	return $tcase_counters;
+}
+
 ?>

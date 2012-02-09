@@ -1,0 +1,10 @@
+[>>][4f00ab9c2725e105926303][DEFAULT][/lib/functions/results.class.php][12/Jan/1 18:53:16]
+	[12/Jan/1 18:53:16][WARNING][<nosession>][GUI]
+		E_NOTICE
+Use of undefined constant TL_DEFAULT_LOCALE - assumed 'TL_DEFAULT_LOCALE' - in /home/kinow/php/workspace/testlink-code/lib/functions/lang_api.php - Line 62
+	[12/Jan/1 18:53:16][WARNING][<nosession>][GUI]
+		E_NOTICE
+Use of undefined constant TL_ABS_PATH - assumed 'TL_ABS_PATH' - in /home/kinow/php/workspace/testlink-code/lib/functions/lang_api.php - Line 224
+	[12/Jan/1 18:53:16][WARNING][<nosession>][GUI]
+		E_WARNING
+require(TL_ABS_PATHlocale/en_GB/strings.txt): failed to open stream: No such file or directory - in /home/kinow/php/workspace/testlink-code/lib/functions/lang_api.php - Line 232

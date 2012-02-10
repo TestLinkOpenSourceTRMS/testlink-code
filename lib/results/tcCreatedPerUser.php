@@ -23,7 +23,6 @@ require_once('results.class.php');
 	
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
-$results_config = config_get('results');
 $date_format_cfg = config_get('date_format');
 
 // init arguments
@@ -57,6 +56,7 @@ function initializeGui(&$db,&$args,$dateFormat)
 	
 	$gui->pageTitle=sprintf($l18n['testcases_created_per_user'],$gui->tproject_name);
 	
+	$results_config = config_get('results');
 	$map_status_code = $results_config['status_code'];
 	$map_code_status = $results_config['code_status'];
 	$map_status_label = $results_config['status_label'];
@@ -105,7 +105,7 @@ function initializeGui(&$db,&$args,$dateFormat)
 	
 	if(!is_null($gui->resultSet)) {	
 		
-		$tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy'));
+	    $tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy'));
 	
 	    $tplanSet = array_keys($gui->resultSet);
 	    $sql = "SELECT name,id FROM {$tables['nodes_hierarchy']} " .
@@ -133,7 +133,7 @@ function initializeGui(&$db,&$args,$dateFormat)
 					$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tcase_id});\">" .
 					                     "<img title=\"{$l18n['execution_history']}\" src=\"{$history_img}\" /></a> ";
 	
-					$edit_link = "<a href=\"javascript:openTCEditWindow({$gui->tproject_id},{$tcase_id});\">" .
+					$edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id});\">" .
 					             "<img title=\"{$l18n['design']}\" src=\"{$edit_img}\" /></a> ";
 					
 					$current_row[] = "<!-- " . sprintf("%010d", $tcase['tc_external_id']) . " -->" . $exec_history_link . 

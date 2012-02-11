@@ -69,6 +69,8 @@ function filterString($str)
  
 function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
+ 	$chronos[] = microtime(true);
+
 	$tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
 
 	$my = array();
@@ -91,13 +93,19 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	
 	if( $my['options']['viewType'] == 'testSpecTree' )
 	{
-	
-		return generateTestSpecTreeNew($db,$tproject_id,$tproject_name,$linkto,$filters,$options);
+		$rr = generateTestSpecTreeNew($db,$tproject_id,$tproject_name,$linkto,$filters,$options);
+		$chronos[] = microtime(true);
+		$tnow = end($chronos);
+		$tprev = prev($chronos);
+		$t_elapsed = number_format( $tnow - $tprev, 4);
+		echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
+		reset($chronos);	
+		return $rr;
 	}
 	
 	
-	new dBug($filters);
-	new dBug($my['filters']);
+	// new dBug($filters);
+	// new dBug($my['filters']);
 	
 	$treeMenu = new stdClass(); 
 	$treeMenu->rootnode = null;
@@ -136,7 +144,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 		                                    testproject::INCLUDE_TESTCASES, $exclude_branches);
 
 	*/	
-	new dBug($filters);
+	// new dBug($filters);
 	$test_spec = getTestSpecTree($tproject_id,$tproject_mgr,$filters);
 
 
@@ -333,7 +341,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     $tpNode = null;
 	if (!$tables)
 	{
-		new dBug($tplan_tcases);
+		// new dBug($tplan_tcases);
 		
   	    $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
         $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
@@ -2316,7 +2324,8 @@ function update_status_for_colors(&$dbHandler,&$items,$context,$statusCfg)
 
 function generateTestSpecTreeNEW(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
-	echo __FUNCTION__;
+	// echo __FUNCTION__;
+		$chronos[] = microtime(true);
 	
 	$tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
 
@@ -2330,7 +2339,7 @@ function generateTestSpecTreeNEW(&$db,$tproject_id, $tproject_name,$linkto,$filt
 
 	$my['options'] = array_merge($my['options'], (array)$options);
 	$my['filters'] = array_merge($my['filters'], (array)$filters);
-	new dBug($my['filters']);
+	// new dBug($my['filters']);
 	
 	$treeMenu = new stdClass(); 
 	$treeMenu->rootnode = null;
@@ -2355,7 +2364,17 @@ function generateTestSpecTreeNEW(&$db,$tproject_id, $tproject_name,$linkto,$filt
 
 	$tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
 	$test_spec = getTestSpecTree($tproject_id,$tproject_mgr,$filters);
-	new dBug($test_spec);
+		$chronos[] = microtime(true);
+		$tnow = end($chronos);
+		$tprev = prev($chronos);
+		$t_elapsed = number_format( $tnow - $tprev, 4);
+		echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
+		reset($chronos);
+		//new dBug($test_spec);
+		//die('AFTER get TEST SPEC');	
+
+
+	// new dBug($test_spec);
 	
 
 	// Added root node for test specification -> testproject
@@ -2394,6 +2413,16 @@ function generateTestSpecTreeNEW(&$db,$tproject_id, $tproject_name,$linkto,$filt
 	    $pnOptions = array('hideTestCases' => $my['options']['hideTestCases']);
 		
 		$testcase_counters = prepareTestSpecNode($db,$test_spec,$decoding_hash,$map_node_tccount,$pnOptions);
+
+		// new dBug($testcase_counters);
+		// new dBug($map_node_tccount);
+		
+		$chronos[] = microtime(true);
+		$tnow = end($chronos);
+		$tprev = prev($chronos);
+		$t_elapsed = number_format( $tnow - $tprev, 4);
+		echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
+		reset($chronos);	
 
 		foreach($testcase_counters as $key => $value)
 		{
@@ -2501,12 +2530,12 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
 		$flt['execution_type'] = intval($fObj['filter_execution_type']);
 	}
 	
-	new dBug($fObj);
+	// new dBug($fObj);
 	
 	$opt = array('recursive' => true,'exclude_testcases' => false);
 	$items = $tprojectMgr->getTestSpec($tprojectID,$flt,$opt); 
 
-	new dBug($items);
+	// new dBug($items);
 	// die();
 	return $items;
 }
@@ -2539,7 +2568,6 @@ function prepareTestSpecNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$opt
 
 	if($node_type == 'testcase')
 	{
-		
 		if ( $my['options']['hideTestCases'] )
 		{
 			$node = null;
@@ -2549,6 +2577,7 @@ function prepareTestSpecNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$opt
 			// needed to avoid problems when using json_encode with EXTJS
 			unset($node['childNodes']);
 			$node['leaf']=true;
+			$tcase_counters['testcase_count'] = 1;
 		}
 	}  // if($node_type == 'testcase')
 	

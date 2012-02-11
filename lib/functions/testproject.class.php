@@ -2513,7 +2513,7 @@ function getTestSpec($id,$filters=null,$options=null)
 	$my['filters'] = array_merge($my['filters'], (array)$filters);
 	$my['options'] = array_merge($my['options'], (array)$options);
  
-  	if( $my['options']['exclude_testcases'])
+  	if( $my['options']['exclude_testcases'] )
   	{
 		$my['filters']['exclude_node_types']['testcase']='exclude me';
 	}
@@ -2526,9 +2526,11 @@ function getTestSpec($id,$filters=null,$options=null)
 	// echo __FUNCTION__;
 	// new dBug($my['filters']);
 	// echo '<hr>';
-	
+	// If we have choose any type of filter, we need to force remove empty test suites
+	//
 	if( !is_null($my['filters']['testcase_name']) || !is_null($my['filters']['testcase_id']) ||
-		!is_null($my['filters']['execution_type']) || $my['options']['remove_empty_branches'] )
+		!is_null($my['filters']['execution_type']) || !is_null($my['filters']['exclude_branches']) ||
+		$my['options']['remove_empty_branches'] )
 	{
 		$my['options']['remove_empty_nodes_of_type'] = 'testsuite';
 	}
@@ -2604,92 +2606,109 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 		}
 
 		// Create invariant sql sentences
-		$tfields = "NH.id, NH.parent_id, NH.name, NH.node_type_id, NH.node_order";
-		if($tcversionFilter['enabled'])
-		{
-			$staticSql = " SELECT DISTINCT {$tfields} " .
-						 " FROM {$this->tables['nodes_hierarchy']} NH " .
-						 " JOIN {$this->tables['nodes_hierarchy']} NHCHILD " .
-						 " ON NHCHILD.parent_id = NH.id " .
-						 " LEFT OUTER JOIN {$this->views['tcversions_last_active']} TCVLA " .
-						 " ON TCVLA.id = NHCHILD.id ";
-		}
-		else if($tcaseFilter['is_active'])
-		{
-			$staticSql = " SELECT DISTINCT {$tfields} " .
-						 " FROM {$this->tables['nodes_hierarchy']} NH " .
-						 " LEFT OUTER JOIN {$this->views['tcases_active']} TCA " .
-						 " ON TCA.id = NH.id ";
-		}
-		else
-		{
-			$staticSql = " SELECT {$tfields}  " .
-						 " FROM {$this->tables['nodes_hierarchy']} NH ";
-		}
+		$tfields = "NH.id, NH.parent_id, NH.name, NH.node_type_id, NH.node_order, '' AS external_id ";
+		$staticSql = " SELECT DISTINCT {$tfields} " .
+				     " FROM {$this->tables['nodes_hierarchy']} NH ";
 		
-		
-		// new dBug($my['options']);
 	}
 
-	$sql =	$staticSql . " WHERE NH.parent_id = {$node_id} ";
-	
-	if( $childFilterOn )
-	{
-		$sql .= " AND (" .
+	$sql =	$staticSql . " WHERE NH.parent_id = {$node_id} " .
+			" AND (" .
             	"      NH.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} " .
-	    		" 	   OR (NH.node_type_id = {$this->tree_manager->node_descr_id['testcase']} ";
-
-
-		if( $tcaseFilter['enabled'] )
+	    		" 	   OR NH.node_type_id = {$this->tree_manager->node_descr_id['testcase']} )";
+	
+	if( $tcaseFilter['enabled'] )
+	{
+		foreach($tcaseFilter as $key => $apply)
 		{
-			foreach($tcaseFilter as $key => $apply)
+			if( $apply )
 			{
-				if( $apply )
+				switch($key)
 				{
-					switch($key)
-					{
-						case 'name':
-							 $sql .= " AND NH.name LIKE '%{$my['filters']['testcase_name']}%' ";
-						break;
-						
-						case 'id':
-			            	 $sql .= " AND NH.id = {$my['filters']['testcase_id']} ";
-						break;
-						
-						case 'is_active':
-			            	 $sql .= " AND NH.id = TCA.id ";
-						break;
-						
-					}
+					case 'name':
+						 $sql .= " AND NH.name LIKE '%{$my['filters']['testcase_name']}%' ";
+					break;
+					
+					case 'id':
+		            	 $sql .= " AND NH.id = {$my['filters']['testcase_id']} ";
+					break;
 				}
 			}
 		}
-		
-		if( $tcversionFilter['enabled'] )
-		{
-			foreach($tcversionFilter as $key => $apply)
-			{
-				if( $apply )
-				{
-					switch($key)
-					{
-						case 'execution_type':
-						case 'importance':
-							 $sql .= " AND TCVLA.{$key} = {$my['filters'][$key]} ";
-						break;
-					}
-				}
-			}
-		}
-
         $sql .= " )) ";
 	}
 	
 	$sql .= " ORDER BY NH.node_order,NH.id";
 	
-	$result = $this->db->exec_query($sql);
-	while($row = $this->db->fetch_array($result))
+	// echo $sql . '<br>';
+	
+	
+	// Approach Change - get all 
+	
+	$rs = $this->db->fetchRowsIntoMap($sql,'id');
+	if( count($rs) == 0 )
+	{
+		return $qnum;
+	}
+
+    // create list with test cases nodes
+	$tclist = null;
+	$ks = array_keys($rs);
+	foreach($ks as $ikey)
+	{
+		if( $rs[$ikey]['node_type_id'] == $this->tree_manager->node_descr_id['testcase'] )
+		{
+			$tclist[$rs[$ikey]['id']] = $rs[$ikey]['id'];
+		}
+	}		
+	if( !is_null($tclist) )
+	{
+		$filterOnTC = false;
+		$glav = " SELECT MAX(TCVX.id) AS tcversion_id, NHTCX.parent_id AS tc_id " .
+				" FROM {$this->tables['tcversions']} TCVX " . 
+				" JOIN {$this->tables['nodes_hierarchy']} NHTCX " .
+				" ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
+				" WHERE NHTCX.parent_id IN (" . implode($tclist,',') . ")" .
+				" GROUP BY NHTCX.parent_id,TCVX.tc_external_id  ";
+		
+		if( $tcversionFilter['enabled'] || $tcaseFilter['is_active'] )
+		{
+			if( $tcversionFilter['execution_type'] )
+			{
+				// Go for condition on latest active tcversion
+				$ssx = 	" SELECT TCV.id AS tcversion_id, TCV.tc_external_id AS external_id, " .
+						" SQ.tc_id " .
+				   		" FROM {$this->tables['tcversions']} TCV " . 
+				   		" JOIN ( $glav ) SQ " .
+				   		" ON TCV.id = SQ.tcversion_id " . 
+				   		" WHERE TCV.execution_type = " . $my['filters']['execution_type'];
+				$filterOnTC = true;
+			}	
+			else	
+			{
+				$ssx = $glav;
+			}
+		}
+		// echo $ssx . '<br>';
+		$highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
+		if( $filterOnTC )
+		{
+			$ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;
+			if( count($ky) > 0 )
+			{
+				// new dBug($ky);
+				foreach($ky as $tcase)
+				{
+					unset($rs[$tcase]);						
+				}
+			}
+		}
+	}
+	
+ 	foreach($rs as $row)
  	{
+ 		// $row = &$rs[$idx];
+ 		// new dBug($row);
 		if(!isset($exclude_branches[$row['id']]))
 		{  
 			$node = $row + array('node_table' => $this->tree_manager->node_tables_by['id'][$row['node_type_id']]);
@@ -2697,6 +2716,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 			if($node['node_table'] == 'testcases')
 			{
 				$node['leaf'] = true; 
+				$node['external_id'] = $highlander[$row['id']]['external_id'];
 			}			
 			
 			// why we use exclude_children_of ?
@@ -2706,6 +2726,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 	        if(!isset($exclude_children_of[$node_types[$row['node_type_id']]]))
 	        {
 	        	// Keep walking (Johny Walker Whisky)
+	        	// echo 'Walk:' . $row['id'] . '<br>'; 
 	        	$this->_get_subtree_rec($row['id'],$node,$my['filters'],$my['options']);
 	        }
 

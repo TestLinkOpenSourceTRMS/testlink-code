@@ -676,11 +676,45 @@ function renderTreeNode($level,&$node,$hash_id_descr,
                         $tc_action_enabled,$linkto,$testCasePrefix,
                         $bForPrinting=0,$showTestCaseID)
 {
+
+	static $f2call;
 	$menustring='';
-	$node_type = $hash_id_descr[$node['node_type_id']];
-	extjs_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,$bForPrinting,
-		                               $showTestCaseID,$testCasePrefix);
+
+	// -------------------------------------------------------------------------------
+	// Choice for PERFORMANCE:
+	// Some pieces of code on TL < 1.9.4 has been wrapped in a function, but when working
+	// with BIG amount of testcases (> 5000) impact on performance was high.
+	if(!$f2call)
+	{
+		$f2call['testproject'] = $bForPrinting ? 'TPROJECT_PTP' : 'EP';
+		$f2call['testsuite'] = $bForPrinting ? 'TPROJECT_PTS' : 'ETS';
+		$f2call['testcase'] = $tc_action_enabled ? 'ET' : 'void';
+	}
+	$node['testlink_node_name'] = filterString($node['name']);
+	$node['testlink_node_type'] = $hash_id_descr[$node['node_type_id']];
+	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
+	$pfn = $f2call[$node['testlink_node_type']];
 	
+	switch($node['testlink_node_type'])
+	{
+		case 'testproject':
+		case 'testsuite':
+			$node['text'] =  $node['testlink_node_name'] . " (" . $testcase_count . ")";
+			break;
+			
+		case 'testcase':
+			$node['text'] = "";
+			if($showTestCaseID)
+			{
+				$node['text'] .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
+			} 
+			$node['text'] .= $node['testlink_node_name'];
+			break;
+	} // switch	
+
+	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
+	$node['href'] = "javascript:{$pfn}({$node['id']})";
+	// -------------------------------------------------------------------------------	
 	
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
@@ -693,7 +727,6 @@ function renderTreeNode($level,&$node,$hash_id_descr,
 		{
 			// asimon - replaced is_null by !isset because of warnings in event log
 			if(!isset($node['childNodes'][$idx]))
-			//if(is_null($node['childNodes'][$idx]))
 			{
 				continue;
 			}
@@ -1661,76 +1694,6 @@ function filter_not_run_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters
 	}
 	
 	return $tcase_set;
-}
-
-
-
-/** VERY IMPORTANT: node must be passed BY REFERENCE */
-function extjs_renderTestSpecTreeNodeOnOpen(&$node,$node_type,$tc_action_enabled,$bForPrinting,
-											$showTestCaseID,$testCasePrefix)
-{
-	$name = filterString($node['name']);
-	$buildLinkTo = 1;
-	$pfn = "ET";
-	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
-	
-	switch($node_type)
-	{
-		case 'testproject':
-			$pfn = $bForPrinting ? 'TPROJECT_PTP' : 'EP';
-			$label =  $name . " (" . $testcase_count . ")";
-			break;
-			
-		case 'testsuite':
-			$pfn = $bForPrinting ? 'TPROJECT_PTS' : 'ETS';
-			$label =  $name . " (" . $testcase_count . ")";	
-			break;
-			
-		case 'testcase':
-			$buildLinkTo = $tc_action_enabled;
-			if (!$buildLinkTo)
-			{
-				$pfn = "void";
-			}
-			
-			$label = "";
-			if($showTestCaseID)
-			{
-				$label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
-			} 
-			$label .= $name;
-			break;
-			
-	} // switch	
-	
-	$node['text']=$label;
-	$node['testlink_node_name'] = $name;
-   	$node['testlink_node_type'] = $node_type;
-	$node['position']=isset($node['node_order']) ? $node['node_order'] : 0;
-	$node['href']=is_null($pfn)? '' : "javascript:{$pfn}({$node['id']})";
-	
-	// Remove useless keys
-	$resultsCfg=config_get('results');
-	$status_descr_code=$resultsCfg['status_code'];
-	
-	foreach($status_descr_code as $key => $code)
-	{
-		if(isset($node[$key]))
-		{
-			unset($node[$key]); 
-		}  
-	}
-	$key2del=array('node_type_id','parent_id','node_order','node_table',
-				   'tcversion_id','external_id','version','testcase_count');  
-	
-	foreach($key2del as $key)
-	{
-		if(isset($node[$key]))
-		{
-			unset($node[$key]); 
-		}  
-	}
-	
 }
 
 

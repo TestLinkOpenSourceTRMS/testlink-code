@@ -2615,7 +2615,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 	$sql =	$staticSql . " WHERE NH.parent_id = {$node_id} " .
 			" AND (" .
             	"      NH.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} " .
-	    		" 	   OR NH.node_type_id = {$this->tree_manager->node_descr_id['testcase']} )";
+	    		" 	   OR (NH.node_type_id = {$this->tree_manager->node_descr_id['testcase']} ";
 	
 	if( $tcaseFilter['enabled'] )
 	{
@@ -2635,11 +2635,15 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 				}
 			}
 		}
-        $sql .= " )) ";
+        //$sql .= " )) ";
 	}
 	
+	//else
+	//{
+    //	$sql .= " )) ";
+	//}
+	$sql .= " )) ";
 	$sql .= " ORDER BY NH.node_order,NH.id";
-	
 	// echo $sql . '<br>';
 	
 	
@@ -2664,32 +2668,29 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 	if( !is_null($tclist) )
 	{
 		$filterOnTC = false;
-		$glav = " SELECT MAX(TCVX.id) AS tcversion_id, NHTCX.parent_id AS tc_id " .
+		$glav = " /* Get LATEST ACTIVE tcversion ID */ " .  
+				" SELECT MAX(TCVX.id) AS tcversion_id, NHTCX.parent_id AS tc_id " .
 				" FROM {$this->tables['tcversions']} TCVX " . 
 				" JOIN {$this->tables['nodes_hierarchy']} NHTCX " .
 				" ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
 				" WHERE NHTCX.parent_id IN (" . implode($tclist,',') . ")" .
 				" GROUP BY NHTCX.parent_id,TCVX.tc_external_id  ";
+
+		$ssx = 	" /* Get LATEST ACTIVE tcversion MAIN ATTRIBUTES */ " .
+				" SELECT TCV.id AS tcversion_id, TCV.tc_external_id AS external_id, SQ.tc_id " .
+		   		" FROM {$this->tables['tcversions']} TCV " . 
+		   		" JOIN ( $glav ) SQ " .
+		   		" ON TCV.id = SQ.tcversion_id ";
 		
 		if( $tcversionFilter['enabled'] || $tcaseFilter['is_active'] )
 		{
 			if( $tcversionFilter['execution_type'] )
 			{
-				// Go for condition on latest active tcversion
-				$ssx = 	" SELECT TCV.id AS tcversion_id, TCV.tc_external_id AS external_id, " .
-						" SQ.tc_id " .
-				   		" FROM {$this->tables['tcversions']} TCV " . 
-				   		" JOIN ( $glav ) SQ " .
-				   		" ON TCV.id = SQ.tcversion_id " . 
-				   		" WHERE TCV.execution_type = " . $my['filters']['execution_type'];
+				$ssx .= " /* Filter LATEST ACTIVE tcversion */ " .
+						" WHERE TCV.execution_type = " . $my['filters']['execution_type'];
 				$filterOnTC = true;
 			}	
-			else	
-			{
-				$ssx = $glav;
-			}
 		}
-		// echo $ssx . '<br>';
 		$highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
 		if( $filterOnTC )
 		{

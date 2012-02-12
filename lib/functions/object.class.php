@@ -80,6 +80,16 @@ abstract class tlObject implements iSerialization
 	 * @see getDBTables()	
 	 */
     protected $tables = null;
+
+	/**
+	 * @var array useful to manage DB where TL view names must have a prefix.
+	 *		key: view name WITHOUT prefix
+	 *		value: view name WITH PREFIX
+	 * @see getDBViews()	
+	 */
+    protected $views = null;
+
+
 	
 	/** class constructor */
 	public function __construct()
@@ -87,6 +97,7 @@ abstract class tlObject implements iSerialization
 		if (!isset($this->tables))
 		{
 			$this->tables = self::getDBTables();
+			$this->views = self::getDBViews();
 		}
 
 		$this->objectID = str_replace(".","",uniqid("", true));

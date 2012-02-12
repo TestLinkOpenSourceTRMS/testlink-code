@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120212 - franciscom - new method  getTCasesFilteredByKeywords()
  * 20120205 - franciscom - new methods _get_subtree_rec(), getTestSpec()
  * 20110817 - franciscom - TICKET 4360
  * 20110817 - franciscom - added missed user_id on copy_requirements() call
@@ -2681,6 +2682,10 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 		   		" FROM {$this->tables['tcversions']} TCV " . 
 		   		" JOIN ( $glav ) SQ " .
 		   		" ON TCV.id = SQ.tcversion_id ";
+
+
+		// We can add here keyword filtering if exist ?
+	
 		
 		if( $tcversionFilter['enabled'] || $tcaseFilter['is_active'] )
 		{
@@ -2691,6 +2696,9 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 				$filterOnTC = true;
 			}	
 		}
+		
+		
+		
 		$highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
 		if( $filterOnTC )
 		{
@@ -2750,6 +2758,40 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 	return $qnum;
 }
 
+
+/**
+ * get just test case id filtered by keywords	
+ * developed to be used on test spec tree generation
+ *
+ *
+ * @internal revisions
+ * @since 1.9.4
+ *
+ */
+function getTCasesFilteredByKeywords($testproject_id, $keyword_id=0, $keyword_filter_type='Or')
+{
+    $keyword_filter = " keyword_id IN (" . implode(',',(array)$keyword_id) . ")";          	
+    if($keyword_filter_type == 'And')
+    {
+    	$sql =	" /* Filter Type = AND */ " .
+				" SELECT FOXDOG.testcase_id FROM " .
+				" ( SELECT COUNT(testcase_id) AS HITS,testcase_id " .
+				" 	FROM {$this->tables['testcase_keywords']} " .
+				" 	WHERE {$keyword_filter} " .
+				" 	GROUP BY testcase_id ) AS FOXDOG " . 
+				" WHERE FOXDOG.HITS = " . count($keyword_id );
+    }    
+	else
+	{
+		$sql =  " /* Filter Type = OR */ " .
+				" SELECT testcase_id " .
+		        " FROM {$this->tables['testcase_keywords']} " .
+				" WHERE {$keyword_filter} ";
+	}
+	$hits = $this->db->fetchRowsIntoMap($sql,'testcase_id');
+
+	return($hits);
+}
 
 } // end class
 ?>

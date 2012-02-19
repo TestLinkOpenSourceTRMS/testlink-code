@@ -232,6 +232,8 @@ abstract class tlObject implements iSerialization
                         'execution_bugs' => DB_TABLE_PREFIX . 'execution_bugs',
                         'executions' => DB_TABLE_PREFIX . 'executions',
                         'inventory' => DB_TABLE_PREFIX . 'inventory',
+                        'issuetrackers' => DB_TABLE_PREFIX . 'issuetrackers',
+                        'testproject_issuetracker' => DB_TABLE_PREFIX . 'testproject_issuetracker',
                         'keywords' => DB_TABLE_PREFIX . 'keywords',
                         'milestones' => DB_TABLE_PREFIX . 'milestones',
                         'node_types' => DB_TABLE_PREFIX . 'node_types',

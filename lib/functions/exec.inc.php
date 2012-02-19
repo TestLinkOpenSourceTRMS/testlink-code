@@ -202,6 +202,9 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
 	$tables['builds'] = DB_TABLE_PREFIX . 'builds';
 	
 	$bug_list=array();
+	
+	var_dump($bug_interface);
+	
 	if( is_object($bug_interface) )
 	{
 		$sql = 	"SELECT execution_id,bug_id,builds.name AS build_name " .
@@ -212,15 +215,16 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
 				" AND   executions.build_id=builds.id " .
 				" ORDER BY builds.name,bug_id";
 		$map = $db->get_recordset($sql);
-		
 		if( !is_null($map) )
 		{  	
 			foreach($map as $elem)
 			{
-				$bug_list[$elem['bug_id']]['link_to_bts'] = $bug_interface->buildViewBugLink($elem['bug_id'],GET_BUG_SUMMARY);
+				$bug_list[$elem['bug_id']]['link_to_bts'] = $bug_interface->buildViewBugLink($elem['bug_id'],true);
 				$bug_list[$elem['bug_id']]['build_name'] = $elem['build_name'];
 			}
 		}
+		
+		var_dump($bug_list);
 	}
 	
 	

@@ -2793,5 +2793,70 @@ function getTCasesFilteredByKeywords($testproject_id, $keyword_id=0, $keyword_fi
 	return($hits);
 }
 
+
+/**
+ *
+ *
+ * @internal revisions
+ * @since 1.9.4
+ *
+ */
+function isIssueTrackerEnabled($id)
+{
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	$sql = "/* $debugMsg */ " .
+		   "SELECT isssue_tracker_enabled FROM {$this->object_table} " .
+		   "WHERE id =" . intval($id); 	
+	$ret = $this->db->get_recordset($sql);
+	
+	return $ret[0]['isssue_tracker_enabled'];
+}
+
+
+
+/**
+ *
+ *
+ * @internal revisions
+ * @since 1.9.4
+ *
+ */
+function enableIssueTracker($id)
+{
+	$this->setIssueTrackerEnabled($id,1);
+}
+
+/**
+ *
+ *
+ * @internal revisions
+ * @since 1.9.4
+ *
+ */
+function disableIssueTracker($id)
+{
+	$this->setIssueTrackerEnabled($id,0);
+}
+
+
+/**
+ *
+ *
+ * @internal revisions
+ * @since 1.9.4
+ *
+ */
+function setIssueTrackerEnabled($id,$value)
+{
+
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	$sql = "/* $debugMsg */ " .
+		   " UPDATE {$this->object_table} " .
+		   " SET issue_tracker_enabled = " . (intval($value) > 0 ? 1 : 0) .
+		   " WHERE id =" . intval($id); 	
+	$ret = $this->db->exec_query($sql);
+}
+
+
 } // end class
 ?>

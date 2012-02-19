@@ -4,21 +4,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	execSetResults.tpl
 @internal smarty template - show tests to add results
 @internal revisions
-	20110314 - franciscom - remote execution improvements
-	20101008 - asimon - BUGID 3311
-	20100926 - franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
-	20100614 - eloff - BUGID 3522 - fix issue with multiple note panels
-	20100503 - franciscom - BUGID 3260: Import XML Results is not working with Internet Explorer
-                          reason: passing string without string separator to  openImportResult()
-	20090901 - franciscom - preconditions
-	20090815 - franciscom - platform feature
-	20090418 - franciscom - BUGID 2364 - added logic to refresh tree, due to access to test spec to edit it.
-	20090329 - franciscom - when using bulk mode, user can access test case spec opening a new window.
-                          
-	20090212 - amitkhullar - BUGID 2068
-	20081231 - franciscom - new implementation of Bulk TC Status 
-                          BUGID 1635
-	20081210 - franciscom - BUGID 1905 
+@since 1.9.4
+
 *}
 {assign var="attachment_model" value=$cfg->exec_cfg->att_model}
 {assign var="title_sep"  value=$smarty.const.TITLE_SEP}

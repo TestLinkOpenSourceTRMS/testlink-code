@@ -1,33 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.28 2010/10/08 07:17:48 mx-julian Exp $
-Purpose: 
-Author: franciscom
+@filesource	inc_exec_show_tc_exec.tpl
+@internal revisions
+@since 1.9.4
 
-Rev:
-	20101008 - Julian - avoid warnings on event viewer
-	20100708 - Julian - BUGID 3587 - executions of closed builds cannot be deleted anymore
-	                               - bugs cannot be added or deleted if build is closed
-	                               - new greyed icons used
-	20100617 - eloff - Row coloring in execution history should include notes and cf in same color
-	20100614 - eloff - BUGID 3522 - fix issue with multiple note panels
-	20100426 - Julian - BUGID 2454 - minor changes to properly show executions if exec
-						history was configured
-						
-	20100310 - Julian - BUGID 2454 - now showing lock-symbol for attachment column if
-						build is closed
-						
-    20090909 - franciscom - removed code regarding $gui->grants->edit_exec_notes,
-                            that on 1.11 was commented, and on 1.12 uncommented
-                            creating an empty row with icon and link to edit notes.
-                            
-    20090901 - franciscom - exec_cfg->steps_results_layout
-    20090713 - franciscom - refactoring of edit execution.
-                            layout changed, added check on buid is open
-    20090526 - franciscom -  inc_exec_test_spec.tpl, added args_testplan_design_time_cf
-    20090418 - franciscom - deleted user crash
-    20090418 - franciscom - BUGID 2364 - access to test spec to edit it.
-    20090212 - amitkhullar - BUGID 2068
 *}	
  	{foreach item=tc_exec from=$gui->map_last_exec}
 
@@ -185,7 +161,7 @@ Rev:
             {assign var="my_colspan" value=$my_colspan-1}
         {/if}
 
-				{if $gsmarty_bugInterfaceOn}
+				{if $gui->issueTrackerIntegrationOn}
           <th style="text-align:left">{$labels.bug_mgmt}</th>
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
@@ -263,24 +239,21 @@ Rev:
       			         alt="{$labels.alt_attachment_mgmt}"
       			         style="border:none" /></a>
               </td>
-			  {*BUGID 2454*}
 			  {else}
 			  	{if $attachment_model->show_upload_column && $gsmarty_attachments->enabled}
 					<td align="center">
 						<img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16_greyed.png" title="{$labels.closed_build}">
 					</td>
 				{/if}
-			  {*END BUGID 2454*}
   	      	  {/if}
 				
-				{*BUGID 3587*}
-    			{if $gsmarty_bugInterfaceOn && $tc_old_exec.build_is_open}
-       		  	<td align="center"><a href="javascript:open_bug_add_window({$tc_old_exec.execution_id})">
+    			{if $gui->issueTrackerIntegrationOn && $tc_old_exec.build_is_open}
+       		  	<td align="center"><a href="javascript:open_bug_add_window({$gui->tproject_id},{$tc_old_exec.execution_id})">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bug1.gif" title="{$labels.img_title_bug_mgmt}"
       			         style="border:none" /></a>
                 </td>
                 {else}
-                	{if $gsmarty_bugInterfaceOn}
+                	{if $gui->issueTrackerIntegrationOn}
                 		<td align="center">
 							<img src="{$smarty.const.TL_THEME_IMG_DIR}/bug1_greyed.gif" title="{$labels.closed_build}">
 						</td>

@@ -3,24 +3,11 @@
  *
  * Smarty template - Edit existing Test project
  *
- * CVS: $Id: projectEdit.tpl,v 1.31.2.1 2011/01/07 19:50:29 franciscom Exp $
+ * @filesource	projectEdit.tpl
  *
- * Revisions:
- *	20110107 - franciscom - BUGID 4145 - removed wrong hidden input
- *  20100930 - franciscom - BUGID 2344: Private test project
- *  20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
- *	20100212 - havlatm - inventory support
- *	20100204 - franciscom - test project copy
- *  20090512 - franciscom - is_public attribute
- *  20080117 - franciscom - removed displayy of ID -> use projectview feature
- *  20080112 - franciscom - added test case prefix management
- *  20070725 - franciscom - refactoring: if test project qty == 0 -> do not display 
- *   		the edit/delete tab, remove query string from url, to avoid redirect to home page.
- *  20070515 - franciscom - BUGID 0000854: Test project cannot be deleted 
- *   		if name contains a ' (single quote)
- *   		added escape type to escape modifier on onclick javascript event
- *	20070214 - franciscom - BUGID 628: Name edit � Invalid action parameter/other 
- *			behaviours if �Enter� pressed.
+ * @internal revisions
+ * @since 1.9.4
+ *
  *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -36,7 +23,7 @@
     public,testproject_color,testproject_alt_color,testproject_enable_requirements,
     testproject_enable_inventory,testproject_features,testproject_description,
     testproject_prefix,availability,mandatory,warning,warning_empty_tcase_prefix,
-    warning_empty_tproject_name'}
+    warning_empty_tproject_name,testproject_issue_tracker_integration,issue_tracker'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
@@ -46,30 +33,29 @@
 {/if}
 
 <script type="text/javascript">
-//   BUGID 3943: Escape all messages (string)
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
-	var warning_empty_tcase_prefix = "{$labels.warning_empty_tcase_prefix|escape:'javascript'}";
-	var warning_empty_tproject_name = "{$labels.warning_empty_tproject_name|escape:'javascript'}";
-	{literal}
-	function validateForm(f)
-	{
-	  if (isWhitespace(f.tprojectName.value))
-	  {
-	      alert_message(alert_box_title,warning_empty_tproject_name);
-	      selectField(f, 'tprojectName');
-	      return false;
-	  }
-	  if (isWhitespace(f.tcasePrefix.value))
-	  {
-	      alert_message(alert_box_title,warning_empty_tcase_prefix);
-	      selectField(f, 'tcasePrefix');
-	      return false;
-	  }
-	
-	  return true;
-	}
-	{/literal}
-	</script>
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_tcase_prefix = "{$labels.warning_empty_tcase_prefix|escape:'javascript'}";
+var warning_empty_tproject_name = "{$labels.warning_empty_tproject_name|escape:'javascript'}";
+{literal}
+function validateForm(f)
+{
+if (isWhitespace(f.tprojectName.value))
+{
+   alert_message(alert_box_title,warning_empty_tproject_name);
+   selectField(f, 'tprojectName');
+   return false;
+}
+if (isWhitespace(f.tcasePrefix.value))
+{
+   alert_message(alert_box_title,warning_empty_tcase_prefix);
+   selectField(f, 'tcasePrefix');
+   return false;
+}
+
+return true;
+}
+{/literal}
+</script>
 </head>
 
 <body>
@@ -174,6 +160,33 @@
 					{$labels.testproject_enable_inventory}
 				</td>
 			</tr>
+
+			<tr>
+				<td>{$labels.testproject_issue_tracker_integration}</td><td></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>
+			    	<input type="checkbox" id="issue_tracker_enabled"
+			    		   name="issue_tracker_enabled" {if $gui->issue_tracker_enabled == 1} checked="checked" {/if} />
+			    	{$labels.th_active}
+			    </td>
+      		</tr>
+			<tr>
+				<td></td>
+				<td>
+			    	{$labels.issue_tracker}
+			 		<select name="issue_tracker_id" id="issue_tracker_id">
+			 		<option value="0">&nbsp;</option>
+			 		{foreach item=issue_tracker from=$gui->issueTrackers}
+			 			<option value="{$issue_tracker.id}" 
+			 				{if $issue_tracker.id == $gui->issue_tracker_id} selected {/if} 
+			 			>
+			 			{$issue_tracker.verbose|escape}</option>
+			 		{/foreach}
+			 		</select>
+			    </td>
+      		</tr>
 
 			<tr>
 				<td>{$labels.availability}</td><td></td>

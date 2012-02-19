@@ -3,24 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * edit/delete test projetcs.
+ * test project management
  *
+ * @filesource	projectEdit.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectEdit.php,v 1.52.2.1 2010/12/07 17:32:04 franciscom Exp $
+ * @copyright 	2007-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- * @todo Verify dependency before delete testplan
  *
- * @internal revision
- * 20101207 - franciscom - BUGID 3999: Test Project list does not refresh after deleted
- * 20100313 - franciscom - reduced interface 'width' with smarty
- * 20100217 - franciscom - fixed errors showed on event viewer due to missing properties
- * 20100119 - franciscom - BUGID 3048
- * 20091227 - franciscom - BUGID 3020
- * 20091121 - franciscom - BUGID - Julian Contribution
- * 20080827 - franciscom - BUGID 1692
+ * @internal revisions
+ * @since 1.9.4
  *
  */
 
@@ -51,10 +44,7 @@ $reloadType = 'none';
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
 
-$gui = $args;
-$gui->canManage = has_rights($db,"mgt_modify_product");
-$gui->found = 'yes';
-
+$gui = initializeGui($db,$args);
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
 $status_ok = 1;
 
@@ -159,13 +149,12 @@ switch($args->doAction)
  * @return singleton object with html values tranformed and other
  *                   generated variables.
  * @internal
- * rev:20080112 - franciscom -
- *     20070206 - franciscom - BUGID 617
  */
 function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 {
     $args = new stdClass();
 	$request_hash = strings_stripSlashes($request_hash);
+	
 	$nullable_keys = array('tprojectName','color','notes','doAction','tcasePrefix');
 	foreach ($nullable_keys as $value)
 	{
@@ -180,32 +169,46 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 
 	// get input from the project edit/create page
 	$checkbox_keys = array('is_public' => 0,'active' => 0,'optReq' => 0,
-				'optPriority' => 0,'optAutomation' => 0,'optInventory' => 0);
+						   'optPriority' => 0,'optAutomation' => 0,
+						   'optInventory' => 0, 'issue_tracker_enabled' => 0);
 	foreach ($checkbox_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? 1 : $value;
 	}
 
-	// Special algorithm for notes
-	// 20070206 - BUGID 617
+	$args->issue_tracker_id = isset($request_hash['issue_tracker_id']) ? intval($request_hash['issue_tracker_id']) : 0;
+
 	if($args->doAction != 'doUpdate' && $args->doAction != 'doCreate')
 	{
 		if ($args->tprojectID > 0)
 		{
 			$the_data = $tprojectMgr->get_by_id($args->tprojectID);
 			$args->notes = $the_data['notes'];
+
+			$args->issue_tracker_enabled = intval($the_data['issue_tracker_enabled']);	
+			$args->issue_tracker_id = 0;
+		   	$itMgr = new tlIssueTracker($tprojectMgr->db);
+			$issueT = $itMgr->getLinkedTo($args->tprojectID);
+			if( !is_null($issueT)  )
+			{
+				$args->issue_tracker_id = $issueT['issuetracker_id'];
+			}
+
 			if ($args->doAction == 'doDelete')
 			{
 				$args->tprojectName = $the_data['name'];
-			}	
+			}
+
 		}
 		else
 		{
 			$args->notes = '';
 		}
 	}
-
-	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+	
+	
+	$args->user = isset($_SESSION['currentUser']) ? $_SESSION['currentUser'] : null;
+	$args->userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
 	$args->testprojects = null;
 	$args->projectOptions = prepareOptions($args);
 	return $args;
@@ -228,6 +231,10 @@ function prepareOptions($argsObj)
 	  	return $options;
 }
 
+/**
+ * 
+ * 
+ */
 function doCreate($argsObj,&$tprojectMgr)
 {
 	$key2get=array('status_ok','msg');
@@ -251,9 +258,9 @@ function doCreate($argsObj,&$tprojectMgr)
 	{
 	  	$options = prepareOptions($argsObj);
 	  	    
-		$new_id = $tprojectMgr->create($argsObj->tprojectName, $argsObj->color,
-					$options, $argsObj->notes, $argsObj->active, $argsObj->tcasePrefix,
-					$argsObj->is_public);
+		$new_id = $tprojectMgr->create($argsObj->tprojectName, $argsObj->color,$options, $argsObj->notes, 
+									   $argsObj->active, $argsObj->tcasePrefix,
+									   $argsObj->is_public);
 									                 
 		if (!$new_id)
 		{
@@ -263,6 +270,23 @@ function doCreate($argsObj,&$tprojectMgr)
 		{
 			$op->template = 'projectView.tpl';
 			$op->id = $new_id;
+			
+			if($argsObj->issue_tracker_enabled)
+			{
+				$tprojectMgr->enableIssueTracker($new_id);
+			}
+			else
+			{
+				$tprojectMgr->disableIssueTracker($new_id);
+			}
+			
+			
+			$itMgr = new tlIssueTracker($tprojectMgr->db);
+			if($argsObj->issue_tracker_id > 0)
+			{ 
+				$itMgr->link($argsObj->issue_tracker_id,$new_id);
+			}
+			
 		}
 	}
 
@@ -327,6 +351,24 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
         {
         	$op->msg = '';
         	$tprojectMgr->activate($argsObj->tprojectID,$argsObj->active);
+        	$tprojectMgr->setIssueTrackerEnabled($argsObj->tprojectID,$argsObj->issue_tracker_enabled);
+		   	$itMgr = new tlIssueTracker($tprojectMgr->db);
+		   	
+		   	new dBug($argsObj);
+		   	
+			if( ($doLink = $argsObj->issue_tracker_id > 0)  )
+			{
+				$itMgr->link($argsObj->issue_tracker_id,$argsObj->tprojectID);
+			}
+        	else
+        	{
+				$issueT = $itMgr->getLinkedTo($argsObj->tprojectID);
+				if( !is_null($issueT) )
+				{
+					$itMgr->unlink($issueT['issuetracker_id'],$issueT['testproject_id']);
+				}	
+        	} 
+        	
         	logAuditEvent(TLS("audit_testproject_saved",$argsObj->tprojectName),"UPDATE",$argsObj->tprojectID,"testprojects");
         }
         else
@@ -366,15 +408,17 @@ function edit(&$argsObj,&$tprojectMgr)
 {
 	$tprojectInfo = $tprojectMgr->get_by_id($argsObj->tprojectID);
    
+
 	$argsObj->tprojectName = $tprojectInfo['name'];
-	$argsObj->color = $tprojectInfo['color'];
-	$argsObj->notes = $tprojectInfo['notes'];
 	$argsObj->projectOptions = $tprojectInfo['opt'];
-	$argsObj->active = $tprojectInfo['active'];
 	$argsObj->tcasePrefix = $tprojectInfo['prefix'];
-	$argsObj->is_public = $tprojectInfo['is_public'];
 
-
+	$k2l = array('color','notes', 'active','is_public','issue_tracker_enabled');	
+	foreach($k2l as $key)
+	{
+		$argsObj->$key = $tprojectInfo[$key];
+	}
+	
 	$ui = new stdClass();
 	$ui->main_descr=lang_get('title_testproject_management');
 	$ui->doActionValue = 'doUpdate';
@@ -393,7 +437,7 @@ function edit(&$argsObj,&$tprojectMgr)
 
   returns: -
 
-  rev: 20090606 - franciscom - minor refactoring
+
 */
 function crossChecks($argsObj,&$tprojectMgr)
 {
@@ -474,11 +518,6 @@ function doDelete($argsObj,&$tprojectMgr,$sessionTprojectID)
 
 	if ($ope_status['status_ok'])
 	{
-        // BUGID 3999: Test Project list does not refresh after deleted
-		// if($sessionTprojectID == $argsObj->tprojectID)
-		// {
-		// 	$op->reloadType = 'reloadNavBar';
-        // }
 		$op->reloadType = 'reloadNavBar';
 		$op->msg = sprintf(lang_get('test_project_deleted'),$argsObj->tprojectName);
 		logAuditEvent(TLS("audit_testproject_deleted",$argsObj->tprojectName),"DELETE",$argsObj->tprojectID,"testprojects");
@@ -490,6 +529,37 @@ function doDelete($argsObj,&$tprojectMgr,$sessionTprojectID)
 
     return $op;
 }
+
+
+
+/*
+ *
+ * @internal revisions
+ * @since 1.9.4
+ */
+function initializeGui(&$dbHandler,$argsObj)
+{
+
+	$guiObj = $argsObj;
+	$guiObj->canManage = $argsObj->user->hasRight($dbHandler,"mgt_modify_product");
+	$guiObj->found = 'yes';
+
+	$itMgr = new tlIssueTracker($dbHandler);
+	$guiObj->issueTrackers = $itMgr->getAll();
+	// if( $argsObj->tprojectID > 0 )
+	// {
+	// 	$guiObj->linkedIssueTracker = $itMgr->getLinkedTo($argsObj->tprojectID);
+	// 	if( !is_null($guiObj->linkedIssueTracker) )
+	// 	{
+	// 		$guiObj->issue_tracker_id = $guiObj->linkedIssueTracker['issuetracker_id'];
+	// 	}
+	// }
+	return $guiObj;
+}
+
+
+
+
 
 function checkRights(&$db,&$user)
 {

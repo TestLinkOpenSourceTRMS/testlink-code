@@ -42,18 +42,32 @@ if( $cfg->exec_cfg->enable_test_automation )
 // If call to testlinkInitPage() is done AFTER require_once for BTS
 // log to event viewer fails, but log to file works ok
 testlinkInitPage($db);
-if($cfg->bts_type != 'NO')
-{
-  require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' . 
-               DIRECTORY_SEPARATOR . 'int_bugtracking.php');
-}
-
-
 $templateCfg = templateConfiguration();
 
 $tcversion_id = null;
 $submitResult = null;
 $args = init_args($db,$cfg);
+
+// get issue tracker config
+$its = null;
+$tproject_mgr = new testproject($db);
+$info = $tproject_mgr->get_by_id($args->tproject_id);
+if($info['issue_tracker_enabled'])
+{
+	$it_mgr = new tlIssueTracker($db);
+	$issueT = $it_mgr->getLinkedTo($args->tproject_id);
+	if( !is_null($issueT)  )
+	{
+		$itt = $it_mgr->getTypes();
+		$itd = $it_mgr->getByID($issueT['issuetracker_id']);
+		$iname = strtolower($itt[$issueT['type']]) . 'Interface';
+		$its = new $iname($itt[$issueT['type']],$itd['cfg']);
+	}
+}	
+
+// var_dump($its->getCfg());
+
+echo 'CO' . $its->isConnected();
 
 $smarty = new TLSmarty();
 $tree_mgr = new tree($db);
@@ -64,6 +78,8 @@ $attachmentRepository = tlAttachmentRepository::create($db);
 $req_mgr = new requirement_mgr($db);
 
 $gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr);
+$gui->issueTrackerIntegrationOn = $info['issue_tracker_enabled'] && !is_null($its) && $its->isConnected();
+
 $_SESSION['history_on'] = $gui->history_on;
 $attachmentInfos = null;
 
@@ -234,10 +250,9 @@ if(!is_null($linked_tcversions))
 		      	}    	
 			  }
     	
-		  // asimon - added $g_bugInterfaceOn, $g_bugInterface
     	  $other_info=exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,
     	  								   $args->tplan_id,$args->tproject_id, 
-    	  								   $g_bugInterfaceOn, $g_bugInterface);
+    	  								   $info['issue_tracker_enabled'],$its);
     	  								   
     	  $gui->attachments=$other_info['attachment'];
     	  $gui->bugs=$other_info['bugs'];
@@ -303,6 +318,7 @@ $smarty->assign('cfg',$cfg);
 $smarty->assign('users',tlUser::getByIDs($db,$userSet,'id'));
 $smarty->assign('gui',$gui);
 $smarty->assign('g_bugInterface', $g_bugInterface);
+
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /*
@@ -660,19 +676,22 @@ function exec_additional_info(&$db, $attachmentRepository, &$tcase_mgr, $other_e
   $bugs = null;
   $cfexec_values = null;
 
+  
   foreach($other_execs as $tcversion_id => $execInfo)
   {
     $num_elem = sizeof($execInfo);   
   	for($idx = 0;$idx < $num_elem;$idx++)
   	{
   		$exec_id = $execInfo[$idx]['execution_id'];
-  		
   		$aInfo = getAttachmentInfos($attachmentRepository,$exec_id,'executions',true,1);
   		if ($aInfo)
+  		{
   			$attachmentInfos[$exec_id] = $aInfo;
+  		}
   		
   		if($bugInterfaceOn)
   		{
+			// $the_bugs = $bugInterface->getIssuesForExecution($exec_id);
 			$the_bugs = get_bugs_for_exec($db,$bugInterface,$exec_id);
 			if(count($the_bugs) > 0)
 			{
@@ -989,7 +1008,7 @@ function getCfg()
     $cfg = new stdClass();
     $cfg->exec_cfg = config_get('exec_cfg');
     $cfg->gui_cfg = config_get('gui');
-    $cfg->bts_type = config_get('interface_bugs');
+    // $cfg->bts_type = config_get('interface_bugs');
     
     $results = config_get('results');
     $cfg->tc_status = $results['status_code'];

@@ -476,6 +476,7 @@ CREATE TABLE /*prefix*/testprojects (
   `prefix` varchar(16) NOT NULL,
   `tc_counter` int(10) unsigned NOT NULL default '0',
   `is_public` tinyint(1) NOT NULL default '1',
+  `isssue_tracker_enabled` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY /*prefix*/testprojects_id_active (`id`,`active`),
   UNIQUE KEY /*prefix*/testprojects_prefix (`prefix`)
@@ -628,15 +629,60 @@ CREATE TABLE /*prefix*/req_specs_revisions (
   UNIQUE KEY /*prefix*/req_specs_revisions_uidx1 (`parent_id`,`revision`)
 ) DEFAULT CHARSET=utf8;
 
+
+CREATE TABLE /*prefix*/issuetrackers
+(
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL,
+  `type` int(10) default 0,
+  `cfg` text,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY /*prefix*/issuetrackers_uidx1 (`name`)
+) DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE /*prefix*/testproject_issuetracker
+(
+  `testproject_id` int(10) unsigned NOT NULL,
+  `issuetracker_id` int(10) unsigned NOT NULL,
+  UNIQUE KEY /*prefix*/testproject_issuetracker_uidx1 (`testproject_id`)
+) DEFAULT CHARSET=utf8;
+
+
 # ----------------------------------------------------------------------------------
 # TICKET 4914: Create View - tcversions_last_active
 # ----------------------------------------------------------------------------------
+CREATE VIEW /*prefix*/tcversions_last_active_bare_bones AS
+(
+	  SELECT NHTCV.parent_id AS tcase_id, max(TCV.id) AS tcversion_id
+	  FROM /*prefix*/nodes_hierarchy NHTCV
+	  JOIN /*prefix*/tcversions TCV ON TCV.id = NHTCV.id
+	  WHERE TCV.active = 1
+	  GROUP BY NHTCV.parent_id, TCV.tc_external_id
+); 
+
+
 CREATE VIEW /*prefix*/tcversions_last_active AS 
 (
-	SELECT NHTCV.parent_id AS tcase_id, MAX(TCV.id) AS tcversion_id
+  SELECT TCV.id, TCV.tc_external_id, TCV.version, TCV.layout, TCV.status, 
+  		 TCV.summary, TCV.preconditions, TCV.importance, TCV.author_id, TCV.creation_ts, 
+  		 TCV.updater_id, TCV.modification_ts, TCV.active, TCV.is_open, TCV.execution_type, 
+  		 BB.tcase_id
+  FROM /*prefix*/tcversions TCV
+  JOIN /*prefix*/tcversions_last_active_bare_bones BB
+  ON TCV.id = BB.tcversion_id
+);
+
+
+
+CREATE VIEW /*prefix*/tcases_active AS 
+(
+	SELECT DISTINCT NHTCV.parent_id AS tcase_id, tcv.tc_external_id
 	FROM /*prefix*/nodes_hierarchy NHTCV 
 	JOIN /*prefix*/tcversions TCV ON TCV.id = NHTCV.id 
 	WHERE TCV.active = 1
-	GROUP BY NHTCV.parent_id,TCV.tc_external_id
 );
+
+
+
 

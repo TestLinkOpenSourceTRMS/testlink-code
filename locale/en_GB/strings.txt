@@ -1475,6 +1475,10 @@ $TLS_testproject_enable_automation = 'Enable Test Automation (API keys)';
 $TLS_testproject_enable_inventory = 'Enable Inventory';
 $TLS_testproject_enable_priority = 'Enable Testing Priority';
 $TLS_testproject_enable_requirements = 'Enable Requirements feature';
+$TLS_testproject_issue_tracker_integration = 'Issue Tracker Integration';
+$TLS_issue_tracker = 'Issue Tracker';
+
+
 $TLS_info_failed_loc_prod = 'Failed to localize the Test Project.';
 $TLS_testproject_description = 'Project description';
 $TLS_testproject_features = 'Enhanced features';

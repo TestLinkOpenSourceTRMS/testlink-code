@@ -547,9 +547,9 @@ function tree_getCheckBox(id)
 }
 
 
-function open_bug_add_window(exec_id)
+function open_bug_add_window(tproject_id,exec_id)
 {
-	window.open(fRoot+"lib/execute/bugAdd.php?exec_id="+exec_id,"bug_add",
+	window.open(fRoot+"lib/execute/bugAdd.php?tproject_id=" + tproject_id + "&exec_id="+exec_id,"bug_add",
 	            "width=510,height=270,resizable=yes,dependent=yes");
 }
 

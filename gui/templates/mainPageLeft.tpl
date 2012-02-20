@@ -1,14 +1,11 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.32 2010/10/30 07:49:48 franciscom Exp $     
+ @filesource	mainPageLeft.tpl
  Purpose: smarty template - main page / site map                 
                                                                  
- rev :
-    20100501 - Julian - blocks are not draggable anymore
-    20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
- 	  20100309 - asimon - BUGID 3227, added link for req overview page
- 	  20100106 - asimon - contribution for 2976 req/reqspec search                                    
-    20090808 - franciscom - grouping rights on gui->grants
+ @internal revisions
+ @since 1.9.4
+ 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis	
 *}
 {lang_get var='labels' s='title_product_mgmt,href_tproject_management,href_admin_modules,
                           href_assign_user_roles,href_cfields_management,
@@ -20,7 +17,7 @@
                           href_search_req, href_search_req_spec,href_inventory,
                           href_platform_management, href_inventory_management,
                           href_print_tc,href_keywords_assign, href_req_overview,
-                          href_print_req, title_documentation'}
+                          href_print_req, title_documentation,href_issuetracker_management'}
 
 {assign var="menuLayout" value=$tlCfg->gui->layoutMainPageLeft}
 {assign var="display_left_block_1" value=false}
@@ -201,6 +198,13 @@
 	  		<img src="{$tlImages.bullet}" />
 			<a href="lib/inventory/inventoryView.php">{$labels.href_inventory}</a>
 		{/if}
+
+
+		{if $gui->grants.issuetracker_management}
+			<br />
+	  		<img src="{$tlImages.bullet}" />
+			<a href="lib/issuetrackers/issueTrackerView.php">{$labels.href_issuetracker_management}</a>
+		{/if}
 	  
     </div>
 	{/if}
@@ -224,14 +228,12 @@
  	{if $display_left_block_3}
     <div id="requirements_topics" >
       {if $gui->grants.reqs_view == "yes"}
+
   		<img src="{$tlImages.bullet}" />
         <a href="{$gui->launcher}?feature=reqSpecMgmt">{$labels.href_req_spec}</a><br/>
-        
-        {* BUGID 3227 *}
         <img src="{$tlImages.bullet}" />
         <a href="lib/requirements/reqOverview.php">{$labels.href_req_overview}</a><br/>
-        
-        {* contribution for 2976 req/reqspec search *}
+
         <img src="{$tlImages.bullet}" />
         <a href="{$gui->launcher}?feature=searchReq">{$labels.href_search_req}</a><br/>
         <img src="{$tlImages.bullet}" />

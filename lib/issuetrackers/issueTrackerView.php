@@ -17,12 +17,18 @@ $gui = new stdClass();
 $templateCfg = templateConfiguration();
 
 $issueTrakerMgr = new tlIssueTracker($db);
-$gui->cf_map = $cfield_mgr->get_all();
-$gui->cf_types = $cfield_mgr->get_available_types();
+$gui->items = $issueTrakerMgr->getAll(array('output' => 'add_link_count'));
+
+new dBug($gui);
+die();
+
+/*
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+*/
 
 function checkRights(&$db,&$user)
 {

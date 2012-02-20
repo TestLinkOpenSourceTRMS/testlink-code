@@ -2134,6 +2134,7 @@ $TLS_title_product_mgmt = "Test Project";
 $TLS_href_plan_define_priority = "Test Plan priority";
 $TLS_href_my_testcase_assignments="Test Cases Assigned to Me";
 $TLS_href_platform_management = "Platform Management";
+$TLS_href_issuetracker_management = "Issue Tracker Management";
 
 
 // ----- contribution by asimon for req/reqspec search BUGID 2976 -----

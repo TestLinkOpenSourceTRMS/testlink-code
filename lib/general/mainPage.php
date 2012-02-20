@@ -14,7 +14,8 @@
  * There is also some javascript that handles the form information.
  *
  * @internal revisions
- * 20110325 - franciscom - BUGID 4062
+ * @since 1.9.4
+ * 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis	
  **/
 
 require_once('../../config.inc.php');
@@ -57,6 +58,8 @@ $gui->grants['reqs_edit'] = $currentUser->hasRight($db,"mgt_modify_req");
 $gui->grants['keywords_view'] = $currentUser->hasRight($db,"mgt_view_key");
 $gui->grants['keywords_edit'] = $currentUser->hasRight($db,"mgt_modify_key");
 $gui->grants['platform_management'] = $currentUser->hasRight($db,"platform_management");
+$gui->grants['issuetracker_management'] = $currentUser->hasRight($db,"issuetracker_management");
+
 $gui->grants['configuration'] = $currentUser->hasRight($db,"system_configuraton");
 $gui->grants['usergroups'] = $currentUser->hasRight($db,"mgt_view_usergroups");
 $gui->grants['view_tc'] = $currentUser->hasRight($db,"mgt_view_tc");
@@ -73,7 +76,6 @@ if($gui->grants['view_tc'])
 
 $smarty->assign('opt_requirements', isset($_SESSION['testprojectOptions']->requirementsEnabled) 
 		? $_SESSION['testprojectOptions']->requirementsEnabled : null); 
-
 
 // ----- Test Plan Section --------------------------------------------------------------
 /** 

@@ -240,6 +240,9 @@ class tlIssueTracker extends tlObject
 	}
 
 
+	/**
+	 *
+	 */
 
 	/*
 	 *
@@ -371,18 +374,50 @@ class tlIssueTracker extends tlObject
 	 *
      *
 	 */
-	function getAll()
+	function getAll($options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$sql = "/* debugMsg */ SELECT * ";
+		$my['options'] = array('output' => null);
+		$my['options'] = array_merge($my['options'], (array)$options);
+
+		$add_fields = '';
+		if( $my['options']['output'] == 'add_link_count' )
+		{
+			$add_fields = ", 0 AS link_count ";
+		}
+
+		$sql = "/* debugMsg */ SELECT * {$add_fields} ";
 		$sql .= " FROM {$this->tables['issuetrackers']} ORDER BY NAME ";
 		$rs = $this->db->fetchRowsIntoMap($sql,'id');
+
 		
+		new dBug($rs);
+		$lc = null;
 		if( !is_null($rs) )
 		{
+		
+			if( $my['options']['output'] == 'add_link_count' )
+			{
+				$sql = "/* debugMsg */ SELECT COUNT(0) AS lcount, ITD.id";
+				$sql .= " FROM {$this->tables['issuetrackers']} ITD " .
+						" JOIN {$this->tables['testproject_issuetracker']} " .
+						" ON issuetracker_id = ITD.id " .
+						" GROUP BY ITD.id ";
+				$lc = $this->db->fetchRowsIntoMap($sql,'id');
+				echo $sql;
+				new dBug($lc);
+			}
+		
 			foreach($rs as &$item)
 			{
 				$item['verbose'] = $item['name'] . " ( {$this->types[$item['type']]} )" ;
+				if( !is_null($lc) )
+				{
+					if( isset($lc[$item['id']]) )
+					{
+						$item['link_count'] = intval($lc[$item['id']]['lcount']);
+					}	
+				}
 			}
 		}
 	    return $rs;

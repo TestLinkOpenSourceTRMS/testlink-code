@@ -29,6 +29,7 @@ abstract class issueTrackerInterface
 
 
 	// Force Extending class to define this method
+	abstract function getCfgTemplate();
 
 	/**
 	 *
@@ -81,6 +82,7 @@ abstract class issueTrackerInterface
 			return false;
 		}
        
+        $this->cfg->dbtype = strtolower((string)$this->cfg->dbtype);
 		$this->dbConnection = new database($this->cfg->dbtype);
 		$result = $this->dbConnection->connect(false, $this->cfg->dbhost,$this->cfg->dbuser,
 											   $this->cfg->dbpassword, $this->cfg->dbname);

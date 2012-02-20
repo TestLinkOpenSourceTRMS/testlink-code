@@ -3,15 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: rolesEdit.php,v $
+ * @filesource	rolesEdit.php
  *
- * @version $Revision: 1.34.6.2 $
- * @modified $Date: 2011/01/10 15:38:59 $ by $Author: asimon83 $
- *
- * @internal revision 
- *	20091124 - franciscom - added contribution item template
- *	20081030 - franciscom - added system_mgmt member on getRightsCfg()
- *	20080827 - franciscom - BUGID 1692
+ * @internal revisions 
+ * @since 1.9.4
+ * 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -74,10 +70,7 @@ function init_args()
 
 	$args = new stdClass();
 	$pParams = I_PARAMS($iParams,$args);
-	
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
-
 	$args->basehref = $_SESSION['basehref'];
 	
 	return $args;
@@ -166,8 +159,6 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 
   returns: object
   
-  rev: 20081030 - franciscom - added system_mgmt member
-
 */
 function getRightsCfg()
 {
@@ -181,6 +172,7 @@ function getRightsCfg()
     $cfg->cfield_mgmt = config_get('rights_cf');
     $cfg->system_mgmt = config_get('rights_system');
     $cfg->platform_mgmt = config_get('rights_platforms');
+    $cfg->issuetracker_mgmt = config_get('rights_issuetrackers');
     return $cfg;
 }
 

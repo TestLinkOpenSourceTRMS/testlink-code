@@ -1052,6 +1052,7 @@ $TLS_menu_edit_role = "Edit Role";
 $TLS_menu_view_users = "View Users";
 $TLS_menu_view_roles = "View roles";
 $TLS_th_cf_rights = "Custom field";
+$TLS_th_issuetracker_rights = 'Issue Tracker';
 $TLS_th_kw_rights = $TLS_keyword;
 $TLS_th_mgttc_rights = "Test Case management";
 $TLS_th_platform_rights = $TLS_platform;
@@ -2275,6 +2276,12 @@ $TLS_test_plan_name = $TLS_testplan;
 // ----- lib/functions/roles.inc.php -----
 $TLS_desc_cfield_management = "Custom field management";
 $TLS_desc_cfield_view = "Custom field view (read only access)";
+$TLS_desc_events_mgt = "Event management";
+
+$TLS_desc_issuetrackers_view = "Issue Tracker view (read only access)";
+$TLS_desc_issuetrackers_management = "Issue Tracker Management";
+
+$TLS_desc_mgt_unfreeze_req = "Unfreeze requirement";
 $TLS_desc_mgt_modify_key = "Keyword management";
 $TLS_desc_mgt_modify_product = "Test Project management";
 $TLS_desc_mgt_modify_req = "Requirement management";
@@ -2284,7 +2291,7 @@ $TLS_desc_mgt_view_key = "Keyword view (read only access)";
 $TLS_desc_mgt_view_req = "Requirement view (read only access)";
 $TLS_desc_mgt_view_tc = "Test Case view (read only access)";
 $TLS_desc_mgt_view_events = "Event viewer (read only access)";
-$TLS_desc_events_mgt = "Event management";
+
 $TLS_desc_platforms_view="Platform view (read only access)";
 $TLS_desc_platforms_management="Platform Management";
 $TLS_desc_project_inventory_view="Inventory view (read only access)";
@@ -2296,8 +2303,9 @@ $TLS_desc_testplan_create_build = "Build create/edit";
 $TLS_desc_testplan_execute = "Test Plan execute";
 $TLS_desc_testplan_metrics = "Test Plan metrics";
 $TLS_desc_testplan_planning = "Test Plan planning";
-$TLS_desc_mgt_unfreeze_req = "Unfreeze requirement";
 $TLS_desc_user_role_assignment = "Role assignment";
+
+
 $TLS_error_duplicate_rolename = "There's already a role with that name!";
 $TLS_error_role_no_rights = "You cannot save roles without any rights!";
 $TLS_error_role_no_rolename = "You must enter a name for the role!";

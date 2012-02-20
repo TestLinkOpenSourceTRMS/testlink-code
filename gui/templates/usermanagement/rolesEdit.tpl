@@ -5,6 +5,7 @@ Purpose: smarty template - create/edit user role
 
 @internal revisions
 @since 1.9.4
+20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis
 20111127 - franciscom - demoMode behaviour changes
 *}
 
@@ -20,7 +21,7 @@ Purpose: smarty template - create/edit user role
              error_role_no_rights,caption_possible_affected_users,enter_role_notes,
              title_user_mgmt,caption_define_role,th_mgttc_rights,th_req_rights,
              th_product_rights,th_user_rights,th_kw_rights,th_cf_rights,th_system_rights,
-             th_platform_rights,demo_update_role_disabled,
+             th_platform_rights,demo_update_role_disabled,th_issuetracker_rights,
              th_rolename,th_tp_rights,btn_cancel'}
              
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
@@ -146,6 +147,12 @@ function validateForm(f)
 				<tr>
 					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_platform_rights}</legend>
 							{foreach from=$gui->rightsCfg->platform_mgmt item=id key=k}
+							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
+							{/foreach}
+						</fieldset>
+					</td>
+					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_issuetracker_rights}</legend>
+							{foreach from=$gui->rightsCfg->issuetracker_mgmt item=id key=k}
 							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>

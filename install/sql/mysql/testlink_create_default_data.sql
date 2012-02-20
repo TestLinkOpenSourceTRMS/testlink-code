@@ -4,6 +4,7 @@
 #
 # Database Type: MySQL
 # @since 1.9.4
+# 20120220 - franciscom - issuetracker_*
 # 20111029 - franciscom - added new rights.
 #						  IMPORTANT NOTICE: 
 #						  some rights are useless with 1.9.x, because will be implemented on 2.0
@@ -74,6 +75,8 @@ INSERT INTO /*prefix*/rights  (id,description) VALUES (27,'project_inventory_vie
 INSERT INTO /*prefix*/rights  (id,description) VALUES (28,'req_tcase_link_management');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (29,'keyword_assignment');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (30,'mgt_unfreeze_req');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (31,'issuetracker_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (32,'issuetracker_view');
 
 
 # Rights for Administrator role
@@ -105,6 +108,8 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,31);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,32);
 
 # Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3 );

@@ -38,6 +38,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ *	20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis
  * 	20111029 - franciscom - TICKET 4786: Add right to allow UNFREEZE a requirement
  *
  * @since 1.9.?	 
@@ -84,6 +85,8 @@ function init_global_rights_maps()
 	global $g_rights_users;
 	global $g_rights_system;
 	global $g_rights_platforms;
+	global $g_rights_issuetrackers;
+
 	global $g_propRights_global;
 	global $g_propRights_product;
 	
@@ -119,7 +122,11 @@ function init_global_rights_maps()
 	
 	$g_rights_platforms = array("platform_view" => lang_get('desc_platforms_view'),
 						        "platform_management" => lang_get('desc_platforms_management'));
-	
+
+	$g_rights_issuetrackers = array("issuetracker_view" => lang_get('desc_issuetrackers_view'),
+						        	"issuetracker_management" => lang_get('desc_issuetrackers_management'));
+
+
 	// Global means test project independent.
 	$g_rights_users_global = array ( "mgt_users" => lang_get('desc_mgt_modify_users'),
 								     "role_management" => lang_get('desc_role_management'),
@@ -129,6 +136,8 @@ function init_global_rights_maps()
 							
 	$g_rights_system = array ("mgt_view_events" => lang_get('desc_mgt_view_events'),
 	                          "events_mgt" => lang_get('desc_events_mgt'));
+
+
 							
 	$g_propRights_global = array_merge($g_rights_users_global,$g_rights_system,$g_rights_product);
     unset($g_propRights_global["testproject_user_role_assignment"]);

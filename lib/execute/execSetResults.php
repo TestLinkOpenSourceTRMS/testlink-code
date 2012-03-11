@@ -67,8 +67,7 @@ if($info['issue_tracker_enabled'])
 }	
 
 // var_dump($its->getCfg());
-
-echo 'CO' . $its->isConnected();
+// echo 'CO' . $its->isConnected();
 
 $smarty = new TLSmarty();
 $tree_mgr = new tree($db);

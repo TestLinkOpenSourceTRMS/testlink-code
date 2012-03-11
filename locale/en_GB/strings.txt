@@ -3430,5 +3430,13 @@ $TLS_warning_empty_issuetracker_type = "Issue Tracker type cannot be empty!";
 // issueTrackerCommands.class.php
 $TLS_issuetracker_management = $TLS_href_issuetracker_management;
 $TLS_issuetracker_deleted = "Issue Tracker %s% has been deleted";
+
+// issueTrackerEdit.tpl
+$TLS_issuetracker_show_cfg_example = 'Show configuration example';
+$TLS_issuetracker_cfg_example = 'Configuration example';
+
+// getissuetrackertemplate.php
+$TLS_issuetracker_invalid_type = 'Issue Traker type %s is unknown';
+$TLS_issuetracker_interface_not_implemented = 'Issue Traker interface %s is not implemented/available';
 // ----- END ------------------------------------------------------------------
 ?>

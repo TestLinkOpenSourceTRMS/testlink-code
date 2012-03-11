@@ -273,17 +273,17 @@ class mantissoapInterface extends issueTrackerInterface
 		return $this->connected;
 	}
 
-	function getCfgTemplate()
+	public static function getCfgTemplate()
   	{
-		$template = "<!-- Template " . __CLASS__ . " -->" .
-					"<issuetracker>" .
-					"<username>MANTIS LOGIN NAME</username>" .
-					"<password>MANTIS PASSWORD</password>" .
-					"<uribase>http://www.mantisbt.org/</uribase>" .
-					"<uriwsdl>http://www.mantisbt.org/bugs/api/soap/mantisconnect.php?wsdl</uriwsdl>" .
-					"<uriview>http://www.mantisbt.org/bugs/view.php?id=</uriview>" .
-					"<uricreate>http://www.mantisbt.org/bugs/</uricreate>" .
-					"</issuetracker>";
+		$template = "<!-- Template " . __CLASS__ . " -->\n" .
+					"<issuetracker>\n" .
+					"<username>MANTIS LOGIN NAME</username>\n" .
+					"<password>MANTIS PASSWORD</password>\n" .
+					"<uribase>http://www.mantisbt.org/</uribase>\n" .
+					"<uriwsdl>http://www.mantisbt.org/bugs/api/soap/mantisconnect.php?wsdl</uriwsdl>\n" .
+					"<uriview>http://www.mantisbt.org/bugs/view.php?id=</uriview>\n" .
+					"<uricreate>http://www.mantisbt.org/bugs/</uricreate>\n" .
+					"</issuetracker>\n";
 		return $template;
   	}
 }

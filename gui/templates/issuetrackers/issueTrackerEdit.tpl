@@ -11,7 +11,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 {lang_get var='labels'
           s='warning,warning_empty_issuetracker_name,warning_empty_issuetracker_type,
-             show_event_history,th_issuetracker,th_issuetracker_type,config,btn_cancel'}
+             show_event_history,th_issuetracker,th_issuetracker_type,config,btn_cancel,
+             issuetracker_show_cfg_example,issuetracker_cfg_example'}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -35,6 +36,32 @@ function validateForm(f)
   }
   return true;
 }
+
+function displayITSCfgExample(oid,displayOID)
+{
+	var type;
+	type = Ext.get(oid).getValue();
+	Ext.Ajax.request({
+		url: fRoot+'lib/ajax/getissuetrackercfgtemplate.php',
+		method: 'GET',
+		params: {
+			type: type
+		},
+		success: function(result, request) {
+			var obj = Ext.util.JSON.decode(result.responseText);
+			$(displayOID).innerHTML = obj['cfg'];
+		},
+		failure: function (result, request) {
+		}
+	});
+
+
+
+
+	
+}
+
+
 </script>
 {/literal}
 </head>
@@ -74,13 +101,18 @@ function validateForm(f)
   			<select id="type" name="type">
   				{html_options options=$gui->typeDomain selected=$gui->item.type}
   			</select>
+  			<a href="javascript:displayITSCfgExample('type','cfg_example')">{$labels.issuetracker_show_cfg_example}</a>
 			</td>
   		</tr>
-
+		
   		<tr>
   			<th>{$labels.config}</th>
   			<td><textarea name="cfg" rows="{#ISSUETRACKER_CFG_ROWS#}" 
   									 cols="{#ISSUETRACKER_CFG_COLS#}">{$gui->item.cfg}</textarea></td>
+  		</tr>
+  		<tr>
+  			<th>{$labels.issuetracker_cfg_example}</th>
+  			<td name="cfg_example" id="cfg_example">&nbsp;</td>
   		</tr>
   	</table>
   	<div class="groupBtn">	

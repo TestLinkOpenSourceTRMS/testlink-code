@@ -188,19 +188,19 @@ class mantisInterface extends issueTrackerInterface
 
 
 
-	function getCfgTemplate()
+	public static function getCfgTemplate()
   	{
   	
-		$template = "<!-- Template " . __CLASS__ . " -->" .
-					"<issuetracker>" .
-					"<dbhost>DATABASE SERVER NAME</dbhost>" .
-					"<dbname>DATABASE NAME</dbname>" .
-					"<dbtype>mysql</dbtype>" .
-					"<dbuser>USER</dbuser>" .
-					"<dbpassword>PASSWORD</dbpassword>" .
-					"<uriview>http://localhost:8080/development/mantisbt-1.2.5/view.php?id=</uriview>" .
-					"<uricreate>http://localhost:8080/development/mantisbt-1.2.5/</uricreate>" .
-					"</issuetracker>";
+		$template = "<!-- Template " . __CLASS__ . " -->\n" .
+					"<issuetracker>\n" .
+					"<dbhost>DATABASE SERVER NAME</dbhost>\n" .
+					"<dbname>DATABASE NAME</dbname>\n" .
+					"<dbtype>mysql</dbtype>\n" .
+					"<dbuser>USER</dbuser>\n" .
+					"<dbpassword>PASSWORD</dbpassword>\n" .
+					"<uriview>http://localhost:8080/development/mantisbt-1.2.5/view.php?id=</uriview>\n" .
+					"<uricreate>http://localhost:8080/development/mantisbt-1.2.5/</uricreate>\n" .
+					"</issuetracker>\n";
 		return $template;
   	}
 

@@ -30,7 +30,7 @@ abstract class issueTrackerInterface
 
 
 	// Force Extending class to define this method
-	abstract function getCfgTemplate();
+	abstract public static function getCfgTemplate();
 
 	/**
 	 *

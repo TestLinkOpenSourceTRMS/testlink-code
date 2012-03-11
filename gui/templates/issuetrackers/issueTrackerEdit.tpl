@@ -1,0 +1,98 @@
+{*
+TestLink Open Source Project - http://testlink.sourceforge.net/
+@filesource	issueTrackerEdit.tpl
+
+@internal revisions
+@since 1.9.4
+20120311 - franciscom - TICKET 4904: integrate with ITS on test project basis
+*}
+{assign var="url_args" value="lib/issuetrackers/issueTrackerEdit.php"}
+{assign var="edit_url" value="$basehref$url_args"}
+
+{lang_get var='labels'
+          s='warning,warning_empty_issuetracker_name,warning_empty_issuetracker_type,
+             show_event_history,th_issuetracker,th_issuetracker_type,config,btn_cancel'}
+
+{include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
+{include file="inc_del_onclick.tpl"}
+
+{literal}
+<script type="text/javascript">
+{/literal}
+var warning_empty_issuetracker_name = "{$labels.warning_empty_issuetracker_name|escape:'javascript'}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+{literal}
+function validateForm(f)
+{
+  //alert('ggg');
+  //return false;
+  
+  if (isWhitespace(f.name.value))
+  {
+      alert_message(alert_box_title,warning_empty_issuetracker_name);
+      selectField(f, 'name');
+      return false;
+  }
+  return true;
+}
+</script>
+{/literal}
+</head>
+
+<body>
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
+<h1 class="title">{$gui->main_descr|escape}</h1>
+
+{if $gui->canManage != ""}
+  <div class="workBack">
+  
+  <div class="action_descr">{$gui->action_descr|escape}
+  	{if $gui->mgt_view_events eq "yes" && $gui->item.id > 0}
+			<img style="margin-left:5px;" class="clickable" src="{$tlImages.info}"
+				 onclick="showEventHistoryFor('{$gui->item.id}','issuetrackers')" 
+				 alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
+	{/if}
+  
+  </div><br />
+  {include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
+
+  	<form name="edit" method="post" action="{$edit_url}" onSubmit="javascript:return validateForm(this);">
+  	<table class="common" style="width:50%">
+  		<tr>
+  			<th>{$labels.th_issuetracker}</th>
+  			<td><input type="text" name="name" id="name"  
+  			           size="{#ISSUETRACKER_NAME_SIZE#}" maxlength="{#ISSUETRACKER_NAME_MAXLEN#}" 
+  				         value="{$gui->item.name|escape}" />
+			  		{include file="error_icon.tpl" field="name"}
+			  </td>				
+  		</tr>
+  		<tr>
+  			<th>{$labels.th_issuetracker_type}</th>
+			<td>
+  			<select id="type" name="type">
+  				{html_options options=$gui->typeDomain selected=$gui->item.type}
+  			</select>
+			</td>
+  		</tr>
+
+  		<tr>
+  			<th>{$labels.config}</th>
+  			<td><textarea name="cfg" rows="{#ISSUETRACKER_CFG_ROWS#}" 
+  									 cols="{#ISSUETRACKER_CFG_COLS#}">{$gui->item.cfg}</textarea></td>
+  		</tr>
+  	</table>
+  	<div class="groupBtn">	
+	<input type="hidden" name="id" id="id" value="{$gui->item.id}">
+  	<input type="hidden" name="doAction" value="{$gui->operation}" />
+    <input type="submit" name="create" id="create" value="{$gui->submit_button_label}"
+	         onclick="doAction.value='{$gui->operation}'" />
+  	<input type="button" value="{$labels.btn_cancel}"
+	         onclick="javascript:location.href=fRoot+'lib/issuetrackers/issueTrackerView.php'" />
+  	</div>
+  	</form>
+  </div>
+{/if}
+</body>
+</html>

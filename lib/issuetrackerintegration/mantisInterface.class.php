@@ -6,7 +6,7 @@
  *
  * @internal revision
  * @since 1.9.4
- *
+ * 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis 
 **/
 class mantisInterface extends issueTrackerInterface
 {

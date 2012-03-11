@@ -10,6 +10,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120219 - franciscom - TICKET 4904: integrate with ITS on test project basis
  * 20120209 - franciscom - new method getDBViews()
  * 20110714 - franciscom - added req_spec_revisions in getDBTables()
  **/

@@ -4,6 +4,9 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	bugAdd.php
+ * @internal revisions
+ * @since 1.9.4
+ * 20120219 - franciscom - TICKET 4904: integrate with ITS on test project basis
  */
 require_once('../../config.inc.php');
 require_once('common.php');

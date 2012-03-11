@@ -14,6 +14,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120311 - franciscom - TICKET 4904: integrate with ITS on test project basis
  *
  */
 

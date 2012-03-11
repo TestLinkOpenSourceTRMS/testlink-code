@@ -4,14 +4,15 @@
  *
  * @filesource	issueTrackerInterface.php
  *
- * Baseclass for connection to additional issue tracking interfaces
+ * Base class for connection to additional issue tracking interfaces
  *
  * For supporting a bug tracking system this class has to be extended
  * All bug tracking customization should be done in a sub class of this. 
  *
  *
  * @internal revisions
- *
+ * @since 1.9.4
+ * 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis 
 **/
 require_once(TL_ABS_PATH . "/lib/functions/database.class.php");
 

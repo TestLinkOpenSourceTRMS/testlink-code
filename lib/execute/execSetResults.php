@@ -7,6 +7,7 @@
  * @internal revisions
  *
  * @since 1.9.4
+ * 20120219 - franciscom - TICKET 4904: integrate with ITS on test project basis
  * 20111230 - franciscom - TICKET 4854: Save and Next - Issues with display CF for test plan design - always EMPTY	
  *						   changes related to get_linked_tcversions() refactoring aimed to improve performance
  *						   and memory usage

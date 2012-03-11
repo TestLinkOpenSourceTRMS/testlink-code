@@ -11,7 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
- *
+ * 20120219 - franciscom - TICKET 4904: integrate with ITS on test project basis
 **/
 
 /**
@@ -24,10 +24,11 @@ class tlIssueTracker extends tlObject
 	/** @var resource the database handler */
 	var $db;
 
-    var $types = array('NONE','BUGZILLA','BUGZILLAXMLRPC','EVENTUM',
+    var $types = array(1 => 'BUGZILLA','BUGZILLAXMLRPC','EVENTUM',
 					   'FOGBUGZ','GFORGE','JIRA','JIRASOAP','MANTIS',
 					   'MANTISSOAP','POLARION','SEAPINE','TRACKPLUS','YOUTRACK');
     
+    var $entitySpec = array('name' => 'string','cfg' => 'string','type' => 'int');
     
 	/**
 	 * Class constructor
@@ -49,7 +50,18 @@ class tlIssueTracker extends tlObject
      */
 	function getTypes()
 	{
-        return($this->types);
+        return $this->types;
+    }
+
+
+    /**
+	 * @return hash 
+	 * 
+	 * 
+     */
+	function getEntitySpec()
+	{
+        return $this->entitySpec;
     }
 
 
@@ -60,11 +72,18 @@ class tlIssueTracker extends tlObject
   	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	    $ret = array('status_ok' => 0, 'id' => 0, 'msg' => 'name already exists');
-	
+		$safeobj = $this->sanitize($it);	
+
+		// empty name is not allowed
+		if( is_null($safeobj->name) )
+		{
+			$ret['msg'] = 'empty name is not allowed';
+			return $ret;  // >>>---> Bye!
+		}
+			
 		// need to check if name already exist
 		if( is_null($this->getByName($it->name,array('output' => 'id')) ))
 		{
-			$safeobj = $this->sanitize($it);	
 			$sql = 	"/* debugMsg */ INSERT  INTO {$this->tables['issuetrackers']} " .
 					" (name,cfg,type) " .
 					" VALUES('" . $safeobj->name . "','" . $safeobj->cfg . "',{$safeobj->type})"; 
@@ -92,11 +111,11 @@ class tlIssueTracker extends tlObject
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' - ';
 		$msg = array();
-		$msg['duplicate_name'] = "name %s exists for id %s";
+		$msg['duplicate_name'] = "Update can not be done - name %s already exists for id %s";
 		$msg['ok'] = "operation OK for id %s";
 
 		$safeobj = $this->sanitize($it);
-	    $ret = array('status_ok' => 1, 'id' => $it->id, 'msg' => $debugMsg);
+	    $ret = array('status_ok' => 1, 'id' => $it->id, 'msg' => '');
 
 
 		// check for duplicate name
@@ -240,15 +259,20 @@ class tlIssueTracker extends tlObject
 	}
 
 
-	/**
-	 *
-	 */
 
 	/*
+	 * Sanitize and do minor checks
 	 *
-	 *	keys	name	-> trim will be applied
-     *	   		type	-> intval() wil be applied
-     *	   		cfg		
+	 * Sanitize Operations
+	 * keys	name	-> trim will be applied
+     *	   	type	-> intval() wil be applied
+     *	   	cfg		
+     *
+     * 		For strings also db_prepare_string() will be applied
+     *
+     *
+     * Check Operations
+	 * keys	name	-> if '' => will be set to NULL
      *
 	 */
 	function sanitize($obj)
@@ -263,7 +287,19 @@ class tlIssueTracker extends tlObject
 		$k2san = array('name');
 		foreach($k2san as $key)
 		{	
-			$sobj->$key = $this->db->prepare_string(trim($obj->$key));
+			$value = trim($obj->$key);
+			switch($key)
+			{
+				case 'name':		
+					$sobj->$key = ($value == '') ? null : $value;
+				break;	
+			}
+			
+			if( !is_null($sobj->$key) )
+			{
+				$sobj->$key = $this->db->prepare_string($obj->$key);
+			}			
+			
 		}	    
 		
 		// seems here is better do not touch.
@@ -377,7 +413,7 @@ class tlIssueTracker extends tlObject
 	function getAll($options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$my['options'] = array('output' => null);
+		$my['options'] = array('output' => null, 'orderByField' => 'name');
 		$my['options'] = array_merge($my['options'], (array)$options);
 
 		$add_fields = '';
@@ -386,12 +422,12 @@ class tlIssueTracker extends tlObject
 			$add_fields = ", 0 AS link_count ";
 		}
 
+		$orderByClause = is_null($my['options']['orderByField']) ? '' : 'ORDER BY ' . $my['options']['orderByField']; 
+		
 		$sql = "/* debugMsg */ SELECT * {$add_fields} ";
-		$sql .= " FROM {$this->tables['issuetrackers']} ORDER BY NAME ";
+		$sql .= " FROM {$this->tables['issuetrackers']} {$orderByClause} ";
 		$rs = $this->db->fetchRowsIntoMap($sql,'id');
 
-		
-		new dBug($rs);
 		$lc = null;
 		if( !is_null($rs) )
 		{
@@ -404,13 +440,13 @@ class tlIssueTracker extends tlObject
 						" ON issuetracker_id = ITD.id " .
 						" GROUP BY ITD.id ";
 				$lc = $this->db->fetchRowsIntoMap($sql,'id');
-				echo $sql;
-				new dBug($lc);
 			}
 		
 			foreach($rs as &$item)
 			{
 				$item['verbose'] = $item['name'] . " ( {$this->types[$item['type']]} )" ;
+				$item['type_descr'] = $this->types[$item['type']];
+				
 				if( !is_null($lc) )
 				{
 					if( isset($lc[$item['id']]) )

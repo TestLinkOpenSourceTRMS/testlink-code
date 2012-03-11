@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120219 - franciscom - TICKET 4904: integrate with ITS on test project basis
  * 20120212 - franciscom - new method  getTCasesFilteredByKeywords()
  * 20120205 - franciscom - new methods _get_subtree_rec(), getTestSpec()
  * 20110817 - franciscom - TICKET 4360

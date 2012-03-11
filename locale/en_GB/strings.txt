@@ -43,6 +43,7 @@ $TLS_actions = "Actions";
 $TLS_asc = "Ascending";
 $TLS_any = "Any";
 $TLS_all = "All";
+$TLS_alt_delete = "delete";
 $TLS_attribute = "Attribute";
 $TLS_attributes = "Attributes";
 $TLS_custom_fields = "Custom Fields";
@@ -54,6 +55,7 @@ $TLS_build = "Build";
 $TLS_check_uncheck_all = "Toggle all";
 $TLS_check_uncheck_all_for_remove = "check/uncheck all for remove";
 $TLS_confirm = "Confirm";
+$TLS_config= "Configuration";
 $TLS_days	= "days";
 $TLS_desc = "Descending";
 $TLS_description = "Description";
@@ -131,6 +133,8 @@ $TLS_timestamp	= "Timestamp";
 $TLS_timestamp_lastchange	= "Last Change";
 $TLS_title = "Title";
 $TLS_warning = "Warning";
+$TLS_warning_delete = "You are going to delete: %s <br /><br /> Are you sure?";
+
 $TLS_max_size_file_msg = "Max. allowed file size:  %s KB";
 $TLS_due_since = "Assigned Since (days)";
 $TLS_parent_child='is Parent or is Child';
@@ -3415,5 +3419,16 @@ $TLS_buildMetricsFeedback = $TLS_title_metrics_x_build .
 // execHistory.php
 $TLS_btn_show_exec_history = 'Execution History';
 $TLS_tcase_never_executed = 'This Test Case has not been executed';
+
+
+// issueTrackerView.tpl
+$TLS_th_issuetracker = 'Issue Tracker';
+$TLS_th_issuetracker_type = 'Type';
+$TLS_warning_empty_issuetracker_name = "Issue Tracker name cannot be empty!";
+$TLS_warning_empty_issuetracker_type = "Issue Tracker type cannot be empty!";
+
+// issueTrackerCommands.class.php
+$TLS_issuetracker_management = $TLS_href_issuetracker_management;
+$TLS_issuetracker_deleted = "Issue Tracker %s% has been deleted";
 // ----- END ------------------------------------------------------------------
 ?>

@@ -50,14 +50,15 @@ if($info['issue_tracker_enabled'])
 
 
 $msg = "";
-
 if($args->bug_id != "")
 {
-	$msg = lang_get("error_wrong_BugID_format");
-	if ($its->checkBugID($args->bug_id))
+	// 20120317
+	$l18n = init_labels(array("error_wrong_BugID_format" => null,"error_bug_does_not_exist_on_bts" => null));
+	$msg = $l18n["error_wrong_BugID_format"];
+	if ($its->checkBugIDSyntax($args->bug_id))
 	{
-		$msg = lang_get("error_bug_does_not_exist_on_bts");
-		if ($its->checkBugID_existence($args->bug_id))
+		$msg = $l18n["error_bug_does_not_exist_on_bts"];
+		if ($its->checkBugIDExistence($args->bug_id))
 		{ 	  
 			if (write_execution_bug($db,$args->exec_id, $args->bug_id))
 			{

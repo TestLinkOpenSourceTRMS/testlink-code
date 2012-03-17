@@ -24,9 +24,22 @@ class tlIssueTracker extends tlObject
 	/** @var resource the database handler */
 	var $db;
 
-    var $types = array(1 => 'BUGZILLA','BUGZILLAXMLRPC','EVENTUM',
-					   'FOGBUGZ','GFORGE','JIRA','JIRASOAP','MANTIS',
-					   'MANTISSOAP','POLARION','SEAPINE','TRACKPLUS','YOUTRACK');
+	var $types = null;
+	var $systems = array( 1 =>	array('type' => 'bugzilla', 'api' => 'db'),
+								array('type' => 'bugzilla', 'api' => 'xmlrpc'),
+								array('type' => 'eventum','api' =>'db'),
+								array('type' => 'fogbugz','api' =>'soap'),
+								array('type' => 'gforge','api' =>'soap'),
+								array('type' => 'jira', 'api' =>'db'),
+								array('type' => 'jira', 'api' =>'soap'),
+								array('type' => 'mantis', 'api' =>'db'),
+								array('type' => 'mantis', 'api' =>'soap'),
+								array('type' =>'polarion', 'api' =>'soap'),
+								array('type' => 'seapine','api' =>'soap'),
+								array('type' => 'trackplus','api' =>'soap'),
+								array('type' => 'youtrack','api' =>'soap'));
+	
+	
     
     var $entitySpec = array('name' => 'string','cfg' => 'string','type' => 'int');
     
@@ -39,20 +52,52 @@ class tlIssueTracker extends tlObject
 	{
    		parent::__construct();
 
+		// populate types property
+		$this->getTypes();
 		$this->db = &$db;
 	}
 
 
+
     /**
-	 * @return hash with available locatipons
+	 * @return hash
+	 * 
+	 * 
+     */
+	function getSystems()
+	{
+		
+        return $this->systems;
+    }
+
+    /**
+	 * @return hash
 	 * 
 	 * 
      */
 	function getTypes()
 	{
+		if( is_null($this->types) )
+		{
+			foreach($this->systems as $code => $spec)
+			{
+				$this->types[$code] = $spec['type'] . " (Interface: {$spec['api']})";
+			}
+		}
         return $this->types;
     }
 
+
+    /**
+	 * @return 
+	 * 
+	 * 
+     */
+	function getImplementationForType($issueTrackerType)
+	{
+		$spec = $this->systems[$issueTrackerType];
+        return $spec['type'] . $spec['api'] . 'Interface';
+    }
 
     /**
 	 * @return hash 
@@ -255,7 +300,12 @@ class tlIssueTracker extends tlObject
 	 	 
 		$sql .= " FROM {$this->tables['issuetrackers']} " . $where;
 		$rs = $this->db->get_recordset($sql);
-	    return !is_null($rs) ? $rs[0] : null; 
+		if( !is_null($rs) )
+		{
+			$rs = $rs[0];
+			$rs['implementation'] = $this->getImplementationForType($rs['type']);
+		}
+	    return $rs; 
 	}
 
 
@@ -483,7 +533,32 @@ class tlIssueTracker extends tlObject
 			   " WHERE TPIT.testproject_id = " . intval($tprojectID);
 			   
 		$ret = $this->db->get_recordset($sql);
-		return !is_null($ret) ? $ret[0] : null;
+		if( !is_null($ret) )
+		{ 
+			$ret = $ret[0];
+			$ret['verboseType'] = $this->types[$ret['type']];
+		}
+		
+		return $ret;
+	}
+
+
+	/*
+	 *
+     *
+	 */
+	function getInterfaceObject($tprojectID)
+	{
+		$its = null;
+		$issueT = $this->getLinkedTo($tprojectID);
+		if( !is_null($issueT)  )
+		{
+			$itd = $this->getByID($issueT['issuetracker_id']);
+			$iname = $itd['implementation'];
+			$its = new $iname($itd['implementation'],$itd['cfg']);
+		}
+		return 	$its;
+	
 	}
 
 } // end class

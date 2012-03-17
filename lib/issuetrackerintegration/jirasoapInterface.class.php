@@ -20,7 +20,9 @@ class jirasoapInterface extends issueTrackerInterface
     protected $APIClient;
 	protected $authToken;
     protected $statusDomain = array();
-
+	protected $l18n;
+	protected $labels = array('duedate' => 'its_duedate_with_separator');
+	
 	private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
 	
 	
@@ -113,7 +115,12 @@ class jirasoapInterface extends issueTrackerInterface
         $summary = null;
         if(!is_null(($issue = $this->getIssue($issueID))))
         {
-            $summary = $issue->summary . '<b> [' . $this->helperParseDate($issue->duedate) . ']</b> ';
+            $summary = $issue->summary;
+        	$strDueDate = $this->helperParseDate($issue->duedate);
+            if( !is_null($strDueDate) )
+            { 
+            	$summary .= "<b> [$strDueDate] </b> ";
+            }
         }
         return $summary;
     }
@@ -184,6 +191,7 @@ class jirasoapInterface extends issueTrackerInterface
      **/
     function connect()
     {
+		$this->interfaceViaDB = false;
 		$op = $this->getClient(array('log' => true));
 		if( ($this->connected = $op['connected']) )
 		{ 
@@ -198,6 +206,7 @@ class jirasoapInterface extends issueTrackerInterface
     	        {
         	    	$this->statusDomain[$pair->name]=$pair->id;
             	}
+            	$this->l18n = init_labels($this->labels);
 			}
 			catch (SoapFault $f)
 			{
@@ -261,12 +270,12 @@ class jirasoapInterface extends issueTrackerInterface
      **/
     private function helperParseDate($date2parse)
     {
-    	$ret = "No Date";
+    	$ret = null;
         if (!is_null($date2parse))
         {
             $ret = date_parse($date2parse);
             $ret = ((gmmktime(0, 0, 0, $ret['month'], $ret['day'], $ret['year'])));
-            $ret = gmstrftime("%d %b %Y",($ret));
+            $ret = $this->l18n['duedate'] . gmstrftime("%d %b %Y",($ret));
         }
         return $ret ;
     }

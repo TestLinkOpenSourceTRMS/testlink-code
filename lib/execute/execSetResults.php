@@ -49,25 +49,17 @@ $tcversion_id = null;
 $submitResult = null;
 $args = init_args($db,$cfg);
 
-// get issue tracker config
+// get issue tracker config and object to manage TestLink - BTS integration 
 $its = null;
 $tproject_mgr = new testproject($db);
 $info = $tproject_mgr->get_by_id($args->tproject_id);
 if($info['issue_tracker_enabled'])
 {
 	$it_mgr = new tlIssueTracker($db);
-	$issueT = $it_mgr->getLinkedTo($args->tproject_id);
-	if( !is_null($issueT)  )
-	{
-		$itt = $it_mgr->getTypes();
-		$itd = $it_mgr->getByID($issueT['issuetracker_id']);
-		$iname = strtolower($itt[$issueT['type']]) . 'Interface';
-		$its = new $iname($itt[$issueT['type']],$itd['cfg']);
-	}
+	$its = $it_mgr->getInterfaceObject($args->tproject_id);
+	unset($it_mgr);
 }	
 
-// var_dump($its->getCfg());
-// echo 'CO' . $its->isConnected();
 
 $smarty = new TLSmarty();
 $tree_mgr = new tree($db);

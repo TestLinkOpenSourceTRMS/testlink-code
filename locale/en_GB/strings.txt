@@ -75,6 +75,7 @@ $TLS_import = "Import";
 $TLS_importance	= "Importance";
 $TLS_imported = "Imported";
 $TLS_important_notice = "Important Notice";
+$TLS_its_duedate_with_separator = "Due date: ";
 $TLS_keyword = "Keyword";
 $TLS_log_message = "Log message";
 $TLS_mandatory = "Mandatory fields";

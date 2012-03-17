@@ -34,14 +34,10 @@ if($info['issue_tracker_enabled'])
 {
 	$it_mgr = new tlIssueTracker($db);
 	$issueT = $it_mgr->getLinkedTo($args->tproject_id);
-	if( !is_null($issueT)  )
+	if( !is_null($issueT) )
 	{
-		$itt = $it_mgr->getTypes();
-		$itd = $it_mgr->getByID($issueT['issuetracker_id']);
-		$iname = strtolower($itt[$issueT['type']]) . 'Interface';
-		$its = new $iname($itt[$issueT['type']],$itd['cfg']);
-
-		$gui->issueTrackerVerboseType = $itt[$issueT['type']];
+		$its = $it_mgr->getInterfaceObject($args->tproject_id);
+		$gui->issueTrackerVerboseType = $issueT['verboseType'];
 		$gui->issueTrackerVerboseID = $issueT['issuetracker_name'];
 		$gui->bugIDMaxLength = $its->getBugIDMaxLength();
 		$gui->createIssueURL = $its->getEnterBugURL();
@@ -50,7 +46,7 @@ if($info['issue_tracker_enabled'])
 
 
 $msg = "";
-if($args->bug_id != "")
+if(!is_null($issueT) && $args->bug_id != "")
 {
 	// 20120317
 	$l18n = init_labels(array("error_wrong_BugID_format" => null,"error_bug_does_not_exist_on_bts" => null));

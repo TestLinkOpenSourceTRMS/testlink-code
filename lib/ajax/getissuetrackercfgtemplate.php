@@ -25,8 +25,8 @@ $itemMgr = new tlIssueTracker($db);
 $itt = $itemMgr->getTypes();
 if( isset($itt[$type]) )
 {
-	$iname = strtolower($itt[$type]) . 'Interface';
-	
+	unset($itt);
+	$iname = $itemMgr->getImplementationForType($type);
 	$info['cfg'] = stream_resolve_include_path($iname . '.class.php');
 
 	// Notes for developers

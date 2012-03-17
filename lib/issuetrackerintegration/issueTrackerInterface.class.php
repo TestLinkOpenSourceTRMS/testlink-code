@@ -15,6 +15,7 @@
  * 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis 
 **/
 require_once(TL_ABS_PATH . "/lib/functions/database.class.php");
+require_once(TL_ABS_PATH . "/lib/functions/lang_api.php");
 
 abstract class issueTrackerInterface
 {
@@ -27,12 +28,11 @@ abstract class issueTrackerInterface
 	var $dbConnection = null;
 	var $connected = false;
 	var $dbMsg = '';
-	var $interfaceViaDB = false;
-
-
+	var $interfaceViaDB = false;  // useful for connect/disconnect methods
 
 	/**
 	 *
+	 * @param str $type (see tlIssueTracker.class.php $systems property)
 	 **/
 	function __construct($type,$config)
 	{
@@ -55,7 +55,8 @@ abstract class issueTrackerInterface
 			$this->cfg->dbcharset = $this->tlCharSet;
 	 	}
 
-		$this->cfg->interfacePHP = strtolower('int_' . $type . '.php');
+		// need to understand if useful
+		// $this->cfg->interfacePHP = strtolower('int_' . $type . '.php');
 	    $this->connect();
 	}
 

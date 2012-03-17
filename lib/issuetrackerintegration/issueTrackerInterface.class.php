@@ -27,10 +27,9 @@ abstract class issueTrackerInterface
 	var $dbConnection = null;
 	var $connected = false;
 	var $dbMsg = '';
+	var $interfaceViaDB = false;
 
 
-	// Force Extending class to define this method
-	abstract public static function getCfgTemplate();
 
 	/**
 	 *
@@ -44,7 +43,7 @@ abstract class issueTrackerInterface
 		$this->cfg = simplexml_load_string($xmlCfg);
 		if (!$this->cfg) 
 		{
-    		echo "Failed loading XML STRING\n";
+    		echo "Failure loading XML STRING\n";
     		foreach(libxml_get_errors() as $error) 
     		{
         		echo "\t", $error->message;
@@ -67,10 +66,27 @@ abstract class issueTrackerInterface
 	{
 		return $this->cfg;
 	}
+
+	/**
+	 *
+	 **/
+	function getMyInterface()
+  	{
+		return $this->cfg->interfacePHP;
+  	}
+
+	/**
+	 * return the maximum length in chars of a bug id
+	 * @return int the maximum length of a bugID
+	 */
+	function getBugIDMaxLength()
+	{
+		return 16;
+	}
+
 	
 	/**
-	 * this function establishes the database connection to the
-	 * bugtracking system
+	 * establishes the database connection to the bugtracking system
 	 *
 	 * @return bool returns true if the db connection was established and the
 	 * db could be selected, false else
@@ -117,14 +133,16 @@ abstract class issueTrackerInterface
 	}
 	
 	/**
-	 * State of the db connection
+	 * State of connection to BTS
 	 *
-	 * @return bool returns true if the db connection is established, false else
+	 * @return bool returns true if connection with BTS is established, false else
 	 *
 	 **/
 	function isConnected()
 	{
-		return ($this->connected && is_object($this->dbConnection)) ? 1 : 0;
+	
+		return ($this->connected && 
+				((!$this->interfaceViaDB ) || is_object($this->dbConnection)) ? 1 : 0);
 	}
 
 	/**
@@ -133,7 +151,7 @@ abstract class issueTrackerInterface
 	 **/
 	function disconnect()
 	{
-		if (isConnected())
+		if ($this->isConnected() && $this->interfaceViaDB)
 		{
 			$this->dbConnection->close();
 		}
@@ -164,14 +182,6 @@ abstract class issueTrackerInterface
       	return $valid;
 	}
 
-	/**
-	 * return the maximum length in chars of a bug id
-	 * @return int the maximum length of a bugID
-	 */
-	function getBugIDMaxLength()
-	{
-		return 16;
-	}
 
 	/**
 	 * default implementation for generating a link to the bugtracking page for viewing
@@ -222,8 +232,6 @@ abstract class issueTrackerInterface
 	{
 		return $this->cfg->uricreate;
 	}
-
-
 
 
 	/**
@@ -296,5 +304,14 @@ abstract class issueTrackerInterface
 	{
 		return true;
 	}
+
+
+	// How to Force Extending class to define this STATIC method ?
+	// KO abstract public static function getCfgTemplate();
+	public static function getCfgTemplate() 
+	{
+        throw new RuntimeException("Unimplemented - YOU must implement it in YOUR interface Class");
+    }
+
 }
 ?>

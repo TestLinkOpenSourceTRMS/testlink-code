@@ -268,11 +268,24 @@ class mantissoapInterface extends issueTrackerInterface
 	}
 
 
+	/**
+	 * 
+	 * 
+	 *
+	 * 
+	 **/
 	function isConnected()
 	{
 		return $this->connected;
 	}
 
+
+	/**
+	 * 
+	 * 
+	 *
+	 * 
+	 **/
 	public static function getCfgTemplate()
   	{
 		$template = "<!-- Template " . __CLASS__ . " -->\n" .

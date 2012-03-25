@@ -2,8 +2,9 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
- * @filesource	mantissoapInterface.class.php
+ * @filesource	jirasoapInterface.class.php
  * @author Francisco Mancardi
+ *
  *
  * @internal IMPORTANT NOTICE
  *			 we use issueID on methods signature, to make clear that this ID 
@@ -25,57 +26,61 @@ class jirasoapInterface extends issueTrackerInterface
 	
 	private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
 	
-	
 	/**
-	 * Returns URL to the bugtracking page for viewing ticket
+	 * Construct and connect to BTS.
 	 *
-	 * @param string issueID
-	 * 
-	 * @return string 
+	 * @param str $type (see tlIssueTracker.class.php $systems property)
+	 * @param xml $cfg
 	 **/
-	function buildViewBugURL($issueID)
+	function __construct($type,$config)
 	{
-		return $this->cfg->uriview . urlencode($issueID);
+		$this->interfaceViaDB = false;
+	    $this->setCfg($config);
+		$this->completeCfg();
+	    $this->connect();
 	}
 
 	/**
 	 *
-	 * @param string issueID
-	 * @param boolean addSummary
-	 * 
-	 * @return string 
-	 **/
-    function buildViewBugLink($issueID,$addSummary=false)
-    {
-        $dummy = $this->getBugStatusString($issueID);
-        $link = "<a href='" .$this->buildViewBugURL($issueID) . "' target='_blank'>";
-        $link .= is_null($dummy) ? $issueID : $dummy;
-        
-        if($addSummary)
-        {
-            $dummy = $this->getBugSummaryString($issueID);
-            if(!is_null($dummy))
-            {
-                $link .= " - " . $dummy;
-            }
-        }
-        $link .= "</a>";
-        return $link;
-    }
-
-	
-	/**
-	 * Returns the status for issueID
-	 * this function is not directly called by TestLink. 
+	 * check for configuration attributes than can be provided on
+	 * user configuration, but that can be considered standard.
+	 * If they are MISSING we will use 'these carved on the stone values' 
+	 * in order	to simplify configuration.
 	 *
+	 *
+	 **/
+	function completeCfg()
+	{
+		$base = trim($this->cfg->uribase,"/") . '/' ;
+	    if( !property_exists($this->cfg,'uriwsdl') )
+	    {
+	    	$this->cfg->uriwsdl = $base . 'rpc/soap/jirasoapservice-v2?wsdl';
+		}
+		
+	    if( !property_exists($this->cfg,'uriview') )
+	    {
+	    	$this->cfg->uriview = $base . 'browse/';
+		}
+	    
+	    if( !property_exists($this->cfg,'uricreate') )
+	    {
+	    	$this->cfg->uricreate = $base . 'secure/CreateIssue!default.jspa';
+		}	    
+	}
+
+
+	/**
+	 * status code (integer) for issueID 
+	 *
+	 * 
 	 * @param string issueID
 	 *
 	 * @return 
 	 **/
-	function getBugStatus($issueID)
+	public function getIssueStatusCode($issueID)
 	{
 		$issue = $this->getIssue($issueID);
-		return !is_null($issue) ? $issue->status : false;
+		return !is_null($issue) ? $issue->statusCode : false;
 	}
 
 		
@@ -87,20 +92,10 @@ class jirasoapInterface extends issueTrackerInterface
 	 * @return string 
 	 *
 	 **/
-	function getBugStatusString($issueID)
+	function getIssueStatusVerbose($issueID)
 	{
-        $str = "Ticket ID - " . $issueID . " - does not exist in BTS";
         $issue = $this->getIssue($issueID);
-        if (!is_null($issue))
-        {
-            $str = array_search($issue->status, $this->statusDomain);
-			if (strcasecmp($str, 'closed') == 0 || strcasecmp($str, 'resolved') == 0 )
-            {
-                $str = "<del>" . $str . "</del>";
-            }
-            $str = "<b>" . $issueID . ": </b>[" . $str  . "] " ;
-        }
-        return $str;
+		return !is_null($issue) ? $issue->statusVerbose : null;
 	}
 	
 	
@@ -110,19 +105,10 @@ class jirasoapInterface extends issueTrackerInterface
 	 * 
 	 * @return string returns the bug summary if bug is found, else null
 	 **/
-    function getBugSummaryString($issueID)
+    function getIssueSummary($issueID)
     {
-        $summary = null;
-        if(!is_null(($issue = $this->getIssue($issueID))))
-        {
-            $summary = $issue->summary;
-        	$strDueDate = $this->helperParseDate($issue->duedate);
-            if( !is_null($strDueDate) )
-            { 
-            	$summary .= "<b> [$strDueDate] </b> ";
-            }
-        }
-        return $summary;
+        $issue = $this->getIssue($issueID);
+		return !is_null($issue) ? $issue->summary : null;
     }
 	
     /**
@@ -136,12 +122,20 @@ class jirasoapInterface extends issueTrackerInterface
         try
         {
             $issue = $this->APIClient->getIssue($this->authToken, $issueID);
+            
+            // We are going to have a set of standard properties
+            $issue->IDHTMLString = "<b>{$issueID} : </b>";
+            $issue->statusCode = $issue->status;
+            $issue->statusVerbose = array_search($issue->status, $this->statusDomain);
+			$issue->statusHTMLString = $this->buildStatusHTMLString($issueID,$issue->statusCode);
+			$issue->summaryHTMLString = $this->buildSummaryHTMLString($issue);
         }
         catch (Exception $e)
         {
          	tLog("JIRA Ticket ID $issueID - " . $e->getMessage(), 'WARNING');
 			$issue = null;
         }
+        
         return $issue;
     }
 
@@ -155,16 +149,7 @@ class jirasoapInterface extends issueTrackerInterface
      **/
     function checkBugIDSyntax($issueID)
     {
-        $status_ok = !(trim($issueID) == "");
-        if($status_ok)
-        {
-            $forbidden_chars = '/[!|�%&()\/=?]/';
-            if (preg_match($forbidden_chars, $issueID))
-            {
-                $status_ok = false;
-            }
-        }
-        return $status_ok;
+    	return $this->checkBugIDSyntaxString($issueID);
     }
 
     /**
@@ -309,5 +294,32 @@ class jirasoapInterface extends issueTrackerInterface
   	{
 		return $this->statusDomain;
   	}
+
+	/**
+	 *
+	 **/
+	function buildStatusHTMLString($issueID,$statusCode)
+	{
+		$str = array_search($statusCode, $this->statusDomain);
+		if (strcasecmp($str, 'closed') == 0 || strcasecmp($str, 'resolved') == 0 )
+        {
+                $str = "<del>" . $str . "</del>";
+        }
+        return "[{$str}] ";
+	}
+
+	/**
+	 *
+	 **/
+    function buildSummaryHTMLString($issue)
+    {
+		$summary = $issue->summary;
+        $strDueDate = $this->helperParseDate($issue->duedate);
+        if( !is_null($strDueDate) )
+        { 
+        	$summary .= "<b> [$strDueDate] </b> ";
+        }
+        return $summary;
+    }
 }
 ?>

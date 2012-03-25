@@ -4,11 +4,21 @@
  *
  * @filesource	issueTrackerInterface.php
  *
- * Base class for connection to additional issue tracking interfaces
+ * Base class for connection to issue tracking interfaces
+ * For supporting a bug/issue tracking system this class has to be extended,
+ * and all customization should be done in the subclass. 
  *
- * For supporting a bug tracking system this class has to be extended
- * All bug tracking customization should be done in a sub class of this. 
+ * ============= Issue Entity properties on TestLink Context ===================
  *
+ * IDHTMLString = string
+ * statusCode = can be integer,string depending of ITS
+ * statusVerbose = string human readable what user see on ITS GUI
+ * statusHTMLString = string can contain additional info ready for HTML
+ * summary = string what user see on ITS GUI
+ * summaryHTMLString = can contain additional info ready for HTML
+ *
+ * other properties can be present depending on ITS.
+ * =============================================================================
  *
  * @internal revisions
  * @since 1.9.4
@@ -25,38 +35,28 @@ abstract class issueTrackerInterface
 	var $tlCharSet = null;
 
 	// private vars don't touch
-	var $dbConnection = null;
-	var $connected = false;
+	var $dbConnection = null;  // usable only if interface is done via direct DB access.
 	var $dbMsg = '';
+	var $connected = false;
 	var $interfaceViaDB = false;  // useful for connect/disconnect methods
 
 	/**
+	 * Construct and connect to BTS.
+	 * Can be overloaded in specialized class
 	 *
 	 * @param str $type (see tlIssueTracker.class.php $systems property)
 	 **/
 	function __construct($type,$config)
 	{
 	    $this->tlCharSet = config_get('charset');
-		
-		$xmlCfg = "<?xml version='1.0'?> " . $config;
-		libxml_use_internal_errors(true);
-		$this->cfg = simplexml_load_string($xmlCfg);
-		if (!$this->cfg) 
-		{
-    		echo "Failure loading XML STRING\n";
-    		foreach(libxml_get_errors() as $error) 
-    		{
-        		echo "\t", $error->message;
-    		}
-		}
+		$this->setCfg($config);
 
+		// useful only for integration via DB
 		if( !property_exists($this->cfg,'dbcharset') )
 		{
 			$this->cfg->dbcharset = $this->tlCharSet;
 	 	}
 
-		// need to understand if useful
-		// $this->cfg->interfacePHP = strtolower('int_' . $type . '.php');
 	    $this->connect();
 	}
 
@@ -71,18 +71,41 @@ abstract class issueTrackerInterface
 	/**
 	 *
 	 **/
+	function setCfg($xmlString)
+	{
+		$xmlCfg = "<?xml version='1.0'?> " . $xmlString;
+		libxml_use_internal_errors(true);
+		$this->cfg = simplexml_load_string($xmlCfg);
+		if (!$this->cfg) 
+		{
+    		echo "Failure loading XML STRING\n";
+    		foreach(libxml_get_errors() as $error) 
+    		{
+        		echo "\t", $error->message;
+    		}
+		}
+	}
+
+	/**
+	 *
+	 **/
 	function getMyInterface()
   	{
 		return $this->cfg->interfacePHP;
   	}
 
 	/**
-	 * return the maximum length in chars of a bug id
+	 * return the maximum length in chars of a issue id
+	 * used on TestLink GUI
+	 *
 	 * @return int the maximum length of a bugID
 	 */
 	function getBugIDMaxLength()
 	{
-		return 16;
+		// CRITIC: related to execution_bugs table, you can not make it
+		//		   greater WITHOUT changing table structure.	
+		// 
+		return 16;  
 	}
 
 	
@@ -163,25 +186,46 @@ abstract class issueTrackerInterface
 
 
 	/**
-	 * checks a bug id for validity, that means numeric only
+	 * checks a issue id for validity (NUMERIC)
 	 *
 	 * @return bool returns true if the bugid has the right format, false else
 	 **/
-	function checkBugIDSyntax($id)
+	function checkBugIDSyntaxNumeric($issueID)
 	{
 		$valid = true;	
 	  	$forbidden_chars = '/\D/i';  
-		if (preg_match($forbidden_chars, $id))
+		if (preg_match($forbidden_chars, $issueID))
     	{
 			$valid = false;	
     	}
 		else 
     	{
-	    	$valid = (intval($id) > 0);	
+	    	$valid = (intval($issueID) > 0);	
     	}
 
       	return $valid;
 	}
+
+    /**
+     * checks id for validity (STRING)
+     *
+	 * @param string issueID
+     *
+     * @return bool returns true if the bugid has the right format, false else
+     **/
+    function checkBugIDSyntaxString($issueID)
+    {
+        $status_ok = !(trim($issueID) == "");
+        if($status_ok)
+        {
+            $forbidden_chars = '/[!|�%&()\/=?]/';
+            if (preg_match($forbidden_chars, $issueID))
+            {
+                $status_ok = false;
+            }
+        }
+        return $status_ok;
+    }
 
 
 	/**
@@ -194,29 +238,52 @@ abstract class issueTrackerInterface
 	 * @return string returns a complete HTML HREF to view the bug (if found in db)
 	 *
 	 **/
-	function buildViewBugLink($bugID, $addSummary = false)
+	function buildViewBugLink($issueID, $addSummary = false)
 	{
 
-		$link = "<a href='" . $this->buildViewBugURL($bugID) . "' target='_blank'>";
-		$status = $this->getBugStatusString($bugID);
-		
-		if (!is_null($status))
+		$link = "<a href='" . $this->buildViewBugURL($issueID) . "' target='_blank'>";
+
+		$issue = $this->getIssue($issueID);
+		$useIconv = property_exists($this->cfg,'dbcharset');
+
+		if($useIconv)
 		{
-			$status = iconv($this->cfg->dbcharset,$this->tlCharSet,$status);
-			$link .= $status;
+				$link .= iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$issue->IDHTMLString);
 		}
 		else
 		{
-			$link .= $bugID;
+				$link .= $issue->IDHTMLString;
+		}
+		
+		if (!is_null($issue->statusHTMLString))
+		{
+			if($useIconv)
+			{
+				$link .= iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$issue->statusHTMLString);
+			}
+			else
+			{
+				$link .= $issue->statusHTMLString;
+			}
+		}
+		else
+		{
+			$link .= $issueID;
 		}
 
 		if ($addSummary)
 		{
-			$summary = $this->getBugSummaryString($bugID);
-			if (!is_null($summary))
+			if (!is_null($issue->summaryHTMLString))
 			{
-				$summary = iconv($this->cfg->dbcharset,$this->tlCharSet,$summary);
-				$link .= " : " . $summary;
+				$link .= " : ";
+				if($useIconv)
+				{
+					$link .= iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$issue->summaryHTMLString);
+				}
+				else
+				{
+					$link .= $issue->summaryHTMLString;
+				}
 			}
 		}
 		$link .= "</a>";
@@ -236,31 +303,30 @@ abstract class issueTrackerInterface
 
 
 	/**
-	 * overload this to return the URL to the bugtracking page for viewing
-	 * the bug with the given id. This function is not directly called by
-	 * TestLink at the moment
+	 * Returns URL to the bugtracking page for viewing ticket
 	 *
-	 * @param int id the bug id
-	 *
-	 * @return string returns a complete URL to view the given bug, or false if the bug
-	 * 			wasnt found
-	 *
+	 * @param mixed issueID 
+	 *				depending of BTS issueID can be a number (e.g. Mantis)
+	 *				or a string (e.g. JIRA)
+	 * 
+	 * @return string 
 	 **/
-	function buildViewBugURL($id)
+	function buildViewBugURL($issueID)
 	{
-		return '';
+		return $this->cfg->uriview . urlencode($issueID);
 	}
+
 	
 	/**
 	 * overload this to return the status of the bug with the given id
 	 * this function is not directly called by TestLink.
 	 *
-	 * @param int id the bug id
+	 * @param mixed issueID
 	 *
 	 * @return any returns the status of the given bug, or false if the bug
 	 *			was not found
 	 **/
-	function getBugStatus($id)
+	public function getIssueStatusCode($issueID)
 	{
 		return false;
 	}
@@ -269,13 +335,13 @@ abstract class issueTrackerInterface
 	 * overload this to return the status in a readable form for the bug with the given id
 	 * This function is not directly called by TestLink
 	 *
-	 * @param int id the bug id
+	 * @param mixed issueID
 	 *
 	 * @return any returns the status (in a readable form) of the given bug, or false
 	 * 			if the bug is not found
 	 *
 	 **/
-	function getBugStatusString($id)
+	function getIssueStatusVerbose($issueID)
 	{
 		return '';
 	}
@@ -290,7 +356,7 @@ abstract class issueTrackerInterface
 	 * @return string returns the bug summary (if bug is found), or ''
 	 *
 	 **/
-	function getBugSummaryString($id)
+	function getIssueSummaryString($issueID)
 	{
 		return '';
 	}
@@ -301,9 +367,9 @@ abstract class issueTrackerInterface
 	*
 	* @return bool
 	**/
-	function checkBugIDExistence($id)
+	function checkBugIDExistence($issueID)
 	{
-		return true;
+        throw new RuntimeException(__METHOD__ . "Not implemented - YOU must implement it in YOUR interface Class");
 	}
 
 
@@ -313,6 +379,5 @@ abstract class issueTrackerInterface
 	{
         throw new RuntimeException("Unimplemented - YOU must implement it in YOUR interface Class");
     }
-
 }
 ?>

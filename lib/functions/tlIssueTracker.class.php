@@ -25,10 +25,12 @@ class tlIssueTracker extends tlObject
 	var $db;
 
 	var $types = null;
+	
+	/*
 	var $systems = array( 1 =>	array('type' => 'bugzilla', 'api' => 'db'),
 								array('type' => 'bugzilla', 'api' => 'xmlrpc'),
 								array('type' => 'eventum','api' =>'db'),
-								array('type' => 'fogbugz','api' =>'soap'),
+								array('type' => 'fogbugz','api' =>'rest'),
 								array('type' => 'gforge','api' =>'soap'),
 								array('type' => 'jira', 'api' =>'db'),
 								array('type' => 'jira', 'api' =>'soap'),
@@ -37,7 +39,19 @@ class tlIssueTracker extends tlObject
 								array('type' =>'polarion', 'api' =>'soap'),
 								array('type' => 'seapine','api' =>'soap'),
 								array('type' => 'trackplus','api' =>'soap'),
-								array('type' => 'youtrack','api' =>'soap'));
+								array('type' => 'youtrack','api' =>'rest'));
+	*/
+	var $systems = array( 1 =>	array('type' => 'bugzilla', 'api' => 'xmlrpc'),
+								array('type' => 'eventum','api' =>'db'),
+								array('type' => 'fogbugz','api' =>'rest'),
+								array('type' => 'gforge','api' =>'soap'),
+								array('type' => 'jira', 'api' =>'soap'),
+								array('type' => 'mantis', 'api' =>'soap'),
+								array('type' =>'polarion', 'api' =>'soap'),
+								array('type' => 'seapine','api' =>'soap'),
+								array('type' => 'trackplus','api' =>'soap'),
+								array('type' => 'youtrack','api' =>'rest'));
+	
 	
 	
     

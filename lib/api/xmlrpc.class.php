@@ -290,6 +290,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                                 'tl.getTestSuiteByID' => 'this:getTestSuiteByID',
                                 'tl.deleteExecution' => 'this:deleteExecution',
                                 'tl.doesUserExist' => 'this:doesUserExist',
+								'tl.updateTestCaseCustomFieldDesignValue' => 'this:updateTestCaseCustomFieldDesignValue',
+								'tl.setTestCaseExecutionType' => 'this:setTestCaseExecutionType',
                                 'tl.checkDevKey' => 'this:checkDevKey',
 			                    'tl.about' => 'this:about',
 			                    'tl.setTestMode' => 'this:setTestMode',
@@ -5196,6 +5198,149 @@ protected function createAttachmentTempFile()
 		}
         return ($status_ok ? $resultInfo : $this->errors);
 	}
+
+
+	/**
+	 * Update value of Custom Field with scope='design' for a given Test case
+	 *
+	 * @param struct $args
+	 * @param string $args["devKey"]: used to check if operation can be done.
+	 *                                if devKey is not valid => abort.
+	 *
+	 * @param string $args["testcaseexternalid"]:  
+	 * @param string $args["version"]: version number  
+	 * @param string $args["testprojectid"]: 
+     * @param string $args["customfields"] - optional
+     *               contains an map with key:Custom Field Name, value: value for CF.
+     *               VERY IMPORTANT: value must be formatted in the way it's written to db,
+     *               this is important for types like:
+     *
+     *               DATE: strtotime()
+     *               DATETIME: mktime()
+     *               MULTISELECTION LIST / CHECKBOX / RADIO: se multipli selezione ! come separatore
+     *
+     *
+     *               these custom fields must be configured to be writte during execution.
+     *               If custom field do not meet condition value will not be written
+     *
+     * @return mixed null if everything ok, else array of IXR_Error objects
+	 * 				
+	 * @access public
+	 */		
+    public function updateTestCaseCustomFieldDesignValue($args)
+	{
+        $msg_prefix="(" .__FUNCTION__ . ") - ";
+		$this->_setArgs($args);	
+		
+        $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseIdentity',
+        						'checkTestCaseVersionNumber');
+        $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
+    	if( $status_ok )
+    	{
+    		if(!$this->_isParamPresent(self::$customFieldsParamName) )
+    		{
+    			$status_ok = false;
+	            $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,self::$customFieldsParamName);
+	            $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);				      
+    		}
+    	}
+    	
+    	if( $status_ok )
+    	{
+			// now check if custom fields are ok
+			// For each custom field need to check if:
+			// 1. is linked to test project
+			// 2. is available for test case at design time
+	
+			// $cfSet = array_keys($args[self::$customFieldsParamName]);
+
+        	$cfieldMgr = new cfield_mgr($this->dbObj);
+			
+			// Just ENABLED
+			$linkedSet = $cfieldMgr->get_linked_cfields_at_design($this->args[self::$testProjectIDParamName],
+																  cfield_mgr::ENABLED,null,'testcase',
+																  null,'name');
+			if( is_null($linkedSet) )
+			{
+    			$status_ok = false;
+	            $msg = NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES_STR;
+	            $this->errors[] = new IXR_Error(NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES, $msg);				      
+			}
+    	}
+    	
+    	
+    	if( $status_ok )
+    	{
+    		$accessVersionBy['number'] = $this->args[self::$versionNumberParamName];
+    		$nodeInfo = $this->tcaseMgr->get_basic_info($this->args[self::$testCaseIDParamName],$accessVersionBy);
+    		$cfSet = $args[self::$customFieldsParamName];
+			foreach($cfSet as $cfName => $cfValue)
+			{
+				// $accessKey = "custom_field_" . $item['id'] . <field_type_id>_<cfield_id>
+				//  design_values_to_db($hash,$node_id,$cf_map=null,$hash_type=null)
+				$item = $linkedSet[$cfName];
+				$accessKey = "custom_field_" . $item['type'] . '_' . $item['id'];
+				$hash[$accessKey] = $cfValue;
+			    $cfieldMgr->design_values_to_db($hash,$nodeInfo[0]['tcversion_id']);
+			}    		
+    	}
+    	else
+    	{
+    		return $this->errors;
+    	}	
+    }
+
+
+	/**
+	 * Update execution type for a test case version
+	 *
+	 * @param struct $args
+	 * @param string $args["devKey"]: used to check if operation can be done.
+	 *                                if devKey is not valid => abort.
+	 *
+	 * @param string $args["testcaseexternalid"]:  
+	 * @param string $args["version"]: version number  
+	 * @param string $args["testprojectid"]: 
+     * @param string $args["executiontype"]: TESTCASE_EXECUTION_TYPE_MANUAL,
+     *										 TESTCASE_EXECUTION_TYPE_AUTOMATIC
+     *
+     * @return mixed null if everything ok, else array of IXR_Error objects
+	 * 				
+	 * @access public
+	 */		
+    public function setTestCaseExecutionType($args)
+	{
+        $msg_prefix="(" .__FUNCTION__ . ") - ";
+		$this->_setArgs($args);	
+		
+        $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseIdentity',
+        						'checkTestCaseVersionNumber');
+        $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
+    	if( $status_ok )
+    	{
+    		if(!$this->_isParamPresent(self::$executionTypeParamName))
+    		{
+    			$status_ok = false;
+	            $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,self::$customFieldsParamName);
+	            $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);				      
+    		}
+    	}
+
+		if($status_ok)
+		{
+			// if value not on domain, will use TESTCASE_EXECUTION_TYPE_MANUAL
+    		$accessVersionBy['number'] = $this->args[self::$versionNumberParamName];
+    		$nodeInfo = $this->tcaseMgr->get_basic_info($this->args[self::$testCaseIDParamName],$accessVersionBy);
+			$dbg = $this->tcaseMgr->setExecutionType($nodeInfo[0]['tcversion_id'],
+													 $this->args[self::$executionTypeParamName]);
+			return array($this->args,$dbg);
+		}
+    	else
+    	{
+    		return $this->errors;
+    	}	
+    }
+
 
 } // class end
 ?>

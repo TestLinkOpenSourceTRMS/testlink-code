@@ -7,38 +7,17 @@
  *
  * @filesource	tcImport.php
  * @package 	TestLink
- * @copyright 	2007-2011, TestLink community 
+ * @copyright 	2007-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal revisions
  *
+ * @since 1.9.4		
+ *  20120407 - franciscom - TICKET 4963: Test case / Tes suite XML format, new element to set author
+ *
+ * @since 1.9.3		
  *	20101106 - franciscom - fixed warning on event viewer when there are no keywords defined on test project
  *	20101002 - franciscom - BUGID 3801
- *  20100911 - amitkhullar - BUGID 3764 - Req Mapping Error while import of Test cases.
- *	20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
- *							processCustomFields()
- *	20100904 - franciscom - BUGID 3571 - Add 'create new version' choice when Import Test Suite
- *	20100821 - franciscom - changes to getStepsFromSimpleXMLObj() due to:
- *							BUGID 3695: Test Case Steps - Export/Import - missing attribute execution type
- *								
- *  20100719 - amitkhullar - BUGID 3609 - fix for keyword import error
- *	20100620 - franciscom - Trying to reduce memory problems using statics on 
- *							saveImportedTCData() after issue 3521
- *	20100619 - franciscom - added file size control 
- *	20100409 - franciscom - added import importance and execution_type
- *	20100317 - franciscom - BUGID 3236 - work in progress
- *	20100214 - franciscom - refactoring to use only simpleXML functions
- *	20100106 - franciscom - Multiple Test Case Steps Feature
- *	20090831 - franciscom - preconditions
- *  20090506 - Requirements refactoring
- *  20090221 - BUGID - Improvement on messages to user when XML file contains
- *                     Custom Field Information.
- *  20090206 - BUGID - Import TC-REQ relationship - franciscom
- *  20090117 - BUGID 1991 - franciscom
- *             BUGID 1992 - contribution for XLS import - franciscom
- *  20090106 - BUGID - franciscom - added logic to import Test Cases custom field values
- *  20081001 - franciscom - added logic to manage too long testcase name
- * 	20080813 - havlatm - added a few logging
  * 
  * *********************************************************************************** */
 require('../../config.inc.php');
@@ -164,15 +143,8 @@ if ($args->do_upload)
 
 if($args->useRecursion)
 {
-	// BUGID 3240 - Contribution 
 	$obj_mgr = new testsuite($db);
-	// $gui->actionOptions=null;
-	// $gui->hitOptions=null;
-	// $gui->actionOptions=array('update_last_version' => lang_get('update_last_testcase_version'),
-	// 						  'generate_new' => lang_get('new_testcase_under_new_testsuite'),
-    //                           'create_new_version' => lang_get('new_version_under_testsuite'));
-
-  	$gui->actionOptions=array('update_last_version' => lang_get('update_last_testcase_version'),
+ 	$gui->actionOptions=array('update_last_version' => lang_get('update_last_testcase_version'),
                               'generate_new' => lang_get('generate_new_testcase'),
                               'create_new_version' => lang_get('create_new_testcase_version'));
 	
@@ -291,6 +263,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 	static $tprojectHas;
 	static $reqSpecSet;
 	static $getVersionOpt;
+	static $userObj;
 	
 	if (!$tcData)
 	{
@@ -311,6 +284,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$tproject_mgr = new testproject($db);
 		$req_spec_mgr = new requirement_spec_mgr($db);
 		$req_mgr = new requirement_mgr($db);
+		$userObj = new tlUser();
 
   		
   		$messages['cf_warning'] = lang_get('no_cf_defined_can_not_import');
@@ -339,14 +313,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 
 
 	    // Get CF with scope design time and allowed for test cases linked to this test project
-	    // $customFields=$tproject_mgr->get_linked_custom_fields($tproject_id,'testcase','name');
-	    // function get_linked_cfields_at_design($tproject_id,$enabled,$filters=null,
-        //                                       $node_type=null,$node_id=null,$access_key='id')
-        // 
         $linkedCustomFields = $tcase_mgr->cfield_mgr->get_linked_cfields_at_design($tproject_id,1,null,'testcase',null,'name');
         $tprojectHas['customFields']=!is_null($linkedCustomFields);                   
 
-        // BUGID - 20090205 - franciscom
 		$reqSpecSet = $tproject_mgr->getReqSpec($tproject_id,null,array('RSPEC.id','NH.name AS title','RSPEC.doc_id as rspec_doc_id', 'REQ.req_doc_id'),'req_doc_id');
 		$tprojectHas['reqSpec'] = (!is_null($reqSpecSet) && count($reqSpecSet) > 0);
 
@@ -355,6 +324,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   
 	$resultMap = array();
 	$tc_qty = sizeof($tcData);
+	$userIDCache = array();
+	
 	for($idx = 0; $idx <$tc_qty ; $idx++)
 	{
 		$tc = $tcData[$idx];
@@ -368,6 +339,29 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$exec_type = isset($tc['execution_type']) ? $tc['execution_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
 		$importance = isset($tc['importance']) ? $tc['importance'] : MEDIUM;		
     
+    	// TICKET 4963: Test case / Tes suite XML format, new element to set author
+    	$personID = $userID;
+    	if( !is_null($tc['author_login']) )
+    	{
+    		if( isset($userIDCache[$tc['author_login']]) )
+    		{
+				$personID = $userIDCache[$tc['author_login']];
+    		}
+			else
+			{
+	    		$userObj->login = $tc['author_login'];
+	    		if( $userObj->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) == tl::OK )
+	    		{
+		    		$personID = $userObj->dbID;
+	    		}
+	    		
+	    		// I will put always a valid userID on this cache,
+	    		// this way if author_login does not exit, and is used multiple times
+	    		// i will do check for existence JUST ONCE.
+				$userIDCache[$tc['author_login']] = $personID;
+			}
+    	}
+    	
 		$name_len = tlStringLen($name);  
 		if($name_len > $fieldSizeCfg->testcase_name)
 		{
@@ -421,11 +415,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
          	        	$last_version = $tcase_mgr->get_last_version_info($tcase_id,$getVersionOpt);
          	        	$tcversion_id = $last_version['id'];
          	        	$ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
-         	        	                          $preconditions,$steps,$userID,$kwIDs,
+         	        	                          $preconditions,$steps,$personID,$kwIDs,
          	        	                          $node_order,$exec_type,$importance);
 
-
-						// BUGID 3801
 						$ret['id'] = $tcase_id;
 						$ret['tcversion_id'] = $tcversion_id;
          	        	$resultMap[] = array($name,$messages['already_exists_updated']);
@@ -450,20 +442,18 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 	                                'action_on_duplicate_name' => $duplicatedLogic['actionOnHit']);
 
 		    if ($ret = $tcase_mgr->create($container_id,$name,$summary,$preconditions,$steps,
-		                                  $userID,$kwIDs,$node_order,testcase::AUTOMATIC_ID,
+		                                  $personID,$kwIDs,$node_order,testcase::AUTOMATIC_ID,
 		                                  $exec_type,$importance,$createOptions))
         	{
         	    $resultMap[] = array($name,$ret['msg']);
         	}                              
 		}
 			
-		// 20090106 - franciscom
 		// Custom Fields Management
 		// Check if CF with this name and that can be used on Test Cases is defined in current Test Project.
 		// If Check fails => give message to user.
 		// Else Import CF data
 		// 	
-
 		$hasCustomFieldsInfo = (isset($tc['customfields']) && !is_null($tc['customfields']));
 		if($hasCustomFieldsInfo)
 		{
@@ -471,7 +461,6 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 			
 		    if($tprojectHas['customFields'])
 		    {                         
-				// BUGID 3431 - Custom Field values at Test Case VERSION Level
 		        $msg = processCustomFields(	$tcase_mgr,$name,$ret['id'],$ret['tcversion_id'],$tc['customfields'],
 		        							$linkedCustomFields,$feedbackMsg);
 		        if( !is_null($msg) )
@@ -902,7 +891,9 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
     //             'integer' => array("node_order","externalid","execution_type","importance"));
 	// $tcXML['attributes'] = array('string' => array("name"), 'integer' =>array('internalid'));
 
-	$tcXML['elements'] = array('string' => array("summary" => null,"preconditions" => null),
+	// TICKET 4963: Test case / Tes suite XML format, new element to set author
+	$tcXML['elements'] = array('string' => array("summary" => null,"preconditions" => null,
+												 "author_login" => null),
                                'integer' => array("node_order" => null,"externalid" => null,
                                					  "execution_type" => null ,"importance" => null));
 	$tcXML['attributes'] = array('string' => array("name" => 'trim'), 

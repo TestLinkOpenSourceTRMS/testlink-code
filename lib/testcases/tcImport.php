@@ -13,6 +13,8 @@
  * @internal revisions
  *
  * @since 1.9.4		
+ *  20120409 - franciscom - TICKET 4925: Import many TestCases in xml does import only first TC - 
+ *										 Consider Test Case as duplicate if: has same internal ID
  *  20120407 - franciscom - TICKET 4963: Test case / Tes suite XML format, new element to set author
  *
  * @since 1.9.3		
@@ -31,53 +33,7 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $pcheck_fn=null;
 $args = init_args();
-
-$gui = new stdClass();
-$gui->importLimitBytes = config_get('import_file_max_size_bytes');
-$gui->importLimitKB = ($gui->importLimitBytes / 1024);
-$gui->hitCriteria = $args->hit_criteria;
-$gui->useRecursion = $args->useRecursion;
-$gui->containerID = $args->container_id;
-$gui->bImport = tlStringLen($args->importType);
-$gui->bIntoProject = $args->bIntoProject;
-$gui->resultMap = null;
-
-
-$dest_common = TL_TEMP_PATH . session_id(). "-importtcs";
-// $dest_files = array('XML' => $dest_common . ".xml",'XLS' => $dest_common . ".xls");
-$dest_files = array('XML' => $dest_common . ".xml");
-$dest=$dest_files['XML'];
-if(!is_null($args->importType))
-{
-	$dest = $dest_files[$args->importType];
-}
-
-$gui->file_check = array('status_ok' => 1, 'msg' => 'ok');
-
-if($args->useRecursion)
-{
-	$gui->import_title = lang_get('title_tsuite_import_to');  
-	$gui->container_description = lang_get('test_suite');
-}
-else
-{
-	$gui->import_title = lang_get('title_tc_import_to');
-	$gui->container_description = lang_get('test_case');
-}
-
-$gui->container_name = '';
-if($args->container_id)
-{
-	$tree_mgr = new tree($db);
-	$node_info = $tree_mgr->get_node_hierarchy_info($args->container_id);
-	unset($tree_mgr);    
-	$gui->container_name = $node_info['name'];
-	if($args->container_id == $args->tproject_id)
-	{
-		$gui->container_description=lang_get('testproject');
-	}	
-}
-
+$gui = initializeGui($db,$args);
 if ($args->do_upload)
 {
   
@@ -101,9 +57,9 @@ if ($args->do_upload)
 	if($doIt)
 	{ 
 		$gui->file_check['status_ok'] = 1;
-		if (move_uploaded_file($source, $dest))
+		if (move_uploaded_file($source, $gui->dest))
 		{
-			tLog('Renamed uploaded file: '.$source);
+			tLog('Renamed uploaded file: ' . $source);
 			switch($args->importType)
 			{
 				case 'XML':
@@ -118,7 +74,7 @@ if ($args->do_upload)
 			}
 	      	if(!is_null($pcheck_fn))
 	      	{
-				$gui->file_check = $pcheck_fn($dest,$args->useRecursion);
+				$gui->file_check = $pcheck_fn($gui->dest,$args->useRecursion);
 			}
 		}
 		if($gui->file_check['status_ok'] && $pimport_fn)
@@ -129,7 +85,7 @@ if ($args->do_upload)
 			$opt['importIntoProject'] = $args->bIntoProject;
 			$opt['duplicateLogic'] = array('hitCriteria' => $args->hit_criteria,
 			                               'actionOnHit' => $args->action_on_duplicated_name);
-			$gui->resultMap = $pimport_fn($db,$dest,$args->container_id,$args->tproject_id,$args->userID,$opt);
+			$gui->resultMap = $pimport_fn($db,$gui->dest,$args->container_id,$args->tproject_id,$args->userID,$opt);
 		}
 	}
 	else if(is_null($gui->file_check))
@@ -393,6 +349,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 					$dummy = $tcase_mgr->tree_manager->get_node_hierarchy_info($internalid,$container_id);
 					if( !is_null($dummy) )
 					{
+						$info = null;  // TICKET 4925
 						$info[$internalid] = $dummy;
 					}
 				break;
@@ -1073,9 +1030,6 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 				case 'testcase':
 				    // getTestCaseSetFromSimpleXMLObj() first argument must be an array
 					$tcData = getTestCaseSetFromSimpleXMLObj(array($target));
-
-					// 20100904 - francisco.mancardi@gruppotesi.com
-					// echo 'Going to work on Test Case INSIDE Test Suite:' . $tsuite['name'] . '<br>';
 					$resultMap = array_merge($resultMap,
 											 saveImportedTCData($dbHandler,$tcData,$tproject_id,
 											                    $tsuiteID,$userID,$kwMap,$duplicateLogic));
@@ -1107,4 +1061,60 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 	}
 	return $resultMap;
 }
+
+
+/**
+ * 
+ *
+ * 
+ **/
+function initializeGui(&$dbHandler,&$argsObj)
+{
+	$guiObj = new stdClass();
+	$guiObj->importLimitBytes = config_get('import_file_max_size_bytes');
+	$guiObj->importLimitKB = ($guiObj->importLimitBytes / 1024);
+	$guiObj->hitCriteria = $argsObj->hit_criteria;
+	$guiObj->useRecursion = $argsObj->useRecursion;
+	$guiObj->containerID = $argsObj->container_id;
+	$guiObj->bImport = tlStringLen($argsObj->importType);
+	$guiObj->bIntoProject = $argsObj->bIntoProject;
+	$guiObj->resultMap = null;
+	$guiObj->container_name = '';
+
+
+	$dest_common = TL_TEMP_PATH . session_id(). "-importtcs";
+	$dest_files = array('XML' => $dest_common . ".xml");
+	$guiObj->dest = $dest_files['XML'];
+	if(!is_null($argsObj->importType))
+	{
+		$guiObj->dest = $dest_files[$argsObj->importType];
+	}
+	
+	$guiObj->file_check = array('status_ok' => 1, 'msg' => 'ok');
+	
+	if($argsObj->useRecursion)
+	{
+		$guiObj->import_title = lang_get('title_tsuite_import_to');  
+		$guiObj->container_description = lang_get('test_suite');
+	}
+	else
+	{
+		$guiObj->import_title = lang_get('title_tc_import_to');
+		$guiObj->container_description = lang_get('test_case');
+	}
+
+	if($argsObj->container_id)
+	{
+		$tree_mgr = new tree($dbHandler);
+		$node_info = $tree_mgr->get_node_hierarchy_info($argsObj->container_id);
+		unset($tree_mgr);    
+		$guiObj->container_name = $node_info['name'];
+		if($argsObj->container_id == $argsObj->tproject_id)
+		{
+			$guiObj->container_description = lang_get('testproject');
+		}	
+	}
+
+	return $guiObj;
+} 
 ?>

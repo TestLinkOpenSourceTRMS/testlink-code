@@ -143,7 +143,6 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 	$my['options'] = array('write_button_only_if_linked' => 0,'prune_unlinked_tcversions' => 0,
 	                       'add_custom_fields' => 0) + (array)$options;
 
-	// BUGID 2797 - filter by test case execution type
 	$my['filters'] = array('keywords' => 0, 'testcases' => null ,'exec_type' => null, 
 						   'importance' => null, 'cfields' => null);
 	foreach( $my as $key => $settings)
@@ -170,7 +169,6 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 	$hash_descr_id = $tcase_mgr->tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
 
-	// BUGID 2797 - filter by test case execution type
 	$key2map = array('keyword_id' => 'keywords', 'tcase_id' => 'testcases', 
 	                 'execution_type' => 'exec_type', 'importance' => 'importance',
 		             'cfields' => 'cfields','tcase_name' => 'tcase_name' );
@@ -184,6 +182,9 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 	$test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
 	$platforms = getPlatforms($db,$tproject_id,$testplan_id);
 
+
+	// new dBug($test_spec);
+	
 	$idx = 0;
 	$a_tcid = array();
 	$a_tsuite_idx = array();
@@ -192,9 +193,18 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 		$cfg = array('node_types' => $hash_id_descr, 'write_status' => $write_status,
 		             'is_uncovered_view_type' => $is_uncovered_view_type);
 		             
+		// $a_tsuite_idx
+		// key: test case version id
+		// value: index inside $out, where parent test suite of test case version id is located.
+		//             
       	list($a_tcid,$a_tsuite_idx,$tsuite_tcqty,$out) = buildSkeleton($id,$name,$cfg,$test_spec,$platforms);
 	} 
 
+
+	// 
+	// new dBug($a_tcid);
+	// new dBug($a_tsuite_idx);
+	
 	// This code has been replace (see below on Remove empty branches)
 	// Once we have created array with testsuite and children testsuites
 	// we are trying to remove nodes that has 0 test case count.
@@ -220,9 +230,18 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 	// Collect information related to linked testcase versions
 	if(!is_null($out) && count($out) > 0 && !is_null($out[0]) && count($a_tcid))
 	{
-		$tcaseSet = $tcase_mgr->get_by_id($a_tcid,testcase::ALL_VERSIONS);
-		$result = addLinkedVersionsInfo($tcaseSet,$a_tsuite_idx,$out,$linked_items);
+		$optGBI = array('output' => 'full_without_users',
+			         	'order_by' => " ORDER BY NHTC.node_order, NHTC.name, TCV.version DESC ");
+
+		$tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid,testcase::ALL_VERSIONS,null,$optGBI); 
+										  
+		// new dBug($tcaseVersionSet);
+		// new dBug($linked_items);
+												  
+		$result = addLinkedVersionsInfo($tcaseVersionSet,$a_tsuite_idx,$out,$linked_items);
 	}
+	
+	// new dBug($result);
 	
 	// Try to prune empty test suites, to reduce memory usage and to remove elements
 	// that do not need to be displayed on user interface.
@@ -341,7 +360,6 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
 
 	// new dBug($tplan_tcases);
 
-	// BUGID 2716
 	if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
 	{
 		$filteredSet = $tcaseMgr->filterByKeyword(array_keys($tplan_tcases),
@@ -416,7 +434,12 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
 	$testCaseSet = !is_null($testCaseSet) ? array_combine($testCaseSet, $testCaseSet) : null;
 	$genSpecFilters = array('keywords' => $argsObj->keyword_id, 'testcases' => $testCaseSet,
 							'exec_type' => $my['filters']['executionTypeFilter'],
-							'cfields' =>  $my['filters']['cfieldsFilter']);
+							'cfields' => null);
+							
+	if( isset($my['filters']['cfieldsFilter']) )
+	{
+		$genSpecFilters['cfields'] = $my['filters']['cfieldsFilter'];
+	}						
 							
 	$out = gen_spec_view($dbHandler, 'testplan', $argsObj->tplan_id, $argsObj->id, $tsuite_data['name'],
 		                 $tplan_linked_tcversions, null, $genSpecFilters, $my['options']);
@@ -968,31 +991,48 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
  
  
 /**
- * 
+ * VERY IMPORTANT NOTICE
+ *
+ * You can be a little bit confused regarding What will be returned on 'testcases' =>[]['tcversions']
+ * You will see JUST ON tcversion with active status = 0, ONLY if the version is LINKED to test plan.
+ * Otherwise you will get ONLY ACTIVE test case versions.
+ *
  *
  * @internal revisions:
- *  20100726 - asimon - BUGID 3628
  */
-function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
+function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_items)
 {
     $optionalIntegerFields = array('user_id', 'feature_id','linked_by');
 	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 	$pivot_id=-1;
 	
-	foreach($testCaseSet as $the_k => $testCase)
+	
+	// new dBug($out);
+	// new dBug($a_tsuite_idx);
+	// new dBug($testCaseVersionSet);
+	
+	foreach($testCaseVersionSet as $the_k => $testCase)
 	{
 		$tc_id = $testCase['testcase_id'];
 		
 		// Needed when having multiple platforms
 		if($pivot_id != $tc_id )
 		{
-			$pivot_id=$tc_id;
+			$pivot_id = $tc_id;
 			$result['num_tc']++;
 		}
 		$parent_idx = $a_tsuite_idx[$tc_id];
 		
     	// Reference to make code reading more human friendly				
 		$outRef = &$out[$parent_idx]['testcases'][$tc_id];
+		
+		//echo '<b>Going to process:</b>' . $testCase['name'] . 'Version:' . $testCase['version'] . '<br>';
+		//new dBug($outRef);
+		
+		// 20120409
+		// Is not clear (need explanation) why we process in this part ONLY ACTIVE
+		// also we need to explain !is_null($out[$parent_idx])
+		//
 		if($testCase['active'] == 1 && !is_null($out[$parent_idx]) )
 		{       
 			if( !isset($outRef['execution_order']) )
@@ -1003,7 +1043,7 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 				//
 				// N.B.:
 				// As suggested by Martin Havlat order will be set to external_id * 10
-				$outRef['execution_order'] = $testCase['node_order']*10;
+				$outRef['execution_order'] = $testCase['node_order'] * 10;
 			} 
 			$outRef['tcversions'][$testCase['id']] = $testCase['version'];
 			$outRef['tcversions_active_status'][$testCase['id']] = 1;
@@ -1022,8 +1062,11 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 		{
 			foreach($linked_items as $linked_testcase)
 			{
-				// refactoring $linked_testcase[0] => current($linked_testcase)
 				$target = current($linked_testcase);
+				//new dBug($linked_testcase);
+				//new dBug($target);
+				
+
 				if(($target['tc_id'] == $testCase['testcase_id']) &&
 				   ($target['tcversion_id'] == $testCase['id']) )
 				{
@@ -1071,7 +1114,7 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 				}
 			}
 		} 
-	} //foreach($tcase_set
+	} //foreach
 	
 	if( !is_null($out[0]) )
 	{

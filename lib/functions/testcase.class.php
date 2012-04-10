@@ -1842,7 +1842,7 @@ class testcase extends tlObjectWithAttachments
 	    $my['filters'] = array( 'active_status' => 'ALL', 'open_status' => 'ALL', 'version_number' => 1);
 	    $my['filters'] = array_merge($my['filters'], (array)$filters);
 
-	    $my['options'] = array( 'output' => 'full', 'access_key' => 'tcversion_id');
+	    $my['options'] = array( 'output' => 'full', 'access_key' => 'tcversion_id', 'order_by' => null);
 	    $my['options'] = array_merge($my['options'], (array)$options);
 
 		$tcid_list = null;
@@ -1908,8 +1908,42 @@ class testcase extends tlObjectWithAttachments
 	         			JOIN {$this->tables['tcversions']} TCV ON NHTCV.id = TCV.id
 	         			LEFT OUTER JOIN {$this->tables['users']} UB ON TCV.author_id = UB.id
 	         			LEFT OUTER JOIN {$this->tables['users']} UA ON TCV.updater_id = UA.id
-	         			$where_clause $active_filter
-	         			ORDER BY TCV.version DESC";
+	         			$where_clause $active_filter";
+	         			
+	         	if(is_null($my['options']['order_by']))
+	         	{
+	         			
+	         		$sql .= " ORDER BY TCV.version DESC";
+	         	}
+	         	else
+	         	{
+	         		$sql .= $my['options']['order_by'];
+	         	}
+	         	break;
+
+			case 'full_without_users':
+				$tcversionFields = 'TCV.id,TCV.tc_external_id,TCV.version,TCV.status,TCV.active,TCV.is_open,' .
+				                   'TCV.execution_type,TCV.importance';
+				                   
+				// ATTENTION:
+				// Order is critical for functions that use this recordset
+				// (see specview.php).
+				//                   
+				$sql = "SELECT NHTC.name,NHTC.node_order,NHTC.parent_id AS testsuite_id,
+			     		NHTCV.parent_id AS testcase_id, {$tcversionFields}
+	         			FROM {$this->tables['nodes_hierarchy']} NHTCV
+	         			JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTCV.parent_id = NHTC.id
+	         			JOIN {$this->tables['tcversions']} TCV ON NHTCV.id = TCV.id
+	         			$where_clause $active_filter";
+
+	         	if(is_null($my['options']['order_by']))
+	         	{
+	         		$sql .= " ORDER BY NHTC.node_order, NHTC.name, TCV.version DESC ";
+	         	}
+	         	else
+	         	{
+	         		$sql .= $my['options']['order_by'];
+	         	}
 	         	break;
 	         	
 			case 'essential':
@@ -1919,8 +1953,16 @@ class testcase extends tlObjectWithAttachments
 	         		   " FROM {$this->tables['nodes_hierarchy']} NHTCV " . 
 	         		   " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTCV.parent_id = NHTC.id " .
 	         		   " JOIN {$this->tables['tcversions']} TCV ON NHTCV.id = TCV.id " .
-	         		   " {$where_clause} {$active_filter} " .
-	         		   " ORDER BY TCV.version DESC";
+	         		   " {$where_clause} {$active_filter} ";
+	         		   
+	         	if(is_null($my['options']['order_by']))
+	         	{
+	         		$sql .= " ORDER BY TCV.version DESC ";
+	         	}
+	         	else
+	         	{
+	         		$sql .= $my['options']['order_by'];
+	         	}
 	         	break;
 		}
 		

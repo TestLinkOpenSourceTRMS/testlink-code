@@ -11,18 +11,8 @@
  *
  * 	@internal revisions:
  *	@since 1.9.4
+ *	20120410 - franciscom - TICKET 4888: Unable to update test plan with last version of testcase
  *
- *	@since 1.9.3
- *	20101024 - francisco - method renamed to getFilteredSpecView() + changes in interfa 
- *  20100726 - asimon - fixed bug in processTestPlan(): "All linked Test Case Versions are current" 
- *                      was always displayed on bulk update of linked versions 
- *                      even when there were newer versions
- *  20100628 - asimon - removal of constants from filter control class
- *  20160625 - asimon - refactoring for new filter features and BUGID 3516
- *  20100624 - asimon - CVS merge (experimental branch to HEAD)
- *	20100131 - franciscom - BUGID 3008/3109	
- *	20100123 - franciscom - BUGID 2652 + missing refactoring for table prefix doUpdate()
- *	
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -61,7 +51,7 @@ $out = null;
 $gui->show_details = 0;
 $gui->operationType = 'standard';
 $gui->hasItems = 0;        	
-        	
+
 switch($args->level)
 {
 	case 'testcase':
@@ -98,6 +88,15 @@ if(!is_null($out))
 	$gui->items = $out['spec_view'];
 }
 
+if($gui->buttonAction == 'doUpdate')
+{
+	$gui->action_descr = lang_get('update_testcase_versions');
+}
+else
+{
+	$gui->action_descr = lang_get('update_all_testcase_versions');
+}
+
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
@@ -124,24 +123,6 @@ function init_args(&$tplanMgr)
     $args->newVersionSet = isset($_REQUEST['new_tcversion_for_tcid']) ? $_REQUEST['new_tcversion_for_tcid'] : null;
     $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
 
-    // BUGID 3516
-    // Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
-//    $keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
-//    $args->keyword_id = is_null($keywordSet) ? 0 : explode(',',$keywordSet); 
-//    $args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
-    
-//    $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
-//    if($args->tplan_id == 0)
-//    {
-//        $args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
-//        $args->tplan_name = $_SESSION['testplanName'];
-//    }
-//    else
-//    {
-//        $tpi = $tplanMgr->get_by_id($args->tplan_id);  
-//        $args->tplan_name = $tpi['name'];
-//    }
-    
     $args->tproject_id = $_SESSION['testprojectID'];
     $args->tproject_name = $_SESSION['testprojectName'];
 
@@ -257,6 +238,7 @@ function processTestSuite(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tca
 {
     $filters = array('keywordsFilter' => $keywordsFilter);
     $out = getFilteredSpecView($dbHandler,$argsObj,$tplanMgr,$tcaseMgr,$filters);
+	tideUpForGUI($out);
     return $out;
 }
 
@@ -337,17 +319,19 @@ function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tree
 	$idx_ts = count($my_path)-1;
 	$tsuite_data = $my_path[$idx_ts-1];
 	$filters = array('tcase_id' => $argsObj->id);
-	$opt = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
+	$opt = array('last_execution' => true, 'details' => 'spec_essential');
+	$dummy_items = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters,$opt);		
 
-	$dummy_items = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters);		
-
-    // 20100131 - franciscom
 	// adapt data structure to gen_spec_view() desires
 	$linked_items[key($dummy_items)][0] = current($dummy_items);
 	$filters = array('keywords' => $argsObj->keyword_id, 'testcases' => $argsObj->id);
-   
+	$opt = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
 	$out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 	                     $linked_items,null,$filters,$opt);
+
+
+	// need new processing
+	tideUpForGUI($out);
 	return $out;
 }
 
@@ -389,6 +373,61 @@ function processTestPlan(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr)
     }
     return $set2update;
 }
+
+
+function tideUpForGUI(&$output)
+{
+    // We are going to loop over test suites
+    $loop2do = count($output['spec_view']);
+    for($idx=0; $idx < $loop2do; $idx++)
+    {
+    	$itemSet = &$output['spec_view'][$idx]['testcases'];
+    	if( count($itemSet) > 0)
+    	{
+    		$key2loop = array_keys($itemSet);
+    		foreach($key2loop as $tcaseID)
+    		{
+    			// want to understand
+    			// How many active test case versions exist
+    			// if we have ONLY one active test case version
+    			//       is this version the ALREADY LINKED one ?
+    			// if we have ZERO ACTIVE VERSIONS
+    			//
+    			$active = 0;
+    			$total = count($itemSet[$tcaseID]['tcversions_active_status']);
+    			foreach($itemSet[$tcaseID]['tcversions_active_status'] as $status)
+    			{
+    				if($status)
+    				{
+    					$active++;
+    				}	
+    			}
+
+				$itemSet[$tcaseID]['updateTarget'] = $itemSet[$tcaseID]['tcversions'];				
+				$lnItem = $itemSet[$tcaseID]['linked_version_id'];
+				$itemSet[$tcaseID]['canUpdateVersion'] = ($active != 0);
+				if($active == 1)
+				{
+					// linked_version_id
+					if( $lnItem == key($itemSet[$tcaseID]['tcversions']) )
+					{
+						$itemSet[$tcaseID]['canUpdateVersion'] = FALSE;
+					}
+				}
+				if( !is_null($lnItem) && isset($itemSet[$tcaseID]['tcversions'][$lnItem]) )
+				{
+					unset($itemSet[$tcaseID]['updateTarget'][$lnItem]);
+					if(count($itemSet[$tcaseID]['updateTarget']) == 0)
+					{
+						$itemSet[$tcaseID]['updateTarget'] = null;
+					}
+				}	
+    		}
+    	}
+    
+    } 
+}
+
 
 
 function checkRights(&$db,&$user)

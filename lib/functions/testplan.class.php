@@ -94,6 +94,17 @@ class testplan extends tlObjectWithAttachments
 	var $import_file_types = array("XML" => "XML"); // array("XML" => "XML", "XLS" => "XLS" );
 	
 	var $resultsCfg;
+
+	// Nodes to exclude when do test plan tree traversal
+    var $nt2exclude=array('testplan' => 'exclude_me',
+	                      'requirement_spec'=> 'exclude_me',
+	                      'requirement'=> 'exclude_me');
+
+    var $nt2exclude_children=array('testcase' => 'exclude_my_children',
+							       'requirement_spec'=> 'exclude_my_children');
+
+
+
 	
 	/**
 	 * testplan class constructor
@@ -579,10 +590,12 @@ class testplan extends tlObjectWithAttachments
 				$sql_filter['platforms'] . $sql_filter['assigned_on_build'] . $sql_filter['user_assignment'] . 
 				$sql_filter['tsuites'];
 
-		$sql .= " ORDER BY testsuite_id,NH_TCASE.node_order,tc_id,T.platform_id ";
+		// $sql .= " ORDER BY testsuite_id,NH_TCASE.node_order,tc_id,T.platform_id ";
 
 		// echo __FUNCTION__ . '<br>'; die($sql);
 		
+		//echo '<br><b>' . 'BEFORE Accessing DB' . ' - Xdebug Timing:' . xdebug_time_index() .'</b><br>'; 
+		// echo __FUNCTION__ . "$my[options][output]::" . $my['options']['output'] . '<br>';
 		switch($my['options']['output'])
 		{ 
 			case 'array':
@@ -603,7 +616,8 @@ class testplan extends tlObjectWithAttachments
 			default:
 				// 20110821 - PROBABLY NONSENSE because retreive lots of records
 				// to generate one
-				$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
+				// echo $sql;
+				$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id',0, -2);
 				
 				// 20070913 - jbarchibald
 				// here we add functionality to filter out the custom field selections
@@ -618,6 +632,7 @@ class testplan extends tlObjectWithAttachments
 				}
 			break;
 		}
+		//echo '<br>' . '<b>after Accessing DB' . ' - Xdebug Timing:' . xdebug_time_index() .'</b><br>'; 
 		
         // Multiple Test Case Steps Feature
         // added after Julian mail regarding perf problems building exec tree
@@ -855,7 +870,7 @@ class testplan extends tlObjectWithAttachments
 					  array('tsuites' => null, 'build_active_status' => null, 'assigned_on_build' => '');
 
 
-
+		// new dBug($ic);
 		return array($ic,$join,$sql_filter,$left_join,$extra_fields);
 	}
 
@@ -1091,8 +1106,6 @@ class testplan extends tlObjectWithAttachments
 	public function get_linked_tcversions($id,$filters=null,$options=null)
 	{
 		$debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
-		// echo $debugMsg . '<br>';
-		
         $my = array('filters' => '', 'options' => '');
 
 		$builds = array('join' => '', 'filter' => '', 'left_join' => ' ');
@@ -1105,17 +1118,12 @@ class testplan extends tlObjectWithAttachments
 		$more_exec_fields='';
 
 		$status_not_run = $this->resultsCfg['status_code']['not_run'];
-		
 		$priority_field = " (urgency * importance) AS priority ";
 		
 		list($my,$build_active_status) = $this->init_get_linked_tcversions($id,$filters,$options);
 
-		// new dBug($my);
-		
 		// IMPORTANT NOTICE:
 		// not run && build_active_status = 'active', need special logic		
-
-
 		// --------------------------------------------------------------
 		// Order of following block of sentences is CRITIC => read it
 		// very, very carefully before do changes.
@@ -1131,7 +1139,6 @@ class testplan extends tlObjectWithAttachments
 
 		if( !is_null($build_active_status) )
 		{
-			// if( is_null($notrun['filter']) )
 			if( is_null($my['sql']['notrun']) )
 			{
 				$my['join']['builds'] = " JOIN {$this->tables['builds']} B ON " .
@@ -1152,9 +1159,6 @@ class testplan extends tlObjectWithAttachments
 				//
 				$my['join']['builds'] = " LEFT OUTER JOIN {$this->tables['builds']} B " .
 								  		" ON B.id=E.build_id ";
-				//$notrun['filter'] = " E.status IS NULL " .
-				//					" OR (E.status IS NOT NULL AND B.active = 0) ";		
-				// $executions['filter'] = " AND ({$notrun['filter']} )";     
 
 				$my['sql']['notrun'] = " E.status IS NULL " .
 									   " OR (E.status IS NOT NULL AND B.active = 0) ";		
@@ -1305,7 +1309,13 @@ class testplan extends tlObjectWithAttachments
 						$my['sql']['ua_build']; 
 						
 				// Want to check if requested build is on ua_build_sql exists the use JOIN
-				$sql .= " JOIN {$this->tables['builds']} B ON B.id = " . intval($my['filters']['assigned_on_build']);		
+				$sql .= " JOIN {$this->tables['builds']} B ON B.id = " . intval($my['filters']['assigned_on_build']);	
+				
+				if(	intval($my['filters']['assigned_on_build']) <= 0 )
+				{
+					// CRASH IMMEDIATELY
+					throw new Exception(__METHOD__ . ' Can NOT WORK JOIN ON B.id <=0');
+				}
 			}
 			$sql .= " WHERE T.testplan_id={$id} {$my['where']['where']} " .
 			        " {$ua_filter} {$executions['filter']} ";
@@ -1335,7 +1345,6 @@ class testplan extends tlObjectWithAttachments
 
 			case 'mapOfArray':
 			$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id',database::CUMULATIVE);
-			// new dBug($recordset);
 			break;
 			
 			case 'mapOfMap':
@@ -1358,6 +1367,7 @@ class testplan extends tlObjectWithAttachments
 			
 			case 'map':
 			default:
+			// echo $sql;
 			$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
 			
 			// 20070913 - jbarchibald
@@ -1418,16 +1428,14 @@ class testplan extends tlObjectWithAttachments
 	 */
 	function init_get_linked_tcversions($tplanID,$filtersCfg,$optionsCfg)
 	{
-		//echo __FUNCTION__ .'<br>'; new dBug($filtersCfg);
-		//echo __FUNCTION__ .'<br>';new dBug($optionsCfg);
+		// echo __FUNCTION__ .'<br>'; new dBug($filtersCfg);
+		// echo __FUNCTION__ .'<br>';new dBug($optionsCfg);
 
-		
         $dummy = array('exec_type','tc_id','builds','keywords','executions','platforms');
 
         $ic['sql'] = array('ua_build' => '', 'notrun' => '');
         $ic['join'] = array_fill_keys($dummy,null);
         $ic['left_join'] = array_fill_keys($dummy,null);
-        // $ic['where'] = array_fill_keys($dummy,null);
         $ic['where'] = array_fill_keys($dummy,'');
         $ic['where']['where'] = '';
         
@@ -1533,24 +1541,16 @@ class testplan extends tlObjectWithAttachments
 		else
 		{
 			$leftOuter = " LEFT OUTER ";
-			// $ic['join']['executions'] .= " LEFT OUTER ";
 			$dummy = $ic['where']['builds'] . $ic['where']['platforms'] . 
 					' AND T.testplan_id =' . intval($tplanID);
 			$ic['where']['builds'] = '';
 		}
 		
-		/*
-		$ic['join']['executions'] .= " JOIN {$this->tables['executions']} E ON " .
-			                   		 " (E.testplan_id = T.testplan_id AND " .
-			                   		 "  E.tcversion_id = T.tcversion_id AND " .
-			                   		 "  E.platform_id = T.platform_id " .
-		    	               		 "  {$dummy}) ";
-		*/
-		
-		$ic['join']['executions'] .= $leftOuter;			                   		 
-		
+		$ic['join']['executions'] .= $leftOuter;	
 		if( $ic['options']['last_execution'] || !is_null($ic['filters']['exec_status']) )
 		{
+		
+			// new dBug($ic['options']['last_execution']);
 			list($fi,$jo,$ic['sql']['notrun']) = $this->helper_last_exec_sql($ic['filters'],$ic['options'],
 																		     $build_active_status,$tplanID);
 			if( $dummy != '')
@@ -1570,7 +1570,13 @@ class testplan extends tlObjectWithAttachments
 			    		               	 "  E.tcversion_id = T.tcversion_id AND " .
 			            		       	 "  E.platform_id = T.platform_id " .
 		    	               			 "  {$dummy}) ";
-		}	                   
+		    	               			 
+		    // new dBug($ic['join']['executions']);	               			 
+		}	           
+		else
+		{
+			$ic['join']['executions'] = '';
+		}        
 		// -----------------------------------------------------------------------------------
 
 
@@ -1593,6 +1599,7 @@ class testplan extends tlObjectWithAttachments
 
 		// new dBug($ic);	
 		// new dBug($ua_build_sql);	
+		// new dBug($ic['join']);	               			 
 		return array($ic,$build_active_status);
 	}
 
@@ -4827,7 +4834,6 @@ class testplan extends tlObjectWithAttachments
 		$item_info = $this->get_by_id($id);
 		
 		// Need to get family
-		// $tplan_spec = $this->tree_manager->get_subtree($id,tree::USE_RECURSIVE_MODE);
 		$nt2exclude = array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me',
 		                    'requirement'=> 'exclude_me');
 		$nt2exclude_children = array('testcase' => 'exclude_my_children',
@@ -4961,7 +4967,7 @@ class testplan extends tlObjectWithAttachments
 
 
 	/**
-	 * DocBlock with nested lists
+	 * 
  	 *
      */
 	private function exportTestSuiteDataToXML($container,$tproject_id)
@@ -5069,6 +5075,300 @@ class testplan extends tlObjectWithAttachments
 	}	// end function
 
 
+
+	/**
+	 * getSkeleton
+	 * 
+	 * get structure with Test suites and Test Cases
+	 * Filters that act on test cases work on attributes that are common to all
+	 * test cases versions: test case name
+	 *
+	 * Development Note:
+	 * Due to the tree structure is not so easy to try to do as much as filter as
+	 * possibile using SQL.
+	 *
+	 *
+	 * @return
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 *
+	 */
+	function getSkeleton($id,$tprojectID,$filters=null,$options=null)
+	{
+	
+		$items = array();
+	
+	  	$my['options'] = array('recursive' => false, 'exclude_testcases' => false, 
+	  						   'remove_empty_branches' => false);
+	  						   
+	 	$my['filters'] = array('exclude_node_types' => $this->nt2exclude,
+	 	                       'exclude_children_of' => $this->nt2exclude_children,
+	 	                       'exclude_branches' => null,
+	 	                       'testcase_name' => null,'testcase_id' => null,
+	 	                       'execution_type' => null, 
+	 	                       'platform_id' => null,
+	 	                       'additionalWhereClause' => null);      
+	 
+		$my['filters'] = array_merge($my['filters'], (array)$filters);
+		$my['options'] = array_merge($my['options'], (array)$options);
+	 
+	  	if( $my['options']['exclude_testcases'] )
+	  	{
+			$my['filters']['exclude_node_types']['testcase']='exclude me';
+		}
+		
+		// transform some of our options/filters on something the 'worker' will understand
+		// when user has request filter by test case name, we do not want to display empty branches
+	
+		// If we have choose any type of filter, we need to force remove empty test suites
+		//
+		if( !is_null($my['filters']['testcase_name']) || !is_null($my['filters']['testcase_id']) ||
+			!is_null($my['filters']['execution_type']) || !is_null($my['filters']['exclude_branches']) ||
+			!is_null($my['filters']['platform_id']) ||
+			$my['options']['remove_empty_branches'] )
+		{
+			$my['options']['remove_empty_nodes_of_type'] = 'testsuite';
+		}
+		
+		// new dBug($my['options']);
+		
+	    $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
+		
+		// echo 'READY TO CALL:' . $method2call;
+		$qnum = $this->$method2call($id,$tprojectID,$items,$my['filters'],$my['options']);
+	 	return $items;
+	}
+	
+	
+	
+	/**
+	 *
+	 * 
+	 * @return
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 *
+	 */
+	function _get_subtree_rec($tplan_id,$node_id,&$pnode,$filters = null, $options = null)
+	{
+		static $qnum;
+		static $my;
+		static $exclude_branches;
+		static $exclude_children_of;
+		static $node_types;
+		static $tcaseFilter;
+		static $tcversionFilter;
+		static $pltaformFilter;
+	
+		static $childFilterOn;
+		static $staticSql;
+		
+		if (!$my)
+		{
+
+			// echo 'READY TO RUN:' . __FUNCTION__ . '<br>';
+
+		  	$qnum=0;
+	
+			$node_types = array_flip($this->tree_manager->get_available_node_types());
+	    	$my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
+	    					   	   'additionalWhereClause' => '', 'testcase_name' => null,
+	    					   	   'platform_id' => null,
+	    					   	   'testcase_id' => null,'active_testcase' => false);
+	                           
+	    	$my['options'] = array('remove_empty_nodes_of_type' => null);
+	
+			$my['filters'] = array_merge($my['filters'], (array)$filters);
+			$my['options'] = array_merge($my['options'], (array)$options);
+	
+			$exclude_branches = $my['filters']['exclude_branches'];
+			$exclude_children_of = $my['filters']['exclude_children_of'];	
+	
+	
+			$tcaseFilter['name'] = !is_null($my['filters']['testcase_name']);
+			$tcaseFilter['id'] = !is_null($my['filters']['testcase_id']);
+			
+			$tcaseFilter['is_active'] = !is_null($my['filters']['active_testcase']) && $my['filters']['active_testcase'];
+			$tcaseFilter['enabled'] = $tcaseFilter['name'] || $tcaseFilter['id'] || $tcaseFilter['is_active'];
+	
+	
+			$tcversionFilter['execution_type'] = !is_null($my['filters']['execution_type']);
+			$tcversionFilter['enabled'] = $tcversionFilter['execution_type'];
+	
+			$childFilterOn = $tcaseFilter['enabled'] || $tcversionFilter['enabled'];
+			
+		
+	
+			if( !is_null($my['options']['remove_empty_nodes_of_type']) )
+			{
+				// this way I can manage code or description			
+				if( !is_numeric($my['options']['remove_empty_nodes_of_type']) )
+				{
+					$my['options']['remove_empty_nodes_of_type'] = 
+								  $this->tree_manager->node_descr_id[$my['options']['remove_empty_nodes_of_type']];
+				}
+			}
+	
+	
+			$platformFilter = "";
+			if( !is_null($my['filters']['platform_id']) && $my['filters']['platform_id'] > 0 )
+			{
+				$platformFilter = " AND T.platform_id = " . intval($my['filters']['platform_id']) ;
+			}
+	
+			// Create invariant sql sentences
+			$staticSql[0] = " /* Get ONLY TestSuites */ " .
+						 	" SELECT NHTS.node_order AS spec_order," . 
+				     	 	" NHTS.node_order AS node_order, NHTS.id, NHTS.parent_id," . 
+				     	 	" NHTS.name, NHTS.node_type_id, 0 AS tcversion_id " .
+				     	 	" FROM {$this->tables['nodes_hierarchy']} NHTS" .
+				     	 	" WHERE NHTS.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} " .
+				     	 	" AND NHTS.parent_id = ";
+				     	
+			$staticSql[1] =	" /* Get ONLY Test Cases with version linked to (testplan,platform) */ " .
+				     	 	" SELECT NHTC.node_order AS spec_order, " .
+				     	 	"        TPTCV.node_order AS node_order, NHTC.id, NHTC.parent_id, " .
+				     	 	"        NHTC.name, NHTC.node_type_id, TPTCV.tcversion_id " .
+				     	 	" FROM {$this->tables['nodes_hierarchy']} NHTC " .
+						 	" JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
+				     	 	" JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTCV.id " .
+				     	 	" WHERE NHTC.node_type_id = {$this->tree_manager->node_descr_id['testcase']} " .
+				     	 	" AND TPTCV.testplan_id = " . intval($tplan_id) . " {$platformFilter} " .
+				     	 	" AND NHTC.parent_id = ";	
+		
+		} // End init static area
+		
+		//$qnum++;
+		//echo $qnum . ' - ' . $node_id . '<br>';
+		$target = intval($node_id);
+		$sql = $staticSql[0] . $target . " UNION " . $staticSql[1] . $target;
+		
+		if( $tcaseFilter['enabled'] )
+		{
+			foreach($tcaseFilter as $key => $apply)
+			{
+				if( $apply )
+				{
+					switch($key)
+					{
+						case 'name':
+							 $sql .= " AND NHTC.name LIKE '%{$my['filters']['testcase_name']}%' ";
+						break;
+						
+						case 'id':
+			            	 $sql .= " AND NHTC.id = {$my['filters']['testcase_id']} ";
+						break;
+					}
+				}
+			}
+		}
+		
+		$sql .= " ORDER BY node_order,id";
+		
+		$rs = $this->db->fetchRowsIntoMap($sql,'id');
+		// new dBug($rs);
+		
+		if( count($rs) == 0 )
+		{
+			return $qnum;
+		}
+	
+	    // create list with test cases nodes
+		$tclist = null;
+		$ks = array_keys($rs);
+		foreach($ks as $ikey)
+		{
+			if( $rs[$ikey]['node_type_id'] == $this->tree_manager->node_descr_id['testcase'] )
+			{
+				$tclist[$rs[$ikey]['id']] = $rs[$ikey]['id'];
+			}
+		}		
+		if( !is_null($tclist) )
+		{
+			$filterOnTC = false;
+			$glav = " /* Get LATEST ACTIVE tcversion ID */ " .  
+					" SELECT MAX(TCVX.id) AS tcversion_id, NHTCX.parent_id AS tc_id " .
+					" FROM {$this->tables['tcversions']} TCVX " . 
+					" JOIN {$this->tables['nodes_hierarchy']} NHTCX " .
+					" ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
+					" WHERE NHTCX.parent_id IN (" . implode($tclist,',') . ")" .
+					" GROUP BY NHTCX.parent_id,TCVX.tc_external_id  ";
+	
+			$ssx = 	" /* Get LATEST ACTIVE tcversion MAIN ATTRIBUTES */ " .
+					" SELECT TCV.id AS tcversion_id, TCV.tc_external_id AS external_id, SQ.tc_id " .
+			   		" FROM {$this->tables['tcversions']} TCV " . 
+			   		" JOIN ( $glav ) SQ " .
+			   		" ON TCV.id = SQ.tcversion_id ";
+	
+			if( $tcversionFilter['enabled'] || $tcaseFilter['is_active'] )
+			{
+				if( $tcversionFilter['execution_type'] )
+				{
+					$ssx .= " /* Filter LATEST ACTIVE tcversion */ " .
+							" WHERE TCV.execution_type = " . $my['filters']['execution_type'];
+					$filterOnTC = true;
+				}	
+			}
+			
+			$highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
+			if( $filterOnTC )
+			{
+				$ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;
+				if( count($ky) > 0 )
+				{
+					// new dBug($ky);
+					foreach($ky as $tcase)
+					{
+						unset($rs[$tcase]);						
+					}
+				}
+			}
+		}
+		
+	 	foreach($rs as $row)
+	 	{
+			if(!isset($exclude_branches[$row['id']]))
+			{  
+				$node = $row + array('node_table' => $this->tree_manager->node_tables_by['id'][$row['node_type_id']]);
+				$node['childNodes'] = null;
+				
+				if($node['node_table'] == 'testcases')
+				{
+					$node['leaf'] = true; 
+					$node['external_id'] = $highlander[$row['id']]['external_id'];
+				}			
+				
+				// why we use exclude_children_of ?
+		        // 1. Sometimes we don't want the children if the parent is a testcase,
+		        //    due to the version management
+		        //
+		        if(!isset($exclude_children_of[$node_types[$row['node_type_id']]]))
+		        {
+		        	// Keep walking (Johny Walker Whisky)
+		        	// echo 'Walk:' . $row['id'] . '<br>'; 
+		        	$this->_get_subtree_rec($tplan_id,$row['id'],$node,$my['filters'],$my['options']);
+		        }
+	
+	         
+				// Have added this logic, because when export test plan will be developed
+				// having a test spec tree where test suites that do not contribute to test plan
+				// are pruned/removed is very important, to avoid additional processing
+				//		        
+				// If node has no childNodes, we check if this kind of node without children
+				// can be removed.
+				//
+			    $doRemove = is_null($node['childNodes']) && 
+			        	    ($node['node_type_id'] == $my['options']['remove_empty_nodes_of_type']);
+			    if(!$doRemove)
+			    {
+		  			$pnode['childNodes'][] = $node;
+		  		}	
+			} // if(!isset($exclude_branches[$rowID]))
+		} //while
+		return $qnum;
+	}
 
 } // end class testplan
 

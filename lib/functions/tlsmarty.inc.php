@@ -260,6 +260,7 @@ class TLSmarty extends Smarty
                           'insert_step' => TL_THEME_IMG_DIR . "insert_step.png",
                           'reorder' => TL_THEME_IMG_DIR . "arrow_switch.png",
                           'sort' => TL_THEME_IMG_DIR . "sort_hint.png",
+                          'toggle_all' => TL_THEME_IMG_DIR .'toggle_all.gif',
                           'bullet' => TL_THEME_IMG_DIR . "slide_gripper.gif");
 
         $msg = lang_get('show_hide_api_info');

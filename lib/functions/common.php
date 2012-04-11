@@ -94,8 +94,9 @@ function tlAutoload($class_name)
 	{
     	$len = tlStringLen($classFileName) - $tlClassPrefixLen;
 		$classFileName = strtolower(tlSubstr($classFileName,$tlClassPrefixLen,$len));
-	} 
-   	require_once $classFileName . '.class.php';
+	}
+	 
+	require_once $classFileName . '.class.php';
 }
 
 
@@ -197,7 +198,7 @@ function setPaths()
 {
 	if (!isset($_SESSION['basehref']))
 	{
-		$_SESSION['basehref'] = get_home_url();
+		$_SESSION['basehref'] = get_home_url(config_get('force_https'));
 	}	
 }
 

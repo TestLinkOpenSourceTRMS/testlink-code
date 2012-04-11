@@ -13,12 +13,10 @@
  * @link 		http://www.teamst.org/index.php
  * @see			sysinfo.php
  *
- * @internal Revisions:
+ * @internal revisions
+ * @since 1.9.4	
+ * 	20120411 - franciscom - TICKET 4969: Add Setting to Force HTTPS
  * 	20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
- *  20110411 - Julian - BUGID 4398 - Prevent user-login when database scheme version does not fit 
- *                                   required scheme
- *  20110126 - Julian - BUGID 4186 - checkSchemaVersion() moved last_db_version to const.inc.php
- *                                 - better log message for DB 1.3 to DB 1.4 upgrade
  *
  **/
 // ---------------------------------------------------------------------------------------------------
@@ -29,33 +27,58 @@
  * @author adapted from Mantis Bugtracking system
  * @return string URL 
  */
-function get_home_url()
+function get_home_url($opt)
 {
-  if ( isset ( $_SERVER['PHP_SELF'] ) ) {
+  if( isset ( $_SERVER['PHP_SELF'] ) ) 
+  {
 	$t_protocol = 'http';
-	if ( isset( $_SERVER['HTTPS'] ) && ( strtolower( $_SERVER['HTTPS'] ) != 'off' ) ) {
+	if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) 
+	{
+		$t_protocol= $_SERVER['HTTP_X_FORWARDED_PROTO'];
+	}		
+	else if ( isset( $_SERVER['HTTPS'] ) && ( strtolower( $_SERVER['HTTPS'] ) != 'off' ) ) 
+	{
 		$t_protocol = 'https';
 	}
+	
+	// TICKET 4969: Add Setting to Force HTTPS
+	$t_protocol = $opt['force_https'] ? 'https' : $t_protocol;
 
 	// $_SERVER['SERVER_PORT'] is not defined in case of php-cgi.exe
-	if ( isset( $_SERVER['SERVER_PORT'] ) ) {
+	if ( isset( $_SERVER['SERVER_PORT'] ) ) 
+	{
 		$t_port = ':' . $_SERVER['SERVER_PORT'];
-		if ( ( ':80' == $t_port && 'http' == $t_protocol )
-		  || ( ':443' == $t_port && 'https' == $t_protocol )) {
+		if ( ( ':80' == $t_port && 'http' == $t_protocol ) || 
+			 ( ':443' == $t_port && 'https' == $t_protocol )) 
+		{
 			$t_port = '';
 		}
-	} else {
+	} 
+	else 
+	{
 		$t_port = '';
 	}
 
-	if ( isset( $_SERVER['HTTP_HOST'] ) ) {
+	if ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) 
+	{ 	// Support ProxyPass
+		$t_hosts = explode( ',', $_SERVER['HTTP_X_FORWARDED_HOST'] );
+		$t_host = $t_hosts[0];
+	}
+	else if ( isset( $_SERVER['HTTP_HOST'] ) ) 
+	{
 		$t_host = $_SERVER['HTTP_HOST'];
-	} else if ( isset( $_SERVER['SERVER_NAME'] ) ) {
+	} 
+	else if ( isset( $_SERVER['SERVER_NAME'] ) ) 
+	{
 		$t_host = $_SERVER['SERVER_NAME'] . $t_port;
-	} else if ( isset( $_SERVER['SERVER_ADDR'] ) ) {
+	} 
+	else if ( isset( $_SERVER['SERVER_ADDR'] ) ) 
+	{
 		$t_host = $_SERVER['SERVER_ADDR'] . $t_port;
-	} else {
-		$t_host = 'www.example.com';
+	} 
+	else 
+	{
+		$t_host = 'localhost';
 	}
 
 	$t_path = dirname( $_SERVER['PHP_SELF'] );

@@ -122,6 +122,12 @@ $tlCfg->charts_font_size = 8;
 /* [SERVER ENVIRONMENT] */
 
 /**
+ * TICKET 4969: Add Setting to Force HTTPS
+ */
+$tlCfg->force_https = false;
+
+
+/**
  * @var integer Set the session timeout for inactivity [minutes].
  * Default high value disables this feature.
  */
@@ -1361,7 +1367,7 @@ require_once('configCheck.php');
 /** root of testlink directory location seen through the web server */
 /*  20070106 - franciscom - this statement it's not 100% right
     better use $_SESSION['basehref'] in the scripts. */
-define('TL_BASE_HREF', get_home_url());
+define('TL_BASE_HREF', get_home_url($tlCfg->force_https));
 
 
 clearstatcache();
@@ -1376,7 +1382,7 @@ if( !isset($g_attachments->access_icon) )
 	$g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
 }
 
-// BUGID 2914
+
 // Important to do this only after custom_* to use (if exists) redefinition of
 // $tlCfg->results['status_label_for_exec_ui']
 $tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];

@@ -4548,6 +4548,19 @@ protected function createAttachmentTempFile()
 	    // file_put_contents('c:\checkTestCaseVersionNumberAncestry.php.xmlrpc', $xx,FILE_APPEND); 
 	    return $ret;
 	} // function end
+	
+	/**
+	 * Helper method to see if the a provided custom field is not empty.
+	 *
+	 * @param string $messagePrefix used to be prepended to error message
+	 *
+	 * @return boolean
+	 * @access protected
+	 */
+	protected function checkCustomField($messagePrefix='')
+	{
+		return (isset($this->args[self::$customFieldNameParamName]) ? true : false);
+	}
 
 
     /**

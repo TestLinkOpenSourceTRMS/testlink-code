@@ -4681,6 +4681,18 @@ protected function createAttachmentTempFile()
 	    return $ret;
 	} // function end
 
+	/**
+	 * Helper method to see if the a provided custom field is not empty.
+	 *
+	 * @param string $messagePrefix used to be prepended to error message
+	 *
+	 * @return boolean
+	 * @access protected
+	 */
+	protected function checkCustomField($messagePrefix='')
+	{
+		return (isset($this->args[self::$customFieldNameParamName]) ? true : false);
+	}
 
     /**
     * Helper method to see if the a provided scope is valid. Valids scopes are 

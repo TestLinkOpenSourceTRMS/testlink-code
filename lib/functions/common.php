@@ -198,7 +198,7 @@ function setPaths()
 {
 	if (!isset($_SESSION['basehref']))
 	{
-		$_SESSION['basehref'] = get_home_url(config_get('force_https'));
+		$_SESSION['basehref'] = get_home_url(array('force_https' => config_get('force_https')));
 	}	
 }
 

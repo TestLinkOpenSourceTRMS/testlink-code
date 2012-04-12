@@ -1360,15 +1360,8 @@ $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
 // DO NOT CHANGE NOTHING BELOW
 // --------------------------------------------------------------------------------------
 
-// havlatm: @TODO move the next code out of config - configCheck.php -> included via common.php
 /** Functions for check request status */
 require_once('configCheck.php');
-
-/** root of testlink directory location seen through the web server */
-/*  20070106 - franciscom - this statement it's not 100% right
-    better use $_SESSION['basehref'] in the scripts. */
-define('TL_BASE_HREF', get_home_url($tlCfg->force_https));
-
 
 clearstatcache();
 if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
@@ -1376,7 +1369,12 @@ if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
   require_once( TL_ABS_PATH . 'custom_config.inc.php' );
 }
 
-// BUGID 3424
+/** root of testlink directory location seen through the web server */
+/*  20070106 - franciscom - this statement it's not 100% right
+    better use $_SESSION['basehref'] in the scripts. */
+define('TL_BASE_HREF', get_home_url(array('force_https' => $tlCfg->force_https));
+
+
 if( !isset($g_attachments->access_icon) )
 {
 	$g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';

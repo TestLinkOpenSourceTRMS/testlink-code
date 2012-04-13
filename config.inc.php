@@ -1372,7 +1372,7 @@ if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
 /** root of testlink directory location seen through the web server */
 /*  20070106 - franciscom - this statement it's not 100% right
     better use $_SESSION['basehref'] in the scripts. */
-define('TL_BASE_HREF', get_home_url(array('force_https' => $tlCfg->force_https));
+define('TL_BASE_HREF', get_home_url(array('force_https' => $tlCfg->force_https)));
 
 
 if( !isset($g_attachments->access_icon) )

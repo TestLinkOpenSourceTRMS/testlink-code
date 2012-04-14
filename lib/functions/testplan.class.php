@@ -5596,6 +5596,8 @@ class testplan extends tlObjectWithAttachments
 
 
 	/**
+	 * getHitsNotRunFull($id,$platformID,$buildQty=0)
+	 *
 	 * returns recordset with:
 	 * test cases with NOT RUN status on ALL ACTIVE builds (full), for a platform.
 	 * 
@@ -5716,7 +5718,7 @@ class testplan extends tlObjectWithAttachments
 				" JOIN {$this->tables['executions']} E ON E.id = LE.id " .
 				" WHERE TPTCV.testplan_id = $id " . 
 				" AND TPTCV.platform_id=" . intval($platformID) . 
-				" AND LE.status IN ('{$statusInClause}')" .
+				" AND E.status IN ('{$statusInClause}')" .
 				" GROUP BY tcase_id" .
 				" HAVING COUNTER = " . intval($buildCount) ; 
 

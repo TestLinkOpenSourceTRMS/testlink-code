@@ -37,31 +37,31 @@ Builds: B1,B2,B3
 Test Cases: TC-100, TC-200,TC-300
 
 Test Case - Build - run # / execution status history
-TC-100      B1      3 / Passed
+<b>TC-100      B1      3 / Passed</b>
 TC-100      B1      2 / BLOCKED
 TC-100      B1      1 / FAILED
-TC-100       B2      1 / FAILED
-TC-100        B3      0 / Not Run
+<b>TC-100       B2      1 / FAILED</b>
+<b>TC-100        B3      0 / Not Run</b>
 
-TC-200      B1      1/FAILED
-TC-200       B2      1/FAILED
-TC-200        B3      1/BLOCKED
+<b>TC-200      B1      1/FAILED</b>
+<b>TC-200       B2      1/FAILED</b>
+<b>TC-200        B3      1/BLOCKED</b>
 	 
-TC-300      B1      3/Passed
+<b>TC-300      B1      3/Passed</b>
 TC-300      B1      2/Passed
 TC-300      B1      1/Passed
-TC-300       B2      3/Passed
+<b>TC-300       B2      3/Passed</b>
 TC-300       B2      2/FAILED
 TC-300       B2      1/Passed
-TC-300        B3      4/BLOCKED
+<b>TC-300        B3      4/BLOCKED</b>
 TC-300        B3      3/BLOCKED
 TC-300        B3      2/Passed
 TC-300        B3      1/FAILED
 	 
-TC-400      B1      2/FAILED =
+<b>TC-400      B1      2/FAILED =</b>
 TC-400      B1      1/BLOCKED
-TC-400       B2      1/FAILED =
-TC-400        B3      3/FAILED =
+<b>TC-400       B2      1/FAILED =</b>
+<b>TC-400        B3      3/FAILED =</b>
 TC-400        B3      2/Passed
 TC-400        B3      1/BLOCKED
 
@@ -120,6 +120,7 @@ $statusSet = array('b','p');
 $method2call = 'getHitsStatusSetFull';
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusSet); 
 echo '<br>' . $method2call . '()' . '<br>';
+var_dump($statusSet);
 new dBug($$method2call);
 echo '<hr>';
 
@@ -127,6 +128,7 @@ $statusSet = array('b','f');
 $method2call = 'getHitsStatusSetFull';
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusSet); 
 echo '<br>' . $method2call . '()' . '<br>';
+var_dump($statusSet);
 new dBug($$method2call);
 echo '<hr>';
 
@@ -140,6 +142,7 @@ $statusSet = array('b','p');
 $method2call = 'getHitsStatusSetPartial';
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id); 
 echo '<br>' . $method2call . '()' . '<br>';
+var_dump($statusSet);
 new dBug($$method2call);
 echo '<hr>';
 

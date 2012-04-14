@@ -5565,6 +5565,7 @@ class testplan extends tlObjectWithAttachments
 				" JOIN {$this->tables['executions']} E ON E.testplan_id = TPTCV.testplan_id " .
 				" AND E.platform_id = TPTCV.platform_id " .
 				" AND E.build_id = B.id " .
+				" AND E.tcversion_id = TPTCV.tcversion_id " .
 				" WHERE TPTCV.testplan_id = $id " . 
 				" AND TPTCV.platform_id=" . intval($platformID) . 
 				" AND E.status ='" .$this->db->prepare_string($status) . "'" .
@@ -5607,11 +5608,96 @@ class testplan extends tlObjectWithAttachments
 				" E.testplan_id = TPTCV.testplan_id " .
 				" AND E.platform_id = TPTCV.platform_id " .
 				" AND E.build_id = B.id " .
+				" AND E.tcversion_id = TPTCV.tcversion_id " .
 				" WHERE TPTCV.testplan_id = $id " . 
 				" AND TPTCV.platform_id={$platformID} AND E.status IS NULL " .
 				" GROUP BY tcase_id,status " .
 				" HAVING COUNTER = " . intval($buildCount) ; 
 		// echo $sql;
+		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
+		return $recordset;
+	}
+
+
+	/**
+	 * returns recordset with:
+	 * test cases that has at least ONE of requested status 
+	 * on ALL ACTIVE builds (full), for a platform
+	 *
+	 * Example:
+	 * 
+	 * Test Plan: PLAN B 
+	 * Builds: B1,B2,B3
+	 * Test Cases: TC-100, TC-200,TC-300
+	 *
+	 * Test Case - Build - Execution status
+	 * TC-100      B1      Passed
+	 * TC-100      B2      FAILED
+	 * TC-100      B3      Not Run
+	 *
+	 * TC-200      B1      FAILED
+	 * TC-200      B2      FAILED
+	 * TC-200      B3      BLOCKED
+	 *
+	 * TC-300      B1      Passed
+	 * TC-300      B2      Passed
+	 * TC-300      B3      BLOCKED
+	 *
+	 * TC-400      B1      FAILED
+	 * TC-400      B2      BLOCKED
+	 * TC-400      B3      FAILED
+	 * 
+	 * Request 1:
+	 * Provide test cases with status in ('Passed','BLOCKED')
+	 * ON ALL ACTIVE Builds
+	 *
+	 * ANSWER:
+	 * TC-300
+	 *
+	 * Request 2:
+	 * Provide test cases with status in ('FAILED','BLOCKED')
+	 * ON ALL ACTIVE Builds
+	 *
+	 * ANSWER:
+	 * TC-300, TC-400
+	 *
+	 * @return
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 *
+	 */
+	function getHitsStatusSetFull($id,$platformID,$statusSet,$buildQty=0) 
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		$statusInClause = implode("','",$statusSet);
+		$buildCount = $buildQty;
+		if( $buildQty == 0 )
+		{
+			$buildSet = $this->get_builds($id, self::ACTIVE_BUILDS);
+			$buildCount = count($buildSet);
+		}
+	
+		$sql = 	" /* $debugMsg */ " .
+				" /* Count() to be used on HAVING */ " .
+				" SELECT count(0) AS COUNTER ,NHTCV.parent_id AS tcase_id" .
+				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+				" /* Consider ONLY ACTIVE BUILDS */ " .
+				" JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id AND B.active = 1 " .
+				" /* Get Test Case ID */ " .
+				" JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCV.tcversion_id " .
+				" JOIN {$this->tables['executions']} E ON E.testplan_id = TPTCV.testplan_id " .
+				" AND E.platform_id = TPTCV.platform_id " .
+				" AND E.build_id = B.id " .
+				" AND E.tcversion_id = TPTCV.tcversion_id " .
+				" WHERE TPTCV.testplan_id = $id " . 
+				" AND TPTCV.platform_id=" . intval($platformID) . 
+				" AND E.status IN ('{$statusInClause}')" .
+				" GROUP BY tcase_id" .
+				" HAVING COUNTER = " . intval($buildCount) ; 
+
+		echo $sql;
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		return $recordset;
 	}

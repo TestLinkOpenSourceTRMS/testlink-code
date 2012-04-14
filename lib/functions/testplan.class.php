@@ -1116,6 +1116,8 @@ class testplan extends tlObjectWithAttachments
 		$builds = array('join' => '', 'filter' => '', 'left_join' => ' ');
 		$executions = array('join' => '', 'filter' => '');
 
+		new dBug($options);
+		
 		// $notrun['filter'] = null;
 		$more_tcase_fields = '';
 		$join_for_parent = '';
@@ -1295,6 +1297,9 @@ class testplan extends tlObjectWithAttachments
 			}	   		
 			$sql .= $ua_fields != '' ? ',' . $ua_fields : '';
 			$sql = str_replace(array(', ,',',,'),',',$sql);
+			
+			
+			new dBug($my['join']);
 			
 			$sql .=" FROM {$this->tables['nodes_hierarchy']} NH_TCV " .
 				   " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCV.parent_id = NH_TCASE.id " .
@@ -1577,6 +1582,15 @@ class testplan extends tlObjectWithAttachments
 		    	               			 "  {$dummy}) ";
 		    	               			 
 		    // new dBug($ic['join']['executions']);	               			 
+		}
+		else if (!$ic['options']['last_execution'])
+		{
+			// with this we try to cover situation when user wants COMPLETE EXECUTION HISTORY
+			$ic['join']['executions'] .= " JOIN {$this->tables['executions']} E ON ";
+			$ic['join']['executions'] .= " (E.testplan_id = T.testplan_id AND " .
+			    		               	 "  E.tcversion_id = T.tcversion_id AND " .
+			            		       	 "  E.platform_id = T.platform_id " .
+		    	               			 "  {$dummy}) ";
 		}	           
 		else
 		{
@@ -3803,7 +3817,7 @@ class testplan extends tlObjectWithAttachments
 	 * @since 1.9,4
 	 *
 	 */
-	function getTestCaseHitByStatusOnPlatformBuild($id, $platformID,$buildSet, $statusSet) 
+	function getTestCaseHitsSetStatusPartial($id,$platformID,$buildSet,$statusSet) 
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$node_types = $this->tree_manager->get_available_node_types();
@@ -5536,7 +5550,7 @@ class testplan extends tlObjectWithAttachments
 
 	/**
 	 * returns recordset with test cases that has requested status
-	 * on ALL ACTIVE builds (full), for a platform
+	 * for LAST EXECUTION on ALL ACTIVE builds (full), for a platform
 	 * 
 	 * @return
 	 *
@@ -5556,19 +5570,20 @@ class testplan extends tlObjectWithAttachments
 
 		$sql = 	" /* $debugMsg */ " .
 				" /* Count() to be used on HAVING */ " .
-				" SELECT count(0) AS COUNTER ,NHTCV.parent_id AS tcase_id" .
+				" SELECT COUNT(0) AS COUNTER ,NHTCV.parent_id AS tcase_id" .
 				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
 				" /* Consider ONLY ACTIVE BUILDS */ " .
 				" JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id AND B.active = 1 " .
 				" /* Get Test Case ID */ " .
 				" JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCV.tcversion_id " .
-				" JOIN {$this->tables['executions']} E ON E.testplan_id = TPTCV.testplan_id " .
-				" AND E.platform_id = TPTCV.platform_id " .
-				" AND E.build_id = B.id " .
-				" AND E.tcversion_id = TPTCV.tcversion_id " .
+				" /* Get INFO From VIEW */ " .
+				" JOIN {$this->views['last_executions']} LE ON LE.testplan_id = TPTCV.testplan_id " .
+				" AND LE.platform_id = TPTCV.platform_id " .
+				" AND LE.build_id = B.id " .
+				" AND LE.tcversion_id = TPTCV.tcversion_id " .
 				" WHERE TPTCV.testplan_id = $id " . 
 				" AND TPTCV.platform_id=" . intval($platformID) . 
-				" AND E.status ='" .$this->db->prepare_string($status) . "'" .
+				" AND LE.status ='" .$this->db->prepare_string($status) . "'" .
 				" GROUP BY tcase_id" .
 				" HAVING COUNTER = " . intval($buildCount) ; 
 
@@ -5598,7 +5613,7 @@ class testplan extends tlObjectWithAttachments
 		}
 		$sql = 	" /* $debugMsg */ " .
 				" /* Count() to be used on HAVING */ " .
-				" SELECT count(0) AS COUNTER ,NHTCV.parent_id AS tcase_id" .
+				" SELECT COUNT(0) AS COUNTER ,NHTCV.parent_id AS tcase_id" .
 				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
 				" JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id " .
 				" AND B.active = 1 " .
@@ -5620,9 +5635,11 @@ class testplan extends tlObjectWithAttachments
 
 
 	/**
+	 * getHitsStatusSetFull($id,$platformID,$statusSet,$buildQty=0) 
+	 *
 	 * returns recordset with:
 	 * test cases that has at least ONE of requested status 
-	 * on ALL ACTIVE builds (full), for a platform
+	 * ON LAST EXECUTION ON ALL ACTIVE builds (full) , for a platform
 	 *
 	 * Example:
 	 * 
@@ -5630,7 +5647,7 @@ class testplan extends tlObjectWithAttachments
 	 * Builds: B1,B2,B3
 	 * Test Cases: TC-100, TC-200,TC-300
 	 *
-	 * Test Case - Build - Execution status
+	 * Test Case - Build - LAST Execution status
 	 * TC-100      B1      Passed
 	 * TC-100      B2      FAILED
 	 * TC-100      B3      Not Run
@@ -5648,7 +5665,7 @@ class testplan extends tlObjectWithAttachments
 	 * TC-400      B3      FAILED
 	 * 
 	 * Request 1:
-	 * Provide test cases with status in ('Passed','BLOCKED')
+	 * Provide test cases with status (LAST EXECUTION) in ('Passed','BLOCKED')
 	 * ON ALL ACTIVE Builds
 	 *
 	 * ANSWER:
@@ -5681,27 +5698,176 @@ class testplan extends tlObjectWithAttachments
 	
 		$sql = 	" /* $debugMsg */ " .
 				" /* Count() to be used on HAVING */ " .
-				" SELECT count(0) AS COUNTER ,NHTCV.parent_id AS tcase_id" .
+				" SELECT COUNT(0) AS COUNTER ,NHTCV.parent_id AS tcase_id" .
 				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
 				" /* Consider ONLY ACTIVE BUILDS */ " .
 				" JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id AND B.active = 1 " .
 				" /* Get Test Case ID */ " .
 				" JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCV.tcversion_id " .
-				" JOIN {$this->tables['executions']} E ON E.testplan_id = TPTCV.testplan_id " .
-				" AND E.platform_id = TPTCV.platform_id " .
-				" AND E.build_id = B.id " .
-				" AND E.tcversion_id = TPTCV.tcversion_id " .
+				" /* Get INFO From VIEW */ " .
+				" JOIN {$this->views['last_executions']} LE ON LE.testplan_id = TPTCV.testplan_id " .
+				" AND LE.platform_id = TPTCV.platform_id " .
+				" AND LE.build_id = B.id " .
+				" AND LE.tcversion_id = TPTCV.tcversion_id " .
 				" WHERE TPTCV.testplan_id = $id " . 
 				" AND TPTCV.platform_id=" . intval($platformID) . 
-				" AND E.status IN ('{$statusInClause}')" .
+				" AND LE.status IN ('{$statusInClause}')" .
 				" GROUP BY tcase_id" .
 				" HAVING COUNTER = " . intval($buildCount) ; 
 
-		echo $sql;
+		// echo $sql;
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		return $recordset;
 	}
 
+	/**
+	 * getHitsNotRunPartial($id,$platformID) 
+	 *
+	 * returns recordset with:
+	 * test cases with NOT RUN status at LEAST ON ONE off ALL ACTIVE builds (Partial), 
+	 * for a platform.
+	 * 
+	 * Example:
+	 * 
+	 * Test Plan: PLAN B 
+	 * Builds: B1,B2,B3
+	 * Test Cases: TC-100, TC-200,TC-300
+	 *
+	 * Test Case - Build - LAST Execution status
+	 * TC-100      B1      Passed
+	 * TC-100      B2      FAILED
+	 * TC-100      B3      Not Run => to have this status means THAT HAS NEVER EXECUTED ON B3
+	 *
+	 * TC-200      B1      FAILED
+	 * TC-200      B2      FAILED
+	 * TC-200      B3      BLOCKED
+	 *
+	 * TC-300      B1      Passed
+	 * TC-300      B2      Passed
+	 * TC-300      B3      BLOCKED
+	 *
+	 * TC-400      B1      FAILED
+	 * TC-400      B2      BLOCKED
+	 * TC-400      B3      FAILED
+	 * 
+	 * Request :
+	 * Provide test cases with status 'NOT RUN'
+	 * ON At Least ON OF all ACTIVE Builds
+	 *
+	 * ANSWER:
+	 * TC-100
+	 *
+	 * @return
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 *
+	 */
+	function getHitsNotRunPartial($id,$platformID) 
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		$sql = 	" /* $debugMsg */ " .
+				" SELECT DISTINCT NHTCV.parent_id AS tcase_id" .
+				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+				" /* Get ONLY ACTIVE Builds */ " .
+				" JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id " .
+				" AND B.active = 1 " .
+				" /* Get Test Case ID */ " .
+				" JOIN {$this->tables['nodes_hierarchy']} NHTCV ON " .
+				" NHTCV.id = TPTCV.tcversion_id " .
+				" /* Executions, looking for status NULL (remember NOT RUN is not written on DB) */ " .
+				" LEFT OUTER JOIN {$this->tables['executions']} E ON " .
+				" E.testplan_id = TPTCV.testplan_id " .
+				" AND E.platform_id = TPTCV.platform_id " .
+				" AND E.build_id = B.id " .
+				" AND E.tcversion_id = TPTCV.tcversion_id " .
+				" WHERE TPTCV.testplan_id = $id AND TPTCV.platform_id={$platformID} AND E.status IS NULL ";
+				
+		// echo $sql;
+		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
+		return $recordset;
+	}
+
+	/**
+	 * getHitsStatusSetPartial($id,$platformID,$statusSet) 
+	 *
+	 * returns recordset with:
+	 * test cases that has at least ONE of requested status 
+	 * on LAST EXECUTION ON At Least ONE of ALL ACTIVE builds (full), for a platform
+	 *
+	 * Example:
+	 * 
+	 * Test Plan: PLAN B 
+	 * Builds: B1,B2,B3
+	 * Test Cases: TC-100, TC-200,TC-300
+	 *
+	 * Test Case - Build - LAST Execution status
+	 * TC-100      B1      Passed
+	 * TC-100      B2      FAILED
+	 * TC-100      B3      Not Run
+	 *
+	 * TC-200      B1      FAILED
+	 * TC-200      B2      FAILED
+	 * TC-200      B3      BLOCKED
+	 *
+	 * TC-300      B1      Passed
+	 * TC-300      B2      Passed
+	 * TC-300      B3      BLOCKED
+	 *
+	 * TC-400      B1      FAILED
+	 * TC-400      B2      BLOCKED
+	 * TC-400      B3      FAILED
+	 * 
+	 * Request 1:
+	 * Provide test cases with status in ('Passed','BLOCKED')
+	 * ON At Least ON OFF ALL ACTIVE Builds
+	 *
+	 * ANSWER:
+	 * TC-200, TC300, TC400
+	 *
+	 * Request 2:
+	 * Provide test cases with status in ('FAILED','BLOCKED')
+	 * ON ALL ACTIVE Builds
+	 *
+	 * ANSWER:
+	 * TC-300, TC-400
+	 *
+	 * @return
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 *
+	 */
+	function getHitsStatusSetPartial($id,$platformID,$statusSet) 
+	{
+
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		$statusInClause = implode("','",$statusSet);
+	
+		$sql = 	" /* $debugMsg */ " .
+				" SELECT DISTINCT NHTCV.parent_id AS tcase_id" .
+				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+				" /* Consider ONLY ACTIVE BUILDS */ " .
+				" JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id AND B.active = 1 " .
+				" /* Get Test Case ID */ " .
+				" JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCV.tcversion_id " .
+				" /* Get INFO From VIEW */ " .
+				" JOIN {$this->views['last_executions']} LE ON LE.testplan_id = TPTCV.testplan_id " .
+				" AND LE.platform_id = TPTCV.platform_id " .
+				" AND LE.build_id = B.id " .
+				" AND LE.tcversion_id = TPTCV.tcversion_id " .
+				" WHERE TPTCV.testplan_id = $id " . 
+				" AND TPTCV.platform_id=" . intval($platformID) . 
+				" AND LE.status IN ('{$statusInClause}')";
+
+		// echo $sql;
+		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
+		return $recordset;
+
+		
+	}
 
 } // end class testplan
 

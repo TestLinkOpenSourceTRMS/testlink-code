@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcases>
+<testcase internalid="32710" name="Create issue tracker - no conflict">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[1]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="32712" name="Create issue tracker - NAME Collision">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[2]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>Create a issue tracker with a name that will generate collision.</p>
+<p>TL&nbsp;has to provide clear and human readeble, feedback message</p>
+<p>issue tracker attributes Type and Configuration, has to be preserved after feedback messages</p>
+<p>Check non event on TL&nbsp;event viewer</p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="32714" name="Edit issue tracker - no conflict">
+	<node_order><![CDATA[102]]></node_order>
+	<externalid><![CDATA[3]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="32716" name="Edit issue tracker - NAME Collision">
+	<node_order><![CDATA[103]]></node_order>
+	<externalid><![CDATA[4]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>Similar to 'Create issue tracker - NAME&nbsp;Collision'</p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="32718" name="Delete issue tracker">
+	<node_order><![CDATA[104]]></node_order>
+	<externalid><![CDATA[5]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>Check that 'delete icon' is present ONLY&nbsp;if issue tracker has not be linked to test project.</p>
+<p>Value of Active attribute on issue tracker integration on test project IS&nbsp;IGNORED</p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="32720" name="List all available issue trackers">
+	<node_order><![CDATA[105]]></node_order>
+	<externalid><![CDATA[6]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>Check that 'delete icon' is present ONLY&nbsp;for issue trackers NON&nbsp;linked to test project</p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+</testcases>

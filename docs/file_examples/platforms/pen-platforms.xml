@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<platforms>
+	<platform>
+		<name><![CDATA[Ballpoint Pen]]></name>
+		<notes><![CDATA[<p><span class="HowToHeading">(introduced in 1940)</span><br />
+<br />
+<span class="HowToemphasis">Benefits:</span><br />
+<span class="HowToBody">No maintenance<br />
+Long ink life</span><br />
+<br />
+<span class="HowToemphasis">Drawbacks:</span><br />
+<span class="HowToBody">Paste ink is sticky <br />
+Fixed ball limits expressive writing</span></p>]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Fiber Tip]]></name>
+		<notes><![CDATA[<p><span class="HowToHeading"> (introduced in 1960)<br />
+</span><br />
+<span class="HowToemphasis">Benefits:</span><br />
+<span class="HowToBody">Smooth delivery of ink because of the fiber (felt) tip<br />
+Interchangeable with most roller ball refills<br />
+Ink dries quickly, which is very helpful for left-handed writers</span><br />
+<br />
+<span class="HowToemphasis">Drawbacks:</span><br />
+<span class="HowToBody">A rich flow, but not as expressive as a fountain pen <br />
+Spring-load action gives a smooth write but takes some getting used to because of its give</span></p>]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Fountain Pen]]></name>
+		<notes><![CDATA[<p><span class="HowToHeading">(introduced in 1880)</span><br />
+<br />
+<span class="HowToemphasis">Benefits:</span><br />
+<span class="HowToBody">Pleasure of expressing liquid ink<br />
+Flexible nib accentuates personal expression</span><br />
+<br />
+<span class="HowToemphasis">Drawbacks:</span><br />
+<span class="HowToBody">Requires a little skill and care</span></p>]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Gel Ink]]></name>
+		<notes><![CDATA[<p><span class="HowToHeading">(introduced in 1995)</span><br />
+<br />
+<span class="HowToemphasis">Benefits: </span><br />
+<span class="HowToBody">Richer ink color<br />
+More colors, because        the ink holds pigment well <br />
+Smoother than roller ball ink because it's        more viscous</span><br />
+<span class="HowToemphasis"><br />
+Drawbacks:</span><br />
+<span class="HowToBody">Dries out quickly<br />
+A short life span if used every day (3 to 5 weeks)</span></p>]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Roller Ball Pen]]></name>
+		<notes><![CDATA[<p><span class="HowToHeading">      (introduced in 1980)</span> <br />
+<br />
+<span class="HowToemphasis">Benefits:</span><br />
+<span class="HowToBody">Pleasure of liquid ink Ease of use</span><br />
+<span class="HowToemphasis"><br />
+Drawbacks:</span>        <span class="HowToBody">Cartridges run out sooner than ballpoint refills  	  <br />
+Fixed ball limits expression</span></p>]]></notes>
+	</platform>
+</platforms>

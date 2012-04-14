@@ -5581,12 +5581,15 @@ class testplan extends tlObjectWithAttachments
 				" AND LE.platform_id = TPTCV.platform_id " .
 				" AND LE.build_id = B.id " .
 				" AND LE.tcversion_id = TPTCV.tcversion_id " .
+				" /* Get STATUS INFO From Executions */ " .
+				" JOIN {$this->tables['executions']} E ON E.id = LE.id " .
 				" WHERE TPTCV.testplan_id = $id " . 
 				" AND TPTCV.platform_id=" . intval($platformID) . 
-				" AND LE.status ='" .$this->db->prepare_string($status) . "'" .
+				" AND E.status ='" .$this->db->prepare_string($status) . "'" .
 				" GROUP BY tcase_id" .
 				" HAVING COUNTER = " . intval($buildCount) ; 
 
+		// echo $sql;
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		return $recordset;
 	}
@@ -5709,6 +5712,8 @@ class testplan extends tlObjectWithAttachments
 				" AND LE.platform_id = TPTCV.platform_id " .
 				" AND LE.build_id = B.id " .
 				" AND LE.tcversion_id = TPTCV.tcversion_id " .
+				" /* Get STATUS INFO From Executions */ " .
+				" JOIN {$this->tables['executions']} E ON E.id = LE.id " .
 				" WHERE TPTCV.testplan_id = $id " . 
 				" AND TPTCV.platform_id=" . intval($platformID) . 
 				" AND LE.status IN ('{$statusInClause}')" .
@@ -5858,6 +5863,8 @@ class testplan extends tlObjectWithAttachments
 				" AND LE.platform_id = TPTCV.platform_id " .
 				" AND LE.build_id = B.id " .
 				" AND LE.tcversion_id = TPTCV.tcversion_id " .
+				" /* Get STATUS INFO From Executions */ " .
+				" JOIN {$this->tables['executions']} E ON E.id = LE.id " .
 				" WHERE TPTCV.testplan_id = $id " . 
 				" AND TPTCV.platform_id=" . intval($platformID) . 
 				" AND LE.status IN ('{$statusInClause}')";

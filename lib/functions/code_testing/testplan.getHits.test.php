@@ -64,6 +64,11 @@ TC-400       B2      1/FAILED =
 TC-400        B3      3/FAILED =
 TC-400        B3      2/Passed
 TC-400        B3      1/BLOCKED
+
+TC-500      B1      0 / NOT RUN
+TC-500       B2      0 / NOT RUN
+TC-500        B3      0 / NOT RUN
+
 STUFF;
 
 
@@ -71,7 +76,7 @@ STUFF;
 $obj_mgr=new $object_class($db);
 new dBug($obj_mgr);
 
-$tplan_id = 33121;
+$tplan_id = 33123;
 $platform_id = 0;
 
 echo '<h1>Test group conditions</h1>';
@@ -88,6 +93,24 @@ echo '<hr>';
 $status = 'p';
 $method2call = 'getHitsSingleStatusFull';
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$status); 
+echo '<br>' . $method2call . '()' . '<br>';
+echo '<br>' . "status=$status"  . '<br>';
+
+new dBug($$method2call);
+echo '<hr>';
+
+$status = 'b';
+$method2call = 'getHitsSingleStatusFull';
+$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$status); 
+echo '<br>' . $method2call . '()' . '<br>';
+echo '<br>' . "status=$status"  . '<br>';
+new dBug($$method2call);
+echo '<hr>';
+
+$status = 'f';
+$method2call = 'getHitsSingleStatusFull';
+$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$status); 
+echo '<br>' . "status=$status"  . '<br>';
 echo '<br>' . $method2call . '()' . '<br>';
 new dBug($$method2call);
 echo '<hr>';

@@ -5869,7 +5869,7 @@ class testplan extends tlObjectWithAttachments
 				" JOIN {$this->tables['executions']} E ON E.id = LE.id " .
 				" WHERE TPTCV.testplan_id = $id " . 
 				" AND TPTCV.platform_id=" . intval($platformID) . 
-				" AND LE.status IN ('{$statusInClause}')";
+				" AND E.status IN ('{$statusInClause}')";
 
 		// echo $sql;
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');

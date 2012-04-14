@@ -140,7 +140,7 @@ echo '<hr>';
 
 $statusSet = array('b','p');
 $method2call = 'getHitsStatusSetPartial';
-$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id); 
+$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusSet); 
 echo '<br>' . $method2call . '()' . '<br>';
 var_dump($statusSet);
 new dBug($$method2call);

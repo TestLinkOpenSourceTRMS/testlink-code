@@ -25,32 +25,22 @@ class tlIssueTracker extends tlObject
 	var $db;
 
 	var $types = null;
-	
-	/*
-	var $systems = array( 1 =>	array('type' => 'bugzilla', 'api' => 'db'),
-								array('type' => 'bugzilla', 'api' => 'xmlrpc'),
-								array('type' => 'eventum','api' =>'db'),
-								array('type' => 'fogbugz','api' =>'rest'),
-								array('type' => 'gforge','api' =>'soap'),
-								array('type' => 'jira', 'api' =>'db'),
-								array('type' => 'jira', 'api' =>'soap'),
-								array('type' => 'mantis', 'api' =>'db'),
-								array('type' => 'mantis', 'api' =>'soap'),
-								array('type' =>'polarion', 'api' =>'soap'),
-								array('type' => 'seapine','api' =>'soap'),
-								array('type' => 'trackplus','api' =>'soap'),
-								array('type' => 'youtrack','api' =>'rest'));
-	*/
+
+	// IMPORTANT NOTICE
+	// 1. order in this data structure, drives order on GUI.
+	// 2. if you need to add a new item start on 200, to avoid crash with standard ID
+	// 	
 	var $systems = array( 1 =>	array('type' => 'bugzilla', 'api' => 'xmlrpc'),
-								array('type' => 'eventum','api' =>'db'),
-								array('type' => 'fogbugz','api' =>'rest'),
-								array('type' => 'gforge','api' =>'soap'),
-								array('type' => 'jira', 'api' =>'soap'),
-								array('type' => 'mantis', 'api' =>'soap'),
-								array('type' =>'polarion', 'api' =>'soap'),
-								array('type' => 'seapine','api' =>'soap'),
-								array('type' => 'trackplus','api' =>'soap'),
-								array('type' => 'youtrack','api' =>'rest'));
+						  3 =>	array('type' => 'fogbugz','api' =>'rest'),
+						  5	=>	array('type' => 'jira', 'api' =>'soap'),
+						  6	=>	array('type' => 'mantis', 'api' =>'soap'),
+						 10 =>	array('type' => 'youtrack','api' =>'rest'),
+						 11 =>	array('type' => 'redmine','api' =>'rest'),
+						  2 =>	array('type' => 'eventum','api' =>'db'),
+						  4 =>	array('type' => 'gforge','api' =>'soap'),
+						  7 =>	array('type' => 'polarion', 'api' =>'soap'),
+						  8 =>	array('type' => 'seapine','api' =>'soap'),
+						  9	=>	array('type' => 'trackplus','api' =>'soap'));
 	
 	
 	

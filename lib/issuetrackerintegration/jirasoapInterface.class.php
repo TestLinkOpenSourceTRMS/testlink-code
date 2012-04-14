@@ -80,7 +80,7 @@ class jirasoapInterface extends issueTrackerInterface
 	public function getIssueStatusCode($issueID)
 	{
 		$issue = $this->getIssue($issueID);
-		return !is_null($issue) ? $issue->statusCode : false;
+		return (!is_null($issue) && is_object($issue))? $issue->statusCode : false;
 	}
 
 		
@@ -95,7 +95,7 @@ class jirasoapInterface extends issueTrackerInterface
 	function getIssueStatusVerbose($issueID)
 	{
         $issue = $this->getIssue($issueID);
-		return !is_null($issue) ? $issue->statusVerbose : null;
+		return (!is_null($issue) && is_object($issue))? $issue->statusVerbose : false;
 	}
 	
 	
@@ -108,7 +108,7 @@ class jirasoapInterface extends issueTrackerInterface
     function getIssueSummary($issueID)
     {
         $issue = $this->getIssue($issueID);
-		return !is_null($issue) ? $issue->summary : null;
+		return (!is_null($issue) && is_object($issue))? $issue->summary : null;
     }
 	
     /**
@@ -119,16 +119,20 @@ class jirasoapInterface extends issueTrackerInterface
      **/
     function getIssue($issueID)
     {
+    	$issue = null;
         try
         {
             $issue = $this->APIClient->getIssue($this->authToken, $issueID);
             
-            // We are going to have a set of standard properties
-            $issue->IDHTMLString = "<b>{$issueID} : </b>";
-            $issue->statusCode = $issue->status;
-            $issue->statusVerbose = array_search($issue->status, $this->statusDomain);
-			$issue->statusHTMLString = $this->buildStatusHTMLString($issueID,$issue->statusCode);
-			$issue->summaryHTMLString = $this->buildSummaryHTMLString($issue);
+			if(!is_null($issue) && is_object($issue))
+			{
+            	// We are going to have a set of standard properties
+	            $issue->IDHTMLString = "<b>{$issueID} : </b>";
+	            $issue->statusCode = $issue->status;
+	            $issue->statusVerbose = array_search($issue->statusCode, $this->statusDomain);
+				$issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusCode);
+				$issue->summaryHTMLString = $this->buildSummaryHTMLString($issue);
+			}
         }
         catch (Exception $e)
         {
@@ -162,7 +166,7 @@ class jirasoapInterface extends issueTrackerInterface
         if(($status_ok = $this->checkBugIDSyntax($issueID)))
         {
             $issue = $this->getIssue($issueID);
-            $status_ok = !is_null($issue);
+            $status_ok = !is_null($issue) && is_object($issue);
         }
         return $status_ok;
     }
@@ -298,7 +302,7 @@ class jirasoapInterface extends issueTrackerInterface
 	/**
 	 *
 	 **/
-	function buildStatusHTMLString($issueID,$statusCode)
+	function buildStatusHTMLString($statusCode)
 	{
 		$str = array_search($statusCode, $this->statusDomain);
 		if (strcasecmp($str, 'closed') == 0 || strcasecmp($str, 'resolved') == 0 )

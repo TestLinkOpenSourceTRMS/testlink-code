@@ -40,6 +40,8 @@ abstract class issueTrackerInterface
 	var $connected = false;
 	var $interfaceViaDB = false;  // useful for connect/disconnect methods
 
+	var $methodOpt = array('buildViewBugLink' => array('addSummary' => false, 'colorByStatus' => false));
+	
 	/**
 	 * Construct and connect to BTS.
 	 * Can be overloaded in specialized class
@@ -233,19 +235,27 @@ abstract class issueTrackerInterface
 	 * the bug with the given id in a new page
 	 *
 	 * @param int id the bug id
-	 * @param boolean addSummary  default false, true => add issue summary on HREF text
 	 *
 	 * @return string returns a complete HTML HREF to view the bug (if found in db)
 	 *
 	 **/
-	function buildViewBugLink($issueID, $addSummary = false)
+	function buildViewBugLink($issueID, $opt=null)
 	{
-
+		// $my['opt'] = array('addSummary' => false, 'colorByStatus' => false);
+		$my['opt'] = $this->methodOpt[__FUNCTION__];
+		$my['opt'] = array_merge($my['opt'],(array)$opt);
+		
 		$link = "<a href='" . $this->buildViewBugURL($issueID) . "' target='_blank'>";
 
 		$issue = $this->getIssue($issueID);
+		
+		if( is_null($issue) || !is_object($issue) )
+		{
+			$link = '';
+			return $link;
+		}
+		
 		$useIconv = property_exists($this->cfg,'dbcharset');
-
 		if($useIconv)
 		{
 				$link .= iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$issue->IDHTMLString);
@@ -271,7 +281,7 @@ abstract class issueTrackerInterface
 			$link .= $issueID;
 		}
 
-		if ($addSummary)
+		if($my['opt']['addSummary'])
 		{
 			if (!is_null($issue->summaryHTMLString))
 			{
@@ -287,6 +297,12 @@ abstract class issueTrackerInterface
 			}
 		}
 		$link .= "</a>";
+
+		if($my['opt']['colorByStatus'] && property_exists($issue,'statusColor') )
+		{
+      		$title = lang_get('access_to_bts');  
+      		$link = "<div  title=\"{$title}\" style=\"display: inline; background: $issue->statusColor;\">$link</div>";
+		}
 		return $link;
 	}
 

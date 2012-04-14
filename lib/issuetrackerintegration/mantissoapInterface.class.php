@@ -23,6 +23,23 @@ class mantissoapInterface extends issueTrackerInterface
 	
 	private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
 	
+
+	/**
+	 * Construct and connect to BTS.
+	 *
+	 * @param str $type (see tlIssueTracker.class.php $systems property)
+	 * @param xml $cfg
+	 **/
+	function __construct($type,$config)
+	{
+		$this->interfaceViaDB = false;
+		$this->methodOpt['buildViewBugLink'] = array('addSummary' => false, 'colorByStatus' => true);
+
+	    $this->setCfg($config);
+		$this->completeCfg();
+	    $this->connect();
+	}
+
 	
 	/**
 	 * Return the URL to the bugtracking page for viewing 
@@ -100,69 +117,6 @@ class mantissoapInterface extends issueTrackerInterface
 		return $res;
 	}	
 	
-	/**
-	 * Returns the status of the bug with the given id
-	 * this function is not directly called by TestLink. 
-	 *
-	 * @return string returns the status of the given bug if exists on Mantis, or false else
-	 **/
-	function getBugStatus($id)
-	{
-		$status = false;
-		$issue = $this->getIssue($id);
-		if(!is_null($issue))
-		{
-			$status = $issue->status->name;						
-		}
-		return $status;
-	}
-
-		
-	/**
-	 * Returns the status in a readable form (HTML context) for the bug with the given id
-	 *
-	 * @param int id the bug id
-	 * 
-	 * @return string returns the status (in a readable form) of the given bug if the bug
-	 * 		was found , else false
-	 **/
-	function getBugStatusString($id)
-	{
-		$status = $this->getBugStatus($id);
-		$str = htmlspecialchars($id);
-		// if the bug wasn't found the status is null and we simply display the bugID
-		if ($status !== false)
-		{
-			//the status values depends on your mantis configuration at config_inc.php in $g_status_enum_string, 
-			//below is the default:
-			//'10:new,20:feedback,30:acknowledged,40:confirmed,50:assigned,80:resolved,90:closed'
-			// With this replace if user configure status on mantis with blank we do not have problems
-			$status = str_replace(" ", "_", $status);
-			$status_i18n = lang_get('issue_status_' . $status);
-			$str = "[" . $status_i18n . "] " . $id . "";	
-		}
-		return $str;
-	}
-	
-	/**
-	 * Fetches the bug summary from the matnis db
-	 *
-	 * @param int id the bug id
-	 * 
-	 * @return string returns the bug summary if bug is found, else null
-	 **/
-	function getBugSummaryString($id)
-	{
-		$summary = null;
-		$issue = $this->getIssue(intval($id));
-		if(!is_null($issue))
-		{
-			$summary = $issue->summary;						
-		}
-		return $summary;
-	}
-
- 
   	/**
 	 * checks is bug id is present on BTS
 	 * 
@@ -204,23 +158,6 @@ class mantissoapInterface extends issueTrackerInterface
 	}
 
 
-
-	
-  	/**
-	 *
-	 * 
-	 *
-	 **/
-	function buildViewBugLink($bugID,$addSummary = false)
-  	{
-      $s = parent::buildViewBugLink($bugID, $addSummary);
-      $status = $this->getBugStatus($bugID);
-      $color = isset($this->status_color[$status]) ? $this->status_color[$status] : 'white';
-      $title = lang_get('access_to_bts');  
-      return "<div  title=\"{$title}\" style=\"display: inline; background: $color;\">$s</div>";
-  	}
-
-
 	/**
 	 * 
 	 * 
@@ -251,6 +188,14 @@ class mantissoapInterface extends issueTrackerInterface
 			if($client->mc_issue_exists($this->cfg->username,$this->cfg->password,$id))
 			{
 				$issue = $client->mc_issue_get($this->cfg->username,$this->cfg->password,$id);
+				if( !is_null($issue) && is_object($issue) )
+				{				
+					$issue->statusCode = $issue->status->id; 
+					$issue->statusVerbose = $issue->status->name; 
+					$issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusVerbose);
+					$issue->statusColor = isset($this->status_color[$issue->statusVerbose]) ? 
+										  $this->status_color[$issue->statusVerbose] : 'white';
+                }
 			}
 		}
 		catch (SoapFault $f) 
@@ -293,11 +238,82 @@ class mantissoapInterface extends issueTrackerInterface
 					"<username>MANTIS LOGIN NAME</username>\n" .
 					"<password>MANTIS PASSWORD</password>\n" .
 					"<uribase>http://www.mantisbt.org/</uribase>\n" .
-					"<uriwsdl>http://www.mantisbt.org/bugs/api/soap/mantisconnect.php?wsdl</uriwsdl>\n" .
-					"<uriview>http://www.mantisbt.org/bugs/view.php?id=</uriview>\n" .
-					"<uricreate>http://www.mantisbt.org/bugs/</uricreate>\n" .
+					"<!-- IMPORTANT NOTICE --->\n" .
+					"<!-- You Do not need to configure uriwsdl,uriview,uricreate  -->\n" .
+					"<!-- if you have done Mantis standard installation -->\n" .
+					"<!-- In this situation DO NOT COPY these config lines -->\n" .
+					"<uriwsdl>http://www.mantisbt.org/api/soap/mantisconnect.php?wsdl</uriwsdl>\n" .
+					"<uriview>http://www.mantisbt.org/view.php?id=</uriview>\n" .
+					"<uricreate>http://www.mantisbt.org/</uricreate>\n" .
 					"</issuetracker>\n";
 		return $template;
   	}
+
+	/**
+	 *
+	 * check for configuration attributes than can be provided on
+	 * user configuration, but that can be considered standard.
+	 * If they are MISSING we will use 'these carved on the stone values' 
+	 * in order	to simplify configuration.
+	 *
+	 *
+	 **/
+	function completeCfg()
+	{
+		$base = trim($this->cfg->uribase,"/") . '/' ;
+	    if( !property_exists($this->cfg,'uriwsdl') )
+	    {
+	    	$this->cfg->uriwsdl = $base . 'api/soap/mantisconnect.php?wsdl';
+		}
+		
+	    if( !property_exists($this->cfg,'uriview') )
+	    {
+	    	$this->cfg->uriview = $base . 'view.php?id';
+		}
+	    
+	    if( !property_exists($this->cfg,'uricreate') )
+	    {
+	    	$this->cfg->uricreate = $base;
+		}	    
+	}
+
+    /**
+     * checks id for validity
+     *
+	 * @param string issueID
+     *
+     * @return bool returns true if the bugid has the right format, false else
+     **/
+    function checkBugIDSyntax($issueID)
+    {
+    	return $this->checkBugIDSyntaxNumeric($issueID);
+    }
+
+
+
+    /**
+     *
+     *
+     **/
+	function buildStatusHTMLString($statusVerbose)
+	{
+		$str = '';
+		if ($statusVerbose !== false)
+		{
+			// status values depends on your mantis configuration at config_inc.php in $g_status_enum_string, 
+			// below is the default:
+			//'10:new,20:feedback,30:acknowledged,40:confirmed,50:assigned,80:resolved,90:closed'
+			// With this replace if user configure status on mantis with blank we do not have problems
+			//
+			$tlStatus = str_replace(" ", "_", $statusVerbose);
+			$str = lang_get('issue_status_' . $tlStatus);
+			if($decoration)
+			{
+				$str = "[" . $str . "] ";	
+			}
+		}
+		return $str;
+	}
+
 }
 ?>

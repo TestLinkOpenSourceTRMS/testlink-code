@@ -76,12 +76,12 @@ class youtrackrestInterface extends issueTrackerInterface
 		{
 			$this->APIClient = new \YouTrack\Connection($this->cfg->uribase, 
 														$this->cfg->username, $this->cfg->password);
-
-			echo __METHOD__ . '<br>';
-			foreach(array('uribase','username','password') as $dk)
-			{
-				echo "$dk =>" . (string) $this->cfg->$dk . '<br>';
-			}
+			
+			// echo __METHOD__ . '<br>';
+			// foreach(array('uribase','username','password') as $dk)
+			// {
+			//	echo "$dk =>" . (string) $this->cfg->$dk . '<br>';
+			// }
 			
 	       	$this->connected = true;
         }
@@ -116,11 +116,14 @@ class youtrackrestInterface extends issueTrackerInterface
 		try
 		{
 			$issue = $this->APIClient->get_issue($issueID);		
-            $issue->IDHTMLString = "<b>{$issueID} : </b>";
-			$issue->statusCode = $issue->State;
-			$issue->statusVerbose = $issue->statusCode;
-			$issue->statusHTMLString = "[$issue->statusCode] ";
-			$issue->summaryHTMLString = $issue->summary;
+			if( !is_null($issue) && is_object($issue) )
+			{
+	            $issue->IDHTMLString = "<b>{$issueID} : </b>";
+				$issue->statusCode = $issue->State;
+				$issue->statusVerbose = $issue->statusCode;
+				$issue->statusHTMLString = "[$issue->statusCode] ";
+				$issue->summaryHTMLString = $issue->summary;
+			}
 			
 		}
 		catch(\YouTrack\YouTrackException $yte)
@@ -142,7 +145,7 @@ class youtrackrestInterface extends issueTrackerInterface
 	function getIssueStatusCode($issueID)
 	{
 		$issue = $this->getIssue($issueID);
-		return !is_null($issue) ? $issue->statusCode : false;
+		return (!is_null($issue) && is_object($issue))? $issue->statusCode : false;
 	}
 
 	/**
@@ -157,7 +160,7 @@ class youtrackrestInterface extends issueTrackerInterface
 	{
         $str = "Ticket ID - " . $issueID . " - does not exist in BTS";
         $issue = $this->getBugStatus($issueID);
-        if (!is_null($issue))
+        if (!is_null($issue) && is_object($issue))
         {
             $str = array_search($issue->status, $this->statusDomain);
 			if (strcasecmp($str, 'closed') == 0 || strcasecmp($str, 'resolved') == 0 )
@@ -204,10 +207,12 @@ class youtrackrestInterface extends issueTrackerInterface
 		$this->cfg->uribase = trim((string)$this->cfg->uribase,"/");
 
 		$base =  $this->cfg->uribase . '/';
+	    /*
 	    if( !property_exists($this->cfg,'urirest') )
 	    {
-	    	$this->cfg->uriwsdl = $base . 'rest/';
+	    	$this->cfg->urirest = $base . 'rest/';
 		}
+		*/
 		
 	    if( !property_exists($this->cfg,'uriview') )
 	    {
@@ -230,7 +235,7 @@ class youtrackrestInterface extends issueTrackerInterface
         if(($status_ok = $this->checkBugIDSyntax($issueID)))
         {
             $issue = $this->getIssue($issueID);
-            $status_ok = !is_null($issue);
+            $status_ok = (!is_null($issue) && is_object($issue));
         }
         return $status_ok;
     }

@@ -138,13 +138,15 @@ class fogbugzrestInterface extends issueTrackerInterface
 		{
 			$target = array('q' => intval($issueID), 'cols' => 'sTitle,sStatus');
 			$xml = $this->APIClient->search($target);
-
-			$issue = new stdClass();
-	        $issue->IDHTMLString = "<b>{$issueID} : </b>";
-			$issue->statusCode = (string)$xml->cases->case->sStatus;
-			$issue->statusVerbose = $issue->statusCode;
-			$issue->statusHTMLString = "[$issue->statusCode] ";
-			$issue->summary = $issue->summaryHTMLString = (string)$xml->cases->case->sTitle;
+			if( !is_null($xml) && is_object($xml) )
+			{
+				$issue = new stdClass();
+		        $issue->IDHTMLString = "<b>{$issueID} : </b>";
+				$issue->statusCode = (string)$xml->cases->case->sStatus;
+				$issue->statusVerbose = $issue->statusCode;
+				$issue->statusHTMLString = "[$issue->statusCode] ";
+				$issue->summary = $issue->summaryHTMLString = (string)$xml->cases->case->sTitle;
+			}
 		}
 		catch(Exception $e)
 		{
@@ -165,7 +167,7 @@ class fogbugzrestInterface extends issueTrackerInterface
 	function getIssueStatusCode($issueID)
 	{
 		$issue = $this->getIssue($issueID);
-		return !is_null($issue) ? $issue->statusCode : false;
+		return (!is_null($issue) && is_object($issue)) ? $issue->statusCode : false;
 	}
 
 	/**
@@ -191,7 +193,7 @@ class fogbugzrestInterface extends issueTrackerInterface
 	function getIssueSummaryHTMLString($issueID)
 	{
         $issue = $this->getIssue($issueID);
-        return $issue->summaryHTMLString;
+		return (!is_null($issue) && is_object($issue)) ? $issue->summaryHTMLString : null;
 	}
 
 

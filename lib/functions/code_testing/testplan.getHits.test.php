@@ -85,6 +85,58 @@ echo 'Test Plan ID:' . $tplan_id . '<br>';
 echo 'Platform ID:' . $platform_id . '<br>';
 echo '<hr>';
 
+
+// -----------------------------------------------------------------------------
+$method2call = 'getHitsStatusSetOnLatestExecution';
+echo "<h1> TESTING:$method2call </h1>";
+// -----------------------------------------------------------------------------
+
+$statusMixed = 'n';
+try
+{
+	$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusMixed); 
+}
+catch (Exception $e)
+{
+	echo $e->getMessage();
+}
+echo '<br>' . $method2call . '()' . '<br>';
+new dBug($statusMixed);
+new dBug($$method2call);
+echo '<hr>';
+
+
+$statusMixed = array('n','p');
+try
+{
+	$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusMixed); 
+}
+catch (Exception $e)
+{
+	echo $e->getMessage();
+}
+echo '<br>' . $method2call . '()' . '<br>';
+new dBug($statusMixed);
+new dBug($$method2call);
+echo '<hr>';
+
+$statusMixed = array('b','p');
+try
+{
+	$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusMixed); 
+}
+catch (Exception $e)
+{
+	echo $e->getMessage();
+}
+echo '<br>' . $method2call . '()' . '<br>';
+new dBug($statusMixed);
+new dBug($$method2call);
+echo '<hr>';
+
+
+// -----------------------------------------------------------------------------
+
 // -----------------------------------------------------------------------------
 $method2call = 'getHitsStatusSetOnBuild';
 echo "<h1> TESTING:$method2call </h1>";

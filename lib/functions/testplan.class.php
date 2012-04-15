@@ -96,6 +96,7 @@ class testplan extends tlObjectWithAttachments
 	var $import_file_types = array("XML" => "XML"); // array("XML" => "XML", "XLS" => "XLS" );
 	
 	var $resultsCfg;
+	var $notRunStatus;
 
 	// Nodes to exclude when do test plan tree traversal
     var $nt2exclude=array('testplan' => 'exclude_me',
@@ -129,6 +130,10 @@ class testplan extends tlObjectWithAttachments
 		$this->platform_mgr = new tlPlatform($this->db);
    	
    		$this->resultsCfg = config_get('results');
+   		
+   		// this special value is used too many times
+   		$this->notRunStatus = $this->resultsCfg['status_code']['not_run'];
+   		
    		
 	    tlObjectWithAttachments::__construct($this->db,'testplans');
 	}
@@ -1124,7 +1129,6 @@ class testplan extends tlObjectWithAttachments
 		$more_parent_fields = '';
 		$more_exec_fields='';
 
-		$status_not_run = $this->resultsCfg['status_code']['not_run'];
 		$priority_field = " (urgency * importance) AS priority ";
 		
 		list($my,$build_active_status) = $this->init_get_linked_tcversions($id,$filters,$options);
@@ -1288,7 +1292,7 @@ class testplan extends tlObjectWithAttachments
 			{
 			    if( is_null($my['options']['forced_exec_status']) )
 				{
-					$sql .=	 ", COALESCE(E.status,'" . $status_not_run . "') AS exec_status ";
+					$sql .=	 ", COALESCE(E.status,'" . $this->notRunStatus . "') AS exec_status ";
 				}
 				else
 				{
@@ -1799,7 +1803,7 @@ class testplan extends tlObjectWithAttachments
 		$notRunFilter = null;	
 		$execFilter = '';
 			
-		$notRunPresent = array_search($this->resultsCfg['status_code']['not_run'],$filter); 
+		$notRunPresent = array_search($this->notRunStatus,$filter); 
 		if($notRunPresent !== false)
 		{
 			$notRunFilter = " E.status IS NULL ";
@@ -3716,7 +3720,7 @@ class testplan extends tlObjectWithAttachments
 		}	
 				
 		$first_results = null;
-		if( in_array($this->resultsCfg['status_code']['not_run'], (array)$status) )
+		if( in_array($this->notRunStatus, (array)$status) )
 		{
 			
 			$sql = " /* $debugMsg */ SELECT distinct T.tcversion_id,E.build_id,NH.parent_id AS tcase_id " .
@@ -3827,10 +3831,10 @@ class testplan extends tlObjectWithAttachments
 		$statusQty = count($statusSet);
 		$dummy = $statusSet;
 		$doNotRunProcessing = false;
-		if( isset($statusSet[$this->resultsCfg['status_code']['not_run']]) )
+		if( isset($statusSet[$this->notRunStatus]) )
 		{
 			$doNotRunProcessing = true;
-			unset($dummy[$this->resultsCfg['status_code']['not_run']]);
+			unset($dummy[$this->notRunStatus]);
 		} 
 		$status_in = implode("','", $dummy);
 		
@@ -4090,8 +4094,6 @@ class testplan extends tlObjectWithAttachments
 	public function getNotExecutedLinkedTCVersionsDetailed($id,$filters=null,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$resultsCfg = config_get('results');
-		$status_not_run=$resultsCfg['status_code']['not_run'];
         $executions_join = "";
 
         $my['filters'] = array('build_id' => 0,'platform_id' => null);
@@ -4130,7 +4132,7 @@ class testplan extends tlObjectWithAttachments
         }
 
 		$sql = "/* {$debugMsg} */ ";
-		$sql .= "SELECT COALESCE(E.status,'" . $status_not_run . "') AS exec_status, " .
+		$sql .= "SELECT COALESCE(E.status,'" . $this->notRunStatus . "') AS exec_status, " .
 		        $build_fields .
 		        " PLAT.name AS platform_name," . 
 		        " NODE_TCASE.parent_id AS testsuite_id, NODE_TCASE.name AS name, NODE_TCASE.id AS tc_id," .
@@ -4203,14 +4205,13 @@ class testplan extends tlObjectWithAttachments
 	public function getStatusForReports()
 	{
 		// This will be used to create dynamically counters if user add new status
-		$resultsCfg = config_get('results');
-		foreach( $resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
+		foreach( $this->resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
 		{
-			$code_verbose[$resultsCfg['status_code'][$tc_status_verbose]] = $tc_status_verbose;
+			$code_verbose[$this->resultsCfg['status_code'][$tc_status_verbose]] = $tc_status_verbose;
 		}
-		if( !isset($resultsCfg['status_label_for_exec_ui']['not_run']) )
+		if( !isset($this->resultsCfg['status_label_for_exec_ui']['not_run']) )
 		{
-			$code_verbose[$resultsCfg['status_code']['not_run']] = 'not_run';
+			$code_verbose[$this->resultsCfg['status_code']['not_run']] = 'not_run';
 		}
 		return $code_verbose;
 	}
@@ -5898,7 +5899,7 @@ class testplan extends tlObjectWithAttachments
 		$dummy = array_flip($statusSet);  // (code => idx)
 
 		$get = array();
-		$get['notRun'] = isset($dummy[$this->resultsCfg['status_code']['not_run']]);
+		$get['notRun'] = isset($dummy[$this->notRunStatus]);
 		$get['otherStatus'] = false;
 
 		$hits = array('notRun' => array(), 'otherStatus' => array());
@@ -5908,7 +5909,7 @@ class testplan extends tlObjectWithAttachments
 		if($get['notRun']) 
 		{
 			$hits['notRun'] = (array)$this->getHitsNotRunFull($id,$platformID,$buildQty);	
-			unset($statusSetLocal[$dummy[$this->resultsCfg['status_code']['not_run']]]);
+			unset($statusSetLocal[$dummy[$this->notRunStatus]]);
 		}
 		if( ($get['otherStatus']=(count($statusSetLocal) > 0)) )
 		{
@@ -6029,6 +6030,103 @@ class testplan extends tlObjectWithAttachments
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
 	}
+
+
+	/**
+	 * getHitsStatusSetOnLatestExecution($id,$platformID,$statusSet)  
+	 *
+	 * returns recordset with:
+	 * test cases that has at least ONE of requested status 
+	 * on LASTEST EXECUTION ON ONE of ALL ACTIVE builds (full), for a platform
+	 *
+	 * IMPORTANT / CRITIC:	THIS DOES NOT WORK for Not Run STATUS
+	 *						HAS NO SENSE, because Not Run IN NOT SAVED to DB
+	 *						=> we can not find LATEST NON RUN
+	 * Example:
+	 * 
+	 * Test Plan: PLAN B 
+	 * Builds: B1,B2,B3
+	 * Test Cases: TC-100, TC-200,TC-300
+	 *
+	 * Test Case - Build - LAST Execution status -	Exec ID
+	 * TC-100      B1      Passed					20120415
+	 * TC-100      B2      >>> FAILED					20120418 <<< LATEST
+	 * TC-100      B3      Not Run					20120416 
+	 *
+	 * TC-200      B1      FAILED					1111
+	 * TC-200      B2      FAILED					1112
+	 * TC-200      B3      >>> BLOCKED					12345  <<< LATEST
+	 *
+	 * TC-300      B1      >>> Passed					4  <<< LATEST
+	 * TC-300      B2      Passed					1
+	 * TC-300      B3      BLOCKED					3
+	 *
+	 * TC-400      B1      FAILED					10
+	 * TC-400      B2      BLOCKED					11
+	 * TC-400      B3      >>> FAILED					12 <<< LATEST
+	 * 
+	 * Request 1:
+	 * Provide test cases with status in ('Passed','BLOCKED')
+	 * ON LATEST Execution
+	 *
+	 * ANSWER:
+	 * TC-200, TC300
+	 *
+	 * Request 2:
+	 * Provide test cases with status in ('FAILED','BLOCKED')
+	 * ON LATEST Execution
+	 *
+	 * ANSWER:
+	 * TC-100, TC-200, TC-400
+	 *
+	 * @return
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 *
+	 */
+	function getHitsStatusSetOnLatestExecution($id,$platformID,$statusSet) 
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		$statusList = (array)$statusSet;
+
+		// Check if 'not run' in present in statusSet => throw exception
+		$dummy = array_flip($statusList);
+		if( isset($dummy[$this->notRunStatus]) )
+		{
+			throw new Exception (__METHOD__ . ':: Status Not Run can not be used');	
+		}
+		$statusInClause = implode("','",$statusList);
+		
+		$sql = 	" /* $debugMsg */ " .
+				" SELECT MAX(LE.id) AS latest_exec_id ,NHTCV.parent_id AS tcase_id" .
+				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+				
+				" /* Consider ONLY ACTIVE BUILDS */ " .
+				" JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id AND B.active = 1 " .
+				
+				" /* Get Test Case ID */ " .
+				" JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCV.tcversion_id " .
+				
+				" /* Get INFO From VIEW */ " .
+				" JOIN {$this->views['last_executions']} LE ON LE.testplan_id = TPTCV.testplan_id " .
+				" AND LE.platform_id = TPTCV.platform_id " .
+				" AND LE.build_id = B.id " .
+				" AND LE.tcversion_id = TPTCV.tcversion_id " .
+				
+				" /* Get STATUS INFO From Executions */ " .
+				" JOIN {$this->tables['executions']} E ON E.id = LE.id " .
+				" WHERE TPTCV.testplan_id = " . intval($id) . 
+				" AND TPTCV.platform_id=" . intval($platformID) . 
+				" AND E.status IN('{$statusInClause}') " .
+				" GROUP BY tcase_id";
+
+		// echo $sql;
+		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
+		return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+    }
+
 
 } // end class testplan
 

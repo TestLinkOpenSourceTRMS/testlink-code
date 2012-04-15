@@ -1405,9 +1405,11 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
 	// Implemented because we have a tree here, 
 	// not simple one-dimensional array of testcases like in tplan class.
 	
-	foreach ($tcase_tree as $key => $node) {
+	foreach ($tcase_tree as $key => $node) 
+	{
 		
-		if ($node['node_type_id'] == $node_type_testsuite) {
+		if ($node['node_type_id'] == $node_type_testsuite) 
+		{
 			$delete_suite = false;
 			
 			if (isset($node['childNodes']) && is_array($node['childNodes'])) {
@@ -1499,7 +1501,6 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
 
 
 /**
- * remove the testcases that don't have the given result in any build
  * 
  * @param object &$tplan_mgr reference to test plan manager object
  * @param array &$tcase_set reference to test case set to filter
@@ -1507,44 +1508,31 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
  * @param array $filters filters to apply to test case set
  * @return array new tcase_set
  */
-function filter_by_status_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
+function filterStatusSetAtLeastOneOfActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
 	
 	$key2remove=null;
 	$buildSet = $tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS);
+
+
 	if( !is_null($buildSet) ) 
 	{
-		$tcase_build_set = $tplan_mgr->get_status_for_any_build($tplan_id,$filters->setting_platform,
-																array_keys($buildSet),
-																$filters->filter_result_result);  
-		                                                             
-		if( is_null($tcase_build_set) ) 
+		$hits = $tplan_mgr->getHitsSameStatusPartial($tplan_id,intval($filters->setting_platform),
+												    (array)$filters->filter_result_result); 
+		
+		if( is_null($hits) ) 
 		{
 			$tcase_set = array();
 		} 
 		else 
 		{
-			$key2remove=null;
-			foreach($tcase_set as $key_tcase_id => $value) 
-			{
-				if( !isset($tcase_build_set[$key_tcase_id]) ) 
-				{
-					$key2remove[]=$key_tcase_id;
-				}
-			}
-		}
-		
-		if( !is_null($key2remove) ) 
-		{
-			foreach($key2remove as $key) 
-			{
-				unset($tcase_set[$key]); 
-			}
+			helper_filter_cleanup($tcase_set,$hits);
 		}
 	}
 		
 	return $tcase_set;
 }
+
 
 /**
  * filterStatusSetAllActiveBuilds()
@@ -1585,7 +1573,7 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
 		} 
 		else 
 		{
-			$this->helper_filter_cleanup($tcase_set,$hits);
+			helper_filter_cleanup($tcase_set,$hits);
 		}
 	}
 	return $tcase_set;
@@ -1596,34 +1584,27 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
  * 							result on specific build
  * 							result on current build
  *
- * filter testcases out which do not have the chosen status in the given build
  *  
  * @param object &$tplan_mgr reference to test plan manager object
  * @param array &$tcase_set reference to test case set to filter
  * @param integer $tplan_id ID of test plan
  * @param array $filters filters to apply to test case set
+ *
  * @return array new tcase_set
  */
 function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
-	$key2remove=null;
-	$build_key = 'filter_result_build';
-	$result_key = 'filter_result_result';
-	
-	$buildSet = array($filters->$build_key => $tplan_mgr->get_build_by_id($tplan_id,$filters->$build_key));
-	if( !is_null($buildSet) ) 
+	// echo __METHOD__;
+	$hits = $tplan_mgr->getHitsStatusSetOnBuild($tplan_id,intval($filters->setting_platform),
+												intval($filters->filter_result_build),
+												(array)$filters->filter_result_result);
+	if( is_null($hits) ) 
 	{
-		$hits = $tplan_mgr->get_status_for_any_build($tplan_id,array_keys($buildSet),
-																$filters->$result_key, $filters->setting_platform);  
-
-		if( is_null($hits) ) 
-		{
-			$tcase_set = array();
-		} 
-		else 
-		{
-			$this->helper_filter_cleanup($tcase_set,$hits);
-		}
+		$tcase_set = array();
+	} 
+	else 
+	{
+		helper_filter_cleanup($tcase_set,$hits);
 	}
 	
 	return $tcase_set;
@@ -1632,6 +1613,8 @@ function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters)
 /**
  * filter testcases by the result of their latest execution
  * 
+ * CAN NOT BE USED FOR NOT RUN because Not run is not saved on DB
+ *
  * @param object &$db reference to database handler
  * @param object &$tplan_mgr reference to test plan manager object
  * @param array &$tcase_set reference to test case set to filter
@@ -1639,41 +1622,26 @@ function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters)
  * @param array $filters filters to apply to test case set
  * @return array new tcase_set
  */
-function filter_by_status_for_last_execution(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
-	testlinkInitPage($db); //BUGID 3806
-	$tables = tlObject::getDBTables('executions');
-	$result_key = 'filter_result_result';
+function filter_by_status_for_latest_execution(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
+{
 
-	// need to check if result is array because multiple can be selected in advanced filter mode
-	$in_status = is_array($filters->$result_key) ? implode("','", $filters->$result_key) : $filters->$result_key;
+	$hits = $tplan_mgr->getHitsStatusSetOnLatestExecution($tplan_id,intval($filters->setting_platform),
+														  (array)$filters->filter_result_result);
 	
-	foreach($tcase_set as $tc_id => $tc_info) {
-		// get last execution result for each testcase, 
-		
-		// if it differs from the result in tcase_set the tcase will be deleted from set
-		$sql = " SELECT status FROM {$tables['executions']} E " .
-			   " WHERE tcversion_id = {$tc_info['tcversion_id']} AND testplan_id = {$tplan_id} " .
-			   " AND platform_id = {$tc_info['platform_id']} " .
-			   " AND status = '{$tc_info['exec_status']}' " .
-			   " AND status IN ('{$in_status}') " .
-			   " ORDER BY execution_ts DESC "; 
-			   
-		$result = null;
-		
-		// BUGID 3772: MS SQL - LIMIT CLAUSE can not be used
-		$result = $db->fetchArrayRowsIntoMap($sql,'status',1);
-		
-		if (is_null($result)) {
-			unset($tcase_set[$tc_id]);
-		}
+	if( is_null($hits) ) 
+	{
+		$tcase_set = array();
+	} 
+	else 
+	{
+		helper_filter_cleanup($tcase_set,$hits);
 	}
-	
+			
 	return $tcase_set;
 }
 
 
 /**
- * filter out those testcases, that do not have at least one build in 'not run' status
  * 
  * @param object &$tplan_mgr reference to test plan manager object
  * @param array &$tcase_set reference to test case set to filter
@@ -1683,37 +1651,15 @@ function filter_by_status_for_last_execution(&$tplan_mgr,&$tcase_set,$tplan_id,$
  */
 function filter_not_run_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
-	$key2remove=null;
-	$buildSet = $tplan_mgr->get_builds($tplan_id);
-	
-	if( !is_null($buildSet) ) 
+
+	$hits = $tplan_mgr->getHitsNotRunPartial($tplan_id,intval($filters->setting_platform));
+	if( is_null($hits) ) 
 	{
-		$tcase_build_set = $tplan_mgr->get_not_run_for_any_build($tplan_id, array_keys($buildSet), 
-																 $filters->setting_platform);  
-		                                                             
-		if( is_null($tcase_build_set) ) 
-		{
-			$tcase_set = array();
-		} 
-		else 
-		{
-			$key2remove=null;
-			foreach($tcase_set as $key_tcase_id => $value) 
-			{
-				if( !isset($tcase_build_set[$key_tcase_id]) ) 
-				{
-					$key2remove[]=$key_tcase_id;
-				}
-			}
-		}
-		
-		if( !is_null($key2remove) ) 
-		{
-			foreach($key2remove as $key) 
-			{
-				unset($tcase_set[$key]); 
-			}
-		}
+		$tcase_set = array();
+	} 
+	else 
+	{
+		helper_filter_cleanup($tcase_set,$hits);
 	}
 	
 	return $tcase_set;
@@ -2221,11 +2167,11 @@ function apply_status_filters($tplan_id,&$items,&$fobj,&$tplan_mgr,$statusCfg)
 	$methods = config_get('execution_filter_methods');
 	$methods = $methods['status_code'];
 	
-	$ffn = array($methods['any_build'] => 'filter_by_status_for_any_build',
+	$ffn = array($methods['any_build'] => 'filterStatusSetAtLeastOneOfActiveBuilds',
 		         $methods['all_builds'] => 'filterStatusSetAllActiveBuilds',
 		         $methods['specific_build'] => 'filter_by_status_for_build',
 		         $methods['current_build'] => 'filter_by_status_for_build',
-		         $methods['latest_execution'] => 'filter_by_status_for_last_execution');
+		         $methods['latest_execution'] => 'filter_by_status_for_latest_execution');
 	
 	$f_method = isset($fobj->filter_result_method) ? $fobj->filter_result_method : null;
 	$f_result = isset($fobj->filter_result_result) ? $fobj->filter_result_result : null;
@@ -2239,19 +2185,20 @@ function apply_status_filters($tplan_id,&$items,&$fobj,&$tplan_mgr,$statusCfg)
 
 	if (!is_null($f_method) && isset($ffn[$f_method])) 
 	{
-		// special case 1: when filtering by "not run" status in any build,
+		// special case: when filtering by "not run" status in any build,
 		// we need another filter function
-		if (in_array($statusCfg['not_run'], $f_result)) {
+		if (in_array($statusCfg['not_run'], $f_result)) 
+		{
 			$ffn[$methods['any_build']] = 'filter_not_run_for_any_build';
 		}
 		
-		// special case 2: when filtering by "current build", we set the build to filter with
+		// special case: when filtering by "current build", we set the build to filter with
 		// to the build chosen in settings instead of the one in filters
-		if ($f_method == $methods['current_build']) {
+		if ($f_method == $methods['current_build']) 
+		{
 			$fobj->filter_result_build = $fobj->setting_build;
 		}
 		
-		// call the filter function and do the filtering
 		$items = $ffn[$f_method]($tplan_mgr, $items, $tplan_id, $fobj);
 	}
 	return $items; 

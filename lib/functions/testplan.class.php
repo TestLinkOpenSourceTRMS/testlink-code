@@ -3758,137 +3758,7 @@ class testplan extends tlObjectWithAttachments
 	}
 
 
-	/**
-	 * BUGID 2455, BUGID 3026
-	 * find any builds which have the wanted status in the build set
-	 * 
-	 * @author asimon
-	 * @param integer $id Build ID
-	 * @param array $buildSet build set to check
-	 * @param array $status status to look for
-	 * @return array $recordset set of builds which match the search criterium
-	 *
-	 * @internal revisions
-	 * @since 1.9,4
-	 *
-	 * @since 1.9.1
-	 * 20101215 - asimon - BUGID 4023: correct filtering also with platforms
-	 */
-	// function get_status_for_any_build($id, $buildSet, $status, $platformID=NULL) 
-	
-	/**
-	 * find set of test case that have one or more of status on statusSet, on
-	 * at least one of builds present on buildSet
-	 *
-	 * This kind of behaivour is useful to provide answer to following request
-	 *
-	 * Give me set of test cases that have failed in one of following ways:
-	 * execution status IN ('Failed','Blocked','Unfinished')
-	 * on one or more of following builds ('B1','B2','B3')
-	 *
-	 * We try to use this on tree on execution feature, but in any case we are
-	 * going to face an issue regarding tree coloring
-	 *
-	 * Example
-	 * Builds: B1,B2,B3
-	 * Test Cases: TC-100, TC-200,TC-300
-	 *
-	 * Test Case - Build - Execution status
-	 * TC-100      B1      Passed
-	 * TC-100      B2      FAILED
-	 * TC-100      B3      Not Run
-	 *
-	 * TC-200      B1      FAILED
-	 * TC-200      B2      FAILED
-	 * TC-200      B3      BLOCKED
-	 *
-	 * TC-300      B1      Passed
-	 * TC-300      B2      Passed
-	 * TC-300      B3      Passed
-	 *
-	 * REQUEST 1
-	 * Give me set of test cases that have failed in one of following ways:
-	 * execution status IN ('Failed','Blocked','Unfinished')
-	 * on one or more of following builds ('B1','B2','B3')
-	 *
-	 * Answer
-	 * TC-100,TC-200
-	 *
-	 * But we can not use any status to color tree at least for TC-200
-	 * because it got TWO different status.
-	 *
-	 * @internal revisions
-	 * @since 1.9,4
-	 *
-	 */
-	function getTestCaseHitsSetStatusPartial($id,$platformID,$buildSet,$statusSet) 
-	{
-		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$node_types = $this->tree_manager->get_available_node_types();
-		$build_in = implode(",", $buildSet);
-		
-		// exclude not run
-		$statusQty = count($statusSet);
-		$dummy = $statusSet;
-		$doNotRunProcessing = false;
-		if( isset($statusSet[$this->notRunStatus]) )
-		{
-			$doNotRunProcessing = true;
-			unset($dummy[$this->notRunStatus]);
-		} 
-		$status_in = implode("','", $dummy);
-		
-		// do lot of exceptions
-		if( $doNotRunProcessing )
-		{
-			$notRunTestCaseSet = $this->getHitsNotRunAtLeastOneBuildForPlatform($id, $platformID, $buildSet);
-			if($statusQty)
-			{
-				// there is nothing to do => bye
-				return $notRunTestCaseSet;	
-			} 
-		}
-		
-		// we reach this point, then seems we have more work to do.
-		
-			$wherePlatform = " AND T.platform_id = $platformID ";
-			$execOnPlatform = " AND E.platform_id = $platformID ";
-			$e_extra_fields = ",E.platform_id ";
-			$sq1_extra_fields = ",SQ1.platform_id ";
 
-		
-		// 20110823 - here platforms has been ignored
-		// anything else
-		$sql = 	"/* $debugMsg */ " . 
-				" SELECT COUNT(EE.status) AS exec_qty, " .
-				" EE.status,SQ1.tcversion_id, NH_TCV.parent_id AS tcase_id {$sq1_extra_fields}" .
-			   	" FROM {$this->tables['executions']} EE " .
-			   	" JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON " .
-			   	" (SELECT MAX(E.id) AS last_exec_id, E.tcversion_id,E.build_id {$e_extra_fields}  " .
-			   	"  FROM {$this->tables['executions']} E " .
-			   	"  WHERE E.build_id IN ({$build_in}) " . 
-			   	"  GROUP BY E.tcversion_id,E.build_id {$e_extra_fields}) AS SQ1 " .
-			   	" " .
-			   	" WHERE EE.build_id IN ({$build_in}) " .
-			   	" AND EE.status IN ('" . $status_in . "') AND NH_TCV.node_type_id={$node_types['testcase_version']} " .
-			   	" AND SQ1.last_exec_id = EE.id AND SQ1.tcversion_id=NH_TCV.id " .
-			   	" GROUP BY status,SQ1.tcversion_id,NH_TCV.parent_id {$sq1_extra_fields}";
-		
-		
-		// echo($sql);
-		
-		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-		
-		if (count($first_results)) {
-			foreach ($first_results as $key => $value) {
-				$recordset[$key] = $value;
-			}
-		}
-		
-		return $recordset;
-	}
-
-	
 	/**
 	 * BUGID 2455, BUGID 3026
 	 * find all builds for which a testcase has not been executed
@@ -5882,7 +5752,6 @@ class testplan extends tlObjectWithAttachments
 		
 	}
 
-
 	/**
 	 * getHitsSameStatusFull($id,$platformID,$statusSet,$buildQty=0) 
 	 *
@@ -5893,64 +5762,7 @@ class testplan extends tlObjectWithAttachments
 	function getHitsSameStatusFull($id,$platformID,$statusSet,$buildQty=0)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		
-		// Needed because, may be we will need to remove an element
-		$statusSetLocal = $statusSet;  
-		$dummy = array_flip($statusSet);  // (code => idx)
-
-		$get = array();
-		$get['notRun'] = isset($dummy[$this->notRunStatus]);
-		$get['otherStatus'] = false;
-
-		$hits = array('notRun' => array(), 'otherStatus' => array());
-		$items = null;
-		
-		
-		if($get['notRun']) 
-		{
-			$hits['notRun'] = (array)$this->getHitsNotRunFull($id,$platformID,$buildQty);	
-			unset($statusSetLocal[$dummy[$this->notRunStatus]]);
-		}
-		if( ($get['otherStatus']=(count($statusSetLocal) > 0)) )
-		{
-			$hits['otherStatus'] = (array)$this->getHitsStatusSetFull($id,$platformID,$statusSetLocal,$buildQty);	
-		}
-
-
-		// build results recordset
-		$hitsFoundOn = array();
-		$hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
-		$hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
-		
-		echo "\$buildQty:$buildQty<br>";
-		new dBug($get);
-		new dBug($hitsFoundOn);
-		new dBug($hits);
-		new dBug($statusSet);
-		
-		if($get['notRun'] && $get['otherStatus'])
-		{
-			if( $hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus'] )
-			{
-				$items = array_merge(array_keys($hits['notRun']),array_keys($hits['otherStatus']));
-			}
-		} 
-		else if($get['notRun'] && $hitsFoundOn['notRun'])
-		{
-			$items = array_keys($hits['notRun']);
-		}
-		else if($get['otherStatus'] && $hitsFoundOn['otherStatus'])
-		{
-			$items = array_keys($hits['otherStatus']);
-		}
-		
-		// echo '<br>notRunHits<br>';
-		// new dBug($notRunHits);
-		// echo '<br>otherStatusHits<br>';
-		// new dBug($otherStatusHits);
-		
-		// new dBug($items);
-		return is_null($items) ? $items : array_flip($items);
+		return $this->helperGetHitsSameStatus('full',$id,$platformID,$statusSet,$buildQty);
 	} 
 
 	/**
@@ -6127,6 +5939,101 @@ class testplan extends tlObjectWithAttachments
 		return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
     }
 
+
+
+	/**
+	 * getHitsSameStatusPartial($id,$platformID,$statusSet) 
+	 *
+	 * returns recordset with:
+	 * test cases that has at least ONE of requested status 
+	 * ON LAST EXECUTION ON AT LEAST ON OF ALL ACTIVE builds, for a platform
+	 */
+	function getHitsSameStatusPartial($id,$platformID,$statusSet)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		return $this->helperGetHitsSameStatus('partial',$id,$platformID,$statusSet);
+	} 
+
+
+
+	/**
+	 * helperGetHitsSameStatus($mode,$id,$platformID,$statusSet,$buildQty=0)
+	 *
+	 *
+	 */
+	function helperGetHitsSameStatus($mode,$id,$platformID,$statusSet,$buildQty=0)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		switch($mode)
+		{
+			case 'partial':
+				$getHitsNotRunMethod = 'getHitsNotRunPartial';
+				$getHitsStatusSetMethod = 'getHitsStatusSetPartial';
+				
+			break;
+			
+			case 'full':
+				$getHitsNotRunMethod = 'getHitsNotRunFull';
+				$getHitsStatusSetMethod = 'getHitsStatusSetFull';
+			break;
+		}
+		
+		// Needed because, may be we will need to remove an element
+		$statusSetLocal = $statusSet;  
+
+		$items = null;
+		$hits = array('notRun' => array(), 'otherStatus' => array());
+
+		$dummy = array_flip($statusSet);  // (code => idx)
+		$get = array('notRun' => isset($dummy[$this->notRunStatus]), 'otherStatus' => false);
+
+		
+		if($get['notRun']) 
+		{
+			$hits['notRun'] = (array)$this->$getHitsNotRunMethod($id,$platformID,$buildQty);	
+			unset($statusSetLocal[$dummy[$this->notRunStatus]]);
+		}
+		if( ($get['otherStatus']=(count($statusSetLocal) > 0)) )
+		{
+			$hits['otherStatus'] = (array)$this->$getHitsStatusSetMethod($id,$platformID,$statusSetLocal,$buildQty);	
+		}
+
+		// build results recordset
+		$hitsFoundOn = array();
+		$hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
+		$hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
+		
+		echo $debugMsg;
+		new dBug($get);
+		new dBug($hitsFoundOn);
+		new dBug($hits);
+		new dBug($statusSet);
+		
+		if($get['notRun'] && $get['otherStatus'])
+		{
+			if( $hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus'] )
+			{
+				$items = array_merge(array_keys($hits['notRun']),array_keys($hits['otherStatus']));
+			}
+		} 
+		else if($get['notRun'] && $hitsFoundOn['notRun'])
+		{
+			$items = array_keys($hits['notRun']);
+		}
+		else if($get['otherStatus'] && $hitsFoundOn['otherStatus'])
+		{
+			$items = array_keys($hits['otherStatus']);
+		}
+		
+		// echo '<br>notRunHits<br>';
+		// new dBug($notRunHits);
+		// echo '<br>otherStatusHits<br>';
+		// new dBug($otherStatusHits);
+		
+		// new dBug($items);
+		return is_null($items) ? $items : array_flip($items);
+	} 
 
 } // end class testplan
 

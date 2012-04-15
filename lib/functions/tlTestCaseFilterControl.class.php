@@ -352,10 +352,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * 
 	 * 
 	 */
-	public function __destruct() {
+	public function __destruct() 
+	{
 		parent::__destruct(); //destroys testproject manager
 		
-		// destroy member objects
 		unset($this->tc_mgr);
 		unset($this->testplan_mgr);
 		unset($this->platform_mgr);
@@ -367,7 +367,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * additionally to those parts of the config which were already loaded by parent class.
 	 * @return bool
 	 */
-	protected function read_config() {
+	protected function read_config() 
+	{
 
 		// some configuration reading already done in parent class
 		parent::read_config();
@@ -382,10 +383,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->configuration->tc_cfg = config_get('testcase_cfg');
 		
 		// is choice of advanced filter mode enabled?
-    	if (isset($this->configuration->advanced_filter_mode_choice)
-    	&& $this->configuration->advanced_filter_mode_choice == ENABLED) {
+    	if (isset($this->configuration->advanced_filter_mode_choice) && 
+    		$this->configuration->advanced_filter_mode_choice == ENABLED) 
+    	{
     		$this->filter_mode_choice_enabled = true;
-    	} else {
+    	} 
+    	else 
+    	{
     		$this->filter_mode_choice_enabled = false;
     	}
 		
@@ -397,20 +401,25 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * from request ($_GET and $_POST). Later configuration,
 	 * settings and filters get modified according to that user input.
 	 */
-	protected function init_args() {
+	protected function init_args() 
+	{
 		
 		// some common user input is already read in parent class
 		parent::init_args();
 
 		// add settings and filters to parameter info array for request parsers
 		$params = array();
-		foreach ($this->all_settings as $name => $info) {
-			if (is_array($info)) {
+		foreach ($this->all_settings as $name => $info) 
+		{
+			if (is_array($info)) 
+			{
 				$params[$name] = $info;
 			}
 		}
-		foreach ($this->all_filters as $name => $info) {
-			if (is_array($info)) {
+		foreach ($this->all_filters as $name => $info) 
+		{
+			if (is_array($info)) 
+			{
 				$params[$name] = $info;
 			}
 		}
@@ -419,11 +428,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$type = 'filter_keywords_filter_type';
 		$this->args->{$type} = (isset($_REQUEST[$type])) ? trim($_REQUEST[$type]) : 'Or';
 
-		$extra_keys = array('filter_result_result',
-		                    'filter_result_method',
-		                    'filter_result_build');
+		$extra_keys = array('filter_result_result','filter_result_method','filter_result_build');
 
-		foreach ($extra_keys as $ek) {
+		foreach ($extra_keys as $ek) 
+		{
 			$this->args->{$ek} = (isset($_REQUEST[$ek])) ? $_REQUEST[$ek] : null;
 		}
 
@@ -433,15 +441,19 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		// got session token sent by form or do we have to generate a new one?
 		$sent_token = null;
 		$this->args->form_token = null;
-		if (isset($_REQUEST['form_token'])) {
+		if (isset($_REQUEST['form_token'])) 
+		{
 			// token got sent
 			$sent_token = $_REQUEST['form_token'];
 		}
-		if (!is_null($sent_token) && isset($_SESSION[$this->mode][$sent_token])) {
+		if (!is_null($sent_token) && isset($_SESSION[$this->mode][$sent_token])) 
+		{
 			// sent token is valid
 			$this->form_token = $sent_token;
 			$this->args->form_token = $sent_token;
-		} else {
+		} 
+		else 
+		{
 			$this->generate_form_token();
 		}
 		
@@ -451,7 +463,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		switch ($this->mode) {
 			
 			case 'plan_mode':
-				switch($this->args->feature) {
+				switch($this->args->feature) 
+				{
 					case 'planUpdateTC':
 					case 'test_urgency':
 					case 'tc_exec_assignment':
@@ -508,7 +521,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}
 		
 		// special situation: the build setting is in plan mode only needed for one feature
-		// BUGID 3406
 		if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') {
 			$this->settings['setting_build'] = false;
 		}
@@ -936,6 +948,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				$opt_etree->useColours->testcases = $exec_cfg->enable_tree_testcases_colouring;
 				$opt_etree->useColours->counters =	$exec_cfg->enable_tree_counters_colouring;
 				$opt_etree->testcases_colouring_by_selected_build =	$exec_cfg->testcases_colouring_by_selected_build; 
+					
+				echo 'DEBUG - mode:' . $this->mode . '<br>';
+				new dBug($opt_etree);
 					
 				list($tree_menu, $testcases_to_show) = generateExecTree($this->db,$gui->menuUrl,
 				                                                        $this->args->testproject_id,
@@ -1570,7 +1585,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
 	private function init_filter_result() 
 	{
-		$key = 'filter_result';
 		$result_key = 'filter_result_result';
 		$method_key = 'filter_result_method';
 		$build_key = 'filter_result_build';
@@ -1587,40 +1601,56 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		       'execution_filter_methods' : 'execution_assignment_filter_methods';
 		$this->configuration->filter_methods = config_get($cfg);
 
-		// determin which filter method shall be selected by the JS function in template,
+		//
+		// CRITIC - Differences bewteen this configuration and
+		// (file const.inc.php)
+		// $tlCfg->execution_filter_methods['default_type'] 
+		// $tlCfg->execution_assignment_filter_methods['default_type']
+		// 
+		// Will create issues: you will see an string on HTML SELECT, but code
+		// returned on submit will not code for string you are seeing.!!!! 
+		//
+		// determine which filter method shall be selected by the JS function in template,
 		// when only one build is selectable by the user
 		$js_key_to_select = 0;
-		if ($this->mode == 'execution_mode') {
+		if ($this->mode == 'execution_mode') 
+		{
 			$js_key_to_select = $this->configuration->filter_methods['status_code']['current_build'];
-		} else if ($this->mode == 'plan_mode') {
+		} 
+		else if ($this->mode == 'plan_mode') 
+		{
 			$js_key_to_select = $this->configuration->filter_methods['status_code']['specific_build'];
 		}
 		
 		// values selected by user
-		$result_selection = $this->args->{$result_key};
-		$method_selection = $this->args->{$method_key};
-		$build_selection = $this->args->{$build_key};
+		$result_selection = $this->args->$result_key;
+		$method_selection = $this->args->$method_key;
+		$build_selection = $this->args->$build_key;
 
 		// default values
 		$default_filter_method = $this->configuration->filter_methods['default_type'];
 		$any_result_key = $this->configuration->results['status_code']['all'];
 		$newest_build_id = $this->testplan_mgr->get_max_build_id($tplan_id, testplan::GET_ACTIVE_BUILD);
 
-		// BUGID 3817
-		if (is_null($method_selection)) {
+		if (is_null($method_selection)) 
+		{
 			$method_selection = $default_filter_method;
 		}
 
-		if (is_null($result_selection) || $this->args->reset_filters) {
+		if (is_null($result_selection) || $this->args->reset_filters) 
+		{
 			// no selection yet or filter reset requested
 			$result_selection = $any_result_key;
 			$method_selection = $default_filter_method;
 			$build_selection = $newest_build_id;
-		} else {
+		} 
+		else 
+		{
 			$this->do_filtering = true;
 		}
 		
 		// init array structure
+		$key = 'filter_result';
 		$this->filters[$key] = array($result_key => array('items' => null,
 		                                                  'selected' => $result_selection),
 		                             $method_key => array('items' => array(),
@@ -1629,12 +1659,15 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		                             $build_key => array('items' => null,
 		                                                 'selected' => $build_selection));
 
+		new dBug($this->filters[$key]);
+		
 		// init menu for result selection by function from exec.inc.php
 		$this->filters[$key][$result_key]['items'] = createResultsMenu();
 		$this->filters[$key][$result_key]['items'][$any_result_key] = $this->option_strings['any'];
 
 		// init menu for filter method selection
-		foreach ($this->configuration->filter_methods['status_code'] as $statusname => $statusshortcut) {
+		foreach ($this->configuration->filter_methods['status_code'] as $statusname => $statusshortcut) 
+		{
 			$code = $this->configuration->filter_methods['status_code'][$statusname];
 			$this->filters[$key][$method_key]['items'][$code] =
 				lang_get($this->configuration->filter_methods['status_label'][$statusname]);

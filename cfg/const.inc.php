@@ -525,7 +525,12 @@ $tlCfg->execution_assignment_filter_methods['status_label'] = array('latest_exec
                                                                     'any_build' => 'filter_result_any_build',
                                                                     'specific_build' => 'filter_result_specific_build');
 
-$tlCfg->execution_assignment_filter_methods['default_type'] = $tlCfg->execution_assignment_filter_methods['status_code']['latest_execution'];
+// CRITIC NOTICE
+// This values has to have certain coerence with 
+// $js_key_to_select on init_filter_result() in tlTestCaseFilterControl.class.php
+// 
+$tlCfg->execution_assignment_filter_methods['default_type'] = 
+$tlCfg->execution_assignment_filter_methods['status_code']['specific_build'];
 
 
 

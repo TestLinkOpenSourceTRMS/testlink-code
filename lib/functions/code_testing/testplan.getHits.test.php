@@ -86,6 +86,37 @@ echo 'Platform ID:' . $platform_id . '<br>';
 echo '<hr>';
 
 // -----------------------------------------------------------------------------
+$method2call = 'getHitsStatusSetOnBuild';
+echo "<h1> TESTING:$method2call </h1>";
+// -----------------------------------------------------------------------------
+$build_id = 26;  // 26,27,28
+echo 'Build ID:' . $build_id . '<br>';
+
+$statusMixed = 'p';
+$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$build_id,$statusMixed); 
+echo '<br>' . $method2call . '()' . '<br>';
+new dBug($statusMixed);
+new dBug($$method2call);
+echo '<hr>';
+
+$statusMixed = array('p','b');
+$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$build_id,$statusMixed); 
+echo '<br>' . $method2call . '()' . '<br>';
+new dBug($statusMixed);
+new dBug($$method2call);
+echo '<hr>';
+
+$statusMixed = array('f','b');
+$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$build_id,$statusMixed); 
+echo '<br>' . $method2call . '()' . '<br>';
+new dBug($statusMixed);
+new dBug($$method2call);
+echo '<hr>';
+
+// -----------------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 $method2call = 'getHitsNotRunOnBuild';
 echo "<h1> TESTING:$method2call </h1>";
 // -----------------------------------------------------------------------------

@@ -5987,6 +5987,49 @@ class testplan extends tlObjectWithAttachments
 	}
 
 
+
+	/**
+	 * getHitsStatusSetOnBuild($id,$platformID,$buildID,$statusSet) 
+	 *
+	 * returns recordset with:
+	 * test cases with LAST EXECUTION STATUS on SPECIFIC build for a PLATFORM, IN status SET.
+	 * 
+	 * @return
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 *
+	 */
+	function getHitsStatusSetOnBuild($id,$platformID,$buildID,$statusSet) 
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$statusInClause = implode("','",(array)$statusSet);
+
+		$sql = 	" /* $debugMsg */ " .
+				" SELECT NHTCV.parent_id AS tcase_id" .
+				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+
+				" /* Get Test Case ID */ " .
+				" JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCV.tcversion_id " .
+
+				" /* Get INFO From VIEW */ " .
+				" JOIN {$this->views['last_executions']} LE ON LE.testplan_id = TPTCV.testplan_id " .
+				" AND LE.platform_id = TPTCV.platform_id " .
+				" AND LE.tcversion_id = TPTCV.tcversion_id " .
+				" AND LE.build_id = " . intval($buildID) .
+
+				" /* Get STATUS INFO From Executions */ " .
+				" JOIN {$this->tables['executions']} E ON E.id = LE.id " .
+
+				" WHERE TPTCV.testplan_id = " . intval($id) . 
+				" AND TPTCV.platform_id = " . intval($platformID) . 
+				" AND E.status IN('{$statusInClause}')";
+				
+		// echo $sql;
+		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
+		return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+	}
+
 } // end class testplan
 
 

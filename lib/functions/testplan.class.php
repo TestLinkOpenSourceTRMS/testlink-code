@@ -5646,6 +5646,9 @@ class testplan extends tlObjectWithAttachments
 	 * test cases that has at least ONE of requested status 
 	 * ON LAST EXECUTION ON ALL ACTIVE builds (full) , for a platform
 	 *
+	 * IMPORTANT / CRITIC:  This has NOT BE USED FOR NOT RUN,
+	 *						there is an special method for NOT RUN status.
+	 *
 	 * Example:
 	 * 
 	 * Test Plan: PLAN B 
@@ -5877,6 +5880,78 @@ class testplan extends tlObjectWithAttachments
 
 		
 	}
+
+
+	/**
+	 * getHitsSameStatusFull($id,$platformID,$statusSet,$buildQty=0) 
+	 *
+	 * returns recordset with:
+	 * test cases that has at least ONE of requested status 
+	 * ON LAST EXECUTION ON ALL ACTIVE builds (full) , for a platform
+	 */
+	function getHitsSameStatusFull($id,$platformID,$statusSet,$buildQty=0)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		// Needed because, may be we will need to remove an element
+		$statusSetLocal = $statusSet;  
+		$dummy = array_flip($statusSet);  // (code => idx)
+
+		$get = array();
+		$get['notRun'] = isset($dummy[$this->resultsCfg['status_code']['not_run']]);
+		$get['otherStatus'] = false;
+
+		$hits = array('notRun' => array(), 'otherStatus' => array());
+		$items = null;
+		
+		
+		if($get['notRun']) 
+		{
+			$hits['notRun'] = (array)$this->getHitsNotRunFull($id,$platformID,$buildQty);	
+			unset($statusSetLocal[$dummy[$this->resultsCfg['status_code']['not_run']]]);
+		}
+		if( ($get['otherStatus']=(count($statusSetLocal) > 0)) )
+		{
+			$hits['otherStatus'] = (array)$this->getHitsStatusSetFull($id,$platformID,$statusSetLocal,$buildQty);	
+		}
+
+
+		// build results recordset
+		$hitsFoundOn = array();
+		$hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
+		$hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
+		
+		echo "\$buildQty:$buildQty<br>";
+		new dBug($get);
+		new dBug($hitsFoundOn);
+		new dBug($hits);
+		new dBug($statusSet);
+		
+		if($get['notRun'] && $get['otherStatus'])
+		{
+			if( $hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus'] )
+			{
+				$items = array_merge(array_keys($hits['notRun']),array_keys($hits['otherStatus']));
+			}
+		} 
+		else if($get['notRun'] && $hitsFoundOn['notRun'])
+		{
+			$items = array_keys($hits['notRun']);
+		}
+		else if($get['otherStatus'] && $hitsFoundOn['otherStatus'])
+		{
+			$items = array_keys($hits['otherStatus']);
+		}
+		
+		// echo '<br>notRunHits<br>';
+		// new dBug($notRunHits);
+		// echo '<br>otherStatusHits<br>';
+		// new dBug($otherStatusHits);
+		
+		// new dBug($items);
+		return is_null($items) ? $items : array_flip($items);
+	} 
+
 
 } // end class testplan
 

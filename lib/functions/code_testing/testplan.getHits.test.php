@@ -76,14 +76,47 @@ STUFF;
 $obj_mgr=new $object_class($db);
 new dBug($obj_mgr);
 
+
 $tplan_id = 33123;
 $platform_id = 0;
 
 echo '<h1>Test group conditions</h1>';
 echo 'Test Plan ID:' . $tplan_id . '<br>';
 echo 'Platform ID:' . $platform_id . '<br>';
-
 echo '<hr>';
+
+$statusMixed = 'n';
+$method2call = 'getHitsSameStatusFull';
+$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusMixed); 
+echo '<br>' . $method2call . '()' . '<br>';
+new dBug($statusMixed);
+new dBug($$method2call);
+echo '<hr>';
+
+$statusMixed = array('n','p');
+$method2call = 'getHitsSameStatusFull';
+$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusMixed); 
+echo '<br>' . $method2call . '()' . '<br>';
+new dBug($statusMixed);
+new dBug($$method2call);
+echo '<hr>';
+
+$statusMixed = array('b','p');
+$method2call = 'getHitsSameStatusFull';
+$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusMixed); 
+echo '<br>' . $method2call . '()' . '<br>';
+new dBug($statusMixed);
+new dBug($$method2call);
+echo '<hr>';
+
+$statusMixed = array('b','f');
+$method2call = 'getHitsSameStatusFull';
+$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusMixed); 
+echo '<br>' . $method2call . '()' . '<br>';
+new dBug($statusMixed);
+new dBug($$method2call);
+echo '<hr>';
+
 $method2call = 'getHitsNotRunFull';
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id); 
 echo '<br>' . $method2call . '()' . '<br>';
@@ -95,7 +128,6 @@ $method2call = 'getHitsSingleStatusFull';
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$status); 
 echo '<br>' . $method2call . '()' . '<br>';
 echo '<br>' . "status=$status"  . '<br>';
-
 new dBug($$method2call);
 echo '<hr>';
 

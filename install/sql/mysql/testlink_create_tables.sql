@@ -684,5 +684,11 @@ CREATE VIEW /*prefix*/tcases_active AS
 );
 
 
+CREATE VIEW /*prefix*/last_executions AS
+(
+	SELECT tcversion_id,testplan_id,platform_id,build_id, MAX(id) AS id 
+	FROM /*prefix*/executions 
+	GROUP by tcversion_id,testplan_id,platform_id,build_id
+); 
 
 

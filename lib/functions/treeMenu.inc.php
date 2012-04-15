@@ -14,6 +14,8 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120415 - franciscom - 	filter_by_same_status_for_all_builds() => filterStatusSetAllActiveBuilds()
+ *
  * 20120205 - franciscom - 	remove deprecated method
  * 20110115 - franciscom -	work on extjs_renderExecTreeNodeOnOpen() and related functions
  *							trying to improve performance
@@ -772,12 +774,15 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $testCaseQty=0;
     $testCaseSet=null;
    
+   
+    new dBug($filters);
   	
 	$keyword_id = 0;
 	$keywordsFilterType = 'Or';
-	if (property_exists($filters, 'filter_keywords') && !is_null($filters->{'filter_keywords'})) {
-		$keyword_id = $filters->{'filter_keywords'};
-		$keywordsFilterType = $filters->{'filter_keywords_filter_type'};
+	if (property_exists($filters, 'filter_keywords') && !is_null($filters->filter_keywords)) 
+	{
+		$keyword_id = $filters->filter_keywords;
+		$keywordsFilterType = $filters->filter_keywords_filter_type;
 	}
 	
 	// @since 1.9.4 - TICKET 4790: Setting & Filters panel - Wrong use of BUILD on settings area	
@@ -850,15 +855,26 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	//$tnow = end($chronos);
 	//$tprev = prev($chronos);
     
-    $test_spec = $tree_manager->get_subtree($tproject_id,$my['filters'],$my['options']);
+    /*
+ 	
+ 	$test_spec = $tree_manager->get_subtree($tproject_id,$my['filters'],$my['options']);
+ 	*/
+ 	// new dBug($my);
+    $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
+ 	//echo 'BEFORE';
+ 	
+ 	//echo 'AF';
+ 	//new dBug($test_spec);
+ 	//die();
+ 	
  	
  	// Take Time
- 	//$chronos[] = microtime(true);
-	//$tnow = end($chronos);
-	//$tprev = prev($chronos);
-	//$t_elapsed = number_format( $tnow - $tprev, 4);
-	//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
-	//reset($chronos);	
+ 	$chronos[] = microtime(true);
+	$tnow = end($chronos);
+	$tprev = prev($chronos);
+	$t_elapsed = number_format( $tnow - $tprev, 4);
+	echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
+	reset($chronos);	
 
      
 	$test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
@@ -902,20 +918,20 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	                        			 $options->absolute_last_execution : false;
 			}
 				
-
-			//new dBug($linkedFilters);
-			//new dBug($opt);
+			echo 'DEBUG' . __FUNCTION__ . '<br>';
+			new dBug($linkedFilters);
+			new dBug($opt);
 									
 			$tplan_tcases = $tplan_mgr->get_ln_tcversions($tplan_id,$linkedFilters,$opt);
 			//new dBug($tplan_tcases);
 			
 		 	// Take Time
-		 	//$chronos[] = microtime(true);
-			//$tnow = end($chronos);
-			//$tprev = prev($chronos);
-			//$t_elapsed = number_format( $tnow - $tprev, 4);
-			//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER get_ln_tcversions()</b>):' . $t_elapsed .'<br>';
-			//reset($chronos);	
+		 	$chronos[] = microtime(true);
+			$tnow = end($chronos);
+			$tprev = prev($chronos);
+			$t_elapsed = number_format( $tnow - $tprev, 4);
+			echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER get_ln_tcversions()</b>):' . $t_elapsed .'<br>';
+			reset($chronos);	
 
 
 			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'And')
@@ -1491,30 +1507,37 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
  * @param array $filters filters to apply to test case set
  * @return array new tcase_set
  */
-function filter_by_status_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
+function filter_by_status_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
+{
 	
 	$key2remove=null;
 	$buildSet = $tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS);
-	$status = 'filter_result_result';
-	
-	if( !is_null($buildSet) ) {
-		// BUGID 4023
-		$tcase_build_set = $tplan_mgr->get_status_for_any_build($tplan_id,
-		                                   array_keys($buildSet),$filters->{$status}, $filters->setting_platform);  
+	if( !is_null($buildSet) ) 
+	{
+		$tcase_build_set = $tplan_mgr->get_status_for_any_build($tplan_id,$filters->setting_platform,
+																array_keys($buildSet),
+																$filters->filter_result_result);  
 		                                                             
-		if( is_null($tcase_build_set) ) {
+		if( is_null($tcase_build_set) ) 
+		{
 			$tcase_set = array();
-		} else {
+		} 
+		else 
+		{
 			$key2remove=null;
-			foreach($tcase_set as $key_tcase_id => $value) {
-				if( !isset($tcase_build_set[$key_tcase_id]) ) {
+			foreach($tcase_set as $key_tcase_id => $value) 
+			{
+				if( !isset($tcase_build_set[$key_tcase_id]) ) 
+				{
 					$key2remove[]=$key_tcase_id;
 				}
 			}
 		}
 		
-	if( !is_null($key2remove) ) {
-			foreach($key2remove as $key) {
+		if( !is_null($key2remove) ) 
+		{
+			foreach($key2remove as $key) 
+			{
 				unset($tcase_set[$key]); 
 			}
 		}
@@ -1524,43 +1547,62 @@ function filter_by_status_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
 }
 
 /**
- * filter testcases out that do not have the same execution result in all builds
- * 
+ * filterStatusSetAllActiveBuilds()
+ *
+ * returns:
+ *
+ * test cases that has AT LEAST ONE of requested status
+ * or combinations of requested status 
+ * ON LAST EXECUTION ON ALL ACTIVE builds, for a PLATFORM
+ *
+ * For examples and more info read documentation regarding
+ * getHits*() methods on testplan class.
+ *
+ *
  * @param object &$tplan_mgr reference to test plan manager object
  * @param array &$tcase_set reference to test case set to filter
+ *				WILL BE MODIFIED HERE
+ *
  * @param integer $tplan_id ID of test plan
  * @param array $filters filters to apply to test case set
  * 
  * @return array new tcase_set
  */
-function filter_by_same_status_for_all_builds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
+function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
+{
+	// echo '<h1>' . __METHOD__ . '</h1>';
 	$key2remove=null;
 	$buildSet = $tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS);
-	$status = 'filter_result_result';
-	
-	if( !is_null($buildSet) ) {
-		// BUGID 4023
-		$tcase_build_set = $tplan_mgr->get_same_status_for_build_set($tplan_id,
-		                                                             array_keys($buildSet),$filters->{$status},$filters->setting_platform);  
-		                               
-		if( is_null($tcase_build_set) ) {
+
+	if( !is_null($buildSet) ) 
+	{
+		$hits = $tplan_mgr->getHitsSameStatusFull($tplan_id,intval($filters->setting_platform),
+												  (array)$filters->filter_result_result,count($buildSet));
+		// new dBug($hits);
+		if( is_null($hits) ) 
+		{
 			$tcase_set = array();
-		} else {
+		} 
+		else 
+		{
 			$key2remove=null;
-			foreach($tcase_set as $key_tcase_id => $value) {
-				if( !isset($tcase_build_set[$key_tcase_id]) ) {
+			foreach($tcase_set as $key_tcase_id => $value) 
+			{
+				if( !isset($hits[$key_tcase_id]) ) 
+				{
 					$key2remove[]=$key_tcase_id;
 				}
 			}
 		}
 		
-		if( !is_null($key2remove) ) {
-			foreach($key2remove as $key) {
+		if( !is_null($key2remove) ) 
+		{
+			foreach($key2remove as $key) 
+			{
 				unset($tcase_set[$key]); 
 			}
 		}
 	}
-	
 	return $tcase_set;
 }
 
@@ -1667,27 +1709,36 @@ function filter_by_status_for_last_execution(&$tplan_mgr,&$tcase_set,$tplan_id,$
  * @param array $filters filters to apply to test case set
  * @return array new tcase_set
  */
-function filter_not_run_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
+function filter_not_run_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
+{
 	$key2remove=null;
 	$buildSet = $tplan_mgr->get_builds($tplan_id);
 	
-	if( !is_null($buildSet) ) {
-		// BUGID 4023
-		$tcase_build_set = $tplan_mgr->get_not_run_for_any_build($tplan_id, array_keys($buildSet), $filters->setting_platform);  
+	if( !is_null($buildSet) ) 
+	{
+		$tcase_build_set = $tplan_mgr->get_not_run_for_any_build($tplan_id, array_keys($buildSet), 
+																 $filters->setting_platform);  
 		                                                             
-		if( is_null($tcase_build_set) ) {
+		if( is_null($tcase_build_set) ) 
+		{
 			$tcase_set = array();
-		} else {
+		} 
+		else 
+		{
 			$key2remove=null;
-			foreach($tcase_set as $key_tcase_id => $value) {
-				if( !isset($tcase_build_set[$key_tcase_id]) ) {
+			foreach($tcase_set as $key_tcase_id => $value) 
+			{
+				if( !isset($tcase_build_set[$key_tcase_id]) ) 
+				{
 					$key2remove[]=$key_tcase_id;
 				}
 			}
 		}
 		
-		if( !is_null($key2remove) ) {
-			foreach($key2remove as $key) {
+		if( !is_null($key2remove) ) 
+		{
+			foreach($key2remove as $key) 
+			{
 				unset($tcase_set[$key]); 
 			}
 		}
@@ -2199,7 +2250,7 @@ function apply_status_filters($tplan_id,&$items,&$fobj,&$tplan_mgr,$statusCfg)
 	$methods = $methods['status_code'];
 	
 	$ffn = array($methods['any_build'] => 'filter_by_status_for_any_build',
-		         $methods['all_builds'] => 'filter_by_same_status_for_all_builds',
+		         $methods['all_builds'] => 'filterStatusSetAllActiveBuilds',
 		         $methods['specific_build'] => 'filter_by_status_for_build',
 		         $methods['current_build'] => 'filter_by_status_for_build',
 		         $methods['latest_execution'] => 'filter_by_status_for_last_execution');
@@ -2209,7 +2260,8 @@ function apply_status_filters($tplan_id,&$items,&$fobj,&$tplan_mgr,$statusCfg)
 	$f_result = (array)$f_result;
 
 	// if "any" was selected as filtering status, don't filter by status
-	if (in_array($statusCfg['all'], $f_result)) {
+	if (in_array($statusCfg['all'], $f_result)) 
+	{
 		$f_result = null;
 	}
 

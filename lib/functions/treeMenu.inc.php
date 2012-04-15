@@ -1585,30 +1585,18 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
 		} 
 		else 
 		{
-			$key2remove=null;
-			foreach($tcase_set as $key_tcase_id => $value) 
-			{
-				if( !isset($hits[$key_tcase_id]) ) 
-				{
-					$key2remove[]=$key_tcase_id;
-				}
-			}
-		}
-		
-		if( !is_null($key2remove) ) 
-		{
-			foreach($key2remove as $key) 
-			{
-				unset($tcase_set[$key]); 
-			}
+			$this->helper_filter_cleanup($tcase_set,$hits);
 		}
 	}
 	return $tcase_set;
 }
 
 /**
+ * used by filter options:
+ * 							result on specific build
+ * 							result on current build
+ *
  * filter testcases out which do not have the chosen status in the given build
- * used by filter options 'result on specific build' and 'result on current build'
  *  
  * @param object &$tplan_mgr reference to test plan manager object
  * @param array &$tcase_set reference to test case set to filter
@@ -1616,41 +1604,25 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
  * @param array $filters filters to apply to test case set
  * @return array new tcase_set
  */
-function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
+function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
+{
 	$key2remove=null;
 	$build_key = 'filter_result_build';
 	$result_key = 'filter_result_result';
 	
 	$buildSet = array($filters->$build_key => $tplan_mgr->get_build_by_id($tplan_id,$filters->$build_key));
-	
-	// BUGID 4023
 	if( !is_null($buildSet) ) 
 	{
-		$tcase_build_set = $tplan_mgr->get_status_for_any_build($tplan_id,array_keys($buildSet),
+		$hits = $tplan_mgr->get_status_for_any_build($tplan_id,array_keys($buildSet),
 																$filters->$result_key, $filters->setting_platform);  
 
-		if( is_null($tcase_build_set) ) 
+		if( is_null($hits) ) 
 		{
 			$tcase_set = array();
 		} 
 		else 
 		{
-			$key2remove=null;
-			foreach($tcase_set as $key_tcase_id => $value) 
-			{
-				if( !isset($tcase_build_set[$key_tcase_id]) ) 
-				{
-					$key2remove[]=$key_tcase_id;
-				}
-			}
-		}
-
-		if( !is_null($key2remove) ) 
-		{
-			foreach($key2remove as $key) 
-			{
-				unset($tcase_set[$key]); 
-			}
+			$this->helper_filter_cleanup($tcase_set,$hits);
 		}
 	}
 	
@@ -2663,6 +2635,29 @@ function prepareTestSpecNode(&$tprojectMgr,$tprojectID,&$node,&$map_node_tccount
 	}
 
 	return $tcase_counters;
+}
+
+/**
+ *
+ *
+ */
+function helper_filter_cleanup(&$itemSet,$hits)
+{
+	$key2remove = null;
+	foreach($itemSet as $tcase_id => $dummy) 
+	{
+		if( !isset($hits[$tcase_id]) ) 
+		{
+			$key2remove[]=$tcase_id;
+		}
+	}
+	if( !is_null($key2remove) ) 
+	{
+		foreach($key2remove as $key) 
+		{
+			unset($itemSet[$key]); 
+		}
+	}
 }
 
 ?>

@@ -5952,6 +5952,40 @@ class testplan extends tlObjectWithAttachments
 		return is_null($items) ? $items : array_flip($items);
 	} 
 
+	/**
+	 * getHitsNotRunOnBuild($id,$platformID,$buildID)
+	 *
+	 * returns recordset with:
+	 * test cases with NOT RUN status on SPECIFIC build for a PLATFORM.
+	 * 
+	 * @return
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 *
+	 */
+	function getHitsNotRunOnBuild($id,$platformID,$buildID) 
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = 	" /* $debugMsg */ " .
+				" SELECT NHTCV.parent_id AS tcase_id" .
+				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+				" /* Get Test Case ID */ " .
+				" JOIN {$this->tables['nodes_hierarchy']} NHTCV ON " .
+				" NHTCV.id = TPTCV.tcversion_id " .
+				" /* Work on Executions */ " .
+				" LEFT OUTER JOIN {$this->tables['executions']} E ON " .
+				" E.testplan_id = TPTCV.testplan_id " .
+				" AND E.platform_id = TPTCV.platform_id " .
+				" AND E.tcversion_id = TPTCV.tcversion_id " .
+				" AND E.build_id = " . intval($buildID) .
+				" WHERE TPTCV.testplan_id = " . intval($id) . 
+				" AND TPTCV.platform_id = " . intval($platformID) . " AND E.status IS NULL ";
+		// echo $sql;
+		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
+		return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+	}
+
 
 } // end class testplan
 

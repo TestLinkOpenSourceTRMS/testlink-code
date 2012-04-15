@@ -70,11 +70,11 @@ TC-500       B2      0 / NOT RUN
 TC-500        B3      0 / NOT RUN
 
 STUFF;
-
+// ================================================================================
 
 
 $obj_mgr=new $object_class($db);
-new dBug($obj_mgr);
+// new dBug($obj_mgr);
 
 
 $tplan_id = 33123;
@@ -85,8 +85,44 @@ echo 'Test Plan ID:' . $tplan_id . '<br>';
 echo 'Platform ID:' . $platform_id . '<br>';
 echo '<hr>';
 
-$statusMixed = 'n';
+// -----------------------------------------------------------------------------
+$method2call = 'getHitsNotRunOnBuild';
+echo "<h1> TESTING:$method2call </h1>";
+// -----------------------------------------------------------------------------
+
+$build_id = 26;  // 26,27,28
+echo 'Build ID:' . $build_id . '<br>';
+
+$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$build_id); 
+echo '<br>' . $method2call . '()' . '<br>';
+new dBug($$method2call);
+echo '<hr>';
+
+$build_id = 27;  // 26,27,28
+echo 'Build ID:' . $build_id . '<br>';
+
+$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$build_id); 
+echo '<br>' . $method2call . '()' . '<br>';
+new dBug($$method2call);
+echo '<hr>';
+
+$build_id = 28;  // 26,27,28
+echo 'Build ID:' . $build_id . '<br>';
+
+$$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$build_id); 
+echo '<br>' . $method2call . '()' . '<br>';
+new dBug($$method2call);
+echo '<hr>';
+// -----------------------------------------------------------------------------
+
+
+
+// -----------------------------------------------------------------------------
 $method2call = 'getHitsSameStatusFull';
+echo "<h1> TESTING:$method2call </h1>";
+// -----------------------------------------------------------------------------
+
+$statusMixed = 'n';
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusMixed); 
 echo '<br>' . $method2call . '()' . '<br>';
 new dBug($statusMixed);
@@ -94,7 +130,6 @@ new dBug($$method2call);
 echo '<hr>';
 
 $statusMixed = array('n','p');
-$method2call = 'getHitsSameStatusFull';
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusMixed); 
 echo '<br>' . $method2call . '()' . '<br>';
 new dBug($statusMixed);
@@ -102,7 +137,6 @@ new dBug($$method2call);
 echo '<hr>';
 
 $statusMixed = array('b','p');
-$method2call = 'getHitsSameStatusFull';
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusMixed); 
 echo '<br>' . $method2call . '()' . '<br>';
 new dBug($statusMixed);
@@ -110,21 +144,30 @@ new dBug($$method2call);
 echo '<hr>';
 
 $statusMixed = array('b','f');
-$method2call = 'getHitsSameStatusFull';
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusMixed); 
 echo '<br>' . $method2call . '()' . '<br>';
 new dBug($statusMixed);
 new dBug($$method2call);
 echo '<hr>';
+// -----------------------------------------------------------------------------
 
+// -----------------------------------------------------------------------------
 $method2call = 'getHitsNotRunFull';
+echo "<h1> TESTING:$method2call </h1>";
+// -----------------------------------------------------------------------------
+
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id); 
 echo '<br>' . $method2call . '()' . '<br>';
 new dBug($$method2call);
 echo '<hr>';
+// -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+$method2call = 'getHitsSingleStatusFull';
+echo "<h1> TESTING:$method2call </h1>";
+// -----------------------------------------------------------------------------
 
 $status = 'p';
-$method2call = 'getHitsSingleStatusFull';
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$status); 
 echo '<br>' . $method2call . '()' . '<br>';
 echo '<br>' . "status=$status"  . '<br>';
@@ -132,7 +175,6 @@ new dBug($$method2call);
 echo '<hr>';
 
 $status = 'b';
-$method2call = 'getHitsSingleStatusFull';
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$status); 
 echo '<br>' . $method2call . '()' . '<br>';
 echo '<br>' . "status=$status"  . '<br>';
@@ -140,16 +182,19 @@ new dBug($$method2call);
 echo '<hr>';
 
 $status = 'f';
-$method2call = 'getHitsSingleStatusFull';
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$status); 
 echo '<br>' . "status=$status"  . '<br>';
 echo '<br>' . $method2call . '()' . '<br>';
 new dBug($$method2call);
 echo '<hr>';
+// -----------------------------------------------------------------------------
 
+// -----------------------------------------------------------------------------
+$method2call = 'getHitsStatusSetFull';
+echo "<h1> TESTING:$method2call </h1>";
+// -----------------------------------------------------------------------------
 
 $statusSet = array('b','p');
-$method2call = 'getHitsStatusSetFull';
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusSet); 
 echo '<br>' . $method2call . '()' . '<br>';
 var_dump($statusSet);
@@ -157,21 +202,29 @@ new dBug($$method2call);
 echo '<hr>';
 
 $statusSet = array('b','f');
-$method2call = 'getHitsStatusSetFull';
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusSet); 
 echo '<br>' . $method2call . '()' . '<br>';
 var_dump($statusSet);
 new dBug($$method2call);
 echo '<hr>';
+// -----------------------------------------------------------------------------
 
+// -----------------------------------------------------------------------------
 $method2call = 'getHitsNotRunPartial';
+echo "<h1> TESTING:$method2call </h1>";
+// -----------------------------------------------------------------------------
+
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id); 
 echo '<br>' . $method2call . '()' . '<br>';
 new dBug($$method2call);
 echo '<hr>';
+// -----------------------------------------------------------------------------
 
-$statusSet = array('b','p');
+// -----------------------------------------------------------------------------
 $method2call = 'getHitsStatusSetPartial';
+echo "<h1> TESTING:$method2call </h1>";
+// -----------------------------------------------------------------------------
+$statusSet = array('b','p');
 $$method2call = $obj_mgr->$method2call($tplan_id,$platform_id,$statusSet); 
 echo '<br>' . $method2call . '()' . '<br>';
 var_dump($statusSet);

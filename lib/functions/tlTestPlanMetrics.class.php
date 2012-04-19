@@ -3,20 +3,19 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * @filesource	tlTestPlanMetrics.class.php
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
- * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: tlTestPlanMetrics.class.php,v 1.7 2010/10/18 14:55:36 mx-julian Exp $
+ * @copyright 	2004-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
  *
- * @internal Revisions:
- * 20110415 - Julian - BUGID 4418 - Clean up priority usage within Testlink
- * 20101018 - Julian - BUGID 2236 - Milestones Report broken
- *                     BUGID 3830 - Milestone is not shown on Report more than one milestone
-                                    have the same target date
-                       BUGID 2770 - Start date for milestones
+ * @internal revisions
+ * @since 1.9.4
+ *
+ * 20120419 - franciscom - new method getExecCountersByBuildStatusOnlyWithTesterAssignment()
+ *
  **/
 
 /**
@@ -39,8 +38,8 @@ class tlTestPlanMetrics extends testPlan
 	private	$testCasePrefix='';
 
 	private $priorityLevelsCfg='';
-	private $resultsCfg;
-	private $testCaseCfg='';
+	//private $resultsCfg;
+	//private $testCaseCfg;
 	private $map_tc_status;
 	private $tc_status_for_statistics;
 
@@ -53,20 +52,20 @@ class tlTestPlanMetrics extends testPlan
 		$this->resultsCfg = config_get('results');
 		$this->testCaseCfg = config_get('testcase_cfg');
 
-  	$this->db = $db;
-  	parent::__construct($db);
+  		$this->db = $db;
+  		parent::__construct($db);
 
-  	$this->map_tc_status = $this->resultsCfg['status_code'];
+  		$this->map_tc_status = $this->resultsCfg['status_code'];
     
-    // This will be used to create dynamically counters if user add new status
-    foreach( $this->resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
-    {
-      	$this->tc_status_for_statistics[$tc_status_verbose] = $this->map_tc_status[$tc_status_verbose];
-    }
-    if( !isset($this->resultsCfg['status_label_for_exec_ui']['not_run']) )
-    {
-      	$this->tc_status_for_statistics['not_run'] = $this->map_tc_status['not_run'];  
-    }
+    	// This will be used to create dynamically counters if user add new status
+    	foreach( $this->resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
+    	{
+      		$this->tc_status_for_statistics[$tc_status_verbose] = $this->map_tc_status[$tc_status_verbose];
+    	}
+    	if( !isset($this->resultsCfg['status_label_for_exec_ui']['not_run']) )
+    	{
+      		$this->tc_status_for_statistics['not_run'] = $this->map_tc_status['not_run'];  
+    	}
 	} // end results constructor
 
 
@@ -223,6 +222,158 @@ class tlTestPlanMetrics extends testPlan
 		$percentCompleted = $total > 0 ? (($parameter / $total) * 100) : 100;
 		return number_format($percentCompleted,1);
 	}
+
+
+	// Work on ALL ACTIVE BUILDS
+	function getExecCountersByBuildStatusOnlyWithTesterAssignment($id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+
+		$statusCode =array_flip(array_keys($this->resultsCfg['status_label_for_exec_ui']));
+		foreach($statusCode as $key => &$dummy)
+		{
+			$dummy = $this->resultsCfg['status_code'][$key];	
+		}
+
+		$activeBuilds = array_keys($this->get_builds($id,testplan::ACTIVE_BUILDS));
+		$activeBuildsInClause = implode(",",$activeBuilds);
+		$getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
+		$platformSet = array_keys($this->getPlatforms($id,$getOpt));
+
+		new dBug($platformSet);
+		new dBug($activeBuilds); 
+		$execCode = intval($this->assignment_types['testcase_execution']['id']);
+		
+		// Common sentece - reusable
+		$sqlExec = 	"/* {$debugMsg} */" . 
+					" SELECT  E.build_id,E.platform_id,E.status, count(0) AS exec_qty " .
+					" FROM last_executions LE " .
+					" /* Get execution status */ " .
+					" JOIN {$this->tables['executions']} E ON E.id=LE.id " .
+					" AND LE.build_id IN ({$activeBuildsInClause}) " .
+					" /* Get feature id */ " .
+					" JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.testplan_id = LE.testplan_id " .
+					" AND TPTCV.platform_id = LE.platform_id AND TPTCV.tcversion_id = LE.tcversion_id " .
+					" AND TPTCV.testplan_id = " . intval($id) .
+					" /* Get only assigned items for executions on build set */ " .
+					" /*LEFTPLACEHOLDER*/ JOIN {$this->tables['user_assignments']} UA ON UA.feature_id = TPTCV.id " .
+					" AND UA.build_id = LE.build_id  AND UA.type = {$execCode} ";
+				
+		// get all execution status from DB Only for test cases with tester assigned			
+		$sql = 	$sqlExec .		
+				" /* FILTER ONLY ACTIVE BUILDS on target test plan */ " .
+				" WHERE LE.testplan_id=" . intval($id) . 
+				" AND LE.build_id IN ({$activeBuildsInClause}) " .
+				" GROUP BY E.build_id,E.platform_id,E.status ";
+	
+		$keyCols = array('build_id','platform_id','status');
+		$exec_with_tester = (array)$this->db->fetchRowsIntoMap3l($sqlExec,$keyCols);           
+           
+           
+		echo $sql;
+
+		// get total assignments
+		
+		$sql = 	"/* $debugMsg */ ".
+				" SELECT COUNT(id) AS qty, build_id " . 
+				" FROM {$this->tables['user_assignments']} " .
+				" WHERE build_id IN ( " . $activeBuildsInClause . " ) " .
+				" AND type = {$execCode} " . 
+				" GROUP BY build_id ";
+
+		$totalAssignedByBuild = (array)$this->db->fetchRowsIntoMap($sql,'build_id');
+
+		// get all execution status from DB Only for test cases WITHOUT tester assigned			
+		$sql = 	$sqlExec .		
+				" WHERE LE.testplan_id=" . intval($id) . ' AND UA.feature_id IS NULL ' .  
+				" GROUP BY E.build_id,E.platform_id,E.status ";
+	
+		echo $sql;
+		// $exec_wo_tester = (array)$this->db->fetchMapRowsIntoMap($sql,'build_id','platform_id', 1);
+	    $exec_wo_tester = (array)$this->db->fetchRowsIntoMap3l($sql,$keyCols);           
+
+
+		new dBug($exec_with_tester);
+		new dBug($totalAssignedByBuild);
+
+		new dBug($exec_wo_tester);
+
+		$info = array();
+		foreach($activeBuilds as $buildID)
+		{
+			if( !isset($exec_with_tester[$buildID]) )
+			{
+				$exec_with_tester[$buildID] = array();
+		    }
+			foreach($platformSet as $platformID)
+			{
+				foreach($statusCode as $verbose => $code )
+				{
+					$exec_with_tester[$buildID][$platformID][] = array('build_id' => $buildID,
+																	   'platform_id' => $platformID,
+																	   'status' => $code, 'exec_qty' => 0);			
+				}	
+			}
+		    
+		    
+		}
+		new dBug($exec_with_tester);
+		die();		
+		
+		/*		
+		$info = array();
+		foreach($activeBuilds as $buildID)
+		{
+			if( !isset($rs[$buildID]) )
+			{
+				$rs[$buildID] = array();
+				foreach($platformSet as $platformID)
+				{
+					
+				}
+		    }
+			
+			if( isset($rs[$buildID]) )
+			{
+				// loop over all defined platforms
+				foreach($platformSet as $platformID)
+				{
+					if( isset($rs[$buildID][$platformID] )
+					{
+						
+					}
+					else
+					{
+						// all counters with 0
+							
+					}	
+				}
+				
+
+				foreach($rs[$buildID] as $platformExec)
+				{
+					// loop over results
+					foreach($platformExec as $resultByStatus)
+					{
+												
+					}
+				}						
+			}	
+			
+		}
+
+		// foreach($this->resultsCfg['status_label_for_exec_ui' as $)
+		if(!is_null($rsnr))
+		{
+			
+		}
+		*/
+		
+		return array($rs,$rsAll);
+		
+	}
+
 
 	
 }

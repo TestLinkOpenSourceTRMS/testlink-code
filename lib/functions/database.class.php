@@ -19,9 +19,22 @@
  *
  */
  
-/** 
- * As stated on ADODB documentation this set will improve performance but have a side
+/**
+ * IMPORTANT NOTICE
+ * As stated on ADODB documentation:
+ *
+ * ----------------------------------------------------------------------------------------------------------------------
+ * $ADODB_COUNTRECS
+ * If the database driver API does not support counting the number of records returned in a SELECT statement, 
+ * the function RecordCount() is emulated when the global variable $ADODB_COUNTRECS is set to true, which is the default.
+ * We emulate this by buffering the records, WHICH CAN TAKE UP LARGE AMOUNTS OF MEMORY FOR BIG RECORDSETS. 
+ * Set this variable to false for the best performance. 
+ * THIS VARIABLE IS CHECKED EVERY TIME A QUERY IS EXECUTED, so you can selectively choose which recordsets to count. 
+ * ----------------------------------------------------------------------------------------------------------------------
+ *
+ * this set will improve performance but have a side
  * effect, for DBMS like POSTGRES method num_rows() will return ALWAYS -1, causing problems
+ *
  */
 $ADODB_COUNTRECS = TRUE;
 
@@ -61,7 +74,7 @@ class database
 	
 	function setLogEnabled($value)
 	{
-	    $this->logEnabled=$value?1:0;
+	    $this->logEnabled=$value ? 1 : 0;
 	}
 	
 	function getLogEnabled($value)
@@ -184,7 +197,6 @@ class database
 		    tLog($message,$logLevel,"DATABASE");
 		}
 		
-		// 20080927 - may be this causes lot of memory usage
 		if($this->logQueries)
 		{
 			array_push ($this->queries_array, array( $p_query, $t_elapsed, $ec, $emsg ) );

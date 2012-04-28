@@ -87,7 +87,12 @@ COMMENT ON TABLE /*prefix*/users  IS 'Updated to TL 1.9.4 - DB 1.5';
 INSERT INTO /*prefix*/rights  (id,description) VALUES (28,'req_tcase_link_management');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (29,'keyword_assignment');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (30,'mgt_unfreeze_req');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (31,'issuetracker_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (32,'issuetracker_view');
+
 
 /* update rights on admin role */
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,31);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,32);
 /* ----- END ----- */

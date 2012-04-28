@@ -12,8 +12,9 @@
  * It is not intelligent enough to ignore  SEMICOLONS inside comments, then PLEASE
  * USE SEMICOLONS ONLY to signal END of SQL Statements.
  *
- * @internal revisions:
- *
+ * @internal revisions
+ * @since 1.9.4
+ * 20120211 - franciscom - new views
  * 20110815 - franciscom - improvements on cookie_string generation (after Julian indications)
  * 20110808 - franciscom - manual migration from 1.9.1 (DB 1.4) to 1.9.4 (DB 1.5)
  */
@@ -43,6 +44,28 @@ CREATE TABLE /*prefix*/req_specs_revisions (
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/req_specs_revisions_uidx1 (`parent_id`,`revision`)
 ) DEFAULT CHARSET=utf8;
+
+# ----------------------------------------------------------------------------------
+# TICKET 4914: Create View - tcversions_last_active
+# ----------------------------------------------------------------------------------
+CREATE VIEW /*prefix*/tcversions_last_active AS 
+(
+	SELECT NHTCV.parent_id AS tcase_id, MAX(TCV.id) AS tcversion_id
+	FROM /*prefix*/nodes_hierarchy NHTCV 
+	JOIN /*prefix*/tcversions TCV ON TCV.id = NHTCV.id 
+	WHERE TCV.active = 1
+	GROUP BY NHTCV.parent_id,TCV.tc_external_id
+);
+
+CREATE VIEW /*prefix*/tcases_active AS 
+(
+	SELECT DISTINCT NHTCV.parent_id AS tcase_id, TCV.tc_external_id
+	FROM /*prefix*/nodes_hierarchy NHTCV 
+	JOIN /*prefix*/tcversions TCV ON TCV.id = NHTCV.id 
+	WHERE TCV.active = 1
+);
+
+
 
 /* Create Req Spec Revision Nodes */
 INSERT INTO /*prefix*/nodes_hierarchy 
@@ -84,7 +107,12 @@ ALTER TABLE /*prefix*/users COMMENT = 'Updated to TL 1.9.4 - DB 1.5';
 INSERT INTO /*prefix*/rights  (id,description) VALUES (28,'req_tcase_link_management');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (29,'keyword_assignment');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (30,'mgt_unfreeze_req');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (31,'issuetracker_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (32,'issuetracker_view');
+
 
 /* update rights on admin role */
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,31);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,32);
 /* ----- END ----- */

@@ -4,21 +4,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - show Test Results and Metrics
 
 @filesource	resultsGeneral.tpl
-@internal revisions:
-20110405 - Julian - BUGID 4377 - Add percentage for "Results by top level Test Suites"
-20110326 - francisco - BUGID 4355: 	General Test Plan Metrics - 
-									Build without executed test cases are not displayed.
-
-20101018 - Julian - added info for milestone progress how percentage is calculated
-                  - BUGID 2236 - Milestones Report is broken
-                  - BUGID 2770 - Start date for milestones
-                  - "Test results according to test priorities" was not shown if
-                    test plan does not use platforms
-20100811 - asimon - removed "results by assigned testers" table,
-                    was replaced by new report "results by tester per build"
-20100722 - asimon - BUGID 3406, 1508 - overall build status,
-                    also replaced some unnecessary lang_get() calls by $labels-usage
+@internal revisions
+20120429 - franciscom - TICKET 4989: Reports - Overall Build Status - refactoring and final business logic
 *}
+
 {lang_get var="labels"
      s='trep_kw,trep_owner,trep_comp,generated_by_TestLink_on, priority,
        	 th_overall_priority, th_progress, th_expected, th_overall, th_milestone,
@@ -57,28 +46,22 @@ Purpose: smarty template - show Test Results and Metrics
   		<th style="width: 10%;">{$labels.th_build}</th>
     	{* <th>{$labels.th_tc_total}</th> *}
     	<th>{$labels.th_tc_assigned}</th>
-      	{foreach item=the_column from=$buildColDefinition}
+      	{foreach item=the_column from=$gui->statistics->overallBuildStatus->colDefinition}
         	<th>{$the_column.qty}</th>
         	<th>{$the_column.percentage}</th>
     	{/foreach}
     	<th>{$labels.th_perc_completed}</th>
   	</tr>
 
-	{foreach item=res from=$buildResults}
+	{foreach item=res from=$gui->statistics->overallBuildStatus->info}
   	<tr>
   		<td>{$res.build_name|escape}</td>
-  		{if isset($res.total_tc)}
-	  		<td>{$res.total_tc}</td>
-	    	{foreach key=status item=the_column from=$buildColDefinition}
+  		<td>{$res.total_assigned}</td>
+	    	{foreach key=status item=the_column from=$gui->statistics->overallBuildStatus->colDefinition}
 	        	<td>{$res.details[$status].qty}</td>
 	        	<td>{$res.details[$status].percentage}</td>
 	    	{/foreach}
-	  		<td>{$res.percentage_completed}</td>
-	  	{else}
-	  		{foreach item=the_column from=$buildColDefinition}
-	  		<td>&nbsp;</td>
-	  		{/foreach}
-	  	{/if}
+  		<td>{$res.percentage_completed}</td>
   	</tr>
 	{/foreach}
 	</table>

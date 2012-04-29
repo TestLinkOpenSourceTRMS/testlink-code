@@ -11,6 +11,8 @@
  * @internal revisions
  * @since 1.9.4
  *
+ * 20120429 - franciscom - TICKET 4989: Reports - Overall Build Status - refactoring and final business logic
+ *
  * @since 1.9.3
  *  20110405 - Julian - BUGID 4377 - Add percentage for "Results by top level Test Suites"
  *  20110326 - franciscom - BUGID 4355: General Test Plan Metrics - Build without executed 
@@ -49,13 +51,17 @@ $gui->columnsDefinition = new stdClass();
 $gui->columnsDefinition->keywords = null;
 $gui->columnsDefinition->testers = null;
 $gui->columnsDefinition->platform = null;
+
 $gui->statistics = new stdClass();
 $gui->statistics->keywords = null;
 $gui->statistics->testers = null;
 $gui->statistics->milestones = null;
+$gui->statistics->overalBuildStatus = null;
+
 $gui->tplan_name = $tplan_info['name'];
 $gui->tproject_name = $tproject_info['name'];
 $gui->elapsed_time = 0; 
+$gui->displayBuildMetrics = false;
 
 $mailCfg = buildMailCfg($gui);
 
@@ -68,6 +74,7 @@ if( is_null($gui->platformSet) )
 }
 
 $metricsMgr = new tlTestPlanMetrics($db);
+
 
 // $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS,ALL_PLATFORMS);
 // default is ALL PLATFORMS
@@ -105,6 +112,8 @@ else
 		$items2loop[] = 'priorities';
 		$prios = $tplan_mgr->getStatusTotalsByPriority($args->tplan_id);
 		$gui->statistics->priorities = $tplan_mgr->tallyResultsForReport($prios);
+		
+		// new dBug($gui->statistics->priorities);
 	}
 
 	foreach($items2loop as $item)
@@ -174,23 +183,8 @@ else
 	$results = null;
 	if($gui->do_report['status_ok'])
 	{
-  		$results = $re->getAggregateBuildResults();
-  		
-  		if ($results != null) 
-  		{
-			// BUGID 0003123: General Test Plan Metrics - order of columns with test case exec results
-			$code_verbose = $tplan_mgr->getStatusForReports();
-      		$resultsCfg = config_get('results');
-      		$labels = $resultsCfg['status_label'];
-      		foreach($code_verbose as $status_verbose)
-      		{
-            	$l18n_label = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : 
-                              lang_get($status_verbose); 
-            
-            	$colDefinition[$status_verbose]['qty'] = $l18n_label;
-            	$colDefinition[$status_verbose]['percentage'] = '[%]';
-      		}
-  		}    
+		$gui->statistics->overallBuildStatus = $metricsMgr->getOverallBuildStatusForRender($args->tplan_id);
+		$gui->displayBuildMetrics = !is_null($gui->statistics->overallBuildStatus);
 	}  
 
 
@@ -204,15 +198,12 @@ else
 } 
 
 // ----------------------------------------------------------------------------
-$gui->displayBuildMetrics = !is_null($results);
 $gui->buildMetricsFeedback = lang_get('buildMetricsFeedback');
 
 $timerOff = microtime(true);
 $gui->elapsed_time = round($timerOff - $timerOn,2);
 $smarty = new TLSmarty;
 $smarty->assign('gui', $gui);
-$smarty->assign('buildColDefinition', $colDefinition);
-$smarty->assign('buildResults',$results);
 displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format,$mailCfg);
 
 
@@ -280,4 +271,7 @@ function buildMailCfg(&$guiObj)
 	                 
 	return $cfg;
 }
+
+
+
 ?>

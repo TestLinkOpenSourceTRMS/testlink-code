@@ -14,6 +14,9 @@
  * @internal revisions
  * @since 1.9.4
  *
+ * 20120429 - franciscom -	TICKET 4989: Reports - Overall Build Status - refactoring and final business logic
+ *							new method getOverallBuildStatusForRender()
+ *
  * 20120419 - franciscom - new method getExecCountersByBuildStatusOnlyWithTesterAssignment()
  *
  **/
@@ -38,10 +41,9 @@ class tlTestPlanMetrics extends testPlan
 	private	$testCasePrefix='';
 
 	private $priorityLevelsCfg='';
-	//private $resultsCfg;
-	//private $testCaseCfg;
 	private $map_tc_status;
 	private $tc_status_for_statistics;
+	private $notRunStatusCode;
 
 	/** 
 	 * class constructor 
@@ -66,6 +68,8 @@ class tlTestPlanMetrics extends testPlan
     	{
       		$this->tc_status_for_statistics['not_run'] = $this->map_tc_status['not_run'];  
     	}
+    	$this->notRunStatusCode = $this->tc_status_for_statistics['not_run'];
+
 	} // end results constructor
 
 
@@ -375,6 +379,191 @@ class tlTestPlanMetrics extends testPlan
 	}
 
 
+
+	// Work on ALL ACTIVE BUILDS IGNORING Platforms
+	function getExecCountersByBuildExecStatus($id, $opt=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		$my['opt'] = array('getUnassigned' => false);
+		$my['opt'] = array_merge($my['opt'], (array)$opt);
+		
+		$statusCode =array_flip(array_keys($this->resultsCfg['status_label_for_exec_ui']));
+		foreach($statusCode as $key => &$dummy)
+		{
+			$dummy = $this->resultsCfg['status_code'][$key];	
+		}
+
+		$activeBuilds = array_keys($ab=$this->get_builds($id,testplan::ACTIVE_BUILDS));
+		$buildsInClause = implode(",",$activeBuilds);
+		$execCode = intval($this->assignment_types['testcase_execution']['id']);
+		
+		new dBug($ab);
+		
+		
+		
+		// This subquery is BETTER than the VIEW, need to understand why
+		// Last Executions By Build (LEBB)
+		$sqlLEBB = 	" SELECT EE.tcversion_id,EE.testplan_id,EE.build_id,MAX(EE.id) AS id " .
+				  	" FROM {$this->tables['executions']} EE " . 
+				   	" WHERE EE.testplan_id=" . intval($id) . 
+					" AND EE.build_id IN ({$buildsInClause}) " .
+				   	" GROUP BY EE.tcversion_id,EE.testplan_id,EE.build_id ";
+		
+		
+		// Common sentece - reusable
+		$sqlExec = 	"/* {$debugMsg} */" . 
+					// " SELECT E.build_id AS build_id,COALESCE(E.status,'{$this->notRunStatusCode}') AS status, count(0) AS exec_qty " .
+					" SELECT UA.build_id,COALESCE(E.status,'{$this->notRunStatusCode}') AS status, count(0) AS exec_qty " .
+
+					" /* Get feature id with Tester Assignment */ " .
+					" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+
+					" /*LEFTPLACEHOLDER*/ JOIN {$this->tables['user_assignments']} UA " .
+					" ON UA.feature_id = TPTCV.id " .
+					" AND UA.build_id IN ({$buildsInClause}) AND UA.type = {$execCode} " .
+
+					" /* GO FOR Absolute LATEST exec ID by BUILD IGNORE  Platform */ " .
+					" LEFT OUTER JOIN ({$sqlLEBB}) AS LEBB " .
+					" ON  LEBB.testplan_id = TPTCV.testplan_id " .
+					" AND LEBB.tcversion_id = TPTCV.tcversion_id " .
+					" AND LEBB.testplan_id = " . intval($id) .
+
+					" /* Get execution status INCLUDING NOT RUN */ " .
+					" LEFT OUTER JOIN {$this->tables['executions']} E " .
+					" ON  E.id = LEBB.id " .
+					" AND E.build_id = LEBB.build_id " .
+					" AND E.build_id IN ({$buildsInClause}) ";
+				
+				
+		// get all execution status from DB Only for test cases with tester assigned			
+		$sql = 	$sqlExec .		
+				" /* FILTER ONLY ACTIVE BUILDS on target test plan */ " .
+				" WHERE TPTCV.testplan_id=" . intval($id) . 
+				" AND UA.build_id IN ({$buildsInClause}) " .
+				" GROUP BY build_id,status ";
+	
+		// 
+		echo '<br><b>' . __FUNCTION__ . '</b><br>'; 
+		echo $sql . '<br>';
+		// die();
+		
+        $exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'build_id','status');              
+
+		if( $my['opt']['getUnassigned'] )
+		{
+			// NEED TO CHECK 
+			// get all execution status from DB Only for test cases WITHOUT tester assigned			
+			$sqlExecLOJ = str_replace('/*LEFTPLACEHOLDER*/',' LEFT OUTER ',$sqlExec);
+			$sql = $sqlExecLOJ .
+					" WHERE LEBB.testplan_id=" . intval($id) . ' AND UA.feature_id IS NULL ' .  
+					" GROUP BY E.build_id,E.status ";
+		
+	        $exec['wo_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'build_id','status');              
+		}
+
+
+		// Need to Add info regarding:
+		// - Add info for ACTIVE BUILD WITHOUT any execution. ???
+		//   Hmm, think about Need to check is this way is better that request DBMS to do it.
+		// - Execution status that have not happened
+		
+		foreach($exec as &$elem)
+		{
+			foreach($activeBuilds as $buildID)
+			{
+				if( !isset($elem[$buildID]) )
+				{
+					$elem[$buildID] = array();
+			    }
+				foreach($statusCode as $verbose => $code)
+				{
+						if(!isset($elem[$buildID][$code]))
+						{
+							$elem[$buildID][$code] = array('build_id' => $buildID,'status' => $code, 'exec_qty' => 0);			
+						}												   
+				}
+			}
+		}
+
+
+		
+		// get total assignments by BUILD ID
+		$sql = 	"/* $debugMsg */ ".
+				" SELECT COUNT(0) AS qty, UA.build_id " . 
+				" FROM {$this->tables['user_assignments']} UA " .
+				" JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.id = UA.feature_id " .
+				" WHERE UA. build_id IN ( " . $buildsInClause . " ) " .
+				" AND UA.type = {$execCode} " . 
+				" GROUP BY build_id";
+
+		$exec['total_assigned'] = (array)$this->db->fetchRowsIntoMap($sql,'build_id');
+		$exec['active_builds'] = $ab;
+
+		return $exec;
+	}
+	
+                                      
+	/**
+	 *
+	 * @internal revisions
+	 *
+	 * @since 1.9.4
+	 * 20120429 - franciscom - TICKET 4989: Reports - Overall Build Status - refactoring and final business logic
+	 **/
+	function getOverallBuildStatusForRender($id)
+	{
+	   	$renderObj = null;
+		$code_verbose = $this->getStatusForReports();
+	    $labels = $this->resultsCfg['status_label'];
+	    
+		$metrics = $this->getExecCountersByBuildExecStatus($id);
+	   	if( !is_null($metrics) )
+	   	{
+	   		$renderObj = new stdClass();
+
+			$buildList = array_keys($metrics['active_builds']);
+			$renderObj->info = array();	
+		    foreach($buildList as $buildID)
+		    {
+				$totalRun = 0;
+		    	$renderObj->info[$buildID]['build_name'] = $metrics['active_builds'][$buildID]['name']; 	
+		    	$renderObj->info[$buildID]['total_assigned'] = $metrics['total_assigned'][$buildID]['qty']; 	
+
+				$renderObj->info[$buildID]['details'] = array();
+				
+				$rf = &$renderObj->info[$buildID]['details'];
+				foreach($code_verbose as $statusCode => $statusVerbose)
+				{
+					$rf[$statusVerbose] = array('qty' => 0, 'percentage' => 0);
+					$rf[$statusVerbose]['qty'] = $metrics['with_tester'][$buildID][$statusCode]['exec_qty']; 	
+					
+					if( $renderObj->info[$buildID]['total_assigned'] > 0 ) 
+					{
+						$rf[$statusVerbose]['percentage'] = number_format(100 * 
+																		  ($rf[$statusVerbose]['qty'] / 
+															 			   $renderObj->info[$buildID]['total_assigned']),1);
+					}
+					
+					$totalRun += $statusVerbose == 'not_run' ? 0 : $rf[$statusVerbose]['qty'];
+				}
+				$renderObj->info[$buildID]['percentage_completed'] =  number_format(100 * 
+																					($totalRun / 
+																					 $renderObj->info[$buildID]['total_assigned']),1);
+		    }
+		   	
+		    foreach($code_verbose as $status_verbose)
+		    {
+		    	$l18n_label = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : 
+		                      lang_get($status_verbose); 
+		    
+		    	$renderObj->colDefinition[$status_verbose]['qty'] = $l18n_label;
+		    	$renderObj->colDefinition[$status_verbose]['percentage'] = '[%]';
+		    }
+	
+		}
+		return $renderObj;
+	}
 	
 }
 ?>

@@ -16,6 +16,7 @@
  * @internal revisions
  * 
  *  @since 1.9.4
+ *	20120430 - franciscom - getPlatforms() added new option 'outputDetails'
  *	20120414 - franciscom - getHits*() new methods for filtering
  * 
  *	20111229 - franciscom - TICKET 4847: XMLRPC 'getTestCasesForTestPlan' method does not include test case's 
@@ -551,6 +552,10 @@ class testplan extends tlObjectWithAttachments
 	
 	/**
 	 * 
+	 * 20120415 - HERE THERE IS A BIG BUG
+	 * We do not get any more info ABOUT tester assignment
+	 * THIS BREAK assignment feature
+	 *
  	 * 
  	 */
 	function get_ln_tcversions($id,$filters=null,$options=null)
@@ -568,12 +573,14 @@ class testplan extends tlObjectWithAttachments
 		$this->helper_sql_filters($sql_filter,$my['filters'],$my['options']);
 		
 		$this->helper_joins($join,$sql_filter,$my['filters'],$my['options'],$id);
+		
 		$hx = 'user_assignment';
 		$extra_fields[$hx] = $join[$hx] == '' ? '' : $extra_fields[$hx];
 
 		$hx = 'executions';
 		$extra_fields[$hx] = $join[$hx] == '' ? '' : $extra_fields[$hx];
 
+		// new dBug($extra_fields);
 		
 		$sql = "/* $debugMsg */ " .
 		       " SELECT NH_TCASE.parent_id AS testsuite_id, {$extra_fields['tsuite']} {$extra_fields['tcase']} " .
@@ -600,7 +607,7 @@ class testplan extends tlObjectWithAttachments
 		// $sql .= " ORDER BY testsuite_id,NH_TCASE.node_order,tc_id,T.platform_id ";
 
 
-		// echo 'DEBUG:SQL:' . $sql . '<br>';
+		echo 'DEBUG:SQL:' . $sql . '<br>';
 		
 		// echo __FUNCTION__ . '<br>'; die($sql);
 		
@@ -723,23 +730,31 @@ class testplan extends tlObjectWithAttachments
 		// since implementation of User Assignment AT (test plan,platform,build)
 		// filters: assigned_to AND assigned_on_build do TEAMWORK.
 		// $dk = 'assigned_on_build';
-		if( ($filters['assigned_on_build'] = intval($filters['assigned_on_build'])) > 0 )
+		// $dummyB = intval($filters['assigned_on_build']);
+		
+		// if( ($filters['assigned_on_build'] = intval($filters['assigned_on_build'])) > 0 )
+		
+		$targetBuild = intval($filters['assigned_on_build']);
+		$targetBuild = $targetBuild > 0 ? $targetBuild : intval($options['assigned_on_build']);
+		
+		if( $targetBuild > 0 )
 		{
-			$sqlfx['assigned_on_build'] = " AND UA.build_id = {$filters['assigned_on_build']} ";		
+			$sqlfx['assigned_on_build'] = " AND UA.build_id = {$targetBuild}"; // OR UA.build_id IS NULL";		
 
 			//
 			// If special user id TL_USER_ANYBODY is present in set of user id,
 			// we will DO NOT FILTER by user ID
-			// $dk = 'assigned_to';
 			if( !is_null($filters['assigned_to']) && 
 			    !in_array(TL_USER_ANYBODY,(array)$filters['assigned_to']) )
 			{  
 				$sqlfx['user_assignment'] = " AND " . $this->helper_assigned_to_sql($filters['assigned_to'],$options);
 			}
-			else
-			{
-				$sqlfx['assigned_on_build'] = '';
-			}
+			
+			// 20120415
+			//else
+			//{
+			//	$sqlfx['assigned_on_build'] = '';
+			//}
 		}
 		
 		if (!is_null($filters['urgencyImportance']))
@@ -762,7 +777,16 @@ class testplan extends tlObjectWithAttachments
 			// if $sqlfx['assigned_on_build'] != '' => I will filter by UA.BUILD_ID then all
 			// records returned from LEFT will be removed because UA.BUILD_ID will be NULL
 			// " LEFT OUTER "
-			$join['user_assignment'] =	" JOIN {$this->tables['user_assignments']} UA " .
+			//
+			// 20120415
+			// my previous sentence is partially wrong
+			// If I need to use result on test execution assignment I need to get ALSO
+			// UNASSIGNED test cases => 
+			// I need LEFT OUTER AND put here on LEFT OUTER
+			// $sqlfx['assigned_on_build'] INSTEAD OF ON WHERE FILTER
+			// I've destroyed a lot !!!!
+			
+			$join['user_assignment'] =	" LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
 					        			" ON UA.feature_id = T.id " . 
 					        			" AND UA.type = {$this->assignment_types['testcase_execution']['id']} ";
 		}
@@ -848,6 +872,9 @@ class testplan extends tlObjectWithAttachments
  	 */
 	function init_get_ln_tcversions($filtersCfg,$optionsCfg)
 	{
+		// new dBug($filtersCfg);
+		// new dBug($optionsCfg);
+		
         $ic['filters'] = array('tcase_id' => null, 'keyword_id' => 0,
                                'assigned_to' => null,'assigned_on_build' => 0 ,
                                'exec_status' => null,
@@ -872,6 +899,8 @@ class testplan extends tlObjectWithAttachments
 									  " E.notes as execution_notes, E.build_id as exec_on_build, " .
 									  " COALESCE(E.status,'n') AS exec_status, "; 
 
+
+		// Hmmm, do not remember why this is ALL null
 		$join = array('exec_type' => '', 'tcase' => '', 'builds' => '', 'keywords' => '' ,
 					  'executions' => '' , 'platforms' => '', 'tsuite' => '', 'user_assignment' => '');
 
@@ -881,6 +910,9 @@ class testplan extends tlObjectWithAttachments
 
 
 		// new dBug($ic);
+		// new dBug($extra_fields);
+		// new dBug($sql_filter);
+		
 		return array($ic,$join,$sql_filter,$left_join,$extra_fields);
 	}
 
@@ -1121,9 +1153,8 @@ class testplan extends tlObjectWithAttachments
 		$builds = array('join' => '', 'filter' => '', 'left_join' => ' ');
 		$executions = array('join' => '', 'filter' => '');
 
-		new dBug($options);
+		// new dBug($options);
 		
-		// $notrun['filter'] = null;
 		$more_tcase_fields = '';
 		$join_for_parent = '';
 		$more_parent_fields = '';
@@ -1303,7 +1334,7 @@ class testplan extends tlObjectWithAttachments
 			$sql = str_replace(array(', ,',',,'),',',$sql);
 			
 			
-			new dBug($my['join']);
+			// new dBug($my['join']);
 			
 			$sql .=" FROM {$this->tables['nodes_hierarchy']} NH_TCV " .
 				   " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCV.parent_id = NH_TCASE.id " .
@@ -1321,15 +1352,20 @@ class testplan extends tlObjectWithAttachments
 				$sql .=	" /* \$ua_fields != '' */ " . 
 						" LEFT OUTER JOIN {$this->tables['user_assignments']} UA ON UA.feature_id = T.id " .
 						$my['sql']['ua_build']; 
-						
+
+
+				// 20120416 - added assigned_on_build condition
 				// Want to check if requested build is on ua_build_sql exists the use JOIN
-				$sql .= " JOIN {$this->tables['builds']} B ON B.id = " . intval($my['filters']['assigned_on_build']);	
-				
-				if(	intval($my['filters']['assigned_on_build']) <= 0 )
+				if(	intval($my['filters']['assigned_on_build']) > 0 )
 				{
-					// CRASH IMMEDIATELY
-					throw new Exception(__METHOD__ . ' Can NOT WORK JOIN ON B.id <=0');
+					$sql .= " JOIN {$this->tables['builds']} B ON B.id = " . intval($my['filters']['assigned_on_build']);	
 				}
+				
+				// if(	intval($my['filters']['assigned_on_build']) <= 0 )
+				// {
+				// 	// CRASH IMMEDIATELY
+				// 	throw new Exception(__METHOD__ . ' Can NOT WORK JOIN ON B.id <=0');
+				// }
 			}
 			$sql .= " WHERE T.testplan_id={$id} {$my['where']['where']} " .
 			        " {$ua_filter} {$executions['filter']} ";
@@ -1342,6 +1378,7 @@ class testplan extends tlObjectWithAttachments
 				$sql .= " AND " . $this->helper_assigned_to_sql($my['filters']['assigned_to'],$my['options']);
 			}
 			
+
 
 			$sql .= " ORDER BY testsuite_id,NH_TCASE.node_order,tc_id,T.platform_id {$exec_order_by}";
 		}
@@ -2597,7 +2634,6 @@ class testplan extends tlObjectWithAttachments
 		$the_sql[]="DELETE FROM {$this->tables['cfield_testplan_design_values']} WHERE link_id ".
 			       "IN ({$getFeaturesSQL})";
 
-		// BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
 		$the_sql[]="DELETE FROM {$this->tables['user_assignments']} WHERE feature_id ".
 			       "IN ({$getFeaturesSQL})";
 		
@@ -3850,7 +3886,7 @@ class testplan extends tlObjectWithAttachments
  	 */
     function getPlatforms($id,$options=null)
     {
-        $my['options'] = array('outputFormat' => 'array', 'addIfNull' => false);
+        $my['options'] = array('outputFormat' => 'array', 'outputDetails' => 'full', 'addIfNull' => false);
 	    $my['options'] = array_merge($my['options'], (array)$options);
         switch($my['options']['outputFormat'])
         {
@@ -3864,8 +3900,25 @@ class testplan extends tlObjectWithAttachments
         	break;
         } 	
     	
-    	if( $my['options']['addIfNull'] && is_null($platforms) )
+    	if( !is_null($platforms) )
+    	{
+    		switch($my['options']['outputDetails'])
+    		{
+    			case 'name':
+    				foreach($platforms as $id => $elem)
+    				{
+    					$platforms[$id] = $elem['name'];		
+    				}
+    			break;
+    			
+    			default:
+    			break;	
+    		}
+    		
+    	}
+    	else if( $my['options']['addIfNull'] )
 		{
+	    	// else if( $my['options']['addIfNull'] && is_null($platforms) )
 			$platforms = array( 0 => '');
 		}
     	return $platforms; 
@@ -4192,13 +4245,14 @@ class testplan extends tlObjectWithAttachments
 	/**
 	 * get last execution status analised by keyword, used to build reports.
 	 *
+	 * Consider Test Case WITH and WITHOUT Tester Assignments
+	 *
+	 *
 	 * @param tplan_id: test plan id
 	 * @return map: key: keyword id
 	 *              value: map with following structure
 	 *
 	 * @internal revision
-	 * 20110408 - franciscom - 	BUGID 4391: General Test Plan Metrics - 
-	 *							Results by Keywords does not work properly when platforms are used
 	 *
  	 */
 	public function getStatusTotalsByKeyword($tplan_id)
@@ -5816,8 +5870,19 @@ class testplan extends tlObjectWithAttachments
 	function getHitsStatusSetOnBuild($id,$platformID,$buildID,$statusSet) 
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$statusInClause = implode("','",(array)$statusSet);
+		
+		$statusList = (array)$statusSet;
 
+		// Manage also not run
+		$notRunHits = null;
+		$dummy = array_flip($statusList);
+		if( isset($dummy[$this->notRunStatus]) )
+		{
+			$notRunHits = $this->getHitsNotRunOnBuild($id,$platformID,$buildID);
+			unset($statusList[$dummy[$this->notRunStatus]]);
+		}
+
+		$statusInClause = implode("','",$statusList);
 		$sql = 	" /* $debugMsg */ " .
 				" SELECT NHTCV.parent_id AS tcase_id" .
 				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
@@ -5840,7 +5905,10 @@ class testplan extends tlObjectWithAttachments
 				
 		// echo $sql;
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-		return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+		$hits = is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+		
+		$items = (array)$hits + (array)$notRunHits; 
+		return count($items) > 0 ? $items : null;
 	}
 
 
@@ -6004,17 +6072,19 @@ class testplan extends tlObjectWithAttachments
 		$hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
 		$hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
 		
-		echo $debugMsg;
-		new dBug($get);
-		new dBug($hitsFoundOn);
-		new dBug($hits);
-		new dBug($statusSet);
+		// echo $debugMsg;
+		// new dBug($get);
+		// new dBug($hitsFoundOn);
+		// new dBug($hits);
+		// new dBug($statusSet);
 		
 		if($get['notRun'] && $get['otherStatus'])
 		{
 			if( $hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus'] )
 			{
-				$items = array_merge(array_keys($hits['notRun']),array_keys($hits['otherStatus']));
+				// THIS DOES NOT WORK with numeric keys	
+				// $items = array_merge(array_keys($hits['notRun']),array_keys($hits['otherStatus']));
+				$items = array_keys($hits['notRun']) + array_keys($hits['otherStatus']);
 			}
 		} 
 		else if($get['notRun'] && $hitsFoundOn['notRun'])

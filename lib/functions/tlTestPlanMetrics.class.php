@@ -564,6 +564,387 @@ class tlTestPlanMetrics extends testPlan
 		}
 		return $renderObj;
 	}
+
+
+
+	// Consider ONLY ACTIVE BUILDS
+	function getExecCountersByKeywordExecStatus($id, $opt=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		$my['opt'] = array('getUnassigned' => false, 'tprojectID' => 0);
+		$my['opt'] = array_merge($my['opt'], (array)$opt);
+		
+		$statusCode = array_flip(array_keys($this->resultsCfg['status_label_for_exec_ui']));
+		foreach($statusCode as $key => $dummy)
+		{
+			$statusCode[$key] = $this->resultsCfg['status_code'][$key];	
+		}
+
+		$activeBuilds = array_keys($ab=$this->get_builds($id,testplan::ACTIVE_BUILDS));
+		$buildsInClause = implode(",",$activeBuilds);
+		$execCode = intval($this->assignment_types['testcase_execution']['id']);
+		
+		
+		// may be too brute force but ...
+		if( ($tprojectID = $my['opt']['tprojectID']) == 0 )
+		{
+			$info = $this->tree_manager->get_node_hierarchy_info($id);
+			$tprojectID = $info['parent_id'];
+		} 
+		$tproject_mgr = new testproject($this->db);
+		$keywordSet = $tproject_mgr->get_keywords_map($tprojectID);
+		$tproject_mgr = null;
+		
+		
+		
+		// This subquery is BETTER than the VIEW, need to understand why
+		// Last Executions By Build (LEBB)
+		$sqlLE = 	" SELECT EE.tcversion_id,EE.testplan_id,MAX(EE.id) AS id " .
+				  	" FROM {$this->tables['executions']} EE " . 
+				   	" WHERE EE.testplan_id=" . intval($id) . 
+					" AND EE.build_id IN ({$buildsInClause}) " .
+				   	" GROUP BY EE.tcversion_id,EE.testplan_id ";
+		
+		
+		// Common sentece - reusable
+		$sqlExec = 	"/* {$debugMsg} */" . 
+					" SELECT TCK.keyword_id,COALESCE(E.status,'{$this->notRunStatusCode}') AS status, count(0) AS exec_qty " .
+
+					" /* Get feature id with Tester Assignment */ " .
+					" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+
+					" /*LEFTPLACEHOLDER*/ JOIN {$this->tables['user_assignments']} UA " .
+					" ON UA.feature_id = TPTCV.id " .
+					" AND UA.build_id IN ({$buildsInClause}) AND UA.type = {$execCode} " .
+
+					" /* Get ONLY Test case versions that has AT LEAST one Keyword assigned */ ".
+					" JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
+					" ON NHTCV.id = TPTCV.tcversion_id " .
+					" JOIN {$this->tables['testcase_keywords']} TCK " .
+					" ON TCK.testcase_id = NHTCV.parent_id " .
+
+					" /* GO FOR Absolute LATEST exec ID IGNORE BUILD AND Platform */ " .
+					" LEFT OUTER JOIN ({$sqlLE}) AS LE " .
+					" ON  LE.testplan_id = TPTCV.testplan_id " .
+					" AND LE.tcversion_id = TPTCV.tcversion_id " .
+					" AND LE.testplan_id = " . intval($id) .
+
+					" /* Get execution status INCLUDING NOT RUN */ " .
+					" LEFT OUTER JOIN {$this->tables['executions']} E " .
+					" ON  E.id = LE.id " .
+					" AND E.build_id IN ({$buildsInClause}) ";
+				
+				
+		// get all execution status from DB Only for test cases with tester assigned			
+		$sql = 	$sqlExec .		
+				" /* FILTER ONLY ACTIVE BUILDS on target test plan */ " .
+				" WHERE TPTCV.testplan_id=" . intval($id) . 
+				" AND UA.build_id IN ({$buildsInClause}) " .
+				" GROUP BY keyword_id,status ";
+	
+		// 
+		echo '<br><b>' . __FUNCTION__ . '</b><br>'; 
+		echo $sql . '<br>';
+		// die();
+
+		// $sql = "SELECT keyword, keyword_id,status
+		
+        $exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'keyword_id','status');              
+
+		// NEED TO UNDERSTAND if I'm goin to use this
+		if( $my['opt']['getUnassigned'] )
+		{
+			// NEED TO CHECK 
+			// get all execution status from DB Only for test cases WITHOUT tester assigned			
+			$sqlExecLOJ = str_replace('/*LEFTPLACEHOLDER*/',' LEFT OUTER ',$sqlExec);
+			$sql = $sqlExecLOJ .
+					" WHERE LE.testplan_id=" . intval($id) . ' AND UA.feature_id IS NULL ' .  
+					" GROUP BY E.build_id,E.status ";
+		
+	        $exec['wo_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'build_id','status');              
+		}
+
+		
+		foreach($exec as &$elem)
+		{
+			foreach($elem as $keywordID => $dummy)
+			{
+				foreach($statusCode as $verbose => $code)
+				{
+					if(!isset($elem[$keywordID][$code]))
+					{
+						$elem[$keywordID][$code] = array('keyword_id' => $keywordID,'status' => $code, 'exec_qty' => 0);			
+					}						
+				}
+			}
+		}
+
+		// get total assignments by Keyword id
+		$sql = 	"/* $debugMsg */ ".
+				" SELECT COUNT(0) AS qty, TCK.keyword_id " . 
+				" FROM {$this->tables['user_assignments']} UA " .
+				" JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.id = UA.feature_id " .
+
+				" /* Get ONLY Test case versions that has AT LEAST one Keyword assigned */ ".
+				" JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
+				" ON NHTCV.id = TPTCV.tcversion_id " .
+				" JOIN {$this->tables['testcase_keywords']} TCK " .
+				" ON TCK.testcase_id = NHTCV.parent_id " .
+
+				" WHERE UA. build_id IN ( " . $buildsInClause . " ) " .
+				" AND UA.type = {$execCode} " . 
+				" GROUP BY keyword_id";
+
+		$exec['total_assigned'] = (array)$this->db->fetchRowsIntoMap($sql,'keyword_id');
+		$exec['keywords'] = $keywordSet;
+
+	
+		return $exec;
+	}
+
+
+	/**
+	 *
+	 * @internal revisions
+	 *
+	 * @since 1.9.4
+	 * 20120429 - franciscom - 
+	 **/
+	function getStatusTotalsByKeywordForRender($id)
+	{
+	   	$renderObj = null;
+		$code_verbose = $this->getStatusForReports();
+	    $labels = $this->resultsCfg['status_label'];
+	    
+		$metrics = $this->getExecCountersByKeywordExecStatus($id);
+	   	if( !is_null($metrics) )
+	   	{
+	   		$renderObj = new stdClass();
+
+			// now we are going to loop over keyword set, that we got previously
+			// ORDERED BY keyword ASC
+			$itemList = array_keys($metrics['keywords']);
+			$renderObj->info = array();	
+		    foreach($itemList as $itemID)
+		    {
+		    	if( isset($metrics['with_tester'][$itemID]) )
+		    	{
+					$totalRun = 0;
+		    		$renderObj->info[$itemID]['type'] = 'keyword';
+		    		$renderObj->info[$itemID]['name'] = $metrics['keywords'][$itemID]; 	
+		    		$renderObj->info[$itemID]['total_tc'] = $metrics['total_assigned'][$itemID]['qty']; 	
+					$renderObj->info[$itemID]['details'] = array();
+					
+					$rf = &$renderObj->info[$itemID]['details'];
+					foreach($code_verbose as $statusCode => $statusVerbose)
+					{
+						$rf[$statusVerbose] = array('qty' => 0, 'percentage' => 0);
+						$rf[$statusVerbose]['qty'] = $metrics['with_tester'][$itemID][$statusCode]['exec_qty']; 	
+						
+						if( $renderObj->info[$itemID]['total_tc'] > 0 ) 
+						{
+							$rf[$statusVerbose]['percentage'] = number_format(100 * 
+																			  ($rf[$statusVerbose]['qty'] / 
+																 			   $renderObj->info[$itemID]['total_tc']),1);
+						}
+						$totalRun += $statusVerbose == 'not_run' ? 0 : $rf[$statusVerbose]['qty'];
+					}
+					$renderObj->info[$itemID]['percentage_completed'] =  number_format(100 * 
+																						($totalRun / 
+																						 $renderObj->info[$itemID]['total_tc']),1);
+		    	}
+		    }
+		   	
+		    foreach($code_verbose as $status_verbose)
+		    {
+		    	$l18n_label = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : 
+		                      lang_get($status_verbose); 
+		    
+		    	$renderObj->colDefinition[$status_verbose]['qty'] = $l18n_label;
+		    	$renderObj->colDefinition[$status_verbose]['percentage'] = '[%]';
+		    }
+	
+		}
+		return $renderObj;
+	}
+
+
+
+	function getExecCountersByPlatformExecStatus($id, $opt=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		$my['opt'] = array('getUnassigned' => false, 'tprojectID' => 0);
+		$my['opt'] = array_merge($my['opt'], (array)$opt);
+		
+		$statusCode = array_flip(array_keys($this->resultsCfg['status_label_for_exec_ui']));
+		foreach($statusCode as $key => $dummy)
+		{
+			$statusCode[$key] = $this->resultsCfg['status_code'][$key];	
+		}
+
+		$activeBuilds = array_keys($ab=$this->get_builds($id,testplan::ACTIVE_BUILDS));
+		$buildsInClause = implode(",",$activeBuilds);
+		$execCode = intval($this->assignment_types['testcase_execution']['id']);
+
+		$getOpt = array('outputFormat' => 'mapAccessByID', 'outputDetails' => 'name', 'addIfNull' => true);
+		$platformSet = $this->getPlatforms($id,$getOpt);
+		
+		
+	
+		// This subquery is BETTER than the VIEW, need to understand why
+		// Latest Executions by Platform
+		// 
+		$sqlLEBP = 	" SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,MAX(EE.id) AS id " .
+				  	" FROM {$this->tables['executions']} EE " . 
+				   	" WHERE EE.testplan_id=" . intval($id) . 
+					" AND EE.build_id IN ({$buildsInClause}) " .
+				   	" GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id ";
+		
+		
+		$sqlExec = 	"/* {$debugMsg} */" . 
+					" SELECT TPTCV.platform_id,COALESCE(E.status,'{$this->notRunStatusCode}') AS status, count(0) AS exec_qty " .
+
+					" /* Get feature id with Tester Assignment */ " .
+					" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+
+					" /*LEFTPLACEHOLDER*/ JOIN {$this->tables['user_assignments']} UA " .
+					" ON UA.feature_id = TPTCV.id " .
+					" AND UA.build_id IN ({$buildsInClause}) AND UA.type = {$execCode} " .
+
+					" /* GO FOR Absolute LATEST exec ID (is exists), IGNORE BUILD */ " .
+					" LEFT OUTER JOIN ({$sqlLEBP}) AS LEBP " .
+					" ON  LEBP.tcversion_id = TPTCV.tcversion_id " .
+					" AND LEBP.platform_id = TPTCV.platform_id " .
+					" AND LEBP.testplan_id = TPTCV.testplan_id " .
+					" AND LEBP.testplan_id = " . intval($id) .
+
+					" /* Get execution status INCLUDING NOT RUN */ " .
+					" LEFT OUTER JOIN {$this->tables['executions']} E " .
+					" ON  E.id = LEBP.id " .
+					" AND E.build_id IN ({$buildsInClause}) ";
+				
+				
+		// get all execution status from DB AND NOT RUN, Only for test cases with tester assigned			
+		$sql = 	$sqlExec .		
+				" /* FILTER ONLY ACTIVE BUILDS on target test plan */ " .
+				" WHERE TPTCV.testplan_id=" . intval($id) . 
+				" AND UA.build_id IN ({$buildsInClause}) " .
+				" GROUP BY platform_id,status ";
+	
+		// 
+		echo '<br><b>' . __FUNCTION__ . '</b><br>'; 
+		echo $sql . '<br>';
+		// die();
+
+		// $sql = "SELECT keyword, keyword_id,status
+		
+        $exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'platform_id','status');              
+
+
+		// add basic data for exec status not found on DB.
+		foreach($exec as &$elem)
+		{
+			foreach($elem as $itemID => $dummy)
+			{
+		 		foreach($statusCode as $verbose => $code)
+		 		{
+		 			if(!isset($elem[$itemID][$code]))
+		 			{
+		 				$elem[$itemID][$code] = array('keyword_id' => $itemID,'status' => $code, 'exec_qty' => 0);			
+		 			}						
+		 		}
+		 	}
+		}
+
+		// get total assignments by Platform id
+		$sql = 	"/* $debugMsg */ ".
+				" SELECT COUNT(0) AS qty, TPTCV.platform_id " . 
+				" FROM {$this->tables['user_assignments']} UA " .
+				" JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.id = UA.feature_id " .
+
+				" WHERE UA. build_id IN ( " . $buildsInClause . " ) " .
+				" AND UA.type = {$execCode} " . 
+				" GROUP BY platform_id";
+
+		$exec['total_assigned'] = (array)$this->db->fetchRowsIntoMap($sql,'platform_id');
+		$exec['platforms'] = $platformSet;
+
+	
+		return $exec;
+	}
+
+
+
+	/**
+	 *
+	 * @internal revisions
+	 *
+	 * @since 1.9.4
+	 * 20120429 - franciscom - 
+	 **/
+	function getStatusTotalsByPlatformForRender($id)
+	{
+	   	$renderObj = null;
+		$code_verbose = $this->getStatusForReports();
+	    $labels = $this->resultsCfg['status_label'];
+	    
+		$metrics = $this->getExecCountersByPlatformExecStatus($id);
+		echo __FUNCTION__ .'<br>';
+		new dBug($metrics);
+		
+	   	if( !is_null($metrics) )
+	   	{
+	   		$renderObj = new stdClass();
+
+			// now we are going to loop over keyword set, that we got previously
+			// ORDERED BY keyword ASC
+			$itemList = array_keys($metrics['platforms']);
+			$renderObj->info = array();	
+		    foreach($itemList as $itemID)
+		    {
+		    	if( isset($metrics['with_tester'][$itemID]) )
+		    	{
+					$totalRun = 0;
+		    		$renderObj->info[$itemID]['type'] = 'platform';
+		    		$renderObj->info[$itemID]['name'] = $metrics['platforms'][$itemID]; 	
+		    		$renderObj->info[$itemID]['total_tc'] = $metrics['total_assigned'][$itemID]['qty']; 	
+					$renderObj->info[$itemID]['details'] = array();
+					
+					$rf = &$renderObj->info[$itemID]['details'];
+					foreach($code_verbose as $statusCode => $statusVerbose)
+					{
+						$rf[$statusVerbose] = array('qty' => 0, 'percentage' => 0);
+						$rf[$statusVerbose]['qty'] = $metrics['with_tester'][$itemID][$statusCode]['exec_qty']; 	
+						
+						if( $renderObj->info[$itemID]['total_tc'] > 0 ) 
+						{
+							$rf[$statusVerbose]['percentage'] = number_format(100 * 
+																			  ($rf[$statusVerbose]['qty'] / 
+																 			   $renderObj->info[$itemID]['total_tc']),1);
+						}
+						$totalRun += $statusVerbose == 'not_run' ? 0 : $rf[$statusVerbose]['qty'];
+					}
+					$renderObj->info[$itemID]['percentage_completed'] =  number_format(100 * 
+																						($totalRun / 
+																						 $renderObj->info[$itemID]['total_tc']),1);
+		    	}
+		    }
+		   	
+		    foreach($code_verbose as $status_verbose)
+		    {
+		    	$l18n_label = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : 
+		                      lang_get($status_verbose); 
+		    
+		    	$renderObj->colDefinition[$status_verbose]['qty'] = $l18n_label;
+		    	$renderObj->colDefinition[$status_verbose]['percentage'] = '[%]';
+		    }
+	
+		}
+		return $renderObj;
+	}
+
 	
 }
 ?>

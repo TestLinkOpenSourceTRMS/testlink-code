@@ -67,21 +67,28 @@ $mailCfg = buildMailCfg($gui);
 
 $getOpt = array('outputFormat' => 'map');
 $gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
+
+new dBug($gui->platformSet);
 if( is_null($gui->platformSet) )
 {
 	$gui->platformSet = array('');
-	$gui->showPlatforms=false;
+	$gui->showPlatforms = false;
 }
 
 $metricsMgr = new tlTestPlanMetrics($db);
+                         
+$kyw = $metricsMgr->getExecCountersByKeywordExecStatus($args->tplan_id);
+new dBug($kyw);
 
+                         
+                         
 
 // $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS,ALL_PLATFORMS);
 // default is ALL PLATFORMS
-$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
+// $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
 // ----------------------------------------------------------------------------
-$topLevelSuites = $re->getTopLevelSuites();
-
+// $topLevelSuites = $re->getTopLevelSuites();
+$topLevelSuites = true;
 if(is_null($topLevelSuites))
 {
 	// no test cases -> no report
@@ -98,15 +105,24 @@ else
 	//$items2loop = array('keywords','assigned_testers');
 	$items2loop = array('keywords');
 	
-	$kwr = $tplan_mgr->getStatusTotalsByKeyword($args->tplan_id);
-    $gui->statistics->keywords = $tplan_mgr->tallyResultsForReport($kwr);
-
+	// $kwr = $tplan_mgr->getStatusTotalsByKeyword($args->tplan_id);
+    // $gui->statistics->keywords = $tplan_mgr->tallyResultsForReport($kwr);
+	// $gui->XXkeywords = $metricsMgr->getStatusTotalsByKeywordForRender($args->tplan_id);
+	// new dBug($gui->statistics->keywords);
+	// new dBug($gui->XXkeywords);
+	$keywordsMetrics = $metricsMgr->getStatusTotalsByKeywordForRender($args->tplan_id);
+	$gui->statistics->keywords = !is_null($keywordsMetrics) ? $keywordsMetrics->info : null; 
+                              
 	if( $gui->showPlatforms )
 	{
 		$items2loop[] = 'platform';
-		$platr = $tplan_mgr->getStatusTotalsByPlatform($args->tplan_id);
-		$gui->statistics->platform = $tplan_mgr->tallyResultsForReport($platr);
+		// $platr = $tplan_mgr->getStatusTotalsByPlatform($args->tplan_id);
+		// $gui->statistics->platform = $tplan_mgr->tallyResultsForReport($platr);
+		// new dBug($gui->statistics->platform);
+		$platformMetrics = $metricsMgr->getStatusTotalsByPlatformForRender($args->tplan_id);
+		$gui->statistics->platform = !is_null($platformMetrics) ? $platformMetrics->info : null; 
 	}
+
 	if($_SESSION['testprojectOptions']->testPriorityEnabled)
 	{
 		$items2loop[] = 'priorities';
@@ -132,51 +148,51 @@ else
          } 
   	} 
 
-  	$mapOfAggregate = $re->getAggregateMap();
+  	// $mapOfAggregate = $re->getAggregateMap();
   	$arrDataSuite = null;
   	$arrDataSuiteIndex = 0;
 
-	// collect data for top test suites and users  
-  	if (is_array($topLevelSuites)) 
-  	{
-      	foreach($topLevelSuites as $key => $suiteNameID)
-      	{
-      		$results = $mapOfAggregate[$suiteNameID['id']];
-      			
-      		$element['tsuite_name'] = $suiteNameID['name'];
-      		$element['total_tc'] = $results['total'];
-      		$element['percentage_completed'] = get_percentage($results['total'], 
-      		$results['total'] - $results['not_run']);
-
-      		// BUGID 4377 - do not unset total now, because we need in foreach loop
-        	// unset($results['total']);
-        	foreach($results as $key => $value)
-        	{
-      	    	$element['details'][$key]['qty'] = $results[$key];
-      	    	// add percentage for each result
-      	    	$element['details'][$key]['percentage'] = get_percentage($results['total'],$results[$key]);
-      		}
-      		unset($element['details']['total']);
-      		$element['details']['not_run']['qty'] = $results['not_run'];
-      	   
-      		$arrDataSuite[$arrDataSuiteIndex] = $element;
-      		$arrDataSuiteIndex++;
-      	} 
-
-    	$gui->statistics->testsuites = $arrDataSuite;
-
-      	// Get labels
-    	$dummy = current($gui->statistics->testsuites);
-      	foreach($dummy['details'] as $status_verbose => $value)
-    	{
-          	$dummy['details'][$status_verbose]['percentage'] = 
-          			lang_get('in_percent');
-          	$dummy['details'][$status_verbose]['qty'] = 
-          			lang_get($tlCfg->results['status_label'][$status_verbose]);
-      	}
-      	$gui->columnsDefinition->testsuites = $dummy['details'];
-  	}
-
+	// // collect data for top test suites and users  
+  	// if (is_array($topLevelSuites)) 
+  	// {
+    //   	foreach($topLevelSuites as $key => $suiteNameID)
+    //   	{
+    //   		$results = $mapOfAggregate[$suiteNameID['id']];
+    //   			
+    //   		$element['tsuite_name'] = $suiteNameID['name'];
+    //   		$element['total_tc'] = $results['total'];
+    //   		$element['percentage_completed'] = get_percentage($results['total'], 
+    //   		$results['total'] - $results['not_run']);
+    // 
+    //   		// BUGID 4377 - do not unset total now, because we need in foreach loop
+    //     	// unset($results['total']);
+    //     	foreach($results as $key => $value)
+    //     	{
+    //   	    	$element['details'][$key]['qty'] = $results[$key];
+    //   	    	// add percentage for each result
+    //   	    	$element['details'][$key]['percentage'] = get_percentage($results['total'],$results[$key]);
+    //   		}
+    //   		unset($element['details']['total']);
+    //   		$element['details']['not_run']['qty'] = $results['not_run'];
+    //   	   
+    //   		$arrDataSuite[$arrDataSuiteIndex] = $element;
+    //   		$arrDataSuiteIndex++;
+    //   	} 
+    // 
+    // 	$gui->statistics->testsuites = $arrDataSuite;
+    // 
+    //   	// Get labels
+    // 	$dummy = current($gui->statistics->testsuites);
+    //   	foreach($dummy['details'] as $status_verbose => $value)
+    // 	{
+    //       	$dummy['details'][$status_verbose]['percentage'] = 
+    //       			lang_get('in_percent');
+    //       	$dummy['details'][$status_verbose]['qty'] = 
+    //       			lang_get($tlCfg->results['status_label'][$status_verbose]);
+    //   	}
+    //   	$gui->columnsDefinition->testsuites = $dummy['details'];
+  	// }
+    // 
 	// ----------------------------------------------------------------------------
   	/* BUILDS REPORT */
 	$colDefinition = null;

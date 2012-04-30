@@ -14,6 +14,7 @@
  *
  * @internal revisions
  * @since 1.9.4 
+ * 20120430 - franciscom - new method fetchRowsIntoMap3l()
  * 20120129 - franciscom - TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for 
  *										PHP on WINDOWS version 5.3 and higher
  *
@@ -839,6 +840,40 @@ class database
 		return $nullValue;
 	}
 
+
+	/**
+	 * Fetches all rows into a map of 3 levels
+	 *
+	 * @param string $sql the query to be executed
+	 * @param array $keyCols, columns to used as access key
+	 * @param boolean $cumulative
+	 * @param integer $limit (optional) number of rows
+	 * 
+	 * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
+	 * 
+	 **/
+	function fetchRowsIntoMap3l($sql,$keyCols,$cumulative = 0,$limit = -1)
+	{
+		$items = null;
+		$result = $this->exec_query($sql,$limit);
+		
+		// new dBug($result);
+		if ($result)
+		{
+			while($row = $this->fetch_array($result))
+			{
+				if($cumulative)
+				{
+					$items[$row[$keyCols[0]]][$row[$keyCols[1]]][$row[$keyCols[2]]][] = $row;
+				}
+				else
+				{
+					$items[$row[$keyCols[0]]][$row[$keyCols[1]]][$row[$keyCols[2]]] = $row;
+				}	
+			}
+		}
+		return $items;
+	}
 
 } // end of database class
 ?>

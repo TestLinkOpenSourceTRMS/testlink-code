@@ -476,7 +476,7 @@ CREATE TABLE /*prefix*/testprojects (
   `prefix` varchar(16) NOT NULL,
   `tc_counter` int(10) unsigned NOT NULL default '0',
   `is_public` tinyint(1) NOT NULL default '1',
-  `isssue_tracker_enabled` tinyint(1) NOT NULL default '0',
+  `issue_tracker_enabled` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY /*prefix*/testprojects_id_active (`id`,`active`),
   UNIQUE KEY /*prefix*/testprojects_prefix (`prefix`)
@@ -691,4 +691,11 @@ CREATE VIEW /*prefix*/last_executions AS
 	GROUP by tcversion_id,testplan_id,platform_id,build_id
 ); 
 
+CREATE VIEW /*prefix*/last_executions_by_platform AS
+(
+	SELECT E.tcversion_id,E.testplan_id,E.platform_id,MAX(E.id) AS id 
+	FROM /*prefix*/executions E 
+	JOIN /*prefix*/builds B ON B.active = 1	AND B.testplan_id = E.testplan_id  
+	GROUP by tcversion_id,testplan_id,platform_id
+); 
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcases>
+<testcase internalid="31" name="GRIP-SL-001">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[1]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+<keywords><keyword name="Mechanical"><notes><![CDATA[
+
+]]></notes></keyword>
+<keyword name="Objective"><notes><![CDATA[
+
+]]></notes></keyword>
+</keywords></testcase>
+
+<testcase internalid="33" name="GRIP-SL-002">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[2]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+<keywords><keyword name="Resistance"><notes><![CDATA[
+
+]]></notes></keyword>
+<keyword name="Objective"><notes><![CDATA[
+
+]]></notes></keyword>
+</keywords></testcase>
+</testcases>

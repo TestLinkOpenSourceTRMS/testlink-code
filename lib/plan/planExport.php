@@ -13,16 +13,15 @@
  *   complete plan contents: 
  *   to be defined 	
  * 	 
+ * @filesource	planExport.php
  * @package 	TestLink
  * @author 		Francisco Mancardi
- * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planExport.php,v 1.11 2010/11/01 15:22:53 franciscom Exp $
+ * @copyright 	2003-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * 
- * @internal Revisions:
- * 20101101	 - franciscom - BUGID 3270 - improve file name.
- * 20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
- *						   added management of exportContent	
+ * @internal revisions
+ * @since 1.9.4
+ * 20120502 - franciscom - TICKET 4996: Ignores change of XML export file name
  *
  **/
 require_once("../../config.inc.php");
@@ -70,6 +69,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
+    
     $args = new stdClass();
     $args->doExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
     $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
@@ -93,18 +93,17 @@ function init_args()
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
     $args->platform_id = isset($_REQUEST['platform_id']) ? intval($_REQUEST['platform_id']) : 0;
 
-    $args->export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
+    $args->export_filename = isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
     $args->export_filename = trim($args->export_filename);
-    
+
     // replace blank on name with _
     if( !is_null($args->export_filename) )
     { 
     	$args->export_filename = str_replace(' ','_',$args->export_filename);
     }
     
-    $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
-    $args->exportContent=isset($_REQUEST['exportContent']) ? $_REQUEST['exportContent'] : 'linkedItems';
-
+    $args->goback_url = isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
+    $args->exportContent = isset($_REQUEST['exportContent']) ? $_REQUEST['exportContent'] : 'linkedItems';
 
     return $args;
 }
@@ -129,7 +128,14 @@ function initializeGui(&$argsObj,&$tplanMgr)
 		$dummy = $tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'mapAccessByID'));
 		$add2name = '_' . str_replace(' ','_',$dummy[$argsObj->platform_id]['name']);
 	}
-	$guiObj->export_filename = $argsObj->exportContent . '_' . str_replace(' ','_',$info['name']) . $add2name . '.xml';
+	
+	// TICKET 4996: Ignores change of XML export file name
+	$guiObj->export_filename = $argsObj->export_filename;
+	if( trim($argsObj->export_filename) == '' )
+	{ 
+		$guiObj->export_filename = $argsObj->exportContent . '_' . str_replace(' ','_',$info['name']) . $add2name . '.xml';
+	}
+	
 	$guiObj->exportTypes = array('XML' => 'XML');
 	$guiObj->page_title = lang_get('export_test_plan');
 	$guiObj->object_name = $info['name'];

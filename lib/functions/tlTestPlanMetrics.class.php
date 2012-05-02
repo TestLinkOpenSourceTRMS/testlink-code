@@ -712,6 +712,7 @@ class tlTestPlanMetrics extends testPlan
 		}
 
 		$activeBuilds = array_keys($ab=$this->get_builds($id,testplan::ACTIVE_BUILDS));
+		$buildQty = count($activeBuilds);
 		$buildsInClause = implode(",",$activeBuilds);
 		$execCode = intval($this->assignment_types['testcase_execution']['id']);
 		
@@ -723,55 +724,78 @@ class tlTestPlanMetrics extends testPlan
 					" AND EE.build_id IN ({$buildsInClause}) " .
 				   	" GROUP BY EE.tcversion_id,EE.testplan_id ";
 		
-		// (urgency * importance) AS priority, {$priority_default_level} AS priority_level "
-		
-		$sqlExec = 	"/* {$debugMsg} */" . 
-					" SELECT (TPTCV.urgency * TCV.importance) AS urg_imp, " .
-					" COALESCE(E.status,'{$this->notRunStatusCode}') AS status, count(0) AS exec_qty " .
+		$sqlUnionA	=	"/* {$debugMsg} sqlUnionA - executions */" . 
+						" SELECT (TPTCV.urgency * TCV.importance) AS urg_imp, " .
+						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status, " .
+						" TPTCV.tcversion_id " . 
 
-					" /* Get feature id with Tester Assignment */ " .
-					" FROM {$this->tables['testplan_tcversions']} TPTCV " .
-
-					" /*LEFTPLACEHOLDER*/ JOIN {$this->tables['user_assignments']} UA " .
-					" ON UA.feature_id = TPTCV.id " .
-					" AND UA.build_id IN ({$buildsInClause}) AND UA.type = {$execCode} " .
-
-					" /* Get importance  */ ".
-					" JOIN {$this->tables['tcversions']} TCV " .
-					" ON TCV.id = TPTCV.tcversion_id " .
-
-					" /* GO FOR Absolute LATEST exec ID IGNORE BUILD AND Platform */ " .
-					" LEFT OUTER JOIN ({$sqlLE}) AS LE " .
-					" ON  LE.testplan_id = TPTCV.testplan_id " .
-					" AND LE.tcversion_id = TPTCV.tcversion_id " .
-					" AND LE.testplan_id = " . intval($id) .
-
-					" /* Get execution status INCLUDING NOT RUN */ " .
-					" LEFT OUTER JOIN {$this->tables['executions']} E " .
-					" ON  E.id = LE.id " .
-					/* 
-					Need to understand if this condition is not ONLY USELESS
-					but is is not source of BAD figures.
-					Why ? because a CERTAIN LE.id exists ONLY FOR ONE SPECIFIC BUILD. 
-					*/
-					" AND E.build_id IN ({$buildsInClause}) ";
-				
-				
-		// get all execution status from DB Only for test cases with tester assigned			
-		$sql = 	$sqlExec .		
-				" /* FILTER ONLY ACTIVE BUILDS on target test plan */ " .
-				" WHERE TPTCV.testplan_id=" . intval($id) . 
-				" AND UA.build_id IN ({$buildsInClause}) " .
-				" GROUP BY urg_imp,status ";
+						" /* Get feature id with Tester Assignment */ " .
+						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+						" JOIN {$this->tables['user_assignments']} UA " .
+						" ON UA.feature_id = TPTCV.id " .
+						" AND UA.build_id IN ({$buildsInClause}) AND UA.type = {$execCode} " .
 	
-		// 
-		echo '<br><b>' . __FUNCTION__ . '</b><br>'; 
-		echo $sql . '<br>';
-		// die();
+						" /* Get importance  */ ".
+						" JOIN {$this->tables['tcversions']} TCV " .
+						" ON TCV.id = TPTCV.tcversion_id " .
+	
+						" /* GO FOR Absolute LATEST exec ID IGNORE BUILD AND Platform */ " .
+						" JOIN ({$sqlLE}) AS LE " .
+						" ON  LE.testplan_id = TPTCV.testplan_id " .
+						" AND LE.tcversion_id = TPTCV.tcversion_id " .
+						" AND LE.testplan_id = " . intval($id) .
+	
+						" /* Get execution statuses that CAN BE WRITTEN TO DB */ " .
+						" JOIN {$this->tables['executions']} E " .
+						" ON  E.id = LE.id " .
+						
+						// Without this we get duplicates 
+						" AND E.build_id = UA.build_id " .
 
+						" /* FILTER ONLY ACTIVE BUILDS on target test plan */ " .
+						" WHERE TPTCV.testplan_id=" . intval($id) . 
+						" AND UA.build_id IN ({$buildsInClause}) ";
+
+		$sqlUnionB	=	"/* {$debugMsg} sqlUnionB - NOT RUN */" . 
+						" SELECT (TPTCV.urgency * TCV.importance) AS urg_imp, " .
+						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status, " .
+						" TPTCV.tcversion_id " . 
+
+						" /* Get feature id with Tester Assignment */ " .
+						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+						" JOIN {$this->tables['user_assignments']} UA " .
+						" ON UA.feature_id = TPTCV.id " .
+						" AND UA.build_id IN ({$buildsInClause}) AND UA.type = {$execCode} " .
+	
+						" /* Get importance  */ ".
+						" JOIN {$this->tables['tcversions']} TCV " .
+						" ON TCV.id = TPTCV.tcversion_id " .
+	
+						" /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
+						" LEFT OUTER JOIN ({$sqlLE}) AS LE " .
+						" ON  LE.testplan_id = TPTCV.testplan_id " .
+						" AND LE.tcversion_id = TPTCV.tcversion_id " .
+						" AND LE.testplan_id = " . intval($id) .
+						" LEFT OUTER JOIN {$this->tables['executions']} E " .
+						" ON  E.tcversion_id = TPTCV.tcversion_id " .
+						" AND E.testplan_id = TPTCV.testplan_id " .
+						" AND E.platform_id = TPTCV.platform_id " .
+						" AND E.build_id = UA.build_id " .
+
+						" /* FILTER ONLY ACTIVE BUILDS on target test plan */ " .
+						" WHERE TPTCV.testplan_id=" . intval($id) . 
+						" AND UA.build_id IN ({$buildsInClause}) " .
+	
+						" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
+						" AND E.id IS NULL AND LE.id IS NULL";
+
+		$sql =	" /* {$debugMsg} UNION Without ALL CLAUSE => DISCARD Duplicates */" .
+				" SELECT count(0) as exec_qty, urg_imp,status " .
+				" FROM ($sqlUnionA UNION $sqlUnionB ) AS SU " .
+				" GROUP BY urg_imp,status ";
 		
-        // $exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'urg_imp','status');              
         $rs = $this->db->get_recordset($sql);
+	
 
 		// Now we need to get priority LEVEL from (urgency * importance)
 		$out = array();
@@ -797,6 +821,7 @@ class tlTestPlanMetrics extends testPlan
 					$rs[$jdx]['priority_level'] = MEDIUM;
 	                $hitOn = MEDIUM;
 				}
+                                      
                                                      
 				// to improve readability                                                     	
 				$status = $rs[$jdx]['status'];
@@ -814,8 +839,6 @@ class tlTestPlanMetrics extends testPlan
 					$totals[$hitOn] = array('priority_level' => $hitOn, 'qty' => 0);
 				}
 				$totals[$hitOn]['qty'] += $rs[$jdx]['exec_qty'];
-				
-				
 			}
 			$exec['with_tester'] = $out;
 			$out = null; 

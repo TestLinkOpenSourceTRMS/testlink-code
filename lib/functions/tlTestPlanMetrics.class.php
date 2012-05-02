@@ -507,6 +507,8 @@ class tlTestPlanMetrics extends testPlan
 
         $exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'keyword_id','status');              
 		
+		// new dBug($exec);
+		
 		foreach($exec as &$elem)
 		{
 			foreach($elem as $keywordID => $dummy)
@@ -561,69 +563,19 @@ class tlTestPlanMetrics extends testPlan
 	 **/
 	function getStatusTotalsByKeywordForRender($id)
 	{
-		
 		$renderObj = $this->getStatusTotalsByItemForRender($id,'keyword');
-		return $renderObj;
-		
-
-	   	$renderObj = null;
-		$code_verbose = $this->getStatusForReports();
-	    $labels = $this->resultsCfg['status_label'];
-	    
-		$metrics = $this->getExecCountersByKeywordExecStatus($id);
-	   	if( !is_null($metrics) )
-	   	{
-	   		$renderObj = new stdClass();
-
-			// now we are going to loop over keyword set, that we got previously
-			// ORDERED BY keyword ASC
-			$itemList = array_keys($metrics['keywords']);
-			$renderObj->info = array();	
-		    foreach($itemList as $itemID)
-		    {
-		    	if( isset($metrics['with_tester'][$itemID]) )
-		    	{
-					$totalRun = 0;
-		    		$renderObj->info[$itemID]['type'] = 'keyword';
-		    		$renderObj->info[$itemID]['name'] = $metrics['keywords'][$itemID]; 	
-		    		$renderObj->info[$itemID]['total_tc'] = $metrics['total_assigned'][$itemID]['qty']; 	
-					$renderObj->info[$itemID]['details'] = array();
-					
-					$rf = &$renderObj->info[$itemID]['details'];
-					foreach($code_verbose as $statusCode => $statusVerbose)
-					{
-						$rf[$statusVerbose] = array('qty' => 0, 'percentage' => 0);
-						$rf[$statusVerbose]['qty'] = $metrics['with_tester'][$itemID][$statusCode]['exec_qty']; 	
-						
-						if( $renderObj->info[$itemID]['total_tc'] > 0 ) 
-						{
-							$rf[$statusVerbose]['percentage'] = number_format(100 * 
-																			  ($rf[$statusVerbose]['qty'] / 
-																 			   $renderObj->info[$itemID]['total_tc']),1);
-						}
-						$totalRun += $statusVerbose == 'not_run' ? 0 : $rf[$statusVerbose]['qty'];
-					}
-					$renderObj->info[$itemID]['percentage_completed'] =  number_format(100 * 
-																						($totalRun / 
-																						 $renderObj->info[$itemID]['total_tc']),1);
-		    	}
-		    }
-		   	
-		    foreach($code_verbose as $status_verbose)
-		    {
-		    	$l18n_label = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : 
-		                      lang_get($status_verbose); 
-		    
-		    	$renderObj->colDefinition[$status_verbose]['qty'] = $l18n_label;
-		    	$renderObj->colDefinition[$status_verbose]['percentage'] = '[%]';
-		    }
-	
-		}
 		return $renderObj;
 	}
 
 
 
+	/**
+	 *
+	 * @internal revisions
+	 *
+	 * @since 1.9.4
+	 * 20120429 - franciscom - 
+	 **/
 	function getExecCountersByPlatformExecStatus($id, $opt=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -741,64 +693,6 @@ class tlTestPlanMetrics extends testPlan
 	{
 		$renderObj = $this->getStatusTotalsByItemForRender($id,'platform');
 		return $renderObj;
-
-	   	$renderObj = null;
-		$code_verbose = $this->getStatusForReports();
-	    $labels = $this->resultsCfg['status_label'];
-	    
-		$metrics = $this->getExecCountersByPlatformExecStatus($id);
-		// echo __FUNCTION__ .'<br>';
-		// new dBug($metrics);
-		
-	   	if( !is_null($metrics) )
-	   	{
-	   		$renderObj = new stdClass();
-
-			// now we are going to loop over keyword set, that we got previously
-			// ORDERED BY keyword ASC
-			$itemList = array_keys($metrics['platforms']);
-			$renderObj->info = array();	
-		    foreach($itemList as $itemID)
-		    {
-		    	if( isset($metrics['with_tester'][$itemID]) )
-		    	{
-					$totalRun = 0;
-		    		$renderObj->info[$itemID]['type'] = 'platform';
-		    		$renderObj->info[$itemID]['name'] = $metrics['platforms'][$itemID]; 	
-		    		$renderObj->info[$itemID]['total_tc'] = $metrics['total_assigned'][$itemID]['qty']; 	
-					$renderObj->info[$itemID]['details'] = array();
-					
-					$rf = &$renderObj->info[$itemID]['details'];
-					foreach($code_verbose as $statusCode => $statusVerbose)
-					{
-						$rf[$statusVerbose] = array('qty' => 0, 'percentage' => 0);
-						$rf[$statusVerbose]['qty'] = $metrics['with_tester'][$itemID][$statusCode]['exec_qty']; 	
-						
-						if( $renderObj->info[$itemID]['total_tc'] > 0 ) 
-						{
-							$rf[$statusVerbose]['percentage'] = number_format(100 * 
-																			  ($rf[$statusVerbose]['qty'] / 
-																 			   $renderObj->info[$itemID]['total_tc']),1);
-						}
-						$totalRun += $statusVerbose == 'not_run' ? 0 : $rf[$statusVerbose]['qty'];
-					}
-					$renderObj->info[$itemID]['percentage_completed'] =  number_format(100 * 
-																						($totalRun / 
-																						 $renderObj->info[$itemID]['total_tc']),1);
-		    	}
-		    }
-		   	
-		    foreach($code_verbose as $status_verbose)
-		    {
-		    	$l18n_label = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : 
-		                      lang_get($status_verbose); 
-		    
-		    	$renderObj->colDefinition[$status_verbose]['qty'] = $l18n_label;
-		    	$renderObj->colDefinition[$status_verbose]['percentage'] = '[%]';
-		    }
-	
-		}
-		return $renderObj;
 	}
 
 
@@ -855,6 +749,11 @@ class tlTestPlanMetrics extends testPlan
 					" /* Get execution status INCLUDING NOT RUN */ " .
 					" LEFT OUTER JOIN {$this->tables['executions']} E " .
 					" ON  E.id = LE.id " .
+					/* 
+					Need to understand if this condition is not ONLY USELESS
+					but is is not source of BAD figures.
+					Why ? because a CERTAIN LE.id exists ONLY FOR ONE SPECIFIC BUILD. 
+					*/
 					" AND E.build_id IN ({$buildsInClause}) ";
 				
 				

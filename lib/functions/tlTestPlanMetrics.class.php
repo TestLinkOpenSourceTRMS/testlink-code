@@ -44,6 +44,7 @@ class tlTestPlanMetrics extends testPlan
 	private $map_tc_status;
 	private $tc_status_for_statistics;
 	private $notRunStatusCode;
+	private $statusCode;
 
 	/** 
 	 * class constructor 
@@ -69,6 +70,14 @@ class tlTestPlanMetrics extends testPlan
       		$this->tc_status_for_statistics['not_run'] = $this->map_tc_status['not_run'];  
     	}
     	$this->notRunStatusCode = $this->tc_status_for_statistics['not_run'];
+    	
+		$this->statusCode = array_flip(array_keys($this->resultsCfg['status_label_for_exec_ui']));
+		foreach($this->statusCode as $key => $dummy)
+		{
+			$this->statusCode[$key] = $this->resultsCfg['status_code'][$key];	
+		}
+    	
+    	
 
 	} // end results constructor
 
@@ -244,12 +253,6 @@ class tlTestPlanMetrics extends testPlan
 		$my['opt'] = array('getUnassigned' => false);
 		$my['opt'] = array_merge($my['opt'], (array)$opt);
 		
-		$statusCode =array_flip(array_keys($this->resultsCfg['status_label_for_exec_ui']));
-		foreach($statusCode as $key => &$dummy)
-		{
-			$dummy = $this->resultsCfg['status_code'][$key];	
-		}
-
 		$activeBuilds = array_keys($ab=$this->get_builds($id,testplan::ACTIVE_BUILDS));
 		$buildsInClause = implode(",",$activeBuilds);
 		$execCode = intval($this->assignment_types['testcase_execution']['id']);
@@ -327,7 +330,7 @@ class tlTestPlanMetrics extends testPlan
 			$itemSet = array_keys($elem);
 			foreach($itemSet as $itemID)
 			{
-				foreach($statusCode as $verbose => $code)
+				foreach($this->statusCode as $verbose => $code)
 				{
 					if(!isset($elem[$itemID][$code]))
 					{
@@ -429,12 +432,6 @@ class tlTestPlanMetrics extends testPlan
 		$my['opt'] = array('getUnassigned' => false, 'tprojectID' => 0);
 		$my['opt'] = array_merge($my['opt'], (array)$opt);
 		
-		$statusCode = array_flip(array_keys($this->resultsCfg['status_label_for_exec_ui']));
-		foreach($statusCode as $key => $dummy)
-		{
-			$statusCode[$key] = $this->resultsCfg['status_code'][$key];	
-		}
-
 		$activeBuilds = array_keys($ab=$this->get_builds($id,testplan::ACTIVE_BUILDS));
 		$buildsInClause = implode(",",$activeBuilds);
 		$execCode = intval($this->assignment_types['testcase_execution']['id']);
@@ -513,7 +510,7 @@ class tlTestPlanMetrics extends testPlan
 		{
 			foreach($elem as $keywordID => $dummy)
 			{
-				foreach($statusCode as $verbose => $code)
+				foreach($this->statusCode as $verbose => $code)
 				{
 					if(!isset($elem[$keywordID][$code]))
 					{
@@ -561,9 +558,9 @@ class tlTestPlanMetrics extends testPlan
 	 * @since 1.9.4
 	 * 20120429 - franciscom - 
 	 **/
-	function getStatusTotalsByKeywordForRender($id)
+	function getStatusTotalsByKeywordForRender($id,$filters=null,$opt=null)
 	{
-		$renderObj = $this->getStatusTotalsByItemForRender($id,'keyword');
+		$renderObj = $this->getStatusTotalsByItemForRender($id,'keyword',$filters,$opt);
 		return $renderObj;
 	}
 
@@ -583,12 +580,6 @@ class tlTestPlanMetrics extends testPlan
 		$my['opt'] = array('getUnassigned' => false, 'tprojectID' => 0);
 		$my['opt'] = array_merge($my['opt'], (array)$opt);
 		
-		$statusCode = array_flip(array_keys($this->resultsCfg['status_label_for_exec_ui']));
-		foreach($statusCode as $key => $dummy)
-		{
-			$statusCode[$key] = $this->resultsCfg['status_code'][$key];	
-		}
-
 		$activeBuilds = array_keys($ab=$this->get_builds($id,testplan::ACTIVE_BUILDS));
 		$buildsInClause = implode(",",$activeBuilds);
 		$execCode = intval($this->assignment_types['testcase_execution']['id']);
@@ -653,7 +644,7 @@ class tlTestPlanMetrics extends testPlan
 		{
 			foreach($elem as $itemID => $dummy)
 			{
-		 		foreach($statusCode as $verbose => $code)
+		 		foreach($this->statusCode as $verbose => $code)
 		 		{
 		 			if(!isset($elem[$itemID][$code]))
 		 			{
@@ -689,52 +680,71 @@ class tlTestPlanMetrics extends testPlan
 	 * @since 1.9.4
 	 * 20120429 - franciscom - 
 	 **/
-	function getStatusTotalsByPlatformForRender($id)
+	function getStatusTotalsByPlatformForRender($id,$filters=null,$opt=null)
 	{
-		$renderObj = $this->getStatusTotalsByItemForRender($id,'platform');
+		$renderObj = $this->getStatusTotalsByItemForRender($id,'platform',$filters,$opt);
 		return $renderObj;
 	}
 
 
 
-	// Consider ONLY ACTIVE BUILDS
-	function getExecCountersByPriorityExecStatus($id, $opt=null)
+	// If no build set providede, ONLY ACTIVE BUILDS will be considered
+	function getExecCountersByPriorityExecStatus($id, $filters=null, $opt=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-		$my['opt'] = array('getUnassigned' => false, 'tprojectID' => 0);
+		$my['opt'] = array('getOnlyAssigned' => false, 'tprojectID' => 0);
 		$my['opt'] = array_merge($my['opt'], (array)$opt);
 		
-		$statusCode = array_flip(array_keys($this->resultsCfg['status_label_for_exec_ui']));
-		foreach($statusCode as $key => $dummy)
-		{
-			$statusCode[$key] = $this->resultsCfg['status_code'][$key];	
-		}
-
-		$activeBuilds = array_keys($ab=$this->get_builds($id,testplan::ACTIVE_BUILDS));
-		$buildQty = count($activeBuilds);
-		$buildsInClause = implode(",",$activeBuilds);
-		$execCode = intval($this->assignment_types['testcase_execution']['id']);
+		$my['filters'] = array('buildSet' => null);
+		$my['filters'] = array_merge($my['filters'], (array)$filters);
 		
+		$buildIDSet = $my['filters']['buildSet'];
+		if( is_null($buildIDSet) )
+		{
+			$buildIDSet = array_keys($buildInfoSet=$this->get_builds($id,testplan::ACTIVE_BUILDS));
+		}
+		$buildQty = count($buildIDSet);
+		$buildsInClause = implode(",",$buildIDSet);
+		
+		$execTaskCode = intval($this->assignment_types['testcase_execution']['id']);
+	
 		
 		// This subquery is BETTER than the VIEW, need to understand why
+		// LE: Latest Execution On Whole Test Plan => Ignore BUILD  and PLATFORM
 		$sqlLE = 	" SELECT EE.tcversion_id,EE.testplan_id,MAX(EE.id) AS id " .
 				  	" FROM {$this->tables['executions']} EE " . 
 				   	" WHERE EE.testplan_id=" . intval($id) . 
 					" AND EE.build_id IN ({$buildsInClause}) " .
 				   	" GROUP BY EE.tcversion_id,EE.testplan_id ";
-		
+
+	
 		$sqlUnionA	=	"/* {$debugMsg} sqlUnionA - executions */" . 
 						" SELECT (TPTCV.urgency * TCV.importance) AS urg_imp, " .
 						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status, " .
-						" TPTCV.tcversion_id " . 
-
-						" /* Get feature id with Tester Assignment */ " .
-						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
-						" JOIN {$this->tables['user_assignments']} UA " .
-						" ON UA.feature_id = TPTCV.id " .
-						" AND UA.build_id IN ({$buildsInClause}) AND UA.type = {$execCode} " .
-	
+						" TPTCV.tcversion_id " .
+						" FROM {$this->tables['testplan_tcversions']} TPTCV ";
+						
+		if( $my['opt']['getOnlyAssigned'] )
+		{
+			// " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+			$sqlGetAssignedFeatures	.=	" /* Get feature id with Tester Assignment */ " .
+										" JOIN {$this->tables['user_assignments']} UA " .
+										" ON UA.feature_id = TPTCV.id " .
+										" AND UA.build_id IN ({$buildsInClause}) AND UA.type = {$execTaskCode} ";
+			$buildSource = "UA";
+			$buildJoinAdd = " AND E.build_id = UA.build_id ";
+			$buildWhereAdd = " AND {$buildSource}.build_id IN ({$buildsInClause}) "; 
+		}						
+		else
+		{
+			$sqlGetAssignedFeatures = '';
+			$buildSource = "E";
+			$buildJoinAdd = "";
+			$buildWhereAdd = "";
+		}               
+		
+		$sqlUnionA	.=	$sqlGetAssignedFeatures .
 						" /* Get importance  */ ".
 						" JOIN {$this->tables['tcversions']} TCV " .
 						" ON TCV.id = TPTCV.tcversion_id " .
@@ -749,24 +759,23 @@ class tlTestPlanMetrics extends testPlan
 						" JOIN {$this->tables['executions']} E " .
 						" ON  E.id = LE.id " .
 						
-						// Without this we get duplicates 
-						" AND E.build_id = UA.build_id " .
+						// Without this we get duplicates ??
+						$buildJoinAdd .
 
-						" /* FILTER ONLY ACTIVE BUILDS on target test plan */ " .
+						" /* FILTER BUILD Set on target test plan */ " .
 						" WHERE TPTCV.testplan_id=" . intval($id) . 
-						" AND UA.build_id IN ({$buildsInClause}) ";
+						" AND {$buildSource}.build_id IN ({$buildsInClause}) ";
+
+
 
 		$sqlUnionB	=	"/* {$debugMsg} sqlUnionB - NOT RUN */" . 
 						" SELECT (TPTCV.urgency * TCV.importance) AS urg_imp, " .
 						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status, " .
-						" TPTCV.tcversion_id " . 
-
-						" /* Get feature id with Tester Assignment */ " .
+						" TPTCV.tcversion_id " .
 						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
-						" JOIN {$this->tables['user_assignments']} UA " .
-						" ON UA.feature_id = TPTCV.id " .
-						" AND UA.build_id IN ({$buildsInClause}) AND UA.type = {$execCode} " .
-	
+						
+						$sqlGetAssignedFeatures .
+
 						" /* Get importance  */ ".
 						" JOIN {$this->tables['tcversions']} TCV " .
 						" ON TCV.id = TPTCV.tcversion_id " .
@@ -780,20 +789,23 @@ class tlTestPlanMetrics extends testPlan
 						" ON  E.tcversion_id = TPTCV.tcversion_id " .
 						" AND E.testplan_id = TPTCV.testplan_id " .
 						" AND E.platform_id = TPTCV.platform_id " .
-						" AND E.build_id = UA.build_id " .
+						$buildJoinAdd .
 
-						" /* FILTER ONLY ACTIVE BUILDS on target test plan */ " .
+						" /* FILTER BUILDS in set on target test plan */ " .
 						" WHERE TPTCV.testplan_id=" . intval($id) . 
-						" AND UA.build_id IN ({$buildsInClause}) " .
+						$buildWhereAdd .
 	
 						" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
 						" AND E.id IS NULL AND LE.id IS NULL";
+
+
+
 
 		$sql =	" /* {$debugMsg} UNION Without ALL CLAUSE => DISCARD Duplicates */" .
 				" SELECT count(0) as exec_qty, urg_imp,status " .
 				" FROM ($sqlUnionA UNION $sqlUnionB ) AS SU " .
 				" GROUP BY urg_imp,status ";
-		
+		echo '<br>' . __FUNCTION__ . $sql . '<br>';
         $rs = $this->db->get_recordset($sql);
 	
 
@@ -848,7 +860,7 @@ class tlTestPlanMetrics extends testPlan
 		{
 			foreach($elem as $itemID => $dummy)
 			{
-				foreach($statusCode as $verbose => $code)
+				foreach($this->statusCode as $verbose => $code)
 				{
 					if(!isset($elem[$itemID][$code]))
 					{
@@ -878,9 +890,9 @@ class tlTestPlanMetrics extends testPlan
 	 * @since 1.9.4
 	 * 20120429 - franciscom - 
 	 **/
-	function getStatusTotalsByPriorityForRender($id)
+	function getStatusTotalsByPriorityForRender($id,$filters=null,$opt=null)
 	{
-		$renderObj = $this->getStatusTotalsByItemForRender($id,'priority_level');
+		$renderObj = $this->getStatusTotalsByItemForRender($id,'priority_level',$filters,$opt);
 		return $renderObj;
 	}
 
@@ -900,12 +912,6 @@ class tlTestPlanMetrics extends testPlan
 		$my['opt'] = array('getUnassigned' => false);
 		$my['opt'] = array_merge($my['opt'], (array)$opt);
 		
-		$statusCode =array_flip(array_keys($this->resultsCfg['status_label_for_exec_ui']));
-		foreach($statusCode as $key => &$dummy)
-		{
-			$dummy = $this->resultsCfg['status_code'][$key];	
-		}
-
 		$activeBuilds = array_keys($ab=$this->get_builds($id,testplan::ACTIVE_BUILDS));
 		$buildsInClause = implode(",",$activeBuilds);
 		$execCode = intval($this->assignment_types['testcase_execution']['id']);
@@ -971,7 +977,7 @@ class tlTestPlanMetrics extends testPlan
 				foreach($itemSet as $itemID)
 				{
 					$elem = &$topLevelElem[$topLevelItemID];
-					foreach($statusCode as $verbose => $code)
+					foreach($this->statusCode as $verbose => $code)
 					{
 						if(!isset($elem[$itemID][$code]))
 						{
@@ -1060,7 +1066,7 @@ class tlTestPlanMetrics extends testPlan
 	 * @since 1.9.4
 	 * 20120429 - franciscom - 
 	 **/
-	function getStatusTotalsByItemForRender($id,$itemType)
+	function getStatusTotalsByItemForRender($id,$itemType,$filters=null,$opt=null)
 	{
 	   	$renderObj = null;
 		$code_verbose = $this->getStatusForReports();
@@ -1069,17 +1075,17 @@ class tlTestPlanMetrics extends testPlan
 		switch($itemType)
 		{	
 			case 'keyword':    
-				$metrics = $this->getExecCountersByKeywordExecStatus($id);
+				$metrics = $this->getExecCountersByKeywordExecStatus($id,$filters,$opt);
 				$setKey = 'keywords';
 			break;
 
 			case 'platform':    
-				$metrics = $this->getExecCountersByPlatformExecStatus($id);
+				$metrics = $this->getExecCountersByPlatformExecStatus($id,$filters,$opt);
 				$setKey = 'platforms';
 			break;
 			
 			case 'priority_level':    
-				$metrics = $this->getExecCountersByPriorityExecStatus($id);
+				$metrics = $this->getExecCountersByPriorityExecStatus($id,$filters,$opt);
 				$setKey = 'priority_levels';
 			break;
 		}

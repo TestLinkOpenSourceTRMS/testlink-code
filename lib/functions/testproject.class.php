@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
  * 20120219 - franciscom - TICKET 4904: integrate with ITS on test project basis
  * 20120212 - franciscom - new method  getTCasesFilteredByKeywords()
  * 20120205 - franciscom - new methods _get_subtree_rec(), getTestSpec()
@@ -2453,16 +2454,14 @@ private function copy_requirements($source_id,$target_id,$user_id)
 		// Because due to order used to copy different items, when we ask to copy
 		// requirements WE DO NOT HAVE TEST CASES on new test project.
 		//
-		$options = array('copy_also' => array('testcase_assignments' => false) );
+		$options = array('copy_also' => array('testcase_assignments' => false), 'caller' => 'copy_testproject');
 		foreach($elements as $piece)
 		{
-			// copy_to($id, $parent_id, $tproject_id, $user_id,$options = null)
 			$op = $reqSpecMgr->copy_to($piece['id'],$target_id,$target_id,$user_id,$options);
 			$mappings += $op['mappings'];
 		}
 	}
 	
-	// TICKET 4360
 	return $mappings['req'];
 }
 

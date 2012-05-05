@@ -5,15 +5,13 @@
  *
  * @package 	TestLink
  * @author 		Andreas Morsing
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.6.2.2 2010/12/10 11:05:07 franciscom Exp $
+ * @copyright 	2007-2012, TestLink community 
+ * @filesource	tlAttachmentRepository.class.php
  * @link 		http://www.teamst.org/index.php
  *
- * @internal
- * 20101210 - franciscom - added trim on attachemnt title, because '' is used on template logic.
- * 20101208 - franciscom - BUGID 4085: Attachment Repository on Database - Can not get file after upload
- * 20100918 - franciscom - BUGID 1890 - storeFileInFSRepository() - contribution by kinow	
- * 20091220 - franciscom - new method copyAttachments()
+ * @internal revisions
+ * @since 1.9.4
+ * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
  *
  */
 
@@ -23,13 +21,14 @@
  */
 class tlAttachmentRepository extends tlObjectWithDB
 {
-	//the one and only attachment repository object
+	// the one and only attachment repository object
 	private static $s_instance;
 
 	/**
 	 * @var int the type of the repository
 	 */
 	private $repositoryType;
+	
 	/**
 	 * @var int the compression type for the attachments
 	 */
@@ -46,6 +45,8 @@ class tlAttachmentRepository extends tlObjectWithDB
 	protected $attachmentCfg;
 
 
+	protected $attmObj;
+
 	/**
 	 * class constructor
 	 * 
@@ -58,6 +59,8 @@ class tlAttachmentRepository extends tlObjectWithDB
     	$this->repositoryCompressionType = self::getCompression();
 		$this->repositoryPath = self::getPathToRepository();
 		$this->attachmentCfg = config_get('attachments');
+		
+		$this->attmObj = new tlAttachment();
 	}
 
     /**
@@ -147,11 +150,10 @@ class tlAttachmentRepository extends tlObjectWithDB
 
 		if ($fileUploaded)
 		{
-			$attachment = new tlAttachment();
-			$fileUploaded = ($attachment->create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title) >= tl::OK);
+			$fileUploaded = ($this->attmObj->create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title) >= tl::OK);
 			if ($fileUploaded)
 			{
-				$fileUploaded = $attachment->writeToDb($this->db);
+				$fileUploaded = $this->attmObj->writeToDb($this->db);
 			}
 			else
 			{ 
@@ -294,8 +296,8 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 */
 	protected function deleteAttachmentFromDB($id,$dummy = null)
 	{
-		$attachment = new tlAttachment($id);
-		return $attachment->deleteFromDB($this->db);
+		$this->attmObj->setID($id);
+		return $this->attmObj->deleteFromDB($this->db);
 	}
 
 	/**
@@ -449,10 +451,10 @@ class tlAttachmentRepository extends tlObjectWithDB
 	public function getAttachmentInfo($id)
 	{
 		$info = null;
-		$attachment = new tlAttachment($id);
-		if ($attachment->readFromDB($this->db))
+		$this->attmObj->setID($id);
+		if ($this->attmObj->readFromDB($this->db))
 		{
-			$info = $attachment->getInfo();
+			$info = $this->attmObj->getInfo();
         }
 		return $info;
 	}
@@ -514,9 +516,6 @@ class tlAttachmentRepository extends tlObjectWithDB
 		$destFPath = null;
 		$mangled_fname = '';
 		$status_ok = false;
-		$repo_type = config_get('repositoryType');
-		$repo_path = config_get('repositoryPath') .  DIRECTORY_SEPARATOR;
-		
 		$attachments = $this->getAttachmentInfosFor($source_id,$fkTableName);
 		if(count($attachments) > 0)
 		{
@@ -526,23 +525,23 @@ class tlAttachmentRepository extends tlObjectWithDB
 				$f_parts = explode(DIRECTORY_SEPARATOR,$value['file_path']);
 				$mangled_fname = $f_parts[count($f_parts)-1];
 				
-				if ($repo_type == TL_REPOSITORY_TYPE_FS)
+				if ($this->repositoryType == TL_REPOSITORY_TYPE_FS)
 				{
 					$destFPath = $this->buildRepositoryFilePath($mangled_fname,$table_name,$target_id);
-					$status_ok = copy($repo_path . $value['file_path'],$destFPath);
+					$status_ok = copy($this->repositoryPath . $value['file_path'],$destFPath);
 				}
 				else
 				{
 					$file_contents = $this->getAttachmentContentFromDB($value['id']);
 					$status_ok = sizeof($file_contents);
 				}
+				
 				if($status_ok)
 				{
-		            $attachmentMgr = new tlAttachment();
-					$attachmentMgr->create($target_id,$fkTableName,$value['file_name'],
+					$this->attmObj->create($target_id,$fkTableName,$value['file_name'],
 						                   $destFPath,$file_contents,$value['file_type'],
 						                   $value['file_size'],$value['title']);
-					$attachmentMgr->writeToDB($this->db);
+					$this->attmObj->writeToDB($this->db);
 				}
 			}
 		}

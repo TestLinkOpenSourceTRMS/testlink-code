@@ -11,6 +11,7 @@
  * @internal revision
  *
  * @since 1.9.4
+ * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
  * 20110818 - franciscom - getByDocID() - fix SQL with bad MAX()
  * 20110817 - franciscom - TICKET 4360
  * 20110817 - franciscom - 	get_all_in_testproject() issue due to TICKET 4661
@@ -38,6 +39,8 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   var $node_types_descr_id;
   var $node_types_id_descr;
   var $attachmentTableName;
+  var $field_size;
+
 
   /*
     contructor
@@ -60,6 +63,9 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         $this->attachmentTableName = 'req_specs';
 		tlObjectWithAttachments::__construct($this->db,$this->attachmentTableName);
 	    $this->object_table=$this->tables['req_specs'];
+
+ 		$this->field_size = config_get('field_size');
+
 	}
 
 	/*
@@ -1673,6 +1679,15 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	*/
 	function copy_to($id, $parent_id, $tproject_id, $user_id,$options = null)
 	{
+		
+		static $get_tree_nt2exclude;
+		if(!$get_tree_nt2exclude)
+		{
+			$get_tree_nt2exclude = array('req_version' => 'exclude_me',
+							  			 'req_revision' => 'exclude_me',
+							  			 'requirement_spec_revision' => 'exclude_me');
+		}
+		
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
 		$op = array('status_ok' => 1, 'msg' => 'ok', 'id' => -1 , 'mappings' => null);
@@ -1680,7 +1695,6 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 		$my['options'] = array_merge($my['options'], (array)$options);
 		
 
-		$field_size = config_get('field_size');
 		$item_info = $this->get_by_id($id);
         $target_doc = $this->generateDocID($id,$tproject_id);		
 		$new_item = $this->create($tproject_id,$parent_id,$target_doc,$item_info['title'],
@@ -1703,33 +1717,62 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
         	
         	
         	// Now loop to copy all items inside it    	
- 			$my['filters'] = null;
-			$subtree = $this->tree_mgr->get_subtree($id,$my['filters']);
+ 			// null is OK, because $id is a req spec, there is no risk
+ 			// to copy/traverse wrong node types.
+ 			// Hmmm may be req_revi ???
+ 			$my['filters']['exclude_node_types'] = $get_tree_nt2exclude;
+			$subtree = $this->tree_mgr->get_subtree($id,$my['filters'],array('output' => 'essential'));
+		
 			if (!is_null($subtree))
 			{
 				$reqMgr =  new requirement_mgr($this->db);
 				$parent_decode=array();
 			  	$parent_decode[$id]=$new_item['id'];
-				foreach($subtree as $the_key => $elem)
+			  	
+			  	// $loop2do = count($subtree);
+				// for($sdx=0; $sdx <= $loop2do; $sdx++)
+				
+				// using reference has to avoid duplicate => memory consumption
+				// (at least this is info found on Internet)
+				// Few test indicates that it's true, but that using a counter
+				// is still better.
+				//
+				// $sdx=1;
+				// foreach($subtree as &$elem)
+			  	$loop2do = count($subtree);
+				for($sdx=0; $sdx <= $loop2do; $sdx++)
 				{
-				  	$the_parent_id=isset($parent_decode[$elem['parent_id']]) ? $parent_decode[$elem['parent_id']] : null;
+					// echo 'MM - SDX:' . $sdx++ . '<br>';
+					// echo 'MM - SDX:' . $sdx . '<br>';
+					//echo 'MM -  Before elem() memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
+					$elem = &$subtree[$sdx];
+					//echo 'MM -  AFTER  elem() memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
+					
+				  	$the_parent_id = isset($parent_decode[$elem['parent_id']]) ? $parent_decode[$elem['parent_id']] : null;
 					switch ($elem['node_type_id'])
 					{
 						case $this->node_types_descr_id['requirement']:
-							// BUGID 4239: wrong last parameter here caused duplicated links 
-							//             between reqs and testcases when copying testproject
-							//$ret = $reqMgr->copy_to($elem['id'],$the_parent_id,$user_id,
-							//                              $tproject_id,$my['options']['copy_also']);
+						
+							//echo 'MM -  Going to copy REQ <br>';
+							//echo 'MM -  Before copy_to() memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
 							$ret = $reqMgr->copy_to($elem['id'],$the_parent_id,$user_id,$tproject_id,$my['options']);
+							//echo 'MM -  AFTER copy_to()  memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
 							$op['status_ok'] = $ret['status_ok'];
 							
 							$op['mappings']['req'] += $ret['mappings']['req'];
 							$op['mappings']['req_version'] += $ret['mappings']['req_version'];
+							// gc_collect_cycles();
 							break;
 							
 						case $this->node_types_descr_id['requirement_spec']:
 							$item_info = $this->get_by_id($elem['id']);
+        	                
+        	                // hmm, when copy_to() is called because we are duplicating
+        	                // a test project, call to generateDocID(), can be avoided.
+        	                // we have IMHO an absolute inexistent risk.
         	                $target_doc = $this->generateDocID($elem['id'],$tproject_id);		
+							
+							
 							$ret = $this->create($tproject_id,$the_parent_id,$target_doc,$item_info['title'],
 			                                     $item_info['scope'],$item_info['total_req'],
 			                                     $item_info['author_id'],$item_info['type'],$item_info['node_order']);
@@ -1739,9 +1782,10 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 
 				      		if( ($op['status_ok'] = $ret['status_ok']) )
 				      		{
-				      			$idCard = array('parent_id' => $elem['id'], 'tproject_id' => $tproject_id);
-				      			// $this->copy_cfields($elem['id'],$ret['id']);
-				      			$this->copy_cfields($idCard,$ret['id']);
+				      			// try to reduce memory usage
+				      			// $idCard = array('parent_id' => $elem['id'], 'tproject_id' => $tproject_id);
+				      			$this->copy_cfields(array('parent_id' => $elem['id'], 'tproject_id' => $tproject_id),
+				      								$ret['id']);
 							}
 							break;
 					}
@@ -1792,7 +1836,6 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
  	 */
 	function generateDocID($id, $tproject_id)
 	{
-		$field_size = config_get('field_size');
 		$item_info = $this->get_by_id($id);
 
 		// Check if another req with same DOC ID exists on target container,
@@ -1806,7 +1849,7 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 			// doc_id has limited size => we need to be sure that generated id will not exceed DB size
             $nameSet = array_flip(array_keys($itemSet));
 	        // 6 magic from " [xxx]"
-	        $prefix = trim_and_limit($item_info['doc_id'],$field_size->docid-6);
+	        $prefix = trim_and_limit($item_info['doc_id'],$this->field_size->docid-6);
             $target_doc = $prefix . " [{$instance}]"; 
         	while( isset($nameSet[$target_doc]) )
         	{

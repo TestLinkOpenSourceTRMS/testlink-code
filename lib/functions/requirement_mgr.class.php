@@ -13,6 +13,7 @@
  *
  * @internal revisions:
  * @since 1.9.4
+ * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
  * 20120111 - franciscom - TICKET 4862: Users rights on requirements are bypassed 
  *										with interproject requirements relations. 
  *						   				new method getTestProjectID()		
@@ -56,7 +57,11 @@ class requirement_mgr extends tlObjectWithAttachments
 							       "DocBook" => "DocBook");
 
 	var $export_file_types = array("XML" => "XML");
-
+	
+	var $fieldSize;
+	var $reqCfg;
+	var $internal_links;
+	
 	
     const AUTOMATIC_ID=0;
     const ALL_VERSIONS=0;
@@ -89,6 +94,10 @@ class requirement_mgr extends tlObjectWithAttachments
 	    $this->object_table=$this->tables['requirements'];
 
 
+		$this->fieldSize = config_get('field_size');
+		$this->reqCfg = config_get('req_cfg');
+		$this->internal_links = config_get('internal_links');
+		
 	}
 
 	/*
@@ -146,7 +155,19 @@ class requirement_mgr extends tlObjectWithAttachments
 */
 function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options=null,$filters=null)
 {
-	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	static $debugMsg;
+	static $userCache;  // key: user id, value: display name
+	static $lables;
+  	static $user_keys;
+
+	if(!$debugMsg)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  	    $labels['undefined'] = lang_get('undefined');
+  	    $user_keys = array('author' => 'author_id', 'modifier' => 'modifier_id');
+	}
+	
+	
 	$my['options'] = array('order_by' => " ORDER BY REQV.version DESC ");
     $my['options'] = array_merge($my['options'], (array)$options);
 
@@ -224,11 +245,9 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
 	}
 	else
 	{
-	    // 20090413 - franciscom - 
-	    // But, how performance wise can be do this, instead of using MAX(version)
-	    // and a group by? 
+	    // But, how performance wise can be do this, 
+	    // instead of using MAX(version) and a group by? 
 	    //           
-	    // 20100309 - franciscom - 
 	    // if $id was a list then this will return something USELESS
 	    //           
 	    if( !$id_is_array )
@@ -242,14 +261,11 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
 	}
 
   	$rs = null;
-  	$userCache = null;  // key: user id, value: display name
   	if(!is_null($recordset))
   	{
   	    // Decode users
   	    $rs = $recordset;
   	    $key2loop = array_keys($recordset);
-  	    $labels['undefined'] = lang_get('undefined');
-  	    $user_keys = array('author' => 'author_id', 'modifier' => 'modifier_id');
   	    foreach( $key2loop as $key )
   	    {
   	    	foreach( $user_keys as $ukey => $userid_field)
@@ -262,6 +278,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   	    				$user = tlUser::getByID($this->db,$rs[$key][$userid_field]);
   	    				$rs[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
   	    				$userCache[$rs[$key][$userid_field]] = $rs[$key][$ukey];
+						unset($user);
   	    			}
   	    			else
   	    			{
@@ -271,6 +288,9 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   	    	}	
   	    }
   	}  	
+  	unset($recordset);
+  	unset($my);
+  	unset($dummy);
 	return $rs;
 }
 
@@ -298,39 +318,54 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   */
 function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
                 $status = TL_REQ_STATUS_VALID, $type = TL_REQ_TYPE_INFO,
-                $expected_coverage=1,$node_order=0)
+                $expected_coverage=1,$node_order=0,$tproject_id=null, $options=null)
 {
-	$log_message = lang_get('req_created_automatic_log');
+	// This kind of saving is important when called in a loop in situations like
+	// copy test project
+	static $debugMsg;
+	static $log_message;
+
+	if(!$log_message)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$log_message = lang_get('req_created_automatic_log');
+	}
+	
+	$tproject_id = is_null($tproject_id) ? $this->tree_mgr->getTreeRoot($srs_id) : $tproject_id;
+
     $result = array( 'id' => 0, 'status_ok' => 0, 'msg' => 'ko');
-	$field_size = config_get('field_size');
+	$my['options'] = array('quickAndDirty' => false);
+    $my['options'] = array_merge($my['options'], (array)$options);
 
-	$reqdoc_id = trim_and_limit($reqdoc_id,$field_size->req_docid);
-	$title = trim_and_limit($title,$field_size->req_title);
-	$tproject_id = $this->tree_mgr->getTreeRoot($srs_id);
+	if(!$my['options']['quickAndDirty'])
+	{
+		$reqdoc_id = trim_and_limit($reqdoc_id,$this->fieldSize->req_docid);
+		$title = trim_and_limit($title,$this->fieldSize->req_title);
+		$op = $this->check_basic_data($srs_id,$tproject_id,$title,$reqdoc_id);
+	}
+	else
+	{
+		$op['status_ok'] = true;
+	}	
 
-	$op = $this->check_basic_data($srs_id,$tproject_id,$title,$reqdoc_id);
 	$result['msg'] = $op['status_ok'] ? $result['msg'] : $op['msg'];
 	if( $op['status_ok'] )
 	{
 		$result = $this->create_req_only($srs_id,$reqdoc_id,$title,$user_id,$node_order);
 		if($result["status_ok"])
 		{
-			if (config_get('internal_links')->enable )
+			if ($this->internal_links->enable )
 			{
 				$scope = req_link_replace($this->db, $scope, $tproject_id);
 			}
 
-			$version_number = 1;
-			$op = $this->create_version($result['id'],$version_number,$scope,$user_id,
+			$op = $this->create_version($result['id'],1,$scope,$user_id,
 			                            $status,$type,intval($expected_coverage));
 			$result['msg'] = $op['status_ok'] ? $result['msg'] : $op['msg'];
-
-			// BUGID 2877 - Custom Fields linked to Requirement Versions
 			$result['version_id'] = $op['status_ok'] ? $op['id'] : -1;
 			
 			if( $op['status_ok'] )
 			{
-				$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 				$sql = 	"/* $debugMsg */ " .
 						"UPDATE {$this->tables['req_versions']} " .
 						" SET log_message='" . $this->db->prepare_string($log_message) . "'" .
@@ -378,8 +413,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
     $result['msg'] = 'ok';
     
     $db_now = $this->db->db_now();
-    $field_size=config_get('field_size');
-    
+   
     // get SRSid, needed to do controls
     $rs=$this->get_by_id($id,$version_id);
     $req = $rs[0];
@@ -388,15 +422,13 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
     // try to avoid function calls when data is available on caller
 	$tproject_id = is_null($tproject_id) ? $this->tree_mgr->getTreeRoot($srs_id): $tproject_id;
 
-    /* contribution by asimon83/mx-julian */
-	if (config_get('internal_links')->enable ) 
+	if ($this->internal_links->enable ) 
 	{
 		$scope = req_link_replace($this->db, $scope, $tproject_id);
 	}
-	/* end contribution by asimon83/mx-julian */
     
-	$reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
-	$title=trim_and_limit($title,$field_size->req_title);
+	$reqdoc_id=trim_and_limit($reqdoc_id,$this->fieldSize->req_docid);
+	$title=trim_and_limit($title,$this->fieldSize->req_title);
     $chk=$this->check_basic_data($srs_id,$tproject_id,$title,$reqdoc_id,$id);
 
     if($chk['status_ok'] || $skip_controls)
@@ -679,7 +711,7 @@ function get_coverage($id)
   	{
   		$ret['msg'] = 'ok';
   		$target = array('key' => 'title', 'value' => $title);
-    	$getOptions = array('output' => 'minimun');
+    	$getOptions = array('output' => 'id');
 		$rs = $this->getByAttribute($target,$tproject_id,$srs_id,$getOptions);
  		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
   		{
@@ -709,11 +741,8 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
     $tcase_mgr = new testcase($this->db);
    	$tsuite_mgr = new testsuite($this->db);
 
-  	$req_cfg = config_get('req_cfg');
-  	$field_size = config_get('field_size');
- 	
-  	$auto_testsuite_name = $req_cfg->default_testsuite_name;
-    $node_descr_type=$this->tree_mgr->get_available_node_types();
+  	$auto_testsuite_name = $this->reqCfg->default_testsuite_name;
+    $node_descr_type = $this->tree_mgr->get_available_node_types();
     $empty_steps = null;
     $empty_preconditions = ''; // fix for BUGID 2995
     
@@ -728,11 +757,11 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
   		$tproject_id = $this->tree_mgr->getTreeRoot($srs_id);
   	}
   	
-  	if ( $req_cfg->use_req_spec_as_testsuite_name ) 
+  	if ( $this->reqCfg->use_req_spec_as_testsuite_name ) 
   	{
  		$full_path = $this->tree_mgr->get_path($srs_id);
   		$addition = " (" . lang_get("testsuite_title_addition") . ")";
-  		$truncate_limit = $field_size->testsuite_name - strlen($addition);
+  		$truncate_limit = $this->fieldSize->testsuite_name - strlen($addition);
 
   		// REQ_SPEC_A
   		//           |-- REQ_SPEC_A1 
@@ -768,7 +797,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
  			
  			if( is_null($tsuiteInfo) )
  			{
-  				$tsuiteInfo = $tsuite_mgr->create($parent_id,$testsuite_name,$req_cfg->testsuite_details);
+  				$tsuiteInfo = $tsuite_mgr->create($parent_id,$testsuite_name,$this->reqCfg->testsuite_details);
   				$output[] = sprintf(lang_get('testsuite_name_created'), $testsuite_name);
   				$deep_create = true;
  			}
@@ -800,7 +829,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
     	} else {
     		// not found -> create
 	    	tLog('test suite:' . $auto_testsuite_name . ' was not found.');
-	    	$new_tsuite=$tsuite_mgr->create($testproject_id,$auto_testsuite_name,$req_cfg->testsuite_details);
+	    	$new_tsuite=$tsuite_mgr->create($testproject_id,$auto_testsuite_name,$this->reqCfg->testsuite_details);
 	    	$tsuite_id=$new_tsuite['id'];
 	    	$label = lang_get('testsuite_name_created');
 	   	}
@@ -875,11 +904,11 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
 	        // Julian - BUGID 2995
 	        
             // BUGID 4031 - copying of scope now is configurable
-            $prefix = ($req_cfg->use_testcase_summary_prefix_with_title_and_version)
-                    ? sprintf($req_cfg->testcase_summary_prefix_with_title_and_version, 
+            $prefix = ($this->reqCfg->use_testcase_summary_prefix_with_title_and_version)
+                    ? sprintf($this->reqCfg->testcase_summary_prefix_with_title_and_version, 
                               $reqID, $reqData['version_id'], $reqData['title'], $reqData['version'])
-                    : $req_cfg->testcase_summary_prefix;
-            $content = ($req_cfg->copy_req_scope_to_tc_summary) ? $prefix . $reqData['scope'] : $prefix;
+                    : $this->reqCfg->testcase_summary_prefix;
+            $content = ($this->reqCfg->copy_req_scope_to_tc_summary) ? $prefix . $reqData['scope'] : $prefix;
             
 	  	    $tcase = $tcase_mgr->create($tsuite_id,$tcase_name,$content,
 						                $empty_preconditions, $empty_steps,$user_id,null,
@@ -1283,6 +1312,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 	static $fieldSize;
 	static $doProcessCF = false;
 	static $debugMsg;
+	static $getByAttributeOpt;
 	
     if(is_null($linkedCF) )
     {
@@ -1306,8 +1336,12 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 		{
 			$labels[$key] = lang_get($key);
 		}	
-	}	
 		
+		$getByAttributeOpt = array('output' => 'id');
+		$getLastChildInfoOpt = array('output' => ' CHILD.is_open, CHILD.id ');
+		
+	}	
+	
     $cf2insert=null;
 	$status_ok = true;
 	$user_feedback = null;
@@ -1331,7 +1365,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 	// 	If there is a hit -> we can not create
 	//		else => create
 	// 
-	$getOptions = array('output' => 'minimun');
+	// $getOptions = array('output' => 'minimun');
 	$msgID = 'import_req_skipped';
 
 	$target = array('key' => $my['options']['hitCriteria'], 'value' => $req[$my['options']['hitCriteria']]);
@@ -1340,7 +1374,8 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     // When get is done by attribute that can not be unique (like seems to happen now 20110108 with
     // title), we can get more than one hit and then on this context we can not continue
     // with requested operation
-	$check_in_reqspec = $this->getByAttribute($target,$tproject_id,$parent_id,$getOptions);
+	$check_in_reqspec = $this->getByAttribute($target,$tproject_id,$parent_id,$getByAttributeOpt);
+	// die();
 
 
 	// 20110206 - franciscom
@@ -1352,12 +1387,12 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 	//
 	if(is_null($check_in_reqspec))
 	{
-		$check_in_tproject = $this->getByAttribute($target,$tproject_id,null,$getOptions);
+		$check_in_tproject = $this->getByAttribute($target,$tproject_id,null,$getByAttributeOpt);
 		if(is_null($check_in_tproject))
 		{
 			$newReq = $this->create($parent_id,$req['docid'],$req['title'],$req['description'],
 		    		         		$author_id,$req['status'],$req['type'],$req['expected_coverage'],
-		    		         		$req['node_order']);
+		    		         		$req['node_order'],$tproject_id,array('quickAndDirty' => true));
 		
 			if( ($status_ok = ($newReq['status_ok'] == 1)) )
 			{
@@ -1385,7 +1420,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     	
 		// Need to get Last Version no matter active or not.
 		$reqID = key($check_in_reqspec);
-		$last_version = $this->get_last_child_info($reqID);
+		$last_version = $this->get_last_child_info($reqID,$getLastChildInfoOpt);
 		$msgID = 'frozen_req_unable_to_import';
 		$status_ok = false;
 		if( $last_version['is_open'] == 1 || !$my['options']['skipFrozenReq'])
@@ -1413,14 +1448,6 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
         	    	
 					// Set always new version to NOT Frozen
 					$this->updateOpen($newItem['id'],1);				
-					
-					// BUGID 4100 - 20101218 - franciscom
-					// Need to update TITLE
-					// $title = trim_and_limit($req['title'],$fieldSize->req_title);
-			  		// $sql = 	"/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
-  		  	 		//		" SET name='" . $this->db->prepare_string($title) . "'" . 
-					//		" WHERE id={$reqID}";
-					// $this->db->exec_query($sql);
 					
 					// hmm wrong implementation
 					// Need to update ALL fields on new version then why do not use
@@ -1591,7 +1618,6 @@ function get_linked_cfields($id,$child_id,$parent_id=null)
 */
 function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name_suffix='', $input_values = null)
 {
-    // $cf_map = $this->get_linked_cfields($id,$version_id,$parent_id,$name_suffix,$input_values);
     $cf_map = $this->get_linked_cfields($id,$version_id,$parent_id,$name_suffix);
 	$cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
     return $cf_smarty;
@@ -1692,7 +1718,6 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   *
   *
   */
- // function customFieldValuesAsXML($id,$tproject_id)
  function customFieldValuesAsXML($id,$version_id,$tproject_id)
  {
     $xml = null;
@@ -1792,7 +1817,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	 * @param integer $id: requirement ID
 	 * @param integer $parent_id: target req spec id (where we want to copy)
 	 * @param integer $user_id: who is requesting copy
-	 * @param integer $tproject_id: optional, is null will be computed here
+	 * @param integer $tproject_id: FOR SOURCE ($id), optional, is null will be computed here
 	 * @param array $options: map
 	 *
 	 * @internal revisions
@@ -1803,7 +1828,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	function copy_to($id,$parent_id,$user_id,$tproject_id=null,$options=null)
 	{
 	    $new_item = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok', 'mappings' => null);
-		$my['options'] = array('copy_also' => null);
+		$my['options'] = array('copy_also' => null, 'caller' => '');
 	    $my['options'] = array_merge($my['options'], (array)$options);
     
    	    if( is_null($my['options']['copy_also']) )
@@ -1812,37 +1837,56 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	    }
 
 		$root = $tproject_id;
-		if( !is_null($root) )
+		if( is_null($root) )
 		{
 			$reqSpecMgr = new requirement_spec_mgr($this->db);
 			$target = $reqSpecMgr->get_by_id($parent_id);
 			$root = $target['testproject_id'];
 		}
-
-		// REQ DOCID is test project wide => can not exist duplicates inside
-		// a test project => we need to generate a new one using target as
-		// starting point
-        $target_doc = $this->generateDocID($id,$root);		
-
+	
+		//echo 'MM - ' . __FUNCTION__ . ' Before get_by_id():' . ' memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
 		$item_versions = $this->get_by_id($id);
+		//echo 'MM - ' . __FUNCTION__ . ' AFTER get_by_id():' . ' memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
+
 		if($item_versions)
 		{
-			// BUGID 4150
-			// If a sibling exists with same title => need to generate automatically
-			// a new one.
-			$title = $this->generateUniqueTitle($item_versions[0]['title'],$parent_id,$root);
+			if($my['options']['caller'] == 'copy_testproject')
+			{ 
+	        	$target_doc = $item_versions[0]['req_doc_id']; 
+	        	$title = $item_versions[0]['title'];
+			}
+			else
+			{
+				// REQ DOCID is test project wide => can not exist duplicates inside
+				// a test project => we need to generate a new one using target as
+				// starting point
+	        	$target_doc = $this->generateDocID($id,$root);		
+
+				// If a sibling exists with same title => need to generate automatically
+				// a new one.
+				$title = $this->generateUniqueTitle($item_versions[0]['title'],$parent_id,$root);
+			}
+			
+			
+			//echo 'MM - ' . __FUNCTION__ . ' Before create_req_only():' . 'memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
 			
 			$new_item = $this->create_req_only($parent_id,$target_doc,$title,
 			                                   $item_versions[0]['author_id'],$item_versions[0]['node_order']);
+			//echo 'MM - ' . __FUNCTION__ . ' AFTER create_req_only():' . 'memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
 			
 			if ($new_item['status_ok'])
 			{
 		        $ret['status_ok']=1;
-		        // TICKET 4360
-   		        // $new_item['mappings'][$id] = $new_item['id'];
    		        $new_item['mappings']['req'][$id] = $new_item['id'];
 		        
-	 			foreach($item_versions as $req_version)
+		        
+		        //new dBug($item_versions);
+		        //die();
+		        //$loop2do = count($item_versions);
+		        
+	 			// foreach($item_versions as $req_version)
+				// for($xdx=0; $xdx <= $loop2do; $xdx++)
+	 			foreach($item_versions as &$req_version)
 				{
 					$op = $this->create_version($new_item['id'],$req_version['version'],
 					                            $req_version['scope'],$req_version['author_id'],
@@ -1853,17 +1897,33 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	    			// first thing that can see here, we are mixing req id and req version id on same hash.
 	    			// 
 	    			$new_item['mappings']['req_version'][$req_version['version_id']] = $op['id'];
-					//$new_item['mappings'][$req_version['id']] = $op['id'];
 
+					//echo 'MM - ' . __FUNCTION__ . 'Before copy_cfields():' . 'memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
+
+					// here we have made a mistake, that help to show that we have some memory issue
+					// with copy_cfields().
+					// ALWAYS when we have tproject_id we have to use it!!!
+					//
 	        		$this->copy_cfields(array('id' => $req_version['id'], 'version_id' =>  $req_version['version_id']),
-	        							array('id' => $new_item['id'], 'version_id' => $op['id']));
+	        							array('id' => $new_item['id'], 'version_id' => $op['id']),
+	        							$tproject_id);
 	    			
+					//echo 'MM - ' . __FUNCTION__ . 'AFTER copy_cfields():' . 'memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
+				
+					unset($op);
 				}
 	        	
-	        	$this->copy_attachments($id,$new_item['id']);
+				//echo 'MM - ' . __FUNCTION__ . 'Before copy_attachments():' . 'memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
+	        	// $this->copy_attachments($id,$new_item['id']);
+	        	$this->attachmentRepository->copyAttachments($id,$new_item['id'],$this->attachmentTableName);
+	        	
+				//echo 'MM - ' . __FUNCTION__ . 'After copy_attachments():' . 'memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
+
 		    	if( isset($my['options']['copy_also']['testcase_assignment']) &&
 		    	    $my['options']['copy_also']['testcase_assignment'] )
 				{
+					// Seems that when we call this function during Test Project Copy
+					// we do not use this piece
 	        		$linked_items = $this->get_coverage($id);
             		if( !is_null($linked_items) )
             		{
@@ -1876,6 +1936,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 			}
 		}
 
+		unset($item_versions); // does this help to release memory ?
 		return($new_item);
 	}
 
@@ -1904,7 +1965,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	*/
 	function copy_cfields($source,$destination,$tproject_id=null)
 	{
-	  $cfmap_from=$this->get_linked_cfields($source['id'],$source['version_id'],$tproject_id);
+	  $cfmap_from = $this->get_linked_cfields($source['id'],$source['version_id'],$tproject_id);
 	  $cfield=null;
 	  if( !is_null($cfmap_from) )
 	  {
@@ -1912,8 +1973,8 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	    {
 	      $cfield[$key]=array("type_id"  => $value['type'], "cf_value" => $value['value']);
 	    }
+	  	$this->cfield_mgr->design_values_to_db($cfield,$destination['version_id'],null,'reqversion_copy_cfields');
 	  }
-	  $this->cfield_mgr->design_values_to_db($cfield,$destination['version_id'],null,'reqversion_copy_cfields');
 	}
 
 
@@ -1936,16 +1997,14 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 		$instance = 1;
 		if( !is_null($itemSet) )
 		{
-			$field_size = config_get('field_size');
-			$req_cfg = config_get('req_cfg');
 			$safety_len = 2; // use t
-			$mask = $req_cfg->duplicated_docid_algorithm->text;
+			$mask = $this->reqCfg->duplicated_docid_algorithm->text;
 			
 			// req_doc_id has limited size then we need to be sure that generated id will
 			// not exceed DB size
     	    $nameSet = array_flip(array_keys($itemSet));
 		    $prefix = trim_and_limit($item_info['req_doc_id'],
-		    						 $field_size->req_docid-strlen($mask)-$safety_len);
+		    						 $this->fieldSize->req_docid-strlen($mask)-$safety_len);
 		    						 
     	    // $target_doc = $prefix . " [{$instance}]"; 
     	    $target_doc = $prefix . sprintf($mask,$instance);
@@ -1964,23 +2023,32 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
      */
 	function create_req_only($srs_id,$reqdoc_id,$title,$user_id,$node_order=0)
 	{
-		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$result = array( 'id' => -1, 'status_ok' => 0, 'msg' => 'ok');
+		static $debugMsg;
+		
+		if(!$debugMsg)
+		{
+			$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		}
+		
 		$req_id = $this->tree_mgr->new_node($srs_id,$this->node_types_descr_id['requirement'],
 		                                    $title,$node_order);
-		$db_now = $this->db->db_now();
 		$sql = "/* $debugMsg */ INSERT INTO {$this->object_table} " .
 		       " (id, srs_id, req_doc_id)" .
     	       " VALUES ({$req_id}, {$srs_id},'" . $this->db->prepare_string($reqdoc_id) . "')";
 		  	   
     	if (!$this->db->exec_query($sql))
     	{
-		 	  $result['msg'] = lang_get('error_inserting_req');
+			$result = array( 'id' => -1, 'status_ok' => 0);
+		 	$result['msg'] = lang_get('error_inserting_req');
 		}
 		else
 		{
 			$result = array( 'id' => $req_id, 'status_ok' => 1, 'msg' => 'ok');
 		}
+		
+		unset($sql);
+		unset($req_id);
+		
     	return $result;
     }
 
@@ -1991,13 +2059,18 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	
 	  returns:
 	
-	  rev: 20080113 - franciscom - interface changes added tc_ext_id
 	
 	*/
 	function create_version($id,$version,$scope, $user_id, $status = TL_REQ_STATUS_VALID, 
 	                        $type = TL_REQ_TYPE_INFO, $expected_coverage=1)
 	{
-		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		static $debugMsg;
+		
+		if(!$debugMsg)
+		{ 
+			$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		}
+		
 		$item_id = $this->tree_mgr->new_node($id,$this->node_types_descr_id['requirement_version']);
 	    
 		$sql = "/* $debugMsg */ INSERT INTO {$this->tables['req_versions']} " .
@@ -2014,6 +2087,9 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 		  	$ret['status_ok']=0;
 		  	$ret['id']=-1;
 		}
+		unset($sql);
+		unset($result);
+		unset($item_id);
 		return $ret;
 	}
 	
@@ -2124,7 +2200,6 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
  	 * @internal revisions
  	 * 20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions 
      */
-	// function copy_version($from_version_id,$to_version_id,$as_version_number,$user_id)
 	function copy_version($id,$from_version_id,$to_version_id,$as_version_number,$user_id)
 	{
 		
@@ -2139,12 +2214,9 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	         " WHERE id={$from_version_id} ";
 	    $result = $this->db->exec_query($sql);
 	         
-	    // BUGID 2877 - Custom Fields linked to Requirement Versions     
 	    $this->copy_cfields(array('id' => $id, 'version_id' => $from_version_id),
 						  	array('id' => $id, 'version_id' => $to_version_id));
-
-
-	         
+         
 	}
 
     /**
@@ -2456,6 +2528,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	                            'case' => 'sensitive', 'output' => 'standard');
 	    $my['options'] = array_merge($my['options'], (array)$options);
     	
+    	// new dBug($my['options']);
     	   
   		$output=null;
   		$target = $this->db->prepare_string(trim($attr['value']));
@@ -2486,6 +2559,11 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 			case 'minimun':
 				 $sql .= " REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title, REQ_SPEC.testproject_id";
 		    break;
+		    
+			case 'id':
+				 $sql .= " REQ.id";
+		    break;
+		    
 			
 		}
 		$sql .= " FROM {$this->object_table} REQ " .
@@ -2504,6 +2582,10 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   		{
   			$sql .= " AND REQ.srs_id={$parent_id}";
   		}
+  		
+  		// new dBug($sql);
+  		// die($my['options']['access_key']);
+  		
   		$output = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
   		return $output;
   	}
@@ -2514,13 +2596,19 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
  	 *
  	 *	@return  
      */
-	function get_last_child_info($id, $child_type='version')
+	// function get_last_child_info($id, $child_type='version')
+	function get_last_child_info($id, $options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$my['options'] = array('child_type' => 'revision', 'output' => 'full');
+		$my['options'] = array_merge($my['options'], (array)$options);
+
+		
 		$info = null;
 		$target_cfg = array('version' => array('table' => 'req_versions', 'field' => 'version'), 
 							'revision' => array('table'=> 'req_revisions', 'field' => 'revision'));
 
+		$child_type = $my['options']['child_type'];  // just for readability 
 		$table = $target_cfg[$child_type]['table'];
 		$field = $target_cfg[$child_type]['field'];
 		
@@ -2533,10 +2621,30 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 		$max_verbose = $this->db->fetchFirstRowSingleColumn($sql,$field);
 		if ($max_verbose >= 0)
 		{
-			$sql = "/* $debugMsg */ SELECT CHILD.* FROM {$this->tables[$table]} CHILD," .
-			       " {$this->tables['nodes_hierarchy']} NH ".
-			       " WHERE $field = {$max_verbose} AND NH.id = CHILD.id AND NH.parent_id = {$id}";
+			
+			$sql = "/* $debugMsg */ SELECT ";
+
+			switch($my['options']['output'])
+			{
+				case 'credentials':
+					$sql .= " CHILD.parent_id,CHILD.id,CHILD.revision,CHILD.doc_id ";
+				break;
+				
+				case 'full':
+					$sql .= " CHILD.* ";
+				break;
+
+				default:
+					$sql .= $my['options']['output'];
+				break;
+			}
+		
+			
+			$sql .= " FROM {$this->tables[$table]} CHILD," .
+			        " {$this->tables['nodes_hierarchy']} NH ".
+			        " WHERE $field = {$max_verbose} AND NH.id = CHILD.id AND NH.parent_id = {$id}";
 	
+			die($sql);
 			$info = $this->db->fetchFirstRow($sql);
 		}
 		return $info;
@@ -2556,7 +2664,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	  	$item_id = $this->tree_mgr->new_node($parent_id,$this->node_types_descr_id['requirement_revision']);
 	  	
 	  	// Needed to get higher revision NUMBER, to generata new NUMBER      
-	  	$source_info =  $this->get_last_child_info($parent_id,'revision');
+	  	$source_info =  $this->get_last_child_info($parent_id,array('child_type' => 'revision'));
 	  	$current_rev = 0;
 	  	if( !is_null($source_info) )
 	  	{
@@ -2932,23 +3040,34 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
  	 */
 	function generateUniqueTitle($title2check, $parent_id, $tproject_id)
 	{
-		$generated = $title2check;
-  		$attr = array('key' => 'title', 'value' => $title2check);
-    	$getOptions = array('output' => 'minimun', 'check_criteria' => 'likeLeft');
-    	
-    	// search need to be done in like to the left
-		$itemSet = $this->getByAttribute($attr,$tproject_id,$parent_id,$getOptions);
 
-		// we borrow logic (may be one day we can put it on a central place) from
-		// testcase class create_tcase_only()
+		static $fieldSize;
+		static $getOptions;
+		static $reqCfg;
+		static $mask;
+		static $title_max_len;
 		
-		if( !is_null($itemSet) && ($siblingQty=count($itemSet)) > 0 )
+		if( !$fieldSize )
 		{
 			$fieldSize = config_get('field_size');
 			$reqCfg = config_get('req_cfg');
-			$mask = $reqCfg->duplicated_name_algorithm->text;
 			
+			$mask = $reqCfg->duplicated_name_algorithm->text;
 			$title_max_len = $fieldSize->requirement_title;
+
+    		$getOptions = array('output' => 'minimun', 'check_criteria' => 'likeLeft');
+		}
+		
+		$generated = $title2check;
+  		$attr = array('key' => 'title', 'value' => $title2check);
+    	
+    	// search need to be done in like to the left
+		$itemSet = $this->getByAttribute($attr,$tproject_id,$parent_id,$getOptions);
+	
+		// we borrow logic (may be one day we can put it on a central place) from
+		// testcase class create_tcase_only()
+		if( !is_null($itemSet) && ($siblingQty=count($itemSet)) > 0 )
+		{
           	$nameSet = array_flip(array_keys($itemSet));
 			$target = $title2check . ($suffix = sprintf($mask,++$siblingQty));
 			$final_len = strlen($target);

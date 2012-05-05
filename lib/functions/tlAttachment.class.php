@@ -133,6 +133,7 @@ class tlAttachment extends tlDBObject
 		$this->dbID = $dbID;
 	}
 	
+	
 	/* 
 	 * Class destructor, cleans the object 
 	 */
@@ -141,6 +142,16 @@ class tlAttachment extends tlDBObject
 		parent::__destruct();
 		$this->_clean();
 	}
+
+	/* 
+	 *
+	 */
+	function setID($id)
+	{
+		$this->dbID = $id;
+	}
+
+
 	
 	/*
 	 * Initializes the attachment object 
@@ -268,7 +279,8 @@ class tlAttachment extends tlDBObject
 		$fType = $db->prepare_string($this->fType);
 		
 		$destFPath = is_null($this->destFPath) ? 'NULL' : "'".$db->prepare_string($this->destFPath)."'";
-		//for FS-repository the contents are null
+
+		// for FS-repository the contents are null
 		$fContents = is_null($this->fContents) ? 'NULL' : "'".$db->prepare_string($this->fContents)."'";
 		
 		$query = "INSERT INTO {$this->tables['attachments']} 

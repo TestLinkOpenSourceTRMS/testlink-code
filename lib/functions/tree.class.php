@@ -12,7 +12,8 @@
  * @internal revisions
  * @since 1.9.4
  *
- * 20120505 - franciscom - _get_subtree() new option: output
+ * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
+ * 						   _get_subtree() new option: output
  *
  */
 

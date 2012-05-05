@@ -14,6 +14,7 @@
  *
  * @internal revisions
  * @since 1.9.4 
+ * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
  * 20120430 - franciscom - new method fetchRowsIntoMap3l()
  * 20120129 - franciscom - TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for 
  *										PHP on WINDOWS version 5.3 and higher
@@ -68,7 +69,8 @@ class database
 	private $logQueries=0;
   
 	// timer analysis
-	function microtime_float() {
+	function microtime_float() 
+	{
 		list( $usec, $sec ) = explode( " ", microtime() );
 		return ( (float)$usec + (float)$sec );
 	}
@@ -85,7 +87,7 @@ class database
 	
 	function setLogQueries($value)
 	{
-	    $this->logQueries=$value?1:0;
+	    $this->logQueries = $value ? 1 : 0;
 	}
 	
 	function getLogQueries($value)
@@ -167,32 +169,50 @@ class database
 	 **/
 	function exec_query( $p_query, $p_limit = -1, $p_offset = -1 )
 	{
-		$this->nQuery++;
-		$t_start = $this->microtime_float();
+		$ec = 0;
+		$emsg = null;
+		$logLevel = 'DEBUG';
+		$message = '';
+
+		if($this->logQueries)
+		{
+			$this->nQuery++;
+			$t_start = $this->microtime_float();
+   		}
    		
 		if ( ( $p_limit != -1 ) || ( $p_offset != -1 ) ) {
 			$t_result = $this->db->SelectLimit( $p_query, $p_limit, $p_offset );
 		} else {
 			$t_result = $this->db->Execute( $p_query );
 		}
-		$t_elapsed = number_format( $this->microtime_float() - $t_start, 4);
-		$this->overallDuration += $t_elapsed;
-		$ec = 0;
-		$emsg = null;
-
-		//build loginfo
-		$logLevel = 'DEBUG';
-		$message = "SQL [". $this->nQuery . "] executed [took {$t_elapsed} secs]" .
-		           "[all took {$this->overallDuration} secs]:\n\t\t" . $p_query;
 		
-		$this->overallDuration += $t_elapsed;	
+		if($this->logQueries)
+		{
+			$t_elapsed = number_format( $this->microtime_float() - $t_start, 4);
+			$this->overallDuration += $t_elapsed;
+			$message = 	"SQL [". $this->nQuery . "] executed [took {$t_elapsed} secs]" .
+		           		"[all took {$this->overallDuration} secs]:\n\t\t";
+		}
+		$message .= $p_query;
+
 		if (!$t_result)
 		{
 			$ec       = $this->error_num();
 			$emsg     = $this->error_msg();
 			$message .= "\nQuery failed: errorcode[" . $ec . "]". "\n\terrormsg:".$emsg;
 			$logLevel = 'ERROR';
+
+
+			tLog("ERROR ON exec_query() - database.class.php <br />" . $this->error(htmlspecialchars($p_query)) . 
+				 "<br />THE MESSAGE : $message ", 'ERROR', "DATABASE");			
+			echo "<pre> ============================================================================== </pre>";
+			echo "<pre> DB Access Error - debug_print_backtrace() OUTPUT START </pre>";
+			echo "<pre> ============================================================================== </pre>";
+			echo "<pre>"; debug_print_backtrace(); echo "</pre>";
+			echo "<pre> ============================================================================== </pre>";
+			$t_result = false;
 		}
+		
 		if($this->logEnabled)
 		{
 		    tLog($message,$logLevel,"DATABASE");
@@ -203,17 +223,6 @@ class database
 			array_push ($this->queries_array, array( $p_query, $t_elapsed, $ec, $emsg ) );
 		}
 
-		if ( !$t_result ) 
-		{
-			tLog("ERROR ON exec_query() - database.class.php <br />" . $this->error(htmlspecialchars($p_query)) . 
-				 "<br />THE MESSAGE : $message ", 'ERROR', "DATABASE");			
-			echo "<pre> ============================================================================== </pre>";
-			echo "<pre> DB Access Error - debug_print_backtrace() OUTPUT START </pre>";
-			echo "<pre> ============================================================================== </pre>";
-			echo "<pre>"; debug_print_backtrace(); echo "</pre>";
-			echo "<pre> ============================================================================== </pre>";
-			$t_result = false;
-		} 
 		return $t_result;
 		
 	}
@@ -537,8 +546,10 @@ class database
 		$result = $this->exec_query($sql);
 		$row = null;
 		if ($result)
+		{
 			$row = $this->fetch_array($result);
-		
+		}
+		unset($result);
 		return $row;
 	}
 
@@ -578,9 +589,12 @@ class database
 		if ($result)
 		{
 			while($row = $this->fetch_array($result))
+			{
 				$items[] = $row[$column];
+			}	
 		}
-	
+		
+		unset($result);
 		return $items;
 	}
 
@@ -626,7 +640,7 @@ class database
 				{
 					$missing_column = !isset($row[$column]);
 				}
-		        $shoot=$missing_column || $empty_column;
+		        $shoot = $missing_column || $empty_column;
 				$errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
                 if( $missing_column )
                 {
@@ -656,6 +670,8 @@ class database
 			}
 		}
 		
+		unset($result);
+		unset($row);
 		return $items;
 	}
 	
@@ -703,7 +719,8 @@ class database
 				}  
 			}	
 		}
-		
+
+		unset($result);
 		return $items;
 	}
 
@@ -735,6 +752,8 @@ class database
 				$output[] = $row;
 			}	
 		}
+
+		unset($result);
 		return $output;
 	}
 
@@ -760,7 +779,8 @@ class database
 				$items[$row[$column]][] = $row;
 			}
 		}
-		
+
+		unset($result);
 		return $items;
 	}
 
@@ -795,6 +815,8 @@ class database
 				}	
 			}
 		}
+		
+		unset($result);
 		return $items;
 	}
 
@@ -872,6 +894,8 @@ class database
 				}	
 			}
 		}
+
+		unset($result);
 		return $items;
 	}
 

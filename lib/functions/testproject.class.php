@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120506 - franciscom - get_accessible_for_user() global coupling removed
  * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
  * 20120219 - franciscom - TICKET 4904: integrate with ITS on test project basis
  * 20120212 - franciscom - new method  getTCasesFilteredByKeywords()
@@ -290,7 +291,9 @@ protected function parseTestProjectRecordset(&$recordset)
  */
 protected function getTestProject($condition = null)
 {
-	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	
+	$sql = "/* debugMsg */ SELECT testprojects.*, nodes_hierarchy.name ".
 	       " FROM {$this->object_table} testprojects, " .
 	       " {$this->tables['nodes_hierarchy']} nodes_hierarchy".
 	       " WHERE testprojects.id = nodes_hierarchy.id ";
@@ -447,37 +450,35 @@ args:
                      default: map
      [order_by]: default: ORDER BY name
 
-rev :
-     20071104 - franciscom - added user_id,role_id to remove global coupling
-                             added order_by (BUGID 498)
-     20070725 - franciscom - added output_type
-     20060312 - franciscom - add nodes_hierarchy on join
+@internal revisions
+@since 1.9.4
 
 */
 function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER BY name ")
 {
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
     $items = array();
+	$safe_user_id = intval($user_id);
 
     // Get default role
-    $sql = " SELECT id,role_id FROM {$this->tables['users']} where id={$user_id}";
+    $sql = "/* $debugMsg */ SELECT id,role_id FROM {$this->tables['users']} where id=" . $safe_user_id;
     $user_info = $this->db->get_recordset($sql);
-	$role_id=$user_info[0]['role_id'];
+	$role_id = intval($user_info[0]['role_id']);
 
-	$sql =  " SELECT nodes_hierarchy.name,testprojects.*
- 	          FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy
- 	          JOIN {$this->object_table} testprojects ON nodes_hierarchy.id=testprojects.id
-	          LEFT OUTER JOIN {$this->tables['user_testproject_roles']} user_testproject_roles
-		        ON testprojects.id = user_testproject_roles.testproject_id AND
-		 	      user_testproject_roles.user_id = {$user_id} WHERE 1=1 ";
+	$sql =  " /* $debugMsg */ SELECT nodes_hierarchy.name,testprojects.* " .
+ 	        " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy " .
+ 	        " JOIN {$this->object_table} testprojects ON nodes_hierarchy.id=testprojects.id " .
+	        " LEFT OUTER JOIN {$this->tables['user_testproject_roles']} user_testproject_roles " .
+		    " ON testprojects.id = user_testproject_roles.testproject_id " .
+		    " AND user_testproject_roles.user_id =" . $safe_user_id . " WHERE 1=1 ";
 
 	
-	// BUGID 2344: Private test project
+	// Private test project feature
 	if( $role_id != TL_ROLES_ADMIN )
 	{
 		if ($role_id != TL_ROLES_NO_RIGHTS)
 		{
-			// $sql .=  "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
-			// (A AND (B OR C) ) OR (NOT A AND C) 
 			$sql .=  " AND "; 
 			$sql_public = " ( is_public = 1 AND (role_id IS NULL OR role_id != " . TL_ROLES_NO_RIGHTS. ") )";
 			$sql_private = " ( is_public = 0 AND role_id != " . TL_ROLES_NO_RIGHTS. ") ";
@@ -491,12 +492,15 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
     	}
 	}
 
-	// $sql .=  " AND (role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
-
-	if (has_rights($this->db,'mgt_modify_product') != 'yes')
+	// this is global coupling => BAD
+	// if (has_rights($this->db,'mgt_modify_product') != 'yes')
+	$userObj = tlUser::getByID($this->db,$safe_user_id,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+	if ($userObj->hasRight($this->db,'mgt_modify_product') != 'yes')
 	{
 		$sql .= " AND active=1 ";
     }
+    unset($userObj);
+    
 	$sql .= $order_by;
 
     if($output_type == 'array_of_map')
@@ -511,6 +515,7 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 	    $do_post_process=1;
 	}
 
+	
 	if ($do_post_process && sizeof($arrTemp))
 	{
         switch ($output_type)
@@ -530,11 +535,11 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 	         case 'map_of_map':
 	    	   foreach($arrTemp as $id => $row)
 	    	   {
-	    		   $items[$id] = array( 'name' => $row['name'],
-	    		                        'active' => $row['active']);
+	    		   $items[$id] = array('name' => $row['name'],'active' => $row['active']);
 	    	   }
 	    	   break;
 	    }
+	    unset($arrTemp);
 	}
 
 	return $items;
@@ -1522,8 +1527,9 @@ function setPublicStatus($id,$status)
 	 **/
 	function addUserRole($userID,$tproject_id,$roleID)
 	{
-		$query = "INSERT INTO {$this->tables['user_testproject_roles']} " .
-			"(user_id,testproject_id,role_id) VALUES ({$userID},{$tproject_id},{$roleID})";
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__; 
+		$query = "/* debugMsg*/ INSERT INTO {$this->tables['user_testproject_roles']} " .
+				 " (user_id,testproject_id,role_id) VALUES ({$userID},{$tproject_id},{$roleID})";
 		if($this->db->exec_query($query))
 		{
 			$testProject = $this->get_by_id($tproject_id);
@@ -1534,9 +1540,11 @@ function setPublicStatus($id,$status)
 				logAuditEvent(TLS("audit_users_roles_added_testproject",$user->getDisplayName(),
 					$testProject['name'],$role->name),"ASSIGN",$tproject_id,"testprojects");
 			}
+			unset($user);
+			unset($role);
+			unset($testProject);
 			return tl::OK;
 		}
-		
 		return tl::ERROR;
 	}
 	

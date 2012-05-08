@@ -68,29 +68,46 @@ $mailCfg = buildMailCfg($gui);
 $getOpt = array('outputFormat' => 'map');
 $gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
 
-new dBug($gui->platformSet);
+// new dBug($gui->platformSet);
 if( is_null($gui->platformSet) )
 {
 	$gui->platformSet = array('');
 	$gui->showPlatforms = false;
 }
 
+
+// $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
+// $mapOfAggregate = $re->getAggregateMap();
+// new dBug($mapOfAggregate);
+// die();
+
 $metricsMgr = new tlTestPlanMetrics($db);
                          
-$kyw = $metricsMgr->getExecCountersByKeywordExecStatus($args->tplan_id);
-new dBug($kyw);
-
+//$kyw = $metricsMgr->getExecCountersByKeywordExecStatus($args->tplan_id);
+//$keywordsMetrics = $metricsMgr->getStatusTotalsByKeywordForRender($args->tplan_id);
+//new dBug($keywordsMetrics);
+//die();
+        
+// $pp = $metricsMgr->getExecCountersByPriorityExecStatus($args->tplan_id);                         
+// new dBug($pp);
+//die();
                          
-                         
+//$tt = $metricsMgr->getExecCountersByTestSuiteExecStatus($args->tplan_id);                         
+//new dBug($tt);
 
-// $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS,ALL_PLATFORMS);
-// default is ALL PLATFORMS
-// $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
-// ----------------------------------------------------------------------------
-// $topLevelSuites = $re->getTopLevelSuites();
-$topLevelSuites = true;
-if(is_null($topLevelSuites))
+//$AA = $metricsMgr->getStatusTotalsByTestSuiteForRender($args->tplan_id);
+//new dBug($AA);
+
+//$BB = $metricsMgr->getStatusTotalsByTopLevelTestSuiteForRender($args->tplan_id);
+//new dBug($BB);
+
+// die();
+
+// -------------------------------------------------------------------------------------------
+$dummy = $metricsMgr->getStatusTotalsByTopLevelTestSuiteForRender($args->tplan_id);
+if(is_null($dummy))
 {
+	
 	// no test cases -> no report
 	$gui->do_report['status_ok'] = 0;
 	$gui->do_report['msg'] = lang_get('report_tspec_has_no_tsuites');
@@ -99,26 +116,17 @@ if(is_null($topLevelSuites))
 else
 {
 	 // do report
+	$gui->statistics->testsuites = $dummy->info;
 	$gui->do_report['status_ok'] = 1;
 	$gui->do_report['msg'] = '';
 
-	//$items2loop = array('keywords','assigned_testers');
-	$items2loop = array('keywords');
-	
-	// $kwr = $tplan_mgr->getStatusTotalsByKeyword($args->tplan_id);
-    // $gui->statistics->keywords = $tplan_mgr->tallyResultsForReport($kwr);
-	// $gui->XXkeywords = $metricsMgr->getStatusTotalsByKeywordForRender($args->tplan_id);
-	// new dBug($gui->statistics->keywords);
-	// new dBug($gui->XXkeywords);
+	$items2loop = array('testsuites','keywords');
 	$keywordsMetrics = $metricsMgr->getStatusTotalsByKeywordForRender($args->tplan_id);
 	$gui->statistics->keywords = !is_null($keywordsMetrics) ? $keywordsMetrics->info : null; 
                               
 	if( $gui->showPlatforms )
 	{
 		$items2loop[] = 'platform';
-		// $platr = $tplan_mgr->getStatusTotalsByPlatform($args->tplan_id);
-		// $gui->statistics->platform = $tplan_mgr->tallyResultsForReport($platr);
-		// new dBug($gui->statistics->platform);
 		$platformMetrics = $metricsMgr->getStatusTotalsByPlatformForRender($args->tplan_id);
 		$gui->statistics->platform = !is_null($platformMetrics) ? $platformMetrics->info : null; 
 	}
@@ -126,10 +134,10 @@ else
 	if($_SESSION['testprojectOptions']->testPriorityEnabled)
 	{
 		$items2loop[] = 'priorities';
-		$prios = $tplan_mgr->getStatusTotalsByPriority($args->tplan_id);
-		$gui->statistics->priorities = $tplan_mgr->tallyResultsForReport($prios);
-		
-		// new dBug($gui->statistics->priorities);
+		$filters = null;
+		$opt = array('getOnlyAssigned' => false);
+		$priorityMetrics = $metricsMgr->getStatusTotalsByPriorityForRender($args->tplan_id,$filters,$opt);
+		$gui->statistics->priorities = !is_null($priorityMetrics) ? $priorityMetrics->info : null; 
 	}
 
 	foreach($items2loop as $item)
@@ -147,52 +155,8 @@ else
           	$gui->columnsDefinition->$item = $dummy['details'];
          } 
   	} 
+	// ----------------------------------------------------------------------------
 
-  	// $mapOfAggregate = $re->getAggregateMap();
-  	$arrDataSuite = null;
-  	$arrDataSuiteIndex = 0;
-
-	// // collect data for top test suites and users  
-  	// if (is_array($topLevelSuites)) 
-  	// {
-    //   	foreach($topLevelSuites as $key => $suiteNameID)
-    //   	{
-    //   		$results = $mapOfAggregate[$suiteNameID['id']];
-    //   			
-    //   		$element['tsuite_name'] = $suiteNameID['name'];
-    //   		$element['total_tc'] = $results['total'];
-    //   		$element['percentage_completed'] = get_percentage($results['total'], 
-    //   		$results['total'] - $results['not_run']);
-    // 
-    //   		// BUGID 4377 - do not unset total now, because we need in foreach loop
-    //     	// unset($results['total']);
-    //     	foreach($results as $key => $value)
-    //     	{
-    //   	    	$element['details'][$key]['qty'] = $results[$key];
-    //   	    	// add percentage for each result
-    //   	    	$element['details'][$key]['percentage'] = get_percentage($results['total'],$results[$key]);
-    //   		}
-    //   		unset($element['details']['total']);
-    //   		$element['details']['not_run']['qty'] = $results['not_run'];
-    //   	   
-    //   		$arrDataSuite[$arrDataSuiteIndex] = $element;
-    //   		$arrDataSuiteIndex++;
-    //   	} 
-    // 
-    // 	$gui->statistics->testsuites = $arrDataSuite;
-    // 
-    //   	// Get labels
-    // 	$dummy = current($gui->statistics->testsuites);
-    //   	foreach($dummy['details'] as $status_verbose => $value)
-    // 	{
-    //       	$dummy['details'][$status_verbose]['percentage'] = 
-    //       			lang_get('in_percent');
-    //       	$dummy['details'][$status_verbose]['qty'] = 
-    //       			lang_get($tlCfg->results['status_label'][$status_verbose]);
-    //   	}
-    //   	$gui->columnsDefinition->testsuites = $dummy['details'];
-  	// }
-    // 
 	// ----------------------------------------------------------------------------
   	/* BUILDS REPORT */
 	$colDefinition = null;
@@ -202,8 +166,6 @@ else
 		$gui->statistics->overallBuildStatus = $metricsMgr->getOverallBuildStatusForRender($args->tplan_id);
 		$gui->displayBuildMetrics = !is_null($gui->statistics->overallBuildStatus);
 	}  
-
-
 	
   	/* MILESTONE & PRIORITY REPORT */
 	$milestonesList = $tplan_mgr->get_milestones($args->tplan_id);

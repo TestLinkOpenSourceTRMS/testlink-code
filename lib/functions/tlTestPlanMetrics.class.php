@@ -613,7 +613,7 @@ class tlTestPlanMetrics extends testPlan
 	 *
 	 * @since 1.9.4
 	 * 20120429 - franciscom - 
-	 **/
+	 */
 	function getStatusTotalsByKeywordForRender($id,$filters=null,$opt=null)
 	{
 		$renderObj = $this->getStatusTotalsByItemForRender($id,'keyword',$filters,$opt);
@@ -945,9 +945,6 @@ class tlTestPlanMetrics extends testPlan
 		$buildsInClause = implode(",",$activeBuilds);
 		$execCode = intval($this->assignment_types['testcase_execution']['id']);
 		
-		new dBug($ab);
-		
-		
 		
 		// This subquery is BETTER than the VIEW, need to understand why
 		// Last Executions By Build (LEBB)
@@ -1097,6 +1094,7 @@ class tlTestPlanMetrics extends testPlan
 		$code_verbose = $this->getStatusForReports();
 	    $labels = $this->resultsCfg['status_label'];
 
+		$returnArray = false;
 		switch($itemType)
 		{	
 			case 'keyword':    
@@ -1113,13 +1111,19 @@ class tlTestPlanMetrics extends testPlan
 				$metrics = $this->getExecCountersByPriorityExecStatus($id,$filters,$opt);
 				$setKey = 'priority_levels';
 			break;
+			
+			case 'tsuite':    
+				$metrics = $this->getExecCountersByTestSuiteExecStatus($id,$filters,$opt);
+				$setKey = 'tsuites';
+				$returnArray = true;
+			break;
+			
 		}
-
 
 	   	if( !is_null($metrics) )
 	   	{
 	   		$renderObj = new stdClass();
-			$itemList = array_keys($metrics[$setKey]);
+			$itemList = array_keys($metrics[$setKey]);			
 			$renderObj->info = array();	
 		    foreach($itemList as $itemID)
 		    {
@@ -1161,9 +1165,111 @@ class tlTestPlanMetrics extends testPlan
 		    }
 	
 		}
+		
+		if($returnArray)
+		{
+			return array($renderObj,$metrics['staircase']);
+		}
+		else
+		{
+			unset($metrics);
+			return $renderObj;
+		}
+	}
+
+
+	/**
+	 *
+	 * @internal revisions
+	 *
+	 * @since 1.9.4
+	 * 20120429 - franciscom - 
+	 */
+	function getStatusTotalsByTestSuiteForRender($id,$filters=null,$opt=null)
+	{
+		list($renderObj,$staircase) = $this->getStatusTotalsByItemForRender($id,'tsuite',$filters,$opt);
+		unset($staircase);
 		return $renderObj;
 	}
 
+	/**
+	 *
+	 * @internal revisions
+	 *
+	 * @since 1.9.4
+	 * 20120429 - franciscom - 
+	 */
+	function getStatusTotalsByTopLevelTestSuiteForRender($id,$filters=null,$opt=null)
+	{
+		//echo 'MM - ' . __FUNCTION__ . ' Start' . ' memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
+		list($rObj,$staircase) = $this->getStatusTotalsByItemForRender($id,'tsuite',$filters,$opt);
+		
+		$key2loop = array_keys($rObj->info);
+		$template = array('type' => 'tsuite', 'name' => '','total_tc' => 0,
+						  'percentage_completed' => 0, 'details' => array());	
+
+		foreach($this->statusCode as $verbose => $code)
+		{
+			$template['details'][$verbose] = array('qty' => 0, 'percentage' => 0);
+		}
+		$renderObj->colDefinition = $rObj->colDefinition;
+		
+		// collect qty
+		$topNameCache = null;
+		$execQty = null;
+		foreach($key2loop as $tsuite_id)
+		{
+			if( count($staircase[$tsuite_id]) > 1)
+			{
+				if( !isset($renderObj->info[$staircase[$tsuite_id][1]]) )
+				{
+					$renderObj->info[$staircase[$tsuite_id][1]] = $template;
+					$dummy = $this->tree_manager->get_node_hierarchy_info($staircase[$tsuite_id][1]);
+					$renderObj->info[$staircase[$tsuite_id][1]]['name'] = $dummy['name'];
+					unset($dummy);
+					$execQty[$staircase[$tsuite_id][1]] = 0;
+				}	
+				
+				foreach($rObj->info[$tsuite_id]['details'] as $code => &$elem)
+				{
+					$renderObj->info[$staircase[$tsuite_id][1]]['details'][$code]['qty'] += $elem['qty'];		
+					$renderObj->info[$staircase[$tsuite_id][1]]['total_tc'] += $elem['qty'];
+
+					if(  $code != 'not_run' )
+					{
+						$execQty[$staircase[$tsuite_id][1]] += $elem['qty'];
+					}
+				}
+			}	
+		}
+
+		// Last step: get percentages
+		foreach($renderObj->info as $tsuite_id => &$elem)
+		{
+			if( $execQty[$tsuite_id] > 0 )
+			{
+				$elem['percentage_completed'] = number_format( 100 * ($execQty[$tsuite_id] / $elem['total_tc']),1);
+			}	
+
+			if( $elem['total_tc'] > 0 )
+			{
+				foreach($elem['details'] as $code => &$yumyum)
+				{
+					$yumyum['percentage'] = number_format( 100 * ($yumyum['qty'] / $elem['total_tc']),1);		
+				}
+			}
+		}
+		
+		unset($topNameCache);
+		unset($rObj);
+		unset($staircase);
+		unset($template);
+		unset($key2loop);
+		unset($execQty);
+
+		//echo 'MM - ' . __FUNCTION__ . ' Stop' . ' memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
+		return $renderObj;
+	}
 
 	/** 
 	 *    
@@ -1181,7 +1287,7 @@ class tlTestPlanMetrics extends testPlan
 		$sqlLE = $sqlStm['LE'];
 
 		$sqlUnionAT	=	"/* {$debugMsg} sqlUnionAT - executions */" . 
-						" SELECT NHTC.parent_id AS tsuite_id, " .
+						" SELECT NHTC.parent_id AS tsuite_id," .
 						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
 						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
 
@@ -1257,13 +1363,42 @@ class tlTestPlanMetrics extends testPlan
 
 		// 
 		//echo 'QD -<br><b>' . __FUNCTION__ . '</b><br>'; 
-		echo 'QD - ' . $sql . '<br>';
+		//echo 'QD - ' . $sql . '<br>';
         $exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'tsuite_id','status');              
-
+        
 		// now we need to complete status domain
 		$this->helperCompleteStatusDomain($exec,'tsuite_id');
 	
+        // Build item set
+       	$exec['tsuites_full'] = $this->get_testsuites($safe_id);
+		$loop2do = count($exec['tsuites_full']);
+		for($idx=0; $idx < $loop2do; $idx++)
+		{
+			$keySet[] = $exec['tsuites_full'][$idx]['id'];
 
+		}
+		$dx = $this->tree_manager->get_full_path_verbose($keySet,array('output_format' => 'stairway2heaven'));
+		for($idx=0; $idx < $loop2do; $idx++)
+		{
+			$exec['tsuites'][$exec['tsuites_full'][$idx]['id']] = $dx['flat'][$exec['tsuites_full'][$idx]['id']];
+		}
+		$exec['staircase'] = $dx['staircase'];
+		
+		// now compute total on Top Level
+		// $exec['top_level'] = array();
+		// foreach($dx['staircase'] as $tsuite_id => &$staircase)
+		// {
+		// 	if(count($staircase) > 1)
+		// 	{
+		// 		if( !isset($exec['top_level'][$staircase[1]]) )
+		// 		{
+		// 			$exec['top_level'][$staircase[1]] = 0;		
+		// 		}
+		// 		$exec['top_level'][$staircase[1]] += 0;
+		// 	}	
+		// }
+		unset($dx);
+		unset($keySet);
 		return $exec;
 	}
 	

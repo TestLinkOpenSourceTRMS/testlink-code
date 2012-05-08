@@ -79,7 +79,7 @@ Purpose: smarty template - show Test Results and Metrics
   	{include file="results/inc_results_show_table.tpl"
            args_title=$labels.title_res_by_top_level_suites
            args_first_column_header=$labels.trep_comp
-           args_first_column_key='tsuite_name'
+           args_first_column_key='name'
            args_show_percentage=true
            args_column_definition=$gui->columnsDefinition->testsuites
            args_column_data=$gui->statistics->testsuites}

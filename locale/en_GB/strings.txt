@@ -3089,7 +3089,13 @@ $TLS_API_ATTACH_FEATURE_DISABLED = 'Attachment feature is disabled';
 $TLS_API_ATTACH_INVALID_FK = "Invalid Foreign Key ID[%s] Table[%s]";
 $TLS_API_ATTACH_INVALID_ATTACHMENT = "Invalid attachment info parameters: FILE_NAME [%s] CONTENT_SIZE [%s]";
 
+$TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES = "There are no custom fields usable at design time linked" . 
+											      " to test cases on this test project ";
+
+
 $TLS_NODEID_INVALID_DATA_TYPE_STR = "Invalid Data Type - Node ID can be Array of positive Integer, or Positive Integer";
+
+
 
 
 // ----- audit log entries -----
@@ -3415,7 +3421,7 @@ $TLS_issue_status_held = "Held";
 
 // this definition has to be placed AFTER $TLS_title_metrics_x_build
 $TLS_buildMetricsFeedback = $TLS_title_metrics_x_build . 
-							' data is computed using only test cases that have tester assignment on build';
+							' percentages are computed using only test cases that have tester assignment on build';
 
 // execHistory.php
 $TLS_btn_show_exec_history = 'Execution History';

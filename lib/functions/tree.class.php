@@ -1168,9 +1168,11 @@ class tree extends tlObject
 	    
 	    foreach((array)$items as $item_id)
 	    {
-	        $path_to[$item_id]['name']=$this->get_path($item_id,$goto_root,$path_format);
+	        $stairway2heaven[$item_id] = $this->get_path($item_id,$goto_root,$path_format);
+			$path_to[$item_id]['name'] = $stairway2heaven[$item_id];
 	        $all_nodes = array_merge($all_nodes,(array)$path_to[$item_id]['name']);
 	    }
+	    
 	    
 	    $status_ok = (!is_null($all_nodes) && count($all_nodes) > 0);
         if( $status_ok )
@@ -1199,6 +1201,7 @@ class tree extends tlObject
         	switch ($output_format)
         	{
         		case 'path_as_string':
+        		case 'stairway2heaven':
 				$flat_path=null;
 				foreach($path_to as $tcase_id => $pieces)
 				{
@@ -1206,7 +1209,16 @@ class tree extends tlObject
 					unset($pieces['name'][0]);
 					$flat_path[$tcase_id]=implode('/',$pieces['name']);
 				}
-				$path_to = $flat_path;
+				if($output_format == 'path_as_string')
+				{
+					$path_to = $flat_path;
+        		}
+        		else
+        		{
+        			$path_to = null;
+        			$path_to['flat'] = $flat_path;
+        			$path_to['staircase'] = $stairway2heaven;
+        		}
         		break;
         		
         		case 'id_name':
@@ -1222,6 +1234,7 @@ class tree extends tlObject
         		break;
         	}	
         }
+        unset($stairway2heaven);
 	    return $path_to; 
 	}
 

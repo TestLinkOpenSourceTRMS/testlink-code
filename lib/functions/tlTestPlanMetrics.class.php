@@ -101,6 +101,7 @@ class tlTestPlanMetrics extends testPlan
 	public function getPrioritizedResults($tplanID,$milestoneTargetDate = null, $milestoneStartDate = null)
 	{
 		$output = array (HIGH=>0,MEDIUM=>0,LOW=>0);
+
 		
 		for($urgency=1; $urgency <= 3; $urgency++)
 		{
@@ -183,7 +184,8 @@ class tlTestPlanMetrics extends testPlan
 		$results = array();
 
 		// get amount of test cases for each execution result + total amount of test cases
-        $planMetrics = $this->getStatusTotals($tplanID);
+		$planMetrics = $this->getExecCountersByExecStatus($tplanID);
+
 		$milestones =  is_null($milestoneSet) ? $this->get_milestones($tplanID) : $milestoneSet;
 
 		// get amount of test cases for each priority for test plan			
@@ -669,66 +671,19 @@ class tlTestPlanMetrics extends testPlan
 	 */
 	function getExecCountersByPlatformExecStatus($id, $filters=null, $opt=null)
 	{
+		echo __FUNCTION__ . '<br>';
+		
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
-
-		$getOpt = array('outputFormat' => 'mapAccessByID', 'outputDetails' => 'name', 'addIfNull' => true);
-		$platformSet = $this->getPlatforms($id,$getOpt);
 		$safe_id = intval($id);	
+		list($my,$builds,$sqlStm,$union,$platformSet) = $this->helperBuildSQLExecCounters($id, $filters, $opt);
 
 		// Latest Executions By Platform (LEBP)
 		$sqlLEBP = 	$sqlStm['LEBP'];
 		
-		$sqlUnionAP	=	"/* {$debugMsg} sqlUnionAP - executions */" . 
-						" SELECT TPTCV.tcversion_id,TPTCV.platform_id, " .
-						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
-						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
-						
-						$sqlStm['getAssignedFeatures'] .
-
-						" /* GO FOR Absolute LATEST exec ID IGNORE BUILD */ " .
-						" JOIN ({$sqlLEBP}) AS LEBP " .
-						" ON  LEBP.testplan_id = TPTCV.testplan_id " .
-						" AND LEBP.platform_id = TPTCV.platform_id " .
-						" AND LEBP.tcversion_id = TPTCV.tcversion_id " .
-						" AND LEBP.testplan_id = " . $safe_id .
-
-						" /* Get execution status WRITTEN on DB */ " .
-						" JOIN {$this->tables['executions']} E " .
-						" ON  E.id = LEBP.id " .
-			
-						" WHERE TPTCV.testplan_id=" . $safe_id .
-						$builds->whereAddExec;
-
+		$sqlUnionAP	= $union['exec'];
 		//echo 'QD - <br>' . $sqlUnionAP . '<br>';
 		
-		$sqlUnionBP	=	"/* {$debugMsg} sqlUnionBP - NOT RUN */" . 
-						" SELECT TPTCV.tcversion_id,TPTCV.platform_id, " .
-						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
-						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
-						
-						$sql['getAssignedFeatures'] .
-
-						" /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
-						" LEFT OUTER JOIN ({$sqlLEBP}) AS LEBP " .
-						" ON  LEBP.testplan_id = TPTCV.testplan_id " .
-						" AND LEBP.tcversion_id = TPTCV.tcversion_id " .
-						" AND LEBP.platform_id = TPTCV.platform_id " .
-						" AND LEBP.testplan_id = " . $safe_id .
-						" LEFT OUTER JOIN {$this->tables['executions']} E " .
-						" ON  E.tcversion_id = TPTCV.tcversion_id " .
-						" AND E.testplan_id = TPTCV.testplan_id " .
-						" AND E.platform_id = TPTCV.platform_id " .
-
-						$builds->joinAdd .
-
-						" /* FILTER BUILDS in set on target test plan (not alway can be applied) */ " .
-						" WHERE TPTCV.testplan_id=" . $safe_id . 
-						$builds->whereAddNotRun .
-	
-						" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
-						" AND E.id IS NULL AND LEBP.id IS NULL";
-
+		$sqlUnionBP	=  $union['not_run'];
 		//echo 'QD - <br>' . $sqlUnionBP . '<br>';
 
 		$sql =	" /* {$debugMsg} UNION ALL CLAUSE => INCLUDE Duplicates */" .
@@ -949,6 +904,46 @@ class tlTestPlanMetrics extends testPlan
 	 * @internal revisions
 	 *
 	 * @since 1.9.4
+	 * 20120512 - franciscom - 
+	 */
+	function getExecCountersByExecStatus($id, $filters=null, $opt=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$safe_id = intval($id);	
+		list($my,$builds,$sqlStm,$union,$platformSet) = $this->helperBuildSQLExecCounters($id, $filters, $opt);
+
+		// Latest Executions By Platform (LEBP)
+		$sqlLEBP = 	$sqlStm['LEBP'];
+		$sqlUnionAP	= $union['exec'];	//echo 'QD - <br>' . $sqlUnionAP . '<br>';
+		$sqlUnionBP	=  $union['not_run']; //echo 'QD - <br>' . $sqlUnionBP . '<br>';
+
+		$sql =	" /* {$debugMsg} UNION ALL CLAUSE => INCLUDE Duplicates */" .
+				" SELECT status, count(0) AS exec_qty " .
+				" FROM ($sqlUnionAP UNION ALL $sqlUnionBP ) AS SQPL " .
+				" GROUP BY status ";
+
+		// 
+		//echo 'QD -<br><b>' . __FUNCTION__ . '</b><br>'; 
+		//echo 'QD - ' . $sql . '<br>';
+        $dummy = (array)$this->db->fetchRowsIntoMap($sql,'status');              
+
+		$statusCounters = array('total' => 0);
+		$codeVerbose = array_flip($this->map_tc_status);
+		foreach($dummy as $code => $elem)
+		{
+			
+			$statusCounters['total'] += $elem['exec_qty'];
+			$statusCounters[$codeVerbose[$code]] = $elem['exec_qty'];
+		} 
+		
+		return $statusCounters;
+	}
+
+	/**
+	 *
+	 * @internal revisions
+	 *
+	 * @since 1.9.4
 	 * 20120430 - franciscom - 
 	 */
 	function getExecCountersByBuildUAExecStatus($id, $opt=null)
@@ -1047,7 +1042,7 @@ class tlTestPlanMetrics extends testPlan
 
 
 	/**
-	 *
+	 * @see resultsByTesterPerBuild.php
 	 * @internal revisions
 	 *
 	 * @since 1.9.4
@@ -1121,7 +1116,8 @@ class tlTestPlanMetrics extends testPlan
 			break;
 
 			case 'platform':    
-				$metrics = $this->getExecCountersByPlatformExecStatus($id,$filters,$opt);
+				$myOpt = array_merge(array('getPlatformSet' => true),(array)$opt);
+				$metrics = $this->getExecCountersByPlatformExecStatus($id,$filters,$myOpt);
 				$setKey = 'platforms';
 			break;
 			
@@ -1434,7 +1430,7 @@ class tlTestPlanMetrics extends testPlan
 	{
 		$sql = array();
 		$my = array();
-		$my['opt'] = array('getOnlyAssigned' => false, 'tprojectID' => 0);
+		$my['opt'] = array('getOnlyAssigned' => false, 'tprojectID' => 0, 'getPlaformSet' => false);
 		$my['opt'] = array_merge($my['opt'], (array)$opt);
 		
 		$my['filters'] = array('buildSet' => null);
@@ -1550,6 +1546,86 @@ class tlTestPlanMetrics extends testPlan
 		}
 		$out['total'] = $totalByItemID;
 	}
+
+
+
+	/** 
+	 *    
+	 *    
+	 *    
+	 *    
+	 */    
+	function helperBuildSQLExecCounters($id, $filters=null, $opt=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
+
+		$safe_id = intval($id);	
+		$platformSet = null;
+		if( $my['opt']['getPlatformSet'] )
+		{
+			$getOpt = array('outputFormat' => 'mapAccessByID', 'outputDetails' => 'name', 'addIfNull' => true);
+			$platformSet = $this->getPlatforms($safe_id,$getOpt);
+		}
+		
+		// Latest Executions By Platform (LEBP)
+		$sqlLEBP = 	$sqlStm['LEBP'];
+		
+		$union['exec']	=	"/* {$debugMsg} sqlUnion - executions */" . 
+							" SELECT TPTCV.tcversion_id,TPTCV.platform_id, " .
+							" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
+							" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+						
+							$sqlStm['getAssignedFeatures'] .
+
+							" /* GO FOR Absolute LATEST exec ID IGNORE BUILD */ " .
+							" JOIN ({$sqlLEBP}) AS LEBP " .
+							" ON  LEBP.testplan_id = TPTCV.testplan_id " .
+							" AND LEBP.platform_id = TPTCV.platform_id " .
+							" AND LEBP.tcversion_id = TPTCV.tcversion_id " .
+							" AND LEBP.testplan_id = " . $safe_id .
+
+							" /* Get execution status WRITTEN on DB */ " .
+							" JOIN {$this->tables['executions']} E " .
+							" ON  E.id = LEBP.id " .
+				
+							" WHERE TPTCV.testplan_id=" . $safe_id .
+							$builds->whereAddExec;
+
+		//echo 'QD - <br>' . $union['exec'] . '<br>';
+		
+		$union['not_run'] =	"/* {$debugMsg} sqlUnion - NOT RUN */" . 
+							" SELECT TPTCV.tcversion_id,TPTCV.platform_id, " .
+							" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
+							" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+							
+							$sql['getAssignedFeatures'] .
+		
+							" /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
+							" LEFT OUTER JOIN ({$sqlLEBP}) AS LEBP " .
+							" ON  LEBP.testplan_id = TPTCV.testplan_id " .
+							" AND LEBP.tcversion_id = TPTCV.tcversion_id " .
+							" AND LEBP.platform_id = TPTCV.platform_id " .
+							" AND LEBP.testplan_id = " . $safe_id .
+							" LEFT OUTER JOIN {$this->tables['executions']} E " .
+							" ON  E.tcversion_id = TPTCV.tcversion_id " .
+							" AND E.testplan_id = TPTCV.testplan_id " .
+							" AND E.platform_id = TPTCV.platform_id " .
+		
+							$builds->joinAdd .
+		
+							" /* FILTER BUILDS in set on target test plan (not alway can be applied) */ " .
+							" WHERE TPTCV.testplan_id=" . $safe_id . 
+							$builds->whereAddNotRun .
+			
+							" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
+							" AND E.id IS NULL AND LEBP.id IS NULL";
+		
+		//echo 'QD - <br>' . $sqlUnionBP . '<br>';
+		return array($my,$builds,$sqlStm,$union,$platformSet);
+	}
+
+
 	
 }
 ?>

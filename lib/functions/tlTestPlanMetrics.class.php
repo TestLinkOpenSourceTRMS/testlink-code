@@ -302,6 +302,7 @@ class tlTestPlanMetrics extends testPlan
 						" /* Get execution status WRITTEN on DB */ " .
 						" JOIN {$this->tables['executions']} E " .
 						" ON  E.id = LEBBP.id " .
+						" AND E.build_id = UA.build_id " .
 
 						" WHERE TPTCV.testplan_id=" . $safe_id .
 						" AND UA.build_id IN ({$builds->inClause}) ";
@@ -950,56 +951,78 @@ class tlTestPlanMetrics extends testPlan
 	{
 		//echo 'QD - <b><br>' . __FUNCTION__ . '</b><br>';
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$safe_id = intval($id);
+		list($my,$builds,$sqlStm) = $this->helperGetExecCounters($safe_id, $filters, $opt);
 
-		$my['opt'] = array('getUnassigned' => false);
-		$my['opt'] = array_merge($my['opt'], (array)$opt);
-		
-		$activeBuilds = array_keys($ab=$this->get_builds($id,testplan::ACTIVE_BUILDS));
-		$buildsInClause = implode(",",$activeBuilds);
-		$execCode = intval($this->assignment_types['testcase_execution']['id']);
-		
-		
-		// This subquery is BETTER than the VIEW, need to understand why
-		// Last Executions By Build (LEBB)
-		$sqlLEBB = 	" SELECT EE.tcversion_id,EE.testplan_id,EE.build_id,MAX(EE.id) AS id " .
-				  	" FROM {$this->tables['executions']} EE " . 
-				   	" WHERE EE.testplan_id=" . intval($id) . 
-					" AND EE.build_id IN ({$buildsInClause}) " .
-				   	" GROUP BY EE.tcversion_id,EE.testplan_id,EE.build_id ";
-		
-		
-		// Common sentece - reusable
-		$sqlExec = 	"/* {$debugMsg} */" . 
-					" SELECT UA.user_id,UA.build_id,COALESCE(E.status,'{$this->notRunStatusCode}') AS status,".
-					" count(0) AS exec_qty " .
+		// Last Executions By Build and Platform (LEBBP)
+		// Please remember that Platforms (when exists) has Multiplier effect on test cases
+		//
+		$sqlLEBBP = $sqlStm['LEBBP'];
 
-					" /* Get feature id with Tester Assignment */ " .
-					" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+		$sqlUnionAU	=	"/* {$debugMsg} sqlUnion - executions */" . 
+						" SELECT UA.user_id, UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " .
+						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
+						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+						" JOIN {$this->tables['user_assignments']} UA " .
+						" ON UA.feature_id = TPTCV.id " .
+						" AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
 
-					" /*LEFTPLACEHOLDER*/ JOIN {$this->tables['user_assignments']} UA " .
-					" ON UA.feature_id = TPTCV.id " .
-					" AND UA.build_id IN ({$buildsInClause}) AND UA.type = {$execCode} " .
+						" /* GO FOR Absolute LATEST exec ID ON BUILD and PLATFORM */ " .
+						" JOIN ({$sqlLEBBP}) AS LEBBP " .
+						" ON  LEBBP.testplan_id = TPTCV.testplan_id " .
+						" AND LEBBP.platform_id = TPTCV.platform_id " .
+						" AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
+						" AND LEBBP.testplan_id = " . $safe_id .
 
-					" /* GO FOR Absolute LATEST exec ID by BUILD IGNORE  Platform */ " .
-					" LEFT OUTER JOIN ({$sqlLEBB}) AS LEBB " .
-					" ON  LEBB.testplan_id = TPTCV.testplan_id " .
-					" AND LEBB.tcversion_id = TPTCV.tcversion_id " .
-					" AND LEBB.testplan_id = " . intval($id) .
+						" /* Get (With BUILD details) execution  status WRITTEN on DB */ " .
+						" JOIN {$this->tables['executions']} E " .
+						" ON  E.build_id = UA.build_id " .
+						" AND E.id = LEBBP.id " .
 
-					" /* Get execution status INCLUDING NOT RUN */ " .
-					" LEFT OUTER JOIN {$this->tables['executions']} E " .
-					" ON  E.id = LEBB.id " .
-					" AND E.build_id = LEBB.build_id " .
-					" AND E.build_id IN ({$buildsInClause}) ";
-				
+						" WHERE TPTCV.testplan_id=" . $safe_id .
+						" AND UA.build_id IN ({$builds->inClause}) ";
+
+		// echo 'QD - <b>' . $sqlUnionAU . '<br>';
+		// die();
+
+		$sqlUnionBU	=	"/* {$debugMsg} sqlUnion - notrun */" . 
+						" SELECT UA.user_id, UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " .
+						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
+						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+						" JOIN {$this->tables['user_assignments']} UA " .
+						" ON UA.feature_id = TPTCV.id " .
+						" AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
+
+						" LEFT OUTER JOIN ({$sqlLEBBP}) AS LEBBP " .
+						" ON  LEBBP.testplan_id = TPTCV.testplan_id " .
+						" AND LEBBP.platform_id = TPTCV.platform_id " .
+						" AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
+						" AND LEBBP.testplan_id = " . $safe_id .
+
+						" LEFT OUTER JOIN {$this->tables['executions']} E " .
+						" ON  E.build_id = UA.build_id " .
+						" AND E.testplan_id = TPTCV.testplan_id " .
+						" AND E.platform_id = TPTCV.platform_id " .
+						" AND E.tcversion_id = TPTCV.tcversion_id " .
+
+						" WHERE TPTCV.testplan_id=" . $safe_id .
+						" AND UA.build_id IN ({$builds->inClause}) " .
+
+						" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
+						" AND E.id IS NULL AND LEBBP.id IS NULL";
+	
+		// echo 'QD - <b>' . $sqlUnionBU . '<br>';
+		// die();
+
+
+
 				
 		// get all execution status from DB Only for test cases with tester assigned			
-		$sql = 	$sqlExec .		
-				" /* FILTER ONLY ACTIVE BUILDS on target test plan */ " .
-				" WHERE TPTCV.testplan_id=" . intval($id) . 
-				" AND UA.build_id IN ({$buildsInClause}) " .
+		$sql =	" /* {$debugMsg} UNION  */" .
+				" SELECT user_id, build_id,status, count(0) AS exec_qty " .
+				" FROM ($sqlUnionAU UNION ALL $sqlUnionBU ) AS SQBU " .
 				" GROUP BY user_id,build_id,status ";
-	
+
 		// 
 		//echo 'QD - <br><b>' . __FUNCTION__ . '</b><br>'; 
 		//echo 'QD - ' . $sql . '<br>';

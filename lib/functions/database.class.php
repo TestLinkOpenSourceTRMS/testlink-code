@@ -916,7 +916,9 @@ class database
 	{
 		$items = null;
 		$result = $this->exec_query($sql,$limit);
-		
+	
+		// displayMemUsage(__FUNCTION__);
+	
 		// new dBug($result);
 		if ($result)
 		{
@@ -932,8 +934,9 @@ class database
 				}	
 			}
 		}
-
+		// displayMemUsage(__FUNCTION__);
 		unset($result);
+		// displayMemUsage(__FUNCTION__);
 		return $items;
 	}
 

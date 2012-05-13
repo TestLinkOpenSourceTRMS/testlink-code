@@ -8,128 +8,54 @@
 * 
 * Show Test Report by individual test case.
 *
-* @author
+* @internal revisios
+* @since 1.9.4
+* 20120513 - franciscom - TICKET 5016: Reports - Test result matrix - Refactoring
+*
+* @since 1.9.3
 * 20110512 - Julian - BUGID 4451 - remove version tag from not run test cases as the shown version
 *                                  is only taken from previous build and might not be right
 * 20110329 - Julian - BUGID 4341 - added "Last Execution" column
-* 20101013 - asimon - use linkto.php for emailed links
-* 20101012 - Julian - added html comment to properly sort by test case column
-* 20101007 - asimon - BUGID 3857: Replace linked icons in reports if reports get sent by e-mail
-* 20100930 - asimon - added icons for testcase editing and execution
-* 20100923 - eloff - refactored to use improved table interface
-* 20100828 - eloff - adapt to rendering of status column
-* 20100823 - Julian - table now uses a unique table id per test project and test plan
-* 20100816 - Julian - changed default column width
-                    - added default sorting
-* 20100723 - asimon - BUGID 3590: crash when clicking testcase link because of missing build id
-* 20100719 - eloff - Update due to changes in tlExtTable
-* 20100716 - eloff - group by platform column
-* 20100715 - eloff - use grouping on first column
-*                    Show only one table, group by platform is still possible
-* 20100503 - franciscom - BUGID 3419: In "Test result matrix", tests statuses or not colorized
-* 20100502 - Julian - BUGID 3418
-* 20100424 - franciscom - BUGID 3356	 
-* 20091223 - eloff - added HTML tables for reports where JS is unavailable
-* 20091221 - eloff - fixed bug when iterating over results
-*                    changed link to executed testcase to be an absolute url
-* 20091016 - franciscom - fix bug on URL to test case execution
-* 20090909 - franciscom - refactored to manage multiple tables when more that one
-*                         platform exists.
-*
-* 20090804 - franciscom - added Eloff contribution
 *
 */
 require('../../config.inc.php');
 require_once('common.php');
-require_once('results.class.php');
 require_once('displayMgr.php');
 require_once('exttable.class.php');
+
+$timerOn = microtime(true);   // will be used to compute elapsed time
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
+
+$metricsMgr = new tlTestPlanMetrics($db);
+$tplan_mgr  = &$metricsMgr; // displayMemUsage('START' . __FILE__);
+
 $args = init_args();
+list($gui,$tproject_info,$labels,$cfg) = initializeGui($db,$args,$tplan_mgr);
 
-$gui = new stdClass();
-$gui->map_status_css = null;
-$gui->title = lang_get('title_test_report_all_builds');
-$gui->printDate = '';
-$gui->matrixCfg  = config_get('resultMatrixReport');
-$gui->matrixData = array();
-
-$labels = init_labels(array('design' => null, 'execution' => null, 'execution_history' => null));
-$exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
-$edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
-$history_img = TL_THEME_IMG_DIR . "history_small.png";
-
+$tprojectOpt = $_SESSION['testprojectOptions'];
 $buildIDSet = null;
-$buildQty = 0;
-$tplan_mgr = new testPlanUrgency($db);
-
-$tproject_mgr = new testproject($db);
-$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
-$tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
-$gui->tplan_name = $tplan_info['name'];
-$gui->tproject_name = $tproject_info['name'];
-
 $testCaseCfg = config_get('testcase_cfg');
 $testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
+unset($testCaseCfg);
 
-$mailCfg = buildMailCfg($gui);
+$mailCfg = buildMailCfg($gui); //displayMemUsage('Before getExecStatusMatrix()');
 
+$execStatus = $metricsMgr->getExecStatusMatrix($args->tplan_id);
+$metrics = $execStatus['metrics'];
+$latestExecution = $execStatus['latestExec']; //displayMemUsage('Before UNSET');
+unset($execStatus); // displayMemUsage('AFTER UNSET');
 
-$getOpt = array('outputFormat' => 'map');
-$gui->platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
-
-$show_platforms = !is_null($gui->platforms);
-$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS,ALL_PLATFORMS);
-
-$gui->buildInfoSet = $tplan_mgr->get_builds($args->tplan_id, 1); //MHT: active builds only
 if ($gui->buildInfoSet)
 {
 	$buildIDSet = array_keys($gui->buildInfoSet);
-	$buildQty = sizeOf($buildIDSet);
 }
-
-// BUGID 3590
 $last_build = end($buildIDSet);
-
-// Get Results on map with access key = test case's parent test suite id
-$executionsMap = $re->getSuiteList();
-
-// lastResultMap provides list of all test cases in plan - data set includes title and suite names
-$lastResultMap = $re->getMapOfLastResult();
-
-$indexOfArrData = 0;
-$resultsCfg = config_get('results');
-$urgencyCfg = config_get('urgency');
-$map_tc_status_verbose_code = $resultsCfg['code_status'];
-$map_tc_status_verbose_label = $resultsCfg['status_label'];
-
-foreach($map_tc_status_verbose_code as $code => $verbose)
-{
-  if( isset($map_tc_status_verbose_label[$verbose]))
-  {
-    $label = $map_tc_status_verbose_label[$verbose];
-    $map_tc_status_code_langet[$code] = lang_get($label);
-    $gui->map_status_css[$code] = $resultsCfg['code_status'][$code] . '_text';
-  }
-}
-$not_run_label=lang_get($resultsCfg['status_label']['not_run']);
-
-// Will add a column
-if ($gui->matrixCfg->buildColumns['showStatusLastExecuted'])
-{
-	$gui->buildInfoSet[] = array('name' => lang_get('result_on_last_build'));
-}
-
-if ($gui->matrixCfg->buildColumns['latestBuildOnLeft'])
-{
-	$gui->buildInfoSet = array_reverse($gui->buildInfoSet);
-}
 
 // Every Test suite a row on matrix to display will be created
 // One matrix will be created for every platform that has testcases
-if ($show_platforms)
+if( ($show_platforms = !is_null($gui->platforms)) )
 {
 	$cols = array_flip(array('tsuite', 'link', 'platform', 'priority'));
 }
@@ -138,190 +64,136 @@ else
 	$cols = array_flip(array('tsuite', 'link', 'priority'));
 }
 
-$gui->matrix = array();
-if ($lastResultMap != null) 
+
+if( !is_null($metrics) )
 {
-	$versionTag = lang_get('tcversion_indicator');
-	$priorityCache  = null;
-	foreach ($lastResultMap as $suiteId => $tsuite) 
+	// invariant pieces	=> avoid wasting time on loops
+	$dlink = '<a href="' . str_replace(" ", "%20", $args->basehref) . 'linkto.php?tprojectPrefix=' . 
+			 urlencode($tproject_info['prefix']) . '&item=testcase&id=';	
+
+	$hist_img_tag = '<img title="' . $labels['history'] . '"' . ' src="' . $gui->img->history . '" /></a> ';
+	$edit_img_tag = '<img title="' . $labels['design'] . '"' . ' src="' . $gui->img->edit . '" /></a> ';
+	// ----------------------------------------------------------------------------------------------
+
+	$tsuiteSet = array_keys($metrics);
+	foreach($tsuiteSet as $tsuiteID)
 	{
-		foreach ($tsuite as $testCaseId => $platform) 
+		$tcaseSet = array_keys($metrics[$tsuiteID]);
+		foreach($tcaseSet as $tcaseID)
 		{
-			foreach($platform as $platformId => $tcase) 
+			$platformSet = array_keys($metrics[$tsuiteID][$tcaseID]);
+			foreach($platformSet as $platformID)
 			{
-    			$suiteName = $tcase['suiteName'];
-				$name = $tcase['name'];
-				$linkedTCVersion = $tcase['version'];
-				$external_id = $testCasePrefix . $tcase['external_id'];
-				
-				// BUGID 3590: crash when clicking testcase link
-				$buildId = $tcase['buildIdLastExecuted'] ? $tcase['buildIdLastExecuted'] : $last_build;
+				$rf = &$metrics[$tsuiteID][$tcaseID][$platformID];
+				$rows = null;
 
-			    $tc_name = htmlspecialchars("{$external_id}:{$name}",ENT_QUOTES);
+				// some info does not change on different executions
+				$build2loop = array_keys($rf);
+				$top = current($build2loop);
+				$external_id = $testCasePrefix . $rf[$top]['external_id'];
+				$rows[$cols['tsuite']] = $rf[$top]['suiteName'];
+			
+				// -----------------------------------------------------------------------------------				
+				// build HTML Links
+			    $name = htmlspecialchars("{$external_id}:{$rf[$top]['name']}",ENT_QUOTES);
+				if($args->format == FORMAT_HTML)
+				{
+					$rows[$cols['link']] = "<!-- " . sprintf("%010d", $rf[$top]['external_id']) . " -->" .  
+										   "<a href=\"javascript:openExecHistoryWindow({$tcaseID});\">" .
+				                		   $hist_img_tag .
+										   "<a href=\"javascript:openTCEditWindow({$tcaseID});\">" .
+				                		   $edit_img_tag . $name;
+				}
+				else
+				{
+					$rows[$cols['link']] = $dlink . urlencode($external_id) . '">' . "{$name}</a> ";
+				}
+				// -----------------------------------------------------------------------------------				
 
-				// create linked icons
-				$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$testCaseId});\">" .
-				                     "<img title=\"{$labels['execution_history']}\" src=\"{$history_img}\" /></a> ";
-				$edit_link = "<a href=\"javascript:openTCEditWindow({$testCaseId});\">" .
-				             "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
-			    // 20101007 - asimon - BUGID 3857
-
-				// 20101013 - asimon - use linkto.php for emailed links
-				$dl = str_replace(" ", "%20", $args->basehref) . 'linkto.php?tprojectPrefix=' . urlencode($tproject_info['prefix']) .
-					  '&item=testcase&id=' . urlencode($external_id);
-				$mail_link = "<a href='{$dl}'>{$tc_name}</a> ";
-
-			    $tcLink = "<!-- " . sprintf("%010d", $tcase['external_id']) . " -->" .
-			              $exec_history_link .$edit_link . $tc_name;
-
-				$rowArray = null;
-				$rowArray[$cols['tsuite']] = $suiteName;
-			    // 20101007 - asimon - BUGID 3857
-				$rowArray[$cols['link']] = $args->format != FORMAT_HTML ? $mail_link : $tcLink;
 				if ($show_platforms)
 				{
-					$rowArray[$cols['platform']] = $gui->platforms[$platformId];
+					$rows[$cols['platform']] = $gui->platforms[$platformID];
 				}
-				// $rowArray[$cols['tcversion']] = $testCaseVersion;
 
-			
-				if($_SESSION['testprojectOptions']->testPriorityEnabled) 
+				if($tprojectOpt->testPriorityEnabled) 
 				{
-					if( !isset($priorityCache[$tcase['tcversion_id']]) )
-					{
-						$dummy = $tplan_mgr->getPriority($args->tplan_id, array('tcversion_id' => $tcase['tcversion_id']));
-						$priorityCache[$tcase['tcversion_id']] = $dummy[$tcase['tcversion_id']];
-					}
 					// is better to use code to do reorder instead of localized string ???
-					$rowArray[$cols['priority']] = $priorityCache[$tcase['tcversion_id']]['priority_level'];
+					$rows[$cols['priority']] = $rf[$top]['priority_level'];
 				}
 
-				$suiteExecutions = $executionsMap[$suiteId];
-				
-				// BUGID 4341 - Remember the status of the latest execution based on highest execution_id
-				$latestExecution = array();
-				// reset exec_id for each test case
-				$latestExecution['exec_id'] = 0;
-				$latestExecution['status'] = null;
-			    
-			    // Remember the status of the last build that was executed
-				// Use array format for status as specified in tlTable::$data
-				$lastBuildRun = null;
-
-				// iterate over all builds and lookup results for current test case			
-				// Keeps a list of status for every build
-				$buildExecStatus = array();
-				for ($idx = 0 ; $idx < $buildQty; $idx++) 
+				// Now loop on result on each build, but following order
+				$buildExecStatus = null;	
+				$execOnLastBuild = null;
+				foreach($buildIDSet as $buildID)
 				{
-					$buildId = $buildIDSet[$idx];
-					$resultsForBuild = null;
-					$lastStatus = $resultsCfg['status_code']['not_run'];
-					
-					// BUGID 3419
-					$cssClass = $gui->map_status_css[$lastStatus]; 
-					
-					// iterate over executions for this suite, look for 
-					// entries that match current:
-					// test case id,build id ,platform id
-					$qta_suites=sizeOf($suiteExecutions);
-
 					// build icon for execution link
-					$exec_link = "";
-					if ($args->format == FORMAT_HTML) {
-						$exec_link = "<a href=\"javascript:openExecutionWindow(" .
-						             "{$testCaseId}, {$tcase['tcversion_id']}, {$buildId}, " .
-						             "{$args->tplan_id}, {$platformId});\">" .
-						             "<img title=\"{$labels['execution']}\" src=\"{$exec_img}\" /></a> ";
-					}
-
-					for ($jdx = 0; $jdx < $qta_suites; $jdx++) 
+					$r4build['text'] = "";
+					if ($args->format == FORMAT_HTML) 
 					{
-						$execution_array = $suiteExecutions[$jdx];
-						if (($execution_array['testcaseID'] == $testCaseId) && 
-						    ($execution_array['build_id'] == $buildId) &&
-						    ($execution_array['platform_id'] == $platformId))
-						{
-							$status = $execution_array['status'];
-							$resultsForBuildText = $map_tc_status_code_langet[$status];
-							$resultsForBuildText .= sprintf($versionTag,$execution_array['version']);
-
-							$resultsForBuild = array(
-								"value" => $status,
-								"text" => $exec_link . $resultsForBuildText,
-								"cssClass" => $gui->map_status_css[$status]);
-
-							$lastStatus = $execution_array['status'];
-							
-							// BUGID 4341 - If execution_id for this test cases within this build
-							// has a higher value remember as latest execution
-							if ($execution_array['executions_id'] > $latestExecution['exec_id']) {
-								$latestExecution['exec_id'] = $execution_array['executions_id'];
-								$latestExecution['status'] = array(
-									"value" => $status,
-									"text" => $exec_link . $resultsForBuildText,
-									"cssClass" => $gui->map_status_css[$status]);
-							}
-						}
+						$r4build['text'] = "<a href=\"javascript:openExecutionWindow(" .
+						             	   "{$tcaseID}, {$rf[$buildID]['tcversion_id']}, {$buildID}, " .
+						             	   "{$args->tplan_id}, {$platformID});\">" .
+						                   "<img title=\"{$labels['execution']}\" src=\"{$gui->img->exec}\" /></a> ";
 					}
-					// If no execution was found => not run
-					if( $resultsForBuild === null )
+					$r4build['text'] .= $labels[$rf[$buildID]['status']] .
+								  		sprintf($labels['versionTag'],$rf[$buildID]['version']);
+
+					$r4build['value'] = $rf[$buildID]['status'];
+					$r4build['cssClass'] = $gui->map_status_css[$rf[$buildID]['status']];
+			
+					$buildExecStatus[] = $r4build;
+
+					if($gui->matrixCfg->buildColumns['showStatusLastExecuted'] && $last_build == $buildID)
 					{
-						$cssClass = $gui->map_status_css[$resultsCfg['status_code']['not_run']]; 
-						$resultsForBuildText = $not_run_label;
-						// BUGID 4451 - remove version tag from not run test cases as the
-						//              shown version is only taken from previous build and
-						//              might not be right
-						// $resultsForBuildText .= sprintf($versionTag,$linkedTCVersion);
-
-						$resultsForBuild = array(
-							"value" => $resultsCfg['status_code']['not_run'],
-							"text" => $exec_link . $resultsForBuildText,
-							"cssClass" => $cssClass);
-						
-						// BUGID 4341 - if status has not been set for prior builds set it to not_run
-						if (!isset($latestExecution['status'])) {
-							$latestExecution['status'] = array(
-								"value" => $resultsCfg['status_code']['not_run'],
-								"text" => $exec_link . $resultsForBuildText,
-								"cssClass" => $cssClass);
-						}
+						$execOnLastBuild = $r4build;	
 					}
-					
-					$buildExecStatus[$idx] = $resultsForBuild;
-					// keep track of last executed status
-					if ($lastBuildRun == null || $lastStatus != $resultsCfg['status_code']['not_run'])
+					if( ($latestExecution[$platformID][$tcaseID]['build_id'] == $buildID) &&
+					    ($latestExecution[$platformID][$tcaseID]['id'] == $rf[$buildID]['executions_id']) )
 					{
-						$lastBuildRun = $resultsForBuild;
-					}
-				} // end build for loop
+						$lexec = $r4build;
+					}    
+				}
+				
+				unset($r4build);
 
+				// Ok, now the specials
+				// If configured, add column with Exec result on Latest Created Build
 			    if ($gui->matrixCfg->buildColumns['showStatusLastExecuted'])
 			    {
-			    	// Add additional column
-			    	$buildExecStatus[] = $lastBuildRun;
+			    	$buildExecStatus[] = $execOnLastBuild;
                 }
-                
 			    if ($gui->matrixCfg->buildColumns['latestBuildOnLeft']) 
 			    {
 			    	$buildExecStatus = array_reverse($buildExecStatus);
 			    }
-			    $rowArray = array_merge($rowArray, $buildExecStatus);
-			    
-			    // BUGID 4341
-				$rowArray[] = $latestExecution['status'];
+			    $rows = array_merge($rows, $buildExecStatus);
 				
-			    $gui->matrix[] = $rowArray;
-  			    $indexOfArrData++;
-        	}
-        }	
-    }
-} // end if
+				// Always righmost column will display lastest execution result
+				$rows[] = $lexec;
+				
+			    $gui->matrix[] = $rows;
+			    unset($rows);
+			    unset($buildExecStatus);
+			} // $platformSet
+			
+		}  // $tcaseSet
+	
+	} // $tsuiteSet
+	// new dBug($gui->matrix);
+}	
+unset($metrics);
+unset($latestExecution);
 
-$gui->tableSet[] =  buildMatrix($gui->buildInfoSet, $gui->matrix, $args->format, $show_platforms, $args, $gui->platforms);
+// displayMemUsage('Before buildMatrix()');
+$gui->tableSet[] =  buildMatrix($gui, $args, $last_build, $tprojectOpt);
+// displayMemUsage('AFTER buildMatrix()');
+
+$timerOff = microtime(true);
+$gui->elapsed_time = round($timerOff - $timerOn,2);
+
 $smarty = new TLSmarty;
 $smarty->assign('gui',$gui);
 displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format, $mailCfg);
-
 
 /**
  * 
@@ -352,58 +224,65 @@ function checkRights(&$db,&$user)
 /**
  * Builds ext-js rich table to display matrix results
  *
- * @param map buildSet: info about all Builds analized
- * @param map dataSet: data to be displayed on matrix
  *
  * return tlExtTable
  *
  */
-function buildMatrix($buildSet, $dataSet, $format, $show_platforms, &$args, $platforms)
+function buildMatrix(&$guiObj,&$argsObj,$latestBuildID,$options)
 {
 	$columns = array(array('title_key' => 'title_test_suite_name', 'width' => 100),
 	                 array('title_key' => 'title_test_case_title', 'width' => 150));
-	if ($show_platforms)
-	{
-		$columns[] = array('title_key' => 'platform', 'width' => 60, 'filter' => 'list', 'filterOptions' => $platforms);
-	}
+
+	$lbl = init_labels(array('title_test_suite_name' => null,'platform' => null,'priority' => null,
+					         'result_on_last_build' => null, 'title_test_case_title' => null));
 	
-	// BUGID 3418: check if test priority is enabled
-	if($_SESSION['testprojectOptions']->testPriorityEnabled) 
+	$group_name = $lbl['title_test_suite_name'];
+
+	if(!is_null($guiObj->platforms))
+	{
+		$columns[] = array('title_key' => 'platform', 'width' => 60, 'filter' => 'list', 
+						   'filterOptions' => $guiObj->platforms);
+		$group_name = $lbl['platform'];
+	}
+	if($options->testPriorityEnabled) 
 	{
 		$columns[] = array('title_key' => 'priority', 'type' => 'priority', 'width' => 40);
 	}
 	
-	foreach ($buildSet as $build) 
+	// --------------------------------------------------------------------
+	$buildSet = $guiObj->buildInfoSet;
+	if( $guiObj->matrixCfg->buildColumns['showStatusLastExecuted'] )
+	{
+		$buildSet[] = array('name' => $lbl['result_on_last_build'] . ' ' . $buildSet[$latestBuildID]['name']);
+	}
+	
+	foreach($buildSet as $build) 
 	{
 		$columns[] = array('title' => $build['name'], 'type' => 'status', 'width' => 100);
 	}
+	// --------------------------------------------------------------------
 	
-	// BUGID 4341 - add new column for last result
+	
 	$columns[] = array('title_key' => 'last_execution', 'type' => 'status', 'width' => 100);
-	
-	if ($format == FORMAT_HTML) 
+	if ($argsObj->format == FORMAT_HTML) 
 	{
-		
-		$matrix = new tlExtTable($columns, $dataSet, 'tl_table_results_tc');
+		$matrix = new tlExtTable($columns, $guiObj->matrix, 'tl_table_results_tc');
 		
 		//if platforms feature is enabled group by platform otherwise group by test suite
-		$group_name = ($show_platforms) ? lang_get('platform') : lang_get('title_test_suite_name');
 		$matrix->setGroupByColumnName($group_name);
-		
 		$matrix->sortDirection = 'DESC';
 
-		// BUGID 3418: check if test priority is enabled
-		if($_SESSION['testprojectOptions']->testPriorityEnabled) 
+		if($options->testPriorityEnabled) 
 		{
 			$matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer', 'filter' => 'Priority'));
-			//sort by priority
-			$matrix->setSortByColumnName(lang_get('priority'));
-		} else {
-			//sort by test case
-			$matrix->setSortByColumnName(lang_get('title_test_case_title'));
+			$matrix->setSortByColumnName($lbl['priority']);
+		} 
+		else 
+		{
+			$matrix->setSortByColumnName($lbl['title_test_case_title']);
 		}
 		
-		//define table toolbar
+		// define table toolbar
 		$matrix->showToolbar = true;
 		$matrix->toolbarExpandCollapseGroupsButton = true;
 		$matrix->toolbarShowAllColumnsButton = true;
@@ -411,8 +290,10 @@ function buildMatrix($buildSet, $dataSet, $format, $show_platforms, &$args, $pla
 	} 
 	else 
 	{
-		$matrix = new tlHTMLTable($columns, $dataSet, 'tl_table_results_tc');
+		$matrix = new tlHTMLTable($columns, $guiObj->matrix, 'tl_table_results_tc');
 	}
+	unset($columns);
+	
 	return $matrix;
 }
 
@@ -430,5 +311,66 @@ function buildMailCfg(&$guiObj)
 	                ' : ' . $labels['testplan'] . ' : ' . $guiObj->tplan_name;
 	                 
 	return $cfg;
+}
+
+/**
+ * 
+ *
+ */
+function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
+{
+	
+	$cfg = array('results' => config_get('results'), 'urgency' => config_get('urgency'));
+	
+	$guiObj = new stdClass();
+	$guiObj->map_status_css = null;
+	$guiObj->title = lang_get('title_test_report_all_builds');
+	$guiObj->printDate = '';
+	$guiObj->matrix = array();
+
+	$guiObj->platforms = $tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'map'));
+
+	$guiObj->img = new stdClass();
+	$guiObj->img->exec = TL_THEME_IMG_DIR . "exec_icon.png";
+	$guiObj->img->edit = TL_THEME_IMG_DIR . "edit_icon.png";
+	$guiObj->img->history = TL_THEME_IMG_DIR . "history_small.png";
+
+
+	$tproject_mgr = new testproject($dbHandler);
+	$tproject_info = $tproject_mgr->get_by_id($argsObj->tproject_id);
+	unset($tproject_mgr); 
+
+	$tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
+	$guiObj->tplan_name = $tplan_info['name'];
+	$guiObj->tproject_name = $tproject_info['name'];
+
+
+	$l18n = init_labels(array('design' => null, 'execution' => null, 'history' => 'execution_history',
+							  'result_on_last_build' => null, 'versionTag' => 'tcversion_indicator') );
+
+	$l18n['not_run']=lang_get($cfg['results']['status_label']['not_run']);
+
+
+	$guiObj->buildInfoSet = $tplanMgr->get_builds($argsObj->tplan_id, testplan::ACTIVE_BUILDS); 
+	$guiObj->matrixCfg  = config_get('resultMatrixReport');
+
+	// hmm need to understand if this can be removed
+	if ($guiObj->matrixCfg->buildColumns['latestBuildOnLeft'])
+	{
+		$guiObj->buildInfoSet = array_reverse($guiObj->buildInfoSet);
+	}
+	// -------------------------------------------------------------------------------
+
+
+	foreach($cfg['results']['code_status'] as $code => $verbose)
+	{
+	  if( isset($cfg['results']['status_label'][$verbose]))
+	  {
+	    $l18n[$code] = lang_get($cfg['results']['status_label'][$verbose]);
+	    $guiObj->map_status_css[$code] = $cfg['results']['code_status'][$code] . '_text';
+	  }
+	}
+	
+	return array($guiObj,$tproject_info,$l18n,$cfg);
 }
 ?>

@@ -1,17 +1,18 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.14 2010/09/20 13:57:37 mx-julian Exp $ *}
-{* Purpose: smarty template - show Test Results and Metrics *}
-{* Revisions:
-    20100719 - eloff - Update due to changes in tlExtTable
-    20091223 - eloff - readded support for HTML tables
-    20070919 - franciscom - BUGID
-    20051204 - mht - removed obsolete print button
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+
+show Test Results and Metrics
+@filesource	resultsTC.tpl
+
+@internal revisions
+@since 1.9.4 
+20120513 - franciscom - added elapsed time - TICKET 5016: Reports - Test result matrix - Refactoring
 *}
 
 {lang_get var="labels"
           s="title,date,printed_by,title_test_suite_name,platform,
              title_test_case_title,version,generated_by_TestLink_on, priority,
-             info_resultsTC_report"}
+             info_resultsTC_report,elapsed_seconds"}
 
 {include file="inc_head.tpl" openHead="yes"}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
@@ -57,6 +58,7 @@
 <br />
 
 {$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
+<p>{$labels.elapsed_seconds} {$gui->elapsed_time}</p>
 </div>
 
 </body>

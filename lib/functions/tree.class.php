@@ -387,6 +387,9 @@ class tree extends tlObject
 		$the_path = array();
 		$this->_get_path($node_id,$the_path,$to_node_id,$format); 
 		
+		// echo $format;
+		// new dBug($the_path);
+		
 		if( !is_null($the_path) && count($the_path) > 0 )
 		{
 			$the_path=array_reverse($the_path);  
@@ -460,12 +463,14 @@ class tree extends tlObject
 			return; 	
 		}
 		
+		// new dBug($format);
 		while ( $row = $this->db->fetch_array($result) )
 		{
 			// only continue if this $node isn't the root node
 			// (that's the node with no parent)
 			if ($row['parent_id'] != '' && $row['id'] != $to_node_id) 
 			{
+				
 				// Getting data from the node specific table
 				// $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
 				// $node_table = $this->node_tables_by['id'][$row['node_type_id']];
@@ -475,7 +480,6 @@ class tree extends tlObject
 				switch($format)
 				{
 					case 'full':
-						
 						//$node_list[] = array('id' => $row['id'],
 						//	'parent_id' => $row['parent_id'],
 						//	'node_type_id' => $row['node_type_id'],
@@ -494,7 +498,29 @@ class tree extends tlObject
 					case 'points':
 						$node_list[] = $row['id'];
 						break;    
-						
+
+					case 'simple_me':
+						if( is_null($node_list) )
+						{
+							$node_list[$row['id']] = $row['id'];
+						}
+						else
+						{
+							$node_list[$row['parent_id']] = $row['parent_id'];
+						}						
+						break;    
+
+					case 'name':
+						//$node_list[] = array('id' => $row['id'],
+						//	'parent_id' => $row['parent_id'],
+						//	'node_type_id' => $row['node_type_id'],
+						//	'node_order' => $row['node_order'],
+						//	'node_table' => $this->node_tables_by['id'][$row['node_type_id']],
+						//	'name' => $row['name'] );
+						// $row['node_table'] = $this->node_tables_by['id'][$row['node_type_id']];
+						$node_list[] = $row['name'];
+						break;    
+
 				}
 				
 				// we should add the path to the parent of this node to the path
@@ -1162,7 +1188,13 @@ class tree extends tlObject
 	    
 	    if( !is_null($options) )
 	    {
-	        $path_format = isset($options['include_starting_point']) ? 'points' : $path_format;
+			// not a good solution, but Quick & Dirty
+	        $path_format = isset($options['path_format']) ? $options['path_format'] : $path_format;
+			if(	!isset($options['path_format']) )
+			{
+	        	$path_format = isset($options['include_starting_point']) ? 'points' : $path_format;
+			}
+
 	        $output_format = isset($options['output_format']) ? $options['output_format'] : $output_format;
 	    }
 	    
@@ -1182,6 +1214,9 @@ class tree extends tlObject
 	    	$sql="/* $debugMsg */ " . 
 	    	     " SELECT id,name FROM {$this->tables['nodes_hierarchy']}  WHERE id IN ({$unique_nodes})"; 
 	    	$decode=$this->db->fetchRowsIntoMap($sql,'id');
+	    	
+	    	// new dBug($decode);
+	    	
 	    	foreach($path_to as $key => $elem)
 	    	{
 	    	     foreach($elem['name'] as $idx => $node_id)
@@ -1203,11 +1238,11 @@ class tree extends tlObject
         		case 'path_as_string':
         		case 'stairway2heaven':
 				$flat_path=null;
-				foreach($path_to as $tcase_id => $pieces)
+				foreach($path_to as $item_id => $pieces)
 				{
-					//remove test project node
+					// remove root node
 					unset($pieces['name'][0]);
-					$flat_path[$tcase_id]=implode('/',$pieces['name']);
+					$flat_path[$item_id]=implode('/',$pieces['name']);
 				}
 				if($output_format == 'path_as_string')
 				{

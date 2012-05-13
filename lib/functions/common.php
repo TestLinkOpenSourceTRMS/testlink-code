@@ -1020,6 +1020,16 @@ function buildExternalIdString($testCasePrefix, $external_id)
 
 }
 
-// var_dump(spl_autoload_functions());
-
+/**
+ * 
+ *
+ */
+function displayMemUsage($msg='')
+{
+	$dx = date('l jS \of F Y h:i:s A');
+	echo "<br>{$msg} :: <b>{$dx}</b> <br>"; 			
+	ob_flush();flush();
+	echo "memory:" . memory_get_usage() . " - PEAK -> " . memory_get_peak_usage() .'<br>';
+	ob_flush();flush();
+}
 ?>

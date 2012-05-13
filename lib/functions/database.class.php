@@ -208,7 +208,8 @@ class database
 			echo "<pre> ============================================================================== </pre>";
 			echo "<pre> DB Access Error - debug_print_backtrace() OUTPUT START </pre>";
 			echo "<pre> ============================================================================== </pre>";
-			echo "<pre>"; debug_print_backtrace(); echo "</pre>";
+			echo "<pre>"; debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS); echo "</pre>";
+			// echo "<pre>"; debug_print_backtrace(); echo "</pre>";
 			echo "<pre> ============================================================================== </pre>";
 			$t_result = false;
 		}
@@ -898,6 +899,45 @@ class database
 		unset($result);
 		return $items;
 	}
+
+
+	/**
+	 * Fetches all rows into a map of 3 levels
+	 *
+	 * @param string $sql the query to be executed
+	 * @param array $keyCols, columns to used as access key
+	 * @param boolean $cumulative
+	 * @param integer $limit (optional) number of rows
+	 * 
+	 * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
+	 * 
+	 **/
+	function fetchRowsIntoMap4l($sql,$keyCols,$cumulative = 0,$limit = -1)
+	{
+		$items = null;
+		$result = $this->exec_query($sql,$limit);
+		
+		// new dBug($result);
+		if ($result)
+		{
+			while($row = $this->fetch_array($result))
+			{
+				if($cumulative)
+				{
+					$items[$row[$keyCols[0]]][$row[$keyCols[1]]][$row[$keyCols[2]]][$row[$keyCols[3]]][] = $row;
+				}
+				else
+				{
+					$items[$row[$keyCols[0]]][$row[$keyCols[1]]][$row[$keyCols[2]]][$row[$keyCols[3]]] = $row;
+				}	
+			}
+		}
+
+		unset($result);
+		return $items;
+	}
+
+
 
 } // end of database class
 ?>

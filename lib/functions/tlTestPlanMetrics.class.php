@@ -273,7 +273,7 @@ class tlTestPlanMetrics extends testplan
 	 *
 	 *
 	 */
-	function getExecCountersByBuildExecStatus($id, $opt=null)
+	function getExecCountersByBuildExecStatus($id, $filters=null, $opt=null)
 	{
 		//echo 'QD - <b><br>' . __FUNCTION__ . '</b><br>';
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -535,7 +535,7 @@ class tlTestPlanMetrics extends testplan
 						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
 						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
 						
-						$sqlGetAssignedFeatures .
+						$sqlStm['getAssignedFeatures'] .
 
 						" /* GO FOR Absolute LATEST exec ID IGNORE BUILD */ " .
 						" JOIN ({$sqlLEBP}) AS LEBP " .
@@ -785,7 +785,7 @@ class tlTestPlanMetrics extends testplan
 
 						" /* FILTER BUILD Set on target test plan */ " .
 						" WHERE TPTCV.testplan_id=" . $safe_id . 
-						$build->whereAddExec;
+						$builds->whereAddExec;
 						
 
 		$sqlUnionB	=	"/* {$debugMsg} sqlUnionB - NOT RUN */" . 
@@ -794,7 +794,7 @@ class tlTestPlanMetrics extends testplan
 						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
 						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
 						
-						$sql['getAssignedFeatures'] .
+						$sqlStm['getAssignedFeatures'] .
 
 						" /* Get importance  */ ".
 						" JOIN {$this->tables['tcversions']} TCV " .
@@ -1259,6 +1259,8 @@ class tlTestPlanMetrics extends testplan
 		{
 			$template['details'][$verbose] = array('qty' => 0, 'percentage' => 0);
 		}
+		
+		$renderObj = new stdClass();
 		$renderObj->colDefinition = $rObj->colDefinition;
 		
 		// collect qty
@@ -1338,7 +1340,7 @@ class tlTestPlanMetrics extends testplan
 						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
 						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
 
-						$sql['getAssignedFeatures'] .
+						$sqlStm['getAssignedFeatures'] .
 						
 						" /* GO FOR Absolute LATEST exec ID IGNORE BUILD */ " .
 						" JOIN ({$sqlLEBP}) AS LEBP " .
@@ -1371,7 +1373,7 @@ class tlTestPlanMetrics extends testplan
 						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
 						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
 						
-						$sql['getAssignedFeatures'] .
+						$sqlStm['getAssignedFeatures'] .
 
 						" /* Get REALLY NOT RUN => BOTH LEBP.id AND E.id ON LEFT OUTER see WHERE  */ " .
 						" LEFT OUTER JOIN ({$sqlLEBP}) AS LEBP " .

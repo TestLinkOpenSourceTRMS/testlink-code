@@ -90,6 +90,15 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
 	}	
 	// ----------------------------------------------------------------------------------------------
 	
+	// BUGID 4929 If there is no req_spec in XML, and req_spec_id 
+	// from context is null, we must raise an error, to avoid ghots requirements in DB
+	if($retval->file_check['status_ok']) {
+		$isReqSpec = property_exists($xml,'req_spec');
+		if(!$isReqSpec && $argsObj->req_spec_id <= 0) {
+			$retval->file_check = array('status_ok' => FALSE, 'msg' => lang_get('please_create_req_spec_first'));
+		}
+	}
+	
 	if($retval->file_check['status_ok'])
 	{
 

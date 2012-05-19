@@ -677,7 +677,7 @@ CREATE VIEW /*prefix*/tcversions_last_active AS
 
 CREATE VIEW /*prefix*/tcases_active AS 
 (
-	SELECT DISTINCT NHTCV.parent_id AS tcase_id, tcv.tc_external_id
+	SELECT DISTINCT NHTCV.parent_id AS tcase_id, TCV.tc_external_id
 	FROM /*prefix*/nodes_hierarchy NHTCV 
 	JOIN /*prefix*/tcversions TCV ON TCV.id = NHTCV.id 
 	WHERE TCV.active = 1

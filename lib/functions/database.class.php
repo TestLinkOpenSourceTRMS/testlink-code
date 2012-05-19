@@ -14,6 +14,7 @@
  *
  * @internal revisions
  * @since 1.9.4 
+ * 20120519 - franciscom - new methods fetchRowsIntoMapAddRC(),fetchRowsIntoMap4l()
  * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
  * 20120430 - franciscom - new method fetchRowsIntoMap3l()
  * 20120129 - franciscom - TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for 
@@ -631,28 +632,23 @@ class database
 		$result = $this->exec_query($sql,$limit);
 		if ($result)
 		{
+			// -----------------------------------------------
+            // Error management Code 				 
+            $errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
+			if( ($empty_column = (trim($column)=='') ) )
+			{
+				$errorMsg .= 'empty column - SQL:' . $sql;
+    			trigger_error($errorMsg,E_USER_NOTICE);
+    			return null;
+    		}
+
 			while($row = $this->fetch_array($result))
 			{
 				// -----------------------------------------------
                 // Error management Code 				 
-				$empty_column = (trim($column)=='');
-				$missing_column = false;
-				if( !$empty_column )
-				{
-					$missing_column = !isset($row[$column]);
-				}
-		        $shoot = $missing_column || $empty_column;
-				$errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
-                if( $missing_column )
+                if( !isset($row[$column]) )
                 {
 	        	    $errorMsg .= 'missing column:' . $column;
-                }
-                else if( $empty_column )
-                {
-                	$errorMsg .= 'empty column';
-                }
-                if($shoot)
-                {
     			    $errorMsg .= ' - SQL:' . $sql;
     				trigger_error($errorMsg,E_USER_NOTICE);
     				return null;
@@ -663,7 +659,6 @@ class database
 				{
 					$items[$row[$column]][] = $row;
 				}
-
 				else
 				{
 					$items[$row[$column]] = $row;
@@ -710,14 +705,14 @@ class database
 		{
 			while ($myrow = $this->fetch_array($result))
 			{
-			  if($cumulative)
-			  {
+				if($cumulative)
+			  	{
 				  $items[$myrow[$column1]][] = $myrow[$column2];
 				}
 				else
 				{
 				  $items[$myrow[$column1]] = $myrow[$column2];
-				}  
+				}
 			}	
 		}
 
@@ -940,6 +935,63 @@ class database
 		return $items;
 	}
 
+
+
+
+	/**
+	 * Fetches all rows into a map whose keys are the values of columns
+	 *
+	 * @param string $sql the query to be executed
+	 * @param string $column the name of the column
+	 *
+	 * @return array an assoc array 
+	 **/
+	function fetchRowsIntoMapAddRC($sql,$column,$limit = -1)
+	{
+		$items = null;
+		$result = $this->exec_query($sql,$limit);
+		if ($result)
+		{
+			// -----------------------------------------------
+            // Error management Code 				 
+            $errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
+			if( ($empty_column = (trim($column)=='') ) )
+			{
+				$errorMsg .= 'empty column - SQL:' . $sql;
+    			trigger_error($errorMsg,E_USER_NOTICE);
+    			return null;
+    		}
+
+			while($row = $this->fetch_array($result))
+			{
+				// -----------------------------------------------
+                // Error management Code 				 
+                if( !isset($row[$column]) )
+                {
+	        	    $errorMsg .= 'missing column:' . $column;
+    			    $errorMsg .= ' - SQL:' . $sql;
+    				trigger_error($errorMsg,E_USER_NOTICE);
+    				return null;
+    			}	
+                // -----------------------------------------------
+                
+                if(!isset($items[$row[$column]]) )
+                {
+                	$row['recordcount'] = 0;
+				}
+				else
+				{
+					$row['recordcount'] = $items[$row[$column]]['recordcount'];
+				}
+				$row['recordcount']++;
+				$items[$row[$column]] = $row;
+			}
+		}
+		
+		unset($result);
+		unset($row);
+		return $items;
+	}
 
 
 } // end of database class

@@ -948,17 +948,47 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				$opt_etree->useColours->testcases = $exec_cfg->enable_tree_testcases_colouring;
 				$opt_etree->useColours->counters =	$exec_cfg->enable_tree_counters_colouring;
 				$opt_etree->testcases_colouring_by_selected_build =	$exec_cfg->testcases_colouring_by_selected_build; 
-					
+				
+				/*	
 				echo 'DEBUG - mode:' . $this->mode . '<br>';
 				new dBug($opt_etree);
-					
+				new dBug($filters);
+				*/
+				
+				$chronos[] = $tstart = microtime(true);
+				echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::Start!!!' . current($chronos);
+				reset($chronos);	
+
+				$style='1.9.4';
+				switch ($style)
+				{				
+				
+				case '1.9.3':
 				list($tree_menu, $testcases_to_show) = generateExecTree($this->db,$gui->menuUrl,
 				                                                        $this->args->testproject_id,
 				                                                        $this->args->testproject_name,
 				                                                        $this->args->testplan_id,
 				                                                        $this->args->testplan_name,
 				                                                        $filters,$opt_etree);
+				                                                        
+				                                                        
+				break;
 					
+				case '1.9.4':
+				list($tree_menu, $testcases_to_show) = execTree($this->db,$gui->menuUrl,
+				                                                $this->args->testproject_id,
+				                                                $this->args->testproject_name,
+				                                                $this->args->testplan_id,
+				                                                $this->args->testplan_name,
+				                                                $filters,$opt_etree);
+				
+				break;
+
+				}
+				$chronos[] = microtime(true); $tnow = end($chronos); $tprev = prev($chronos);
+				$t_elapsed = number_format( $tnow - $tprev, 4);
+				echo '<br> ' . basename(__FILE__) . ' Elapsed (sec):' . $t_elapsed;
+
 				$this->set_testcases_to_show($testcases_to_show);
 				
 				$root_node = $tree_menu->rootnode;
@@ -1659,7 +1689,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		                             $build_key => array('items' => null,
 		                                                 'selected' => $build_selection));
 
-		new dBug($this->filters[$key]);
+		// new dBug($this->filters[$key]);
 		
 		// init menu for result selection by function from exec.inc.php
 		$this->filters[$key][$result_key]['items'] = createResultsMenu();

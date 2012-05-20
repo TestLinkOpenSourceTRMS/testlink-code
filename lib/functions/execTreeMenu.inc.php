@@ -42,7 +42,7 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $testCaseSet=null;
    
    
-    new dBug($objFilters);
+    // new dBug($objFilters);
   	
 	$keyword_id = 0;
 	$keywordsFilterType = 'Or';
@@ -147,7 +147,7 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			// WE NEED TO ADD FILTERING on CUSTOM FIELD VALUES, WE HAVE NOT REFACTORED
 			// THIS YET.
 			//
-			new dBug($filters, array('label' => __FUNCTION__));
+			// new dBug($filters, array('label' => __FUNCTION__));
 			
 			if( !is_null($sql2do = $tplan_mgr->getLinkedForTree($tplan_id,$filters,$options)) )
 			{
@@ -188,7 +188,6 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			$tplan_tcases = array();
 			$apply_other_filters=false;
 		}
-		
 		// Take time
 	 	//$chronos[] = microtime(true);
 		//$tnow = end($chronos);
@@ -196,6 +195,22 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		//$t_elapsed = number_format( $tnow - $tprev, 4);
 		//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>FROM get_subtree()</b>):' . $t_elapsed .'<br>';
 		//reset($chronos);	
+
+		// OK, now we need to work on status filters
+		// new dBug($objFilters);
+		// new dBug($objOptions);
+		// if "any" was selected as filtering status, don't filter by status
+		$targetExecStatus = (array)(isset($objFilters->filter_result_result) ? $objFilters->filter_result_result : null);
+		if( !is_null($targetExecStatus) && (!in_array($resultsCfg['status_code']['all'], $targetExecStatus)) ) 
+		{
+			// die('GO ON OTHER FILTERS');
+			echo '<h1> BEFORE applyStatusFilters() </h1>';
+			new dBug($tplan_tcases);
+			applyStatusFilters($tplan_id,$tplan_tcases,$objFilters,$tplan_mgr,$resultsCfg['status_code']);
+		}
+		
+		
+		
 
 
 
@@ -441,6 +456,38 @@ function prepareExecTreeNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 	}
 
 	return $tcase_counters;
+}
+
+
+
+function applyStatusFilters($tplan_id,&$items2filter,&$fobj,&$tplan_mgr,$statusCfg)
+{
+	$methods = config_get('execution_filter_methods');
+	$methods = $methods['status_code'];
+	
+	$ffn = array($methods['any_build'] => 'filterStatusSetAtLeastOneOfActiveBuilds',
+		         $methods['all_builds'] => 'filterStatusSetAllActiveBuilds',
+		         $methods['specific_build'] => 'filter_by_status_for_build',
+		         $methods['current_build'] => 'filter_by_status_for_build',
+		         $methods['latest_execution'] => 'filter_by_status_for_latest_execution');
+	
+	$f_method = isset($fobj->filter_result_method) ? $fobj->filter_result_method : null;
+	$f_result = isset($fobj->filter_result_result) ? $fobj->filter_result_result : null;
+	$f_result = (array)$f_result;
+
+	// if "any" was selected as filtering status, don't filter by status
+	if (in_array($statusCfg['all'], $f_result)) 
+	{
+		$f_result = null;
+		return $items2filter; // >>---> Bye!
+	}
+
+	if( ($filter_done = !is_null($f_method) ) )
+	{
+		$items = $ffn[$f_method]($tplan_mgr, $items2filter, $tplan_id, $fobj);
+	}
+
+	return $filter_done ? $items : $items2filter; 
 }
 
 ?>

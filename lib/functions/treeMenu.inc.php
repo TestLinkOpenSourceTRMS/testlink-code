@@ -1517,7 +1517,7 @@ function filterStatusSetAtLeastOneOfActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_
 {
 	
 	$key2remove=null;
-	$buildSet = $tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS);
+	$buildSet = array_keys($tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
 
 
 	if( !is_null($buildSet) ) 
@@ -1563,15 +1563,16 @@ function filterStatusSetAtLeastOneOfActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_
  */
 function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
-	// echo '<h1>' . __METHOD__ . '</h1>';
-	$key2remove=null;
-	$buildSet = $tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS);
-
+	echo '<h1>' . __METHOD__ . '</h1>';
+	$buildSet = array_keys($tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
 	if( !is_null($buildSet) ) 
 	{
 		$hits = $tplan_mgr->getHitsSameStatusFull($tplan_id,intval($filters->setting_platform),
-												  (array)$filters->filter_result_result,count($buildSet));
-		// new dBug($hits);
+												  (array)$filters->filter_result_result,$buildSet);
+
+
+		echo '<h1> hits </h1>';
+		new dBug($hits);
 		if( is_null($hits) ) 
 		{
 			$tcase_set = array();
@@ -1579,6 +1580,7 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
 		else 
 		{
 			helper_filter_cleanup($tcase_set,$hits);
+			unset($hits);
 		}
 	}
 	return $tcase_set;
@@ -1599,7 +1601,7 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
  */
 function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
-	// echo __METHOD__;
+	echo __METHOD__;
 	$hits = $tplan_mgr->getHitsStatusSetOnBuild($tplan_id,intval($filters->setting_platform),
 												intval($filters->filter_result_build),
 												(array)$filters->filter_result_result);

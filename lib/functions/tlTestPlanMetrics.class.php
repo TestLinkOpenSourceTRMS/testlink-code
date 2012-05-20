@@ -45,9 +45,10 @@ class tlTestPlanMetrics extends testplan
 	private $priorityLevelsCfg='';
 	private $map_tc_status;
 	private $tc_status_for_statistics;
-	private $notRunStatusCode;
+	
+	// private $notRunStatusCode;
 	private $statusCode;
-	private $execTaskCode;
+	// private $execTaskCode;
 
 	/** 
 	 * class constructor 
@@ -72,7 +73,7 @@ class tlTestPlanMetrics extends testplan
     	{
       		$this->tc_status_for_statistics['not_run'] = $this->map_tc_status['not_run'];  
     	}
-    	$this->notRunStatusCode = $this->tc_status_for_statistics['not_run'];
+    	// $this->notRunStatusCode = $this->tc_status_for_statistics['not_run'];
     	
 		$this->statusCode = array_flip(array_keys($this->resultsCfg['status_label_for_exec_ui']));
 		foreach($this->statusCode as $key => $dummy)
@@ -80,7 +81,7 @@ class tlTestPlanMetrics extends testplan
 			$this->statusCode[$key] = $this->resultsCfg['status_code'][$key];	
 		}
     	
-    	$this->execTaskCode = intval($this->assignment_types['testcase_execution']['id']);
+    	// $this->execTaskCode = intval($this->assignment_types['testcase_execution']['id']);
 
 	} // end results constructor
 
@@ -1854,6 +1855,63 @@ class tlTestPlanMetrics extends testplan
 	}
 
 
+	/** 
+	 *    
+	 *    
+	 *    
+	 *    
+	 */    
+	function getExecutionsByStatus($id,$status)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
+		$safe_id = intval($id);	
+
+		$sqlLEBBP = $sqlStm['LEBBP'];
+		$sql =	"/* {$debugMsg} sqlUnion Test suites - executions */" . 
+				" SELECT NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
+				" TPTCV.tcversion_id,TPTCV.platform_id," .
+				" E.build_id,TCV.version,TCV.tc_external_id AS external_id, " .
+				" E.id AS executions_id, E.status AS status, " .
+				" (TPTCV.urgency * TCV.importance) AS urg_imp " .
+				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+				
+				" /* GO FOR Absolute LATEST exec ID On BUILD,PLATFORM */ " .
+				" JOIN ({$sqlLEBBP}) AS LEBBP " .
+				" ON  LEBBP.testplan_id = TPTCV.testplan_id " .
+				" AND LEBBP.platform_id = TPTCV.platform_id " .
+				" AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
+				" AND LEBBP.testplan_id = " . $safe_id .
+
+				" /* Get execution status WRITTEN on DB */ " .
+				" JOIN {$this->tables['executions']} E " .
+				" ON  E.id = LEBBP.id " .
+				" AND E.build_id = LEBBP.build_id " .
+	
+				" /* Get Test Case info from Test Case Version */ " .
+				" JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
+				" ON  NHTCV.id = TPTCV.tcversion_id " .
+	
+				" /* Get Test Suite info from Test Case  */ " .
+				" JOIN {$this->tables['nodes_hierarchy']} NHTC " .
+				" ON  NHTC.id = NHTCV.parent_id " .
+				
+				" /* Get Test Case Version attributes */ " .
+				" JOIN {$this->tables['tcversions']} TCV " .
+				" ON  TCV.id = TPTCV.tcversion_id " .
+			
+				" WHERE TPTCV.testplan_id=" . $safe_id .
+				" AND E.status='{$status}' " .
+				$builds->whereAddExec;
+							
+                                   
+        new dBug($sql);                           
+		$keyColumns = array('tsuite_id','tcase_id','platform_id','build_id');
+        $dummy = (array)$this->db->fetchRowsIntoMap4l($sql,$keyColumns);              
+
+		new dBug($dummy);
+		
+	}
 	
 }
 ?>

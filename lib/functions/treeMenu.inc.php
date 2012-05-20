@@ -37,6 +37,9 @@
  */
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
 
+
+require_once("execTreeMenu.inc.php");
+
 /**
 *	strip potential newlines and other unwanted chars from strings
 *	Mainly for stripping out newlines, carriage returns, and quotes that were 
@@ -888,7 +891,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 
 	if($test_spec)
 	{
-		if(is_null($tc_id) || $tc_id >= 0)
+		if(is_null($tc_id) || $tc_id > 0)   // 20120519 TO BE CHECKED
 		{
 			$doFilterByKeyword = (!is_null($keyword_id) && $keyword_id > 0);
 			if($doFilterByKeyword)
@@ -898,7 +901,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			
 			// Multiple step algoritm to apply keyword filter on type=AND
 			// get_*_tcversions filters by keyword ALWAYS in OR mode.
-			$linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,
+			$linkedFilters = array('tcase_id' => $tc_id, 
+								   'keyword_id' => $keyword_id, 'keyword_filter_type' => $keywordsFilterType,
                                    'assigned_to' => $assignedTo,
                                    'assigned_on_build' => $build2filter_assignments,
                                    'cf_hash' =>  $cf_hash,
@@ -917,12 +921,13 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 				$opt['last_execution'] = isset($options->absolute_last_execution) ? 
 	                        			 $options->absolute_last_execution : false;
 			}
+			$linkedFilters['tcase_name'] = isset($filters->filter_testcase_name) ? $filters->filter_testcase_name : null; 
 				
 			echo 'DEBUG' . __FUNCTION__ . '<br>';
 			new dBug($linkedFilters);
 			new dBug($opt);
 									
-			$tplan_tcases = $tplan_mgr->get_ln_tcversions($tplan_id,$linkedFilters,$opt);
+			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
 			//new dBug($tplan_tcases);
 			
 		 	// Take Time
@@ -946,7 +951,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 					$linkedFilters = array('tcase_id' => array_keys($filteredSet));
 					
 					// TICKET 4710
-					$tplan_tcases = $tplan_mgr->get_ln_tcversions($tplan_id,$linkedFilters,$opt);
+					$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
 					
 				} else {
 					$tplan_tcases = null;
@@ -2177,6 +2182,10 @@ function apply_status_filters($tplan_id,&$items,&$fobj,&$tplan_mgr,$statusCfg)
 	$f_result = isset($fobj->filter_result_result) ? $fobj->filter_result_result : null;
 	$f_result = (array)$f_result;
 
+	// echo __METHOD__ . '<br>';
+	// new dBug($methods);
+	// new dBug($fobj);
+	
 	// if "any" was selected as filtering status, don't filter by status
 	if (in_array($statusCfg['all'], $f_result)) 
 	{
@@ -2185,11 +2194,15 @@ function apply_status_filters($tplan_id,&$items,&$fobj,&$tplan_mgr,$statusCfg)
 
 	if (!is_null($f_method) && isset($ffn[$f_method])) 
 	{
-		// special case: when filtering by "not run" status in any build,
-		// we need another filter function
+		// special case: 
+		// filtering by "not run" status in any build
+		// filtering by "not run" status in specific
+		//
+		// we change filter function
 		if (in_array($statusCfg['not_run'], $f_result)) 
 		{
 			$ffn[$methods['any_build']] = 'filter_not_run_for_any_build';
+		    $ffn[$methods['specific_build']] = 'filter_by_status_for_build';
 		}
 		
 		// special case: when filtering by "current build", we set the build to filter with
@@ -2606,5 +2619,4 @@ function helper_filter_cleanup(&$itemSet,$hits)
 		}
 	}
 }
-
 ?>

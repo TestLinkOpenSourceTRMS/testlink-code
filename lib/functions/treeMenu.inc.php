@@ -1515,15 +1515,22 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
  */
 function filterStatusSetAtLeastOneOfActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
+	echo __METHOD__;
 	
-	$key2remove=null;
+	$safe_platform = intval($filters->setting_platform);
 	$buildSet = array_keys($tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
-
-
 	if( !is_null($buildSet) ) 
 	{
-		$hits = $tplan_mgr->getHitsSameStatusPartial($tplan_id,intval($filters->setting_platform),
-												    (array)$filters->filter_result_result); 
+		if( $safe_platform > 0 )
+		{
+			$hits = $tplan_mgr->getHitsSameStatusPartialOnPlatform($tplan_id,$safe_platform,
+												    		       (array)$filters->filter_result_result); 
+		}
+		else
+		{
+			echo '<b><br>ALOP</b><br>';
+			$hits = $tplan_mgr->getHitsSameStatusPartialALOP($tplan_id,(array)$filters->filter_result_result); 
+		}
 		
 		if( is_null($hits) ) 
 		{
@@ -1567,9 +1574,18 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
 	$buildSet = array_keys($tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
 	if( !is_null($buildSet) ) 
 	{
-		$hits = $tplan_mgr->getHitsSameStatusFull($tplan_id,intval($filters->setting_platform),
-												  (array)$filters->filter_result_result,$buildSet);
 
+		$safe_platform = intval($filters->setting_platform);
+		if( $safe_platform > 0 )
+		{
+			$hits = $tplan_mgr->getHitsSameStatusFullOnPlatform($tplan_id,$safe_platform,
+													  			(array)$filters->filter_result_result,$buildSet);
+		}
+		else
+		{
+			$hits = $tplan_mgr->getHitsSameStatusFullALOP($tplan_id,
+													  	  (array)$filters->filter_result_result,$buildSet);
+		}
 
 		echo '<h1> hits </h1>';
 		new dBug($hits);
@@ -1602,9 +1618,22 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
 function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
 	echo __METHOD__;
-	$hits = $tplan_mgr->getHitsStatusSetOnBuild($tplan_id,intval($filters->setting_platform),
-												intval($filters->filter_result_build),
-												(array)$filters->filter_result_result);
+	
+	$safe_platform = intval($filters->setting_platform);
+	$safe_build = intval($filters->filter_result_build);
+	if( $safe_platform > 0)
+	{
+		
+		$hits = $tplan_mgr->getHitsStatusSetOnBuildPlatform($tplan_id,$safe_platform,$safe_build,
+															(array)$filters->filter_result_result);
+	}
+	else
+	{
+		echo '<br>ALOP<br>';
+		$hits = $tplan_mgr->getHitsStatusSetOnBuildALOP($tplan_id,$safe_build,
+														(array)$filters->filter_result_result);
+	}
+
 	if( is_null($hits) ) 
 	{
 		$tcase_set = array();
@@ -1659,7 +1688,16 @@ function filter_by_status_for_latest_execution(&$tplan_mgr,&$tcase_set,$tplan_id
 function filter_not_run_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
 
-	$hits = $tplan_mgr->getHitsNotRunPartial($tplan_id,intval($filters->setting_platform));
+	$safe_platform = intval($filters->setting_platform);
+	if( $safe_platform > 0)
+	{
+		$hits = $tplan_mgr->getHitsNotRunPartialOnPlatform($tplan_id,intval($filters->setting_platform));
+	}
+	else
+	{
+		$hits = $tplan_mgr->getHitsNotRunPartialALOP($tplan_id);
+	}
+
 	if( is_null($hits) ) 
 	{
 		$tcase_set = array();
@@ -2184,9 +2222,9 @@ function apply_status_filters($tplan_id,&$items,&$fobj,&$tplan_mgr,$statusCfg)
 	$f_result = isset($fobj->filter_result_result) ? $fobj->filter_result_result : null;
 	$f_result = (array)$f_result;
 
-	// echo __METHOD__ . '<br>';
+	echo __METHOD__ . '<br>';
 	// new dBug($methods);
-	// new dBug($fobj);
+	new dBug($fobj);
 	
 	// if "any" was selected as filtering status, don't filter by status
 	if (in_array($statusCfg['all'], $f_result)) 

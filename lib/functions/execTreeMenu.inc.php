@@ -23,6 +23,7 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                   $tplan_name,$objFilters,$objOptions) 
 {
 
+	echo '<h1>' . __FUNCTION__ . '</h1>';
  	$chronos[] = microtime(true);
 
 
@@ -60,16 +61,10 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 
 	$tplan_mgr = new testplan($dbHandler);
 	$tproject_mgr = new testproject($dbHandler);
-	$tcase_mgr = new testcase($dbHandler);
-	
-	$tree_manager = $tplan_mgr->tree_manager;
-	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
+	$tcase_node_type = $tplan_mgr->tree_manager->node_descr_id['testcase'];
 
-	$hash_descr_id = $tree_manager->get_available_node_types();
+	$hash_descr_id = $tplan_mgr->tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);	    
-	$decoding_hash = array('node_id_descr' => $hash_id_descr,
-		                   'status_descr_code' =>  $resultsCfg['status_code'],
-		                   'status_code_descr' =>  $resultsCfg['code_status']);
 	
 	$tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
 	
@@ -87,7 +82,8 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
   	// makes the magic of ignoring test cases not linked to test plan.
   	// This unexpected bonus can be useful on export test plan as XML.
   	//
-  	$my['options']=array('recursive' => true, 'remove_empty_nodes_of_type' => $tree_manager->node_descr_id['testsuite'],
+  	$my['options']=array('recursive' => true, 
+  						 'remove_empty_nodes_of_type' => $tplan_mgr->tree_manager->node_descr_id['testsuite'],
   	                     'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id));
  	$my['filters'] = array('exclude_node_types' => $nt2exclude,
  	                       'exclude_children_of' => $nt2exclude_children);
@@ -125,6 +121,7 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
 	$test_spec['id'] = $tproject_id;
 	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
+	$test_spec['node_type'] = 'testproject';
 	$map_node_tccount = array();
 	
 	$tplan_tcases = null;
@@ -149,23 +146,28 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			//
 			// new dBug($filters, array('label' => __FUNCTION__));
 			
-			if( !is_null($sql2do = $tplan_mgr->getLinkedForTree($tplan_id,$filters,$options)) )
+			if( !is_null($sql2do = $tplan_mgr->getLinkedForExecTree($tplan_id,$filters,$options)) )
 			{
 				new dBug($sql2do);
-				
-				// 
-				// $setTestCaseStatus = $this->db->fetchColumnsIntoMap($sql2run,'tcase_id','exec_status');
-				if( $filters['keyword_filter_type'] == 'And')
-				{ 
-					$kmethod = "fetchRowsIntoMapAddRC";
-					$unionClause = " UNION ALL ";
+
+				if( is_array($sql2do) )
+				{				
+					if( $filters['keyword_filter_type'] == 'And')
+					{ 
+						$kmethod = "fetchRowsIntoMapAddRC";
+						$unionClause = " UNION ALL ";
+					}
+					else
+					{
+						$kmethod = "fetchRowsIntoMap";
+						$unionClause = ' UNION ';
+					}
+					$sql2run = $sql2do['exec'] . $unionClause . $sql2do['not_run'];
 				}
 				else
 				{
-					$kmethod = "fetchRowsIntoMap";
-					$unionClause = ' UNION ';
+					$sql2run = $sql2do;
 				}
-				$sql2run = $sql2do['exec'] . $unionClause . $sql2do['not_run'];
 				$tplan_tcases = $setTestCaseStatus = $dbHandler->$kmethod($sql2run,'tcase_id');
 				
 			}
@@ -223,7 +225,7 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		
 	    $pnFilters = null;		
 		$pnOptions = array('hideTestCases' => false, 'viewType' => 'executionTree');
-		$testcase_counters = prepareExecTreeNode($dbHandler,$test_spec,$decoding_hash,$map_node_tccount,
+		$testcase_counters = prepareExecTreeNode($dbHandler,$test_spec,$map_node_tccount,
 		                                  		 $tplan_tcases,$pnFilters,$pnOptions);
 
 		// Take time
@@ -309,6 +311,11 @@ function initExecTree($filtersObj,$optionsObj)
 	$options['include_unassigned'] = isset($filtersObj->filter_assigned_user_include_unassigned) ?
 	                      			 $filtersObj->filter_assigned_user_include_unassigned : false;
 
+	// useful when using tree on set urgent test cases
+	$options['allow_empty_build'] = isset($optionsObj->allow_empty_build) ?
+	                      			      $optionsObj->allow_empty_build : false;
+
+
 	// NOT CLEAR what to do
 	// $status = isset($filters->filter_result_result) ? $filters->filter_result_result : null;
 	$show_testsuite_contents = isset($filtersObj->show_testsuite_contents) ? 
@@ -328,35 +335,38 @@ function initExecTree($filtersObj,$optionsObj)
 
 
 
-function prepareExecTreeNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
-                      		 &$tplan_tcases = null,$filters=null, $options=null)
+function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = null,
+							 $filters=null, $options=null)
 {
 	
 	static $status_descr_list;
 	static $debugMsg;
-    static $tables;
     static $my;
-    static $enabledFiltersOn;
-    static $activeVersionClause;
-    static $filterOnTCVersionAttribute;
-    static $filtersApplied;
-    static $users2filter;
-    static $results2filter;
+	static $resultsCfg;
 
     $tpNode = null;
-	if (!$tables)
+	if (!$debugMsg)
 	{
 		// new dBug($tplan_tcases);
 		
   	    $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
-        $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
 
-		$status_descr_list = array_keys($decoding_info['status_descr_code']);
+		$resultsCfg = config_get('results');
+		$status_descr_list = array_keys($resultsCfg['status_code']);
 		$status_descr_list[] = 'testcase_count';
+
+		$my = array();
+		$my['options'] = array('hideTestCases' => 0);
+		$my['options'] = array_merge($my['options'], (array)$options);
+
+
+		$my['filters'] = array();
+		$my['filters'] = array_merge($my['filters'], (array)$filters);
+
 	}
 		
 	$tcase_counters = array_fill_keys($status_descr_list, 0);
-	$node_type = isset($node['node_type_id']) ? $decoding_info['node_id_descr'][$node['node_type_id']] : null;
+	$node_type = isset($node['node_type']) ? $node['node_type'] : null;
 
 	if($node_type == 'testcase')
 	{
@@ -382,9 +392,9 @@ function prepareExecTreeNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 			$tcase_counters[$key]=0;
 		}
 
-		if(isset($tpNode['exec_status']) )
+		if( isset($tpNode['exec_status']) )
 		{
-			$tc_status_descr = $decoding_info['status_code_descr'][$tpNode['exec_status']];   
+			$tc_status_descr = $resultsCfg['code_status'][$tpNode['exec_status']];   
 		}
 		else
 		{
@@ -417,8 +427,8 @@ function prepareExecTreeNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 				continue;
 			}
 			
-			$counters_map = prepareExecTreeNode($db,$current,$decoding_info,$map_node_tccount,
-				                                $tplan_tcases,$my['filters'],$my['options']);
+			$counters_map = prepareExecTreeNode($db,$current,$map_node_tccount,$tplan_tcases,
+												$my['filters'],$my['options']);
 			foreach($counters_map as $key => $value)
 			{
 				$tcase_counters[$key] += $counters_map[$key];   
@@ -438,9 +448,6 @@ function prepareExecTreeNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 		{
 			$node = null;
 		}
-
-		
-		
 	}
 	else if ($node_type == 'testsuite')
 	{
@@ -475,6 +482,8 @@ function applyStatusFilters($tplan_id,&$items2filter,&$fobj,&$tplan_mgr,$statusC
 	$f_result = isset($fobj->filter_result_result) ? $fobj->filter_result_result : null;
 	$f_result = (array)$f_result;
 
+	// die();
+	
 	// if "any" was selected as filtering status, don't filter by status
 	if (in_array($statusCfg['all'], $f_result)) 
 	{
@@ -484,10 +493,259 @@ function applyStatusFilters($tplan_id,&$items2filter,&$fobj,&$tplan_mgr,$statusC
 
 	if( ($filter_done = !is_null($f_method) ) )
 	{
+		echo '<h1>FILTER METHOD:' . $f_method . '::' .  $ffn[$f_method] . '</h1>';
 		$items = $ffn[$f_method]($tplan_mgr, $items2filter, $tplan_id, $fobj);
 	}
 
 	return $filter_done ? $items : $items2filter; 
+}
+
+
+
+
+
+function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
+                      $tplan_name,$objFilters,$objOptions) 
+{
+
+	echo '<h1>' . __FUNCTION__ . '</h1>';
+
+	$debugMsg = ' - Method: ' . __FUNCTION__;
+ 	$chronos[] = microtime(true);
+
+	$treeMenu = new stdClass(); 
+	$treeMenu->rootnode = null;
+	$treeMenu->menustring = '';
+	
+	$resultsCfg = config_get('results');
+	$showTestCaseID = config_get('treemenu_show_testcase_id');
+	$glueChar=config_get('testcase_cfg')->glue_character;
+	$menustring = null;
+	$tplan_tcases = null;
+
+	list($filters,$options,
+		 $show_testsuite_contents,
+	     $useCounters,$useColors,$colorBySelectedBuild) = initExecTree($objFilters,$objOptions);
+	
+
+	$tplan_mgr = new testplan($dbHandler);
+	$tproject_mgr = new testproject($dbHandler);
+	$tree_manager = $tplan_mgr->tree_manager;
+	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
+
+	$hash_descr_id = $tree_manager->get_available_node_types();
+	$hash_id_descr = array_flip($hash_descr_id);	    
+	$tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
+	
+	$nt2exclude = array('testplan' => 'exclude_me',
+		                'requirement_spec'=> 'exclude_me',
+		                'requirement'=> 'exclude_me');
+	
+	$nt2exclude_children = array('testcase' => 'exclude_my_children',
+		                         'requirement_spec'=> 'exclude_my_children');
+	
+  	// remove test spec, test suites (or branches) that have ZERO test cases linked to test plan
+  	// 
+  	// IMPORTANT:
+  	// using 'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id))
+  	// makes the magic of ignoring test cases not linked to test plan.
+  	// This unexpected bonus can be useful on export test plan as XML.
+  	//
+  	$my['options']=array('recursive' => true, 'remove_empty_nodes_of_type' => $tree_manager->node_descr_id['testsuite'],
+  	                     'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id));
+ 	$my['filters'] = array('exclude_node_types' => $nt2exclude,
+ 	                       'exclude_children_of' => $nt2exclude_children);
+	
+ 	if (isset($objFilters->filter_toplevel_testsuite) && is_array($objFilters->filter_toplevel_testsuite)) 
+ 	{
+ 		$my['filters']['exclude_branches'] = $objFilters->filter_toplevel_testsuite;
+ 	}
+ 	
+ 	// Take Time
+ 	//$chronos[] = microtime(true);
+	//$tnow = end($chronos);
+	//$tprev = prev($chronos);
+    
+ 	// new dBug($my);
+	// Document why this is needed, please	
+    $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
+ 	//echo 'BEFORE';
+ 	
+ 	//echo 'AF';
+ 	//new dBug($test_spec);
+ 	//die();
+ 	
+ 	
+ 	// Take Time
+ 	$chronos[] = microtime(true);
+	$tnow = end($chronos);
+	$tprev = prev($chronos);
+	$t_elapsed = number_format( $tnow - $tprev, 4);
+	echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
+	reset($chronos);	
+
+     
+	$test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
+	$test_spec['id'] = $tproject_id;
+	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
+	$test_spec['node_type'] = 'testproject';
+	$map_node_tccount = array();
+	
+	$tplan_tcases = null;
+    $apply_other_filters=true;
+
+
+	if($test_spec)
+	{
+		if(is_null($filters['tcase_id']) || $filters['tcase_id'] > 0)   // 20120519 TO BE CHECKED
+		{
+			// Step 1 - get item set with exec status.
+			// This has to scopes:
+			// 1. tree coloring according exec status on (Test plan, platform, build ) context
+			// 2. produce sql that can be used to reduce item set on combination with filters
+			//    that can not be used on this step like:
+			//    a. test cases belonging to branch with root TEST SUITE
+			//	  b. keyword filter on AND MODE
+			//    c. execution results on other builds, any build etc
+			//
+			// WE NEED TO ADD FILTERING on CUSTOM FIELD VALUES, WE HAVE NOT REFACTORED
+			// THIS YET.
+			//
+			// new dBug($filters, array('label' => __FUNCTION__));
+			
+			// $gtMethod = {$objOptions->getTreeMethod};
+			
+			if( !is_null($sql2do = $tplan_mgr->{$objOptions->getTreeMethod}($tplan_id,$filters,$options)) )
+			{
+				new dBug($sql2do);
+
+				if( is_array($sql2do) )
+				{				
+					if( $filters['keyword_filter_type'] == 'And')
+					{ 
+						$kmethod = "fetchRowsIntoMapAddRC";
+						$unionClause = " UNION ALL ";
+					}
+					else
+					{
+						$kmethod = "fetchRowsIntoMap";
+						$unionClause = ' UNION ';
+					}
+					$sql2run = $sql2do['exec'] . $unionClause . $sql2do['not_run'];
+				}
+				else
+				{
+					$kmethod = "fetchRowsIntoMap";
+					$sql2run = $sql2do;
+				}
+				
+				new dBug($sql2run);
+				$tplan_tcases = $setTestCaseStatus = $dbHandler->$kmethod($sql2run,'tcase_id');
+				
+			}
+									
+			// $tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
+			//new dBug($tplan_tcases);
+			
+		 	// Take Time
+		 	$chronos[] = microtime(true);
+			$tnow = end($chronos);
+			$tprev = prev($chronos);
+			$t_elapsed = number_format( $tnow - $tprev, 4);
+			echo '<br> ' . __FUNCTION__ . " Elapsed (sec) (<b>AFTER glinkedMethod()</b>):" . $t_elapsed .'<br>';
+			reset($chronos);	
+		}   
+
+		
+		if (is_null($tplan_tcases))
+		{
+			$tplan_tcases = array();
+			$apply_other_filters=false;
+		}
+		// Take time
+	 	//$chronos[] = microtime(true);
+		//$tnow = end($chronos);
+		//$tprev = prev($chronos);
+		//$t_elapsed = number_format( $tnow - $tprev, 4);
+		//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>FROM get_subtree()</b>):' . $t_elapsed .'<br>';
+		//reset($chronos);	
+
+		// OK, now we need to work on status filters
+		// new dBug($objFilters);
+		// new dBug($objOptions);
+		// if "any" was selected as filtering status, don't filter by status
+		$targetExecStatus = (array)(isset($objFilters->filter_result_result) ? $objFilters->filter_result_result : null);
+		if( !is_null($targetExecStatus) && (!in_array($resultsCfg['status_code']['all'], $targetExecStatus)) ) 
+		{
+			// die('GO ON OTHER FILTERS');
+			echo '<h1> BEFORE applyStatusFilters() </h1>';
+			new dBug($tplan_tcases);
+			applyStatusFilters($tplan_id,$tplan_tcases,$objFilters,$tplan_mgr,$resultsCfg['status_code']);
+		}
+		
+		
+		
+
+
+
+		// Take time
+	 	//$chronos[] = microtime(true);
+		//$tnow = end($chronos);
+		//$tprev = prev($chronos);
+		//$t_elapsed = number_format( $tnow - $tprev, 4);
+		//reset($chronos);	
+		
+	    $pnFilters = null;		
+		$pnOptions = array('hideTestCases' => false, 'viewType' => 'executionTree');
+		$testcase_counters = prepareExecTreeNode($dbHandler,$test_spec,$map_node_tccount,
+		                                  		 $tplan_tcases,$pnFilters,$pnOptions);
+
+		// Take time
+	 	// $chronos[] = microtime(true);
+		// $tnow = end($chronos);
+		// $tprev = prev($chronos);
+		// $t_elapsed = number_format( $tnow - $tprev, 4);
+		// echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER prepareExecTreeNode()</b>):' . $t_elapsed .'<br>';
+		// reset($chronos);	
+
+
+		foreach($testcase_counters as $key => $value)
+		{
+			$test_spec[$key] = $testcase_counters[$key];
+		}
+	
+		$keys = array_keys($tplan_tcases);
+		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,
+			                             $hash_id_descr,1,$menuUrl,false,$useCounters,$useColors,
+			                             $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
+	}  // if($test_spec)
+	
+		
+	$treeMenu->rootnode=new stdClass();
+	$treeMenu->rootnode->name=$test_spec['text'];
+	$treeMenu->rootnode->id=$test_spec['id'];
+	$treeMenu->rootnode->leaf=$test_spec['leaf'];
+	$treeMenu->rootnode->text=$test_spec['text'];
+	$treeMenu->rootnode->position=$test_spec['position'];	    
+	$treeMenu->rootnode->href=$test_spec['href'];
+	
+	if( !is_null($menustring) )
+	{  
+		// Change key ('childNodes')  to the one required by Ext JS tree.
+		if(isset($test_spec['childNodes'])) 
+		{
+			$menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes']));
+		}
+		
+		// Remove null elements (Ext JS tree do not like it ).
+		// :null happens on -> "children":null,"text" that must become "children":[],"text"
+		// $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
+		$menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
+	}  
+	
+	$treeMenu->menustring = $menustring;
+	
+	return array($treeMenu, $keys);
 }
 
 ?>

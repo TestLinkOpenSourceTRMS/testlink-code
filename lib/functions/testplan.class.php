@@ -606,15 +606,12 @@ class testplan extends tlObjectWithAttachments
 				$sql_filter['platforms'] . $sql_filter['assigned_on_build'] . $sql_filter['user_assignment'] . 
 				$sql_filter['tsuites'];
 
-		// $sql .= " ORDER BY testsuite_id,NH_TCASE.node_order,tc_id,T.platform_id ";
-
-
-		// echo 'DEBUG:SQL:' . $sql . '<br>';
-		
-		// echo __FUNCTION__ . '<br>'; die($sql);
-		
+		//$sql .= " ORDER BY testsuite_id,NH_TCASE.node_order,tc_id,T.platform_id ";
+		//echo 'DEBUG:SQL:' . $sql . '<br>';
+		//echo __FUNCTION__ . '<br>'; die($sql);
 		//echo '<br><b>' . 'BEFORE Accessing DB' . ' - Xdebug Timing:' . xdebug_time_index() .'</b><br>'; 
-		// echo __FUNCTION__ . "$my[options][output]::" . $my['options']['output'] . '<br>';
+		//echo __FUNCTION__ . "$my[options][output]::" . $my['options']['output'] . '<br>';
+
 		switch($my['options']['output'])
 		{ 
 			case 'array':
@@ -1157,7 +1154,7 @@ class testplan extends tlObjectWithAttachments
 
 		list($my,$build_active_status) = $this->init_get_linked_tcversions($id,$filters,$options);
 
-		echo __LINE__ . '<br>';
+		//echo __LINE__ . '<br>';
 		// new dBug($my);
 		// new dBug($build_active_status);
 
@@ -1214,7 +1211,7 @@ class testplan extends tlObjectWithAttachments
 		//new dBug($sqlNew);
 		//new dBug($joinNew);
 		//new dBug($order_byNew);
-		echo '<hr>';
+		//echo '<hr>';
 		
 		//$sqlLEBBP = '';
 		//if( is_null($myNew['options']['exclude_info']) || 
@@ -5932,7 +5929,7 @@ class testplan extends tlObjectWithAttachments
 				" GROUP BY tcase_id" .
 				" HAVING COUNTER = " . $countTarget ; 
 
-		echo $sql;
+		//echo $sql;
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		return $recordset;
 	}
@@ -6105,7 +6102,7 @@ class testplan extends tlObjectWithAttachments
 				" AND E.status IN('{$statusInClause}') " .
 				" GROUP BY tcase_id";
 
-		// echo $sql;
+		//echo $sql;
 		unset($safe_id,$buildsCfg,$sqlLEBBP);
 
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
@@ -6157,7 +6154,7 @@ class testplan extends tlObjectWithAttachments
 		//
 		$countTarget = intval($buildsCfg['count']) * count($dummy);
 		
-		// echo '<br><b>' . $debugMsg . '</b><br>';
+		//echo '<br><b>' . $debugMsg . '</b><br>';
 		// new dBug($buildsCfg);
 		
 		$sql = 	" /* $debugMsg */ " .
@@ -6193,7 +6190,7 @@ class testplan extends tlObjectWithAttachments
 				" GROUP BY tcase_id " .
 				" HAVING COUNTER = " . $countTarget ; 
 
-		echo $sql;
+		//echo $sql;
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		return $recordset;
 
@@ -6239,7 +6236,7 @@ class testplan extends tlObjectWithAttachments
 				" AND E.build_id = " . intval($buildID) .
 				" AND E.status IS NULL ";
 
-		// echo $sql;
+		//echo $sql;
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
 	}
@@ -6281,7 +6278,7 @@ class testplan extends tlObjectWithAttachments
 				" AND E.build_id = " . intval($buildID) .
 				" AND E.status IS NULL ";
 
-		// echo $sql;
+		//echo $sql;
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
 	}
@@ -6346,7 +6343,7 @@ class testplan extends tlObjectWithAttachments
 				" AND E.build_id  = " . $safe_id['build'] . 
 				" AND E.status IN('{$statusInClause}')";
 				
-		// echo $sql;
+		//echo $sql;
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		$hits = is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
 		
@@ -6417,7 +6414,7 @@ class testplan extends tlObjectWithAttachments
 				" AND E.build_id  = " . $safe_id['build'] . 
 				" AND E.status IN('{$statusInClause}')";
 		
-		echo $sql . '<br>';		
+		//echo $sql . '<br>';		
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		$hits = is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
 		
@@ -6427,51 +6424,19 @@ class testplan extends tlObjectWithAttachments
 
 
 	/**
-	 * getHitsStatusSetOnLatestExecution($id,$platformID,$statusSet)  
+	 * getHitsStatusSetOnLatestExecALOP($id,$statusSet,$buildSet)  
 	 *
 	 * returns recordset with:
 	 * test cases that has at least ONE of requested status 
-	 * on LASTEST EXECUTION ON ONE of ALL ACTIVE builds (full), for a platform
+	 * on ABSOLUTE LASTEST EXECUTION considering all builds on build set IGNORING platform.
+	 *
+	 * If build set is NULL, we will analyse  ALL ACTIVE builds (full) IGNORING platform.
 	 *
 	 * IMPORTANT / CRITIC:	THIS DOES NOT WORK for Not Run STATUS
 	 *						HAS NO SENSE, because Not Run IN NOT SAVED to DB
 	 *						=> we can not find LATEST NON RUN
 	 * Example:
 	 * 
-	 * Test Plan: PLAN B 
-	 * Builds: B1,B2,B3
-	 * Test Cases: TC-100, TC-200,TC-300
-	 *
-	 * Test Case - Build - LAST Execution status -	Exec ID
-	 * TC-100      B1      Passed					20120415
-	 * TC-100      B2      >>> FAILED					20120418 <<< LATEST
-	 * TC-100      B3      Not Run					20120416 
-	 *
-	 * TC-200      B1      FAILED					1111
-	 * TC-200      B2      FAILED					1112
-	 * TC-200      B3      >>> BLOCKED					12345  <<< LATEST
-	 *
-	 * TC-300      B1      >>> Passed					4  <<< LATEST
-	 * TC-300      B2      Passed					1
-	 * TC-300      B3      BLOCKED					3
-	 *
-	 * TC-400      B1      FAILED					10
-	 * TC-400      B2      BLOCKED					11
-	 * TC-400      B3      >>> FAILED					12 <<< LATEST
-	 * 
-	 * Request 1:
-	 * Provide test cases with status in ('Passed','BLOCKED')
-	 * ON LATEST Execution
-	 *
-	 * ANSWER:
-	 * TC-200, TC300
-	 *
-	 * Request 2:
-	 * Provide test cases with status in ('FAILED','BLOCKED')
-	 * ON LATEST Execution
-	 *
-	 * ANSWER:
-	 * TC-100, TC-200, TC-400
 	 *
 	 * @return
 	 *
@@ -6479,11 +6444,13 @@ class testplan extends tlObjectWithAttachments
 	 * @since 1.9.4
 	 *
 	 */
-	function getHitsStatusSetOnLatestExecution($id,$platformID,$statusSet) 
+	function getHitsStatusSetOnLatestExecALOP($id,$statusSet,$buildSet=null) 
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		
-		list($safe_id,$buildsCfg,$sqlLEBBP) = $this->helperGetHits($id,$platformID);
+		list($safe_id,$buildsCfg,$sqlLEX) = $this->helperGetHits($id,null,$buildSet,
+																 array('ignorePlatform' => true,
+																 	   'ignoreBuild' => true));
 		
 		// Check if 'not run' in present in statusSet => throw exception
 		$statusList = (array)$statusSet;
@@ -6494,14 +6461,8 @@ class testplan extends tlObjectWithAttachments
 		}
 		$statusInClause = implode("','",$statusList);
 
-
-
-
-
-		// --------------------------------------------------------------------------------------		
 		$sql = 	" /* $debugMsg */ " .
-				" /* Count() to be used on HAVING */ " .
-				" SELECT MAX(LEBBP.id) AS latest_exec_id ,NHTCV.parent_id AS tcase_id" .
+				" SELECT MAX(LEX.id) AS latest_exec_id ,NHTCV.parent_id AS tcase_id" .
 				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
 
 				" JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id " .
@@ -6510,29 +6471,102 @@ class testplan extends tlObjectWithAttachments
 				" /* Get Test Case ID */ " .
 				" JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCV.tcversion_id " .
 
-				" /* Get Latest Execution by BUILD and PLATFORM  */ " .
-				" JOIN ({$sqlLEBBP}) AS LEBBP " .
-				" ON  LEBBP.testplan_id = TPTCV.testplan_id " .
-				" AND LEBBP.platform_id = TPTCV.platform_id " .
-				" AND LEBBP.build_id = B.id " .
-				" AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
+				" /* Get Latest Execution  IGNORE BUILD, PLATFORM  */ " .
+				" JOIN ({$sqlLEX}) AS LEX " .
+				" ON  LEX.testplan_id = TPTCV.testplan_id " .
+				" AND LEX.tcversion_id = TPTCV.tcversion_id " .
 
 				" /* Get STATUS INFO From Executions */ " .
 				" JOIN {$this->tables['executions']} E " .
-				" ON  E.id = LEBBP.id " .
-				" AND E.tcversion_id = LEBBP.tcversion_id " .
-				" AND E.testplan_id = LEBBP.testplan_id " .
-				" AND E.platform_id = LEBBP.platform_id " .
-				" AND E.build_id = LEBBP.build_id " .
+				" ON  E.id = LEX.id " .
+				" AND E.tcversion_id = LEX.tcversion_id " .
+				" AND E.testplan_id = LEX.testplan_id " .
+				" AND E.build_id = B.id " .
 
 				" WHERE TPTCV.testplan_id = " . $safe_id['tplan'] . 
-				" AND TPTCV.platform_id=" . $safe_id['platform'] . 
 				" AND E.build_id IN ({$buildsCfg['inClause']}) " .
 				" AND E.status IN('{$statusInClause}') " .
 				" GROUP BY tcase_id";
 
-		// echo $sql;
-		unset($safe_id,$buildsCfg,$sqlLEBBP);
+		//echo $sql;
+		unset($safe_id,$buildsCfg,$sqlLEX);
+		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
+		return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+    }
+
+
+
+	/**
+	 * getHitsStatusSetOnLatestExecOnPlatform($id,$platformID,$statusSet,$buildSet)  
+	 *
+	 * returns recordset with:
+	 * test cases that has at least ONE of requested status 
+	 * on ABSOLUTE LASTEST EXECUTION considering all builds on build set, for a platform
+	 *
+	 * If build set is NULL, we will analyse  ALL ACTIVE builds (full), for a platform
+	 *
+	 * IMPORTANT / CRITIC:	THIS DOES NOT WORK for Not Run STATUS
+	 *						HAS NO SENSE, because Not Run IN NOT SAVED to DB
+	 *						=> we can not find LATEST NON RUN
+	 * Example:
+	 * 
+	 *
+	 * @return
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 *
+	 */
+	function getHitsStatusSetOnLatestExecOnPlatform($id,$platformID,$statusSet,$buildSet=null) 
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		list($safe_id,$buildsCfg,$sqlLEBP) = $this->helperGetHits($id,$platformID,$buildSet,
+																  array('ignoreBuild' => true));
+		
+		// Check if 'not run' in present in statusSet => throw exception
+		$statusList = (array)$statusSet;
+		$dummy = array_flip($statusList);
+		if( isset($dummy[$this->notRunStatusCode]) )
+		{
+			throw new Exception (__METHOD__ . ':: Status Not Run can not be used');	
+		}
+		$statusInClause = implode("','",$statusList);
+
+		// --------------------------------------------------------------------------------------		
+		$sql = 	" /* $debugMsg */ " .
+				" SELECT MAX(LEBP.id) AS latest_exec_id ,NHTCV.parent_id AS tcase_id" .
+				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+
+				" JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id " .
+				$buildsCfg['statusClause'] .
+
+				" /* Get Test Case ID */ " .
+				" JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCV.tcversion_id " .
+
+				" /* Get Latest Execution on PLATFORM IGNORE BUILD */ " .
+				" JOIN ({$sqlLEBP}) AS LEBP " .
+				" ON  LEBP.testplan_id = TPTCV.testplan_id " .
+				" AND LEBP.platform_id = TPTCV.platform_id " .
+				" AND LEBP.tcversion_id = TPTCV.tcversion_id " .
+				// " AND LEBP.build_id = B.id " .
+
+				" /* Get STATUS INFO From Executions */ " .
+				" JOIN {$this->tables['executions']} E " .
+				" ON  E.id = LEBP.id " .
+				" AND E.tcversion_id = LEBP.tcversion_id " .
+				" AND E.testplan_id = LEBP.testplan_id " .
+				" AND E.platform_id = LEBP.platform_id " .
+				// " AND E.build_id = LEBBP.build_id " .
+
+				" WHERE TPTCV.testplan_id = " . $safe_id['tplan'] . 
+				" AND TPTCV.platform_id=" . $safe_id['platform'] . 
+				" AND E.build_id IN ({$buildsCfg['inClause']}) " .
+				" AND E.status IN ('{$statusInClause}') " .
+				" GROUP BY tcase_id";
+
+		//echo $sql;
+		unset($safe_id,$buildsCfg,$sqlLEBP);
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
     }
@@ -6616,7 +6650,7 @@ class testplan extends tlObjectWithAttachments
 		}
 		else if($get['otherStatus'] && $hitsFoundOn['otherStatus'])
 		{
-			echo '<br>ONLY DB STATUS <br>';
+			//echo '<br>ONLY DB STATUS <br>';
 			$items = array_keys($hits['otherStatus']);
 		}
 		
@@ -6626,7 +6660,7 @@ class testplan extends tlObjectWithAttachments
 
 
 	/**
-	 * getHitsStatusSetPartialOnPlatform($id,$platformID,$statusSet,$buildSet) 
+	 * getHitsStatusSetPartialALOP($id,$platformID,$statusSet,$buildSet) 
 	 *
 	 * @return
 	 *
@@ -6674,7 +6708,7 @@ class testplan extends tlObjectWithAttachments
 				" AND E.status IN ('{$statusInClause}') ";
 				// " GROUP BY tcase_id";
 
-		echo '<br><b>' . $sql . '</b><br>';
+		//echo '<br><b>' . $sql . '</b><br>';
 		unset($safe_id,$buildsCfg,$sqlLEX);
 
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
@@ -6760,7 +6794,7 @@ class testplan extends tlObjectWithAttachments
 				" AND B.id IN ({$buildsCfg['inClause']}) " .
 				" AND E.status IS NULL ";
 				
-		// echo $sql;
+		//echo $sql;
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		return $recordset;
 	}
@@ -6808,8 +6842,8 @@ class testplan extends tlObjectWithAttachments
 		if( ($get['otherStatus']=(count($statusSetLocal) > 0)) )
 		{
 			
-			// echo '<h1>' . $debugMsg . '</h1>';
-			// echo '<h1>' . $getHitsStatusSetMethod . '</h1>';
+			//echo '<h1>' . $debugMsg . '</h1>';
+			//echo '<h1>' . $getHitsStatusSetMethod . '</h1>';
 			$hits['otherStatus'] = (array)$this->$getHitsStatusSetMethod($id,$platformID,$statusSetLocal,$buildSet);	
 		}
 
@@ -6818,7 +6852,7 @@ class testplan extends tlObjectWithAttachments
 		$hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
 		$hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
 		
-		// echo $debugMsg;
+		//echo $debugMsg;
 		// new dBug($get);
 		// new dBug($hitsFoundOn);
 		// new dBug($hits);
@@ -6842,9 +6876,9 @@ class testplan extends tlObjectWithAttachments
 			$items = array_keys($hits['otherStatus']);
 		}
 		
-		// echo '<br>notRunHits<br>';
-		// new dBug($notRunHits);
-		// echo '<br>otherStatusHits<br>';
+		//echo '<br>notRunHits<br>';
+		//new dBug($notRunHits);
+		//echo '<br>otherStatusHits<br>';
 		// new dBug($otherStatusHits);
 		
 		// new dBug($items);
@@ -6860,9 +6894,9 @@ class testplan extends tlObjectWithAttachments
 	function helperGetHits($id,$platformID,$buildSet=null,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		// echo '<h1>' . $debugMsg . '</h1>';
+		//echo '<h1>' . $debugMsg . '</h1>';
 
-		$my['options'] = array('buildID' => 0, 'ignorePlatform' => false);
+		$my['options'] = array('buildID' => 0, 'ignorePlatform' => false, 'ignoreBuild' => false);
 		$my['options'] = array_merge($my['options'],(array)$options);
 		
 		
@@ -6896,18 +6930,25 @@ class testplan extends tlObjectWithAttachments
 			$platformField = " ";
 		}
 
+		$buildField = " ,EE.build_id ";
+		if( $my['options']['ignoreBuild'] )
+		{
+			$buildField = " ";
+		}
 
-		$sqlLEBBP = " SELECT EE.tcversion_id,EE.testplan_id,{$platformField} EE.build_id," .
-					" MAX(EE.id) AS id " .
-				  	" FROM {$this->tables['executions']} EE " . 
-				   	" WHERE EE.testplan_id = " . $safe_id['tplan'] . 
-					" AND EE.build_id IN ({$buildsCfg['inClause']}) " .
-				   	$platformClause .
-				   	" GROUP BY EE.tcversion_id,EE.testplan_id,{$platformField} EE.build_id ";
+
+
+		$sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id {$platformField} {$buildField} ," .
+				  " MAX(EE.id) AS id " .
+				  " FROM {$this->tables['executions']} EE " . 
+				  " WHERE EE.testplan_id = " . $safe_id['tplan'] . 
+				  " AND EE.build_id IN ({$buildsCfg['inClause']}) " .
+				  $platformClause .
+				  " GROUP BY EE.tcversion_id,EE.testplan_id {$platformField} {$buildField} ";
 
 	
-		new dBug($buildsCfg);
-		return array($safe_id,$buildsCfg,$sqlLEBBP);
+		// new dBug($buildsCfg);
+		return array($safe_id,$buildsCfg,$sqlLEX);
 	}
 
 
@@ -6950,8 +6991,8 @@ class testplan extends tlObjectWithAttachments
 	{
 		
 		
-		new dBug($filters);
-		new dBug($opt);
+		//new dBug($filters);
+		//new dBug($opt);
 		$safe_id = intval($tplanID);		
 		
 		$join['tsuite'] = '';
@@ -7338,8 +7379,8 @@ class testplan extends tlObjectWithAttachments
 
         $ic['options'] = array('include_unassigned' => false);
 
-		echo '<br><b>' . $debugMsg . '</b><br>';
-		new dBug($filtersCfg);
+		//echo '<br><b>' . $debugMsg . '</b><br>';
+		//new dBug($filtersCfg);
 		
 		$ic['filters'] = array_merge($ic['filters'], (array)$filtersCfg);
 		$ic['options'] = array_merge($ic['options'], (array)$optionsCfg);
@@ -7423,7 +7464,7 @@ class testplan extends tlObjectWithAttachments
 				$this->helper_assigned_to_sql($ic['filters']['assigned_to'],$ic['options'],
 											  $ic['filters']['build_id']);						
 
-			new dBug($ic);
+			//new dBug($ic);
 			
 			$ic['where']['where'] .= $ic['where']['ua']; 
 

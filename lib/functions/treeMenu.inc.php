@@ -1661,8 +1661,18 @@ function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters)
 function filter_by_status_for_latest_execution(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
 
-	$hits = $tplan_mgr->getHitsStatusSetOnLatestExecution($tplan_id,intval($filters->setting_platform),
-														  (array)$filters->filter_result_result);
+	$safe_tplan = intval($tplan_id);
+	$safe_platform = intval($filters->setting_platform);
+	
+	if($safe_platform > 0)
+	{
+		$hits = $tplan_mgr->getHitsStatusSetOnLatestExecOnPlatform($safe_tplan,$safe_platform,
+															       (array)$filters->filter_result_result);
+	}
+	else
+	{
+		$hits = $tplan_mgr->getHitsStatusSetOnLatestExecALOP($safe_tplan,(array)$filters->filter_result_result);
+	}
 	
 	if( is_null($hits) ) 
 	{

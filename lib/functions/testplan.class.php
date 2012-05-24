@@ -16,6 +16,7 @@
  * @internal revisions
  * 
  *  @since 1.9.4
+ *  20120524 - franciscom - get_keywords_map() query refactoring.
  *  20120520 - franciscom - getLinkedForTree() new method
  *	20120430 - franciscom - getPlatforms() added new option 'outputDetails'
  *	20120414 - franciscom - getHits*() new methods for filtering
@@ -2305,41 +2306,34 @@ class testplan extends tlObjectWithAttachments
 	/**
 	 * 
 	 * @internal revisions
-	 * 20100505 - franciscom - BUGID 3434
 	 */
 	function get_keywords_map($id,$order_by_clause='')
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$map_keywords=null;
 		
-		// keywords are associated to testcase id, then first
+		// keywords are associated to testcase id,
 		// we need to get the list of testcases linked to the testplan
-		// 
-		// 20100505 - according to user report (BUGID 3434) seems that 
-		// $linked_items = $this->get_linked_tcversions($id);
-		// has performance problems.
-		// Then make a choice do simple query here.
 		//
-		$sql = " /* $debugMsg */ ". 
-			   " SELECT DISTINCT parent_id FROM {$this->tables['nodes_hierarchy']} NHTC " .
-			   " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTC.id " .
-			   " WHERE TPTCV.testplan_id = {$id} ";
-			   
-		$linked_items = $this->db->fetchRowsIntoMap($sql,'parent_id');			     
-		
-		if( !is_null($linked_items) )
-		{
-			$tc_id_list = implode(",",array_keys($linked_items));
-			
-			$sql = " /* $debugMsg */ " .
-				   " SELECT DISTINCT TCKW.keyword_id,KW.keyword " .
-				   " FROM {$this->tables['testcase_keywords']} TCKW, " .
-				   " {$this->tables['keywords']} KW " .
-				   " WHERE TCKW.keyword_id = KW.id " .
-				   " AND TCKW.testcase_id IN ( {$tc_id_list} ) " .
-				   " {$order_by_clause} ";
-			$map_keywords = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
-		}
+		// After several tests, this seems to be best option
+		// Tested on test plan with 14000 test cases, to get 60 keywords. (20120524)
+		//
+		$sql = " /* $debugMsg */ " .
+			   " SELECT SQK.keyword_id ,KW.keyword " .
+			   " FROM {$this->tables['keywords']} KW " .
+			   " JOIN ( " .
+			   "		SELECT DISTINCT TCKW.keyword_id	" .
+			   " 		FROM {$this->tables['testplan_tcversions']} TPTCV " .
+			   " 		JOIN {$this->tables['nodes_hierarchy']} NHTC " . 
+			   " 		ON TPTCV.tcversion_id = NHTC.id " .
+			   " 		JOIN {$this->tables['testcase_keywords']} TCKW " .
+			   " 		ON TCKW.testcase_id = NHTC.parent_id " .
+			   " 		WHERE TPTCV.testplan_id = " . intval($id) . 
+			   "     ) AS SQK " .
+			   " ON KW.id = SQK.keyword_id " .
+			   $order_by_clause;
+		$map_keywords = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
+	
 		return ($map_keywords);
 	}
 	
@@ -5316,6 +5310,7 @@ class testplan extends tlObjectWithAttachments
 	 */
 	function getSkeleton($id,$tprojectID,$filters=null,$options=null)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	
 		$items = array();
 	
@@ -5384,9 +5379,11 @@ class testplan extends tlObjectWithAttachments
 	
 		static $childFilterOn;
 		static $staticSql;
+		static $debugMsg;
 		
 		if (!$my)
 		{
+			$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
 			// echo 'READY TO RUN:' . __FUNCTION__ . '<br>';
 
@@ -5439,7 +5436,7 @@ class testplan extends tlObjectWithAttachments
 			}
 	
 			// Create invariant sql sentences
-			$staticSql[0] = " /* Get ONLY TestSuites */ " .
+			$staticSql[0] = " /* $debugMsg - Get ONLY TestSuites */ " .
 						 	" SELECT NHTS.node_order AS spec_order," . 
 				     	 	" NHTS.node_order AS node_order, NHTS.id, NHTS.parent_id," . 
 				     	 	" NHTS.name, NHTS.node_type_id, 0 AS tcversion_id " .
@@ -5447,7 +5444,7 @@ class testplan extends tlObjectWithAttachments
 				     	 	" WHERE NHTS.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} " .
 				     	 	" AND NHTS.parent_id = ";
 				     	
-			$staticSql[1] =	" /* Get ONLY Test Cases with version linked to (testplan,platform) */ " .
+			$staticSql[1] =	" /* $debugMsg - Get ONLY Test Cases with version linked to (testplan,platform) */ " .
 				     	 	" SELECT NHTC.node_order AS spec_order, " .
 				     	 	"        TPTCV.node_order AS node_order, NHTC.id, NHTC.parent_id, " .
 				     	 	"        NHTC.name, NHTC.node_type_id, TPTCV.tcversion_id " .
@@ -5495,58 +5492,59 @@ class testplan extends tlObjectWithAttachments
 			return $qnum;
 		}
 	
-	    // create list with test cases nodes
-		$tclist = null;
-		$ks = array_keys($rs);
-		foreach($ks as $ikey)
-		{
-			if( $rs[$ikey]['node_type_id'] == $this->tree_manager->node_descr_id['testcase'] )
-			{
-				$tclist[$rs[$ikey]['id']] = $rs[$ikey]['id'];
-			}
-		}		
-		if( !is_null($tclist) )
-		{
-			$filterOnTC = false;
-			$glav = " /* Get LATEST ACTIVE tcversion ID */ " .  
-					" SELECT MAX(TCVX.id) AS tcversion_id, NHTCX.parent_id AS tc_id " .
-					" FROM {$this->tables['tcversions']} TCVX " . 
-					" JOIN {$this->tables['nodes_hierarchy']} NHTCX " .
-					" ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
-					" WHERE NHTCX.parent_id IN (" . implode($tclist,',') . ")" .
-					" GROUP BY NHTCX.parent_id,TCVX.tc_external_id  ";
-	
-			$ssx = 	" /* Get LATEST ACTIVE tcversion MAIN ATTRIBUTES */ " .
-					" SELECT TCV.id AS tcversion_id, TCV.tc_external_id AS external_id, SQ.tc_id " .
-			   		" FROM {$this->tables['tcversions']} TCV " . 
-			   		" JOIN ( $glav ) SQ " .
-			   		" ON TCV.id = SQ.tcversion_id ";
-	
-			if( $tcversionFilter['enabled'] || $tcaseFilter['is_active'] )
-			{
-				if( $tcversionFilter['execution_type'] )
-				{
-					$ssx .= " /* Filter LATEST ACTIVE tcversion */ " .
-							" WHERE TCV.execution_type = " . $my['filters']['execution_type'];
-					$filterOnTC = true;
-				}	
-			}
-			
-			$highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
-			if( $filterOnTC )
-			{
-				$ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;
-				if( count($ky) > 0 )
-				{
-					// new dBug($ky);
-					foreach($ky as $tcase)
-					{
-						unset($rs[$tcase]);						
-					}
-				}
-			}
-		}
-		
+	    /// create list with test cases nodes
+		//$tclist = null;
+		//$ks = array_keys($rs);
+		//foreach($ks as $ikey)
+		//{
+		//	if( $rs[$ikey]['node_type_id'] == $this->tree_manager->node_descr_id['testcase'] )
+		//	{
+		//		$tclist[$rs[$ikey]['id']] = $rs[$ikey]['id'];
+		//	}
+		//}		
+		//
+		//if( !is_null($tclist) )
+		//{
+		//	$filterOnTC = false;
+		//	$glav = " /* Get LATEST ACTIVE tcversion ID */ " .  
+		//			" SELECT MAX(TCVX.id) AS tcversion_id, NHTCX.parent_id AS tc_id " .
+		//			" FROM {$this->tables['tcversions']} TCVX " . 
+		//			" JOIN {$this->tables['nodes_hierarchy']} NHTCX " .
+		//			" ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
+		//			" WHERE NHTCX.parent_id IN (" . implode($tclist,',') . ")" .
+		//			" GROUP BY NHTCX.parent_id,TCVX.tc_external_id  ";
+	    //
+		//	$ssx = 	" /* Get LATEST ACTIVE tcversion MAIN ATTRIBUTES */ " .
+		//			" SELECT TCV.id AS tcversion_id, TCV.tc_external_id AS external_id, SQ.tc_id " .
+		//	   		" FROM {$this->tables['tcversions']} TCV " . 
+		//	   		" JOIN ( $glav ) SQ " .
+		//	   		" ON TCV.id = SQ.tcversion_id ";
+	    //
+		//	if( $tcversionFilter['enabled'] || $tcaseFilter['is_active'] )
+		//	{
+		//		if( $tcversionFilter['execution_type'] )
+		//		{
+		//			$ssx .= " /* Filter LATEST ACTIVE tcversion */ " .
+		//					" WHERE TCV.execution_type = " . $my['filters']['execution_type'];
+		//			$filterOnTC = true;
+		//		}	
+		//	}
+		//	
+		//	$highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
+		//	if( $filterOnTC )
+		//	{
+		//		$ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;
+		//		if( count($ky) > 0 )
+		//		{
+		//			// new dBug($ky);
+		//			foreach($ky as $tcase)
+		//			{
+		//				unset($rs[$tcase]);						
+		//			}
+		//		}
+		//	}
+		//}
+
 	 	foreach($rs as $row)
 	 	{
 			if(!isset($exclude_branches[$row['id']]))
@@ -5559,7 +5557,8 @@ class testplan extends tlObjectWithAttachments
 				if($node['node_table'] == 'testcases')
 				{
 					$node['leaf'] = true; 
-					$node['external_id'] = isset($highlander[$row['id']]) ? $highlander[$row['id']]['external_id'] : '';
+					// $node['external_id'] = isset($highlander[$row['id']]) ? $highlander[$row['id']]['external_id'] : '';
+					$node['external_id'] = '';
 				}			
 				
 				// why we use exclude_children_of ?
@@ -7274,14 +7273,13 @@ class testplan extends tlObjectWithAttachments
 			return null;	
 		}
 
-		
 		$sqlLEBBP = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id," .
 					" MAX(EE.id) AS id " .
 				  	" FROM {$this->tables['executions']} EE " . 
 				   	" WHERE EE.testplan_id = " . $safe['tplan_id'] . 
-					" AND EE.build_id = " . $my['filters']['build_id'] .
-					" AND EE.platform_id = " . $my['filters']['platform_id'] .
-				   	" GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
+					" AND EE.build_id = " . intval($my['filters']['build_id']) .
+					" AND EE.platform_id = " . intval($my['filters']['platform_id']) .
+					" GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
 
 
 

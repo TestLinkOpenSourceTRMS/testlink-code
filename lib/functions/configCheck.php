@@ -289,13 +289,6 @@ function getSecurityNotes(&$db)
 		$securityNotes[] = $msg;
 	}
 	
-	// 20070911 - fixing bug 1021 
-	$msg = checkForTestPlansWithoutTestProjects($db);
-	if($msg != "")
-	{
-		$securityNotes[] = $msg;
-	}
-	
 	$msg = checkEmailConfig();
 	if(!is_null($msg))
 	{
@@ -494,28 +487,6 @@ function checkSchemaVersion(&$db)
 	
 	return $result;
 }
-
-/**
- * checks if the install dir is present
- *
- * @return msg returns if there are any test plans without a test project 
- * @author Asiel Brumfield 
- **/
-function checkForTestPlansWithoutTestProjects(&$db)
-{
-	$msg = "";
-	if(count(getTestPlansWithoutProject($db)))
-	{	
-		$msg = "You have Test Plans that are not associated with Test Projects!";
-		if(isset($_SESSION['basehref']))
-		{		
-			$url = $_SESSION['basehref'] . "/lib/project/fix_tplans.php"; 			
-			$msg .= " <a style=\"color:red\" href=\"{$url}\">Fix This</a>";		
-		}
-	}	
-	return $msg;
-}
-
 
 /*
   function: checkEmailConfig 
@@ -1037,22 +1008,6 @@ function reportCheckingPermissions(&$errCounter,$installationType='none')
 	{
 		echo check_file_permissions($errCounter,$installationType,'config_db.inc.php', $blockingCheck);
 	}
-	// 20100502 - this file is not needed => IMHO we do not need to check existence
-	// echo check_file_permissions($errCounter,$installationType,'custom_config.inc.php');
 	echo '</table>';
-}
-
-// 20070911 - azl
-// 20071029 - azl - modified to only get active test plans bug # 1148
-function getTestPlansWithoutProject(&$db)
-{
-    $tables['nodes_hierarchy'] = DB_TABLE_PREFIX . 'nodes_hierarchy';
-    $tables['testplans'] = DB_TABLE_PREFIX . 'testplans';
-    
-	$sql = "SELECT id,name FROM {$tables['nodes_hierarchy']} WHERE id " . 
-	       " IN( SELECT id FROM {$tables['testplans']}  " .
-		   " WHERE testproject_id=0 and active=1)";
-	$testPlans = $db->get_recordset($sql);
-	return $testPlans;
 }
 ?>

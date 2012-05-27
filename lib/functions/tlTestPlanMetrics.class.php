@@ -1184,12 +1184,13 @@ class tlTestPlanMetrics extends testplan
 					$renderObj->info[$itemID]['details'] = array();
 					
 					$rf = &$renderObj->info[$itemID]['details'];
+					$doPerc = ($renderObj->info[$itemID]['total_tc'] > 0); 
 					foreach($code_verbose as $statusCode => $statusVerbose)
 					{
 						$rf[$statusVerbose] = array('qty' => 0, 'percentage' => 0);
 						$rf[$statusVerbose]['qty'] = $metrics['with_tester'][$itemID][$statusCode]['exec_qty']; 	
 						
-						if( $renderObj->info[$itemID]['total_tc'] > 0 ) 
+						if($doPerc) 
 						{
 							$rf[$statusVerbose]['percentage'] = number_format(100 * 
 																			  ($rf[$statusVerbose]['qty'] / 
@@ -1197,9 +1198,11 @@ class tlTestPlanMetrics extends testplan
 						}
 						$totalRun += $statusVerbose == 'not_run' ? 0 : $rf[$statusVerbose]['qty'];
 					}
-					$renderObj->info[$itemID]['percentage_completed'] =  number_format(100 * 
-																						($totalRun / 
-																						 $renderObj->info[$itemID]['total_tc']),1);
+					if($doPerc) 
+					{
+						$renderObj->info[$itemID]['percentage_completed'] =  number_format(100 * 
+																			 ($totalRun/$renderObj->info[$itemID]['total_tc']),1);
+                    }																						 
 		    	}
 		    }
 		   	
@@ -1549,7 +1552,7 @@ class tlTestPlanMetrics extends testplan
 	{
 		$sql = array();
 		$my = array();
-		$my['opt'] = array('getOnlyAssigned' => false, 'tprojectID' => 0, 'getPlaformSet' => false);
+		$my['opt'] = array('getOnlyAssigned' => false, 'tprojectID' => 0, 'getPlatformSet' => false);
 		$my['opt'] = array_merge($my['opt'], (array)$opt);
 		
 		$my['filters'] = array('buildSet' => null);
@@ -1861,18 +1864,26 @@ class tlTestPlanMetrics extends testplan
 	 *    
 	 *    
 	 */    
-	function getExecutionsByStatus($id,$status)
+	function getExecutionsByStatus($id,$status,$opt=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$filters = null;
 		list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
+		
+		// particular options
+		$my['opt'] = array_merge(array('output' => 'map'),$my['opt']);		
 		$safe_id = intval($id);	
 
+		$fullEID = $this->helperConcatTCasePrefix($safe_id);
+
 		$sqlLEBBP = $sqlStm['LEBBP'];
-		$sql =	"/* {$debugMsg} sqlUnion Test suites - executions */" . 
+		$sql =	"/* {$debugMsg} executions with status WRITTEN on DB => not run is not present */" . 
 				" SELECT NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
 				" TPTCV.tcversion_id,TPTCV.platform_id," .
-				" E.build_id,TCV.version,TCV.tc_external_id AS external_id, " .
-				" E.id AS executions_id, E.status AS status, " .
+				" E.tcversion_number, E.build_id,E.id AS executions_id, E.status AS status, " .
+				" E.notes AS execution_notes, E.tester_id,E.execution_ts," .
+				" TCV.version,TCV.tc_external_id AS external_id, " .
+				" $fullEID AS full_external_id," .
 				" (TPTCV.urgency * TCV.importance) AS urg_imp " .
 				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
 				
@@ -1905,13 +1916,22 @@ class tlTestPlanMetrics extends testplan
 				$builds->whereAddExec;
 							
                                    
-        new dBug($sql);                           
-		$keyColumns = array('tsuite_id','tcase_id','platform_id','build_id');
-        $dummy = (array)$this->db->fetchRowsIntoMap4l($sql,$keyColumns);              
+        //new dBug($sql);                           
+		switch($my['opt']['output'])
+		{
+			case 'array':
+        		$dummy = (array)$this->db->get_recordset($sql);              
+			break;
 
-		new dBug($dummy);
+			case 'map':
+			default:
+				$keyColumns = array('tsuite_id','tcase_id','platform_id','build_id');
+        		$dummy = (array)$this->db->fetchRowsIntoMap4l($sql,$keyColumns);              
+			break;
+		}
+
+		return $dummy;
 		
 	}
-	
 }
 ?>

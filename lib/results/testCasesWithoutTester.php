@@ -3,14 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: testCasesWithoutTester.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2010/10/19 09:05:06 $ by $Author: mx-julian $
- * @author Francisco Mancardi - francisco.mancardi@gmail.com
+ * @filesource testCasesWithoutTester.php
  * 
- * For a test plan, list test cases that has no tester assigned
+ * For a test plan, list test cases that HAS NOT BEEN RUN AND HAS NO TESTER ASSIGNED
  *
- * @internal Revisions:
+ * @internal revisions
+ * @since 1.9.4
+ *
+ * @internal revisions
+ * @since 1.9.3
  * 20101019 - Julian - show priority column only if priority is enabled for project
  * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                     table state independent from localization
@@ -29,6 +30,13 @@ require_once("common.php");
 require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
 
+
+// Time tracking
+//$tstart = microtime(true);
+//$chronos[] = $tstart; $tnow = end($chronos);reset($chronos);
+// Memory metrics	
+//$mem['usage'][] = memory_get_usage(true); $mem['peak'][] = memory_get_peak_usage(true);
+
 $templateCfg = templateConfiguration();
 $tplan_mgr = new testplan($db);
 $args = init_args($tplan_mgr);
@@ -39,76 +47,81 @@ $gui->warning_msg = '';
 $gui->tproject_name = $args->tproject_name;
 $gui->tplan_name = $args->tplan_name;
 
-$labels = init_labels(array('design' => null, 'execution' => null, 'execution_history' => null));
-$edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
-$history_img = TL_THEME_IMG_DIR . "history_small.png";
+$testPriorityEnabled = $_SESSION['testprojectOptions']->testPriorityEnabled;
+
+$labels = init_labels(array('design' => null, 'execution' => null, 'execution_history' => null,
+						    'match_count' => null));
+
+// create it here, in order to be able to get tlImages
+$smarty = new TLSmarty();
 
 $msg_key = 'no_linked_tcversions';
 if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 {
 	$msg_key = 'all_testcases_have_tester';
 	
-	// BUGID 3723 - filter test cases by exec_status => not run
 	$cfg = config_get('results');
-	$filters = array('assigned_to' => TL_USER_NOBODY, 'exec_status' => $cfg['status_code']['not_run']);
-	$options = array('output' => 'array', 'details' => 'summary');
-	$testCaseSet = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters, $options);
-	if(($gui->row_qty = count($testCaseSet)) > 0)
-	{
-		$msg_key = '';
-		$gui->pageTitle .= " - " . lang_get('match_count') . ":" . $gui->row_qty;
 
-		$tproject_mgr = new testproject($db);
-		$prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
-		unset($tproject_mgr);
+	$metricsMgr = new tlTestPlanMetrics($db);
+	$metrics = $metricsMgr->getNotRunWoTesterAssigned($args->tplan_id,null,
+													  array('output' => 'array', 'ignoreBuild' => true));
+
+	//new dBug($metrics);
+	//die();
+
+	if(($gui->row_qty = count($metrics)) > 0)
+	{
+		$links = featureLinks($labels,$smarty->_tpl_vars['tlImages']);
+		$msg_key = '';
+		$gui->pageTitle .= " - " . $labels['match_count'] . ":" . $gui->row_qty;
+
+		// $tproject_mgr = new testproject($db);
+		// $prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
+		// unset($tproject_mgr);
 
 		// Collect all tc_id:s and get all test suite paths
-		$tcase_set = array();
-		foreach ($testCaseSet as $item) {
-			$tcase_set[] = $item['tc_id'];
+		$targetSet = array();
+		foreach ($metrics as &$item) 
+		{
+			$targetSet[] = $item['tcase_id'];
 		}
 		$tree_mgr = new tree($db);
-		$path_info = $tree_mgr->get_full_path_verbose($tcase_set);
+		$path_info = $tree_mgr->get_full_path_verbose($targetSet);
 		unset($tree_mgr);
+		unset($targetSet);
 
 		$data = array();
-		foreach ($testCaseSet as $item)
+		foreach ($metrics as &$item)
 		{
-			$verbosePath = join(" / ", $path_info[$item['tc_id']]);
-			$name = buildExternalIdString($prefix,$item['external_id'] . ': ' . $item['name']);
-
-			// create linked icons
-			$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$item['tc_id']});\">" .
-			                     "<img title=\"{$labels['execution_history']}\" src=\"{$history_img}\" /></a> ";
-			$edit_link = "<a href=\"javascript:openTCEditWindow({$item['tc_id']});\">" .
-			             "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
-
-			$link = "<!-- " . sprintf("%010d", $item['external_id']) . " -->" . $exec_history_link .
-			        $edit_link . $name;
-
-			$row = array($verbosePath,$link);
+			$row = array();
+			$row[] = join(" / ", $path_info[$item['tcase_id']]);
+			
+			$row[] = "<!-- " . sprintf("%010d", $item['external_id']) . " -->" . 
+					 sprintf($links['full'],$item['tcase_id'],$item['tcase_id']) .
+					 $item['full_external_id'] . ': ' . $item['name'];
+			
 			if ($args->show_platforms)
 			{
 				$row[] = $item['platform_name'];
 			}
 
-			if($_SESSION['testprojectOptions']->testPriorityEnabled)
+			if($testPriorityEnabled)
 			{
-				$row[] = $tplan_mgr->urgencyImportanceToPriorityLevel($item['priority']);
+				// THIS HAS TO BE REFACTORED, because we can no do lot of calls
+				// because performance will be BAD
+				$row[] = $tplan_mgr->urgencyImportanceToPriorityLevel($item['urg_imp']);
 			}
 			
 			$row[] = strip_tags($item['summary']);
-			
 			$data[] = $row;
 		}
 
 		$gui->tableSet[] = buildTable($data, $args->tproject_id, $args->show_platforms,
-									  $_SESSION['testprojectOptions']->testPriorityEnabled);
+									  $testPriorityEnabled);
 	}
 }
 
 $gui->warning_msg = lang_get($msg_key);
-$smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
@@ -187,6 +200,31 @@ function init_args(&$tplan_mgr)
     
     return $args;
 }
+
+
+function featureLinks($lbl,$img)
+{
+	$links = array();
+
+	// %s => test case id
+	$links['exec_history'] = '<a href="javascript:openExecHistoryWindow(%s);" >' .
+			                 '<img title="' . $lbl['execution_history'] . '" ' .
+			                 'src="' . $img['history_small'] . '" /></a> ';
+
+	// %s => test case id
+	$links['edit'] = '<a href="javascript:openTCEditWindow(%s);" >' .
+					'<img title="' . $lbl['design'] . '" '. 
+				    'src="' . $img['edit_icon'] . '" /></a> ';
+
+
+	$links['full'] = $links['exec_history'] . $links['edit'];
+
+	return $links;
+}
+
+
+
+
 
 function checkRights(&$db,&$user)
 {

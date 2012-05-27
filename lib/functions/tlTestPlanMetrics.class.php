@@ -958,7 +958,7 @@ class tlTestPlanMetrics extends testplan
 	 * @since 1.9.4
 	 * 20120430 - franciscom - 
 	 */
-	function getExecCountersByBuildUAExecStatus($id, $opt=null)
+	function getExecCountersByBuildUAExecStatus($id, $filters=null, $opt=null)
 	{
 		//echo 'QD - <b><br>' . __FUNCTION__ . '</b><br>';
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -2048,24 +2048,61 @@ class tlTestPlanMetrics extends testplan
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
-
-		// new dBug($builds);
-		
+		list($safe_id,$buildsCfg,$sqlLEX) = $this->helperGetHits($id,null,$buildSet,
+																 array('ignorePlatform' => true));
 		// particular options
-		$my['opt'] = array_merge(array('output' => 'map'),$my['opt']);		
+		$my['opt'] = array_merge(array('output' => 'map','ignoreBuild' => false),$my['opt']);		
 		$safe_id = intval($id);	
 
 		$fullEID = $this->helperConcatTCasePrefix($safe_id);
-		// $sqlLEBBP = $sqlStm['LEBBP'];
 
+		// $sqlLEBBP = $sqlStm['LEBBP'];
+		$add2select = ' DISTINCT ';
+		$buildInfo = '';
+		// $buildInfo = 'B.id AS build_id,';
+		// if($my['opt']['output'] == 'array' && $my['opt']['ignoreBuild'])
+		// {
+		// 	$add2select = '';
+		// 	$buildInfo = '';
+		// } 
+
+		
+		$sqlc = "/* $debugMsg */ " .
+				" SELECT count(0) AS COUNTER ,A_NHTCV.parent_id AS tcase_id  " .
+				" FROM {$this->tables['testplan_tcversions']} A_TPTCV " .
+				" JOIN {$this->tables['builds']} A_B ON A_B.testplan_id = A_TPTCV.testplan_id " .
+				str_replace('B.active','A_B.active',$buildsCfg['statusClause']) .
+				
+				" JOIN {$this->tables['nodes_hierarchy']} A_NHTCV ON " .
+				" A_NHTCV.id = A_TPTCV.tcversion_id " .
+
+				" LEFT OUTER JOIN {$this->tables['executions']} A_E " .
+				" ON  A_E.testplan_id = A_TPTCV.testplan_id " .
+				" AND A_E.platform_id = A_TPTCV.platform_id " .
+				" AND A_E.tcversion_id = A_TPTCV.tcversion_id " .
+				" AND A_E.build_id = A_B.id " .
+
+				" LEFT OUTER JOIN {$this->tables['user_assignments']} A_UA " .
+				" ON  A_UA.feature_id = A_TPTCV.id " .
+				" AND A_UA.build_id = A_B.id " .
+				" AND A_UA.type = {$this->execTaskCode} " .
+
+				" WHERE A_TPTCV.testplan_id = " . $safe_id  . 
+				" AND A_E.status IS NULL " .
+				" AND A_UA.user_id IS NULL " .
+				" GROUP BY tcase_id " .
+				" HAVING COUNTER = " . intval($buildsCfg['count']) ; 
+
+		// new dBug($sqlc);
+		
 		$sql =	"/* {$debugMsg} Not Run */" . 
-				" SELECT NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
+				" SELECT $add2select NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
 				" TPTCV.tcversion_id,TPTCV.platform_id," .
-				" TCV.version AS tcversion_number, B.id AS build_id," . 
+				" TCV.version AS tcversion_number, {$buildInfo}" . 
 				" '{$this->notRunStatusCode}' AS status, " .
 				" TCV.version,TCV.tc_external_id AS external_id, " .
 				" $fullEID AS full_external_id,UA.user_id," .
-				" (TPTCV.urgency * TCV.importance) AS urg_imp " .
+				" (TPTCV.urgency * TCV.importance) AS urg_imp, TCV.summary  " .
 				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
 
 				" JOIN {$this->tables['builds']} B " .
@@ -2083,6 +2120,9 @@ class tlTestPlanMetrics extends testplan
 				" JOIN {$this->tables['tcversions']} TCV " .
 				" ON  TCV.id = TPTCV.tcversion_id " .
 
+				" JOIN ({$sqlc}) AS NR " .
+				" ON  NR.tcase_id = NHTC.id " .
+
 				" LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
 				" ON  UA.feature_id = TPTCV.id " .
 				" AND UA.build_id = B.id " .
@@ -2099,6 +2139,7 @@ class tlTestPlanMetrics extends testplan
 				" AND E.id IS NULL AND UA.user_id IS NULL " .
 				" AND B.id IN ({$builds->inClause}) "; 
 
+		// new dBug($sql);
 		switch($my['opt']['output'])
 		{
 			case 'array':
@@ -2112,8 +2153,12 @@ class tlTestPlanMetrics extends testplan
 			break;
 		}
 
+
+
+
 		return $dummy;
 	}
+	
 
 }
 ?>

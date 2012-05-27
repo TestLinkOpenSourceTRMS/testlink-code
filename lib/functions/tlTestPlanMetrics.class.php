@@ -1565,7 +1565,7 @@ class tlTestPlanMetrics extends testplan
 		$bi->infoSet = null;
 		if( is_null($bi->idSet) )
 		{
-			$bi->idSet = array_keys($bi->infoSet=$this->get_builds($id,testplan::ACTIVE_BUILDS));
+			$bi->idSet = array_keys($bi->infoSet = $this->get_builds($id,testplan::ACTIVE_BUILDS));
 		}
 		$bi->inClause = implode(",",$bi->idSet);
 
@@ -1859,15 +1859,20 @@ class tlTestPlanMetrics extends testplan
 
 
 	/** 
+	 * get executions (Not Run is not included)   
 	 *    
-	 *    
-	 *    
+	 * @param int $id test plan id
+	 * @param char $status status code (one char)
+	 * @param mixed $filters
+	 *				keys: 'buildSet'
+	 *
+	 * @param mixed opt    
+	 *				keys: 'output' elem domain 'map','array'
 	 *    
 	 */    
-	function getExecutionsByStatus($id,$status,$opt=null)
+	function getExecutionsByStatus($id,$status,$filters=null,$opt=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$filters = null;
 		list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
 		
 		// particular options
@@ -1933,5 +1938,182 @@ class tlTestPlanMetrics extends testplan
 		return $dummy;
 		
 	}
+
+
+	/** 
+	 * get just Not Run test case on test plan, but ONLY THESE
+	 * that has tester assigned.
+	 * This is critic:
+	 *
+	 * example:
+	 * test plan with 11 test cases linked.
+	 * two Builds B1, B2
+	 * 1. Assign tester to all test cases on BUILD B1
+	 * 2. run getNotRunWithTesterAssigned()
+	 *    you will get 11 records all for B1
+	 *
+	 * 3. Assign tester to 4 test cases on BUILD B2	 
+	 * 4. run getNotRunWithTesterAssigned()
+	 *    you will get: 15 records
+	 *    11 records for B1
+	 *     4 records for B2
+     *
+	 * @param int $id test plan id
+	 * @param char $status status code (one char)
+	 * @param mixed $filters
+	 *				keys: 'buildSet'
+	 *
+	 * @param mixed opt    
+	 *				keys: 'output' elem domain 'map','array'
+	 *    
+	 */    
+	function getNotRunWithTesterAssigned($id,$filters=null,$opt=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
+
+		// new dBug($builds);
+		
+		// particular options
+		$my['opt'] = array_merge(array('output' => 'map'),$my['opt']);		
+		$safe_id = intval($id);	
+
+		$fullEID = $this->helperConcatTCasePrefix($safe_id);
+		// $sqlLEBBP = $sqlStm['LEBBP'];
+
+		$sql =	"/* {$debugMsg} Not Run */" . 
+				" SELECT NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
+				" TPTCV.tcversion_id,TPTCV.platform_id," .
+				" TCV.version AS tcversion_number, B.id AS build_id," . 
+				" '{$this->notRunStatusCode}' AS status, " .
+				" TCV.version,TCV.tc_external_id AS external_id, " .
+				" $fullEID AS full_external_id,UA.user_id," .
+				" (TPTCV.urgency * TCV.importance) AS urg_imp, TCV.summary " .
+				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+
+				" JOIN {$this->tables['builds']} B " .
+				" ON  B.testplan_id = TPTCV.testplan_id " .
+
+				" /* Get Test Case info from Test Case Version */ " .
+				" JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
+				" ON  NHTCV.id = TPTCV.tcversion_id " .
+	
+				" /* Get Test Suite info from Test Case  */ " .
+				" JOIN {$this->tables['nodes_hierarchy']} NHTC " .
+				" ON  NHTC.id = NHTCV.parent_id " .
+				
+				" /* Get Test Case Version attributes */ " .
+				" JOIN {$this->tables['tcversions']} TCV " .
+				" ON  TCV.id = TPTCV.tcversion_id " .
+
+				" JOIN {$this->tables['user_assignments']} UA " .
+				" ON  UA.feature_id = TPTCV.id " .
+				" AND UA.build_id = B.id " .
+				" AND UA.type = {$this->execTaskCode} " .
+
+				" LEFT OUTER JOIN {$this->tables['executions']} E " .
+				" ON  E.testplan_id = TPTCV.testplan_id " .
+				" AND E.platform_id = TPTCV.platform_id " .
+				" AND E.tcversion_id = TPTCV.tcversion_id " .
+				" AND E.build_id = B.id ".
+
+
+				" WHERE TPTCV.testplan_id=" . $safe_id .
+				" AND E.id IS NULL " .
+				" AND B.id IN ({$builds->inClause}) "; 
+
+		// new dBug($sql);
+			
+		switch($my['opt']['output'])
+		{
+			case 'array':
+        		$dummy = (array)$this->db->get_recordset($sql);              
+			break;
+
+			case 'map':
+			default:
+				$keyColumns = array('tsuite_id','tcase_id','platform_id','build_id');
+        		$dummy = (array)$this->db->fetchRowsIntoMap4l($sql,$keyColumns);              
+			break;
+		}
+
+		return $dummy;
+			
+	}
+
+
+
+
+	function getNotRunWOTesterAssigned($id,$filters=null,$opt=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
+
+		// new dBug($builds);
+		
+		// particular options
+		$my['opt'] = array_merge(array('output' => 'map'),$my['opt']);		
+		$safe_id = intval($id);	
+
+		$fullEID = $this->helperConcatTCasePrefix($safe_id);
+		// $sqlLEBBP = $sqlStm['LEBBP'];
+
+		$sql =	"/* {$debugMsg} Not Run */" . 
+				" SELECT NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
+				" TPTCV.tcversion_id,TPTCV.platform_id," .
+				" TCV.version AS tcversion_number, B.id AS build_id," . 
+				" '{$this->notRunStatusCode}' AS status, " .
+				" TCV.version,TCV.tc_external_id AS external_id, " .
+				" $fullEID AS full_external_id,UA.user_id," .
+				" (TPTCV.urgency * TCV.importance) AS urg_imp " .
+				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+
+				" JOIN {$this->tables['builds']} B " .
+				" ON  B.testplan_id = TPTCV.testplan_id " .
+
+				" /* Get Test Case info from Test Case Version */ " .
+				" JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
+				" ON  NHTCV.id = TPTCV.tcversion_id " .
+	
+				" /* Get Test Suite info from Test Case  */ " .
+				" JOIN {$this->tables['nodes_hierarchy']} NHTC " .
+				" ON  NHTC.id = NHTCV.parent_id " .
+				
+				" /* Get Test Case Version attributes */ " .
+				" JOIN {$this->tables['tcversions']} TCV " .
+				" ON  TCV.id = TPTCV.tcversion_id " .
+
+				" LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
+				" ON  UA.feature_id = TPTCV.id " .
+				" AND UA.build_id = B.id " .
+				" AND UA.type = {$this->execTaskCode} " .
+
+				" LEFT OUTER JOIN {$this->tables['executions']} E " .
+				" ON  E.testplan_id = TPTCV.testplan_id " .
+				" AND E.platform_id = TPTCV.platform_id " .
+				" AND E.tcversion_id = TPTCV.tcversion_id " .
+				" AND E.build_id = B.id ".
+
+
+				" WHERE TPTCV.testplan_id=" . $safe_id .
+				" AND E.id IS NULL AND UA.user_id IS NULL " .
+				" AND B.id IN ({$builds->inClause}) "; 
+
+		switch($my['opt']['output'])
+		{
+			case 'array':
+        		$dummy = (array)$this->db->get_recordset($sql);              
+			break;
+
+			case 'map':
+			default:
+				$keyColumns = array('tsuite_id','tcase_id','platform_id','build_id');
+        		$dummy = (array)$this->db->fetchRowsIntoMap4l($sql,$keyColumns);              
+			break;
+		}
+
+		return $dummy;
+	}
+
 }
 ?>

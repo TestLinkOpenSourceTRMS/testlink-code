@@ -58,7 +58,6 @@ $gui = initializeGui($statusCode,$args,$tplan_mgr);
 
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
-$metrics = $metricsMgr->getExecutionsByStatus($args->tplan_id,$args->type,array('output' => 'array'));
 
 // Memory metrics
 //$mem['usage'][] = memory_get_usage(true); $mem['peak'][] = memory_get_peak_usage(true);
@@ -90,14 +89,18 @@ $mailCfg = buildMailCfg($gui);
 
 if( $args->type == $statusCode['not_run'] )
 {
-
+	$metrics = $metricsMgr->getNotRunWithTesterAssigned($args->tplan_id,null,array('output' => 'array'));
+	$notesAccessKey = 'summary';
+	$userAccessKey = 'user_id';
 }
 else
 {
+	$metrics = $metricsMgr->getExecutionsByStatus($args->tplan_id,$args->type,null,array('output' => 'array'));
+	$notesAccessKey = 'execution_notes';
 	$userAccessKey='tester_id';
 }
 
-// done here in order to get some config about imageas
+// done here in order to get some config about images
 $smarty = new TLSmarty();
 if( !is_null($metrics) and count($metrics) > 0 )
 {              
@@ -132,13 +135,14 @@ if( !is_null($metrics) and count($metrics) > 0 )
 		// When test case has been runned, version must be get from executions.tcversion_number 
 		// Column ORDER IS CRITIC                       
 		// suiteName
-		// testTitle 	[Test Execution] [Test Spec Design] VZA-15708:INSTACBDV-150
+		// testTitle 	CCA-15708: RSRSR-150
 		// testVersion 	1
-		// buildName 	2.0.rc3
-		// testerName 	sushant.marwah
-		// localizedTS 	2012-04-25 12:14:55
+		// buildName 	2.0
+		// platformName XXXX
+		// testerName 	yyyyyy
+		// localizedTS 	2012-04-25 12:14:55   <<<< ONLY if executed
 		// notes 	[empty string]
-		// bugString 	[empty string]
+		// bugString 	[empty string]        <<<< ONLY if executed 
 	
 		$out[$odx]['suiteName'] =  $pathCache[$exec['tcase_id']];
 
@@ -163,6 +167,10 @@ if( !is_null($metrics) and count($metrics) > 0 )
 
 		$out[$odx]['testVersion'] =  $exec['tcversion_number'];
 		$out[$odx]['buildName'] = $nameCache['build'][$exec['build_id']];
+		if($gui->show_platforms)
+		{
+			$out[$odx]['platformName'] = $nameCache['platform'][$exec['platform_id']];
+		}
 
 		// --------------------------------------------------------------------------------------------
 		// verbose user  
@@ -185,14 +193,17 @@ if( !is_null($metrics) and count($metrics) > 0 )
 		$out[$odx]['testerName'] = htmlspecialchars($out[$odx]['testerName']);
 		// --------------------------------------------------------------------------------------------
 
-		$out[$odx]['localizedTS'] = $exec['execution_ts'];
-		$out[$odx]['notes'] = strip_tags($exec['execution_notes']);
-		$out[$odx]['bugString'] = '';
-
-		if($gui->show_platforms)
+		if( $args->type != $statusCode['not_run'] )
 		{
-			$out[$odx]['platformName'] = $nameCache['platform'][$exec['platform_id']];
+			$out[$odx]['localizedTS'] = $exec['execution_ts'];
 		}
+		$out[$odx]['notes'] = strip_tags($exec[$notesAccessKey]);
+
+		if( $args->type != $statusCode['not_run'] )
+		{
+			$out[$odx]['bugString'] = '';
+		}
+	
    	    $odx++;
 	}
 	$gui->dataSet = $out;
@@ -200,7 +211,7 @@ if( !is_null($metrics) and count($metrics) > 0 )
 }
 else
 {
-    $gui->warning_msg = getWarning($args->type,$statusCode['not_run']);
+    $gui->warning_msg = getWarning($args->type,$statusCode);
 }	
 
 // Time tracking

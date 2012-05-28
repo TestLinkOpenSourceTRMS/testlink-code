@@ -5095,7 +5095,7 @@ class testcase extends tlObjectWithAttachments
         	if( !is_null($my['filters'][$fieldName]) )
         	{
         		$itemSet = implode(',', (array)($my['filters'][$fieldName]));
-        		$filterBy[$key] = " AND e.{$fieldName} IN ({$itemSet}) ";
+        		$filterBy[$fieldName] = " AND e.{$fieldName} IN ({$itemSet}) ";
         	}
         }
 	

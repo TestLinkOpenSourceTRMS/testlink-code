@@ -11,7 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
- *
+ * 20120528 - franciscom - get_full_path_verbose() algorithm improved for high item qty
  * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
  * 						   _get_subtree() new option: output
  *
@@ -1198,24 +1198,49 @@ class tree extends tlObject
 	        $output_format = isset($options['output_format']) ? $options['output_format'] : $output_format;
 	    }
 	    
-	    foreach((array)$items as $item_id)
+	    // according to count($items) we will try to optimize, sorry for magic number
+	    if( count((array)$items) > 200)
 	    {
-	        $stairway2heaven[$item_id] = $this->get_path($item_id,$goto_root,$path_format);
-			$path_to[$item_id]['name'] = $stairway2heaven[$item_id];
-	        $all_nodes = array_merge($all_nodes,(array)$path_to[$item_id]['name']);
+	    	$xitems = array_flip((array)$items);
+	    	$xsql = " SELECT parent_id,id " . 
+	    			" FROM {$this->tables['nodes_hierarchy']} " . 
+	    			" WHERE id IN (" . implode(',',array_keys($xitems)) . ")";
+
+			$xmen = $this->db->fetchRowsIntoMap($xsql,'parent_id',database::CUMULATIVE);
+			$all_nodes = array();			
+		    foreach($xmen as $parent_id => &$children)
+		    {
+		    	$paty = $this->get_path($parent_id,$goto_root,$path_format);
+				$paty[] = $parent_id;
+				
+				$all_nodes = array_merge($all_nodes,$paty);
+		    	foreach($children as &$item)
+		    	{
+		    		 $path_to[$item['id']]['name'] = $stairway2heaven[$item['id']] = $paty;
+		    		 $all_nodes[] = $item['id'];	
+		    	}
+		    }
+			unset($xmen);
 	    }
-	    
+	    else
+	    {
+		    foreach((array)$items as $item_id)
+		    {
+		        $stairway2heaven[$item_id] = $this->get_path($item_id,$goto_root,$path_format);
+				$path_to[$item_id]['name'] = $stairway2heaven[$item_id];
+		        $all_nodes = array_merge($all_nodes,(array)$path_to[$item_id]['name']);
+		    }
+	    }
 	    
 	    $status_ok = (!is_null($all_nodes) && count($all_nodes) > 0);
         if( $status_ok )
         { 
 	        // get only different items, to get descriptions
 	    	$unique_nodes=implode(',',array_unique($all_nodes));
+
 	    	$sql="/* $debugMsg */ " . 
 	    	     " SELECT id,name FROM {$this->tables['nodes_hierarchy']}  WHERE id IN ({$unique_nodes})"; 
 	    	$decode=$this->db->fetchRowsIntoMap($sql,'id');
-	    	
-	    	// new dBug($decode);
 	    	
 	    	foreach($path_to as $key => $elem)
 	    	{
@@ -1225,6 +1250,7 @@ class tree extends tlObject
 	   	     		$path_to[$key]['node_id'][$idx]=$node_id;
 	    	     }
 	    	}
+	    	unset($decode);
 	    }  
 	    else
 	    {

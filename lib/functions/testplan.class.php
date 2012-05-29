@@ -16,6 +16,7 @@
  * @internal revisions
  * 
  *  @since 1.9.4
+ *  20120529 - franciscom - getRootTestSuites()
  *  20120524 - franciscom - get_keywords_map() query refactoring.
  *  20120520 - franciscom - getLinkedForTree() new method
  *	20120430 - franciscom - getPlatforms() added new option 'outputDetails'
@@ -506,7 +507,6 @@ class testplan extends tlObjectWithAttachments
 	 *
 	 * 
 	 * @internal revisions:
-	 *   20100722 - asimon - added missing $debugMsg
 	 */
 	function get_linked_items_id($id)
 	{
@@ -552,6 +552,68 @@ class testplan extends tlObjectWithAttachments
 		$linked_items = $this->db->fetchRowsIntoMap($sql,'id');
 		return !is_null($linked_items) ? key($linked_items) : -1;
 	}
+
+
+	/**
+	 * @internal revisions:
+	 * 
+	 */
+	function getRootTestSuites($id,$tproject_id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = " /* $debugMsg */ ". 
+			   " SELECT DISTINCT NHTCASE.parent_id AS tsuite_id" .
+			   " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
+			   " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+			   " ON TPTCV.tcversion_id = NHTCV.id " .
+			   " JOIN {$this->tables['nodes_hierarchy']} NHTCASE " .
+			   " ON NHTCASE.id = NHTCV.parent_id " .
+			   " WHERE TPTCV.testplan_id = {$id} ";
+			   
+		$items = $this->db->fetchRowsIntoMap($sql,'tsuite_id',database::CUMULATIVE);			     
+	    $xsql = " SELECT COALESCE(parent_id,0) AS parent_id,id,name" . 
+	    		" FROM {$this->tables['nodes_hierarchy']} " . 
+	    		" WHERE id IN (" . implode(',',array_keys($items)) . ") AND parent_id IS NOT NULL";
+
+		unset($items);
+		$xmen = $this->db->fetchMapRowsIntoMap($xsql,'parent_id','id');
+		$tlnodes = array();	
+		foreach($xmen as $parent_id => &$children)
+		{
+			if($parent_id == $tproject_id)
+			{
+				foreach($children as $item_id => &$elem)
+				{
+					$tlnodes[$item_id] = '';
+				}
+			}
+			else
+			{
+				$paty = $this->tree_manager->get_path($parent_id);
+				if( !isset($tlnodes[$paty[0]['id']]) )
+				{
+					$tlnodes[$paty[0]['id']] = '';		
+		    	}
+				unset($paty);
+			}
+		}
+		unset($xmen);
+		
+		// Now with node list get order
+	    $xsql = " SELECT id,name,node_order " . 
+	    		" FROM {$this->tables['nodes_hierarchy']} " . 
+	    		" WHERE id IN (" . implode(',',array_keys($tlnodes)) . ")" .
+	    		" ORDER BY node_order,name ";
+		$xmen = $this->db->fetchRowsIntoMap($xsql,'id');
+		foreach($xmen as $xid => $elem)
+		{
+			$xmen[$xid] = $elem['name'];
+		}
+		unset($tlnodes);
+	    return $xmen;
+	}
+	
+	
 
 	
 	
@@ -1934,7 +1996,7 @@ class testplan extends tlObjectWithAttachments
         $notrun_filter = null;
 		if(!is_null($cfgFilters['exec_status']))
 		{
-			list($sql,$notrun_filter) = $this->helper_exec_status_filter($cfgFilters['exec_status'],sql);
+			list($sql,$notrun_filter) = $this->helper_exec_status_filter($cfgFilters['exec_status'],$sql);
 		}
 
 		// May be we can be used a view instead of SELECT MAX(E2.id) AS lastexecid ...
@@ -4789,8 +4851,6 @@ class testplan extends tlObjectWithAttachments
     public function urgencyImportanceToPriorityLevel($urgency, $importance=null)
     {
         $urgencyImportance = intval($urgency) * (is_null($importance) ? 1 : intval($importance)) ;
-        
-        //BUGID 4418 - clean up priority usage
         return priority_to_level($urgencyImportance);
     }
 
@@ -5617,6 +5677,7 @@ class testplan extends tlObjectWithAttachments
 				" LEFT OUTER JOIN {$this->tables['executions']} E ON " .
 				" E.testplan_id = TPTCV.testplan_id " .
 				" AND E.platform_id = TPTCV.platform_id " .
+				" AND E.tcversion_id = TPTCV.tcversion_id " .
 				" AND E.build_id = B.id " .
 				
 				" WHERE TPTCV.testplan_id = " . $safe_id['tplan']  . 

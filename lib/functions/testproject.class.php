@@ -2037,13 +2037,15 @@ function getTCasesLinkedToAnyTPlan($id)
 	$tplanNodeType = $this->tree_manager->node_descr_id['testplan'];
 	
 	// len of lines must be <= 100/110 as stated on development standard guide.
-    $sql = " SELECT DISTINCT  NHA.parent_id AS testcase_id " .
-           " FROM {$this->tables['nodes_hierarchy']} NHA " .
-           " JOIN {$this->tables['testplan_tcversions']} ON NHA.id = tcversion_id ";
+    $sql = " SELECT DISTINCT NHTCV.parent_id AS testcase_id " .
+           " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
+           " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+           " ON NHTCV.id = TPTCV.tcversion_id ";
     
     // get testplan id for target test�project, to get test case versions linked to testplan.
-    $sql .= " JOIN {$this->tables['nodes_hierarchy']} NH ON testplan_id = NH.id  " .
-            " WHERE NH.node_type_id = {$tplanNodeType} AND NH.parent_id ={$id}";
+    $sql .= " JOIN {$this->tables['nodes_hierarchy']} NHTPLAN " .
+            " ON TPTCV.testplan_id = NHTPLAN.id  " .
+            " WHERE NHTPLAN.node_type_id = {$tplanNodeType} AND NHTPLAN.parent_id = " . intval($id);
     $rs = $this->db->fetchRowsIntoMap($sql,'testcase_id');
     
     return $rs;
@@ -2063,7 +2065,6 @@ function getFreeTestCases($id,$options=null)
     $retval['items']=null;
     $retval['allfree']=false;
     
-    // @TODO here there is a problem $all is undefined!!!
     $all=array(); 
     $this->get_all_testcases_id($id,$all);
     $linked=array();
@@ -2079,15 +2080,17 @@ function getFreeTestCases($id,$options=null)
     if( !is_null($free) && count($free) > 0)
     {
         $in_clause=implode(',',array_keys($free));
-   	    $sql = " /* $debugMsg */ SELECT MAX(TCV.version) AS version, TCV.tc_external_id, " .
-   	           " TCV.importance AS importance, NHA.parent_id AS id, NHB.name " .
-   	           " FROM {$this->tables['tcversions']} TCV,{$this->tables['nodes_hierarchy']} NHA, " .
-	           "      {$this->tables['nodes_hierarchy']} NHB " .
-	           " WHERE NHA.parent_id IN ({$in_clause}) " .
-   	           " AND TCV.id = NHA.id " .
-   	           " AND NHB.id = NHA.parent_id " .
-	           " GROUP BY NHB.name,NHA.parent_id,TCV.tc_external_id,TCV.importance " .  // BUGID 3966
-	           " ORDER BY NHA.parent_id";
+   	    $sql = " /* $debugMsg */ " .
+   	    	   " SELECT MAX(TCV.version) AS version, TCV.tc_external_id, " .
+   	           " TCV.importance AS importance, NHTCV.parent_id AS id, NHTC.name " .
+   	           " FROM {$this->tables['tcversions']} TCV " .
+   	           " JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
+   	           " ON NHTCV.id = TCV.id " .
+	           " JOIN {$this->tables['nodes_hierarchy']} NHTC " .
+   	           " ON NHTC.id = NHTCV.parent_id " .
+	           " WHERE NHTCV.parent_id IN ({$in_clause}) " .
+	           " GROUP BY NHTC.name,NHTCV.parent_id,TCV.tc_external_id,TCV.importance " . 
+	           " ORDER BY NHTCV.parent_id";
 	    $retval['items']=$this->db->fetchRowsIntoMap($sql,'id');       
     }
 

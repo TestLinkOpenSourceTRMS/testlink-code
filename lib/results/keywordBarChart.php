@@ -32,7 +32,9 @@ $cfg->beginY = $chart_cfg['beginY'];
 $cfg->scale->legendXAngle = $chart_cfg['legendXAngle'];
 
 
-$info = getDataAndScale($db);
+$args = init_args();
+$info = getDataAndScale($db,$args);
+
 createChart($info,$cfg);
 
 
@@ -44,21 +46,26 @@ createChart($info,$cfg);
   returns: object
 
 */
-function getDataAndScale(&$dbHandler)
+function getDataAndScale(&$dbHandler,$argsObj)
 {
 	$resultsCfg = config_get('results');
 	$obj = new stdClass(); 
 	$items = array();
-	$dataSet = $_SESSION['statistics']['getAggregateKeywordResults'];
+
+	// $dataSet = $_SESSION['statistics']['getAggregateKeywordResults'];
+	$metricsMgr = new tlTestPlanMetrics($dbHandler);
+    $dummy = $metricsMgr->getStatusTotalsByKeywordForRender($argsObj->tplan_id);
+    $dataSet = $dummy->info;
+
 	$obj->canDraw = !is_null($dataSet);
 	$totals = null; 
-	
+
 	if($obj->canDraw)
 	{
 	   	// Process to enable alphabetical order
 	    foreach($dataSet as $keyword_id => $elem)
 	    {
-	        $item_descr[$elem['keyword_name']] = $keyword_id;
+	        $item_descr[$elem['name']] = $keyword_id;
 	    }  
 	    ksort($item_descr);
 	    
@@ -94,8 +101,6 @@ function getDataAndScale(&$dbHandler)
 	    {
 	        $obj->chart_data[] = $values;
 	        $obj->series_label[] = lang_get($resultsCfg['status_label'][$status]);
-	        
-	        // BUGID 4090
 	        if( isset($resultsCfg['charts']['status_colour'][$status]) )
             {	
 	        	$obj->series_color[] = $resultsCfg['charts']['status_colour'][$status];
@@ -105,6 +110,20 @@ function getDataAndScale(&$dbHandler)
 	    
 	return $obj;
 }
+
+
+function init_args()
+{
+	$argsObj = new stdClass();
+	// $argsObj->tproject_id = intval($_REQUEST['tproject_id']);
+	$argsObj->tplan_id = intval($_REQUEST['tplan_id']);
+	if( isset($_REQUEST['debug']) )
+	{
+		$argsObj->debug = 'yes';
+	}
+	return $argsObj;
+}
+
 
 function checkRights(&$db,&$user)
 {

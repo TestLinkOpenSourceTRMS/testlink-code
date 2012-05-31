@@ -76,6 +76,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	protected $tcaseMgr =  null;
 	protected $tprojectMgr = null;
 	protected $tplanMgr = null;
+	protected $tplanMetricsMgr = null;
 	protected $reqSpecMgr = null;
     protected $reqMgr = null;
 
@@ -225,6 +226,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$this->tcaseMgr=new testcase($this->dbObj);
 	    $this->tprojectMgr=new testproject($this->dbObj);
 	    $this->tplanMgr=new testplan($this->dbObj);
+	    $this->tplanMetricsMgr=new tlTestPlanMetrics($this->dbObj);
+
 	    $this->reqSpecMgr=new requirement_spec_mgr($this->dbObj);
         $this->reqMgr=new requirement_mgr($this->dbObj);
 		

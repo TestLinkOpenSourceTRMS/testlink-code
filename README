@@ -1,5 +1,5 @@
 ===============================================================
-                    TestLink 1.9.3 (Prague Bugfix 3) - Read me
+                    TestLink 1.9.4 (Prague Bugfix 4) - Read me
 ===============================================================
 
 Contents
@@ -31,7 +31,7 @@ There is no hidden fee - 100% free for using!
 2. Release notes
 ===============================================================
 
-This release contains bugfixes for 1.9.0/1.9.1/1.9.2
+This release contains bugfixes for 1.9.0/1.9.1/1.9.2/1.9.3
    
 See CHANGELOG file for detailed list of issues fixed.
 
@@ -45,7 +45,7 @@ Server environment should consists from:
 - DBMS: MySQL 5.x , Postgres 8.x,9.x , MS-SQL 2005/2008
 
 Supported client web-browsers: 
-- Firefox 3.x
+- Firefox 3 - 10
 - Internet Explorer 6.x, 7.x, 8.x
 - Chrome   
 
@@ -98,7 +98,7 @@ Check Installation manual and TestLink forum if you meet a problem.
 When accessing Installer page you will found following options:
 
  - New Installation
- - Migration from 1.8 to 1.9.1/2/3
+ - Migration from 1.8 to 1.9.1/2/3/4
 
 If you are upgrading from 1.9.0 please go to section 'Upgrade from 1.9.0 to 1.9.1/2/3'.
 If you are upgrading from 1.9.1/2 NO DB upgrades will be needed.
@@ -156,7 +156,10 @@ This list comprise people that has helped
 * Francisco Mancardi - Project lead, builds, core developer, contributors code reviewer
 * Julian Krien - Leader of testlink-qa group effort on 1.9.x
 
---- Contributors and developers active on other releases ---
+--- Contributors and developers active  ---
+* Bruno de Paula Kinoshita - some work on API, CSRF, Turn Key Linux
+
+--- Contributors and developers active on older releases ---
 * Andreas Simon
 * Erik Eloff
 * Martin Havlat - Project lead, builds, infrastructure, developer
@@ -230,6 +233,11 @@ post in forum on section "Companies using TestLink".
 
 To submit a bug or a feature, please use our Mantis installation at 
 http://www.testlink.org/mantis/. 
+
+You can follow us on twitter => http://twitter.com/#!/TLOpenSource
+
+Useful mails: testlink.forum@gmail.com, testlink.helpme@gmail.com
+
 
 
 

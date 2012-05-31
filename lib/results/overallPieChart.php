@@ -3,15 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource	overallPieChart.php
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 	2005-2009, TestLink community
+ * @copyright 	2005-2012, TestLink community
  * @copyright 	
- * @version    	CVS: $Id: overallPieChart.php,v 1.12 2010/09/12 17:09:17 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
- *
+ * @internal revisions
+ * @since 1.9.4
+ * 20120531 - franciscom - refactored to use tlTestPlanMetrics class
  *
 **/
 require_once('../../config.inc.php');
@@ -26,7 +27,9 @@ $chart_cfg = $resultsCfg['charts']['dimensions']['overallPieChart'];
 
 $args = init_args();
 $tplan_mgr = new testplan($db);
-$totals = $tplan_mgr->getStatusTotals($args->tplan_id);
+
+$metricsMgr = new tlTestPlanMetrics($db);
+$totals = $metricsMgr->getExecCountersByExecStatus($args->tplan_id);
 unset($totals['total']);
 
 $values = array();

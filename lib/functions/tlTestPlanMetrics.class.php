@@ -710,7 +710,7 @@ class tlTestPlanMetrics extends testplan
 
 		$this->helperCompleteStatusDomain($exec,'platform_id');
 
-		// get total rest cases by Platform id ON TEST PLAN (With & WITHOUT tester assignment)
+		// get total test cases by Platform id ON TEST PLAN (With & WITHOUT tester assignment)
 		$sql = 	"/* $debugMsg */ ".
 				" SELECT COUNT(0) AS qty, TPTCV.platform_id " . 
 				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
@@ -1127,6 +1127,69 @@ class tlTestPlanMetrics extends testplan
 	}
 
 
+	/**
+	 *
+	 * @internal revisions
+	 *
+	 * @since 1.9.4
+	 * 20120430 - franciscom - 
+	 */
+	function getExecCountersByTesterExecStatus($id, $filters=null, $opt=null)
+	{
+		//echo 'QD - <b><br>' . __FUNCTION__ . '</b><br>';
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$safe_id = intval($id);
+		list($my,$builds,$sqlStm) = $this->helperGetExecCounters($safe_id, $filters, $opt);
+
+		$sqlLEX = $sqlStm['LE'];
+
+		$sql =	"/* {$debugMsg} sqlUnion - executions */" . 
+				" SELECT COUNT(0) AS exec_qty, E.tester_id, E.status " .
+				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+				" /* GO FOR Absolute LATEST exec ID ON BUILD and PLATFORM */ " .
+				" JOIN ({$sqlLEX}) AS LEX " .
+				" ON  LEX.testplan_id = TPTCV.testplan_id " .
+				" AND LEX.tcversion_id = TPTCV.tcversion_id " .
+				" AND LEX.testplan_id = " . $safe_id .
+
+				" /* Get (With BUILD details) execution  status WRITTEN on DB */ " .
+				" JOIN {$this->tables['executions']} E " .
+				" ON E.id = LEX.id " .
+
+				" WHERE TPTCV.testplan_id=" . $safe_id .
+				" AND E.build_id IN ({$builds->inClause}) " .
+				" GROUP BY tester_id,status ";
+
+        $exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'tester_id','status');              
+
+
+		// Need Users Set
+		$itemSet = array_keys($exec['with_tester']);
+		$userSet = $this->helperGetUserIdentity($itemSet);
+		unset($itemSet);
+		$exec['testers'] = array();
+		foreach($userSet as $id => &$elem)
+		{
+			$exec['testers'][$id] = $elem['login'];
+		}
+		return $exec;
+	}
+
+	/**
+	 *
+	 * @internal revisions
+	 *
+	 * @since 1.9.4
+	 * 20120429 - franciscom - 
+	 */
+	function getStatusTotalsByTesterForRender($id,$filters=null,$opt=null)
+	{
+		$renderObj = $this->getStatusTotalsByItemForRender($id,'tester',$filters,$opt);
+		return $renderObj;
+	}
+
+
+
 
 	/**
 	 *
@@ -1141,6 +1204,7 @@ class tlTestPlanMetrics extends testplan
 		$code_verbose = $this->getStatusForReports();
 	    $labels = $this->resultsCfg['status_label'];
 
+		
 		$returnArray = false;
 		switch($itemType)
 		{	
@@ -1164,6 +1228,18 @@ class tlTestPlanMetrics extends testplan
 				$metrics = $this->getExecCountersByTestSuiteExecStatus($id,$filters,$opt);
 				$setKey = 'tsuites';
 				$returnArray = true;
+			break;
+			
+			
+			case 'tester':    
+				$metrics = $this->getExecCountersByTesterExecStatus($id,$filters,$opt);
+				$setKey = 'testers';
+			break;
+
+			case 'assignedUser':    
+				$metrics = $this->getExecCountersByUAExecStatus($id,$filters,$opt);
+				$setKey = 'assignedUsers';
+				// new dBug($metrics);
 			break;
 			
 		}
@@ -1255,6 +1331,11 @@ class tlTestPlanMetrics extends testplan
 		//echo 'MM - ' . __FUNCTION__ . ' Start' . ' memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
 		list($rObj,$staircase) = $this->getStatusTotalsByItemForRender($id,'tsuite',$filters,$opt);
 		
+		
+		//new dBug($rObj);
+		//new dBug($staircase);
+
+		
 		$key2loop = array_keys($rObj->info);
 		$template = array('type' => 'tsuite', 'name' => '','total_tc' => 0,
 						  'percentage_completed' => 0, 'details' => array());	
@@ -1272,30 +1353,53 @@ class tlTestPlanMetrics extends testplan
 		$execQty = null;
 		foreach($key2loop as $tsuite_id)
 		{
+			// (count() == 1) => is a TOP LEVEL SUITE, 
+			// only element contains Root node, is useless for this algorithm
+			// 
+			
 			if( count($staircase[$tsuite_id]) > 1)
 			{
-				if( !isset($renderObj->info[$staircase[$tsuite_id][1]]) )
+				// element at position 1 is a TOP LEVEL SUITE
+				$topSuiteID = &$staircase[$tsuite_id][1];
+				$initName = false;
+			}
+			else
+			{
+				$topSuiteID = $tsuite_id;
+				$initName = true;
+			}     
+			
+			
+			
+				if( !isset($renderObj->info[$topSuiteID]) )
 				{
-					$renderObj->info[$staircase[$tsuite_id][1]] = $template;
-					$dummy = $this->tree_manager->get_node_hierarchy_info($staircase[$tsuite_id][1]);
-					$renderObj->info[$staircase[$tsuite_id][1]]['name'] = $dummy['name'];
-					unset($dummy);
-					$execQty[$staircase[$tsuite_id][1]] = 0;
+					$renderObj->info[$topSuiteID] = $template;
+					$execQty[$topSuiteID] = 0;
+					$initName = true;
 				}	
+
+				if( $initName )
+				{
+					$dummy = $this->tree_manager->get_node_hierarchy_info($topSuiteID);
+					$renderObj->info[$topSuiteID]['name'] = $dummy['name'];
+					unset($dummy);
+				}				
 				
+				
+				// Loop to get executions counters
 				foreach($rObj->info[$tsuite_id]['details'] as $code => &$elem)
 				{
-					$renderObj->info[$staircase[$tsuite_id][1]]['details'][$code]['qty'] += $elem['qty'];		
-					$renderObj->info[$staircase[$tsuite_id][1]]['total_tc'] += $elem['qty'];
+					// echo 'here';
+					$renderObj->info[$topSuiteID]['details'][$code]['qty'] += $elem['qty'];		
+					$renderObj->info[$topSuiteID]['total_tc'] += $elem['qty'];
 
 					if(  $code != 'not_run' )
 					{
-						$execQty[$staircase[$tsuite_id][1]] += $elem['qty'];
+						$execQty[$topSuiteID] += $elem['qty'];
 					}
 				}
 			}	
-		}
-
+		   
 		// Last step: get percentages
 		foreach($renderObj->info as $tsuite_id => &$elem)
 		{
@@ -1320,6 +1424,7 @@ class tlTestPlanMetrics extends testplan
 		unset($key2loop);
 		unset($execQty);
 
+		// new dBug($renderObj);
 		//echo 'MM - ' . __FUNCTION__ . ' Stop' . ' memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
 		return $renderObj;
 	}
@@ -2044,7 +2149,7 @@ class tlTestPlanMetrics extends testplan
 
 
 
-	function getNotRunWOTesterAssigned($id,$filters=null,$opt=null)
+	function getNotRunWOTesterAssigned($id,$buildSet=null,$filters=null,$opt=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
@@ -2157,6 +2262,149 @@ class tlTestPlanMetrics extends testplan
 
 
 		return $dummy;
+	}
+
+
+
+
+	/**
+	 *
+	 * @internal revisions
+	 *
+	 * @since 1.9.4
+	 * 20120601 - franciscom - 
+	 */
+	function getExecCountersByUAExecStatus($id, $filters=null, $opt=null)
+	{
+		//echo 'QD - <b><br>' . __FUNCTION__ . '</b><br>';
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$safe_id = intval($id);
+		list($my,$builds,$sqlStm) = $this->helperGetExecCounters($safe_id, $filters, $opt);
+
+		$sqlLEX = $sqlStm['LE'];
+
+		$sqlUnionAU	=	"/* {$debugMsg} sqlUnion - executions */" . 
+						" SELECT UA.user_id, UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " .
+						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
+						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+						" JOIN {$this->tables['user_assignments']} UA " .
+						" ON UA.feature_id = TPTCV.id " .
+						" AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
+
+						" /* GO FOR Absolute LATEST exec ID ON TEST PLAN */ " .
+						" JOIN ({$sqlLEX}) AS LEX " .
+						" ON  LEX.testplan_id = TPTCV.testplan_id " .
+						" AND LEX.tcversion_id = TPTCV.tcversion_id " .
+
+						" /* Get (With BUILD details) execution  status WRITTEN on DB */ " .
+						" JOIN {$this->tables['executions']} E " .
+						" ON E.id = LEX.id " .
+
+						" WHERE TPTCV.testplan_id=" . $safe_id .
+						" AND UA.build_id IN ({$builds->inClause}) ";
+
+		//echo 'QD - <b>' . $sqlUnionAU . '<br>';
+		// die();
+
+		$sqlUnionBU	=	"/* {$debugMsg} sqlUnion - notrun */" . 
+						" SELECT UA.user_id, UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " .
+						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
+						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+						" JOIN {$this->tables['user_assignments']} UA " .
+						" ON UA.feature_id = TPTCV.id " .
+						" AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
+
+						" LEFT OUTER JOIN ({$sqlLEX}) AS LEX " .
+						" ON  LEX.testplan_id = TPTCV.testplan_id " .
+						" AND LEX.tcversion_id = TPTCV.tcversion_id " .
+
+						" LEFT OUTER JOIN {$this->tables['executions']} E " .
+						" ON  E.testplan_id = TPTCV.testplan_id " .
+						" AND E.tcversion_id = TPTCV.tcversion_id " .
+
+						" WHERE TPTCV.testplan_id=" . $safe_id .
+						" AND UA.build_id IN ({$builds->inClause}) " .
+
+						" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
+						" AND E.id IS NULL AND LEX.id IS NULL";
+	
+		//echo 'QD - <b>' . $sqlUnionBU . '<br>';
+		// die();
+				
+		// get all execution status from DB Only for test cases with tester assigned			
+		$sql =	" /* {$debugMsg} UNION  */" .
+				" SELECT user_id,status, count(0) AS exec_qty " .
+				" FROM ($sqlUnionAU UNION ALL $sqlUnionBU ) AS SQBU " .
+				" GROUP BY user_id,status ";
+
+		$exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'user_id','status');              
+
+		// Need Users Set
+		$itemSet = array_keys($exec['with_tester']);
+		$userSet = $this->helperGetUserIdentity($itemSet);
+		unset($itemSet);
+		$exec['assignedUsers'] = array();
+		foreach($userSet as $id => &$elem)
+		{
+			$exec['assignedUsers'][$id] = $elem['login'];
+		}
+		// new dBug($exec);
+		// die();
+
+		// get total test cases by Assigned Tester
+		$sql = 	"/* $debugMsg */ ".
+				" SELECT COUNT(0) AS qty, UA.user_id " . 
+				" FROM {$this->tables['user_assignments']} UA " .
+				" WHERE UA.build_id IN ( " . $builds->inClause . " ) " .
+				" AND UA.type = {$this->execTaskCode} " . 
+				" GROUP BY user_id";
+
+		$exec['total'] = (array)$this->db->fetchRowsIntoMap($sql,'user_id');
+
+
+
+		return $exec;
+	}
+
+	/**
+	 *
+	 * @internal revisions
+	 *
+	 * @since 1.9.4
+	 * 20120429 - franciscom - 
+	 */
+	function getStatusTotalsByAssignedUserForRender($id,$filters=null,$opt=null)
+	{
+		// echo __FUNCTION__;
+		$renderObj = $this->getStatusTotalsByItemForRender($id,'assignedUser',$filters,$opt);
+		return $renderObj;
+	}
+
+
+
+	/**
+	 *
+	 * @internal revisions
+	 *
+	 * @since 1.9.4
+	 */
+	function helperGetUserIdentity($idSet=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = " SELECT id,login,first,last " .
+			   " FROM {$this->tables['users']}";
+
+		$inClause = '';
+		if( !is_null($idSet) && ((array)$idSet >0))
+		{
+			if( ($dummy=implode(',',(array)$idSet)) != '' )
+			{
+				$inClause = " WHERE id IN ({$dummy}) ";		
+			}	
+		}
+
+		$rs = $this->db->fetchRowsIntoMap($sql . $inClause,'id');
+		return $rs;
 	}
 	
 

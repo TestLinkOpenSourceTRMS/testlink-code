@@ -28,7 +28,8 @@ $cfg->beginX = $chart_cfg['beginX'];
 $cfg->beginY = $chart_cfg['beginY'];
 $cfg->scale->legendXAngle = $chart_cfg['legendXAngle'];
 
-$info = getDataAndScale($db);
+$args = init_args();
+$info = getDataAndScale($db,$args);
 createChart($info,$cfg);
 
 
@@ -40,33 +41,37 @@ createChart($info,$cfg);
   returns: 
 
 */
-function getDataAndScale(&$dbHandler)
+function getDataAndScale(&$dbHandler,$argsObj)
 {
     $obj = new stdClass(); 
     $totals = null; 
     $resultsCfg = config_get('results');
 
-    $dataSet = $_SESSION['statistics']['getAggregateOwnerResults'];
-    $obj->canDraw = !is_null($dataSet);
+	$metricsMgr = new tlTestPlanMetrics($dbHandler);
+    $dummy = $metricsMgr->getStatusTotalsByAssignedUserForRender($argsObj->tplan_id);
+    $dataSet = $dummy->info;
+
+    $obj->canDraw = !is_null($dataSet) && (count($dataSet) > 0);
     if($obj->canDraw)
     {
         // Process to enable alphabetical order
-        foreach($dataSet as $tester_id => $elem)
+        foreach($dataSet as $assignedUser => $elem)
         {
-            $item_descr[$elem['tester_name']] = $tester_id;
+            $item_descr[$elem['name']] = $assignedUser;
         }  
         ksort($item_descr);
-
-        foreach($item_descr as $name => $tester_id)
+	
+        foreach($item_descr as $name => $assignedUser)
         {
             $items[] = htmlspecialchars($name);
-            foreach($dataSet[$tester_id]['details'] as $status => $value)
+            foreach($dataSet[$assignedUser]['details'] as $status => $value)
             {
                 $totals[$status][] = $value['qty'];  
             }    
         }
 
     }
+    
     $obj->xAxis = new stdClass();
     $obj->xAxis->values = $items;
     $obj->xAxis->serieName = 'Serie8';
@@ -82,7 +87,6 @@ function getDataAndScale(&$dbHandler)
         {
             $obj->chart_data[] = $values;
             $obj->series_label[] = lang_get($resultsCfg['status_label'][$status]);
-   	        // BUGID 4090
 	        if( isset($resultsCfg['charts']['status_colour'][$status]) )
             {	
             	$obj->series_color[] = $resultsCfg['charts']['status_colour'][$status];
@@ -91,6 +95,20 @@ function getDataAndScale(&$dbHandler)
     }
     return $obj;
 }
+
+
+function init_args()
+{
+	$argsObj = new stdClass();
+	// $argsObj->tproject_id = intval($_REQUEST['tproject_id']);
+	$argsObj->tplan_id = intval($_REQUEST['tplan_id']);
+	if( isset($_REQUEST['debug']) )
+	{
+		$argsObj->debug = 'yes';
+	}
+	return $argsObj;
+}
+
 
 function checkRights(&$db,&$user)
 {

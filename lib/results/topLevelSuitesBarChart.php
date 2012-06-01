@@ -57,14 +57,13 @@ function getDataAndScale(&$dbHandler,$argsObj)
 
     $dataSet = $metricsMgr->getRootTestSuites($argsObj->tplan_id,$argsObj->tproject_id);
     $dummy = $metricsMgr->getStatusTotalsByTopLevelTestSuiteForRender($argsObj->tplan_id);
-    $mapOfAggregate = $dummy->info;
-   
+    $obj->canDraw = !is_null($dummy->info);
+    
 	if( property_exists($argsObj,'debug') )
 	{
-    	new dBug($mapOfAggregate);
+    	new dBug($dummy->info);
     }
      
-    $obj->canDraw = !is_null($dataSet);
     if($obj->canDraw) 
     {    
         //// Process to enable alphabetical order
@@ -72,10 +71,10 @@ function getDataAndScale(&$dbHandler,$argsObj)
         ksort($item_descr);
         foreach($item_descr as $name => $tsuite_id)
         {
-            if( isset($mapOfAggregate[$tsuite_id]) )
+            if( isset($dummy->info[$tsuite_id]) )
             {
             	$items[]=htmlspecialchars($name);
-	            $rmap = $mapOfAggregate[$tsuite_id]['details'];
+	            $rmap = $dummy->info[$tsuite_id]['details'];
 	        	foreach($rmap as $key => $value)
 	        	{
 	        		$totals[$key][]=$value['qty'];  

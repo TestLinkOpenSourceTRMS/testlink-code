@@ -3,35 +3,32 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource	platformPieChart.php
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 	2005-2009, TestLink community
+ * @copyright 	2005-2012, TestLink community
  * @copyright 	
- * @version    	CVS: $Id: platformPieChart.php,v 1.4 2010/09/22 12:28:29 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
- * 20100922 - Julian - BUGID 3798
- * 20091222 - eloff - fixed extraction of data to current data structures
- *
+ * @internal revisions
+ * @since 1.9.4
  *
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
-define('PCHART_PATH','../../third_party/pchart');
-include(PCHART_PATH . "/pChart/pData.class");   
-include(PCHART_PATH . "/pChart/pChart.class");   
+include("../../third_party/pchart/pChart/pData.class");   
+include("../../third_party/pchart/pChart/pChart.class");   
 testlinkInitPage($db,true,false,"checkRights");
 
 $resultsCfg = config_get('results');
 $chart_cfg = $resultsCfg['charts']['dimensions']['platformPieChart'];
 
 $args = init_args();
-$tplan_mgr = new testplan($db);
-$totalsByPlatform = $tplan_mgr->getStatusTotalsByPlatform($args->tplan_id);
-
-$totals=$totalsByPlatform[$args->platform_id]['details'];
-unset($totals['total']);
+$metricsMgr = new tlTestPlanMetrics($db);
+$dummy = $metricsMgr->getStatusTotalsByPlatformForRender($args->tplan_id);
+$totals = $dummy->info[$args->platform_id]['details'];
+unset($dummy);
+unset($metricsMgr);
 
 $values = array();
 $labels = array();
@@ -62,7 +59,6 @@ $pChartCfg->radius = $chart_cfg['radius'];
 $pChartCfg->legendX = $chart_cfg['legendX'];                    
 $pChartCfg->legendY = $chart_cfg['legendY'];
 
-// BUGID 3798
 $pChartCfg->centerX = intval($pChartCfg->XSize/2);                    
 $pChartCfg->centerY = intval($pChartCfg->YSize/2);
 
@@ -84,6 +80,7 @@ $Test->drawBasicPieGraph($graph->data,$graph->description,
                          $pChartCfg->centerX,$pChartCfg->centerY,$pChartCfg->radius,PIE_PERCENTAGE,255,255,218);   
 $Test->drawPieLegend($pChartCfg->legendX,$pChartCfg->legendY,$graph->data,$graph->description,250,250,250);                                
 $Test->Stroke();
+
 
 function checkRights(&$db,&$user)
 {

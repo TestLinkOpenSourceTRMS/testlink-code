@@ -13,22 +13,12 @@
  * @since 1.9.4
  * 20120602 - franciscom - TICKET 5041: Charts - Report by Tester - REMOVE / DEPRECATED
  *
- * @since 1.9.3
- * 20100716 - eloff - BUGID 3562: include bug tracking if activated
- * 20100221 - franciscom - fixed call to getPlatforms()	
  */
 require_once('../../config.inc.php');
 require_once('common.php');
 
-// TO BE REFACTORED
-if (config_get('interface_bugs') != 'NO')
-{
-  require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' .
-               DIRECTORY_SEPARATOR . 'int_bugtracking.php');
-}
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-
 $gui=new stdClass();
 
 $l18n = init_labels(array('overall_metrics' => null,'overall_metrics_for_platform' => null,

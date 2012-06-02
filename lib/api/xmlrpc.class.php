@@ -226,7 +226,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$this->tcaseMgr=new testcase($this->dbObj);
 	    $this->tprojectMgr=new testproject($this->dbObj);
 	    $this->tplanMgr=new testplan($this->dbObj);
-	    $this->tplanMetricsMgr=new tlTestPlanMetrics($this->dbObj);
+	    $this->tplanMetricsMgr = new tlTestPlanMetrics($this->dbObj);
 
 	    $this->reqSpecMgr=new requirement_spec_mgr($this->dbObj);
         $this->reqMgr=new requirement_mgr($this->dbObj);
@@ -245,66 +245,9 @@ class TestlinkXMLRPCServer extends IXR_Server
         }   
         $this->codeStatus=array_flip($this->statusCode);
     	
-        
-	    
-	    $this->methods = array( 'tl.reportTCResult' => 'this:reportTCResult',
-	                            'tl.setTestCaseExecutionResult' => 'this:reportTCResult',
-	                            'tl.createBuild' => 'this:createBuild',
-	                            'tl.createTestCase' => 'this:createTestCase',
-	                            'tl.createTestCaseSteps' => 'this:createTestCaseSteps',
-	                            'tl.createTestPlan' => 'this:createTestPlan',
-	                            'tl.createTestProject' => 'this:createTestProject',
-	                            'tl.createTestSuite' => 'this:createTestSuite',
-								'tl.deleteTestCaseSteps' => 'this:deleteTestCaseSteps',
-	                            'tl.uploadExecutionAttachment' => 'this:uploadExecutionAttachment',
-	                            'tl.uploadRequirementSpecificationAttachment' => 'this:uploadRequirementSpecificationAttachment',
-	                            'tl.uploadRequirementAttachment' => 'this:uploadRequirementAttachment',
-	                            'tl.uploadTestProjectAttachment' => 'this:uploadTestProjectAttachment',
-	                            'tl.uploadTestSuiteAttachment' => 'this:uploadTestSuiteAttachment',
-	                            'tl.uploadTestCaseAttachment' => 'this:uploadTestCaseAttachment',
-	                            'tl.uploadAttachment' => 'this:uploadAttachment',
-                                'tl.assignRequirements' => 'this:assignRequirements',     
-                                'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
-	                            'tl.getProjects' => 'this:getProjects',
-	                            'tl.getTestProjectByName' => 'this:getTestProjectByName',
-	                            'tl.getTestPlanByName' => 'this:getTestPlanByName',
-	                            'tl.getProjectTestPlans' => 'this:getProjectTestPlans',
-								'tl.getTestPlanPlatforms' => 'this:getTestPlanPlatforms',
-	                            'tl.getTotalsForTestPlan' => 'this:getTotalsForTestPlan',
-	                            'tl.getBuildsForTestPlan' => 'this:getBuildsForTestPlan',
-	                            'tl.getLatestBuildForTestPlan' => 'this:getLatestBuildForTestPlan',	
-                                'tl.getLastExecutionResult' => 'this:getLastExecutionResult',
-	                            'tl.getTestSuitesForTestPlan' => 'this:getTestSuitesForTestPlan',
-	                            'tl.getTestSuitesForTestSuite' => 'this:getTestSuitesForTestSuite',
-	                            'tl.getTestCasesForTestSuite'	=> 'this:getTestCasesForTestSuite',
-	                            'tl.getTestCasesForTestPlan' => 'this:getTestCasesForTestPlan',
-	                            'tl.getTestCaseIDByName' => 'this:getTestCaseIDByName',
-                                'tl.getTestCaseCustomFieldDesignValue' => 'this:getTestCaseCustomFieldDesignValue',
-	    						'tl.getTestCaseCustomFieldExecutionValue' => 'this:getTestCaseCustomFieldExecutionValue',
-	    						'tl.getTestCaseCustomFieldTestPlanDesignValue' => 'this:getTestCaseCustomFieldTestPlanDesignValue',
-	    						'tl.getTestSuiteCustomFieldDesignValue' => 'this:getTestSuiteCustomFieldDesignValue',
-	    						'tl.getTestPlanCustomFieldDesignValue' => 'this:getTestPlanCustomFieldDesignValue',
-	    						'tl.getReqSpecCustomFieldDesignValue' => 'this:getReqSpecCustomFieldDesignValue',
-	    						'tl.getRequirementCustomFieldDesignValue' => 'this:getRequirementCustomFieldDesignValue',
-                                'tl.getFirstLevelTestSuitesForTestProject' => 'this:getFirstLevelTestSuitesForTestProject',     
-                                'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
-	                            'tl.getTestCase' => 'this:getTestCase',
-                                'tl.getFullPath' => 'this:getFullPath',
-                                'tl.getTestSuiteByID' => 'this:getTestSuiteByID',
-                                'tl.deleteExecution' => 'this:deleteExecution',
-                                'tl.doesUserExist' => 'this:doesUserExist',
-								'tl.updateTestCaseCustomFieldDesignValue' => 'this:updateTestCaseCustomFieldDesignValue',
-								'tl.setTestCaseExecutionType' => 'this:setTestCaseExecutionType',
-                                'tl.checkDevKey' => 'this:checkDevKey',
-			                    'tl.about' => 'this:about',
-			                    'tl.setTestMode' => 'this:setTestMode',
-                    			// ping is an alias for sayHello
-                    			'tl.ping' => 'this:sayHello', 
-                    			'tl.sayHello' => 'this:sayHello',
-                    			'tl.repeat' => 'this:repeat'
-		                      );				
-		
+	    $this->initMethodYellowPages();
 		$this->methods += $callbacks;
+
 		$this->IXR_Server($this->methods);		
 	}	
 	
@@ -4145,7 +4088,7 @@ public function getTestCase($args)
 
 	/**
 	 * Gets the summarized results grouped by platform.
-	 * @see testplan:getStatusTotalsByPlatform()
+	 * @see 
 	 *
 	 * @param struct $args
 	 * @param string $args["devKey"]
@@ -4177,7 +4120,8 @@ public function getTestCase($args)
 
 		if( $status_ok )
 		{
-			$total = $this->tplanMgr->getStatusTotalsByPlatform($this->args[self::$testPlanIDParamName]);
+			// $total = $this->tplanMgr->getStatusTotalsByPlatform($this->args[self::$testPlanIDParamName]);
+			$total = $this->tplanMetricsMgr->getExecCountersByPlatformExecStatus($this->args[self::$testPlanIDParamName]);
 		}
 
 		return $status_ok ? $total : $this->errors;
@@ -5356,6 +5300,115 @@ protected function createAttachmentTempFile()
     	}	
     }
 
+
+
+	public function getExecCountersByBuild($args)
+	{
+		$operation = __FUNCTION__;
+		$msg_prefix="({$operation}) - ";
+		$total = null;
+		
+		$this->_setArgs($args);
+		$status_ok=true;
+
+		// Checks are done in order
+		$checkFunctions = array('authenticate','checkTestPlanID');
+		$status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+
+		if( $status_ok )
+		{
+			$metrics = $this->tplanMetricsMgr->getExecCountersByBuildExecStatus($this->args[self::$testPlanIDParamName]);
+		}
+
+		if( !is_null($metrics) )
+		{
+			// transform in somethin similar to a simple table
+			$out = array();
+			foreach($metrics['with_tester'] as $build_id => &$elem)
+			{
+				$out[$build_id] = array();
+				$out[$build_id]['name'] = $metrics['active_builds'][$build_id]['name'];
+				$out[$build_id]['notes'] = $metrics['active_builds'][$build_id]['notes'];
+				$out[$build_id]['total'] = $metrics['total'][$build_id]['qty'];
+				
+				foreach($elem as $status_code => &$data)
+				{
+					$out[$build_id][$status_code] = $data['exec_qty'];		
+				}
+			}
+			return array('raw' => $metrics, 'table' => $out);
+			
+		}
+		else
+		{
+			return $this->errors;
+		}
+		
+	}
+
+
+
+
+	function initMethodYellowPages()
+	{
+	    $this->methods = array( 'tl.reportTCResult' => 'this:reportTCResult',
+	                            'tl.setTestCaseExecutionResult' => 'this:reportTCResult',
+	                            'tl.createBuild' => 'this:createBuild',
+	                            'tl.createTestCase' => 'this:createTestCase',
+	                            'tl.createTestCaseSteps' => 'this:createTestCaseSteps',
+	                            'tl.createTestPlan' => 'this:createTestPlan',
+	                            'tl.createTestProject' => 'this:createTestProject',
+	                            'tl.createTestSuite' => 'this:createTestSuite',
+								'tl.deleteTestCaseSteps' => 'this:deleteTestCaseSteps',
+	                            'tl.uploadExecutionAttachment' => 'this:uploadExecutionAttachment',
+	                            'tl.uploadRequirementSpecificationAttachment' => 'this:uploadRequirementSpecificationAttachment',
+	                            'tl.uploadRequirementAttachment' => 'this:uploadRequirementAttachment',
+	                            'tl.uploadTestProjectAttachment' => 'this:uploadTestProjectAttachment',
+	                            'tl.uploadTestSuiteAttachment' => 'this:uploadTestSuiteAttachment',
+	                            'tl.uploadTestCaseAttachment' => 'this:uploadTestCaseAttachment',
+	                            'tl.uploadAttachment' => 'this:uploadAttachment',
+                                'tl.assignRequirements' => 'this:assignRequirements',     
+                                'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
+                                'tl.getExecCountersByBuild' => 'this:getExecCountersByBuild',
+	                            'tl.getProjects' => 'this:getProjects',
+	                            'tl.getTestProjectByName' => 'this:getTestProjectByName',
+	                            'tl.getTestPlanByName' => 'this:getTestPlanByName',
+	                            'tl.getProjectTestPlans' => 'this:getProjectTestPlans',
+								'tl.getTestPlanPlatforms' => 'this:getTestPlanPlatforms',
+	                            'tl.getTotalsForTestPlan' => 'this:getTotalsForTestPlan',
+	                            'tl.getBuildsForTestPlan' => 'this:getBuildsForTestPlan',
+	                            'tl.getLatestBuildForTestPlan' => 'this:getLatestBuildForTestPlan',	
+                                'tl.getLastExecutionResult' => 'this:getLastExecutionResult',
+	                            'tl.getTestSuitesForTestPlan' => 'this:getTestSuitesForTestPlan',
+	                            'tl.getTestSuitesForTestSuite' => 'this:getTestSuitesForTestSuite',
+	                            'tl.getTestCasesForTestSuite'	=> 'this:getTestCasesForTestSuite',
+	                            'tl.getTestCasesForTestPlan' => 'this:getTestCasesForTestPlan',
+	                            'tl.getTestCaseIDByName' => 'this:getTestCaseIDByName',
+                                'tl.getTestCaseCustomFieldDesignValue' => 'this:getTestCaseCustomFieldDesignValue',
+	    						'tl.getTestCaseCustomFieldExecutionValue' => 'this:getTestCaseCustomFieldExecutionValue',
+	    						'tl.getTestCaseCustomFieldTestPlanDesignValue' => 'this:getTestCaseCustomFieldTestPlanDesignValue',
+	    						'tl.getTestSuiteCustomFieldDesignValue' => 'this:getTestSuiteCustomFieldDesignValue',
+	    						'tl.getTestPlanCustomFieldDesignValue' => 'this:getTestPlanCustomFieldDesignValue',
+	    						'tl.getReqSpecCustomFieldDesignValue' => 'this:getReqSpecCustomFieldDesignValue',
+	    						'tl.getRequirementCustomFieldDesignValue' => 'this:getRequirementCustomFieldDesignValue',
+                                'tl.getFirstLevelTestSuitesForTestProject' => 'this:getFirstLevelTestSuitesForTestProject',     
+                                'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
+	                            'tl.getTestCase' => 'this:getTestCase',
+                                'tl.getFullPath' => 'this:getFullPath',
+                                'tl.getTestSuiteByID' => 'this:getTestSuiteByID',
+                                'tl.deleteExecution' => 'this:deleteExecution',
+                                'tl.doesUserExist' => 'this:doesUserExist',
+								'tl.updateTestCaseCustomFieldDesignValue' => 'this:updateTestCaseCustomFieldDesignValue',
+								'tl.setTestCaseExecutionType' => 'this:setTestCaseExecutionType',
+                                'tl.checkDevKey' => 'this:checkDevKey',
+			                    'tl.about' => 'this:about',
+			                    'tl.setTestMode' => 'this:setTestMode',
+                    			// ping is an alias for sayHello
+                    			'tl.ping' => 'this:sayHello', 
+                    			'tl.sayHello' => 'this:sayHello',
+                    			'tl.repeat' => 'this:repeat'
+		                      );				
+	}
 
 } // class end
 ?>

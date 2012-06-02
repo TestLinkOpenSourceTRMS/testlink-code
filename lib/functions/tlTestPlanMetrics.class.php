@@ -1132,70 +1132,6 @@ class tlTestPlanMetrics extends testplan
 	 * @internal revisions
 	 *
 	 * @since 1.9.4
-	 * 20120430 - franciscom - 
-	 */
-	function getExecCountersByTesterExecStatus($id, $filters=null, $opt=null)
-	{
-		//echo 'QD - <b><br>' . __FUNCTION__ . '</b><br>';
-		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$safe_id = intval($id);
-		list($my,$builds,$sqlStm) = $this->helperGetExecCounters($safe_id, $filters, $opt);
-
-		$sqlLEX = $sqlStm['LE'];
-
-		$sql =	"/* {$debugMsg} sqlUnion - executions */" . 
-				" SELECT COUNT(0) AS exec_qty, E.tester_id, E.status " .
-				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
-				" /* GO FOR Absolute LATEST exec ID ON BUILD and PLATFORM */ " .
-				" JOIN ({$sqlLEX}) AS LEX " .
-				" ON  LEX.testplan_id = TPTCV.testplan_id " .
-				" AND LEX.tcversion_id = TPTCV.tcversion_id " .
-				" AND LEX.testplan_id = " . $safe_id .
-
-				" /* Get (With BUILD details) execution  status WRITTEN on DB */ " .
-				" JOIN {$this->tables['executions']} E " .
-				" ON E.id = LEX.id " .
-
-				" WHERE TPTCV.testplan_id=" . $safe_id .
-				" AND E.build_id IN ({$builds->inClause}) " .
-				" GROUP BY tester_id,status ";
-
-        $exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'tester_id','status');              
-
-
-		// Need Users Set
-		$itemSet = array_keys($exec['with_tester']);
-		$userSet = $this->helperGetUserIdentity($itemSet);
-		unset($itemSet);
-		$exec['testers'] = array();
-		foreach($userSet as $id => &$elem)
-		{
-			$exec['testers'][$id] = $elem['login'];
-		}
-		return $exec;
-	}
-
-	/**
-	 *
-	 * @internal revisions
-	 *
-	 * @since 1.9.4
-	 * 20120429 - franciscom - 
-	 */
-	function getStatusTotalsByTesterForRender($id,$filters=null,$opt=null)
-	{
-		$renderObj = $this->getStatusTotalsByItemForRender($id,'tester',$filters,$opt);
-		return $renderObj;
-	}
-
-
-
-
-	/**
-	 *
-	 * @internal revisions
-	 *
-	 * @since 1.9.4
 	 * 20120429 - franciscom - 
 	 */
 	function getStatusTotalsByItemForRender($id,$itemType,$filters=null,$opt=null)
@@ -1230,18 +1166,7 @@ class tlTestPlanMetrics extends testplan
 				$returnArray = true;
 			break;
 			
-			
-			case 'tester':    
-				$metrics = $this->getExecCountersByTesterExecStatus($id,$filters,$opt);
-				$setKey = 'testers';
-			break;
-
-			case 'assignedUser':    
-				$metrics = $this->getExecCountersByUAExecStatus($id,$filters,$opt);
-				$setKey = 'assignedUsers';
-				// new dBug($metrics);
-			break;
-			
+		
 		}
 
 	   	if( !is_null($metrics) )
@@ -2272,121 +2197,6 @@ class tlTestPlanMetrics extends testplan
 	 * @internal revisions
 	 *
 	 * @since 1.9.4
-	 * 20120601 - franciscom - 
-	 */
-	function getExecCountersByUAExecStatus($id, $filters=null, $opt=null)
-	{
-		//echo 'QD - <b><br>' . __FUNCTION__ . '</b><br>';
-		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$safe_id = intval($id);
-		list($my,$builds,$sqlStm) = $this->helperGetExecCounters($safe_id, $filters, $opt);
-
-		$sqlLEX = $sqlStm['LE'];
-
-		$sqlUnionAU	=	"/* {$debugMsg} sqlUnion - executions */" . 
-						" SELECT UA.user_id, UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " .
-						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
-						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
-						" JOIN {$this->tables['user_assignments']} UA " .
-						" ON UA.feature_id = TPTCV.id " .
-						" AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
-
-						" /* GO FOR Absolute LATEST exec ID ON TEST PLAN */ " .
-						" JOIN ({$sqlLEX}) AS LEX " .
-						" ON  LEX.testplan_id = TPTCV.testplan_id " .
-						" AND LEX.tcversion_id = TPTCV.tcversion_id " .
-
-						" /* Get (With BUILD details) execution  status WRITTEN on DB */ " .
-						" JOIN {$this->tables['executions']} E " .
-						" ON E.id = LEX.id " .
-
-						" WHERE TPTCV.testplan_id=" . $safe_id .
-						" AND UA.build_id IN ({$builds->inClause}) ";
-
-		//echo 'QD - <b>' . $sqlUnionAU . '<br>';
-		// die();
-
-		$sqlUnionBU	=	"/* {$debugMsg} sqlUnion - notrun */" . 
-						" SELECT UA.user_id, UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " .
-						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
-						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
-						" JOIN {$this->tables['user_assignments']} UA " .
-						" ON UA.feature_id = TPTCV.id " .
-						" AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
-
-						" LEFT OUTER JOIN ({$sqlLEX}) AS LEX " .
-						" ON  LEX.testplan_id = TPTCV.testplan_id " .
-						" AND LEX.tcversion_id = TPTCV.tcversion_id " .
-
-						" LEFT OUTER JOIN {$this->tables['executions']} E " .
-						" ON  E.testplan_id = TPTCV.testplan_id " .
-						" AND E.tcversion_id = TPTCV.tcversion_id " .
-
-						" WHERE TPTCV.testplan_id=" . $safe_id .
-						" AND UA.build_id IN ({$builds->inClause}) " .
-
-						" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
-						" AND E.id IS NULL AND LEX.id IS NULL";
-	
-		//echo 'QD - <b>' . $sqlUnionBU . '<br>';
-		// die();
-				
-		// get all execution status from DB Only for test cases with tester assigned			
-		$sql =	" /* {$debugMsg} UNION  */" .
-				" SELECT user_id,status, count(0) AS exec_qty " .
-				" FROM ($sqlUnionAU UNION ALL $sqlUnionBU ) AS SQBU " .
-				" GROUP BY user_id,status ";
-
-		$exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'user_id','status');              
-
-		// Need Users Set
-		$itemSet = array_keys($exec['with_tester']);
-		$userSet = $this->helperGetUserIdentity($itemSet);
-		unset($itemSet);
-		$exec['assignedUsers'] = array();
-		foreach($userSet as $id => &$elem)
-		{
-			$exec['assignedUsers'][$id] = $elem['login'];
-		}
-		// new dBug($exec);
-		// die();
-
-		// get total test cases by Assigned Tester
-		$sql = 	"/* $debugMsg */ ".
-				" SELECT COUNT(0) AS qty, UA.user_id " . 
-				" FROM {$this->tables['user_assignments']} UA " .
-				" WHERE UA.build_id IN ( " . $builds->inClause . " ) " .
-				" AND UA.type = {$this->execTaskCode} " . 
-				" GROUP BY user_id";
-
-		$exec['total'] = (array)$this->db->fetchRowsIntoMap($sql,'user_id');
-
-
-
-		return $exec;
-	}
-
-	/**
-	 *
-	 * @internal revisions
-	 *
-	 * @since 1.9.4
-	 * 20120429 - franciscom - 
-	 */
-	function getStatusTotalsByAssignedUserForRender($id,$filters=null,$opt=null)
-	{
-		// echo __FUNCTION__;
-		$renderObj = $this->getStatusTotalsByItemForRender($id,'assignedUser',$filters,$opt);
-		return $renderObj;
-	}
-
-
-
-	/**
-	 *
-	 * @internal revisions
-	 *
-	 * @since 1.9.4
 	 */
 	function helperGetUserIdentity($idSet=null)
 	{
@@ -2406,7 +2216,5 @@ class tlTestPlanMetrics extends testplan
 		$rs = $this->db->fetchRowsIntoMap($sql . $inClause,'id');
 		return $rs;
 	}
-	
-
 }
 ?>

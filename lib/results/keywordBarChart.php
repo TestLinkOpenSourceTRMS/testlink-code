@@ -47,13 +47,18 @@ function getDataAndScale(&$dbHandler,$argsObj)
 	$resultsCfg = config_get('results');
 	$obj = new stdClass(); 
 	$items = array();
+	$totals = null; 
 
 	$metricsMgr = new tlTestPlanMetrics($dbHandler);
     $dummy = $metricsMgr->getStatusTotalsByKeywordForRender($argsObj->tplan_id);
-    $dataSet = $dummy->info;
-
-	$obj->canDraw = !is_null($dataSet) && (count($dataSet) > 0);
-	$totals = null; 
+    
+    $obj->canDraw = false;
+	if( !is_null($dummy) )    
+	{
+    	$dataSet = $dummy->info;
+		$obj->canDraw = !is_null($dataSet) && (count($dataSet) > 0);
+	}
+	
 	if($obj->canDraw)
 	{
 	   	// Process to enable alphabetical order

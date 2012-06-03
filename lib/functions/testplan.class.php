@@ -16,6 +16,7 @@
  * @internal revisions
  * 
  *  @since 1.9.4
+ *	20120603 - franciscom - count_testcases() enhancements
  *  20120529 - franciscom - getRootTestSuites()
  *  20120524 - franciscom - get_keywords_map() query refactoring.
  *  20120520 - franciscom - getLinkedForTree() new method
@@ -346,33 +347,73 @@ class testplan extends tlObjectWithAttachments
 	  function: count_testcases
             get number of testcases linked to a testplan
 
-	  args: id: testplan id
+	  args: id: testplan id, can be array of id,
 
             [platform_id]: null => do not filter by platform
+            			   can be array of platform id	
             
 	  returns: number
 	*/
-	public function count_testcases($id,$platform_id=null)
+	public function count_testcases($id,$platform_id=null,$opt=null)
 	{
+		// output:
+		// 'number', just the count
+		// 'groupByTestPlan' => map: key test plan id
+		//                      element: count
+		//
+		// 'groupByTestPlanPlatform' => map: first level key test plan id
+		//                                   second level key platform id 
+		//
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		$my['opt'] = array('output' => 'number');
+		$my['opt'] = array_merge($my['opt'],(array)$opt);
+		
 		$sql_filter = '';
 		if( !is_null($platform_id) )
 		{
-			$sql_filter = " AND platform_id={$platform_id} ";
+			$sql_filter = ' AND platform_id = IN (' . implode(',',(array)$platform_id) . ')';
 		}
 		
-		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $sql = "/* $debugMsg */ " .
-	           " SELECT COUNT(testplan_id) AS qty " .
-		       " FROM {$this->tables['testplan_tcversions']} " .
-			   " WHERE testplan_id={$id} {$sql_filter}";
-		$recordset = $this->db->get_recordset($sql);
-		$qty = 0;
-		if(!is_null($recordset))
+		
+		$out = null;
+		$outfields = "/* $debugMsg */ " . ' SELECT COUNT(testplan_id) AS qty ';
+		$dummy = " FROM {$this->tables['testplan_tcversions']} " .
+			   	 " WHERE testplan_id IN (" . implode(',',(array)$id) . ") {$sql_filter}";
+
+		switch( $my['opt']['output'] )
 		{
-			$qty = $recordset[0]['qty'];
+			case 'groupByTestPlan':
+				$sql = $outfields . ', testplan_id' . $dummy . ' GROUP BY testplan_id '; 
+				$out = $this->db->fetchRowsIntoMap($sql,'testplan_id');
+			break;
+			
+			case 'groupByTestPlanPlatform':
+				$groupBy = ' GROUP BY testplan_id, platform_id ';
+				$sql = $outfields . ', testplan_id, platform_id' . $dummy . 
+					   ' GROUP BY testplan_id,platform_id '; 
+				$out = $this->db->fetchMapsRowsIntoMap($sql,'testplan_id','platform_id');
+			break;
+		
+			case 'number':
+			default:
+				$sql = $outfields . $dummy;
+				$rs = $this->db->get_recordset($sql);
+				//new dBug($rs);
+				
+				$out = 0;
+				if(!is_null($rs))
+				{
+					$out = $rs[0]['qty'];
+				}
+				// new dBug($out);
+			break;
 		}
-		return $qty;
+
+		return $out;
 	}
+
+
 
 
 	/*
@@ -4370,44 +4411,6 @@ class testplan extends tlObjectWithAttachments
 	}
 
     /**
-     *
-	 * @param tplan_id: test plan id
-	 * @return map: 
-	 *
-	 * @internal revisions
-	 * 20100610 - eloff - BUGID 3515 - take platforms into account
- 	 */
-	public function getStatusTotals($tplan_id)
-	{
-		$code_verbose = $this->getStatusForReports();
-	
-		$filters=null;
-		$options=array('output' => 'mapOfMap');
-		$execResults = $this->get_linked_tcversions($tplan_id,$filters,$options);
-	
-		// need to get Last Execution Status CROSS BUILD by Platform
-		// new dBug($execResults);
-		
-		$totals = array('total' => 0,'not_run' => 0);
-		foreach($code_verbose as $status_code => $status_verbose)
-		{
-			$totals[$status_verbose]=0;
-		}
-		foreach($execResults as $key => $testcases)
-		{
-			foreach($testcases as $testcase)
-			{
-				$totals['total']++;
-				$totals[$code_verbose[$testcase['exec_status']]]++;
-			}
-		}
-		
-		// new dBug($totals);
-		return $totals;
-	}
-
-
-    /**
 	 * DocBlock with nested lists
  	 *
  	 */
@@ -4425,367 +4428,6 @@ class testplan extends tlObjectWithAttachments
 		return $code_verbose;
 	}
 
-    /**
-     *
-	 * @param tplan_id: test plan id
-	 * @return map:
-	 *
-	 *	'type' => 'platform'
-	 *	'total_tc => ZZ
-	 *	'details' => array ( 'passed' => array( 'qty' => X)
-	 *	                     'failed' => array( 'qty' => Y)
-	 *	                     'blocked' => array( 'qty' => U)
-	 *                       ....)
-	 *
-	 * @internal revision
-	 * 20100610 - eloff - BUGID 3515 - rewrite inspired by getStatusTotals()
-	 * 20100201 - franciscom - BUGID 3121
-	 */
-	public function getStatusTotalsByPlatform($tplan_id)
-	{
-		$code_verbose = $this->getStatusForReports();
-
-		$filters=null;
-		$options=array('output' => 'mapOfMap');
-		$execResults = $this->get_linked_tcversions($tplan_id,$filters,$options);
-
-		$code_verbose = $this->getStatusForReports();
-		$platformSet = $this->getPlatforms($tplan_id, array('outputFormat' => 'map'));
-		$totals = null;
-		$platformIDSet = is_null($platformSet) ? array(0) : array_keys($platformSet);
-
-		foreach($platformIDSet as $platformID)
-		{
-			$totals[$platformID]=array(
-				'type' => 'platform',
-				'name' => $platformSet[$platformID],
-				'total_tc' => 0,
-				'details' => array());
-			foreach($code_verbose as $status_code => $status_verbose)
-			{
-				$totals[$platformID]['details'][$status_verbose]['qty'] = 0;
-			}
-		}
-		foreach($execResults as $key => $testcases)
-		{
-			foreach($testcases as $platform_id => $testcase)
-			{
-				$totals[$platform_id]['total_tc']++;
-				$totals[$platform_id]['details'][$code_verbose[$testcase['exec_status']]]['qty']++;
-			}
-		}
-		return $totals;
-	}
-
-	/**
-	 * @param int $tplan_id test plan id
-	 * @return map:
-	 *	'type' => 'priority'
-	 *	'total_tc => ZZ
-	 *	'details' => array ( 'passed' => array( 'qty' => X)
-	 *	                     'failed' => array( 'qty' => Y)
-	 *	                     'blocked' => array( 'qty' => U)
-	 *	                      ....)
-	 *
-	 * @internal revision
-	 * 20100614 - eloff - refactor to same style as the other getStatusTotals...()
-	 * 20100206 - eloff - BUGID 3060
-	 */
-	public function getStatusTotalsByPriority($tplan_id)
-	{
-		$code_verbose = $this->getStatusForReports();
-		$urgencyCfg = config_get('urgency');
-		$prioSet = array(
-			HIGH => lang_get($urgencyCfg['code_label'][HIGH]),
-			MEDIUM => lang_get($urgencyCfg['code_label'][MEDIUM]),
-			LOW => lang_get($urgencyCfg['code_label'][LOW]));
-		$totals = array();
-
-		foreach($prioSet as $prioCode => $prioLabel)
-		{
-			$totals[$prioCode]=array('type' => 'priority',
-				'name' => $prioLabel,
-				'total_tc' => 0,
-				'details' => null);
-			foreach($code_verbose as $status_code => $status_verbose)
-			{
-				$totals[$prioCode]['details'][$status_verbose]['qty']=0;
-			}
-		}
-		$filters = null;
-		$options=array('output' => 'mapOfMap');
-		$execResults = $this->get_linked_tcversions($tplan_id,$filters,$options);
-
-		foreach($execResults as $testcases)
-		{
-			foreach($testcases as $testcase)
-			{
-				$prio_level = $this->urgencyImportanceToPriorityLevel($testcase['priority']);
-				$totals[$prio_level]['total_tc']++;
-				$totals[$prio_level]['details'][$code_verbose[$testcase['exec_status']]]['qty']++;
-			}
-		}
-		return $totals;
-	}
-
-	/**
-	 * get last execution status analised by keyword, used to build reports.
-	 *
-	 * Consider Test Case WITH and WITHOUT Tester Assignments
-	 *
-	 *
-	 * @param tplan_id: test plan id
-	 * @return map: key: keyword id
-	 *              value: map with following structure
-	 *
-	 * @internal revision
-	 *
- 	 */
-	public function getStatusTotalsByKeyword($tplan_id)
-	{
-		$code_verbose = $this->getStatusForReports();
-		$totals = null;
-		$filters=null;
-		$options = array('output' => 'mapOfMap');  // this way we get info by platform
-		$execResults = $this->get_linked_tcversions($tplan_id,$filters,$options);
-
-		if( !is_null($execResults) )
-		{
-			$tcaseSet = array_keys($execResults);
-			$kw=$this->tcase_mgr->getKeywords($tcaseSet,null,'keyword_id',' ORDER BY keyword ASC ');
-			if( !is_null($kw) )
-			{
-				$keywordSet = array_keys($kw);
-				foreach($keywordSet as $keywordID)
-				{
-					$totals[$keywordID]['type'] = 'keyword';
-					$totals[$keywordID]['name']=$kw[$keywordID][0]['keyword'];
-					$totals[$keywordID]['notes']=$kw[$keywordID][0]['notes'];
-					$totals[$keywordID]['total_tc'] = 0;
-					foreach($code_verbose as $status_code => $status_verbose)
-					{
-						$totals[$keywordID]['details'][$status_verbose]['qty']=0;
-					}
-				}
-
-				foreach($keywordSet as $keywordID)
-				{
-					foreach($kw[$keywordID] as $kw_tcase)
-					{	
-						// BUGID 4391 
-						// here we need to do multiple loops according platforms
-						$platformSet = array_keys($execResults[$kw_tcase['testcase_id']]);
-						foreach($platformSet as $platID)
-						{
-							$status = $execResults[$kw_tcase['testcase_id']][$platID]['exec_status'];
-							$totals[$keywordID]['total_tc']++;
-							$totals[$keywordID]['details'][$code_verbose[$status]]['qty']++;
-						}
-					}
-				}
-			}
-		}
-
-		return $totals;
-	}
-
-    /**
-     * 
-	 * @param id: test plan id
-	 * @return map: 
- 	 *             key: user id
- 	 *             value: map with key=platform id
- 	 *                             value: map with keys: 'total' and verbose status
- 	 *                                             values: test case count.
- 	 *                              
- 	 */
-	public function getStatusTotalsByAssignedTesterPlatform($id)
-	{
-		$code_verbose = $this->getStatusForReports();
-		$filters = null;
-		$user_platform = null;
-		$options = array('output' => 'mapOfMap');
-    	$execResults = $this->get_linked_tcversions($id,$filters,$options);
-    	
-	    if( !is_null($execResults) )
-	    {
-	    	$tcaseSet = array_keys($execResults);
-            foreach($tcaseSet as $tcaseID)
-            {
-            	$testcaseInfo=$execResults[$tcaseID];
-            	$platformIDSet = array_keys($execResults[$tcaseID]);
-            	foreach($platformIDSet as $platformID)
-            	{
-            		
-            		$testedBy = $testcaseInfo[$platformID]['tester_id'];
-            		$assignedTo = $testcaseInfo[$platformID]['user_id'];
-            		$assignedTo = !is_null($assignedTo) && $assignedTo > 0 ? $assignedTo : TL_USER_NOBODY;
-            		$execStatus = $testcaseInfo[$platformID]['exec_status'];
-					
-            		// to avoid errors due to bad or missing config
-            		$verboseStatus = isset($code_verbose[$execStatus]) ? $code_verbose[$execStatus] : $execStatus;
-            		
-            		// 20100425 - francisco.mancardi@gruppotesi.com
-            		if( $assignedTo != TL_USER_NOBODY )
-            		{
-            			if( !isset($user_platform[$assignedTo][$platformID]) )
-            			{
-            				$user_platform[$assignedTo][$platformID]['total']=0;
-            			}
-            			
-            			if( !isset($user_platform[$assignedTo][$platformID][$verboseStatus]) )
-            			{
-            				$user_platform[$assignedTo][$platformID][$verboseStatus]=0;
-            			}
-            		}   
-            		
-            		$testerBoy = is_null($testedBy) ? $assignedTo : $testedBy; 
-            		if( !isset($user_platform[$testerBoy][$platformID]) )
-            		{
-            			$user_platform[$testerBoy][$platformID]['total']=0;
-            		}
-            		
-            		if( !isset($user_platform[$testerBoy][$platformID][$verboseStatus]) )
-            		{
-            			$user_platform[$testerBoy][$platformID][$verboseStatus]=0;
-            		}   
-                    
-            		$user_platform[$testerBoy][$platformID]['total']++;
-            		$user_platform[$testerBoy][$platformID][$verboseStatus]++;
-                   
-				}
-            } 
-        }
-        return $user_platform;
-    }
-
-    /**
-     * 
-	 * @param id: test plan id
-	 * @return map: 
- 	 *             key: user id
- 	 *             value: map with key=platform id
- 	 *                             value: map with keys: 'total' and verbose status
- 	 *                                             values: test case count.
- 	 *                              
- 	 */
-	public function getStatusTotalsByAssignedTester($id)
-	{
-		$unassigned = lang_get('unassigned');
-		$data_set = $this->getStatusTotalsByAssignedTesterPlatform($id);
-	    if( !is_null($data_set) )
-	    {
-			$code_verbose = $this->getStatusForReports();
-
-	    	$userSet = array_keys($data_set);
-	    	// need to find a better way (with less overhead and data movement) to do this
-            $userCol=tlUser::getByIDs($this->db,$userSet,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
-            foreach($userSet as $assignedTo)
-            {
-            	$user_platform[$assignedTo]['type'] = 'assignedTester';
-            	$user_platform[$assignedTo]['name'] = $unassigned; 
-            	if( $assignedTo > 0 )
-            	{
-            		$user_platform[$assignedTo]['name'] = $userCol[$assignedTo]->getDisplayName();;
-            	}
-            	$user_platform[$assignedTo]['total_tc'] = 0;
-            	
-   				foreach($code_verbose as $status_code => $status_verbose)
-			    {
-					$user_platform[$assignedTo]['details'][$status_verbose]['qty']=0;
-			    }
-            	
-            	// this will be removed from final result
-            	$user_platform[$assignedTo]['details']['total']['qty'] = 0;
-            	
-            	$platformIDSet = array_keys($data_set[$assignedTo]);
-            	foreach($platformIDSet as $platformID)
-            	{
-            		foreach( $data_set[$assignedTo][$platformID] as $verboseStatus => $counter)
-            		{
-            			if( !isset($user_platform[$assignedTo]['details'][$verboseStatus]) )
-            			{
-            				$user_platform[$assignedTo]['details'][$verboseStatus]['qty']=0;
-            			}   
-            		    $user_platform[$assignedTo]['details'][$verboseStatus]['qty'] += $counter;
-            		}
-				}
-				$user_platform[$assignedTo]['total_tc']=$user_platform[$assignedTo]['details']['total']['qty'];
-				unset($user_platform[$assignedTo]['details']['total']);
-            } 
-        }
-        return $user_platform;
-    }
-
-
-    /**
-     * 
-	 * @param id: test plan id
-	 * @return map: 
- 	 */
-	public function getStatusByAssignedTesterPlatform($id)
-	{
-		$filters = null;
-		$info = null;
-		$options = array('output' => 'mapOfMap');
-    	$execResults = $this->get_linked_tcversions($id,$filters,$options);
-	    if( !is_null($execResults) )
-	    {
-	    	$tcaseSet = array_keys($execResults);
-            foreach($tcaseSet as $tcaseID)
-            {
-            	$testcaseInfo=$execResults[$tcaseID];
-            	$platformIDSet = array_keys($execResults[$tcaseID]);
-            	foreach($platformIDSet as $platformID)
-            	{
-            		$assignedTo = $testcaseInfo[$platformID]['user_id'];
-            		$assignedTo = !is_null($assignedTo) && $assignedTo > 0 ? $assignedTo : TL_USER_NOBODY;   
-					$info[$assignedTo][$tcaseID][$platformID] = $testcaseInfo[$platformID]['exec_status'];
-				}
-            } 
-        }
-
-        return $info;
-    }
-
-	/**
-	 * 
- 	 *
-     */
-	function tallyResultsForReport($results)
-	{
-		if ($results == null)
-		{
-			return null;
-		}
-		$na_string = lang_get('not_aplicable');
-		$keySet = array_keys($results);
-		foreach($keySet as $keyID)
-		{
-			$results[$keyID]['percentage_completed'] = 0;
-			$totalCases = $results[$keyID]['total_tc'];
-			$target = &$results[$keyID]['details']; 
-			if ($totalCases != 0)
-			{
-				$results[$keyID]['percentage_completed'] = 
-						number_format((($totalCases - $target['not_run']['qty']) / $totalCases) * 100,2);
-						
-				foreach($target as $status_verbose => $qty)
-				{
-					$target[$status_verbose]['percentage']=(($target[$status_verbose]['qty']) / $totalCases) * 100;
-					$target[$status_verbose]['percentage']=number_format($target[$status_verbose]['percentage'],2);
-				}
-			} else {
-				// 20100722 - asimon: if $target[$status_verbose]['percentage'] is not set,
-				// it causes warnings in the template later, so it has to be set here
-				// if $totalCases == 0 to avoid later undefined index warnings in the log
-				foreach($target as $status_verbose => $qty) {
-					$target[$status_verbose]['percentage'] = $na_string;
-				}
-			}
-		}
-		return $results;
-	} // end function
 
 
 	/**
@@ -4852,118 +4494,6 @@ class testplan extends tlObjectWithAttachments
     {
         $urgencyImportance = intval($urgency) * (is_null($importance) ? 1 : intval($importance)) ;
         return priority_to_level($urgencyImportance);
-    }
-
-
-	// -------------------
-    /**
-     * 
-	 * @param id: test plan id
-	 * @return map: 
- 	 *             key: user id
- 	 *             value: map with key=platform id
- 	 *                             value: map with keys: 'total' and verbose status
- 	 *                                             values: test case count.
- 	 *                              
- 	 */
-	public function getStatusTotalsByTesterPlatform($id)
-	{
-		$code_verbose = $this->getStatusForReports();
-		$filters = null;
-		$user_platform = null;
-		$options = array('output' => 'mapOfMap');
-    	$execResults = $this->get_linked_tcversions($id,$filters,$options);
-    	
-	    if( !is_null($execResults) )
-	    {
-	    	$tcaseSet = array_keys($execResults);
-            foreach($tcaseSet as $tcaseID)
-            {
-            	$testcaseInfo=$execResults[$tcaseID];
-            	$platformIDSet = array_keys($execResults[$tcaseID]);
-            	foreach($platformIDSet as $platformID)
-            	{
-            		$testedBy = $testcaseInfo[$platformID]['tester_id'];
-            		$testedBy = !is_null($testedBy) && $testedBy > 0 ? $testedBy : TL_USER_NOBODY;
-            		$execStatus = $testcaseInfo[$platformID]['exec_status'];
-            		
-            		// to avoid errors due to bad or missing config
-            		$verboseStatus = isset($code_verbose[$execStatus]) ? $code_verbose[$execStatus] : $execStatus;
-            		
-            		if( !isset($user_platform[$testedBy][$platformID]) )
-            		{
-            			$user_platform[$testedBy][$platformID]['total']=0;
-            		}
-            		
-            		if( !isset($user_platform[$testedBy][$platformID][$verboseStatus]) )
-            		{
-            			$user_platform[$testedBy][$platformID][$verboseStatus]=0;
-            		}   
-            		$user_platform[$testedBy][$platformID]['total']++;
-            		$user_platform[$testedBy][$platformID][$verboseStatus]++;
-				}
-            } 
-        }
-	    
-        return $user_platform;
-    }
-
-    /**
-     * 
-	 * @param id: test plan id
-	 * @return map: 
- 	 *             key: user id
- 	 *             value: map with key=platform id
- 	 *                             value: map with keys: 'total' and verbose status
- 	 *                                             values: test case count.
- 	 *                              
- 	 */
-	public function getStatusTotalsByTester($id)
-	{
-		$unassigned = lang_get('unassigned');
-		$data_set = $this->getStatusTotalsByAssignedTesterPlatform($id);
-	    if( !is_null($data_set) )
-	    {
-			$code_verbose = $this->getStatusForReports();
-
-	    	$userSet = array_keys($data_set);
-	    	// need to find a better way (with less overhead and data movement) to do this
-            $userCol=tlUser::getByIDs($this->db,$userSet,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
-            foreach($userSet as $testedBy)
-            {
-            	$user_platform[$testedBy]['type'] = 'tester';
-            	$user_platform[$testedBy]['name'] = $unassigned; 
-            	if( $testedBy > 0 )
-            	{
-            		$user_platform[$testedBy]['name'] = $userCol[$testedBy]->getDisplayName();;
-            	}
-            	$user_platform[$testedBy]['total_tc'] = 0;
-            	
-   				foreach($code_verbose as $status_code => $status_verbose)
-			    {
-					$user_platform[$testedBy]['details'][$status_verbose]['qty']=0;
-			    }
-            	
-            	// this will be removed from final result
-            	$user_platform[$testedBy]['details']['total']['qty'] = 0;
-            	
-            	$platformIDSet = array_keys($data_set[$assignedTo]);
-            	foreach($platformIDSet as $platformID)
-            	{
-            		foreach( $data_set[$testedBy][$platformID] as $verboseStatus => $counter)
-            		{
-            			if( !isset($user_platform[$testedBy]['details'][$verboseStatus]) )
-            			{
-            				$user_platform[$testedBy]['details'][$verboseStatus]['qty']=0;
-            			}   
-            		    $user_platform[$testedBy]['details'][$verboseStatus]['qty'] += $counter;
-            		}
-				}
-				$user_platform[$testedBy]['total_tc']=$user_platform[$testedBy]['details']['total']['qty'];
-				unset($user_platform[$testedBy]['details']['total']);
-            } 
-        }
-        return $user_platform;
     }
 
 

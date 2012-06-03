@@ -695,7 +695,7 @@ class tlTestPlanMetrics extends testplan
 		if( isset($opt['getOnlyActiveTCVersions']) )
 		{
 			$add2Key='Active';
-			$addOnWhere = 'AND TCV.active = 1'; 
+			$addOnWhere = ' AND TCV.active = 1 '; 
 			$addOnJoin = " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id ";
 		}
 		$sqlUnionAP	= $union['exec' . $add2Key];	//echo 'QD - <br>' . $sqlUnionAP . '<br>';

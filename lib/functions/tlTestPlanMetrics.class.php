@@ -689,13 +689,18 @@ class tlTestPlanMetrics extends testplan
 		$safe_id = intval($id);	
 		list($my,$builds,$sqlStm,$union,$platformSet) = $this->helperBuildSQLExecCounters($id, $filters, $opt);
 
-		// Latest Executions By Platform (LEBP)
-		$sqlLEBP = 	$sqlStm['LEBP'];
-		
-		$sqlUnionAP	= $union['exec'];
+		$add2key = '';
+		$addOnWhere = '';
+		$addOnJoin = '';
+		if( isset($opt['getOnlyActiveTCVersions']) )
+		{
+			$add2Key='Active';
+			$addOnWhere = 'AND TCV.active = 1'; 
+			$addOnJoin = " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id ";
+		}
+		$sqlUnionAP	= $union['exec' . $add2Key];	//echo 'QD - <br>' . $sqlUnionAP . '<br>';
+		$sqlUnionBP	=  $union['not_run' . $add2Key]; //echo 'QD - <br>' . $sqlUnionBP . '<br>';
 		//echo 'QD - <br>' . $sqlUnionAP . '<br>';
-		
-		$sqlUnionBP	=  $union['not_run'];
 		//echo 'QD - <br>' . $sqlUnionBP . '<br>';
 
 		$sql =	" /* {$debugMsg} UNION ALL CLAUSE => INCLUDE Duplicates */" .
@@ -714,7 +719,8 @@ class tlTestPlanMetrics extends testplan
 		$sql = 	"/* $debugMsg */ ".
 				" SELECT COUNT(0) AS qty, TPTCV.platform_id " . 
 				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
-				" WHERE TPTCV.testplan_id=" . $safe_id . 
+				$addOnJoin .
+				" WHERE TPTCV.testplan_id=" . $safe_id . $addOnWhere .
 				" GROUP BY platform_id";
 
 		$exec['total'] = (array)$this->db->fetchRowsIntoMap($sql,'platform_id');
@@ -925,10 +931,15 @@ class tlTestPlanMetrics extends testplan
 		list($my,$builds,$sqlStm,$union,$platformSet) = $this->helperBuildSQLExecCounters($id, $filters, $opt);
 
 		// Latest Executions By Platform (LEBP)
-		$sqlLEBP = 	$sqlStm['LEBP'];
-		$sqlUnionAP	= $union['exec'];	//echo 'QD - <br>' . $sqlUnionAP . '<br>';
-		$sqlUnionBP	=  $union['not_run']; //echo 'QD - <br>' . $sqlUnionBP . '<br>';
-
+		// $sqlLEBP = 	$sqlStm['LEBP'];
+		$add2key = '';
+		if( isset($opt['getOnlyActiveTCVersions']) )
+		{
+			$add2Key='Active';
+		}
+		$sqlUnionAP	= $union['exec' . $add2Key];	//echo 'QD - <br>' . $sqlUnionAP . '<br>';
+		$sqlUnionBP	=  $union['not_run' . $add2Key]; //echo 'QD - <br>' . $sqlUnionBP . '<br>';
+		
 		$sql =	" /* {$debugMsg} UNION ALL CLAUSE => INCLUDE Duplicates */" .
 				" SELECT status, count(0) AS exec_qty " .
 				" FROM ($sqlUnionAP UNION ALL $sqlUnionBP ) AS SQPL " .
@@ -936,7 +947,7 @@ class tlTestPlanMetrics extends testplan
 
 		// 
 		//echo 'QD -<br><b>' . __FUNCTION__ . '</b><br>'; 
-		//echo 'QD - ' . $sql . '<br>';
+		//echo "QD - \$add2Key:{$add2Key} " . $sql . '<br>';
         $dummy = (array)$this->db->fetchRowsIntoMap($sql,'status');              
 
 		$statusCounters = array('total' => 0);
@@ -1169,7 +1180,8 @@ class tlTestPlanMetrics extends testplan
 		
 		}
 
-	   	if( !is_null($metrics) )
+
+	   	if( !is_null($metrics) && !is_null($metrics[$setKey]) > 0)
 	   	{
 	   		$renderObj = new stdClass();
 			$itemList = array_keys($metrics[$setKey]);			
@@ -1664,6 +1676,8 @@ class tlTestPlanMetrics extends testplan
 						" AND EE.build_id IN ({$bi->inClause}) " .
 				   		" GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
 
+
+
 		return array($my,$bi,$sql);
 	}	
 
@@ -1723,7 +1737,8 @@ class tlTestPlanMetrics extends testplan
 		// Latest Executions By Platform (LEBP)
 		$sqlLEBP = 	$sqlStm['LEBP'];
 		
-		$union['exec']	=	"/* {$debugMsg} sqlUnion - executions */" . 
+		
+		$dummy['exec']	=	"/* {$debugMsg} sqlUnion - executions */" . 
 							" SELECT TPTCV.tcversion_id,TPTCV.platform_id, " .
 							" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
 							" FROM {$this->tables['testplan_tcversions']} TPTCV " .
@@ -1739,14 +1754,22 @@ class tlTestPlanMetrics extends testplan
 
 							" /* Get execution status WRITTEN on DB */ " .
 							" JOIN {$this->tables['executions']} E " .
-							" ON  E.id = LEBP.id " .
-				
-							" WHERE TPTCV.testplan_id=" . $safe_id .
-							$builds->whereAddExec;
+							" ON  E.id = LEBP.id ";
+		
+		
+		$union['exec'] = $dummy['exec'] . " WHERE TPTCV.testplan_id=" . $safe_id . $builds->whereAddExec;
+
+		$union['execActive'] =	$dummy['exec'] .
+								" /* Used to filter ON ACTIVE TCVersion */ " .
+								" JOIN {$this->tables['tcversions']} TCV " .
+								" ON  TCV.id = TPTCV.tcversion_id " .
+								" WHERE TPTCV.testplan_id=" . $safe_id . $builds->whereAddExec .
+								" AND TCV.active = 1 ";
+	
 
 		//echo 'QD - <br>' . $union['exec'] . '<br>';
 		
-		$union['not_run'] =	"/* {$debugMsg} sqlUnion - NOT RUN */" . 
+		$dummy['not_run'] =	"/* {$debugMsg} sqlUnion - NOT RUN */" . 
 							" SELECT TPTCV.tcversion_id,TPTCV.platform_id, " .
 							" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
 							" FROM {$this->tables['testplan_tcversions']} TPTCV " .
@@ -1764,14 +1787,27 @@ class tlTestPlanMetrics extends testplan
 							" AND E.testplan_id = TPTCV.testplan_id " .
 							" AND E.platform_id = TPTCV.platform_id " .
 		
-							$builds->joinAdd .
+							$builds->joinAdd;
 		
+
+		$union['not_run'] = $dummy['not_run'] . 
 							" /* FILTER BUILDS in set on target test plan (not alway can be applied) */ " .
 							" WHERE TPTCV.testplan_id=" . $safe_id . 
 							$builds->whereAddNotRun .
-			
 							" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
 							" AND E.id IS NULL AND LEBP.id IS NULL";
+		
+
+		$union['not_runActive'] =	$dummy['not_run'] .
+									" /* Used to filter ON ACTIVE TCVersion */ " .
+									" JOIN {$this->tables['tcversions']} TCV " .
+									" ON  TCV.id = TPTCV.tcversion_id " .
+									" WHERE TPTCV.testplan_id=" . $safe_id . 
+									$builds->whereAddNotRun .
+									" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
+									" AND E.id IS NULL AND LEBP.id IS NULL" .
+									" AND TCV.active = 1 ";
+
 		
 		//echo 'QD - <br>' . $sqlUnionBP . '<br>';
 		return array($my,$builds,$sqlStm,$union,$platformSet);
@@ -2089,13 +2125,6 @@ class tlTestPlanMetrics extends testplan
 		// $sqlLEBBP = $sqlStm['LEBBP'];
 		$add2select = ' DISTINCT ';
 		$buildInfo = '';
-		// $buildInfo = 'B.id AS build_id,';
-		// if($my['opt']['output'] == 'array' && $my['opt']['ignoreBuild'])
-		// {
-		// 	$add2select = '';
-		// 	$buildInfo = '';
-		// } 
-
 		
 		$sqlc = "/* $debugMsg */ " .
 				" SELECT count(0) AS COUNTER ,A_NHTCV.parent_id AS tcase_id  " .

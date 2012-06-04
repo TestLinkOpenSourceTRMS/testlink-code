@@ -39,7 +39,7 @@ list($gui->tplan_metrics,$gui->show_platforms, $platforms) = getMetrics($db,$_SE
 
 $gui->warning_msg = $labels['no_testplans_available'];
 
-new dBug($gui->tplan_metrics);
+// new dBug($gui->tplan_metrics);
 if(count($gui->tplan_metrics) > 0) 
 {
 	$statusSetForDisplay = $result_cfg['status_label_for_exec_ui']; 
@@ -51,7 +51,7 @@ if(count($gui->tplan_metrics) > 0)
 	{
 		foreach($tplan_metrics['platforms'] as $key => $platform_metric) 
 		{
-			new dBug($platform_metric);
+			//new dBug($platform_metric);
 			
 			$rowData = array();
 			
@@ -87,6 +87,7 @@ if(count($gui->tplan_metrics) > 0)
 				$rowData[] = strip_tags($platform_metric['platform_name']);
 			}
 			
+			// $rowData[] = isset($platform_metric['total']) ? $platform_metric['total'] : $platform_metric['active'];
 			$rowData[] = $platform_metric['total'];
 			foreach ($statusSetForDisplay as $status_verbose => $status_label)
 			{
@@ -110,7 +111,7 @@ if(count($gui->tplan_metrics) > 0)
 		}
 	}
 	
-	new dBug($matrixData);
+	//new dBug($matrixData);
 	$table = new tlExtTable($columns, $matrixData, 'tl_table_metrics_dashboard');
 
 	// if platforms are to be shown -> group by test plan
@@ -177,8 +178,8 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 	
 	$metricsMgr = new tlTestPlanMetrics($db);
 	
-	new dBug($test_plans);
-	new dBug($result_cfg);
+	//new dBug($test_plans);
+	//new dBug($result_cfg);
 	$show_platforms = false;
 	
 	$metrics = array('testplans' => null, 'total' => null);
@@ -189,6 +190,7 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 		$metrics['total'][$status_code] = 0; 
 	}	
 	
+	$codeStatusVerbose = array_flip($result_cfg['status_code']);
 	foreach($test_plans as $key => &$dummy)
 	{
 		$platformSet = $tplan_mgr->getPlatforms($key);
@@ -200,8 +202,39 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 		$show_platforms = $show_platforms || $show_platforms_for_tplan;
 		if( !is_null($platformSet) )
 		{
-			$mm[$key] = $metricsMgr->getExecCountersByPlatformExecStatus($key,null,
-																		 array('getOnlyActiveTCVersions' => true));
+			$neurus = $metricsMgr->getExecCountersByPlatformExecStatus($key,null,
+																	   array('getPlatformSet' => true,
+																	         'getOnlyActiveTCVersions' => true));
+																		 
+			$mm[$key]['overall']['active'] = $mm[$key]['overall']['executed'] = 0;
+			foreach($neurus['with_tester'] as $platform_id => &$pinfo)
+			{
+				$xd = &$mm[$key]['platforms'][$platform_id];
+				$xd['tplan_name'] = $dummy['name'];
+				$xd['platform_name'] = $neurus['platforms'][$platform_id];
+				$xd['total'] = $xd['active'] = $neurus['total'][$platform_id]['qty'];
+				$xd['executed'] = 0;
+				
+				foreach($pinfo as $code => &$elem)
+				{
+					$xd[$codeStatusVerbose[$code]] = $elem['exec_qty'];
+					if($codeStatusVerbose[$code] != 'not_run')
+					{
+						$xd['executed'] += $elem['exec_qty'];
+					}
+					if( !isset($mm[$key]['overall'][$codeStatusVerbose[$code]]) )
+					{
+						$mm[$key]['overall'][$codeStatusVerbose[$code]] = 0;
+					}
+					$mm[$key]['overall'][$codeStatusVerbose[$code]] += $elem['exec_qty'];
+				}
+				$mm[$key]['overall']['executed'] += $xd['executed'];
+				$mm[$key]['overall']['active'] += $xd['active'];
+			}	
+			unset($neurus);
+			$mm[$key]['overall']['total'] = $mm[$key]['overall']['active'];															
+			$metrics['total']['executed'] += $mm[$key]['overall']['executed'];
+			$metrics['total']['active'] += $mm[$key]['overall']['active'];
 		}
 		else
 		{
@@ -241,7 +274,6 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 	$tnow = end($chronos);$tprev = prev($chronos);$t_elapsed = number_format( $tnow - $tprev, 4);
 	echo '<br> ' . __FUNCTION__ . ' Elapsed (sec):' . $t_elapsed .'<br>';
 	reset($chronos);	
-    new dBug($mm);
     
 	// remove duplicate platform names
 	$platformsUnique = array();

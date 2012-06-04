@@ -155,7 +155,7 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 {
 
 	echo '<h1>' . __FUNCTION__ . '</h1>';
- 	$chronos[] = microtime(true); $tnow = end($chronos);
+ 	//$chronos[] = microtime(true); $tnow = end($chronos);
 
 	$user_id = $args->currentUserID;
 	$tproject_id = $args->tproject_id;
@@ -173,7 +173,7 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 	// Get count of testcases linked to every testplan
 	// Hmm Count active and inactive ?
 
-	displayMemUsage();
+	// displayMemUsage();
 	$linkedItemsQty = $tplan_mgr->count_testcases(array_keys($test_plans),null,array('output' => 'groupByTestPlan'));
 	
 	$metricsMgr = new tlTestPlanMetrics($db);
@@ -269,11 +269,11 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 			$mm[$key]['platforms'][0]['platform_name'] = $labels['not_aplicable'];
 		}	
 	}
-	displayMemUsage();
- 	$chronos[] = microtime(true);
-	$tnow = end($chronos);$tprev = prev($chronos);$t_elapsed = number_format( $tnow - $tprev, 4);
-	echo '<br> ' . __FUNCTION__ . ' Elapsed (sec):' . $t_elapsed .'<br>';
-	reset($chronos);	
+	//displayMemUsage();
+ 	//$chronos[] = microtime(true);
+	//$tnow = end($chronos);$tprev = prev($chronos);$t_elapsed = number_format( $tnow - $tprev, 4);
+	//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec):' . $t_elapsed .'<br>';
+	//reset($chronos);	
     
 	// remove duplicate platform names
 	$platformsUnique = array();

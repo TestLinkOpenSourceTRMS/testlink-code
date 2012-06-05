@@ -1,20 +1,14 @@
 <?php
-/* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: sqlParser.class.php,v 1.13 2010/09/11 17:10:32 franciscom Exp $ */
-// File: sqlParser.class.php
-//       MySQL Dump Parser
+// TestLink Open Source Project - http://testlink.sourceforge.net/
 //
-// Rev :
-//       20090603 - franciscom - added management of table prefix
-//       20071011 - franciscom - MSSQL support
-//       20060523 - franciscom - changes to add postgres support
+// @filesource  sqlParser.class.php
 //
-//       20060101 - franciscom - Refactoring after added ADODB support
-//
-//       20050804 - franciscom - Improved using code from MySQL Eventum
-//
-//       Original work from: Etomite Installer SNUFFKIN/ Alex 2004
-//
+// @internal notes:
+// Original work from: Etomite Installer SNUFFKIN/ Alex 2004
+// Improved using code from MySQL Eventum
+// 
+// @internal revisions
+// 20120605 - franciscom - fixed old hidden issue with trim()
 //
 
 class SqlParser {
@@ -99,17 +93,17 @@ function process($filename)
     $num = 0;
     foreach($sql_array as $sql_do) 
     {
-      // Due to explode adds \r\n
-      $sql_dodo =  trim($sql_do, "\r\n ");			
+      // Needed becuasu explode() adds \r\n
+      $sql_dodo =  trim(trim($sql_do, "\r\n "));			
       if( strlen($sql_dodo) > 0 )
       {
 
-			// echo '<br>READY TO RUN: ' . $sql_do . '<br><br>';
+			// echo '<br>READY TO RUN: ' . $sql_dodo . '<br><br>';
   			$num = $num + 1;
-  			$status_ok=$this->db_conn->exec_query($sql_do);
+  			$status_ok=$this->db_conn->exec_query($sql_dodo);
   			if(!$status_ok)
   			{ 
-  				$this->sql_errors[] = array("error" => $this->db_conn->error_msg(), "sql" => $sql_do);
+  				$this->sql_errors[] = array("error" => $this->db_conn->error_msg(), "sql" => $sql_dodo);
   				$this->install_failed = true;
   			}
       }

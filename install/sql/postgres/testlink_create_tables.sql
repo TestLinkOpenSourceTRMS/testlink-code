@@ -267,6 +267,7 @@ CREATE TABLE /*prefix*/testprojects(
   "prefix" varchar(16) NOT NULL,
   "tc_counter" int NOT NULL default '0',
   "is_public" INT2 NOT NULL DEFAULT '1',
+  "issue_tracker_enabled" INT2 NOT NULL DEFAULT '0',
   PRIMARY KEY ("id")
 ); 
 CREATE UNIQUE INDEX /*prefix*/testprojects_uidx1 ON /*prefix*/testprojects ("prefix");
@@ -722,6 +723,24 @@ CREATE TABLE /*prefix*/req_specs_revisions (
 CREATE UNIQUE INDEX /*prefix*/req_specs_revisions_uidx1 ON /*prefix*/req_revisions ("parent_id","revision");
 
 
+CREATE TABLE /*prefix*/issuetrackers
+(
+   "id" BIGSERIAL NOT NULL ,
+  "name" VARCHAR(100) NOT NULL,
+  "type" INTEGER NOT NULL DEFAULT '0',
+  "cfg" TEXT,
+  PRIMARY KEY  ("id")
+);
+CREATE UNIQUE INDEX /*prefix*/issuetrackers_uidx1 ON /*prefix*/issuetrackers ("name");
+
+
+CREATE TABLE /*prefix*/testproject_issuetracker
+(
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
+  "issuetracker_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/issuetrackers (id)
+);
+CREATE UNIQUE INDEX /*prefix*/testproject_issuetracker_uidx1 ON /*prefix*/testproject_issuetracker ("testproject_id");
+
 --
 -- TICKET 4914: Create View - tcversions_last_active
 --
@@ -745,7 +764,7 @@ CREATE OR REPLACE VIEW /*prefix*/tcversions_last_active AS
 
 CREATE OR REPLACE VIEW /*prefix*/tcases_active AS 
 (
-	SELECT DISTINCT nhtcv.parent_id AS tcase_id
+	SELECT DISTINCT nhtcv.parent_id AS tcase_id, tcv.tc_external_id
 	FROM /*prefix*/nodes_hierarchy nhtcv
 	JOIN /*prefix*/tcversions tcv ON tcv.id = nhtcv.id
 	WHERE tcv.active = 1

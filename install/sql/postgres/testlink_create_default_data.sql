@@ -70,6 +70,8 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (27,'project_inventory_view
 INSERT INTO /*prefix*/rights (id,description) VALUES (28,'req_tcase_link_management');
 INSERT INTO /*prefix*/rights (id,description) VALUES (29,'keyword_assignment');
 INSERT INTO /*prefix*/rights (id,description) VALUES (30,'mgt_unfreeze_req');
+INSERT INTO /*prefix*/rights (id,description) VALUES (31,'issuetracker_management');
+INSERT INTO /*prefix*/rights (id,description) VALUES (32,'issuetracker_view');
 
 
 
@@ -101,7 +103,10 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,24);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,28);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,29);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,31);
 
 
 --  Rights for guest role

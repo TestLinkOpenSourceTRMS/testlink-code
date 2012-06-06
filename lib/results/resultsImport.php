@@ -5,21 +5,13 @@
  *
  * Results import from XML file
  * 
+ * @filesource	resultsImport.php
  * @package 	TestLink
  * @author 		Kevin Levy
- * @copyright 	2010, TestLink community 
- * @version    	CVS: $Id: resultsImport.php,v 1.22 2010/10/04 19:48:00 franciscom Exp $
+ * @copyright 	2010,2012 TestLink community 
  *
- * @internal Revisions:
- * 20110512 - franciscom - BUGID 4467
- * 20101004 - franciscom - added new checks other than	if( isset($tcase_exec['bug_id']) )
- *						   to avoid warnings on event viewer.	
- * 20100926 - franciscom - BUGID 3751: New attribute "execution type" makes old XML import files incompatible
- * 20100823 - franciscom - BUGID 3543 - added execution_type
- * 20100821 - franciscom - BUGID 3470 - reopened
- * 20100328 - franciscom - BUGID 3470, BUGID 3475
- * 20100328 - franciscom - BUGID 3331 add bug id management
- * 20100214 - franciscom - xml managed using simpleXML
+ * @internal revisions
+ * @since 1.9.4
  *
  **/
 
@@ -34,7 +26,6 @@ $templateCfg = templateConfiguration();
 $args = init_args($db);
 $gui = new stdClass();
 
-// 20100821 - franciscom
 // CRITIC:
 // All this logics is done to extract from referer important parameters
 // like: build id, etc.
@@ -93,6 +84,7 @@ if ($args->doUpload)
 						$pimport_fn="importExecutionResultsFromXML";
 					break;
 				}
+				
 				if ($pcheck_fn)
 				{
 					$gui->file_check=$pcheck_fn($dest);
@@ -131,6 +123,10 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function importExecutionResultsFromXML(&$db,$fileName,$context)
 {	
+	
+	new dBug($fileName);
+	new dBug($context);
+	// die(__FUNCTION__);
 	$resultMap=null;
 	$xml = @simplexml_load_file($fileName);
 	if($xml !== FALSE)
@@ -190,8 +186,6 @@ function importResults(&$db,&$xml,$context)
   returns: 
 
   rev: 
- 		20100823 - franciscom - BUGID 3543 - added execution_type          		
-		20100328 - franciscom - BUGID 3331 manage bug id	
 */
 function saveImportedResultData(&$db,$resultData,$context)
 {
@@ -277,7 +271,6 @@ function saveImportedResultData(&$db,$resultData,$context)
     
     
 	// --------------------------------------------------------------------	
-	
 	for($idx=0; $doIt && $idx < $tc_qty;$idx++)
 	{
 		$tester_id = 0;
@@ -287,7 +280,7 @@ function saveImportedResultData(&$db,$resultData,$context)
 	  	$status_ok = true;
 		$tcase_exec = $resultData[$idx];
 		
-		// BUGID 3751: New attribute "execution type" makes old XML import files incompatible
+		// New attribute "execution type" makes old XML import files incompatible
 		// Important NOTICE:
 		// tcase_exec is passed BY REFERENCE to allow check_exec_values()change execution type if needed
 		//
@@ -316,15 +309,12 @@ function saveImportedResultData(&$db,$resultData,$context)
 		    $result_code=strtolower($tcase_exec['result']);
 		    $result_is_acceptable=isset($resulstCfg['code_status'][$result_code]) ? true : false;
 		    		
-		    $notes=$tcase_exec['notes'];
+		    $notes = $tcase_exec['notes'];
 		    $message=null;
-			$filters = array('tcase_id' => $tcase_id, 'build_id' => $context->buildID,
-		    			 	 'platform_id' => $context->platformID);
+		    $info_on_case = $tplan_mgr->getLinkInfo($context->tplanID,$tcase_id,$context->platformID);
 
-		    $linked_cases=$tplan_mgr->get_linked_tcversions($context->tplanID,$filters);
-		    $info_on_case=$linked_cases[$tcase_id];
 
-		    if (!$linked_cases)
+		    if ($info_on_case)
 		    {
 		    	$message=sprintf($l18n['import_results_tc_not_found'],$tcase_identity);
   	    	}
@@ -334,9 +324,9 @@ function saveImportedResultData(&$db,$resultData,$context)
 		    } 
 		    else 
 		    {
-		    	$tcversion_id=$info_on_case['tcversion_id'];
-		    	$version=$info_on_case['version'];
-          		$notes=$db->prepare_string(trim($notes));
+		    	$tcversion_id = $info_on_case['tcversion_id'];
+		    	$version = $info_on_case['version'];
+          		$notes = $db->prepare_string(trim($notes));
           		
           		// N.B.: db_now() returns an string ready to be used in an SQL insert
           		//       example '2008-09-04', while $tcase_exec["timestamp"] => 2008-09-04

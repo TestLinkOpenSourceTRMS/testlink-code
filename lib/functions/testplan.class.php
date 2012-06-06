@@ -16,6 +16,7 @@
  * @internal revisions
  * 
  *  @since 1.9.4
+ *	20120606 - franciscom - new method getLinkInfo()
  *	20120603 - franciscom - count_testcases() enhancements
  *  20120529 - franciscom - getRootTestSuites()
  *  20120524 - franciscom - get_keywords_map() query refactoring.
@@ -7224,6 +7225,35 @@ class testplan extends tlObjectWithAttachments
 		return $union;
 	}
 
+
+
+    function getLinkInfo($id,$tcase_id,$platform_id=null)
+    {
+		$debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
+    	$safe_id = array('tplan_id' => 0, 'platform_id' => 0, 'tcase_id' => 0);
+    	$safe_id['tplan_id'] = intval($id);
+    	$safe_id['tcase_id'] = intval($tcase_id);
+    	
+    	$sql = "/* $debugMsg */ " .
+    		   " SELECT TCV.id AS tcversion_id,TCV.version " .
+    		   " FROM {$this->tables['testplan_tcversions']} TPTCV " .	
+    		   " JOIN {$this->tables['tcversions']} TCV " .
+    		   " ON TCV.id = TPTCV.tcversion_id " .
+    		   " JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
+    		   " ON NHTCV.id = TPTCV.tcversion_id " .
+    		   " WHERE TPTCV.testplan_id = {$safe_id['tplan_id']} " .
+    		   " AND NHTCV.parent_id = {$safe_id['tcase_id']} ";
+    		   
+		if( !is_null($platform_id) ) 
+		{
+			if( ($safe_id['platform_id'] = intval($platform_id)) > 0)
+			{ 
+    			$sql .= " AND TPTCV.platform_id = " . $safe_id['platform_id'];
+    		}	
+		}   		   
+    	$rs = $this->db->get_recordset($sql);	
+		return !is_null($rs) ? $rs[0] : null;	
+    }
 
 
 

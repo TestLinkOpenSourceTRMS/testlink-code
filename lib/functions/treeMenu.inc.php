@@ -14,6 +14,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120607 - franciscom - 	somework to be able to generate tree used on Test Report, and Test Plan Report
  * 20120415 - franciscom - 	filter_by_same_status_for_all_builds() => filterStatusSetAllActiveBuilds()
  *
  * 20120205 - franciscom - 	remove deprecated method
@@ -1087,52 +1088,13 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
  * @param array &$node reference to recursive map
  * @param array &$tcases_map reference to map that contains info about testcase exec status
  *              when node is of testcase type.
- * @param boolean $bHideTCs 1 -> hide testcase
+ * @param boolean $hideTestCases 1 -> hide testcase
  * 
  * @return datatype description
  * 
- * @internal Revisions:
- *	20100611 - franciscom - removed useless $getArguments
- *	20071229 - franciscom -added $useCounters,$useColors
  */
-function renderExecTreeNodeOri($level,&$node,&$tcase_node,$hash_id_descr,
-                            $tc_action_enabled,$linkto,$bHideTCs,$useCounters,$useColors,
-                            $showTestCaseID,$testCasePrefix,$showTestSuiteContents)
-{
-	$node_type = $hash_id_descr[$node['node_type_id']];
-	$menustring = '';
-    extjs_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_enabled,$bHideTCs,
-                                   $useCounters,$useColors,$showTestCaseID,$testCasePrefix,
-                                   $showTestSuiteContents);
-	
-	
-	if( isset($tcase_node[$node['id']]) )
-	{
-		unset($tcase_node[$node['id']]);
-	}
-	if (isset($node['childNodes']) && $node['childNodes'])
-	{
-	    // need to work always original object in order to change it's values using reference .
-	    // Can not assign anymore to intermediate variables.
-        $nodes_qty = sizeof($node['childNodes']);
-		for($idx = 0;$idx <$nodes_qty ;$idx++)
-		{
-			if(is_null($node['childNodes'][$idx]))
-			{
-				continue;
-			}
-			$menustring .= renderExecTreeNode($level+1,$node['childNodes'][$idx],$tcase_node,
-			                                  $hash_id_descr,
-			                                  $tc_action_enabled,$linkto,$bHideTCs,
-			                                  $useCounters,$useColors,$showTestCaseID,
-			                                  $testCasePrefix,$showTestSuiteContents);
-		}
-	}
-	return $menustring;
-}
-
 function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
-                            $tc_action_enabled,$linkto,$bHideTCs,$useCounters,$useColors,
+                            $tc_action_enabled,$linkto,$hideTestCases,$useCounters,$useColors,
                             $showTestCaseID,$testCasePrefix,$showTestSuiteContents)
 {
 	static $resultsCfg;
@@ -1143,9 +1105,10 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
 
 	$node_type = $hash_id_descr[$node['node_type_id']];
 	$menustring = '';
-    
+    echo 'FCFCFC';
 	if(!$resultsCfg)
 	{ 
+		echo 'DDD?';
 		$doColouringOn['testcase'] = 1;
 		$doColouringOn['counters'] = 1;
 		if( !is_null($useColors) )
@@ -1161,9 +1124,8 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
 			$l18n[$status_descr_code[$key]] = lang_get($value);
 			$cssClasses[$status_descr_code[$key]] = $doColouringOn['testcase'] ? ('class="light_' . $value . '"') : ''; 
 		}
-		
-		$pf['testproject'] = $bHideTCs ? 'TPLAN_PTP' : 'SP';
-		$pf['testsuite'] = $bHideTCs ? 'TPLAN_PTS' : ($showTestSuiteContents ? 'STS' : null); 
+		$pf['testproject'] = $hideTestCases ? 'TPLAN_PTP' : 'SP';
+		$pf['testsuite'] = $hideTestCases ? 'TPLAN_PTS' : ($showTestSuiteContents ? 'STS' : null); 
 		
 	}
 	
@@ -1205,11 +1167,13 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
 		break;
 
 		default:
+			echo 'USING DEF<br>';
 			$pfn = "ST";
 		break;
 	}
 	
 	// $node['text'] = $label;
+	echo $pfn . '<br>';
 	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
 	$node['href'] = is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$versionID})";
 
@@ -1232,7 +1196,7 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
 			}
 			$menustring .= renderExecTreeNode($level+1,$node['childNodes'][$idx],$tcase_node,
 			                                  $hash_id_descr,
-			                                  $tc_action_enabled,$linkto,$bHideTCs,
+			                                  $tc_action_enabled,$linkto,$hideTestCases,
 			                                  $useCounters,$useColors,$showTestCaseID,
 			                                  $testCasePrefix,$showTestSuiteContents);
 		}
@@ -1288,8 +1252,6 @@ function create_counters_info(&$node,$useColors)
 /**
  * VERY IMPORTANT: node must be passed BY REFERENCE
  * 
- * @internal Revisions:
- *	20080629 - franciscom - fixed bug missing argument for call to ST
  */
 function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action_enabled,
                                         $bForPrinting,$useCounters=1,$useColors=null,
@@ -1313,6 +1275,10 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 
 		$resultsCfg = config_get('results');
 		$status_descr_code = $resultsCfg['status_code'];
+		
+		//var_dump($resultsCfg);
+		//die();
+		
 		foreach($resultsCfg['status_label'] as $key => $value)
 		{
 			$l18n[$status_descr_code[$key]] = lang_get($value);

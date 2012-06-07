@@ -85,20 +85,44 @@ switch($args->doc_type)
   	  	$filters->hide_testcases = HIDE_TESTCASES;
   	  	$filters->filter_assigned_user_include_unassigned = true;
   	  	$filters->show_testsuite_contents = true;
-		// ----- BUGID 3451 and related ---------------------------------------
   	  	
   	  	$additionalInfo->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
   	  	$additionalInfo->useColours = COLOR_BY_TC_STATUS_OFF;
         
+        /*
         list($treeContents, $additionalArgs) = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
 				                                                $args->tplan_id,$testplan_name,$filters,$additionalInfo);
+        */
+        
+		$filters = new stdClass();
+		$filters->build_id = $latestBuild;
+
+		$opt_etree = new stdClass();
+		$opt_etree->hideTestCases = HIDE_TESTCASES;
+		$opt_etree->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
+		
+		$opt_etree->useColours = new stdClass();
+		$opt_etree->useColours->testcases = COLOR_BY_TC_STATUS_OFF;
+		$opt_etree->useColours->counters =	COLOR_BY_TC_STATUS_OFF;
+	    
+	    new dBug($filters);    
+		list($treeContents, $testcases_to_show) = execTree($db,$workPath,
+				                                        $args->tproject_id,
+				                                        $args->tproject_name,
+				                                        $args->tplan_id,
+				                                        $testplan_name,
+				                                        $filters,$opt_etree);
+        
+        
+        new dBug($treeContents);
+        
         
       	$tree = $treeContents->menustring;
       	$gui->ajaxTree = new stdClass();
       	$gui->ajaxTree->root_node = $treeContents->rootnode;
         $gui->ajaxTree->children = $treeContents->menustring;
         $gui->ajaxTree->loadFromChildren = true;
-        // BUGID 4613 - improved cookie prefix for test plan report and test report
+        // improved cookie prefix for test plan report and test report
         $report = $args->doc_type == "testplan" ? "test_plan_report" : "test_report";
         $gui->ajaxTree->cookiePrefix .= "{$report}_tplan_id_{$args->tplan_id}_";
         

@@ -43,7 +43,7 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $testCaseSet=null;
    
    
-    // new dBug($objFilters);
+    new dBug($objFilters);
   	
 	$keyword_id = 0;
 	$keywordsFilterType = 'Or';
@@ -58,6 +58,7 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		 $show_testsuite_contents,
 	     $useCounters,$useColors,$colorBySelectedBuild) = initExecTree($objFilters,$objOptions);
 	
+    new dBug($filters);
 
 	$tplan_mgr = new testplan($dbHandler);
 	$tproject_mgr = new testproject($dbHandler);
@@ -95,18 +96,16 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
  	}
  	
  	// Take Time
- 	//$chronos[] = microtime(true);
-	//$tnow = end($chronos);
-	//$tprev = prev($chronos);
+ 	$chronos[] = microtime(true);
+	$tnow = end($chronos);$tprev = prev($chronos);
     
  	// new dBug($my);
 	// Document why this is needed, please	
     $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
  	//echo 'BEFORE';
  	
- 	//echo 'AF';
+ 	echo 'AF';
  	//new dBug($test_spec);
- 	//die();
  	
  	
  	// Take Time
@@ -114,8 +113,9 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$tnow = end($chronos);
 	$tprev = prev($chronos);
 	$t_elapsed = number_format( $tnow - $tprev, 4);
-	echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
+	echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (getSkeleton()):' . $t_elapsed .'<br>';
 	reset($chronos);	
+ 	// die('DYING LINE' . __LINE__);
 
      
 	$test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
@@ -222,9 +222,13 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		//$tprev = prev($chronos);
 		//$t_elapsed = number_format( $tnow - $tprev, 4);
 		//reset($chronos);	
+
+		// new dBug($tplan_tcases);
+		
 		
 	    $pnFilters = null;		
-		$pnOptions = array('hideTestCases' => false, 'viewType' => 'executionTree');
+		// ATTENTION: sometimes we use $my['options'], other $options
+		$pnOptions = array('hideTestCases' => $options['hideTestCases'], 'viewType' => 'executionTree');
 		$testcase_counters = prepareExecTreeNode($dbHandler,$test_spec,$map_node_tccount,
 		                                  		 $tplan_tcases,$pnFilters,$pnOptions);
 
@@ -243,8 +247,9 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		}
 	
 		$keys = array_keys($tplan_tcases);
-		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,
-			                             $hash_id_descr,1,$menuUrl,false,$useCounters,$useColors,
+		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,1,$menuUrl,
+										 $options['hideTestCases'],
+			                             $useCounters,$useColors,
 			                             $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
 	}  // if($test_spec)
 	
@@ -272,6 +277,14 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	}  
 	
 	$treeMenu->menustring = $menustring;
+
+		 	$chronos[] = microtime(true);
+			$tnow = end($chronos);
+			reset($chronos);	
+			$tstart = prev($chronos);
+			$t_elapsed = number_format( $tnow - $tstart, 4);
+			echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>BEFORE RETURN()</b>):' . $t_elapsed .'<br>';
+			reset($chronos);	
 	
 	return array($treeMenu, $keys);
 }
@@ -291,14 +304,17 @@ function initExecTree($filtersObj,$optionsObj)
 	$keymap = array('tcase_id' => 'filter_tc_id', 'assigned_to' => 'filter_assigned_user',
 					'platform_id' => 'setting_platform', 'exec_type' => 'filter_execution_type',
 					'urgencyImportance' => 'filter_priority', 'tcase_name' => 'filter_testcase_name',
-					'cf_hash' => 'filter_custom_fields', 'build_id' => 'setting_build');
+					'cf_hash' => 'filter_custom_fields', 'build_id' => 'setting_build', 
+					'build_id' => 'build_id');
 	
-	// new dBug($filtersObj);
+	new dBug($filtersObj);
 	foreach($keymap as $key => $prop)
 	{
-		// echo $prop . '<br>';
+		echo $prop . '<br>' . $key . '<br>';
 		$filters[$key] = isset($filtersObj->$prop) ? $filtersObj->$prop : null; 
 	}
+
+	new dBug($filters);
 
 	$filters['keyword_id'] = 0;
 	$filters['keyword_filter_type'] = 'Or';
@@ -307,6 +323,10 @@ function initExecTree($filtersObj,$optionsObj)
 		$filters['keyword_id'] = $filtersObj->filter_keywords;
 		$filters['keyword_filter_type'] = $filtersObj->filter_keywords_filter_type;
 	}
+
+
+	$options['hideTestCases'] = isset($optionsObj->hideTestCases) ?
+	                      	          $optionsObj->hideTestCases : false;
 
 	$options['include_unassigned'] = isset($filtersObj->filter_assigned_user_include_unassigned) ?
 	                      			 $filtersObj->filter_assigned_user_include_unassigned : false;
@@ -511,7 +531,7 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 	echo '<h1>' . __FUNCTION__ . '</h1>';
 
 	$debugMsg = ' - Method: ' . __FUNCTION__;
- 	$chronos[] = microtime(true);
+ 	$chronos[] = $tstart = microtime(true);
 
 	$treeMenu = new stdClass(); 
 	$treeMenu->rootnode = null;
@@ -581,7 +601,7 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 	$tnow = end($chronos);
 	$tprev = prev($chronos);
 	$t_elapsed = number_format( $tnow - $tprev, 4);
-	echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
+	echo '<br> ' . __FUNCTION__ . '::' . __LINE__ . ' Elapsed (sec) (getSkeleton()):' . $t_elapsed .'<br>';
 	reset($chronos);	
 
      
@@ -684,10 +704,6 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 		}
 		
 		
-		
-
-
-
 		// Take time
 	 	//$chronos[] = microtime(true);
 		//$tnow = end($chronos);
@@ -696,17 +712,21 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 		//reset($chronos);	
 		
 	    $pnFilters = null;		
-		$pnOptions = array('hideTestCases' => false, 'viewType' => 'executionTree');
+		// $pnOptions = array('hideTestCases' => false, 'viewType' => 'executionTree');
+		$pnOptions = array('hideTestCases' => $my['options']['hideTestCases'], 'viewType' => 'executionTree');
+		
+		new dBug($pnOptions);
 		$testcase_counters = prepareExecTreeNode($dbHandler,$test_spec,$map_node_tccount,
 		                                  		 $tplan_tcases,$pnFilters,$pnOptions);
 
+		// new dBug($test_spec);
+		
 		// Take time
-	 	// $chronos[] = microtime(true);
-		// $tnow = end($chronos);
-		// $tprev = prev($chronos);
-		// $t_elapsed = number_format( $tnow - $tprev, 4);
-		// echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER prepareExecTreeNode()</b>):' . $t_elapsed .'<br>';
-		// reset($chronos);	
+	 	$chronos[] = microtime(true);
+		$tnow = end($chronos);$tprev = prev($chronos);
+		$t_elapsed = number_format( $tnow - $tprev, 4);
+		echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER prepareExecTreeNode()</b>):' . $t_elapsed .'<br>';
+		reset($chronos);	
 
 
 		foreach($testcase_counters as $key => $value)
@@ -718,6 +738,12 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,
 			                             $hash_id_descr,1,$menuUrl,false,$useCounters,$useColors,
 			                             $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
+	 	$chronos[] = microtime(true);
+		$tnow = end($chronos);$tprev = prev($chronos);
+		$t_elapsed = number_format( $tnow - $tprev, 4);
+		echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER renderExecTreeNode()</b>):' . $t_elapsed .'<br>';
+		reset($chronos);	
+		
 	}  // if($test_spec)
 	
 		
@@ -744,6 +770,13 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 	}  
 	
 	$treeMenu->menustring = $menustring;
+
+		 	$chronos[] = microtime(true);
+			$tnow = end($chronos);
+			reset($chronos);	
+			$t_elapsed = number_format( $tnow - $tstart, 4);
+			echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>BEFORE RETURN()</b>):' . $t_elapsed .'<br>';
+			reset($chronos);	
 	
 	return array($treeMenu, $keys);
 }

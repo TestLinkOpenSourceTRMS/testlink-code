@@ -144,7 +144,8 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			// WE NEED TO ADD FILTERING on CUSTOM FIELD VALUES, WE HAVE NOT REFACTORED
 			// THIS YET.
 			//
-			// new dBug($filters, array('label' => __FUNCTION__));
+			new dBug($filters, array('label' => __FUNCTION__));
+			
 			
 			if( !is_null($sql2do = $tplan_mgr->getLinkedForExecTree($tplan_id,$filters,$options)) )
 			{
@@ -296,7 +297,6 @@ function initExecTree($filtersObj,$optionsObj)
 	$filters = array();
 	$options = array();
 	
-	// $buildSettingsPanel = isset($filters->setting_build) ? $filters->setting_build : 0;
 	$buildSettingsPanel = null;
 	$buildFiltersPanel = isset($filtersObj->filter_result_build) ? $filtersObj->filter_result_build : null;
 	$build2filter_assignments = is_null($buildFiltersPanel) ? $buildSettingsPanel : $buildFiltersPanel;
@@ -304,17 +304,30 @@ function initExecTree($filtersObj,$optionsObj)
 	$keymap = array('tcase_id' => 'filter_tc_id', 'assigned_to' => 'filter_assigned_user',
 					'platform_id' => 'setting_platform', 'exec_type' => 'filter_execution_type',
 					'urgencyImportance' => 'filter_priority', 'tcase_name' => 'filter_testcase_name',
-					'cf_hash' => 'filter_custom_fields', 'build_id' => 'setting_build', 
-					'build_id' => 'build_id');
+					'cf_hash' => 'filter_custom_fields', 'build_id' => array('setting_build','build_id'));
 	
-	new dBug($filtersObj);
 	foreach($keymap as $key => $prop)
 	{
-		echo $prop . '<br>' . $key . '<br>';
-		$filters[$key] = isset($filtersObj->$prop) ? $filtersObj->$prop : null; 
+		if( is_array($prop) )
+		{
+			foreach($prop as $tryme)
+			{
+				if( isset($filtersObj->$tryme) )
+				{
+					$filters[$key] = $filtersObj->$tryme;
+					break;
+				}
+				else
+				{
+					$filters[$key] = null;
+				}
+			}	
+		}
+		else
+		{
+			$filters[$key] = isset($filtersObj->$prop) ? $filtersObj->$prop : null; 
+		}	
 	}
-
-	new dBug($filters);
 
 	$filters['keyword_id'] = 0;
 	$filters['keyword_filter_type'] = 'Or';

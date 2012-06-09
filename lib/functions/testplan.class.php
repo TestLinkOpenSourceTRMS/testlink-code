@@ -7258,8 +7258,68 @@ class testplan extends tlObjectWithAttachments
 
 
 
+	public function getLinkedStaticView($id,$filters=null,$options=null)
+	{
+		$debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
+        $my = array('filters' => '', 'options' => '');
+
+		$my['filters'] = array('platform_id' => null,'tsuites_id' => null);
+		$my['filters'] = array_merge($my['filters'],(array)$filters);
+
+		$safe['tplan'] = intval($id);
+		$io = $this->tree_manager->get_node_hierarchy_info($safe['tplan']);
+	    list($prefix,$garbage) = $this->tcase_mgr->getPrefix(null,$io['parent_id']);
+		unset($io);
+		$feid = $this->db->db->concat("'{$prefix}'",'TCV.tc_external_id');
 
 
+        $addWhere = array('platform' => '','tsuite' => '');
+        $platQty = 0;
+		if( !is_null($my['filters']['platform_id']) )
+		{
+			$dummy = (array)$my['filters']['platform_id'];
+			array_walk($dummy,'intval');
+			$addWhere['platform'] = 'AND TPTCV.platform_id IN (' . implode(',',$dummy) . ')';
+			$platQty = count((array)$my['filters']['platform_id']);		
+		}
+		if( !is_null($my['filters']['tsuites_id']) )
+		{
+			$dummy = (array)$my['filters']['tsuites_id'];
+			array_walk($dummy,'intval');
+			$addWhere['tsuite'] = 'AND NH_TCASE.parent_id IN (' . implode(',',$dummy) . ')';
+		}
+		
+		
+		
+			$sql = "/* $debugMsg */ " .
+			       " SELECT NH_TCASE.parent_id AS testsuite_id, NH_TCV.parent_id AS tc_id, " . 
+			       " NH_TCASE.node_order AS spec_order, NH_TCASE.name," .
+				   " TPTCV.platform_id, PLAT.name as platform_name, TPTCV.id AS feature_id, " .
+				   " TPTCV.tcversion_id AS tcversion_id, " .
+				   " TPTCV.node_order AS execution_order, TPTCV.urgency," .
+				   " TCV.version AS version, TCV.active, TCV.summary," .
+				   " TCV.tc_external_id AS external_id, TCV.execution_type,TCV.importance," .  
+				   " {$feid} AS full_external_id, (TPTCV.urgency * TCV.importance) AS priority ";
+
+			$sql .=" FROM {$this->tables['nodes_hierarchy']} NH_TCV " .
+				   " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCV.parent_id = NH_TCASE.id " .
+				   " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NH_TCV.id " .
+				   " JOIN  {$this->tables['tcversions']} TCV ON  TCV.id = NH_TCV.id " .
+				   " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id ";
+
+			$sql .= " WHERE TPTCV.testplan_id={$safe['tplan']} {$addWhere['platform']} {$addWhere['tsuite']} ";
+
+		if($platQty == 1)
+		{
+			$rs = $this->db->fetchRowsIntoMap($sql,'tc_id');
+		}
+		else
+		{
+			$rs = $this->db->fetchMapRowsIntoMap($sql,'platform_id','tc_id');
+		}
+		
+		return $rs;
+	}
 
 
 } // end class testplan

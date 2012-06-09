@@ -20,6 +20,8 @@ require_once('common.php');
 require_once('print.inc.php');
 require_once('displayMgr.php');
 
+displayMemUsage('START SCRIPT - LINE:' .__LINE__);
+
 $treeForPlatform = null;
 $docText = '';					
 $topText = '';
@@ -36,9 +38,13 @@ $printingOptions = initPrintOpt($_REQUEST,$doc_info);
 
 $subtree = $tree_manager->get_subtree($args->itemID,$my['filters'],$my['options']);
 
+new dBug($subtree);
+
 $treeForPlatform[0] = &$subtree;
 $doc_info->title = $doc_info->tproject_name;
 
+echo '<b> FFF </b><br>';
+var_dump($doc_info->type);
 switch ($doc_info->type)
 {
 	case DOC_REQ_SPEC:
@@ -95,14 +101,32 @@ switch ($doc_info->type)
 
 			// IMPORTANT NOTICE:
 			// on get_linked_tcversions(), when getting exec status we will GET LAST exec status
+			//var_dump($platforms);
+			
 			switch($doc_info->content_range)
 			{
 				case 'testproject':
+				
+					//echo 'DI';
+					//die();
+					displayMemUsage('BEFORE LOOP ON PLATFORMS');
+					$linkedBy = array();
+    	   	    	
+    	   	    	// Prepare Node -> pn
+                    $pnFilters = null;
+                      
+                    // due to Platforms we need to use 'viewType' => 'executionTree',
+                    // if not we get ALWAYS the same set of test cases linked to test plan
+                    // for each platform -> WRONG 
+                    $pnOptions =  array('hideTestCases' => 0, 'showTestCaseID' => 1,
+                    					'viewType' => 'executionTree',
+		            					'getExternalTestCaseID' => 0, 'ignoreInactiveTestCases' => 0);
+
 					foreach ($platforms as $platform_id => $platform_name)
 					{
 						$filters = array('platform_id' => $platform_id);	
-    	   	    		$linkedBy[$platform_id] = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters);
-    	   	    	  
+    	   	    	  	$linkedBy[$platform_id] = $tplan_mgr->getLinkedStaticView($args->tplan_id,$filters);
+   	   	    	  	
     	   	    	  	// IMPORTANTE NOTE:
     	   	    	  	// We are in a loop and we use tree on prepareNode, that changes it,
     	   	    	  	// then we can not use anymore a reference BUT WE NEED A COPY.
@@ -111,25 +135,11 @@ switch ($doc_info->type)
     	   	    	  	{
     	   	    			$tree2work['childNodes'] = null;
     	   	    	  	}
-    	   	    	  
-    	   	    	  	// Prepare Node -> pn
-                      	$pnFilters = null;
-                      
-                      	// 20110113 - franciscom
-                      	// BUGID 4170
-                      	// due to Platforms we need to use 'viewType' => 'executionTree',
-                      	// if not we get ALWAYS the same set of test cases linked to test plan
-                      	// for each platform -> WRONG 
-                      	$pnOptions =  array('hideTestCases' => 0, 'showTestCaseID' => 1,
-                      						'viewType' => 'executionTree',
-		                					'getExternalTestCaseID' => 0, 'ignoreInactiveTestCases' => 0);
 
 						$dummy4reference = null;
     	   	    	  	prepareNode($db,$tree2work,$decode,$dummy4reference,$dummy4reference,
     	   	    	  				$linkedBy[$platform_id],$pnFilters,$pnOptions);
-    	   	    	  			  
-    	   	    	  	$treeForPlatform[$platform_id] = $tree2work;            
-    	   	    	  
+    	   	    	  	$treeForPlatform[$platform_id] = $tree2work; 
     	   	    	}              
             	break;
     	       
@@ -143,7 +153,7 @@ switch ($doc_info->type)
 					$children_tsuites = $tree_manager->get_subtree_list($args->itemID,$decode['node_descr_id']['testsuite']);
 					if( !is_null($children_tsuites) and trim($children_tsuites) != "")
 					{
-							$branch_tsuites = explode(',',$children_tsuites);
+						$branch_tsuites = explode(',',$children_tsuites);
 					}
 					$branch_tsuites[]=$args->itemID;
 					
@@ -175,8 +185,6 @@ switch ($doc_info->type)
 						// Prepare Node -> pn
 						$pnFilters = null;
                         $pnOptions =  array('hideTestCases' => 0);
-						
-						// BUGID 3624
                         $pnOptions = array_merge($pnOptions, $my['options']['prepareNode']);
 						$dummy4reference = null;
 						prepareNode($db,$tInfo,$decode,$dummy4reference,$dummy4reference,
@@ -291,6 +299,7 @@ echo $docText;
  **/
 function init_args()
 {
+	new dBug($_REQUEST);
 	$args = new stdClass();
 	$args->doc_type = $_REQUEST['type'];
 	$args->level = isset($_REQUEST['level']) ?  $_REQUEST['level'] : null;
@@ -303,6 +312,8 @@ function init_args()
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
 	$args->user_id = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
 
+
+	new dBug($args);
 	return $args;
 }
 
@@ -374,6 +385,8 @@ function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
 	$lblKey	= array(DOC_TEST_SPEC => 'title_test_spec', DOC_TEST_PLAN => 'test_plan',
 					DOC_TEST_REPORT => 'test_report', DOC_REQ_SPEC => 'req_spec');
 
+
+	new dBug($argsObj);
 	$doc->content_range = $argsObj->level;
 	$doc->type = $argsObj->doc_type;
 	$doc->type_name = lang_get($lblKey[$doc->type]);

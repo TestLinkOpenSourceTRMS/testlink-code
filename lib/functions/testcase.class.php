@@ -2948,17 +2948,13 @@ class testcase extends tlObjectWithAttachments
 	   	   20101212 - franciscom - internal bug get_last_execution() empty where clause -> do not use $id
 	   	   						   this bug seems to AFFECT ONLY API CALLS
 	   	   						   added new options getSteps
-	   	   						   		
-	       20090815 - franciscom - added platform_id argument
-	       20090716 - franciscom - added options argument, removed get_no_executions
-	       20080103 - franciscom - added execution_type
 	
 	*/
 	function get_last_execution($id,$version_id,$tplan_id,$build_id,$platform_id,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$resultsCfg = config_get('results');
-		$status_not_run=$resultsCfg['status_code']['not_run'];
+		$status_not_run = $resultsCfg['status_code']['not_run'];
 
 		$filterKeys = array('build_id','platform_id');
         foreach($filterKeys as $key)
@@ -3112,7 +3108,6 @@ class testcase extends tlObjectWithAttachments
 	        " NHB.name,NHA.parent_id AS testcase_id, NHB.parent_id AS tsuite_id," .
 	        " tcversions.id,tcversions.tc_external_id,tcversions.version,tcversions.summary," .
 	        " tcversions.preconditions," .
-	        // " tcversions.steps,tcversions.expected_results,tcversions.importance,tcversions.author_id," .
 	        " tcversions.importance,tcversions.author_id," .
 	        " tcversions.creation_ts,tcversions.updater_id,tcversions.modification_ts,tcversions.active," .
 	        " tcversions.is_open,tcversions.execution_type," .
@@ -5404,6 +5399,122 @@ class testcase extends tlObjectWithAttachments
 		$this->db->exec_query($sql);
 		return array($value,$execType,$sql);
 	}
+
+
+	
+
+	/**
+	 * @param map $identity: id, version_id
+	 * @param map $execContext: tplan_id, platform_id,build_id
+	 * @internal revisions
+	 *
+	 * @since 1.9.4
+	 **/
+	function getLatestExecSingleContext($identity,$execContext,$options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		$cfg = config_get('results');
+		$status_not_run = $cfg['status_code']['not_run'];
+		
+		$my = array('opt' => array('output' => 'full'));
+		$my['opt'] = array_merge($my['opt'],(array)$options);
+		$safeContext = $execContext;
+		$safeIdentity = $identity;
+		//new dBug($safeIdentity);
+		//array_walk($safeIdentity,'intval');
+		// array_walk($safeContext,'intval');
+		foreach($safeContext as &$ele)
+		{
+			$ele = intval($ele);
+		}
+		foreach($safeIdentity as &$ele)
+		{
+			$ele = intval($ele);
+		}
+		
+		
+		// we have to manage following situations
+		// 1. we do not know test case version id.
+		if($safeIdentity['version_id'] > 0)
+		{
+			$addJoinLEX = '';
+			$addWhereLEX = " AND EE.tcversion_id = " . $safeIdentity['version_id']; 
+			$addWhere = " AND TPTCV.tcversion_id = " . $safeIdentity['version_id']; 
+		}
+		else
+		{                  
+			$addJoinLEX = " JOIN {$this->tables['nodes_hierarchy']} H2O " .
+					   	  " ON H2O.id = EE.tcversion_id ";
+			$addWhereLEX = " AND H2O.parent_id = " . $safeIdentity['id'];
+			$addWhere = " AND NHTC.id = " . $safeIdentity['id'];
+		}
+
+		$sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id," .
+				  " MAX(EE.id) AS id " .
+				  " FROM {$this->tables['executions']} EE " . 
+				  $addJoinLEX .
+				  " WHERE EE.testplan_id = " . $safeContext['tplan_id'] . 
+				  " AND EE.platform_id = " . $safeContext['platform_id'] . 
+				  " AND EE.build_id = " . $safeContext['build_id'] . 
+				  $addWhereLEX .
+				  " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
+
+		$out = null;
+		switch($my['opt']['output'])
+		{
+			case 'exec_id':
+				  $dummy = $this->db->get_recordset($sqlLEX);
+				  $out = (!is_null($dummy) ? $dummy[0]['id'] : null);	
+			break;	
+		
+			case 'full':
+			default:
+				  $sql= "/* $debugMsg */ SELECT E.id AS execution_id, " .
+			   			" COALESCE(E.status,'{$status_not_run}') AS status, E.execution_type AS execution_run_type," .
+				        " NHTC.name, NHTC.id AS testcase_id, NHTC.parent_id AS tsuite_id," .
+				        " TCV.id,TCV.tc_external_id,TCV.version,TCV.summary," .
+				        " TCV.preconditions,TCV.importance,TCV.author_id," .
+				        " TCV.creation_ts,TCV.updater_id,TCV.modification_ts,TCV.active," .
+				        " TCV.is_open,TCV.execution_type," .
+				        " U.login AS tester_login,U.first AS tester_first_name," .
+						" U.last AS tester_last_name, E.tester_id AS tester_id," .
+						" E.notes AS execution_notes, E.execution_ts, E.build_id,E.tcversion_number," .
+						" B.name AS build_name, B.active AS build_is_active, B.is_open AS build_is_open," .
+				        " COALESCE(PLATF.id,0) AS platform_id,PLATF.name AS platform_name" .
+					    " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
+					    " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTCV.id" .
+				        " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+				        " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+						
+						" LEFT OUTER JOIN ({$sqlLEX}) AS LEX " .
+						" ON  LEX.testplan_id = TPTCV.testplan_id " .
+						" AND LEX.platform_id = TPTCV.platform_id " .
+						" AND LEX.tcversion_id = TPTCV.tcversion_id " .
+						" AND LEX.build_id = {$safeContext['build_id']} " .
+			
+						" LEFT OUTER JOIN {$this->tables['executions']} E " . 
+						" ON E.id = LEX.id " .
+			
+				        " JOIN {$this->tables['builds']} B ON B.id = {$safeContext['build_id']} " .
+				        " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = E.tester_id " .
+			   	        " LEFT OUTER JOIN {$this->tables['platforms']} PLATF ON PLATF.id = {$safeContext['platform_id']} " .
+						" WHERE TPTCV.testplan_id = {$safeContext['tplan_id']} " .
+						" AND TPTCV.platform_id = {$safeContext['platform_id']} " .
+						$addWhere .
+						" AND (E.build_id = {$safeContext['build_id']} OR E.build_id IS NULL)";
+						
+						
+						
+						$out = $this->db->get_recordset($sql);
+			break;
+		}
+
+		return $out;	
+	}	
+
+
+	
 	
 } // end class
 ?>

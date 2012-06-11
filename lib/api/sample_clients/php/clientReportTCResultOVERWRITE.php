@@ -2,12 +2,8 @@
  /**
  * A sample client implementation in php
  * 
- * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
- * @package 	TestlinkAPI
- * @link      http://testlink.org/api/
- *
- * rev: 20080306 - franciscom - added dBug to improve diagnostic info.
- *      20080305 - franciscom - refactored
+ * @author	Asiel Brumfield <asielb@users.sourceforge.net>
+ * @package	TestlinkAPI
  */
  
 require_once 'util.php';
@@ -20,24 +16,22 @@ $tcaseStatusCode['failed']='f';
 $tcaseStatusCode['wrong']='w';
 $tcaseStatusCode['departed']='d';
 
-
-
 // Substitute for tcid and tpid that apply to your project
 $unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";
-$testPlanID=389;
-// $testCaseExternalID='API-71';  // 'API-69'
-$testCaseExternalID='API-66';
+$testPlanID=337084;
+$testCaseExternalID='URN-1';
 $testCaseID=null;
-$buildID=21;
-$status=$tcaseStatusCode['blocked'];
-//$status=$tcaseStatusCode['failed'];
-//$status=$tcaseStatusCode['passed'];
+$buildID=142;
+// $status=$tcaseStatusCode['blocked'];
+$status=$tcaseStatusCode['passed'];
 
-$exec_notes="Call using all EXTERNAL ID ({$testCaseExternalID}) - status={$status}";
-//$platformName='NO PLATFORM LINKED';
-$platformName='Solaris 9';
+date_default_timezone_set('UTC');
+
+$exec_notes="Call using all EXTERNAL ID ({$testCaseExternalID}) - status={$status} - " . date(DATE_RFC822);
+$platformName='Ferrari';
 $overwrite=true;
-
+$bug_id = null;
+$customfields = null;
 $debug=false;
 echo $unitTestDescription;
 $response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,

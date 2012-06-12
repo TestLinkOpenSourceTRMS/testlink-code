@@ -15,14 +15,6 @@
  * 20110820 - franciscom - TICKET 4714: retrieve big amount of useless data
  * 20110622 - asimon - TICKET 4600: Blocked execution of testcases
  *
- * @since 1.9.3
- *  20110323 - Julian - BUGID 4324 - Encoding of Test Suite did not work properly
- *  20110322 - eloff - BUGID 3643
- *  20110308 - franciscom - remote execution
- *  20110123 - franciscom - BUGID 3338
- *  20110105 - asimon - BUGID 3878: "Save and move to next" does not respect filter settings
- *  20110104 - aismon - BUGID 3643: apply filters earlier in script instead of loading unnecessary data
- *
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -57,6 +49,14 @@ if($info['issue_tracker_enabled'])
 {
 	$it_mgr = new tlIssueTracker($db);
 	$its = $it_mgr->getInterfaceObject($args->tproject_id);
+	/*
+	$xx = $its->getCfg();
+	echo '<pre>';
+	var_dump($xx);
+	echo '</pre>';
+	die();
+    */
+
 	unset($it_mgr);
 }	
 
@@ -68,6 +68,8 @@ $tcase_mgr = new testcase($db);
 $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 $attachmentRepository = tlAttachmentRepository::create($db);
 $req_mgr = new requirement_mgr($db);
+
+new dBug($args);
 
 $gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr);
 $gui->issueTrackerIntegrationOn = $info['issue_tracker_enabled'] && !is_null($its) && $its->isConnected();
@@ -90,54 +92,10 @@ if($args->doExec == 1 && !is_null($args->tc_versions) && count($args->tc_version
 }	
 
 
-// -----------------------------------------------------------
-// When nullify filter_status - 20080504 - DO NOT REMOVE -
-// 
-// May be in the following situation we do not HAVE to apply filter status:
-// 1. User have filter for Not Run on Tree
-// 2. Clicks on TC XXX
-// 3. Executes TC
-// 4. DO NOT UPDATE TREE.
-//    we do not update automatically to avoid:
-//    a) performance problems
-//    b) delays on operations due to tree redraw
-//    c) loose tree status due to lack of feature of tree engine
-//
-// 5. Clicks again on TC XXX
-// If we use filter, we will get No Data Available.
-//
-// When working on show_testsuite_contents mode (OLD MODE) when we show
-// all testcases inside a testsuite that verifies a filter criteria WE NEED TO APPLY FILTER
-//
-// We do not have this problem when this page is called after user have executed,
-// probably because filter_status is not send back.
-//
-// I will add logic to nullify filter_status on init_args()
-// 
+new dBug($args);
+$linked_tcversions = getLinkedItems($args,$gui->history_on,$cfg,$tcase_mgr,$tplan_mgr);
+new dBug($linked_tcversions);
 
-// $options = array('only_executed' => true, 'output' => 'mapOfArray',
-//				 'include_unassigned' => $args->include_unassigned,
-//                 'user_assignments_per_build' => $args->build_id);
-$options = array('only_executed' => true, 'output' => $gui->history_on ? 'mapOfArray' : 'mapOfMap',
-				 'include_unassigned' => $args->include_unassigned,
-				 'group_by_build' => 'add_build',
-				 'last_execution' => !$gui->history_on);
-
-
-
-if(is_null($args->filter_status) || in_array($cfg->tc_status['not_run'],$args->filter_status))
-{
-    $options['only_executed'] = false;
-}
-
-// TICKET 4714
-$filters = array('tcase_id' => $args->tc_id,  'keyword_id' => $args->keyword_id,
-                 'assigned_to' => $args->filter_assigned_to, 'exec_status' => $args->filter_status,
-                 'build_id' => $args->build_id, 'cf_hash' => $args->cf_selected,
-                 'platform_id' => $args->platform_id, 'tsuites_id' => $args->tsuites_id,
-                 'assigned_on_build' => $args->build_id);
-
-$linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
 $tcase_id = 0;
 $userid_array = null;
 if(!is_null($linked_tcversions))
@@ -186,7 +144,7 @@ if(!is_null($linked_tcversions))
 				$tcase_id = $nextItem['tcase_id'];
 				$tcversion_id = $nextItem['tcversion_id'];
 				
-				// TICKET 4854: Save and Next - Issues with display CF for test plan design - always EMPTY	
+				// Save and Next - Issues with display CF for test plan design - always EMPTY	
 				// need info about this test case => need to update linked_tcversions info
 				$filters['tcase_id'] = $tcase_id; 
 				$lt = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
@@ -194,6 +152,8 @@ if(!is_null($linked_tcversions))
 			}
         }
     }
+    
+    // Important Notice: $tcase_id and $tcversions_id, can be ARRAYS when user enable bulk execution
     $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
     
     if ($args->doDelete)
@@ -1172,13 +1132,12 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
   returns: 
 
 */
-function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
-                         &$treeMgr,&$tcaseMgr,&$docRepository)
+function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tcaseMgr,&$docRepository)
 {     
 
   	// IMPORTANT due  to platform feature
   	// every element on linked_tcversions will be an array.
-    $cf_filters=array('show_on_execution' => 1); // BUGID 1650 (REQ)
+    $cf_filters=array('show_on_execution' => 1); 
     $locationFilters=$tcaseMgr->buildCFLocationMap();
     $guiObj->design_time_cfields='';
   	$guiObj->testplan_design_time_cfields='';
@@ -1195,7 +1154,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
   	// por get_linked_tcversions().
   	// Because we want to access FIRTS element is better to use current.
   	//
-  	$target = current($linked_tcversions[$tcase_id]);
+  	$target = current(current($tcv));
   	$items_to_exec[$tcase_id] = $target['tcversion_id'];    
   	$link_id = $target['feature_id'];
   	$tcversion_id = isset($tcase['tcversion_id']) ? $tcase['tcversion_id'] : $items_to_exec[$tcase_id];
@@ -1232,6 +1191,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
 
 /*
   function: getLastExecution
+   			Important Notice: $tcase_id and $tcversions_id, can be ARRAYS when user enable bulk execution
 
   args :
   
@@ -1498,4 +1458,98 @@ function launchRemoteExec(&$dbHandler,&$argsObj,$tcasePrefix,&$tplanMgr,&$tcaseM
 		return $feedback;
 }
 
+
+
+
+function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr)
+{          
+	$ltcv = null;
+	if( !is_null($argsObj->tc_id) && !is_array($argsObj->tc_id) )
+	{
+		if(!$historyOn)
+		{
+			// it's ok to get just latest execution
+			$opt = null;
+			$ltcv = $tcaseMgr->getLatestExecSingleContext(array('id' => $argsObj->tc_id, 
+							 							        'version_id' => $argsObj->version_id),
+												 		  array('tplan_id' => $argsObj->tplan_id,
+												 	   			'platform_id' => $argsObj->platform_id,
+												 	   			'build_id' => $argsObj->build_id), $opt);
+		}
+		else
+		{
+			$ltcv = $tcaseMgr->getExecutionSet($argsObj->tc_id,array('tplan_id' => $argsObj->tplan_id));
+		}
+	
+	}
+	else
+	{
+		// -----------------------------------------------------------
+		// When nullify filter_status - 20080504 - DO NOT REMOVE -
+		// 
+		// May be in the following situation we do not HAVE to apply filter status:
+		// 1. User have filter for Not Run on Tree
+		// 2. Clicks on TC XXX
+		// 3. Executes TC
+		// 4. DO NOT UPDATE TREE.
+		//    we do not update automatically to avoid:
+		//    a) performance problems
+		//    b) delays on operations due to tree redraw
+		//    c) loose tree status due to lack of feature of tree engine
+		//
+		// 5. Clicks again on TC XXX
+		// If we use filter, we will get No Data Available.
+		//
+		// When working on show_testsuite_contents mode (OLD MODE) when we show
+		// all testcases inside a testsuite that verifies a filter criteria WE NEED TO APPLY FILTER
+		//
+		// We do not have this problem when this page is called after user have executed,
+		// probably because filter_status is not send back.
+		//
+		// I will add logic to nullify filter_status on init_args()
+		// 
+		
+		$options = array('only_executed' => true, 'output' => $historyOn ? 'mapOfArray' : 'mapOfMap',
+						 'include_unassigned' => $argsObj->include_unassigned,
+						 'group_by_build' => 'add_build',
+						 'last_execution' => !$historyOn);
+		
+		
+		if(is_null($argsObj->filter_status) || in_array($cfgObj->tc_status['not_run'],$argsObj->filter_status))
+		{
+		    $options['only_executed'] = false;
+		}
+
+
+		// args->tsuites_id: is only used when user click on a test suite.
+		//                   probably is used only when bulk execution is enabled.
+		//
+		// if args->tc_id is not null, theorically all other filters are useless.
+		// why ?
+		// Because will normally call this script, from the execution tree and if we can click
+		// on a tree node, this means it has passed all filters.
+		// We need to understand, if doing this check anc changing the way we call get_linked_tcversions()
+		// can help us to:
+		// 1. have better control/understanding of this code => mantainance will be easier
+		// 2. performance will improve.
+		//
+		//
+		// $args->platform_id: needed to get execution status info
+		// $args->build_id: needed to get execution status info
+		//
+		$basic_filters = array('tcase_id' => $argsObj->tc_id, 'platform_id' => $argsObj->platform_id,
+							   'build_id' => $argsObj->build_id);
+		
+		// This filters are useful when bulk execution is enabled, 
+		// and user do click on a test suite on execution tree.
+		$bulk_filters = array('keyword_id' => $argsObj->keyword_id,'assigned_to' => $argsObj->filter_assigned_to, 
+						      'exec_status' => $argsObj->filter_status,'cf_hash' => $argsObj->cf_selected,
+		                      'tsuites_id' => $argsObj->tsuites_id,'assigned_on_build' => $argsObj->build_id);
+
+		$filters = array_merge($basic_filters,$bulk_filters);
+		$ltcv = $tplanMgr->get_linked_tcversions($args->tplan_id,$filters,$options);
+	}
+             
+    return $ltcv;         
+}
 ?>

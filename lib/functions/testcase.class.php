@@ -5068,7 +5068,7 @@ class testcase extends tlObjectWithAttachments
 
 	/**
 	 *
-	 *
+	 * @used-by execSetResults.php
 	 */
 	function getExecutionSet($id,$filters=null,$options=null)
 	{
@@ -5090,7 +5090,7 @@ class testcase extends tlObjectWithAttachments
         	if( !is_null($my['filters'][$fieldName]) )
         	{
         		$itemSet = implode(',', (array)($my['filters'][$fieldName]));
-        		$filterBy[$fieldName] = " AND e.{$fieldName} IN ({$itemSet}) ";
+        		$filterBy[$fieldName] = " AND E.{$fieldName} IN ({$itemSet}) ";
         	}
         }
 	
@@ -5105,26 +5105,37 @@ class testcase extends tlObjectWithAttachments
 			$where_clause = " WHERE NHTCV.parent_id = {$id} ";
 		}
 	
-	  $sql = "/* $debugMsg */ SELECT NHTC.name,NHTCV.parent_id AS testcase_id, tcversions.*, " .
-			 " users.login AS tester_login, users.first AS tester_first_name, users.last AS tester_last_name," .
-			 " e.tester_id AS tester_id,e.id AS execution_id, e.status,e.tcversion_number," .
-			 " e.notes AS execution_notes, e.execution_ts, e.execution_type AS execution_run_type," .
-			 " e.build_id AS build_id, b.name AS build_name, b.active AS build_is_active, " .
-			 " b.is_open AS build_is_open,e.platform_id, p.name AS platform_name," .
-   			 " e.testplan_id,NHTPLAN.name AS testplan_name " . 
+	  $sql = "/* $debugMsg */ SELECT NHTC.name,NHTCV.parent_id AS testcase_id, NHTCV.id AS tcversion_id, " .
+	  		 " TCV.*, " .
+			 " U.login AS tester_login, U.first AS tester_first_name, U.last AS tester_last_name," .
+			 " E.tester_id AS tester_id,E.id AS execution_id, E.status,E.tcversion_number," .
+			 " E.notes AS execution_notes, E.execution_ts, E.execution_type AS execution_run_type," .
+			 " E.build_id AS build_id, B.name AS build_name, B.active AS build_is_active, " .
+			 " B.is_open AS build_is_open,E.platform_id, PLATF.name AS platform_name," .
+   			 " E.testplan_id,NHTPLAN.name AS testplan_name,TPTCV.id AS feature_id " . 
 		     " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
-	         " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTCV.parent_id = NHTC.id " .
-	         " JOIN {$this->tables['tcversions']} tcversions ON NHTCV.id = tcversions.id " .
-	         " JOIN {$this->tables['executions']} e " . 
-	         " ON NHTCV.id = e.tcversion_id " .
-	         $filterBy['testplan_id'] . $filterBy['build_id'] . $filterBy['platform_id'] .
-	         $filterBy['tcversion_id'] .
-	         " JOIN {$this->tables['builds']}  b ON e.build_id=b.id " .
-	         " JOIN {$this->tables['testplans']} TPLAN ON TPLAN.id = e.testplan_id " .
-	         " JOIN {$this->tables['nodes_hierarchy']} NHTPLAN ON NHTPLAN.id = TPLAN.id " .
-	         " LEFT OUTER JOIN {$this->tables['users']} users ON users.id = e.tester_id " .
-	         " LEFT OUTER JOIN {$this->tables['platforms']} p ON p.id = e.platform_id  " .
-	        $where_clause .
+	         " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+	         " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id  " .
+
+	         " JOIN {$this->tables['executions']} E " . 
+	         " ON E.tcversion_id = NHTCV.id " .
+	         $filterBy['testplan_id'] . $filterBy['build_id'] . 
+	         $filterBy['platform_id'] . $filterBy['tcversion_id'] .
+
+			 " /* To get build name */ " .
+	         " JOIN {$this->tables['builds']} B ON B.id=E.build_id " .
+
+			 " /* To get test plan name */ " .
+	         // " JOIN {$this->tables['testplans']} TPLAN ON TPLAN.id = E.testplan_id " .
+	         " JOIN {$this->tables['nodes_hierarchy']} NHTPLAN ON NHTPLAN.id = E.testplan_id " .
+
+	         " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+	         " ON  TPTCV.testplan_id = E.testplan_id " .
+	         " AND TPTCV.tcversion_id = E.tcversion_id " .
+	         " AND TPTCV.platform_id = E.platform_id " .
+	         " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = E.tester_id " .
+	         " LEFT OUTER JOIN {$this->tables['platforms']} PLATF ON PLATF.id = E.platform_id  " .
+	         $where_clause .
 	        " ORDER BY execution_id {$my['options']['exec_id_order']} ";
 
 	
@@ -5433,6 +5444,8 @@ class testcase extends tlObjectWithAttachments
 			$ele = intval($ele);
 		}
 		
+		//new dBug($safeIdentity);
+		//new dBug($safeContext);
 		
 		// we have to manage following situations
 		// 1. we do not know test case version id.
@@ -5473,7 +5486,7 @@ class testcase extends tlObjectWithAttachments
 				  $sql= "/* $debugMsg */ SELECT E.id AS execution_id, " .
 			   			" COALESCE(E.status,'{$status_not_run}') AS status, E.execution_type AS execution_run_type," .
 				        " NHTC.name, NHTC.id AS testcase_id, NHTC.parent_id AS tsuite_id," .
-				        " TCV.id,TCV.tc_external_id,TCV.version,TCV.summary," .
+				        " TCV.id AS tcversion_id,TCV.tc_external_id,TCV.version,TCV.summary," .
 				        " TCV.preconditions,TCV.importance,TCV.author_id," .
 				        " TCV.creation_ts,TCV.updater_id,TCV.modification_ts,TCV.active," .
 				        " TCV.is_open,TCV.execution_type," .
@@ -5481,7 +5494,7 @@ class testcase extends tlObjectWithAttachments
 						" U.last AS tester_last_name, E.tester_id AS tester_id," .
 						" E.notes AS execution_notes, E.execution_ts, E.build_id,E.tcversion_number," .
 						" B.name AS build_name, B.active AS build_is_active, B.is_open AS build_is_open," .
-				        " COALESCE(PLATF.id,0) AS platform_id,PLATF.name AS platform_name" .
+				        " COALESCE(PLATF.id,0) AS platform_id,PLATF.name AS platform_name, TPTCV.id AS feature_id " .
 					    " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
 					    " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTCV.id" .
 				        " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
@@ -5504,12 +5517,14 @@ class testcase extends tlObjectWithAttachments
 						$addWhere .
 						" AND (E.build_id = {$safeContext['build_id']} OR E.build_id IS NULL)";
 						
-						
-						
-						$out = $this->db->get_recordset($sql);
+						//new dBug($sql);
+						// using database::CUMULATIVE is just a trick to return data structure
+						// that will be liked on execSetResults.php
+						$out = $this->db->fetchRowsIntoMap($sql,'testcase_id',database::CUMULATIVE);
 			break;
 		}
 
+		// new dBug($out);
 		return $out;	
 	}	
 

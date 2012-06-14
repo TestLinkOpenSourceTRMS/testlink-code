@@ -3354,6 +3354,7 @@ $TLS_import_req_new_version_failed = 'Request to create a New version has failed
 $TLS_import_req_update_last_version_failed = 'Request to update LAST version has failed - %s';
 
 $TLS_import_done = 'Import done';
+$TLS_import_syntax_error = 'Import done, but with syntax errors';
 $TLS_import_req_conflicts_other_branch = 'Doc ID conflicts with req in othe branch';
 $TLS_import_req_exists_here = 'Doc ID exists';
 

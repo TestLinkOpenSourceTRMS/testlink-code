@@ -302,14 +302,37 @@ class testplan extends tlObjectWithAttachments
 	 is_open
 	 parent_id
 	 */
-	function get_by_id($id)
+	function get_by_id($id, $opt=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $sql = "/* $debugMsg */ " .
-		       " SELECT testplans.*,NH.name,NH.parent_id " .
-			   " FROM {$this->tables['testplans']} testplans, " .
-			   " {$this->tables['nodes_hierarchy']} NH " .
-			   " WHERE testplans.id = NH.id AND  testplans.id = {$id}";
+
+		$my = array();
+		$my['opt'] = array('output' => 'full');
+		$my['opt'] = array_merge($my['opt'],$opt);
+
+		
+		$safe_id = intval($id);
+		switch($my['opt']['output'])
+		{
+			case 'minimun':
+        		$sql = 	"/* $debugMsg */ " .
+		      			" SELECT NH_TPLAN.name,NH_TPROJ.id AS tproject_id, NH_TPROJ.name AS tproject_name" .
+			   			" FROM {$this->tables['nodes_hierarchy']} NH_TPLAN " .
+			   			" JOIN {$this->tables['nodes_hierarchy']} NH_TPROJ " .
+			   			" ON NH_TPROJ.id = NH_TPLAN.parent_id " .
+			   			" WHERE NH_TPLAN.id = " . $safe_id;
+			break;
+			
+			case 'full':
+			default:
+        		$sql = 	"/* $debugMsg */ " .
+		      			" SELECT TPLAN.*,NH_TPLAN.name,NH_TPLAN.parent_id " .
+			   			" FROM {$this->tables['testplans']} TPLAN, " .
+			   			" {$this->tables['nodes_hierarchy']} NH_TPLAN " .
+			   			" WHERE TPLAN.id = NH_TPLAN.id AND TPLAN.id = " . $safe_id;
+			break;	
+		
+		}
 		$recordset = $this->db->get_recordset($sql);
 		return($recordset ? $recordset[0] : null);
 	}
@@ -7515,6 +7538,7 @@ class build_mgr extends tlObject
 		$myrow = $this->db->fetch_array($result);
 		return $myrow;
 	}
+
 
 	/**
 	 * Set date of closing build

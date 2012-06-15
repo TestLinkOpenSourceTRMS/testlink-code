@@ -225,7 +225,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		
 		$this->tcaseMgr=new testcase($this->dbObj);
 	    $this->tprojectMgr=new testproject($this->dbObj);
-	    $this->tplanMgr=new testplan($this->dbObj);
+	    $this->tplanMgr = new testplan($this->dbObj);
 	    $this->tplanMetricsMgr = new tlTestPlanMetrics($this->dbObj);
 
 	    $this->reqSpecMgr=new requirement_spec_mgr($this->dbObj);
@@ -379,21 +379,30 @@ class TestlinkXMLRPCServer extends IXR_Server
 	/**
 	 * checks if a user has requested right on test project, test plan pair.
 	 * 
-	 * @param string $roleQuestion  on of the right defined in rights table
+	 * @param string $rightToCheck  one of the rights defined in rights table
 	 *
 	 * @return boolean
 	 * @access protected
 	 */
-    protected function userHasRight($roleQuestion)
+    protected function userHasRight($rightToCheck)
     {
       	$status_ok = true;
       	$tprojectid = $this->args[self::$testProjectIDParamName];
 		$tplanid = isset($this->args[self::$testPlanIDParamName]) ? $this->args[self::$testPlanIDParamName] : null;
 
-    	if(!$this->user->hasRight($this->dbObj,$roleQuestion,$tprojectid, $tplanid))
+
+		if(intval($tprojectid) <= 0)
+		{
+			// get test project from test plan
+			$dummy = $this->tplanMgr->get_by_id($tplanid,array('output' => 'minimun'));	
+			$tprojectid = $dummy['tproject_id'];
+		}
+
+    	if(!$this->user->hasRight($this->dbObj,$rightToCheck,$tprojectid, $tplanid))
     	{
     		$status_ok = false;
-    		$this->errors[] = new IXR_Error(INSUFFICIENT_RIGHTS, INSUFFICIENT_RIGHTS_STR);
+    		$msg = sprintf(INSUFFICIENT_RIGHTS_STR,$rightToCheck,intval($tprojectid), $tplanid);
+    		$this->errors[] = new IXR_Error(INSUFFICIENT_RIGHTS, $msg);
     	}
     	return $status_ok;
     }
@@ -2009,13 +2018,13 @@ class TestlinkXMLRPCServer extends IXR_Server
 			$targetPlatform = null;
 			if( !is_null($platformSet) )
             {       
-	    		$status_ok = $this->checkPlatformIdentity($this->args[self::$testPlanIDParamName],$platformSet,$msg_prefix);
+	    		$status_ok = $this->checkPlatformIdentity($this->args[self::$testPlanIDParamName],
+	    												  $platformSet,$msg_prefix);
 				if($status_ok)
 				{
 					$targetPlatform[$this->args[self::$platformIDParamName]] = $platformSet[$this->args[self::$platformIDParamName]];
 				}
 	    	}
-	    	
 			$status_ok = $status_ok && $this->_checkTCIDAndTPIDValid($targetPlatform,$msg_prefix);
 	    }
 	
@@ -2027,7 +2036,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 		    $resultInfo[0]["status"] = true;
 			$resultInfo[0]["message"] = GENERAL_SUCCESS_STR;
 
-			// BUGID 4082 - no check on overwrite value
     	    if($this->_isParamPresent(self::$overwriteParamName) && $this->args[self::$overwriteParamName])
     	    {
     	    		$executionID = $this->_updateResult();
@@ -3928,14 +3936,21 @@ public function getTestCase($args)
 
 	protected function _updateResult()
 	{
-		$platform_id = 0;
 		$exec_id = 0;
-		$build_id = $this->args[self::$buildIDParamName];
 		$tester_id =  $this->userID;
 		$status = $this->args[self::$statusParamName];
-		$testplan_id =	$this->args[self::$testPlanIDParamName];
+
+		// $platform_id = 0;  // hmm here I think we have an issue
+		// $testplan_id =	$this->args[self::$testPlanIDParamName];
+		// $build_id = $this->args[self::$buildIDParamName];
+
 		$tcversion_id =	$this->tcVersionID;
     	$tcase_id = $this->args[self::$testCaseIDParamName];
+
+		$execContext = array('tplan_id' => $this->args[self::$testPlanIDParamName],
+							 'platform_id' => $this->args[self::$platformIDParamName],
+							 'build_id' => $this->args[self::$buildIDParamName]);
+		
     	$db_now=$this->dbObj->db_now();
     
     	if( isset($this->args[self::$platformIDParamName]) )
@@ -3944,15 +3959,15 @@ public function getTestCase($args)
 		}
 
 		// Here steps and expected results are not needed => do not request => less data on network
-		$options = array('getSteps' => 0);
-		$last_exec = $this->tcaseMgr->get_last_execution($tcase_id,testcase::ALL_VERSIONS,
-		                                                 $testplan_id,$build_id,$platform_id,$options);
-    	
-    	if( !is_null($last_exec) )
+		// $options = array('getSteps' => 0);
+		// $last_exec = $this->tcaseMgr->get_last_execution($tcase_id,testcase::ALL_VERSIONS,
+		//                                                 $testplan_id,$build_id,$platform_id,$options);
+    	$opt = array('output' => 'exec_id');
+		$exec_id = $this->tcaseMgr->getLatestExecSingleContext(array('id' => $tcase_id, 'version_id' => null),
+											 					 $execContext, $opt);
+    	if( !is_null($exec_id) )
     	{
-    		$last_exec = current($last_exec);
 			$execution_type = constant("TESTCASE_EXECUTION_TYPE_AUTO");
-            $exec_id = $last_exec['execution_id'];
 			$notes = '';
     		$notes_update = '';
 			

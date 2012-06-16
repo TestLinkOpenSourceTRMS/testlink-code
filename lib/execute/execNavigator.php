@@ -40,10 +40,25 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
+$chronos[] = $tstart = microtime(true);
+echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::Start!!!' . current($chronos);
+reset($chronos);	
 
 $control = new tlTestCaseFilterControl($db, 'execution_mode');
 $gui = initializeGui($control);
 $control->build_tree_menu($gui);
+
+$chronos[] = microtime(true);
+$tnow = end($chronos);
+$tprev = prev($chronos);
+echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::AFTER build_tree_menu()' . $tnow;
+$t_elapsed = number_format( $tnow - $tprev, 4);
+echo '<br> ' . basename(__FILE__) . ' Elapsed (sec):' . $t_elapsed;
+reset($chronos);	
+$t_elapsed = number_format( $tnow - $tstart, 4);
+echo '<br> ' . basename(__FILE__) . ' FROM START Elapsed (sec):' . $t_elapsed;
+
+
 $smarty = new TLSmarty();
 
 $smarty->assign('gui',$gui);
@@ -76,6 +91,7 @@ function initializeGui(&$control)
 	$dummy = config_get('execution_filter_methods');
 	$gui->lastest_exec_method = $dummy['status_code']['latest_execution'];
 
+	new dBug($gui);
 	return $gui;
 }
 ?>

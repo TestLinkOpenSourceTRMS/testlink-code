@@ -308,7 +308,7 @@ class testplan extends tlObjectWithAttachments
 
 		$my = array();
 		$my['opt'] = array('output' => 'full');
-		$my['opt'] = array_merge($my['opt'],$opt);
+		$my['opt'] = array_merge($my['opt'],(array)$opt);
 
 		
 		$safe_id = intval($id);
@@ -6869,11 +6869,12 @@ class testplan extends tlObjectWithAttachments
 	function getLinkedForExecTree($id,$filters=null,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		// echo '<h1>' . $debugMsg . '</h1>';	                         
+		//echo '<h1>' . $debugMsg . '</h1>';	                         
 		
 		$safe['tplan_id'] = intval($id);
 		$my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
 	    
+	    //new dBug($my['filters']);  new dBug($my['where']);
                         
 		if(	$my['filters']['build_id'] <= 0 )
 		{
@@ -7088,6 +7089,14 @@ class testplan extends tlObjectWithAttachments
 			($dummy = trim($ic['filters']['tcase_name'])) != ''	)
 		{
 			$ic['where']['where'] .= " AND NH_TCASE.name LIKE '%{$dummy}%' "; 
+		}
+                               
+                               
+        // 20120616 - missing logic on exec_status.                       
+		if (!is_null($ic['filters']['exec_status']))
+		{
+			$dummy = (array)$ic['filters']['exec_status'];
+			$ic['where']['where'] .= " AND E.status IN ('" . implode("','",$dummy) . "')";
 		}
                                
         return $ic;                       

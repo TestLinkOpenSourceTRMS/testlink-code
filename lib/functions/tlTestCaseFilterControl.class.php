@@ -33,36 +33,8 @@
  *    --> assign keywords
  *    --> assign requirements
  *
- * @internal Revisions:
- * 20110621 - asimon - BUGID 4625: usage of wrong values in $this->args->xyz for cookiePrefix
- *                                 instead of correct values in $filters->setting_xyz
- * 20110328 - franciscom - init_filter_custom_fields() fixed issue introduced du to trim() on arrays.
- * 20110113 - asimon - BUGID 4166 - List also test plans without builds for "plan_mode"
- * 20101110 - asimon - BUGID 3822: Keywords combobox is absent on the Filters pane of 'Add / Remove Test Cases'
- * 20101103 - asimon - custom fields on test spec did not retain value after apply
- * 20101028 - asimon - BUGID 3933: Add test case to test plan - Left Pane filter uses 
- *                     priority concept to filter test spec where priority does not exist
- * 20101026 - asimon - BUGID 3930: changing date format according to given locale
- * 20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
- * 20101019 - asimon - BUGID 3910: show filter only if test priority management is enabled
- * 20101011 - asimon - BUGID 3883: fixed handling of unset date custom field inputs
- * 20101011 - asimon - BUGID 3884: added handling for datetime custom fields
- * 20101005 - asimon - BUGID 3853: show_filters disabled still shows panel
- * 20100929 - asimon - BUGID 3817
- * 20100972 - asimon - additional fix to BUGID 3809
- * 20100927 - amitkhullar - BUGID 3809 - Radio button based Custom Fields not working
- * 20100901 - asimon - show button "show/hide cf" only when there are cfields
- * 20100901 - asimon - re-enabled filter for assigned user when assigning testcases
- * 20100901 - asimon - re-enable option "user_filter_default"
- * 20100830 - asimon - BUGID 3726: store user's selection of build and platform
- * 20100811 - asimon - BUGID 3566: show/hide CF
- * 20100810 - asimon - added TC ID filter for Test Cases
- * 20100807 - franciscom - BUGID 3660
- * 20100727 - asimon - BUGID 3630 - syntax error in get_argument_string()
- * 20100716 - asimon - BUGID 3406 - changes on init_settings() and $mode_setting_mapping
- * 20100713 - asimon - fixed Drag&Drop error caused by init_filter_custom_fields()
- * 20100702 - asimon - fixed error in init_setting_testplan()
- * 20100701 - asimon - BUGID 3414 - additional work in init_filter_custom_fields()
+ * @internal revisions
+ * @since 1.9.4
  */
 
 /*
@@ -442,7 +414,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->args->form_token = null;
 		if (isset($_REQUEST['form_token'])) 
 		{
-			// token got sent
 			$sent_token = $_REQUEST['form_token'];
 		}
 		if (!is_null($sent_token) && isset($_SESSION[$this->mode][$sent_token])) 
@@ -458,41 +429,41 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		
 		// "feature" is needed for plan and edit modes
 		$this->args->feature = isset($_REQUEST['feature']) ? trim($_REQUEST['feature']) : null;
-		
-		switch ($this->mode) {
-			
+		$doLog = false;
+		switch ($this->mode) 
+		{
 			case 'plan_mode':
 				switch($this->args->feature) 
 				{
 					case 'planUpdateTC':
 					case 'test_urgency':
 					case 'tc_exec_assignment':
-						// feature OK
 					break;
 				
 					default:
-						// feature not OK
-						tLog("Wrong or missing GET argument 'feature'.", 'ERROR');
-						exit();
+						$doLog = true;
 					break;
 				}
 			break;
 			
 			case 'edit_mode':
-				switch($this->args->feature) {
+				switch($this->args->feature) 
+				{
 					case 'edit_tc':
 					case 'keywordsAssign':
 					case 'assignReqs':
-						// feature OK
 					break;
 				
 					default:
-						// feature not OK
-						tLog("Wrong or missing GET argument 'feature'.", 'ERROR');
-						exit();
+						$doLog = true;
 					break;
 				}
 			break;
+		}
+		if($doLog)
+		{
+			tLog('Mode:' . $this->mode . ' - Wrong or missing GET argument: feature', 'ERROR');
+			exit();
 		}
 	} // end of method
 
@@ -503,29 +474,36 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * checked from templates and elsewhere.
 	 * Then calls the initializing method for each still active setting.
 	 */
-	protected function init_settings() {
+	protected function init_settings() 
+	{
 		$at_least_one_active = false;
 
-		foreach ($this->all_settings as $name => $info) {
+		foreach ($this->all_settings as $name => $info) 
+		{
 			$init_method = "init_$name";
-			if (in_array($name, $this->mode_setting_mapping[$this->mode])
-			&& method_exists($this, $init_method)) {
+			if (in_array($name, $this->mode_setting_mapping[$this->mode]) && 
+				method_exists($this, $init_method)) 
+			{
 				// is valid, configured, exists and therefore can be used, so initialize this setting
 				$this->$init_method();
 				$at_least_one_active = true;
-			} else {
+			} 
+			else 
+			{
 				// is not needed, simply deactivate it by setting it to false in main array
 				$this->settings[$name] = false;
 			}
 		}
 		
 		// special situation: the build setting is in plan mode only needed for one feature
-		if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') {
+		if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') 
+		{
 			$this->settings['setting_build'] = false;
 		}
 		
 		// if at least one active setting is left to display, switch settings panel on
-		if ($at_least_one_active) {
+		if ($at_least_one_active) 
+		{
 			$this->display_settings = true;
 		}
 	}
@@ -615,7 +593,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				case 'plan_mode':
 					// these features are generating an exec tree,
 					// they need the filters as a stdClass object
-					$value = (object) $this->active_filters;
+					$value = (object)$this->active_filters;
 					break;
 				
 				default:
@@ -738,56 +716,66 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * 
 	 * @return string $string the formatted string with active filters
 	 */
-	public function get_argument_string() {
+	public function get_argument_string() 
+	{
 		static $string = null; // cache for repeated calls of this method
 		
-		if (!$string) {
+		if (!$string) 
+		{
 			$string = '';
 
 			// important: the token with which the page in right frame can access data in session
 			$string .= '&form_token=' . $this->form_token;
-			
-			if ($this->settings['setting_build']) {
-				$string .= '&setting_build=' . 
-				           $this->settings['setting_build']['selected'];
+
+			$key2loop = array('setting_build','setting_platform');
+			foreach($key2loop as $kiwi)
+			{
+				if($this->settings[$kiwi]) 
+				{
+					$string .= "&{$kiwi}={$this->settings[$kiwi]['selected']}";
+				}
+				
+			}			
+			if ($this->active_filters['filter_priority'] > 0) 
+			{
+				$string .= '&filter_priority=' . $this->active_filters['filter_priority'];
 			}
-			
-			if ($this->settings['setting_platform']) {
-				$string .= '&setting_platform=' . 
-				           $this->settings['setting_platform']['selected'];
-			}
+		
 			
 			$keyword_list = null;
-			if (is_array($this->active_filters['filter_keywords'])) {
+			if (is_array($this->active_filters['filter_keywords'])) 
+			{
 				$keyword_list = implode(',', $this->active_filters['filter_keywords']);
-			} else if ($this->active_filters['filter_keywords']) {
+			} 
+			else if ($this->active_filters['filter_keywords']) 
+			{
 				$keyword_list = $this->active_filters['filter_keywords'];
 			}			
-			if ($keyword_list) {
+			
+			
+			// Need to undertand why for other filters that also are array
+			// we have choosen to serialize, and here not.
+			// may be to avoid more refactoring
+			if ($keyword_list) 
+			{
 				$string .= '&filter_keywords=' . $keyword_list . 
 				           '&filter_keywords_filter_type=' . 
 				           $this->active_filters['filter_keywords_filter_type'];
 			}
 			
-			if ($this->active_filters['filter_priority'] > 0) {
-				$string .= '&filter_priority=' . $this->active_filters['filter_priority'];
-			}
-						
-			if ($this->active_filters['filter_assigned_user']) {
-				// 3630
-				$unassigned = $this->active_filters['filter_assigned_user_include_unassigned'] ? '1' : '0';
-				$string .= '&filter_assigned_user='. 
-				           serialize($this->active_filters['filter_assigned_user']) .
-				           '&filter_assigned_user_include_unassigned=' . $unassigned;
+			// Using serialization			
+			if ($this->active_filters['filter_assigned_user']) 
+			{
+				$string .= '&filter_assigned_user='. serialize($this->active_filters['filter_assigned_user']) .
+				           '&filter_assigned_user_include_unassigned=' . 
+				           ($this->active_filters['filter_assigned_user_include_unassigned'] ? '1' : '0');
 			}
 			
-			if ($this->active_filters['filter_result_result']) {
-				$string .= '&filter_result_result=' .
-				           serialize($this->active_filters['filter_result_result']) .
-				           '&filter_result_method=' .
-				           $this->active_filters['filter_result_method'] .
-				           '&filter_result_build=' .
-				           $this->active_filters['filter_result_build'];
+			if ($this->active_filters['filter_result_result']) 
+			{
+				$string .= '&filter_result_result=' . serialize($this->active_filters['filter_result_result']) .
+				           '&filter_result_method=' . $this->active_filters['filter_result_method'] .
+				           '&filter_result_build=' .  $this->active_filters['filter_result_build'];
 			}
 		}
 		
@@ -1017,6 +1005,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				break;
 					
 				case '1.9.4':
+				echo '<h1>MIK</h1>';
+				new dBug($filters);
 				list($tree_menu, $testcases_to_show) = execTree($this->db,$gui->menuUrl,
 				                                                $this->args->testproject_id,
 				                                                $this->args->testproject_name,
@@ -1042,7 +1032,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				// BUGID 4625 - usage of wrong values in $this->args->xyz for cookiePrefix
 				//              instead of correct values in $filters->setting_xyz
 				$cookie_prefix = 'test_exec_build_id_' . $filters->setting_build . '_';
-				if (isset($filters->setting_platform)) {
+				if (isset($filters->setting_platform)) 
+				{
 					$cookie_prefix .= 'platform_id_' . $filters->setting_platform . '_';
 				}
 			break;

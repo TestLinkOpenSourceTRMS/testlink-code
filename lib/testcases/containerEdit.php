@@ -47,6 +47,7 @@ require_once("opt_transfer.php");
 require_once("web_editor.php");
 $editorCfg=getWebEditorCfg('design');
 require_once(require_web_editor($editorCfg['type']));
+require_once("form_api.php");
 
 testlinkInitPage($db);
 $tree_mgr = new tree($db);
@@ -148,6 +149,7 @@ switch($action)
 		// 20110315 - asimon: refresh tree when creating new testsuite
 		$gui = new stdClass();
 		$gui->refreshTree = $args->refreshTree;
+		$gui->form_security_field = form_security_field('new_testsuite');
 		$smarty->assign('gui', $gui);
 		$tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames,$oWebEditor,$action,
 		                             $args->containerID, $args->testsuiteID,null,$webEditorTemplateKey);
@@ -194,10 +196,12 @@ switch($action)
     	break;
 
     case 'add_testsuite':
-	    $messages = null;
-	    $op['status'] = 0;
-		if ($name_ok)
-		{
+        $messages = null;
+        $op['status'] = 0;
+        if(FALSE === form_security_validate('new_testsuite')) {
+            $messages = array( 'result_msg' => 'Result message invalid token',
+                            'user_feedback' => 'User feedback invalid token');
+        } else if ($name_ok) {
 	    	$op = addTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
 	    	$messages = array( 'result_msg' => $op['messages']['msg'], 
 	    	                   'user_feedback' => $op['messages']['user_feedback']);

@@ -15,6 +15,7 @@
  * @link http://www.teamst.org/
  */
 
+require_once 'common.php';
 require_once 'gpc_api.php';
 
 /**
@@ -40,7 +41,7 @@ function form_security_token( $p_form_name ) {
 // 	if ( PHP_CLI == php_mode() || OFF == config_get_global( 'form_security_validation' ) ) {
 // 		return '';
 // 	}
-    session_start();
+    doSessionStart();
 	$t_tokens = $_SESSION['form_security_tokens'];
 
 	# Create a new array for the form name if necessary
@@ -119,7 +120,7 @@ function form_security_validate( $p_form_name ) {
 // 	if ( PHP_CLI == php_mode() || OFF == config_get_global( 'form_security_validation' ) ) {
 // 		return true;
 // 	}
-    session_start();
+    doSessionStart();
 	$t_tokens = $_SESSION['form_security_tokens'];
 
 	# Short-circuit if we don't have any tokens for the given form name
@@ -163,7 +164,7 @@ function form_security_purge( $p_form_name ) {
 		return;
 	}
     
-	session_start();
+	doSessionStart();
 	$t_tokens = $_SESSION['form_security_tokens'];
 
 	# Short-circuit if we don't have any tokens for the given form name

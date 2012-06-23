@@ -5,12 +5,12 @@
  * 
  * @filesource	tlUser.class.php
  * @package 	TestLink
- * @copyright 	2007-2011, TestLink community 
+ * @copyright 	2007-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
  * @since 1.9.4
- *
+ * 20120623 - franciscom - 	getNames() interface and logic changes
  * 20110815 - franciscom - 	TICKET 4342 - fixing missing update of cookie_string when password changes.
  *							
  * 20110813 - franciscom - 	TICKET 4342 - new methods from Mantisbt
@@ -727,11 +727,18 @@ class tlUser extends tlDBObject
      * @param integer $db DB Identifier
      * @return array list of user IDs and names
      */
-	public function getNames(&$db)
+	public function getNames(&$db,$idSet=null)
 	{
-		$sql = "SELECT id,login,first,last FROM {$this->tables['users']}";
-		$output = $db->fetchRowsIntoMap($sql,'id');
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = " SELECT id,login,first,last FROM {$this->tables['users']}";
 
+		$inClause = '';
+		if( !is_null($idSet) )
+		{
+			$inClause = " WHERE id IN (" . implode(',',(array)$idSet) . ") ";		
+		}
+
+		$output = $db->fetchRowsIntoMap($sql . $inClause,'id');
 		return $output;
 	}
 

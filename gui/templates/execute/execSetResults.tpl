@@ -5,6 +5,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @internal smarty template - show tests to add results
 @internal revisions
 @since 1.9.4
+20120623 - franciscom - TICKET 4981: When bulk executing test cases, 
+						inactivity of test cases is not taken into account
 
 *}
 {assign var="attachment_model" value=$cfg->exec_cfg->att_model}
@@ -67,7 +69,7 @@ var import_xml_results="{$labels.import_xml_results}";
 
 function load_notes(panel,exec_id)
 {
-  // 20100129 - BUGID 3113 - franciscom   -  solved ONLY for  $webeditorType == 'none'
+  // solved ONLY for  $webeditorType == 'none'
   var url2load=fRoot+'lib/execute/getExecNotes.php?readonly=1&exec_id=' + exec_id;
   panel.load({url:url2load});
 }
@@ -105,7 +107,7 @@ function set_combo_group(formid,combo_id_prefix,value_to_assign)
 {literal}
 <script type="text/javascript">
 {/literal}
-// BUGID 3943: Escape all messages (string)
+// Escape all messages (string)
 var alert_box_title="{$labels.warning|escape:'javascript'}";
 var warning_nothing_will_be_saved="{$labels.warning_nothing_will_be_saved|escape:'javascript'}";
 {literal}
@@ -225,7 +227,6 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
               {if #ROUND_TC_SPEC#}Nifty('div.exec_test_spec');{/if}
               {if #ROUND_EXEC_HISTORY#}Nifty('div.exec_history');{/if}
               {if #ROUND_TC_TITLE#}Nifty('div.exec_tc_title');{/if}"
-      {* 20101008 - asimon - BUGID 3311 *}
       onUnload="storeWindowSize('TCExecPopup')">
 
 <h1 class="title">
@@ -368,7 +369,6 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     	    	         onclick="javascript: openImportResult('import_xml_results',{$gui->tproject_id},
     	    	                                                {$gui->tplan_id},{$gui->build_id},{$gui->platform_id});" />
           
-              {* 20081125 - franciscom - BUGID 1902*}
 		          {if $tlCfg->exec_cfg->enable_test_automation}
 		          <input type="submit" id="execute_cases" name="execute_cases"
 		                 value="{$labels.execute_and_save_results}"/>
@@ -381,12 +381,6 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	{/if}
 
   {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
-      {* this message will be displate dby inc_exec_controls.tpl 
-      <div class="messages" style="align:center;">
-      {$labels.exec_not_run_result_note}
-      </div>
-      *}
-
       <div>
       <br />
       <input type="button" id="do_export_testcases" name="do_export_testcases"  value="{$labels.btn_export_testcases}"
@@ -401,34 +395,36 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
  	    <th>{$labels.exec_status}</th><th>{$labels.test_exec_result}</th>
  	    </tr>
  	    {foreach item=tc_exec from=$gui->map_last_exec name="tcSet"}
-      
-        {assign var="tc_id" value=$tc_exec.testcase_id}
-	      {assign var="tcversion_id" value=$tc_exec.id}
-	      {* IMPORTANT:
-	                   Here we use version_number, which is related to tcversion_id SPECIFICATION.
-	                   When we need to display executed version number, we use tcversion_number
-	      *}
-	      {assign var="version_number" value=$tc_exec.version}
+      	  {if $tc_exec.active == 1}	 {* TICKET 4981 *}
+
+            {assign var="tc_id" value=$tc_exec.testcase_id}
+	        {assign var="tcversion_id" value=$tc_exec.id}
+	        {* IMPORTANT:
+	           Here we use version_number, which is related to tcversion_id SPECIFICATION.
+	           When we need to display executed version number, we use tcversion_number
+	        *}
+	        {assign var="version_number" value=$tc_exec.version}
 	      
 	    	<input type="hidden" id="tc_version_{$tcversion_id}" name="tc_version[{$tcversion_id}]" value='{$tc_id}' />
 	    	<input type="hidden" id="version_number_{$tcversion_id}" name="version_number[{$tcversion_id}]" value='{$version_number}' />
       
-        {* ------------------------------------------------------------------------------------ *}
-        <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
-        <td>{$tsuite_info[$tc_id].tsuite_name}</td>{* <td>&nbsp;</td> *}
-        <td>
-        <a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')" title="{$labels.show_tcase_spec}">
-        {$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape}::{$labels.version}: {$tc_exec.version}::{$tc_exec.name|escape}
-        </a>
-        </td>
-        <td class="{$tlCfg->results.code_status[$tc_exec.status]}">
-        {$gui->execStatusValues[$tc_exec.status]}
-        </td>
-   			<td><select name="status[{$tcversion_id}]" id="status_{$tcversion_id}">
-				    {html_options options=$gui->execStatusValues}
-				</select>
-			   </td>
-        </tr>
+	        {* ------------------------------------------------------------------------------------ *}
+	        <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
+	        <td>{$tsuite_info[$tc_id].tsuite_name}</td>{* <td>&nbsp;</td> *}
+	        <td>
+	        <a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')" title="{$labels.show_tcase_spec}">
+	        {$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape}::{$labels.version}: {$tc_exec.version}::{$tc_exec.name|escape}
+	        </a>
+	        </td>
+	        <td class="{$tlCfg->results.code_status[$tc_exec.status]}">
+	        {$gui->execStatusValues[$tc_exec.status]}
+	        </td>
+	   			<td><select name="status[{$tcversion_id}]" id="status_{$tcversion_id}">
+					    {html_options options=$gui->execStatusValues}
+					</select>
+				   </td>
+	        </tr>
+	    {/if}   {* Design only if test case version we want to execute is ACTIVE *}   
       {/foreach}
       </table>
       </div>

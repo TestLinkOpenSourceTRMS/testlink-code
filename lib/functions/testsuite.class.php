@@ -6,36 +6,19 @@
  * @filesource	testsuite.class.php
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 	2005-2011, TestLink community 
+ * @copyright 	2005-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120623 - franciscom -	TICKET 5070: Import Test suite with Custom fields - Custom fields are not imported
+ *							exportTestSuiteDataToXML() generated wrong XML
+ *							get_linked_cfields_at_design() interface changes
+ *
  * 20110824 - franciscom - get_branch() new method
  * 20110820 - franciscom - get_children() interface changes
- *
- * @since 1.9.3
  * 20110806 - franciscom - TICKET 4692
- * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
- * 20110223 - asimon - BUGID 4239: forgotten parameter $mappings in a function call in copy_to() caused
- *                                 requirements to be assigned with wrong IDs when copying testprojects
- * 20110129 - franciscom - BUGID 4202 - get_linked_cfields_at_execution() interface changes.
- * 20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
- * 20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
- * 20101009 - franciscom - exportTestSuiteDataToXML() - better checks on $optExport
- * 20100920 - franciscom - html_table_of_custom_field_values() changed keys on $formatOptions
- * 20100904 - franciscom - BUGID 3571 - get_by_name() interface changes
- *						   update() - interface changes	
- * 20100602 - franciscom - BUGID 3498 - get_by_name() - missing JOIN
- * 20100328 - franciscom - get_by_id() interface and return set changes
- *						   get_children() - new method - contribution - BUGID 2645
- * 20100315 - amitkhullar - Added options for CFields for Export.
- * 20100227 - franciscom - BUGID 0003233: After test suite edit, display of Test suite do not 
- *                         have upload button enabled for attachment
- * 20100210	- franciscom - keywords XML export refactored
- * 20100209 - franciscom - changes in delete_subtree_objects() call due to BUGID 3147 
- * 20100204 - franciscom - copy_to() refactoring	
- * 20100201 - franciscom - get_testcases_deep() - added external_id in output
+ *
  */
 
 /** include support for attachments */
@@ -647,7 +630,7 @@ class testsuite extends tlObjectWithAttachments
 				switch ($elem['node_type_id'])
 				{
 					case $this->node_types_descr_id['testcase']:
-						// BUGID 4239: forgotten parameter $mappings caused requirement assignments to use wrong IDs
+						// forgotten parameter $mappings caused requirement assignments to use wrong IDs
 						$tcOp = $tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyTCaseOpt, $my['mappings']);
 						$op['mappings'] += $tcOp['mappings'];
 						break;
@@ -1030,8 +1013,8 @@ class testsuite extends tlObjectWithAttachments
 	  
 	  returns: 
 	  
-	  rev: 20090204 - franciscom - added node_order
-	
+	  rev: 
+	  TICKET 5070: Custom fields are not imported
 	*/
 	function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array())
 	{
@@ -1121,16 +1104,15 @@ class testsuite extends tlObjectWithAttachments
 	  returns: hash
 	  
 	  rev :
-	  20110129 - franciscom - BUGID 4202
 	*/
-		function get_linked_cfields_at_design($id,$parent_id=null,$filters=null,$tproject_id = null) 
+		function get_linked_cfields_at_design($id,$parent_id=null,$filters=null,$tproject_id = null,$access_key='id') 
 		{
 			if (!$tproject_id)
 			{
 				$tproject_id = $this->getTestProjectFromTestSuite($id,$parent_id);
 			}
 			$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,
-																	  $filters,'testsuite',$id);
+																	  $filters,'testsuite',$id,$access_key);
 			return $cf_map;
 		}
 		

@@ -13,6 +13,8 @@
  * @internal revisions
  *
  * @since 1.9.4		
+ *  20120623 - franciscom - TICKET 5070: Import Test suite with Custom fields - Custom fields are not imported
+ *							TICKET 5075: Import Test suite with Keywords - All test suites end with same keywords
  *  20120409 - franciscom - TICKET 4925: Import many TestCases in xml does import only first TC - 
  *										 Consider Test Case as duplicate if: has same internal ID
  *  20120407 - franciscom - TICKET 4963: Test case / Tes suite XML format, new element to set author
@@ -193,16 +195,6 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
   function: saveImportedTCData
   args :
   returns: 
-  
-  rev:
-	  20101002 - franciscom - BUGID 3801	
-  	  20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level	
- 	  20100317 - franciscom - manage different criteria to decide that test case
- 	  	                      is present on system
- 	  	                                 		
-      20090204 - franciscom - use value of node_order readed from file
-      
-      configure create to rename test case if exists 
 */
 function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
                             $userID,$kwMap,$duplicatedLogic = array('hitCriteria' => 'name', 'actionOnHit' => null))
@@ -957,7 +949,7 @@ function getKeywordsFromSimpleXMLObj($simpleXMLItems)
   returns: 
   
   @internal revisions
-  added duplicate logic
+  20120623 - franciscom - TICKET 5070 - test suite custom fields import
   
 */
 function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
@@ -967,19 +959,26 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 	static $tsuiteMgr;
 	static $myself;
 	static $callCounter = 0;
+	static $cfSpec;
+	static $doCF;
+	
 	$resultMap = array();
     
 	// $callCounter++;
 	if(is_null($tsuiteXML) )
 	{
+		$myself = __FUNCTION__;
 		$tsuiteXML = array();
 		$tsuiteXML['elements'] = array('string' => array("details" => null),
 			                           'integer' => array("node_order" => null));
 		$tsuiteXML['attributes'] = array('string' => array("name" => 'trim'));
 		
 		$tsuiteMgr = new testsuite($dbHandler);
+		$doCF = !is_null(($cfSpec = $tsuiteMgr->get_linked_cfields_at_design(null,null,null,
+																			 $tproject_id,'name')));
+
+		echo 'doCF:' . $doCF . '<br>';
 		
-		$myself = __FUNCTION__;
 	}
 	
 	if($xml->getName() == 'testsuite')
@@ -998,21 +997,38 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 			if( is_null($info) )
 			{
 				$ret = $tsuiteMgr->create($parentID,$tsuite['name'],$tsuite['details'],$tsuite['node_order']);
-				$tsuiteID = $ret['id'];
+				$tsuite['id'] = $ret['id'];
 			}
 			else
 			{
-				$tsuiteID = $info[0]['id'];
+				$tsuite['id'] = $info[0]['id'];
 				$ret = $tsuiteMgr->update($tsuiteID,$tsuite['name'],$tsuite['details'],null,$tsuite['node_order']);
 			}
-			
-			unset($tsuite);
 			unset($dummy);
-			
-			if (!$tsuiteID)
+
+			$tsuiteID = $tsuite['id'];  // $tsuiteID is needed on more code pieces => DO NOT REMOVE
+			if (!$tsuite['id'])
 			{
 				return null;
 			}	
+
+			if($doCF)
+			{
+				$cf = getCustomFieldsFromSimpleXMLObj($xml->custom_fields->custom_field);
+				if(!is_null($cf))
+				{	
+					processTestSuiteCF($tsuiteMgr,$xml,$cfSpec,$cf,$tsuite,$tproject_id);
+				}	
+			}
+			// TICKET 5075
+			if( $keywords = getKeywordsFromSimpleXMLObj($xml->keywords->keyword) )
+			{
+				echo 'Going to process KEYWORDS <br>';
+				$kwIDs = buildKeywordList($kwMap,$keywords);
+				$tsuiteMgr->addKeywords($tsuite['id'],$kwIDs);
+			}
+
+			unset($tsuite);
 		}
 		else if($importIntoProject)
 		{
@@ -1042,20 +1058,18 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 											         $tproject_id,$userID,$kwMap,$importIntoProject,$duplicateLogic));
 				break;
 
-				// do not understand why we need to do this particular logic.
-				// Need to understand				
-				case 'details':
-					if (!$importIntoProject)
-					{
-						$keywords = getKeywordsFromSimpleXMLObj($target->xpath("//keyword"));
-						if($keywords)
-						{
-							$kwIDs = buildKeywordList($kwMap,$keywords);
-							$tsuiteMgr->addKeywords($tsuiteID,$kwIDs);
-						}
-					}
-				break;
-				
+
+				// Important Development Notice
+				// Due to XML file structure, while looping
+				// we will find also this children:
+				// node_order,keywords,custom_fields,details
+				//
+				// It's processing to get and save values is done
+				// on other pieces of this code.
+				//
+				// Form a logical point of view seems the better 
+				// to consider and process here testcase and testsuite as children.
+				//
 			}			
 		}
 	}
@@ -1117,4 +1131,51 @@ function initializeGui(&$dbHandler,&$argsObj)
 
 	return $guiObj;
 } 
+
+/**
+ * 
+ *
+ * @internal revisions
+ * @since 1.9.4
+ * 
+ **/
+function processTestSuiteCF(&$tsuiteMgr,$xmlObj,&$cfDefinition,&$cfValues,$tsuite,$tproject_id)
+{
+
+	static $messages;
+    static $missingCfMsg;
+
+	if(is_null($messages))
+	{
+  		$messages = array();
+  		$messages['cf_warning'] = lang_get('no_cf_defined_can_not_import');
+  	    $messages['start_warning'] = lang_get('start_warning');
+	    $messages['end_warning'] = lang_get('end_warning');
+	    $messages['testlink_warning'] = lang_get('testlink_warning');
+	    $messages['start_feedback'] = $messages['start_warning'] . "\n" . $messages['testlink_warning'] . "\n";
+  		$messages['cfield'] = lang_get('cf_value_not_imported_missing_cf_on_testproject');
+  		$messages['tsuite'] = lang_get('testsuite');
+	}		
+
+    $cf2insert=null;
+    $resultMsg=null;
+    foreach($cfValues as $value)
+    {
+       if( isset($cfDefinition[$value['name']]) )
+       {
+           $cf2insert[$cfDefinition[$value['name']]['id']]=array('type_id' => $cfDefinition[$value['name']]['type'],
+                                                                 'cf_value' => $value['value']);         
+       }
+       else
+       {
+           if( !isset($missingCfMsg[$value['name']]) )
+           {
+               $missingCfMsg[$value['name']] = sprintf($messages['cfield'],$value['name'],$messages['tsuite']);
+           }
+           $resultMsg[] = array($tsuite['name'],$missingCfMsg[$value['name']]); 
+       }
+    }  
+    $tsuiteMgr->cfield_mgr->design_values_to_db($cf2insert,$tsuite['id'],null,'simple');
+    return $resultMsg;
+}
 ?>

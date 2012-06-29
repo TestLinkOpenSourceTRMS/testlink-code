@@ -22,6 +22,7 @@ checkConfiguration();
 require_once('config.inc.php');
 require_once('common.php');
 require_once('doAuthorize.php');
+require_once('form_api.php');
 
 $templateCfg = templateConfiguration();
 $doRenderLoginScreen = false;
@@ -39,23 +40,34 @@ switch($args->action)
 {
 	case 'doLogin':
 	case 'ajaxlogin':
-		 doSessionStart(true);
-		 
-		 // When doing ajax login we need to skip control regarding session already open
-		 // that we use when doing normal login.
-		 // If we do not proceed this way we will enter an infinite loop
-	 	 $options = array('doSessionExistsCheck' => ($args->action=='doLogin'));
-	 	 $op = doAuthorize($db,$args->login,$args->pwd,$options);
-		 $doAuthPostProcess = true;
+	     if(FALSE === form_security_validate('loginform')) {
+	        $gui->note = lang_get('invalid_security_token');
+	        $doAuthPostProcess = false;
+	        $doRenderLoginScreen = true;
+	     } else {
+    		 doSessionStart(true);
+    		 
+    		 // When doing ajax login we need to skip control regarding session already open
+    		 // that we use when doing normal login.
+    		 // If we do not proceed this way we will enter an infinite loop
+    	 	 $options = array('doSessionExistsCheck' => ($args->action=='doLogin'));
+    	 	 $op = doAuthorize($db,$args->login,$args->pwd,$options);
+    		 $doAuthPostProcess = true;
+	     }
 		 break;
 
 	case 'ajaxcheck':
-		 processAjaxCheck($db);
+	     if(FALSE === form_security_validate('loginform')) {
+	        $gui->note = 'User feedback invalid token';
+	        $doAuthPostProcess = false;
+	        $doRenderLoginScreen = true;
+	     } else {
+		     processAjaxCheck($db);
+	     }
 		 break;
 	
 	case 'loginform':
 		 $doRenderLoginScreen = true;
-		 
 		 // unfortunatelly we use $args->note in order to do some logic.
 		 if( (trim($args->note) == "") &&
 		 	 $gui->authCfg['SSO_enabled'] && $gui->authCfg['SSO_method'] == 'CLIENT_CERTIFICATE')
@@ -75,6 +87,7 @@ if( $doAuthPostProcess )
 
 if( $doRenderLoginScreen ) 
 {
+    $gui->form_security_field = form_security_field('loginform');
 	renderLoginScreen($gui);
 }
 
@@ -94,6 +107,7 @@ function init_args()
 		             "reqURI" => array(tlInputParameter::STRING_N,0,4000),
 		             "action" => array(tlInputParameter::STRING_N,0, 10),
 		             "destination" => array(tlInputParameter::STRING_N, 0, 255),
+	                 "loginform_token" => array(tlInputParameter::STRING_N, 0, 255)
 	);
 	$pParams = R_PARAMS($iParams);
 

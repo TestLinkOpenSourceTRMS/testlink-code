@@ -200,7 +200,7 @@ switch($action)
         $op['status'] = 0;
         if(FALSE === form_security_validate('new_testsuite')) {
             $messages = array( 'result_msg' => 'Result message invalid token',
-                            'user_feedback' => 'User feedback invalid token');
+                            'user_feedback' => lang_get('invalid_security_token'));
         } else if ($name_ok) {
 	    	$op = addTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
 	    	$messages = array( 'result_msg' => $op['messages']['msg'], 

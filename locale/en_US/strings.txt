@@ -333,7 +333,7 @@ $TLS_valid_user_name_format = "Login/User name can only contain letters, numbers
 $TLS_warning_empty_pwd = "Your password should not be empty!";
 $TLS_your_info_please = "Enter Your User Information";
 $TLS_new_account = "TestLink - New Account Created";
-
+$TLS_invalid_security_token = "Invalid security token";
 
 
 // ----- archiveData.php -----

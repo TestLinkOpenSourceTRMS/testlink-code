@@ -118,6 +118,7 @@ function init_args()
     $args->reqURI = urlencode($pParams['req']);
     $args->preqURI = urlencode($pParams['reqURI']);
 	$args->destination = urldecode($pParams['destination']);
+	$args->loginform_token = urldecode($pParams['loginform_token']);
 
 	if ($pParams['action'] == 'ajaxcheck' || $pParams['action'] == 'ajaxlogin') {
 		$args->action = $pParams['action'];

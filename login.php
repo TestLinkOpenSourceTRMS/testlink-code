@@ -8,11 +8,12 @@
  * @filesource	login.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2006,2011 TestLink community 
+ * @copyright 	2006,2012 TestLink community 
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal revisions
  * @since 1.9.4
+ *  20120703 - kinow - TICKET 4977 - CSRF - Advisory ID: HTB23088
  *  20111210 - franciscom - TICKET 4813: doDBConnect() - user feedback improvements
  *							
  **/
@@ -36,15 +37,19 @@ $gui = init_gui($db,$args);
 // if these checks fail => we will redirect to login screen with some message
 doBlockingChecks($db,$gui);
 
+$l18n = init_labels(array('invalid_security_token' => null));
 switch($args->action) 
 {
 	case 'doLogin':
 	case 'ajaxlogin':
-	     if(FALSE === form_security_validate('loginform')) {
-	        $gui->note = lang_get('invalid_security_token');
+	     if(FALSE === form_security_validate('loginform')) 
+	     {
+	        $gui->note = $l18n['invalid_security_token'];
 	        $doAuthPostProcess = false;
 	        $doRenderLoginScreen = true;
-	     } else {
+	     } 
+	     else 
+	     {
     		 doSessionStart(true);
     		 
     		 // When doing ajax login we need to skip control regarding session already open
@@ -57,11 +62,14 @@ switch($args->action)
 		 break;
 
 	case 'ajaxcheck':
-	     if(FALSE === form_security_validate('loginform')) {
-	        $gui->note = 'User feedback invalid token';
+	     if(FALSE === form_security_validate('loginform')) 
+	     {
+	        $gui->note =  $l18n['invalid_security_token'];
 	        $doAuthPostProcess = false;
 	        $doRenderLoginScreen = true;
-	     } else {
+	     } 
+	     else 
+	     {
 		     processAjaxCheck($db);
 	     }
 		 break;
@@ -120,11 +128,16 @@ function init_args()
 	$args->destination = urldecode($pParams['destination']);
 	$args->loginform_token = urldecode($pParams['loginform_token']);
 
-	if ($pParams['action'] == 'ajaxcheck' || $pParams['action'] == 'ajaxlogin') {
+	if ($pParams['action'] == 'ajaxcheck' || $pParams['action'] == 'ajaxlogin') 
+	{
 		$args->action = $pParams['action'];
-	} else if (!is_null($args->login)) {
+	} 
+	else if (!is_null($args->login)) 
+	{
 		$args->action = 'doLogin';
-	} else {
+	} 
+	else 
+	{
 		$args->action = 'loginform';
 	}
 

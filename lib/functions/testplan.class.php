@@ -9,13 +9,14 @@
  * @filesource	testplan.class.php
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 	2007-2011, TestLink community 
+ * @copyright 	2007-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal revisions
  * 
  *  @since 1.9.4
+ *	20120704 - franciscom - getRootTestSuites() - interface changes
  *	20120606 - franciscom - new method getLinkInfo()
  *	20120603 - franciscom - count_testcases() enhancements
  *  20120529 - franciscom - getRootTestSuites()
@@ -102,6 +103,7 @@ class testplan extends tlObjectWithAttachments
 	var $import_file_types = array("XML" => "XML"); // array("XML" => "XML", "XLS" => "XLS" );
 	
 	var $resultsCfg;
+	var $tcaseCfg;
 	
 	var $notRunStatusCode;
 	var $execTaskCode;
@@ -115,9 +117,6 @@ class testplan extends tlObjectWithAttachments
     var $nt2exclude_children=array('testcase' => 'exclude_my_children',
 							       'requirement_spec'=> 'exclude_my_children');
 
-
-
-	
 	/**
 	 * testplan class constructor
 	 * 
@@ -126,7 +125,7 @@ class testplan extends tlObjectWithAttachments
 	function __construct(&$db)
 	{
 	    $this->db = &$db;
-	    $this->tree_manager = New tree($this->db);
+	    $this->tree_manager = new tree($this->db);
 		$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
 		$this->node_types_id_descr=array_flip($this->node_types_descr_id);
       
@@ -139,6 +138,8 @@ class testplan extends tlObjectWithAttachments
 		$this->platform_mgr = new tlPlatform($this->db);
    	
    		$this->resultsCfg = config_get('results');
+		$this->tcaseCfg = config_get('testcase_cfg');
+
    		
    		// special values used too many times
    		$this->notRunStatusCode = $this->resultsCfg['status_code']['not_run'];
@@ -459,11 +460,11 @@ class testplan extends tlObjectWithAttachments
 		
 		// Get human readeable info for audit
 		$ret=array();
-		$tcase_cfg = config_get('testcase_cfg');
+		// $tcase_cfg = config_get('testcase_cfg');
 		$dummy=reset($items);
 		
 		list($ret['tcasePrefix'],$tproject_id) = $this->tcase_mgr->getPrefix($dummy);
-		$ret['tcasePrefix'] .= $tcase_cfg->glue_character;
+		$ret['tcasePrefix'] .= $this->tcaseCfg->glue_character;
 		
         $sql = "/* $debugMsg */ " .
 		       " SELECT TCV.id, tc_external_id, version, NHB.name " .
@@ -601,6 +602,21 @@ class testplan extends tlObjectWithAttachments
 		return $linked_items;
 	}
 
+
+	function getLinkedCount($id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = " /* $debugMsg */ ". 
+			   " SELECT COUNT( DISTINCT(TPTCV.tcversion_id) ) AS qty " .
+			   " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+			   " WHERE TPTCV.testplan_id = " . intval($id);
+			   
+		$rs = $this->db->get_recordset($sql);			     
+		return $rs[0]['qty'];
+	}
+
+
+
 	/**
 	 * @internal revisions:
 	 * 
@@ -623,9 +639,13 @@ class testplan extends tlObjectWithAttachments
 	 * @internal revisions:
 	 * 
 	 */
-	function getRootTestSuites($id,$tproject_id)
+	function getRootTestSuites($id,$tproject_id,$opt=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		$my = array('opt' => array('output' => 'std'));
+		$my['opt'] = array_merge($my['opt'],(array)$opt);
+
 		$sql = " /* $debugMsg */ ". 
 			   " SELECT DISTINCT NHTCASE.parent_id AS tsuite_id" .
 			   " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
@@ -670,9 +690,14 @@ class testplan extends tlObjectWithAttachments
 	    		" WHERE id IN (" . implode(',',array_keys($tlnodes)) . ")" .
 	    		" ORDER BY node_order,name ";
 		$xmen = $this->db->fetchRowsIntoMap($xsql,'id');
-		foreach($xmen as $xid => $elem)
+		switch($my['opt']['output'])
 		{
-			$xmen[$xid] = $elem['name'];
+			case 'std':
+				foreach($xmen as $xid => $elem)
+				{
+					$xmen[$xid] = $elem['name'];
+				}	
+			break;
 		}
 		unset($tlnodes);
 	    return $xmen;
@@ -1540,8 +1565,8 @@ class testplan extends tlObjectWithAttachments
 	    	// Get test case prefix
 	    	$io = $this->tree_manager->get_node_hierarchy_info($id);
 	    	list($prefix,$garbage) = $this->tcase_mgr->getPrefix(null,$io['parent_id']);
-	    	$tcase_cfg = config_get('testcase_cfg');
-	    	$prefix .= $tcase_cfg->glue_character;
+	    	// $tcase_cfg = config_get('testcase_cfg');
+	    	$prefix .= $this->tcaseCfg->glue_character;
 	    	$concat = $this->db->db->concat("'{$prefix}'",'TCV.tc_external_id');
 	    		
 			$sql = "/* $debugMsg */ " .
@@ -2308,6 +2333,7 @@ class testplan extends tlObjectWithAttachments
 			    " WHERE SUBQ.newest_tcversion_id = TCV.id AND SUBQ.version < TCV.version " .
 			    " ORDER BY SUBQ.tc_id ";
 		
+		echo $sql2;
 		return $this->db->fetchRowsIntoMap($sql2,'tc_id');
 	}
 
@@ -6578,18 +6604,14 @@ class testplan extends tlObjectWithAttachments
 
 	    $io = $this->tree_manager->get_node_hierarchy_info($id);
 	    
-	    // new dBug($io, array('label' => $debugMsg));
-	    
 	    list($prefix,$garbage) = $this->tcase_mgr->getPrefix(null,$io['parent_id']);
-	    $tcase_cfg = config_get('testcase_cfg');
-	    $prefix .= $tcase_cfg->glue_character;
+	    $prefix .= $this->tcaseCfg->glue_character;
 	    $concat = $this->db->db->concat("'{$prefix}'",'TCV.tc_external_id');
 
 	    // new dBug($concat, array('label' => $debugMsg));
 
 		unset($io);
 		unset($garbage);
-		unset($tcase_cfg);
 		unset($prefix);
 		
 		return $concat;
@@ -6991,14 +7013,13 @@ class testplan extends tlObjectWithAttachments
                                'platform_id' => null, 'exec_type' => null,
                                'tcase_name' => null);
 
-        $ic['options'] = array('include_unassigned' => false);
+        $ic['options'] = array('include_unassigned' => false, 'allow_empty_build' => 0);
 
 		//echo '<br><b>' . $debugMsg . '</b><br>';
 		//new dBug($filtersCfg);
 		
 		$ic['filters'] = array_merge($ic['filters'], (array)$filtersCfg);
 		$ic['options'] = array_merge($ic['options'], (array)$optionsCfg);
-
 
 
 		$ic['filters']['build_id'] = intval($ic['filters']['build_id']);
@@ -7107,8 +7128,8 @@ class testplan extends tlObjectWithAttachments
 	// This method is intended to return minimal data useful to create Test Plan Tree, 
 	// for feature:
 	// test case tester execution assignment:
-	// ONLY BUILD IS PRESENT on settings area
 	// PLATFORM IS NOT USED TO NAVIGATE => is not present on Settings Section.
+	// ONLY BUILD IS PRESENT on settings area
 	// 
 	// 
 	// Status on Latest execution on Build ANY PLATFORM is needed
@@ -7153,7 +7174,10 @@ class testplan extends tlObjectWithAttachments
 		$safe['tplan_id'] = intval($id);
 		$my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
 	    
-		if(	$my['filters']['build_id'] <= 0 )
+	    // Need to detail better, origin of build_id.
+	    // is got from GUI settings area ?
+	    // is got from GUI Filters area ?
+		if(	($my['options']['allow_empty_build'] == 0) && $my['filters']['build_id'] <= 0 )
 		{
 			// CRASH IMMEDIATELY
 			throw new Exception( $debugMsg . " Can NOT WORK with \$my['filters']['build_id'] <= 0");
@@ -7195,7 +7219,7 @@ class testplan extends tlObjectWithAttachments
  				 " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
 				 $my['where']['where'];
 		
-		return $union;
+		// return $union;
 		
 		// -------------------------------------------------------------------------------------
 		
@@ -7259,21 +7283,73 @@ class testplan extends tlObjectWithAttachments
 
 
 
-    function getLinkInfo($id,$tcase_id,$platform_id=null)
+    function getLinkInfo($id,$tcase_id,$platform_id=null,$opt=null)
     {
 		$debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
     	$safe_id = array('tplan_id' => 0, 'platform_id' => 0, 'tcase_id' => 0);
     	$safe_id['tplan_id'] = intval($id);
     	$safe_id['tcase_id'] = intval($tcase_id);
     	
+    	// check and die?
+    	
+    	$my = array('opt' => array('output' => 'version_info','tproject_id' => null,
+    							   'build4assignment' => null, 'collapse' => false));
+    	$my['opt'] = array_merge($my['opt'],(array)$opt);
+    	
+    	
+    	
     	$sql = "/* $debugMsg */ " .
-    		   " SELECT TCV.id AS tcversion_id,TCV.version " .
+    		   " SELECT TCV.id AS tcversion_id,TCV.version %%needle%% " .
     		   " FROM {$this->tables['testplan_tcversions']} TPTCV " .	
     		   " JOIN {$this->tables['tcversions']} TCV " .
     		   " ON TCV.id = TPTCV.tcversion_id " .
     		   " JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
-    		   " ON NHTCV.id = TPTCV.tcversion_id " .
-    		   " WHERE TPTCV.testplan_id = {$safe_id['tplan_id']} " .
+    		   " ON NHTCV.id = TPTCV.tcversion_id ";
+    		   
+    	$more_cols = ' ';		
+		switch($my['opt']['output'])
+		{
+			case 'tcase_info':
+		    	if(is_null($my['opt']['tproject_id']))
+		    	{
+		    		$dummy = $this->tree_manager->get_node_hierarchy_info($safe_id['tplan_id']);
+		    		$my['opt']['tproject_id'] = $dummy['parent_id'];
+		    	}
+				$pp = $this->tcase_mgr->getPrefix($safe_id['tcase_id'],$my['opt']['tproject_id']);
+	    		$prefix = $pp[0] . $this->tcaseCfg->glue_character;
+    		   	$more_cols = ', NHTC.name, NHTC.id AS tc_id, ' .
+    		   				 $this->db->db->concat("'{$prefix}'",'TCV.tc_external_id') .
+    		   				 ' AS full_external_id ';
+    		   				 
+				$sql .= " JOIN {$this->tables['nodes_hierarchy']} NHTC " .
+    		   			" ON NHTC.id = NHTCV.parent_id ";
+			break;
+
+			case 'assignment_info':
+				if(is_null($my['opt']['build4assignment']))
+				{
+					// CRASH IMMEDIATELY
+					throw new Exception(__METHOD__ . 
+									    ' When your choice is to get assignment_info ' .
+									    " you need to provide build id using 'build4assignment'");
+				}
+				// Go ahead
+				$safe_id['build_id'] = intval($my['opt']['build4assignment']);
+
+			    $more_cols = ',TPTCV.platform_id';
+				$sql .= " LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
+    		   			" ON UA.build_id = " . $safe_id['build_id'] .
+    		   			" AND UA.feature_id = TPTCV.id ";
+			break;
+
+			
+			case 'version_info':
+				 $more_cols = ',TPTCV.platform_id';
+			default:
+			break;
+		}
+    	$sql = str_replace('%%needle%%',$more_cols,$sql) .		
+			   " WHERE TPTCV.testplan_id = {$safe_id['tplan_id']} " .
     		   " AND NHTCV.parent_id = {$safe_id['tcase_id']} ";
     		   
 		if( !is_null($platform_id) ) 
@@ -7283,8 +7359,14 @@ class testplan extends tlObjectWithAttachments
     			$sql .= " AND TPTCV.platform_id = " . $safe_id['platform_id'];
     		}	
 		}   		   
+		
+		echo $sql;
     	$rs = $this->db->get_recordset($sql);	
-		return !is_null($rs) ? $rs[0] : null;	
+    	if(!is_null($rs))
+    	{
+    		$rs = $my['opt']['collapse'] ? $rs[0] : $rs;
+    	}
+		return $rs;
     }
 
 

@@ -8,11 +8,9 @@
 * This page will forward the user to a form where they can select
 * the builds they would like to query results against.
 *
-* rev:
-*   20101026 - asimon - BUGID 3930
-*   20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
-*	20090912 - franciscom - BUGID 2796 - configuration start_time
-*	20090122 - franciscom - BUGID 2012 
+* @internal revisions
+* @since 1.9.4
+* 
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -64,15 +62,9 @@ function get_status_for_reports_html_options()
 */
 function initializeGui(&$dbHandler,$args)
 {
-	// BUGID 3930
-	global $g_locales_date_format;
-	$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
-	$date_format = $g_locales_date_format[$locale];		
-	
+
     $gui = new stdClass();  
     $tplan_mgr = new testplan($dbHandler);
-    $tproject_mgr = new testproject($dbHandler);
-    
 
     $gui_open = config_get('gui_separator_open');
     $gui_close = config_get('gui_separator_close');
@@ -82,14 +74,13 @@ function initializeGui(&$dbHandler,$args)
     $gui->tplan_id = $args->tplan_id;
     $gui->tproject_id = $args->tproject_id;
     
-    
     $tplan_info = $tplan_mgr->get_by_id($gui->tplan_id);
     $gui->tplan_name = $tplan_info['name'];
-
-    $tproject_info = $tproject_mgr->get_by_id($gui->tproject_id);
-    $gui->tproject_name = $tproject_info['name'];
-
-    $re = new results($dbHandler, $tplan_mgr,$tproject_info,$tplan_info);
+	unset($tplan_info);
+	
+    $ni = $tplan_mgr->tree_manager->get_node_hierarchy_info($gui->tproject_id);
+    $gui->tproject_name = $ni['name'];
+	unset($ni);
 
     $gui->assigned_users = new stdClass();
     $gui->keywords = new stdClass();
@@ -108,47 +99,46 @@ function initializeGui(&$dbHandler,$args)
 	  //                                                            TL_USER_NOBODY => $gui->str_option_none) );
     //
     $gui->assigned_users->items = getUsersForHtmlOptions($dbHandler, ALL_USERS_FILTER,
-    	                                                   array(TL_USER_ANYBODY => $gui->str_option_any) );
+    	                                                 array(TL_USER_ANYBODY => $gui->str_option_any) );
 
-    $gui->assigned_users->qty = count($gui->assigned_users->items);
-    
-    // BUGID 2012 - franciscom
+    $gui->builds->items = $tplan_mgr->get_builds($gui->tplan_id,testplan::ACTIVE_BUILDS);
+    $gui->platforms->items = $tplan_mgr->getPlatforms($gui->tplan_id);
+	$gui->testsuites->items = $tplan_mgr->getRootTestSuites($gui->tplan_id,$gui->tproject_id,
+															array('output' => 'plain'));
+
     $gui->keywords->items[0]=$gui->str_option_any;
     if(!is_null($tplan_keywords_map=$tplan_mgr->get_keywords_map($gui->tplan_id)) ) 
     {
         $gui->keywords->items += $tplan_keywords_map;
     }
-       
-    $gui->builds->items = $tplan_mgr->get_builds($gui->tplan_id,testplan::ACTIVE_BUILDS);
-    $gui->platforms->items = $tplan_mgr->getPlatforms($gui->tplan_id);
-    $gui->testsuites->items = $re->getTopLevelSuites();
 
-    $gui->keywords->qty = count($gui->keywords->items);
-    $gui->builds->qty = count($gui->builds->items);
-    $gui->platforms->qty = count($gui->platforms->items);
-    $gui->testsuites->qty = count($gui->testsuites->items);
+
+	$key2loop = array('keywords','builds','platforms','testsuites','assigned_users');
+    foreach($key2loop as $kx)
+    {
+    	$gui->$kx->qty = count($gui->$kx->items);
+    
+    }
     $gui->status_code_label = get_status_for_reports_html_options();
     $gui->report_type = $args->format;
 
     $reports_cfg = config_get('reportsCfg');
-    
-    // BUGID 3716
-    $startDate = strftime($date_format, time() - ($reports_cfg->start_date_offset));
-    $gui->selected_start_date = $startDate;
+	$ldf = config_get('locales_date_format');
+	$date_format = $ldf[((isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB')];		
+    $gui->selected_start_date = strftime($date_format, time() - ($reports_cfg->start_date_offset));
     $gui->selected_start_time = $reports_cfg->start_time;
-
-    // BUGID 3716
     $gui->selected_end_date = strftime($date_format, time());
     $gui->selected_end_time = null;
+
     return $gui;
 }
 
+
+
 function init_args()
 {
-	$iParams = array(
-		"format" => array(tlInputParameter::INT_N),
-		"tplan_id" => array(tlInputParameter::INT_N),
-	);
+	$iParams = array("format" => array(tlInputParameter::INT_N),
+					 "tplan_id" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
 	$pParams = R_PARAMS($iParams,$args);

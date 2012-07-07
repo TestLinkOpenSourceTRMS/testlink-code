@@ -3,7 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	inc_exec_show_tc_exec.tpl
 @internal revisions
 @since 1.9.4
-
+20120707 - franciscom - TICKET 5084: Rendering KO when history on and exec status is NOT RUN
 *}	
  	{foreach item=tc_exec from=$gui->map_last_exec}
 
@@ -61,11 +61,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 
 		<div class="exec_tc_title">
-		{* BUGID *}
 		{if $gui->grants->edit_testcase}
-		<a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')">
-		<img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png"  title="{$labels.show_tcase_spec}">
-		</a>
+			<a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')">
+			<img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png"  title="{$labels.show_tcase_spec}">
+			</a>
 		{/if}
 		
     {$labels.title_test_case}&nbsp;{$labels.th_test_case_id}{$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape} :: {$labels.version}: {$tc_exec.version}
@@ -78,10 +77,17 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         {/if}
     </div>
 
- 		{if $cfg->exec_cfg->show_last_exec_any_build}
+   	{assign var="drawNotRun" value=0}
+ 	{if $cfg->exec_cfg->show_last_exec_any_build}
    		{assign var="abs_last_exec" value=$gui->map_last_exec_any_build.$tcversion_id}
- 		  {assign var="my_build_name" value=$abs_last_exec.build_name|escape}
- 		  {assign var="show_current_build" value=1}
+ 		{assign var="my_build_name" value=$abs_last_exec.build_name|escape}
+ 		{assign var="show_current_build" value=1}
+ 		
+ 		{* this happens when test case has been never run *}
+ 		{if $my_build_name == ''}
+ 			{assign var="my_build_name" value=$gui->build_name|escape}
+   			{assign var="drawNotRun" value=1}
+ 		{/if}
     {/if}
     {assign var="exec_build_title" value="$build_title $title_sep $my_build_name"}
 
@@ -101,31 +107,39 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   		</div>
 
 		{* The very last execution for any build of this test plan *}
-		{if $cfg->exec_cfg->show_last_exec_any_build && $gui->history_on==0}
-        {if $abs_last_exec.status != '' and $abs_last_exec.status != $tlCfg->results.status_code.not_run}
+		{if $cfg->exec_cfg->show_last_exec_any_build && $gui->history_on == 0}
+           {if $abs_last_exec.status != '' and $abs_last_exec.status != $tlCfg->results.status_code.not_run}
 			    {assign var="status_code" value=$abs_last_exec.status}
      			<div class="{$tlCfg->results.code_status.$status_code}">
      			{$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
      			{$title_sep_type3}
      			{$labels.test_exec_by} {$title_sep} 
+  				
   				{if isset($users[$abs_last_exec.tester_id])}
   				  {$users[$abs_last_exec.tester_id]->getDisplayName()|escape}
   				{else}
   				  {assign var="deletedTester" value=$abs_last_exec.tester_id}
-            {assign var="deletedUserString" value=$labels.deleted_user|replace:"%s":$deletedTester}
-            {$deletedUserString}
+            	  {assign var="deletedUserString" value=$labels.deleted_user|replace:"%s":$deletedTester}
+            	  {$deletedUserString}
   				{/if}  
+     			
      			{$title_sep_type3}
      			{$labels.build}{$title_sep} {$abs_last_exec.build_name|escape}
      			{$title_sep_type3}
      			{$labels.exec_status} {$title_sep} {localize_tc_status s=$status_code}
      			</div>
-
   		  {else}
-    		   <div class="not_run">{$labels.test_status_not_run}</div>
-    			   {$labels.tc_not_tested_yet}
+            	{assign var="drawNotRun" value=1}
    		  {/if}
-    {/if}
+     {/if}
+	 
+	 {if $drawNotRun }
+	 	<div class="not_run">{$labels.test_status_not_run}</div>
+    	{$labels.tc_not_tested_yet}
+   	
+	 {/if}
+     
+     
 
     {* -------------------------------------------------------------------------------------------------- *}
     {if $gui->other_execs.$tcversion_id}
@@ -154,7 +168,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 				<th style="text-align:center">{$labels.exec_status}</th>
 				<th style="text-align:center">{$labels.testcaseversion}</th>
 				
-				{* BUGID 2545: show attachments column even if all builds are closed *}
+				{* show attachments column even if all builds are closed *}
 				{if $attachment_model->show_upload_column && $gsmarty_attachments->enabled}
 						<th style="text-align:center">{$labels.attachment_mgmt}</th>
 				{else}		
@@ -228,9 +242,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
   				<td  style="text-align:center">{$tc_old_exec.tcversion_number}</td>
 
-		  {* BUGID 2545: adjusted if statement to show executions properly
-		   *   if execution history was configured 
-		   *}
+		  {* adjusted if statement to show executions properly if execution history was configured *}
           {if ($attachment_model->show_upload_column && !$att_download_only && $tc_old_exec.build_is_open 
                && $gsmarty_attachments->enabled) || ($attachment_model->show_upload_column && $gui->history_on == 1 
                && $tc_old_exec.build_is_open && $gsmarty_attachments->enabled)}

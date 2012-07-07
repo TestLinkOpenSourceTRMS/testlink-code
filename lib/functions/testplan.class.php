@@ -16,6 +16,8 @@
  * @internal revisions
  * 
  *  @since 1.9.4
+ *	20120707 - franciscom - TICKET 5002: Exported test plan has multiple test case instances if ...
+ *							( exportLinkedItemsToXML() )
  *	20120704 - franciscom - getRootTestSuites() - interface changes
  *	20120606 - franciscom - new method getLinkInfo()
  *	20120603 - franciscom - count_testcases() enhancements
@@ -4635,10 +4637,10 @@ class testplan extends tlObjectWithAttachments
 							 "||NAME||" => "name","||VERSION||" => "version",
 							 "||EXECUTION_ORDER||" => "execution_order");
 
-		$mm = $this->get_linked_tcversions($id,null,array('output' => 'array'));
-		
+		$mm = $this->getLinkedStaticView($id,null,array('output' => 'array'));
 		$linked_testcases = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,('noXMLHeader'=='noXMLHeader'));
 
+		
 		$item_info['linked_platforms'] = $linked_platforms;
 		$item_info['linked_testcases'] = $linked_testcases;
 		$xml_root = "\n\t<testplan>{{XMLCODE}}\n\t</testplan>";
@@ -4716,6 +4718,10 @@ class testplan extends tlObjectWithAttachments
 		$tproject_mgr = new testproject($this->db);
 		$tproject_info = $tproject_mgr->get_by_id($context['tproject_id']);
 
+
+		new dBug($tproject_info);
+		die();
+		
 		// ||yyy||-> tags,  {{xxx}} -> attribute 
 		// tags and attributes receive different treatment on exportDataToXML()
 		//
@@ -7380,6 +7386,10 @@ class testplan extends tlObjectWithAttachments
 		$my['filters'] = array('platform_id' => null,'tsuites_id' => null);
 		$my['filters'] = array_merge($my['filters'],(array)$filters);
 
+		$my['options'] = array('output' => 'map','order_by' => null);
+		$my['options'] = array_merge($my['options'],(array)$options);
+
+
 		$safe['tplan'] = intval($id);
 		$io = $this->tree_manager->get_node_hierarchy_info($safe['tplan']);
 	    list($prefix,$garbage) = $this->tcase_mgr->getPrefix(null,$io['parent_id']);
@@ -7405,33 +7415,41 @@ class testplan extends tlObjectWithAttachments
 		
 		
 		
-			$sql = "/* $debugMsg */ " .
-			       " SELECT NH_TCASE.parent_id AS testsuite_id, NH_TCV.parent_id AS tc_id, " . 
-			       " NH_TCASE.node_order AS spec_order, NH_TCASE.name," .
-				   " TPTCV.platform_id, PLAT.name as platform_name, TPTCV.id AS feature_id, " .
-				   " TPTCV.tcversion_id AS tcversion_id, " .
-				   " TPTCV.node_order AS execution_order, TPTCV.urgency," .
-				   " TCV.version AS version, TCV.active, TCV.summary," .
-				   " TCV.tc_external_id AS external_id, TCV.execution_type,TCV.importance," .  
-				   " {$feid} AS full_external_id, (TPTCV.urgency * TCV.importance) AS priority ";
+		$sql = "/* $debugMsg */ " .
+		       " SELECT NH_TCASE.parent_id AS testsuite_id, NH_TCV.parent_id AS tc_id, " . 
+		       " NH_TCASE.node_order AS spec_order, NH_TCASE.name," .
+			   " TPTCV.platform_id, PLAT.name as platform_name, TPTCV.id AS feature_id, " .
+			   " TPTCV.tcversion_id AS tcversion_id, " .
+			   " TPTCV.node_order AS execution_order, TPTCV.urgency," .
+			   " TCV.version AS version, TCV.active, TCV.summary," .
+			   " TCV.tc_external_id AS external_id, TCV.execution_type,TCV.importance," .  
+			   " {$feid} AS full_external_id, (TPTCV.urgency * TCV.importance) AS priority ";
 
-			$sql .=" FROM {$this->tables['nodes_hierarchy']} NH_TCV " .
-				   " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCV.parent_id = NH_TCASE.id " .
-				   " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NH_TCV.id " .
-				   " JOIN  {$this->tables['tcversions']} TCV ON  TCV.id = NH_TCV.id " .
-				   " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id ";
+		$sql .=" FROM {$this->tables['nodes_hierarchy']} NH_TCV " .
+			   " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCV.parent_id = NH_TCASE.id " .
+			   " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NH_TCV.id " .
+			   " JOIN  {$this->tables['tcversions']} TCV ON  TCV.id = NH_TCV.id " .
+			   " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id ";
 
-			$sql .= " WHERE TPTCV.testplan_id={$safe['tplan']} {$addWhere['platform']} {$addWhere['tsuite']} ";
+		$sql .= " WHERE TPTCV.testplan_id={$safe['tplan']} {$addWhere['platform']} {$addWhere['tsuite']} ";
 
-		if($platQty == 1)
+		switch($my['options']['output'])
 		{
-			$rs = $this->db->fetchRowsIntoMap($sql,'tc_id');
+			case 'array':
+				$rs = $this->db->get_recordset($sql);
+			break;
+			
+			case 'map':
+			if($platQty == 1)
+			{
+				$rs = $this->db->fetchRowsIntoMap($sql,'tc_id');
+			}
+			else
+			{
+				$rs = $this->db->fetchMapRowsIntoMap($sql,'platform_id','tc_id');
+			}
+			break;
 		}
-		else
-		{
-			$rs = $this->db->fetchMapRowsIntoMap($sql,'platform_id','tc_id');
-		}
-		
 		return $rs;
 	}
 

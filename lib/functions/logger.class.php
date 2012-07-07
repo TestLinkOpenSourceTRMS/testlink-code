@@ -5,32 +5,24 @@
  *
  * Log Functions
  *
- * A great way to debug is through logging. It's even easier if you can leave
- * the log messages through your code and turn them on and off with a single command.
- * To facilitate this we will create a number of logging functions.
+ * A great way to debug is through logging. 
+ * It's even easier if you can leave the log messages through your code and 
+ * turn them on and off with a single command.
  *
- * @package TestLink
- * @author Andreas Morsing
- * @copyright 2005-2009, TestLink community 
- * @version CVS: $Id: logger.class.php,v 1.49 2010/08/23 21:43:24 franciscom Exp $
- * @link http://www.teamst.org
+ * IMPORTANTE DEVELOPMENT NOTICE:
+ * logger Object is created when this file is included.
+ * ($g_tlLogger = tlLogger::create($db);)
+ *
+ * @package 	TestLink
+ * @author		Andreas Morsing
+ * @copyright 	2005-2012, TestLink community 
+ * @filesource	logger.class.php
+ * @link 		http://www.teamst.org
  * @since 1.8
  * 
- * @internal Revisions:
- * 
- *  20100823 - franciscom - BUGID 3656 - reopened crash when using table prefix
- *	20100808 - franciscom - BUGID 3656 - crash on some DBMS due to Transactions instead of transactions
- *	20091005 - amitkhullar - improved function getEventsFor() - BUG 2862
- *	20090603 - franciscom - adding table prefix management
- *	20080517 - franciscom - exclude mktime() logs 
- *	20080316 - franciscom - added getEnableLoggingStatus() methods
- *	                        refactored access to enable logging status info.
- *	                        refactored enable/disable logging
- *	                        Added code to configure individual loggers using new config $g_loggerCfg
- *	20080315 - franciscom - discovered bug on tlTransaction->writeToDB thanks to POSTGRES
- *	                        watchPHPErrors() - added new error to suppress
- *	20080216 - franciscom - limit length of entryPoint
- *
+ * @internal revisions
+ * @since 1.9.4
+ * 20120707 - franciscom - TICKET 5083: Refactor logger.class.php
  **/
  
 /**
@@ -38,41 +30,57 @@
  */
 class tlLogger extends tlObject
 {
+
+ 	// must be changed is db field len changes
+ 	const ENTRYPOINT_MAX_LEN = 45;
+
 	/** 
-	 * Log levels
-	 * There are 5 logging levels available. Log messages will only be displayed
-	 * if they are at a level less verbose than that currently set. So, we can turn
-	 * on logging with the following command:
+	 * Log levels VALUES
+	 * There are 5 logging levels available. 
+	 * Log messages will only be displayed if they are at a level less verbose than that currently set. 
+	 * So, we can turn on logging with the following command:
 	 *
 	 */
+	const NONE = 0;
 	const ERROR = 1;
 	const WARNING = 2;
  	const INFO = 4;
 	const DEBUG = 8;
 	const AUDIT = 16;
 
-	static $logLevels = null;
-	static $revertedLogLevels = null;
 
-    /** @var boolean to enable/disable loggin for all loggers */
+	/** 
+	 * @var array logLevels, key log level code, value log level string
+     *
+     */
+	static $logLevels = null;
+
+	/** 
+	 * @var array logLevelsStringCode, key log level string, value log level code  
+     *
+     */
+	static $logLevelsStringCode = null;
+
+    /** @var int log only event which pass the filter.
+     *  value can be OR of log levels const
+     */
+	protected $logLevelFilter = null;
+
+
+    /** @var boolean to enable/disable loging for all loggers */
 	protected $doLogging = true;
 
- 	// must be changed is db field len changes
- 	const ENTRYPOINT_MAX_LEN = 45;
 
-	//the one and only logger of TesTLink
+	// the one and only logger of TesTLink
 	private static $s_instance;
 
-	//all transactions, at the moment there is only one transaction supported,
-	//could be extended if we need more
+	// all transactions, at the moment there is only one transaction supported,
+	// could be extended if we need more
 	protected $transactions = null;
 
-	//the logger which are controlled
+	// the logger which are controlled
 	protected $loggers = null;
 
-	//log only event which pass the filter,
-	/** @TODO SCHLUNDUS: should use $g_log_level */
-	protected $logLevelFilter = null;
 
 	protected $eventManager;
     
@@ -92,12 +100,14 @@ class tlLogger extends tlObject
 	{
 		parent::__destruct();
 	}
+	
 	public function getAuditEventsFor($objectIDs = null,$objectTypes = null,$activityCodes = null,
 	                                  $limit = -1,$startTime = null,$endTime = null, $users = null)
 	{
 		return $this->eventManager->getEventsFor(tlLogger::AUDIT,$objectIDs,$objectTypes,$activityCodes,
 		                                         $limit,$startTime,$endTime,$users);
 	}
+	
 	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,
 	                             $activityCodes = null,$limit = -1,$startTime = null,
 	                             $endTime = null, $users = null)
@@ -112,8 +122,8 @@ class tlLogger extends tlObject
 	}
 	
 	/**
-	 * set the log level filter, only events which matches the filter can pass
-	 * can be combination of any of the tlLogger::LogLevels
+	 * Set the log level filter, only events which matches the filter can pass.
+	 * $filter: Can be combination of any of the tlLogger::LogLevels
 	 */
 	public function setLogLevelFilter($filter)
 	{
@@ -124,6 +134,56 @@ class tlLogger extends tlObject
 		}
 		return tl::OK;
 	}
+
+
+	/**
+	 * 
+	 * 
+	 */
+	public function getLogLevelFilter($opt='raw')
+	{
+		if($opt == 'raw')
+		{
+			return $this->logLevelFilter;
+		}
+		else
+		{
+			$human = null;
+			foreach(self::$logLevels as $code => $verbose)
+			{
+				if($this->logLevelFilter & $code)
+				{
+					$human[$code] = $verbose; 
+				}		
+			}
+			if( !is_null($human) )
+			{
+				asort($human);
+			}
+			return $human;
+		}
+	}
+
+
+	/**
+	 * 
+	 * 
+	 */
+	public function setLogLevelFilterFromVerbose($verbose)
+	{
+		$dummy = (array)$verbose;
+		$filter = 0;
+		foreach($dummy as $verboseLevel)
+		{
+			if( isset(self::$logLevelsStringCode[$verboseLevel]) )
+			{
+				$filter = $filter | self::$logLevelsStringCode[$verboseLevel];
+			}	
+		}
+		$this->setLogLevelFilter($filter);	
+	}
+
+
 
 	/**
 	 * disable logging
@@ -173,13 +233,8 @@ class tlLogger extends tlObject
 
 	public function getEnableLoggingStatus($logger = null)
 	{
-		$status=is_null($logger) ? $this->doLogging : $this->loggers[$logger]->getEnableLoggingStatus();
+		$status = is_null($logger) ? $this->doLogging : $this->loggers[$logger]->getEnableLoggingStatus();
 		return $status;
-		
-		// if(is_null($logger))
-		// 	return $this->doLogging;
-		// else
-		// 	return $this->loggers[$logger]->getEnableLoggingStatus();
 	}
 
 	/**
@@ -202,11 +257,13 @@ class tlLogger extends tlObject
     {
         if (!isset(self::$s_instance))
 		{
-			//create the logging instance
-			self::$logLevels = array (self::DEBUG => 'DEBUG', self::INFO => 'INFO',
+			// create the logging instance
+			self::$logLevels = array( self::DEBUG => 'DEBUG', self::INFO => 'INFO',
 							          self::WARNING => 'WARNING', self::ERROR => 'ERROR',
 							          self::AUDIT => 'AUDIT');
-			self::$revertedLogLevels = array_flip(self::$logLevels);
+
+			self::$logLevelsStringCode = array_flip(self::$logLevels);
+
             $c = __CLASS__;
             self::$s_instance = new $c($db);
         }
@@ -222,12 +279,17 @@ class tlLogger extends tlObject
 	 */
 	public function startTransaction($name = "DEFAULT",$entryPoint = null,$userID = null)
 	{
-		//if we have already a transaction with this name, return
+		// if we have already a transaction with this name, return
 		if (isset($transactions[$name]))
+		{
 			return tl::ERROR;
+		}	
+		
 		if (is_null($entryPoint))
+		{
 			$entryPoint = $_SERVER['SCRIPT_NAME'];
-
+		}
+		
 		if(strlen($entryPoint) > self::ENTRYPOINT_MAX_LEN)
 		{
 			// Important information is at end of string
@@ -241,11 +303,15 @@ class tlLogger extends tlObject
 			// search first /
 			$mypos = strpos($entryPoint,"/");
 			if(($mypos !== FALSE) && $mypos)
+			{
 				$entryPoint = substr($entryPoint,$mypos);
+			}	
 		}
 
-		if (is_null($userID))
+		if(is_null($userID))
+		{
 			$userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0;
+		}
 		$sessionID = $userID ? session_id() : null;
 
 		$t = new tlTransaction($this->db);
@@ -268,6 +334,7 @@ class tlLogger extends tlObject
 		$this->transactions[$name]->close();
 		unset($this->transactions[$name]);
 	}
+
 }
 
 
@@ -359,10 +426,16 @@ class tlTransaction extends tlDBObject
 		$query = " SELECT id,entry_point,start_time,end_time,user_id,session_id " .
 		         " FROM {$this->tables['transactions']} ";
 		$clauses = null;
+		
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
+		{
 			$clauses[] = "id = {$this->dbID}";
+		}
+		
 		if ($clauses)
+		{
 			$query .= " WHERE " . implode(" AND ",$clauses);
+		}
 		$info = $db->fetchFirstRow($query);
 		if ($info)
 		{
@@ -378,6 +451,7 @@ class tlTransaction extends tlDBObject
 	
 	public function writeToDB(&$db)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		if (!$this->dbID)
 		{
 			$entryPoint = $db->prepare_string($this->entryPoint);
@@ -390,7 +464,7 @@ class tlTransaction extends tlDBObject
 				$sessionID = "'".$db->prepare_string($this->sessionID)."'";
             }
             
-			$query = "INSERT INTO {$this->tables['transactions']} " .
+			$query = "/* $debugMsg */ INSERT INTO {$this->tables['transactions']} " .
 			         "(entry_point,start_time,end_time,user_id,session_id) " .
 			         "VALUES ('{$entryPoint}',{$startTime},{$endTime},{$userID},{$sessionID})";
 			$result = $db->exec_query($query);
@@ -402,7 +476,8 @@ class tlTransaction extends tlDBObject
 		else
 		{
 			$endTime = $db->prepare_int(time());
-			$query = "UPDATE {$this->tables['transactions']} SET end_time = {$endTime} WHERE id = {$this->dbID}";
+			$query = " /* $debugMsg */ " .
+					 " UPDATE {$this->tables['transactions']} SET end_time = {$endTime} WHERE id = {$this->dbID}";
 			$result = $db->exec_query($query);
 		}
 		return $result ? tl::OK : tl::ERROR;
@@ -478,8 +553,6 @@ class tlEventManager extends tlObjectWithDB
 
     returns:
     
-    rev: 20080514 - franciscom - added empty() to avoid crash
-
   */
 	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,
 	                             $activityCodes = null,$limit = -1,$startTime = null,
@@ -524,8 +597,8 @@ class tlEventManager extends tlObjectWithDB
 		
 	    if (!is_null($users))
 	    {
-	    	// BUGID 3656
-	        $usersFilter = " JOIN {$this->tables['transactions']}  T ON T.id = E.transaction_id AND T.user_id IN ({$users}) ";
+	        $usersFilter = " JOIN {$this->tables['transactions']}  T " .
+	        			   " ON T.id = E.transaction_id AND T.user_id IN ({$users}) ";
 	    }
 		$query = "SELECT E.id FROM {$this->tables['events']} E {$usersFilter}";
 	    if ($clauses)
@@ -592,7 +665,7 @@ class tlEvent extends tlDBObject
 
 	public $transaction = null;
 
-    //detail leveles  @TODO DOCUMENT DETAILS OF WHAT ?
+    //detail levels  @TODO DOCUMENT DETAILS OF WHAT ?
 	const TLOBJ_O_GET_DETAIL_TRANSACTION = 1;
 
 	public function getLogLevel()
@@ -618,7 +691,9 @@ class tlEvent extends tlDBObject
 		$this->objectType = null;
 		$this->transaction = null;
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
+		{
 			$this->dbID = null;
+		}	
 	}
 
 	public function initialize($transactionID,$userID,$sessionID,$logLevel,$description,
@@ -636,16 +711,24 @@ class tlEvent extends tlDBObject
 		$this->objectID = $objectID;
 		$this->objectType = $objectType;
 	}
+	
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
 		$query = " SELECT id,transaction_id,log_level,source,description,fired_at,object_id,object_type,activity " .
 		         " FROM {$this->tables['events']} ";
 		$clauses = null;
+		
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
+		{
 			$clauses[] = "id = {$this->dbID}";
+		}
+		
 		if ($clauses)
+		{
 			$query .= " WHERE " . implode(" AND ",$clauses);
+		}
+		
 		$info = $db->fetchFirstRow($query);
 		if ($info)
 		{
@@ -654,14 +737,14 @@ class tlEvent extends tlDBObject
 			$this->logLevel = $info['log_level'];
 			$this->source = $info['source'];
 			$this->description = $info['source'];
-			if( ($tmp = tlMetaString::unserialize($info['description'])) )
-			{
-				$this->description = $tmp;
-			}
 			$this->timestamp = $info['fired_at'];
 			$this->objectID = $info['object_id'];
 			$this->objectType = $info['object_type'];
 			$this->activityCode = $info['activity'];
+			if( ($tmp = tlMetaString::unserialize($info['description'])) )
+			{
+				$this->description = $tmp;
+			}
 
 			if ($this->transactionID && $options & self::TLOBJ_O_GET_DETAIL_TRANSACTION)
 			{
@@ -678,35 +761,32 @@ class tlEvent extends tlDBObject
 
 	public function writeToDB(&$db)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		if (!$this->dbID)
 		{
 			$logLevel = $db->prepare_int($this->logLevel);
-			//this event logger supports tlMetaString and normal strings
-			if (is_object($this->description))
-				$description = $this->description->serialize();
-			else
-				$description = $this->description;
-
-			$description = $db->prepare_string($description);
-			$source = "NULL";
-			if (!is_null($this->source))
-				$source = "'".$db->prepare_string($this->source)."'";
-			$objectType	= "NULL";
-			if (!is_null($this->objectType))
-				$objectType = "'".$db->prepare_string($this->objectType)."'";
-			$activityCode = "NULL";
-			if (!is_null($this->activityCode))
-				$activityCode = "'".$db->prepare_string($this->activityCode)."'";
-			$objectID = "NULL";
-			if (!is_null($this->objectID))
-				$objectID = $db->prepare_int($this->objectID);
 			$firedAt = $db->prepare_int($this->timestamp);
 			$transactionID = $db->prepare_int($this->transactionID);
+			
+			// this event logger supports tlMetaString and normal strings
+			$dummy = is_object($this->description) ? $this->description->serialize() : $this->description;
+			$description = $db->prepare_string($dummy);
 
-			$query = "INSERT INTO {$this->tables['events']} (transaction_id,log_level,description,source," .
+			$local = new stdClass();
+			$local->objectID = !is_null($this->objectID) ? $db->prepare_int($this->objectID) : 0;
+
+			$str2loop = array('source','objectType','activityCode');
+			foreach($str2loop as $tg)
+			{
+				$local->$tg = !is_null($this->$tg) ? ("'" . $db->prepare_string($this->$tg) . "'" ) : 'NULL';
+			}
+
+
+			$query = "/* $debugMsg */ " .
+					 "INSERT INTO {$this->tables['events']} (transaction_id,log_level,description,source," .
 			         "fired_at,object_id,object_type,activity) " .
-			         "VALUES ({$transactionID},{$logLevel},'{$description}',{$source}," .
-			         "{$firedAt},{$objectID},{$objectType},{$activityCode})";
+			         "VALUES ({$transactionID},{$logLevel},'{$description}',{$local->source}," .
+			         "{$firedAt},{$local->objectID},{$local->objectType},{$local->activityCode})";
 
 			$result = $db->exec_query($query);
 			if ($result)
@@ -778,12 +858,21 @@ class tlDBLogger extends tlObjectWithDB
 
 	public function writeTransaction(&$t)
 	{
-	  if ($this->getEnableLoggingStatus() == false)
+	  	if ($this->getEnableLoggingStatus() == false)
+	  	{
 			return tl::OK;
+		}
+			
 		if (!$this->logLevelFilter)
+		{
 			return tl::ERROR;
+		}
+		
 		if ($this->checkDBConnection() < tl::OK)
+		{
 			return tl::ERROR;
+		}
+		
 		//if we get a closed transaction without a dbID then the transaction wasn't stored
 		//into the db, so we can also ignore this write
 		if ($t->endTime)
@@ -791,9 +880,9 @@ class tlDBLogger extends tlObjectWithDB
 			$this->pendingTransaction = null;
 			if ($t->dbID)
 			{
-			  $this->disableLogging();
+			  	$this->disableLogging();
 				$t->writeToDb($this->db);
-			  $this->enableLogging();
+			  	$this->enableLogging();
 			}
 			return tl::OK;
 		}
@@ -809,13 +898,21 @@ class tlDBLogger extends tlObjectWithDB
 	public function writeEvent(&$e)
 	{
 		if (!$this->doLogging)
+		{
 			return tl::OK;
+		}
+		
 		if (!($e->logLevel & $this->logLevelFilter))
+		{
 			return tl::OK;
+		}
+		
 		if ($this->checkDBConnection() < tl::OK)
+		{
 			return tl::ERROR;
-
-    // to avoid log, writes related to log logic
+		}
+		
+    	// to avoid log, writes related to log logic
 		$this->disableLogging();
 
 		//if we have a pending transaction so we could write it now
@@ -830,11 +927,14 @@ class tlDBLogger extends tlObjectWithDB
 		return $result;
 	}
 
+
 	public function setLogLevelFilter($filter)
 	{
-		//we should never log DEBUG to db
-		$this->logLevelFilter = $filter & ~tlLogger::DEBUG;
+		// we should never log DEBUG to db ?
+		// $this->logLevelFilter = $filter & ~tlLogger::DEBUG;
+		$this->logLevelFilter = $filter;
 	}
+
 
 	public function checkDBConnection()
 	{
@@ -1004,23 +1104,6 @@ class tlHTMLLogger
 
 }
 
-
-//create the global TestLink Logger, and open the initial default transaction
-global $g_loggerCfg;
-$g_tlLogger = tlLogger::create($db);
-if( !is_null($g_loggerCfg) )
-{
-    foreach($g_loggerCfg as $loggerKey => $cfgValue)
-    {
-        $pfn=$cfgValue['enable'] ? 'enableLogging' : 'disableLogging';
-        $g_tlLogger->$pfn($loggerKey);
-    }
-}
-
-$g_tlLogger->startTransaction();
-
-set_error_handler("watchPHPErrors");
-
 /**
  * include php errors, warnings and notices to TestLink log
  * 
@@ -1072,4 +1155,29 @@ function shutdownLogger()
 	if ($g_tlLogger)
 		$g_tlLogger->endTransaction();
 }
+
+
+// --------------------------------------------------------------------------------------
+// EXECUTED ON INCLUDE
+// create the global TestLink Logger, and open the initial default transaction
+global $g_loggerCfg;
+$g_tlLogger = tlLogger::create($db);
+if( !is_null($g_loggerCfg) )
+{
+    foreach($g_loggerCfg as $loggerKey => $cfgValue)
+    {
+        $pfn = $cfgValue['enable'] ? 'enableLogging' : 'disableLogging';
+        $g_tlLogger->$pfn($loggerKey);
+    }
+}
+
+if( !is_null(config_get('loggerFilter')) )
+{
+	$g_tlLogger->setLogLevelFilterFromVerbose(config_get('loggerFilter'));
+}
+
+$g_tlLogger->startTransaction();
+set_error_handler("watchPHPErrors");
+// --------------------------------------------------------------------------------------
+
 ?>

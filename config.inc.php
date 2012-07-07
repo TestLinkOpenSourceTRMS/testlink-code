@@ -23,6 +23,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ *	20120707 - franciscom - TICKET 5083: Refactoring - logger.class.php -> $tlCfg->loggerFilter
  *	20120108 - franciscom - TICKET 4821: Bugzilla integration via XMLRPC (BUGZILLAXMLRPC)
  *	20120107 - franciscom - TICKET 4857: Add SOAP integration for Mantis (MANTISSOAP)
  *	20111217 - franciscom - $tlCfg->validation_cfg->user_login_valid_regex updated using mantisbt 1.2.5
@@ -155,7 +156,9 @@ $tlCfg->sessionInactivityTimeout = 9900;
 /** Error reporting - do we want php errors to show up for users */
 error_reporting(E_ALL);
 
-/** @var string Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
+/** @var string Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) 
+ *  is not used by tlLogger, we need to change this in future.
+ */
 $tlCfg->log_level = 'ERROR';
 
 /** @var boolean show smarty debug window */
@@ -186,7 +189,13 @@ $g_loggerCfg = null;
 
 /**  @var integer All events older this value [days] are removed from the db, during login */
 $g_removeEventsOlderThan = 30;
+                            
 
+/**  @var array values can be only these defined on logger.class.php 
+ *   @since 1.9.4                                  
+ *   example array('INFO','AUDIT') only this levels of log will be logged.
+ */                            
+$tlCfg->loggerFilter = null; // default defined on logger.class.php ;                            
 
 // ----------------------------------------------------------------------------
 /* [Bug Tracking systems] */

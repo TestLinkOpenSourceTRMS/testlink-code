@@ -37,18 +37,22 @@ $gui = initializeGui($args,$tplan_mgr);
 
 if ($args->doExport)
 {
+	$tLogMsg = 'basename(__FILE__) : ' . basename(__FILE__) . ' : $args->exportContent : ' . $args->exportContent;
 	switch ($args->exportContent)
 	{
 		case 'linkedItems':
 		$content = $tplan_mgr->exportLinkedItemsToXML($args->tplan_id);
+		$tLogMsg .= ' : exportLinkedItemsToXML()';
 		break;
 		
 		case 'tree':
 		$context = array('platform_id' => $args->platform_id, 'build_id' => $args->build_id,
 						 'tproject_id' => $args->tproject_id);
 		$content = $tplan_mgr->exportTestPlanDataToXML($args->tplan_id,$context);
+		$tLogMsg .= ' : exportTestPlanDataToXML()';
 		break;
 	}
+	tLog($tLogMsg,'DEBUG');
 	downloadContentsToFile($content,$gui->export_filename);
 	exit();
 }

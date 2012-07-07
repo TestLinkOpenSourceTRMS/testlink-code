@@ -42,6 +42,8 @@ $tcversion_id = null;
 $submitResult = null;
 $args = init_args($db,$cfg);
 
+new dBug($args);
+
 // get issue tracker config and object to manage TestLink - BTS integration 
 $its = null;
 $tproject_mgr = new testproject($db);
@@ -73,6 +75,8 @@ $req_mgr = new requirement_mgr($db);
 $gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr);
 $gui->issueTrackerIntegrationOn = $info['issue_tracker_enabled'] && !is_null($its) && $its->isConnected();
 
+new dBug($args->id);
+
 $_SESSION['history_on'] = $gui->history_on;
 $attachmentInfos = null;
 
@@ -93,6 +97,9 @@ if($args->doExec == 1 && !is_null($args->tc_versions) && count($args->tc_version
 list($linked_tcversions,$itemSet) = getLinkedItems($args,$gui->history_on,$cfg,$tcase_mgr,$tplan_mgr);
 $tcase_id = 0;
 $userid_array = null;
+new dBug($gui);
+new dBug($args->id);
+new dBug($linked_tcversions);
 if(!is_null($linked_tcversions))
 {
 	$items_to_exec = array();
@@ -101,6 +108,7 @@ if(!is_null($linked_tcversions))
     {
     	// Warning!!! - $gui is passed by reference to be updated inside function
     	$tcase = null;
+    	new dBug($args->id);
         list($tcase_id,$tcversion_id) = processTestCase($tcase,$gui,$args,$cfg,$linked_tcversions,
                                                         $tree_mgr,$tcase_mgr,$attachmentRepository);
     }
@@ -130,6 +138,9 @@ if(!is_null($linked_tcversions))
         if ($args->save_and_next) 
         {	
 			$nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$tcversion_id,$args->platform_id);
+			
+			// new dBug($nextItem);
+			
 			while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $args->testcases_to_show)) 
 			{
 				$nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$nextItem['tcversion_id'],$args->platform_id);
@@ -142,8 +153,6 @@ if(!is_null($linked_tcversions))
 				
 				// Save and Next - Issues with display CF for test plan design - always EMPTY	
 				// need info about this test case => need to update linked_tcversions info
-				// $filters['tcase_id'] = $tcase_id;
-				// $lt = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
 				$identity = array('id' => $nextItem['tcase_id'], 'version_id' => $nextItem['tcversion_id']);
 				list($lt,$xdm) = getLinkedItems($args,$gui->history_on,$cfg,$tcase_mgr,$tplan_mgr,$identity);
          		processTestCase($nextItem,$gui,$args,$cfg,$lt,$tree_mgr,$tcase_mgr,$attachmentRepository);
@@ -175,6 +184,8 @@ if(!is_null($linked_tcversions))
     	                                                                   testcase::ANY_BUILD,
     	                                                                   $args->platform_id,$options);
     	    
+
+			// new dBug($gui->map_last_exec_any_build);
     	    //Get UserID and Updater ID for current Version
     	    $tc_current = $gui->map_last_exec_any_build;
     	    foreach ($tc_current as $key => $value)
@@ -185,7 +196,7 @@ if(!is_null($linked_tcversions))
     	}
     	
     	$gui->req_details = $req_mgr->get_all_for_tcase($tcase_id);
-    	$gui->other_execs=getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);
+    	$gui->other_execs = getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);
     	
     	// Get attachment,bugs, etc
     	if(!is_null($gui->other_execs))
@@ -320,7 +331,7 @@ function init_args(&$dbHandler,$cfgObj)
     {
 		// 20120616 - franciscom
 		// some strange thing to investigate, seems that userialize is invoked
-		// under tha hood when getting data from $_REQUEST, then this piece
+		// under the hood when getting data from $_REQUEST, then this piece
 		// of code not only will be useless BUT WRONG, because will try
 		// to unserialize something that IS NOT SERIALIZED!!!!
     	if(is_string($args->filter_status))
@@ -396,15 +407,18 @@ function init_args(&$dbHandler,$cfgObj)
 	}
 	
 	// TICKET 4714 - Memory usage improvement
-	$args->tsuites_id = null; 
-	if( !is_null($args->tsuites_id) )
+	$args->tsuitesInBranch = null; 
+	if( !is_null($args->tsuite_id) )
 	{
-		// will get all test suites in this branch, in order to limit amount of data returned by get_linked_tcversions
+		// will get all test suites in this branch, in order to limit amount of data returned 
+		// by functions/method that collect linked tcversions
+		// THIS COLLECT ONLY FIRST LEVEL UNDER test suite, do not do deep search
+		// Need to understand is still needed
 		$tsuite_mgr = new testsuite($dbHandler);
 		$xx = $tsuite_mgr->get_children($args->tsuite_id,array('details' => 'id'));
 		$ldx = count($xx);
 		$xx[$ldx] = $args->tsuite_id;
-		$args->tsuites_id = $xx;
+		$args->tsuitesInBranch = $xx;
 		unset($tsuite_mgr);
 	}
 
@@ -436,6 +450,7 @@ function init_args(&$dbHandler,$cfgObj)
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
 	$args->user = $_SESSION['currentUser'];
     $args->user_id = $args->user->dbID;
+
 
 	return $args;
 }
@@ -530,6 +545,7 @@ function get_ts_name_details(&$db,$tcase_id)
 */
 function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tcase_id,$tproject_id)
 {
+  new dBug($tcase_id);	
   $fpath=$tree_mgr->get_full_path_verbose($tcase_id, array('output_format' => 'id_name'));
   $tsuite_info = get_ts_name_details($db,$tcase_id);
   foreach($fpath as $key => $value)
@@ -1130,6 +1146,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
 function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tcaseMgr,&$docRepository)
 {     
 
+	
   	// IMPORTANT due  to platform feature
   	// every element on linked_tcversions will be an array.
     $cf_filters=array('show_on_execution' => 1); 
@@ -1138,6 +1155,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   	$guiObj->testplan_design_time_cfields='';
   	
   	$tcase_id = isset($tcase['tcase_id']) ? $tcase['tcase_id'] : $argsObj->id;
+	new dBug($tcase_id);
   	
   	// Development Notice:
   	// accessing a FIXED index like in:
@@ -1146,7 +1164,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   	// $link_id = $linked_tcversions[$tcase_id][0]['feature_id'];
 	//
   	// has a latent danger (has happened during refactoring changing output type
-  	// por get_linked_tcversions().
+  	// por get_linked_tcversions()).
   	// Because we want to access FIRTS element is better to use current.
   	//
   	$target = current(current($tcv));
@@ -1454,16 +1472,21 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
 		$execContext = array('tplan_id' => $argsObj->tplan_id,
 							 'platform_id' => $argsObj->platform_id,
 							 'build_id' => $argsObj->build_id);		
-		if(!$historyOn)
-		{
-			// it's ok to get just latest execution
-			$opt = null;
-			$ltcv = $tcaseMgr->getLatestExecSingleContext($idCard,$execContext,$opt);
-		}
-		else
+
+		$ltcv = null;
+		if($historyOn)
 		{
 			$execContext['testplan_id'] = $argsObj->tplan_id;
 			$ltcv = $tcaseMgr->getExecutionSet($idCard['id'],null,$execContext);
+		}
+
+		// lazy implementation:
+		// getExecutionSet() returns data ONLY for Statuses that are written ON DB,
+		// then if full history for test case is NOT RUN, we are doomed!!
+		if(!$historyOn || is_null($ltcv))
+		{
+			$opt = null;
+			$ltcv = $tcaseMgr->getLatestExecSingleContext($idCard,$execContext,$opt);
 		}
 	}
 	else
@@ -1527,12 +1550,17 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
 		// and user do click on a test suite on execution tree.
 		$bulk_filters = array('keyword_id' => $argsObj->keyword_id,'assigned_to' => $argsObj->filter_assigned_to, 
 						      'exec_status' => $argsObj->filter_status,'cf_hash' => $argsObj->cf_selected,
-		                      'tsuites_id' => $argsObj->tsuites_id,'assigned_on_build' => $argsObj->build_id);
-
-		$filters = array_merge($basic_filters,$bulk_filters);
-		// 20120616
-		// $ltcv = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters,$options);
+		                      'tsuites_id' => $argsObj->tsuite_id,
+		                      'assigned_on_build' => $argsObj->build_id);
 		
+		// CRITIC / IMPORTANT 
+		// With BULK Operation enabled, we prefer to display Test cases tha are ONLY DIRECT CHILDREN
+		// of test suite id => we do not do deep walk.
+		// Think is a good choice, to avoid retrieving lot of info.
+		// May be we need to add a config parameter (or better an option at GUI level)
+		// in order to allow use how he / she wants to work.
+		//
+		$filters = array_merge($basic_filters,$bulk_filters);
 		if( !is_null($sql2do = $tplanMgr->getLinkedForExecTree($argsObj->tplan_id,$filters,$options)) )
 		{
 			if( is_array($sql2do) )
@@ -1553,12 +1581,15 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
 			{
 				$sql2run = $sql2do;
 			}
+			
+			//echo $sql2run;
 			// Development Notice: 
 			// CUMULATIVE is used only to create same type of datastructe that existed
 			// before this refactoring
 			//
 			// $tex = $tcaseMgr->db->$kmethod($sql2run,'tcase_id',database::CUMULATIVE);
 			$ltcv = $tex = $tcaseMgr->db->$kmethod($sql2run,'tcase_id');
+			//new dBug($tex);
 			if(!is_null($tex))
 			{
 				foreach($tex as $xkey => $xvalue)

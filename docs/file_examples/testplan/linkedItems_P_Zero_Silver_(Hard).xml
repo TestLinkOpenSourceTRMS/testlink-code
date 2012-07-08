@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+	<testplan>
+		<name><![CDATA[P Zero Silver (Hard)]]></name>
+		<platforms>
+	<platform>		<name><![CDATA[Ferrari]]></name>		<internal_id><![CDATA[5]]></internal_id>
+	</platform>
+	<platform>		<name><![CDATA[Mc Laren]]></name>		<internal_id><![CDATA[6]]></internal_id>
+	</platform>
+	<platform>		<name><![CDATA[Red Bull]]></name>		<internal_id><![CDATA[7]]></internal_id>
+	</platform>
+</platforms>
+		
+<executables>
+	<link>
+		<platform>
+			<name><![CDATA[Ferrari]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[TC1A]]></name>
+			<externalid><![CDATA[1]]></externalid>
+			<version><![CDATA[1]]></version>
+			<execution_order><![CDATA[1000]]></execution_order>
+		</testcase>
+</link>
+
+	<link>
+		<platform>
+			<name><![CDATA[Mc Laren]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[TC1B]]></name>
+			<externalid><![CDATA[2]]></externalid>
+			<version><![CDATA[1]]></version>
+			<execution_order><![CDATA[1010]]></execution_order>
+		</testcase>
+</link>
+
+	<link>
+		<platform>
+			<name><![CDATA[Red Bull]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[TC1B]]></name>
+			<externalid><![CDATA[2]]></externalid>
+			<version><![CDATA[1]]></version>
+			<execution_order><![CDATA[1010]]></execution_order>
+		</testcase>
+</link>
+
+	<link>
+		<platform>
+			<name><![CDATA[Mc Laren]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[TC2X]]></name>
+			<externalid><![CDATA[3]]></externalid>
+			<version><![CDATA[1]]></version>
+			<execution_order><![CDATA[1000]]></execution_order>
+		</testcase>
+</link>
+
+	<link>
+		<platform>
+			<name><![CDATA[Ferrari]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[TC2Y]]></name>
+			<externalid><![CDATA[4]]></externalid>
+			<version><![CDATA[1]]></version>
+			<execution_order><![CDATA[1010]]></execution_order>
+		</testcase>
+</link>
+
+	<link>
+		<platform>
+			<name><![CDATA[Mc Laren]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[TC2Y]]></name>
+			<externalid><![CDATA[4]]></externalid>
+			<version><![CDATA[1]]></version>
+			<execution_order><![CDATA[1010]]></execution_order>
+		</testcase>
+</link>
+
+</executables>
+
+	</testplan>

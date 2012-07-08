@@ -136,6 +136,8 @@ function open_popup(page)
 
   returns:
 
+  IMPORTANT NOTICE: see Development Notes on TOP of this document for info regarding args
+
 */
 function ST(id,version)
 {

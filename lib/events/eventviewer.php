@@ -3,23 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: eventviewer.php,v $
+ * @filesource	eventviewer.php
  *
- * @version $Revision: 1.39.2.1 $
- * @modified $Date: 2010/12/06 10:03:09 $ by $Author: mx-julian $
+ * @internal revisions
  *
- * rev:
- *
- *      20101026 - Julian - Localized dateformat for datepicker - validation MISSING
- *                        - BUGID 3908: reset filters after clearing events
- * 		20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                          table state independent from localization
- * 		20101008 - Julian - added html comment to properly sort by description column
- *		20101008 - Julian - BUGID 3871: use exttable for event viewer
- *		20100508 - franciscom - BUGID 3445: Ability to delete events from selected class from event logs 
- *		20091005 - amitkhullar - improved function getEventsFor() - BUG 2862
- *      20081029 - franciscom - added 'clear' action to delete all events and transactions
- *                              present on database.
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -38,7 +25,7 @@ $charset = config_get('charset');
 switch($args->doAction)
 {
     case 'clear':
-        // BUGID 3445: Ability to delete events from selected class from event logs 
+        // Ability to delete events from selected class from event logs 
 	    $g_tlLogger->deleteEventsFor($args->logLevel);
 	    if( is_null($args->logLevel) )
 	    {
@@ -55,13 +42,12 @@ switch($args->doAction)
 	    	logAuditEvent(TLS("audit_events_with_level_deleted",$args->currentUser->login,$logLevelVerbose),"DELETE",null,"events");
 	    }
 	    
-	    // BUGID 3908: reset filters after clearing events
+	    // reset filters after clearing events
 	    $args->logLevel = null;
 	    $gui->selectedLogLevels = array();
 	    $gui->selectedTesters = array();
 	    $gui->startDate = null;
 	    $gui->endDate = null;
-	    
 	    break;
     
     case 'filter':
@@ -70,19 +56,20 @@ switch($args->doAction)
     	break;
 }
 
-//print_r($filters);
-
 $gui->events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $args->object_id : null,
 										 $args->object_type ? $args->object_type : null,null,500,$filters->startTime,
 										 $filters->endTime,$filters->users);
 
-if (count($gui->events) > 0) {
+if (count($gui->events) > 0) 
+{
 	$table = buildExtTable($gui, $show_icon, $charset);
-	
-	if (!is_null($table)) {
+	if (!is_null($table)) 
+	{
 		$gui->tableSet[] = $table;
 	}
-} else {
+} 
+else 
+{
 	$gui->warning_msg = lang_get("no_events");
 }
 
@@ -160,7 +147,6 @@ function initializeGui(&$dbHandler,&$argsObj)
     $gui->selectedLogLevels = ($argsObj->logLevel ? array_values($argsObj->logLevel) : array());
     $gui->selectedTesters = ($argsObj->testers ? array_values($argsObj->testers) : array());
 
-    // $gui->canDelete = has_rights($db,"events_mgt") ? 1 : 0;
     $gui->canDelete = $argsObj->currentUser->hasRight($dbHandler,"events_mgt");
     
     $gui->warning_msg = "";

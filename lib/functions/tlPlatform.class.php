@@ -3,30 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * @filesource	tlPlatform.class.php
  * @package     TestLink
  * @author      Erik Eloff
- * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.22 2010/09/12 15:15:53 franciscom Exp $
+ * @copyright   2006-2012, TestLink community
  * @link        http://www.teamst.org/index.php
  *
- * @internal Revision:
+ * @internal revisions
  *                                 
- *	20100912 - franciscom - BUGID 3771 - getAll() MS SQL Query problem
- *	20100711 - franciscom - BUGID 3564: TestCases added via tl.addTestCaseToTestPlan won't show up for execution
- *	20100705 - franciscom - getLinkedToTestplan() - interface changes
- *	20100225 - eloff - rename platformVisibleForTestplan() to platformsActiveForTestplan()
- *	20100202 - franciscom - create() - changed return type
- *	20100201 - franciscom - linkToTestplan(), unlinkFromTestplan() - refactoring to manage null	as $id
- *		                    deleteByTestProject() - new method.
- *  20100124 - franciscom - fixed bug on getAll() - filter by active test project is not more there.
- *  20091201 - Eloff - added options to getAll() to include linked_count
- *                     Use positive logic in getAll()
- *                     Rewrite SQL queries to coding conventions (no newline in string)
- *  20091118 - franciscom - getID() - fixed added testproject id in where clause
- *	20091031 - franciscom - getAll(),getAllAsMap(),getLinkedToTestplanAsMap() - added orderBy
- *	20090807 - franciscom - added check on empty name with exception (throwIfEmptyName())
- *                          linkToTestplan(),unlinkFromTestplan() interface changes
- *	20090805 - Eloff - Updated code according to guidelines
  */
 
 /**

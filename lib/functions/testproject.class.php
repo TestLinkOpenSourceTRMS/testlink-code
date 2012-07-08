@@ -6,7 +6,7 @@
  * @filesource	testproject.class.php
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 	2005-2011, TestLink community 
+ * @copyright 	2005-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
@@ -562,19 +562,21 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
   returns: map
            see tree->get_subtree() for details.
 
-  rev : 20080104 - franciscom - added exclude_testcases
 
 */
-function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
-                     $exclude_branches=null, $additionalWhereClause='')
+function get_subtree($id,$filters=null,$opt=null)
 {
-	$my['options']=array('recursive' => $recursive_mode);
+	$my = array();
+	$my['options'] = array('recursive' => false, 'exclude_testcases' => false, 'output' => 'full');
  	$my['filters'] = array('exclude_node_types' => $this->nt2exclude,
  	                       'exclude_children_of' => $this->nt2exclude_children,
- 	                       'exclude_branches' => $exclude_branches,
- 	                       'additionalWhereClause' => $additionalWhereClause);      
- 
-  	if($exclude_testcases)
+ 	                       'exclude_branches' => null,
+ 	                       'additionalWhereClause' => '');      
+    
+	$my['options'] = array_merge($my['options'],(array)$opt);
+ 	$my['filters'] = array_merge($my['filters'],(array)$filters);
+
+   	if($my['options']['exclude_testcases'])
   	{
   	  $my['filters']['exclude_node_types']['testcase']='exclude me';
   	}
@@ -700,8 +702,9 @@ function count_testcases($id)
 	function gen_combo_test_suites($id,$exclude_branches=null,$mode='dotted')
 	{
 		$ret = array();
-		$test_spec = $this->get_subtree($id,!self::RECURSIVE_MODE,self::EXCLUDE_TESTCASES,$exclude_branches);
-
+		$test_spec = $this->get_subtree($id, array('exclude_branches' => $exclude_branches),
+										array('recursive' => !self::RECURSIVE_MODE,
+										      'exclude_testcases' => self::EXCLUDE_TESTCASES));
 		if(count($test_spec))
 		{
 		  $ret = $this->_createHierarchyMap($test_spec);

@@ -4,10 +4,7 @@ $Id: planExport.tpl,v 1.7 2010/11/06 11:42:47 amkhullar Exp $
 
 test plan export
 
-Revisions:
-20101009 - franciscom - BUGID 3270 - improvements to avoid event viewer warnings
-20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
-
+internal revisions
 *}
 {lang_get var="labels" 
           s='export_filename,warning_empty_filename,file_type,warning,export_cfields,title_req_export,
@@ -19,7 +16,6 @@ Revisions:
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
 {literal}
@@ -57,7 +53,7 @@ function validateForm(f)
     {$labels.export_filename}
     </td>
     <td>
-  	<input type="text" name="export_filename" maxlength="{#FILENAME_MAXLEN#}" 
+  	<input type="text" id="export_filename" name="export_filename" maxlength="{#FILENAME_MAXLEN#}" 
 			           value="{$gui->export_filename|escape}" size="{#FILENAME_SIZE#}"/>
 			  				{include file="error_icon.tpl" field="export_filename"}
   	</td>

@@ -6,7 +6,7 @@
  * @filesource tlTestCaseFilterControl.class.php
  * @package    TestLink
  * @author     Andreas Simon
- * @copyright  2006-2011, TestLink community
+ * @copyright  2006-2012, TestLink community
  * @link       http://www.teamst.org/index.php
  * 
  *
@@ -289,12 +289,23 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 */
 	private $mode = 'edit_mode';
 
+
+	/**
+	 * Options to be used accordin to $this->mode, to build tree
+	 * @var array
+	 */
+	private $treeOpt = array();
+
+
 	/**
 	 * The token that will be used to identify the relationship between left frame
 	 * (with navigator) and right frame (which displays execution of test case e.g.) in session.
 	 * @var string
 	 */
 	public $form_token = null;
+	
+	
+	
 	
 	/**
 	 *
@@ -312,6 +323,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		// so no further method call is required here for initialization.
 		parent::__construct($dbHandler);
 
+		$this->initTreeOptions($this->mode);
+		
 		// delete any filter settings that may be left from previous calls in session
 		$this->delete_own_session_data();
 		$this->delete_old_session_data();
@@ -794,7 +807,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * @author Andreas Simon
 	 * @param object $gui Reference to GUI object (data will be written to it)
 	 */
-	public function build_tree_menu(&$gui) {
+	public function build_tree_menu(&$gui) 
+	{
 		$tree_menu = null;
 		$filters = $this->get_active_filters();
 		$loader = '';
@@ -818,20 +832,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			
 			case 'plan_mode':
 				// No lazy loading here.
-					
-				$opt_etree = new stdClass();
-				$opt_etree->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
-				$opt_etree->useColours = COLOR_BY_TC_STATUS_OFF;
-				$opt_etree->testcases_colouring_by_selected_build = DISABLED;
-				$opt_etree->absolute_last_execution = true;  // hmm  probably useless
-				// $opt_etree->allow_empty_build = ($this->args->feature == 'test_urgency') ? 1 : 0;
-				
+				$opt_etree = $this->treeOpt[$this->mode];
 				$filters->show_testsuite_contents = 1;
-				// $filters->hide_testcases = ($this->args->feature == 'test_urgency') ? 1 : 0;
-				
-				
-				new dBug($this->args->feature);
-				
 				switch($this->args->feature)
 				{
 					case 'test_urgency':
@@ -848,7 +850,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 					
 					case 'planUpdateTC':
 						$filters->hide_testcases = 0;
-						$opt_etree->allow_empty_build = 0;
+						$opt_etree->allow_empty_build = 1;
 						$opt_etree->getTreeMethod = 'getLinkedForTesterAssignmentTree';
 					break;
 					
@@ -979,15 +981,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				$opt_etree->useColours->counters =	$exec_cfg->enable_tree_counters_colouring;
 				$opt_etree->testcases_colouring_by_selected_build =	$exec_cfg->testcases_colouring_by_selected_build; 
 				
-				/*	
-				echo 'DEBUG - mode:' . $this->mode . '<br>';
-				new dBug($opt_etree);
-				new dBug($filters);
-				*/
-				
-				$chronos[] = $tstart = microtime(true);
-				echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::Start!!!' . current($chronos);
-				reset($chronos);	
+			
+				//$chronos[] = $tstart = microtime(true);
+				//echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::Start!!!' . current($chronos);
+				//reset($chronos);	
 
 				$style='1.9.4';
 				switch ($style)
@@ -1005,8 +1002,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				break;
 					
 				case '1.9.4':
-				echo '<h1>MIK</h1>';
-				new dBug($filters);
 				list($tree_menu, $testcases_to_show) = execTree($this->db,$gui->menuUrl,
 				                                                $this->args->testproject_id,
 				                                                $this->args->testproject_name,
@@ -1017,9 +1012,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				break;
 
 				}
-				$chronos[] = microtime(true); $tnow = end($chronos); $tprev = prev($chronos);
-				$t_elapsed = number_format( $tnow - $tprev, 4);
-				echo '<br> ' . basename(__FILE__) . ' Elapsed (sec):' . $t_elapsed;
+				//$chronos[] = microtime(true); $tnow = end($chronos); $tprev = prev($chronos);
+				//$t_elapsed = number_format( $tnow - $tprev, 4);
+				//echo '<br> ' . basename(__FILE__) . ' Elapsed (sec):' . $t_elapsed;
 
 				$this->set_testcases_to_show($testcases_to_show);
 				
@@ -1733,8 +1728,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		                             $build_key => array('items' => null,
 		                                                 'selected' => $build_selection));
 
-		// new dBug($this->filters[$key]);
-		
 		// init menu for result selection by function from exec.inc.php
 		$this->filters[$key][$result_key]['items'] = createResultsMenu();
 		$this->filters[$key][$result_key]['items'][$any_result_key] = $this->option_strings['any'];
@@ -1766,5 +1759,22 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			$this->active_filters[$build_key] = $build_selection;
 		}
 	} // end of method
+	
+	
+	
+	/**
+	 *
+	 * @used-by __construct
+	 */
+	private function initTreeOptions()
+	{
+		$this->treeOpt['plan_mode'] = new stdClass();
+		$this->treeOpt['plan_mode']->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
+		$this->treeOpt['plan_mode']->useColours = COLOR_BY_TC_STATUS_OFF;
+		$this->treeOpt['plan_mode']->testcases_colouring_by_selected_build = DISABLED;
+		$this->treeOpt['plan_mode']->absolute_last_execution = true;  // hmm  probably useless
+		
+	}
+	
 } // end of class tlTestCaseFilterControl
 ?>

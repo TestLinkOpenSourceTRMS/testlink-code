@@ -5,26 +5,15 @@
  *
  * Test navigator for Test Plan
  *
- *
  * @filesource	planTCNavigator.php
  * @package 	TestLink
- * @author 		Martin Havlat
- * @copyright 	2003-2011, TestLink community
+ * @copyright 	2003-2012, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
  * @since 1.9.4	
  * 20110824 - franciscom - TICKET 4721: Left side tree manu - add specific navigator titles
  *
- * @since 1.9.1	
- * 20100708 - asimon - BUGID 3406
- * 20100628 - asimon - removal of constants from filter control class
- * 20160625 - asimon - refactoring for new filter features
- * 20100624 - asimon - CVS merge (experimental branch to HEAD)
- * 20100622 - asimon - huge refactorization for new tlTestCaseFilterControl class
- * 20100428 - asimon - BUGID 3301 and related issues - changed name or case
- *                     of some variables used in new common template, added filtering by custom fields
- * 20100202 - asimon - BUGID 2455, BUGID 3026
  **/
 
 require('../../config.inc.php');
@@ -33,14 +22,21 @@ require_once("users.inc.php");
 require_once("treeMenu.inc.php");
 require_once('exec.inc.php');
 
-testlinkInitPage($db);
+// Time tracking - 
+// $chronos[] = microtime(true);$tnow = end($chronos);
 
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
-$assignment_mgr = new assignment_mgr($db); // BUGID 3406
+$assignment_mgr = new assignment_mgr($db);
 $control = new tlTestCaseFilterControl($db, 'plan_mode');
 $gui = initializeGui($db, $control, $assignment_mgr);
 $control->build_tree_menu($gui);
+
+//$chronos[] = microtime(true);$tnow = end($chronos); $tprev = prev($chronos);
+//$t_elapsed = number_format( $tnow - $tprev, 4);
+//echo '<br> ' . __FUNCTION__ . ' Elapsed BEFORE RENDERING (sec) (xxx()):' . $t_elapsed .'<br>';
+//reset($chronos);	
 
 $smarty = new TLSmarty();
 

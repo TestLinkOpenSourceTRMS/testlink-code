@@ -5,18 +5,16 @@
  *
  * Displays the users' information and allows users to change their passwords and user info.
  *
+ * @filesource	userInfo.php
  * @package 	TestLink
  * @author 		-
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: userInfo.php,v 1.32 2010/10/08 15:18:13 mx-julian Exp $
+ * @copyright 	2007-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  *
- * @internal Revisions:
- *
- *	20101008 - Julian - reload navBar after changing personal data (localization)
- *	20100106 - franciscom - security improvement - checkDoAction()
- *                        - BUGID 3043 -  genApiKey -> genAPIKey
+ * @internal revisions
+ * @since 1.9.4
+ * 
  */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
@@ -64,12 +62,16 @@ switch($args->doAction)
 
 if($doUpdate)
 {
-    if(FALSE === form_security_validate('userinfo')) {
+    if(FALSE === form_security_validate('userinfo')) 
+    {
         $op->status = tl::ERROR;
         $op->user_feedback = lang_get('invalid_security_token');
-    } else {
+    } 
+    else 
+    {
     	$op->status = $user->writeToDB($db);
-    	if ($op->status >= tl::OK) {
+    	if ($op->status >= tl::OK) 
+    	{
     		logAuditEvent(TLS($op->auditMsg,$user->login),"SAVE",$user->dbID,"users");
     		$_SESSION['currentUser'] = $user;
     		setUserSession($db,$user->login, $args->userID, $user->globalRoleID, $user->emailAddress, $user->locale);

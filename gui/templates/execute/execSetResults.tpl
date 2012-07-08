@@ -19,8 +19,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {assign var="draw_submit_button" value=false}
 
 {assign var="show_current_build" value=0}
-{assign var="my_build_name" value=$gui->build_name|escape}
-
 {lang_get s='build' var='build_title'}
 
 {lang_get 

@@ -128,7 +128,7 @@ function validateForm(f)
 						<img class="clickable" src="{$tlImages.edit}"
 						     onclick="javascript:openTCaseWindow({$tcase.id});"
 						     title="{$labels.design}" />
-						{$gui->testCasePrefix|escape}{$tcase.external_id|esstyle="width=10px;"cape}{$gsmarty_gui->title_separator_1}{$tcase.name|escape}
+						{$gui->testCasePrefix|escape}{$tcase.external_id|escape}{$gsmarty_gui->title_separator_1}{$tcase.name|escape}
       			      </td>
   
                   <td style="text-align:center;">

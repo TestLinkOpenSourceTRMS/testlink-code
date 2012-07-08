@@ -798,19 +798,18 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         }
 
         $safe_value=$this->db->prepare_string($value);
-        // BUGID 3989
-        if($this->db->num_rows( $result ) > 0 && $value != "")
+        if($this->db->num_rows($result) > 0 && $value != "")
         {
 
           $sql = "/* $debugMsg */ UPDATE {$this->tables['cfield_design_values']} " .
                  " SET value='{$safe_value}' " .
     	         " WHERE field_id={$field_id} AND	node_id={$node_id}";
+		  
           $this->db->exec_query($sql);
         }
-        // BUGID 3989
         else if ($this->db->num_rows( $result ) == 0 && $value != "")
         {
-          # Remark got from Mantis code:
+          	# Remark got from Mantis code:
   		    # Always store the value, even if it's the dafault value
   		    # This is important, as the definitions might change but the
   		    #  values stored with a bug must not change
@@ -818,13 +817,13 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   				   " ( field_id, node_id, value ) " .
   				   " VALUES	( {$field_id}, {$node_id}, '{$safe_value}' )";
   		    $this->db->exec_query($sql);
-  		// BUGID 3989
-        } else if ($this->db->num_rows( $result ) > 0 && $value == "") {
+        } 
+        else if ($this->db->num_rows( $result ) > 0 && $value == "") 
+        {
   			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_design_values']} " .
   				   " WHERE field_id={$field_id} AND	node_id={$node_id}";
   			$this->db->exec_query($sql);
   		}
-  		
       } //foreach($cfield
     } //if( !is_null($cfield) )
 

@@ -10,24 +10,12 @@
  *
  * @internal revisions
  * @since 1.9.4
- *
  * 20120429 - franciscom - TICKET 4989: Reports - Overall Build Status - refactoring and final business logic
  *
- * @since 1.9.3
- *  20110405 - Julian - BUGID 4377 - Add percentage for "Results by top level Test Suites"
- *  20110326 - franciscom - BUGID 4355: General Test Plan Metrics - Build without executed 
- *										test cases are not displayed.
- *  20101018 - Julian - BUGID 2236 - Milestones Report broken - removed useless code
- *  20100811 - asimon - removed "results by assigned testers" table,
- *                      was replaced by new report "results by tester per build"
- *  20100621 - eloff - BUGID 3542 - fixed typo
- *  20100206 - eloff - BUGID 3060 - Show verbose priority statistics like other tables.
- *  20100201 - franciscom - BUGID 0003123: General Test Plan Metrics - order of columns
- *                                         with test case exec results
- * ----------------------------------------------------------------------------------- */
+ * 
+ */
 require('../../config.inc.php');
 require_once('common.php');
-require_once('results.class.php');
 require_once('displayMgr.php');
 testlinkInitPage($db,true,false,"checkRights");
 
@@ -67,8 +55,6 @@ $mailCfg = buildMailCfg($gui);
 
 $getOpt = array('outputFormat' => 'map');
 $gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
-
-// new dBug($gui->platformSet);
 if( is_null($gui->platformSet) )
 {
 	$gui->platformSet = array('');
@@ -76,38 +62,10 @@ if( is_null($gui->platformSet) )
 }
 
 
-// $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
-// $mapOfAggregate = $re->getAggregateMap();
-// new dBug($mapOfAggregate);
-// die();
-
 $metricsMgr = new tlTestPlanMetrics($db);
-                         
-//$kyw = $metricsMgr->getExecCountersByKeywordExecStatus($args->tplan_id);
-//$keywordsMetrics = $metricsMgr->getStatusTotalsByKeywordForRender($args->tplan_id);
-//new dBug($keywordsMetrics);
-//die();
-        
-// $pp = $metricsMgr->getExecCountersByPriorityExecStatus($args->tplan_id);                         
-// new dBug($pp);
-//die();
-                         
-//$tt = $metricsMgr->getExecCountersByTestSuiteExecStatus($args->tplan_id);                         
-//new dBug($tt);
-
-//$AA = $metricsMgr->getStatusTotalsByTestSuiteForRender($args->tplan_id);
-//new dBug($AA);
-
-//$BB = $metricsMgr->getStatusTotalsByTopLevelTestSuiteForRender($args->tplan_id);
-//new dBug($BB);
-
-// die();
-
-// -------------------------------------------------------------------------------------------
 $dummy = $metricsMgr->getStatusTotalsByTopLevelTestSuiteForRender($args->tplan_id);
 if(is_null($dummy))
 {
-	
 	// no test cases -> no report
 	$gui->do_report['status_ok'] = 0;
 	$gui->do_report['msg'] = lang_get('report_tspec_has_no_tsuites');
@@ -153,7 +111,8 @@ else
             	$dummy['details'][$status_verbose]['percentage'] = "[%]";
             }
           	$gui->columnsDefinition->$item = $dummy['details'];
-         } 
+         }
+         
   	} 
 	// ----------------------------------------------------------------------------
 
@@ -193,10 +152,8 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
 */
 function init_args()
 {
-	$iParams = array(
-		"tplan_id" => array(tlInputParameter::INT_N),
-		"format" => array(tlInputParameter::INT_N),
-	);
+	$iParams = array("tplan_id" => array(tlInputParameter::INT_N),
+					 "format" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
 	$pParams = G_PARAMS($iParams,$args);
@@ -212,28 +169,6 @@ function init_args()
     return $args;
 }
 
-/**
- * calculate percentage and format
- * 
- * @param int $total Total count
- * @param int $parameter a parameter count
- * @return string formatted percentage
- */
-function get_percentage($total, $parameter)
-{
-    if ($total > 0) 
-   		$percentCompleted = ($parameter / $total) * 100;
-	else 
-   		$percentCompleted = 0;
-
-	return number_format($percentCompleted,2);
-	
-}
-
-function checkRights(&$db,&$user)
-{
-	return $user->hasRight($db,'testplan_metrics');
-}
 
 /**
  * 
@@ -251,5 +186,8 @@ function buildMailCfg(&$guiObj)
 }
 
 
-
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_metrics');
+}
 ?>

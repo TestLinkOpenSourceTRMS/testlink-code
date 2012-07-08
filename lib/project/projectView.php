@@ -26,8 +26,7 @@ $gui->doAction = $args->doAction;
 $gui->canManage = has_rights($db,"mgt_modify_product");
 
 $tproject_mgr = new testproject($db);
-$gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map', 
-                                                         " ORDER BY nodes_hierarchy.name ");
+$gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map', " ORDER BY name ");
 
 $template2launch = $templateCfg->default_template;
 if(count($gui->tprojects) == 0)

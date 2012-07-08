@@ -3,49 +3,22 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @package TestLink
- * @author Erik Eloff
- * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.41 2010/11/07 09:44:59 mx-julian Exp $
- * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
+ * @package	TestLink
+ * @author 	Erik Eloff
+ * @copyright 2009,2012 TestLink community 
+ * @filesource exttable.class.php
  * @link http://www.teamst.org
  * @since 1.9
  *
- * @internal Revision:
- *  20101022 - Julian - BUGID 3979 - Use grid filters for exttables
- *  20100924 - asimon - made export ("download") button configurable
- *  20100921 - Julian - added stripeRows setting to getGridSettings(), default: enabled
- *	20100921 - eloff - refactor column index names
- *	20100830 - franciscom - buildColumns() refactored
- *							buildContent() minor refactored to avoid warnings on event viewer
- *	20100828 - eloff - Refactored rendering of status
- *	                   Add status behaviour as default
- *	20100826 - Julian - BUGID 3714 - new attribute $storeTableState
- *	20100824 - Julian - new attribute $toolbarRefreshButton
- *	20100823 - franciscom - getColumnIdxByName() - minor refactoring forcing exit with break
- *  20100823 - eloff - Add convinience methods setSortByColumnName and setGroupByColumnName
- *  				   Always store column config in full format(array-of-arrays)
- *  20100822 - asimon - new function getColumnIdxByName() to make sorting by column name possible
- *  20100819 - asimon - additional parameters (hidden, hideable, groupable) for req based report and other tables
- *  20100819 - Julian - MultiSort (BUGID 3694), default Values for Grid Settings, more Grid Settings
- * 	20100817 - Julian - default toolbar items, hideGroupedColumn
- *  20100816 - asimon - enable sorting by a default column via $sortByColumn
- *	20100719 - eloff - Pass $tableID via constructor
- *	20100719 - franciscom - changing default value for $groupByColumn
- *	20100716 - eloff - Allow grouping on any column
- *	20100715 - eloff - Add option for grouping on first column
- *	20100503 - franciscom - BUGID 3419 In "Test result matrix", tests statuses or not colorized
- *	20100423 - franciscom - refactoring to allow more flexibility
- *	20090909 - franciscom - changed to allow multiple tables
- *	new method renderCommonGlobals()
+ * @internal revisions
  * 
  **/
 
 require_once('table.class.php');
 
 /**
- * Helper class used for EXT-JS tables. There is an option to use custom type
- * in order to use custom rendering and sorting if needed.
+ * Helper class used for EXT-JS tables. 
+ * There is an option to use custom type in order to use custom rendering and sorting if needed.
  */
 class tlExtTable extends tlTable
 {
@@ -241,7 +214,8 @@ class tlExtTable extends tlTable
 				$s .= ",filter: {type: '{$column['filter']}',options: ['";
 				$s .= implode("','",$column['filterOptions']);
 				$s .= "']}";
-			} else if (isset($column['type']) && isset($this->customBehaviour[$column['type']]['filter'])) {
+			} 
+			else if (isset($column['type']) && isset($this->customBehaviour[$column['type']]['filter'])) {
 				// do not define a filter in this case. Special filters are applied later
 			} else {
 				// if no filter is specified use string filter

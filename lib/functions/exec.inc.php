@@ -202,9 +202,6 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
 	$tables['builds'] = DB_TABLE_PREFIX . 'builds';
 	
 	$bug_list=array();
-	
-	var_dump($bug_interface);
-	
 	if( is_object($bug_interface) )
 	{
 		$sql = 	"SELECT execution_id,bug_id,builds.name AS build_name " .
@@ -223,11 +220,8 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
 				$bug_list[$elem['bug_id']]['build_name'] = $elem['build_name'];
 			}
 		}
-		
-		var_dump($bug_list);
 	}
-	
-	
+
 	return($bug_list);
 }
 

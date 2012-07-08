@@ -100,18 +100,12 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	if( $my['options']['viewType'] == 'testSpecTree' )
 	{
 		$rr = generateTestSpecTreeNew($db,$tproject_id,$tproject_name,$linkto,$filters,$options);
-		$chronos[] = microtime(true);
-		$tnow = end($chronos);
-		$tprev = prev($chronos);
-		$t_elapsed = number_format( $tnow - $tprev, 4);
-		echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
-		reset($chronos);	
+		//$chronos[] = microtime(true); $tnow = end($chronos);$tprev = prev($chronos);
+		//$t_elapsed = number_format( $tnow - $tprev, 4);
+		//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
+		//reset($chronos);	
 		return $rr;
 	}
-	
-	
-	// new dBug($filters);
-	// new dBug($my['filters']);
 	
 	$treeMenu = new stdClass(); 
 	$treeMenu->rootnode = null;
@@ -144,13 +138,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	                    $filters['filter_toplevel_testsuite'] : null;
 	
 	$tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
-
-	/*
-	$test_spec = $tproject_mgr->get_subtree($tproject_id,testproject::RECURSIVE_MODE,
-		                                    testproject::INCLUDE_TESTCASES, $exclude_branches);
-
-	*/	
-	// new dBug($filters);
 	$test_spec = getTestSpecTree($tproject_id,$tproject_mgr,$filters);
 
 
@@ -347,8 +334,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     $tpNode = null;
 	if (!$tables)
 	{
-		// new dBug($tplan_tcases);
-		
   	    $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
         $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
 
@@ -777,9 +762,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $idx=0;
     $testCaseQty=0;
     $testCaseSet=null;
-   
-   
-    new dBug($filters);
   	
 	$keyword_id = 0;
 	$keywordsFilterType = 'Or';
@@ -859,26 +841,14 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	//$tnow = end($chronos);
 	//$tprev = prev($chronos);
     
-    /*
- 	
- 	$test_spec = $tree_manager->get_subtree($tproject_id,$my['filters'],$my['options']);
- 	*/
- 	// new dBug($my);
-    $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
- 	//echo 'BEFORE';
- 	
- 	//echo 'AF';
- 	//new dBug($test_spec);
- 	//die();
+ $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
  	
  	
  	// Take Time
- 	$chronos[] = microtime(true);
-	$tnow = end($chronos);
-	$tprev = prev($chronos);
-	$t_elapsed = number_format( $tnow - $tprev, 4);
-	echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
-	reset($chronos);	
+ 	//$chronos[] = microtime(true);	$tnow = end($chronos);	$tprev = prev($chronos);
+	//$t_elapsed = number_format( $tnow - $tprev, 4);
+	//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
+	//reset($chronos);	
 
      
 	$test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
@@ -887,7 +857,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$map_node_tccount = array();
 	
 	$tplan_tcases = null;
-    $apply_other_filters=true;
+  $apply_other_filters=true;
 
 
 	if($test_spec)
@@ -923,22 +893,13 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	                        			 $options->absolute_last_execution : false;
 			}
 			$linkedFilters['tcase_name'] = isset($filters->filter_testcase_name) ? $filters->filter_testcase_name : null; 
-				
-			echo 'DEBUG' . __FUNCTION__ . '<br>';
-			new dBug($linkedFilters);
-			new dBug($opt);
-									
 			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
-			//new dBug($tplan_tcases);
 			
 		 	// Take Time
-		 	$chronos[] = microtime(true);
-			$tnow = end($chronos);
-			$tprev = prev($chronos);
-			$t_elapsed = number_format( $tnow - $tprev, 4);
-			echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER get_ln_tcversions()</b>):' . $t_elapsed .'<br>';
-			reset($chronos);	
-
+		 	//$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
+			//$t_elapsed = number_format( $tnow - $tprev, 4);
+			//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER get_ln_tcversions()</b>):' . $t_elapsed .'<br>';
+			//reset($chronos);	
 
 			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'And')
 			{
@@ -948,13 +909,16 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 				// then get_*_tcversions() thinks there are just no filters set,
 				// but really there are no testcases which match the wanted keyword criteria,
 				// so we have to set $tplan_tcases to null because there is no more filtering necessary
-				if ($filteredSet != null) {
+				if ($filteredSet != null) 
+        {
 					$linkedFilters = array('tcase_id' => array_keys($filteredSet));
 					
 					// TICKET 4710
 					$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
 					
-				} else {
+				} 
+				else 
+				{
 					$tplan_tcases = null;
 				}
 			}
@@ -1105,10 +1069,8 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
 
 	$node_type = $hash_id_descr[$node['node_type_id']];
 	$menustring = '';
-    echo 'FCFCFC';
 	if(!$resultsCfg)
 	{ 
-		echo 'DDD?';
 		$doColouringOn['testcase'] = 1;
 		$doColouringOn['counters'] = 1;
 		if( !is_null($useColors) )
@@ -1167,13 +1129,10 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
 		break;
 
 		default:
-			echo 'USING DEF<br>';
 			$pfn = "ST";
 		break;
 	}
 	
-	// $node['text'] = $label;
-	echo $pfn . '<br>';
 	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
 	$node['href'] = is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$versionID})";
 
@@ -1481,8 +1440,6 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
  */
 function filterStatusSetAtLeastOneOfActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
-	echo __METHOD__;
-	
 	$safe_platform = intval($filters->setting_platform);
 	$buildSet = array_keys($tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
 	if( !is_null($buildSet) ) 
@@ -1494,7 +1451,6 @@ function filterStatusSetAtLeastOneOfActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_
 		}
 		else
 		{
-			echo '<b><br>ALOP</b><br>';
 			$hits = $tplan_mgr->getHitsSameStatusPartialALOP($tplan_id,(array)$filters->filter_result_result); 
 		}
 		
@@ -1536,7 +1492,6 @@ function filterStatusSetAtLeastOneOfActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_
  */
 function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
-	echo '<h1>' . __METHOD__ . '</h1>';
 	$buildSet = array_keys($tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
 	if( !is_null($buildSet) ) 
 	{
@@ -1552,9 +1507,6 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
 			$hits = $tplan_mgr->getHitsSameStatusFullALOP($tplan_id,
 													  	  (array)$filters->filter_result_result,$buildSet);
 		}
-
-		echo '<h1> hits </h1>';
-		new dBug($hits);
 		if( is_null($hits) ) 
 		{
 			$tcase_set = array();
@@ -1583,8 +1535,6 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
  */
 function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
-	echo __METHOD__;
-	
 	$safe_platform = intval($filters->setting_platform);
 	$safe_build = intval($filters->filter_result_build);
 	if( $safe_platform > 0)
@@ -1595,7 +1545,6 @@ function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters)
 	}
 	else
 	{
-		echo '<br>ALOP<br>';
 		$hits = $tplan_mgr->getHitsStatusSetOnBuildALOP($tplan_id,$safe_build,
 														(array)$filters->filter_result_result);
 	}
@@ -2197,10 +2146,6 @@ function apply_status_filters($tplan_id,&$items,&$fobj,&$tplan_mgr,$statusCfg)
 	$f_method = isset($fobj->filter_result_method) ? $fobj->filter_result_method : null;
 	$f_result = isset($fobj->filter_result_result) ? $fobj->filter_result_result : null;
 	$f_result = (array)$f_result;
-
-	echo __METHOD__ . '<br>';
-	// new dBug($methods);
-	new dBug($fobj);
 	
 	// if "any" was selected as filtering status, don't filter by status
 	if (in_array($statusCfg['all'], $f_result)) 
@@ -2287,7 +2232,6 @@ function update_status_for_colors(&$dbHandler,&$items,$context,$statusCfg)
 
 function generateTestSpecTreeNEW(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
-	// echo __FUNCTION__;
 		$chronos[] = microtime(true);
 	
 	$tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
@@ -2302,7 +2246,6 @@ function generateTestSpecTreeNEW(&$db,$tproject_id, $tproject_name,$linkto,$filt
 
 	$my['options'] = array_merge($my['options'], (array)$options);
 	$my['filters'] = array_merge($my['filters'], (array)$filters);
-	// new dBug($my['filters']);
 	
 	$treeMenu = new stdClass(); 
 	$treeMenu->rootnode = null;
@@ -2327,18 +2270,10 @@ function generateTestSpecTreeNEW(&$db,$tproject_id, $tproject_name,$linkto,$filt
 
 	$tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
 	$test_spec = getTestSpecTree($tproject_id,$tproject_mgr,$filters);
-		$chronos[] = microtime(true);
-		$tnow = end($chronos);
-		$tprev = prev($chronos);
-		$t_elapsed = number_format( $tnow - $tprev, 4);
-		echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
-		reset($chronos);
-		//new dBug($test_spec);
-		//die('AFTER get TEST SPEC');	
-
-
-	// new dBug($test_spec);
-	
+	//$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
+	//$t_elapsed = number_format( $tnow - $tprev, 4);
+	//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
+	//reset($chronos);
 
 	// Added root node for test specification -> testproject
 	$test_spec['name'] = $tproject_name;
@@ -2366,12 +2301,10 @@ function generateTestSpecTreeNEW(&$db,$tproject_id, $tproject_name,$linkto,$filt
 		$testcase_counters = prepareTestSpecNode($tproject_mgr,$tproject_id,$test_spec,$map_node_tccount,
 												 $pnFilters,$pnOptions);
 
-		$chronos[] = microtime(true);
-		$tnow = end($chronos);
-		$tprev = prev($chronos);
-		$t_elapsed = number_format( $tnow - $tprev, 4);
-		echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
-		reset($chronos);	
+		//$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
+		//$t_elapsed = number_format( $tnow - $tprev, 4);
+		//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
+		//reset($chronos);	
 
 		if( is_null($test_spec) )
 		{
@@ -2486,13 +2419,9 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
 		$flt['execution_type'] = intval($fObj['filter_execution_type']);
 	}
 	
-	// new dBug($fObj);
-	
 	$opt = array('recursive' => true,'exclude_testcases' => false);
 	$items = $tprojectMgr->getTestSpec($tprojectID,$flt,$opt); 
 
-	// new dBug($items);
-	// die();
 	return $items;
 }
 

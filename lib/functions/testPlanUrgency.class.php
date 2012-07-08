@@ -20,7 +20,7 @@
  */ 
 
 /** parent class */
-require_once('testplan.class.php');
+// require_once('testplan.class.php');
 
 /** 
  * Class testPlanUrgency extends testPlan functionality by Test Urgency functions 
@@ -30,7 +30,7 @@ require_once('testplan.class.php');
  * @author 	Martin Havlat
  * @since 	1.8 - 17.7.2008
  */
-class testPlanUrgency extends testPlan
+class testPlanUrgency extends testplan
 {
 	/**
 	 * Set Test urgency for test case version in a Test Plan
@@ -198,7 +198,6 @@ class testPlanUrgency extends testPlan
 				case 'tcversion':
 					foreach($key2loop as $key)
 					{
-						//BUGID 4418 - clean up priority usage
 						$rs[$key]['priority_level'] = priority_to_level($rs[$key]['priority']);
 					}
 				break;
@@ -209,7 +208,6 @@ class testPlanUrgency extends testPlan
 						$platformSet = array_keys($rs[$key]);
 						foreach($platformSet as $platform_id) 
 						{
-							//BUGID 4418 - clean up priority usage
 							$rs[$key][$platform_id]['priority_level'] = priority_to_level($rs[$key][$platform_id]['priority']);
 						}
 					}

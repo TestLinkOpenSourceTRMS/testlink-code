@@ -28,6 +28,7 @@ $templateCfg = templateConfiguration();
 
 $args = init_args($tplan_mgr);
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
+
 $keywordsFilter = null;
 if(is_array($args->keyword_id))
 {
@@ -63,7 +64,7 @@ switch($args->level)
 		break;
 
 	case 'testplan':
-        $itemSet = processTestPlan($db,$args,$keywordsFilter,$tplan_mgr);
+        $itemSet = processTestPlan($db,$args,$tplan_mgr);
         $gui->testcases = $itemSet['items'];
         $gui->user_feedback = $itemSet['msg'];
 		$gui->instructions = lang_get('update2latest');
@@ -126,7 +127,6 @@ function init_args(&$tplanMgr)
     $args->tproject_id = $_SESSION['testprojectID'];
     $args->tproject_name = $_SESSION['testprojectName'];
 
-    // BUGID 3516
 	// For more information about the data accessed in session here, see the comment
 	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
@@ -137,10 +137,13 @@ function init_args(&$tplanMgr)
 	                ? $_SESSION[$mode][$form_token] : null;
 	
 	$args->tplan_id = isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0;
-	if($args->tplan_id == 0) {
+	if($args->tplan_id == 0) 
+	{
 		$args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
 		$args->tplan_name = $_SESSION['testplanName'];
-	} else {
+	} 
+	else 
+	{
 		$tpi = $tplanMgr->get_by_id($args->tplan_id);  
 		$args->tplan_name = $tpi['name'];
 	}
@@ -150,16 +153,19 @@ function init_args(&$tplanMgr)
     
     $args->keyword_id = 0;
 	$fk = 'filter_keywords';
-	if (isset($session_data[$fk])) {
+	if (isset($session_data[$fk])) 
+	{
 		$args->keyword_id = $session_data[$fk];
-		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
+		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) 
+		{
 			$args->keyword_id = $args->keyword_id[0];
 		}
 	}
 	
 	$args->keywordsFilterType = null;
 	$ft = 'filter_keywords_filter_type';
-	if (isset($session_data[$ft])) {
+	if (isset($session_data[$ft])) 
+	{
 		$args->keywordsFilterType = $session_data[$ft];
 	}
 	
@@ -236,8 +242,8 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 */
 function processTestSuite(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tcaseMgr)
 {
-    $filters = array('keywordsFilter' => $keywordsFilter);
-    $out = getFilteredSpecView($dbHandler,$argsObj,$tplanMgr,$tcaseMgr,$filters);
+	// hmm  need to document why we use ONLY $keywordsFilter
+    $out = getFilteredSpecView($dbHandler,$argsObj,$tplanMgr,$tcaseMgr,array('keywordsFilter' => $keywordsFilter));
 	tideUpForGUI($out);
     return $out;
 }
@@ -254,8 +260,6 @@ function processTestSuite(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tca
 function doUpdateAllToLatest(&$dbObj,$argsObj,&$tplanMgr)
 {
   $qty=0;
-  // 
-  // $linkedItems=$tplanMgr->get_linked_tcversions($argsObj->tplan_id);
   $linkedItems = $tplanMgr->get_linked_items_id($argsObj->tplan_id);
   if( is_null($linkedItems) )
   {
@@ -315,20 +319,19 @@ function doUpdateAllToLatest(&$dbObj,$argsObj,&$tplanMgr)
  */
 function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$treeMgr)
 {
+    $xx = $tplanMgr->getLinkInfo($argsObj->tplan_id,$argsObj->id,null,
+    							 array('output' => 'tcase_info', 'collapse' => true));
+	$linked_items[$xx['tc_id']][0] = $xx; // adapt data structure to gen_spec_view() desires
+	
 	$my_path = $treeMgr->get_path($argsObj->id);
 	$idx_ts = count($my_path)-1;
 	$tsuite_data = $my_path[$idx_ts-1];
-	$filters = array('tcase_id' => $argsObj->id);
-	$opt = array('last_execution' => true, 'details' => 'spec_essential');
-	$dummy_items = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters,$opt);		
 
-	// adapt data structure to gen_spec_view() desires
-	$linked_items[key($dummy_items)][0] = current($dummy_items);
+	// Again here need to understand why we seems to consider ONLY keywords filter.
 	$filters = array('keywords' => $argsObj->keyword_id, 'testcases' => $argsObj->id);
 	$opt = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
 	$out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 	                     $linked_items,null,$filters,$opt);
-
 
 	// need new processing
 	tideUpForGUI($out);
@@ -339,24 +342,20 @@ function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tree
  * 
  *
  * @internal revisions:
- *  20100726 - asimon - fixed bug: "All linked Test Case Versions are current" 
- *                      was always displayed on bulk update of linked versions 
- *                      even when there were newer versions of linked TCs
  */
-function processTestPlan(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr)
+function processTestPlan(&$dbHandler,&$argsObj,&$tplanMgr)
 {
 	$set2update = array('items' => null, 'msg' => '');
-    $filters = array('keywords' => $argsObj->keyword_id);
-	$linked_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters);
 	$set2update['msg'] = lang_get('testplan_seems_empty');
-    if( count($linked_tcases) > 0 )
+	$check = $tplanMgr->getLinkedCount($argsObj->tplan_id);
+	
+    $set2update['items'] = $tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id);
+    if( count($set2update['items']) > 0 )
     {
-        $testCaseSet = array_keys($linked_tcases);
-    	$set2update['items'] = $tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id,$testCaseSet);
-		// 20100726 - asimon
-		$set2update['msg'] = '';
+		$set2update['msg'] = lang_get('no_newest_version_of_linked_tcversions');
 		if( !is_null($set2update['items']) && count($set2update['items']) > 0 )
 		{
+			$set2update['msg'] = '';
 			$itemSet=array_keys($set2update['items']);
 			$path_info=$tplanMgr->tree_manager->get_full_path_verbose($itemSet);
 			foreach($set2update['items'] as $tcase_id => $value)
@@ -366,10 +365,7 @@ function processTestPlan(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr)
 				$path[]='';
 				$set2update['items'][$tcase_id]['path']=implode(' / ',$path);
 			}
-		} else {
-			// 20100726 - asimon
-			$set2update['msg'] = lang_get('no_newest_version_of_linked_tcversions');
-		}
+		} 
     }
     return $set2update;
 }

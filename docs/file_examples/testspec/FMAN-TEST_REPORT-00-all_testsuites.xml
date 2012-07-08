@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="" >
+<node_order><![CDATA[]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="TS100" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="TS100.1" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details>
+<testcase internalid="18588" name="TC1A">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[1]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[1]]></importance>
+
+<keywords><keyword name="K1"><notes><![CDATA[
+
+]]></notes></keyword>
+<keyword name="K2"><notes><![CDATA[
+
+]]></notes></keyword>
+</keywords></testcase>
+
+<testcase internalid="18590" name="TC1B">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[2]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+<keywords><keyword name="K1"><notes><![CDATA[
+
+]]></notes></keyword>
+<keyword name="K2"><notes><![CDATA[
+
+]]></notes></keyword>
+<keyword name="K3"><notes><![CDATA[
+
+]]></notes></keyword>
+</keywords></testcase>
+</testsuite></testsuite><testsuite name="TS200" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="TS200.1" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details>
+<testcase internalid="18592" name="TC2X">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[3]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+<keywords><keyword name="K2"><notes><![CDATA[
+
+]]></notes></keyword>
+</keywords></testcase>
+
+<testcase internalid="18594" name="TC2Y">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[4]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[3]]></importance>
+
+<keywords><keyword name="K2"><notes><![CDATA[
+
+]]></notes></keyword>
+</keywords></testcase>
+</testsuite></testsuite></testsuite>

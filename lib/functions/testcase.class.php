@@ -2599,12 +2599,14 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function addKeyword($id,$kw_id,$audit=self::AUDIT_ON)
 	{
+		// if keyword is already assigned, we just say good bye
 		$kw = $this->getKeywords($id,$kw_id);
 		if (sizeof($kw))
 		{
 			return 1;
 		}
 		
+		// Ok, ho ahead
 		$sql = " INSERT INTO {$this->tables['testcase_keywords']} (testcase_id,keyword_id) " .
 			   " VALUES ($id,$kw_id)";
 	

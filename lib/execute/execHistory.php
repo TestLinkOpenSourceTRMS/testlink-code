@@ -25,9 +25,10 @@ $node['basic'] = $tcase_mgr->tree_manager->get_node_hierarchy_info($args->tcase_
 $node['specific'] = $tcase_mgr->getExternalID($args->tcase_id); 
 $idCard = $node['specific'][0] . ' : ' . $node['basic']['name'];
 
-// $linkedItems = $tcase_mgr->get_linked_versions($args->tcase_id,null,array('output' => 'minimal'));
-$gui->execSet = $tcase_mgr->getExecutionSet($args->tcase_id);
 
+// IMPORTANT NOTICE:
+// getExecutionSet() consider only executions written to DB.
+$gui->execSet = $tcase_mgr->getExecutionSet($args->tcase_id);
 $gui->warning_msg = (!is_null($gui->execSet)) ? '' : lang_get('tcase_never_executed');
 $gui->user_is_admin = ($_SESSION['currentUser']->globalRole->name=='admin') ? true : false;
 $gui->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -40,7 +41,7 @@ if(!is_null($gui->execSet) )
 {
 	$gui->execPlatformSet = $tcase_mgr->getExecutedPlatforms($args->tcase_id);
 
-	// bugs
+	// bugs - STILL NEED REFACTORING
 	if(config_get('interface_bugs') != 'NO')
 	{
 		// need to understand why I need to do the include here and can not do
@@ -56,9 +57,7 @@ if(!is_null($gui->execSet) )
 	
 }
 
-// new dBug($gui);
 $gui->displayPlatformCol = !is_null($gui->execPlatformSet) ? 1 : 0;
-
 $gui->main_descr = lang_get('execution_history');
 $gui->detailed_descr = lang_get('test_case') . ' ' . $idCard;
 $smarty = new TLSmarty();

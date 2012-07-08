@@ -63,7 +63,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 	$cfg = config_get('results');
 
 	$metricsMgr = new tlTestPlanMetrics($db);
-	$metrics = $metricsMgr->getNotRunWoTesterAssigned($args->tplan_id,null,
+	$metrics = $metricsMgr->getNotRunWoTesterAssigned($args->tplan_id,null,null,
 													  array('output' => 'array', 'ignoreBuild' => true));
 
 	//new dBug($metrics);

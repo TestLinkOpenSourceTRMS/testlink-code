@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+  <testcase external_id="FP-1" >
+    <!-- if not present logged user  will be used -->
+    <!-- tester LOGIN Name -->
+    <tester>u0113</tester>  
+    <!-- if not present now() will be used -->
+    <timestamp>2008-09-08 14:00:00</timestamp>  
+    <result>p</result>
+    <notes>functionality works great </notes>
+  </testcase>
+</results>

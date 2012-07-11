@@ -20,7 +20,8 @@
  * 
  *
  * @internal revisions 
- * @since 1.9.4
+ * @since 1.9.4             
+ * 20120711 - franciscom - TICKET 5087: use tcase_id in order to provide complete error message
  * 20111226 - franciscom - TICKET 4843: 'getTestCasesForTestPlan' - add support for new argument 'details'
  * 20111024 - franciscom - TICKET 4774: New methods to manage test case steps
  * 20111023 - franciscom - getTestCase(), added key on result 'full_tc_external_id' that will hold
@@ -1047,27 +1048,35 @@ class TestlinkXMLRPCServer extends IXR_Server
         	$plat = is_null($platform_id) ? 0 : $platform_id; 
             $this->versionNumber = $dummy[$tplan_id][$plat]['version'];
             
-            // $this->errors[] = $this->tcVersionID;
-            // $this->errors[] = $this->versionNumber;
-        	// $status_ok = false;    
         }
         else
         {
             $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
-            $tcase_info = $this->tcaseMgr->get_by_id($tcase_id);
+            $tcase_info = $this->tcaseMgr->get_by_id($tcase_id,testcase::ALL_VERSIONS,null,
+            										 array('output' => 'essential',));
             
+            // TICKET 5087
+            //if( !isset($this->args[self::$testCaseExternalIDParamName]))
+            //{
+            //	$dummy = $this->tcaseMgr->getPrefix($tcase_id);
+    	    //	$ext_id = $dummy[0] . config_get('testcase_cfg')->glue_character . 
+    	    //			  $tcase_info[0]['tc_external_id'];
+            //}
+            //else
+            //{
+            //	$ext_id = $this->args[self::$testCaseExternalIDParamName];
+            //}
             if( is_null($platform_id) )
             {
             	$msg = sprintf(TCASEID_NOT_IN_TPLANID_STR,$tcase_info[0]['name'],
-            	               $this->args[self::$testCaseExternalIDParamName],$tplan_info['name'],$tplan_id);          
+            	               $tcase_id,$tplan_info['name'],$tplan_id);          
             	$this->errors[] = new IXR_Error(TCASEID_NOT_IN_TPLANID, $msg);
             }
             else
             {
             	
             	$msg = sprintf(TCASEID_NOT_IN_TPLANID_FOR_PLATFORM_STR,$tcase_info[0]['name'],
-            	               $this->args[self::$testCaseExternalIDParamName],
-            	               $tplan_info['name'],$tplan_id,$platformInfo[$platform_id],$platform_id);          
+            	               $tcase_id,$tplan_info['name'],$tplan_id,$platformInfo[$platform_id],$platform_id);          
             	$this->errors[] = new IXR_Error(TCASEID_NOT_IN_TPLANID_FOR_PLATFORM, $msg);
             }
         }
@@ -2155,7 +2164,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 	        {  
 	        	  if ($fromInternal)
 	        	  {
-	        	  	$my_errors[] = new IXR_Error(INVALID_TCASEID, $messagePrefix . INVALID_TCASEID_STR);
+	        	  	$my_errors[] = new IXR_Error(INVALID_TCASEID,
+	        	  								 sprintf($messagePrefix . INVALID_TCASEID_STR,$tcaseID));
 	        	  } 
 	        	  elseif ($fromExternal)
 	        	  {

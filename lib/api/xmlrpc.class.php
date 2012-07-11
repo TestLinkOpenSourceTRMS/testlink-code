@@ -1787,8 +1787,6 @@ class TestlinkXMLRPCServer extends IXR_Server
   		    {
   		        $optional[$key]=$this->_isParamPresent($key) ? trim($this->args[$key]) : '';
   		    }
-  
-            // 20091128 - franciscom
             if( $optional[self::$testCasePathNameParamName] != '' )
             {
           		$dummy = $testCaseMgr->getByPathName($optional[self::$testCasePathNameParamName]);
@@ -1802,13 +1800,26 @@ class TestlinkXMLRPCServer extends IXR_Server
           		$result = $testCaseMgr->get_by_name($testCaseName,$optional[self::$testSuiteNameParamName],
             	                                    $optional[self::$testProjectNameParamName]);
           	}
-          	if(0 == sizeof($result))
-          	{
-          	    $status_ok=false;
-          	    $this->errors[] = new IXR_ERROR(NO_TESTCASE_BY_THIS_NAME, 
-          	                                    $msg_prefix . NO_TESTCASE_BY_THIS_NAME_STR);
-          	    return $this->errors;
-          	}
+
+			$match_count = count($result);
+			switch($match_count)
+			{
+				case 0:
+	          	    $status_ok = false;
+    	      	    $this->errors[] = new IXR_ERROR(NO_TESTCASE_BY_THIS_NAME, 
+        	  	                                    $msg_prefix . NO_TESTCASE_BY_THIS_NAME_STR);
+				break;
+
+				case 1:
+	          	    $status_ok = true;
+				break;
+				
+				default:
+					// multiple matches.
+	          	    $status_ok = true;
+				break;
+				
+			}
       }
       return $status_ok ? $result : $this->errors; 
   }

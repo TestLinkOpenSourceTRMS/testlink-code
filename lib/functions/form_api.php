@@ -13,6 +13,10 @@
  * @copyright Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
  * @copyright Copyright (C) 2002 - 2012  MantisBT Team - mantisbt-dev@lists.sourceforge.net
  * @link http://www.teamst.org/
+ * @since 1.9.4
+ *
+ * @internal revisions
+ * 20120712 - franciscom - add isset() on each use of $t_tokens
  */
 
 require_once 'common.php';
@@ -36,16 +40,19 @@ function form_action_self() {
  * @param string Form name
  * @return string Security token string
  */
-function form_security_token( $p_form_name ) {
+function form_security_token( $p_form_name ) 
+{
     // TBD: verify if we should implement similar verification
-// 	if ( PHP_CLI == php_mode() || OFF == config_get_global( 'form_security_validation' ) ) {
-// 		return '';
-// 	}
+	// 	if ( PHP_CLI == php_mode() || OFF == config_get_global( 'form_security_validation' ) ) {
+	// 		return '';
+	// 	}
+    
     doSessionStart();
-	$t_tokens = $_SESSION['form_security_tokens'];
+	$t_tokens = isset($_SESSION['form_security_tokens']) ? $_SESSION['form_security_tokens'] : null;
 
 	# Create a new array for the form name if necessary
-	if( !isset( $t_tokens[$p_form_name] ) || !is_array( $t_tokens[$p_form_name] ) ) {
+	if( !isset($t_tokens[$p_form_name]) || !is_array($t_tokens[$p_form_name]) ) 
+	{
 		$t_tokens[$p_form_name] = array();
 	}
 
@@ -55,12 +62,13 @@ function form_security_token( $p_form_name ) {
 	$t_string = $t_date . sha1( time() . mt_rand() );
 
 	# Add the token to the user's session
-	if ( !isset( $t_tokens[$p_form_name][$t_date] ) ) {
+	if ( !isset( $t_tokens[$p_form_name][$t_date] ) ) 
+	{
 		$t_tokens[$p_form_name][$t_date] = array();
 	}
 
 	$t_tokens[$p_form_name][$t_date][$t_string] = true;
-	$_SESSION['form_security_tokens'] =$t_tokens;
+	$_SESSION['form_security_tokens'] = $t_tokens;
 
 	# The token string
 	return $t_string;
@@ -115,13 +123,15 @@ function form_security_param( $p_form_name ) {
  * @param string Form name
  * @return boolean Form is valid
  */
-function form_security_validate( $p_form_name ) {
+function form_security_validate( $p_form_name ) 
+{
     // TBD: verify if we should implement similar verification
-// 	if ( PHP_CLI == php_mode() || OFF == config_get_global( 'form_security_validation' ) ) {
-// 		return true;
-// 	}
+	// 	if ( PHP_CLI == php_mode() || OFF == config_get_global( 'form_security_validation' ) ) {
+	// 		return true;
+	// 	}
+
     doSessionStart();
-	$t_tokens = $_SESSION['form_security_tokens'];
+	$t_tokens = isset($_SESSION['form_security_tokens']) ? $_SESSION['form_security_tokens'] : null;
 
 	# Short-circuit if we don't have any tokens for the given form name
 	if( !isset( $t_tokens[$p_form_name] ) || !is_array( $t_tokens[$p_form_name] ) || count( $t_tokens[$p_form_name] ) < 1 ) {
@@ -159,13 +169,14 @@ function form_security_validate( $p_form_name ) {
  * for form validation.
  * @param string Form name
  */
-function form_security_purge( $p_form_name ) {
+function form_security_purge( $p_form_name ) 
+{
 	if ( PHP_CLI == php_mode() || OFF == config_get_global( 'form_security_validation' ) ) {
 		return;
 	}
     
 	doSessionStart();
-	$t_tokens = $_SESSION['form_security_tokens'];
+	$t_tokens = isset($_SESSION['form_security_tokens']) ? $_SESSION['form_security_tokens'] : null;
 
 	# Short-circuit if we don't have any tokens for the given form name
 	if( !isset( $t_tokens[$p_form_name] ) || !is_array( $t_tokens[$p_form_name] ) || count( $t_tokens[$p_form_name] ) < 1 ) {

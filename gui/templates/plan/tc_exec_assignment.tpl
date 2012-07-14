@@ -1,13 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-@filesource tc_exec_assignment.tpl
+
 generate the list of TC that can be removed from a Test Plan 
 
+@filesource tc_exec_assignment.tpl
 @internal revisions
-20110706 - Julian - BUGID 4652 - add link to test execution history
-                  - put test case id and test case name in one column to not waste space
-20110618 - franciscom - TICKET 4624: bulk assignment KO if "Send mail notification to tester" is checked
-20110523 - Julian - Added linked test case version to test case link
 *}
 
 {lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
@@ -23,9 +20,9 @@ generate the list of TC that can be removed from a Test Plan
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-// BUGID 3943: Escape all messages (string)
-	var check_msg="{$labels.exec_assign_no_testcase|escape:'javascript'}";
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
+// Escape all messages (string)
+var check_msg="{$labels.exec_assign_no_testcase|escape:'javascript'}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
 {literal}
 
 loop2do=0;   // needed for the convert grid logic
@@ -80,7 +77,6 @@ function check_action_precondition(container_id,action)
 			{else}
 			<input type="hidden" id="select_platform" value="0">
 			{/if}
-			{* TICKET 4624 *}
 			<button onclick="cs_all_checkbox_in_div_with_platform('tc_exec_assignment_cb', '{$add_cb}', Ext.get('select_platform').getValue()); return false">{$labels.btn_do}</button>
 		</div>
 		<div>
@@ -107,7 +103,7 @@ function check_action_precondition(container_id,action)
 	</div> <!-- header-wrap -->
 
   {if $gui->has_tc}
-   <div class="workBack" id="tc_exec_assignment_cb"> {* TICKET 4624 *}
+   <div class="workBack" id="tc_exec_assignment_cb">
 	  {assign var=table_counter value=0}
 	  {assign var=top_level value=$gui->items[0].level}
 	  {foreach from=$gui->items item=ts key=idx name="div_drawing"}
@@ -117,10 +113,11 @@ function check_action_precondition(container_id,action)
 	      <div id="{$div_id}" style="margin-left:{$ts.level}0px; border:1;">
         <br />
         {* check/uncheck on ALL contained test suites is implemented with this clickable image *}
-	      <h3 class="testlink"><img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+	      <h3 class="testlink"><img class="clickable" src="{$tlImages.toggle_all}"
 			                            onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_","add_value_{$ts_id}");'
                                   title="{$labels.check_uncheck_children_checkboxes}" />
         {$ts.testsuite.name|escape}
+        toggle_all
 	      </h3>
 
         {* used as memory for the check/uncheck all checkbox javascript logic *}
@@ -135,7 +132,7 @@ function check_action_precondition(container_id,action)
 			      <thead>
 			      <tr style="background-color:#059; font-weight:bold; color:white">
 			      	<th width="35px" align="center">
-			          <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+			          <img class="clickable" src="{$tlImages.toggle_all}"
 			               onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_{$ts_id}_","add_value_{$ts_id}");'
                      title="{$labels.check_uncheck_all_checkboxes}" />
 			      	</th>
@@ -159,8 +156,8 @@ function check_action_precondition(container_id,action)
               {foreach from=$tcase.feature_id key=platform_id item=feature}
                 {if $tcase.linked_version_id != 0}
                   {assign var="userID" value=0}
-           	    	{if isset($tcase.user_id[$platform_id])}
-            	    	  {assign var="userID" value=$tcase.user_id[$platform_id]} 
+           	      {if isset($tcase.user_id[$platform_id])}
+            	  	{assign var="userID" value=$tcase.user_id[$platform_id]} 
                   {/if} 
             	    <tr>
             	    	<td>
@@ -175,14 +172,13 @@ function check_action_precondition(container_id,action)
                   			                     value="{$tcase.feature_id[$platform_id]}" />
             	    	</td>
             	    	<td>
-            	    		<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+            	    		<img class="clickable" src="{$tlImages.history_small}"
             	    		     onclick="javascript:openExecHistoryWindow({$tcase.id});"
             	    		     title="{$labels.execution_history}" />
-            	    		{* BUGID 4636 add execution and edit icon to open specific content in popup *}
-            	    		<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/exec_icon.png"
+            	    		<img class="clickable" src="{$tlImages.exec_icon}"
             	    		     onclick="javascript:openExecutionWindow({$tcase.id},{$tcase.linked_version_id},{$gui->build_id},{$gui->tplan_id},{$platform_id});"
             	    		     title="{$labels.execution}" />
-            	    		<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+            	    		<img class="clickable" src="{$tlImages.edit}"
             	    		     onclick="javascript:openTCaseWindow({$tcase.id},{$tcase.linked_version_id});"
             	    		     title="{$labels.design}" />
             	    		{$gui->testCasePrefix|escape}{$tcase.external_id|escape}{$gsmarty_gui->title_separator_1}{$tcase.name|escape}

@@ -11,6 +11,7 @@
  *
  */
 require_once('../../config.inc.php');
+require_once('common.php');
 require_once('charts.inc.php');
 testlinkInitPage($db,true,false,"checkRights");
 

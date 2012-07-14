@@ -1,18 +1,13 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: charts.inc.php,v 1.6 2010/09/14 19:44:24 franciscom Exp $ 
- *
+ * @filesourece	charts.inc.php
  * @author	Francisco Mancardi - francisco.mancardi@gmail.com
- *
  * @internal revisions
  *
- * 20100912 - franciscom - BUGID 2215
- * 20081113 - franciscom - BUGID 1848
  *
  */
 require_once('../../config.inc.php');
-require_once('results.class.php');
 define('PCHART_PATH','../../third_party/pchart');
 include_once(PCHART_PATH . "/pChart/pData.class");   
 include_once(PCHART_PATH . "/pChart/pChart.class");   

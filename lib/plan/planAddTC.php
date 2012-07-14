@@ -209,14 +209,9 @@ if($do_display)
 	// Filters regarding this kind of attributes WILL BE NOT APPLIEDED to get linked items
 	// In this way counters on Test Spec Tree and amount of TC displayed on right pane will be coherent.
 	// 
-	
-	// new dBug($args);
-	// new dBug($tplan_mgr->get_ln_tcversions($args->tplan_id));
-	// die(__LINE__);
-	
 	$tplan_linked_tcversions = getFilteredLinkedVersions($db,$args,$tplan_mgr,$tcase_mgr);
 	
-	// BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
+	// Add Test Cases to Test plan - Right pane does not honor custom field filter
 	$testCaseSet = $args->control_panel['filter_tc_id'];   
 	if(!is_null($keywordsFilter) )
 	{ 

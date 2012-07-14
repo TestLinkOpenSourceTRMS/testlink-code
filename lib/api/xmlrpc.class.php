@@ -360,6 +360,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    {
 	    	$this->devKey = $this->args[self::$devKeyParamName];
 	    }
+	    
 	    // make sure the key we have is valid
 	    if(!$this->_isDevKeyValid($this->devKey))
 	    {
@@ -369,7 +370,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    }
 	    else
 	    {
-	    	//Load User
+	    	// Load User
 	    	$this->user = tlUser::getByID($this->dbObj,$this->userID);	
 	    	$this->authenticated = true;	    	
 	    	return true;
@@ -2228,7 +2229,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 public function getTestCasesForTestPlan($args)
 	 {
 
-
 	    $operation=__FUNCTION__;
  	    $msg_prefix="({$operation}) - ";
          
@@ -2247,9 +2247,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         $optMutualExclusive=array(self::$keywordIDParamName => null,
                                   self::$keywordNameParamName => null); 	
         $this->_setArgs($args);
-		
-		// Test Case ID, Build ID are checked if present
-		if(!$this->_checkGetTestCasesForTestPlanRequest($msg_prefix) && $this->userHasRight("mgt_view_tc"))
+		if(!($this->_checkGetTestCasesForTestPlanRequest($msg_prefix) && $this->userHasRight("mgt_view_tc")) )
 		{
 			return $this->errors;
 		}
@@ -2289,7 +2287,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 			             'exec_type' => $opt[self::$executionTypeParamName]);
 		
 		
-		$recordset=$this->tplanMgr->get_linked_tcversions($tplanid,$filters,$options);
+		$recordset = $this->tplanMgr->getLTCVNewGeneration($tplanid,$filters,$options);
 		return $recordset;
 	 }
 
@@ -2305,7 +2303,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */
 	protected function _checkGetTestCasesForTestPlanRequest($messagePrefix='')
 	{
-		$status=$this->authenticate();
+		$status = $this->authenticate();
 		if($status)
 		{
 	        $status &=$this->checkTestPlanID($messagePrefix);

@@ -23,10 +23,6 @@
  * 20111031 - franciscom - 	TICKET 4790: Setting & Filters panel - Wrong use of BUILD on settings area
  *							generateExecTree().
  *
- * 20110823 - franciscom - 	filter_by_cf_values() interface changes
- * 							TICKET 4710: Performance/Filter Problem on big project - get_ln_tcversions()
- *							new functions apply_status_filters(); update_status_for_colors();
- *
  * 20110820 - franciscom - 	TICKET 4710: Performance/Filter Problem on big project
  *							generateExecTree() - changes in call to get_linked_tcversions()
  *
@@ -898,7 +894,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		 	// Take Time
 		 	//$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
 			//$t_elapsed = number_format( $tnow - $tprev, 4);
-			//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER get_ln_tcversions()</b>):' . $t_elapsed .'<br>';
+			//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER XXXXX()</b>):' . $t_elapsed .'<br>';
 			//reset($chronos);	
 
 			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'And')

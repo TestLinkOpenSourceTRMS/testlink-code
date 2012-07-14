@@ -20,7 +20,7 @@ require_once('common.php');
 require_once('print.inc.php');
 require_once('displayMgr.php');
 
-displayMemUsage('START SCRIPT - LINE:' .__LINE__);
+// displayMemUsage('START SCRIPT - LINE:' .__LINE__);
 
 $treeForPlatform = null;
 $docText = '';					
@@ -37,14 +37,9 @@ list($doc_info,$my) = initEnv($db,$args,$tproject,$_SESSION['userID']);
 $printingOptions = initPrintOpt($_REQUEST,$doc_info);
 
 $subtree = $tree_manager->get_subtree($args->itemID,$my['filters'],$my['options']);
-
-new dBug($subtree);
-
 $treeForPlatform[0] = &$subtree;
 $doc_info->title = $doc_info->tproject_name;
 
-echo '<b> FFF </b><br>';
-var_dump($doc_info->type);
 switch ($doc_info->type)
 {
 	case DOC_REQ_SPEC:
@@ -109,7 +104,7 @@ switch ($doc_info->type)
 				
 					//echo 'DI';
 					//die();
-					displayMemUsage('BEFORE LOOP ON PLATFORMS');
+					// displayMemUsage('BEFORE LOOP ON PLATFORMS');
 					$linkedBy = array();
     	   	    	
     	   	    	// Prepare Node -> pn
@@ -299,7 +294,6 @@ echo $docText;
  **/
 function init_args()
 {
-	new dBug($_REQUEST);
 	$args = new stdClass();
 	$args->doc_type = $_REQUEST['type'];
 	$args->level = isset($_REQUEST['level']) ?  $_REQUEST['level'] : null;
@@ -313,7 +307,6 @@ function init_args()
 	$args->user_id = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
 
 
-	new dBug($args);
 	return $args;
 }
 
@@ -386,7 +379,6 @@ function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
 					DOC_TEST_REPORT => 'test_report', DOC_REQ_SPEC => 'req_spec');
 
 
-	new dBug($argsObj);
 	$doc->content_range = $argsObj->level;
 	$doc->type = $argsObj->doc_type;
 	$doc->type_name = lang_get($lblKey[$doc->type]);
@@ -439,6 +431,7 @@ function getStatsEstimatedExecTime(&$tplanMgr,&$items2use,$tplanID)
 {
 
 	$min = array();
+ 	$stat = null;        
 	if( is_null($items2use) )
 	{
 		// will work on all test cases present on Test Project.
@@ -484,7 +477,8 @@ function getStatsEstimatedExecTime(&$tplanMgr,&$items2use,$tplanID)
 function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$tplanID,$decode)
 {
    	$min = array();
-	$$executed_qty = 0;
+	$stat = null;
+	$executed_qty = 0;
 	$items2use = array();
 	
 	if( count($lastExecBy) > 0 )

@@ -17,6 +17,8 @@
  * 
  *  @since 1.9.4
  *  20120714 - franciscom - getLinkInfo(), output set addapted for tc_exec_assignment.php
+ *							getLinkedForTesterAssignmentTree()
+ *
  *	20120707 - franciscom - TICKET 5002: Exported test plan has multiple test case instances if ...
  *							( exportLinkedItemsToXML() )
  *	20120704 - franciscom - getRootTestSuites() - interface changes
@@ -41,26 +43,6 @@
  *  20110818 - Julian - TICKET 4696 - Create Test Plan from existing Test Plan does not preserve linked 
  *                                    Test Case Versions (keep currently linked version is checked)
  * 
- *  @since 1.9.3
- *  20110415 - Julian - BUGID 4418 - Clean up priority usage within Testlink
- *	20110408 - franciscom - BUGID 4391: General Test Plan Metrics - 
- *							Results by Keywords does not work properly when platforms are used
- *	20110328 - franciscom - filter_cf_selection() fixed issue regarding simple types
- *	20110326 - franciscom - filter_cf_selection() make it safer
- *	20110322 - franciscom - BUGID 4343: Reports Failed Test Cases / ... -> Build is not shown	
- *							get_linked_tcversions() - error while refactoring.
- *
- *	20110317 - franciscom - BUGID 4328: Metrics dashboard - only active builds has to be used
- *							get_linked_tcversions() - new option forced_exec_status
- *													  build_id now can be an array of id
- *
- *	20110316 - franciscom - BUGID 4328: Metrics dashboard - only active builds has to be used
- *							get_linked_tcversions()
- *
- *	20110121 - franciscom - BUGID 4184 - MSSQL Ambiguous column name platform_id
- *  20110115 - franciscom - BUGID 4171 - changes on methods related to estimated execution time
- *  20110112 - franciscom - BUGID 4171 - changes on methods related to estimated execution time
- *  20110104 - asimon - BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
  **/
 
 /** related functionality */
@@ -6824,54 +6806,34 @@ class testplan extends tlObjectWithAttachments
 		$my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
 	    
 	    // Need to detail better, origin of build_id.
-	    // is got from GUI settings area ?
 	    // is got from GUI Filters area ?
 		if(	($my['options']['allow_empty_build'] == 0) && $my['filters']['build_id'] <= 0 )
 		{
 			// CRASH IMMEDIATELY
 			throw new Exception( $debugMsg . " Can NOT WORK with \$my['filters']['build_id'] <= 0");
 		}
-		
 		if( !$my['green_light'] ) 
 		{
 			// No query has to be run, because we know in advance that we are
 			// going to get NO RECORDS
 			return null;	
 		}
+
+		$buildClause = array('lex' => (' AND EE.build_id = ' . $my['filters']['build_id']), 
+							 'exec_join' => (" AND E.build_id = " . $my['filters']['build_id']));
+		if( $my['options']['allow_empty_build'] && $my['filters']['build_id'] <= 0 )
+		{
+			$buildClause = array('lex' => '','exec_join' => '');
+		}
+
 		$sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.build_id," .
 				  " MAX(EE.id) AS id " .
 				  " FROM {$this->tables['executions']} EE " . 
 				  " WHERE EE.testplan_id = " . $safe['tplan_id'] . 
-				  " AND EE.build_id = " . $my['filters']['build_id'] .
+				  $buildClause['lex'] .
 				  " GROUP BY EE.tcversion_id,EE.testplan_id,EE.build_id ";
 		
-		$union = "/* {$debugMsg}  */" . 
-				 " SELECT DISTINCT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,TCV.version," .
-				 " TCV.tc_external_id AS external_id, " .
-				 " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
-    			 " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
-			   	 " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
-			   	 " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
-			   	 " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
-				 $my['join']['ua'] .
-				 $my['join']['keywords'] .
-				 
-				 " LEFT OUTER JOIN ({$sqlLEX}) AS LEX " .
-				 " ON  LEX.testplan_id = TPTCV.testplan_id " .
-				 " AND LEX.tcversion_id = TPTCV.tcversion_id " .
-				 " AND LEX.testplan_id = " . $safe['tplan_id'] .
-				 " LEFT OUTER JOIN {$this->tables['executions']} E " .
-				 " ON  E.tcversion_id = TPTCV.tcversion_id " .
-				 " AND E.testplan_id = TPTCV.testplan_id " .
-				 " AND E.build_id = " . $my['filters']['build_id'] .
-
- 				 " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
-				 $my['where']['where'];
-		
-		// return $union;
-		
 		// -------------------------------------------------------------------------------------
-		
 		// adding tcversion on output can be useful for Filter on Custom Field values,
 		// because we are saving values at TCVERSION LEVEL
 		//	
@@ -6888,19 +6850,19 @@ class testplan extends tlObjectWithAttachments
 							$my['join']['keywords'] .
 							
 							" /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
-							" LEFT OUTER JOIN ({$sqlLEBBP}) AS LEBBP " .
-							" ON  LEBBP.testplan_id = TPTCV.testplan_id " .
-							" AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
-							" AND LEBBP.testplan_id = " . $safe['tplan_id'] .
+							" LEFT OUTER JOIN ({$sqlLEX}) AS LEX " .
+							" ON  LEX.testplan_id = TPTCV.testplan_id " .
+							" AND LEX.tcversion_id = TPTCV.tcversion_id " .
+							" AND LEX.testplan_id = " . $safe['tplan_id'] .
 							" LEFT OUTER JOIN {$this->tables['executions']} E " .
 							" ON  E.tcversion_id = TPTCV.tcversion_id " .
 							" AND E.testplan_id = TPTCV.testplan_id " .
-							" AND E.build_id = " . $my['filters']['build_id'] .
+				  			$buildClause['exec_join'] .
 
 							" WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
 							$my['where']['where'] .
 							" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
-							" AND E.id IS NULL AND LEBBP.id IS NULL";
+							" AND E.id IS NULL AND LEX.id IS NULL";
 
 
 		$union['exec'] = "/* {$debugMsg} sqlUnion - executions */" . 
@@ -6915,14 +6877,14 @@ class testplan extends tlObjectWithAttachments
 							$my['join']['ua'] .
 							$my['join']['keywords'] .
 							
-							" JOIN ({$sqlLEBBP}) AS LEBBP " .
-							" ON  LEBBP.testplan_id = TPTCV.testplan_id " .
-							" AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
-							" AND LEBBP.testplan_id = " . $safe['tplan_id'] .
+							" JOIN ({$sqlLEX}) AS LEX " .
+							" ON  LEX.testplan_id = TPTCV.testplan_id " .
+							" AND LEX.tcversion_id = TPTCV.tcversion_id " .
+							" AND LEX.testplan_id = " . $safe['tplan_id'] .
 							" JOIN {$this->tables['executions']} E " .
 							" ON  E.tcversion_id = TPTCV.tcversion_id " .
 							" AND E.testplan_id = TPTCV.testplan_id " .
-							" AND E.build_id = " . $my['filters']['build_id'] .
+							$buildClause['exec_join'] .
 
 							" WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
 							$my['where']['where'];
@@ -7102,6 +7064,32 @@ class testplan extends tlObjectWithAttachments
 		}
 		return $rs;
 	}
+
+
+	// need to recheck, because probably we need to be able to wokr without build id provided
+	// has to be based on TREE USED on features like:
+	// assign test case execution  or set test case urgency
+	//
+	public function getLTCVNewGeneration($id,$filters=null,$options=null)
+	{
+		$debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
+        $my = array('filters' => '', 'options' => '');
+		if( !is_null($sql2do = $this->getLinkedForExecTree($tplan_id,$filters,$options)) )
+		{
+			if( is_array($sql2do) )
+			{				
+				$sql2run = $sql2do['exec'] . ' UNION ' . $sql2do['not_run'];
+			}
+			else
+			{
+				$sql2run = $sql2do;
+			}
+			$tplan_tcases = $this->db->fetchRowsIntoMap($sql2run,'tcase_id');
+		}
+		return $tplan_tcases;
+	}
+
+
 
 
 } // end class testplan

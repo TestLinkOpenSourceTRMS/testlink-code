@@ -1,16 +1,11 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.26 2010/10/17 09:46:37 franciscom Exp $
 
-Purpose: smarty template - users overview
-
-rev:
-  20101017 - franciscom - image access refactored (tlImages)
-  20100923 - Julian - BUGID 3802
-  20100426 - asimon - removed forgotten comment end sign (template syntax error)
-  20100419 - franciscom - BUGID 3355: A user can not be deleted from the list
-  20100326 - franciscom - BUGID 3324
+users overview
+@filesource usersView.tpl
+@internal revisions
 *}
+
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
 
@@ -104,7 +99,7 @@ function toggleRowByClass(oid,className,displayValue)
 				<th>{$labels.th_last_name}</th>
 				<th>{$labels.th_email}</th>
 
-				<th {if $user_order_by == 'order_by_role'}style="background-color: #c8dce8;color: black;"{/if}>
+				<th {if $user_order_by == 'order_by_role'} style="background-color: #c8dce8;color: black;"{/if}>
 				    {$labels.th_role}
 	    			<img src="{$smarty.const.TL_THEME_IMG_DIR}/order_{$order_by_role_dir}.gif"
 	    			     title="{$labels.order_by_role_descr} {lang_get s=$order_by_role_dir}"
@@ -132,7 +127,7 @@ function toggleRowByClass(oid,className,displayValue)
 				    {$userObj->login|escape}
 			      {if $gsmarty_gui->show_icon_edit}
 				      <img title="{$labels.alt_edit_user}"
-				           alt="{$labels.alt_edit_user}" src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
+				           alt="{$labels.alt_edit_user}" src="{$tlImages.edit}"/>
 				    {/if}
 				    </a>
 				</td>

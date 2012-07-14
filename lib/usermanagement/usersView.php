@@ -7,12 +7,12 @@
  *
  * @package 	TestLink
  * @author 		-
- * @copyright 	2007-2011, TestLink community 
+ * @copyright 	2007-2012, TestLink community 
  * @filesource	usersView.php
  * @link 		http://www.teamst.org/index.php
  *
  *
- * @internal Revisions:
+ * @internal revisions
  * @since 1.9.4
  * 20111127 - franciscom - use of demoSpecialUsers                          
  */
@@ -79,8 +79,6 @@ switch($args->operation)
 
 $order_by_clause = get_order_by_clause($orderBy);
 $users = getAllUsersRoles($db,$order_by_clause);
-
-new dBug($users);
 
 $highlight = initialize_tabsmenu();
 $highlight->view_users = 1;

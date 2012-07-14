@@ -694,12 +694,12 @@ class tlTestPlanMetrics extends testplan
 		$addOnJoin = '';
 		if( isset($opt['getOnlyActiveTCVersions']) )
 		{
-			$add2Key='Active';
+			$add2key='Active';
 			$addOnWhere = ' AND TCV.active = 1 '; 
 			$addOnJoin = " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id ";
 		}
-		$sqlUnionAP	= $union['exec' . $add2Key];	//echo 'QD - <br>' . $sqlUnionAP . '<br>';
-		$sqlUnionBP	=  $union['not_run' . $add2Key]; //echo 'QD - <br>' . $sqlUnionBP . '<br>';
+		$sqlUnionAP	= $union['exec' . $add2key];	//echo 'QD - <br>' . $sqlUnionAP . '<br>';
+		$sqlUnionBP	=  $union['not_run' . $add2key]; //echo 'QD - <br>' . $sqlUnionBP . '<br>';
 		//echo 'QD - <br>' . $sqlUnionAP . '<br>';
 		//echo 'QD - <br>' . $sqlUnionBP . '<br>';
 
@@ -935,10 +935,10 @@ class tlTestPlanMetrics extends testplan
 		$add2key = '';
 		if( isset($opt['getOnlyActiveTCVersions']) )
 		{
-			$add2Key='Active';
+			$add2key='Active';
 		}
-		$sqlUnionAP	= $union['exec' . $add2Key];	//echo 'QD - <br>' . $sqlUnionAP . '<br>';
-		$sqlUnionBP	=  $union['not_run' . $add2Key]; //echo 'QD - <br>' . $sqlUnionBP . '<br>';
+		$sqlUnionAP	= $union['exec' . $add2key];	//echo 'QD - <br>' . $sqlUnionAP . '<br>';
+		$sqlUnionBP	=  $union['not_run' . $add2key]; //echo 'QD - <br>' . $sqlUnionBP . '<br>';
 		
 		$sql =	" /* {$debugMsg} UNION ALL CLAUSE => INCLUDE Duplicates */" .
 				" SELECT status, count(0) AS exec_qty " .
@@ -947,7 +947,7 @@ class tlTestPlanMetrics extends testplan
 
 		// 
 		//echo 'QD -<br><b>' . __FUNCTION__ . '</b><br>'; 
-		//echo "QD - \$add2Key:{$add2Key} " . $sql . '<br>';
+		//echo "QD - \$add2key:{$add2key} " . $sql . '<br>';
         $dummy = (array)$this->db->fetchRowsIntoMap($sql,'status');              
 
 		$statusCounters = array('total' => 0);
@@ -2245,5 +2245,49 @@ class tlTestPlanMetrics extends testplan
 		$rs = $this->db->fetchRowsIntoMap($sql . $inClause,'id');
 		return $rs;
 	}
+
+
+	/**
+	 *
+	 * @internal revisions
+	 *
+	 * @since 1.9.4
+	 */
+	function queryMetrics($id,$filters=null,$options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		$my = array();
+		$my['filters'] = array('exec_ts_from' => null, 'exec_ts_to' => null,
+							   'assigned_to' => null, 'tester_id' => null,
+							   'keywords' => null, 'builds' => null,
+							   'plaforms' => null, 'top_level_tsuites' => null);
+							   
+		$my['filters'] = array_merge($my['filters'],(array)$filters);
+
+		// executions
+		$sex = "/* $debugMsg */" .
+			   "SELECT E.status,E.notes,E.tcversion_number,E.execution_ts,E.build_id,E.platform_id " .
+			   "FROM {$this->tables['testplan_tcversions']} TPTCV " .
+			   "JOIN {$this->tables['executions']} E " .
+			   "ON E.tcversion_id = TPTCV.tcversion_id " .
+			   "AND E.testplan_id = TPTCV.testplan_id " .
+			   "AND E.platform_id = TPTCV.platform_id ";
+			   
+		// build where clause
+		$where = "WHERE TPTCV.testplan_id = " . intval($id);
+		if( !is_null($my['filters']['builds']) )
+		{
+			$where .= " AND E.build_id IN " . implode(',',(array)$my['filters']['builds']);	
+		}
+			    
+		$sql = $sex . $where;
+
+		//
+		echo $sql;
+		$rs = $this->db->get_recordset($sql); 			    
+		return $rs;
+	}
+
 }
 ?>

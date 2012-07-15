@@ -2286,7 +2286,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 			             'build_id' => $opt[self::$buildIDParamName],
 			             'exec_type' => $opt[self::$executionTypeParamName]);
 		
-		
 		$recordset = $this->tplanMgr->getLTCVNewGeneration($tplanid,$filters,$options);
 		return $recordset;
 	 }

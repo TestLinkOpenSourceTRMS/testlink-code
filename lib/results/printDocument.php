@@ -3,13 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource printDocument.php
- * @author Martin Havlat
- *
  * SCOPE:
  * Generate documentation Test report based on Test plan data.
  *
- * @interanl revisions
+ * @filesource 	printDocument.php
+ * @author 		Martin Havlat
+ * @copyright 	2007-2012, TestLink community 
+ * @link 		http://www.teamst.org/index.php
+ *
+ *
+ * @internal revisions
  * @since 1.9.4
  * 20111007 - franciscom - TICKET 4766: Requirements Report - Display Revision and Version
  *
@@ -94,16 +97,10 @@ switch ($doc_info->type)
 			$executed_qty = 0;
 			$treeForPlatform = array();
 
-			// IMPORTANT NOTICE:
-			// on get_linked_tcversions(), when getting exec status we will GET LAST exec status
-			//var_dump($platforms);
-			
 			switch($doc_info->content_range)
 			{
 				case 'testproject':
-				
-					//echo 'DI';
-					//die();
+			
 					// displayMemUsage('BEFORE LOOP ON PLATFORMS');
 					$linkedBy = array();
     	   	    	
@@ -121,7 +118,7 @@ switch ($doc_info->type)
 					{
 						$filters = array('platform_id' => $platform_id);	
     	   	    	  	$linkedBy[$platform_id] = $tplan_mgr->getLinkedStaticView($args->tplan_id,$filters);
-   	   	    	  	
+   	   	    			
     	   	    	  	// IMPORTANTE NOTE:
     	   	    	  	// We are in a loop and we use tree on prepareNode, that changes it,
     	   	    	  	// then we can not use anymore a reference BUT WE NEED A COPY.
@@ -163,8 +160,9 @@ switch ($doc_info->type)
 						
     	            	$filters['platform_id'] = $platform_id;
 						$items2use[$platform_id] = null;
-    	   	        	$linkedBy[$platform_id] = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters); 
+    	   	        	$linkedBy[$platform_id] = $tplan_mgr->getLinkedStaticView($args->tplan_id, $filters); 
 						
+					
 						// After architecture changes on how CF design values for Test Cases are
 						// managed, we need the test case version ID and not test case ID
 						// In addition if we loop over Platforms we need to save this set each time!!!
@@ -236,7 +234,6 @@ if ($treeForPlatform)
 				
 				case DOC_TEST_SPEC:
 					$docText .= renderSimpleChapter(lang_get('scope'), $doc_info->tproject_scope);
-					// BUGID 3459 - added platform ID
 					$docText .= renderTestSpecTreeForPrinting($db, $tree2work, $doc_info->content_range,
 					            $printingOptions, null, 0, 1, $args->user_id,0,null,$args->tproject_id,$platform_id);
 				break;

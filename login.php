@@ -246,8 +246,7 @@ function authorizePostProcessing($argsObj,$op)
 	{
 		// Login successful, redirect to destination
 		logAuditEvent(TLS("audit_login_succeeded",$argsObj->login,
-		              $_SERVER['REMOTE_ADDR']),"LOGIN",$_SESSION['currentUser']->currentUser->dbID,"users");
-	
+		              $_SERVER['REMOTE_ADDR']),"LOGIN",$_SESSION['currentUser']->dbID,"users");
 		
 		if ($argsObj->action == 'ajaxlogin') 
 		{

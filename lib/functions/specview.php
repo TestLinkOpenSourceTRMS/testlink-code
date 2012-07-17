@@ -6,14 +6,14 @@
  * @filesource	specview.php
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2004-2011, TestLink community 
+ * @copyright 	2004-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
  * @since 1.9.4
- *	20111230 - franciscom - refactoring to use current() instead of fixed access to element with index 0
- * 	20110824 - franciscom - fixed issue using get_branch()	
- * 	20110820 - franciscom - TICKET 4710 - getFilteredLinkedVersions()	
+ * 20111230 - franciscom - refactoring to use current() instead of fixed access to element with index 0
+ * 20110824 - franciscom - fixed issue using get_branch()	
+ * 20110820 - franciscom - TICKET 4710 - getFilteredLinkedVersions()	
  **/ 
 
 /**
@@ -179,12 +179,9 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 		$pfFilters[$tk] = isset($my['filters'][$fk]) ? $my['filters'][$fk] : null;
 	}
 	
+	
 	$test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
 	$platforms = getPlatforms($db,$tproject_id,$testplan_id);
-
-
-	// new dBug($test_spec);
-	
 	$idx = 0;
 	$a_tcid = array();
 	$a_tsuite_idx = array();
@@ -201,9 +198,6 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 	} 
 
 
-	// 
-	// new dBug($a_tcid);
-	// new dBug($a_tsuite_idx);
 	
 	// This code has been replace (see below on Remove empty branches)
 	// Once we have created array with testsuite and children testsuites
@@ -234,14 +228,9 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 			         	'order_by' => " ORDER BY NHTC.node_order, NHTC.name, TCV.version DESC ");
 
 		$tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid,testcase::ALL_VERSIONS,null,$optGBI); 
-										  
-		// new dBug($tcaseVersionSet);
-		// new dBug($linked_items);
-												  
 		$result = addLinkedVersionsInfo($tcaseVersionSet,$a_tsuite_idx,$out,$linked_items);
 	}
 	
-	// new dBug($result);
 	
 	// Try to prune empty test suites, to reduce memory usage and to remove elements
 	// that do not need to be displayed on user interface.
@@ -322,52 +311,52 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
  *
  * @internal revisions
  * @since 1.9.4
- * 20110820 - TICKET 4710 - use of get_ln_tcversions()
- * 20110820 - TICKET 4710 - changes on get_linked_tcversions() call	
- *
- * @since 1.9.3
- *  20100721 - asimon - BUGID 3046, added $options
- *	20080919 - franciscom - BUGID 2716
  *
  */
 function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr, $options = null)
 {
-	$doFilterByKeyword=(!is_null($argsObj->keyword_id) && $argsObj->keyword_id > 0) ? true : false;
+	static $tsuite_mgr;
+	
+	//echo __METHOD__ . '<br>';
+	//new dBug($options);
+	
+	$doFilterByKeyword = (!is_null($argsObj->keyword_id) && $argsObj->keyword_id > 0) ? true : false;
 	
 	// Multiple step algoritm to apply keyword filter on type=AND
 	// get_*_tcversions filters by keyword ALWAYS in OR mode.
 	//
 	$filters = array('keyword_id' => $argsObj->keyword_id);
+	if( isset($options['assigned_on_build']) && $options['assigned_on_build'] > 0)
+	{
+		$filters['assigned_on_build'] = $options['assigned_on_build'];
+	}
 	
-	//new dBug($argsObj);
-	// die();
 	// get test suites in branch to limit search
 	$itemID = property_exists($argsObj,'object_id') ? $argsObj->object_id : $argsObj->id;
 	if( !is_null($itemID) )
 	{
 		// will get all test suites in this branch, in order to limit amount of data returned by 
 		// get_*_tcversions
-		$tsuite_mgr = new testsuite($dbHandler);
+		if(!$tsuite_mgr)
+		{
+			$tsuite_mgr = new testsuite($dbHandler);
+		}
 		$xx = $tsuite_mgr->get_branch($itemID);
 		$xx .= ($xx == '') ? $itemID : ',' . $itemID;
 		$filters['tsuites_id'] = explode(',',$xx);
-		unset($tsuite_mgr);
+		// unset($tsuite_mgr);
 	}
-	$opx = array('output' => 'mapOfArray', 'last_execution' => true) +   (array)$options;
-
-	// new dBug($opx);
-	$tplan_tcases = $tplanMgr->get_ln_tcversions($argsObj->tplan_id, $filters, $opx);
-
-	// new dBug($tplan_tcases);
+	
+	$opx = array('addExecInfo' => true, 'specViewFields' => true) +   (array)$options;
+	$tplan_tcases = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $opx);
 
 	if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
 	{
 		$filteredSet = $tcaseMgr->filterByKeyword(array_keys($tplan_tcases),
 			                                    $argsObj->keyword_id,$argsObj->keywordsFilterType);
 		
-		$testCaseSet=array_keys($filteredSet);   
-	    $filters = array('tcase_id' => $testCaseSet);
-		$tplan_tcases = $tplanMgr->get_ln_tcversions($argsObj->tplan_id, $filters, $opx);
+	    $filters = array('tcase_id' => array_keys($filteredSet));
+		$tplan_tcases = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $opx);
 	}
 	
 	return $tplan_tcases; 
@@ -407,8 +396,6 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
 	// This does filter on keywords ALWAYS in OR mode.
 	$tplan_linked_tcversions = getFilteredLinkedVersions($dbHandler,$argsObj, $tplanMgr, $tcaseMgr, $options);
 
-	// new dBug($tplan_linked_tcversions);
-	
 	// With these pieces we implement the AND type of keyword filter.
 	$testCaseSet = null;
 	if(!is_null($my['filters']['keywordsFilter']) && !is_null($my['filters']['keywordsFilter']->items))
@@ -484,12 +471,6 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
  * @internal revisions
  * @since 1.9.4
  *
- * @since 1.9.3
- * 20101024 - franciscom - BUGID 3932: Add test case to test plan - Execution type filter does not affect right pane
- *						   BUGID 3936: Assign Test Case Execution - Right pane does not reflect custom field filter.
- *
- * 20100417 - franciscom - BUGID 2498 - added logic to filter by importance (defined on test case spec)
- * 20100411 - franciscom - added logic to filter by execution type
  */
 function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContainerId,$nodeId,$specViewType,$filters)
 {
@@ -499,6 +480,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 	$tck_map = null;
 	$tobj_mgr = new testproject($dbHandler);
 	$test_spec = $tobj_mgr->get_subtree($nodeId);
+	
 	$key2loop = null;
 	$useAllowed = false;
 	
@@ -577,6 +559,9 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 			$options = ($specViewType == 'testPlanLinking') ? array( 'access_key' => 'testcase_id') : null;
 			
 			$getFilters = $useFilter['cfields'] ? array('cfields' => $filters['cfields']) : null;
+			
+			
+			// Potential Performance ISSUE - 20120619 - fman
 			$tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
 		
 			switch($specViewType)
@@ -628,6 +613,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 					$allowedSet = null;
 					if( $useFilter['execution_type'] )
 					{
+						// Potential Performance ISSUE
 						$allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters['execution_type'],$options);
 						$doFilter = (!is_null($allowedSet) &&  count($allowedSet) > 0);
 					}
@@ -889,7 +875,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 			if($is_uncovered_view_type)
 			{
 				// @TODO understand impacts of platforms
-				$outRef['external_id'] = $linked_items[$tc_id]['external_id'];      
+				$outRef['external_id'] = $test_spec[$tc_id]['external_id'];      
 			} 
 			else
 			{
@@ -1006,11 +992,6 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
 	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 	$pivot_id=-1;
 	
-	
-	// new dBug($out);
-	// new dBug($a_tsuite_idx);
-	// new dBug($testCaseVersionSet);
-	
 	foreach($testCaseVersionSet as $the_k => $testCase)
 	{
 		$tc_id = $testCase['testcase_id'];
@@ -1026,8 +1007,6 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
     	// Reference to make code reading more human friendly				
 		$outRef = &$out[$parent_idx]['testcases'][$tc_id];
 		
-		//echo '<b>Going to process:</b>' . $testCase['name'] . 'Version:' . $testCase['version'] . '<br>';
-		//new dBug($outRef);
 		
 		// 20120409
 		// Is not clear (need explanation) why we process in this part ONLY ACTIVE
@@ -1063,10 +1042,6 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
 			foreach($linked_items as $linked_testcase)
 			{
 				$target = current($linked_testcase);
-				//new dBug($linked_testcase);
-				//new dBug($target);
-				
-
 				if(($target['tc_id'] == $testCase['testcase_id']) &&
 				   ($target['tcversion_id'] == $testCase['id']) )
 				{
@@ -1092,7 +1067,8 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
 
                     foreach($linked_testcase as $item)
                     {  
-						if(intval($item['executed']))
+                    	// 20120714 - franciscom - need t check if this info is needed.
+						if(isset($item['executed']) && (intval($item['executed']) >0) )
 						{
 							$outRef['executed'][$item['platform_id']]='yes';
 						}

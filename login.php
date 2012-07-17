@@ -62,16 +62,7 @@ switch($args->action)
 		 break;
 
 	case 'ajaxcheck':
-	     if(FALSE === form_security_validate('loginform')) 
-	     {
-	        $gui->note =  $l18n['invalid_security_token'];
-	        $doAuthPostProcess = false;
-	        $doRenderLoginScreen = true;
-	     } 
-	     else 
-	     {
 		     processAjaxCheck($db);
-	     }
 		 break;
 	
 	case 'loginform':

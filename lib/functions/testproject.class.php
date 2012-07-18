@@ -20,12 +20,6 @@
  * 20110817 - franciscom - added missed user_id on copy_requirements() call
  * 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
  *
- * @since 1.9.3
- * 20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
- * 20110223 - asimon - BUGID 4239: forgotten parameter $oldNewMappings for a function call in copy_as()  
- *                               caused links between reqs in old project and testcases in new project
- *                               when copying testprojects
- *
  **/
 
 /** related functions */ 
@@ -705,9 +699,10 @@ function count_testcases($id)
 		$test_spec = $this->get_subtree($id, array('exclude_branches' => $exclude_branches),
 										array('recursive' => !self::RECURSIVE_MODE,
 										      'exclude_testcases' => self::EXCLUDE_TESTCASES));
+
 		if(count($test_spec))
 		{
-		  $ret = $this->_createHierarchyMap($test_spec);
+			$ret = $this->_createHierarchyMap($test_spec);
 		}
 		return $ret;
 	}
@@ -1149,12 +1144,16 @@ function setPublicStatus($id,$status)
 	/**
 	 * get list of all SRS for a test project
 	 * 
+     * @used-by lib/results/uncoveredTestCases.php
+     *			lib/requirements/reqTcAssign.php
+     * 			lib/requirements/reqSpecSearchForm.php
+     *			lib/requirements/reqSearchForm.php
+	 *	 
 	 * @author Martin Havlat
 	 * @return associated array List of titles according to IDs
 	 * 
-	 * @internal
-	 * rev :
-	 *    20070104 - franciscom - added [$get_not_empy]
+	 * @internal revisions
+	 * 
 	 **/
   function getOptionReqSpec($tproject_id,$get_not_empty=self::GET_EMPTY_REQSPEC)
   {
@@ -1166,7 +1165,9 @@ function setPublicStatus($id,$status)
   		$additional_join=" AND SRS.id = REQ.srs_id ";
   	}
     $sql = " SELECT SRS.id,NH.name AS title " .
-           " FROM {$this->tables['req_specs']} SRS, {$this->tables['nodes_hierarchy']} NH " . $additional_table .
+           " FROM {$this->tables['req_specs']} SRS, " .
+           " {$this->tables['nodes_hierarchy']} NH " . 
+           $additional_table .
            " WHERE testproject_id={$tproject_id} " .
            " AND SRS.id=NH.id " .
            $additional_join .
@@ -1176,12 +1177,19 @@ function setPublicStatus($id,$status)
 
 
 	/**
-	 * TBD
-   * @author Francisco Mancardi - francisco.mancardi@gmail.com
-   *
-   * @internal rev :
-   *      20090125 - franciscom
-   **/
+	 * @author Francisco Mancardi - francisco.mancardi@gmail.com
+     *
+     * @TODO check who uses it, is duplicated of getOptionReqSpec?
+     *
+     * @used-by lib/results/uncoveredTestCases.php
+     *			lib/requirements/reqTcAssign.php
+     * 			lib/requirements/reqSpecSearchForm.php
+     *			lib/requirements/reqSearchForm.php
+     *
+     * @internal revisions
+     * 
+     *
+	 **/
 	function genComboReqSpec($id,$mode='dotted')
 	{
 		$ret = array();
@@ -1192,9 +1200,9 @@ function setPublicStatus($id,$status)
  		$my['filters'] = array('exclude_node_types' => $exclude_node_types);
 
 	  	$subtree = $this->tree_manager->get_subtree($id,$my['filters']);
- 		if(count($subtree))
+  		if(count($subtree))
 		{
-		  $ret = $this->_createHierarchyMap($subtree);
+			$ret = $this->_createHierarchyMap($subtree);
         }
 		return $ret;
 	}
@@ -1745,8 +1753,6 @@ function setPublicStatus($id,$status)
 			   " WHERE parent_id IN ({$idList})";
 		$sql .= " AND node_type_id IN ({$tcNodeTypeID},{$tsuiteNodeTypeID}) "; 
 		
-  		// echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
 		$result = $this->db->exec_query($sql);
 		if ($result)
 		{
@@ -1762,8 +1768,6 @@ function setPublicStatus($id,$status)
 							   " JOIN  {$this->tables['tcversions']} TCV ON TCV.id = NH.id " .
 							   " WHERE NH.parent_id = {$row['id']} ";
 						
-  						// echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
 						$rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
 						$tcIDs[$row['id']] = $rs[$row['id']]['tc_external_id'];
 					}
@@ -2535,12 +2539,6 @@ function getTestSpec($id,$filters=null,$options=null)
 	
 	// transform some of our options/filters on something the 'worker' will understand
 	// when user has request filter by test case name, we do not want to display empty branches
-
-
-	// echo '<hr>';
-	// echo __FUNCTION__;
-	// new dBug($my['filters']);
-	// echo '<hr>';
 	// If we have choose any type of filter, we need to force remove empty test suites
 	//
 	if( !is_null($my['filters']['testcase_name']) || !is_null($my['filters']['testcase_id']) ||
@@ -2549,8 +2547,6 @@ function getTestSpec($id,$filters=null,$options=null)
 	{
 		$my['options']['remove_empty_nodes_of_type'] = 'testsuite';
 	}
-	
-	// new dBug($my['options']);
 	
     $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
 	$qnum = $this->$method2call($id,$items,$my['filters'],$my['options']);
@@ -2650,16 +2646,9 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 				}
 			}
 		}
-        //$sql .= " )) ";
 	}
-	
-	//else
-	//{
-    //	$sql .= " )) ";
-	//}
 	$sql .= " )) ";
 	$sql .= " ORDER BY NH.node_order,NH.id";
-	// echo $sql . '<br>';
 	
 	
 	// Approach Change - get all 
@@ -2719,7 +2708,6 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 			$ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;
 			if( count($ky) > 0 )
 			{
-				// new dBug($ky);
 				foreach($ky as $tcase)
 				{
 					unset($rs[$tcase]);						
@@ -2730,8 +2718,6 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 	
  	foreach($rs as $row)
  	{
- 		// $row = &$rs[$idx];
- 		// new dBug($row);
 		if(!isset($exclude_branches[$row['id']]))
 		{  
 			$node = $row + array('node_table' => $this->tree_manager->node_tables_by['id'][$row['node_type_id']]);
@@ -2749,7 +2735,6 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 	        if(!isset($exclude_children_of[$node_types[$row['node_type_id']]]))
 	        {
 	        	// Keep walking (Johny Walker Whisky)
-	        	// echo 'Walk:' . $row['id'] . '<br>'; 
 	        	$this->_get_subtree_rec($row['id'],$node,$my['filters'],$my['options']);
 	        }
 
@@ -2819,10 +2804,9 @@ function isIssueTrackerEnabled($id)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	$sql = "/* $debugMsg */ " .
-		   "SELECT isssue_tracker_enabled FROM {$this->object_table} " .
+		   "SELECT issue_tracker_enabled FROM {$this->object_table} " .
 		   "WHERE id =" . intval($id); 	
 	$ret = $this->db->get_recordset($sql);
-	
 	return $ret[0]['isssue_tracker_enabled'];
 }
 

@@ -283,7 +283,7 @@ class tlIssueTracker extends tlObject
 	 		break;
 	
 	 		case 'full':
-	 		deafult:
+	 		default:
 				 $sql .= " * ";
 	 		break;
 	 		

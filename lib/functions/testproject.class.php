@@ -2806,8 +2806,9 @@ function isIssueTrackerEnabled($id)
 	$sql = "/* $debugMsg */ " .
 		   "SELECT issue_tracker_enabled FROM {$this->object_table} " .
 		   "WHERE id =" . intval($id); 	
+		   
 	$ret = $this->db->get_recordset($sql);
-	return $ret[0]['isssue_tracker_enabled'];
+	return $ret[0]['issue_tracker_enabled'];
 }
 
 

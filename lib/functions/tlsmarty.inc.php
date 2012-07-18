@@ -99,6 +99,8 @@ function guard_header_smarty($file)
  */
 class TLSmarty extends Smarty
 {
+	private $tlImages;
+	
     function TLSmarty()
     {
         global $tlCfg;
@@ -238,7 +240,7 @@ class TLSmarty extends Smarty
         
         // -----------------------------------------------------------------------------
         // Images
-        $tlImages = array('api_info' => TL_THEME_IMG_DIR . 'brick.png',
+        $this->tlImages = array('api_info' => TL_THEME_IMG_DIR . 'brick.png',
                           'calendar' => TL_THEME_IMG_DIR . 'calendar.gif',
                           'checked' => TL_THEME_IMG_DIR . 'apply_f2_16.png',
                           'clear' => TL_THEME_IMG_DIR . 'trash.png',
@@ -266,24 +268,24 @@ class TLSmarty extends Smarty
                           'bullet' => TL_THEME_IMG_DIR . 'slide_gripper.gif');
 
         $msg = lang_get('show_hide_api_info');
-        $tlImages['toggle_api_info'] =  "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
+        $this->tlImages['toggle_api_info'] =  "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
         								" onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
-        								" src=\"{$tlImages['api_info']}\" align=\"left\" />";
+        								" src=\"{$this->tlImages['api_info']}\" align=\"left\" />";
 
         $msg = lang_get('show_hide_direct_link');
-        $tlImages['toggle_direct_link'] = "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
+        $this->tlImages['toggle_direct_link'] = "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
         						  		  " onclick=\"showHideByClass('div','direct_link');event.stopPropagation();\" " .
-        						  		  " src=\"{$tlImages['direct_link']}\" align=\"left\" />";
+        						  		  " src=\"{$this->tlImages['direct_link']}\" align=\"left\" />";
 
         // Some useful values for Sort Table Engine
-        $tlImages['sort_hint'] = '';
+        $this->tlImages['sort_hint'] = '';
         switch (TL_SORT_TABLE_ENGINE)
         {
             case 'kryogenix.org':
                 $sort_table_by_column = lang_get('sort_table_by_column');
-                $tlImages['sort_hint'] = "<img title=\"{$sort_table_by_column}\" " .
+                $this->tlImages['sort_hint'] = "<img title=\"{$sort_table_by_column}\" " .
                 						 " alt=\"{$sort_table_by_column}\" " .
-                						 " src=\"{$tlImages['sort']}\" align=\"left\" />";
+                						 " src=\"{$this->tlImages['sort']}\" align=\"left\" />";
                 
                 $this->assign("noSortableColumnClass","sorttable_nosort");
             break;
@@ -295,7 +297,7 @@ class TLSmarty extends Smarty
 
 
 		// Do not move!!!
-        $this->assign("tlImages",$tlImages);
+        $this->assign("tlImages",$this->tlImages);
         
         // Register functions
         $this->register_function("lang_get", "lang_get_smarty");
@@ -307,6 +309,13 @@ class TLSmarty extends Smarty
         $this->register_modifier("dirname","dirname");
     
     } // end of function TLSmarty()
+
+
+
+    function getImages()
+    {
+    	return $this->tlImages;
+	}
 
 } // end of class TLSmarty
 

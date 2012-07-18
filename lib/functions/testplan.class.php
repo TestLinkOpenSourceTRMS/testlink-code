@@ -372,7 +372,7 @@ class testplan extends tlObjectWithAttachments
 		$sql_filter = '';
 		if( !is_null($platform_id) )
 		{
-			$sql_filter = ' AND platform_id = IN (' . implode(',',(array)$platform_id) . ')';
+			$sql_filter = ' AND platform_id IN (' . implode(',',(array)$platform_id) . ')';
 		}
 		
 		

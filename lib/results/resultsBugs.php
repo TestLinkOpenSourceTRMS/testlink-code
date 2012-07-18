@@ -40,8 +40,11 @@ $gui->tableSet = null;
 $templateCfg = templateConfiguration();
 $args = init_args();
 
-$history_img = TL_THEME_IMG_DIR . "history_small.png";
-$edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
+
+$smarty = new TLSmarty;
+$img = $smarty->getImages();
+// $history_img = TL_THEME_IMG_DIR . "history_small.png";
+// $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $openBugs = array();
 $resolvedBugs = array();
@@ -52,29 +55,34 @@ $tproject_mgr = new testproject($db);
 
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
+unset($tproject_mgr);
 
 $filters = array();
 $options = array('output' => 'array', 'only_executed' => true, 'details' => 'full');
-$results = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters, $options);
+$execSet = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters, $options);
 
 $testcase_bugs = array();
-foreach ($results as $execution) {
+$mine = array();
+
+$l18n = init_labels(array('execution_history' => null,'design' => null,'no_linked_bugs' => null));
+foreach ($execSet as $execution) 
+{
 	$tc_id = $execution['tc_id'];
 	$mine[] = $execution['exec_id'];
-	$exec_id = $execution['exec_id'];
-	$bug_urls = buildBugString($db, $exec_id, $openBugs, $resolvedBugs);
+	$bug_urls = buildBugString($db, $execution['exec_id'], $openBugs, $resolvedBugs);
 	if ($bug_urls)
 	{
 		// First bug found for this tc
-		if (!isset($testcase_bugs[$tc_id])) {
+		if (!isset($testcase_bugs[$tc_id])) 
+		{
 			$suiteName = $execution['tsuite_name'];
 			$tc_name = buildExternalIdString($tproject_info['prefix'], $execution['external_id']) . ":" . $execution['name'];
 
 			// add linked icons
 			$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tc_id});\">" .
-			                     "<img title=\"".lang_get('execution_history')."\" src=\"{$history_img}\" /></a> ";
+			                     "<img title=\"" . $l18n['execution_history'] ."\" src=\"{$img['history']}\" /></a> ";
 			$edit_link = "<a href=\"javascript:openTCEditWindow({$tc_id});\">" .
-						 "<img title=\"".lang_get('design')."\" src=\"{$edit_img}\" /></a> ";
+						 "<img title=\"" . $l18n['design'] . "\" src=\"{$img['edit']}\" /></a> ";
 			$tc_name = "<!-- " . sprintf("%010d", $execution['external_id']) . " -->" . $exec_history_link .
 			           $edit_link . $tc_name;
 
@@ -95,16 +103,17 @@ foreach ($testcase_bugs as &$row)
 }
 $arrData = array_values($testcase_bugs);
 
-if(count($arrData) > 0) {
+if(count($arrData) > 0) 
+{
 	// Create column headers
 	$columns = getColumnsDefinition();
 
 	// Extract the relevant data and build a matrix
 	$matrixData = array();
 	
-	foreach($arrData as $bugs) {
+	foreach($arrData as $bugs) 
+	{
 		$rowData = array();
-		
 		$rowData[] = $bugs[0];
 		$rowData[] = $bugs[1];
 		$rowData[] = $bugs[2];
@@ -124,8 +133,10 @@ if(count($arrData) > 0) {
 	$table->toolbarShowAllColumnsButton = true;
 	
 	$gui->tableSet = array($table);
-} else {
-	$gui->warning_msg = lang_get('no_linked_bugs');
+} 
+else 
+{
+	$gui->warning_msg = $l18n['no_linked_bugs'];
 }
 
 $totalOpenBugs = count($openBugs);
@@ -133,7 +144,6 @@ $totalResolvedBugs = count($resolvedBugs);
 $totalBugs = $totalOpenBugs + $totalResolvedBugs;
 $totalCasesWithBugs = count($arrData);
 
-$smarty = new TLSmarty;
 $gui->user = $args->user;
 $gui->printDate = '';
 $gui->tproject_name = $tproject_info['name'];
@@ -145,25 +155,6 @@ $gui->totalBugs = $totalBugs;
 $gui->totalCasesWithBugs = $totalCasesWithBugs;
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-
-/**
- * Register the bug for counting.
- */
-function registerBug($bugID, $bugInfo, &$openBugsArray, &$resolvedBugsArray)
-{
-	$linkString = $bugInfo['link_to_bts'];
-	$position = strpos($linkString,"<del>");
-	$position2 = strpos($linkString,"</del>");
-	if ((!$position) && (!$position2))
-	{
-		if (!in_array($bugID, $openBugsArray))
-			$openBugsArray[] = $bugID;
-	}
-	else if (!in_array($bugID, $resolvedBugsArray))
-	{
-		$resolvedBugsArray[] = $bugID;
-   	} 
-}
 
 
 /**
@@ -186,7 +177,18 @@ function buildBugString(&$db,$execID,&$openBugsArray,&$resolvedBugsArray)
 		{
 			foreach($bugs as $bugID => $bugInfo)
 			{
-				registerBug($bugID, $bugInfo, $openBugsArray, $resolvedBugsArray);
+				if ((!strpos($bugInfo['link_to_bts'],"<del>")) && 
+				    (!strpos($bugInfo['link_to_bts'],"</del>")))
+				{
+					if (!in_array($bugID, $openBugsArray))
+					{
+						$openBugsArray[] = $bugID;
+					}
+				}
+				else if (!in_array($bugID, $resolvedBugsArray))
+				{
+					$resolvedBugsArray[] = $bugID;
+			   	} 
 				$bugUrls[] = $bugInfo['link_to_bts'];
 			}
 		}

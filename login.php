@@ -42,7 +42,7 @@ switch($args->action)
 {
 	case 'doLogin':
 	case 'ajaxlogin':
-	     if(FALSE === form_security_validate('loginform')) 
+	     if(FALSE === form_security_validate()) 
 	     {
 	        $gui->note = $l18n['invalid_security_token'];
 	        $doAuthPostProcess = false;
@@ -86,7 +86,7 @@ if( $doAuthPostProcess )
 
 if( $doRenderLoginScreen ) 
 {
-    $gui->form_security_field = form_security_field('loginform');
+    $gui->form_security_field = form_security_field();
 	renderLoginScreen($gui);
 }
 

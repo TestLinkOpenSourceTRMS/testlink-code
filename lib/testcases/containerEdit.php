@@ -149,7 +149,7 @@ switch($action)
 		// 20110315 - asimon: refresh tree when creating new testsuite
 		$gui = new stdClass();
 		$gui->refreshTree = $args->refreshTree;
-		$gui->form_security_field = form_security_field('new_testsuite');
+		$gui->form_security_field = form_security_field();
 		$smarty->assign('gui', $gui);
 		$tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames,$oWebEditor,$action,
 		                             $args->containerID, $args->testsuiteID,null,$webEditorTemplateKey);
@@ -198,7 +198,7 @@ switch($action)
     case 'add_testsuite':
         $messages = null;
         $op['status'] = 0;
-        if(FALSE === form_security_validate('new_testsuite')) {
+        if(FALSE === form_security_validate()) {
             $messages = array( 'result_msg' => 'Result message invalid token',
                             'user_feedback' => lang_get('invalid_security_token'));
         } else if ($name_ok) {

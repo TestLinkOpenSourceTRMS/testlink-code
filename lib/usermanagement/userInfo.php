@@ -62,7 +62,7 @@ switch($args->doAction)
 
 if($doUpdate)
 {
-    if(FALSE === form_security_validate('userinfo')) 
+    if(FALSE === form_security_validate()) 
     {
         $op->status = tl::ERROR;
         $op->user_feedback = lang_get('invalid_security_token');
@@ -103,7 +103,7 @@ $smarty->assign('mgt_view_events',$user->hasRight($db,"mgt_view_events"));
 $smarty->assign('loginHistory', $loginHistory);
 $smarty->assign('user_feedback', $op->user_feedback);
 $smarty->assign('update_title_bar',$update_title_bar);
-$smarty->assign('form_security_field', form_security_field('userinfo'));
+$smarty->assign('form_security_field', form_security_field());
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
@@ -168,7 +168,7 @@ function generateAPIKey(&$argsObj,&$user)
 	$op = new stdClass();
     $op->status = tl::OK;
     $op->user_feedback = null;
-    if(FALSE === form_security_validate('userinfo')) {
+    if(FALSE === form_security_validate()) {
         $op->status = tl::ERROR;
         $op->user_feedback = lang_get('invalid_security_token');
     } else if ($user) {

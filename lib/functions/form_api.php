@@ -79,7 +79,7 @@ function form_security_token( $p_form_name )
  * @param string Form name
  * @return string Hidden form element to output
  */
-function form_security_field( $p_form_name ) {
+function form_security_field( $p_form_name = 'csrf_protection' ) {
     // TBD: verify if we should implement similar verification
 // 	if ( PHP_CLI == php_mode() || OFF == config_get_global( 'form_security_validation' ) ) {
 // 		return '';
@@ -123,7 +123,7 @@ function form_security_param( $p_form_name ) {
  * @param string Form name
  * @return boolean Form is valid
  */
-function form_security_validate( $p_form_name ) 
+function form_security_validate( $p_form_name = 'csrf_protection' ) 
 {
     // TBD: verify if we should implement similar verification
 	// 	if ( PHP_CLI == php_mode() || OFF == config_get_global( 'form_security_validation' ) ) {

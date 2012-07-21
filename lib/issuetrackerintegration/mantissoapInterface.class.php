@@ -22,7 +22,7 @@ class mantissoapInterface extends issueTrackerInterface
 	
 	
 	private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
-	
+	private $guiCfg = array();
 
 	/**
 	 * Construct and connect to BTS.
@@ -38,6 +38,8 @@ class mantissoapInterface extends issueTrackerInterface
 	    $this->setCfg($config);
 		$this->completeCfg();
 	    $this->connect();
+	    
+	    $this->guiCfg = array('use_decoration' => true);
 	}
 
 	
@@ -138,10 +140,10 @@ class mantissoapInterface extends issueTrackerInterface
 		}
 		
 		$status_ok = 0;
-		$id = intval($id);
+		$safe_id = intval($id);
 		try
 		{
-			$status_ok = $client->mc_issue_exists($this->cfg->username,$this->cfg->password,$id) ? 1 : 0;
+			$status_ok = $client->mc_issue_exists($this->cfg->username,$this->cfg->password,$safe_id) ? 1 : 0;
 		}
 		catch (SoapFault $f) 
 		{
@@ -180,14 +182,13 @@ class mantissoapInterface extends issueTrackerInterface
 		}
 
 		$status = false;
-		$id = intval($id);
+		$safe_id = intval($id);
 		$issue = null;
-
 		try
 		{
-			if($client->mc_issue_exists($this->cfg->username,$this->cfg->password,$id))
+			if($client->mc_issue_exists($this->cfg->username,$this->cfg->password,$safe_id))
 			{
-				$issue = $client->mc_issue_get($this->cfg->username,$this->cfg->password,$id);
+				$issue = $client->mc_issue_get($this->cfg->username,$this->cfg->password,$safe_id);
 				if( !is_null($issue) && is_object($issue) )
 				{				
 					$issue->IDHTMLString = "<b>{$id} : </b>";
@@ -310,7 +311,7 @@ class mantissoapInterface extends issueTrackerInterface
 			//
 			$tlStatus = str_replace(" ", "_", $statusVerbose);
 			$str = lang_get('issue_status_' . $tlStatus);
-			if($decoration)
+			if($this->guiCfg['use_decoration'])
 			{
 				$str = "[" . $str . "] ";	
 			}

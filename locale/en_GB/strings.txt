@@ -2843,9 +2843,10 @@ $TLS_title_tsuite_export_all = "Export all Test Suites";
 // ----- lib/testcases/containerEdit.php -----
 $TLS_delete = "Delete";
 $TLS_delete_notice = "Warning: All Related Execution Results will be deleted";
-$TLS_warning_empty_com_name = "Please give a name to Test Suite";
 $TLS_all_testcases_have_been_deleted = "All Test Cases have been deleted";
 $TLS_delete_testcases = "Delete Test Cases";
+$TLS_tsuite_copied_ok = 'Test Suite %s has been copied inside %s';
+$TLS_tsuite_copied_ok_name_changed = 'Test Suite %s has been copied inside %s with new name %s';
 
 
 

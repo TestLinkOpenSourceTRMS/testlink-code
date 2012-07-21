@@ -1,16 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.12.2.2 2011/01/14 14:39:04 asimon83 Exp $
-Purpose: smarty template - edit test specification: containers 
 
-@internal revision
-20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
-20110110 - Julian - BUGID 4155: Warning message when navigating away from changed test
-                                suite without saving
-20101012 - franciscom - BUGID 3887: CF Types validation
-20100315 - amitkhullar - Added Cancel button
-20091122 - franciscom - refactoring to use alert_message() and $labels
+Edit test specification: containers 
 
+@filesource	containerEdit.tpl
+@internal revisions
 *}
 {lang_get var="labels"
           s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,cancel,warning,
@@ -70,15 +64,12 @@ function validateForm(f)
 	      	return false;
 		}
 	}
-
-  
   
   return true;
 }
 </script>
 {/literal}
 
-{* BUGID 4155 *}
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">
   var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
@@ -99,7 +90,6 @@ function validateForm(f)
 	      name="container_edit" id="container_edit"
         onSubmit="javascript:return validateForm(this);">
 	
-	{* BUGID 4155  - when save or cancel is pressed do not show modification warning *}
 	<div>
 		<input type="submit" name="update_testsuite" value="{$labels.btn_save}" 
 		       onclick="show_modified_warning = false;" />
@@ -123,7 +113,6 @@ function validateForm(f)
 	 {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 	 </div>
 	<br></br>
-	{* BUGID 4155  - when save or cancel is pressed do not show modification warning *}
 	<div>
 		<input type="submit" name="update_testsuite" value="{$labels.btn_save}"
 		       onclick="show_modified_warning = false;" />

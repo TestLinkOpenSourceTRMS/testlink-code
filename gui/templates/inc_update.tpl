@@ -1,9 +1,9 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_update.tpl,v 1.21 2010/08/10 16:14:38 asimon83 Exp $
-Purpose: show message after an SQL operation
 
-rev: 20100810 - asimon - BUGID 3579: solved tree refreshing problems
+show message after an SQL operation
+@filesource	inc_update.tpl
+
 *}
 {* 
   INPUT: $result (mandatory) = [ok, sql_error_description] 

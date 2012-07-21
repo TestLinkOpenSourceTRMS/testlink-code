@@ -6,40 +6,12 @@
  * @filesource	containerEdit.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2005-2011, TestLink community 
+ * @copyright 	2005-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- *	20110402 - franciscom - BUGID 4322: New Option to block delete of executed test cases.	
- *  20101216 - asimon - refresh tree when creating new testsuite
- *	20101106 - franciscom - added check on $guiObj->testCaseSet and other variables that can be null
- *							to avoid event viewer warnings	when deleting test case in test suite 
- *							that has ONLY one test case.
- *
- *	20101012 - franciscom - BUGID 3890: Create Test Suite with same name that existent sibling - BLOCK
- *  20101011 - asimon - BUGID 3875
- *  20100916 - franciscom - BUGID 3778, 3779 - Option to reorder ALL CHILDREN Test Suites
- *  20100916 - franciscom - BUGID 3639 - reworked
- *  20100914 - franciscom - BUGID 3639 - reorderTestCasesDictionary()
- *  20100909 - franciscom - BUGID 3047: Deleting multiple TCs
- *  20100811 - asimon - BUGID 3669
- *  20100722 - asimon - BUGID 3406, removal of changes for 3049
- *  20100628 - asimon - removal of constants from filter control class
- *  20100625 - asimon - refactoring for new filter features and BUGID 3516
- *  20100624 - asimon - CVS merge (experimental branch to HEAD)
- *  20100314 - franciscom - added logic to refresh tree when copying N test cases 	
- * 						    added logic to get user choice regarding refresh tree from SESSION.
- *  20100223 - asimon - added removeTestcaseAssignments() for BUGID 3049
- *	20100204 - franciscom - changes in $tsuiteMgr->copy_to() call	
- *	20100202 - franciscom - BUGID 3130: TestSuite: Edit - rename Test Suite Name causes PHP Fatal Error
- *                          (bug created due change in show() interface
- *	20091206 - franciscom - addTestSuite() - new test suites are order set to last on tree branch
- *	20081225 - franciscom - Postgres SQL Error
- *	20080827 - franciscom - BUGID 1692
- *	20080329 - franciscom - added contribution by Eugenia Drosdezki - Move/copy testcases
- *	20080223 - franciscom - BUGID 1408
- *	20080129 - franciscom - contribution - tuergeist@gmail.com - doTestSuiteReorder() remove global coupling
- *	20080122 - franciscom - BUGID 1312
+ * @since 1.9.4
+ * 20120721 - franciscom - TICKET 5103: Copy Test Suite - user feedback always said ...
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -93,6 +65,12 @@ $action = null;
 $get_c_data = null;
 $init_opt_transfer = null;
 
+$dummy = ($sortCriteria = config_get('testcase_reorder_by')) == 'NAME' ? '_alpha' : '_externalid';
+$lbl2init = array('warning_empty_testsuite_name' => null,'string_contains_bad_chars' => null,
+				  'container_title_testsuite' => null,'invalid_security_token' => null,
+				  'btn_reorder_testcases' => 'btn_reorder_testcases' . $dummy);
+$l18n = init_labels($lbl2init);
+
 foreach ($a_actions as $the_key => $the_val)
 {
 	if (isset($_POST[$the_key]) )
@@ -103,13 +81,10 @@ foreach ($a_actions as $the_key => $the_val)
 		$action = $the_key;
 		$get_c_data = $the_val;
 		$level = 'testsuite';
-		$warning_empty_name = lang_get('warning_empty_com_name');
 		break;
 	}
 }
 
-$lblkey = ($sortCriteria = config_get('testcase_reorder_by')) == 'NAME' ? '_alpha' : '_externalid';
-$btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
 
 $smarty->assign('level', $level);
 $smarty->assign('page_title',lang_get('container_title_' . $level));
@@ -125,16 +100,15 @@ if($get_c_data)
 {
 	$name_ok = 1;
 	$c_data = getValuesFromPost($webEditorHtmlNames);
-
 	if($name_ok && !check_string($c_data['container_name'],$g_ereg_forbidden))
 	{
-		$msg = lang_get('string_contains_bad_chars');
+		$msg = $l18n['string_contains_bad_chars'];
 		$name_ok = 0;
 	}
 
 	if($name_ok && ($c_data['container_name'] == ""))
 	{
-		$msg = $warning_empty_name;
+		$msg = $l18n['warning_empty_testsuite_name'];
 		$name_ok = 0;
 	}
 }
@@ -146,7 +120,6 @@ switch($action)
 	case 'new_testsuite':
 		keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list);
 		$smarty->assign('opt_cfg', $opt_cfg);
-		// 20110315 - asimon: refresh tree when creating new testsuite
 		$gui = new stdClass();
 		$gui->refreshTree = $args->refreshTree;
 		$gui->form_security_field = form_security_field();
@@ -177,7 +150,7 @@ switch($action)
     	break;
 
     case 'do_copy':
-    	copyTestSuite($smarty,$template_dir,$tsuite_mgr,$args);
+    	copyTestSuite($smarty,$template_dir,$tsuite_mgr,$args,$l18n);
     	break;
 
     case 'update_testsuite':
@@ -186,11 +159,10 @@ switch($action)
         	$msg = updateTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
     	}
 		$guiObj = new stdClass();
-		// BUGID 3875
-		$guiObj->btn_reorder_testcases = $btn_reorder_testcases;
+		$guiObj->btn_reorder_testcases = $l18n['btn_reorder_testcases'];
   	  	$guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
 	  	$guiObj->id = $args->testsuiteID;
-		$guiObj->page_title = lang_get('container_title_testsuite');
+		$guiObj->page_title = $l18n['container_title_testsuite'];
 		$guiObj->refreshTree = $args->refreshTree;
      	$tsuite_mgr->show($smarty,$guiObj,$template_dir,$args->testsuiteID,null,$msg);
     	break;
@@ -198,10 +170,13 @@ switch($action)
     case 'add_testsuite':
         $messages = null;
         $op['status'] = 0;
-        if(FALSE === form_security_validate()) {
+        if(FALSE === form_security_validate()) 
+        {
             $messages = array( 'result_msg' => 'Result message invalid token',
-                            'user_feedback' => lang_get('invalid_security_token'));
-        } else if ($name_ok) {
+                               'user_feedback' => $l18n['invalid_security_token']);
+        } 
+        else if ($name_ok) 
+        {
 	    	$op = addTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
 	    	$messages = array( 'result_msg' => $op['messages']['msg'], 
 	    	                   'user_feedback' => $op['messages']['user_feedback']);
@@ -213,7 +188,7 @@ switch($action)
         $assignedKeywords = $op['status'] ? "" : $args->assigned_keyword_list;
         keywords_opt_transf_cfg($opt_cfg, $assignedKeywords);
       	$smarty->assign('opt_cfg', $opt_cfg);
-      	// 20101216 - asimon: refresh tree when creating new testsuite
+
       	$gui = new stdClass();
       	$gui->refreshTree = $args->refreshTree;
       	$smarty->assign('gui', $gui);
@@ -246,11 +221,10 @@ switch($action)
     						  lang_get('all_testcases_have_been_deleted'));
     	break;
 
-    // BUGID 3639 
 	case 'reorder_testcases': 
     	reorderTestCasesByCriteria($args,$tsuite_mgr,$tree_mgr,$sortCriteria);
 		$guiObj = new stdClass();
-		$guiObj->btn_reorder_testcases = $btn_reorder_testcases;
+		$guiObj->btn_reorder_testcases = $l18n['btn_reorder_testcases'];
 		$guiObj->refreshTree = true;
   	  	$guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
 	  	$guiObj->id = $args->testsuiteID;
@@ -262,7 +236,7 @@ switch($action)
 	case 'reorder_testsuites_alpha': 
     	reorderTestSuitesDictionary($args,$tree_mgr,$args->testsuiteID);
 		$guiObj = new stdClass();
-		$guiObj->btn_reorder_testcases = $btn_reorder_testcases;
+		$guiObj->btn_reorder_testcases = $l18n['btn_reorder_testcases'];
 		$guiObj->refreshTree = true;
   	  	$guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
 	  	$guiObj->id = $args->testsuiteID;
@@ -273,7 +247,7 @@ switch($action)
 	case 'reorder_testproject_testsuites_alpha':
     	reorderTestSuitesDictionary($args,$tree_mgr,$args->tprojectID);
 		$guiObj = new stdClass();
-		$guiObj->btn_reorder_testcases = $btn_reorder_testcases;
+		$guiObj->btn_reorder_testcases = $l18n['btn_reorder_testcases'];
 		$guiObj->refreshTree = true;
   	  	$guiObj->attachments = getAttachmentInfosFrom($tproject_mgr,$args->tprojectID);
 	  	$guiObj->id = $args->tprojectID;
@@ -683,8 +657,12 @@ function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
   returns:
 
 */
-function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj)
+function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj,$l18n)
 {
+
+	$guiObj = new stdClass();
+	$guiObj->btn_reorder_testcases = $l18n['btn_reorder_testcases'];;
+
     $exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
   	
   	$options = array();
@@ -692,17 +670,24 @@ function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj)
   	$options['action_on_duplicate_name'] = config_get('action_on_duplicate_name');
   	$options['copyKeywords'] = $argsObj->copyKeywords;
 
-  	$op=$tsuiteMgr->copy_to($argsObj->objectID, $argsObj->containerID, $argsObj->userID,$options);
+ 	// copy_to($source,$destination,...)
+  	$op = $tsuiteMgr->copy_to($argsObj->objectID, $argsObj->containerID, $argsObj->userID,$options);
 	if( $op['status_ok'] )
 	{
 	    $tsuiteMgr->tree_manager->change_child_order($argsObj->containerID,$op['id'],
 	                                                 $argsObj->target_position,$exclude_node_types);
+
+
+		// get info to provide feedback
+		$dummy = $tsuiteMgr->tree_manager->get_node_hierarchy_info(array($argsObj->objectID, $argsObj->containerID));
+	
+		$msgk = $op['name_changed'] ? 'tsuite_copied_ok_name_changed' : 'tsuite_copied_ok';
+		$guiObj->user_feedback = sprintf(lang_get($msgk),$dummy[$argsObj->objectID]['name'],
+										 $dummy[$argsObj->containerID]['name'],$op['name']);
 	}
 	
-	$guiObj = new stdClass();
 	$guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
 	$guiObj->id = $argsObj->objectID;
-	
 	$tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,null,'ok');
 }
 

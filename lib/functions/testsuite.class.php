@@ -128,16 +128,27 @@ class testsuite extends tlObjectWithAttachments
 	                  $ret['msg']
 	                  $ret['id']        -> when status_ok=1, id of the new element
 	  rev :
-	       20070324 - BUGID 710
 	*/
 	function create($parent_id,$name,$details,$order=null,
 	                $check_duplicate_name=0,
 	                $action_on_duplicate_name='allow_repeat')
 	{
-		$prefix_name_for_copy = config_get('prefix_name_for_copy');
+		static $l18n;
+		static $cfg;
+		if(!$cfg)
+		{
+			$cfg = array();
+			$cfg['prefix_name_for_copy'] = config_get('prefix_name_for_copy');
+		    $cfg['node_order'] = config_get('treemenu_default_testsuite_order');
+		    
+		    $l18n = array();
+		    $l18n['component_name_already_exists'] = lang_get('component_name_already_exists');
+		    
+		}
+		
 		if( is_null($order) )
 		{
-		  $node_order = config_get('treemenu_default_testsuite_order');
+		  $node_order = $cfg['treemenu_default_testsuite_order'];
 		}
 		else
 		{
@@ -145,7 +156,8 @@ class testsuite extends tlObjectWithAttachments
 		}
 		
 		$name = trim($name);
-		$ret = array('status_ok' => 1, 'id' => 0, 'msg' => 'ok');
+		$ret = array('status_ok' => 1, 'id' => 0, 'msg' => 'ok', 
+					 'name' => '', 'name_changed' => false);
 	
 		if ($check_duplicate_name)
 		{
@@ -155,18 +167,17 @@ class testsuite extends tlObjectWithAttachments
 				if ($action_on_duplicate_name == 'block')
 				{
 					$ret['status_ok'] = 0;
-					// BUGID 2767
-					$ret['msg'] = sprintf(lang_get('component_name_already_exists'),$name);	
+					$ret['msg'] = sprintf($l18n['component_name_already_exists'],$name);	
 				} 
 				else
 				{
 					$ret['status_ok'] = 1;      
 					if ($action_on_duplicate_name == 'generate_new')
 					{ 
-						$ret['status_ok'] = 1;
-						$desired_name=$name;      
-						$name = config_get('prefix_name_for_copy') . " " . $desired_name ;      
-					    $ret['msg'] = sprintf(lang_get('created_with_new_name'),$name,$desired_name);	
+						$desired_name = $name;      
+						$name = $ret['name'] = $cfg['prefix_name_for_copy'] . " " . $desired_name ;      
+					    $ret['msg'] = sprintf(lang_get('created_with_new_name'),$name,$desired_name);
+					    $ret['name_changed'] = true;
 					}
 				}
 			}       
@@ -392,13 +403,21 @@ class testsuite extends tlObjectWithAttachments
 	              $sqlResult = '', $action = 'update',$modded_item_id = 0)
 	{
 		$gui = is_null($guiObj) ? new stdClass() : $guiObj;
+		
 		$gui->cf = '';
 	    $gui->sqlResult = '';
 		$gui->sqlAction = '';
-		$gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
+		
+		$p2ow = array('refreshTree' => false, 'user_feedback' => '');
+		foreach($p2ow as $prop => $value)
+		{
+			if( !property_exists($gui,$prop) )
+			{
+				$gui->$prop = $value;
+			}
+		}
 
-        // BUGID 0003233: After test suite edit, display of Test suite do not 
-        //                have upload button enabled for attachment
+        // After test suite edit, display of Test suite do not have upload button enabled for attachment
   	    $my['options'] = array('show_mode' => 'readwrite'); 	
 	    $my['options'] = array_merge($my['options'], (array)$options);
 
@@ -425,7 +444,7 @@ class testsuite extends tlObjectWithAttachments
 		$gui->keywords_map = $this->get_keywords_map($id,' ORDER BY keyword ASC ');
 		$gui->attachmentInfos = getAttachmentInfosFrom($this,$id);
 		$gui->id = $id;
-	 	$gui->idpage_title = lang_get('testsuite');
+	 	$gui->page_title = lang_get('testsuite');
 		$gui->level = 'testsuite';
 		
 		$smarty->assign('gui',$gui);
@@ -585,8 +604,6 @@ class testsuite extends tlObjectWithAttachments
 	    $my['mappings'] = array();
 	    $my['mappings'] = array_merge($my['mappings'], (array)$mappings);
 
-
-		// BUGID 4374
 		$copyTCaseOpt = array('preserve_external_id' => $my['options']['preserve_external_id'],
 							  'copy_also' => 
 		                      array('keyword_assignments' => $my['options']['copyKeywords'],
@@ -600,7 +617,7 @@ class testsuite extends tlObjectWithAttachments
 		$op = $this->create($parent_id,$tsuite_info['name'],$tsuite_info['details'],
 		                    $tsuite_info['node_order'],$my['options']['check_duplicate_name'],
 		                    $my['options']['action_on_duplicate_name']);
-		
+				
 		$op['mappings'][$id] = $op['id']; 
 		$new_tsuite_id = $op['id'];
 		
@@ -621,7 +638,6 @@ class testsuite extends tlObjectWithAttachments
 		$subtree = $this->tree_manager->get_subtree($id,$my['filters']);
 		if (!is_null($subtree))
 		{
-		  
 			$parent_decode=array();
 		  	$parent_decode[$id]=$new_tsuite_id;
 			foreach($subtree as $the_key => $elem)

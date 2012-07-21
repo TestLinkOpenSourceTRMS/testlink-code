@@ -29,6 +29,14 @@
 // Uncomment this if you want dBug() display info
 // define('DBUG_ON',1);
 //
+// Example of Logger config
+// After this config:
+// 					 $tlCfg->loggerFilter = array('DEBUG','AUDIT','WARNING','ERROR');
+//
+// This will be written to TL event viewer
+// 					tLog("SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})","DEBUG");
+//
+//
 // To use a different version of ADODB that provided with TL, use a similar bunch of lines
 // on custom_config.inc.php
 // if( !defined('TL_ADODB_RELATIVE_PATH') )

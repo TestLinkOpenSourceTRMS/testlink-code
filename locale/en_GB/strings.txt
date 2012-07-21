@@ -527,7 +527,7 @@ $TLS_warning_empty_testsuite_name = "Please give a name to Test Suite";
 // ----- gui/templates/bug_add.tpl -----
 $TLS_btn_add_bug 		= "Add bug";
 $TLS_bug_id 			= "Bug id";
-$TLS_button_enter_bug 	= "Create new bug";
+$TLS_button_enter_bug 	= "Add bug to TestLink (bug must exists on BTS)";
 $TLS_link_bts_create_bug = "Access to Bug Tracking System ";
 $TLS_title_bug_add 		= "Add bug report";
 
@@ -1014,8 +1014,8 @@ $TLS_copy_req_spec = "Copy Req. Spec.";
 
 // gui/templates/inc_show_bug_table.tpl
 $TLS_caption_bugtable = "Relevant bugs";
-$TLS_delete_bug ="delete bug";
-$TLS_del_bug_warning_msg = "Really delete this bug?";
+$TLS_delete_bug ="delete bug from TestLink";
+$TLS_del_bug_warning_msg = "Really delete this bug from TestLink Database?";
 
 
 

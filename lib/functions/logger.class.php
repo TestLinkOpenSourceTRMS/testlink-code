@@ -37,8 +37,14 @@ class tlLogger extends tlObject
 	/** 
 	 * Log levels VALUES
 	 * There are 5 logging levels available. 
-	 * Log messages will only be displayed if they are at a level less verbose than that currently set. 
-	 * So, we can turn on logging with the following command:
+	 * Log messages will only be displayed if they level is present in 
+	 * config option array $tlCfg->loggerFilter.
+	 * Example:
+	 * 			Configurin on your custom_config.inc.php
+	 *	
+	 * 			$tlCfg->loggerFilter = array('DEBUG','AUDIT','WARNING','ERROR');
+	 *
+	 * 			Will write to event viewer ALSO 'DEBUG' event
 	 *
 	 */
 	const NONE = 0;

@@ -33,7 +33,7 @@ class mantissoapInterface extends issueTrackerInterface
 	function __construct($type,$config)
 	{
 		$this->interfaceViaDB = false;
-		$this->methodOpt['buildViewBugLink'] = array('addSummary' => false, 'colorByStatus' => true);
+		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);
 
 	    $this->setCfg($config);
 		$this->completeCfg();
@@ -190,11 +190,14 @@ class mantissoapInterface extends issueTrackerInterface
 				$issue = $client->mc_issue_get($this->cfg->username,$this->cfg->password,$id);
 				if( !is_null($issue) && is_object($issue) )
 				{				
+					$issue->IDHTMLString = "<b>{$id} : </b>";
 					$issue->statusCode = $issue->status->id; 
 					$issue->statusVerbose = $issue->status->name; 
 					$issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusVerbose);
 					$issue->statusColor = isset($this->status_color[$issue->statusVerbose]) ? 
 										  $this->status_color[$issue->statusVerbose] : 'white';
+
+					$issue->summaryHTMLString = $issue->summary;
                 }
 			}
 		}
@@ -268,7 +271,7 @@ class mantissoapInterface extends issueTrackerInterface
 		
 	    if( !property_exists($this->cfg,'uriview') )
 	    {
-	    	$this->cfg->uriview = $base . 'view.php?id';
+	    	$this->cfg->uriview = $base . 'view.php?id=';
 		}
 	    
 	    if( !property_exists($this->cfg,'uricreate') )

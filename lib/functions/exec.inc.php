@@ -8,41 +8,23 @@
  *
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: exec.inc.php,v 1.60 2010/06/24 17:25:53 asimon83 Exp $
+ * @copyright 	2005-2012, TestLink community 
+ * @filesource	exec.inc.php
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
+ * @since 1.9.4
+ * 20120721 - franciscom - TICKET 05104: Audit message for BUG delete needs more info (improvement)
  *
- * 20100522 - franciscom - BUGID 3479 - Bulk Execution - Custom Fields Bulk Assignment (write_execution())
- * 20100522 - franciscom - BUGID 3440 - get_bugs_for_exec() - added is_object() check 
- * 20090815 - franciscom - write_execution() - interface changes 
- * 20081231 - franciscom - write_execution() changes to manage bulks exec notes
- * 20080528 - franciscom - BUGID 1504 - changes in write_execution
- *                                      using version_number
- * 20080504 - franciscom - removed deprecated functions
- * 20051119  - scs - added fix for 227
- * 20060311 - kl - some modifications to SQL queries dealing with 1.7
- *                 builds table in order to comply with new 1.7 schema
- * 20060528 - franciscom - adding management of bulk update
- * 20060916 - franciscom - added write_execution_bug()
- *                               get_bugs_for_exec()
- * 20070105 - franciscom - interface changes write_execution()
- * 20070222 - franciscom - BUGID 645 createResultsMenu()
- * 20070617 - franciscom - BUGID     insert_id() problems for Postgres and Oracle?
  **/
-/** 
- * @uses  common.php required basic environment (configuration and core libraries) 
- **/
-require_once('common.php');
 
+require_once('common.php');
 
 /** 
  * Building the dropdown box of results filter
  * 
  * @return array map of 'status_code' => localized string
  **/
-// BUGID 645 
 function createResultsMenu()
 {
 	$resultsCfg = config_get('results');
@@ -70,17 +52,13 @@ function createResultsMenu()
  * @param resource &$db reference to database handler
  * @param obj &$exec_signature object with tproject_id,tplan_id,build_id,platform_id,user_id
  * 
- * @internal Revisions:
+ * @internal revisions
  * 
- *
- * 20110323 - Parameter map_last_exec not used within function -> removed
- * 20100522 - BUGID 3479 - Bulk Execution - Custom Fields Bulk Assignment
  */
 function write_execution(&$db,&$exec_signature,&$exec_data)
 {
 	$executions_table = DB_TABLE_PREFIX . 'executions';
 	$resultsCfg = config_get('results');
-	// $bugInterfaceOn = config_get('bugInterfaceOn');
 	$db_now = $db->db_now();
 	$cfield_mgr = New cfield_mgr($db);
 	$cf_prefix = $cfield_mgr->get_name_prefix();
@@ -169,16 +147,14 @@ function write_execution_bug(&$db,$exec_id, $bug_id,$just_delete=false)
 	// Instead of Check if record exists before inserting, do delete + insert
 	$prep_bug_id = $db->prepare_string($bug_id);
 	
-	$sql = "DELETE FROM {$execution_bugs} " .
-		"WHERE execution_id={$exec_id} " .
-		"AND bug_id='" . $prep_bug_id ."'";
+	$sql = "DELETE FROM {$execution_bugs} WHERE execution_id={$exec_id} " .
+		   "AND bug_id='" . $prep_bug_id ."'";
 	$result = $db->exec_query($sql);
 	
 	if(!$just_delete)
 	{
-		$sql = "INSERT INTO {$execution_bugs} " .
-			"(execution_id,bug_id) " .
-			"VALUES({$exec_id},'" . $prep_bug_id . "')";
+		$sql = "INSERT INTO {$execution_bugs} (execution_id,bug_id) " .
+			   "VALUES({$exec_id},'" . $prep_bug_id . "')";
 		$result = $db->exec_query($sql);  	     
 	}
 	
@@ -197,11 +173,9 @@ function write_execution_bug(&$db,$exec_id, $bug_id,$just_delete=false)
  */
 function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
 {
-	$tables['execution_bugs'] = DB_TABLE_PREFIX . 'execution_bugs';
-	$tables['executions'] = DB_TABLE_PREFIX . 'executions';
-	$tables['builds'] = DB_TABLE_PREFIX . 'builds';
-	
+	$tables = tlObjectWithDB::getDBTables(array('executions','execution_bugs','builds'));
 	$bug_list=array();
+
 	if( is_object($bug_interface) )
 	{
 		$sql = 	"SELECT execution_id,bug_id,builds.name AS build_name " .
@@ -211,6 +185,7 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
 				" AND   execution_id=executions.id " .
 				" AND   executions.build_id=builds.id " .
 				" ORDER BY builds.name,bug_id";
+
 		$map = $db->get_recordset($sql);
 		if( !is_null($map) )
 		{  	
@@ -234,16 +209,38 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
  * 
  * @return array all values of executions DB table in format field=>value
  */
-function get_execution(&$db,$execution_id)
+function get_execution(&$dbHandler,$execution_id,$opt=null)
 {
-	$tables['executions'] = DB_TABLE_PREFIX . 'executions';
+	$my = array('options' => array('output' => 'raw'));
+	$my['options'] = array_merge($my['options'], (array)$opt);
+	$tables = tlObjectWithDB::getDBTables(array('executions','nodes_hierarchy','builds','platforms'));
 	
-	$sql = "SELECT * " .
-		"FROM {$tables['executions']} ".
-		"WHERE id={$execution_id} ";
-	
-	$map = $db->get_recordset($sql);
-	return($map);
+	$safe_id = intval($execution_id);	
+	switch($my['options']['output'])
+	{
+		case 'audit':
+			$sql = " SELECT B.name AS build_name,PLAT.name AS platform_name, " .
+			       " NH_TPLAN.name AS testplan_name, NH_TC.name AS testcase_name, " .
+			       " E.id AS exec_id, NH_TPROJ.name AS testproject_name " . 
+				   " FROM {$tables['executions']} E " .
+				   " JOIN {$tables['builds']} B ON B.id = E.build_id " . 
+				   " JOIN {$tables['platforms']} PLAT ON PLAT.id = E.platform_id " . 
+				   " JOIN {$tables['nodes_hierarchy']} NH_TPLAN ON NH_TPLAN.id = E.testplan_id " . 
+				   " JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = E.tcversion_id " . 
+				   " JOIN {$tables['nodes_hierarchy']} NH_TC ON NH_TC.id = NH_TCV.parent_id " . 
+				   " JOIN {$tables['nodes_hierarchy']} NH_TPROJ ON NH_TPROJ.id = NH_TPLAN.parent_id " . 
+				   " WHERE E.id = " . $safe_id;
+		break;		
+		
+		case 'raw':
+		default:
+			$sql = " SELECT * FROM {$tables['executions']} E ".
+				   " WHERE E.id = " . $afe_id;
+		break;		
+	}	
+	tLog(__FUNCTION__ . ':' . $sql,"DEBUG");
+	$rs = $dbHandler->get_recordset($sql);
+	return($rs);
 }
 
 /** 
@@ -259,9 +256,7 @@ function get_execution(&$db,$execution_id)
  **/
 function delete_execution(&$db,$exec_id)
 {
-	$tables['execution_bugs'] = DB_TABLE_PREFIX . 'execution_bugs';
-	$tables['executions'] = DB_TABLE_PREFIX . 'executions';
-	$tables['cfield_execution_values'] = DB_TABLE_PREFIX . 'cfield_execution_values';
+	$tables = tlObjectWithDB::getDBTables(array('executions','execution_bugs','cfield_execution_values'));
 	
 	$sql = array(
 		"DELETE FROM {$tables['execution_bugs']} WHERE execution_id = {$exec_id}", // delete bugs

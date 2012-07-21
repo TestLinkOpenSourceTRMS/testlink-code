@@ -3150,7 +3150,10 @@ $TLS_audit_keyword_assignment_removed_tc = "Keyword '{%1}' was unassigned from T
 $TLS_audit_all_keyword_assignments_removed_tc = "All keywords were unassigned from the Test Case '{%1}'";
 
 $TLS_audit_executionbug_added = "Bug '{%1}' was added during execution";
-$TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted during execution";
+$TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted " . 
+								  "from execution with id: {%2} of Test Case: {%3} " .
+								  "from Test Project: {%4} - Test Plan: {%5} - " .
+								  "Platform: {%6} - Build: {%7}";
 
 $TLS_audit_attachment_deleted = "Attachment '{%1}' was deleted";
 $TLS_audit_attachment_created = "Attachment '{%1}' - file '{%2}' was created";

@@ -387,9 +387,6 @@ class tree extends tlObject
 		$the_path = array();
 		$this->_get_path($node_id,$the_path,$to_node_id,$format); 
 		
-		// echo $format;
-		// new dBug($the_path);
-		
 		if( !is_null($the_path) && count($the_path) > 0 )
 		{
 			$the_path=array_reverse($the_path);  
@@ -463,7 +460,6 @@ class tree extends tlObject
 			return; 	
 		}
 		
-		// new dBug($format);
 		while ( $row = $this->db->fetch_array($result) )
 		{
 			// only continue if this $node isn't the root node
@@ -839,14 +835,9 @@ class tree extends tlObject
 	    	}
 	    	$my['filters']['additionalWhereClause'] .= " AND node_type_id NOT IN (" . implode(",",$exclude) . ")";
 	  	}
-
-		//new dBug($my['options']);
-		
+	
 	    $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
 	 	$qnum = $this->$method2call($node_id,$the_subtree,$my['filters'],$my['options']);
-	 
-	 
-	    // echo '<br>' . 'DO RECURSIVE ?' . $my['options']['recursive'] . ':: <b> QNUM:' . $qnum . '</b><br>';
 	 	return $the_subtree;
 	}
 	
@@ -928,7 +919,8 @@ class tree extends tlObject
 						                     'parent_id' => $row['parent_id'],
 						                     'node_type_id' => $row['node_type_id'],
 						                     'node_order' => $row['node_order'],
-						                     'node_table' => $node_table);
+						                     'node_table' => $node_table,
+						                     'name' => $row['name']);
 					break;                     
 
 					case 'full':
@@ -977,9 +969,7 @@ class tree extends tlObject
 		if (!$tcNodeTypeID)
 		{
 		  	$tcNodeTypeID = $this->node_descr_id['testcase'];
-		  	
-		  	
-		  	
+
 		  	$qnum=0;
 
         	$my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
@@ -994,9 +984,10 @@ class tree extends tlObject
 
 			$platform_filter = "";
 			if( isset($my['options']['order_cfg']['platform_id']) && 
-				$my['options']['order_cfg']['platform_id'] > 0 )
+				($safe_pid = intval($my['options']['order_cfg']['platform_id']) ) > 0 )
 			{
-				$platform_filter = " AND T.platform_id = {$order_cfg['platform_id']} ";
+				$platform_filter = " /* Platform filter */ " . 
+								   " AND T.platform_id = " . $safe_pid;
 			}
 			
 			$fclause = " AND node_type_id <> {$tcNodeTypeID} {$my['filters']['additionalWhereClause']} ";
@@ -1016,19 +1007,6 @@ class tree extends tlObject
 			$exclude_branches = $my['filters']['exclude_branches'];
 			$exclude_children_of = $my['filters']['exclude_children_of'];	
 		}
-
-	
-		// Seems is not used
-		/*	
-		if( !is_null($my['filters']['family']) )
-		{
-			if( isset($my['filters']['family'][$node_id]) )
-			{
-				$children2get = implode( ',',array_keys($my['filters']['family'][$node_id]));
-			}
-		} 	
-	    */
-	    
 	    
 	    switch($my['options']['order_cfg']['type'])
 	    {
@@ -1070,21 +1048,10 @@ class tree extends tlObject
 			    
 	    }
     
-		// echo $sql;
-	  	
-	  	
 	  	$result = $this->db->exec_query($sql);
-	  	
 	  	$qnum++;
 	    while($row = $this->db->fetch_array($result))
-	    //$loop2do = count($recordSet);
-	    //for($ldx=0; $ldx < $loop2do; $ldx++)
 	    {
-	    	// $row = &$recordSet[$ldx];
-	  		//$rowID = $row['id'];
-	  		// $nodeTypeID = $row['node_type_id'];
-	  		// $nodeType = $this->node_types[$row['node_type_id']];
-			
 	  		if(!isset($exclude_branches[$row['id']]))
 	  		{  
 				    switch($my['options']['key_type'])

@@ -269,7 +269,7 @@ class testplan extends tlObjectWithAttachments
 
 		$sql .= " FROM {$this->tables['testplans']} testplans, " .
 			    " {$this->tables['nodes_hierarchy']} NH" .
-			    " WHERE testplans.id=NH.id " .
+			    " WHERE testplans.id = NH.id " .
 				" AND NH.name = '" . $this->db->prepare_string($name) . "'";
 				
 		if( ($safe_id = intval($tproject_id)) > 0 )
@@ -5868,7 +5868,6 @@ class testplan extends tlObjectWithAttachments
     		}	
 		}   		   
 		
-		echo $sql . '<br>';
     	$rs = $this->db->get_recordset($sql);	
     	if(!is_null($rs))
     	{
@@ -6339,6 +6338,7 @@ class build_mgr extends tlObject
 		$my = array('options' => array('tplan_id' => null, 'output' => 'full'));
 		$my['options'] = array_merge($my['options'],(array)$opt);
 
+		$sql = "/* {$debugMsg} */";
 		switch($my['options']['output'])
 		{
 			case 'minimun':

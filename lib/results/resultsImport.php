@@ -179,7 +179,6 @@ function importResults(&$db,&$xml,$context)
 		
 		$xmlTCExec = $xml->xpath("//testcase");
 		$resultData = importExecutionsFromXML($xmlTCExec);
-		new dBug($resultData);
 		
 		if ($resultData) 
 		{
@@ -270,9 +269,10 @@ function saveImportedResultData(&$db,$resultData,$context)
 	$checks['status_ok'] = true;		
 	$checks['msg'] = null;
 	$dummy = null;
+	
 	if( !is_null($context->tprojectID) && intval($context->tprojectID) > 0)
 	{
-		$dummy = $tproject_mgr->get_by_id($context->tprojectID,array('output' => 'existsByID'));
+		$dummy = array($tproject_mgr->get_by_id($context->tprojectID,array('output' => 'existsByID')));
 	}
 	else if( !is_null($context->tprojectName) )
 	{
@@ -297,6 +297,8 @@ function saveImportedResultData(&$db,$resultData,$context)
     {
     	$context->tprojectID = $dummy[0]['id'];	
     }
+    
+    
     
 	// --------------------------------------------------------------------	
 	$dummy = null;
@@ -341,7 +343,7 @@ function saveImportedResultData(&$db,$resultData,$context)
 	// --------------------------------------------------------------------	
 
 	// --------------------------------------------------------------------	
-	$optGB = array('tplan_id' => $context->testplanID, 'output' => 'minimun');
+	$optGB = array('tplan_id' => $context->tplanID, 'output' => 'minimun');
 	$dummy = null;
 	if( !is_null($context->buildID) && intval($context->buildID) > 0 )
 	{

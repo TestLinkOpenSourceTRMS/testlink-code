@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- TestLink - www.teamst.org - results example using names instead of id -->
+<results>
+  <testplan name="My first test plan" />
+  <build name="1.3.0" />
+  <platform name="Ferrari" />
+
+  <testcase external_id="BB-1" >
+    <!-- if not present logged user  will be used -->
+    <!-- tester LOGIN Name -->
+    <tester>u0113</tester>  
+    <!-- if not present now() will be used -->
+    <timestamp>2008-09-08 14:00:00</timestamp>  
+    <result>p</result>
+    <notes>functionality works great </notes>
+  </testcase>
+  
+  <!-- ANOTHER EXE for SAME test case -->
+  <testcase external_id="BB-1" >
+    <result>f</result>
+    <notes>functionality works great KIMI</notes>
+  </testcase>
+  
+  <!-- Using INTERNAL ID -->
+  <testcase id="2627" >   
+    <result>f</result>
+    <notes>Using INTERNAL ID as link </notes>
+    <bug_id>ISSUE-66</bug_id>
+  </testcase>
+</results>

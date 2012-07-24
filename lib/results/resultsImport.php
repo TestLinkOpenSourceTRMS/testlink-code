@@ -12,7 +12,8 @@
  *
  * @internal revisions
  * @since 1.9.4
- *
+ * 20120724 - franciscom - TICKET 5106: Import results - add possibility 
+ *										to provide names instead of internal id to identify context
  **/
 
 require('../../config.inc.php');
@@ -123,10 +124,6 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function importExecutionResultsFromXML(&$db,$fileName,$context)
 {	
-	
-	new dBug($fileName);
-	new dBug($context);
-	// die(__FUNCTION__);
 	$resultMap=null;
 	$xml = @simplexml_load_file($fileName);
 	if($xml !== FALSE)
@@ -154,19 +151,36 @@ function importResults(&$db,&$xml,$context)
 		// if yes overwrite GUI selection with value get from file
 		//
 		$executionContext = $context;
-		$contextKeys = array('testproject' => 'tprojectID', 'testplan' => 'tplanID', 
-							 'build' => 'buildID', 'platform' => 'platformID');
+		$contextKeys = array('testproject' 	=> array('id' => 'tprojectID', 'name' => 'tprojectName'), 
+							 'testplan' 	=> array('id' => 'tplanID', 'name' => 'tplanName'),  
+							 'build' 		=> array('id' => 'buildID', 'name' => 'buildName'),   
+							 'platform' 	=> array('id' => 'platformID', 'name' => 'platformName'));
 		
-		foreach( $contextKeys as $xmlkey => $execkey)
+
+
+		foreach( $contextKeys as $xmlkey => $execElem)
 		{
 			if( ($joker = $xml->$xmlkey) )
 			{
-				$executionContext->$execkey = (int) $joker['id'];
+				// IMPORTANT NOTICE: name has precedence over id
+				if( isset($joker['name']) )
+				{
+					$executionContext->$execElem['name'] = (string) $joker['name'];
+					$executionContext->$execElem['id'] = null; // get rid of id passed from GUI
+					continue;
+				}
+				if( isset($joker['id']) )
+				{
+					$executionContext->$execElem['id'] = (int) $joker['id'];
+					$executionContext->$execElem['name'] = null;
+				}
 			}
 		} 				
-
+		
 		$xmlTCExec = $xml->xpath("//testcase");
 		$resultData = importExecutionsFromXML($xmlTCExec);
+		new dBug($resultData);
+		
 		if ($resultData) 
 		{
 			$resultMap = saveImportedResultData($db,$resultData,$executionContext);
@@ -232,6 +246,7 @@ function saveImportedResultData(&$db,$resultData,$context)
 	{
 		$tplan_mgr=new testplan($db);
 		$tproject_mgr=new testproject($db);
+		$build_mgr=new build_mgr($db);
 	}
 	
 	// Need to do checks on common settings
@@ -251,9 +266,19 @@ function saveImportedResultData(&$db,$resultData,$context)
 	// execution type if not present -> set to MANUAL
 	//				  if presente is valid i.e. inside the TL domain
 	//
+	$checks = array();
 	$checks['status_ok'] = true;		
 	$checks['msg'] = null;
-	$dummy = $tproject_mgr->get_by_id($context->tprojectID);
+	$dummy = null;
+	if( !is_null($context->tprojectID) && intval($context->tprojectID) > 0)
+	{
+		$dummy = $tproject_mgr->get_by_id($context->tprojectID,array('output' => 'existsByID'));
+	}
+	else if( !is_null($context->tprojectName) )
+	{
+		$dummy = $tproject_mgr->get_by_name($context->tprojectName,array('output' => 'existsByName'));
+	}
+
 	$checks['status_ok'] = !is_null($dummy);
 	if( !$checks['status_ok'] )
 	{
@@ -267,8 +292,70 @@ function saveImportedResultData(&$db,$resultData,$context)
 			$resultMap[]=array($warning);
 		}
 	}
-    $doIt = $checks['status_ok'];
+	
+    if( ($doIt = $checks['status_ok']) )
+    {
+    	$context->tprojectID = $dummy[0]['id'];	
+    }
     
+	// --------------------------------------------------------------------	
+	$dummy = null;
+	if( !is_null($context->tplanID) && intval($context->tplanID) > 0 )
+	{
+		$dummy = $tplan_mgr->get_by_id($context->tplanID,array('output' => 'minimun'));
+	}
+	else if( !is_null($context->tplanName) )
+	{
+		$dummy = $tplan_mgr->get_by_name($context->tplanName,$context->tprojectID,array('output' => 'minimun'));
+	}
+	if( !is_null($dummy) )
+	{
+    	$context->tplanID = $dummy[0]['id'];	
+	}
+
+	if( (intval($context->tprojectID) <= 0) && intval($context->tplanID) > 0)
+	{
+		$dummy = $tplan_mgr->tree_manager->get_node_hierarchy_info($context->tplanID);
+		$context->tprojectID = $dummy['parent_id'];
+	}
+	// --------------------------------------------------------------------	
+	
+	// --------------------------------------------------------------------	
+	$dummy = null;
+	$tplan_mgr->platform_mgr->setTestProjectID($context->tprojectID);
+	if( !is_null($context->platformID) && intval($context->platformID) > 0 )
+	{
+		$dummy = array($tplan_mgr->platform_mgr->getByID($context->platformID));
+	}
+	else if( !is_null($context->platformName) )
+	{
+		if( !is_null($xx = $tplan_mgr->platform_mgr->getID($context->platformName) ) )
+		{
+			$dummy = array(0 => array('id' => $xx));
+		}
+	}
+	if( !is_null($dummy) )
+	{
+    	$context->platformID = $dummy[0]['id'];	
+	}
+	// --------------------------------------------------------------------	
+
+	// --------------------------------------------------------------------	
+	$optGB = array('tplan_id' => $context->testplanID, 'output' => 'minimun');
+	$dummy = null;
+	if( !is_null($context->buildID) && intval($context->buildID) > 0 )
+	{
+		$dummy = array($build_mgr->get_by_id($context->buildID,$optGB));
+	}
+	else if( !is_null($context->buildName) )
+	{
+		$dummy = $build_mgr->get_by_name($context->buildName,$optGB);
+	}
+	if( !is_null($dummy) )
+	{
+    	$context->buildID = $dummy[0]['id'];	
+	}
+	// --------------------------------------------------------------------	
     
 	// --------------------------------------------------------------------	
 	for($idx=0; $doIt && $idx < $tc_qty;$idx++)
@@ -288,9 +375,9 @@ function saveImportedResultData(&$db,$resultData,$context)
     	$status_ok = $checks['status_ok'];		
 		if($status_ok)
 		{
-			$tcase_id=$checks['tcase_id'];
-			$tcase_external_id=trim($tcase_exec['tcase_external_id']);
-        	$tester_id=$checks['tester_id'];
+			$tcase_id = $checks['tcase_id'];
+			$tcase_external_id = trim($tcase_exec['tcase_external_id']);
+        	$tester_id = $checks['tester_id'];
 		    
 	        // external_id has precedence over internal id
         	$using_external_id = ($tcase_external_id != "");
@@ -305,17 +392,16 @@ function saveImportedResultData(&$db,$resultData,$context)
    		
 	  	if( $status_ok) 
 	  	{
-	  		$tcase_identity=$using_external_id ? $tcase_external_id : $tcase_id; 
-		    $result_code=strtolower($tcase_exec['result']);
-		    $result_is_acceptable=isset($resulstCfg['code_status'][$result_code]) ? true : false;
-		    		
+	  		$tcase_identity = $using_external_id ? $tcase_external_id : $tcase_id; 
+		    $result_code = strtolower($tcase_exec['result']);
+		    $result_is_acceptable = isset($resulstCfg['code_status'][$result_code]) ? true : false;
 		    $notes = $tcase_exec['notes'];
-		    $message=null;
+		    $message = null;
+		    
 		    $info_on_case = $tplan_mgr->getLinkInfo($context->tplanID,$tcase_id,$context->platformID);
-
-
-		    if ($info_on_case)
+		    if(is_null($info_on_case))
 		    {
+		    	
 		    	$message=sprintf($l18n['import_results_tc_not_found'],$tcase_identity);
   	    	}
 		    else if (!$result_is_acceptable) 
@@ -324,6 +410,7 @@ function saveImportedResultData(&$db,$resultData,$context)
 		    } 
 		    else 
 		    {
+		    	$info_on_case = current($info_on_case);
 		    	$tcversion_id = $info_on_case['tcversion_id'];
 		    	$version = $info_on_case['version'];
           		$notes = $db->prepare_string(trim($notes));
@@ -343,7 +430,6 @@ function saveImportedResultData(&$db,$resultData,$context)
               		$tester_id=$context->userID;
           		}
 
-				// BUGID 3543 - added execution_type          		
           		$sql = " /* $debugMsg */ " .
 		      	       " INSERT INTO {$tables['executions']} (build_id,tester_id,status,testplan_id," .
 		               " tcversion_id,execution_ts,notes,tcversion_number,platform_id,execution_type)" .
@@ -401,7 +487,7 @@ function importExecutionsFromXML($xmlTCExecSet)
 	{ 
 	    $jdx=0;
 	    $exec_qty=sizeof($xmlTCExecSet);
-	    for($idx=0; $idx <$exec_qty ; $idx++)
+	    for($idx=0; $idx < $exec_qty ; $idx++)
 	    {
 	    	$xmlTCExec=$xmlTCExecSet[$idx];
 	    	$execInfo = importExecutionFromXML($xmlTCExec);
@@ -553,8 +639,9 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,&$execValues,&$
     if($using_external_id)
     {
         // need to get internal id  
-        $checks['tcase_id']=$tcase_mgr->getInternalID($tcase_external_id,$tcaseCfg->glue_character);
-        $checks['status_ok']=intval($checks['tcase_id']) > 0 ? true : false;
+        
+        $checks['tcase_id'] = $tcase_mgr->getInternalID($tcase_external_id,$tcaseCfg->glue_character);
+        $checks['status_ok'] = intval($checks['tcase_id']) > 0 ? true : false;
         if(!$checks['status_ok'])
         {
            $checks['msg'][]=sprintf(lang_get('tcase_external_id_do_not_exists'),$tcase_external_id); 
@@ -563,8 +650,8 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,&$execValues,&$
     else
     {
        // before using internal id, I want to check it's a number  
-       $checks['tcase_id']=$tcase_id;
-       $checks['status_ok']=intval($checks['tcase_id']) > 0 ? true : false;
+       $checks['tcase_id'] = $tcase_id;
+       $checks['status_ok'] = intval($checks['tcase_id']) > 0 ? true : false;
        if(!$checks['status_ok'])
        {
            $checks['msg'][]=sprintf(lang_get('tcase_id_is_not_number'),$tcase_id); 
@@ -602,7 +689,6 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,&$execValues,&$
 		}
     }
     
-    // BUGID 4467
 	$execValues['bug_id'] = isset($execValues['bug_id']) ? $execValues['bug_id'] : null;
     if($checks['status_ok'] && !is_null($execValues['bug_id']) && is_array($execValues['bug_id']) )
     {
@@ -617,10 +703,8 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,&$execValues,&$
 		}
 	}
 	
-	// BUGID 3543
     if($checks['status_ok'] && isset($execValues['execution_type']) )
     {
-    	// BUGID 3751
     	$execValues['execution_type'] = intval($execValues['execution_type']); 
 		$execDomain = $tcase_mgr->get_execution_types();
 		if( $execValues['execution_type'] == 0 )

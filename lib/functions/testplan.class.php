@@ -16,6 +16,8 @@
  * @internal revisions
  * 
  *  @since 1.9.4
+ *  20120724 - franciscom - TICKET 5106: Import results - add possibility to provide names 
+ *										 instead of internal id to identify context
  *  20120714 - franciscom - getLinkInfo(), output set addapted for tc_exec_assignment.php
  *							getLinkedForTesterAssignmentTree()
  *
@@ -244,23 +246,39 @@ class testplan extends tlObjectWithAttachments
 	 name: testplan name
 	 testproject_id
 	 */
-	function get_by_name($name,$tproject_id = 0)
+	function get_by_name($name,$tproject_id=0,$opt=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$my = array();
+		$my['opt'] = array('output' => 'full');
+		$my['opt'] = array_merge($my['opt'],(array)$opt);
+
         $sql = "/* $debugMsg */ ";
-		$sql .= " SELECT testplans.*, NH.name " .
-			    " FROM {$this->tables['testplans']} testplans, " .
+
+		switch($my['opt']['output'])
+		{
+			case 'minimun':
+				$sql .= " SELECT testplans.id, NH.name ";
+			break;
+			
+			case 'full':
+			default:
+				$sql .= " SELECT testplans.*, NH.name ";
+			break;
+		}
+
+		$sql .= " FROM {$this->tables['testplans']} testplans, " .
 			    " {$this->tables['nodes_hierarchy']} NH" .
 			    " WHERE testplans.id=NH.id " .
-			    " AND NH.name = '" . $this->db->prepare_string($name) . "'";
-		
-		if($tproject_id > 0 )
+				" AND NH.name = '" . $this->db->prepare_string($name) . "'";
+				
+		if( ($safe_id = intval($tproject_id)) > 0 )
 		{
-			$sql .= " AND NH.parent_id={$tproject_id}";
+			$sql .= " AND NH.parent_id={$safe_id} ";
 		}
 		
-		$recordset = $this->db->get_recordset($sql);
-		return($recordset);
+		$rs = $this->db->get_recordset($sql);
+		return($rs);
 	}
 
 
@@ -5777,12 +5795,9 @@ class testplan extends tlObjectWithAttachments
     	$safe_id['tcase_id'] = intval($tcase_id);
     	
     	// check and die?
-    	
     	$my = array('opt' => array('output' => 'version_info','tproject_id' => null,
     							   'build4assignment' => null, 'collapse' => false));
     	$my['opt'] = array_merge($my['opt'],(array)$opt);
-    	
-    	
     	
     	$sql = "/* $debugMsg */ " .
     		   " SELECT TCV.id AS tcversion_id,TCV.version %%needle%% " .
@@ -5853,6 +5868,7 @@ class testplan extends tlObjectWithAttachments
     		}	
 		}   		   
 		
+		echo $sql . '<br>';
     	$rs = $this->db->get_recordset($sql);	
     	if(!is_null($rs))
     	{
@@ -6276,13 +6292,77 @@ class build_mgr extends tlObject
 
     rev :
   */
-	function get_by_id($id)
+	function get_by_id($id,$opt=null)
 	{
-		$sql = "SELECT * FROM {$this->tables['builds']} WHERE id = {$id}";
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		$my = array('options' => array('tplan_id' => null, 'output' => 'full'));
+		$my['options'] = array_merge($my['options'],(array)$opt);
+		
+		$safe_id = intval($id);	
+		
+		$sql = "/* {$debugMsg} */";
+		switch($my['options']['output'])
+		{
+			case 'minimun':
+				$sql .= " SELECT id,is_open,active FROM {$this->tables['builds']} "; 
+			break;
+			
+			case 'full':
+			default:
+				$sql .= " SELECT * FROM {$this->tables['builds']} "; 
+			break;
+		}
+		
+		$sql .= " WHERE id = {$safe_id} ";
+		if(!is_null($my['options']['tplan_id']) && ($safe_tplan = intval($my['options']['tplan_id'])) > 0)
+		{
+			$sql .= " AND testplan_id = {$safe_tplan} ";
+		}
+		
 		$result = $this->db->exec_query($sql);
 		$myrow = $this->db->fetch_array($result);
 		return $myrow;
 	}
+
+
+
+	/*
+     function: get_by_name
+              get information about a build by name
+    */          
+    
+	function get_by_name($name,$opt=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		$my = array('options' => array('tplan_id' => null, 'output' => 'full'));
+		$my['options'] = array_merge($my['options'],(array)$opt);
+
+		switch($my['options']['output'])
+		{
+			case 'minimun':
+				$sql .= " SELECT B.id, B.name, B.is_open, B.active ";
+			break;
+			
+			case 'full':
+			default:
+				$sql .= " SELECT B.* ";
+			break;
+		}
+
+		$sql .= " FROM {$this->tables['builds']} B " .
+			    " WHERE B.name = '" . $this->db->prepare_string($name) . "'";
+
+		if(!is_null($my['options']['tplan_id']) && ($safe_tplan = intval($my['options']['tplan_id'])) > 0)
+		{
+			$sql .= " AND B.testplan_id = {$safe_tplan} ";
+		}
+
+		$rs = $this->db->get_recordset($sql);
+		return($rs);
+	}
+
 
 
 	/**

@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<results>
+  <testplan name="TPLAN WITH PLAT" />
+  <build name="1.0"/>
+  <platform name="Mc Laren"/>
+
+  <testcase external_id="TR22-2" >
+    <result>b</result>
+    <notes>functionality works great </notes>
+  </testcase>
+  
+</results>

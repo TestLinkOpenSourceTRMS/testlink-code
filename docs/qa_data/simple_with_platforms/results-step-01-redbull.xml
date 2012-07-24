@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<results>
+  <testplan name="TPLAN WITH PLAT" />
+  <build name="1.0"/>
+  <platform name="Red Bull"/>
+
+  <testcase external_id="TR22-2" >
+    <result>f</result>
+    <notes>Test execution failed</notes>
+  </testcase>
+  
+</results>

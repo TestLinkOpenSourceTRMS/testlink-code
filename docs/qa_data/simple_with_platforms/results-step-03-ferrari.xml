@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<results>
+  <testplan name="TPLAN WITH PLAT" />
+  <build name="1.0"/>
+  <platform name="Ferrari"/>
+
+  <testcase external_id="TR22-1" >
+    <result>p</result>
+    <notes>functionality works great</notes>
+  </testcase>
+
+  <testcase external_id="TR22-4" >
+    <result>b</result>
+    <notes>Test case execution blocked</notes>
+  </testcase>
+  
+</results>

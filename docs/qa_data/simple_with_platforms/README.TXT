@@ -4,7 +4,7 @@ Important notice:
 if you use suggested names, you will be able to use all support files provided
 without editing them.
 
-1. create test project (suggested name 'Sample One', prefix 'TRR') 
+1. create test project (suggested name 'Sample One', prefix 'TR') 
 2. import testproject-2ts-4tc.xml
 3. import platforms => platforms-formulaone-few-cars.xml
 4. create test plan (suggested name 'TPLAN WITH PLAT')

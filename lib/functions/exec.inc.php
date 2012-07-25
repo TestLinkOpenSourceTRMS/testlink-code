@@ -235,7 +235,7 @@ function get_execution(&$dbHandler,$execution_id,$opt=null)
 		case 'raw':
 		default:
 			$sql = " SELECT * FROM {$tables['executions']} E ".
-				   " WHERE E.id = " . $afe_id;
+				   " WHERE E.id = " . $safe_id;
 		break;		
 	}	
 	tLog(__FUNCTION__ . ':' . $sql,"DEBUG");

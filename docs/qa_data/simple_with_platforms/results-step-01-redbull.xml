@@ -4,7 +4,7 @@
   <build name="1.0"/>
   <platform name="Red Bull"/>
 
-  <testcase external_id="TR22-2" >
+  <testcase external_id="TR-2" >
     <result>f</result>
     <notes>Test execution failed</notes>
   </testcase>

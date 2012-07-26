@@ -6072,7 +6072,7 @@ class testplan extends tlObjectWithAttachments
 				  			$buildClause['exec_join'] .
 
 
-							" WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
+							" WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . ' ' .
 							$my['where']['where'] .
 							" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
 							" AND E.id IS NULL AND LEX.id IS NULL";
@@ -6098,7 +6098,7 @@ class testplan extends tlObjectWithAttachments
 						 " AND E.platform_id = TPTCV.platform_id " .
 						 $buildClause['exec_join'] .
                          
-						 " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
+						 " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . ' ' .
 						 $my['where']['where'];
 
 		return $union;

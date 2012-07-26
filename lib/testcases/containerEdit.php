@@ -191,6 +191,7 @@ switch($action)
 
       	$gui = new stdClass();
       	$gui->refreshTree = $args->refreshTree;
+      	$gui->form_security_field = form_security_field();
       	$smarty->assign('gui', $gui);
   	    $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, $action,
 	                                 $args->containerID, null,$messages,

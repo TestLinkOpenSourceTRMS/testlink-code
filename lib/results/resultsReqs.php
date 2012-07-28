@@ -3,19 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource	resultsReqs.php
- * @author Martin Havlat
- * 
  * Report requirement based results
+ *
+ * @filesource	resultsReqs.php
+ * @author 		Martin Havlat
+ * 
  * 
  * internal revisions
- * @since 1.9.3
+ * @since 1.9.4
  *
- * @since 1.9.3
- * 20110207 - asimon - BUGID 4227 - Allow to choose status of requirements to be evaluated
- * 20110207 - Julian - BUGID 4228 - Add more requirement evaluation states
- * 20110207 - Julian - BUGID 4206 - Jump to latest execution for linked test cases
- * 20110207 - Julian - BUGID 4205 - Add Progress bars for a quick overview
  */
 
 require_once("../../config.inc.php");
@@ -25,11 +21,14 @@ require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
+
+$smarty = new TLSmarty();
+$images = $smarty->getImages();
+
 $tproject_mgr = new testproject($db);
 $tplan_mgr = new testplan($db);
 $req_mgr = new requirement_mgr($db);
 $req_spec_mgr = new requirement_spec_mgr($db);
-
 $platform_mgr = new tlPlatform($db);
 
 $glue_char = config_get('gui_title_separator_1');
@@ -39,69 +38,13 @@ $no_srs_msg_key = 'no_srs_defined';
 $no_matching_reqs_msg_key = 'no_matching_reqs';
 $charset = config_get('charset');
 
+
 $req_cfg = config_get('req_cfg');
-$req_spec_cfg = config_get('req_spec_cfg');
-$results_cfg = config_get('results');
-
 $req_type_labels = init_labels($req_cfg->type_labels);
-$req_spec_type_labels = init_labels($req_spec_cfg->type_labels);
 $status_labels = init_labels($req_cfg->status_labels);
-$labels = init_labels( array('requirement' => null,'requirements' => null,
-                			 'type' => null,'req_availability' => null,
-      			          	 'linked_tcs' => null,'no_linked_tcs' => null,
-                			 'goto_testspec' => null,'design' => null,
-                			 'no_label_for_req_type'  => null,
-                			 'na' => 'not_aplicable',
-                             'execution' => null,
-                             'execution_history' => null));
 
-$history_icon = TL_THEME_IMG_DIR . "history_small.png";
-$exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
-$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
-
-$status_code_map = array();
-foreach ($results_cfg['status_label_for_exec_ui'] as $status => $label) {
-	$status_code_map[$status] = $results_cfg['status_code'][$status];
-}
-
-$code_status_map = array_flip($status_code_map);
-foreach ($code_status_map as $code => $status) {
-	$code_status_map[$code] = array('label' => lang_get($results_cfg['status_label'][$status]),
-	                                'long_label' => lang_get("req_title_" . $status),
-	                                'status' => $status,
-	                                'css_class' => $status . '_text');
-}
-
-$eval_status_map = $code_status_map;
-
-// BUGID 4228 - add additional states for requirement evaluation
-$eval_status_map['partially_passed'] = array('label' => lang_get('partially_passed'),
-                                             'long_label' => lang_get('partially_passed_reqs'),
-                                             'css_class' => 'passed_text');
-$eval_status_map['uncovered'] = array('label' => lang_get('uncovered'),
-                                      'long_label' => lang_get('uncovered_reqs'),
-                                      'css_class' => 'not_run_text');
-$eval_status_map['p_nfc'] = array('label' => lang_get('passed_nfc'),
-                                  'long_label' => lang_get('passed_nfc_reqs'),
-                                  'css_class' => 'passed_text');
-$eval_status_map['f_nfc'] = array('label' => lang_get('failed_nfc'),
-                                  'long_label' => lang_get('failed_nfc_reqs'),
-                                  'css_class' => 'failed_text');
-$eval_status_map['b_nfc'] = array('label' => lang_get('blocked_nfc'),
-                                  'long_label' => lang_get('blocked_nfc_reqs'),
-                                  'css_class' => 'blocked_text');
-$eval_status_map['n_nfc'] = array('label' => lang_get('not_run_nfc'),
-                                  'long_label' => lang_get('not_run_nfc_reqs'),
-                                  'css_class' => 'not_run_text');
-$eval_status_map['partially_passed_nfc'] = array('label' => lang_get('partially_passed_nfc'),
-                                                 'long_label' => lang_get('partially_passed_nfc_reqs'),
-                                                 'css_class' => 'passed_text');
-
-
-// BUGID 4205 - add count for each status to show test progress
-foreach ($eval_status_map as $key => $status) {
-	$eval_status_map[$key]['count'] = 0;
-}
+list($req_spec_type_labels,$label) = setUpLabels();
+list($results_cfg,$status_code_map,$code_status_map,$eval_status_map) = setUpReqStatusCfg();
 
 $total_reqs = 0;
 
@@ -121,21 +64,25 @@ $testcases = array();
 
 // first step: get the requirements and linked testcases with which we have to work,
 // order them into $req_spec_map by spec
-if (count($req_ids)) {		
-	foreach($req_ids as $id) {
+if (count($req_ids)) 
+{		
+	foreach($req_ids as $id) 
+	{
 		// get the information for this requirement
 		$req = $req_mgr->get_by_id($id, requirement_mgr::LATEST_VERSION);
 		$req_info = $req[0];
 		$spec_id = $req_info['srs_id'];
 				
 		// if req is "usable" (has one of the selected states) add it
-		if (in_array($req_info['status'], $args->states_to_show->selected, true)
-		   || in_array("0", $args->states_to_show->selected, true)) {
+		if (in_array($req_info['status'], $args->states_to_show->selected, true) || 
+			in_array("0", $args->states_to_show->selected, true)) 
+		{
 			// coverage data
 			$linked_tcs = (array) $req_mgr->get_coverage($id);
 			$req_info['linked_testcases'] = $linked_tcs;
 			
-			if (!isset($req_spec_map[$spec_id])) {
+			if (!isset($req_spec_map[$spec_id])) 
+			{
 				$spec_info = $req_spec_mgr->get_by_id($spec_id);
 				$req_spec_map[$spec_id] = $spec_info;
 				$req_spec_map[$spec_id]['requirements'] = array();
@@ -143,62 +90,68 @@ if (count($req_ids)) {
 			$total_reqs ++;
 			$req_spec_map[$spec_id]['requirements'][$id] = $req_info;
 
-			foreach ($linked_tcs as $tc) {
+			foreach ($linked_tcs as $tc) 
+			{
 				$tc_ids[] = $tc['id'];
 			}
 		}
 	}
-	// BUGID 3439
-	if (!count($req_spec_map)) {
+
+	if (!count($req_spec_map)) 
+	{
 		$gui->warning_msg = lang_get($no_matching_reqs_msg_key);
 	}
-} else {
+} 
+else 
+{
 	$gui->warning_msg = lang_get($no_srs_msg_key);
 }
 
 
 // second step: walk through req spec map, count/calculate, store results
-if(count($req_spec_map)) {
-	
-	// BUGID 3439
+if(count($req_spec_map)) 
+{
 	$testcases = array();
-	if (count($tc_ids)) {
+	if (count($tc_ids)) 
+	{
 		$filters = array('tcase_id' => $tc_ids);
-		if ($args->platform != 0) {
+		if ($args->platform != 0) 
+		{
 			$filters['platform_id'] = $args->platform;
 		}
-		$options = array('last_execution' => true, 'output' => 'map');
-		$testcases = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters, $options);
+		// $options = array('last_execution' => true, 'output' => 'map');
+		$options = array('addExecInfo' => true);
+		$testcases = $tplan_mgr->getLTCVNewGeneration($args->tplan_id, $filters, $options);
 	}
 
-	foreach ($req_spec_map as $req_spec_id => $req_spec_info) {
+	foreach ($req_spec_map as $req_spec_id => $req_spec_info) 
+	{
 		$req_spec_map[$req_spec_id]['req_counters'] = array('total' => 0);
 		
-		foreach ($req_spec_info['requirements'] as $req_id => $req_info) {
+		foreach ($req_spec_info['requirements'] as $req_id => $req_info) 
+		{
 			$req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters'] = array('total' => 0);
 			
 			// add coverage for more detailed evaluation
 			$req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters']['expected_coverage'] = 
 				$req_spec_map[$req_spec_id]['requirements'][$req_id]['expected_coverage'];
 			
-			foreach ($req_info['linked_testcases'] as $key => $tc_info) {
+			foreach ($req_info['linked_testcases'] as $key => $tc_info) 
+			{
 				$tc_id = $tc_info['id'];
-				
-				// BUGID 3964
 				$req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters']['total'] ++;
 				
-				if (isset($testcases[$tc_id]['exec_status'])) {
+				if (isset($testcases[$tc_id]['exec_status'])) 
+				{
 					$status = $testcases[$tc_id]['exec_status'];
 					
 					// if the counters for this status don't exist yet, initialize them with 0
-					if (!isset($req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters'][$status])) {
+					if (!isset($req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters'][$status])) 
+					{
 						$req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters'][$status] = 0;
 					}
 					
 					$req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters'][$status] ++;
-					
-					// BUGID 3964
-					//$req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters']['total'] ++;
 				}
 			}
 			
@@ -207,7 +160,8 @@ if(count($req_spec_map)) {
 			                     $req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters']);
 			$req_spec_map[$req_spec_id]['requirements'][$req_id]['evaluation'] = $eval;
 			
-			if (!isset($req_spec_map[$req_spec_id]['req_counters'][$eval])) {
+			if (!isset($req_spec_map[$req_spec_id]['req_counters'][$eval])) 
+			{
 				$req_spec_map[$req_spec_id]['req_counters'][$eval] = 0;
 			}
 			
@@ -218,7 +172,8 @@ if(count($req_spec_map)) {
 }
 
 // last step: build the table
-if (count($req_spec_map)) {
+if (count($req_spec_map)) 
+{
 	// headers
 	$columns = array();
 	$columns[] = array('title_key' => 'req_spec_short',
@@ -284,7 +239,7 @@ if (count($req_spec_map)) {
 			//                $title . '</a>';
 
 			$edit_link = "<a href=\"javascript:openLinkedReqWindow(" . $req_id . ")\">" .
-						 "<img title=\"{$labels['requirement']}\" src=\"{$edit_icon}\" /></a> ";
+						 "<img title=\"{$labels['requirement']}\" src=\"{$images['edit_icon']}\" /></a> ";
 
 		    $link = $edit_link . $title;
 
@@ -308,7 +263,9 @@ if (count($req_spec_map)) {
 						                   " ({$current}/{$expected_coverage})";
 			    	}
 			    	$single_row[] = $coverage_string;
-				} else {
+				} 
+				else 
+				{
 					// no expected value, no percentage, just absolute number
 					$single_row[] = $current;
 				}
@@ -360,10 +317,13 @@ if (count($req_spec_map)) {
 			
 			// complete progress
 			$single_row[] = ($total_count) ? comment_percentage($progress_percentage) : $labels['na'];
+
 			//BUGID 3717 - show all linked tcversions incl exec result
 			$linked_tcs_with_status = '';
-			if (count($req_info['linked_testcases']) > 0 ) {
-				foreach($req_info['linked_testcases'] as $testcase) {
+			if (count($req_info['linked_testcases']) > 0 ) 
+			{
+				foreach($req_info['linked_testcases'] as $testcase) 
+				{
 					$tc_id = $testcase['id'];
 					
 					$status = $status_code_map['not_run'];
@@ -378,16 +338,18 @@ if (count($req_spec_map)) {
 					           $testcase['name'];
 					
 					$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tc_id});\">" .
-					                     "<img title=\"{$labels['execution_history']}\" src=\"{$history_icon}\" /></a> ";
+					                     "<img title=\"{$labels['execution_history']}\" " .
+					                     " src=\"{$images['history_small']}\" /></a> ";
 					$edit_link = "<a href=\"javascript:openTCEditWindow({$tc_id});\">" .
-								 "<img title=\"{$labels['design']}\" src=\"{$edit_icon}\" /></a> ";
+								 "<img title=\"{$labels['design']}\" src=\"{$images['edit_icon']}\" /></a> ";
 					
 					$exec_link = "";
-					if(isset($testcases[$tc_id]['exec_status'])) {
+					if(isset($testcases[$tc_id]['exec_status'])) 
+					{
 						$exec_link = "<a href=\"javascript:openExecutionWindow(" .
 						             "{$tc_id}, {$testcases[$tc_id]['tcversion_number']}, {$testcases[$tc_id]['exec_on_build']} , " .
 						             "{$testcases[$tc_id]['exec_on_tplan']}, {$testcases[$tc_id]['platform_id']});\">" .
-						             "<img title=\"{$labels['execution']}\" src=\"{$exec_img}\" /></a> ";
+						             "<img title=\"{$labels['execution']}\" src=\"{$images['exec']}\" /></a> ";
 					}
 
 					$linked_tcs_with_status .= "{$exec_history_link} {$edit_link} {$exec_link} {$colored_status} {$tc_name}<br>";
@@ -426,7 +388,6 @@ if (count($req_spec_map)) {
 $gui->summary = $eval_status_map;
 $gui->total_reqs = $total_reqs;
 
-$smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
@@ -604,7 +565,8 @@ function init_args(&$tproject_mgr, &$req_cfg)
  * @param stdClass $argsObj reference to user input
  * @return stdClass $gui gui data
  */
-function init_gui(&$argsObj) {
+function init_gui(&$argsObj) 
+{
 	$gui = new stdClass();
 	
 	$gui->pageTitle = lang_get('title_result_req_testplan');
@@ -612,11 +574,103 @@ function init_gui(&$argsObj) {
 	$gui->tproject_name = $argsObj->tproject_name;
 	$gui->states_to_show = $argsObj->states_to_show;
 	$gui->tableSet = null;
-	// BUGID 3856
 	$gui->selected_platform = $argsObj->platform;
 
 	return $gui;
 }
+
+
+function setUpLabels()
+{
+
+	$dummy = config_get('req_spec_cfg');
+	$req_spec_type_labels = init_labels($dummy->type_labels);
+
+	$labels = init_labels( array('requirement' => null,'requirements' => null,
+                			 'type' => null,'req_availability' => null,
+      			          	 'linked_tcs' => null,'no_linked_tcs' => null,
+                			 'goto_testspec' => null,'design' => null,
+                			 'no_label_for_req_type'  => null,
+                			 'na' => 'not_aplicable',
+                             'execution' => null,
+                             'execution_history' => null));
+
+
+
+	return array($req_spec_type_labels,$labels);
+}
+
+
+function setUpReqStatusCfg()
+{
+	$results_cfg = config_get('results');
+	
+	$status_code_map = array();
+	foreach ($results_cfg['status_label_for_exec_ui'] as $status => $label) 
+	{
+		$status_code_map[$status] = $results_cfg['status_code'][$status];
+	}
+	
+	$code_status_map = array_flip($status_code_map);
+	foreach ($code_status_map as $code => $status) 
+	{
+		$code_status_map[$code] = array('label' => lang_get($results_cfg['status_label'][$status]),
+		                                'long_label' => lang_get("req_title_" . $status),
+		                                'status' => $status,
+		                                'css_class' => $status . '_text');
+	}
+
+
+	$eva = $code_status_map;
+	
+	// add additional states for requirement evaluation
+	$evalbl = init_labels(array('partially_passed' => null, 'partially_passed_reqs' => null,
+		                        'uncovered' => null, 'uncovered_reqs' => null,
+								'passed_nfc' => null, 'passed_nfc_reqs' => null,
+								'failed_nfc' => null, 'failed_nfc_reqs' => null,
+								'blocked_nfc' => null, 'blocked_nfc_reqs' => null,
+								'not_run_nfc' => null, 'not_run_nfc_reqs' => null,
+								'partially_passed_nfc' => null, 'partially_passed_nfc_reqs' => null));
+
+	$eva['partially_passed'] = array('label' => $evalbl['partially_passed'],
+	                                 'long_label' => $evalbl['partially_passed_reqs'],
+	                                 'css_class' => 'passed_text');
+
+	$eva['uncovered'] = array('label' => $evalbl['uncovered'],
+	                          'long_label' => $evalbl['uncovered_reqs'],
+	                          'css_class' => 'not_run_text');
+
+	$eva['p_nfc'] = array('label' => $evalbl['passed_nfc'],
+	                      'long_label' => $evalbl['passed_nfc_reqs'],
+	                      'css_class' => 'passed_text');
+	                      
+	$eva['f_nfc'] = array('label' => $evalbl['failed_nfc'],
+	                      'long_label' => $evalbl['failed_nfc_reqs'],
+	                      'css_class' => 'failed_text');
+	                                  
+	$eva['b_nfc'] = array('label' => $evalbl['blocked_nfc'],
+	                      'long_label' => $evalbl['blocked_nfc_reqs'],
+	                      'css_class' => 'blocked_text');
+	                      
+	$eva['n_nfc'] = array('label' => $evalbl['not_run_nfc'],
+	                      'long_label' => $evalbl['not_run_nfc_reqs'],
+	                      'css_class' => 'not_run_text');
+	                      
+	$eva['partially_passed_nfc'] = array('label' => $evalbl['partially_passed_nfc'],
+	                                     'long_label' => $evalbl['partially_passed_nfc_reqs'],
+	                                     'css_class' => 'passed_text');
+	
+	
+	// add count for each status to show test progress
+	foreach ($eva as $key => $status) 
+	{
+		$eva[$key]['count'] = 0;
+	}
+
+	return array($results_cfg,$status_code_map,$code_status_map,$eva);
+}
+
+
 
 
 /**

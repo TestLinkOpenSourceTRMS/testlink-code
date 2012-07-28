@@ -2109,6 +2109,8 @@ $TLS_alt_active_testplan = "Active testplan";
 $TLS_warning_delete_testplan = "<p>You are going to delete: %s </p><p>Are you sure?</p>";
 $TLS_export_testplan_links = "Export links to test cases and platforms";
 $TLS_import_testplan_links = "Import links to test cases and platforms";
+$TLS_testcase_qty = 'Test Case Qty';
+$TLS_platform_qty = 'Platform Qty';
 
 
 // ----- gui/templates/mainPage_left.tpl -----

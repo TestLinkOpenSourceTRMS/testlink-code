@@ -1,16 +1,16 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-Filename: planView.tpl
-smarty template - edit / delete Test Plan 
 
-Development hint:
-     some smarty and javascript variables are created on the inc_*.tpl files.
+
+@filesource	planView.tpl
+
+@internal development hint:
+some smarty and javascript variables are created on the inc_*.tpl files.
      
-Rev:
-    20110220 - franciscom - use of thead abd tbody
-    						BUGID 4246 - add simple table ruler via events
-    20101017 - franciscom - image access refactored (tlImages)
-    20100925 - franciscom - BUGID 3649 - test plan export/import -> EXPORT
+@internal revisions
+@since 1.9.4
+20120728 - franciscom - TICKET 5115: [FEATURE] - Test Plan list view - add test case qty, and platforms qty
+
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -29,7 +29,8 @@ Rev:
           testplan_th_name,testplan_th_notes,testplan_th_active,testplan_th_delete,
           testplan_alt_edit_tp,alt_active_testplan,testplan_alt_delete_tp,public,
           btn_testplan_create,th_id,error_no_testprojects_present,btn_export_import,
-          export_import,export,import,export_testplan_links,import_testplan_links'}
+          export_import,export,import,export_testplan_links,import_testplan_links,
+          testcase_qty,platform_qty'}
 
 
 {lang_get s='warning_delete_testplan' var="warning_msg"}
@@ -66,6 +67,10 @@ var del_action=fRoot+'{$deleteAction}';
 		<tr>
 			<th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.testplan_th_name}</th> 			
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_notes}</th>
+			<th>{$tlImages.sort_hint}{$labels.testcase_qty}</th>
+			{if $gui->drawPlatformQtyColumn}
+				<th>{$tlImages.sort_hint}{$labels.platform_qty}</th>
+			{/if}	
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_active}</th>
 			<th class="{$noSortableColumnClass}">{$labels.public}</th>
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_delete}</th>
@@ -88,6 +93,15 @@ var del_action=fRoot+'{$deleteAction}';
 			<td>
 				{$testplan.notes|strip_tags|strip|truncate:#TESTPLAN_NOTES_TRUNCATE#}
 			</td>
+			<td align="right" style="width:10%;">
+				{$testplan.tcase_qty}
+			</td>
+			{if $gui->drawPlatformQtyColumn}
+				<td align="right" style="width:10%;">
+					{$testplan.platform_qty}
+				</td>
+			{/if}	
+
 			<td class="clickable_icon">
 				{if $testplan.active eq 1} 
   					<img style="border:none" title="{$labels.alt_active_testplan}" alt="{$labels.alt_active_testplan}" 

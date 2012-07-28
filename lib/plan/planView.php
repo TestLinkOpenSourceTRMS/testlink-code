@@ -3,12 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: planView.php,v $
- *
- * @version $Revision: 1.11 $
- * @modified $Date: 2009/06/03 19:51:45 $ $Author: schlundus $
- *
-*/
+ * @filesource	planView.php
+ * @internal revisions
+ * @since 1.9.4
+ * 20120728 - franciscom - TICKET 5115: [FEATURE] - Test Plan list view - add test case qty, and platforms qty
+ */
 require_once('../../config.inc.php');
 require_once("common.php");
 testlinkInitPage($db,false,false,"checkRights");
@@ -31,6 +30,30 @@ if($args->tproject_id)
 {
 	$tproject_mgr = new testproject($db);
 	$gui->tplans = $tproject_mgr->get_all_testplans($args->tproject_id);
+	$gui->drawPlatformQtyColumn = false;
+	
+	if( !is_null($gui->tplans) )
+	{
+		// do this test project has platform definitions ?
+		$tplan_mgr = new testplan($db);
+		$tplan_mgr->platform_mgr->setTestProjectID($args->tproject_id);
+		$dummy = $tplan_mgr->platform_mgr->testProjectCount();
+		$gui->drawPlatformQtyColumn = $dummy[$args->tproject_id]['platform_qty'] > 0;
+
+		$tplanSet = array_keys($gui->tplans);
+		$dummy = $tplan_mgr->count_testcases($tplanSet,null,array('output' => 'groupByTestPlan'));
+		foreach($tplanSet as $idk)
+		{
+			$gui->tplans[$idk]['tcase_qty'] = isset($dummy[$idk]['qty']) ? $dummy[$idk]['qty'] : 0;
+			if( $gui->drawPlatformQtyColumn )
+			{
+				$plat = $tplan_mgr->getPlatforms($idk);
+				$gui->tplans[$idk]['platform_qty'] = is_null($plat) ? 0 : count($plat);
+			}
+		}		
+		unset($tplan_mgr);	
+	}
+	unset($tproject_mgr);	
 }
 
 $smarty = new TLSmarty();

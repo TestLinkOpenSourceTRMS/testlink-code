@@ -10,7 +10,9 @@
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- *                                 
+ * @ since 1.9.4
+ * 20120728 - franciscom - new method testProjectCount() 
+ *						   TICKET 5115: [FEATURE] - Test Plan list view - add test case qty, and platforms qty                               
  */
 
 /**
@@ -47,7 +49,7 @@ class tlPlatform extends tlObjectWithDB
 	 */
 	public function setTestProjectID($tproject_id)
 	{
-		$this->tproject_id = $tproject_id;	
+		$this->tproject_id = intval($tproject_id);	
 	}
 
 
@@ -90,7 +92,7 @@ class tlPlatform extends tlObjectWithDB
 	{
 		$sql =  " SELECT id, name, notes " .
 				" FROM {$this->tables['platforms']} " .
-				" WHERE id = {$id}";
+				" WHERE id = " . intval($id);
 		return $this->db->fetchFirstRow($sql);
 	}
 	
@@ -216,7 +218,6 @@ class tlPlatform extends tlObjectWithDB
 	 * @return array 
 	 *
 	 * @internal revisions
-	 * 20100912 - franciscom - BUGID 3771 
 	 */
 	public function getAll($options = null)
 	{
@@ -387,5 +388,34 @@ class tlPlatform extends tlObjectWithDB
 		return $result ? tl::OK : self::E_DBERROR;
 	}
 
+
+	/**
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 */
+	public function testProjectCount($opt=null)
+	{
+		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . '*/ ';
+		$my['opt'] = array('range' => 'tproject');
+		$my['opt'] = array_merge($my['opt'],(array)$opt);
+		
+		
+		// HINT: COALESCE(COUNT(PLAT.id),0)
+		//       allows to get 0 on platform_qty
+		//
+		$sql = $debugMsg . " SELECT COALESCE(COUNT(PLAT.id),0) AS platform_qty, TPROJ.id AS tproject_id " .
+		       " FROM {$this->tables['testprojects']} TPROJ " .
+		       " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.testproject_id = TPROJ.id ";
+		
+		switch($my['opt']['range'])
+		{
+			case 'tproject':
+				$sql .= " WHERE TPROJ.id = " . $this->tproject_id ;
+			break;
+		}
+		$sql .= " GROUP BY TPROJ.id ";
+		return ($this->db->fetchRowsIntoMap($sql,'tproject_id'));        
+	}
 
 }

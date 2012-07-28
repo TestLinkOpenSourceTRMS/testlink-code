@@ -1607,7 +1607,6 @@ class testplan extends tlObjectWithAttachments
 		$the_sql[]="DELETE FROM {$this->tables['user_assignments']} WHERE feature_id ".
 			       "IN ({$getFeaturesSQL})";
 		
-		$the_sql[]="DELETE FROM {$this->tables['risk_assignments']} WHERE testplan_id={$id}";
 		$the_sql[]="DELETE FROM {$this->tables['testplan_platforms']} WHERE testplan_id={$id}";
 
 		$the_sql[]="DELETE FROM {$this->tables['testplan_tcversions']} WHERE testplan_id={$id}";

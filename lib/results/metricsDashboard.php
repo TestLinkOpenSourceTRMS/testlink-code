@@ -10,6 +10,8 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120728 - franciscom - CHANGE OF BEHAVIOR: test plan without builds will be ignored
+ *							
  * 20120603 - franciscom - TICKET 5048: Metrics Dashboard refactoring for performance
  *
  **/
@@ -34,8 +36,6 @@ $labels = init_labels(array('overall_progress' => null, 'test_plan' => null, 'pr
                             'platform' => null, 'th_active_tc' => null, 'in_percent' => null));
 
 list($gui->tplan_metrics,$gui->show_platforms, $platforms) = getMetrics($db,$_SESSION['currentUser'],$args,$result_cfg, $labels);
-
-// new dBug();
 
 $gui->warning_msg = $labels['no_testplans_available'];
 
@@ -176,6 +176,7 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 	// displayMemUsage();
 	$linkedItemsQty = $tplan_mgr->count_testcases(array_keys($test_plans),null,array('output' => 'groupByTestPlan'));
 	
+	
 	$metricsMgr = new tlTestPlanMetrics($db);
 	
 	//new dBug($test_plans);
@@ -193,6 +194,16 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 	$codeStatusVerbose = array_flip($result_cfg['status_code']);
 	foreach($test_plans as $key => &$dummy)
 	{
+
+		// We need to know if test plan has builds, if not we can not call any method 
+		// that try to get exec info, because you can only execute if you have builds.
+		$buildSet = $tplan_mgr->get_builds($key);
+		if( is_null($buildSet) )
+		{
+			continue;
+		}
+
+
 		$platformSet = $tplan_mgr->getPlatforms($key);
 		if (isset($platformSet)) 
 		{

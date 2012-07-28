@@ -46,9 +46,8 @@ class tlTestPlanMetrics extends testplan
 	private $map_tc_status;
 	private $tc_status_for_statistics;
 	
-	// private $notRunStatusCode;
 	private $statusCode;
-	// private $execTaskCode;
+	
 
 	/** 
 	 * class constructor 
@@ -922,6 +921,7 @@ class tlTestPlanMetrics extends testplan
 	 * @internal revisions
 	 *
 	 * @since 1.9.4
+	 * 20120728 - issue if test plan has no builds defined
 	 * 20120512 - franciscom - 
 	 */
 	function getExecCountersByExecStatus($id, $filters=null, $opt=null)
@@ -931,7 +931,6 @@ class tlTestPlanMetrics extends testplan
 		list($my,$builds,$sqlStm,$union,$platformSet) = $this->helperBuildSQLExecCounters($id, $filters, $opt);
 
 		// Latest Executions By Platform (LEBP)
-		// $sqlLEBP = 	$sqlStm['LEBP'];
 		$add2key = '';
 		if( isset($opt['getOnlyActiveTCVersions']) )
 		{
@@ -1267,12 +1266,7 @@ class tlTestPlanMetrics extends testplan
 	{
 		//echo 'MM - ' . __FUNCTION__ . ' Start' . ' memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
 		list($rObj,$staircase) = $this->getStatusTotalsByItemForRender($id,'tsuite',$filters,$opt);
-		
-		
-		//new dBug($rObj);
-		//new dBug($staircase);
-
-		
+	
 		$key2loop = array_keys($rObj->info);
 		$template = array('type' => 'tsuite', 'name' => '','total_tc' => 0,
 						  'percentage_completed' => 0, 'details' => array());	
@@ -1588,7 +1582,8 @@ class tlTestPlanMetrics extends testplan
 	 *    
 	 *    
 	 *    
-	 *    
+	 *  @internal revisions
+	 *  20120728 - franciscom - added emergency exit if build set is empty  
 	 */    
 	function helperGetExecCounters($id, $filters, $opt)
 	{
@@ -1609,9 +1604,18 @@ class tlTestPlanMetrics extends testplan
 		{
 			$bi->idSet = array_keys($bi->infoSet = $this->get_builds($id,testplan::ACTIVE_BUILDS));
 		}
+		
+		// ==========================================================================
+		// Emergency Exit !!!
+		if( is_null($bi->idSet) )
+		{
+			  throw new Exception(__METHOD__ . " - Can not work with empty build set");
+		}
+		// ==========================================================================
+		
+		
+		// Things seems to be OK
 		$bi->inClause = implode(",",$bi->idSet);
-
-
 		if( $my['opt']['getOnlyAssigned'] )
 		{
 			$sql['getAssignedFeatures']	 =	" /* Get feature id with Tester Assignment */ " .
@@ -1719,7 +1723,8 @@ class tlTestPlanMetrics extends testplan
 	 *    
 	 *    
 	 *    
-	 *    
+	 * @internal revisions
+	 *   
 	 */    
 	function helperBuildSQLExecCounters($id, $filters=null, $opt=null)
 	{

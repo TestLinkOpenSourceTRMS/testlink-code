@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<requirement-specification>
+<req_spec title="Section RSPEC-01"  doc_id="RSPEC-01"  >
+<revision><![CDATA[1]]></revision>
+
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[1]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope>
+<![CDATA[]]>
+</scope>
+<req_spec title="User Req Spec 01"  doc_id="RSPEC-01.URS.01"  >
+<revision><![CDATA[1]]></revision>
+
+<type><![CDATA[2]]></type>
+
+<node_order><![CDATA[1]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope>
+<![CDATA[]]>
+</scope>
+	<requirement>
+		<docid><![CDATA[RQ.USR.01.1000]]></docid>
+		<title><![CDATA[User has to be happy]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>1</node_order>
+		<description><![CDATA[
+
+]]></description>
+		<status><![CDATA[D]]></status>
+		<type><![CDATA[3]]></type>
+		<expected_coverage><![CDATA[1]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ.USR.01.1001]]></docid>
+		<title><![CDATA[User has to be ready to go]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>2</node_order>
+		<description><![CDATA[
+
+]]></description>
+		<status><![CDATA[D]]></status>
+		<type><![CDATA[3]]></type>
+		<expected_coverage><![CDATA[1]]></expected_coverage>
+		
+	</requirement>
+</req_spec><req_spec title="System Req. Spec 01"  doc_id="RSPEC-01.SYSRS.01"  >
+<revision><![CDATA[1]]></revision>
+
+<type><![CDATA[3]]></type>
+
+<node_order><![CDATA[2]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope>
+<![CDATA[]]>
+</scope>
+	<requirement>
+		<docid><![CDATA[RQ.SYS.01.1000]]></docid>
+		<title><![CDATA[System Fast & furious]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>1</node_order>
+		<description><![CDATA[
+
+]]></description>
+		<status><![CDATA[D]]></status>
+		<type><![CDATA[3]]></type>
+		<expected_coverage><![CDATA[1]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ.SYS.01.1001]]></docid>
+		<title><![CDATA[System has to be cheap]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>2</node_order>
+		<description><![CDATA[
+
+]]></description>
+		<status><![CDATA[D]]></status>
+		<type><![CDATA[3]]></type>
+		<expected_coverage><![CDATA[1]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ.SYS.01.1002]]></docid>
+		<title><![CDATA[System will be ecologic]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>3</node_order>
+		<description><![CDATA[
+
+]]></description>
+		<status><![CDATA[D]]></status>
+		<type><![CDATA[3]]></type>
+		<expected_coverage><![CDATA[1]]></expected_coverage>
+		
+	</requirement>
+</req_spec></req_spec><req_spec title="Section RSPEC-02"  doc_id="RSPEC-02"  >
+<revision><![CDATA[1]]></revision>
+
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[2]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope>
+<![CDATA[]]>
+</scope>
+<req_spec title="User Req Spec - Area 51 - 100"  doc_id="RSPEC-02.USER.100"  >
+<revision><![CDATA[1]]></revision>
+
+<type><![CDATA[2]]></type>
+
+<node_order><![CDATA[1]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope>
+<![CDATA[]]>
+</scope>
+	<requirement>
+		<docid><![CDATA[RQ.USER.100.ALFA]]></docid>
+		<title><![CDATA[User will be ready to go to Jupiter]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>1</node_order>
+		<description><![CDATA[
+
+]]></description>
+		<status><![CDATA[D]]></status>
+		<type><![CDATA[3]]></type>
+		<expected_coverage><![CDATA[1]]></expected_coverage>
+		
+	</requirement>
+</req_spec><req_spec title="Sys Admin Req Spec 500"  doc_id="RSPEC-02.SYSTEM.500"  >
+<revision><![CDATA[1]]></revision>
+
+<type><![CDATA[3]]></type>
+
+<node_order><![CDATA[2]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope>
+<![CDATA[]]>
+</scope>
+	<requirement>
+		<docid><![CDATA[RQ.SYS.X.Y.Z]]></docid>
+		<title><![CDATA[System will be USB 3.0 Ready]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>1</node_order>
+		<description><![CDATA[
+
+]]></description>
+		<status><![CDATA[D]]></status>
+		<type><![CDATA[3]]></type>
+		<expected_coverage><![CDATA[1]]></expected_coverage>
+		
+	</requirement>
+</req_spec></req_spec></requirement-specification>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<requirement-specification>
+<req_spec title="Section RSPEC-01"  doc_id="RSPEC-01"  >
+<revision><![CDATA[1]]></revision>
+
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[1]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope>
+<![CDATA[]]>
+</scope>
+<req_spec title="User Req Spec 01"  doc_id="RSPEC-01.URS.01"  >
+<revision><![CDATA[1]]></revision>
+
+<type><![CDATA[2]]></type>
+
+<node_order><![CDATA[1]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope>
+<![CDATA[]]>
+</scope>
+</req_spec><req_spec title="System Req. Spec 01"  doc_id="RSPEC-01.SYSRS.01"  >
+<revision><![CDATA[1]]></revision>
+
+<type><![CDATA[3]]></type>
+
+<node_order><![CDATA[2]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope>
+<![CDATA[]]>
+</scope>
+</req_spec></req_spec><req_spec title="Section RSPEC-02"  doc_id="RSPEC-02"  >
+<revision><![CDATA[1]]></revision>
+
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[2]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope>
+<![CDATA[]]>
+</scope>
+<req_spec title="User Req Spec - Area 51 - 100"  doc_id="RSPEC-02.USER.100"  >
+<revision><![CDATA[1]]></revision>
+
+<type><![CDATA[2]]></type>
+
+<node_order><![CDATA[1]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope>
+<![CDATA[]]>
+</scope>
+</req_spec><req_spec title="Sys Admin Req Spec 500"  doc_id="RSPEC-02.SYSTEM.500"  >
+<revision><![CDATA[1]]></revision>
+
+<type><![CDATA[3]]></type>
+
+<node_order><![CDATA[2]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope>
+<![CDATA[]]>
+</scope>
+</req_spec></req_spec></requirement-specification>

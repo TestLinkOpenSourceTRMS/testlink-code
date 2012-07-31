@@ -23,6 +23,7 @@ require_once('common.php');
 require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('testproject');
 require_once(require_web_editor($editorCfg['type']));
+require_once("form_api.php");
 
 testlinkInitPage($db,true,false,"checkRights");
 
@@ -55,38 +56,58 @@ switch($args->doAction)
     	$template = $templateCfg->default_template;
       	$ui = create($args,$tproject_mgr);
       	$gui->testprojects = $ui->testprojects;
+      	$gui->form_security_field = form_security_field();
     	break;
 
     case 'edit':
     	$template = $templateCfg->default_template;
     	$ui = edit($args,$tproject_mgr);
+    	$gui->form_security_field = form_security_field();
     	break;
 
     case 'doCreate':
-    	$op = doCreate($args,$tproject_mgr);
-    	$template= $op->status_ok ?  null : $templateCfg->default_template;
-    	$ui = $op->ui;
-    	$status_ok = $op->status_ok;
-    	$user_feedback = $op->msg;
-    	$reloadType = $op->reloadType;
+        if(FALSE === form_security_validate())
+        {
+            $ui = new stdClass();
+        	$status_ok = FALSE;
+        	$template = 'projectEdit.tpl';
+        	$user_feedback = lang_get('invalid_security_token');
+            $reloadType = 'ErrorOnAction';
+        } else {
+        	$op = doCreate($args,$tproject_mgr);
+        	$template= $op->status_ok ?  null : $templateCfg->default_template;
+        	$ui = $op->ui;
+        	$status_ok = $op->status_ok;
+        	$user_feedback = $op->msg;
+        	$reloadType = $op->reloadType;
+        }
     	break;
 
     case 'doUpdate':
-    	$op = doUpdate($args,$tproject_mgr,$session_tproject_id);
-    	$template= $op->status_ok ?  null : $templateCfg->default_template;
-    	$ui = $op->ui;
-
-    	$status_ok = $op->status_ok;
-    	$user_feedback = $op->msg;
-    	$reloadType = $op->reloadType;
-      break;
+        if(FALSE === form_security_validate())
+        {
+            $ui = new stdClass();
+            $status_ok = FALSE;
+            $template = 'projectEdit.tpl';
+            $user_feedback = lang_get('invalid_security_token');
+            $reloadType = 'ErrorOnAction';
+        } else {
+        	$op = doUpdate($args,$tproject_mgr,$session_tproject_id);
+        	$template= $op->status_ok ?  null : $templateCfg->default_template;
+        	$ui = $op->ui;
+    
+        	$status_ok = $op->status_ok;
+        	$user_feedback = $op->msg;
+        	$reloadType = $op->reloadType;
+        }
+        break;
 
     case 'doDelete':
         $op = doDelete($args,$tproject_mgr,$session_tproject_id);
     	$status_ok = $op->status_ok;
     	$user_feedback = $op->msg;
     	$reloadType = $op->reloadType;
-      break;
+        break;
 }
 
 $ui->main_descr = lang_get('title_testproject_management');

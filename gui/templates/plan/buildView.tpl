@@ -42,7 +42,7 @@ var del_action=fRoot+'{$deleteAction}';
 <h1 class="title">{$labels.title_build_2}{$smarty.const.TITLE_SEP_TYPE3}{$labels.test_plan}{$smarty.const.TITLE_SEP}{$gui->tplan_name|escape}</h1>
 
 <div class="workBack">
-{include file="inc_update.tpl" result=$sqlResult item="build"}
+{include file="inc_update.tpl" result=$sqlResult item="build" user_feedback=$gui->user_feedback}
 
 {* ------------------------------------------------------------------------------------------- *}
 <div id="existing_builds">

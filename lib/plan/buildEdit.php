@@ -26,6 +26,7 @@ require_once("common.php");
 require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('build');
 require_once(require_web_editor($editorCfg['type']));
+require_once("form_api.php");
 
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
@@ -56,11 +57,13 @@ switch($args->do_action)
 	  	$op = edit($args,$build_mgr,$date_format_cfg);
         $gui->closed_on_date = $args->closed_on_date;
 		$of->Value = $op->notes;
+		$gui->form_security_field = form_security_field();
 		break;
 
 	case 'create':
 	  	$op = create($args);
         $gui->closed_on_date = $args->closed_on_date;
+        $gui->form_security_field = form_security_field();
 		break;
 
 	case 'do_delete':
@@ -68,15 +71,46 @@ switch($args->do_action)
 		break;
 
 	case 'do_update':
-	  	$op = doUpdate($args,$build_mgr,$tplan_mgr,$date_format_cfg);
-		$of->Value = $op->notes;
-		$templateCfg->template = $op->template;
+	    if(FALSE === form_security_validate())
+	    {
+	        $op = new stdClass();
+	        $op->user_feedback = '';
+	        $op->template = "buildEdit.tpl";
+	        $op->notes = $args->notes;
+	        $op->status_ok = FALSE;
+	        $op->operation_descr = lang_get('title_build_edit') . TITLE_SEP_TYPE3 . $oldname;
+	        $op->buttonCfg = new stdClass();
+	        $op->buttonCfg->name = "do_update";
+	        $op->buttonCfg->value = lang_get('btn_save');
+	        $op->user_feedback = lang_get('invalid_security_token');
+	    } 
+	    else 
+	    {
+    	  	$op = doUpdate($args,$build_mgr,$tplan_mgr,$date_format_cfg);
+    		$of->Value = $op->notes;
+    		$templateCfg->template = $op->template;
+	    }
 		break;
 
 	case 'do_create':
-	  	$op = doCreate($args,$build_mgr,$tplan_mgr,$date_format_cfg);
-		$of->Value = $op->notes;
-		$templateCfg->template = $op->template;
+	    if(FALSE === form_security_validate())
+	    {
+	        $op = new stdClass();
+	        $op->template = "buildEdit.tpl";
+	        $op->notes = $args->notes;
+	        $op->status_ok = FALSE;
+	        $op->operation_descr = lang_get('title_build_edit') . TITLE_SEP_TYPE3 . $oldname;
+	        $op->buttonCfg = new stdClass();
+	        $op->buttonCfg->name = "do_update";
+	        $op->buttonCfg->value = lang_get('btn_save');
+	        $op->user_feedback = lang_get('invalid_security_token');
+	    } 
+	    else 
+	    {
+	        $op = doCreate($args,$build_mgr,$tplan_mgr,$date_format_cfg);
+	        $of->Value = $op->notes;
+	        $templateCfg->template = $op->template;
+	    }
 		break;
 
 }

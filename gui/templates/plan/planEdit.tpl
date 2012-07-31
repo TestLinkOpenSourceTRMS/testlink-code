@@ -8,7 +8,7 @@ Revisions:
 20090513 - franciscom - added is_public
 
 20070214 - franciscom -
-BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed
+BUGID 628: Name edit ï¿½ Invalid action parameter/other behaviours if ï¿½Enterï¿½ pressed
 Bug confirmed on IE
 
 *}
@@ -112,7 +112,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 	<form method="post" name="testplan_mgmt" id="testplan_mgmt"
 	      action="lib/plan/planEdit.php?action={$form_action}"
 	      onSubmit="javascript:return validateForm(this);">
-
+    {$gui->form_security_field}
 	<input type="hidden" id="tplan_id" name="tplan_id" value="{$gui->tplan_id}" />
 	<table class="common" width="80%">
 
@@ -173,7 +173,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 
 	<div class="groupBtn">
 
-		{* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
+		{* BUGID 628: Name edit ï¿½ Invalid action parameter/other behaviours if ï¿½Enterï¿½ pressed. *}
 		{if $gui->tplan_id eq 0}
 		  <input type="hidden" name="do_action" value="do_create" />
 		  <input type="submit" name="do_create" value="{$labels.btn_testplan_create}"

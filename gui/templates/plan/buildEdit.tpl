@@ -5,6 +5,7 @@ $Id: buildEdit.tpl,v 1.22 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: smarty template - Add new build and show existing
 
 Rev:
+    20120731 - kinow - TICKET 4977: CSRF token
     20101025 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
     20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
     20100820 - franciscom - refactored to use only $gui as interface from php code

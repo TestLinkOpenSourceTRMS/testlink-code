@@ -5,6 +5,7 @@ $Id: buildView.tpl,v 1.18 2010/10/17 09:46:37 franciscom Exp $
 Purpose: smarty template - Show existing builds
 
 Rev:
+    20120731 - kinow - TICKET 4977: CSRF token
     20101017 - franciscom - image access refactored (tlImages)
     20090509 - franciscom - BUGID - display release_date
     20070921 - franciscom - BUGID  - added strip_tags|strip to notes

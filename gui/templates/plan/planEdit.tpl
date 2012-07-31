@@ -4,6 +4,7 @@ $Id: planEdit.tpl,v 1.17 2010/11/06 11:42:47 amkhullar Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
+20120731 - kinow - TICKET 4977: CSRF token
 20101012 - franciscom - BUGID 3892: CF Types validation
 20090513 - franciscom - added is_public
 

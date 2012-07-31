@@ -7,12 +7,13 @@
  *
  * @package 	TestLink
  * @author 		
- * @copyright 	2007-2009, TestLink community 
+ * @copyright 	2007-2012, TestLink community 
  * @version    	CVS: $Id: planEdit.php,v 1.56 2010/10/12 19:58:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ * 20120731 - kinow - TICKET 4977: CSRF token
  * 20101012 - franciscom - html_table_of_custom_field_inputs() interface changes
  *						   BUGID 3891: Do not lose Custom Field values if test plan can not be created due to duplicated name	
  * 20100602 - franciscom - BUGID 3485: "Create from existing Test Plan" always copies builds
@@ -103,7 +104,9 @@ switch($args->do_action)
 		if(FALSE === form_security_validate())
 		{
 		    $gui->user_feedback = lang_get('invalid_security_token');
-		} else {
+		} 
+		else 
+		{
     		if(!$name_exists || $name_id_rel_ok)
     		{
     			if(!$tplan_mgr->update($args->tplan_id,$args->testplan_name,$args->notes,
@@ -153,7 +156,9 @@ switch($args->do_action)
 		if(FALSE === form_security_validate())
 		{
 		    $gui->user_feedback = lang_get('invalid_security_token');
-		} else {
+		} 
+		else 
+		{
     		if(!$name_exists)
     		{
     			$new_tplan_id = $tplan_mgr->create($args->testplan_name,$args->notes,

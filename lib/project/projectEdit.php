@@ -14,6 +14,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120731 - kinow - TICKET 4977: CSRF token
  * 20120311 - franciscom - TICKET 4904: integrate with ITS on test project basis
  *
  */
@@ -73,7 +74,9 @@ switch($args->doAction)
         	$template = 'projectEdit.tpl';
         	$user_feedback = lang_get('invalid_security_token');
             $reloadType = 'ErrorOnAction';
-        } else {
+        } 
+        else 
+        {
         	$op = doCreate($args,$tproject_mgr);
         	$template= $op->status_ok ?  null : $templateCfg->default_template;
         	$ui = $op->ui;
@@ -91,7 +94,9 @@ switch($args->doAction)
             $template = 'projectEdit.tpl';
             $user_feedback = lang_get('invalid_security_token');
             $reloadType = 'ErrorOnAction';
-        } else {
+        } 
+        else 
+        {
         	$op = doUpdate($args,$tproject_mgr,$session_tproject_id);
         	$template= $op->status_ok ?  null : $templateCfg->default_template;
         	$ui = $op->ui;

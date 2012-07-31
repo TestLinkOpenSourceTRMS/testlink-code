@@ -9,6 +9,7 @@
  * @modified $Date: 2010/10/26 14:16:32 $ $Author: mx-julian $
  *
  * @internal revision
+ *  20120731 - kinow - TICKET 4977: CSRF token
  *  20101025 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
  *  20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
  *	20100820 - franciscom - init_source_build_selector() - refactoring

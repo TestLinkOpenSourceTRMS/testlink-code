@@ -317,9 +317,6 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
 {
 	static $tsuite_mgr;
 	
-	//echo __METHOD__ . '<br>';
-	//new dBug($options);
-	
 	$doFilterByKeyword = (!is_null($argsObj->keyword_id) && $argsObj->keyword_id > 0) ? true : false;
 	
 	// Multiple step algoritm to apply keyword filter on type=AND
@@ -884,8 +881,6 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 	
 				$outRef['tcversions'] = array();
 				$outRef['tcversions_active_status'] = array();
-				
-				// 20080811 - franciscom - BUGID 1650 (REQ)
 				$outRef['tcversions_execution_type'] = array();
 				$outRef['tcversions_qty'] = 0;
 				$outRef['linked_version_id'] = 0;
@@ -946,7 +941,9 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 					$level[$current['parent_id']] = $the_level;
 				}
 				else 
+				{
 					$the_level = $level[$current['parent_id']];
+				}	
 			}
 			$out[$idx]['testsuite']=array('id' => $current['id'], 'name' => $current['name']);
 			$out[$idx]['testcases'] = array();
@@ -1054,8 +1051,7 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
 						$outRef['tcversions_execution_type'][$testCase['id']] = $testCase['execution_type'];
 						$outRef['importance'][$testCase['id']] = $testCase['importance'];
 					}
-					$exec_order= isset($target['execution_order'])? $target['execution_order']:0;
-					$outRef['execution_order'] = $exec_order;
+					$outRef['execution_order'] = isset($target['execution_order'])? $target['execution_order'] : 0;
 					if( isset($target['priority']) )
 					{
 						$outRef['priority'] = priority_to_level($target['priority']);

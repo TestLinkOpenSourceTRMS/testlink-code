@@ -6034,7 +6034,7 @@ class testplan extends tlObjectWithAttachments
 		$commonFields = " SELECT NH_TCASE.id AS tcase_id,NH_TCASE.id AS tc_id,TPTCV.tcversion_id,TCV.version," .
 						" TCV.tc_external_id AS external_id, TCV.execution_type," .
 						" TCV.summary, TCV.preconditions,TPTCV.id AS feature_id," .
-						" TPTCV.platform_id,PLAT.name AS platform_name,".
+						" TPTCV.platform_id,PLAT.name AS platform_name,TPTCV.node_order AS execution_order,".
 						" COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status ";
 
 

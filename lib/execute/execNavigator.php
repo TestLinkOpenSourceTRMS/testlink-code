@@ -13,20 +13,6 @@
  * @internal revisions
  * @since 1.9.4
  *
- * @since 1.9.3
- * 20101007 - franciscom - 	BUGID 3270 - Export Test Plan in XML Format
- * 20100628 - asimon - removal of constants from filter control class
- * 20100624 - asimon - CVS merge (experimental branch to HEAD)
- * 20100622 - asimon - huge refactoring for new filter design,
- *                     removed as much logic from here as possible
- * 20100609 - eloff - Prevent selection of invalid platform
- * 20100428 - asimon - BUGID 3301 and related issues - changed name or case
- *                     of some variables used in new common template
- * 20100417 - franciscom - BUGID 3380 execution type filter
- * 20100409 - eloff - BUGID 3050 - remember selected platform and build in session
- * 20100222 - asimon - fixes in initializeGui() for testplan select box when there are no builds
- * 20100217 - asimon - added check for open builds on initBuildInfo()
- * 20100202 - asimon - changed filtering, BUGID 2455, BUGID 3026
  *
  **/
 
@@ -41,22 +27,22 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $chronos[] = $tstart = microtime(true);
-echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::Start!!!' . current($chronos);
-reset($chronos);	
+//echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::Start!!!' . current($chronos);
+//reset($chronos);	
 
 $control = new tlTestCaseFilterControl($db, 'execution_mode');
 $gui = initializeGui($control);
 $control->build_tree_menu($gui);
 
-$chronos[] = microtime(true);
-$tnow = end($chronos);
-$tprev = prev($chronos);
-echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::AFTER build_tree_menu()' . $tnow;
-$t_elapsed = number_format( $tnow - $tprev, 4);
-echo '<br> ' . basename(__FILE__) . ' Elapsed (sec):' . $t_elapsed;
-reset($chronos);	
-$t_elapsed = number_format( $tnow - $tstart, 4);
-echo '<br> ' . basename(__FILE__) . ' FROM START Elapsed (sec):' . $t_elapsed;
+//$chronos[] = microtime(true);
+//$tnow = end($chronos);
+//$tprev = prev($chronos);
+//echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::AFTER build_tree_menu()' . $tnow;
+//$t_elapsed = number_format( $tnow - $tprev, 4);
+//echo '<br> ' . basename(__FILE__) . ' Elapsed (sec):' . $t_elapsed;
+//reset($chronos);	
+//$t_elapsed = number_format( $tnow - $tstart, 4);
+//echo '<br> ' . basename(__FILE__) . ' FROM START Elapsed (sec):' . $t_elapsed;
 
 
 $smarty = new TLSmarty();
@@ -91,7 +77,7 @@ function initializeGui(&$control)
 	$dummy = config_get('execution_filter_methods');
 	$gui->lastest_exec_method = $dummy['status_code']['latest_execution'];
 
-	new dBug($gui);
+	//new dBug($gui);
 	return $gui;
 }
 ?>

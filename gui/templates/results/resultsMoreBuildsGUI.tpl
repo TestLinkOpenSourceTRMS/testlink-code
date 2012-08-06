@@ -1,19 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuildsGUI.tpl,v 1.8 2010/10/26 11:31:21 mx-julian Exp $
-@author Francisco Mancardi
+@filesource	resultsMoreBuildsGUI.tpl
+@author		Francisco Mancardi
 
-rev :
-     20101026 - asimon - no validation for dates -> no manual input - input only via datepicker
-     20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
-     20101019 - eloff - BUGID 3794 - added contribution by rtessier
-     20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report. 
-     20080524 - franciscom - layout changes
-                             BUGID 1430
-     20080517 - franciscom - refactoring
-     20070916 - franciscom - added hidden input to manage test plan id
-     20070901 - franciscom - use config file and smarty date and time controls
-
+@internal revisions
+@since 1.9.4
 *}
 {lang_get var="labels"
 			s='enter_start_time,enter_end_time,date,hour,Yes,submit_query,
@@ -83,12 +74,12 @@ franciscom - may be in the future - 20090107
 				</select>
                         </td>
 			<td>
-       <select name="testsuite[]" size="{$testsuite_qty}" multiple="multiple">
+       		<select name="testsuite[]" size="{$testsuite_qty}" multiple="multiple">
 					{foreach key=row item=tsuite_name from=$gui->testsuites->items}
 						<option value="{$gui->testsuites->items[$row].id},{$gui->testsuites->items[$row].name|escape}" 
 						        selected="selected">{$gui->testsuites->items[$row].name|escape}</option>
 					{/foreach}
-				</select>
+			</select>
 			</td>
 		</tr>
 		<tr>

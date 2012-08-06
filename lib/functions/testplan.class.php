@@ -16,6 +16,7 @@
  * @internal revisions
  * 
  *  @since 1.9.4
+ *	20120806 - franciscom - getLTCVNewGeneration() - added new option 'accessKeyType'
  *  20120724 - franciscom - TICKET 5106: Import results - add possibility to provide names 
  *										 instead of internal id to identify context
  *  20120714 - franciscom - getLinkInfo(), output set addapted for tc_exec_assignment.php
@@ -5957,14 +5958,15 @@ class testplan extends tlObjectWithAttachments
 	}
 
 
-	// need to recheck, because probably we need to be able to wokr without build id provided
+	// need to recheck, because probably we need to be able to work without build id provided
 	// has to be based on TREE USED on features like:
 	// assign test case execution  or set test case urgency
 	//
 	public function getLTCVNewGeneration($id,$filters=null,$options=null)
 	{
 		$debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
-        $my = array('filters' => array(), 'options' => array('allow_empty_build' => 1));
+        $my = array('filters' => array(),'options' => array('allow_empty_build' => 1,
+        													'accessKeyType' => 'tcase+platform'));
         $amk = array('filters','options');
         foreach($amk as $mk)
         {
@@ -5981,8 +5983,16 @@ class testplan extends tlObjectWithAttachments
 			{
 				$sql2run = $sql2do;
 			}
-			// Test plan can have platforms
-			$tplan_tcases = $this->db->fetchMapRowsIntoMap($sql2run,'tcase_id','platform_id');
+			echo $sql2run;
+			
+			if( $my['options']['accessKeyType'] == 'tcase+platform')
+			{
+				$tplan_tcases = $this->db->fetchMapRowsIntoMap($sql2run,'tcase_id','platform_id');
+			}
+			else
+			{
+				$tplan_tcases = $this->db->fetchRowsIntoMap($sql2run,'tcase_id');
+			}	
 		}
 		return $tplan_tcases;
 	}

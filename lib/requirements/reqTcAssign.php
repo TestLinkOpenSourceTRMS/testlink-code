@@ -2,15 +2,9 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
- * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.21.4.2 $
- * @modified $Date: 2011/01/10 15:38:59 $  $Author: asimon83 $
- * 
+ * @filesource	reqTcAssign.php
  * @author Martin Havlat
  *
- * 20100602 - franciscom - BUGID 3495 - Requirements Bulk Assignment crash. (typo error)
- * 20100408 - franciscom - BUGID 3361 - FatalError after trying to assign requirements to an empty test suite
- * 20081130 - franciscom - BUGID 1852 - Bulk Assignment Feature
  *
 **/
 require_once("../../config.inc.php");
@@ -45,8 +39,7 @@ switch($args->doAction)
 	    break;  
 
     case 'bulkassign':
-    	// BUGID 3361 - need to check if we have test cases to work on
-       	// BUGID 3495 - Requirements Bulk Assignment crash. (typo error) (dbHandler -> db)
+    	// need to check if we have test cases to work on
        	$tsuite_mgr = new testsuite($db);
         $tcase_set = $tsuite_mgr->get_testcases_deep($args->id,'only_id');
 		$bulkCounter = 0;
@@ -161,10 +154,18 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj)
     $guiObj->pageTitle = lang_get('test_suite') . config_get('gui_title_separator_1') . $tsuite_info['name'];
      
 	$guiObj->req_specs = $tproject_mgr->getOptionReqSpec($argsObj->tproject_id,testproject::GET_NOT_EMPTY_REQSPEC);
+	
+	$Xreq_specs = $tproject_mgr->genComboReqSpec($argsObj->tproject_id);
+	//new dBug($guiObj->req_specs);
+	//new dBug($guiObj->Xreq_specs);
+	
     $guiObj->selectedReqSpec = $argsObj->idReqSpec;
     $guiObj->tcase_number = 0;
     $guiObj->has_req_spec = false;
     $guiObj->tsuite_id = $argsObj->id;
+    
+    //new dBug($guiObj);
+    
     if(!is_null($guiObj->req_specs) && count($guiObj->req_specs))
     {  
 		$guiObj->has_req_spec = true;
@@ -179,7 +180,10 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj)
        	
        	$tsuite_mgr = new testsuite($dbHandler);
        	$tcase_set = $tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
-       	$guiObj->tcase_number = count($tcase_set);    
+       	$guiObj->tcase_number = count($tcase_set); 
+       	
+       	//new dBug($tcase_set);
+       	   
        	if( $guiObj->tcase_number > 0 )
        	{
 			$guiObj->bulkassign_warning_msg = sprintf(lang_get('bulk_req_assign_msg'),$guiObj->tcase_number);
@@ -267,19 +271,22 @@ function array_diff_byId ($arrAll, $arrPart)
 	$arrTemp2 = array();
 
 	// converts to associated arrays
-	foreach ($arrAll as $penny) {
+	foreach ($arrAll as $penny) 
+	{
 		$arrTemp[$penny['id']] = $penny;
 	}
-	foreach ($arrPart as $penny) {
+	foreach ($arrPart as $penny) 
+	{
 		$arrTemp2[$penny['id']] = $penny;
 	}
 
 	// exec diff
 	$arrTemp3 = array_diff_assoc($arrTemp, $arrTemp2);
-
 	$arrTemp4 = null;
+
 	// convert to numbered array
-	foreach ($arrTemp3 as $penny) {
+	foreach ($arrTemp3 as $penny) 
+	{
 		$arrTemp4[] = $penny;
 	}
 	return $arrTemp4;

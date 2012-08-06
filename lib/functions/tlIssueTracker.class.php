@@ -27,20 +27,29 @@ class tlIssueTracker extends tlObject
 	var $types = null;
 
 	// IMPORTANT NOTICE
-	// 1. order in this data structure, drives order on GUI.
-	// 2. if you need to add a new item start on 200, to avoid crash with standard ID
+	// array index is used AS CODE that will be written to DB
+	// if you need to add a new item start on 200, to avoid crash with standard ID
 	// 	
-	var $systems = array( 1 =>	array('type' => 'bugzilla', 'api' => 'xmlrpc'),
-						  3 =>	array('type' => 'fogbugz','api' =>'rest'),
-						  5	=>	array('type' => 'jira', 'api' =>'soap'),
-						  6	=>	array('type' => 'mantis', 'api' =>'soap'),
-						 10 =>	array('type' => 'youtrack','api' =>'rest'),
-						 11 =>	array('type' => 'redmine','api' =>'rest'),
-						  2 =>	array('type' => 'eventum','api' =>'db'),
-						  4 =>	array('type' => 'gforge','api' =>'soap'),
-						  7 =>	array('type' => 'polarion', 'api' =>'soap'),
-						  8 =>	array('type' => 'seapine','api' =>'soap'),
-						  9	=>	array('type' => 'trackplus','api' =>'soap'));
+	var $systems = array( 1 =>	array('type' => 'bugzilla', 'api' => 'xmlrpc', 'enabled' => true, 'order' => -1),
+						  2 =>	array('type' => 'bugzilla', 'api' => 'db', 'enabled' => true, 'order' => -1),
+						  3	=>	array('type' => 'mantis', 'api' =>'soap', 'enabled' => true, 'order' => -1),
+						  4	=>	array('type' => 'mantis', 'api' =>'db', 'enabled' => true, 'order' => -1),
+						  5	=>	array('type' => 'jira', 'api' =>'soap', 'enabled' => true, 'order' => -1),
+						  6	=>	array('type' => 'jira', 'api' =>'db', 'enabled' => true, 'order' => -1),
+						  8 =>	array('type' => 'fogbugz','api' =>'rest','enabled' => true, 'order' => -1),
+						  9 =>	array('type' => 'fogbugz','api' =>'db','enabled' => true, 'order' => -1),
+						 10 =>	array('type' => 'gforge','api' =>'soap','enabled' => true, 'order' => -1),
+						 11 =>	array('type' => 'gforge','api' =>'db','enabled' => true, 'order' => -1),
+					     12 =>	array('type' => 'eventum','api' =>'db', 'enabled' => true, 'order' => -1),
+						 13 =>	array('type' => 'polarion', 'api' =>'soap', 'enabled' => true, 'order' => -1),
+						 14 =>	array('type' => 'youtrack','api' =>'rest','enabled' => true, 'order' => -1),
+						 15 =>	array('type' => 'redmine','api' =>'rest','enabled' => true, 'order' => -1),
+						 16 =>	array('type' => 'redmine','api' =>'db','enabled' => true, 'order' => -1),
+						 17 =>	array('type' => 'seapine','api' =>'soap','enabled' => true, 'order' => -1),
+						 18 =>	array('type' => 'seapine','api' =>'db','enabled' => true, 'order' => -1),
+						 19 =>	array('type' => 'trac','api' =>'xmlrpc','enabled' => true, 'order' => -1),
+						 20	=>	array('type' => 'trackplus','api' =>'soap','enabled' => true, 'order' => -1),
+						 21	=>	array('type' => 'trackplus','api' =>'db','enabled' => true, 'order' => -1));
 	
 	
 	
@@ -68,10 +77,37 @@ class tlIssueTracker extends tlObject
 	 * 
 	 * 
      */
-	function getSystems()
+	function getSystems($opt=null)
 	{
+		$my = array('options' => null);
+		$my['options']['status'] = 'enabled'; // enabled,disabled,all
+		$my['options'] = array_merge($my['options'],(array)$opt);
+				
+		switch($my['options']['status']) 
+		{
+			case 'enabled':
+				$tval = true;
+			break;
+				
+			case 'disabled':
+				$tval = false;
+			break;
+			
+			default:
+				$tval = null;
+			break;
+		}		
 		
-        return $this->systems;
+		$ret = array();
+		foreach($this->systems as $code => $elem)
+		{
+			$idx = 0;
+			if($tval== null || $elem['enabled'] == $tval)
+			{
+				$ret[$code] = $elem;
+			}
+		}
+        return $ret;
     }
 
     /**
@@ -393,7 +429,6 @@ class tlIssueTracker extends tlObject
 				   " SET issuetracker_id = " . intval($id) .
 				   " WHERE testproject_id = " . intval($tprojectID);
 		}
-		echo $sql;
 		$this->db->exec_query($sql);
 	}
 

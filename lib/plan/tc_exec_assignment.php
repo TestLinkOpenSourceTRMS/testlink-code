@@ -5,29 +5,12 @@
  *
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tc_exec_assignment.php,v 1.61.2.1 2011/02/11 08:23:11 mx-julian Exp $
+ * @copyright 	2005-2012, TestLink community 
+ * @filesource	tc_exec_assignment.php
  * @link 		http://www.teamst.org/index.php
  *
- * @internal revisions:
- * 20110207 - asimon - BUGID 4203 - use new method to delete assignments to respect assignments per build
- * 20101028 - asimon - BUGID 3945: Assign Test Case Execution to a build shows all the test cases on applied filters
- * 20101024 - franciscom - method renamed to getFilteredSpecView() + changes in interface
- *						   BUGID 3934: Assign Test Case Execution - Execution type filter does not affect right pane	
- * 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
- * 20100721 - asimon - BUGID 3406 - testcase execution assignment per build
- * 20100326 - amitkhullar - BUGID 3346: Update the date on updating test case asssigments
- * 20100228 - franciscom - BUGID 3226: Assignment of single test case not possible
- * 20100225 - eloff - remove unnecessary call to platformVisibleForTestplan
- * 20100215 - asimon - BUGID 2455, BUGID 3026
- * 20100212 - eloff - BUGID 3157 - fixes reassignment to other user
- * 20090807 - franciscom - new feature platforms
- * 20090201 - franciscom - new feature send mail to tester
- * 20080312 - franciscom - BUGID 1427
- * 20080114 - franciscom - added testcase external_id management
- * 20071228 - franciscom - BUG build combo of users using only users
- *                         that can execute test cases in testplan.
- * 20070912 - franciscom - BUGID 1041
+ * @internal revisions
+ * 
  */
          
 require_once(dirname(__FILE__)."/../../config.inc.php");
@@ -36,6 +19,7 @@ require_once("treeMenu.inc.php");
 require_once('email_api.php');
 require_once("specview.php");
 
+// Time tracking - $chronos[] = microtime(true);$tnow = end($chronos);
 testlinkInitPage($db,false,false,"checkRights");
 
 $tree_mgr = new tree($db); 
@@ -69,7 +53,6 @@ if(!is_null($args->doAction))
 		$db_now = $db->db_now();
 
         $features2 = array( 'upd' => array(), 'ins' => array(), 'del' => array());
-        // BUGID 4203 - use new method to delete assignments to respect assignments per build
 	    $method2call = array( 'upd' => 'update', 'ins' => 'assign', 'del' => 'delete_by_feature_id_and_build_id');
 	    $called = array( 'upd' => false, 'ins' => false, 'del' => false);
 
@@ -126,8 +109,11 @@ if(!is_null($args->doAction))
 	    {
 	        if( count($features2[$key]) > 0 )
 	        {
+	        	//tLog($method2call[$key],"AUDIT");
+
+				//echo $method2call[$key];
+				// die();
 	           	$assignment_mgr->$method2call[$key]($values);
-	           	
 	           	$called[$key]=true;
 	        }  
 	    }
@@ -154,17 +140,11 @@ switch($args->level)
         $yy = array_keys($xx);  // done to silence warning on end()
         $tsuite_data['id'] = end($yy);
         $tsuite_data['name'] = $xx[$tsuite_data['id']]['value']; 
-		
-		// 20100228 - franciscom - BUGID 3226: Assignment of single test case not possible
-        // BUGID 3406
-        $getFilters = array('tcase_id' => $args->id);
-        $getOptions = array('output' => 'mapOfArray', 'user_assignments_per_build' => $args->build_id);
-		$linked_items = $tplan_mgr->get_linked_tcversions($args->tplan_id,$getFilters,$getOptions);
-
-		
-		// BUGID 3406
+		$xx = $tplan_mgr->getLinkInfo($args->tplan_id,$args->id,null,
+									 array('output' => 'assignment_info',
+									       'build4assignment' => $args->build_id));
+        $linked_items[$args->id] = $xx;
 		$opt = array('write_button_only_if_linked' => 1, 'user_assignments_per_build' => $args->build_id);
-		
 		$filters = array('keywords' => $keywordsFilter->items );	
 		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 						        $linked_items,null,$filters,$opt);
@@ -177,29 +157,27 @@ switch($args->level)
 		break;
 		
 	case 'testsuite':
-		// BUGID 3934
-		// BUGID 3026
-		// BUGID 3516
-		// BUGID 3406
 		$filters = array();
 		$filters['keywordsFilter'] = $keywordsFilter;
-		// BUGID 3945: tcaseFilter --> testcaseFilter
 		$filters['testcaseFilter'] = (isset($args->testcases_to_show)) ? $args->testcases_to_show : null;
 		$filters['assignedToFilter'] = property_exists($args,'filter_assigned_to') ? $args->filter_assigned_to : null;
 		$filters['executionTypeFilter'] = $args->control_panel['filter_execution_type'];
 		$filters['cfieldsFilter'] = $args->control_panel['filter_custom_fields'];
 		
-		// new dBug($filters);
-		// die();
-		
-		$opt = array('user_assignments_per_build' => $args->build_id);
-		$out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);  
+		// $opt = array('user_assignments_per_build' => $args->build_id);
+		$opt = array('assigned_on_build' => $args->build_id);
+		$filters += $opt;
+		$out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
+		//new dBug($out);
+		// die(); 
 		break;
 
 	default:
 		show_instructions('tc_exec_assignment');
 		break;
 }
+		//new dBug($out);
+		//die(); 
 
 $gui->items = $out['spec_view'];
 
@@ -208,15 +186,34 @@ $gui->items_qty = is_null($gui->items) ? 0 : count($gui->items);
 $gui->has_tc = $out['num_tc'] > 0 ? 1:0;
 $gui->support_array = array_keys($gui->items);
 
+new dBug($gui);
+//die();
+
+
 if ($_SESSION['testprojectOptions']->testPriorityEnabled) 
 {
 	$urgencyCfg = config_get('urgency');
 	$gui->priority_labels = init_labels($urgencyCfg["code_label"]);
 }
 
+//new dBug($gui->items);
+//die();
+// $chronos[] = microtime(true);
+// $tnow = end($chronos); $tprev = prev($chronos);
+// $t_elapsed = number_format( $tnow - $tprev, 4);
+// echo '<br> ' . __FUNCTION__ . ' Elapsed BEFORE RENDERING (sec) (xxx()):' . $t_elapsed .'<br>';
+// reset($chronos);	
+
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+// $chronos[] = microtime(true);
+// $tnow = end($chronos); $tprev = prev($chronos);
+// $t_elapsed = number_format( $tnow - $tprev, 4);
+// echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (xxx()):' . $t_elapsed .'<br>';
+// reset($chronos);	
+
 
 
 /*

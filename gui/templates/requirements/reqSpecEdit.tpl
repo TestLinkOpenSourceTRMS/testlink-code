@@ -4,18 +4,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - create a new req document
 
 @internal revisions
-  20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
+20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
 
-  20110304 - asimon - added help icon with a description of some of the "new" features
-  20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
-  20110111 - Julian - Added Save, Cancel Button on top of the page
-  20110110 - Julian - BUGID 4154: Warning message when navigating away from changed requirement
-                                  specification without saving
-  20101124 - Julian - BUGID 4051: Ajax login on timeout for requirement specifications to avoid data loss
-  20101006 - asimon - BUGID 3854
-  20100810 - asimon - BUGID 3317: disabled total count of requirements by default
-  20100808 - asimon - added logic to refresh filtered tree on changes
-  20091230 - franciscom - req spec type
 *}
 {* ------------------------------------------------------------------------- *}
 
@@ -33,92 +23,91 @@ Purpose: smarty template - create a new req document
 <script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
-	var warning_empty_req_spec_title = "{$labels.warning_empty_req_spec_title|escape:'javascript'}";
-	var warning_empty_doc_id = "{$labels.warning_empty_doc_id|escape:'javascript'}";
-	var warning_countreq_numeric = "{$labels.warning_countreq_numeric|escape:'javascript'}";
-  	
-  	// TICKET 4661
-  	var log_box_title = "{$labels.revision_log_title|escape:'javascript'}";
-  	var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
-  	var confirm_title = "{$labels.warning_suggest_create_revision|escape:'javascript'}";
-  	var confirm_text = "{$labels.suggest_create_revision_html}";
-	
-	var external_req_management = {$gui->external_req_management};
+// Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_req_spec_title = "{$labels.warning_empty_req_spec_title|escape:'javascript'}";
+var warning_empty_doc_id = "{$labels.warning_empty_doc_id|escape:'javascript'}";
+var warning_countreq_numeric = "{$labels.warning_countreq_numeric|escape:'javascript'}";
 
-	{literal}
-	function validateForm(f)
+// TICKET 4661
+var log_box_title = "{$labels.revision_log_title|escape:'javascript'}";
+var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
+var confirm_title = "{$labels.warning_suggest_create_revision|escape:'javascript'}";
+var confirm_text = "{$labels.suggest_create_revision_html}";
+
+var external_req_management = {$gui->external_req_management};
+
+{literal}
+function validateForm(f)
+{
+
+	if (isWhitespace(f.doc_id.value)) 
 	{
-   
-		if (isWhitespace(f.doc_id.value)) 
-  		{
-    		alert_message(alert_box_title,warning_empty_doc_id);
-			selectField(f, 'doc_id');
-			return false;
-		}
-
-		if (isWhitespace(f.title.value))
-		{
-			alert_message(alert_box_title,warning_empty_req_spec_title);
-			selectField(f,'title');
-			return false;
-		}
-		if (external_req_management && isNaN(parseInt(f.countReq.value)))
-		{
-			alert_message(alert_box_title,warning_countreq_numeric);
-			selectField(f,'countReq');
-			return false;
-		}
-
-		// ---------------------------------------------------------
-	    if(f.prompt4log.value == 1)
-    	{
-      		Ext.Msg.prompt(	log_box_title, log_box_text, 
-      						function(btn, text)
-      						{
-        						if (btn == 'ok')
-        						{
-            						f.goaway.value=1;
-            						f.prompt4log.value=0;
-            						f.do_save.value=1;
-            						f.save_rev.value=1;
-            						f.log_message.value=text;
-            						f.submit();
-        						}
-        					},
-        					this,true);    
-
-      		return false;    
-    	} // if(f.prompt4log.value == 1)
-	    else if(f.prompt4revision.value == 1)
-    	{
-      		Ext.Msg.prompt(	confirm_title, confirm_text, 
-      						function(btn, text)
-      						{
-        						if (btn == 'ok')
-        						{
-            						f.save_rev.value=1;
-            						f.log_message.value=text;
-        						}
-        						else
-        						{
-            						f.save_rev.value=0;
-            						f.log_message.value='';
-        						}
-            					f.goaway.value=1;
-            					f.prompt4log.value=0;
-            					f.do_save.value=1;
-            					f.submit();
-      						},this,true);    
-      		return false;    
-    	} // else if(f.prompt4revision.value == 1)
-
-		
-		return Ext.ux.requireSessionAndSubmit(f);
+		alert_message(alert_box_title,warning_empty_doc_id);
+		selectField(f, 'doc_id');
+		return false;
 	}
-	{/literal}
-	</script>
+
+	if (isWhitespace(f.title.value))
+	{
+		alert_message(alert_box_title,warning_empty_req_spec_title);
+		selectField(f,'title');
+		return false;
+	}
+	if (external_req_management && isNaN(parseInt(f.countReq.value)))
+	{
+		alert_message(alert_box_title,warning_countreq_numeric);
+		selectField(f,'countReq');
+		return false;
+	}
+    
+	// ---------------------------------------------------------
+    if(f.prompt4log.value == 1)
+	{
+  		Ext.Msg.prompt(	log_box_title, log_box_text, 
+  						function(btn, text)
+  						{
+    						if (btn == 'ok')
+    						{
+        						f.goaway.value=1;
+        						f.prompt4log.value=0;
+        						f.do_save.value=1;
+        						f.save_rev.value=1;
+        						f.log_message.value=text;
+        						f.submit();
+    						}
+    					},
+    					this,true);    
+
+  		return false;    
+	} // if(f.prompt4log.value == 1)
+    else if(f.prompt4revision.value == 1)
+	{
+  		Ext.Msg.prompt(	confirm_title, confirm_text, 
+  						function(btn, text)
+  						{
+    						if (btn == 'ok')
+    						{
+        						f.save_rev.value=1;
+        						f.log_message.value=text;
+    						}
+    						else
+    						{
+        						f.save_rev.value=0;
+        						f.log_message.value='';
+    						}
+        					f.goaway.value=1;
+        					f.prompt4log.value=0;
+        					f.do_save.value=1;
+        					f.submit();
+  						},this,true);    
+  		return false;    
+	} // else if(f.prompt4revision.value == 1)
+
+	return Ext.ux.requireSessionAndSubmit(f);
+}
+{/literal}
+</script>
 
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">

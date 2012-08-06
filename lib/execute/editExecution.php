@@ -3,14 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: editExecution.php,v $
- *
- * @version $Revision: 1.4.6.2 $
- * @modified $Date: 2011/01/10 15:38:59 $ by $Author: asimon83 $
+ * @filesource	editExecution.php
  *
  * Edit an execution notes and custom fields
- *
- * rev: 20090530 - franciscom - BUGID 
+ * @since 1.9.4
+ * 20120802 - franciscom - TICKET 5121: Link to test case execution edit page is invalid  
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -30,6 +27,8 @@ $gui->exec_id = $args->exec_id;
 $gui->tcversion_id = $args->tcversion_id;
 $gui->tplan_id = $args->tplan_id;
 $gui->tproject_id = $args->tproject_id;
+$gui->edit_enabled = config_get('exec_cfg')->edit_notes;
+
 
 $owebeditor = web_editor('notes',$args->basehref,$editorCfg);
 switch ($args->doAction)
@@ -67,16 +66,16 @@ function init_args()
 	$iParams = array("exec_id" => array(tlInputParameter::INT_N),
 		             "doAction" => array(tlInputParameter::STRING_N,0,100),
    		             "notes" => array(tlInputParameter::STRING_N),
-					"tcversion_id" => array(tlInputParameter::INT_N),
-					"tplan_id" => array(tlInputParameter::INT_N),
-					"tproject_id" => array(tlInputParameter::INT_N),
-			);
+					 "tcversion_id" => array(tlInputParameter::INT_N),
+					 "tplan_id" => array(tlInputParameter::INT_N),
+					 "tproject_id" => array(tlInputParameter::INT_N));
+
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
     
     $args->basehref = $_SESSION['basehref'];
     
-    // BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+    // Take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 	
     return $args; 
@@ -95,8 +94,9 @@ function checkRights(&$db,&$user)
 {
 	$execCfg = config_get('exec_cfg');
 	if ($execCfg->edit_notes != 1)
+	{
 		return false;	
-		
+	}	
 	return $user->hasRight($db,"testplan_execute");
 }
 ?>

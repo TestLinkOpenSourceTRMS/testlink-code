@@ -10,8 +10,6 @@
  * 20120616 - franciscom - processTestSuite() refactoring
  * 20120219 - franciscom - TICKET 4904: integrate with ITS on test project basis
  * 20111230 - franciscom - TICKET 4854: Save and Next - Issues with display CF for test plan design - always EMPTY	
- *						   changes related to get_linked_tcversions() refactoring aimed to improve performance
- *						   and memory usage
  *	
  * 20110820 - franciscom - TICKET 4714: retrieve big amount of useless data
  * 20110622 - asimon - TICKET 4600: Blocked execution of testcases
@@ -42,7 +40,7 @@ $tcversion_id = null;
 $submitResult = null;
 $args = init_args($db,$cfg);
 
-new dBug($args);
+//new dBug($args);
 
 // get issue tracker config and object to manage TestLink - BTS integration 
 $its = null;
@@ -52,14 +50,6 @@ if($info['issue_tracker_enabled'])
 {
 	$it_mgr = new tlIssueTracker($db);
 	$its = $it_mgr->getInterfaceObject($args->tproject_id);
-	/*
-	$xx = $its->getCfg();
-	echo '<pre>';
-	var_dump($xx);
-	echo '</pre>';
-	die();
-    */
-
 	unset($it_mgr);
 }	
 
@@ -75,7 +65,7 @@ $req_mgr = new requirement_mgr($db);
 $gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr);
 $gui->issueTrackerIntegrationOn = $info['issue_tracker_enabled'] && !is_null($its) && $its->isConnected();
 
-new dBug($args->id);
+//new dBug($args->id);
 
 $_SESSION['history_on'] = $gui->history_on;
 $attachmentInfos = null;
@@ -97,9 +87,9 @@ if($args->doExec == 1 && !is_null($args->tc_versions) && count($args->tc_version
 list($linked_tcversions,$itemSet) = getLinkedItems($args,$gui->history_on,$cfg,$tcase_mgr,$tplan_mgr);
 $tcase_id = 0;
 $userid_array = null;
-new dBug($gui);
-new dBug($args->id);
-new dBug($linked_tcversions);
+//new dBug($gui);
+//new dBug($args->id);
+//new dBug($linked_tcversions);
 if(!is_null($linked_tcversions))
 {
 	$items_to_exec = array();
@@ -108,7 +98,7 @@ if(!is_null($linked_tcversions))
     {
     	// Warning!!! - $gui is passed by reference to be updated inside function
     	$tcase = null;
-    	new dBug($args->id);
+    	//new dBug($args->id);
         list($tcase_id,$tcversion_id) = processTestCase($tcase,$gui,$args,$cfg,$linked_tcversions,
                                                         $tree_mgr,$tcase_mgr,$attachmentRepository);
     }
@@ -210,9 +200,9 @@ if(!is_null($linked_tcversions))
 			  	      $userid_array[$testerid] = $testerid;
 		      	}    	
 			}
-			$other_info=exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,
-    	  								     $args->tplan_id,$args->tproject_id, 
-    	  								     $info['issue_tracker_enabled'],$its);
+			$other_info = exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,
+    	  								       $args->tplan_id,$args->tproject_id, 
+    	  								       $info['issue_tracker_enabled'],$its);
     	  								   
     	  $gui->attachments=$other_info['attachment'];
     	  $gui->bugs=$other_info['bugs'];
@@ -545,7 +535,7 @@ function get_ts_name_details(&$db,$tcase_id)
 */
 function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tcase_id,$tproject_id)
 {
-  new dBug($tcase_id);	
+  //new dBug($tcase_id);	
   $fpath=$tree_mgr->get_full_path_verbose($tcase_id, array('output_format' => 'id_name'));
   $tsuite_info = get_ts_name_details($db,$tcase_id);
   foreach($fpath as $key => $value)
@@ -1155,7 +1145,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   	$guiObj->testplan_design_time_cfields='';
   	
   	$tcase_id = isset($tcase['tcase_id']) ? $tcase['tcase_id'] : $argsObj->id;
-	new dBug($tcase_id);
+	//new dBug($tcase_id);
   	
   	// Development Notice:
   	// accessing a FIXED index like in:
@@ -1163,8 +1153,6 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   	// $items_to_exec[$tcase_id] = $linked_tcversions[$tcase_id][0]['tcversion_id'];    
   	// $link_id = $linked_tcversions[$tcase_id][0]['feature_id'];
 	//
-  	// has a latent danger (has happened during refactoring changing output type
-  	// por get_linked_tcversions()).
   	// Because we want to access FIRTS element is better to use current.
   	//
   	$target = current(current($tcv));
@@ -1534,10 +1522,6 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
 		// why ?
 		// Because will normally call this script, from the execution tree and if we can click
 		// on a tree node, this means it has passed all filters.
-		// We need to understand, if doing this check anc changing the way we call get_linked_tcversions()
-		// can help us to:
-		// 1. have better control/understanding of this code => mantainance will be easier
-		// 2. performance will improve.
 		//
 		//
 		// $args->platform_id: needed to get execution status info

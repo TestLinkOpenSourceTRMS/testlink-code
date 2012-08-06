@@ -5983,8 +5983,7 @@ class testplan extends tlObjectWithAttachments
 			{
 				$sql2run = $sql2do;
 			}
-			echo $sql2run;
-			
+					
 			if( $my['options']['accessKeyType'] == 'tcase+platform')
 			{
 				$tplan_tcases = $this->db->fetchMapRowsIntoMap($sql2run,'tcase_id','platform_id');

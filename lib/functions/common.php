@@ -223,7 +223,15 @@ function checkSessionValid(&$db, $redirect=true)
  */
 function doSessionStart()
 {
-	session_set_cookie_params(99999);
+	// this was not enough plus a security risk
+	// session_set_cookie_params(99999);
+	
+	// session_name() is required before session_set_cookie_params() according to php.net manual, 
+	// see http://cz.php.net/manual/pl/function.session-set-cookie-params.php#83484
+	// and http://www.php.net/manual/en/function.session-name.php#89090
+	session_name(session_name());
+	session_set_cookie_params(99999, dirname($_SERVER['PHP_SELF']) . '/');
+	
 	if(!isset($_SESSION))
 	{
 		session_start();

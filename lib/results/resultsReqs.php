@@ -31,25 +31,19 @@ $req_mgr = new requirement_mgr($db);
 $req_spec_mgr = new requirement_spec_mgr($db);
 
 $title_sep = config_get('gui_title_separator_1');
-$glue_char_tc = config_get('testcase_cfg')->glue_character;
-
 $charset = config_get('charset');
 
 
 $req_cfg = config_get('req_cfg');
-$req_type_labels = init_labels($req_cfg->type_labels);
-$status_labels = init_labels($req_cfg->status_labels);
-
-list($req_spec_type_labels,$label) = setUpLabels();
+list($req_spec_type_labels,$req_type_labels,$status_labels,$labels) = setUpLabels($req_cfg);
 list($results_cfg,$status_code_map,$code_status_map,$eval_status_map) = setUpReqStatusCfg();
-
 
 $args = init_args($tproject_mgr, $req_cfg);
 $gui = init_gui($args,$tplan_mgr);
 
-
 $req_ids = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
-$prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
+$prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id) . (config_get('testcase_cfg')->glue_character);
+
 $req_spec_map = array();
 $testcases = array();
 
@@ -75,9 +69,6 @@ else
 
 new dBug($testcases);
 
-
-
- 
 
 // second step: walk through req spec map, count/calculate, store results
 if(count($req_spec_map)) 
@@ -116,6 +107,7 @@ if(count($req_spec_map))
 			// evaluate this requirement by configured coverage algorithm
 			$eval = evaluate_req($status_code_map, $req_cfg->coverageStatusAlgorithm,
 			                     $req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters']);
+
 			$req_spec_map[$req_spec_id]['requirements'][$req_id]['evaluation'] = $eval;
 			
 			if (!isset($req_spec_map[$req_spec_id]['req_counters'][$eval])) 
@@ -169,6 +161,7 @@ if (count($req_spec_map))
 	// data for rows
 	$rows = array();
 	
+
 	foreach ($req_spec_map as $req_spec_id => $req_spec_info) 
 	{
 		
@@ -298,8 +291,7 @@ if (count($req_spec_map))
 					$colored_status = '<span class="' . $eval_status_map[$status]['css_class'] . '">[' . 
 					                  $eval_status_map[$status]['label'] . ']</span>';
 					
-					$tc_name = $prefix . $glue_char_tc . $testcase['tc_external_id'] . $glue_char .
-					           $testcase['name'];
+					$tc_name = $prefix . $testcase['tc_external_id'] . $title_sep . $testcase['name'];
 					
 					$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tc_id});\">" .
 					                     "<img title=\"{$labels['execution_history']}\" " .
@@ -313,7 +305,7 @@ if (count($req_spec_map))
 						$exec_link = "<a href=\"javascript:openExecutionWindow(" .
 						             "{$tc_id}, {$testcases[$tc_id]['tcversion_number']}, {$testcases[$tc_id]['exec_on_build']} , " .
 						             "{$testcases[$tc_id]['exec_on_tplan']}, {$testcases[$tc_id]['platform_id']});\">" .
-						             "<img title=\"{$labels['execution']}\" src=\"{$images['exec']}\" /></a> ";
+						             "<img title=\"{$labels['execution']}\" src=\"{$images['exec_icon']}\" /></a> ";
 					}
 
 					$linked_tcs_with_status .= "{$exec_history_link} {$edit_link} {$exec_link} {$colored_status} {$tc_name}<br>";
@@ -370,26 +362,32 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * @return string description
  */
 function build_req_spec_description(&$evalcode_status_map, &$spec_info, $ext_mgmt_enabled, 
-                                    &$labels, &$spec_types) {
+                                    &$labels, &$spec_types) 
+{
+	
 	$description = "";
 	$space = "&nbsp;&nbsp;&nbsp;&nbsp;";
 	
 	$req_count = $spec_info['req_counters']['total'];
 	$external_count = isset($spec_info['total_req']) ? $spec_info['total_req'] : 0;
-	
 	$description .= "<br/>" . $space . $labels['type'] . ": " . $spec_types[$spec_info['type']];
 	
-	if ($ext_mgmt_enabled && $external_count) {
+	if ($ext_mgmt_enabled && $external_count) 
+	{
 		$description .= "<br/>{$space}{$labels['req_availability']}: " . 
 		                "({$req_count}/{$external_count})";
-	} else {
+	} 
+	else 
+	{
 		$description .= "<br/>" . $space . $labels['requirements'] . ": " . $req_count;
 	}
 	
-	foreach ($evalcode_status_map as $status_code => $status_info) {
+	foreach ($evalcode_status_map as $status_code => $status_info) 
+	{
 		$count = isset($spec_info['req_counters'][$status_code]) ?
 		         $spec_info['req_counters'][$status_code] : 0;
-		if ($count) {
+		if ($count) 
+		{
 			$description .= "<br/>" . $space . $status_info['long_label'] . ": " . $count;
 		}
 	}
@@ -402,57 +400,63 @@ function build_req_spec_description(&$evalcode_status_map, &$spec_info, $ext_mgm
  * Get the evaluation status of a single requirement.
  * 
  * @author Andreas Simon
- * @param array $status_code_map
+ * @param array $status_code
  * @param array $algorithm_cfg
  * @param array $counters
  * @return string evaluation
  */
-function evaluate_req(&$status_code_map, &$algorithm_cfg, &$counters) {
-	
+function evaluate_req(&$status_code, &$algorithm_cfg, &$counters) 
+{
 	// check if requirement is fully covered (">= 100%")
 	$fully_covered = ($counters['total'] >= $counters['expected_coverage']) ? true : false;
-	
-	// count all not run test cases of the requirement
-	$not_run = $counters['total'];
-	foreach($counters as $key => $counter) {
-		if($key != "total" && $key != 'expected_coverage') {
-			$not_run = $not_run - $counter;
-		}
+	$evaluation = $fully_covered ? 'partially_passed' : 'partially_passed_nfc';
+
+	if( !isset($counters[$status_code['not_run']]) )
+	{
+		$counters[$status_code['not_run']] = 0;
 	}
-	
-	$evaluation = ($fully_covered) ? 'partially_passed' : 'partially_passed_nfc';
-	$break = false;
-	
-	// BUGID 3964
-	// if no test case is linked -> uncovered
-	if ($counters['total'] == 0) {
+
+	$doIt = true;
+	if ($counters['total'] == 0) 
+	{
+		// Zero test cases linked => uncovered
 		$evaluation = 'uncovered';
-		$break = true;
+		$doIt = false;
 	}
 	
-	// if at least one test case is linked and all linked test cases are not run -> not run
-	if ($counters['total'] == $not_run && $counters['total'] > 0) {
-		$evaluation = ($fully_covered) ? 'n' : 'n_nfc';
-		$break = true;
+	// if there are linked test cases and all are not run => Req. takes status 'not run'
+	if( ($counters['total'] > 0) && ($counters['total'] == $counters[$status_code['not_run']]) ) 
+	{
+		$evaluation = $fully_covered ? $status_code['not_run'] : ($status_code['not_run'] . '_nfc');
+		$doIt = false;
 	}
 	
-	if (!$break) {
-		foreach ($algorithm_cfg['checkOrder'] as $checkKey) {
-			foreach ($algorithm_cfg['checkType'][$checkKey] as $status2check) {
-				$code = $status_code_map[$status2check];
+	if($doIt) 
+	{
+		foreach($algorithm_cfg['checkOrder'] as $checkKey) 
+		{
+			$doOuterBreak = false;
+			foreach($algorithm_cfg['checkType'][$checkKey] as $status2check) 
+			{
+				$code = $status_code[$status2check];
 				$count = isset($counters[$code]) ? $counters[$code] : 0;
-				if ($checkKey == 'atLeastOne' && $count) {
-					$evaluation = ($fully_covered) ? $code : $code . "_nfc";
-					$break = true;
+				if ($checkKey == 'atLeastOne' && $count) 
+				{
+					$evaluation = $fully_covered ? $code : $code . "_nfc";
+					$doOuterBreak = true;
 					break;
 				}
-				if($checkKey == 'all' && $count == $counters['total']) {
-					$evaluation = ($fully_covered) ? $code : $code . "_nfc";
-					$break = true;
+				
+				if($checkKey == 'all' && $count == $counters['total']) 
+				{
+					$evaluation = $fully_covered ? $code : $code . "_nfc";
+					$doOuterBreak = true;
 					break;
 				}
 			}  
-			if($break) {
+			
+			if($doOuterBreak) 
+			{
 				break;
 			}
 		}
@@ -553,11 +557,13 @@ function init_gui(&$argsObj,&$tplanMgr)
 }
 
 
-function setUpLabels()
+function setUpLabels($reqCfg)
 {
-
 	$dummy = config_get('req_spec_cfg');
-	$req_spec_type_labels = init_labels($dummy->type_labels);
+	$rsptlbl = init_labels($dummy->type_labels);
+
+	$rtlbl = init_labels($reqCfg->type_labels);
+	$slbl = init_labels($reqCfg->status_labels);
 
 	$labels = init_labels( array('requirement' => null,'requirements' => null,
                 			 'type' => null,'req_availability' => null,
@@ -568,9 +574,7 @@ function setUpLabels()
                              'execution' => null,'no_srs_defined' => null,
                              'execution_history' => null, 'req_spec_short' => null));
 
-
-
-	return array($req_spec_type_labels,$labels);
+	return array($rsptlbl,$rtlbl,$slbl,$labels);
 }
 
 
@@ -656,8 +660,6 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
 		$req = $reqMgr->get_by_id($id, requirement_mgr::LATEST_VERSION);
 		$req = $req[0];
 		
-		new dBug($req);
-				
 		// if req is "usable" (has one of the selected states) add it
 		if( in_array($req['status'], $reqStatusFilter, true) || 
 			in_array("0", $reqStatusFilter, true) ) 
@@ -672,7 +674,7 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
 			}
 
 			$req['linked_testcases'] = (array)$reqMgr->get_coverage($id);
-			$rspec[$spec_id]['requirements'][$id] = $req;
+			$rspec[$req['srs_id']]['requirements'][$id] = $req;
 
 			foreach ($req['linked_testcases'] as $tc) 
 			{
@@ -689,11 +691,9 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
 		{
 			$filters['platform_id'] = $argsObj->platform;
 		}
-		$options = array('addExecInfo' => true);
+		$options = array('addExecInfo' => true,'accessKeyType' => 'tcase');
 		$tcaseSet = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $options);
 	}
-
-
 	return array($total,$rspec,$tcaseSet);
 }
 

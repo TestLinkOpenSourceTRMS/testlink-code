@@ -3,11 +3,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	inc_exec_show_tc_exec.tpl
 @internal revisions
 @since 1.9.4
+20120808 - franciscom - TICKET 5128: $tlCfg->exec_cfg->can_delete_execution need to be limited.
 20120707 - franciscom - TICKET 5084: Rendering KO when history on and exec status is NOT RUN
 *}	
  	{foreach item=tc_exec from=$gui->map_last_exec}
 
-    {assign var="tc_id" value=$tc_exec.testcase_id}
+      {assign var="tc_id" value=$tc_exec.testcase_id}
 	  {assign var="tcversion_id" value=$tc_exec.id}
 	  {* IMPORTANT:
 	               Here we use version_number, which is related to tcversion_id SPECIFICATION.
@@ -24,6 +25,19 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     {assign var="memstatus_id" value=tsdetails_view_status_$tc_id}
     {assign var="ts_name"  value=$tsuite_info[$tc_id].tsuite_name}
     {assign var="container_title" value="$container_title$title_sep$ts_name"}
+
+	{* TICKET 5128,5129,5130 *}
+	{assign var="can_delete_exec" value=0}
+	{assign var="can_edit_exec_notes" value=$gui->grants->edit_exec_notes}
+	{assign var="can_manage_attachments" value=$gsmarty_attachments->enabled}
+	{if $tc_exec.can_be_executed}
+		{if $gui->grants->delete_execution}
+			{assign var="can_delete_exec" value=1}
+		{/if}
+	{else}
+		{assign var="can_edit_exec_notes" value=0}
+		{assign var="can_manage_attachments" value=0}
+	{/if}
 
     {include file="inc_show_hide_mgmt.tpl"
              show_hide_container_title=$container_title
@@ -169,7 +183,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 				<th style="text-align:center">{$labels.testcaseversion}</th>
 				
 				{* show attachments column even if all builds are closed *}
-				{if $attachment_model->show_upload_column && $gsmarty_attachments->enabled}
+				{if $attachment_model->show_upload_column && $can_manage_attachments}
 						<th style="text-align:center">{$labels.attachment_mgmt}</th>
 				{else}		
             {assign var="my_colspan" value=$my_colspan-1}
@@ -180,7 +194,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
 
-				{if $gui->grants->delete_execution}
+		{* TICKET 5128 $gui->grants->delete_execution *}
+		{if $can_delete_exec}
           <th style="text-align:left">{$labels.delete}</th>
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
@@ -196,12 +211,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 			<tr style="border-top:1px solid black; background-color: {$bg_color}">
   			  <td>
           {* Check also that Build is Open *}
-  			  {if $gui->grants->edit_exec_notes && $tc_old_exec.build_is_open}
+  			  {if $can_edit_exec_notes && $tc_old_exec.build_is_open}
   		      <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" style="vertical-align:middle" 
   		           title="{$labels.edit_execution}" onclick="javascript: openExecEditWindow(
   		           {$tc_old_exec.execution_id},{$tc_old_exec.id},{$gui->tplan_id},{$gui->tproject_id});">
   		      {else}
-  		         {if $gui->grants->edit_exec_notes}
+  		         {if $can_edit_exec_notes}
   		            <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit_greyed.png" 
   		                 style="vertical-align:middle" title="{$labels.closed_build}">
   		         {/if}
@@ -243,16 +258,17 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   				<td  style="text-align:center">{$tc_old_exec.tcversion_number}</td>
 
 		  {* adjusted if statement to show executions properly if execution history was configured *}
-          {if ($attachment_model->show_upload_column && !$att_download_only && $tc_old_exec.build_is_open 
-               && $gsmarty_attachments->enabled) || ($attachment_model->show_upload_column && $gui->history_on == 1 
-               && $tc_old_exec.build_is_open && $gsmarty_attachments->enabled)}
+          {if ($attachment_model->show_upload_column && !$att_download_only && 
+          	   $tc_old_exec.build_is_open && $can_manage_attachments) || 
+          	   ($attachment_model->show_upload_column && $gui->history_on == 1 && 
+          	    $tc_old_exec.build_is_open && $can_manage_attachments)}
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16.png" title="{$labels.alt_attachment_mgmt}"
       			         alt="{$labels.alt_attachment_mgmt}"
       			         style="border:none" /></a>
               </td>
 			  {else}
-			  	{if $attachment_model->show_upload_column && $gsmarty_attachments->enabled}
+			  	{if $attachment_model->show_upload_column && $can_manage_attachments}
 					<td align="center">
 						<img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16_greyed.png" title="{$labels.closed_build}">
 					</td>
@@ -272,16 +288,17 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
                 	{/if}
           		{/if}
 
-				{*BUGID 3587*}
-    			{if $gui->grants->delete_execution && $tc_old_exec.build_is_open }
-       		  	<td align="center">
-             	<a href="javascript:confirm_and_submit(msg,'execSetResults','exec_to_delete',
+				{* TICKET 3587, 5128 *}
+    			{* if $gui->grants->delete_execution && $tc_old_exec.build_is_open *}
+    			{if $can_delete_exec && $tc_old_exec.build_is_open}
+	       		  	<td align="center">
+    	         	<a href="javascript:confirm_and_submit(msg,'execSetResults','exec_to_delete',
              	                                       {$tc_old_exec.execution_id},'do_delete',1);">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" title="{$labels.img_title_delete_execution}"
       			         style="border:none" /></a>
       			 </td>
       			{else}
-      				{if $gui->grants->delete_execution}
+      				{if $can_delete_execution}
       					<td align="center">
       						<img src="{$smarty.const.TL_THEME_IMG_DIR}/trash_greyed.png" title="{$labels.closed_build}">
       					</td>
@@ -332,7 +349,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
    			</tr>
  			  {/if}
 
-  			{* 20070105 - Custom field values  *}
+  			{* Custom field values  *}
 			<tr style="background-color: {$bg_color}">
   			<td colspan="{$my_colspan}">
   				{assign var="execID" value=$tc_old_exec.execution_id}
@@ -366,11 +383,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         {if isset($gui->bugs[$execID])}
 		<tr style="background-color: {$bg_color}">
    			<td colspan="{$my_colspan}">
-   				{*BUGID 3587*}
    				{include file="inc_show_bug_table.tpl"
-   			         bugs_map=$gui->bugs[$execID]
-   			         can_delete=$tc_old_exec.build_is_open
-   			         exec_id=$execID}
+   			         	 bugs_map=$gui->bugs[$execID]
+   			         	 can_delete=$tc_old_exec.build_is_open
+   			         	 exec_id=$execID}
    			</td>
    		</tr>
    		{/if}
@@ -384,7 +400,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   <br />
   {* ----------------------------------------------------------------------------------- *}
   <div>
-    {* 20090526 - franciscom*}
     {include file="execute/inc_exec_test_spec.tpl"
              args_tc_exec=$tc_exec
              args_labels=$labels

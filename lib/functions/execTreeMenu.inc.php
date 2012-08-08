@@ -23,7 +23,8 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                   $tplan_name,$objFilters,$objOptions) 
 {
 
-	//echo '<h1>' . __FUNCTION__ . '</h1>';
+	//Echo '<h1>' . __FUNCTION__ . '</h1>';    
+	// die();
  	$chronos[] = microtime(true);
 
 
@@ -43,7 +44,7 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $testCaseSet=null;
    
    
-    //new dBug($objFilters);
+    //New dBug($objFilters);
   	
 	$keyword_id = 0;
 	$keywordsFilterType = 'Or';
@@ -58,7 +59,7 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		 $show_testsuite_contents,
 	     $useCounters,$useColors,$colorBySelectedBuild) = initExecTree($objFilters,$objOptions);
 	
-    //new dBug($filters);
+    //New dBug($filters);
 
 	$tplan_mgr = new testplan($dbHandler);
 	$tproject_mgr = new testproject($dbHandler);
@@ -99,13 +100,13 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
  	//$chronos[] = microtime(true);
 	//$tnow = end($chronos);$tprev = prev($chronos);
     
- 	// new dBug($my);
+ 	//New dBug($my);
 	// Document why this is needed, please	
     $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
- 	//echo 'BEFORE';
+ 	//Echo 'BEFORE';
  	
  	//echo 'AF';
- 	//new dBug($test_spec);
+ 	//New dBug($test_spec);
  	
  	
  	// Take Time
@@ -144,12 +145,12 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			// WE NEED TO ADD FILTERING on CUSTOM FIELD VALUES, WE HAVE NOT REFACTORED
 			// THIS YET.
 			//
-			//new dBug($filters, array('label' => __FUNCTION__));
+			//New dBug($filters, array('label' => __FUNCTION__));
 			
 			
 			if( !is_null($sql2do = $tplan_mgr->getLinkedForExecTree($tplan_id,$filters,$options)) )
 			{
-				//new dBug($sql2do);
+				//New dBug($sql2do);
 				$kmethod = "fetchRowsIntoMap";
 				if( is_array($sql2do) )
 				{				
@@ -197,16 +198,24 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		//reset($chronos);	
 
 		// OK, now we need to work on status filters
-		// new dBug($objFilters);
-		// new dBug($objOptions);
+		// New dBug($objFilters);
+		// New dBug($objOptions);
 		// if "any" was selected as filtering status, don't filter by status
 		$targetExecStatus = (array)(isset($objFilters->filter_result_result) ? $objFilters->filter_result_result : null);
+		
+		//New dBug($targetExecStatus);
+		
 		if( !is_null($targetExecStatus) && (!in_array($resultsCfg['status_code']['all'], $targetExecStatus)) ) 
 		{
 			// die('GO ON OTHER FILTERS');
 			//echo '<h1> BEFORE applyStatusFilters() </h1>';
-			//new dBug($tplan_tcases);
-			applyStatusFilters($tplan_id,$tplan_tcases,$objFilters,$tplan_mgr,$resultsCfg['status_code']);
+			//New dBug($tplan_tcases);
+			applyStatusFilters($tplan_id,$tplan_tcases,$objFilters,$tplan_mgr,$resultsCfg['status_code']);       
+
+			//echo '<h1> *** After *** applyStatusFilters() </h1>';
+			//New dBug($tplan_tcases);
+			
+			
 		}
 		
 		
@@ -221,7 +230,7 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		//$t_elapsed = number_format( $tnow - $tprev, 4);
 		//reset($chronos);	
 
-		// new dBug($tplan_tcases);
+		// New dBug($tplan_tcases);
 		
 		
 	    $pnFilters = null;		
@@ -377,7 +386,7 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
     $tpNode = null;
 	if (!$debugMsg)
 	{
-		// new dBug($tplan_tcases);
+		// New dBug($tplan_tcases);
 		
   	    $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
 
@@ -499,8 +508,12 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
 
 function applyStatusFilters($tplan_id,&$items2filter,&$fobj,&$tplan_mgr,$statusCfg)
 {
-	$methods = config_get('execution_filter_methods');
-	$methods = $methods['status_code'];
+	$fm = config_get('execution_filter_methods');
+	$methods = $fm['status_code'];
+
+	//New dBug($fm,array('label' => __METHOD__));
+	//New dBug($methods,array('label' => __METHOD__));
+	
 	
 	$ffn = array($methods['any_build'] => 'filterStatusSetAtLeastOneOfActiveBuilds',
 		         $methods['all_builds'] => 'filterStatusSetAllActiveBuilds',
@@ -524,6 +537,19 @@ function applyStatusFilters($tplan_id,&$items2filter,&$fobj,&$tplan_mgr,$statusC
 	if( ($filter_done = !is_null($f_method) ) )
 	{
 		//echo '<h1>FILTER METHOD:' . $f_method . '::' .  $ffn[$f_method] . '</h1>';
+		$logMsg = 'FILTER METHOD:' . $f_method . '::' .  $ffn[$f_method];
+		tLog($logMsg,'DEBUG');
+		
+		// special case: 
+		// when filtering by "current build", we set the build to filter with
+		// to the build chosen in settings instead of the one in filters
+		//
+		// Need to understand why we need to do this 'dirty/brute force initialization'
+		if ($f_method == $methods['current_build']) 
+		{
+			$fobj->filter_result_build = $fobj->setting_build;
+		}
+		
 		$items = $ffn[$f_method]($tplan_mgr, $items2filter, $tplan_id, $fobj);
 	}
 
@@ -558,8 +584,8 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 	     $useCounters,$useColors,$colorBySelectedBuild) = initExecTree($objFilters,$objOptions);
 	
 
-	new dBug($objOptions);
-	new dBug($options);
+	//New dBug($objOptions);
+	//New dBug($options);
 	
 	$tplan_mgr = new testplan($dbHandler);
 	$tproject_mgr = new testproject($dbHandler);
@@ -601,13 +627,13 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 	//$tnow = end($chronos);
 	//$tprev = prev($chronos);
     
- 	// new dBug($my);
+ 	//New dBug($my);
 	// Document why this is needed, please	
     $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
  	//echo 'BEFORE';
  	
  	//echo 'AF';
- 	//new dBug($test_spec);
+ 	//New dBug($test_spec);
  	//die();
  	
  	
@@ -646,13 +672,13 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 			// WE NEED TO ADD FILTERING on CUSTOM FIELD VALUES, WE HAVE NOT REFACTORED
 			// THIS YET.
 			//
-			// new dBug($filters, array('label' => __FUNCTION__));
+			//New dBug($filters, array('label' => __FUNCTION__));
 			
 			// $gtMethod = {$objOptions->getTreeMethod};
 			
 			if( !is_null($sql2do = $tplan_mgr->{$objOptions->getTreeMethod}($tplan_id,$filters,$options)) )
 			{
-				new dBug($sql2do);
+				//New dBug($sql2do);
 
 				if( is_array($sql2do) )
 				{				
@@ -674,7 +700,7 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 					$sql2run = $sql2do;
 				}
 				
-				new dBug($sql2run);
+				//New dBug($sql2run);
 				$tplan_tcases = $setTestCaseStatus = $dbHandler->$kmethod($sql2run,'tcase_id');
 				
 			}
@@ -703,15 +729,15 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 		//reset($chronos);	
 
 		// OK, now we need to work on status filters
-		// new dBug($objFilters);
-		// new dBug($objOptions);
+		//New dBug($objFilters);
+		//New dBug($objOptions);
 		// if "any" was selected as filtering status, don't filter by status
 		$targetExecStatus = (array)(isset($objFilters->filter_result_result) ? $objFilters->filter_result_result : null);
 		if( !is_null($targetExecStatus) && (!in_array($resultsCfg['status_code']['all'], $targetExecStatus)) ) 
 		{
 			// die('GO ON OTHER FILTERS');
 			//echo '<h1> BEFORE applyStatusFilters() </h1>';
-			//new dBug($tplan_tcases);
+			//New dBug($tplan_tcases);
 			applyStatusFilters($tplan_id,$tplan_tcases,$objFilters,$tplan_mgr,$resultsCfg['status_code']);
 		}
 		
@@ -731,11 +757,11 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 		
 		
 		
-		new dBug($pnOptions);
+		//New dBug($pnOptions);
 		$testcase_counters = prepareExecTreeNode($dbHandler,$test_spec,$map_node_tccount,
 		                                  		 $tplan_tcases,$pnFilters,$pnOptions);
 
-		// new dBug($test_spec);
+		//New dBug($test_spec);
 		
 		// Take time
 	 	// $chronos[] = microtime(true);

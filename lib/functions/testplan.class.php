@@ -16,6 +16,7 @@
  * @internal revisions
  * 
  *  @since 1.9.4
+ *	20120808 - franciscom - TICKET 5131 - getHitsNotRunOnBuildPlatform()
  *	20120806 - franciscom - getLTCVNewGeneration() - added new option 'accessKeyType'
  *  20120724 - franciscom - TICKET 5106: Import results - add possibility to provide names 
  *										 instead of internal id to identify context
@@ -4444,7 +4445,6 @@ class testplan extends tlObjectWithAttachments
 				
 				" WHERE TPTCV.testplan_id = " . intval($id) . 
 				" AND TPTCV.platform_id = " . intval($platformID) . 
-				" AND E.build_id = " . intval($buildID) .
 				" AND E.status IS NULL ";
 
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
@@ -4456,7 +4456,7 @@ class testplan extends tlObjectWithAttachments
 	 * getHitsNotRunOnBuildALOP($id,$buildID)
 	 *
 	 * returns recordset with:
-	 * test cases with NOT RUN status on SPECIFIC build On AT LEAST ONE PLATFORM.
+	 * test cases with NOT RUN status on SPECIFIC build On AT LEAST ONE PLATFORM. (ALOP)
 	 * 
 	 * @return
 	 *
@@ -4481,11 +4481,7 @@ class testplan extends tlObjectWithAttachments
 				" AND E.tcversion_id = TPTCV.tcversion_id " .
 				" AND E.build_id = " . intval($buildID) .
 
-				// " AND E.platform_id = TPTCV.platform_id " .
-
-				
 				" WHERE TPTCV.testplan_id = " . intval($id) . 
-				" AND E.build_id = " . intval($buildID) .
 				" AND E.status IS NULL ";
 
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
@@ -4520,10 +4516,13 @@ class testplan extends tlObjectWithAttachments
 		$dummy = array_flip($statusList);
 		if( isset($dummy[$this->notRunStatusCode]) )
 		{
+			tLog(__FUNCTION__ . ':: getHitsNotRunOnBuildPlatform','DEBUG');
 			$notRunHits = $this->getHitsNotRunOnBuildPlatform($safe_id['tplan'],$safe_id['platform'],$safe_id['build']);
 			unset($statusList[$dummy[$this->notRunStatusCode]]);
 		}
 
+		// new dBug($notRunHits,array('label' => __METHOD__));
+		
 		$statusInClause = implode("','",$statusList);
 		$sql = 	" /* $debugMsg */ " .
 				" SELECT NHTCV.parent_id AS tcase_id" .
@@ -4607,16 +4606,12 @@ class testplan extends tlObjectWithAttachments
 				" AND LEX.tcversion_id = TPTCV.tcversion_id " .
 				" AND LEX.build_id = " . $safe_id['build'] .
 
-				// " AND LEX.platform_id = TPTCV.platform_id " .
-
 				" /* Get STATUS INFO From Executions */ " .
 				" JOIN {$this->tables['executions']} E " .
 				" ON  E.id = LEX.id " .
 				" AND E.tcversion_id = LEX.tcversion_id " .
 				" AND E.testplan_id = LEX.testplan_id " .
 				" AND E.build_id = LEX.build_id " .
-
-				// " AND E.platform_id = LEX.platform_id " .
 
 				" WHERE TPTCV.testplan_id = " . $safe_id['tplan'] . 
 				" AND E.build_id  = " . $safe_id['build'] . 
@@ -5983,7 +5978,6 @@ class testplan extends tlObjectWithAttachments
 			{
 				$sql2run = $sql2do;
 			}
-					
 			if( $my['options']['accessKeyType'] == 'tcase+platform')
 			{
 				$tplan_tcases = $this->db->fetchMapRowsIntoMap($sql2run,'tcase_id','platform_id');
@@ -6006,6 +6000,8 @@ class testplan extends tlObjectWithAttachments
 		$safe['tplan_id'] = intval($id);
 		$my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
     
+    	//new dBug($my, array('label' => __METHOD__));
+	    
 	    $mop = array('options' => array('addExecInfo' => false,'specViewFields' => false));
 	    $my['options'] = array_merge($mop['options'],$my['options']);
 	    

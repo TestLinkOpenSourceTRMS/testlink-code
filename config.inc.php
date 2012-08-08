@@ -542,7 +542,6 @@ $g_sort_table_engine='kryogenix.org';
 /* [Reports] */
 $tlCfg->reportsCfg=new stdClass();
 
-/** @TODO unfinished changes by Francisco? */
 //Displayed execution statuses to use on reports (ordered). */
 $tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];
 
@@ -653,7 +652,6 @@ $tlCfg->exec_cfg->testcases_colouring_by_selected_build = ENABLED;
 $tlCfg->exec_cfg->enable_tree_counters_colouring = ENABLED;
 
 
-// 20080303 - franciscom
 // This can help to avoid performance problems.
 // Controls what happens on right frame when user clicks on a testsuite on tree.
 // ENABLED -> show all test cases presents on test suite and children test suite.

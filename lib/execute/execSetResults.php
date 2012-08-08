@@ -40,8 +40,6 @@ $tcversion_id = null;
 $submitResult = null;
 $args = init_args($db,$cfg);
 
-//new dBug($args);
-
 // get issue tracker config and object to manage TestLink - BTS integration 
 $its = null;
 $tproject_mgr = new testproject($db);
@@ -65,8 +63,6 @@ $req_mgr = new requirement_mgr($db);
 $gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr);
 $gui->issueTrackerIntegrationOn = $info['issue_tracker_enabled'] && !is_null($its) && $its->isConnected();
 
-//new dBug($args->id);
-
 $_SESSION['history_on'] = $gui->history_on;
 $attachmentInfos = null;
 
@@ -87,9 +83,6 @@ if($args->doExec == 1 && !is_null($args->tc_versions) && count($args->tc_version
 list($linked_tcversions,$itemSet) = getLinkedItems($args,$gui->history_on,$cfg,$tcase_mgr,$tplan_mgr);
 $tcase_id = 0;
 $userid_array = null;
-//new dBug($gui);
-//new dBug($args->id);
-//new dBug($linked_tcversions);
 if(!is_null($linked_tcversions))
 {
 	$items_to_exec = array();
@@ -98,7 +91,6 @@ if(!is_null($linked_tcversions))
     {
     	// Warning!!! - $gui is passed by reference to be updated inside function
     	$tcase = null;
-    	//new dBug($args->id);
         list($tcase_id,$tcversion_id) = processTestCase($tcase,$gui,$args,$cfg,$linked_tcversions,
                                                         $tree_mgr,$tcase_mgr,$attachmentRepository);
     }
@@ -128,8 +120,6 @@ if(!is_null($linked_tcversions))
         if ($args->save_and_next) 
         {	
 			$nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$tcversion_id,$args->platform_id);
-			
-			// new dBug($nextItem);
 			
 			while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $args->testcases_to_show)) 
 			{
@@ -168,14 +158,11 @@ if(!is_null($linked_tcversions))
     	// @TODO 20090815 - franciscom check what to do with platform
     	if( $cfg->exec_cfg->show_last_exec_any_build )
     	{
-    		// 20090716 - franciscom - get_last_execution() interface changes
 			$options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
     	    $gui->map_last_exec_any_build = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$args->tplan_id,
     	                                                                   testcase::ANY_BUILD,
     	                                                                   $args->platform_id,$options);
     	    
-
-			// new dBug($gui->map_last_exec_any_build);
     	    //Get UserID and Updater ID for current Version
     	    $tc_current = $gui->map_last_exec_any_build;
     	    foreach ($tc_current as $key => $value)
@@ -535,7 +522,6 @@ function get_ts_name_details(&$db,$tcase_id)
 */
 function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tcase_id,$tproject_id)
 {
-  //new dBug($tcase_id);	
   $fpath=$tree_mgr->get_full_path_verbose($tcase_id, array('output_format' => 'id_name'));
   $tsuite_info = get_ts_name_details($db,$tcase_id);
   foreach($fpath as $key => $value)
@@ -978,7 +964,7 @@ function getCfg()
   
   args:
        dbHandler: reference to db object
-       $userObj: reference to current user object
+       userObj: reference to current user object
        tproject_id:
        tplan_id
   
@@ -997,8 +983,23 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
     $grants->execute = $userObj->hasRight($dbHandler,"testplan_execute",$tproject_id,$tplan_id);
     $grants->execute = $grants->execute=="yes" ? 1 : 0;
     
+    // IMPORTANT NOTICE - TICKET 5128
+    // If is TRUE we will need also to analize, test case by test case
+    // these settings:
+	// 				  $tlCfg->exec_cfg->exec_mode->tester
+	//				  $tlCfg->exec_cfg->simple_tester_roles  	   
+    //
+    // Why ?
+    // Because if a tester can execute ONLY test cases assigned to him, this also
+    // has to mean that:
+    // can delete executions ONLY of test cases assigned to him
+    // can edit exec notes ONLY of test cases assigned to him
+    // can manage uploads on executions, ONLY of test cases assigned to him
+    //
+    // These checks can not be done here
+    //
     // may be in the future this can be converted to a role right
-    $grants->delete_execution=$exec_cfg->can_delete_execution;
+    $grants->delete_execution = $exec_cfg->can_delete_execution;
     
     
     // may be in the future this can be converted to a role right
@@ -1089,12 +1090,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->build_name = isset($the_builds[$argsObj->build_id]) ? $the_builds[$argsObj->build_id] : '';
 
 
-    // 20090419 - franciscom
-    $gui->grants = initializeRights($dbHandler,$argsObj->user,$argsObj->tproject_id,$argsObj->tplan_id);
     $gui->exec_mode = initializeExecMode($dbHandler,$cfgObj->exec_cfg,
                                          $argsObj->user,$argsObj->tproject_id,$argsObj->tplan_id);
-
-
+	
+    $gui->grants = initializeRights($dbHandler,$argsObj->user,$argsObj->tproject_id,$argsObj->tplan_id);
 
     $rs = $tplanMgr->get_by_id($argsObj->tplan_id);
     $gui->testplan_notes = $rs['notes'];
@@ -1145,8 +1144,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   	$guiObj->testplan_design_time_cfields='';
   	
   	$tcase_id = isset($tcase['tcase_id']) ? $tcase['tcase_id'] : $argsObj->id;
-	//new dBug($tcase_id);
-  	
+
   	// Development Notice:
   	// accessing a FIXED index like in:
   	//
@@ -1566,14 +1564,12 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
 				$sql2run = $sql2do;
 			}
 			
-			//echo $sql2run;
 			// Development Notice: 
 			// CUMULATIVE is used only to create same type of datastructe that existed
 			// before this refactoring
 			//
 			// $tex = $tcaseMgr->db->$kmethod($sql2run,'tcase_id',database::CUMULATIVE);
 			$ltcv = $tex = $tcaseMgr->db->$kmethod($sql2run,'tcase_id');
-			//new dBug($tex);
 			if(!is_null($tex))
 			{
 				foreach($tex as $xkey => $xvalue)

@@ -4036,7 +4036,7 @@ class testplan extends tlObjectWithAttachments
 				" AND TPTCV.platform_id = " . $safe_id['platform']  .  
 				" AND E.status IS NULL " .
 				" GROUP BY tcase_id " .
-				" HAVING COUNTER = " . intval($buildCfg['count']) ; 
+				" HAVING COUNTER = " . intval($buildsCfg['count']) ; 
 
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		return $recordset;

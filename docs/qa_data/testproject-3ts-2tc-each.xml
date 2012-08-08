@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="" >
+<node_order><![CDATA[]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="TS100" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[ 
+]]> 
+</details><testsuite name="TS100.1" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[ 
+]]> 
+</details>
+<testcase internalid="39" name="TC1A">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[1]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[1]]></importance>
+
+<keywords><keyword name="K1"><notes><![CDATA[
+
+]]></notes></keyword>
+<keyword name="K2"><notes><![CDATA[
+
+]]></notes></keyword>
+</keywords>	<requirements>
+		<requirement>
+			<req_spec_title><![CDATA[User Req Spec 01]]></req_spec_title>
+			<doc_id><![CDATA[RQ.USR.01.1000]]></doc_id>
+			<title><![CDATA[User has to be happy]]></title>
+		</requirement>
+		<requirement>
+			<req_spec_title><![CDATA[User Req Spec 01]]></req_spec_title>
+			<doc_id><![CDATA[RQ.USR.01.1001]]></doc_id>
+			<title><![CDATA[User has to be ready to go]]></title>
+		</requirement>
+	</requirements>
+</testcase>
+
+<testcase internalid="41" name="TC1B">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[2]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+<keywords><keyword name="K1"><notes><![CDATA[
+
+]]></notes></keyword>
+<keyword name="K2"><notes><![CDATA[
+
+]]></notes></keyword>
+<keyword name="K3"><notes><![CDATA[
+
+]]></notes></keyword>
+</keywords></testcase>
+</testsuite></testsuite><testsuite name="TS200" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[ 
+]]> 
+</details><testsuite name="TS200.1" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[ 
+]]> 
+</details>
+<testcase internalid="45" name="TC2X">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[3]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+<keywords><keyword name="K2"><notes><![CDATA[
+
+]]></notes></keyword>
+</keywords></testcase>
+
+<testcase internalid="47" name="TC2Y">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[4]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[3]]></importance>
+
+<keywords><keyword name="K2"><notes><![CDATA[
+
+]]></notes></keyword>
+</keywords>	<requirements>
+		<requirement>
+			<req_spec_title><![CDATA[User Req Spec 01]]></req_spec_title>
+			<doc_id><![CDATA[RQ.USR.01.1000]]></doc_id>
+			<title><![CDATA[User has to be happy]]></title>
+		</requirement>
+		<requirement>
+			<req_spec_title><![CDATA[System Req. Spec 01]]></req_spec_title>
+			<doc_id><![CDATA[RQ.SYS.01.1001]]></doc_id>
+			<title><![CDATA[System has to be cheap]]></title>
+		</requirement>
+		<requirement>
+			<req_spec_title><![CDATA[System Req. Spec 01]]></req_spec_title>
+			<doc_id><![CDATA[RQ.SYS.01.1002]]></doc_id>
+			<title><![CDATA[System will be ecologic]]></title>
+		</requirement>
+	</requirements>
+</testcase>
+</testsuite></testsuite><testsuite name="TS300" >
+<node_order><![CDATA[3]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="TS300.1" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details>
+<testcase internalid="75" name="TC3-XL5">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[5]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+<keywords><keyword name="K2"><notes><![CDATA[
+
+]]></notes></keyword>
+</keywords></testcase>
+
+<testcase internalid="77" name="TC3-YM6">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[6]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+<keywords><keyword name="K2"><notes><![CDATA[
+
+]]></notes></keyword>
+</keywords></testcase>
+</testsuite></testsuite></testsuite>

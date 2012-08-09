@@ -754,16 +754,19 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
 
 		$resultsCfg = config_get('results');
 		$status_descr_code = $resultsCfg['status_code'];
+		
+		
 		foreach($resultsCfg['status_label'] as $key => $value)
 		{
 			$l18n[$status_descr_code[$key]] = lang_get($value);
-			$cssClasses[$status_descr_code[$key]] = $doColouringOn['testcase'] ? ('class="light_' . $value . '"') : ''; 
+
+			// here we use ONLY key
+			$cssClasses[$status_descr_code[$key]] = $doColouringOn['testcase'] ? ('class="light_' . $key . '"') : ''; 
 		}
 		$pf['testproject'] = $hideTestCases ? 'TPLAN_PTP' : 'SP';
 		$pf['testsuite'] = $hideTestCases ? 'TPLAN_PTS' : ($showTestSuiteContents ? 'STS' : null); 
 		
 	}
-	
 	$name = filterString($node['name']);
 
 	// custom Property that will be accessed by EXT-JS using node.attributes
@@ -1172,11 +1175,13 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
 		$safe_platform = intval($filters->setting_platform);
 		if( $safe_platform > 0 )
 		{
+			tLog(__FUNCTION__ . ':: $tplan_mgr->getHitsSameStatusFullOnPlatform', 'DEBUG');
 			$hits = $tplan_mgr->getHitsSameStatusFullOnPlatform($tplan_id,$safe_platform,
 													  			(array)$filters->filter_result_result,$buildSet);
 		}
 		else
 		{
+			tLog(__FUNCTION__ . ':: $tplan_mgr->getHitsSameStatusFullALOP', 'DEBUG');
 			$hits = $tplan_mgr->getHitsSameStatusFullALOP($tplan_id,
 													  	  (array)$filters->filter_result_result,$buildSet);
 		}
@@ -1208,16 +1213,19 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
  */
 function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
+	//New dBug($filters, array('label' => __METHOD__));
+	
 	$safe_platform = intval($filters->setting_platform);
 	$safe_build = intval($filters->filter_result_build);
 	if( $safe_platform > 0)
 	{
-		
+		tLog(__FUNCTION__ . ':: $tplan_mgr->getHitsStatusSetOnBuildPlatform', 'DEBUG');
 		$hits = $tplan_mgr->getHitsStatusSetOnBuildPlatform($tplan_id,$safe_platform,$safe_build,
 															(array)$filters->filter_result_result);
 	}
 	else
 	{
+		tLog(__FUNCTION__ . ':: $tplan_mgr->getHitsStatusSetOnBuildALOP', 'DEBUG');
 		$hits = $tplan_mgr->getHitsStatusSetOnBuildALOP($tplan_id,$safe_build,
 														(array)$filters->filter_result_result);
 	}
@@ -1807,8 +1815,9 @@ function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype
  */
 function apply_status_filters($tplan_id,&$items,&$fobj,&$tplan_mgr,$statusCfg)
 {
-	$methods = config_get('execution_filter_methods');
-	$methods = $methods['status_code'];
+	$fm = config_get('execution_filter_methods');
+	$methods = $fm['status_code'];
+	
 	
 	$ffn = array($methods['any_build'] => 'filterStatusSetAtLeastOneOfActiveBuilds',
 		         $methods['all_builds'] => 'filterStatusSetAllActiveBuilds',

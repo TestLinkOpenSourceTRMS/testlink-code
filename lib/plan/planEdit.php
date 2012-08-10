@@ -14,6 +14,7 @@
  *
  * @internal Revisions:
  * 20120731 - kinow - TICKET 4977: CSRF token
+ * 20101108 - kinow - TICKET 3987: Add attachments to a Test Plan
  * 20101012 - franciscom - html_table_of_custom_field_inputs() interface changes
  *						   BUGID 3891: Do not lose Custom Field values if test plan can not be created due to duplicated name	
  * 20100602 - franciscom - BUGID 3485: "Create from existing Test Plan" always copies builds
@@ -308,6 +309,9 @@ function checkRights(&$db,&$user)
  */
 function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
 {
+    // 20101108 - kinow - BUGID 3987: Add attachments to a Test Plan
+    $tplan_mgr = new testplan($dbHandler);
+    
     $guiObj = new stdClass();
     $guiObj->tproject_id = $argsObj->tproject_id; 
     $guiObj->editorType = $editorCfg['type'];
@@ -316,7 +320,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
     $guiObj->main_descr = lang_get('testplan_title_tp_management'). " - " .
                          lang_get('testproject') . ' ' . $argsObj->tproject_name;
     $guiObj->testplan_name = null;
-    $guiObj->tplan_id = null;
+    $guiObj->tplan_id = $argsObj->tplan_id;
     $guiObj->is_active = 0;
     $guiObj->is_public = 0;
     $guiObj->cfields = '';
@@ -326,6 +330,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
     $guiObj->grants->testplan_create = $_SESSION['currentUser']->hasRight($dbHandler,"mgt_testplan_create");
     $guiObj->grants->mgt_view_events = $_SESSION['currentUser']->hasRight($dbHandler,"mgt_view_events");
     $guiObj->notes = '';
+    
+    // 20101108 - kinow - BUGID 3987: Add attachments to a Test Plan
+    $guiObj->attachments[$guiObj->tplan_id] = getAttachmentInfosFrom($tplan_mgr,$guiObj->tplan_id);
+    $guiObj->attachmentTableName = $tplan_mgr->getAttachmentTableName();
     
     return $guiObj;
 }

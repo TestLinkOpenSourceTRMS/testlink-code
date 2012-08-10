@@ -14,7 +14,6 @@
  *
  * @internal Revisions:
  * 20120731 - kinow - TICKET 4977: CSRF token
- * 20101108 - kinow - TICKET 3987: Add attachments to a Test Plan
  * 20101012 - franciscom - html_table_of_custom_field_inputs() interface changes
  *						   BUGID 3891: Do not lose Custom Field values if test plan can not be created due to duplicated name	
  * 20100602 - franciscom - BUGID 3485: "Create from existing Test Plan" always copies builds

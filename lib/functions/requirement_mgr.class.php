@@ -2619,7 +2619,6 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
  	 *
  	 *	@return  
      */
-	// function get_last_child_info($id, $child_type='version')
 	function get_last_child_info($id, $options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -2644,7 +2643,6 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 		$max_verbose = $this->db->fetchFirstRowSingleColumn($sql,$field);
 		if ($max_verbose >= 0)
 		{
-			
 			$sql = "/* $debugMsg */ SELECT ";
 
 			switch($my['options']['output'])
@@ -2662,12 +2660,10 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 				break;
 			}
 		
-			
 			$sql .= " FROM {$this->tables[$table]} CHILD," .
 			        " {$this->tables['nodes_hierarchy']} NH ".
 			        " WHERE $field = {$max_verbose} AND NH.id = CHILD.id AND NH.parent_id = {$id}";
 	
-			die($sql);
 			$info = $this->db->fetchFirstRow($sql);
 		}
 		return $info;
@@ -3180,6 +3176,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 		
 		
 		$sql .= $where;		
+		echo $sql;
 		$rs = $this->db->fetchRowsIntoMap($sql,'id');
 				
 		return $rs;

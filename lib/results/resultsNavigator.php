@@ -2,19 +2,15 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.63 2010/08/21 18:09:23 franciscom Exp $ 
- * @author	Martin Havlat <havlat@users.sourceforge.net>
- * 
+ *
  * Scope: Launcher for Test Results and Metrics.
  *
- * rev :
- *  20100616 - eloff - BUGID 3255 - Fix bug interface check
- *  20100410 - franciscom - BUGID 3370
- *  20071109,11 - havlatm - move data to config + refactorization;
-                            removed obsolete build list, move functions into class
- *  20070930 - franciscom -
- *  20070916 - franciscom - added logic to choose test plan
- *  20070826 - franciscom - disable resultsImport
+ * @filesource	resultsNavigator.php
+ * @author		Martin Havlat <havlat@users.sourceforge.net>
+ * 
+ *
+ * @internal revisions
+ * @since 1.9.4
  * 
  **/
 require('../../config.inc.php');
@@ -29,12 +25,14 @@ $gui = new stdClass();
 $gui->workframe = $_SESSION['basehref'] . "lib/general/staticPage.php?key=showMetrics";
 $gui->do_report = array('status_ok' => 1, 'msg' => '');
 $gui->tplan_id = $args->tplan_id;
+$gui->tproject_id = $args->tproject_id;
 $gui->checked_show_inactive_tplans = $args->checked_show_inactive_tplans;
 
-$btsEnabled = config_get('interface_bugs') != 'NO';
 
-// $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
+$btsEnabled = $tproject_mgr->isIssueTrackerEnabled($gui->tproject_id);
+new dBug($btsEnabled);
+
 
 $reports_mgr = new tlReports($db, $gui->tplan_id);
 

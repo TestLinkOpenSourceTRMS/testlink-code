@@ -1,6 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filsesource execHistory.tpl
+@internal revision
+@since 1.9.4
+20120802 - franciscom - TICKET 5121: Link to test case execution edit page is invalid
 *}	
 {lang_get var='labels' 
           s='title_test_case,th_test_case_id,version,date_time_run,platform,test_exec_by,
@@ -64,8 +67,7 @@ function load_notes(panel,exec_id)
 					{cycle values='#eeeeee,#d0d0d0' assign="bg_color"}
 					<tr style="border-top:1px solid black; background-color: {$bg_color}">
 						<td>
-							{* function openExecEditWindow(exec_id,tcversion_id,tplan_id,tproject_id) *}
-							{if $gui->user_is_admin}
+							{if $gui->exec_cfg->edit_notes}
 								<img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" style="vertical-align:middle" 
 								     title="{$labels.edit_execution}" onclick="javascript: openExecEditWindow(
 								     {$tcv_exec.execution_id},{$tcv_exec.id},{$tcv_exec.testplan_id},{$gui->tproject_id});">

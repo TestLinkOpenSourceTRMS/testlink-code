@@ -3,28 +3,19 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource	lang_api.php
  * @package 	TestLink
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: lang_api.php,v 1.29 2010/08/25 18:05:50 franciscom Exp $
+ * @copyright 	2005-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal thanks
+ * The functionality is based on Mantis BTS project code 
+ * Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
+ * Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
+ *
+ *
+ * @internal revisions
  * 
- *	20100823 - franciscom - forcing loading of en_GB, for displaying missing localization
- *							on english (if available), instead of LOCALIZED
- *
- *	20100820 - franciscom - new feature on init_labels()
- *	20070501 - franciscom - lang_get_smarty() now accept a list of
- *	                         strings to translate.
- *	20070501 - franciscom - enabled logic to manage a custom_strings.txt file
- *	20050508 - fm - changes to lang_get_smarty()
- *	200800606 - havlatm - added description.php resource
- *
- *
- * Thanks:
- * 		The functionality is based on Mantis BTS project code 
- * 		Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
- * 		Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  *
  **/
 
@@ -301,15 +292,15 @@ function localize_array( $input_array ) {
  *             value: lang_get(string_to_translate)
  * 
  * @internal revision:
- * 20100820 - franciscom - support for null as string_to_translate
  */
-function init_labels($map_code_label)
+function init_labels($label2translate)
 {
-	foreach($map_code_label as $key => $label)
+	$ret = array();
+	foreach($label2translate as $key => $label)
 	{
-		$map_code_label[$key] = is_null($label) ? lang_get($key) : lang_get($label);
+		$ret[$key] = is_null($label) ? lang_get($key) : lang_get($label);
 	}
-	return $map_code_label;
+	return $ret;
 }
 
 

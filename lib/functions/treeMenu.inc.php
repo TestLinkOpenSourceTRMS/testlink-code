@@ -20,16 +20,6 @@
  * 20120205 - franciscom - 	remove deprecated method
  * 20110115 - franciscom -	work on extjs_renderExecTreeNodeOnOpen() and related functions
  *							trying to improve performance
- * 20111031 - franciscom - 	TICKET 4790: Setting & Filters panel - Wrong use of BUILD on settings area
- *							generateExecTree().
- *
- * 20110820 - franciscom - 	TICKET 4710: Performance/Filter Problem on big project
- *							generateExecTree() - changes in call to get_linked_tcversions()
- *
- * 20110709 - franciscom - fixed event viewer warning due to missing isset() check generateExecTree()
- *
- * @since 1.9.3
- * 20110311 - asimon - BUGID 3765: Req Spec Doc ID disappeared for req specs without direct requirement child nodes
  *
  */
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
@@ -727,319 +717,6 @@ function renderTreeNode($level,&$node,$hash_id_descr,
 }
 
 
-/** 
- * Creates data for tree menu used on :
- * - Execution of Test Cases
- * - Remove Test cases from test plan
- * 
- * @internal revisions
- *
- * @since 1.9.4
- * 20110820 - franciscom - 	TICKET 4710: Performance/Filter Problem on big project
- */
-function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
-                          $tplan_name,$filters,$options) 
-{
-
- 	$chronos[] = microtime(true);
-
-
-	$treeMenu = new stdClass(); 
-	$treeMenu->rootnode = null;
-	$treeMenu->menustring = '';
-	$resultsCfg = config_get('results');
-	$showTestCaseID = config_get('treemenu_show_testcase_id');
-	$glueChar=config_get('testcase_cfg')->glue_character;
-	
-	$menustring = null;
-	$any_exec_status = null;
-	$tplan_tcases = null;
-	$tck_map = null;
-    $idx=0;
-    $testCaseQty=0;
-    $testCaseSet=null;
-  	
-	$keyword_id = 0;
-	$keywordsFilterType = 'Or';
-	if (property_exists($filters, 'filter_keywords') && !is_null($filters->filter_keywords)) 
-	{
-		$keyword_id = $filters->filter_keywords;
-		$keywordsFilterType = $filters->filter_keywords_filter_type;
-	}
-	
-	// @since 1.9.4 - TICKET 4790: Setting & Filters panel - Wrong use of BUILD on settings area	
-	$buildSettingsPanel = isset($filters->setting_build) ? $filters->setting_build : 0;
-	$buildFiltersPanel = isset($filters->filter_result_build) ? $filters->filter_result_build : null;
-	$build2filter_assignments = is_null($buildFiltersPanel) ? $buildSettingsPanel : $buildFiltersPanel;
-	
-	
-	$tc_id = isset($filters->filter_tc_id) ? $filters->filter_tc_id : null; 
-	$assignedTo = isset($filters->filter_assigned_user) ? $filters->filter_assigned_user : null; 
-	$include_unassigned = isset($filters->filter_assigned_user_include_unassigned) ?
-	                      $filters->filter_assigned_user_include_unassigned : false;
-	$setting_platform = isset($filters->setting_platform) ? $filters->setting_platform : null;
-	$execution_type = isset($filters->filter_execution_type) ? $filters->filter_execution_type : null;
-	$status = isset($filters->filter_result_result) ? $filters->filter_result_result : null;
-	$cf_hash = isset($filters->filter_custom_fields) ? $filters->filter_custom_fields : null;
-	$show_testsuite_contents = isset($filters->show_testsuite_contents) ? 
-	                           $filters->show_testsuite_contents : true;
-	$urgencyImportance = isset($filters->filter_priority) ?
-	                     $filters->filter_priority : null;
-	
-	$useCounters=isset($options->useCounters) ? $options->useCounters : null;
-	$useColors=isset($options->useColours) ? $options->useColours : null;
-	$colorBySelectedBuild = isset($options->testcases_colouring_by_selected_build) ? 
-	                        $options->testcases_colouring_by_selected_build : null;
-
-	// 20110823
-
-	$tplan_mgr = new testplan($db);
-	$tproject_mgr = new testproject($db);
-	$tcase_mgr = new testcase($db);
-	
-	$tree_manager = $tplan_mgr->tree_manager;
-	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
-
-	$hash_descr_id = $tree_manager->get_available_node_types();
-	$hash_id_descr = array_flip($hash_descr_id);	    
-	$decoding_hash = array('node_id_descr' => $hash_id_descr,
-		                   'status_descr_code' =>  $resultsCfg['status_code'],
-		                   'status_code_descr' =>  $resultsCfg['code_status']);
-	
-	$tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
-	
-	$nt2exclude = array('testplan' => 'exclude_me',
-		                'requirement_spec'=> 'exclude_me',
-		                'requirement'=> 'exclude_me');
-	
-	$nt2exclude_children = array('testcase' => 'exclude_my_children',
-		                         'requirement_spec'=> 'exclude_my_children');
-	
-  	// remove test spec, test suites (or branches) that have ZERO test cases linked to test plan
-  	// 
-  	// IMPORTANT:
-  	// using 'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id))
-  	// makes the magic of ignoring test cases not linked to test plan.
-  	// This unexpected bonus can be useful on export test plan as XML.
-  	//
-  	$my['options']=array('recursive' => true, 'remove_empty_nodes_of_type' => $tree_manager->node_descr_id['testsuite'],
-  	                     'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id));
- 	$my['filters'] = array('exclude_node_types' => $nt2exclude,
- 	                       'exclude_children_of' => $nt2exclude_children);
-	
- 	// BUGID 3301 - added for filtering by toplevel testsuite
- 	if (isset($filters->{'filter_toplevel_testsuite'}) && is_array($filters->{'filter_toplevel_testsuite'})) {
- 		$my['filters']['exclude_branches'] = $filters->{'filter_toplevel_testsuite'};
- 	}
- 	
- 	// Take Time
- 	//$chronos[] = microtime(true);
-	//$tnow = end($chronos);
-	//$tprev = prev($chronos);
-    
- $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
- 	
- 	
- 	// Take Time
- 	//$chronos[] = microtime(true);	$tnow = end($chronos);	$tprev = prev($chronos);
-	//$t_elapsed = number_format( $tnow - $tprev, 4);
-	//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
-	//reset($chronos);	
-
-     
-	$test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
-	$test_spec['id'] = $tproject_id;
-	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
-	$map_node_tccount = array();
-	
-	$tplan_tcases = null;
-  $apply_other_filters=true;
-
-
-	if($test_spec)
-	{
-		if(is_null($tc_id) || $tc_id > 0)   // 20120519 TO BE CHECKED
-		{
-			$doFilterByKeyword = (!is_null($keyword_id) && $keyword_id > 0);
-			if($doFilterByKeyword)
-			{
-				$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id,$keywordsFilterType);
-			}
-			
-			// Multiple step algoritm to apply keyword filter on type=AND
-			// get_*_tcversions filters by keyword ALWAYS in OR mode.
-			$linkedFilters = array('tcase_id' => $tc_id, 
-								   'keyword_id' => $keyword_id, 'keyword_filter_type' => $keywordsFilterType,
-                                   'assigned_to' => $assignedTo,
-                                   'assigned_on_build' => $build2filter_assignments,
-                                   'cf_hash' =>  $cf_hash,
-                                   'platform_id' => $setting_platform,
-                                   'urgencyImportance' => $urgencyImportance,
-                                   'exec_type' => $execution_type);
-			
-			$opt = array('include_unassigned' => $include_unassigned, 'steps_info' => false);
-			// TICKET 4710
-			if( ($opt['last_execution'] = $useColors && $colorBySelectedBuild) )
-			{
-				$linkedFilters['build_id'] = $filters->setting_build;
-			}
-			else
-			{
-				$opt['last_execution'] = isset($options->absolute_last_execution) ? 
-	                        			 $options->absolute_last_execution : false;
-			}
-			$linkedFilters['tcase_name'] = isset($filters->filter_testcase_name) ? $filters->filter_testcase_name : null; 
-			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
-			
-		 	// Take Time
-		 	//$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
-			//$t_elapsed = number_format( $tnow - $tprev, 4);
-			//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER XXXXX()</b>):' . $t_elapsed .'<br>';
-			//reset($chronos);	
-
-			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'And')
-			{
-				$filteredSet = $tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);
-
-				// CAUTION: if $filteredSet is null,
-				// then get_*_tcversions() thinks there are just no filters set,
-				// but really there are no testcases which match the wanted keyword criteria,
-				// so we have to set $tplan_tcases to null because there is no more filtering necessary
-				if ($filteredSet != null) 
-        {
-					$linkedFilters = array('tcase_id' => array_keys($filteredSet));
-					
-					// TICKET 4710
-					$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
-					
-				} 
-				else 
-				{
-					$tplan_tcases = null;
-				}
-			}
-		}   
-
-		
-		if (is_null($tplan_tcases))
-		{
-			$tplan_tcases = array();
-			$apply_other_filters=false;
-		}
-		
-		// Take time
-	 	//$chronos[] = microtime(true);
-		//$tnow = end($chronos);
-		//$tprev = prev($chronos);
-		//$t_elapsed = number_format( $tnow - $tprev, 4);
-		//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>FROM get_subtree()</b>):' . $t_elapsed .'<br>';
-		//reset($chronos);	
-
-		// 20110823 - refactoring		
-		if( $apply_other_filters )
-		{
-			$tplan_tcases = (array)apply_status_filters($tplan_id,$tplan_tcases,$filters,$tplan_mgr,$resultsCfg['status_code']);
-			if( count($tplan_tcases) == 0)
-			{
-				$tplan_tcases = array();
-				$apply_other_filters=false;
-			}
-		}
-		// end - 20110823 - refactoring		
-
-		// BUGID 3450 - Change colors/counters in exec tree.
-		// Means: replace exec status in filtered array $tplan_tcases 
-		// by the one of last execution of selected build.
-		// Since this changes exec status, replacing is done after filtering by status.
-		// It has to be done before call to prepareNode() though,
-		// because that one sets the counters according to status.
-		//
-		// 20110823 - franciscom
-		// A minor analysis need to be done regarding use of platform on following code.
-		// Up today exec tree display data for ONLY a SELECTED platform 
-		// this happens on EXECUTION FEATURE (execution_mode on tlTestCaseFilterControl.class.php).
-		// We never display a tree where we have one test case occurrence for each platform.
-		// Under this context query can be simplified, using a fixed value for platform_id filter.
-		// 
-		if ($apply_other_filters && $useColors && $colorBySelectedBuild) 
-		{
-			$context = array('tplanID' => $tplan_id, 'buildID' => $filters->setting_build); 
-			update_status_for_colors($db,$tplan_tcases,$context,$resultsCfg['status_code']);
-		}
-		
-		// After reviewing code, seems that assignedTo has no sense because tp_tcs
-		// has been filtered.
-		// Then to avoid changes to prepareNode() due to include_unassigned,
-		// seems enough to set assignedTo to 0, if include_unassigned==true
-		$assignedTo = $include_unassigned ? null : $assignedTo;
-		
-		$pnFilters = array('assignedTo' => $assignedTo);
-		$keys2init = array('filter_testcase_name','filter_execution_type','filter_priority');
-		
-		foreach ($keys2init as $keyname) {
-			$pnFilters[$keyname] = isset($filters->{$keyname}) ? $filters->{$keyname} : null;
-		}
-
-		// Take time
-	 	//$chronos[] = microtime(true);
-		//$tnow = end($chronos);
-		//$tprev = prev($chronos);
-		//$t_elapsed = number_format( $tnow - $tprev, 4);
-		//echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>BEFORE prepareNode()</b>):' . $t_elapsed .'<br>';
-		//reset($chronos);	
-	    		
-		$pnOptions = array('hideTestCases' => false, 'viewType' => 'executionTree');
-		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
-		                                 $tck_map,$tplan_tcases,$pnFilters,$pnOptions);
-
-		// Take time
-	 	// $chronos[] = microtime(true);
-		// $tnow = end($chronos);
-		// $tprev = prev($chronos);
-		// $t_elapsed = number_format( $tnow - $tprev, 4);
-		// echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER prepareNode()</b>):' . $t_elapsed .'<br>';
-		// reset($chronos);	
-
-
-		foreach($testcase_counters as $key => $value)
-		{
-			$test_spec[$key] = $testcase_counters[$key];
-		}
-	
-		$keys = array_keys($tplan_tcases);
-		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,
-			                             $hash_id_descr,1,$menuUrl,false,$useCounters,$useColors,
-			                             $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
-	}  // if($test_spec)
-	
-		
-	$treeMenu->rootnode=new stdClass();
-	$treeMenu->rootnode->name=$test_spec['text'];
-	$treeMenu->rootnode->id=$test_spec['id'];
-	$treeMenu->rootnode->leaf=$test_spec['leaf'];
-	$treeMenu->rootnode->text=$test_spec['text'];
-	$treeMenu->rootnode->position=$test_spec['position'];	    
-	$treeMenu->rootnode->href=$test_spec['href'];
-	
-	if( !is_null($menustring) )
-	{  
-		// Change key ('childNodes')  to the one required by Ext JS tree.
-		if(isset($test_spec['childNodes'])) 
-		{
-			$menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes']));
-		}
-		
-		// Remove null elements (Ext JS tree do not like it ).
-		// :null happens on -> "children":null,"text" that must become "children":[],"text"
-		// $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
-		$menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
-	}  
-	
-	$treeMenu->menustring = $menustring;
-	
-	return array($treeMenu, $keys);
-}
-
 
 /**
  * 
@@ -1077,16 +754,19 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
 
 		$resultsCfg = config_get('results');
 		$status_descr_code = $resultsCfg['status_code'];
+		
+		
 		foreach($resultsCfg['status_label'] as $key => $value)
 		{
 			$l18n[$status_descr_code[$key]] = lang_get($value);
-			$cssClasses[$status_descr_code[$key]] = $doColouringOn['testcase'] ? ('class="light_' . $value . '"') : ''; 
+
+			// here we use ONLY key
+			$cssClasses[$status_descr_code[$key]] = $doColouringOn['testcase'] ? ('class="light_' . $key . '"') : ''; 
 		}
 		$pf['testproject'] = $hideTestCases ? 'TPLAN_PTP' : 'SP';
 		$pf['testsuite'] = $hideTestCases ? 'TPLAN_PTS' : ($showTestSuiteContents ? 'STS' : null); 
 		
 	}
-	
 	$name = filterString($node['name']);
 
 	// custom Property that will be accessed by EXT-JS using node.attributes
@@ -1495,11 +1175,13 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
 		$safe_platform = intval($filters->setting_platform);
 		if( $safe_platform > 0 )
 		{
+			tLog(__FUNCTION__ . ':: $tplan_mgr->getHitsSameStatusFullOnPlatform', 'DEBUG');
 			$hits = $tplan_mgr->getHitsSameStatusFullOnPlatform($tplan_id,$safe_platform,
 													  			(array)$filters->filter_result_result,$buildSet);
 		}
 		else
 		{
+			tLog(__FUNCTION__ . ':: $tplan_mgr->getHitsSameStatusFullALOP', 'DEBUG');
 			$hits = $tplan_mgr->getHitsSameStatusFullALOP($tplan_id,
 													  	  (array)$filters->filter_result_result,$buildSet);
 		}
@@ -1531,16 +1213,19 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
  */
 function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
+	//New dBug($filters, array('label' => __METHOD__));
+	
 	$safe_platform = intval($filters->setting_platform);
 	$safe_build = intval($filters->filter_result_build);
 	if( $safe_platform > 0)
 	{
-		
+		tLog(__FUNCTION__ . ':: $tplan_mgr->getHitsStatusSetOnBuildPlatform', 'DEBUG');
 		$hits = $tplan_mgr->getHitsStatusSetOnBuildPlatform($tplan_id,$safe_platform,$safe_build,
 															(array)$filters->filter_result_result);
 	}
 	else
 	{
+		tLog(__FUNCTION__ . ':: $tplan_mgr->getHitsStatusSetOnBuildALOP', 'DEBUG');
 		$hits = $tplan_mgr->getHitsStatusSetOnBuildALOP($tplan_id,$safe_build,
 														(array)$filters->filter_result_result);
 	}
@@ -2130,8 +1815,9 @@ function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype
  */
 function apply_status_filters($tplan_id,&$items,&$fobj,&$tplan_mgr,$statusCfg)
 {
-	$methods = config_get('execution_filter_methods');
-	$methods = $methods['status_code'];
+	$fm = config_get('execution_filter_methods');
+	$methods = $fm['status_code'];
+	
 	
 	$ffn = array($methods['any_build'] => 'filterStatusSetAtLeastOneOfActiveBuilds',
 		         $methods['all_builds'] => 'filterStatusSetAllActiveBuilds',

@@ -1,9 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: editExecution.tpl,v 1.3 2010/10/08 12:33:28 asimon83 Exp $
-Authot: francisco.mancardi@gmail.com
+@filesource editExecution.tpl
+@author		francisco.mancardi@gmail.com
 
-Purpose:  
+
 *}
 {include file="inc_head.tpl" editorType=$gui->editorType}
 <body onUnload="storeWindowSize('ExecEditPopup')">

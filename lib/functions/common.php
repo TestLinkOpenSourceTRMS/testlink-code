@@ -588,7 +588,8 @@ function config_get($config_id)
 		
 		if( $t_found )
 		{
-			$logInfo = array('msg' => "config option: {$config_id} is {$t_value}", 'level' => 'INFO');
+			$logInfo['msg'] = "config option: {$config_id} is " . (is_object($t_value) ? serialize($t_value) : $t_value);
+			$logIngo['level'] = 'INFO';
 		}
 	}
 	

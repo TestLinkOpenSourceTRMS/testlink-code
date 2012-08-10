@@ -837,19 +837,22 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				switch($this->args->feature)
 				{
 					case 'test_urgency':
-						$filters->hide_testcases = 1;
+						$filters->hide_testcases = 1; // ??
 						$opt_etree->allow_empty_build = 1;
-						$opt_etree->getTreeMethod = 'getLinkedForTestUrgencyTree';
+						$opt_etree->hideTestCases = 1;
+						$opt_etree->getTreeMethod = 'getLinkedForTesterAssignmentTree';
 					break;
 					
 					case 'tc_exec_assignment':
 						$filters->hide_testcases = 0;
+						$opt_etree->hideTestCases = 0;
 						$opt_etree->allow_empty_build = 0;
 						$opt_etree->getTreeMethod = 'getLinkedForTesterAssignmentTree';
 					break;
 					
 					case 'planUpdateTC':
 						$filters->hide_testcases = 0;
+						$opt_etree->hideTestCases = 0;
 						$opt_etree->allow_empty_build = 1;
 						$opt_etree->getTreeMethod = 'getLinkedForTesterAssignmentTree';
 					break;

@@ -2,10 +2,7 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
- * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.41.2.2 $
- * @modified $Date: 2011/01/10 15:38:59 $ $Author: asimon83 $
- *
+ * @filesource	reqSpecEdit.php
  * @author Martin Havlat
  *
  * View existing and create a new req. specification.

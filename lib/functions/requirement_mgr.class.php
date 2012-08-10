@@ -6,13 +6,14 @@
  * @filesource	requirement_mgr.class.php
  * @package  	TestLink
  * @author 	 	Francisco Mancardi <francisco.mancardi@gmail.com>
- * @copyright 	2007-2011, TestLink community 
+ * @copyright 	2007-2012, TestLink community 
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * @internal revisions:
  * @since 1.9.4
+ * 20120810	- franciscom - TICKET 5127: Requirements based report - refactoring - new method getAllByContext()
  * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
  * 20120111 - franciscom - TICKET 4862: Users rights on requirements are bypassed 
  *										with interproject requirements relations. 
@@ -22,18 +23,6 @@
  * 20111008 - franciscom - TICKET 4768: Requirements Export - Export Version and Revision
  * 20110817 - franciscom - TICKET 4360 copy_to()
  *
- * @since 1.9.3
- *	20110331 - franciscom - BUGID 4366: Custom Field when requirements reports is generated was empty
- *							get_by_id()
- *
- *	20110308 - aismon - backported method get_version_revision() from master to branch 1.9
- *	20110116 - franciscom - fixed Crash on MSSQL due to column name with MIXED case
- *  						BUGID 4172 - MSSQL UNION text field issue
- * 	20110115 - franciscom - create_new_revision() - fixed insert of null on timestamp field
- *	20110108 - franciscom - createFromMap() - check improvements
- *						  	BUGID 4150 check for duplicate req title
- *	20110106 - Julian - update() - set author,modifier,creation_ts,modifier_ts depending on creation of new revision
- *                      get_history() - added last_editor to output
  */
 
 // Needed to use extends tlObjectWithAttachments, If not present autoload fails.
@@ -625,20 +614,54 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
  * @param string $req_id ID of req.
  * @return assoc_array list of test cases [id, title]
  *
- * rev: 20080226 - franciscom - get test case external id
+ * Notice regarding platforms:
+ * When doing Requirements Based Reports, we analize report situation
+ * on a Context composed by:
+ * 							 Test project AND Test plan.
+ *
+ * We do this because we want to have a dynamic view (i.e. want to add exec info).
+ *
+ * When a Test plan has platforms defined, user get at GUI possibility to choose
+ * one platform.
+ * IMHO (franciscom) this has to change how coverage (dynamic) is computed.
+ *
+ * Static coverage:
+ *					depicts relation bewteen Req and test cases spec, and platforms are not considered
+ *
+ * DYNAMIC coverage: 
+ *					depicts relation bewteen Req and test cases spec and exec status of these test case, 
+ *					and platforms have to be considered
+ *
  */
-function get_coverage($id)
+function get_coverage($id,$context=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $sql = "/* $debugMsg */ SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id " .
-  	       " FROM {$this->tables['nodes_hierarchy']} NHA, " .
-  	       " {$this->tables['nodes_hierarchy']} NHB, " .
-  	       " {$this->tables['tcversions']} TCV, " .
-  	       " {$this->tables['req_coverage']} RC " .
-           " WHERE RC.testcase_id = NHA.id " .
-  		   " AND NHB.parent_id=NHA.id " .
-           " AND TCV.id=NHB.id " .
-  		   " AND RC.req_id={$id}";
+    
+    $safe_id = intval($id);
+	$common = array();
+	
+	$common['fields'] = " SELECT DISTINCT NH_TC.id,NH_TC.name,TCV.tc_external_id " .
+	  	       			" FROM {$this->tables['nodes_hierarchy']} NH_TC " .
+	  	       			" JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id=NH_TC.id " .
+	  	       			" JOIN {$this->tables['tcversions']} TCV ON TCV.id=NH_TCV.id " .
+	  	       			" JOIN {$this->tables['req_coverage']} RC ON RC.testcase_id = NH_TC.id ";
+    $common['where'] = " WHERE RC.req_id={$safe_id} ";
+
+    if(is_null($context))
+    {
+	    $sql = "/* $debugMsg - Static Coverage */ " . $common['fields'] . $common['where'];
+  	}
+  	else
+  	{
+  		
+	    $sql = "/* $debugMsg - Dynamic Coverage */ " . 
+	    	   $common['fields'] .	
+	  	       " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NH_TCV.id " .
+	    	   $common['where'] .	
+	  		   " AND TPTCV.testplan_id = " . intval($context['tplan_id']) .
+	  		   " AND TPTCV.platform_id = " . intval($context['platform_id']);
+  	}
+  	
   	return $this->db->get_recordset($sql);
 }
 
@@ -2596,7 +2619,6 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
  	 *
  	 *	@return  
      */
-	// function get_last_child_info($id, $child_type='version')
 	function get_last_child_info($id, $options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -2621,7 +2643,6 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 		$max_verbose = $this->db->fetchFirstRowSingleColumn($sql,$field);
 		if ($max_verbose >= 0)
 		{
-			
 			$sql = "/* $debugMsg */ SELECT ";
 
 			switch($my['options']['output'])
@@ -2639,12 +2660,10 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 				break;
 			}
 		
-			
 			$sql .= " FROM {$this->tables[$table]} CHILD," .
 			        " {$this->tables['nodes_hierarchy']} NH ".
 			        " WHERE $field = {$max_verbose} AND NH.id = CHILD.id AND NH.parent_id = {$id}";
 	
-			die($sql);
 			$info = $this->db->fetchFirstRow($sql);
 		}
 		return $info;
@@ -3115,6 +3134,53 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 		$target = $reqSpecMgr->get_by_id($parent);
 		return $target['testproject_id'];
 	}
+
+
+    /**
+	 * @param  $context map with following keys
+	 * 						tproject_id => REQUIRED
+	 *						tplan_id => OPTIONAL
+	 *						platform_id => OPTIONAL, will be used ONLY 
+	 *												 if tplan_id is provided.
+ 	 *
+ 	 */
+	function getAllByContext($context,$opt=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		if( !isset($context['tproject_id']) )
+		{
+			throw new Exception($debugMsg . ' : $context[\'tproject_id\'] is needed');
+
+		}
+
+		$where = "WHERE RSPEC.testproject_id = " . intval($context['tproject_id']);
+		$sql = "/* $debugMsg */ " .
+			   "SELECT DISTINCT REQ.id,REQ.req_doc_id FROM {$this->tables['requirements']} REQ " .
+			   "JOIN {$this->tables['req_specs']} RSPEC ON RSPEC.id = REQ.srs_id ";
+		
+
+		if( isset($context['tplan_id']) )
+		{
+			
+			$sql .= "JOIN {$this->tables['req_coverage']} REQCOV ON REQCOV.req_id = REQ.id " .
+					"JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = REQCOV.testcase_id " .
+					"JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NH_TCV.id ";
+		
+			$where .= " AND TPTCV.testplan_id = " . intval($context['tplan_id']);
+			if( isset($context['platform_id']) && intval($context['platform_id']) > 0 )
+			{
+				$where .= " AND TPTCV.platform_id = " . intval($context['platform_id']);
+			}
+		}
+		
+		
+		$sql .= $where;		
+		$rs = $this->db->fetchRowsIntoMap($sql,'id');
+				
+		return $rs;
+	}
+
 	
 } // class end
 ?>

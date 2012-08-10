@@ -8,7 +8,7 @@
  * @filesource  users.inc.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2006-2011, TestLink community 
+ * @copyright 	2006-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
@@ -332,9 +332,10 @@ function getAllUsersRoles(&$db,$order_by = null)
 	
 	$loop2do = count($users);
 	$specialK = array_flip((array)config_get('demoSpecialUsers'));
+	$demoModeEnabled = config_get('demoMode');
 	for($idx=0; $idx < $loop2do; $idx++)
 	{
-		$users[$idx]->isDemoSpecial = isset($specialK[$users[$idx]->login]); 
+		$users[$idx]->isDemoSpecial = $demoModeEnabled ? isset($specialK[$users[$idx]->login]) : false; 
 	}
 	return $users;
 }

@@ -283,23 +283,55 @@ protected function parseTestProjectRecordset(&$recordset)
  * @param string $condition (optional) additional SQL condition(s)
  * @return array map with test project info; null if query fails
  */
-protected function getTestProject($condition = null)
+protected function getTestProject($condition = null, $opt=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+	$my = array('options' => array('output' => 'full'));
+	$my['options'] = array_merge($my['options'],(array)$opt);
+	$doParse = true;
 	
-	$sql = "/* debugMsg */ SELECT testprojects.*, nodes_hierarchy.name ".
-	       " FROM {$this->object_table} testprojects, " .
-	       " {$this->tables['nodes_hierarchy']} nodes_hierarchy".
-	       " WHERE testprojects.id = nodes_hierarchy.id ";
+	switch($my['options']['output'])
+	{
+		case 'existsByID':
+			$doParse = false;
+			$sql = "/* debugMsg */ SELECT testprojects.id ".
+	    		   " FROM {$this->object_table} testprojects " .
+	        	   " WHERE 1=1 ";
+		break;
+
+		case 'existsByName':
+			$doParse = false;
+			$sql = "/* debugMsg */ SELECT testprojects.id ".
+	    		   " FROM {$this->object_table} testprojects, " .
+	       		   " {$this->tables['nodes_hierarchy']} nodes_hierarchy".
+	        	   " WHERE testprojects.id = nodes_hierarchy.id " .
+	        	   " AND nodes_hierarchy.node_type_id = " . 
+	        	   $this->tree_manager->node_descr_id['testproject'];
+		break;
+	
+		case 'full':
+		default:
+			$doParse = true;
+			$sql = "/* debugMsg */ SELECT testprojects.*, nodes_hierarchy.name ".
+	    		   " FROM {$this->object_table} testprojects, " .
+	       		   " {$this->tables['nodes_hierarchy']} nodes_hierarchy".
+	        	   " WHERE testprojects.id = nodes_hierarchy.id ";
+	        	   " AND nodes_hierarchy.node_type_id = " . 
+	        	   $this->tree_manager->node_descr_id['testproject'];
+		break;
+	}	
 	if (!is_null($condition) )
 	{
 		$sql .= " AND " . $condition;
     }
     
-	$recordset = $this->db->get_recordset($sql);
-	$this->parseTestProjectRecordset($recordset);
-
-	return $recordset;
+	$rs = $this->db->get_recordset($sql);
+	if($doParse)
+	{
+		$this->parseTestProjectRecordset($rs);
+	}
+	return $rs;
 }
 
 
@@ -326,10 +358,10 @@ public function get_by_name($name, $addClause = null)
  * @param integer $id test project
  * @return array map with test project info; null if query fails
  */
-public function get_by_id($id)
+public function get_by_id($id, $opt=null)
 {
 	$condition = "testprojects.id=". intval($id);
-	$result = $this->getTestProject($condition);
+	$result = $this->getTestProject($condition,$opt);
 	return $result[0];
 }
 
@@ -1694,7 +1726,7 @@ function setPublicStatus($id,$status)
 		
 		if (empty($error))
 		{
-			// BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
+			// Delete test project with requirements defined crashed with memory exhausted
 			$this->tree_manager->delete_subtree_objects($id,$id,'',array('testcase' => 'exclude_tcversion_nodes'));
 			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$id} ";
 			$this->db->exec_query($sql);

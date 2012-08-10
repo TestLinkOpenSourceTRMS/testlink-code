@@ -6,12 +6,13 @@
  * Report requirement based results
  *
  * @filesource	resultsReqs.php
+ * @package		TestLink
  * @author 		Martin Havlat
  * 
  * 
  * internal revisions
  * @since 1.9.4
- *
+ * 20120810 - franciscom - TICKET 5127: Requirements based report - refactoring 
  */
 
 require_once("../../config.inc.php");
@@ -38,10 +39,14 @@ $req_cfg = config_get('req_cfg');
 list($req_spec_type_labels,$req_type_labels,$status_labels,$labels) = setUpLabels($req_cfg);
 list($results_cfg,$status_code_map,$code_status_map,$eval_status_map) = setUpReqStatusCfg();
 
-$args = init_args($tproject_mgr, $req_cfg);
+$args = init_args($tproject_mgr,$tplan_mgr,$req_cfg);
 $gui = init_gui($args,$tplan_mgr);
 
-$req_ids = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
+$reqContext = array('tproject_id' => $args->tproject_id, 'tplan_id' => $args->tplan_id, 
+					'platform_id' => $args->platform);
+$reqSetX = (array)$req_mgr->getAllByContext($reqContext);
+$req_ids = array_keys($reqSetX);
+
 $prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id) . (config_get('testcase_cfg')->glue_character);
 
 $req_spec_map = array();
@@ -52,10 +57,8 @@ $testcases = array();
 $gui->total_reqs = 0;
 if (count($req_ids)) 
 {		
-	list($gui->total_reqs,$req_spec_map,$testcases) = buildReqSpecMap($req_ids,$req_mgr,$req_spec_mgr,
-																	  $tplan_mgr,	
-																	  $args->states_to_show->selected,
-																	  $args);
+	list($gui->total_reqs,$req_spec_map,$testcases) = buildReqSpecMap($req_ids,$req_mgr,$req_spec_mgr,$tplan_mgr,
+																	  $args->states_to_show->selected,$args);
 	if (!count($req_spec_map)) 
 	{
 		$gui->warning_msg = $labels['no_matching_reqs'];
@@ -66,8 +69,9 @@ else
 	$gui->warning_msg = $labels['no_srs_defined'];
 }
 
+//New dBug($req_spec_map);
 
-new dBug($testcases);
+//New dBug($testcases);
 
 
 // second step: walk through req spec map, count/calculate, store results
@@ -132,12 +136,14 @@ if (count($req_spec_map))
 	                   'groupable' => 'false', 'type' => 'text');
 	$columns[] = array('title_key' => 'version', 'width' => 20, 'groupable' => 'false');
 	
-	if ($req_cfg->expected_coverage_management) {
+	if ($req_cfg->expected_coverage_management) 
+	{
 		$columns[] = array('title_key' => 'th_coverage', 'width' => 60, 'groupable' => 'false');
 	}
 	
 	$evaluation_for_filter = array();
-	foreach($eval_status_map as $eval) {
+	foreach($eval_status_map as $eval) 
+	{
 		$evaluation_for_filter[] = $eval['label'];
 	}
 	$columns[] = array('title_key' => 'evaluation', 'width' => 80, 'groupable' => 'false',
@@ -147,21 +153,18 @@ if (count($req_spec_map))
 	$columns[] = array('title_key' => 'status', 'width' => 60, 'groupable' => 'false',
 	                   'filter' => 'list', 'filterOptions' => $status_labels);
 	
-	foreach ($code_status_map as $status) {
+	foreach ($code_status_map as $status) 
+	{
 		$columns[] = array('title_key' => $results_cfg['status_label'][$status['status']], 
 		                   'width' => 60, 'groupable' => 'false');
 	}
 	
 	// complete progress
 	$columns[] = array('title_key' => 'progress', 'width' => 60, 'groupable' => 'false');
-	
-	$columns[] = array('title_key' => 'linked_tcs', 'groupable' => 'false', 'width' => 250, 
-	                   'type' => 'text');
+	$columns[] = array('title_key' => 'linked_tcs', 'groupable' => 'false', 'width' => 250, 'type' => 'text');
 	
 	// data for rows
 	$rows = array();
-	
-
 	foreach ($req_spec_map as $req_spec_id => $req_spec_info) 
 	{
 		
@@ -185,15 +188,12 @@ if (count($req_spec_map))
 			$single_row[] = htmlentities($path, ENT_QUOTES, $charset) . $req_spec_description;
 			
 			// create the linked title to display
-			$title = htmlentities($req_info['req_doc_id'], ENT_QUOTES, $charset) . $title_sep . 
-			         htmlentities($req_info['title'], ENT_QUOTES, $charset);
-
 			$edit_link = "<a href=\"javascript:openLinkedReqWindow(" . $req_id . ")\">" .
 						 "<img title=\"{$labels['requirement']}\" src=\"{$images['edit_icon']}\" /></a> ";
 
-		    $link = $edit_link . $title;
-
-			$single_row[] = $link;
+		    $single_row[] = $edit_link .
+		    				htmlentities($req_info['req_doc_id'], ENT_QUOTES, $charset) . $title_sep . 
+			         		htmlentities($req_info['title'], ENT_QUOTES, $charset);
 	    	
 	    	// version number
 	    	$version_num = $req_info['version'];
@@ -229,9 +229,8 @@ if (count($req_spec_map))
 			// add the count of each evaluation
 			$eval_status_map[$eval]['count'] += 1;
 
-			$colored_eval = '<span class="' . $eval_status_map[$eval]['css_class'] . '">' . 
+			$single_row[] = '<span class="' . $eval_status_map[$eval]['css_class'] . '">' . 
 			                $eval_status_map[$eval]['label'] . '</span>';
-			$single_row[] = $colored_eval;
 			
 			$single_row[] = isset($req_type_labels[$req_info['type']]) ? $req_type_labels[$req_info['type']] : 
 							sprintf($labels['no_label_for_req_type'],$req_info['type']);
@@ -252,8 +251,7 @@ if (count($req_spec_map))
 				if ($total_count) 
 				{
 					$percentage = (100 / $total_count) * $count;
-		    		$percentage_string = comment_percentage($percentage) .
-					                     " ({$count}/{$total_count})";
+		    		$percentage_string = comment_percentage($percentage) . " ({$count}/{$total_count})";
 					
 		    		$value = $percentage_string;
 					
@@ -272,7 +270,7 @@ if (count($req_spec_map))
 			}
 			
 			// complete progress
-			$single_row[] = ($total_count) ? comment_percentage($progress_percentage) : $labels['na'];
+			$single_row[] = $total_count ? comment_percentage($progress_percentage) : $labels['na'];
 
 			// show all linked tcversions incl exec result
 			$linked_tcs_with_status = '';
@@ -473,7 +471,8 @@ function evaluate_req(&$status_code, &$algorithm_cfg, &$counters)
  * @param int $percentage
  * @return string
  */
-function comment_percentage($percentage) {
+function comment_percentage($percentage) 
+{
 	$percentage = round($percentage, 2);
     $padded_percentage = sprintf("%010d", $percentage);
 	$string = "<!-- {$padded_percentage} --> {$percentage}% ";
@@ -488,14 +487,17 @@ function comment_percentage($percentage) {
  * @param resource &$tproject_mgr reference to testproject manager
  * @return array $args array with user input information
  */
-function init_args(&$tproject_mgr, &$req_cfg)
+function init_args(&$tproject_mgr, &$tplan_mgr, &$req_cfg)
 {
 	$args = new stdClass();
 
 	$states_to_show = array(0 => "0");
-	if (isset($_REQUEST['states_to_show'])) {
+	if (isset($_REQUEST['states_to_show'])) 
+	{
 		$states_to_show = $_REQUEST['states_to_show'];
-	} else if (isset($_SESSION['states_to_show'])) {
+	} 
+	else if (isset($_SESSION['states_to_show'])) 
+	{
 		$states_to_show = $_SESSION['states_to_show'];
 	}
 		
@@ -513,14 +515,26 @@ function init_args(&$tproject_mgr, &$req_cfg)
 	
 	$args->format = $_SESSION['resultsNavigator_format'];
 
-	// BUGID 3856
 	// remember platform selection too
+	//
 	$platform = 0;
-	if (isset($_REQUEST['platform'])) {
+	$gui_open = config_get('gui_separator_open');
+	$gui_close = config_get('gui_separator_close');
+	$dummy = $tplan_mgr->platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
+	$args->platformSet = $dummy ? array(0 => $gui_open . lang_get('any') . $gui_close) + $dummy : null;
+	
+	if (isset($_REQUEST['platform'])) 
+	{
 		$platform = $_REQUEST['platform'];
-	} else if (isset($_SESSION['platform'])) {
-		$platform = $_SESSION['platform'];
+	} 
+	else if ( isset($_SESSION['platform']) && isset($args->platforms[$_SESSION['platform']]) ) 
+	{
+		// ATTENTION: 
+		// This can be ONLY done if: 
+		// the platform we remember linked to current test plan 
+		$platform = intval($_SESSION['platform']);
 	}
+	
 	$args->platform = $_SESSION['platform'] = $platform;
 	
 	return $args;
@@ -544,11 +558,7 @@ function init_gui(&$argsObj,&$tplanMgr)
 	$gui->states_to_show = $argsObj->states_to_show;
 	$gui->tableSet = null;
 	$gui->selected_platform = $argsObj->platform;
-
-	$gui_open = config_get('gui_separator_open');
-	$gui_close = config_get('gui_separator_close');
-	$platforms = $tplanMgr->platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
-	$gui->platforms = $platforms ? array(0 => $gui_open . lang_get('any') . $gui_close) + $platforms : null;
+	$gui->platforms = $argsObj->platformSet;
 
 	$dummy = $tplanMgr->get_by_id($argsObj->tplan_id);
 	$gui->tplan_name = $dummy['name'];
@@ -653,6 +663,14 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
 {		
 	$rspec = array();
 	$total = 0;
+	$tc_ids = array();
+
+	$coverageContext = null;
+	if ($argsObj->platform != 0) 
+	{
+		$coverageContext['tplan_id'] = $argsObj->tplan_id;
+		$coverageContext['platform_id'] = $argsObj->platform;
+	}
 	
 	foreach($reqSet as $id) 
 	{
@@ -673,7 +691,7 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
 				$rspec[$req['srs_id']]['requirements'] = array();
 			}
 
-			$req['linked_testcases'] = (array)$reqMgr->get_coverage($id);
+			$req['linked_testcases'] = (array)$reqMgr->get_coverage($id,$coverageContext);
 			$rspec[$req['srs_id']]['requirements'][$id] = $req;
 
 			foreach ($req['linked_testcases'] as $tc) 
@@ -692,6 +710,9 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
 			$filters['platform_id'] = $argsObj->platform;
 		}
 		$options = array('addExecInfo' => true,'accessKeyType' => 'tcase');
+		
+		//New dBug($filters);
+		
 		$tcaseSet = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $options);
 	}
 	return array($total,$rspec,$tcaseSet);

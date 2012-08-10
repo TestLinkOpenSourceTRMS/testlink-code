@@ -3176,7 +3176,6 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 		
 		
 		$sql .= $where;		
-		echo $sql;
 		$rs = $this->db->fetchRowsIntoMap($sql,'id');
 				
 		return $rs;

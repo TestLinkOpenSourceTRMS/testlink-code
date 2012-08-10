@@ -3,24 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * @filesource	table.class.php
  * @package TestLink
  * @author Erik Eloff
- * @copyright 2009, TestLink community 
- * @version CVS: $Id: table.class.php,v 1.14 2010/10/21 08:59:41 mx-julian Exp $
+ * @copyright 2009,2012 TestLink community 
  *
- * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/table.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
- * @internal Revision:
- *  20101019 - Julian - avoid warnings on event viewer
- *  20101019 - eloff - Make sure column identifiers are unique per table only.
- *  20100922 - eloff - BUGID 3805 - allow duplicate column names by generating unique id
- *                     Added option to pass title_key when creating columns
- *  20100921 - eloff - added col_id value to columns
- *  20100828 - eloff - Changed format on status column
- *  20100823 - eloff - Always store column config in full format(array-of-arrays)
- *  20100719 - eloff - Pass $tableID via constructor
+ * @internal revisions
  **/
 
 

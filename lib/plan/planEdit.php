@@ -12,11 +12,9 @@
  * @link 		http://www.teamst.org/index.php
  *
  *
- * @internal Revisions:
+ * @internal revisions
+ * @since 1.9.4
  * 20120731 - kinow - TICKET 4977: CSRF token
- * 20101012 - franciscom - html_table_of_custom_field_inputs() interface changes
- *						   BUGID 3891: Do not lose Custom Field values if test plan can not be created due to duplicated name	
- * 20100602 - franciscom - BUGID 3485: "Create from existing Test Plan" always copies builds
  *
  **/
 
@@ -59,7 +57,6 @@ if($args->do_action == "do_create" || $args->do_action == "do_update")
 	                   $gui->tplans[$args->tplan_id]['name'] == $args->testplan_name);
 }
 
-// 20101012 - franciscom
 // interface changes to be able to do not loose CF values if some problem arise on User Interface
 $gui->cfields = $tplan_mgr->html_table_of_custom_field_inputs($args->tplan_id,$args->tproject_id,'design','',$_REQUEST);
 switch($args->do_action)
@@ -84,6 +81,7 @@ switch($args->do_action)
 			logAuditEvent(TLS("audit_testplan_deleted",$args->tproject_name,$tplanInfo['name']),
 			              "DELETE",$args->tplan_id,"testplan");
 		}
+
 		//unset the session test plan if it is deleted
 		if (isset($_SESSION['testplanID']) && ($_SESSION['testplanID'] = $args->tplan_id))
 		{
@@ -214,20 +212,42 @@ switch($args->do_action)
    case "do_delete":
    case "do_update":
    case "list":
-        $gui->tplans = $tproject_mgr->get_all_testplans($args->tproject_id);
-        $template = is_null($template) ? 'planView.tpl' : $template;
         $do_display=true;
+        $template = is_null($template) ? 'planView.tpl' : $template;
+        $gui->tplans = $tproject_mgr->get_all_testplans($args->tproject_id);
         $gui->form_security_field = form_security_field();
+        $gui->drawPlatformQtyColumn = false;
+
+		if( !is_null($gui->tplans) )
+		{
+			// do this test project has platform definitions ?
+			$tplan_mgr->platform_mgr->setTestProjectID($args->tproject_id);
+			$dummy = $tplan_mgr->platform_mgr->testProjectCount();
+			$gui->drawPlatformQtyColumn = $dummy[$args->tproject_id]['platform_qty'] > 0;
+	
+			$tplanSet = array_keys($gui->tplans);
+			$dummy = $tplan_mgr->count_testcases($tplanSet,null,array('output' => 'groupByTestPlan'));
+			foreach($tplanSet as $idk)
+			{
+				$gui->tplans[$idk]['tcase_qty'] = isset($dummy[$idk]['qty']) ? $dummy[$idk]['qty'] : 0;
+				if( $gui->drawPlatformQtyColumn )
+				{
+					$plat = $tplan_mgr->getPlatforms($idk);
+					$gui->tplans[$idk]['platform_qty'] = is_null($plat) ? 0 : count($plat);
+				}
+			}		
+		}
 		break;
 
    case "edit":
    case "create":
+        $do_display=true;
         $template = is_null($template) ? 'planEdit.tpl' : $template;
       	$gui->notes=$of->CreateHTML();
-        $do_display=true;
         $gui->form_security_field = form_security_field();
 		break;
 }
+
 if($do_display)
 {
     $smarty->assign('gui',$gui);
@@ -246,8 +266,7 @@ if($do_display)
  * @return    object with html values tranformed and other
  *                   generated variables.
  *
- * 20060103 - fm
-*/
+ */
 function init_args($request_hash)
 {
 	$session_hash = $_SESSION;

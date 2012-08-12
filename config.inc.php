@@ -23,6 +23,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 	20120812 - franciscom - TICKET 5138: Possibility to have a mail logger: new config option tl_installation_id
  *	20120707 - franciscom - TICKET 5083: Refactoring - logger.class.php -> $tlCfg->loggerFilter
  *	20120108 - franciscom - TICKET 4821: Bugzilla integration via XMLRPC (BUGZILLAXMLRPC)
  *	20120107 - franciscom - TICKET 4857: Add SOAP integration for Mantis (MANTISSOAP)
@@ -57,11 +58,8 @@ $tlCfg->custom_fields = new stdClass();
 $tlCfg->req_spec_cfg = new stdClass();
 $tlCfg->diffEngine = new stdClass();
 
-/** @uses database access definition (generated automatically by TL installer) */
-
 /** @uses database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
-
 if( !defined('DB_TABLE_PREFIX') )
 {
     define('DB_TABLE_PREFIX','' );
@@ -75,6 +73,11 @@ require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 
 
 // ----------------------------------------------------------------------------
+/** @var string used to have (when needed) a possibility to identify different TL instances
+				@since 1.9.4 used on mail subject when mail logger is used
+ */
+$tlCfg->instance_id = 'Main TestLink Instance';
+
 /* [LOCALIZATION] */
 
 /** @var string Default localization for users */
@@ -181,19 +184,22 @@ $tlCfg->config_check_warning_mode = 'FILE';
 /**
  * Configure if individual logging data stores are enabled of disabled
  * Possibile values to identify loggers: 'db','file'
- *		$g_loggerCfg=null; all loggers enabled (default)
- * 		$g_loggerCfg['db']['enable']=true/false;
- * 		$g_loggerCfg['file']['enable']=true/false;
+ * $g_loggerCfg=null; all loggers enabled 
+ * $g_loggerCfg['db']['enable']=true/false;
+ * $g_loggerCfg['file']['enable']=true/false;
+ * $g_loggerCfg['mail']['enable']=true/false;
  */
-$g_loggerCfg = null;
+$g_loggerCfg = array('mail' => array('enable' => false));
 
 /**  @var integer All events older this value [days] are removed from the db, during login */
 $g_removeEventsOlderThan = 30;
                             
 
-/**  @var array values can be only these defined on logger.class.php 
+/**  @var map keys: 'all' + values present on proprety of logger class $loggerTypeDomain
+*			  values can be only these defined on logger.class.php 
  *   @since 1.9.4                                  
- *   example array('INFO','AUDIT') only this levels of log will be logged.
+ *   example array('all' => array('INFO','AUDIT'),
+ *				   'mail' =>  array('ERROR'))
  */                            
 $tlCfg->loggerFilter = null; // default defined on logger.class.php ;                            
 

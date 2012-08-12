@@ -3456,5 +3456,8 @@ $TLS_issuetracker_cfg_example = 'Configuration example';
 // getissuetrackertemplate.php
 $TLS_issuetracker_invalid_type = 'Issue Traker type %s is unknown';
 $TLS_issuetracker_interface_not_implemented = 'Issue Traker interface %s is not implemented/available';
+
+// logger.class.php
+$TLS_mail_logger_email_subject = ' :: Log Message From TestLink :: ';
 // ----- END ------------------------------------------------------------------
 ?>

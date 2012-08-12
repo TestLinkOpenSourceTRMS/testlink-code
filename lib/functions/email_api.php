@@ -7,18 +7,15 @@
  *
  * Email API (adapted from third party code)
  *
+ * @filesource  email_api.php
  * @package 	TestLink
  * @author 		franciscom
  * @author 		2002 - 2004 Mantis Team (the code is based on mantis BT project code)
- * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: email_api.php,v 1.12.6.1 2011/01/03 21:05:27 franciscom Exp $
+ * @copyright 	2003-2012, TestLink community 
  * @link 		http://www.teamst.org/
  *
  *
- * @internal revision
- * 20110102 - franciscom - found some pieces of code that need to be removed in order
- *						   to make refactoring work OK	
- * 20110101 - franciscom - refactoring to use last PHPMAILER version
+ * @internal revisions
  *
  */
 
@@ -43,8 +40,6 @@ $g_phpMailer = null;
  * 		on success and false on errors
  * @param boolean $htmlFormat specify text type true = html, false (default) = plain text
  */
-// 20070107 - KL - modified signature to allow caller to specify htmlFormat = true if they so choose
-// 20090308 - havlatm - removed unused parameter $p_category
 function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
                      $p_exit_on_error = false, $htmlFormat = false ) 
 {
@@ -76,7 +71,7 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 
 
 	$mail->PluginDir = PHPMAILER_PATH;
-  	// 20090201 - franciscom
+
   	// Need to get strings file for php mailer
   	// To avoid problems I choose ENglish
   	$mail->SetLanguage( 'en', PHPMAILER_PATH . 'language' . DIRECTORY_SEPARATOR );
@@ -121,6 +116,7 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 			}
 		break;
 	}
+
 	$mail->IsHTML($htmlFormat);    # set email format to plain text
 	$mail->WordWrap = 80;
 	$mail->Priority = config_get( 'mail_priority' );   # Urgent = 1, Not Urgent = 5, Disable = 0
@@ -137,7 +133,7 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 
 	$t_debug_to = '';
 	# add to the Recipient list
-	$t_recipient_list = split(',', $t_recipient);
+	$t_recipient_list = explode(',', $t_recipient);
 
 	while ( list( , $t_recipient ) = each( $t_recipient_list ) ) {
 		if ( !is_blank( $t_recipient ) ) {
@@ -145,8 +141,7 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 		}
 	}
 
-  	// 20051106 - fm
-  	$t_cc_list = split(',', $p_cc);
+  	$t_cc_list = explode(',', $p_cc);
 	while(list(, $t_cc) = each($t_cc_list)) {
 		if ( !is_blank( $t_cc ) ) {
 				$mail->AddCC( $t_cc, '' );
@@ -200,6 +195,7 @@ function make_lf_crlf( $p_string ) {
 	$t_string = str_replace( "\n", "\r\n", $p_string );
 	return str_replace( "\r\r\n", "\r\n", $t_string );
 }
+
 # --------------------
 # Check limit_email_domain option and append the domain name if it is set
 function email_append_domain( $p_email ) {

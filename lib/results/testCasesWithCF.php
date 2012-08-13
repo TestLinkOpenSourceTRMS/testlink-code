@@ -3,30 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2010/10/15 11:43:25 $ by $Author: mx-julian $
+ * @filesource	testCasesWithCF.php
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
  *
- * @internal Revisions:
- *  20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                      table state independent from localization
- *  20101012 - Julian - added html comment to properly sort by test case column
- *  20100930 - asimon - added icons for testcase execution and editing
- *  20100901 - Julian - added execution notes column
- *	20100830 - franciscom - fixed warnings on eventviewer
- *	20100828 - eloff - adapt to rendering of status column
- *	20100827 - franciscom - refactoring - removed unused variables
- *  20100827 - Julian - only show test case if at least one custom field has a value
- *	20100825 - eloff - add platform_name in table
- *	                   add test suite column
- *	20100823 - Julian - table now uses a unique table id per test project
- *	20100816 - Julian - added default column width
- *                    - added default sorting and grouping
- *	20100719 - eloff - Use tlExtTable
- *	20090504 - amitkhullar - BUGID 2465
+ * @internal revisions
+ * @since 1.9.4
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -135,8 +118,6 @@ if( $args->doIt )
 
 	if (count($matrixData) > 0) {
 		$table = new tlExtTable($columns, $matrixData, 'tl_table_tc_with_cf');
-		// BUGID 4125
-		// $table->addCustomBehaviour('status', array('render' => 'statusRenderer'));
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
 
 		$table->setGroupByColumnName(lang_get('build'));
@@ -148,7 +129,9 @@ if( $args->doIt )
 		$table->toolbarShowAllColumnsButton = true;
 
 		$gui->tableSet = array($table);
-	} else {
+	} 
+	else 
+	{
 		$gui->warning_msg = $labels['no_linked_tc_cf'];
 	}
 }
@@ -202,10 +185,9 @@ function initializeGui(&$dbHandler,&$argsObj)
 {
 	$guiObj = new stdClass();
 	$guiObj->pageTitle = lang_get('caption_testCasesWithCF');
-	$guiObj->warning_msg = '';
-	$guiObj->tcasePrefix = '';
-	$guiObj->path_info = null;
-	$guiObj->resultSet = null;
+	$guiObj->warning_msg = $guiObj->tcasePrefix = '';
+	$guiObj->path_info = $guiObj->resultSet = $guiObj->tableSet = null;
+	
 	$guiObj->tproject_name = $argsObj->tproject_name;
 	$guiObj->tplan_name = $argsObj->tplan_name;
 	$guiObj->tplan_id = $argsObj->tplan_id;

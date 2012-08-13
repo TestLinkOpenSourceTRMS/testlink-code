@@ -8,17 +8,8 @@
  *
  * SCOPE: Definition of report/metrics menu 
  * 
- * @internal revisions:
- *  20110713 - asimon - added test cases not run on any platform
- *	20110312 - franciscom - added logic to include custom_reports.cfg.php
- *  20100903 - Julian - BUGID 37006 - disabled uncovered_testcases report 
- *  20100731 - asimon - added results by tester per build and assignment overview
- *  20090421 - amitkhullar- BUGID 2410 - Custom Field report for Test Plan
- *  20090414 - franciscom - BUGID 2363 - free test cases i.e. not assigned to a test plan.
- *  20081227 - franciscom - added tcases_without_tester
- *  20081213 - franciscom - replace of old $g_ variables
- *  20081109 - franciscom - added uncovered_testcases
- * 	20080813 - havlatm - removed metrics_tp_builds
+ * @internal revisions
+ * @since 1.9.4
  *
  * *********************************************************************************** */
 
@@ -196,12 +187,14 @@ $tlCfg->reports_list['free_tcases'] = array(
 'enabled' => 'all',
 'format' => 'format_html'
 );
-$tlCfg->reports_list['test_cases_created_per_user'] = array(
-'title' => 'link_report_test_cases_created_per_user',
-'url' => 'lib/results/tcCreatedPerUserGUI.php',
-'enabled' => 'all',
-'format' => 'format_html'
-);
+   
+// not will be available on 1.9.4   
+// $tlCfg->reports_list['test_cases_created_per_user'] = array(
+// 'title' => 'link_report_test_cases_created_per_user',
+// 'url' => 'lib/results/tcCreatedPerUserGUI.php',
+// 'enabled' => 'all',
+// 'format' => 'format_html'
+// );
 
 clearstatcache();
 $f2inc = TL_ABS_PATH . 'cfg/custom_reports.cfg.php';

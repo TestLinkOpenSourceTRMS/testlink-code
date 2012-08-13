@@ -527,7 +527,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 				
 				if ($this->repositoryType == TL_REPOSITORY_TYPE_FS)
 				{
-					$destFPath = $this->buildRepositoryFilePath($mangled_fname,$table_name,$target_id);
+					$destFPath = $this->buildRepositoryFilePath($mangled_fname,$fkTableName,$target_id);
 					$status_ok = copy($this->repositoryPath . $value['file_path'],$destFPath);
 				}
 				else

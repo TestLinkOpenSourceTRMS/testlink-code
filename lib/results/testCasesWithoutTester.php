@@ -10,20 +10,6 @@
  * @internal revisions
  * @since 1.9.4
  *
- * @internal revisions
- * @since 1.9.3
- * 20101019 - Julian - show priority column only if priority is enabled for project
- * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                     table state independent from localization
- * 20101012 - Julian - added html comment to properly sort by test case column
- * 20101001 - asimon - added linked icon for testcase editing
- * 20100830 - Julian - Added test case summary column
- * 20100830 - franciscom - refactoring
- * 20100830 - Julian - BUGID 3723 - filter shown test cases by not run status
- * 20100825 - eloff - BUGID 3712 - show only platform if available
- * 20100823 - Julian - added unique table id, default sorting and grouping
- * 20100823 - eloff - Improve report with ext table and information on platforms and prio
- * 
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -58,29 +44,31 @@ $smarty = new TLSmarty();
 $msg_key = 'no_linked_tcversions';
 if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 {
+	$platformCache = null;
 	$msg_key = 'all_testcases_have_tester';
-	
 	$cfg = config_get('results');
 
 	$metricsMgr = new tlTestPlanMetrics($db);
 	$metrics = $metricsMgr->getNotRunWoTesterAssigned($args->tplan_id,null,null,
 													  array('output' => 'array', 'ignoreBuild' => true));
 
-	//new dBug($metrics);
-	//die();
+	//New dBug($metrics); die();
 
 	if(($gui->row_qty = count($metrics)) > 0)
 	{
-		$links = featureLinks($labels,$smarty->_tpl_vars['tlImages']);
 		$msg_key = '';
+		$links = featureLinks($labels,$smarty->_tpl_vars['tlImages']);
 		$gui->pageTitle .= " - " . $labels['match_count'] . ":" . $gui->row_qty;
 
-		// $tproject_mgr = new testproject($db);
-		// $prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
-		// unset($tproject_mgr);
 
-		// Collect all tc_id:s and get all test suite paths
+		if ($args->show_platforms)
+		{
+			$platformCache = $tplan_mgr->getPlatforms($args->tplan_id,array('outputFormat' => 'mapAccessByID'));
+		}
+		
+		// Collect all tcases id and get all test suite paths
 		$targetSet = array();
+
 		foreach ($metrics as &$item) 
 		{
 			$targetSet[] = $item['tcase_id'];
@@ -102,7 +90,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 			
 			if ($args->show_platforms)
 			{
-				$row[] = $item['platform_name'];
+				$row[] = $platformCache[$item['platform_id']]['name'];
 			}
 
 			if($testPriorityEnabled)

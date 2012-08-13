@@ -132,12 +132,15 @@ $tlCfg->reports_list['list_tc_norun'] = array(
 	'enabled' => 'all',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
-$tlCfg->reports_list['list_tc_notrunanyplatform'] = array(
-	'title' => 'link_report_not_run_any_platform',
-	'url' => 'lib/results/tcNotRunAnyPlatform.php',
-	'enabled' => 'all',
-	'format' => 'format_html,format_ods,format_xls,format_mail_html'
-);
+
+// not will be available on 1.9.4   
+// $tlCfg->reports_list['list_tc_notrunanyplatform'] = array(
+// 	'title' => 'link_report_not_run_any_platform',
+// 	'url' => 'lib/results/tcNotRunAnyPlatform.php',
+// 	'enabled' => 'all',
+// 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
+// );
+
 $tlCfg->reports_list['tcases_without_tester'] = array(
 	'title' => 'link_report_tcases_without_tester',
 	'url' => 'lib/results/testCasesWithoutTester.php',
@@ -156,12 +159,16 @@ $tlCfg->reports_list['results_requirements'] = array(
 	'enabled' => 'req',
 	'format' => 'format_html'
 );
+
+
+// disabled TICKET 37006 - disabled uncovered_testcases report 
 //$tlCfg->reports_list['uncovered_testcases'] = array( 
 //	'title' => 'link_report_uncovered_testcases',
 //	'url' => 'lib/results/uncoveredTestCases.php',
 //	'enabled' => 'req',
 //	'format' => 'format_html'
 //);
+
 $tlCfg->reports_list['list_problems'] = array( 
 	'title' => 'link_report_total_bugs',
 	'url' => 'lib/results/resultsBugs.php',

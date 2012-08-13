@@ -22,12 +22,14 @@
  * 
  * @internal revisions
  * @since 1.9.4
+ * 20120812 - franciscom - TICKET 5138: Possibility to have a mail logger
  * 20120707 - franciscom - TICKET 5083: Refactor logger.class.php
  **/
  
 /**
  * @package TestLink
  */
+require_once('email_api.php');
 class tlLogger extends tlObject
 {
 
@@ -67,15 +69,8 @@ class tlLogger extends tlObject
      */
 	static $logLevelsStringCode = null;
 
-    /** @var int log only event which pass the filter.
-     *  value can be OR of log levels const
-     */
-	protected $logLevelFilter = null;
-
-
     /** @var boolean to enable/disable loging for all loggers */
 	protected $doLogging = true;
-
 
 	// the one and only logger of TesTLink
 	private static $s_instance;
@@ -89,16 +84,27 @@ class tlLogger extends tlObject
 
 
 	protected $eventManager;
+    protected $loggerTypeClass = array('db' => null, 'file' => null, 'mail' => null);
+    protected $loggerTypeDomain;
     
 	public function __construct(&$db)
 	{
 		parent::__construct();
 
-		$this->loggers['db'] = new tlDBLogger($db);
-		$this->loggers['file'] = new tlFileLogger();
-
+        $this->loggerTypeDomain = array_flip(array_keys($this->loggerTypeClass));
+		foreach($this->loggerTypeClass as $id => $className)
+		{
+			$class2call = $className;
+			if( is_null($className) )
+			{
+				$class2call = 'tl' . strtoupper($id) . 'Logger';
+			} 
+			$this->loggers[$id] = new $class2call($db);
+		}
+		
 		$this->setLogLevelFilter(self::ERROR | self::WARNING | self::AUDIT);
-
+		$this->loggers['mail']->setLogLevelFilter(self::ERROR | self::WARNING);
+		
 		$this->eventManager = tlEventManager::create($db);
 	}
 
@@ -148,45 +154,86 @@ class tlLogger extends tlObject
 	 */
 	public function getLogLevelFilter($opt='raw')
 	{
+		$ret = array();
 		if($opt == 'raw')
 		{
-			return $this->logLevelFilter;
+			foreach($this->loggers as $type => $loggerObj)
+			{
+				$ret[$type] = $loggerObj->logLevelFilter;
+			}
 		}
 		else
 		{
-			$human = null;
-			foreach(self::$logLevels as $code => $verbose)
+			foreach($this->loggers as $type => $loggerObj)
 			{
-				if($this->logLevelFilter & $code)
+				$human = null;
+				foreach(self::$logLevels as $code => $verbose)
 				{
-					$human[$code] = $verbose; 
-				}		
+					if($loggerObj->logLevelFilter & $code)
+					{
+						$human[$code] = $verbose; 
+					}		
+				}
+				if( !is_null($human) )
+				{
+					asort($human);
+				}
+				$ret[$type] = $human;
 			}
-			if( !is_null($human) )
-			{
-				asort($human);
-			}
-			return $human;
-		}
+			
+			//foreach(self::$logLevels as $code => $verbose)
+			//{
+			//	if($this->logLevelFilter & $code)
+			//	{
+			//		$human[$code] = $verbose; 
+			//	}		
+			//}
+            //
+			//if( !is_null($human) )
+			//{
+			//	asort($human);
+			//}
+			//return $human;
+		}     
+		return $ret;
 	}
 
 
 	/**
-	 * 
+	 * @param verboseForLogger
+	 *		  map with following keys: 'all' + $this->loggerTypeClass
 	 * 
 	 */
-	public function setLogLevelFilterFromVerbose($verbose)
+	public function setLogLevelFilterFromVerbose($verboseForLogger)
 	{
-		$dummy = (array)$verbose;
-		$filter = 0;
-		foreach($dummy as $verboseLevel)
+		//$loggerTypeDomain = array_flip(array_keys($this->loggerTypeClass));
+
+		$itemSet = (array)$verboseForLogger;
+		foreach($itemSet as $loggerType => $dummy)
 		{
-			if( isset(self::$logLevelsStringCode[$verboseLevel]) )
+			$filter = 0;
+			foreach($dummy as $verboseLevel) 
 			{
-				$filter = $filter | self::$logLevelsStringCode[$verboseLevel];
-			}	
+				if( isset(self::$logLevelsStringCode[$verboseLevel]) )
+				{
+					$filter = $filter | self::$logLevelsStringCode[$verboseLevel];
+				}	
+			}
+			
+			switch($loggerType)
+			{
+				case 'all':
+					$this->setLogLevelFilter($filter);	
+				break;
+				
+				default:
+					 if( isset($this->loggerTypeDomain[$loggerType]) )
+					 {
+						$this->loggers[$loggerType]->setLogLevelFilter($filter);	
+					 }
+				break;
+			}			
 		}
-		$this->setLogLevelFilter($filter);	
 	}
 
 
@@ -832,7 +879,7 @@ class tlEvent extends tlDBObject
  */
 class tlDBLogger extends tlObjectWithDB
 {
-	protected $logLevelFilter = null;
+	var $logLevelFilter = null;
 	protected $pendingTransaction = null;
 	protected $doLogging = true;
 
@@ -968,7 +1015,7 @@ class tlFileLogger extends tlObject
 	static protected $eventFormatString = "\t[%timestamp][%errorlevel][%sessionid][%source]\n\t\t%description\n";
 	static protected $openTransactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startTime]\n";
 	static protected $closedTransactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startTime][%endTime][took %duration secs]\n";
-	protected $logLevelFilter = null;
+	var $logLevelFilter = null;
 
 	protected $doLogging = true;
 
@@ -1004,11 +1051,14 @@ class tlFileLogger extends tlObject
 	//SCHLUNDUS: maybe i dont' write the transaction stuff to the file?
 	public function writeTransaction(&$t)
 	{
-	  if ($this->getEnableLoggingStatus() == false)
+		if ($this->getEnableLoggingStatus() == false)
+	  	{
 			return tl::OK;
-
-		if (!$this->logLevelFilter)
+	  	}	
+	  	if (!$this->logLevelFilter)
+	  	{
 			return;
+		}
 
 		//build the logfile entry
 		$subjects = array("%prefix","%transactionID","%name","%entryPoint","%startTime","%endTime","%duration");
@@ -1025,17 +1075,25 @@ class tlFileLogger extends tlObject
 		$line = str_replace($subjects,$replacements,$formatString);
 		return $this->writeEntry(self::getLogFileName(),$line);
 	}
+
 	public function writeEvent(&$e)
 	{
 		if (!($e->logLevel & $this->logLevelFilter))
+		{
 			return;
-		//this event logger supports tlMetaString and normal strings
+		}
+		
+		// this event logger supports tlMetaString and normal strings
 		if (is_object($e->description))
+		{
 			$description = $e->description->localize('en_GB');
+		}
 		else
+		{
 			$description = $e->description;
-
-		//build the logfile entry
+		}
+		
+		// build the logfile entry
 		$subjects = array("%timestamp","%errorlevel","%source","%description","%sessionid");
 		$replacements = array(gmdate("y/M/j H:i:s",$e->timestamp),
 								tlLogger::$logLevels[$e->logLevel],
@@ -1044,9 +1102,11 @@ class tlFileLogger extends tlObject
 		$line = str_replace($subjects,$replacements,self::$eventFormatString);
 
 		$this->writeEntry(self::getLogFileName(),$line);
-		//audits are also logged to a global audits logfile
+		// audits are also logged to a global audits logfile
 		if ($e->logLevel == tlLogger::AUDIT)
+		{
 			$this->writeEntry(self::getAuditLogFileName(),$line);
+		}	
 	}
 
 	protected function writeEntry($fileName,$line)
@@ -1110,6 +1170,145 @@ class tlHTMLLogger
 
 }
 
+/** 
+ * class for logging events to email
+ * @package 	TestLink
+ */
+class tlMailLogger extends tlObjectWithDB
+{
+
+	var $logLevelFilter = null;
+	
+	static protected $eventFormatString = "\t[%timestamp][%errorlevel][%sessionid][%source]\n\t\t%description\n";
+
+	protected $doLogging = true;
+	
+	private $sendto_email;
+	private $from_email;
+	private $return_path_email;
+	private $configIsOK;
+	
+	
+	public function __construct(&$db)
+	{
+		parent::__construct($db);
+		$this->sendto_email = config_get('tl_admin_email');
+		$this->from_email = config_get('from_email');
+		$this->return_path_email = config_get('return_path_email');
+	
+		// now we need to check if we have all needed configuration
+		$key2check = array('sendto_email','from_email','return_path_email');
+	   	$regex2match = config_get('validation_cfg')->user_email_valid_regex_php;
+		$this->configIsOK = true;
+		foreach($key2check as $emailKey)
+		{
+	    	$matches = array();
+			$this->$emailKey = trim($this->$emailKey);
+			if (is_blank($this->$emailKey) || !preg_match($regex2match,$this->$emailKey,$matches))
+			{
+				$this->configIsOK = false;
+				break;
+			}	
+		}
+	
+	}
+		
+	public function getMailCfg()
+	{
+		$key2ret = array('sendto_email','from_email','return_path_email');
+		$cfg = array();
+		foreach($key2ret as $key)
+		{
+			$cfg[$key] = $this->$key;
+		}
+		return $cfg;
+	}
+
+	public function writeEvent(&$event)
+	{
+		if (!$this->doLogging)
+		{
+			return tl::OK;
+		}
+		
+		if (!($event->logLevel & $this->logLevelFilter))
+		{
+			return tl::OK;
+		}
+		
+		if (!$this->configIsOK)
+		{
+			return tl::ERROR;
+		}
+
+		// this event logger supports tlMetaString and normal strings
+		if (is_object($event->description))
+		{
+			$description = $event->description->localize('en_GB');
+		}
+		else
+		{
+			$description = $event->description;
+		}
+
+
+    	// to avoid log writes related to log logic
+		$this->disableLogging();
+
+		// build the logfile entry
+		$subjects = array("%timestamp","%errorlevel","%source","%description","%sessionid");
+		
+		$verboseTimeStamp = gmdate("y/M/j H:i:s",$event->timestamp);
+		$replacements = array($verboseTimeStamp,
+								tlLogger::$logLevels[$event->logLevel],
+								$event->source,$description,
+								$event->sessionID ? $event->sessionID : "<nosession>");
+		$email_body = str_replace($subjects,$replacements,self::$eventFormatString);
+
+		try
+		{
+			
+			$mail_subject = $verboseTimeStamp . lang_get('mail_logger_email_subject');
+			$mail_subject .= isset($_SESSION['basehref']) ?	$_SESSION['basehref'] : config_get('instance_id');
+			email_send($this->from_email, $this->sendto_email, $mail_subject, $email_body);
+		}
+		catch (Exception $exceptionObj)
+		{
+			// do nothing
+			return tl::KO;
+		}
+
+
+		$this->enableLogging();
+		return tl::OK;
+
+	}
+
+
+	public function writeTransaction(&$t)
+	{
+		return tl::OK;
+	}
+	
+	public function setLogLevelFilter($filter)
+	{
+		$this->logLevelFilter = $filter;
+	}
+
+	public function enableLogging()
+	{
+		$this->doLogging = true;
+	}
+
+	public function disableLogging()
+	{
+		$this->doLogging = false;
+	}
+	
+}
+
+
+
 /**
  * include php errors, warnings and notices to TestLink log
  * 
@@ -1159,7 +1358,9 @@ function shutdownLogger()
 {
 	global $g_tlLogger;
 	if ($g_tlLogger)
+	{
 		$g_tlLogger->endTransaction();
+	}
 }
 
 
@@ -1185,5 +1386,4 @@ if( !is_null(config_get('loggerFilter')) )
 $g_tlLogger->startTransaction();
 set_error_handler("watchPHPErrors");
 // --------------------------------------------------------------------------------------
-
 ?>

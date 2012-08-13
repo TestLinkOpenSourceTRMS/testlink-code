@@ -4,6 +4,7 @@ $Id: planEdit.tpl,v 1.17 2010/11/06 11:42:47 amkhullar Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
+20120812 - kinow - TICKET 3987: Hide form to upload attachments during test plan creation
 20101108 - kinow - TICKET 3987: Add attachments to a Test Plan
 20120731 - kinow - TICKET 4977: CSRF token
 20101012 - franciscom - BUGID 3892: CF Types validation
@@ -198,6 +199,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 	</div>
 
 	</form>
+{if $gui->tplan_id neq 0}
 {assign var="downloadOnly" value=true}
 {if $gui->grants->testplan_create eq 'yes'}
 {assign var="downloadOnly" value=false}
@@ -208,6 +210,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 		         attach_attachmentInfos=$gui->attachments[$planID]  
 		         attach_downloadOnly=$downloadOnly
 		         attach_loadOnCancelURL=$loadOnCancelURL}
+{/if}
 		         
 <p>{$labels.testplan_txt_notes}</p>
 

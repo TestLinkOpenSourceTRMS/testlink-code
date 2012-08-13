@@ -14,6 +14,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120812 - kinow - TICKET 3987: Added option to copy attachments when copying a test plan 
  * 20120731 - kinow - TICKET 4977: CSRF token
  *
  **/
@@ -296,7 +297,8 @@ function init_args($request_hash)
 	$args->copy_options=array();
 	$boolean_keys = array('copy_tcases' => 0,'copy_priorities' => 0,
                           'copy_milestones' => 0, 'copy_user_roles' => 0, 
-                          'copy_builds' => 0, 'copy_platforms_links' => 0);
+                          'copy_builds' => 0, 'copy_platforms_links' => 0,
+	                      'copy_attachments' => 0);
 
 	foreach($boolean_keys as $key => $value)
 	{

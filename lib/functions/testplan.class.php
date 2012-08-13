@@ -16,6 +16,7 @@
  * @internal revisions
  * 
  *  @since 1.9.4
+ *  20120812 - kinow - TICKET 3987 - Added methods to copy attachments when copying a test plan
  *	20120808 - franciscom - TICKET 5131 - getHitsNotRunOnBuildPlatform()
  *	20120806 - franciscom - getLTCVNewGeneration() - added new option 'accessKeyType'
  *  20120724 - franciscom - TICKET 5106: Import results - add possibility to provide names 
@@ -1185,7 +1186,8 @@ class testplan extends tlObjectWithAttachments
 		// BUGID 3846
 		$cp_methods = array('copy_milestones' => 'copy_milestones',
 			                'copy_user_roles' => 'copy_user_roles',
-			                'copy_platforms_links' => 'copy_platforms_links');
+			                'copy_platforms_links' => 'copy_platforms_links',
+		                    'copy_attachments' => 'copy_attachments');
 
 		$mapping_methods = array('copy_platforms_links' => 'platforms');
 
@@ -1193,7 +1195,7 @@ class testplan extends tlObjectWithAttachments
 
 		// Configure here only elements that has his own table.
 		$my['options']['items2copy']= array('copy_tcases' => 1,'copy_milestones' => 1, 'copy_user_roles' => 1, 
-		                                    'copy_builds' => 1, 'copy_platforms_links' => 1);
+		                                    'copy_builds' => 1, 'copy_platforms_links' => 1, 'copy_attachments' => 1);
 
 		$my['options']['copy_assigned_to'] = 0;
 		$my['options']['tcversion_type'] = null;
@@ -2838,6 +2840,17 @@ class testplan extends tlObjectWithAttachments
     		}
     		$this->platform_mgr->linkToTestplan($sourceLinks,$target_id);
     	}
+	}
+	
+	/**
+	 * link attachments to a new Test Plan
+	 *
+	 * @param int $source_id original Test Plan id
+	 * @param int $target_id new Test Plan id
+	 */
+	private function copy_attachments($source_id, $target_id)
+	{
+	    $this->attachmentRepository->copyAttachments($source_id,$target_id,$this->attachmentTableName);
 	}
 
     /**

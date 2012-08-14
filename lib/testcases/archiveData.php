@@ -25,10 +25,13 @@ $cfg = array('testcase' => config_get('testcase_cfg'),
 			 'testcase_reorder_by' => config_get('testcase_reorder_by'),
 			 'spec' => config_get('spec_cfg'));                         
 
-$args = init_args($db,$viewerArgs,$cfg);
+
 $smarty = new TLSmarty();
+
+$args = init_args($db,$viewerArgs,$cfg);
 $gui = new stdClass();
 $gui->page_title = lang_get('container_title_' . $args->feature);
+$gui->user_feedback = '';
 
 
 // User right at test project level has to be done

@@ -1,20 +1,19 @@
 <?php
 /**
-* TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsMoreBuildsGUI.php,v 1.7 2010/11/01 17:15:37 franciscom Exp $
-*
-* @author	Kevin Levy <kevinlevy@users.sourceforge.net>
-*
-* This page will forward the user to a form where they can select
-* the builds they would like to query results against.
-*
-* @internal revisions
-* @since 1.9.4
-* 
-**/
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ *
+ * This page will forward the user to a form where they can select
+ *
+ * the builds they would like to query results against.
+ * @filesource	resultsMoreBuildsGUI.php
+ * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
+ *
+ * @internal revisions
+ * @since 1.9.4
+ * 
+ **/
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once('results.class.php');
 require_once('exec.inc.php');
 require_once('users.inc.php');
 testlinkInitPage($db,true,false,"checkRights");

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+	<testplan>
+		<name><![CDATA[TPLAN #1 - NO PLATFORMS]]></name>
+		
+		
+<executables>
+	<link>
+		<platform>
+			<name><![CDATA[]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[TC1A]]></name>
+			<externalid><![CDATA[1]]></externalid>
+			<version><![CDATA[1]]></version>
+			<execution_order><![CDATA[1000]]></execution_order>
+		</testcase>
+</link>
+
+	<link>
+		<platform>
+			<name><![CDATA[]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[TC1B]]></name>
+			<externalid><![CDATA[2]]></externalid>
+			<version><![CDATA[1]]></version>
+			<execution_order><![CDATA[1010]]></execution_order>
+		</testcase>
+</link>
+
+	<link>
+		<platform>
+			<name><![CDATA[]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[TC2X]]></name>
+			<externalid><![CDATA[3]]></externalid>
+			<version><![CDATA[1]]></version>
+			<execution_order><![CDATA[1000]]></execution_order>
+		</testcase>
+</link>
+
+	<link>
+		<platform>
+			<name><![CDATA[]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[TC2Y]]></name>
+			<externalid><![CDATA[4]]></externalid>
+			<version><![CDATA[1]]></version>
+			<execution_order><![CDATA[1010]]></execution_order>
+		</testcase>
+</link>
+
+</executables>
+
+	</testplan>

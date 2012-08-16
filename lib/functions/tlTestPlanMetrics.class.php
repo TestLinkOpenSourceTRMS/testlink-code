@@ -2113,8 +2113,13 @@ class tlTestPlanMetrics extends testplan
 	}
 
 
-
-
+	/*
+	 *
+	 * @used-by lib/results/testCasesWithoutTester.php
+	 * @internal revisions
+	 * @since 1.9.4
+	 * 
+	 */
 	function getNotRunWOTesterAssigned($id,$buildSet=null,$filters=null,$opt=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -2216,13 +2221,8 @@ class tlTestPlanMetrics extends testplan
         		$dummy = (array)$this->db->fetchRowsIntoMap4l($sql,$keyColumns);              
 			break;
 		}
-
-
-
-
 		return $dummy;
 	}
-
 
 
 
@@ -2254,6 +2254,8 @@ class tlTestPlanMetrics extends testplan
 
 	/**
 	 *
+	 * @used-by /lib/results/resultsMoreBuilds.php
+	 *
 	 * @internal revisions
 	 *
 	 * @since 1.9.4
@@ -2262,14 +2264,67 @@ class tlTestPlanMetrics extends testplan
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-		$my = array();
-		$my['filters'] = array('exec_ts_from' => null, 'exec_ts_to' => null,
-							   'assigned_to' => null, 'tester_id' => null,
-							   'keywords' => null, 'builds' => null,
-							   'plaforms' => null, 'top_level_tsuites' => null);
-							   
-		$my['filters'] = array_merge($my['filters'],(array)$filters);
+		$safe = array();
+		$safe['tplan_id'] = intval($id);
 
+		$my = array();
+		list($my,$sqlLEX) = $this->initQueryMetrics($safe['tplan_id'],$filters,$options);
+	
+
+		// -------------------------------------------------------------------------------------------		
+		// We will work always using last execution result as filter criteria.
+		// -------------------------------------------------------------------------------------------
+	
+		// we will need a union to manage 'not run' (remember this status is NEVER WRITTEN to DB)
+		// and other statuses
+		// This logic have been borrowed from testplan.class.php - getLinkedForExecTree().
+		//
+		$key2check = array('builds' => 'build_id', 'platforms' => 'platform_id');
+		$ejoin = array();
+		foreach($key2check as $check => $field)
+		{
+			$ejoin[$check] = is_null($my['filters'][$check]) ? '' : 
+							 " AND E.$field IN (" . implode(',',(array)$my['filters'][$check]) . ')';	
+		}
+		
+		new dbug($my);
+		new dbug($ejoin);
+		die(__LINE__ . __FILE__);
+		
+		
+		
+		$union['not_run'] = "/* {$debugMsg} sqlUnion - not run */" .
+							" SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,TCV.version," .
+							" TCV.tc_external_id AS external_id, " .
+							" COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
+							
+			   				" FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
+			   				" JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
+			   				" JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
+			   				" JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+							$my['join']['ua'] .
+							$my['join']['keywords'] .
+							" LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
+							
+							" /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
+							" LEFT OUTER JOIN ({$sqlLEX}) AS LEX " .
+							" ON  LEX.testplan_id = TPTCV.testplan_id " .
+							" AND LEX.tcversion_id = TPTCV.tcversion_id " .
+							" AND LEX.platform_id = TPTCV.platform_id " .
+							" AND LEX.testplan_id = " . $safe['tplan_id'] .
+							" LEFT OUTER JOIN {$this->tables['executions']} E " .
+							" ON  E.tcversion_id = TPTCV.tcversion_id " .
+							" AND E.testplan_id = TPTCV.testplan_id " .
+							" AND E.platform_id = TPTCV.platform_id " .
+							" AND E.build_id = " . $my['filters']['build_id'] .
+
+							" WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
+							$my['where']['where'] .
+							" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
+							" AND E.id IS NULL AND LEX.id IS NULL";
+		die();		
+		
+		
 		// executions
 		$sex = "/* $debugMsg */" .
 			   "SELECT E.status,E.notes,E.tcversion_number,E.execution_ts,E.build_id,E.platform_id " .
@@ -2278,14 +2333,21 @@ class tlTestPlanMetrics extends testplan
 			   "ON E.tcversion_id = TPTCV.tcversion_id " .
 			   "AND E.testplan_id = TPTCV.testplan_id " .
 			   "AND E.platform_id = TPTCV.platform_id ";
+		
+		
 			   
-		// build where clause
-		$where = "WHERE TPTCV.testplan_id = " . intval($id);
-		if( !is_null($my['filters']['builds']) )
+		// build up where clause
+		$where = "WHERE TPTCV.testplan_id = " . $safe['tplan_id'];
+
+		$key2check = array('builds' => 'build_id', 'platforms' => 'platform_id');
+		foreach($key2check as $check => $field)
 		{
-			$where .= " AND E.build_id IN " . implode(',',(array)$my['filters']['builds']);	
+			if( !is_null($my['filters'][$check]) )
+			{
+				$where .= " AND E.$field IN (" . implode(',',(array)$my['filters'][$check]) . ')';	
+			}
 		}
-			    
+		    
 		$sql = $sex . $where;
 
 		//
@@ -2293,6 +2355,70 @@ class tlTestPlanMetrics extends testplan
 		$rs = $this->db->get_recordset($sql); 			    
 		return $rs;
 	}
+	
+	
+	
+	/*
+	 *
+	 * @used-by 
+	 *						
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 */
+	function initQueryMetrics($tplanID,$filtersCfg,$optionsCfg)
+	{
+		$ic = array();
+
+		$ic['join'] = array();
+		$ic['join']['ua'] = '';
+
+		$ic['where'] = array();
+		$ic['where']['where'] = '';
+		$ic['where']['platforms'] = '';
+
+		$ic['green_light'] = true;
+	
+		$ic['filters'] = array('exec_ts_from' => null, 'exec_ts_to' => null,
+							   'assigned_to' => null, 'tester_id' => null,
+							   'keywords' => null, 'builds' => null,
+							   'platforms' => null, 'top_level_tsuites' => null);
+
+		$ic['filters'] = array_merge($ic['filters'],(array)$filtersCfg);
+
+		new dBug($filtersCfg);
+		
+		// ---------------------------------------------------------------------------------------------
+		$sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id," .
+				  " MAX(EE.id) AS id " .
+				  " FROM {$this->tables['executions']} EE " . 
+				  " WHERE EE.testplan_id = " . $tplanID;
+	
+		$key2check = array('builds' => 'build_id', 'platforms' => 'platform_id');
+		foreach($key2check as $check => $field)
+		{
+			$ic['where'][$check] = '';
+			if( !is_null($ic['filters'][$check]) )
+			{
+				$sqlLEX .= " AND EE.$field IN (" . implode(',',(array)$ic['filters'][$check]) . ')';	
+				$ic['where'][$check] = " AND TPTCV.$field IN (" . implode(',',(array)$ic['filters'][$check]) . ')';	
+			}
+		}
+		$sqlLEX	.= " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
+		// ---------------------------------------------------------------------------------------------
+
+		if( !is_null($ic['filters']['keywords']) )
+		{    
+			list($ic['join']['keywords'],$ic['where']['keywords']) = 
+				$this->helper_keywords_sql($ic['filters']['keywords'],array('output' => 'array'));
+
+			$ic['where']['where'] .= $ic['where']['keywords']; // **** // CHECK THIS CAN BE NON OK
+		}
+
+
+		return array($ic,$sqlLEX);		
+	}
+	
 
 }
 ?>

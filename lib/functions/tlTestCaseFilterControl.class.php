@@ -35,6 +35,8 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120816 - franciscom -TICKET 4905: Test Case Tester Assignment - filters dont work properly for 'Assigned to' Field
+ *
  */
 
 /*
@@ -821,7 +823,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$drag_and_drop->BackEndUrl = '';
 		$drag_and_drop->useBeforeMoveNode = FALSE;
 				
-		if (!$this->testproject_mgr) {
+		if (!$this->testproject_mgr) 
+		{
 			$this->testproject_mgr = new testproject($this->db);
 		}
 		
@@ -848,6 +851,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 						$opt_etree->hideTestCases = 0;
 						$opt_etree->allow_empty_build = 0;
 						$opt_etree->getTreeMethod = 'getLinkedForTesterAssignmentTree';
+						
+						// TICKET 4905: Test Case Tester Assignment - filters dont work properly 
+						//				for 'Assigned to' Field
+						// This way we are GOING TO IGNORE SETTING BUILD
+						$opt_etree->buildIDKeyMap = 'filter_result_build';
+						
 					break;
 					
 					case 'planUpdateTC':
@@ -858,8 +867,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 					break;
 					
 				}
-				
-				
 				
 				
 				list($tree_menu, $testcases_to_show) = testPlanTree($this->db,$gui->menuUrl,
@@ -1171,17 +1178,20 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		// Now get all selectable testplans for the user to display.
 		// For execution, don't take testplans into selection which have no (active/open) builds!
 		// For plan add mode, add every plan no matter if he has builds or not.
-		foreach ($testplans as $plan) {
-			// BUGID 4166 - List also test plans without builds for "plan_mode"
+		foreach ($testplans as $plan) 
+		{
+			// List also test plans without builds for "plan_mode"
 			$add_plan = $this->mode == 'plan_add_mode' || $this->mode == 'plan_mode';
-			if (!$add_plan) {
+			if (!$add_plan) 
+			{
 				$builds = $this->testplan_mgr->get_builds($plan['id'],
 				                                          testplan::GET_ACTIVE_BUILD,
 				                                          testplan::GET_OPEN_BUILD);
 				$add_plan =  (is_array($builds) && count($builds));
 			}
 			
-			if ($add_plan) {
+			if ($add_plan) 
+			{
 				$this->settings[$key]['items'][$plan['id']] = $plan['name'];
 			}
 		}

@@ -17,7 +17,7 @@
  *
  * @internal revisions
  * @since 1.9.4
- * 
+ * 20120816 - franciscom -TICKET 4905: Test Case Tester Assignment - filters dont work properly for 'Assigned to' Field
  */
 function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                   $tplan_name,$objFilters,$objOptions) 
@@ -297,7 +297,13 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 }
 
 
-
+/*
+ *
+ *
+ * @internal revisions
+ * @since 1.9.4
+ *
+ */
 function initExecTree($filtersObj,$optionsObj)
 {
 	$filters = array();
@@ -311,6 +317,12 @@ function initExecTree($filtersObj,$optionsObj)
 					'platform_id' => 'setting_platform', 'exec_type' => 'filter_execution_type',
 					'urgencyImportance' => 'filter_priority', 'tcase_name' => 'filter_testcase_name',
 					'cf_hash' => 'filter_custom_fields', 'build_id' => array('setting_build','build_id'));
+	
+	// TICKET 4905: Test Case Tester Assignment - filters dont work properly for 'Assigned to' Field
+	if( property_exists($optionsObj,'buildIDKeyMap') && !is_null($filtersObj->filter_result_build) )
+	{
+		$keymap['build_id'] = $optionsObj->buildIDKeyMap;
+	}
 	
 	foreach($keymap as $key => $prop)
 	{
@@ -331,9 +343,12 @@ function initExecTree($filtersObj,$optionsObj)
 		}
 		else
 		{
+			//Echo '\$key:' . $key . '<br>';
 			$filters[$key] = isset($filtersObj->$prop) ? $filtersObj->$prop : null; 
 		}	
 	}
+
+	//New dBug($filters);
 
 	$filters['keyword_id'] = 0;
 	$filters['keyword_filter_type'] = 'Or';
@@ -578,6 +593,10 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 	$glueChar=config_get('testcase_cfg')->glue_character;
 	$menustring = null;
 	$tplan_tcases = null;
+	
+	//New dBug($objFilters);
+	//New dBug($objOptions);
+	
 
 	list($filters,$options,
 		 $show_testsuite_contents,
@@ -627,15 +646,8 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 	//$tnow = end($chronos);
 	//$tprev = prev($chronos);
     
- 	//New dBug($my);
-	// Document why this is needed, please	
     $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
- 	//echo 'BEFORE';
- 	
- 	//echo 'AF';
- 	//New dBug($test_spec);
- 	//die();
- 	
+
  	
  	// Take Time
  	// $chronos[] = microtime(true);
@@ -673,13 +685,9 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 			// THIS YET.
 			//
 			//New dBug($filters, array('label' => __FUNCTION__));
-			
 			// $gtMethod = {$objOptions->getTreeMethod};
-			
 			if( !is_null($sql2do = $tplan_mgr->{$objOptions->getTreeMethod}($tplan_id,$filters,$options)) )
 			{
-				//New dBug($sql2do);
-
 				if( is_array($sql2do) )
 				{				
 					if( $filters['keyword_filter_type'] == 'And')

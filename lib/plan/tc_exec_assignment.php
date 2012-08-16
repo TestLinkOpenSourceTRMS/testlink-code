@@ -41,6 +41,8 @@ if(is_array($args->keyword_id))
 }
 $arrData = array();
 
+//New dBug($args->doAction);
+
 if(!is_null($args->doAction))
 {
 	if(!is_null($args->achecked_tc))
@@ -109,10 +111,8 @@ if(!is_null($args->doAction))
 	    {
 	        if( count($features2[$key]) > 0 )
 	        {
-	        	//tLog($method2call[$key],"AUDIT");
-
-				//echo $method2call[$key];
-				// die();
+	        	//TLog($method2call[$key],"AUDIT");
+				//Echo $method2call[$key];
 	           	$assignment_mgr->$method2call[$key]($values);
 	           	$called[$key]=true;
 	        }  
@@ -146,6 +146,9 @@ switch($args->level)
         $linked_items[$args->id] = $xx;
 		$opt = array('write_button_only_if_linked' => 1, 'user_assignments_per_build' => $args->build_id);
 		$filters = array('keywords' => $keywordsFilter->items );	
+		//New dBug($opt);
+		//New dBug($linked_items);
+		
 		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 						        $linked_items,null,$filters,$opt);
 		
@@ -168,8 +171,6 @@ switch($args->level)
 		$opt = array('assigned_on_build' => $args->build_id);
 		$filters += $opt;
 		$out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
-		//new dBug($out);
-		// die(); 
 		break;
 
 	default:
@@ -186,8 +187,8 @@ $gui->items_qty = is_null($gui->items) ? 0 : count($gui->items);
 $gui->has_tc = $out['num_tc'] > 0 ? 1:0;
 $gui->support_array = array_keys($gui->items);
 
-new dBug($gui);
-//die();
+//New dBug($gui);
+//Die();
 
 
 if ($_SESSION['testprojectOptions']->testPriorityEnabled) 

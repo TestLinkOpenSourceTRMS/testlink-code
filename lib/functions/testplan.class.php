@@ -4841,7 +4841,7 @@ class testplan extends tlObjectWithAttachments
 			$hits['notRun'] = (array)$this->$getHitsNotRunMethod($id,$buildSet);	
 			unset($statusSetLocal[$dummy[$this->notRunStatusCode]]);
 			
-			new dBug($hits);
+			//New dBug($hits);
 		}
 		
 		if( ($get['otherStatus']=(count($statusSetLocal) > 0)) )
@@ -5636,8 +5636,6 @@ class testplan extends tlObjectWithAttachments
                               
 		// If special user id TL_USER_ANYBODY is present in set of user id,
 		// we will DO NOT FILTER by user ID
-		
-		
 		if( !is_null($ic['filters']['assigned_to']) && 
 		    !in_array(TL_USER_ANYBODY,(array)$ic['filters']['assigned_to']) )
 		{  
@@ -5646,11 +5644,18 @@ class testplan extends tlObjectWithAttachments
 				$this->helper_assigned_to_sql($ic['filters']['assigned_to'],$ic['options'],
 											  $ic['filters']['build_id']);						
 
-			
 			$ic['where']['where'] .= $ic['where']['ua']; 
-
-									
 		}
+		
+		
+		if( !is_null($ic['options']['assigned_on_build']) )
+		{
+			$ic['join']['ua'] = " LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
+				   				" ON UA.feature_id = TPTCV.id " . 
+				    			" AND UA.build_id = " . $ic['options']['assigned_on_build'] . 
+				    			" AND UA.type = {$this->execTaskCode} ";
+		}
+
 
 		if( !is_null($ic['filters']['tcase_name']) && 
 			($dummy = trim($ic['filters']['tcase_name'])) != ''	)
@@ -6026,7 +6031,8 @@ class testplan extends tlObjectWithAttachments
 		$safe['tplan_id'] = intval($id);
 		$my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
     
-    	//new dBug($my, array('label' => __METHOD__));
+    	//New dBug($my, array('label' => __METHOD__));
+	    //New dBug($my,array('label' => __METHOD__));
 	    
 	    $mop = array('options' => array('addExecInfo' => false,'specViewFields' => false));
 	    $my['options'] = array_merge($mop['options'],$my['options']);
@@ -6069,6 +6075,12 @@ class testplan extends tlObjectWithAttachments
 						" COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status ";
 
 
+		// used on tester assignment feature when working at test suite level
+		if( !is_null($my['options']['assigned_on_build']) )
+		{
+			$commonFields .= ",UA.user_id";
+		}
+		
 		if($my['options']['addExecInfo'])
 		{
 			$commonFields .= ",E.tcversion_number,E.build_id AS exec_on_build,E.testplan_id AS exec_on_tplan";

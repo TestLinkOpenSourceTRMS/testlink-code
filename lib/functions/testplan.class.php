@@ -4834,13 +4834,19 @@ class testplan extends tlObjectWithAttachments
 		$dummy = array_flip($statusSetLocal);  // (code => idx)
 		$get = array('notRun' => isset($dummy[$this->notRunStatusCode]), 'otherStatus' => false);
 		
+		
 		if($get['notRun']) 
 		{
+			tLog(__METHOD__ . ":: \$tplan_mgr->$getHitsNotRunMethod", 'DEBUG');
 			$hits['notRun'] = (array)$this->$getHitsNotRunMethod($id,$buildSet);	
 			unset($statusSetLocal[$dummy[$this->notRunStatusCode]]);
+			
+			new dBug($hits);
 		}
+		
 		if( ($get['otherStatus']=(count($statusSetLocal) > 0)) )
 		{
+			tLog(__METHOD__ . ":: \$tplan_mgr->$getHitsStatusSetMethod", 'DEBUG');
 			$hits['otherStatus'] = (array)$this->$getHitsStatusSetMethod($id,$statusSetLocal,$buildSet);	
 		}
 
@@ -5529,7 +5535,14 @@ class testplan extends tlObjectWithAttachments
 	}
 
 
-
+	/*
+	 *
+	 * @used-by getLinkedForExecTree(),getLinkedForTesterAssignmentTree(), getLinkedTCVersionsSQL()
+	 *						
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 */
 	function initGetLinkedForTree($tplanID,$filtersCfg,$optionsCfg)
 	{
 
@@ -6120,7 +6133,6 @@ class testplan extends tlObjectWithAttachments
 
 		return $union;
 	}
-
 
 } // end class testplan
 

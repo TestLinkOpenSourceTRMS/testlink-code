@@ -1678,8 +1678,9 @@ $TLS_info_bugs_per_tc_report = "This report shows all bugs linked to test cases 
 
 
 // ----- gui/templates/resultsTC.tpl -----
-$TLS_info_resultsTC_report = "This report shows the last test case execution result for each " .
-                             "build.<br /><b>Example:</b><br />Test Case has been executed in this order: " .
+$TLS_info_resultsTC_report = "This report shows the last test case execution result for each build, " .
+							 "analizing test cases <b>with and without tester assignment.</b> <br />" .
+                             "<br /><b>Example:</b><br />Test Case has been executed in this order: " .
                              "<br />Build 1.0 - Passed; Build 1.0 - Failed<br />-> Last Result  for Build 1.0 " .
                              "is Failed because second execution overrides older results.<br /><br />" .
                              "\"[Last Build]\" and \"Last execution\" column show data according " .
@@ -1710,6 +1711,10 @@ $TLS_info_notrun_tc_report = "This report shows all test cases that have not bee
 $TLS_no_blocked = "There are no blocked test cases";
 $TLS_no_notrun = "There are no test case that have not been run";
 $TLS_no_failed = "There are no failed test cases";
+
+$TLS_no_not_run_with_tester = 'There are no test case (WITH TESTER ASSIGNED) that have not been run';
+$TLS_no_failed_with_tester = 'There are no failed test cases (WITH TESTER ASSIGNED)';
+$TLS_no_blocked_with_tester = 'There are no blocked test cases (WITH TESTER ASSIGNED)';
 
 
 

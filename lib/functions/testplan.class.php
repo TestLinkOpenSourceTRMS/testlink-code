@@ -5648,7 +5648,7 @@ class testplan extends tlObjectWithAttachments
 		}
 		
 		
-		if( !is_null($ic['options']['assigned_on_build']) )
+		if( isset($ic['options']['assigned_on_build']) && !is_null($ic['options']['assigned_on_build']) )
 		{
 			$ic['join']['ua'] = " LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
 				   				" ON UA.feature_id = TPTCV.id " . 

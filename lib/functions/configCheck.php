@@ -875,9 +875,8 @@ function check_dir_permissions(&$errCounter)
 	$final_msg = '';
 	$msg_ko = "<td><span class='tab-error'>Failed!</span></td></tr>";
 	$msg_ok = "<td><span class='tab-success'>OK</span></td></tr>";
-	$checked_path_base = realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..');
-
-	foreach ($dirs_to_check as $the_d) 
+	$checked_path_base = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
+	foreach ($dirs_to_check as $the_d => $how) 
 	{
   		if( is_null($how) )
   		{
@@ -889,7 +888,6 @@ function check_dir_permissions(&$errCounter)
 			$the_d = config_get($how);	
 		}
 		
-		$the_d = $checked_path_base . DIRECTORY_SEPARATOR . $the_d;
   		$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists</td>";
   
 		if(!file_exists($the_d)) 

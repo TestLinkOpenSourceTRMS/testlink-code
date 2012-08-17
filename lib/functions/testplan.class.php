@@ -6034,7 +6034,7 @@ class testplan extends tlObjectWithAttachments
     	//New dBug($my, array('label' => __METHOD__));
 	    //New dBug($my,array('label' => __METHOD__));
 	    
-	    $mop = array('options' => array('addExecInfo' => false,'specViewFields' => false));
+	    $mop = array('options' => array('addExecInfo' => false,'specViewFields' => false, 'assigned_on_build' => null));
 	    $my['options'] = array_merge($mop['options'],$my['options']);
 	    
 		if(	($my['options']['allow_empty_build'] == 0) && $my['filters']['build_id'] <= 0 )

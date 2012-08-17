@@ -148,7 +148,7 @@ class testsuite extends tlObjectWithAttachments
 		
 		if( is_null($order) )
 		{
-		  $node_order = $cfg['treemenu_default_testsuite_order'];
+		  $node_order = isset($cfg['treemenu_default_testsuite_order']) ? $cfg['treemenu_default_testsuite_order'] : 0;
 		}
 		else
 		{

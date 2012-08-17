@@ -4,19 +4,20 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Verify environment
- * Note: informations are passed via $_SESSION
+ * Note: information is passed via $_SESSION
  * 
  * @filesource	installCheck.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2009,2011 TestLink community 
+ * @copyright 	2009,2012 TestLink community 
  *
  * @internal revisions
- * 
+ * @since 1.9.4
+ * 20120817 - franciscom - include config & common to use config_get() 
  **/
-
-//require_once("installUtils.php");
-require_once('..'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'functions'.DIRECTORY_SEPARATOR.'configCheck.php');
+require_once('..' . DIRECTORY_SEPARATOR . 'config.inc.php');
+require_once('..' . DIRECTORY_SEPARATOR . 'lib'. DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'common.php');
+require_once('..' . DIRECTORY_SEPARATOR . 'lib'. DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'configCheck.php');
 
 if( !isset($_SESSION) )
 { 

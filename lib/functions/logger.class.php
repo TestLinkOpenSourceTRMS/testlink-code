@@ -1111,7 +1111,14 @@ class tlFileLogger extends tlObject
 
 	protected function writeEntry($fileName,$line)
 	{
-		$fd = fopen($fileName,'a+');
+		// 20120817 - franciscom
+		// need to silence this because during installation we can be in a situation
+		// where we are not able to write the file, due to security changes we have done
+		// @see http://mantis.testlink.org/view.php?id=5147
+		// @see http://mantis.testlink.org/view.php?id=5148
+		// @see http://mantis.testlink.org/view.php?id=4977
+		// @see http://mantis.testlink.org/view.php?id=4906
+		@$fd = fopen($fileName,'a+');
 		if ($fd)
 		{
 			fputs($fd,$line);

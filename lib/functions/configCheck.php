@@ -9,12 +9,13 @@
  * @filesource	configCheck.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2007-2011, TestLink community 
+ * @copyright 	2007-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * @see			sysinfo.php
  *
  * @internal revisions
- * @since 1.9.4	
+ * @since 1.9.4
+ *	20120817 - franciscom - changes in check_dir_permissions()	
  * 	20120411 - franciscom - TICKET 4969: Add Setting to Force HTTPS
  * 	20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
  *
@@ -868,7 +869,9 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
  */
 function check_dir_permissions(&$errCounter)
 {
-	$dirs_to_check = array('gui'.DIRECTORY_SEPARATOR.'templates_c', 'logs', 'upload_area');
+	$dirs_to_check = array('gui' . DIRECTORY_SEPARATOR . 'templates_c' => null, 
+						   'logs' => 'log_path', 'upload_area' => 'repositoryPath');
+
 	$final_msg = '';
 	$msg_ko = "<td><span class='tab-error'>Failed!</span></td></tr>";
 	$msg_ok = "<td><span class='tab-success'>OK</span></td></tr>";
@@ -876,9 +879,18 @@ function check_dir_permissions(&$errCounter)
 
 	foreach ($dirs_to_check as $the_d) 
 	{
-  	// Correct relative path for installer.
+  		if( is_null($how) )
+  		{
+  			// Correct relative path for installer.
+			$the_d = $checked_path_base . DIRECTORY_SEPARATOR . $the_d;
+		}
+		else
+		{
+			$the_d = config_get($how);	
+		}
+		
 		$the_d = $checked_path_base . DIRECTORY_SEPARATOR . $the_d;
-  	$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists</td>";
+  		$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists</td>";
   
 		if(!file_exists($the_d)) 
 		{

@@ -3,6 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * IMPORTANT NOTICE:
+ * Only test cases that HAVE TESTER ASSIGNED will be considered.
  *
  * @filesource	resultsByStatus.php
  * @package 	TestLink
@@ -13,12 +15,6 @@
  * @internal revisions
  * @since 1.9.4
  *
- * @since 1.9.3
- *  20101013 - asimon - use linkto.php for emailed links
- *  20101012 - Julian - added html comment to properly sort by test case column
- *  20101007 - asimon - BUGID 3857: Replace linked icons in reports if reports get sent by e-mail
- *  20100927 - asimon - added mouseover information for the exec and edit icons
- *  20100923 - eloff - refactored to use improved table interface
  */
 
 require('../../config.inc.php');
@@ -469,18 +465,15 @@ function initNameCache($guiObj)
 
 function getWarning($targetStatus,$statusCfg)
 {
-	$msg = '';
-	if($targetStatus == $statusCfg['not_run']) 
+	$msg = ''; 
+	$key2check = array('not_run','failed','blocked');
+	foreach($key2check as $statusVerbose)
 	{
-		$msg = lang_get('no_notrun');
-	}
-	if($targetStatus == $statusCfg['failed']) 
-	{
-		$msg = lang_get('no_failed');
-	}
-	if($targetStatus == $statusCfg['blocked']) 
-	{
-		$msg = lang_get('no_blocked');
+		if( $targetStatus == $statusCfg[$statusVerbose] )
+		{         
+			$msg = lang_get('no_' . $statusVerbose . '_with_tester');
+			break;
+		}
 	}
 	return $msg;
 }	

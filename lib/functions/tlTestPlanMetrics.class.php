@@ -965,7 +965,8 @@ class tlTestPlanMetrics extends testplan
 	 *
 	 * @internal revisions
 	 *
-	 * @since 1.9.4
+	 * @since 1.9.4            
+	 * 20120817 - franciscom - found issue, UNION NOT NEEDED
 	 * 20120430 - franciscom - 
 	 */
 	function getExecCountersByBuildUAExecStatus($id, $filters=null, $opt=null)
@@ -979,35 +980,12 @@ class tlTestPlanMetrics extends testplan
 		// Please remember that Platforms (when exists) has Multiplier effect on test cases
 		//
 		$sqlLEBBP = $sqlStm['LEBBP'];
-
-		$sqlUnionAU	=	"/* {$debugMsg} sqlUnion - executions */" . 
-						" SELECT UA.user_id, UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " .
-						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
-						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
-						" JOIN {$this->tables['user_assignments']} UA " .
-						" ON UA.feature_id = TPTCV.id " .
-						" AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
-
-						" /* GO FOR Absolute LATEST exec ID ON BUILD and PLATFORM */ " .
-						" JOIN ({$sqlLEBBP}) AS LEBBP " .
-						" ON  LEBBP.testplan_id = TPTCV.testplan_id " .
-						" AND LEBBP.platform_id = TPTCV.platform_id " .
-						" AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
-						" AND LEBBP.testplan_id = " . $safe_id .
-
-						" /* Get (With BUILD details) execution  status WRITTEN on DB */ " .
-						" JOIN {$this->tables['executions']} E " .
-						" ON  E.build_id = UA.build_id " .
-						" AND E.id = LEBBP.id " .
-
-						" WHERE TPTCV.testplan_id=" . $safe_id .
-						" AND UA.build_id IN ({$builds->inClause}) ";
-
-		//echo 'QD - <b>' . $sqlUnionAU . '<br>';
-		// die();
-
-		$sqlUnionBU	=	"/* {$debugMsg} sqlUnion - notrun */" . 
-						" SELECT UA.user_id, UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " .
+		
+		// 20120817 - franciscom -
+		// I'm not to happy with DISTINCT I've added to do this work.
+		// Do not understand why i get multiple identical records
+		$sqlUnionBU	=	"/* {$debugMsg} */" . 
+						" SELECT DISTINCT UA.user_id, UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " .
 						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
 						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
 						" JOIN {$this->tables['user_assignments']} UA " .
@@ -1027,26 +1005,17 @@ class tlTestPlanMetrics extends testplan
 						" AND E.tcversion_id = TPTCV.tcversion_id " .
 
 						" WHERE TPTCV.testplan_id=" . $safe_id .
-						" AND UA.build_id IN ({$builds->inClause}) " .
-
-						" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
-						" AND E.id IS NULL AND LEBBP.id IS NULL";
+						" AND UA.build_id IN ({$builds->inClause}) " ;
 	
-		//echo 'QD - <b>' . $sqlUnionBU . '<br>';
-		// die();
-
-
-
-				
-		// get all execution status from DB Only for test cases with tester assigned			
-		$sql =	" /* {$debugMsg} UNION  */" .
-				" SELECT user_id, build_id,status, count(0) AS exec_qty " .
-				" FROM ($sqlUnionAU UNION ALL $sqlUnionBU ) AS SQBU " .
-				" GROUP BY user_id,build_id,status ";
-
-		// 
-		//echo 'QD - <br><b>' . __FUNCTION__ . '</b><br>'; 
-		//echo 'QD - ' . $sql . '<br>';
+		//Echo 'QD - <b>' . $sqlUnionBU . '</b><br>';
+		//Die();
+		$sql =	" /* {$debugMsg} */" .
+		 		" SELECT user_id, build_id,status, count(0) AS exec_qty " .
+		 		" FROM ($sqlUnionBU) AS SQBU " .
+		 		" GROUP BY user_id,build_id,status ";
+           
+		//Echo 'QD - <br><b>' . __FUNCTION__ . '</b><br>'; 
+		//Echo 'QD - ' . $sql . '<br>';
 		$keyColumns = array('build_id','user_id','status');
         $exec['with_tester'] = (array)$this->db->fetchRowsIntoMap3l($sql,$keyColumns);              
 

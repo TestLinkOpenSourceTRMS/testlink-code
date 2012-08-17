@@ -6,7 +6,7 @@ Contents
 1. Introduction
 2. Release notes
 3. System Requirements
-4. Installation
+4. Installation & SECURITY
 5. Upgrade and Migration
 6. TestLink Team 
 7. Bug Reports and Feedback
@@ -50,10 +50,9 @@ Supported client web-browsers:
 - Chrome   
 
 
-4. Installation
+4. Installation & SECURITY
 ===============================================================
-The following details the basic steps for installation on any   
-system. 
+The following details the basic steps for installation on any system. 
 Instructions may seem unix-centric but should work on Windows systems.
 
 Barring complications, it should take you about 10-20 minutes 
@@ -65,8 +64,8 @@ Short summary:
  3. Launch web based installer
 
 1. First, transfer the file to your web-server using whatever 
-method you like best (ftp, scp, etc).  You will need to telnet/ssh 
-into the server machine for the next steps.
+method you like best (ftp, scp, etc).  
+You will need to telnet/ssh into the server machine for the next steps.
 
 2. Next, untar/gunzip it to the directory that you want.
 The usual command is (1 step):
@@ -82,8 +81,24 @@ Total Commander, Winzip, and other programs should also be able
 to handle decompression of the archive.
 
 At this point you may want to rename the directory to something 
-different to 'testlink'. You should allow write access for
-logging, upload and template directories.
+different to 'testlink'. 
+
+*** SECURITY ****
+You need to configure:
+
+- log directory 	($tlCfg->log_path)
+- upload directory  ($g_repositoryPath)
+
+according to your installation, default values provided are examples THAT DOES NOT WORK OUT OF THE BOX
+
+Give a look to:
+http://mantis.testlink.org/view.php?id=5147
+http://mantis.testlink.org/view.php?id=5148
+http://mantis.testlink.org/view.php?id=4977
+http://mantis.testlink.org/view.php?id=4906
+
+You should also need to configure write access for logging, upload and template directories.
+
 
 3. Launch web based installer
 We will create the necessary database tables and a basic configuration

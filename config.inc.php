@@ -23,6 +23,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ *  20120817 - franciscom - Changes on $tlCfg->log_path and $g_repositoryPath due to SECURITY VULNERABILITY
  * 	20120812 - franciscom - TICKET 5138: Possibility to have a mail logger: new config option tl_installation_id
  *	20120707 - franciscom - TICKET 5083: Refactoring - logger.class.php -> $tlCfg->loggerFilter
  *	20120108 - franciscom - TICKET 4821: Bugzilla integration via XMLRPC (BUGZILLAXMLRPC)
@@ -167,8 +168,12 @@ $tlCfg->log_level = 'ERROR';
 /** @var boolean show smarty debug window */
 $tlCfg->smarty_debug = false;
 
-/** @var string Path to store logs */
-$tlCfg->log_path = TL_ABS_PATH . 'logs' . DIRECTORY_SEPARATOR ;
+/** 
+ *  @var string Path to store logs - 
+ *	for security reasons (see http://itsecuritysolutions.org/2012-08-13-TestLink-1.9.3-multiple-vulnerabilities/)
+ *	put it out of reach via web or configure access denied.
+ */
+$tlCfg->log_path = '/var/testlink/logs/'; /* unix example */
 
 
 /**
@@ -878,8 +883,11 @@ $g_repositoryType = TL_REPOSITORY_TYPE_FS;
 /**
  * TL_REPOSITORY_TYPE_FS: the where the filesystem repository should be located
  * We recommend to change the directory for security reason.
+ * (see http://itsecuritysolutions.org/2012-08-13-TestLink-1.9.3-multiple-vulnerabilities/)
+ * Put it out of reach via web or configure access denied.
+ *
  **/
-$g_repositoryPath = TL_ABS_PATH . "upload_area" . DIRECTORY_SEPARATOR;
+$g_repositoryPath = '/var/testlink/upload_area/';  /* unix example */
 
 /**
  * compression used within the repository

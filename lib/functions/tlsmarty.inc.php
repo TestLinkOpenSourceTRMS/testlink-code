@@ -173,10 +173,15 @@ class TLSmarty extends Smarty
         
         $this->assign('basehref', $basehref);
         $this->assign('css', $basehref . TL_TESTLINK_CSS);
-        $this->assign('custom_css', $basehref . TL_TESTLINK_CUSTOM_CSS);
+        $this->assign('use_custom_css', 0);
+		if(!is_null($tlCfg->custom_css) && $tlCfg->custom_css != '')
+		{
+	        $this->assign('use_custom_css', 1);
+        	$this->assign('custom_css', $basehref . TL_TESTLINK_CUSTOM_CSS);
+		}
+	
         $this->assign('locale', $my_locale);
-          
-          
+         
         // -----------------------------------------------------------------------------
         // load configuration
         $this->assign('session',isset($_SESSION) ? $_SESSION : null);

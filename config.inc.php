@@ -23,6 +23,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ *  20120818 - franciscom - TICKET 5152 - changes in custom css management
  *  20120817 - franciscom - Changes on $tlCfg->log_path and $g_repositoryPath due to SECURITY VULNERABILITY
  * 	20120812 - franciscom - TICKET 5138: Possibility to have a mail logger: new config option tl_installation_id
  *	20120707 - franciscom - TICKET 5083: Refactoring - logger.class.php -> $tlCfg->loggerFilter
@@ -1375,6 +1376,10 @@ if the name exist.
 */
 $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
 
+// name of your custom.css, place it in same folder that standard TL css
+// null or '' => do not use
+$tlCfg->custom_css = null;
+
 
 // ----- End of Config ------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
@@ -1450,9 +1455,12 @@ define('TL_THEME_BASE_DIR', $tlCfg->theme_dir);
 define('TL_THEME_IMG_DIR', $tlCfg->theme_dir . 'images/');
 define('TL_THEME_CSS_DIR', $tlCfg->theme_dir . 'css/');
 define('TL_TESTLINK_CSS', TL_THEME_CSS_DIR . TL_CSS_MAIN);
-define('TL_TESTLINK_CUSTOM_CSS', TL_THEME_CSS_DIR . TL_CSS_CUSTOM);
 define('TL_PRINT_CSS', TL_THEME_CSS_DIR . TL_CSS_PRINT);
 define('TL_TREEMENU_CSS', TL_THEME_CSS_DIR . TL_CSS_TREEMENU);
+
+// if you do not want to use this, redefine $tlCfg->custom_css as '' or null
+define('TL_TESTLINK_CUSTOM_CSS', TL_THEME_CSS_DIR . $tlCfg->custom_css);
+
 
 // --------------------------------------------------------------------------------------
 // when a role is deleted, a new role must be assigned to all users

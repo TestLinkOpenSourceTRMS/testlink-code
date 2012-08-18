@@ -870,44 +870,50 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
 function check_dir_permissions(&$errCounter)
 {
 	$dirs_to_check = array('gui' . DIRECTORY_SEPARATOR . 'templates_c' => null, 
-						   'logs' => 'log_path', 'upload_area' => 'repositoryPath');
+						   'logs' => 'log_path','upload_area' => 'repositoryPath');
 
 	$final_msg = '';
 	$msg_ko = "<td><span class='tab-error'>Failed!</span></td></tr>";
 	$msg_ok = "<td><span class='tab-success'>OK</span></td></tr>";
 	$checked_path_base = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
+
+  	$final_msg .= "<tr><td>For security reason we suggest that directories tagged with [S]" .
+  				  " on following messages, will be made UNREACHEABLE from browser</td>";
+
 	foreach ($dirs_to_check as $the_d => $how) 
 	{
   		if( is_null($how) )
   		{
   			// Correct relative path for installer.
+			$needsLock = '';
 			$the_d = $checked_path_base . DIRECTORY_SEPARATOR . $the_d;
 		}
 		else
 		{
+			$needsLock = '[S] ';
 			$the_d = config_get($how);	
 		}
 		
-  		$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists</td>";
+  		$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists <b>{$needsLock}</b<</td>";
   
 		if(!file_exists($the_d)) 
 		{
   			$errCounter += 1;
   			$final_msg .= $msg_ko; 
-  	} 
+  		} 
 		else 
 		{
   			$final_msg .= $msg_ok;
-    		$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory is writable</td>";
+    		$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory is writable (by user used to run webserver process) </td>";
   			if(!is_writable($the_d)) 
     		{
-				    $errCounter += 1;
-  	  	    $final_msg .= $msg_ko;  
+				$errCounter += 1;
+  	  	    	$final_msg .= $msg_ko;  
   			}
     		else
     		{
 				    $final_msg .= $msg_ok;  
-			  }
+			}
    	}
 	}
 

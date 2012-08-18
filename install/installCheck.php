@@ -36,7 +36,7 @@ include 'installHead.inc';
 
 <?php
 // Check before DB installation
-$inst_type = $_GET['type'];
+$inst_type = isset($_GET['type']) ? $_GET['type'] : '';
 $errors = 0;
 reportCheckingSystem($errors);
 reportCheckingWeb($errors);

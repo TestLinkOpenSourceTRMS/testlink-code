@@ -2211,7 +2211,7 @@ $TLS_info_metrics_dashboard = "This Report shows the progress for the whole proj
                               "of all (or only active) test plans.";
 $TLS_overall_progress = "Overall Progress";
 $TLS_progress_absolute = "Progress";
-$TLS_test_plan_progress = "Test Plan Progress";
+$TLS_test_plan_progress = "Test Plan Progress (ATTENTION: Only Test Plans with BUILDS are considered)";
 $TLS_project_progress = "Test Project Progress";
 
 // ----- lib/execute/bug_add.php -----

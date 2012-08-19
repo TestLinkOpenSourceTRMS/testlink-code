@@ -6,20 +6,11 @@ Purpose: view requirement with version management
 
 @internal revisions
 @since 1.9.4
-  20120111 - franciscom - TICKET 4862: Users rights on requirements are bypassed 
-									   with interproject requirements relations
-  20110816 - franciscom - TICKET 4702: Requirement View - display log message
+20120111 - franciscom - TICKET 4862: Users rights on requirements are bypassed 
+								     with interproject requirements relations
+								     
+20110816 - franciscom - TICKET 4702: Requirement View - display log message
 
-@since 1.9.3
-  20110602 - franciscom - TICKET 4536: Tree is not refreshed after editing Requirement
-  20110530 - asimon - BUGID 4298: added functionality for direct links to open specific requirement versions
-  20110525 - Julian - BUGID 4497 - show version and revision also for "Other versions"
-  20110304 - asimon - added help icon with a description of some of the "new" features
-  20101212 - franciscom - BUGID 4056: Requirement Revisioning
-  20101026 - franciscom - BUGID 3927: Requirement can not be deleted due to JS error -> label has to be escaped
-  20101017 - franciscom - image access refactored (tlImages)
-  20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
-  20100319 - asimon - BUGID 1748, added requirement relations display
 *}
 
 {lang_get s='warning_delete_requirement' var="warning_msg" }
@@ -39,7 +30,8 @@ Purpose: view requirement with version management
              relation_set_by, relation_delete, relations, new_relation, by, title_created,
              relation_destination_doc_id, in, btn_add, img_title_delete_relation, current_req,
              no_records_found,other_versions,version,title_test_case,match_count,warning,
-             revision_log_title,please_add_revision_log,commit_title,current_direct_link,specific_direct_link'}
+             revision_log_title,please_add_revision_log,commit_title,current_direct_link,
+             specific_direct_link,req_does_not_exist'}
 
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
@@ -49,7 +41,7 @@ Purpose: view requirement with version management
 
 <script type="text/javascript">
 
-// BUGID 3927: Requirement can not be deleted due to JS error -> label has to be escaped
+// Requirement can not be deleted due to JS error -> label has to be escaped
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var delete_rel_msgbox_msg = '{$delete_rel_msgbox_msg|escape:'javascript'}';
 var delete_rel_msgbox_title = '{$delete_rel_msgbox_title|escape:'javascript'}';
@@ -488,7 +480,11 @@ var pF_unfreeze_req_version = unfreeze_req_version;
     <br>
 {/section}
 {else}
-	{$labels.no_records_found}
+	{if $gui->reqHasBeenDeleted}
+		{$labels.req_does_not_exist}
+	{else}
+		{$labels.no_records_found}
+	{/if}
 {/if}
 
 {* TICKET 4536: Tree is not refreshed after editing Requirement *}

@@ -3465,5 +3465,8 @@ $TLS_issuetracker_interface_not_implemented = 'Issue Traker interface %s is not 
 
 // logger.class.php
 $TLS_mail_logger_email_subject = ' :: Log Message From TestLink :: ';
+
+// reqView.php
+$TLS_req_does_not_exist = "Requirement does not exist anymore.";
 // ----- END ------------------------------------------------------------------
 ?>

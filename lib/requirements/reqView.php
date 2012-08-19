@@ -10,22 +10,12 @@
  *
  *	@internal revision
  *	@since 1.9.4
+ *	20120819 - franciscom - TICKET 5155: Dead link in generated test case summary after source requirement deletion
  *	20120111 - franciscom - TICKET 4862: Users rights on requirements are bypassed 
  *										 with interproject requirements relations
  *	20111029 - franciscom - TICKET 4786: Add right to allow UNFREEZE a requirement
  *	20110816 - franciscom - TICKET 4702: Requirement View - display log message
  *
- *	@since 1.9.3
- *  20110602 - franciscom - TICKET 4536: Tree is not refreshed after editing Requirement
- *  20101210 - franciscom - BUGID 4056 - Req. Revisioning
- *  20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
- *	20101020 - franciscom - BUGID 3914 - typo error  
- *	20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
- *  20100324 - asimon - BUGID 1748 - Moved init_relation_type_select to requirement_mgr
- *                                   as it is now used from multiple files
- *	20100319 - franciscom - refactoring of BUGID 1748 
- *  20100319 - asimon - BUGID 1748 - implemented display of req relations
- *	20091217 - franciscom - display type and expected coverage
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -91,6 +81,24 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr)
     $gui->req_cfg = config_get('req_cfg');
     $gui->tproject_name = $argsObj->tproject_name;
 
+	// TICKET 5155: Dead link in generated test case summary after source requirement deletion
+   	$gui->req_id = $argsObj->req_id;
+        
+    /* if wanted, show only the given version */
+    $gui->version_option = ($argsObj->req_version_id) ? $argsObj->req_version_id : requirement_mgr::ALL_VERSIONS;
+    $gui->req_versions = $req_mgr->get_by_id($gui->req_id, $gui->version_option);
+	
+	$gui->reqHasBeenDeleted = false;
+	if( is_null($gui->req_versions) )
+	{
+		// this means that requirement does not exist anymore.
+		// We have to give just that info to user
+		$gui->reqHasBeenDeleted = true;
+		$gui->main_descr = lang_get('req_does_not_exist');
+		unset($gui->show_match_count);
+		return $gui; // >>>----> Bye!
+	}
+
 
 	// TICKET 4862: Users rights on requirements are bypassed 
 	//				with interproject requirements relations	
@@ -98,6 +106,8 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr)
 	// when this script is called from openLinkedReqWindow() we need to get test project
 	// from requirement.
 	//
+	
+
 	$tproject_id = $req_mgr->getTestProjectID($argsObj->requirement_id);
 	$target_id = $argsObj->tproject_id; 
 	if( ($isAlien = ($tproject_id != $argsObj->tproject_id)) )
@@ -112,12 +122,7 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr)
     $gui->glueChar = config_get('testcase_cfg')->glue_character;
     $gui->pieceSep = config_get('gui_title_separator_1');
     
-    $gui->req_id = $argsObj->req_id;
-        
-    /* if wanted, show only the given version */
-    $gui->version_option = ($argsObj->req_version_id) ? $argsObj->req_version_id : requirement_mgr::ALL_VERSIONS;
-        
-    $gui->req_versions = $req_mgr->get_by_id($gui->req_id, $gui->version_option);
+ 
 
 	// TICKET 4702: Requirement View - display log message
 	$gui->log_target = null;

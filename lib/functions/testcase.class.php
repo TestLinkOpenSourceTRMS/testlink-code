@@ -11,6 +11,9 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120819 - franciscom - TICKET 4937: Test Cases EXTERNAL ID is Auto genarated, no matter is provided on XML
+ *						   create() changed
+ *	 
  * 20111106 - franciscom - TICKET 4797: Test case step reuse - renderGhostSteps()
  * 20110817 - franciscom - TICKET 4708: When adding testcases to test plan, filtering by execution type does not work.
  *
@@ -218,11 +221,9 @@ class testcase extends tlObjectWithAttachments
 		     $ret['new_name']
 		     
 	rev: 
-		20100503 - franciscom - BUGID 3374
-		20100409 - franciscom - improved check on name len.
-								BUGID 3367: Error after trying to copy a test case that 
-								the name is in the size limit.
-		20090120 - franciscom - added new action_on_duplicate_name	     
+	@since 1.9.4 
+	20120819 - franciscom - 4937: Test Cases EXTERNAL ID is Auto genarated, no matter is provided on XML
+	
 	*/
 	function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
 	                           $options=null)
@@ -237,7 +238,8 @@ class testcase extends tlObjectWithAttachments
 		             'new_name' => '', 'version_number' => 1, 'has_duplicate' => false);
 
 	    $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME, 
-	                            'action_on_duplicate_name' => 'generate_new'); 
+	                            'action_on_duplicate_name' => 'generate_new',
+	                            'external_id' => null); 
 	                            
 	    $my['options'] = array_merge($my['options'], (array)$options);
        
@@ -285,7 +287,6 @@ class testcase extends tlObjectWithAttachments
             	            	// I will create TC X [2] insteand of TC X [1]
             	            	// Anyway right now I will not change.
 			            		$target = $name . ($suffix = sprintf($mask,++$siblingQty));
-								// BUGID 3367
 			            		$final_len = strlen($target);
 			            		if( $final_len > $name_max_len)
 			            		{
@@ -294,22 +295,21 @@ class testcase extends tlObjectWithAttachments
                                 
                                 // Need to recheck if new generated name does not crash with existent name
                                 // why? Suppose you have created:
-        	// TC [1]
-        	// TC [2]
-        	// TC [3]
-        	// Then you delete TC [2].
-        	// When I got siblings  il will got 2 siblings, if I create new progressive using next,
-        	// it will be 3 => I will get duplicated name.
-        	while( isset($nameSet[$target]) )
-        	{
-			            			$target = $name . ($suffix = sprintf($mask,++$siblingQty));
-									// BUGID 3367
-			            			$final_len = strlen($target);
-			            			if( $final_len > $name_max_len)
-			            			{
-			        $target = substr($target,strlen($suffix),$name_max_len);
-			            			}
-        	}
+					        	// TC [1]
+					        	// TC [2]
+					        	// TC [3]
+					        	// Then you delete TC [2].
+					        	// When I got siblings  il will got 2 siblings, if I create new progressive using next,
+					        	// it will be 3 => I will get duplicated name.
+					        	while( isset($nameSet[$target]) )
+					        	{
+						   			$target = $name . ($suffix = sprintf($mask,++$siblingQty));
+						   			$final_len = strlen($target);
+								    if( $final_len > $name_max_len)
+								    {
+								        $target = substr($target,strlen($suffix),$name_max_len);
+								    }
+					        	}
                                 $name = $target;
 			            	break;
 			            } 
@@ -324,7 +324,6 @@ class testcase extends tlObjectWithAttachments
 				        
 				        // If we found more that one with same name and same parent,
 				        // will take the first one.
-				        // BUGID 3374
 				        $xx = current($itemSet);
 	                    $ret['id'] = $xx['id'];            
 		                $ret['external_id']=$xx['tc_external_id'];
@@ -348,10 +347,14 @@ class testcase extends tlObjectWithAttachments
 	    // Get tproject id
 	    $path2root=$this->tree_manager->get_path($parent_id);
 	    $tproject_id=$path2root[0]['parent_id'];
+	    
+	    // counter need to be increased anyway
 	    $tcaseNumber=$this->tproject_mgr->generateTestCaseNumber($tproject_id);
 	    $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$safeLenName,$order,$id);
 	    $ret['id'] = $tcase_id;
-	    $ret['external_id'] = $tcaseNumber;
+	    
+	    // TICKET 4937: Test Cases EXTERNAL ID is Auto genarated, no matter is provided on XML
+	    $ret['external_id'] = is_null($my['options']['external_id']) ? $tcaseNumber : $my['options']['external_id'];
 		if( !$ret['has_duplicate'] && ($originalNameLen > $name_max_len) )
 		{
 			$ret['new_name'] = $safeLenName;

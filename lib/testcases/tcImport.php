@@ -281,11 +281,17 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$summary = $tc['summary'];
 		$steps = $tc['steps'];
 		$node_order = isset($tc['node_order']) ? intval($tc['node_order']) : testcase::DEFAULT_ORDER;
-		$externalid = $tc['externalid'];
 		$internalid = $tc['internalid'];
 		$preconditions = $tc['preconditions'];
 		$exec_type = isset($tc['execution_type']) ? $tc['execution_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
 		$importance = isset($tc['importance']) ? $tc['importance'] : MEDIUM;		
+
+		// TICKET 4937: Test Cases EXTERNAL ID is Auto genarated, no matter is provided on XML
+		$externalid = $tc['externalid'];
+		if( intval($externalid) <= 0 )
+		{
+			$externalid = null;
+		}
     
     	// TICKET 4963: Test case / Tes suite XML format, new element to set author
     	$personID = $userID;
@@ -387,8 +393,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		
 		if( $doCreate )
 		{
-		    $createOptions = array( 'check_duplicate_name' => testcase::CHECK_DUPLICATE_NAME, 
-	                                'action_on_duplicate_name' => $duplicatedLogic['actionOnHit']);
+		    $createOptions = array('check_duplicate_name' => testcase::CHECK_DUPLICATE_NAME, 
+	                               'action_on_duplicate_name' => $duplicatedLogic['actionOnHit'],
+	                               'external_id' => $externalid);
 
 		    if ($ret = $tcase_mgr->create($container_id,$name,$summary,$preconditions,$steps,
 		                                  $personID,$kwIDs,$node_order,testcase::AUTOMATIC_ID,

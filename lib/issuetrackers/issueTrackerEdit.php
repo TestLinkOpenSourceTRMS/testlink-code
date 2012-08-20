@@ -17,7 +17,6 @@ $templateCfg = templateConfiguration();
 
 list($args,$gui,$commandMgr) = initScript($db);
 
-
 $pFn = $args->doAction;
 $op = null;
 if(method_exists($commandMgr,$pFn))
@@ -99,7 +98,7 @@ function initScript(&$dbHandler)
 {
 	$mgr = new issueTrackerCommands($dbHandler);
 	$args = init_args(array('doAction' => $mgr->getGuiOpWhiteList()));
-	$gui = initializeGui($dbHandler,$args,$commandMgr);
+	$gui = initializeGui($dbHandler,$args,$mgr);
 	return array($args,$gui,$mgr);
 }
 
@@ -155,6 +154,24 @@ function initializeGui(&$dbHandler,&$argsObj,&$commandMgr)
 	$gui->user_feedback = array('type' => '', 'message' => '');
 	$gui->mgt_view_events = $argsObj->currentUser->hasRight($dbHandler,'mgt_view_events');
 	
+	// get affected test projects
+	$gui->testProjectSet = null;
+	if($argsObj->id > 0)
+	{
+		
+		// just to fix erroneous test project delete
+		$dummy = $commandMgr->issueTrackerMgr->getLinks($argsObj->id,array('getDeadLinks' => true));
+		if( !is_null($dummy) )
+		{
+			foreach($dummy as $key => $elem)
+			{
+				$commandMgr->issueTrackerMgr->unlink($argsObj->id,$key);
+			}
+		}
+
+		// Now get good info
+		$gui->testProjectSet = $commandMgr->issueTrackerMgr->getLinks($argsObj->id);
+	}
 	return $gui;
 }
 

@@ -14,13 +14,14 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120820 - franciscom - TICKET 5156: Display test project linked to issue tracker, when editing
  * 20120311 - franciscom - TICKET 4904: integrate with ITS on test project basis
  **/
 
 class issueTrackerCommands
 {
+	var $issueTrackerMgr;
 	private $db;
-	private $issueTrackerMgr;
 	private $templateCfg;
 	private $grants;
 	private $guiOpWhiteList;  // used to sanitize inputs on different pages

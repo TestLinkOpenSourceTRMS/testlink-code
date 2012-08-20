@@ -3458,6 +3458,7 @@ $TLS_issuetracker_deleted = "Issue Tracker %s% has been deleted";
 // issueTrackerEdit.tpl
 $TLS_issuetracker_show_cfg_example = 'Show configuration example';
 $TLS_issuetracker_cfg_example = 'Configuration example';
+$TLS_used_on_testproject = 'Used on Test Project';
 
 // getissuetrackertemplate.php
 $TLS_issuetracker_invalid_type = 'Issue Traker type %s is unknown';

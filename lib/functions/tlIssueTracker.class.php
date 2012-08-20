@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120820 - franciscom - TICKET 5156: Display test project linked to issue tracker, when editing
  * 20120219 - franciscom - TICKET 4904: integrate with ITS on test project basis
 **/
 
@@ -456,20 +457,30 @@ class tlIssueTracker extends tlObject
 	 *
      *
 	 */
-	function getLinks($id)
+	function getLinks($id, $opt=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
+		$my = array('opt' => array('getDeadLinks' => false));
+		$my['opt'] = array_merge($my['opt'], (array)$opt);
+		
 		if(is_null($id))
 		{
 			return;
         }
+
+
 		$sql = "/* $debugMsg */ " .
 			   " SELECT TPIT.testproject_id, NHTPR.name AS testproject_name " .
 			   " FROM {$this->tables['testproject_issuetracker']} TPIT" .
 			   " LEFT OUTER JOIN {$this->tables['nodes_hierarchy']} NHTPR " .
 			   " ON NHTPR.id = TPIT.testproject_id " . 
 			   " WHERE TPIT.issuetracker_id = " . intval($id);
+		
+		if($my['opt']['getDeadLinks'])
+		{
+			$sql .= ' AND NHTPR.id IS NULL AND NHTPR.name IS NULL ';	
+		}
 			   
 		$ret = $this->db->fetchRowsIntoMap($sql,'testproject_id');
 		return $ret;
@@ -599,6 +610,24 @@ class tlIssueTracker extends tlObject
 		return 	$its;
 	
 	}
+
+
+	//function unlinkBadBoys($id)
+	//{
+	//	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    //
+	//	if(is_null($id))
+	//	{
+	//		return;
+    //    }
+    //    
+    //    // Get links
+    //    $dummy = 
+	//	$sql = "/* $debugMsg */ DELETE FROM {$this->tables['testproject_issuetracker']} " .
+	//		   	   " WHERE testproject_id = " . intval($tprojectID) . 
+	//		   	   " AND issuetracker_id = " . intval($id);
+	//	$this->db->exec_query($sql);
+	//}
 
 } // end class
 ?>

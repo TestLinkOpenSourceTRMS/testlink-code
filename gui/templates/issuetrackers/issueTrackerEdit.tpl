@@ -4,6 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @internal revisions
 @since 1.9.4
+20120820 - franciscom - TICKET 5156: Display test project linked to issue tracker, when editing
 20120311 - franciscom - TICKET 4904: integrate with ITS on test project basis
 *}
 {assign var="url_args" value="lib/issuetrackers/issueTrackerEdit.php"}
@@ -12,7 +13,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {lang_get var='labels'
           s='warning,warning_empty_issuetracker_name,warning_empty_issuetracker_type,
              show_event_history,th_issuetracker,th_issuetracker_type,config,btn_cancel,
-             issuetracker_show_cfg_example,issuetracker_cfg_example'}
+             issuetracker_show_cfg_example,issuetracker_cfg_example,used_on_testproject'}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -25,9 +26,6 @@ var alert_box_title = "{$labels.warning|escape:'javascript'}";
 {literal}
 function validateForm(f)
 {
-  //alert('ggg');
-  //return false;
-  
   if (isWhitespace(f.name.value))
   {
       alert_message(alert_box_title,warning_empty_issuetracker_name);
@@ -54,10 +52,6 @@ function displayITSCfgExample(oid,displayOID)
 		failure: function (result, request) {
 		}
 	});
-
-
-
-
 	
 }
 
@@ -115,6 +109,24 @@ function displayITSCfgExample(oid,displayOID)
   			<td name="cfg_example" id="cfg_example">&nbsp;</td>
   		</tr>
   	</table>
+
+	{if $gui->testProjectSet != ''}
+  	<table class="common" style="width:50%">
+		<tr>
+			<th>
+			{$labels.used_on_testproject}
+			</th>
+		</tr>
+		{foreach key=item_id item=item_def from=$gui->testProjectSet}
+		<tr>
+			<td>
+			{$item_def.testproject_name|escape}
+			</td>
+		</tr>
+		{/foreach}
+  	</table>
+	{/if}
+
   	<div class="groupBtn">	
 	<input type="hidden" name="id" id="id" value="{$gui->item.id}">
   	<input type="hidden" name="doAction" value="{$gui->operation}" />

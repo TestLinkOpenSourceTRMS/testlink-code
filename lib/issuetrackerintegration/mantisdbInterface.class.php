@@ -160,11 +160,11 @@ class mantisdbInterface extends issueTrackerInterface
 
 	function buildViewBugLink($bugID,$addSummary = false)
   	{
-      $s = parent::buildViewBugLink($bugID, $addSummary);
+      $linkVerbose = parent::buildViewBugLink($bugID, $addSummary);
       $status = $this->getBugStatus($bugID);
       $color = isset($this->status_color[$status]) ? $this->status_color[$status] : 'white';
       $title = lang_get('access_to_bts');  
-      return "<div  title=\"{$title}\" style=\"display: inline; background: $color;\">$s</div>";
+      return "<div  title=\"{$title}\" style=\"display: inline; background: $color;\">$linkVerbose</div>";
   	}
 
 

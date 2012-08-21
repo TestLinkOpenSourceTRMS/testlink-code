@@ -31,8 +31,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 	    $this->setCfg($config);
 		$this->completeCfg();
 	    $this->connect();
-	    // var_dump($this->APIClient);
-	    
+	    $this->guiCfg = array('use_decoration' => true); // add [] on summary
 	}
 
 
@@ -203,7 +202,12 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 	function getIssueSummaryHTMLString($issueID)
 	{
         $issue = $this->getIssue($issueID);
-        return $issue->summaryHTMLString;
+        $str = $issue->summaryHTMLString;
+		if($this->guiCfg['use_decoration'])
+		{
+			$str = "[" . $str . "] ";	
+		}
+        return $str;
 	}
 
     /**

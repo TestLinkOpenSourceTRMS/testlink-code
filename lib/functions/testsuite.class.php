@@ -213,7 +213,7 @@ class testsuite extends tlObjectWithAttachments
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	  	$ret['status_ok']=0;
 	  	$ret['msg']='';
-	  	$check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$id,$parent_id);
+	  	$check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,intval($id),$parent_id);
 	  	if($check['status']==0)
 	  	{
 			$sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .

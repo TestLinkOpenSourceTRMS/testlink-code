@@ -1299,21 +1299,31 @@ class tree extends tlObject
         	throw new Exception($msg);
         }        	
         
+        
         $additionalFilters = '';
-        $parentNodeID=$parent_id;
+        $parentNodeID = intval($parent_id);
         if( !is_null($id) )
         {
         	// Try to get parent id if not provided on method call.
-        	if( is_null($parentNodeID) )
+        	if( is_null($parentNodeID) || $parentNodeID <= 0)
         	{
         		$sql = "/* {$debugMsg} */ " . 
         		       " SELECT parent_id FROM {$this->object_table} NHA " .
     				   " WHERE NHA.id = {$id} ";
     	        $rs = $this->db->get_recordset($sql);
-        		$parentNodeID=$rs[0]['parent_id'];	   
+        		$parentNodeID = intval($rs[0]['parent_id']);	   
+        		
         	}
         	$additionalFilters = " AND NHA.id <> {$id} ";
         }		
+
+        if( $parentNodeID <= 0)
+        {
+        	$msg = $debugMsg . ' FATAL Error $parentNodeID can not be <= 0';
+        	throw new Exception($msg);
+        }        	
+        
+        
 		$sql = "/* {$debugMsg} */ " . 
 		       " SELECT count(0) AS qty FROM {$this->object_table} NHA " .
     		   " WHERE NHA.node_type_id	= {$node_type_id} " .

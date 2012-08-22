@@ -13,15 +13,13 @@
  * @internal revisions
  *
  * @since 1.9.4		
+ *	20120822 - franciscom - TICKET 5159: importing duplicate test suites	
  *  20120623 - franciscom - TICKET 5070: Import Test suite with Custom fields - Custom fields are not imported
  *							TICKET 5075: Import Test suite with Keywords - All test suites end with same keywords
  *  20120409 - franciscom - TICKET 4925: Import many TestCases in xml does import only first TC - 
  *										 Consider Test Case as duplicate if: has same internal ID
  *  20120407 - franciscom - TICKET 4963: Test case / Tes suite XML format, new element to set author
  *
- * @since 1.9.3		
- *	20101106 - franciscom - fixed warning on event viewer when there are no keywords defined on test project
- *	20101002 - franciscom - BUGID 3801
  * 
  * *********************************************************************************** */
 require('../../config.inc.php');
@@ -87,7 +85,8 @@ if ($args->do_upload)
 			$opt['importIntoProject'] = $args->bIntoProject;
 			$opt['duplicateLogic'] = array('hitCriteria' => $args->hit_criteria,
 			                               'actionOnHit' => $args->action_on_duplicated_name);
-			$gui->resultMap = $pimport_fn($db,$gui->dest,$args->container_id,$args->tproject_id,$args->userID,$opt);
+			$gui->resultMap = $pimport_fn($db,$gui->dest,intval($args->container_id),
+										  intval($args->tproject_id),intval($args->userID),$opt);
 		}
 	}
 	else if(is_null($gui->file_check))
@@ -180,7 +179,7 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
 			
 			if ($useRecursion && ($xml->getName() == 'testsuite'))
 			{
-				$resultMap = importTestSuitesFromSimpleXML($db,$xml,$parentID,$tproject_id,$userID,
+				$resultMap = importTestSuitesFromSimpleXML($db,$xml,intval($parentID),intval($tproject_id),$userID,
 														   $kwMap,$importIntoProject,$duplicateLogic);
 			}
 
@@ -413,7 +412,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$hasCustomFieldsInfo = (isset($tc['customfields']) && !is_null($tc['customfields']));
 		if($hasCustomFieldsInfo)
 		{
-			//new dBug($ret);
+			//New dBug($ret);
 			
 		    if($tprojectHas['customFields'])
 		    {                         
@@ -921,7 +920,7 @@ function getStepsFromSimpleXMLObj($simpleXMLItems)
 			}
 		}
 	}
-	// new dBug($items);
+	//New dBug($items);
 	return $items;
 }
 
@@ -983,14 +982,12 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 		$tsuiteMgr = new testsuite($dbHandler);
 		$doCF = !is_null(($cfSpec = $tsuiteMgr->get_linked_cfields_at_design(null,null,null,
 																			 $tproject_id,'name')));
-
-		echo 'doCF:' . $doCF . '<br>';
-		
 	}
 	
 	if($xml->getName() == 'testsuite')
 	{
-		
+						
+
 		// getItemsFromSimpleXMLObj() first argument must be an array
         $dummy = getItemsFromSimpleXMLObj(array($xml),$tsuiteXML);
         $tsuite = current($dummy); 
@@ -1008,8 +1005,9 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 			}
 			else
 			{
-				$tsuite['id'] = $info[0]['id'];
-				$ret = $tsuiteMgr->update($tsuiteID,$tsuite['name'],$tsuite['details'],null,$tsuite['node_order']);
+				$ret = $tsuiteMgr->update(($tsuite['id'] = $info[0]['id']),
+										  $tsuite['name'],$tsuite['details'],null,$tsuite['node_order']);
+				
 			}
 			unset($dummy);
 
@@ -1027,10 +1025,9 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 					processTestSuiteCF($tsuiteMgr,$xml,$cfSpec,$cf,$tsuite,$tproject_id);
 				}	
 			}
-			// TICKET 5075
+
 			if( $keywords = getKeywordsFromSimpleXMLObj($xml->keywords->keyword) )
 			{
-				echo 'Going to process KEYWORDS <br>';
 				$kwIDs = buildKeywordList($kwMap,$keywords);
 				$tsuiteMgr->addKeywords($tsuite['id'],$kwIDs);
 			}
@@ -1039,7 +1036,7 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 		}
 		else if($importIntoProject)
 		{
-			$tsuiteID = $tproject_id;
+			$tsuiteID = intval($tproject_id);
 		}
 
 		$childrenNodes = $xml->children();	
@@ -1061,8 +1058,8 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 
 				case 'testsuite':
 					$resultMap = array_merge($resultMap,
-											 $myself($dbHandler,$target,$tsuiteID,
-											         $tproject_id,$userID,$kwMap,$importIntoProject,$duplicateLogic));
+											 $myself($dbHandler,$target,$tsuiteID,$tproject_id,
+											 		 $userID,$kwMap,$importIntoProject,$duplicateLogic));
 				break;
 
 

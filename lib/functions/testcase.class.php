@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120822 - franciscom -TICKET 5159: importing duplicate test suites
  * 20120819 - franciscom - TICKET 4937: Test Cases EXTERNAL ID is Auto genarated, no matter is provided on XML
  *						   create() changed
  *	 
@@ -265,6 +266,11 @@ class testcase extends tlObjectWithAttachments
 				    case 'generate_new':
 				        $doCreate=true;
 				        
+				        // TICKET 5159: importing duplicate test suites
+				        // Need to force use of generated External ID 
+				        // (this seems the best alternative)
+				        $my['options']['external_id'] = null; 
+				        
 			            switch($algo_cfg->type)
 			            {
 			            	case 'stringPrefix':
@@ -339,6 +345,9 @@ class testcase extends tlObjectWithAttachments
 			}
 		}
 	
+	  // 20120822 - think we have potencial issue, becuase we never check if
+	  // duplicated EXTERNAL ID exists.
+	  // Right now there is no time to try a fix	
 	  if( $ret['status_ok'] && $doCreate)
 	  {
 	  	
@@ -349,12 +358,14 @@ class testcase extends tlObjectWithAttachments
 	    $tproject_id=$path2root[0]['parent_id'];
 	    
 	    // counter need to be increased anyway
-	    $tcaseNumber=$this->tproject_mgr->generateTestCaseNumber($tproject_id);
+	    $tcaseNumber = $this->tproject_mgr->generateTestCaseNumber($tproject_id);
 	    $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$safeLenName,$order,$id);
 	    $ret['id'] = $tcase_id;
 	    
+	    // TICKET 5159: importing duplicate test suites
 	    // TICKET 4937: Test Cases EXTERNAL ID is Auto genarated, no matter is provided on XML
 	    $ret['external_id'] = is_null($my['options']['external_id']) ? $tcaseNumber : $my['options']['external_id'];
+	    
 		if( !$ret['has_duplicate'] && ($originalNameLen > $name_max_len) )
 		{
 			$ret['new_name'] = $safeLenName;
@@ -851,7 +862,6 @@ class testcase extends tlObjectWithAttachments
 	{
 		$ret['status_ok'] = 1;
 		$ret['msg'] = '';
-		
 		
 		tLog("TC UPDATE ID=($id): exec_type=$execution_type importance=$importance");
 		
@@ -4786,9 +4796,7 @@ class testcase extends tlObjectWithAttachments
 		{
 			$or_clause = '';
 			$cf_query = '';
-			// new dBug($recordset);
-			// new dBug($my['filters']['cfields']);
-			
+		
 			if( !is_null($my['filters']['cfields']) )
 			{
 				$cf_hash = &$my['filters']['cfields'];
@@ -5458,9 +5466,6 @@ class testcase extends tlObjectWithAttachments
 		$my['opt'] = array_merge($my['opt'],(array)$options);
 		$safeContext = $execContext;
 		$safeIdentity = $identity;
-		//new dBug($safeIdentity);
-		//array_walk($safeIdentity,'intval');
-		// array_walk($safeContext,'intval');
 		foreach($safeContext as &$ele)
 		{
 			$ele = intval($ele);

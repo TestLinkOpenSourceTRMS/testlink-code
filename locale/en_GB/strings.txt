@@ -1728,7 +1728,7 @@ $TLS_caption_results_by_tester_per_build = "Results by Tester per Build";
 $TLS_results_by_tester_per_build = "Results by Tester per Build";
 $TLS_progress = "Progress [%]";
 $TLS_executions_without_assignment = "Unassigned executions";
-$TLS_no_testers_per_build = "There are no tester assignments to builds in this testplan.";
+$TLS_no_testers_per_build = "There are no tester assignments to OPEN builds in this testplan.";
 
 
 
@@ -3474,5 +3474,8 @@ $TLS_mail_logger_email_subject = ' :: Log Message From TestLink :: ';
 
 // reqView.php
 $TLS_req_does_not_exist = "Requirement does not exist anymore.";
+
+// resultsByTesterPerBuild.php
+$TLS_no_open_builds = 'There are no open builds';
 // ----- END ------------------------------------------------------------------
 ?>

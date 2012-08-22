@@ -258,13 +258,13 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
      **/
 	public static function getCfgTemplate()
   	{
-  	
-  		// http://tl.m.remine.org
 		$template = "<!-- Template " . __CLASS__ . " -->\n" .
 					"<issuetracker>\n" .
-					"<apikey>REDMINE API KEY</apikey>\n" .
-					"<uribase>http://tl.m.remine.org</uribase>\n" .
-					"</issuetracker>\n";
+					"<username>USERNAME</username>\n" .
+					"<password>PASSWORD</password>\n" .
+					"<uribase>http://bugzilla.mozilla.org/</uribase>\n" .
+					"</issuetracker>\n";					
+					
 		return $template;
   	}
 }

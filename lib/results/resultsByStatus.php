@@ -14,7 +14,7 @@
  *
  * @internal revisions
  * @since 1.9.4
- *
+ * 
  */
 
 require('../../config.inc.php');
@@ -162,11 +162,14 @@ if( !is_null($metrics) and count($metrics) > 0 )
 		// --------------------------------------------------------------------------------------------
 
 		$out[$odx]['testVersion'] =  $exec['tcversion_number'];
-		$out[$odx]['buildName'] = $nameCache['build'][$exec['build_id']];
+		
+		// Insert order on out is CRITIC, because order is used on buildMatrix
 		if($gui->show_platforms)
 		{
 			$out[$odx]['platformName'] = $nameCache['platform'][$exec['platform_id']];
 		}
+
+		$out[$odx]['buildName'] = $nameCache['build'][$exec['build_id']];
 
 		// --------------------------------------------------------------------------------------------
 		// verbose user  
@@ -380,8 +383,14 @@ function buildMatrix($dataSet, &$args, $options = array(), $platforms)
 		}
 	}
 
+
 	if ($options['format'] == FORMAT_HTML)
 	{
+
+		// IMPORTANT DEVELOPMENT NOTICE
+		// columns and dataSet are deeply related this means that inside
+		// dataSet order has to be identical that on columns or table will be a disaster
+		//
 		$matrix = new tlExtTable($columns, $dataSet, 'tl_table_results_by_status');
 		
 		//if not run report: sort by test suite

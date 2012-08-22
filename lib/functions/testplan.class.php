@@ -61,6 +61,7 @@ class testplan extends tlObjectWithAttachments
 	const GET_OPEN_BUILD=1;
 	const GET_CLOSED_BUILD=0;
 	const ACTIVE_BUILDS=1;
+	const OPEN_BUILDS=1;
 	const ENABLED=1;
 
 	/** @var database handler */

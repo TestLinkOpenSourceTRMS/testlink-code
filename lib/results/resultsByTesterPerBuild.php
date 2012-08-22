@@ -31,9 +31,25 @@ $args = init_args($tproject_mgr, $tplan_mgr);
 $gui = init_gui($args);
 $charset = config_get('charset');
 
+// By default Only open builds are displayed
+// we will check if we have open builds
+$openBuildsQty = $tplan_mgr->getNumberOfBuilds($args->tplan_id,null,testplan::OPEN_BUILDS);
+
+// not too wise duplicated code, but effective => Quick & Dirty
+if( $openBuildsQty <= 0 )
+{
+	$gui->warning_message = lang_get('no_open_builds');
+	$smarty = new TLSmarty();
+	$smarty->assign('gui',$gui);
+	$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+	exit();
+}
+
+
 $metricsMgr = new tlTestPlanMetrics($db);
 $statusCfg = $metricsMgr->getStatusConfig();
-$metrics = $metricsMgr->getStatusTotalsByBuildUAForRender($args->tplan_id);
+$metrics = $metricsMgr->getStatusTotalsByBuildUAForRender($args->tplan_id,
+														  array('processClosedBuilds' => $args->show_closed_builds));
 $matrix = $metrics->info;
 
 

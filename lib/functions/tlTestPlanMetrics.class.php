@@ -1061,13 +1061,15 @@ class tlTestPlanMetrics extends testplan
 	 * @since 1.9.4
 	 * 20120430 - franciscom - 
 	 */
-	function getStatusTotalsByBuildUAForRender($id)
+	function getStatusTotalsByBuildUAForRender($id,$opt=null)
 	{
-
+		$my = array('opt' => array('processClosedBuilds' => true));
+		$my['opt'] = array_merge($my['opt'],(array)$opt);
+		
 	   	$renderObj = null;
 		$code_verbose = $this->getStatusForReports();
 	    $labels = $this->resultsCfg['status_label'];
-		$metrics = $this->getExecCountersByBuildUAExecStatus($id);
+		$metrics = $this->getExecCountersByBuildUAExecStatus($id,null,$my['opt']);
 		
 	   	if( !is_null($metrics) )
 	   	{
@@ -1558,7 +1560,8 @@ class tlTestPlanMetrics extends testplan
 	{
 		$sql = array();
 		$my = array();
-		$my['opt'] = array('getOnlyAssigned' => false, 'tprojectID' => 0, 'getPlatformSet' => false);
+		$my['opt'] = array('getOnlyAssigned' => false, 'tprojectID' => 0, 
+						   'getPlatformSet' => false, 'processClosedBuilds' => true);
 		$my['opt'] = array_merge($my['opt'], (array)$opt);
 		
 		$my['filters'] = array('buildSet' => null);
@@ -1571,7 +1574,8 @@ class tlTestPlanMetrics extends testplan
 		$bi->infoSet = null;
 		if( is_null($bi->idSet) )
 		{
-			$bi->idSet = array_keys($bi->infoSet = $this->get_builds($id,testplan::ACTIVE_BUILDS));
+			$openStatus = $my['opt']['processClosedBuilds'] ? null : 1;
+			$bi->idSet = array_keys($bi->infoSet = $this->get_builds($id,testplan::ACTIVE_BUILDS,$openStatus));
 		}
 		
 		// ==========================================================================

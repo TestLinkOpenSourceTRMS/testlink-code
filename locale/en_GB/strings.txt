@@ -1253,6 +1253,11 @@ $TLS_has_no_assignment = "No tester assigned";
 $TLS_img_title_bug_mgmt = "Bug management";
 $TLS_img_title_delete_execution = "Delete execution";
 $TLS_import_xml_results = "Import XML Results";
+$TLS_issue_tracker_integration_problems = "Attention Please: <br>" .
+										  "Something is preventing connection to Bug Tracking System,<br>" .
+										  "and is going to create performance issues.<br>" .
+										  "Please contact your TestLink Administrator";
+
 $TLS_just_last_execution_for_this_build = "Last execution for build";
 $TLS_last_execution = "Last execution";
 $TLS_no_data_available = "No data available";

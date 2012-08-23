@@ -14,9 +14,11 @@
 --			  changed to varchar(4000) everything goes OK
 --            http://www.mssqltips.com/sqlservertip/2242/row-sizes-exceeding-8060-bytes-in-sql-2005/
 -- 
---
+-- ATTENTION: 
+-- 
 -- @internal revisions
 -- since 1.9.4
+-- 20120823 - franciscom - TICKET 5167: replace TEXT with NVARCHAR(MAX) - support for 2005 and up.
 -- 20120209 - franciscom - TICKET 4914: Create View - tcversions_last_active
 -- 20120129 - franciscom - new table req_specs_revisions & changes to req_specs
 -- 20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server 
@@ -26,7 +28,7 @@
 --
 --
 CREATE TABLE /*prefix*/transactions (
-	id int IDENTITY(1,1) NOT NULL,
+  id int IDENTITY(1,1) NOT NULL,
   entry_point varchar(45) NOT NULL CONSTRAINT /*prefix*/DF_transactions_entry_point default(N''),
   start_time INT NOT NULL CONSTRAINT /*prefix*/DF_transactions_start_time DEFAULT ((0)),
   end_time INT NOT NULL CONSTRAINT /*prefix*/DF_transactions_end_time DEFAULT ((0)),
@@ -45,7 +47,7 @@ CREATE TABLE /*prefix*/events (
   transaction_id INT NOT NULL CONSTRAINT /*prefix*/DF_events_transaction_id DEFAULT ((0)),
   log_level SMALLINT NOT NULL CONSTRAINT /*prefix*/DF_events_log_level DEFAULT ((0)),
   source varchar(45) NULL,
-  description text NOT NULL,
+  description nvarchar(max)  NOT NULL,
   fired_at INT NOT NULL CONSTRAINT /*prefix*/DF_fired_at DEFAULT ((0)),
   activity varchar(45) NULL,
   object_id INT NULL,
@@ -70,7 +72,7 @@ CREATE NONCLUSTERED INDEX /*prefix*/IX_fired_at ON  /*prefix*/events
 CREATE TABLE /*prefix*/db_version (
 version varchar(50)  NOT NULL CONSTRAINT /*prefix*/DF_db_version_version DEFAULT (N'unknown'),
 upgrade_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_db_version_upgrade_ts DEFAULT (getdate()),
-notes text  NULL
+notes nvarchar(max)   NULL
 ) ON [PRIMARY];
 
 
@@ -176,7 +178,7 @@ CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/IX_custom_fields_name ON  /*prefix*/c
 CREATE TABLE /*prefix*/roles (
 	id int IDENTITY(1,1) NOT NULL,
 	description varchar(100)  NOT NULL,
-	notes text  NULL,
+	notes nvarchar(max)   NULL,
  CONSTRAINT /*prefix*/PK_roles PRIMARY KEY CLUSTERED 
 (
 	id ASC
@@ -229,7 +231,7 @@ CREATE TABLE /*prefix*/executions (
 	tcversion_number smallint NOT NULL CONSTRAINT /*prefix*/DF_executions_tcversion_number DEFAULT ((1)),
 	platform_id int NOT NULL CONSTRAINT /*prefix*/DF_executions_platform_id DEFAULT ((0)),
 	execution_type tinyint NOT NULL CONSTRAINT /*prefix*/DF_executions_execution_type DEFAULT ((1)),
-	notes text  NULL CONSTRAINT /*prefix*/DF_executions_notes DEFAULT (NULL),
+	notes nvarchar(max)   NULL CONSTRAINT /*prefix*/DF_executions_notes DEFAULT (NULL),
  CONSTRAINT /*prefix*/PK_executions PRIMARY KEY CLUSTERED 
 (
 	id ASC
@@ -281,7 +283,7 @@ CREATE TABLE /*prefix*/builds (
 	id int IDENTITY(1,1) NOT NULL,
 	testplan_id int NOT NULL CONSTRAINT /*prefix*/DF_builds_testplan_id DEFAULT ((0)),
 	name varchar(100)  NOT NULL CONSTRAINT /*prefix*/DF_builds_name DEFAULT (N'undefined'),
-	notes text  NULL,
+	notes nvarchar(max)   NULL,
 	active tinyint NOT NULL CONSTRAINT /*prefix*/DF_builds_active DEFAULT ((1)),
 	is_open tinyint NOT NULL CONSTRAINT /*prefix*/DF_builds_open DEFAULT ((1)),
 	author_id int NULL,
@@ -309,7 +311,7 @@ CREATE TABLE /*prefix*/keywords (
 	id int IDENTITY(1,1) NOT NULL,
 	keyword varchar(100)  NOT NULL,
 	testproject_id int NOT NULL CONSTRAINT /*prefix*/DF_keywords_testproject_id DEFAULT ((0)),
-	notes text  NULL,
+	notes nvarchar(max)   NULL,
  CONSTRAINT /*prefix*/PK_keywords PRIMARY KEY CLUSTERED 
 (
 	id ASC
@@ -364,7 +366,7 @@ CREATE TABLE /*prefix*/attachments (
 	file_size int NOT NULL CONSTRAINT /*prefix*/DF_attachments_file_size DEFAULT ((0)),
 	file_type varchar(250)  NOT NULL,
 	date_added datetime NOT NULL,
-	content text  NULL,
+	content nvarchar(max)   NULL,
 	compression_type int NOT NULL CONSTRAINT /*prefix*/DF_attachments_compression_type DEFAULT ((0)),
  CONSTRAINT /*prefix*/PK_attachments PRIMARY KEY CLUSTERED 
 (
@@ -452,7 +454,7 @@ CREATE TABLE /*prefix*/req_versions(
 	id int NOT NULL,
   version INTEGER NOT NULL DEFAULT '1',
   revision INTEGER NOT NULL DEFAULT '1',
-  scope TEXT NULL DEFAULT NULL,
+  scope nvarchar(max)  NULL DEFAULT NULL,
   status CHAR(1) NOT NULL DEFAULT 'V',
   type CHAR(1) NULL DEFAULT NULL,
   active INT NOT NULL DEFAULT '1',
@@ -462,7 +464,7 @@ CREATE TABLE /*prefix*/req_versions(
 	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_versions_creation_ts DEFAULT (getdate()),
   modifier_id INT NULL DEFAULT NULL,
 	modification_ts datetime NULL,
-  log_message TEXT NULL DEFAULT NULL,
+  log_message nvarchar(max)  NULL DEFAULT NULL,
   CONSTRAINT /*prefix*/PK_req_versions PRIMARY KEY CLUSTERED 
   (
 	  id
@@ -476,13 +478,13 @@ CREATE TABLE /*prefix*/req_revisions(
   revision INTEGER NOT NULL DEFAULT '1',
     req_doc_id varchar(64) NULL,
     name varchar(100) NULL,
-  scope TEXT NULL DEFAULT NULL,
+  scope nvarchar(max)  NULL DEFAULT NULL,
   status CHAR(1) NOT NULL DEFAULT 'V',
   type CHAR(1) NULL DEFAULT NULL,
   active INT NOT NULL DEFAULT '1',
   is_open INT NOT NULL DEFAULT '1',
   expected_coverage INT NOT NULL DEFAULT 1,
-  log_message TEXT NULL DEFAULT NULL,
+  log_message nvarchar(max)  NULL DEFAULT NULL,
   author_id INT NULL DEFAULT NULL,
     creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_revisions_creation_ts DEFAULT (getdate()),
   modifier_id INT NULL DEFAULT NULL,
@@ -530,8 +532,8 @@ CREATE TABLE /*prefix*/tcversions (
 	version smallint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_version DEFAULT ((1)),
 	layout INT NOT NULL DEFAULT '1',
 	status int NOT NULL DEFAULT ((1)),
-  	summary text  NULL,
-  	preconditions TEXT NULL,
+  	summary nvarchar(max)   NULL,
+  	preconditions nvarchar(max)  NULL,
 	importance tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_importance DEFAULT ((2)),
 	author_id int NULL,
 	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_tcversions_creation_ts DEFAULT (getdate()),
@@ -553,8 +555,8 @@ CREATE TABLE /*prefix*/tcversions (
 CREATE TABLE /*prefix*/tcsteps (  
 	id int NOT NULL,
   step_number INT NOT NULL DEFAULT '1',
-  actions TEXT NULL DEFAULT NULL,
-  expected_results TEXT NULL DEFAULT NULL,
+  actions nvarchar(max)  NULL DEFAULT NULL,
+  expected_results nvarchar(max)  NULL DEFAULT NULL,
   active INT NOT NULL DEFAULT '1',
   execution_type INT NOT NULL DEFAULT '1',
   CONSTRAINT /*prefix*/PK_tcsteps PRIMARY KEY CLUSTERED 
@@ -567,7 +569,7 @@ CREATE TABLE /*prefix*/tcsteps (
 CREATE TABLE /*prefix*/testplans (
 	id int NOT NULL,
 	testproject_id int NOT NULL CONSTRAINT /*prefix*/DF_testplans_testproject_id DEFAULT ((0)),
-	notes text  NULL,
+	notes nvarchar(max)   NULL,
 	active tinyint NOT NULL CONSTRAINT /*prefix*/DF_testplans_active DEFAULT ((1)),
 	is_open tinyint NOT NULL CONSTRAINT /*prefix*/DF_testplans_is_open DEFAULT ((1)),
 	is_public tinyint NOT NULL CONSTRAINT /*prefix*/DF_testplans_is_public DEFAULT ((1)),
@@ -585,11 +587,11 @@ CREATE NONCLUSTERED INDEX /*prefix*/IX_testproject_id_active ON  /*prefix*/testp
 
 CREATE TABLE /*prefix*/testprojects (
 	id int NOT NULL,
-	notes text  NULL,
+	notes nvarchar(max)   NULL,
 	color varchar(12)  NOT NULL CONSTRAINT /*prefix*/DF_testprojects_color DEFAULT (N'#9BD'),
 	active tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_active DEFAULT ((1)),
 	is_public tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_is_public DEFAULT ((1)),
-  	options TEXT,
+  	options nvarchar(max) ,
 	option_reqs tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_option_reqs DEFAULT ((0)),
 	option_priority tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_option_priority DEFAULT ((0)),
   	option_automation tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_option_automation DEFAULT ((0)),
@@ -615,7 +617,7 @@ CREATE NONCLUSTERED INDEX /*prefix*/IX_id_active ON  /*prefix*/testprojects
 
 CREATE TABLE /*prefix*/testsuites (
 	id int NOT NULL,
-	details text  NULL,
+	details nvarchar(max)   NULL,
  CONSTRAINT /*prefix*/PK_testsuites PRIMARY KEY CLUSTERED 
 (
 	id ASC
@@ -738,7 +740,7 @@ CREATE TABLE /*prefix*/text_templates (
   id int IDENTITY(1,1) NOT NULL,
   type smallint NOT NULL,
   title varchar (100) NOT NULL,
-  template_data text,
+  template_data nvarchar(max) ,
   author_id int DEFAULT NULL,
 	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_text_templates_creation_ts DEFAULT (getdate()),
 	is_public tinyint NOT NULL CONSTRAINT /*prefix*/DF_text_templates_is_public DEFAULT ((0)),
@@ -756,7 +758,7 @@ CREATE TABLE /*prefix*/text_templates (
 CREATE TABLE /*prefix*/user_group (
   id int IDENTITY(1,1) NOT NULL,
   title varchar (100) NOT NULL,
-  description text,
+  description nvarchar(max) ,
 	CONSTRAINT /*prefix*/PK_user_group PRIMARY KEY  CLUSTERED 
 	(
 		id
@@ -777,7 +779,7 @@ CREATE TABLE /*prefix*/platforms (
   id int IDENTITY(1,1) NOT NULL,
   name VARCHAR(100) NOT NULL,
   testproject_id int NOT NULL DEFAULT '0',
-  notes text NOT NULL,
+  notes nvarchar(max)  NOT NULL,
 	CONSTRAINT /*prefix*/PK_platforms PRIMARY KEY  CLUSTERED 
 	(
 		id
@@ -806,7 +808,7 @@ CREATE TABLE /*prefix*/inventory (
 	owner_id int NOT NULL,
 	name VARCHAR(255) NOT NULL,
 	ipaddress VARCHAR(255) NOT NULL,
-	content TEXT,
+	content nvarchar(max) ,
 	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_inventory_creation_ts DEFAULT (getdate()),
 	modification_ts datetime NULL,
 	CONSTRAINT /*prefix*/PK_inventory PRIMARY KEY  CLUSTERED 
@@ -847,7 +849,7 @@ CREATE TABLE /*prefix*/req_specs_revisions (
   	revision INTEGER NOT NULL DEFAULT '1',
 	doc_id VARCHAR(64) NOT NULL,
 	name varchar(100) NULL,
-	scope text  NULL,
+	scope nvarchar(max)   NULL,
 	total_req int NOT NULL CONSTRAINT /*prefix*/DF_req_specs_revisions_total_req DEFAULT ((0)),
 	type char(1)  NOT NULL CONSTRAINT /*prefix*/DF_req_specs_revisions_type DEFAULT (N'n'),
 	status int NULL DEFAULT ((1)),
@@ -855,7 +857,7 @@ CREATE TABLE /*prefix*/req_specs_revisions (
 	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_specs_revisions_creation_ts DEFAULT (getdate()),
 	modifier_id int NULL,
 	modification_ts datetime NULL,
-  	log_message TEXT NULL DEFAULT NULL,
+  	log_message nvarchar(max)  NULL DEFAULT NULL,
  	CONSTRAINT /*prefix*/PK_req_specs_revisions PRIMARY KEY CLUSTERED 
 	(
 		id ASC
@@ -868,7 +870,7 @@ CREATE TABLE /*prefix*/issuetrackers
   id int IDENTITY(1,1) NOT NULL,
   name VARCHAR(100) NOT NULL,
   type int NOT NULL CONSTRAINT /*prefix*/DF_issuetrackers_type DEFAULT ((0)),
-  cfg TEXT NULL,
+  cfg nvarchar(max)  NULL,
   CONSTRAINT /*prefix*/PK_issuetrackers PRIMARY KEY  CLUSTERED 
 	(
 		id

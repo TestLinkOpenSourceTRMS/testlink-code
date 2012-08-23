@@ -6025,7 +6025,13 @@ class testplan extends tlObjectWithAttachments
 
 
 
-
+	/**
+	 * 
+	 * @used-by testplan::getLTCVNewGeneration()
+	 * @internal revisions
+	 * @since 1.9.4
+	 * 
+	 */
 	function getLinkedTCVersionsSQL($id,$filters=null,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -6069,12 +6075,20 @@ class testplan extends tlObjectWithAttachments
 		// because we are saving values at TCVERSION LEVEL
 		//	
 		
+		// TICKET 5165: Issues with DISTINCT CLAUSE on TEXT field
+		// Do not know if other usages are going to cry due to missing fields
+		//
+		// $commonFields = " SELECT NH_TCASE.id AS tcase_id,NH_TCASE.id AS tc_id,TPTCV.tcversion_id,TCV.version," .
+		// 				" TCV.tc_external_id AS external_id, TCV.execution_type," .
+		// 				" TCV.summary, TCV.preconditions,TPTCV.id AS feature_id," .
+		// 				" TPTCV.platform_id,PLAT.name AS platform_name,TPTCV.node_order AS execution_order,".
+		// 				" COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status ";
+        // 
 		$commonFields = " SELECT NH_TCASE.id AS tcase_id,NH_TCASE.id AS tc_id,TPTCV.tcversion_id,TCV.version," .
-						" TCV.tc_external_id AS external_id, TCV.execution_type," .
-						" TCV.summary, TCV.preconditions,TPTCV.id AS feature_id," .
-						" TPTCV.platform_id,PLAT.name AS platform_name,TPTCV.node_order AS execution_order,".
-						" COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status ";
-
+		 				" TCV.tc_external_id AS external_id, TCV.execution_type," .
+		 				" TPTCV.id AS feature_id," .
+		 				" TPTCV.platform_id,PLAT.name AS platform_name,TPTCV.node_order AS execution_order,".
+		 				" COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status ";
 
 		// used on tester assignment feature when working at test suite level
 		if( !is_null($my['options']['assigned_on_build']) )

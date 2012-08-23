@@ -15,6 +15,8 @@
  *
  * @internal revisions
  * @since 1.9.4
+ *	20120823 - franciscom - TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for 
+ *										 PHP on WINDOWS version 5.3 and higher
  *	20120817 - franciscom - changes in check_dir_permissions()	
  * 	20120411 - franciscom - TICKET 4969: Add Setting to Force HTTPS
  * 	20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
@@ -578,12 +580,38 @@ function checkPhpExtensions(&$errCounter)
   
   $msg_support='<tr><td>Checking %s </td>';
   $checks=array();
+
+
+  // Database extensions	
   $checks[]=array('extension' => 'mysql',
                   'msg' => array('feedback' => 'MySQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
  
   $checks[]=array('extension' => 'pgsql',
                   'msg' => array('feedback' => 'Postgres Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
  
+
+  // ---------------------------------------------------------------------------------------------------------	  
+  // special check for MSSQL - TICKET 4898
+  $extid = 'mssql';
+  if(PHP_OS == 'WINNT')
+  {
+	// Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
+	// From PHP MANUAL - reganding mssql_* functions
+	// These functions allow you to access MS SQL Server database.
+	// This extension is not available anymore on Windows with PHP 5.3 or later.
+	// SQLSRV, an alternative driver for MS SQL is available from Microsoft:
+	// http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx. 			
+	//
+	// PHP_VERSION_ID is available as of PHP 5.2.7
+	if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300)  
+	{
+	  $extid = 'sqlsrv';
+	}			
+  }	
+  $checks[] = array('extension' => $extid,
+					'msg' => array('feedback' => 'MSSQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );		
+  // ---------------------------------------------------------------------------------------------------------
+
   
   $checks[]=array('extension' => 'gd',
                   'msg' => array('feedback' => 'GD Graphic library', 'ok' => $td_ok, 

@@ -25,7 +25,7 @@ show message after an SQL operation
 
 {if $user_feedback neq ''}
     {if $feedback_type != ""}
-    	<div class="warning_{$feedback_type}">	
+    	<div class="{$feedback_type}">
   	{else}
      <div class="user_feedback">
   	 {/if}

@@ -83,6 +83,7 @@ switch($args->doAction)
         	$status_ok = $op->status_ok;
         	$user_feedback = $op->msg;
         	$reloadType = $op->reloadType;
+      		$gui->form_security_field = form_security_field();
         }
     	break;
 
@@ -104,6 +105,7 @@ switch($args->doAction)
         	$status_ok = $op->status_ok;
         	$user_feedback = $op->msg;
         	$reloadType = $op->reloadType;
+      		$gui->form_security_field = form_security_field();
         }
         break;
 
@@ -112,6 +114,7 @@ switch($args->doAction)
     	$status_ok = $op->status_ok;
     	$user_feedback = $op->msg;
     	$reloadType = $op->reloadType;
+   		$gui->form_security_field = form_security_field();
         break;
 }
 
@@ -121,9 +124,10 @@ $smarty->assign('gui_cfg',$gui_cfg);
 $smarty->assign('editorType',$editorCfg['type']);
 $smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
 
-
+$feedback_type = '';	
 if(!$status_ok)
 {
+   $feedback_type = 'error';	
    $args->doAction = "ErrorOnAction";
 }
 
@@ -144,7 +148,7 @@ switch($args->doAction)
 
     case "ErrorOnAction":
     default:
-        if( $args->doAction != "edit")
+        if( $args->doAction != "edit" && $args->doAction != "ErrorOnAction")
         {
     		$of->Value = getItemTemplateContents('project_template', $of->InstanceName, $args->notes);
         }
@@ -152,6 +156,7 @@ switch($args->doAction)
         {
         	$of->Value = $args->notes;
         }
+        
         foreach($ui as $prop => $value)
         {
             $smarty->assign($prop,$value);
@@ -159,7 +164,7 @@ switch($args->doAction)
         $smarty->assign('gui', $args);
         $smarty->assign('notes', $of->CreateHTML());
         $smarty->assign('user_feedback', $user_feedback);
-        $smarty->assign('feedback_type', 'ultrasoft');
+        $smarty->assign('feedback_type', $feedback_type);
         $smarty->display($templateCfg->template_dir . $template);
     break;
 
@@ -417,7 +422,7 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
     	$op->ui->caption = sprintf(lang_get('caption_edit_tproject'),$op->oldName);
 	}
 
-	  return $op;
+	return $op;
 }
 
 

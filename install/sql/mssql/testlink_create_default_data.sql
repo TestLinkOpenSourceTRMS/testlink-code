@@ -6,7 +6,8 @@
 -- IMPORTANT NOTE:
 -- each NEW TABLE added here NEED TO BE DEFINED in object.class.php getDBTables()
 --
---  Database Type: Microsoft SQL Server
+-- Database Type: Microsoft SQL Server
+-- @since 1.9.4
 -- 20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server 
 --
 --  -----------------------------------------------------------------------------------
@@ -72,6 +73,8 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (27,'project_inventory_view
 INSERT INTO /*prefix*/rights (id,description) VALUES (28,'req_tcase_link_management');
 INSERT INTO /*prefix*/rights (id,description) VALUES (29,'keyword_assignment');
 INSERT INTO /*prefix*/rights (id,description) VALUES (30,'mgt_unfreeze_req');
+INSERT INTO /*prefix*/rights (id,description) VALUES (31,'issuetracker_management');
+INSERT INTO /*prefix*/rights (id,description) VALUES (32,'issuetracker_view');
 
 
 
@@ -106,6 +109,9 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,31);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,32);
+
 
 --  Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3);

@@ -589,16 +589,17 @@ CREATE TABLE /*prefix*/testprojects (
 	color varchar(12)  NOT NULL CONSTRAINT /*prefix*/DF_testprojects_color DEFAULT (N'#9BD'),
 	active tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_active DEFAULT ((1)),
 	is_public tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_is_public DEFAULT ((1)),
-  options TEXT,
+  	options TEXT,
 	option_reqs tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_option_reqs DEFAULT ((0)),
 	option_priority tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_option_priority DEFAULT ((0)),
-  option_automation tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_option_automation DEFAULT ((0)),
+  	option_automation tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_option_automation DEFAULT ((0)),
 	prefix varchar(16) NOT NULL,
-  tc_counter int NOT NULL CONSTRAINT /*prefix*/DF_testprojects_tc_counter DEFAULT ((0)),
-  CONSTRAINT /*prefix*/PK_testprojects PRIMARY KEY CLUSTERED 
-  (
-	 id ASC
-  ) ON [PRIMARY],
+  	tc_counter int NOT NULL CONSTRAINT /*prefix*/DF_testprojects_tc_counter DEFAULT ((0)),
+  	issue_tracker_enabled tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_issue_tracker_enabled DEFAULT ((0)),  
+  	CONSTRAINT /*prefix*/PK_testprojects PRIMARY KEY CLUSTERED 
+  	(
+	 	id ASC
+  	) ON [PRIMARY],
 	CONSTRAINT /*prefix*/IX_testprojects_prefix UNIQUE  NONCLUSTERED 
 	(
 		prefix
@@ -862,11 +863,29 @@ CREATE TABLE /*prefix*/req_specs_revisions (
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 
-CREATE VIEW /*prefix*/tcversions_last_active AS 
+CREATE TABLE /*prefix*/issuetrackers
 (
-	SELECT NHTCV.parent_id AS tcase_id, MAX(TCV.id) AS tcversion_id
-	FROM /*prefix*/nodes_hierarchy NHTCV 
-	JOIN /*prefix*/tcversions TCV ON TCV.id = NHTCV.id 
-	WHERE TCV.active = 1
-	GROUP BY NHTCV.parent_id,TCV.tc_external_id
-);
+  id int IDENTITY(1,1) NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  type int NOT NULL CONSTRAINT /*prefix*/DF_issuetrackers_type DEFAULT ((0)),
+  cfg TEXT NULL,
+  CONSTRAINT /*prefix*/PK_issuetrackers PRIMARY KEY  CLUSTERED 
+	(
+		id
+	)  ON [PRIMARY],
+    CONSTRAINT /*prefix*/UIX_issuetrackers UNIQUE NONCLUSTERED 
+   ( 
+	name ASC
+   ) ON [PRIMARY]	
+) ON [PRIMARY];
+
+
+CREATE TABLE /*prefix*/testproject_issuetracker
+(
+  testproject_id int NOT NULL,
+  issuetracker_id int NOT NULL,
+    CONSTRAINT /*prefix*/UIX_testproject_issuetracker UNIQUE NONCLUSTERED 
+   ( 
+	testproject_id ASC
+   ) ON [PRIMARY]	  
+)ON [PRIMARY];

@@ -2109,8 +2109,9 @@ class tlTestPlanMetrics extends testplan
 		$add2select = ' DISTINCT ';
 		$buildInfo = '';
 		
+	
 		$sqlc = "/* $debugMsg */ " .
-				" SELECT count(0) AS COUNTER ,A_NHTCV.parent_id AS tcase_id  " .
+				" SELECT count(0) AS TESTER_COUNTER ,A_NHTCV.parent_id AS tcase_id  " .
 				" FROM {$this->tables['testplan_tcversions']} A_TPTCV " .
 				" JOIN {$this->tables['builds']} A_B ON A_B.testplan_id = A_TPTCV.testplan_id " .
 				str_replace('B.active','A_B.active',$buildsCfg['statusClause']) .
@@ -2131,10 +2132,20 @@ class tlTestPlanMetrics extends testplan
 
 				" WHERE A_TPTCV.testplan_id = " . $safe_id  . 
 				" AND A_E.status IS NULL " .
-				" AND A_UA.user_id IS NULL " .
-				" GROUP BY tcase_id " .
-				" HAVING COUNTER = " . intval($buildsCfg['count']) ; 
+				" AND A_UA.user_id IS NULL ";
 
+		// TICKET 5166: Test Cases without Tester Assignment - MSSQL				
+		if( DB_TYPE == 'mssql' )
+		{		
+			$sqlc .= " GROUP BY A_NHTCV.parent_id " .
+					 " HAVING count(0) = " . intval($buildsCfg['count']) ; 
+		}
+		else
+		{
+			$sqlc .= " GROUP BY tcase_id " .
+				" HAVING TESTER_COUNTER = " . intval($buildsCfg['count']) ; 
+		}
+		
 		// new dBug($sqlc);
 		
 		$sql =	"/* {$debugMsg} Not Run */" . 

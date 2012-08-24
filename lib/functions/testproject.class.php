@@ -734,7 +734,7 @@ function count_testcases($id)
 
 		if(count($test_spec))
 		{
-			$ret = $this->_createHierarchyMap($test_spec);
+			$ret = $this->_createHierarchyMap($test_spec,$mode);
 		}
 		return $ret;
 	}
@@ -756,7 +756,6 @@ function count_testcases($id)
 			$ret['msg'] = lang_get('info_product_name_empty');
 			$ret['status_ok'] = 0;
 		}
-		// BUGID 0000086
 		if ($ret['status_ok'] && !check_string($name,$forbidden_pattern))
 		{
 			$ret['msg'] = lang_get('string_contains_bad_chars');
@@ -1174,7 +1173,8 @@ function setPublicStatus($id,$status)
 
 	/* REQUIREMENTS RELATED */
 	/**
-	 * get list of all SRS for a test project
+	 * get list of all SRS for a test project, no distinction between levels
+	 *
 	 * 
      * @used-by lib/results/uncoveredTestCases.php
      *			lib/requirements/reqTcAssign.php
@@ -1205,6 +1205,7 @@ function setPublicStatus($id,$status)
            $additional_join .
   		   " ORDER BY title";
   	return $this->db->fetchColumnsIntoMap($sql,'id','title');
+  	//return $this->db->fetchRowsIntoMap($sql,'id'); SRS.doc_id,
   } // function end
 
 
@@ -1222,7 +1223,7 @@ function setPublicStatus($id,$status)
      * 
      *
 	 **/
-	function genComboReqSpec($id,$mode='dotted')
+	function genComboReqSpec($id,$mode='dotted',$dot='.')
 	{
 		$ret = array();
     	$exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
@@ -1230,11 +1231,12 @@ function setPublicStatus($id,$status)
 	                              'requirement_spec_revision' => 'exclude_me');
 
  		$my['filters'] = array('exclude_node_types' => $exclude_node_types);
-
-	  	$subtree = $this->tree_manager->get_subtree($id,$my['filters']);
+		
+		$my['options'] = array('order_cfg' => array('type' => 'rspec'), 'output' => 'rspec');
+	  	$subtree = $this->tree_manager->get_subtree($id,$my['filters'],$my['options']);
   		if(count($subtree))
 		{
-			$ret = $this->_createHierarchyMap($subtree);
+			$ret = $this->_createHierarchyMap($subtree,$mode,$dot,'doc_id');
         }
 		return $ret;
 	}
@@ -1280,13 +1282,14 @@ function setPublicStatus($id,$status)
                                10   array(name =>	'TS2', level 	=> 2)
 
   */
-  protected function _createHierarchyMap($array2map,$mode='dotted')
+  protected function _createHierarchyMap($array2map,$mode='dotted',$dot='.',$addfield=null)
   {
 		$hmap=array();
 		$the_level = 1;
 		$level = array();
   		$pivot = $array2map[0];
 
+		$addprefix = !is_null($addfield);
 		foreach($array2map as $elem)
 		{
 			$current = $elem;
@@ -1304,7 +1307,9 @@ function setPublicStatus($id,$status)
 			switch($mode)
 			{
   				case 'dotted':
-					$hmap[$current['id']] = str_repeat('.',$the_level) . $current['name'];
+  					$dm = $addprefix ? "[{$current[$addfield]}] - " : '';
+  					$pding = ($the_level == 1) ? 0 : $the_level+1;  
+					$hmap[$current['id']] = str_repeat($dot,$pding) . $dm . $current['name'];
 					break;
 
   				case 'array':

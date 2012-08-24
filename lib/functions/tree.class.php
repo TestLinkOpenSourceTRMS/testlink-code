@@ -816,7 +816,8 @@ class tree extends tlObject
 	                           'exclude_branches' => null,'additionalWhereClause' => '', 'family' => null);
                                
         $my['options'] = array('recursive' => false, 'order_cfg' => array("type" =>'spec_order'), 
-        					   'output' => 'essential', 'key_type' => 'std');
+        					   'output' => 'essential', 'key_type' => 'std',
+        					   'addJoin' => '', 'addFields' => '');
 	
 		// Cast to array to handle $options = null
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
@@ -844,7 +845,6 @@ class tree extends tlObject
 	
 	function _get_subtree($node_id,&$node_list,$filters = null, $options = null)
 	{
-
 		static $my;
 		if(!$my)
 		{
@@ -852,21 +852,31 @@ class tree extends tlObject
 	        					   'additionalWhereClause' => '', 'family' => null);
 	                               
 	        $my['options'] = array('order_cfg' => array("type" =>'spec_order'),
-	        					   'output' => 'full', 'key_type' => 'std');
+	        					   'output' => 'full', 'key_type' => 'std',
+	        					   'addJoin' => '', 'addFields' => '');
 	
-			// Cast to array to handle $options = null
-			$my['filters'] = array_merge($my['filters'], (array)$filters);
-			$my['options'] = array_merge($my['options'], (array)$options);
 		}
-	
+		// Cast to array to handle $options = null
+		$my['filters'] = array_merge($my['filters'], (array)$filters);
+		$my['options'] = array_merge($my['options'], (array)$options);
 		   
 	    switch($my['options']['order_cfg']['type'])
 	    {
 	        case 'spec_order':
-	  	    $sql = " SELECT id,name,parent_id,node_type_id,node_order FROM {$this->object_table} " .
+	  	    $sql = " SELECT id,name,parent_id,node_type_id,node_order {$my['options']['addFields']}" .
+	  	    	   " FROM {$this->object_table} {$my['options']['addJoin']} " .
 	  	           " WHERE parent_id = {$node_id} {$my['filters']['additionalWhereClause']}" .
 			       " ORDER BY node_order,id";
 			    break;
+
+	        case 'rspec':
+	  	    $sql = " SELECT OBT.id,name,parent_id,node_type_id,node_order,RSPEC.doc_id " .
+	  	    	   " FROM {$this->object_table} AS OBT " .
+	  	    	   " JOIN {$this->tables['req_specs']} AS RSPEC ON RSPEC.id = OBT.id " .
+	  	           " WHERE parent_id = {$node_id} {$my['filters']['additionalWhereClause']}" .
+			       " ORDER BY node_order,OBT.id";
+			    break;
+
 			    
 			case 'exec_order':
 			// REMEMBER THAT DISTINCT IS NOT NEEDED when you does UNION WITHOUT ALL
@@ -922,6 +932,17 @@ class tree extends tlObject
 						                     'node_table' => $node_table,
 						                     'name' => $row['name']);
 					break;                     
+
+					case 'rspec':
+						$node_list[] = array('id' => $row['id'],
+						                     'parent_id' => $row['parent_id'],
+						                     'doc_id' => $row['doc_id'],
+						                     'node_type_id' => $row['node_type_id'],
+						                     'node_order' => $row['node_order'],
+						                     'node_table' => $node_table,
+						                     'name' => $row['name']);
+					break;                     
+					
 
 					case 'full':
 					default:

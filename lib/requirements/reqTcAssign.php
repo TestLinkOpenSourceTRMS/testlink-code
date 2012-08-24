@@ -14,15 +14,7 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-
-$gui = new stdClass();
-$gui->showCloseButton = $args->showCloseButton;
-$gui->user_feedback = '';
-$gui->tcTitle = null;
-$gui->arrAssignedReq = null;
-$gui->arrUnassignedReq = null;
-$gui->arrReqSpec = null;
-$gui->selectedReqSpec = $args->idReqSpec;
+$gui = initializeGui($args);
 
 $bulkCounter = 0;
 $bulkDone = false;
@@ -108,7 +100,7 @@ function init_args()
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
 
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	// take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 	
 	$args->idReqSpec = null;
@@ -123,7 +115,6 @@ function init_args()
         $args->doAction = ($args->assign != "") ? "assign" : null;
     }
 
-	// 20081103 - sisajr - hold choosen SRS (saved for a session)
 	if ($args->idSRS)
 	{
 	  	$args->idReqSpec = $args->idSRS;
@@ -153,19 +144,12 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj)
     $tsuite_info = $tproject_mgr->tree_manager->get_node_hierarchy_info($guiObj->tsuite_id);
     $guiObj->pageTitle = lang_get('test_suite') . config_get('gui_title_separator_1') . $tsuite_info['name'];
      
-	$guiObj->req_specs = $tproject_mgr->getOptionReqSpec($argsObj->tproject_id,testproject::GET_NOT_EMPTY_REQSPEC);
-	
-	$Xreq_specs = $tproject_mgr->genComboReqSpec($argsObj->tproject_id);
-	//new dBug($guiObj->req_specs);
-	//new dBug($guiObj->Xreq_specs);
-	
+	$guiObj->req_specs = $tproject_mgr->genComboReqSpec($argsObj->tproject_id,'dotted',"&nbsp;");
     $guiObj->selectedReqSpec = $argsObj->idReqSpec;
     $guiObj->tcase_number = 0;
     $guiObj->has_req_spec = false;
     $guiObj->tsuite_id = $argsObj->id;
-    
-    //new dBug($guiObj);
-    
+
     if(!is_null($guiObj->req_specs) && count($guiObj->req_specs))
     {  
 		$guiObj->has_req_spec = true;
@@ -181,8 +165,6 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj)
        	$tsuite_mgr = new testsuite($dbHandler);
        	$tcase_set = $tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
        	$guiObj->tcase_number = count($tcase_set); 
-       	
-       	//new dBug($tcase_set);
        	   
        	if( $guiObj->tcase_number > 0 )
        	{
@@ -211,7 +193,6 @@ function doBulkAssignment(&$dbHandler,&$argsObj,$targetTestCaseSet = null)
     	if( is_null($tcase_set) )
     	{
         	$tsuite_mgr = new testsuite($dbHandler);
-        	echo 'DEBUG BEFORE';
         	$tcase_set = $tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
    		}
    		if( !is_null($tcase_set) && count($tcase_set) )
@@ -300,9 +281,7 @@ function array_diff_byId ($arrAll, $arrPart)
 function processTestCase(&$dbHandler,&$argsObj,&$guiObj)
 {
    	$tproject_mgr = new testproject($dbHandler);
-	// $guiObj->arrReqSpec = $tproject_mgr->getOptionReqSpec($argsObj->tproject_id,testproject::GET_NOT_EMPTY_REQSPEC);
-    
-    $guiObj->arrReqSpec = $tproject_mgr->genComboReqSpec($argsObj->tproject_id);
+    $guiObj->arrReqSpec = $tproject_mgr->genComboReqSpec($argsObj->tproject_id,'dotted',"&nbsp;");
 	$SRS_qty = count($guiObj->arrReqSpec);
   
 	if($SRS_qty > 0)
@@ -331,6 +310,19 @@ function processTestCase(&$dbHandler,&$argsObj,&$guiObj)
 	 } 
 	 return $guiObj;
 }
+
+function initializeGui($argsObj)
+{ 
+	$guiObj = new stdClass();
+	$guiObj->user_feedback = '';
+	$guiObj->tcTitle = $guiObj->arrAssignedReq = null;
+	$guiObj->arrUnassignedReq = $guiObj->arrReqSpec = null;
+	
+	$guiObj->showCloseButton = $argsObj->showCloseButton;
+	$guiObj->selectedReqSpec = $argsObj->idReqSpec;
+	return $guiObj;
+}
+
 
 function checkRights(&$db,&$user)
 {

@@ -13,19 +13,9 @@
  * @uses 	printDocument.php
  *
  *
- * @internal revisions:
- *  20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
- *	20110309 - franciscom - renderReqForPrinting() fixed call to get custom fields, not
- *							refactored after addition of req REVISIONS
- *							
- *	20110306 - franciscom - BUGID 4273: Option to print single requirement
- *							renderReqForPrinting()	new layout for version and revision
- *
- *	20110305 - franciscom - BUGID 4273: Option to print single requirement
- *							renderReqForPrinting() - refactored to use version id.
- *
- *	20110304 - franciscom - BUGID 4286: Option to print single test case
- *							renderTestCaseForPrinting() added missing info.
+ * @internal revisions
+ * @since 1.9.4
+ * 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
  *
  */ 
 
@@ -33,11 +23,6 @@
 require_once("exec.inc.php");
 require_once("lang_api.php");
 
-if (config_get('interface_bugs') != 'NO')
-{
-  require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' .
-               DIRECTORY_SEPARATOR . 'int_bugtracking.php');
-}
 
 /**
  * render a requirement as HTML code for printing
@@ -857,6 +842,8 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
     static $locationFilters;
     static $tables = null;
     static $force = null;
+    static $bugInterfaceOn = false;
+    static $its;
     
 	$code = null;
 	$tcInfo = null;
@@ -884,6 +871,19 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
 		$force['displayVersion'] = isset($options['displayVersion']) ? $options['displayVersion'] : false;
 		$force['displayLastEdit'] = isset($options['displayLastEdit']) ? $options['displayLastEdit'] : false;
 		
+		
+		 
+		$its = null;
+		$tproject_mgr = new testproject($db);
+		$info = $tproject_mgr->get_by_id($tprojectID);
+		$bugInterfaceOn = $info['issue_tracker_enabled'];
+		if($info['issue_tracker_enabled'])
+		{
+			$it_mgr = new tlIssueTracker($db);
+			$its = $it_mgr->getInterfaceObject($tprojectID);
+			unset($it_mgr);
+		}	
+
 	}
 
 	$cspan = ' colspan = "' . ($cfg['tableColspan']-1) . '" ';
@@ -920,7 +920,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
         }	
      	foreach($locationFilters as $fkey => $fvalue)
 		{ 
-			// BUGID 3431 - Custom Field values at Test Case VERSION Level
+			// Custom Field values at Test Case VERSION Level
 			$cfields['specScope'][$fkey] = 
 					$tc_mgr->html_table_of_custom_field_values($id,'design',$fvalue,null,$tplan_id,
 			                                                   $tprojectID,$cfieldFormatting,$tcInfo['id']);             
@@ -969,7 +969,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
 		$code .= '<a name="' . prefixToHTMLID('tc'.$id) . '"></a>';
 	}
     
-	// 20110308 - asimon - change table style in case of single TC printing to not be indented
+	// change table style in case of single TC printing to not be indented
 	$table_style = "";
 	if (isset($options['docType']) && $options['docType'] == SINGLE_TESTCASE) {
 		$table_style = 'style="margin-left: 0;"';
@@ -1076,8 +1076,6 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
             }         
         }
     }
-
-	// 20110304 - franciscom - BUGID 4286: Option to print single test case
 	$code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
 		     '<span class="label">'.$labels['execution_type'].':</span></td>' .
         	 '<td colspan="' .  ($cfg['tableColspan']-1) . '">';
@@ -1115,7 +1113,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
 	{
 		if ($exec_info) 
 		{
-			$code .= buildTestExecResults($db,$cfg,$labels,$exec_info,$cfg['tableColspan']-1,$options['notes']);
+			$code .= buildTestExecResults($db,$its,$cfg,$labels,$exec_info,$cfg['tableColspan']-1,$options['notes']);
 		}
 		else
 		{
@@ -1434,16 +1432,23 @@ function initRenderTestCaseCfg(&$tcaseMgr)
  * 
  *
  */
-function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info,$colspan,$show_exec_notes = false)
+function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan,$show_exec_notes = false)
 {
+	static $testerNameCache;
 	$out='';
 	$testStatus = $cfg['status_labels'][$exec_info[0]['status']];
-	$testerName = gendocGetUserName($dbHandler, $exec_info[0]['tester_id']);
+	
+	if(!isset($testerNameCache[$exec_info[0]['tester_id']]))
+	{
+		$testerNameCache[$exec_info[0]['tester_id']] = gendocGetUserName($dbHandler, $exec_info[0]['tester_id']);
+	}
+	
 	
 	$executionNotes = $show_exec_notes ? $exec_info[0]['notes'] : '';
 
 	$td_colspan = '';
-	if( !is_null($colspan) ) {
+	if( !is_null($colspan) ) 
+	{
 		$td_colspan .= ' colspan="' . $colspan . '" '; 
 	}
 	    
@@ -1453,7 +1458,7 @@ function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info,$colspan,$show
     		'<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
     		'<td '  .$td_colspan . '>' . htmlspecialchars($exec_info[0]['build_name']) . "</b></td></tr>\n" .
     		'<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['tester'] .'</td>' . 
-    		'<td '  .$td_colspan . '>' . $testerName . "</b></td></tr>\n";
+    		'<td '  .$td_colspan . '>' . $testerNameCache[$exec_info[0]['tester_id']] . "</b></td></tr>\n";
 
     if ($executionNotes != '') // show exection notes is not empty
     {
@@ -1461,11 +1466,10 @@ function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info,$colspan,$show
 			    '<td '  .$td_colspan . '>' . nl2br($executionNotes)  . "</td></tr>\n"; 
     }
 
-	$bug_interface = config_get('bugInterfaceOn'); //BUGFIX for error logs.
-	if ($bug_interface) 
+	if( !is_null($its) ) 
 	{
     	// amitkhullar-BUGID 2207 - Code to Display linked bugs to a TC in Test Report
-		$bugs = get_bugs_for_exec($dbHandler,$bug_interface,$exec_info[0]['execution_id']);
+		$bugs = get_bugs_for_exec($dbHandler,$its,$exec_info[0]['execution_id']);
 		if ($bugs) 
 		{
 			$bugString = '';

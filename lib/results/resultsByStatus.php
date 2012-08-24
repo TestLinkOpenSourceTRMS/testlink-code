@@ -31,13 +31,6 @@ require_once('exec.inc.php'); // used for bug string lookup
 //$mem['usage'][] = memory_get_usage(true); $mem['peak'][] = memory_get_peak_usage(true);
 
 
-// NEED TO BE REFACTORED
-// Probably will not be used anymore
-if (config_get('interface_bugs') != 'NO')
-{
-  require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' .
-               DIRECTORY_SEPARATOR . 'int_bugtracking.php');
-}
 testlinkInitPage($db,true,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -59,16 +52,22 @@ $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 //$mem['usage'][] = memory_get_usage(true); $mem['peak'][] = memory_get_peak_usage(true);
 //echo '<br>' . __FUNCTION__ . ' Mem:' . end($mem['usage']) . ' Peak:' . end($mem['peak']) .'<br>';
 
-// TO BE REVIEWED!!!!
-$gui->bugInterfaceOn = config_get('bugInterfaceOn');
-$bugInterface = null;
-if ($gui->bugInterfaceOn) 
+// get issue tracker config and object to manage TestLink - BTS integration 
+$its = null;
+$tproject_mgr = new testproject($db);
+$info = $tproject_mgr->get_by_id($args->tproject_id);
+$gui->bugInterfaceOn = $info['issue_tracker_enabled'];
+if($info['issue_tracker_enabled'])
 {
-	$bugInterface = config_get('bugInterface');
-}
+	$it_mgr = new tlIssueTracker($db);
+	$its = $it_mgr->getInterfaceObject($args->tproject_id);
+	unset($it_mgr);
+}	
+
 
 $labels = init_labels(array('deleted_user' => null, 'design' => null, 'execution' => null,
-                            'execution_history' => null,'nobody' => null));
+                            'execution_history' => null,'nobody' => null,
+                            'th_bugs_not_linked' => null,'info_notrun_tc_report' => null));
 
 $gui->tplan_name = $tplan_info['name'];
 $gui->tproject_name = $tproject_info['name'];
@@ -82,33 +81,37 @@ $mailCfg = buildMailCfg($gui);
 //echo '<br>' . __FUNCTION__ . ' Elapsed relative (sec):' . $t_elapsed . ' Elapsed ABSOLUTE (sec):' . $t_elapsed_abs .'<br>';
 //reset($chronos);	
 
-
+$gui->info_msg = '';
+$gui->bugs_msg = '';
 if( $args->type == $statusCode['not_run'] )
 {
+	$gui->info_msg = $labels['info_notrun_tc_report'];
 	$metrics = $metricsMgr->getNotRunWithTesterAssigned($args->tplan_id,null,array('output' => 'array'));
 	$notesAccessKey = 'summary';
 	$userAccessKey = 'user_id';
 }
 else
 {
+	$gui->info_msg = lang_get('info_' . $resultsCfg['code_status'][$args->type] .'_tc_report');
 	$metrics = $metricsMgr->getExecutionsByStatus($args->tplan_id,$args->type,null,array('output' => 'array'));
 	$notesAccessKey = 'execution_notes';
 	$userAccessKey='tester_id';
+
+	$gui->bugs_msg = $labels['th_bugs_not_linked'];
 }
 
 // done here in order to get some config about images
 $smarty = new TLSmarty();
 if( !is_null($metrics) and count($metrics) > 0 )
 {              
+
 	$urlSafeString = array();  
 	$urlSafeString['tprojectPrefix'] = urlencode($tproject_info['prefix']);
 	$urlSafeString['basehref'] = str_replace(" ", "%20", $args->basehref);	
 	  
 	$out = array();
 	$users = getUsersForHtmlOptions($db);
-    $pathCache=null;
-    $topCache=null;
-    $levelCache=null;
+    $pathCache = $topCache = $levelCache = null;
 	$nameCache = initNameCache($gui);
 
 	$links = featureLinks($labels,$smarty->_tpl_vars['tlImages']);
@@ -125,6 +128,29 @@ if( !is_null($metrics) and count($metrics) > 0 )
 	        $ky = current(array_keys($dummy)); 
 	        $topCache[$exec['tcase_id']] = $ky;
 		}
+		
+		// --------------------------------------------------------------------------
+		// Bug processing. 
+		// Remember that bugs are linked to executions NOT test case.
+		// When using Platforms a Test Case can have multiple executions
+		// (N on each platform).
+		// --------------------------------------------------------------------------
+		$bugString = '';
+		if($gui->bugInterfaceOn && $exec['status'] != $statusCode['not_run']) 
+		{
+			$bugSet = get_bugs_for_exec($db, $its, $exec['executions_id']);
+			if (count($bugSet) == 0) 
+			{
+				$gui->without_bugs_counter += 1;
+			}
+			foreach($bugSet as $bug) 
+			{
+				$bugString .= $bug['link_to_bts'] . '<br/>';
+ 			}
+		}
+	    // --------------------------------------------------------------------------
+		
+		
 		// --------------------------------------------------------------------------------------------
 
 		// IMPORTANT NOTICE:
@@ -200,7 +226,7 @@ if( !is_null($metrics) and count($metrics) > 0 )
 
 		if( $args->type != $statusCode['not_run'] )
 		{
-			$out[$odx]['bugString'] = '';
+			$out[$odx]['bugString'] = $bugString;
 		}
 	
    	    $odx++;
@@ -212,6 +238,8 @@ else
 {
     $gui->warning_msg = getWarning($args->type,$statusCode);
 }	
+
+
 
 // Time tracking
 //$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);

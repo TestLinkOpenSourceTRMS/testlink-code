@@ -1,15 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsByStatus.tpl,v 1.20 2010/10/31 08:24:33 mx-julian Exp $
-Purpose: show Test Results and Metrics
 
-rev:
-    20101031 - Julian - table did not show
-	20100719 - Eloff - Implement extTable for this report
-	20100527 - BUGID 3492 - show only test case summary for not run test cases
-	                        else show exec notes
-	20100309 - asimon - added sort hint icon on some columns where it was missing before 
-	20091016 - franciscom - results showed in one table for all platform (if any)
+show Test Results by Status
+
+@filesource	resultsByStatus.tpl
+@internal revisions
+@since 1.9.4
 *}
 
 {lang_get var='labels' 
@@ -44,26 +40,14 @@ rev:
 	{/foreach}
 	<br />
 	
-	{if $gui->bugInterfaceOn && $gui->type != 'n'}
-	  <h2 class="simple">{$labels.th_bugs_not_linked}{$gui->without_bugs_counter}</h2>
+	{if $gui->bugs_msg != ''}
+	  <h2 class="simple">{$gui->bugs_msg}{$gui->without_bugs_counter}</h2>
 	  <br />
 	{/if}
-	
-	{if $gui->type == 'f'}
-		<p class="italic">{$labels.info_failed_tc_report}</p>
-		<br />
-	{/if}
-	
-	{if $gui->type == 'b'}
-		<p class="italic">{$labels.info_blocked_tc_report}</p>
-		<br />
-	{/if}
-	
-	{if $gui->type == 'n'}
-		<p class="italic">{$labels.info_notrun_tc_report}</p>
-		<br />
-	{/if}
-	
+
+
+	<p class="italic">{$gui->info_msg|escape}</p>
+	<br />
 	{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}
 	<br \>

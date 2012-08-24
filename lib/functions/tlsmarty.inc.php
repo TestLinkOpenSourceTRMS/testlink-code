@@ -9,7 +9,7 @@
  * @filesource	tlsmarty.inc.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2005-2011, TestLink community 
+ * @copyright 	2005-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
@@ -17,8 +17,6 @@
  * @since 1.9.4
  * 20110816 - franciscom - TICKET 4703: Req. Spec. View - display log message 
  *
- * @since 1.9.3
- * 20110530 - asimon - fixed use of wrong constant name in constructor TLSmarty()
  */
 
 define('SMARTY_DIR', TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty'.  
@@ -189,8 +187,7 @@ class TLSmarty extends Smarty
         $this->assign('gsmarty_gui',$tlCfg->gui);
         $this->assign('gsmarty_spec_cfg',config_get('spec_cfg'));
         $this->assign('gsmarty_attachments',config_get('attachments'));
-        $this->assign('gsmarty_bugInterfaceOn',config_get('bugInterfaceOn'));
-
+        
         $this->assign('pageCharset',$tlCfg->charset);
         $this->assign('tlVersion',TL_VERSION);
         $this->assign('testproject_coloring',null);

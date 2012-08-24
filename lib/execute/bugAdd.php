@@ -110,15 +110,7 @@ function init_args()
  */
 function checkRights(&$db,&$user)
 {
-	/*
-	$hasRights = false;	
-	if( config_get('bugInterfaceOn') )
-	{
-		$hasRights = $user->hasRight($db,"testplan_execute");
-	}
-	*/
 	$hasRights = $user->hasRight($db,"testplan_execute");
-	
 	return $hasRights;
 }
 ?>

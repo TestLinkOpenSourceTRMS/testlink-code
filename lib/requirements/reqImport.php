@@ -35,8 +35,8 @@ switch($args->doAction)
         $dummy = doExecuteImport($gui->fileName,$args,$req_spec_mgr,$req_mgr);
 		$gui->items = $dummy->items;        
 		$gui->file_check = $dummy->file_check;
-		$gui->userFeedback = $dummy->userFeedback;
-		if(array_key_exists("syntaxError", $dummy->userFeedback) && count($dummy->userFeedback['syntaxError']) > 0) {
+		$gui->userFeedback = (array)$dummy->userFeedback;
+		if(array_key_exists("syntaxError", $gui->userFeedback) && count($gui->userFeedback['syntaxError']) > 0) {
 		    $gui->importResult = lang_get('import_syntax_error');
 		} else {
 		    $gui->importResult = lang_get('import_done');

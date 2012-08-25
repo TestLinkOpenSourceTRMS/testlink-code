@@ -170,6 +170,7 @@ switch($args->doAction)
     default:
 		break;
 }
+
 $smarty = new TLSmarty();
 if($do_display)
 {
@@ -231,8 +232,8 @@ if($do_display)
     $opt = array('write_button_only_if_linked' => 0, 'add_custom_fields' => 0);
     $opt['add_custom_fields'] = count($cfields) > 0 ? 1 : 0;
 
-	// 20101025 - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
-	// 20100411 - BUGID 2797 - filter by test case execution type
+	// Add Test Cases to Test plan - Right pane does not honor custom field filter
+	// filter by test case execution type
     $filters = array('keywords' => $args->keyword_id, 'testcases' => $testCaseSet, 
                      'exec_type' => $args->executionType, 'importance' => $args->importance,
                      'cfields' => $args->control_panel['filter_custom_fields'],

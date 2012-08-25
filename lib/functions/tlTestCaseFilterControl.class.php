@@ -35,7 +35,9 @@
  *
  * @internal revisions
  * @since 1.9.4
- * 20120816 - franciscom -TICKET 4905: Test Case Tester Assignment - filters dont work properly for 'Assigned to' Field
+ * 20120825 - franciscom - TICKET 5176: [Assign Test Case Execution] 
+ *										 Possibility to filter by Platform (using setting platform)
+ * 20120816 - franciscom - TICKET 4905: Test Case Tester Assignment - filters dont work properly for 'Assigned to' Field
  *
  */
 
@@ -271,6 +273,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * This array is used to map the modes to their available settings.
 	 * @var array
 	 */
+	 
+	// TICKET 5176: Possibility to filter by Platform - changes in 'plan_mode'
+	// 
 	private $mode_setting_mapping = array('edit_mode' => array('setting_refresh_tree_on_action'),
 	                                      'execution_mode' => array('setting_testplan',
 	                                                                'setting_build',
@@ -278,6 +283,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	                                                                'setting_refresh_tree_on_action'),
 	                                      'plan_mode' => array('setting_testplan',
 	                                                           'setting_build',
+	                                                           'setting_platform',
 	                                                           'setting_refresh_tree_on_action'),
 	                                      'plan_add_mode' => array('setting_testplan',
 	                                                               'setting_refresh_tree_on_action'));
@@ -510,11 +516,19 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			}
 		}
 		
-		// special situation: the build setting is in plan mode only needed for one feature
+		// special situations 
+		// the build setting is in plan mode only needed for one feature
 		if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') 
 		{
 			$this->settings['setting_build'] = false;
 		}
+	
+		// TICKET 5176: Possibility to filter by Platform - changes in 'plan_mode' 	
+		if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') 
+		{
+			$this->settings['setting_platform'] = false;
+		}
+		
 		
 		// if at least one active setting is left to display, switch settings panel on
 		if ($at_least_one_active) 
@@ -1030,12 +1044,16 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				
 				$root_node = $tree_menu->rootnode;
 				$children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
-				// BUGID 4613 - improved cookiePrefix - tree on test execution shows test cases
-				//              depending on test plan, platform and build. As test plan is
-				//              implcitily given with build -> store state for each platform-build
-				//              combination
-				// BUGID 4625 - usage of wrong values in $this->args->xyz for cookiePrefix
-				//              instead of correct values in $filters->setting_xyz
+				
+				//
+				// improved cookiePrefix - 
+				// tree on test execution shows test cases depending on test plan, platform and build. 
+				// Because test plan is implicitily given with build -> store state for each (platform-build)
+				// combination
+				//
+				// Usage of wrong values in $this->args->xyz for cookiePrefix
+				// instead of correct values in $filters->setting_xyz
+				//
 				$cookie_prefix = 'test_exec_build_id_' . $filters->setting_build . '_';
 				if (isset($filters->setting_platform)) 
 				{
@@ -1200,10 +1218,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	/**
 	 * 
 	 * 
+	 * 20120825 - franciscom - TICKET 5176: Possibility to filter by Platform
+	 *						   according mode we need to add [Any] option
+	 *
 	 */
 	private function init_setting_platform() 
 	{
-		if (!$this->platform_mgr) {
+		if (!$this->platform_mgr) 
+		{
 			$this->platform_mgr = new tlPlatform($this->db);
 		}
 		$key = 'setting_platform';
@@ -1211,28 +1233,43 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->settings[$key] = array('items' => null, 'selected' => $this->args->{$key});
 		$testplan_id = $this->settings['setting_testplan']['selected'];
 
-		$this->settings[$key]['items'] = $this->platform_mgr->getLinkedToTestplanAsMap($testplan_id);
-
+		$checkSelected = true;
+		$platformSet = $this->platform_mgr->getLinkedToTestplanAsMap($testplan_id);
+		$this->settings[$key]['items'] = $platformSet;
+		switch($this->mode)
+		{
+			case 'plan_mode':
+				if( !is_null($platformSet) )
+				{
+					$this->settings[$key]['items'] = array(0 => $this->option_strings['any']);
+					$this->settings[$key]['items'] += $platformSet;
+					$checkSelected = false;
+				}
+			break;
+		}
+		
 		// BUGID 3726
 		$session_key = $testplan_id . '_stored_setting_platform';
 		$session_selection = isset($_SESSION[$session_key]) ? $_SESSION[$session_key] : null;
 		
 		// if no platform has been selected when entering the feature the first time set it
 		// according to preselected value on gui
-		$this->args->{$key} = $this->args->{$key} > 0 ? $this->args->{$key} : $session_selection;
-
-		if (!$this->settings[$key]['selected']) {
+		// TICKET 
+		$this->args->{$key} = !is_null($this->args->{$key}) ? $this->args->{$key} : $session_selection;
+		if( $checkSelected && !$this->settings[$key]['selected']) 
+		{
 			$this->settings[$key]['selected'] = $session_selection;
 		}
 
 		if (!isset($this->settings[$key]['items']) || !is_array($this->settings[$key]['items'])) {
 			$this->settings[$key] = false;
-		} else if (isset($this->settings[$key]['items']) && is_array($this->settings[$key]['items']) && 
-				   is_null($this->settings[$key]['selected'])) {
-					// platforms exist, but none has been selected yet, so select first one
+		} 
+		else if (isset($this->settings[$key]['items']) && is_array($this->settings[$key]['items']) && 
+				   is_null($this->settings[$key]['selected'])) 
+	    {
+			// platforms exist, but none has been selected yet, so select first one
 			$this->settings[$key]['selected'] =	key($this->settings[$key]['items']);
 		}
-
 		$_SESSION[$session_key] = $this->settings[$key]['selected'];
 	} // end of method
 
@@ -1347,7 +1384,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->filters[$key] = false;
 		$keywords = null;
 
-		switch ($this->mode) {
+		switch ($this->mode) 
+		{
 			case 'edit_mode':
 			case 'plan_add_mode':  	// BUGID 3822
 				// we need the keywords for the whole testproject
@@ -1489,7 +1527,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$visible_testers = $all_testers;
 		
 		// in execution mode the rights of the user have to be regarded
-		if ($this->mode == 'execution_mode') {
+		if ($this->mode == 'execution_mode') 
+		{
 			$role = $this->user->getEffectiveRole($this->db, $this->args->testproject_id, $tplan_id);
 			
 			$simple_tester_roles = array_flip($this->configuration->exec_cfg->simple_tester_roles);

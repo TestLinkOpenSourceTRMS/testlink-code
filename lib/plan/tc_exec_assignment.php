@@ -10,6 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20120825 - franciscom - TICKET 5176: Possibility to filter by Platform
  * 
  */
          
@@ -140,14 +141,18 @@ switch($args->level)
         $yy = array_keys($xx);  // done to silence warning on end()
         $tsuite_data['id'] = end($yy);
         $tsuite_data['name'] = $xx[$tsuite_data['id']]['value']; 
-		$xx = $tplan_mgr->getLinkInfo($args->tplan_id,$args->id,null,
+        
+        // TICKET 5176
+		$xx = $tplan_mgr->getLinkInfo($args->tplan_id,$args->id,$args->control_panel['setting_platform'],
 									 array('output' => 'assignment_info',
 									       'build4assignment' => $args->build_id));
         $linked_items[$args->id] = $xx;
 		$opt = array('write_button_only_if_linked' => 1, 'user_assignments_per_build' => $args->build_id);
-		$filters = array('keywords' => $keywordsFilter->items );	
+		$filters = array('keywords' => $keywordsFilter->items);
+
 		//New dBug($opt);
 		//New dBug($linked_items);
+		//Die();
 		
 		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 						        $linked_items,null,$filters,$opt);
@@ -170,6 +175,9 @@ switch($args->level)
 		// $opt = array('user_assignments_per_build' => $args->build_id);
 		$opt = array('assigned_on_build' => $args->build_id);
 		$filters += $opt;
+
+        // TICKET 5176
+		// platform filter is generated inside getFilteredSpecView() using $args->control_panel['setting_platform'];
 		$out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
 		break;
 

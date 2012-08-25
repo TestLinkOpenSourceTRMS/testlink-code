@@ -1239,7 +1239,6 @@ class testplan extends tlObjectWithAttachments
 		if( $my['options']['items2copy']['copy_tcases'] )
 		{
 			$my['options']['items2copy']['copy_platforms_links'] = 1;
-			// BUGID 3846
 			$this->copy_linked_tcversions($id,$new_tplan_id,$user_id,$my['options'],$mappings, $build_id_mapping);
 		}
 
@@ -5575,7 +5574,9 @@ class testplan extends tlObjectWithAttachments
 		// This NEVER HAPPENS for Execution Tree, but if we want to reuse
 		// this method for Tester Assignment Tree, we need to add this check
 		//
-		if( !is_null($ic['filters']['platform_id']) )
+		// TICKET 5176: Possibility to filter by Platform
+		if( !is_null($ic['filters']['platform_id']) && $ic['filters']['platform_id'] > 0)
+		// if( !is_null($ic['filters']['platform_id']) )
 		{
 			$ic['filters']['platform_id'] = intval($ic['filters']['platform_id']);
 			$ic['where']['platforms'] = " AND TPTCV.platform_id = {$ic['filters']['platform_id']} ";
@@ -5665,13 +5666,12 @@ class testplan extends tlObjectWithAttachments
 		}
                                
                                
-        // 20120616 - missing logic on exec_status.                       
 		if (!is_null($ic['filters']['exec_status']))
 		{
 			$dummy = (array)$ic['filters']['exec_status'];
 			$ic['where']['where'] .= " AND E.status IN ('" . implode("','",$dummy) . "')";
 		}
-                               
+                      
         return $ic;                       
 	}                              
 
@@ -5722,6 +5722,7 @@ class testplan extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$safe['tplan_id'] = intval($id);
+		
 		$my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
 	    
 	    

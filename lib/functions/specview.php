@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120825 - franciscom - TICKET 5176: Possibility to filter by Platform
  * 20111230 - franciscom - refactoring to use current() instead of fixed access to element with index 0
  * 20110824 - franciscom - fixed issue using get_branch()	
  * 20110820 - franciscom - TICKET 4710 - getFilteredLinkedVersions()	
@@ -316,13 +317,18 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr, $options = null)
 {
 	static $tsuite_mgr;
-	
 	$doFilterByKeyword = (!is_null($argsObj->keyword_id) && $argsObj->keyword_id > 0) ? true : false;
 	
 	// Multiple step algoritm to apply keyword filter on type=AND
 	// get_*_tcversions filters by keyword ALWAYS in OR mode.
 	//
-	$filters = array('keyword_id' => $argsObj->keyword_id);
+	// TICKET 5176: Possibility to filter by Platform
+	$filters = array('keyword_id' => $argsObj->keyword_id, 'platform_id' => null);
+    if( property_exists($argsObj,'control_panel') && intval($argsObj->control_panel['setting_platform']) > 0 )
+    {
+ 		$filters['platform_id'] = intval($argsObj->control_panel['setting_platform']);
+    } 				 
+	
 	if( isset($options['assigned_on_build']) && $options['assigned_on_build'] > 0)
 	{
 		$filters['assigned_on_build'] = $options['assigned_on_build'];

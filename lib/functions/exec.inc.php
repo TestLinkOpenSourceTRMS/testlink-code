@@ -176,14 +176,16 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
 	$tables = tlObjectWithDB::getDBTables(array('executions','execution_bugs','builds'));
 	$bug_list=array();
 
+	$debugMsg = 'FILE:: ' . __FILE__ . ' :: FUNCTION:: ' . __FUNCTION__;
 	if( is_object($bug_interface) )
 	{
-		$sql = 	"SELECT execution_id,bug_id,builds.name AS build_name " .
+		
+		$sql = 	"/* $debugMsg */ SELECT execution_id,bug_id,builds.name AS build_name " .
 				"FROM {$tables['execution_bugs']}, {$tables['executions']} executions, " .
 				" {$tables['builds']} builds ".
-				" WHERE execution_id={$execution_id} " .
-				" AND   execution_id=executions.id " .
-				" AND   executions.build_id=builds.id " .
+				" WHERE execution_id = {$execution_id} " .
+				" AND   execution_id = executions.id " .
+				" AND   executions.build_id = builds.id " .
 				" ORDER BY builds.name,bug_id";
 
 		$map = $db->get_recordset($sql);

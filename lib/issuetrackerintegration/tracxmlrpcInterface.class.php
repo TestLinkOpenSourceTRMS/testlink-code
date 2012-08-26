@@ -34,6 +34,10 @@ class tracxmlrpcInterface extends issueTrackerInterface
 {
     private $APIClient;
 
+	// this info has been get from ticket.get documentation
+	const TICKET_GET_ID_IDX = 0;
+	const TICKET_GET_ATTRIBUTES_IDX = 3;
+	 
 	/**
 	 * Construct and connect to BTS.
 	 *
@@ -66,7 +70,7 @@ class tracxmlrpcInterface extends issueTrackerInterface
 		$base = trim($this->cfg->uribase,"/") . '/'; // be sure no double // at end
 	    if( !property_exists($this->cfg,'urixmlrpc') )
 	    {
-	    	$this->cfg->urixmlrpc = $base . '/xmlrpc';
+	    	$this->cfg->urixmlrpc = $base . 'xmlrpc';
 		}
 		
 	    if( !property_exists($this->cfg,'uriview') )
@@ -118,7 +122,8 @@ class tracxmlrpcInterface extends issueTrackerInterface
 			// to cast properties BEFORE using it.
 			$this->createAPIClient();
 	       	$this->connected = true;
-			// var_dump($this->APIClient);
+	       	
+			//var_dump($this->APIClient);
 			//echo '<br><br><b>END</b> ' . __METHOD__ . '<br><br>';
 			
         }
@@ -151,24 +156,44 @@ class tracxmlrpcInterface extends issueTrackerInterface
      **/
 	public function getIssue($issueID)
 	{
-        $resp = $this->sendCmd('ticket.get', $issueID);
-
-		// new dBug($resp);
+		// array ticket.get(int id) Fetch a ticket. 
+		// Returns [id, time_created, time_changed, attributes]. 
+		// attributes is following map (@20120826)
+		//		
+		// ------------------------------------------
+		// key          | value
+		// ------------------------------------------
+		// status 		| new
+		// description 	| MERCURIAL FIRST TICKET
+		// reporter 	| admin
+		// cc 			| [empty string]
+		// component 	| component1
+		// summary 		| MERCURIAL FIRST TICKET
+		// priority 	| major
+		// keywords 	| [empty string]
+		// version 		| [empty string]
+		// milestone 	| [empty string]
+		// owner 		| somebody
+		// type 		| defect
+		//	
 		
-		/*
-		if(count($resp['Bug.get']['faults'] == 0))
+        $resp = $this->sendCmd('ticket.get', $issueID);
+		if( $resp == false )
 		{
+			$issue = null;
+		}
+		else
+		{
+			$attrib = $resp[self::TICKET_GET_ATTRIBUTES_IDX];
 			$issue = new stdClass();
 		    $issue->IDHTMLString = "<b>{$issueID} : </b>";
-			
 			$issue->statusCode = 0;
-			$issue->statusVerbose = $resp['Bug.get']['bugs'][0]['status'];
+			$issue->statusVerbose = $attrib['status'];
 			$issue->statusHTMLString = "[$issue->statusVerbose] ";
-
-			$issue->summary = $issue->summaryHTMLString = $resp['Bug.get']['bugs'][0]['summary'];
+			$issue->summary = $issue->summaryHTMLString = $attrib['summary'];
+		
 		}
 		return $issue;
-		*/
 	}
 
 
@@ -223,12 +248,12 @@ class tracxmlrpcInterface extends issueTrackerInterface
      **/
     function checkBugIDExistence($issueID)
     {
+    	$dBugLabel = array('label' => __METHOD__);
         if(($status_ok = $this->checkBugIDSyntax($issueID)))
         {
             $issue = $this->getIssue($issueID);
             
-            var_dump($issue);
-            die();
+            // new dBug($issue,$dBugLabel);
             $status_ok = is_object($issue) && !is_null($issue);
         }
         return $status_ok;
@@ -241,7 +266,6 @@ class tracxmlrpcInterface extends issueTrackerInterface
      **/
 	function createAPIClient()
 	{
-		// echo __METHOD__ .'<br>';
 		try
 		{
             // Create a new connection with the TRAC-server.
@@ -271,18 +295,15 @@ class tracxmlrpcInterface extends issueTrackerInterface
     	$msg->addParam($param);
     	
     	// Send request with timeout disabled
-    	var_dump($this->APIClient);
-    	
     	$response = $this->APIClient->send($msg, 0);
-		new dBug($response, array('label' => __METHOD__)); 
-		die();    	                      
-    	                                           
     	if (!$response->errno) 
     	{
     		$response = php_xmlrpc_decode($response->val);
+			//new dBug($response);
     	} 
     	else 
     	{
+    		tLog();
     		$response = false;
     	}
     	   		

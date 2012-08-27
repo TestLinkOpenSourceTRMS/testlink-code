@@ -1122,13 +1122,17 @@ function filterStatusSetAtLeastOneOfActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_
 	{
 		if( $safe_platform > 0 )
 		{
+			tLog(basename(__FILE__) . __FUNCTION__ . ':: $tplan_mgr->getHitsSameStatusPartialOnPlatform', 'DEBUG');
 			$hits = $tplan_mgr->getHitsSameStatusPartialOnPlatform($tplan_id,$safe_platform,
 												    		       (array)$filters->filter_result_result); 
 		}
 		else
 		{
+			tLog(basename(__FILE__) . __FUNCTION__ . ':: $tplan_mgr->getHitsSameStatusPartialALOP', 'DEBUG');
 			$hits = $tplan_mgr->getHitsSameStatusPartialALOP($tplan_id,(array)$filters->filter_result_result); 
 		}
+		
+		new dBug($hits);
 		
 		if( is_null($hits) ) 
 		{
@@ -1175,13 +1179,13 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
 		$safe_platform = intval($filters->setting_platform);
 		if( $safe_platform > 0 )
 		{
-			tLog(__FUNCTION__ . ':: $tplan_mgr->getHitsSameStatusFullOnPlatform', 'DEBUG');
+			tLog(basename(__FILE__) . __FUNCTION__ . ':: $tplan_mgr->getHitsSameStatusFullOnPlatform', 'DEBUG');
 			$hits = $tplan_mgr->getHitsSameStatusFullOnPlatform($tplan_id,$safe_platform,
 													  			(array)$filters->filter_result_result,$buildSet);
 		}
 		else
 		{
-			tLog(__FUNCTION__ . ':: $tplan_mgr->getHitsSameStatusFullALOP', 'DEBUG');
+			tLog(basename(__FILE__) .__FUNCTION__ . ':: $tplan_mgr->getHitsSameStatusFullALOP', 'DEBUG');
 			$hits = $tplan_mgr->getHitsSameStatusFullALOP($tplan_id,
 													  	  (array)$filters->filter_result_result,$buildSet);
 		}
@@ -1503,12 +1507,17 @@ function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testpr
  * @param array $filters Filter settings which shall be applied to the tree
  * @param array $options Further options which shall be applied on generating the tree
  * @return array $filtered_map map with all fitting requirements
+ *
+ * @internal revisions
+ * @since 1.9.4
+ * 20120827 - franciscom - TICKET 5178: Requirement Specification->"Req. Spec. Type" Filter-> KO
+ *
  */
 function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters, $options) {
 	$filtered_map = null;
 	$tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy', 'requirements', 'req_specs',
 	                                            'req_relations', 'req_versions', 'req_coverage',
-	                                            'tcversions', 'cfield_design_values'));
+	                                            'tcversions', 'cfield_design_values','req_specs_revisions'));
 	
 	$sql = " SELECT R.id, R.req_doc_id, NH_R.name AS title, R.srs_id, " .
 	       "        RS.doc_id AS req_spec_doc_id, NH_RS.name AS req_spec_title, " .
@@ -1519,14 +1528,17 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
 	       " JOIN {$tables['nodes_hierarchy']} NH_RV ON NH_RV.parent_id = NH_R.id " .
 	       " JOIN {$tables['req_versions']} RV ON RV.id = NH_RV.id " .
 	       " JOIN {$tables['req_specs']} RS ON RS.id = R.srs_id " .
+	       " JOIN {$tables['req_specs_revisions']} RSPECREV ON RSPECREV.parent_id = RS.id " .
 	       " JOIN {$tables['nodes_hierarchy']} NH_RS ON NH_RS.id = RS.id ";
 
-	if (isset($filters['filter_relation'])) {
+	if (isset($filters['filter_relation'])) 
+	{
 		$sql .= " JOIN {$tables['req_relations']} RR " .
 		        " ON (RR.destination_id = R.id OR RR.source_id = R.id) ";
 	}	
 	
-	if (isset($filters['filter_tc_id'])) {
+	if (isset($filters['filter_tc_id'])) 
+	{
 		$tc_cfg = config_get('testcase_cfg');
 		$tc_prefix = $testproject_mgr->getTestCasePrefix($testproject_id);
 		$tc_prefix .= $tc_cfg->glue_character;
@@ -1540,28 +1552,34 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
 		        "                                    AND TV.tc_external_id = {$tc_ext_id} ";
 	}
 	
-	if (isset($filters['filter_custom_fields'])) {
+	if (isset($filters['filter_custom_fields'])) 
+	{
 		$suffix = 1;
 		
-		foreach ($filters['filter_custom_fields'] as $cf_id => $cf_value) {
+		foreach ($filters['filter_custom_fields'] as $cf_id => $cf_value) 
+		{
 			$sql .= " JOIN {$tables['cfield_design_values']} CF{$suffix} " .
-			        //BUGID 2877 -  Custom Fields linked to Req versions
 			        " ON CF{$suffix}.node_id = RV.id " .
 			        " AND CF{$suffix}.field_id = {$cf_id} ";
 			
 			// single value or array?
-			if (is_array($cf_value)) {
+			if (is_array($cf_value)) 
+			{
 				$sql .= " AND ( ";
 				$count = 1;
-				foreach ($cf_value as $value) {
-					if ($count > 1) {
+				foreach ($cf_value as $value) 
+				{
+					if ($count > 1) 
+					{
 						$sql .= " OR ";
 					}
 					$sql .= " CF{$suffix}.value LIKE '%{$value}%' ";
 					$count++;
 				}
 				$sql .= " ) ";
-			} else {
+			} 
+			else 
+			{
 				$sql .= " AND CF{$suffix}.value LIKE '%{$cf_value}%' ";
 			}
 			
@@ -1571,66 +1589,80 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
 	
 	$sql .= " WHERE RS.testproject_id = {$testproject_id} ";
 
-	if (isset($filters['filter_doc_id'])) {
+	if (isset($filters['filter_doc_id'])) 
+	{
 		$doc_id = $db->prepare_string($filters['filter_doc_id']);
 		$sql .= " AND R.req_doc_id LIKE '%{$doc_id}%' OR RS.doc_id LIKE '%{$doc_id}%' ";
 	}
 	
-	if (isset($filters['filter_title'])) {
+	if (isset($filters['filter_title'])) 
+	{
 		$title = $db->prepare_string($filters['filter_title']);
 		$sql .= " AND NH_R.name LIKE '%{$title}%' ";
 	}
 	
-	if (isset($filters['filter_coverage'])) {
+	if (isset($filters['filter_coverage'])) 
+	{
 		$coverage = $db->prepare_int($filters['filter_coverage']);
 		$sql .= " AND expected_coverage = {$coverage} ";
 	}
 	
-	if (isset($filters['filter_status'])) {
+	if (isset($filters['filter_status'])) 
+	{
 		$statuses = (array) $filters['filter_status'];
-		foreach ($statuses as $key => $status) {
+		foreach ($statuses as $key => $status) 
+		{
 			$statuses[$key] = "'" . $db->prepare_string($status) . "'";
 		}
 		$statuses = implode(",", $statuses);
 		$sql .= " AND RV.status IN ({$statuses}) ";
 	}
 	
-	if (isset($filters['filter_type'])) {
+	if (isset($filters['filter_type'])) 
+	{
 		$types = (array) $filters['filter_type'];
 
-		// BUGID 3671
-		foreach ($types as $key => $type) {
+		foreach ($types as $key => $type) 
+		{
 			$types[$key] = $db->prepare_string($type);
 		}
 		$types = implode("','", $types);
 		$sql .= " AND RV.type IN ('{$types}') ";
 	}
 	
-	if (isset($filters['filter_spec_type'])) {
+	if (isset($filters['filter_spec_type'])) 
+	{
 		$spec_types = (array) $filters['filter_spec_type'];
 
-		// BUGID 3671
-		foreach ($spec_types as $key => $type) {
+		foreach ($spec_types as $key => $type) 
+		{
 			$spec_types[$key] = $db->prepare_string($type);
 		}
 		$spec_types = implode("','", $spec_types);
-		$sql .= " AND RS.type IN ('{$spec_types}') ";
+		$sql .= " AND RSPECREV.type IN ('{$spec_types}') ";
 	}
 	
-	if (isset($filters['filter_relation'])) {
+	if (isset($filters['filter_relation'])) 
+	{
 		$sql .= " AND ( ";
 		$count = 1;
-		foreach ($filters['filter_relation'] as $key => $rel_filter) {
+		foreach ($filters['filter_relation'] as $key => $rel_filter) 
+		{
 			$relation_info = explode('_', $rel_filter);
 			$relation_type = $db->prepare_int($relation_info[0]);
 			$relation_side = isset($relation_info[1]) ? $relation_info[1] : null;
 			$sql .= ($count == 1) ? " ( " : " OR ( ";
 			
-			if ($relation_side == "destination") {
+			if ($relation_side == "destination") 
+			{
 				$sql .= " RR.destination_id = R.id ";
-			} else if ($relation_side == "source") {
+			} 
+			else if ($relation_side == "source") 
+			{
 				$sql .= " RR.source_id = R.id ";
-			} else {
+			} 
+			else 
+			{
 				$sql .= " (RR.destination_id = R.id OR RR.source_id = R.id) ";
 			}
 			

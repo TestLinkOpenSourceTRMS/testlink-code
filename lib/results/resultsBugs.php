@@ -32,6 +32,8 @@ $its = null;
 $tproject_mgr = new testproject($db);
 $info = $tproject_mgr->get_by_id($args->tproject_id);
 $gui->bugInterfaceOn = $info['issue_tracker_enabled'];
+
+new dBug($gui);
 if($info['issue_tracker_enabled'])
 {
 	$it_mgr = new tlIssueTracker($db);
@@ -57,7 +59,10 @@ unset($tproject_mgr);
 // $filters = array();
 //$options = array('output' => 'array', 'only_executed' => true, 'details' => 'full');
 // $execSet = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters, $options);
-$execSet = $metricsMgr->getExecutionsByStatus($args->tplan_id,$args->type,null,array('output' => 'array'));
+$execSet = $metricsMgr->getLTCVNewGeneration($args->tplan_id,null,
+											 array('addExecInfo' => true, 'accessKeyType' => 'index'));
+
+new dBug($execSet);
 
 
 $testcase_bugs = array();
@@ -66,9 +71,13 @@ $mine = array();
 $l18n = init_labels(array('execution_history' => null,'design' => null,'no_linked_bugs' => null));
 foreach ($execSet as $execution) 
 {
+	new dBug($execution);
+	// die();
+	
 	$tc_id = $execution['tc_id'];
 	$mine[] = $execution['exec_id'];
-	$bug_urls = buildBugString($db, $execution['exec_id'], $openBugs, $resolvedBugs);
+	
+	$bug_urls = buildBugString($db, $execution['exec_id'],$its,  $openBugs, $resolvedBugs);
 	if ($bug_urls)
 	{
 		// First bug found for this tc
@@ -165,13 +174,16 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  *
  * @return array List of links to related bugs
  */
-function buildBugString(&$db,$execID,&$openBugsArray,&$resolvedBugsArray)
+function buildBugString(&$db,$execID,&$bugInterface,&$openBugsArray,&$resolvedBugsArray)
 {
 	$bugUrls = array();
-	$bugInterface = config_get('bugInterface');
+	
+	new dBug($execID);
 	if ($bugInterface)
 	{
 		$bugs = get_bugs_for_exec($db,$bugInterface,$execID);
+	
+		
 		if ($bugs)
 		{
 			foreach($bugs as $bugID => $bugInfo)

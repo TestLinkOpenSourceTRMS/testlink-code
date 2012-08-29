@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120829 - KuiBie - TICKET 5133: Test cases - possibility to have step expected result reuse, as exists for step action
  * 20120822 - franciscom -TICKET 5159: importing duplicate test suites
  * 20120819 - franciscom - TICKET 4937: Test Cases EXTERNAL ID is Auto genarated, no matter is provided on XML
  *						   create() changed
@@ -5245,14 +5246,24 @@ class testcase extends tlObjectWithAttachments
 	  return($recordset ? $recordset : null);
 	}
 
-
-
 	/**
-	 *
+	 * Expanded the function renderGhostSteps to include expected results
 	 */
 	function renderGhostSteps(&$steps2render)
 	{
-		$loop2do = count($steps2render);
+		$loop2do = count($steps2render);		
+		
+		$rse = &$steps2render;
+		for($gdx=0; $gdx < $loop2do; $gdx++)
+		{
+			$this->doRenderGhost($rse, $gdx, 'actions');
+			$this->doRenderGhost($rse, $gdx, 'expected_results');		
+		}
+	}			
+	
+	function doRenderGhost(&$rse,$gdx,$prop) 
+	{
+	
 		$tlBeginMark = '[ghost]';
 		$tlEndMark = '[/ghost]';
 		
@@ -5261,44 +5272,40 @@ class testcase extends tlObjectWithAttachments
 		// when trying to use json_decode().
 		// Hope this set is enough.
 		$replaceSet = array($tlEndMark, '</p>', '<p>','&nbsp;');
-		
-		$rse = &$steps2render;
-		for($gdx=0; $gdx < $loop2do; $gdx++)
+	
+		$start = strpos($rse[$gdx][$prop],$tlBeginMark);
+		$action = $rse[$gdx][$prop];
+		if($start > 0)
 		{
-			$start = strpos($rse[$gdx]['actions'],$tlBeginMark);
-			$action = $rse[$gdx]['actions'];
-			if($start > 0)
+			$xx = explode($tlBeginMark,$rse[$gdx][$prop]);
+			$xx2do = count($xx);
+			$action = '';
+			for($xdx=0; $xdx < $xx2do; $xdx++)
 			{
-				$xx = explode($tlBeginMark,$rse[$gdx]['actions']);
-				$xx2do = count($xx);
-				$action = '';
-				for($xdx=0; $xdx < $xx2do; $xdx++)
+				if(strpos($xx[$xdx],$tlEndMark) > 0)
 				{
-					if(strpos($xx[$xdx],$tlEndMark) > 0)
+					$dx = trim(str_replace($replaceSet,'',$xx[$xdx]));
+					$dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
+					$dx = json_decode($dx,true);
+					$xid = $this->getInternalID($dx['TestCase']);
+					// echo('xdi::' . $xid);
+					if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
 					{
-						$dx = trim(str_replace($replaceSet,'',$xx[$xdx]));
-						$dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
-						$dx = json_decode($dx,true);
-						$xid = $this->getInternalID($dx['TestCase']);
-						// echo('xdi::' . $xid);
-						if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
+						$fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
+						if(!is_null($fi))
 						{
-							$fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
-							if(!is_null($fi))
-							{
-								$stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
-								$action .= $stx[0]['actions'];
-							}
-						}	
-					}
+							$stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
+							$action .= $stx[0][$prop];
+						}
+					}	
 				}
 			}
-			if($action != '')
-			{
-				$rse[$gdx]['actions'] = $action;
-			}					
 		}
-	}		
+		if($action != '')
+		{
+			$rse[$gdx][$prop] = $action;
+		}		
+	}	
 	
 	/**
 	 * Gets test cases created per user. The test cases are restricted to a 

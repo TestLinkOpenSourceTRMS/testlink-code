@@ -3,35 +3,22 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.44 $
- * @modified $Date: 2010/10/15 11:43:25 $ by $Author: mx-julian $
+ * @filesource resultsBugs.php
  * @author kevinlevy
  * 
- * rev :
- *  20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                      table state independent from localization
- *  20101012 - Julian - added html comment to properly sort by test case column
- *  20101005 - asimon - added linked icon for test case editing
- *	20100920 - Julian - use exttable
- *	20100616 - eloff - refactor out results class
- *	20100124 - eloff - BUGID 3012 - don't show internal id in report
- *	20080413 - franciscom - refactoring + BUGID 1477 
- *	20070827 - franciscom - BUGID 994
+ * @internal revisions
+ * @since 1.9.4
+ * 
+ * 
  */
-
-
 require('../../config.inc.php');
 require_once('common.php');
 require_once("lang_api.php");
 require_once('displayMgr.php');
 require_once('exec.inc.php'); // used for bug string lookup
 require_once('exttable.class.php');
-if (config_get('interface_bugs') != 'NO')
-{
-  require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' .
-               DIRECTORY_SEPARATOR . 'int_bugtracking.php');
-}
+
+
 testlinkInitPage($db,true,false,"checkRights");
 $gui = new stdClass();
 $gui->warning_msg = '';
@@ -40,26 +27,38 @@ $gui->tableSet = null;
 $templateCfg = templateConfiguration();
 $args = init_args();
 
+// get issue tracker config and object to manage TestLink - BTS integration 
+$its = null;
+$tproject_mgr = new testproject($db);
+$info = $tproject_mgr->get_by_id($args->tproject_id);
+$gui->bugInterfaceOn = $info['issue_tracker_enabled'];
+if($info['issue_tracker_enabled'])
+{
+	$it_mgr = new tlIssueTracker($db);
+	$its = $it_mgr->getInterfaceObject($args->tproject_id);
+	unset($it_mgr);
+}	
+
 
 $smarty = new TLSmarty;
 $img = $smarty->getImages();
-// $history_img = TL_THEME_IMG_DIR . "history_small.png";
-// $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
-
 $openBugs = array();
 $resolvedBugs = array();
 $arrData = array();
 
 $tplan_mgr = new testplan($db);
+$metricsMgr = new tlTestPlanMetrics($db);
 $tproject_mgr = new testproject($db);
 
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 unset($tproject_mgr);
 
-$filters = array();
-$options = array('output' => 'array', 'only_executed' => true, 'details' => 'full');
-$execSet = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters, $options);
+// $filters = array();
+//$options = array('output' => 'array', 'only_executed' => true, 'details' => 'full');
+// $execSet = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters, $options);
+$execSet = $metricsMgr->getExecutionsByStatus($args->tplan_id,$args->type,null,array('output' => 'array'));
+
 
 $testcase_bugs = array();
 $mine = array();

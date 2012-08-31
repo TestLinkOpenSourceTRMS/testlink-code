@@ -11,7 +11,8 @@
  *
  * @internal revisions
  * @since 1.9.4
- * 20120822 - franciscom -TICKET 5159: importing duplicate test suites
+ * 20120831 - franciscom - TICKET 5133: Test cases - possibility to have step expected result reuse, as exists for step action
+ * 20120822 - franciscom - TICKET 5159: importing duplicate test suites
  * 20120819 - franciscom - TICKET 4937: Test Cases EXTERNAL ID is Auto genarated, no matter is provided on XML
  *						   create() changed
  *	 
@@ -5249,12 +5250,14 @@ class testcase extends tlObjectWithAttachments
 
 	/**
 	 *
+	 * 20120831 - franciscom - TICKET 5133
 	 */
 	function renderGhostSteps(&$steps2render)
 	{
 		$loop2do = count($steps2render);
 		$tlBeginMark = '[ghost]';
 		$tlEndMark = '[/ghost]';
+		$key2check = array('actions','expected_results');
 		
 		// I've discovered that working with Web Rich Editor generates 
 		// some additional not wanted entities, that disturb a lot
@@ -5265,38 +5268,40 @@ class testcase extends tlObjectWithAttachments
 		$rse = &$steps2render;
 		for($gdx=0; $gdx < $loop2do; $gdx++)
 		{
-			$start = strpos($rse[$gdx]['actions'],$tlBeginMark);
-			$action = $rse[$gdx]['actions'];
-			if($start > 0)
+			foreach($key2check as $item_key)
 			{
-				$xx = explode($tlBeginMark,$rse[$gdx]['actions']);
-				$xx2do = count($xx);
-				$action = '';
-				for($xdx=0; $xdx < $xx2do; $xdx++)
+				$start = strpos($rse[$gdx][$item_key],$tlBeginMark);
+				$ghost = $rse[$gdx][$item_key];
+			
+				if($start > 0)
 				{
-					if(strpos($xx[$xdx],$tlEndMark) > 0)
+					$xx = explode($tlBeginMark,$rse[$gdx][$item_key]);
+					$xx2do = count($xx);
+					$ghost = '';
+					for($xdx=0; $xdx < $xx2do; $xdx++)
 					{
-						$dx = trim(str_replace($replaceSet,'',$xx[$xdx]));
-						$dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
-						$dx = json_decode($dx,true);
-						$xid = $this->getInternalID($dx['TestCase']);
-						// echo('xdi::' . $xid);
-						if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
+						if(strpos($xx[$xdx],$tlEndMark) > 0)
 						{
-							$fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
-							if(!is_null($fi))
+							$dx = trim(str_replace($replaceSet,'',$xx[$xdx]));
+							$dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
+							$dx = json_decode($dx,true);
+							if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
 							{
-								$stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
-								$action .= $stx[0]['actions'];
-							}
-						}	
+								$fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
+								if(!is_null($fi))
+								{
+									$stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
+									$ghost .= $stx[0][$item_key];
+								}
+							}	
+						}
 					}
 				}
-			}
-			if($action != '')
-			{
-				$rse[$gdx]['actions'] = $action;
-			}					
+				if($ghost != '')
+				{
+					$rse[$gdx][$item_key] = $ghost;
+				}
+			} 					
 		}
 	}		
 	

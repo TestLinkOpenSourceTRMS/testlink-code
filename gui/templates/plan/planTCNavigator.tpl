@@ -7,18 +7,6 @@ Scope: show test plan tree for execution
 @since 1.9.4
 20110824 - franciscom - TICKET 4721: Left side tree manu - add specific navigator titles
 
-@since 1.9.1
-20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
-20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
-20101027 - asimon - BUGID 3946: reqirement specification tree size
-20100708 - aismon - BUGDI 3406 - removed functionality and labels from 3049
-20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
-                 them with new included template inc_tc_filter_panel.tpl
-20100412 - asimon - BUGID 3379, changed displaying of some filters
-20100302 - asimon - BUGID 3049, added button in filter frame
-20100218 - asimon - BUGID 3049, changed root_href
-20100202 - asimon - BUGID 2455, BUGID 3026, changed filtering 
-                 panel is now ext collapsible panel
 *}
 
 {lang_get var="labels" 

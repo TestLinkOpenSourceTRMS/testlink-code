@@ -16,6 +16,7 @@
  * @internal revisions
  * 
  *  @since 1.9.4
+ *  TICKET 5182: Add/Remove Test Cases -> Trying to assign new platform to executed test cases
  *  20120812 - kinow - TICKET 3987 - Added methods to copy attachments when copying a test plan
  *	20120808 - franciscom - TICKET 5131 - getHitsNotRunOnBuildPlatform()
  *	20120806 - franciscom - getLTCVNewGeneration() - added new option 'accessKeyType'
@@ -6044,11 +6045,6 @@ class testplan extends tlObjectWithAttachments
 		$safe['tplan_id'] = intval($id);
 		$my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
     
-   
-    
-    	//New dBug($my, array('label' => __METHOD__));
-	    //New dBug($my,array('label' => __METHOD__));
-	    
 	    $mop = array('options' => array('addExecInfo' => false,'specViewFields' => false, 
 	    								'assigned_on_build' => null, 'testSuiteInfo' => false));
 	    $my['options'] = array_merge($mop['options'],$my['options']);
@@ -6072,12 +6068,16 @@ class testplan extends tlObjectWithAttachments
 			$buildClause = array('lex' => '','exec_join' => '');
 		}
 
-		$sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.build_id," .
+		// TICKET 5182: Add/Remove Test Cases -> Trying to assign new platform to executed test cases
+		// Before this ticket LEX was just on BUILD => ignoring platforms
+		// Need to understand if will create side effects.
+		//
+		$sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id," .
 				  " MAX(EE.id) AS id " .
 				  " FROM {$this->tables['executions']} EE " . 
 				  " WHERE EE.testplan_id = " . $safe['tplan_id'] . 
 				  $buildClause['lex'] .
-				  " GROUP BY EE.tcversion_id,EE.testplan_id,EE.build_id ";
+				  " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
 		
 		// -------------------------------------------------------------------------------------
 		// adding tcversion on output can be useful for Filter on Custom Field values,
@@ -6140,6 +6140,7 @@ class testplan extends tlObjectWithAttachments
 							" /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
 							" LEFT OUTER JOIN ({$sqlLEX}) AS LEX " .
 							" ON  LEX.testplan_id = TPTCV.testplan_id " .
+							" AND LEX.platform_id = TPTCV.platform_id " .   // TICKET 5182
 							" AND LEX.tcversion_id = TPTCV.tcversion_id " .
 							" AND LEX.testplan_id = " . $safe['tplan_id'] .
 							" LEFT OUTER JOIN {$this->tables['executions']} E " .
@@ -6147,7 +6148,6 @@ class testplan extends tlObjectWithAttachments
 							" AND E.testplan_id = TPTCV.testplan_id " .
 							" AND E.platform_id = TPTCV.platform_id " .
 				  			$buildClause['exec_join'] .
-
 
 							" WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . ' ' .
 							$my['where']['where'] .
@@ -6168,6 +6168,7 @@ class testplan extends tlObjectWithAttachments
 						 
 						 " JOIN ({$sqlLEX}) AS LEX " .
 						 " ON  LEX.testplan_id = TPTCV.testplan_id " .
+						 " AND LEX.platform_id = TPTCV.platform_id " .    // TICKET 5182
 						 " AND LEX.tcversion_id = TPTCV.tcversion_id " .
 						 " AND LEX.testplan_id = " . $safe['tplan_id'] .
 						 " JOIN {$this->tables['executions']} E " .

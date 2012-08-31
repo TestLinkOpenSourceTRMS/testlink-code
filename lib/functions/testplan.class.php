@@ -1184,7 +1184,6 @@ class testplan extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-		// BUGID 3846
 		$cp_methods = array('copy_milestones' => 'copy_milestones',
 			                'copy_user_roles' => 'copy_user_roles',
 			                'copy_platforms_links' => 'copy_platforms_links',
@@ -1221,11 +1220,11 @@ class testplan extends tlObjectWithAttachments
 			$this->db->exec_query($sql);
 		}
 
-		// BUGID 3846
 		// copy builds and tcversions out of following loop, because of the user assignments per build
 		// special measures have to be taken
 		$build_id_mapping = null;
-		if($my['options']['items2copy']['copy_builds']) {
+		if($my['options']['items2copy']['copy_builds']) 
+		{
 			$build_id_mapping = $this->copy_builds($id,$new_tplan_id);
 		}
 
@@ -1273,9 +1272,7 @@ class testplan extends tlObjectWithAttachments
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$rs=$this->get_builds($id);
 
-		// BUGID 3846
 		$id_mapping = array();
-
 		if(!is_null($rs))
 		{
 			foreach($rs as $build)
@@ -1285,14 +1282,10 @@ class testplan extends tlObjectWithAttachments
 					"'" . $this->db->prepare_string($build['notes']) ."',{$new_tplan_id})";
 				
 				$this->db->exec_query($sql);
-
-				// BUGID 3846
 				$new_id = $this->db->insert_id($this->tables['builds']);
 				$id_mapping[$build['id']] = $new_id;
 			}
 		}
-
-		// BUGID 3846
 		return $id_mapping;
 	}
 
@@ -1330,7 +1323,6 @@ class testplan extends tlObjectWithAttachments
 		$sql="/* $debugMsg */ "; 
 		if($my['options']['copy_assigned_to'])
 		{
-			// BUGID 3846
 			$sql .= " SELECT TPTCV.*, COALESCE(UA.user_id,-1) AS tester, " .
 					" COALESCE(UA.build_id,0) as assigned_build " .
 			        " FROM {$this->tables['testplan_tcversions']} TPTCV " .
@@ -6011,13 +6003,19 @@ class testplan extends tlObjectWithAttachments
 			{
 				$sql2run = $sql2do;
 			}
-			if( $my['options']['accessKeyType'] == 'tcase+platform')
+			switch($my['options']['accessKeyType'])
 			{
-				$tplan_tcases = $this->db->fetchMapRowsIntoMap($sql2run,'tcase_id','platform_id');
-			}
-			else
-			{
-				$tplan_tcases = $this->db->fetchRowsIntoMap($sql2run,'tcase_id');
+			 	case 'tcase+platform':
+					$tplan_tcases = $this->db->fetchMapRowsIntoMap($sql2run,'tcase_id','platform_id');
+				break;
+				
+				case 'index':
+					$tplan_tcases = $this->db->get_recordset($sql2run);
+				break;	
+				
+				default:
+					$tplan_tcases = $this->db->fetchRowsIntoMap($sql2run,'tcase_id');
+				break;	
 			}	
 		}
 		return $tplan_tcases;
@@ -6099,7 +6097,7 @@ class testplan extends tlObjectWithAttachments
 		
 		if($my['options']['addExecInfo'])
 		{
-			$commonFields .= ",E.tcversion_number,E.build_id AS exec_on_build,E.testplan_id AS exec_on_tplan";
+			$commonFields .= ",COALESCE(E.id,0) AS exec_id,E.tcversion_number,E.build_id AS exec_on_build,E.testplan_id AS exec_on_tplan";
 		}
 		
 		if($my['options']['specViewFields'])

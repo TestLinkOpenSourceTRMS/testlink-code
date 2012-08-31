@@ -16,9 +16,7 @@
  * @copyright 	2003-2011, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * 
- * @internal Revisions:
- * 20110630 - franciscom - get_linked_versions() interface changes
- * 20110308 - franciscom - get_basic_info() interface changes
+ * @internal revisions
  *
  **/
 require('../../config.inc.php');
@@ -361,7 +359,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 							$lvFilters = array('tplan_id' => $contextObj->tplan_id);
 							$linkedVersions = $tcaseMgr->get_linked_versions($dummy[0]['id'],$lvFilters);
 							$updateLink = false;
-							
+							$doUpdateFeedBack = true;  // TICKET 5189: Import a test plan does not import test cases execution order
 							// new dBug($linkedVersions);   
 							if( !($createLink = is_null($linkedVersions)) )
 							{
@@ -407,14 +405,23 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 									$dummy_msg .= sprintf($labels['link_to_platform'],$targetName);
 								}
 								$msg[] = array($dummy_msg,$labels['ok']);
+								
+								// TICKET 5189: Import a test plan does not import test cases execution order
+								$updateLink = true;
+								$doUpdateFeedBack = false;
 							}
+							
 							if( $updateLink )
 							{
 								$newOrder = array( $dummy[0]['tcversion_id'] => $execOrder);
 								$tplanMgr->setExecutionOrder($contextObj->tplan_id,$newOrder);
-								$dummy_msg = sprintf($labels['tcase_link_updated'],$tcasePrefix . $externalID . ' ' . 
+								
+								if( $doUpdateFeedBack )
+								{
+									$dummy_msg = sprintf($labels['tcase_link_updated'],$tcasePrefix . $externalID . ' ' . 
 													$tcaseName,$version);
-								$msg[] = array($dummy_msg,$labels['ok']);
+									$msg[] = array($dummy_msg,$labels['ok']);
+								}	
 							}
 						}
 						else

@@ -346,13 +346,13 @@ function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tree
 function processTestPlan(&$dbHandler,&$argsObj,&$tplanMgr)
 {
 	$set2update = array('items' => null, 'msg' => '');
-	$set2update['msg'] = lang_get('testplan_seems_empty');
 	$check = $tplanMgr->getLinkedCount($argsObj->tplan_id);
+	$set2update['msg'] = $check == 0 ? lang_get('testplan_seems_empty') : 
+									   lang_get('no_newest_version_of_linked_tcversions');
 	
     $set2update['items'] = $tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id);
     if( count($set2update['items']) > 0 )
     {
-		$set2update['msg'] = lang_get('no_newest_version_of_linked_tcversions');
 		if( !is_null($set2update['items']) && count($set2update['items']) > 0 )
 		{
 			$set2update['msg'] = '';

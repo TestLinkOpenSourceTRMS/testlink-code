@@ -32,8 +32,6 @@ $its = null;
 $tproject_mgr = new testproject($db);
 $info = $tproject_mgr->get_by_id($args->tproject_id);
 $gui->bugInterfaceOn = $info['issue_tracker_enabled'];
-
-new dBug($gui);
 if($info['issue_tracker_enabled'])
 {
 	$it_mgr = new tlIssueTracker($db);
@@ -60,10 +58,9 @@ unset($tproject_mgr);
 //$options = array('output' => 'array', 'only_executed' => true, 'details' => 'full');
 // $execSet = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters, $options);
 $execSet = $metricsMgr->getLTCVNewGeneration($args->tplan_id,null,
-											 array('addExecInfo' => true, 'accessKeyType' => 'index'));
-
-new dBug($execSet);
-
+											 array('addExecInfo' => true, 'accessKeyType' => 'index',
+											 	   'specViewFields' => true, 'testSuiteInfo' => true,
+											 	   'includeNotRun' => false));
 
 $testcase_bugs = array();
 $mine = array();
@@ -71,9 +68,6 @@ $mine = array();
 $l18n = init_labels(array('execution_history' => null,'design' => null,'no_linked_bugs' => null));
 foreach ($execSet as $execution) 
 {
-	new dBug($execution);
-	// die();
-	
 	$tc_id = $execution['tc_id'];
 	$mine[] = $execution['exec_id'];
 	
@@ -84,7 +78,7 @@ foreach ($execSet as $execution)
 		if (!isset($testcase_bugs[$tc_id])) 
 		{
 			$suiteName = $execution['tsuite_name'];
-			$tc_name = buildExternalIdString($tproject_info['prefix'], $execution['external_id']) . ":" . $execution['name'];
+			$tc_name = $execution['full_external_id'] . ":" . $execution['name'];
 
 			// add linked icons
 			$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tc_id});\">" .
@@ -177,13 +171,9 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function buildBugString(&$db,$execID,&$bugInterface,&$openBugsArray,&$resolvedBugsArray)
 {
 	$bugUrls = array();
-	
-	new dBug($execID);
 	if ($bugInterface)
 	{
 		$bugs = get_bugs_for_exec($db,$bugInterface,$execID);
-	
-		
 		if ($bugs)
 		{
 			foreach($bugs as $bugID => $bugInfo)
@@ -233,10 +223,8 @@ function getColumnsDefinition()
 */
 function init_args()
 {
-	$iParams = array(
-		"format" => array(tlInputParameter::INT_N),
-		"tplan_id" => array(tlInputParameter::INT_N),
-   	);
+	$iParams = array("format" => array(tlInputParameter::INT_N),
+					 "tplan_id" => array(tlInputParameter::INT_N));
 	$args = new stdClass();
 	$pParams = R_PARAMS($iParams,$args);
 	

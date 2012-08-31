@@ -5987,7 +5987,8 @@ class testplan extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
         $my = array('filters' => array(),'options' => array('allow_empty_build' => 1,
-        													'accessKeyType' => 'tcase+platform'));
+        													'accessKeyType' => 'tcase+platform',
+        													'includeNotRun' => true));
         $amk = array('filters','options');
         foreach($amk as $mk)
         {
@@ -5996,9 +5997,14 @@ class testplan extends tlObjectWithAttachments
         
 		if( !is_null($sql2do = $this->getLinkedTCVersionsSQL($id,$my['filters'],$my['options'])) )
 		{
+			// need to document better
 			if( is_array($sql2do) )
 			{				
-				$sql2run = $sql2do['exec'] . ' UNION ' . $sql2do['not_run'];
+				$sql2run = $sql2do['exec'];
+				if($my['options']['includeNotRun'])
+				{
+					$sql2run .= ' UNION ' . $sql2do['not_run'];
+				} 
 			}
 			else
 			{
@@ -6038,10 +6044,13 @@ class testplan extends tlObjectWithAttachments
 		$safe['tplan_id'] = intval($id);
 		$my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
     
+   
+    
     	//New dBug($my, array('label' => __METHOD__));
 	    //New dBug($my,array('label' => __METHOD__));
 	    
-	    $mop = array('options' => array('addExecInfo' => false,'specViewFields' => false, 'assigned_on_build' => null));
+	    $mop = array('options' => array('addExecInfo' => false,'specViewFields' => false, 
+	    								'assigned_on_build' => null, 'testSuiteInfo' => false));
 	    $my['options'] = array_merge($mop['options'],$my['options']);
 	    
 		if(	($my['options']['allow_empty_build'] == 0) && $my['filters']['build_id'] <= 0 )
@@ -6084,11 +6093,13 @@ class testplan extends tlObjectWithAttachments
 		// 				" TPTCV.platform_id,PLAT.name AS platform_name,TPTCV.node_order AS execution_order,".
 		// 				" COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status ";
         // 
+        // $fullEID = $this->helperConcatTCasePrefix($safe['tplan_id']);
 		$commonFields = " SELECT NH_TCASE.id AS tcase_id,NH_TCASE.id AS tc_id,TPTCV.tcversion_id,TCV.version," .
 		 				" TCV.tc_external_id AS external_id, TCV.execution_type," .
 		 				" TPTCV.id AS feature_id," .
 		 				" TPTCV.platform_id,PLAT.name AS platform_name,TPTCV.node_order AS execution_order,".
-		 				" COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status ";
+		 				" COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status, " .
+    					$this->helperConcatTCasePrefix($safe['tplan_id']) . "  AS full_external_id ";
 
 		// used on tester assignment feature when working at test suite level
 		if( !is_null($my['options']['assigned_on_build']) )
@@ -6107,12 +6118,21 @@ class testplan extends tlObjectWithAttachments
 							 ",NH_TCASE.parent_id AS testsuite_id"; 	
 		}
 		
+		$my['join']['tsuites'] = '';
+		if($my['options']['testSuiteInfo'])
+		{
+			$commonFields .= ",NH_TSUITE.name AS tsuite_name ";
+			$my['join']['tsuites'] = " JOIN {$this->tables['nodes_hierarchy']} NH_TSUITE " . 
+									 " ON NH_TSUITE.id = NH_TCASE.parent_id ";
+		}
+		
 		
 		$union['not_run'] = "/* {$debugMsg} sqlUnion - not run */" . $commonFields .
 			   				" FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
 			   				" JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
 			   				" JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
 			   				" JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+			   				$my['join']['tsuites'] .
 							$my['join']['ua'] .
 							$my['join']['keywords'] .
 							
@@ -6142,6 +6162,7 @@ class testplan extends tlObjectWithAttachments
 			   			 " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
 			   			 " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
 			   		     " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
+		   				 $my['join']['tsuites'] .
 						 $my['join']['ua'] .
 						 $my['join']['keywords'] .
 						 

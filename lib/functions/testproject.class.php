@@ -2497,6 +2497,7 @@ private function copy_testplans($source_id,$target_id,$user_id,$mappings)
 private function copy_requirements($source_id,$target_id,$user_id)
 {
 	$mappings = null;
+
 	// need to get subtree and create a new one
 	$filters = array();
 	$filters['exclude_node_types'] = array('testplan' => 'exclude','testcase' => 'exclude',
@@ -2521,7 +2522,7 @@ private function copy_requirements($source_id,$target_id,$user_id)
 		}
 	}
 	
-	return $mappings['req'];
+	return (!is_null($mappings) && isset($mappings['req'])) ? $mappings['req'] : null;
 }
 
 

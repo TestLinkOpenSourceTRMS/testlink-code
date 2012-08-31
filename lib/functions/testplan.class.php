@@ -1195,7 +1195,8 @@ class testplan extends tlObjectWithAttachments
 
 		// Configure here only elements that has his own table.
 		$my['options']['items2copy']= array('copy_tcases' => 1,'copy_milestones' => 1, 'copy_user_roles' => 1, 
-		                                    'copy_builds' => 1, 'copy_platforms_links' => 1, 'copy_attachments' => 1);
+		                                    'copy_builds' => 1, 'copy_platforms_links' => 1, 
+		                                    'copy_attachments' => 1, 'copy_priorities' => 1);
 
 		$my['options']['copy_assigned_to'] = 0;
 		$my['options']['tcversion_type'] = null;
@@ -1376,13 +1377,14 @@ class testplan extends tlObjectWithAttachments
 					}
 				}
 				
-				// BUGID 4017: Create plan as copy - Priorities are ALWAYS COPIED
+				// Create plan as copy - Priorities are ALWAYS COPIED
 				$sql = "/* $debugMsg */ " . 
 				       " INSERT INTO {$this->tables['testplan_tcversions']} " .
 					   " (testplan_id,tcversion_id,platform_id,node_order ";
 				$sql_values	= " VALUES({$new_tplan_id},{$tcversion_id},{$platform_id}," .
 					          " {$elem['node_order']} ";
-				if( $my['options']['items2copy']['copy_priorities'] )
+					          
+				if($my['options']['items2copy']['copy_priorities'])
 				{
 					$sql .= ",urgency ";
 					$sql_values	.= ",{$elem['urgency']}";
@@ -1403,7 +1405,6 @@ class testplan extends tlObjectWithAttachments
 					$features_map = array();
 					$feature_id=$new_feature_id;
 					$features_map[$feature_id]['user_id'] = $elem['tester'];
-					// BUGID 3846
 					$features_map[$feature_id]['build_id'] = $build_id_mapping[$elem['assigned_build']];
 					$features_map[$feature_id]['type'] = $this->assignment_types['testcase_execution']['id'];
 					$features_map[$feature_id]['status']  = $this->assignment_status['open']['id'];

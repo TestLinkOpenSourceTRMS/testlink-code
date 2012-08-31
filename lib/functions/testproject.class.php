@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120831 - franciscom - TICKET 5190: Copy Test projects - tester assignments to testplan+build are not copied
  * 20120506 - franciscom - get_accessible_for_user() global coupling removed
  * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
  * 20120219 - franciscom - TICKET 4904: integrate with ITS on test project basis
@@ -2309,6 +2310,8 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 		
 	$this->copy_user_roles($id,$new_id);
 
+	// 20120831 - need to understand if we need to change this and PRESERVE External Test case ID
+	//
 	// When copying a project, external TC ID is not preserved	
 	// need to update external test case id numerator
 	$sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
@@ -2478,7 +2481,8 @@ private function copy_testplans($source_id,$target_id,$user_id,$mappings)
 
 			if( $new_id > 0 )
 			{
-				$tplanMgr->copy_as($itemID,$new_id,null,$target_id,$user_id,null,$mappings);
+                // TICKET 5190: Copy Test projects - tester assignments to testplan+build are not copied
+				$tplanMgr->copy_as($itemID,$new_id,null,$target_id,$user_id,array('copy_assigned_to' => 1),$mappings);
 			}                       
 		}
 		

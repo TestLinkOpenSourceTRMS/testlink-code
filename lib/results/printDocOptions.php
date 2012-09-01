@@ -3,9 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  *  
- * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2010/11/06 18:46:33 $ by $Author: amkhullar $
+ * @filesource printDocOptions.php
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -105,18 +103,13 @@ switch($args->doc_type)
 		$opt_etree->useColours->testcases = COLOR_BY_TC_STATUS_OFF;
 		$opt_etree->useColours->counters =	COLOR_BY_TC_STATUS_OFF;
 	    
-	    new dBug($filters);    
 		list($treeContents, $testcases_to_show) = execTree($db,$workPath,
 				                                        $args->tproject_id,
 				                                        $args->tproject_name,
 				                                        $args->tplan_id,
 				                                        $testplan_name,
 				                                        $filters,$opt_etree);
-        
-        
-        new dBug($treeContents);
-        
-        
+      
       	$tree = $treeContents->menustring;
       	$gui->ajaxTree = new stdClass();
       	$gui->ajaxTree->root_node = $treeContents->rootnode;

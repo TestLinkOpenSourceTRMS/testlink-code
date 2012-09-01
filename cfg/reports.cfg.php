@@ -84,30 +84,35 @@ $tlCfg->reports_list['test_report'] = array(
 	'enabled' => 'all',
 	'format' => 'format_html,format_odt,format_msword'
 );
+
 $tlCfg->reports_list['metrics_tp_general'] = array( 
 	'title' => 'link_report_general_tp_metrics',
 	'url' => 'lib/results/resultsGeneral.php',
 	'enabled' => 'all',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
+
 $tlCfg->reports_list['results_by_tester_per_build'] = array( 
 	'title' => 'link_report_by_tester_per_build',
 	'url' => 'lib/results/resultsByTesterPerBuild.php',
 	'enabled' => 'all',
 	'format' => 'format_html'
 );
+
 $tlCfg->reports_list['assigned_tc_overview'] = array( 
 	'title' => 'link_assigned_tc_overview',
 	'url' => 'lib/testcases/tcAssignedToUser.php?show_all_users=1&show_inactive_and_closed=1',
 	'enabled' => 'all',
 	'format' => 'format_html'
 );
-$tlCfg->reports_list['results_custom_query'] = array( 
-	'title' => 'link_report_metrics_more_builds',
-	'url' => 'lib/results/resultsMoreBuildsGUI.php',
-	'enabled' => 'all',
-	'format' => 'format_html,format_ods,format_xls,format_mail_html'
-);
+
+// will be released in future because refactoring is not completed
+//$tlCfg->reports_list['results_custom_query'] = array( 
+//	'title' => 'link_report_metrics_more_builds',
+//	'url' => 'lib/results/resultsMoreBuildsGUI.php',
+//	'enabled' => 'all',
+//	'format' => 'format_html,format_ods,format_xls,format_mail_html'
+//);
 $tlCfg->reports_list['results_matrix'] = array( 
 	'title' => 'link_report_test',
 	'url' => 'lib/results/resultsTC.php',

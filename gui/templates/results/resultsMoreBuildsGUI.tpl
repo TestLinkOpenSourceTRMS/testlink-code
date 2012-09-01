@@ -76,7 +76,7 @@ franciscom - may be in the future - 20090107
 			<td>
        		<select name="testsuite[]" size="{$testsuite_qty}" multiple="multiple">
 					{foreach key=row item=tsuite_name from=$gui->testsuites->items}
-						<option value="{$gui->testsuites->items[$row].id},{$gui->testsuites->items[$row].name|escape}" 
+						<option value="{$gui->testsuites->items[$row].id}" 
 						        selected="selected">{$gui->testsuites->items[$row].name|escape}</option>
 					{/foreach}
 			</select>

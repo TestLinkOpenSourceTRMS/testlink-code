@@ -3,8 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * This page will forward the user to a form where they can select
- * the builds they would like to query results against.
+ * Called from resultsMoreBuildsGUI.php to do the effective job.
  * 
  * @filesource	resultsMoreBuilds.php
  * @package 	TestLink
@@ -12,11 +11,11 @@
  * @copyright 	2009,2012 TestLink community 
  *
  * @internal revisions
+ * @since 1.9.4
  * 
  **/
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once('results.class.php');
 require_once('users.inc.php');
 require_once('displayMgr.php');
 
@@ -29,7 +28,6 @@ $gui = initializeGui($db,$args,$date_format_cfg);
 $mailCfg = buildMailCfg($gui);
 
 $smarty = new TLSmarty();
-
 $smarty->assign('gui', $gui);
 $smarty->assign('report_type', $args->report_type);
 displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->report_type,$mailCfg);
@@ -40,47 +38,47 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
  */
 function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
 {
+	
+	new dBug($argsObj);
+	
+/*		$my['filters'] = array('exec_ts_from' => null, 'exec_ts_to' => null,
+							   'assigned_to' => null, 'tester_id' => null,
+							   'keywords' => null, 'builds' => null,
+							   'plaforms' => null, 'top_level_tsuites' => null);
+	
+*/	
     $reports_cfg = config_get('reportsCfg');
-    
-    $gui = new stdClass();
     $tplan_mgr = new tlTestPlanMetrics($dbHandler);
     $tproject_mgr = new testproject($dbHandler);
- 
+    
+    $gui = new stdClass();
+    $gui->resultsCfg = config_get('results');
+    $gui->title = lang_get('query_metrics_report');
+    $gui->tplan_id = $argsObj->tplan_id;
+    $gui->tproject_id = $argsObj->tproject_id;
+
+    $tplan_info = $tplan_mgr->get_by_id($gui->tplan_id);
+    $tproject_info = $tproject_mgr->get_by_id($gui->tproject_id);
+    $gui->tplan_name = $tplan_info['name'];
+    $gui->tproject_name = $tproject_info['name'];
+
     $getOpt = array('outputFormat' => 'map');
     $gui->platformSet = $tplan_mgr->getPlatforms($argsObj->tplan_id,$getOpt);
-
-
-    $gui->title = lang_get('query_metrics_report');
-
-    $gui->showPlatforms=true;
+    $gui->showPlatforms = true;
 	if( is_null($gui->platformSet) )
 	{
-		$gui->platformSet = array('');
-		$gui->showPlatforms=false;
+		$gui->platformSet = null;
+		$gui->showPlatforms = false;
+	}
+	else
+	{
+		$filters['platforms'] = array_keys($gui->platformSet);
 	}
    
-    $gui->resultsCfg = config_get('results');
-
 	// convert starttime to iso format for database usage
-	$key2loop = array('selected_start_date' => 'startTime','selected_end_date' => 'endTime');
+	list($gui->startTime,$gui->endTime) = helper2ISO($_REQUEST);
 	
-	// convert to iso format for database usage
-	foreach($key2loop as $target => $prop)
-	{
-	    if (isset($_REQUEST[$target]) && $_REQUEST[$target] != '') 
-	    {
-			$dummy = split_localized_date($_REQUEST[$target], $dateFormat);
-			if($dummy != null) 
-			{
-				$gui->$prop = $dummy['year'] . "-" . $dummy['month'] . "-" . $dummy['day'];
-			}
-		}
-	}
-
-	$start_hour = isset($_REQUEST['start_Hour']) ? $_REQUEST['start_Hour'] : "00";
-	$gui->startTime = $gui->startTime . " " . $start_hour . ":00:00";
-	$end_hour = isset($_REQUEST['end_Hour']) ? $_REQUEST['end_Hour'] : "00";
-	$gui->endTime = $gui->endTime . " " . $end_hour . ":59:59";
+	//die();
 
 	   
     $gui_open = config_get('gui_separator_open');
@@ -90,31 +88,29 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
 
     $gui->search_notes_string = $argsObj->search_notes_string;
 
-    $gui->tplan_id = $argsObj->tplan_id;
-    $gui->tproject_id = $argsObj->tproject_id;
-   
-    $tplan_info = $tplan_mgr->get_by_id($gui->tplan_id);
-    $tproject_info = $tproject_mgr->get_by_id($gui->tproject_id);
-    $gui->tplan_name = $tplan_info['name'];
-    $gui->tproject_name = $tproject_info['name'];
-
-    $testsuiteIds = null;
     $testsuiteNames = null;
-            
+	$everest = $tplan_mgr->getRootTestSuites($gui->tplan_id,$gui->tproject_id,array('output' => 'plain'));
     $tsuites_qty = sizeOf($argsObj->testsuitesSelected);
-    for ($id = 0; $id < $tsuites_qty ; $id++)
-    {
-    	list($suiteId, $suiteName) = preg_split("/\,/", $argsObj->testsuitesSelected[$id], 2);
-    	$testsuiteIds[$id] = $suiteId;
-    	$testsuiteNames[$id] = $suiteName;	
-    }
+    
+    $userWantsAll = ($tsuits_qty == 0 || $tsuits_qty == count($everest));
+    $filters['top_level_tsuites'] = ($tsuites_qty == 0 || $tsuites_qty == count($everest)) ? null : $argsObj->testsuitesSelected;
+	$gui->testsuitesSelected = array();
+	foreach($argsObj->testsuitesSelected as $dmy)
+	{
+		$gui->testsuitesSelected[$dmy] = $everest[$dmy]['name'];
+	} 
 
-    $buildsToQuery = -1;
+    $filters['builds'] = null;
     if (sizeof($argsObj->buildsSelected)) 
     {
-    	$buildsToQuery = implode(",", $argsObj->buildsSelected);
+    	$filters['builds'] = implode(",", $argsObj->buildsSelected);
     }
-
+    
+    $filters['keywords'] = (array)$argsObj->keywordSelected;
+    if(in_array(0,$filters['keywords']))  // Sorry for MAGIC 0 => ANY
+    {
+    	$filters['keywords'] = null;
+    }
 
     // statusForClass is used for results.class.php
     // lastStatus is used to be displayed 
@@ -127,8 +123,11 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
     $tester = $argsObj->executorSelected > 0 ? $argsObj->executorSelected : TL_USER_ANYBODY  ;
     
     
-    $rs = $tplan_mgr->queryMetrics($gui->tplan_id);
-    new dBug($rs);
+    
+    
+    //$rs = $tplan_mgr->queryMetrics($gui->tplan_id,$filters);
+    //new dBug($rs);
+	// die();
     
     //$re = new newResults($dbHandler, $tplan_mgr,$tproject_info,$tplan_info, 
     //                  	 $testsuiteIds, $buildsToQuery,
@@ -156,9 +155,10 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
     //$gui->flatArray = $re->getFlatArray();
     //$gui->mapOfSuiteSummary =  $re->getAggregateMap();
     //
-    
+
+
+	// Prepare User Feedback    
     $gui->totals = new stdClass();
-    // $gui->totals->items = $re->getTotalsForPlan();
     $gui->totals->items = 0;
     $gui->totals->labels = array();
     
@@ -168,9 +168,8 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
         $gui->totals->labels[$key] = lang_get($l18n);  
     }
 
-    // BUGID 2012 - franciscom
     $gui->keywords = new stdClass();             
-    $gui->keywords->items[0] = $gui->str_option_any;
+    $gui->keywords->items[0] = $gui->str_option_any;  // Sorry MAGIC 0
     if(!is_null($tplan_keywords_map = $tplan_mgr->get_keywords_map($gui->tplan_id)))
     {
         $gui->keywords->items += $tplan_keywords_map; 
@@ -184,7 +183,6 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
 
     $gui->ownerSelected = $gui->users[$argsObj->ownerSelected];      
     $gui->executorSelected = $gui->users[$argsObj->executorSelected];
-    $gui->testsuitesSelected = $testsuiteNames;
     $gui->buildsSelected = $argsObj->buildsSelected;
     $gui->platformsSelected = $argsObj->platformsSelected;
     $gui->display = $argsObj->display;
@@ -279,6 +277,32 @@ function buildMailCfg(&$guiObj)
 					$guiObj->tproject_name . ' : ' . $labels['testplan'] . ' : ' . $guiObj->tplan_name;
 	return $cfg;
 }
+
+function helper2ISO($userInput)
+{                   
+	$dateFormatMask = config_get('date_format');
+	$zy = array();
+	$key2loop = array('selected_start_date' => 'startTime','selected_end_date' => 'endTime');
+	foreach($key2loop as $target => $prop)
+	{
+	    if (isset($userInput[$target]) && $userInput[$target] != '') 
+	    {
+			$dummy = split_localized_date($userInput[$target], $dateFormatMask);
+			if($dummy != null) 
+			{
+				$zy[$prop] = $dummy['year'] . "-" . $dummy['month'] . "-" . $dummy['day'];
+			}
+		}
+	}                      
+	
+	$dummy = isset($userInput['start_Hour']) ? $userInput['start_Hour'] : "00";
+	$zy['startTime'] .= " " . $dummy . ":00:00";
+	$dummy = isset($userInput['end_Hour']) ? $userInput['end_Hour'] : "00";
+	$zy['endTime'] .= " " . $dummy . ":59:59";
+
+	return(array($zy['startTime'],$zy['endTime']));
+}
+
 
 
 /**

@@ -2,9 +2,9 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
- * This page will forward the user to a form where they can select
+ * This page will forward the user to a form where they can select parameters
+ * builds, platforms, keywords, etc they would like to query results against.
  *
- * the builds they would like to query results against.
  * @filesource	resultsMoreBuildsGUI.php
  * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
  *

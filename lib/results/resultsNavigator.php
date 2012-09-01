@@ -31,8 +31,6 @@ $gui->checked_show_inactive_tplans = $args->checked_show_inactive_tplans;
 
 $tproject_mgr = new testproject($db);
 $btsEnabled = $tproject_mgr->isIssueTrackerEnabled($gui->tproject_id);
-new dBug($btsEnabled);
-
 
 $reports_mgr = new tlReports($db, $gui->tplan_id);
 

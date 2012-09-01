@@ -47,8 +47,7 @@ $aa_tfp = array(
      'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',
      'assignReqs' => 'lib/testcases/listTestCases.php?feature=assignReqs',
      'searchTc' => 'lib/testcases/tcSearchForm.php',
-	 
-	 /* contribution for 2976 req/reqspec search */
+
      'searchReq' => 'lib/requirements/reqSearchForm.php',
      'searchReqSpec' => 'lib/requirements/reqSpecSearchForm.php',
 	 
@@ -60,7 +59,6 @@ $aa_tfp = array(
      'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=planUpdateTC',
      'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
      'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
-//            'priority' => 'lib/plan/planTCNavigator.php?feature=plan_risk_assignment',
      'test_urgency' => 'lib/plan/planTCNavigator.php?feature=test_urgency',
      'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment',
      'executeTest' => 'lib/execute/execNavigator.php',

@@ -3,6 +3,121 @@
    TestLink  Change-log
 *******************************************************************************
 
+TestLink - 1.9.4 (2012 Q3 - bug fixing) (Scheduled For Release 2012-09-02)
+================================================================================
+- 0004904: [Bug Tracking Systems Integration] integrate with ITS on test project basis (fman) - work in progress.
+- 0005172: [Bug Tracking Systems Integration] execHistory.php refactor due to integrate with ITS on test project basis (fman) - resolved.
+- 0004977: [Security] CSRF - Advisory ID: HTB23088 - Reference: https://www.htbridge.com/advisory/HTB23088 [^] (kinow) - work in progress.
+- 0005179: [Reports] Bugs Per Test Case - Call to undefined method (fman) - resolved.
+- 0005190: [Test Project Management] Copy Test projects - tester assignments to testplan+build are not copied (fman) - resolved.
+- 0005175: [Requirement to Test Case Assignment] Req Spec combo box - minor gui improvement (fman) - resolved.
+- 0005173: [General] resultsByStatus.php/ resultsByStatus.tpl - refactoring (fman) - resolved.
+- 0005166: [Database MS-SQL] Test Cases without Tester Assignment - MSSQL (fman) - resolved.
+- 0005165: [Database MS-SQL] Issues with DISTINCT CLAUSE on TEXT field (fman) - resolved.
+- 0005164: [Test Project Management] Edit test project with name conflict - content of 'Project description' become EMPTY (fman) - resolved.
+- 0004898: [Database MS-SQL] MSSQL - Add support for SQLSRV drivers needed for PHP on WINDOWS version 5.3 and higher (fman) - resolved.
+- 0005162: [Reports] "Build" and "Platform" swapped in "ResultsByStatus" (fman) - resolved.
+- 0005159: [Export/Import] importing duplicate test suites (with option 'Create a new test case with different title') =>test case id is getting duplicated (fman) - resolved.
+- 0005158: [Test Execute] [1.9.4 PREVIEW]: Test Execution-> Filter by Execution type ( Manual, Automated) is not working (fman) - resolved.
+- 0005156: [Issue Tracker management] Display test project linked to issue tracker, when editing (fman) - resolved.
+- 0005155: [Test Specification] [1.9.4 Preview] Dead link in generated test case summary after source requirement deletion (fman) - resolved.
+- 0005154: [User Interface Layout] [1.9.4 Preview] Project dropdown list out of toolbar with IE7 (fman) - resolved.
+- 0005152: [General] [1.9.4 Preview]: Reappearing "NetworkError: 404 Not Found - http://demo.testlink.org/tlqarepo/gui/themes/default/css/custom.css" [^] (fman) - resolved.
+- 0004854: [Test Execute] Save and Next - Issues with display CF for test plan design - always EMPTY (fman) - resolved.
+- 0004891: [Database MS-SQL] Custom fields tables (custom_fields, custom*) Column data type definition differs between mySQL and MSSQL (fman) - resolved.
+- 0004842: [Test Specification] Test Case search - add check of user rights (fman) - resolved.
+- 0004445: [Test Specification] Test Suite Deletion not working in Test Specs (fman) - resolved.
+- 0005139: [Internal issue] PHP 5.3 deprecated functions (fman) - resolved.
+- 0004958: [Charts] General Test Plan Metrics shows white page - Bug tracking integration enabled (fman) - resolved.
+- 0004888: [Test Plan (builds, milestones, test assign)] Unable to update test plan with last version of testcase (fman) - resolved.
+- 0005148: [Security] http://itsecuritysolutions.org/2012-08-13-TestLink-1.9.3-multiple-vulnerabilities/ [^] (fman) - resolved.
+- 0005147: [Security] metasploit - TestLink v1.9.3 Arbitrary File Upload Vulnerability (fman) - resolved.
+- 0004992: [Reports] Reports - Results by Tester per Build - refactoring (fman) - resolved.
+- 0004990: [Reports] Reports - Test Case Assignment Overview - refactoring (fman) - resolved.
+- 0005044: [Charts] Charts - refactor results by Platforms (fman) - resolved.
+- 0004914: [Database General] Create View - tcversions_last_active (fman) - resolved.
+- 0004969: [New Feature] Add Setting to Force HTTPS (fman) - resolved.
+- 0004905: [Assign Test Case Execution] Test Case Tester Assignment - filters dont work properly for 'Assigned to' Field (fman) - resolved.
+- 0005090: [Test Plan (builds, milestones, test assign)] method getLinkedForTestUrgencyTree() (fman) - resolved.
+- 0005142: [Test Execute] [1.9.4 Preview] : Test Execution : Some "Result" on "build" filters are not working (fman) - resolved.
+- 0005069: [Test Execute - 'Save and move to next'] "Save and move to next" does not work when Execution feature is opened on a POP-UP window (fman) - resolved.
+- 0004465: [Test Execute - 'Save and move to next'] Problem with automatique sequence of test cases when accessed from "Test Cases Assigned to me" (fman) - resolved.
+- 0003987: [General] Contribution - Add attachments to a Test Plan (kinow) - resolved.
+- 0005127: [Reports] Requirements based report - refactoring (fman) - resolved.
+- 0005132: [Test Execute] [1.9.4 PREVIEW] : Executed test case colors are not displayed in Left frame tree (fman) - resolved.
+- 0005131: [Test Execute] [1.9.4 PREVIEW] Test Execution Filters : "Not Run" Result Filter is not working (fman) - resolved.
+- 0004819: [Filters] Filtering execution by "Not Run" on "ALL Builds" shows too few results (fman) - resolved.
+- 0005129: [Users and Rights] $tlCfg->exec_cfg->edit_notes needs to consider also if user CAN EXECUTE the TEST CASE (fman) - resolved.
+- 0005130: [Users and Rights] Possibility to manage attachments on EXECUTION needs to consider also if user CAN EXECUTE the TEST CASE (fman) - resolved.
+- 0004342: [Users and Rights] Security problem with multiple Testlink installations on the same server (fman) - resolved.
+- 0004975: [Reports] Not run tests are not counted in "Requirements based Report" (fman) - resolved.
+- 0005126: [Reports] Requirements based report - display context on results page (fman) - resolved.
+- 0005121: [Test Specification] [1.9.4 PREVIEW] Link to test case execution edit page is invalid (fman) - resolved.
+- 0004239: [Test Project Management] Duplicated requirements in testcase layout and duplicated testcases in requirement layout when using testproject reuse feature (kinow) - resolved.
+- 0004702: [Requirement Management] Requirement View - display log message (fman) - resolved.
+- 0005017: [Reports] Reports - Failed Test Cases / Blocked Test Cases - Refactoring (fman) - resolved.
+- 0005016: [Reports] Reports - Test result matrix - Refactoring (fman) - resolved.
+- 0004896: [Export/Import] XML Requirement Import with same title for differents Doc ID (fman) - resolved.
+- 0004890: [Database General] testplan::delete contains reference to risk_assignments (fman) - resolved.
+- 0004714: [Test Execute] execSetResults.php - retrieve big amount of useless data (fman) - resolved.
+- 0005115: [Test Plan (builds, milestones, test assign)] [FEATURE] - Test Plan list view - add test case qty, and platforms qty (fman) - resolved.
+- 0004934: [Keywords] Selective Assigment of Keywords to Test Suites (fman) - resolved.
+- 0004994: [Reports] Reports - General Test Plan metrics - Results by Keyword - Refactoring (fman) - resolved.
+- 0005003: [Reports] General Test Plan Metrics pass/fail/blocked numbers include unassigned test cases (fman) - resolved.
+- 0004989: [Reports] Reports - Overall Build Status - refactoring and final business logic. (fman) - resolved.
+- 0005048: [Reports] Metrics Dashboard refactoring for performance (fman) - resolved.
+- 0005043: [Charts] Charts - refactoring to improve performance (fman) - resolved.
+- 0005106: [Import results XML format] Import results - add possibility to provide names instead of internal id to identify context (fman) - resolved.
+- 0005104: [Event viewer] Audit message for BUG delete needs more info (improvement) (fman) - resolved.
+- 0004883: [Keywords] Lose of keywords at testcase levels (fman) - resolved.
+- 0003554: [Keywords] Assigning keywords to a Test Suite assigns all keywords in Assigned listbox (fman) - resolved.
+- 0005087: [TL API] _checkTCIDAndTPIDValid() - use $tcase_id instead of $this->args[self::$testCaseExternalIDParamName] (fman) - resolved.
+- 0005002: [Export/Import] Exported test plan has multiple test case instances if test case has been executed two or more times (fman) - resolved.
+- 0005084: [Test Execute] Rendering KO when history on and exec status is NOT RUN (fman) - resolved.
+- 0005047: [TL API] API Call to get execution metrics information - getExecCountersByBuild() (fman) - resolved.
+- 0005074: [Keywords] Bulk Keyword assignment - All keywords are assigned to the test case instead of the selected keyword (fman) - resolved.
+- 0005041: [Charts] Charts - Report by Tester - REMOVE / DEPRECATED (fman) - resolved.
+- 0005083: [Internal issue] Refactoring - logger.class.php (fman) - resolved.
+- 0005070: [Export/Import] Import Test suite with Custom fields - Custom fields are not imported (fman) - resolved.
+- 0004981: [Test Execute] When bulk executing test cases, inactivity of test cases is not taken into account (fman) - resolved.
+- 0005075: [Export/Import] Import Test suite with Keywords - All test suites end with same keywords (fman) - resolved.
+- 0004925: [Export/Import] Import many TestCases in xml does import only first TC - Consider Test Case as duplicate if: has same internal ID (fman) - resolved.
+- 0004695: [Migration/Upgrade Testlink] Unassigned Executions are not shown on Overall Build Status (1.9.0 OK , 1.9.3 NOK) (fman) - resolved.
+- 0004916: [Filters] Manual fix to improve Test Spec Tree generation when using KEYWORDS Filtering (fman) - resolved.
+- 0004700: [Requirement Management] Req Search Improvements - search on log message and provide link/url to multiple results (fman) - resolved.
+ - 0004705: [Documentation (Install, User Manual, help)] Add short online help for improved Req and Req Spec Search (Julian) - resolved.
+- 0004703: [Requirement Management] Req. Spec. View - display log message (fman) - resolved.
+- 0004796: [Test Specification] Test Case reuse - Quick & Dirty Approach (fman) - resolved.
+- 0004907: [Export/Import] Test Case / Test Suite export - suggested filename improvements (fman) - resolved.
+- 0004966: [TL API] New method to manage set test case execution type (fman) - resolved.
+- 0004965: [TL API] New method to manage test case Custom Field Design Value (fman) - resolved.
+- 0004906: [Security] Several security issues (fman) - resolved.
+- 0004862: [Users and Rights] Users rights on requirements are bypassed with interproject requirements relations (fman) - resolved.
+- 0004857: [Bug Tracking Systems Integration] Add SOAP integration for Mantis (fman) - resolved.
+- 0004711: [New Feature] Apache Webserver - SSL Client Certificate Authentication (Single Sign-on?) (fman) - resolved.
+- 0004814: [Bug Tracking Systems Integration] bug deletion may fails if bugID string contains special characters ('#', '&' , ...) (fman) - resolved.
+- 0004790: [Filters] Setting & Filters panel - Wrong use of BUILD on settings area (fman) - resolved.
+- 0004788: [Test Execute] Test Case Execution - Give feedback when filter combination 'Result' + 'on' can not be used (fman) - resolved.
+- 0004360: [Requirement Management] Project Creation: Use of Templates: Requirement/Test Case links are lost when creating a project with the use of a template. (kinow) - resolved.
+- 0004715: [Test Plan (builds, milestones, test assign)] can_remove_executed = DISABLED doesn't work when Platforms are used. Test Cases can be removed (fman) - resolved.
+- 0004721: [General] Left side tree manu - add specific navigator titles (fman) - resolved.
+- 0004696: [Test Plan (builds, milestones, test assign)] Create Test Plan from existing Test Plan does not preserve linked Test Case Versions (keep currently linked version is checked) (Julian) - resolved.
+- 0004682: [Test Plan (builds, milestones, test assign)] Newest version is smaller than Linked version (Julian) - resolved.
+- 0004588: [Requirement Management] Delete-Button doesn't work correctly when opening a specific version of a requirement (Julian) - resolved.
+- 0004652: [Test Execute] Link Execution History in appropriate places (Julian) - resolved.
+- 0005128: [Users and Rights] $tlCfg->exec_cfg->can_delete_execution need to be limited. (fman) - closed.
+- 0004440: [Filters] filter for "not executed" case work for "all build", but not for "any build" (fman) - closed.
+- 0004909: [Test Specification] Code Refactoring - testproject class - new method for getting test spec info (fman) - closed.
+- 0005001: [Test Project Management] crash - Create test project from an existing one (has 1900 Requirements) (fman) - closed.
+- 0004996: [Export/Import] Ignores change of XML export file name (fman) - closed.
+- 0003792: [Reports] Overall Build Status numbers seem incorrect (fman) - closed.
+- 0004723: [General] Delete Test Plan prints an exception although delete works (fman) - closed.
+- 0004802: [Export/Import] Exporting large amount of requirements ( qty > 1900) fails (fman) - closed.
+
+
+
+
+
 TestLink - 1.9.3 (2011 Q3 - bug fixing) (Scheduled For Release 2011-07-01)
 ==========================================================================
 - 0004511: [Reports] MIle stones are not getting updated (Julian) - resolved.

@@ -46,8 +46,24 @@ function check_action_precondition(form_id,action)
 	}
 	return true;
 }
-</script>
+
+// Ext.onReady(function()
+// {
+//   // Convert combo idSRS	  
+//   var idx=0;
+//   var gridSet = new Array();
+//   var converted = new Ext.form.ComboBox({
+//    typeAhead: true,
+//    triggerAction: 'all',
+//    transform:'idSRS',
+//    width:135,
+//    forceSelection:true
+//  });
+// 
+// 	alert('AISA');
+// });
 {/literal}
+</script>
 </head>
 
 <body>
@@ -58,16 +74,14 @@ function check_action_precondition(form_id,action)
 </h1>
 
 <div class="workBack">
-
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 {if $gui->arrReqSpec eq "" }
    {$labels.warning_req_tc_assignment_impossible}
 {else}
-
   <h2>{$labels.req_title_assign}</h2>
   <form id="SRS_switch" name="SRS_switch" method="post">
-    <p><span class="labelHolder">{$labels.req_spec}</span>
-  	<select name="idSRS" onchange="form.submit()">
+    <p><span class="labelHolder">{$labels.req_spec}</span>   
+  	<select name="idSRS" id="idSRS" onchange="form.submit()">
   		{html_options options=$gui->arrReqSpec selected=$gui->selectedReqSpec}
   	</select>
   </form>

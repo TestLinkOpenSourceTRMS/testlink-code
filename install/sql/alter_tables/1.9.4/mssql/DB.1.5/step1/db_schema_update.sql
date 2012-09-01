@@ -16,11 +16,30 @@
  */
 
 -- ==============================================================================
--- ATTENTION PLEASE - replace /*prefix*/ with your table prefix if you have any. 
+-- ATTENTION PLEASE - WHEN YOU RUN THIS using a SQL CLIENTE
+-- 1. replace /*prefix*/ with your table prefix if you have any. 
+-- 2. execute line by line all operations on users table, because is done
+--    all as a block will fail 
+--    (see 
+--     http://stackoverflow.com/questions/4443262/tsql-add-column-to-table-and-then-update-it-inside-transaction-go 
+--     note said: Nope, the error is related to batch and compilation. At parse time, ADDED COLUMN does not exist
+--    ) 
 -- ==============================================================================
 
+/* users - EXECUTE ONE LINE AT A TIME */
+ALTER TABLE /*prefix*/users ADD cookie_string varchar(64) NOT NULL DEFAULT '';
+UPDATE /*prefix*/users SET cookie_string=HashBytes('MD5',CAST(RAND() AS CHAR)) + HashBytes('MD5',login);
+CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/users_cookie_string ON  /*prefix*/users 
+(
+	cookie_string
+) ON [PRIMARY];
+
+/* FROM THIS POINT YOU CAN RUN EVERYTHING AS A SINGLE BATCH */
 /* update some config data */
+SET IDENTITY_INSERT /*prefix*/node_types ON;
 INSERT INTO /*prefix*/node_types ("id","description") VALUES (11,'requirement_spec_revision');
+SET IDENTITY_INSERT /*prefix*/node_types OFF;
+
 
 -- TICKET 4661
 CREATE TABLE /*prefix*/req_specs_revisions (
@@ -100,24 +119,20 @@ ALTER TABLE /*prefix*/req_specs DROP COLUMN creation_ts;
 ALTER TABLE /*prefix*/req_specs DROP COLUMN modifier_id;
 ALTER TABLE /*prefix*/req_specs DROP COLUMN modification_ts;
 
-/* users */
-ALTER TABLE /*prefix*/users ADD cookie_string varchar(64) NOT NULL DEFAULT '';
-UPDATE /*prefix*/users SET cookie_string=HashBytes('MD5',CAST(RAND() AS CHAR)) + HashBytes('MD5','admin');
-CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/users_cookie_string ON  /*prefix*/users 
-(
-	cookie_string
-) ON [PRIMARY];
-
 /* new rights */
+SET IDENTITY_INSERT /*prefix*/rights ON;
 INSERT INTO /*prefix*/rights  (id,description) VALUES (28,'req_tcase_link_management');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (29,'keyword_assignment');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (30,'mgt_unfreeze_req');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (31,'issuetracker_management');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (32,'issuetracker_view');
+SET IDENTITY_INSERT /*prefix*/rights OFF;
 
 
 /* update rights on admin role */
+SET IDENTITY_INSERT /*prefix*/role_rights ON;
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,31);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,32);
+SET IDENTITY_INSERT /*prefix*/role_rights OFF;
 /* ----- END ----- */

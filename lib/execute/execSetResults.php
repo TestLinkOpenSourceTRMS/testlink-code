@@ -61,7 +61,19 @@ $attachmentRepository = tlAttachmentRepository::create($db);
 $req_mgr = new requirement_mgr($db);
 
 $gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr);
-$gui->issueTrackerIntegrationOn = $info['issue_tracker_enabled'] && !is_null($its) && $its->isConnected();
+$gui->issueTrackerIntegrationOn = false;
+if($info['issue_tracker_enabled'])
+{
+	if(!is_null($its) && $its->isConnected())
+	{
+		$gui->issueTrackerIntegrationOn = true;
+	}
+	else
+	{
+		$gui->user_feedback = lang_get('issue_tracker_integration_problems');
+	}
+}
+
 
 $_SESSION['history_on'] = $gui->history_on;
 $attachmentInfos = null;
@@ -235,7 +247,9 @@ $smarty->assign('test_automation_enabled',0);
 $smarty->assign('cfg',$cfg);
 $smarty->assign('users',tlUser::getByIDs($db,$userSet,'id'));
 $smarty->assign('gui',$gui);
-$smarty->assign('g_bugInterface', $g_bugInterface);
+
+
+// $smarty->assign('g_bugInterface', $g_bugInterface);
 
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
@@ -630,7 +644,6 @@ function exec_additional_info(&$db, $attachmentRepository, &$tcase_mgr, $other_e
   		
   		if($bugInterfaceOn)
   		{
-			// $the_bugs = $bugInterface->getIssuesForExecution($exec_id);
 			$the_bugs = get_bugs_for_exec($db,$bugInterface,$exec_id);
 			if(count($the_bugs) > 0)
 			{
@@ -1027,7 +1040,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
     $gui = new stdClass();
-    $gui->remoteExecFeedback = '';
+    $gui->remoteExecFeedback = $gui->user_feedback = '';
     $gui->tplan_id=$argsObj->tplan_id;
     $gui->tproject_id=$argsObj->tproject_id;
     $gui->build_id = $argsObj->build_id;

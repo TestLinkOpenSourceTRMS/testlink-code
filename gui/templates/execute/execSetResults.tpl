@@ -5,6 +5,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @internal smarty template - show tests to add results
 @internal revisions
 @since 1.9.4
+20120820 - franciscom - TICKET 4904: integrate with ITS on test project basis
 20120623 - franciscom - TICKET 4981: When bulk executing test cases, 
 						inactivity of test cases is not taken into account
 
@@ -248,6 +249,9 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 
 <div id="main_content" class="workBack">
+	{if $gui->user_feedback != ''}
+		<div class="error">{$gui->user_feedback}</div>
+	{/if}
   {if $gui->build_is_open == 0}
   <div class="messages" style="align:center;">
      {$labels.build_is_closed}<br />

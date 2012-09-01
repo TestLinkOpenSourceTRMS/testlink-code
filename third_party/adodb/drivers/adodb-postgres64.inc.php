@@ -583,7 +583,7 @@ select viewname,'V' from pg_views where viewname like $mask";
 		
 	}
 	
-	function Param($name)
+	function Param($name,$type='C')
 	{
 		$this->_pnum += 1;
 		return '$'.$this->_pnum;

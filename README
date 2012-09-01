@@ -60,7 +60,7 @@ A wide variety of reports provide information on what has been done and what sti
 2. Release notes
 ===============================================================
 
-This release contains bugfixes for 1.9.0/1.9.1/1.9.2/1.9.3
+This release contains bugfixes for 1.9.3
    
 See CHANGELOG file for detailed list of issues fixed.
 
@@ -139,13 +139,8 @@ Check Installation manual and TestLink forum if you meet a problem.
 
 5. Upgrade and Migration
 ===============================================================
-When accessing Installer page you will found following options:
-
- - New Installation
- - Migration from 1.8 to 1.9.1/2/3/4
-
-If you are upgrading from 1.9.0 please go to section 'Upgrade from 1.9.0 to 1.9.1/2/3'.
-If you are upgrading from 1.9.1/2 NO DB upgrades will be needed.
+When accessing Installer page you will found ONLY NEW INSTALLATION OPTION
+Migration HAS TO BE DONE MANUALLY => read below (- Upgrade from 1.9.3 to 1.9.4 )
 
  Steps
  - Make a Backup of your current database.
@@ -164,32 +159,20 @@ If you are upgrading from 1.9.1/2 NO DB upgrades will be needed.
  If you are using a different major version detailed in options,  
  you need to use the specific Migrations.
  
- If in some steps TestLink ask you for two databases, NEVER use 
- same name from both.
+ If in some steps TestLink ask you for two databases, 
+ NEVER use same name from both.
  
  If you do not find nothing useful, post in forum
    
  Always before login, after an upgrade/migration clear browser cookies.
 
-- Upgrade from 1.9.0 to 1.9.1+
-To be able to use Testlink 1.9.1+ with the new „Requirement Revisioning“ feature - 
-migration procedure requires some manual steps. 
+- Upgrade from 1.9.3 to 1.9.4
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+a) Execute install/sql/alter_tables/1.9.4/<your_db>/DB1.4/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/stepZ/z_final_step.sql
 
-A.) Why does this release need manual steps on migration from 1.9.0?
-„Requirement Revisioning“ Feature requires database changes. 
-Manual migration is simple and should not be a problem for anyone. 
-No data needs to be migrated – it only requires to alter some tables and create a single new table.
-
-B.) What steps have to be executed for migration from 1.9.0 to 1.9.1+?
-1. First of all make sure your testlink installation uses testlink 1.9.0 database scheme. 
-If you are still on Testlink 1.8.x use standard upgrade procedure.
-
-2. a) Execute install/sql/alter_tables/1.9.1/<your_db>/DB1.4/step1/db_schema_update.sql
-	 b) Execute install/sql/alter_tables/1.9.1/<your_db>/DB1.4/stepZ/z_final_step.sql
-	 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
-
-	 Hint: When using MySQL Query Browser make sure you are not using a single command execution. 
-	      (open script or use special script tab to execute the whole script at once)
+Hint: When using MySQL Query Browser make sure you are not using a single command execution. 
+      (open script or use special script tab to execute the whole script at once)
 
 6. TestLink Team 
 ===============================================================
@@ -209,6 +192,16 @@ This list comprise people that has helped
 * Martin Havlat - Project lead, builds, infrastructure, developer
 * Andreas Morsing - core developer
 * Amit Khullar
+
+--- TestLink - QA Team - for 1.9.4
+* Romoy Headly - QA Manager
+* Sujata Verma   
+* Damien Mathieu
+* Amardeep Maradana
+* Amit Khullar
+* Andreas Simon
+* Ngoc Vu
+* Biache Benoit
 
 --- TestLink - QA - for 1.9 RC1
 * Andreia Balani

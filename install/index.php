@@ -40,8 +40,9 @@ $_SESSION['testlink_version'] = TL_VERSION;
     TestLink <?php echo $_SESSION['testlink_version'] ?> Installation</h1>
 <div class="tlLiner">&nbsp;</div>
 <div class="tlStory">
-		<p>You are installing TestLink. Select your case 'New installation'
-		or 'Upgrade from older version'.</p>
+		<p>You are installing TestLink 1.9.4 </p>
+		<p><b>Migration from 1.9.3 to 1.9.4 has to be done MANUALLY.</b></p> 
+		<p>Please read Section on README file or go to www.teamst.org (Forum: TestLink 1.9.4 News,changes, etc) </p>
 		<p>Open <a target="_blank" href="../docs/testlink_installation_manual.pdf">Installation manual</a>
 		for more information or troubleshooting. You could also look at
 		<a href="../README">README</a> or <a href="../CHANGELOG">Changes Log</a>.
@@ -50,9 +51,6 @@ $_SESSION['testlink_version'] = TL_VERSION;
 		</p>
 		<p><ul>
 		<li><a href="installIntro.php?type=new">New installation</a></li>
-   		<li><a href="installIntro.php?type=upgrade_1.8_to_1.9">Upgrade from 1.8.x
-   		versions to 1.9.1 ONLY</a>. Older releases should be migrated to 1.8 version at first.
-   		</li>
 		</ul></p>
 </div>
 <div class="tlLiner">&nbsp;</div>

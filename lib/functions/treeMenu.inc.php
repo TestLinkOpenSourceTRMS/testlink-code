@@ -82,7 +82,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	$my['options'] = array_merge($my['options'], (array)$options);
 	$my['filters'] = array_merge($my['filters'], (array)$filters);
 	
-	
 	if( $my['options']['viewType'] == 'testSpecTree' )
 	{
 		$rr = generateTestSpecTreeNew($db,$tproject_id,$tproject_name,$linkto,$filters,$options);
@@ -1132,8 +1131,6 @@ function filterStatusSetAtLeastOneOfActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_
 			$hits = $tplan_mgr->getHitsSameStatusPartialALOP($tplan_id,(array)$filters->filter_result_result); 
 		}
 		
-		new dBug($hits);
-		
 		if( is_null($hits) ) 
 		{
 			$tcase_set = array();
@@ -1944,9 +1941,9 @@ function update_status_for_colors(&$dbHandler,&$items,$context,$statusCfg)
 
 
 
-function generateTestSpecTreeNEW(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
+function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
-		$chronos[] = microtime(true);
+	$chronos[] = microtime(true);
 	
 	$tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
 
@@ -1997,7 +1994,7 @@ function generateTestSpecTreeNEW(&$db,$tproject_id, $tproject_name,$linkto,$filt
 	
 	$map_node_tccount=array();
 	$tplan_tcs=null;
-	
+
 	if($test_spec)
 	{
 	    if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) 
@@ -2032,7 +2029,6 @@ function generateTestSpecTreeNEW(&$db,$tproject_id, $tproject_name,$linkto,$filt
 			$test_spec[$key] = $testcase_counters[$key];
 		}
 
-		
 		$showTestCaseID = config_get('treemenu_show_testcase_id');
 		$menustring = renderTreeNode(1,$test_spec,$hash_id_descr,
 			                         $my['options']['tc_action_enabled'],$linkto,$tcase_prefix,
@@ -2182,6 +2178,8 @@ function prepareTestSpecNode(&$tprojectMgr,$tprojectID,&$node,&$map_node_tccount
 			}
 		}
 		
+		// new dBug($tcFilterByKeywords);
+		
 		// Critic for logic that prune empty branches
 		$filtersApplied = $doFilterOn['keywords'];
 	}
@@ -2209,10 +2207,15 @@ function prepareTestSpecNode(&$tprojectMgr,$tprojectID,&$node,&$map_node_tccount
 	// ================================================================================
 	if( !is_null($node) && isset($node['childNodes']) && is_array($node['childNodes']) )
 	{
+		// new dBug($node);
+		
 		// node has to be a Test Suite ?
 		$childNodes = &$node['childNodes'];
 		$childNodesQty = count($childNodes);
 		
+		// new dBug($childNodes);
+		
+		//$pos2unset = array();
 		for($idx = 0;$idx < $childNodesQty ;$idx++)
 		{
 			$current = &$childNodes[$idx];
@@ -2223,8 +2226,20 @@ function prepareTestSpecNode(&$tprojectMgr,$tprojectID,&$node,&$map_node_tccount
 			}
 			
 			$counters_map = prepareTestSpecNode($tprojectMgr,$tprojectID,$current,$map_node_tccount);
+			// new dBug($current);
+			
+			// 20120831 - to be analized carefully, because this can be solution
+			// to null issue with json and ext-js
+			// if( is_null($current) )
+			// {
+			// 	echo 'TO NULX';
+			// 	unset($childNodes[$idx]);
+			// }
+			
 			$tcase_counters['testcase_count'] += $counters_map['testcase_count'];   
 		}
+		//new dBug($pos2unset);
+		
 		$node['testcase_count'] = $tcase_counters['testcase_count'];
 		
 		if (isset($node['id']))
@@ -2237,14 +2252,16 @@ function prepareTestSpecNode(&$tprojectMgr,$tprojectID,&$node,&$map_node_tccount
 		if( $filtersApplied && 
 			!$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
 		{
+			// echo 'ne';
 			$node = null;
+			// unset($node);
 		}
 	}
 	else if ($node_type == 'testsuite')
 	{
 		// does this means is an empty test suite ??? - franciscom 20080328
 		$map_node_tccount[$node['id']] = array(	'testcount' => 0,'name' => $node['name']);
-		
+	
         // If is an EMPTY Test suite and we have added filtering conditions,
         // We will destroy it.
 		if( $filtersApplied )

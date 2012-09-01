@@ -1,14 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: printDocOptions.tpl,v 1.20.2.2 2011/02/11 10:54:40 mx-julian Exp $ 
-Purpose: show tree on print feature
-
-rev:
-	20110211 - Julian - BUGID 4199 - tree div has to be named different than the tree variable
-	20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
-	20101027 - asimon - BUGID 3946: reqirement specification tree size
-	20080820 - franciscom - added code to manage EXTJS tree component
-
+@filesource printDocOptions.tpl
 *}
 {lang_get var="labels"
           s='doc_opt_title,doc_opt_guide,tr_td_show_as,check_uncheck_all_options'}

@@ -855,7 +855,6 @@ function openLinkedReqVersionWindow(req_id, req_version_id, anchor)
 	var feature_url = "lib/requirements/reqView.php";
 	feature_url += "?showReqSpecTitle=1&requirement_id=" + req_id + "&req_version_id=" + req_version_id + anchor;
 
-	// 20101008 - asimon - BUGID 3311
 	var width = getCookie("ReqPopupWidth");
 	var height = getCookie("ReqPopupHeight");
 

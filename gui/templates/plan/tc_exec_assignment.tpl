@@ -37,20 +37,31 @@ function check_action_precondition(container_id,action)
 }
 
 // 20100927 - franciscom
-// Ext.onReady(function()
-// {
-//   // create the grid
-//   var idx=0;
-//   var gridSet = new Array();
-//   for(idx=1; idx <= loop2do; idx++)
-//   {
-//     gridSet[idx] = new Ext.ux.grid.TableGrid("the-table-"+idx, {
-//                        stripeRows: true // stripe alternate rows
-//                    });
-//     gridSet[idx].render();
-//   }
+//Ext.onReady(function()
+//{
+//  
+//  // Convert combo bulk_tester_div	  
+//  var idx=0;
+//  var gridSet = new Array();
+//  var converted = new Ext.form.ComboBox({
+//   typeAhead: true,
+//   triggerAction: 'all',
+//   transform:'bulk_tester_div',
+//   width:135,
+//   forceSelection:true
 // });
-
+//
+// 
+// 
+//  // create the grid   
+//  for(idx=1; idx <= loop2do; idx++)
+//  {
+//    gridSet[idx] = new Ext.ux.grid.TableGrid("the-table-"+idx, {
+//                       stripeRows: true // stripe alternate rows
+//                   });
+//    gridSet[idx].render();
+//  }
+//});
 {/literal}
 </script>
 

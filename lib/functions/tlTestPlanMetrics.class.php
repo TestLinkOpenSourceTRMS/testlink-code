@@ -13,6 +13,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120903 - franciscom -  TICKET 5192: "Results by Tester per Build" is incorrect if multi results in one case
  * 20120429 - franciscom -	TICKET 5016: Reports - Test result matrix - Refactoring
  * 20120429 - franciscom -	TICKET 4989: Reports - Overall Build Status - refactoring and final business logic
  *							new method getOverallBuildStatusForRender()
@@ -1003,12 +1004,12 @@ class tlTestPlanMetrics extends testplan
 						" AND E.testplan_id = TPTCV.testplan_id " .
 						" AND E.platform_id = TPTCV.platform_id " .
 						" AND E.tcversion_id = TPTCV.tcversion_id " .
-
+						" AND E.id = LEBBP.id " . // TICKET 5192
 						" WHERE TPTCV.testplan_id=" . $safe_id .
 						" AND UA.build_id IN ({$builds->inClause}) " ;
 	
-		//Echo 'QD - <b>' . $sqlUnionBU . '</b><br>';
-		//Die();
+		// echo 'QD - <b>' . $sqlUnionBU . '</b><br>';
+		// die();
 		$sql =	" /* {$debugMsg} */" .
 		 		" SELECT user_id, build_id,status, count(0) AS exec_qty " .
 		 		" FROM ($sqlUnionBU) AS SQBU " .

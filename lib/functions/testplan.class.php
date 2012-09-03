@@ -5517,7 +5517,8 @@ class testplan extends tlObjectWithAttachments
 							" AND LEBBP.platform_id = TPTCV.platform_id " .
 							" AND LEBBP.testplan_id = " . $safe['tplan_id'] .
 							" JOIN {$this->tables['executions']} E " .
-							" ON  E.tcversion_id = TPTCV.tcversion_id " .
+							" ON  E.id = LEBBP.id " .  // TICKET 5191	
+							" AND E.tcversion_id = TPTCV.tcversion_id " .
 							" AND E.testplan_id = TPTCV.testplan_id " .
 							" AND E.platform_id = TPTCV.platform_id " .
 							" AND E.build_id = " . $my['filters']['build_id'] .

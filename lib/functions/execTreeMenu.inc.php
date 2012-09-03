@@ -17,7 +17,7 @@
  *
  * @internal revisions
  * @since 1.9.4
- * 20120816 - franciscom -TICKET 4905: Test Case Tester Assignment - filters dont work properly for 'Assigned to' Field
+ * 20120816 - franciscom - TICKET 4905: Test Case Tester Assignment - filters dont work properly for 'Assigned to' Field
  */
 function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                   $tplan_name,$objFilters,$objOptions) 
@@ -573,8 +573,11 @@ function applyStatusFilters($tplan_id,&$items2filter,&$fobj,&$tplan_mgr,$statusC
 
 
 
-
-
+/*
+ *
+ * @used-by Assign Test Execution Feature
+ *
+ */
 function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                       $tplan_name,$objFilters,$objOptions) 
 {
@@ -593,18 +596,10 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 	$glueChar=config_get('testcase_cfg')->glue_character;
 	$menustring = null;
 	$tplan_tcases = null;
-	
-	//New dBug($objFilters);
-	//New dBug($objOptions);
-	
 
 	list($filters,$options,
 		 $show_testsuite_contents,
 	     $useCounters,$useColors,$colorBySelectedBuild) = initExecTree($objFilters,$objOptions);
-	
-
-	//New dBug($objOptions);
-	//New dBug($options);
 	
 	$tplan_mgr = new testplan($dbHandler);
 	$tproject_mgr = new testproject($dbHandler);
@@ -685,7 +680,8 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 			// THIS YET.
 			//
 			//New dBug($filters, array('label' => __FUNCTION__));
-			// $gtMethod = {$objOptions->getTreeMethod};
+			//Echo $objOptions->getTreeMethod;
+			//Die();
 			if( !is_null($sql2do = $tplan_mgr->{$objOptions->getTreeMethod}($tplan_id,$filters,$options)) )
 			{
 				if( is_array($sql2do) )

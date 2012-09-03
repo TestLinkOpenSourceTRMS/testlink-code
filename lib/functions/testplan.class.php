@@ -16,7 +16,8 @@
  * @internal revisions
  * 
  *  @since 1.9.4
- *  TICKET 5182: Add/Remove Test Cases -> Trying to assign new platform to executed test cases
+ *  20120903 - franciscom - TICKET 5196: Tree shows wrong color if testcase has multiple executions
+ *  20120829 - franciscom - TICKET 5182: Add/Remove Test Cases -> Trying to assign new platform to executed test cases
  *  20120812 - kinow - TICKET 3987 - Added methods to copy attachments when copying a test plan
  *	20120808 - franciscom - TICKET 5131 - getHitsNotRunOnBuildPlatform()
  *	20120806 - franciscom - getLTCVNewGeneration() - added new option 'accessKeyType'
@@ -5742,6 +5743,8 @@ class testplan extends tlObjectWithAttachments
 			$buildClause = array('lex' => '','exec_join' => '');
 		}
 
+		//
+		// Platforms have NOTHING TO DO HERE
 		$sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.build_id," .
 				  " MAX(EE.id) AS id " .
 				  " FROM {$this->tables['executions']} EE " . 
@@ -5773,6 +5776,7 @@ class testplan extends tlObjectWithAttachments
 							" LEFT OUTER JOIN {$this->tables['executions']} E " .
 							" ON  E.tcversion_id = TPTCV.tcversion_id " .
 							" AND E.testplan_id = TPTCV.testplan_id " .
+							" AND E.id = LEX.id " .  // 20120903
 				  			$buildClause['exec_join'] .
 
 							" WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
@@ -5800,6 +5804,7 @@ class testplan extends tlObjectWithAttachments
 							" JOIN {$this->tables['executions']} E " .
 							" ON  E.tcversion_id = TPTCV.tcversion_id " .
 							" AND E.testplan_id = TPTCV.testplan_id " .
+							" AND E.id = LEX.id " .  // 20120903
 							$buildClause['exec_join'] .
 
 							" WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .

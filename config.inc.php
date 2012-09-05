@@ -18,15 +18,12 @@
  *
  * @filesource	config.inc.php
  * @package 	TestLink
- * @copyright 	2005-2011, TestLink community
+ * @copyright 	2005-2012, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- * 20111217 - franciscom - $tlCfg->validation_cfg->user_login_valid_regex updated using mantisbt 1.2.5
- * 20111127 - franciscom - demo mode - new config option demoSpecialUsers
  **/
 
-// ----------------------------------------------------------------------------
 /* [INITIALIZATION] - DO NOT CHANGE THE SECTION */
 
 /** @global array Global configuration class */
@@ -50,11 +47,8 @@ $tlCfg->req_spec_cfg = new stdClass();
 $tlCfg->diffEngine = new stdClass();
 $tlCfg->tplanDesign = new stdClass();
 
-/** @uses database access definition (generated automatically by TL installer) */
-
 /** @uses database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
-
 if( !defined('DB_TABLE_PREFIX') )
 {
     define('DB_TABLE_PREFIX','' );
@@ -68,6 +62,11 @@ require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 
 
 // ----------------------------------------------------------------------------
+/** @var string used to have (when needed) a possibility to identify different TL instances
+ * 				@since 1.9.4 used on mail subject when mail logger is used
+ */
+$tlCfg->instance_id = 'Main TestLink Instance';
+
 /* [LOCALIZATION] */
 
 /** @var string Default localization for users */
@@ -77,10 +76,9 @@ require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 $tlCfg->default_language = 'en_GB';
 
 /**
- * @var string Charset 'UTF-8' is only officially supported charset (Require
- * MySQL version >= 4.1) 'ISO-8859-1' or another Charset could be set for
- * backward compatability by experienced users. However we have not resources
- * to support such patches.
+ * @var string Charset 'UTF-8' is only officially supported charset  
+ * 'ISO-8859-1' or another Charset could be set for backward compatability by experienced users. 
+ * However we have not resources to support such patches.
  **/
 $tlCfg->charset = 'UTF-8';
 
@@ -106,6 +104,7 @@ $tlCfg->testcase_cfg->glue_character = '-';
  * fonts set used to draw charts
  **/
 $tlCfg->charts_font_path = TL_ABS_PATH . "third_party/pchart/Fonts/tahoma.ttf";
+
 /**
  * font size used to draw charts
  **/
@@ -114,6 +113,8 @@ $tlCfg->charts_font_size = 8;
 
 // ----------------------------------------------------------------------------
 /* [SERVER ENVIRONMENT] */
+$tlCfg->force_https = false;
+
 
 /**
  * @var integer Set the session timeout for inactivity [minutes].
@@ -149,8 +150,12 @@ $tlCfg->log_level = 'ERROR';
 /** @var boolean show smarty debug window */
 $tlCfg->smarty_debug = false;
 
-/** @var string Path to store logs */
-$tlCfg->log_path = TL_ABS_PATH . 'logs' . DIRECTORY_SEPARATOR ;
+/** 
+ *  @var string Path to store logs - 
+ *	for security reasons (see http://itsecuritysolutions.org/2012-08-13-TestLink-1.9.3-multiple-vulnerabilities/)
+ *	put it out of reach via web or configure access denied.
+ */
+$tlCfg->log_path = '/var/testlink/logs/'; /* unix example */
 
 
 /**
@@ -166,47 +171,23 @@ $tlCfg->config_check_warning_mode = 'FILE';
 /**
  * Configure if individual logging data stores are enabled of disabled
  * Possibile values to identify loggers: 'db','file'
- *		$g_loggerCfg=null; all loggers enabled (default)
- * 		$g_loggerCfg['db']['enable']=true/false;
- * 		$g_loggerCfg['file']['enable']=true/false;
+ * $g_loggerCfg=null; all loggers enabled 
+ * $g_loggerCfg['db']['enable']=true/false;
+ * $g_loggerCfg['file']['enable']=true/false;
+ * $g_loggerCfg['mail']['enable']=true/false;
  */
-$g_loggerCfg = null;
+$g_loggerCfg = array('mail' => array('enable' => false));
 
 /**  @var integer All events older this value [days] are removed from the db, during login */
 $g_removeEventsOlderThan = 30;
 
-
-// ----------------------------------------------------------------------------
-/* [Bug Tracking systems] */
-/**
- * TestLink collaborates with bug tracking systems to check if displayed bugs resolved,
- * verified, and closed reports.
- *
- * Note: Use this option to check if a bug interface is enabled, if so every
- * page using bug tracking MUST include int_bugtracking.php to make the
- * connection. The variable bugInterfaceOn is only set when a connection is made
- *
- * @var string $g_interface_bugs = [
- * 'NO'        : no bug tracking system integration (DEFAULT)
- * 'BUGZILLA'  : edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
- * 'MANTIS'    : edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
- * 'JIRA'      : edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
- * 'JIRASOAP'  : edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
- * 'TRACKPLUS' : edit configuration in TL_ABS_PATH/cfg/trackplus.cfg.php
- * 'EVENTUM'   : edit configuration in TL_ABS_PATH/cfg/eventum.cfg.php
- * 'SEAPINE'   : edit configuration in TL_ABS_PATH/cfg/seapine.cfg.php
- * 'GFORGE'    : edit configuration in TL_ABS_PATH/cfg/gforge.cfg.php
- * 'FOGBUGZ'   : edit configuration in TL_ABS_PATH/cfg/fogbugz.cfg.php
- * 'YOUTRACK'  : edit configuration in TL_ABS_PATH/cfg/youtrack.cfg.php
- * 'POLARION'  : edit configuration in TL_ABS_PATH/cfg/polarion.cfg.php
- * ]
- */
-$g_interface_bugs = 'NO';
-
-// do not change this
-$g_bugInterfaceOn = false;
-$g_bugInterface = null;
-
+/**  @var map keys: 'all' + values present on proprety of logger class $loggerTypeDomain
+*			  values can be only these defined on logger.class.php 
+ *   @since 1.9.4                                  
+ *   example array('all' => array('INFO','AUDIT'),
+ *				   'mail' =>  array('ERROR'))
+ */                            
+$tlCfg->loggerFilter = null; // default defined on logger.class.php ;                            
 
 // ----------------------------------------------------------------------------
 /* [SMTP] */
@@ -216,18 +197,39 @@ $g_bugInterface = null;
  * Configure using custom_config.inc.php
  * @uses lib/functions/email_api.php
  */
-$g_smtp_host        = '[smtp_host_not_configured]';  # SMTP server MUST BE configured
+ 
+$tlCfg->mail = new stdClass();
+$tlCfg->mail->smtp = new stdClass();
+$tlCfg->mail->smtp->host = '[smtp_host_not_configured]';  # SMTP server MUST BE configured
 
-# Configure using custom_config.inc.php
-$g_tl_admin_email     = '[testlink_sysadmin_email_not_configured]'; # for problem/error notification
-$g_from_email         = '[from_email_not_configured]';  # email sender
-$g_return_path_email  = '[return_path_email_not_configured]';
+/**
+ * The smtp port to use.  The typical SMTP ports are 25 and 587.  The port to use
+ * will depend on the SMTP server configuration and hence others may be used.
+ * @global int $g_smtp_port
+ */
+$tlCfg->mail->smtp->port = 25;
+
+/** Configure only if SMTP server requires authentication */
+$tlCfg->mail->smtp->username = '';  # user
+$tlCfg->mail->smtp->password = '';  # password
+
+/**
+ * This control the connection mode to SMTP server. 
+ * Can be '', 'ssl','tls'
+ */
+
+$tlCfg->mail->smtp->connection_mode = '';
+
+$tlCfg->mail->addresses = new stdClass();
+$tlCfg->mail->addresses->tl_admin = '[testlink_sysadmin_email_not_configured]'; # for problem/error notification
+$tlCfg->mail->addresses->from = '[from_email_not_configured]';  # email sender
+$tlCfg->mail->addresses->return_path = '[return_path_email_not_configured]';
 
 /**
  * Email notification priority (low by default)
  * Urgent = 1, Not Urgent = 5, Disable = 0
  **/
-$g_mail_priority = 5;
+$tlCfg->mail->priority = 5;
 
 /**
  * Taken from mantis for phpmailer config
@@ -236,25 +238,8 @@ $g_mail_priority = 5;
  * PHPMAILER_METHOD_SENDMAIL - sendmail
  * PHPMAILER_METHOD_SMTP - SMTP
  */
-$g_phpMailer_method = PHPMAILER_METHOD_SMTP;
-
-/** Configure only if SMTP server requires authentication */
-$g_smtp_username    = '';  # user
-$g_smtp_password    = '';  # password
-
-/**
- * This control the connection mode to SMTP server. 
- * Can be '', 'ssl','tls'
- * @global string $g_smtp_connection_mode
- */
-$g_smtp_connection_mode = '';
-
-/**
- * The smtp port to use.  The typical SMTP ports are 25 and 587.  The port to use
- * will depend on the SMTP server configuration and hence others may be used.
- * @global int $g_smtp_port
- */
-$g_smtp_port = 25;                        
+$tlCfg->phpMailer = new stdClass();
+$tlCfg->phpMailer->method = PHPMAILER_METHOD_SMTP;
 
 
 // ----------------------------------------------------------------------------
@@ -266,6 +251,18 @@ $g_smtp_port = 25;
  *	'LDAP' => use password from LDAP Server
  */
 $tlCfg->authentication['method'] = 'MD5';
+
+
+/**
+ * Single Sign On authentication
+ * This will be used with $tlCfg->authentication['method']
+ * 
+ */
+$tlCfg->authentication['SSO_enabled'] = false; 
+$tlCfg->authentication['SSO_method'] = 'CLIENT_CERTIFICATE';
+$tlCfg->authentication['SSO_uid_field'] = 'SSL_CLIENT_S_DN_Email';
+
+
 
 /** LDAP authentication credentials */
 $tlCfg->authentication['ldap_server'] = 'localhost';
@@ -294,6 +291,7 @@ $tlCfg->password_reset_send_method = 'send_password_by_mail';
  * The regular expression to use when validating new user login names
  * The default regular expression allows a-z, A-Z, 0-9, +, -, dot, @ and underscore. 	 
  * For testing regular expressions, use http://rubular.com/.
+ * For regular expression to englihs, use http://xenon.stanford.edu/~xusch/regexp/analyzer.html
  */
 // $tlCfg->validation_cfg->user_login_valid_regex='/^[\w \- .]+$/';
 $tlCfg->validation_cfg->user_login_valid_regex='/^([a-z\d\-.+_@]+(@[a-z\d\-.]+\.[a-z]{2,4})?)$/i';
@@ -348,9 +346,8 @@ $tlCfg->login_info = ''; // Empty by default
  *                  background colour for every test project.
  * 'none'        -> new behaviour no background color change
  */
-$tlCfg->gui->testproject_coloring = 'none'; // I'm sorry default is not coloring using coloring is a pain
-                                            // and useless
-/** @TODO havlatm4francisco Ok, then merge these two attributes into one */
+$tlCfg->gui->testproject_coloring = 'none'; 
+                                            
 /** default background color */
 $tlCfg->gui->background_color = '#9BD';
 
@@ -485,12 +482,11 @@ $tlCfg->gui->layoutMainPageRight = array('testPlan' => 1, 'testExecution' => 2,
  *
  * Does not work in Webkit browsers (Chrome, Safari) when using frames.
  * Bug in webkit: https://bugs.webkit.org/show_bug.cgi?id=19418
+ *
+ * ISSUE 0003275 + post on forum: // http://www.teamst.org/phpBB2/viewtopic.php?t=3075
+ * seems that with config options that will be used on javascript via smarty template variables
+ * we are having problems using FALSE/TRUE => use 0/1 (or our CONSTANT DISABLED/ENABLED)
  */
-
-// franciscom -
-// BUGID 0003275 + post on forum: // http://www.teamst.org/phpBB2/viewtopic.php?t=3075
-// seems that with config options that will be used on javascript via smarty template variables
-// we are having problems using FALSE/TRUE => use 0/1 (or our CONSTANT DISABLED/ENABLED)
 $tlCfg->gui->checkNotSaved = ENABLED;
 
 
@@ -526,7 +522,6 @@ $g_sort_table_engine='kryogenix.org';
 /* [Reports] */
 $tlCfg->reportsCfg=new stdClass();
 
-/** @TODO unfinished changes by Francisco? */
 //Displayed execution statuses to use on reports (ordered). */
 $tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];
 
@@ -635,7 +630,6 @@ $tlCfg->exec_cfg->testcases_colouring_by_selected_build = ENABLED;
 $tlCfg->exec_cfg->enable_tree_counters_colouring = ENABLED;
 
 
-// 20080303 - franciscom
 // This can help to avoid performance problems.
 // Controls what happens on right frame when user clicks on a testsuite on tree.
 // ENABLED -> show all test cases presents on test suite and children test suite.
@@ -695,11 +689,9 @@ $tlCfg->exec_cfg->expand_collapse->testsuite_details = LAST_USER_CHOICE;
 
 // ----------------------------------------------------------------------------
 /* [Test Specification] */
-// $g_spec_cfg = new stdClass();
 
 // 'horizontal' ->  step and results on the same row
 // 'vertical'   ->  steps on one row, results in the row bellow
-// $g_spec_cfg->steps_results_layout = 'vertical';
 $tlCfg->spec_cfg->steps_results_layout = 'horizontal';
 
 
@@ -857,8 +849,11 @@ $g_repositoryType = TL_REPOSITORY_TYPE_FS;
 /**
  * TL_REPOSITORY_TYPE_FS: the where the filesystem repository should be located
  * We recommend to change the directory for security reason.
+ * (see http://itsecuritysolutions.org/2012-08-13-TestLink-1.9.3-multiple-vulnerabilities/)
+ * Put it out of reach via web or configure access denied.
+ *
  **/
-$g_repositoryPath = TL_ABS_PATH . "upload_area" . DIRECTORY_SEPARATOR;
+$g_repositoryPath = '/var/testlink/upload_area/';  /* unix example */
 
 /**
  * compression used within the repository
@@ -992,7 +987,7 @@ $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['all']=array('passed');
 //$tlCfg->req_cfg->coverageStatusAlgorithm['displayOrder']=array('passed','failed','blocked','not_run');
 
 
-// TICKET 4661 - truncate log message to this amount of chars for reqSpecCompareRevisions
+// truncate log message to this amount of chars for reqSpecCompareRevisions
 $tlCfg->req_spec_cfg->log_message_len = 200;
 
 // Linking between requirements/requirement specifications
@@ -1344,7 +1339,6 @@ $tlCfg->enableTableExportButton = true;
 
 /**
  * Taken from Mantis to implement better login security, and solve
- * BUGID 4342
  */
 $tlCfg->auth_cookie = "TESTLINK_USER_AUTH_COOKIE";
 $tlCfg->current_tproject_id_cookie = "TESTLINK_CURRENT_TPROJECT_ID";
@@ -1356,6 +1350,9 @@ $tlCfg->current_tproject_id_cookie = "TESTLINK_CURRENT_TPROJECT_ID";
  */
 $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
 
+// name of your custom.css, place it in same folder that standard TL css
+// null or '' => do not use
+$tlCfg->custom_css = null;
 
 /** Used when need to indicate to users via mail, people to contact */
 $tlCfg->admin_coordinates = 'testlink_admin (configure using $tlCfg->admin_coordinates)';
@@ -1371,15 +1368,11 @@ $tlCfg->mail_templates->change_password = TL_ABS_PATH . "docs/item_templates/%lo
 // DO NOT CHANGE NOTHING BELOW
 // --------------------------------------------------------------------------------------
 
-// havlatm: @TODO move the next code out of config - configCheck.php -> included via common.php
+
 /** Functions for check request status */
 require_once('configCheck.php');
 
-/** root of testlink directory location seen through the web server */
-// @TODO: basehref should be defined by installation script or stored from login in $_SESSION
-/*  20070106 - franciscom - this statement it's not 100% right
-    better use $_SESSION['basehref'] in the scripts. */
-define('TL_BASE_HREF', get_home_url());
+
 
 
 clearstatcache();
@@ -1388,13 +1381,18 @@ if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
   require_once( TL_ABS_PATH . 'custom_config.inc.php' );
 }
 
-// BUGID 3424
+/** root of testlink directory location seen through the web server */
+/*  20070106 - franciscom - this statement it's not 100% right
+    better use $_SESSION['basehref'] in the scripts. */
+define('TL_BASE_HREF', get_home_url(array('force_https' => $tlCfg->force_https)));
+
+
 if( !isset($g_attachments->access_icon) )
 {
 	$g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
 }
 
-// BUGID 2914
+
 // Important to do this only after custom_* to use (if exists) redefinition of
 // $tlCfg->results['status_label_for_exec_ui']
 $tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];
@@ -1443,9 +1441,12 @@ define('TL_THEME_BASE_DIR', $tlCfg->theme_dir);
 define('TL_THEME_IMG_DIR', $tlCfg->theme_dir . 'images/');
 define('TL_THEME_CSS_DIR', $tlCfg->theme_dir . 'css/');
 define('TL_TESTLINK_CSS', TL_THEME_CSS_DIR . TL_CSS_MAIN);
-define('TL_TESTLINK_CUSTOM_CSS', TL_THEME_CSS_DIR . TL_CSS_CUSTOM);
 define('TL_PRINT_CSS', TL_THEME_CSS_DIR . TL_CSS_PRINT);
 define('TL_TREEMENU_CSS', TL_THEME_CSS_DIR . TL_CSS_TREEMENU);
+
+// if you do not want to use this, redefine $tlCfg->custom_css as '' or null
+define('TL_TESTLINK_CUSTOM_CSS', TL_THEME_CSS_DIR . $tlCfg->custom_css);
+
 
 // --------------------------------------------------------------------------------------
 // when a role is deleted, a new role must be assigned to all users

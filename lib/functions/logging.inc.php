@@ -1,22 +1,29 @@
 <?php
 /**
-* Now any log messages from the levels ERROR or INFO will be recorded.
-* DEBUG messages will be ignored. We can have as many log entries as we like.
-* They take the form:
-*
-*    tLog("testing level ERROR", 'ERROR');
-*    tLog("testing level INFO", 'INFO');
-*    tLog("testing level DEBUG");
-*
-* This will add the following entries to the log:
-*
-* [05/Jan/27 13:05:56][INFO][guest] - Login ok. (Timing: 0.000763)
-* [05/Jan/27 13:06:03][DEBUG][havlatm] - User id = 10, Rights = admin
-*
-* @author Andreas Morsing : changed to format of log entries
-* @author Andreas Morsing : errors in extended level will be shown in red instead of
-* 							inlined as comments
-*/
+ * @filesource	logging.inc.php
+ * @package 	TestLink
+ * @copyright 	2009,2012 TestLink community 
+ *
+ *
+ * Log messages from the levels ERROR or INFO will be recorded on ???.
+ * DEBUG messages will be ignored. 
+ * They take the form:
+ *
+ *    tLog("testing level ERROR", 'ERROR');
+ *    tLog("testing level INFO", 'INFO');
+ *    tLog("testing level DEBUG");
+ *
+ * This will add the following entries to the log:
+ *
+ * [05/Jan/27 13:05:56][INFO][guest] - Login ok. (Timing: 0.000763)
+ * [05/Jan/27 13:06:03][DEBUG][havlatm] - User id = 10, Rights = admin
+ *
+ *
+ * @internal revisions
+ * @author Andreas Morsing : changed to format of log entries
+ * @author Andreas Morsing : errors in extended level will be shown in red instead of inlined as comments
+ */
+ 
 /*
 	This function fires audit events
 
@@ -31,6 +38,7 @@ function logAuditEvent($message,$activityCode = null,$objectID = null,$objectTyp
 {
 	return tLog($message,"AUDIT","GUI",$objectID,$objectType,$activityCode);
 }
+
 function logWarningEvent($message,$activityCode = null,$objectID = null,$objectType = null)
 {
 	return tLog($message,"WARNING","GUI",$objectID,$objectType,$activityCode);
@@ -40,33 +48,27 @@ function tLog($message, $level = 'DEBUG', $source = "GUI",$objectID = null,$obje
 {
 	global $g_tlLogger;
 	if (!$g_tlLogger)
+	{
 		return tl::ERROR;
+	}
 	$t = $g_tlLogger->getTransaction();
 	if (!$t)
+	{
 		return tl::ERROR;
-	//to avoid transforming old code, we check if we have old string-like logLevel or new tlLogger-LogLevel
-	$logLevel = is_string($level) ? tlLogger::$revertedLogLevels[$level] : $level;
+	}
+
+	if( $level == 'X')
+	{
+		echo '<br> >>> ' . __FUNCTION__  . ':' . $message . '/'. $level .'<br>';
+		$level='ERROR';
+	}
+	
+	// to avoid transforming old code, we check if we have old string-like logLevel or new tlLogger-LogLevel
+	$logLevel = is_string($level) ? tlLogger::$logLevelsStringCode[$level] : $level;
 	$t->add($logLevel,$message,$source,$activityCode,$objectID,$objectType);
 
 	return tl::OK;
-	/*
-		//SCHLUNDUS: could be a special "to page" logger?
-		$bExtendedLogLevel = ($tl_log_levels[$tl_log_level] >= $tl_log_levels['EXTENDED']);
-		if ($bExtendedLogLevel)
-		{
-			if ($level == 'ERROR')
-				echo "<pre style=\"color:red\">";
-			else
-				echo "\n<!--\n";
-			echo $message;
-			if ($level == 'ERROR')
-				echo "</pre>";
-			else
-				echo "\n-->\n";
-		}
-    	return true;
-    }
-		*/
+	
 }
 
 /**

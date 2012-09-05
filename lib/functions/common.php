@@ -12,20 +12,10 @@
  *
  * @filesource	common.php
  * @package 	TestLink
- * @copyright 	2005,2011 TestLink community 
+ * @copyright 	2005,2012 TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- * 20110602 - franciscom - minor improvement on checkUploadOperation()
- * 20110502 - franciscom - testlinkInitPage() logic changed
- * 20110430 - franciscom - checkSecurityClearance()
- * 20110416 - franciscom - setSessionProject() -> setCurrentProject()
- * 20110415 - Julian - BUGID 4418: Clean up priority usage within Testlink
- *                                  -> priority_to_level() uses urgencyImportance
- * 20110321 - franciscom - 	BUGID 4025: option to avoid that obsolete test cases 
- *							can be added to new test plans
- *							getConfigAndLabels($configKey,$accessMode='key')
- *
  */
 
 /** core and parenthal classes */
@@ -485,7 +475,9 @@ function config_get($config_id)
 		
 		if( $t_found )
 		{
-			$logInfo = array('msg' => "config option: {$config_id} is {$t_value}", 'level' => 'INFO');
+			$logInfo['msg'] = "config option: {$config_id} is " . 
+							  ((is_object($t_value) || is_array($t_value)) ? serialize($t_value) : $t_value);
+			$logInfo['level'] = 'INFO';
 		}
 	}
 	

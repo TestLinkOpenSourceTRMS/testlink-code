@@ -5,6 +5,7 @@ generate the list of TC that can be removed from a Test Plan
 
 @filesource tc_exec_assignment.tpl
 @internal revisions
+20120907 - asimon - TICKET 5211: Assign Test Case Execution: text "toggle_all" is displayed next to every test suite title
 *}
 
 {lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
@@ -128,7 +129,7 @@ function check_action_precondition(container_id,action)
 			                            onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_","add_value_{$ts_id}");'
                                   title="{$labels.check_uncheck_children_checkboxes}" />
         {$ts.testsuite.name|escape}
-        toggle_all
+        {* TICKET 5211: "toggle_all" is displayed next to every test suite title on assigning test case execution *}
 	      </h3>
 
         {* used as memory for the check/uncheck all checkbox javascript logic *}

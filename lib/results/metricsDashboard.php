@@ -10,6 +10,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120907 - asimon - TICKET 5212: removed debug output "getMetrics" that was shown above the normal page header
  * 20120728 - franciscom - CHANGE OF BEHAVIOR: test plan without builds will be ignored
  *							
  * 20120603 - franciscom - TICKET 5048: Metrics Dashboard refactoring for performance
@@ -153,8 +154,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 {
-
-	echo '<h1>' . __FUNCTION__ . '</h1>';
+	// TICKET 5212: removed debug output "getMetrics" that was shown above the normal page header
+	//echo '<h1>' . __FUNCTION__ . '</h1>';
  	//$chronos[] = microtime(true); $tnow = end($chronos);
 
 	$user_id = $args->currentUserID;

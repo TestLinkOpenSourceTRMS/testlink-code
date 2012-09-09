@@ -17,7 +17,6 @@
  * 
  **/
 
-//require_once("installUtils.php");
 require_once('..'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'functions'.DIRECTORY_SEPARATOR.'configCheck.php');
 
 if( !isset($_SESSION) )

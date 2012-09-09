@@ -325,15 +325,14 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
    * gets all infos about the attachments of the object specified by $id
    *    
    * @param integer $id this is the fkid of the attachments table
-     * @return array returns map with the infos of the attachment, 
-     *         keys are the column names of the attachments table 
+   * @return array returns map with the infos of the attachment, 
+   *         keys are the column names of the attachments table 
    *
-   * @TODO schlundus: legacy function to keep existing code, should be replaced by a 
-   *                  function which returns objects 
    */
-  function getAttachmentInfos($id)
+  function getAttachmentInfos($id,$storeListInSession = true,$counter = 0)
   {
-    return $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName);
+    return $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName,
+                                                              $storeListInSession,$counter);
   }
   
   /**

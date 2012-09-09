@@ -10,7 +10,9 @@
  *	Also called when search option on Navigation Bar is used
  *
  *	@internal revision
- *  20111105 - franciscom - TICKET 4796: Test Case reuse - Quick & Dirty Approach
+ *  @since 2.0
+ *  20120909 - franciscom - attachment management refactoring
+ *
  */
 
 require_once('../../config.inc.php');
@@ -46,9 +48,9 @@ switch($args->feature)
 	case 'testproject':
 	case 'testsuite':
 		$item_mgr = new $args->feature($db);
-		$gui->attachments = getAttachmentInfosFrom($item_mgr,$args->id);
+		$gui->attachments = $item_mgr->getAttachmentInfos($args->id);
 		$gui->id = $args->id;
-		
+	
 		$lblkey = config_get('testcase_reorder_by') == 'NAME' ? '_alpha' : '_externalid';
 		$gui->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
 

@@ -1,11 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	attachmentupload.tpl
+@filesource attachmentupload.tpl
 template for attachment upload dialog 
 
 @internal revisions
-20101026 - BUGID 3943: Escape all messages (string) that has to be used on Javascript code
+
 *}
-{lang_get var='labels'
+{lang_get var='atlabels'
           s='title_upload_attachment,enter_attachment_title,btn_upload_file,warning,enter_attachment_title,
              local_file,attachment_upload_ok,title_choose_local_file,btn_cancel,max_size_file_upload'}
 
@@ -26,29 +26,29 @@ var warning_empty_title = "{$labels.enter_attachment_title|escape:'javascript'}"
 {/if}
 
 <div class="workBack">
-	<h2>{$labels.title_choose_local_file}</h2>
-	
-	<form action="lib/attachments/attachmentupload.php" method="post" enctype="multipart/form-data" id="aForm">
-		<p>{$labels.local_file}
-			<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->import_limit}" /> {* restrict file size *}
-			<input type="file" name="uploadedFile" size="{#UPLOAD_FILENAME_SIZE#}" />
-		</p>
-		<p>
-			{$labels.enter_attachment_title}:
-			<input type="text" id="title" name="title" maxlength="{#ATTACHMENT_TITLE_MAXLEN#}" 
-			       size="{#ATTACHMENT_TITLE_SIZE#}" />
-		</p>
-		<div class="groupBtn">
-			<input type="submit" value="{$labels.btn_upload_file}" onclick="return attachmentDlg_onSubmit({$gsmarty_attachments->allow_empty_title eq true})" />
-			<input type="button" value="{$labels.btn_cancel}" onclick="window.close()" />
-		</div>
-	</form>
-	<p>
-		{$labels.max_size_file_upload}: {$gui->import_limit} Bytes
-	</p>
-	{if $gui->msg != ''}
-		<p class="bold" style="color:red">{$gui->msg}</p>
-	{/if}
+  <h2>{$labels.title_choose_local_file}</h2>
+  
+  <form action="lib/attachments/attachmentupload.php" method="post" enctype="multipart/form-data" id="aForm">
+    <p>{$labels.local_file}
+      <input type="hidden" name="MAX_FILE_SIZE" value="{$gui->import_limit}" /> {* restrict file size *}
+      <input type="file" name="uploadedFile" size="{#UPLOAD_FILENAME_SIZE#}" />
+    </p>
+    <p>
+      {$labels.enter_attachment_title}:
+      <input type="text" id="title" name="title" maxlength="{#ATTACHMENT_TITLE_MAXLEN#}" 
+             size="{#ATTACHMENT_TITLE_SIZE#}" />
+    </p>
+    <div class="groupBtn">
+      <input type="submit" value="{$labels.btn_upload_file}" onclick="return attachmentDlg_onSubmit({$gsmarty_attachments->allow_empty_title eq true})" />
+      <input type="button" value="{$labels.btn_cancel}" onclick="window.close()" />
+    </div>
+  </form>
+  <p>
+    {$labels.max_size_file_upload}: {$gui->import_limit} Bytes
+  </p>
+  {if $gui->msg != ''}
+    <p class="bold" style="color:red">{$gui->msg}</p>
+  {/if}
 </div>
 
 </body>

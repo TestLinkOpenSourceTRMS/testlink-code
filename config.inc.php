@@ -29,6 +29,10 @@
 /** @global array Global configuration class */
 $tlCfg = new stdClass();
 $tlCfg->api = new stdClass();
+$tlCfg->attachments = new stdClass();  // @since 2.0
+$tlCfg->attachments->repository = new stdClass();  // @since 2.0
+
+
 $tlCfg->document_generator = new stdClass();
 
 $tlCfg->spec_cfg = new stdClass();
@@ -837,63 +841,27 @@ $tlCfg->platform_template->notes->value = '';
 /* [ATTACHMENTS] */
 
 /** Attachment feature availability */
-$g_attachments = new stdClass();
-$g_attachments->enabled = TRUE;
+$tlCfg->attachments->enabled = TRUE;
+$tlCfg->attachments->emptyTitleAllowed = TRUE;
 
-/** the type of the repository can be database or filesystem
- * TL_REPOSITORY_TYPE_DB => database
- * TL_REPOSITORY_TYPE_FS => filesystem
- **/
-$g_repositoryType = TL_REPOSITORY_TYPE_FS;
 
-/**
- * TL_REPOSITORY_TYPE_FS: the where the filesystem repository should be located
- * We recommend to change the directory for security reason.
- * (see http://itsecuritysolutions.org/2012-08-13-TestLink-1.9.3-multiple-vulnerabilities/)
- * Put it out of reach via web or configure access denied.
- *
- **/
-$g_repositoryPath = '/var/testlink/upload_area/';  /* unix example */
-
-/**
- * compression used within the repository
- * TL_REPOSITORY_COMPRESSIONTYPE_NONE => no compression
- * TL_REPOSITORY_COMPRESSIONTYPE_GZIP => gzip compression
- */
-$g_repositoryCompressionType = TL_REPOSITORY_COMPRESSIONTYPE_NONE;
-
-// the maximum allowed file size for each repository entry, default 1MB.
-// Also check your PHP settings (default is usually 2MBs)
-$tlCfg->repository_max_filesize = 1; //MB
-
-// TRUE -> when you upload a file you can give no title
-$g_attachments->allow_empty_title = TRUE;
-
-// $g_attachments->allow_empty_title == TRUE, you can ask the system
-// to do something
+// $tlCfg->attachments->emptyTitleAllowed == TRUE, 
+// you can ask the system to do something
 //
 // 'none'         -> just write on db an empty title
 // 'use_filename' -> use filename as title
-//$g_attachments->action_on_save_empty_title='use_filename';
-//
-$g_attachments->action_on_save_empty_title = 'none';
+$tlCfg->attachments->emptyTitleActionOnSave = 'none';
 
-// Remember that title is used as link description for download
-// then if title is empty, what the system has to do when displaying ?
-// 'show_icon'  -> the $g_attachments->access_icon will be used.
-// 'show_label' -> the value of $g_attachments->access_string will be used .
-$g_attachments->action_on_display_empty_title = 'show_icon';
+$tlCfg->attachments->accessString = "[*]";
+$tlCfg->attachments->orderBy = " ORDER BY date_added DESC ";
 
-// martin: @TODO use an image file only
+$tlCfg->attachments->repository->type = TL_REPOSITORY_TYPE_FS;
+$tlCfg->attachments->repository->path = '/var/testlink/upload_area/';  /* unix example */
 
-// BUGID 3424  - need to be moved AFTER include of custom_config
-//
-// $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
-$g_attachments->access_string = "[*]";
-
-// Set display order of uploaded files - BUGID 1086
-$g_attachments->order_by = " ORDER BY date_added DESC ";
-
+// the maximum allowed file size for each repository entry, default 1MB.
+// Also check your PHP settings (default is usually 2MBs)
+$tlCfg->attachments->repository->maxFileSize = 1; //MB
+$tlCfg->attachments->repository->compressionType = TL_REPOSITORY_COMPRESSIONTYPE_NONE;
 
 
 // ----------------------------------------------------------------------------
@@ -1382,14 +1350,13 @@ if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
 }
 
 /** root of testlink directory location seen through the web server */
-/*  20070106 - franciscom - this statement it's not 100% right
-    better use $_SESSION['basehref'] in the scripts. */
+/*  this statement it's not 100% right better use $_SESSION['basehref'] in the scripts. */
 define('TL_BASE_HREF', get_home_url(array('force_https' => $tlCfg->force_https)));
 
 
-if( !isset($g_attachments->access_icon) )
+if( !isset($tlCfg->attachments->accessIcon) )
 {
-	$g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
+	$tlCfg->attachments->accessIcon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
 }
 
 
@@ -1433,7 +1400,7 @@ $tlCfg->results['code_status'] = array_flip($tlCfg->results['status_code']);
 /** Converted and derived variables (Users should not modify this section) */
 define('REFRESH_SPEC_TREE',$tlCfg->spec_cfg->automatic_tree_refresh ? 1 : 0);
 define('TL_SORT_TABLE_ENGINE',$g_sort_table_engine);
-define("TL_REPOSITORY_MAXFILESIZE", 1024*1024*$tlCfg->repository_max_filesize);
+define("TL_REPOSITORY_MAXFILESIZE", 1024*1024*$tlCfg->attachments->repository->maxFileSize);
 
 define('TL_XMLEXPORT_HEADER', "<?xml version=\"1.0\" encoding=\"" . $tlCfg->charset . "\"?>\n");
 

@@ -6,29 +6,22 @@
  * Check configuration and system 
  * Using: Installer, sysinfo.php and Login
  * 
- * @package 	TestLink
- * @author 		Martin Havlat
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: configCheck.php,v 1.56 2011/01/26 09:02:01 mx-julian Exp $
- * @link 		http://www.teamst.org/index.php
- * @see			sysinfo.php
+ * @package 	  TestLink
+ * @author 		  Martin Havlat
+ * @copyright   2007-2011, TestLink community 
+ * @filesource  configCheck.php,v 1.56 2011/01/26 09:02:01 mx-julian Exp $
+ * @link 		    http://www.teamst.org/index.php
+ * @see			    sysinfo.php
  *
- * @internal Revisions:
- * 	
- *  20110411 - Julian - BUGID 4398 - Prevent user-login when database scheme version does not fit 
- *                                   required scheme
- *  20110126 - Julian - BUGID 4186 - checkSchemaVersion() moved last_db_version to const.inc.php
- *  20100617 - franciscom - domxml is not needed anymore
- *  20090713 - franciscom - tested is_writable() on windows with PHP 5.
- *                          minor refactoring
- *  20090416 - havlatm - checking: database, GD lib and browser support
- *  20090126 - franciscom - check_php_extensions() refactoring
- *  20090109 - havlatm - import checking functions from Installer 
- * 	20081122 - franciscom - checkForExtensions() - added check of needed extensions to use pChart
- *  20081015 - franciscom - getSecurityNotes() - refactoring
+ * @uses common.php
+ *
+ * @internal revisions
+ * @since 2.0 	
  *
  **/
-// ---------------------------------------------------------------------------------------------------
+
+require_once('..' . DIRECTORY_SEPARATOR . 'config.inc.php');
+require_once('common.php');
 
 /**
  * get home URL
@@ -36,43 +29,71 @@
  * @author adapted from Mantis Bugtracking system
  * @return string URL 
  */
-function get_home_url()
+function get_home_url($opt)
 {
-  if ( isset ( $_SERVER['PHP_SELF'] ) ) {
+
+  if( isset ( $_SERVER['PHP_SELF'] ) ) 
+  {
 	$t_protocol = 'http';
-	if ( isset( $_SERVER['HTTPS'] ) && ( strtolower( $_SERVER['HTTPS'] ) != 'off' ) ) {
+	if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) 
+	{
+		$t_protocol= $_SERVER['HTTP_X_FORWARDED_PROTO'];
+	}		
+	else if ( isset( $_SERVER['HTTPS'] ) && ( strtolower( $_SERVER['HTTPS'] ) != 'off' ) ) 
+	{
 		$t_protocol = 'https';
 	}
+	
+	// Add Setting to Force HTTPS
+	$t_protocol = $opt['force_https'] ? 'https' : $t_protocol;
 
 	// $_SERVER['SERVER_PORT'] is not defined in case of php-cgi.exe
-	if ( isset( $_SERVER['SERVER_PORT'] ) ) {
+	if ( isset( $_SERVER['SERVER_PORT'] ) ) 
+	{
 		$t_port = ':' . $_SERVER['SERVER_PORT'];
-		if ( ( ':80' == $t_port && 'http' == $t_protocol )
-		  || ( ':443' == $t_port && 'https' == $t_protocol )) {
+    if( (':80' == $t_port && 'http' == $t_protocol ) || 
+        (':443' == $t_port && 'https' == $t_protocol ) ) 
+		{
 			$t_port = '';
 		}
-	} else {
+	} 
+	else 
+	{
 		$t_port = '';
 	}
 
-	if ( isset( $_SERVER['HTTP_HOST'] ) ) {
+	if ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) 
+	{ 	
+	  // Support ProxyPass
+		$t_hosts = explode( ',', $_SERVER['HTTP_X_FORWARDED_HOST'] );
+		$t_host = $t_hosts[0];
+	}
+	else if ( isset( $_SERVER['HTTP_HOST'] ) ) 
+	{
 		$t_host = $_SERVER['HTTP_HOST'];
-	} else if ( isset( $_SERVER['SERVER_NAME'] ) ) {
+	} 
+	else if ( isset( $_SERVER['SERVER_NAME'] ) ) 
+	{
 		$t_host = $_SERVER['SERVER_NAME'] . $t_port;
-	} else if ( isset( $_SERVER['SERVER_ADDR'] ) ) {
+	} 
+	else if ( isset( $_SERVER['SERVER_ADDR'] ) ) 
+	{
 		$t_host = $_SERVER['SERVER_ADDR'] . $t_port;
-	} else {
-		$t_host = 'www.example.com';
+	} 
+	else 
+	{
+		$t_host = 'localhost';
 	}
 
 	$t_path = dirname( $_SERVER['PHP_SELF'] );
-	if ( '/' == $t_path || '\\' == $t_path ) {
+	if ( '/' == $t_path || '\\' == $t_path ) 
+	{
 		$t_path = '';
 	}
 
 	$t_url	= $t_protocol . '://' . $t_host . $t_path.'/';
 	
-	return ($t_url);
+	return $t_url;
   }
 }
 
@@ -134,7 +155,8 @@ function checkLibGd()
 	{
 		$arrLibConf = gd_info();
 		$msg = lang_get("error_gd_png_support_disabled");
-		if ($arrLibConf["PNG Support"]){
+		if ($arrLibConf["PNG Support"])
+		{
 			$msg = 'OK';
 		}	
 	}
@@ -152,18 +174,9 @@ function checkLibGd()
  * @param array [ref] msgs will be appended
  * @return bool returns true if all extension or functions ar present or defined
  *
- * @author Andreas Morsing 
- * @todo Martin: it's used in getSecurityNotes() ... but it's not consistent with 
- * 		checkPhpExtensions() - refactore
  **/
-// * rev: 20081122 - franciscom - added gd2 check
 function checkForExtensions(&$msg)
 {
-	// if (!function_exists('domxml_open_file'))
-	// {
-	// 	$msg[] = lang_get("error_domxml_missing");
-	// }
-	
 	// without this pChart do not work
 	if( !extension_loaded('gd') )
 	{
@@ -225,16 +238,12 @@ function checkForLDAPExtension()
  * @return array returns the security issues, or null if none found!
  * @author Andreas Morsing 
  *
- * @internal rev :
- *      20081015 - franciscom - LDAP checks refactored
- *      20080925 - franciscom - added option to not show results
- *      20070626 - franciscom - added LDAP checks  
+ * @internal revisions
+ * @since 2.0
+ *
  **/
 function getSecurityNotes(&$db)
 {
-	$repository['type'] = config_get('repositoryType');
-	$repository['path'] = config_get('repositoryPath');
-  
 	$securityNotes = null;
 	if (checkForInstallDir())
 	{
@@ -256,23 +265,21 @@ function getSecurityNotes(&$db)
 		    $securityNotes[] = lang_get("sec_note_admin_default_pwd");
 		}
   }
-
-  
-	if (!checkForBTSConnection())
-	{
-		$securityNotes[] = lang_get("bts_connection_problems");
-	}
+ 
 		
-	if($repository['type'] == TL_REPOSITORY_TYPE_FS)
+  $cfg = config_get('attachments');
+	if($cfg->repository->type == TL_REPOSITORY_TYPE_FS)
 	{
-		$ret = checkForRepositoryDir($repository['path']);
-		if(!$ret['status_ok'])
+	  $repoMgr = new tlAttachmentRepository($db);
+		$ret = $repoMgr->checkRepositoryStatus();
+		if(!$ret['enabled'])
 		{
-			$securityNotes[] = $ret['msg'];
+			$securityNotes[] = $ret['disabledMsg'];
 		}	
+		unset($repoMgr);
 	}
 
-	// 20070121 - needed when schemas change has been done
+	// Needed when schemas change has been done
 	// This call can be removed when release is stable
 	$res = checkSchemaVersion($db);
 	$msg = $res['msg'];
@@ -281,13 +288,7 @@ function getSecurityNotes(&$db)
 	{
 		$securityNotes[] = $msg;
 	}
-	
-	// 20070911 - fixing bug 1021 
-	$msg = checkForTestPlansWithoutTestProjects($db);
-	if($msg != "")
-	{
-		$securityNotes[] = $msg;
-	}
+
 	
 	$msg = checkEmailConfig();
 	if(!is_null($msg))
@@ -301,7 +302,7 @@ function getSecurityNotes(&$db)
   
 	if(!is_null($securityNotes))
 	{
-	  $user_feedback=config_get('config_check_warning_mode');
+	  $user_feedback = config_get('config_check_warning_mode');
 	  
 	  switch($user_feedback)
 	  {
@@ -329,26 +330,6 @@ function getSecurityNotes(&$db)
 	return $securityNotes;
 }
 
-
-/**
- * checks if the connection to the Bug Tracking System database is working
- *
- * @return boolean returns true if ok
- * 				false else
- * @author franciscom 
- **/
-function checkForBTSConnection()
-{
-  
-	global $g_bugInterface;
-	$status_ok = true;
-	if($g_bugInterface && !$g_bugInterface->connect())
-	{	
-		$status_ok = false;
-	}
-	return $status_ok; 
-}
-
 /** 
  * Check if server OS is microsoft Windows flavour
  * 
@@ -362,61 +343,6 @@ function isMSWindowsServer()
 	return $isWindows; 
 }
 
-/*
-  function: checkForRepositoryDir
-  args :
-  returns: 
-*/
-function checkForRepositoryDir($the_dir)
-{
-	clearstatcache();
-
-	$ret['msg']=lang_get('attachments_dir') . " " . $the_dir . " ";
-	$ret['status_ok']=false;
-  	
-	if(is_dir($the_dir)) 
-	{
-		$ret['msg'] .= lang_get('exists') . ' ';
-		$ret['status_ok'] = true;
-
-		// There is a note on PHP manual that points that on windows
-		// is_writable() has problems => need a workaround
-		/** @TODO verify if it's valid for PHP5 */
-		// if( isMSWindowsServer() )
-		// {
-        //     $test_dir= $the_dir . '/requirements/';
-        //     if(!is_dir($test_dir))
-        //     {
-        //       // try to make the dir
-        //       $stat = @mkdir($test_dir);
-        //       $ret['status_ok']=$stat;
-        //     }
-		// }
-		// else
-		// {
-		// 	$ret['status_ok'] = (is_writable($the_dir)) ? true : false; 
-    	// }
-        // 20090713 - franciscom - tested on windows XP with PHP 5.2.9 seems OK
- 	    $ret['status_ok'] = (is_writable($the_dir)) ? true : false; 
-
-		if($ret['status_ok']) 
-		{
-   	    	$ret['msg'] .= lang_get('directory_is_writable');
-   		}
-       	else
-       	{
-   	    	$ret['msg'] .= lang_get('but_directory_is_not_writable');
-   	    }	
-	} 
-	else
-	{
-		$ret['msg'] .= lang_get('does_not_exist');
-	}
-	
-	return($ret);
-}
-
-
 /**
  * Check if DB schema is valid
  * 
@@ -427,7 +353,7 @@ function checkForRepositoryDir($the_dir)
 function checkSchemaVersion(&$db)
 {
 	$result = array('status' => tl::ERROR, 'msg' => null);
-	$last_version = TL_LAST_DB_VERSION;  // BUGID 4186: moved last db version to const.inc.php
+	$last_version = TL_LAST_DB_VERSION;  
 	$db_version_table= DB_TABLE_PREFIX . 'db_version';
 	
 	$sql = "SELECT * FROM {$db_version_table} ORDER BY upgrade_ts DESC";
@@ -457,16 +383,25 @@ function checkSchemaVersion(&$db)
 			$result['msg'] = $upgrade_msg;
 			break;
 			
-		// this check is not necessary to maintain on 2.x but can serve as example how to handle
-		// non-automatic migration/update procedures
-		case 'DB 1.3': // TL 1.9.0
-			// DB 1.3 to DB 1.4 requires manual steps
-			if ($last_version == 'DB 1.4') {
-				$result['msg'] = "Manual upgrade of your DB scheme necessary (1.9.0 -> 1.9.1) - Read README file!";
-			} else {
-				$result['msg'] = $upgrade_msg;
+		case 'DB 1.3':
+			// DB 1.3 to DB 1.4/1.5 requires manual steps
+			$result['msg'] = $upgrade_msg;
+			if ($last_version == 'DB 1.4' || $last_version == 'DB 1.5') 
+			{
+				$result['msg'] = "Manual upgrade of your DB scheme necessary (1.9.0 -> {$last_version}) " .
+								 " - Read README file!";
 			}
 			break;
+			
+		case 'DB 1.4':
+			$result['msg'] = $upgrade_msg;
+			if ($last_version == 'DB 1.5') 
+			{
+				$result['msg'] = "Manual upgrade of your DB scheme necessary (1.9.0 -> {$last_version}) " .
+								 " - Read README file!";
+			}
+			break;
+
 			
 		case $last_version:
 			$result['status'] = tl::OK;
@@ -480,28 +415,6 @@ function checkSchemaVersion(&$db)
 	
 	return $result;
 }
-
-/**
- * checks if the install dir is present
- *
- * @return msg returns if there are any test plans without a test project 
- * @author Asiel Brumfield 
- **/
-function checkForTestPlansWithoutTestProjects(&$db)
-{
-	$msg = "";
-	if(count(getTestPlansWithoutProject($db)))
-	{	
-		$msg = "You have Test Plans that are not associated with Test Projects!";
-		if(isset($_SESSION['basehref']))
-		{		
-			$url = $_SESSION['basehref'] . "/lib/project/fix_tplans.php"; 			
-			$msg .= " <a style=\"color:red\" href=\"{$url}\">Fix This</a>";		
-		}
-	}	
-	return $msg;
-}
-
 
 /*
   function: checkEmailConfig 
@@ -592,12 +505,38 @@ function checkPhpExtensions(&$errCounter)
   
   $msg_support='<tr><td>Checking %s </td>';
   $checks=array();
+
+
+  // Database extensions	
   $checks[]=array('extension' => 'mysql',
                   'msg' => array('feedback' => 'MySQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
  
   $checks[]=array('extension' => 'pgsql',
                   'msg' => array('feedback' => 'Postgres Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
  
+
+  // ---------------------------------------------------------------------------------------------------------	  
+  // special check for MSSQL - TICKET 4898
+  $extid = 'mssql';
+  if(PHP_OS == 'WINNT')
+  {
+	// Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
+	// From PHP MANUAL - reganding mssql_* functions
+	// These functions allow you to access MS SQL Server database.
+	// This extension is not available anymore on Windows with PHP 5.3 or later.
+	// SQLSRV, an alternative driver for MS SQL is available from Microsoft:
+	// http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx. 			
+	//
+	// PHP_VERSION_ID is available as of PHP 5.2.7
+	if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300)  
+	{
+	  $extid = 'sqlsrv';
+	}			
+  }	
+  $checks[] = array('extension' => $extid,
+					'msg' => array('feedback' => 'MSSQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );		
+  // ---------------------------------------------------------------------------------------------------------
+
   
   $checks[]=array('extension' => 'gd',
                   'msg' => array('feedback' => 'GD Graphic library', 'ok' => $td_ok, 
@@ -627,8 +566,8 @@ function checkPhpExtensions(&$errCounter)
       }
       $out .= $msg;
   }
-
-	return ($out);
+  
+	return $out;
 }  
 
 
@@ -644,20 +583,24 @@ function check_session(&$errCounter)
 	$out = "<tr><td>Checking if sessions are properly configured</td>";
 
 	if( !isset($_SESSION) )
+	{
 		session_start();
-
+  }
+  
 	if( $_SESSION['session_test'] != 1 ) 
 	{
-    	$color = 'success';
-    	$msg = 'OK';
-	} else {
-    	$color = 'error';
-    	$msg = 'Failed!';
-        $errCounter++;
-    }
+    $color = 'success';
+    $msg = 'OK';
+	} 
+	else 
+	{
+    $color = 'error';
+    $msg = 'Failed!';
+    $errCounter++;
+  }
 
 	$out .= "<td><span class='tab-$color'>$msg</span></td></tr>\n";
-	return ($out);
+	return $out;
 }  //function end
 
 
@@ -669,25 +612,30 @@ function check_session(&$errCounter)
  */
 function check_timeout(&$errCounter)
 {
-    $out = '<tr><td>Maximum Session Idle Time before Timeout</td>';
+  $out = '<tr><td>Maximum Session Idle Time before Timeout</td>';
 
 	$timeout = ini_get("session.gc_maxlifetime");
 	$gc_maxlifetime_min = floor($timeout/60);
 	$gc_maxlifetime_sec = $timeout % 60;
 	
-    if ($gc_maxlifetime_min > 30) {
-    	$color = 'success';
-    	$res = 'OK';
-	} else if ($gc_maxlifetime_min > 10){
-    	$color = 'warning';
-    	$res = 'Short. Consider to extend.';
-	} else {
-    	$color = 'error';
-    	$res = 'Too short. It must be extended!';
-        $errCounter++;
-    }
-    $out .= "<td><span class='tab-$color'>".$gc_maxlifetime_min .
-    		" minutes and $gc_maxlifetime_sec seconds - ($res)</span></td></tr>\n";
+  if ($gc_maxlifetime_min > 30) 
+  {
+    $color = 'success';
+    $res = 'OK';
+	} 
+	else if ($gc_maxlifetime_min > 10)
+	{
+    $color = 'warning';
+    $res = 'Short. Consider to extend.';
+	} 
+	else 
+	{
+    $color = 'error';
+    $res = 'Too short. It must be extended!';
+    $errCounter++;
+  }
+  $out .= "<td><span class='tab-$color'>" . $gc_maxlifetime_min .
+    		  " minutes and $gc_maxlifetime_sec seconds - ($res)</span></td></tr>\n";
     
 	return $out;
 }
@@ -714,9 +662,10 @@ function checkDbType(&$errCounter, $type)
     		break;
     		
     	default:
-    		$out .= '<td><span class="tab-warning">Unsupported type: '.$type.
-					'. MySQL,Postgres and MsSql 2000 are supported DB types. Of course' .
-					' you can use also other ones without migration support.</span></td></tr>';
+    		$out .= '<td><span class="tab-warning">Unsupported type: ' . $type .
+					      '. MySQL,Postgres and MSSQL 2005/8 are supported DB types. ' .
+					      'Of course you can use also other ones without migration support.</span></td></tr>';
+				break;	
 	}
 	
 	return $out;
@@ -730,10 +679,7 @@ function checkDbType(&$errCounter, $type)
  */
 function checkServerOs()
 {
-	$final_msg = '<tr><td>Server Operating System (no constrains)</td>';
-	$final_msg .= '<td>'.PHP_OS.'</td></tr>';
-	
-	return $final_msg;
+	return '<tr><td>Server Operating System (no constrains)</td>' .	'<td>' . PHP_OS . '</td></tr>';
 }  
 
 
@@ -743,17 +689,11 @@ function checkServerOs()
  * @param integer &$errCounter pointer to error counter
  * @return string html row with result 
  */
- /* Revision
-  		- havlatm: converted to table format, error passed via argument, 
-  			disabled unused "not tested version"
-        - added argument to point to info
-        - added warning regarding possible problems between MySQL and PHP 
-          on windows systems due to MySQL password algorithm.
- */
 function checkPhpVersion(&$errCounter)
 {
+	// 20120909 - choose to rise from 5.2 to 5.3 
 	// 5.2 is required because json is used in ext-js component
-	$min_version = '5.2.0'; 
+	$min_version = '5.3.0'; 
 	$my_version = phpversion();
 
 	// version_compare:
@@ -765,8 +705,8 @@ function checkPhpVersion(&$errCounter)
 	if($php_ver_comp < 0) 
 	{
 		$final_msg .= "<td><span class='tab-error'>Failed!</span> - You are running on PHP " . 
-	        $my_version . ", and TestLink requires PHP " . $min_version . ' or greater. ' .
-	        'This is fatal problem. You must upgrade it.</td>';
+	                $my_version . ", and TestLink requires PHP " . $min_version . ' or greater. ' .
+	                'This is fatal problem. You must upgrade it.</td>';
 		$errCounter += 1;
 	} 
 	else 
@@ -777,7 +717,7 @@ function checkPhpVersion(&$errCounter)
 		$final_msg .= " ) </span></td></tr>";
 	}
 
-	return ($final_msg);
+	return $final_msg;
 }  
 
 
@@ -807,17 +747,17 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
   			}
   			else
   			{
- 				if ($isCritical)
- 				{
- 					$out .= "<td><span class='tab-error'>Failed! Please fix the file " .
- 							$checked_file . " permissions and reload the page.</span></td></tr>"; 
-					$errCounter += 1;
- 				}
- 				else
- 				{
- 					$out .= "<td><span class='tab-warning'>Not writable! Please fix the file " .
- 							$checked_file . " permissions.</span></td></tr>"; 
- 				}			
+   				if ($isCritical)
+   				{
+   					$out .= "<td><span class='tab-error'>Failed! Please fix the file " .
+   							    $checked_file . " permissions and reload the page.</span></td></tr>"; 
+  					$errCounter += 1;
+   				}
+   				else
+   				{
+   					$out .= "<td><span class='tab-warning'>Not writable! Please fix the file " .
+   							    $checked_file . " permissions.</span></td></tr>"; 
+   				}			
   			}
   		} 
 		else 
@@ -828,17 +768,17 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
   			}
   			else
   			{
- 				if ($isCritical)
- 				{
-	 				$out .= "<td><span class='tab-error'>Directory is not writable! Please fix " .
- 							$checked_path . " permissions and reload the page.</span></td></tr>"; 
-					$errCounter += 1;
- 				}
- 				else
- 				{
- 					$out .= "<td><span class='tab-warning'>Directory is not writable! Please fix " .
- 							$checked_path . " permissions.</span></td></tr>"; 
- 				}			
+   				if ($isCritical)
+   				{
+  	 				$out .= "<td><span class='tab-error'>Directory is not writable! Please fix " .
+   							$checked_path . " permissions and reload the page.</span></td></tr>"; 
+  					$errCounter += 1;
+   				}
+   				else
+   				{
+   					$out .= "<td><span class='tab-warning'>Directory is not writable! Please fix " .
+   							$checked_path . " permissions.</span></td></tr>"; 
+   				}			
   			}
 		}
 	}
@@ -852,9 +792,9 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
   			}
   			else
   			{
- 				$out .= "<td><span class='tab-warning'>It's recommended to have read only permission for security reason.</span></td></tr>"; 
+ 				  $out .= "<td><span class='tab-warning'>It's recommended to have read only permission for security reason.</span></td></tr>"; 
   			}
-  		} 
+  	} 
 		else 
 		{
 			if ($isCritical)
@@ -869,7 +809,7 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
 		}
 	}
 
-	return($out);
+	return $out;
 }
 
 
@@ -880,43 +820,63 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
  * @param integer &$errCounter pointer to error counter
  * @return string html row with result 
  * @author Martin Havlat
+ *
+ * @internal revisions
+ * @since 2.0
+ *
  */
 function check_dir_permissions(&$errCounter)
 {
-	$dirs_to_check = array('gui'.DIRECTORY_SEPARATOR.'templates_c', 'logs', 'upload_area');
+	$dirs_to_check = array('gui' . DIRECTORY_SEPARATOR . 'templates_c' => null, 
+						             'logs' => config_get('log_path'),
+						             'upload_area' => config_get('attachments')->repository->path);
+
 	$final_msg = '';
 	$msg_ko = "<td><span class='tab-error'>Failed!</span></td></tr>";
 	$msg_ok = "<td><span class='tab-success'>OK</span></td></tr>";
-	$checked_path_base = realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..');
+	$checked_path_base = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
 
-	foreach ($dirs_to_check as $the_d) 
+  	$final_msg .= "<tr><td>For security reason we suggest that directories tagged with [S]" .
+  				  " on following messages, will be made UNREACHEABLE from browser</td>";
+
+	foreach ($dirs_to_check as $the_d => $how) 
 	{
-  	// Correct relative path for installer.
-		$the_d = $checked_path_base . DIRECTORY_SEPARATOR . $the_d;
-  	$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists</td>";
+  		if( is_null($how) )
+  		{
+  			// Correct relative path for installer.
+			  $needsLock = '';
+			  $the_d = $checked_path_base . DIRECTORY_SEPARATOR . $the_d;
+		}
+		else
+		{
+			$needsLock = '[S] ';
+			$the_d = $how;	
+		}
+		
+    $final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists <b>{$needsLock}</b<</td>";
   
 		if(!file_exists($the_d)) 
 		{
   			$errCounter += 1;
   			$final_msg .= $msg_ko; 
-  	} 
+  		} 
 		else 
 		{
   			$final_msg .= $msg_ok;
-    		$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory is writable</td>";
+    		$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory is writable (by user used to run webserver process) </td>";
   			if(!is_writable($the_d)) 
     		{
-				    $errCounter += 1;
-  	  	    $final_msg .= $msg_ko;  
+				$errCounter += 1;
+  	  	    	$final_msg .= $msg_ko;  
   			}
     		else
     		{
 				    $final_msg .= $msg_ok;  
-			  }
+			}
    	}
 	}
 
-	return($final_msg);
+	return $final_msg;
 }
 
 
@@ -979,7 +939,6 @@ function reportCheckingDatabase(&$errCounter, $type = null)
 	{
 		echo '<h2>Database checking</h2><table class="common" style="width: 100%;">';
 		echo checkDbType($errCounter, $type);
-//		echo checkDbConnection($errCounter);
 		echo "</table>\n";
 		
 	}
@@ -1023,8 +982,6 @@ function reportCheckingPermissions(&$errCounter,$installationType='none')
 	{
 		echo check_file_permissions($errCounter,$installationType,'config_db.inc.php', $blockingCheck);
 	}
-	// 20100502 - this file is not needed => IMHO we do not need to check existence
-	// echo check_file_permissions($errCounter,$installationType,'custom_config.inc.php');
 	echo '</table>';
 }
 

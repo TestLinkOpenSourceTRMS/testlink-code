@@ -9,13 +9,12 @@
  * @filesource	tlsmarty.inc.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2005-2011, TestLink community 
+ * @copyright 	2005-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
  * @internal revisions
  * @since 2.0
- * 20110816 - franciscom - TICKET 4703: Req. Spec. View - display log message 
  *
  */
 
@@ -150,13 +149,23 @@ class TLSmarty extends Smarty
         $this->assign('body_onload',null);
         
         // inc_attachments.tpl
-        $this->assign('attach_tableStyles',"font-size:12px");
-        $this->assign('attach_tableClassName',"simple");
-        $this->assign('attach_inheritStyle',0);
-        $this->assign('attach_show_upload_btn',1);
-        $this->assign('attach_show_title',1);
-        $this->assign('attach_downloadOnly',false);
+        $tplMgr = new stdClass();
+        $tplMgr->attach_tableStyles = "font-size:12px";
+        $tplMgr->attach_tableClassName = "simple";
+        $tplMgr->attach_inheritStyle = 0;
+        $tplMgr->attach_show_upload_btn = 1;
+        $tplMgr->attach_show_title = 1;
+        $tplMgr->attach_downloadOnly = false;
+
+        // $this->assign('attach_tableStyles',"font-size:12px");
+        // $this->assign('attach_tableClassName',"simple");
+        // $this->assign('attach_inheritStyle',0);
+        // $this->assign('attach_show_upload_btn',1);
+        // $this->assign('attach_show_title',1);
+        // $this->assign('attach_downloadOnly',false);
         
+
+
         // inc_help.tpl
         $this->assign('inc_help_alt',null);
         $this->assign('inc_help_title',null);
@@ -179,10 +188,20 @@ class TLSmarty extends Smarty
         $this->assign('tlCfg',$tlCfg);
         $this->assign('gsmarty_gui',$tlCfg->gui);
         $this->assign('gsmarty_spec_cfg',config_get('spec_cfg'));
-        $this->assign('gsmarty_attachments',config_get('attachments'));
-        $this->assign('gsmarty_bugInterfaceOn',config_get('bugInterfaceOn'));
 
-        $this->assign('pageCharset',$tlCfg->charset);
+
+        $dummy = config_get('attachments');
+        if($dummy->action_on_display_empty_title == 'show_icon')
+        {
+            $dummy->accessLink = $dummy->access_icon;
+        }    
+        else
+        {
+            $dummy->accesslink = $dummy->access_string;
+        }
+        $this->assign('gsmarty_attachments',$dummy);
+    
+        // $this->assign('pageCharset',$tlCfg->charset);
         $this->assign('tlVersion',TL_VERSION);
         $this->assign('testproject_coloring',null);
         
@@ -205,7 +224,7 @@ class TLSmarty extends Smarty
         // inc_head.tpl
         $this->assign('jsValidate', null);
         $this->assign('jsTree', null);
-        $this->assign('editorType', null);
+        // $this->assign('editorType', null);
         	
         	
         // user feedback variables (used in inc_update.tpl)

@@ -1,88 +1,82 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_attachments.tpl,v 1.27 2010/12/09 14:04:41 mx-julian Exp $
+@filesource inc_attachments.tpl
 Generic attachment management
 
+@internal revisions
+@since 2.0
 Input:
-	$attach_attachmentsInfos
-	$attach_id
-	$attach_tableName
-	$attach_show_upload_btn
-	$attach_downloadOnly
-  $attach_tableClassName
-  $attach_inheritStyle
-  $attach_tableStyles
-
-	
-
-Smarty global variables:
-$gsmarty_attachments
-
-20100713 - asimon - added missing ">" to opening "<a>"-tag (syntax error)
-20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-20080701 - franciscom - removed "none" label when there are no attachments has no value.
-20080425 - franciscom -
-20070826 - franciscom - added inheritStyle
-20070307 - franciscom - BUGID 722
+      $attach->attachmentsInfos
+      $attach->itemID
+      $attach->dbTable
+      $attach->gui->tableStyles    
+      $attach->gui->tableClassName
+      $attach->gui->inheritStyle
+      $attach->gui->loadOnCancelURL
+      $attach->gui->labels
+      $attach->gui->display
+      $attach->gui->showUploadBtn
+      $attach->gui->downloadOnly
+      $attach->gui->uploadEnabled
 
 *}
-{lang_get s='warning_delete_attachment' var="warning_msg"}
-{lang_get s='delete' var="del_msgbox_title"}
+{$del_msgbox_title = $attach->gui->labels.delete|escape:'javascript'|escape}
+{$warning_msg = $attach->gui->labels.warning_delete_attachment|escape:'javascript'|escape}
 
 <script type="text/javascript">
 
-var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
-{if isset($attach_loadOnCancelURL)}
- 	var attachment_reloadOnCancelURL = '{$attach_loadOnCancelURL}';
+var warning_delete_attachment = "{$attach->gui->labels.warning_delete_attachment}";
+{if isset($attach->gui->loadOnCancelURL)}
+  var attachment_reloadOnCancelURL = '{$attach->gui->loadOnCancelURL}';
 {/if} 
 </script>
 
-{if $gsmarty_attachments->enabled eq FALSE}
- 	  <div class="messages">{lang_get s='attachment_feature_disabled'}<p>
-    {$gsmarty_attachments->disabled_msg}
+{if $attach->enabled eq FALSE}
+    <div class="messages">{$attach->gui->labels.attachment_feature_disabled}<p>
+    {$attach->gui->disabled_msg}
     </div>
 {/if}
 {include file="inc_action_onclick.tpl"}
-{if $gsmarty_attachments->enabled && ($attach_attachmentInfos != "" || $attach_show_upload_btn)}
+{if $attach->enabled && ($attach->attachmentInfos != "" || $attach->gui->showUploadBtn)}
 
-<table class="{$attach_tableClassName}" {if $attach_inheritStyle == 0} style="{$attach_tableStyles}" {/if}>
+<table class="{$attach_tableClassName}" {if $attach->gui->inheritStyle == 0} style="{$attach->gui->tableStyles}" {/if}>
 
- 	{if $attach_show_title}
-	<tr>
-		<td class="bold">{lang_get s="attached_files"}{$tlCfg->gui_title_separator_1}</td>
-	</tr>
- 	{/if}
-
-	{foreach from=$attach_attachmentInfos item=info}
-		{if $info.title eq ""}
-			{if $gsmarty_attachments->action_on_display_empty_title == 'show_icon'}
-				{assign var="my_link" value=$gsmarty_attachments->access_icon}
-			{else}
-				{assign var="my_link" value=$gsmarty_attachments->access_string}
-		{/if}
-		{else}
-			{assign var="my_link" value=$info.title|escape}
-		{/if}
-
-	  	<tr>
-			<td style="vertical-align:middle;"><a href="lib/attachments/attachmentdownload.php?id={$info.id}" target="_blank" class="bold">
-			{$my_link}</a> - <span class="italic">{$info.file_name|escape} ({$info.file_size|escape} bytes, {$info.file_type|escape}) {localize_date d=$info.date_added|escape}</span>
-				{if !$attach_downloadOnly}
-				<a href="javascript:action_confirmation({$info.id},'{$info.file_name|escape:'javascript'|escape}',
-					                                  '{$del_msgbox_title|escape:'javascript'|escape}','{$warning_msg|escape:'javascript'|escape}',deleteAttachment_onClick);">
-					<img style="border:none;" alt="{lang_get s='alt_delete_attachment'}"
-				                         title="{lang_get s='alt_delete_attachment'}"
-				                         src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" /></a>
-				{/if}
-			</td>
-		</tr>
-	{/foreach}
-
-  {if $attach_show_upload_btn && !$attach_downloadOnly}
+  {if $attach_showTitle}
   <tr>
-  	<td colspan="2">
-  	<input type="button" value="{lang_get s='upload_file_new_file'}" 
-  	       onclick="openFileUploadWindow({$attach_id},'{$attach_tableName}')" /></td>
+    <td class="bold">{$attach->gui->labels.attached_files}{$tlCfg->gui_title_separator_1}</td>
+  </tr>
+  {/if}
+
+  {foreach from=$attach->attachmentInfos item=info}
+    {if $info.title == ""}
+      {$my_link = $attach->gui->accessLink}
+    {else}
+      {$my_link = $info.title|escape}
+    {/if}
+
+      <tr>
+      <td style="vertical-align:middle;"><a href="lib/attachments/attachmentdownload.php?id={$info.id}" 
+          target="_blank" class="bold">
+      {$my_link}</a> - <span class="italic">{$info.file_name|escape} ({$info.file_size|escape} bytes, 
+      {$info.file_type|escape}) {localize_date d=$info.date_added|escape}</span>
+        {if !$attach_downloadOnly}
+        <a href="javascript:action_confirmation({$info.id},'{$info.file_name|escape:'javascript'|escape}',
+                                                '{$del_msgbox_title|escape:'javascript'|escape}',
+                                                '{$warning_msg|escape:'javascript'|escape}',
+                                                deleteAttachment_onClick);">
+          <img style="border:none;" alt="{$attach->gui->labels.alt_delete_attachment}"
+                                    title="{$attach->gui->labels.alt_delete_attachment}"
+                                    src="{$tlImages.delete}" /></a>
+        {/if}
+      </td>
+    </tr>
+  {/foreach}
+
+  {if $attach->showUploadBtn && !$attach->downloadOnly}
+  <tr>
+    <td colspan="2">
+    <input type="button" value="{$attach->gui->labels.upload_file_new_file}" 
+           onclick="openFileUploadWindow({$attach->itemID},'{$attach->dbTable}')" /></td>
   </tr>
   {/if}
 

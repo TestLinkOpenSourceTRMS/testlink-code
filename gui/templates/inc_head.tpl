@@ -8,13 +8,12 @@ editorType: used to understand if code for tinymce need to be loaded
 
 @filesource	inc_head.tpl
 @internal revisions
-20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
 *}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset={$pageCharset}" />
+	<meta http-equiv="Content-Type" content="text/html; charset={$tlCfg->charset}" />
 	<meta http-equiv="Content-language" content="en" />
 	<meta http-equiv="expires" content="-1" />
 	<meta http-equiv="pragma" content="no-cache" />
@@ -23,7 +22,7 @@ editorType: used to understand if code for tinymce need to be loaded
 	<meta name="robots" content="NOFOLLOW" />
 	<base href="{$basehref}"/>
 	<title>{$pageTitle|default:"TestLink"}</title>
-	<link rel="icon" href="{$basehref}{$smarty.const.TL_THEME_IMG_DIR}favicon.ico" type="image/x-icon" />
+	<link rel="icon" href="{$basehref}{$tlImages.favicon}" type="image/x-icon" />
 	
 {* ----- load CSS ------------------------------------------------------------------- *} 
 	<style media="all" type="text/css">@import "{$css}";</style>
@@ -44,7 +43,7 @@ editorType: used to understand if code for tinymce need to be loaded
     {include file="inc_jsCfieldsValidation.tpl"}
 	{/if}
    
-	{if $editorType == 'tinymce'}
+	{if $gui->useWebRichEditor && $gui->editorType == 'tinymce'}
     <script type="text/javascript" language="javascript"
     	src="{$basehref}third_party/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
     {include file="inc_tinymce_init.tpl"}

@@ -3,17 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @package 	TestLink
- * @author 		Andreas Morsing
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.8 2010/12/10 11:21:03 franciscom Exp $
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author 		  Andreas Morsing
+ * @copyright 	2007-2012, TestLink community 
+ * @filesource  tlAttachmentRepository.class.php
+ * @link 		    http://www.teamst.org/index.php
  *
- * @internal
- * 20101210 - franciscom - added trim on attachemnt title, because '' is used on template logic.
- * 20101208 - franciscom - BUGID 4085: Attachment Repository on Database - Can not get file after upload
- * 20100918 - franciscom - BUGID 1890 - storeFileInFSRepository() - contribution by kinow	
- * 20091220 - franciscom - new method copyAttachments()
+ * @internal revisions
+ * @since 2.0
+ * 20120909 - franciscom - checkRepositoryStatus()
+ *
  *
  */
 
@@ -29,16 +28,17 @@ class tlAttachmentRepository extends tlObjectWithDB
 	/**
 	 * @var int the type of the repository
 	 */
-	private $repositoryType;
+	private $type;
+	
 	/**
 	 * @var int the compression type for the attachments
 	 */
-	private $repositoryCompressionType;
+	private $compressionType;
 
 	/**
 	 * @var string the path to the repository if filesystem 
 	 */
-	protected $repositoryPath;
+	protected $path;
 	
 	/**
 	 * @var array additional attachment configuration
@@ -54,10 +54,13 @@ class tlAttachmentRepository extends tlObjectWithDB
 	function __construct(&$db)
 	{
 		tlObjectWithDB::__construct($db);
-    	$this->repositoryType = self::getType();
-    	$this->repositoryCompressionType = self::getCompression();
-		$this->repositoryPath = self::getPathToRepository();
 		$this->attachmentCfg = config_get('attachments');
+		
+		$prop2init = array('type','compressionType','path');
+		foreach($prop2init as $prop)
+		{
+		  $this->$prop = $this->attachmentCfg->repository->$prop;
+	  }
 	}
 
     /**
@@ -68,13 +71,13 @@ class tlAttachmentRepository extends tlObjectWithDB
      */
     public static function create(&$db)
     {
-        if (!isset(self::$s_instance))
-		{
-            $c = __CLASS__;
-            self::$s_instance = new $c($db);
-        }
-
-        return self::$s_instance;
+      if (!isset(self::$s_instance))
+		  {
+        $c = __CLASS__;
+        self::$s_instance = new $c($db);
+      }
+      
+      return self::$s_instance;
     }
 
     /**
@@ -84,17 +87,19 @@ class tlAttachmentRepository extends tlObjectWithDB
      */
     public static function getType()
     {
-    	return config_get('repositoryType');
+    	return $this->type;
     }
+    
 	/**
 	 * returns the compression type of the repository
 	 * 
 	 * @return integer the compression type
 	 */
-	public static function getCompression()
+	  public static function getCompression()
     {
-    	return config_get('repositoryCompressionType');
+    	return $this->compressionType;
     }
+    
     /**
      * returns the path to the repository
      * 
@@ -102,7 +107,7 @@ class tlAttachmentRepository extends tlObjectWithDB
      */
     public static function getPathToRepository()
     {
-    	return config_get('repositoryPath');
+    	return $this->path;
     }
     
     
@@ -130,7 +135,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 		$destFPath = null;
 		$destFName = getUniqueFileName($fExt);
 
-		if ($this->repositoryType == TL_REPOSITORY_TYPE_FS)
+		if ($this->type == TL_REPOSITORY_TYPE_FS)
 		{
 		 	$destFPath = $this->buildRepositoryFilePath($destFName,$fkTableName,$fkid);
 			$fileUploaded = $this->storeFileInFSRepository($fTmpName,$destFPath);
@@ -148,7 +153,8 @@ class tlAttachmentRepository extends tlObjectWithDB
 		if ($fileUploaded)
 		{
 			$attachment = new tlAttachment();
-			$fileUploaded = ($attachment->create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title) >= tl::OK);
+			$fileUploaded = ($attachment->create($fkid,$fkTableName,$fName,$destFPath,
+			                                     $fContents,$fType,$fSize,$title) >= tl::OK);
 			if ($fileUploaded)
 			{
 				$fileUploaded = $attachment->writeToDb($this->db);
@@ -174,7 +180,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	public function buildRepositoryFilePath($destFName,$tableName,$id)
 	{
 		$destFPath = $this->buildRepositoryFolderFor($tableName,$id,true);
-		$destFPath .= DIRECTORY_SEPARATOR.$destFName;
+		$destFPath .= DIRECTORY_SEPARATOR . $destFName;
 
 		return $destFPath;
 	}
@@ -190,14 +196,15 @@ class tlAttachmentRepository extends tlObjectWithDB
 	protected function getFileContentsForDBRepository($fTmpName,$destFName)
 	{
 		$tmpGZName = null;
-		switch($this->repositoryCompressionType)
+		switch($this->compressionType)
 		{
 			case TL_REPOSITORY_COMPRESSIONTYPE_NONE:
-				break;
+				break;                        
+				
 			case TL_REPOSITORY_COMPRESSIONTYPE_GZIP:
 				//copy the file into a dummy file in the repository and gz it and
 				//read the file contents from this new file
-				$tmpGZName = $this->repositoryPath.DIRECTORY_SEPARATOR.$destFName.".gz";
+				$tmpGZName = $this->path . DIRECTORY_SEPARATOR . $destFName . ".gz";
 				gzip_compress_file($fTmpName, $tmpGZName);
 				$fTmpName = $tmpGZName;
 				break;
@@ -228,7 +235,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 **/
 	protected function storeFileInFSRepository($fTmpName,&$destFPath)
 	{
-		switch($this->repositoryCompressionType)
+		switch($this->compressionType)
 		{
 			case TL_REPOSITORY_COMPRESSIONTYPE_NONE:
 				if ( is_uploaded_file($fTmpName))
@@ -261,13 +268,17 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 **/
  	protected function buildRepositoryFolderFor($tableName,$id,$mkDir = false)
 	{
-		$path = $this->repositoryPath.DIRECTORY_SEPARATOR.$tableName;
-		if ($mkDir && !file_exists($path))
+		$path = $this->path . DIRECTORY_SEPARATOR . $tableName;
+		if ($mkDir && !file_exists($path))          
+		{
 			mkdir($path);
-		$path .= DIRECTORY_SEPARATOR.$id;
-		if ($mkDir && !file_exists($path))
-			mkdir($path);
+		}
 
+		$path .= DIRECTORY_SEPARATOR . $id;
+		if ($mkDir && !file_exists($path))
+		{
+			mkdir($path);
+    }
 		return $path;
 	}
 
@@ -280,9 +291,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 */
 	protected function deleteAttachmentFromFS($dummy,$attachmentInfo = null)
 	{
-		$filePath = $attachmentInfo['file_path'];
-
-		$destFPath = $this->repositoryPath.DIRECTORY_SEPARATOR.$filePath;
+  	$destFPath = $this->path . DIRECTORY_SEPARATOR . $attachmentInfo['file_path'];
 		return @unlink($destFPath) ? tl::OK : tl::ERROR;
 	}
 
@@ -308,29 +317,21 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 */
 	public function deleteAttachment($id,$attachmentInfo = null)
 	{
-		$bResult = tl::ERROR;
+		$opStatus = tl::ERROR;
 		if (is_null($attachmentInfo))
 		{
 			$attachmentInfo = $this->getAttachmentInfo($id);
 		}
 		if ($attachmentInfo)
 		{
-			$bResult = tl::OK;
-
-			// 20101210 - franciscom		
-			// does not understand Why need to do both deletes
-			//
-			// if (trim($attachmentInfo['file_path']) != "")
-			// 	$bResult = $this->deleteAttachmentFromFS($id,$attachmentInfo);
-			// $bResult = $this->deleteAttachmentFromDB($id,null) && $bResult;
-		
+			$opStatus = tl::OK;
 			if (trim($attachmentInfo['file_path']) != "")
 			{
-				$bResult = $this->deleteAttachmentFromFS($id,$attachmentInfo);
+				$opStatus = $this->deleteAttachmentFromFS($id,$attachmentInfo);
 			}
-			$bResult = $this->deleteAttachmentFromDB($id,null) && $bResult;
+			$opStatus = $this->deleteAttachmentFromDB($id,null) && $opStatus;
 		}
-		return $bResult ? tl::OK : tl::ERROR;
+		return $opStatus ? tl::OK : tl::ERROR;
 	}
 	
 	/**
@@ -353,9 +354,9 @@ class tlAttachmentRepository extends tlObjectWithDB
 		
 		if ($attachmentInfo)
 		{
-			$fname = 'getAttachmentContentFrom';
-			$fname .= ($this->repositoryType == TL_REPOSITORY_TYPE_FS) ? 'FS' : 'DB';
-			$content = $this->$fname($id);
+			$pfn = 'getAttachmentContentFrom';
+			$pfn .= ($this->repositoryType == TL_REPOSITORY_TYPE_FS) ? 'FS' : 'DB';
+			$content = $this->$pfn($id);
 		}
 		return $content;
 	}
@@ -375,9 +376,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 		$content = null;
 		if ($row)
 		{
-			$filePath = $row['file_path'];
-			$fileSize = $row['file_size'];
-			$destFPath = $this->repositoryPath.DIRECTORY_SEPARATOR.$filePath;
+			$destFPath = $this->repositoryPath.DIRECTORY_SEPARATOR . $row['file_path'];
 			switch($row['compression_type'])
 			{
 				case TL_REPOSITORY_COMPRESSIONTYPE_NONE:
@@ -385,13 +384,14 @@ class tlAttachmentRepository extends tlObjectWithDB
 					break;
 					
 				case TL_REPOSITORY_COMPRESSIONTYPE_GZIP:
-					$content = gzip_readFileContent($destFPath,$fileSize);
+					$content = gzip_readFileContent($destFPath,$row['file_size']);
 					break;
 			}
 		}
 
 		return $content;
 	}
+
 	/**
 	 * Gets some common infos about attachments
 	 *
@@ -410,14 +410,13 @@ class tlAttachmentRepository extends tlObjectWithDB
 		if ($row)
 		{
 			$content = $row['content'];
-			$fileSize = $row['file_size'];
 			switch($row['compression_type'])
 			{
 				case TL_REPOSITORY_COMPRESSIONTYPE_NONE:
 					break;
 					
 				case TL_REPOSITORY_COMPRESSIONTYPE_GZIP:
-					$content = gzip_uncompress_content($content,$fileSize);
+					$content = gzip_uncompress_content($content,$row['file_size']);
 					break;
 			}
 		}
@@ -428,29 +427,31 @@ class tlAttachmentRepository extends tlObjectWithDB
 	/**
 	 * Deletes all attachments of a certain object of a given type
 	 * 
-	 * @param $fkid integer the id of the object whose attachments should be deleted
-	 * @param $fkTableName the "type" of the object, or the table the object is stored in 
+	 * @param $itemID      integer the id of the object whose attachments should be deleted
+	 * @param $itemDBTable string  some sort of "type" of the object, or the table the object is stored in 
 	 * 
-	 * @return boolean returns bSuccess if all attachments are deleted, false else
+	 * @return boolean returns true if all attachments are deleted, false else
 	 */
-	public function deleteAttachmentsFor($fkid,$fkTableName)
+	public function deleteAttachmentsFor($itemID,$itemDBTable)
 	{
-		$bSuccess = true;
-		$attachmentIDs = $this->getAttachmentIDsFor($fkid,$fkTableName);
-		for($i = 0;$i < sizeof($attachmentIDs);$i++)
+		$opOK = true;
+		$itemSet = $this->getAttachmentIDSetFor($itemID,$itemDBTable);
+		
+		$loop2do = sizeof($itemSet);
+		for($idx = 0; $idx < $loop2do; $idx++)
 		{
-			$id = $attachmentIDs[$i];
-			$bSuccess = ($this->deleteAttachment($id) && $bSuccess);
+			$opOK = ($this->deleteAttachment($itemSet[$idx]) && $opOK);
 		}
-		if ($bSuccess)
+		
+		if ($opOK)
 		{
-			$folder = $this->buildRepositoryFolderFor($fkTableName,$fkid);
+			$folder = $this->buildRepositoryFolderFor($itemDBTable,$itemID);
 			if (is_dir($folder))
 			{
 				rmdir($folder);
 			}
 		}
-		return $bSuccess;
+		return $opOK;
 	}
 
 	/**
@@ -466,7 +467,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 		if ($attachment->readFromDB($this->db))
 		{
 			$info = $attachment->getInfo();
-        }
+    }
 		return $info;
 	}
 	
@@ -478,44 +479,54 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 * 
 	 * @return arrays returns an array with the attachments of the objects, or null on error
 	 */
-	public function getAttachmentInfosFor($fkid,$fkTableName)
+	public function getAttachmentInfosFor($fkid,$fkTableName,$storeListInSession = true,$counter = 0)
 	{
-		$attachmentInfos = null;
-		$attachmentIDs = $this->getAttachmentIDsFor($fkid,$fkTableName);
-		$loop2do = sizeof($attachmentIDs);
+		$infoSet = null;
+		$idSet = $this->getAttachmentIDSetFor($fkid,$fkTableName);
+		$loop2do = sizeof($idSet);
 		for($idx = 0;$idx < $loop2do; $idx++)
 		{
-			$attachmentInfo = $this->getAttachmentInfo($attachmentIDs[$idx]);
-			if ($attachmentInfo)
+			$info = $this->getAttachmentInfo($idSet[$idx]);
+			if ($info)
 			{
 				// needed because on inc_attachments.tpl this test:
 				// {if $info.title eq ""}
 				// is used to undertand if icon or other handle is needed to access
 				// file content
-				$attachmentInfo['title'] = trim($attachmentInfo['title']);
-				$attachmentInfos[] = $attachmentInfo;
+				$info['title'] = trim($info['title']);
+				$infoSet[] = $info;
 			}
 		}
-		return $attachmentInfos;
+		
+		// Now manage cache in session if requested
+	  if (!is_null($infoSet) && $storeListInSession)
+	  {
+		  $this->storeAttachmentsInSession($infoSet,$counter);
+	  }
+		return $infoSet;
 	}
 	
 	/**
-	 * Yields all attachmentids for a certain object of a given type
+	 * Yields all attachment ids for a certain object of a given type
 	 * 
 	 * @param $fkid integer the id of the object whose attachments should be read
 	 * @param $fkTableName the "type" of the object, or the table the object is stored in 
 	 * 
 	 * @return arrays returns an array with the attachments of the objects, or null on error
 	 */
-	public function getAttachmentIDsFor($fkid,$fkTableName)
+	public function getAttachmentIDSetFor($itemID,$itemDBTable,$opt=null)
 	{
-		$order_by = $this->attachmentCfg->order_by;
+	  $my = array('opt' => array('action' => 'display'));
+	  $my['opt'] = array_merge($my['opt'], (array)$opt);
 
-		$query = "SELECT id FROM {$this->tables['attachments']} WHERE fk_id = {$fkid} " .
-		         " AND fk_table = '" . $this->db->prepare_string($fkTableName). "' " . $order_by;
-		$attachmentIDs = $this->db->fetchColumnsIntoArray($query,'id');
+    // avoid order by on SQL when useless
+	  $order_by = ($my['opt']['action'] == 'delete') ? '' : $this->attachmentCfg->order_by;
+    
+		$query = " SELECT id FROM {$this->tables['attachments']} WHERE fk_id = {$itemID} " .
+		         " AND fk_table = '" . $this->db->prepare_string($itemDBTable). "' " . $order_by;
+		$idSet = $this->db->fetchColumnsIntoArray($query,'id');
 
-		return $attachmentIDs;
+		return $idSet;
 	}
 
     /*
@@ -560,7 +571,75 @@ class tlAttachmentRepository extends tlObjectWithDB
 			}
 		}
 	}
+	
+  /**
+   * Stores the attachment infos into the session for referencing it later
+   * 
+   * @param array $attach infos about attachment
+   * @param $counter counter for the attachments in the session
+   *
+   * @used-by tlAttachment.class.php
+   * 
+   */
+  function storeAttachmentsInSession($attach,$counter = 0)
+  {
+    if(!$attach)
+    {
+    	$attach = array();
+    }
+    
+    $tkey = 's_lastAttachmentInfos';
+    if (!isset($_SESSION[$tkey]) || !$_SESSION[$tkey])
+    {
+    	$_SESSION[$tkey] = array();
+    }
+    
+    if ($counter == 0)
+    { 
+    	$_SESSION[$tkey] = $attach;
+    }
+    else
+    {
+    	$_SESSION[$tkey] = array_merge($_SESSION[$tkey],$attach);
+    }	
+  }
+	
+	
+	function checkRepositoryStatus($forceDirCheck = false)
+	{
+    $ret = array('enabled' => TRUE, 'disabledMsg' => '');
+    
+    new dBug($this->path);
+    
+  	if($this->type == TL_REPOSITORY_TYPE_FS || $forceDirCheck)
+  	{
+  	  $l18n = init_labels(array('attachments_dir' => null,'exists' => null,
+  	                            'directory_is_writable' => null, 'does_not_exist' => null,
+  	                            'but_directory_is_not_writable' => null));
+	    clearstatcache();
+	    $ret['msg'] = $l18n['attachments_dir'] . " " . $this->path . " ";
+	    $ret['status_ok'] = false;
+      if(is_dir($this->path)) 
+	    {
+    		$ret['msg'] .= $l18n['exists'] . ' ';
+		    $ret['status_ok'] = is_writable($this->path) ? true : false; 
 
+        $ret['msg'] .= $ret['status_ok'] ? $l18n['directory_is_writable'] : 
+                                           $l18n['but_directory_is_not_writable'];
+      }
+      else
+      {
+        $ret['msg'] .= $l18n['does_not_exist']; 
+      }      
+      
+  	  if(!$ret['status_ok'])
+  	  {
+  		  $ret['enabled'] = FALSE;
+  		  $ret['disabledMsg'] = $ret['msg'];
+  	  }
+  	}
+    return $ret;
+	}
 
 }
 ?>

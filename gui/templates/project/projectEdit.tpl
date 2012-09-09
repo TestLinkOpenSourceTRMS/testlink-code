@@ -6,12 +6,6 @@
  * @filesource	projectEdit.tpl
  *
  * @internal revisions
- *  20110107 - franciscom - BUGID 4145
- *  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
- *  20100930 - franciscom - BUGID 2344: Private test project
- *  20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
- *	20100212 - havlatm - inventory support
- *	20100204 - franciscom - test project copy
  *}
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -28,12 +22,12 @@
     public,testproject_color,testproject_alt_color,testproject_enable_requirements,
     testproject_enable_inventory,testproject_features,testproject_description,
     testproject_prefix,availability,mandatory,mandatory_hint,warning,warning_empty_tcase_prefix,
-    warning_empty_tproject_name'}
+    warning_empty_tproject_name,testproject_issue_tracker_integration,issue_tracker'}
 
-{include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_ext_js.tpl"}
 
-{if $gui_cfg->testproject_coloring != 'none'}
+{if $gui->cfg->testproject_coloring != 'none'}
   {include file="inc_jsPicker.tpl"}
 {/if}
 
@@ -64,17 +58,17 @@ function validateForm(f)
 
 <body>
 <h1 class="title">
-	{$main_descr|escape}  {$tlCfg->gui_title_separator_1}
-	{$caption|escape}
-	{if $mgt_view_events eq "yes" and $gui->tprojectID}
-		<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
+	{$gui->main_descr|escape}  {$tlCfg->gui_title_separator_1}
+	{$gui->caption|escape}
+	{if $gui->mgt_view_events eq "yes" and $gui->tprojectID}
+		<img style="margin-left:5px;" class="clickable" src="{$tlImages.event_info}" 
 			     onclick="showEventHistoryFor('{$gui->tprojectID}','testprojects')" 
 			     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
 	{/if}
 </h1>
 
-{if $user_feedback != ''}
-  {include file="inc_update.tpl" user_feedback=$user_feedback feedback_type=$feedback_type}
+{if $gui->user_feedback != ''}
+  {include file="inc_update.tpl" user_feedback=$gui->user_feedback feedback_type=$gui->feedback_type}
 {/if}
 
 <div class="workBack">
@@ -117,9 +111,9 @@ function validateForm(f)
 			</tr>
 			<tr>
 				<td>{$labels.testproject_description}</td>
-				<td style="width:80%">{$notes}</td>
+				<td style="width:80%">{$gui->notes}</td>
 			</tr>
-			{if $gui_cfg->testproject_coloring neq 'none'}
+			{if $gui->cfg->testproject_coloring != 'none'}
 			<tr>
 				<th style="background:none;">{$labels.testproject_color}</th>
 				<td>
@@ -164,6 +158,33 @@ function validateForm(f)
 					{$labels.testproject_enable_inventory}
 				</td>
 			</tr>
+			<tr>
+				<td>{$labels.testproject_issue_tracker_integration}</td><td></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>
+			    	<input type="checkbox" id="issue_tracker_enabled"
+			    		   name="issue_tracker_enabled" {if $gui->issue_tracker_enabled == 1} checked="checked" {/if} />
+			    	{$labels.th_active}
+			    </td>
+      		</tr>
+			<tr>
+				<td></td>
+				<td>
+			    	{$labels.issue_tracker}
+			 		<select name="issue_tracker_id" id="issue_tracker_id">
+			 		<option value="0">&nbsp;</option>
+			 		{foreach item=issue_tracker from=$gui->issueTrackers}
+			 			<option value="{$issue_tracker.id}" 
+			 				{if $issue_tracker.id == $gui->issue_tracker_id} selected {/if} 
+			 			>
+			 			{$issue_tracker.verbose|escape}</option>
+			 		{/foreach}
+			 		</select>
+			    </td>
+      		</tr>
+
 
 			<tr>
 				<td>{$labels.availability}</td><td></td>
@@ -184,10 +205,10 @@ function validateForm(f)
 			<tr><td cols="2">
 		    {if $gui->canManage == "yes"}
 				<div class="groupBtn">
-    			<input type="hidden" name="doAction" value="{$doActionValue}" />
+    			<input type="hidden" name="doAction" value="{$gui->doActionValue}" />
 				<input type="hidden" name="tprojectID" value="{$gui->tprojectID}" />
 				<input type="hidden" id="contextTprojectID" name="contextTprojectID" value="{$gui->contextTprojectID}" />
-			    <input type="submit" name="doActionButton" value="{$buttonValue}" />
+			    <input type="submit" name="doActionButton" value="{$gui->buttonValue}" />
 				<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript:history.back();"/>
 				</div>
 			{/if}

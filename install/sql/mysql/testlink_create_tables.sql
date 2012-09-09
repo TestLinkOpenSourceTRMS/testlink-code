@@ -36,9 +36,8 @@
 # 
 # ---------------------------------------------------------------------------------------
 # @internal revisions
-# 20111008 - franciscom - TICKET 4769: Test Case versions table - add field to specify estimated execution duration
-#						  TICKET 4770: Test Case EXECUTIONS table - add field to specify execution duration
-# 20110903 - franciscom - TICKET 4661 - req spec revisions
+# @since 2.0
+# 20120906 - franciscom - TICKET 
 # ---------------------------------------------------------------------------------------
 #
 #
@@ -279,6 +278,11 @@ CREATE TABLE /*prefix*/testprojects (
   `prefix` varchar(16) NOT NULL,
   `tc_counter` int(10) unsigned NOT NULL default '0',
   `is_public` tinyint(1) NOT NULL default '1',
+  `issue_tracker_enabled` tinyint(1) NOT NULL default '0',
+  `author_id` int(10) unsigned default NULL,
+  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updater_id` int(10) unsigned default NULL,
+  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`), 
   KEY /*prefix*/testprojects_id_active (`id`,`active`),
   UNIQUE KEY /*prefix*/testprojects_prefix (`prefix`),
@@ -777,4 +781,21 @@ CREATE TABLE /*prefix*/req_specs_revisions (
   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/req_specs_revisions_uidx1 (`parent_id`,`revision`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE /*prefix*/issuetrackers
+(
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL,
+  `type` int(10) default 0,
+  `cfg` text,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY /*prefix*/issuetrackers_uidx1 (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE /*prefix*/testproject_issuetracker
+(
+  `testproject_id` int(10) unsigned NOT NULL REFERENCES /*prefix*/testprojects (id), 
+  `issuetracker_id` int(10) unsigned NOT NULL REFERENCES /*prefix*/issuetrackers (id),
+  UNIQUE KEY /*prefix*/testproject_issuetracker_uidx1 (`testproject_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

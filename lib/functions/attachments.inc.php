@@ -47,7 +47,7 @@ function getAttachmentInfos(&$attachmentRepository,$fkid,$fkTableName,$storeList
  *
  * @return array returns infos about the attachment on success, NULL else
  */
-function getAttachmentInfosFrom(&$object,$fkid,$storeListInSession = true,$counter = 0)
+function XXXgetAttachmentInfosFrom(&$object,$fkid,$storeListInSession = true,$counter = 0)
 {
 	$attachmentInfos = $object->getAttachmentInfos($fkid);
 	if ($storeListInSession)
@@ -63,7 +63,7 @@ function getAttachmentInfosFrom(&$object,$fkid,$storeListInSession = true,$count
  * @param array $attachmentInfos infos about attachment
  * @param $counter counter for the attachments in the session
  */
-function storeAttachmentsInSession($attachmentInfos,$counter = 0)
+function XXstoreAttachmentsInSession($attachmentInfos,$counter = 0)
 {
 	if (!$attachmentInfos)
 		$attachmentInfos = array();

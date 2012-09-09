@@ -8,66 +8,58 @@
  * @filesource	projectEdit.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2007-2011, TestLink community 
+ * @copyright 	2007-2012, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan
  *
- * @internal revision
- * 20110506 - franciscom - Refactoring for TABBED Browsing
- * 20101207 - franciscom - BUGID 3999: Test Project list does not refresh after deleted
- * 20100313 - franciscom - reduced interface 'width' with smarty
- * 20100217 - franciscom - fixed errors showed on event viewer due to missing properties
- * 20100119 - franciscom - BUGID 3048
+ * @internal revisions
+ * @since 2.0
  *
  */
 
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once("web_editor.php");
+require_once("form_api.php");
+
 $editorCfg = getWebEditorCfg('testproject');
 require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-$tproject_mgr = new testproject($db);
-$args = init_args($tproject_mgr);
-checkRights($db,$_SESSION['currentUser'],$args);
+list($tprojectMgr,$args,$gui,$ui) = initializeEnv($db);
+$gui->editorType = $editorCfg['type'];
 
-$gui = new stdClass();
-$gui = $args;
-$gui->tproject_id = $args->tprojectID;
-$gui->canManage = $_SESSION['currentUser']->hasRight($db,"mgt_modify_product",$gui->tproject_id);
-$gui->found = 'yes';
+checkRights($db,$_SESSION['currentUser'],$args);  // is failed script execution will be aborted
 
-$ui = new stdClass();
-$ui->doActionValue = '';
-$ui->buttonValue = '';
-$ui->caption = '';
-$ui->main_descr = lang_get('title_testproject_management');
-$user_feedback = '';
+$cmdMgr = new projectCommands($db,$_SESSION['currentUser']);
+$cmdMgr->setTemplateCfg(templateConfiguration());
+
+
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
 $status_ok = 1;
 $template = null;
-switch($args->doAction)
+$doRender = false;
+switch(($pfn = $args->doAction))
 {
     case 'create':
-    	$template = $templateCfg->default_template;
-      	$ui = create($args,$gui,$tproject_mgr,$gui);
+        $op = $cmdMgr->$pfn($args,$gui);
+        $doRender = true;
     	break;
 
     case 'edit':
     	$template = $templateCfg->default_template;
-    	$ui = edit($args,$gui,$tproject_mgr);
+    	$ui = edit($args,$gui,$tprojectMgr);
     	break;
 
     case 'doCreate':
-    	$op = doCreate($args,$tproject_mgr);
+    	$op = doCreate($args,$tprojectMgr);
     	$template= $op->status_ok ?  null : $templateCfg->default_template;
     	$ui = $op->ui;
     	$status_ok = $op->status_ok;
-    	$user_feedback = $op->msg;
+    	$gui->user_feedback = $op->msg;
     	$gui->reloadType = $op->reloadType;
     	
     	if( $status_ok && $gui->contextTprojectID == 0)
@@ -79,30 +71,34 @@ switch($args->doAction)
     	break;
 
     case 'doUpdate':
-    	$op = doUpdate($args,$tproject_mgr,$args->contextTprojectID);
+    	$op = doUpdate($args,$tprojectMgr,$args->contextTprojectID);
     	$template= $op->status_ok ?  null : $templateCfg->default_template;
     	$ui = $op->ui;
 
     	$status_ok = $op->status_ok;
-    	$user_feedback = $op->msg;
+    	$gui->user_feedback = $op->msg;
     	$gui->reloadType = $op->reloadType;
       break;
 
     case 'doDelete':
-        $op = doDelete($args,$tproject_mgr,$args->contextTprojectID);
+        $op = doDelete($args,$tprojectMgr,$args->contextTprojectID);
     	$status_ok = $op->status_ok;
-    	$user_feedback = $op->msg;
+    	$gui->user_feedback = $op->msg;
     	$gui->reloadType = $op->reloadType;
     	$gui->contextTprojectID = $op->contextTprojectID;
       break;
 }
 
-$ui->main_descr = lang_get('title_testproject_management');
-$smarty = new TLSmarty();
-$smarty->assign('gui_cfg',config_get('gui'));
-$smarty->assign('editorType',$editorCfg['type']);
-$smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
 
+if( $doRender )
+{
+	$cmdMgr->renderGui($args,$gui,$op);
+	exit();
+}
+
+
+
+$smarty = new TLSmarty();
 
 if(!$status_ok)
 {
@@ -114,7 +110,7 @@ switch($args->doAction)
     case "doCreate":
     case "doDelete":
     case "doUpdate":
-        $gui->tprojects = getTprojectSet($tproject_mgr,$args->userID);
+        $gui->tprojects = getTprojectSet($tprojectMgr,$args->userID);
 
         // Context Need to be updated using first test project on set
         $gui->contextTprojectID = $gui->tprojects[0]['id'];
@@ -134,18 +130,55 @@ switch($args->doAction)
         {
         	$of->Value = $args->notes;
         }
+
+        // HERE WE NEED REWORK - 20120908
         foreach($ui as $prop => $value)
         {
-            $smarty->assign($prop,$value);
+            $gui->$prop = $value;
         }
+        $gui->notes = $of->CreateHTML();
         $smarty->assign('gui', $args);
-        $smarty->assign('notes', $of->CreateHTML());
-        $smarty->assign('user_feedback', $user_feedback);
-        $smarty->assign('feedback_type', 'ultrasoft');
         $smarty->display($templateCfg->template_dir . $template);
     break;
 
 }
+
+
+/**
+ * initialize page ENVironment
+ *
+ * @return array
+ * @internal revisions
+ */
+
+function initializeEnv(&$dbHandler)
+{
+	$tprojectMgr = new testproject($dbHandler);
+	$argsObj = init_args($tprojectMgr);
+
+	// Gui
+	$guiObj = $argsObj;
+	$guiObj->canManage = $guiObj->user->hasRight($dbHandler,"mgt_modify_product");
+	$guiObj->mgt_view_events = $guiObj->user->hasRight($dbHandler,"mgt_view_events");
+	$guiObj->found = 'yes';
+	$guiObj->cfg = config_get('gui');
+	$guiObj->user_feedback = '';
+	$guiObj->feedback_type = 'ultrasoft';
+	$guiObj->main_descr = lang_get('title_testproject_management');
+
+	
+	$itMgr = new tlIssueTracker($dbHandler);
+	$guiObj->issueTrackers = $itMgr->getAll();
+	unset($itMgr);
+
+	// UI
+	$uiObj = new stdClass();
+	$uiObj->doActionValue = $uiObj->buttonValue = $uiObj->caption = '';
+
+
+	return array($tprojectMgr,$argsObj,$guiObj,$uiObj);
+}
+
 
 /**
  * INITialize page ARGuments, using the $_REQUEST and $_SESSION
@@ -183,7 +216,6 @@ function init_args(&$tprojectMgr)
 
 	
 	// Special algorithm for notes
-	// 20070206 - BUGID 617
 	if($args->doAction != 'doUpdate' && $args->doAction != 'doCreate')
 	{
 		if ($args->tprojectID > 0)
@@ -202,6 +234,7 @@ function init_args(&$tprojectMgr)
 	}
 
 	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+	$args->user = $_SESSION['currentUser'];
 	$args->testprojects = null;
 	$args->projectOptions = prepareOptions($args);
 	return $args;
@@ -430,30 +463,6 @@ function crossChecks($argsObj,&$tprojectMgr)
     return $check_op;
 }
 
-/*
-  function: create
-
-  args :
-
-  returns:
-
-*/
-function create(&$argsObj,&$guiObj,&$tprojectMgr)
-{
-	$uiObj = new stdClass();
-	$uiObj->doActionValue = 'doCreate';
-	$uiObj->buttonValue = lang_get('btn_create');
-	$uiObj->caption = lang_get('caption_new_tproject');
-	$uiObj->testprojects = $tprojectMgr->get_all(null,array('access_key' => 'id'));
-
-	// update by refence
-    $argsObj->active = 1;
-    $argsObj->is_public = 1;
-	$guiObj->testprojects = $uiObj->testprojects;
-	$guiObj->reloadType = 'none';
-
-    return $uiObj;
-}
 
 
 /*

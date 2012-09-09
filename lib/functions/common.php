@@ -309,22 +309,7 @@ function testlinkInitPage(&$db,$checkSession=true)
 	{
 		checkSessionValid($db);
 	}
-	
-	// used to disable the attachment feature if there are problems with repository path
-	/** @TODO this check should not be done anytime but on login and using */
-	global $g_repositoryType;
-	global $g_attachments;
-	global $g_repositoryPath;
-	$g_attachments->disabled_msg = "";
-	if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
-	{
-	  $ret = checkForRepositoryDir($g_repositoryPath);
-	  if(!$ret['status_ok'])
-	  {
-		  $g_attachments->enabled = FALSE;
-		  $g_attachments->disabled_msg = $ret['msg'];
-	  }
-	}
+
 }
 
 

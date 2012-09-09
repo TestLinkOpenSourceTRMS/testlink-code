@@ -6,7 +6,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - view test specification containers
 
 @internal revisions
-20101202 - asimon - BUGID 4067: refresh tree problems
 *}
 {lang_get var='labels' 
           s='th_product_name,edit_testproject_basic_data,th_notes,test_suite,details,none,
@@ -103,12 +102,7 @@ Purpose: smarty template - view test specification containers
 		</tr>
 
 	</table>
-	{*
-	<div id="inProgress"></div>
-	<div id="executionResults"></div>
-  	*}
 
-  {* internal bug - 20080706 - franciscom*}
 	{include file="inc_attachments.tpl" 
 	         attach_id=$gui->id attach_tableName="nodes_hierarchy"
 	         attach_attachmentInfos=$gui->attachmentInfos

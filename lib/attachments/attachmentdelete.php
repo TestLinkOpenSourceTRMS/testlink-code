@@ -15,16 +15,20 @@ testlinkInitPage($db);
 $args = init_args();	
 checkRights($db,$_SESSION['currentUser'],$args);
 
-$deleteDone = false;
+$l18n = init_labels(array('deleting_was_ok' => null,'error_attachment_delete' => null));
+$gui = new stdClass();
+$gui->userFeedback = $l18n['error_attachment_delete'];
+
 if ($args->id)
 {
-	$attachmentRepository = tlAttachmentRepository::create($db);
-	$attachmentInfo = $attachmentRepository->getAttachmentInfo($args->id);
+	$repo = tlAttachmentRepository::create($db);
+	$attachmentInfo = $repo->getAttachmentInfo($args->id);
 	if ($attachmentInfo && checkAttachmentID($db,$args->id,$attachmentInfo))
 	{
-		$deleteDone = $attachmentRepository->deleteAttachment($args->id,$attachmentInfo);
-		if ($deleteDone)
+		$opOK = $repo->deleteAttachment($args->id,$attachmentInfo);
+		if ($opOK)
 		{
+      $gui->userFeedback = $l18n['deleting_was_ok'];
 			logAuditEvent(TLS("audit_attachment_deleted",
 			              $attachmentInfo['title']),"DELETE",$args->id,"attachments");
 		}	
@@ -32,7 +36,7 @@ if ($args->id)
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('bDeleted',$deleteDone);
+$smarty->assign('gui',$gui);
 $smarty->display('attachmentdelete.tpl');
 
 
@@ -42,13 +46,11 @@ $smarty->display('attachmentdelete.tpl');
 function init_args()
 {
 	//the id (attachments.id) of the attachment to be deleted
-	$iParams = array(
-		"id" => array(tlInputParameter::INT_N),
-	);
+	$iParams = array("id" => array(tlInputParameter::INT_N));
 	$args = new stdClass();
 	G_PARAMS($iParams,$args);
 	
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	// take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	return $args;

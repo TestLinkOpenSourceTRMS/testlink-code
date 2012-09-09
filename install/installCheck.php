@@ -6,18 +6,17 @@
  * Verify environment
  * Note: informations are passed via $_SESSION
  * 
- * @package 	TestLink
- * @author 		Martin Havlat
- * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: installCheck.php,v 1.3 2010/10/02 18:02:06 franciscom Exp $
+ * @package 	  TestLink
+ * @author 		  Martin Havlat
+ * @copyright 	2009,2012 TestLink community 
+ * @filesource  installCheck.php
  *
- * @internal Revisions:
- * 20080914 - franciscom - check_php_resource_settings() 
- * 20080219 - franciscom - fixed dir permission checking
+ * @internal revisions
  * 
  **/
-
-require_once('..'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'functions'.DIRECTORY_SEPARATOR.'configCheck.php');
+require_once('..' . DIRECTORY_SEPARATOR . 'config.inc.php');
+require_once('..' . DIRECTORY_SEPARATOR . 'lib'. DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'common.php');
+require_once('..' . DIRECTORY_SEPARATOR . 'lib'. DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'configCheck.php');
 
 if( !isset($_SESSION) )
 { 

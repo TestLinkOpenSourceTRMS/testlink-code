@@ -13,15 +13,12 @@
  * @link 		    http://www.teamst.org/index.php
  * @see			    sysinfo.php
  *
- * @uses common.php
+ * @uses config_get()
  *
  * @internal revisions
  * @since 2.0 	
  *
  **/
-
-require_once('..' . DIRECTORY_SEPARATOR . 'config.inc.php');
-require_once('common.php');
 
 /**
  * get home URL

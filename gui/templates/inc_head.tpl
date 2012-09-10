@@ -4,13 +4,11 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - HTML Common Header
 
 Critic Smarty Global Variables expected
-editorType: used to understand if code for tinymce need to be loaded 
 
 @filesource	inc_head.tpl
 @internal revisions
 *}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-     "DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset={$tlCfg->charset}" />
@@ -43,9 +41,9 @@ editorType: used to understand if code for tinymce need to be loaded
     {include file="inc_jsCfieldsValidation.tpl"}
 	{/if}
    
-	{if $gui->useWebRichEditor && $gui->editorType == 'tinymce'}
+	{if property_exists($gui,'editorType') &&  $gui->editorType == 'tinymce'}
     <script type="text/javascript" language="javascript"
-    	src="{$basehref}third_party/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+    		src="{$basehref}third_party/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
     {include file="inc_tinymce_init.tpl"}
 	{/if}
 

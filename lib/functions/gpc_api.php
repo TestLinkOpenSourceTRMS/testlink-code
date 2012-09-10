@@ -14,7 +14,7 @@
  * prevent the cookie from being transmitted to other domains.
  * @global bool $g_cookie_secure_flag_enabled
  */
-$g_cookie_secure_flag_enabled = isset( $_SERVER['HTTPS'] ) && ( utf8_strtolower( $_SERVER['HTTPS'] ) != 'off' );
+$g_cookie_secure_flag_enabled = isset( $_SERVER['HTTPS'] ) && ( mb_strtolower( $_SERVER['HTTPS'] ) != 'off' );
 
 /**
  * Determines (once-off) whether the version of PHP executing this script has

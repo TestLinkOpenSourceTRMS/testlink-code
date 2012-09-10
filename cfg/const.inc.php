@@ -381,17 +381,17 @@ define('TL_REPOSITORY_COMPRESSIONTYPE_GZIP', 2);
 $att_model_m1 = new stdClass();
 $att_model_m2 = new stdClass();
 
-$att_model_m1->show_upload_btn = true;
-$att_model_m1->show_title = true;
-$att_model_m1->num_cols = 4;
-$att_model_m1->show_upload_column = false;
+$att_model_m1->showUploadBtn = true;
+$att_model_m1->showTitle = true;
+$att_model_m1->showUploadColumn = false;
+$att_model_m1->numCols = 4;
 
 // $att_model_m2 ->  hides upload button and title
 // 
-$att_model_m2->show_upload_btn = false;
-$att_model_m2->show_title = false;
-$att_model_m2->num_cols = 5;
-$att_model_m2->show_upload_column = true;
+$att_model_m2->showUploadBtn = false;
+$att_model_m2->showTitle = false;
+$att_model_m2->showUploadColumn = true;
+$att_model_m2->numCols = 5;
 
 
 // --------------------------------------------------------------------------------------

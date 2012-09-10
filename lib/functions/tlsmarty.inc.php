@@ -148,24 +148,6 @@ class TLSmarty extends Smarty
         $this->assign('css_only',null);
         $this->assign('body_onload',null);
         
-        // inc_attachments.tpl
-        $tplMgr = new stdClass();
-        $tplMgr->attach_tableStyles = "font-size:12px";
-        $tplMgr->attach_tableClassName = "simple";
-        $tplMgr->attach_inheritStyle = 0;
-        $tplMgr->attach_show_upload_btn = 1;
-        $tplMgr->attach_show_title = 1;
-        $tplMgr->attach_downloadOnly = false;
-
-        // $this->assign('attach_tableStyles',"font-size:12px");
-        // $this->assign('attach_tableClassName',"simple");
-        // $this->assign('attach_inheritStyle',0);
-        // $this->assign('attach_show_upload_btn',1);
-        // $this->assign('attach_show_title',1);
-        // $this->assign('attach_downloadOnly',false);
-        
-
-
         // inc_help.tpl
         $this->assign('inc_help_alt',null);
         $this->assign('inc_help_title',null);
@@ -189,18 +171,7 @@ class TLSmarty extends Smarty
         $this->assign('gsmarty_gui',$tlCfg->gui);
         $this->assign('gsmarty_spec_cfg',config_get('spec_cfg'));
 
-
-        $dummy = config_get('attachments');
-        if($dummy->action_on_display_empty_title == 'show_icon')
-        {
-            $dummy->accessLink = $dummy->access_icon;
-        }    
-        else
-        {
-            $dummy->accesslink = $dummy->access_string;
-        }
-        $this->assign('gsmarty_attachments',$dummy);
-    
+ 
         // $this->assign('pageCharset',$tlCfg->charset);
         $this->assign('tlVersion',TL_VERSION);
         $this->assign('testproject_coloring',null);
@@ -260,15 +231,16 @@ class TLSmarty extends Smarty
                           'delete' => TL_THEME_IMG_DIR . "trash.png",
                           'delete_disabled' => TL_THEME_IMG_DIR . "trash_greyed.png",
                           'demo_mode' => TL_THEME_IMG_DIR . "emoticon_tongue.png",
-        				  'direct_link' => TL_THEME_IMG_DIR . "world_link.png",
-        				  'disconnect' => TL_THEME_IMG_DIR . 'disconnect.png',
-        				  'edit' => TL_THEME_IMG_DIR . "icon_edit.png",
-        				  'edit_type2' => TL_THEME_IMG_DIR . "edit_icon.png",
+        				          'direct_link' => TL_THEME_IMG_DIR . "world_link.png",
+        				          'disconnect' => TL_THEME_IMG_DIR . 'disconnect.png',
+        				          'edit' => TL_THEME_IMG_DIR . "icon_edit.png",
+        				          'edit_type2' => TL_THEME_IMG_DIR . "edit_icon.png",
                           'exec_order' => TL_THEME_IMG_DIR . 'timeline_marker.png',
                           'executed' => TL_THEME_IMG_DIR . 'lightning.png',
                           'export' => TL_THEME_IMG_DIR . "export.png",
                           'export_import' => TL_THEME_IMG_DIR . "export_import.png",
-						  'event_info' => TL_THEME_IMG_DIR . "question.gif",
+						              'event_info' => TL_THEME_IMG_DIR . "question.gif",
+						              'favicon' => TL_THEME_IMG_DIR . "favicon.ico",
                           'history' => TL_THEME_IMG_DIR . "history.png",
                           'history_small' => TL_THEME_IMG_DIR . "history_small.png",
                           'log_message' => TL_THEME_IMG_DIR . "history.png",

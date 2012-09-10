@@ -103,13 +103,9 @@ Purpose: smarty template - view test specification containers
 
 	</table>
 
-	{include file="inc_attachments.tpl" 
-	         attach_id=$gui->id attach_tableName="nodes_hierarchy"
-	         attach_attachmentInfos=$gui->attachmentInfos
-	         attach_downloadOnly=$bDownloadOnly}
+	{include file="inc_attachments.tpl" attach=$gui->attach}
 
 
-{* removed for BUGID 3406
 {* ----- TEST PLAN (for BUGID 3049) -----------------------------------------------
 {elseif $gui->level == 'testplan'}
 
@@ -233,21 +229,13 @@ Purpose: smarty template - view test specification containers
 	
 	{* ----- show Test Suite data --------------------------------------------- *}
 	{include file="testcases/inc_testsuite_viewer_ro.tpl"}
-
-	{if $gui->modify_tc_rights eq 'yes'}
-		{$bDownloadOnly=false}
-	{/if}
-	{include file="inc_attachments.tpl" 
-	         attach_attachmentInfos=$gui->attachmentInfos
-	         attach_id=$gui->id attach_tableName="nodes_hierarchy" 
-	         attach_downloadOnly=$bDownloadOnly}
+	{include file="inc_attachments.tpl" attach=$gui->attach}
 
 {/if} {* test suite *}
 
 </div>
 {if $gui->refreshTree}
    	{include file="inc_refreshTreeWithFilters.tpl"}
-	{*include file="inc_refreshTree.tpl"*}
 {/if}
 </body>
 </html>

@@ -520,7 +520,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	  $my['opt'] = array_merge($my['opt'], (array)$opt);
 
     // avoid order by on SQL when useless
-	  $order_by = ($my['opt']['action'] == 'delete') ? '' : $this->attachmentCfg->order_by;
+	  $order_by = ($my['opt']['action'] == 'delete') ? '' : $this->attachmentCfg->orderBy;
     
 		$query = " SELECT id FROM {$this->tables['attachments']} WHERE fk_id = {$itemID} " .
 		         " AND fk_table = '" . $this->db->prepare_string($itemDBTable). "' " . $order_by;

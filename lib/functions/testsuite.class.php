@@ -387,20 +387,19 @@ class testsuite extends tlObjectWithAttachments
     
     // need to understand why sometimes $guiObj can be null
     $gui = is_null($guiObj) ? new stdClass() : $guiObj;
+    $gui->id = $id;
     $gui->cf = '';
     $gui->sqlResult = '';
     $gui->sqlAction = '';
     $gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
 
-        $my['options'] = array('show_mode' => 'readwrite');   
-      $my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array('show_mode' => 'readwrite');   
+    $my['options'] = array_merge($my['options'], (array)$options);
 
-    // 20110604
-        // $gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc");
-        if($my['options']['show_mode'] == 'readonly')
-        {       
+    if($my['options']['show_mode'] == 'readonly')
+    {       
       $gui->modify_tc_rights = 'no';
-      }
+    }
       
     if($sqlResult)
     { 
@@ -418,20 +417,24 @@ class testsuite extends tlObjectWithAttachments
     $gui->cf = $this->html_table_of_custom_field_values($id);
     $gui->keywords_map = $this->get_keywords_map($id,' ORDER BY keyword ASC ');
 
-    list($gui->attachmentInfos,$gui->attachCfg) = $this->buildAttachSetup($id);
+    $gui->attach = new stdClass();
+    $gui->attach->itemID = $gui->id;
+    $gui->attach->dbTable = $this->attachmentTableName;
 
-    echo __METHOD__;
-    new dBug($gui);
-    die();
+    $gui->attach->infoSet = null;
+    $gui->attach->gui = null;
+    list($gui->attach->infoSet,$gui->attach->gui) = $this->buildAttachSetup($id,$my['options']);
+
+    $gui->attach->gui->display=TRUE;
+    new dBug($gui->attach);
     
-    $gui->id = $id;
     $gui->idpage_title = lang_get('testsuite');
     $gui->level = 'testsuite';
     $gui->tproject_id = $tproject_id;
     
     $gui->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id=$tproject_id " .
-                 ' target="mainframe" class="bold" ' .
-                       ' title="' . lang_get('menu_manage_keywords') . '"';
+                             ' target="mainframe" class="bold" ' .
+                             ' title="' . lang_get('menu_manage_keywords') . '"';
     
     
     
@@ -1377,16 +1380,14 @@ class testsuite extends tlObjectWithAttachments
 
 
 
-  function buildAttachSetup($id)
+  function buildAttachSetup($id,$opt)
   {
-    $cfg = tlAttachment::getGuiCfg();  
-    
-    
-    new dBug($dummy);
-    // change settings according dynamic situation
-    // {if $gsmarty_attachments->enabled && ($attach_attachmentInfos != "" || $attach_show_upload_btn)}
-
+    $systemWideCfg = config_get('attachments');
     $info = $this->getAttachmentInfos($id);
+
+    $cfg = tlAttachment::getGuiCfg();  
+    $cfg->display = $systemWideCfg->enabled && !is_null($info);
+    $cfg->uploadEnabled = ($cfg->showUploadBtn && ($opt['show_mode'] != 'readonly'));
   
     return array($info,$cfg);
   }

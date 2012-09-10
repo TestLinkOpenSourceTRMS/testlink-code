@@ -357,19 +357,30 @@ class tlAttachment extends tlDBObject
         $cfg->tableStyles = "font-size:12px";
         $cfg->tableClassName = "simple";
         $cfg->inheritStyle = 0;
-        $cfg->showUploadBtn = 1;
-        $cfg->showTitle =  1;
         $cfg->downloadOnly = false;
-        $cfg->behaviourCfg = config_get('attachments');
+        $cfg->loadOnCancelURL = ''; // will be setted by each feature
+        $cfg->disabledMsg = '';  // will be setted after repo checks
+
+        // theses are specific to allow different behaviours ONLY on execution feature
+        // @see const.inc.php
+        // @see $tlCfg->exec_cfg->att_model
+        $cfg->showUploadBtn = true;  
+        $cfg->showTitle =  true;
+        $cfg->showUploadColumn = false;
+        $cfg->numCols = 4; 
+
+        // $cfg->behaviourCfg = config_get('attachments');
         
-        new dbug($cfg->behaviourCfg);
+        // new dbug($cfg->behaviourCfg);
         
 
         $dummy = array('title_upload_attachment' => null, 'enter_attachment_title' => null,
                        'btn_upload_file' => null, 'warning' => null, 'enter_attachment_title' => null,
                        'local_file' => null, 'attachment_upload_ok' => null,
                        'title_choose_local_file' => null ,'btn_cancel' => null,
-                       'max_size_file_upload' => null);
+                       'warning_delete_attachment' => 'warning', 'delete' => null,
+                       'attachment_feature_disabled' => null,'attached_files' => null,
+                       'max_size_file_upload' => null,'upload_file_new_file' => null);
         $cfg->labels = init_labels($dummy);
         return $cfg;  
   }

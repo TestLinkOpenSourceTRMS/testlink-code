@@ -6,18 +6,21 @@ Generic attachment management
 @internal revisions
 @since 2.0
 Input:
-      $attach->attachmentsInfos
       $attach->itemID
       $attach->dbTable
+      $attach->infoSet
+
+      $attach->gui->display
+      $attach->gui->showUploadBtn  - used when in execute feature
+      $attach->gui->downloadOnly
+      $attach->gui->uploadEnabled  - need to check if is useful
+      
       $attach->gui->tableStyles    
       $attach->gui->tableClassName
       $attach->gui->inheritStyle
       $attach->gui->loadOnCancelURL
       $attach->gui->labels
-      $attach->gui->display
-      $attach->gui->showUploadBtn
-      $attach->gui->downloadOnly
-      $attach->gui->uploadEnabled
+
 
 *}
 {$del_msgbox_title = $attach->gui->labels.delete|escape:'javascript'|escape}
@@ -31,23 +34,24 @@ var warning_delete_attachment = "{$attach->gui->labels.warning_delete_attachment
 {/if} 
 </script>
 
-{if $attach->enabled eq FALSE}
+{* this can happens for configuration or due to issues with FileSystem Repository *}
+{if $attach->enabled == FALSE}
     <div class="messages">{$attach->gui->labels.attachment_feature_disabled}<p>
-    {$attach->gui->disabled_msg}
+    {$attach->gui->disabledMsg}
     </div>
 {/if}
+
 {include file="inc_action_onclick.tpl"}
-{if $attach->enabled && ($attach->attachmentInfos != "" || $attach->gui->showUploadBtn)}
+{if $attach->gui->display}
+<table class="{$attach->gui->tableClassName}" {if $attach->gui->inheritStyle == 0} style="{$attach->gui->tableStyles}" {/if}>
 
-<table class="{$attach_tableClassName}" {if $attach->gui->inheritStyle == 0} style="{$attach->gui->tableStyles}" {/if}>
-
-  {if $attach_showTitle}
+  {if $attach->gui->showTitle} {* again this is related to attachments on execution feature *}
   <tr>
     <td class="bold">{$attach->gui->labels.attached_files}{$tlCfg->gui_title_separator_1}</td>
   </tr>
   {/if}
 
-  {foreach from=$attach->attachmentInfos item=info}
+  {foreach from=$attach->infoSet item=info}
     {if $info.title == ""}
       {$my_link = $attach->gui->accessLink}
     {else}
@@ -59,7 +63,7 @@ var warning_delete_attachment = "{$attach->gui->labels.warning_delete_attachment
           target="_blank" class="bold">
       {$my_link}</a> - <span class="italic">{$info.file_name|escape} ({$info.file_size|escape} bytes, 
       {$info.file_type|escape}) {localize_date d=$info.date_added|escape}</span>
-        {if !$attach_downloadOnly}
+        {if $attach->gui->downloadOnly == FALSE}
         <a href="javascript:action_confirmation({$info.id},'{$info.file_name|escape:'javascript'|escape}',
                                                 '{$del_msgbox_title|escape:'javascript'|escape}',
                                                 '{$warning_msg|escape:'javascript'|escape}',
@@ -72,7 +76,7 @@ var warning_delete_attachment = "{$attach->gui->labels.warning_delete_attachment
     </tr>
   {/foreach}
 
-  {if $attach->showUploadBtn && !$attach->downloadOnly}
+  {if $attach->gui->uploadEnabled }
   <tr>
     <td colspan="2">
     <input type="button" value="{$attach->gui->labels.upload_file_new_file}" 

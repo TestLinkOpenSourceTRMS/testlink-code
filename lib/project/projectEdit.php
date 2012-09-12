@@ -6,18 +6,15 @@
  * edit/delete test projetcs.
  *
  * @filesource	projectEdit.php
- * @package 	TestLink
- * @author 		Martin Havlat
+ * @package 	  TestLink
+ * @author 		  Martin Havlat
  * @copyright 	2007-2012, TestLink community 
- * @link 		http://www.teamst.org/index.php
- *
- * @todo Verify dependency before delete testplan
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
  * @since 2.0
  *
  */
-
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once("web_editor.php");
@@ -36,9 +33,8 @@ checkRights($db,$_SESSION['currentUser'],$args);  // is failed script execution 
 $cmdMgr = new projectCommands($db,$_SESSION['currentUser']);
 $cmdMgr->setTemplateCfg(templateConfiguration());
 
-
-
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
+
 $status_ok = 1;
 $template = null;
 $doRender = false;
@@ -81,7 +77,7 @@ switch(($pfn = $args->doAction))
       break;
 
     case 'doDelete':
-        $op = doDelete($args,$tprojectMgr,$args->contextTprojectID);
+      $op = doDelete($args,$tprojectMgr,$args->contextTprojectID);
     	$status_ok = $op->status_ok;
     	$gui->user_feedback = $op->msg;
     	$gui->reloadType = $op->reloadType;
@@ -92,7 +88,7 @@ switch(($pfn = $args->doAction))
 
 if( $doRender )
 {
-	$cmdMgr->renderGui($args,$gui,$op);
+	$cmdMgr->renderGui($args,$gui,$op,$templateCfg,getCfg());
 	exit();
 }
 
@@ -110,7 +106,7 @@ switch($args->doAction)
     case "doCreate":
     case "doDelete":
     case "doUpdate":
-        $gui->tprojects = getTprojectSet($tprojectMgr,$args->userID);
+        $gui->tprojects = $tprojectMgr->get_accessible_for_user($args->userID,'array_of_map');
 
         // Context Need to be updated using first test project on set
         $gui->contextTprojectID = $gui->tprojects[0]['id'];
@@ -124,19 +120,19 @@ switch($args->doAction)
     default:
         if( $args->doAction != "edit")
         {
-    		$of->Value = getItemTemplateContents('project_template', $of->InstanceName, $args->notes);
+    		  $of->Value = getItemTemplateContents('project_template', $of->InstanceName, $args->notes);
         }
         else
         {
         	$of->Value = $args->notes;
         }
 
-        // HERE WE NEED REWORK - 20120908
         foreach($ui as $prop => $value)
         {
             $gui->$prop = $value;
         }
         $gui->notes = $of->CreateHTML();
+
         $smarty->assign('gui', $args);
         $smarty->display($templateCfg->template_dir . $template);
     break;
@@ -192,7 +188,7 @@ function initializeEnv(&$dbHandler)
  */
 function init_args(&$tprojectMgr)
 {
-    $args = new stdClass();
+  $args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 	$nullable_keys = array('tprojectName','color','notes','doAction','tcasePrefix');
 	foreach ($nullable_keys as $value)
@@ -237,6 +233,8 @@ function init_args(&$tprojectMgr)
 	$args->user = $_SESSION['currentUser'];
 	$args->testprojects = null;
 	$args->projectOptions = prepareOptions($args);
+	$args->basehref = $_SESSION['basehref'];  // needed by rich web editor
+	
 	return $args;
 }
 
@@ -496,7 +494,8 @@ function doDelete($argsObj,&$tprojectMgr,$contextTprojectID)
 		{
 			$op->runUpdateLogic = 1;
 			// need to get test project set available AFTER delete
-        	$tprojectSet = getTprojectSet($tprojectMgr,$argsObj->userID);
+        	$tprojectSet = $tprojectMgr->get_accessible_for_user($argsObj->userID,'array_of_map');
+
         	if( !is_null($tprojectSet) )
         	{
         		$op->contextTprojectID = key($tprojectSet);
@@ -515,15 +514,14 @@ function doDelete($argsObj,&$tprojectMgr,$contextTprojectID)
 }
 
 
-/**
- * helper
- *
- */
-function getTprojectSet(&$tprojectMgr,$userID)
+
+function getCfg()
 {
-	$items = $tprojectMgr->get_accessible_for_user($userID,'array_of_map');
-	return $items;
+  $cfg=new stdClass();
+  $cfg->webEditorCfg = getWebEditorCfg('testproject');
+  return $cfg;
 }
+
 
 
 

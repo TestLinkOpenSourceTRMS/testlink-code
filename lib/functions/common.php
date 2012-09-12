@@ -714,9 +714,11 @@ function getFileUploadErrorMessage($fInfo)
 			case UPLOAD_ERR_INI_SIZE:
 				$msg = lang_get('error_file_size_larger_than_maximum_size_check_php_ini');
 				break;
+				
 			case UPLOAD_ERR_FORM_SIZE:
 				$msg = lang_get('error_file_size_larger_than_maximum_size');
 				break;
+				
 			case UPLOAD_ERR_PARTIAL:
 			case UPLOAD_ERR_NO_FILE:
 				$msg = lang_get('error_file_upload');
@@ -757,12 +759,12 @@ function templateConfiguration($template2get=null)
 	}
 	
 	$path_parts=explode("/",dirname($_SERVER['SCRIPT_NAME']));
-    $last_part=array_pop($path_parts);
-    $tcfg = new stdClass();
-    $tcfg->template_dir = "{$last_part}/";
-    $tcfg->default_template = isset($custom_templates[$access_key]) ? $custom_templates[$access_key] : ($access_key . '.tpl');
-    $tcfg->template = null;
-    return $tcfg;
+  $last_part=array_pop($path_parts);
+  $tcfg = new stdClass();
+  $tcfg->template_dir = "{$last_part}/";
+  $tcfg->default_template = isset($custom_templates[$access_key]) ? $custom_templates[$access_key] : ($access_key . '.tpl');
+  $tcfg->template = null;
+  return $tcfg;
 }
 
 

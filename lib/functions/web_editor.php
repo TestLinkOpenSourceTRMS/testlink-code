@@ -6,16 +6,15 @@
  * Support for web editor switching
  * 
  * @filesource	web_editor.php
- * @package 	TestLink
- * @copyright 	2005-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
- * @uses 		config.inc.php
- * @uses 		common.php
+ * @package     TestLink
+ * @copyright 	2005-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
+ * @uses 		    config.inc.php
+ * @uses 		    common.php
  *
  * @internal revisions
- * 20111107 - franciscom - 	ckeditor - added explicit configuration of basePath
- *							to avoid issue that produce bad URL when ckeditor 
- *							try to guess basePath
+ * @since 2.0
+ *
  **/
 
 require_once(dirname(__FILE__)."/../../config.inc.php");
@@ -32,18 +31,18 @@ require_once("common.php");
 */
 function getWebEditorCfg($feature='all')
 {
-    $cfg = config_get('gui');
-    $defaultCfg = $cfg->text_editor['all'];
+  $cfg = config_get('gui');
+  $defaultCfg = $cfg->text_editor['all'];
 	$webEditorCfg = isset($cfg->text_editor[$feature]) ? $cfg->text_editor[$feature] : $defaultCfg;
   
 	foreach($defaultCfg as $key => $value)
-  	{
+  {
 		if(!isset($webEditorCfg[$key]))
 		{
-          	$webEditorCfg[$key] = $defaultCfg[$key];
-        }  	
+      $webEditorCfg[$key] = $defaultCfg[$key];
+    }  	
 	} 
-    return $webEditorCfg;
+  return $webEditorCfg;
 }
 
 
@@ -95,7 +94,7 @@ function require_web_editor($editor_type=null)
 */
 function web_editor($html_input_id,$base_path,$editor_cfg=null)
 {
-    $webEditorCfg = is_null($editor_cfg) ? getWebEditorCfg() : $editor_cfg;
+  $webEditorCfg = is_null($editor_cfg) ? getWebEditorCfg() : $editor_cfg;
 
 	switch($webEditorCfg['type'])
 	{
@@ -105,17 +104,20 @@ function web_editor($html_input_id,$base_path,$editor_cfg=null)
 			$of->ToolbarSet = $webEditorCfg['toolbar'];
 			$of->Config['CustomConfigurationsPath']  = $base_path . $webEditorCfg['configFile'];
 			if (isset($webEditorCfg['height']))
+			{
 				$of->Height = $webEditorCfg['height'];
+			}
 			if (isset($webEditorCfg['width']))
+			{
 				$of->Width = $webEditorCfg['width'];
+			}	
 		break;
 
 		case 'ckeditor':
-			
-			// BUGID 4047: CKEditor Language according to chosen Testlink language
+			// CKEditor Language according to chosen Testlink language
 			$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
 			
-			$ckeditorLang;
+			//$ckeditorLang;
 			switch($locale)
 			{
 				case 'cs_CZ': $ckeditorLang = 'cs'; break;
@@ -144,29 +146,44 @@ function web_editor($html_input_id,$base_path,$editor_cfg=null)
 			$of->Editor->config['toolbar'] = $webEditorCfg['toolbar'];
 			$of->Editor->config['language'] = $ckeditorLang;
 			if (isset($webEditorCfg['height']))
+			{
 				$of->Editor->config['height'] = $webEditorCfg['height'];
+			}
+			
 			if (isset($webEditorCfg['width']))
+			{
 				$of->Editor->config['width'] = $webEditorCfg['width'];
+			}	
 		break;
 		    
 		case 'tinymce':
 			$of = new tinymce($html_input_id) ;
 			if (isset($webEditorCfg['rows']))
+			{
 				$of->rows = $webEditorCfg['rows'];
+			}
+
 			if (isset($webEditorCfg['cols']))
+			{
 				$of->cols = $webEditorCfg['cols'];
+			}
 			break;
 		    
 		case 'none':
 		default:
 			$of = new no_editor($html_input_id) ;
 			if (isset($webEditorCfg['rows']))
+			{
 				$of->rows = $webEditorCfg['rows'];
+			}
+			
 			if (isset($webEditorCfg['cols']))
+			{
 				$of->cols = $webEditorCfg['cols'];
+			}	
 			break;
 	}
     
-    return $of;
+  return $of;
 }
 ?>

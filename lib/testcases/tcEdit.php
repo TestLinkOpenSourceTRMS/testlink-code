@@ -473,7 +473,6 @@ function initializeOptionTransferCfg($otName,&$argsObj,&$tprojectMgr)
   
   returns: object
   
-  rev: 20080902 - franciscom - manage column number as function of layout for tinymce
 */
 function createWebEditors($basehref,$editorCfg,$editorSet=null,$edit_steps=false)
 {
@@ -486,8 +485,6 @@ function createWebEditors($basehref,$editorCfg,$editorSet=null,$edit_steps=false
     $cols = array('steps' => array('horizontal' => 38, 'vertical' => 44),
                   'expected_results' => array('horizontal' => 38, 'vertical' => 44));
 
-	// BUGID 4158 - CKEditor only working for the first two initialized editors
-    //              -> check which Editors really need to be initialized
 	$owe->cfg = null;
 	if($edit_steps == false) {
 		$owe->cfg = array('summary' => array('rows'=> null,'cols' => null),
@@ -521,19 +518,18 @@ function createWebEditors($basehref,$editorCfg,$editorSet=null,$edit_steps=false
 */
 function getCfg()
 {
-    $cfg=new stdClass();
-    $cfg->treemenu_default_testcase_order = config_get('treemenu_default_testcase_order');
-    $cfg->spec = config_get('spec_cfg');
-    $cfg->exclude_node_types = array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
-    $cfg->tcase_template = config_get('testcase_template');
-    $cfg->webEditorCfg=getWebEditorCfg('design');
+  $cfg=new stdClass();
+  $cfg->treemenu_default_testcase_order = config_get('treemenu_default_testcase_order');
+  $cfg->spec = config_get('spec_cfg');
+  $cfg->exclude_node_types = array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
+  $cfg->tcase_template = config_get('testcase_template');
+  $cfg->webEditorCfg = getWebEditorCfg('design');
 
-    $cfg->editorKeys = new stdClass();
-    $cfg->editorKeys->testcase = array('summary' => true, 'preconditions' => true);    
-    $cfg->editorKeys->step = array('steps' => true, 'expected_results' => true);    
-    
-    
-    return $cfg;
+  $cfg->editorKeys = new stdClass();
+  $cfg->editorKeys->testcase = array('summary' => true, 'preconditions' => true);    
+  $cfg->editorKeys->step = array('steps' => true, 'expected_results' => true);    
+
+  return $cfg;
 }
 
 /**
@@ -612,10 +608,10 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$edit_steps)
                              'doInsertStep' => 'doUpdateStep');
 
 	
-	$key2work = 'initWebEditorFromTemplate';
-	$initWebEditorFromTemplate = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
-  	$key2work = 'cleanUpWebEditor';
-	$cleanUpWebEditor = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
+  $key2work = 'initWebEditorFromTemplate';
+  $initWebEditorFromTemplate = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
+  $key2work = 'cleanUpWebEditor';
+  $cleanUpWebEditor = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
 
     $oWebEditor = createWebEditors($argsObj->basehref,$cfgObj->webEditorCfg,null,$edit_steps); 
 	foreach ($oWebEditor->cfg as $key => $value)

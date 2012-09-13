@@ -11,6 +11,8 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120913 - asimon - TICKET 5228: Filter use on test spec causes "undefined index" warning in event log
+ *                                  for every test case with no active version
  * 20120831 - franciscom - TICKET 5190: Copy Test projects - tester assignments to testplan+build are not copied
  * 20120506 - franciscom - get_accessible_for_user() global coupling removed
  * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
@@ -2602,7 +2604,8 @@ function getTestSpec($id,$filters=null,$options=null)
  * @return
  *
  * @internal revisions
- *
+ * 20120913 - asimon - TICKET 5228: Filter use on test spec causes "undefined index" warning in event log
+ *                                  for every test case with no active version
  */
 function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 {
@@ -2767,7 +2770,9 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 			if($node['node_table'] == 'testcases')
 			{
 				$node['leaf'] = true; 
-				$node['external_id'] = $highlander[$row['id']]['external_id'];
+                // TICKET 5228: Filter use on test spec causes "undefined index" warning in event log
+                //              for every test case with no active version
+				$node['external_id'] = isset($highlander[$row['id']]) ? $highlander[$row['id']]['external_id'] : null;
 			}			
 			
 			// why we use exclude_children_of ?

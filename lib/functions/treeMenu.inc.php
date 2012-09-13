@@ -14,9 +14,9 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120913 - asimon - TICKET 5186: Filtering by the value of custom fields on test specification is not working
  * 20120607 - franciscom - 	somework to be able to generate tree used on Test Report, and Test Plan Report
  * 20120415 - franciscom - 	filter_by_same_status_for_all_builds() => filterStatusSetAllActiveBuilds()
- *
  * 20120205 - franciscom - 	remove deprecated method
  * 20110115 - franciscom -	work on extjs_renderExecTreeNodeOnOpen() and related functions
  *							trying to improve performance
@@ -983,13 +983,12 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
  * @param resource &$db reference to DB handler object
  * @param array &$tcase_tree reference to test case set/tree to filter
  * @param array &$cf_hash reference to selected custom field information
- * @param int $node_type_testsuite ID of node type for testsuites
- * @param int $node_type_testcase ID of node type for testcase
+ * @param int $node_types IDs of node types
  * 
  * @return array $tcase_tree filtered tree structure
  * 
  * @internal revisions:
- * 
+ * 20120913 - asimon - TICKET 5186: Filtering by the value of custom fields on test specification is not working
  * 20100702 - did some changes to logic in here and added a fix for array indexes
  */
 function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
@@ -1012,8 +1011,8 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
 	
 	foreach ($tcase_tree as $key => $node) 
 	{
-		
-		if ($node['node_type_id'] == $node_type_testsuite) 
+        // TICKET 5186: Filtering by the value of custom fields on test specification is not working
+		if ($node['node_type_id'] == $node_types['testsuite']) 
 		{
 			$delete_suite = false;
 			
@@ -1034,55 +1033,78 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
 			if ($delete_suite) {
 				unset($tcase_tree[$key]);
 				$node_deleted = true;
-			}			
-		} else if ($node['node_type_id'] == $node_type_testcase) {
+			}
+        // TICKET 5186: Filtering by the value of custom fields on test specification is not working
+		} else if ($node['node_type_id'] == $node_types['testcase']) {
 			// node is testcase, check if we need to delete it
 			
 			$passed = false;
 			//BUGID 2877 - Custom Fields linked to TC versions
-			$sql = " /* $debugMsg */ SELECT CFD.value FROM {$tables['cfield_design_values']} CFD," .
+            // TICKET 5186: added "DISTINCT" to SQL clause, detailed explanation follows at the end of function
+			$sql = " /* $debugMsg */ SELECT DISTINCT CFD.value FROM {$tables['cfield_design_values']} CFD," .
 				   " {$tables['nodes_hierarchy']} NH" .
 				   " WHERE CFD.node_id = NH.id" .
 				   " AND NH.parent_id = {$node['id']} ";
 			// AND value in ('" . implode("' , '",$cf_hash) . "')";
-		//BUGID 3995 Custom Field Filters not working properly since the cf_hash is array	
-		if (isset($cf_hash)) 
-		{	
-			$countmain = 1;
-			$cf_sql = '';
-			foreach ($cf_hash as $cf_id => $cf_value) 
-			{
-				
-				if ( $countmain != 1 ) 
-				{
-					$cf_sql .= " OR ";
-				}
-				// single value or array?
-				if (is_array($cf_value)) 
-				{
-					$count = 1;
-					foreach ($cf_value as $value) 
-					{
-						if ($count > 1) 
-						{
-							$cf_sql .= " AND ";
-						}
-						$cf_sql .= "( CFD.value LIKE '%{$value}%' AND CFD.field_id = {$cf_id} )";
-						$count++;
-						//print_r($count);
-					}
-				} else 
-				{
-					$cf_sql .= " ( CFD.value LIKE '%{$cf_value}%' ) ";
-				}
-				$countmain++;
-			}
-			$sql .=  " AND ({$cf_sql}) ";
-		}
+            //BUGID 3995 Custom Field Filters not working properly since the cf_hash is array	
+            if (isset($cf_hash)) 
+            {	
+                $countmain = 1;
+                $cf_sql = '';
+                foreach ($cf_hash as $cf_id => $cf_value) 
+                {
+                    
+                    if ( $countmain != 1 ) 
+                    {
+                        $cf_sql .= " OR ";
+                    }
+                    // single value or array?
+                    if (is_array($cf_value)) 
+                    {
+                        $count = 1;
+                        foreach ($cf_value as $value) 
+                        {
+                            if ($count > 1) 
+                            {
+                                $cf_sql .= " AND ";
+                            }
+                            $cf_sql .= "( CFD.value LIKE '%{$value}%' AND CFD.field_id = {$cf_id} )";
+                            $count++;
+                            //print_r($count);
+                        }
+                    } else 
+                    {
+                        $cf_sql .= " ( CFD.value LIKE '%{$cf_value}%' AND CFD.field_id = {$cf_id} ) ";
+                    }
+                    $countmain++;
+                }
+                $sql .=  " AND ({$cf_sql}) ";
+            }
 
 			$rows = $db->fetchColumnsIntoArray($sql,'value'); //BUGID 4115
 			//if there exist as many rows as custom fields to be filtered by
 			//the tc does meet the criteria
+            
+            /* NOTE by asimon: This assumption was wrong! If there are multiple versions of a TC,
+             * then the row number here can be larger than the number of custom fields with the correct value.
+             * 
+             * Example: 
+             * Custom field "color" has possible values "red", "blue", "green", default empty.
+             * Custom field "status" has possible values "draft", "ready", "needs review", "needs rework", default empty.
+             * TC Version 1: cfield "color" has value "red", cfield "status" has no value yet.
+             * TC Version 2: cfield "color" has value "red", cfield "status" has no value yet.
+             * TC Version 3: cfield "color" and value "red", cfield "status" has value "ready".
+             * TC Version 4: cfield "color" has value "red", cfield "status" has value "ready".
+             * 
+             * Filter by color GREEN and status READY, then $rows looks like this: Array ( [0] => red, [1] => red )
+             * => count($rows) returns 2, which matches the number of custom fields we want to filter by.
+             * So TC lands in the result set instead of being filtered out.
+             * That is wrong, because TC matches only one of the fields we were filtering by!
+             * 
+             * Because of this I extended the SQL statement above with the DISTINCT keyword,
+             * so that each custom field only is contained ONCE in the result set.
+             */
+            
 			$passed = (count($rows) == count($cf_hash)) ? true : false;
 			// now delete node if no match was found
 			if (!$passed) {

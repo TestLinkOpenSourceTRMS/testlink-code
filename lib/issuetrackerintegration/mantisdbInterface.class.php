@@ -12,21 +12,21 @@
 **/
 class mantisdbInterface extends issueTrackerInterface
 {
-  	private $code_status = array(10 => 'new',
-                                 20 => 'feedback',
-                                 30 => 'acknowledged',
-                                 40 => 'confirmed',
-                                 50 => 'assigned',
-                                 80 => 'resolved',
-                                 90 => 'closed');
+  private $code_status = array(10 => 'new',
+                               20 => 'feedback',
+                               30 => 'acknowledged',
+                               40 => 'confirmed',
+                               50 => 'assigned',
+                               80 => 'resolved',
+                               90 => 'closed');
                               
 	private $status_color = array('new'          => '#ffa0a0', # red,
-                                  'feedback'     => '#ff50a8', # purple
-                                  'acknowledged' => '#ffd850', # orange
-                                  'confirmed'    => '#ffffb0', # yellow
-                                  'assigned'     => '#c8c8ff', # blue
-                                  'resolved'     => '#cceedd', # buish-green
-                                  'closed'       => '#e8e8e8'); # light gray
+                                'feedback'     => '#ff50a8', # purple
+                                'acknowledged' => '#ffd850', # orange
+                                'confirmed'    => '#ffffb0', # yellow
+                                'assigned'     => '#c8c8ff', # blue
+                                'resolved'     => '#cceedd', # buish-green
+                                'closed'       => '#e8e8e8'); # light gray
 
 
 
@@ -38,11 +38,15 @@ class mantisdbInterface extends issueTrackerInterface
 	 **/
 	function __construct($type,$config)
 	{
-	    parent::__construct($type,$config);
+	  parent::__construct($type,$config);
 
 		$this->interfaceViaDB = true;
 		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);
-	    $this->guiCfg = array('use_decoration' => true);
+	  $this->guiCfg = array('use_decoration' => true);
+	  if( property_exists($this->cfg, 'statuscfg') )
+	  {
+	    $this->setStatusCfg();
+	  }
 	}
 
 
@@ -215,20 +219,51 @@ class mantisdbInterface extends issueTrackerInterface
 
 
 	public static function getCfgTemplate()
-  	{
-  	
+  {
 		$template = "<!-- Template " . __CLASS__ . " -->\n" .
-					"<issuetracker>\n" .
-					"<dbhost>DATABASE SERVER NAME</dbhost>\n" .
-					"<dbname>DATABASE NAME</dbname>\n" .
-					"<dbtype>mysql</dbtype>\n" .
-					"<dbuser>USER</dbuser>\n" .
-					"<dbpassword>PASSWORD</dbpassword>\n" .
-					"<uriview>http://localhost:8080/development/mantisbt-1.2.5/view.php?id=</uriview>\n" .
-					"<uricreate>http://localhost:8080/development/mantisbt-1.2.5/</uricreate>\n" .
-					"</issuetracker>\n";
+      					"<issuetracker>\n" .
+      					"<dbhost>DATABASE SERVER NAME</dbhost>\n" .
+      					"<dbname>DATABASE NAME</dbname>\n" .
+      					"<dbtype>mysql</dbtype>\n" .
+      					"<dbuser>USER</dbuser>\n" .
+      					"<dbpassword>PASSWORD</dbpassword>\n" .
+      					"<uriview>http://localhost:8080/development/mantisbt-1.2.5/view.php?id=</uriview>\n" .
+      					"<uricreate>http://localhost:8080/development/mantisbt-1.2.5/</uricreate>\n" .
+                "<!-- Optional -->\n" .
+                "<statuscfg>\n" .
+                "<status><code>10</code><verbose>new</verbose><color>#ffa0a0</color></status>\n" .
+                "<status><code>20</code><verbose>feedback</verbose><color>#ff50a8</color></status>\n" .
+                "<status><code>30</code><verbose>acknowledged</verbose><color>#ffd850</color></status>\n" .
+                "<status><code>40</code><verbose>confirmed</verbose><color>#ffffb0</color></status>\n" .
+                "<status><code>50</code><verbose>assigned</verbose><color>#c8c8ff</color></status>\n" .
+                "<status><code>80</code><verbose>resolved</verbose><color>#cceedd</color></status>\n" .
+                "<status><code>90</code><verbose>closed</verbose><color>#e8e8e8</color></status>\n" .
+                "</statuscfg>\n" . 
+      					"</issuetracker>\n";
 		return $template;
-  	}
+  }
+
+  public function setStatusCfg()
+  {
+    $statusCfg = (array)$this->cfg->statuscfg;
+    foreach($statusCfg['status'] as $cfx)
+    {
+      $e = (array)$cfx;
+  	  $this->code_status[$e['code']] = $e['verbose'];
+	    $this->status_color[$e['verbose']] = $e['color'];
+    }
+  }
+
+
+  public function getCodeStatus()
+  {
+  	  return $this->code_status;
+  }
+
+  public function getStatusColor()
+  {
+  	  return $this->status_color;
+  }
 
 }
 ?>

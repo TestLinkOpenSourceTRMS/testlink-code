@@ -4,21 +4,19 @@
  *
  * @filesource	mantissoapInterface.class.php
  * @author Francisco Mancardi
- *
- * @internal revisions
  * @since 1.9.4
- * 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis 
+ * @internal revisions
 **/
 class mantissoapInterface extends issueTrackerInterface
 {
 	// Copied from mantis configuration
 	private $status_color = array('new'          => '#ffa0a0', # red,
-                                  'feedback'     => '#ff50a8', # purple
-                                  'acknowledged' => '#ffd850', # orange
-                                  'confirmed'    => '#ffffb0', # yellow
-                                  'assigned'     => '#c8c8ff', # blue
-                                  'resolved'     => '#cceedd', # buish-green
-                                  'closed'       => '#e8e8e8'); # light gray
+                                'feedback'     => '#ff50a8', # purple
+                                'acknowledged' => '#ffd850', # orange
+                                'confirmed'    => '#ffffb0', # yellow
+                                'assigned'     => '#c8c8ff', # blue
+                                'resolved'     => '#cceedd', # buish-green
+                                'closed'       => '#e8e8e8'); # light gray
 	
 	
 	private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
@@ -236,22 +234,32 @@ class mantissoapInterface extends issueTrackerInterface
 	 * 
 	 **/
 	public static function getCfgTemplate()
-  	{
+  {
 		$template = "<!-- Template " . __CLASS__ . " -->\n" .
-					"<issuetracker>\n" .
-					"<username>MANTIS LOGIN NAME</username>\n" .
-					"<password>MANTIS PASSWORD</password>\n" .
-					"<uribase>http://www.mantisbt.org/</uribase>\n" .
-					"<!-- IMPORTANT NOTICE --->\n" .
-					"<!-- You Do not need to configure uriwsdl,uriview,uricreate  -->\n" .
-					"<!-- if you have done Mantis standard installation -->\n" .
-					"<!-- In this situation DO NOT COPY these config lines -->\n" .
-					"<uriwsdl>http://www.mantisbt.org/api/soap/mantisconnect.php?wsdl</uriwsdl>\n" .
-					"<uriview>http://www.mantisbt.org/view.php?id=</uriview>\n" .
-					"<uricreate>http://www.mantisbt.org/</uricreate>\n" .
-					"</issuetracker>\n";
+      					"<issuetracker>\n" .
+      					"<username>MANTIS LOGIN NAME</username>\n" .
+      					"<password>MANTIS PASSWORD</password>\n" .
+      					"<uribase>http://www.mantisbt.org/</uribase>\n" .
+      					"<!-- IMPORTANT NOTICE --->\n" .
+      					"<!-- You Do not need to configure uriwsdl,uriview,uricreate  -->\n" .
+      					"<!-- if you have done Mantis standard installation -->\n" .
+      					"<!-- In this situation DO NOT COPY these config lines -->\n" .
+      					"<uriwsdl>http://www.mantisbt.org/api/soap/mantisconnect.php?wsdl</uriwsdl>\n" .
+      					"<uriview>http://www.mantisbt.org/view.php?id=</uriview>\n" .
+      					"<uricreate>http://www.mantisbt.org/</uricreate>\n" .
+                "<!-- Optional -->\n" .
+                "<statuscfg>\n" .
+                "<status><code>10</code><verbose>new</verbose><color>#ffa0a0</color></status>\n" .
+                "<status><code>20</code><verbose>feedback</verbose><color>#ff50a8</color></status>\n" .
+                "<status><code>30</code><verbose>acknowledged</verbose><color>#ffd850</color></status>\n" .
+                "<status><code>40</code><verbose>confirmed</verbose><color>#ffffb0</color></status>\n" .
+                "<status><code>50</code><verbose>assigned</verbose><color>#c8c8ff</color></status>\n" .
+                "<status><code>80</code><verbose>resolved</verbose><color>#cceedd</color></status>\n" .
+                "<status><code>90</code><verbose>closed</verbose><color>#e8e8e8</color></status>\n" .
+                "</statuscfg>\n" . 
+      					"</issuetracker>\n";
 		return $template;
-  	}
+  }
 
 	/**
 	 *
@@ -318,6 +326,21 @@ class mantissoapInterface extends issueTrackerInterface
 		}
 		return $str;
 	}
+
+  public function setStatusCfg()
+  {
+    $statusCfg = (array)$this->cfg->statuscfg;
+    foreach($statusCfg['status'] as $cfx)
+    {
+      $e = (array)$cfx;
+	    $this->status_color[$e['verbose']] = $e['color'];
+    }
+  }
+
+  public function getStatusColor()
+  {
+  	  return $this->status_color;
+  }
 
 }
 ?>

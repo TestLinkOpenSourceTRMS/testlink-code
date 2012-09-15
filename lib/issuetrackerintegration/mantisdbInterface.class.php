@@ -3,10 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
  * @filesource	mantisdbInterface.class.php
+ * @since 1.9.4
  *
  * @internal revision
- * @since 1.9.4
- * 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis 
+ * @since 2.0
+ * 20120915 - franciscom - TICKET 5230: E_NOTICE Undefined variable warning when viewing executed test case
+ *
 **/
 class mantisdbInterface extends issueTrackerInterface
 {
@@ -87,7 +89,7 @@ class mantisdbInterface extends issueTrackerInterface
 			{
 				// give info to user on Event Viewer
 				$msg = lang_get('MANTIS_status_not_configured');
-				$msg = sprintf($msg,$status_rs['status']);
+				$msg = sprintf($msg,$rs['status']);
 				logWarningEvent($msg,"MANTIS INTEGRATION");
 				$issue->statusVerbose = 'custom_undefined_on_tl';
 			}	

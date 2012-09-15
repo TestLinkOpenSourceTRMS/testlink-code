@@ -4,10 +4,11 @@
  *
  * @filesource	mantissoapInterface.class.php
  * @author Francisco Mancardi
+ * @since 1.9.4
  *
  * @internal revisions
- * @since 1.9.4
- * 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis 
+ * 20120915 - franciscom - TICKET 5227: [Mantisbt integration] Allow Configuration of Custom Statuses via XML
+ *                         new methods setStatusCfg(),getCodeStatus(),getStatusColor()
 **/
 class mantissoapInterface extends issueTrackerInterface
 {
@@ -318,6 +319,28 @@ class mantissoapInterface extends issueTrackerInterface
 		}
 		return $str;
 	}
+
+  public function setStatusCfg()
+  {
+    $statusCfg = (array)$this->cfg->statuscfg;
+    foreach($statusCfg['status'] as $cfx)
+    {
+      $e = (array)$cfx;
+	    $this->status_color[$e['verbose']] = $e['color'];
+    }
+  }
+
+
+  public function getCodeStatus()
+  {
+  	  return $this->code_status;
+  }
+
+  public function getStatusColor()
+  {
+  	  return $this->status_color;
+  }
+
 
 }
 ?>

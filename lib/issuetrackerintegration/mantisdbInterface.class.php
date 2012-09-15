@@ -3,11 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
  * @filesource	mantisdbInterface.class.php
+ * @since 1.9.4
  *
  * @internal revision
- * @since 1.9.4
- * 20120915 - franciscom - TICKET 5230: E_NOTICE Undefined variable warning when viewing executed test case
- * 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis 
+ * 20120915 - franciscom - TICKET 5227: [Mantisbt integration] Allow Configuration of Custom Statuses via XML
+ *                         new methods setStatusCfg(),getCodeStatus(),getStatusColor()
 **/
 class mantisdbInterface extends issueTrackerInterface
 {
@@ -19,13 +19,13 @@ class mantisdbInterface extends issueTrackerInterface
                                  80 => 'resolved',
                                  90 => 'closed');
                               
-	private $status_color = array('new'          => '#ffa0a0', # red,
-                                  'feedback'     => '#ff50a8', # purple
-                                  'acknowledged' => '#ffd850', # orange
-                                  'confirmed'    => '#ffffb0', # yellow
-                                  'assigned'     => '#c8c8ff', # blue
-                                  'resolved'     => '#cceedd', # buish-green
-                                  'closed'       => '#e8e8e8'); # light gray
+	 private $status_color = array('new'          => '#ffa0a0', # red,
+                                 'feedback'     => '#ff50a8', # purple
+                                 'acknowledged' => '#ffd850', # orange
+                                 'confirmed'    => '#ffffb0', # yellow
+                                 'assigned'     => '#c8c8ff', # blue
+                                 'resolved'     => '#cceedd', # buish-green
+                                 'closed'       => '#e8e8e8'); # light gray
 
 
 
@@ -41,7 +41,13 @@ class mantisdbInterface extends issueTrackerInterface
 
 		$this->interfaceViaDB = true;
 		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);
-	    $this->guiCfg = array('use_decoration' => true);
+	  $this->guiCfg = array('use_decoration' => true);
+	  
+	  if( property_exists($this->cfg, 'statuscfg') )
+	  {
+	    $this->setStatusCfg();
+	  }
+
 	}
 
 
@@ -225,9 +231,41 @@ class mantisdbInterface extends issueTrackerInterface
 					"<dbpassword>PASSWORD</dbpassword>\n" .
 					"<uriview>http://localhost:8080/development/mantisbt-1.2.5/view.php?id=</uriview>\n" .
 					"<uricreate>http://localhost:8080/development/mantisbt-1.2.5/</uricreate>\n" .
+          "<!-- Optional -->\n" .
+          "<statuscfg>\n" .
+          "<status><code>10</code><verbose>new</verbose><color>#ffa0a0</color></status>\n" .
+          "<status><code>20</code><verbose>feedback</verbose><color>#ff50a8</color></status>\n" .
+          "<status><code>30</code><verbose>acknowledged</verbose><color>#ffd850</color></status>\n" .
+          "<status><code>40</code><verbose>confirmed</verbose><color>#ffffb0</color></status>\n" .
+          "<status><code>50</code><verbose>assigned</verbose><color>#c8c8ff</color></status>\n" .
+          "<status><code>80</code><verbose>resolved</verbose><color>#cceedd</color></status>\n" .
+          "<status><code>90</code><verbose>closed</verbose><color>#e8e8e8</color></status>\n" .
+          "</statuscfg>\n" . 
 					"</issuetracker>\n";
 		return $template;
   	}
+
+  public function setStatusCfg()
+  {
+    $statusCfg = (array)$this->cfg->statuscfg;
+    foreach($statusCfg['status'] as $cfx)
+    {
+      $e = (array)$cfx;
+  	  $this->code_status[$e['code']] = $e['verbose'];
+	    $this->status_color[$e['verbose']] = $e['color'];
+    }
+  }
+
+
+  public function getCodeStatus()
+  {
+  	  return $this->code_status;
+  }
+
+  public function getStatusColor()
+  {
+  	  return $this->status_color;
+  }
 
 }
 ?>

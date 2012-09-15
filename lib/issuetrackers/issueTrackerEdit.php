@@ -4,11 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	issueTrackerEdit.php
- *
  * @author	francisco.mancardi@gmail.com
+ * @since 1.9.4
+ *
  * @internal revisions
  * @since 1.9.4
- * 20120311 - franciscom - TICKET 4904: integrate with ITS on test project basis
+ * 
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -113,7 +114,7 @@ function init_args($whiteLists)
 	$iParams = array("id" => array(tlInputParameter::INT_N),
 					 "doAction" => array(tlInputParameter::STRING_N,0,20),
 					 "name" => array(tlInputParameter::STRING_N,0,100),
-					 "cfg" => array(tlInputParameter::STRING_N,0,1000),
+					 "cfg" => array(tlInputParameter::STRING_N,0,2000),
 					 "type" => array(tlInputParameter::INT_N));
 	
 	//new dBug($_REQUEST);

@@ -5,14 +5,6 @@
 # Database Type: MySQL 
 #
 # @internal revisions
-# 20110903 - franciscom - TICKET 4661 - req spec revisions 
-# 20110603 - franciscom - TICKET 4557: New right Keyword Assignment
-# 20110602 - franciscom - TICKET 4515: "Requirement-Test Case Assignment" should be set per default for roles 
-#						  admin / leader / test-designer / senior-tester
-# 20110411 - franciscom - removed sentence that create admin user
-#
-# 20101126 - franciscom - DB version increased
-#                         added requirement_revision node type
 # ---------------------------------------------------------------------------------
 
 # Database version
@@ -73,6 +65,9 @@ INSERT INTO /*prefix*/rights  (id,description) VALUES (26,'project_inventory_man
 INSERT INTO /*prefix*/rights  (id,description) VALUES (27,'project_inventory_view');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (28,'req_tcase_link_management');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (29,'keyword_assignment');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (30,'mgt_unfreeze_req');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (31,'issuetracker_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (32,'issuetracker_view');
 
 # Rights for Administrator role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,1 );
@@ -104,6 +99,9 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,28);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,29);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,31);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,32);
 
 # Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3 );

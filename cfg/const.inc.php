@@ -38,10 +38,12 @@ if (!defined('TL_ABS_PATH'))
 
 /** Setting up the global include path for testlink */
 ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . '.' . PATH_SEPARATOR . 
-		TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR);
+                       TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR
+                    	 TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'issuetrackerintegration' . DIRECTORY_SEPARATOR);                       
 
-ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . 
-        TL_ABS_PATH . 'third_party' . DIRECTORY_SEPARATOR);
+ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . TL_ABS_PATH . 'third_party' . DIRECTORY_SEPARATOR);
+
+
 
 /** Localization directory base */
 define('TL_LOCALE_PATH', TL_ABS_PATH . 'locale/');

@@ -16,7 +16,7 @@ create/edit user role
              error_role_no_rights,caption_possible_affected_users,enter_role_notes,
              title_user_mgmt,caption_define_role,th_mgttc_rights,th_req_rights,
              th_product_rights,th_user_rights,th_kw_rights,th_cf_rights,th_system_rights,
-             th_platform_rights,warn_demo,demo_update_role_disabled,
+             th_platform_rights,warn_demo,demo_update_role_disabled,th_issuetracker_rights,
              th_rolename,th_tp_rights,btn_cancel'}
              
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
@@ -144,6 +144,12 @@ function validateForm(f)
 							{/foreach}
 						</fieldset>
 					</td>
+					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_issuetracker_rights}</legend>
+							{foreach from=$gui->rightsCfg->issuetracker_mgmt item=id key=k}
+							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
+							{/foreach}
+						</fieldset>
+					</td>
 				</tr>
 
 			</table>
@@ -161,7 +167,7 @@ function validateForm(f)
 		{if $gui->operation == 'doUpdate'}
 			{$submitEnabled="0"}
 		{/if}
-    {/if}	
+  {/if}	
 	<div class="groupBtn">
 	{if $gui->grants->role_mgmt == "yes" && $gui->role->dbID != $smarty.const.TL_ROLES_NO_RIGHTS}
 		{if $submitEnabled}

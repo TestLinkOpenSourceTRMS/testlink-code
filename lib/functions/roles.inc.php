@@ -31,21 +31,12 @@
  *
  *
  * @filesource	roles.inc.php
- * @package 	TestLink
- * @author 		Martin Havlat, Chad Rosen
- * @copyright 	2006-2011, TestLink community 
+ * @package 	  TestLink
+ * @author 		  Martin Havlat, Chad Rosen
+ * @copyright 	2006-2012, TestLink community 
  * 
  *
- * @internal rev: 
- *	20101112 - franciscom - BUGID 4006: get_tplan_effective_role() fixed bad variable usage -> error on event viewer
- *	20101111 - franciscom - BUGID 4006: test plan is_public
- *	20100930 - franciscom - BUGID 2344: Private test project
- *	20100307 - franciscom - removed wrong right due to copy/paste BUGID 3249
- *	20100220 - franciscom - added inventory rights
- *  20090425 - franciscom - BUGID 2417 - new right for test projects
- *  20081030 - franciscom - added new rights -> system
- *  20070901 - franciscom - BUGID 1016
- *  20070819 - franciscom - added get_tplan_effective_role(), get_tproject_effective_role()
+ * @internal revisions 
  */
 
 /** localization support */ 
@@ -80,47 +71,48 @@ function init_global_rights_maps()
 	global $g_rights_users;
 	global $g_rights_system;
 	global $g_rights_platforms;
+  global $g_rights_issuetrackers;
+	
 	global $g_propRights_global;
 	global $g_propRights_product;
 	
-	$g_rights_tp = array (	"testplan_execute" => lang_get('desc_testplan_execute'),
-							"testplan_create_build" => lang_get('desc_testplan_create_build'),
-							"testplan_metrics" => lang_get('desc_testplan_metrics'),
-							"testplan_planning" => lang_get('desc_testplan_planning'),
-							"testplan_user_role_assignment" => lang_get('desc_user_role_assignment'),
-						);
+	$g_rights_tp = array("testplan_execute" => lang_get('desc_testplan_execute'),
+                       "testplan_create_build" => lang_get('desc_testplan_create_build'),
+							         "testplan_metrics" => lang_get('desc_testplan_metrics'),
+							         "testplan_planning" => lang_get('desc_testplan_planning'),
+							         "testplan_user_role_assignment" => lang_get('desc_user_role_assignment'));
 						
-	$g_rights_mgttc = array (	"mgt_view_tc" => lang_get('desc_mgt_view_tc'),
-								"mgt_modify_tc" => lang_get('desc_mgt_modify_tc'),
-								"mgt_testplan_create" => lang_get('mgt_testplan_create'),
-							);
+	$g_rights_mgttc = array("mgt_view_tc" => lang_get('desc_mgt_view_tc'),
+								          "mgt_modify_tc" => lang_get('desc_mgt_modify_tc'),
+								          "mgt_testplan_create" => lang_get('mgt_testplan_create'));
 	
-	$g_rights_kw = array (	
-								"mgt_view_key" => lang_get('desc_mgt_view_key'),
-								"mgt_modify_key" => lang_get('desc_mgt_modify_key'),
-								"keyword_assignment" => lang_get('desc_keyword_assignment'),
-							);
-	$g_rights_req = array (	
-								"mgt_view_req" => lang_get('desc_mgt_view_req'),
-								"mgt_modify_req" => lang_get('desc_mgt_modify_req'),
-								"req_tcase_link_management" => lang_get('desc_req_tcase_link_management'),
-							);
+	$g_rights_kw = array("mgt_view_key" => lang_get('desc_mgt_view_key'),
+								       "mgt_modify_key" => lang_get('desc_mgt_modify_key'),
+								       "keyword_assignment" => lang_get('desc_keyword_assignment'));
+
+	$g_rights_req = array("mgt_view_req" => lang_get('desc_mgt_view_req'),
+								        "mgt_modify_req" => lang_get('desc_mgt_modify_req'),
+								        "req_tcase_link_management" => lang_get('desc_req_tcase_link_management'),
+								        "mgt_unfreeze_req" => lang_get('desc_mgt_unfreeze_req'));
 	
 	$g_rights_product = array("mgt_modify_product" => lang_get('desc_mgt_modify_product'),
-                              "project_inventory_management" => lang_get('desc_project_inventory_management'),
-                              "project_inventory_view" => lang_get('desc_project_inventory_view') );						
+                            "project_inventory_management" => lang_get('desc_project_inventory_management'),
+                            "project_inventory_view" => lang_get('desc_project_inventory_view') );						
 	
 	$g_rights_cf = array("cfield_view" => lang_get('desc_cfield_view'),
-						 "cfield_management" => lang_get('desc_cfield_management'));
-	
+						           "cfield_management" => lang_get('desc_cfield_management'));
 	
 	$g_rights_platforms = array("platform_view" => lang_get('desc_platforms_view'),
-						        "platform_management" => lang_get('desc_platforms_management'));
+						                  "platform_management" => lang_get('desc_platforms_management'));
+
+	$g_rights_issuetrackers = array("issuetracker_view" => lang_get('desc_issuetrackers_view'),
+                                  "issuetracker_management" => lang_get('desc_issuetrackers_management'));
+
 	
 	// Global means test project independent.
-	$g_rights_users_global = array ( "mgt_users" => lang_get('desc_mgt_modify_users'),
-								     "role_management" => lang_get('desc_role_management'),
-								     "user_role_assignment" => lang_get('desc_user_role_assignment')); 
+	$g_rights_users_global = array( "mgt_users" => lang_get('desc_mgt_modify_users'),
+								                  "role_management" => lang_get('desc_role_management'),
+								                  "user_role_assignment" => lang_get('desc_user_role_assignment')); 
 	
 	$g_rights_users = $g_rights_users_global;
 							
@@ -128,7 +120,7 @@ function init_global_rights_maps()
 	                          "events_mgt" => lang_get('desc_events_mgt'));
 							
 	$g_propRights_global = array_merge($g_rights_users_global,$g_rights_system,$g_rights_product);
-    unset($g_propRights_global["testproject_user_role_assignment"]);
+  unset($g_propRights_global["testproject_user_role_assignment"]);
     
 	$g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_kw,$g_rights_req);
 }

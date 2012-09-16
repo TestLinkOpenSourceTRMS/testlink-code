@@ -155,16 +155,6 @@ function renderGui(&$argsObj,&$guiObj,$templateCfg)
 }
 
 
-/*
-  function: getRightsCfg
-
-  args : -
-
-  returns: object
-  
-  rev: 20081030 - franciscom - added system_mgmt member
-
-*/
 function getRightsCfg()
 {
     $cfg = new stdClass();
@@ -177,6 +167,7 @@ function getRightsCfg()
     $cfg->cfield_mgmt = config_get('rights_cf');
     $cfg->system_mgmt = config_get('rights_system');
     $cfg->platform_mgmt = config_get('rights_platforms');
+    $cfg->issuetracker_mgmt = config_get('rights_issuetrackers');
     return $cfg;
 }
 

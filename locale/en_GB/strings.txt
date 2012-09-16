@@ -2307,6 +2307,7 @@ $TLS_desc_project_inventory_view="Inventory view (read only access)";
 $TLS_desc_project_inventory_management="Inventory Management";
 $TLS_desc_issuetrackers_view = "Issue Tracker view (read only access)";
 $TLS_desc_issuetrackers_management = "Issue Tracker Management";
+$TLS_desc_mgt_unfreeze_req = "Unfreeze requirement";
 
 
 $TLS_desc_role_management = "Role management";

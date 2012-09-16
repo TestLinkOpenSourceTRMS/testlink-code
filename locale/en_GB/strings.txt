@@ -1067,6 +1067,7 @@ $TLS_menu_edit_role = "Edit Role";
 $TLS_menu_view_users = "View Users";
 $TLS_menu_view_roles = "View roles";
 $TLS_th_cf_rights = "Custom field";
+$TLS_th_issuetracker_rights = 'Issue Tracker';
 $TLS_th_kw_rights = $TLS_keyword;
 $TLS_th_mgttc_rights = "Test Case management";
 $TLS_th_platform_rights = $TLS_platform;
@@ -1500,6 +1501,8 @@ $TLS_testproject_txt_empty_list = 'There are no Test Projects defined!';
 $TLS_testproject_prefix = 'Prefix (used for Test case ID)';
 $TLS_warning_empty_tcase_prefix = 'Test Case ID prefix cannot be empty!';
 $TLS_warning_empty_tproject_name = 'Project name cannot be empty!';
+$TLS_testproject_issue_tracker_integration = 'Issue Tracker Integration';
+$TLS_issue_tracker = 'Issue Tracker';
 
 
 // ----- gui/templates/projectView.tpl -----
@@ -2145,6 +2148,7 @@ $TLS_title_product_mgmt = "Test Project";
 $TLS_href_plan_define_priority = "Test Plan priority";
 $TLS_href_my_testcase_assignments="Test Cases Assigned to Me";
 $TLS_href_platform_management = "Platform Management";
+$TLS_href_issuetracker_management = "Issue Tracker Management";
 
 
 // ----- contribution by asimon for req/reqspec search BUGID 2976 -----
@@ -2301,6 +2305,8 @@ $TLS_desc_platforms_view="Platform view (read only access)";
 $TLS_desc_platforms_management="Platform Management";
 $TLS_desc_project_inventory_view="Inventory view (read only access)";
 $TLS_desc_project_inventory_management="Inventory Management";
+$TLS_desc_issuetrackers_view = "Issue Tracker view (read only access)";
+$TLS_desc_issuetrackers_management = "Issue Tracker Management";
 
 
 $TLS_desc_role_management = "Role management";
@@ -3467,5 +3473,33 @@ $TLS_upload_err_extension='A PHP extension stopped the file upload.';
 // execHistory.php
 $TLS_btn_show_exec_history = 'Execution History';
 $TLS_tcase_never_executed = 'This Test Case has not been executed';
+
+// issueTrackerView.tpl
+$TLS_th_issuetracker = 'Issue Tracker';
+$TLS_th_issuetracker_type = 'Type';
+$TLS_warning_empty_issuetracker_name = "Issue Tracker name cannot be empty!";
+$TLS_warning_empty_issuetracker_type = "Issue Tracker type cannot be empty!";
+
+// issueTrackerCommands.class.php
+$TLS_issuetracker_management = $TLS_href_issuetracker_management;
+$TLS_issuetracker_deleted = "Issue Tracker %s% has been deleted";
+
+// issueTrackerEdit.tpl
+$TLS_issuetracker_show_cfg_example = 'Show configuration example';
+$TLS_issuetracker_cfg_example = 'Configuration example';
+$TLS_used_on_testproject = 'Used on Test Project';
+
+// getissuetrackertemplate.php
+$TLS_issuetracker_invalid_type = 'Issue Traker type %s is unknown';
+$TLS_issuetracker_interface_not_implemented = 'Issue Traker interface %s is not implemented/available';
+
+// logger.class.php
+$TLS_mail_logger_email_subject = ' :: Log Message From TestLink :: ';
+
+// reqView.php
+$TLS_req_does_not_exist = "Requirement does not exist anymore.";
+
+// resultsByTesterPerBuild.php
+$TLS_no_open_builds = 'There are no open builds';
 // ----- END ------------------------------------------------------------------
 ?>

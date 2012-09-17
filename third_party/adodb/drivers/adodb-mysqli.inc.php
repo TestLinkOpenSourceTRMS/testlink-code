@@ -1,6 +1,6 @@
 <?php
 /*
-V5.11 5 May 2010   (c) 2000-2010 John Lim (jlim#natsoft.com). All rights reserved.
+V5.18 3 Sep 2012  (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence.
@@ -28,10 +28,10 @@ if (! defined("_ADODB_MYSQLI_LAYER")) {
 
 class ADODB_mysqli extends ADOConnection {
 	var $databaseType = 'mysqli';
-	var $dataProvider = 'native';
+	var $dataProvider = 'mysql';
 	var $hasInsertID = true;
 	var $hasAffectedRows = true;	
-	var $metaTablesSQL = "SHOW TABLES";	
+	var $metaTablesSQL = "SELECT TABLE_NAME, CASE WHEN TABLE_TYPE = 'VIEW' THEN 'V' ELSE 'T' END FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=SCHEMA()";	
 	var $metaColumnsSQL = "SHOW COLUMNS FROM `%s`";
 	var $fmtTimeStamp = "'Y-m-d H:i:s'";
 	var $hasLimit = true;
@@ -99,6 +99,9 @@ class ADODB_mysqli extends ADOConnection {
 			mysqli_options($this->_connectionID,$arr[0],$arr[1]);
 		}
 
+		//http ://php.net/manual/en/mysqli.persistconns.php
+		if ($persist && PHP_VERSION > 5.2 && strncmp($argHostname,'p:',2) != 0) $argHostname = 'p:'.$argHostname;
+
 		#if (!empty($this->port)) $argHostname .= ":".$this->port;
 		$ok = mysqli_real_connect($this->_connectionID,
  				    $argHostname,
@@ -144,10 +147,13 @@ class ADODB_mysqli extends ADOConnection {
 	// do not use $ADODB_COUNTRECS
 	function GetOne($sql,$inputarr=false)
 	{
+	global $ADODB_GETONE_EOF;
+	
 		$ret = false;
 		$rs = $this->Execute($sql,$inputarr);
-		if ($rs) {	
-			if (!$rs->EOF) $ret = reset($rs->fields);
+		if ($rs) {
+			if ($rs->EOF) $ret = $ADODB_GETONE_EOF;
+			else $ret = reset($rs->fields);
 			$rs->Close();
 		}
 		return $ret;
@@ -464,6 +470,66 @@ class ADODB_mysqli extends ADOConnection {
 //		return "from_unixtime(unix_timestamp($date)+$fraction)";
 	}
 	
+    function MetaProcedures($NamePattern = false, $catalog  = null, $schemaPattern  = null)
+    {
+        // save old fetch mode
+        global $ADODB_FETCH_MODE;
+
+        $false = false;
+        $save = $ADODB_FETCH_MODE;
+        $ADODB_FETCH_MODE = ADODB_FETCH_NUM;
+
+        if ($this->fetchMode !== FALSE) {
+               $savem = $this->SetFetchMode(FALSE);
+        }
+
+        $procedures = array ();
+
+        // get index details
+
+        $likepattern = '';
+        if ($NamePattern) {
+           $likepattern = " LIKE '".$NamePattern."'";
+        }
+        $rs = $this->Execute('SHOW PROCEDURE STATUS'.$likepattern);
+        if (is_object($rs)) {
+
+	    // parse index data into array
+	    while ($row = $rs->FetchRow()) {
+		    $procedures[$row[1]] = array(
+				    'type' => 'PROCEDURE',
+				    'catalog' => '',
+
+				    'schema' => '',
+				    'remarks' => $row[7],
+			    );
+	    }
+	}
+
+        $rs = $this->Execute('SHOW FUNCTION STATUS'.$likepattern);
+        if (is_object($rs)) {
+            // parse index data into array
+            while ($row = $rs->FetchRow()) {
+                $procedures[$row[1]] = array(
+                        'type' => 'FUNCTION',
+                        'catalog' => '',
+                        'schema' => '',
+                        'remarks' => $row[7]
+                    );
+            }
+	    }
+
+        // restore fetchmode
+        if (isset($savem)) {
+                $this->SetFetchMode($savem);
+
+        }
+        $ADODB_FETCH_MODE = $save;
+
+
+        return $procedures;
+    }
+	
 	function MetaTables($ttype=false,$showSchema=false,$mask=false) 
 	{	
 		$save = $this->metaTablesSQL;
@@ -777,7 +843,7 @@ class ADODB_mysqli extends ADOConnection {
 
     if ($this->charSet !== $charset_name) {
       $if = @$this->_connectionID->set_charset($charset_name);
-      if ($if == "0" & $this->GetCharSet() == $charset_name) {
+      if ($if === true & $this->GetCharSet() == $charset_name) {
         return true;
       } else return false;
     } else return true;
@@ -959,15 +1025,9 @@ class ADORecordSet_mysqli extends ADORecordSet{
 	    //if results are attached to this pointer from Stored Proceedure calls, the next standard query will die 2014
         //only a problem with persistant connections
 
-        //mysqli_next_result($this->connection->_connectionID); trashes the DB side attached results.
-
         while(mysqli_more_results($this->connection->_connectionID)){
            @mysqli_next_result($this->connection->_connectionID);
         }
-
-        //Because you can have one attached result, without tripping mysqli_more_results
-        @mysqli_next_result($this->connection->_connectionID);
-
 
 		mysqli_free_result($this->_queryID); 
 	  	$this->_queryID = false;	

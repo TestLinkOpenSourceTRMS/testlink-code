@@ -1,6 +1,6 @@
 <?php
 /* 
-V4.80 8 Mar 2006  (c) 2000-2010 John Lim (jlim#natsoft.com). All rights reserved.
+V4.80 8 Mar 2006  (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. 
@@ -146,11 +146,12 @@ FROM `nuke_stories` `t1`, `nuke_authors` `t2`, `nuke_stories_cat` `t3`, `nuke_to
 	echo "Date=",$db->UserDate('2002-04-07'),'<br>';
 	print "<i>date1</i> (1969-02-20) = ".$db->DBDate('1969-2-20');
 	print "<br><i>date1</i> (1999-02-20) = ".$db->DBDate('1999-2-20');
-	print "<br><i>date1.1</i> 1999 = ".$db->DBDate("'1999'");
+	print "<br><i>date1.1</i> 1999 injection attack= ".$db->DBDate("'1999', ' injection attack '");
 	print "<br><i>date2</i> (1970-1-2) = ".$db->DBDate(24*3600)."<p>";
 	print "<i>ts1</i> (1999-02-20 13:40:50) = ".$db->DBTimeStamp('1999-2-20 1:40:50 pm');
 	print "<br><i>ts1.1</i> (1999-02-20 13:40:00) = ".$db->DBTimeStamp('1999-2-20 13:40');
 	print "<br><i>ts2</i> (1999-02-20) = ".$db->DBTimeStamp('1999-2-20');
+	print "<br><i>ts2</i> (1999-02-20) = ".$db->DBTimeStamp("'1999-2-20', 'injection attack'");
 	print "<br><i>ts3</i> (1970-1-2 +/- timezone) = ".$db->DBTimeStamp(24*3600);
 	print "<br> Fractional TS (1999-2-20 13:40:50.91): ".$db->DBTimeStamp($db->UnixTimeStamp('1999-2-20 13:40:50.91+1'));
 	 $dd = $db->UnixDate('1999-02-20');
@@ -637,11 +638,18 @@ END Adodb;
 	);
 	//$db->debug=1;
 	print "<p>Testing Bulk Insert of 3 rows</p>";
+	
+//	$db->debug=1;
+//	$db->Execute('select * from table where val=? AND value=?', array('val'=>'http ://www.whatever.com/test?=21', 'value'=>'blabl'));
+
 
 	$sql = "insert into ADOXYZ (id,firstname,lastname) values (".$db->Param('0').",".$db->Param('1').",".$db->Param('2').")";
+	$db->bulkBind = true;
 	$db->StartTrans();
+	$db->debug=99;
 	$db->Execute($sql,$arr);
 	$db->CompleteTrans();
+	$db->bulkBind = false;
 	$rs = $db->Execute('select * from ADOXYZ order by id');
 	if (!$rs || $rs->RecordCount() != 3) Err("Bad bulk insert");
 	
@@ -841,19 +849,27 @@ END Adodb;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	
 	print "<p>CacheSelectLimit  Test...</p>";
-	$db->debug=1;
 	$rs = $db->CacheSelectLimit('select  id, firstname from  ADOXYZ order by id',2);
+	
+	if (ADODB_ASSOC_CASE == 2 || $db->dataProvider == 'oci8') {
+		$id = 'ID';
+		$fname = 'FIRSTNAME';
+	}else {
+		$id = 'id';
+		$fname = 'firstname';
+	}
+	
 	
 	if ($rs && !$rs->EOF) {
 		if (isset($rs->fields[0])) {
 			Err("ASSOC has numeric fields");
 			print_r($rs->fields);
 		}
-		if ($rs->fields['id'] != 1)  {Err("Error"); print_r($rs->fields);};
-		if (trim($rs->fields['firstname']) != 'Caroline')  {print Err("Error 2"); print_r($rs->fields);};
+		if ($rs->fields[$id] != 1)  {Err("Error"); print_r($rs->fields);};
+		if (trim($rs->fields[$fname]) != 'Caroline')  {print Err("Error 2"); print_r($rs->fields);};
 		
 		$rs->MoveNext();
-		if ($rs->fields['id'] != 2)  {Err("Error 3"); print_r($rs->fields);};
+		if ($rs->fields[$id] != 2)  {Err("Error 3"); print_r($rs->fields);};
 		$rs->MoveNext();
 		if (!$rs->EOF) {
 			Err("Error EOF");
@@ -861,16 +877,10 @@ END Adodb;
 		}
 	}
 	
-	print "<p>FETCH_MODE = ASSOC: Should get 1, Caroline</p>";
+	print "<p>FETCH_MODE = ASSOC: Should get 1, Caroline ASSOC_CASE=".ADODB_ASSOC_CASE."</p>";
 	$rs = $db->SelectLimit('select id,firstname from ADOXYZ order by id',2);
 	if ($rs && !$rs->EOF) {
-		if (ADODB_ASSOC_CASE == 2) {
-			$id = 'ID';
-			$fname = 'FIRSTNAME';
-		}else {
-			$id = 'id';
-			$fname = 'firstname';
-		}
+
 		if ($rs->fields[$id] != 1)  {Err("Error 1"); print_r($rs->fields);};
 		if (trim($rs->fields[$fname]) != 'Caroline')  {Err("Error 2"); print_r($rs->fields);};
 		$rs->MoveNext();
@@ -887,7 +897,7 @@ END Adodb;
 	print "<p>FETCH_MODE = NUM: Should get 1, Caroline</p>";
 	$rs = $db->SelectLimit('select id,firstname from ADOXYZ order by id',1);
 	if ($rs && !$rs->EOF) {
-		if (isset($rs->fields['id'])) Err("FETCH_NUM has ASSOC fields");
+		if (isset($rs->fields[$id])) Err("FETCH_NUM has ASSOC fields");
 		if ($rs->fields[0] != 1)  {Err("Error 1"); print_r($rs->fields);};
 		if (trim($rs->fields[1]) != 'Caroline')  {Err("Error 2");print_r($rs->fields);};
 		$rs->MoveNext();
@@ -901,8 +911,9 @@ END Adodb;
 	$rs = $db->SelectLimit('select id,firstname from ADOXYZ order by id',1);
 	if ($rs && !$rs->EOF) {
 		$arr = $rs->GetRowAssoc();
-		if ($arr['ID'] != 1) {Err("Error 1");print_r($arr);};
-		if (trim($arr['FIRSTNAME']) != 'Caroline') {Err("Error 2"); print_r($arr);};
+		
+		if ($arr[strtoupper($id)] != 1) {Err("Error 1");print_r($arr);};
+		if (trim($arr[strtoupper($fname)]) != 'Caroline') {Err("Error 2"); print_r($arr);};
 		$rs->MoveNext();
 		if (!$rs->EOF) Err("Error EOF");
 
@@ -1091,6 +1102,15 @@ END Adodb;
 		if (sizeof($arr) != 2) Err("Prepare failed 3");
 	}
 	print "Testing GetAssoc() ";
+	
+	
+	if ($db->dataProvider == 'mysql') {
+		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+		$arr = $db->GetAssoc("SELECT 'adodb', '0'");
+		var_dump($arr);
+		die();
+	}
+	
 	$savecrecs = $ADODB_COUNTRECS;
 	$ADODB_COUNTRECS = false;
 	//$arr = $db->GetArray("select  lastname,firstname from ADOXYZ");
@@ -1171,12 +1191,12 @@ END Adodb;
 	$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
 	$rs = $db->CacheExecute(6,"select distinct firstname,lastname from ADOXYZ");
 	print_r($rs->fields); echo $rs->fetchMode;echo "<br>";
-	echo $rs->Fields('firstname');
+	echo $rs->Fields($fname);
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$rs = $db->CacheExecute(6,"select distinct firstname,lastname from ADOXYZ");
 	print_r($rs->fields);echo "<br>";
-	echo $rs->Fields('firstname');
+	echo $rs->Fields($fname);
 	$db->debug = false;
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
@@ -1743,6 +1763,6 @@ echo "<br>vers=",ADOConnection::Version();
 
 
 ?>
-<p><i>ADODB Database Library  (c) 2000-2010 John Lim. All rights reserved. Released under BSD and LGPL, PHP <?php echo PHP_VERSION ?>.</i></p>
+<p><i>ADODB Database Library  (c) 2000-2012 John Lim. All rights reserved. Released under BSD and LGPL, PHP <?php echo PHP_VERSION ?>.</i></p>
 </body>
 </html>

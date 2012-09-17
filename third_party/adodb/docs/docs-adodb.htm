@@ -620,7 +620,7 @@ ul
 
 <h2>ADOdb Library for PHP</h2>
 
-<p>V5.11 5 May 2010 (c) 2000-2010 John Lim (jlim#natsoft.com)</p>
+<p>V5.18 3 Sep 2012 (c) 2000-2012 John Lim (jlim#natsoft.com)</p>
 
 <p><span style='font-size:7.5pt'>This software is dual licensed using BSD-Style
 and LGPL. This means you can use it in compiled proprietary and commercial
@@ -727,7 +727,7 @@ href="#ignoreerrors">IgnoreErrors</a><br>
 Data Dictionary (metadata): <a href="#metadatabases">MetaDatabases</a> <a
 href="#metatables">MetaTables</a> <a href="#metacolumns">MetaColumns</a> <a
 href="#metacolumnames">MetaColumnNames</a> <a href="#metaprimarykeys">MetaPrimaryKeys</a>
-<a href="#metaforeignkeys">MetaForeignKeys</a> <a href="#serverinfo">ServerInfo</a>
+<a href="#metaforeignkeys">MetaForeignKeys</a> <a href="#serverinfo">ServerInfo</a> <a href="#setcharset">SetCharSet</a>
 <br>
 Statistics and Query-Rewriting: <a href="#logsql">LogSQL</a> <a
 href="#fnexecute">fnExecute and fnCacheExecute</a><br>
@@ -2023,7 +2023,7 @@ NewADOConnection($name) to create a connection object for that database. </p>
   <p class=MsoNormal><span style='font-size:10.0pt'>C</span></p>
   </td>
   <td valign=top style='padding:.75pt .75pt .75pt .75pt;height:54.75pt'>
-  <p><span style='font-size:10.0pt'>Native mssql driver from M'soft. </span></p>
+  <p><span style='font-size:10.0pt'>Native mssql driver from M'soft. Use with PHP 5.3 or later. </span></p>
   </td>
   <td valign=top style='padding:.75pt .75pt .75pt .75pt;height:54.75pt'>
   <p class=MsoNormal><span style='font-size:10.0pt'>?</span></p>
@@ -2421,6 +2421,27 @@ NewADOConnection($name) to create a connection object for that database. </p>
   <td valign=top style='padding:.75pt .75pt .75pt .75pt'>
   <p class=MsoNormal><span style='font-size:10.0pt'>PostgreSQL which supports
   version 8 functionality.</span></p>
+  </td>
+  <td valign=top style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt'>Y</span></p>
+  </td>
+  <td valign=top style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt'>PostgreSQL client</span></p>
+  </td>
+  <td valign=top style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt'>Unix and Windows. </span></p>
+  </td>
+ </tr>
+  <tr style='mso-yfti-irow:35'>
+  <td valign=top style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt'>postgres9</span></b></p>
+  </td>
+  <td valign=top style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt'>A</span></p>
+  </td>
+  <td valign=top style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt'>PostgreSQL which supports
+  version 9 functionality.</span></p>
   </td>
   <td valign=top style='padding:.75pt .75pt .75pt .75pt'>
   <p class=MsoNormal><span style='font-size:10.0pt'>Y</span></p>
@@ -3869,7 +3890,12 @@ include('adodb.inc.php'); </p>
 <h3><a name="adodb_auto_quote"></a>$ADODB_QUOTE_FIELDNAMES</h3>
 
 <p>Auto-quotes field names when using AutoExecute() when set to true. </p>
-
+<p>Since 5.13, if $ADODB_QUOTE_FIELDNAMES is set to:
+<ul>
+<li>'UPPER' or true: uppercase field names. This is the default.
+<li>'NATIVE' : use native case.
+<li>'LOWER': lowercase field names.
+</ul>
 <p>&nbsp;</p>
 
 <div class=MsoNormal align=center style='text-align:center'>
@@ -3903,7 +3929,7 @@ security reasons.</p>
 <p><b>raiseErrorFn</b>: Allows you to define an error handling function. See
 adodb-errorhandler.inc.php for an example.</p>
 
-<p><b>debug</b>: Set to <i>true</i> to make debug statements to appear.</p>
+<p><b>debug</b>: Set to <i>true</i> to make debug statements. Set to -99 to only display errors. Set to 99 to display debug statements and add a backtrace.</p>
 
 <p><b>concat_operator</b>: Set to '+' or '||' normally. The operator used to
 concatenate strings in SQL. Used by the <b><a href="#concat">Concat</a></b>
@@ -5482,6 +5508,14 @@ $db-&gt;MetaPrimaryKeys('dataView');</pre></div>
 'description' element contains the string description of the database. The
 'version' naturally holds the version number (which is also a string).</p>
 
+<p><b>SetCharSet<a name=setcharset id=setcharset></a>($charset)</b> </p>
+
+<p>Set the charset of the connection. The parameter passed in is dependent on the actual database RDBMS. e.g.
+<pre>
+	$DB->SetCharSet('utf8'); // for mysql
+</pre>
+This is database driver specific and only supported for mysql, mysqlt, mysqli, and also postgres7 and later.</p>
+
 <p><b>MetaForeignKeys<a name=metaforeignkeys></a>($table, $owner=false,
 $upper=false)</b> </p>
 
@@ -6135,6 +6169,65 @@ href="http://phplens.com/lens/php-book/optimizing-debugging-php.php">Optimizing
 PHP</a>. </p>
 
 <h2>Change Log<a name=changes></a><a name=changelog></a></h2>
+<p><a name=5.18><b>5.18 3 Sep 2012</b>
+<p>datadict-postgres: Fixes bug in ALTER COL. See http://phplens.com/lens/lensforum/msgs.php?id=19202. Also fixed bugs in MetaType() checking $fieldobj properties.
+<p>GetRowAssoc did not work with null values. Bug in 5.17.
+<p>postgres9:  New driver to better support PostgreSQL 9. Thx Glenn Herteg and Cacti team.
+<p>sqlite3: Modified to support php 5.4. Thx Günter Weber [built.development#googlemail.com]
+<p>adodb: When fetch mode is ADODB_FETCH_ASSOC, and we execute $db->GetAssoc("select 'a','0'"); we get an error. Fixed. See http://phplens.com/lens/lensforum/msgs.php?id=19190
+<p>adodb: Caching directory permissions now configurable using global variable
+$ADODB_CACHE_PERMS. Default value is 0771.
+<p>mysqli: SetCharSet() did not return true (success) or false (fail) correctly. Fixed.
+<p>mysqli: changed dataProvider to 'mysql' so that MetaError and other shared functions will work.
+<p>mssqlnative: Prepare() did not work previously. Now calling Prepare() will work but the sql is not actually compiled. Unfortunately bind params are passed to sqlsrv_prepare  and not to sqlsrv_execute.
+make Prepare() and empty function, and we still execute the unprepared stmt.
+<p>mysql: FetchField(-1), turns it is is not possible to retrieve the max_length. Set to -1.
+<p>mysql-perf: Fixed "SHOW INNODB STATUS". Change to "SHOW ENGINE INNODB STATUS"
+<p><a name=5.17><b>5.17 18 May 2012</b>
+<p>Active Record: Removed trailing whitespace from adodb-active-record.inc.php.
+<p>odbc: Added support for $database parameter in odbc Connect() function. E.g. $DB->Connect($dsn_without_db, $user, $pwd, $database). 
+Previously $database had to be left blank and the $dsn was used to pass in this parameter.
+<p>oci8: Added better empty($rs) error handling to metaindexes().
+<p>oci8: Changed to use newer oci API to support PHP 5.4.
+<p>adodb.inc.php: Changed GetRowAssoc to more generic code that will work in all scenarios.
+<p><a name=5.16><b>5.16 26 March 2012</b>
+<p>mysqli: extra mysqli_next_result() in close() removed. See http://phplens.com/lens/lensforum/msgs.php?id=19100
+<p>datadict-oci8: minor typo in create sequence trigger fixed. See http://phplens.com/lens/lensforum/msgs.php?id=18879.
+<p>security: safe date parsing changes. Does not impact security, these are code optimisations. Thx Saithis.
+<p>postgres, oci8, oci8po, db2oci: Param() function parameters inconsistent with base class.  $type='C' missing. Fixed.
+<p>active-record: locked bug fixed. http://phplens.com/lens/lensforum/msgs.php?phplens_forummsg=new&id=19073
+<p>mysql, mysqli and informix: added MetaProcedures. Metaprocedures allows to retrieve an array list of all procedures in database. http://phplens.com/lens/lensforum/msgs.php?id=18414
+<p>Postgres7: added support for serial data type in MetaColumns().
+<p><a name=5.15><b>5.15 19 Jan 2012</b>
+<p>pdo: fix ErrorMsg() to detect errors correctly. Thx Jens.
+<p>mssqlnative: added another check for $this->fields array exists.
+<p>mssqlnative: bugs in FetchField() fixed. See http://phplens.com/lens/lensforum/msgs.php?id=19024
+<p>DBDate and DBTimeStamp had sql injection bug. Fixed. Thx Saithis
+<p>mysql and mysqli: MetaTables() now identifies views and tables correctly.
+<p>Added function adodb_time() to adodb-time.inc.php. Generates current time in unsigned integer format.
+<p><a name=5.14><b>5.14 8 Sep 2011</b>
+<p>mysqli: fix php compilation bug. 
+<p>postgres: bind variables did not work properly. Fixed.
+<p>postgres: blob handling bug in _decode. Fixed.
+<p>ActiveRecord: if a null field was never updated, activerecord would still update the record. Fixed.
+<p>ActiveRecord: 1 char length string never quoted. Fixed.
+<p>LDAP: Connection string ldap:// and ldaps:// did not work. Fixed.
+<p><a name=5.13></a><b>5.13 15 Aug 2011</b>
+<p>Postgres: Fix in 5.12 was wrong. Uses pg_unescape_bytea() correctly now in _decode.
+<p>GetInsertSQL/GetUpdateSQL: Now $ADODB_QUOTE_FIELDNAMES allows you to define 'NATIVE', 'UPPER', 'LOWER'. If set to true, will default to 'UPPER'.
+<p>mysqli: added support for persistent connections 'p:'.
+<p>mssqlnative: ADODB_FETCH_BOTH did not work properly. Fixed.
+<p>mssqlnative: return values for stored procedures where not returned! Fixed. See http://phplens.com/lens/lensforum/msgs.php?id=18919
+<p>mssqlnative: timestamp and fetchfield bugs fixed. http ://phplens.com/lens/lensforum/msgs.php?id=18453
+<p><a name=5.12></a><b>5.12 30 June 2011</b> </p>
+<p>Postgres: Added information_schema support for postgresql.
+<p>Postgres: Use pg_unescape_bytea() in _decode.
+<p>Fix bulk binding with oci8. http://phplens.com/lens/lensforum/msgs.php?id=18786
+<p>oci8 perf: added wait evt monitoring. Also db cache advice now handles multiple buffer pools properly.
+<p>sessions2: Fixed setFetchMode problem.
+<p>sqlite: Some DSN connection settings were not parsed correctly.
+<p>mysqli: now GetOne obeys $ADODB_GETONE_EOF;
+<p>memcache: compress option did not work. Fixed. See http://phplens.com/lens/lensforum/msgs.php?id=18899
 <p><a name=5.11></a><b>5.11 5 May 2010</b> </p>
 <p>mysql: Fixed GetOne() to return null if no records returned.
 <p>oci8 perf: added stats on sga, rman, memory usage, and flash in performance tab.

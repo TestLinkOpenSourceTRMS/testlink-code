@@ -1,7 +1,7 @@
 <?php
 
 /* 
-V4.80 8 Mar 2006  (c) 2000-2010 John Lim (jlim#natsoft.com). All rights reserved.
+V4.80 8 Mar 2006  (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. 
@@ -23,19 +23,20 @@ error_reporting(E_ALL);
 ob_start();
 include('../session/adodb-cryptsession2.php');
 
+
 $options['debug'] = 1;
-$db = 'oci8';
+$db = 'postgres';
 
 #### CONNECTION
 switch($db) {
 case 'oci8': 
 	$options['table'] = 'adodb_sessions2';
-	ADOdb_Session::config('oci8', '', 'jcollect_bkrm', 'natsoft', '',$options);
+	ADOdb_Session::config('oci8', 'mobydick', 'jdev', 'natsoft', 'mobydick',$options);
 	break;
 
 case 'postgres':
 	$options['table'] = 'sessions2';
-	ADOdb_Session::config('postgres', 'localhost', 'tester', 'test', 'test',$options);
+	ADOdb_Session::config('postgres', 'localhost', 'postgres', 'natsoft', 'northwind',$options);
 	break;
 	
 case 'mysql':

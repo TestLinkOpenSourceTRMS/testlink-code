@@ -2,7 +2,7 @@
 
 
 /*
-V5.11 5 May 2010   (c) 2000-2010 John Lim (jlim#natsoft.com). All rights reserved.
+V5.18 3 Sep 2012  (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved.
          Contributed by Ross Smith (adodb@netebb.com). 
   Released under both BSD license and Lesser GPL library license.
   Whenever there is any discrepancy between the two licenses,
@@ -620,7 +620,10 @@ class ADODB_Session {
 
 		$binary = $conn->dataProvider === 'mysql' ? '/*! BINARY */' : '';
 	
-		$sql = "SELECT sessdata FROM $table WHERE sesskey = $binary ".$conn->Param(0)." AND expiry >= " . $conn->sysTimeStamp;
+		global $ADODB_SESSION_SELECT_FIELDS;
+		if (!isset($ADODB_SESSION_SELECT_FIELDS)) $ADODB_SESSION_SELECT_FIELDS = 'sessdata';		
+		$sql = "SELECT $ADODB_SESSION_SELECT_FIELDS FROM $table WHERE sesskey = $binary ".$conn->Param(0)." AND expiry >= " . $conn->sysTimeStamp;		
+		
 		/* Lock code does not work as it needs to hold transaction within whole page, and we don't know if 
 		  developer has commited elsewhere... :(
 		 */
@@ -687,7 +690,7 @@ class ADODB_Session {
 
 		// crc32 optimization since adodb 2.1
 		// now we only update expiry date, thx to sebastian thom in adodb 2.32
-		if ($crc !== false && $crc == (strlen($oval) . crc32($oval))) {
+		if ($crc !== '00' && $crc !== false && $crc == (strlen($oval) . crc32($oval))) {
 			if ($debug) {
 				echo '<p>Session: Only updating date - crc32 not changed</p>';
 			}
@@ -727,7 +730,7 @@ class ADODB_Session {
 			if ($rs) $rs->Close();
 					
 			if ($rs && reset($rs->fields) > 0) {
-				$sql = "UPDATE $table SET expiry=$expiry, sessdata=".$conn->Param(0).", expireref= ".$conn->Param(1).",modified=$sysTimeStamp WHERE sesskey = ".$conn->Param('2');
+				$sql = "UPDATE $table SET expiry=$expiry, sessdata=".$conn->Param(0).", expireref= ".$conn->Param(1).",modified=$sysTimeStamp WHERE sesskey = ".$conn->Param(2);
 				
 			} else {
 				$sql = "INSERT INTO $table (expiry, sessdata, expireref, sesskey, created, modified) 
@@ -882,8 +885,8 @@ class ADODB_Session {
 		$savem = $conn->SetFetchMode(ADODB_FETCH_NUM);
 		$sql = "SELECT expireref, sesskey FROM $table WHERE expiry < $time ORDER BY 2"; # add order by to prevent deadlock
 		$rs = $conn->SelectLimit($sql,1000);
-		ADODB_Session::_dumprs($rs);
-		if ($debug) $conn->SetFetchMode($savem);
+		if ($debug) ADODB_Session::_dumprs($rs);
+		$conn->SetFetchMode($savem);
 		if ($rs) {
 			$tr = $conn->hasTransactions;
 			if ($tr) $conn->BeginTrans();

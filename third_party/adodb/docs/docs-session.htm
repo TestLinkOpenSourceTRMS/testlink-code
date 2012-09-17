@@ -21,7 +21,7 @@ font-size: 8pt;
 <body style="background-color: rgb(255, 255, 255);">
 <h1>ADODB Session 2 Management Manual</h1>
 <p>
-V5.11 5 May 2010  (c) 2000-2010 John Lim (jlim#natsoft.com)
+V5.18 3 Sep 2012  (c) 2000-2012 John Lim (jlim#natsoft.com)
 </p>
 <p> <font size="1">This software is dual licensed using BSD-Style and
 LGPL. This means you can use it in compiled proprietary and commercial
@@ -44,7 +44,8 @@ session, as the user moves from page to page. </p>
 <p>To use session variables, call session_start() at the beginning of
 your web page, before your HTTP headers are sent. Then for every
 variable you want to keep alive for the duration of the session, call
-session_register($variable_name). By default, the session handler will
+variable you want to keep alive for the duration of the session, use $_SESSION['variablename']. 
+ By default, the session handler will
 keep track of the session by using a cookie. You can save objects or
 arrays in session variables also.
 </p>

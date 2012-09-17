@@ -1,7 +1,7 @@
 <?php
 
 /**
-  V5.11 5 May 2010   (c) 2000-2010 John Lim (jlim#natsoft.com). All rights reserved.
+  V5.18 3 Sep 2012  (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence.
@@ -30,8 +30,8 @@ class ADODB2_postgres extends ADODB_DataDict {
 			$t = $fieldobj->type;
 			$len = $fieldobj->max_length;
 		}
-		$is_serial = is_object($fieldobj) && $fieldobj->primary_key && $fieldobj->unique && 
-			$fieldobj->has_default && substr($fieldobj->default_value,0,8) == 'nextval(';
+		$is_serial = is_object($fieldobj) && !empty($fieldobj->primary_key) && !empty($fieldobj->unique) && 
+			!empty($fieldobj->has_default) && substr($fieldobj->default_value,0,8) == 'nextval(';
 		
 		switch (strtoupper($t)) {
 			case 'INTERVAL':
@@ -130,13 +130,14 @@ class ADODB2_postgres extends ADODB_DataDict {
 	{
 		$tabname = $this->TableName ($tabname);
 		$sql = array();
+		$not_null = false;
 		list($lines,$pkey) = $this->_GenFields($flds);
 		$alter = 'ALTER TABLE ' . $tabname . $this->addCol . ' ';
 		foreach($lines as $v) {
 			if (($not_null = preg_match('/NOT NULL/i',$v))) {
 				$v = preg_replace('/NOT NULL/i','',$v);
 			}
-			if (preg_match('/^([^ ]+) .*DEFAULT ([^ ]+)/',$v,$matches)) {
+			if (preg_match('/^([^ ]+) .*DEFAULT (\'[^\']+\'|\"[^\"]+\"|[^ ]+)/',$v,$matches)) {
 				list(,$colname,$default) = $matches;
 				$sql[] = $alter . str_replace('DEFAULT '.$default,'',$v);
 				$sql[] = 'UPDATE '.$tabname.' SET '.$colname.'='.$default;
@@ -188,23 +189,46 @@ class ADODB2_postgres extends ADODB_DataDict {
 	      $tabname = $this->TableName($tabname);
 	      $sql = array();
 	      list($lines,$pkey) = $this->_GenFields($flds);
+		  $set_null = false;
 	      $alter = 'ALTER TABLE ' . $tabname . $this->alterCol . ' ';
 	      foreach($lines as $v) {
-	         if ($not_null = preg_match('/NOT NULL/i',$v)) {
+	        if ($not_null = preg_match('/NOT NULL/i',$v)) {
 	            $v = preg_replace('/NOT NULL/i','',$v);
-	         }
+	        }
 	         // this next block doesn't work - there is no way that I can see to 
 	         // explicitly ask a column to be null using $flds
-	         else if ($set_null = preg_match('/NULL/i',$v)) {
+	        else if ($set_null = preg_match('/NULL/i',$v)) {
 	            // if they didn't specify not null, see if they explicitely asked for null
 	            $v = preg_replace('/\sNULL/i','',$v);
-	         }
+	        }
 	         
-	         if (preg_match('/^([^ ]+) .*DEFAULT ([^ ]+)/',$v,$matches)) {
-	            list(,$colname,$default) = $matches;
-	            $v = preg_replace('/^' . preg_quote($colname) . '\s/', '', $v);
-	            $sql[] = $alter . $colname . ' TYPE ' . str_replace('DEFAULT '.$default,'',$v);
-	            $sql[] = 'ALTER TABLE '.$tabname.' ALTER COLUMN '.$colname.' SET DEFAULT ' . $default;
+			if (preg_match('/^([^ ]+) .*DEFAULT (\'[^\']+\'|\"[^\"]+\"|[^ ]+)/',$v,$matches)) {
+				$existing = $this->MetaColumns($tabname);
+				list(,$colname,$default) = $matches;
+				if ($this->connection) $old_coltype = $this->connection->MetaType($existing[strtoupper($colname)]);
+				else $old_coltype = $t;
+				$v = preg_replace('/^' . preg_quote($colname) . '\s/', '', $v);
+				$t = trim(str_replace('DEFAULT '.$default,'',$v));
+
+				// Type change from bool to int
+				if ( $old_coltype == 'L' && $t == 'INTEGER' ) {
+					$sql[] = $alter . $colname . ' DROP DEFAULT';
+					$sql[] = $alter . $colname . " TYPE $t USING ($colname::BOOL)::INT";
+					$sql[] = $alter . $colname . " SET DEFAULT $default";
+				}
+				// Type change from int to bool
+				else if ( $old_coltype == 'I' && $t == 'BOOLEAN' ) {
+					$sql[] = $alter . $colname . ' DROP DEFAULT';
+					$sql[] = $alter . $colname . " TYPE $t USING CASE WHEN $colname = 0 THEN false ELSE true END";
+					$sql[] = $alter . $colname . " SET DEFAULT " . $this->connection->qstr($default);
+				}
+				// Any other column types conversion
+				else {
+					$sql[] = $alter . $colname . " TYPE $t";
+					$sql[] = $alter . $colname . " SET DEFAULT $default";
+				}
+			 
+			 
 	         } 
 	         else {
 	            // drop default?
@@ -213,14 +237,14 @@ class ADODB2_postgres extends ADODB_DataDict {
 	            $sql[] = $alter . $colname . ' TYPE ' . $rest;
 	         }
 	
-	         list($colname) = explode(' ',$v);
+#	         list($colname) = explode(' ',$v);
 	         if ($not_null) {
 	            // this does not error out if the column is already not null
-	            $sql[] = 'ALTER TABLE '.$tabname.' ALTER COLUMN '.$colname.' SET NOT NULL';
+				$sql[] = $alter . $colname . ' SET NOT NULL';
 	         }
 	         if ($set_null) {
 	            // this does not error out if the column is already null
-	            $sql[] = 'ALTER TABLE '.$tabname.' ALTER COLUMN '.$colname.' DROP NOT NULL';
+	            $sql[] = $alter . $colname . ' DROP NOT NULL';
 	         }
 	      }
 	      return $sql;

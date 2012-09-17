@@ -14,7 +14,7 @@
 /**
 	\mainpage
 	
-	 @version V5.11 5 May 2010   (c) 2000-2010 John Lim (jlim#natsoft.com). All rights reserved.
+	 @version V5.18 3 Sep 2012   (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved.
 
 	Released under both BSD license and Lesser GPL library license. You can choose which license
 	you prefer.
@@ -177,7 +177,7 @@
 		/**
 		 * ADODB version as a string.
 		 */
-		$ADODB_vers = 'V5.11 5 May 2010  (c) 2000-2010 John Lim (jlim#natsoft.com). All rights reserved. Released BSD & LGPL.';
+		$ADODB_vers = 'V5.18 3 Sep 2012  (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved. Released BSD & LGPL.';
 	
 		/**
 		 * Determines whether recordset->RecordCount() is used. 
@@ -215,6 +215,36 @@
 		var $default_value; // default, if any, and supported. Check has_default first.
 */
 	}
+	
+	
+	function _adodb_safedate($s)
+	{
+		return str_replace(array("'", '\\'), '', $s);
+	}
+
+	// parse date string to prevent injection attack
+	// date string will have one quote at beginning e.g. '3434343'
+	function _adodb_safedateq($s)
+	{
+		$len = strlen($s);
+		if ($s[0] !== "'") $s2 = "'".$s[0];
+		else $s2 = "'";
+		for($i=1; $i<$len; $i++) {
+			$ch = $s[$i];
+			if ($ch === '\\') {
+				$s2 .= "'";
+				break;
+			} elseif ($ch === "'") {
+				$s2 .= $ch;
+				break;
+			}
+			
+			$s2 .= $ch;
+		}
+		
+		return strlen($s2) == 0 ? 'null' : $s2;
+	}
+
 	
 	// for transaction handling
 	
@@ -285,10 +315,12 @@
 		// create temp directories
 		function createdir($hash, $debug)
 		{
+		global $ADODB_CACHE_PERMS;
+		
 			$dir = $this->getdirname($hash);
 			if ($this->notSafeMode && !file_exists($dir)) {
 				$oldu = umask(0);
-				if (!@mkdir($dir,0771)) if(!is_dir($dir) && $debug) ADOConnection::outp("Cannot create $dir");
+				if (!@mkdir($dir, empty($ADODB_CACHE_PERMS) ? 0771 : $ADODB_CACHE_PERMS)) if(!is_dir($dir) && $debug) ADOConnection::outp("Cannot create $dir");
 				umask($oldu);
 			}
 		
@@ -954,6 +986,7 @@
 			$element0 = reset($inputarr);
 			# is_object check because oci8 descriptors can be passed in
 			$array_2d = $this->bulkBind && is_array($element0) && !is_object(reset($element0));
+		
 			//remove extra memory copy of input -mikefedyk
 			unset($element0);
 			
@@ -961,6 +994,7 @@
 				$sqlarr = explode('?',$sql);
 				$nparams = sizeof($sqlarr)-1;
 				if (!$array_2d) $inputarr = array($inputarr);
+	
 				foreach($inputarr as $arr) {
 					$sql = ''; $i = 0;
 					//Use each() instead of foreach to reduce memory usage -mikefedyk
@@ -1002,7 +1036,7 @@
 						$stmt = $this->Prepare($sql);
 					else
 						$stmt = $sql;
-						
+					
 					foreach($inputarr as $arr) {
 						$ret = $this->_Execute($stmt,$arr);
 						if (!$ret) return $ret;
@@ -1594,7 +1628,8 @@
 	}
 	
 	/**
-	* Return one row of sql statement. Recordset is disposed for you.
+	* Return one row of sql statement. Recordset is disposed for you. 
+	* Note that SelectLimit should not be called.
 	*
 	* @param sql			SQL statement
 	* @param [inputarr]		input bind array
@@ -1799,7 +1834,7 @@
 				if (get_magic_quotes_runtime() && !$this->memCache) {
 					ADOConnection::outp("Please disable magic_quotes_runtime - it corrupts cache files :(");
 				}
-				if ($this->debug !== -1) ADOConnection::outp( " $md5file cache failure: $err (see sql below)");
+				if ($this->debug !== -1) ADOConnection::outp( " $md5file cache failure: $err (this is a notice and not an error)");
 			}
 			
 			$rs = $this->Execute($sqlparam,$inputarr);
@@ -2247,6 +2282,29 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 			return false;
 		}
 	
+	  /**
+      * List procedures or functions in an array.
+      * @param procedureNamePattern  a procedure name pattern; must match the procedure name as it is stored in the database
+      * @param catalog a catalog name; must match the catalog name as it is stored in the database;
+      * @param schemaPattern a schema name pattern;
+      *
+      * @return array of procedures on current database.
+	  
+		 Array (
+		    [name_of_procedure] => Array
+		      (
+		      [type] => PROCEDURE or FUNCTION
+		      [catalog] => Catalog_name
+		      [schema] => Schema_name
+		      [remarks] => explanatory comment on the procedure 
+		      )
+                 )		
+      */
+     function MetaProcedures($procedureNamePattern = null, $catalog  = null, $schemaPattern  = null)
+     {
+            return false;
+     }
+
 		
 	/**
 	 * @param ttype can either be 'VIEW' or 'TABLE' or false. 
@@ -2446,7 +2504,11 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		
 		
 		if (is_string($d) && !is_numeric($d)) {
-			if ($d === 'null' || strncmp($d,"'",1) === 0) return $d;
+			if ($d === 'null') return $d;
+			if (strncmp($d,"'",1) === 0) {
+				$d = _adodb_safedateq($d);
+				return $d;
+			}
 			if ($this->isoDates) return "'$d'";
 			$d = ADOConnection::UnixDate($d);
 		}
@@ -2489,8 +2551,10 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 			return adodb_date($this->fmtTimeStamp,$ts);
 		
 		if ($ts === 'null') return $ts;
-		if ($this->isoDates && strlen($ts) !== 14) return "'$ts'";
-		
+		if ($this->isoDates && strlen($ts) !== 14) {
+			$ts = _adodb_safedate($ts);
+			return "'$ts'";
+		}
 		$ts = ADOConnection::UnixTimeStamp($ts);
 		return adodb_date($this->fmtTimeStamp,$ts);
 	}
@@ -2786,6 +2850,7 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		function FieldCount(){ return 0;}
 		function Init() {}
 		function getIterator() {return new ADODB_Iterator_empty($this);}
+		function GetAssoc() {return array();}
 	}
 	
 	//==============================================================================================	
@@ -3096,7 +3161,7 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 			$false = false;
 			return $false;
 		}
-		$numIndex = isset($this->fields[0]);
+		$numIndex = isset($this->fields[0]) && isset($this->fields[1]);
 		$results = array();
 		
 		if (!$first2cols && ($cols > 2 || $force_array)) {
@@ -3437,22 +3502,22 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
    *
    * $upper  0 = lowercase, 1 = uppercase, 2 = whatever is returned by FetchField
    */
-	function GetRowAssoc($upper=1)
+	function GetRowAssoc($upper=1) 
 	{
 		$record = array();
-	 //	if (!$this->fields) return $record;
-		
-	   	if (!$this->bind) {
+		if (!$this->bind) {
 			$this->GetAssocKeys($upper);
 		}
-		
 		foreach($this->bind as $k => $v) {
-			$record[$k] = $this->fields[$v];
+			if( isset( $this->fields[$v] ) ) {
+				$record[$k] = $this->fields[$v];
+			} else if (isset($this->fields[$k])) {
+				$record[$k] = $this->fields[$k];
+			} else
+				$record[$k] = $this->fields[$v];
 		}
-
 		return $record;
 	}
-	
 	
 	/**
 	 * Clean up recordset
@@ -4153,7 +4218,7 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 				$fakedsn = str_replace('@/','@adodb-fakehost/',$fakedsn);
 			}
 			
-			 if ((strpos($origdsn, 'sqlite')) !== FALSE) {
+			 if ((strpos($origdsn, 'sqlite')) !== FALSE && stripos($origdsn, '%2F') === FALSE) {
              // special handling for SQLite, it only might have the path to the database file.
              // If you try to connect to a SQLite database using a dsn like 'sqlite:///path/to/database', the 'parse_url' php function
              // will throw you an exception with a message such as "unable to parse url"

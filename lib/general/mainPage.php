@@ -4,10 +4,10 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	mainPage.php
- * @package 	TestLink
- * @copyright 	2005,2011 TestLink community 
- * @link 		http://www.teamst.org/index.php
- * @author 		Martin Havlat
+ * @package 	  TestLink
+ * @copyright   2005,2012 TestLink community 
+ * @link        http://www.teamst.org/index.php
+ * @author 	    Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
  *
@@ -17,9 +17,6 @@
  * There is also some javascript that handles the form information.
  *
  * @internal revisions
- * 20110417 - franciscom - BUGID 4429: Code refactoring to remove global coupling as much as possible
- * 20110401 - franciscom - BUGID 3615 - right to allow ONLY MANAGEMENT of requirements link to testcases
- * 20110325 - franciscom - BUGID 4062
  **/
 
 require_once('../../config.inc.php');
@@ -72,9 +69,8 @@ if ($gui->grants['project_edit'] && ($tprojectQty == 0))
 $gui->grants = array_merge($gui->grants, initGrants($db,$currentUser,$gui->testprojectID,$gui->testplanID));
 
 $gui->grants['project_inventory_view'] = ($gui->tprojectOptions->inventoryEnabled && 
-										 ($currentUser->hasRight($db,"project_inventory_view",
-										  $gui->testprojectID,$gui->testplanID) == 'yes')) ? 1 : 0;
-//$gui->grants['modify_tc'] = null; 
+                                         ($currentUser->hasRight($db,"project_inventory_view",
+										                                             $gui->testprojectID,$gui->testplanID) == 'yes')) ? 1 : 0;
 $gui->hasTestCases = false;
 
 if($gui->grants['view_tc'])
@@ -118,9 +114,8 @@ if($gui->testplanID > 0)
     }
     if( $found == 0 )
     {
-        // update test plan id
-		$gui->testplanID = $arrPlans[0]['id'];
-		setSessionTestPlan($arrPlans[0]);     	
+  		$gui->testplanID = $arrPlans[0]['id'];
+	  	setSessionTestPlan($arrPlans[0]);     	
     } 
     $arrPlans[$index]['selected']=1;
 }
@@ -138,8 +133,7 @@ $rights2check = array('testplan_execute','testplan_create_build','testplan_metri
                       'cfield_view', 'cfield_management');
 foreach($rights2check as $key => $the_right)
 {
-	// trying to remove Evil global coupling
-    $gui->grants[$the_right] = $currentUser->hasRight($db,$the_right,$gui->testprojectID,$gui->testplanID);
+  $gui->grants[$the_right] = $currentUser->hasRight($db,$the_right,$gui->testprojectID,$gui->testplanID);
 }                         
 
 $gui->grants['tproject_user_role_assignment'] = "no";
@@ -202,8 +196,8 @@ function initEnvironment(&$dbHandler,&$userObj)
 	
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 	$iParams = array("tprojectIDNavBar" => array(tlInputParameter::INT_N),
-					 "tproject_id" => array(tlInputParameter::INT_N),
-					 "tplan_id" => array(tlInputParameter::INT_N));
+					         "tproject_id" => array(tlInputParameter::INT_N),
+					         "tplan_id" => array(tlInputParameter::INT_N));
 	R_PARAMS($iParams,$argsObj);
 	
 	$guiObj->tcasePrefix = '';
@@ -242,17 +236,17 @@ function initEnvironment(&$dbHandler,&$userObj)
 	$guiObj->searchSize = 8;
 	if($guiObj->tprojectID > 0)
 	{
-	    $guiObj->tcasePrefix = $tprojectMgr->getTestCasePrefix($guiObj->tprojectID) . 
-	    					   config_get('testcase_cfg')->glue_character;
-	    $guiObj->searchSize = tlStringLen($guiObj->tcasePrefix) + $cfg->dynamic_quick_tcase_search_input_size;
+	  $guiObj->tcasePrefix = $tprojectMgr->getTestCasePrefix($guiObj->tprojectID) . 
+	                         config_get('testcase_cfg')->glue_character;
+	  $guiObj->searchSize = tlStringLen($guiObj->tcasePrefix) + $cfg->dynamic_quick_tcase_search_input_size;
 
-		$guiObj->tplanSet = $userObj->getAccessibleTestPlans($dbHandler,$guiObj->tprojectID);
-	    $guiObj->tplanCount = sizeof($guiObj->tplanSet);
-	    if( $guiObj->tplanID == 0 )
-	    {
-	    	$guiObj->tplanID = $guiObj->tplanSet[0]['id'];
-	    	$guiObj->tplanSet[0]['selected']=1;
-	    }
+    $guiObj->tplanSet = $userObj->getAccessibleTestPlans($dbHandler,$guiObj->tprojectID);
+	  $guiObj->tplanCount = sizeof($guiObj->tplanSet);
+	  if( $guiObj->tplanID == 0 )
+	  {
+	    $guiObj->tplanID = $guiObj->tplanSet[0]['id'];
+	    $guiObj->tplanSet[0]['selected']=1;
+	  }
 	}	
 	
 	return array($argsObj,$guiObj);
@@ -260,14 +254,15 @@ function initEnvironment(&$dbHandler,&$userObj)
 
 function initGrants(&$dbHandler,&$userObj,$tprojectID,$testplanID)
 {
-	$grantKeys = array(	'reqs_view' => "mgt_view_req", 'reqs_edit' => "mgt_modify_req",
-						'req_tcase_assignment' => 'req_tcase_assignment',
-						'keywords_view'=> "mgt_view_key",'keywords_edit' => "mgt_modify_key",
-						'keywords_assignment' => 'keyword_assignment',
-						'platform_management' => 'platform_management',
-						'configuration' => "system_configuraton",
-						'usergroups' => "mgt_view_usergroups",
-						'view_tc' => "mgt_view_tc", 'modify_tc' => 'mgt_modify_tc');
+	$grantKeys = array('reqs_view' => "mgt_view_req", 'reqs_edit' => "mgt_modify_req",
+						         'req_tcase_assignment' => 'req_tcase_assignment',
+        						 'keywords_view'=> "mgt_view_key",'keywords_edit' => "mgt_modify_key",
+        						 'keywords_assignment' => 'keyword_assignment',
+        						 'platform_management' => 'platform_management',
+        						 'configuration' => "system_configuraton",
+        						 'usergroups' => "mgt_view_usergroups",
+        						 'view_tc' => "mgt_view_tc", 'modify_tc' => 'mgt_modify_tc',
+        						 'issuetracker_management' => 'issuetracker_management');
 					
 	$grants = array();		
 	foreach($grantKeys as $key => $right)

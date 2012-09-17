@@ -3,13 +3,6 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 @filesource	mainPageLeft.tpl
 
 @internal revisions
-20110417 - franciscom - BUGID 4429: Code refactoring to remove global coupling as much as possible
-						on each link enviroment (test project ID,test plan ID) will be added
-20110401 - franciscom - BUGID 3615 - right to allow ONLY MANAGEMENT of requirements link to testcases
-20100501 - Julian - blocks are not draggable anymore
-20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-20100309 - asimon - BUGID 3227, added link for req overview page
-20100106 - asimon - contribution for 2976 req/reqspec search                                    
 *}
 {lang_get var='labels' s='title_product_mgmt,href_tproject_management,href_admin_modules,
                           href_assign_user_roles,href_cfields_management,
@@ -21,18 +14,18 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
                           href_search_req, href_search_req_spec,href_inventory,
                           href_platform_management, href_inventory_management,
                           href_print_tc,href_keywords_assign, href_req_overview,
-                          href_print_req, title_documentation'}
+                          href_print_req, title_documentation,href_issuetracker_management'}
 
-{assign var="menuLayout" value=$tlCfg->gui->layoutMainPageLeft}
-{assign var="display_left_block_1" value=false}
-{assign var="display_left_block_2" value=false}
-{assign var="display_left_block_3" value=false}
-{assign var="display_left_block_4" value=false}
-{assign var="display_left_block_5" value=true}
+{$menuLayout=$tlCfg->gui->layoutMainPageLeft}
+{$display_left_block_1=false}
+{$display_left_block_2=false}
+{$display_left_block_3=false}
+{$display_left_block_4=false}
+{$display_left_block_5=true}
 {if $gui->testprojectID && 
 	($gui->grants.project_edit == "yes" || $gui->grants.tproject_user_role_assignment == "yes" ||
 	$gui->grants.cfield_management == "yes" || $gui->grants.keywords_view == "yes")}
-	{assign var="display_left_block_1" value=true}
+	{$display_left_block_1=true}
 
     <script  type="text/javascript">
     function display_left_block_1()
@@ -54,7 +47,7 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 
 
 {if $gui->grants.mgt_users == "yes"}
-    {assign var="display_left_block_2" value=true}
+    {$display_left_block_2=true}
 
     <script type="text/javascript">
     function display_left_block_2()
@@ -76,7 +69,7 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 {/if}
 
 {if $gui->testprojectID && $opt_requirements == TRUE && ($gui->grants.reqs_view == "yes" || $gui->grants.reqs_edit == "yes")}
-    {assign var="display_left_block_3" value=true}
+    {$display_left_block_3=true}
 
     <script type="text/javascript">
     function display_left_block_3()
@@ -97,7 +90,7 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 {/if}
 
 {if $gui->testprojectID && $gui->grants.view_tc == "yes"}
-    {assign var="display_left_block_4" value=true}
+    {$display_left_block_4=true}
 
     <script type="text/javascript">
     function display_left_block_4()
@@ -135,7 +128,6 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
     </script>
 
 <div class="vertical_menu" style="float: left">
-  {* ---------------------------------------------------------------------------------------- *}
   <div id='menu_left_block_1'></div><br />
   <div id='menu_left_block_2'></div><br />
   <div id="menu_left_block_3"></div><br />
@@ -149,14 +141,6 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
         <a href="lib/project/projectView.php?tproject_id={$gui->testprojectID}">{$labels.href_tproject_management}</a>
     {/if}
 
-    {* 
-	  {if $gui->grants.configuration == "yes"}
-        <br />
-   		<img src="{$tlImages.bullet}" />
-        <a href="lib/admin/modules.php">{$labels.href_admin_modules}</a>
-      {/if} 
-    *}
-    
 	  {if $gui->grants.tproject_user_role_assignment == "yes"}
         <br />
   		<img src="{$tlImages.bullet}" />
@@ -192,11 +176,15 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 	  		<img src="{$tlImages.bullet}" />
 			<a href="lib/inventory/inventoryView.php?tproject_id={$gui->testprojectID}">{$labels.href_inventory}</a>
 		{/if}
+
+		{if $gui->grants.issuetracker_management}
+			<br />
+	  		<img src="{$tlImages.bullet}" />
+			<a href="lib/issuetrackers/issueTrackerView.php">{$labels.href_issuetracker_management}</a>
+		{/if}
 	  
     </div>
 	{/if}
-  {* ---------------------------------------------------------------------------------------- *}
-
 
   {* ------------------------------------------------- *}
 	{if $display_left_block_2}
@@ -217,8 +205,6 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
       {if $gui->grants.reqs_view == "yes"}
   		<img src="{$tlImages.bullet}" />
         <a href="{$gui->launcher}?feature=reqSpecMgmt&tproject_id={$gui->testprojectID}">{$labels.href_req_spec}</a><br/>
-        
-        {* BUGID 3227 *}
         <img src="{$tlImages.bullet}" />
         <a href="lib/requirements/reqOverview.php?tproject_id={$gui->testprojectID}">{$labels.href_req_overview}</a><br/>
         
@@ -293,6 +279,4 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
     	</select>
 		</form>
     </div>
-
-
 </div>

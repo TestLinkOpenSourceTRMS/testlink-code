@@ -171,8 +171,6 @@ class TLSmarty extends Smarty
         $this->assign('gsmarty_gui',$tlCfg->gui);
         $this->assign('gsmarty_spec_cfg',config_get('spec_cfg'));
 
- 
-        // $this->assign('pageCharset',$tlCfg->charset);
         $this->assign('tlVersion',TL_VERSION);
         $this->assign('testproject_coloring',null);
         

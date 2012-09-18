@@ -4,7 +4,6 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	rolesEdit.php
- *
  * @internal revisions 
 **/
 require_once("../../config.inc.php");
@@ -15,10 +14,12 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('role');
 require_once(require_web_editor($editorCfg['type']));
 testlinkInitPage($db);
-init_global_rights_maps();
 $templateCfg = templateConfiguration();
 $args = init_args();
 checkRights($db,$_SESSION['currentUser'],$args);
+
+$xxx = tlRight::getRightsCfg();
+new dBug($xxx);
 
 $gui = initialize_gui($args,$editorCfg['type']);
 $op = initialize_op();
@@ -30,19 +31,19 @@ $canManage = $_SESSION['currentUser']->hasRight($db,"role_management") ? true : 
 switch($args->doAction)
 {
 	case 'create':
-		break;
+	break;
 
 	case 'edit':
 	    $op->role = tlRole::getByID($db,$args->roleid);
-		break;
+	break;
 
 	case 'doCreate':
 	case 'doUpdate':
-		if($canManage)
-	  	{
-	  	  	$op = doOperation($db,$args,$args->doAction);
-	  	  	$templateCfg->template = $op->template;
-        }
+		  if($canManage)
+	    {
+	  	  $op = doOperation($db,$args,$args->doAction);
+	  	  $templateCfg->template = $op->template;
+      }
 		break;
 		
 	default:
@@ -59,18 +60,16 @@ renderGui($args,$gui,$templateCfg);
 function init_args()
 {
 	$iParams = array("rolename" => array("POST",tlInputParameter::STRING_N,0,100),
-					 "roleid" => array("REQUEST",tlInputParameter::INT_N),
-		 			 "doAction" => array("REQUEST",tlInputParameter::STRING_N,0,100),
-					 "notes" => array("POST",tlInputParameter::STRING_N),
-					 "grant" => array("POST",tlInputParameter::ARRAY_STRING_N),
-					 "tproject_id" => array("REQUEST",tlInputParameter::INT_N));
+					         "roleid" => array("REQUEST",tlInputParameter::INT_N),
+		 			         "doAction" => array("REQUEST",tlInputParameter::STRING_N,0,100),
+					         "notes" => array("POST",tlInputParameter::STRING_N),
+					         "grant" => array("POST",tlInputParameter::ARRAY_STRING_N),
+					         "tproject_id" => array("REQUEST",tlInputParameter::INT_N));
 
 	$args = new stdClass();
 	I_PARAMS($iParams,$args);
 	
 	$args->basehref = $_SESSION['basehref'];
-	
-	// new dBug($args);
 	return $args;
 }
 
@@ -88,31 +87,28 @@ function doOperation(&$dbHandler,$argsObj,$operation)
 	$op->userFeedback = null;
 	$op->template = 'rolesEdit.tpl';
 
-	// new dBug($op->role->rights);
-	
 	$result = $op->role->writeToDB($dbHandler);
 	if ($result >= tl::OK)
 	{
 		$auditCfg = null;
 		switch($operation)
 		{
-	    	case 'doCreate':
-				$auditCfg['msg'] = "audit_role_created";
-				$auditCfg['activity'] = "CREATE";
-				break;
+      case 'doCreate':
+			    $auditCfg['msg'] = "audit_role_created";
+			    $auditCfg['activity'] = "CREATE";
+			break;
 	
 			case 'doUpdate':
-	      		$auditCfg['msg'] = "audit_role_saved";
-				$auditCfg['activity'] = "SAVE";
-				break;
+	        $auditCfg['msg'] = "audit_role_saved";
+				  $auditCfg['activity'] = "SAVE";
+			break;
 		}
-		
 		logAuditEvent(TLS($auditCfg['msg'],$argsObj->rolename),$auditCfg['activity'],$op->role->dbID,"roles");
 		$op->template = null;
 	}
 	else
 	{
-    	$op->userFeedback = getRoleErrorMessage($result);
+    $op->userFeedback = tlRole::getRoleErrorMessage($result);
 	}
 
 	return $op;
@@ -124,32 +120,32 @@ function renderGui(&$argsObj,&$guiObj,$templateCfg)
 	$smarty = new TLSmarty();
 	$smarty->assign('gui',$guiObj);
 
-    $doRender = false;
-    switch($argsObj->doAction)
-    {
+  $doRender = false;
+  switch($argsObj->doAction)
+  {
 		case "edit":
-        case "create":
-        	$doRender = true;
+    case "create":
+        $doRender = true;
     		$tpl = $templateCfg->default_template;
-    		break;
+    break;
 
 		case "doCreate":
-        case "doUpdate":
-        	if(!is_null($templateCfg->template))
-        	{
-            	$doRender = true;
-            	$tpl = $templateCfg->template;
-        	}
-        	else
-        	{
+    case "doUpdate":
+        if(!is_null($templateCfg->template))
+        {
+          $doRender = true;
+          $tpl = $templateCfg->template;
+        }
+        else
+        {
  	  			header("Location: rolesView.php?tproject_id={$guiObj->tproject_id}");
 	  			exit();
-        	}
-    		break;
+        }
+    break;
 	}
 
-    if($doRender)
-    {
+  if($doRender)
+  {
 		$smarty->display($templateCfg->template_dir . $tpl);
 	}
 }
@@ -157,18 +153,18 @@ function renderGui(&$argsObj,&$guiObj,$templateCfg)
 
 function getRightsCfg()
 {
-    $cfg = new stdClass();
-    $cfg->tplan_mgmt = config_get('rights_tp');
-    $cfg->tcase_mgmt = config_get('rights_mgttc');
-    $cfg->kword_mgmt = config_get('rights_kw');
-    $cfg->tproject_mgmt = config_get('rights_product');
-    $cfg->user_mgmt = config_get('rights_users');
-    $cfg->req_mgmt = config_get('rights_req');
-    $cfg->cfield_mgmt = config_get('rights_cf');
-    $cfg->system_mgmt = config_get('rights_system');
-    $cfg->platform_mgmt = config_get('rights_platforms');
-    $cfg->issuetracker_mgmt = config_get('rights_issuetrackers');
-    return $cfg;
+  $cfg = new stdClass();
+  $cfg->tplan_mgmt = config_get('rights_tp');
+  $cfg->tcase_mgmt = config_get('rights_mgttc');
+  $cfg->kword_mgmt = config_get('rights_kw');
+  $cfg->tproject_mgmt = config_get('rights_product');
+  $cfg->user_mgmt = config_get('rights_users');
+  $cfg->req_mgmt = config_get('rights_req');
+  $cfg->cfield_mgmt = config_get('rights_cf');
+  $cfg->system_mgmt = config_get('rights_system');
+  $cfg->platform_mgmt = config_get('rights_platforms');
+  $cfg->issuetracker_mgmt = config_get('rights_issuetrackers');
+  return $cfg;
 }
 
 
@@ -209,7 +205,7 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
     $guiObj->role = $roleObj;
     $guiObj->grants = getGrantsForUserMgmt($dbHandler,$_SESSION['currentUser']);
     $guiObj->rightsCfg = getRightsCfg();
-	$guiObj->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
+	  $guiObj->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
 
     // Create status for all checkboxes and set to unchecked
     foreach($guiObj->rightsCfg as $grantDetails)

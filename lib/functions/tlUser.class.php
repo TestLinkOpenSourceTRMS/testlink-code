@@ -3,15 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @filesource	tlUser.class.php
- * @package 	TestLink
- * @copyright 	2007-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @filesource  tlUser.class.php
+ * @package     TestLink
+ * @copyright   2007-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
- * @internal revisions:
- *	20110410 - franciscom - BUGID 4342 - new methods from Mantisbt
- *							added securityCookie property
- *  20110325 - franciscom - BUGID 4062 - hasRight() caused by bad access to $_SESSION
+ * @internal revisions
  */
  
 /**
@@ -30,23 +27,12 @@ class tlUser extends tlDBObject
 	 */
 	private $object_table = "users";
     
-	/**
-	 * @var string the first name of the user
-	 */
 	public $firstName;
-
-	/**
-	 * @var string the last name of the user
-	 */
 	public $lastName;
-
-	/**
-	 * @var string the email address of the user
-	 */
 	public $emailAddress;
 
 	/**
-	 * @var string the locale of the user (eG de_DE, en_GB)
+	 * @var string the locale of the user (example de_DE, en_GB)
 	 */
 	public $locale;
 
@@ -80,20 +66,8 @@ class tlUser extends tlDBObject
 	 */
 	public $tplanRoles;
 
-	/**
-	 * @var string the login of the user
-	 */
 	public $login;
-
-	/**
-	 * @var string the API Key for the user
-	 */
 	public $userApiKey;
-
-	/**
-	 * @var string the password of the user
-	 * @access protected
-	 */
 	protected $password;
 
 	/**
@@ -127,9 +101,8 @@ class tlUser extends tlDBObject
 	
 	//detail leveles
 	const TLOBJ_O_GET_DETAIL_ROLES = 1;
-
-    const SKIP_CHECK_AT_TESTPROJECT_LEVEL = -1;
-    const SKIP_CHECK_AT_TESTPLAN_LEVEL = -1;
+  const SKIP_CHECK_AT_TESTPROJECT_LEVEL = -1;
+  const SKIP_CHECK_AT_TESTPLAN_LEVEL = -1;
 
 	
 	/**
@@ -241,9 +214,9 @@ class tlUser extends tlDBObject
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
-		$sql = "SELECT id,login,password,cookie_string,first,last,email,role_id,locale, " .
-		         " login AS fullname, active,default_testproject_id, script_key " .
-		         " FROM {$this->object_table}";
+		$sql = " SELECT id,login,password,cookie_string,first,last,email,role_id,locale, " .
+		       " login AS fullname, active,default_testproject_id, script_key " .
+		       " FROM {$this->object_table}";
 		$clauses = null;
 
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
@@ -301,9 +274,9 @@ class tlUser extends tlDBObject
 	 */
 	public function readTestProjectRoles(&$db,$tprojectID = null)
 	{
-		$sql = "SELECT testproject_id,role_id " .
-		         " FROM {$this->tables['user_testproject_roles']} user_testproject_roles " .
-		         " WHERE user_id = {$this->dbID}";
+		$sql = " SELECT testproject_id,role_id " .
+		       " FROM {$this->tables['user_testproject_roles']} user_testproject_roles " .
+		       " WHERE user_id = {$this->dbID}";
 		if ($tprojectID)
 		{
 			$sql .= " AND testproject_id = {$tprojectID}";
@@ -344,13 +317,13 @@ class tlUser extends tlDBObject
 	 */
 	public function readTestPlanRoles(&$db,$tplanID = null)
 	{
-		$sql = "SELECT testplan_id,role_id " . 
-		         " FROM {$this->tables['user_testplan_roles']} user_testplan_roles " .
-		         " WHERE user_id = {$this->dbID}";
+		$sql = " SELECT testplan_id,role_id " . 
+		       " FROM {$this->tables['user_testplan_roles']} user_testplan_roles " .
+		       " WHERE user_id = {$this->dbID}";
 		if ($tplanID)
 		{
 			$sql .= " AND testplan_id = {$tplanID}";
-        }
+    }
         
 		$allRoles = $db->fetchColumnsIntoMap($sql,'testplan_id','role_id');
 		$this->tplanRoles = null;
@@ -390,14 +363,14 @@ class tlUser extends tlDBObject
 		{		
 			if($this->dbID)
 			{
-				$sql = "UPDATE {$this->tables['users']} " .
-			       	   "SET first = '" . $db->prepare_string($this->firstName) . "'" .
-			       	   ", last = '" .  $db->prepare_string($this->lastName)    . "'" .
-			       	   ", email = '" . $db->prepare_string($this->emailAddress)   . "'" .
-				   	   ", locale = ". "'" . $db->prepare_string($this->locale) . "'" . 
-				   	   ", password = ". "'" . $db->prepare_string($this->password) . "'" .
-				   	   ", role_id = ". $db->prepare_string($this->globalRoleID) . 
-				   	   ", active = ". $db->prepare_string($this->isActive);
+				$sql = " UPDATE {$this->tables['users']} " .
+			       	 " SET first = '" . $db->prepare_string($this->firstName) . "'" .
+			       	 " , last = '" .  $db->prepare_string($this->lastName)    . "'" .
+			       	 " , email = '" . $db->prepare_string($this->emailAddress)   . "'" .
+				   	   " , locale = ". "'" . $db->prepare_string($this->locale) . "'" . 
+				   	   " , password = ". "'" . $db->prepare_string($this->password) . "'" .
+				   	   " , role_id = ". $db->prepare_string($this->globalRoleID) . 
+				   	   " , active = ". $db->prepare_string($this->isActive);
 				$sql .= " WHERE id = " . $this->dbID;
 				$result = $db->exec_query($sql);
 			}
@@ -424,34 +397,6 @@ class tlUser extends tlDBObject
 		}
 		return $result;
 	}	
-
-	/** 
-	 * WARNING: DO NOT USE THE FUNCTION - CAUSES DB INCONSISTENCE! 
-	 *  
-	 * @deprecated 1.8.3 
-	 * @see #2407 
-	 **/	
-	public function deleteFromDB(&$db)
-	{
-		$sqlSet = array();
-		$sqlSet[] = "DELETE FROM {$this->table['user_assignments']} WHERE user_id = {$this->dbID}";
-		$sqlSet[] = "DELETE FROM {$this->table['users']}  WHERE id = {$this->dbID}";
-
-	    foreach($sqlSet as $sql)
-	    {
-			$result = $db->exec_query($sql) ? tl::OK : tl::ERROR;
-		    if($result == tl::ERROR) 
-		    {
-		        break;  
-		    }
-		}
-	
-		if ($result == tl::OK)
-		{
-			$result = $this->deleteTestProjectRoles($db);
-		}
-		return $result;
-	}
 
 	/**
 	 * Deletes all testproject related role assignments for a given user
@@ -490,9 +435,10 @@ class tlUser extends tlDBObject
 	 */
 	protected function encryptPassword($pwd)
 	{
-		if (self::isPasswordMgtExternal())
+		if (self::isPasswordMgtExternal()) 
+		{
 			return self::S_PWDMGTEXTERNAL;
-
+    }
 		return md5($pwd);
 	}
 	
@@ -536,10 +482,15 @@ class tlUser extends tlDBObject
 	public function comparePassword($pwd)
 	{
 		if (self::isPasswordMgtExternal())
+		{
 			return self::S_PWDMGTEXTERNAL;
-
+    }
+    
 		if ($this->getPassword($pwd) == $this->encryptPassword($pwd))
+		{
 			return tl::OK;
+		}
+		
 		return self::E_PWDDONTMATCH;		
 	}
 
@@ -580,10 +531,14 @@ class tlUser extends tlDBObject
 		$login = trim($login);
 		
 		if ($login == "" || (tlStringLen($login) > $this->maxLoginLength))
+		{
 			$result = self::E_LOGINLENGTH;
-		else if (!preg_match($this->loginRegExp,$login)) //Only allow a basic set of characters
+		}
+		else if (!preg_match($this->loginRegExp,$login)) 
+		{
+		  //Only allow a basic set of characters
 			$result = self::E_NOTALLOWED;
-
+    }
 		return $result;
 	}
 	
@@ -620,9 +575,9 @@ class tlUser extends tlDBObject
 	 **/
 	protected function getUserNamesWithTestPlanRole(&$db)
 	{
-		$sql = "SELECT DISTINCT id FROM {$this->tables['users']} users," . 
-		         " {$this->tables['user_testplan_roles']} user_testplan_roles " .
-		         " WHERE  users.id = user_testplan_roles.user_id";
+		$sql = " SELECT DISTINCT id FROM {$this->tables['users']} users," . 
+		       " {$this->tables['user_testplan_roles']} user_testplan_roles " .
+		       " WHERE  users.id = user_testplan_roles.user_id";
 		$sql .= " AND user_testplan_roles.role_id = {$this->dbID}";
 		$idSet = $db->fetchColumnsIntoArray($sql,"id");
 		
@@ -631,18 +586,18 @@ class tlUser extends tlDBObject
 
 
 	/**
-     * Get a list of names with a defined project right (for example for combo-box)
-     * used by ajax script getUsersWithRight.php
-     * 
-     * @param integer $db DB Identifier
-     * @param string $rightNick key corresponding with description in rights table
-     * @param integer $tprojectID Identifier of project
-     *
-     * @return array list of user IDs and names
-     * 
-     * @todo fix the case that user has default role with a right but project role without
-     * 		i.e. he should be listed
-     */
+   * Get a list of names with a defined project right (for example for combo-box)
+   * used by ajax script getUsersWithRight.php
+   * 
+   * @param integer $db DB Identifier
+   * @param string $rightNick key corresponding with description in rights table
+   * @param integer $tprojectID Identifier of project
+   *
+   * @return array list of user IDs and names
+   * 
+   * @todo fix the case that user has default role with a right but project role without
+   * 		i.e. he should be listed
+   **/
 	public function getNamesForProjectRight(&$db,$rightNick,$tprojectID = null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -656,39 +611,33 @@ class tlUser extends tlDBObject
 		
 		//get users for default roles
 		$sql = "/* $debugMsg */ SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
-			   " JOIN {$this->tables['role_rights']} a ON a.role_id=u.role_id" .
-			   " JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
-			   " WHERE b.description='{$rightNick}'";
+			     " JOIN {$this->tables['role_rights']} a ON a.role_id=u.role_id" .
+			     " JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
+			     " WHERE b.description='{$rightNick}'";
 		$defaultRoles = $db->fetchRowsIntoMap($sql,'id');
 
 		// get users for project roles
 		$sql = "/* $debugMsg */ SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
-			   " JOIN {$this->tables['user_testproject_roles']} p ON p.user_id=u.id" .
-			   " AND p.testproject_id=" . $tprojectID .
-			   " JOIN {$this->tables['role_rights']} a ON a.role_id=p.role_id" .
-			   " JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
-			   " WHERE b.description='{$rightNick}'";
+			     " JOIN {$this->tables['user_testproject_roles']} p ON p.user_id=u.id" .
+			     " AND p.testproject_id=" . $tprojectID .
+  			   " JOIN {$this->tables['role_rights']} a ON a.role_id=p.role_id" .
+  			   " JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
+  			   " WHERE b.description='{$rightNick}'";
 		$projectRoles = $db->fetchRowsIntoMap($sql,'id');
 		
 		// merge arrays		
 		// the next function is available from php53 but we support php52
 		// $output = array_replace($output1, $output2);
-	    if( !is_null($projectRoles) )
+    if( !is_null($projectRoles) )
+    {
+      foreach($projectRoles as $k => $v) 
 	    {
-	    	foreach($projectRoles as $k => $v) 
-	    	{
-       		    if( !isset($defaultRoles[$k]) ) 
-       		    {
-	    	   	    $defaultRoles[$k] = $v;
-      		    }
-	    	}
+        if( !isset($defaultRoles[$k]) ) 
+       	{
+	    	  $defaultRoles[$k] = $v;
+      	}
 	    }
-
-	    // format for ext-js combo-box (remove associated array)
-	    // foreach($defaultRoles as $k => $v) 
-	    // {
-       	//     $output[] = $v;
-	    // }
+	  }
 		$output = array_values($defaultRoles);   
 		   
 		return $output;
@@ -712,15 +661,13 @@ class tlUser extends tlDBObject
 
 
 	/**
-     * check right on effective role for user, using test project and test plan,
-     * means that check right on effective role.
-     *
-     * @return string|null 'yes' or null
+   * check right on effective role for user, using test project and test plan,
+   * means that check right on effective role.
+   *
+   * @return string|null 'yes' or null
 	 *
 	 * @internal revisions
-	 * 20110325 - franciscom - 	BUGID 4062 - caused by bad access to $_SESSION
-	 *							dammed global coupling	
-     */
+   */
 	function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	{
 		global $g_propRights_global;
@@ -1109,6 +1056,16 @@ class tlUser extends tlDBObject
 	{
 		return $this->securityCookie;
 	}
+
+
+  /**
+ 	 * @deprecated since 1.8.3 
+	 * @see TICKET 2407 
+	 * Needed till good refactoring, to avoid issue due to abstract class
+   */
+	public function deleteFromDB(&$db)
+	{
+  }
 
 }
 ?>

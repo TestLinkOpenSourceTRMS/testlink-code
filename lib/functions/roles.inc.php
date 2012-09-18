@@ -334,7 +334,7 @@ function get_tplan_effective_role(&$db,$tplan_id,$tproject,$user_id = null,$user
 }
 
 
-function getRoleErrorMessage($code)
+function XgetRoleErrorMessage($code)
 {
 	$msg = 'ok';
 	switch($code)
@@ -360,19 +360,5 @@ function getRoleErrorMessage($code)
 			$msg = lang_get('error_role_not_updated');
 	}
 	return $msg;
-}
-
-
-function deleteRole(&$db,$roleID)
-{
-	$userFeedback = '';
-	$role = new tlRole($roleID);
-	$role->readFromDb($db);
-	if ($role->deleteFromDB($db) < tl::OK)
-		$userFeedback = lang_get("error_role_deletion");
-	else
-		logAuditEvent(TLS("audit_role_deleted",$role->getDisplayName()),"DELETE",$roleID,"roles");
-	
-	return $userFeedback;
 }
 ?>

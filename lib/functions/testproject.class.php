@@ -4,12 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource	testproject.class.php
- * @package 	TestLink
- * @author 		franciscom
- * @copyright 	2005-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author      franciscom
+ * @copyright 	2005-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
+ * @since 2.0
+ *
  **/
 
 /** related functions */ 
@@ -51,9 +53,9 @@ class testproject extends tlObjectWithAttachments
 	{
 		$this->db = &$db;
 		$this->tree_manager = new tree($this->db);
-		$this->cfield_mgr=new cfield_mgr($this->db);
+		$this->cfield_mgr = new cfield_mgr($this->db);
 		tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
-        $this->object_table=$this->tables['testprojects'];
+    $this->object_table = $this->tables['testprojects'];
 	}
 
 
@@ -2330,97 +2332,182 @@ private function copy_cfields_assignments($source_id, $target_id)
 }
 
 
-/**
- * 
- *
- */
-private function copy_testplans($source_id,$target_id,$user_id,$mappings)
-{
-	static $tplanMgr;
-	
-	$tplanSet = $this->get_all_testplans($source_id);
-	if( !is_null($tplanSet) )
-	{
-		$keySet = array_keys($tplanSet);
-		if( is_null($tplanMgr) )
-		{
-			$tplanMgr = new testplan($this->db);
-		}
-		
-		foreach($keySet as $itemID)
-		{
-			$new_id = $tplanMgr->create($tplanSet[$itemID]['name'],$tplanSet[$itemID]['notes'],
-			                            $target_id,$tplanSet[$itemID]['active'],$tplanSet[$itemID]['is_public']);
-
-			if( $new_id > 0 )
-			{
-				$tplanMgr->copy_as($itemID,$new_id,null,$target_id,$user_id,null,$mappings);
-			}                       
-		}
-		
-	}
-}
-
-
-/**
- * 
- *
- */
-private function copy_requirements($source_id,$target_id,$user_id)
-{
-	$mappings = null;
-	// need to get subtree and create a new one
-	$filters = array();
-	$filters['exclude_node_types'] = array('testplan' => 'exclude','testcase' => 'exclude','testsuite' => 'exclude',
-	                                       'requirement' => 'exclude', 'requirement_spec_revision' => 'exclude');
-	                 
-	$elements = $this->tree_manager->get_children($source_id,$filters['exclude_node_types']);
-	if( !is_null($elements) )
-	{
-		$mappings = array();
-		$reqSpecMgr = new requirement_spec_mgr($this->db);
-		$options = array('copy_also' => array('testcase_assignments' => false) );
-		foreach($elements as $piece)
-		{
-			$op = $reqSpecMgr->copy_to($piece['id'],$target_id,$target_id,$user_id,$options);
-			$mappings += $op['mappings'];
-		}
-	}
-	return $mappings;
-}
+  /**
+   * 
+   *
+   */
+  private function copy_testplans($source_id,$target_id,$user_id,$mappings)
+  {
+  	static $tplanMgr;
+  	
+  	$tplanSet = $this->get_all_testplans($source_id);
+  	if( !is_null($tplanSet) )
+  	{
+  		$keySet = array_keys($tplanSet);
+  		if( is_null($tplanMgr) )
+  		{
+  			$tplanMgr = new testplan($this->db);
+  		}
+  		
+  		foreach($keySet as $itemID)
+  		{
+  			$new_id = $tplanMgr->create($tplanSet[$itemID]['name'],$tplanSet[$itemID]['notes'],
+  			                            $target_id,$tplanSet[$itemID]['active'],$tplanSet[$itemID]['is_public']);
+  
+  			if( $new_id > 0 )
+  			{
+  				$tplanMgr->copy_as($itemID,$new_id,null,$target_id,$user_id,null,$mappings);
+  			}                       
+  		}
+  		
+  	}
+  }
 
 
-function getTotalCount()
-{
-	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	// FYI - AS itemQty -> postgres returns 'itemqty' as key -> lower case
-	$sql = 	"/* $debugMsg */ SELECT count(0) AS item_qty FROM {$this->object_table} ";
-	$rs = $this->db->fetchFirstRow($sql);
-	return $rs['item_qty'];
-}
+  /**
+   * 
+   *
+   */
+  private function copy_requirements($source_id,$target_id,$user_id)
+  {
+  	$mappings = null;
+  	// need to get subtree and create a new one
+  	$filters = array();
+  	$filters['exclude_node_types'] = array('testplan' => 'exclude','testcase' => 'exclude','testsuite' => 'exclude',
+  	                                       'requirement' => 'exclude', 'requirement_spec_revision' => 'exclude');
+  	                 
+  	$elements = $this->tree_manager->get_children($source_id,$filters['exclude_node_types']);
+  	if( !is_null($elements) )
+  	{
+  		$mappings = array();
+  		$reqSpecMgr = new requirement_spec_mgr($this->db);
+  		$options = array('copy_also' => array('testcase_assignments' => false) );
+  		foreach($elements as $piece)
+  		{
+  			$op = $reqSpecMgr->copy_to($piece['id'],$target_id,$target_id,$user_id,$options);
+  			$mappings += $op['mappings'];
+  		}
+  	}
+  	return $mappings;
+  }
 
 
-/**
- * getUserChoice()
- * used to recover user's choice while using different features, than has to be saved
- * on $_SESSION. 
- *
- */
-static function getUserChoice($id,$accessKeys)
-{
-	$ret = 0;
-	
-	if( isset($_SESSION['env_for_tproject'][$id]) )
-	{
-		$ret = $_SESSION['env_for_tproject'][$id];
-		foreach($accessKeys as $key)
-		{
-			$ret = $ret[$key];
-		}
-	}
-	
-	return $ret;
-}
+  function getTotalCount()
+  {
+  	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  	// FYI - AS itemQty -> postgres returns 'itemqty' as key -> lower case
+  	$sql = 	"/* $debugMsg */ SELECT count(0) AS item_qty FROM {$this->object_table} ";
+  	$rs = $this->db->fetchFirstRow($sql);
+  	return $rs['item_qty'];
+  }
+
+
+  /**
+   * getUserChoice()
+   * used to recover user's choice while using different features, than has to be saved
+   * on $_SESSION. 
+   *
+   */
+  static function getUserChoice($id,$accessKeys)
+  {
+  	$ret = 0;
+  	
+  	if( isset($_SESSION['env_for_tproject'][$id]) )
+  	{
+  		$ret = $_SESSION['env_for_tproject'][$id];
+  		foreach($accessKeys as $key)
+  		{
+  			$ret = $ret[$key];
+  		}
+  	}
+  	
+  	return $ret;
+  }
+
+ 
+  function isPublic($id)
+  {
+	  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	  $sql = "/* $debugMsg */ " . 
+	         " SELECT is_public FROM {$this->object_table} WHERE id = " . intval($id);
+    
+    $rs = $this->db->fetchFirstRowSingleColumn($sql,'is_public');
+    return $rs;
+  }
+
+  /**
+   * Get info about user(s) role at test project level,
+   * with indication about the nature of role: inherited or assigned.
+   * 
+   * To get a user role we consider a 3 layer model:
+   *          layer 1 - user           <--- uplayer
+   *          layer 2 - test project   <--- in this fuction we are interested in this level.
+   *          layer 3 - test plan
+   * 
+   * args : $tproject_id
+   *        [$user_id]
+   * 
+   * @return array map with effetive_role in context ($tproject_id)
+   *          key: user_id 
+   *          value: map with keys:
+   *                 login                (from users table - useful for debug)
+   *                 user_role_id         (from users table - useful for debug)
+   *                 uplayer_role_id      (always = user_role_id)
+   *                 uplayer_is_inherited
+   *                 effective_role_id  user role for test project
+   *                 is_inherited
+   */
+  function getEffectiveRole($id,$isPublic=null,$userID=null,$users=null)
+  {
+    if(is_null($isPublic))
+    {
+      $isPublic = $this->isPublic($id);
+    }    
+
+  	$effective_role = array();
+  	if (!is_null($userID))
+  	{
+  		$users = tlUser::getByIDs($this->db,(array)$userID);
+  	}
+  	else if (is_null($users))
+  	{
+  		$users = tlUser::getAll($this->db);
+  	}
+  
+  	if ($users)
+  	{
+  		foreach($users as $id => $user)
+  		{
+  			// manage admin exception
+  			$isInherited = 1;
+  			$effectiveRoleID = $user->globalRoleID;
+  			$effectiveRole = $user->globalRole;
+  			if( ($user->globalRoleID != TL_ROLES_ADMIN) && !isPublic)
+  			{
+  				$isInherited = $isPublic;
+  				$effectiveRoleID = TL_ROLES_NO_RIGHTS;
+  				$effectiveRole = '<no rights>';
+  			}
+  			
+  			if(isset($user->tprojectRoles[$id]))
+  			{
+  				$isInherited = 0;
+  				$effectiveRoleID = $user->tprojectRoles[$id]->dbID;
+  				$effectiveRole = $user->tprojectRoles[$id];
+  			}  
+  
+  			$effective_role[$id] = array('login' => $user->login,
+  										               'user' => $user,
+  										               'user_role_id' => $user->globalRoleID,
+  										               'uplayer_role_id' => $user->globalRoleID,
+  										               'uplayer_is_inherited' => 0,
+  										               'effective_role_id' => $effectiveRoleID,
+  										               'effective_role' => $effectiveRole,
+  										               'is_inherited' => $isInherited);
+  		}  
+  	}
+  	return $effective_role;
+  }
 
 } // end class
 ?>

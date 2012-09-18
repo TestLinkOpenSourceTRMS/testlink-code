@@ -20,6 +20,7 @@ $gui = initializeGui($db,$args);
 
 $doDelete = false;
 $role = null;
+$updateGui = false;
 switch ($args->doAction)
 {
 	case 'delete':
@@ -38,7 +39,10 @@ switch ($args->doAction)
 
 if($doDelete)
 {
-	$gui->userFeedback = deleteRole($db,$args->roleid);
+  $role = new tlRole($args->roleid);
+	$userFeedback = $role->delete($db);
+  $gui = initializeGui($db,$args);
+	$gui->userFeedback = $userFeedback;
 	checkSessionValid($db); 	//refresh the current user
 }
 
@@ -53,15 +57,14 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args()
 {
 	$iParams = array("roleid" => array(tlInputParameter::INT_N),
-					 "tproject_id" => array(tlInputParameter::INT_N),
-					 "doAction" => array(tlInputParameter::STRING_N,0,100));
+					         "tproject_id" => array(tlInputParameter::INT_N),
+					         "doAction" => array(tlInputParameter::STRING_N,0,100));
 
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
     
 	$args->currentUser = $_SESSION['currentUser'];
-	
-    return $args;
+  return $args;
 }
 
 

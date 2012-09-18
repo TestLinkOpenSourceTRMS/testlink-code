@@ -7,33 +7,15 @@
  * Builds, Custom fields, etc
  *
  * @filesource	testplan.class.php
- * @package 	TestLink
- * @author 		franciscom
- * @copyright 	2007-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author 		  franciscom
+ * @copyright 	2007-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
  *
  * @internal revisions
- *  20110818 - Julian - Ticket 4696 - Create Test Plan from existing Test Plan does not preserve linked 
- *                      Test Case Versions (keep currently linked version is checked)
- *  20110505 - franciscom - get_builds() - interface changes
- *  20110415 - Julian - BUGID 4418 - Clean up priority usage within Testlink
- *	20110328 - franciscom - filter_cf_selection() fixed issue regarding simple types
- *	20110326 - franciscom - filter_cf_selection() make it safer
- *	20110322 - franciscom - BUGID 4343: Reports Failed Test Cases / ... -> Build is not shown	
- *							get_linked_tcversions() - error while refactoring.
+ * @since 2.0
  *
- *	20110317 - franciscom - BUGID 4328: Metrics dashboard - only active builds has to be used
- *							get_linked_tcversions() - new option forced_exec_status
- *													  build_id now can be an array of id
- *
- *	20110316 - franciscom - BUGID 4328: Metrics dashboard - only active builds has to be used
- *							get_linked_tcversions()
- *
- *	20110121 - franciscom - BUGID 4184 - MSSQL Ambiguous column name platform_id
- *  20110115 - franciscom - BUGID 4171 - changes on methods related to estimated execution time
- *  20110112 - franciscom - BUGID 4171 - changes on methods related to estimated execution time
- *  20110104 - asimon - BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
  **/
 
 /** related functionality */
@@ -4314,9 +4296,93 @@ class testplan extends tlObjectWithAttachments
 		if( isset($container['id']) )
 		{
 			$xmlTC .= "</testsuite>"; 
-        }
+    }
 		return $xmlTC;
 	}
+
+
+
+  function isPublic($id)
+  {
+	  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	  $sql = "/* $debugMsg */ " . 
+	         " SELECT is_public FROM {$this->object_table} WHERE id = " . intval($id);
+    
+    $rs = $this->db->fetchFirstRowSingleColumn($sql,'is_public');
+    return $rs;
+  }
+
+
+  /**
+   * Get info about user(s) role at test plan level,
+   * with indication about the nature of role: inherited or assigned.
+   * 
+   * To get a user role we consider a 3 layer model:
+   *          layer 1 - user           <--- uplayer
+   *          layer 2 - test project   <--- in this fuction we are interested in this level.
+   *          layer 3 - test plan
+    
+    args : $tplan_id
+           $tproject_id
+           [$user_id]
+    
+   * @return array map with effetive_role in context ($tplan_id)
+             key: user_id 
+             value: map with keys:
+                    login                (from users table - useful for debug)
+                    user_role_id         (from users table - useful for debug)
+                    uplayer_role_id      user role for test project
+                    uplayer_is_inherited 1 -> uplayer role is inherited 
+                                         0 -> uplayer role is written in table
+                    effective_role_id    user role for test plan
+                    is_inherited       
+                    
+    @internal revisions
+   */
+  function getEffectiveRole($id,$tprojectID,$isPublic=null,$userID=null,$users=null)
+  {
+ 	
+ 	  static $tprojecMgr;
+
+    if(is_null($isPublic))
+    {
+      $isPublic = $this->isPublic($id);
+    }    
+
+ 	  if(is_null($tprojecMgr))
+ 	  {
+ 	    $tprojectMgr = new testproject($this->db);
+ 	  }
+ 	  $isPublicTestProject = $tprojecMgr->isPublic($tprojectID);
+  	$effective_role = $tprojecMgr->getEffectiveRole($tprojectID,$isPublicTestProject,$userID,$users);
+
+  	foreach($effective_role as $userKey => $row)
+  	{
+  		$isInherited = 1;
+  		$effective_role[$userKey]['uplayer_role_id'] = $effective_role[$userKey]['effective_role_id'];
+  		$effective_role[$userKey]['uplayer_is_inherited'] = $effective_role[$userKey]['is_inherited'];
+  		
+  		// Manage administrator exception
+  		if( ($row['user']->globalRoleID != TL_ROLES_ADMIN) && !$isPublic)
+  		{
+  				$isInherited = $isPublicTestProject;
+  				$effectiveRoleID = TL_ROLES_NO_RIGHTS;
+  				$effectiveRole = '<no rights>';
+  		}
+  		// ---------------------------------------------------------------------------
+  		
+  		if(isset($row['user']->tplanRoles[$tplan_id]))
+  		{
+  			$isInherited = 0;
+  			$effective_role[$userKey]['effective_role_id'] = $row['user']->tplanRoles[$id]->dbID;  
+  			$effective_role[$userKey]['effective_role'] = $row['user']->tplanRoles[$id];
+  		}
+  
+  		$effective_role[$userKey]['is_inherited'] = $isInherited;
+  	}
+  	return $effective_role;
+  }
+
 
 } // end class testplan
 

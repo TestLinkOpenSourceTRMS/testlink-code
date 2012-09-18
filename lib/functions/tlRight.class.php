@@ -30,7 +30,9 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 	{
 		$this->name = null;
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
+		{
 			$this->dbID = null;
+		}	
 	}
 	
 	/** 
@@ -65,7 +67,6 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 	public function copyFromCache($right)
 	{
 		$this->name = $right->name;
-		
 		return tl::OK;
 	}
 	/** 
@@ -79,18 +80,23 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		if ($this->readFromCache() >= tl::OK)
+		{
 			return tl::OK;
-
+    }
+		
 		$readSucceeded = tl::ERROR;	
 		$this->_clean($options);
 		$query = $this->getReadFromDBQuery($this->dbID,$options);
 		$info = $db->fetchFirstRow($query);
 		if ($info)
+		{
 			$readSucceeded = $this->readFromDBRow($info);
+		}
 		
 		if ($readSucceeded >= tl::OK)
+		{
 			$this->addToCache();	
-			
+		}	
 		return $info ? tl::OK : tl::ERROR;
 	}
 
@@ -101,7 +107,6 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 	public function readFromDBRow($row)
 	{
 		$this->initialize($row['id'],$row['description']);
-		
 		return tl::OK;
 	}
 	
@@ -119,13 +124,19 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
 		{
 			if (!is_array($ids))
+			{
 				$clauses[] = "id = {$ids}";
-			else		
+			}
+			else
+			{		
 				$clauses[] = "id IN (".implode(",",$ids).")";
+			}	
 		}
+		
 		if ($clauses)
+		{
 			$query .= " WHERE " . implode(" AND ",$clauses);
-			
+		}	
 		return $query;	
 	}
 	
@@ -166,8 +177,9 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 		$tables = tlObject::getDBTables('rights');
 		$sql = " SELECT id FROM {$tables['rights']} ";
 		if (!is_null($whereClause))
+		{
 			$sql .= ' '.$whereClause;
-	
+	  }
 		$sql .= is_null($orderBy) ? " ORDER BY id ASC " : $orderBy;
 		return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
 	}
@@ -177,9 +189,6 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 	 **/    
 	public function writeToDB(&$db)
 	{
-		//@TODO schlundus, now i removed the potentially modified object from the cache
-		//another optimization could be read the new contents if storing was successfully into the
-		//cache
 		$this->removeFromCache();
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
@@ -192,5 +201,32 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 		$this->removeFromCache();
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
+	
+	
+	static function getRightsCfg()
+	{
+    $cfg = new stdClass();
+    $l18nCfg = array('desc_testplan_execute' => null,'desc_testplan_create_build' => null,
+							       'desc_testplan_metrics' => null,'desc_testplan_planning' => null,
+							       'desc_user_role_assignment' => null,'desc_mgt_view_tc' => null,
+								     'desc_mgt_modify_tc'  => null,'mgt_testplan_create' => null);
+
+    $l18n = init_labels($l18nCfg);
+    
+	  $cfg->tplan_mgmt = array("testplan_execute" => $l18n['desc_testplan_execute'],
+                             "testplan_create_build" => $l18n['desc_testplan_create_build'],
+							               "testplan_metrics" => $l18n['desc_testplan_metrics'],
+							               "testplan_planning" => $l18n['desc_testplan_planning'],
+							               "testplan_user_role_assignment" => $l18n['desc_user_role_assignment']);
+	
+	
+		$cfg->tcase_mgmt = array("mgt_view_tc" => $l18n['desc_mgt_view_tc'],
+								             "mgt_modify_tc" => $l18n['desc_mgt_modify_tc'],
+								             "mgt_testplan_create" => $l18n['mgt_testplan_create']);
+
+	
+	  return $cfg;
+	}
+	
 }
 ?>

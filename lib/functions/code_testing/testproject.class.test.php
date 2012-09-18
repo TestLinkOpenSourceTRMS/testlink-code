@@ -3,16 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: testproject.class.test.php,v $
- *
- * @version $Revision: 1.6 $
- * @modified $Date: 2010/02/04 10:51:36 $ by $Author: franciscom $
+ * @filesource testproject.class.test.php
  * @author Francisco Mancardi
  *
  * 
  *
- * rev :
-*/
+ * @internal revisions
+ *
+ */
 
 require_once('../../../config.inc.php');
 require_once('common.php');
@@ -21,6 +19,9 @@ testlinkInitPage($db);
 echo "<pre> testproject - constructor - testproject(&\$db)";echo "</pre>";
 $tproject_mgr=new testproject($db);
 new dBug($tproject_mgr);
+
+echo '<br>is public?' . $tproject_mgr->isPublic(3);
+echo '<br>is public?' . $tproject_mgr->isPublic(1);
 
 // create()
 // function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)

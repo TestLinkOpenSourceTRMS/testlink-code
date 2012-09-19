@@ -3,9 +3,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	issueTrackerEdit.tpl
 
 @internal revisions
-@since 1.9.4
-20120820 - franciscom - TICKET 5156: Display test project linked to issue tracker, when editing
-20120311 - franciscom - TICKET 4904: integrate with ITS on test project basis
 *}
 {assign var="url_args" value="lib/issuetrackers/issueTrackerEdit.php"}
 {assign var="edit_url" value="$basehref$url_args"}
@@ -16,14 +13,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              issuetracker_show_cfg_example,issuetracker_cfg_example,used_on_testproject'}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
-{include file="inc_del_onclick.tpl"}
+{include file="inc_action_onclick.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
 var warning_empty_issuetracker_name = "{$labels.warning_empty_issuetracker_name|escape:'javascript'}";
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
-{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.name.value))
@@ -54,14 +48,11 @@ function displayITSCfgExample(oid,displayOID)
 	});
 	
 }
-
-
 </script>
-{/literal}
 </head>
 
 <body>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{$cfg_section=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$gui->main_descr|escape}</h1>

@@ -3,38 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
- * @package 	TestLink
- * @author 		Francisco Mancardi
- * @author 		Mantis Team
- * @copyright 	2006 TestLink community 
- * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
- * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.59 2011/01/15 20:01:34 franciscom Exp $
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author 		  Francisco Mancardi
+ * @author 		  Mantis Team
+ * @copyright   2006 TestLink community 
+ * @copyright   2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
+ * 				      (Parts of code has been adapted from Mantis BT)
+ * @filesource  database.class.php,v 1.59 2011/01/15 20:01:34 franciscom Exp $
+ * @link 		    http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
  *
- * 20110115 - franciscom - new method db_null_timestamp()
- * 20101212 - franciscom - BUGID 4093: MSSQL - Problems on fetch_array()
- * 20100111 - franciscon - BUGID - display debug_print_backtrace() when query fails
- * 20090720 - franciscom - fetchRowsIntoMap() - added some error management code 
- * 20090202 - franciscom - BUGID 1318 - fetchFirstRowSingleColumn() added new control
- * 20081129 - franciscom - Added CUMULATIVE constant
- * 20081116 - franciscom - fetchColumnsIntoMap() added cumulative argument
- *
- * 20080722 - franciscom -  trying to solve memory usage problems, have add option
- *                          to enable/disable query execution log.
- *                          Setted to DISABLE by default.
- *
- * 20080722 - franciscom -  problems with MSSQL and ADODB_FETCH_ASSOC
- * 20080315 - franciscom -  due to problems with PostGres with $ADODB_COUNTRECS=FALSE;
- *                          return to default mode ($ADODB_COUNTRECS=TRUE;)
- *
- * 20080204 - franciscom -  setting ADODB_FETCH_ASSOC as default fetch mode
- * 20060708 - franciscom -  changed Connect() to NConnect(), to avoid
- *                          problems due to connection reuse, when
- *                          you wanto to connect to more than one database at once
- *                          See ADODB manuals
  */
  
 /** 
@@ -121,7 +100,7 @@ class database
 	
 	
 	/** Make a connection to the database */
-	# 20060708 - franciscom -  changed Connect() to NConnect() see ADODB Manuals
+	# changed Connect() to NConnect() see ADODB Manuals
 	function connect( $p_dsn, $p_hostname = null, $p_username = null, 
 	                          $p_password = null, $p_database_name = null ) 
 	{
@@ -234,7 +213,7 @@ class database
 	}
 
 
-    // 20080315 - franciscom - Got new code from Mantis, that manages FETCH_MODE_ASSOC
+  // Got new code from Mantis, that manages FETCH_MODE_ASSOC
 	function db_result( $p_result, $p_index1=0, $p_index2=0 ) {
 		if ( $p_result && ( $this->num_rows( $p_result ) > 0 ) ) 
 		{
@@ -353,7 +332,6 @@ class database
 
 
 	# prepare a string before DB insertion
-	# 20051226 - fm
 	function prepare_string( $p_string )
 	{
 		if (is_null($p_string))

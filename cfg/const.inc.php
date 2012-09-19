@@ -7,10 +7,10 @@
  * The script is included via config.inc.php
  * 
  * @filesource	const.inc.php
- * @package 	TestLink
- * @author 		Martin Havlat
- * @copyright 	2007-2009, TestLink community 
- * @see 		config.inc.php
+ * @package 	  TestLink
+ * @author 		  Martin Havlat
+ * @copyright 	2007-2012, TestLink community 
+ * @see 		    config.inc.php
  *
  * @internal revisions
  * No revisions logged here but each parameter must be described!
@@ -583,29 +583,22 @@ define( 'ERROR_LDAP_BIND_FAILED',				1404 );
 /* [Priority, Urgency, Importance] */
 
 /** @var array importance levels */
-$tlCfg->importance_levels = array( 
-	HIGH => 3,
-	MEDIUM => 2,
-	LOW => 1
-);
+$tlCfg->importance_levels = array(HIGH => 3,MEDIUM => 2,LOW => 1);
+
+$tlCfg->importance['verbose_code'] = array('high' => 3, 'medium' => 2, 'low' => 1);
+$tlCfg->importance['verbose_label'] = array('high' => 'importance_high', 
+                                            'medium' => 'importance_medium', 'low' => 'importance_low');
+
+$tlCfg->urgency['verbose_code'] = array('high' => 3, 'medium' => 2, 'low' => 1);
+$tlCfg->urgency['verbose_label'] = array('high' => 'urgency_high', 
+                                         'medium' => 'urgency_medium', 'low' => 'urgency_low');
 
 /** @var integer Default Test case Importance offered in GUI */
-$tlCfg->testcase_importance_default = MEDIUM;
+$tlCfg->testcase_importance_default = $tlCfg->importance['verbose_code']['medium'];
 
 /** @var integer Default Test case Urgency offered in GUI */
-$tlCfg->testcase_urgency_default = MEDIUM;
+$tlCfg->testcase_urgency_default = $tlCfg->urgency['verbose_code']['medium'];
 
-/** 
- * @var array Used to get localized string to show to users
- * key: numeric code
- * value: id to use with lang_get() to get the string, from strings.txt (or custom_strings.txt)
- * @since 1.8 
- */
-$tlCfg->urgency['code_label'] = array(
-	HIGH => 'urgency_high',
-	MEDIUM => 'urgency_medium',
-	LOW => 'urgency_low'
-);
 
 
 // --------------------------------------------------------------------------------------

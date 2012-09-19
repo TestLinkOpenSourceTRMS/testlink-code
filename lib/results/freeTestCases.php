@@ -4,7 +4,7 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource	freeTestCases.php
- * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
+ * @author 		  Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list FREE test cases, i.e. not assigned to a test plan.
  * 
@@ -37,13 +37,13 @@ $gui->path_info = null;
 $gui->tableSet = null;
 if(!is_null($gui->freeTestCases['items']))
 {
-    if($gui->freeTestCases['allfree'])
-    { 
-        // has no sense display all test cases => display just message.
-        $msg_key = 'all_testcases_are_free';
-  	}   
-  	else
-  	{
+  if($gui->freeTestCases['allfree'])
+  { 
+    // has no sense display all test cases => display just message.
+    $msg_key = 'all_testcases_are_free';
+  }   
+  else
+  {
         $msg_key = '';    
         $tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id) . $tcase_cfg->glue_character;
         $tcaseSet = array_keys($gui->freeTestCases['items']);
@@ -51,12 +51,20 @@ if(!is_null($gui->freeTestCases['items']))
         $tsuites = $tproject_mgr->tree_manager->get_full_path_verbose($tcaseSet,$options);
         $titleSeperator = config_get('gui_title_separator_1');
   	    
-		$columns = getColumnsDefinition($priorityMgmtEnabled);
+		  $columns = getColumnsDefinition($priorityMgmtEnabled);
 	
 		// Extract the relevant data and build a matrix
 		$matrixData = array();
-		
-		foreach($gui->freeTestCases['items'] as $tcases) {
+		  
+		$impCfg = config_get('importance');
+		$impCodeVerbose = array_flip($impCfg['verbose_code']);
+    foreach($impCfg['verbose_label'] as $verbose => $lblkey)
+    {
+      $impCodeLabel[$impCfg['verbose_code'][$verbose]] = lang_get($lblkey);
+    }		 
+
+		foreach($gui->freeTestCases['items'] as $tcases) 
+		{
 			$rowData = array();
 			
 			$rowData[] = strip_tags($tsuites[$tcases['id']]);
@@ -71,21 +79,11 @@ if(!is_null($gui->freeTestCases['items']))
 			
 			// only add importance column if 
 			if($priorityMgmtEnabled)
-			{
-				switch ($tcases['importance']) 
-				{
-					case $importance_levels[LOW]:
-						$rowData[] = "<!-- " . LOW . " -->" . lang_get('low_importance');
-						break;
-			
-					case $importance_levels[MEDIUM]:
-						$rowData[] = "<!-- " . MEDIUM . " -->" . lang_get('medium_importance');
-						break;
-			
-					case $importance_levels[HIGH]:
-						$rowData[] = "<!-- " . HIGH . " -->" . lang_get('high_importance');
-						break;
-				}
+			{                              
+			  if( isset($impCodeVerbose[$tcases['importance']]) )
+			  {
+						$rowData[] = "<!-- " . $tcases['importance'] . " -->" . $impCodeLabel[$tcases['importance']];
+			  }
 			}
 			
 			$matrixData[] = $rowData;

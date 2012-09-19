@@ -6,20 +6,16 @@
  * This file handles the initial authentication for login and creates all user session variables.
  *
  * @filesource 	doAuthorize.php
- * @package 	TestLink
- * @copyright 	2003-2011, TestLink community 
- * @link 		http://www.teamst.org/
+ * @package     TestLink
+ * @copyright   2003-2012, TestLink community 
+ * @link 		    http://www.teamst.org/
  *
  * @todo Setting up cookies so that the user can automatically login next time
  *
- * @internal revisions:
- * 20110410 - franciscom - BUGID 4342
- * 20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
- * 20100202 - franciscom - refactoring of doAuthorize (BUGID 0003129: After login failure blank page is displayed)
+ * @internal revisions
  *
  */
 
-/** TBD */ 
 require_once("users.inc.php");
 require_once("roles.inc.php");
 

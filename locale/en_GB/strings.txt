@@ -51,6 +51,7 @@ $TLS_actions = "Actions";
 $TLS_asc = "Ascending";
 $TLS_any = "Any";
 $TLS_all = "All";
+$TLS_alt_delete = "delete";
 $TLS_attribute = "Attribute";
 $TLS_attributes = "Attributes";
 $TLS_custom_fields = "Custom Fields";
@@ -144,6 +145,8 @@ $TLS_timestamp	= "Timestamp";
 $TLS_timestamp_lastchange	= "Last Change";
 $TLS_title = "Title";
 $TLS_warning = "Warning";
+$TLS_warning_delete = "You are going to delete: %s <br /><br /> Are you sure?";
+
 $TLS_max_size_file_msg = "Max. allowed file size:  %s KB";
 $TLS_due_since = "Assigned Since (days)";
 $TLS_parent_child='is Parent or is Child';

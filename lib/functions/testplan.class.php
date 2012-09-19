@@ -16,6 +16,7 @@
  * @internal revisions
  * 
  *  @since 1.9.4
+ *  20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
  *  20120903 - franciscom - TICKET 5196: Tree shows wrong color if testcase has multiple executions
  *  20120829 - franciscom - TICKET 5182: Add/Remove Test Cases -> Trying to assign new platform to executed test cases
  *  20120812 - kinow - TICKET 3987 - Added methods to copy attachments when copying a test plan
@@ -4106,7 +4107,7 @@ class testplan extends tlObjectWithAttachments
 	 *
 	 * @internal revisions
 	 * @since 1.9.4
-	 *
+	 * 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
 	 */
 	function getHitsStatusSetFullOnPlatform($id,$platformID,$statusSet,$buildSet=null) 
 	{
@@ -4121,8 +4122,12 @@ class testplan extends tlObjectWithAttachments
 		// if I've requested (Passed or Blocked) on ALL BUILDS
 		// Have 2 results for build number.
 		//
-		$countTarget = intval($buildsCfg['count']) * count($dummy);
-		
+        // That logic is wrong when filtering for the SAME STATUS on ALL builds.
+        // Maybe copy/paste-error on refactoring? 
+        // Example: With 3 builds and filtering for FAILED or BLOCKED on ALL builds
+        // we have to get 3 hits for each test case to be shown, not six hits.
+        //$countTarget = intval($buildsCfg['count']) * count($dummy);
+        $countTarget = intval($buildsCfg['count']);
 
 		$sql = 	" /* $debugMsg */ " .
 				" /* Count() to be used on HAVING */ " .
@@ -4349,7 +4354,7 @@ class testplan extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		return $this->helperGetHitsSameStatusOnPlatform('full',$id,$platformID,$statusSet,$buildSet);
-	} 
+	}
 
 
 
@@ -4362,6 +4367,9 @@ class testplan extends tlObjectWithAttachments
 	 * ON LAST EXECUTION ON ALL builds on buils set (full) , for a platform
 	 *
 	 * If build set is NULL => ON LAST EXECUTION ON ALL ACTIVE builds (full), for a platform
+     * 
+     * @internal revisions:
+     * 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
 	 */
 	function getHitsSameStatusFullALOP($id,$statusSet,$buildSet=null)
 	{
@@ -4370,53 +4378,113 @@ class testplan extends tlObjectWithAttachments
 		list($safe_id,$buildsCfg,$sqlLEX) = $this->helperGetHits($id,null,$buildSet,
 																 array('ignorePlatform' => true));
 
-		$dummy = (array)$statusSet;
-		$statusInClause = implode("','",$dummy);
+        // 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
+        // The filtering for "not run" status was simply not implemented for the case 
+        // of not using platforms. Maybe that part was forgotten when refactoring the filters.
+        // I adopted logic from helperGetHitsSameStatusOnPlatform() to get this working.
+        $flippedStatusSet = array_flip($statusSet);  // (code => idx)
+        $get = array('notRun' => isset($flippedStatusSet[$this->notRunStatusCode]), 'otherStatus' => false);
+        $hits = array('notRun' => array(), 'otherStatus' => array());
 
-		// ATTENTION:
-		// if I've requested (Passed or Blocked) on ALL BUILDS
-		// Have 2 results for build number.
-		//
-		$countTarget = intval($buildsCfg['count']) * count($dummy);
-		$sql = 	" /* $debugMsg */ " .
-				" /* Count() to be used on HAVING - ALOP */ " .
-				" SELECT COUNT(0) AS COUNTER ,tcase_id " .
-				" FROM ( " .
-				" SELECT DISTINCT NHTCV.parent_id AS tcase_id, E.build_id " .
-				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+        if($get['notRun'])
+        {
+            $notRunSQL = " /* $debugMsg */ " .
+                " /* COUNT() is needed as parameter for HAVING clause */ " .
+                " SELECT COUNT(0) AS COUNTER, NHTCV.parent_id AS tcase_id" .
+                " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+                " JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id " .
+                $buildsCfg['statusClause'] .
 
-				" JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id " .
-				$buildsCfg['statusClause'] .
+                " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON " .
+                " NHTCV.id = TPTCV.tcversion_id " .
 
-				" /* Get Test Case ID */ " .
-				" JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCV.tcversion_id " .
+                " LEFT OUTER JOIN {$this->tables['executions']} E ON " .
+                " E.testplan_id = TPTCV.testplan_id " .
+                " AND E.build_id = B.id " .
+                " AND E.tcversion_id = TPTCV.tcversion_id " .
 
-				" /* Get Latest Execution by BUILD IGNORE PLATFORM  */ " .
-				" JOIN ({$sqlLEX}) AS LEX " .
-				" ON  LEX.testplan_id = TPTCV.testplan_id " .
-				" AND LEX.build_id = B.id " .
-				" AND LEX.tcversion_id = TPTCV.tcversion_id " .
+                " WHERE TPTCV.testplan_id = " . $safe_id['tplan']  .
+                " AND E.status IS NULL " .
+                " GROUP BY tcase_id " .
+                " HAVING COUNTER = " . intval($buildsCfg['count']) ;
 
-				" /* Get STATUS INFO From Executions */ " .
-				" JOIN {$this->tables['executions']} E " .
-				" ON  E.id = LEX.id " .
-				" AND E.tcversion_id = LEX.tcversion_id " .
-				" AND E.testplan_id = LEX.testplan_id " .
-				" AND E.build_id = LEX.build_id " .
-				
-				" WHERE TPTCV.testplan_id = " . $safe_id['tplan'] . 
-				" AND E.build_id IN ({$buildsCfg['inClause']}) " .
-				" AND E.status IN ('{$statusInClause}')" .
-				" ) SQX " .
-				" GROUP BY tcase_id " .
-				" HAVING COUNTER = " . $countTarget ; 
+            $hits['notRun'] = $this->db->fetchRowsIntoMap($notRunSQL,'tcase_id');
 
-		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-		return $recordset;
+            unset($statusSet[$flippedStatusSet[$this->notRunStatusCode]]);
+        }
+        
+        $get['otherStatus'] = count($statusSet) > 0;
+        if($get['otherStatus'])
+        {
+            $statusInClause = implode("','",$statusSet);
+            
+            // ATTENTION:
+            // if I've requested (Passed or Blocked) on ALL BUILDS
+            // Have 2 results for build number.
 
+            // That logic is wrong when filtering for the SAME STATUS on ALL builds.
+            // Maybe copy/paste-error on refactoring? 
+            // Example: With 3 builds and filtering for FAILED or BLOCKED on ALL builds
+            // we have to get 3 hits for each test case to be shown, not six hits.
+            //$countTarget = intval($buildsCfg['count']) * count($statusSet);
+            $countTarget = intval($buildsCfg['count']);
+            
+            $otherStatusSQL = 	" /* $debugMsg */ " .
+                    " /* Count() to be used on HAVING - ALOP */ " .
+                    " SELECT COUNT(0) AS COUNTER ,tcase_id " .
+                    " FROM ( " .
+                    " SELECT DISTINCT NHTCV.parent_id AS tcase_id, E.build_id " .
+                    " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+    
+                    " JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id " .
+                    $buildsCfg['statusClause'] .
+    
+                    " /* Get Test Case ID */ " .
+                    " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCV.tcversion_id " .
+    
+                    " /* Get Latest Execution by BUILD IGNORE PLATFORM  */ " .
+                    " JOIN ({$sqlLEX}) AS LEX " .
+                    " ON  LEX.testplan_id = TPTCV.testplan_id " .
+                    " AND LEX.build_id = B.id " .
+                    " AND LEX.tcversion_id = TPTCV.tcversion_id " .
+    
+                    " /* Get STATUS INFO From Executions */ " .
+                    " JOIN {$this->tables['executions']} E " .
+                    " ON  E.id = LEX.id " .
+                    " AND E.tcversion_id = LEX.tcversion_id " .
+                    " AND E.testplan_id = LEX.testplan_id " .
+                    " AND E.build_id = LEX.build_id " .
+                    
+                    " WHERE TPTCV.testplan_id = " . $safe_id['tplan'] . 
+                    " AND E.build_id IN ({$buildsCfg['inClause']}) " .
+                    " AND E.status IN ('{$statusInClause}')" .
+                    " ) SQX " .
+                    " GROUP BY tcase_id " .
+                    " HAVING COUNTER = " . $countTarget ;
+    
+            $hits['otherStatus'] = $this->db->fetchRowsIntoMap($otherStatusSQL,'tcase_id');
+        }
+        
+        // build results record set
+        $hitsFoundOn = array();
+        $hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
+        $hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
 
+        if($hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus'])
+        {
+            $items = array_merge(array_keys($hits['notRun']), array_keys($hits['otherStatus']));
+        }
+        else if($hitsFoundOn['notRun'])
+        {
+            $items = array_keys($hits['notRun']);
+        }
+        else if($hitsFoundOn['otherStatus'])
+        {
+            $items = array_keys($hits['otherStatus']);
+        }
 
-
+        
+        return is_null($items) ? $items : array_flip($items);
 	} 
 
 
@@ -5014,8 +5082,9 @@ class testplan extends tlObjectWithAttachments
 
 	/**
 	 * helperGetHitsSameStatusOnPlatform($mode,$id,$platformID,$statusSet,$buildSet)
-	 *
-	 *
+	 * 
+     * @internal revisions:
+	 * 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
 	 */
 	function helperGetHitsSameStatusOnPlatform($mode,$id,$platformID,$statusSet,$buildSet=null)
 	{
@@ -5059,25 +5128,50 @@ class testplan extends tlObjectWithAttachments
 		$hitsFoundOn = array();
 		$hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
 		$hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
-		
-		if($get['notRun'] && $get['otherStatus'])
+
+        //20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
+        //if($get['notRun'] && $get['otherStatus'])
+        //{
+            //if( $hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus'] )
+        // The problem with this if clause:
+        // When $get['notRun'] && $get['otherStatus'] evaluated as TRUE but there were no hits 
+        // in one of $hitsFoundOn['notRun'] or $hitsFoundOn['otherStatus'], then no results were returned at all.
+        
+		if($hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus'])
 		{
-			if( $hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus'] )
-			{
-				// THIS DOES NOT WORK with numeric keys	
-				// $items = array_merge(array_keys($hits['notRun']),array_keys($hits['otherStatus']));
-				$items = array_keys($hits['notRun']) + array_keys($hits['otherStatus']);
-			}
+            // THIS DOES NOT WORK with numeric keys	
+            // $items = array_merge(array_keys($hits['notRun']),array_keys($hits['otherStatus']));
+            //$items = array_keys($hits['notRun']) + array_keys($hits['otherStatus']);
+
+            // 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
+            // 
+            // ATTENTION: Using the + operator instead of array_merge() for numeric keys is wrong!
+            //
+            // Quotes from documentation http://www.php.net/manual/en/function.array-merge.php:
+            // 
+            // array_merge(): "If the input arrays have the same string keys, then the later value for that key 
+            // will overwrite the previous one. If, however, the arrays contain numeric keys, 
+            // the later value will not overwrite the original value, but will be appended."
+            // 
+            // + operator: "The keys from the first array will be preserved. 
+            // If an array key exists in both arrays, then the element from the first array will be used 
+            // and the matching key's element from the second array will be ignored."
+            // 
+            // That means if there were 5 results in $hits['notRun']) and 10 results in $hits['otherStatus']), 
+            // the first 5 testcases from $hits['otherStatus']) were not in the result set because of the + operator.
+            // 
+            // After using array_keys() we have numeric keys => we HAVE TO USE array_merge().
+            $items = array_merge(array_keys($hits['notRun']), array_keys($hits['otherStatus']));
 		} 
-		else if($get['notRun'] && $hitsFoundOn['notRun'])
+		else if($hitsFoundOn['notRun'])
 		{
 			$items = array_keys($hits['notRun']);
 		}
-		else if($get['otherStatus'] && $hitsFoundOn['otherStatus'])
+		else if($hitsFoundOn['otherStatus'])
 		{
 			$items = array_keys($hits['otherStatus']);
 		}
-		
+        
 		return is_null($items) ? $items : array_flip($items);
 	} 
 

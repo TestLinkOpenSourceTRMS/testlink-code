@@ -17,6 +17,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20120921 - asimon - TICKET 5229: Filtering by the value of custom fields is not working on test execution
  * 20120816 - franciscom - TICKET 4905: Test Case Tester Assignment - filters dont work properly for 'Assigned to' Field
  */
 function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
@@ -95,7 +96,13 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
  	{
  		$my['filters']['exclude_branches'] = $objFilters->filter_toplevel_testsuite;
  	}
- 	
+
+    // TICKET 5229: Filtering by the value of custom fields is not working on test execution
+    if (isset($objFilters->filter_custom_fields) && is_array($objFilters->filter_custom_fields))
+    {
+        $my['filters']['filter_custom_fields'] = $objFilters->filter_custom_fields;
+    }
+    
  	// Take Time
  	//$chronos[] = microtime(true);
 	//$tnow = end($chronos);$tprev = prev($chronos);
@@ -218,10 +225,12 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			
 		}
 		
-		
-		
-
-
+		// TICKET 5229: Filtering by the value of custom fields is not working on test execution
+		if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes']))
+        {
+            $test_spec['childNodes'] = filter_by_cf_values($dbHandler, $test_spec['childNodes'],
+                                                           $my['filters']['filter_custom_fields'],$hash_descr_id);
+        }
 
 		// Take time
 	 	//$chronos[] = microtime(true);

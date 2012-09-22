@@ -3,11 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @package   TestLink
- * @author    Francisco Mancardi
- * @copyright   2007-2009, TestLink community 
- * @version     CVS: $Id: tlAttachment.class.php,v 1.2 2009/12/28 08:53:37 franciscom Exp $
- * @link    http://www.teamst.org/index.php
+ * @package     TestLink
+ * @author      Francisco Mancardi
+ * @copyright   2007-2012, TestLink community 
+ * @filesource  tlAttachment.class.php
+ * @link        http://www.teamst.org/index.php
  *
  */
 /** parenthal class */
@@ -249,14 +249,13 @@ class tlAttachment extends tlDBObject
   public function getInfo()
   {
     return array("id" => $this->dbID,"title" => $this->title,
-               "description" => $this->description,
-               "file_name" => $this->fName, "file_type" => $this->fType,
-               "file_size" => $this->fSize,
-               "date_added" => $this->dateAdded,
-               "compression_type" => $this->compressionType,
-               "file_path" => $this->destFPath,
-               "fk_id" => $this->fkID,"fk_table" => $this->fkTableName,
-    );
+                 "description" => $this->description,
+                 "file_name" => $this->fName, "file_type" => $this->fType,
+                 "file_size" => $this->fSize,
+                 "date_added" => $this->dateAdded,
+                 "compression_type" => $this->compressionType,
+                 "file_path" => $this->destFPath,
+                 "fk_id" => $this->fkID,"fk_table" => $this->fkTableName);
   }
   
   /* 
@@ -369,11 +368,6 @@ class tlAttachment extends tlDBObject
         $cfg->showUploadColumn = false;
         $cfg->numCols = 4; 
 
-        // $cfg->behaviourCfg = config_get('attachments');
-        
-        // new dbug($cfg->behaviourCfg);
-        
-
         $dummy = array('title_upload_attachment' => null, 'enter_attachment_title' => null,
                        'btn_upload_file' => null, 'warning' => null, 'enter_attachment_title' => null,
                        'local_file' => null, 'attachment_upload_ok' => null,
@@ -425,5 +419,5 @@ class tlAttachment extends tlDBObject
   	}
   	return $attach;
   }
-};
+}
 ?>

@@ -555,9 +555,10 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
  	$gui->level = 'testproject';
  	$gui->page_title = lang_get('testproject');
 	$gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
-    $gui->attachmentInfos = getAttachmentInfosFrom($this,$id);
+  $gui->attachmentInfos = $this->getAttachmentInfos($id);
  	
-	// BUGID 3937: No information when exporting all test suites when no test suites exists 	
+ 	
+ 	
  	$exclusion = array( 'testcase', 'me', 'testplan' => 'me', 'requirement_spec' => 'me');
  	$gui->canDoExport = count($this->tree_manager->get_children($id,$exclusion)) > 0;
 	if ($modded_item_id)

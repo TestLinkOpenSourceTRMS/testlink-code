@@ -14,6 +14,8 @@
  * @internal revisions
  *
  * @since 1.9.4 
+ *  20120926 - asimon - TICKET 5251: only use validateForm() to validate result filter 
+ *                                   when result filter is actually enabled
  *  20111031 - franciscom - TICKET 4788: Test Case Execution - 
  *							Give feedback when filter combination 'Result' + 'on' can not be used
  *
@@ -46,8 +48,12 @@
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
-<form method="post" id="filter_panel_form" name="filter_panel_form" 
-      onsubmit="return validateForm(this);document.getElementById('filter_result_method').disabled=false;">
+<form method="post" id="filter_panel_form" name="filter_panel_form"
+      {* TICKET 5251: only use validateForm() to validate result filter when result filter is actually enabled *}
+      {if $control->filters.filter_result}
+        onsubmit="return validateForm(this);document.getElementById('filter_result_method').disabled=false;"
+      {/if}
+        >
 
 {* hidden input with token to manage transfer of data between left and right frame *}
 {if isset($control->form_token)}

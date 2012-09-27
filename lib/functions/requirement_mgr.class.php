@@ -12,16 +12,9 @@
  * Requirements are children of a requirement specification (requirements container)
  *
  * @internal revisions:
- * @since 1.9.4
- * 20120810	- franciscom - TICKET 5127: Requirements based report - refactoring - new method getAllByContext()
- * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
- * 20120111 - franciscom - TICKET 4862: Users rights on requirements are bypassed 
- *										with interproject requirements relations. 
- *						   				new method getTestProjectID()		
- *
- * 20111110 - franciscom - TICKET 4802: Exporting large amount of requirements ( qty > 1900) fails
- * 20111008 - franciscom - TICKET 4768: Requirements Export - Export Version and Revision
- * 20110817 - franciscom - TICKET 4360 copy_to()
+ * @since 1.9.5
+ * 20120927 - franciscom - TICKET 5255: Deleting requirement with relations does not remove requirement, 
+ *                                      partial deletion, cannot remove
  *
  */
 
@@ -510,14 +503,14 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 	  	if(is_array($id))
 	  	{
 		
-			$id_list = implode(',',$id);
+			  $id_list = implode(',',$id);
 	    	$where_clause_coverage = " WHERE req_id IN ({$id_list})";
-			$where_clause_this = " WHERE id IN ({$id_list})";
+			  $where_clause_this = " WHERE id IN ({$id_list})";
 	  	}
 	    else
 	    {
 	    	$where_clause_coverage = " WHERE req_id = {$id}";
-			$where_clause_this = " WHERE id = {$id}";
+			  $where_clause_this = " WHERE id = {$id}";
 	    }
 		
 		// When deleting only one version, we need to check if we need to delete  requirement also.
@@ -546,6 +539,14 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 	  		// delete dependencies with test specification
 	  		$sql = "DELETE FROM {$this->tables['req_coverage']} " . $where_clause_coverage;
 	  		$result = $this->db->exec_query($sql);
+
+ 		  // also delete relations to other requirements
+ 			// Issue due to FK
+ 			// 
+ 			if ($result)
+ 			{
+	  	  $this->delete_all_relations($id);
+      }
 
 			if ($result)
 	  		{
@@ -601,8 +602,6 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 	  		$sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " . $where_clause_this;
 	  		$result = $this->db->exec_query($sql);
 	  		
-	  		//also delete relations to other requirements
-	  		$this->delete_all_relations($id);
 		}
 	
 	    $result = (!$result) ? lang_get('error_deleting_req') : 'ok';

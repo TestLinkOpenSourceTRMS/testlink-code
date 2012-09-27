@@ -23,8 +23,6 @@ $viewerArgs = null;
 $cfg = array('testcase' => config_get('testcase_cfg'),                  
 			 'testcase_reorder_by' => config_get('testcase_reorder_by'),
 			 'spec' => config_get('spec_cfg'));                         
-
-
 $smarty = new TLSmarty();
 
 $args = init_args($db,$viewerArgs,$cfg);
@@ -43,7 +41,6 @@ switch($args->feature)
 	case 'testproject':
 	case 'testsuite':
 		$item_mgr = new $args->feature($db);
-		$gui->attachments = getAttachmentInfosFrom($item_mgr,$args->id);
 		$gui->id = $args->id;
 		
 		$lblkey = $cfg['testcase_reorder_by'] == 'NAME' ? '_alpha' : '_externalid';
@@ -51,14 +48,16 @@ switch($args->feature)
 
 		if($args->feature == 'testproject')
 		{
+		  $gui->id = $args->id = $args->tproject_id;
 			$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id);
 		}
 		else
 		{
+		  $gui->attachments = getAttachmentInfosFrom($item_mgr,$args->id);
 			$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id,
 							array('show_mode' => $args->show_mode));
-        }
         
+    }
 		break;
 		
 	case 'testcase':

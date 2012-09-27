@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: opt_transfer.inc.tpl,v 1.10 2010/05/01 19:06:26 franciscom Exp $
+@filesoruce opt_transfer.inc.tpl,v 1.10 2010/05/01 19:06:26 franciscom Exp $
 Purpose: manage the OptionTransfer.js created by Matt Kruse
          http://www.JavascriptToolbox.com/
          JavaScript Toolbox - Option Transfer - Move Select Box Options Back And Forth
@@ -11,10 +11,10 @@ Author: Francisco Mancardi
   
    <div class="option_transfer_container">
     <table cellspacing="0" cellpadding="0" border="0" width="100%">
-      {if $option_transfer->global_lbl neq ''}
+      {if $option_transfer->labels->global_lbl != ''}
   		<caption style="font-weight:bold;">
-  	  {$option_transfer->global_lbl}
-    	&nbsp;{$option_transfer->additional_global_lbl|escape}
+  	  {$option_transfer->labels->global_lbl}
+    	&nbsp;{$option_transfer->labels->additional_global_lbl|escape}
 		  </caption>
 		  {/if}
 
@@ -26,21 +26,21 @@ Author: Francisco Mancardi
                        size=$option_transfer->size 
                        style=$option_transfer->style 
                        multiple="yes"
-                       ondblclick=$opt_cfg->js_events->left2right_click  
+                       ondblclick=$option_transfer->jsEvents->left2right_click  
                        options=$option_transfer->from->map}
       </td>
       <td align="center" width="40">
-        <img src="{$smarty.const.TL_THEME_IMG_DIR}/ico_all_r.gif" 
-              onclick="{$opt_cfg->js_events->all_right_click}"
+        <img src="{$tlImages.allToRight}" 
+              onclick="{$option_transfer->jsEvents->all_right_click}"
               alt=">>" style="cursor: pointer;" /><br />
-        <img src="{$smarty.const.TL_THEME_IMG_DIR}/ico_l2r.gif" 
-              onclick="{$opt_cfg->js_events->left2right_click}"
+        <img src="{$tlImages.leftToRight}" 
+              onclick="{$option_transfer->jsEvents->left2right_click}"
               alt=">" style="cursor: pointer;" /><br />
-        <img src="{$smarty.const.TL_THEME_IMG_DIR}/ico_r2l.gif" 
-              onclick="{$opt_cfg->js_events->right2left_click}"
+        <img src="{$tlImages.rightToLeft}" 
+              onclick="{$option_transfer->jsEvents->right2left_click}"
               alt="<" style="cursor: pointer;" /><br />
-        <img src="{$smarty.const.TL_THEME_IMG_DIR}/ico_all_l.gif" 
-              onclick="{$opt_cfg->js_events->all_left_click}"
+        <img src="{$tlImages.allToLeft}" 
+              onclick="{$option_transfer->jsEvents->all_left_click}"
               alt="<<" style="cursor: pointer;" />
       </td>
       <td align="center" width="50%">
@@ -50,15 +50,15 @@ Author: Francisco Mancardi
                        size=$option_transfer->size 
                        style=$option_transfer->style 
                        multiple="yes"
-                       ondblclick=$opt_cfg->js_events->right2left_click  
+                       ondblclick=$option_transfer->jsEvents->right2left_click  
                        options=$option_transfer->to->map}
       </td>
     </tr>
   </table>
   </div>
-  <input type="hidden" name="{$opt_cfg->js_ot_name}_removedLeft"  value="" />
-  <input type="hidden" name="{$opt_cfg->js_ot_name}_removedRight"  value="" />
-  <input type="hidden" name="{$opt_cfg->js_ot_name}_addedLeft"  value="" />
-  <input type="hidden" name="{$opt_cfg->js_ot_name}_addedRight"  value="" />
-  <input type="hidden" name="{$opt_cfg->js_ot_name}_newLeft"  value="" />
-  <input type="hidden" name="{$opt_cfg->js_ot_name}_newRight"  value="" />
+  <input type="hidden" id="{$option_transfer->htmlInputNames->removedLeft}" name="{$option_transfer->htmlInputNames->removedLeft}"  value="" />
+  <input type="hidden" id="{$option_transfer->htmlInputNames->removedRight}" name="{$option_transfer->htmlInputNames->removedRight}"  value="" />
+  <input type="hidden" id="{$option_transfer->htmlInputNames->addedLeft}" name="{$option_transfer->htmlInputNames->addedLeft}"  value="" />
+  <input type="hidden" id="{$option_transfer->htmlInputNames->addedRight}" name="{$option_transfer->htmlInputNames->addedRight}"  value="" />
+  <input type="hidden" id="{$option_transfer->htmlInputNames->newLeft}" name="{$option_transfer->htmlInputNames->newLeft}"  value="" />
+  <input type="hidden" id="{$option_transfer->htmlInputNames->newRight}" name="{$option_transfer->htmlInputNames->newRight}"  value="" />

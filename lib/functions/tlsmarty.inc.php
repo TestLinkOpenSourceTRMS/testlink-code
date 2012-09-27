@@ -244,12 +244,16 @@ class TLSmarty extends Smarty
                           'log_message' => TL_THEME_IMG_DIR . "history.png",
                           'log_message_small' => TL_THEME_IMG_DIR . "history_small.png",
                           'import' => TL_THEME_IMG_DIR . "door_in.png",
-        				  'info' => TL_THEME_IMG_DIR . "question.gif",
+        				          'info' => TL_THEME_IMG_DIR . "question.gif",
                           'insert_step' => TL_THEME_IMG_DIR . "insert_step.png",
                           'reorder' => TL_THEME_IMG_DIR . "arrow_switch.png",
                           'search' => TL_THEME_IMG_DIR . "magnifier.png",
                           'sort' => TL_THEME_IMG_DIR . "sort_hint.png",
-                          'toggle_all' => TL_THEME_IMG_DIR . "toggle_all.gif"
+                          'toggle_all' => TL_THEME_IMG_DIR . "toggle_all.gif",
+                          'allToRight' => TL_THEME_IMG_DIR . 'ico_all_r.gif',
+                          'leftToRight' => TL_THEME_IMG_DIR . 'ico_l2r.gif',
+                          'rightToLeft' => TL_THEME_IMG_DIR . 'ico_r2l.gif',
+                          'allToLeft' => TL_THEME_IMG_DIR . 'ico_all_l.gif'
                           );
 
         $msg = lang_get('show_hide_api_info');

@@ -55,19 +55,17 @@ require_once("exec_cfield_mgr.class.php");
  * Automatic loader for PHP classes
  * See PHP Manual for details 
  */
-function tlAutoload($class_name) 
+function tlAutoload($className) 
 {
 	// exceptions
 	$tlClasses = null;
 	$tlClassPrefixLen = 2;
-	$classFileName = $class_name;
-    
-	if (isset($tlClasses[$classFileName]))
+	if (isset($tlClasses[$className]))
 	{
-    	$len = tlStringLen($classFileName) - $tlClassPrefixLen;
-		$classFileName = strtolower(tlSubstr($classFileName,$tlClassPrefixLen,$len));
+    $len = tlStringLen($className) - $tlClassPrefixLen;
+		$className = strtolower(tlSubstr($className,$tlClassPrefixLen,$len));
 	} 
-    require_once $classFileName . '.class.php';
+  require_once $className . '.class.php';
 }
 
 

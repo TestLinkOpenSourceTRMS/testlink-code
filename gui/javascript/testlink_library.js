@@ -1540,3 +1540,20 @@ function openTCW(tcase_external_id,version_number)
 	// second parameter(window name) with spaces caused bug on IE
 	window.open(fRoot+feature_url,__FUNCTION__,windowCfg);
 }
+
+
+// @since 2.0
+// @use OptionTransfer.js
+//
+function setUpOptionTransferEngine(jsonEncodedPHPObj)
+{
+	var inputNames = JSON.parse(jsonEncodedPHPObj);
+	var ote = new OptionTransfer(inputNames.fromPanel,inputNames.toPanel);
+	ote.saveRemovedLeftOptions(inputNames.removedLeft);
+	ote.saveRemovedRightOptions(inputNames.removedRight);
+	ote.saveAddedLeftOptions(inputNames.addedLeft);
+	ote.saveAddedRightOptions(inputNames.addedRight);
+	ote.saveNewLeftOptions(inputNames.newLeft);
+	ote.saveNewRightOptions(inputNames.newRight);
+	return ote;
+}

@@ -20,7 +20,6 @@ require_once('common.php');
 require_once('testsuite.class.php');
 testlinkInitPage($db);
 
-$templateCfg = templateConfiguration();
 $viewerArgs = null;
 
 $tproject_mgr = new testproject($db);
@@ -34,6 +33,8 @@ $grants->mgt_view_req = $userObj->hasRight($db,"mgt_view_req",$args->tproject_id
 $grants->testplan_planning = $userObj->hasRight($db,"testplan_planning",$args->tproject_id);
 
 $smarty = new TLSmarty();
+$smarty->tlTemplateCfg = $templateCfg = templateConfiguration();
+
 $gui = new stdClass();
 $gui->modify_tc_rights = $grants->mgt_modify_tc;  // TICKET 
 $gui->tproject_id = $args->tproject_id;
@@ -60,9 +61,8 @@ switch($args->feature)
 		}
 		else
 		{
-			$item_mgr->show($smarty,$args->tproject_id,$gui,$templateCfg->template_dir,
-							$args->id,array('show_mode' => $args->show_mode));
-        }
+			$item_mgr->show($smarty,$args->tproject_id,$gui,$args->id,array('show_mode' => $args->show_mode));
+    }
 		break;
 		
 	case 'testcase':
@@ -110,7 +110,7 @@ switch($args->feature)
 	    
 	    
 		$item_mgr->show($smarty,$args->tproject_id,$grants,$gui,$templateCfg->template_dir,
-						$args->id,$args->tcversion_id,$viewerArgs,$path_info,$args->show_mode);
+						        $args->id,$args->tcversion_id,$viewerArgs,$path_info,$args->show_mode);
 		break;
 
 	default:

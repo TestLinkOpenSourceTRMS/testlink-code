@@ -4,10 +4,10 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource  testsuite.class.php
- * @package   TestLink
- * @author    franciscom
+ * @package     TestLink
+ * @author      franciscom
  * @copyright   2005-2012, TestLink community 
- * @link    http://www.teamst.org/index.php
+ * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
  * @since 2.0
@@ -187,29 +187,31 @@ class testsuite extends tlObjectWithAttachments
   /**
    * update
    *
-   * @internal Revisions
-   * 20100904 - franciscom - added node_order
+   * @internal revisions
    */
-  function update($id, $name, $details, $parent_id=null, $node_order=null)
+  // function update($id, $name, $details, $parent_id=null, $node_order=null)
+  function update($item)
   {
+    new dBug($item);
+    
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      $ret['status_ok']=0;
-      $ret['msg']='';
-      $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$id,$parent_id);
-      if($check['status']==0)
-      {
+    $ret['status_ok']=0;
+    $ret['msg']='';
+    $check = $this->tree_manager->nodeNameExists($item->name,$this->my_node_type,$item->id,$item->parent_id);
+    if($check['status']==0)
+    {
       $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .
-             " SET details = '" . $this->db->prepare_string($details) . "'" .
+             " SET details = '" . $this->db->prepare_string($item->details) . "'" .
              " WHERE id = {$id}";
       $result = $this->db->exec_query($sql);
         
       if ($result)
       {
         $sql = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
-             " SET name='" .  $this->db->prepare_string($name) . "' ";
-        if( !is_null($node_order) && intval($node_order) > 0 )
+             " SET name='" .  $this->db->prepare_string($item->name) . "' ";
+        if( !is_null($item->order) && intval($item->order) > 0 )
         {
-          $sql .= ', node_order=' . $this->db->prepare_int(intval($node_order));     
+          $sql .= ', node_order=' . $this->db->prepare_int(intval($item->order));     
         }    
         $sql .= " WHERE id= {$id}";
         $result = $this->db->exec_query($sql);
@@ -381,7 +383,7 @@ class testsuite extends tlObjectWithAttachments
    * returns: -
    *
    **/
-  function show(&$smarty,$tproject_id,$guiObj,$template_dir, $id, $options=null,
+  function show(&$smarty,$tproject_id,$guiObj,$id, $options=null,
                 $sqlResult = '', $action = 'update',$modded_item_id = 0)
   {
     
@@ -393,6 +395,7 @@ class testsuite extends tlObjectWithAttachments
     $gui->sqlAction = '';
     $gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
 
+    
     $my['options'] = array('show_mode' => 'readwrite');   
     $my['options'] = array_merge($my['options'], (array)$options);
 
@@ -426,7 +429,7 @@ class testsuite extends tlObjectWithAttachments
     list($gui->attach->infoSet,$gui->attach->gui) = $this->buildAttachSetup($id,$my['options']);
 
     $gui->attach->gui->display=TRUE;
-    new dBug($gui->attach);
+    //new dBug($gui->attach);
     
     $gui->idpage_title = lang_get('testsuite');
     $gui->level = 'testsuite';
@@ -438,9 +441,9 @@ class testsuite extends tlObjectWithAttachments
     
     
     
-    new dBug($gui);
+    //new dBug($gui);
     $smarty->assign('gui',$gui);
-    $smarty->display($template_dir . 'containerView.tpl');
+    $smarty->display($smarty->tlTemplateCfg->template_dir . 'containerView.tpl');
   }
   
   
@@ -468,95 +471,99 @@ class testsuite extends tlObjectWithAttachments
     returns: -
   
     rev :
-         20090801 - franciscom - added $userInput
-         20080105 - franciscom - added $userTemplateCfg
-         20071202 - franciscom - interface changes -> template_dir
   */
-  function viewer_edit_new($tproject_id,&$smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, 
-               $action, $parent_id,$id=null, $messages=null, $userTemplateKey=null, $userInput=null)
+//  function viewer_edit_new($tproject_id,&$smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, 
+//                           $action, $parent_id,$id=null, $messages=null, $userTemplateKey=null, $userInput=null)
+
+
+  function viewer_edit_new(&$smarty,$gui,$action,$context,$oWebEditor, 
+                           $messages=null,$userInput=null)
   {
   
     $internalMsg = array('result_msg' => null,  'user_feedback' => null);
-    $the_data = null;
-    $name = '';
-    
     if( !is_null($messages) )
     {
       $internalMsg = array_merge($internalMsg, $messages);
     }
+    $smarty->assign('sqlResult', $internalMsg['result_msg']);
+
     $useUserInput = is_null($userInput) ? 0 : 1;
     
-      $cf_smarty=-2; // MAGIC must be explained
-      
-      $pnode_info=$this->tree_manager->get_node_hierarchy_info($parent_id);
-      $parent_info['description']=lang_get($this->node_types_id_descr[$pnode_info['node_type_id']]);
-      $parent_info['name']=$pnode_info['name'];
+    $tproject_id = $context['tproject_id'];
+    $parent_id = $context['parent_id'];
+    $id = $context['id'];
     
-  
-    $a_tpl = array( 'edit_testsuite' => 'containerEdit.tpl',
-            'new_testsuite'  => 'containerNew.tpl',
-            'add_testsuite'  => 'containerNew.tpl');
     
-    $the_tpl = $a_tpl[$action];
-    
-    // $gui = new stdClass();
-    // $gui->containerID = $parent_id;
-    // $gui->tproject_id = $tproject_id;
-    // $smarty->assign('gui', $gui);
+    $gui->cf = -2; // MAGIC must be explained
 
+    $gui->containerID = $parent_id;
+    $gui->container = null;
+    $gui->containerType = 'testsuite';
+    $gui->name = '';
+    $gui->user_feedback = $internalMsg['user_feedback'];
+
+ 
+    $tpl = $smarty->tlTemplateCfg->template_dir;
+    switch($action)
+    {
+      case 'edit_testsuite':
+        $tpl .= 'containerEdit.tpl';
+      break;
+
+      case 'new_testsuite':
+      case 'add_testsuite':
+        $tpl .= 'containerNew.tpl';
+        $gui->parent_info = $this->tree_manager->get_node_hierarchy_info($parent_id);
+        $gui->parent_info['description'] = lang_get($this->node_types_id_descr[$gui->parent_info['node_type_id']]);
+      break;
+      
+    }
   
-    $smarty->assign('sqlResult', $internalMsg['result_msg']);
-    $smarty->assign('containerID',$parent_id);   
-    $smarty->assign('user_feedback', $internalMsg['user_feedback'] );
-    
     if( $useUserInput )
     {
       $webEditorData = $userInput;
     }
     else
     {
-      $the_data = null;
-      $name = '';
       if ($action == 'edit_testsuite')
       {
-        $the_data = $this->get_by_id($id);
-        $name=$the_data['name'];
-        $smarty->assign('containerID',$id); 
-        } 
-        $webEditorData = $the_data;
+        $gui->container = $this->get_by_id($id);
+        $gui->name = $gui->container['name'];
+      } 
+      $webEditorData = $gui->container; // NOT TOO CLEAR
     }
     
-      $cf_smarty = $this->html_table_of_custom_field_inputs($id,$parent_id,'design','',$userInput);
+    $gui->cf = $this->html_table_of_custom_field_inputs($id,$parent_id,'design','',$userInput);
     
     // webeditor
-    // 20090503 - now templates will be also used after 'add_testsuite', when
-    // presenting a new test suite with all other fields empty.
-      if( !$useUserInput )
-        {
-      if( ($action == 'new_testsuite' || $action == 'add_testsuite') && !is_null($userTemplateKey) )
+    // templates will be also used after 'add_testsuite', when presenting a new test suite 
+    // with all other fields empty.
+    if( !$useUserInput )
+    {
+      if( ($action == 'new_testsuite' || $action == 'add_testsuite') && !is_null($oWebEditor->templates) )
       {
          // need to understand if need to use templates
-         $webEditorData=$this->_initializeWebEditors($webEditorHtmlNames,$userTemplateKey);
-         
+         $webEditorData = $this->_initializeWebEditors($oWebEditor->inputNames,$oWebEditor->templates);
       } 
     }
     
-    foreach ($webEditorHtmlNames as $key)
+    foreach ($oWebEditor->inputNames as $key)
     {
       // Warning:
       // the data assignment will work while the keys in $the_data are identical
       // to the keys used on $oWebEditor.
-      $of = &$oWebEditor[$key];         
+      $of = &$oWebEditor->jsControls[$key];         
       $of->Value = isset($webEditorData[$key]) ? $webEditorData[$key] : null;
       $smarty->assign($key, $of->CreateHTML());
     }
     
-      $smarty->assign('cf',$cf_smarty); 
-    $smarty->assign('parent_info', $parent_info);
-    $smarty->assign('level', 'testsuite');
-    $smarty->assign('name',$name);
-    $smarty->assign('container_data',$the_data);
-    $smarty->display($template_dir . $the_tpl);
+    // $smarty->assign('cf',$cf_smarty); 
+    // $smarty->assign('parent_info', $parent_info);
+    // $smarty->assign('level', 'testsuite');
+    // $smarty->assign('name',$name);
+    // $smarty->assign('container_data',$the_data);
+    $smarty->assign('gui',$gui); 
+    $smarty->display($tpl);
   }
   
   

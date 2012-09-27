@@ -10,9 +10,8 @@
  *	Also called when search option on Navigation Bar is used
  *
  *	@internal revision
- *	@since 1.9.4
- *	20111218 - franciscom - TICKET 4842: Test Case search - add check of user rights when trying to access test case
- *  20111105 - franciscom - TICKET 4796: Test Case reuse - Quick & Dirty Approach 
+ *	@since 1.9.5
+ *  20120927 - franciscom - TICKET 5250: User rights "Test Case view" not work
  */
 
 require_once('../../config.inc.php');
@@ -94,13 +93,18 @@ switch($args->feature)
 			// Get Test Project in order to check user rights
 			if( !is_null($args->tcaseTestProject) )
 			{
+			  $check = null;
 				$grant2check = array('mgt_view_tc','mgt_modify_tc');
 				foreach($grant2check as $grant)
 				{
 						$grantlbl['desc_' . $grant] = null;
+				    $check = $_SESSION['currentUser']->hasRight($db,$grant,$args->tcaseTestProject['id']);
+            if( !is_null($check) )
+            {
+              break;
+            }
 				}
 
-				$check = $_SESSION['currentUser']->hasRight($db,$grant2check,$args->tcaseTestProject['id']);
 				if( is_null($check) )
 				{
 					$grantLabels = init_labels($grantlbl);

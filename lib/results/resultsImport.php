@@ -11,9 +11,9 @@
  * @copyright 	2010,2012 TestLink community 
  *
  * @internal revisions
- * @since 1.9.4
- * 20120724 - franciscom - TICKET 5106: Import results - add possibility 
- *										to provide names instead of internal id to identify context
+ * @since 1.9.5
+ * 20120928 - franciscom - TICKET 5257: Testcase exported for id/external id not able to import same for result update
+ *
  **/
 
 require('../../config.inc.php');
@@ -305,14 +305,16 @@ function saveImportedResultData(&$db,$resultData,$context)
 	if( !is_null($context->tplanID) && intval($context->tplanID) > 0 )
 	{
 		$dummy = $tplan_mgr->get_by_id($context->tplanID,array('output' => 'minimun'));
+		$dummy = $dummy[0];
 	}
 	else if( !is_null($context->tplanName) )
 	{
 		$dummy = $tplan_mgr->get_by_name($context->tplanName,$context->tprojectID,array('output' => 'minimun'));
 	}
+	
 	if( !is_null($dummy) )
 	{
-    	$context->tplanID = $dummy[0]['id'];	
+    	$context->tplanID = $dummy['id'];	
 	}
 
 	if( (intval($context->tprojectID) <= 0) && intval($context->tplanID) > 0)
@@ -329,7 +331,7 @@ function saveImportedResultData(&$db,$resultData,$context)
 	{
 		$dummy = array($tplan_mgr->platform_mgr->getByID($context->platformID));
 	}
-	else if( !is_null($context->platformName) )
+	else if( property_exists($context,'platformName') && !is_null($context->platformName) )
 	{
 		if( !is_null($xx = $tplan_mgr->platform_mgr->getID($context->platformName) ) )
 		{

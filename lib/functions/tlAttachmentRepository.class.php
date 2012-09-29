@@ -85,7 +85,7 @@ class tlAttachmentRepository extends tlObjectWithDB
      * 
      * @return integer the type of the repository 
      */
-    public static function getType()
+    public function getType()
     {
     	return $this->type;
     }
@@ -97,7 +97,8 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 */
 	  public static function getCompression()
     {
-    	return $this->compressionType;
+      $cfg = config_get('attachments');
+    	return $cfg->repository->compressionType;
     }
     
     /**
@@ -107,7 +108,8 @@ class tlAttachmentRepository extends tlObjectWithDB
      */
     public static function getPathToRepository()
     {
-    	return $this->path;
+      $cfg = config_get('attachments');
+    	return $cfg->repository->path;
     }
     
     
@@ -608,9 +610,6 @@ class tlAttachmentRepository extends tlObjectWithDB
 	function checkRepositoryStatus($forceDirCheck = false)
 	{
     $ret = array('enabled' => TRUE, 'disabledMsg' => '');
-    
-    new dBug($this->path);
-    
   	if($this->type == TL_REPOSITORY_TYPE_FS || $forceDirCheck)
   	{
   	  $l18n = init_labels(array('attachments_dir' => null,'exists' => null,

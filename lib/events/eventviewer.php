@@ -6,14 +6,7 @@
  * @filesource	eventviewer.php
  *
  * @internal revisions
- *      20101026 - Julian - Localized dateformat for datepicker - validation MISSING
- *                        - BUGID 3908: reset filters after clearing events
- * 		20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                          table state independent from localization
- * 		20101008 - Julian - added html comment to properly sort by description column
- *		20101008 - Julian - BUGID 3871: use exttable for event viewer
- *		20100508 - franciscom - BUGID 3445: Ability to delete events from selected class from event logs 
- *		20091005 - amitkhullar - improved function getEventsFor() - BUG 2862
+ * @since 2.0
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -33,7 +26,6 @@ $charset = config_get('charset');
 switch($args->doAction)
 {
     case 'clear':
-        // BUGID 3445: Ability to delete events from selected class from event logs 
 	    $g_tlLogger->deleteEventsFor($args->logLevel);
 	    if( is_null($args->logLevel) )
 	    {
@@ -42,44 +34,44 @@ switch($args->doAction)
 	    else
 	    {
 	    	$logLevelVerbose = null;
-			foreach( $args->logLevel as $code )
-			{
-				$logLevelVerbose[] = $gui->logLevels[$code];  
+  			foreach( $args->logLevel as $code )
+	  		{
+		  		$logLevelVerbose[] = $gui->logLevels[$code];  
 	    	}
 	    	$logLevelVerbose = implode(',',$logLevelVerbose);
-	    	logAuditEvent(TLS("audit_events_with_level_deleted",$args->currentUser->login,$logLevelVerbose),"DELETE",null,"events");
+	    	logAuditEvent(TLS("audit_events_with_level_deleted",$args->currentUser->login,$logLevelVerbose),
+	    	                  "DELETE",null,"events");
 	    }
 	    
-	    // BUGID 3908: reset filters after clearing events
 	    $args->logLevel = null;
 	    $gui->selectedLogLevels = array();
 	    $gui->selectedTesters = array();
 	    $gui->startDate = null;
 	    $gui->endDate = null;
-	    
-	    break;
+    break;
     
     case 'filter':
-	default:
-		$date_format_cfg = config_get('date_format');
+	  default:  
+		  $date_format_cfg = config_get('date_format');
 	    $filters = getFilters($args,$date_format_cfg);
-    	break;
+    break;
 }
 
-//print_r($filters);
-
 $gui->events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $args->object_id : null,
-										 $args->object_type ? $args->object_type : null,null,500,$filters->startTime,
-										 $filters->endTime,$filters->users);
+										                     $args->object_type ? $args->object_type : null,null,500,$filters->startTime,
+										                     $filters->endTime,$filters->users);
 
-if (count($gui->events) > 0) {
+if (count($gui->events) > 0) 
+{
 	$table = buildExtTable($gui, $show_icon, $charset);
-	
-	if (!is_null($table)) {
+  if (!is_null($table)) 
+  {
 		$gui->tableSet[] = $table;
 	}
-} else {
-	$gui->warning_msg = lang_get("no_events");
+} 
+else 
+{
+  $gui->warning_msg = lang_get("no_events");
 }
 
 $smarty = new TLSmarty();
@@ -235,7 +227,8 @@ function getFilters(&$argsObj=null,$dateFormat=null)
 function buildExtTable($gui,$show_icon,$charset)
 {
 	$table = null;
-	if(count($gui->events) > 0) {
+	if(count($gui->events) > 0) 
+	{
 		$columns = array();
 		$columns[] = array('title_key' => 'th_timestamp', 'width' => 15);
 		$columns[] = array('title_key' => 'th_loglevel', 'width' => 15);
@@ -243,18 +236,18 @@ function buildExtTable($gui,$show_icon,$charset)
 		$columns[] = array('title_key' => 'th_event_description','type' => 'text');
 		$columns[] = array('title_key' => 'th_transaction', 'width' => 15, 'hidden' => 'true');
 	
+		$l18n = init_labels(array('not_aplicable' => null,'show_eventdetails' => null));
+
 		// Extract the relevant data and build a matrix
 		$matrixData = array();
-
 		foreach ($gui->events as $event_key => $event)
 		{
-			$transactionID = $event->transactionID;
-			
+		
 			$rowData = array();
-
+		
+			// use html comment to sort properly by timestamp
 			// necessary as localize_dateOrTimeStamp expects 2nd parameter to pass by reference
 			$dummy = null; 
-			// use html comment to sort properly by timestamp
 			$rowData[] = "<!--{$event->timestamp}-->" .
 			             localize_dateOrTimeStamp(null, $dummy, 'timestamp_format',$event->timestamp);
 			             
@@ -263,12 +256,12 @@ function buildExtTable($gui,$show_icon,$charset)
 			if (isset($event->userID) && $event->userID != false && isset($gui->users[$event->userID])) {
 				$rowData[] = $gui->users[$event->userID];
 			} else {
-				$rowData[] = lang_get("not_aplicable");
+				$rowData[] = $l18n['not_aplicable'];
 			}
 			$description = htmlentities($event->description, ENT_QUOTES, $charset);
 			$rowData[] = "<!--" . $description . "-->" .
 			             "<a onClick=\"showEventDetails({$event->dbID});\" style=\"cursor: hand; cursor: pointer;\">" . 
-			             "<img title=\"" . lang_get("show_eventdetails") ."\" src=\"{$show_icon}\" /> </a>" .
+			             "<img title=\"" . $l18n['show_eventdetails'] ."\" src=\"{$show_icon}\" /> </a>" .
 			             $description;
 			             
 			$rowData[] = $event->transactionID;

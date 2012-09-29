@@ -5,39 +5,12 @@
  *
  * @package TestLink
  * @author Erik Eloff
- * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.41 2010/11/07 09:44:59 mx-julian Exp $
- * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
+ * @copyright 2009,2012 TestLink community 
+ * @filesource exttable.class.php
  * @link http://www.teamst.org
  * @since 1.9
  *
- * @internal Revision:
- *  20101022 - Julian - BUGID 3979 - Use grid filters for exttables
- *  20100924 - asimon - made export ("download") button configurable
- *  20100921 - Julian - added stripeRows setting to getGridSettings(), default: enabled
- *	20100921 - eloff - refactor column index names
- *	20100830 - franciscom - buildColumns() refactored
- *							buildContent() minor refactored to avoid warnings on event viewer
- *	20100828 - eloff - Refactored rendering of status
- *	                   Add status behaviour as default
- *	20100826 - Julian - BUGID 3714 - new attribute $storeTableState
- *	20100824 - Julian - new attribute $toolbarRefreshButton
- *	20100823 - franciscom - getColumnIdxByName() - minor refactoring forcing exit with break
- *  20100823 - eloff - Add convinience methods setSortByColumnName and setGroupByColumnName
- *  				   Always store column config in full format(array-of-arrays)
- *  20100822 - asimon - new function getColumnIdxByName() to make sorting by column name possible
- *  20100819 - asimon - additional parameters (hidden, hideable, groupable) for req based report and other tables
- *  20100819 - Julian - MultiSort (BUGID 3694), default Values for Grid Settings, more Grid Settings
- * 	20100817 - Julian - default toolbar items, hideGroupedColumn
- *  20100816 - asimon - enable sorting by a default column via $sortByColumn
- *	20100719 - eloff - Pass $tableID via constructor
- *	20100719 - franciscom - changing default value for $groupByColumn
- *	20100716 - eloff - Allow grouping on any column
- *	20100715 - eloff - Add option for grouping on first column
- *	20100503 - franciscom - BUGID 3419 In "Test result matrix", tests statuses or not colorized
- *	20100423 - franciscom - refactoring to allow more flexibility
- *	20090909 - franciscom - changed to allow multiple tables
- *	new method renderCommonGlobals()
+ * @internal revisions
  * 
  **/
 
@@ -168,11 +141,9 @@ class tlExtTable extends tlTable
 	public function __construct($columns, $data, $tableID)
 	{
 		parent::__construct($columns, $data, $tableID);
-		$this->addCustomBehaviour('status', array(
-			'render' => 'statusRenderer',
-			'sort' => 'statusCompare',
-			'filter' => 'Status'
-		));
+		$this->addCustomBehaviour('status', 
+		                          array('render' => 'statusRenderer','sort' => 'statusCompare',
+		                                'filter' => 'Status'));
 
 		$this->showExportButton = config_get('enableTableExportButton');
 	}
@@ -329,14 +300,14 @@ class tlExtTable extends tlTable
 	 * What will happen if user add new status ?????
 	 *
 	 * @return string status_code_label = new Array();
-	 *                status_code_label.f = 'Failed';
-	 *                status_code_label.b = 'Blocked';
-	 *                status_code_label.p = 'Passed';
-	 *                status_code_label.n = 'Not Run';
+	 *                status_code_label.CODE = localized CODE;
+	 *                status_code_label.CODE = localized CODE;
+	 *                ...
+   *
 	 *                prio_code_label = new Array();
-	 *                prio_code_label[3] = 'High';
-	 *                prio_code_label[2] = 'Medium';
-	 *                prio_code_label[1] = 'Low';
+	 *                prio_code_label[HIGH CODE] = Localized HIGH CODE;
+	 *                prio_code_label[MEDIUM CODE] = Localized MEDIUM CODE;
+	 *                prio_code_label[LOW CODE] = Localized LOW CODE;
 	 */
 	function buildCodeLabels()
 	{
@@ -346,14 +317,14 @@ class tlExtTable extends tlTable
 		foreach ($resultsCfg["status_label"] as $status => $label)
 		{
 			$code = $resultsCfg['status_code'][$status];
-		    // echo 'code:' . $code . '<br>';
 			$s .= "status_code_label.$code = '" . lang_get($label) . "';\n";
 		}
 
 		$urgencyCfg = config_get('urgency');
 		$s .= "prio_code_label = new Array();\n";
-		foreach ($urgencyCfg['code_label'] as $prio => $label) {
-			$s .= "prio_code_label[$prio] = '" . lang_get($label) . "';\n";
+		foreach ($urgencyCfg['verbose_code'] as $verbose => $code) 
+		{
+			$s .= "prio_code_label[$code] = '" . lang_get($urgencyCfg['verbose_label']['verbose']) . "';\n";
 		}
 		return $s;
 	}
@@ -375,11 +346,15 @@ class tlExtTable extends tlTable
 	/**
 	 * Outputs all js that is common.
 	 */
-	public function renderCommonGlobals()
+	public function renderCommonGlobals($callAddMethods = 1)
 	{
 		$s = '<script type="text/javascript">'. "\n\n";
-		$s .= $this->buildCodeLabels() . "\n\n";
-		$s .= $this->buildCfg() . "\n\n";
+		if( $callAddMethods )
+		{
+		  $s .= $this->buildCodeLabels() . "\n\n";
+		  $s .= $this->buildCfg() . "\n\n";
+		}
+		
 		$s .= "var store = new Array()\n\n";
 		$s .= "var grid = new Array()\n\n";
 		$s .= "var tableData = new Array()\n\n";
@@ -434,14 +409,13 @@ class tlExtTable extends tlTable
 	{
 		$resultsCfg = config_get('results');
 		$jsCode = "status_code_order = new Array();\n";
-        
-        $verboseStatusOrder=array_keys($resultsCfg["status_label_for_exec_ui"]);
-        foreach( $verboseStatusOrder as $order => $status )
-        {
-        	$code = $resultsCfg['status_code'][$status];
+    $verboseStatusOrder=array_keys($resultsCfg["status_label_for_exec_ui"]);
+    foreach( $verboseStatusOrder as $order => $status )
+    {
+      $code = $resultsCfg['status_code'][$status];
 			$jsCode .= "status_code_order.$code = " . $order . ";\n";
-        }
-        return $jsCode;
+    }
+    return $jsCode;
 	}
 
 	/**

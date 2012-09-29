@@ -27,35 +27,34 @@ switch($args->feature)
 {
 	case 'testproject':
 	case 'testsuite':
-		$item_mgr = new $args->feature($db);
-		$gui->attachments = $item_mgr->getAttachmentInfos($args->id);
-		$gui->id = $args->id;
 	
 		$lblkey = config_get('testcase_reorder_by') == 'NAME' ? '_alpha' : '_externalid';
 		$gui->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
+		$gui->id = $args->id;
 
+		$item_mgr = new $args->feature($db);
 		if($args->feature == 'testproject')
 		{
-			$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id);
+			$item_mgr->show($smarty,$gui,$args->id);
 		}
 		else
 		{
-			$item_mgr->show($smarty,$args->tproject_id,$gui,$args->id,array('show_mode' => $args->show_mode));
+			$item_mgr->show($smarty,$args->tproject_id,$gui,$args->id,array('show_mode' => $gui->show_mode));
     }
 	break;
 		
 	case 'testcase':
-	  $path_info = null;
+	  $gui->path_info = null;
 		$get_path_info = false;
 		$item_mgr = new testcase($db);
-		$args->viewerArgs['refresh_tree'] = 'no';
+		$gui->viewerArgs['refresh_tree'] = 'no';
     	
    		// has been called from a test case search
   	if(!is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)
 	  {
-		  $args->viewerArgs['show_title'] = 'no';
-		  $args->viewerArgs['display_testproject'] = 1;
-		  $args->viewerArgs['display_parent_testsuite'] = 1;
+		  $gui->viewerArgs['show_title'] = 'no';
+		  $gui->viewerArgs['display_testproject'] = 1;
+		  $gui->viewerArgs['display_parent_testsuite'] = 1;
 		  $args->id = $item_mgr->getInternalID($args->targetTestCase);
           
 		  if( !($get_path_info = ($args->id > 0)) )
@@ -69,7 +68,7 @@ switch($args->feature)
 	  {
 		  if( $get_path_info || $args->show_path )
 		  {
-		    $path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
+		    $gui->path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
 		  }
 		
 	    $platform_mgr = new tlPlatform($db,$args->tproject_id);
@@ -79,7 +78,7 @@ switch($args->feature)
 	  }
     $gui->id = $args->id;
 	  $item_mgr->show($smarty,$args->tproject_id,$grants,$gui,$templateCfg->template_dir,
-		  			        $args->id,$args->tcversion_id,$args->viewerArgs,$path_info,$args->show_mode);
+		  			        $args->id,$args->tcversion_id,$gui->viewerArgs);
 	break;
 
   default:
@@ -97,36 +96,38 @@ switch($args->feature)
  */
 function initializeEnv($dbHandler)
 {
-  $env = array();
-  $env[0] = init_args($dbHandler);
+  $args = init_args($dbHandler);
 
-  $grant2check = array('mgt_modify_tc','mgt_view_req','testplan_planning');
+  $gui = new stdClass();
+
+  $grant2check = array('mgt_modify_tc','mgt_view_req','testplan_planning','mgt_modify_product');
   $grants = new stdClass();
   foreach($grant2check as $right)
   {
-      $grants->$right = $_SESSION['currentUser']->hasRight($dbHandler,$right,$env[0]->tproject_id);
+      $grants->$right = $_SESSION['currentUser']->hasRight($dbHandler,$right,$args->tproject_id);
+      $gui->$right = $grants->$right;
   }
-
-  $env[1] = new stdClass();
-  $env[1]->modify_tc_rights = $grants->mgt_modify_tc;
-  $env[1]->tproject_id = $env[0]->tproject_id;
-  $env[1]->page_title = lang_get('container_title_' . $env[0]->feature);
-  $env[1]->opt_requirements = $env[0]->opt_requirements; 
-  $env[1]->requirementsEnabled = $env[0]->requirementsEnabled; 
-  $env[1]->automationEnabled = $env[0]->automationEnabled; 
-  $env[1]->testPriorityEnabled = $env[0]->testPriorityEnabled;
+  
+  $gui->tproject_id = $args->tproject_id;
+  $gui->page_title = lang_get('container_title_' . $args->feature);
+  $gui->opt_requirements = $args->opt_requirements; 
+  $gui->requirementsEnabled = $args->requirementsEnabled; 
+  $gui->automationEnabled = $args->automationEnabled; 
+  $gui->testPriorityEnabled = $args->testPriorityEnabled;
+  $gui->show_mode = $args->show_mode;
 
   // has sense only when we work on test case
-	$env[1]->platforms = null;
-  $env[1]->tableColspan = 5;
-	$env[1]->loadOnCancelURL = '';
-	$env[1]->attachments = null;
-	$env[1]->direct_link = null;
-	$env[1]->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
-	$env[1]->bodyOnUnload = "storeWindowSize('TCEditPopup')";
+	$gui->platforms = null;
+  $gui->tableColspan = 5;
+	$gui->loadOnCancelURL = '';
+	$gui->attachments = null;
+	$gui->direct_link = null;
+	$gui->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
+	$gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
+	$gui->viewerArgs = array('action' => '', 'msg_result' => '','user_feedback' => '', 'disable_edit' => 0,
+	                         'refreshTree' => 0);
 
-  $env[2] = $grants;
-  return $env;
+  return array($args,$gui,$grants);
 }
 
 /**
@@ -222,6 +223,7 @@ function init_args(&$dbHandler)
     	$args->feature = 'testcase';
     	$args->id = intval($args->tcase_id);
   }
+	$args->id = is_null($args->id) ? 0 : $args->id;
     
   switch($args->feature)
   {
@@ -229,12 +231,6 @@ function init_args(&$dbHandler)
         	$_SESSION['setting_refresh_tree_on_action'] = ($args->refreshTree) ? 1 : 0;
     break;
      
-    case 'testcase':
-			    $args->id = is_null($args->id) ? 0 : $args->id;
-			    $spec_cfg = config_get('spec_cfg');
-			    $args->viewerCfg = array('action' => '', 'msg_result' => '','user_feedback' => '');
-			    $args->viewerCfg['disable_edit'] = 0;
-          $args->viewerCfg['refreshTree'] = 0;
   	break;
   }
   

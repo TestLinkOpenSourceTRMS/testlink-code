@@ -48,7 +48,7 @@ Purpose: smarty template - view test specification containers
 
 {if $gui->level == 'testproject'}
 
-	{if $gui->modify_tc_rights == 'yes'}
+	{if $gui->mgt_modify_tc == 'yes'}
 		{$bDownloadOnly=false}
 
 	<fieldset class="groupBtn">
@@ -166,7 +166,7 @@ Purpose: smarty template - view test specification containers
 {* ----- TEST SUITE ----------------------------------------------------- *}
 {elseif $gui->level == 'testsuite'}
 
-	{if $gui->modify_tc_rights == 'yes' || $gui->sqlResult neq ''}
+	{if $gui->mgt_modify_tc == 'yes' || $gui->sqlResult neq ''}
 		<fieldset class="groupBtn">
 
 		<h2>{$labels.testsuite_operations}</h2>

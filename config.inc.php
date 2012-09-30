@@ -1325,7 +1325,7 @@ $tlCfg->demoSpecialUsers = array('admin');
  * ATTENTION: This feature is fully experimental. Enable at your own risk!
  *            Enabling it can cause broken tables.
  */
-$tlCfg->enableTableExportButton = true;
+$tlCfg->enableTableExportButton = false;
 
 /**
  * Taken from Mantis to implement better login security, and solve

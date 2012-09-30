@@ -77,13 +77,11 @@ if(!is_null($linked_tcversions))
   {
     // Warning!!! - $gui is passed by reference to be updated inside function
     $tcase = null;
-    list($tcase_id,$tcversion_id) = processTestCase($tcase,$gui,$args,$cfg,$linked_tcversions,
-                                                    $tree_mgr,$tcase_mgr,$attachmentRepository);
+    list($tcase_id,$tcversion_id) = processTestCase($tcase,$gui,$args,$cfg,$linked_tcversions,$mgr);
   }
   else
   {
-    list($tcase_id,$tcversion_id) = processTestSuite($db,$gui,$args,$linked_tcversions,
-                                                     $tree_mgr,$tcase_mgr,$attachmentRepository);
+    list($tcase_id,$tcversion_id) = processTestSuite($db,$gui,$args,$linked_tcversions,$mgr);
   }
 
   $gui->tcversionSet = is_array($tcversion_id) ? implode(',',$tcversion_id) : $tcversion_id;
@@ -102,13 +100,13 @@ if(!is_null($linked_tcversions))
     // Need to re-read to update test case status
     if ($args->save_and_next) 
     {
-      $identity = processSaveAndNext($tplan_mgr,$args,$gui,,$tcversion_id);
+      $identity = processSaveAndNext($mgr,$args,$gui,$tcversion_id);
       
-			$nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$tcversion_id,$args->platform_id);
+			$nextItem = $mgr->tplan->getTestCaseNextSibling($args->tplan_id,$tcversion_id,$args->platform_id);
 			
 			while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $args->testcases_to_show)) 
 			{
-				$nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$nextItem['tcversion_id'],$args->platform_id);
+				$nextItem = $mgr->tplan->getTestCaseNextSibling($args->tplan_id,$nextItem['tcversion_id'],$args->platform_id);
 			}
 			
 			if( !is_null($nextItem) )
@@ -120,7 +118,7 @@ if(!is_null($linked_tcversions))
 				// need info about this test case => need to update linked_tcversions info
 				$identity = array('id' => $nextItem['tcase_id'], 'version_id' => $nextItem['tcversion_id']);
 				list($lt,$xdm) = getLinkedItems($args,$gui->history_on,$cfg,$tcase_mgr,$tplan_mgr,$identity);
-     		processTestCase($nextItem,$gui,$args,$cfg,$lt,$tree_mgr,$tcase_mgr,$attachmentRepository);
+     		processTestCase($nextItem,$gui,$args,$cfg,$lt,$mgr);
 			}
    }
   }
@@ -608,8 +606,6 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
 function exec_additional_info(&$db, $attachmentRepository, &$tcase_mgr, $other_execs, 
                               $tplan_id, $tproject_id, $bugInterfaceOn, $bugInterface)
 {
-//  $bugInterfaceOn = config_get('bugInterfaceOn');
-//  $bugInterface = config_get('bugInterface');
   $attachmentInfos = null;
   $bugs = null;
   $cfexec_values = null;
@@ -620,7 +616,8 @@ function exec_additional_info(&$db, $attachmentRepository, &$tcase_mgr, $other_e
   	for($idx = 0;$idx < $num_elem;$idx++)
   	{
   		$exec_id = $execInfo[$idx]['execution_id'];
-  		
+
+      // REFACTORING NEEDED !!! 20120930  		
   		$aInfo = getAttachmentInfos($attachmentRepository,$exec_id,'executions',true,1);
   		if ($aInfo)
   			$attachmentInfos[$exec_id] = $aInfo;
@@ -1127,60 +1124,48 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$mgrPool)
   returns: 
 
   rev: 
-    20090913 - franciscom - changes due to platform feature
-  	20090718 - franciscom - cfield location management
-  	20080811 - franciscom - BUGID 1650 (REQ)
   
 */
-function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
-                         &$treeMgr,&$tcaseMgr,&$docRepository)
+function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,&$mgrPool)
 {     
 
-  	// IMPORTANT due  to platform feature
-  	// every element on linked_tcversions will be an array.
-    $cf_filters=array('show_on_execution' => 1); // BUGID 1650 (REQ)
-    $locationFilters=$tcaseMgr->buildCFLocationMap();
-    $guiObj->design_time_cfields='';
-  	$guiObj->testplan_design_time_cfields='';
-  	
-  	$tcase_id = isset($tcase['tcase_id']) ? $tcase['tcase_id'] : $argsObj->id;
+  // IMPORTANT due to platform feature
+  // every element on linked_tcversions will be an array.
+  $cf_filters = array('show_on_execution' => 1);
+  $guiObj->design_time_cfields='';
+  $guiObj->testplan_design_time_cfields='';
+  
+  $tcase_id = isset($tcase['tcase_id']) ? $tcase['tcase_id'] : $argsObj->id;
+  $items_to_exec[$tcase_id] = $linked_tcversions[$tcase_id][0]['tcversion_id'];    
+  $tcversion_id = isset($tcase['tcversion_id']) ? $tcase['tcversion_id'] : $items_to_exec[$tcase_id];
+ 
+  $link_id = $linked_tcversions[$tcase_id][0]['feature_id'];
+  $guiObj->tcAttachments[$tcase_id] = $mgrPool->tcase->getAttachmentInfo($tcase_id);
 
-  	$items_to_exec[$tcase_id] = $linked_tcversions[$tcase_id][0]['tcversion_id'];    
-  	// $tcversion_id = $linked_tcversions[$tcase_id][0]['tcversion_id'];
-  	$tcversion_id = isset($tcase['tcversion_id']) ? $tcase['tcversion_id'] : $items_to_exec[$tcase_id];
-  	
-  	$link_id = $linked_tcversions[$tcase_id][0]['feature_id'];
-  	$guiObj->tcAttachments[$tcase_id] = getAttachmentInfos($docRepository,$tcase_id,'nodes_hierarchy',1);
+  $tc_info = $mgrPool->tree->get_node_hierarchy_info($tcase_id);
+	$guiObj->tSuiteAttachments[$tc_info['parent_id']] = $mgrPool->tsuite->getAttachmentInfo($tc_info['parent_id']);
 
+  $locationFilters = testcase::buildCFLocationMap();
 	foreach($locationFilters as $locationKey => $filterValue)
 	{
-
-		// BUGID 3431 - Custom Field values at Test Case VERSION Level
-		$finalFilters=$cf_filters+$filterValue;
-    	$guiObj->design_time_cfields[$tcase_id][$locationKey] = 
-  		         $tcaseMgr->html_table_of_custom_field_values($tcase_id,'design',$finalFilters,null,null,
-  		         											  $argsObj->tproject_id,null,$tcversion_id);
+		$finalFilters = $cf_filters+$filterValue;
+    $guiObj->design_time_cfields[$tcase_id][$locationKey] = 
+  		         $mgrPool->tcase->html_table_of_custom_field_values($tcase_id,'design',$finalFilters,null,null,
+  		         											                              $argsObj->tproject_id,null,$tcversion_id);
     	
-    	// 20090718 - franciscom - TO BE refactored
-    	$guiObj->testplan_design_time_cfields[$tcase_id] = 
-  		         $tcaseMgr->html_table_of_custom_field_values($tcversion_id,'testplan_design',$cf_filters,
-  		                                                      null,null,$argsObj->tproject_id,null,$link_id);
+   	$guiObj->testplan_design_time_cfields[$tcase_id] = 
+  		         $mgrPool->tcase->html_table_of_custom_field_values($tcversion_id,'testplan_design',$cf_filters,
+  		                                                            null,null,$argsObj->tproject_id,null,$link_id);
 
-    }
+  }
 
-    // BUGID 856: Guest user can execute test case
-  	if($guiObj->grants->execute)
-  	{
+  if($guiObj->grants->execute)
+  {
   	   $guiObj->execution_time_cfields[$tcase_id] = 
-  	            $tcaseMgr->html_table_of_custom_field_inputs($tcase_id,null,'execution',"_{$tcase_id}",null,
-  	                                                         null,$argsObj->tproject_id);
-  	}
-    $tc_info=$treeMgr->get_node_hierarchy_info($tcase_id);
-	$guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
-		                                                                   'nodes_hierarchy',true,1);
-
-
-    return array($tcase_id,$tcversion_id);
+  	            $mgrPool->tcase->html_table_of_custom_field_inputs($tcase_id,null,'execution',"_{$tcase_id}",null,
+  	                                                               null,$argsObj->tproject_id);
+  }
+  return array($tcase_id,$tcversion_id);
 }
 
 
@@ -1422,13 +1407,14 @@ function launchRemoteExec(&$dbHandler,&$argsObj,$tcasePrefix,&$tplanMgr,&$tcaseM
 }
 
 
-function  processSaveAndNext(&$tplanMgr,$argsObj,$guiObj,$tcversionID)
+function  processSaveAndNext(&$mgrPool,$argsObj,$guiObj,$tcversionID)
 {
   $identity = null;
-  $nextItem = $tplanMgr->getTestCaseNextSibling($argsObj->tplan_id,$tcversionID,$argsObj->platform_id);
+  $nextItem = $mgrPool->tplan->getTestCaseNextSibling($argsObj->tplan_id,$tcversionID,$argsObj->platform_id);
   while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $argsObj->testcases_to_show)) 
   {
-  	$nextItem = $tplanMgr->getTestCaseNextSibling($argsObj->tplan_id,$nextItem['tcversion_id'],$argsObj->platform_id);
+  	$nextItem = $mgrPool->tplan->getTestCaseNextSibling($argsObj->tplan_id,$nextItem['tcversion_id'],
+  	                                                    $argsObj->platform_id);
   }
   
   if( !is_null($nextItem) )
@@ -1437,7 +1423,7 @@ function  processSaveAndNext(&$tplanMgr,$argsObj,$guiObj,$tcversionID)
   	// need info about this test case => need to update linked_tcversions info
   	$identity = array('id' => $nextItem['tcase_id'], 'version_id' => $nextItem['tcversion_id']);
   	list($lt,$xdm) = getLinkedItems($argsObj,$guiObj->history_on,$cfg,$tcase_mgr,$tplan_mgr,$identity);
-  	processTestCase($nextItem,$guiObj,$argsObj,$cfg,$lt,$tree_mgr,$tcase_mgr,$attachmentRepository);
+  	processTestCase($nextItem,$guiObj,$argsObj,$cfg,$lt,$mgr);
   }
   return $identity;
 }
@@ -1447,6 +1433,7 @@ function createManagers($dbHandler,$tprojectID)
   $is = new stdClass();
   $is->tree = new tree($dbHandler);
   $is->tproject = new testproject($dbHandler);
+  $is->tsuite = new testsuite($dbHandler);
   $is->tplan = new testplan($dbHandler);
   $is->tcase = new testcase($dbHandler);
   $is->req = new requirement_mgr($dbHandler);
@@ -1456,5 +1443,152 @@ function createManagers($dbHandler,$tprojectID)
   $is->exec_cfield = new exec_cfield_mgr($dbHandler,$tprojectID);
 
   retunr $is;
+}
+
+
+
+// function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identity=null)
+function getLinkedItems($argsObj,$historyOn,$cfgObj,$mgrPool,$identity=null)
+{          
+	
+	$ltcv = null;
+	$idCard = null;
+	$itemSet = null;
+	if( !is_null($identity) )
+	{
+		$idCard = $identity;	
+	}
+	else if(!is_null($argsObj->tc_id) && !is_array($argsObj->tc_id) )
+	{
+		$idCard = array('id' => $argsObj->tc_id, 'version_id' => $argsObj->version_id);
+	}
+
+	if( !is_null($idCard) )
+	{
+		$execContext = array('tplan_id' => $argsObj->tplan_id,
+							           'platform_id' => $argsObj->platform_id,
+							           'build_id' => $argsObj->build_id);		
+
+		$ltcv = null;
+		if($historyOn)
+		{
+			$execContext['testplan_id'] = $argsObj->tplan_id;
+			$ltcv = $mgrPool->tcase->getExecutionSet($idCard['id'],null,$execContext);
+		}
+
+		// lazy implementation:
+		// getExecutionSet() returns data ONLY for Statuses that are written ON DB,
+		// then if full history for test case is NOT RUN, we are doomed!!
+		if(!$historyOn || is_null($ltcv))
+		{
+			$opt = null;
+			$ltcv = $mgrPool->tcase->getLatestExecSingleContext($idCard,$execContext,$opt);
+		}
+	}
+	else
+	{
+		// -----------------------------------------------------------
+		// When nullify filter_status - 20080504 - DO NOT REMOVE -
+		// 
+		// May be in the following situation we do not HAVE to apply filter status:
+		// 1. User have filter for Not Run on Tree
+		// 2. Clicks on TC XXX
+		// 3. Executes TC
+		// 4. DO NOT UPDATE TREE.
+		//    we do not update automatically to avoid:
+		//    a) performance problems
+		//    b) delays on operations due to tree redraw
+		//    c) loose tree status due to lack of feature of tree engine
+		//
+		// 5. Clicks again on TC XXX
+		// If we use filter, we will get No Data Available.
+		//
+		// When working on show_testsuite_contents mode (OLD MODE) when we show
+		// all testcases inside a testsuite that verifies a filter criteria WE NEED TO APPLY FILTER
+		//
+		// We do not have this problem when this page is called after user have executed,
+		// probably because filter_status is not send back.
+		//
+		// I will add logic to nullify filter_status on init_args()
+		// 
+		
+		$options = array('only_executed' => true, 'output' => $historyOn ? 'mapOfArray' : 'mapOfMap',
+						         'include_unassigned' => $argsObj->include_unassigned,
+						         'group_by_build' => 'add_build','last_execution' => !$historyOn);
+		
+		if(is_null($argsObj->filter_status) || in_array($cfgObj->tc_status['not_run'],$argsObj->filter_status))
+		{
+		    $options['only_executed'] = false;
+		}
+
+
+		// args->tsuites_id: is only used when user click on a test suite.
+		//                   probably is used only when bulk execution is enabled.
+		//
+		// if args->tc_id is not null, theorically all other filters are useless.
+		// why ?
+		// Because will normally call this script, from the execution tree and if we can click
+		// on a tree node, this means it has passed all filters.
+		//
+		//
+		// $args->platform_id: needed to get execution status info
+		// $args->build_id: needed to get execution status info
+		//
+		$basic_filters = array('tcase_id' => $argsObj->tc_id, 'platform_id' => $argsObj->platform_id,
+							             'build_id' => $argsObj->build_id);
+		
+		// This filters are useful when bulk execution is enabled, 
+		// and user do click on a test suite on execution tree.
+		$bulk_filters = array('keyword_id' => $argsObj->keyword_id,'assigned_to' => $argsObj->filter_assigned_to, 
+						              'exec_status' => $argsObj->filter_status,'cf_hash' => $argsObj->cf_selected,
+		                      'tsuites_id' => $argsObj->tsuite_id,
+		                      'assigned_on_build' => $argsObj->build_id);
+		
+		// CRITIC / IMPORTANT 
+		// With BULK Operation enabled, we prefer to display Test cases tha are ONLY DIRECT CHILDREN
+		// of test suite id => we do not do deep walk.
+		// Think is a good choice, to avoid retrieving lot of info.
+		// May be we need to add a config parameter (or better an option at GUI level)
+		// in order to allow use how he / she wants to work.
+		//
+		$filters = array_merge($basic_filters,$bulk_filters);
+		if( !is_null($sql2do = $mgrPool->tplan->getLinkedForExecTree($argsObj->tplan_id,$filters,$options)) )
+		{
+			if( is_array($sql2do) )
+			{				
+				if( isset($filters['keyword_filter_type']) && ($filters['keyword_filter_type'] == 'And') )
+				{ 
+					$kmethod = "fetchRowsIntoMapAddRC";
+					$unionClause = " UNION ALL ";
+				}
+				else
+				{
+					$kmethod = "fetchRowsIntoMap";
+					$unionClause = ' UNION ';
+				}
+				$sql2run = $sql2do['exec'] . $unionClause . $sql2do['not_run'];
+			}
+			else
+			{
+				$sql2run = $sql2do;
+			}
+			
+			// Development Notice: 
+			// CUMULATIVE is used only to create same type of datastructe that existed
+			// before this refactoring
+			//
+			$ltcv = $tex = $mgrPool->tcase->db->$kmethod($sql2run,'tcase_id');
+			if(!is_null($tex))
+			{
+				foreach($tex as $xkey => $xvalue)
+		       	{
+		        	$itemSet->tcase_id[]=$xkey;
+		        	$itemSet->tcversion_id[]=$xvalue['tcversion_id'];
+		       	}  
+			}
+		}
+	}
+             
+  return array($ltcv,$itemSet);         
 }
 ?>

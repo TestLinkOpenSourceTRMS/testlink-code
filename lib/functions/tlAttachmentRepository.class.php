@@ -344,7 +344,6 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 * @return string the contents of the attachment or null on error
 	 *
 	 * @internal revision
-	 * 20101208 - franciscom - BUGID 4085
 	 */
 	public function getAttachmentContent($id,$attachmentInfo = null)
 	{

@@ -169,6 +169,7 @@ Ext.onReady(function() {
 					show_all_columns: '{$labels.show_all_columns|escape:javascript}',
 					show_all_columns_tooltip: '{$labels.show_all_columns_tooltip|escape:javascript}'
 				}
+				
 				//init plugins for multisort
 				{if $matrix->multiSortEnabled}
 					// minor syntax error causing problems on IE6
@@ -237,8 +238,7 @@ Ext.onReady(function() {
 			view: new Ext.grid.GroupingView({
 				forceFit: true
 				{if $matrix->showGroupItemsCount}
-					,groupTextTpl: '{ text } ({ [values.rs.length] } ' +
-						'{ [values.rs.length > 1 ? "Items" : "Item"] })'
+					,groupTextTpl: '{ text } ({ [values.rs.length] } { [values.rs.length > 1 ? "Items" : "Item"] })'
 				{/if}
 				{if $matrix->hideGroupedColumn}
 					,hideGroupedColumn:true

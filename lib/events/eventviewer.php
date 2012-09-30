@@ -11,7 +11,6 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
-require_once('exttable.class.php');
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
@@ -20,6 +19,8 @@ checkRights($db,$_SESSION['currentUser'],$args);
 
 $gui = initializeGui($db,$args);
 $filters = getFilters();
+
+$smarty = new TLSmarty();
 $show_icon = TL_THEME_IMG_DIR . "plus.gif";
 $charset = config_get('charset');
 
@@ -74,7 +75,6 @@ else
   $gui->warning_msg = lang_get("no_events");
 }
 
-$smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 

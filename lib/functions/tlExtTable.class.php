@@ -15,7 +15,7 @@
  *
  **/
 
-require_once('table.class.php');
+//require_once('table.class.php');
 
 /**
  * Helper class used for EXT-JS tables. There is an option to use custom type
@@ -103,9 +103,9 @@ class tlExtTable extends tlTable
 		                                'filter' => 'Status'));
 
 
-    $this->toolbar = new stdClass();
-	  $this->toolbar->multiSortEnabled = true;
+	  $this->multiSortEnabled = true;
 
+    $this->toolbar = new stdClass();
 	  $this->toolbar->show = true;
 
     $this->toolbar->showButton = new stdClass();
@@ -113,7 +113,7 @@ class tlExtTable extends tlTable
     $this->toolbar->showButton->expandCollapseGroups = true;
     $this->toolbar->showButton->defaultState = true;
     $this->toolbar->showButton->refresh = true;
-    $this->toolbar->showButton->resetFilter = true;
+    $this->toolbar->showButton->resetFilters = true;
     $this->toolbar->showButton->export = config_get('enableTableExportButton');
 	}
 
@@ -144,7 +144,8 @@ class tlExtTable extends tlTable
 	{
 		if( !is_null($this->data) ) // to avoid warnings on foreach
 		{
-			foreach ($this->data as &$row) {
+			foreach ($this->data as &$row) 
+			{
 				// Use only column values from each row (makes every index numeric)
 				// This makes sure a js array is created, if named keys are used
 				// json_encode will create a js object instead.
@@ -168,59 +169,50 @@ class tlExtTable extends tlTable
 		$n_columns = sizeof($this->columns);
 		$options = array('width','hidden','groupable','hideable');
 
-		for ($i=0; $i<$n_columns; $i++) {
-			$column = $this->columns[$i];
+		for ($idx = 0; $idx < $n_columns; $idx++) 
+		{
+			$column = $this->columns[$idx];
 			$s .= "{header: \"{$column['title']}\", dataIndex: '{$column['col_id']}'";
-			
-			// filter is set, but no filterOptions
-			if (isset($column['filter']) && !isset($column['filterOptions'])) {
-				$s .= ",filter: {type: '{$column['filter']}'}";
-			} else if (isset($column['filter']) && isset($column['filterOptions'])) {
-				// filter and filterOptions is set
-				// for example list filter needs options
-				$s .= ",filter: {type: '{$column['filter']}',options: ['";
-				$s .= implode("','",$column['filterOptions']);
-				$s .= "']}";
-			} else if (isset($column['type']) && isset($this->customBehaviour[$column['type']]['filter'])) {
-				// do not define a filter in this case. Special filters are applied later
-			} else {
-				// if no filter is specified use string filter
-				// string filter is the most "basic" filter
-				$s .= ",filter: {type: 'string'}";
-			}
 
-            foreach($options as $opt_str)
-            {
-				if (isset($column[$opt_str])) {
+      foreach($options as $opt_str)
+      {
+				if (isset($column[$opt_str])) 
+				{
 					$s .= ",$opt_str: {$column[$opt_str]}";
 				}
 			}
-
-			if( isset($column['type']) && isset($this->customBehaviour[$column['type']]))
+			
+			if ( isset($column['filter']) ) 
 			{
-				// BUGID 4125
+				$s .= ",filter: {type: '{$column['filter']}'";
+			  if( isset($column['filterOptions']) )
+			  {
+  				$s .= ",options: ['" . implode("','",$column['filterOptions']) . "']";
+			  }
+				$s .= "}";
+			} 
+      else if (isset($column['type']) && isset($this->customBehaviour[$column['type']]['filter'])) 
+      {
 				$customBehaviour = $this->customBehaviour[$column['type']];
-				if (isset($customBehaviour['filter']) && $customBehaviour['filter'] == 'Status')
+				if (isset($customBehaviour['filter']) && isset($customBehaviour['filterMethod']) )
 				{
-					$s .= ",filter: " . $this->buildStatusFilterOptions();
+					$s .= ",filter: " . $this->$customBehaviour['filterMethod']();
 				}
-				if (isset($customBehaviour['filter']) && $customBehaviour['filter'] == 'Priority')
-				{
-					$s .= ",filter: " . $this->buildPriorityFilterOptions();
-				}
+				
 				if (isset($customBehaviour['render']) )
 				{
 					// Attach a custom renderer
 					$s .= ",renderer: {$customBehaviour['render']}";
 				}
 			}
-
-			$sortable = 'true';
-			if(isset($column['sortable'])){
-				$sortable = $column['sortable'];
+			else 
+			{
+				// if no filter is specified use string filter, that is the most "basic" filter
+				$s .= ",filter: {type: 'string'}";
 			}
-			$s .= ",sortable: {$sortable}";
 
+			$dummy = isset($column['sortable']) ? $column['sortable'] : 'true';
+			$s .= ",sortable: {$dummy}";
 			$s .= "},\n";
 		}
 		$s = trim($s,",\n") . '];';
@@ -228,8 +220,8 @@ class tlExtTable extends tlTable
 	}
 
 	/**
-	 * Build a JS object to describe the fields needed be EXT-JS ArrayStore. This
-	 * is supposed to be used as columnData.
+	 * Build a JS object to describe the fields needed be EXT-JS ArrayStore. 
+	 * This is supposed to be used as columnData.
 	 *
 	 * @return string in the following format
 	 *                 [{name: 'id_TestSuite'},
@@ -240,15 +232,18 @@ class tlExtTable extends tlTable
 	{
 		$s = '[';
 		$n_columns = sizeof($this->columns);
-		for ($i=0; $i < $n_columns; $i++) {
-			$column = $this->columns[$i];
+		for ($idx=0; $idx < $n_columns; $idx++) 
+		{
+			$column = $this->columns[$idx];
 			$s .= "{name: '{$column['col_id']}'";
 			if(	isset($column['type']) &&
 				isset($this->customBehaviour[$column['type']]) &&
 				isset($this->customBehaviour[$column['type']]['sort']) )
 			{
 				$s .= ", sortType: {$this->customBehaviour[$column['type']]['sort']}";
-			} else if (isset($column['sortType'])) {
+			} 
+			else if (isset($column['sortType'])) 
+			{
 				$s .= ", sortType: '{$column['sortType']}'";
 			}
 			
@@ -258,44 +253,6 @@ class tlExtTable extends tlTable
 		$s .= '];';
 		return $s;
 
-	}
-
-	/**
-	 * Build a JS assoc array to translate status and priorities codes to
-	 * localized strings. This is done in JS because we need the short codes
-	 * when sorting the table. The codes are translated to text only when
-	 * rendering.
-	 *
-	 * What will happen if user add new status ?????
-	 *
-	 * @return string status_code_label = new Array();
-	 *                status_code_label.CODE = localized CODE;
-	 *                status_code_label.CODE = localized CODE;
-	 *                ...
-   *
-	 *                prio_code_label = new Array();
-	 *                prio_code_label[HIGH CODE] = Localized HIGH CODE;
-	 *                prio_code_label[MEDIUM CODE] = Localized MEDIUM CODE;
-	 *                prio_code_label[LOW CODE] = Localized LOW CODE;
-	 */
-	function buildCodeLabels()
-	{
-		$resultsCfg = config_get('results');
-		$s = "status_code_label = new Array();\n";
-        		
-		foreach ($resultsCfg["status_label"] as $status => $label)
-		{
-			$code = $resultsCfg['status_code'][$status];
-			$s .= "status_code_label.$code = '" . lang_get($label) . "';\n";
-		}
-
-		$urgencyCfg = config_get('urgency');
-		$s .= "prio_code_label = new Array();\n";
-		foreach ($urgencyCfg['verbose_code'] as $verbose => $code) 
-		{
-			$s .= "prio_code_label[$code] = '" . lang_get($urgencyCfg['verbose_label']['verbose']) . "';\n";
-		}
-		return $s;
 	}
 
 	/**
@@ -315,15 +272,9 @@ class tlExtTable extends tlTable
 	/**
 	 * Outputs all js that is common.
 	 */
-	public function renderCommonGlobals($callAddMethods = 1)
+	public function renderCommonGlobals()
 	{
 		$s = '<script type="text/javascript">'. "\n\n";
-		if( $callAddMethods )
-		{
-		  $s .= $this->buildCodeLabels() . "\n\n";
-		  $s .= $this->buildCfg() . "\n\n";
-		}
-		
 		$s .= "var store = new Array()\n\n";
 		$s .= "var grid = new Array()\n\n";
 		$s .= "var tableData = new Array()\n\n";
@@ -345,14 +296,21 @@ class tlExtTable extends tlTable
 	{
 		$s = '';
 		$settings = array('title', 'width', 'height', 'autoHeight', 'collapsible', 'frame', 'stripeRows');
-		foreach ($settings as $setting) {
+		foreach ($settings as $setting) 
+		{
 			$value = $this->{$setting};
-			if (!is_null($value)){
-				if (is_int($value)) {
+			if (!is_null($value))
+			{
+				if (is_int($value)) 
+				{
 					$s .= ", {$setting}: {$value}";
-				} else if (is_bool($value)) {
+				} 
+				else if (is_bool($value)) 
+				{
 					$s .= ", {$setting}: " . ($value ? 'true' : 'false');
-				} else {
+				} 
+				else 
+				{
 					$s .= ", {$setting}: \"{$value}\"";
 				}
 			}
@@ -370,46 +328,32 @@ class tlExtTable extends tlTable
 
 
 	/**
-	 * Build a JS 
-	 *
-	 * @return 
-	 */
-	function buildCfg()
-	{
-		$resultsCfg = config_get('results');
-		$jsCode = "status_code_order = new Array();\n";
-    $verboseStatusOrder=array_keys($resultsCfg["status_label_for_exec_ui"]);
-    foreach( $verboseStatusOrder as $order => $status )
-    {
-      $code = $resultsCfg['status_code'][$status];
-			$jsCode .= "status_code_order.$code = " . $order . ";\n";
-    }
-    return $jsCode;
-	}
-
-	/**
 	 * Get the index of a column by (localized) name of the column.
 	 * 
 	 * @author Andreas Simon
 	 * @param string $name
 	 * @return int $column_idx
 	 */
-	protected function getColumnIdxByName($name) {
-		$column_idx = 0;
-		foreach ($this->columns as $key => $column) {
-			if ($name == $column['title']) {
-				$column_idx = $key;
+	protected function getColumnIdxByName($name) 
+	{
+		$idx = 0;
+		foreach ($this->columns as $key => $column) 
+		{
+			if ($name == $column['title']) 
+			{
+				$idx = $key;
 				break;
 			}
 		}
-		return $column_idx;
+		return $idx;
 	}
 
 	/**
 	 * Convinience function to group by column name.
 	 * @param string $name column name to group by
 	 */
-	function setGroupByColumnName($name) {
+	function setGroupByColumnName($name) 
+	{
 		$idx = $this->getColumnIdxByName($name);
 		$this->groupByColumn = $this->columns[$idx]['col_id'];
 	}
@@ -418,27 +362,48 @@ class tlExtTable extends tlTable
 	 * Convinience function to sort on column name.
 	 * @param string $name column name to sort on
 	 */
-	function setSortByColumnName($name) {
+	function setSortByColumnName($name) 
+	{
 		$idx = $this->getColumnIdxByName($name);
 		$this->sortByColumn = $this->columns[$idx]['col_id'];
 	}
 
-	function buildStatusFilterOptions() {
-		$resultsCfg = config_get('results');
-		$statuses = array();
-		foreach ($resultsCfg["status_label"] as $status => $label) {
-			$code = $resultsCfg['status_code'][$status];
-			$statuses[] = array($code, lang_get($label));
+
+  
+  /**
+   * Following methods are generic, is simple to develop if the live here.
+   * 
+   */
+
+  /**
+   * 
+   * 
+   */
+	function buildStatusFilterOptions() 
+	{
+		$cfg = config_get('results');
+		$options = array();
+		foreach ($cfg["status_label"] as $status => $label) 
+		{
+			$code = $cfg['status_code'][$status];
+			$options[] = array($code, lang_get($label));
 		}
-		return "{type: 'Status', options: " . json_encode($statuses) . "}";
+		return "{type: 'Status', options: " . json_encode($options) . "}";
 	}
 	
-	function buildPriorityFilterOptions() {
-		$urgencyCfg = config_get('urgency');
-		$priorities = array();
-		foreach ($urgencyCfg['code_label'] as $prio => $label) {
-			$priorities[] = array("$prio", lang_get($label));
+  /**
+   * 
+   * 
+   */
+	function buildPriorityFilterOptions() 
+	{
+		$cfg = config_get('urgency');
+		$options = array();
+		foreach ($cfg['verbose_code'] as $verbose => $code) 
+		{
+			$options[] = array("$code", lang_get($cfg['verbose_label'][$verbose]));
 		}
-		return "{type: 'Priority', options: " . json_encode($priorities) . "}";
+		return "{type: 'Priority', options: " . json_encode($options) . "}";
 	}
 }
+?>

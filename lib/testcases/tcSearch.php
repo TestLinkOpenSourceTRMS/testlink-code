@@ -6,17 +6,18 @@
  * Display test cases search results. 
  *
  * @filesource	tcSearch.php
- * @package 	TestLink
- * @author 		TestLink community
- * @copyright 	2007-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author 		  TestLink community
+ * @copyright 	2007-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
  *
- *	@internal revisions
+ * @internal revisions
+ * @since 2.0
+ *
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once('exttable.class.php');
 testlinkInitPage($db);
 $date_format_cfg = config_get('date_format');
 
@@ -28,6 +29,7 @@ $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
 $args = init_args($date_format_cfg);
 
+$smarty = new TLSmarty();
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 $history_icon = TL_THEME_IMG_DIR . "history_small.png";
 
@@ -203,7 +205,6 @@ if ($args->tproject_id)
 	}
 }
 
-$smarty = new TLSmarty();
 if($gui->row_qty > 0)
 {	
 	if(!is_null($gui->resultSet))

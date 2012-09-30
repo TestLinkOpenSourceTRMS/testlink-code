@@ -9,17 +9,6 @@
  * Show Test Results over all Builds.
  *
  * @internal revisions
- *  20110405 - Julian - BUGID 4377 - Add percentage for "Results by top level Test Suites"
- *  20110326 - franciscom - BUGID 4355: General Test Plan Metrics - Build without executed 
- *										test cases are not displayed.
- *	20101225 - franciscom - added processing time feedback
- *  20101018 - Julian - BUGID 2236 - Milestones Report broken - removed useless code
- *  20100811 - asimon - removed "results by assigned testers" table,
- *                      was replaced by new report "results by tester per build"
- *  20100621 - eloff - BUGID 3542 - fixed typo
- *  20100206 - eloff - BUGID 3060 - Show verbose priority statistics like other tables.
- *  20100201 - franciscom - BUGID 0003123: General Test Plan Metrics - order of columns
- *                                         with test case exec results
  * ----------------------------------------------------------------------------------- */
 require('../../config.inc.php');
 require_once('common.php');

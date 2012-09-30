@@ -269,10 +269,9 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon) {
 		$table->setSortByColumnName($labels['test_case']);
 		$table->sortDirection = 'DESC';
 		
-		$table->showToolbar = true;
-		$table->allowMultiSort = false;
-		$table->toolbarRefreshButton = false;
-		$table->toolbarShowAllColumnsButton = false;
+		$table->multiSortEnabled = false;
+		$table->toolbar->showButton->refresh = false;
+		$table->toolbar->showButton->showAllColumns = false;
 		
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
 		

@@ -150,11 +150,6 @@ if( ($doIt = !is_null($gui->resultSet)) )
 			$matrix->frame = true;
 		}
 		
-		// define toolbar
-		$matrix->showToolbar = true;
-		$matrix->toolbarExpandCollapseGroupsButton = true;
-		$matrix->toolbarShowAllColumnsButton = true;
-		
 		$matrix->setSortByColumnName($sortByColumn);
 		$matrix->sortDirection = 'DESC';
 		$gui->tableSet[$tplan_id] = $matrix;

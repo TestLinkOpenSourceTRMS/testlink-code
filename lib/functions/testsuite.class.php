@@ -427,9 +427,8 @@ class testsuite extends tlObjectWithAttachments
     $gui->attach->infoSet = null;
     $gui->attach->gui = null;
     list($gui->attach->infoSet,$gui->attach->gui) = $this->buildAttachSetup($id,$my['options']);
-
     $gui->attach->gui->display=TRUE;
-    //new dBug($gui->attach);
+    $gui->attach->enabled = $gui->attach->gui->enabled;
     
     $gui->idpage_title = lang_get('testsuite');
     $gui->level = 'testsuite';
@@ -1385,20 +1384,5 @@ class testsuite extends tlObjectWithAttachments
       return $branch;
   }
 
-
-
-  function buildAttachSetup($id,$opt)
-  {
-    $systemWideCfg = config_get('attachments');
-    $info = $this->getAttachmentInfos($id);
-
-    $cfg = tlAttachment::getGuiCfg();  
-    $cfg->display = $systemWideCfg->enabled && !is_null($info);
-    $cfg->uploadEnabled = ($cfg->showUploadBtn && ($opt['show_mode'] != 'readonly'));
-  
-    return array($info,$cfg);
-  }
-
 } // end class
-
 ?>

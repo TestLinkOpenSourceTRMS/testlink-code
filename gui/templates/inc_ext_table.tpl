@@ -237,12 +237,8 @@ Ext.onReady(function() {
 
 			view: new Ext.grid.GroupingView({
 				forceFit: true
-				{if $matrix->showGroupItemsCount}
-					,groupTextTpl: '{ text } ({ [values.rs.length] } { [values.rs.length > 1 ? "Items" : "Item"] })'
-				{/if}
-				{if $matrix->hideGroupedColumn}
-					,hideGroupedColumn:true
-				{/if}
+				{if $matrix->showGroupItemsCount}{$matrix->groupItemsCountRenderString}{/if}
+				{if $matrix->hideGroupedColumn},hideGroupedColumn:true{/if}
 				}), //END view
 			
 			columns: columnData['{$tableID}']

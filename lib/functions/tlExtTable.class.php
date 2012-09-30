@@ -84,6 +84,9 @@ class tlExtTable extends tlTable
 	 * see BUGID 3714 for information about problems
 	 */
 	public $storeTableState = true;
+	
+	
+	public $groupItemsCountRenderString;
 
 	/**
 	 * Creates a helper object to render a table to a EXT-JS GridPanel.
@@ -115,6 +118,11 @@ class tlExtTable extends tlTable
     $this->toolbar->showButton->refresh = true;
     $this->toolbar->showButton->resetFilters = true;
     $this->toolbar->showButton->export = config_get('enableTableExportButton');
+    
+    // is used on smarty template, and to avoid issues with delimiters
+    // is much better to create here the string
+    $this->groupItemsCountRenderString = ",groupTextTpl: '{text} ({[values.rs.length]} " .
+                                         "{[values.rs.length > 1 ? \"Items\" : \"Item\"]})'";
 	}
 
 	/**

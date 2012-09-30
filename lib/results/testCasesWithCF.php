@@ -8,11 +8,10 @@
  *
  * For a test plan, list test cases with Execution Custom Field Data
  *
- * @internal Revisions:
+ * @internal revisions
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();

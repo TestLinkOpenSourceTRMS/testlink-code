@@ -19,7 +19,6 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('displayMgr.php');
 require_once('users.inc.php');
-require_once('exttable.class.php');
 require_once('exec.inc.php'); // used for bug string lookup
 if (config_get('interface_bugs') != 'NO')
 {

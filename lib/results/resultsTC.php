@@ -7,16 +7,11 @@
 * Show Test Report by individual test case.
 *
 * @internal revisions
-* 20110512 - Julian - BUGID 4451 - remove version tag from not run test cases as the shown version
-*                                  is only taken from previous build and might not be right
-* 20110329 - Julian - BUGID 4341 - added "Last Execution" column
-*
+* @since 2.0
 */
 require('../../config.inc.php');
 require_once('common.php');
-require_once('results.class.php');
 require_once('displayMgr.php');
-require_once('exttable.class.php');
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();

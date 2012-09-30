@@ -3,16 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource	tcAssignedToUser.php
- * @package 	TestLink
- * @copyright 	2005,2011 TestLink community 
- * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @copyright 	2005,2012 TestLink community 
+ * @author 		  Francisco Mancardi - francisco.mancardi@gmail.com
+ * @link 		    http://www.teamst.org/index.php
  *
- * @internal revisions:
+ * @internal revisions
+ * @since 2.0
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once("exttable.class.php");
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();

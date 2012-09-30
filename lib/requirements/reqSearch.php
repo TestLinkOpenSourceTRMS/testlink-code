@@ -4,10 +4,10 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	reqSearch.php
- * @package 	TestLink
- * @author		Andreas Simon
+ * @package 	  TestLink
+ * @author		  Andreas Simon
  * @copyright 	2005-2012, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @link 		  http://www.teamst.org/index.php
  *
  * Search results for requirements.
  *
@@ -20,7 +20,6 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("requirements.inc.php");
-require_once('exttable.class.php');
 testlinkInitPage($db);
 $date_format_cfg = config_get('date_format');
 

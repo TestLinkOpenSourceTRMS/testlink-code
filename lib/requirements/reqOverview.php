@@ -5,10 +5,10 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	reqOverview.php
- * @package 	TestLink
- * @author 		Andreas Simon
- * @copyright 	2010, TestLink community
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author 		  Andreas Simon
+ * @copyright 	2010,2012 TestLink community
+ * @link 		    http://www.teamst.org/index.php
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -20,7 +20,6 @@
 
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once('exttable.class.php');
 testlinkInitPage($db);
 
 $cfield_mgr = new cfield_mgr($db);

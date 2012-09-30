@@ -277,9 +277,6 @@ function buildExtTable($gui,$show_icon,$charset)
 		$table->setSortByColumnName(lang_get('th_timestamp'));
 		$table->sortDirection = 'DESC';
 		
-		$table->showToolbar = true;
-		$table->toolbarExpandCollapseGroupsButton = true;
-		$table->toolbarShowAllColumnsButton = true;
 	}
 	return($table);
 }

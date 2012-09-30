@@ -11,7 +11,8 @@
  * @since 1.9
  *
  * @internal revisions
- * 
+ * @since 2.0
+ *
  **/
 
 require_once('table.class.php');
@@ -29,11 +30,6 @@ class tlExtTable extends tlTable
 	 */
 	protected $customBehaviour = array();
 	
-	/**
-	 * if true toolbar offers multisort feature.
-	 */
-	
-	public $allowMultiSort = true;
 
 	/**
 	 * If set to an POSITIVE INTEGER VALUE, use this column for grouping. 
@@ -57,23 +53,19 @@ class tlExtTable extends tlTable
 	 */
 	
 	public $title = null;
-	
 	public $width = null;
-	
 	public $height = 500;
-
 	public $autoHeight = true;
-	
 	public $collapsible = false;
-	
 	public $frame = false;
 	
 	// x-grid3-row-alt of extjs css file is responsible for color
 	public $stripeRows = true;
 	
 	/**
-	 * 20100816 - asimon - enable sorting by a default column.
-	 * If set (via setSortByColumnName), use this column for sorting. The value must be in the format from titleToColumnName.
+	 * Enable sorting by a default column.
+	 * If set (via setSortByColumnName), use this column for sorting. 
+	 * The value must be in the format from titleToColumnName.
 	 * User can choose to sort by other columns, this is just the default column.
 	 * If you activate this, you can also set $sortDirection if you don't want descending sorting.
 	 * @see tlTable::titleToColumnName()
@@ -81,47 +73,12 @@ class tlExtTable extends tlTable
 	public $sortByColumn = null;
 	
 	/**
-	 * 20100816 - asimon - enable sorting by a default column and with configurable direction.
+	 * enable sorting by a default column and with configurable direction.
 	 * If $sortByColumn is used, this will be used as the sort direction, default is descending (DESC).
 	 */
 	public $sortDirection = 'DESC';
 
-    /**
-     * If true shows a toolbar in the table header.
-     */
-    public $showToolbar = true;
-
-    /**
-     * If true shows "expand/collapse groups" toolbutton in toolbar.
-     */
-    public $toolbarExpandCollapseGroupsButton = true;
-    
-    /**
-     * If true shows "show all columns" toolbutton in toolbar.
-     */
-    public $toolbarShowAllColumnsButton = true;
-
-	/**
-	 * If true show "reset to default settings" button
-	 */
-	public $toolbarDefaultStateButton = true;
-	
-	/**
-	 * If true show "refresh" button
-	 */
-	public $toolbarRefreshButton = true;
-	
-	/**
-	 * If true show "Reset Filters" button
-	 */
-	public $toolbarResetFiltersButton = true;
-
-	/**
-	 * If true, show export button in table toolbar.
-	 * @var bool
-	 */
-	public $showExportButton = false;
-
+  public $toolbar = null;
 	/**
 	 * If true save table state to cookie
 	 * see BUGID 3714 for information about problems
@@ -145,7 +102,19 @@ class tlExtTable extends tlTable
 		                          array('render' => 'statusRenderer','sort' => 'statusCompare',
 		                                'filter' => 'Status'));
 
-		$this->showExportButton = config_get('enableTableExportButton');
+
+    $this->toolbar = new stdClass();
+	  $this->toolbar->multiSortEnabled = true;
+
+	  $this->toolbar->show = true;
+
+    $this->toolbar->showButton = new stdClass();
+    $this->toolbar->showButton->showAllColumns = true;
+    $this->toolbar->showButton->expandCollapseGroups = true;
+    $this->toolbar->showButton->defaultState = true;
+    $this->toolbar->showButton->refresh = true;
+    $this->toolbar->showButton->resetFilter = true;
+    $this->toolbar->showButton->export = config_get('enableTableExportButton');
 	}
 
 	/**

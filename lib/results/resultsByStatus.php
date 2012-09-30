@@ -7,13 +7,13 @@
  * Builds, Custom fields, etc
  *
  * @filesource	resultsByStatus.php
- * @package 	TestLink
- * @copyright 	2007-2010, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @copyright 	2007-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
  *
  * @internal revisions
-*/
+ */
 
 require('../../config.inc.php');
 require_once('common.php');
@@ -466,11 +466,6 @@ function buildMatrix($dataSet, &$args, $options = array(), $platforms)
 		$matrix->setGroupByColumnName(lang_get('th_build'));
 
 		$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
-		
-		//define table toolbar
-		$matrix->showToolbar = true;
-		$matrix->toolbarExpandCollapseGroupsButton = true;
-		$matrix->toolbarShowAllColumnsButton = true;
 	}
 	else
 	{

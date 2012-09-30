@@ -377,12 +377,6 @@ function buildMatrix($buildSet, $dataSet, $format, $show_platforms, &$args, $pla
 			//sort by test case
 			$matrix->setSortByColumnName(lang_get('title_test_case_title'));
 		}
-		
-		//define table toolbar
-		$matrix->showToolbar = true;
-		$matrix->toolbarExpandCollapseGroupsButton = true;
-		$matrix->toolbarShowAllColumnsButton = true;
-
 	} 
 	else 
 	{

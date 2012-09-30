@@ -172,10 +172,6 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $gluechar,$charset
 		$table->setGroupByColumnName(lang_get('test_suite'));
 		$table->setSortByColumnName(lang_get('test_case'));
 		$table->sortDirection = 'ASC';
-		
-		$table->showToolbar = true;
-		$table->toolbarExpandCollapseGroupsButton = true;
-		$table->toolbarShowAllColumnsButton = true;
 	}
 	return($table);
 }

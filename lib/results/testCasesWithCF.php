@@ -97,19 +97,18 @@ if( $args->doIt )
 		}
 	}
 
-	if (count($matrixData) > 0) {
+	if (count($matrixData) > 0) 
+	{
 		$table = new tlExtTable($columns, $matrixData, 'tl_table_tc_with_cf');
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
 		$table->setGroupByColumnName(lang_get('build'));
 		$table->setSortByColumnName(lang_get('date'));
 		$table->sortDirection = 'DESC';
 
-		$table->showToolbar = true;
-		$table->toolbarExpandCollapseGroupsButton = true;
-		$table->toolbarShowAllColumnsButton = true;
-
 		$gui->tableSet = array($table);
-	} else {
+	} 
+	else 
+	{
 		$gui->warning_msg = $labels['no_linked_tc_cf'];
 	}
 }

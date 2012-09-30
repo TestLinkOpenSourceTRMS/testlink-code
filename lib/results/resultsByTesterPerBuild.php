@@ -126,21 +126,9 @@ foreach ($matrix as $build_id => $build_execution_map) {
 // create the table object
 $matrix = new tlExtTable($columns, $rows, 'tl_table_results_by_tester_per_build');
 $matrix->title = lang_get('results_by_tester_per_build');
-
-//group by build
 $matrix->setGroupByColumnName(lang_get('build'));
-
-// 20100816 - asimon - enable default sorting by progress column
 $matrix->setSortByColumnName(lang_get('progress'));
-
-//define toolbar
-$matrix->showToolbar = true;
-$matrix->toolbarExpandCollapseGroupsButton = true;
-$matrix->toolbarShowAllColumnsButton = true;
-
 $gui->tableSet = array($matrix);
-
-// BUGID 3911: show warning message instead of table if table is empty
 $gui->warning_message = (count($rows) > 0) ? '' : lang_get('no_testers_per_build');
 
 $smarty = new TLSmarty();

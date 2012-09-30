@@ -43,7 +43,10 @@ class testcase extends tlObjectWithAttachments
     const ANY_BUILD=null;
     const GET_NO_EXEC=1; 
     const ANY_PLATFORM=null;
-	const NOXMLHEADER=true;    
+	  const NOXMLHEADER=true;
+	  const EXECUTION_TYPE_MANUAL = 1;
+    const EXECUTION_TYPE_AUTO = 2;
+	      
         
     
 	/** @var database handler */
@@ -86,8 +89,7 @@ class testcase extends tlObjectWithAttachments
 
 		$this->cfield_mgr = new cfield_mgr($this->db);
 
-		$this->execution_types = array(TESTCASE_EXECUTION_TYPE_MANUAL => lang_get('manual'),
-                                       TESTCASE_EXECUTION_TYPE_AUTO => lang_get('automated'));
+		$this->execution_types = $this->get_execution_types();
 
 		// ATTENTION:
 		// second argument is used to set $this->attachmentTableName,property that this calls
@@ -139,9 +141,10 @@ class testcase extends tlObjectWithAttachments
 	            value: execution type verbose description
 	
 	*/
-	function get_execution_types()
+	static function get_execution_types()
 	{
-	    return $this->execution_types;
+		  return array(self::EXECUTION_TYPE_MANUAL => lang_get('manual'),
+                   self::EXECUTION_TYPE_AUTO => lang_get('automated'));
 	}
 
 
@@ -4293,11 +4296,10 @@ class testcase extends tlObjectWithAttachments
 	 *                         value: location code
 	 *
 	 */
-	function buildCFLocationMap()
+	static function buildCFLocationMap()
 	{
-		$ret = $this->cfield_mgr->buildLocationMap('testcase');
-		return $ret;
-    }
+		return cfield_mgr::buildLocationMap('testcase');
+  }
 	
 	
 	/**

@@ -26,6 +26,9 @@ testlinkInitPage($db);
 echo "<pre> testcase - static methods - get_execution_types()";echo "</pre>";
 new dBug(testcase::get_execution_types());
 
+echo "<pre> testcase - static methods - buildCFLocationMap()";echo "</pre>";
+new dBug(testcase::buildCFLocationMap());
+
 echo "<pre> testcase - access to class const - testcase::EXECUTION_TYPE_MANUAL";echo "</pre>";
 echo testcase::EXECUTION_TYPE_MANUAL . '<br>';
 

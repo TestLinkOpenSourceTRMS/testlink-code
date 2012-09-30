@@ -2516,5 +2516,19 @@ private function copy_cfields_assignments($source_id, $target_id)
   	return $effective_role;
   }
 
+
+  function getIssueTrackerMgr($id)
+  { 
+    $its = array(false,null); 
+    $info = $this->get_by_id($id);
+    if($info['issue_tracker_enabled'])
+    {
+    	$it_mgr = new tlIssueTracker($this->db);
+    	$its = $it_mgr->getInterfaceObject($id);
+    	unset($it_mgr);
+    }	
+    return array($info['issue_tracker_enabled'],$its);
+  }
+
 } // end class
 ?>

@@ -4,15 +4,8 @@
  *
  * @filesource	execSetResults.php
  *
- * @internal revisions:
- *
- *  20110622 - asimon - TICKET 4600: Blocked execution of testcases
- *  20110323 - Julian - BUGID 4324 - Encoding of Test Suite did not work properly
- *  20110322 - eloff - BUGID 3643
- *  20110308 - franciscom - remote execution
- *  20110123 - franciscom - BUGID 3338
- *  20110105 - asimon - BUGID 3878: "Save and move to next" does not respect filter settings
- *  20110104 - aismon - BUGID 3643: apply filters earlier in script instead of loading unnecessary data
+ * @internal revisions
+ * @since 2.0
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -23,43 +16,39 @@ require_once("web_editor.php");
 
 $cfg=getCfg();
 require_once(require_web_editor($cfg->editorCfg['type']));
-
-// BUGID 3338
 if( $cfg->exec_cfg->enable_test_automation )
 {
   require_once('remote_exec.php');
 }
 
-// BUGID 3276
-// CRITIC:
-// If call to testlinkInitPage() is done AFTER require_once for BTS
-// log to event viewer fails, but log to file works ok
 testlinkInitPage($db);
-if($cfg->bts_type != 'NO')
-{
-  require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' . 
-               DIRECTORY_SEPARATOR . 'int_bugtracking.php');
-}
-
-
 $templateCfg = templateConfiguration();
+$smarty = new TLSmarty();
 
 $tcversion_id = null;
 $submitResult = null;
 $args = init_args($cfg);
 
-$smarty = new TLSmarty();
-$tree_mgr = new tree($db);
-$tplan_mgr = new testplan($db);
-$tcase_mgr = new testcase($db);
-$exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
-$attachmentRepository = tlAttachmentRepository::create($db);
-$req_mgr = new requirement_mgr($db);
+$mgr = createManagers($db,$args->tproject_id);
+$gui = initializeGui($db,$args,$cfg,$mgr);
 
-$gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr);
+// get issue tracker config and object to manage TestLink - BTS integration 
+list($issueTrackerEnabled,$its) = $mgr->tproject->getIssueTrackerMgr($args->tproject_id);
+if($issueTrackerEnabled)
+{
+	if(!is_null($its) && $its->isConnected())
+	{
+		$gui->issueTrackerIntegrationOn = true;
+	}
+	else
+	{
+		$gui->user_feedback = lang_get('issue_tracker_integration_problems');
+	}
+}
+
+
 $_SESSION['history_on'] = $gui->history_on;
 $attachmentInfos = null;
-
 $do_show_instructions = ($args->level == "" || $args->level == 'testproject') ? 1 : 0;
 if ($do_show_instructions)
 {
@@ -69,82 +58,14 @@ if ($do_show_instructions)
 
 // ---------------------------------------------------------
 // Testplan executions and result archiving. Checks whether execute cases button was clicked
-//
-if($args->doExec == 1)
+if($args->doExec == 1 && !is_null($args->tc_versions) && count($args->tc_versions))
 {
-	/** @note get testcase ids in an array */
-	if(!is_null($args->tc_versions) && count($args->tc_versions))
-	{
-		// 20110129 - franciscom
-		// IMPORTANT NOTICE
-		// Remote execution will NOT use ANY of data typed by user,
-		// - notes
-		// - custom fields
-		//
-		$execContext = buildExecContext($args,$gui->tcasePrefix,$tplan_mgr,$tcase_mgr);
-		$remoteExecFeedback = do_remote_execution($db,$execContext);
-		
-		// IMPORTANT NOTICE
-		// need to understand what to do with feedback provided
-		// by do_remote_execution().
-		// Right now no matter how things go, no feedback is given to user.
-		// May be this need to be improved in future.
-		//
-		// Only drawback i see is when remote exec is done on a test suite
-		// and amount of feedback can be high, then do not see what can be effect
-		// on GUI
-	}
+	$gui->remoteExecFeedback = launchRemoteExec($db,$args,$gui->tcasePrefix,$tplan_mgr,$tcase_mgr);
 }	
-// -----------------------------------------------------------
-// When nullify filter_status - 20080504 - DO NOT REMOVE -
-// 
-// May be in the following situation we do not HAVE to apply filter status:
-// 1. User have filter for Not Run on Tree
-// 2. Clicks on TC XXX
-// 3. Executes TC
-// 4. DO NOT UPDATE TREE.
-//    we do not update automatically to avoid:
-//    a) performance problems
-//    b) delays on operations due to tree redraw
-//    c) loose tree status due to lack of feature of tree engine
-//
-// 5. Clicks again on TC XXX
-// If we use filter, we will get No Data Available.
-//
-// When working on show_testsuite_contents mode (OLD MODE) when we show
-// all testcases inside a testsuite that verifies a filter criteria WE NEED TO APPLY FILTER
-//
-// We do not have this problem when this page is called after user have executed,
-// probably because filter_status is not send back.
-//
-// I will add logic to nullify filter_status on init_args()
-// 
-// 20080224 - franciscom - BUGID 1056
-// 20070306 - franciscom - BUGID 705
-// 20070914 - jbarchibald - added $cf_selected parameter
-//
-
-// 20081221 - franciscom                              
-// BUGID 3406
-$options = array('only_executed' => true, 'output' => 'mapOfArray',
-				 'include_unassigned' => $args->include_unassigned,
-                 'user_assignments_per_build' => $args->build_id);
 
 
-if(is_null($args->filter_status) || in_array($cfg->tc_status['not_run'],$args->filter_status))
-{
-    $options['only_executed'] = false;
-}
 
-// Added platform_id filter
-// BUGID 3643 - don't apply filters further down below, do the filtering already here
-//$filters = array('tcase_id' => $args->tc_id,  'keyword_id' => $args->keyword_id,
-$filters = array('tcase_id' => $args->testcases_to_show,  'keyword_id' => $args->keyword_id,
-                 'assigned_to' => $args->filter_assigned_to, 'exec_status' => $args->filter_status,
-                 'build_id' => $args->build_id, 'cf_hash' => $args->cf_selected,
-                 'platform_id' => $args->platform_id);
-
-$linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
+list($linked_tcversions,$itemSet) = getLinkedItems($args,$gui->history_on,$cfg,$tcase_mgr,$tplan_mgr);
 $tcase_id = 0;
 $userid_array = null;
 
@@ -152,47 +73,41 @@ if(!is_null($linked_tcversions))
 {
 	$items_to_exec = array();
 	$_SESSION['s_lastAttachmentInfos'] = null;
-    if($args->level == 'testcase')
-    {
-    	// Warning!!! - $gui is passed by reference to be updated inside function
-    	$tcase = null;
-        list($tcase_id,$tcversion_id) = processTestCase($tcase,$gui,$args,$cfg,$linked_tcversions,
-                                                        $tree_mgr,$tcase_mgr,$attachmentRepository);
-    }
-    else
-    {
-        list($tcase_id,$tcversion_id) = processTestSuite($db,$gui,$args,$linked_tcversions,
-                                                         $tree_mgr,$tcase_mgr,$attachmentRepository);
-    }
+  if($args->level == 'testcase')
+  {
+    // Warning!!! - $gui is passed by reference to be updated inside function
+    $tcase = null;
+    list($tcase_id,$tcversion_id) = processTestCase($tcase,$gui,$args,$cfg,$linked_tcversions,
+                                                    $tree_mgr,$tcase_mgr,$attachmentRepository);
+  }
+  else
+  {
+    list($tcase_id,$tcversion_id) = processTestSuite($db,$gui,$args,$linked_tcversions,
+                                                     $tree_mgr,$tcase_mgr,$attachmentRepository);
+  }
 
-	// 20100927 - asimon - check if value is an array before calling implode
-	// to avoid warnings in event log
-   	$gui->tcversionSet = is_array($tcversion_id) ? implode(',',$tcversion_id) : $tcversion_id;
+  $gui->tcversionSet = is_array($tcversion_id) ? implode(',',$tcversion_id) : $tcversion_id;
 
-    // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
-    //
-    // Can be DONE JUST ONCE AFTER write results to DB
-    // $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
-    
-    // --------------------------------------------------------------------------------------------
-    // Results to DB
-    if ($args->save_results || $args->do_bulk_save || $args->save_and_next)
-    {
-    	// this has to be done to do not break logic present on write_execution()
-    	$args->save_results = $args->save_and_next ? $args->save_and_next : $args->save_results;
-    	$_REQUEST['save_results'] = $args->save_results;
-    	
-    	// 20110129 - franciscom - seems $gui->map_last_exec is USELESS on write_execution()
-    	// $submitResult = write_execution($db,$args,$_REQUEST,$gui->map_last_exec);
-        write_execution($db,$args,$_REQUEST);
+  // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
+  //
+  // Can be DONE JUST ONCE AFTER write results to DB
+  // Results to DB
+  if ($args->save_results || $args->do_bulk_save || $args->save_and_next)
+  {
+    // this has to be done to do not break logic present on write_execution()
+    $args->save_results = $args->save_and_next ? $args->save_and_next : $args->save_results;
+    $_REQUEST['save_results'] = $args->save_results;
+    write_execution($db,$args,$_REQUEST);
         
-        // Need to re-read to update test case status
-        if ($args->save_and_next) 
-        {
+    // Need to re-read to update test case status
+    if ($args->save_and_next) 
+    {
+      $identity = processSaveAndNext($tplan_mgr,$args,$gui,,$tcversion_id);
+      
 			$nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$tcversion_id,$args->platform_id);
 			
-			// BUGID 3878
-			while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $args->testcases_to_show)) {
+			while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $args->testcases_to_show)) 
+			{
 				$nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$nextItem['tcversion_id'],$args->platform_id);
 			}
 			
@@ -200,14 +115,17 @@ if(!is_null($linked_tcversions))
 			{
 				$tcase_id = $nextItem['tcase_id'];
 				$tcversion_id = $nextItem['tcversion_id'];
-				// BUGID 3478
-         		processTestCase($nextItem,$gui,$args,$cfg,$linked_tcversions,$tree_mgr,$tcase_mgr,$attachmentRepository);
+
+				// Save and Next - Issues with display CF for test plan design - always EMPTY	
+				// need info about this test case => need to update linked_tcversions info
+				$identity = array('id' => $nextItem['tcase_id'], 'version_id' => $nextItem['tcversion_id']);
+				list($lt,$xdm) = getLinkedItems($args,$gui->history_on,$cfg,$tcase_mgr,$tplan_mgr,$identity);
+     		processTestCase($nextItem,$gui,$args,$cfg,$lt,$tree_mgr,$tcase_mgr,$attachmentRepository);
 			}
-			
-        }
-       // $gui->map_last_exec=getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
-    }
-    $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
+   }
+  }
+  // Important Notice: $tcase_id and $tcversions_id, can be ARRAYS when user enable bulk execution
+  $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
     
     if ($args->doDelete)
     {
@@ -766,7 +684,7 @@ function do_remote_execution(&$dbHandler,$context)
 			" (testplan_id,platform_id,build_id,tester_id,execution_type," .
 			"  tcversion_id,execution_ts,status,notes) ".
 			" VALUES ({$context['tplan_id']}, {$context['platform_id']}, {$context['build_id']}," .
-			" {$context['user_id']}," . TESTCASE_EXECUTION_TYPE_AUTO . ",";
+			" {$context['user_id']}," . testcase::EXECUTION_TYPE_AUTO . ",";
 
 	// have we got multiple test cases to execute ?
 	$target = &$context['target'];
@@ -1100,12 +1018,13 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
 
   rev: 20080429 - franciscom
 */
-function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
+function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$mgrPool)
 {
     $buildMgr = new build_mgr($dbHandler);
     $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
     $gui = new stdClass();
+    $gui->issueTrackerIntegrationOn = false;
     $gui->tplan_id=$argsObj->tplan_id;
     $gui->tproject_id=$argsObj->tproject_id;
     $gui->build_id = $argsObj->build_id;
@@ -1139,17 +1058,15 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->map_last_exec=null;
 
     	
-    // 20081122 - franciscom
     // Just for the record:	
     // doing this here, we avoid to do on processTestSuite() and processTestCase(),
     // but absolutely this will not improve in ANY WAY perfomance, because we do not loop
     // over these two functions. 	
-    $tprojectMgr = new testproject($dbHandler);
-    $gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
+    $gui->tcasePrefix = $mrgPool->tproject->getTestCasePrefix($argsObj->tproject_id);
     $build_info = $buildMgr->get_by_id($argsObj->build_id);
     $gui->build_notes=$build_info['notes'];
     $gui->build_is_open=($build_info['is_open'] == 1 ? 1 : 0);
-    $gui->execution_types=$tcaseMgr->get_execution_types();
+    $gui->execution_types = testcase::get_execution_types();
 
     if($argsObj->filter_assigned_to)
     {
@@ -1164,24 +1081,22 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     }
     // ------------------------------------------------------------------
 
-    $the_builds = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id);
+    $the_builds = $mgrPool->tplan->get_builds_for_html_options($argsObj->tplan_id);
     $gui->build_name = isset($the_builds[$argsObj->build_id]) ? $the_builds[$argsObj->build_id] : '';
 
-
-    // 20090419 - franciscom
     $gui->grants = initializeRights($dbHandler,$argsObj->user,$argsObj->tproject_id,$argsObj->tplan_id);
     $gui->exec_mode = initializeExecMode($dbHandler,$cfgObj->exec_cfg,
                                          $argsObj->user,$argsObj->tproject_id,$argsObj->tplan_id);
 
 
 
-    $rs = $tplanMgr->get_by_id($argsObj->tplan_id);
+    $rs = $mgrPool->tplan->get_by_id($argsObj->tplan_id);
     $gui->testplan_notes = $rs['notes'];
 
     // Important note: 
     // custom fields for test plan can be edited ONLY on design, that's reason why we are using 
     // scope = 'design' instead of 'execution'
-    $gui->testplan_cfields = $tplanMgr->html_table_of_custom_field_values($argsObj->tplan_id,'design',
+    $gui->testplan_cfields = $mgrPool->tplan->html_table_of_custom_field_values($argsObj->tplan_id,'design',
                                                                           array('show_on_execution' => 1));
     
     $gui->history_on = manage_history_on($_REQUEST,$_SESSION,$cfgObj->exec_cfg,
@@ -1480,5 +1395,66 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
     }
 
     return array($testSet->tcase_id,$testSet->tcversion_id);  
+}
+
+function launchRemoteExec(&$dbHandler,&$argsObj,$tcasePrefix,&$tplanMgr,&$tcaseMgr)
+{
+		// IMPORTANT NOTICE
+		// Remote execution will NOT use ANY of data typed by user,
+		// - notes
+		// - custom fields
+		//
+		// IMPORTANT NOTICE
+		// need to understand what to do with feedback provided
+		// by do_remote_execution().
+		// Right now no matter how things go, no feedback is given to user.
+		// May be this need to be improved in future.
+		//
+		// Only drawback i see is when remote exec is done on a test suite
+		// and amount of feedback can be high, then do not see what can be effect
+		// on GUI
+
+
+		$execContext = buildExecContext($argsObj,$tcasePrefix,$tplanMgr,$tcaseMgr);
+		$feedback = do_remote_execution($dbHandler,$execContext);
+		$feedback = current($feedback);
+		return $feedback;
+}
+
+
+function  processSaveAndNext(&$tplanMgr,$argsObj,$guiObj,$tcversionID)
+{
+  $identity = null;
+  $nextItem = $tplanMgr->getTestCaseNextSibling($argsObj->tplan_id,$tcversionID,$argsObj->platform_id);
+  while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $argsObj->testcases_to_show)) 
+  {
+  	$nextItem = $tplanMgr->getTestCaseNextSibling($argsObj->tplan_id,$nextItem['tcversion_id'],$argsObj->platform_id);
+  }
+  
+  if( !is_null($nextItem) )
+  {
+  	// Save and Next - Issues with display CF for test plan design - always EMPTY	
+  	// need info about this test case => need to update linked_tcversions info
+  	$identity = array('id' => $nextItem['tcase_id'], 'version_id' => $nextItem['tcversion_id']);
+  	list($lt,$xdm) = getLinkedItems($argsObj,$guiObj->history_on,$cfg,$tcase_mgr,$tplan_mgr,$identity);
+  	processTestCase($nextItem,$guiObj,$argsObj,$cfg,$lt,$tree_mgr,$tcase_mgr,$attachmentRepository);
+  }
+  return $identity;
+}
+
+function createManagers($dbHandler,$tprojectID)
+{
+  $is = new stdClass();
+  $is->tree = new tree($dbHandler);
+  $is->tproject = new testproject($dbHandler);
+  $is->tplan = new testplan($dbHandler);
+  $is->tcase = new testcase($dbHandler);
+  $is->req = new requirement_mgr($dbHandler);
+  
+  $is->attachmentRepository = tlAttachmentRepository::create($dbHandler);
+
+  $is->exec_cfield = new exec_cfield_mgr($dbHandler,$tprojectID);
+
+  retunr $is;
 }
 ?>

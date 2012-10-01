@@ -5,21 +5,19 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	reqSpecSearch.php
- * @package 	TestLink
- * @author		asimon
- * @copyright 	2005-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author		  asimon
+ * @copyright 	2005-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
  * This page presents the search results for requirement specifications.
  *
  * @internal revisions
- * 20110903 - franciscom - search on log message and provide link/url to multiple results 
  *
  */
 
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once('exttable.class.php');
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();

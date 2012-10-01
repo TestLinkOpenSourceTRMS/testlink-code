@@ -37,7 +37,6 @@ $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID) . config
 $gui->mainCaption = lang_get('testproject') . " " . $args->tprojectName;
 $gui->importance = config_get('testcase_importance_default');
 
-// BUGID 3716
 $gui->creation_date_from = null;
 $gui->creation_date_to = null;
 $gui->modification_date_from = null;
@@ -78,15 +77,16 @@ function init_args(&$tprojectMgr)
   	$args = new stdClass();
 
 	$args->testPriorityEnabled = 0;
-    $args->tprojectName = '';
-    $args->tprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+  $args->tprojectName = '';
+  $args->tprojectID = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	
 	if($args->tprojectID > 0)
 	{
-    	$dummy = $tprojectMgr->get_by_id($args->tprojectID > 0);
+    	$dummy = $tprojectMgr->get_by_id($args->tprojectID);
     	$args->tprojectName = $dummy['name'];
     	$args->testPriorityEnabled = $dummy['opt']->testPriorityEnabled;
 	}
        
-    return $args;
+  return $args;
 }
 ?>

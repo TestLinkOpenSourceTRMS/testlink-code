@@ -199,21 +199,6 @@ define('TL_CSS_TREEMENU', 'tl_treemenu.css');
 /** Browser Cookie keeptime */
 define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
 
-/** 
- * Configurable templates this can help if you want to use a non standard template.
- * i.e. you want to develop a new one without loosing the original template.
- * key: original TL template name WITHOUT extension
- * value: whatever name you want, only constrain you have to copy your template
- *        ON SAME FOLDER where original template is. 
- * See example below        
- */
-$g_tpl = array();
- 
-// Example 
-// $g_tpl = array('tcView'	=> 'custom_tcView.tpl',
-// 	              'tcSearchView' => 'myOwnTCSearchView.tpl',
-// 	              'tcEdit' => 'tcEdit_ultraCool.tpl');
-
 // needed for drap and drop feature
 define('TL_DRAG_DROP_DIR', 'gui/drag_and_drop/');
 define('TL_DRAG_DROP_JS_DIR', TL_DRAG_DROP_DIR. 'js/');

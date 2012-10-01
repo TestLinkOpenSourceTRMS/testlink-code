@@ -146,9 +146,9 @@ class cfield_mgr extends tlObject
      * 
      * IMPORTANT: if you add a new key, this values are used as access keys in several properties of this object.
      *            then if you add one here, remember to update other properties.
+     * @see getLocations();
      */
-    var $locations = array( 'testcase' => 
-                            array( 1 => 'standard_location', 2 => 'before_steps_results'));
+    var $locations;
 
     // Needed to manage user interface, when creating Custom Fields.
     // When user choose a item type (test case, etc), a javascript logic
@@ -219,7 +219,7 @@ class cfield_mgr extends tlObject
 	 */
 	function __construct(&$db)
 	{
-   		parent::__construct();
+	  parent::__construct();
 
 		$this->db = &$db;
 		$this->tree_manager = new tree($this->db);
@@ -227,43 +227,42 @@ class cfield_mgr extends tlObject
 		$cfConfig = config_get('custom_fields');
 		$this->sizes = $cfConfig->sizes;
 		
-        if( property_exists($cfConfig,'types') && 
-		    !is_null($cfConfig->types) )
+    if( property_exists($cfConfig,'types') && !is_null($cfConfig->types) )
 		{
 		    $this->custom_field_types +=$cfConfig->types;
 		    ksort($this->custom_field_types);
 		}
     
-        if( property_exists($cfConfig,'possible_values_cfg') && 
-		    !is_null($cfConfig->possible_values_cfg) )
+    if( property_exists($cfConfig,'possible_values_cfg') && !is_null($cfConfig->possible_values_cfg) )
 		{
 		    $this->possible_values_cfg +=$cfConfig->possible_values_cfg;
 		}
-        $this->object_table=$this->tables["custom_fields"];
-
-        $this->max_length_value = $cfConfig->max_length;
-        $this->max_length_possible_values = $this->max_length_value;
+    
+    $this->object_table=$this->tables["custom_fields"];
+    $this->max_length_value = $cfConfig->max_length;
+    $this->max_length_possible_values = $this->max_length_value;
+    
+    $this->locations = $this->getLocations();
 	}
 
-    function getSizeLimit()
-    {
+  function getSizeLimit()
+  {
         return $this->max_length_value;    
-    }
+  }
 
 	function get_application_areas()
 	{
-        return($this->application_areas);
-    }
+    return($this->application_areas);
+  }
 
-    /**
-	 * @return hash with available locatipons
+  /**
+	 * @return hash with available locations
 	 * 
-	 * 
-     */
-	function getLocations()
+   */
+	static function getLocations()
 	{
-        return($this->locations);
-    }
+    return array( 'testcase' => array( 1 => 'standard_location', 2 => 'before_steps_results'));
+  }
 
 
 	/**
@@ -2519,10 +2518,10 @@ function get_linked_testprojects($id)
  *                         value: location code
  *
  */
-function buildLocationMap($nodeType)
+static function buildLocationMap($nodeType)
 {
-	$locationMap=null;
-    $dummy = $this->getLocations();
+	$locationMap = null;
+  $dummy = self::getLocations();
 	$verboseLocationCode = array_flip($dummy[$nodeType]);
 	if( !is_null($verboseLocationCode) && count($verboseLocationCode) > 0 )
 	{
@@ -2531,7 +2530,7 @@ function buildLocationMap($nodeType)
 			$locationMap[$key]['location']=$value;
 		}
 	}	     
-    return $locationMap; 
+  return $locationMap; 
 }
 
 

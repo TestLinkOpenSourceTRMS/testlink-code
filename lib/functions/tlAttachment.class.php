@@ -125,13 +125,21 @@ class tlAttachment extends tlDBObject
   {
     parent::__construct();
 
-    $this->compressionType  = tlAttachmentRepository::getCompression();
+    // $this->compressionType  = tlAttachmentRepository::getCompression();
+    $this->setCompression(tlAttachmentRepository::getCompression());
+    
     $this->repositoryPath = tlAttachmentRepository::getPathToRepository();
     $this->attachmentCfg = config_get('attachments');
 
     $this->_clean();
     $this->dbID = $dbID;
   }
+  
+  function setCompression($value)
+  {
+    $this->compressionType = $value;
+  }
+  
   
   /* 
    * Class destructor, cleans the object 
@@ -370,7 +378,7 @@ class tlAttachment extends tlDBObject
 
         $dummy = array('title_upload_attachment' => null, 'enter_attachment_title' => null,
                        'btn_upload_file' => null, 'warning' => null, 'enter_attachment_title' => null,
-                       'local_file' => null, 'attachment_upload_ok' => null,
+                       'local_file' => null, 'attachment_upload_ok' => null,'alt_delete_attachment' => null,
                        'title_choose_local_file' => null ,'btn_cancel' => null,
                        'warning_delete_attachment' => 'warning', 'delete' => null,
                        'attachment_feature_disabled' => null,'attached_files' => null,

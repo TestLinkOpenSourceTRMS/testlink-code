@@ -3,16 +3,18 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource	tcAssignedToUser.php
- * @package 	TestLink
- * @copyright 	2005,2011 TestLink community 
- * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @copyright 	2005,2012 TestLink community 
+ * @author 		  Francisco Mancardi - francisco.mancardi@gmail.com
+ * @link 		    http://www.teamst.org/index.php
  *
- * @internal revisions:
+ * @internal revisions
+ * @since 2.0
+ *
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once("exttable.class.php");
+
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
@@ -30,7 +32,7 @@ $tcase_mgr = new testcase($db);
 $tplan_mgr = new testplan($db);
 
 $gui=new stdClass();
-//20101013 - asimon - disable "show also closed builds" checkbox when a specific build is selected
+// disable "show also closed builds" checkbox when a specific build is selected
 $gui->show_build_selector = ($args->build_id == 0);
 $gui->glueChar = config_get('testcase_cfg')->glue_character;
 $gui->tproject_id = $args->tproject_id;
@@ -200,12 +202,7 @@ if( ($doIt = !is_null($gui->resultSet)) )
 			$matrix->collapsible = true;
 			$matrix->frame = true;
 		}
-		
-		// define toolbar
-		$matrix->showToolbar = true;
-		$matrix->toolbarExpandCollapseGroupsButton = true;
-		$matrix->toolbarShowAllColumnsButton = true;
-		
+
 		$matrix->setSortByColumnName($sortByColumn);
 		$matrix->sortDirection = 'DESC';
 		$gui->tableSet[$tplan_id] = $matrix;
@@ -267,7 +264,6 @@ function init_args(&$dbHandler)
 	$args->build_id = isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id']) ? 
 					  intval($_REQUEST['build_id']) : 0;
 
-	// BUGID 4009
 	$args->show_inactive_tplans = isset($_REQUEST['show_inactive_tplans']) ? true : false;
 	                  
 	$args->show_all_users = (isset($_REQUEST['show_all_users']) && $_REQUEST['show_all_users'] =! 0);

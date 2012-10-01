@@ -3,12 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @package TestLink
- * @author Erik Eloff
- * @copyright 2009,2012 TestLink community 
- * @filesource table.class.php
- * @link http://www.teamst.org
- * @since 1.9
+ * @package     TestLink
+ * @author      Erik Eloff
+ * @copyright   2009,2012 TestLink community 
+ * @filesource  tlTable.class.php
+ * @link        http://www.teamst.org
+ * @since       1.9
  *
  * @internal revisions
  **/

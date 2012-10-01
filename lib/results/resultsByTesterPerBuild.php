@@ -5,29 +5,18 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	resultsByTesterPerBuild.php
- * @package		TestLink
- * @author		Andreas Simon
- * @copyright 	2010, TestLink community
+ * @package		  TestLink
+ * @author		  Andreas Simon
+ * @copyright 	2010,2012 TestLink community
  *
  * Lists results and progress by tester per build.
  * 
  * @internal revisions:
- * 20110510 - Julian - set proper filters for table columns
- * 20110211 - asimon - BUGID 4192: show only open builds by default
- * 20101019 - asimon - BUGID 3911: show warning message instead of table if table is empty
- * 20100923 - eloff - refactored to use improved table interface
- * 20100923 - Julian - BUGID 3803
- *                   - added status label to status percentage column to be able to reorder columns
- *                     without losing the context
- * 20100823 - asimon - refactoring: $table_id
- * 20100816 - asimon - enable default sorting by progress column
- * 20100731 - asimon - initial commit
  * 		
  */
 
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once('exttable.class.php');
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
@@ -126,21 +115,9 @@ foreach ($matrix as $build_id => $build_execution_map) {
 // create the table object
 $matrix = new tlExtTable($columns, $rows, 'tl_table_results_by_tester_per_build');
 $matrix->title = lang_get('results_by_tester_per_build');
-
-//group by build
 $matrix->setGroupByColumnName(lang_get('build'));
-
-// 20100816 - asimon - enable default sorting by progress column
 $matrix->setSortByColumnName(lang_get('progress'));
-
-//define toolbar
-$matrix->showToolbar = true;
-$matrix->toolbarExpandCollapseGroupsButton = true;
-$matrix->toolbarShowAllColumnsButton = true;
-
 $gui->tableSet = array($matrix);
-
-// BUGID 3911: show warning message instead of table if table is empty
 $gui->warning_message = (count($rows) > 0) ? '' : lang_get('no_testers_per_build');
 
 $smarty = new TLSmarty();

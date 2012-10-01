@@ -1,14 +1,13 @@
 <?php
-
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	reqSearch.php
- * @package 	TestLink
- * @author		Andreas Simon
- * @copyright 	2005-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author		  Andreas Simon
+ * @copyright 	2005-2012, TestLink community 
+ * @link 		  http://www.teamst.org/index.php
  *
  * Search results for requirements.
  *
@@ -21,7 +20,6 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("requirements.inc.php");
-require_once('exttable.class.php');
 testlinkInitPage($db);
 $date_format_cfg = config_get('date_format');
 
@@ -196,12 +194,11 @@ function buildExtTable($gui, $charset)
 		$table->setGroupByColumnName($labels['req_spec']);
 		$table->setSortByColumnName($labels['requirement']);
 		$table->sortDirection = 'DESC';
-		
-		$table->showToolbar = true;
-		$table->allowMultiSort = false;
-		$table->toolbarRefreshButton = false;
-		$table->toolbarShowAllColumnsButton = false;
+		$table->multiSortEnabled = false;
 		$table->storeTableState = false;
+
+		$table->toolbar->showButton->refresh = false;
+		$table->toolbar->showButton->ShowAllColumns = false;
 		
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
 	}
@@ -238,7 +235,6 @@ function init_args($dateFormat)
 		$args->$keyvar = isset($_REQUEST[$keyvar]) ? intval($_REQUEST[$keyvar]) : 0;
 	}
 	
-	// BUGID 3716
 	// convert "creation date from" to iso format for database usage
     if (isset($args->creation_date_from) && $args->creation_date_from != '') {
 		$date_array = split_localized_date($args->creation_date_from, $dateFormat);

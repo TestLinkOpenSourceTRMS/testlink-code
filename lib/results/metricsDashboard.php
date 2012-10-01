@@ -4,29 +4,16 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	metricsDashboard.php
- * @package 	TestLink
- * @copyright 	2007-2011, TestLink community 
- * @author franciscom
+ * @package 	  TestLink
+ * @copyright   2007-2011, TestLink community 
+ * @author      franciscom
  *
  * @internal revisions
- * 20110330 - franciscom - BUGID 4362: metricsDashboard not working properly with platforms defined
- * 20110317 - franciscom - BUGID 4328: Metrics dashboard - only active builds has to be used
- * 20110303 - Julian - added more information to test project report
- * 20101022 - Julian - BUGID 3979 - Use grid filters for exttables
- * 20101015 - franciscom - code refactoring
- * 20101015 - Julian - refactored exttable column titles
- * 20101014 - Julian - BUGID 3893 - Extended metrics dashboard
- * 20100922 - Julian - Hide "Progress (Executed/Total)"-Column by default
- * 20100917 - Julian - BUGID 3724 - checkbox to show all/active test plans
- *                                - use of exttable
- * 20100526 - Julian - fixed wrong access to platform array
- * 20100525 - Julian - added option 'step_info' => 0 to get_linked_tcversions call
- *                     to improve performance
+ * @since 2.0
  *
  **/
 require('../../config.inc.php');
 require_once('common.php');
-require_once('exttable.class.php');
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $args = init_args($db);
@@ -117,13 +104,8 @@ if(count($gui->tplan_metrics) > 0) {
 
 	$table->setSortByColumnName($labels['progress']);
 	$table->sortDirection = 'DESC';
-
-	$table->showToolbar = true;
-	$table->toolbarExpandCollapseGroupsButton = true;
-	$table->toolbarShowAllColumnsButton = true;
-	$table->toolbarResetFiltersButton = true;
-	$table->title = $labels['href_metrics_dashboard'];
 	$table->showGroupItemsCount = true;
+	$table->title = $labels['href_metrics_dashboard'];
 
 	$gui->tableSet = array($table);
 	
@@ -151,7 +133,6 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * 
  *	@internal revisions
  *
- *	BUGID 4328: Metrics dashboard - only active builds has to be used
  */
 function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 {
@@ -163,7 +144,6 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 	$show_platforms = false;
 	$platforms = array();
 
-	// BUGID 1215
 	// get all tesplans accessibles  for user, for $tproject_id
 	$options['active'] = $args->show_only_active ? ACTIVE : TP_ALL_STATUS; 
 	$test_plans = $userObj->getAccessibleTestPlans($db,$tproject_id,null,$options);

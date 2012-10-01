@@ -4,20 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	testPlanWithCF.php
- * @author 		Amit Khullar - amkhullar@gmail.com
+ * @author 		  Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list associated Custom Field Data
  *
  * @internal revisions
- *      20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                          table state independent from localization
- *      20101012 - Julian - added html comment to properly sort by test case column
- *      20101001 - asimon - added linked icon for testcase editing
- *      20100921 - Julian - BUGID 3797 - use exttable
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once('exttable.class.php');
 testlinkInitPage($db);
 
 $cfield_mgr = new cfield_mgr($db);
@@ -172,10 +166,6 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $gluechar,$charset
 		$table->setGroupByColumnName(lang_get('test_suite'));
 		$table->setSortByColumnName(lang_get('test_case'));
 		$table->sortDirection = 'ASC';
-		
-		$table->showToolbar = true;
-		$table->toolbarExpandCollapseGroupsButton = true;
-		$table->toolbarShowAllColumnsButton = true;
 	}
 	return($table);
 }

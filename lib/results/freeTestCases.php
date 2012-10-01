@@ -13,7 +13,6 @@
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once('exttable.class.php');
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
@@ -97,11 +96,7 @@ if(!is_null($gui->freeTestCases['items']))
 		
 		$table->setSortByColumnName(lang_get($sort_by_column));
 		$table->sortDirection = 'DESC';
-		
-		$table->showToolbar = true;
-		$table->toolbarExpandCollapseGroupsButton = true;
-		$table->toolbarShowAllColumnsButton = true;
-		
+	
 		$gui->tableSet = array($table);
   	    
   	}

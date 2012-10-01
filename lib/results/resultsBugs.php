@@ -14,7 +14,6 @@ require_once('common.php');
 require_once("lang_api.php");
 require_once('displayMgr.php');
 require_once('exec.inc.php'); // used for bug string lookup
-require_once('exttable.class.php');
 if (config_get('interface_bugs') != 'NO')
 {
   require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' .
@@ -108,16 +107,13 @@ if(count($arrData) > 0) {
 	$table = new tlExtTable($columns, $matrixData, 'tl_table_bugs_per_test_case');
 	
 	$table->setGroupByColumnName(lang_get('title_test_suite_name'));
-	
 	$table->setSortByColumnName(lang_get('title_test_case_title'));
 	$table->sortDirection = 'ASC';
 	
-	$table->showToolbar = true;
-	$table->toolbarExpandCollapseGroupsButton = true;
-	$table->toolbarShowAllColumnsButton = true;
-	
 	$gui->tableSet = array($table);
-} else {
+} 
+else 
+{
 	$gui->warning_msg = lang_get('no_linked_bugs');
 }
 

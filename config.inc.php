@@ -50,6 +50,8 @@ $tlCfg->custom_fields = new stdClass();
 $tlCfg->req_spec_cfg = new stdClass();
 $tlCfg->diffEngine = new stdClass();
 $tlCfg->tplanDesign = new stdClass();
+$tlCfg->tpl = new stdClass();
+
 
 /** @uses database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
@@ -343,6 +345,26 @@ $tlCfg->company_logo = 'company_logo.png';
 
 /** Login page could show an informational text */
 $tlCfg->login_info = ''; // Empty by default
+
+/** 
+ * Configurable templates.
+ * This can help if you want to use a non standard template.
+ *
+ * i.e. you want to develop a new one without loosing the original template.
+ * key: original TL template name WITHOUT extension
+ * value: whatever name you want, only constrain you have to copy your template
+ *        ON SAME FOLDER where original template is. 
+ * Examples:
+ *
+ * $tlCfg->tpl['login'] = 'myFancyLogin.tpl';
+ *
+ * $tlCfg->tpl = array('tcView'	=> 'custom_tcView.tpl',
+ *                     'tcSearchView' => 'myOwnTCSearchView.tpl',
+ *                     'tcEdit' => 'tcEdit_ultraCool.tpl');
+ *
+ */
+$tlCfg->tpl = array();
+
 
 /**
  * @var string Availability of Test Project specific background colour
@@ -1303,7 +1325,7 @@ $tlCfg->demoSpecialUsers = array('admin');
  * ATTENTION: This feature is fully experimental. Enable at your own risk!
  *            Enabling it can cause broken tables.
  */
-$tlCfg->enableTableExportButton = true;
+$tlCfg->enableTableExportButton = false;
 
 /**
  * Taken from Mantis to implement better login security, and solve

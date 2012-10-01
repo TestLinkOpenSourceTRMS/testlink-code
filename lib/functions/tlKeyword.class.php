@@ -6,21 +6,16 @@
  * Management and assignment of keywords
  *
  * @filesource	tlKeyword.class.php
- * @package 	TestLink
- * @copyright 	2007-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @copyright 	2007-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
- *
- * 20110223 - Julian - BUGID 4270 - Keywords are not ordered by name
- * 20100210 - franciscom - toXMLString() new method
+ * @since 2.0
  *
  **/
 
-/** parenthal classes */
 require_once('object.class.php');
-
-/** export/import */
 require_once('csv.inc.php');
 require_once('xml.inc.php');
 
@@ -30,13 +25,8 @@ require_once('xml.inc.php');
  */ 
 class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML,iSerializationToCSV,iDBBulkReadSerialization
 {
-	/** @var string name of the keyword */
 	public $name;
-
-	/** @var string notes for the keyword */
 	public $notes;
-
-	/** @var string testprojectID the keyword belongs to */
 	public $testprojectID;
 
 	/** error codes */
@@ -96,7 +86,6 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$this->testprojectID = $testprojectID;
 	}
 	
-	//BEGIN interface iDBSerialization
 	/* Reads a keyword from the database
 	 * 
 	 * @param resource $db [ref] the database connection
@@ -476,5 +465,20 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		return sizeof($data) ? tl::OK : tl::ERROR;
 	}
 	//END interface iSerializationToCSV
+
+  
+  
+  static function optionTransferGuiControl()
+  {
+    $guiControl = new tlOptionTransfer();
+
+    $fieldCfg = array('id' => 'id', 'description' =>'keyword');
+    $guiControl->setFromPanelFieldCfg($fieldCfg);
+    $guiControl->setToPanelFieldCfg($fieldCfg);
+    $guiControl->setStyle("width: 98%;");
+    return $guiControl;
+  }
+
+
 }
 ?>

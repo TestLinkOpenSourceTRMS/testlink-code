@@ -3,15 +3,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	containerEdit.tpl
 Purpose: smarty template - edit test specification: containers 
 
-@internal revision
-20110612 - franciscom - TICKET 4597: Is required field doesn't work properly for some custom field type
-20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
-20110110 - Julian - BUGID 4155: Warning message when navigating away from changed test
-                                suite without saving
-20101226 - franciscom - BUGID 4088: Required parameter for custom fields
-20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-20101012 - franciscom - BUGID 3887: CF Types validation
-20100315 - amitkhullar - Added Cancel button
+@internal revisions
+@since 2.0
 
 *}
 {lang_get var="labels"
@@ -25,13 +18,7 @@ Purpose: smarty template - edit test specification: containers
 
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
-var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
-{$opt_cfg->js_ot_name}.saveRemovedLeftOptions("{$opt_cfg->js_ot_name}_removedLeft");
-{$opt_cfg->js_ot_name}.saveRemovedRightOptions("{$opt_cfg->js_ot_name}_removedRight");
-{$opt_cfg->js_ot_name}.saveAddedLeftOptions("{$opt_cfg->js_ot_name}_addedLeft");
-{$opt_cfg->js_ot_name}.saveAddedRightOptions("{$opt_cfg->js_ot_name}_addedRight");
-{$opt_cfg->js_ot_name}.saveNewLeftOptions("{$opt_cfg->js_ot_name}_newLeft");
-{$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
+var {$gui->optionTransfer->jsName} = setUpOptionTransferEngine('{$gui->optionTransferJSObject}');
 </script>
 
 <script type="text/javascript">
@@ -57,7 +44,6 @@ function validateForm(f)
 }
 </script>
 
-{* BUGID 4155 *}
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">
   var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
@@ -67,18 +53,14 @@ function validateForm(f)
 {/if}
 
 </head>
-
-<body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('name')">
-{config_load file="input_dimensions.conf" section="containerEdit"} {* Constant definitions *}
-<h1 class="title">{lang_get s=$level}{$smarty.const.TITLE_SEP}{$name|escape}</h1> 
-
+<body onLoad="{$gui->optionTransfer->jsName}.init(document.forms[0]);focusInputField('name')">
+<h1 class="title">{lang_get s=$gui->containerType}{$smarty.const.TITLE_SEP}{$gui->name|escape}</h1> 
 <div class="workBack">
-  <h1 class="title">{$labels.title_edit_level} {lang_get s=$level}</h1> 
-	<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$containerID}&tproject_id={$gui->tproject_id}" 
+  <h1 class="title">{$labels.title_edit_level} {lang_get s=$gui->containerType}</h1> 
+	<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$gui->containerID}&tproject_id={$gui->tproject_id}" 
 	      name="container_edit" id="container_edit"
         onSubmit="javascript:return validateForm(this);">
 	
-	{* BUGID 4155  - when save or cancel is pressed do not show modification warning *}
 	<div>
 		<input type="submit" name="update_testsuite" value="{$labels.btn_save}" 
 		       onclick="show_modified_warning = false;" />
@@ -89,20 +71,19 @@ function validateForm(f)
 	 {include file="testcases/inc_testsuite_viewer_rw.tpl"}
 
    {* Custom fields *}
-   {if $cf neq ""}
+   {if $gui->cf != ""}
      <p>
      <div id="cfields_design_time" class="custom_field_container">
-     {$cf}
+     {$gui->cf}
      </div>
      <p>
    {/if}
    
   <div>
    <a href={$gui->keywordsViewHREF}>{$labels.tc_keywords}</a>
-	 {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
+	 {include file="opt_transfer.inc.tpl" option_transfer=$gui->optionTransfer}
 	 </div>
 	<br></br>
-	{* BUGID 4155  - when save or cancel is pressed do not show modification warning *}
 	<div>
 		<input type="submit" name="update_testsuite" value="{$labels.btn_save}"
 		       onclick="show_modified_warning = false;" />

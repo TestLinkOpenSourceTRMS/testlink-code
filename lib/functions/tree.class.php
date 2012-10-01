@@ -1179,31 +1179,36 @@ class tree extends tlObject
 	 *                                
 	 */
 	function nodeNameExists($name,$node_type_id,$id=null,$parent_id=null)
-    {
-    	$debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
+  {
+    $debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
 		$ret['status'] = 0;
 		$ret['msg'] = '';
-        if( is_null($id) && is_null($parent_id) )
-        {
-        	$msg = $debugMsg . 'Error on call $id and $parent_id can not be both null';
-        	throw new Exception($msg);
-        }        	
+    if( is_null($id) && is_null($parent_id) )
+    {
+      $msg = $debugMsg . 'Error on call $id and $parent_id can not be both null';
+      throw new Exception($msg);
+    }        	
         
-        $additionalFilters = '';
-        $parentNodeID=$parent_id;
-        if( !is_null($id) )
+    $additionalFilters = '';
+    $parentNodeID = $parent_id;
+    if( !is_null($id) )
+    {
+      // Try to get parent id if not provided on method call.
+      if( is_null($parentNodeID) )
+      {
+        $sql = "/* {$debugMsg} */ " . 
+               " SELECT parent_id FROM {$this->object_table} NHA " .
+    		       " WHERE NHA.id = {$id} ";
+    	  $rs = $this->db->get_recordset($sql);
+        $parentNodeID = $rs[0]['parent_id'];	   
+        if( is_null($parentNodeID)  )
         {
-        	// Try to get parent id if not provided on method call.
-        	if( is_null($parentNodeID) )
-        	{
-        		$sql = "/* {$debugMsg} */ " . 
-        		       " SELECT parent_id FROM {$this->object_table} NHA " .
-    				   " WHERE NHA.id = {$id} ";
-    	        $rs = $this->db->get_recordset($sql);
-        		$parentNodeID=$rs[0]['parent_id'];	   
-        	}
-        	$additionalFilters = " AND NHA.id <> {$id} ";
-        }		
+          $msg = $debugMsg . 'Error Trying to get parent id for node with id:' . $id;
+          throw new Exception($msg);
+        }        	
+      }
+      $additionalFilters = " AND NHA.id <> {$id} ";
+    }		
 		$sql = "/* {$debugMsg} */ " . 
 		       " SELECT count(0) AS qty FROM {$this->object_table} NHA " .
     		   " WHERE NHA.node_type_id	= {$node_type_id} " .

@@ -11,7 +11,6 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('results.class.php');
 require_once('displayMgr.php');
-require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -225,11 +224,6 @@ function buildMatrix($dataSet, $format)
 			$matrix->setSortByColumnName(lang_get('title_test_case_title'));
 		}
 		
-		//define table toolbar
-		$matrix->showToolbar = true;
-		$matrix->toolbarExpandCollapseGroupsButton = true;
-		$matrix->toolbarShowAllColumnsButton = true;
-
 	} 
 	else 
 	{

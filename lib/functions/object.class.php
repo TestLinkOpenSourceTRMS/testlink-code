@@ -360,6 +360,26 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
     return $this->attachmentTableName;  
   }
   
+  
+  function buildAttachSetup($id,$options = null)
+  {
+    $opt = array('show_mode' => null);
+    $opt = array_merge($opt,(array)$options);
+    
+    $systemWideCfg = config_get('attachments');
+    $info = $this->getAttachmentInfos($id);
+
+    $cfg = tlAttachment::getGuiCfg();  
+    $cfg->display = $systemWideCfg->enabled && !is_null($info);
+    $cfg->uploadEnabled = ($cfg->showUploadBtn && ($opt['show_mode'] != 'readonly'));
+ 
+    $dummy = $this->attachmentRepository->checkRepositoryStatus();
+    $cfg->enabled = $dummy['enabled'];
+    return array($info,$cfg);
+  }
+  
+  
+  
 }
 
 

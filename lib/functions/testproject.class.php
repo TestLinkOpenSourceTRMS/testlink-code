@@ -524,49 +524,56 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
 }
 
 
-/**
- * Displays smarty template to show test project info to users.
- *
- * @param type $smarty [ref] smarty object
- * @param type $id test project
- * @param type $sqlResult [default = '']
- * @param type $action [default = 'update']
- * @param type $modded_item_id [default = 0]
- *
- * @internal revision
- * 20101030 - francisco - BUGID 3937: No information when exporting all test suites when no test suites exists 	
- *
- **/
-function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
-{
-	$gui = $guiObj;
-	$gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc");
-	$gui->mgt_modify_product = has_rights($this->db,"mgt_modify_product");
-
-	$gui->sqlResult = '';
-	$gui->sqlAction = '';
-	if($sqlResult)
-	{
-		$gui->sqlResult = $sqlResult;
-	}
-
-	$gui->container_data = $this->get_by_id($id);
- 	$gui->moddedItem = $gui->container_data;
- 	$gui->level = 'testproject';
- 	$gui->page_title = lang_get('testproject');
-	$gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
-    $gui->attachmentInfos = getAttachmentInfosFrom($this,$id);
- 	
-	// BUGID 3937: No information when exporting all test suites when no test suites exists 	
- 	$exclusion = array( 'testcase', 'me', 'testplan' => 'me', 'requirement_spec' => 'me');
- 	$gui->canDoExport = count($this->tree_manager->get_children($id,$exclusion)) > 0;
-	if ($modded_item_id)
-	{
-		$gui->moddedItem = $this->get_by_id($modded_item_id);
-	}
+  /**
+   * Displays smarty template to show test project info to users.
+   *
+   * @param type $smarty [ref] smarty object
+   * @param type $id test project
+   * @param type $sqlResult [default = '']
+   * @param type $action [default = 'update']
+   * @param type $modded_item_id [default = 0]
+   *
+   * @internal revision
+   *
+   **/
+  function show(&$smarty,$guiObj,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
+  {
+  	$gui = $guiObj;
+  
+  	$gui->container_data = $this->get_by_id($id);
+   	$gui->moddedItem = $gui->container_data;
+   	$gui->level = 'testproject';
+   	$gui->page_title = lang_get('testproject');
+  	$gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
+  
+  	$gui->sqlResult = '';
+  	$gui->sqlAction = '';
+  	if($sqlResult)
+  	{
+  		$gui->sqlResult = $sqlResult;
+  	}
+    
+    $gui->attach = new stdClass();
+    $gui->attach->itemID = $gui->id;
+    $gui->attach->dbTable = $this->attachmentTableName;
+  
+    $gui->attach->infoSet = null;
+    $gui->attach->gui = null;
+    list($gui->attach->infoSet,$gui->attach->gui) = $this->buildAttachSetup($id);
+    $gui->attach->gui->display = TRUE;
+    $gui->attach->enabled = $gui->attach->gui->enabled;
+  
+  	
+   	
+   	$exclusion = array( 'testcase', 'me', 'testplan' => 'me', 'requirement_spec' => 'me');
+   	$gui->canDoExport = count($this->tree_manager->get_children($id,$exclusion)) > 0;
+  	if ($modded_item_id)
+  	{
+  		$gui->moddedItem = $this->get_by_id($modded_item_id);
+  	}
     $smarty->assign('gui', $gui);	
-	$smarty->display($template_dir . 'containerView.tpl');
-}
+  	$smarty->display($smarty->tlTemplateCfg->template_dir . 'containerView.tpl');
+  }
 
 
 /**
@@ -2507,6 +2514,20 @@ private function copy_cfields_assignments($source_id, $target_id)
   		}  
   	}
   	return $effective_role;
+  }
+
+
+  function getIssueTrackerMgr($id)
+  { 
+    $its = array(false,null); 
+    $info = $this->get_by_id($id);
+    if($info['issue_tracker_enabled'])
+    {
+    	$it_mgr = new tlIssueTracker($this->db);
+    	$its = $it_mgr->getInterfaceObject($id);
+    	unset($it_mgr);
+    }	
+    return array($info['issue_tracker_enabled'],$its);
   }
 
 } // end class

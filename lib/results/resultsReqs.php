@@ -9,16 +9,11 @@
  * Report requirement based results
  * 
  * @internal revisions
- * 20110207 - asimon - BUGID 4227 - Allow to choose status of requirements to be evaluated
- * 20110207 - Julian - BUGID 4228 - Add more requirement evaluation states
- * 20110207 - Julian - BUGID 4206 - Jump to latest execution for linked test cases
- * 20110207 - Julian - BUGID 4205 - Add Progress bars for a quick overview
  */
 
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
-require_once('exttable.class.php');
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
@@ -133,20 +128,15 @@ if (count($req_spec_map)) {
 	// create table object
 	$matrix = new tlExtTable($columns, $rows, 'tl_table_results_reqs');
 	$matrix->title = $gui->pageTitle;
+	$matrix->showGroupItemsCount = false;
+	$matrix->setSortByColumnName(lang_get('progress'));
+	$matrix->sortDirection = 'DESC';
 	
 	// group by Req Spec and hide that column
 	$matrix->setGroupByColumnName(lang_get('req_spec_short'));
 	
-	// sort descending by progress percentage
-	$matrix->setSortByColumnName(lang_get('progress'));
-	$matrix->sortDirection = 'DESC';
-	
-	//show long text content in multiple lines
+	// show long text content in multiple lines
 	$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
-	
-	//define toolbar
-	$matrix->toolbarShowAllColumnsButton = true;
-	$matrix->showGroupItemsCount = false;
 	
 	$gui->tableSet = array($matrix);
 }

@@ -4,27 +4,19 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	containerEdit.php
- * @package 	TestLink
- * @author 		Martin Havlat
- * @copyright 	2005-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author 		  Martin Havlat
+ * @copyright 	2005-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
- *	20110609 - franciscom - TICKET 4322: New Option to block delete of executed test cases.	
- *							improvements on messages following Julian advice.
- *
- *	20110402 - franciscom - BUGID 4322: New Option to block delete of executed test cases.	
- *  20101216 - asimon - refresh tree when creating new testsuite
- *	20101106 - franciscom - added check on $guiObj->testCaseSet and other variables that can be null
- *							to avoid event viewer warnings	when deleting test case in test suite 
- *							that has ONLY one test case.
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once("opt_transfer.php");
 require_once("web_editor.php");
-$editorCfg=getWebEditorCfg('design');
+$editorCfg = getWebEditorCfg('design');
 require_once(require_web_editor($editorCfg['type']));
+
 
 testlinkInitPage($db);
 $tree_mgr = new tree($db);
@@ -32,121 +24,59 @@ $tproject_mgr = new testproject($db);
 $tsuite_mgr = new testsuite($db);
 $tcase_mgr = new testcase($db);
 
-$template_dir = 'testcases/';
-$refreshTree = false;
-$level = null;
-
-// Option Transfer configuration
-$opt_cfg=new stdClass();
-$opt_cfg->js_ot_name = 'ot';
-
 $assign_gui = true;
-$args = init_args($tree_mgr,$opt_cfg);
+$refreshTree = false;
+// echo 'Io sono ' . __FILE__;
+
+list($args,$gui) = initializeEnv($tree_mgr);
+$keywordSet = array('testproject' => $tproject_mgr->get_keywords_map($args->tproject_id),
+                    'testsuite' => null);
+if($args->action=='edit_testsuite')
+{
+  $keywordSet['testsuite'] = $tsuite_mgr->get_keywords_map($args->testsuiteID," ORDER BY keyword ASC ");
+}
 
 
-$gui = new stdClass();
-$gui->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id={$args->tproject_id} " .
-				 		 ' target="mainframe" class="bold" ' .
-   			  	 		 ' title="' . lang_get('menu_manage_keywords') . '"';
-
-$gui->tproject_id = $args->tproject_id;
-$gui->refreshTree = $args->refreshTree;
-
-$gui->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id={$args->tproject_id} " .
-						 ' target="mainframe" class="bold" ' .
-        			  	 ' title="' . lang_get('menu_manage_keywords') . '"';
 
 $gui_cfg = config_get('gui');
+
+$tpl = null;
 $smarty = new TLSmarty();
+$smarty->tlTemplateCfg = templateConfiguration();
 $smarty->assign('editorType',$editorCfg['type']);
 
-$a_keys['testsuite'] = array('details');
-$a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
-                'delete_testsuite' => 'containerDelete.tpl',
-                'move_testcases_viewer' => 'containerMoveTC.tpl',
-                'do_copy_tcase_set' => 'containerMoveTC.tpl',
-                'delete_testcases' =>  'containerDeleteTC.tpl',
-                'do_delete_testcases' =>  'containerDeleteTC.tpl');
-
-$a_actions = array ('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite' => 0,'do_move' => 0,
-					'do_copy' => 0,'reorder_testsuites' => 1,'do_testsuite_reorder' => 0,
-                    'add_testsuite' => 1,'move_testsuite_viewer' => 0,'update_testsuite' => 1,
-                    'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,
-                    'do_copy_tcase_set' => 0, 'del_testsuites_bulk' => 0, 
-                    'delete_testcases' => 0,'do_delete_testcases' => 0, 'reorder_testcases' => 0, 
-                    'reorder_testsuites_alpha' => 0, 'reorder_testproject_testsuites_alpha' => 0);
-
-$a_init_opt_transfer=array('edit_testsuite' => 1,'new_testsuite'  => 1,'add_testsuite'  => 1,
-                           'update_testsuite' => 1);
-
-$the_tpl = null;
-$action = null;
-$get_c_data = null;
-$init_opt_transfer = null;
-
-foreach ($a_actions as $the_key => $the_val)
-{
-	if (isset($_POST[$the_key]) )
-	{
-		$the_tpl = isset($a_tpl[$the_key]) ? $a_tpl[$the_key] : null;
-		$init_opt_transfer = isset($a_init_opt_transfer[$the_key])?1:0;
-
-		$action = $the_key;
-		$get_c_data = $the_val;
-		$level = 'testsuite';
-		$warning_empty_name = lang_get('warning_empty_com_name');
-		break;
-	}
-}
-
-$lblkey = ($sortCriteria = config_get('testcase_reorder_by')) == 'NAME' ? '_alpha' : '_externalid';
-$btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
-$gui->btn_reorder_testcases = $btn_reorder_testcases;
-
-$gui->page_title = lang_get('container_title_' . $level);
-
-$smarty->assign('level', $level);
-$smarty->assign('page_title',$gui->page_title);
-
-if($init_opt_transfer)
-{
-    $opt_cfg = initializeOptionTransfer($tproject_mgr,$tsuite_mgr,$args,$action);
-}
-// create  web editor objects
-list($oWebEditor,$webEditorHtmlNames,$webEditorTemplateKey)=initWebEditors($a_keys,$level,$editorCfg);
-
-if($get_c_data)
-{
-	$name_ok = 1;
-	$c_data = getValuesFromPost($webEditorHtmlNames);
-
-	if($name_ok && !check_string($c_data['container_name'],$g_ereg_forbidden))
-	{
-		$msg = lang_get('string_contains_bad_chars');
-		$name_ok = 0;
-	}
-
-	if($name_ok && ($c_data['container_name'] == ""))
-	{
-		$msg = $warning_empty_name;
-		$name_ok = 0;
-	}
-}
-
-switch($action)
+ 
+switch($args->action)
 {
 	case 'edit_testsuite':
 	case 'new_testsuite':
-		keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list);
-		$smarty->assign('opt_cfg', $opt_cfg);
-		
-		$gui->containerID = $args->containerID;
-		$gui->tproject_id = $args->tproject_id;
-		$smarty->assign('gui', $gui);
-		
-		$tsuite_mgr->viewer_edit_new($args->tproject_id,$smarty,$template_dir,$webEditorHtmlNames,$oWebEditor,$action,
-		                             $args->containerID, $args->testsuiteID,null,$webEditorTemplateKey);
+    renderTestSuiteForManagement($smarty,$args,$gui,$tsuite_mgr,$keywordSet);
+    exit();
 		break;
+
+    case 'add_testsuite':
+	    $messages = null;
+	    $op['status'] = 0;
+		  if ($args->nameIsOK)
+		  {
+	    	$op = addTestSuite($tsuite_mgr,$args,$_REQUEST);
+	    	$messages = array( 'result_msg' => $op['messages']['msg'], 
+	    	                   'user_feedback' => $op['messages']['user_feedback']);
+	  	}
+    	
+      // $userInput is used to maintain data filled by user if there is
+      // a problem with test suite name.
+      $userInput = $op['status'] ? null : $_REQUEST; 
+      if($op['status'])
+      {
+        $args->assigned_keyword_list = "";
+      } 
+      renderTestSuiteForManagement($smarty,$args,$gui,$tsuite_mgr,$keywordSet,$userInput);
+    break;
+
+
+
+
 
     case 'delete_testsuite':
    		$refreshTree = deleteTestSuite($smarty,$args,$tsuite_mgr,$tree_mgr,$tcase_mgr,$level);
@@ -177,44 +107,16 @@ switch($action)
     	break;
 
     case 'update_testsuite':
-	  	if ($name_ok)
+	  	if ($args->nameIsOK)
 	  	{
         	$msg = updateTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
     	}
-		$guiObj = new stdClass();
-		$guiObj->btn_reorder_testcases = $btn_reorder_testcases;
-  	  	$guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
-	  	$guiObj->id = $args->testsuiteID;
-		$guiObj->page_title = lang_get('container_title_testsuite');
-		$guiObj->refreshTree = $args->refreshTree;
-     	$tsuite_mgr->show($smarty,$args->tproject_id,$guiObj,$template_dir,$args->testsuiteID,null,$msg);
+	  	$gui->id = $args->testsuiteID;
+		  $gui->page_title = lang_get('container_title_testsuite');
+		  $gui->refreshTree = $args->refreshTree;
+     	$tsuite_mgr->show($smarty,$args->tproject_id,$guiObj,$args->testsuiteID,null,$msg);
     	break;
 
-    case 'add_testsuite':
-	    $messages = null;
-	    $op['status'] = 0;
-		if ($name_ok)
-		{
-	    	$op = addTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
-	    	$messages = array( 'result_msg' => $op['messages']['msg'], 
-	    	                   'user_feedback' => $op['messages']['user_feedback']);
-	  	}
-    	
-        // $userInput is used to maintain data filled by user if there is
-        // a problem with test suite name.
-        $userInput = $op['status'] ? null : $_REQUEST; 
-        $assignedKeywords = $op['status'] ? "" : $args->assigned_keyword_list;
-        keywords_opt_transf_cfg($opt_cfg, $assignedKeywords);
-      	$smarty->assign('opt_cfg', $opt_cfg);
-      	
-		$gui->containerID = $args->containerID;
-		$gui->tproject_id = $args->tproject_id;
-      	$smarty->assign('gui', $gui);
-
-  	    $tsuite_mgr->viewer_edit_new($args->tproject_id,$smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, 
-  	    							 $action,$args->containerID, null,$messages,
-	                                 $webEditorTemplateKey,$userInput);
-    	break;
 
 
     case 'do_move_tcase_set':
@@ -236,35 +138,33 @@ switch($action)
 
     case 'do_delete_testcases':
         $args->refreshTree = true;
-    	$assign_gui = false;
+    	  $assign_gui = false;
         doDeleteTestCases($db,$args->tcaseSet,$tcase_mgr);
-    	deleteTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$tsuite_mgr,$tcase_mgr,$args,
-    						  lang_get('all_testcases_have_been_deleted'));
+    	  deleteTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$tsuite_mgr,$tcase_mgr,$args,
+    						              lang_get('all_testcases_have_been_deleted'));
     	break;
 
     // BUGID 3639 
 	case 'reorder_testcases': 
-    	reorderTestCasesByCriteria($args,$tsuite_mgr,$tree_mgr,$sortCriteria);
-		$guiObj = new stdClass();
-		$guiObj->btn_reorder_testcases = $btn_reorder_testcases;
-		$guiObj->refreshTree = true;
-  	  	$guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
-	  	$guiObj->id = $args->testsuiteID;
-		$guiObj->page_title = lang_get('container_title_testsuite');
-     	$tsuite_mgr->show($smarty,$args->tproject_id,$guiObj,$template_dir,$args->testsuiteID,null,null);
-    	break;
+    	 reorderTestCasesByCriteria($args,$tsuite_mgr,$tree_mgr,$sortCriteria);
+		   // $guiObj = new stdClass();  
+		   // $guiObj->btn_reorder_testcases = $btn_reorder_testcases;
+  	   // $gui->attachments = $tsuite_mgr->getAttachmentInfos($args->testsuiteID);
+		   $gui->refreshTree = true;
+	  	 $gui->id = $args->testsuiteID;
+		   $gui->page_title = lang_get('container_title_testsuite');
+     	 $tsuite_mgr->show($smarty,$args->tproject_id,$gui,$args->testsuiteID,null,null);
+    	 break;
 	
 
 	case 'reorder_testsuites_alpha': 
-    	reorderTestSuitesDictionary($args,$tree_mgr,$args->testsuiteID);
-		$guiObj = new stdClass();
-		$guiObj->btn_reorder_testcases = $btn_reorder_testcases;
-		$guiObj->refreshTree = true;
-  	  	$guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
-	  	$guiObj->id = $args->testsuiteID;
-		$guiObj->page_title = lang_get('container_title_testsuite');
-     	$tsuite_mgr->show($smarty,$args->tproject_id,$guiObj,$template_dir,$args->testsuiteID,null,null);
-    	break;
+    reorderTestSuitesDictionary($args,$tree_mgr,$args->testsuiteID);
+		$gui->refreshTree = true;
+  	// $gui->attachments = $tsuite_mgr->getAttachmentInfos($args->testsuiteID);
+	  $gui->id = $args->testsuiteID;
+	  $gui->page_title = lang_get('container_title_testsuite');
+    $tsuite_mgr->show($smarty,$args->tproject_id,$gui,$args->testsuiteID,null,null);
+  break;
 
 	case 'reorder_testproject_testsuites_alpha':
     	reorderTestSuitesDictionary($args,$tree_mgr,$args->tproject_id);
@@ -282,12 +182,12 @@ switch($action)
     	break;
 }
 
-if($the_tpl)
+if($tpl)
 {
 	if( $assign_gui )
 	{
     	$smarty->assign('gui', $gui);
-    }
+  }
 	$smarty->assign('refreshTree',$refreshTree && $args->refreshTree);
 	$smarty->display($template_dir . $the_tpl);
 }
@@ -392,54 +292,74 @@ function build_del_testsuite_warning_msg(&$tree_mgr,&$tcase_mgr,&$testcases,$tsu
   returns:
 
 */
-function init_args(&$treeMgr,$optionTransferCfg)
+function init_args(&$treeMgr)
 {
-   	$args = new stdClass();
-    $_REQUEST = strings_stripSlashes($_REQUEST);
+  $args = new stdClass();
+ 
+  $_REQUEST = strings_stripSlashes($_REQUEST);
+  
+  new dBug($_REQUEST);
+  
+	$args->containerType = 'testsuite';
+  $args->userID = $_SESSION['userID'];
 
+  $args->tproject_name = '';	
+  $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+  if($args->tproject_id)
+  {
+  	$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+  	$args->tproject_name = $dummy['name'];
+  }
+  $args->refreshTree = testproject::getUserChoice($args->tproject_id,array('tcaseTreeRefreshOnAction','edit_mode'));
+  
+  
+  $keys2loop=array('nodes_order' => null, 'tcaseSet' => null,
+                   'target_position' => 'bottom', 'doAction' => '');
+  foreach($keys2loop as $key => $value)
+  {
+     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
+  }
+  
+  
+  $args->tsuite_name = isset($_REQUEST['testsuiteName']) ? $_REQUEST['testsuiteName'] : null;
+  $args->bSure = (isset($_REQUEST['sure']) && ($_REQUEST['sure'] == 'yes'));
 
-	$args->tproject_name = '';	
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-    if($args->tproject_id)
+  // $rl_html_name = $optionTransferCfg->js_ot_name . "_newRight";
+  $args->assigned_keyword_list = isset($_REQUEST['assigned_keyword_list'])? $_REQUEST['assigned_keyword_list'] : "";
+
+  
+  // integer values
+  $keys2loop=array('testsuiteID' => null, 'containerID' => null,'objectID' => null, 'copyKeywords' => 0);
+  foreach($keys2loop as $key => $value)
+  {
+     $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
+  }
+  
+  // hmmm IMHO depends on action
+  if(is_null($args->containerID))
+  {
+  	$args->containerID = $args->tproject_id;
+  }
+  
+  if( isset($_REQUEST['container_name']) )
+  {
+    $args->nameIsOK = true;
+    $args->mse = '';
+    $args->container_name = trim($_REQUEST['container_name']);
+    if( !check_string($args->container_name,config_get('ereg_forbidden')) )
     {
-    	$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
-    	$args->tproject_name = $dummy['name'];
+      $args->msg = lang_get('string_contains_bad_chars');
+      $args->nameIsOK = false;
     }
     
-    $args->userID = $_SESSION['userID'];
-
-    $keys2loop=array('nodes_order' => null, 'tcaseSet' => null,
-                     'target_position' => 'bottom', 'doAction' => '');
-    foreach($keys2loop as $key => $value)
+    if($args->nameIsOK && $args->container_name == '')
     {
-       $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
-    }
-
-
-    $args->tsuite_name = isset($_REQUEST['testsuiteName']) ? $_REQUEST['testsuiteName'] : null;
-    $args->bSure = (isset($_REQUEST['sure']) && ($_REQUEST['sure'] == 'yes'));
-    $rl_html_name = $optionTransferCfg->js_ot_name . "_newRight";
-    $args->assigned_keyword_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
-
-
-    // integer values
-    $keys2loop=array('testsuiteID' => null, 'containerID' => null,
-                     'objectID' => null, 'copyKeywords' => 0);
-    foreach($keys2loop as $key => $value)
-    {
-       $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
-    }
-
-    if(is_null($args->containerID))
-    {
-    	$args->containerID = $args->tproject_id;
-    }
-
-    // 20110604 - franciscom - TICKET 4566: TABBED BROWSING
-    $args->refreshTree = testproject::getUserChoice($args->tproject_id, 
-    												array('tcaseTreeRefreshOnAction','edit_mode'));
-
-    return $args;
+      $args->msg = lang_get('warning_empty_com_name');
+      $args->nameIsOK = false;
+    } 
+  }
+  new dBug($args);
+  return $args;
 }
 
 
@@ -474,9 +394,9 @@ function writeCustomFieldsToDB(&$db,$tprojectID,$tsuiteID,&$hash)
 */
 function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,$level)
 {
-  	$feedback_msg = '';
+  $feedback_msg = '';
 	$system_message = '';
-  	$testcase_cfg = config_get('testcase_cfg');
+  $testcase_cfg = config_get('testcase_cfg');
 	$can_delete = 1;
 
 	if($argsObj->bSure)
@@ -491,7 +411,7 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
 	}
 	else
 	{
-	  	$doRefreshTree = false;
+	  $doRefreshTree = false;
 
 		// Get test cases present in this testsuite and all children
 		$testcases = $tsuiteMgr->get_testcases_deep($argsObj->testsuiteID);
@@ -543,15 +463,9 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
   returns: map with messages and status
   
   revision: 
-  			20101012 - franciscom - BUGID 3890
-  			when creating action on duplicate is setted to BLOCK without using 
-  			config_get('action_on_duplicate_name').
-  			This is because this config option has to be used ONLY when copying/moving not when creating.
-  									
-  			20091206 - franciscom - new items are created as last element of tree branch
 
 */
-function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
+function addTestSuite(&$tsuiteMgr,&$argsObj,&$hash)
 {
     $new_order = null;
 
@@ -563,27 +477,29 @@ function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
     	$dummy = end($siblings);
     	$new_order = $dummy['node_order']+1;
     }
-	$ret = $tsuiteMgr->create($argsObj->containerID,$container['container_name'],$container['details'],
-	                         $new_order,config_get('check_names_for_duplicates'),'block');
+    
+    new dBug($argsObj);
+	  $ret = $tsuiteMgr->create($argsObj->containerID,$argsObj->container_name,$argsObj->details,
+	                            $new_order,config_get('check_names_for_duplicates'),'block');
 		                         
     $op['messages']= array('msg' => $ret['msg'], 'user_feedback' => '');
     $op['status']=$ret['status_ok'];
 	
-	if($ret['status_ok'])
-	{
-		$op['messages']['user_feedback'] = lang_get('testsuite_created');
-		if($op['messages']['msg'] != 'ok')
-		{
-			$op['messages']['user_feedback'] = $op['messages']['msg'];  
-		}
+	  if($ret['status_ok'])
+	  {
+		  $op['messages']['user_feedback'] = lang_get('testsuite_created');
+		  if($op['messages']['msg'] != 'ok')
+		  {
+			  $op['messages']['user_feedback'] = $op['messages']['msg'];  
+		  }
 
-		if(trim($argsObj->assigned_keyword_list) != "")
+		  if(trim($argsObj->assigned_keyword_list) != "")
     	{
     		$tsuiteMgr->addKeywords($ret['id'],explode(",",$argsObj->assigned_keyword_list));
     	}
     	writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tproject_id,$ret['id'],$hash);
-	}
-	return $op;
+	  }
+	  return $op;
 }
 
 /*
@@ -622,31 +538,32 @@ function  moveTestSuiteViewer(&$smartyObj,&$tprojectMgr,$argsObj)
   returns: -
 
 */
-function  reorderTestSuiteViewer(&$smartyObj,&$treeMgr,$argsObj)
+function reorderTestSuiteViewer(&$smartyObj,&$treeMgr,$argsObj)
 {
-	$level = null;
+	$containerType = null;
 	$oid = is_null($argsObj->testsuiteID) ? $argsObj->containerID : $argsObj->testsuiteID;
 	$children = $treeMgr->get_children($oid, array("testplan" => "exclude_me",
                                                  "requirement_spec"  => "exclude_me"));
-  	$object_info = $treeMgr->get_node_hierarchy_info($oid);
-  	$object_name = $object_info['name'];
-
-
 	if (!sizeof($children))
+	{
 		$children = null;
+  }
 
+  $object_info = $treeMgr->get_node_hierarchy_info($oid);
+  $object_name = $object_info['name'];
+  
 	$smartyObj->assign('arraySelect', $children);
 	$smartyObj->assign('objectID', $oid);
 	$smartyObj->assign('object_name', $object_name);
 
 	if($oid == $argsObj->tproject_id)
-  	{
-    	$level = 'testproject';
-    	$smartyObj->assign('level', $level);
-    	$smartyObj->assign('page_title',lang_get('container_title_' . $level));
+  {
+    	$containerType = 'testproject';
+    	$smartyObj->assign('level', $containerType);
+    	$smartyObj->assign('page_title',lang_get('container_title_' . $containerType));
   }
 
-  return $level;
+  return $containerType;
 }
 
 
@@ -661,7 +578,16 @@ function  reorderTestSuiteViewer(&$smartyObj,&$treeMgr,$argsObj)
 function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
 {
 	$msg = 'ok';
-	$ret = $tsuiteMgr->update($argsObj->testsuiteID,$container['container_name'],$container['details']);
+	
+	$item = new stdClass();
+	$item->id = $argsObj->testsuiteID;
+	$item->name = $argsObj->container_name;
+	$item->details = $argsObj->details;
+	$item->parent_id = null;
+	$item->order = null;
+	
+	//$ret = $tsuiteMgr->update($argsObj->testsuiteID,$argsObj->container_name,$argsObj->details);
+	$ret = $tsuiteMgr->update($item);
 	if($ret['status_ok'])
 	{
       $tsuiteMgr->deleteKeywords($argsObj->testsuiteID);
@@ -670,8 +596,8 @@ function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
          $tsuiteMgr->addKeywords($argsObj->testsuiteID,explode(",",$argsObj->assigned_keyword_list));
       }
       writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tproject_id,$argsObj->testsuiteID,$hash);
-  	}
-  	else
+  }
+  else
 	{
 	    $msg = $ret['msg'];
 	}
@@ -721,11 +647,11 @@ function moveTestSuite(&$smartyObj,$template_dir,&$tprojectMgr,$argsObj,$guiObj)
 	$exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
 
 	$tprojectMgr->tree_manager->change_parent($argsObj->objectID,$argsObj->containerID);
-  	$tprojectMgr->tree_manager->change_child_order($argsObj->containerID,$argsObj->objectID,
+  $tprojectMgr->tree_manager->change_child_order($argsObj->containerID,$argsObj->objectID,
                                                    $argsObj->target_position,$exclude_node_types);
 
 	$guiObj->id = $argsObj->tproject_id;
-  	$tprojectMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->tproject_id,null,'ok');
+  $tprojectMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->tproject_id,null,'ok');
 }
 
 
@@ -740,11 +666,10 @@ function moveTestSuite(&$smartyObj,$template_dir,&$tprojectMgr,$argsObj,$guiObj)
 function initializeOptionTransfer(&$tprojectMgr,&$tsuiteMgr,$argsObj,$doAction)
 {
     $opt_cfg = opt_transf_empty_cfg();
-    $opt_cfg->js_ot_name='ot';
     $opt_cfg->global_lbl='';
-    $opt_cfg->from->lbl=lang_get('available_kword');
+    $opt_cfg->from->lbl = lang_get('available_kword');
+    $opt_cfg->to->lbl = lang_get('assigned_kword');
     $opt_cfg->from->map = $tprojectMgr->get_keywords_map($argsObj->tproject_id);
-    $opt_cfg->to->lbl=lang_get('assigned_kword');
 
     if($doAction=='edit_testsuite')
     {
@@ -897,29 +822,31 @@ function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
  * initWebEditors
  *
  */
- function initWebEditors($webEditorKeys,$containerType,$editorCfg)
+ function initWebEditors($containerType,$editorCfg)
  {
+
+    $editorSet = new stdClass();
+    $editorSet->jsControls = array();
+    $editorSet->inputNames = null;
+    $editorSet->templates = null;
+    
     switch($containerType)
     {
         case 'testsuite':
-            // $cfg=config_get('testsuite_template');
-            $itemTemplateKey='testsuite_template';
+            $editorSet->templates = 'testsuite_template';
+            $editorSet->inputNames = array('details');
         break;    
         
         default:
-            //$cfg=null;
-            $itemTemplateKey=null;
         break;    
     }
     
-    
-    $htmlNames = $webEditorKeys[$containerType];
-    $oWebEditor = array();
-    foreach ($htmlNames as $key)
+    foreach($editorSet->inputNames as $key)
     {
-      $oWebEditor[$key] = web_editor($key,$_SESSION['basehref'],$editorCfg);
+      $editorSet->jsControls[$key] = web_editor($key,$_SESSION['basehref'],$editorCfg);
     }
-    return array($oWebEditor,$htmlNames,$itemTemplateKey);
+    
+    return $editorSet;
  }
  
  
@@ -1142,4 +1069,100 @@ function reorderTestSuitesDictionary($args,$treeMgr,$parent_id)
 }
 
 
+function initializeEnv($treeMgr)
+{
+  $env = array();
+  $env[0] = init_args($treeMgr);
+  $env[1] = initializeGui($env[0]);
+  $argsObj = &$env[0];
+  $guiObj = &$env[1];
+
+  
+  $actionTpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
+                      'delete_testsuite' => 'containerDelete.tpl',
+                      'move_testcases_viewer' => 'containerMoveTC.tpl',
+                      'do_copy_tcase_set' => 'containerMoveTC.tpl',
+                      'delete_testcases' =>  'containerDeleteTC.tpl',
+                      'do_delete_testcases' =>  'containerDeleteTC.tpl');
+
+  $actionGetData = array('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite' => 0,'do_move' => 0,
+					               'do_copy' => 0,'reorder_testsuites' => 1,'do_testsuite_reorder' => 0,
+                         'add_testsuite' => 1,'move_testsuite_viewer' => 0,'update_testsuite' => 1,
+                         'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,
+                         'do_copy_tcase_set' => 0, 'del_testsuites_bulk' => 0, 
+                         'delete_testcases' => 0,'do_delete_testcases' => 0, 'reorder_testcases' => 0, 
+                         'reorder_testsuites_alpha' => 0, 'reorder_testproject_testsuites_alpha' => 0);
+
+  $actionInitOptTransfer = array('edit_testsuite' => 1,'new_testsuite'  => 1,'add_testsuite'  => 1,
+                                 'update_testsuite' => 1);
+
+  $guiObj->tpl = null;
+  $guiObj->page_title = '';
+  
+  $argsObj->action = null;
+  $argsObj->init_opt_transfer = null;
+  $argsObj->getUserInput = null;
+
+  foreach ($actionGetData as $key => $val)
+  {
+	  if (isset($_POST[$key]) )
+	  {
+	    $argsObj->action = $key;
+		  $argsObj->init_opt_transfer = isset($actionInitOptTransfer[$argsObj->action]) ? 1 : 0;
+		  $argsObj->getUserInput = $val;
+
+		  $guiObj->tpl = isset($actionTpl[$argsObj->action]) ? $actionTpl[$argsObj->action] : null;
+      $guiObj->page_title = lang_get('container_title_testsuite');
+		  break;
+	  }
+  }
+
+  return $env;
+}
+
+function initializeGui(&$argsObj)
+{
+  $guiObj = new stdClass();
+  $guiObj->containerType = $argsObj->containerType;
+  $guiObj->tproject_id = $argsObj->tproject_id;
+  $guiObj->refreshTree = $argsObj->refreshTree;
+
+  $guiObj->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id={$argsObj->tproject_id} " .
+	  			 		                ' target="mainframe" class="bold" ' .
+   	  		  	 		            ' title="' . lang_get('menu_manage_keywords') . '"';
+
+
+
+  $lblkey = ($guiObj->SortCriteria = config_get('testcase_reorder_by')) == 'NAME' ? '_alpha' : '_externalid';
+  $guiObj->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
+  $guiObj->page_title = lang_get('container_title_' . $argsObj->containerType);
+
+  return $guiObj;
+}
+
+
+function renderTestSuiteForManagement(&$tplEngine,&$argsObj,&$guiObj,&$tsuiteMgr,$keywordSet,$userInput=null)
+{
+  
+  echo $argsObj->action;
+  $guiObj->optionTransfer = tlKeyword::optionTransferGuiControl();
+  $guiObj->optionTransfer->setNewRightInputName('assigned_keyword_list');
+  $guiObj->optionTransfer->initFromPanel(null,lang_get('available_kword'));
+  $guiObj->optionTransfer->initToPanel(null,lang_get('assigned_kword'));
+
+  $guiObj->optionTransfer->setFromPanelContent($keywordSet['testproject']);
+  $guiObj->optionTransfer->setToPanelContent($keywordSet['testsuite']);
+  $guiObj->optionTransfer->updatePanelsContent($argsObj->assigned_keyword_list);
+  
+  $guiObj->optionTransferJSObject = json_encode($guiObj->optionTransfer->getHtmlInputNames());
+  
+  $context = array('tproject_id' => $argsObj->tproject_id,
+		               'parent_id' => $argsObj->containerID, 
+		               'id' => $argsObj->testsuiteID);
+
+  new dBug($guiObj);
+  $editorCfg = getWebEditorCfg('design');
+  $editorsObj = initWebEditors($guiObj->containerType,$editorCfg);
+	$tsuiteMgr->viewer_edit_new($tplEngine,$guiObj,$argsObj->action,$context,$editorsObj,null,$userInput);
+}
 ?>

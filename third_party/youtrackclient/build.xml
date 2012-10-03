@@ -1,0 +1,17 @@
+<project name=" YouTrack-Client-PHP-Library" default="build">
+ <target name="clean">
+  <delete dir="${basedir}/build"/>
+ </target>
+
+ <target name="prepare">
+  <mkdir dir="${basedir}/build/logs"/>
+ </target>
+
+ <target name="phpunit">
+  <exec dir="${basedir}" executable="phpunit" failonerror="true">
+   <arg line="--log-junit ${basedir}/build/logs/phpunit.xml test" />
+  </exec>
+ </target>
+
+ <target name="build" depends="clean,prepare,phpunit"/>
+</project>

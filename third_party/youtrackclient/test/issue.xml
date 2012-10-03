@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<issue id="T-2">
+  <field name="projectShortName">
+    <value>T</value>
+  </field>
+  <field name="numberInProject">
+    <value>2</value>
+  </field>
+  <field name="summary">
+    <value>A summary of the issue.</value>
+  </field>
+  <field name="description">
+    <value>A verbose description of the issue.</value>
+  </field>
+  <field name="created">
+    <value>1301392165003</value>
+  </field>
+  <field name="updated">
+    <value>1301914508603</value>
+  </field>
+  <field name="updaterName">
+    <value>nameOfTheUpdater</value>
+  </field>
+  <field name="resolved">
+    <value>1301914508602</value>
+  </field>
+  <field name="reporterName">
+    <value>nameOfTheReporter</value>
+  </field>
+  <field name="assigneeName">
+    <value>nameOfTheAssignee</value>
+  </field>
+  <field name="type">
+    <value>Task</value>
+  </field>
+  <field name="priority">
+    <value>2</value>
+  </field>
+  <field name="state">
+    <value>Fixed</value>
+  </field>
+  <field name="subsystem">
+    <value>subsystemName</value>
+  </field>
+  <field name="commentsCount">
+    <value>6</value>
+  </field>
+  <field name="votes">
+    <value>0</value>
+  </field>
+  <field name="links">
+    <value role="is required for" type="Depend">T-1</value>
+    <value role="is required for" type="Depend">T-3</value>
+    <value role="is required for" type="Depend">T-4</value>
+  </field>
+  <field name="Due date">
+    <value>1302775200000</value>
+  </field>
+  <field name="attachments">
+    <value url="/youtrack/_persistent/passwd?file=56-0&amp;v=0&amp;c=true">passwd</value>
+    <value url="/youtrack/_persistent/list.csv?file=56-1&amp;v=0&amp;c=true">list.csv</value>
+    <value url="/youtrack/_persistent/passwd-cleartext?file=56-3&amp;v=0&amp;c=true">passwd-cleartext</value>
+  </field>
+</issue>

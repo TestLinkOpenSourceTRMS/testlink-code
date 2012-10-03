@@ -42,7 +42,6 @@ require_once('tlsmarty.inc.php');
 // Needed to avoid problems with Smarty 3
 spl_autoload_register('tlAutoload');
 
-
 /** Input data validation */
 require_once("inputparameter.inc.php");
 
@@ -58,9 +57,7 @@ require_once("inputparameter.inc.php");
  */
 function tlAutoload($className) 
 {
-	// exceptions
-	$tlClasses = null;
-	$tlClassPrefixLen = 2;
+	$tlClasses = array('withPrefix' => null, 'noClassSuffix' => array('dBug' => 1)); // exceptions
 
 	// this way Zend_Loader_Autoloader will take care of these classes.
 	// Needed in order to make work bugzillaxmlrpc interface
@@ -69,13 +66,32 @@ function tlAutoload($className)
 		return false;
 	}
 	
-	
-	if (isset($tlClasses[$className]))
+	$suffix = '.class';
+	foreach($tlClasses as $neo => $items)
 	{
-    $len = tlStringLen($className) - $tlClassPrefixLen;
-		$className = strtolower(tlSubstr($className,$tlClassPrefixLen,$len));
-	} 
-  require_once $className . '.class.php';
+    if( !is_null($items) )
+    {
+      switch($neo)
+      {
+        case 'withPrefix':
+        	if( isset($items[$className]) )
+        	{
+       	  	$tlClassPrefixLen = 2;
+            $len = tlStringLen($className) - $tlClassPrefixLen;
+        		$className = strtolower(tlSubstr($className,$tlClassPrefixLen,$len));
+        	} 
+        break;
+        
+        case 'noClassSuffix':
+        	if( isset($items[$className]) )
+        	{
+            $suffix = '';
+         	} 
+        break;
+      } 
+	  }
+	}
+  require_once $className . $suffix . '.php';
 }
 
 

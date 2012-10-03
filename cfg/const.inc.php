@@ -42,6 +42,8 @@ ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . '.' . PATH_SEP
 
 ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'issuetrackerintegration' . DIRECTORY_SEPARATOR);                       
 ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . TL_ABS_PATH . 'third_party' . DIRECTORY_SEPARATOR);
+ini_set('include_path',ini_get('include_path') . 
+        PATH_SEPARATOR . TL_ABS_PATH . 'third_party' . DIRECTORY_SEPARATOR . 'dBug' . DIRECTORY_SEPARATOR);
 
 
 

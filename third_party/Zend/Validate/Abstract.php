@@ -14,9 +14,9 @@
  *
  * @category   Zend
  * @package    Zend_Validate
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Abstract.php,v 1.1 2010/05/17 19:30:24 franciscom Exp $
+ * @version    $Id: Abstract.php 24807 2012-05-15 12:10:42Z adamlundrigan $
  */
 
 /**
@@ -27,7 +27,7 @@ require_once 'Zend/Validate/Interface.php';
 /**
  * @category   Zend
  * @package    Zend_Validate
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Validate_Abstract implements Zend_Validate_Interface
@@ -216,10 +216,10 @@ abstract class Zend_Validate_Abstract implements Zend_Validate_Interface
         $message = $this->_messageTemplates[$messageKey];
 
         if (null !== ($translator = $this->getTranslator())) {
-            if ($translator->isTranslated($message)) {
-                $message = $translator->translate($message);
-            } elseif ($translator->isTranslated($messageKey)) {
+            if ($translator->isTranslated($messageKey)) {
                 $message = $translator->translate($messageKey);
+            } else {
+                $message = $translator->translate($message);
             }
         }
 
@@ -239,7 +239,7 @@ abstract class Zend_Validate_Abstract implements Zend_Validate_Interface
 
         $message = str_replace('%value%', (string) $value, $message);
         foreach ($this->_messageVariables as $ident => $property) {
-            $message = str_replace("%$ident%", (string) $this->$property, $message);
+            $message = str_replace("%$ident%", implode(' ',(array)$this->$property), $message);
         }
 
         $length = self::getMessageLength();
@@ -354,14 +354,14 @@ abstract class Zend_Validate_Abstract implements Zend_Validate_Interface
 
     /**
      * Does this validator have its own specific translator?
-     * 
+     *
      * @return bool
      */
     public function hasTranslator()
     {
         return (bool)$this->_translator;
-    }  
-    
+    }
+
     /**
      * Set default translation object for all validate objects
      *
@@ -404,14 +404,14 @@ abstract class Zend_Validate_Abstract implements Zend_Validate_Interface
 
     /**
      * Is there a default translation object set?
-     * 
+     *
      * @return boolean
      */
     public static function hasDefaultTranslator()
-    { 
+    {
         return (bool)self::$_defaultTranslator;
     }
-    
+
     /**
      * Indicate whether or not translation should be disabled
      *

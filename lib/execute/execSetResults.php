@@ -14,7 +14,7 @@ require_once("attachments.inc.php");
 require_once("specview.php");
 require_once("web_editor.php");
 
-$cfg=getCfg();
+$cfg = getCfg();
 require_once(require_web_editor($cfg->editorCfg['type']));
 if( $cfg->exec_cfg->enable_test_automation )
 {
@@ -73,6 +73,12 @@ if(!is_null($linked_tcversions))
 {
 	$items_to_exec = array();
 	$_SESSION['s_lastAttachmentInfos'] = null;
+
+  if ($args->doDelete)
+  {
+    delete_execution($db,$args->exec_to_delete);
+  }
+
   if($args->level == 'testcase')
   {
     // Warning!!! - $gui is passed by reference to be updated inside function
@@ -85,6 +91,8 @@ if(!is_null($linked_tcversions))
   }
 
   $gui->tcversionSet = is_array($tcversion_id) ? implode(',',$tcversion_id) : $tcversion_id;
+
+
 
   // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
   //
@@ -101,66 +109,46 @@ if(!is_null($linked_tcversions))
     if ($args->save_and_next) 
     {
       $identity = processSaveAndNext($mgr,$args,$gui,$tcversion_id);
-      
-			$nextItem = $mgr->tplan->getTestCaseNextSibling($args->tplan_id,$tcversion_id,$args->platform_id);
-			
-			while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $args->testcases_to_show)) 
+			if( !is_null($identity) )
 			{
-				$nextItem = $mgr->tplan->getTestCaseNextSibling($args->tplan_id,$nextItem['tcversion_id'],$args->platform_id);
-			}
-			
-			if( !is_null($nextItem) )
-			{
-				$tcase_id = $nextItem['tcase_id'];
-				$tcversion_id = $nextItem['tcversion_id'];
-
-				// Save and Next - Issues with display CF for test plan design - always EMPTY	
-				// need info about this test case => need to update linked_tcversions info
-				$identity = array('id' => $nextItem['tcase_id'], 'version_id' => $nextItem['tcversion_id']);
-				list($lt,$xdm) = getLinkedItems($args,$gui->history_on,$cfg,$tcase_mgr,$tplan_mgr,$identity);
-     		processTestCase($nextItem,$gui,$args,$cfg,$lt,$mgr);
+				$tcase_id = $identity['tcase_id'];
+				$tcversion_id = $identity['tcversion_id'];
 			}
    }
   }
   // Important Notice: $tcase_id and $tcversions_id, can be ARRAYS when user enable bulk execution
   $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
     
-    if ($args->doDelete)
+  $gui->map_last_exec_any_build = null;
+  $gui->other_execs=null;
+  $testerid = null;
+    
+    
+  if($args->level == 'testcase')
+  {
+    // @TODO 20090815 - franciscom check what to do with platform
+    if( $cfg->exec_cfg->show_last_exec_any_build )
     {
-    	delete_execution($db,$args->exec_to_delete);
-    }
-    // --------------------------------------------------------------------------------------------
-    
-    $gui->map_last_exec_any_build = null;
-    $gui->other_execs=null;
-    $testerid = null;
-    
-    
-    if($args->level == 'testcase')
-    {
-    	// @TODO 20090815 - franciscom check what to do with platform
-    	if( $cfg->exec_cfg->show_last_exec_any_build )
-    	{
-    		// 20090716 - franciscom - get_last_execution() interface changes
 			$options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
-    	    $gui->map_last_exec_any_build = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$args->tplan_id,
-    	                                                                   testcase::ANY_BUILD,
-    	                                                                   $args->platform_id,$options);
+    	$gui->map_last_exec_any_build = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$args->tplan_id,
+    	                                                               testcase::ANY_BUILD,
+    	                                                               $args->platform_id,$options);
     	    
-    	    //Get UserID and Updater ID for current Version
-    	    $tc_current = $gui->map_last_exec_any_build;
-    	    foreach ($tc_current as $key => $value)
-    	    {
-				$testerid = $value['tester_id'];
-			    $userid_array[$testerid] = $testerid;
-    	    }	    
-    	}
-    	
-    	$gui->req_details = $req_mgr->get_all_for_tcase($tcase_id); //Bug 2068
-    	$gui->other_execs=getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);
-    	// Get attachment,bugs, etc
-    	if(!is_null($gui->other_execs))
+    	// Get UserID and Updater ID for current Version
+    	$tc_current = $gui->map_last_exec_any_build;
+    	foreach ($tc_current as $key => $value)
     	{
+				$testerid = $value['tester_id'];
+			  $userid_array[$testerid] = $testerid;
+    	}	    
+    }
+    	
+    $gui->req_details = $req_mgr->get_all_for_tcase($tcase_id); //Bug 2068
+    $gui->other_execs=getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);
+    
+    // Get attachment,bugs, etc
+    if(!is_null($gui->other_execs))
+    {
     		//Get the Tester ID for all previous executions
 			  foreach ($gui->other_execs as $key => $execution)
 			  {    	
@@ -171,8 +159,7 @@ if(!is_null($linked_tcversions))
 		      	}    	
 			  }
     	
-		  // asimon - added $g_bugInterfaceOn, $g_bugInterface
-    	  $other_info=exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,
+			  $other_info = exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,
     	  $args->tplan_id,$args->tproject_id, $g_bugInterfaceOn, $g_bugInterface);
     	  $gui->attachments=$other_info['attachment'];
     	  $gui->bugs=$other_info['bugs'];
@@ -208,32 +195,17 @@ if ($userid_array)
 }
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id);
 
-// BUGID 3643 - don't apply filters here
-// BUGID 2455, BUGID 3026
-// BUGID 3516
-// remove testcases which shall not be displayed because they were filtered out
-//if (!is_null($args->testcases_to_show) && $args->level == 'testsuite') {
-//	foreach($gui->map_last_exec as $key => $tc) {
-//		if (!in_array($tc['testcase_id'], $args->testcases_to_show)) {
-//			unset($gui->map_last_exec[$key]); // tc shall not be displayed
-//		}
-//	}
-//	// fix indexes for smarty
-//	$gui->map_last_exec = array_values($gui->map_last_exec);
-//}
-
 // Bulk is possible when test suite is selected (and is allowed in config)
 $gui->can_use_bulk_op = ($args->level == 'testsuite');
-
 if( $gui->can_use_bulk_op )
 {
-    $gui->execStatusValues=createResultsMenu();
+    $gui->execStatusValues = createResultsMenu();
     if( isset($gui->execStatusValues[$cfg->tc_status['all']]) )
     {
         unset($gui->execStatusValues[$cfg->tc_status['all']]);
     }
 
-    $of=web_editor("bulk_exec_notes",$_SESSION['basehref'],$cfg->editorCfg);
+    $of = web_editor("bulk_exec_notes",$_SESSION['basehref'],$cfg->editorCfg);
    	$of->Value = getItemTemplateContents('execution_template', $of->InstanceName, null);
     
     // Magic numbers that can be determined by trial and error
@@ -242,7 +214,7 @@ if( $gui->can_use_bulk_op )
 }
 else
 {
-    $gui->exec_notes_editors=createExecNotesWebEditor($gui->map_last_exec,$_SESSION['basehref'],$cfg->editorCfg);
+    $gui->exec_notes_editors = createExecNotesWebEditor($gui->map_last_exec,$_SESSION['basehref'],$cfg->editorCfg);
 }
 
 // To silence smarty errors
@@ -253,6 +225,8 @@ $smarty->assign('users',tlUser::getByIDs($db,$userSet,'id'));
 $smarty->assign('gui',$gui);
 $smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+
 
 /*
   function: 
@@ -1059,7 +1033,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$mgrPool)
     // doing this here, we avoid to do on processTestSuite() and processTestCase(),
     // but absolutely this will not improve in ANY WAY perfomance, because we do not loop
     // over these two functions. 	
-    $gui->tcasePrefix = $mrgPool->tproject->getTestCasePrefix($argsObj->tproject_id);
+    $gui->tcasePrefix = $mgrPool->tproject->getTestCasePrefix($argsObj->tproject_id);
     $build_info = $buildMgr->get_by_id($argsObj->build_id);
     $gui->build_notes=$build_info['notes'];
     $gui->build_is_open=($build_info['is_open'] == 1 ? 1 : 0);
@@ -1442,7 +1416,7 @@ function createManagers($dbHandler,$tprojectID)
 
   $is->exec_cfield = new exec_cfield_mgr($dbHandler,$tprojectID);
 
-  retunr $is;
+  return $is;
 }
 
 
@@ -1450,6 +1424,9 @@ function createManagers($dbHandler,$tprojectID)
 // function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identity=null)
 function getLinkedItems($argsObj,$historyOn,$cfgObj,$mgrPool,$identity=null)
 {          
+	
+	
+	new dBug($mgrPool);
 	
 	$ltcv = null;
 	$idCard = null;

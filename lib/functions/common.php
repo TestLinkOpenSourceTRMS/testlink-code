@@ -11,9 +11,9 @@
  * a feature specific code because of performance and readability reasons
  *
  * @filesource	common.php
- * @package 	TestLink
+ * @package 	  TestLink
  * @copyright 	2005,2012 TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
  */
@@ -42,14 +42,14 @@ require_once('tlsmarty.inc.php');
 // Needed to avoid problems with Smarty 3
 spl_autoload_register('tlAutoload');
 
-
 /** Input data validation */
 require_once("inputparameter.inc.php");
 
 /** @TODO use the next include only if it is used -> must be removed */
-require_once("testproject.class.php"); 
-require_once("treeMenu.inc.php");
-require_once("exec_cfield_mgr.class.php");
+// 20121003
+// require_once("testproject.class.php"); 
+// require_once("treeMenu.inc.php");
+// require_once("exec_cfield_mgr.class.php");
 
 /**
  * Automatic loader for PHP classes
@@ -57,15 +57,41 @@ require_once("exec_cfield_mgr.class.php");
  */
 function tlAutoload($className) 
 {
-	// exceptions
-	$tlClasses = null;
-	$tlClassPrefixLen = 2;
-	if (isset($tlClasses[$className]))
+	$tlClasses = array('withPrefix' => null, 'noClassSuffix' => array('dBug' => 1)); // exceptions
+
+	// this way Zend_Loader_Autoloader will take care of these classes.
+	// Needed in order to make work bugzillaxmlrpc interface
+	if( strstr($className,'Zend_') !== FALSE )
 	{
-    $len = tlStringLen($className) - $tlClassPrefixLen;
-		$className = strtolower(tlSubstr($className,$tlClassPrefixLen,$len));
-	} 
-  require_once $className . '.class.php';
+		return false;
+	}
+	
+	$suffix = '.class';
+	foreach($tlClasses as $neo => $items)
+	{
+    if( !is_null($items) )
+    {
+      switch($neo)
+      {
+        case 'withPrefix':
+        	if( isset($items[$className]) )
+        	{
+       	  	$tlClassPrefixLen = 2;
+            $len = tlStringLen($className) - $tlClassPrefixLen;
+        		$className = strtolower(tlSubstr($className,$tlClassPrefixLen,$len));
+        	} 
+        break;
+        
+        case 'noClassSuffix':
+        	if( isset($items[$className]) )
+        	{
+            $suffix = '';
+         	} 
+        break;
+      } 
+	  }
+	}
+  require_once $className . $suffix . '.php';
 }
 
 
@@ -78,11 +104,14 @@ $db = 0;
 /**
  * TestLink connects to the database
  *
+ * @param &$db reference to resource, here resource pointer will be returned.
+ * @param $onErrorExit default false, true standard page will be displayed
+ *
  * @return array
  *         aa['status'] = 1 -> OK , 0 -> KO
  *         aa['dbms_msg''] = 'ok', or $db->error_msg().
  */
-function doDBConnect(&$db)
+function doDBConnect(&$db,$onErrorExit=false)
 {
 	global $g_tlLogger;
 	
@@ -96,7 +125,22 @@ function doDBConnect(&$db)
 	{
 		echo $result['dbms_msg'];
 		$result['status'] = 0;
-		tLog('Connect to database fails!!! ' . $result['dbms_msg'], 'ERROR');
+		$search = array('<b>','</b>','<br>');
+		$replace = array('',''," :: ");
+		$logtext = ' Connect to database <b>' . DB_NAME . '</b> on Host <b>' . DB_HOST . '</b> fails <br>';
+		$logtext .= 'DBMS Error Message: ' . $result['dbms_msg'];
+		
+		$logmsg  = $logtext . ($onErrorExit ? '<br>Redirection to connection fail screen.' : '');
+		tLog(str_replace($search,$replace,$logmsg), 'ERROR');
+		if( $onErrorExit )
+		{
+			$smarty = new TLSmarty();
+			$smarty->assign('title', lang_get('fatal_page_title'));
+			$smarty->assign('content', $logtext);
+			$smarty->assign('link_to_op', null);
+			$smarty->display('workAreaSimple.tpl'); 
+			exit();
+		}
 	}
 	else
 	{
@@ -143,14 +187,13 @@ function setSessionTestPlan($tplan_info)
 
 /**
  * Set home URL path
- * @internal Revisions:
- * 200806 - havlatm - removed rpath
+ * @internal revisions
  */
 function setPaths()
 {
 	if (!isset($_SESSION['basehref']))
 	{
-		$_SESSION['basehref'] = get_home_url();
+		$_SESSION['basehref'] = get_home_url(array('force_https' => config_get('force_https')));
 	}	
 }
 
@@ -167,15 +210,7 @@ function checkSessionValid(&$db, $redirect=true)
 	$isValidSession = false;
 	if (isset($_SESSION['userID']) && $_SESSION['userID'] > 0)
 	{
-		/** @TODO martin: 
-		    Talk with Andreas to understand:
-		    1. advantages of this approach
-		    2. do we need to recreate it every time ? why ?
-		   
-		 * a) store just data -not all object
-		 * b) do not read again and again the same data from DB
-		 * c) this function check JUST session validity
-		 **/
+
 		$now = time();
 		if (($now - $_SESSION['lastActivity']) <= (config_get("sessionInactivityTimeout") * 60))
 		{
@@ -209,12 +244,18 @@ function checkSessionValid(&$db, $redirect=true)
 /**
  * Start session
  */
-function doSessionStart()
+function doSessionStart($setPaths=false)
 {
 	session_set_cookie_params(99999);
 	if(!isset($_SESSION))
 	{
 		session_start();
+	}
+	
+	if($setPaths)
+	{
+		unset($_SESSION['basehref']);
+		setPaths();
 	}
 }
 

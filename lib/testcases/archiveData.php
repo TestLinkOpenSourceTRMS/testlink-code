@@ -11,6 +11,7 @@
  *
  *	@internal revision
  *  @since 2.0
+ *  20121004 - asimon - TICKET 5265: test case search displays only the first version of all test cases
  *  20120909 - franciscom - attachment management refactoring
  *
  */
@@ -60,8 +61,9 @@ switch($args->feature)
 		  if( !($get_path_info = ($args->id > 0)) )
 		  {
 			  $gui->warning_msg = $args->id == 0 ? lang_get('testcase_does_not_exists') : lang_get('prefix_does_not_exists');
- 		  } 
-		
+ 		  }
+          // TICKET 5265: test case search displays only the first version of all test cases
+          $args->tcversion_id = testcase::ALL_VERSIONS;
 	  }
 
 	  if( $args->id > 0 )

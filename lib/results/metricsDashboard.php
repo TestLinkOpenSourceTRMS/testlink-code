@@ -9,11 +9,9 @@
  * @author franciscom
  *
  * @internal revisions
- * @since 1.9.4
+ * @since 1.9.5
+ * 20121004 - franciscom - TICKET 5267: Metrics Dashboard. Test Project Progress display "0" for Passed/Failed/Blocked
  * 20120907 - asimon - TICKET 5212: removed debug output "getMetrics" that was shown above the normal page header
- * 20120728 - franciscom - CHANGE OF BEHAVIOR: test plan without builds will be ignored
- *							
- * 20120603 - franciscom - TICKET 5048: Metrics Dashboard refactoring for performance
  *
  **/
 require('../../config.inc.php');
@@ -239,6 +237,7 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 						$mm[$key]['overall'][$codeStatusVerbose[$code]] = 0;
 					}
 					$mm[$key]['overall'][$codeStatusVerbose[$code]] += $elem['exec_qty'];
+          $metrics['total'][$codeStatusVerbose[$code]] += $elem['exec_qty']; 
 				}
 				$mm[$key]['overall']['executed'] += $xd['executed'];
 				$mm[$key]['overall']['active'] += $xd['active'];

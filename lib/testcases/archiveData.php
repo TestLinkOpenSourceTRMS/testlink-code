@@ -11,6 +11,7 @@
  *
  *	@internal revision
  *	@since 1.9.5
+ *  20121004 - asimon - TICKET 5265: test case search displays only the first version of all test cases
  *  20120927 - franciscom - TICKET 5250: User rights "Test Case view" not work
  */
 
@@ -84,7 +85,9 @@ switch($args->feature)
 			if( !($get_path_info = ($args->id > 0)) )
 			{
 				$gui->warning_msg = $args->id == 0 ? lang_get('testcase_does_not_exists') : lang_get('prefix_does_not_exists');
- 			} 
+ 			}
+            // TICKET 5265: test case search displays only the first version of all test cases
+            $args->tcversion_id = testcase::ALL_VERSIONS;
 		}
 
 		if( $args->id > 0 )

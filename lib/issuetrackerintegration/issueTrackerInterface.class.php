@@ -77,15 +77,23 @@ abstract class issueTrackerInterface
 	{
 		$xmlCfg = "<?xml version='1.0'?> " . $xmlString;
 		libxml_use_internal_errors(true);
-		$this->cfg = simplexml_load_string($xmlCfg);
-		if (!$this->cfg) 
+		try 
 		{
-    		echo "Failure loading XML STRING\n";
-    		foreach(libxml_get_errors() as $error) 
-    		{
-        		echo "\t", $error->message;
-    		}
-		}
+  		$this->cfg = simplexml_load_string($xmlCfg);
+  		if (!$this->cfg) 
+  		{
+      		echo "Failure loading XML STRING\n";
+      		foreach(libxml_get_errors() as $error) 
+      		{
+          		echo "\t", $error->message;
+      		}
+  		}
+    }
+    catch(Exception $e)
+    {
+      echo "Exception loading XML STRING\n";
+      echo 'Message: ' .$e->getMessage();
+    }
 	}
 
 	/**

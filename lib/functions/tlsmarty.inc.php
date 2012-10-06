@@ -223,6 +223,8 @@ class TLSmarty extends Smarty
         // add in alpha order please
         $tlImages = array('api_info' => TL_THEME_IMG_DIR . "brick.png",
                           'bullet' => TL_THEME_IMG_DIR . "slide_gripper.gif",
+                          'bugMgmt' => TL_THEME_IMG_DIR . "bug1.gif",
+                          'bugMgmtGreyed' => TL_THEME_IMG_DIR . "bug1_greyed.gif",
                           'calendar' => TL_THEME_IMG_DIR . "calendar.gif",
                           'checked' => TL_THEME_IMG_DIR . "apply_f2_16.png",
                           'date' => TL_THEME_IMG_DIR . "date.png",
@@ -241,8 +243,11 @@ class TLSmarty extends Smarty
 						              'favicon' => TL_THEME_IMG_DIR . "favicon.ico",
                           'history' => TL_THEME_IMG_DIR . "history.png",
                           'history_small' => TL_THEME_IMG_DIR . "history_small.png",
+                          'lock' => TL_THEME_IMG_DIR . "lock.png",
                           'log_message' => TL_THEME_IMG_DIR . "history.png",
                           'log_message_small' => TL_THEME_IMG_DIR . "history_small.png",
+                          'note_edit' => TL_THEME_IMG_DIR . "note_edit.png",
+                          'note_edit_greyed' => TL_THEME_IMG_DIR . "note_edit_greyed.png",
                           'import' => TL_THEME_IMG_DIR . "door_in.png",
         				          'info' => TL_THEME_IMG_DIR . "question.gif",
                           'insert_step' => TL_THEME_IMG_DIR . "insert_step.png",
@@ -253,7 +258,12 @@ class TLSmarty extends Smarty
                           'allToRight' => TL_THEME_IMG_DIR . 'ico_all_r.gif',
                           'leftToRight' => TL_THEME_IMG_DIR . 'ico_l2r.gif',
                           'rightToLeft' => TL_THEME_IMG_DIR . 'ico_r2l.gif',
-                          'allToLeft' => TL_THEME_IMG_DIR . 'ico_all_l.gif'
+                          'allToLeft' => TL_THEME_IMG_DIR . 'ico_all_l.gif',
+                          'attachMgmt' => TL_THEME_IMG_DIR . 'upload_16.png',
+                          'attachMgmtGreyed' => TL_THEME_IMG_DIR . 'upload_16_greyed.png',
+                          'manualExec' => TL_THEME_IMG_DIR . 'user.png',
+                          'automatedExec' => TL_THEME_IMG_DIR . 'bullet_wrench.png'
+                          
                           );
 
         $msg = lang_get('show_hide_api_info');

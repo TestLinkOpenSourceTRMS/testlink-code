@@ -17,7 +17,7 @@ require_once('common.php');
 require_once( dirname(__FILE__) . '/files.inc.php' );
 
 /**
- * Get infos about the attachments of a given object
+ * Get infos about all attachments of a given object
  * 
  * @param object $attachmentRepository [ref] the attachment Repository
  * @param int $fkid the id of the object (attachments.fk_id);
@@ -27,12 +27,12 @@ require_once( dirname(__FILE__) . '/files.inc.php' );
  *
  * @return array infos about the attachment on success, NULL else
 */
-function getAttachmentInfos(&$attachmentRepository,$fkid,$fkTableName,$storeListInSession = true,$counter = 0)
+function deprecated_getAttachmentInfos(&$attachmentRepository,$fkid,$fkTableName,$storeListInSession = true,$counter = 0)
 {
 	$attachmentInfos = $attachmentRepository->getAttachmentInfosFor($fkid,$fkTableName);
 	if ($storeListInSession)
 	{
-		storeAttachmentsInSession($attachmentInfos,$counter);
+		$attachmentRepository->storeAttachmentsInSession($attachmentInfos,$counter);
 	}
 	return $attachmentInfos;
 }

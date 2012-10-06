@@ -37,33 +37,6 @@
 require_once('common.php');
 
 
-/** 
- * Building the dropdown box of results filter
- * 
- * @return array map of 'status_code' => localized string
- **/
-// BUGID 645 
-function createResultsMenu()
-{
-	$resultsCfg = config_get('results');
-	
-	// Fixed values, that has to be added always
-	$my_all = isset($resultsCfg['status_label']['all'])?$resultsCfg['status_label']['all']:'';
-	$menu_data[$resultsCfg['status_code']['all']] = $my_all;
-	$menu_data[$resultsCfg['status_code']['not_run']] = lang_get($resultsCfg['status_label']['not_run']);
-	
-	// loop over status for user interface, because these are the statuses
-	// user can assign while executing test cases
-	foreach($resultsCfg['status_label_for_exec_ui'] as $verbose_status => $status_label)
-	{
-		$code = $resultsCfg['status_code'][$verbose_status];
-		$menu_data[$code] = lang_get($status_label); 
-	}
-	
-	return $menu_data;
-}
-	
-	
 /**
  * write execution result to DB
  * 

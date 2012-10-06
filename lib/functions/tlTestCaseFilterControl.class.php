@@ -1647,7 +1647,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 		                                                 'selected' => $build_selection));
 
 		// init menu for result selection by function from exec.inc.php
-		$this->filters[$key][$result_key]['items'] = createResultsMenu();
+		$this->filters[$key][$result_key]['items'] = testcase::createExecutionResultsMenu();
 		$this->filters[$key][$result_key]['items'][$any_result_key] = $this->option_strings['any'];
 
 		// init menu for filter method selection

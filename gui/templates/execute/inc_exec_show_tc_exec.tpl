@@ -6,23 +6,23 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 *}	
 {foreach item=tc_exec from=$gui->map_last_exec}
 
-    {assign var="tc_id" value=$tc_exec.testcase_id}
-	  {assign var="tcversion_id" value=$tc_exec.id}
+    {$tc_id = $tc_exec.testcase_id}
+	  {$tcversion_id = $tc_exec.id}
 	  {* IMPORTANT:
 	               Here we use version_number, which is related to tcversion_id SPECIFICATION.
 	               When we need to display executed version number, we use tcversion_number
 	  *}
-	  {assign var="version_number" value=$tc_exec.version}
+	  {$version_number = $tc_exec.version}
 	  
 		<input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_id}' />
 		<input type='hidden' name='version_number[{$tcversion_id}]' value='{$version_number}' />
 
     {* ------------------------------------------------------------------------------------ *}
     {lang_get s='th_testsuite' var='container_title'}
-    {assign var="div_id" value="tsdetails_$tc_id"}
-    {assign var="memstatus_id" value="tsdetails_view_status_$tc_id"}
-    {assign var="ts_name"  value=$tsuite_info[$tc_id].tsuite_name}
-    {assign var="container_title" value="$container_title$title_sep$ts_name"}
+    {$div_id = "tsdetails_$tc_id"}
+    {$memstatus_id = "tsdetails_view_status_$tc_id"}
+    {$ts_name = $tsuite_info[$tc_id].tsuite_name}
+    {$container_title = "$container_title$title_sep$ts_name"}
 
     {include file="inc_show_hide_mgmt.tpl"
              show_hide_container_title=$container_title
@@ -48,9 +48,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   		{if $gui->tSuiteAttachments != null && $gui->tSuiteAttachments[$tc_exec.tsuite_id] != null}
   		  <br />
 		    {include file="inc_attachments.tpl" 
-		             attach_tableName="nodes_hierarchy" 
-		             attach_downloadOnly=true
-			        	 attach_attachmentInfos=$gui->tSuiteAttachments[$tc_exec.tsuite_id]
+		             attach_tableName = "nodes_hierarchy" 
+		             attach_downloadOnly = true
+			        	 attach_attachmentInfos = $gui->tSuiteAttachments[$tc_exec.tsuite_id]
 			        	 attach_inheritStyle=1
 			        	 attach_tableClassName="none"
 				         attach_tableStyles="background-color:#ffffcc;width:100%"}
@@ -60,10 +60,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 
 		<div class="exec_tc_title">
-		{* BUGID *}
 		{if $gui->grants->edit_testcase}
 		<a href="javascript:openTCaseWindow({$gui->tproject_id},{$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')">
-		<img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png"  title="{$labels.show_tcase_spec}">
+		<img src="{$tlImages.note_edit}"  title="{$labels.show_tcase_spec}">
 		</a>
 		{/if}
 		
@@ -128,8 +127,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
     {* -------------------------------------------------------------------------------------------------- *}
     {if $gui->other_execs.$tcversion_id}
-      {assign var="my_colspan" value=$attachment_model->num_cols}
-      
+      {$my_colspan = $attachment_model->num_cols}
       {if $gui->history_on == 0 && $show_current_build}
    		   <div class="exec_history_title">
   			    {$labels.last_execution} {$labels.exec_current_build}
@@ -146,48 +144,48 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 				{/if}
 				{if $gui->has_platforms && 
 				    ($gui->history_on == 0 || $cfg->exec_cfg->show_history_all_platforms)}
-					{assign var="my_colspan" value=$my_colspan+1}
+					{$my_colspan = $my_colspan+1}
 				  <th style="text-align:left">{$labels.platform}</th>
 				{/if}
 				<th style="text-align:left">{$labels.test_exec_by}</th>
 				<th style="text-align:center">{$labels.exec_status}</th>
 				<th style="text-align:center">{$labels.testcaseversion}</th>
 				
-				{* BUGID 2545: show attachments column even if all builds are closed *}
+				{* show attachments column even if all builds are closed *}
 				{if $attachment_model->show_upload_column && $gsmarty_attachments->enabled}
 						<th style="text-align:center">{$labels.attachment_mgmt}</th>
 				{else}		
-            {assign var="my_colspan" value=$my_colspan-1}
+            {$my_colspan = $my_colspan-1}
         {/if}
 
-				{if $gsmarty_bugInterfaceOn}
+				{if $gui->issueTrackerIntegrationOn}
           <th style="text-align:left">{$labels.bug_mgmt}</th>
-          {assign var="my_colspan" value=$my_colspan+1}
+          {$my_colspan = $my_colspan+1}
         {/if}
 
 				{if $gui->grants->delete_execution}
           <th style="text-align:left">{$labels.delete}</th>
-          {assign var="my_colspan" value=$my_colspan+1}
+          {$my_colspan = $my_colspan+1}
         {/if}
 
         <th style="text-align:left">{$labels.run_mode}</th>
-        {assign var="my_colspan" value=$my_colspan+2}
+        {$my_colspan = $my_colspan+2}
 			 </tr>
 
 			{* ----------------------------------------------------------------------------------- *}
 			{foreach item=tc_old_exec from=$gui->other_execs.$tcversion_id}
-  	     {assign var="tc_status_code" value=$tc_old_exec.status}
+  	     {$tc_status_code = $tc_old_exec.status}
 			{cycle values='#eeeeee,#d0d0d0' assign="bg_color"}
 			<tr style="border-top:1px solid black; background-color: {$bg_color}">
   			  <td>
           {* Check also that Build is Open *}
   			  {if $gui->grants->edit_exec_notes && $tc_old_exec.build_is_open}
-  		      <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" style="vertical-align:middle" 
+  		      <img src="{$tlImages.note_edit}" style="vertical-align:middle" 
   		           title="{$labels.edit_execution}" onclick="javascript: openExecEditWindow(
   		           {$tc_old_exec.execution_id},{$tc_old_exec.id},{$gui->tplan_id},{$gui->tproject_id});">
   		      {else}
   		         {if $gui->grants->edit_exec_notes}
-  		            <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit_greyed.png" 
+  		            <img src="{$tlImages.note_edit_greyed}" 
   		                 style="vertical-align:middle" title="{$labels.closed_build}">
   		         {/if}
  			  {/if}
@@ -195,7 +193,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   			  </td>
 				  {if $gui->history_on == 0 || $cfg->exec_cfg->show_history_all_builds}
   				<td>{if !$tc_old_exec.build_is_open}
-  				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{$labels.closed_build}">{/if}
+  				    <img src="{$tlImages.lock}" title="{$labels.closed_build}">{/if}
   				    {$tc_old_exec.build_name|escape}
   				</td>
   				{/if}
@@ -211,8 +209,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   				{if isset($users[$tc_old_exec.tester_id])}
   				  {$users[$tc_old_exec.tester_id]->getDisplayName()|escape}
   				{else}
-  				  {assign var="deletedTester" value=$tc_old_exec.tester_id}
-            {assign var="deletedUserString" value=$labels.deleted_user|replace:"%s":$deletedTester}
+  				  {$deletedTester = $tc_old_exec.tester_id}
+            {$deletedUserString = $labels.deleted_user|replace:"%s":$deletedTester}
             {$deletedUserString}
   				{/if}  
   				</td>
@@ -226,65 +224,54 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       	  *}
 
   				<td  style="text-align:center">{$tc_old_exec.tcversion_number}</td>
-
-		  {* BUGID 2545: adjusted if statement to show executions properly
-		   *   if execution history was configured 
-		   *}
           {if ($attachment_model->show_upload_column && !$att_download_only && $tc_old_exec.build_is_open 
                && $gsmarty_attachments->enabled) || ($attachment_model->show_upload_column && $gui->history_on == 1 
                && $tc_old_exec.build_is_open && $gsmarty_attachments->enabled)}
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
-      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16.png" title="{$labels.alt_attachment_mgmt}"
+      			    <img src="{$tlImages.attachMgmt}" title="{$labels.alt_attachment_mgmt}"
       			         alt="{$labels.alt_attachment_mgmt}"
       			         style="border:none" /></a>
               </td>
-			  {*BUGID 2454*}
 			  {else}
 			  	{if $attachment_model->show_upload_column && $gsmarty_attachments->enabled}
 					<td align="center">
-						<img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16_greyed.png" title="{$labels.closed_build}">
+						<img src="{$tlImages.attachMgmtGreyed}" title="{$labels.closed_build}">
 					</td>
 				{/if}
-			  {*END BUGID 2454*}
   	      	  {/if}
 				
-				{*BUGID 3587*}
-    			{if $gsmarty_bugInterfaceOn && $tc_old_exec.build_is_open}
+    			{if $gui->issueTrackerIntegrationOn && $tc_old_exec.build_is_open}
        		  	<td align="center"><a href="javascript:open_bug_add_window({$tc_old_exec.execution_id})">
-      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bug1.gif" title="{$labels.img_title_bug_mgmt}"
+      			    <img src="{$tlImages.bugMgmt}" title="{$labels.img_title_bug_mgmt}"
       			         style="border:none" /></a>
                 </td>
                 {else}
                 	{if $gsmarty_bugInterfaceOn}
                 		<td align="center">
-							<img src="{$smarty.const.TL_THEME_IMG_DIR}/bug1_greyed.gif" title="{$labels.closed_build}">
+							<img src="{$tlImages.bugMgmtGreyed}" title="{$labels.closed_build}">
 						</td>
                 	{/if}
           		{/if}
-
-				{*BUGID 3587*}
     			{if $gui->grants->delete_execution && $tc_old_exec.build_is_open}
        		  	<td align="center">
              	<a href="javascript:confirm_and_submit(msg,'execSetResults','exec_to_delete',
              	                                       {$tc_old_exec.execution_id},'do_delete',1);">
-      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" title="{$labels.img_title_delete_execution}"
+      			    <img src="{$tlImages.delete}" title="{$labels.img_title_delete_execution}"
       			         style="border:none" /></a>
       			 </td>
       			{else}
       				{if $gui->grants->delete_execution}
       					<td align="center">
-      						<img src="{$smarty.const.TL_THEME_IMG_DIR}/trash_greyed.png" title="{$labels.closed_build}">
+      						<img src="{$tlImages.delete_disabled}" title="{$labels.closed_build}">
       					</td>
       				{/if}
           		{/if}
 
        		<td class="icon_cell" align="center">
        		  {if $tc_old_exec.execution_run_type == $smarty.const.TESTCASE_EXECUTION_TYPE_MANUAL}
-      		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/user.png" title="{$labels.execution_type_manual}"
-      		            style="border:none" />
+      		    <img src="{$tlImages.manualExec}" title="{$labels.execution_type_manual}" style="border:none" />
        		  {else}
-      		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bullet_wrench.png" title="{$labels.execution_type_auto}"
-      		            style="border:none" />
+      		    <img src="{$tlImages.automatedExec}" title="{$labels.execution_type_auto}" style="border:none" />
        		  {/if}
           </td>
 
@@ -293,12 +280,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   			</tr>
  			  {if $tc_old_exec.execution_notes neq ""}
   			<script>
-		    {* --------------------------------------------------------------------------------- *} 
-		    {*  BUGID 3522                                                                       *} 
-		    {*  Initialize panel if notes exists. There might be multiple note panels            *}
-		    {*  visible at the same time, so we need to collect those init functions in          *}
-		    {*  an array and execute them from Ext.onReady(). See execSetResults.tpl             *}
-		    {* --------------------------------------------------------------------------------- *}
+		    {* ------------------------------------------------------------------------- *} 
+		    {*  Initialize panel if notes exists.                                        *}
+		    {*  There might be multiple note panels visible at the same time,            *}
+		    {*  so we need to collect those init functions in an array and execute them  *}
+		    {*  from Ext.onReady(). See execSetResults.tpl                               *}
+		    {* ------------------------------------------------------------------------- *}
         var panel_init = function(){
             var p = new Ext.Panel({
             title: '{$labels.exec_notes}',
@@ -322,7 +309,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
    			</tr>
  			  {/if}
 
-  			{* 20070105 - Custom field values  *}
 			<tr style="background-color: {$bg_color}">
   			<td colspan="{$my_colspan}">
   				{assign var="execID" value=$tc_old_exec.execution_id}
@@ -333,7 +319,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 
 
-  			{* Attachments *}
+			{* Attachments *}
 			<tr style="background-color: {$bg_color}">
   			<td colspan="{$my_colspan}">
   				{assign var="execID" value=$tc_old_exec.execution_id}
@@ -354,13 +340,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
         {* Execution Bugs (if any) *}
         {if isset($gui->bugs[$execID])}
-		<tr style="background-color: {$bg_color}">
+		    <tr style="background-color: {$bg_color}">
    			<td colspan="{$my_colspan}">
-   				{*BUGID 3587*}
-   				{include file="inc_show_bug_table.tpl"
-   			         bugs_map=$gui->bugs[$execID]
-   			         can_delete=$tc_old_exec.build_is_open
-   			         exec_id=$execID}
+   				{include file="inc_show_bug_table.tpl" bugs_map=$gui->bugs[$execID]
+   			         can_delete = $tc_old_exec.build_is_open exec_id=$execID}
    			</td>
    		</tr>
    		{/if}
@@ -374,7 +357,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   <br />
   {* ----------------------------------------------------------------------------------- *}
   <div>
-    {* 20090526 - franciscom*}
     {include file="execute/inc_exec_test_spec.tpl"
              args_tc_exec=$tc_exec
              args_labels=$labels
@@ -386,6 +368,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              args_tcAttachments=$gui->tcAttachments
 	           args_req_details=$gui->req_details
 	           args_cfg=$cfg}
+
     {if $tc_exec.can_be_executed}
       {include file="execute/inc_exec_controls.tpl"
                args_save_type='single'

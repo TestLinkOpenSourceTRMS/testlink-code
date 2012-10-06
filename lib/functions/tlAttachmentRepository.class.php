@@ -22,6 +22,9 @@
  */
 class tlAttachmentRepository extends tlObjectWithDB
 {
+  
+  const STOREINSESSION = true;
+  
 	//the one and only attachment repository object
 	private static $s_instance;
 
@@ -149,7 +152,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 			if($fileUploaded)
 			{
 		    	@unlink($fTmpName);	
-		    }	
+		  }	
 		}
 
 		if ($fileUploaded)
@@ -181,9 +184,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 **/
 	public function buildRepositoryFilePath($destFName,$tableName,$id)
 	{
-		$destFPath = $this->buildRepositoryFolderFor($tableName,$id,true);
-		$destFPath .= DIRECTORY_SEPARATOR . $destFName;
-
+		$destFPath = $this->buildRepositoryFolderFor($tableName,$id,true) . DIRECTORY_SEPARATOR . $destFName;
 		return $destFPath;
 	}
 
@@ -233,7 +234,6 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 * @return bool returns true if the file was uploaded, false else
 	 *
 	 * @internal revision
-	 * 20100918 - francisco.mancardi@gruppotesi.com - BUGID 1890 - contribution by kinow
 	 **/
 	protected function storeFileInFSRepository($fTmpName,&$destFPath)
 	{
@@ -563,7 +563,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 				}
 				if($status_ok)
 				{
-		            $attachmentMgr = new tlAttachment();
+          $attachmentMgr = new tlAttachment();
 					$attachmentMgr->create($target_id,$fkTableName,$value['file_name'],
 						                   $destFPath,$file_contents,$value['file_type'],
 						                   $value['file_size'],$value['title']);
@@ -639,5 +639,26 @@ class tlAttachmentRepository extends tlObjectWithDB
     return $ret;
 	}
 
+
+  /**
+   * Get Metadata information about all attachments of a given object
+   * 
+   * @param object $attachmentRepository [ref] the attachment Repository
+   * @param int $fkid the id of the object (attachments.fk_id);
+   * @param string $fkTableName the name of the table $fkid refers to (attachments.fk_table)
+   * @param bool $storeInSession if true, the attachment list will be stored within the session
+   * @param int $counter if $counter > 0 the attachments are appended to existing attachments within the session
+   *
+   * @return array infos about the attachment on success, NULL else
+  */
+  function getAllAttachmentsMetadata($fkid,$fkTableName,$storeInSession = self::STOREINSESSION, $counter = 0)
+  {
+  	$metadata = $this->getAttachmentInfosFor($fkid,$fkTableName);
+  	if($storeListInSession == self::STOREINSESSION)
+  	{
+  		$this->storeAttachmentsInSession($metadata,$counter);
+  	}
+  	return $metadata;
+  }
 }
 ?>

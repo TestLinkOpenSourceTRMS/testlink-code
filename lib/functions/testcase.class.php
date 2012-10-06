@@ -4,15 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource 	testcase.class.php
- * @package 	TestLink
- * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2005-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author 		  Francisco Mancardi (francisco.mancardi@gmail.com)
+ * @copyright 	2005-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
- * 20111127 - franciscom - TICKET XML-RPC API - updateTestCase() method - updateSimpleFields()
- * 20111106 - franciscom - TICKET 4797: Test case step reuse - renderGhostSteps()
- * 20111009 - franciscom - TICKET 4769: Test Case versions table - add field to specify estimated execution duration
+ * @since 2.0
+ * 
  */
 
 /** related functionality */
@@ -30,22 +29,22 @@ $g_tcFormatStrings = array ("XML" => lang_get('the_format_tc_xml_import'));
  */
 class testcase extends tlObjectWithAttachments
 {
-    const AUTOMATIC_ID=0;
-    const DEFAULT_ORDER=0;
-    const ALL_VERSIONS=0;
-    const LATEST_VERSION=-1;
-    const AUDIT_OFF=0;
-    const AUDIT_ON=1;
-    const CHECK_DUPLICATE_NAME=1;
-    const DONT_CHECK_DUPLICATE_NAME=0;
-    const ENABLED=1;
-    const ALL_TESTPLANS=null;
-    const ANY_BUILD=null;
-    const GET_NO_EXEC=1; 
-    const ANY_PLATFORM=null;
-	  const NOXMLHEADER=true;
-	  const EXECUTION_TYPE_MANUAL = 1;
-    const EXECUTION_TYPE_AUTO = 2;
+  const AUTOMATIC_ID=0;
+  const DEFAULT_ORDER=0;
+  const ALL_VERSIONS=0;
+  const LATEST_VERSION=-1;
+  const AUDIT_OFF=0;
+  const AUDIT_ON=1;
+  const CHECK_DUPLICATE_NAME=1;
+  const DONT_CHECK_DUPLICATE_NAME=0;
+  const ENABLED=1;
+  const ALL_TESTPLANS=null;
+  const ANY_BUILD=null;
+  const GET_NO_EXEC=1; 
+  const ANY_PLATFORM=null;
+  const NOXMLHEADER=true;
+  const EXECUTION_TYPE_MANUAL = 1;
+  const EXECUTION_TYPE_AUTO = 2;
 	      
         
     
@@ -67,6 +66,7 @@ class testcase extends tlObjectWithAttachments
 	var $import_file_types = array("XML" => "XML", "XLS" => "XLS" );
 	var $export_file_types = array("XML" => "XML");
 	var $execution_types = array();
+	var $cfg;
 
 	/**
 	 * testplan class constructor
@@ -90,6 +90,10 @@ class testcase extends tlObjectWithAttachments
 		$this->cfield_mgr = new cfield_mgr($this->db);
 
 		$this->execution_types = $this->get_execution_types();
+
+    $this->cfg = new stdClass();
+    $this->cfg->testcase = config_get('testcase_cfg');
+		$this->cfg->results = config_get('results');
 
 		// ATTENTION:
 		// second argument is used to set $this->attachmentTableName,property that this calls
@@ -275,7 +279,7 @@ class testcase extends tlObjectWithAttachments
 	    $doCreate=true;
 	 	if ($my['options']['check_duplicate_name'])
 		{
-			$algo_cfg = config_get('testcase_cfg')->duplicated_name_algorithm;
+			$algo_cfg = $this->cfg->testcase->duplicated_name_algorithm;
 			$getOptions['check_criteria'] = ($algo_cfg->type == 'counterSuffix') ? 'like' : '='; 
 			$getOptions['access_key'] = ($algo_cfg->type == 'counterSuffix') ? 'name' : 'id'; 
 	        $itemSet = $this->getDuplicatesByName($name,$parent_id,$getOptions);	
@@ -817,7 +821,7 @@ class testcase extends tlObjectWithAttachments
 	  $goo->linked_versions=null;
 	  $goo->platforms = null;
 
-		$goo->tcase_cfg = config_get('testcase_cfg');
+		$goo->tcase_cfg = $this->cfg->testcase;
 
 
 	  $viewer_defaults = array('title' => lang_get('title_test_case'),'show_title' => 'no',
@@ -2445,11 +2449,9 @@ class testcase extends tlObjectWithAttachments
 	function getInternalID($stringID,$glueCharacter = null)
 	{
 		$internalID = 0;
-
 		if (is_null($glueCharacter))
 		{
-			$cfg = config_get('testcase_cfg');
-			$glueCharacter = $cfg->glue_character;
+			$glueCharacter = $this->cfg->testcase->glue_character;
 		}
 		
 		// Find the last glue char
@@ -2464,8 +2466,8 @@ class testcase extends tlObjectWithAttachments
 	
 			// Check first if Test Project prefix is valid, if not abort
 			$testCasePrefix = $this->db->prepare_string($rawTestCasePrefix);
-	      	$sql = 	"SELECT id  FROM {$this->tables['testprojects']} " .
-	           		"WHERE prefix = '" . $testCasePrefix . "'";
+	    $sql = "SELECT id  FROM {$this->tables['testprojects']} " .
+	           "WHERE prefix = '" . $testCasePrefix . "'";
 			$tproject_info = $this->db->get_recordset($sql);
 			$status_ok = !is_null($tproject_info);
 		}
@@ -2477,9 +2479,9 @@ class testcase extends tlObjectWithAttachments
 			// get all test cases with requested external ID on all test projects.
 			// we do not have way to work only on one test project.
 			$sql = "SELECT DISTINCT NH.parent_id AS tcase_id" .
-	               " FROM {$this->tables['tcversions']} TCV, {$this->tables['nodes_hierarchy']} NH" .
-	               " WHERE TCV.id = NH.id " .
-	               " AND  TCV.tc_external_id = {$externalID}";
+	           " FROM {$this->tables['tcversions']} TCV, {$this->tables['nodes_hierarchy']} NH" .
+	           " WHERE TCV.id = NH.id " .
+	           " AND  TCV.tc_external_id = {$externalID}";
 	
 			$testCases = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 			if(!is_null($testCases))
@@ -2487,13 +2489,13 @@ class testcase extends tlObjectWithAttachments
 				$tproject_id = $tproject_info[0]['id'];
 				foreach($testCases as $tcaseID => $value)
 				{
-	        		$path2root = $this->tree_manager->get_path($tcaseID);
+	        $path2root = $this->tree_manager->get_path($tcaseID);
 					if($tproject_id == $path2root[0]['parent_id'])
 					{
-	          			$internalID = $tcaseID;
+	          $internalID = $tcaseID;
 						break;
-	        		}
-	      		}	
+          }
+	      }	
 			}
 		}
 
@@ -2990,12 +2992,11 @@ class testcase extends tlObjectWithAttachments
 	function get_last_execution($id,$version_id,$tplan_id,$build_id,$platform_id,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$resultsCfg = config_get('results');
-		$status_not_run=$resultsCfg['status_code']['not_run'];
+		$status_not_run = $this->cfg->results['status_code']['not_run'];
 
 		$filterKeys = array('build_id','platform_id');
-        foreach($filterKeys as $key)
-        {
+    foreach($filterKeys as $key)
+    {
         	$filterBy[$key] = '';
         	if( !is_null($$key) )
         	{
@@ -3065,22 +3066,6 @@ class testcase extends tlObjectWithAttachments
 	    	$where_clause_1 = $where_clause;
 	    	$where_clause_2 = $where_clause;
         }
-
-		// $group_by .= $localOptions['groupByBuild'] ? $add_groupby : ''; 
-		// $group_by = $set_group_by ? ' GROUP BY tcversion_id ' : '';
-		// $group_by = ($group_by == '' && $add_groupby != '') ? ' GROUP BY ' : $group_by;  
-		
-		// we may be need to remove tcversion filter ($set_group_by==false)
-		// $add_field = $set_group_by ? ', e.tcversion_id AS tcversion_id' : '';
-        // $add_field = $localOptions['groupByBuild'] ? '' : ', e.tcversion_id AS tcversion_id';
-	    // $where_clause_1 = $localOptions['groupByBuild'] ? $where_clause :  $where_clause_1;
-	    // $where_clause_2 = $localOptions['groupByBuild'] ? $where_clause : $where_clause_2;
-	    
-      	// get list of max exec id, to be used filter in next query
-      	// Here we can get:
-      	// a) one record for each tcversion_id (ignoring build)
-      	// b) one record for each tcversion_id,build
-      	//
 
 		// 20101212 - franciscom - may be not the best logic but ...      	
 	    $where_clause_1 = ($where_clause_1 == '') ? $where_clause : $where_clause_1;
@@ -4434,15 +4419,9 @@ class testcase extends tlObjectWithAttachments
      */
 	function getExternalID($id,$tproject_id=null,$prefix=null)
 	{
-		static $cfg;
 		static $root;
 		static $tcase_prefix;
-		
-		if( is_null($cfg) )
-		{
-			$cfg = config_get('testcase_cfg');
-		}
-       	
+      	
 		if( is_null($prefix) )
 		{
 			if( is_null($root) ||  ($root != $tproject_id) )
@@ -4455,10 +4434,9 @@ class testcase extends tlObjectWithAttachments
 			$tcase_prefix = $prefix;
 		}
 		$info = $this->get_last_version_info($id, array('output' => 'minimun'));
-        $external = $info['tc_external_id'];
-        //BUGID - 3776
-       	$identity = $tcase_prefix . $cfg->glue_character . $external;
-		return array($identity,$tcase_prefix,$cfg->glue_character,$external);
+    $external = $info['tc_external_id'];
+    $identity = $tcase_prefix . $this->cfg->testcase->glue_character . $external;
+		return array($identity,$tcase_prefix,$this->cfg->testcase->glue_character,$external);
 	}
 
 
@@ -5628,5 +5606,223 @@ class testcase extends tlObjectWithAttachments
 		return $ret;
 	}
 
+
+
+  function writeExecToDB(&$exec_signature,&$exec_data)
+  {
+  	$cf_prefix = $this->cfield_mgr->get_name_prefix();
+  	$len_cfp = tlStringLen($cf_prefix);
+  	$cf_nodeid_pos = 4;
+  	$bulk_notes = '';
+  	
+  	$cf_map = $this->cfield_mgr->get_linked_cfields_at_execution($exec_signature->tproject_id,1,'testcase');
+  	$has_custom_fields = is_null($cf_map) ? 0 : 1;
+  	
+  	// extract custom fields id.
+  	$map_nodeid_array_cfnames=null;
+  	foreach($exec_data as $input_name => $value)
+  	{
+  		if( strncmp($input_name,$cf_prefix,$len_cfp) == 0 )
+  		{
+  			$dummy = explode('_',$input_name);
+  			$map_nodeid_array_cfnames[$dummy[$cf_nodeid_pos]][]=$input_name;
+  		} 
+  	}
+  	
+  	if( isset($exec_data['do_bulk_save']) )
+  	{
+  		// create structure to use common algoritm
+  		$item2loop= $exec_data['status'];
+  		$is_bulk_save=1;
+  		$bulk_notes = $this->db->prepare_string(trim($exec_data['bulk_exec_notes']));		
+  	}	
+  	else
+  	{
+  		$item2loop= $exec_data['save_results'];
+  		$is_bulk_save=0;
+  	}
+  	
+  	foreach ( $item2loop as $tcversion_id => $val)
+  	{
+  		$tcase_id = $exec_data['tc_version'][$tcversion_id];
+  		$current_status = $exec_data['status'][$tcversion_id];
+  		$version_number = $exec_data['version_number'][$tcversion_id];;
+  		$has_been_executed = ($current_status != $this->cfg->results['status_code']['not_run'] ? TRUE : FALSE);
+  		if($has_been_executed)
+  		{ 
+  			
+  			$my_notes = $is_bulk_save ? $bulk_notes : $this->db->prepare_string(trim($exec_data['notes'][$tcversion_id]));		
+  			$sql = "INSERT INTO {$this->tables['executions']} ".
+  				"(build_id,tester_id,status,testplan_id,tcversion_id," .
+  				" execution_ts,notes,tcversion_number,platform_id)".
+  				" VALUES ( {$exec_signature->build_id}, {$exec_signature->user_id}, '{$exec_data['status'][$tcversion_id]}',".
+  				"{$exec_signature->tplan_id}, {$tcversion_id},{$this->db->db_now()},'{$my_notes}'," .
+  				"{$version_number},{$exec_signature->platform_id}" . 
+  				")";
+  			$this->db->exec_query($sql);  	
+  			
+  			// at least for Postgres DBMS table name is needed. 
+  			$execution_id = $this->db->insert_id($this->tables['executions']);
+  			
+  			if( $has_custom_fields )
+  			{
+  				// test useful when doing bulk update, because some type of custom fields
+  				// like checkbox can not exist on exec_data. => why ??
+  				//
+  				$hash_cf = null;
+  				$access_key = $is_bulk_save ? 0 : $tcase_id;
+  				if( isset($map_nodeid_array_cfnames[$access_key]) )
+  				{ 
+  					foreach($map_nodeid_array_cfnames[$access_key] as $cf_v)
+  					{
+  						$hash_cf[$cf_v]=$exec_data[$cf_v];
+  					}  
+  				}                          
+  				$this->cfield_mgr->execution_values_to_db($hash_cf,$tcversion_id, $execution_id, 
+  				                                          $exec_signature->tplan_id,$cf_map);
+  			}                                     
+  		}
+  	}
+  }
+
+
+
+
+
+  static function createExecutionResultsMenu()
+  {
+  	$cfg = config_get('results');
+  	
+  	$menu[$cfg['status_code']['all']] = isset($cfg['status_label']['all']) ? $cfg['status_label']['all'] : '';
+  	$menu[$cfg['status_code']['not_run']] = lang_get($cfg['status_label']['not_run']);
+  	
+  	// loop over status for user interface, because these are the statuses
+  	// user can assign while executing test cases
+  	foreach($cfg['status_label_for_exec_ui'] as $verbose => $label)
+  	{
+  		$menu[$cfg['status_code'][$verbose]] = lang_get($label); 
+  	}
+  	return $menu;
+  }
+
+  // ---------------------------------------------------------------------------------------
+  // from 1.9.4
+	/**
+	 * @param map $identity: id, version_id
+	 * @param map $execContext: tplan_id, platform_id,build_id
+	 * @internal revisions
+	 *
+	 * @since 1.9.4
+	 **/
+	function getLatestExecSingleContext($identity,$execContext,$options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$status_not_run = $this->cfg->results['status_code']['not_run'];
+		
+		$my = array('opt' => array('output' => 'full'));
+		$my['opt'] = array_merge($my['opt'],(array)$options);
+		$safeContext = $execContext;
+		$safeIdentity = $identity;
+		foreach($safeContext as &$ele)
+		{
+			$ele = intval($ele);
+		}
+		foreach($safeIdentity as &$ele)
+		{
+			$ele = intval($ele);
+		}
+		
+		// we have to manage following situations
+		// 1. we do not know test case version id.
+		if($safeIdentity['version_id'] > 0)
+		{
+			$addJoinLEX = '';
+			$addWhereLEX = " AND EE.tcversion_id = " . $safeIdentity['version_id']; 
+			$addWhere = " AND TPTCV.tcversion_id = " . $safeIdentity['version_id']; 
+		}
+		else
+		{                  
+			$addJoinLEX = " JOIN {$this->tables['nodes_hierarchy']} H2O " .
+					   	      " ON H2O.id = EE.tcversion_id ";
+			$addWhereLEX = " AND H2O.parent_id = " . $safeIdentity['id'];
+			$addWhere = " AND NHTC.id = " . $safeIdentity['id'];
+		}
+
+		$sqlLEX = ' SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id,' .
+    				  ' MAX(EE.id) AS id ' .
+    				  " FROM {$this->tables['executions']} EE " . 
+    				  $addJoinLEX .
+    				  ' WHERE EE.testplan_id = ' . $safeContext['tplan_id'] . 
+    				  ' AND EE.platform_id = ' . $safeContext['platform_id'] . 
+    				  ' AND EE.build_id = ' . $safeContext['build_id'] .
+    				  $addWhereLEX .
+    				  ' GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id ,EE.build_id ';
+		
+		$out = null;
+		switch($my['opt']['output'])
+		{
+			case 'exec_id':
+				  $dummy = $this->db->get_recordset($sqlLEX);
+				  $out = (!is_null($dummy) ? $dummy[0]['id'] : null);	
+			break;	
+		
+			case 'full':
+			default:
+				  $sql= "/* $debugMsg */ SELECT E.id AS execution_id, " .
+			   			  " COALESCE(E.status,'{$status_not_run}') AS status, E.execution_type AS execution_run_type," .
+				        " NHTC.name, NHTC.id AS testcase_id, NHTC.parent_id AS tsuite_id," .
+				        " TCV.id AS tcversion_id,TCV.tc_external_id,TCV.version,TCV.summary," .
+				        " TCV.preconditions,TCV.importance,TCV.author_id," .
+				        " TCV.creation_ts,TCV.updater_id,TCV.modification_ts,TCV.active," .
+				        " TCV.is_open,TCV.execution_type," .
+				        " U.login AS tester_login,U.first AS tester_first_name," .
+    						" U.last AS tester_last_name, E.tester_id AS tester_id," .
+    						" E.notes AS execution_notes, E.execution_ts, E.build_id,E.tcversion_number," .
+    						" B.name AS build_name, B.active AS build_is_active, B.is_open AS build_is_open," .
+				        " COALESCE(PLATF.id,0) AS platform_id,PLATF.name AS platform_name, TPTCV.id AS feature_id " .
+  					    " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
+	  				    " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTCV.id" .
+				        " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+				        " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+						
+		    				" LEFT OUTER JOIN ({$sqlLEX}) AS LEX " .
+				    		" ON  LEX.testplan_id = TPTCV.testplan_id " .
+    						" AND LEX.platform_id = TPTCV.platform_id " .
+    						" AND LEX.tcversion_id = TPTCV.tcversion_id " .
+    						" AND LEX.build_id = {$safeContext['build_id']} " .
+    			
+    						" LEFT OUTER JOIN {$this->tables['executions']} E " . 
+    						" ON E.id = LEX.id " .
+			
+				        " JOIN {$this->tables['builds']} B ON B.id = {$safeContext['build_id']} " .
+				        " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = E.tester_id " .
+		   	        " LEFT OUTER JOIN {$this->tables['platforms']} PLATF ON PLATF.id = {$safeContext['platform_id']} " .
+    						" WHERE TPTCV.testplan_id = {$safeContext['tplan_id']} " .
+		    				" AND TPTCV.platform_id = {$safeContext['platform_id']} " .
+				    		$addWhere .
+						    " AND (E.build_id = {$safeContext['build_id']} OR E.build_id IS NULL)";
+						
+    						// using database::CUMULATIVE is just a trick to return data structure
+		    				// that will be liked on execSetResults.php
+				    		$out = $this->db->fetchRowsIntoMap($sql,'testcase_id',database::CUMULATIVE);
+			break;
+		}
+		return $out;	
+	}	
+
+  // wrappers  
+  // just a wrapper that can be useful sometimes
+  function get_full_path_verbose($id)
+  {
+    return $this->tree_manager->get_full_path_verbose($id);
+  }
+  
+  function getTestSuiteID($id)
+  {
+    $dummy = $this->tree_manager->get_node_hierarchy_info($id);
+    return $dummy['parent_id'];
+  }
+
+  
 } // end class
 ?>

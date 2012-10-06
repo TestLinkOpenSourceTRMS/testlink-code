@@ -4,9 +4,9 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource  object.class.php
- * @package   TestLink
+ * @package     TestLink
  * @copyright   2007-2012, TestLink community 
- * @link    http://www.teamst.org/index.php
+ * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
  * @since 2.0

@@ -4,7 +4,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - show tests to add results
 
 @internal revisions
-20110612 - franciscom - TICKET 4597: Is required field doesn't work properly for some custom field type
 *}
 {$attachment_model = $cfg->exec_cfg->att_model}
 {$title_sep = $smarty.const.TITLE_SEP}
@@ -17,14 +16,11 @@ Purpose: smarty template - show tests to add results
 
 {$show_current_build =0}
 {$my_build_name =$gui->build_name|escape}
-
-{lang_get s='build' var='build_title'}
-
 {lang_get var='labels'
-          s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,
+          s='build,edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,
              th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,
              version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,
-             execution_type_short_descr,expected_results,testcase_customfields,
+             execution_type_short_descr,expected_results,testcase_customfields,bulk_tc_status_management,
              last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
              test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
 	           attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,
@@ -35,7 +31,7 @@ Purpose: smarty template - show tests to add results
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
              deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution, 
              btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,warning_required_cf,
-             preconditions,platform,platform_description,exec_not_run_result_note'}
+             preconditions,platform,platform_description,exec_not_run_result_note,test_plan_notes,builds_notes'}
 
 
 
@@ -175,8 +171,9 @@ function openExportTestCases(windows_title,tsuite_id,tproject_id,tplan_id,build_
 }
 </script>
 
-{* Initialize note panels. The array panel_init_functions is filled with init
-functions from inc_exec_show_tc_exec.tpl and executed from onReady below *}
+{* Initialize note panels. 
+The array panel_init_functions is filled with init functions from inc_exec_show_tc_exec.tpl 
+and executed from onReady below *}
 <script>
 panel_init_functions = new Array();
 Ext.onReady(function() {
@@ -188,9 +185,7 @@ Ext.onReady(function() {
 
 
 </head>
-{*
-IMPORTANT: if you change value, you need to chang init_args() logic on execSetResults.php
-*}
+{* IMPORTANT: if you change value, you need to chang init_args() logic on execSetResults.php *}
 {$tplan_notes_view_memory_id ="tpn_view_status"}
 {$build_notes_view_memory_id ="bn_view_status"}
 {$bulk_controls_view_memory_id ="bc_view_status"}
@@ -250,16 +245,13 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {* -------------------------------------------------------------------------------- *}
   {* Test Plan notes show/hide management                                             *}
   {* -------------------------------------------------------------------------------- *}
-  {lang_get s='test_plan_notes' var='container_title'}
   {$div_id ='tplan_notes'}
-  {$memstatus_id =$tplan_notes_view_memory_id}
-
   {include file="inc_show_hide_mgmt.tpl"
-           show_hide_container_title=$container_title
+           show_hide_container_title=$labels.test_plan_notes
            show_hide_container_id=$div_id
            show_hide_container_draw=false
            show_hide_container_class='exec_additional_info'
-           show_hide_container_view_status_id=$memstatus_id}
+           show_hide_container_view_status_id = $tplan_notes_view_memory_id}
 
   <div id="{$div_id}" class="exec_additional_info">
     {$gui->testplan_notes}
@@ -268,40 +260,32 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {* -------------------------------------------------------------------------------- *}
 
   {* -------------------------------------------------------------------------------- *}
-  {* Platforms notes show/hide management                                                 *}
+  {* Platforms notes show/hide management                                             *}
   {* -------------------------------------------------------------------------------- *}
   {if $gui->platform_info.id > 0}
-  {lang_get s='platform_description' var='container_title'}
-  {$div_id ='platform_notes'}
-  {$memstatus_id =$platform_notes_view_memory_id}
-
-  {include file="inc_show_hide_mgmt.tpl"
-           show_hide_container_title=$container_title
-           show_hide_container_id=$div_id
-           show_hide_container_view_status_id=$memstatus_id
-           show_hide_container_draw=true
-           show_hide_container_class='exec_additional_info'
-           show_hide_container_html=$gui->platform_info.notes}
+    {$div_id ='platform_notes'}
+    {include file="inc_show_hide_mgmt.tpl"
+             show_hide_container_title=$labels.platform_description
+             show_hide_container_id=$div_id
+             show_hide_container_view_status_id = $platform_notes_view_memory_id
+             show_hide_container_draw=true
+             show_hide_container_class='exec_additional_info'
+             show_hide_container_html=$gui->platform_info.notes}
   {/if}         
   {* -------------------------------------------------------------------------------- *}
 
   {* -------------------------------------------------------------------------------- *}
   {* Build notes show/hide management                                                 *}
   {* -------------------------------------------------------------------------------- *}
-  {lang_get s='builds_notes' var='container_title'}
   {$div_id ='build_notes'}
-  {$memstatus_id =$build_notes_view_memory_id}
-
   {include file="inc_show_hide_mgmt.tpl"
-           show_hide_container_title=$container_title
+           show_hide_container_title = $labels.builds_notes
            show_hide_container_id=$div_id
-           show_hide_container_view_status_id=$memstatus_id
+           show_hide_container_view_status_id = $build_notes_view_memory_id
            show_hide_container_draw=true
            show_hide_container_class='exec_additional_info'
            show_hide_container_html=$gui->build_notes}
   {* -------------------------------------------------------------------------------- *}
-
-
 
   {if $gui->map_last_exec eq ""}
      <div class="messages" style="text-align:center"> {$labels.no_data_available}</div>
@@ -311,18 +295,14 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         {$att_download_only =false}
         {$enable_custom_fields =true}
         {$draw_submit_button =true}
-
-
         {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
-            {lang_get s='bulk_tc_status_management' var='container_title'}
             {$div_id ='bulk_controls'}
-            {$memstatus_id =$bulk_controls_view_memory_id}
             {include file="inc_show_hide_mgmt.tpl"
-                     show_hide_container_title=$container_title
+                     show_hide_container_title = $labels.bulk_tc_status_management
                      show_hide_container_id=$div_id
                      show_hide_container_draw=false
                      show_hide_container_class='exec_additional_info'
-                     show_hide_container_view_status_id=$memstatus_id}
+                     show_hide_container_view_status_id = $bulk_controls_view_memory_id}
 
             <div id="{$div_id}" name="{$div_id}">
               {include file="execute/inc_exec_controls.tpl"
@@ -409,11 +389,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
       </div>
   {else}
     {include file="execute/inc_exec_show_tc_exec.tpl"}
-
-    {* 20090419 - BUGID 2364 - franciscom*}
     {if isset($gui->refreshTree) && $gui->refreshTree}
 	    {include file="inc_refreshTreeWithFilters.tpl"}
-	    {*include file="inc_refreshTree.tpl"*}
     {/if}
   {/if}
   

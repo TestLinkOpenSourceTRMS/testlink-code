@@ -2,6 +2,8 @@
 Testlink Open Source Project - http://testlink.sourceforge.net/ 
 main page / site map                 
 @filesource	mainPage.tpl
+@internal revisions
+@since 2.0
 *}
 
 {$cfg_section=$smarty.template|replace:".tpl":""}
@@ -60,10 +62,15 @@ window.onload=function()
     {include file="inc_msg_from_array.tpl" array_of_msg=$gui->securityNotes arg_css_class="warning"}
 {/if}
 
-{* ----- Right Column ------------- *}
+{* 
+This is right include order 
+Important/Good info got here => http://www.yaml.de/docs/index.html#yaml-columns 
+*}
 {include file="mainPageRight.tpl"}
-
-{* ----- Left Column -------------- *}
 {include file="mainPageLeft.tpl"}
+
+{if isset($tlCfg->tpl.mainPageCentral) }
+  {include file=$tlCfg->tpl.mainPageCentral}
+{/if}
 </body>
 </html>

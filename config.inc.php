@@ -362,9 +362,9 @@ $tlCfg->login_info = ''; // Empty by default
  *                     'tcSearchView' => 'myOwnTCSearchView.tpl',
  *                     'tcEdit' => 'tcEdit_ultraCool.tpl');
  *
+ * $tlCfg->tpl = array('mainPageCentral' => 'mainPageCentral.tpl');
  */
 $tlCfg->tpl = array();
-
 
 /**
  * @var string Availability of Test Project specific background colour

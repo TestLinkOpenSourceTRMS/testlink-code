@@ -4,22 +4,16 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	tlTestPlanMetrics.class.php
- * @package 	TestLink
- * @author 		Kevin Levy, franciscom
+ * @package 	  TestLink
+ * @author 		  Kevin Levy, franciscom
  * @copyright 	2004-2012, TestLink community 
- * @link 		http://www.teamst.org/index.php
- * @uses		config.inc.php 
- * @uses		common.php 
+ * @link 		    http://www.teamst.org/index.php
+ * @uses		    config.inc.php 
+ * @uses		    common.php 
  *
  * @internal revisions
- * @since 1.9.4
- * 20120903 - franciscom -  TICKET 5192: "Results by Tester per Build" is incorrect if multi results in one case
- * 20120429 - franciscom -	TICKET 5016: Reports - Test result matrix - Refactoring
- * 20120429 - franciscom -	TICKET 4989: Reports - Overall Build Status - refactoring and final business logic
- *							new method getOverallBuildStatusForRender()
- *
- * 20120419 - franciscom - new method getExecCountersByBuildStatusOnlyWithTesterAssignment()
- *
+ * @since 1.9.5
+ * 20121008 - franciscom - issue 5272: General Test Plan Metrics / Overall Build Status / Not Run is not for build but global.
  **/
 
 
@@ -255,19 +249,20 @@ class tlTestPlanMetrics extends testplan
 	/**
 	 * No matter we are trying to calculate metrics for BUILDS,
 	 * we need to consider execution status at Build and Platform level.
+   *
 	 * Why?
 	 * Let's review help we provide on GUI:
 	 *
 	 * The use of platforms has impact on metrics, because
 	 * a test case that must be executed for N platforms is considered 
 	 * as N test cases on metrics.
-     *
+   *
 	 * Example: Platform X and Y 
 	 *
 	 * Test Case  - Tester Assigned 
 	 *       TC1                 U1 
 	 *
-     * user U1 has to execute TWO test cases, NOT ONE. 	 
+   * user U1 has to execute TWO test cases, NOT ONE. 	 
 	 * This means that we HAVE to consider execution status ON (BUILD,PLATFORM),
 	 * but we are not going to display results with BUILD and PLATFORM,
 	 * but ONLY with BUILD indication. 
@@ -287,76 +282,74 @@ class tlTestPlanMetrics extends testplan
 		$sqlLEBBP =	$sqlStm['LEBBP'];
 
 		$sqlUnionAB	=	"/* {$debugMsg} sqlUnionAB - executions */" . 
-						" SELECT UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " . 
-						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
-						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
-						" JOIN {$this->tables['user_assignments']} UA " .
-						" ON UA.feature_id = TPTCV.id " .
-						" AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
+						      " SELECT UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " . 
+      						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
+      						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+      						" JOIN {$this->tables['user_assignments']} UA " .
+      						" ON UA.feature_id = TPTCV.id " .
+      						" AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
 
-						" /* GO FOR Absolute LATEST exec ID ON BUILD and PLATFORM */ " .
-						" JOIN ({$sqlLEBBP}) AS LEBBP " .
-						" ON  LEBBP.testplan_id = TPTCV.testplan_id " .
-						" AND LEBBP.platform_id = TPTCV.platform_id " .
-						" AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
-						" AND LEBBP.testplan_id = " . $safe_id .
+      						" /* GO FOR Absolute LATEST exec ID ON BUILD and PLATFORM */ " .
+      						" JOIN ({$sqlLEBBP}) AS LEBBP " .
+      						" ON  LEBBP.testplan_id = TPTCV.testplan_id " .
+      						" AND LEBBP.platform_id = TPTCV.platform_id " .
+      						" AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
+      						" AND LEBBP.testplan_id = " . $safe_id .
 
-						" /* Get execution status WRITTEN on DB */ " .
-						" JOIN {$this->tables['executions']} E " .
-						" ON  E.id = LEBBP.id " .
-						" AND E.build_id = UA.build_id " .
-
-						" WHERE TPTCV.testplan_id=" . $safe_id .
-						" AND UA.build_id IN ({$builds->inClause}) ";
-
+      						" /* Get execution status WRITTEN on DB */ " .
+      						" JOIN {$this->tables['executions']} E " .
+      						" ON  E.id = LEBBP.id " .
+      						" AND E.build_id = UA.build_id " .
+      
+      						" WHERE TPTCV.testplan_id=" . $safe_id .
+      						" AND UA.build_id IN ({$builds->inClause}) ";
+      
 		//echo 'QD - <br>' . $sqlUnionAB . '<br>';
 		$sqlUnionBB	=	"/* {$debugMsg} sqlUnionBB - NOT RUN */" . 
-						" SELECT UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " . 
-						" COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
-						" FROM {$this->tables['testplan_tcversions']} TPTCV " .
-						" JOIN {$this->tables['user_assignments']} UA " .
-						" ON UA.feature_id = TPTCV.id " .
-						" AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
+     						  " SELECT UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " . 
+						      " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
+						      " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+						      " JOIN {$this->tables['user_assignments']} UA " .
+						      " ON UA.feature_id = TPTCV.id " .
+						      " AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
 
-						" /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
-						" LEFT OUTER JOIN ({$sqlLEBBP}) AS LEBBP " .
-						" ON  LEBBP.testplan_id = TPTCV.testplan_id " .
-						" AND LEBBP.platform_id = TPTCV.platform_id " .
-						" AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
+      						" /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
+      						" LEFT OUTER JOIN ({$sqlLEBBP}) AS LEBBP " .
+      						" ON  LEBBP.testplan_id = TPTCV.testplan_id " .
+      						" AND LEBBP.platform_id = TPTCV.platform_id " .
+      						" AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
 
-						// 20120512 - think this piece is needed.
-						// anyway need to investigate.
-						// " AND LEBBP.build_id = UA.build_id " .
+      						// Without this I've created issue 5272
+      						" AND LEBBP.build_id = UA.build_id " .
 
-						" AND LEBBP.testplan_id = " . $safe_id .
-						" LEFT OUTER JOIN {$this->tables['executions']} E " .
-						" ON  E.tcversion_id = TPTCV.tcversion_id " .
-						" AND E.testplan_id = TPTCV.testplan_id " .
-						" AND E.platform_id = TPTCV.platform_id " .
+      						" AND LEBBP.testplan_id = " . $safe_id .
+      						" LEFT OUTER JOIN {$this->tables['executions']} E " .
+      						" ON  E.tcversion_id = TPTCV.tcversion_id " .
+      						" AND E.testplan_id = TPTCV.testplan_id " .
+      						" AND E.platform_id = TPTCV.platform_id " .
 
-						// 20120512 - think this piece is needed.
-						// anyway need to investigate.
-						// " AND E.build_id = LEBBP.build_id " .
+      						// Without this I've created issue 5272
+      						" AND E.build_id = LEBBP.build_id " .
 
-						" /* FILTER BUILDS in set on target test plan (not alway can be applied) */ " .
-						" WHERE TPTCV.testplan_id=" . $safe_id . 
-						" AND UA.build_id IN ({$builds->inClause}) " .
+      						" /* FILTER BUILDS in set on target test plan (not alway can be applied) */ " .
+      						" WHERE TPTCV.testplan_id=" . $safe_id . 
+      						" AND UA.build_id IN ({$builds->inClause}) " .
 	
-						" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
-						" AND E.id IS NULL AND LEBBP.id IS NULL";
-
-		//echo 'QD - <br>' . $sqlUnionBP . '<br>';
+      						" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
+      						" AND E.id IS NULL AND LEBBP.id IS NULL";
+      
+		echo 'QD - <br>' . $sqlUnionBB . '<br>';
 
 		$sql =	" /* {$debugMsg} UNION WITH ALL CLAUSE */" .
-				" SELECT build_id,status, count(0) AS exec_qty " .
-				" FROM ($sqlUnionAB UNION ALL $sqlUnionBB ) AS SQBU " .
-				" GROUP BY build_id,status ";
+    				" SELECT build_id,status, count(0) AS exec_qty " .
+    				" FROM ($sqlUnionAB UNION ALL $sqlUnionBB ) AS SQBU " .
+    				" GROUP BY build_id,status ";
 
 		// 
 		//echo 'QD - <br><b>' . __FUNCTION__ . '</b><br>'; 
 		//echo 'QD - <br>' . $sql . '<br>';
 		
-        $exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'build_id','status');              
+    $exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'build_id','status');              
 
 
 		// Need to Add info regarding:
@@ -380,12 +373,12 @@ class tlTestPlanMetrics extends testplan
 		
 		// get total assignments by BUILD ID
 		$sql = 	"/* $debugMsg */ ".
-				" SELECT COUNT(0) AS qty, UA.build_id " . 
-				" FROM {$this->tables['user_assignments']} UA " .
-				" JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.id = UA.feature_id " .
-				" WHERE UA. build_id IN ( " . $builds->inClause . " ) " .
-				" AND UA.type = {$this->execTaskCode} " . 
-				" GROUP BY build_id";
+    				" SELECT COUNT(0) AS qty, UA.build_id " . 
+		    		" FROM {$this->tables['user_assignments']} UA " .
+				    " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.id = UA.feature_id " .
+		    		" WHERE UA. build_id IN ( " . $builds->inClause . " ) " .
+    				" AND UA.type = {$this->execTaskCode} " . 
+		    		" GROUP BY build_id";
 
 		//$exec['total_assigned'] = (array)$this->db->fetchRowsIntoMap($sql,'build_id');
 		$exec['total'] = (array)$this->db->fetchRowsIntoMap($sql,'build_id');
@@ -400,18 +393,17 @@ class tlTestPlanMetrics extends testplan
 	 * @internal revisions
 	 *
 	 * @since 1.9.4
-	 * 20120429 - franciscom - TICKET 4989: Reports - Overall Build Status - refactoring and final business logic
 	 **/
 	function getOverallBuildStatusForRender($id, $totalKey='total_assigned')
 	{
-	   	$renderObj = null;
+	  $renderObj = null;
 		$code_verbose = $this->getStatusForReports();
-	    $labels = $this->resultsCfg['status_label'];
+	  $labels = $this->resultsCfg['status_label'];
 	    
 		$metrics = $this->getExecCountersByBuildExecStatus($id);
-	   	if( !is_null($metrics) )
-	   	{
-	   		$renderObj = new stdClass();
+	  if( !is_null($metrics) )
+	  {
+	   	$renderObj = new stdClass();
 
 			// Creating item list this way will generate a row also for
 			// ACTIVE BUILDS were ALL TEST CASES HAVE NO TESTER ASSIGNMENT

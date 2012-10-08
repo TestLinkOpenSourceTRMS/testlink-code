@@ -15,31 +15,9 @@
  *
  * @internal revisions
  * 
- *  @since 1.9.4
- *  20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
- *  20120903 - franciscom - TICKET 5196: Tree shows wrong color if testcase has multiple executions
- *  20120829 - franciscom - TICKET 5182: Add/Remove Test Cases -> Trying to assign new platform to executed test cases
- *  20120812 - kinow - TICKET 3987 - Added methods to copy attachments when copying a test plan
- *	20120808 - franciscom - TICKET 5131 - getHitsNotRunOnBuildPlatform()
- *	20120806 - franciscom - getLTCVNewGeneration() - added new option 'accessKeyType'
- *  20120724 - franciscom - TICKET 5106: Import results - add possibility to provide names 
- *										 instead of internal id to identify context
- *  20120714 - franciscom - getLinkInfo(), output set addapted for tc_exec_assignment.php
- *							getLinkedForTesterAssignmentTree()
- *
- *	20120707 - franciscom - TICKET 5002: Exported test plan has multiple test case instances if ...
- *							( exportLinkedItemsToXML() )
- *	20120704 - franciscom - getRootTestSuites() - interface changes
- *	20120606 - franciscom - new method getLinkInfo()
- *	20120603 - franciscom - count_testcases() enhancements
- *  20120529 - franciscom - getRootTestSuites()
- *  20120524 - franciscom - get_keywords_map() query refactoring.
- *  20120520 - franciscom - getLinkedForTree() new method
- *	20120430 - franciscom - getPlatforms() added new option 'outputDetails'
- *	20120414 - franciscom - getHits*() new methods for filtering
- *						
- *  20110818 - Julian - TICKET 4696 - Create Test Plan from existing Test Plan does not preserve linked 
- *                                    Test Case Versions (keep currently linked version is checked)
+ * @since 1.9.5
+ * 20121008 - franciscom - TICKET 5256
+ * 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
  * 
  **/
 
@@ -5547,13 +5525,20 @@ class testplan extends tlObjectWithAttachments
 			return null;	
 		}
 
+    // 20121008 - TICKET 5256
+		$platform4EE = " ";
+		if( !is_null($my['filters']['platform_id']) )
+		{
+			$platform4EE = " AND EE.platform_id = " . intval($my['filters']['platform_id']);
+		}
+	
 		$sqlLEBBP = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id," .
-					" MAX(EE.id) AS id " .
-				  	" FROM {$this->tables['executions']} EE " . 
-				   	" WHERE EE.testplan_id = " . $safe['tplan_id'] . 
-					" AND EE.build_id = " . intval($my['filters']['build_id']) .
-					" AND EE.platform_id = " . intval($my['filters']['platform_id']) .
-					" GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
+					      " MAX(EE.id) AS id " .
+				  	    " FROM {$this->tables['executions']} EE " . 
+				   	    " WHERE EE.testplan_id = " . $safe['tplan_id'] . 
+					      " AND EE.build_id = " . intval($my['filters']['build_id']) .
+					      $platform4EE .
+					      " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
 
 
 

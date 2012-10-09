@@ -4,19 +4,17 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	reqSpecView.php
- * @author 		Martin Havlat
+ * @author 		  Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revisions
- * 20110602 - franciscom - TICKET 4535: Tree is not refreshed after editing Requirement Specification 
  *
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
 require_once('requirements.inc.php');
-require_once('attachments.inc.php');
 require_once("configCheck.php");
 testlinkInitPage($db);
 
@@ -37,11 +35,11 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args(&$dbHandler)
 {
 	$iParams = array("req_spec_id" => array(tlInputParameter::INT_N),
-					 "refreshTree" => array(tlInputParameter::INT_N),
-					 "tproject_id" => array(tlInputParameter::INT_N));
+					         "refreshTree" => array(tlInputParameter::INT_N),
+					         "tproject_id" => array(tlInputParameter::INT_N));
 
-    $args = new stdClass();
-    R_PARAMS($iParams,$args);
+  $args = new stdClass();
+  R_PARAMS($iParams,$args);
 
 	$args->refreshTree = intval($args->refreshTree);
 	$args->tproject_name = '';
@@ -52,7 +50,7 @@ function init_args(&$dbHandler)
 		$args->tproject_name = $dummy['name'];    
 	}
     
-    return $args;
+  return $args;
 }
 
 /**
@@ -65,8 +63,8 @@ function initialize_gui(&$dbHandler,&$argsObj)
 	$tproject_mgr = new testproject($dbHandler);
 	$commandMgr = new reqSpecCommands($dbHandler);
 	
-    $gui = $commandMgr->initGuiBean();
-    $gui->refreshTree = $argsObj->refreshTree;
+  $gui = $commandMgr->initGuiBean();
+  $gui->refreshTree = $argsObj->refreshTree;
 	$gui->req_spec_cfg = config_get('req_spec_cfg');
 	$gui->req_cfg = config_get('req_cfg');
 	
@@ -90,42 +88,44 @@ function initialize_gui(&$dbHandler,&$argsObj)
 
 	$gui->refresh_tree = 'no';
 	$gui->cfields = $req_spec_mgr->html_table_of_custom_field_values($argsObj->req_spec_id,$gui->req_spec_revision_id,
-																	 $argsObj->tproject_id);
-	$gui->attachments = getAttachmentInfosFrom($req_spec_mgr,$argsObj->req_spec_id);
+																	                                 $argsObj->tproject_id);
+	$gui->attachments = $req_spec_mgr->getAttachmentInfos($argsObj->req_spec_id);
 	$gui->requirements_count = $req_spec_mgr->get_requirements_count($argsObj->req_spec_id);
 	
 	$gui->reqSpecTypeDomain = init_labels($gui->req_spec_cfg->type_labels);
 
-	/* contribution BUGID 2999, show direct link */
 	$prefix = $tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
 	$gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . 
 	                    '&item=reqspec&id=' . urlencode($gui->req_spec['doc_id']);
 
-
-
-	$module = $_SESSION['basehref'] . "lib/requirements/";
-	$context = "tproject_id=$gui->tproject_id&req_spec_id=$gui->req_spec_id";
-	$gui->actions = new stdClass();
-	$gui->actions->req_import = $module . "reqImport.php?doAction=import&$context";
-	$gui->actions->req_export = $module . "reqExport.php?doAction=export&$context";
-	$gui->actions->req_edit = $module . "reqEdit.php?doAction=create&$context";
-	$gui->actions->req_reorder = $module . "reqEdit.php?doAction=reorder&$context";
-	$gui->actions->req_create_tc = $module . "reqEdit.php?doAction=createTestCases&$context";
-
-	$gui->actions->req_spec_new = $module . "reqSpecEdit.php?doAction=createChild" .
-								  "&tproject_id=$gui->tproject_id&reqParentID=$gui->req_spec_id";
-
-	$gui->actions->req_spec_copy = $module . "reqSpecEdit.php?doAction=copy&$context";
-	
-	$gui->actions->req_spec_copy_req = $module . "reqSpecEdit.php?doAction=copyRequirements&$context";
-								  
-	$gui->actions->req_spec_import = $gui->actions->req_import . "&scope=branch";
-	$gui->actions->req_spec_export = $gui->actions->req_export . "&scope=branch";
-
-
-    return $gui;
+  $gui->actions = initializeActions($gui);
+  return $gui;
 }
 
+
+function initializeActions($guiObj)
+{
+	$module = $_SESSION['basehref'] . "lib/requirements/";
+	$context = "tproject_id=$guiObj->tproject_id&req_spec_id=$guiObj->req_spec_id";
+
+	$actions = new stdClass();
+	$actions->req_import = $module . "reqImport.php?doAction=import&$context";
+	$actions->req_export = $module . "reqExport.php?doAction=export&$context";
+	$actions->req_edit = $module . "reqEdit.php?doAction=create&$context";
+	$actions->req_reorder = $module . "reqEdit.php?doAction=reorder&$context";
+	$actions->req_create_tc = $module . "reqEdit.php?doAction=createTestCases&$context";
+
+	$actions->req_spec_new = $module . "reqSpecEdit.php?doAction=createChild" .
+						  "&tproject_id=$guiObj->tproject_id&reqParentID=$guiObj->req_spec_id";
+
+	$actions->req_spec_copy = $module . "reqSpecEdit.php?doAction=copy&$context";
+	
+	$actions->req_spec_copy_req = $module . "reqSpecEdit.php?doAction=copyRequirements&$context";
+						  
+	$actions->req_spec_import = $gui->actions->req_import . "&scope=branch";
+	$actions->req_spec_export = $gui->actions->req_export . "&scope=branch";
+  return $actions;
+}
 
 /**
  * checkRights

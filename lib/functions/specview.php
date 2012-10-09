@@ -1070,7 +1070,9 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
                     foreach($linked_testcase as $item)
                     {  
                     	// 20120714 - franciscom - need t check if this info is needed.
-						if(isset($item['executed']) && (intval($item['executed']) >0) )
+
+						if(isset($item['executed']) && (intval($item['executed']) >0) ||
+						   isset($item['exec_id']) && (intval($item['exec_id']) >0))
 						{
 							$outRef['executed'][$item['platform_id']]='yes';
 						}

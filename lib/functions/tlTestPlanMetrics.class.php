@@ -338,7 +338,7 @@ class tlTestPlanMetrics extends testplan
       						" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
       						" AND E.id IS NULL AND LEBBP.id IS NULL";
       
-		echo 'QD - <br>' . $sqlUnionBB . '<br>';
+		// echo 'QD - <br>' . $sqlUnionBB . '<br>';
 
 		$sql =	" /* {$debugMsg} UNION WITH ALL CLAUSE */" .
     				" SELECT build_id,status, count(0) AS exec_qty " .

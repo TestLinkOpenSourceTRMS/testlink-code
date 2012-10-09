@@ -635,10 +635,23 @@ $tlCfg->exec_cfg->show_history_all_builds = FALSE;
 // FALSE ->  Only history of the current platform will be shown  [STANDARD BEHAVIOUR]
 $tlCfg->exec_cfg->show_history_all_platforms = FALSE;
 
+//
 // different models for the attachments management on execution page
-// $att_model_m1 ->  shows upload button and title
-// $att_model_m2 ->  hides upload button and title
-$tlCfg->exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
+//
+$tlCfg->exec_cfg->att_model = new stdClass();
+
+// shows upload button and title
+// $tlCfg->exec_cfg->att_model->showUploadBtn = true;
+// $tlCfg->exec_cfg->att_model->showTitle = true;
+// $tlCfg->exec_cfg->att_model->showUploadColumn = false;
+// $tlCfg->exec_cfg->att_model->numCols = 4;
+
+// hides upload button and title
+$tlCfg->exec_cfg->att_model->showUploadBtn = false;
+$tlCfg->exec_cfg->att_model->showTitle = false;
+$tlCfg->exec_cfg->att_model->showUploadColumn = true;
+$tlCfg->exec_cfg->att_model->numCols = 5;
+
 
 // ENABLED -> User can delete an execution result
 // DISABLED -> User can not.  [STANDARD BEHAVIOUR]

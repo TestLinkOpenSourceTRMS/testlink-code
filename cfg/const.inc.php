@@ -22,7 +22,7 @@
 
 /** TestLink Release version (MUST BE changed before the release day) */
 define('TL_FACE_DIR', 'prague'); 
-define('TL_VERSION', '1.9.4 (Prague - Speedy)'); 
+define('TL_VERSION', '1.9.4 (GIT REPOSITORY VERSION - Prague - Speedy)'); 
 
 /** Last Database version that is used to give users feedback about necesssary upgrades
  * if you set this parameter also upgrade lib/functions/configCheck.php - checkSchemaVersion() */
@@ -133,6 +133,7 @@ define('DO_NOT_FILTER_INACTIVE_TESTCASES', 0);
 
 define('ACTION_TESTCASE_DISABLE', 0);
 define('IGNORE_INACTIVE_TESTCASES', 1);
+define('IGNORE_ACTIVE_TESTCASES', 2);
 
 define('DO_ON_TESTCASE_CLICK', 1);
 define('NO_ADDITIONAL_ARGS', '');

@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20121010 - asimon - TICKET 4217: added filter for importance
  * 20120913 - asimon - TICKET 5228: Filter use on test spec causes "undefined index" warning in event log
  *                                  for every test case with no active version
  * 20120831 - franciscom - TICKET 5190: Copy Test projects - tester assignments to testplan+build are not copied
@@ -2557,7 +2558,7 @@ private function copy_requirements($source_id,$target_id,$user_id)
  * @return
  *
  * @internal revisions
- *
+ * 20121010 - asimon - TICKET 4217: added filter for importance
  */
 function getTestSpec($id,$filters=null,$options=null)
 {
@@ -2584,9 +2585,10 @@ function getTestSpec($id,$filters=null,$options=null)
 	// transform some of our options/filters on something the 'worker' will understand
 	// when user has request filter by test case name, we do not want to display empty branches
 	// If we have choose any type of filter, we need to force remove empty test suites
-	//
+	// TICKET 4217: added filter for importance
 	if( !is_null($my['filters']['testcase_name']) || !is_null($my['filters']['testcase_id']) ||
 		!is_null($my['filters']['execution_type']) || !is_null($my['filters']['exclude_branches']) ||
+        !is_null($my['filters']['importance']) ||
 		$my['options']['remove_empty_branches'] )
 	{
 		$my['options']['remove_empty_nodes_of_type'] = 'testsuite';
@@ -2604,6 +2606,7 @@ function getTestSpec($id,$filters=null,$options=null)
  * @return
  *
  * @internal revisions
+ * 20121010 - asimon - TICKET 4217: added filter for importance
  * 20120913 - asimon - TICKET 5228: Filter use on test spec causes "undefined index" warning in event log
  *                                  for every test case with no active version
  */
@@ -2624,9 +2627,11 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 	  	$qnum=0;
 
 		$node_types = array_flip($this->tree_manager->get_available_node_types());
+        
+        // TICKET 4217: added filter for importance
     	$my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
     					   	   'additionalWhereClause' => '', 'testcase_name' => null,
-    					   	   'testcase_id' => null,'active_testcase' => false);
+    					   	   'testcase_id' => null,'active_testcase' => false, 'importance' => null);
                            
     	$my['options'] = array('remove_empty_nodes_of_type' => null);
 
@@ -2643,9 +2648,10 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 		$tcaseFilter['is_active'] = !is_null($my['filters']['active_testcase']) && $my['filters']['active_testcase'];
 		$tcaseFilter['enabled'] = $tcaseFilter['name'] || $tcaseFilter['id'] || $tcaseFilter['is_active'];
 
-
+        // TICKET 4217: added filter for importance
 		$tcversionFilter['execution_type'] = !is_null($my['filters']['execution_type']);
-		$tcversionFilter['enabled'] = $tcversionFilter['execution_type'];
+        $tcversionFilter['importance'] = !is_null($my['filters']['importance']);
+		$tcversionFilter['enabled'] = $tcversionFilter['execution_type'] || $tcversionFilter['importance'];
 
 		$childFilterOn = $tcaseFilter['enabled'] || $tcversionFilter['enabled'];
 		
@@ -2733,19 +2739,32 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 
 
 		// We can add here keyword filtering if exist ?
-	
-		
+
+        // TICKET 4217: added filter for importance
 		if( $tcversionFilter['enabled'] || $tcaseFilter['is_active'] )
 		{
+            if ($tcversionFilter['importance'] || $tcversionFilter['execution_type'])
+            {
+                $ssx .= " WHERE ";
+            }
+            
+            if( $tcversionFilter['importance'] )
+            {
+                $ssx .= " TCV.importance = " . $my['filters']['importance'];
+                $filterOnTC = true;
+            }
+
+            if ($tcversionFilter['importance'] && $tcversionFilter['execution_type'])
+            {
+                $ssx .= " AND ";
+            }
+            
 			if( $tcversionFilter['execution_type'] )
 			{
-				$ssx .= " /* Filter LATEST ACTIVE tcversion */ " .
-						" WHERE TCV.execution_type = " . $my['filters']['execution_type'];
+				$ssx .= " TCV.execution_type = " . $my['filters']['execution_type'];
 				$filterOnTC = true;
 			}	
-		}
-		
-		
+		}		
 		
 		$highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
 		if( $filterOnTC )

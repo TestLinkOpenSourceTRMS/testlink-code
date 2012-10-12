@@ -10,9 +10,9 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.4
- * 20120820 - franciscom - TICKET 5156: Display test project linked to issue tracker, when editing
- * 20120219 - franciscom - TICKET 4904: integrate with ITS on test project basis
+ * @since 1.9.5
+ * 20121012 - franciscom - TICKET 5281: On list view add check to environment (example SOAP ext is enabled?) 
+ *
 **/
 
 /**
@@ -137,8 +137,8 @@ class tlIssueTracker extends tlObject
 	function getImplementationForType($issueTrackerType)
 	{
 		$spec = $this->systems[$issueTrackerType];
-        return $spec['type'] . $spec['api'] . 'Interface';
-    }
+    return $spec['type'] . $spec['api'] . 'Interface';
+  }
 
     /**
 	 * @return hash 
@@ -513,7 +513,7 @@ class tlIssueTracker extends tlObject
 	function getAll($options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$my['options'] = array('output' => null, 'orderByField' => 'name');
+		$my['options'] = array('output' => null, 'orderByField' => 'name', 'checkEnv' => false);
 		$my['options'] = array_merge($my['options'], (array)$options);
 
 		$add_fields = '';
@@ -536,16 +536,28 @@ class tlIssueTracker extends tlObject
 			{
 				$sql = "/* debugMsg */ SELECT COUNT(0) AS lcount, ITD.id";
 				$sql .= " FROM {$this->tables['issuetrackers']} ITD " .
-						" JOIN {$this->tables['testproject_issuetracker']} " .
-						" ON issuetracker_id = ITD.id " .
-						" GROUP BY ITD.id ";
+						    " JOIN {$this->tables['testproject_issuetracker']} " .
+						    " ON issuetracker_id = ITD.id " .
+						    " GROUP BY ITD.id ";
 				$lc = $this->db->fetchRowsIntoMap($sql,'id');
 			}
 		
+		  
 			foreach($rs as &$item)
 			{
 				$item['verbose'] = $item['name'] . " ( {$this->types[$item['type']]} )" ;
 				$item['type_descr'] = $this->types[$item['type']];
+        $item['env_check_ok'] = true;
+        $item['env_check_msg'] = '';
+         
+  			if( $my['options']['checkEnv'] )
+	  		{
+			     $impl = $this->getImplementationForType($item['type']);
+			     $dummy = $impl::checkEnv();
+           $item['env_check_ok'] = $dummy['status'];
+           $item['env_check_msg'] = $dummy['msg'];
+		    }
+
 				
 				if( !is_null($lc) )
 				{
@@ -556,7 +568,7 @@ class tlIssueTracker extends tlObject
 				}
 			}
 		}
-	    return $rs;
+    return $rs;
 	}
 
 

@@ -7,8 +7,9 @@
  *
  * @author	francisco.mancardi@gmail.com
  * @internal revisions
- * @since 1.9.4
- * 20120311 - franciscom - TICKET 4904: integrate with ITS on test project basis
+ * 
+ * @since 1.9.5
+ * 20121012 - franciscom - TICKET 5281: On list view add check to environment (example SOAP ext is enabled?) 
  *
 **/
 require_once(dirname(__FILE__) . "/../../config.inc.php");
@@ -21,7 +22,7 @@ $issueTrackerMgr = new tlIssueTracker($db);
 
 $gui = new stdClass();
 $args = init_args();
-$gui->items = $issueTrackerMgr->getAll(array('output' => 'add_link_count'));
+$gui->items = $issueTrackerMgr->getAll(array('output' => 'add_link_count', 'checkEnv' => true));
 $gui->canManage = $args->currentUser->hasRight($db,"issuetracker_management");
 $gui->user_feedback = $args->user_feedback;
 

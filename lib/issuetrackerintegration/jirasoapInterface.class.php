@@ -18,9 +18,9 @@
 class jirasoapInterface extends issueTrackerInterface
 {
 
-    protected $APIClient;
+  protected $APIClient;
 	protected $authToken;
-    protected $statusDomain = array();
+  protected $statusDomain = array();
 	protected $l18n;
 	protected $labels = array('duedate' => 'its_duedate_with_separator');
 	
@@ -35,9 +35,9 @@ class jirasoapInterface extends issueTrackerInterface
 	function __construct($type,$config)
 	{
 		$this->interfaceViaDB = false;
-	    $this->setCfg($config);
+	  $this->setCfg($config);
 		$this->completeCfg();
-	    $this->connect();
+	  $this->connect();
 	}
 
 	/**
@@ -325,5 +325,14 @@ class jirasoapInterface extends issueTrackerInterface
         }
         return $summary;
     }
+
+  public static function checkEnv()
+  {
+    $ret = array();
+    $ret['status'] = extension_loaded('soap');
+    $ret['msg'] = $ret['status'] ? 'OK' : 'You need to enable SOAP extension';
+    return $ret;
+  }
+
 }
 ?>

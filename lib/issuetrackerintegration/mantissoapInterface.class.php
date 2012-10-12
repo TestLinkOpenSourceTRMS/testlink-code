@@ -341,6 +341,14 @@ class mantissoapInterface extends issueTrackerInterface
   	  return $this->status_color;
   }
 
+  public static function checkEnv()
+  {
+    $ret = array();
+    $ret['status'] = extension_loaded('soap');
+    $ret['msg'] = $ret['status'] ? 'OK' : 'You need to enable SOAP extension';
+    return $ret;
+  }
+
 
 }
 ?>

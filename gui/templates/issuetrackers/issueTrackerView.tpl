@@ -9,7 +9,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 {lang_get var='labels'
           s='th_issuetracker,th_issuetracker_type,th_delete,th_description,menu_assign_kw_to_tc,
-          	 btn_create,alt_delete'}
+          	 btn_create,alt_delete,th_issuetracker_env'}
 
 {lang_get s='warning_delete' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
@@ -31,12 +31,13 @@ var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&i
 		<tr>
 			<th width="30%">{$tlImages.sort_hint}{$labels.th_issuetracker}</th>
 			<th>{$tlImages.sort_hint}{$labels.th_issuetracker_type}</th>
+			<th>{$labels.th_issuetracker_env}</th>
 			{if $gui->canManage != ""}
 				<th style="min-width:70px">{$tlImages.sort_hint}{$labels.th_delete}</th>
 			{/if}
 		</tr>
 
-  		{foreach key=item_id item=item_def from=$gui->items}
+   {foreach key=item_id item=item_def from=$gui->items}
 		<tr>
 			<td>
 				{if $gui->canManage != ""}
@@ -48,7 +49,8 @@ var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&i
 				{/if}
 			</td>
 			<td>{$item_def.type_descr|escape}</td>
-				<td class="clickable_icon">
+			<td class="clickable_icon">{$item_def.check_env_msg|escape}</td>
+			<td class="clickable_icon">
 				{if $gui->canManage != ""  && $item_def.link_count == 0}
 			  		<img style="border:none;cursor: pointer;"
 			       		alt="{$labels.alt_delete}" title="{$labels.alt_delete}"   

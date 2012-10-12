@@ -315,15 +315,23 @@ class jirasoapInterface extends issueTrackerInterface
 	/**
 	 *
 	 **/
-    function buildSummaryHTMLString($issue)
-    {
-		$summary = $issue->summary;
-        $strDueDate = $this->helperParseDate($issue->duedate);
-        if( !is_null($strDueDate) )
-        { 
-        	$summary .= "<b> [$strDueDate] </b> ";
-        }
-        return $summary;
+  function buildSummaryHTMLString($issue)
+  {
+    $summary = $issue->summary;
+    $strDueDate = $this->helperParseDate($issue->duedate);
+    if( !is_null($strDueDate) )
+    { 
+     	$summary .= "<b> [$strDueDate] </b> ";
     }
+    return $summary;
+  }
+
+  public static function checkEnv()
+	{
+	  $ret = array();
+	  $ret['status'] = extension_loaded('soap');
+	  $ret['msg'] = $ret['status'] ? 'OK' : 'You need to enable SOAP extension';
+	  return $ret;
+	}
 }
 ?>

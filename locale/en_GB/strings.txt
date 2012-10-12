@@ -3480,6 +3480,7 @@ $TLS_tcase_never_executed = 'This Test Case has not been executed';
 // issueTrackerView.tpl
 $TLS_th_issuetracker = 'Issue Tracker';
 $TLS_th_issuetracker_type = 'Type';
+$TLS_th_issuetracker_env = 'Environment';
 $TLS_warning_empty_issuetracker_name = "Issue Tracker name cannot be empty";
 $TLS_warning_empty_issuetracker_type = "Issue Tracker type cannot be empty";
 

@@ -394,6 +394,15 @@ abstract class issueTrackerInterface
 	public static function getCfgTemplate() 
 	{
         throw new RuntimeException("Unimplemented - YOU must implement it in YOUR interface Class");
-    }
+  }
+  
+  public static function checkEnv()
+	{
+	  $ret = array();
+	  $ret['status'] = true;
+	  $ret['msg'] = 'OK';
+	  return $ret;
+	}  
+  
 }
 ?>

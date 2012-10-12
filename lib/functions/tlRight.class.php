@@ -209,24 +209,82 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
     $l18nCfg = array('desc_testplan_execute' => null,'desc_testplan_create_build' => null,
 							       'desc_testplan_metrics' => null,'desc_testplan_planning' => null,
 							       'desc_user_role_assignment' => null,'desc_mgt_view_tc' => null,
-								     'desc_mgt_modify_tc'  => null,'mgt_testplan_create' => null);
+								     'desc_mgt_modify_tc'  => null,'mgt_testplan_create' => null,
+                     'desc_mgt_view_key' => null,'desc_mgt_modify_key' => null,
+								     'desc_keyword_assignment' => null,'desc_mgt_view_req' => null,
+                     'desc_mgt_modify_req' => null,'desc_req_tcase_link_management' => null,
+                     'desc_mgt_modify_product' => null,'desc_project_inventory_management' => null,
+                     'desc_project_inventory_view' => null,
+                     'desc_cfield_view' => null,'desc_cfield_management' => null,
+                     'desc_platforms_view' => null,'desc_platforms_management' => null,
+                     'desc_issuetrackers_view' => null,'desc_issuetrackers_management' => null,
+                     'desc_mgt_modify_users' => null,'desc_role_management' => null,
+                     'desc_user_role_assignment' => null,
+                     'desc_mgt_view_events' => null, 'desc_events_mgt' => null,
+                     'desc_mgt_unfreeze_req' => null);
 
     $l18n = init_labels($l18nCfg);
     
-	  $cfg->tplan_mgmt = array("testplan_execute" => $l18n['desc_testplan_execute'],
-                             "testplan_create_build" => $l18n['desc_testplan_create_build'],
-							               "testplan_metrics" => $l18n['desc_testplan_metrics'],
-							               "testplan_planning" => $l18n['desc_testplan_planning'],
-							               "testplan_user_role_assignment" => $l18n['desc_user_role_assignment']);
+	  $cfg->testplans = array("testplan_execute" => $l18n['desc_testplan_execute'],
+                            "testplan_create_build" => $l18n['desc_testplan_create_build'],
+							              "testplan_metrics" => $l18n['desc_testplan_metrics'],
+							              "testplan_planning" => $l18n['desc_testplan_planning'],
+							              "testplan_user_role_assignment" => $l18n['desc_user_role_assignment']);
 	
 	
-		$cfg->tcase_mgmt = array("mgt_view_tc" => $l18n['desc_mgt_view_tc'],
-								             "mgt_modify_tc" => $l18n['desc_mgt_modify_tc'],
-								             "mgt_testplan_create" => $l18n['mgt_testplan_create']);
+		$cfg->testcases = array("mgt_view_tc" => $l18n['desc_mgt_view_tc'],
+								            "mgt_modify_tc" => $l18n['desc_mgt_modify_tc'],
+								            "mgt_testplan_create" => $l18n['mgt_testplan_create']);
 
+
+    $cfg->keywords = array("mgt_view_key" => $l18n['desc_mgt_view_key'],
+								           "mgt_modify_key" => $l18n['desc_mgt_modify_key'],
+								           "keyword_assignment" => $l18n['desc_keyword_assignment']);
+
+    $cfg->requirements = array("mgt_view_req" => $l18n['desc_mgt_view_req'],
+								               "mgt_modify_req" => $l18n['desc_mgt_modify_req'],
+								               "req_tcase_link_management" => $l18n['desc_req_tcase_link_management'],
+								               "mgt_unfreeze_req" => $l18n['desc_mgt_unfreeze_req']);
+
+
+	  $cfg->testprojects = array("mgt_modify_product" => $l18n['desc_mgt_modify_product'],
+                               "project_inventory_management" => $l18n['desc_project_inventory_management'],
+                               "project_inventory_view" => $l18n['desc_project_inventory_view'] );						
+
+
+	  $cfg->customfields = array("cfield_view" => $l18n['desc_cfield_view'],
+						                   "cfield_management" => $l18n['desc_cfield_management']);
 	
+	  $cfg->platforms = array("platform_view" => $l18n['desc_platforms_view'],
+						                "platform_management" => $l18n['desc_platforms_management']);
+
+	  $cfg->issuetrackers = array("issuetracker_view" => $l18n['desc_issuetrackers_view'],
+                                "issuetracker_management" => $l18n['desc_issuetrackers_management']);
+
+
+	  $cfg->users = array("mgt_users" => $l18n['desc_mgt_modify_users'],
+								        "role_management" => $l18n['desc_role_management'],
+								        "user_role_assignment" => $l18n['desc_user_role_assignment']); 
+
+	  $cfg->system = array("mgt_view_events" => $l18n['desc_mgt_view_events'],
+	                       "events_mgt" => $l18n['desc_events_mgt']);
+
 	  return $cfg;
 	}
+
+  static function propagateRights($fromRights,$propRights,&$toRights)
+  {
+  	// the mgt_users right isn't test project related so this right is inherited from
+  	// the global role (if set)
+  	foreach($propRights as $right => $desc)
+  	{
+  		if (in_array($right,$fromRights) && !in_array($right,$toRights))
+  		{
+  			$toRights[] = $right;
+  		}	
+  	}
+  }
+
 	
 }
 ?>

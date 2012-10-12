@@ -84,28 +84,28 @@ function validateForm(f)
 				<table>
 				<tr>
 					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_tp_rights}</legend>
-							{foreach from=$gui->rightsCfg->tplan_mgmt item=id key=k}
+							{foreach from=$gui->rightsCfg->testplans item=id key=k}
 							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]}/>{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
 					<td>
 						<fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_mgttc_rights}</legend>
-						{foreach from=$gui->rightsCfg->tcase_mgmt item=id key=k}
+						{foreach from=$gui->rightsCfg->testcases item=id key=k}
 						<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 						{/foreach}
 						</fieldset>
 					</td>
 					<td>
 						<fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_req_rights}</legend>
-						{foreach from=$gui->rightsCfg->req_mgmt item=id key=k}
+						{foreach from=$gui->rightsCfg->requirements item=id key=k}
 						<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 						{/foreach}
 						</fieldset>
 					</td>
 					<td>
 						<fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_product_rights}</legend>
-						{foreach from=$gui->rightsCfg->tproject_mgmt item=id key=k}
+						{foreach from=$gui->rightsCfg->testprojects item=id key=k}
 						<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 						{/foreach}
 						</fieldset>
@@ -113,25 +113,25 @@ function validateForm(f)
 				</tr>
 				<tr>
 					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_user_rights}</legend>
-							{foreach from=$gui->rightsCfg->user_mgmt item=id key=k}
+							{foreach from=$gui->rightsCfg->users item=id key=k}
 							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
 					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_kw_rights}</legend>
-							{foreach from=$gui->rightsCfg->kword_mgmt item=id key=k}
+							{foreach from=$gui->rightsCfg->keywords item=id key=k}
 							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
 					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_cf_rights}</legend>
-							{foreach from=$gui->rightsCfg->cfield_mgmt item=id key=k}
+							{foreach from=$gui->rightsCfg->customfields item=id key=k}
 							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
 					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_system_rights}</legend>
-							{foreach from=$gui->rightsCfg->system_mgmt item=id key=k}
+							{foreach from=$gui->rightsCfg->system item=id key=k}
 							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>
@@ -139,13 +139,13 @@ function validateForm(f)
 				</tr>
 				<tr>
 					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_platform_rights}</legend>
-							{foreach from=$gui->rightsCfg->platform_mgmt item=id key=k}
+							{foreach from=$gui->rightsCfg->platforms item=id key=k}
 							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
 					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_issuetracker_rights}</legend>
-							{foreach from=$gui->rightsCfg->issuetracker_mgmt item=id key=k}
+							{foreach from=$gui->rightsCfg->issuetrackers item=id key=k}
 							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>

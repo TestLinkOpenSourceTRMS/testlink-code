@@ -143,7 +143,7 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 }
 
 
-function propagateRights($fromRights,$propRights,&$toRights)
+function XXXpropagateRights($fromRights,$propRights,&$toRights)
 {
 	// the mgt_users right isn't test project related so this right is inherited from
 	// the global role (if set)

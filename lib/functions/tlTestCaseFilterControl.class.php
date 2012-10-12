@@ -35,6 +35,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 201210xx - asimon - TICKET 4217: added importance filter on test specification
  * 20120825 - franciscom - TICKET 5176: [Assign Test Case Execution] 
  *										 Possibility to filter by Platform (using setting platform)
  * 20120816 - franciscom - TICKET 4905: Test Case Tester Assignment - filters dont work properly for 'Assigned to' Field
@@ -207,6 +208,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	                             'filter_testcase_name' => array("POST", tlInputParameter::STRING_N),
 	                             'filter_toplevel_testsuite' => array("POST", tlInputParameter::STRING_N),
 	                             'filter_keywords' => array("POST", tlInputParameter::ARRAY_INT),
+                                 // TICKET 4353: added active/inactive filter
+                                 'filter_active_inactive' => array("POST", tlInputParameter::INT_N),
+                                 // TICKET 4217: added importance filter
+                                 'filter_importance' => array("POST", tlInputParameter::INT_N),
 	                             'filter_priority' => array("POST", tlInputParameter::INT_N),
 	                             'filter_execution_type' => array("POST", tlInputParameter::INT_N),
 	                             'filter_assigned_user' => array("POST", tlInputParameter::ARRAY_INT),
@@ -228,6 +233,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	                                                          'filter_testcase_name',
 	                                                          'filter_toplevel_testsuite',
 	                                                          'filter_keywords',
+                                                              // TICKET 4353: added active/inactive filter
+                                                              'filter_active_inactive',
+                                                              // TICKET 4217: added importance filter
+                                                              'filter_importance',
 	                                                          'filter_execution_type',
 	                                                          'filter_custom_fields'),
 	                                     'execution_mode' => array('filter_tc_id',
@@ -253,6 +262,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	                                                              'filter_testcase_name',
 	                                                              'filter_toplevel_testsuite',
 	                                                              'filter_keywords',
+                                                                  // TICKET 4353: added active/inactive filter
+                                                                  'filter_active_inactive',
+                                                                  // TICKET 4217: added importance filter
+                                                                  'filter_importance',
 	                                                              // BUGID 3933 - no priority here
 		                                                          //'filter_priority',
 	                                                              'filter_execution_type',
@@ -919,11 +932,24 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				
 				if ($this->do_filtering) 
 				{
+                    // TICKET 4353: added active/inactive filter
+                    $ignore_inactive_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
+                    $ignore_active_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
+                    if ($filters['filter_active_inactive'] == IGNORE_INACTIVE_TESTCASES)
+                    {
+                        $ignore_inactive_testcases = IGNORE_INACTIVE_TESTCASES;
+                    }
+                    if ($filters['filter_active_inactive'] == IGNORE_ACTIVE_TESTCASES)
+                    {
+                        $ignore_active_testcases = IGNORE_ACTIVE_TESTCASES;
+                    }
+                    
 					$options = array('forPrinting' => NOT_FOR_PRINTING,
 					                 'hideTestCases' => SHOW_TESTCASES,
 						             'tc_action_enabled' => DO_ON_TESTCASE_CLICK,
-						             'ignore_inactive_testcases' => DO_NOT_FILTER_INACTIVE_TESTCASES,
-					                 'exclude_branches' => null);
+					                 'exclude_branches' => null,
+                                     'ignore_inactive_testcases' => $ignore_inactive_testcases,
+                                     'ignore_active_testcases' => $ignore_active_testcases);
 				    
 					$tree_menu = generateTestSpecTree($this->db, $this->args->testproject_id,
 					                                  $this->args->testproject_name,
@@ -958,13 +984,26 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				//              instead of correct values in $filters->setting_xyz
 				$cookie_prefix = "add_remove_tc_tplan_id_{$filters['setting_testplan']}_";
 				
-				if ($this->do_filtering) 
+				if ($this->do_filtering)
 				{
+                    // TICKET 4496: added active/inactive filter
+                    $ignore_inactive_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
+                    $ignore_active_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
+                    if ($filters['filter_active_inactive'] == IGNORE_INACTIVE_TESTCASES)
+                    {
+                        $ignore_inactive_testcases = IGNORE_INACTIVE_TESTCASES;
+                    }
+                    if ($filters['filter_active_inactive'] == IGNORE_ACTIVE_TESTCASES)
+                    {
+                        $ignore_active_testcases = IGNORE_ACTIVE_TESTCASES;
+                    }
+                    
 					$options = array('forPrinting' => NOT_FOR_PRINTING,
 					                 'hideTestCases' => HIDE_TESTCASES,
 					                 'tc_action_enabled' => ACTION_TESTCASE_DISABLE,
-					                 'ignore_inactive_testcases' => IGNORE_INACTIVE_TESTCASES,
-					                 'viewType' => 'testSpecTreeForTestPlan');
+					                 'viewType' => 'testSpecTreeForTestPlan',
+                                     'ignore_inactive_testcases' => $ignore_inactive_testcases,
+                                     'ignore_active_testcases' => $ignore_active_testcases);
 			
 					$tree_menu = generateTestSpecTree($this->db,
 					                                  $this->args->testproject_id,
@@ -1444,6 +1483,57 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->active_filters[$type] = $selection ? $type_selection : null;
 	} // end of method
 
+    // TICKET 4353: added active/inactive filter
+    private function init_filter_active_inactive() {
+        $key = 'filter_active_inactive';
+        
+        $items = array(DO_NOT_FILTER_INACTIVE_TESTCASES => $this->option_strings['any'],
+                       IGNORE_INACTIVE_TESTCASES => lang_get('show_only_active_testcases'),
+                       IGNORE_ACTIVE_TESTCASES => lang_get('show_only_inactive_testcases'));
+        
+        $selection = $this->args->{$key};
+        
+        if (!$selection || $this->args->reset_filters) {
+            $selection = null;
+        } else {
+            $this->do_filtering = true;
+        }
+
+        $this->filters[$key] = array('items' => $items, 'selected' => $selection);
+        $this->active_filters[$key] = $selection;
+    }
+    
+    // TICKET 4217: added importance filter
+    private function init_filter_importance() {
+        // This is a special case of filter: the menu items don't get initialized here,
+        // they are available as a global smarty variable. So the only thing to be managed
+        // here is the selection by user.
+
+        $key = 'filter_importance';
+        $this->active_filters[$key] = null;
+        $this->filters[$key] = false;
+
+        // show this filter only if test priority management is enabled
+        if (!$this->testproject_mgr) {
+            $this->testproject_mgr = new testproject($this->db);
+        }
+        $tp_info = $this->testproject_mgr->get_by_id($this->args->testproject_id);
+        $enabled = $tp_info['opt']->testPriorityEnabled;
+
+        if ($enabled) {
+            // default value and filter reset
+            $selection = $this->args->{$key};
+            if (!$selection || $this->args->reset_filters) {
+                $selection = null;
+            } else {
+                $this->do_filtering = true;
+            }
+
+            $this->filters[$key] = array('selected' => $selection);
+            $this->active_filters[$key] = $selection;
+        }
+    }
+    
 	private function init_filter_priority() {
 		// This is a special case of filter: the menu items don't get initialized here,
 		// they are available as a global smarty variable. So the only thing to be managed

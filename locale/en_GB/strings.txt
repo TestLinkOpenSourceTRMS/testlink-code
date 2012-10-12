@@ -683,6 +683,9 @@ $TLS_btn_show_cf = "Show Custom Fields";
 $TLS_btn_export_testplan_tree = 'Export Test Plan';
 $TLS_expand_tree = "Expand tree";
 $TLS_collapse_tree = "Collapse tree";
+$TLS_filter_active_inactive = "Active/Inactive";
+$TLS_show_only_active_testcases = "Only active Test Cases";
+$TLS_show_only_inactive_testcases = "Only inactive Test Cases";
 
 
 // ----- gui/templates/execNavigator.tpl -----

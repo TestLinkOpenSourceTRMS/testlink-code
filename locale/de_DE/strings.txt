@@ -677,6 +677,9 @@ $TLS_btn_show_cf = "Benutzerdef. Felder einblenden";
 $TLS_btn_export_testplan_tree = 'Testplan exportieren';
 $TLS_expand_tree = "Baum aufklappen";
 $TLS_collapse_tree = "Baum zuklappen";
+$TLS_filter_active_inactive = "Aktiv/Inaktiv";
+$TLS_show_only_active_testcases = "Nur aktive Testfälle";
+$TLS_show_only_inactive_testcases = "Nur inaktive Testfälle";
 
 
 // ----- gui/templates/execNavigator.tpl -----

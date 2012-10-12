@@ -23,6 +23,8 @@
  *
  * @internal revisions
  * @since 1.9.4
+ *  20121010 - asimon - TICKET 4353: added filter for active/inactive test cases
+ *  20121010 - asimon - TICKET 4217: added importance filter on test specification
  *  20120818 - franciscom - TICKET 5152 - changes in custom css management
  *  20120817 - franciscom - Changes on $tlCfg->log_path and $g_repositoryPath due to SECURITY VULNERABILITY
  * 	20120812 - franciscom - TICKET 5138: Possibility to have a mail logger: new config option tl_installation_id
@@ -1170,6 +1172,8 @@ $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_testcase_name = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_toplevel_testsuite = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_keywords = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_active_inactive = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_importance = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_execution_type = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_custom_fields = ENABLED;
 // filter mode choice disabled for this mode because there are no filters benefiting from it
@@ -1190,7 +1194,8 @@ $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_testcase_name = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_toplevel_testsuite = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_keywords = ENABLED;
-$tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_priority = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_active_inactive = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_importance = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_execution_type = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->advanced_filter_mode_choice = ENABLED;

@@ -14,6 +14,9 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20121010 - asimon - TICKET 4217: added filter for importance
+ * 20121010 - asimon - TICKET 4496: Add filter for active/inactive Test Cases on Add/remove Test Cases
+ * 20121010 - asimon - TICKET 4353: added active/inactive filter
  * 20120913 - asimon - TICKET 5186: Filtering by the value of custom fields on test specification is not working
  * 20120607 - franciscom - 	somework to be able to generate tree used on Test Report, and Test Plan Report
  * 20120415 - franciscom - 	filter_by_same_status_for_all_builds() => filterStatusSetAllActiveBuilds()
@@ -53,6 +56,8 @@ function filterString($str)
  * @param array $exclude_branches map key=node_id
  * 
  * @internal Revisions:
+ * 20121010 - asimon - TICKET 4496: Add filter for active/inactive Test Cases on Add/remove Test Cases
+ * 20121010 - asimon - TICKET 4353: added active/inactive filter
  * 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
  * 20100810 - asimon - filtering by testcase ID
  * 20100428 - asimon - BUGID 3301, added filtering by custom fields
@@ -67,10 +72,11 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 
 	$my = array();
 	
+    // TICKET 4353: added active/inactive filter
 	$my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0, 
-	                       'tc_action_enabled' => 1, 'ignore_inactive_testcases' => 0, 
-	                       'viewType' => 'testSpecTree');
-	
+	                       'tc_action_enabled' => 1, 'viewType' => 'testSpecTree',
+                           'ignore_inactive_testcases' => null,
+                           'ignore_active_testcases' => null);
 
 	// testplan => only used if opetions['viewType'] == 'testSpecTreeForTestPlan'
 	
@@ -164,10 +170,12 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	    												   $my['filters']['filter_custom_fields'],$hash_descr_id);
 	    }
 		
+        // TICKET 4496: added inactive testcase filter
 	    $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'], 
 	    				   'viewType' => $my['options']['viewType'],	
-		                   'ignoreInactiveTestCases' => $my['options']['ignore_inactive_testcases']);
-		
+		                   'ignoreInactiveTestCases' => $my['options']['ignore_inactive_testcases'],
+                           'ignoreActiveTestCases' => $my['options']['ignore_active_testcases']);
+
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,$tck_map,
 			                             $tplan_tcs,$pnFilters,$pnOptions);
 
@@ -182,7 +190,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 			                         $my['options']['tc_action_enabled'],$linkto,$tcase_prefix,
 			                         $my['options']['forPrinting'],$showTestCaseID);
 	}
-	
+
 	$menustring ='';
 	$treeMenu->rootnode = new stdClass();
 	$treeMenu->rootnode->name = $test_spec['text'];
@@ -300,6 +308,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
  *         'not run'
  *
  * @internal revisions
+ * 20121010 - asimon - TICKET 4496: added inactive testcase filter
  */
 function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = null,
                      &$tplan_tcases = null,$filters=null, $options=null)
@@ -326,8 +335,9 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		$status_descr_list[] = 'testcase_count';
 		
 		$my = array();
+        // TICKET 4496: added inactive testcase filter
 		$my['options'] = array('hideTestCases' => 0, 'showTestCaseID' => 1, 'viewType' => 'testSpecTree',
-		                       'getExternalTestCaseID' => 1,'ignoreInactiveTestCases' => 0);
+		                       'getExternalTestCaseID' => 1,'ignoreInactiveTestCases' => 0,'ignoreActiveTestCases' => 0);
 
 		// asimon - added importance here because of "undefined" error in event log
 		$my['filters'] = array('status' => null, 'assignedTo' => null, 
@@ -480,6 +490,23 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 					$node = null;
 				}
 			}
+
+            // TICKET 4496: added inactive testcase filter
+            if ($node && $my['options']['ignoreActiveTestCases'])
+            {
+                $sql=" /* $debugMsg - line:" . __LINE__ . " */ " .
+                    " SELECT count(TCV.id) AS num_active_versions " .
+                    " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
+                    " WHERE NH.parent_id=" . $node['id'] .
+                    " AND NH.id = TCV.id AND TCV.active=1";
+
+                $result = $db->exec_query($sql);
+                $myrow = $db->fetch_array($result);
+                if($myrow['num_active_versions'] != 0)
+                {
+                    $node = null;
+                }
+            }
 		}
 		// -------------------------------------------------------------------
 		
@@ -998,7 +1025,7 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
 	
 	$rows = null;
 	if (!$debugMsg) {
-		$tables = tlObject::getDBTables(array('cfield_design_values','nodes_hierarchy'));
+		$tables = tlObject::getDBTables(array('cfield_design_values','nodes_hierarchy','tcversions'));
 		$debugMsg = 'Function: ' . __FUNCTION__;
 	}
 	
@@ -1039,12 +1066,29 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
 			// node is testcase, check if we need to delete it
 			
 			$passed = false;
+            
 			//BUGID 2877 - Custom Fields linked to TC versions
             // TICKET 5186: added "DISTINCT" to SQL clause, detailed explanation follows at the end of function
-			$sql = " /* $debugMsg */ SELECT DISTINCT CFD.value FROM {$tables['cfield_design_values']} CFD," .
-				   " {$tables['nodes_hierarchy']} NH" .
-				   " WHERE CFD.node_id = NH.id" .
-				   " AND NH.parent_id = {$node['id']} ";
+            // Note: SQL statement has been adopted to filter by latest active tc version.
+            // That is a better solution for the explained problem than using the distinct keyword.
+
+            $latest_active_version_sql = " /* get latest active TC version ID */ " .
+                                         " SELECT MAX(TCVX.id) AS max_tcv_id, NHTCX.parent_id AS tc_id " .
+                                         " FROM {$tables['tcversions']} TCVX " .
+                                         " JOIN {$tables['nodes_hierarchy']} NHTCX " .
+                                         " ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
+                                         " WHERE NHTCX.parent_id = {$node['id']} " .
+                                         " GROUP BY NHTCX.parent_id, TCVX.tc_external_id ";
+            
+            $sql = " /* $debugMsg */ SELECT CFD.value " .
+                   " FROM {$tables['cfield_design_values']} CFD, {$tables['nodes_hierarchy']} NH " .
+                   " JOIN ( $latest_active_version_sql ) LAVSQL ON NH.id = LAVSQL.max_tcv_id " .
+                   " WHERE CFD.node_id = NH.id ";
+
+            //$sql = " /* $debugMsg */ SELECT DISTINCT CFD.value FROM {$tables['cfield_design_values']} CFD," .
+			//	   " {$tables['nodes_hierarchy']} NH" .
+			//	   " WHERE CFD.node_id = NH.id" .
+			//	   " AND NH.parent_id = {$node['id']} ";
 			// AND value in ('" . implode("' , '",$cf_hash) . "')";
             //BUGID 3995 Custom Field Filters not working properly since the cf_hash is array	
             if (isset($cf_hash)) 
@@ -1961,8 +2005,11 @@ function update_status_for_colors(&$dbHandler,&$items,$context,$statusCfg)
 }
 
 
-
-
+/**
+ * 
+ * @internal revisions
+ *  20121010 - asimon - TICKET 4353: added active/inactive filter
+ */
 function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
 	$chronos[] = microtime(true);
@@ -2027,11 +2074,14 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
 		
 	    $pnFilters = array('keywords' => $my['filters']['filter_keywords'],
 	    				   'keywords_filter_type' => $my['filters']['filter_keywords_filter_type']);
-		$pnOptions = array('hideTestCases' => $my['options']['hideTestCases']);
+        // TICKET 4353 - added active/inactive filter
+		$pnOptions = array('hideTestCases' => $my['options']['hideTestCases'],
+                           'ignoreInactiveTestCases' => $my['options']['ignore_inactive_testcases'],
+                           'ignoreActiveTestCases' => $my['options']['ignore_active_testcases']);
 		
 		// Important/CRITIC: 
 		// prepareTestSpecNode() will make changes to $test_spec like filtering by test case keywords.
-		$testcase_counters = prepareTestSpecNode($tproject_mgr,$tproject_id,$test_spec,$map_node_tccount,
+		$testcase_counters = prepareTestSpecNode($db, $tproject_mgr,$tproject_id,$test_spec,$map_node_tccount,
 												 $pnFilters,$pnOptions);
 
 		//$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
@@ -2118,7 +2168,8 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
 
 /**
  * 
- * 
+ * @internal revisions
+ * 20121010 - asimon - TICKET 4217: added filter for importance
  */
 function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
 {
@@ -2127,11 +2178,11 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
 	$flt['exclude_branches'] = isset($fObj['filter_toplevel_testsuite']) && is_array($fObj['filter_toplevel_testsuite']) ?
 	                    	   $fObj['filter_toplevel_testsuite'] : null;
 	
-	
-
+	// TICKET 4217: added filter for importance
 	$flt['testcase_name'] = null;
 	$flt['testcase_id'] = null;
 	$flt['execution_type'] = null;
+    $flt['filter_importance'] = null;
 
 	if( isset($fObj['filter_testcase_name']) && !is_null($fObj['filter_testcase_name']) )
 	{
@@ -2150,7 +2201,13 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
 	{
 		$flt['execution_type'] = intval($fObj['filter_execution_type']);
 	}
-	
+
+    // TICKET 4217: added filter for importance
+    if( isset($fObj['filter_importance']) && !is_null($fObj['filter_importance']) )
+    {
+            $flt['importance'] = intval($fObj['filter_importance']);
+    }
+    
 	$opt = array('recursive' => true,'exclude_testcases' => false);
 	$items = $tprojectMgr->getTestSpec($tprojectID,$flt,$opt); 
 
@@ -2159,12 +2216,12 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
 
 
 /**
- * 
- * 
+ * @internal revisions
+ * 20121010 - asimon - TICKET 4353: added active/inactive filter
  */
-function prepareTestSpecNode(&$tprojectMgr,$tprojectID,&$node,&$map_node_tccount,$filters=null,$options=null)
+function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_tccount,$filters=null,$options=null)
 {
-	
+    
 	static $status_descr_list;
 	static $debugMsg;
     static $tables;
@@ -2203,7 +2260,9 @@ function prepareTestSpecNode(&$tprojectMgr,$tprojectID,&$node,&$map_node_tccount
 		// new dBug($tcFilterByKeywords);
 		
 		// Critic for logic that prune empty branches
-		$filtersApplied = $doFilterOn['keywords'];
+        // TICKET 4353: added active/inactive filter
+		$filtersApplied = $doFilterOn['keywords'] || $my['options']['ignoreInactiveTestCases'] || 
+                          $my['options']['ignoreActiveTestCases'];
 	}
 		
 	$tcase_counters['testcase_count'] = 0;
@@ -2211,13 +2270,40 @@ function prepareTestSpecNode(&$tprojectMgr,$tprojectID,&$node,&$map_node_tccount
 
 	if($node_type == 'testcase')
 	{
-		if( $my['options']['hideTestCases'] ||
+        $remove_node = false;
+        
+        if ($my['options']['ignoreInactiveTestCases'])
+        {
+            $sql = " SELECT COUNT(TCV.id) AS count_active_versions " .
+                " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
+                " WHERE NH.parent_id=" . $node['id'] .
+                " AND NH.id = TCV.id AND TCV.active=1";
+            $result = $db->exec_query($sql);
+            $row = $db->fetch_array($result);
+            if ($row['count_active_versions'] == 0)
+            {
+                $remove_node = true;
+            }
+        }
+        else if ($my['options']['ignoreActiveTestCases'])
+        {
+            $sql = " SELECT COUNT(TCV.id) AS count_active_versions " .
+                " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
+                " WHERE NH.parent_id=" . $node['id'] .
+                " AND NH.id = TCV.id AND TCV.active=1";
+            $result = $db->exec_query($sql);
+            $row = $db->fetch_array($result);
+            if ($row['count_active_versions'] != 0)
+            {
+                $remove_node = true;
+            }
+        }
+        
+		if( $my['options']['hideTestCases'] || $remove_node ||
 			($doFilterOn['keywords'] && !isset($tcFilterByKeywords[$node['id']])) )
 		{
 			$node = null;
-		}
-		else
-		{
+		} else {
 			// needed to avoid problems when using json_encode with EXTJS
 			unset($node['childNodes']);
 			$node['leaf']=true;
@@ -2246,8 +2332,9 @@ function prepareTestSpecNode(&$tprojectMgr,$tprojectID,&$node,&$map_node_tccount
 			{
 				continue;
 			}
-			
-			$counters_map = prepareTestSpecNode($tprojectMgr,$tprojectID,$current,$map_node_tccount);
+
+            // TICKET 4353: added $db for active/inactive filter
+			$counters_map = prepareTestSpecNode($db, $tprojectMgr,$tprojectID,$current,$map_node_tccount);
 			// new dBug($current);
 			
 			// 20120831 - to be analized carefully, because this can be solution

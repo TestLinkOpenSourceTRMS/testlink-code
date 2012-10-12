@@ -13,7 +13,9 @@
  * @author Andreas Simon
  * @internal revisions
  *
- * @since 1.9.4 
+ * @since 1.9.4
+ *  20121010 - asimon - TICKET 4353: added filter for active/inactive test cases
+ *  20121010 - asimon - TICKET 4217: added importance filter on test specification
  *  20120926 - asimon - TICKET 5251: only use validateForm() to validate result filter 
  *                                   when result filter is actually enabled
  *  20111031 - franciscom - TICKET 4788: Test Case Execution - 
@@ -38,11 +40,11 @@
                         build,filter_tcID,filter_on,filter_result,
                         btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,
                         filter_owner,TestPlan,test_plan,caption_nav_filters,
-                        platform, include_unassigned_testcases,
+                        platform, include_unassigned_testcases, filter_active_inactive,
                         btn_remove_all_tester_assignments, execution_type, 
                         do_auto_update, testsuite, btn_reset_filters,
                         btn_bulk_update_to_latest_version, priority, tc_title,
-                        custom_field, search_type_like,
+                        custom_field, search_type_like, importance,
                         document_id, req_expected_coverage, title,
                         status, req_type, req_spec_type, th_tcid, has_relation_type,btn_export_testplan_tree'}
 
@@ -101,7 +103,7 @@
 
 			{if $control->settings.setting_testplan}
 				<tr>
-					<th>{$labels.test_plan}</th>
+					<td>{$labels.test_plan}</td>
 					<td>
 						<select name="setting_testplan" onchange="this.form.submit()">
 						{html_options options=$control->settings.setting_testplan.items
@@ -114,7 +116,7 @@
 			{if $control->settings.setting_platform}
 			  {assign var="platformID" value=$control->settings.setting_platform.selected}
 				<tr>
-					<th>{$labels.platform}</th>
+					<td>{$labels.platform}</td>
 					<td>
 						<select name="setting_platform" onchange="this.form.submit()">
 						{html_options options=$control->settings.setting_platform.items
@@ -126,7 +128,7 @@
 
 			{if $control->settings.setting_build}
 				<tr>
-					<th>{$control->settings.setting_build.label}</th>
+					<td>{$control->settings.setting_build.label}</td>
 					<td>
 						<select name="setting_build" onchange="this.form.submit()">
 						{html_options options=$control->settings.setting_build.items
@@ -232,9 +234,37 @@
 			</tr>
 		{/if}
 
+        {* TICKET 4353: added filter for active/inactive test cases *}
+        {if $control->filters.filter_active_inactive}
+            <tr>
+                <td>{$labels.filter_active_inactive}</td>
+                <td>
+                    <select name="filter_active_inactive">
+                        {html_options options=$control->filters.filter_active_inactive.items
+                        selected=$control->filters.filter_active_inactive.selected}
+                    </select>
+                </td>
+            </tr>
+        {/if}
+            
+        {* TICKET 4217: added importance filter on test specification *}
+        {if $control->filters.filter_importance}
+            <tr>
+                <td>{$labels.importance}</td>
+                <td>
+                    <select name="filter_importance">
+                        {* add "any" option to smarty global variable *}
+                        <option value="">{$control->option_strings.any}</option>
+                        {html_options options=$gsmarty_option_importance
+                        selected=$control->filters.filter_importance.selected}
+                    </select>
+                </td>
+            </tr>
+        {/if}
+            
 		{if $control->filters.filter_priority}
 			<tr>
-				<th width="75">{$labels.priority}</th>
+				<td>{$labels.priority}</td>
 				<td>
 					<select name="filter_priority">
 					{* add "any" option to smarty global variable for priority *}
@@ -315,7 +345,7 @@
 		<tr><td>&nbsp;</td></tr> {* empty row for a little separation *}
 
 	   		<tr>
-				<th>{$labels.filter_result}</th>
+				<td>{$labels.filter_result}</td>
 				<td>
 				<select id="filter_result_result" 
 				{if $control->advanced_filter_mode}
@@ -331,7 +361,7 @@
 			</tr>
 
 			<tr>
-				<th>{$labels.filter_on}</th>
+				<td>{$labels.filter_on}</td>
 				<td>
 				  	<select name="filter_result_method" id="filter_result_method"
 				  		      onchange="javascript: triggerBuildChooser('filter_result_build_row',
@@ -344,7 +374,7 @@
 			</tr>
 
 			<tr id="filter_result_build_row">
-				<th>{$labels.build}</th>
+				<td>{$labels.build}</td>
 				<td><select id="filter_result_build" name="filter_result_build">
 					{html_options options=$control->filters.filter_result.filter_result_build.items
 					              selected=$control->filters.filter_result.filter_result_build.selected}

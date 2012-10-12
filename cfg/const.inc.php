@@ -9,7 +9,7 @@
  * @filesource	const.inc.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2007-2011, TestLink community 
+ * @copyright 	2007-2012, TestLink community 
  * @see 		config.inc.php
  *
  * @internal revisions
@@ -22,7 +22,7 @@
 
 /** TestLink Release version (MUST BE changed before the release day) */
 define('TL_FACE_DIR', 'prague'); 
-define('TL_VERSION', '1.9.4 (Prague - Speedy)'); 
+define('TL_VERSION', 'DEVELOPMENT NEXT 1.9.4 FIX'); 
 
 /** Last Database version that is used to give users feedback about necesssary upgrades
  * if you set this parameter also upgrade lib/functions/configCheck.php - checkSchemaVersion() */

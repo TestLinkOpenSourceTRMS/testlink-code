@@ -192,12 +192,13 @@ class testsuite extends tlObjectWithAttachments
   // function update($id, $name, $details, $parent_id=null, $node_order=null)
   function update($item)
   {
-    new dBug($item);
-    
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    new dBug($debugMsg);
+    new dBug($item);
     $ret['status_ok']=0;
     $ret['msg']='';
     $check = $this->tree_manager->nodeNameExists($item->name,$this->my_node_type,$item->id,$item->parent_id);
+
     if($check['status']==0)
     {
       $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .

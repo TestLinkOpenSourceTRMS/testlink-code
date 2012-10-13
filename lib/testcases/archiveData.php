@@ -23,14 +23,10 @@ $smarty = new TLSmarty();
 $smarty->tlTemplateCfg = $templateCfg = templateConfiguration();
 
 list($args,$gui,$grants) = initializeEnv($db);
-
 switch($args->feature)
 {
 	case 'testproject':
 	case 'testsuite':
-	
-		$lblkey = config_get('testcase_reorder_by') == 'NAME' ? '_alpha' : '_externalid';
-		$gui->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
 		$gui->id = $args->id;
 
 		$item_mgr = new $args->feature($db);
@@ -117,6 +113,9 @@ function initializeEnv($dbHandler)
   $gui->automationEnabled = $args->automationEnabled; 
   $gui->testPriorityEnabled = $args->testPriorityEnabled;
   $gui->show_mode = $args->show_mode;
+	$lblkey = config_get('testcase_reorder_by') == 'NAME' ? '_alpha' : '_externalid';
+	$gui->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
+
 
   // has sense only when we work on test case
 	$gui->platforms = null;

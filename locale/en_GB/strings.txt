@@ -62,6 +62,7 @@ $TLS_build = "Build";
 $TLS_check_uncheck_all = "Toggle all";
 $TLS_check_uncheck_all_for_remove = "check/uncheck all for remove";
 $TLS_confirm = "Confirm";
+$TLS_config= "Configuration";
 $TLS_days	= "days";
 $TLS_desc = "Descending";
 $TLS_description = "Description";

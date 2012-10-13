@@ -8,15 +8,14 @@
  * @since 1.9.4
  *
  * @internal revisions
- * 
+ * @since 2.0 
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 list($args,$gui,$commandMgr) = initScript($db);
-
 $pFn = $args->doAction;
 $op = null;
 if(method_exists($commandMgr,$pFn))
@@ -103,10 +102,11 @@ function init_args($whiteLists)
 	$args = new stdClass();
 
 	$iParams = array("id" => array(tlInputParameter::INT_N),
-					 "doAction" => array(tlInputParameter::STRING_N,0,20),
-					 "name" => array(tlInputParameter::STRING_N,0,100),
-					 "cfg" => array(tlInputParameter::STRING_N,0,2000),
-					 "type" => array(tlInputParameter::INT_N));
+	                 "tproject_id" => array(tlInputParameter::INT_N),
+					         "doAction" => array(tlInputParameter::STRING_N,0,20),
+					         "name" => array(tlInputParameter::STRING_N,0,100),
+					         "cfg" => array(tlInputParameter::STRING_N,0,2000),
+					         "type" => array(tlInputParameter::INT_N));
 	
 	R_PARAMS($iParams,$args);
 

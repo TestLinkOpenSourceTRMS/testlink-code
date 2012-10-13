@@ -7,25 +7,22 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_action_onclick.tpl"}
 
+{$cfg_section=$smarty.template|basename|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
 {lang_get var='labels'
           s='th_issuetracker,th_issuetracker_type,th_delete,th_description,menu_assign_kw_to_tc,
-          	 btn_create,alt_delete,th_issuetracker_env'}
-
-{lang_get s='warning_delete' var="warning_msg" }
-{lang_get s='delete' var="del_msgbox_title" }
+          	 btn_create,alt_delete,th_issuetracker_env,warning_delete,delete,href_issuetracker_management'}
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_action_onclick.tpl */
 var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&id=';
 </script>
- 
 </head>
-<body {$body_onload}>
-{$cfg_section=$smarty.template|basename|replace:".tpl":"" }
-{config_load file="input_dimensions.conf" section=$cfg_section}
-
+<body {$gui->body_onload}>
+<h1 class="title">{$labels.href_issuetracker_management}</h1>
+{include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
 <div class="workBack">
-	{include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
 	{if $gui->items != ''}
 	<table class="simple_tableruler sortable">
 		<tr>
@@ -57,7 +54,7 @@ var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&i
              		src="{$tlImages.delete}"			     
 				     	 onclick="delete_confirmation({$item_def.id},
 				              '{$item_def.name|escape:'javascript'|escape}',
-				              '{$del_msgbox_title}','{$warning_msg}');" />
+				              '{$labels.delete}','{$labels.warning_delete}');" />
 				{/if}
 				</td>
 		</tr>
@@ -66,15 +63,14 @@ var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&i
 	{/if}
 	
 	<div class="groupBtn">	
-	  	<form name="item_view" id="item_view" method="post" action="lib/issuetrackers/issueTrackerEdit.php"> 
-	  	  <input type="hidden" name="doAction" value="" />
-
-    ZZ{$gui->canManage}
-		{if $gui->canManage != ""}
-	  		<input type="submit" id="create" name="create" value="{$labels.btn_create}" 
-	  	           onclick="doAction.value='create'"/>
-		{/if}
-  </form>
+  	<form name="item_view" id="item_view" method="post" action="lib/issuetrackers/issueTrackerEdit.php"> 
+   	  <input type="hidden" name="doAction" id="doAction" value="" />
+      <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
+  		{if $gui->canManage != ""}
+  	  		<input type="submit" id="create" name="create" value="{$labels.btn_create}" 
+  	             onclick="doAction.value='create'"/>
+  		{/if}
+    </form>
 	</div>
 </div>
 

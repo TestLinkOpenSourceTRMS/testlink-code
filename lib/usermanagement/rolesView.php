@@ -13,7 +13,6 @@ require_once("roles.inc.php");
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
-init_global_rights_maps();
 $args = init_args();
 checkRights($db,$_SESSION['currentUser'],$args);
 $gui = initializeGui($db,$args);

@@ -180,7 +180,7 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 		{if $gui->grants.issuetracker_management}
 			<br />
 	  		<img src="{$tlImages.bullet}" />
-			<a href="lib/issuetrackers/issueTrackerView.php">{$labels.href_issuetracker_management}</a>
+			<a href="lib/issuetrackers/issueTrackerView.php?tproject_id={$gui->testprojectID}">{$labels.href_issuetracker_management}</a>
 		{/if}
 	  
     </div>

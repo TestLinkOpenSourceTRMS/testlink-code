@@ -3,13 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: bugAdd.php,v $
- *
- * @version $Revision: 1.16 $
- * @modified $Date: 2011/01/10 15:38:55 $ by $Author: asimon83 $
- * 
- * rev:
- *	20100917 - amitkhullar - missing $gui param to smarty
+ * @filesource  bugAdd.php
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -79,6 +73,44 @@ function init_args($bugInterface)
 	
 	return $args;
 }
+
+
+function initEnv(&$dbHandler)
+{
+  $args = init_args();
+  $gui = new stdClass();
+  $gui->bugIDMaxLength = 0;
+  $gui->createIssueURL = null;
+  $gui->issueTrackerVerboseID = '';
+  $gui->issueTrackerVerboseType = '';
+  $gui->tproject_id = $args->tproject_id;
+
+  // get issue tracker config and object to manage TestLink - BTS integration 
+  $its = null;
+  $tprojectMgr = new testproject($dbHandler);
+  list($issueTrackerEnabled,$its) = $tprojectMgr->getIssueTrackerMgr($args->tproject_id);
+  if($issueTrackerEnabled)
+  {
+  	if( !is_null($its) )
+	  {
+  		$gui->issueTrackerVerboseType = $issueT['verboseType'];
+  		$gui->issueTrackerVerboseID = $issueT['issuetracker_name'];
+  		$gui->bugIDMaxLength = $its->getBugIDMaxLength();
+  		$gui->createIssueURL = $its->getEnterBugURL();
+  	}
+  }	
+
+  return array($args,$gui);
+}
+
+
+
+
+
+
+
+
+
 
 
 /**

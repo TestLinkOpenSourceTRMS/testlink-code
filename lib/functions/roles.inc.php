@@ -52,7 +52,7 @@ require_once( dirname(__FILE__). '/lang_api.php' );
 // Then we need to explicitily init this globals to get right localization.
 // With previous implementation we always get localization on TL DEFAULT LOCALE
 //
-init_global_rights_maps();
+//init_global_rights_maps();
 
 
 /**

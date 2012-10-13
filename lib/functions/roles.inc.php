@@ -52,7 +52,7 @@ require_once( dirname(__FILE__). '/lang_api.php' );
 // Then we need to explicitily init this globals to get right localization.
 // With previous implementation we always get localization on TL DEFAULT LOCALE
 //
-init_global_rights_maps();
+//init_global_rights_maps();
 
 
 /**
@@ -143,7 +143,7 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 }
 
 
-function propagateRights($fromRights,$propRights,&$toRights)
+function XXXpropagateRights($fromRights,$propRights,&$toRights)
 {
 	// the mgt_users right isn't test project related so this right is inherited from
 	// the global role (if set)

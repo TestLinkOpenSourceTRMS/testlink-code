@@ -364,25 +364,6 @@ define('TL_REPOSITORY_COMPRESSIONTYPE_NONE', 1);
 define('TL_REPOSITORY_COMPRESSIONTYPE_GZIP', 2);
 
 
-// Two models to manage attachment interface in the execution screen
-// $att_model_m1 ->  shows upload button and title 
-//
-$att_model_m1 = new stdClass();
-$att_model_m2 = new stdClass();
-
-$att_model_m1->showUploadBtn = true;
-$att_model_m1->showTitle = true;
-$att_model_m1->showUploadColumn = false;
-$att_model_m1->numCols = 4;
-
-// $att_model_m2 ->  hides upload button and title
-// 
-$att_model_m2->showUploadBtn = false;
-$att_model_m2->showTitle = false;
-$att_model_m2->showUploadColumn = true;
-$att_model_m2->numCols = 5;
-
-
 // --------------------------------------------------------------------------------------
 /* [Test execution] */
 /** 

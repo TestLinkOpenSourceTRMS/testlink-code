@@ -9,6 +9,9 @@
  * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
+ * @since 2.0
+ * 20121013 - franciscom - hasRight() refactoring
+ *                         propagateRights() moved here
  */
  
 /**
@@ -16,7 +19,7 @@
  * 
  * @package TestLink
  * @author 	Andreas Morsing
- * @uses 	config.inc.php
+ * @uses 	  config.inc.php
  * @since 	1.7
  */ 
 class tlUser extends tlDBObject
@@ -670,59 +673,57 @@ class tlUser extends tlDBObject
    */
 	function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	{
-		global $g_propRights_global;
-		global $g_propRights_product;
+	  static $parentRightPool;
+	  if(!$parentRightPool)
+	  {
+	    $dummy = tlRight::getRightsCfg();
+      $parentRightPool['tplanRoles'] = $dummy->testprojectWideRange;	  
+      $parentRightPool['tprojectRoles'] = $dummy->systemWideRange;	  
+	  }
 		
-		$userGlobalRights = (array)$this->globalRole->rights;
-		$globalRights = array();
-		foreach($userGlobalRights as $right)
-		{
-			$globalRights[] = $right->name;
-		}
-
-		$userTestProjectRoles = $this->tprojectRoles;
-		$userTestPlanRoles = $this->tplanRoles;
-		$allRights = $globalRights;
-
-		// if $tprojectID not present on specific roles  we dont check rights at test project level.
-		// IMPORTANTE NOTICE:
-		// To implement private test project feature, check that test project role is needed is done
-		// in other method NOT HERE
-		// 
-		if (isset($userTestProjectRoles[$tprojectID]))
-		{
-			$userTestProjectRights = (array)$userTestProjectRoles[$tprojectID]->rights;
-			$testProjectRights = array();
-			foreach($userTestProjectRights as $right)
-			{
-				$testProjectRights[] = $right->name;
-			}
-		    
-
-			//subtract global rights		
-			$testProjectRights = array_diff($testProjectRights,array_keys($g_propRights_global));
-			propagateRights($globalRights,$g_propRights_global,$testProjectRights);
-			$allRights = $testProjectRights;
-		}
-		
-		/* if $tplanID == -1 we dont check rights at tp level! */
-		if (isset($userTestPlanRoles[$tplanID]))
-		{
-			$userTestPlanRights = (array) $userTestPlanRoles[$tplanID]->rights;
-			$testPlanRights = array();
-			foreach($userTestPlanRights as $right)
-			{
-				$testPlanRights[] = $right->name;
-			}
-			//subtract test projects rights		
-			$testPlanRights = array_diff($testPlanRights,array_keys($g_propRights_product));
-			
-			propagateRights($allRights,$g_propRights_product,$testPlanRights);
-			$allRights = $testPlanRights;
-		}
-		
-		return checkForRights($allRights,$roleQuestion);
+    // analisys has to be done from specific to generic level
+    // Test plan
+    // Test project
+    // System
+    // Order in following data structure is CRITIC for algorithm
+    // 
+    $level2check = array( array('prop' => 'tplanRoles', 'id' => $tplanID), 
+                          array('prop' => 'tprojectRoles', 'id' => $tprojectID),
+                          array('prop' => 'globalRole','id' => null));
+    
+    $userRightSet = null;
+ 		$userGlobalRights = array_keys((array)$this->globalRole->rights);
+    $done = false;
+    foreach($level2check as $elem)
+    {
+      switch($elem['prop'])
+      {
+        case 'globalRole':
+          $userRightSet = $userGlobalRights;           
+        break;
+        
+        default:
+          $context = $this->$elem['prop'];
+          if( isset($context[$elem['id']]) )
+          {
+      			// subtract parent Level rights		
+			      $rightSet = array_keys((array)$context[$elem['id']]->rights);
+			      $rightSet = array_diff($rightSet,array_keys($parentRightPool[$elem['prop']]));
+      			$userRightSet = $this->propagateRights($parentRightPool[$elem['prop']],
+      			                                       $userGlobalRights,$rightSet);
+            $done = true;
+          }
+        break;
+      }
+      
+      if($done)
+      {
+        break;    
+      }
+    }
+		return checkForRights($userRightSet,$roleQuestion);
 	}
+
 
 	/**
      * get array with accessible test plans for user on a test project, 
@@ -1067,5 +1068,17 @@ class tlUser extends tlDBObject
 	{
   }
 
+ 
+  static function propagateRights($rightPool,$from,$to)
+  {
+  	foreach($rightsPool as $right => $desc)
+  	{
+  		if (in_array($right,$from) && !in_array($right,$to))
+  		{
+  			$to[] = $right;
+  		}	
+  	}
+  	return $to;
+  }
 }
 ?>

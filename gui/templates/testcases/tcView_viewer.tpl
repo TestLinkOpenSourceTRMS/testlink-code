@@ -6,7 +6,6 @@ viewer for test case in test specification
 @filesource	tcView_viewer.tpl
 
 @internal revisions
-20111016 - franciscom - TICKET 4769: estimated execution duration
 *}
 {lang_get var="tcView_viewer_labels"
           s="requirement_spec,Requirements,tcversion_is_inactive_msg,

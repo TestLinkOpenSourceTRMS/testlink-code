@@ -151,7 +151,7 @@ class tlRole extends tlDBObject
 			$this->description = $rightInfo[0]['notes'];
 			if ($getFullDetails)
 			{
-				$this->rights = $this->buildRightsArray($rightInfo);
+				$this->rights = $this->buildRightsSet($rightInfo);
 			}	
 		}
 		$readSucceeded = $rightInfo ? tl::OK : tl::ERROR;
@@ -453,26 +453,27 @@ class tlRole extends tlDBObject
 	
 	protected function readRights(&$db)
 	{
-		$sql = " SELECT right_id,description FROM {$this->tables['role_rights']} a " .
-		       " JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = "/* {$debugMsg} */ " .
+		       " SELECT right_id,description FROM {$this->tables['role_rights']} ROLERIGHTS " .
+		       " JOIN {$this->tables['rights']} RIGHTS ON ROLERIGHTS.right_id = RIGHTS.id " .
 		       " WHERE role_id = {$this->dbID}";
 		$rightInfo = $db->get_recordset($sql);
-		$this->rights = buildRightsArray($rightInfo);
+		$this->rights = $this->buildRightsSet($rightInfo);
 		return tl::OK;
 	}	
 	
-	protected function buildRightsArray($rightInfo)
+	protected function buildRightsSet($rightInfo)
 	{
-		$rights = null;
+		$items = null;
 		$loop2do = sizeof($rightInfo);
 		for($idx = 0;$idx < $loop2do; $idx++)
 		{
-			$id = $rightInfo[$idx];
-			$right = new tlRight($id['right_id']);
-			$right->name = $id['description'];
-			$rights[] = $right;
+			$right = new tlRight($rightInfo[$idx]['right_id']);
+			$right->name = $rightInfo[$idx]['description'];
+			$items[$right->name] = $right;
 		}
-		return $rights;
+		return $items;
 	}
 	
 	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
@@ -572,10 +573,6 @@ class tlRole extends tlDBObject
   	
   	return $userFeedback;
   }
-
-
-
-
 
 
 }

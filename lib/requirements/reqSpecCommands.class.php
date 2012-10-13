@@ -7,9 +7,7 @@
  * @author Francisco Mancardi
  * 
  * @internal revisions
- * 20110903 - franciscom - TICKET 4661: req. spec revisions
  */
-
 class reqSpecCommands
 {
 	private $db;
@@ -20,8 +18,8 @@ class reqSpecCommands
 	private $defaultTemplate='reqSpecEdit.tpl';
 	private $submit_button_label;
 	private $auditContext;
-    private $getRequirementsOptions;
-    private $reqSpecTypeDomain;
+  private $getRequirementsOptions;
+  private $reqSpecTypeDomain;
 
 	const OVERWRITESCOPE=true;
 
@@ -31,13 +29,13 @@ class reqSpecCommands
 	 */
 	function __construct(&$db)
 	{
-	    $this->db=$db;
-	    $this->reqSpecMgr = new requirement_spec_mgr($db);
-	    $this->reqMgr = new requirement_mgr($db);
-	    $this->treeMgr = $this->reqMgr->tree_mgr;
+	  $this->db=db;
+	  $this->reqSpecMgr = new requirement_spec_mgr($db);
+	  $this->reqMgr = new requirement_mgr($db);
+	  $this->treeMgr = $this->reqMgr->tree_mgr;
 
-	    $req_spec_cfg = config_get('req_spec_cfg');
-        $this->reqSpecTypeDomain = init_labels($req_spec_cfg->type_labels);
+    $req_spec_cfg = config_get('req_spec_cfg');
+    $this->reqSpecTypeDomain = init_labels($req_spec_cfg->type_labels);
 		$this->commandMgr = new reqCommands($db);
 		$this->submit_button_label=lang_get('btn_save');
 		$this->getRequirementsOptions = array('order_by' => " ORDER BY NH_REQ.node_order ");
@@ -311,58 +309,6 @@ class reqSpecCommands
       	
 		return $guiObj;	
   }
-  
-  
-  /*
-    function: reorder
-
-    args:
-    
-    returns: 
-
-  */
-	function reorder(&$argsObj)
-	{
-      	$guiObj = $this->initGuiBean(); 
-  		$guiObj->template = 'reqSpecReorder.tpl';
-		$guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
-		$guiObj->action_descr = lang_get('title_change_req_spec_order');
-
-		$order_by = ' ORDER BY NH.node_order,REQ_SPEC.id ';
-		$guiObj->all_req_spec = $this->reqSpecMgr->get_all_in_testproject($argsObj->tproject_id,$order_by);
-      	$guiObj->tproject_name=$argsObj->tproject_name;
-      	$guiObj->tproject_id=$argsObj->tproject_id;
-	    return $guiObj;
-  }
-
-
-
-  /*
-    function: doReorder
-
-    args:
-    
-    returns: 
-
-  */
-	function doReorder(&$argsObj)
-	{
-      	$guiObj = $this->initGuiBean(); 
-      	$guiObj->tproject_name=$argsObj->tproject_name;
-      	$guiObj->tproject_id=$argsObj->tproject_id;
-  		$guiObj->template = 'project_req_spec_mgmt.tpl';
-  		$guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
-  		
-		$nodes_in_order = transform_nodes_order($argsObj->nodes_order);
-
-		// need to remove first element, is testproject
-		array_shift($nodes_in_order);
-		$this->reqSpecMgr->set_order($nodes_in_order);
-      	$guiObj->refreshTree=1;
-	    return $guiObj;
-  }
-
-
   /*
     function: createChild
 

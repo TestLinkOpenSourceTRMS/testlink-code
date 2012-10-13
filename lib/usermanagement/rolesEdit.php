@@ -18,9 +18,6 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 checkRights($db,$_SESSION['currentUser'],$args);
 
-$xxx = tlRight::getRightsCfg();
-new dBug($xxx);
-
 $gui = initialize_gui($args,$editorCfg['type']);
 $op = initialize_op();
 
@@ -151,23 +148,6 @@ function renderGui(&$argsObj,&$guiObj,$templateCfg)
 }
 
 
-function getRightsCfg()
-{
-  $cfg = new stdClass();
-  $cfg->tplan_mgmt = config_get('rights_tp');
-  $cfg->tcase_mgmt = config_get('rights_mgttc');
-  $cfg->kword_mgmt = config_get('rights_kw');
-  $cfg->tproject_mgmt = config_get('rights_product');
-  $cfg->user_mgmt = config_get('rights_users');
-  $cfg->req_mgmt = config_get('rights_req');
-  $cfg->cfield_mgmt = config_get('rights_cf');
-  $cfg->system_mgmt = config_get('rights_system');
-  $cfg->platform_mgmt = config_get('rights_platforms');
-  $cfg->issuetracker_mgmt = config_get('rights_issuetrackers');
-  return $cfg;
-}
-
-
 function initialize_gui(&$argsObj,$editorType)
 {
     $gui = new stdClass();
@@ -204,7 +184,7 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
     $guiObj->operation = $actionCfg['operation'][$argsObj->doAction];
     $guiObj->role = $roleObj;
     $guiObj->grants = getGrantsForUserMgmt($dbHandler,$_SESSION['currentUser']);
-    $guiObj->rightsCfg = getRightsCfg();
+    $guiObj->rightsCfg = tlRight::getRightsCfg();
 	  $guiObj->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
 
     // Create status for all checkboxes and set to unchecked

@@ -30,7 +30,7 @@ var warning_empty_title = "{$atlabels.enter_attachment_title|escape:'javascript'
   <h2>{$atlabels.title_choose_local_file}</h2>
   
   <form action="lib/attachments/attachmentupload.php" method="post" enctype="multipart/form-data" id="aForm">
-    <p>{$labels.local_file}
+    <p>{$atlabels.local_file}
       <input type="hidden" name="MAX_FILE_SIZE" value="{$gui->import_limit}" /> {* restrict file size *}
       <input type="file" name="uploadedFile" size="{#UPLOAD_FILENAME_SIZE#}" />
     </p>

@@ -199,22 +199,28 @@ function setPaths()
 
 
 /** 
- * Verify if user is log in. Redirect to login page if not.
+ * Verify if Session is valid,
+ * Redirect to login page if not.
  * 
- * @param integer $db DB identifier 
+ * @param integer $db DB handler
  * @param boolean $redirect if true (default) redirects user to login page, 
- * 							otherwise returns true/false as login status
+ * 							  otherwise returns true/false as login status
  **/
 function checkSessionValid(&$db, $redirect=true)
 {
 	$isValidSession = false;
 	if (isset($_SESSION['userID']) && $_SESSION['userID'] > 0)
 	{
-
 		$now = time();
-		if (($now - $_SESSION['lastActivity']) <= (config_get("sessionInactivityTimeout") * 60))
+		$renewSession = ($now - $_SESSION['lastActivity']) <= (config_get("sessionInactivityTimeout") * 60);
+		if($renewSession)
 		{
 			$_SESSION['lastActivity'] = $now;
+			
+			// Because this method is called each time we access a page,
+			// is OK to re-read user info, to update all info than can be changed like roles and rights.
+			// What we are done with user object in session, IMHO is some sort of BAD Global coupling
+			// We are illuding ourselve we are using cached data but is not RIGHT.
 			$user = new tlUser($_SESSION['userID']);
 			$user->readFromDB($db);
 			$_SESSION['currentUser'] = $user;
@@ -223,19 +229,18 @@ function checkSessionValid(&$db, $redirect=true)
 	}
 	if (!$isValidSession && $redirect)
 	{
-        $ip = $_SERVER["REMOTE_ADDR"];
-	    tLog('Invalid session from ' . $ip . '. Redirected to login page.', 'INFO');
+    $ip = $_SERVER["REMOTE_ADDR"];
+	  tLog('Invalid session from ' . $ip . '. Redirected to login page.', 'INFO');
 		
 		$fName = "login.php";
-        $baseDir = dirname($_SERVER['SCRIPT_FILENAME']);
-        
-        while(!file_exists($baseDir . DIRECTORY_SEPARATOR .$fName))
-        {
-            $fName = "../" . $fName;
-        }
+    $baseDir = dirname($_SERVER['SCRIPT_FILENAME']);
+    while(!file_exists($baseDir . DIRECTORY_SEPARATOR .$fName))
+    {
+      $fName = "../" . $fName;
+    }
 		$destination = "&destination=" . urlencode($_SERVER['REQUEST_URI']);
-        redirect($fName . "?note=expired" . $destination,"top.location");
-        exit();
+    redirect($fName . "?note=expired" . $destination,"top.location");
+    exit();
 	}
 	return $isValidSession;
 }

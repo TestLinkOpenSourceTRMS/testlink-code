@@ -269,21 +269,21 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 	  $cfg->system = array("mgt_view_events" => $l18n['desc_mgt_view_events'],
 	                       "events_mgt" => $l18n['desc_events_mgt']);
 
+
+    // Do some grouping, needed by other methods
+    // some rights are system wide => test project has no effect
+    $cfg->systemWideRange = array_merge($cfg->users,$cfg->system,$cfg->testprojects);
+    unset($cfg->systemWideRange["testproject_user_role_assignment"]);
+     
+    $cfg->testprojectWideRange = array_merge($cfg->systemWideRange,$cfg->testcases,$cfg->keywords,
+                                             $cfg->requirements);    
+
+    // 20121013 - not clear with platforms,customfields,issuetrackers,testplans are not 
+    // present on one of WideRange config, need to try to understand 
+    
 	  return $cfg;
 	}
 
-  static function propagateRights($fromRights,$propRights,&$toRights)
-  {
-  	// the mgt_users right isn't test project related so this right is inherited from
-  	// the global role (if set)
-  	foreach($propRights as $right => $desc)
-  	{
-  		if (in_array($right,$fromRights) && !in_array($right,$toRights))
-  		{
-  			$toRights[] = $right;
-  		}	
-  	}
-  }
 
 	
 }

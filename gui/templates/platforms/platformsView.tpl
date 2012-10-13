@@ -6,20 +6,18 @@ Purpose: smarty template - View all platforms
 @filesource platformsView.tpl
 
 @internal revisions
-20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor for platform notes
+@since 2.0
 *}
+
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_action_onclick.tpl"} {* includes ext-js *}
-
 {lang_get var='labels'
           s='th_notes,th_platform,th_delete,btn_import,btn_export,
              menu_manage_platforms,alt_delete_platform,warning_delete_platform,
              warning_cannot_delete_platform,delete,
              menu_assign_kw_to_tc,btn_create_platform'}
-
-{lang_get s='warning_delete_platform' var="warning_msg"}
-{lang_get s='warning_cannot_delete_platform' var="warning_msg_cannot_del"}
-{lang_get s='delete' var="del_msgbox_title"}
 
 {$viewAction="lib/platforms/platformsView.php"}
 
@@ -33,8 +31,6 @@ target_action +='&doAction=do_delete&id=';
  
 </head>
 <body {$body_onload}>
-{$cfg_section=$smarty.template|basename|replace:".tpl":""}
-{config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$labels.menu_manage_platforms}</h1>
 {include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
@@ -68,11 +64,11 @@ target_action +='&doAction=do_delete&id=';
 				<img style="border:none;cursor: pointer;"	alt="{$labels.alt_delete_platform}"
 						title="{$labels.alt_delete_platform}"	src="{$tlImages.delete}"
 						onclick="action_confirmation({$gui->platforms[platform].id},
-							      '{$gui->platforms[platform].name|escape:'javascript'|escape}', '{$del_msgbox_title|escape:'javascript'}','{$warning_msg|escape:'javascript'}');" />
+							      '{$gui->platforms[platform].name|escape:'javascript'|escape}', '{$labels.delete|escape:'javascript'}','{$labels.warning_delete_platform|escape:'javascript'}');" />
 				{else}
 					<img style="border:none;cursor: pointer;" 	alt="{$labels.alt_delete_platform}"
 						title="{$labels.alt_delete_platform}"	src="{$tlImages.delete_disabled}"
-						onclick="alert_message_html('{$del_msgbox_title|escape:'javascript'}','{$warning_msg_cannot_del|replace:'%s':$gui->platforms[platform].name|escape:'javascript'}');" />
+						onclick="alert_message_html('{$labels.delete|escape:'javascript'}','{$labels.warning_cannot_delete_platform|replace:'%s':$gui->platforms[platform].name|escape:'javascript'}');" />
 				{/if}
 			</td>
 			{/if}

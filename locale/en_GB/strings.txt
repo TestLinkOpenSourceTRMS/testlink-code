@@ -243,8 +243,8 @@ $TLS_req_type_constrain = 'Constraint';
 $TLS_req_type_system_function = 'System Function';
 
 $TLS_req_spec_type_section = "Section";
-$TLS_req_spec_type_user_req_spec = "User Requirement Specification";
-$TLS_req_spec_type_system_req_spec = "System Requirement Specification";
+$TLS_req_spec_type_user_req_spec = "User Requirements Specification";
+$TLS_req_spec_type_system_req_spec = "System Requirements Specification";
 
 
 $TLS_exec_not_run_result_note = "Important Notice: once a Result is updated from 'Not Run' to another value, " .
@@ -264,7 +264,7 @@ $TLS_specific_direct_link = "Direct link to this specific version of the current
 $TLS_reserved_system_role_1 = 'reserved system role 1';
 $TLS_reserved_system_role_2 = 'reserved system role 2';
 $TLS_req_created_automatic_log = "Requirement Created";
-$TLS_reqspec_created_automatic_log = "Requirement Specification Created";
+$TLS_reqspec_created_automatic_log = "Requirements Specification Created";
 
 $TLS_elapsed_seconds = 'Processing time (seconds)'; 
 
@@ -364,7 +364,7 @@ $TLS_no_good_email_address = "Email address format seems no good. Check domain(s
 
 $TLS_passwd_dont_match = "The two passwords entered did not match. Note that passwords are case sensitive. " .
                          "Please try again.";
-$TLS_user_cant_be_created_because = "Your account can't be created because:";
+$TLS_user_cant_be_created_because = "Your account cannot be created because:";
 $TLS_user_name_exists = "Login/User name is already in use, please select another one.";
 $TLS_valid_user_name_format = "Login/User name can only contain letters, numbers, spaces, hyphens and underscores.";
 $TLS_warning_empty_pwd = "Your password should not be empty";
@@ -825,7 +825,7 @@ $TLS_coverage = "Coverage";
 $TLS_popup_delete_req = "Are you sure you want to delete the requirement?";
 $TLS_req_edit = "Edit Requirement";
 $TLS_req_msg_notestcase = "No connected Test Case";
-$TLS_requirement_spec = "Requirement Specification Document";
+$TLS_requirement_spec = "Requirements Specification Document";
 $TLS_test_case_id = "ID";
 $TLS_title_created = "Created on";
 $TLS_title_last_mod = "Last modified on ";
@@ -900,8 +900,8 @@ $TLS_comp_scope = "Scope";
 
 
 // gui/templates/reqSpecView.tpl
-$TLS_req_spec_operations = "Requirement Specification Operations";
-$TLS_req_operations = "Requirement Operations";
+$TLS_req_spec_operations = "Requirements Specification Operations";
+$TLS_req_operations = "Requirements Operations";
 $TLS_btn_analyse = "Analyse";
 $TLS_btn_check_all = "Check All";
 $TLS_btn_copy_requirements = "Copy Requirements";
@@ -916,7 +916,7 @@ $TLS_btn_req_create = "Create";
 $TLS_btn_spec_list = "List of all documents";
 $TLS_btn_uncheck_all = "Uncheck All";
 $TLS_cant_delete_req_nothing_sel = "Please select a requirement";
-$TLS_popup_sure_delete = "Are you sure you want to delete the Requirement Specification document?";
+$TLS_popup_sure_delete = "Are you sure you want to delete the Requirements Specification document?";
 $TLS_req_select_create_tc = "Create Test Cases";
 $TLS_req_select_delete = "Delete requirements";
 $TLS_req_title_list = "List of requirements";
@@ -957,7 +957,7 @@ $TLS_req_total_count = "Total count of requirements";
 
 
 // ----- gui/templates/reqSpecCreate.tpl -----
-$TLS_action_create_srs = "Create Requirement Specification document";
+$TLS_action_create_srs = "Create Requirements Specification document";
 
 
 
@@ -1034,7 +1034,7 @@ $TLS_del_bug_warning_msg = "Really delete this bug?";
 // gui/templates/reqSpecList.tpl
 $TLS_btn_assign_tc = "Assign Test Case";
 $TLS_no_docs = "No available documents.";
-$TLS_req_list_docs = "Requirement Specification Documents";
+$TLS_req_list_docs = "Requirements Specification Documents";
 
 
 
@@ -1409,14 +1409,14 @@ $TLS_testplan_title_create = "Create a new Test plan";
 $TLS_testplan_title_edit = "Edit " . $TLS_test_plan . " - ";
 $TLS_testplan_title_for_project = "for Test Project ";
 $TLS_testplan_title_tp_management = "Test Plan Management";
-$TLS_testplan_txt_notes = "Test Plans should encompass a (set of) clearly defined tasks with a timeframe and content. " .
-                          "They can be created for everything from simple change requests to new product versions." .
+$TLS_testplan_txt_notes = "A Test Plan should encompass a set of clearly defined tasks with a time frame and content. " .
+                          "Test Plans can be created for everything from simple change requests to new product versions. " .
                           "It is recommended that the description field be used to document links to project plans " .
-                          "and related documentation, lists of features to be tested, risks, etc." .
-                          "You can create a new Test Plan from an existing one. " .
-                          "The items that are copied include: builds, Test Cases, priorities, milestones, and user roles." .
+                          "and related documentation, a summary of features to be tested, risks, etc. " .
+                          "You can create a new Test Plan by copying an existing one. " .
+                          "The items that are copied include: builds, Test Cases, priorities, milestones, and user roles. " .
                           "Test plans can be deactivated (i.e., editing and changing of results change are not allowed). " .
-                          "Deactivated Test Plans are visible only via 'Reporting' and this page.";
+                          "Deactivated Test Plans are visible only via 'Reporting' and this page. ";
 $TLS_warning_empty_tp_name = "You cannot enter a Test Plan without a name";
 
 $TLS_testplan_copy_tcases = "Copy Test Cases";
@@ -1527,8 +1527,8 @@ $TLS_req_title_assigned = "Assigned Requirements";
 $TLS_req_title_unassigned = "Available Requirements";
 $TLS_warning_req_tc_assignment_impossible = "You <b>can't do</b> the assignment " .
 		"due to one of these causes:" .
-		"<br /><ul><li>There is no Requirement Specification document defined</li>" .
-		"<li>The Requirement Specification document is empty.</li></ul>";
+		"<br /><ul><li>There is no Requirements Specification document defined</li>" .
+		"<li>The Requirements Specification document is empty.</li></ul>";
 
 
 
@@ -2134,16 +2134,16 @@ $TLS_href_keywords_assign = "Assign Keywords";
 $TLS_href_keywords_manage = "Keyword Management";
 $TLS_href_keywords_view = "View Keywords";
 $TLS_href_print_tc = "Generate Test Specification Document";
-$TLS_href_print_req = "Generate Requirement Specification Document";
+$TLS_href_print_req = "Generate Requirements Specification Document";
 $TLS_href_req_assign = "Assign Requirements";
-$TLS_href_req_spec = "Requirement Specification";
-$TLS_href_req_overview = "Requirement Overview";
+$TLS_href_req_spec = "Requirements Specification";
+$TLS_href_req_overview = "Requirements Overview";
 $TLS_href_roles_management = "Role Management";
 $TLS_href_search_tc = "Search Test Cases";
 $TLS_href_tproject_management = "Test Project Management";
 $TLS_href_user_management = "User Management";
 $TLS_href_admin_modules = "System Configuration";
-$TLS_title_requirements = "Requirement Specification";
+$TLS_title_requirements = "Requirements Specification";
 $TLS_title_test_spec = "Test Specification";
 $TLS_title_documentation = "Documentation";
 $TLS_title_product_mgmt = "Test Project";
@@ -2155,9 +2155,9 @@ $TLS_href_issuetracker_management = "Issue Tracker Management";
 
 // ----- contribution by asimon for req/reqspec search BUGID 2976 -----
 $TLS_href_search_req = "Search Requirements";
-$TLS_href_search_req_spec = "Search Requirement Specifiations";
+$TLS_href_search_req_spec = "Search Requirements Specifications";
 $TLS_caption_search_form_req = "Search Requirements";
-$TLS_caption_search_form_req_spec = "Search Requirement Specifications";
+$TLS_caption_search_form_req_spec = "Search Requirements Specifications";
 $TLS_title_search_req = "Search";
 $TLS_requirement_document_id = "Req. Doc. ID";
 $TLS_req_spec_document_id = "Req. Spec. Doc. ID";
@@ -2184,7 +2184,7 @@ $TLS_href_add_remove_test_cases = "Add / Remove Test Cases";
 $TLS_href_build_new = "Builds / Releases";
 $TLS_href_execute_test = "Execute Tests";
 $TLS_href_metrics_dashboard = "Metrics Dashboard";
-$TLS_href_newest_tcversions = "Show Test Cases Newest Versions";
+$TLS_href_newest_tcversions = "Show Newest Versions of Test Cases";
 $TLS_href_plan_assign_urgency = "Set Urgent Tests";
 $TLS_href_plan_management = "Test Plan Management";
 $TLS_href_plan_mstones = "Milestone Overview";
@@ -2331,7 +2331,7 @@ $TLS_no_rights = "no rights";
 
 
 // ----- lib/functions/testproject.class.php -----
-$TLS_error_creating_req_spec = "Error while creating Requirement Specification Document";
+$TLS_error_creating_req_spec = "Error while creating Requirements Specification Document";
 $TLS_info_product_name_empty = "Empty name is not possible.";
 $TLS_keyword_already_exists = "This keyword already exists";
 $TLS_string_contains_bad_chars = "Name contains bad characters which cannot be used";
@@ -2344,7 +2344,7 @@ $TLS_conflict = "Conflict";
 $TLS_error_deleting_req = "Error while deleting requirements";
 $TLS_error_inserting_req = "Error while inserting requirements";
 $TLS_error_updating_req = "Error while updating requirements";
-$TLS_error_updating_reqspec = "Error while updating Requirement Specification document";
+$TLS_error_updating_reqspec = "Error while updating Requirements Specification document";
 $TLS_file_is_not_xml = "File is not well-formed XML. Cannot be used";
 $TLS_req_import_format_description1 = " - CSV type requires three fields for each row:" .
 		" 'req_doc_id','title','description'";
@@ -2562,11 +2562,11 @@ $TLS_opt_show_tc_keys = "Test Case keywords";
 $TLS_opt_show_cfields	= "Test Case Custom Fields";
 $TLS_opt_show_passfail = "Test results";
 $TLS_opt_show_metrics = "Metrics";
-$TLS_opt_req_spec_scope = "Requirement Specification Doc. Scope";
-$TLS_opt_req_spec_author = "Requirement Specification Doc. Author";
-$TLS_opt_req_spec_overwritten_count_reqs = "Requirement Specification Doc. Overwritten Count of REQs";
-$TLS_opt_req_spec_type = "Requirement Specification Doc. Type";
-$TLS_opt_req_spec_cf = "Requirement Specification Doc. Custom Fields";
+$TLS_opt_req_spec_scope = "Requirements Specification Doc. Scope";
+$TLS_opt_req_spec_author = "Requirements Specification Doc. Author";
+$TLS_opt_req_spec_overwritten_count_reqs = "Requirements Specification Doc. Overwritten Count of REQs";
+$TLS_opt_req_spec_type = "Requirements Specification Doc. Type";
+$TLS_opt_req_spec_cf = "Requirements Specification Doc. Custom Fields";
 $TLS_opt_req_scope = "Requirement Scope";
 $TLS_opt_req_author = "Requirement Author";
 $TLS_opt_req_status = "Requirement Status";
@@ -2576,11 +2576,11 @@ $TLS_opt_req_relations = "Requirement Relations";
 $TLS_opt_req_linked_tcs = "Requirement related Test Cases";
 $TLS_opt_req_coverage = "Requirement Coverage";
 $TLS_title_tc_print_navigator = "Navigator - Print Test Specification";
-$TLS_title_req_print_navigator = "Navigator - Print Requirement Specification";
+$TLS_title_req_print_navigator = "Navigator - Print Requirements Specification";
 $TLS_title_tp_print_navigator = "Navigator - Print Test Plan ";
 $TLS_testplan_report = "Test Plan Report";
 $TLS_testspecification_report = "Test Specification Report";
-$TLS_requirement_specification_report = "Requirement Specification Report";
+$TLS_requirement_specification_report = "Requirements Specification Report";
 $TLS_related_tcs = "Related Test Cases";
 
 // ----- lib/project/projectedit.php -----
@@ -2829,7 +2829,7 @@ $TLS_no_cf_defined_can_not_import="Custom Field values are present on import fil
                                   "Custom Fields with Test Spec. Design Scope on this Test Project";
 $TLS_no_reqspec_defined_can_not_import="Requirements are present in import file ".
                                        "but can not be imported because there are no " .
-                                       "Requirement Specifications defined for this Test Project";
+                                       "Requirements Specifications defined for this Test Project";
 
 $TLS_same_internalID = 'has same Internal ID';
 $TLS_same_externalID = 'has same External ID'; // (only applicable to Test Cases)';
@@ -2920,12 +2920,12 @@ $TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associate
 
 // ----- lib/project/project_req_spec_mgmt.tpl -----
 $TLS_btn_new_req_spec = "Create";
-$TLS_btn_reorder_req_spec = "Reorder Requirement Specifications";
-$TLS_btn_export_all_reqspec = "Export All Requirement Specifications";
+$TLS_btn_reorder_req_spec = "Reorder Requirements Specifications";
+$TLS_btn_export_all_reqspec = "Export All Requirements Specifications";
 
 
 // ----- lib/requirements/reqOverview.php -----
-$TLS_caption_req_overview = "Requirement Overview";
+$TLS_caption_req_overview = "Requirements Overview";
 $TLS_number_of_reqs = "Number of Requirements";
 $TLS_number_of_versions = "Number of Requirement versions";
 $TLS_no_linked_req = 'There are no Requirements defined in this Test Project.';
@@ -2945,11 +2945,11 @@ $TLS_never = "Never";
 
 
 // ----- reqSpecEdit.php -----
-$TLS_delete_req_spec = "Delete Requirement Specification";
-$TLS_req_spec_created = "Requirement Specification: %s was successfully created";
-$TLS_req_spec_deleted = "Requirement Specification: %s was successfully deleted";
-$TLS_title_req_spec = "Requirement Specifications";
-$TLS_warning_empty_req_spec_title = "Requirement Specification title cannot be empty";
+$TLS_delete_req_spec = "Delete Requirements Specification";
+$TLS_req_spec_created = "Requirements Specification: %s was successfully created";
+$TLS_req_spec_deleted = "Requirements Specification: %s was successfully deleted";
+$TLS_title_req_spec = "Requirements Specifications";
+$TLS_warning_empty_req_spec_title = "Requirements Specification title cannot be empty";
 $TLS_warning_empty_doc_id = "Document ID can not be empty";
 $TLS_create_req_spec = "Create Requirements Specification";
 $TLS_create_child_req_spec = "Create Child Req Specification";
@@ -2966,7 +2966,7 @@ $TLS_req_version_deleted = "Req: %s-%s Version %s was successfully deleted";
 
 
 // ----- reqSpecReorder.tpl -----
-$TLS_title_change_req_spec_order = "Change Requirement Specifications order";
+$TLS_title_change_req_spec_order = "Change Requirements Specifications order";
 
 
 // ----- requirement_mgr -----
@@ -3249,7 +3249,7 @@ $TLS_access_to_bts="Access issue tracking system";
 // ----- uncoveredTestCases.php -----
 $TLS_report_testcases_without_requirement = $TLS_link_report_uncovered_testcases;
 $TLS_no_uncovered_testcases = 'All Test Cases are covered';
-$TLS_testproject_has_no_reqspec = 'There are no Requirement Spec. defined';
+$TLS_testproject_has_no_reqspec = 'There are no Requirements Spec. defined';
 $TLS_testproject_has_no_requirements = 'There are no Requirements defined';
 
 
@@ -3292,7 +3292,7 @@ $TLS_direct_link_on_wrong_version = "Click here to open the current version of t
 // ----- testcase/req/req spec comparison -----
 $TLS_title_compare_versions_tc = "Test Case versions comparison page";
 $TLS_title_compare_versions_req = "Requirement versions comparison page";
-$TLS_title_compare_revisions_rspec = "Requirement Spec. revisions comparison page";
+$TLS_title_compare_revisions_rspec = "Requirements Spec. revisions comparison page";
 $TLS_btn_compare_versions = "Compare versions";
 $TLS_btn_compare_selected_versions = "Compare selected versions";
 $TLS_btn_compare_revisions = "Compare revisions";
@@ -3402,7 +3402,7 @@ $TLS_no_label_for_req_type = 'No req_type_labels configuration for type: %s';
 
 $TLS_print_testcase = 'Print Test Case: %s';
 $TLS_print_requirement = 'Print Requirement: %s';
-$TLS_print_requirement_specification = 'Print Requirement Specification: %s';
+$TLS_print_requirement_specification = 'Print Requirements Specification: %s';
 
 
 // ----- lib/functions/remote_exec.php

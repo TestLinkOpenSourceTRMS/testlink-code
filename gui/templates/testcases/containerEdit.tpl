@@ -9,7 +9,7 @@ Purpose: smarty template - edit test specification: containers
 *}
 {lang_get var="labels"
           s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,cancel,warning,warning_required_cf,
-          warning_unsaved'}
+             warning_unsaved,comp_name,details'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -56,6 +56,11 @@ function validateForm(f)
 <body onLoad="{$gui->optionTransfer->jsName}.init(document.forms[0]);focusInputField('name')">
 <h1 class="title">{lang_get s=$gui->containerType}{$smarty.const.TITLE_SEP}{$gui->name|escape}</h1> 
 <div class="workBack">
+
+  {if $gui->midAirCollision}
+	  {include file = "midAirCollisionMessage.inc.tpl" mdcArgsMain = "{$gui->midAirCollisionMsg.main}" 
+	                                                   mdcArgsDetails = "{$gui->midAirCollisionMsg.details}" }
+  {/if}
   <h1 class="title">{$labels.title_edit_level} {lang_get s=$gui->containerType}</h1> 
 	<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$gui->containerID}&tproject_id={$gui->tproject_id}" 
 	      name="container_edit" id="container_edit"
@@ -66,6 +71,9 @@ function validateForm(f)
 		       onclick="show_modified_warning = false;" />
 		<input type="button" name="go_back" value="{$labels.cancel}" 
 		       onclick="javascript: show_modified_warning = false; history.back();"/>
+		       
+		<input type="hidden" name="midAirCollisionTimeStamp" id="midAirCollisionTimeStamp" 
+		                     value = "{$gui->container.modification_ts}"       
 	</div>
 	 
 	 {include file="testcases/inc_testsuite_viewer_rw.tpl"}

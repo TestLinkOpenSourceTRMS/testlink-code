@@ -590,6 +590,10 @@ CREATE TABLE /*prefix*/testcase_keywords (
 CREATE TABLE /*prefix*/testsuites (
   `id` int(10) unsigned NOT NULL,
   `details` text,
+  `author_id` int(10) unsigned default NULL,
+  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updater_id` int(10) unsigned default NULL,
+  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`), 
   CONSTRAINT /*prefix*/testsuites_nodes_hierarchy_fk 
   FOREIGN KEY (`id`) REFERENCES /*prefix*/nodes_hierarchy (id) ON DELETE CASCADE ON UPDATE CASCADE

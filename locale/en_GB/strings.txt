@@ -3506,5 +3506,12 @@ $TLS_req_does_not_exist = "Requirement does not exist any more.";
 
 // resultsByTesterPerBuild.php
 $TLS_no_open_builds = 'There are no open builds';
+
+
+$TLS_collision_detected = 'Mid-air Collision Detected!';
+$TLS_collision_detected_some_one_else = 'On %s ,User %s (email: %s) has made changes to this item, at the same time you were trying to.';
+$TLS_collision_detected_choices = 'You have following choices:<br>' .
+								  'a. Submit your changes anyway, overwritten work done by User %s. <br>' .
+								  'b. Throw	away your changes, and go to see item current data.<br>';
 // ----- END ------------------------------------------------------------------
 ?>

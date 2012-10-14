@@ -1228,7 +1228,7 @@ $TLS_password_reset = "Reset password";
 
 
 // ----- gui/templates/tcView.tpl -----
-$TLS_no_records_found = "Your search delivered no results";
+$TLS_no_records_found = "Your search delivered no results.";
 $TLS_other_versions = 'Other versions';
 $TLS_match_count = "Number of matches";
 
@@ -2098,8 +2098,8 @@ $TLS_warning_delete_build = "<p>You are going to delete: %s </p>" .
 		"<p>All dependent data (i.e., test results) will also be deleted!</p>" .
 		"<p>Are you sure?</p>";
 $TLS_builds_description = "A build is identified by its title. Each build is " .
-		"related to the active Test Plan.<br />Description should include:&nbsp;" .
-		"list of delivered packages, fixes or features, approvals, status, etc.<br />" .
+		"related to the active Test Plan.<br />The description could include " .
+		"a list of delivered packages, fixes or features, approvals, status, etc.<br />" .
 		"A build has two attributes:<br />" .
 		"Active / Inactive &ndash; defines whether the build can be used. " .
 		"Inactive builds are not listed on the execution and reports pages.<br />" .
@@ -2121,6 +2121,8 @@ $TLS_alt_active_testplan = "Active Test Plan";
 $TLS_warning_delete_testplan = "<p>You are going to delete: %s </p><p>Are you sure?</p>";
 $TLS_export_testplan_links = "Export links to Test Cases and platforms";
 $TLS_import_testplan_links = "Import links to Test Cases and platforms";
+$TLS_testcase_qty = 'Test Case Qty';
+$TLS_platform_qty = 'Platform Qty';
 
 
 // ----- gui/templates/mainPage_left.tpl -----
@@ -2538,15 +2540,15 @@ $TLS_platform_default_suffix = "Default Platform %s";
 $TLS_platform_default_notes = "Automatically created platform for Test Plan %s";
 
 // ----- lib/platforms/platformsAssign.php -----
-$TLS_unknown_platform="Warning/Critic<br>" .
-		                  " In this Test Plan there are Test Case versions without platform assignment. <br>" .
-						          " This probably means that you worked on this Test Plan before " .
-						          " assigning platforms.<br>" .
-						          " After you have assigned platforms to this Test Plan you MUST " .
-						          " go to the 'add/remove Test Cases' feature to assign the right platform " .
-						          " to your linked Test Cases<br>".
-						          " To ease your work, if you assign now here ONE platform to a Test Plan " .
-						          " without platforms, all linked Test Cases will be updated with this platform. ";
+$TLS_unknown_platform="Warning!<br>" .
+		                  " In this Test Plan there are Test Case versions without platform assignment. " .
+				  " This probably means that you worked on this Test Plan before " .
+				  " assigning platforms.<br>" .
+				  " After you have assigned platforms to this Test Plan you MUST " .
+				  " go to the 'add/remove Test Cases' feature to assign the right platform " .
+				  " to your linked Test Cases.<br>".
+				  " To simplify your work, if you now assign here ONE platform to a Test Plan " .
+				  " without platforms, all linked Test Cases will be updated with this platform. ";
 
 // ----- lib/results/printDocOptions.php -----
 $TLS_opt_displayVersion = "Req Spec and Requirements Version/Revision";

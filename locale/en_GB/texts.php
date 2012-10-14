@@ -305,7 +305,7 @@ current Test Plan for execution. You can also select a Report format:</p>
 </ul>
 
 <p>The print button activates printing of a report only (without navigation).</p>
-<p>There are several separate reports to choose from, their purpose and function are explained below.</p>
+<p>There are several separate reports to choose from; their purpose and function are explained below.</p>
 
 <h3>Test Plan</h3>
 <p>The document 'Test Plan' has options to define a content and a document structure.</p>

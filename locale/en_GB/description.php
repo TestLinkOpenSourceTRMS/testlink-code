@@ -3,7 +3,7 @@
  * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
- * Localization: English (en_GB) texts - default development localization (World-wide English)
+ * Localisation: English (en_GB) texts - default development localisation (World-wide English)
  *
  * 
  * The file contains global variables with html text. These variables are used as 
@@ -11,7 +11,7 @@
  * prefix '$TLS_hlp_' or '$TLS_txt_'. This must be a reserved prefix.
  * 
  * Contributors howto:
- * Add your localization to TestLink tracker as attachment to update the next release
+ * Add your localisation to TestLink tracker as attachment to update the next release
  * for your language.
  *
  * No revision is stored for the the file - see CVS history
@@ -31,8 +31,8 @@
 // printFilter.html
 $TLS_hlp_generateDocOptions = "<h2>Options for a generated document</h2>
 
-<p>This table allows the user to filter test cases before they are viewed. If
-selected (checked) the data will be shown. In order to change the data
+<p>This table allows the user to filter Test Cases before they are viewed. If
+selected (checked), the data will be shown. In order to change the data
 presented, check or uncheck, click on Filter, and select the desired data
 level from the tree.</p>
 
@@ -50,33 +50,33 @@ Body in order to support viewing Titles with a brief Summary and the absence of
 Steps, Expected Results, and Keywords. If a user decides to view Test Case
 Body, Test Case Summary will always be included.</p>
 
-<p><b>Table of Content:</b> TestLink inserts list of all titles with internal hypertext links if checked.</p>
+<p><b>Table of Content:</b> TestLink inserts a list of all titles with internal hypertext links if checked.</p>
 
-<p><b>Output format:</b> There are two possibilities: HTML and MS Word. Browser calls MS word component 
-in second case.</p>";
+<p><b>Output format:</b> There are two possibilities: HTML and MS Word. Browser calls MSWord component 
+in the second case.</p>";
 
 // testPlan.html
 $TLS_hlp_testPlan = "<h2>Test Plan</h2>
 
 <h3>General</h3>
-<p>A test plan is a systematic approach to testing a system such as software. You can organize testing activity with 
-particular builds of product in time and trace results.</p>
+<p>A Test Plan is a systematic approach to testing a system such as software. You can organise testing activity with 
+particular builds of a product in time and trace the results.</p>
 
 <h3>Test Execution</h3>
-<p>This section is where users can execute test cases (write test results) and 
+<p>This section is where users can execute Test Cases (write test results) and 
 print Test case suite of the Test Plan. This section is where users can track 
-the results of their test case execution.</p> 
+the results of their Test Case execution.</p> 
 
 <h2>Test Plan Management</h2>
-<p>This section, which is only lead accessible, allows users to administrate test plans. 
-Administering test plans involves creating/editing/deleting plans, 
-adding/editing/deleting/updating test cases in plans, creating builds as well as defining who can 
+<p>This section, which is only lead accessible, allows users to administer Test Plans. 
+Administration of Test Plans involves creating/editing/deleting plans, 
+adding/editing/deleting/updating Test Cases in plans and creating builds, as well as defining who can 
 see which plan.<br />
 Users with lead permissions may also set the priority/risk and ownership of 
-Test case suites (categories) and create testing milestones.</p> 
+Test Suites (categories) and create testing milestones.</p> 
 
-<p>Note: It is possible that users may not see a dropdown containing any Test plans. 
-In this situation all links (except lead enabled ones) will be unlinked. If you 
+<p>Note: It is possible that users may not see a dropdown containing any Test Plans. 
+In this situation all links (except lead-enabled ones) will be unlinked. If you 
 are in this situation you must contact a lead or admin to grant you the proper 
 project rights or create a Test Plan for you.</p>"; 
 
@@ -115,16 +115,16 @@ syntax). <b>(NOT IMPLEMENTED YET)</b></li>
 <li>Enable on test specification. User can change the value during Test Case Specification Design</li>
 <li>Display on test execution.</li>
 <li>Enable on test execution. User can change the value during Test Case execution</li>
-<li>Display on test plan design.</li>
-<li>Enable on test plan design. User can change the value during Test Plan design (add test cases to test plan)</li>
+<li>Display on Test Plan design.</li>
+<li>Enable on Test Plan design. User can change the value during Test Plan design (add Test Cases to Test Plan)</li>
 <li>Available for. User choose to what kind of item the field belows.</li>
 </ul>
 ";
 
 // execMain.html
 $TLS_hlp_executeMain = "<h2>Executing Test Cases</h2>
-<p>Allows users to 'execute' test cases. Execution itself is merely
-assigning a test case a result (pass,fail,blocked) against a selected build.</p>
+<p>Allows users to execute Test Cases. Execution itself is merely
+assigning a Test Case a result (pass,fail,blocked) against a selected build.</p>
 <p>Access to a bug tracking system could be configured. User can directly add a new bugs
 and browse existing ones then. See Installation manual for more.</p>";
 
@@ -132,7 +132,7 @@ and browse existing ones then. See Installation manual for more.</p>";
 $TLS_hlp_btsIntegration = "<h2>Add Bugs to Test Case</h2>
 <p><i>(only if it is configured)</i>
 TestLink has a very simple integration with Bug Tracking Systems (BTS),
-not being able either send a bug creationg request to BTS, neither get back the bug id.
+not being able either send a bug creation request to BTS, neither get back the bug id.
 The integration is done using links to pages on BTS, that calls the following features:
 <ul>
 	<li>Insert new bug.</li>
@@ -149,60 +149,60 @@ The integration is done using links to pages on BTS, that calls the following fe
    <li>Step 4: use add bug button.</li>
    </ul>  
 
-After closing the add bug page, you will see relevant bug data on the execute page.
+After closing the add bug page, you will see the relevant bug data on the execute page.
 </p>";
 
 // execFilter.html
 $TLS_hlp_executeFilter = "<h2>Settings</h2>
 
-<p>Settings allows you to select the test plan, build and platform (if available) to
+<p>The Settings panel allows you to select the Test Plan, build and platform (if available) to
 be executed.</p>
 
 <h3>Test Plan</h3>
-<p>You can choose the required test plan. According to the chosen test plan the appropriate
-builds will be shown. After choosing a test plan filters will be reset.</p>
+<p>You can choose the required Test Plan. According to the chosen Test Plan the appropriate
+builds will be shown. After choosing a Test Plan, filters will be reset.</p>
 
 <h3>Platform</h3>
 <p>If the platforms feature is used, you must select the appropriate platform before execution.</p>
 
 <h3>Build to execute</h3>
-<p>You can choose the build you whish to execute the test cases for.</p>
+<p>You can choose the build for which you wish to execute the Test Cases. </p>
 
 <h2>Filters</h2>
-<p>Filters provide the opportunity to further influence the set of shown test cases
-before the execution. You can reduce the set of shown test cases by specifying filters
-and click the \"Apply\" button.</p>
+<p>Filters provide the opportunity to further influence the set of Test Cases shown.
+You can reduce the set of shown Test Cases by specifying filters
+and clicking the \"Apply\" button.</p>
 
-<p> Advanced Filters will allow you to specify a set of values for applicable filters by
-using CTRL-Click inside the Multi-Select ListBox</p>
+<p> Advanced Filters allow you to specify a set of values for applicable filters by
+using CTRL-Click inside the Multi-Select ListBox.</p>
 
 
 <h3>Keyword Filter</h3>
-<p>You can filter test cases by the keywords that have been assigned. You can choose " .
-"multiple keywords by using CTRL-Click. If you chose more than one keyword you can " .
-"decide whether only test cases are shown that have all chosen keywords assigned " .
-"(radiobutton \"And\") or  at least one of the chosen keywords (radiobutton \"Or\").</p>
+<p>You can filter Test Cases by the keywords that have been assigned. You can choose " .
+"multiple keywords by using CTRL-Click. If you choose more than one keyword you can " .
+"decide whether only Test Cases are shown that have all chosen keywords assigned " .
+"(radiobutton \"And\") or at least one of the chosen keywords (radiobutton \"Or\").</p>
 
 <h3>Priority Filter</h3>
-<p>You can filter test cases by test priority. The test priority is \"test case importance\" " .
-"combined with \"test urgency\" within the current test plan.</p> 
+<p>You can filter Test Cases by test priority. The test priority is \"Test Case importance\" " .
+"combined with \"test urgency\" within the current Test Plan.</p> 
 
 <h3>User Filter</h3>
-<p>You can filter test cases that are not assigned (\"Nobody\") or assigned to \"Somebody\". " .
-"You can also filter test cases that are assigned to a specific tester. If you chose a specific " .
-"tester you also have the possibility to show test cases that are unassigned in addition to " .
-"those test cases (advanced Filters are available). </p>
+<p>You can filter Test Cases that are not assigned (\"Nobody\") or assigned to \"Somebody\". " .
+"You can also filter Test Cases that are assigned to a specific tester. If you choose a specific " .
+"tester you also have the possibility to show Test Cases that are unassigned in addition to " .
+"those Test Cases (advanced Filters are available). </p>
 
 <h3>Result Filter</h3>
-<p>You can filter test cases by result (advanced Filters are available). You can filter by " .
+<p>You can filter Test Cases by result (advanced Filters are available). You can filter by " .
 "result \"on chosen build for execution\", \"on latest execution\", \"on ALL builds\", " .
-"\"on ANY build\" and \"on specific build\". If \"specific build\" is chosen you then can " .
+"\"on ANY build\" and \"on specific build\". If \"specific build\" is chosen you then " .
 "specify the build. </p>";
 
 
 // newest_tcversions.html
 $TLS_hlp_planTcModified = "<h2>Newest versions of linked Test Cases</h2>
-<p>The whole set of Test Cases linked to Test Plan is analyzed, and a list of Test Cases
+<p>The whole set of Test Cases linked to Test Plan is analysed, and a list of Test Cases
 which have a newest version is displayed (against the current set of the Test Plan).
 </p>";
 
@@ -210,15 +210,15 @@ which have a newest version is displayed (against the current set of the Test Pl
 // requirementsCoverage.html
 $TLS_hlp_requirementsCoverage = "<h3>Requirements Coverage</h3>
 <br />
-<p>This feature allows to map a coverage of user or system requirements by
-test cases. Navigate via link \"Requirement Specification\" in main screen.</p>
+<p>This feature allows you to map the coverage of user or system requirements by
+Test Cases. Navigate via link \"Requirement Specification\" in main screen.</p>
 
 <h3>Requirements Specification</h3>
 <p>Requirements are grouped by 'Requirements Specification' document which is related to 
 Test Project.<br /> TestLink doesn't support versions for both Requirements Specification  
 and Requirements itself. So, version of document should be added after 
 a Specification <b>Title</b>.
-An user can add simple description or notes to <b>Scope</b> field.</p> 
+A user can add simple description or notes to <b>Scope</b> field.</p> 
 
 <p><b><a name='total_count'>Overwritten count of REQs</a></b> serves for 
 evaluation Req. coverage in case that not all requirements are added (imported) in. 
@@ -233,7 +233,7 @@ Status should be \"Normal\" or \"Not testable\". Not testable requirements are n
 to metrics. This parameter should be used for both unimplemented features and 
 wrong designed requirements.</p> 
 
-<p>You can create new test cases for requirements by using multi action with checked 
+<p>You can create new Test Cases for requirements by using multi action with checked 
 requirements within the specification screen. These Test Cases are created into Test Suite
 with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_testsuite_name = 
 \"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
@@ -250,8 +250,8 @@ makes a coverage of 40 percent.
 $TLS_hlp_planAddTC = "<h2>Regarding 'Save Custom Fields'</h2>
 If you have defined and assigned to Test Project,<br /> 
 Custom Fields with:<br />
- 'Display on test plan design=true' and <br />
- 'Enable on test plan design=true'<br />
+ 'Display on Test Plan design=true' and <br />
+ 'Enable on Test Plan design=true'<br />
 you will see these in this page ONLY for Test Cases linked to Test Plan.
 ";
 
@@ -261,16 +261,16 @@ $TLS_hlp_results_by_tester_per_build_table = "<b>More information about testers:
 If you click on a tester name in this table, you will get a more detailed overview
 about all Test Cases assigned to that user and his testing progress.<br /><br />
 <b>Note:</b><br />
-This Report shows those test cases, which are assigned to a specific user and have been executed 
-based on each active build. Even if a test case has been executed by another user than the assigned user, 
-the test case will appear as executed for the assigned user.
+This report shows those Test Cases which are assigned to a specific user and have been executed 
+based on each active build. Even if a Test Case has been executed by another user than the assigned user, 
+the Test Case will appear as executed for the assigned user.
 ";
 
 
 // req_edit
 $TLS_hlp_req_edit = "<h3>Internal links on scope:</h3>
-<p>Internal links serve the purpose of creating links to other requirements/requirement specifications 
-with a special syntax. Internal Links behaviour can be changed in the config file.
+<p>Internal links serve the purpose of creating links to other requirements/requirement specifications. 
+They have a special syntax. Internal Link behaviour can be changed in the config file.
 <br /><br />
 <b>Usage:</b>
 <br />
@@ -280,26 +280,26 @@ Link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
 <p>The test project of the requirement / requirement specification, a version and an anchor 
 to jump to can also be specified:<br />
 [req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
-This syntax also works for requirement specifications (version attribute has no effect).<br />
-If you do not specify a version the whole requirement including all versions will be shown.</p>
+This syntax also works for requirement specifications (the version attribute has no effect).<br />
+If you do not specify a version the whole requirement, including all versions, will be shown.</p>
 
 <h3>Log message for changes:</h3>
-<p>Whenever a change is made Testlink will ask for a log message. This log message served the purpose of traceability.
+<p>Whenever a change is made, Testlink will ask for a log message. This log message serves the purpose of traceability.
 If only the scope of the requirement has changed you are free to decide whether to create a new revision or not. 
-Whenever anything besides the scope is changed you are forced to create a new revision.</p>
+Whenever anything other than the scope is changed you are forced to create a new revision.</p>
 ";
 
 
 // req_view
 $TLS_hlp_req_view = "<h3>Direct Links:</h3>
-<p>To easily share this document with others simply click the globe icon at the top of this document to create a direct link.</p>
+<p>To easily share this document with others, simply click the globe icon at the top of this document to create a direct link.</p>
 
 <h3>View History:</h3>
-<p>This feature allows to compare revisions/versions of requirements if more than one revision/version of the requirement exists.
+<p>This feature allows you to compare revisions/versions of requirements if more than one revision/version of the requirement exists.
 The overview provides the Log message for each revision/version, a timestamp and the author of the last change.</p>
 
 <h3>Coverage:</h3>
-<p>Shows all linked test cases for this requirement.</p>
+<p>Shows all linked Test Cases for this requirement.</p>
 
 <h3>Relations:</h3>
 <p>Requirement Relations are used to model relationships between requirements. 
@@ -312,8 +312,8 @@ Testlink will set the relation \"Requirement B is child of Requirement A\" impli
 
 // req_spec_edit
 $TLS_hlp_req_spec_edit = "<h3>Internal links on scope:</h3>
-<p>Internal links serve the purpose of creating links to other requirements/requirement specifications 
-with a special syntax. Internal Links behaviour can be changed in the config file.
+<p>Internal links serve the purpose of creating links to other requirements/requirement specifications. 
+They have a special syntax. Internal Link behaviour can be changed in the config file.
 <br /><br />
 <b>Usage:</b>
 <br />

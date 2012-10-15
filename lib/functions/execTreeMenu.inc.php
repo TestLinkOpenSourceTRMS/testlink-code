@@ -17,8 +17,21 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20121015 - asimon - TICKET 5284: Filtering by the value of custom fields is not working on tester assignment
  * 20120921 - asimon - TICKET 5229: Filtering by the value of custom fields is not working on test execution
  * 20120816 - franciscom - TICKET 4905: Test Case Tester Assignment - filters dont work properly for 'Assigned to' Field
+ */
+
+/**
+ * @param $dbHandler
+ * @param $menuUrl
+ * @param $tproject_id
+ * @param $tproject_name
+ * @param $tplan_id
+ * @param $tplan_name
+ * @param $objFilters
+ * @param $objOptions
+ * @return array
  */
 function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                   $tplan_name,$objFilters,$objOptions) 
@@ -586,6 +599,8 @@ function applyStatusFilters($tplan_id,&$items2filter,&$fobj,&$tplan_mgr,$statusC
  *
  * @used-by Assign Test Execution Feature
  *
+ * @internal revisions:
+ * 20121015 - asimon - TICKET 5284: Filtering by the value of custom fields is not working on tester assignment
  */
 function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                       $tplan_name,$objFilters,$objOptions) 
@@ -644,7 +659,13 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
  	{
  		$my['filters']['exclude_branches'] = $objFilters->filter_toplevel_testsuite;
  	}
- 	
+
+    // TICKET 5284: Filtering by the value of custom fields is not working on tester assignment
+    if (isset($objFilters->filter_custom_fields) && is_array($objFilters->filter_custom_fields))
+    {
+        $my['filters']['filter_custom_fields'] = $objFilters->filter_custom_fields;
+    }
+
  	// Take Time
  	//$chronos[] = microtime(true);
 	//$tnow = end($chronos);
@@ -753,8 +774,14 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 			//New dBug($tplan_tcases);
 			applyStatusFilters($tplan_id,$tplan_tcases,$objFilters,$tplan_mgr,$resultsCfg['status_code']);
 		}
-		
-		
+
+        // TICKET 5284: Filtering by the value of custom fields is not working on tester assignment
+        if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes']))
+        {
+            $test_spec['childNodes'] = filter_by_cf_values($dbHandler, $test_spec['childNodes'],
+                                       $my['filters']['filter_custom_fields'],$hash_descr_id);
+        }
+
 		// Take time
 	 	//$chronos[] = microtime(true);
 		//$tnow = end($chronos);

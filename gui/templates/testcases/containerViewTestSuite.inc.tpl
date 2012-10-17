@@ -4,7 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @internal revisions
 *}
 
-{if $gui->mgt_modify_tc == 'yes' || $gui->sqlResult neq ''}
+{if $gui->grants->mgt_modify_tc == 'yes' || $gui->sqlResult == ''}
 	<fieldset class="groupBtn">
 	<h2>{$labels.testsuite_operations}</h2>
 	<form method="post" action="lib/testcases/containerEdit.php">

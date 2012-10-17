@@ -4,17 +4,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 Purpose: smarty template - create / edit a req  
 
-@internal revision
-20110612 - franciscom - TICKET 4597: Is required field doesn't work properly for some custom field type
-20110607 - Julian - BUGID 3953: Checkbox to decide whether to create another requirement or not
-20110304 - asimon - added help icon with a description of some of the "new" features
-20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
-20110110 - Julian - BUGID 4153: Warning message when navigating away from changed requirement without saving
-20110106 - Julian - BUGID 4152: do not set focus on req doc id if log message window is shown
-20101226 - franciscom - BUGID 4088: Required parameter for custom fields
+@internal revisions
 *}
-{* ------------------------------------------------------------------------- *}
-
 {lang_get var='labels' 
           s='show_event_history,btn_save,cancel,status,scope,warning,req_doc_id,
              title,warning_expected_coverage,type,warning_expected_coverage_range,
@@ -57,7 +48,7 @@ js_attr_cfg['expected_coverage']['oid']['input'] = 'expected_coverage';
 js_attr_cfg['expected_coverage']['oid']['container'] = 'expected_coverage_container';
 
 {foreach from=$gui->attrCfg.expected_coverage key=req_type item=cfg_def}
-    js_attr_cfg['expected_coverage'][{$req_type}]={$cfg_def};
+  js_attr_cfg['expected_coverage'][{$req_type}]={$cfg_def};
 {/foreach}
 
   /**
@@ -160,17 +151,16 @@ js_attr_cfg['expected_coverage']['oid']['container'] = 'expected_coverage_contai
    * 
    *
    */
-	window.onload = function()
+window.onload = function()
+{
+  if( document.getElementById('prompt4revision').value == 0 &&  document.getElementById('prompt4log').value == 0) 
   {
-     // BUGID 4152: do not set focus on req doc id if log message window is shown
-     if( document.getElementById('prompt4revision').value == 0 &&  document.getElementById('prompt4log').value == 0) {
 	  focusInputField('reqDocId');
-	 }
-     {* BUGID 3307 - disable this check if coverage management is disabled, to avoid javascript errors *}
-     {if $gui->req_cfg->expected_coverage_management}
-        configure_attr('reqType',js_attr_cfg);
-     {/if}
-  }
+	}
+  {if $gui->req_cfg->expected_coverage_management}
+    configure_attr('reqType',js_attr_cfg);
+  {/if}
+}
  
   
   /*
@@ -226,7 +216,6 @@ function insert_last_doc_id()
 }
 </script>
 
-{* BUGID 4153 *}
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">
   var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
@@ -321,14 +310,13 @@ function insert_last_doc_id()
  	<br />
 
 	{if $gui->req.type}
-		{assign var="preSelectedType" value=$gui->req.type}
+		{$preSelectedType = $gui->req.type}
 	{else}
-		{assign var="preSelectedType" value=$gui->preSelectedType}
+		{$preSelectedType = $gui->preSelectedType}
 	{/if}
 
   	<div class="labelHolder" id="reqType_container"> <label for="reqType">{$labels.type}</label>
      	<select name="reqType" id="reqType"
-     	{* BUGID 3307 - disable this check if coverage management is disabled, to avoid javascript errors *}
      	{if $gui->req_cfg->expected_coverage_management}
      	     	  onchange="configure_attr('reqType',js_attr_cfg);"
      	{/if}
@@ -343,9 +331,9 @@ function insert_last_doc_id()
   		<div class="labelHolder" id="expected_coverage_container"> <label for="expected_coverage">{$labels.expected_coverage}</label>
   	
   	{if $gui->req.expected_coverage}
-			{assign var="coverage_to_display" value=$gui->req.expected_coverage}
+			{$coverage_to_display = $gui->req.expected_coverage}
 		{else}
-			{assign var="coverage_to_display" value=$gui->expected_coverage}
+			{$coverage_to_display = $gui->expected_coverage}
 		{/if}
   	
   		<input type="text" name="expected_coverage" id="expected_coverage"

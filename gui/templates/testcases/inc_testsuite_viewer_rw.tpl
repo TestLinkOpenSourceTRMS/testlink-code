@@ -6,7 +6,7 @@ Warning CONTAINER* are defined in the includer template
 *}
     <p>
 		<div class="labelHolder">
-		 <label for="name">{lang_get s='comp_name'}</label>
+		 <label for="name">{$labels.comp_name}</label>
 		</div> 
 		<div>
 			<input type="text" id="name" name="container_name" alt="{lang_get s='comp_alt_name'}"
@@ -19,7 +19,7 @@ Warning CONTAINER* are defined in the includer template
     </div>
     <p>
 		<div class="labelHolder">
-		<label for="details">{lang_get s='details'}</label>
+		<label for="details">{$labels.details}</label>
 		</div>
 		<div>
 		{$details}

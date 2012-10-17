@@ -8,7 +8,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 *}
 {lang_get var="labels"
           s="warning_empty_testsuite_name,title_create,tc_keywords,warning_required_cf,
-             warning,btn_create_testsuite,cancel,warning_unsaved"}
+             warning,btn_create_testsuite,cancel,warning_unsaved,details,comp_name"}
 
 {config_load file="input_dimensions.conf" section="containerEdit"}
 
@@ -66,11 +66,10 @@ function validateForm(f)
                                refresh=$gui->refreshTree}
 
 
-<form method="post" action="lib/testcases/containerEdit.php?containerID={$gui->containerID}&tproject_id={$gui->tproject_id}" 
-	      name="container_new" id="container_new"
-        onSubmit="javascript:return validateForm(this);">
-
-
+<form method="post" 
+      action="lib/testcases/containerEdit.php?containerID={$gui->containerID}&tproject_id={$gui->tproject_id}" 
+	    name="container_new" id="container_new"
+      onSubmit="javascript:return validateForm(this);">
 	<div style="font-weight: bold;">
 		<div>
       <input type="hidden" name="add_testsuite" id="add_testsuite" />
@@ -88,8 +87,7 @@ function validateForm(f)
      {$gui->cf}
      </div>
    {/if}
-   
-  	 <br />
+   	 <br />
    <div>
    <a href={$gui->keywordsViewHREF}>{$labels.tc_keywords}</a>
 	 {include file="opt_transfer.inc.tpl" option_transfer=$gui->optionTransfer}

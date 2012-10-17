@@ -4,8 +4,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @internal revisions
 *}
 
-{if $gui->mgt_modify_tc == 'yes'}
-	{$bDownloadOnly=false}
+{if $gui->grants->mgt_modify_tc == 'yes'}
+	{* IS REALLY NEEDED ??? {$bDownloadOnly=false} 20121014 *}
 	<fieldset class="groupBtn">
 	<h2>{$labels.testsuite_operations}</h2>
 	<form method="post" action="lib/testcases/containerEdit.php">
@@ -14,7 +14,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	  <input type="hidden" name="containerID" id="containerID" value="{$gui->container_data.id}" />
 	  <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 	
-	  <input type="submit" name="new_testsuiteX" value="{$labels.btn_new_testsuite}" />
+	  <input type="submit" name="new_testsuite" id="new_testsuite"
+	                       onclick="doAction.value='new_testsuite'" value="{$labels.btn_new_testsuite}" />
 	  <input type="submit" name="reorder_testproject_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
 		  	                 title="{$labels.btn_reorder_testsuites_alpha}" />
 

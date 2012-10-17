@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 2.0
+ * 20121013 - franciscom - create() interface changed
  * 20120909 - franciscom - attachment management refactored (see show())
  */
 
@@ -30,6 +31,8 @@ class testsuite extends tlObjectWithAttachments
   const DEFAULT_ORDER=0;
   const USE_RECURSIVE_MODE = 1;
   
+  private $object_table;
+
   /** @var database handler */
   var $db;
   var $tree_manager;
@@ -37,20 +40,17 @@ class testsuite extends tlObjectWithAttachments
   var $node_types_id_descr;
   var $my_node_type;
   var $cfield_mgr;
-
-  private $object_table;
-
-    var $import_file_types = array("XML" => "XML");
-    var $export_file_types = array("XML" => "XML");
+  var $import_file_types = array("XML" => "XML");
+  var $export_file_types = array("XML" => "XML");
  
-    // Node Types (NT)
-    var $nt2exclude=array('testplan' => 'exclude_me',
+  // Node Types (NT)
+  var $nt2exclude=array('testplan' => 'exclude_me',
                         'requirement_spec'=> 'exclude_me',
                         'requirement'=> 'exclude_me');
                                                   
 
-    var $nt2exclude_children=array('testcase' => 'exclude_my_children',
-                     'requirement_spec'=> 'exclude_my_children');
+  var $nt2exclude_children=array('testcase' => 'exclude_my_children',
+                                 'requirement_spec'=> 'exclude_my_children');
 
   /**
    * testplan class constructor
@@ -107,59 +107,41 @@ class testsuite extends tlObjectWithAttachments
     return $this->import_file_types;
   }
 
-
   /*
-    args :
-          $parent_id
-          $name
-          $details
-          [$check_duplicate_name]
-          [$action_on_duplicate_name]
-          [$order]
     returns:   hash 
                     $ret['status_ok'] -> 0/1
                     $ret['msg']
                     $ret['id']        -> when status_ok=1, id of the new element
-    rev :
-         20070324 - BUGID 710
   */
-  function create($parent_id,$name,$details,$order=null,
-                  $check_duplicate_name=0,
-                  $action_on_duplicate_name='allow_repeat')
+  function create($item)
   {
+    $parent_id = intval($item->parent_id);
+    $name = trim($item->name);
+    $details = $item->details;
+    $node_order = is_null($item->order) ? config_get('treemenu_default_testsuite_order') : intval($item->order);
+
     $prefix_name_for_copy = config_get('prefix_name_for_copy');
-    if( is_null($order) )
-    {
-      $node_order = config_get('treemenu_default_testsuite_order');
-    }
-    else
-    {
-      $node_order = $order;
-    }
-    
-    $name = trim($name);
     $ret = array('status_ok' => 1, 'id' => 0, 'msg' => 'ok');
   
-    if ($check_duplicate_name)
+    if($item->check_duplicate_name)
     {
-          $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,null,$parent_id);
+      $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,null,$parent_id);
       if( $check['status'] == 1)
       {
-        if ($action_on_duplicate_name == 'block')
+        if ($item->action_on_duplicate_name == 'block')
         {
           $ret['status_ok'] = 0;
-          // BUGID 2767
           $ret['msg'] = sprintf(lang_get('component_name_already_exists'),$name); 
         } 
         else
         {
           $ret['status_ok'] = 1;      
-          if ($action_on_duplicate_name == 'generate_new')
+          if($item->action_on_duplicate_name == 'generate_new')
           { 
             $ret['status_ok'] = 1;
-            $desired_name=$name;      
+            $desired_name = $name;      
             $name = config_get('prefix_name_for_copy') . " " . $desired_name ;      
-              $ret['msg'] = sprintf(lang_get('created_with_new_name'),$name,$desired_name); 
+            $ret['msg'] = sprintf(lang_get('created_with_new_name'),$name,$desired_name); 
           }
         }
       }       
@@ -170,9 +152,10 @@ class testsuite extends tlObjectWithAttachments
       // get a new id
       $tsuite_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,
                                                  $name,$node_order);
-      $sql = "INSERT INTO {$this->tables['testsuites']} (id,details) " .
-           " VALUES ({$tsuite_id},'" . $this->db->prepare_string($details) . "')";
-                   
+      $sql = " INSERT INTO {$this->tables['testsuites']} (id,details,author_id,creation_ts) " .
+             " VALUES ({$tsuite_id},'" . $this->db->prepare_string($details) . "'," . intval($item->userID) . "," . 
+             $this->db->db_now() .  ")";
+
       $result = $this->db->exec_query($sql);
       if ($result)
       {
@@ -189,46 +172,61 @@ class testsuite extends tlObjectWithAttachments
    *
    * @internal revisions
    */
-  // function update($id, $name, $details, $parent_id=null, $node_order=null)
   function update($item)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    new dBug($debugMsg);
-    new dBug($item);
-    $ret['status_ok']=0;
-    $ret['msg']='';
+    $ret = array('status_ok' => 0, 'reason' => null, 'msg' => '', 'more' => null);
     $check = $this->tree_manager->nodeNameExists($item->name,$this->my_node_type,$item->id,$item->parent_id);
 
     if($check['status']==0)
     {
-      $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .
-             " SET details = '" . $this->db->prepare_string($item->details) . "'" .
-             " WHERE id = {$id}";
+      $where = " WHERE id = " . intval($item->id);  
+      $sql = "/* $debugMsg */ " .
+             " UPDATE {$this->tables['testsuites']} " .
+             " SET details = '" . $this->db->prepare_string($item->details) . "'," .
+             " modification_ts = " . $this->db->db_now() . "," .
+             " updater_id = " . intval($item->userID) .
+             $where . " AND modification_ts = '" . $item->modification_ts . "'";
       $result = $this->db->exec_query($sql);
-        
+       
+      // Check for midair collision and exit if found
+      if( $midAirCollision = ($this->db->Affected_Rows() == 0) )
+      {
+        // we need to abort gently
+        // Using Bugzilla approach, get info about update
+        $ret['status_ok'] = 0;
+        $ret['reason'] = 'midAirCollision';
+        $ret['msg'] = '';
+        $ret['more'] = $this->get_by_id($item->id);
+        return $ret;      
+      }
+      
+      // Till here everything OK.
+      // We can have potentially a 'soft crash' if two or moer people are trying
+      // to add test suites with same name
       if ($result)
       {
         $sql = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
-             " SET name='" .  $this->db->prepare_string($item->name) . "' ";
+               " SET name='" .  $this->db->prepare_string($item->name) . "' ";
         if( !is_null($item->order) && intval($item->order) > 0 )
         {
           $sql .= ', node_order=' . $this->db->prepare_int(intval($item->order));     
         }    
-        $sql .= " WHERE id= {$id}";
+        $sql .= $where;
         $result = $this->db->exec_query($sql);
       }
       
-        $ret['status_ok']=1;
+      $ret['status_ok']=1;
       $ret['msg']='ok';
       if (!$result)
       {
         $ret['msg'] = $this->db->error_msg();
       }
-      }
-      else
-      {
-        $ret['msg']=$check['msg'];
-      }
+    }
+    else
+    {
+      $ret['msg']=$check['msg'];
+    }
     return $ret;
   }
   
@@ -253,11 +251,11 @@ class testsuite extends tlObjectWithAttachments
    */
   function delete($id)
   {
-      $tcase_mgr = New testcase($this->db);
+    $tcase_mgr = new testcase($this->db);
     $tsuite_info = $this->get_by_id($id);
   
-      $testcases=$this->get_children_testcases($id);
-      if (!is_null($testcases))
+    $testcases=$this->get_children_testcases($id);
+    if (!is_null($testcases))
     {
       foreach($testcases as $the_key => $elem)
       {
@@ -265,17 +263,16 @@ class testsuite extends tlObjectWithAttachments
       }
     }  
       
-      // What about keywords ???
-      $this->cfield_mgr->remove_all_design_values_from_node($id);
-      $this->deleteAttachments($id);  //inherited
-      $this->deleteKeywords($id);
+    // What about keywords ???
+    $this->cfield_mgr->remove_all_design_values_from_node($id);
+    $this->deleteAttachments($id);  //inherited
+    $this->deleteKeywords($id);
       
-      $sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
-      $result = $this->db->exec_query($sql);
+    $sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
+    $result = $this->db->exec_query($sql);
       
-      $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id={$id}";
-      $result = $this->db->exec_query($sql);
-  
+    $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id={$id}";
+    $result = $this->db->exec_query($sql);
   }
   
   
@@ -291,17 +288,14 @@ class testsuite extends tlObjectWithAttachments
              details
              name: testsuite name
   
-    @internal Revisions
-    20100904 - added parent_id
-    20100602 - BUGID 3498 
   */
   function get_by_name($name, $parent_id=null)
   {
     $sql = " SELECT TS.*, NH.name, NH.parent_id " .
-         " FROM {$this->tables['testsuites']} TS " .
-         " JOIN {$this->tables['nodes_hierarchy']} NH " .
-         " ON NH.id = TS.id " .
-         " WHERE NH.name = '" . $this->db->prepare_string($name) . "'";
+           " FROM {$this->tables['testsuites']} TS " .
+           " JOIN {$this->tables['nodes_hierarchy']} NH " .
+           " ON NH.id = TS.id " .
+           " WHERE NH.name = '" . $this->db->prepare_string($name) . "'";
     
     if( !is_null($parent_id) )
     {
@@ -323,11 +317,6 @@ class testsuite extends tlObjectWithAttachments
              id:  testsuite id (node id) (can be an array)
              details
              name: testsuite name
-    
-    
-    rev :
-        20100328 - BUGID 2645 - contribution - added parent_id
-          20070324 - added node_order in result set
   
   */
   function get_by_id($id, $order_by = '')
@@ -341,12 +330,12 @@ class testsuite extends tlObjectWithAttachments
     $sql .= $order_by;
     
     
-      $rs = $this->db->fetchRowsIntoMap($sql,'id');
+    $rs = $this->db->fetchRowsIntoMap($sql,'id');
     if( !is_null($rs) )
-      {
+    {
         $rs = count($rs) == 1 ? current($rs) : $rs;
-      }
-      return $rs;
+    }
+    return $rs;
   }
   
   
@@ -453,33 +442,26 @@ class testsuite extends tlObjectWithAttachments
               new/create testsuite operations.
               
   
-    args : smarty [reference]
-           webEditorHtmlNames
-           oWebEditor: rich editor object (today is FCK editor)
-           action
-           parent_id: testsuite parent id on tree.
-           [id]
+    args : 
+    
+           ... (TOBE DONE)  
            [messages]: default null
                        map with following keys
                        [result_msg]: default: null used to give information to user
                        [user_feedback]: default: null used to give information to user
                        
-           // [$userTemplateCfg]: configurations, Example: testsuite template usage
-           [$userTemplateKey]: main Key to access item template configuration
            [$userInput]
                             
     returns: -
   
     rev :
   */
-//  function viewer_edit_new($tproject_id,&$smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, 
-//                           $action, $parent_id,$id=null, $messages=null, $userTemplateKey=null, $userInput=null)
-
-
-  function viewer_edit_new(&$smarty,$gui,$action,$context,$oWebEditor, 
-                           $messages=null,$userInput=null)
+  function viewer_edit_new(&$smarty,$gui,$action,$context,$oWebEditor,$messages=null,$userInput=null)
   {
   
+    echo __METHOD__;
+    new dBug($userInput);
+    
     $internalMsg = array('result_msg' => null,  'user_feedback' => null);
     if( !is_null($messages) )
     {
@@ -499,7 +481,6 @@ class testsuite extends tlObjectWithAttachments
     $gui->containerID = $parent_id;
     $gui->container = null;
     $gui->containerType = 'testsuite';
-    $gui->name = '';
     $gui->user_feedback = $internalMsg['user_feedback'];
 
  
@@ -507,6 +488,8 @@ class testsuite extends tlObjectWithAttachments
     switch($action)
     {
       case 'edit_testsuite':
+      case 'update_testsuite':
+        // update has been added to cope with Mid Air Collision management
         $tpl .= 'containerEdit.tpl';
       break;
 
@@ -518,13 +501,22 @@ class testsuite extends tlObjectWithAttachments
       break;
       
     }
-  
-    if( $useUserInput )
+
+    if($useUserInput)
     {
       $webEditorData = $userInput;
+      $look4 = array('name','container_name');
+      foreach($look4 as $key)
+      {
+        if( isset($userInput[$key]) )
+        {
+          $gui->name = trim($userInput[$key]); 
+        }
+      }
     }
     else
     {
+      $gui->name = '';
       if ($action == 'edit_testsuite')
       {
         $gui->container = $this->get_by_id($id);
@@ -546,7 +538,6 @@ class testsuite extends tlObjectWithAttachments
          $webEditorData = $this->_initializeWebEditors($oWebEditor->inputNames,$oWebEditor->templates);
       } 
     }
-    
     foreach ($oWebEditor->inputNames as $key)
     {
       // Warning:
@@ -557,11 +548,8 @@ class testsuite extends tlObjectWithAttachments
       $smarty->assign($key, $of->CreateHTML());
     }
     
-    // $smarty->assign('cf',$cf_smarty); 
-    // $smarty->assign('parent_info', $parent_info);
-    // $smarty->assign('level', 'testsuite');
-    // $smarty->assign('name',$name);
-    // $smarty->assign('container_data',$the_data);
+    echo 'Before to Render';
+    echo $tpl;
     $smarty->assign('gui',$gui); 
     $smarty->display($tpl);
   }

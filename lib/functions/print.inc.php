@@ -1126,7 +1126,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
         $filters = array('tcversion_id' => $tcInfo['id']);
         $opt = array('details' => 'tcversion');
         $prio_info = $tplan_urgency->getPriority($tplan_id, $filters, $opt);
-        $prio = $tcInfo['id'][$prio_info];
+        $prio = $prio_info[$tcInfo['id']]['priority_level'];
 
         $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' .
                  '<span class="label">'.$labels['priority'].':</span></td>' .

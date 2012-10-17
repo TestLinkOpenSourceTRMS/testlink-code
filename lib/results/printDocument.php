@@ -10,6 +10,7 @@
  * Generate documentation Test report based on Test plan data.
  *
  * @internal revisions
+ * 20121017 - asimon - TICKET 5288 - print importance/priority when printing test specification/plan
  */
 require_once('../../config.inc.php');
 require('../../cfg/reports.cfg.php');
@@ -69,7 +70,7 @@ $order_cfg = array("type" =>'spec_order');
 $pnOptionsAdd = null;
 switch ($doc_info->type)
 {
-	case DOC_TEST_SPEC: 
+	case DOC_TEST_SPEC:
 		$doc_info->type_name = lang_get('title_test_spec');
 		break;
 	
@@ -78,7 +79,7 @@ switch ($doc_info->type)
 		$order_cfg = array("type" =>'exec_order',"tplan_id" => $args->tplan_id);
 		break;
 	
-	case DOC_TEST_REPORT: 
+	case DOC_TEST_REPORT:
 		$doc_info->type_name = lang_get('test_report');
 		
 		// needed to filter spec by test plan
@@ -118,7 +119,8 @@ $subtree = $tree_manager->get_subtree($args->itemID,$my['filters'],$my['options'
 $tproject_info = $tproject->get_by_id($args->tproject_id);
 $doc_info->tproject_name = htmlspecialchars($tproject_info['name']);
 $doc_info->tproject_scope = $tproject_info['notes'];
-
+// TICKET 5288 - print importance/priority when printing test specification/plan
+$doc_info->test_priority_enabled = $dummy['opt']->testPriorityEnabled;
 $user = tlUser::getById($db,$_SESSION['userID']);
 if ($user)
 {
@@ -151,7 +153,11 @@ switch ($doc_info->type)
 	break;
 		
     case DOC_TEST_SPEC: // test specification
-		switch($doc_info->content_range)
+
+        // TICKET 5288 - print importance when printing test specification
+        $printingOptions['importance'] = $doc_info->test_priority_enabled;
+
+        switch($doc_info->content_range)
 		{
 			case 'testproject':
 				$tree = &$subtree;
@@ -185,6 +191,8 @@ switch ($doc_info->type)
 			$executed_qty = 0;
 			$treeForPlatform = array();
 
+            // TICKET 5288 - print priority when printing test plan
+            $printingOptions['priority'] = $doc_info->test_priority_enabled;
 
 			switch($doc_info->content_range)
 			{

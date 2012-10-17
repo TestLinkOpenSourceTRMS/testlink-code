@@ -23,20 +23,27 @@ $smarty = new TLSmarty();
 $smarty->tlTemplateCfg = $templateCfg = templateConfiguration();
 
 list($args,$gui,$grants) = initializeEnv($db);
+
+$identity = new stdClass();
+$identity->id = $args->id;
+$identity->tproject_id = $args->tproject_id;
+
 switch($args->feature)
 {
 	case 'testproject':
 	case 'testsuite':
 		$gui->id = $args->id;
-
+    $gui->grants = $grants;
 		$item_mgr = new $args->feature($db);
 		if($args->feature == 'testproject')
 		{
-			$item_mgr->show($smarty,$gui,$args->id);
+			// $item_mgr->show($smarty,$gui,$args->id);
+			$item_mgr->show($smarty,$gui,$identity);
 		}
 		else
 		{
-			$item_mgr->show($smarty,$args->tproject_id,$gui,$args->id,array('show_mode' => $gui->show_mode));
+			// $item_mgr->show($smarty,$gui,$args->tproject_id,$args->id,array('show_mode' => $gui->show_mode));
+			$item_mgr->show($smarty,$gui,$identity,array('show_mode' => $gui->show_mode));
     }
 	break;
 		
@@ -75,8 +82,10 @@ switch($args->feature)
 	    $gui->direct_link = $item_mgr->buildDirectWebLink($_SESSION['basehref'],$args->id);
 	  }
     $gui->id = $args->id;
-	  $item_mgr->show($smarty,$args->tproject_id,$grants,$gui,$templateCfg->template_dir,
-		  			        $args->id,$args->tcversion_id,$gui->viewerArgs);
+	  //$item_mgr->show($smarty,$args->tproject_id,$grants,$gui,$templateCfg->template_dir,
+		//  			        $args->id,$args->tcversion_id,$gui->viewerArgs);
+		$identity->version_id = $args->tcversion_id;
+	  $item_mgr->show($smarty,$gui,$identity);
 	break;
 
   default:

@@ -6,11 +6,11 @@
  * test project commands
  *
  * @filesource  projectCommands.class.php
- * @package   TestLink
- * @author    Francisco Mancardi - francisco.mancardi@gmail.com
+ * @package     TestLink
+ * @author      Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright   2007-2012, TestLink community 
- * @link    http://www.teamst.org/index.php
- * @since 2.0
+ * @link        http://www.teamst.org/index.php
+ * @since       2.0
  *
  * @internal revisions
  * @since 2.0

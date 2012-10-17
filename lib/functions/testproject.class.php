@@ -536,11 +536,11 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
    * @internal revision
    *
    **/
-  function show(&$smarty,$guiObj,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
+  function show(&$smarty,$guiObj,$identity,$sqlResult='', $action = 'update',$modded_item_id = 0)
   {
   	$gui = $guiObj;
   
-  	$gui->container_data = $this->get_by_id($id);
+  	$gui->container_data = $this->get_by_id($identity->id);
    	$gui->moddedItem = $gui->container_data;
    	$gui->level = 'testproject';
    	$gui->page_title = lang_get('testproject');
@@ -559,14 +559,14 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
   
     $gui->attach->infoSet = null;
     $gui->attach->gui = null;
-    list($gui->attach->infoSet,$gui->attach->gui) = $this->buildAttachSetup($id);
+    list($gui->attach->infoSet,$gui->attach->gui) = $this->buildAttachSetup($identity->id);
     $gui->attach->gui->display = TRUE;
     $gui->attach->enabled = $gui->attach->gui->enabled;
   
   	
    	
    	$exclusion = array( 'testcase', 'me', 'testplan' => 'me', 'requirement_spec' => 'me');
-   	$gui->canDoExport = count($this->tree_manager->get_children($id,$exclusion)) > 0;
+   	$gui->canDoExport = count($this->tree_manager->get_children($identity->id,$exclusion)) > 0;
   	if ($modded_item_id)
   	{
   		$gui->moddedItem = $this->get_by_id($modded_item_id);

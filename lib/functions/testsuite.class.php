@@ -373,13 +373,15 @@ class testsuite extends tlObjectWithAttachments
    * returns: -
    *
    **/
-  function show(&$smarty,$tproject_id,$guiObj,$id, $options=null,
+  // function show(&$smarty,$guiObj,$tproject_id,$id, $options=null,
+  //              $sqlResult = '', $action = 'update',$modded_item_id = 0)
+  function show(&$smarty,$guiObj,$identity,$options=null,
                 $sqlResult = '', $action = 'update',$modded_item_id = 0)
   {
     
     // need to understand why sometimes $guiObj can be null
     $gui = is_null($guiObj) ? new stdClass() : $guiObj;
-    $gui->id = $id;
+    $gui->id = $identity->id;
     $gui->cf = '';
     $gui->sqlResult = '';
     $gui->sqlAction = '';
@@ -400,15 +402,15 @@ class testsuite extends tlObjectWithAttachments
       $gui->sqlAction = $action;
     }
     
-    $gui->container_data = $this->get_by_id($id);
+    $gui->container_data = $this->get_by_id($identity->id);
     $gui->moddedItem = $gui->container_data;
     if ($modded_item_id)
     {
       $gui->moddedItem = $this->get_by_id($modded_item_id);
     }
 
-    $gui->cf = $this->html_table_of_custom_field_values($id);
-    $gui->keywords_map = $this->get_keywords_map($id,' ORDER BY keyword ASC ');
+    $gui->cf = $this->html_table_of_custom_field_values($identity->id);
+    $gui->keywords_map = $this->get_keywords_map($identity->id,' ORDER BY keyword ASC ');
 
     $gui->attach = new stdClass();
     $gui->attach->itemID = $gui->id;
@@ -416,21 +418,17 @@ class testsuite extends tlObjectWithAttachments
 
     $gui->attach->infoSet = null;
     $gui->attach->gui = null;
-    list($gui->attach->infoSet,$gui->attach->gui) = $this->buildAttachSetup($id,$my['options']);
+    list($gui->attach->infoSet,$gui->attach->gui) = $this->buildAttachSetup($identity->id,$my['options']);
     $gui->attach->gui->display=TRUE;
     $gui->attach->enabled = $gui->attach->gui->enabled;
     
     $gui->idpage_title = lang_get('testsuite');
     $gui->level = 'testsuite';
-    $gui->tproject_id = $tproject_id;
+    $gui->tproject_id = $identity->tproject_id;
     
-    $gui->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id=$tproject_id " .
+    $gui->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id=$identity->tproject_id " .
                              ' target="mainframe" class="bold" ' .
                              ' title="' . lang_get('menu_manage_keywords') . '"';
-    
-    
-    
-    //new dBug($gui);
     $smarty->assign('gui',$gui);
     $smarty->display($smarty->tlTemplateCfg->template_dir . 'containerView.tpl');
   }
@@ -458,10 +456,6 @@ class testsuite extends tlObjectWithAttachments
   */
   function viewer_edit_new(&$smarty,$gui,$action,$context,$oWebEditor,$messages=null,$userInput=null)
   {
-  
-    echo __METHOD__;
-    new dBug($userInput);
-    
     $internalMsg = array('result_msg' => null,  'user_feedback' => null);
     if( !is_null($messages) )
     {
@@ -547,9 +541,6 @@ class testsuite extends tlObjectWithAttachments
       $of->Value = isset($webEditorData[$key]) ? $webEditorData[$key] : null;
       $smarty->assign($key, $of->CreateHTML());
     }
-    
-    echo 'Before to Render';
-    echo $tpl;
     $smarty->assign('gui',$gui); 
     $smarty->display($tpl);
   }

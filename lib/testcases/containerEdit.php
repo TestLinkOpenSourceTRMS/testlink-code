@@ -25,9 +25,6 @@ $tcase_mgr = new testcase($db);
 
 $assign_gui = true;
 $refreshTree = false;
-echo 'Io sono ' . __FILE__;
-
-new dBug($_REQUEST);
 list($args,$gui) = initializeEnv($db,$tree_mgr);
 $keywordSet = array('testproject' => $tproject_mgr->get_keywords_map($args->tproject_id),
                     'testsuite' => null);
@@ -37,16 +34,11 @@ if($args->action=='edit_testsuite')
   $keywordSet['testsuite'] = $tsuite_mgr->get_keywords_map($args->testsuiteID," ORDER BY keyword ASC ");
 }
 
-
-
 $gui_cfg = config_get('gui');
-
 $tpl = null;
 $smarty = new TLSmarty();
 $smarty->tlTemplateCfg = templateConfiguration();
 $smarty->assign('editorType',$editorCfg['type']);
-
-new dBug($args);
 switch($args->action)
 {
 	case 'edit_testsuite':
@@ -99,7 +91,7 @@ switch($args->action)
   break;
 
   case 'do_copy':
-    copyTestSuite($smarty,$template_dir,$tsuite_mgr,$args,$gui);
+    copyTestSuite($smarty,$tsuite_mgr,$args,$gui);
   break;
 
   case 'update_testsuite':
@@ -113,7 +105,10 @@ switch($args->action)
   	  $gui->id = $args->testsuiteID;
 	  	$gui->page_title = lang_get('container_title_testsuite');
 		  $gui->refreshTree = $args->refreshTree;
-      $tsuite_mgr->show($smarty,$args->tproject_id,$gui,$args->testsuiteID);
+     	$identity = new stdClass();
+     	$identity->id = $args->testsuiteID;
+     	$identity->tproject_id = $args->tproject_id;
+     	$tsuite_mgr->show($smarty,$gui,$identity);
     }
     else
     {
@@ -124,7 +119,6 @@ switch($args->action)
       {
         $foe = new tlUser($op['more']['updater_id']);
 			  $foe->readFromDB($db);
-        new dBug($foe);
         $gui->midAirCollisionMsg['main'] = sprintf(lang_get('collision_detected_some_one_else'),
                                                    $op['more']['modification_ts'],$foe->login,$foe->emailAddress);
         $gui->midAirCollisionMsg['details'] = sprintf(lang_get('collision_detected_choices'),$foe->login);
@@ -134,53 +128,53 @@ switch($args->action)
     }
   break;
 
+  case 'do_move_tcase_set':
+    moveTestCases($smarty,$template_dir,$tsuite_mgr,$tree_mgr,$args);
+  break;
+
+  case 'do_copy_tcase_set':
+    $op = copyTestCases($smarty,$template_dir,$tsuite_mgr,$tcase_mgr,$args);
+    $refreshTree = $op['refreshTree'];
+    moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,$op['userfeedback']);
+  break;
 
 
-    case 'do_move_tcase_set':
-    	moveTestCases($smarty,$template_dir,$tsuite_mgr,$tree_mgr,$args);
-    	break;
+  case 'delete_testcases':
+    $args->refreshTree = false;
+    $assign_gui = false;
+    deleteTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$tsuite_mgr,$tcase_mgr,$args);
+  break;
 
-    case 'do_copy_tcase_set':
-    	$op = copyTestCases($smarty,$template_dir,$tsuite_mgr,$tcase_mgr,$args);
-    	$refreshTree = $op['refreshTree'];
-    	moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,$op['userfeedback']);
-    	break;
+  case 'do_delete_testcases':
+    $args->refreshTree = true;
+    $assign_gui = false;
+    doDeleteTestCases($db,$args->tcaseSet,$tcase_mgr);
+    deleteTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$tsuite_mgr,$tcase_mgr,$args,
+    				              lang_get('all_testcases_have_been_deleted'));
+  break;
 
-
-    case 'delete_testcases':
-        $args->refreshTree = false;
-    	$assign_gui = false;
-    	deleteTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$tsuite_mgr,$tcase_mgr,$args);
-    	break;
-
-    case 'do_delete_testcases':
-        $args->refreshTree = true;
-    	  $assign_gui = false;
-        doDeleteTestCases($db,$args->tcaseSet,$tcase_mgr);
-    	  deleteTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$tsuite_mgr,$tcase_mgr,$args,
-    						              lang_get('all_testcases_have_been_deleted'));
-    	break;
-
-    // BUGID 3639 
 	case 'reorder_testcases': 
-    	 reorderTestCasesByCriteria($args,$tsuite_mgr,$tree_mgr,$sortCriteria);
-		   // $guiObj = new stdClass();  
-		   // $guiObj->btn_reorder_testcases = $btn_reorder_testcases;
-  	   // $gui->attachments = $tsuite_mgr->getAttachmentInfos($args->testsuiteID);
-		   $gui->refreshTree = true;
-	  	 $gui->id = $args->testsuiteID;
-		   $gui->page_title = lang_get('container_title_testsuite');
-     	 $tsuite_mgr->show($smarty,$args->tproject_id,$gui,$args->testsuiteID,null,null);
-    	 break;
+    reorderTestCasesByCriteria($args,$tsuite_mgr,$tree_mgr,$sortCriteria);
+    $gui->refreshTree = true;
+	  $gui->id = $args->testsuiteID;
+		$gui->page_title = lang_get('container_title_testsuite');
+    $identity = new stdClass();
+    $identity->id = $args->testsuiteID;
+    $identity->tproject_id = $args->tproject_id;
+    $tsuite_mgr->show($smarty,$gui,$identity);
+  break;
 	
 
 	case 'reorder_testsuites_alpha': 
     reorderTestSuitesDictionary($args,$tree_mgr,$args->testsuiteID);
 		$gui->refreshTree = true;
-  	// $gui->attachments = $tsuite_mgr->getAttachmentInfos($args->testsuiteID);
 	  $gui->id = $args->testsuiteID;
 	  $gui->page_title = lang_get('container_title_testsuite');
-    $tsuite_mgr->show($smarty,$args->tproject_id,$gui,$args->testsuiteID,null,null);
+
+    $identity = new stdClass();
+    $identity->id = $args->testsuiteID;
+    $identity->tproject_id = $args->tproject_id;
+    $tsuite_mgr->show($smarty,$gui,$identity);
   break;
 
 	case 'reorder_testproject_testsuites_alpha':
@@ -612,26 +606,29 @@ function updateTestSuite(&$tsuiteMgr,&$argsObj,&$hash)
   returns:
 
 */
-function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj,$guiObj)
+function copyTestSuite(&$smartyObj,&$tsuiteMgr,$argsObj,$guiObj)
 {
-    $exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
+  $exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
   	
-  	$options = array();
+  $options = array();
 	$options['check_duplicate_name'] = config_get('check_names_for_duplicates');
-  	$options['action_on_duplicate_name'] = config_get('action_on_duplicate_name');
-  	$options['copyKeywords'] = $argsObj->copyKeywords;
+  $options['action_on_duplicate_name'] = config_get('action_on_duplicate_name');
+  $options['copyKeywords'] = $argsObj->copyKeywords;
 
-  	$op=$tsuiteMgr->copy_to($argsObj->objectID, $argsObj->containerID, $argsObj->userID,$options);
+  $op=$tsuiteMgr->copy_to($argsObj->objectID, $argsObj->containerID, $argsObj->userID,$options);
 	if( $op['status_ok'] )
 	{
-	    $tsuiteMgr->tree_manager->change_child_order($argsObj->containerID,$op['id'],
-	                                                 $argsObj->target_position,$exclude_node_types);
+    $tsuiteMgr->tree_manager->change_child_order($argsObj->containerID,$op['id'],
+	                                               $argsObj->target_position,$exclude_node_types);
 	}
 	
 	$guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
 	$guiObj->id = $argsObj->objectID;
-	
-	$tsuiteMgr->show($smartyObj,$argsObj->tproject_id,$guiObj,$template_dir,$argsObj->objectID,null,'ok');
+
+	$identity = new stdClass();
+	$identity->tproject_id = $argsObj->tproject_id;
+	$identity->id = $argsObj->objectID;
+	$tsuiteMgr->show($smartyObj,$guiObj,$identity);
 }
 
 /*
@@ -650,8 +647,11 @@ function moveTestSuite(&$smartyObj,&$tprojectMgr,$argsObj,$guiObj)
   $tprojectMgr->tree_manager->change_child_order($argsObj->containerID,$argsObj->objectID,
                                                  $argsObj->target_position,$exclude_node_types);
 
-	$guiObj->id = $argsObj->tproject_id;
-  $tprojectMgr->show($smartyObj,$guiObj,$argsObj->tproject_id,null,'ok');
+	
+	$identity = new stdClass();
+	$identity->id = $guiObj->id = $argsObj->tproject_id;
+  // $tprojectMgr->show($smartyObj,$guiObj,$argsObj->tproject_id,null,'ok');
+  $tprojectMgr->show($smartyObj,$guiObj,$identity);
 }
 
 
@@ -800,20 +800,25 @@ function copyTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$tcaseMgr,$argsObj
   returns: -
 
 */
-function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
+function moveTestCases(&$smartyObj,&$tsuiteMgr,&$treeMgr,$argsObj)
 {
   if(sizeof($argsObj->tcaseSet) > 0)
   {
-    $status_ok = $treeMgr->change_parent($argsObj->tcaseSet,$argsObj->containerID);
-    $user_feedback= $status_ok ? '' : lang_get('move_testcases_failed');
-
     // objectID - original container
     $guiObj = new stdClass();
    	$guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
 		$guiObj->id = $argsObj->objectID;
 		
 		$guiObj->refreshTree = true;
-    $tsuiteMgr->show($smartyObj,$argsObj->tproject_id,$guiObj,$argsObj->objectID,null,$user_feedback);
+		$guiObj->user_feedback = $user_feedback;
+
+    $status_ok = $treeMgr->change_parent($argsObj->tcaseSet,$argsObj->containerID);
+    $guiObj->user_feedback = $status_ok ? '' : lang_get('move_testcases_failed');
+  	
+  	$identity = new stdClass();
+	  $identity->tproject_id = $argsObj->tproject_id;
+	  $identity->id = $argsObj->objectID;
+	  $tsuiteMgr->show($smartyObj,$guiObj,$identity);
   }
 }
 
@@ -1127,19 +1132,14 @@ function initializeGui(&$dbHand,&$argsObj)
   $guiObj->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
   $guiObj->page_title = lang_get('container_title_' . $argsObj->containerType);
 
-
+  $guiObj->grants = new stdClass();
   $guiObj->grants->mgt_modify_tc = $argsObj->userObj->hasRight($dbHand,'mgt_modify_tc',$argsObj->tproject_id);
-  
-  new dBug($guiObj, array('label' => __FUNCTION__));
-
   return $guiObj;
 }
 
 
 function renderTestSuiteForManagement(&$tplEngine,&$argsObj,&$guiObj,&$tsuiteMgr,$keywordSet,$userInput=null)
 {
-  echo __FUNCTION__ . '<br>';
-  echo 'action:' . $argsObj->action . '<br>';
   $guiObj->optionTransfer = tlKeyword::optionTransferGuiControl();
   $guiObj->optionTransfer->setNewRightInputName('assigned_keyword_list');
   $guiObj->optionTransfer->initFromPanel(null,lang_get('available_kword'));

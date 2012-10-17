@@ -15,6 +15,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20121017 - asimon - TICKET 5288 - print priority when printing test plan
  * 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
  *
  */ 
@@ -814,6 +815,7 @@ function gendocGetUserName(&$db, $userId)
  * @return string generated html code
  *
  * @internal revisions
+ * 20121017 - asimon - TICKET 5288 - print priority when printing test plan
  * 20110304 - franciscom - BUGID 4286: Option to print single test case
  *						   added missing info
  *						   version number, creation date, modifier+date
@@ -835,6 +837,8 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
 	
     static $req_mgr;
 	static $tc_mgr;
+    // TICKET 5288 - print priority when printing test plan
+    static $tplan_urgency;
 	static $labels;
 	static $tcase_prefix;
     static $userMap = array();
@@ -856,6 +860,8 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
     {
     	$tables = tlDBObject::getDBTables(array('executions','builds'));
  	    $tc_mgr = new testcase($db);
+        // TICKET 5288 - print priority when printing test plan
+        $tplan_urgency = new testPlanUrgency($db);
  	    list($cfg,$labels) = initRenderTestCaseCfg($tc_mgr);
 
 	    if(!is_null($prefix))
@@ -1101,8 +1107,23 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
 				 $cfg['importance'][$tcInfo['importance']];
 		$code .= "</td></tr>\n";
     }
-	
-	
+
+    // TICKET 5288 - print priority when printing test plan
+    if (isset($options['priority']) && $options['priority'])
+    {
+        // Get priority of this tc version for this test plan by using testplanUrgency class.
+        // Is there maybe a better method than this one?
+        $filters = array('tcversion_id' => $tcInfo['id']);
+        $opt = array('details' => 'tcversion');
+        $prio_info = $tplan_urgency->getPriority($tplan_id, $filters, $opt);
+        $prio = $tcInfo['id'][$prio_info];
+
+        $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' .
+            '<span class="label">'.$labels['priority'].':</span></td>' .
+            '<td colspan="' .  ($cfg['tableColspan']-1) . '">' .
+            $cfg['priority'][$prio];
+        $code .= "</td></tr>\n";
+    }
 	
     // Spacer
     $code .= '<tr><td colspan="' .  $cfg['tableColspan'] . '">' . "</td></tr>";
@@ -1382,6 +1403,9 @@ function buildTestPlanMetrics($statistics)
  * on renderTestCaseForPrinting()
  * 
  * @return map with configuration and labels
+ *
+ * @internal revisions:
+ * 20121017 - asimon - TICKET 5288 - print priority when printing test plan
  */
 
 function initRenderTestCaseCfg(&$tcaseMgr)
@@ -1407,12 +1431,14 @@ function initRenderTestCaseCfg(&$tcaseMgr)
 
     // 20100306 - contribution by romans
 	// BUGID 0003235: Printing Out Test Report Shows empty Column Headers for "Steps" and "Step Actions"
+    // TICKET 5288 - print priority when printing test plan
     $labelsKeys=array('last_exec_result', 'title_execution_notes', 'none', 'reqs','author', 'summary',
                       'steps', 'expected_results','build', 'test_case', 'keywords','version', 
                       'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions',
                       'step_number', 'step_actions', 'last_edit', 'created_on', 'execution_type',
                       'execution_type_manual','execution_type_auto','importance',
-                      'high_importance','medium_importance','low_importance');
+                      'high_importance','medium_importance','low_importance',
+                      'priority', 'high_priority','medium_priority','low_priority');
                       
     $labelsQty=count($labelsKeys);         
     for($idx=0; $idx < $labelsQty; $idx++)
@@ -1423,7 +1449,12 @@ function initRenderTestCaseCfg(&$tcaseMgr)
     $config['importance'] = array(HIGH => $labels['high_importance'],
     							  MEDIUM => $labels['medium_importance'],
     							  LOW => $labels['low_importance']);
-    
+
+    // TICKET 5288 - print priority when printing test plan
+    $config['priority'] = array(HIGH => $labels['high_priority'],
+                                MEDIUM => $labels['medium_priority'],
+                                LOW => $labels['low_priority']);
+
     return array($config,$labels);
 }
 

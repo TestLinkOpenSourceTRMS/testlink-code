@@ -14,6 +14,7 @@
  *
  * @internal revisions
  * @since 1.9.4
+ * 20121017 - asimon - TICKET 5288 - print importance/priority when printing test specification/plan
  * 20111007 - franciscom - TICKET 4766: Requirements Report - Display Revision and Version
  *
  */
@@ -67,6 +68,9 @@ switch ($doc_info->type)
 	break;
 		
     case DOC_TEST_SPEC:
+        // TICKET 5288 - print importance when printing test specification
+        $printingOptions['importance'] = $doc_info->test_priority_enabled;
+
 		switch($doc_info->content_range)
 		{
 			case 'testsuite':
@@ -96,6 +100,9 @@ switch ($doc_info->type)
 			$execid_filter = null;
 			$executed_qty = 0;
 			$treeForPlatform = array();
+
+            // TICKET 5288 - print priority when printing test plan
+            $printingOptions['priority'] = $doc_info->test_priority_enabled;
 
 			switch($doc_info->content_range)
 			{
@@ -356,7 +363,8 @@ function getDecode(&$treeMgr)
 
 /** 
  * 
- * 
+ * @internal revisions:
+ * 20121017 - TICKET 5288 - print importance/priority when printing test specification/plan
  **/
 function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
 {
@@ -415,6 +423,9 @@ function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
 	$dummy = $tprojectMgr->get_by_id($argsObj->tproject_id);
 	$doc->tproject_name = htmlspecialchars($dummy['name']);
 	$doc->tproject_scope = $dummy['notes'];
+
+    // TICKET 5288 - print importance/priority when printing test specification/plan
+    $doc->test_priority_enabled = $dummy['opt']->testPriorityEnabled;
 
 	return array($doc,$my);
 }

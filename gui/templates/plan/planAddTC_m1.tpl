@@ -4,6 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 @since 1.9.4
+20121019 - asimon - TICKET 5294: it is not possible to remove an inactive tc version from a testplan with platforms
 20111012 - franciscom - TICKET 3939: Add warning message when removing EXECUTED test cases from a test plan
 20110823 - franciscom - TICKET 4715: can_remove_executed doesn't work when Platforms are used
 20110706 - Julian - BUGID 4652 - add link to test execution history
@@ -458,8 +459,10 @@ Ext.onReady(function(){
       			        <td>{$platform.name|escape}</td>
   				          <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
   				          {if $gui->priorityEnabled} <td>&nbsp;</td> {/if}
-  				          
-  				          {if $is_active == 1 && isset($tcase.feature_id[$platform.id])}
+
+                          {* TICKET 5294: it is not possible to remove an inactive tc version from a testplan with platforms *}
+  				          {*if $is_active == 1 && isset($tcase.feature_id[$platform.id])*}
+                          {if isset($tcase.feature_id[$platform.id])}
   	      			      <td>&nbsp;</td>
   	   				        <td>
   	      			    	{* added isset() on next section to avoid warning on event log *}
@@ -472,7 +475,7 @@ Ext.onReady(function(){
             			  	  	{/if}      
                    			{/if} 
             	   			{if $show_remove_check}
-  	   				            <input type='checkbox' name='{$rm_cb}[{$tcID}][{$platform.id}]' id='{$rm_cb}{$tcID}[{$platform.id}]' 
+  	   				            <input type='checkbox' name='{$rm_cb}[{$tcID}][{$platform.id}]' id='{$rm_cb}{$tcID}[{$platform.id}]'
   	      			  		           value='{$linked_version_id}' />
   				   			{else}
             		    		&nbsp;&nbsp;
@@ -480,6 +483,10 @@ Ext.onReady(function(){
                         	{if isset($tcase.executed[$platform.id]) && $tcase.executed[$platform.id] eq 'yes'}&nbsp;&nbsp;&nbsp;
    				                  <img src="{$tlImages.executed}" title="{$gui->warning_msg->executed}" />
                         	{/if}
+
+                            {* TICKET 5294: it is not possible to remove an inactive tc version from a testplan with platforms *}
+                            {* display "inactive" label when testcase has no active version *}
+                            {if $is_active eq 0}&nbsp;&nbsp;&nbsp;{$labels.inactive_testcase}{/if}
   	                  </td>
   	                  <td align="center" title="{$labels.info_added_on_date}">{localize_date d=$tcase.linked_ts[$platform.id]}</td>
                     {/if}

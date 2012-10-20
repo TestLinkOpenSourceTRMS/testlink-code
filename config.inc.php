@@ -1418,8 +1418,10 @@ if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
 
 if(false !== $serverLanguage)
 {
-	if (array_key_exists($serverLanguage,$g_locales))
+	if (array_key_exists($serverLanguage,$tlCfg->locales))
+	{
 		$tlCfg->default_language = $serverLanguage;
+	}	
 }
 define ('TL_DEFAULT_LOCALE', $tlCfg->default_language);
 

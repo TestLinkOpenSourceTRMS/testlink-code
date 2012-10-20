@@ -4,6 +4,7 @@
  *
  * @filesource	jirasoapInterface.class.php
  * @author Francisco Mancardi
+ * @since 1.9.4
  *
  *
  * @internal IMPORTANT NOTICE
@@ -12,8 +13,8 @@
  *			 not how is identified internally at DB	level on TestLink
  *
  * @internal revisions
- * @since 1.9.4
- * 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis 
+ * @since 1.9.5
+ * 20121020 - franciscom - TICKET 5290: Doesn´t show description of bugs from BTS (JIRA)
 **/
 class jirasoapInterface extends issueTrackerInterface
 {
@@ -35,6 +36,7 @@ class jirasoapInterface extends issueTrackerInterface
 	function __construct($type,$config)
 	{
 		$this->interfaceViaDB = false;
+	  $this->methodOpt = array('buildViewBugLink' => array('addSummary' => true, 'colorByStatus' => true));
 	  $this->setCfg($config);
 		$this->completeCfg();
 	  $this->connect();

@@ -4,16 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource	reqViewRevision.php
- * @author 		francisco.mancardi@gmail.com
- * @package 	TestLink
- * @copyright 	2008-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @author 		  francisco.mancardi@gmail.com
+ * @package 	  TestLink
+ * @copyright 	2008-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
  */
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once('attachments.inc.php');
 require_once('requirements.inc.php');
 require_once('users.inc.php');
 testlinkInitPage($db);

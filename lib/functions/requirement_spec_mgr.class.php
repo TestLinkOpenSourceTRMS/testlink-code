@@ -4,19 +4,16 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	requirement_mgr.class.php
- * @package  	TestLink
- * @author 	 	Francisco Mancardi <francisco.mancardi@gmail.com>
- * @copyright 	2007-2011, TestLink community 
+ * @package  	  TestLink
+ * @author 	 	  Francisco Mancardi <francisco.mancardi@gmail.com>
+ * @copyright 	2007-2012, TestLink community 
  *
  * 
  * Manager for requirement specification (requirement container)
  *
  * @internal revisions
- * 20110903 - franciscom - TICKET 4661: Req. Spec Revisions
- * 20110817 - franciscom - TICKET 4360
  *
-*/
-require_once( dirname(__FILE__) . '/attachments.inc.php' );
+ */
 require_once( dirname(__FILE__) . '/requirements.inc.php' );
 
 class requirement_spec_mgr extends tlObjectWithAttachments

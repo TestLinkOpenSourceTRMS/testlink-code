@@ -40,7 +40,8 @@ var warning_empty_title = "{$atlabels.enter_attachment_title|escape:'javascript'
              size="{#ATTACHMENT_TITLE_SIZE#}" />
     </p>
     <div class="groupBtn">
-      <input type="submit" value="{$atlabels.btn_upload_file}" onclick="return attachmentDlg_onSubmit({$gsmarty_attachments->allow_empty_title eq true})" />
+      <input type="submit" value="{$atlabels.btn_upload_file}" 
+             onclick="return attachmentDlg_onSubmit({$tlCfg->attachments->emptyTitleAllowed})" />
       <input type="button" value="{$atlabels.btn_cancel}" onclick="window.close()" />
     </div>
   </form>

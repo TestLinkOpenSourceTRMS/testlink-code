@@ -17,7 +17,6 @@
 /** related functionality */
 require_once( dirname(__FILE__) . '/requirement_mgr.class.php' );
 require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
-require_once( dirname(__FILE__) . '/attachments.inc.php' );
 require_once( dirname(__FILE__) . '/users.inc.php' );
 
 /** list of supported format for Test case import/export */

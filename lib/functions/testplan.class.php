@@ -21,7 +21,6 @@
 /** related functionality */
 require_once( dirname(__FILE__) . '/tree.class.php' );
 require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
-require_once( dirname(__FILE__) . '/attachments.inc.php' );
 
 /**
  * class to coordinate and manage Test Plans

@@ -7,23 +7,22 @@
  * @author francisco.mancardi@gmail.com
  * 
  *
- *	@internal revision
+ * @internal revisions
  */
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once('attachments.inc.php');
 require_once('requirements.inc.php');
 require_once('users.inc.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
 $args = init_args($db);
 $gui = initialize_gui($db,$args);
 $smarty = new TLSmarty();
-
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
 /**
  *
  */
@@ -41,12 +40,12 @@ function init_args(&$dbHandler)
 	{
 		$mgr = new tree($dbHandler);
 		$dummy = $mgr->get_node_hierarchy_info($args->tproject_id);
-    	$args->tproject_name = $dummy['name'];		
+   	$args->tproject_name = $dummy['name'];		
 	}
-    $user = $_SESSION['currentUser'];
+  $user = $_SESSION['currentUser'];
 	$args->userID = $user->dbID;
 	
-    return $args;
+  return $args;
 }
 
 /**

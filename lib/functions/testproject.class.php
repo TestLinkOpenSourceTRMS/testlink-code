@@ -14,9 +14,6 @@
  *
  **/
 
-/** related functions */ 
-require_once('attachments.inc.php');
-
 /**
  * class is responsible to get project related data and CRUD test project
  * @package 	TestLink
@@ -527,16 +524,11 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
   /**
    * Displays smarty template to show test project info to users.
    *
-   * @param type $smarty [ref] smarty object
-   * @param type $id test project
-   * @param type $sqlResult [default = '']
-   * @param type $action [default = 'update']
-   * @param type $modded_item_id [default = 0]
    *
-   * @internal revision
-   *
+   * @internal revisions
+   * 
    **/
-  function show(&$smarty,$guiObj,$identity,$sqlResult='', $action = 'update',$modded_item_id = 0)
+  function show(&$smarty,$guiObj,$identity,$sqlResult='')
   {
   	$gui = $guiObj;
 
@@ -544,11 +536,10 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
    	$gui->canDoExport = $this->tree_manager->hasChildOfType($identity->id,'testsuite');
 
     $gui->actions = new stdClass();
-    $gui->actions->tcImport = 'lib/testcases/tcImport.php?tproject_id=' . $indentity['id'];
-    $gui->actions->importTestSuite = $smarty->baseHREF . 'lib/testcases/tcImport.php?tproject_id=' . $indentity['id'] .
+    $gui->actions->importTestSuite = $smarty->baseHREF . 'lib/testcases/tcImport.php?tproject_id=' . $identity->id .
                                      '&target=testproject';
 
-    $gui->actions->exportAllTestSuites = $smarty->baseHREF . 'lib/testcases/tcExport.php?tproject_id=' . $indentity['id'] .
+    $gui->actions->exportAllTestSuites = $smarty->baseHREF . 'lib/testcases/tcExport.php?tproject_id=' . $identity->id .
                                      '&useRecursion=1';
     
   	$gui->tproject = $this->get_by_id($identity->id);
@@ -571,13 +562,7 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
     list($gui->attach->infoSet,$gui->attach->gui) = $this->buildAttachSetup($identity->id);
     $gui->attach->gui->display = TRUE;
     $gui->attach->enabled = $gui->attach->gui->enabled;
-  	
-  	//if ($modded_item_id)
-  	//{
-  	//$gui->moddedItem = $this->get_by_id($modded_item_id);
-  	//}
     $smarty->assign('gui', $gui);	
-  	// $smarty->display($smarty->tlTemplateCfg->template_dir . 'containerView.tpl');
   	$smarty->display('testsuites/testSpecViewTestProject.tpl');
   }
 

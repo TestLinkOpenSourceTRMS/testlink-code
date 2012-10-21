@@ -9,7 +9,7 @@
  * 	Normally launched from tree navigator.
  *	Also called when search option on Navigation Bar is used
  *
- *	@internal revision
+ *	@internal revisions
  *  @since 2.0
  *  20121004 - asimon - TICKET 5265: test case search displays only the first version of all test cases
  *  20120909 - franciscom - attachment management refactoring
@@ -17,7 +17,6 @@
  */
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once('testsuite.class.php');
 testlinkInitPage($db);
 $smarty = new TLSmarty();
 $smarty->tlTemplateCfg = $templateCfg = templateConfiguration();
@@ -37,12 +36,10 @@ switch($args->feature)
 		$item_mgr = new $args->feature($db);
 		if($args->feature == 'testproject')
 		{
-			// $item_mgr->show($smarty,$gui,$args->id);
 			$item_mgr->show($smarty,$gui,$identity);
 		}
 		else
 		{
-			// $item_mgr->show($smarty,$gui,$args->tproject_id,$args->id,array('show_mode' => $gui->show_mode));
 			$item_mgr->show($smarty,$gui,$identity,array('show_mode' => $gui->show_mode));
     }
 	break;
@@ -65,8 +62,8 @@ switch($args->feature)
 		  {
 			  $gui->warning_msg = $args->id == 0 ? lang_get('testcase_does_not_exists') : lang_get('prefix_does_not_exists');
  		  }
-          // TICKET 5265: test case search displays only the first version of all test cases
-          $args->tcversion_id = testcase::ALL_VERSIONS;
+      // TICKET 5265: test case search displays only the first version of all test cases
+      $args->tcversion_id = testcase::ALL_VERSIONS;
 	  }
 
 	  if( $args->id > 0 )
@@ -82,8 +79,6 @@ switch($args->feature)
 	    $gui->direct_link = $item_mgr->buildDirectWebLink($_SESSION['basehref'],$args->id);
 	  }
     $gui->id = $args->id;
-	  //$item_mgr->show($smarty,$args->tproject_id,$grants,$gui,$templateCfg->template_dir,
-		//  			        $args->id,$args->tcversion_id,$gui->viewerArgs);
 		$identity->version_id = $args->tcversion_id;
 	  $item_mgr->show($smarty,$gui,$identity);
 	break;

@@ -7,11 +7,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {if $gui->grants->mgt_modify_tc == 'yes' || $gui->sqlResult == ''}
 	<fieldset class="groupBtn">
 	<h2>{$labels.testsuite_operations}</h2>
-	<form method="post" action="lib/testcases/containerEdit.php">
+	<form method="post" action="lib/testcases/testSuiteEdit.php">
 	  <input type="hidden" name="containerType" id="containerType" value="{$gui->level}" />
-		<input type="hidden" name="containerID" value="{$gui->container_data.id}" />
-		<input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
-		<input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
+		<input type="hidden" name="testsuiteID" value="{$gui->tsuite.id}" />
+		<input type="hidden" name="testsuiteName" value="{$gui->tsuite.name|escape}" />
 		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 
 		<input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />

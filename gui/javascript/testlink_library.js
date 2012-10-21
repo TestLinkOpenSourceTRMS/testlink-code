@@ -193,6 +193,8 @@ function EP(tproject_id,tplan_id,id)
 {
 	var _FUNCTION_NAME_="EP";
 
+	// alert(menuUrl);
+		
 	// get checkboxes status
 	var pParams = tree_getPrintPreferences();
 	var action_url = fRoot+menuUrl+"?print_scope=test_specification" + "&edit=testproject" +
@@ -203,17 +205,6 @@ function EP(tproject_id,tplan_id,id)
 	parent.workframe.location = action_url;
 }
 
-///*
-//function: PL
-//          printing of Test Plan for BUGID 3049
-//args: id
-//*/
-//function PL(id)
-//{
-//	var _FUNCTION_NAME_="PL";
-//	var action_url = fRoot + 'lib/testcases/archiveData.php?edit=testplan&level=testplan&id=' + id;
-//	parent.workframe.location = action_url;
-//}
 
 /*
   function: Edit Test Suite or launch print
@@ -233,6 +224,7 @@ function ETS(tproject_id,tplan_id,id)
 								 "&tplan_id=" + tplan_id + "&edit=testsuite&level=testsuite&id="+id+args+"&"+pParams;
 
 	// alert(_FUNCTION_NAME_ + " " +action_url);
+	// @20121021 - menuUrl points to archiveData.php
 	parent.workframe.location = action_url;
 
 }

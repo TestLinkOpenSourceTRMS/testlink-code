@@ -4,20 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	requirement_mgr.class.php
- * @package  TestLink
- * @author 	 Francisco Mancardi <francisco.mancardi@gmail.com>
- * @copyright 2007-2011, TestLink community 
+ * @package     TestLink
+ * @author 	    Francisco Mancardi <francisco.mancardi@gmail.com>
+ * @copyright   2007-2012, TestLink community 
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * @internal revisions
- * 20111110 - franciscom - TICKET 4802: Exporting large amount of requirements ( qty > 1900) fails
- * 20111008 - franciscom - TICKET 4768: Requirements Export - Export Version and Revision
  */
-
-// Needed to use extends tlObjectWithAttachments, If not present autoload fails.
-require_once( dirname(__FILE__) . '/attachments.inc.php');
 class requirement_mgr extends tlObjectWithAttachments
 {
 	var $db;
@@ -25,7 +20,7 @@ class requirement_mgr extends tlObjectWithAttachments
 	var $my_node_type;
 	var $tree_mgr;
 	var $node_types_descr_id;
-    var $node_types_id_descr;
+  var $node_types_id_descr;
 	var $attachmentTableName;
 
 
@@ -34,15 +29,15 @@ class requirement_mgr extends tlObjectWithAttachments
 	var $import_file_types = array("csv" => "CSV",
 	                               "csv_doors" => "CSV (Doors)",
 	                               "XML" => "XML",
-							       "DocBook" => "DocBook");
+							                   "DocBook" => "DocBook");
 
 	var $export_file_types = array("XML" => "XML");
 
 	
-    const AUTOMATIC_ID=0;
-    const ALL_VERSIONS=0;
-    const LATEST_VERSION=-1;
-    const NO_REVISION=-1;
+  const AUTOMATIC_ID=0;
+  const ALL_VERSIONS=0;
+  const LATEST_VERSION=-1;
+  const NO_REVISION=-1;
     
 
 

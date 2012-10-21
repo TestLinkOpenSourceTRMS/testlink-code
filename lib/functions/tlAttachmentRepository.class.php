@@ -20,6 +20,7 @@
  * class store and load attachments
  * @package 	TestLink
  */
+require_once('files.inc.php');
 class tlAttachmentRepository extends tlObjectWithDB
 {
   
@@ -356,7 +357,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 		if ($attachmentInfo)
 		{
 			$pfn = 'getAttachmentContentFrom';
-			$pfn .= ($this->repositoryType == TL_REPOSITORY_TYPE_FS) ? 'FS' : 'DB';
+			$pfn .= ($this->type == TL_REPOSITORY_TYPE_FS) ? 'FS' : 'DB';
 			$content = $this->$pfn($id);
 		}
 		return $content;
@@ -373,20 +374,19 @@ class tlAttachmentRepository extends tlObjectWithDB
 		$query = "SELECT file_size,compression_type,file_path " .
 		         " FROM {$this->tables['attachments']} WHERE id = {$id}";
 		$row = $this->db->fetchFirstRow($query);
-
 		$content = null;
 		if ($row)
 		{
-			$destFPath = $this->repositoryPath.DIRECTORY_SEPARATOR . $row['file_path'];
+			$destFPath = $this->path . DIRECTORY_SEPARATOR . $row['file_path'];
 			switch($row['compression_type'])
 			{
 				case TL_REPOSITORY_COMPRESSIONTYPE_NONE:
 					$content = getFileContents($destFPath);
-					break;
+				break;
 					
 				case TL_REPOSITORY_COMPRESSIONTYPE_GZIP:
 					$content = gzip_readFileContent($destFPath,$row['file_size']);
-					break;
+				break;
 			}
 		}
 
@@ -539,8 +539,8 @@ class tlAttachmentRepository extends tlObjectWithDB
 		$destFPath = null;
 		$mangled_fname = '';
 		$status_ok = false;
-		$repo_type = config_get('repositoryType');
-		$repo_path = config_get('repositoryPath') .  DIRECTORY_SEPARATOR;
+		// $repo_type = config_get('repositoryType');
+		// $repo_path = config_get('repositoryPath') .  DIRECTORY_SEPARATOR;
 		
 		$attachments = $this->getAttachmentInfosFor($source_id,$fkTableName);
 		if(count($attachments) > 0)
@@ -551,10 +551,10 @@ class tlAttachmentRepository extends tlObjectWithDB
 				$f_parts = explode(DIRECTORY_SEPARATOR,$value['file_path']);
 				$mangled_fname = $f_parts[count($f_parts)-1];
 				
-				if ($repo_type == TL_REPOSITORY_TYPE_FS)
+				if ($this->type == TL_REPOSITORY_TYPE_FS)
 				{
 					$destFPath = $this->buildRepositoryFilePath($mangled_fname,$table_name,$target_id);
-					$status_ok = copy($repo_path . $value['file_path'],$destFPath);
+					$status_ok = copy($this->path . DIRECTORY_SEPARATOR . $value['file_path'],$destFPath);
 				}
 				else
 				{
@@ -565,8 +565,8 @@ class tlAttachmentRepository extends tlObjectWithDB
 				{
           $attachmentMgr = new tlAttachment();
 					$attachmentMgr->create($target_id,$fkTableName,$value['file_name'],
-						                   $destFPath,$file_contents,$value['file_type'],
-						                   $value['file_size'],$value['title']);
+						                     $destFPath,$file_contents,$value['file_type'],
+						                     $value['file_size'],$value['title']);
 					$attachmentMgr->writeToDB($this->db);
 				}
 			}

@@ -138,7 +138,7 @@ $TLS_test_plan = "Test Plan";
 $TLS_testplan = $TLS_test_plan; // obsolete
 $TLS_testproject = "Test Project";
 $TLS_test_report = "Test Report";
-$TLS_test_suite = "Test Suite";
+$TLS_test_suite = $TLS_testsuite = "Test Suite";
 $TLS_testsuite_created = "Test Suite created";
 $TLS_type = "Type";
 $TLS_timestamp	= "Timestamp";

@@ -887,6 +887,7 @@ $tlCfg->attachments->emptyTitleAllowed = TRUE;
 // 'use_filename' -> use filename as title
 $tlCfg->attachments->emptyTitleActionOnSave = 'none';
 
+$tlCfg->attachments->accessIcon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
 $tlCfg->attachments->accessString = "[*]";
 $tlCfg->attachments->orderBy = " ORDER BY date_added DESC ";
 

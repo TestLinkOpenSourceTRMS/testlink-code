@@ -26,7 +26,6 @@ $tsuite_mgr = new testsuite($db);
 $tcase_mgr = new testcase($db);
 
 $assign_gui = true;
-$refreshTree = false;
 list($args,$gui) = initializeEnv($db,$tree_mgr);
 $gui->editorType = $editorCfg['type'];
 
@@ -38,11 +37,12 @@ if($args->action=='edit_testsuite')
   $keywordSet['testsuite'] = $tsuite_mgr->get_keywords_map($args->testsuiteID," ORDER BY keyword ASC ");
 }
 
+
+new dBug($args->action);
+
 $gui_cfg = config_get('gui');
-$tpl = null;
 $smarty = new TLSmarty();
 $smarty->tlTemplateCfg = templateConfiguration();
-$smarty->assign('editorType',$editorCfg['type']);
 switch($args->action)
 {
 	case 'edit_testsuite':
@@ -72,8 +72,7 @@ switch($args->action)
   break;
 
   case 'delete_testsuite':
-   	$refreshTree = deleteTestSuite($smarty,$args,$tsuite_mgr,$tree_mgr,$tcase_mgr,$level);
-		$gui->refreshTree = $refreshTree;
+   	deleteTestSuite($args,$gui,$tsuite_mgr,$tcase_mgr);
 		$smarty->assign('gui', $gui);
   break;
 
@@ -138,7 +137,7 @@ switch($args->action)
 
   case 'do_copy_tcase_set':
     $op = copyTestCases($smarty,$template_dir,$tsuite_mgr,$tcase_mgr,$args);
-    $refreshTree = $op['refreshTree'];
+    $gui->refreshTree = $op['refreshTree'] && $args->refreshTree;
     moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,$op['userfeedback']);
   break;
 
@@ -183,11 +182,9 @@ switch($args->action)
 
 	case 'reorder_testproject_testsuites_alpha':
     reorderTestSuitesDictionary($args,$tree_mgr,$args->tproject_id);
-		$guiObj = new stdClass();
-		$guiObj->btn_reorder_testcases = $btn_reorder_testcases;
-		$guiObj->refreshTree = true;
-	  $guiObj->id = $args->tproject_id;
-		$guiObj->page_title = lang_get('container_title_testsuite');
+		$gui->refreshTree = true;
+	  $gui->id = $args->tproject_id;
+		$gui->page_title = lang_get('container_title_testsuite');
 
 		$identity = new stdClass();
 		$identity->id = $args->tproject_id;
@@ -195,18 +192,17 @@ switch($args->action)
     break;
 
     default:
-    	trigger_error("containerEdit.php - No correct GET/POST data", E_USER_ERROR);
-    	break;
+    	trigger_error(__FILE__ . " - No correct GET/POST data", E_USER_ERROR);
+    break;
 }
 
-if($tpl)
+if($gui->tpl)
 {
 	if( $assign_gui )
 	{
     	$smarty->assign('gui', $gui);
   }
-	$smarty->assign('refreshTree',$refreshTree && $args->refreshTree);
-	$smarty->display($template_dir . $the_tpl);
+	$smarty->display($smarty->tlTemplateCfg->template_dir . $gui->tpl);
 }
 
 /*
@@ -217,7 +213,7 @@ if($tpl)
   returns:
 
 */
-function build_del_testsuite_warning_msg(&$tree_mgr,&$tcase_mgr,&$testcases,$tsuite_id)
+function build_del_testsuite_warning_msg(&$tcase_mgr,&$testcases,$tsuite_id)
 {
 	$msg = null;
 	$msg['warning'] = null;
@@ -226,60 +222,58 @@ function build_del_testsuite_warning_msg(&$tree_mgr,&$tcase_mgr,&$testcases,$tsu
 
 	if(!is_null($testcases))
 	{
-    	$show_warning = 0;
-    	$delete_msg = '';
-  		$verbose = array();
-  		$msg['link_msg'] = array();
-	
-    	$status_warning = array('linked_and_executed' => 1,'linked_but_not_executed' => 1,'no_links' => 0);
-
+    $show_warning = 0;
+    $delete_msg = '';
+  	$verbose = array();
+  	$msg['link_msg'] = array();
+   	$status_warning = array('linked_and_executed' => 1,'linked_but_not_executed' => 1,'no_links' => 0);
 		$delete_notice = array(	'linked_and_executed' => lang_get('delete_notice'),
     	                    	'linked_but_not_executed' => '','no_links' => '');
 
 		$getOptions = array('addExecIndicator' => true);
-  		foreach($testcases as $the_key => $elem)
-  		{
-  			$verbose[] = $tree_mgr->get_path($elem['id'],$tsuite_id);
+  	foreach($testcases as $the_key => $elem)
+  	{
+  		$verbose[] = $tcase_mgr->tree_mgr->get_path($elem['id'],$tsuite_id);
 			$xx = $tcase_mgr->get_exec_status($elem['id'],null,$getOptions);
 			$status = 'no_links';
 			if(!is_null($xx))
 			{
 				$status = $xx['executed'] ? 'linked_and_executed' : 'linked_but_not_executed';
 			}
-  			$msg['link_msg'][] = $status;
+  		$msg['link_msg'][] = $status;
 
-  			if($status_warning[$status])
-  			{
-  		  		$show_warning = 1;
-  		  		$msg['delete_msg'] = $delete_notice[$status];
-  			}
-	  	}
+  		if($status_warning[$status])
+  		{
+  		  $show_warning = 1;
+  		  $msg['delete_msg'] = $delete_notice[$status];
+  		}
+	  }
 
-	  	$idx = 0;
-	  	if($show_warning)
+    $idx = 0;
+	  if($show_warning)
+	  {
+	    $msg['warning'] = array();
+	  	foreach($verbose as $the_key => $elem)
 	  	{
-	  		$msg['warning'] = array();
-	  		foreach($verbose as $the_key => $elem)
+	  	  $msg['warning'][$idx] = '';
+	  		$addSlash = false;
+	  		foreach($elem as $tkey => $telem)
 	  		{
-	  			$msg['warning'][$idx] = '';
-	  			$bSlash = false;
-	  			foreach($elem as $tkey => $telem)
+	  		  if($addSlash)
 	  			{
-	  				if ($bSlash)
-	  				{
-	  					$msg['warning'][$idx] .= "\\";
-	  				}
-	  				$msg['warning'][$idx] .= $telem['name'];
-	  				$bSlash = true;
+	  			  $msg['warning'][$idx] .= "\\";
 	  			}
-	  			$idx++;
+	  			$msg['warning'][$idx] .= $telem['name'];
+	  			$addSlash = true;
 	  		}
+	  		$idx++;
 	  	}
-	  	else
-	  	{
-	  	  	$msg['link_msg'] = null;
-	  		$msg['warning'] = null;
-	  	}
+	  }
+	  else
+	  {
+      $msg['link_msg'] = null;
+	  	$msg['warning'] = null;
+	  }
  	}
 	return $msg;
 }
@@ -329,13 +323,13 @@ function init_args(&$treeMgr)
      $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
   }
  
-  $args->tsuite_name = isset($_REQUEST['testsuiteName']) ? $_REQUEST['testsuiteName'] : null;
-  $args->bSure = (isset($_REQUEST['sure']) && ($_REQUEST['sure'] == 'yes'));
+  $args->testsuiteName = isset($_REQUEST['testsuiteName']) ? $_REQUEST['testsuiteName'] : null;
+  $args->doIt = isset($_REQUEST['doIt']);
 
   $args->assigned_keyword_list = isset($_REQUEST['assigned_keyword_list'])? $_REQUEST['assigned_keyword_list'] : "";
   
   // integer values
-  $keys2loop=array('testsuiteID' => null,'objectID' => null, 'copyKeywords' => 0);
+  $keys2loop=array('testsuiteID' => null, 'copyKeywords' => 0);
   foreach($keys2loop as $key => $value)
   {
      $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
@@ -392,73 +386,59 @@ function writeCustomFieldsToDB(&$db,$tprojectID,$tsuiteID,&$hash)
 /*
   function: deleteTestSuite
 
-  args:
-
-  returns: true -> refresh tree
-           false -> do not refresh
-
 */
-function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,$level)
+function deleteTestSuite(&$argsObj,&$guiObj,&$tsuiteMgr,&$tcaseMgr)
 {
-  $feedback_msg = '';
-	$system_message = '';
-  $testcase_cfg = config_get('testcase_cfg');
-	$can_delete = 1;
+	$guiObj->page_title = lang_get('delete') . " " . lang_get('testsuite');
+	$guiObj->refreshTree = false;
+	$guiObj->can_delete = 1;
+  $guiObj->delete_msg = $guiObj->warning_msg = $guiObj->link_msg = null;
+	$guiObj->system_msg = $guiObj->feedback_msg = $guiObj->user_feedback = $guiObj->last_chance_msg = '';
+	
 
-	if($argsObj->bSure)
+	$guiObj->testsuiteID = $argsObj->testsuiteID;
+	$guiObj->testsuiteName = $argsObj->testsuiteName;
+
+	if($argsObj->doIt)
 	{
-	 	$tsuite = $tsuiteMgr->get_by_id($argsObj->objectID);
-		$tsuiteMgr->delete_deep($argsObj->objectID);
-		$tsuiteMgr->deleteKeywords($argsObj->objectID);
-		$smartyObj->assign('objectName', $tsuite['name']);
-		$doRefreshTree = true;
-		$feedback_msg = 'ok';
-		$smartyObj->assign('user_feedback',lang_get('testsuite_successfully_deleted'));
+	 	$tsuite = $tsuiteMgr->get_by_id($argsObj->testsuiteID);
+		$guiObj->objectName = $tsuite['name'];
+		$tsuiteMgr->delete_deep($argsObj->testsuiteID);
+		$tsuiteMgr->deleteKeywords($argsObj->testsuiteID);
+
+		$guiObj->refreshTree = true;
+		$guiObj->feedback_msg = 'ok';
+		$guiObj->user_feedback = lang_get('testsuite_successfully_deleted');
 	}
 	else
 	{
-	  $doRefreshTree = false;
-
+    $testcase_cfg = config_get('testcase_cfg');
+    $guiObj->last_chance_msg = sprintf(lang_get('question_del_testsuite'),$argsObj->testsuiteName);
+    
 		// Get test cases present in this testsuite and all children
 		$testcases = $tsuiteMgr->get_testcases_deep($argsObj->testsuiteID);
-
-		$map_msg['warning'] = null;
-		$map_msg['link_msg'] = null;
-		$map_msg['delete_msg'] = null;
-		
-		if(is_null($testcases) || count($testcases) == 0)
+  	if(is_null($testcases) || count($testcases) == 0)
 		{
-			$can_delete = 1;
+			$guiObj->can_delete = 1;
 		}
 		else
 		{
-			$map_msg = build_del_testsuite_warning_msg($treeMgr,$tcaseMgr,$testcases,$argsObj->testsuiteID);
-			if( in_array('linked_and_executed', (array)$map_msg['link_msg']) )
+			$msgSet = build_del_testsuite_warning_msg($tcaseMgr,$testcases,$argsObj->testsuiteID);
+			if( in_array('linked_and_executed', (array)$msgSet['link_msg']) )
 			{
-				$can_delete = $testcase_cfg->can_delete_executed;
+				$guiObj->can_delete = $testcase_cfg->can_delete_executed;
+			}
+			foreach($msgSet as $key)
+			{
+			  $guiObj->$key = $msgSet[$key];
 			}
 		}
-
-		$system_message = '';
-		if(!$can_delete && !$testcase_cfg->can_delete_executed)  
+		if(!$guiObj->can_delete && !$testcase_cfg->can_delete_executed)  
 		{
-			$system_message = lang_get('system_blocks_tsuite_delete_due_to_exec_tc');
+			$guiObj->system_msg = lang_get('system_blocks_tsuite_delete_due_to_exec_tc');
 		}
-
-		// prepare to show the delete confirmation page
-		$smartyObj->assign('can_delete',$can_delete);
-		$smartyObj->assign('objectID', $argsObj->testsuiteID);
-		$smartyObj->assign('objectName', $argsObj->tsuite_name);
-		$smartyObj->assign('delete_msg',$map_msg['delete_msg']);
-		$smartyObj->assign('warning', $map_msg['warning']);
-		$smartyObj->assign('link_msg', $map_msg['link_msg']);
-	
 	}
-	$smartyObj->assign('system_message', $system_message);
-	$smartyObj->assign('page_title', lang_get('delete') . " " . lang_get('container_title_' . $level));
- 	$smartyObj->assign('sqlResult',$feedback_msg);
-
- 	return $doRefreshTree;
+ 	$guiObj->sqlResult = $guiObj->feedback_msg;
 }
 
 /*
@@ -536,7 +516,7 @@ function  moveTestSuiteViewer(&$smartyObj,&$tprojectMgr,$argsObj)
 	$smartyObj->assign('old_containerID', $argsObj->tproject_id);
 	$smartyObj->assign('containers', $testsuites);
 	$smartyObj->assign('objectID', $argsObj->testsuiteID);
-	$smartyObj->assign('object_name', $argsObj->tsuite_name);
+	$smartyObj->assign('object_name', $argsObj->testsuiteName);
 	$smartyObj->assign('top_checked','checked=checked');
  	$smartyObj->assign('bottom_checked','');
 }
@@ -712,7 +692,7 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$ar
 	$glue = $testcase_cfg->glue_character;
 	
 	$containerID = isset($argsObj->testsuiteID) ? $argsObj->testsuiteID : $argsObj->objectID;
-	$containerName = $argsObj->tsuite_name;
+	$containerName = $argsObj->testsuiteName;
 	if( is_null($containerName) )
 	{
 		$dummy = $treeMgr->get_node_hierarchy_info($argsObj->objectID);
@@ -870,7 +850,6 @@ function moveTestCases(&$smartyObj,&$tsuiteMgr,&$treeMgr,$argsObj)
   returns: -
 
 	@internal revisions
-	20110402 - franciscom - BUGID 4322: New Option to block delete of executed test cases.	
 */
 function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&$tsuiteMgr,
 							   &$tcaseMgr,$argsObj,$feedback = null)
@@ -886,7 +865,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 	$guiObj->system_message = '';
 
 	$containerID = isset($argsObj->testsuiteID) ? $argsObj->testsuiteID : $argsObj->objectID;
-	$containerName = $argsObj->tsuite_name;
+	$containerName = $argsObj->testsuiteName;
 	if( is_null($containerName) )
 	{
 		$dummy = $treeMgr->get_node_hierarchy_info($argsObj->objectID);
@@ -1087,8 +1066,8 @@ function initializeEnv(&$dbHandler,$treeMgr)
   $guiObj = &$env[1];
 
   
-  $actionTpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
-                      'delete_testsuite' => 'containerDelete.tpl',
+  $actionTpl = array( 'move_testsuite_viewer' => 'testSuiteMove.tpl',
+                      'delete_testsuite' => 'testSuiteDelete.tpl',
                       'move_testcases_viewer' => 'containerMoveTC.tpl',
                       'do_copy_tcase_set' => 'containerMoveTC.tpl',
                       'delete_testcases' =>  'containerDeleteTC.tpl',

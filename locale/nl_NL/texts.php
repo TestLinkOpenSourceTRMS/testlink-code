@@ -23,6 +23,10 @@
  *
  **/
 
+// LET OP: om consistente vertalingen te bewerkstelligen, maak gebruik van de standaard
+// woordvertalingen (inclusief hoofdlettergebruik) die bovenaan het bestand  nl_NL/strings.txt 
+// zijn aangegeven.
+
 
 // --------------------------------------------------------------------------------------
 $TLS_htmltext_title['error']	= "Application error";
@@ -178,42 +182,42 @@ See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['reqSpecMgmt']	= "Requirements Specification Design"; //printTC.html
-$TLS_htmltext['reqSpecMgmt'] 			= "<p>On this page you can manage Requirements Specification documents.</p>
+$TLS_htmltext_title['reqSpecMgmt']	= "Requirements Specification Ontwerp"; //printTC.html
+$TLS_htmltext['reqSpecMgmt'] 		= "<p>Hier kunt u Requirements Specificatie documenten beheren.</p>
 
-<h2>Requirements Specification</h2>
+<h2>Requirements Specificatie</h2>
 
-<p>Requirements are grouped by <b>Requirements Specification document</b>, which is related to a
-Test Project.</p> 
+<p>Requirements zijn gegroepeerd per <b>Requirements Specificatie</b>, die gekoppeld is aan een 
+Testproject.</p> 
 
-<p>Requirements Specification documents can be arranged hierarchically. 
-Create top-level Requirements Specification documents by clicking on the project node. </p>
+<p>Requirements Specificaties kunnen hierarchisch gerangschikt worden.  
+Creëer Requirements Specificaties op het hoogste niveau door op de projectnaam te klikken. </p>
 
-<p>TestLink does not (yet) support versions for Requirements Specifications or
-Requirements. So if a document version is required, it should be appended to the Specification <b>Title</b>.
-A simple description or notes can be added to the <b>Scope</b> field.</p>
+<p>TestLink ondersteunt geen versies van Requirements Specificaties of Requirements. 
+Dus als een document versie nodig is, moet u het achter de Specificatie <b>Titel</b> plaatsen.
+Een eenvoudige beschrijving of aantekeningen kunnen in het <b>Scope</b> veld worden geplaatst.</p>
 
-<p>The <b><a name='total_count'>Overwritten count of REQs</a></b> can be used to
-evaluate Requirement coverage if not all requirements have yet been added to TestLink.
-The value <b>0</b> means that the current count of requirements is used
-for metrics.</p>
-<p><i>E.g. SRS includes 200 requirements but only 50 are in TestLink. Test
-coverage is 25% (assuming the 50 added requirements will actually be tested).</i></p>
+<p>Het 'overschreven aantal REQs' kan men gebruiken om de Requirement dekking te evalueren
+als nog niet alle Requirements in TestLink staan. Het aantal 0 betekent dat het aantal 
+daadwerkelijk aanwezige Requirements  voor metrieken wordt gebruikt.</p>
 
-<h2><a name='req'>Requirements</a></h2>
+<p>Voorbeeld: SRS beschrijft 200 Requirements, maar nog maar 50 zijn in TestLink ingevoerd.
+TestLink dekking is 25% (als de 50 ingevoerde Requirements daadwerkelijk zijn getest).<p>
 
-<p>Click the title of an existing Requirements Specification. You can create, edit, delete
-or import requirements for the document. Each requirement has a title, scope and status.
-A status should be either 'Normal' or 'Not testable'. 'Not testable' requirements are not counted
-in metrics. This parameter should be used for both unimplemented features and
-wrongly-designed requirements.</p>
+<h2>Requirements</h2>
 
-<p>You can create new skeleton Test Cases for requirements by using the 'Create Test Cases'
-button in the Requirement Specification screen. This leads to a screen where you can specify
-how many cases are wanted for each Requirements document in the Requirements Specification.
-These Test Cases are created in the Test Suite
-with the name defined in configuration <i>(the default is: \$tlCfg->req_cfg->default_testsuite_name =
-'Test suite created by Requirement - Auto';)</i>. The Title and Scope are copied to these Test Cases.</p>";
+<p>Klik de titel van een Requirements Specificatie. U kunt Requirements creëren, bewerken, verwijderen
+of importeren voor het document. Elke Requirement heeft een titel, scope en status. 
+De status is 'Normaal' of 'Informatief'. Requirements met status 'Informatief' worden niet in de metrieken
+meegeteld. Deze statuswaarde kan worden gebruikt voor features die nog niet zijn geïmplementeerd of
+Requirements die nog niet goed zijn ontworpen.</p>
+
+<p>U kunt nieuwe Testgevallen in skeletvorm creëren voor Requirements met de 'Creëer Testgevallen' knop
+op de Requirement Specificatie pagina. Dit start een pagina waar u kunt aangeven hoeveel Testgevallen
+gewenst zijn voor elke Requirements document in de Requirements Specificatie.
+Deze Testgevallen worden gecreëerd in de Test Suite met de naam die in de configuratie gedefinieerd is
+<i>(de default is:<br> \$tlCfg->req_cfg->default_testsuite_name = 'Test suite created by Requirement - Auto';)</i>
+De titel en Scope worden naar deze Testgevallen gekopieerd.</p>";
 
 
 // ------------------------------------------------------------------------------------------

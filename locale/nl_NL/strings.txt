@@ -32,7 +32,7 @@
  // Aantekeningen Nederlandse vertaling.
  // Bijgewerkt oktober 2012 door Stephen Poley
  // Om consistentie te borgen, gebruik de volgende veel voorkomende vertalingen:
- //   Test Project = Testproject (let op: Engelse versie is op een gegeven moment overgeschakeld van "test product" naar "test project"
+ //   Test Project = Testproject (let op: Engelse versie is op een gegeven moment overgeschakeld van "test product" naar "test project")
  //   Test Plan = Testplan
  //   Test Suite = Test Suite
  //   Test Case = Testgeval
@@ -228,10 +228,10 @@ $TLS_btn_import = "Importeer";
 $TLS_btn_monitor 	= "Monitor";
 $TLS_btn_move = "Verplaats";
 $TLS_btn_no = "Nee";
-$TLS_btn_new_revision = "Create a new revision";
+$TLS_btn_new_revision = "Nieuwe revisie creëren";
 $TLS_btn_ok = "OK";
-$TLS_btn_print = "Print";
-$TLS_btn_print_view = "Print view";
+$TLS_btn_print = "Afdrukken";
+$TLS_btn_print_view = "View afdrukken";
 $TLS_btn_save = "Bewaar";
 $TLS_btn_unassign = "Niet toewijzen";
 $TLS_btn_uncheck = "Uncheck";
@@ -241,7 +241,7 @@ $TLS_btn_upload = "Upload";
 $TLS_btn_advanced_filters = "Geavanceerde Filters";
 $TLS_btn_simple_filters = "Basis Filters"; 
 $TLS_btn_reorder_steps = "Reorder Steps";
-$TLS_btn_view_history = "View history";
+$TLS_btn_view_history = "Toon geschiedenis";
 
 
 // Status (used widely)
@@ -277,7 +277,7 @@ $TLS_req_spec_type_system_req_spec = "System Requirements Specification";
 $TLS_exec_not_run_result_note = "Important Notice: once a Result is updated from 'Not Run' to another value, " .
                                 "you cannot set it back to 'Not Run'. <br />You can still set the Result to any other value.";
 
-$TLS_req_status_not_testable = "Not testable"; // defined for historical reason (should be replaced by $TLS_req_type_info)
+$TLS_req_status_not_testable = "Niet testbaar"; // defined for historical reason (should be replaced by $TLS_req_type_info)
 $TLS_req_status_draft = "Draft";
 $TLS_req_status_review = "Review";
 $TLS_req_status_rework = "Rework";
@@ -607,9 +607,9 @@ $TLS_insert_last_req_doc_id = "Insert Document ID of last created Requirement";
 
 
 // ----- gui/templates/reqCopy.tpl -----
-$TLS_copy_one_req = "Copy requirement";
-$TLS_copy_several_reqs = "Copy requirements";
-$TLS_copy_testcase_assignments = "Copy Test Case Assignments";
+$TLS_copy_one_req = "Kopieer Requirement";
+$TLS_copy_several_reqs = "Kopieer Requirements";
+$TLS_copy_testcase_assignments = "Kopieer Testgeval toewijzingen";
 
 
 // ----- gui/templates/requirements/reqCreateTestCases.tpl -----
@@ -702,7 +702,7 @@ $TLS_logical_or = "Or";
 $TLS_btn_apply_filter = $TLS_btn_apply;
 $TLS_btn_reset_filters = "Reset Filters";
 $TLS_caption_nav_filters = "Filters";
-$TLS_caption_nav_settings = "Settings";
+$TLS_caption_nav_settings = "Instellingen";
 $TLS_current_build = "Current build";
 $TLS_filter_owner = "Assigned to";
 $TLS_filter_result = "Result";
@@ -725,8 +725,8 @@ $TLS_req_spec_type = "Req. Spec. Type";
 $TLS_btn_hide_cf = "Hide Custom Fields";
 $TLS_btn_show_cf = "Show Custom Fields";
 $TLS_btn_export_testplan_tree = 'Export Test Plan';
-$TLS_expand_tree = "Expand tree";
-$TLS_collapse_tree = "Collapse tree";
+$TLS_expand_tree = "Uitvouwen";
+$TLS_collapse_tree = "Samenvouwen";
 
 
 // ----- gui/templates/execNavigator.tpl -----
@@ -801,7 +801,7 @@ $TLS_bad_file_format = "File content can not be imported, check format";
 $TLS_alt_delete_build = "Klik hier om deze oplevering te verwijderen";
 $TLS_alt_delete_attachment = "Klik hier om dit toegevoegde bestand te verwijderen.";
 $TLS_attached_files = "Gekoppelde bestanden";
-$TLS_attachment_feature_disabled = "Toevoegen bestand uit gezet";
+$TLS_attachment_feature_disabled = "Toevoegen bestand uitgezet";
 $TLS_button_upload = "Upload";
 $TLS_upload_file_new_file = "Upload nieuw bestand";
 $TLS_warning_delete_attachment = "Verwijder dtoegevoegde bestand echt?";
@@ -865,7 +865,7 @@ $TLS_requirement_spec = "Requirement Specificatie Document";
 $TLS_test_case_id = "ID";
 $TLS_title_created = "Gecreëerd op";
 $TLS_title_last_mod = "Als laatste gewijzigd op ";
-$TLS_expected_coverage = "Number of Test Cases needed";
+$TLS_expected_coverage = "Aantal Testgevallen nodig";
 $TLS_warning_expected_coverage = $TLS_expected_coverage . " must be a number ";
 $TLS_warning_expected_coverage_range = $TLS_expected_coverage . " must be > 0 ";
 $TLS_stay_here_req = 'check to create another requirement after saving';
@@ -891,8 +891,8 @@ $TLS_suggest_create_revision_html = "You changed ONLY the scope. " .
 $TLS_warning_suggest_create_revision = "Attention!! - Do you want to create a new revision?";
                             
 $TLS_revision_log_title = "Revision Log";
-$TLS_please_add_revision_log = "Please add a log message";
-$TLS_commit_title = "Log message";
+$TLS_please_add_revision_log = "A.u.b. een logbericht opgeven";
+$TLS_commit_title = "Logbericht";
 $TLS_please_add_reason_log = "Please add reason for changes";
 
 
@@ -1000,18 +1000,18 @@ $TLS_action_create_srs = "Creëer Requirement Specificatie document";
 
 // ----- gui/templates/inc_reqView.tpl -----
 $TLS_last_edit = "Laatst gewijzigd door";
-$TLS_warning_delete_requirement = "You are going to delete: %s <br /><br /> Are you sure?";
-$TLS_btn_freeze_this_version = "Freeze this version";
-$TLS_warning_freeze_requirement = "You are going to freeze: %s <br /><br /> Are you sure?";
-$TLS_warning_freeze_spec = "You are going to freeze the child Requirements of: %s<br /><br />Are you sure?";
-$TLS_btn_freeze_req_spec = "Freeze all Requirements";
-$TLS_freeze = "Freeze";
-$TLS_can_not_edit_req = "You can not edit this version because it has been frozen.";
-$TLS_req_version_frozen = "Requirement version has been frozen.";
-$TLS_freeze_req = "Freeze Requirement";
-$TLS_req_frozen = "Requirements have been frozen.";
-$TLS_showing_version = "Displaying version ";
-$TLS_btn_revisions = "Revisions";
+$TLS_warning_delete_requirement = "U gaat verwijderen: %s <br /><br />Wilt u dat?";
+$TLS_btn_freeze_this_version = "Deze versie bevriezen";
+$TLS_warning_freeze_requirement = "U gaat bevriezen: %s <br /><br />Wilt u dat?";
+$TLS_warning_freeze_spec = "U gaat de child Requirements van %s bevriezen<br /><br />Wilt u dat?";
+$TLS_btn_freeze_req_spec = "Requirements bevriezen";
+$TLS_freeze = "Bevriezen";
+$TLS_can_not_edit_req = "u kunt deze versie niet bewerken omdat hij bevroren is.";
+$TLS_req_version_frozen = "Requirements versie is bevroren.";
+$TLS_freeze_req = "Requirement bevriezen";
+$TLS_req_frozen = "Requirements zijn bevroren.";
+$TLS_showing_version = "Tonen versie ";
+$TLS_btn_revisions = "Revisies";
 
 
 // gui/templates/inc_res_by_comp.tpl
@@ -1259,7 +1259,7 @@ $TLS_password_reset = "Opnieuw instellen wachtwoord";
 // ----- gui/templates/tcView.tpl -----
 $TLS_no_records_found = "Uw zoekopdracht heeft geen resultaten opgeleverd!";
 $TLS_other_versions = 'Other versions';
-$TLS_match_count = "Number of matches";
+$TLS_match_count = "Aantal gevonden";
 
 // ----- gui/templates/execSetResults.tpl -----
 $TLS_alt_attachment_mgmt = "Toevoegingde bestanden";
@@ -2197,8 +2197,8 @@ $TLS_reqversion = "Versie";
 $TLS_title_search_req_spec = "Zoek";
 $TLS_requirements = "Requirements";
 $TLS_req_specs = "Req. Specs";
-$TLS_req_expected_coverage = "Expected no. of Test Cases";
-$TLS_has_relation_type = "Has relation of type";
+$TLS_req_expected_coverage = "Verwachte aantal Testgevallen";
+$TLS_has_relation_type = "Heeft relatie van type";
 $TLS_reqid = "Requirement ID";
 $TLS_info_search_req = "This list shows all requirements which match the search " .
                        "criteria.<br />You can open a matching version/revision " .
@@ -2401,15 +2401,13 @@ $TLS_test_project_notes = "Test Project description";
 
 
 // ----- lib/functions/users.inc.php -----
-$TLS_duplicate_login = "Een gebruiker met die login bestaat al!";
-$TLS_login_must_not_be_empty = "Login mag niet leeg zijn!";
-$TLS_wrong_old_password = "Verkeerd oud wachtwoord!";
-
+$TLS_duplicate_login = "Een gebruiker met die login bestaat al";
+$TLS_login_must_not_be_empty = "Login mag niet leeg zijn";
+$TLS_wrong_old_password = "Verkeerd oud wachtwoord";
 
 
 // ----- lib/functions/email_api.php -----
-$TLS_stmp_host_unconfigured = "SMTP host is niet correct geconfigureerd!";
-
+$TLS_stmp_host_unconfigured = "SMTP host is niet correct geconfigureerd";
 
 
 // ----- lib/functions/common.php -----
@@ -2419,14 +2417,14 @@ $TLS_XMLRPC_error_number = "XML-RPC Fault number:- ";
 
 
 // ----- lib/functions/configCheck.php -----
-$TLS_attachments_dir = "map voor toe te voegen bestanden:";
+$TLS_attachments_dir = "Map voor toe te voegen bestanden:";
 $TLS_bts_connection_problems = "Connectie naar uw bevindingenbeheer is mislukt:<br> 
                                 Controleer alstublieft uw configuratie.<br>
                                 Weer voorzichtig, dit probleem kan de prestatie van Testlink verminderen.";
-$TLS_but_directory_is_not_writable = "De map is niet schrijfbaar!";
+$TLS_but_directory_is_not_writable = "De map is niet schrijfbaar.";
 $TLS_check_email_config="Check following parameters of email feature:";
 $TLS_directory_is_writable = "De map is schrijfbaar";
-$TLS_does_not_exist = "bestaat niet";
+$TLS_does_not_exist = "bestaat niet.";
 $TLS_exists = "bestaat";
 $TLS_ldap_extension_not_loaded = "Login method is configured as LDAP<br />" .
                                "but PHP LDAP extension is not loaded => " .
@@ -2605,6 +2603,43 @@ $TLS_no_req_spec_available = "No Requirements Specification available for this T
 // ----- lib/results/resultsBugs.php -----
 $TLS_title_test_report_all_builds = "Test Rapport: Resultaten van Testgevallen voor alle opleveringen";
 
+// ----- requirement relations (BUGID 1748)
+$TLS_relation_id = "#";
+$TLS_current_req = "Huidige requirement";
+$TLS_relation_type = "Type";
+$TLS_relation_document = "Gerelateerde Requirement";
+$TLS_relation_status = "Status";
+$TLS_relation_set_by = "Ingesteld door";
+$TLS_relation_delete = "Verwijder";
+$TLS_relations = "Relaties";
+$TLS_th_relations = "# Gerelateerde Req.";
+$TLS_new_relation = "Nieuwe relatie";
+$TLS_relation_project = "In Testproject";
+$TLS_in = "in project";
+$TLS_relation_destination_doc_id = "Requirement Document ID";
+$TLS_new_rel_add_success = "Nieuwe relatie is toegevoegd.";
+$TLS_rel_add_error_dest_id = "Doel Document ID is invalid.";
+$TLS_rel_add_error = "Fout bij toevoegen nieuwe relatie.";
+$TLS_rel_add_error_self = "Een Requirement mag geen relatie met zichzelf hebben.";
+$TLS_rel_add_error_exists_already = "Een relatie van deze type (\"%s\") bestaat al tussen deze twee Requirements.";
+$TLS_delete_rel_success = "Relatie is verwijderd.";
+$TLS_error_deleting_rel = "Relatie kon niet verwijderd worden.";
+$TLS_delete_rel_msgbox_title = "Verwijder relatie";
+$TLS_delete_rel_msgbox_msg = "Relatie #%i echt verwijderen?";
+$TLS_img_title_delete_relation = "Klik om deze relatie te verwijderen.";
+
+
+// ----- configured requirement relation types (BUGID 1748) -----
+$TLS_req_rel_is_parent_of = "parent of";
+$TLS_req_rel_is_child_of = "child of";
+$TLS_req_rel_blocks = "blocks";
+$TLS_req_rel_depends = "depends on";
+$TLS_req_rel_is_related_to = "related to";
+
+
+
+// ----- lib/results/resultsTC.php -----
+$TLS_title_test_report_all_builds = "Test Report: Results of Test Cases for all Builds";
 
 
 // ----- lib/results/resultsAllBuilds.php -----
@@ -2616,11 +2651,6 @@ $TLS_title_metrics_x_build = "Algemene oplevering status";
 $TLS_list_of_blocked = "Geblokkeerde Testgevallen";
 $TLS_list_of_failed = "Niet akkoord Testgevallen";
 $TLS_list_of_not_run = "Niet uitgevoerde Testgevallen";
-
-
-
-// ----- lib/results/resultsTC.php -----
-
 
 
 // ----- lib/results/resultsNavigator.php -----
@@ -2762,19 +2792,19 @@ $TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associate
 
 
 // ----- lib/project/project_req_spec_mgmt.tpl -----
-$TLS_btn_new_req_spec = "New Requirement Specification";
-$TLS_btn_reorder_req_spec = "Reorder Requirement Specifications";
+$TLS_btn_new_req_spec = "Nieuwe Requirements Specificatie";
+$TLS_btn_reorder_req_spec = "Reorder Requirements Specificaties";
 
 
 // ----- reqSpecEdit.php -----
-$TLS_delete_req_spec = "Delete Requirement Specification";
-$TLS_req_spec_created = "Requirement Specification: %s was successfully created";
-$TLS_req_spec_deleted = "Requirement Specification: %s was successfully deleted";
-$TLS_title_req_spec = "Requirement Specifications";
-$TLS_warning_empty_req_spec_title = "Requirement Specification title cannot be empty!";
-$TLS_create_req_spec = "Create Requirements Specification";
-$TLS_create_child_req_spec = "Create Child Req Specification";
-$TLS_edit_req_spec = "Edit Requirements Specification";
+$TLS_delete_req_spec = "Verwijder Requirements Specificatie";
+$TLS_req_spec_created = "Requirements Specificatie: %s is gecreëerd";
+$TLS_req_spec_deleted = "Requirements Specificatie: %s is verwijderd";
+$TLS_title_req_spec = "Requirements Specificaties";
+$TLS_warning_empty_req_spec_title = "Requirements Specificatie titel mag niet leeg zijn";
+$TLS_create_req_spec = "Creëer Requirements Specificatie";
+$TLS_create_child_req_spec = "Creëer Child Req Specificatie";
+$TLS_edit_req_spec = "Requirements Specificatie bewerken";
 
 
 // ----- reqEdit.php -----
@@ -2786,7 +2816,7 @@ $TLS_req_deleted = "Requirement: %s was successfully deleted";
 
 
 // ----- reqSpecReorder.tpl -----
-$TLS_title_change_req_spec_order = "Change Requirement Specifications order";
+$TLS_title_change_req_spec_order = "Wijzig volgorde Requirements Specificaties";
 
 
 // ----- requirement_mgr -----
@@ -3137,8 +3167,8 @@ $TLS_no_label_for_req_type = 'No req_type_labels configuration for type: %s';
 
 
 $TLS_print_testcase = 'Print Test Case: %s';
-$TLS_print_requirement = 'Print Requirement: %s';
-$TLS_print_requirement_specification = 'Print Requirements Specification: %s';
+$TLS_print_requirement = 'Requirement afdrukken: %s';
+$TLS_print_requirement_specification = 'Requirements Specificatie afdrukken: %s';
 
 
 // ----- lib/functions/remote_exec.php

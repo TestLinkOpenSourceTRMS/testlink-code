@@ -42,7 +42,7 @@ $TLS_STRINGFILE_CHARSET = "UTF-8";
 // Last Update of this file
 $TLS_last_update = "English is the default development language and is always up to date";
 
-// ----- General terms (used wide) ----------------------------
+// ----- General terms (used widely) ----------------------------
 $TLS_type_not_configured = "system message: type not configured";
 $TLS_undefined = "undefined";
 $TLS_active = "Active";
@@ -158,6 +158,7 @@ $TLS_user_has_no_right_for_action = 'User has insufficient rights to do the requ
 $TLS_from = "from";
 $TLS_until = "until";
 $TLS_file_size_exceeded = 'File size (%s) > allowed size (%s)';
+
 $TLS_total = "Total";
 $TLS_Unknown = "Unknown";
 $TLS_urgency = "Urgency";
@@ -167,7 +168,7 @@ $TLS_platform = "Platform";
 $TLS_show_calender = "Show Calender";
 $TLS_clear_date = "Clear Date";
 
-// Actions (used wide)
+// Actions (used widely)
 $TLS_add = "add";
 $TLS_assigned = "assigned";
 $TLS_create = "create";
@@ -180,7 +181,7 @@ $TLS_move	= "Move";
 $TLS_remove = "remove";
 $TLS_unassigned = "unassigned";
 
-// Buttons (used wide)
+// Buttons (used widely)
 $TLS_btn_apply 	= "Apply";
 $TLS_btn_add 	= "Add";
 $TLS_btn_add_to_testplans = "Add to Test Plans";
@@ -219,7 +220,7 @@ $TLS_btn_reorder_steps = "Reorder Steps";
 $TLS_btn_view_history = "View history";
 
 
-// Status (used wide)
+// Status (used widely)
 $TLS_test_status_all = "All";
 $TLS_test_status_any = "Any";
 $TLS_test_status_not_run = "Not Run";
@@ -307,7 +308,7 @@ $TLS_created_with_new_name = "Create with name:%s, because name:%s already exist
 
 
 $TLS_click_to_open = 'Click to open';
-$TLS_testplan_usage="Test Plan usage";
+$TLS_testplan_usage = "Test Plan usage";
 
 $TLS_add_tcversion_to_plans = "Add Test Case Version to Test Plans";
 $TLS_please_select_one_testplan = "Please select at least one Test Plan.";
@@ -450,6 +451,7 @@ $TLS_change_password_mail_body = "Account: %login_name% \n\n " .
 		 "Password (copy string between square brackets) [%password%]\n\n " .
 		 "If you experience any issues feel free to contact your administrator\n\n " .
 		 "%admin_coordinates%";								 
+
 // ----- login.php -----
 $TLS_bad_user_passwd = "Try again! Wrong login name or password.";
 $TLS_login_msg_session_exists1 = "There is still a valid login for your browser. <br /> Please use this link >>> ";
@@ -478,6 +480,7 @@ $TLS_report_tcase_platorm_relationship = "Platforms have been added to this Test
                                          "is considered as N Test Cases in the metrics. <br />" .
                                          "Example: if user U1 has been assigned to execute Test Case TC1 <br />" .
                                          "on platform X and Y, then user U1 has to execute TWO Test Cases, NOT ONE.";
+
 
 // ----- resultsNavigator.php -----
 $TLS_title_nav_results = "Reports and Metrics";

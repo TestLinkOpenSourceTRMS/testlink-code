@@ -92,12 +92,10 @@ Purpose: smarty template - manage import of test cases and test suites
 	{foreach item=result from=$gui->resultMap}
 		{$labels.title_imp_tc_data} : <b>{$result[0]|escape}</b> : {$result[1]|escape}<br />
 	{/foreach}
-  {include file="inc_refreshTree.tpl"}
+  {$tlRefreshTreeByReloadJS}
 {/if}
 
-{if $gui->bImport > 0}
-	{include file="inc_refreshTree.tpl"}
-{/if}
+{if $gui->bImport > 0} {$tlRefreshTreeByReloadJS} {/if}
 
 {if $gui->file_check.status_ok == 0}
   <script type="text/javascript">

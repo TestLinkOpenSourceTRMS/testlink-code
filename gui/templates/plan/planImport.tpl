@@ -57,18 +57,14 @@ Purpose: manage import of test plan links (test cases and platforms)
 	{foreach item=result from=$gui->resultMap}
 		<b>{$result[0]|escape}</b> : {$result[1]|escape}<br />
 	{/foreach}
-  {include file="inc_refreshTree.tpl"}
+  {$tlRefreshTreeByReloadJS}
 {/if}
 
-{if $gui->import_done}
-	{include file="inc_refreshTree.tpl"}
-{/if}
+{if $gui->import_done} {$tlRefreshTreeByReloadJS} {/if}
 
 {if $gui->file_check.status_ok eq 0}
   <script type="text/javascript">
-//  BUGID 3943: Escape all messages (string)
   alert_message("{$labels.warning}","{$gui->file_check.msg|escape:'javascript'}");
-  // alert("{$gui->file_check.msg}");
   </script>
 {/if}  
 </div>

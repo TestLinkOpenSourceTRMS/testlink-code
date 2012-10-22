@@ -1,13 +1,8 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: project_req_spec_mgmt.tpl,v 1.17 2010/10/27 09:40:20 mx-julian Exp $
+@filesource project_req_spec_mgmt.tpl
 
-rev: 
-  20101027 - Julian - reverted accidentally commited experimental code
-  20080415 - franciscom - refactoring
 *}
-{* ------------------------------------------------------------------------- *}
-
 {lang_get var="labels" s="btn_reorder_req_spec,btn_new_req_spec,btn_import,btn_export_all_reqspec"}
 {assign var="req_module" value='lib/requirements/'}
 {assign var="url_args" value="reqSpecEdit.php?doAction=create&amp;tproject_id="}
@@ -46,9 +41,7 @@ rev:
 	</div>
 </div>
 
-{if $gui->refresh_tree == "yes"}
-   {include file="inc_refreshTree.tpl"}
-{/if}
+{if $gui->refresh_tree} {$tlRefreshTreeByReloadJS} {/if}
 
 </body>
 </html>

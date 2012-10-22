@@ -59,17 +59,13 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   {/if}
 {/if}
 
-{if $gui->refreshTree}
-	{include file="inc_refreshTree.tpl"}
-{/if}
+{if $gui->refreshTree} {$tlRefreshTreeByReloadJS} {/if}
 
 {if $gui->file_check.status_ok eq 0}
   <script type="text/javascript">
   alert_message("{$labels.warning|escape:'javascript'}","{$gui->file_check.msg|escape:'javascript'}");
   </script>
 {/if}  
-
-
 </div>
 
 </body>

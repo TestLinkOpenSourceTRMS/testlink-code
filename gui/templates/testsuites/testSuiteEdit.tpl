@@ -98,5 +98,6 @@ function validateForm(f)
 	</div>
 	</form>
 </div>
+{if $gui->refreshTree}{$tlRefreshTreeJS}{/if}
 </body>
 </html>

@@ -132,11 +132,7 @@ name=$gui->name user_feedback=$gui->user_feedback refresh=$smarty.session.settin
 </form>
 </div>
 
-{* BUGID 4067 *}
-{if $gui->sqlResult eq 'ok'}
-	{if isset($gui->refreshTree) && $gui->refreshTree}
-		{include file="inc_refreshTreeWithFilters.tpl"}
-	{/if}
+{if $gui->sqlResult eq 'ok' && isset($gui->refreshTree) && $gui->refreshTree} {$tlRefreshTreeJS} {/if}
 {/if}
 
 </body>

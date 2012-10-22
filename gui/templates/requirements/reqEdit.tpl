@@ -384,10 +384,6 @@ function insert_last_doc_id()
   {/if}
 </form>
 </div>
-
-{if isset($gui->refreshTree) && $gui->refreshTree}
-	{include file="inc_refreshTreeWithFilters.tpl"}
-{/if}
-
+{if isset($gui->refreshTree) && $gui->refreshTree} {$tlRefreshTreeJS} {/if}
 </body>
 </html>

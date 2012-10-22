@@ -120,10 +120,6 @@ function check_action_precondition(container_id,action,msg)
 {/if}
 
 </div>
-{* 20100314 - franciscom *}
-{if $refreshTree}
-   	{include file="inc_refreshTreeWithFilters.tpl"}
-	{*include file="inc_refreshTree.tpl"*}
-{/if}
+{if $gui->refreshTree} {$tlRefreshTreeJS} {/if}
 </body>
 </html>

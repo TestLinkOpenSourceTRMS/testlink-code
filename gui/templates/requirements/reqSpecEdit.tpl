@@ -261,12 +261,8 @@ function validateForm(f)
 </div>
 
 <script type="text/javascript" defer="1">
-   	document.forms[0].doc_id.focus()
+document.forms[0].doc_id.focus()
 </script>
-
-{if isset($gui->refreshTree) && $gui->refreshTree}
-	{include file="inc_refreshTreeWithFilters.tpl"}
-{/if}
-
+{if isset($gui->refreshTree) && $gui->refreshTree} {$tlRefreshTreeJS} {/if}
 </body>
 </html>

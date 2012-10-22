@@ -58,8 +58,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	</tr>
 </table>
 {include file="inc_attachments.tpl" attach=$gui->attach}
-{if $gui->refreshTree}
-  {include file="inc_refreshTreeWithFilters.tpl"}
-{/if}
+{if $gui->refreshTree} {$tlRefreshTreeJS} {/if}
 </body>
 </html>

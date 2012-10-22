@@ -6,11 +6,7 @@ view a requirement specification
 @filesource	reqSpecView.tpl
 @internal revisions
 @since 2.0
-20110817 - franciscom - TICKET 4703: Req. Spec. View - display log message 
-20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
-20110320 - franciscom - TICKET 4321: Requirement Spec - add option to print single Req Spec
 *}
-
 {lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,title_last_mod,revision,
 						  title_created,no_records_found,commit_title,please_add_revision_log"}
 
@@ -234,8 +230,6 @@ Ext.onReady(function(){ tip4log({$gui->req_spec.revision_id}); });
 {/if}
 
 </div>
-{if isset($gui->refreshTree) && $gui->refreshTree}
-   {include file="inc_refreshTreeWithFilters.tpl"}
-{/if}
+{if isset($gui->refreshTree) && $gui->refreshTree} {$tlRefreshTreeJS} {/if}
 </body>
 </html>

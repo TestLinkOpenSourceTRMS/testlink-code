@@ -243,11 +243,7 @@ function validateStepsReorder(formOID)
 	  {$labels.no_records_found}
 	{/if}
 {/if}
-
 </div>
-{* 20100315 - franciscom *}
-{if $gui->refreshTree}
-	{include file="inc_refreshTreeWithFilters.tpl"}
-{/if}
+{if $gui->refreshTree} {$tlRefreshTreeJS} {/if}
 </body>
 </html>

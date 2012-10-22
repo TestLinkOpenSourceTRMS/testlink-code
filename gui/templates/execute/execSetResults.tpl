@@ -389,9 +389,7 @@ Ext.onReady(function() {
       </div>
   {else}
     {include file="execute/inc_exec_show_tc_exec.tpl"}
-    {if isset($gui->refreshTree) && $gui->refreshTree}
-	    {include file="inc_refreshTreeWithFilters.tpl"}
-    {/if}
+    {if isset($gui->refreshTree) && $gui->refreshTree} {$tlRefreshTreeJS} {/if}
   {/if}
   
 </form>

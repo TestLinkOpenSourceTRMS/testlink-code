@@ -143,8 +143,6 @@ function check_action_precondition(container_id,action,msg)
 {/if}
 
 </div>
-{if $gui->refreshTree}
-   	{include file="inc_refreshTreeWithFilters.tpl"}
-{/if}
+{if $gui->refreshTree} {$tlRefreshTreeJS} {/if}
 </body>
 </html>

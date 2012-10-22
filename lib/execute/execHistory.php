@@ -9,7 +9,6 @@
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('exec.inc.php');
-require_once("attachments.inc.php");
 require_once("web_editor.php");
 
 testlinkInitPage($db);

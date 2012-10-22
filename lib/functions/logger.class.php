@@ -1,4 +1,3 @@
-
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
@@ -14,12 +13,12 @@
  * logger Object is created when this file is included.
  * ($g_tlLogger = tlLogger::create($db);)
  *
- * @package TestLink
- * @author Andreas Morsing
- * @copyright 2005-2012, TestLink community 
- * @filesource logger.class.php
- * @link http://www.teamst.org
- * @since 1.8
+ * @package     TestLink
+ * @author      Andreas Morsing
+ * @copyright   2005-2012, TestLink community 
+ * @filesource  logger.class.php
+ * @link        http://www.teamst.org
+ * @since       1.8
  * 
  * @internal revisions
  * @since 2.0

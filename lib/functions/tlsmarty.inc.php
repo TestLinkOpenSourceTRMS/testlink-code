@@ -7,31 +7,32 @@
  * The class is loaded via common.php to all pages.
  * 
  * @filesource	tlsmarty.inc.php
- * @package 	TestLink
- * @author 		Martin Havlat
+ * @package 	  TestLink
+ * @author 		  Martin Havlat
  * @copyright 	2005-2012, TestLink community 
- * @link 		http://www.teamst.org/index.php
- * @link 		http://www.smarty.net/ 
+ * @link 		    http://www.teamst.org/index.php
+ * @link 		    http://www.smarty.net/ 
  *
  * @internal revisions
  * @since 2.0
  *
  */
 
-define('SMARTY_DIR', TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty'.  
-					 DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR);
+define('SMARTY_DIR', TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty'. DIRECTORY_SEPARATOR . 
+       'libs' . DIRECTORY_SEPARATOR);
 define('SMARTY_CORE_DIR', SMARTY_DIR . 'internals' . DIRECTORY_SEPARATOR);
 
 /** include parent extrenal component */
 require_once( SMARTY_DIR . 'Smarty.class.php');
 
-/** in this way you can switch ext js version in easy way,
-	To use a different version of Sencha (Old EXT-JS) that provided with TL */
+/** 
+in this way you can switch ext js version in easy way,
+To use a different version of Sencha (Old EXT-JS) that provided with TL 
+*/
 if( !defined('TL_EXTJS_RELATIVE_PATH') )
 {
     define('TL_EXTJS_RELATIVE_PATH','third_party/ext-js' );
 }
-
 
 /** @TODO martin: refactore + describe 
  * The next two functions was moved here from common.php */
@@ -96,17 +97,18 @@ function guard_header_smarty($file)
  */
 class TLSmarty extends Smarty
 {
-    function TLSmarty()
+    var $baseHREF;
+    function __construct()
     {
         global $tlCfg;
         global $g_locales_html_select_date_field_order;
-        global $g_locales_date_format;
-        global $g_locales_timestamp_format;
+        // global $g_locales_date_format;
+        // global $g_locales_timestamp_format;
         
         parent::__construct();
         $this->template_dir = TL_ABS_PATH . 'gui/templates/';
-        $this->compile_dir = TL_TEMP_PATH;
         $this->config_dir = TL_ABS_PATH . 'gui/templates/';
+        $this->compile_dir = TL_TEMP_PATH;
 
         $testproject_coloring = $tlCfg->gui->testproject_coloring;
         $testprojectColor = $tlCfg->gui->background_color ; //TL_BACKGROUND_DEFAULT;
@@ -121,8 +123,7 @@ class TLSmarty extends Smarty
         }
         $this->assign('testprojectColor', $testprojectColor);
         
-        $my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
-        $basehref = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
+        $this->baseHREF =isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
         
         if ($tlCfg->smarty_debug)
         {
@@ -158,10 +159,9 @@ class TLSmarty extends Smarty
         $this->assign('name',null);
         // -----------------------------------------------------------------------------
         
-        $this->assign('basehref', $basehref);
-        $this->assign('css', $basehref . TL_TESTLINK_CSS);
-        $this->assign('custom_css', $basehref . TL_TESTLINK_CUSTOM_CSS);
-        $this->assign('locale', $my_locale);
+        $this->assign('basehref', $this->baseHREF);
+        $this->assign('css', $this->baseHREF . TL_TESTLINK_CSS);
+        $this->assign('custom_css', $this->baseHREF . TL_TESTLINK_CUSTOM_CSS);
           
           
         // -----------------------------------------------------------------------------
@@ -193,7 +193,6 @@ class TLSmarty extends Smarty
         // inc_head.tpl
         $this->assign('jsValidate', null);
         $this->assign('jsTree', null);
-        // $this->assign('editorType', null);
         	
         	
         // user feedback variables (used in inc_update.tpl)
@@ -207,16 +206,18 @@ class TLSmarty extends Smarty
         
         $this->assign('optLocale',config_get('locales'));
         
-        $this->assign('gsmarty_html_select_date_field_order',
-                      $g_locales_html_select_date_field_order[$my_locale]);
-                      
-        $this->assign('gsmarty_date_format',$g_locales_date_format[$my_locale]);
+        //$this->assign('gsmarty_html_select_date_field_order',
+        //              $g_locales_html_select_date_field_order[$my_locale]);
+
+        $my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
+        $this->assign('locale', $my_locale);
+        $this->assign('gsmarty_date_format',$tlCfg->locales_date_format[$my_locale]);
         
         // add smarty variable to be able to set localized date format on datepicker
         $this->assign('gsmarty_datepicker_format',
-                      str_replace('%','',$g_locales_date_format[$my_locale]));
+                      str_replace('%','',$tlCfg->locales_date_format[$my_locale]));
                       
-        $this->assign('gsmarty_timestamp_format',$g_locales_timestamp_format[$my_locale]);
+        $this->assign('gsmarty_timestamp_format',$tlCfg->locales_timestamp_format[$my_locale]);
         
         // -----------------------------------------------------------------------------
         // Images

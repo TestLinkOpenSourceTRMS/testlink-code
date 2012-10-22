@@ -1,7 +1,7 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-@filesource	containerEdit.tpl
-Purpose: smarty template - edit test specification: containers 
+@filesource	testSuiteEdit.tpl
+Purpose: smarty template - edit test specification: test suites 
 
 @internal revisions
 @since 2.0
@@ -28,10 +28,10 @@ var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
 
 function validateForm(f)
 {
-  if (isWhitespace(f.container_name.value)) 
+  if (isWhitespace(f.testsuiteName.value)) 
   {
       alert_message(alert_box_title,warning_empty_container_name);
-      selectField(f, 'container_name');
+      selectField(f, 'testsuiteName');
       return false;
   }
 
@@ -47,7 +47,7 @@ function validateForm(f)
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">
   var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
-  var tc_editor = "{$editorType}";
+  var tc_editor = "{$gui->editorType}";
   </script>
   <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
 {/if}
@@ -62,31 +62,29 @@ function validateForm(f)
 	                                                   mdcArgsDetails = "{$gui->midAirCollisionMsg.details}" }
   {/if}
   <h1 class="title">{$labels.title_edit_level} {lang_get s=$gui->containerType}</h1> 
-	<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$gui->id}&tproject_id={$gui->tproject_id}" 
+	<form method="post" action="lib/testsuites/testSuiteEdit.php>
 	      name="container_edit" id="container_edit"
         onSubmit="javascript:return validateForm(this);">
 	
 	<div>
+		<input type="hidden" name="testsuiteID" id="testsuiteID" value="{$gui->id}">
+	  <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}"> 
 		<input type="submit" name="update_testsuite" value="{$labels.btn_save}" 
 		       onclick="show_modified_warning = false;" />
 		<input type="button" name="go_back" value="{$labels.cancel}" 
 		       onclick="javascript: show_modified_warning = false; history.back();"/>
 		       
 		<input type="hidden" name="midAirCollisionTimeStamp" id="midAirCollisionTimeStamp" 
-		                     value = "{$gui->container.modification_ts}"       
+		                     value = "{$gui->tsuite.modification_ts}"       
 	</div>
-	 
-	 {include file="testcases/inc_testsuite_viewer_rw.tpl"}
-
-   {* Custom fields *}
-   {if $gui->cf != ""}
-     <p>
-     <div id="cfields_design_time" class="custom_field_container">
-     {$gui->cf}
-     </div>
-     <p>
-   {/if}
-   
+  {include file="testsuites/testSuiteViewerRW.inc.tpl"}
+  {if $gui->cf != ""} {* Custom fields *}
+    <p>
+    <div id="cfields_design_time" class="custom_field_container">
+    {$gui->cf}
+    </div>
+    <p>
+  {/if}
   <div>
    <a href={$gui->keywordsViewHREF}>{$labels.tc_keywords}</a>
 	 {include file="opt_transfer.inc.tpl" option_transfer=$gui->optionTransfer}
@@ -100,6 +98,5 @@ function validateForm(f)
 	</div>
 	</form>
 </div>
-
 </body>
 </html>

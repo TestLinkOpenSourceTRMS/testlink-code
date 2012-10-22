@@ -8,10 +8,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	{* IS REALLY NEEDED ??? {$bDownloadOnly=false} 20121014 *}
 	<fieldset class="groupBtn">
 	<h2>{$labels.testsuite_operations}</h2>
-	<form method="post" action="lib/testcases/containerEdit.php">
+	<form method="post" action="lib/testcases/testSuiteEdit.php">
 	  <input type="hidden" name="doAction" id="doAction" value="" />
 	  <input type="hidden" name="containerType" id="containerType" value="{$gui->level}" />
-	  <input type="hidden" name="containerID" id="containerID" value="{$gui->container_data.id}" />
+	  <input type="hidden" name="testsuiteID" id="testsuiteID" value="{$gui->tsuite.id}" />
 	  <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 	
 	  <input type="submit" name="new_testsuite" id="new_testsuite"

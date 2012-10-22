@@ -257,7 +257,7 @@ define('TL_LOCALIZE_TAG','LOCALIZE: ');
  *      CKEditor
  **/
 // 
-$g_locales = array(	
+$tlCfg->locales = array(	
 	'cs_CZ' => 'Czech',
 	'de_DE' => 'German',
 	'en_GB' => 'English (wide/UK)',
@@ -283,12 +283,12 @@ $g_locales = array(
  */
 
 /** @var string Default format of date */
-$g_date_format ='%d/%m/%Y';
+$tlCfg->date_format ='%d/%m/%Y';
 /** @var string Default format of datetime */
-$g_timestamp_format = '%d/%m/%Y %H:%M:%S';
+$tlCfg->timestamp_format = '%d/%m/%Y %H:%M:%S';
 
 /** @var array Localized format of date */
-$g_locales_date_format = array(
+$tlCfg->locales_date_format = array(
 	'cs_CZ' => '%d.%m.%Y',
 	'de_DE' => '%d.%m.%Y',
 	'en_GB' => '%d/%m/%Y',
@@ -309,7 +309,7 @@ $g_locales_date_format = array(
 ); 
 
 /** @var array Localized format of full timestamp */
-$g_locales_timestamp_format = array(
+$tlCfg->locales_timestamp_format = array(
 	'cs_CZ' => '%d.%m.%Y %H:%M:%S',
 	'de_DE' => '%d.%m.%Y %H:%M:%S',
 	'en_GB' => '%d/%m/%Y %H:%M:%S',

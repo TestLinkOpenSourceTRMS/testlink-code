@@ -17,7 +17,6 @@
 /** related functionality */
 require_once( dirname(__FILE__) . '/requirement_mgr.class.php' );
 require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
-require_once( dirname(__FILE__) . '/attachments.inc.php' );
 require_once( dirname(__FILE__) . '/users.inc.php' );
 
 /** list of supported format for Test case import/export */
@@ -632,9 +631,14 @@ class testcase extends tlObjectWithAttachments
 	
 	//function show(&$smarty,$env_tproject_id,$grants,$guiObj,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 	//              $viewer_args = null,$path_info=null,$mode=null)
-	function show(&$smarty,$env_tproject_id,$grants,$guiObj,$id,$version_id = self::ALL_VERSIONS)
+	// function show(&$smarty,$env_tproject_id,$grants,$guiObj,$id,$version_id = self::ALL_VERSIONS)
+	function show(&$smarty,$guiObj,$identity)
 	{
 
+    $env_tproject_id = $identity->tproject_id;
+    $id = $identity->id;
+    $version_id = isset($identity->version_id) ? $identity->version_id : self::ALL_VERSIONS;
+  
 	  $idSet = is_array($id) ? $id : (array)$id;
 	  $status_ok = $idSet[0] > 0 ? 1 : 0;
 

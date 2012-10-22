@@ -6,12 +6,14 @@
  * Test Case and Test Steps operations
  *
  * @filesource	tcEdit.php
- * @package 	TestLink
- * @author 		TestLink community
- * @copyright 	2007-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author 		  TestLink community
+ * @copyright 	2007-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
+ * @since 2.0
+ *
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -29,7 +31,6 @@ $tsuite_mgr = new testsuite($db);
 
 $args = init_args($cfg,$tproject_mgr,$_SESSION['currentUser'],$optionTransferName);
 require_once(require_web_editor($cfg->webEditorCfg['type']));
-$templateCfg = templateConfiguration('tcEdit');
 
 $commandMgr = new testcaseCommands($db,$_SESSION['currentUser'],$args->tproject_id);
 $commandMgr->setTemplateCfg(templateConfiguration());
@@ -45,6 +46,7 @@ $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
 $gui = initializeGui($db,$args,$cfg,$tcase_mgr,$_SESSION['currentUser']);
 
 $smarty = new TLSmarty();
+$smarty->templateCfg = templateConfiguration('tcEdit');
 
 $name_ok = 1;
 $doRender = false;
@@ -129,9 +131,9 @@ if($args->delete_tc_version)
 	$gui->exec_status_quo = $sq;
 	$gui->refreshTree = 0;
 
-    $smarty->assign('gui',$gui);
-    $templateCfg = templateConfiguration('tcDelete');
-    $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+  $smarty->assign('gui',$gui);
+  $templateCfg = templateConfiguration('tcDelete');
+  $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 }
 else if($args->move_copy_tc)
 {
@@ -161,19 +163,24 @@ else if($args->move_copy_tc)
 	$gui->tproject_id = $args->tproject_id;
 
 	$smarty->assign('gui', $gui);
-    $templateCfg = templateConfiguration('tcMove');
-    $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+  $templateCfg = templateConfiguration('tcMove');
+  $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 }
 else if($args->do_move)
 {
 	$result = $tree_mgr->change_parent($args->tcase_id,$args->new_container_id);
-  	$tree_mgr->change_child_order($args->new_container_id,$args->tcase_id,
-                                  $args->target_position,$cfg->exclude_node_types);
+  $tree_mgr->change_child_order($args->new_container_id,$args->tcase_id,
+                                $args->target_position,$cfg->exclude_node_types);
 
-    $gui->refreshTree = $args->refreshTree;
-	// TICKET 4562
-    $gui->modify_tc_rights = $_SESSION['currentUser']->hasRight($db,"mgt_modify_tc",$args->tproject_id);
-	$tsuite_mgr->show($smarty,$args->tproject_id,$gui,$templateCfg->template_dir,$args->old_container_id);
+  $gui->refreshTree = $args->refreshTree;
+  $gui->modify_tc_rights = $_SESSION['currentUser']->hasRight($db,"mgt_modify_tc",$args->tproject_id);
+	// $tsuite_mgr->show($smarty,$args->tproject_id,$gui,$templateCfg->template_dir,$args->old_container_id);
+	$identity = new stdClass();
+	$identity->tproject_id = $args->tproject_id;
+	$identity->id = $args->old_container_id;
+	$tsuite_mgr->show($smarty,$gui,$identity);
+	
+	
 }
 else if($args->do_copy)
 {
@@ -208,9 +215,14 @@ else if($args->do_copy)
 	$viewer_args['refreshTree']=$args->refreshTree? 1 : 0;
 	$viewer_args['msg_result'] = $msg;
 	$viewer_args['user_feedback'] = $user_feedback;
-	$tcase_mgr->show($smarty,$args->tproject_id,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
-	                 $args->tcversion_id,$viewer_args,null, $args->show_mode);
+	// $tcase_mgr->show($smarty,$args->tproject_id,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
+	//                 $args->tcversion_id,$viewer_args,null, $args->show_mode);
 
+  $identity = new stdClass();
+  $identity->tproject_id = $args->tproject_id;
+  $identity->id = $args->tcase_id;
+  $identity->version_id = $args->tcversion_id;
+	$tcase_mgr->show($smarty,$gui,$identity);
 }
 else if($args->do_create_new_version)
 {
@@ -231,11 +243,15 @@ else if($args->do_create_new_version)
 	$viewer_args['refreshTree'] = DONT_REFRESH;
 	$viewer_args['msg_result'] = $msg;
 	$viewer_args['user_feedback'] = $user_feedback;
+
+	//$tcase_mgr->show($smarty,$args->tproject_id,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
+	//				         $testcase_version,$viewer_args,null, $args->show_mode);
 	
-	
-	$testcase_version = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
-	$tcase_mgr->show($smarty,$args->tproject_id,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
-					 $testcase_version,$viewer_args,null, $args->show_mode);
+	$identity = new stdClass();
+	$identity->tproject_id = $args->tproject_id;
+	$identity->id = $args->tcase_id;
+	$identity->version_id = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
+	$tcase_mgr->show($smarty,$gui,$identity);					         
 }
 else if($args->do_activate_this || $args->do_deactivate_this)
 {
@@ -254,8 +270,18 @@ else if($args->do_activate_this || $args->do_deactivate_this)
 	$viewer_args['action'] = $action_result;
 	$viewer_args['refreshTree']=DONT_REFRESH;
 
-	$tcase_mgr->show($smarty,$args->tproject_id,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
-	                 testcase::ALL_VERSIONS,$viewer_args,null, $args->show_mode);
+	// $tcase_mgr->show($smarty,$args->tproject_id,$args->userGrants,$gui,$templateCfg->template_dir,$args->tcase_id,
+	//                 testcase::ALL_VERSIONS,$viewer_args,null, $args->show_mode);
+
+  $identity = new stdClass();
+  $identity->tproject_id = $args->tproject_id;
+  $identity->id = $args->tcase_id;
+  $identity->version_id = testcase::ALL_VERSIONS;
+	$tcase_mgr->show($smarty,$gui,$identity);
+
+
+
+
 }
 
 // --------------------------------------------------------------------------
@@ -293,14 +319,14 @@ if ($show_newTC_form)
 		$cf_smarty[$locationKey] = 
 			$tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,$args->container_id,'design','',
 			                                              null,null,null,$locationFilter);
-    }
+  }
 	$gui->cf = $cf_smarty;
 	$gui->tc = $tc_default;
 	$gui->containerID = $args->container_id;
 	$smarty->assign('gui',$gui);
 
-    $templateCfg = templateConfiguration('tcNew');
-  	$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+  $templateCfg = templateConfiguration('tcNew');
+  $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 }
 
 

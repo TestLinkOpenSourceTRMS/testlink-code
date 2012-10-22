@@ -4,13 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	tree.class.php
- * @package 	TestLink
- * @author Francisco Mancardi
- * @copyright 	2005-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author      Francisco Mancardi
+ * @copyright 	2005-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
- * 20110903 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
  */
 
 /**
@@ -56,20 +55,20 @@ class tree extends tlObject
 	 */
 	function __construct(&$db) 
 	{
-   		parent::__construct();
+    parent::__construct();
 		$this->db = &$db;
 		$this->node_descr_id = array_flip($this->node_types);
-        $this->object_table = $this->tables['nodes_hierarchy'];
+    $this->object_table = $this->tables['nodes_hierarchy'];
 	}
 
-  	/**
-  	 *  get info from node_types table, regarding node types
-  	 *        that can be used in a tree. 
-  	 * 
-  	 * @return array map
-     *        key: description: single human friendly string describing node type
-     *        value: numeric code used to identify a node type
-	 */
+  /**
+    *  get info from node_types table, regarding node types
+  	*        that can be used in a tree. 
+  	* 
+  	* @return array map
+    *        key: description: single human friendly string describing node type
+    *        value: numeric code used to identify a node type
+	  */
 	function get_available_node_types() 
 	{
 		static $s_nodeTypes;
@@ -523,29 +522,29 @@ class tree extends tlObject
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		
-	  	$sql = "/* $debugMsg */ SELECT * from {$this->object_table} " .
-	  	       " WHERE parent_id = {$id} ORDER BY node_order,id";
+    $sql = "/* $debugMsg */ SELECT * from {$this->object_table} " .
+	         " WHERE parent_id = {$id} ORDER BY node_order,id";
 	  	
-	  	$node_list=array();  
-	  	$result = $this->db->exec_query($sql);
+    $node_list=array();  
+	  $result = $this->db->exec_query($sql);
 	  	
-	  	if( $this->db->num_rows($result) == 0 )
+    if( $this->db->num_rows($result) == 0 )
+	  {
+      return(null); 	
+	  }
+	  	
+    while( $row = $this->db->fetch_array($result) )
+	  {
+      $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
+	  	if( !isset($exclude_node_types[$this->node_types[$row['node_type_id']]]))
 	  	{
-	  	  return(null); 	
+	  	  $node_list[] = array('id' => $row['id'], 'parent_id' => $row['parent_id'],
+	  	     	                 'node_type_id' => $row['node_type_id'],
+	  	         	             'node_order' => $row['node_order'],
+	  	             	         'node_table' => $node_table,'name' => $row['name']);
 	  	}
-	  	
-	  	while ( $row = $this->db->fetch_array($result) )
-	  	{
-	  	  	$node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
-	  	  	if( !isset($exclude_node_types[$this->node_types[$row['node_type_id']]]))
-	  	  	{
-	  	    	$node_list[] = array('id' => $row['id'], 'parent_id' => $row['parent_id'],
-	  	        	                 'node_type_id' => $row['node_type_id'],
-	  	            	             'node_order' => $row['node_order'],
-	  	                	         'node_table' => $node_table,'name' => $row['name']);
-	  		}
-	  	}
-	  	return ($node_list);
+	  }
+	  return ($node_list);
 	}
 	
 	 
@@ -1458,8 +1457,15 @@ class tree extends tlObject
 		}	
 	}
 
-
-
+  function hasChildOfType($id,$type)
+  {
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $sql = "/* $debugMsg */ SELECT count(*) AS qty from {$this->object_table} " .
+	         " WHERE parent_id = {$id} AND node_type_id = " . $this->node_descr_id[$type];
+	  	
+	  $rs = $this->db->get_recordset($sql);
+    return ($rs[0]['qty'] > 0);  
+  }
  
 }// end class
 

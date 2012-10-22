@@ -16,7 +16,6 @@
  */
 
 /** include support for attachments */
-require_once( dirname(__FILE__) . '/attachments.inc.php');
 require_once( dirname(__FILE__) . '/files.inc.php');
 
 /**
@@ -373,18 +372,17 @@ class testsuite extends tlObjectWithAttachments
    * returns: -
    *
    **/
-  function show(&$smarty,$tproject_id,$guiObj,$id, $options=null,
-                $sqlResult = '', $action = 'update',$modded_item_id = 0)
+  function show(&$smarty,$guiObj,$identity,$options = null,$sqlResult = '', $action = 'update')
   {
     
     // need to understand why sometimes $guiObj can be null
     $gui = is_null($guiObj) ? new stdClass() : $guiObj;
-    $gui->id = $id;
+    $gui->id = $identity->id;
     $gui->cf = '';
     $gui->sqlResult = '';
     $gui->sqlAction = '';
     $gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
-
+    $gui->level = 'testsuite';
     
     $my['options'] = array('show_mode' => 'readwrite');   
     $my['options'] = array_merge($my['options'], (array)$options);
@@ -400,39 +398,29 @@ class testsuite extends tlObjectWithAttachments
       $gui->sqlAction = $action;
     }
     
-    $gui->container_data = $this->get_by_id($id);
-    $gui->moddedItem = $gui->container_data;
-    if ($modded_item_id)
-    {
-      $gui->moddedItem = $this->get_by_id($modded_item_id);
-    }
-
-    $gui->cf = $this->html_table_of_custom_field_values($id);
-    $gui->keywords_map = $this->get_keywords_map($id,' ORDER BY keyword ASC ');
+    $gui->tsuite = $this->get_by_id($identity->id);
+    $gui->pageTitle = $gui->viewerTitle = lang_get('testsuite') . ' : ' . $gui->tsuite['name'];
+    
+    $gui->cf = $this->html_table_of_custom_field_values($identity->id);
+    $gui->keywords_map = $this->get_keywords_map($identity->id,' ORDER BY keyword ASC ');
 
     $gui->attach = new stdClass();
-    $gui->attach->itemID = $gui->id;
+    $gui->attach->itemID = $identity->id;
     $gui->attach->dbTable = $this->attachmentTableName;
 
     $gui->attach->infoSet = null;
     $gui->attach->gui = null;
-    list($gui->attach->infoSet,$gui->attach->gui) = $this->buildAttachSetup($id,$my['options']);
+    list($gui->attach->infoSet,$gui->attach->gui) = $this->buildAttachSetup($identity->id,$my['options']);
     $gui->attach->gui->display=TRUE;
     $gui->attach->enabled = $gui->attach->gui->enabled;
     
-    $gui->idpage_title = lang_get('testsuite');
-    $gui->level = 'testsuite';
-    $gui->tproject_id = $tproject_id;
+    $gui->tproject_id = $identity->tproject_id;
     
-    $gui->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id=$tproject_id " .
+    $gui->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id=$identity->tproject_id " .
                              ' target="mainframe" class="bold" ' .
                              ' title="' . lang_get('menu_manage_keywords') . '"';
-    
-    
-    
-    //new dBug($gui);
     $smarty->assign('gui',$gui);
-    $smarty->display($smarty->tlTemplateCfg->template_dir . 'containerView.tpl');
+    $smarty->display('testsuites/testSpecViewTestSuite.tpl');
   }
   
   
@@ -458,10 +446,6 @@ class testsuite extends tlObjectWithAttachments
   */
   function viewer_edit_new(&$smarty,$gui,$action,$context,$oWebEditor,$messages=null,$userInput=null)
   {
-  
-    echo __METHOD__;
-    new dBug($userInput);
-    
     $internalMsg = array('result_msg' => null,  'user_feedback' => null);
     if( !is_null($messages) )
     {
@@ -478,9 +462,10 @@ class testsuite extends tlObjectWithAttachments
     
     $gui->cf = -2; // MAGIC must be explained
 
-    $gui->containerID = $parent_id;
-    $gui->container = null;
-    $gui->containerType = 'testsuite';
+    $gui->parentID = $parent_id;
+    $gui->tsuite = null;
+    $gui->containerType = property_exists($gui,'containerType') ? $gui->containerType : 'testsuite';
+    $gui->page_title = lang_get($gui->containerType);
     $gui->user_feedback = $internalMsg['user_feedback'];
 
  
@@ -490,16 +475,15 @@ class testsuite extends tlObjectWithAttachments
       case 'edit_testsuite':
       case 'update_testsuite':
         // update has been added to cope with Mid Air Collision management
-        $tpl .= 'containerEdit.tpl';
+        $tpl .= 'testSuiteEdit.tpl';
       break;
 
       case 'new_testsuite':
       case 'add_testsuite':
-        $tpl .= 'containerNew.tpl';
-        $gui->parent_info = $this->tree_manager->get_node_hierarchy_info($parent_id);
-        $gui->parent_info['description'] = lang_get($this->node_types_id_descr[$gui->parent_info['node_type_id']]);
+        $tpl .= 'testSuiteNew.tpl';
+        $parent_info = $this->tree_manager->get_node_hierarchy_info($parent_id);
+        $gui->page_title .= ' : ' . $parent_info['name']; 
       break;
-      
     }
 
     if($useUserInput)
@@ -519,10 +503,10 @@ class testsuite extends tlObjectWithAttachments
       $gui->name = '';
       if ($action == 'edit_testsuite')
       {
-        $gui->container = $this->get_by_id($id);
-        $gui->name = $gui->container['name'];
+        $gui->tsuite = $this->get_by_id($id);
+        $gui->name = $gui->tsuite['name'];
       } 
-      $webEditorData = $gui->container; // NOT TOO CLEAR
+      $webEditorData = $gui->tsuite; // NOT TOO CLEAR
     }
     
     $gui->cf = $this->html_table_of_custom_field_inputs($id,$parent_id,'design','',$userInput);
@@ -547,9 +531,6 @@ class testsuite extends tlObjectWithAttachments
       $of->Value = isset($webEditorData[$key]) ? $webEditorData[$key] : null;
       $smarty->assign($key, $of->CreateHTML());
     }
-    
-    echo 'Before to Render';
-    echo $tpl;
     $smarty->assign('gui',$gui); 
     $smarty->display($tpl);
   }

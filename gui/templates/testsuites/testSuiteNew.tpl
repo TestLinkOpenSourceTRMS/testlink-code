@@ -1,25 +1,25 @@
 {* 
-TestLink Open Source Project - http://testlink.sourceforge.net/ 
-@filesource	containerEdit.tpl
-Purpose: smarty template - edit test specification: containers 
+TestLink Open Source Project - http://testlink.sourceforge.net/
 
+@filesource	testSuiteNew.tpl
 @internal revisions
 @since 2.0
 
 *}
 {lang_get var="labels"
-          s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,cancel,warning,warning_required_cf,
-             warning_unsaved,comp_name,details'}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
-{config_load file="input_dimensions.conf" section=$cfg_section}
+          s="warning_empty_testsuite_name,title_create,tc_keywords,warning_required_cf,
+             warning,btn_create_testsuite,cancel,warning_unsaved,details,comp_name,comp_alt_name"}
 
-{include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$editorType}
+{config_load file="input_dimensions.conf" section="containerEdit"}
+
+{include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 {include file="inc_ext_js.tpl"}
 
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
 var {$gui->optionTransfer->jsName} = setUpOptionTransferEngine('{$gui->optionTransferJSObject}');
 </script>
+
 
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
@@ -39,7 +39,7 @@ function validateForm(f)
   {
   	return false;
   }
- 
+  
   return true;
 }
 </script>
@@ -47,59 +47,59 @@ function validateForm(f)
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">
   var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
-  var tc_editor = "{$editorType}";
+  var tc_editor = "{$gui->editorType}";
   </script>
   <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
 {/if}
-
 </head>
 <body onLoad="{$gui->optionTransfer->jsName}.init(document.forms[0]);focusInputField('name')">
-<h1 class="title">{lang_get s=$gui->containerType}{$smarty.const.TITLE_SEP}{$gui->name|escape}</h1> 
+<h1 class="title">{$gui->page_title|escape}</h1>
 <div class="workBack">
-
-  {if $gui->midAirCollision}
-	  {include file = "midAirCollisionMessage.inc.tpl" mdcArgsMain = "{$gui->midAirCollisionMsg.main}" 
-	                                                   mdcArgsDetails = "{$gui->midAirCollisionMsg.details}" }
-  {/if}
-  <h1 class="title">{$labels.title_edit_level} {lang_get s=$gui->containerType}</h1> 
-	<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$gui->id}&tproject_id={$gui->tproject_id}" 
-	      name="container_edit" id="container_edit"
-        onSubmit="javascript:return validateForm(this);">
+<h1 class="title">{$labels.title_create} {lang_get s=$gui->containerType}</h1>
 	
-	<div>
-		<input type="submit" name="update_testsuite" value="{$labels.btn_save}" 
-		       onclick="show_modified_warning = false;" />
-		<input type="button" name="go_back" value="{$labels.cancel}" 
+{include file="inc_update.tpl" result=$sqlResult 
+                               user_feedback=$gui->user_feedback
+                               item=$gui->containerType action="add" name=$gui->name
+                               refresh=$gui->refreshTree}
+
+
+<form method="post" name="container_new" id="container_new"
+      action="lib/testsuites/testSuiteEdit.php"
+      onSubmit="javascript:return validateForm(this);">
+	<div style="font-weight: bold;">
+		<div>
+      <input type="hidden" name="parentID" value="{$gui->parentID}">
+      <input type="hidden" name="tproject_id" value="{$gui->tproject_id}">
+
+      <input type="hidden" name="add_testsuite" id="add_testsuite" />
+			<input type="submit" name="add_testsuite_button" value="{$labels.btn_create_testsuite}"
+			       onclick="show_modified_warning = false;" />
+			<input type="button" name="go_back" value="{$labels.cancel}" 
 		       onclick="javascript: show_modified_warning = false; history.back();"/>
-		       
-		<input type="hidden" name="midAirCollisionTimeStamp" id="midAirCollisionTimeStamp" 
-		                     value = "{$gui->container.modification_ts}"       
-	</div>
-	 
-	 {include file="testcases/inc_testsuite_viewer_rw.tpl"}
+		</div>	
+	  {include file="testsuites/testSuiteViewerRW.inc.tpl"}
 
    {* Custom fields *}
    {if $gui->cf != ""}
-     <p>
+     <br />
      <div id="cfields_design_time" class="custom_field_container">
      {$gui->cf}
      </div>
-     <p>
    {/if}
-   
-  <div>
+   	 <br />
+   <div>
    <a href={$gui->keywordsViewHREF}>{$labels.tc_keywords}</a>
 	 {include file="opt_transfer.inc.tpl" option_transfer=$gui->optionTransfer}
 	 </div>
-	<br></br>
+	 <br />
 	<div>
-		<input type="submit" name="update_testsuite" value="{$labels.btn_save}"
+		<input type="submit" name="add_testsuite_button" value="{$labels.btn_create_testsuite}" 
 		       onclick="show_modified_warning = false;" />
 		<input type="button" name="go_back" value="{$labels.cancel}" 
 		       onclick="javascript: show_modified_warning = false; history.back();"/>
-	</div>
-	</form>
-</div>
+	</div>	
 
+</div>
+</form>
 </body>
 </html>

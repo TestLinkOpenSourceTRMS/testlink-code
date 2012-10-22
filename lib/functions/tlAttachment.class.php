@@ -384,6 +384,10 @@ class tlAttachment extends tlDBObject
                        'attachment_feature_disabled' => null,'attached_files' => null,
                        'max_size_file_upload' => null,'upload_file_new_file' => null);
         $cfg->labels = init_labels($dummy);
+        
+        $dummy = config_get('attachments');
+        $cfg->accessLink = $dummy->accessIcon;        
+       
         return $cfg;  
   }
 

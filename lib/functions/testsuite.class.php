@@ -531,6 +531,8 @@ class testsuite extends tlObjectWithAttachments
       $of->Value = isset($webEditorData[$key]) ? $webEditorData[$key] : null;
       $smarty->assign($key, $of->CreateHTML());
     }
+    
+    new dBug($gui);
     $smarty->assign('gui',$gui); 
     $smarty->display($tpl);
   }

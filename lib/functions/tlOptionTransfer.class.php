@@ -19,7 +19,7 @@ class tlOptionTransfer
   public  $to = null;
   public  $size = null;
   public  $style = null;
-  private $htmlInputNames = null;
+  public  $htmlInputNames = null;
   
   public function __construct($jsName = 'ot') 
 	{

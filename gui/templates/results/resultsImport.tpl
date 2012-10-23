@@ -58,12 +58,10 @@ rev:
 	{foreach item=result from=$gui->resultMap}
 		{$labels.title_imp_tc_data} : {$result[0]|escape}<br />
 	{/foreach}
-	{include file="inc_refreshTree.tpl"}
+  {$tlRefreshTreeByReloadJS}
 {/if}
 
-{if $gui->doImport}
-	{include file="inc_refreshTree.tpl"}
-{/if}
+{if $gui->doImport} {$tlRefreshTreeByReloadJS} {/if}
 
 {if $gui->file_check.status_ok eq 0}
     <script>

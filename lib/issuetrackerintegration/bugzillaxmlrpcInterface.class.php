@@ -7,8 +7,8 @@
  *
  *
  * @internal revisions
- * @since 1.9.4
- * 20120324 - franciscom - TICKET 4904: integrate with ITS on test project basis 
+ * @since 1.9.5
+ * 
 **/
 require_once('Zend/Loader/Autoloader.php');
 Zend_Loader_Autoloader::getInstance();
@@ -138,7 +138,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 
 		$issue = null;
 		$args = array(array('login' => (string)$this->cfg->username, 
-							'password' => (string)$this->cfg->password,'remember' => 1));
+							          'password' => (string)$this->cfg->password,'remember' => 1));
 
 		$resp = array();
 		$method = 'User.login';
@@ -151,16 +151,20 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 		$method = 'User.logout';
 		$resp[$method] = $this->APIClient->call($method);
 
-		if(count($resp['Bug.get']['faults'] == 0))
+		if(count($resp['Bug.get']['faults']) == 0)
 		{
 			$issue = new stdClass();
-		    $issue->IDHTMLString = "<b>{$issueID} : </b>";
+		  $issue->IDHTMLString = "<b>{$issueID} : </b>";
 			
 			$issue->statusCode = 0;
 			$issue->statusVerbose = $resp['Bug.get']['bugs'][0]['status'];
 			$issue->statusHTMLString = "[$issue->statusVerbose] ";
 
 			$issue->summary = $issue->summaryHTMLString = $resp['Bug.get']['bugs'][0]['summary'];
+		}
+    else
+	  {
+	    tLog(__METHOD__ . ' :: ' . $resp['Bug.get']['faults'][0]['faultString'], 'ERROR');
 		}
 		return $issue;
 	}

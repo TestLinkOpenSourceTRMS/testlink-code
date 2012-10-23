@@ -6,7 +6,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {lang_get var='labels' 
           s='btn_new_testsuite,btn_edit_testsuite,btn_move_cp_testsuite,btn_del_testsuite,
              btn_reorder_testsuites_alpha,btn_import_testsuite,btn_export_testsuite,
-             btn_new_tc,btn_move_cp_testcases,btn_delete_testcases,btn_import_tc,btn_export_tc'}
+             btn_new_tc,btn_move_cp_testcases,btn_delete_testcases,btn_import_tc,btn_export_tc,
+             testsuite_operations,testcase_operations'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {$ext_location=$smarty.const.TL_EXTJS_RELATIVE_PATH}
@@ -60,7 +61,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 		<input type="hidden" name="testsuiteName" value="{$gui->tsuite.name|escape}" />
 
     <input type="submit" name="move_testcases_viewer" value="{$labels.btn_move_cp_testcases}"
-       		 title="{$labels.alt_move_cp_testcases}" />
+       		 title="{$labels.btn_move_cp_testcases}" />
 		<input type="submit" name="delete_testcases" value="{$labels.btn_delete_testcases}"
 			     title="{$labels.btn_delete_testcases}" />
 		<input type="submit" name="reorder_testcases" value="{$gui->btn_reorder_testcases}"

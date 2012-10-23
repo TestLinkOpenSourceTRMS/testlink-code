@@ -93,29 +93,25 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
      **/
     function connect()
     {
-    	// echo __METHOD__ . '<br><br>';
-		try
-		{
-			// CRITIC NOTICE for developers
-			// $this->cfg is a simpleXML Object, then seems very conservative and safe
-			// to cast properties BEFORE using it.
-			$this->createAPIClient();
-	       	$this->connected = true;
-			// var_dump($this->APIClient);
-			//echo '<br><br><b>END</b> ' . __METHOD__ . '<br><br>';
-			
-        }
-		catch(Exception $e)
-		{
-			$logDetails = '';
-			foreach(array('uribase','apikey') as $v)
-			{
-				$logDetails .= "$v={$this->cfg->$v} / "; 
-			}
-			$logDetails = trim($logDetails,'/ ');
-			$this->connected = false;
-            tLog(__METHOD__ . " [$logDetails] " . $e->getMessage(), 'ERROR');
-		}
+  		try
+  		{
+  			// CRITIC NOTICE for developers
+  			// $this->cfg is a simpleXML Object, then seems very conservative and safe
+  			// to cast properties BEFORE using it.
+  			$this->createAPIClient();
+  	    $this->connected = true;
+      }
+  		catch(Exception $e)
+  		{
+  			$logDetails = '';
+  			foreach(array('uribase','apikey') as $v)
+  			{
+  				$logDetails .= "$v={$this->cfg->$v} / "; 
+  			}
+  			$logDetails = trim($logDetails,'/ ');
+  			$this->connected = false;
+        tLog(__METHOD__ . " [$logDetails] " . $e->getMessage(), 'ERROR');
+  		}
     }
 
     /**
@@ -134,11 +130,9 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
      **/
 	public function getIssue($issueID)
 	{
-		// $client = $this->APIClient;
-
 		$issue = null;
 		$args = array(array('login' => (string)$this->cfg->username, 
-							'password' => (string)$this->cfg->password,'remember' => 1));
+							          'password' => (string)$this->cfg->password,'remember' => 1));
 
 		$resp = array();
 		$method = 'User.login';
@@ -151,16 +145,20 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 		$method = 'User.logout';
 		$resp[$method] = $this->APIClient->call($method);
 
-		if(count($resp['Bug.get']['faults'] == 0))
+		if(count($resp['Bug.get']['faults']) == 0)
 		{
 			$issue = new stdClass();
-		    $issue->IDHTMLString = "<b>{$issueID} : </b>";
+		  $issue->IDHTMLString = "<b>{$issueID} : </b>";
 			
 			$issue->statusCode = 0;
 			$issue->statusVerbose = $resp['Bug.get']['bugs'][0]['status'];
 			$issue->statusHTMLString = "[$issue->statusVerbose] ";
 
 			$issue->summary = $issue->summaryHTMLString = $resp['Bug.get']['bugs'][0]['summary'];
+		}
+		else
+		{
+		  tLog(__METHOD__ . ' :: ' . $resp['Bug.get']['faults'][0]['faultString'], 'ERROR');
 		}
 		return $issue;
 	}

@@ -39,19 +39,19 @@ class bugzilladbInterface extends issueTrackerInterface
 		}
 		
 		$sql = " SELECT bug_id AS id,short_desc AS summary,bug_status AS status" .
-			   " FROM " . ( !is_null($this->cfg->dbcchema) ? " {$this->cfg->dbschema}.bugs " : 'bugs') .
-			   " WHERE bug_id = '{$id}' ";
+			     " FROM " . ( !is_null($this->cfg->dbschema) ? " {$this->cfg->dbschema}.bugs " : 'bugs') .
+			     " WHERE bug_id = '{$id}' ";
 		$rs = $this->dbConnection->fetchRowsIntoMap($sql,'id');
 		$issue = null;
 
 		if( !is_null($rs) )	
 		{
-	        $issue = new stdClass();
+	    $issue = new stdClass();
 			$issue->IDHTMLString = "<b>{$id} : </b>";
 			$issue->statusCode = $issue->statusVerbose = $rs[$id]['status']; 
 			$issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusVerbose);
 			$issue->statusColor = isset($this->status_color[$issue->statusVerbose]) ? 
-								  $this->status_color[$issue->statusVerbose] : 'white';
+			$this->status_color[$issue->statusVerbose] : 'white';
 	
 			$issue->summaryHTMLString = $rs[$id]['summary'];
 		}

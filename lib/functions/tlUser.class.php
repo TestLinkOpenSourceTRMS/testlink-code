@@ -167,12 +167,11 @@ class tlUser extends tlDBObject
 	 * Checks if password management is external (like LDAP)...
 	 * 
 	 * @return boolean return true if password management is external, else false
-	 * @TODO schlundus, should be moved inside a super tl configuration class
 	 */
 	static public function isPasswordMgtExternal()
 	{
 		$authCfg = config_get('authentication');
-		return ($authCfg['method'] != '' &&  $authCfg['method'] != 'MD5') ? true : false;
+		return ($authCfg['password']['store'] == 'external');
 	}
 	
 	/**
@@ -192,7 +191,7 @@ class tlUser extends tlDBObject
 	  $listNonAlpha = ',;:!?.$/*-+&@_+;./*&?$-!,';
 	  
 	  return str_shuffle(substr(str_shuffle($listAlpha),0,$numAlpha) .
-	                      substr(str_shuffle($listNonAlpha),0,$numNonAlpha));
+                       substr(str_shuffle($listNonAlpha),0,$numNonAlpha));
 	}
 	
 	/** 

@@ -35,30 +35,24 @@ function doAuthorize(&$db,$login,$pwd)
 		$login_exists = ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) >= tl::OK); 
 		if ($login_exists)
 		{
-			$password_check = auth_does_password_match($user,$pwd);
-
-			if(!$password_check->status_ok)
+			$check = auth_does_password_match($user,$pwd);
+			if(!$check->status_ok)
 			{
-				$result = array('status' => tl::ERROR, 'msg' => $password_check->msg);
+				$result = array('status' => tl::ERROR, 'msg' => $check->msg);
 			}
-			
-
-
-			if ($password_check->status_ok && $user->isActive)
+			if ($check->status_ok && $user->isActive)
 			{
-				// BUGID 4342 - 20110410 
 				// Need to do set COOKIE following Mantis model
 				$auth_cookie_name = config_get('auth_cookie');
-				$expireOnBrowserClose=false;
+				$expireOnBrowserClose = false;
 				setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,'/');
 			
-				// 20051007 MHT Solved  0000024 Session confusion 
 				// Disallow two sessions within one browser
 				if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
 				{
 					$result['msg'] = lang_get('login_msg_session_exists1') . 
 					                 ' <a style="color:white;" href="logout.php">' . 
-						             lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
+						               lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
 				}
 				else
 				{ 
@@ -88,7 +82,6 @@ function doAuthorize(&$db,$login,$pwd)
  *         obj->status_ok = true/false
  *         obj->msg = message to explain what has happened to a human being.
  */
-// 20060507 - franciscom - based on mantis function
 function auth_does_password_match(&$user,$cleartext_password)
 {
 	$authCfg = config_get('authentication');
@@ -96,27 +89,34 @@ function auth_does_password_match(&$user,$cleartext_password)
 	$ret->status_ok = true;
 	$ret->msg = 'ok';
 	
-	if ('LDAP' == $authCfg['method']) 
+	switch($authCfg['method'])
 	{
-		$msg[ERROR_LDAP_AUTH_FAILED] = lang_get('error_ldap_auth_failed');
-		$msg[ERROR_LDAP_SERVER_CONNECT_FAILED] = lang_get('error_ldap_server_connect_failed');
-		$msg[ERROR_LDAP_UPDATE_FAILED] = lang_get('error_ldap_update_failed');
-		$msg[ERROR_LDAP_USER_NOT_FOUND] = lang_get('error_ldap_user_not_found');
-		$msg[ERROR_LDAP_BIND_FAILED] = lang_get('error_ldap_bind_failed');
-		
-		$xx = ldap_authenticate($user->login, $cleartext_password);
-		$ret->status_ok = $xx->status_ok;
-		$ret->msg = $msg[$xx->status_code];	
-	}
+	  case 'LDAP':
+  		$msg[ERROR_LDAP_AUTH_FAILED] = lang_get('error_ldap_auth_failed');
+  		$msg[ERROR_LDAP_SERVER_CONNECT_FAILED] = lang_get('error_ldap_server_connect_failed');
+  		$msg[ERROR_LDAP_UPDATE_FAILED] = lang_get('error_ldap_update_failed');
+  		$msg[ERROR_LDAP_USER_NOT_FOUND] = lang_get('error_ldap_user_not_found');
+  		$msg[ERROR_LDAP_BIND_FAILED] = lang_get('error_ldap_bind_failed');
+  		
+  		$dummy = ldap_authenticate($user->login, $cleartext_password);
+  		$ret->status_ok = $dummy->status_ok;
+  		$ret->msg = $msg[$dummy->status_code];	
+	  break;
+	  
+	  case 'LOCAL':
+  		if($user->comparePassword($cleartext_password) != tl::OK)
+  		{
+  			$ret->status_ok = false;
+  			$ret->msg = lang_get('bad_user_passwd');
+  		}	
+	  break;
+	  
+	  default:
+	    // Custom implementation
+	  break;
 	
-	else // normal database password compare
-	{
-		if ($user->comparePassword($cleartext_password) != tl::OK)
-			$ret->status_ok = false;
-	}      
+	}
 	
 	return $ret;
 }
-
-
 ?>

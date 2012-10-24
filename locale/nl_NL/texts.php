@@ -114,26 +114,23 @@ case sensitive. The results only include Test Cases from the current Test Projec
 
 // requirements search
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchReq']	= "Requirement Search Page";
-$TLS_htmltext['searchReq'] 		= "<h2>Purpose:</h2>
+$TLS_htmltext_title['searchReq']	= "Requirements Zoekpagina";
+$TLS_htmltext['searchReq'] 		= "<h2>Doel</h2>
 
-<p>Search requirements documents within the currently selected Test Project.</p>
+<p>Zoek Requirements documenten in het huidige Testproject.</p>
 
-<h2>To search</h2>
+<h2>Zoekmethode</h2>
 
 <ol>
-	<li>Enter the desired search strings in the appropriate boxes. Leave unused fields blank.</li>
-	<li>Choose required keywords from drop-downs if required.</li>
-	<li>Click the Find button.</li>
-	<li>A list of matching requirements is shown, together with links to the actual documents. </li>
+	<li>Voer de gewenste teksten in de zoekvelden. Laat velden waar men niet in de waarde wil zoeken blanco.</li>
+	<li>Kies desgewenst steekwoorden in de drop-downs.</li>
+	<li>Vul desgewenst datumvelden met kalendar knop.</li> 
+	<li>Klik de Vind knop.</li>
+	<li>Een lijst van overeenkomstige requirements wordt getoond.</li>
 </ol>
 
-<h2>Note:</h2>
-
-<ul> 
-<li>The search is case-insensitive.</li>
-<li>Empty fields are not considered.</li>
-</ul>";
+<p>Het zoeken is niet hoofdlettergevoelig.</p>
+";
 
 // requirement specification search
 // ------------------------------------------------------------------------------------------

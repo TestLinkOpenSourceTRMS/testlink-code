@@ -244,10 +244,10 @@ with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_
 \"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
 ";
 
-$TLS_hlp_req_coverage_table = "<h3>Coverage:</h3>
-A value of e.g. \"40% (8/20)\" means that 20 Test Cases have to be created for this Requirement 
-to test it completely. 8 of those have already been created and linked to this Requirement, which 
-makes a coverage of 40 percent.
+$TLS_hlp_req_coverage_table = "<h3>Dekking:</h3>
+Een waarde van bijvoorbeeld \"40% (8/20)\" betekent dat 20 Testgevallen moeten voor deze Requirement
+worden creëerd om hem volledig te testen. 8 bestaan al en zijn aan deze Requirement gekoppeld,
+wat betekent dat de dekking 40 procent is.
 ";
 
 

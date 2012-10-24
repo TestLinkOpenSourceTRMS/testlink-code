@@ -53,8 +53,6 @@ switch($args->action)
 		 {
 		 	$op = doAuthorize($db,$args->login,$args->pwd);
 		 }
-		 new dBug($op);
-		 
 		 if($op['status'] < tl::OK)
 		 {
 		 	$gui->note = is_null($op['msg']) ? lang_get('bad_user_passwd') : $op['msg'];

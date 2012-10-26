@@ -29,33 +29,35 @@
 
 
 // --------------------------------------------------------------------------------------
-$TLS_htmltext_title['error']	= "Application error";
-$TLS_htmltext['error'] 		= "<p>An unexpected error happened. Please check the event viewer or " .
-		"logs for details.</p><p>You are welcome to report the problem. Please visit our " .
+$TLS_htmltext_title['error']	= "Applicatiefout";
+$TLS_htmltext['error'] 		= "<p>Een onverwachte fout heeft plaatsgevonden. A.u.b. de event viewer of " .
+		"log controleren voor details.</p><p>U bent welkom om het probleem te melden. Bezoek onze " .
 		"<a href='http://www.teamst.org'>website</a>.</p>";
 
 
 
-$TLS_htmltext_title['assignReqs']	= "Assign Requirements to Test Case";
-$TLS_htmltext['assignReqs'] 		= "<h2>Purpose</h2>
-<p>Users can set relations between requirements and Test Cases. A test designer could
-define relations 0..n to 0..n. In other words, one Test Case could be assigned to none, one or more
-requirements and vice versa. This kind of traceability matrix helps the investigation of test coverage
-of requirements and identifies which ones were successful or failed during testing. This
-analysis serves as confirmation that all defined expectations are met.</p>
+$TLS_htmltext_title['assignReqs']	= "Requirements toekennen aan Testgeval";
+$TLS_htmltext['assignReqs'] 		= "<h2>Doel</h2>
+<p>Hier kunt u relaties leggen tussen Requirements en Testgevallen. De relaties zijn
+<i>n:n</i>; d.w.z. een Testgeval kan nul, een of meerdere Requirements worden toegekend en
+andersom. Deze koppeling ondersteunt controle van de dekking van Requirements door Testgevallen
+en identificeert welke Requirements succesvol werden vervuld tijdens testen.
+Deze analyse kan bevestigen dat aan alle verwachtingen is voldaan.</p>
 
-<h2>Getting Started</h2>
+<h2>Werkmethode</h2>
+<p> Als u bezig bent met werkzaamheden kunt u terugkeren naar dit uitleg door op de naam van het 
+Testproject bovenaan de boomstructuur links te klikken.</p>
 <ol>
-	<li>Choose a Test Case in the tree on the left. The combo-box with the list of Requirements
-	Specifications is shown at the top of the work area.</li>
-	<li>Choose a Requirements Specification Document if more than one is defined. 
-	TestLink automatically reloads the page.</li>
-	<li>The middle block of the work area lists all requirements (from the chosen Specification) which
-	are  assigned to the Test Case. The bottom block 'Available Requirements' lists all
-	requirements which are not assigned
-	to the current Test Case. A designer could mark requirements which are covered by this
-	Test Case and then click the button 'Assign'. These newly assigned Test Cases are then shown in
-	the middle block 'Assigned Requirements'.</li>
+	<li>Kies een Testgeval in de boomstructuur links. Het werkgebied verschijnt rechts. De combo-box
+	met de lijst van Requirements Specificaties wordt bovenaan het werkgebied getoond.
+
+	<li>Kies een Requirements Specificatie document als meer dan één bestaat. 
+	TestLink herlaadt de pagina automatisch.</li>
+	<li>De middelste blok van het werkgebied geeft alle Requirements weer van de gekozen Specificatie
+	die aan het Testgeval zijn toegekend.</li>
+	<li>De onderste blok geeft alle Requirements weer van de gekozen Specificatie
+	die niet aan het huidige Testgeval zijn toegekend. Vink de relevante Requirements aan en
+	klik de knop 'Toewijzen'. Deze worden dan naar de middelste blok verplaatst.</li>
 </ol>";
 
 
@@ -134,26 +136,24 @@ $TLS_htmltext['searchReq'] 		= "<h2>Doel</h2>
 
 // requirement specification search
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchReqSpec']	= "Requirement Specification Search Page";
-$TLS_htmltext['searchReqSpec'] 		= "<h2>Purpose:</h2>
+$TLS_htmltext_title['searchReqSpec']	= "Requirements Specificatie Zoekpagina";
+$TLS_htmltext['searchReqSpec'] 		= "<h2>Doel</h2>
 
-<p>Search requirements specifications within the currently selected Test Project.</p>
+<p>Zoek Requirements Specificatie documenten in het huidige Testproject.</p>
 
-<h2>To search:</h2>
+
+<h2>Zoekmethode</h2>
 
 <ol>
-	<li>Enter the desired search strings in the appropriate boxes. Leave unused fields blank.</li>
-	<li>Click the Find button.</li>
-	<li>A list of matching requirement specifications is shown, together with links to the actual documents. </li>
+	<li>Voer de gewenste teksten in de zoekvelden. Laat velden waar men niet in de waarde wil zoeken blanco.</li>
+	<li>Kies desgewenst steekwoorden in de drop-down.</li>
+	<li>Klik de Vind knop.</li>
+	<li>Een lijst van overeenkomstige requirements wordt getoond.</li>
 </ol>
 
-<h2>Note:</h2>
+<p>Het zoeken is niet hoofdlettergevoelig.</p>
+";
 
-<ul> 
-<li>The search is case-insensitive.</li>
-<li>Empty fields are not considered.</li>
-</ul>";
-/* end contribution */
 
 
 // ------------------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['reqSpecMgmt']	= "Requirements Specification Ontwerp"; //printTC.html
+$TLS_htmltext_title['reqSpecMgmt']	= "Requirements Specificatie Ontwerp"; //printTC.html
 $TLS_htmltext['reqSpecMgmt'] 		= "<p>Hier kunt u Requirements Specificatie documenten beheren.</p>
 
 <h2>Requirements Specificatie</h2>
@@ -218,24 +218,22 @@ De titel en Scope worden naar deze Testgevallen gekopieerd.</p>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['printReqSpec'] = "Print Requirement Specification"; //printReq
-$TLS_htmltext['printReqSpec'] = "<h2>Purpose:</h2>
-<p>From here you can print a single requirement, all the requirements within a requirement specification,
-or all the requirements in a Test Project.</p>
-<h2>Get Started:</h2>
+$TLS_htmltext_title['printReqSpec'] = "Genereer Requirements Specificatie document"; //printReq
+$TLS_htmltext['printReqSpec'] = "<h2>Doel</h2>
+<p>Hier kunt u een document genereren &ndash; bijvoorbeeld om af te drukken of te e-mailen &ndash; met 
+de Requirements in een Requirements Specificatie, of alle Requirements in een Testproject.</p> 
+
+<h2>Werkmethode</h2>
 <ol>
-<li>
-<p>Select the parts of the requirements you want to display, and then click on a requirement, 
-requirement specification, or the Test Project. A printable page will be displayed.</p>
-</li>
-<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want 
-the information displayed as HTML, OpenOffice Writer or in a Micosoft Word document. 
-See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
-'{$locale}');\">help</span> for more information.</p>
-</li>
-<li><p>Use your browser's print functionality to actually print the information.<br />
-<i>Note: Make sure to only print the right-hand frame.</i></p>
-</li>
+		<li>Selecteer de onderdelen die u wilt meenemen in het paneel linksboven.</li>
+		<li>Gebruik de 'Toon als' drop-box in het navigatiepaneel om te kiezen tussen
+		HTML, OpenOffice Writer or een Microsoft Word document. 
+		</li>
+		<li>Selecteer de Requirement Specificatie die u in het document wilt hebben,
+		in de boormstructuur linksonder, of klik het
+		Testproject naam om alle Requirement Specificaties te selecteren.</li>
+		<li>Bij de HTML optie, gebruik de print functie van de browser om het HTML af te drukken. 
+		Let op: print alleen de rechter frame.</li> 
 </ol>";
 
 

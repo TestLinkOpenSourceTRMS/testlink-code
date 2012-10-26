@@ -41,6 +41,8 @@ of requirements and identifies which ones were successful or failed during testi
 analysis serves as confirmation that all defined expectations are met.</p>
 
 <h2>Getting Started</h2>
+<p>While assigning requirements you can return to this instruction page by clicking on 
+the name of the Test Project in the tree structure in the left panel.</p>
 <ol>
 	<li>Choose a Test Case in the tree on the left. The combo-box with the list of Requirements
 	Specifications is shown at the top of the work area.</li>

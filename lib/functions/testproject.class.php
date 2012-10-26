@@ -540,7 +540,7 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
                                      '&target=testproject';
 
     $gui->actions->exportAllTestSuites = $smarty->baseHREF . 'lib/testcases/tcExport.php?tproject_id=' . $identity->id .
-                                     '&useRecursion=1';
+                                         '&useRecursion=1';
     
   	$gui->tproject = $this->get_by_id($identity->id);
    	$gui->page_title = lang_get('testproject') . ' ' . $gui->tproject['name'];

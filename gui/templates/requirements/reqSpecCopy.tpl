@@ -50,12 +50,7 @@ rev :
 
 	</form>
 {/if}
-
-{* BUGID 3854 *}
-{if isset($gui->refreshTree) && $gui->refreshTree}
-   {include file="inc_refreshTreeWithFilters.tpl"}
-{/if}
-
+{if isset($gui->refreshTree) && $gui->refreshTree} {$tlRefreshTreeJS} {/if}
 </div>
 </body>
 </html>

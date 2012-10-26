@@ -47,6 +47,7 @@ switch($args->action)
 {
 	case 'edit_testsuite':
 	case 'new_testsuite':
+	  $gui->refreshTree = false;
     renderTestSuiteForManagement($smarty,$args,$gui,$tsuite_mgr,$keywordSet);
     exit();
 	break;
@@ -67,8 +68,10 @@ switch($args->action)
     if($op['status'])
     {
       $args->assigned_keyword_list = "";
+      $gui->refreshTree = $args->refreshTree;
     } 
     renderTestSuiteForManagement($smarty,$args,$gui,$tsuite_mgr,$keywordSet,$userInput);
+    exit();
   break;
 
   case 'delete_testsuite':
@@ -128,6 +131,7 @@ switch($args->action)
       }    
             
       renderTestSuiteForManagement($smarty,$args,$gui,$tsuite_mgr,$keywordSet,$userInput);
+      exit();
     }
   break;
 
@@ -1152,6 +1156,8 @@ function renderTestSuiteForManagement(&$tplEngine,&$argsObj,&$guiObj,&$tsuiteMgr
 		               'id' => $argsObj->testsuiteID);
 
   $editorsObj = initWebEditors();
+  
+  new dBug($guiObj);
 	$tsuiteMgr->viewer_edit_new($tplEngine,$guiObj,$argsObj->action,$context,$editorsObj,null,$userInput);
 }
 ?>

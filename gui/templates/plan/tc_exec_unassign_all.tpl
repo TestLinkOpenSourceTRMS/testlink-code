@@ -20,8 +20,10 @@ Purpose: show a confirmation before unassigning all testers from the test cases 
  *
  *
  */
-function remove_testers(btn) {
-	if (btn == "yes") {
+function remove_testers(btn) 
+{
+	if (btn == "yes") 
+	{
 		document.getElementById("delete_tc_exec_assignments").submit();
 	}
 }
@@ -31,14 +33,14 @@ function remove_testers(btn) {
  *
  * 
  */
-function warn_remove_testers(msgbox_title, msgbox_content) {
+function warn_remove_testers(msgbox_title, msgbox_content) 
+{
 	Ext.Msg.confirm(msgbox_title, msgbox_content, function(btn) {
 		remove_testers(btn);
 	});
 }					
 
 </script>
-
 </head>
 
 <body>
@@ -60,11 +62,7 @@ function warn_remove_testers(msgbox_title, msgbox_content) {
 		</form>
 	</div> <!-- groupBtn -->
 {/if}
-
-{if $gui->refreshTree}
-	{include file="inc_refreshTreeWithFilters.tpl"}
-{/if}
-
+{if $gui->refreshTree} {$tlRefreshTreeJS} {/if}
 </div> <!-- workback -->
   
 </body>

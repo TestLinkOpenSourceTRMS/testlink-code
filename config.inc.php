@@ -253,10 +253,25 @@ $tlCfg->phpMailer->method = PHPMAILER_METHOD_SMTP;
 
 /**
  * Login authentication method:
- * 	'MD5' => use password stored on db
- *	'LDAP' => use password from LDAP Server
+ * 'LOCAL' => use password stored on db
+ * 'LDAP' => use password from LDAP Server
  */
-$tlCfg->authentication['method'] = 'MD5';
+$tlCfg->authentication['method'] = 'LOCAL'; // means also passwordAlgorithm = 'MD5'
+
+// May be in the future may be
+// CRYPT_MD5,CRYPT_BLOWFISH,CRYPT_SHA256,CRYPT_SHA512
+// Read http://httpd.apache.org/docs/2.2/misc/password_encryptions.html
+//
+$tlCfg->authentication['password']['algorithm'] = 'MD5'; 
+$tlCfg->authentication['password']['store'] = 'internal'; 
+
+
+// For custom methods you need to configure
+// To be used only with custom defined authentication method
+// Class that will be called to authenticate at login.
+// $tlCfg->authentication['class'] = '';
+//
+// You are free to define any other key you need
 
 
 /**

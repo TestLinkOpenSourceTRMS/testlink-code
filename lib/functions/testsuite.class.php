@@ -379,6 +379,19 @@ class testsuite extends tlObjectWithAttachments
     $gui = is_null($guiObj) ? new stdClass() : $guiObj;
     $gui->id = $identity->id;
     $gui->cf = '';
+    $gui->actions = new stdClass();
+    $gui->actions->importTestSuite = $smarty->baseHREF . 'lib/testcases/tcImport.php?tproject_id=' . $identity->id .
+                                     '&tsuiteID=' . $identity->parent_id . '&type=testsuite';
+
+    $gui->actions->exportTestSuite = $smarty->baseHREF . 'lib/testcases/tcExport.php?tproject_id=' . $identity->id .
+                                     '&tsuiteID=' . $identity->parent_id . '&type=testsuite';
+
+    $gui->actions->importTestCases = $smarty->baseHREF . 'lib/testcases/tcImport.php?tproject_id=' . $identity->id .
+                                     '&tsuiteID=' . $identity->parent_id . '&type=testcase';
+                                     
+    $gui->actions->exportTestCases = $smarty->baseHREF . 'lib/testcases/tcExport.php?tproject_id=' . $identity->id .
+                                     '&tsuiteID=' . $identity->parent_id . '&type=testcase';
+    
     $gui->sqlResult = '';
     $gui->sqlAction = '';
     $gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
@@ -531,6 +544,8 @@ class testsuite extends tlObjectWithAttachments
       $of->Value = isset($webEditorData[$key]) ? $webEditorData[$key] : null;
       $smarty->assign($key, $of->CreateHTML());
     }
+    
+    new dBug($gui);
     $smarty->assign('gui',$gui); 
     $smarty->display($tpl);
   }

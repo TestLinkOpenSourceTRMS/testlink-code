@@ -5,21 +5,13 @@
  *
  * Login page with configuratin checking and authorization
  *
- * @package 	TestLink
- * @author 		Martin Havlat
- * @copyright 	2006, TestLink community 
- * @version    	CVS: $Id: login.php,v 1.59 2010/11/24 08:06:02 mx-julian Exp $
- * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/login.php?view=markup
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author 		  Martin Havlat
+ * @copyright 	2006,2012 TestLink community 
+ * @filesource	login.php
+ * @link 		    http://www.teamst.org/index.php
  * 
- * @internal Revisions
- * 20110411 - Julian - BUGID 4398 - Prevent user-login when database scheme version does not 
- *                                  fit required scheme
- * 20100928 - Julian - Redirection after Login only for linkto.php
- * 20100904 - eloff - BUGID 3740 - redirect to destination after login
- * 20100202 - franciscom - BUGID 0003129: After login failure blank page is displayed
- * 20100127 - eloff - Send localized login form strings with response to ajaxcheck
- * 20100124 - eloff - Added login functionality via ajax
+ * @internal revisions
  **/
 
 require_once('lib/functions/configCheck.php');
@@ -29,7 +21,7 @@ require_once('common.php');
 require_once('doAuthorize.php');
 
 $templateCfg = templateConfiguration();
-$doRender = false; // BUGID 0003129
+$doRender = false;
 
 $op = doDBConnect($db);
 if (!$op['status'])
@@ -53,14 +45,14 @@ switch($args->action)
 		 unset($_SESSION['basehref']);
 		 setPaths();
 		 
-		 // BUGID 4398 - check if db scheme is up to date else deny login
+		 // check if db scheme is up to date else deny login
 		 $op = checkSchemaVersion($db);
 		 
 		 // only try to authorize user if scheme version is OK
-		 if($op['status'] == tl::OK) {
+		 if($op['status'] == tl::OK) 
+		 {
 		 	$op = doAuthorize($db,$args->login,$args->pwd);
 		 }
-		 
 		 if($op['status'] < tl::OK)
 		 {
 		 	$gui->note = is_null($op['msg']) ? lang_get('bad_user_passwd') : $op['msg'];

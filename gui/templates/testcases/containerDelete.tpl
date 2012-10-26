@@ -53,11 +53,7 @@ Purpose: smarty template - delete containers in test specification
 		{/if}
 	</form>
 {/if}
-
-{if $refreshTree}
-   	{include file="inc_refreshTreeWithFilters.tpl"}
-{/if}
-
+{if $gui->refreshTree} {$tlRefreshTreeJS} {/if}
 </div>
 </body>
 </html>

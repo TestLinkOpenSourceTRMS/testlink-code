@@ -98,8 +98,8 @@ function validateForm(f)
 		<input type="button" name="go_back" value="{$labels.cancel}" 
 		       onclick="javascript: show_modified_warning = false; history.back();"/>
 	</div>	
-
 </div>
 </form>
+{if $gui->refreshTree}{$tlRefreshTreeJS}{/if}
 </body>
 </html>

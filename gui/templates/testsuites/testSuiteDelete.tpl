@@ -52,11 +52,7 @@ Purpose: smarty template - delete test suites in test specification view
 		{/if}
 	</form>
 {/if}
-
-{if $gui->refreshTree}
-   	{include file="inc_refreshTreeWithFilters.tpl"}
-{/if}
-
+{if $gui->refreshTree} {$tlRefreshTreeJS} {/if}
 </div>
 </body>
 </html>

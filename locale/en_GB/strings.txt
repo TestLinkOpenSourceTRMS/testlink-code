@@ -2240,11 +2240,9 @@ $TLS_bugdeleting_was_ok = "The bug was successfully deleted";
 $TLS_error_ldap_auth_failed = "LDAP authentication failed";
 $TLS_error_ldap_bind_failed = "LDAP binding failed (invalid credentials)";
 $TLS_error_ldap_server_connect_failed = "Connecting to the LDAP server failed ".
-		"(check hostname, port and LDAP version).";
+																				"(check hostname, port and LDAP version).";
 $TLS_error_ldap_update_failed = "Updating LDAP failed";
 $TLS_error_ldap_user_not_found = "LDAP user not found";
-
-
 
 // ----- lib/functions/product.inc.php -----
 $TLS_info_product_delete_fails = "An error occured while deleting the Test Project";

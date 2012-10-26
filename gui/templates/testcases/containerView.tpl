@@ -50,8 +50,6 @@ Purpose: smarty template - view test specification containers
   {include file="testcases/containerViewTestSuite.inc.tpl"}  
 {/if}
 </div>
-{if $gui->refreshTree}
-  {include file="inc_refreshTreeWithFilters.tpl"}
-{/if}
+{if $gui->refreshTree} {$tlRefreshTreeJS} {/if}
 </body>
 </html>

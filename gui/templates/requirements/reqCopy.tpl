@@ -109,11 +109,7 @@ function check_action_precondition(container_id,action,msg)
 
 	</form>
 
-	{* BUGID 3755: tree not refreshed when copying requirements *}
-	{if isset($gui->refreshTree) && $gui->refreshTree}
-	{include file="inc_refreshTreeWithFilters.tpl"}
-	{/if}
-
+{if isset($gui->refreshTree) && $gui->refreshTree} {$tlRefreshTreeJS} {/if}
 </div>
 </body>
 </html>

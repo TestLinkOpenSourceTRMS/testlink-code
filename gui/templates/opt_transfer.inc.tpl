@@ -8,17 +8,21 @@ Purpose: manage the OptionTransfer.js created by Matt Kruse
 Author: Francisco Mancardi
         Based on Cold Fusion code by Alessandro Lia (alessandro.lia@gruppotesi.com
 *}
-  
    <div class="option_transfer_container">
+    <input type="hidden" id="{$option_transfer->htmlInputNames->removedLeft}" name="{$option_transfer->htmlInputNames->removedLeft}"  value="" />
+    <input type="hidden" id="{$option_transfer->htmlInputNames->removedRight}" name="{$option_transfer->htmlInputNames->removedRight}"  value="" />
+    <input type="hidden" id="{$option_transfer->htmlInputNames->addedLeft}" name="{$option_transfer->htmlInputNames->addedLeft}"  value="" />
+    <input type="hidden" id="{$option_transfer->htmlInputNames->addedRight}" name="{$option_transfer->htmlInputNames->addedRight}"  value="" />
+    <input type="hidden" id="{$option_transfer->htmlInputNames->newLeft}" name="{$option_transfer->htmlInputNames->newLeft}"  value="" />
+    <input type="hidden" id="{$option_transfer->htmlInputNames->newRight}" name="{$option_transfer->htmlInputNames->newRight}"  value="" />
     <table cellspacing="0" cellpadding="0" border="0" width="100%">
       {if $option_transfer->labels->global_lbl != ''}
-  		<caption style="font-weight:bold;">
-  	  {$option_transfer->labels->global_lbl}
-    	&nbsp;{$option_transfer->labels->additional_global_lbl|escape}
-		  </caption>
+  		  <caption style="font-weight:bold;">
+  	    {$option_transfer->labels->global_lbl}
+    	  &nbsp;{$option_transfer->labels->additional_global_lbl|escape}
+		    </caption>
 		  {/if}
-
-    <tr>
+      <tr>
       <td align="center" width="50%">
          <div class="labelHolder">{$option_transfer->from->lbl}</div>
          {html_options name=$option_transfer->from->name 
@@ -56,9 +60,3 @@ Author: Francisco Mancardi
     </tr>
   </table>
   </div>
-  <input type="hidden" id="{$option_transfer->htmlInputNames->removedLeft}" name="{$option_transfer->htmlInputNames->removedLeft}"  value="" />
-  <input type="hidden" id="{$option_transfer->htmlInputNames->removedRight}" name="{$option_transfer->htmlInputNames->removedRight}"  value="" />
-  <input type="hidden" id="{$option_transfer->htmlInputNames->addedLeft}" name="{$option_transfer->htmlInputNames->addedLeft}"  value="" />
-  <input type="hidden" id="{$option_transfer->htmlInputNames->addedRight}" name="{$option_transfer->htmlInputNames->addedRight}"  value="" />
-  <input type="hidden" id="{$option_transfer->htmlInputNames->newLeft}" name="{$option_transfer->htmlInputNames->newLeft}"  value="" />
-  <input type="hidden" id="{$option_transfer->htmlInputNames->newRight}" name="{$option_transfer->htmlInputNames->newRight}"  value="" />

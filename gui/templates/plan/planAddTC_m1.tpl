@@ -470,10 +470,6 @@ Ext.onReady(function(){
   </div>
 {/if}
 </form>
-
-{if $gui->refreshTree}
-	{include file="inc_refreshTreeWithFilters.tpl"}
-{/if}
-
+{if $gui->refreshTree}{$tlRefreshTreeJS}{/if}
 </body>
 </html>

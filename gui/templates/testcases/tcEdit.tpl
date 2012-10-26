@@ -119,13 +119,10 @@ function validateForm(the_form)
 </form>
 
 <script type="text/javascript" defer="1">
-   	document.forms[0].testcase_name.focus();
+document.forms[0].testcase_name.focus();
 </script>
 
-{if isset($gui->refreshTree) && $gui->refreshTree}
-	{include file="inc_refreshTreeWithFilters.tpl"}
-{/if}
-
+{if isset($gui->refreshTree) && $gui->refreshTree} {$tlRefreshTreeJS} {/if}
 </div>
 </body>
 </html>

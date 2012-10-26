@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 2.0
+ * 20121026 - franciscom - getNode()
  * 20121013 - franciscom - create() interface changed
  * 20120909 - franciscom - attachment management refactored (see show())
  */
@@ -1366,7 +1367,13 @@ class testsuite extends tlObjectWithAttachments
   function get_branch($id)
   {
     $branch = $this->tree_manager->get_subtree_list($id,$this->my_node_type);
-      return $branch;
+    return $branch;
+  }
+
+  function getNode($id)
+  {
+    $node = $this->tree_manager->get_node_hierarchy_info($id);
+    return $node;
   }
 
 } // end class

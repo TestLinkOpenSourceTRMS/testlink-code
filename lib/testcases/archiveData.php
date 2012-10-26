@@ -40,6 +40,8 @@ switch($args->feature)
 		}
 		else
 		{
+		  $dummy = $item_mgr->getNode($identity->id);
+		  $identity->parent_id = $dummy['parent_id'];
 			$item_mgr->show($smarty,$gui,$identity,array('show_mode' => $gui->show_mode));
     }
 	break;

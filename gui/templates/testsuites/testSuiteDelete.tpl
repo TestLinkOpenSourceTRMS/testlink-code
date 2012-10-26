@@ -12,14 +12,14 @@ Purpose: smarty template - delete test suites in test specification view
 
 <body>
 <h1 class="title">{$gui->page_title|escape}</h1> 
-{include file="inc_update.tpl" result=$gui->sqlResult item=$level action='delete' refresh=$gui->refreshTree}
-
 <div class="workBack">
-{if $gui->sqlResult == '' && $gui->testsuiteID != ''}
+{include file="inc_update.tpl" user_feedback=$gui->user_feedback refresh=$gui->refreshTree}
+
+{if $gui->user_feedback == '' && $gui->testsuiteID != ''}
 	{if $gui->warning_msg != ""}
 		{if $gui->system_msg != ""}
-		      <div class="user_feedback">{$gui->system_msg}</div>
-		      <br />
+      <div class="user_feedback">{$gui->system_msg}</div>
+		  <br />
 		{/if}
 		<table class="link_and_exec">
 		<tr>

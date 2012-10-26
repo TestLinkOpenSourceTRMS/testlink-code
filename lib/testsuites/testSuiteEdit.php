@@ -393,7 +393,6 @@ function writeCustomFieldsToDB(&$db,$tprojectID,$tsuiteID,&$hash)
 */
 function deleteTestSuite(&$argsObj,&$guiObj,&$tsuiteMgr,&$tcaseMgr)
 {
-	$guiObj->page_title = lang_get('delete') . " " . lang_get('testsuite');
 	$guiObj->refreshTree = false;
 	$guiObj->can_delete = 1;
   $guiObj->delete_msg = $guiObj->warning_msg = $guiObj->link_msg = null;
@@ -405,14 +404,14 @@ function deleteTestSuite(&$argsObj,&$guiObj,&$tsuiteMgr,&$tcaseMgr)
 
 	if($argsObj->doIt)
 	{
-	 	$tsuite = $tsuiteMgr->get_by_id($argsObj->testsuiteID);
-		$guiObj->objectName = $tsuite['name'];
-		$tsuiteMgr->delete_deep($argsObj->testsuiteID);
-		$tsuiteMgr->deleteKeywords($argsObj->testsuiteID);
-
+	 	$tsuite = $tsuiteMgr->getNode($argsObj->testsuiteID);
+    $guiObj->testsuiteName  = $tsuite['name'];
+		$guiObj->user_feedback = sprintf(lang_get('testsuite_successfully_deleted'),$guiObj->testsuiteName);
 		$guiObj->refreshTree = true;
 		$guiObj->feedback_msg = 'ok';
-		$guiObj->user_feedback = lang_get('testsuite_successfully_deleted');
+
+		$tsuiteMgr->delete_deep($argsObj->testsuiteID);
+		$tsuiteMgr->deleteKeywords($argsObj->testsuiteID);
 	}
 	else
 	{
@@ -442,7 +441,10 @@ function deleteTestSuite(&$argsObj,&$guiObj,&$tsuiteMgr,&$tcaseMgr)
 			$guiObj->system_msg = lang_get('system_blocks_tsuite_delete_due_to_exec_tc');
 		}
 	}
- 	$guiObj->sqlResult = $guiObj->feedback_msg;
+ 	// $guiObj->sqlResult = $guiObj->feedback_msg;
+	$guiObj->page_title = lang_get('delete') . " " . lang_get('testsuite') . ' : ' . $guiObj->testsuiteName;
+
+
 }
 
 /*

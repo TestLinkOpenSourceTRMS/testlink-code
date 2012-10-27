@@ -17,9 +17,9 @@
  * It saves your changes for the next upgrade in one extra file.
  *
  * @filesource	config.inc.php
- * @package 	TestLink
+ * @package 	  TestLink
  * @copyright 	2005-2012, TestLink community
- * @link 		http://www.teamst.org/index.php
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
  **/
@@ -69,7 +69,7 @@ require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 
 // ----------------------------------------------------------------------------
 /** @var string used to have (when needed) a possibility to identify different TL instances
- * 				@since 1.9.4 used on mail subject when mail logger is used
+ * 	@since 1.9.4 used on mail subject when mail logger is used
  */
 $tlCfg->instance_id = 'Main TestLink Instance';
 
@@ -817,8 +817,6 @@ $tlCfg->testsuite_template->details->type = 'none';
 $tlCfg->testsuite_template->details->value = '';
 
 
-// Contribution - Julian (Refactore)
-// BUGID 0002968,0002961,0002962,0002963
 $tlCfg->project_template = new stdClass();
 $tlCfg->project_template->notes  = new stdClass();
 $tlCfg->project_template->notes->type = 'none';
@@ -894,7 +892,7 @@ $tlCfg->attachments->repository->compressionType = TL_REPOSITORY_COMPRESSIONTYPE
 // ----------------------------------------------------------------------------
 /* [Requirements] */
 
-// 20101212 - truncate log message to this amount of chars for reqCompareVersions
+// truncate log message to this amount of chars for reqCompareVersions
 $tlCfg->req_cfg->log_message_len = 200;
 
 /**
@@ -945,7 +943,6 @@ $tlCfg->req_cfg->expected_coverage_management = ENABLED;
 // DIABLED: ONLY Requirement Specification is shown
 $tlCfg->req_cfg->show_child_reqs_on_reqspec_print_view = DISABLED;
 
-// 20090111 - franciscom
 // Order of test cases status in this array, is used to undestand
 // to what status set requirement in the requirements report.
 // Standard algorithm, present in getReqCoverage(), is:
@@ -1202,7 +1199,7 @@ $tlCfg->tree_filter_cfg->requirements->automatic_tree_refresh = ENABLED;
 
 /* [Assign test cases to test plan] */
 $tlCfg->tplanDesign->hideTestCaseWithStatusIn = array($tlCfg->testCaseStatus['obsolete'] => 'obsolete', 
-													  $tlCfg->testCaseStatus['future'] => 'future' );
+													                            $tlCfg->testCaseStatus['future'] => 'future' );
 
 
 
@@ -1242,9 +1239,9 @@ $tlCfg->custom_fields->sizes = array('string' => 100,
                                      'email' => 100,
                                      'list' => 5,
                                      'multiselection list' => 5,
-		  					         'text area' => array('rows' => 6, 'cols' => 80),
-							         'script' => 100,
-							         'server' => 100);
+		  					                     'text area' => array('rows' => 6, 'cols' => 80),
+							                       'script' => 100,
+							                       'server' => 100);
 
 // Use this variable (on custom_config.inc.php) to define new Custom Field types.
 // IMPORTANT:
@@ -1362,13 +1359,8 @@ $tlCfg->mail_templates->change_password = TL_ABS_PATH . "docs/item_templates/%lo
 // --------------------------------------------------------------------------------------
 // DO NOT CHANGE NOTHING BELOW
 // --------------------------------------------------------------------------------------
-
-
 /** Functions for check request status */
 require_once('configCheck.php');
-
-
-
 
 clearstatcache();
 if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
@@ -1379,7 +1371,6 @@ if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
 /** root of testlink directory location seen through the web server */
 /*  this statement it's not 100% right better use $_SESSION['basehref'] in the scripts. */
 define('TL_BASE_HREF', get_home_url(array('force_https' => $tlCfg->force_https)));
-
 
 if( !isset($tlCfg->attachments->accessIcon) )
 {

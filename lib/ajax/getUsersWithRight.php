@@ -19,7 +19,7 @@ require_once('common.php');
 testlinkInitPage($db);
 $data = array();
 
-// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+// take care of proper escaping when magic_quotes_gpc is enabled
 $_REQUEST=strings_stripSlashes($_REQUEST);
 
 $iParams = array("right" => array(tlInputParameter::STRING_N,0,100,'/^[a-z0-9_]+$/'));
@@ -27,7 +27,7 @@ $args = G_PARAMS($iParams);
 
 
 // user must have the same right as requested (security)
-if (has_rights($db,$args['right']))
+if($_SESSION['currentUser']->hasRight($db,$args['right']))
 {
 	$tlUser = new tlUser($_SESSION['userID']);
 	$data['rows'] = $tlUser->getNamesForProjectRight($db,$args['right'],intval($_REQUEST['tproject_id']));

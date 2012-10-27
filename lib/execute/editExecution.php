@@ -33,12 +33,12 @@ $gui->tproject_id = $args->tproject_id;
 $owebeditor = web_editor('notes',$args->basehref,$editorCfg);
 switch ($args->doAction)
 {
-    case 'edit':
-	    break;
+  case 'edit':
+	break;
         
-    case 'doUpdate':
-	    doUpdate($db,$args,$tcase_mgr,$_REQUEST);
-   		break;  
+  case 'doUpdate':
+	  doUpdate($db,$args,$tcase_mgr,$_REQUEST);
+  break;  
 }
 $map = get_execution($db,$args->exec_id);
 $owebeditor->Value = $map[0]['notes'];
@@ -88,16 +88,15 @@ function init_args()
  */
 function checkRights(&$db,&$userObj,$argsObj)
 {
-	$execCfg = config_get('exec_cfg');
-	if($execCfg->edit_notes)
+	$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+	$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+	if($userObj->hasRight($dbHandler,"exec_edit_notes",$env['tproject_id'],$env['tplan_id']) )
 	{
-		$env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
-		$env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
 		checkSecurityClearance($db,$userObj,$env,array('testplan_execute'),'and');
 	}
 	else
 	{
-	  	redirect($_SESSION['basehref'],"top.location");
+    redirect($_SESSION['basehref'],"top.location");
 		exit();
 	}
 }

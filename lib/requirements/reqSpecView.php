@@ -49,7 +49,7 @@ function init_args(&$dbHandler)
 		$dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
 		$args->tproject_name = $dummy['name'];    
 	}
-    
+  $args->user = $_SESSION['currentUser'];  
   return $args;
 }
 
@@ -71,7 +71,7 @@ function initialize_gui(&$dbHandler,&$argsObj)
 	$gui->external_req_management = ($gui->req_cfg->external_req_management == ENABLED) ? 1 : 0;
 	
 	$gui->grants = new stdClass();
-	$gui->grants->req_mgmt = has_rights($db,"mgt_modify_req");
+	$gui->grants->req_mgmt = $argsObj->user->hasRight($dbHandler,"mgt_modify_req",$argsObj->tproject_id);
 
 	$gui->req_spec = $req_spec_mgr->get_by_id($argsObj->req_spec_id);
 	$gui->revCount = $req_spec_mgr->getRevisionsCount($argsObj->req_spec_id);

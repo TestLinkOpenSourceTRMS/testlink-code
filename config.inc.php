@@ -498,7 +498,7 @@ $tlCfg->gui->text_editor['all'] = array('type' => 'ckeditor',
                                     	'configFile' => 'cfg/tl_ckeditor_config.js',
                                         'height' => 300);
 
-// BUGID 4163: mini toolbar for test case steps edit
+// mini toolbar for test case steps edit
 $tlCfg->gui->text_editor['steps_design'] = array('type' => 'ckeditor',
                                     	         'toolbar' => 'TestlinkMini',
                                     	         'configFile' => 'cfg/tl_ckeditor_config.js',
@@ -628,7 +628,7 @@ $tlCfg->exec_cfg->enable_test_automation = DISABLED;
 
 // 1 -> user can edit execution notes, on old executions (Attention: user must have test case execution right)
 // DISABLED -> no edit allowed [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->edit_notes = DISABLED;
+$tlCfg->exec_cfg->edit_notes = DISABLED;   // RIGHT
 
 // ASCending   -> last execution at bottom
 // DESCending  -> last execution on top      [STANDARD BEHAVIOUR]
@@ -670,7 +670,7 @@ $tlCfg->exec_cfg->att_model->numCols = 5;
 
 // ENABLED -> User can delete an execution result
 // DISABLED -> User can not.  [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->can_delete_execution = DISABLED;
+$tlCfg->exec_cfg->can_delete_execution = DISABLED;  // RIGHT
 
 // ENABLED -> test cases will be coloured according to test case status
 $tlCfg->exec_cfg->enable_tree_testcases_colouring = ENABLED;

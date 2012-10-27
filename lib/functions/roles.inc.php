@@ -58,7 +58,7 @@ require_once( dirname(__FILE__). '/lang_api.php' );
 /**
  * init global map with user rights and user rights description localized.
  */
-function init_global_rights_maps()
+function TTTTTTinit_global_rights_maps()
 {
 	// Every array, defines a section in the define role page
 	global $g_rights_tp;
@@ -169,7 +169,7 @@ function XXXpropagateRights($fromRights,$propRights,&$toRights)
  * @since 20.02.2006, 20:30:07
  *
  **/
-function checkForRights($rights,$roleQuestion,$modeAND = 1)
+function QAAAcheckForRights($rights,$roleQuestion,$modeAND = 1)
 {
 	$ret = null;
 	//check to see if the $roleQuestion variable appears in the $roles variable

@@ -4,20 +4,18 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	reqEdit.php
- * @author 		Martin Havlat
+ * @author 		  Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revisions
- *
- *  20110607 - Julian - BUGID 3953 - Checkbox to decide whether to create another requirement or not
+ * @since 2.0
  *  
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
 require_once('requirements.inc.php');
-require_once("csv.inc.php");
 require_once("xml.inc.php");
 require_once("configCheck.php");
 require_once("web_editor.php");
@@ -49,35 +47,34 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg,$db);
  */
 function init_args(&$dbHandler)
 {
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	// take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 
-	// BUGID 1748
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
-					 "req_spec_id" => array(tlInputParameter::INT_N),
-					 "containerID" => array(tlInputParameter::INT_N),
-					 "reqDocId" => array(tlInputParameter::STRING_N,0,64), 
-					 "req_title" => array(tlInputParameter::STRING_N,0,100),
-					 "scope" => array(tlInputParameter::STRING_N),
-					 "reqStatus" => array(tlInputParameter::STRING_N,0,1),
-					 "reqType" => array(tlInputParameter::STRING_N,0,1),
-					 "countReq" => array(tlInputParameter::INT_N),
-					 "expected_coverage" => array(tlInputParameter::INT_N),
-					 "doAction" => array(tlInputParameter::STRING_N,0,20),
-					 "req_id_cbox" => array(tlInputParameter::ARRAY_INT),
-			 		 "itemSet" => array(tlInputParameter::ARRAY_INT),
-					 "testcase_count" => array(tlInputParameter::ARRAY_INT),
-					 "req_version_id" => array(tlInputParameter::INT_N),
-					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL),
-					 "relation_id" => array(tlInputParameter::INT_N),
-					 "relation_source_req_id" => array(tlInputParameter::INT_N),
-					 "relation_type" => array(tlInputParameter::STRING_N),
-					 "relation_destination_req_doc_id" => array(tlInputParameter::STRING_N,0,64),
-					 "relation_destination_testproject_id" => array(tlInputParameter::INT_N),
-					 "save_rev" => array(tlInputParameter::INT_N),
-					 "do_save" => array(tlInputParameter::INT_N),
-					 "tproject_id" => array(tlInputParameter::INT_N),
-					 "log_message" => array(tlInputParameter::STRING_N));
+					         "req_spec_id" => array(tlInputParameter::INT_N),
+					         "containerID" => array(tlInputParameter::INT_N),
+					         "reqDocId" => array(tlInputParameter::STRING_N,0,64), 
+					         "req_title" => array(tlInputParameter::STRING_N,0,100),
+					         "scope" => array(tlInputParameter::STRING_N),
+					         "reqStatus" => array(tlInputParameter::STRING_N,0,1),
+					         "reqType" => array(tlInputParameter::STRING_N,0,1),
+					         "countReq" => array(tlInputParameter::INT_N),
+					         "expected_coverage" => array(tlInputParameter::INT_N),
+					         "doAction" => array(tlInputParameter::STRING_N,0,20),
+					         "req_id_cbox" => array(tlInputParameter::ARRAY_INT),
+			 		         "itemSet" => array(tlInputParameter::ARRAY_INT),
+					         "testcase_count" => array(tlInputParameter::ARRAY_INT),
+        					 "req_version_id" => array(tlInputParameter::INT_N),
+        					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL),
+        					 "relation_id" => array(tlInputParameter::INT_N),
+        					 "relation_source_req_id" => array(tlInputParameter::INT_N),
+        					 "relation_type" => array(tlInputParameter::STRING_N),
+        					 "relation_destination_req_doc_id" => array(tlInputParameter::STRING_N,0,64),
+        					 "relation_destination_testproject_id" => array(tlInputParameter::INT_N),
+        					 "save_rev" => array(tlInputParameter::INT_N),
+        					 "do_save" => array(tlInputParameter::INT_N),
+        					 "tproject_id" => array(tlInputParameter::INT_N),
+        					 "log_message" => array(tlInputParameter::STRING_N));
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
@@ -98,17 +95,15 @@ function init_args(&$dbHandler)
 	}
 	
 	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-
-	// BUGID 3307 - set to 0 if null, to avoid database errors with null value
+  $args->user = $_SESSION['currentUser'];
+  
+	// to avoid database errors with null value
 	if (!is_numeric($args->expected_coverage)) {
 		$args->expected_coverage = 0;
 	}
 	
-    // 20110604 - franciscom - TICKET 4566: TABBED BROWSING
-    $uk = 'setting_refresh_tree_on_action';
-    $args->refreshTree = testproject::getUserChoice($args->tproject_id, 
-    												array('reqTreeRefreshOnAction'));
-	
+  $uk = 'setting_refresh_tree_on_action';
+  $args->refreshTree = testproject::getUserChoice($args->tproject_id,array('reqTreeRefreshOnAction'));
 	$args->stay_here = isset($_REQUEST['stay_here']) ? 1 : 0;
 	
 	return $args;
@@ -254,39 +249,37 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
  */
 function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 {
-    $req_spec_mgr = new requirement_spec_mgr($dbHandler);
+  $req_spec_mgr = new requirement_spec_mgr($dbHandler);
 
-    $gui = $commandMgr->initGuiBean();
-    $gui->req_cfg = config_get('req_cfg');
+  $gui = $commandMgr->initGuiBean();
+  $gui->req_cfg = config_get('req_cfg');
+  $gui->user_feedback = null;
+  $gui->action_descr = null;
+  $gui->main_descr = lang_get('req_spec_short');
+	$gui->preSelectedType = TL_REQ_TYPE_USE_CASE;
+	$gui->stay_here = $argsObj->stay_here;
     
-  	$gui->tproject_id = $argsObj->tproject_id;
-  	$gui->req_spec_id = $argsObj->req_spec_id;
-  	$gui->requirement_id = $argsObj->requirement_id;
+  $gui->tproject_id = $argsObj->tproject_id;
+  $gui->req_spec_id = $argsObj->req_spec_id;
+	$gui->req_version_id = $argsObj->req_version_id;
+  $gui->requirement_id = $argsObj->requirement_id;
 	if ($argsObj->req_spec_id)
 	{
 		$gui->requirements_count = $req_spec_mgr->get_requirements_count($gui->req_spec_id);
 		$gui->req_spec = $req_spec_mgr->get_by_id($gui->req_spec_id);
 	}
-    $gui->user_feedback = null;
-    $gui->main_descr = lang_get('req_spec_short');
-    if (isset($gui->req_spec))
-    {
+  if (isset($gui->req_spec))
+  {
      	$gui->main_descr .= config_get('gui_title_separator_1') . $gui->req_spec['title'];
-    }
-    $gui->action_descr = null;
+  }
 
-    $gui->grants = new stdClass();
-    $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
-	$gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
+  $gui->grants = new stdClass();
+  $gui->grants->req_mgmt = $argsObj->user->hasRight($dbHandler,"mgt_modify_req",$argsObj->tproject_id);
+	$gui->grants->mgt_view_events = $argsObj->user->hasRight($dbHandler,"mgt_view_events");
 	
-	$gui->req_version_id = $argsObj->req_version_id;
-	$gui->preSelectedType = TL_REQ_TYPE_USE_CASE;
-	
-	$gui->stay_here = $argsObj->stay_here;
-
 	$module = $_SESSION['basehref'] . 'lib/requirements/';
 	$context = "tproject_id={$gui->tproject_id}&requirement_id={$gui->requirement_id}" .
-			   "&req_spec_id={$gui->req_spec_id}";
+			       "&req_spec_id={$gui->req_spec_id}";
 
 	$gui->actions = new stdClass();
 	$gui->actions->req_view = $module . "reqView.php?{$context}"; 

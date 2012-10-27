@@ -138,29 +138,27 @@ function initializeGui(&$dbHandler,&$argsObj)
 {
 	$gui = new stdClass();
 	$gui->logLevels = array(tlLogger::AUDIT => lang_get("log_level_AUDIT"),
-	  			            tlLogger::ERROR => lang_get("log_level_ERROR"),
-				            tlLogger::WARNING => lang_get("log_level_WARNING"),
-				            tlLogger::INFO => lang_get("log_level_INFO"),
-				            tlLogger::DEBUG => lang_get("log_level_DEBUG"));
+	  			                tlLogger::ERROR => lang_get("log_level_ERROR"),
+      				            tlLogger::WARNING => lang_get("log_level_WARNING"),
+      				            tlLogger::INFO => lang_get("log_level_INFO"),
+      				            tlLogger::DEBUG => lang_get("log_level_DEBUG"));
 	
 	$gui->allusers = tlUser::getAll($dbHandler);   // THIS IS AN OVERKILL because get ALL USER OBJECTS
 	$gui->testers = getUsersForHtmlOptions($dbHandler,null,null,true,$gui->allusers);
 	$gui->users = getUsersForHtmlOptions($dbHandler);
-    $gui->users[0] = false;
+  $gui->users[0] = false;
 
-    $gui->startDate=$argsObj->startDate;
-    $gui->endDate=$argsObj->endDate;
+  $gui->startDate=$argsObj->startDate;
+  $gui->endDate=$argsObj->endDate;
 	$gui->object_id=$argsObj->object_id;
-    $gui->object_type=$argsObj->object_type;
+  $gui->object_type=$argsObj->object_type;
 
-    $gui->selectedLogLevels = ($argsObj->logLevel ? array_values($argsObj->logLevel) : array());
-    $gui->selectedTesters = ($argsObj->testers ? array_values($argsObj->testers) : array());
-
-    // $gui->canDelete = has_rights($db,"events_mgt") ? 1 : 0;
-    $gui->canDelete = $argsObj->currentUser->hasRight($dbHandler,"events_mgt");
-    
-    $gui->warning_msg = "";
-    $gui->tableSet = null;
+  $gui->selectedLogLevels = ($argsObj->logLevel ? array_values($argsObj->logLevel) : array());
+  $gui->selectedTesters = ($argsObj->testers ? array_values($argsObj->testers) : array());
+  $gui->canDelete = $argsObj->currentUser->hasRight($dbHandler,"events_mgt");
+  
+  $gui->warning_msg = "";
+  $gui->tableSet = null;
     
 	return $gui;
 }

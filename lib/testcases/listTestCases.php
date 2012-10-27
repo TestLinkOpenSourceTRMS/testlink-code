@@ -1,20 +1,20 @@
 <?php
 /**
-* 	TestLink Open Source Project - http://testlink.sourceforge.net/
-*
-* 	@filesource	listTestCases.php
-* 	@package 	TestLink
-* 	@author 	Martin Havlat
-* 	@copyright 	2007-2011, TestLink community 
-* 	@link 		http://www.teamst.org/index.php
-*
-*
-* 	Generates tree menu with test specification.
-*   It builds the javascript tree that allows the user to choose testsuite or testcase.
-*
-*	@internal revisions
-*
-*/
+ * 	TestLink Open Source Project - http://testlink.sourceforge.net/
+ *
+ * 	@filesource	listTestCases.php
+ * 	@package 	  TestLink
+ * 	@author 	  Martin Havlat
+ * 	@copyright 	2007-2011, TestLink community 
+ * 	@link 		  http://www.teamst.org/index.php
+ *
+ *
+ * 	Generates tree menu with test specification.
+ *   It builds the javascript tree that allows the user to choose testsuite or testcase.
+ *
+ *	@internal revisions
+ *
+ */
 require_once('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
@@ -23,7 +23,6 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $control = new tlTestCaseFilterControl($db, 'edit_mode');
 
-// new dBug($control,array('calledFrom' => 'File:' . __FILE__));
 $gui = initializeGui($db, $control);
 $control->build_tree_menu($gui);
 
@@ -56,7 +55,8 @@ function initializeGui(&$dbHandler, &$control)
 	                      'keywordsAssign' => "lib/keywords/keywordsAssign.php",
 	                      'assignReqs' => "lib/requirements/reqTcAssign.php");
 
-	$gui->tree_drag_and_drop_enabled = array('edit_tc' => (has_rights($dbHandler, "mgt_modify_tc") == 'yes'),
+	$gui->tree_drag_and_drop_enabled = array('edit_tc' => 
+	                                          ($control->user->HasRight($dbHandler, "mgt_modify_tc") == 'yes'),
 	                                         'keywordsAssign' => false,
 	                                         'assignReqs' => false);
 

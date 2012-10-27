@@ -79,6 +79,7 @@ function init_args(&$dbHandler)
 	// $_REQUEST=strings_stripSlashes($_REQUEST);
 	
 	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+	$args->user = $_SESSION['currentUser'];
 	$args->basehref = $_SESSION['basehref'];
 	$args->parentID = is_null($args->parentID) ? $args->tproject_id : $args->parentID;
 
@@ -142,25 +143,20 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     }
 	$guiObj->scope = $owebEditor->CreateHTML();
     $guiObj->editorType = $editorCfg['type'];  
-	// ------------------------------------------------------------------------------------------------
 
-	// ------------------------------------------------------------------------------------------------
+
 	// Tree refresh Processing
 	switch($argsObj->doAction)
-    {
-        case "doCreate":
-	    case "doUpdate": 
-        case "doCopyRequirements":
-        case "doCopy":
-        case "doFreeze":
-        case "doDelete":
-    		$guiObj->refreshTree = $argsObj->refreshTree;
-    	break;
-    }
-	// ------------------------------------------------------------------------------------------------
-
-    
-	// ------------------------------------------------------------------------------------------------
+  {
+    case "doCreate":
+	  case "doUpdate": 
+    case "doCopyRequirements":
+    case "doCopy":
+    case "doFreeze":
+    case "doDelete":
+      $guiObj->refreshTree = $argsObj->refreshTree;
+    break;
+  }
 	// GUI rendering Processing
     switch($argsObj->doAction)
     {
@@ -213,10 +209,10 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     switch($renderType)
     {
         case 'template':
-			$smartyObj->assign('mgt_view_events',has_rights($db,"mgt_view_events"));
- 		    $smartyObj->assign('gui',$guiObj);
-		    $smartyObj->display($tpl);
-        	break;  
+			    $smartyObj->assign('mgt_view_events',$argsObj->user->hasRights($db,"mgt_view_events"));
+ 		      $smartyObj->assign('gui',$guiObj);
+		      $smartyObj->display($tpl);
+        break;  
  
         case 'redirect':
 		    header("Location: {$tpl}");

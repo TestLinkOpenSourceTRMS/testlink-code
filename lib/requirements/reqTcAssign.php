@@ -95,13 +95,13 @@ switch($args->edit)
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
-$smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
+$smarty->assign('modify_req_rights', $args->user->hasRights($db,"mgt_modify_req",$args->tproject_id)); 
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 function init_args()
 {
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	// take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	$iParams = array("id" => array(tlInputParameter::INT_N),
@@ -120,32 +120,25 @@ function init_args()
 
 
 	$args->idReqSpec = null;
-    $args->idReq = $args->req;
-    $args->reqIdSet = $args->req_id;
-    if(is_null($args->doAction))
-    {
-    	$args->doAction = ($args->unassign != "") ? "unassign" : null;
-    }
-    if(is_null($args->doAction))
-    {
-        $args->doAction = ($args->assign != "") ? "assign" : null;
-    }
+  $args->idReq = $args->req;
+  $args->reqIdSet = $args->req_id;
+  if(is_null($args->doAction))
+  {
+  	$args->doAction = ($args->unassign != "") ? "unassign" : null;
+  }
+  if(is_null($args->doAction))
+  {
+      $args->doAction = ($args->assign != "") ? "assign" : null;
+  }
 
 	// using session creates issue when using TABBED BROWSING => has to be avoided
-	// 20081103 - sisajr - hold choosen SRS (saved for a session)
 	if ($args->idSRS)
 	{
 	  	$args->idReqSpec = $args->idSRS;
-	  	// $_SESSION['currentSrsId'] = $args->idReqSpec;
 	}
-	
-	// else if(isset($_SESSION['currentSrsId']) && intval($_SESSION['currentSrsId']) > 0)
-	// {
-	//	$args->idReqSpec = intval($_SESSION['currentSrsId']);
-	// }
 
-	
-    return $args;
+  $args->user = $_SESSION['currentUser'];	
+  return $args;
 }
 
 /**

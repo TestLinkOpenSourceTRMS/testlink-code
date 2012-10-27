@@ -720,8 +720,52 @@ class tlUser extends tlDBObject
         break;    
       }
     }
-		return checkForRights($userRightSet,$roleQuestion);
+		return $this->checkForRights($userRightSet,$roleQuestion);
 	}
+
+  /**
+   * TBD
+   *
+   * @param string $rights 
+   * @param mixed $roleQuestion 
+   * @param boolean $bAND [default = 1] 
+   * @return mixed 'yes' or null
+   *
+   * @author Andreas Morsing <schlundus@web.de>
+   * @since 20.02.2006, 20:30:07
+   *
+   **/
+  function checkForRights($rights,$roleQuestion,$modeAND = 1)
+  {
+  	$ret = null;
+  	if (is_array($roleQuestion))
+  	{
+  		$r = array_intersect($roleQuestion,$rights);
+  		if ($modeAND)
+  		{
+  			//for AND all rights must be present
+  			if (sizeof($r) == sizeof($roleQuestion))
+  			{
+  				$ret = 'yes';
+  			}	
+  		}	
+  		else 
+  		{
+  			// for OR one of all must be present
+  			if (sizeof($r))
+  			{
+  				$ret = 'yes';
+  			}	
+  		}	
+  	}
+  	else
+  	{
+  		$ret = (in_array($roleQuestion,$rights) ? 'yes' : null);
+  	}
+  	return $ret;
+  }
+
+
 
 
 	/**

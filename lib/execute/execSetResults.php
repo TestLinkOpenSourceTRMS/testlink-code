@@ -6,6 +6,8 @@
  *
  * @internal revisions
  * @since 2.0
+ * 20121027 - franciscom - TICKET 5310: Execution Config - convert options into rights
+ *
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -944,10 +946,7 @@ function getCfg()
        tproject_id:
        tplan_id
   
-       Warning: this is right interface for this function, but
-                has_rights() can works in a mode (that i consider a dirty one)
-                using SESSION to achieve global coupling.
-                 
+                
   returns: 
 
 */
@@ -959,16 +958,16 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
     $grants->execute = $userObj->hasRight($dbHandler,"testplan_execute",$tproject_id,$tplan_id);
     $grants->execute = $grants->execute=="yes" ? 1 : 0;
     
-    // may be in the future this can be converted to a role right
-    $grants->delete_execution=$exec_cfg->can_delete_execution;
+    // TICKET 5310: Execution Config - convert options into rights
+    $grants->delete_execution = $userObj->hasRight($dbHandler,"exec_delete",$tproject_id,$tplan_id);
     
     
     // may be in the future this can be converted to a role right
     // Important:
     // Execution right must be present to consider this configuration option.
-    $grants->edit_exec_notes = $grants->execute && $exec_cfg->edit_notes;
+    $grants->edit_exec_notes = $grants->execute && 
+                               $userObj->hasRight($dbHandler,"exec_edit_notes",$tproject_id,$tplan_id);
     
-    // 20090419 - franciscom - BUGID 
     $grants->edit_testcase = $userObj->hasRight($dbHandler,"mgt_modify_tc",$tproject_id,$tplan_id);
     $grants->edit_testcase = $grants->edit_testcase=="yes" ? 1 : 0;
     return $grants;

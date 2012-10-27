@@ -18,6 +18,8 @@
  * class is responsible to get project related data and CRUD test project
  * @package 	TestLink
  */
+require_once('object.class.php'); /** needed becaus autoload is not able to find tlObjectWithAttachments */
+
 class testproject extends tlObjectWithAttachments
 {
 	const RECURSIVE_MODE = true;
@@ -433,11 +435,12 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=null)
 	}
 
 	// $sql .=  " AND (role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
-
-	if (has_rights($this->db,'mgt_modify_product') != 'yes')
+  // 20121027
+  $userObj = new tlUser($user_id);
+	if($userObj->hasRight($this->db,'mgt_modify_product') != 'yes')
 	{
 		$sql .= " AND active=1 ";
-    }
+  }
 	$sql .= $my['order_by'];
 
     if($output_type == 'array_of_map')
@@ -537,7 +540,7 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
 
     $gui->actions = new stdClass();
     $gui->actions->importTestSuite = $smarty->baseHREF . 'lib/testcases/tcImport.php?tproject_id=' . $identity->id .
-                                     '&target=testproject';
+                                     '&itemToImport=testsuite&target=testproject';
 
     $gui->actions->exportAllTestSuites = $smarty->baseHREF . 'lib/testcases/tcExport.php?tproject_id=' . $identity->id .
                                          '&useRecursion=1';

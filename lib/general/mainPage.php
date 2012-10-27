@@ -262,7 +262,8 @@ function initGrants(&$dbHandler,&$userObj,$tprojectID,$testplanID)
         						 'configuration' => "system_configuraton",
         						 'usergroups' => "mgt_view_usergroups",
         						 'view_tc' => "mgt_view_tc", 'modify_tc' => 'mgt_modify_tc',
-        						 'issuetracker_management' => 'issuetracker_management');
+        						 'issuetracker_management' => 'issuetracker_management',
+        						 'exec_edit_notes' => 'exec_edit_notes', 'exec_delete' => 'exec_delete');
 					
 	$grants = array();		
 	foreach($grantKeys as $key => $right)

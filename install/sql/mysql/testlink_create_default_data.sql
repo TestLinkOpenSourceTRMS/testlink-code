@@ -68,6 +68,8 @@ INSERT INTO /*prefix*/rights  (id,description) VALUES (29,'keyword_assignment');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (30,'mgt_unfreeze_req');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (31,'issuetracker_management');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (32,'issuetracker_view');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (33,'exec_edit_notes');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (34,'exec_delete');
 
 # Rights for Administrator role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,1 );
@@ -102,6 +104,8 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,29);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,31);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,32);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,33);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,34);
 
 # Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3 );

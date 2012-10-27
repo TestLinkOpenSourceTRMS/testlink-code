@@ -40,6 +40,7 @@ if($args->action=='edit_testsuite')
 
 new dBug($args->action);
 
+
 $gui_cfg = config_get('gui');
 $smarty = new TLSmarty();
 $smarty->tlTemplateCfg = templateConfiguration();
@@ -656,31 +657,6 @@ function moveTestSuite(&$smartyObj,&$tprojectMgr,$argsObj,$guiObj)
   // $tprojectMgr->show($smartyObj,$guiObj,$argsObj->tproject_id,null,'ok');
   $tprojectMgr->show($smartyObj,$guiObj,$identity);
 }
-
-
-/*
-  function: initializeOptionTransfer
-
-  args:
-
-  returns: option transfer configuration
-
-*/
-function initializeOptionTransfer(&$tprojectMgr,&$tsuiteMgr,$argsObj,$doAction)
-{
-    $opt_cfg = opt_transf_empty_cfg();
-    $opt_cfg->global_lbl='';
-    $opt_cfg->from->lbl = lang_get('available_kword');
-    $opt_cfg->to->lbl = lang_get('assigned_kword');
-    $opt_cfg->from->map = $tprojectMgr->get_keywords_map($argsObj->tproject_id);
-
-    if($doAction=='edit_testsuite')
-    {
-      $opt_cfg->to->map=$tsuiteMgr->get_keywords_map($argsObj->testsuiteID," ORDER BY keyword ASC ");
-    }
-    return $opt_cfg;
-}
-
 
 /*
   function: moveTestCasesViewer

@@ -2337,6 +2337,9 @@ $TLS_no_rights = "no rights";
 
 $TLS_right_exec_edit_notes = "Edit Execution Notes";
 $TLS_right_exec_delete = "Delete Execution";
+$TLS_right_testplan_unlink_executed_testcases = "Unlink Executed Test Cases";
+$TLS_right_testproject_delete_executed_testcases = "Delete Executed Test Cases";
+$TLS_right_testproject_edit_executed_testcases = "Edit Executed Test Cases";
 
 
 // ----- lib/functions/testproject.class.php -----

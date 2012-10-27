@@ -626,10 +626,6 @@ $tlCfg->document_generator->tc_version_enabled = FALSE;
 // DISABLED -> disable
 $tlCfg->exec_cfg->enable_test_automation = DISABLED;
 
-// 1 -> user can edit execution notes, on old executions (Attention: user must have test case execution right)
-// DISABLED -> no edit allowed [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->edit_notes = DISABLED;   // RIGHT
-
 // ASCending   -> last execution at bottom
 // DESCending  -> last execution on top      [STANDARD BEHAVIOUR]
 $tlCfg->exec_cfg->history_order = 'DESC';
@@ -666,11 +662,6 @@ $tlCfg->exec_cfg->att_model->showUploadBtn = false;
 $tlCfg->exec_cfg->att_model->showTitle = false;
 $tlCfg->exec_cfg->att_model->showUploadColumn = true;
 $tlCfg->exec_cfg->att_model->numCols = 5;
-
-
-// ENABLED -> User can delete an execution result
-// DISABLED -> User can not.  [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->can_delete_execution = DISABLED;  // RIGHT
 
 // ENABLED -> test cases will be coloured according to test case status
 $tlCfg->exec_cfg->enable_tree_testcases_colouring = ENABLED;
@@ -760,21 +751,6 @@ $tlCfg->spec_cfg->show_tsuite_filter = ENABLED;
 // Anyway on user interface user will be able to change this choice
 // $g_spec_cfg->automatic_tree_refresh = ENABLED;
 $tlCfg->spec_cfg->automatic_tree_refresh = ENABLED;
-
-
-// ENABLED -> user can edit executed tc versions
-// DISABLED -> editing of executed tc versions is blocked.  [STANDARD BEHAVIOUR]
-$tlCfg->testcase_cfg->can_edit_executed = DISABLED;
-
-// ENABLED -> user can removed from a testplan executed tc versions. [STANDARD BEHAVIOUR]
-// DISABLED -> user can NOT remove from a testplan executed tc versions.
-$tlCfg->testcase_cfg->can_remove_executed = ENABLED;
-
-
-// ENABLED -> user can DELETE a TEST CASE that has been executed. 
-// DISABLED -> [STANDARD BEHAVIOUR]
-// IMPORTANT: this is valid for any role => admin is also under this law.
-$tlCfg->testcase_cfg->can_delete_executed = DISABLED;
 
 
 // To avoid perfomance problems on search test case feature,

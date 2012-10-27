@@ -68,20 +68,20 @@ $TLS_htmltext['editTc'] 		= "<p>The <i>Test Specification</i> page allows users 
 <ol>
 	<li>Select your <i>Test Project</i> in the navigation tree (the root node). <i>Please note: " .
 	"you can always change the active Test Project by selecting a different one from the " .
-	"drop-down list in the top-right corner.</i></li>
-	<li>Create a new Test Suite by clicking on <b>Create</b> (Test Suite Operations). Test Suites can " .
+	"drop-down list in the top-right corner (provided you have rights on more than one Test Project).</i></li>
+	<li>Create a new Test Suite by clicking on <b>New Child Test Suite</b> (under Test Suite Operations). Test Suites can " .
 	"bring structure to your test documents according to your conventions (functional/non-functional " .
 	"tests, product components or features, change requests, etc.) The description of " .
 	"a Test Suite could hold the scope of the component Test Cases, default configuration, " .
 	"links to relevant documents, limitations and other useful information. In general, " .
-	"it would hold all annotations that are common to the Child Test Cases. Test Suites follow " .
+	"it would hold all annotations that are common to the Child Test Cases.</li> " .
+	"<li> Test Suites follow " .
 	"the &quot;folder&quot; metaphor, thus users can move and copy Test Suites within " .
 	"the Test project. Also, they can be imported or exported (including the component Test Cases).</li>
-	<li>Test Suites are scalable folders. Users can move or copy Test Suites within " .
-	"the Test project. Test Suites can be imported or exported (including Test Cases).
 	<li>Select your newly created Test Suite in the navigation tree and create " .
-	"a new Test Case by clicking on <b>Create</b> (Test Case Operations). A Test Case specifies " .
-	"a particular testing scenario, expected results and custom fields defined " .
+	"a new Test Case by clicking on <b>Create</b> (Test Case Operations). A Test Case is the " .
+	"fundamental unit of testing; during execution it is determined to have passed or failed. It contains " .
+	"a particular test scenario, the expected results and may have custom fields defined " .
 	"in the Test Project (refer to the user manual for more information). It is also possible " .
 	"to assign <b>keywords</b> for improved traceability.</li>
 	<li>Navigate via the tree view on the left side and edit data. Each Test Case stores its own history.</li>

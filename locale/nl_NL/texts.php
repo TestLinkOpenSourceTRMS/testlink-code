@@ -62,57 +62,58 @@ Testproject bovenaan de boomstructuur links te klikken.</p>
 
 
 // --------------------------------------------------------------------------------------
-$TLS_htmltext_title['editTc']	= "Test Specification";
-$TLS_htmltext['editTc'] 		= "<p>The <i>Test Specification</i> page allows users to view " .
-		"and edit all of the existing <i>Test Suites</i> and <i>Test Cases</i>. " .
-		"Test Cases are versioned and all of the previous versions are available and can be " .
-		"viewed and managed here.</p>
+$TLS_htmltext_title['editTc']	= "Testspecificatie";
+$TLS_htmltext['editTc'] 		= "<p>Een Testgeval is de fundamentele eenheid van testen. Tijdens de 
+	uitvoering krijgt het het resultaat 'geslaagd' of 'gefaald'. In TestLink kunt u Testgevallen 
+	organiseren in Test Suites. Deze kunnen hiërarchisch worden genest in andere Test Suites. </p>
+	<p>Op deze <i>Testspecificatie</i> pagina kunt u alle 
+	<i>Test Suites</i> and <i>Testgevallen</i> bekijken en bewerken. 
+	Versies van Testgevallen worden ondersteund, en alle vorige versies zijn beschikbaar en kunnen hier 
+	bekeken en beheerd worden.</p>
 		
-<h2>Getting Started</h2>
+<h2>Starten</h2>
 <ol>
-	<li>Select your <i>Test Project</i> in the navigation tree (the root node). <i>Please note: " .
-	"you can always change the active Test Project by selecting a different one from the " .
-	"drop-down list in the top-right corner.</i></li>
-	<li>Create a new Test Suite by clicking on <b>Create</b> (Test Suite Operations). Test Suites can " .
-	"bring structure to your test documents according to your conventions (functional/non-functional " .
-	"tests, product components or features, change requests, etc.) The description of " .
-	"a Test Suite could hold the scope of the component Test Cases, default configuration, " .
-	"links to relevant documents, limitations and other useful information. In general, " .
-	"it would hold all annotations that are common to the Child Test Cases. Test Suites follow " .
-	"the &quot;folder&quot; metaphor, thus users can move and copy Test Suites within " .
-	"the Test project. Also, they can be imported or exported (including the component Test Cases).</li>
-	<li>Test Suites are scalable folders. Users can move or copy Test Suites within " .
-	"the Test project. Test Suites can be imported or exported (including Test Cases).
-	<li>Select your newly created Test Suite in the navigation tree and create " .
-	"a new Test Case by clicking on <b>Create</b> (Test Case Operations). A Test Case specifies " .
-	"a particular testing scenario, expected results and custom fields defined " .
-	"in the Test Project (refer to the user manual for more information). It is also possible " .
-	"to assign <b>keywords</b> for improved traceability.</li>
-	<li>Navigate via the tree view on the left side and edit data. Each Test Case stores its own history.</li>
-	<li>Assign your created Test Specification to a 	<span class=\"help\" onclick=
-	\"javascript:open_help_window('glosary','$locale');\">Test Plan</span> when your Test Cases are ready.</li>
-</ol>
-
-<p>With TestLink you can organise Test Cases into Test Suites. " .
-"Test Suites can be nested within other Test Suites, enabling you to create hierarchies of Test Suites.
- You can then print this information together with the Test Cases.</p>";
+	<li>Selecteert u het <i>Testproject</i> in de boomstructuur. U kunt op elk moment een
+	andere Testproject kiezen in de drop-down rechtsboven (als u rechten heeft op meerdere Testprojecten).</li>
+	<li>Creëer een nieuwe Test Suite met de knop <b>Nieuwe dochter Test Suite</b> (Test Suite Operaties).
+	U kunt Test Suites gebruiken om uw testdocumenten te structuren volgens eigen conventies
+	(functioneel / niet-functioneel, per component of feature, per wijzigingsverzoek enz.)
+	De beschrijving van een Test Suite zou in het algemeen alle informatie bevatten die voor alle
+	Testgevallen in de Test Suite relevant is, bijvoorbeeld een samenvatting van de scope van de Testgevallen,
+	verwijzingen naar relevante documenten enz.</li> 
+	<li>Test Suites hebben de aard van een 'map'; gebruikers
+	kunnen op een soortgelijke manier als met een map Test Suites verplaatsen en kopieren binnen het
+	Testproject. Tevens kan een Test Suite worden geïmporteerd of geëxporteerd, tezamen met zijn
+	Testgevallen.</li>
+	<li>Selecteert u de net gecreëerde Test Suite in de boomstructuur en creëer een nieuw Testgeval
+	door op de knop <b>Creëer Testgeval</b> te klikken (onder Testgeval Operaties).
+	Een Testgeval bevat een bepaalde test scenario, de verwachte resultaten, en eventueel
+	gebruikersvelden die in het Testproject zijn gedefinieerd (zie de gebruikershandleiding voor meer
+	informatie). Men kan ook <b>steekwoorden</b> toewijzen t.b.v. de traceerbaarheid.</li>
+	<li>Navigeer via de boomstructuur links en bewerk gegevens. Elk Testgeval bevat zijn eigen
+	geschiedenis.</li>
+	<li>Wijs de aangemaakte Testspecificatie toe aan een Testplan als de Testgevallen klaar zijn.
+</ol>	
+";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchTc']	= "Test Case Search Page";
-$TLS_htmltext['searchTc'] 		= "<h2>Purpose:</h2>
+$TLS_htmltext_title['searchTc']	= "Testgeval Zoekpagina";
+$TLS_htmltext['searchTc'] 		= "<h2>Doel</h2>
 
-<p>Navigation according to keywords and/or searched strings. The search is not
-case sensitive. The results only include Test Cases from the current Test Project.</p>
+<p>Navigatie op basis van steekwoorden of zoekteksten. Het zoeken is niet hoofdlettergevoelig. 
+de resultaten bevatten Testgevallen uit het huidige Testproject.</p>
 
-<h2>To search</h2>
+<h2>Om te zoeken</h2>
 
 <ol>
-	<li>Enter the search string in the appropriate box. Leave unused fields blank.</li>
-	<li>Choose required keyword or leave the value as 'Not applied'.</li>
-	<li>Click the Search button.</li>
-	<li>All matching Test Cases are shown. You can modify Test Cases via the 'Title' link.</li>
-</ol>";
+	<li>Voer de gewenste zoekteksten op in de relevante velden. Laat andere velden leeg.</li>
+	<li>Kies gewenste datumcriteria met de calendar knoppen.</li>
+	<li>Kies gewenste steekwoorden in de drop-downs. </li>
+	<li>Klik de 'Vind' knop.</li>
+</ol>
+<p>	De overeenkomstige Testgevallen worden getoond. U kunt Testgevallen bewerken via de 'Titel' link.</p>
+";
 
 // requirements search
 // ------------------------------------------------------------------------------------------
@@ -157,24 +158,22 @@ $TLS_htmltext['searchReqSpec'] 		= "<h2>Doel</h2>
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['printTestSpec']	= "Print Test Specification"; //printTC.html
-$TLS_htmltext['printTestSpec'] 			= "<h2>Purpose:</h2>
-<p>From here you can print a single Test Case, all the Test Cases within a Test Suite,
-or all the Test Cases in a test project or plan.</p>
-<h2>Get Started:</h2>
+$TLS_htmltext_title['printTestSpec']	= "Genereer Test Specificatie document"; //printTC.html
+$TLS_htmltext['printTestSpec'] 			= "<h2>Doel</h2>
+<p>Hier kunt u een document genereren &ndash; bijvoorbeeld om af te drukken of te e-mailen &ndash; met 
+de Testgevallen in een Test Suite, of alle Testgevallen in een Testproject.</p> 
+
+<h2>Werkmethode</h2>
 <ol>
-<li>
-<p>Select the parts of the Test Cases you want to display, and then click on a Test Case, 
-Test Suite, or the test project. A printable page will be displayed.</p>
-</li>
-<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want 
-the information displayed as HTML, OpenOffice Writer or in a Micosoft Word document. 
-See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
-'{$locale}');\">help</span> for more information.</p>
-</li>
-<li><p>Use your browser's print functionality to actually print the information.<br />
-<i>Note: Make sure to only print the right-hand frame.</i></p>
-</li>
+		<li>Selecteer de onderdelen die u wilt meenemen in het paneel linksboven.</li>
+		<li>Gebruik de 'Toon als' drop-box in het navigatiepaneel om te kiezen tussen
+		HTML, OpenOffice Writer or een Microsoft Word document. 
+		</li>
+		<li>Selecteer de Test Suite die u in het document wilt hebben,
+		in de boomstructuur linksonder, of klik het
+		Testproject naam om alle Test Suites te selecteren.</li>
+		<li>Bij de HTML optie, gebruik de print functie van de browser om het HTML af te drukken. 
+		Let op: print alleen de rechter frame.</li> 
 </ol>";
 
 
@@ -238,32 +237,28 @@ de Requirements in een Requirements Specificatie, of alle Requirements in een Te
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['keywordsAssign']	= "Keyword Assignment";
-$TLS_htmltext['keywordsAssign'] 			= "<h2>Purpose:</h2>
-<p>The Keyword Assignment page is the place where users can batch-assign keywords to an  
-existing Test Suite or Test Case</p>
+$TLS_htmltext_title['keywordsAssign']	= "Steekwoorden Toekennen";
+$TLS_htmltext['keywordsAssign'] 			= "<h2>Doel</h2>
+<p>Op deze pagina kunt u groepen steekwoorden toekennen aan een Test Suite of Testgeval</p>
 
-<h2>To Assign Keywords:</h2>
+<h2>Om steekwoorden toe te kennen:</h2>
 <ol>
-	<li>Select a Test Suite or Test Case in the tree view
-		on the left.</li>
-	<li>The topmost box that shows up on the right hand side will
-		allow you to assign available keywords to every single test
-		case.</li>
-	<li>The selections below allow you to assign cases at a more
-		granular level.</li>
+	<li>Selecteer een Test Suite of Testgeval in de boomstructuur links. </li>
+	<li>Selecteer de gewenste steekwoorden (u kunt de Ctrl of Shift toetsen gebruiken
+	om meerdere steekwoorden te selecteren)</li>
+	<li>Gebruik de pijlen om de steekwoorden toe te kennen.</li>
 </ol>
 
-<h2>Important Information Regarding Keyword Assignments in Test Plans:</h2>
-<p>Keyword assignments you make to the specification will only effect Test Cases
-in your Test Plans if and only if the Test Plan contains the latest version of the Test Case.
-If a Test Plan contains only older versions of a Test Case, assignments you make
-now WILL NOT appear in the Test Plan.
+<h2>Belangrijke informatie over het toekennen van steekwoorden:</h2>
+<p>Steekwoorden worden alleen toegekend aan Testgevallen als het Testplan de nieuwste versie
+van het Testgeval bevat. Als een Testplan alleen oude versies bevat zullen die toegekende steekwoorden
+dus <i>niet</i> verschijnen in het Testplan.
 </p>
-<p>TestLink uses this approach so that older versions of Test Cases in Test Plans are not affected
-by keyword assignments you make to the most recent version of the Test Case. If you want your
-Test Cases in your Test Plan to be updated, first verify they are up to date using the 'Update
-Modified Test Cases' functionality BEFORE making keyword assignments.</p>";
+<p>TestLink gebruikt deze aanpak zodat oude versies van Testgevallen niet worden vervuild door
+steekwoord toewijzingen die bedoeld zijn voor de huidige versie. Om zeker te zijn dat uw 
+Testgevallen de steekwoorden krijgen toegekend, gebruik eerst de 'Gewijzigde Testgeval versies bijwerken' 
+functie <i>vóór</i> het toekennen van steekwoorden.</p>
+";
 
 
 // ------------------------------------------------------------------------------------------

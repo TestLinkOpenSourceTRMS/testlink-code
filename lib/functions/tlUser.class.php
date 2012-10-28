@@ -1123,5 +1123,117 @@ class tlUser extends tlDBObject
   	}
   	return $to;
   }
+
+
+  function resetPassword(&$db,$passwordSendMethod='send_password_by_mail')
+  {
+  	$retval = array('status' => tl::OK, 'password' => '', 'msg' => ''); 
+  	$retval['status'] = $this->readFromDB($db);
+  	
+  	if ($retval['status'] >= tl::OK)
+  	{
+  		$retval['status'] = tlUser::E_EMAILLENGTH;
+  		if ($this->emailAddress != "")
+  		{
+  			$newPassword = tlUser::generatePassword(8,4); 
+  			$retval['status'] = $this->setPassword($newPassword);
+  			if ($retval['status'] >= tl::OK)
+  			{
+  				$retval['password'] = $newPassword;
+  				$mail_op = new stdClass();
+  				$mail_op->status_ok = false;
+      
+  				if( $passwordSendMethod == 'send_password_by_mail' )
+  				{
+  					$mail_templates = config_get('mail_templates');
+  					$admin_contact = config_get('admin_coordinates');
+  					$tags = array('%admin_coordinates%','%login_name%','%password%','%ipaddress%','%timestamp%');
+  					$values = array($admin_contact,$this->login,$newPassword,get_ip_address(),date("r", time()));
+
+  					// try to use localized template
+  					$file2get = str_replace('%locale%',$this->locale,$mail_templates->change_password);
+  					$msgBody = file_get_contents($file2get);
+  					if(is_null($msgBody))
+  					{
+  						$msgBody = lang_get('change_password_mail_body');
+  					}
+  					$msgBody = str_replace($tags,$values,$msgBody);
+  					$mail_op = @email_send(config_get('from_email'), 
+  									               $this->emailAddress,lang_get('mail_passwd_subject'),$msgBody);
+  				}
+
+  				if ($mail_op->status_ok || ($passwordSendMethod == 'display_on_screen') )
+  				{
+  					$retval['status'] = $this->writePasswordToDB($db);
+  					$retval['msg'] = 'ok';
+  				}
+  				else
+  				{
+  					$retval['status'] = tl::ERROR;
+  					$retval['msg'] = $mail_op->msg;
+  				}
+  			}
+  		}
+  	}
+  	$retval['msg'] = ($retval['msg'] != "") ? $retval['msg'] : $this->getUserErrorMessage($result['status']) ;
+  	return $retval;
+  }
+  
+  static function getUserErrorMessage($code)
+  {
+  	$msg = 'ok';
+  	switch($code)
+  	{
+  		case tl::OK:
+  			break;
+  
+  		case tlUser::E_LOGINLENGTH:
+  			$msg = lang_get('error_user_login_length_error');
+  			break;
+  
+  		case tlUser::E_EMAILLENGTH:
+  			$msg = lang_get('empty_email_address');
+  			break;
+  		case tlUser::E_EMAILFORMAT:
+  			$msg = lang_get('no_good_email_address');
+  			break;
+  			
+  		case tlUser::E_NOTALLOWED:
+  			$msg = lang_get('user_login_valid_regex');
+  			break;
+  
+  		case tlUser::E_FIRSTNAMELENGTH:
+  			$msg = lang_get('empty_first_name');
+  			break;
+  
+  		case tlUser::E_LOGINALREADYEXISTS:
+  			$msg = lang_get('user_name_exists');
+  			break;
+  
+  		case tlUser::E_LASTNAMELENGTH:
+  			$msg = lang_get('empty_last_name');
+  			break;
+  
+  		case tlUser::E_PWDEMPTY:
+  			$msg = lang_get('warning_empty_pwd');
+  			break;
+  
+  		case tlUser::E_PWDDONTMATCH:
+  			$msg = lang_get('wrong_old_password');
+  			break;
+  
+  		case tlUser::S_PWDMGTEXTERNAL	:
+  			$msg = lang_get('password_mgmt_is_external');
+  			break;
+  
+  		case ERROR:
+  		case tlUser::E_DBERROR:
+  		default:
+  			$msg = lang_get('error_user_not_updated');
+  		break;	
+  	}
+  	return $msg;
+  }
+  
 }
 ?>

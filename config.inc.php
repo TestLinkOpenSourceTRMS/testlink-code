@@ -1351,7 +1351,7 @@ $tlCfg->admin_coordinates = 'testlink_admin (configure using $tlCfg->admin_coord
 
 // %locale% will be replaced with user locale
 $tlCfg->mail_templates = new stdClass();
-$tlCfg->mail_templates->change_password = TL_ABS_PATH . "docs/item_templates/%locale%/mail_change_password.txt";
+$tlCfg->mail_templates->change_password = TL_ABS_PATH . "locale/%locale%/mail/mail_change_password.txt";
 
 
 

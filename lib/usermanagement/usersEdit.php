@@ -6,13 +6,11 @@
  * Allows editing a user
  *
  * @filesource	usersEdit.php
- * @package 	TestLink
- * @copyright 	2005-2011, TestLink community
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @copyright 	2005-2012, TestLink community
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
- *	20101010 - franciscom - BUGID 3872: Admin should be able to set a new password for users
- *	20100502 - franciscom - BUGID 3417
  *
  */
 require_once('../../config.inc.php');
@@ -37,8 +35,8 @@ $gui->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events"
 
 
 $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
-                       'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
-                       'resetPassword' => 'doUpdate');
+                         'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
+                         'resetPassword' => 'doUpdate');
 
 switch($args->doAction)
 {
@@ -65,7 +63,7 @@ switch($args->doAction)
 		$gui->highlight->edit_user = 1;
 		$gui->user = new tlUser($args->user_id);
 		$gui->user->readFromDB($db);
-		$gui->op = createNewPassword($db,$args,$user,$passwordSendMethod);
+		$gui->op = createNewPassword($db,$args,$user);
 		break;
 	
 	case "create":
@@ -164,9 +162,9 @@ function doCreate(&$dbHandler,&$argsObj)
 
 function doUpdate(&$dbHandler,&$argsObj,$currentUserID)
 {
-    $op = new stdClass();
-    $op->user_feedback = '';
-    $op->user = new tlUser($argsObj->user_id);
+  $op = new stdClass();
+  $op->user_feedback = '';
+  $op->user = new tlUser($argsObj->user_id);
 	$op->status = $op->user->readFromDB($dbHandler);
 
 	if ($op->status >= tl::OK)
@@ -195,7 +193,6 @@ function doUpdate(&$dbHandler,&$argsObj,$currentUserID)
  * 
  *
  * @internal revisions
- *	20100502 - franciscom - BUGID 3417
  */
 function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 {
@@ -222,7 +219,7 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 	$password_on_screen = ($passwordSendMethod == 'display_on_screen');
 	if( $validator->isValid($smtp_host) || $password_on_screen )
 	{
-		$dummy = resetPassword($dbHandler,$argsObj->user_id,$passwordSendMethod);
+		$dummy = $userObj->resetPassword($dbHandler,$passwordSendMethod);
 
 		$op->user_feedback = $dummy['msg'];
 		$op->status = $dummy['status'];
@@ -284,15 +281,15 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
     $doRender = false;
     switch($argsObj->doAction)
     {
-        case "edit":
-        case "create":
-        case "resetPassword":
+      case "edit":
+      case "create":
+      case "resetPassword":
        		$doRender = true;
     		$tpl = $templateCfg->default_template;
-    		break;
+    	break;
 
-		case "doCreate":
-		case "doUpdate":
+		  case "doCreate":
+		  case "doUpdate":
         if(!is_null($templateCfg->template))
         {
             $doRender = true;

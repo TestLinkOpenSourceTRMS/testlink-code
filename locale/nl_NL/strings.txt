@@ -136,7 +136,7 @@ $TLS_open_on_new_window = "open on new window";
 
 $TLS_priority	= "Prioriteit";
 $TLS_project = "Project";
-$TLS_public = "Public";
+$TLS_public = "Openbaar";
 
 $TLS_requirement = "Requirement"; 
 $TLS_req_monitoring = "Requirement Monitoring";
@@ -697,7 +697,7 @@ $TLS_warning_no_type_change = "You can NOT change the custom field type <br /> "
 $TLS_info_failed_db_upd = "Mislukt om de database te updaten!";
 $TLS_info_failed_db_upd_details = "Mislukt om de database te updaten! - details:";
 $TLS_invalid_query = "Fout";
-$TLS_warning = "Waarschuwing!!";
+$TLS_warning = "Waarschuwing";
 $TLS_was_success = " was succesvol ";
 
 
@@ -895,11 +895,10 @@ $TLS_suggest_create_revision_html = "You changed ONLY the scope. " .
 
 $TLS_warning_suggest_create_revision = "Attention!! - Do you want to create a new revision?";
                             
-$TLS_revision_log_title = "Revision Log";
+$TLS_revision_log_title = "Revisie Log";
 $TLS_please_add_revision_log = "A.u.b. een logbericht opgeven";
 $TLS_commit_title = "Logbericht";
 $TLS_please_add_reason_log = "Please add reason for changes";
-
 
 
 // gui/templates/buildEdit.tpl
@@ -910,14 +909,14 @@ $TLS_enter_build_notes = "Omschrijving";
 $TLS_open = "Open";
 $TLS_title_build_2 = "Opleveringsbeheer";
 $TLS_title_build_create = "Creëer een nieuwe oplevering";
-$TLS_title_build_update = "Update oplevering";
-$TLS_title_build_edit = "Edit Build";
-$TLS_warning_empty_build_name = "Voeg alstublieft een naam in voor de oplevering!";
-$TLS_copy_to_all_tplans = "Copy to all Test Plans";
-$TLS_release_date = "Release date";
-$TLS_closure_date = "Close on";
-$TLS_copy_tester_assignments = "Copy tester assignments";
-$TLS_assignment_source_build = "From existing build";
+$TLS_title_build_update = "Oplevering bijwerken";
+$TLS_title_build_edit = "Oplevering bewerken";
+$TLS_warning_empty_build_name = "Voeg alstublieft een naam in voor de oplevering";
+$TLS_copy_to_all_tplans = "Kopieer naar alle Testplannen";
+$TLS_release_date = "Opleverdatum";
+$TLS_closure_date = "Sluiten op";
+$TLS_copy_tester_assignments = "Tester toekenningen kopieren";
+$TLS_assignment_source_build = "Van bestaande oplevering";
 
 
 // gui/templates/inc_comp_viewer_ro.tpl
@@ -926,7 +925,6 @@ $TLS_introduction = "Introductie";
 $TLS_limitations = "Beperkingen";
 $TLS_methodology = "Metodologie";
 $TLS_references = "Referenties";
-
 
 
 // gui/templates/inc_comp_viewer_rw.tpl
@@ -1445,15 +1443,16 @@ $TLS_testplan_title_create = "Creëer een nieuw Testplan";
 $TLS_testplan_title_edit = "Wijzig het Testplan";
 $TLS_testplan_title_for_project = "voor Testproject ";
 $TLS_testplan_title_tp_management = "Testplan Beheer";
-$TLS_testplan_txt_notes = "Testplannen zouden een (gedeelte van) duidelijk gedefinieerde taken met een planning en inhoud moeten bevatten. " .
-                          "Deze kunnen worden gecreëerd voor simpele wijzigingsvoorstellen tot niuewe product versies." .
-                          "Het is aan te raden dat het omschrijvingsveld wordt gebruikt om links naar projectplannen en gerelateerde " .
-                          "documentatie te documenteren, lijsten van onderdelen die getest moeten worden, risico's etc" .
-                          "U kan een nieuw testplan creeren van een bestaande. " .
-                          "De onderdelen die worden gekopieerd zijn: opleveringen, Testgevallen, prioriteiten, mijlpalen, en gebruikersrollen." .
-                          "Testplannen kunnen worden gedeactiveerd (dat wil zeggen, wijzigen en aanpassen van resultaten zijn niet toegestaan). " .
-                          "Gedeactiveerde testplannen zijn alleen zictbaar via 'Rapprotage' en deze pagina.";
-$TLS_warning_empty_tp_name = "U kunt geen Testplan toevoegen zonder naam!";
+$TLS_testplan_txt_notes = "<p>Een Testplan hoort een duidelijk afgebakende taak te bevatten, met een planning en inhoud. " .
+                          "Testplannen kunnen worden gecreëerd voor simpele wijzigingsvoorstellen tot geheel nieuwe product versies. " .
+                          "Het is aan te raden het beschrijvingsveld te gebruiken om de scope van het Testplan te definieren. " . 
+                          "Daarnaast kan het links naar projectplannen en gerelateerde " .
+                          "documentatie bevatten, lijsten van onderdelen die getest moeten worden, risico's etc. </p> " .
+                          "<p>U kunt een nieuw testplan creëren van een bestaande. " .
+                          "De onderdelen die worden gekopieerd zijn: opleveringen, Testgevallen, prioriteiten, mijlpalen, en gebruikersrollen. " .
+                          "<p>Testplannen kunnen worden gedeactiveerd (dat wil zeggen, wijzigen en aanpassen van resultaten zijn niet toegestaan).</p> " .
+                          "Gedeactiveerde testplannen zijn alleen zichtbaar via 'Rapportage' en op deze pagina. </p>";
+$TLS_warning_empty_tp_name = "U kunt geen Testplan toevoegen zonder naam";
 
 $TLS_testplan_copy_tcases = "Copy Test Cases";
 $TLS_testplan_copy_tcases_latest = "Latest available version";
@@ -1479,45 +1478,40 @@ $TLS_testplan_menu_list = "Lijst";
 $TLS_alt_delete_milestone = "Verwijder mijlpaal?";
 $TLS_btn_edit_milestone = "Wijzig";
 $TLS_btn_new_milestone = "Creëer";
-$TLS_info_milestones_date = "Mijlpalen moeten wordne gecreerd vanaf de dag van vandaag of groter";
-$TLS_info_milestones_start_date = "Start date is optional.";
+$TLS_info_milestones_date = "Mijlpalen moeten in de toekomst zijn (of gelijk aan vandaag)";
+$TLS_info_milestones_start_date = "Startdatum is optioneel.";
 $TLS_no_milestones = "Er zijn geen Mijlpalen voor dit Testplan!";
 $TLS_popup_delete_milestones = "Weet u zeker dat u de mijlpaal %NAME% wil verwijder?";
-$TLS_warning_delete_milestone = "You are going to delete: %s <br /> <br /> Are you sure?";
-$TLS_warning_empty_milestone_name="Milestone name cannot be empty!";
-$TLS_warning_invalid_date = "This date is not a valid date.";
-$TLS_info_milestone_create_prio = "Milestones consider executions within a specified time period.<br />This period starts " .
-                                  "with the <b>Start Date 00:00:00</b> - if the Start Date is not specified all executions are " .
-                                  "taken into account - and ends with the <b>Target date 23:59:59</b>.<br />All executions after the " .
-                                  "Target Date are ignored.<br />Milestones are reached when all \"Sub-Milestones\" for the " .
-                                  "different <b>priorities</b> are reached. Status of Milestones can be found on General Test Plan " .
-                                  "Metrics.";
-$TLS_info_milestone_create_no_prio = "Milestones consider executions within a specified time period.<br />This period starts " .
-                                     "with the <b>Start Date 00:00:00</b> - if the Start Date is not specified all executions are " .
-                                     "taken into account - and ends with the <b>Target date 23:59:59</b>.<br />All executions after the " .
-                                     "Target Date are ignored.<br />Milestones are reached when the chosen percentage of " .
-                                     "<b>Completed tests</b> is reached. Status of Milestones can be found on General Test Plan " .
-                                     "Metrics.";
+$TLS_warning_delete_milestone = "U gaat mijlpaal verwijderen: %s <br /> <br /> Weet u dat zeker?";
+$TLS_warning_empty_milestone_name="Mijlpaal naam mag niet leeg zijn";
+$TLS_warning_invalid_date = "Deze datum is niet geldig";
 
+$tls_info_milestone_1 = "Mijlpalen hebben betrekking op testuitvoeringen in een specifieke tijdsperiode. " .
+	"Deze periode begint bij <b>Startdatum 00:00:00</b> en eindigt bij <b>Doeldatum 23:59:59</b>. Als geen Startdatum is " .
+	"gespecificeerd worden alle testuitvoeringen voor de Doeldatum meegenomen. <br />"; 
+$TLS_info_milestone_create_prio = $tls_info_milestone_1 . "Mijlpalen zijn bereikt als alle 'Submijlpalen' voor de verschillende " .
+	"<b>prioriteiten</b> zijn bereikt. De status van mijlpalen is te vinden in de Algemene Testplan metrieken. ";
+$TLS_info_milestone_create_no_prio = $tls_info_milestone_1 . "Mijlpalen zijn bereikt als de gekozen percentage van 
+	<b>voltooide testen</b> is bereikt. De status van mijlpalen is te vinden in de Algemene Testplan metrieken. ";
 
 $TLS_th_date_format = "Doel Datum";
 $TLS_th_perc_a_prio = "Afgeronde tests met A Prioriteit [0-100%]";
 $TLS_th_perc_b_prio = "Afgeronde tests met B Prioriteit [0-100%]";
 $TLS_th_perc_c_prio = "Afgeronde tests met C Prioriteit [0-100%]";
-$TLS_th_perc_testcases = "Completed tests [0-100%]";
+$TLS_th_perc_testcases = "Voltooide testen [0-100%]";
 $TLS_title_existing_milestones = "Bestaande Mijlpalen";
 $TLS_title_milestones = "Mijlpalen voor Testplan";
 $TLS_title_new_milestone = "Nieuwe Mijlpaal";
-$TLS_title_edit_milestone = "Edit Milestone";
-$TLS_delete_milestone = "Delete milestone";
-$TLS_milestone_deleted = "Milestone %s was successfully deleted";
-$TLS_create_milestone = "Create Milestone";
-$TLS_edit_milestone = "Edit Milestone %s";
-$TLS_warning_empty_low_priority_tcases = "Value can not be empty";
-$TLS_warning_empty_medium_priority_tcases = "Value can not be empty";
-$TLS_warning_empty_high_priority_tcases = "Value can not be empty";
-$TLS_milestone_created = "Milestone Created";
-$TLS_start_date = 'Start Date';
+$TLS_title_edit_milestone = "Mijlpaal Bewerken";
+$TLS_delete_milestone = "Mijlpaal verwijderen";
+$TLS_milestone_deleted = "Mijlpaal %s is verwijderd";
+$TLS_create_milestone = "Mijlpaal Creëren";
+$TLS_edit_milestone = "Mijlpaal %s Bewerken";
+$TLS_warning_empty_low_priority_tcases = "Waarde mag niet leeg zijn";
+$TLS_warning_empty_medium_priority_tcases = "Waarde mag niet leeg zijn";
+$TLS_warning_empty_high_priority_tcases = "Waarde mag niet leeg zijn";
+$TLS_milestone_created = "Mijlpaal gecreëerd";
+$TLS_start_date = 'Startdatum';
 
 
 // ----- gui/templates/projectEdit.tpl -----
@@ -2128,12 +2122,12 @@ $TLS_th_description = "Omschrijving";
 $TLS_th_open = "Open";
 $TLS_title_build_list = "Lijst van bestaande opleveringen";
 $TLS_warning_delete_build = "Wilt u werkelijk deze oplevering verwijderen? Alle afhankelijke data (b.v. test resultaten) worden ook verwijderd!";
-$TLS_builds_description = "Een Oplevering wordt gedefinieerd door zijn titel. Elke oplevering is gerelateerd aan een actief Testplan." .
-						  "Omschrijving zou moeten bevatten: lijstvan oplgeleverde onderdelen, oplossingen of aanpassingen, goedkeuringen, status, etc. " .
-						  "Het heeft twee attributen:<br />" .
-                          "Actief / Inactief &ndash; definieerd of de oplevering gebruikt kan worden. " .
+$TLS_builds_description = "Een Oplevering wordt gedefinieerd door zijn titel. Elke oplevering is gerelateerd aan een actief Testplan. " .
+						  "De omschrijving zou moeten bevatten: lijst van opgeleverde onderdelen, oplossingen of aanpassingen, goedkeuringen, status, etc. " .
+						  "Een oplevering heeft de volgende attributen:<br />" .
+                          "Actief / Inactief &ndash; definieert of de oplevering gebruikt mag worden. " .
                           "Inactieve opleveringen worden niet getoond bij de uitvoering en rapportage paginas.<br />" .
-                          "Open / Gesloten &ndash; De test resultaten van een open oplevering kunnen worden aangepast. Die van een gesloten oplvering niet.";
+                          "Open / Gesloten &ndash; De test resultaten van een open oplevering kunnen worden aangepast; die van een gesloten oplevering niet.";
 $TLS_build_copy_help = "If you check option: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
 		"&nbsp;,Build name will be searched on every Test Plan of this Test Project " .
 		"and if name does not exist, build will be created.";
@@ -2150,8 +2144,8 @@ $TLS_alt_active_testplan = "Actief testplan";
 $TLS_warning_delete_testplan = "<p>You are going to delete: %s </p><p>Are you sure?</p>";
 $TLS_export_testplan_links = "Export links to Test Cases and platforms";
 $TLS_import_testplan_links = "Import links to Test Cases and platforms";
-$TLS_testcase_qty = 'Test Case Qty';
-$TLS_platform_qty = 'Platform Qty';
+$TLS_testcase_qty = 'Aantal Testgevallen';
+$TLS_platform_qty = 'Aantal Platforms';
 
 
 // ----- gui/templates/mainPage_left.tpl -----

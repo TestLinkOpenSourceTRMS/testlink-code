@@ -63,7 +63,7 @@ switch($args->doAction)
 		$gui->highlight->edit_user = 1;
 		$gui->user = new tlUser($args->user_id);
 		$gui->user->readFromDB($db);
-		$gui->op = createNewPassword($db,$args,$user);
+		$gui->op = createNewPassword($db,$args,$gui->user);
 		break;
 	
 	case "create":

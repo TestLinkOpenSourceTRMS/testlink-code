@@ -37,10 +37,8 @@ if( 'LDAP' == $authCfg['method'] )
  * 
  * @return integer status code
  * 
- * @TODO havlatm: move to tlSession class
- * @TODO fix return functionality
  **/
-function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $active = null)
+function XXXsetUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $active = null)
 {
 	tLog('setUserSession: $user=' . $user . ' $id='.$id.' $roleID='.$roleID.' $email='.$email.' $locale='.$locale);
 

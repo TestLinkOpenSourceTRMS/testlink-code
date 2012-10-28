@@ -1234,6 +1234,49 @@ class tlUser extends tlDBObject
   	}
   	return $msg;
   }
+
+
+  function setUserSession(&$db)
+  {
+  	// tLog('setUserSession: $user=' . $user . ' $id='.$id.' $roleID='.$roleID.' $email='.$email.' $locale='.$locale);
+  
+  	$_SESSION['userID']	= $this->dbID;
+  	$_SESSION['s_lastAttachmentList'] = null;
+  	$_SESSION['locale'] = $this->locale;
+    set_dt_formats();
+  
+  	// $tproject_mgr = new testproject($db);
+  	// $arrProducts = $tproject_mgr->get_accessible_for_user($id,'map');
+  	// $tproject_cookie = 'TL_lastTestProjectForUserID_'. $id;
+  	// if (isset($_COOKIE[$tproject_cookie]))
+  	// {
+  	// 	if (isset($arrProducts[$_COOKIE[$tproject_cookie]]) && $arrProducts[$_COOKIE[$tproject_cookie]])
+    //     {
+  	// 	  	  $_SESSION['testprojectID'] = $_COOKIE[$tproject_cookie];
+    //     		tLog('Cookie: {$tproject_cookie}='.$_SESSION['testprojectID']);
+    //     }
+  	// }
+  	// if (!$_SESSION['testprojectID'])
+  	// {
+    //   	$tpID = null;
+    //   	if (sizeof($arrProducts))
+    //   	{
+    //   		$tpID = key($arrProducts);
+    //   	}	
+    //  		$_SESSION['testprojectID'] = $tpID;
+  	// }
+  	// // Validation is done in navBar.php
+  	// $tplan_cookie = 'TL_lastTestPlanForUserID_' . $id;
+  	// if (isset($_COOKIE[$tplan_cookie]))
+  	// {
+  	// 	$_SESSION['testplanID'] = $_COOKIE[$tplan_cookie];
+  	// 	tLog("Cookie: {$tplan_cookie}=".$_SESSION['testplanID']);
+  	// }
+    // 
+  	return 1;
+  }
+
+
   
 }
 ?>

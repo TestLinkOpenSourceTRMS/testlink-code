@@ -7,7 +7,6 @@
  *
 **/
 require_once("../../config.inc.php");
-require_once("common.php");
 require_once("users.inc.php");
 testlinkInitPage($db);
 
@@ -74,7 +73,7 @@ function initializeGui(&$dbHandler,&$argsObj)
 	$guiObj->highlight->view_roles = 1;
 
 	$guiObj->roles = tlRole::getAll($dbHandler,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
-	$guiObj->grants = getGrantsForUserMgmt($dbHandler,$argsObj->currentUser);
+	$guiObj->grants = $argsObj->currentUser->getGrantsForUserMgmt($dbHandler);
 	$guiObj->id = $argsObj->roleid;
 	$guiObj->role_id_replacement = config_get('role_replace_for_deleted_roles');
 

@@ -14,7 +14,6 @@
  *
  */
 require_once('../../config.inc.php');
-require_once('testproject.class.php');
 require_once('users.inc.php');
 require_once('email_api.php');
 require_once('Zend/Validate/Hostname.php');
@@ -29,7 +28,7 @@ $gui->highlight = initialize_tabsmenu();
 $gui->op = new stdClass();
 $gui->op->user_feedback = '';
 $gui->external_password_mgmt = tlUser::isPasswordMgtExternal();
-$gui->grants = getGrantsForUserMgmt($db,$_SESSION['currentUser']);
+$gui->grants = $_SESSION['currentUser']->getGrantsForUserMgmt($db);
 $gui->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
 
 
@@ -210,8 +209,8 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 	// This can be done by passing a parameter to Zend_Validate_Hostname when you instantiate it. 
 	// The paramter should be an integer which determines what types of hostnames are allowed. 
 	// You are encouraged to use the Zend_Validate_Hostname constants to do this.
-    // The Zend_Validate_Hostname constants are: ALLOW_DNS to allow only DNS hostnames, ALLOW_IP to allow IP addresses, 
-    // ALLOW_LOCAL to allow local network names, and ALLOW_ALL to allow all three types. 
+  // The Zend_Validate_Hostname constants are: ALLOW_DNS to allow only DNS hostnames, ALLOW_IP to allow IP addresses, 
+  // ALLOW_LOCAL to allow local network names, and ALLOW_ALL to allow all three types. 
 	// 
 	$validator = new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL);
 	$smtp_host = config_get( 'smtp_host' );

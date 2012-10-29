@@ -598,8 +598,8 @@ class testcaseCommands
     $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
 		$guiObj->goBackAction = sprintf($guiObj->goBackAction,$argsObj->tcase_id,$argsObj->tcversion_id);
 
-    	$templateCfg = templateConfiguration('tcStepEdit');
-  		$guiObj->template=$templateCfg->default_template;
+    $templateCfg = templateConfiguration('tcStepEdit');
+  	$guiObj->template=$templateCfg->default_template;
   		
 		return $guiObj;
 	}

@@ -7,7 +7,6 @@
  * @internal revisions 
 **/
 require_once("../../config.inc.php");
-require_once("common.php");
 require_once("users.inc.php");
 require_once("web_editor.php");
 
@@ -183,7 +182,7 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
     $guiObj->highlight->$actionCfg['highlight'][$argsObj->doAction] = 1;
     $guiObj->operation = $actionCfg['operation'][$argsObj->doAction];
     $guiObj->role = $roleObj;
-    $guiObj->grants = getGrantsForUserMgmt($dbHandler,$_SESSION['currentUser']);
+    $guiObj->grants = $_SESSION['currentUser']->getGrantsForUserMgmt($dbHandler);
     $guiObj->rightsCfg = tlRight::getRightsCfg();
 	  $guiObj->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
 
@@ -192,7 +191,7 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
     {
         foreach($grantDetails as $grantCode => $grantDescription)
         {
-			$guiObj->checkboxStatus[$grantCode] = "";
+			    $guiObj->checkboxStatus[$grantCode] = "";
         }
     }
 

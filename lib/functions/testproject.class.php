@@ -389,21 +389,17 @@ args:
      [order_by]: default: value of config_get('gui')->tprojects_combo_order_by
 
 rev :
-     20071104 - franciscom - added user_id,role_id to remove global coupling
-                             added order_by (BUGID 498)
-     20070725 - franciscom - added output_type
-     20060312 - franciscom - add nodes_hierarchy on join
 
 */
 function get_accessible_for_user($user_id,$output_type='map',$order_by=null)
 {
 
 	$my['order_by'] = is_null($order_by) ? config_get('gui')->tprojects_combo_order_by : $order_by;
-    $items = array();
+  $items = array();
 
-    // Get default role
-    $sql = " SELECT id,role_id FROM {$this->tables['users']} where id={$user_id}";
-    $user_info = $this->db->get_recordset($sql);
+  // Get default role
+  $sql = " SELECT id,role_id FROM {$this->tables['users']} where id={$user_id}";
+  $user_info = $this->db->get_recordset($sql);
 	$role_id=$user_info[0]['role_id'];
 
 	$sql =  " SELECT nodes_hierarchy.name,testprojects.*
@@ -414,7 +410,7 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=null)
 		 	      user_testproject_roles.user_id = {$user_id} WHERE 1=1 ";
 
 	
-	// BUGID 2344: Private test project
+	// Private test project
 	if( $role_id != TL_ROLES_ADMIN )
 	{
 		if ($role_id != TL_ROLES_NO_RIGHTS)
@@ -434,25 +430,24 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=null)
     	}
 	}
 
-	// $sql .=  " AND (role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
-  // 20121027
   $userObj = new tlUser($user_id);
+  $userObj->readFromDB($this->db);
 	if($userObj->hasRight($this->db,'mgt_modify_product') != 'yes')
 	{
 		$sql .= " AND active=1 ";
   }
 	$sql .= $my['order_by'];
 
-    if($output_type == 'array_of_map')
+  if($output_type == 'array_of_map')
 	{
-	    $items = $this->db->get_recordset($sql);
+	  $items = $this->db->get_recordset($sql);
 		$this->parseTestProjectRecordset($items);
-	    $do_post_process=0;
+	  $do_post_process=0;
 	}
 	else
 	{
-	    $arrTemp = $this->db->fetchRowsIntoMap($sql,'id');
-	    $do_post_process=1;
+    $arrTemp = $this->db->fetchRowsIntoMap($sql,'id');
+	  $do_post_process=1;
 	}
 
 	if ($do_post_process && sizeof($arrTemp))

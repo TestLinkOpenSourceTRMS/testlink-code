@@ -1244,35 +1244,6 @@ class tlUser extends tlDBObject
   	$_SESSION['s_lastAttachmentList'] = null;
   	$_SESSION['locale'] = $this->locale;
     set_dt_formats();
-  
-  	// $tproject_mgr = new testproject($db);
-  	// $arrProducts = $tproject_mgr->get_accessible_for_user($id,'map');
-  	// $tproject_cookie = 'TL_lastTestProjectForUserID_'. $id;
-  	// if (isset($_COOKIE[$tproject_cookie]))
-  	// {
-  	// 	if (isset($arrProducts[$_COOKIE[$tproject_cookie]]) && $arrProducts[$_COOKIE[$tproject_cookie]])
-    //     {
-  	// 	  	  $_SESSION['testprojectID'] = $_COOKIE[$tproject_cookie];
-    //     		tLog('Cookie: {$tproject_cookie}='.$_SESSION['testprojectID']);
-    //     }
-  	// }
-  	// if (!$_SESSION['testprojectID'])
-  	// {
-    //   	$tpID = null;
-    //   	if (sizeof($arrProducts))
-    //   	{
-    //   		$tpID = key($arrProducts);
-    //   	}	
-    //  		$_SESSION['testprojectID'] = $tpID;
-  	// }
-  	// // Validation is done in navBar.php
-  	// $tplan_cookie = 'TL_lastTestPlanForUserID_' . $id;
-  	// if (isset($_COOKIE[$tplan_cookie]))
-  	// {
-  	// 	$_SESSION['testplanID'] = $_COOKIE[$tplan_cookie];
-  	// 	tLog("Cookie: {$tplan_cookie}=".$_SESSION['testplanID']);
-  	// }
-    // 
   	return 1;
   }
 
@@ -1342,17 +1313,29 @@ class tlUser extends tlDBObject
 
   function getTestProjectEffectiveRole($tproject)
   {
-	  return $this->helperTestProjectEffectiveRole($this,$tproject);
+	  return $this->helperTestProjectEffectiveRole($tproject,$this);
   }
 
   function getTestProjectEffectiveRoleForUserSet($tproject,$userSet)
   {
-	  return $this->helperTestProjectEffectiveRole($userSet,$tproject);
+	  return $this->helperTestProjectEffectiveRole($tproject,$userSet);
+  }
+
+  function getTestPlanEffectiveRole($tplan,$tproject)
+  {
+	  return $this->helperTestPlanEffectiveRole($tplan,$tproject,$this);
+  }
+
+  function getTestPlanEffectiveRoleForUserSet($tplan,$tproject,$userSet)
+  {
+	  return $this->helperTestPlanEffectiveRole($tplan,$tproject,$userSet);
   }
 
 
-  function helperTestPlanEffectiveRole($userSet,$tplan,$tproject)
+  function helperTestPlanEffectiveRole($tplan,$tproject,$userSet)
   {
+    $effective_role = array();
+	  $effective_role = $this->getTestProjectEffectiveRoleForUserSet($tproject,$userSet);
   
   	foreach($effective_role as $user_id => $row)
   	{
@@ -1369,11 +1352,11 @@ class tlUser extends tlDBObject
   		}
   		// ---------------------------------------------------------------------------
   		
-  		if(isset($row['user']->tplanRoles[$tplan_id]))
+  		if(isset($row['user']->tplanRoles[$tplan['id']]))
   		{
   			$isInherited = 0;
-  			$effective_role[$user_id]['effective_role_id'] = $row['user']->tplanRoles[$tplan_id]->dbID;  
-  			$effective_role[$user_id]['effective_role'] = $row['user']->tplanRoles[$tplan_id];
+  			$effective_role[$user_id]['effective_role_id'] = $row['user']->tplanRoles[$tplan['id']]->dbID;  
+  			$effective_role[$user_id]['effective_role'] = $row['user']->tplanRoles[$tplan['id']];
   		}
   
   		$effective_role[$user_id]['is_inherited'] = $isInherited;
@@ -1381,7 +1364,7 @@ class tlUser extends tlDBObject
   	return $effective_role;
   }
 
-  function helperTestProjectEffectiveRole($userSet,$tproject)
+  function helperTestProjectEffectiveRole($tproject,$userSet)
   {
     $effective_role = array();
 		foreach($userSet as $id => $user)
@@ -1397,11 +1380,11 @@ class tlUser extends tlDBObject
 				$effectiveRole = '<no rights>';
 			}
 			
-			if(isset($user->tprojectRoles[$tproject_id]))
+			if(isset($user->tprojectRoles[$tproject['id']]))
 			{
 				$isInherited = 0;
-				$effectiveRoleID = $user->tprojectRoles[$tproject_id]->dbID;
-				$effectiveRole = $user->tprojectRoles[$tproject_id];
+				$effectiveRoleID = $user->tprojectRoles[$tproject['id']]->dbID;
+				$effectiveRole = $user->tprojectRoles[$tproject['id']];
 			}  
 
 			$effective_role[$id] = array('login' => $user->login,
@@ -1415,6 +1398,64 @@ class tlUser extends tlDBObject
 		}  
     return $effective_role;
   }
+
+  static function getAllUsersRoles(&$db,$order_by = null)
+  {
+      $tables = tlObject::getDBTables(array('users','roles'));
+      
+  	$sql = "SELECT users.id FROM {$tables['users']} users " .
+  	       " LEFT OUTER JOIN {$tables['roles']} roles ON users.role_id = roles.id ";
+  	$sql .= is_null($order_by) ? " ORDER BY login " : $order_by;
+  
+  	$users = tlDBObject::createObjectsFromDBbySQL($db,$sql,"id","tlUser",false,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+  
+  	$loop2do = count($users);
+  	$specialK = array_flip((array)config_get('demoSpecialUsers'));
+  	for($idx=0; $idx < $loop2do; $idx++)
+  	{
+  		$users[$idx]->isDemoSpecial = isset($specialK[$users[$idx]->login]);
+  	}
+  	return $users;
+  }
+
+
+  function getGrantsForUserMgmt(&$dbHandler,$tprojectID=null,$tplanID=null)
+  {
+      $answers = new stdClass();
+      $grants = new stdClass();
+      $grants->user_mgmt = $this->hasRight($dbHandler,"mgt_users",$tprojectID);
+      $grants->role_mgmt = $this->hasRight($dbHandler,"role_management",$tprojectID);
+      $grants->tproject_user_role_assignment = "no";
+      $grants->tplan_user_role_assignment = "no";
+      
+      if($grants->user_mgmt == 'yes')
+      {
+          $grants->tplan_user_role_assignment = 'yes';
+          $grants->tproject_user_role_assignment = 'yes';  
+      }
+      else
+      {
+          
+          $grants->tplan_user_role_assignment = $this->hasRight($dbHandler,"testplan_user_role_assignment",
+                                                                $tprojectID,$tplanID);
+          
+          
+          $answers->user_role_assignment = $this->hasRight($dbHandler,"user_role_assignment",null,-1);
+          $answers->testproject_user_role_assignment = $this->hasRight($dbHandler,"testproject_user_role_assignment",$tprojectID,-1);
+          if($answers->user_role_assignment == "yes" || $answers->testproject_user_role_assignment == "yes")
+          {    
+              $grants->tproject_user_role_assignment = "yes";
+          }
+      }    
+      foreach($grants as $key => $value)
+      {
+          $grants->$key = $value == "yes" ? "yes" : "no";       
+      }
+      
+      return $grants;
+  }
+
+
 
 }
 ?>

@@ -42,7 +42,7 @@ if( 'LDAP' == $authCfg['method'] )
  * 20101023 - franciscom - BUGID 3931: Assign test case to test project fails for 
  *						   PRIVATE TEST PROJECT (tested with admin user)
  */
-function getTestersForHtmlOptions(&$db,$tplanID,$tproject,$users = null, 
+function XXXXgetTestersForHtmlOptions(&$db,$tplanID,$tproject,$users = null, 
                                   $additional_testers = null,$activeStatus = 'active')
 {
 	$orOperand = false;

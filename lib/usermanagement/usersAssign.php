@@ -362,7 +362,6 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
   		$user->readTestPlanRoles($dbHandler,$argsObj->featureID);
   	}
 
-	  // adapted to new interface of getTestersForHtmlOptions
 	  $tproject_info = $tprojectMgr->get_by_id($argsObj->tproject_id);
     $tplan_info = $tplanMgr->get_by_id($argsObj->featureID); 
 	  $effectiveRoles = $argsObj->user->getTestPlanEffectiveRoleForUserSet($tplan_info,$tproject_info,$users);

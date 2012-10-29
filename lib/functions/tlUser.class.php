@@ -1313,29 +1313,29 @@ class tlUser extends tlDBObject
 
   function getTestProjectEffectiveRole($tproject)
   {
-	  return $this->helperTestProjectEffectiveRole($tproject,$this);
+	  return tlUser::helperTestProjectEffectiveRole($tproject,$this);
   }
 
-  function getTestProjectEffectiveRoleForUserSet($tproject,$userSet)
+  static function getTestProjectEffectiveRoleForUserSet($tproject,$userSet)
   {
-	  return $this->helperTestProjectEffectiveRole($tproject,$userSet);
+	  return tlUser::helperTestProjectEffectiveRole($tproject,$userSet);
   }
 
   function getTestPlanEffectiveRole($tplan,$tproject)
   {
-	  return $this->helperTestPlanEffectiveRole($tplan,$tproject,$this);
+	  return tlUser::helperTestPlanEffectiveRole($tplan,$tproject,$this);
   }
 
-  function getTestPlanEffectiveRoleForUserSet($tplan,$tproject,$userSet)
+  static function getTestPlanEffectiveRoleForUserSet($tplan,$tproject,$userSet)
   {
-	  return $this->helperTestPlanEffectiveRole($tplan,$tproject,$userSet);
+	  return tlUser::helperTestPlanEffectiveRole($tplan,$tproject,$userSet);
   }
 
 
-  function helperTestPlanEffectiveRole($tplan,$tproject,$userSet)
+  static function helperTestPlanEffectiveRole($tplan,$tproject,$userSet)
   {
     $effective_role = array();
-	  $effective_role = $this->getTestProjectEffectiveRoleForUserSet($tproject,$userSet);
+	  $effective_role = tlUser::getTestProjectEffectiveRoleForUserSet($tproject,$userSet);
   
   	foreach($effective_role as $user_id => $row)
   	{
@@ -1364,7 +1364,7 @@ class tlUser extends tlDBObject
   	return $effective_role;
   }
 
-  function helperTestProjectEffectiveRole($tproject,$userSet)
+  static function helperTestProjectEffectiveRole($tproject,$userSet)
   {
     $effective_role = array();
 		foreach($userSet as $id => $user)
@@ -1455,6 +1455,42 @@ class tlUser extends tlDBObject
       return $grants;
   }
 
+  static function getTestersForHtmlOptions($tplan,$tproject,$users = null, 
+                                           $additional_testers = null,$activeStatus = 'active')
+  {
+    $orOperand = false;
+    $activeTarget = 1;
+    switch ($activeStatus)
+    {
+        case 'any':
+            $orOperand = true;
+        break;
+        
+        case 'inactive':
+            $activeTarget = 0;
+    	break;
+        
+        case 'active':
+        default:
+  	  break;
+    }
+    $users_roles = tlUser::getTestPlanEffectiveRoleForUserSet($tplan,$tproject,$users);
+    $userFilter = array();
+    foreach($users_roles as $keyUserID => $roleInfo)
+    {
+    	// Assign test case to test project fails for PRIVATE TEST PROJECT (tested with admin user)
+    	if( is_object($roleInfo['effective_role']) )
+    	{
+        	if( $roleInfo['effective_role']->hasRight('testplan_execute') && 
+        	    ($orOperand || $roleInfo['user']->isActive == $activeTarget) )
+        	{
+        	    
+        	     $userFilter[$keyUserID] = $roleInfo['user'];
+        	}
+        }   
+    }
+  	return tlUser::buildUserMap($userFilter,true,$additional_testers);
+  }
 
 
 }

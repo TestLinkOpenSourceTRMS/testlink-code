@@ -1,13 +1,15 @@
 <?php
+
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource tlFilterControl.class.php
  * @package    TestLink
  * @author     Andreas Simon
- * @copyright  2006-2011, TestLink community
+ * @copyright  2006-2010, TestLink community
+ * @version    CVS: $Id: tlFilterControl.class.php,v 1.8 2010/10/07 17:42:56 franciscom Exp $
  * @link       http://www.teamst.org/index.php
+ * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlFilterControl.class.php?view=markup
  *
  * This class holds common logic to be used at GUI level to manage a common set of settings and filters.
  * It is used when filters or subviews of the test case or requirement tree are needed.
@@ -15,11 +17,10 @@
  * which hold specific changes for each of these object types.
  * Main class is abstract because it shall not be used/instantiated directly.
  *
- * @internal revisions
+ * @internal Revisions:
  *
  * 20110621 - asimon - changed access of field active_filters from private to protected because of some IDE warnings
  *                     as well as some phpDoc comments
- * 20110411 - franciscom - BUGID 4339: issues when Working with two different projects within one Browser (same session).
  * 20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
  * 20100808 - asimon - little changes for first implementation of requirement filtering
  * 20100803 - asimon - corrected error in parameter initializing in init_args()
@@ -97,7 +98,7 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	 * @var bool
 	 */
 	public $draw_export_testplan_button = false;  // BUGID 3270 - Export Test Plan in XML Format
-	
+		
 	/**
 	 * will hold the localized string options (any/none/somebody/...)
 	 * @var array
@@ -108,7 +109,7 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	 * holds the configuration that will be read from config file
 	 * @var stdClass
 	 */
-	public $cfg = null;
+	public $configuration = null;
 
 	/**
 	 * holds the user input read from request
@@ -214,11 +215,12 @@ abstract class tlFilterControl extends tlObjectWithDB {
 		// According to these inputs all filters which are not needed will not be used.
 		// Then initialize and use only the remaining filters.
 		$this->read_config();
-		$this->init_args($dbHandler);
-		
+		$this->init_args();
+
 		// set filter mode to advanced or simple
-		$this->advanced_filter_mode = ($this->filter_mode_choice_enabled && 
-									   $this->args->advanced_filter_mode && !$this->args->simple_filter_mode);
+		$this->advanced_filter_mode = ($this->filter_mode_choice_enabled 
+		                              && $this->args->advanced_filter_mode
+		                              && !$this->args->simple_filter_mode);
 		
 		// init button labels
     	if ($this->advanced_filter_mode) {
@@ -240,10 +242,10 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	 * Destructor: deletes all member object which have to be deleted after use.
 	 * 
 	 */
-	public function __destruct() 
-	{
+	public function __destruct() {
+		// delete member objects
 		unset($this->testproject_mgr);
-	}
+	} // end of method
 	
 	/**
 	 * Reads the configuration from the configuration file, which is not dependent on type of objects in tree.
@@ -272,16 +274,11 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	 * While the implementation here loads generic input (unrelated to choice of
 	 * test case or requirements for the tree), it will be extended by
 	 * child classes to load input specific for requirements and test cases.
-	 *
-	 * @internal revisions
-	 * 20110417 - franciscom - 	BUGID 4339 added dbHandler
-	 *							try to get test project from $_REQUEST instead of $_SESSION
 	 */
-	protected function init_args(&$dbHandler) {
+	protected function init_args() {
 
-		static $treeMgr;
-		
 		$this->args = new stdClass();
+
 		$this->args->basehref = $_SESSION['basehref'];
 		
 		// get user's data
@@ -289,32 +286,21 @@ abstract class tlFilterControl extends tlObjectWithDB {
 		$this->args->user_id = $this->user->dbID;
 		$this->args->user_name = $this->user->getDisplayName();
 		
-		$this->args->testproject_id = intval(isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0);
-		$this->args->testproject_name = '';
-		if( $this->args->testproject_id > 0 )
-		{
-			if(is_null($treeMgr))
-			{
-				$treeMgr = new tree($dbHandler);
-			}
-			$dummy = $treeMgr->get_node_hierarchy_info($this->args->testproject_id);
-			$this->args->testproject_name = $dummy['name'];
-
-
-			$this->args->testplan_id = intval(isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0);
-			$this->args->testplan_name = '';
-			if( $this->args->testplan_id > 0 )
-			{
-				$dummy = $treeMgr->get_node_hierarchy_info($this->args->testplan_id);
-				$this->args->testplan_name = $dummy['name'];
-			}
-		}
+		$this->args->testproject_id = isset($_SESSION['testprojectID']) ?
+		                              $_SESSION['testprojectID'] : 0;
+		$this->args->testproject_name = isset($_SESSION['testprojectName']) ?
+		                                $_SESSION['testprojectName'] : 0;
 		
 		$params = array();
 
 		// 20100803 - asimon - corrected error in parameter initializing
-		$params['setting_refresh_tree_on_action'] =	array("POST", tlInputParameter::CB_BOOL);
-		$params['hidden_setting_refresh_tree_on_action'] = array("POST", tlInputParameter::INT_N);
+		$params['setting_refresh_tree_on_action'] =
+			//array("POST", 'setting_refresh_tree_on_action', tlInputParameter::CB_BOOL);
+			array("POST", tlInputParameter::CB_BOOL);
+		$params['hidden_setting_refresh_tree_on_action'] =
+			//array("POST", 'hidden_setting_refresh_tree_on_action', tlInputParameter::INT_N);
+			array("POST", tlInputParameter::INT_N);
+
 		I_PARAMS($params, $this->args);
 
 		// was a filter reset requested?

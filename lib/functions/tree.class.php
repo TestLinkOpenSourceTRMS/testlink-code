@@ -168,13 +168,14 @@ class tree extends tlObject
 	  	}
 	  	else
 	  	{
-	  	    $sql .= "= {$node_id}";
-	  	    if( !is_null($parent_id) )
-	  	    {
-	  	    	$sql .= " AND parent_id={$parent_id} ";	
-	  	    }
-			$rs=$this->db->get_recordset($sql);
-			$result=!is_null($rs) ? $rs[0] : null;
+	  	  $sql .= "= {$node_id}";
+	  	  if( !is_null($parent_id) )
+	  	  {
+	  	   	$sql .= " AND parent_id={$parent_id} ";	
+	  	  }
+			  echo 'FFF';
+			  $rs = $this->db->get_recordset($sql);
+			  $result=!is_null($rs) ? $rs[0] : null;
 	  	} 
 		return $result;
 	}

@@ -626,7 +626,7 @@ function copyTestSuite(&$smartyObj,&$tsuiteMgr,$argsObj,$guiObj)
 	                                               $argsObj->target_position,$exclude_node_types);
 	}
 	
-	$guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
+	$guiObj->attachments = $tsuiteMgr->getAttachmentInfosFrom($argsObj->objectID);
 	$guiObj->id = $argsObj->objectID;
 
 	$identity = new stdClass();
@@ -761,7 +761,7 @@ function copyTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$tcaseMgr,$argsObj
         }
         
         $guiObj = new stdClass();
-   		$guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
+   		$guiObj->attachments = $tsuiteMgr->getAttachmentInfosFrom($argsObj->objectID);
 		$guiObj->id = $argsObj->objectID;
 		$guiObj->refreshTree = true;
     	$op['refreshTree'] = true;
@@ -785,7 +785,7 @@ function moveTestCases(&$smartyObj,&$tsuiteMgr,&$treeMgr,$argsObj)
   {
     // objectID - original container
     $guiObj = new stdClass();
-   	$guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
+   	$guiObj->attachments = $tsuiteMgr->getAttachmentInfosFrom($argsObj->objectID);
 		$guiObj->id = $argsObj->objectID;
 		
 		$guiObj->refreshTree = true;

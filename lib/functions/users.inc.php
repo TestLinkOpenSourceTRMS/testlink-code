@@ -96,7 +96,7 @@ function XXXsetUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $ac
   rev :
        20071228 - franciscom - added active_filter
 */
-function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = null, $active_filter = null,$users = null)
+function RRRRgetUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = null, $active_filter = null,$users = null)
 {
 	$users_map = null;
 	if (!$users)
@@ -143,7 +143,7 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = nul
   returns: map ready to be used on a HTML select input.
 
 */
-function buildUserMap($users,$add_options = false, $additional_options=null)
+function TTTbuildUserMap($users,$add_options = false, $additional_options=null)
 {
 	$usersMap = null;
 	$inactivePrefix = lang_get('tag_for_inactive_users');
@@ -261,7 +261,7 @@ function getTestersForHtmlOptions(&$db,$tplanID,$tproject,$users = null,
     $userFilter = array();
     foreach($users_roles as $keyUserID => $roleInfo)
     {
-    	// BUGID 3931: Assign test case to test project fails for PRIVATE TEST PROJECT (tested with admin user)
+    	// Assign test case to test project fails for PRIVATE TEST PROJECT (tested with admin user)
     	if( is_object($roleInfo['effective_role']) )
     	{
         	if( $roleInfo['effective_role']->hasRight('testplan_execute') && 

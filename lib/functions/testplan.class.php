@@ -66,20 +66,20 @@ class testplan extends tlObjectWithAttachments
 	 */
 	function __construct(&$db)
 	{
-	    $this->db = &$db;
-	    $this->tree_manager = New tree($this->db);
+    $this->db = &$db;
+	  $this->tree_manager = New tree($this->db);
 		$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
 		$this->node_types_id_descr=array_flip($this->node_types_descr_id);
       
-	    $this->assignment_mgr = new assignment_mgr($this->db);
-	    $this->assignment_types = $this->assignment_mgr->get_available_types();
-	    $this->assignment_status = $this->assignment_mgr->get_available_status();
+	  $this->assignment_mgr = new assignment_mgr($this->db);
+	  $this->assignment_types = $this->assignment_mgr->get_available_types();
+	  $this->assignment_status = $this->assignment_mgr->get_available_status();
 
-    	$this->cfield_mgr = new cfield_mgr($this->db);
-    	$this->tcase_mgr = New testcase($this->db);
+    $this->cfield_mgr = new cfield_mgr($this->db);
+    $this->tcase_mgr = New testcase($this->db);
 		$this->platform_mgr = new tlPlatform($this->db);
    	
-	    tlObjectWithAttachments::__construct($this->db,'testplans');
+	  tlObjectWithAttachments::__construct($this->db,'testplans');
 	}
 
 	/**
@@ -4305,7 +4305,7 @@ class testplan extends tlObjectWithAttachments
   {
 	  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	  $sql = "/* $debugMsg */ " . 
-	         " SELECT is_public FROM {$this->object_table} WHERE id = " . intval($id);
+	         " SELECT is_public FROM {$this->tables['testplans']} WHERE id = " . intval($id);
     
     $rs = $this->db->fetchFirstRowSingleColumn($sql,'is_public');
     return $rs;

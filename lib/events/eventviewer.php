@@ -10,7 +10,7 @@
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once("users.inc.php");
+// require_once("users.inc.php");
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
@@ -21,9 +21,7 @@ $gui = initializeGui($db,$args);
 $filters = getFilters();
 
 $smarty = new TLSmarty();
-$show_icon = TL_THEME_IMG_DIR . "plus.gif";
 $charset = config_get('charset');
-
 switch($args->doAction)
 {
     case 'clear':
@@ -64,7 +62,7 @@ $gui->events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $arg
 
 if (count($gui->events) > 0) 
 {
-	$table = buildExtTable($gui, $show_icon, $charset);
+	$table = buildExtTable($gui,$smarty->tpl_vars['tlImages'], $charset);
   if (!is_null($table)) 
   {
 		$gui->tableSet[] = $table;
@@ -85,17 +83,17 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args()
 {
 	$iParams = array("startDate" => array("POST",tlInputParameter::STRING_N,0,10),
-					 "endDate" => array("POST",tlInputParameter::STRING_N,0,10),
-					 "doAction" => array("POST",tlInputParameter::STRING_N,0,100),
-					 "object_id" => array("REQUEST",tlInputParameter::INT_N),
-					 "object_type" => array("REQUEST",tlInputParameter::STRING_N,0,15),
-					 "logLevel" => array("POST",tlInputParameter::ARRAY_INT),
-					 "testers" => array("REQUEST",tlInputParameter::ARRAY_INT));
+        					 "endDate" => array("POST",tlInputParameter::STRING_N,0,10),
+        					 "doAction" => array("POST",tlInputParameter::STRING_N,0,100),
+        					 "object_id" => array("REQUEST",tlInputParameter::INT_N),
+        					 "object_type" => array("REQUEST",tlInputParameter::STRING_N,0,15),
+        					 "logLevel" => array("POST",tlInputParameter::ARRAY_INT),
+        					 "testers" => array("REQUEST",tlInputParameter::ARRAY_INT));
 
 	$args = new stdClass();
 	I_PARAMS($iParams,$args);
 	
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	// take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	$args->currentUser = $_SESSION['currentUser'];
@@ -124,7 +122,7 @@ function checkRights(&$db,&$userObj,$argsObj)
 	}
 	if(!$checkStatus)
 	{
-	  	redirect($_SESSION['basehref'],"top.location");
+	  redirect($_SESSION['basehref'],"top.location");
 		exit();
 	}
 }
@@ -143,9 +141,10 @@ function initializeGui(&$dbHandler,&$argsObj)
       				            tlLogger::INFO => lang_get("log_level_INFO"),
       				            tlLogger::DEBUG => lang_get("log_level_DEBUG"));
 	
-	$gui->allusers = tlUser::getAll($dbHandler);   // THIS IS AN OVERKILL because get ALL USER OBJECTS
-	$gui->testers = getUsersForHtmlOptions($dbHandler,null,null,true,$gui->allusers);
-	$gui->users = getUsersForHtmlOptions($dbHandler);
+	// $gui->allusers = tlUser::getAll($dbHandler);   // THIS IS AN OVERKILL because get ALL USER OBJECTS
+	
+	$gui->testers = tlUser::getUsersForHtmlOptions($dbHandler,null,null,true); // ,$gui->allusers);
+	$gui->users = tlUser::getUsersForHtmlOptions($dbHandler);
   $gui->users[0] = false;
 
   $gui->startDate=$argsObj->startDate;
@@ -172,28 +171,29 @@ function getFilters(&$argsObj=null,$dateFormat=null)
 {
 	$filters = new stdClass();
 	$filters->startTime = null;
-    $filters->endTime = null;
-    $filters->users = null;
+  $filters->endTime = null;
+  $filters->users = null;
 
-    if( !is_null($argsObj) )
-    {
-		if ($argsObj->startDate != "")
-		{
-			$date_array = split_localized_date($argsObj->startDate, $dateFormat);
-			if ($date_array != null) {
-				// convert localized date to date that strtotime understands -> en_US: m/d/Y: 
-				$filters->startTime = strToTime($date_array['month'] . "/" . $date_array['day']. "/" .$date_array['year']);
-			}
-			if ($filters->startTime == "")
-			{
-				$filters->startTime = null;
-			}
-		}
+  if( !is_null($argsObj) )
+  {
+  	if ($argsObj->startDate != "")
+  	{
+  		$date_array = split_localized_date($argsObj->startDate, $dateFormat);
+  		if ($date_array != null) {
+  			// convert localized date to date that strtotime understands -> en_US: m/d/Y: 
+  			$filters->startTime = strToTime($date_array['month'] . "/" . $date_array['day']. "/" .$date_array['year']);
+  		}
+  		if ($filters->startTime == "")
+  		{
+  			$filters->startTime = null;
+  		}
+  	}
 		
 		if ($argsObj->endDate != "")
 		{
 			$date_array = split_localized_date($argsObj->endDate, $dateFormat);
-			if ($date_array != null) {
+			if ($date_array != null) 
+			{
 				// convert localized date to date that strtotime understands -> en_US: m/d/Y:
 				// end time must end at selected day at 23:59:59
 				$filters->endTime = strToTime($date_array['month'] . "/" . $date_array['day']. "/" . 

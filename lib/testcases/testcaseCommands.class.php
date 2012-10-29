@@ -21,21 +21,28 @@ class testcaseCommands
 	private $templateCfg;
 	private $execution_types;
 	private $grants;
+	private $cfg;
 
 	function __construct(&$db,&$userObj,$tproject_id)
 	{
 	  $this->db=$db;
 	  $this->tcaseMgr = new testcase($db);
     $this->execution_types = $this->tcaseMgr->get_execution_types();
+    $this->cfg = (object) array('testcase' => config_get('testcase_cfg'),
+                                'spec' => config_get('spec_cfg')); 
 
     $this->grants = new stdClass();
-		$this->grants->mgt_modify_tc = $userObj->hasRight($db,'mgt_modify_tc',$tproject_id);
-		$this->grants->mgt_view_req = $userObj->hasRight($db,"mgt_view_req",$tproject_id);
-		$this->grants->testplan_planning = $userObj->hasRight($db,"testplan_planning",$tproject_id);
-
+    $g2c = array('mgt_modify_tc','mgt_view_req','testplan_planning',
+                 'testproject_delete_executed_testcases','testproject_edit_executed_testcases');
+                  
+    foreach($g2c as $grant)
+    {
+		  $this->grants->$grant = $userObj->hasRight($db,$grant,$tproject_id);
+    
+    }
     $this->grants->requirement_mgmt = $userObj->hasRight($db,"mgt_modify_req",$tproject_id) ||
         								              $userObj->hasRight($db,"req_tcase_link_management",$tproject_id);
-        								              
+
     $this->sep_1 = config_get('gui_title_separator_1');
     $this->sep_2 = config_get('gui_title_separator_2'); 
 	}
@@ -118,7 +125,8 @@ class testcaseCommands
         			  	 		       ' title="' . lang_get('menu_manage_keywords') . '"';
 		return $obj;
 	}
-	 
+
+
 	/**
 	 * initialize common test case information, useful when working on steps
  	 *
@@ -127,7 +135,7 @@ class testcaseCommands
 	function initTestCaseBasicInfo(&$argsObj,&$guiObj)
 	{
 		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
-												null,array('output' => 'full_without_steps'));
+												                    null,array('output' => 'full_without_steps'));
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->tproject_id);
 		$tcaseInfo[0]['tc_external_id'] = $external[0];
 		$guiObj->testcase = $tcaseInfo[0];
@@ -138,9 +146,7 @@ class testcaseCommands
 			$guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id'],'id');
 		}	
 	}
-
-	 
-	 
+ 
 	 
 	 
 	/**
@@ -149,8 +155,11 @@ class testcaseCommands
 	 */
 	function create(&$argsObj,$oWebEditorKeys,$userInput)
 	{
+	  new dBug($argsObj);
+
     $guiObj = $this->initGuiBean($argsObj);
     $guiObj->initWebEditorFromTemplate = true;
+ 
 
 		$info = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($guiObj->tsuiteID);
 		$guiObj->tsuite = array('name' => $info['name']);
@@ -169,6 +178,7 @@ class testcaseCommands
     $dummy = $this->initKeywordGuiControl($argsObj,$userInput);                                        
     $guiObj->optionTransfer = $dummy->optionTransfer;
     $guiObj->optionTransferJSObject = $dummy->optionTransferJSObject;
+    new dBug($guiObj,array('label' => __METHOD__));
            
                                         
 		$cfPlaces = $this->tcaseMgr->buildCFLocationMap();
@@ -192,33 +202,33 @@ class testcaseCommands
 	 */
 	function doCreate(&$argsObj,$oWebEditorKeys,$request)
 	{
-        $guiObj = $this->create($argsObj,$otCfg,$oWebEditorKeys);
-    	$tplKey = 'tcNew';
+    $guiObj = $this->create($argsObj,$oWebEditorKeys,$request);
+
+
+    new dBug($guiObj);
+    
+		$item = array('parent_id' => $argsObj->tsuiteID, 'name' => $argsObj->name,
+					        'summary' => $argsObj->summary, 'preconditions' => $argsObj->preconditions,
+					        'steps' => $argsObj->tcaseSteps, 'author_id' => $argsObj->user_id,
+					        'keywords_id' => $argsObj->assigned_keywords_list,
+					        'tc_order' => config_get('treemenu_default_testcase_order'), 
+					        'execution_type' => $argsObj->exec_type,
+					        'importance' => $argsObj->importance, 'status' => $argsObj->tc_status,
+					        'estimated_execution_duration' => $argsObj->estimated_execution_duration);
 		  
 		// compute order
-		$new_order = config_get('treemenu_default_testcase_order');
-		$nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
-		$siblings = $this->tcaseMgr->tree_manager->get_children($argsObj->container_id,$nt2exclude);
+		$nt2exclude = array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
+		$siblings = $this->tcaseMgr->tree_manager->get_children($argsObj->tsuiteID,$nt2exclude);
 	
 		if( !is_null($siblings) )
 		{
 			$dummy = end($siblings);
-			$new_order = $dummy['node_order']+1;
+			$item['tc_order'] = $dummy['node_order']+1;
 		}
-		$options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
-		                 'action_on_duplicate_name' => 'block');
-		                 
-		$item = array('parent_id' => $argsObj->container_id, 'name' => $argsObj->name,
-					        'summary' => $argsObj->summary, 'preconditions' => $argsObj->preconditions,
-					        'steps' => $argsObj->tcaseSteps, 'author_id' => $argsObj->user_id,
-					        'keywords_id' => $argsObj->assigned_keywords_list,
-					        'tc_order' => $new_order, 'execution_type' => $argsObj->exec_type,
-					        'importance' => $argsObj->importance, 'status' => $argsObj->tc_status,
-					        'estimated_execution_duration' => $argsObj->estimated_execution_duration);
-		                 
-		$tcase = $this->tcaseMgr->create($item,$options);
 
-		
+		$tcase = $this->tcaseMgr->create($item,
+		                                 array('check_duplicate_name' => config_get('check_names_for_duplicates'),
+		                                       'action_on_duplicate_name' => 'block'));
 		if($tcase['status_ok'])
 		{
 			if($argsObj->stay_here)
@@ -230,10 +240,10 @@ class testcaseCommands
 				// new dBug($_REQUEST);
 				$this->tcaseMgr->cfield_mgr->design_values_to_db($_REQUEST,$tcase['tcversion_id'],$cf_map);
 
-		   		$guiObj->user_feedback = sprintf(lang_get('tc_created'),$argsObj->name);
-		   		$guiObj->sqlResult = 'ok';
-		   		$guiObj->initWebEditorFromTemplate = true;
-		   		$guiObj->cleanUpWebEditor = true;
+		   	$guiObj->user_feedback = sprintf(lang_get('tc_created'),$argsObj->name);
+		   	$guiObj->sqlResult = 'ok';
+		   	$guiObj->initWebEditorFromTemplate = true;
+		   	$guiObj->cleanUpWebEditor = true;
 				$opt_list = '';
 			}
 			else
@@ -242,22 +252,25 @@ class testcaseCommands
 				$argsObj->tcase_id = $tcase['id'];
 				$argsObj->tcversion_id = $tcase['tcversion_id'];
 				$this->show($argsObj,$request, array('status_ok' => 1));
+				exit();
 			}
 		}
 		elseif(isset($tcase['msg']))
 		{
 			$guiObj->user_feedback = lang_get('error_tc_add');
 			$guiObj->user_feedback .= '' . $tcase['msg'];
-	    	$guiObj->sqlResult = 'ko';
-    		$opt_list = $argsObj->assigned_keywords_list;
-    		$guiObj->initWebEditorFromTemplate = false;
+	    $guiObj->sqlResult = 'ko';
+    	$opt_list = $argsObj->assigned_keywords_list;
+    	$guiObj->initWebEditorFromTemplate = false;
 		}
-        keywords_opt_transf_cfg($otCfg, $opt_list);
-    	$guiObj->opt_cfg=$otCfg;
+    
+    keywords_opt_transf_cfg($otCfg, $opt_list);
+    $guiObj->opt_cfg=$otCfg;
+		
 		$templateCfg = templateConfiguration('tcNew');
 		$guiObj->template=$templateCfg->default_template;
 		return $guiObj;    
-    }
+  }
 
 
 
@@ -272,19 +285,19 @@ class testcaseCommands
 	*/
 	function edit(&$argsObj,$oWebEditorKeys)
 	{
-    	$guiObj = $this->initGuiBean($argsObj);
-    	$this->keywordSet['testcase'] = $this->tcaseMgr->get_keywords_map($argsObj->tcase_id," ORDER BY keyword ASC ");
+    $guiObj = $this->initGuiBean($argsObj);
+    $this->keywordSet['testcase'] = $this->tcaseMgr->get_keywords_map($argsObj->tcase_id," ORDER BY keyword ASC ");
 
-    	keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
-  		$tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
+    keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
+  	$tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
 
-  		foreach($oWebEditorKeys as $key)
-   		{
-   			$guiObj->$key = isset($tc_data[0][$key]) ?  $tc_data[0][$key] : '';
-   			$argsObj->$key = $guiObj->$key;
-  		}
+  	foreach($oWebEditorKeys as $key)
+   	{
+   		$guiObj->$key = isset($tc_data[0][$key]) ?  $tc_data[0][$key] : '';
+   		$argsObj->$key = $guiObj->$key;
+  	}
  		
-  		$cf_smarty = null;
+  	$cf_smarty = null;
 		$cfPlaces = $this->tcaseMgr->buildCFLocationMap();
 		foreach($cfPlaces as $locationKey => $locationFilter)
 		{ 
@@ -293,12 +306,14 @@ class testcaseCommands
 				                                                   $argsObj->tcversion_id,null,null,$locationFilter);
 		}	
 		
-   		$templateCfg = templateConfiguration('tcEdit');
 		$guiObj->cf = $cf_smarty;
-    	$guiObj->tc=$tc_data[0];
-    	$guiObj->opt_cfg=$otCfg;
-		$guiObj->template=$templateCfg->default_template;
-    	return $guiObj;
+    $guiObj->tc = $tc_data[0];
+
+   	$templateCfg = templateConfiguration('tcEdit');
+		$guiObj->template = $templateCfg->default_template;
+
+    new dBug($guiObj);
+    return $guiObj;
   }
 
 
@@ -380,15 +395,16 @@ class testcaseCommands
    */
 	function delete(&$argsObj,$request)
 	{
-    	$guiObj = $this->initGuiBean($argsObj);
+	  new dBug($argsObj);
+	  
+    $guiObj = $this->initGuiBean($argsObj);
  		$guiObj->delete_message = '';
-		$cfg = config_get('testcase_cfg');
 	
  		$guiObj->exec_status_quo = $this->tcaseMgr->get_exec_status($argsObj->tcase_id,null, 
- 																	array('addExecIndicator' => true));
+ 																	                              array('addExecIndicator' => true));
 
 		$guiObj->delete_enabled = 1;
-		if( $guiObj->exec_status_quo['executed'] && !$cfg->can_delete_executed )
+		if( $guiObj->exec_status_quo['executed'] && !$this->grants->testproject_delete_executed_testcases )
 		{
 			$guiObj->delete_message = lang_get('system_blocks_delete_executed_tc_when');
 			$guiObj->delete_enabled = 0;
@@ -426,12 +442,10 @@ class testcaseCommands
 				}
 			}
 		}
-		                  
 	
 		$tcinfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id);
-		list($prefix,$root) = $this->tcaseMgr->getPrefix($argsObj->tcase_id,$argsObj->tproject_id);
-        $prefix .= $cfg->glue_character;
-        $external_id = $prefix . $tcinfo[0]['tc_external_id'];
+		list($external_id,$root) = $this->tcaseMgr->getPrefix($argsObj->tcase_id,$argsObj->tproject_id);
+    $external_id .= $this->cfg->testcase->glue_character . $tcinfo[0]['tc_external_id'];
         
 		$guiObj->title = lang_get('title_del_tc');
 		$guiObj->testcase_name =  $tcinfo[0]['name'];
@@ -440,8 +454,8 @@ class testcaseCommands
 		$guiObj->refreshTree = 1;
  		$guiObj->main_descr = lang_get('title_del_tc') . TITLE_SEP . $external_id . TITLE_SEP . $tcinfo[0]['name'];  
     
-    	$templateCfg = templateConfiguration('tcDelete');
-  		$guiObj->template=$templateCfg->default_template;
+    $templateCfg = templateConfiguration('tcDelete');
+  	$guiObj->template = $templateCfg->default_template;
 	
 		return $guiObj;
 	}
@@ -452,9 +466,7 @@ class testcaseCommands
    */
 	function doDelete(&$argsObj,$request)
 	{
-		$cfg = config_get('testcase_cfg');
-
-    	$guiObj = $this->initGuiBean($argsObj);
+   	$guiObj = $this->initGuiBean($argsObj);
  		$guiObj->user_feedback = '';
 		$guiObj->delete_message = '';
 		$guiObj->action = 'deleted';
@@ -462,9 +474,8 @@ class testcaseCommands
  		$guiObj->delete_mode = 'single';
 
 		$tcinfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
-		list($prefix,$root) = $this->tcaseMgr->getPrefix($argsObj->tcase_id,$argsObj->tproject_id);
-        $prefix .= $cfg->glue_character;
-        $external_id = $prefix . $tcinfo[0]['tc_external_id'];
+		list($external_id,$root) = $this->tcaseMgr->getPrefix($argsObj->tcase_id,$argsObj->tproject_id);
+    $external_id .= $this->cfg->testcase->glue_character . $tcinfo[0]['tc_external_id'];
 		if (!$this->tcaseMgr->delete($argsObj->tcase_id,$argsObj->tcversion_id))
 		{
 			$guiObj->action = '';
@@ -477,25 +488,25 @@ class testcaseCommands
     	
 		$guiObj->main_descr = lang_get('title_del_tc') . ":" . $external_id . TITLE_SEP . htmlspecialchars($tcinfo[0]['name']);
   
-  		// 20080706 - refresh must be forced to avoid a wrong tree situation.
-  		// if tree is not refreshed and user click on deleted test case he/she
-  		// will get a SQL error
-  		// $refresh_tree = $cfg->spec->automatic_tree_refresh ? "yes" : "no";
-  		$guiObj->refreshTree = 1;
+  	// refresh must be forced to avoid a wrong tree situation.
+  	// if tree is not refreshed and user click on deleted test case he/she
+  	// will get a SQL error
+  	// $refresh_tree = $cfg->spec->automatic_tree_refresh ? "yes" : "no";
+  	$guiObj->refreshTree = 1;
  
-  		// When deleting JUST one version, there is no need to refresh tree
+  	// When deleting JUST one version, there is no need to refresh tree
 		if($argsObj->tcversion_id != testcase::ALL_VERSIONS)
 		{
 			  $guiObj->main_descr .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
 			  $guiObj->refreshTree = 0;
-		  	  $guiObj->user_feedback = sprintf(lang_get('tc_version_deleted'),$tcinfo[0]['name'],$tcinfo[0]['version']);
+		  	$guiObj->user_feedback = sprintf(lang_get('tc_version_deleted'),$tcinfo[0]['name'],$tcinfo[0]['version']);
 		}
 
 		$guiObj->testcase_name = $tcinfo[0]['name'];
 		$guiObj->testcase_id = $argsObj->tcase_id;
     
-    	$templateCfg = templateConfiguration('tcDelete');
-  		$guiObj->template=$templateCfg->default_template;
+    $templateCfg = templateConfiguration('tcDelete');
+  	$guiObj->template=$templateCfg->default_template;
 		return $guiObj;
 	}
 
@@ -584,7 +595,7 @@ class testcaseCommands
 		// seems to be used as argument "attach_loadOnCancelURL"
 		// on {include file="inc_attachments.tpl"}
 		// on tcView.tpl
-        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
+    $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
 		$guiObj->goBackAction = sprintf($guiObj->goBackAction,$argsObj->tcase_id,$argsObj->tcversion_id);
 
     	$templateCfg = templateConfiguration('tcStepEdit');
@@ -859,29 +870,28 @@ class testcaseCommands
 	 */
 	function show(&$argsObj,$request,$userFeedback)
 	{
-        $smartyObj = new TLSmarty();
-        $viewer_args=array();
-    	$guiObj = $this->initGuiBean($argsObj);
-   	    $guiObj->refreshTree = ($argsObj->refreshTree && $userFeedback['status_ok']) ? 1 : 0;
-   	    $guiObj->has_been_executed = $argsObj->has_been_executed;
-		$guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
+    $smartyObj = new TLSmarty();
+    $viewer_args=array();
+    
+    $guiObj = $this->initGuiBean($argsObj);
+   	$guiObj->refreshTree = ($argsObj->refreshTree && $userFeedback['status_ok']) ? 1 : 0;
+   	$guiObj->has_been_executed = $argsObj->has_been_executed;
+		$guiObj->steps_results_layout = $this->cfg->spec->steps_results_layout;
 
-		
-        if($userFeedback['status_ok'])
+    if($userFeedback['status_ok'])
 		{
-		    $guiObj->user_feedback = '';
-  			$ENABLED = 1;
-	  		$NO_FILTERS = null;
-		  	$cf_map = $this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tproject_id,
-		                                                                        $ENABLED,$NO_FILTERS,'testcase') ;
+      $guiObj->user_feedback = '';
+  		$ENABLED = 1;
+	  	$NO_FILTERS = null;
+		  $cf_map = $this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tproject_id,
+		                                                                      $ENABLED,$NO_FILTERS,'testcase') ;
 
 			$this->tcaseMgr->cfield_mgr->design_values_to_db($request,$argsObj->tcversion_id,$cf_map);
-			
-            $guiObj->attachments[$argsObj->tcase_id] = getAttachmentInfosFrom($this->tcaseMgr,$argsObj->tcase_id);
+      $guiObj->attachments[$argsObj->tcase_id] = $this->tcaseMgr->getAttachmentInfos($argsObj->tcase_id);
 		}
 		else
 		{
-		    $guiObj->user_feedback = $userFeedback['msg'];
+      $guiObj->user_feedback = $userFeedback['msg'];
 		}
 
     $viewer_args['refreshTree'] = $guiObj->refreshTree;
@@ -894,7 +904,6 @@ class testcaseCommands
     $identity->version_id = $argsObj->tcversion_id;
 
     $this->tcaseMgr->show($smartyObj,$guiObj,$identity); 
-
 		exit();	
 	}
 
@@ -916,6 +925,9 @@ class testcaseCommands
     
     $inputNames = $widget->optionTransfer->getHtmlInputNames();
     $toKeywordSet = isset($userInput[$inputNames->newRight])? $userInput[$inputNames->newRight] : "";
+    
+    new dBug($inputNames->newRight);
+    
     $widget->optionTransfer->updatePanelsContent($toKeywordSet);
     
     $widget->optionTransferJSObject = json_encode($inputNames);

@@ -87,14 +87,13 @@ function validateStepsReorder(formOID)
 
 </head>
 
-{assign var="my_style" value=""}
+{$my_style = ""}
 {if $gui->hilite_testcase_name}
-    {assign var="my_style" value="background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
+    {$my_style = "background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
 {/if}
 
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
-<h1 class="title">{$gui->pageTitle}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}
-</h1>
+<h1 class="title">{$gui->pageTitle|escape}</h1>
 
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback refresh=$gui->refreshTree}
 <div class="workBack">
@@ -102,13 +101,13 @@ function validateStepsReorder(formOID)
 {if $gui->tc_current_version}
 {section name=idx loop=$gui->tc_current_version}
 
-		{assign var="tcID" value=$gui->tc_current_version[idx][0].testcase_id}
+		{$tcID = $gui->tc_current_version[idx][0].testcase_id}
 
     {* Current active version *}
     {if $gui->testcase_other_versions[idx] neq null}
-        {assign var="my_delete_version" value="yes"}
+        {$my_delete_version = "yes"}
     {else}
-        {assign var="my_delete_version" value="no"}
+        {$my_delete_version = "no"}
     {/if}
   
     <h2 style="{$my_style}">

@@ -258,13 +258,13 @@ function get_tproject_effective_role(&$db,$tproject,$user_id = null,$users = nul
 			}  
 
 			$effective_role[$id] = array('login' => $user->login,
-										 'user' => $user,
-										 'user_role_id' => $user->globalRoleID,
-										 'uplayer_role_id' => $user->globalRoleID,
-										 'uplayer_is_inherited' => 0,
-										 'effective_role_id' => $effectiveRoleID,
-										 'effective_role' => $effectiveRole,
-										 'is_inherited' => $isInherited);
+										               'user' => $user,
+              										 'user_role_id' => $user->globalRoleID,
+              										 'uplayer_role_id' => $user->globalRoleID,
+              										 'uplayer_is_inherited' => 0,
+              										 'effective_role_id' => $effectiveRoleID,
+              										 'effective_role' => $effectiveRole,
+              										 'is_inherited' => $isInherited);
 		}  
 	}
 	return $effective_role;
@@ -311,7 +311,6 @@ function get_tplan_effective_role(&$db,$tplan_id,$tproject,$user_id = null,$user
 		$effective_role[$user_id]['uplayer_role_id'] = $effective_role[$user_id]['effective_role_id'];
 		$effective_role[$user_id]['uplayer_is_inherited'] = $effective_role[$user_id]['is_inherited'];
 		
-		// BUGID 4006 
 		// Manage administrator exception
 		if( ($row['user']->globalRoleID != TL_ROLES_ADMIN) && !$tplan['is_public'])
 		{

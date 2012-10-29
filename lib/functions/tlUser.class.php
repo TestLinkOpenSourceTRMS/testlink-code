@@ -1277,6 +1277,144 @@ class tlUser extends tlDBObject
   }
 
 
+  static function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = null, $active_filter = null,$users = null)
+  {
+  	$users_map = null;
+  	if (!$users)
+  	{
+  		$sqlWhere = $whereClause;
+  		if(!is_null($active_filter))
+  		{
+  			$whereClause .= ' AND active =' . ($active_filter > 0 ? 1 : 0) . ' ';
+  		}
+  		$users = tlUser::getAll($db,$sqlWhere,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+  	}
+    
+  	return tlUser::buildUserMap($users,!is_null($additional_users),$additional_users);
+  }
+
+
+  /*
+    function: buildUserMap
   
+    args:
+         $users: map of user objects
+         [add_options]: default false.
+                        true, elements present on additional_options arguments
+                        will be will added to result map.
+         
+         [additional_options]: default null
+                               map with key=user id, value=verbose description 
+    
+    returns: map ready to be used on a HTML select input.
+  
+  */
+  static private function buildUserMap($users,$add_options = false, $additional_options=null)
+  {
+  	$usersMap = null;
+  	$inactivePrefix = lang_get('tag_for_inactive_users');
+  	if ($users)
+  	{
+  		if($add_options)
+  		{
+  		  $my_options = is_null($additional_options) ? array( 0 => '') : $additional_options;
+  		  foreach($my_options as $code => $verbose_code)
+  		  {
+  			    $usersMap[$code] = $verbose_code;
+  			}
+  		}
+  		$userSet = array_keys($users);
+  		$loops2do = count($userSet);
+  		
+      for( $idx=0; $idx < $loops2do ; $idx++)
+      {
+       	$userID = $userSet[$idx];
+  			$usersMap[$userID] = $users[$userID]->getDisplayName();
+  			if($users[$userID]->isActive == 0)
+  			{
+  			    $usersMap[$userID] = $inactivePrefix . ' ' . $usersMap[$userID];
+  			} 
+      }
+  	}
+  	return $usersMap;
+  }
+
+
+  function getTestProjectEffectiveRole($tproject)
+  {
+	  return $this->helperTestProjectEffectiveRole($this,$tproject);
+  }
+
+  function getTestProjectEffectiveRoleForUserSet($tproject,$userSet)
+  {
+	  return $this->helperTestProjectEffectiveRole($userSet,$tproject);
+  }
+
+
+  function helperTestPlanEffectiveRole($userSet,$tplan,$tproject)
+  {
+  
+  	foreach($effective_role as $user_id => $row)
+  	{
+  		$isInherited = 1;
+  		$effective_role[$user_id]['uplayer_role_id'] = $effective_role[$user_id]['effective_role_id'];
+  		$effective_role[$user_id]['uplayer_is_inherited'] = $effective_role[$user_id]['is_inherited'];
+  		
+  		// Manage administrator exception
+  		if( ($row['user']->globalRoleID != TL_ROLES_ADMIN) && !$tplan['is_public'])
+  		{
+  				$isInherited = $tproject['is_public'];
+  				$effectiveRoleID = TL_ROLES_NO_RIGHTS;
+  				$effectiveRole = '<no rights>';
+  		}
+  		// ---------------------------------------------------------------------------
+  		
+  		if(isset($row['user']->tplanRoles[$tplan_id]))
+  		{
+  			$isInherited = 0;
+  			$effective_role[$user_id]['effective_role_id'] = $row['user']->tplanRoles[$tplan_id]->dbID;  
+  			$effective_role[$user_id]['effective_role'] = $row['user']->tplanRoles[$tplan_id];
+  		}
+  
+  		$effective_role[$user_id]['is_inherited'] = $isInherited;
+  	}
+  	return $effective_role;
+  }
+
+  function helperTestProjectEffectiveRole($userSet,$tproject)
+  {
+    $effective_role = array();
+		foreach($userSet as $id => $user)
+		{
+			// manage admin exception
+			$isInherited = 1;
+			$effectiveRoleID = $user->globalRoleID;
+			$effectiveRole = $user->globalRole;
+			if( ($user->globalRoleID != TL_ROLES_ADMIN) && !$tproject['is_public'])
+			{
+				$isInherited = $tproject['is_public'];
+				$effectiveRoleID = TL_ROLES_NO_RIGHTS;
+				$effectiveRole = '<no rights>';
+			}
+			
+			if(isset($user->tprojectRoles[$tproject_id]))
+			{
+				$isInherited = 0;
+				$effectiveRoleID = $user->tprojectRoles[$tproject_id]->dbID;
+				$effectiveRole = $user->tprojectRoles[$tproject_id];
+			}  
+
+			$effective_role[$id] = array('login' => $user->login,
+										               'user' => $user,
+              										 'user_role_id' => $user->globalRoleID,
+              										 'uplayer_role_id' => $user->globalRoleID,
+              										 'uplayer_is_inherited' => 0,
+              										 'effective_role_id' => $effectiveRoleID,
+              										 'effective_role' => $effectiveRole,
+              										 'is_inherited' => $isInherited);
+		}  
+    return $effective_role;
+  }
+
 }
 ?>

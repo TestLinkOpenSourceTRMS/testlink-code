@@ -31,6 +31,8 @@ $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 
+new dBug($_REQUEST);
+
 $args = init_args($cfg,$tproject_mgr);
 require_once(require_web_editor($cfg->webEditorCfg['type']));
 
@@ -66,7 +68,7 @@ switch($args->doAction)
 	case "create":  
 	case "doCreate":  
     $oWebEditorKeys = array_keys($oWebEditor->cfg);
-    $op = $commandMgr->$pfn($args,$opt_cfg,$oWebEditorKeys,$_REQUEST);
+    $op = $commandMgr->$pfn($args,$oWebEditorKeys,$_REQUEST);
     $doRender = true;
   break;
     
@@ -335,8 +337,9 @@ function init_args(&$cfgObj,&$tprojectMgr)
 {
   $tc_importance_default = config_get('testcase_importance_default');
   
-  $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
+  
+  $args->user = $_SESSION['currentUser'];
   
   $id2get = array('tsuiteID' => 'tsuiteID','tcase_id' => 'testcase_id','tcversion_id' => 'tcversion_id');
   foreach($id2get as $prop => $input)

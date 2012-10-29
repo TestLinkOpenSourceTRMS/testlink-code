@@ -625,13 +625,6 @@ class testcase extends tlObjectWithAttachments
 	
 	  rev :
 	*/
-	// 1.9.4
-	// function show(&$smarty,$guiObj,$template_dir,$id,$version_id = self::ALL_VERSIONS,
-	//              $viewer_args = null,$path_info=null,$mode=null)
-	
-	//function show(&$smarty,$env_tproject_id,$grants,$guiObj,$template_dir,$id,$version_id = self::ALL_VERSIONS,
-	//              $viewer_args = null,$path_info=null,$mode=null)
-	// function show(&$smarty,$env_tproject_id,$grants,$guiObj,$id,$version_id = self::ALL_VERSIONS)
 	function show(&$smarty,$guiObj,$identity)
 	{
 
@@ -644,18 +637,14 @@ class testcase extends tlObjectWithAttachments
 
 		$req_mgr = new requirement_mgr($this->db);
 
-	  $gui = initShowGui($guiObj,$grants);
-	  $gui->can_do = $this->getShowViewerActions($gui->show_mode);
+	  $gui = $this->initShowGui($guiObj,$grants);
 	  
-    $dummy = templateConfiguration('tcView');
-		$my_template = isset($the_tpl['tcView']) ? $the_tpl['tcView'] : 'tcView.tpl'; 
-
+	  
 		$gui->testcase_other_versions = array();
     $userid_array = array();
 
 		if($status_ok)
 	  {
-
 	    $path2root = $this->tree_manager->get_path($idSet[0]);
 	    $gui->tproject_id = $path2root[0]['parent_id'];
 	    $info = $this->tproject_mgr->get_by_id($gui->tproject_id);
@@ -788,13 +777,13 @@ class testcase extends tlObjectWithAttachments
 		unset($userid_array['']);
 		$passeduserarray = array_keys($userid_array);
 
-		
-
-    initShowGuiActions(&$gui);
+    $this->initShowGuiActions(&$gui);
 		$gui->users = tlUser::getByIDs($this->db,$passeduserarray,'id');
+		
+		new dBug($gui);
 		$smarty->assign('gui',$gui);
-		$dummy = templateConfiguration('tcView');
-		$smarty->display($template_dir . $dummy->default_template);
+    $dummy = templateConfiguration('tcView');
+		$smarty->display($smarty->tlTemplateCfg->template_dir . $dummy->default_template);
 	}
 	
 
@@ -844,15 +833,16 @@ class testcase extends tlObjectWithAttachments
 		$goo->user_feedback = $viewer_defaults['user_feedback'];
 
 	  $goo->pageTitle = $viewer_defaults['title'];
+	  $goo->display_testcase_path = !is_null($goo->path_info);
+	  $goo->show_match_count = $viewer_defaults['show_match_count'];
+ 	  if($goo->show_match_count && $goo->display_testcase_path )
+	  {
+		  $goo->pageTitle .= '-' . lang_get('match_count') . ':' . ($goo->match_count = count($goo->path_info));
+	  }
+		
 		$goo->refreshTree = isset($goo->refreshTree) ? $goo->refreshTree : $viewer_defaults['refreshTree'];
 		$goo->sqlResult = $viewer_defaults['msg_result'];
 
-	  $goo->show_match_count = $viewer_defaults['show_match_count'];
-	  $goo->display_testcase_path = !is_null($goo->path_info);
-	  if($goo->show_match_count && $goo->display_testcase_path )
-	  {
-	        $goo->match_count = count($goo->path_info);  
-	  }
 
     // fine grain control of operations
 	  if( $viewer_defaults['disable_edit'] == 1 || ($grantsObj->mgt_modify_tc == false) )
@@ -872,6 +862,8 @@ class testcase extends tlObjectWithAttachments
 
 		$dummy = getConfigAndLabels('testCaseStatus','code');
 		$goo->domainTCStatus = $dummy['lbl'];
+
+    $goo->can_do = $this->getShowViewerActions($oo->show_mode);
 
 
 	  return $goo;

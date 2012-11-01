@@ -5,12 +5,12 @@
  * 	@filesource	listTestCases.php
  * 	@package 	  TestLink
  * 	@author 	  Martin Havlat
- * 	@copyright 	2007-2011, TestLink community 
+ * 	@copyright 	2007-2012, TestLink community 
  * 	@link 		  http://www.teamst.org/index.php
  *
  *
  * 	Generates tree menu with test specification.
- *   It builds the javascript tree that allows the user to choose testsuite or testcase.
+ *  It builds the javascript tree that allows the user to choose testsuite or testcase.
  *
  *	@internal revisions
  *

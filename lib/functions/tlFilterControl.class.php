@@ -4,12 +4,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * @filesource tlFilterControl.class.php
  * @package    TestLink
  * @author     Andreas Simon
- * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlFilterControl.class.php,v 1.8 2010/10/07 17:42:56 franciscom Exp $
+ * @copyright  2006-2012, TestLink community
  * @link       http://www.teamst.org/index.php
- * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlFilterControl.class.php?view=markup
  *
  * This class holds common logic to be used at GUI level to manage a common set of settings and filters.
  * It is used when filters or subviews of the test case or requirement tree are needed.
@@ -17,18 +16,8 @@
  * which hold specific changes for each of these object types.
  * Main class is abstract because it shall not be used/instantiated directly.
  *
- * @internal Revisions:
+ * @internal revisions
  *
- * 20110621 - asimon - changed access of field active_filters from private to protected because of some IDE warnings
- *                     as well as some phpDoc comments
- * 20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
- * 20100808 - asimon - little changes for first implementation of requirement filtering
- * 20100803 - asimon - corrected error in parameter initializing in init_args()
- * 20100628 - asimon - removal of constants
- * 20100624 - asimon - CVS merge (experimental branch to HEAD)
- * 20100503 - asimon - start of implementation of filter panel class hierarchy
- *                     to simplify/generalize filter panel handling
- *                     for test cases and requirements
  */
 
 /**
@@ -42,7 +31,8 @@
  * @package TestLink
  * @uses testproject
  */
-abstract class tlFilterControl extends tlObjectWithDB {
+abstract class tlFilterControl extends tlObjectWithDB 
+{
 
 	/**
 	 * Label (and name) for the button to enable simple filter mode. 
@@ -206,37 +196,36 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	 *
 	 * @param database $dbHandler reference to database object
 	 */
-	public function __construct(&$dbHandler) {
-
-		// call to constructor of parent class tlObjectWithDB
+	public function __construct(&$dbHandler) 
+	{
 		parent::__construct($dbHandler);
 
-		// Here comes all initializing work: First read the config, then user input.
+		// Here comes all initializing work: 
+		// First read the config, then user input.
 		// According to these inputs all filters which are not needed will not be used.
 		// Then initialize and use only the remaining filters.
+		//
+		// Remember difference bewteen self & this when extending classes
+		//
 		$this->read_config();
 		$this->init_args();
 
-		// set filter mode to advanced or simple
-		$this->advanced_filter_mode = ($this->filter_mode_choice_enabled 
-		                              && $this->args->advanced_filter_mode
-		                              && !$this->args->simple_filter_mode);
-		
-		// init button labels
-    	if ($this->advanced_filter_mode) {
-    	    $label = self::SIMPLE_FILTER_BUTTON_LABEL;
-    	    $qty = self::ADVANCED_FILTER_ITEM_QUANTITY;
-    	} else {
-    	    $label = self::ADVANCED_FILTER_BUTTON_LABEL;
-    	    $qty = self::SIMPLE_FILTER_ITEM_QUANTITY;
-    	}
-		$this->filter_mode_button_label = lang_get($label);
-		$this->filter_mode_button_name = $label;
-		$this->filter_item_quantity = $qty;
+    $this->filter_item_quantity = self::SIMPLE_FILTER_ITEM_QUANTITY;
+    $this->filter_mode_button_name = self::ADVANCED_FILTER_BUTTON_LABEL;
+
+		$this->advanced_filter_mode = ($this->filter_mode_choice_enabled && 
+		                               $this->args->advanced_filter_mode && !$this->args->simple_filter_mode);
+
+    if ($this->advanced_filter_mode) 
+    {
+        $this->filter_mode_button_name = self::SIMPLE_FILTER_BUTTON_LABEL;
+        $this->filter_item_quantity = self::ADVANCED_FILTER_ITEM_QUANTITY;
+    } 
+		$this->filter_mode_button_label = lang_get($this->filter_mode_button_name);
 
 		$this->init_settings();
 		$this->init_filters();
-	} // end of method
+	}
 
 	/**
 	 * Destructor: deletes all member object which have to be deleted after use.
@@ -254,18 +243,17 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	 * Function has protected (in subclasses private) visibility because it will only be called by __construct().
 	 * @return bool
 	 */
-	protected function read_config() {
+	protected function read_config() 
+	{
 		// opening and closing brackets
 		$gui_open = config_get('gui_separator_open');
-    	$gui_close = config_get('gui_separator_close');
+    $gui_close = config_get('gui_separator_close');
 
 		// configure string options for select inputs
 		$this->option_strings['any'] = $gui_open . lang_get('any') . $gui_close;
-    	$this->option_strings['none'] = $gui_open . lang_get('nobody') . $gui_close;
-    	$this->option_strings['somebody'] = $gui_open . lang_get('filter_somebody') . $gui_close;
-
-		return tl::OK;
-	} // end of method
+    $this->option_strings['none'] = $gui_open . lang_get('nobody') . $gui_close;
+    $this->option_strings['somebody'] = $gui_open . lang_get('filter_somebody') . $gui_close;
+	} 
 
 	/**
 	 * Does what init_args() usually does in scripts: Reads the user input
@@ -275,47 +263,45 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	 * test case or requirements for the tree), it will be extended by
 	 * child classes to load input specific for requirements and test cases.
 	 */
-	protected function init_args() {
-
+	protected function init_args() 
+	{
 		$this->args = new stdClass();
-
 		$this->args->basehref = $_SESSION['basehref'];
 		
 		// get user's data
 		$this->user = $_SESSION['currentUser'];
 		$this->args->user_id = $this->user->dbID;
 		$this->args->user_name = $this->user->getDisplayName();
-		
-		$this->args->testproject_id = isset($_SESSION['testprojectID']) ?
-		                              $_SESSION['testprojectID'] : 0;
-		$this->args->testproject_name = isset($_SESSION['testprojectName']) ?
-		                                $_SESSION['testprojectName'] : 0;
-		
-		$params = array();
+  		
+		$this->args->testproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
+		if($this->args->testproject_id <= 0)
+		{
+			$msg = "Class: " . __CLASS__ . " - Method: " . __FUNCTION__ . " :: Test project ID <= 0 ";
+			throw new Exception($msg);
+		}
+    $tree_mgr = new tree($this->db);
+    $dummy = $tree_mgr->get_node_hierarchy_info($this->args->testproject_id);
+    unset($tree_mgr);
+    $this->args->testproject_name = $dummy['name'];
 
-		// 20100803 - asimon - corrected error in parameter initializing
-		$params['setting_refresh_tree_on_action'] =
-			//array("POST", 'setting_refresh_tree_on_action', tlInputParameter::CB_BOOL);
-			array("POST", tlInputParameter::CB_BOOL);
-		$params['hidden_setting_refresh_tree_on_action'] =
-			//array("POST", 'hidden_setting_refresh_tree_on_action', tlInputParameter::INT_N);
-			array("POST", tlInputParameter::INT_N);
+		$params = array();
+		$params['setting_refresh_tree_on_action'] =	array("POST", tlInputParameter::CB_BOOL);
+		$params['hidden_setting_refresh_tree_on_action'] =	array("POST", tlInputParameter::INT_N);
 
 		I_PARAMS($params, $this->args);
 
 		// was a filter reset requested?
 		$this->args->reset_filters = false;
-		if (isset($_REQUEST['btn_reset_filters'])) {
+		if (isset($_REQUEST['btn_reset_filters'])) 
+		{
 			$this->args->reset_filters = true; // mark filter reset in args
 			$this->do_filtering = false; // mark that no filtering has to be done after reset
 		}
 		
 		// what filter mode has been chosen?
-		$this->args->simple_filter_mode = 
-			isset($_REQUEST[self::SIMPLE_FILTER_BUTTON_LABEL]) ? true : false;
-		$this->args->advanced_filter_mode = 
-			isset($_REQUEST[self::ADVANCED_FILTER_BUTTON_LABEL]) ? true : false;	
-	} // end of method
+		$this->args->simple_filter_mode = isset($_REQUEST[self::SIMPLE_FILTER_BUTTON_LABEL]) ? true : false;
+		$this->args->advanced_filter_mode =	isset($_REQUEST[self::ADVANCED_FILTER_BUTTON_LABEL]) ? true : false;	
+	} 
 	
 	/**
 	 * Initializes the class member array for settings 

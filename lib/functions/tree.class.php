@@ -173,7 +173,6 @@ class tree extends tlObject
 	  	  {
 	  	   	$sql .= " AND parent_id={$parent_id} ";	
 	  	  }
-			  echo 'FFF';
 			  $rs = $this->db->get_recordset($sql);
 			  $result=!is_null($rs) ? $rs[0] : null;
 	  	} 

@@ -4,10 +4,10 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	frmWorkArea.php
- * @package 	TestLink
- * @copyright 	2005,2011 TestLink community 
- * @author 		Martin Havlat
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @copyright 	2005,2012 TestLink community 
+ * @author 		  Martin Havlat
+ * @link 		    http://www.teamst.org/index.php
  *
  * This page is window for navigation and working area (eg tree + edit page).
  *
@@ -37,26 +37,24 @@ $args = init_args();
 //
 $req_cfg = config_get('req_cfg');
 
-$aa_tfp = array( 
-     'assignReqs' => 'lib/testcases/listTestCases.php?feature=assignReqs',
-     'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',
-     'executeTest' => "lib/execute/execNavigator.php?tplan_id={$args->tplan_id}",
-     'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
-     'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
-     'planAddTC'    => 'lib/plan/planAddTCNavigator.php',
-     'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=planRemoveTC',
-     'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=planUpdateTC',
-     'printTestSpec' => 'lib/results/printDocOptions.php?type=testspec',
-     'printReqSpec' => 'lib/results/printDocOptions.php?type=reqspec',
-     'reqSpecMgmt' => 'lib/requirements/reqSpecListTree.php',
-     'searchTc' => 'lib/testcases/tcSearchForm.php',
-     'searchReq' => 'lib/requirements/reqSearchForm.php',
-     'searchReqSpec' => 'lib/requirements/reqSpecSearchForm.php',
-     'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
-     'showMetrics' => 'lib/results/resultsNavigator.php',
-     'test_urgency' => 'lib/plan/planTCNavigator.php?feature=test_urgency',
-     'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment'
-);
+$aa_tfp = array('assignReqs' => 'lib/testcases/listTestCases.php?feature=assignReqs',
+                'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',
+                'executeTest' => "lib/execute/execNavigator.php?tplan_id={$args->tplan_id}",
+                'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
+                'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
+                'planAddTC'    => 'lib/plan/planAddTCNavigator.php',
+                'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=planRemoveTC',
+                'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=planUpdateTC',
+                'printTestSpec' => 'lib/results/printDocOptions.php?type=testspec',
+                'printReqSpec' => 'lib/results/printDocOptions.php?type=reqspec',
+                'reqSpecMgmt' => 'lib/requirements/reqSpecListTree.php',
+                'searchTc' => 'lib/testcases/tcSearchForm.php',
+                'searchReq' => 'lib/requirements/reqSearchForm.php',
+                'searchReqSpec' => 'lib/requirements/reqSpecSearchForm.php',
+                'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
+                'showMetrics' => 'lib/results/resultsNavigator.php',
+                'test_urgency' => 'lib/plan/planTCNavigator.php?feature=test_urgency',
+                'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment');
 
 $full_screen = array('newest_tcversions' => 1);
 //cleanup session var

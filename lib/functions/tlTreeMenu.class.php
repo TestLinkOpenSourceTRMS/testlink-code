@@ -6,10 +6,10 @@
  * This file generates tree menu for test specification and test execution.
  * 
  * @filesource	tlTreeMenu.class.php
- * @package 	TestLink
- * @author 		Francisco Mancardi
- * @copyright 	2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author 		  Francisco Mancardi
+ * @copyright 	2011,2012 TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
  */
@@ -26,8 +26,8 @@ class tlTreeMenu
 		$this->db = $dbHandler;
 		$this->tprojectMgr = new testproject($dbHandler);
 
-        $this->tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy',
-        												  'testplan_tcversions','cfield_design_values'));
+    $this->tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy',
+        												                      'testplan_tcversions','cfield_design_values'));
 
 		$this->cfg = new stdClass();
 		
@@ -41,9 +41,9 @@ class tlTreeMenu
 
 		$this->cfg->renderTestSpecNode = new stdClass();
 		$this->cfg->renderTestSpecNode->key2del = array_merge(array_keys($this->cfg->results['status_code']),
-															  array('node_type_id','parent_id','node_order',
-															  		'node_table','tcversion_id','external_id',
-															  		'version','testcase_count'));  
+															                            array('node_type_id','parent_id','node_order',
+															  		                            'node_table','tcversion_id','external_id',
+															  		                            'version','testcase_count'));  
 
 	}
 

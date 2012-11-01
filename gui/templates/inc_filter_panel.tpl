@@ -23,7 +23,7 @@
                         do_auto_update, testsuite, btn_reset_filters,
                         btn_bulk_update_to_latest_version, priority, tc_title,
                         custom_field, search_type_like,importance,
-                        document_id, req_expected_coverage, title,
+                        document_id, req_expected_coverage, title,filter_active_inactive,
                         status, req_type, req_spec_type, th_tcid, has_relation_type,btn_export_testplan_tree'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
@@ -206,6 +206,18 @@
 				</td>
 			</tr>
 		{/if}
+    
+    {if $control->filters.filter_active_inactive}
+        <tr>
+            <td>{$labels.filter_active_inactive}</td>
+            <td>
+                <select name="filter_active_inactive">
+                    {html_options options=$control->filters.filter_active_inactive.items
+                    selected=$control->filters.filter_active_inactive.selected}
+                </select>
+            </td>
+        </tr>
+    {/if}
 
 		{if $control->filters.filter_importance}
 			<tr>

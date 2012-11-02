@@ -1143,13 +1143,14 @@ $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_custom_fields = ENABL
 $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_result = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->execution_mode->advanced_filter_mode_choice = ENABLED;
 
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_active_inactive = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_custom_fields = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_execution_type = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_importance = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_keywords = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_testcase_name = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_toplevel_testsuite = ENABLED;
-$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_keywords = ENABLED;
-$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_execution_type = ENABLED;
-$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_custom_fields = ENABLED;
-$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_importance = ENABLED;
 
 // filter mode choice disabled for this mode because there are no filters benefiting from it
 $tlCfg->tree_filter_cfg->testcases->edit_mode->advanced_filter_mode_choice = DISABLED;

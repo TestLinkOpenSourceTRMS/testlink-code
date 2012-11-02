@@ -82,7 +82,7 @@ switch($args->feature)
 	  }
     $gui->id = $args->id;
 		$identity->version_id = $args->tcversion_id;
-	  $item_mgr->show($smarty,$gui,$identity);
+	  $item_mgr->show($smarty,$gui,$identity,$grants);
 	break;
 
   default:

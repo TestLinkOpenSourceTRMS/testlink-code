@@ -162,12 +162,12 @@
  * @uses testcase
  */
 
-const ACTIVE_INACTIVE_TESTCASES_NO_FILTER = 0;
-const ONLY_ACTIVE_TESTCASES = 1;
-const ONLY_INACTIVE_TESTCASES = 2;
  
 class tlTestCaseFilterControl extends tlFilterControl 
 {
+  const ACTIVE_INACTIVE_TESTCASES_NO_FILTER = 0;
+  const ONLY_ACTIVE_TESTCASES = 1;
+  const ONLY_INACTIVE_TESTCASES = 2;
 
 	/**
 	 * Testcase manager object.
@@ -219,9 +219,9 @@ class tlTestCaseFilterControl extends tlFilterControl
 	                             'filter_result' => null); // result: no info here, divided into more parts
 
 	/**
-	 * This array is used as an additional security measure. It maps all available
-	 * filters to the mode in which they can be used. If a user tries to
-	 * enable filters in config.inc.php which are not defined inside this array,
+	 * This array is used as an additional security measure. 
+	 * It maps all available filters to the mode in which they can be used. 
+	 * If a user tries to enable filters in config.inc.php which are not defined inside this array,
 	 * this will be simply ignored instead of trying to initialize the filter
 	 * no matter wether it has been implemented or not.
 	 * The keys inside this array are the modes defined above as class constants.
@@ -1750,6 +1750,7 @@ class tlTestCaseFilterControl extends tlFilterControl
       $ajaxTree->dragDrop->useBeforeMoveNode = false;
 		}
 		
+		new dBug($this->args);
     if ($this->do_filtering) 
 		{
 
@@ -1757,7 +1758,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 						           'tc_action_enabled' => DO_ON_TESTCASE_CLICK,'exclude_branches' => null);
 			$ajaxTree->tree_menu = generateTestSpecTree($this->db, $this->args->testproject_id,
 					                                        $this->args->testproject_name,
-					                                        $gui->menuUrl, $filters, $options);
+					                                        $guiObj->menuUrl, $filters, $options);
 					
 			$ajaxTree->root_node = $ajaxTree->tree_menu->rootnode;
 			$ajaxTree->children = $ajaxTree->tree_menu->menustring ? $ajaxTree->tree_menu->menustring : "[]";
@@ -1765,6 +1766,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 		else 
 		{
       $ajaxTree->loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
+					  					    "tproject_id={$this->args->testproject_id}&" .
+					  					    "tplan_id={$this->args->testplan_id}&" .
                           "root_node={$this->args->testproject_id}&" .
                           "tcprefix=" . urlencode($guiObj->tc_prefix);
       
@@ -1801,6 +1804,8 @@ class tlTestCaseFilterControl extends tlFilterControl
     else 
 	  {
       $ajaxTree->loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
+      					  				"tproject_id={$this->args->testproject_id}&" .
+					  					    "tplan_id={$this->args->testplan_id}&" .
     	  	                "root_node={$this->args->testproject_id}&show_tcases=0";
     
       $ajaxTree->root_node = new stdClass();

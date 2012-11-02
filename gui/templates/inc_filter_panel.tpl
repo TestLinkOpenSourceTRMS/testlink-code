@@ -206,7 +206,7 @@
 				</td>
 			</tr>
 		{/if}
-    
+                                 
     {if $control->filters.filter_active_inactive}
         <tr>
             <td>{$labels.filter_active_inactive}</td>

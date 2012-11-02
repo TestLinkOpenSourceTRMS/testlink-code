@@ -12,8 +12,6 @@
  *
  * @author Andreas Simon
  * @internal revision
- *   20100709 - asimon - BUGID 3406: new JS function for the unassign button
- *   20100610 - asimon - new include file for simplifying usage of filter related javascript functions
  *}
 
 <script>

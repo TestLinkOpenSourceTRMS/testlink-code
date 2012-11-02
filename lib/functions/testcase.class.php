@@ -625,7 +625,7 @@ class testcase extends tlObjectWithAttachments
 	
 	  rev :
 	*/
-	function show(&$smarty,$guiObj,$identity)
+	function show(&$smarty,$guiObj,$identity,$grants)
 	{
 
     $env_tproject_id = $identity->tproject_id;
@@ -791,7 +791,7 @@ class testcase extends tlObjectWithAttachments
   {	  
 	  $goo = is_null($guiObj) ? new stdClass() : $guiObj;
 
-		$gui->execution_types = $this->execution_types;
+		$goo->execution_types = $this->execution_types;
 		$goo->view_req_rights = $grantsObj->mgt_view_req;
 
 	  $goo->parentTestSuiteName='';
@@ -863,7 +863,7 @@ class testcase extends tlObjectWithAttachments
 		$dummy = getConfigAndLabels('testCaseStatus','code');
 		$goo->domainTCStatus = $dummy['lbl'];
 
-    $goo->can_do = $this->getShowViewerActions($oo->show_mode);
+    $goo->can_do = $this->getShowViewerActions($goo->show_mode);
 
 
 	  return $goo;

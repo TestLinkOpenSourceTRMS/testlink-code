@@ -235,10 +235,12 @@ function init_args(&$dbHandler)
   switch($args->feature)
   {
 		case 'testsuite':
-        	$_SESSION['setting_refresh_tree_on_action'] = ($args->refreshTree) ? 1 : 0;
+      $_SESSION['setting_refresh_tree_on_action'] = ($args->refreshTree) ? 1 : 0;
     break;
-     
-  	break;
+
+		case 'testproject':
+      	$args->id = $args->tproject_id;
+    break;
   }
   
   if (strpos($args->targetTestCase,$cfg->glue_character) === false)

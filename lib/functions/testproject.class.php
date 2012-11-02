@@ -221,7 +221,7 @@ protected function parseTestProjectRecordset(&$recordset)
 	else
 	{
 		$recordset = null;
-		tLog('parseTestProjectRecordset: No project on query', 'DEBUG');
+		tLog(__METHOD__  . ': WARNING!! - Empty recordset', 'DEBUG');
 	}
 }
 

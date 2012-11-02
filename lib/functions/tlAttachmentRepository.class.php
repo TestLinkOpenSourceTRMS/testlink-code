@@ -164,6 +164,8 @@ class tlAttachmentRepository extends tlObjectWithDB
 			if ($fileUploaded)
 			{
 				$fileUploaded = $attachment->writeToDb($this->db);
+        $msg = $this->attachmentIdentity($this->getAttachmentInfo($attachment->dbID));   
+  	    logAuditEvent(TLS("audit_attachment_created",$msg,$fName),"CREATE",$attachment->dbID,"attachments");
 			}
 			else
 			{ 
@@ -690,7 +692,7 @@ class tlAttachmentRepository extends tlObjectWithDB
     {
       if($identity != '')
       {
-        $identity .= lang_get('attach_linked_to') . ' ' . $family['owner'] . ' - ' . $family['ancestor'];
+        $identity .= lang_get('attach_linked_to') . ' ' . $family['owner'];
       }  
     }
     return ($identity != '' ? $identity : 'Warning! - Not able to create identity');
@@ -708,10 +710,9 @@ class tlAttachmentRepository extends tlObjectWithDB
         switch($class2use)
         {
           case 'testcase':
- 		        $the_path = $tree_manager->get_path($attachInfo['fk_id']);
-		        $tproject = $tree_manager->get_node_hierarchy_info($the_path[0]['parent_id']);
-            $ret = array('ownerType' => 'testcase', 'owner' => lang_get('testcase') . ':' . $dummy['name'], 
-                         'ancestor' => lang_get('testproject') . ':' . $tproject['name']);
+            $mgr = new $class2use($this->db);
+            $signature = $mgr->getAuditSignature((object) array('id' => $attachInfo['fk_id']));
+            $ret = array('ownerType' => 'testcase', 'owner' => lang_get('testcase') . ':' . $signature); 
           break;              
         }
       break;

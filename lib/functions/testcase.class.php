@@ -1489,9 +1489,9 @@ class testcase extends tlObjectWithAttachments
 		{
 	    	$path2root=$this->tree_manager->get_path($id);
 	    	$root=$path2root[0]['parent_id'];
-	    }
-	    $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($root);
-	    return array($tcasePrefix,$root);
+	  }
+	  $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($root);
+	  return array($tcasePrefix,$root);
 	}
 	
 	
@@ -1685,14 +1685,20 @@ class testcase extends tlObjectWithAttachments
 	function get_last_version_info($id,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	    $my['options'] = array( 'get_steps' => false, 'output' => 'full');
-	    $my['options'] = array_merge($my['options'], (array)$options);
+	  $my['options'] = array( 'get_steps' => false, 'output' => 'full');
+	  $my['options'] = array_merge($my['options'], (array)$options);
 		$tcInfo = null;
+		$nhTestCaseJoin = '';
 		switch($my['options']['output'])
 		{
 			case 'minimun':
-			default:
 				$fields2get = " TCV.id, TCV.version, TCV.tc_external_id ";
+			break;		
+
+			case 'medium':
+				$fields2get = " TCV.id, TCV.version, TCV.tc_external_id, NH_TCASE.name ";
+		    $nhTestCaseJoin = " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE " .
+		                      " ON NH_TCASE.id = NH.parent_id ";
 			break;		
 
 			case 'full':
@@ -1703,32 +1709,32 @@ class testcase extends tlObjectWithAttachments
 		
 		
 		$sql = "/* $debugMsg */ SELECT MAX(version) AS version " .
-		       " FROM {$this->tables['tcversions']} TCV," .
-		       " {$this->tables['nodes_hierarchy']} NH WHERE ".
-		       " NH.id = TCV.id ".
-		       " AND NH.parent_id = {$id} ";
+		       " FROM {$this->tables['tcversions']} TCV" .
+		       " JOIN {$this->tables['nodes_hierarchy']} NH ON NH.id = TCV.id ".
+		       " WHERE NH.parent_id = {$id} ";
 	
 		$max_version = $this->db->fetchFirstRowSingleColumn($sql,'version');
 	
 		$tcInfo = null;
 		if ($max_version)
 		{
-			$sql = "SELECT {$fields2get}  FROM {$this->tables['tcversions']} TCV," .
-			       " {$this->tables['nodes_hierarchy']} NH ".
-			       " WHERE TCV.version = {$max_version} AND NH.id = TCV.id".
-				   " AND NH.parent_id = {$id}";
+			$sql = "/* $debugMsg */ SELECT {$fields2get} " .
+			       " FROM {$this->tables['tcversions']} TCV " .
+			       " JOIN {$this->tables['nodes_hierarchy']} NH ON NH.id = TCV.id " .
+             $nhTestCaseJoin . 
+			       " WHERE TCV.version = {$max_version} AND NH.parent_id = {$id}";
 	
 			$tcInfo = $this->db->fetchFirstRow($sql);
 		}
 
-		// Multiple Test Case Steps Feature
-	    if( !is_null($tcInfo) && $my['options']['get_steps'] )
-	    {
-    		$step_set = $this->get_steps($tcInfo['id']);
-    		$tcInfo['steps'] = $step_set;
-	    }
-		return $tcInfo;
-	}
+  	// Multiple Test Case Steps Feature
+    if( !is_null($tcInfo) && $my['options']['get_steps'] )
+  	{
+      $step_set = $this->get_steps($tcInfo['id']);
+      $tcInfo['steps'] = $step_set;
+    }
+  	return $tcInfo;
+  }
 	
 	
 	/*
@@ -4303,14 +4309,14 @@ class testcase extends tlObjectWithAttachments
 	 *                             |__ short range devices [ID 21]
 	 *	                                    |__ TestCase1
 	 *                                      |__ TestCase2
-     *
-     * if test case set: TestCase100,TestCase1
-     *
-     *   4  Communications
-     *  20 	Communications/Subspace channels
-     *  21 	Communications/Subspace channels/short range devices
-     *                
-     *                
+   *
+   * if test case set: TestCase100,TestCase1
+   *
+   *   4  Communications
+   *  20 	Communications/Subspace channels
+   *  21 	Communications/Subspace channels/short range devices
+   *                
+   *                
 	 * returns map with key: test suite id
 	 *                  value: test suite path to root
 	 *
@@ -4320,17 +4326,17 @@ class testcase extends tlObjectWithAttachments
 	{
 		$xtree=null;
 		foreach($tcaseSet as $item)
-    	{
+    {
 			$path_info = $this->tree_manager->get_path($item); 
-    		$testcase = end($path_info);
+    	$testcase = end($path_info);
     		
-    		// This check is useful when you have several test cases with same parent test suite
-    		if( !isset($xtree[$testcase['parent_id']]['value']) )
-    		{
-    			$level=0;
+    	// This check is useful when you have several test cases with same parent test suite
+    	if( !isset($xtree[$testcase['parent_id']]['value']) )
+    	{
+    		$level=0;
 				foreach($path_info as $elem)
 				{
-                    $level++;
+          $level++;
 					$prefix = isset($xtree[$elem['parent_id']]['value']) ? ($xtree[$elem['parent_id']]['value'] . '/') : '';
 					if( $elem['node_table'] == 'testsuites' )
 					{
@@ -4341,11 +4347,11 @@ class testcase extends tlObjectWithAttachments
 			}
 		}	
 		return $xtree;
-	} // getPathLayered($tcaseSet)
+	} 
 
 
 
-    /**
+  /**
 	 * 
  	 *
  	 */
@@ -4353,7 +4359,7 @@ class testcase extends tlObjectWithAttachments
 	{
 		$xtmas=null;
 		foreach($tcaseSet as $item)
-    	{
+    {
 			$path_info = $this->tree_manager->get_path($item); 
     		$top = current($path_info);
     		$xtmas[$item] = array( 'name' => $top['name'], 'id' => $top['id']);
@@ -4415,10 +4421,10 @@ class testcase extends tlObjectWithAttachments
         return $dl;
     }
 
-    /**
+  /**
 	 * 
  	 *
-     */
+   */
 	function getExternalID($id,$tproject_id=null,$prefix=null)
 	{
 		static $root;
@@ -4429,7 +4435,7 @@ class testcase extends tlObjectWithAttachments
 			if( is_null($root) ||  ($root != $tproject_id) )
 			{
        			list($tcase_prefix,$root) = $this->getPrefix($id,$tproject_id);
-       		}	
+      }	
 		}
 		else
 		{
@@ -4471,11 +4477,11 @@ class testcase extends tlObjectWithAttachments
 			}	
 		}
 		$where_clause .= " AND NH_TCASE .id = {$id} ";
-        $sql .= $where_clause;
+    $sql .= $where_clause;
        
-        $result = $this->db->get_recordset($sql);
-        return $result;
-    }
+    $result = $this->db->get_recordset($sql);
+    return $result;
+  }
 
 
 
@@ -5825,6 +5831,30 @@ class testcase extends tlObjectWithAttachments
     return $dummy['parent_id'];
   }
 
+  /** 
+ 	 *
+ 	 */ 
+	public function getAuditSignature($context,$options = null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		// we need:
+		// Test Case External ID
+		// Test Case Name
+		// Test Case Path
+		// What about test case version ID ? => only if argument provided
+		// 
+	  $pathInfo = $this->tree_manager->get_full_path_verbose($context->id,array('output_format' => 'id_name'));
+	  $pathInfo = current($pathInfo);
+	  $path = '/' . implode('/',$pathInfo['name']) . '/';
+
+	  $tcase_prefix = $this->getPrefix($context->id, $pathInfo['node_id'][0]);
+		$info = $this->get_last_version_info($context->id, array('output' => 'medium'));
+    $signature = $path . $tcase_prefix[0] . $this->cfg->testcase->glue_character . 
+                 $info['tc_external_id'] . ':' . $info['name'];
+
+		return $signature;        
+	}
   
 } // end class
 ?>

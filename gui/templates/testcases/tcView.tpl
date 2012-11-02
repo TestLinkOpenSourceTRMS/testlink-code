@@ -24,9 +24,9 @@ var target_action=fRoot+'{$gui->deleteStepAction}';
 
 {* need by refresh on upload logic used when this template is called while executing *}
 {if $gui->bodyOnLoad != ''}
-<script language="JavaScript">
+  <script language="JavaScript">
   var {$gui->dialogName} = new std_dialog('&refreshTree');
-</script>  
+  </script>  
 {/if}
 
 
@@ -116,18 +116,17 @@ function validateStepsReorder(formOID)
 	      {foreach from=$gui->path_info[$tcID] item=path_part}
 	          {$path_part|escape} /
 	      {/foreach}
-	      {* <br /> *}
 	  {/if}
     {if $gui->show_title == 'no'}
 	    {$gui->tc_current_version[idx][0].tc_external_id|escape}:{$gui->tc_current_version[idx][0].name|escape}</h2>
     {/if}
     <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
 		{include file="testcases/tcView_viewer.tpl" 
-		         args_testcase=$gui->tc_current_version[idx][0]
-		         args_keywords_map=$gui->keywords_map[idx] 
-		         args_reqs=$gui->arrReqs[idx] 
-		         args_status_quo=$gui->status_quo[idx]
-		         args_can_do=$gui->can_do
+		         args_testcase = $gui->tc_current_version[idx][0]
+		         args_keywords_map = $gui->keywords_map[idx] 
+		         args_reqs = $gui->arrReqs[idx] 
+		         args_status_quo = $gui->status_quo[idx]
+		         args_can_do = $gui->can_do
 		         args_can_move_copy="yes"
 		         args_can_delete_testcase="yes" 
 		         args_can_delete_version=$my_delete_version
@@ -136,35 +135,25 @@ function validateStepsReorder(formOID)
 		         args_show_title=$gui->show_title
 		         args_activate_deactivate_name='activate'
 		         args_activate_deactivate='bnt_activate'
-		         args_cf=$gui->cf_current_version[idx] 
-		         args_tcase_cfg=$gui->tcase_cfg
-		         args_users=$gui->users
-		         args_tproject_name=$gui->tprojectName
-		         args_tsuite_name=$gui->parentTestSuiteName
-		         args_linked_versions=$gui->linked_versions[idx]
-		         args_has_testplans=$gui->has_testplans}
+		         args_cf = $gui->cf_current_version[idx] 
+		         args_tcase_cfg = $gui->tcase_cfg
+		         args_users = $gui->users
+		         args_tproject_name = $gui->tprojectName
+		         args_tsuite_name = $gui->parentTestSuiteName
+		         args_linked_versions = $gui->linked_versions[idx]
+		         args_has_testplans = $gui->has_testplans}
 		
 		
-		{assign var="bDownloadOnly" value=false}
-		{if $gui->can_do->edit != 'yes'}
-			{assign var="bDownloadOnly" value=true}
-		{/if}
+    {include file="inc_attachments.tpl" attach=$gui->attach[$tcID]}
 		
-		{if !isset($gui->loadOnCancelURL)}
- 	      {assign var="loadOnCancelURL" value=""}
-    {/if} 
-		{include file="inc_attachments.tpl" 
-		         attach_id=$tcID  
-		         attach_tableName="nodes_hierarchy"
-		         attach_attachmentInfos=$gui->attachments[$tcID]  
-		         attach_downloadOnly=$bDownloadOnly
-		         attach_loadOnCancelURL=$gui->loadOnCancelURL}
+		
+		
 		         
 	{* Other Versions *}
     {if $gui->testcase_other_versions[idx] neq null}
-        {assign var="vid" value=$gui->tc_current_version[idx][0].id}
-        {assign var="div_id" value="vers_$vid"}
-        {assign var="memstatus_id" value="mem_$div_id"}
+        {$vid = $gui->tc_current_version[idx][0].id}
+        {$div_id = "vers_$vid"}
+        {$memstatus_id = "mem_$div_id"}
         <br />
         {include file="inc_show_hide_mgmt.tpl" 
                  show_hide_container_title=$labels.other_versions
@@ -177,14 +166,14 @@ function validateStepsReorder(formOID)
         
   	    {foreach from=$gui->testcase_other_versions[idx] item=my_testcase key=tdx}
 
-            {assign var="version_num" value=$my_testcase.version}
-            {assign var="title" value=$labels.version}
-            {assign var="title" value="$title $version_num"}
+            {$version_num = $my_testcase.version}
+            {$title = $labels.version}
+            {$title = "$title $version_num"}
             
-            {assign var="sep" value="_"}
-            {assign var="div_id" value="v_$vid"}
-            {assign var="div_id" value="$div_id$sep$version_num"}
-            {assign var="memstatus_id" value="mem_$div_id"}
+            {$sep="_"}
+            {$div_id="v_$vid"}
+            {$div_id="$div_id$sep$version_num"}
+            {$memstatus_id="mem_$div_id"}
             {include file="inc_show_hide_mgmt.tpl" 
                      show_hide_container_title=$title
                      show_hide_container_id=$div_id
@@ -195,7 +184,7 @@ function validateStepsReorder(formOID)
   	          <div id="{$div_id}" class="workBack">
 				      {*
 				      BE CAREFUL
-				      args_cf=$gui->cf_other_versions[idx][tdx]  - KO
+				          args_cf=$gui->cf_other_versions[idx][tdx]  - KO
            			  args_cf=$gui->cf_other_versions[$idx][$tdx]  - KO
            			  args_cf=$gui->cf_other_versions[$idx][tdx]  - KO
            			  args_cf=$gui->cf_other_versions[idx][$tdx] - OK 
@@ -207,7 +196,7 @@ function validateStepsReorder(formOID)
                        args_reqs=$gui->arrReqs[idx]
                        args_status_quo=$gui->status_quo[idx]
                        args_can_do=$gui->can_do
-         		       args_can_move_copy="no" 
+         		           args_can_move_copy="no" 
                        args_can_delete_testcase='no'
                        args_can_delete_version="yes"
                        
@@ -223,15 +212,13 @@ function validateStepsReorder(formOID)
 		    {/foreach}
 		    </div>
   
-      	{* ---------------------------------------------------------------- *}
       	{* Force the div of every old version to show closed as first state *}
       	<script type="text/javascript">
- 	  	      viewElement(document.getElementById('vers_{$vid}'),false);
-    	  		{foreach item=my_testcase from=$gui->testcase_other_versions[idx]}
-  	  	      viewElement(document.getElementById('v_{$vid}_{$my_testcase.version}'),false);
-			      {/foreach}
+ 	  	  viewElement(document.getElementById('vers_{$vid}'),false);
+    	  {foreach item=my_testcase from=$gui->testcase_other_versions[idx]}
+  	  	  viewElement(document.getElementById('v_{$vid}_{$my_testcase.version}'),false);
+			  {/foreach}
       	</script>
-      	{* ---------------------------------------------------------------- *}
     {/if}
     <br>
 {/section}

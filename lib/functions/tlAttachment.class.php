@@ -380,7 +380,7 @@ class tlAttachment extends tlDBObject
                        'btn_upload_file' => null, 'warning' => null, 'enter_attachment_title' => null,
                        'local_file' => null, 'attachment_upload_ok' => null,'alt_delete_attachment' => null,
                        'title_choose_local_file' => null ,'btn_cancel' => null,
-                       'warning_delete_attachment' => 'warning', 'delete' => null,
+                       'warning_delete_attachment' => 'warning_delete_attachment', 'delete' => null,
                        'attachment_feature_disabled' => null,'attached_files' => null,
                        'max_size_file_upload' => null,'upload_file_new_file' => null);
         $cfg->labels = init_labels($dummy);

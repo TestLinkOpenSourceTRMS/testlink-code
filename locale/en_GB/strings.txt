@@ -775,7 +775,7 @@ $TLS_attached_files = "Attached files";
 $TLS_attachment_feature_disabled = "attachment disabled";
 $TLS_button_upload = $TLS_btn_upload;
 $TLS_upload_file_new_file = "Upload new file";
-$TLS_warning_delete_attachment = "Really delete the attachment '%s' ?";
+$TLS_warning_delete_attachment = "Attention: You are going to delete attachment: %s";
 
 
 
@@ -3527,5 +3527,7 @@ $TLS_collision_detected_some_one_else = 'On %s ,User %s (email: %s) has made cha
 $TLS_collision_detected_choices = 'You have following choices:<br>' .
 								  'a. Submit your changes anyway, overwritten work done by User %s. <br>' .
 								  'b. Throw	away your changes, and go to see item current data.<br>';
+
+$TLS_attach_linked_to = ' linked to ';
 // ----- END ------------------------------------------------------------------
 ?>

@@ -628,20 +628,16 @@ class testcase extends tlObjectWithAttachments
 	function show(&$smarty,$guiObj,$identity,$grants)
 	{
 
+		$req_mgr = new requirement_mgr($this->db);
+
     $env_tproject_id = $identity->tproject_id;
     $id = $identity->id;
     $version_id = isset($identity->version_id) ? $identity->version_id : self::ALL_VERSIONS;
-  
 	  $idSet = is_array($id) ? $id : (array)$id;
 	  $status_ok = $idSet[0] > 0 ? 1 : 0;
 
-		$req_mgr = new requirement_mgr($this->db);
-
-	  $gui = $this->initShowGui($guiObj,$grants);
-	  
-	  
+    $gui = $this->initShowGui($guiObj,$grants);
 		$gui->testcase_other_versions = array();
-    $userid_array = array();
 
 		if($status_ok)
 	  {
@@ -686,9 +682,10 @@ class testcase extends tlObjectWithAttachments
 		  }
 	  }
 	  
+    $userid_array = array();
     if($status_ok && sizeof($idSet))
 	  {
-	    	$cfx=0;
+	    	$cfx = 0;
 		  	$allTCKeywords = $this->getKeywords($idSet,null,'testcase_id',' ORDER BY keyword ASC ');
 		  	$allReqs = $req_mgr->get_all_for_tcase($idSet);
 		  	
@@ -700,6 +697,18 @@ class testcase extends tlObjectWithAttachments
 		  		{
 		  			continue;
 		  		}
+		  		
+          $gui->attach[$tc_id] = new stdClass();
+          $gui->attach[$tc_id]->itemID = $tc_id;
+          $gui->attach[$tc_id]->dbTable = $this->attachmentTableName;
+      
+          $gui->attach[$tc_id]->infoSet = null;
+          $gui->attach[$tc_id]->gui = null;
+          list($gui->attach[$tc_id]->infoSet,$gui->attach[$tc_id]->gui) = $this->buildAttachSetup($tc_id);
+          $gui->attach[$tc_id]->gui->display=TRUE;
+          $gui->attach[$tc_id]->enabled = $gui->attach[$tc_id]->gui->enabled;
+
+          new dBug($gui->attach);
 		  		
 		  		$tc_array[0]['tc_external_id'] = $tcasePrefix . $tc_array[0]['tc_external_id'];
 
@@ -775,11 +784,10 @@ class testcase extends tlObjectWithAttachments
 		
     // Removing duplicate and NULL id's
 		unset($userid_array['']);
-		$passeduserarray = array_keys($userid_array);
-
     $this->initShowGuiActions(&$gui);
-		$gui->users = tlUser::getByIDs($this->db,$passeduserarray,'id');
+		$gui->users = tlUser::getByIDs($this->db,array_keys($userid_array),'id');
 		
+		echo __METHOD__ . '<br>';
 		new dBug($gui);
 		$smarty->assign('gui',$gui);
     $dummy = templateConfiguration('tcView');
@@ -1245,15 +1253,13 @@ class testcase extends tlObjectWithAttachments
 	      		{
 	      		    $sql .= " AND TTC.testplan_id = {$tplan_id} ";  
 	      		}  					    
-	      		
-	      		// 20100308 - franciscom
 	      		if(!is_null($platform_id))
 	      		{
 	      		    $sql .= " AND TTC.platform_id = {$platform_id} ";  
 	      		}  					    
 	      		
 	        	$recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id',database::CUMULATIVE);
-				// 20100330 - eloff - BUGID 3329
+
 				if( !is_null($recordset) )
 				{
 					// changes third access key from sequential index to platform_id
@@ -1274,12 +1280,12 @@ class testcase extends tlObjectWithAttachments
 				}	
 		  break;
 	
-	      case "EXECUTED":
+      case "EXECUTED":
 		  case "NOT_EXECUTED":
 				$getFilters = array('exec_status' => $exec_status,'active_status' => $active_status,
 									'tplan_id' => $tplan_id, 'platform_id' => $platform_id);
 		      	$recordset=$this->get_exec_status($id,$getFilters);
-	      break;
+	    break;
 	  }
 
 	  // Multiple Test Case Steps

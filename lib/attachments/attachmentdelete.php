@@ -21,17 +21,17 @@ $gui->userFeedback = $l18n['error_attachment_delete'];
 if ($args->id)
 {
 	$repo = tlAttachmentRepository::create($db);
-	$attachmentInfo = $repo->getAttachmentInfo($args->id);
-	if ($attachmentInfo && checkAttachmentID($db,$args->id,$attachmentInfo))
-	{
-		$opOK = $repo->deleteAttachment($args->id,$attachmentInfo);
-		if ($opOK)
-		{
-      $gui->userFeedback = $l18n['deleting_was_ok'];
-			logAuditEvent(TLS("audit_attachment_deleted",
-			              $attachmentInfo['title']),"DELETE",$args->id,"attachments");
-		}	
-	}
+	// $attachmentInfo = $repo->getAttachmentInfo($args->id);
+	// If you want to check something do not think this is the way.
+	// May be right check is:
+	// 1. user has session 
+	// 2. if OK, user has rights to manage object that owns the attachment ?
+	// if ($attachmentInfo && $repo->checkAttachmentID($db,$args->id,$attachmentInfo))
+	//{
+  if( $repo->deleteAttachment($args->id,null,array('audit' => true)) )
+  {
+    $gui->userFeedback = $l18n['deleting_was_ok'];
+  }	
 }
 
 $smarty = new TLSmarty();

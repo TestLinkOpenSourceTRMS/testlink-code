@@ -195,7 +195,9 @@ class tlTestCaseFilterControl extends tlFilterControl
 	 * Initialized not in constructor, only on first use to save resources.
 	 * @var testplan
 	 */
-	private $testplan_mgr = null;
+	private $testplan_mgr = null;          
+	
+	private $treeMenuMgr = null;
 	
 	/**
 	 * This array contains all possible filters.
@@ -334,7 +336,9 @@ class tlTestCaseFilterControl extends tlFilterControl
     // Constructor will launch common methods, calling method defined IN THIS CLASS
 		parent::__construct($dbHandler);
 
-		$this->initTreeOptions($this->mode);
+		$this->initTreeOptions($this->mode);  
+		
+		$this->treeMenuMgr = new tlTreeMenu($this->db);
 		
 		// delete any filter settings that may be left from previous calls in session
 		$this->delete_own_session_data();
@@ -1756,9 +1760,11 @@ class tlTestCaseFilterControl extends tlFilterControl
 
 			$options = array('forPrinting' => NOT_FOR_PRINTING,'hideTestCases' => SHOW_TESTCASES,
 						           'tc_action_enabled' => DO_ON_TESTCASE_CLICK,'exclude_branches' => null);
-			$ajaxTree->tree_menu = generateTestSpecTree($this->db, $this->args->testproject_id,
-					                                        $this->args->testproject_name,
-					                                        $guiObj->menuUrl, $filters, $options);
+			
+	    $env = new stdClass();
+	    $env->tproject_id = $this->args->testproject_id;
+	    $env->tproject_name = $this->args->testproject_name;
+			$ajaxTree->tree_menu = $this->treeMenuMgr->generateTestSpecTree($env,$guiObj->menuUrl,$filters,$options);
 					
 			$ajaxTree->root_node = $ajaxTree->tree_menu->rootnode;
 			$ajaxTree->children = $ajaxTree->tree_menu->menustring ? $ajaxTree->tree_menu->menustring : "[]";

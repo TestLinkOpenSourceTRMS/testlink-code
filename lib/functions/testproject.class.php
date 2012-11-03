@@ -2519,5 +2519,324 @@ private function copy_cfields_assignments($source_id, $target_id)
     return array($info['issue_tracker_enabled'],$its);
   }
 
+
+
+  /**
+   * getTestSpec
+   * 
+   * get structure with Test suites and Test Cases
+   * Filters that act on test cases work on attributes that are common to all
+   * test cases versions: test case name
+   *
+   * Development Note:
+   * Due to the tree structure is not so easy to try to do as much as filter as
+   * possibile using SQL.
+   *
+   *
+   * @param int id test project ID
+   * @param mixed filters
+   * @param mixed options
+   *				recursive true/false changes output format
+   *				testcase_name filter in LIKE %string%, if will be case sensitive or not
+   *				will depend of DBMS.
+   *
+   * 
+   * @return
+   *
+   * @internal revisions
+   * 20121010 - asimon - TICKET 4217: added filter for importance
+   */
+  function getTestSpec($id,$filters=null,$options=null)
+  {
+  	$items = array();
+    $my['options'] = array('recursive' => false, 'exclude_testcases' => false, 
+    						           'remove_empty_branches' => false);
+    						   
+   	$my['filters'] = array('exclude_node_types' => $this->nt2exclude,
+   	                       'exclude_children_of' => $this->nt2exclude_children,
+   	                       'exclude_branches' => null,
+   	                       'testcase_name' => null,
+   	                       'additionalWhereClause' => null);      
+   
+  	$my['filters'] = array_merge($my['filters'], (array)$filters);
+  	$my['options'] = array_merge($my['options'], (array)$options);
+   
+    if( $my['options']['exclude_testcases'] )
+    {
+  		$my['filters']['exclude_node_types']['testcase'] = 'exclude me';
+  	}
+  	
+  	// transform some of our options/filters on something the 'worker' will understand
+  	// when user has request filter by test case name, we do not want to display empty branches
+  	// If we have choose any type of filter, we need to force remove empty test suites
+  	if( ($setOptRemove = $my['options']['remove_empty_branches']) == false) )
+  	{
+  	  $f2c = array('testcase_name','testcase_id','execution_type','exclude_branches','importance');
+    	foreach($f2c as $phi)
+    	{
+    	  if( ($setOptRemove = !is_null($my['filters'][$phi]) )
+    	  {
+    	    break;
+    	  }  
+    	}
+  	}
+  	if( $setOptRemove )
+  	{
+  		$my['options']['remove_empty_nodes_of_type'] = 'testsuite';
+  	}
+  	
+    $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
+  	$qnum = $this->$method2call($id,$items,$my['filters'],$my['options']);
+   	return $items;
+  }
+
+  /**
+   *
+   * 
+   * @return
+   *
+   * @internal revisions
+   * 20121010 - asimon - TICKET 4217: added filter for importance
+   * 20120913 - asimon - TICKET 5228: Filter use on test spec causes "undefined index" warning in event log
+   *                                  for every test case with no active version
+   */
+  function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
+  {
+  	static $qnum;
+  	static $my;
+  	static $exclude_branches;
+  	static $exclude_children_of;
+  	static $node_types;
+  	static $tcaseFilter;
+  	static $tcversionFilter;
+  	static $childFilterOn;
+  	static $staticSql;
+  	static $addToTCversionSQL;
+  	
+  	if (!$my)
+  	{
+      $qnum = 0;
+   		$node_types = array_flip($this->tree_manager->get_available_node_types());
+   		
+   		list($my,$tcaseFilter,$tcversionFilter) = $this->helperGSRInit($filters,$options);
+  		$exclude_branches = $my['filters']['exclude_branches'];
+  		$exclude_children_of = $my['filters']['exclude_children_of'];	
+  		$childFilterOn = $tcaseFilter['enabled'] || $tcversionFilter['enabled'];
+ 
+  		if( !is_null($my['options']['remove_empty_nodes_of_type']) )
+  		{
+  			// this way I can manage code or description			
+  			if( !is_numeric($my['options']['remove_empty_nodes_of_type']) )
+  			{
+  				$my['options']['remove_empty_nodes_of_type'] = 
+  							  $this->tree_manager->node_descr_id[$my['options']['remove_empty_nodes_of_type']];
+  			}
+  		}
+  
+  		// Create invariant sql sentences
+  		$tfields = "NH.id, NH.parent_id, NH.name, NH.node_type_id, NH.node_order, '' AS external_id ";
+      $staticSql = array();
+  		$staticSql['head'] = " SELECT DISTINCT {$tfields} FROM {$this->tables['nodes_hierarchy']} NH ";
+      $staticSql['tail'] = $this->helperGSRSQLTestCaseFilters($tcaseFilter,$my['filters']);
+
+		  $staticSql['glav'] = " /* Get LATEST ACTIVE tcversion ID */ " .  
+  				                 " SELECT MAX(TCVX.id) AS tcversion_id, NHTCX.parent_id AS tc_id " .
+  				                 " FROM {$this->tables['tcversions']} TCVX " . 
+  				                 " JOIN {$this->tables['nodes_hierarchy']} NHTCX " .
+  				                 " ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
+  				                 " WHERE NHTCX.parent_id IN (%s)" .
+  				                 " GROUP BY NHTCX.parent_id,TCVX.tc_external_id  ";
+
+  		$addToTCversionSQL = '';
+  		if( $tcversionFilter['enabled'] || $tcaseFilter['is_active'] )
+  		{
+        $fc = array('importance','execution_type');
+        $addWhere = true;
+        $addAnd = false;
+      	foreach($fc as $kf)
+      	{
+      	  if( $tcversionFilter[$kf] )
+      		{
+      		  $filterOnTC = true;
+      			if( $addWhere )
+      			{
+      			  $addToTCversionSQL = ' WHERE ';
+      			  $addWhere = false;    
+      			}
+      			if( $addAnd )
+      			{
+      			  $addToTCversionSQL .= " AND ";
+      			}
+      			$addToTCversionSQL .= " TCV.{$kf} = {$my['filters'][$kf]} ";
+            $addAnd = true;      			    
+      	  }
+      	}
+  		}		
+  	}
+  
+    $sql = $staticSql['head'] . " WHERE NH.parent_id = {$node_id} AND (" . $staticSql['tail'];
+    $rs = $this->db->fetchRowsIntoMap($sql,'id');
+  	if( count($rs) == 0 )
+  	{
+  		return $qnum;
+  	}
+  
+    // create list with test cases nodes
+  	$tclist = null;
+  	$ks = array_keys($rs);
+  	foreach($ks as $ikey)
+  	{
+  		if( $rs[$ikey]['node_type_id'] == $this->tree_manager->node_descr_id['testcase'] )
+  		{
+  			$tclist[$rs[$ikey]['id']] = $rs[$ikey]['id'];
+  		}
+  	}		
+  	if( !is_null($tclist) )
+  	{
+  		$filterOnTC = false;
+  		$glav = $sprintf($staticSql['glav'], implode($tclist,',');
+  		$ssx = " /* Get LATEST ACTIVE tcversion MAIN ATTRIBUTES */ " .
+  				   " SELECT TCV.id AS tcversion_id, TCV.tc_external_id AS external_id, SQ.tc_id " .
+  		   		 " FROM {$this->tables['tcversions']} TCV " . 
+  		   		 " JOIN ( $glav ) SQ " .
+  		   		 " ON TCV.id = SQ.tcversion_id ";
+    
+  		// We can add here keyword filtering if exist ?
+  		if( $tcversionFilter['enabled'] || $tcaseFilter['is_active'] )
+  		{
+        $fc = array('importance','execution_type');
+        $addWhere = true;
+        $addAnd = false;
+      	foreach($fc as $kf)
+      	{
+      	  if( $tcversionFilter[$kf] )
+      		{
+      		  $filterOnTC = true;
+      			if( $addWhere )
+      			{
+      			  $ssx .= ' WHERE ';
+      			  $addWhere = false;    
+      			}
+      			if( $addAnd )
+      			{
+      			  $ssx .= " AND ";
+      			}
+      			$ssx .= " TCV.{$kf} = {$my['filters'][$kf]} ";
+            $addAnd = true;      			    
+      	  }
+      	}
+  		}		
+  		
+  		$highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
+  		if( $filterOnTC )
+  		{
+  			$ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;
+  			if( count($ky) > 0 )=>
+  			{
+  				foreach($ky as $tcase)
+  				{
+  					unset($rs[$tcase]);						
+  				}
+  			}
+  		}
+  	}
+  	
+   	foreach($rs as $row)
+   	{
+  		if(!isset($exclude_branches[$row['id']]))
+  		{  
+  			$node = $row + array('node_table' => $this->tree_manager->node_tables_by['id'][$row['node_type_id']]);
+  			$node['childNodes'] = null;
+  			if($node['node_table'] == 'testcases')
+  			{
+  				$node['leaf'] = true; 
+  				$node['external_id'] = isset($highlander[$row['id']]) ? $highlander[$row['id']]['external_id'] : null;
+  			}			
+  			
+  			// why we use exclude_children_of ?
+  	    // 1. Sometimes we don't want the children if the parent is a testcase,
+  	    //    due to the version management
+  	    //
+  	    if(!isset($exclude_children_of[$node_types[$row['node_type_id']]]))
+  	    {
+  	    	// Keep walking (Johny Walker Whisky)
+  	    	$this->_get_subtree_rec($row['id'],$node,$my['filters'],$my['options']);
+  	    }
+          
+  			// Have added this logic, because when export test plan will be developed
+  			// having a test spec tree where test suites that do not contribute to test plan
+  			// are pruned/removed is very important, to avoid additional processing
+  			//		        
+  			// If node has no childNodes, we check if this kind of node without children
+  			// can be removed.
+  			//
+  		    $doRemove = is_null($node['childNodes']) && 
+  		        	    ($node['node_type_id'] == $my['options']['remove_empty_nodes_of_type']);
+  		    if(!$doRemove)
+  		    {
+  	  			$pnode['childNodes'][] = $node;
+  	  		}	
+  		} // if(!isset($exclude_branches[$rowID]))
+  	}
+  	return $qnum;
+  }
+
+
+  function helperGSRInit($filters,$options)
+  {
+     	$my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
+      					   	         'additionalWhereClause' => '', 'testcase_name' => null,
+      					   	         'testcase_id' => null,'active_testcase' => false, 'importance' => null);
+                             
+      $my['options'] = array('remove_empty_nodes_of_type' => null);
+  
+  		$my['filters'] = array_merge($my['filters'], (array)$filters);
+  		$my['options'] = array_merge($my['options'], (array)$options);
+  
+  		// $exclude_branches = $my['filters']['exclude_branches'];
+  		// $exclude_children_of = $my['filters']['exclude_children_of'];	
+ 
+   		$tcaseFilter['name'] = !is_null($my['filters']['testcase_name']);
+  		$tcaseFilter['id'] = !is_null($my['filters']['testcase_id']);
+  		
+  		$tcaseFilter['is_active'] = !is_null($my['filters']['active_testcase']) && $my['filters']['active_testcase'];
+  		$tcaseFilter['enabled'] = $tcaseFilter['name'] || $tcaseFilter['id'] || $tcaseFilter['is_active'];
+   		$tcversionFilter['execution_type'] = !is_null($my['filters']['execution_type']);
+      $tcversionFilter['importance'] = !is_null($my['filters']['importance']);
+  		$tcversionFilter['enabled'] = $tcversionFilter['execution_type'] || $tcversionFilter['importance'];
+  
+      return array($my,$tcaseFilter,$tcversionFilter);
+  }
+
+
+  function helperGSRSQLTestCaseFilters($tcaseFilter,$filterValues)
+  {
+    $sql = "  NH.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} " .
+        	 "  OR (NH.node_type_id = {$this->tree_manager->node_descr_id['testcase']} ";
+    
+    if( $tcaseFilter['enabled'] )
+    {
+    	foreach($tcaseFilter as $key => $apply)
+    	{
+    		if( $apply )
+    		{
+    			switch($key)
+    			{
+    				case 'name':
+              $sql .= " AND NH.name LIKE '%{$filterValues['testcase_name']}%' ";
+    				break;
+    				
+    				case 'id':
+              $sql .= " AND NH.id = {$filterValues['testcase_id']} ";
+    				break;
+    			}
+    		}
+    	}
+    }
+    $sql .= " )) ORDER BY NH.node_order,NH.id";
+    return $sql;
+  }
+
+
 } // end class
 ?>

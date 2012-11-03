@@ -98,6 +98,7 @@ function guard_header_smarty($file)
 class TLSmarty extends Smarty
 {
   var $baseHREF;
+  var $tlImages;
   function __construct()
   {
     global $tlCfg;
@@ -248,7 +249,8 @@ class TLSmarty extends Smarty
                       'attachMgmt' => TL_THEME_IMG_DIR . 'upload_16.png',
                       'attachMgmtGreyed' => TL_THEME_IMG_DIR . 'upload_16_greyed.png',
                       'manualExec' => TL_THEME_IMG_DIR . 'user.png',
-                      'automatedExec' => TL_THEME_IMG_DIR . 'bullet_wrench.png'
+                      'automatedExec' => TL_THEME_IMG_DIR . 'bullet_wrench.png',
+                      'show' => TL_THEME_IMG_DIR . 'plus.gif'
                       );
 
     $msg = lang_get('show_hide_api_info');

@@ -33,9 +33,6 @@ require_once('pagestatistics.class.php');
 /** library of database wrapper */
 require_once('database.class.php');
 
-/** user right checking */
-require_once('roles.inc.php');
-
 /** Testlink Smarty class wrapper sets up the default smarty settings for testlink */
 require_once('tlsmarty.inc.php');
 

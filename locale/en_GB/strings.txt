@@ -530,7 +530,7 @@ $TLS_container_title_testsuite = $TLS_test_suite;
 $TLS_linked_but_not_executed = "Linked to one or more Test Plans, but not executed";
 $TLS_question_del_testsuite = "Are you sure you want to delete Test Suite: %s ?";
 $TLS_th_link_exec_status = "Link and execution status";
-$TLS_testsuite_successfully_deleted = "The Test Suite was successfully deleted";
+$TLS_testsuite_successfully_deleted = "Test Suite: %s was successfully deleted";
 $TLS_no_links = "No dependent data.";
 $TLS_linked_and_executed = "Test Case was added to a Test Plan and has results.";
 $TLS_system_blocks_tsuite_delete_due_to_exec_tc = 
@@ -702,6 +702,9 @@ $TLS_btn_show_cf = "Show Custom Fields";
 $TLS_btn_export_testplan_tree = 'Export Test Plan';
 $TLS_expand_tree = "Expand tree";
 $TLS_collapse_tree = "Collapse tree";
+$TLS_filter_active_inactive = "Active/Inactive";
+$TLS_show_only_active_testcases = "Active";
+$TLS_show_only_inactive_testcases = "Inactive";
 
 
 // ----- gui/templates/execNavigator.tpl -----
@@ -772,7 +775,7 @@ $TLS_attached_files = "Attached files";
 $TLS_attachment_feature_disabled = "attachment disabled";
 $TLS_button_upload = $TLS_btn_upload;
 $TLS_upload_file_new_file = "Upload new file";
-$TLS_warning_delete_attachment = "Really delete the attachment '%s' ?";
+$TLS_warning_delete_attachment = "Attention: You are going to delete attachment: %s";
 
 
 
@@ -1074,6 +1077,7 @@ $TLS_menu_edit_role = "Edit Role";
 $TLS_menu_view_users = "View Users";
 $TLS_menu_view_roles = "View roles";
 $TLS_th_cf_rights = "Custom field";
+$TLS_th_execution_rights = 'Test Case Execution';
 $TLS_th_issuetracker_rights = 'Issue Tracker';
 $TLS_th_kw_rights = $TLS_keyword;
 $TLS_th_mgttc_rights = "Test Case management";
@@ -2334,6 +2338,12 @@ $TLS_mgt_testplan_create = "Test Plan create/edit";
 $TLS_inherited = "inherited";
 $TLS_no_rights = "no rights";
 
+$TLS_right_exec_edit_notes = "Edit Execution Notes";
+$TLS_right_exec_delete = "Delete Execution";
+$TLS_right_testplan_unlink_executed_testcases = "Unlink Executed Test Cases";
+$TLS_right_testproject_delete_executed_testcases = "Delete Executed Test Cases";
+$TLS_right_testproject_edit_executed_testcases = "Edit Executed Test Cases";
+
 
 // ----- lib/functions/testproject.class.php -----
 $TLS_error_creating_req_spec = "Error while creating Requirements Specification Document";
@@ -3517,5 +3527,7 @@ $TLS_collision_detected_some_one_else = 'On %s ,User %s (email: %s) has made cha
 $TLS_collision_detected_choices = 'You have following choices:<br>' .
 								  'a. Submit your changes anyway, overwritten work done by User %s. <br>' .
 								  'b. Throw	away your changes, and go to see item current data.<br>';
+
+$TLS_attach_linked_to = ' linked to ';
 // ----- END ------------------------------------------------------------------
 ?>

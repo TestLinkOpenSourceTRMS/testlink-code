@@ -6,17 +6,14 @@
  * Allows editing a user
  *
  * @filesource	usersEdit.php
- * @package 	TestLink
- * @copyright 	2005-2011, TestLink community
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @copyright 	2005-2012, TestLink community
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
- *	20101010 - franciscom - BUGID 3872: Admin should be able to set a new password for users
- *	20100502 - franciscom - BUGID 3417
  *
  */
 require_once('../../config.inc.php');
-require_once('testproject.class.php');
 require_once('users.inc.php');
 require_once('email_api.php');
 require_once('Zend/Validate/Hostname.php');
@@ -31,14 +28,14 @@ $gui->highlight = initialize_tabsmenu();
 $gui->op = new stdClass();
 $gui->op->user_feedback = '';
 $gui->external_password_mgmt = tlUser::isPasswordMgtExternal();
-$gui->grants = getGrantsForUserMgmt($db,$_SESSION['currentUser']);
+$gui->grants = $_SESSION['currentUser']->getGrantsForUserMgmt($db);
 $gui->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
 
 
 
 $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
-                       'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
-                       'resetPassword' => 'doUpdate');
+                         'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
+                         'resetPassword' => 'doUpdate');
 
 switch($args->doAction)
 {
@@ -65,7 +62,7 @@ switch($args->doAction)
 		$gui->highlight->edit_user = 1;
 		$gui->user = new tlUser($args->user_id);
 		$gui->user->readFromDB($db);
-		$gui->op = createNewPassword($db,$args,$user,$passwordSendMethod);
+		$gui->op = createNewPassword($db,$args,$gui->user);
 		break;
 	
 	case "create":
@@ -164,9 +161,9 @@ function doCreate(&$dbHandler,&$argsObj)
 
 function doUpdate(&$dbHandler,&$argsObj,$currentUserID)
 {
-    $op = new stdClass();
-    $op->user_feedback = '';
-    $op->user = new tlUser($argsObj->user_id);
+  $op = new stdClass();
+  $op->user_feedback = '';
+  $op->user = new tlUser($argsObj->user_id);
 	$op->status = $op->user->readFromDB($dbHandler);
 
 	if ($op->status >= tl::OK)
@@ -195,7 +192,6 @@ function doUpdate(&$dbHandler,&$argsObj,$currentUserID)
  * 
  *
  * @internal revisions
- *	20100502 - franciscom - BUGID 3417
  */
 function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 {
@@ -213,8 +209,8 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 	// This can be done by passing a parameter to Zend_Validate_Hostname when you instantiate it. 
 	// The paramter should be an integer which determines what types of hostnames are allowed. 
 	// You are encouraged to use the Zend_Validate_Hostname constants to do this.
-    // The Zend_Validate_Hostname constants are: ALLOW_DNS to allow only DNS hostnames, ALLOW_IP to allow IP addresses, 
-    // ALLOW_LOCAL to allow local network names, and ALLOW_ALL to allow all three types. 
+  // The Zend_Validate_Hostname constants are: ALLOW_DNS to allow only DNS hostnames, ALLOW_IP to allow IP addresses, 
+  // ALLOW_LOCAL to allow local network names, and ALLOW_ALL to allow all three types. 
 	// 
 	$validator = new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL);
 	$smtp_host = config_get( 'smtp_host' );
@@ -222,7 +218,7 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 	$password_on_screen = ($passwordSendMethod == 'display_on_screen');
 	if( $validator->isValid($smtp_host) || $password_on_screen )
 	{
-		$dummy = resetPassword($dbHandler,$argsObj->user_id,$passwordSendMethod);
+		$dummy = $userObj->resetPassword($dbHandler,$passwordSendMethod);
 
 		$op->user_feedback = $dummy['msg'];
 		$op->status = $dummy['status'];
@@ -284,15 +280,15 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
     $doRender = false;
     switch($argsObj->doAction)
     {
-        case "edit":
-        case "create":
-        case "resetPassword":
+      case "edit":
+      case "create":
+      case "resetPassword":
        		$doRender = true;
     		$tpl = $templateCfg->default_template;
-    		break;
+    	break;
 
-		case "doCreate":
-		case "doUpdate":
+		  case "doCreate":
+		  case "doUpdate":
         if(!is_null($templateCfg->template))
         {
             $doRender = true;

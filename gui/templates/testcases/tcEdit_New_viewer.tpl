@@ -106,9 +106,10 @@ Purpose: smarty template - create new testcase
 	     </div>
 	{/if}
 
+  <p />
 	<div>
 	<a href={$gui->keywordsViewHREF}>{$labels.tc_keywords}</a>
-	{include file="opt_transfer.inc.tpl" option_transfer=$gui->opt_cfg}
+	{include file="opt_transfer.inc.tpl" option_transfer=$gui->optionTransfer}
 	</div>
 	
 	{if $gui->opt_requirements==TRUE && $gui->grants->requirement_mgmt=='yes' && isset($gui->tc.testcase_id)}

@@ -56,14 +56,16 @@ function doAuthorize(&$db,$login,$pwd)
 				}
 				else
 				{ 
-					//Setting user's session information
+					// Setting user's session information
 					$_SESSION['currentUser'] = $user;
 					$_SESSION['lastActivity'] = time();
+					$user->setUserSession($db);
 					
 					global $g_tlLogger;
 					$g_tlLogger->endTransaction();
 					$g_tlLogger->startTransaction();
-					setUserSession($db,$user->login, $user->dbID,$user->globalRoleID,$user->emailAddress, $user->locale,null);
+					// setUserSession($db,$user->login, $user->dbID,$user->globalRoleID,$user->emailAddress, $user->locale,null);
+					
 					$result['status'] = tl::OK;
 				}
 			}

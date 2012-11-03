@@ -164,6 +164,8 @@ class tlAttachmentRepository extends tlObjectWithDB
 			if ($fileUploaded)
 			{
 				$fileUploaded = $attachment->writeToDb($this->db);
+        $msg = $this->attachmentIdentity($this->getAttachmentInfo($attachment->dbID));   
+  	    logAuditEvent(TLS("audit_attachment_created",$msg,$fName),"CREATE",$attachment->dbID,"attachments");
 			}
 			else
 			{ 
@@ -318,13 +320,17 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 * @param $attachmentInfo array, optional information about the attachment
 	 * @return integer returns tl::OK on success, tl::ERROR else
 	 */
-	public function deleteAttachment($id,$attachmentInfo = null)
+	public function deleteAttachment($id,$attachmentInfo = null,$opt=null)
 	{
+	  
+	  $options = array_merge(array('audit' => true),(array)$opt);
 		$opStatus = tl::ERROR;
+
 		if (is_null($attachmentInfo))
 		{
 			$attachmentInfo = $this->getAttachmentInfo($id);
 		}
+
 		if ($attachmentInfo)
 		{
 			$opStatus = tl::OK;
@@ -334,6 +340,14 @@ class tlAttachmentRepository extends tlObjectWithDB
 			}
 			$opStatus = $this->deleteAttachmentFromDB($id,null) && $opStatus;
 		}
+		
+		
+		if($opStatus && $options['audit'])
+		{
+      $msg = $this->attachmentIdentity($attachmentInfo);   
+  	  logAuditEvent(TLS("audit_attachment_deleted",$msg),"DELETE",$id,"attachments");
+		} 
+		
 		return $opStatus ? tl::OK : tl::ERROR;
 	}
 	
@@ -660,5 +674,52 @@ class tlAttachmentRepository extends tlObjectWithDB
   	}
   	return $metadata;
   }
+  
+  
+  function attachmentIdentity($attachInfo)
+  {
+    $key2loop = array('title','description', 'file_name');
+    foreach($key2loop as $target)
+    {
+      if( ($identity = trim($attachInfo[$target]) ) != '' )
+      {
+        break;
+      } 
+    }
+    
+    $family = $this->getAttachmentFamily($attachInfo);
+    if(!is_null($family))
+    {
+      if($identity != '')
+      {
+        $identity .= lang_get('attach_linked_to') . ' ' . $family['owner'];
+      }  
+    }
+    return ($identity != '' ? $identity : 'Warning! - Not able to create identity');
+  }
+
+  function getAttachmentFamily($attachInfo)
+  {
+    $ret = null;
+    switch($attachInfo['fk_table'])
+    {
+      case 'nodes_hierarchy':
+        $tree_manager = new tree($this->db);
+        $dummy = $tree_manager->get_node_hierarchy_info($attachInfo['fk_id']);
+        $class2use = $tree_manager->class_name[$dummy['node_type_id']];
+        switch($class2use)
+        {
+          case 'testcase':
+            $mgr = new $class2use($this->db);
+            $signature = $mgr->getAuditSignature((object) array('id' => $attachInfo['fk_id']));
+            $ret = array('ownerType' => 'testcase', 'owner' => lang_get('testcase') . ':' . $signature); 
+          break;              
+        }
+      break;
+    }
+    return $ret;
+    
+  }
+  
 }
 ?>

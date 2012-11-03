@@ -720,8 +720,52 @@ class tlUser extends tlDBObject
         break;    
       }
     }
-		return checkForRights($userRightSet,$roleQuestion);
+		return $this->checkForRights($userRightSet,$roleQuestion);
 	}
+
+  /**
+   * TBD
+   *
+   * @param string $rights 
+   * @param mixed $roleQuestion 
+   * @param boolean $bAND [default = 1] 
+   * @return mixed 'yes' or null
+   *
+   * @author Andreas Morsing <schlundus@web.de>
+   * @since 20.02.2006, 20:30:07
+   *
+   **/
+  function checkForRights($rights,$roleQuestion,$modeAND = 1)
+  {
+  	$ret = null;
+  	if (is_array($roleQuestion))
+  	{
+  		$r = array_intersect($roleQuestion,$rights);
+  		if ($modeAND)
+  		{
+  			//for AND all rights must be present
+  			if (sizeof($r) == sizeof($roleQuestion))
+  			{
+  				$ret = 'yes';
+  			}	
+  		}	
+  		else 
+  		{
+  			// for OR one of all must be present
+  			if (sizeof($r))
+  			{
+  				$ret = 'yes';
+  			}	
+  		}	
+  	}
+  	else
+  	{
+  		$ret = (in_array($roleQuestion,$rights) ? 'yes' : null);
+  	}
+  	return $ret;
+  }
+
+
 
 
 	/**
@@ -1079,5 +1123,375 @@ class tlUser extends tlDBObject
   	}
   	return $to;
   }
+
+
+  function resetPassword(&$db,$passwordSendMethod='send_password_by_mail')
+  {
+  	$retval = array('status' => tl::OK, 'password' => '', 'msg' => ''); 
+  	$retval['status'] = $this->readFromDB($db);
+  	
+  	if ($retval['status'] >= tl::OK)
+  	{
+  		$retval['status'] = tlUser::E_EMAILLENGTH;
+  		if ($this->emailAddress != "")
+  		{
+  			$newPassword = tlUser::generatePassword(8,4); 
+  			$retval['status'] = $this->setPassword($newPassword);
+  			if ($retval['status'] >= tl::OK)
+  			{
+  				$retval['password'] = $newPassword;
+  				$mail_op = new stdClass();
+  				$mail_op->status_ok = false;
+      
+  				if( $passwordSendMethod == 'send_password_by_mail' )
+  				{
+  					$mail_templates = config_get('mail_templates');
+  					$admin_contact = config_get('admin_coordinates');
+  					$tags = array('%admin_coordinates%','%login_name%','%password%','%ipaddress%','%timestamp%');
+  					$values = array($admin_contact,$this->login,$newPassword,get_ip_address(),date("r", time()));
+
+  					// try to use localized template
+  					$file2get = str_replace('%locale%',$this->locale,$mail_templates->change_password);
+  					$msgBody = file_get_contents($file2get);
+  					if(is_null($msgBody))
+  					{
+  						$msgBody = lang_get('change_password_mail_body');
+  					}
+  					$msgBody = str_replace($tags,$values,$msgBody);
+  					$mail_op = @email_send(config_get('from_email'), 
+  									               $this->emailAddress,lang_get('mail_passwd_subject'),$msgBody);
+  				}
+
+  				if ($mail_op->status_ok || ($passwordSendMethod == 'display_on_screen') )
+  				{
+  					$retval['status'] = $this->writePasswordToDB($db);
+  					$retval['msg'] = 'ok';
+  				}
+  				else
+  				{
+  					$retval['status'] = tl::ERROR;
+  					$retval['msg'] = $mail_op->msg;
+  				}
+  			}
+  		}
+  	}
+  	$retval['msg'] = ($retval['msg'] != "") ? $retval['msg'] : $this->getUserErrorMessage($result['status']) ;
+  	return $retval;
+  }
+  
+  static function getUserErrorMessage($code)
+  {
+  	$msg = 'ok';
+  	switch($code)
+  	{
+  		case tl::OK:
+  			break;
+  
+  		case tlUser::E_LOGINLENGTH:
+  			$msg = lang_get('error_user_login_length_error');
+  			break;
+  
+  		case tlUser::E_EMAILLENGTH:
+  			$msg = lang_get('empty_email_address');
+  			break;
+  		case tlUser::E_EMAILFORMAT:
+  			$msg = lang_get('no_good_email_address');
+  			break;
+  			
+  		case tlUser::E_NOTALLOWED:
+  			$msg = lang_get('user_login_valid_regex');
+  			break;
+  
+  		case tlUser::E_FIRSTNAMELENGTH:
+  			$msg = lang_get('empty_first_name');
+  			break;
+  
+  		case tlUser::E_LOGINALREADYEXISTS:
+  			$msg = lang_get('user_name_exists');
+  			break;
+  
+  		case tlUser::E_LASTNAMELENGTH:
+  			$msg = lang_get('empty_last_name');
+  			break;
+  
+  		case tlUser::E_PWDEMPTY:
+  			$msg = lang_get('warning_empty_pwd');
+  			break;
+  
+  		case tlUser::E_PWDDONTMATCH:
+  			$msg = lang_get('wrong_old_password');
+  			break;
+  
+  		case tlUser::S_PWDMGTEXTERNAL	:
+  			$msg = lang_get('password_mgmt_is_external');
+  			break;
+  
+  		case ERROR:
+  		case tlUser::E_DBERROR:
+  		default:
+  			$msg = lang_get('error_user_not_updated');
+  		break;	
+  	}
+  	return $msg;
+  }
+
+
+  function setUserSession(&$db)
+  {
+  	// tLog('setUserSession: $user=' . $user . ' $id='.$id.' $roleID='.$roleID.' $email='.$email.' $locale='.$locale);
+  
+  	$_SESSION['userID']	= $this->dbID;
+  	$_SESSION['s_lastAttachmentList'] = null;
+  	$_SESSION['locale'] = $this->locale;
+    set_dt_formats();
+  	return 1;
+  }
+
+
+  static function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = null, $active_filter = null,$users = null)
+  {
+  	$users_map = null;
+  	if (!$users)
+  	{
+  		$sqlWhere = $whereClause;
+  		if(!is_null($active_filter))
+  		{
+  			$whereClause .= ' AND active =' . ($active_filter > 0 ? 1 : 0) . ' ';
+  		}
+  		$users = tlUser::getAll($db,$sqlWhere,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+  	}
+    
+  	return tlUser::buildUserMap($users,!is_null($additional_users),$additional_users);
+  }
+
+
+  /*
+    function: buildUserMap
+  
+    args:
+         $users: map of user objects
+         [add_options]: default false.
+                        true, elements present on additional_options arguments
+                        will be will added to result map.
+         
+         [additional_options]: default null
+                               map with key=user id, value=verbose description 
+    
+    returns: map ready to be used on a HTML select input.
+  
+  */
+  static private function buildUserMap($users,$add_options = false, $additional_options=null)
+  {
+  	$usersMap = null;
+  	$inactivePrefix = lang_get('tag_for_inactive_users');
+  	if ($users)
+  	{
+  		if($add_options)
+  		{
+  		  $my_options = is_null($additional_options) ? array( 0 => '') : $additional_options;
+  		  foreach($my_options as $code => $verbose_code)
+  		  {
+  			    $usersMap[$code] = $verbose_code;
+  			}
+  		}
+  		$userSet = array_keys($users);
+  		$loops2do = count($userSet);
+  		
+      for( $idx=0; $idx < $loops2do ; $idx++)
+      {
+       	$userID = $userSet[$idx];
+  			$usersMap[$userID] = $users[$userID]->getDisplayName();
+  			if($users[$userID]->isActive == 0)
+  			{
+  			    $usersMap[$userID] = $inactivePrefix . ' ' . $usersMap[$userID];
+  			} 
+      }
+  	}
+  	return $usersMap;
+  }
+
+
+  function getTestProjectEffectiveRole($tproject)
+  {
+	  return tlUser::helperTestProjectEffectiveRole($tproject,$this);
+  }
+
+  static function getTestProjectEffectiveRoleForUserSet($tproject,$userSet)
+  {
+	  return tlUser::helperTestProjectEffectiveRole($tproject,$userSet);
+  }
+
+  function getTestPlanEffectiveRole($tplan,$tproject)
+  {
+	  return tlUser::helperTestPlanEffectiveRole($tplan,$tproject,$this);
+  }
+
+  static function getTestPlanEffectiveRoleForUserSet($tplan,$tproject,$userSet)
+  {
+	  return tlUser::helperTestPlanEffectiveRole($tplan,$tproject,$userSet);
+  }
+
+
+  static function helperTestPlanEffectiveRole($tplan,$tproject,$userSet)
+  {
+    $effective_role = array();
+	  $effective_role = tlUser::getTestProjectEffectiveRoleForUserSet($tproject,$userSet);
+  
+  	foreach($effective_role as $user_id => $row)
+  	{
+  		$isInherited = 1;
+  		$effective_role[$user_id]['uplayer_role_id'] = $effective_role[$user_id]['effective_role_id'];
+  		$effective_role[$user_id]['uplayer_is_inherited'] = $effective_role[$user_id]['is_inherited'];
+  		
+  		// Manage administrator exception
+  		if( ($row['user']->globalRoleID != TL_ROLES_ADMIN) && !$tplan['is_public'])
+  		{
+  				$isInherited = $tproject['is_public'];
+  				$effectiveRoleID = TL_ROLES_NO_RIGHTS;
+  				$effectiveRole = '<no rights>';
+  		}
+  		// ---------------------------------------------------------------------------
+  		
+  		if(isset($row['user']->tplanRoles[$tplan['id']]))
+  		{
+  			$isInherited = 0;
+  			$effective_role[$user_id]['effective_role_id'] = $row['user']->tplanRoles[$tplan['id']]->dbID;  
+  			$effective_role[$user_id]['effective_role'] = $row['user']->tplanRoles[$tplan['id']];
+  		}
+  
+  		$effective_role[$user_id]['is_inherited'] = $isInherited;
+  	}
+  	return $effective_role;
+  }
+
+  static function helperTestProjectEffectiveRole($tproject,$userSet)
+  {
+    $effective_role = array();
+		foreach($userSet as $id => $user)
+		{
+			// manage admin exception
+			$isInherited = 1;
+			$effectiveRoleID = $user->globalRoleID;
+			$effectiveRole = $user->globalRole;
+			if( ($user->globalRoleID != TL_ROLES_ADMIN) && !$tproject['is_public'])
+			{
+				$isInherited = $tproject['is_public'];
+				$effectiveRoleID = TL_ROLES_NO_RIGHTS;
+				$effectiveRole = '<no rights>';
+			}
+			
+			if(isset($user->tprojectRoles[$tproject['id']]))
+			{
+				$isInherited = 0;
+				$effectiveRoleID = $user->tprojectRoles[$tproject['id']]->dbID;
+				$effectiveRole = $user->tprojectRoles[$tproject['id']];
+			}  
+
+			$effective_role[$id] = array('login' => $user->login,
+										               'user' => $user,
+              										 'user_role_id' => $user->globalRoleID,
+              										 'uplayer_role_id' => $user->globalRoleID,
+              										 'uplayer_is_inherited' => 0,
+              										 'effective_role_id' => $effectiveRoleID,
+              										 'effective_role' => $effectiveRole,
+              										 'is_inherited' => $isInherited);
+		}  
+    return $effective_role;
+  }
+
+  static function getAllUsersRoles(&$db,$order_by = null)
+  {
+      $tables = tlObject::getDBTables(array('users','roles'));
+      
+  	$sql = "SELECT users.id FROM {$tables['users']} users " .
+  	       " LEFT OUTER JOIN {$tables['roles']} roles ON users.role_id = roles.id ";
+  	$sql .= is_null($order_by) ? " ORDER BY login " : $order_by;
+  
+  	$users = tlDBObject::createObjectsFromDBbySQL($db,$sql,"id","tlUser",false,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+  
+  	$loop2do = count($users);
+  	$specialK = array_flip((array)config_get('demoSpecialUsers'));
+  	for($idx=0; $idx < $loop2do; $idx++)
+  	{
+  		$users[$idx]->isDemoSpecial = isset($specialK[$users[$idx]->login]);
+  	}
+  	return $users;
+  }
+
+
+  function getGrantsForUserMgmt(&$dbHandler,$tprojectID=null,$tplanID=null)
+  {
+      $answers = new stdClass();
+      $grants = new stdClass();
+      $grants->user_mgmt = $this->hasRight($dbHandler,"mgt_users",$tprojectID);
+      $grants->role_mgmt = $this->hasRight($dbHandler,"role_management",$tprojectID);
+      $grants->tproject_user_role_assignment = "no";
+      $grants->tplan_user_role_assignment = "no";
+      
+      if($grants->user_mgmt == 'yes')
+      {
+          $grants->tplan_user_role_assignment = 'yes';
+          $grants->tproject_user_role_assignment = 'yes';  
+      }
+      else
+      {
+          
+          $grants->tplan_user_role_assignment = $this->hasRight($dbHandler,"testplan_user_role_assignment",
+                                                                $tprojectID,$tplanID);
+          
+          
+          $answers->user_role_assignment = $this->hasRight($dbHandler,"user_role_assignment",null,-1);
+          $answers->testproject_user_role_assignment = $this->hasRight($dbHandler,"testproject_user_role_assignment",$tprojectID,-1);
+          if($answers->user_role_assignment == "yes" || $answers->testproject_user_role_assignment == "yes")
+          {    
+              $grants->tproject_user_role_assignment = "yes";
+          }
+      }    
+      foreach($grants as $key => $value)
+      {
+          $grants->$key = $value == "yes" ? "yes" : "no";       
+      }
+      
+      return $grants;
+  }
+
+  static function getTestersForHtmlOptions($tplan,$tproject,$users = null, 
+                                           $additional_testers = null,$activeStatus = 'active')
+  {
+    $orOperand = false;
+    $activeTarget = 1;
+    switch ($activeStatus)
+    {
+        case 'any':
+            $orOperand = true;
+        break;
+        
+        case 'inactive':
+            $activeTarget = 0;
+    	break;
+        
+        case 'active':
+        default:
+  	  break;
+    }
+    $users_roles = tlUser::getTestPlanEffectiveRoleForUserSet($tplan,$tproject,$users);
+    $userFilter = array();
+    foreach($users_roles as $keyUserID => $roleInfo)
+    {
+    	// Assign test case to test project fails for PRIVATE TEST PROJECT (tested with admin user)
+    	if( is_object($roleInfo['effective_role']) )
+    	{
+        	if( $roleInfo['effective_role']->hasRight('testplan_execute') && 
+        	    ($orOperand || $roleInfo['user']->isActive == $activeTarget) )
+        	{
+        	    
+        	     $userFilter[$keyUserID] = $roleInfo['user'];
+        	}
+        }   
+    }
+  	return tlUser::buildUserMap($userFilter,true,$additional_testers);
+  }
+
+
 }
 ?>

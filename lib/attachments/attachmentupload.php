@@ -34,12 +34,12 @@ if ($args->bPostBack)
 		$fTmpName = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : '';
 		if ($fSize && $fTmpName != "")
 		{
-			$attachmentRepository = tlAttachmentRepository::create($db);
-			$gui->uploaded = $attachmentRepository->insertAttachment($id,$gui->tableName,$args->title,$fInfo);
-			if ($gui->uploaded)
-			{
-				logAuditEvent(TLS("audit_attachment_created",$args->title,$fInfo['name']),"CREATE",$id,"attachments");
-			}	
+			$repo = tlAttachmentRepository::create($db);
+			$gui->uploaded = $repo->insertAttachment($id,$gui->tableName,$args->title,$fInfo);
+			// if ($gui->uploaded)
+			// {
+			// 	logAuditEvent(TLS("audit_attachment_created",$args->title,$fInfo['name']),"CREATE",$id,"attachments");
+			// }	
 		}
 		else
 		{
@@ -48,7 +48,8 @@ if ($args->bPostBack)
 	}
 }
 else
-{
+{                           
+  // Try to understand if we can remove this code - 20121102
 	$_SESSION['s_upload_tableName'] = $args->tableName;
 	$_SESSION['s_upload_id'] = $args->id;
 }

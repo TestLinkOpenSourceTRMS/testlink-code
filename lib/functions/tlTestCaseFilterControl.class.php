@@ -6,7 +6,7 @@
  * @filesource tlTestCaseFilterControl.class.php
  * @package    TestLink
  * @author     Andreas Simon
- * @copyright  2006-2011, TestLink community
+ * @copyright  2006-2012, TestLink community
  * @link       http://www.teamst.org/index.php
  * 
  *
@@ -34,6 +34,8 @@
  *    --> assign requirements
  *
  * @internal revisions
+ * @since 2.0
+ *
  */
 
 /*
@@ -154,17 +156,21 @@
  *
  * @author Andreas Simon
  * @package TestLink
- * @uses testplan.class.php
- * @uses exec_cf_mgr.class.php
- * @uses tlPlatform.class.php
- * @uses testcase.class.php
- * @uses tlTreeMenu.class.php
+ * @uses testplan
+ * @uses exec_cf_mgr
+ * @uses tlPlatform
+ * @uses testcase
  */
+
+ 
 class tlTestCaseFilterControl extends tlFilterControl 
 {
+  const ACTIVE_INACTIVE_TESTCASES_NO_FILTER = 0;
+  const ONLY_ACTIVE_TESTCASES = 1;
+  const ONLY_INACTIVE_TESTCASES = 2;
 
 	/**
-	 * Test case manager object.
+	 * Testcase manager object.
 	 * Initialized not in constructor, only on first use to save resources.
 	 * @var testcase
 	 */
@@ -185,19 +191,11 @@ class tlTestCaseFilterControl extends tlFilterControl
 	private $cfield_mgr = null;
 	
 	/**
-	 * Test plan manager object.
+	 * Testplan manager object.
 	 * Initialized not in constructor, only on first use to save resources.
-	 * @var testplan_mgr
+	 * @var testplan
 	 */
 	private $testplan_mgr = null;
-	
-	
-	/**
-	 * Tree Menu manager object.
-	 * Initialized not in constructor, only on first use to save resources.
-	 * @var $treemenu_mgr
-	 */
-	private $treemenu_mgr = null;
 	
 	/**
 	 * This array contains all possible filters.
@@ -212,8 +210,9 @@ class tlTestCaseFilterControl extends tlFilterControl
 	                             'filter_testcase_name' => array("POST", tlInputParameter::STRING_N),
 	                             'filter_toplevel_testsuite' => array("POST", tlInputParameter::STRING_N),
 	                             'filter_keywords' => array("POST", tlInputParameter::ARRAY_INT),
+                               'filter_active_inactive' => array("POST", tlInputParameter::INT_N),
+                               'filter_importance' => array("POST", tlInputParameter::INT_N),
 	                             'filter_priority' => array("POST", tlInputParameter::INT_N),
-	                             'filter_importance' => array("POST", tlInputParameter::INT_N),
 	                             'filter_execution_type' => array("POST", tlInputParameter::INT_N),
 	                             'filter_assigned_user' => array("POST", tlInputParameter::ARRAY_INT),
 	                             'filter_custom_fields' => array("POST", tlInputParameter::ARRAY_STRING_N),
@@ -234,7 +233,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 	                                                          'filter_testcase_name',
 	                                                          'filter_toplevel_testsuite',
 	                                                          'filter_keywords',
-		                                                      'filter_importance',
+                                                            'filter_active_inactive',
+                                                            'filter_importance',
 	                                                          'filter_execution_type',
 	                                                          'filter_custom_fields'),
 	                                     'execution_mode' => array('filter_tc_id',
@@ -260,7 +260,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 	                                                              'filter_testcase_name',
 	                                                              'filter_toplevel_testsuite',
 	                                                              'filter_keywords',
-		                                                          'filter_importance',
+                                                                'filter_active_inactive',
+                                                                'filter_importance',
 	                                                              'filter_execution_type',
 	                                                              'filter_custom_fields'));
 
@@ -279,6 +280,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 	 * This array is used to map the modes to their available settings.
 	 * @var array
 	 */
+	 
 	private $mode_setting_mapping = array('edit_mode' => array('setting_refresh_tree_on_action'),
 	                                      'execution_mode' => array('setting_testplan',
 	                                                                'setting_build',
@@ -286,6 +288,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 	                                                                'setting_refresh_tree_on_action'),
 	                                      'plan_mode' => array('setting_testplan',
 	                                                           'setting_build',
+	                                                           'setting_platform',
 	                                                           'setting_refresh_tree_on_action'),
 	                                      'plan_add_mode' => array('setting_testplan',
 	                                                               'setting_refresh_tree_on_action'));
@@ -299,6 +302,14 @@ class tlTestCaseFilterControl extends tlFilterControl
 	 */
 	private $mode = 'edit_mode';
 
+
+	/**
+	 * Options to be used accordin to $this->mode, to build tree
+	 * @var array
+	 */
+	private $treeOpt = array();
+
+
 	/**
 	 * The token that will be used to identify the relationship between left frame
 	 * (with navigator) and right frame (which displays execution of test case e.g.) in session.
@@ -306,22 +317,25 @@ class tlTestCaseFilterControl extends tlFilterControl
 	 */
 	public $form_token = null;
 	
+	
+	
+	
 	/**
 	 *
 	 * @param database $dbHandler
 	 * @param string $mode can be edit_mode/execution_mode/plan_mode/plan_add_mode, depending on usage
 	 */
-	public function __construct(&$dbHandler, $mode = 'edit_mode') {
-
-		// set mode to define further actions before calling parent constructor
+	public function __construct(&$dbHandler, $mode = 'edit_mode') 
+	{
+		// Has to be done before any other action
 		$this->mode = array_key_exists($mode,$this->mode_filter_mapping) ? $mode : 'edit_mode';
 
-		// Call to constructor of parent class tlFilterControl.
-		// This already loads configuration and user input
-		// and does all the remaining necessary method calls,
-		// so no further method call is required here for initialization.
+    // Important Developer Notice:
+    // Constructor will launch common methods, calling method defined IN THIS CLASS
 		parent::__construct($dbHandler);
 
+		$this->initTreeOptions($this->mode);
+		
 		// delete any filter settings that may be left from previous calls in session
 		$this->delete_own_session_data();
 		$this->delete_old_session_data();
@@ -329,120 +343,112 @@ class tlTestCaseFilterControl extends tlFilterControl
 		$this->save_session_data();
 	}
 
-	public function __destruct() {
+	/**
+	 * 
+	 * 
+	 */
+	public function __destruct() 
+	{
 		parent::__destruct(); //destroys testproject manager
 		
-		// destroy member objects
 		unset($this->tc_mgr);
 		unset($this->testplan_mgr);
 		unset($this->platform_mgr);
 		unset($this->cfield_mgr);
-		unset($this->treemenu_mgr);
 	}
 
 	/**
 	 * Reads the configuration from the configuration file specific for test cases,
 	 * additionally to those parts of the config which were already loaded by parent class.
-	 * @return bool
+	 *
+	 * IMPORTANT DEVELOPER NOTICE: YOU HAVE TO CALL parent method as FIRST ACTION
 	 */
-	protected function read_config() {
-
-		// some configuration reading already done in parent class
+	protected function read_config() 
+	{
 		parent::read_config();
-
-		// load configuration for active mode only
-		$this->cfg = config_get('tree_filter_cfg')->testcases->{$this->mode};
-
-		// load also exec config - it is not only needed in exec mode
-		$this->cfg->exec_cfg = config_get('exec_cfg');
-
-		// some additional testcase configuration
-		$this->cfg->tc_cfg = config_get('testcase_cfg');
+		$this->configuration = config_get('tree_filter_cfg')->testcases->{$this->mode};
+		$this->configuration->exec_cfg = config_get('exec_cfg');
+		$this->configuration->tc_cfg = config_get('testcase_cfg');
 		
-		// is choice of advanced filter mode enabled?
-    	$this->filter_mode_choice_enabled = isset($this->cfg->advanced_filter_mode_choice) && 
-    										$this->cfg->advanced_filter_mode_choice == ENABLED; 
-	
-		return tl::OK;
-	} // end of method
+		$this->filter_mode_choice_enabled = (isset($this->configuration->advanced_filter_mode_choice) && 
+    		                                 $this->configuration->advanced_filter_mode_choice == ENABLED); 
+	}
 
 	/**
 	 * Does what init_args() usually does in all scripts: Reads the user input
 	 * from request ($_GET and $_POST). Later configuration,
 	 * settings and filters get modified according to that user input.
-	 *
-	 *
-	 * Developer note:
-	 * this method will be called by parent::__constructor()
-	 *
-	 * @internal revisions
+   * 
+	 * IMPORTANT DEVELOPER NOTICE: YOU HAVE TO CALL parent method as FIRST ACTION
 	 */
-	protected function init_args(&$dbHandler) 
+	protected function init_args() 
 	{
-		// some common user input is already read in parent class
-		parent::init_args($dbHandler);
+		parent::init_args();
 
 		// add settings and filters to parameter info array for request parsers
 		$params = array();
-		$k2l = array('all_settings','all_filters');
-		foreach($k2l as $prop)
+		foreach ($this->all_settings as $name => $info) 
 		{
-			foreach ($this->$prop as $name => $info) 
+			if (is_array($info)) 
 			{
-				if (is_array($info)) 
-				{
-					$params[$name] = $info;
-				}
+				$params[$name] = $info;
 			}
 		}
-		
+		foreach ($this->all_filters as $name => $info) 
+		{
+			if (is_array($info)) 
+			{
+				$params[$name] = $info;
+			}
+		}
 		I_PARAMS($params, $this->args);
+
 		$type = 'filter_keywords_filter_type';
 		$this->args->{$type} = (isset($_REQUEST[$type])) ? trim($_REQUEST[$type]) : 'Or';
 
 		$extra_keys = array('filter_result_result','filter_result_method','filter_result_build');
+
 		foreach ($extra_keys as $ek) 
 		{
 			$this->args->{$ek} = (isset($_REQUEST[$ek])) ? $_REQUEST[$ek] : null;
 		}
 
-		$okill = 'filter_assigned_user_include_unassigned';
-		$this->args->$okill = isset($_REQUEST[$okill]) ? 1 : 0;
+		$this->args->{'filter_assigned_user_include_unassigned'} = 
+			isset($_REQUEST['filter_assigned_user_include_unassigned']) ? 1 : 0;
 
 		// got session token sent by form or do we have to generate a new one?
 		$sent_token = null;
 		$this->args->form_token = null;
-		if (isset($_REQUEST['form_token'])) {
-			// token got sent
+		if (isset($_REQUEST['form_token'])) 
+		{
 			$sent_token = $_REQUEST['form_token'];
 		}
-		if (!is_null($sent_token) && isset($_SESSION[$this->mode][$sent_token])) {
+		if (!is_null($sent_token) && isset($_SESSION[$this->mode][$sent_token])) 
+		{
 			// sent token is valid
 			$this->form_token = $sent_token;
 			$this->args->form_token = $sent_token;
-		} else {
+		} 
+		else 
+		{
 			$this->generate_form_token();
 		}
 		
 		// "feature" is needed for plan and edit modes
 		$this->args->feature = isset($_REQUEST['feature']) ? trim($_REQUEST['feature']) : null;
-		
-		
-		// new dBug($this->args, array('calledFrom' => 'Class:' . __CLASS__ . 'Method:' . __FUNCTION__));
-		$status_ok = true;
+		$doLog = false;
 		switch ($this->mode) 
 		{
-			
 			case 'plan_mode':
-				switch($this->args->feature) {
+				switch($this->args->feature) 
+				{
 					case 'planUpdateTC':
 					case 'test_urgency':
 					case 'tc_exec_assignment':
-						// feature OK
 					break;
 				
 					default:
-						$status_ok = false;
+						$doLog = true;
 					break;
 				}
 			break;
@@ -453,24 +459,23 @@ class tlTestCaseFilterControl extends tlFilterControl
 					case 'edit_tc':
 					case 'keywordsAssign':
 					case 'assignReqs':
-						// feature OK
 					break;
 				
 					default:
-						$status_ok = false;
+						$doLog = true;
 					break;
 				}
 			break;
 		}
-		if( !$status_ok )
+		if($doLog)
 		{
-			tLog("Wrong or missing GET argument 'feature'.", 'ERROR');
+			tLog('Mode:' . $this->mode . ' - Wrong or missing GET argument: feature', 'ERROR');
 			exit();
 		}
 	} // end of method
 
 	/**
-	 * Initializes all settings. (called on parent constructor)
+	 * Initializes all settings.
 	 * Iterates through all available settings and adds an array to $this->settings
 	 * for the active ones, sets the rest to false so this can be
 	 * checked from templates and elsewhere.
@@ -478,27 +483,45 @@ class tlTestCaseFilterControl extends tlFilterControl
 	 */
 	protected function init_settings() 
 	{
-		foreach ($this->all_settings as $name => $info) {
-			$init_method = "init_$name"; //	echo $init_method . '<br>';
-			if (in_array($name, $this->mode_setting_mapping[$this->mode]) && method_exists($this, $init_method)) {
+		$at_least_one_active = false;
+		foreach ($this->all_settings as $name => $info) 
+		{
+			$init_method = "init_$name";
+			if (in_array($name, $this->mode_setting_mapping[$this->mode]) && 	method_exists($this, $init_method)) 
+			{
 				// is valid, configured, exists and therefore can be used, so initialize this setting
 				$this->$init_method();
-				$this->display_settings = true;
-			} else {
+				$at_least_one_active = true;
+			} 
+			else 
+			{
 				// is not needed, simply deactivate it by setting it to false in main array
 				$this->settings[$name] = false;
 			}
 		}
 		
-		// special situation: the build setting is in plan mode only needed for one feature
-		if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') {
+		// special situations 
+		// the build setting is in plan mode only needed for one feature
+		if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') 
+		{
 			$this->settings['setting_build'] = false;
 		}
+	
+		if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') 
+		{
+			$this->settings['setting_platform'] = false;
+		}
 		
+		
+		// if at least one active setting is left to display, switch settings panel on
+		if ($at_least_one_active) 
+		{
+			$this->display_settings = true;
+		}
 	}
 
 	/**
-	 * Initialize all filters. (called by parent::__construct())
+	 * Initialize all filters. 
 	 * I'm double checking here with loaded configuration _and_ additional array
 	 * $mode_filter_mapping, set according to defined mode, because this can avoid errors in case
 	 * when users try to enable a filter in config that doesn't exist for a mode.
@@ -508,15 +531,15 @@ class tlTestCaseFilterControl extends tlFilterControl
 	{
 		// In resulting data structure, all values have to be defined (at least initialized),
 		// no matter wether they are wanted for filtering or not.
-		$items2init = array('filter_keywords_filter_type','filter_result_result',
-		                    'filter_result_method','filter_result_build',
-		                    'filter_assigned_user_include_unassigned');
+		$dummy = array('filter_keywords_filter_type','filter_result_result',
+		               'filter_result_method','filter_result_build',
+		               'filter_assigned_user_include_unassigned');
 		
-		// now nullify them
-		foreach ($items2init as $filtername) 
+		foreach ($dummy as $filtername) 
 		{
 			$this->active_filters[$filtername] = null;
 		}
+		
 
 		// iterate through all filters and activate the needed ones
 		$this->display_filters = false;
@@ -525,15 +548,13 @@ class tlTestCaseFilterControl extends tlFilterControl
 		{
 			$init_method = "init_$name";
 			if (in_array($name, $this->mode_filter_mapping[$this->mode]) &&
-				method_exists($this, $init_method) && $this->cfg->{$name} == ENABLED &&
-				$this->cfg->show_filters == ENABLED) 
+				method_exists($this, $init_method) && $this->configuration->{$name} == ENABLED &&
+				$this->configuration->show_filters == ENABLED) 
 			{
-				// echo $init_method . '<br>';
 				$this->$init_method();
-				$this->display_filters = true;
-				// new dBug($this->active_filters[$name]);
-				// echo '<br>';
 
+				// there is at least one filter item to display => switch panel on
+				$this->display_filters = true;
 			} 
 			else 
 			{
@@ -545,14 +566,22 @@ class tlTestCaseFilterControl extends tlFilterControl
 		}
 
 		// special situation: the assigned user filter is in plan mode only needed for one feature
-		if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') {
+		if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') 
+		{
 			$this->settings['filter_assigned_user'] = false;
 		}
 
 		// add the important settings to active filter array
 		foreach ($this->all_settings as $name => $info) 
 		{
-			$this->active_filters[$name] = $this->settings[$name] ? $this->settings[$name]['selected'] : null;
+			if ($this->settings[$name]) 
+			{
+				$this->active_filters[$name] = $this->settings[$name]['selected'];
+			} 
+			else 
+			{
+				$this->active_filters[$name] = null;
+			}
 		}
 	} // end of method
 
@@ -565,17 +594,18 @@ class tlTestCaseFilterControl extends tlFilterControl
 	 */
 	protected function get_active_filters() 
 	{
-		static $value = null; // serves as a kind of cache, if method is called more than once
+		static $value = null; // serves as a kind of cache if method is called more than once
 				
 		// convert array to stcClass if needed
 		if (!$value) 
 		{
-			switch ($this->mode) {
+			switch ($this->mode) 
+			{
 				case 'execution_mode':
 				case 'plan_mode':
 					// these features are generating an exec tree,
 					// they need the filters as a stdClass object
-					$value = (object) $this->active_filters;
+					$value = (object)$this->active_filters;
 					break;
 				
 				default:
@@ -588,11 +618,15 @@ class tlTestCaseFilterControl extends tlFilterControl
 		return $value;
 	} // end of method
 
-	public function set_testcases_to_show($testcases_to_show = null) {
+	/**
+	 * 
+	 * 
+	 */
+	public function set_testcases_to_show($value = null) 
+	{
 		// update active_filters
-		if (!is_null($testcases_to_show)) 
-		{
-			$this->active_filters['testcases_to_show'] = $testcases_to_show;
+		if (!is_null($value)) {
+			$this->active_filters['testcases_to_show'] = $value;
 		}
 		
 		// Since a new filter in active_filters has been set from outside class after
@@ -614,13 +648,13 @@ class tlTestCaseFilterControl extends tlFilterControl
 	 * @author Andreas Simon
 	 * @return $tl::OK
 	 */
-	public function save_session_data() {		
-		if (!isset($_SESSION[$this->mode]) || is_null($_SESSION[$this->mode]) || !is_array($_SESSION[$this->mode])) {
+	public function save_session_data() 
+	{		
+		if (!isset($_SESSION[$this->mode]) || is_null($_SESSION[$this->mode]) || !is_array($_SESSION[$this->mode])) 
+		{
 			$_SESSION[$this->mode] = array();
 		}
 		
-		// $uk = 'setting_refresh_tree_on_action';	
-		// $_SESSION[$this->mode][$this->form_token][] = $this->settings[$uk]['selected'];
 		$_SESSION[$this->mode][$this->form_token] = $this->active_filters;
 		$_SESSION[$this->mode][$this->form_token]['timestamp'] = time();
 		
@@ -636,27 +670,37 @@ class tlTestCaseFilterControl extends tlFilterControl
 	 * @author Andreas Simon
 	 * @param int $token_validity_duration data older than given timespan will be deleted
 	 */
-	public function delete_old_session_data($token_validity_duration = 0) {
+	public function delete_old_session_data($token_validity_duration = 0) 
+	{
 		// TODO this duration could maybe also be configured in config/const.inc.php
 		
 		// how long shall the data remain in session before it will be deleted?
-		if (!is_numeric($token_validity_duration) || $token_validity_duration <= 0) {
+		if (!is_numeric($token_validity_duration) || $token_validity_duration <= 0) 
+		{
 			$token_validity_duration = 60 * 60 * 1; // one hour as default
 		}
 		
 		// delete all tokens from session that are older than given age
-		if (isset($_SESSION[$this->mode]) && is_array($_SESSION[$this->mode])) {
-			foreach ($_SESSION[$this->mode] as $token => $data) {
-				if ($data['timestamp'] < (time() - $token_validity_duration)) {
-					// too old, delete!
-					unset($_SESSION[$this->mode][$token]);
+		if (isset($_SESSION[$this->mode]) && is_array($_SESSION[$this->mode])) 
+		{
+			foreach ($_SESSION[$this->mode] as $token => $data) 
+			{
+				if ($data['timestamp'] < (time() - $token_validity_duration)) 
+				{
+					unset($_SESSION[$this->mode][$token]); // too old, delete!
 				}
 			}
 		}
 	}
 	
-	public function delete_own_session_data() {
-		if (isset($_SESSION[$this->mode]) && isset($_SESSION[$this->mode][$this->form_token])) {
+	/**
+	 * 
+	 * 
+	 */
+	public function delete_own_session_data() 
+	{
+		if (isset($_SESSION[$this->mode]) && isset($_SESSION[$this->mode][$this->form_token])) 
+		{
 			unset($_SESSION[$this->mode][$this->form_token]);
 		}
 	}
@@ -665,7 +709,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 	 * Generates a form token, which will be used to identify the relationship
 	 * between left navigator-frame with its settings and right frame.
 	 */
-	protected function generate_form_token() {
+	protected function generate_form_token() 
+	{
 		// Notice: I am just generating an integer here for the token.
 		// Since this is not any security relevant stuff like a password hash or similar,
 		// but only a means to separate multiple tabs a single user opens, this should suffice.
@@ -699,49 +744,49 @@ class tlTestCaseFilterControl extends tlFilterControl
 
 			// important: the token with which the page in right frame can access data in session
 			$string .= '&form_token=' . $this->form_token;
-			
-			$setItems = array('setting_build','setting_platform');
-			foreach($setItems as $key)
-			{
-				if ($this->settings[$key]) 
-				{
-					$string .= "&$key=" . $this->settings[$key]['selected'];
-				}
-			
-			}
 
-			$filterItems = array('filter_priority','filter_importance');
-			foreach($filterItems as $key)
+			$key2loop = array('setting_build','setting_platform');
+			foreach($key2loop as $kiwi)
 			{
-				if ($this->active_filters[$key] > 0) 
+				if($this->settings[$kiwi]) 
 				{
-					$string .= "&$key=" . $this->active_filters[$key];
+					$string .= "&{$kiwi}={$this->settings[$kiwi]['selected']}";
 				}
-			
+				
+			}			
+			if ($this->active_filters['filter_priority'] > 0) 
+			{
+				$string .= '&filter_priority=' . $this->active_filters['filter_priority'];
 			}
+		
 			
 			$keyword_list = null;
 			if (is_array($this->active_filters['filter_keywords'])) 
 			{
 				$keyword_list = implode(',', $this->active_filters['filter_keywords']);
 			} 
-			else if ($this->active_filters['filter_keywords'] > 0) 
+			else if ($this->active_filters['filter_keywords']) 
 			{
 				$keyword_list = $this->active_filters['filter_keywords'];
 			}			
 			
-			if (!is_null($keyword_list))
+			
+			// Need to undertand why for other filters that also are array
+			// we have choosen to serialize, and here not.
+			// may be to avoid more refactoring
+			if ($keyword_list) 
 			{
 				$string .= '&filter_keywords=' . $keyword_list . 
-				           '&filter_keywords_filter_type=' . $this->active_filters['filter_keywords_filter_type'];
+				           '&filter_keywords_filter_type=' . 
+				           $this->active_filters['filter_keywords_filter_type'];
 			}
 			
-		
+			// Using serialization			
 			if ($this->active_filters['filter_assigned_user']) 
 			{
-				$unassigned = $this->active_filters['filter_assigned_user_include_unassigned'] ? '1' : '0';
 				$string .= '&filter_assigned_user='. serialize($this->active_filters['filter_assigned_user']) .
-				           '&filter_assigned_user_include_unassigned=' . $unassigned;
+				           '&filter_assigned_user_include_unassigned=' . 
+				           ($this->active_filters['filter_assigned_user_include_unassigned'] ? '1' : '0');
 			}
 			
 			if ($this->active_filters['filter_result_result']) 
@@ -769,191 +814,83 @@ class tlTestCaseFilterControl extends tlFilterControl
 	 */
 	public function build_tree_menu(&$gui) 
 	{
-		
-		$tree_menu = null;
-		$filters = $this->get_active_filters();
-		$treeOpt = null;
-		$options = null;
-		$loader = '';
-		$children = "[]";
-		$cookie_prefix = '';
-		
-		// by default, disable drag and drop, then later enable if needed
-		$drag_and_drop = new stdClass();
-		$drag_and_drop->enabled = false;
-		$drag_and_drop->useBeforeMoveNode = false;
-		$drag_and_drop->BackEndUrl = '';
-				
-		if (!$this->testproject_mgr) {
+		if (!$this->testproject_mgr) 
+		{
 			$this->testproject_mgr = new testproject($this->db);
 		}
-		if (is_null($this->treemenu_mgr)) {
-			$this->treemenu_mgr = new tlTreeMenu($this->db);
-		}
 		
-		$env= array('tproject_id' => $this->args->testproject_id, 
-					'tproject_name' => $this->args->testproject_name,
-					'tc_prefix' => $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id),
-					'tplan_id' => 0,'tplan_name' => '');
-
-		if( property_exists($this->args,'testplan_id') ) 							 
-		{
-			$env['tplan_id'] = $this->args->testplan_id;
-		}
-		else
-		{
-			$this->args->testplan_id = 0;
-		}
-		
-		if( property_exists($this->args,'testplan_name') ) 							 
-		{
-			$env['tplan_name'] = $this->args->testplan_name;
-		}
-		else 
-		{
-			$this->args->testplan_name = '';
-		}
-				 
-		// echo __LINE__ . ':' . $this->mode . '<br>'; die(__FILE__);			
-
+    $gui->tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id) .
+                      $this->configuration->tc_cfg->glue_character;
+		$filters = $this->get_active_filters();
 		switch ($this->mode) 
 		{
+			case 'plan_mode':
+			  $gui->ajaxTree = $this->buildTreePlanMo->menuUrlde($gui->menuUrl);
+			break;
 			
 			case 'edit_mode':
-				$this->build_tree_edit($env,$gui,$filters);
+			  $gui->ajaxTree = $this->buildTreeEditMode($gui,$filters);
 			break;
 			
 			case 'plan_add_mode':
-				$this->build_tree_plan_add($env,$gui,$filters);
+	      $gui->ajaxTree = $this->buildTreePlanAddMode($gui,$filters);
 			break;
-
-			case 'plan_mode':
-				// No lazy loading here.
-				$treeOpt = new stdClass();
-				$treeOpt->useCounters = 0;
-				$treeOpt->colorOptions = null;
-				$treeOpt->testcases_colouring_by_selected_build = DISABLED;
-				$treeOpt->tc_action_enabled = true;
-				
-				$filters->show_testsuite_contents = 1;
-				$filters->hide_testcases = ($this->args->feature == 'test_urgency') ? 1 : 0;
-				
-				list($tree_menu, $testcases_to_show) = generateExecTree($this->db,$gui->menuUrl,
-		                                                       			$env,$filters,$treeOpt);
-				
-				$this->set_testcases_to_show($testcases_to_show);
-				$root_node = $tree_menu->rootnode;
-				$children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
-				// BUGID 4613 - improved cookiePrefix - all trees in plan mode show test cases
-				//              assigned to a specified test plan -> store state for each feature
-				//              and each project
-				// BUGID 4625 - usage of wrong values in $this->args->xyz for cookiePrefix
-				//              instead of correct values in $filters->setting_xyz
-				$cookie_prefix = $this->args->feature . "_tplan_id_" . $filters->setting_testplan ."_";
-			break;
-			
 			
 			case 'execution_mode':
 			default:
 				// No lazy loading here.
 				// Filtering is always done in execution mode, no matter if user enters data or not,
 				// since the user should usually never see the whole tree here.
-				$filters->hide_testcases = false;
-				$filters->show_testsuite_contents = $this->cfg->exec_cfg->show_testsuite_contents;
-
-				$treeOpt = new stdClass();
-				$treeOpt->tc_action_enabled = true;
-				$treeOpt->useCounters = $this->cfg->exec_cfg->enable_tree_testcase_counters;
-				$treeOpt->colourOptions = new stdClass();
-				$treeOpt->colourOptions->testcases = $this->cfg->exec_cfg->enable_tree_testcases_colouring;
-				$treeOpt->colourOptions->counters =  $this->cfg->exec_cfg->enable_tree_counters_colouring;
-				$treeOpt->testcases_colouring_by_selected_build = $this->cfg->exec_cfg->testcases_colouring_by_selected_build; 
-					
-				list($tree_menu, $testcases_to_show) = generateExecTree($this->db,$gui->menuUrl,$env,$filters,$treeOpt);
-				
-				$this->set_testcases_to_show($testcases_to_show);
-				
-				$root_node = $tree_menu->rootnode;
-				$children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
-				// improved cookiePrefix - 
-				// tree on test execution shows test cases depending on test plan, platform and build. 
-				// As test plan is implcitily given with build -> store state for each platform-build combination
-				$cookie_prefix = 'test_exec_build_id_' . $filters->setting_build . '_';
-				if (isset($filters->setting_platform)) {
-					$cookie_prefix .= 'platform_id_' . $filters->setting_platform . '_';
-				}
+	  		$filters->show_testsuite_contents = $this->configuration->exec_cfg->show_testsuite_contents;
+	      $gui->ajaxTree = $this->buildTreeExecutionMode($gui,$filters);
 			break;
 		}
-		
-		if( $this->mode != 'plan_add_mode' && $this->mode != 'edit_mode') 
-		{
-			$gui->tree = $tree_menu;
-			
-			$gui->ajaxTree = new stdClass();
-			$gui->ajaxTree->loader = $loader;
-			$gui->ajaxTree->root_node = $root_node;
-			$gui->ajaxTree->children = $children;
-			$gui->ajaxTree->cookiePrefix = $cookie_prefix;
-			$gui->ajaxTree->dragDrop = $drag_and_drop;
-		}
-	} // end of method
-	
+		$gui->tree = $gui->ajaxTree->tree_menu;
+	} 
 	
 	/**
-	 * called magically by init_settings()	
-	 *
-	 * @internal revisions
-	 * 20110605 - franciscom - TICKET 4566: TABBED BROWSING - Update Tree option change affects all open projects
+	 * 
 	 * 
 	 */
 	private function init_setting_refresh_tree_on_action() 
 	{
 
 		$key = 'setting_refresh_tree_on_action';
-		$hidden_key = "hidden_{$key}";
-		$setting = 'tcaseTreeRefreshOnAction';
-		
+		$hidden_key = 'hidden_setting_refresh_tree_on_action';
+		$selection = 0;
+
 		$this->settings[$key] = array();
 		$this->settings[$key][$hidden_key] = false;
-	
-		// look where we can find the setting - POST, SESSION, config?
-		$selection = isset($this->args->{$key}) ? 1 : 0;
-		if( $selection == 0 && !isset($this->args->{$hidden_key}))
-		{
-		
-			// look on $_SESSION using $mode and test project ID
-			// this is only way to cope with TABBED BROWSING
-			// we consider that test project set the enviroment
-			// then if we open N TABS with same test project 
-			// setting in ONE TAB => ALL TABS will be affected.
-			// IMHO this is a good compromise
-			// 
-			if(isset($_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode]))
-			{
-				$selection = $_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode];
-			} 
-			else
-			{
-				$selection = ($this->cfg->automatic_tree_refresh > 0) ? 1 : 0;
-			}
-		}
 
+		// look where we can find the setting - POST, SESSION, config?
+		if (isset($this->args->{$key})) {
+			$selection = 1;
+		} else if (isset($this->args->{$hidden_key})) {
+			$selection = 0;
+		} else if (isset($_SESSION[$key])) {
+			$selection = $_SESSION[$key];
+		} else {
+			$spec_cfg = config_get('spec_cfg');
+			$selection = ($spec_cfg->automatic_tree_refresh > 0) ? 1 : 0;
+		}
+		
 		$this->settings[$key]['selected'] = $selection;
 		$this->settings[$key][$hidden_key] = $selection;
-		$_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode] = $selection;
-		
+		$_SESSION[$key] = $selection;		
 	} // end of method
 
+
+
 	/**
-	 * called magically by init_settings()	
-	 *
-	 * @internal revisions
-	 *
+	 * 
+	 * 
 	 */
-	private function init_setting_build() {
+	private function init_setting_build() 
+	{
 
 		$key = 'setting_build';
-		if (is_null($this->testplan_mgr)) {
+		if (is_null($this->testplan_mgr)) 
+		{
 			$this->testplan_mgr = new testplan($this->db);
 		}
 
@@ -965,31 +902,32 @@ class tlTestCaseFilterControl extends tlFilterControl
 		$open = ($this->mode == 'plan_mode') ? null : testplan::GET_OPEN_BUILD;
 		
 		$this->settings[$key]['items'] = $this->testplan_mgr->get_builds_for_html_options($tplan_id, $active, $open);
-		$tplan_builds = array_keys($this->settings[$key]['items']);
+		$tplan_builds = array_keys((array)$this->settings[$key]['items']);
 
-		// BUGID 3406 - depending on mode, we need different labels for this selector on GUI
+		// According to mode, we need different labels for this selector on GUI
 		$label = ($this->mode == 'plan_mode') ? 'assign_build' : 'exec_build';
 		$this->settings[$key]['label'] = lang_get($label);
 		
 		// if no build has been chosen by user, select newest build by default
 		$newest_build_id = $this->testplan_mgr->get_max_build_id($tplan_id, $active, $open);
 
-		// BUGID 3726
 		$session_key = $tplan_id . '_stored_setting_build';
 		$session_selection = isset($_SESSION[$session_key]) ? $_SESSION[$session_key] : null;
 
 		$this->args->{$key} = $this->args->{$key} > 0 ? $this->args->{$key} : $session_selection;
 
-		if (!$this->args->{$key}) {
-			$this->args->{$key} = $newest_build_id;
+		if (!$this->args->$key) 
+		{
+			$this->args->$key = $newest_build_id;
 		}
 		
 		// only take build ID into account if it really is a build from this testplan
-		$this->settings[$key]['selected'] = (in_array($this->args->{$key}, $tplan_builds)) ? 
-		                                    $this->args->{$key} : $newest_build_id;
+		$this->settings[$key]['selected'] = (in_array($this->args->$key, (array)$tplan_builds)) ? 
+		                                    $this->args->$key : $newest_build_id;
 
 		// still no build selected? take first one from selection.
-		if (!$this->settings[$key]['selected'] && sizeof($this->settings[$key]['items'])) {
+		if (!$this->settings[$key]['selected'] && sizeof($this->settings[$key]['items'])) 
+		{
 			$this->settings[$key]['selected'] = end($tplan_builds);
 		}
 
@@ -998,10 +936,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 
 
 	/**
-	 * called magically by init_settings()	
-	 *
-	 * @internal revisions
-	 *
+	 * 
+	 * 
 	 */
 	private function init_setting_testplan() 
 	{
@@ -1011,26 +947,23 @@ class tlTestCaseFilterControl extends tlFilterControl
 		}
 		
 		$key = 'setting_testplan';
-		$tplanSet = $this->user->getAccessibleTestPlans($this->db, $this->args->testproject_id);
-		$tplan_id = $this->args->testplan_id;
-		if( intval($this->args->testplan_id) != $this->args->{$key}) 
-		{
+		$testplans = $this->user->getAccessibleTestPlans($this->db, $this->args->testproject_id);
+
+		if (isset($_SESSION['testplanID']) && $_SESSION['testplanID'] != $this->args->{$key}) {
 			// testplan was changed, we need to reset all filters
 			// --> they were chosen for another testplan, not this one!
 			$this->args->reset_filters = true;
 
 			// check if user is allowed to set chosen testplan before changing
-			foreach ($tplanSet as $item) 
-			{
-				if ($item['id'] == $this->args->{$key}) 
-				{
-					$tplan_id = $item['id'];
-					break;
+			foreach ($testplans as $plan) {
+				if ($plan['id'] == $this->args->{$key}) {
+					setSessionTestPlan($plan);
 				}
 			}
 		}
 
-		$info = $this->testplan_mgr->get_by_id($tplan_id);
+		// now load info from session
+		$info = $this->testplan_mgr->get_by_id($_SESSION['testplanID']);
 		$this->args->testplan_name = $info['name'];
 		$this->args->testplan_id = $info['id'];
 		$this->args->{$key} = $info['id'];
@@ -1039,31 +972,36 @@ class tlTestCaseFilterControl extends tlFilterControl
 		// Now get all selectable testplans for the user to display.
 		// For execution, don't take testplans into selection which have no (active/open) builds!
 		// For plan add mode, add every plan no matter if he has builds or not.
-		// BUGID 4166 - List also test plans without builds for "plan_mode"
-		foreach ($tplanSet as $item) 
+		foreach ($testplans as $plan) 
 		{
+			// List also test plans without builds for "plan_mode"
 			$add_plan = $this->mode == 'plan_add_mode' || $this->mode == 'plan_mode';
-			if (!$add_plan) {
-				$buildCount = $this->testplan_mgr->get_builds($item['id'],testplan::GET_ACTIVE_BUILD,
-				                                          	  testplan::GET_OPEN_BUILD,array('output' => 'count') );
-				$add_plan =  ($buildCount['qty'] > 0);
+			if (!$add_plan) 
+			{
+				$builds = $this->testplan_mgr->get_builds($plan['id'],
+				                                          testplan::GET_ACTIVE_BUILD,
+				                                          testplan::GET_OPEN_BUILD);
+				$add_plan =  (is_array($builds) && count($builds));
 			}
 			
-			if ($add_plan) {
-				$this->settings[$key]['items'][$item['id']] = $item['name'];
+			if ($add_plan) 
+			{
+				$this->settings[$key]['items'][$plan['id']] = $plan['name'];
 			}
 		}
 	} // end of method
 
-
 	/**
-	 * called magically by init_settings()	
-	 *
-	 * @internal revisions
+	 * 
+	 * 
+	 * 20120825 - franciscom - TICKET 5176: Possibility to filter by Platform
+	 *						   according mode we need to add [Any] option
 	 *
 	 */
-	private function init_setting_platform() {
-		if (!$this->platform_mgr) {
+	private function init_setting_platform() 
+	{
+		if (!$this->platform_mgr) 
+		{
 			$this->platform_mgr = new tlPlatform($this->db);
 		}
 		$key = 'setting_platform';
@@ -1071,36 +1009,49 @@ class tlTestCaseFilterControl extends tlFilterControl
 		$this->settings[$key] = array('items' => null, 'selected' => $this->args->{$key});
 		$testplan_id = $this->settings['setting_testplan']['selected'];
 
-		$this->settings[$key]['items'] = $this->platform_mgr->getLinkedToTestplanAsMap($testplan_id);
-
+		$checkSelected = true;
+		$platformSet = $this->platform_mgr->getLinkedToTestplanAsMap($testplan_id);
+		$this->settings[$key]['items'] = $platformSet;
+		switch($this->mode)
+		{
+			case 'plan_mode':
+				if( !is_null($platformSet) )
+				{
+					$this->settings[$key]['items'] = array(0 => $this->option_strings['any']);
+					$this->settings[$key]['items'] += $platformSet;
+					$checkSelected = false;
+				}
+			break;
+		}
+		
 		// BUGID 3726
 		$session_key = $testplan_id . '_stored_setting_platform';
 		$session_selection = isset($_SESSION[$session_key]) ? $_SESSION[$session_key] : null;
 		
 		// if no platform has been selected when entering the feature the first time set it
 		// according to preselected value on gui
-		$this->args->{$key} = $this->args->{$key} > 0 ? $this->args->{$key} : $session_selection;
-
-		if (!$this->settings[$key]['selected']) {
+		// TICKET 
+		$this->args->{$key} = !is_null($this->args->{$key}) ? $this->args->{$key} : $session_selection;
+		if( $checkSelected && !$this->settings[$key]['selected']) 
+		{
 			$this->settings[$key]['selected'] = $session_selection;
 		}
 
 		if (!isset($this->settings[$key]['items']) || !is_array($this->settings[$key]['items'])) {
 			$this->settings[$key] = false;
-		} else if (isset($this->settings[$key]['items']) && is_array($this->settings[$key]['items']) && 
-				   is_null($this->settings[$key]['selected'])) {
-					// platforms exist, but none has been selected yet, so select first one
+		} 
+		else if (isset($this->settings[$key]['items']) && is_array($this->settings[$key]['items']) && 
+				   is_null($this->settings[$key]['selected'])) 
+	    {
+			// platforms exist, but none has been selected yet, so select first one
 			$this->settings[$key]['selected'] =	key($this->settings[$key]['items']);
 		}
-
 		$_SESSION[$session_key] = $this->settings[$key]['selected'];
 	} // end of method
 
 	/**
-	 * called by init_filters()
-	 *
-	 * @internal revisions
-	 *
+	 * 
+	 * 
 	 */
 	private function init_filter_tc_id() 
 	{
@@ -1108,19 +1059,23 @@ class tlTestCaseFilterControl extends tlFilterControl
 		$selection = $this->args->{$key};
 		$internal_id = null;
 		
-		if (!$this->testproject_mgr) {
+		if (!$this->testproject_mgr) 
+		{
 			$this->testproject_mgr = new testproject($this->db);
 		}
-		if (!$this->tc_mgr) {
+		if (!$this->tc_mgr) 
+		{
 			$this->tc_mgr = new testcase($this->db);
 		}
 		
-		$tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id);
-		$tc_prefix .= $this->cfg->tc_cfg->glue_character;
+		$tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id) .
+		             $this->configuration->tc_cfg->glue_character;
 		
 		if (!$selection || $selection == $tc_prefix || $this->args->reset_filters) {
 			$selection = null;
-		} else {
+		}
+		else
+		{
 			$this->do_filtering = true;
 			// we got the external ID here when filtering, but need the internal one
 			$internal_id = $this->tc_mgr->getInternalID($selection);
@@ -1128,13 +1083,11 @@ class tlTestCaseFilterControl extends tlFilterControl
 		
 		$this->filters[$key] = array('selected' => $selection ? $selection : $tc_prefix);
 		$this->active_filters[$key] = $internal_id;
-	} // end of method
-
+	} 
+	
 	/**
-	 * called by init_filters()
-	 *
-	 * @internal revisions
-	 *
+	 * 
+	 * 
 	 */
 	private function init_filter_testcase_name() {
 		$key = 'filter_testcase_name';
@@ -1152,38 +1105,42 @@ class tlTestCaseFilterControl extends tlFilterControl
 
 
 	/**
-	 * called by init_filters()
-	 *
-	 * @internal revisions
-	 *
+	 * 
+	 * 
 	 */
-	private function init_filter_toplevel_testsuite() {
-		if (!$this->testproject_mgr) {
+	private function init_filter_toplevel_testsuite() 
+	{
+		if (!$this->testproject_mgr) 
+		{
 			$this->testproject_mgr = new testproject($this->db);
 		}
 		$key = 'filter_toplevel_testsuite';
-			
 		$first_level_suites = $this->testproject_mgr->get_first_level_test_suites($this->args->testproject_id,
 		                                                                          'smarty_html_options');
 		
 		$selection = $this->args->{$key};
-		if (!$selection || $this->args->reset_filters) {
+		if (!$selection || $this->args->reset_filters) 
+		{
 			$selection = null;
-		} else {
+		} 
+		else 
+		{
 			$this->do_filtering = true;
 		}
 		
 		// this filter should only be visible if there are any top level testsuites
-		$this->filters[$key] = null; // BUGID 3660
-		if ($first_level_suites) {			
+		$this->filters[$key] = null;
+		if ($first_level_suites) 
+		{			
 			$this->filters[$key] = array('items' => array(0 => ''),
 			                             'selected' => $selection,
 			                             'exclude_branches' => array());
 		
-			foreach ($first_level_suites as $suite_id => $suite_name) {
+			foreach ($first_level_suites as $suite_id => $suite_name) 
+			{
 				$this->filters[$key]['items'][$suite_id] = $suite_name;
-								
-				if ($selection && $suite_id != $selection) {
+				if ($selection && $suite_id != $selection) 
+				{
 					$this->filters[$key]['exclude_branches'][$suite_id] = 'exclude_me';
 				}
 			}
@@ -1191,16 +1148,16 @@ class tlTestCaseFilterControl extends tlFilterControl
 			// Important: This is the only case in which active_filters contains the items
 			// which have to be deleted from tree, instead of the other way around.
 			$this->active_filters[$key] = $this->filters[$key]['exclude_branches'];
-		} else {
+		} 
+		else 
+		{
 			$this->active_filters[$key] = null;
 		}		
 	} // end of method
 
 	/**
-	 * called by init_filters()
-	 *
-	 * @internal revisions
-	 *
+	 * 
+	 * 
 	 */
 	private function init_filter_keywords() {
 		$key = 'filter_keywords';
@@ -1208,10 +1165,10 @@ class tlTestCaseFilterControl extends tlFilterControl
 		$this->filters[$key] = false;
 		$keywords = null;
 
-		switch ($this->mode) {
+		switch ($this->mode) 
+		{
 			case 'edit_mode':
-			// BUGID 3822
-			case 'plan_add_mode':
+			case 'plan_add_mode':  	// BUGID 3822
 				// we need the keywords for the whole testproject
 				if (!$this->testproject_mgr) {
 					$this->testproject_mgr = new testproject($this->db);
@@ -1268,17 +1225,69 @@ class tlTestCaseFilterControl extends tlFilterControl
 		$this->active_filters[$type] = $selection ? $type_selection : null;
 	} // end of method
 
-
-	/**
-	 * called by init_filters()
-	 *
-	 * @internal revisions
-	 *
-	 */
-	private function init_filter_priority() {
-		// This is a special case of filter: the menu items don't get initialized here,
-		// they are available as a global smarty variable. So the only thing to be managed
-		// here is the selection by user.
+  private function init_filter_active_inactive() 
+  {
+      $key = 'filter_active_inactive';
+      $items = array(self::ACTIVE_INACTIVE_TESTCASES_NO_FILTER => $this->option_strings['any'],
+                     self::ONLY_ACTIVE_TESTCASES => lang_get('show_only_active_testcases'),
+                     self::ONLY_INACTIVE_TESTCASES => lang_get('show_only_inactive_testcases'));
+      
+      $selection = $this->args->{$key};
+      
+      if (!$selection || $this->args->reset_filters) 
+      {
+          $selection = null;
+      } else {
+          $this->do_filtering = true;
+      }
+  
+      $this->filters[$key] = array('items' => $items, 'selected' => $selection);
+      $this->active_filters[$key] = $selection;
+  }
+  
+  
+  // This is a special case of filter: 
+  // the menu items don't get initialized here,
+  // they are available as a global smarty variable. 
+  // So the only thing to be managed
+  // here is the selection by user.
+    
+  private function init_filter_importance() 
+  {
+    // show this filter only if test priority management is enabled
+    if (!$this->testproject_mgr) 
+    {
+        $this->testproject_mgr = new testproject($this->db);
+    }
+    
+    $key = 'filter_importance';
+    $this->active_filters[$key] = null;
+    $this->filters[$key] = false;
+    
+    $dummy = $this->testproject_mgr->get_by_id($this->args->testproject_id);
+    if($dummy['opt']->testPriorityEnabled) 
+    {
+        // default value and filter reset
+        $selection = $this->args->{$key};
+        if (!$selection || $this->args->reset_filters) 
+        {
+            $selection = null;
+        } 
+        else
+        {
+            $this->do_filtering = true;
+        }
+    
+        $this->filters[$key] = array('selected' => $selection);
+        $this->active_filters[$key] = $selection;
+    }
+  }
+    
+  // This is a special case of filter: the menu items don't get initialized here,
+	// they are available as a global smarty variable. So the only thing to be managed
+	// here is the selection by user.
+	private function init_filter_priority() 
+	{
 		$key = 'filter_priority';
 		
 		if (!$this->testproject_mgr) {
@@ -1291,8 +1300,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 		$this->active_filters[$key] = null;
 		$this->filters[$key] = false;
 		
-		// BUGID 3910: show filter only if test priority management is enabled
-		if ($enabled) {
+		if ($enabled) 
+		{
 			// default value and filter reset
 			$selection = $this->args->{$key};
 			if (!$selection || $this->args->reset_filters) {
@@ -1304,17 +1313,14 @@ class tlTestCaseFilterControl extends tlFilterControl
 			$this->filters[$key] = array('selected' => $selection);
 			$this->active_filters[$key] = $selection;
 		}		
-	} // end of method
+	}
 
 
-	/**
-	 * called by init_filters()
-	 *
-	 * @internal revisions
-	 *
-	 */
-	private function init_filter_execution_type() {
-		if (!$this->tc_mgr) {
+
+	private function init_filter_execution_type() 
+	{
+		if (!$this->tc_mgr)
+		{
 			$this->tc_mgr = new testcase($this->db);
 		}
 		$key = 'filter_execution_type';
@@ -1332,24 +1338,23 @@ class tlTestCaseFilterControl extends tlFilterControl
 		// load available execution types
 		$this->filters[$key]['items'] = $this->tc_mgr->get_execution_types();
 		// add "any" string to these types at index 0 as default selection
-		$this->filters[$key]['items'] = array(0 => $this->option_strings['any'])
-		                                      + $this->filters[$key]['items'];
+		$this->filters[$key]['items'] = array(0 => $this->option_strings['any']) + $this->filters[$key]['items'];
 		
 		$this->active_filters[$key] = $selection;
-	} // end of method
+	} 
 
-
-	/**
-	 * called by init_filters()
-	 *
-	 * @internal revisions
-	 *
-	 */
 	private function init_filter_assigned_user() 
 	{
-		if (!$this->testproject_mgr) {
+		if (!$this->testproject_mgr) 
+		{
 			$this->testproject_mgr = new testproject($this->db);
 		}
+
+		if (!$this->testplan_mgr) 
+		{
+			$this->testplan_mgr = new testplan($this->db);
+		}
+
 
 		$key = 'filter_assigned_user';
 		$unassigned_key = 'filter_assigned_user_include_unassigned';
@@ -1357,26 +1362,31 @@ class tlTestCaseFilterControl extends tlFilterControl
 
 		// set selection to default (any), only change if value is sent by user and reset is not requested
 		$selection = $this->args->{$key};
-		if (!$selection || $this->args->reset_filters) {
+		if (!$selection || $this->args->reset_filters) 
+		{
 			$selection = null;
-		} else {
+		} 
+		else 
+		{
 			$this->do_filtering = true;
 		}
 
 		$tproject_info = $this->testproject_mgr->get_by_id($this->args->testproject_id);
+		$tplan_info = $this->testplan_mgr->get_by_id($tplan_id);
 
-		$all_testers = getTestersForHtmlOptions($this->db, $tplan_id, $tproject_info, null,
-			                                    array(TL_USER_ANYBODY => $this->option_strings['any'],
-			                                          TL_USER_NOBODY => $this->option_strings['none'],
-			                                          TL_USER_SOMEBODY => $this->option_strings['somebody']),
-			                                    'any');
+		$all_testers = tlUser::getTestersForHtmlOptions($tplan_info, $tproject_info, null,
+			                                              array(TL_USER_ANYBODY => $this->option_strings['any'],
+          			                                          TL_USER_NOBODY => $this->option_strings['none'],
+			                                                    TL_USER_SOMEBODY => $this->option_strings['somebody']),
+			                                              'any');
 		$visible_testers = $all_testers;
 		
 		// in execution mode the rights of the user have to be regarded
-		if ($this->mode == 'execution_mode') {
+		if ($this->mode == 'execution_mode') 
+		{
 			$role = $this->user->getEffectiveRole($this->db, $this->args->testproject_id, $tplan_id);
 			
-			$simple_tester_roles = array_flip($this->cfg->exec_cfg->simple_tester_roles);
+			$simple_tester_roles = array_flip($this->configuration->exec_cfg->simple_tester_roles);
 			
 			// check the user's rights to see what he may do
 			$right_to_execute = $role->hasRight('testplan_execute');
@@ -1388,7 +1398,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 				$simple = true;
 			}
 
-			$view_mode = $simple ? $this->cfg->exec_cfg->view_mode->tester : 'all';
+			$view_mode = $simple ? $this->configuration->exec_cfg->view_mode->tester : 'all';
 			
 			if ($view_mode != 'all') {
 				$visible_testers = (array)$this->user->getDisplayName();
@@ -1396,13 +1406,13 @@ class tlTestCaseFilterControl extends tlFilterControl
 			}
 
 			// re-enable option "user_filter_default"
-			if (!$selection && $this->cfg->exec_cfg->user_filter_default == 'logged_user') {
+			if (!$selection && $this->configuration->exec_cfg->user_filter_default == 'logged_user') {
 				$selection = (array)$this->user->dbID;
 			}
 		}
 		
-		$this->filters[$key] = array('active' => true,
-									 'items' => $visible_testers,'selected' => $selection,
+		$this->filters[$key] = array('items' => $visible_testers,
+		                             'selected' => $selection,
 		                             $unassigned_key => $this->args->{$unassigned_key});
 		
 		// which value shall be passed to tree generation class?
@@ -1425,59 +1435,35 @@ class tlTestCaseFilterControl extends tlFilterControl
 	} // end of method
 
 
-	/**
-	 * called by init_filters()
-	 *
-	 * @internal revisions
-	 *
-	 * 20110605 - franciscom - 	TICKET 4569: TABBED BROWSING - Show/Hide custom field choice affects 
-	 *							stored preference for all projects
-	 */
+
 	private function init_filter_custom_fields() 
 	{
-		$key = 'filter_custom_fields';
+		if (!$this->cfield_mgr) 
+		{
+			$this->cfield_mgr = new cfield_mgr($this->db, $this->args->testproject_id);
+		}
+
 		$no_warning = true;
+
+		$key = 'filter_custom_fields';
+		$this->filters[$key] = false;
+		$this->active_filters[$key] = null;
 		
-		// BUGID 3930
 		global $g_locales_date_format;
-		
 		$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
 		$date_format = str_replace('%', '', $g_locales_date_format[$locale]);
 		
-		// this is only way to cope with TABBED BROWSING
-		// we consider that test project set the enviroment
-		// then if we open N TABS with same test project 
-		// setting in ONE TAB => ALL TABS will be affected.
-		// IMHO this is a good compromise
-		// 
-		// if(isset($_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode]))
-		
-		// $collapsed = isset($_SESSION['cf_filter_collapsed']) ? $_SESSION['cf_filter_collapsed'] : 0;
-		$setting = 'cf_filter_collapsed';
-		$collapsed = 0;
-		if(isset($_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode]))
-		{
-			$collapsed = $_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode];
-		}
-	
+		$collapsed = isset($_SESSION['cf_filter_collapsed']) ? $_SESSION['cf_filter_collapsed'] : 0;
 		$collapsed = isset($_REQUEST['btn_toggle_cf']) ? !$collapsed : $collapsed;
-		
-		// $_SESSION['cf_filter_collapsed'] = $collapsed;	
-		$_SESSION['env_for_tproject'][$this->args->testproject_id][$setting][$this->mode] = $collapsed;	 
-	
+		$_SESSION['cf_filter_collapsed'] = $collapsed;	
 		$btn_label = $collapsed ? lang_get('btn_show_cf') : lang_get('btn_hide_cf');
 		
-		if (!$this->cfield_mgr) {
-			$this->cfield_mgr = new cfield_mgr($this->db, $this->args->testproject_id);
-		}
 		
 		$cfields = $this->cfield_mgr->get_linked_cfields_at_design($this->args->testproject_id, 1, null, 'testcase');
 		$cf_prefix = $this->cfield_mgr->name_prefix;
 		$cf_html_code = "";
 		$selection = array();
 		
-		$this->filters[$key] = false;
-		$this->active_filters[$key] = null;
 
 		if (!is_null($cfields)) 
 		{
@@ -1489,12 +1475,6 @@ class tlTestCaseFilterControl extends tlFilterControl
 				$type = $cf['type'];
 				$verbose_type = trim($this->cfield_mgr->custom_field_types[$type]);
 				$cf_input_name = "{$cf_prefix}{$type}_{$id}";
-				
-				
-				// BUGID 3716
-				// custom fields on test spec did not retain value after apply
-				// IMPORTANT/CRITIC issue:  trim() on array makes array = null !!!
-				//
 				$value = isset($_REQUEST[$cf_input_name]) ? $_REQUEST[$cf_input_name] : null;
 
 				if ($this->args->reset_filters) 
@@ -1503,7 +1483,6 @@ class tlTestCaseFilterControl extends tlFilterControl
 				}
 				else
 				{
-					// BUGID 3884: added filtering for datetime custom fields
 					if ($verbose_type == 'datetime') {
 						// if cf is a date field, convert the three given values to unixtime format
 						if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != ''
@@ -1521,16 +1500,14 @@ class tlTestCaseFilterControl extends tlFilterControl
 					}
                 	
 					if ($verbose_type == 'date') {
-						// if cf is a date field, convert the three given values to unixtime format
-						// BUGID 3883: only set values if different from 0
-						if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != '') {
+						if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != '') 
+						{
 							$date = $_REQUEST[$cf_input_name . '_input'];						
 							$date_array = split_localized_date($date, $date_format);
 							$value = mktime(0, 0, 0, $date_array['month'], $date_array['day'], $date_array['year']);
 						}
 					}
 				}
-
 
 
 				
@@ -1555,90 +1532,94 @@ class tlTestCaseFilterControl extends tlFilterControl
 				$label = str_replace(TL_LOCALIZE_TAG, '', lang_get($cf['label'], null, $no_warning));
 
 				$cf_size = self::CF_INPUT_SIZE;
-				// set special size for list inputs
-				if ($verbose_type == 'list' || $verbose_type == 'multiselection list') {
+				if ($verbose_type == 'list' || $verbose_type == 'multiselection list') 
+				{
 					$cf_size = 3;
 				}
 				
 				// don't show textarea inputs here, they are too large for filterpanel
-				if ($verbose_type != 'text area') {
+				if ($verbose_type != 'text area') 
+				{
 					$cf_html_code .= '<tr class="cfRow"><td>' . htmlspecialchars($label) . '</td><td>' .
-					                 $this->cfield_mgr->string_custom_field_input($cf, '', $cf_size, true) .
-					                 '</td></tr>';
+					                 $this->cfield_mgr->string_custom_field_input($cf, '', $cf_size, true) . '</td></tr>';
 				}
 			}
-
-			// BUGID 3566: show/hide CF
-			$this->filters[$key] = array('items' => $cf_html_code, 
-			                             'btn_label' => $btn_label, 
-			                             'collapsed' => $collapsed);
+			$this->filters[$key] = array('items' => $cf_html_code,'btn_label' => $btn_label,'collapsed' => $collapsed);
 			$this->active_filters[$key] = count($selection) ? $selection : null;
 		}
 	} // end of method
 
 
-	/**
-	 * called by init_filters()
-	 *
-	 * @internal revisions
-	 *
-	 */
 	private function init_filter_result() 
 	{
-		$key = 'filter_result';
 		$result_key = 'filter_result_result';
 		$method_key = 'filter_result_method';
 		$build_key = 'filter_result_build';
 		
-		if (is_null($this->testplan_mgr)) {
+		if (is_null($this->testplan_mgr)) 
+		{
 			$this->testplan_mgr = new testplan($this->db);
 		}
 		$tplan_id = $this->settings['setting_testplan']['selected'];
 
-		$this->cfg->results = config_get('results');
+		$this->configuration->results = config_get('results');
 
 		// determine, which config to load and use for filter methods - depends on mode!
 		$cfg = ($this->mode == 'execution_mode') ? 
 		       'execution_filter_methods' : 'execution_assignment_filter_methods';
-		$this->cfg->filter_methods = config_get($cfg);
+		$this->configuration->filter_methods = config_get($cfg);
 
-		// determin which filter method shall be selected by the JS function in template,
+		//
+		// CRITIC - Differences bewteen this configuration and
+		// (file const.inc.php)
+		// $tlCfg->execution_filter_methods['default_type'] 
+		// $tlCfg->execution_assignment_filter_methods['default_type']
+		// 
+		// Will create issues: you will see an string on HTML SELECT, but code
+		// returned on submit will not code for string you are seeing.!!!! 
+		//
+		// determine which filter method shall be selected by the JS function in template,
 		// when only one build is selectable by the user
 		$js_key_to_select = 0;
-		if ($this->mode == 'execution_mode') {
-			$js_key_to_select = $this->cfg->filter_methods['status_code']['current_build'];
-		} else if ($this->mode == 'plan_mode') {
-			$js_key_to_select = $this->cfg->filter_methods['status_code']['specific_build'];
+		if ($this->mode == 'execution_mode') 
+		{
+			$js_key_to_select = $this->configuration->filter_methods['status_code']['current_build'];
+		} 
+		else if ($this->mode == 'plan_mode') 
+		{
+			$js_key_to_select = $this->configuration->filter_methods['status_code']['specific_build'];
 		}
 		
 		// values selected by user
-		$result_selection = $this->args->{$result_key};
-		$method_selection = $this->args->{$method_key};
-		$build_selection = $this->args->{$build_key};
+		$result_selection = $this->args->$result_key;
+		$method_selection = $this->args->$method_key;
+		$build_selection = $this->args->$build_key;
 
 		// default values
-		$default_filter_method = $this->cfg->filter_methods['default_type'];
-		$any_result_key = $this->cfg->results['status_code']['all'];
+		$default_filter_method = $this->configuration->filter_methods['default_type'];
+		$any_result_key = $this->configuration->results['status_code']['all'];
 		$newest_build_id = $this->testplan_mgr->get_max_build_id($tplan_id, testplan::GET_ACTIVE_BUILD);
 
-		// BUGID 3817
-		if (is_null($method_selection)) {
+		if (is_null($method_selection)) 
+		{
 			$method_selection = $default_filter_method;
 		}
 
-		if (is_null($result_selection) || $this->args->reset_filters) {
+		if (is_null($result_selection) || $this->args->reset_filters) 
+		{
 			// no selection yet or filter reset requested
 			$result_selection = $any_result_key;
 			$method_selection = $default_filter_method;
 			$build_selection = $newest_build_id;
-		} else {
+		} 
+		else 
+		{
 			$this->do_filtering = true;
 		}
 		
 		// init array structure
-		// 20111101 - added active key to make clear logic on inc_filter_panel_js.tpl
-		$this->filters[$key] = array('active' => true,
-									 $result_key => array('items' => null,
+		$key = 'filter_result';
+		$this->filters[$key] = array($result_key => array('items' => null,
 		                                                  'selected' => $result_selection),
 		                             $method_key => array('items' => array(),
 		                                                  'selected' => $method_selection,
@@ -1647,14 +1628,15 @@ class tlTestCaseFilterControl extends tlFilterControl
 		                                                 'selected' => $build_selection));
 
 		// init menu for result selection by function from exec.inc.php
-		$this->filters[$key][$result_key]['items'] = testcase::createExecutionResultsMenu();
+		$this->filters[$key][$result_key]['items'] = createResultsMenu();
 		$this->filters[$key][$result_key]['items'][$any_result_key] = $this->option_strings['any'];
 
 		// init menu for filter method selection
-		foreach ($this->cfg->filter_methods['status_code'] as $statusname => $statusshortcut) {
-			$code = $this->cfg->filter_methods['status_code'][$statusname];
+		foreach ($this->configuration->filter_methods['status_code'] as $statusname => $statusshortcut) 
+		{
+			$code = $this->configuration->filter_methods['status_code'][$statusname];
 			$this->filters[$key][$method_key]['items'][$code] =
-				lang_get($this->cfg->filter_methods['status_label'][$statusname]);
+				lang_get($this->configuration->filter_methods['status_label'][$statusname]);
 		}
 		
 		// init menu for build selection
@@ -1662,179 +1644,241 @@ class tlTestCaseFilterControl extends tlFilterControl
 			$this->testplan_mgr->get_builds_for_html_options($tplan_id, testplan::GET_ACTIVE_BUILD);
 		
 		// if "any" is selected, nullify the active filters
-		if ((is_array($result_selection) && in_array($any_result_key, $result_selection))
-		|| $result_selection == $any_result_key) {
+		if ((is_array($result_selection) && in_array($any_result_key, $result_selection)) || 
+		    $result_selection == $any_result_key) 
+		{
 			$this->active_filters[$result_key] = null;
 			$this->active_filters[$method_key] = null;
 			$this->active_filters[$build_key] = null;
 			$this->filters[$key][$result_key]['selected'] = $any_result_key;
 			$this->filters[$key][$method_key]['selected'] = $default_filter_method;
 			$this->filters[$key][$build_key]['selected'] = $newest_build_id;
-		} else {
+		} 
+		else 
+		{
 			$this->active_filters[$result_key] = $result_selection;
 			$this->active_filters[$method_key] = $method_selection;
 			$this->active_filters[$build_key] = $build_selection;
 		}
 	} // end of method
 	
-
+	
+	
 	/**
-	 * called by init_filters()
 	 *
-	 * @internal revisions
-	 *
+	 * @used-by __construct
 	 */
-	private function init_filter_importance()
+	private function initTreeOptions()
 	{
-		// This is a special case of filter: the menu items don't get initialized here,
-		// they are available as a global smarty variable. So the only thing to be managed
-		// here is the selection by user.
-		$key = 'filter_importance';
+		$this->treeOpt['plan_mode'] = new stdClass();
+		$this->treeOpt['plan_mode']->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
+		$this->treeOpt['plan_mode']->useColours = COLOR_BY_TC_STATUS_OFF;
+		$this->treeOpt['plan_mode']->testcases_colouring_by_selected_build = DISABLED;
+		$this->treeOpt['plan_mode']->absolute_last_execution = true;  // hmm  probably useless
 		
-		if (!$this->testproject_mgr) {
-			$this->testproject_mgr = new testproject($this->db);
-		}
-		
-		$info = $this->testproject_mgr->get_by_id($this->args->testproject_id);
-		$enabled = $info['opt']->testPriorityEnabled;
+	}
+
+	function buildTreePlanMode($menuUrl)
+	{
+
+    // No lazy loading here.
+		$opt_etree = $this->treeOpt[$this->mode];
+		$filtersObj = new stdClass();
+		$filtersObj->show_testsuite_contents = 1;
+		switch($this->args->feature)
+		{
+      case 'test_urgency':
+				$filtersObj->hide_testcases = 1; // @TODO Document Why
+				$opt_etree->allow_empty_build = 1;
+				$opt_etree->hideTestCases = 1;
+				$opt_etree->getTreeMethod = 'getLinkedForTesterAssignmentTree';
+			break;
+			
+			case 'tc_exec_assignment':
+				$filtersObj->hide_testcases = 0;
+				$opt_etree->hideTestCases = 0;
+				$opt_etree->allow_empty_build = 0;
+				$opt_etree->getTreeMethod = 'getLinkedForTesterAssignmentTree';
 				
-		$this->active_filters[$key] = null;
-		$this->filters[$key] = false;
-		
-		if ($enabled) 
-		{
-			// default value and filter reset
-			$selection = $this->args->{$key};
-			if (!$selection || $this->args->reset_filters) {
-				$selection = null;
-			} else {
-				$this->do_filtering = true;
-			}
-	
-			$this->filters[$key] = array('selected' => $selection);
-			$this->active_filters[$key] = $selection;
-		}		
-	} // end of method
-
-
-
-	
-	
-	/**
-	 *
-	 *
-	 */
-	function build_tree_plan_add($env,&$guiObj,$filters)
-	{
-		$guiObj->ajaxTree = new stdClass();
-		$guiObj->ajaxTree->dragDrop = new stdClass();
-		$guiObj->ajaxTree->dragDrop->enabled = false;
-		$guiObj->ajaxTree->dragDrop->useBeforeMoveNode = false;
-		$guiObj->ajaxTree->dragDrop->BackEndUrl = '';
-
-		$guiObj->ajaxTree->loader = null;
-		$guiObj->ajaxTree->root_node = null;
-		$guiObj->ajaxTree->children = null;
-		
-		// improved cookiePrefix - 
-		// tree in plan_add_mode is only used for add/removed test cases features and 
-		// shows all test cases defined in test project, but as test cases are added 
-		// to a specified test plan -> we need store state for each test plan
-		// usage of wrong values in $this->args->xyz for cookiePrefix
-		// instead of correct values in $filters->setting_xyz
-		$guiObj->ajaxTree->cookiePrefix = "add_remove_tc_tplan_id_{$filters->setting_testplan}_";
-	
-		if ($this->do_filtering) 
-		{
-			$options = array('forPrinting' => 0,'hideTestCases' => 1,'tc_action_enabled' => 0,
-							 'ignore_inactive_testcases' => 1,'viewType' => 'testSpecTreeForTestPlan');
-	
-			$guiObj->tree_menu = $this->treemenu_mgr->generateTestSpecTree($env,$guiObj->menuUrl,$filters,$options);
+				// Test Case Tester Assignment - 
+				// filters dont work properly for 'Assigned to' Field
+				// This way we are GOING TO IGNORE SETTING BUILD
+				$opt_etree->buildIDKeyMap = 'filter_result_build';
+				
+			break;
 			
-			$guiObj->ajaxTree->root_node = $guiObj->tree_menu->rootnode;
-		    $guiObj->ajaxTree->children = $guiObj->tree_menu->menustring ? $guiObj->tree_menu->menustring : "[]";
-		} 
-		else 
-		{
-			$guiObj->ajaxTree->loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
-					  					"tproject_id={$this->args->testproject_id}&" .
-					  					"tplan_id={$this->args->testplan_id}&" .
-					  					"root_node={$this->args->testproject_id}&show_tcases=0";
+		  case 'planUpdateTC':
+		  	$filtersObj->hide_testcases = 0;
+		  	$opt_etree->hideTestCases = 0;
+		  	$opt_etree->allow_empty_build = 1;
+		  	$opt_etree->getTreeMethod = 'getLinkedForTesterAssignmentTree';
+		  break;
+    }
+
+
+		$ajaxTree = $this->ajaxTreeTemplate();
+		list($ajaxTree->tree_menu, $testcases_to_show) = testPlanTree($this->db,$menuUrl,
+		                                            			            $this->args->testproject_id,
+		                                                   	          $this->args->testproject_name,
+		                                                   	          $this->args->testplan_id,
+		                                                   	          $this->args->testplan_name,
+		                                                   	          $filtersObj,$opt_etree);
 		
-			$guiObj->ajaxTree->root_node = new stdClass();
-			$guiObj->ajaxTree->root_node->id = $this->args->testproject_id;
-			$guiObj->ajaxTree->root_node->name = $this->args->testproject_name;
-			$guiObj->ajaxTree->root_node->testlink_node_type = 'testproject';
+		$ajaxTree->root_node = $ajaxTree->tree_menu->rootnode;
+		$ajaxTree->children = $ajaxTree->tree_menu->menustring ? $ajaxTree->tree_menu->menustring : "[]";
+		$ajaxTree->cookiePrefix = $this->args->feature . "_tplan_id_" . $filtersObj->setting_testplan ."_";
+    $ajaxTree->filters = $filtersObj;  
+		$this->set_testcases_to_show($testcases_to_show);
+	  unset($testcases_to_show);
 
-			$guiObj->ajaxTree->root_node->href = "javascript:EP({$this->args->testproject_id}," .
-										 		 "{$this->args->testplan_id},{$this->args->testproject_id})";
-		}
+    return $ajaxTree;
+  }
 
-	}	
+  // ---------------------------------------------------------------
+	function buildTreeEditMode($guiObj,$filters)
+	{   
+		$ajaxTree = $this->ajaxTreeTemplate();
 
-
-	/**
-	 *
-	 *
-	 */
-	function build_tree_edit($env,&$guiObj,$filters)
-	{
-		$debugMsg = 'Class:' . __CLASS__ . 'Function: ' . __FUNCTION__;
-
-		$guiObj->ajaxTree = new stdClass();
-
-		$guiObj->ajaxTree->dragDrop = new stdClass();
-		$guiObj->ajaxTree->dragDrop->useBeforeMoveNode = false;
-		$guiObj->ajaxTree->dragDrop->enabled = false;
-		$guiObj->ajaxTree->dragDrop->BackEndUrl = '';
-		if ($guiObj->tree_drag_and_drop_enabled[$this->args->feature]) 
-		{
-			$guiObj->ajaxTree->dragDrop->enabled = true;
-			$guiObj->ajaxTree->dragDrop->BackEndUrl = $this->args->basehref . 'lib/ajax/dragdroptprojectnodes.php';
-		}
-
-		$guiObj->ajaxTree->loader = null;
-		$guiObj->ajaxTree->root_node = null;
-		$guiObj->ajaxTree->children = null;
-		
-		// improved cookiePrefix - 
-		// all trees in edit mode show test cases of the whole test project 
+		// all trees in edit mode show test cases of whole test project  
 		// -> store state for each feature and each project
-		$guiObj->ajaxTree->cookiePrefix = $this->args->feature . "_tproject_id_" . $this->args->testproject_id ."_";	
-
-
-		if ($this->do_filtering) 
+	  $ajaxTree->cookiePrefix = $this->args->feature . "_tproject_id_" . $this->args->testproject_id ."_";
+	  
+    if ($guiObj->tree_drag_and_drop_enabled[$this->args->feature]) 
 		{
-			$options = array('forPrinting' => 0,'hideTestCases' => 0,'tc_action_enabled' => 1,
-							 'ignore_inactive_testcases' => 0,'exclude_branches' => null);
-	
-			// new dBug($filters,array('calledFrom' => $debugMsg));	
-			$guiObj->tree_menu = $this->treemenu_mgr->generateTestSpecTree($env,$guiObj->menuUrl,$filters,$options);
-			
-			$guiObj->ajaxTree->root_node = $guiObj->tree_menu->rootnode;
-		    $guiObj->ajaxTree->children = $guiObj->tree_menu->menustring ? $guiObj->tree_menu->menustring : "[]";
-		} 
+      $ajaxTree->dragDrop->enabled = true;
+      $ajaxTree->dragDrop->BackEndUrl = $this->args->basehref . 'lib/ajax/dragdroptprojectnodes.php';
+      $ajaxTree->dragDrop->useBeforeMoveNode = false;
+		}
+		
+		new dBug($this->args);
+    if ($this->do_filtering) 
+		{
+
+			$options = array('forPrinting' => NOT_FOR_PRINTING,'hideTestCases' => SHOW_TESTCASES,
+						           'tc_action_enabled' => DO_ON_TESTCASE_CLICK,'exclude_branches' => null);
+			$ajaxTree->tree_menu = generateTestSpecTree($this->db, $this->args->testproject_id,
+					                                        $this->args->testproject_name,
+					                                        $guiObj->menuUrl, $filters, $options);
+					
+			$ajaxTree->root_node = $ajaxTree->tree_menu->rootnode;
+			$ajaxTree->children = $ajaxTree->tree_menu->menustring ? $ajaxTree->tree_menu->menustring : "[]";
+    } 
 		else 
 		{
-			$guiObj->ajaxTree->loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
-					  					"tproject_id={$this->args->testproject_id}&" .
-					  					"tplan_id={$this->args->testplan_id}&" .
-					  					"root_node={$this->args->testproject_id}&" .
-					          			"tcprefix=" . urlencode($env['tc_prefix'] . $this->cfg->tc_cfg->glue_character);
-
-		
-			$guiObj->ajaxTree->root_node = new stdClass();
-			$guiObj->ajaxTree->root_node->id = $this->args->testproject_id;
-			$guiObj->ajaxTree->root_node->testlink_node_type = 'testproject';
-			$guiObj->ajaxTree->root_node->href = "javascript:EP({$this->args->testproject_id}," .
-										 		 "{$this->args->testplan_id},{$this->args->testproject_id})";
-
-			$tcase_qty = $this->testproject_mgr->count_testcases($this->args->testproject_id);
-			$guiObj->ajaxTree->root_node->name = $this->args->testproject_name . " ($tcase_qty)";
-
+      $ajaxTree->loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
+					  					    "tproject_id={$this->args->testproject_id}&" .
+					  					    "tplan_id={$this->args->testplan_id}&" .
+                          "root_node={$this->args->testproject_id}&" .
+                          "tcprefix=" . urlencode($guiObj->tc_prefix);
+      
+      $tcase_qty = $this->testproject_mgr->count_testcases($this->args->testproject_id);
+      
+      $ajaxTree->root_node = new stdClass();
+      $ajaxTree->root_node->href = "javascript:EP({$this->args->testproject_id})";
+      $ajaxTree->root_node->id = $this->args->testproject_id;
+      $ajaxTree->root_node->name = $this->args->testproject_name . " ($tcase_qty)";
+      $ajaxTree->root_node->testlink_node_type='testproject';
 		}
+    return $ajaxTree;
+ }
+ 
 
-	}	
+// ------------------------
+	function buildTreePlanAddMode($guiObj,$filters)
+	{   
+		$ajaxTree = $this->ajaxTreeTemplate();
+		$ajaxTree->cookiePrefix = "add_remove_tc_tplan_id_{$filters['setting_testplan']}_";
+		if ($this->do_filtering)
+		{
+      $options = array('forPrinting' => NOT_FOR_PRINTING,
+					             'hideTestCases' => HIDE_TESTCASES,
+					             'tc_action_enabled' => ACTION_TESTCASE_DISABLE,
+					             'viewType' => 'testSpecTreeForTestPlan');
+			$ajaxTree->tree_menu = generateTestSpecTree($this->db,$this->args->testproject_id,
+					                                        $this->args->testproject_name,
+					                                        $guiObj->menuUrl,$filters,$options);
+					
+			$ajaxTree->root_node = $ajaxTree->tree_menu->rootnode;
+			$ajaxTree->children = $ajaxTree->tree_menu->menustring ? $ajaxTree->tree_menu->menustring : "[]";
+    } 
+    else 
+	  {
+      $ajaxTree->loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
+      					  				"tproject_id={$this->args->testproject_id}&" .
+					  					    "tplan_id={$this->args->testplan_id}&" .
+    	  	                "root_node={$this->args->testproject_id}&show_tcases=0";
+    
+      $ajaxTree->root_node = new stdClass();
+      $ajaxTree->root_node->href = "javascript:EP({$this->args->testproject_id})";
+      $ajaxTree->root_node->id = $this->args->testproject_id;
+      $ajaxTree->root_node->name = $this->args->testproject_name;
+      $ajaxTree->root_node->testlink_node_type='testproject';
+    }
+    return $ajaxTree;				
+  }
+    
+
+  function buildTreeExecutionMode($gui,$filters)
+  {
+  	$filters->hide_testcases = false;
+  
+    $exec_cfg = &$this->configuration->exec_cfg;
+  	$opt_etree = new stdClass();
+  	$opt_etree->useCounters = $exec_cfg->enable_tree_testcase_counters;
+  
+  	$opt_etree->useColours = new stdClass();
+  	$opt_etree->useColours->testcases = $exec_cfg->enable_tree_testcases_colouring;
+    $opt_etree->useColours->counters =	$exec_cfg->enable_tree_counters_colouring;
+    $opt_etree->testcases_colouring_by_selected_build =	$exec_cfg->testcases_colouring_by_selected_build; 
+  
+    //$chronos[] = $tstart = microtime(true);
+    //echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::Start!!!' . current($chronos);
+    //reset($chronos);	
+  
+    list($ajaxTree->tree_menu, $testcases_to_show) = execTree($this->db,$gui->menuUrl,
+                                                              $this->args->testproject_id,
+                                                              $this->args->testproject_name,
+                                                              $this->args->testplan_id,
+                                                              $this->args->testplan_name,
+                                                              $filters,$opt_etree);
+  	//$chronos[] = microtime(true); $tnow = end($chronos); $tprev = prev($chronos);
+  	//$t_elapsed = number_format( $tnow - $tprev, 4);
+  	//echo '<br> ' . basename(__FILE__) . ' Elapsed (sec):' . $t_elapsed;
+  
+    $this->set_testcases_to_show($testcases_to_show);
+
+		$ajaxTree->root_node = $ajaxTree->tree_menu->rootnode;
+		$ajaxTree->children = $ajaxTree->tree_menu->menustring ? $ajaxTree->tree_menu->menustring : "[]";
+ 
+  	$ajaxTree->cookiePrefix = 'test_exec_build_id_' . $filters->setting_build . '_';
+  	if (isset($filters->setting_platform)) 
+    {
+  	  $ajaxTree->cookiePrefix .= 'platform_id_' . $filters->setting_platform . '_';
+    }
+  
+    return $ajaxTree;				
+  }
+
+
+    
+    
+  function ajaxTreeTemplate()
+  {
+		$lapacho = new stdClass();
+		$lapacho->dragDrop = new stdClass();
+		$lapacho->dragDrop->enabled = false;
+		$lapacho->dragDrop->BackEndUrl = '';
+		$lapacho->dragDrop->useBeforeMoveNode = FALSE;
+
+    $lapacho->tree_menu = null;
+		$lapacho->loader = null;
+		$lapacho->root_node = null;
+		$lapacho->children = "[]";
+		$lapacho->cookiePrefix = '';
+    $lapacho->filters = null;  
+ 
+    return $lapacho;  
+  }
 
 } // end of class tlTestCaseFilterControl
 ?>

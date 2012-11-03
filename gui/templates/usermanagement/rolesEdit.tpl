@@ -17,7 +17,7 @@ create/edit user role
              title_user_mgmt,caption_define_role,th_mgttc_rights,th_req_rights,
              th_product_rights,th_user_rights,th_kw_rights,th_cf_rights,th_system_rights,
              th_platform_rights,warn_demo,demo_update_role_disabled,th_issuetracker_rights,
-             th_rolename,th_tp_rights,btn_cancel'}
+             th_rolename,th_tp_rights,btn_cancel,th_execution_rights'}
              
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_modify_role = "{$labels.warning_modify_role|escape:'javascript'}";
@@ -150,8 +150,13 @@ function validateForm(f)
 							{/foreach}
 						</fieldset>
 					</td>
+					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_execution_rights}</legend>
+							{foreach from=$gui->rightsCfg->execution item=id key=k}
+							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
+							{/foreach}
+						</fieldset>
+					</td>
 				</tr>
-
 			</table>
 			</td>
 		</tr>

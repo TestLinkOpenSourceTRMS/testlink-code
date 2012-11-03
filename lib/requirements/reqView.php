@@ -66,8 +66,8 @@ function init_args(&$dbHandler)
   	$args->tproject_name = $dummy['name'];
   }
 
-  $user = $_SESSION['currentUser'];
-	$args->userID = $user->dbID;
+  $args->user = $_SESSION['currentUser'];
+	$args->userID = $args->user->dbID;
 	
   return $args;
 }
@@ -90,7 +90,7 @@ function initialize_gui(&$dbHandler,$argsObj)
 
 
   $gui->grants = new stdClass();
-  $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
+  $gui->grants->req_mgmt = $argsObj->user->hasRight($dbHandler,"mgt_modify_req",$argsObj->tproject_id);
 
   // IMPORTANT NOTICE
   // We can arrive here after following operation

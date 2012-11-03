@@ -6,28 +6,11 @@
  * link/unlink test cases to a test plan
  *
  * @filesource	planAddTC.php
- * @package 	TestLink
- * @copyright 	2007-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @copyright 	2007-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  * 
  * @internal revisions
- * 20101026 - franciscom - BUGID 3889: Add Test Cases to Test plan - checks with test case id and test case name filters.
- * 20101025 - franciscom - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
- * 20101009 - franciscom - fixing event viewer warnings created for missing initialization of required
- *						   properties of gui object
- *	
- * 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
- * 20100927 - asimon - refresh tree only when action is done
- * 20100721 - asimon - BUGID 3406: assign users per build when adding testcases to plan,
- *                                 added init_build_selector()
- * 20100628 - asimon - removal of constants from filter control class
- * 20100625 - asimon - refactoring for new filter features and BUGID 3516
- * 20100624 - asimon - CVS merge (experimental branch to HEAD)
- * 20100417 - BUGDID 2498 - filter by test case importance
- * 20100411 - BUGID 2797 - filter by test case execution type
- * 20100225 - eloff - BUGID 3205 - Don't show "save platforms" when platforms aren't used
- * 20100129 - franciscom - moved here from template, logic to initialize:
- *                         drawSavePlatformsButton,drawSaveCFieldsButton
  *
  **/
 
@@ -308,6 +291,9 @@ function init_args(&$tprojectMgr)
 	$_REQUEST = strings_stripSlashes($_REQUEST); // new dBug($_REQUEST);
 	
 	$args = new stdClass();
+
+	$args->user = isset($_SESSION['currentUser']) ? $_SESSION['currentUser'] : 0;
+
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
 	$args->object_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 	$args->item_level = isset($_REQUEST['edit']) ? trim($_REQUEST['edit']) : null;
@@ -326,10 +312,8 @@ function init_args(&$tprojectMgr)
 	$args->feature2fix = isset($_REQUEST['feature2fix']) ? $_REQUEST['feature2fix'] : null;
 	$args->userID = $_SESSION['currentUser']->dbID;
 	$args->testerID = isset($_REQUEST['testerID']) ? intval($_REQUEST['testerID']) : 0;
-    $args->send_mail = isset($_REQUEST['send_mail']) ? $_REQUEST['send_mail'] : false;
+  $args->send_mail = isset($_REQUEST['send_mail']) ? $_REQUEST['send_mail'] : false;
 
-    // BUGID 3516
-	//	// BUGID 2797 - filter by test case execution type
 	//	// 0 -> Any, but has to be converter to null to be used on call to other functions
 	//	$args->executionType = isset($_REQUEST['executionType']) ? intval($_REQUEST['executionType']) : 0;
 	//	$args->executionType = ($args->executionType > 0) ? $args->executionType : null;
@@ -338,19 +322,18 @@ function init_args(&$tprojectMgr)
 	//	$args->importance = isset($_REQUEST['importance']) ? intval($_REQUEST['importance']) : 0;
 	//	$args->importance = ($args->importance > 0) ? $args->importance : null;
 
-	// BUGID 3516
 	// For more information about the data accessed in session here, see the comment
 	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 	$mode = 'plan_add_mode';
 	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
 
-    // to be able to pass filters to functions present on specview.php
+  // to be able to pass filters to functions present on specview.php
 	$args->control_panel = $session_data;
 	
 	$getFromSession = !is_null($session_data);
 	$booleankeys = array('refreshTree' => 'setting_refresh_tree_on_action','importance' => 'filter_priority',
-						 'executionType' => 'filter_execution_type');
+						           'executionType' => 'filter_execution_type');
     foreach($booleankeys as $key => $value)
     {
     	$args->$key = ($getFromSession && isset($session_data[$key])) ? $session_data[$key] : 0;
@@ -373,7 +356,6 @@ function init_args(&$tprojectMgr)
 		$args->keywordsFilterType = $session_data[$ak];
 	}
 	
-	// BUGID 3406
 	$args->build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
 
 	$args->tproject_name = '';
@@ -476,8 +458,14 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->testCasePrefix .= $tcase_cfg->glue_character;
     
-    $gui->can_remove_executed_testcases=$tcase_cfg->can_remove_executed;
+    $gui->can_remove_executed_testcases = $argsObj->user->hasRight($dbHandler,
+                                                                   "testplan_unlink_executed_testcases",
+                                                                   $argsObj->tproject_id);
 
+    
+    $gui->can_remove_executed_testcases = ($gui->can_remove_executed_testcases == 'yes');
+    
+    
     $tprojectInfo = $tcaseMgr->tproject_mgr->get_by_id($argsObj->tproject_id);
     $gui->priorityEnabled = $tprojectInfo['opt']->testPriorityEnabled;
 
@@ -502,11 +490,11 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui->pageTitle = lang_get('test_plan') . $title_separator . $gui->testPlanName;
     $gui->refreshTree = $argsObj->refreshTree;
 
-	// 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
     $tproject_mgr = new testproject($dbHandler);
     $tproject_info = $tproject_mgr->get_by_id($argsObj->tproject_id);
+    $userSet = $argsObj->user->getAll($dbHandler); 
+    $gui->testers = tlUser::getTestersForHtmlOptions($tplan_info, $tproject_info,$userSet);
 
-    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id, $tproject_info);
     $gui->testerID = $argsObj->testerID;
     $gui->send_mail = $argsObj->send_mail;
     $gui->send_mail_checked = '';

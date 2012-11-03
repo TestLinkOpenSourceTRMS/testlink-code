@@ -18,16 +18,9 @@
  * @example sample_clients/ruby/clientSample.rb ruby client sample
  * @example sample_clients/python/clientSample.py python client sample
  * 
- *
  * @internal revisions 
- * 20111123 - franciscom - updateTestCase(), work started
- * 20111023 - franciscom - getTestCase(), added key on result 'full_tc_external_id' that will hold
- *						   external ID as is displayed on GUI (with prefix and glue character)	
- * 20111018 - franciscom - TICKET 4774: New methods to manage test case steps
- * 20110924 - franciscom - improvements on error message provided for missing parameters
- * 20110903 - franciscom - integration with refactoring of TICKET 4188
- * 20110903 - franciscom - get_linked_versions() interface changes
- * 20110903 - franciscom - TICKET 4311: typo error on uploadExecutionAttachment mapping
+ * @since 2.0
+ * 20121027 - franciscom - TICKET 5310: Execution Config - convert options into rights
  */
 
 /** 
@@ -3664,28 +3657,27 @@ public function getTestCase($args)
 	 * 				[message]	=> optional message for error message string
 	 * @access public
 	 */	
-	 public function deleteExecution($args)
-	 {		
-		$resultInfo = array();
-        $operation=__FUNCTION__;
-	    $msg_prefix="({$operation}) - ";
-		$execCfg = config_get('exec_cfg');
+  public function deleteExecution($args)
+  {		
+    $resultInfo = array();
+    $operation = __FUNCTION__;
+	  $msg_prefix = "({$operation}) - ";
 
 		$this->_setArgs($args);              
 		$resultInfo[0]["status"] = false;
 		
-        $checkFunctions = array('authenticate','checkExecutionID');       
-        $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
+    $checkFunctions = array('authenticate','checkExecutionID');       
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
 	
-	    // Important userHasRight sets error object
-	    //
-        $status_ok = ($status_ok && $this->userHasRight("testplan_execute"));	
+	  // Important userHasRight sets error object
+	  //
+    $status_ok = ($status_ok && $this->userHasRight("testplan_execute"));	
 		if($status_ok)
 		{			
-			if( $execCfg->can_delete_execution )  
+			if( $this->userHasRight("exec_delete") )  
 			{
 				$this->tcaseMgr->deleteExecution($args[self::$executionIDParamName]);			
-    	    	$resultInfo[0]["status"] = true;
+    	  $resultInfo[0]["status"] = true;
 				$resultInfo[0]["id"] = $args[self::$executionIDParamName];	
 				$resultInfo[0]["message"] = GENERAL_SUCCESS_STR;
 				$resultInfo[0]["operation"] = $operation;
@@ -3693,8 +3685,7 @@ public function getTestCase($args)
 			else
 			{
 				$status_ok = false;
-    		    $this->errors[] = new IXR_Error(CFG_DELETE_EXEC_DISABLED, 
-    		                                    CFG_DELETE_EXEC_DISABLED_STR);
+    		$this->errors[] = new IXR_Error(CFG_DELETE_EXEC_DISABLED,CFG_DELETE_EXEC_DISABLED_STR);
 			}
 		}
 

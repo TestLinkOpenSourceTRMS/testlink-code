@@ -21,16 +21,14 @@ require_once('common.php');
 testlinkInitPage($db);
 $data = array('success' => true, 'message' => '');
 
-// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+// take care of proper escaping when magic_quotes_gpc is enabled
 $_REQUEST=strings_stripSlashes($_REQUEST);
 
-$iParams = array(
-	"name" => array(tlInputParameter::STRING_N,0,100),
-	"testcase_id" => array(tlInputParameter::INT),
-);
+$iParams = array(	"name" => array(tlInputParameter::STRING_N,0,100),
+	                "testcase_id" => array(tlInputParameter::INT));
 $args = G_PARAMS($iParams);
 
-if (has_rights($db, 'mgt_view_tc'))
+if($_SESSION['currentUser']->hasRight($db, 'mgt_view_tc'))
 {
 	$tree_manager = new tree($db);
 
@@ -52,4 +50,4 @@ else
 }
 
 echo json_encode($data);
-
+?>

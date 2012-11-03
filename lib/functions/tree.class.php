@@ -168,13 +168,13 @@ class tree extends tlObject
 	  	}
 	  	else
 	  	{
-	  	    $sql .= "= {$node_id}";
-	  	    if( !is_null($parent_id) )
-	  	    {
-	  	    	$sql .= " AND parent_id={$parent_id} ";	
-	  	    }
-			$rs=$this->db->get_recordset($sql);
-			$result=!is_null($rs) ? $rs[0] : null;
+	  	  $sql .= "= {$node_id}";
+	  	  if( !is_null($parent_id) )
+	  	  {
+	  	   	$sql .= " AND parent_id={$parent_id} ";	
+	  	  }
+			  $rs = $this->db->get_recordset($sql);
+			  $result=!is_null($rs) ? $rs[0] : null;
 	  	} 
 		return $result;
 	}
@@ -1101,11 +1101,10 @@ class tree extends tlObject
 	        $all_nodes = array_merge($all_nodes,(array)$path_to[$item_id]['name']);
 	    }
 	    
-	    // BUGID 2728 - added check to avoid crash
 	    $status_ok = (!is_null($all_nodes) && count($all_nodes) > 0);
-        if( $status_ok )
-        { 
-	        // get only different items, to get descriptions
+      if( $status_ok )
+      { 
+	      // get only different items, to get descriptions
 	    	$unique_nodes=implode(',',array_unique($all_nodes));
 	    	$sql="/* $debugMsg */ " . 
 	    	     " SELECT id,name FROM {$this->tables['nodes_hierarchy']}  WHERE id IN ({$unique_nodes})"; 
@@ -1121,37 +1120,37 @@ class tree extends tlObject
 	    }  
 	    else
 	    {
-			$path_to = null;
+			  $path_to = null;
 	    }
         
-        if( !is_null($path_to) )
-        {
-        	switch ($output_format)
-        	{
-        		case 'path_as_string':
-				$flat_path=null;
-				foreach($path_to as $tcase_id => $pieces)
-				{
-					//remove test project node
-					unset($pieces['name'][0]);
-					$flat_path[$tcase_id]=implode('/',$pieces['name']);
-				}
-				$path_to = $flat_path;
-        		break;
+      if( !is_null($path_to) )
+      {
+      	switch ($output_format)
+      	{
+      		case 'path_as_string':
+			      $flat_path=null;
+				    foreach($path_to as $tcase_id => $pieces)
+				    {
+					    // remove test project node
+					    unset($pieces['name'][0]);
+					    $flat_path[$tcase_id]=implode('/',$pieces['name']);
+				    }
+				    $path_to = $flat_path;
+          break;
         		
-        		case 'id_name':
-        		break;
+        	case 'id_name':
+        	break;
         		
-        		case 'simple':	
-        		default:
+        	case 'simple':	
+        	default:
         		$keySet = array_keys($path_to);
         		foreach($keySet as $key)
         		{
         			$path_to[$key] = $path_to[$key]['name'];
         		}
-        		break;
-        	}	
-        }
+        	break;
+        }	
+      }
 	    return $path_to; 
 	}
 

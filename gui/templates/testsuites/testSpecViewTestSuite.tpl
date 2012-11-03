@@ -49,7 +49,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	<form method="post" action="lib/testcases/tcEdit.php">
 		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 	  <input type="hidden" name="containerType" id="containerType" value="testsuite" />
-	  <input type="hidden" name="parentID" id="parentID" value="{$gui->tsuite.id}" />
+	  <input type="hidden" name="tsuiteID" id="tsuiteID" value="{$gui->tsuite.id}" />
 		<input type="submit" accesskey="t" id="create_tc" name="create_tc" value="{$labels.btn_new_tc}" />
 	</form>
 

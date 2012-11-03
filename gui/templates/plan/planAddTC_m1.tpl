@@ -374,9 +374,9 @@ Ext.onReady(function(){
             			  	{/if}
             			  	
             			  	{if $linked_version_id}
-            			  		{assign var="show_remove_check" value=1}
+            			  		{$show_remove_check = 1}
          				        {if $tcase.executed[0] == 'yes'}
-         				          	{assign var="show_remove_check" value=$gui->can_remove_executed_testcases}
+         				          	{$show_remove_check = $gui->can_remove_executed_testcases}
             			  	  {/if}      
                       {/if} 
             			  	{if $show_remove_check}

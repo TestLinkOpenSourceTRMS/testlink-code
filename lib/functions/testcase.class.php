@@ -625,37 +625,22 @@ class testcase extends tlObjectWithAttachments
 	
 	  rev :
 	*/
-	// 1.9.4
-	// function show(&$smarty,$guiObj,$template_dir,$id,$version_id = self::ALL_VERSIONS,
-	//              $viewer_args = null,$path_info=null,$mode=null)
-	
-	//function show(&$smarty,$env_tproject_id,$grants,$guiObj,$template_dir,$id,$version_id = self::ALL_VERSIONS,
-	//              $viewer_args = null,$path_info=null,$mode=null)
-	// function show(&$smarty,$env_tproject_id,$grants,$guiObj,$id,$version_id = self::ALL_VERSIONS)
-	function show(&$smarty,$guiObj,$identity)
+	function show(&$smarty,$guiObj,$identity,$grants)
 	{
+
+		$req_mgr = new requirement_mgr($this->db);
 
     $env_tproject_id = $identity->tproject_id;
     $id = $identity->id;
     $version_id = isset($identity->version_id) ? $identity->version_id : self::ALL_VERSIONS;
-  
 	  $idSet = is_array($id) ? $id : (array)$id;
 	  $status_ok = $idSet[0] > 0 ? 1 : 0;
 
-		$req_mgr = new requirement_mgr($this->db);
-
-	  $gui = initShowGui($guiObj,$grants);
-	  $gui->can_do = $this->getShowViewerActions($gui->show_mode);
-	  
-    $dummy = templateConfiguration('tcView');
-		$my_template = isset($the_tpl['tcView']) ? $the_tpl['tcView'] : 'tcView.tpl'; 
-
+    $gui = $this->initShowGui($guiObj,$grants);
 		$gui->testcase_other_versions = array();
-    $userid_array = array();
 
 		if($status_ok)
 	  {
-
 	    $path2root = $this->tree_manager->get_path($idSet[0]);
 	    $gui->tproject_id = $path2root[0]['parent_id'];
 	    $info = $this->tproject_mgr->get_by_id($gui->tproject_id);
@@ -697,9 +682,10 @@ class testcase extends tlObjectWithAttachments
 		  }
 	  }
 	  
+    $userid_array = array();
     if($status_ok && sizeof($idSet))
 	  {
-	    	$cfx=0;
+	    	$cfx = 0;
 		  	$allTCKeywords = $this->getKeywords($idSet,null,'testcase_id',' ORDER BY keyword ASC ');
 		  	$allReqs = $req_mgr->get_all_for_tcase($idSet);
 		  	
@@ -711,6 +697,18 @@ class testcase extends tlObjectWithAttachments
 		  		{
 		  			continue;
 		  		}
+		  		
+          $gui->attach[$tc_id] = new stdClass();
+          $gui->attach[$tc_id]->itemID = $tc_id;
+          $gui->attach[$tc_id]->dbTable = $this->attachmentTableName;
+      
+          $gui->attach[$tc_id]->infoSet = null;
+          $gui->attach[$tc_id]->gui = null;
+          list($gui->attach[$tc_id]->infoSet,$gui->attach[$tc_id]->gui) = $this->buildAttachSetup($tc_id);
+          $gui->attach[$tc_id]->gui->display=TRUE;
+          $gui->attach[$tc_id]->enabled = $gui->attach[$tc_id]->gui->enabled;
+
+          new dBug($gui->attach);
 		  		
 		  		$tc_array[0]['tc_external_id'] = $tcasePrefix . $tc_array[0]['tc_external_id'];
 
@@ -786,15 +784,14 @@ class testcase extends tlObjectWithAttachments
 		
     // Removing duplicate and NULL id's
 		unset($userid_array['']);
-		$passeduserarray = array_keys($userid_array);
-
+    $this->initShowGuiActions(&$gui);
+		$gui->users = tlUser::getByIDs($this->db,array_keys($userid_array),'id');
 		
-
-    initShowGuiActions(&$gui);
-		$gui->users = tlUser::getByIDs($this->db,$passeduserarray,'id');
+		echo __METHOD__ . '<br>';
+		new dBug($gui);
 		$smarty->assign('gui',$gui);
-		$dummy = templateConfiguration('tcView');
-		$smarty->display($template_dir . $dummy->default_template);
+    $dummy = templateConfiguration('tcView');
+		$smarty->display($smarty->tlTemplateCfg->template_dir . $dummy->default_template);
 	}
 	
 
@@ -802,7 +799,7 @@ class testcase extends tlObjectWithAttachments
   {	  
 	  $goo = is_null($guiObj) ? new stdClass() : $guiObj;
 
-		$gui->execution_types = $this->execution_types;
+		$goo->execution_types = $this->execution_types;
 		$goo->view_req_rights = $grantsObj->mgt_view_req;
 
 	  $goo->parentTestSuiteName='';
@@ -844,15 +841,16 @@ class testcase extends tlObjectWithAttachments
 		$goo->user_feedback = $viewer_defaults['user_feedback'];
 
 	  $goo->pageTitle = $viewer_defaults['title'];
+	  $goo->display_testcase_path = !is_null($goo->path_info);
+	  $goo->show_match_count = $viewer_defaults['show_match_count'];
+ 	  if($goo->show_match_count && $goo->display_testcase_path )
+	  {
+		  $goo->pageTitle .= '-' . lang_get('match_count') . ':' . ($goo->match_count = count($goo->path_info));
+	  }
+		
 		$goo->refreshTree = isset($goo->refreshTree) ? $goo->refreshTree : $viewer_defaults['refreshTree'];
 		$goo->sqlResult = $viewer_defaults['msg_result'];
 
-	  $goo->show_match_count = $viewer_defaults['show_match_count'];
-	  $goo->display_testcase_path = !is_null($goo->path_info);
-	  if($goo->show_match_count && $goo->display_testcase_path )
-	  {
-	        $goo->match_count = count($goo->path_info);  
-	  }
 
     // fine grain control of operations
 	  if( $viewer_defaults['disable_edit'] == 1 || ($grantsObj->mgt_modify_tc == false) )
@@ -872,6 +870,8 @@ class testcase extends tlObjectWithAttachments
 
 		$dummy = getConfigAndLabels('testCaseStatus','code');
 		$goo->domainTCStatus = $dummy['lbl'];
+
+    $goo->can_do = $this->getShowViewerActions($goo->show_mode);
 
 
 	  return $goo;
@@ -1253,15 +1253,13 @@ class testcase extends tlObjectWithAttachments
 	      		{
 	      		    $sql .= " AND TTC.testplan_id = {$tplan_id} ";  
 	      		}  					    
-	      		
-	      		// 20100308 - franciscom
 	      		if(!is_null($platform_id))
 	      		{
 	      		    $sql .= " AND TTC.platform_id = {$platform_id} ";  
 	      		}  					    
 	      		
 	        	$recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id',database::CUMULATIVE);
-				// 20100330 - eloff - BUGID 3329
+
 				if( !is_null($recordset) )
 				{
 					// changes third access key from sequential index to platform_id
@@ -1282,12 +1280,12 @@ class testcase extends tlObjectWithAttachments
 				}	
 		  break;
 	
-	      case "EXECUTED":
+      case "EXECUTED":
 		  case "NOT_EXECUTED":
 				$getFilters = array('exec_status' => $exec_status,'active_status' => $active_status,
 									'tplan_id' => $tplan_id, 'platform_id' => $platform_id);
 		      	$recordset=$this->get_exec_status($id,$getFilters);
-	      break;
+	    break;
 	  }
 
 	  // Multiple Test Case Steps
@@ -1491,9 +1489,9 @@ class testcase extends tlObjectWithAttachments
 		{
 	    	$path2root=$this->tree_manager->get_path($id);
 	    	$root=$path2root[0]['parent_id'];
-	    }
-	    $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($root);
-	    return array($tcasePrefix,$root);
+	  }
+	  $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($root);
+	  return array($tcasePrefix,$root);
 	}
 	
 	
@@ -1687,14 +1685,20 @@ class testcase extends tlObjectWithAttachments
 	function get_last_version_info($id,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	    $my['options'] = array( 'get_steps' => false, 'output' => 'full');
-	    $my['options'] = array_merge($my['options'], (array)$options);
+	  $my['options'] = array( 'get_steps' => false, 'output' => 'full');
+	  $my['options'] = array_merge($my['options'], (array)$options);
 		$tcInfo = null;
+		$nhTestCaseJoin = '';
 		switch($my['options']['output'])
 		{
 			case 'minimun':
-			default:
 				$fields2get = " TCV.id, TCV.version, TCV.tc_external_id ";
+			break;		
+
+			case 'medium':
+				$fields2get = " TCV.id, TCV.version, TCV.tc_external_id, NH_TCASE.name ";
+		    $nhTestCaseJoin = " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE " .
+		                      " ON NH_TCASE.id = NH.parent_id ";
 			break;		
 
 			case 'full':
@@ -1705,32 +1709,32 @@ class testcase extends tlObjectWithAttachments
 		
 		
 		$sql = "/* $debugMsg */ SELECT MAX(version) AS version " .
-		       " FROM {$this->tables['tcversions']} TCV," .
-		       " {$this->tables['nodes_hierarchy']} NH WHERE ".
-		       " NH.id = TCV.id ".
-		       " AND NH.parent_id = {$id} ";
+		       " FROM {$this->tables['tcversions']} TCV" .
+		       " JOIN {$this->tables['nodes_hierarchy']} NH ON NH.id = TCV.id ".
+		       " WHERE NH.parent_id = {$id} ";
 	
 		$max_version = $this->db->fetchFirstRowSingleColumn($sql,'version');
 	
 		$tcInfo = null;
 		if ($max_version)
 		{
-			$sql = "SELECT {$fields2get}  FROM {$this->tables['tcversions']} TCV," .
-			       " {$this->tables['nodes_hierarchy']} NH ".
-			       " WHERE TCV.version = {$max_version} AND NH.id = TCV.id".
-				   " AND NH.parent_id = {$id}";
+			$sql = "/* $debugMsg */ SELECT {$fields2get} " .
+			       " FROM {$this->tables['tcversions']} TCV " .
+			       " JOIN {$this->tables['nodes_hierarchy']} NH ON NH.id = TCV.id " .
+             $nhTestCaseJoin . 
+			       " WHERE TCV.version = {$max_version} AND NH.parent_id = {$id}";
 	
 			$tcInfo = $this->db->fetchFirstRow($sql);
 		}
 
-		// Multiple Test Case Steps Feature
-	    if( !is_null($tcInfo) && $my['options']['get_steps'] )
-	    {
-    		$step_set = $this->get_steps($tcInfo['id']);
-    		$tcInfo['steps'] = $step_set;
-	    }
-		return $tcInfo;
-	}
+  	// Multiple Test Case Steps Feature
+    if( !is_null($tcInfo) && $my['options']['get_steps'] )
+  	{
+      $step_set = $this->get_steps($tcInfo['id']);
+      $tcInfo['steps'] = $step_set;
+    }
+  	return $tcInfo;
+  }
 	
 	
 	/*
@@ -4305,14 +4309,14 @@ class testcase extends tlObjectWithAttachments
 	 *                             |__ short range devices [ID 21]
 	 *	                                    |__ TestCase1
 	 *                                      |__ TestCase2
-     *
-     * if test case set: TestCase100,TestCase1
-     *
-     *   4  Communications
-     *  20 	Communications/Subspace channels
-     *  21 	Communications/Subspace channels/short range devices
-     *                
-     *                
+   *
+   * if test case set: TestCase100,TestCase1
+   *
+   *   4  Communications
+   *  20 	Communications/Subspace channels
+   *  21 	Communications/Subspace channels/short range devices
+   *                
+   *                
 	 * returns map with key: test suite id
 	 *                  value: test suite path to root
 	 *
@@ -4322,17 +4326,17 @@ class testcase extends tlObjectWithAttachments
 	{
 		$xtree=null;
 		foreach($tcaseSet as $item)
-    	{
+    {
 			$path_info = $this->tree_manager->get_path($item); 
-    		$testcase = end($path_info);
+    	$testcase = end($path_info);
     		
-    		// This check is useful when you have several test cases with same parent test suite
-    		if( !isset($xtree[$testcase['parent_id']]['value']) )
-    		{
-    			$level=0;
+    	// This check is useful when you have several test cases with same parent test suite
+    	if( !isset($xtree[$testcase['parent_id']]['value']) )
+    	{
+    		$level=0;
 				foreach($path_info as $elem)
 				{
-                    $level++;
+          $level++;
 					$prefix = isset($xtree[$elem['parent_id']]['value']) ? ($xtree[$elem['parent_id']]['value'] . '/') : '';
 					if( $elem['node_table'] == 'testsuites' )
 					{
@@ -4343,11 +4347,11 @@ class testcase extends tlObjectWithAttachments
 			}
 		}	
 		return $xtree;
-	} // getPathLayered($tcaseSet)
+	} 
 
 
 
-    /**
+  /**
 	 * 
  	 *
  	 */
@@ -4355,7 +4359,7 @@ class testcase extends tlObjectWithAttachments
 	{
 		$xtmas=null;
 		foreach($tcaseSet as $item)
-    	{
+    {
 			$path_info = $this->tree_manager->get_path($item); 
     		$top = current($path_info);
     		$xtmas[$item] = array( 'name' => $top['name'], 'id' => $top['id']);
@@ -4417,10 +4421,10 @@ class testcase extends tlObjectWithAttachments
         return $dl;
     }
 
-    /**
+  /**
 	 * 
  	 *
-     */
+   */
 	function getExternalID($id,$tproject_id=null,$prefix=null)
 	{
 		static $root;
@@ -4431,7 +4435,7 @@ class testcase extends tlObjectWithAttachments
 			if( is_null($root) ||  ($root != $tproject_id) )
 			{
        			list($tcase_prefix,$root) = $this->getPrefix($id,$tproject_id);
-       		}	
+      }	
 		}
 		else
 		{
@@ -4473,11 +4477,11 @@ class testcase extends tlObjectWithAttachments
 			}	
 		}
 		$where_clause .= " AND NH_TCASE .id = {$id} ";
-        $sql .= $where_clause;
+    $sql .= $where_clause;
        
-        $result = $this->db->get_recordset($sql);
-        return $result;
-    }
+    $result = $this->db->get_recordset($sql);
+    return $result;
+  }
 
 
 
@@ -5827,6 +5831,30 @@ class testcase extends tlObjectWithAttachments
     return $dummy['parent_id'];
   }
 
+  /** 
+ 	 *
+ 	 */ 
+	public function getAuditSignature($context,$options = null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		// we need:
+		// Test Case External ID
+		// Test Case Name
+		// Test Case Path
+		// What about test case version ID ? => only if argument provided
+		// 
+	  $pathInfo = $this->tree_manager->get_full_path_verbose($context->id,array('output_format' => 'id_name'));
+	  $pathInfo = current($pathInfo);
+	  $path = '/' . implode('/',$pathInfo['name']) . '/';
+
+	  $tcase_prefix = $this->getPrefix($context->id, $pathInfo['node_id'][0]);
+		$info = $this->get_last_version_info($context->id, array('output' => 'medium'));
+    $signature = $path . $tcase_prefix[0] . $this->cfg->testcase->glue_character . 
+                 $info['tc_external_id'] . ':' . $info['name'];
+
+		return $signature;        
+	}
   
 } // end class
 ?>

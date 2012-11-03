@@ -17,9 +17,9 @@
  * It saves your changes for the next upgrade in one extra file.
  *
  * @filesource	config.inc.php
- * @package 	TestLink
+ * @package 	  TestLink
  * @copyright 	2005-2012, TestLink community
- * @link 		http://www.teamst.org/index.php
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
  **/
@@ -69,7 +69,7 @@ require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 
 // ----------------------------------------------------------------------------
 /** @var string used to have (when needed) a possibility to identify different TL instances
- * 				@since 1.9.4 used on mail subject when mail logger is used
+ * 	@since 1.9.4 used on mail subject when mail logger is used
  */
 $tlCfg->instance_id = 'Main TestLink Instance';
 
@@ -498,7 +498,7 @@ $tlCfg->gui->text_editor['all'] = array('type' => 'ckeditor',
                                     	'configFile' => 'cfg/tl_ckeditor_config.js',
                                         'height' => 300);
 
-// BUGID 4163: mini toolbar for test case steps edit
+// mini toolbar for test case steps edit
 $tlCfg->gui->text_editor['steps_design'] = array('type' => 'ckeditor',
                                     	         'toolbar' => 'TestlinkMini',
                                     	         'configFile' => 'cfg/tl_ckeditor_config.js',
@@ -626,10 +626,6 @@ $tlCfg->document_generator->tc_version_enabled = FALSE;
 // DISABLED -> disable
 $tlCfg->exec_cfg->enable_test_automation = DISABLED;
 
-// 1 -> user can edit execution notes, on old executions (Attention: user must have test case execution right)
-// DISABLED -> no edit allowed [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->edit_notes = DISABLED;
-
 // ASCending   -> last execution at bottom
 // DESCending  -> last execution on top      [STANDARD BEHAVIOUR]
 $tlCfg->exec_cfg->history_order = 'DESC';
@@ -666,11 +662,6 @@ $tlCfg->exec_cfg->att_model->showUploadBtn = false;
 $tlCfg->exec_cfg->att_model->showTitle = false;
 $tlCfg->exec_cfg->att_model->showUploadColumn = true;
 $tlCfg->exec_cfg->att_model->numCols = 5;
-
-
-// ENABLED -> User can delete an execution result
-// DISABLED -> User can not.  [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->can_delete_execution = DISABLED;
 
 // ENABLED -> test cases will be coloured according to test case status
 $tlCfg->exec_cfg->enable_tree_testcases_colouring = ENABLED;
@@ -762,21 +753,6 @@ $tlCfg->spec_cfg->show_tsuite_filter = ENABLED;
 $tlCfg->spec_cfg->automatic_tree_refresh = ENABLED;
 
 
-// ENABLED -> user can edit executed tc versions
-// DISABLED -> editing of executed tc versions is blocked.  [STANDARD BEHAVIOUR]
-$tlCfg->testcase_cfg->can_edit_executed = DISABLED;
-
-// ENABLED -> user can removed from a testplan executed tc versions. [STANDARD BEHAVIOUR]
-// DISABLED -> user can NOT remove from a testplan executed tc versions.
-$tlCfg->testcase_cfg->can_remove_executed = ENABLED;
-
-
-// ENABLED -> user can DELETE a TEST CASE that has been executed. 
-// DISABLED -> [STANDARD BEHAVIOUR]
-// IMPORTANT: this is valid for any role => admin is also under this law.
-$tlCfg->testcase_cfg->can_delete_executed = DISABLED;
-
-
 // To avoid perfomance problems on search test case feature,
 // we can decide when to inform user that results can not be displayed
 // due to too many results.
@@ -841,8 +817,6 @@ $tlCfg->testsuite_template->details->type = 'none';
 $tlCfg->testsuite_template->details->value = '';
 
 
-// Contribution - Julian (Refactore)
-// BUGID 0002968,0002961,0002962,0002963
 $tlCfg->project_template = new stdClass();
 $tlCfg->project_template->notes  = new stdClass();
 $tlCfg->project_template->notes->type = 'none';
@@ -918,7 +892,7 @@ $tlCfg->attachments->repository->compressionType = TL_REPOSITORY_COMPRESSIONTYPE
 // ----------------------------------------------------------------------------
 /* [Requirements] */
 
-// 20101212 - truncate log message to this amount of chars for reqCompareVersions
+// truncate log message to this amount of chars for reqCompareVersions
 $tlCfg->req_cfg->log_message_len = 200;
 
 /**
@@ -969,7 +943,6 @@ $tlCfg->req_cfg->expected_coverage_management = ENABLED;
 // DIABLED: ONLY Requirement Specification is shown
 $tlCfg->req_cfg->show_child_reqs_on_reqspec_print_view = DISABLED;
 
-// 20090111 - franciscom
 // Order of test cases status in this array, is used to undestand
 // to what status set requirement in the requirements report.
 // Standard algorithm, present in getReqCoverage(), is:
@@ -1170,13 +1143,14 @@ $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_custom_fields = ENABL
 $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_result = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->execution_mode->advanced_filter_mode_choice = ENABLED;
 
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_active_inactive = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_custom_fields = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_execution_type = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_importance = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_keywords = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_testcase_name = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_toplevel_testsuite = ENABLED;
-$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_keywords = ENABLED;
-$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_execution_type = ENABLED;
-$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_custom_fields = ENABLED;
-$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_importance = ENABLED;
 
 // filter mode choice disabled for this mode because there are no filters benefiting from it
 $tlCfg->tree_filter_cfg->testcases->edit_mode->advanced_filter_mode_choice = DISABLED;
@@ -1226,7 +1200,7 @@ $tlCfg->tree_filter_cfg->requirements->automatic_tree_refresh = ENABLED;
 
 /* [Assign test cases to test plan] */
 $tlCfg->tplanDesign->hideTestCaseWithStatusIn = array($tlCfg->testCaseStatus['obsolete'] => 'obsolete', 
-													  $tlCfg->testCaseStatus['future'] => 'future' );
+													                            $tlCfg->testCaseStatus['future'] => 'future' );
 
 
 
@@ -1266,9 +1240,9 @@ $tlCfg->custom_fields->sizes = array('string' => 100,
                                      'email' => 100,
                                      'list' => 5,
                                      'multiselection list' => 5,
-		  					         'text area' => array('rows' => 6, 'cols' => 80),
-							         'script' => 100,
-							         'server' => 100);
+		  					                     'text area' => array('rows' => 6, 'cols' => 80),
+							                       'script' => 100,
+							                       'server' => 100);
 
 // Use this variable (on custom_config.inc.php) to define new Custom Field types.
 // IMPORTANT:
@@ -1378,7 +1352,7 @@ $tlCfg->admin_coordinates = 'testlink_admin (configure using $tlCfg->admin_coord
 
 // %locale% will be replaced with user locale
 $tlCfg->mail_templates = new stdClass();
-$tlCfg->mail_templates->change_password = TL_ABS_PATH . "docs/item_templates/%locale%/mail_change_password.txt";
+$tlCfg->mail_templates->change_password = TL_ABS_PATH . "locale/%locale%/mail/mail_change_password.txt";
 
 
 
@@ -1386,13 +1360,8 @@ $tlCfg->mail_templates->change_password = TL_ABS_PATH . "docs/item_templates/%lo
 // --------------------------------------------------------------------------------------
 // DO NOT CHANGE NOTHING BELOW
 // --------------------------------------------------------------------------------------
-
-
 /** Functions for check request status */
 require_once('configCheck.php');
-
-
-
 
 clearstatcache();
 if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
@@ -1403,7 +1372,6 @@ if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
 /** root of testlink directory location seen through the web server */
 /*  this statement it's not 100% right better use $_SESSION['basehref'] in the scripts. */
 define('TL_BASE_HREF', get_home_url(array('force_https' => $tlCfg->force_https)));
-
 
 if( !isset($tlCfg->attachments->accessIcon) )
 {

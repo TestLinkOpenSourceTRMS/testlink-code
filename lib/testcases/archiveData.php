@@ -40,6 +40,8 @@ switch($args->feature)
 		}
 		else
 		{
+		  $dummy = $item_mgr->getNode($identity->id);
+		  $identity->parent_id = $dummy['parent_id'];
 			$item_mgr->show($smarty,$gui,$identity,array('show_mode' => $gui->show_mode));
     }
 	break;
@@ -80,7 +82,7 @@ switch($args->feature)
 	  }
     $gui->id = $args->id;
 		$identity->version_id = $args->tcversion_id;
-	  $item_mgr->show($smarty,$gui,$identity);
+	  $item_mgr->show($smarty,$gui,$identity,$grants);
 	break;
 
   default:
@@ -233,10 +235,12 @@ function init_args(&$dbHandler)
   switch($args->feature)
   {
 		case 'testsuite':
-        	$_SESSION['setting_refresh_tree_on_action'] = ($args->refreshTree) ? 1 : 0;
+      $_SESSION['setting_refresh_tree_on_action'] = ($args->refreshTree) ? 1 : 0;
     break;
-     
-  	break;
+
+		case 'testproject':
+      	$args->id = $args->tproject_id;
+    break;
   }
   
   if (strpos($args->targetTestCase,$cfg->glue_character) === false)

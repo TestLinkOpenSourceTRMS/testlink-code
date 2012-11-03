@@ -42,8 +42,8 @@ function init_args(&$dbHandler)
 		$dummy = $mgr->get_node_hierarchy_info($args->tproject_id);
    	$args->tproject_name = $dummy['name'];		
 	}
-  $user = $_SESSION['currentUser'];
-	$args->userID = $user->dbID;
+  $args->user = $_SESSION['currentUser'];
+	$args->userID = $args->user->dbID;
 	
   return $args;
 }
@@ -63,17 +63,17 @@ function initialize_gui(&$dbHandler,$argsObj)
     $gui->tproject_name = $argsObj->tproject_name;
 
     $gui->grants = new stdClass();
-    $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
+    $gui->grants->req_mgmt = $argsObj->hasRight($dbHandler,"mgt_modify_req",$argsObj->tproject_id);
     
     $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->glueChar = config_get('testcase_cfg')->glue_character;
     $gui->pieceSep = config_get('gui_title_separator_1');
     
     $gui->item_id = $argsObj->item_id;
-	$info = $itemMgr->getRevisionByID($gui->item_id,array('decode_user' => true));
+	  $info = $itemMgr->getRevisionByID($gui->item_id,array('decode_user' => true));
     $gui->item = $info;
 	
-	$gui->cfields = $itemMgr->html_table_of_custom_field_values(null,$gui->item_id,$argsObj->tproject_id);
+	  $gui->cfields = $itemMgr->html_table_of_custom_field_values(null,$gui->item_id,$argsObj->tproject_id);
     $gui->show_title = false;
     $gui->main_descr = lang_get('req_spec') . $gui->pieceSep .  $gui->item['name'];
     

@@ -27,8 +27,7 @@ Input:
 {$warning_msg = $attach->gui->labels.warning_delete_attachment|escape:'javascript'|escape}
 
 <script type="text/javascript">
-
-var warning_delete_attachment = "{$attach->gui->labels.warning_delete_attachment}";
+// var warning_delete_attachment = "{$attach->gui->labels.warning}";
 {if isset($attach->gui->loadOnCancelURL)}
   var attachment_reloadOnCancelURL = '{$attach->gui->loadOnCancelURL}';
 {/if} 
@@ -36,9 +35,9 @@ var warning_delete_attachment = "{$attach->gui->labels.warning_delete_attachment
 
 {* this can happens for configuration or due to issues with FileSystem Repository *}
 {if $attach->enabled == FALSE}
-    <div class="messages">{$attach->gui->labels.attachment_feature_disabled}<p>
-    {$attach->gui->disabledMsg}
-    </div>
+  <div class="messages">{$attach->gui->labels.attachment_feature_disabled}<p>
+  {$attach->gui->disabledMsg}
+  </div>
 {/if}
 
 {include file="inc_action_onclick.tpl"}

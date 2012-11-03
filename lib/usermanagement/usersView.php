@@ -5,19 +5,13 @@
  *
  * Shows all users
  *
- * @package 	TestLink
- * @author 		-
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: usersView.php,v 1.37 2011/01/10 15:38:55 asimon83 Exp $
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author 		  -
+ * @copyright 	2007-2012, TestLink community 
+ * @filesource  usersView.php
+ * @link 		    http://www.teamst.org/index.php
  *
- *
- * @internal Revisions:
- *  20100419 - franciscom - BUGID 3355: A user can not be deleted from the list
- *	20100326 - franciscom - BUGID 3324
- *	20100106 - franciscom - security improvement - checkUserOrderBy()
- *                         (after scanning with Acunetix Web Security Scanner)
- *                          
+ * @internal revisions
  */
 require_once("../../config.inc.php");
 require_once("users.inc.php");
@@ -238,9 +232,9 @@ function initializeGui(&$dbHandler,&$argsObj,$orderBy)
 	$guiObj->base_href = $argsObj->basehref;
 	$guiObj->body_onload = $argsObj->body_onload;
 
-	$guiObj->role_colour = getRoleColourCfg($dbHandler);
-	$guiObj->users = getAllUsersRoles($dbHandler,get_order_by_clause($orderBy));
-	$guiObj->grants = getGrantsForUserMgmt($dbHandler,$argsObj->currentUser,$argsObj->tproject_id);
+	$guiObj->role_colour = tlRole::getRoleColourCfg($dbHandler);
+	$guiObj->users = tlUser::getAllUsersRoles($dbHandler,get_order_by_clause($orderBy));
+	$guiObj->grants = $argsObj->currentUser->getGrantsForUserMgmt($dbHandler,$argsObj->tproject_id);
 	$guiObj->tproject_id = $argsObj->tproject_id;
 
 	return $guiObj;

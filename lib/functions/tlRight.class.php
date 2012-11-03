@@ -221,7 +221,11 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
                      'desc_mgt_modify_users' => null,'desc_role_management' => null,
                      'desc_user_role_assignment' => null,
                      'desc_mgt_view_events' => null, 'desc_events_mgt' => null,
-                     'desc_mgt_unfreeze_req' => null);
+                     'desc_mgt_unfreeze_req' => null,
+                     'right_exec_edit_notes' => null, 'right_exec_delete' => null,
+                     'right_testplan_unlink_executed_testcases' => null, 
+                     'right_testproject_delete_executed_testcases' => null,
+                     'right_testproject_edit_executed_testcases' => null);
 
     $l18n = init_labels($l18nCfg);
     
@@ -229,12 +233,17 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
                             "testplan_create_build" => $l18n['desc_testplan_create_build'],
 							              "testplan_metrics" => $l18n['desc_testplan_metrics'],
 							              "testplan_planning" => $l18n['desc_testplan_planning'],
-							              "testplan_user_role_assignment" => $l18n['desc_user_role_assignment']);
+							              "testplan_user_role_assignment" => $l18n['desc_user_role_assignment'],
+							              "testplan_unlink_executed_testcases" => $l18n['right_testplan_unlink_executed_testcases']);
 	
 	
 		$cfg->testcases = array("mgt_view_tc" => $l18n['desc_mgt_view_tc'],
 								            "mgt_modify_tc" => $l18n['desc_mgt_modify_tc'],
-								            "mgt_testplan_create" => $l18n['mgt_testplan_create']);
+								            "mgt_testplan_create" => $l18n['mgt_testplan_create'],
+								            "testproject_delete_executed_testcases" => 
+								                                                    $l18n['right_testproject_delete_executed_testcases'],
+								            "testproject_edit_executed_testcases" => 
+								                                                    $l18n['right_testproject_edit_executed_testcases']);
 
 
     $cfg->keywords = array("mgt_view_key" => $l18n['desc_mgt_view_key'],
@@ -268,6 +277,10 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 
 	  $cfg->system = array("mgt_view_events" => $l18n['desc_mgt_view_events'],
 	                       "events_mgt" => $l18n['desc_events_mgt']);
+
+    // TICKET 
+	  $cfg->execution = array("exec_edit_notes" => $l18n['right_exec_edit_notes'],
+	                          "exec_delete" => $l18n['right_exec_delete']);
 
 
     // Do some grouping, needed by other methods

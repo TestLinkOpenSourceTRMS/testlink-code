@@ -4,26 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	tc_exec_assignment.php
- * @package 	TestLink
- * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2005-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author 		  Francisco Mancardi (francisco.mancardi@gmail.com)
+ * @copyright 	2005-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
- * @internal revisions:
- * 20110425 - franciscom - 	BUGID 4429: Code refactoring to remove global coupling as much as possible
- *							BUGID 4339: Working with two different projects within one Browser (same session) 
- *							is not possible without heavy side-effects
- * 20110207 - asimon - BUGID 4203 - use new method to delete assignments to respect assignments per build
- * 20101028 - asimon - BUGID 3945: Assign Test Case Execution to a build shows all the test cases on applied filters
- * 20101024 - franciscom - method renamed to getFilteredSpecView() + changes in interface
- *						   BUGID 3934: Assign Test Case Execution - Execution type filter does not affect right pane	
- * 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
- * 20100721 - asimon - BUGID 3406 - testcase execution assignment per build
- * 20100326 - amitkhullar - BUGID 3346: Update the date on updating test case asssigments
- * 20100228 - franciscom - BUGID 3226: Assignment of single test case not possible
- * 20100225 - eloff - remove unnecessary call to platformVisibleForTestplan
- * 20100215 - asimon - BUGID 2455, BUGID 3026
- * 20100212 - eloff - BUGID 3157 - fixes reassignment to other user
+ * @internal revisions
  */
          
 require_once(dirname(__FILE__)."/../../config.inc.php");
@@ -359,14 +345,14 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 	    $tproject_info = $tproject_mgr->get_by_id($argsObj->tproject_id);
 
 	    $gui->all_users = tlUser::getAll($dbHandler,null,"id",null);
-	   	$gui->users = getUsersForHtmlOptions($dbHandler,null,null,null,$gui->all_users);
+	   	$gui->users = tlUser::getUsersForHtmlOptions($dbHandler,null,null,null,$gui->all_users);
 	   	$gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$tproject_info,$gui->all_users);
 	   	
 	   	
 	}
 	$gui->testPriorityEnabled = $argsObj->tprojectOptions->testPriorityEnabled;
 	$gui->tproject_id = $argsObj->tproject_id;
-    return $gui;
+  return $gui;
 }
 
 

@@ -262,156 +262,99 @@ functie <i>vóór</i> het toekennen van steekwoorden.</p>
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['executeTest']	= "Test Case Execution";
-$TLS_htmltext['executeTest'] 		= "<h2>Purpose:</h2>
+$TLS_htmltext_title['executeTest']	= "Testgeval Uitvoering";
+$TLS_htmltext['executeTest'] 		= "<h2>Doel</h2>
 
-<p>Here the user can execute Test Cases: the user can assign a Test result
-to a Test Case for a given Build. See help for more information about filters and settings " .
-		"(click on the question-mark icon).</p>
+<p>Hier kunt u Testgevallen uitvoeren: een testresultaat opgeven voor een Testgeval voor
+een bepaalde Oplevering.</p>
 
-<h2>Get started:</h2>
+<h2>Werkmethode</h2>
 
 <ol>
-	<li>You must have defined a Build for the Test Plan.</li>
-	<li>Select a Build from the drop-down box.</li>
-	<li>If you want to see only a few Test Cases instead of the whole tree,
-		you can choose which filters to apply. Click the \"Apply\" button 
-		after you have changed the filters.</li>	
-	<li>Click on a Test Case in the tree menu.</li>
-	<li>Fill out the Test Case result and any applicable notes or bugs.</li>
-	<li>Save the results.</li>
+	<li>Tenminste één Oplevering moet gedefinieerd zijn voor het Testplan.</li>
+	<li>Selecteer een Oplevering van de drop-down.</li>
+	<li>Als u alleen enkele Testgevallen wilt zien i.p.v. de hele boomstructuur, 
+		kies filters om toe te passen. Klik dan 'Pas filter toe'.</li>	
+	<li>Klik op een Testgeval in de boomstructuur.</li>
+	<li>Voor het testresultaat in, samen met eventuele aantekeningen of fouten. </li>
+	<li>Sla de resultaten op.</li>
 </ol>
-<p><i>Note: you can create/trace a problem report directly from the GUI. 
-To do this, TestLink must be configured to collaborate with your Bug tracker. </i></p>";
+<p>Zie de help voor meer informatie over filters en instellingen: klik op de vraagteken.</p>
+
+<p><i>NB: u kunt een probleem rapport rechtstreeks vanuit TestLink creëren.  
+Om dit te doen moet TestLink zijn geconfigureerd om met uw Bug tracker samen te werken. </i></p>";
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['showMetrics']	= "Description of Test Reports and Metrics";
-$TLS_htmltext['showMetrics'] 		= "<p>Reports are related to a Test Plan. " .
-		"This is defined at the top of the navigation panel, and so can be different from the
-current Test Plan for execution. You can also select a Report format:</p>
+$TLS_htmltext_title['showMetrics']	= "Beschrijving van Testrapportage en Metrieken";
+$TLS_htmltext['showMetrics'] 		= "<p>Rapporten hebben betrekking op een Testplan.
+	Dit wordt bovenaan het navigatiepaneel gedefinieerd, en kan dus anders zijn dan het
+	huidige Testplan voor testuitvoering.</p>
+	<p>U kunt een rapport formaat selecteren:</p>
+	<ul>
+	<li><b>HTML</b> &ndash; rapport wordt in de webpagina getoond</li>
+	<li><b>OpenOffice Writer</b> </li> 
+	<li><b>OpenOffice Calc</b> </li>
+	<li><b>MS Excel</b> </li>
+	<li><b>HTML Email</b> - rapport wordt gemaild naar het e-mail adres van de gebruiker.</li>
+	</ul>
+	<p>De 'afdrukken' knop activeert rechtstreeks afdrukken.</p>
+	<p>Er zijn meerdere rapporten beschikbaar; hun doel en functie wordt hieronder beschreven.</p>
+
+<h3>Laatste Test Resultaat</h3>
+Het 'laatste testresultaat' is een concept dat in meedere rapporten wordt gebruikt. Het wordt als 
+volgt bepaald.
+<ul> 
+<li> Het wordt in eerste instantie bepaald door de Oplevering. De volgorde waarin Opleveringen 
+aan een Testplan worden toegevoegd bepaalt welke het meest recente is. (Dus niet de opleverdatum). 
+</li>
+<li> Als een Testgeval meerdere keer wordt uitgevoerd voor een Oplevering (bijvoorbeeld omdat de 
+tester de eerste keer een fout maakt) wordt de laatste uitvoering meegenomen. </li>
+<li> Testgevallen die voor een bepaalde Oplevering niet worden uitgevoerd, tellen niet mee. Dus als 
+een Testgeval op 'fout' staat voor Oplevering 1, 'geslaagd' voor Oplevering 2 en 'niet uitgevoerd' 
+voor Oplevering 3, is het laatste testresultaat 'geslaagd'. </li>
+<li>Het laatste testresultaat staat alleen op 'niet uitgevoerd' als het Testgeval voor geen enkele
+Oplevering is uitgevoerd.</li>
+</ul>
+
+
+<h3>Testplan Rapport</h3>
+<p>Dit bevat de Testgevallen.  </p> 
+<p>Het heeft opties om de inhoud en structuur van het rapport te definieren. Klik op
+een Test Suite om het rapport te genereren voor die Test Suite, of de bovenste rij
+van de boomstructuur (Testproject) om het rapport te genereren voor alle Test Suites.</p>
+
+<h3>Test Rapport</h3>
+<p>Dit heeft een soortgelijke structuur als het Testplan rapport, maar bevat ook de testresultaten.
+
+<h3>Algemene Testplan Metrieken</h3>
+<p>Dit rapport toont de huidige status van een Testplan op basis van Test Suite, eigenaar en steekwoorden.
+De huidige status wordt bepaald door de laatste Testresultaat (zoals hierboven beschreven.)</p>
+
+<p>Toont de volgende informatie:</p>
 <ul>
-<li><b>Normal</b> - report is displayed in web page</li>
-<li><b>OpenOffice Writer</b> - report imported to OpenOffice Writer</li>
-<li><b>OpenOffice Calc</b> - report imported to OpenOffice Calc</li>
-<li><b>MS Excel</b> - report imported to Microsoft Excel</li>
-<li><b>HTML Email</b> - report is emailed to user's email address</li>
-<li><b>Charts</b> - report include graphs (flash technology)</li>
+<li>Resultaten per hoogste-niveau Test Suite;</li>
+<li>Resultaten op basis van prioriteit;</li>
+<li>Resultaten per steekwoord</li>
+<li>Status van mijlpalen.</li>
 </ul>
 
-<p>The print button activates printing of a report only (without navigation).</p>
-<p>There are several separate reports to choose from; their purpose and function are explained below.</p>
+<h3>Gefaalde, geblokkeerde em niet uitgevoerde Testgevallen</h3>
+<p>Toont Testgevallen met genoemde status volgens het hierboven beschreven 'laatste testresultaat' logica.
+Geblokkeerde en gefaalde Testgevallen tonen ook de bijbehorende foutmeldingen als men een 
+geïntegreerde issue tracking systeem gebruikt.</p>
 
-<h3>Test Plan</h3>
-<p>The document 'Test Plan' has options to define a content and a document structure.</p>
+<h3>Testresultaat Matrix</h3>
+<p>Toont de status van elk Testgeval voor elke actieve Oplevering. Bij gebruik van grote hoeveelheid
+gegevens wordt export naar Excel aanbevolen.</p>
 
-<h3>Test Report</h3>
-<p>The document 'Test Report' has options to define a content and document structure.
-It includes Test Cases together with test results.</p>
-
-<h3>General Test Plan Metrics</h3>
-<p>This page shows you only the most current status of a Test plan by Test Suite, owner, and keyword.
-The most 'current status' is determined by the most recent build Test Cases were executed on.  For
-instance, if a Test Case was executed over multiple builds, only the latest result is taken into account.</p>
-
-<p>'Last Test Result' is a concept used in many reports, and is determined as follows:</p>
+<h3>Charts</h3>
+<p>Charts van algemene Testplan metrieken, volgens 'laatste testresultaat' logica.
 <ul>
-<li>The order in which builds are added to a Test Plan determines which build is most recent. The results
-from the most recent build will take precedence over older builds. For example, if you mark a test as
-'fail' in build 1, and mark it as 'pass' in build 2, its latest result will be 'pass'.</li>
-<li>If a Test Case is executed multiple times for the same build, the most recent execution will take
-precedence.  For example, if build 3 is released to your team and tester 1 marks it as 'pass' at 2PM,
-and tester 2 marks it as 'fail' at 3PM - it will appear as 'fail'.</li>
-<li>Test Cases listed as 'not run' against a particular build are not taken into account. For example, if you mark
-a case as 'pass' in build 1, and don't execute it in build 2, its last result will be considered as
-'pass'. Test Cases are only considered 'not run' if they have not been run for <i>any</i> build.</li>
+<li>Globale verdeling Testgevallen in geslaagd / gefaald / geblokkeerd / niet uitgevoerd. </li>
+<li>Resultaten per steekwoord</li>
+<li>Resultaten per hoogste-niveau Test Suite</li>
 </ul>
-<p>The following tables are displayed:</p>
-<ul>
-<li><b>Results by top level Test Suites: </b>
-	Lists the results of each top level suite. Total cases, passed, failed, blocked, not run, and percent
-	completed are listed. A 'completed' Test Case is one that has been marked pass, fail, or block.
-	Results for top level suites include all descendant suites.</li>
-	<li><b>Results By Keyword: </b>
-	Lists all keywords that are assigned to cases in the current Test Plan, and the results associated
-	with them.</li>
-	<li><b>Results by owner: </b>
-	Lists each owner that has Test Cases assigned to them in the current Test Plan. Test Cases which
-	are not assigned are tallied under the 'unassigned' heading.</li>
-</ul>
-
-<h3>The Overall Build Status</h3>
-<p>Lists the execution results for every build. For each build, the total Test Cases, total pass,
-% pass, total fail, % fail, blocked, % blocked, not run, %not run.  If a Test Case has been executed
-twice for the same build, the most recent execution will be taken into account.</p>
-
-<h3>Query Metrics</h3>
-<p>This report consists of a query form page, and a query results page which contains the queried data.
-The Query Form Page presents with a query page with four controls. Each control is set to a default which
-maximises the number of Test Cases and builds the query should be performed against. Altering the controls
-allows the user to filter the results and generate specific reports for specific owner, keyword, suite,
-and build combinations.</p>
-
-<ul>
-<li><b>keyword:</b> 0->1 keywords can be selected. By default - no keyword is selected. If a keyword is not
-selected, then all Test Cases will be considered regardless of keyword assignments. Keywords are assigned
-in the test specification or Keyword Management pages.  Keywords assigned to Test Cases span all Test Plans,
-and span across all versions of a Test Case.  If you are interested in the results for a specific keyword
-you would alter this control.</li>
-<li><b>owner:</b> 0->1 owners can be selected. By default - no owner is selected. If an owner is not selected,
-then all Test Cases will be considered regardless of owner assignment.  Currently there is no functionality
-to search for 'unassigned' Test Cases.  Ownership is assigned through the 'Assign Test Case execution' page,
-and is done on a per Test Plan basis.  If you are interested in the work done by a specific tester you would
-alter this control.</li>
-<li><b>top level suite:</b> 0->n top level suites can be selected. By default - all suites are selected.
-Only suites that are selected will be queried for result metrics.  If you are only intested in the results
-for a specific suite you would alter this control.</li>
-<li><b>builds:</b> 1->n builds can be selected.  By default - all builds are selected.  Only executions
-performed on builds you select will be taken into account when producing metrics.  For example - if you
-wanted to see how many Test Cases were executed on the last 3 builds - you would alter this control.
-Keyword, owner, and top level suite selections will dictate the number of Test Cases from your Test Plan
-are used to computate per suite and per Test Plan metrics.  For example, if you select owner = 'Greg',
-Keyword='Priority 1', and all available Test Suites - only Priority 1 Test Cases assigned to Greg will be
-considered. The '# of Test Cases' totals you will see on the report will be influenced by these 3 controls.
-Build selections will influence if a case is considered 'pass', 'fail', 'blocked', or 'not run'.  Please
-refer to 'Last Test Result' rules as they appear above.</li>
-</ul>
-<p>Click the 'submit' button to proceed with the query and display the output page.</p>
-
-<p>Query Report Page will display: </p>
-<ol>
-<li>the query parameters used to create report</li>
-<li>totals for the entire Test Plan</li>
-<li>a per-suite breakdown of the totals (sum / pass / fail / blocked / not run) and all executions performed
-on that suite.  If a Test Case has been executed more than once on multiple builds - all executions will be
-displayed that were recorded against the selected builds. However, the summary for that suite will only
-include the 'Last Test Result' for the selected builds.</li>
-</ol>
-
-<h3>Blocked, Failed, and  Not Run Test Case Reports</h3>
-<p>These reports show all of the currently blocked, failing, or not run Test Cases.  'Last test Result'
-logic (which is described above under General Test Plan Metrics) is again employed to determine if
-a Test Case should be considered blocked, failed, or not run.  Blocked and failed Test Case reports will
-display the associated bugs if the user is using an integrated bug tracking system.</p>
-
-<h3>Test Report</h3>
-<p>View the status of every Test Case on every build. The most recent execution result will be used
-if a Test Case was executed multiple times on the same build. It is recommended to export this report
-to Excel format for easier browsing if a large data set is being used.</p>
-
-<h3>Charts - General Test Plan Metrics</h3>
-<p>'Last test Result' logic is used for all four charts that you will see. The graphs are animated to help
-the user visualise the metrics from the current Test Plan. The four charts provided are :</p>
-<ul><li>Pie chart of overall pass / fail / blocked / and not run Test Cases</li>
-<li>Bar chart of Results by Keyword</li>
-<li>Bar chart of Results By Owner</li>
-<li>Bar chart of Results By Top Level Suite</li>
-</ul>
-<p>The bars in the bar charts are coloured such that the user can identify the approximate number of
-pass, fail, blocked, and not run cases.</p>
-
-<h3>Total Bugs For Each Test Case</h3>
-<p>This report shows each Test Case with all of the bugs filed against it for the entire project.
-This report is only available if a Bug Tracking System is connected.</p>";
+";
 
 
 // ------------------------------------------------------------------------------------------

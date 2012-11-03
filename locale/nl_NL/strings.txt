@@ -31,7 +31,7 @@
 
  // Dutch translation.
  // Partial translation originally made by contributor "baamster" for version 1.7.4.  
- // Extended and corrected October 2012 by Stephen Poley.
+ // Corrected and extended for new functionality in 1.8 and 1.9, Oct-Nov 2012 by Stephen Poley.
  
  // AANTEKENINGEN OVER DE VERTALING
  // Om consistentie te borgen, gebruik de volgende veel voorkomende vertalingen:
@@ -107,7 +107,7 @@ $TLS_hour = "Uur";
 $TLS_import = "Import";
 $TLS_importance	= "Belang"; 
 $TLS_imported = "Geïmporteerd";
-$TLS_important_notice = "Important Notice";
+$TLS_important_notice = "Belangrijk";
 
 $TLS_keyword = "Steekwoord";
 
@@ -252,7 +252,7 @@ $TLS_btn_view_history = "Toon geschiedenis";
 // Status (used widely)
 $TLS_test_status_all = "Allemaal";
 $TLS_test_status_any = "Enige";
-$TLS_test_status_not_run = "Niet Gedraaid";
+$TLS_test_status_not_run = "Niet Uitgevoerd";
 $TLS_test_status_blocked = "Geblokkeerd";
 $TLS_test_status_failed = "Niet OK";
 $TLS_test_status_passed = "OK";
@@ -279,8 +279,8 @@ $TLS_req_spec_type_user_req_spec = "Gebruikers Requirements Specificatie";
 $TLS_req_spec_type_system_req_spec = "Systeem Requirements Specificatie";
 
 
-$TLS_exec_not_run_result_note = "Important Notice: once a Result is updated from 'Not Run' to another value, " .
-                                "you cannot set it back to 'Not Run'. <br />You can still set the Result to any other value.";
+$TLS_exec_not_run_result_note = "Belangrijk: als een resultaat eenmaal is gewijzigd  van 'Niet Uitgevoerd' naar een andere waarde, " .
+                                "kan het niet teruggezet worden op 'Niet Uitgevoerd'. <br />U kunt het wel nog steeds naar een andere waarde wijzigen.";
 
 $TLS_req_status_not_testable = "Niet testbaar"; // defined for historical reason (should be replaced by $TLS_req_type_info)
 $TLS_req_status_draft = "Concept";
@@ -344,7 +344,7 @@ $TLS_deleted_user = "[deleted user - id=%s]";
 $TLS_tag_for_inactive_users = "*";
 
 $TLS_design = "Testgeval bewerken";
-$TLS_execution = "Test Execution";
+$TLS_execution = "Test uitvoering";
 $TLS_testplan_design = "Test Plan Design";
 $TLS_enable_on = "Enable on";
 $TLS_closed_on_date="Closed on ";
@@ -492,7 +492,7 @@ $TLS_passwd_lost = "Uw wachtwoord is gestuurd naar het email adres dar u heeft g
 $TLS_password_reseted = "New password has been sent via mail";
 $TLS_please_login = "Log in alstublieft...";
 $TLS_session_expired = "Uw sessie is verlopen! Log a.u.b. nogmaals in.";
-$TLS_your_first_login = "Welkom bij TestLink! U heeft gast toegangsrechten nu. Lgoin alstublieft...";
+$TLS_your_first_login = "Welkom bij TestLink! U heeft nu gast toegangsrechten. Login alstublieft...";
 
 
 // ----- newest_tcversions.php -----
@@ -512,11 +512,10 @@ $TLS_report_tcase_platorm_relationship = "Platforms have been added to this Test
 
                                  
 // ----- resultsNavigator.php -----
-$TLS_title_nav_results = "Reports and Metrics";
-$TLS_report_tplan_has_no_build = "Test Plan has no build defined, <br />".
-                               "then no execution data can exist => no report can be created";
-$TLS_report_tplan_has_no_tcases = "Test Plan has no Test Cases linked, <br />".
-                                "then no execution data can exist => no report can be created";
+$TLS_title_nav_results = "Testrapportage en Metrieken";
+$TLS_report_tplan_has_no_build = "Geen Oplevering gedefinieerd voor het Testplan; kan geen rapport maken.";
+$TLS_report_tplan_has_no_tcases = "Geen Testgevallen gedefinieerd voor het Testplan; kan geen rapport maken.";
+                                
 
 // ----- tcEdit.php -----
 $TLS_copy_keyword_assignments = "Copy Keyword Assignments";
@@ -714,22 +713,22 @@ $TLS_filter_result = "Resultaat";
 $TLS_filter_on = "op";
 $TLS_filter_tcID = "Testgeval ID";
 $TLS_include_unassigned_testcases = "include unassigned Test Cases";
-$TLS_filter_result_all_builds = "ALL Builds";
-$TLS_filter_result_any_build = "ANY Build";
-$TLS_filter_result_specific_build = "specific Build";
-$TLS_filter_result_latest_execution = "latest execution";
-$TLS_filter_result_current_build = "Build chosen for execution";
-$TLS_filter_somebody = "Somebody";
-$TLS_exec_build = "Build to execute";
-$TLS_assign_build = "Build to assign";
+$TLS_filter_result_all_builds = "ALLE Opleveringen";
+$TLS_filter_result_any_build = "ENIGE Oplevering";
+$TLS_filter_result_specific_build = "specifieke Oplevering";
+$TLS_filter_result_latest_execution = "laatste uitvoering";
+$TLS_filter_result_current_build = "Oplevering gekozen voor uitvoering";
+$TLS_filter_somebody = "Iemand";
+$TLS_exec_build = "Oplevering om uit te voeren";
+$TLS_assign_build = "Oplevering om toe te kennen";
 $TLS_filter_result_all_prev_builds = "ALL Previous Builds";
 $TLS_filter_result_any_prev_build = "ANY Previous Build";
 $TLS_document_id = "Document ID";
 $TLS_req_type = "Requirement Type";
 $TLS_req_spec_type = "Req. Spec. Type";
-$TLS_btn_hide_cf = "Hide Custom Fields";
-$TLS_btn_show_cf = "Show Custom Fields";
-$TLS_btn_export_testplan_tree = 'Export Test Plan';
+$TLS_btn_hide_cf = "Verberg Gebruikersvelden";
+$TLS_btn_show_cf = "Toon Gebruikersvelden";
+$TLS_btn_export_testplan_tree = 'Exporteer Testplan';
 $TLS_expand_tree = "Alles uitvouwen";
 $TLS_collapse_tree = "Alles samenvouwen";
 
@@ -740,12 +739,12 @@ $TLS_btn_apply_filter = "Pas filter toe";
 $TLS_btn_update_menu = "Update menu";
 $TLS_caption_nav_filter_settings = "Navigatie Filter & Instellingen";
 $TLS_current_build = "Huidige oplevering";
-$TLS_filter_owner = "Geassigneerd aan";
-$TLS_filter_result = "Resulaat";
+$TLS_filter_owner = "Toegekend aan";
+$TLS_filter_result = "Resultaat";
 $TLS_filter_tcID = "Testgeval ID";
-$TLS_include_unassigned_testcases = " - include unassigned Test Cases";
+$TLS_include_unassigned_testcases = " - inclusief niet toegekende Testgevallen";
 $TLS_test_status_all_status = $TLS_test_status_all;
-$TLS_filter_result_all_prev_builds = "Result on ALL Previous Builds";
+$TLS_filter_result_all_prev_builds = "Resultaat van ALLE vorige Opleveringen";
 
 
 // ----- gui/templates/mainPage.tpl -----
@@ -756,12 +755,12 @@ $TLS_error_no_testprojects_present = "There are currently no Test Projects defin
 
 
 // ----- gui/templates/metrics_dashbord.tpl -----
-$TLS_th_total_tc = "Test Case number";
-$TLS_th_active_tc = "Active Test Cases";
-$TLS_th_executed_tc = "Executed Test Cases";
-$TLS_th_executed_vs_active = "Executed/Active [%]";
-$TLS_th_executed_vs_total = "Executed/Total [%]";
-$TLS_show_only_active = "Show metrics only for active Test Plans";
+$TLS_th_total_tc = "Testgeval nummer";
+$TLS_th_active_tc = "Actieve Testgevallen";
+$TLS_th_executed_tc = "Uitgevoerde Testgevallen";
+$TLS_th_executed_vs_active = "Uitgevoerd/Actief [%]";
+$TLS_th_executed_vs_total = "Uitgevoerd/Totaal [%]";
+$TLS_show_only_active = "Toon metrieken alleen voor actieve Testplannen";
 
 
 // ----- gui/templates/newest_tcversions.tpl -----
@@ -815,12 +814,12 @@ $TLS_warning_delete_attachment = "Verwijder dtoegevoegde bestand echt?";
 
 // gui/templates/resultsNavigator.tpl
 $TLS_note_email_sent_t = "aantekening: e-mail formaat naar de gebruiker zijn e-mail gestuurd";
-$TLS_show_inactive_tplans = "Show inactive Test Plans";
+$TLS_show_inactive_tplans = "Toon inactieve Testplannen";
 $TLS_send_results = "Gestuurde resultaten";
 $TLS_send_to = "Naar:";
 $TLS_subject = "Onderwerp:";
 $TLS_title_active_build = "Actieve oplevering";
-$TLS_title_report_type = "Rapporteer Formaat";
+$TLS_title_report_type = "Rapport Formaat";
 $TLS_via_email = "via e-mail";
 $TLS_link_results_import = "Importeer Resultaten";
 
@@ -1021,7 +1020,7 @@ $TLS_btn_revisions = "Revisies";
 $TLS_title_res_by_top_level_suites = "Resultaten van de hoogste niveau Test Suites";
 $TLS_trep_blocked = $TLS_test_status_blocked;
 $TLS_trep_comp = "Test Suite";
-$TLS_trep_comp_perc = "Afgerond [%]";
+$TLS_trep_comp_perc = "Voltooid [%]";
 $TLS_trep_failed = $TLS_test_status_failed;
 $TLS_trep_not_run = $TLS_test_status_not_run;
 $TLS_trep_passed = $TLS_test_status_passed;
@@ -1083,7 +1082,7 @@ $TLS_req_list_docs = "Requirement Specificatie Documenten";
 // ----- gui/templates/tcEdit_New_viewer.tpl -----
 $TLS_alt_add_tc_name = "Voeg Testgeval naam toe. Deze waarde is verplicht.";
 $TLS_expected_results = "Verwachte resulaten";
-$TLS_preconditions = "Preconditions";
+$TLS_preconditions = "Voorwaarden";
 $TLS_steps = "Stappen";
 $TLS_summary = "Samenvatting";
 $TLS_tc_title = "Testgeval titel";
@@ -1273,34 +1272,34 @@ $TLS_btn_history_off_any_build = "Show only last execution (any Build)";
 $TLS_btn_history_on = "Toon volledige uitvoer historie";
 $TLS_btn_save_all_tests_results = "Bewaar alle uitvoer";
 $TLS_btn_save_tc_exec_results = "Bewaar uitvoer";
-$TLS_btn_save_exec_and_movetonext = "Save and move to next";
+$TLS_btn_save_exec_and_movetonext = "Bewaar en volgende";
 $TLS_bug_mgmt = "Bevindingenbeheer";
-$TLS_btn_export_testcases = "Export Test Cases";
-$TLS_build_is_closed = "�plevering is gesloten";
+$TLS_btn_export_testcases = "Export Testgevallen";
+$TLS_build_is_closed = "Oplevering is gesloten";
 $TLS_builds_notes = "Oplevering omschrijving";
 $TLS_bulk_tc_status_management = "Bulk Testgeval status beheer";
 $TLS_closed_build = "close build. no operation can be done";
 $TLS_date_time_run = "Datum";
 $TLS_details = "Details";
-$TLS_edit_notes = "notes bewerken";
-$TLS_execute_and_save_results ="Execute and Save Results";
-$TLS_exec_any_build = "(any build)";
-$TLS_exec_current_build = "(current build)";
+$TLS_edit_notes = "aantekeningen bewerken";
+$TLS_execute_and_save_results ="Voer uit en bewaar resultaten";
+$TLS_exec_any_build = "(elke oplevering)";
+$TLS_exec_current_build = "(huidige oplevering)";
 $TLS_exec_notes = "Aantekeningen";
 $TLS_exec_status = "Status";
 $TLS_execution_history = "Uitvoerings historie";
-$TLS_execution_type_manual = "Manual";
-$TLS_execution_type_auto = "Automated";
+$TLS_execution_type_manual = "Handmatig";
+$TLS_execution_type_auto = "Automatisch";
 $TLS_has_no_assignment = "Geen tester is toegewezen";
 $TLS_img_title_bug_mgmt = "Bevindingenbeheer";
 $TLS_img_title_delete_execution = "Verwijder uitvoering";
 $TLS_import_xml_results = "Import XML Results";
 $TLS_just_last_execution_for_this_build = "Laatste uitvoering voor deze oplevering";
-$TLS_last_execution = "Last execution";
+$TLS_last_execution = "Laatste uitvoering";
 $TLS_no_data_available = "Geen gegevens beschikbaar";
 $TLS_only_test_cases_assigned_to = "Alleen Testgevallen toegekend aan";
 $TLS_or_unassigned_test_cases = " Of zonder toegekende tester";
-$TLS_run_mode = "Run mode";
+$TLS_run_mode = "Run modus";
 $TLS_set_all_tc_to = "Zet alles naar status ";
 $TLS_show_hide = "Toon / verberg";
 $TLS_show_hide_reorder = "Show / Hide reorder ";
@@ -1323,11 +1322,11 @@ $TLS_title_t_r_on_build = "Test Resultaten bij oplevering";
 $TLS_title_t_r_owner = " Toegewezen aan";
 $TLS_title_test_case = "Testgeval";
 $TLS_version = "Versie";
-$TLS_warning_delete_execution = "You are going to delete execution<br /><br /> Are you sure?";;
-$TLS_warning_nothing_will_be_saved = "For the selected execution result nothing will be written to database";
-$TLS_edit_execution = "edit execution";
-$TLS_platform_description = "Platform description";
-$TLS_remoteExecFeeback = "Remote Test Case Execution Feedback";
+$TLS_warning_delete_execution = "U gaat de uitvoering verwijderen<br /><br /> Weet u dat zeker?";;
+$TLS_warning_nothing_will_be_saved = "Voor het geselecteerde resultaat wordt niets bewaard.";
+$TLS_edit_execution = "uitvoering bewerken";
+$TLS_platform_description = "Platform beschrijving";
+$TLS_remoteExecFeeback = "Remote Testgeval Uitvoering Terugkoppeling";
 
 
 // ----- gui/templates/inc_testsuite_viewer_ro.tpl -----
@@ -1517,18 +1516,18 @@ $TLS_start_date = 'Startdatum';
 // ----- gui/templates/projectEdit.tpl -----
 $TLS_btn_activate = "Activeer";
 $TLS_btn_del = "Verwijder";
-$TLS_btn_edit_del = "Weizig / Verwijder";
+$TLS_btn_edit_del = "Wijzig / Verwijder";
 $TLS_btn_inactivate = "Zet op inactief";
-$TLS_caption_edit_tproject = "Edit %s";
-$TLS_caption_new_tproject = "Create new Test Project";
-$TLS_create_from_existent_tproject = 'Create from existing Test Project?';
-$TLS_testproject_color = 'Background color';
+$TLS_caption_edit_tproject = "Bewerk %s";
+$TLS_caption_new_tproject = "Creëer nieuw Testproject";
+$TLS_create_from_existent_tproject = 'Creëer op basis van bestaand Testproject?';
+$TLS_testproject_color = 'Achtergrondkleur';
 $TLS_testproject_enable_automation = 'Enable Test Automation (API keys)';
 $TLS_testproject_enable_inventory = 'Enable Inventory';
 $TLS_testproject_enable_priority = 'Enable Testing Priority';
 $TLS_testproject_enable_requirements = 'Enable Requirements feature';
 $TLS_color = "Kleur";
-$TLS_enable_requirements = "Zet Requirements functionaleit aan";
+$TLS_enable_requirements = "Zet Requirements functionaliteit aan";
 $TLS_enable_priority = "Priority Beheer";
 $TLS_enable_automation = "Test Automation";
 $TLS_info_failed_loc_prod = "Mislukt om het Testproject te lokalizeren.";
@@ -1710,7 +1709,7 @@ $TLS_all_reqspecs_in_tproject = "All Req. Specs in Test Project";
 // ----- gui/templates/resultsAllBuilds.tpl -----
 $TLS_th_build = "Oplevering";
 $TLS_th_tc_total = "Testgeval Totaal";
-$TLS_th_tc_assigned = "Assigned";
+$TLS_th_tc_assigned = "Toegekend";
 $TLS_title_met_of_build = "Metrieken van de oplevering";
 
 
@@ -1751,55 +1750,55 @@ $TLS_info_test_results = "Er zijn alleen test resultaten getoond. " .
 $TLS_th_bugs = "Bevindingen";
 $TLS_th_date = "Datum";
 $TLS_th_run_by = "Uitgevoerd door";
-$TLS_th_bugs_not_linked = "Total no. of Test Cases with missing/linked Bugs:";
-$TLS_th_assigned_to = "Assigned To";
-$TLS_info_failed_tc_report = "This report shows all Test Cases for each build " .
-                             "and each platform (if used for this Test Plan), " .
-                             "whose last execution result is \"failed\".";
-$TLS_info_blocked_tc_report = "This report shows all Test Cases for each build " .
-                              "and each platform (if used for this Test Plan), " .
-                              "whose last execution result is \"blocked\".";
-$TLS_info_notrun_tc_report = "This report shows all Test Cases that have not been executed " .
-                             "for any build within this Test Plan";
-$TLS_no_blocked = "There are no blocked Test Cases";
-$TLS_no_notrun =  "There are no Test Cases that have not been run";
-$TLS_no_not_run = "There are no Test Cases that have not been run";
-$TLS_no_failed = "There are no failed Test Cases";
+$TLS_th_bugs_not_linked = "Totaal aantal Testgevallen met ontbrekende/gelinkde Bugs: ";
+$TLS_th_assigned_to = "Toegekend aan";
+$TLS_info_failed_tc_report = "Dit rapport toont alle Testgevallen voor elke Oplevering " .
+	"en elke platform (als dit voor dit Testplan wordt gebruikt), waarvan het laatste testresultaat " .
+	"'gefaald' is.";
+$TLS_info_blocked_tc_report = "Dit rapport toont alle Testgevallen voor elke Oplevering " .
+	"en elke platform (als dit voor dit Testplan wordt gebruikt), waarvan het laatste testresultaat " .
+	"'geblokkeerd' is.";
+$TLS_info_notrun_tc_report = "Dit rapport toont alle Testgevallen die voor geen enkele Oplevering zijn uitgevoerd " .
+                             "in dit Testplan.";
+$TLS_no_blocked = "Er zijn geen geblokkeerde Testgevallen.";
+$TLS_no_notrun =  "Er zijn geen Testgevallen die niet zijn uitgevoerd.";
+$TLS_no_not_run = "Er zijn geen Testgevallen die niet zijn uitgevoerd.";
+$TLS_no_failed = "Er zijn geen gefaalde Testgevallen.";
 
 
 // ----- gui/templates/resultsByTesterPerBuild.tpl -----
-$TLS_caption_results_by_tester_per_build = "Results by Tester per Build";
-$TLS_results_by_tester_per_build = "Results by Tester per Build";
-$TLS_progress = "Progress [%]";
-$TLS_executions_without_assignment = "Unassigned executions";
-$TLS_no_testers_per_build = "There are no tester assignments to builds in this Test Plan.";
+$TLS_caption_results_by_tester_per_build = "Resultaten per Tester per Oplevering";
+$TLS_results_by_tester_per_build = "Resultaten per Tester per Oplevering";
+$TLS_progress = "Voortgang [%]";
+$TLS_executions_without_assignment = "Niet toegekende uitvoeringen";
+$TLS_no_testers_per_build = "Er zijn geen testers toegekend aan Opleveringen in dit Testplan.";
 
 
 // ----- gui/templates/resultsGeneral.tpl -----
-$TLS_title_gen_test_rep = "Algemente Testplan Metrieken";
-$TLS_title_report_tc_priorities = "Test results according to test priorities";
-$TLS_title_report_milestones = "Status of Milestones";
-$TLS_th_completed = "Completed";
-$TLS_th_milestone = "Milestone [date]";
-$TLS_th_not_run = "Not run";
-$TLS_th_tc_priority_high = "High priority";
-$TLS_th_tc_priority_medium = "Medium priority";
-$TLS_th_tc_priority_low = "Low priority";
-$TLS_th_progress = "Test progress [%]";
+$TLS_title_gen_test_rep = "Algemene Testplan Metrieken";
+$TLS_title_report_tc_priorities = "Testresultaten volgens test prioriteiten";
+$TLS_title_report_milestones = "Status Mijlpalen";
+$TLS_th_completed = "Voltooid";
+$TLS_th_milestone = "Mijlpaal [datum]";
+$TLS_th_not_run = "Niet uitgevoerd";
+$TLS_th_tc_priority_high = "Hoge prioriteit";
+$TLS_th_tc_priority_medium = "Medium prioriteit";
+$TLS_th_tc_priority_low = "Lage prioriteit";
+$TLS_th_progress = "Test voortgang [%]";
 $TLS_th_goal = "Execution goal [%]";
 $TLS_th_overall_priority = "Overall test priority";
 $TLS_th_overall_platform = "Overall test platform";
 $TLS_title_res_by_platform = "Results by Platform";
-$TLS_th_expected = "Expected";
-$TLS_th_overall = "Overall";
-$TLS_info_res_by_top_level_suites = "This report shows results for each top level " .
-                                    "Test Suite. Results for subordinated Test Suites " .
-                                    "are counted in for the corresponding top level Test " .
-                                    "Suite.";
-$TLS_info_report_tc_priorities = "This report shows results according to the test priorities " .
-                                 "The priority of a Test Case is calculated based on the test " .
-                                 "importance and test urgency. For further information about " .
-                                 "test priority read the manual and check your configuration.";
+$TLS_th_expected = "Verwacht";
+$TLS_th_overall = "Alle prioriteiten";
+$TLS_info_res_by_top_level_suites = "Deze sectie toont resultaten voor elke Test Suite " .
+		"op het hoogste niveau. Resultaten voor dochter Test Suites worden meegeteld bij " .
+		"de moeders.";
+
+$TLS_info_report_tc_priorities = "Deze sectie toont resultaten op basis van prioriteit. " . 
+		"De prioriteit wordt berekend op basis van het testbelang en de urgentie. " .
+		"Voor verdere informatie raadpleeg de gebruikershandleiding. ";
+
 $TLS_info_res_by_platform = "This report shows the result for each platform linked to this test " .
                             "plan.";
 $TLS_info_report_milestones_prio = "This Report shows milestones defined for this Test Plan. " .
@@ -1808,13 +1807,13 @@ $TLS_info_report_milestones_prio = "This Report shows milestones defined for thi
 $TLS_info_report_milestones_no_prio = "This Report shows milestones defined for this Test Plan. " .
                                       "A milestone has been reached when Test Progress is coloured " .
                                       "green (Test Progress > Execution goal).";
-$TLS_info_res_by_kw = "This report shows results for each keyword. If a Test Case has multiple " .
-                      "keywords assigned it will be counted for each assigned keyword.";
-$TLS_info_gen_test_rep = "<b>General Information</b><br />" .
-                         "All reports only consider the last execution of each Test Case.<br />" .
-                         "You can sort tables by clicking the column header.";
+$TLS_info_res_by_kw = "Deze sectie toont resultaten voor elk steekwoord. " . 
+		"Als een Testgeval meerdere steekwoorden heeft, dan wordt het voor elk toegekende " . 
+		"steekwoord geteld. ";
 
-
+$TLS_info_gen_test_rep = "<b>Algemene Informatie</b><br />" .
+		"Alle secties zijn gebaseerd op de laatste testresultaten van elk Testgeval.<br />" .
+		"U kunt kolommmen sorteren door op de kolomkoppen te klikken. ";
 
 
 // ----- gui/templates/resultsMoreBuilds_query_form.tpl -----
@@ -1879,44 +1878,45 @@ $TLS_report_display_options = "Report display options";
 
 
 // ----- gui/templates/resultsReqs.tpl -----
-$TLS_no_srs_defined = "No Requirements Specification available for this Test Project.";
-$TLS_no_matching_reqs = "No matching Requirements available.";
-$TLS_count_of_reqs = "Number of Requirements";
-$TLS_req_availability = "Requirement-Availability";
-$TLS_show_only_finished_reqs = "Show only finished Requirements";
-$TLS_title_result_req_testplan = "Test Results based on Requirements Specification";
+$TLS_no_srs_defined = "Geen Requirements Specificatie beschikbaar voor dit Testproject.";
+$TLS_no_matching_reqs = "Geen overeenkomstige Requirements beschikbaar.";
+$TLS_count_of_reqs = "Aantal Requirements";
+$TLS_req_availability = "Requirement-Beschikbaarheid";
+$TLS_show_only_finished_reqs = "Toon alleen voltooide Requirements";
+$TLS_title_result_req_testplan = "Testresultaten gebaseerd op Requirements Specificatie";
 $TLS_title_test_plan = $TLS_testplan;
-$TLS_evaluation = "Evaluation";
-$TLS_partially_passed = "Partially passed";
-$TLS_partially_passed_reqs = "Partially passed Requirements";
-$TLS_uncovered = "Not covered";
-$TLS_uncovered_reqs = "Not covered Requirements";
-$TLS_passed_nfc = "Passed (nfc)";
-$TLS_passed_nfc_reqs = "Passed Requirements (nfc)";
-$TLS_failed_nfc = "Failed (nfc)";
-$TLS_failed_nfc_reqs = "Failed Requirements (nfc)";
-$TLS_blocked_nfc = "Blocked (nfc)";
-$TLS_blocked_nfc_reqs = "Blocked Requirements (nfc)";
-$TLS_not_run_nfc = "Not Run (nfc)";
-$TLS_not_run_nfc_reqs = "Not Run Requirements (nfc)";
-$TLS_partially_passed_nfc = "Partially Passed (nfc)";
-$TLS_partially_passed_nfc_reqs = "Partially Passed Requirements (nfc)";
-$TLS_linked_tcs = "Linked Test Cases";
-$TLS_no_linked_tcs = "No linked Test Cases";
-$TLS_title_resultsReqsProgress = "Test Progress based on Requirements";
-$TLS_info_resultsReqsProgress = "<u>Hint:</u> nfc = not fully covered";
-$TLS_title_resultsReqs = "Detailed Test Progress based on Requirements";
-$TLS_info_resultsReqs = "This report shows existing requirements and provides information " .
-                        "about their testing progress, expressed by the number of linked " .
-                        "Test Cases with the corresponding execution results.";
+$TLS_evaluation = "Evaluatie";
+$TLS_partially_passed = "Gedeeltelijk geslaagd";
+$TLS_partially_passed_reqs = "Gedeeltelijk volotooide Requirements";
+$TLS_uncovered = "Niet gedekt";
+$TLS_uncovered_reqs = "Niet gedekte Requirements";
+$TLS_passed_nfc = "Geslaagd (nvg)";
+$TLS_passed_nfc_reqs = "Geslaagde Requirements (nvg)";
+$TLS_failed_nfc = "Gefaald (nvg)";
+$TLS_failed_nfc_reqs = "Gefaalde Requirements (nvg)";
+$TLS_blocked_nfc = "Geblokkeerd (nvg)";
+$TLS_blocked_nfc_reqs = "Geblokkerde Requirements (nvg)";
+$TLS_not_run_nfc = "Niet uitgevoerd (nvg)";
+$TLS_not_run_nfc_reqs = "Niet uitgevoerde Requirements (nvg)";
+$TLS_partially_passed_nfc = "Gedeeltelijk geslaagd (nvg)";
+$TLS_partially_passed_nfc_reqs = "Gedeeltelijk geslaagde Requirements (nvg)";
+$TLS_linked_tcs = "Toegekende Testgevallen";
+$TLS_no_linked_tcs = "Geen toegekende Testgevallen";
+$TLS_title_resultsReqsProgress = "Test Voortgang gebaseerd op Requirements";
+$TLS_info_resultsReqsProgress = "nvg = niet volledig gedekt";
+$TLS_title_resultsReqs = "GedetailleerdTest Voortgang gebaseerd op Requirements";
+$TLS_info_resultsReqs = "Dit rapport toont Requirements en geeft informatie over de voortgang " . 
+	"van het testen, uitgedrukt als aantal toegekende Testgevallen met de overeenkomstige " . 
+	"testresultaten. ";
+
 
 // IMPORTANT for dynamic generation of labels
 // $TLS_req_title_<Test Case status>
 // If user adds a new Test Case status he/she MUST add a new label
-$TLS_req_title_blocked = "Blocked Requirements";
-$TLS_req_title_failed = "Failed Requirements";
-$TLS_req_title_not_run = "Unexecuted Requirements";
-$TLS_req_title_passed = "Passed Requirements";
+$TLS_req_title_blocked = "Geblokkeerde Requirements";
+$TLS_req_title_failed = "Gefaalde Requirements";
+$TLS_req_title_not_run = "Niet uitgevoerde Requirements";
+$TLS_req_title_passed = "Geslaagde Requirements";
 
 
 // ----- gui/templates/resultsSend.tpl -----
@@ -1967,8 +1967,8 @@ $TLS_testsuite_is_empty = 'Test suite has no test cases. Nothing can be done';
 
 // ----- gui/templates/printDocOptions.tpl -----
 $TLS_doc_opt_title = 'Document opties';
-$TLS_doc_opt_guide = 'Selecteer de opties voor de gewenste documentstructuur. ' .
-                     '<br />Selecteer dan de gewenste element in de boomstructuur ' .
+$TLS_doc_opt_guide = 'Selecteer de opties in de bovenste lijst voor de gewenste documentstructuur. ' .
+                     '<br />Klik dan op de gewenste element in de boomstructuur ' .
                      'om de documentinhoud te genereren.';
 $TLS_tr_td_show_as = "Toon als";
 $TLS_check_uncheck_all_options = "Alles selecteren / deselecteren";
@@ -2213,7 +2213,7 @@ $TLS_href_newest_tcversions = "Toon de nieuwste versies van de Testgevallen";
 $TLS_href_plan_assign_urgency = "Urgente testen definiëren";
 $TLS_href_plan_management = "Testplan beheer";
 $TLS_href_plan_mstones = "Mijlpaal beheer";
-$TLS_href_rep_and_metrics = "Test rapport en Metrieken";
+$TLS_href_rep_and_metrics = "Testrapportage en Metrieken";
 $TLS_href_tc_exec_assignment = "Ken Testgeval uitvoer toe";
 $TLS_href_update_tplan = "Gewijzigde Testgeval versies bijwerken";
 $TLS_href_platform_assign = "Platforms toevoegen/verwijderen";
@@ -2660,36 +2660,64 @@ $TLS_req_rel_depends = "depends on";
 $TLS_req_rel_is_related_to = "related to";
 
 
+// ----- lib/results/testPlanWithCF----
+$TLS_link_report_tplans_with_cf = "Testplan met gebruikersvelden";
+$TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
+$TLS_no_linked_tplan_cf = "Er zijn geen Testgevallen waar een gebruikersveld  " .
+	"werd ingevuld tijdens het toevoegen daarvan aan een Testplan.";
+$TLS_info_testPlanWithCF = "Dit arpport toont alle Testgevallen waar een gebruikersveld " .
+	"werd ingevuld tijdens het toevoegen daarvan aan een Testplan.";
+
 
 // ----- lib/results/resultsTC.php -----
-$TLS_title_test_report_all_builds = "Test Report: Results of Test Cases for all Builds";
+$TLS_result_on_last_build = '[Laatste Oplevering]';
+$TLS_tcversion_indicator = ' [v%s]';
+$TLS_title_test_report_all_builds = "Testrapport: Resultaten van Testgevallen voor alle Opleveringen";
 
+
+// ----- lib/results/testCasesWithCF.php -----
+$TLS_link_report_tcases_with_cf = "Testgevallen met gebruikersvelden tijdens uitvoering ingevuld";
+$TLS_caption_testCasesWithCF = $TLS_link_report_tcases_with_cf;
+$TLS_no_linked_tc_cf= 'Er zijn geen Testgevallen met een gebruikersveld ingevuld tijdens uitvoering.';
+$TLS_info_testCasesWithCF = "Dit rapport toont alle Testgevallen met een gebruikersveld " .
+	"dat ingevuld is tijdens test uitvoering. Ook worden de uitvoeringsaantekeningen getoond voor deze " .
+	"Testgevallen. ";
+	
 
 // ----- lib/results/resultsAllBuilds.php -----
 $TLS_title_metrics_x_build = "Algemene oplevering status";
 
 
-
 // ----- lib/results/resultsByStatus.php -----
 $TLS_list_of_blocked = "Geblokkeerde Testgevallen";
-$TLS_list_of_failed = "Niet akkoord Testgevallen";
+$TLS_list_of_failed = "Gefaalde Testgevallen";
 $TLS_list_of_not_run = "Niet uitgevoerde Testgevallen";
 
 
-// ----- lib/results/resultsNavigator.php -----
+// ----- cfg/reports.cfg.php -----
 $TLS_link_charts = "Charts";
 $TLS_link_report_blocked_tcs = "Geblokkeerde Testgevallen";
-$TLS_link_report_failed = "Niet akkoord Testgevallen";
+$TLS_link_report_failed = "Gefaalde Testgevallen";
 $TLS_link_report_general_tp_metrics = "Algemene Testplan Metrieken";
-$TLS_link_report_metrics_active_build = "Metrieken voor de actieve oplevering";
+$TLS_link_report_by_tester_per_build = "Resultaten per Tester per Oplevering";
+$TLS_link_assigned_tc_overview = "Test Case Toekenning Overzicht";
+$TLS_link_report_metrics_active_build = "Metrieken voor de actieve Oplevering";
 $TLS_link_report_metrics_more_builds = "Opgevraagde Metrieken";
-$TLS_link_report_not_run = "Not run Test Cases";
+$TLS_link_report_not_run = "Niet uitgevoerde Testgevallen";
+$TLS_link_report_not_run_any_platform = "Testgevallen niet op enig Platform uitgevoerd";
 $TLS_link_report_overall_build = "Algemene Oplevering status";
-$TLS_link_report_reqs_coverage = "Requirements gebaseerd Rapport";
-$TLS_link_report_tcases_without_tester = "Test Cases without Tester Assignment";
-$TLS_link_report_test = "Test Rapport";
+$TLS_link_report_reqs_coverage = "Requirements-gebaseerd Rapport";
+$TLS_link_report_tcases_without_tester = "Testgevallen zonder toegekende Tester";
+$TLS_link_report_test = "Testresultaat Matrix";
+$TLS_link_report_test_plan = "Testplan Rapport";
+$TLS_link_report_test_report = "Testrapport";
 $TLS_link_report_total_bugs = "Totaal aantal bevindingen voor elk Testgeval";
-$TLS_link_report_uncovered_testcases = "Test Cases without Requirements Assignment";
+$TLS_link_report_uncovered_testcases = "Testgevallen zonder toegekende Requirements";
+$TLS_link_report_reqs_with_cf = "Requirements met gebruikersvelden";
+$TLS_caption_requirementsWithCF = $TLS_link_report_reqs_with_cf;
+$TLS_link_report_free_testcases_on_testproject = "Testgevallen niet toegekend aan enig Testplan";
+
+$TLS_no_linked_req_cf = 'Er zijn geen Requirements met ingevulde gebruikersvelden';
 
 $TLS_format_html 		= 'HTML';
 $TLS_format_odt 		= 'OpenOffice Writer';
@@ -2713,9 +2741,12 @@ $TLS_error_sendreport_no_email_credentials = "E-mail voor deze gebruiker is niet
 // ----- lib/testcases/archive.inc.php -----
 
 
+// ----- lib/testcases/tcAssignedToUser.php -----
+$TLS_assigned_tc_overview = "Testproject: %s - Testgeval Toekenning Overzicht voor alle gebruikers";
+$TLS_show_closed_builds_btn = "Toon ook gesloten opleveringen";
+
 
 // ----- lib/testcases/listTestCases.php -----
-
 
 
 // ----- lib/testcases/tcImport.php -----
@@ -3074,7 +3105,10 @@ $TLS_testproject_has_no_requirements = 'There are no Requirements defined';
 
 // ----- testCasesWithoutTester -----
 $TLS_caption_testCasesWithoutTester = $TLS_link_report_tcases_without_tester;
-$TLS_all_testcases_have_tester = 'All Test Cases have Tester Assigned';
+$TLS_all_testcases_have_tester = 'Alle Testgevallen zijn toegekend en/of zijn al uitgevoerd.';
+$TLS_testCasesWithoutTester_info = "Dit rapport toont alle Testgevallen die voor geen enkele Oplevering " .
+	"zijn toegekend aan een tester en voor geen enkele Oplevering zijn uitgevoerd. " .
+	"Als platforms aan dit Testplan zijn toegekend, wordt elke platform apart bekeken. ";
 
 
 // ----- timeCharts ----- 
@@ -3138,8 +3172,8 @@ $TLS_warning_selected_revisions = "You have to select two revisions from the lis
 $TLS_warning_same_selected_revisions = "You have to select two different revisions from the list.";
 
 // ----- grab from not-systematic developers -----
-$TLS_step_actions = "Step actions";
-$TLS_step_details="Step details";
+$TLS_step_actions = "Acties";
+$TLS_step_details="Stap details";
 $TLS_step_number="#";
 $TLS_step_number_verbose = "Step number";
 $TLS_step_number_x_created = "Step number: %s created";
@@ -3266,7 +3300,7 @@ $TLS_xls_jmexport_author = 'Author';
 $TLS_xls_jmexport_tester = 'Tester';
 $TLS_xls_jmexport_testcase = 'Test Case';
 $TLS_xls_jmexport_testobjectives = 'Test Objectives';
-$TLS_xls_jmexport_preconditions = 'Preconditions';
+$TLS_xls_jmexport_preconditions = 'Voorwaarden';
 $TLS_xls_jmexport_steps = 'Steps';
 $TLS_xls_jmexport_expected_result = 'Expected Result';
 $TLS_xls_jmexport_result = 'Result';

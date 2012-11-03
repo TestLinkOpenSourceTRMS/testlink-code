@@ -296,40 +296,43 @@ Whenever anything other than the scope is changed you are forced to create a new
 
 
 // req_view
-$TLS_hlp_req_view = "<h3>Direct Links:</h3>
-<p>To easily share this document with others, simply click the globe icon at the top of this document to create a direct link.</p>
+$TLS_hlp_req_view = "<h3>Directe Links:</h3>
+<p>Om dit document gemakkelijk met anderen te kunnen delen, klik op de wereldbol bovenaan
+dit document om een direct link aan te maken.</p>
 
-<h3>View History:</h3>
-<p>This feature allows you to compare revisions/versions of requirements if more than one revision/version of the requirement exists.
-The overview provides the Log message for each revision/version, a timestamp and the author of the last change.</p>
+<h3>Geschiedenis Bekijken</h3>
+<p>Hiermee kunt u versies van Requirements vergelijken (als er meer dan één bestaat).
+Het overzicht geeft het logbericht voor elke versie, een tijdstempel en de auteur van de laatste
+versie.</p>
 
-<h3>Coverage:</h3>
-<p>Shows all linked Test Cases for this requirement.</p>
+<h3>Dekking:</h3>
+<p>Toont alle toegekende Testgevallen voor deze Requirement.</p>
 
-<h3>Relations:</h3>
-<p>Requirement Relations are used to model relationships between requirements. 
-Custom relations and the option to allow relations between requirements of 
-different test projects can be configured on the config file.
-If you set the relation \"Requirement A is parent of Requirement B\", 
-Testlink will set the relation \"Requirement B is child of Requirement A\" implicitly.</p>
+<h3>Relaties:</h3>
+<p>Requirement Relaties worden gebruikt om relaties tussen Requirements te modelleren.
+Eigen relaties en de optie om relaties tussen verschillende Testprojecten toe te staan
+kunnen in het configuratiebestand worden ingesteld.
+Als u de relatie instelt 'Requirement A is moeder van Requirement B',
+TestLink zet natuurlijk ook de relatie 'Requirement B is dochter van Requirement A'.</p>
 ";
 
 
-// req_spec_edit
-$TLS_hlp_req_spec_edit = "<h3>Internal links on scope:</h3>
-<p>Internal links serve the purpose of creating links to other requirements/requirement specifications. 
-They have a special syntax. Internal Link behaviour can be changed in the config file.
-<br /><br />
-<b>Usage:</b>
-<br />
-Link to requirements: [req]req_doc_id[/req]<br />
-Link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
 
-<p>The test project of the requirement / requirement specification, a version and an anchor 
-to jump to can also be specified:<br />
+
+// req_spec_edit
+$TLS_hlp_req_spec_edit = "<h3>Interne links:</h3>
+<p>Interne links verwijzen naar andere Requirements / Requirement Specificaties. 
+Zij hebben een bijzonder syntaxis. Het gedrag van interne links kan gewijzigd worden
+in het configuratiebestand. </p>
+<h3>Gebruik:</h3>
+<p>
+Link naar Requirements: [req]req_doc_id[/req]<br />
+Link naar Requirements Specificatie: [req_spec]req_spec_doc_id[/req_spec]</p>
+<p>Het Testproject van de Requirement, een versie en een doellocatie (anchor) kan ook 
+worden gespecificeerd:<br />
 [req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
-This syntax also works for requirement specifications (version attribute has no effect).<br />
-If you do not specify a version the whole requirement including all versions will be shown.</p>
+Dit syntaxis werkt ook voor Requirement Specifications (versie heeft in dat geval geen effect).
+Als u geen versie opgeeft wordt de hele Requirement getoond, met alle versies.</p>
 ";
 
 

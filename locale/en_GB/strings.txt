@@ -685,7 +685,7 @@ $TLS_expand_tree = "Expand tree";
 $TLS_collapse_tree = "Collapse tree";
 $TLS_filter_active_inactive = "Active/Inactive";
 $TLS_show_only_active_testcases = "At least ONE version is ACTIVE";
-$TLS_show_only_inactive_testcases = "ALL versions are INACTIVE)";
+$TLS_show_only_inactive_testcases = "ALL versions are INACTIVE";
 
 
 // ----- gui/templates/execNavigator.tpl -----

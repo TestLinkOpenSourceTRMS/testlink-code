@@ -24,12 +24,13 @@ $node['basic'] = $tcase_mgr->tree_manager->get_node_hierarchy_info($args->tcase_
 $node['specific'] = $tcase_mgr->getExternalID($args->tcase_id); 
 $idCard = $node['specific'][0] . ' : ' . $node['basic']['name'];
 
-// $linkedItems = $tcase_mgr->get_linked_versions($args->tcase_id,null,array('output' => 'minimal'));
 $gui->execSet = $tcase_mgr->getExecutionSet($args->tcase_id);
+
+
 
 $gui->warning_msg = (!is_null($gui->execSet)) ? '' : lang_get('tcase_never_executed');
 $gui->user_is_admin = ($_SESSION['currentUser']->globalRole->name=='admin') ? true : false;
-$gui->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$gui->tproject_id = isset($_REQUEST['testprojectID']) ? intval($_REQUEST['testprojectID']) : 0;
 
 $gui->execPlatformSet = null;
 $gui->cfexec = null;
@@ -39,15 +40,14 @@ if(!is_null($gui->execSet) )
 {
 	$gui->execPlatformSet = $tcase_mgr->getExecutedPlatforms($args->tcase_id);
 
-	// bugs
-	if(config_get('interface_bugs') != 'NO')
+	// get issue tracker config and object to manage TestLink - BTS integration 
+	$its = null;
+	$tproject_mgr = new testproject($db);
+	$info = $tproject_mgr->get_by_id($gui->tproject_id);
+	if($info['issue_tracker_enabled'])
 	{
-		// need to understand why I need to do the include here and can not do
-		// it inside getIssues()
-		require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' . 
-				 	 DIRECTORY_SEPARATOR . 'int_bugtracking.php');
-		$gui->bugs = getIssues($db,$gui->execSet);
-	}
+		$gui->bugs = getIssues($db,$gui->execSet,$gui->tproject_id);
+	}	
 	
 	// get custom fields brute force => do not check if this call is needed
 	$gui->cfexec = getCustomFields($tcase_mgr,$gui->execSet);
@@ -79,12 +79,13 @@ function init_args()
 	return $args;
 }
 
-function getIssues(&$dbHandler,&$execSet)
+function getIssues(&$dbHandler,&$execSet,$tprojectID)
 {
-	
-	$bugInterfaceOn = config_get('bugInterfaceOn');
-	$bugInterface = config_get('bugInterface');
 
+	$it_mgr = new tlIssueTracker($dbHandler);
+	$its = $it_mgr->getInterfaceObject($tprojectID);
+	unset($it_mgr);
+	
 	// we will see in future if we can use a better algorithm
 	$issues = array();
 	$tcv2loop = array_keys($execSet);
@@ -94,7 +95,7 @@ function getIssues(&$dbHandler,&$execSet)
 		for($idx=0; $idx < $execQty; $idx++)
 		{
 			$exec_id = $execSet[$tcvid][$idx]['execution_id'];
-			$dummy = get_bugs_for_exec($dbHandler,$bugInterface,$exec_id);
+			$dummy = get_bugs_for_exec($dbHandler,$its,$exec_id);
 			if(count($dummy) > 0)
 			{
 				$issues[$exec_id] = $dummy;
@@ -123,6 +124,7 @@ function getCustomFields(&$tcaseMgr,&$execSet)
 	return $cf;
 }
 
+// @TODO 20121104 - NEEDS REFACTORING
 function getAttachments(&$dbHandler,&$execSet)
 {
 	$attachmentMgr = tlAttachmentRepository::create($dbHandler);

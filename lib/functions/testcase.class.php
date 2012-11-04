@@ -627,12 +627,6 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function show(&$smarty,$guiObj,$identity,$grants)
 	{
-
-		$req_mgr = new requirement_mgr($this->db);
-
-    new dBug($guiObj);
-    new dBug($identity);
-    
     $env_tproject_id = $identity->tproject_id;
     $id = $identity->id;
     $version_id = isset($identity->version_id) ? $identity->version_id : self::ALL_VERSIONS;
@@ -644,6 +638,7 @@ class testcase extends tlObjectWithAttachments
 
 		if($status_ok)
 	  {
+		  $req_mgr = new requirement_mgr($this->db);
 	    $path2root = $this->tree_manager->get_path($idSet[0]);
 	    $gui->tproject_id = $path2root[0]['parent_id'];
 	    $info = $this->tproject_mgr->get_by_id($gui->tproject_id);
@@ -696,8 +691,6 @@ class testcase extends tlObjectWithAttachments
 		  	foreach($idSet as $key => $tc_id)
 		  	{
 		  		$tc_array = $this->get_by_id($tc_id,$version_id);
-		  		new dBug($tc_array);
-		  		
 		  		if (!$tc_array)
 		  		{
 		  			continue;
@@ -788,13 +781,8 @@ class testcase extends tlObjectWithAttachments
 		unset($userid_array['']);
     $this->initShowGuiActions(&$gui);
 		$gui->users = tlUser::getByIDs($this->db,array_keys($userid_array),'id');
-		
-		echo __METHOD__ . '<br>';
-		new dBug($gui);
 		$smarty->assign('gui',$gui);
     $dummy = templateConfiguration('tcView');
-    new dBug($dummy);
-  	// $smarty->display($smarty->tlTemplateCfg->template_dir . $dummy->default_template);
   	$smarty->display($dummy->template_dir . $dummy->default_template);
 	}
 	

@@ -158,7 +158,8 @@ viewer for test case in test specification
 	  {/if}
 
 	 	{if $args_can_do->create_new_version == "yes"}
-  		<input type="submit" name="do_create_new_version"   value="{$tcView_viewer_labels.btn_new_version}" />
+  		<input type="submit" name="do_create_new_version" 
+  		       onclick="doAction.value='doCreateNewVersion'" value="{$tcView_viewer_labels.btn_new_version}" />
 	  {/if}
 
 	

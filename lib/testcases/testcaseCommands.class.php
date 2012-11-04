@@ -312,8 +312,6 @@ class testcaseCommands
 
    	$templateCfg = templateConfiguration('tcEdit');
 		$guiObj->template = $templateCfg->default_template;
-
-    new dBug($guiObj);
     return $guiObj;
   }
 
@@ -396,8 +394,6 @@ class testcaseCommands
    */
 	function delete(&$argsObj,$request)
 	{
-	  new dBug($argsObj);
-	  
     $guiObj = $this->initGuiBean($argsObj);
  		$guiObj->delete_message = '';
 	
@@ -878,29 +874,24 @@ class testcaseCommands
    	$guiObj->refreshTree = ($argsObj->refreshTree && $userFeedback['status_ok']) ? 1 : 0;
    	$guiObj->has_been_executed = $argsObj->has_been_executed;
 		$guiObj->steps_results_layout = $this->cfg->spec->steps_results_layout;
-
     $guiObj->user_feedback = isset($userFeedback['msg']) ? $userFeedback['msg'] : '';
+    $guiObj->viewerArgs['user_feedback'] = $guiObj->user_feedback;
+
     if($userFeedback['status_ok'])
 		{
-      $guiObj->user_feedback = '';
-  		$ENABLED = 1;
 	  	$NO_FILTERS = null;
 		  $cf_map = $this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tproject_id,
-		                                                                      $ENABLED,$NO_FILTERS,'testcase') ;
+		                                                                      cfield_mgr::ENABLED,$NO_FILTERS,'testcase') ;
 
 			$this->tcaseMgr->cfield_mgr->design_values_to_db($request,$argsObj->tcversion_id,$cf_map);
-      $guiObj->attachments[$argsObj->tcase_id] = $this->tcaseMgr->getAttachmentInfos($argsObj->tcase_id);
 		}
-
-    $viewer_args['refreshTree'] = $guiObj->refreshTree;
-    $viewer_args['user_feedback'] = $guiObj->user_feedback;
-    $smartyObj->templateCfg = $this->templateCfg;
 
     $identity = new stdClass();
     $identity->tproject_id = $argsObj->tproject_id;
     $identity->id = $argsObj->tcase_id;
     $identity->version_id = $argsObj->tcversion_id;
 
+    $smartyObj->templateCfg = $this->templateCfg;
     $this->tcaseMgr->show($smartyObj,$guiObj,$identity,$this->grants); 
 		exit();	
 	}
@@ -932,23 +923,23 @@ class testcaseCommands
   }
 
 
-	function doCreateNewVersion(&$argsObj,$oWebEditorKeys,$userInput)
+	function doCreateNewVersion(&$argsObj,$userInput)
 	{
-  	
-    $guiObj = $this->initGuiBean($argsObj);
-  	
-
-  	$viewer_args['action'] = "do_update";
-  	$viewer_args['refreshTree'] = !tlTreeMenu::REFRESH_GUI;
-  	$viewer_args['user_feedback'] = '';
-  	$viewer_args['msg_result'] = '';
-  	$op = $this->tcaseMgr->create_new_version($args->tcase_id,$args->user_id,$args->tcversion_id);
+    $guiObj = $this->initGuiBean($argsObj, array('tproject_id'));
+  	$op = $this->tcaseMgr->create_new_version($argsObj->tcase_id,$argsObj->user_id,$argsObj->tcversion_id);
   	if ($op['msg'] == "ok")
   	{
-  		$viewer_args['user_feedback'] = sprintf(lang_get('tc_new_version'),$op['version']);
-  		$viewer_args['msg_result'] = 'ok';
+  	
+  		$userFeedback['status_ok'] = true; 
+  		$userFeedback['msg'] = sprintf(lang_get('tc_new_version'),$op['version']);
   	}
-  	$this->show($argsObj,$userInput);					         
+  	else
+  	{
+      $userFeedback['status_ok'] = false; 
+  	  $userFeedback['msg'] = $op['msg'];
+  	}
+    $argsObj->refreshTree = !tlTreeMenu::REFRESH_GUI;
+  	$this->show($argsObj,$userInput,$userFeedback);					         
   }
 
 } // end class  

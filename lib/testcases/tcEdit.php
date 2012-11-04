@@ -24,14 +24,10 @@ $cfg = getCfg();
 testlinkInitPage($db);
 $optionTransferName = 'ot';
 
-echo __FILE__;
-
 $tcase_mgr = new testcase($db);
 $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
-
-new dBug($_REQUEST);
 
 $args = init_args($db,$cfg,$tproject_mgr);
 require_once(require_web_editor($cfg->webEditorCfg['type']));
@@ -57,10 +53,12 @@ $doRender = false;
 $edit_steps = false;
 
 $pfn = $args->doAction;
+
 switch($args->doAction)
 {
   case "doUpdate":
   case "doAdd2testplan":
+  case "doCreateNewVersion":
     $op = $commandMgr->$pfn($args,$_REQUEST);
   break;
 	
@@ -225,32 +223,6 @@ else if($args->do_copy)
   $identity->id = $args->tcase_id;
   $identity->version_id = $args->tcversion_id;
 	$tcase_mgr->show($smarty,$gui,$identity);
-}
-else if($args->do_create_new_version)
-{
-	// used to implement go back 
-	$gui->loadOnCancelURL = buildLoadOnCancelURL($args);
-
-	$user_feedback = '';
-	$show_newTC_form = 0;
-	$msg = lang_get('error_tc_add');
-	$op = $tcase_mgr->create_new_version($args->tcase_id,$args->user_id,$args->tcversion_id);
-	if ($op['msg'] == "ok")
-	{
-		$user_feedback = sprintf(lang_get('tc_new_version'),$op['version']);
-		$msg = 'ok';
-	}
-
-	$viewer_args['action'] = "do_update";
-	$viewer_args['refreshTree'] = DONT_REFRESH;
-	$viewer_args['msg_result'] = $msg;
-	$viewer_args['user_feedback'] = $user_feedback;
-
-	$identity = new stdClass();
-	$identity->tproject_id = $args->tproject_id;
-	$identity->id = $args->tcase_id;
-	$identity->version_id = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
-	$tcase_mgr->show($smarty,$gui,$identity);					         
 }
 else if($args->do_activate_this || $args->do_deactivate_this)
 {

@@ -89,7 +89,7 @@ function validateStepsReorder(formOID)
 
 {$my_style = ""}
 {if $gui->hilite_testcase_name}
-    {$my_style = "background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
+  {$my_style = "background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
 {/if}
 
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">

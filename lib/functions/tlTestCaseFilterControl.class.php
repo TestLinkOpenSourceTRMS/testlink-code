@@ -829,7 +829,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 		switch ($this->mode) 
 		{
 			case 'plan_mode':
-			  $gui->ajaxTree = $this->buildTreePlanMo->menuUrlde($gui->menuUrl);
+			  $gui->ajaxTree = $this->buildTreePlanMode($gui->menuUrl);
 			break;
 			
 			case 'edit_mode':
@@ -1773,8 +1773,6 @@ class tlTestCaseFilterControl extends tlFilterControl
 		{
       $ajaxTree->loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
 					  					    "tproject_id={$this->args->testproject_id}&" .
-					  					    "tplan_id={$this->args->testplan_id}&" .
-                          "root_node={$this->args->testproject_id}&" .
                           "tcprefix=" . urlencode($guiObj->tc_prefix);
       
       $tcase_qty = $this->testproject_mgr->count_testcases($this->args->testproject_id);

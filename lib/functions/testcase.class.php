@@ -630,6 +630,9 @@ class testcase extends tlObjectWithAttachments
 
 		$req_mgr = new requirement_mgr($this->db);
 
+    new dBug($guiObj);
+    new dBug($identity);
+    
     $env_tproject_id = $identity->tproject_id;
     $id = $identity->id;
     $version_id = isset($identity->version_id) ? $identity->version_id : self::ALL_VERSIONS;
@@ -707,9 +710,6 @@ class testcase extends tlObjectWithAttachments
           list($gui->attach[$tc_id]->infoSet,$gui->attach[$tc_id]->gui) = $this->buildAttachSetup($tc_id);
           $gui->attach[$tc_id]->gui->display=TRUE;
           $gui->attach[$tc_id]->enabled = $gui->attach[$tc_id]->gui->enabled;
-
-          new dBug($gui->attach);
-		  		
 		  		$tc_array[0]['tc_external_id'] = $tcasePrefix . $tc_array[0]['tc_external_id'];
 
 		  		// get the status quo of execution and links of tc versions
@@ -791,7 +791,9 @@ class testcase extends tlObjectWithAttachments
 		new dBug($gui);
 		$smarty->assign('gui',$gui);
     $dummy = templateConfiguration('tcView');
-		$smarty->display($smarty->tlTemplateCfg->template_dir . $dummy->default_template);
+    new dBug($dummy);
+  	// $smarty->display($smarty->tlTemplateCfg->template_dir . $dummy->default_template);
+  	$smarty->display($dummy->template_dir . $dummy->default_template);
 	}
 	
 
@@ -887,13 +889,13 @@ class testcase extends tlObjectWithAttachments
 
 		$gui->tcExportAction = "lib/testcases/tcExport.php?tproject_id=$gui->tproject_id&show_mode=$gui->show_mode";
 		$gui->tcViewAction = "lib/testcases/archiveData.php?tproject_id={$gui->tproject_id}" . 
-							 "&show_mode=$gui->show_mode&tcase_id=";
+							           "&show_mode=$gui->show_mode&tcase_id=";
 
 		$gui->printTestCaseAction = "lib/testcases/tcPrint.php?tproject_id=$gui->tproject_id&show_mode=$gui->show_mode";
 
 
 		$gui->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id={$gui->tproject_id} " .
-						 		 ' target="mainframe" class="bold" title="' . lang_get('menu_manage_keywords') . '"';
+						 		             ' target="mainframe" class="bold" title="' . lang_get('menu_manage_keywords') . '"';
 
 
 		$gui->reqSpecMgmtHREF = "lib/general/frmWorkArea.php?tproject_id={$gui->tproject_id}&feature=reqSpecMgmt";

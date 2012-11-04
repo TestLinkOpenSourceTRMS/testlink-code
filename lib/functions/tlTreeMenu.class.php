@@ -101,6 +101,7 @@ class tlTreeMenu
   	$map_node_tccount = array();
   	$tplan_tcs = null;
   	$menustring = null;
+  	
   	if($test_spec)
   	{
   		$tck_map = null;  // means no filter
@@ -117,7 +118,8 @@ class tlTreeMenu
   	  if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) 
   	  {
   	  	$test_spec['childNodes'] = $this->filterByCFValues($test_spec['childNodes'],
-  	  												                                $my['filters']['filter_custom_fields']);
+  	  												                             $my['filters']['filter_custom_fields'],
+  	  												                             $my['filters']['filter_active_inactive']);
   	  }
   		
   	  // Important: 
@@ -520,7 +522,8 @@ class tlTreeMenu
    * Important Notice on logic (see section Apply Query To Filter): 
    * CF are linked to Test case versions.
    * When there are multiple versions of a TC, then row count of filtering query,
-   * can be larger than the number of custom fields with the correct value.
+   * can be larger than the number of custom fields with the correct value,
+   * if we consider ALL TEST CASE VERSIONS.
    * 
    * Example: 
    * Custom field "color", domain: red,blue,green. Default value => empty.
@@ -535,9 +538,7 @@ class tlTreeMenu
    * => count($rows) returns 2, which matches the number of custom fields we want to filter by.
    * So TC seems OK, but instead is HAS TO BE EXCLUDED.
    * That is wrong, because TC matches only one of the fields we were filtering by!
-   * 
-   * Because of this I extended the SQL statement above with the DISTINCT keyword,
-   * so that each custom field only is contained ONCE in the result set.
+   *   
    *	 
 	 *
 	 * @author Andreas Simon
@@ -551,7 +552,7 @@ class tlTreeMenu
 	 * @internal revisions
 	 * 
 	 */
-	function filterByCFValues(&$tcaseSet, &$cfSet) 
+	function filterByCFValues(&$tcaseSet, &$cfSet,$tcversionActiveAttr) 
 	{
 		static $debugMsg;
 		static $cfQty = 0;
@@ -562,13 +563,22 @@ class tlTreeMenu
 			$debugMsg = 'Function: ' . __FUNCTION__;
 			$cfQty = count($cfSet);
       $sqlSet = array();
-      $sqlSet['glav'] = " /* get latest active TC version ID */ " .
-                        " SELECT MAX(TCVX.id) AS max_tcv_id, NHTCX.parent_id AS tc_id " .
-                        " FROM {$tables['tcversions']} TCVX " .
-                        " JOIN {$tables['nodes_hierarchy']} NHTCX " .
-                        " ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
-                        " WHERE NHTCX.parent_id = ";
-
+      
+      $activeClause = " AND TCVX.active = ";
+      if( $tcversionActiveAttr == tlTestCaseFilterControl::ONLY_INACTIVE_TESTCASES )
+      {
+          $activeClause .= "0";
+      }
+      else
+      {
+          $activeClause .= "1";
+      }
+      $sqlSet['glaiv'] = " /* get latest TC version ID considering Active/Inactive Status */ " .
+                         " SELECT MAX(TCVX.id) AS tcv_id, NHTCVX.parent_id AS tc_id " .
+                         " FROM {$tables['tcversions']} TCVX " .
+                         " JOIN {$tables['nodes_hierarchy']} NHTCVX " .
+                         " ON NHTCVX.id = TCVX.id {$activeClause} " .
+                         " WHERE NHTCVX.parent_id = ";
 		}
 
 		$rows = null;
@@ -586,7 +596,8 @@ class tlTreeMenu
 				$doDel = true;
 				if (isset($node['childNodes']) && is_array($node['childNodes'])) 
 				{
-					$tcaseSet[$key]['childNodes'] = $this->filterByCFValues($tcaseSet[$key]['childNodes'],$cfSet);
+					$tcaseSet[$key]['childNodes'] = $this->filterByCFValues($tcaseSet[$key]['childNodes'],$cfSet,
+					                                                        $tcversionActiveAttr);
 					
 					// remove if it is empty after coming back from recursion
 					$doDel = (count($tcaseSet[$key]['childNodes']) == 0);
@@ -600,10 +611,11 @@ class tlTreeMenu
 			else if ($node['node_type_id'] == $this->cfg->nodeTypeCode['testcase']) 
 			{
 				$doDel = true;
-				$sql = " /* $debugMsg */ SELECT CFD.value " . 
-					     " FROM {$this->tables['cfield_design_values']} CFD " .
-					     " JOIN {$this->tables['nodes_hierarchy']} NH  ON NH.id = CFD.node_id " .
-					     " WHERE  NH.parent_id = {$node['id']} ";
+				$auxSQL = $sqlSet['glaiv'] . intval($node['id']) ." GROUP BY NHTCVX.parent_id ";
+        $sql = " /* $debugMsg */ SELECT CFD.value " .
+               " FROM {$tables['cfield_design_values']} CFD " .
+               " JOIN ($auxSQL) LAIV ON LAIV.tcv_id = CFD.node_id " .
+               " WHERE 0=0 ";
 
 				if( isset($cfSet) ) 
 				{	
@@ -624,9 +636,8 @@ class tlTreeMenu
 						} 
 						else 
 						{
-							$cf_sql .= " ( CFD.value LIKE '%{$cf_value}%' ) ";
+							$cf_sql .= " ( CFD.value LIKE '%{$cf_value}%' AND CFD.field_id = {$cf_id} ) ";
 						}
-
 						$sqlOR = " OR ";
 					}
 					$sql .=  " AND ({$cf_sql}) ";
@@ -634,11 +645,7 @@ class tlTreeMenu
 	
 				$rows = $this->db->fetchColumnsIntoArray($sql,'value');
 				
-				// if there exist as many rows as custom fields to be filtered by
-				// tc does meet the criteria
-				// $doDel = (count($rows) != count($cf_hash)) ? true : false;
-		    // Apply Query To Filter. (for logic details see function header).
-		    //
+				// if there exist as many rows as custom fields to be filtered by tc DOES MEET the criteria
 				if ((count($rows) != $cfQty)) 
 				{
 					unset($tcaseSet[$key]);
@@ -1916,7 +1923,7 @@ class tlTreeMenu
     $filterOn['custom_fields'] = isset($my['filters']['filter_custom_fields']);
     $filterOn['keywords'] = isset($tck_map);
     $filterOn['active_inactive'] = isset($my['filters']['active_inactive']) && 
-                                           $my['filters']['active_inactive'] != tlTestCaseFilterControl::ACTIVE_INACTIVE_TESTCASES_NO_FILTER
+                                   $my['filters']['active_inactive'] != tlTestCaseFilterControl::ACTIVE_INACTIVE_TESTCASES_NO_FILTER;
     
     
     $filterOnTCVersionAttribute = $filtersOn['executionType'] || $filtersOn['importance'];

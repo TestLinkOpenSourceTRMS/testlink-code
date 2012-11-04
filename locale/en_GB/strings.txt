@@ -703,8 +703,8 @@ $TLS_btn_export_testplan_tree = 'Export Test Plan';
 $TLS_expand_tree = "Expand tree";
 $TLS_collapse_tree = "Collapse tree";
 $TLS_filter_active_inactive = "Active/Inactive";
-$TLS_show_only_active_testcases = "Active";
-$TLS_show_only_inactive_testcases = "Inactive";
+$TLS_show_only_active_testcases = "At least ONE version is ACTIVE";
+$TLS_show_only_inactive_testcases = "ALL versions are INACTIVE";
 
 
 // ----- gui/templates/execNavigator.tpl -----
@@ -1121,8 +1121,8 @@ $TLS_too_wide_search_criteria = "Too many results. Please set more specific " .
 
 
 // ----- gui/templates/tcDelete.tpl -----
-$TLS_btn_yes_iw2del = "Yes, delete Test Case!";
-$TLS_question_del_tc = "Really delete Test Case?";
+$TLS_btn_yes_iw2del = "Delete";
+$TLS_question_del_tc = "Are you sure you want to delete Test Case?";
 $TLS_th_executed = "Executed";
 $TLS_th_linked_to_tplan = "Linked to Test Plan";
 $TLS_th_version = "Version";

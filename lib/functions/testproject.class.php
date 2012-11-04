@@ -2569,12 +2569,12 @@ private function copy_cfields_assignments($source_id, $target_id)
   	// transform some of our options/filters on something the 'worker' will understand
   	// when user has request filter by test case name, we do not want to display empty branches
   	// If we have choose any type of filter, we need to force remove empty test suites
-  	if( ($setOptRemove = $my['options']['remove_empty_branches']) == false) )
+  	if( ($setOptRemove = $my['options']['remove_empty_branches']) == false) 
   	{
   	  $f2c = array('testcase_name','testcase_id','execution_type','exclude_branches','importance');
     	foreach($f2c as $phi)
     	{
-    	  if( ($setOptRemove = !is_null($my['filters'][$phi]) )
+    	  if( ($setOptRemove = !is_null($my['filters'][$phi])) )
     	  {
     	    break;
     	  }  
@@ -2694,7 +2694,7 @@ private function copy_cfields_assignments($source_id, $target_id)
   	if( !is_null($tclist) )
   	{
   		$filterOnTC = false;
-  		$glav = $sprintf($staticSql['glav'], implode($tclist,',');
+  		$glav = $sprintf($staticSql['glav'], implode($tclist,','));
   		$ssx = " /* Get LATEST ACTIVE tcversion MAIN ATTRIBUTES */ " .
   				   " SELECT TCV.id AS tcversion_id, TCV.tc_external_id AS external_id, SQ.tc_id " .
   		   		 " FROM {$this->tables['tcversions']} TCV " . 
@@ -2731,7 +2731,7 @@ private function copy_cfields_assignments($source_id, $target_id)
   		if( $filterOnTC )
   		{
   			$ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;
-  			if( count($ky) > 0 )=>
+  			if( count($ky) > 0 )
   			{
   				foreach($ky as $tcase)
   				{

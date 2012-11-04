@@ -52,7 +52,7 @@ switch($args->feature)
 		$item_mgr = new testcase($db);
 		$gui->viewerArgs['refresh_tree'] = 'no';
     	
-   		// has been called from a test case search
+   	// has been called from a test case search
   	if(!is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)
 	  {
 		  $gui->viewerArgs['show_title'] = 'no';
@@ -77,7 +77,6 @@ switch($args->feature)
 		
 	    $platform_mgr = new tlPlatform($db,$args->tproject_id);
 	    $gui->platforms = $platform_mgr->getAllAsMap();
-      $gui->attachments[$args->id] = $item_mgr->getAttachmentInfos($args->id);
 	    $gui->direct_link = $item_mgr->buildDirectWebLink($_SESSION['basehref'],$args->id);
 	  }
     $gui->id = $args->id;

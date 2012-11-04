@@ -8,12 +8,7 @@
  *
  * SCOPE: Definition of report/metrics menu 
  * 
- * @internal revisions:
- *  20110713 - asimon - added test cases not run on any platform
- *	20110515 - franciscom - new xls report using codeplex
- *	20110312 - franciscom - added logic to include custom_reports.cfg.php
- *  20100903 - Julian - BUGID 37006 - disabled uncovered_testcases report 
- *  20100731 - asimon - added results by tester per build and assignment overview
+ * @internal revisions
  *
  * *********************************************************************************** */
 

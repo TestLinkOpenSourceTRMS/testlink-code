@@ -15,6 +15,7 @@
  */
 class tlTreeMenu
 {
+  const REFRESH_GUI = true;
 
 	private $db = null;
 	private $tprojectMgr = null;

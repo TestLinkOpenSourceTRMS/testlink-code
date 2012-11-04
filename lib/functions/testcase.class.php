@@ -696,6 +696,8 @@ class testcase extends tlObjectWithAttachments
 		  	foreach($idSet as $key => $tc_id)
 		  	{
 		  		$tc_array = $this->get_by_id($tc_id,$version_id);
+		  		new dBug($tc_array);
+		  		
 		  		if (!$tc_array)
 		  		{
 		  			continue;

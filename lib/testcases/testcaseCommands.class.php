@@ -110,7 +110,6 @@ class testcaseCommands
 
 		$obj->main_descr = '';
 		$obj->name = '';
-    $obj->refreshTree=0;
 	  $obj->sqlResult = '';
    	$obj->step_id = -1;
    	$obj->step_set = '';
@@ -119,19 +118,19 @@ class testcaseCommands
     	
     $obj->tcase_id = property_exists($argsObj,'tcase_id') ? intval($argsObj->tcase_id) : -1;
 
-    $p2check = 'goback_url';
-    $obj->$p2check = '';
-    if( property_exists($argsObj,$p2check) )
+    $p2check = array('goback_url' => '', 'show_mode' => 'show', 'refreshTree' => !tlTreeMenu::REFRESH_GUI);
+    foreach($p2check as $prop => $value)
     {
-    	$obj->$p2check = !is_null($argsObj->$p2check) ? $argsObj->$p2check : ''; 
+      if( property_exists($argsObj,$prop) && !is_null($argsObj->$prop) )
+      {
+    	  $obj->$prop = $argsObj->$prop;
+      }
+      else
+      {
+        $obj->$prop = $value;
+      }
     }
     
-    $p2check = 'show_mode';
-    if( property_exists($argsObj,$p2check) )
-    {
-    	$obj->$p2check = !is_null($argsObj->$p2check) ? $argsObj->$p2check : 'show'; 
-    }
-
 		// need to check where is used -> on cancel button on tcStepEdit.tpl
     $obj->loadOnCancelURL = "archiveData.php?tproject_id={$obj->tproject_id}&edit=testcase" . 
         						        "&show_mode={$obj->show_mode}&id=%s&version_id=%s";
@@ -175,8 +174,6 @@ class testcaseCommands
 	 */
 	function create(&$argsObj,$oWebEditorKeys,$userInput)
 	{
-	  new dBug($argsObj);
-
     $guiObj = $this->initGuiBean($argsObj);
     $guiObj->initWebEditorFromTemplate = true;
  
@@ -185,12 +182,12 @@ class testcaseCommands
 		$guiObj->tsuite = array('name' => $info['name']);
     $guiObj->main_descr = lang_get('testsuite') . $this->sep_1 . $info['name'] . $this->sep_2 . lang_get('title_new_tc');
     
-		$importance_default = config_get('testcase_importance_default');
 		$tcStatusConfig = getConfigAndLabels('testCaseStatus');
 
-    $tc_default=array('id' => 0, 'name' => '', 'importance' => $importance_default,
-  	                  'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL,
-  	                  'status' => $tcStatusConfig['cfg']['draft']);
+    $guiObj->tc = array('id' => 0, 'name' => '', 'importance' => config_get('testcase_importance_default'),
+  	                    'execution_type' => testcase::EXECUTION_TYPE_MANUAL,
+  	                    'estimated_execution_duration' => '',
+  	                    'status' => $tcStatusConfig['cfg']['draft']);
 
     	
     list($guiObj->optionTransfer,$guiObj->optionTransferJSObject) = $this->initKeywordGuiControl($argsObj,$userInput);                                        
@@ -204,7 +201,6 @@ class testcaseCommands
 				$this->tcaseMgr->html_table_of_custom_field_inputs(null,null,'design','',null,null,
 				                                                   $argsObj->tproject_id,$locationFilter, $_REQUEST);
 		}	
-    $guiObj->tc = $tc_default;
 		$templateCfg = templateConfiguration('tcNew');
 		$guiObj->template = $templateCfg->default_template;
 		
@@ -218,14 +214,10 @@ class testcaseCommands
 	function doCreate(&$argsObj,$oWebEditorKeys,$request)
 	{
     $guiObj = $this->create($argsObj,$oWebEditorKeys,$request);
-
-
-    new dBug($guiObj);
-    
 		$item = array('parent_id' => $argsObj->tsuiteID, 'name' => $argsObj->name,
 					        'summary' => $argsObj->summary, 'preconditions' => $argsObj->preconditions,
 					        'steps' => $argsObj->tcaseSteps, 'author_id' => $argsObj->user_id,
-					        'keywords_id' => $argsObj->assigned_keywords_list,
+					        'keywords_id' => $argsObj->assigned_keyword_list,
 					        'tc_order' => config_get('treemenu_default_testcase_order'), 
 					        'execution_type' => $argsObj->exec_type,
 					        'importance' => $argsObj->importance, 'status' => $argsObj->tc_status,
@@ -252,7 +244,6 @@ class testcaseCommands
 			     	                                                                NO_FILTER_SHOW_ON_EXEC,'testcase');
 			
 
-				// new dBug($_REQUEST);
 				$this->tcaseMgr->cfield_mgr->design_values_to_db($_REQUEST,$tcase['tcversion_id'],$cf_map);
 
 		   	$guiObj->user_feedback = sprintf(lang_get('tc_created'),$argsObj->name);
@@ -275,13 +266,10 @@ class testcaseCommands
 			$guiObj->user_feedback = lang_get('error_tc_add');
 			$guiObj->user_feedback .= '' . $tcase['msg'];
 	    $guiObj->sqlResult = 'ko';
-    	$opt_list = $argsObj->assigned_keywords_list;
+    	$opt_list = $argsObj->assigned_keyword_list;
     	$guiObj->initWebEditorFromTemplate = false;
 		}
-    
-    keywords_opt_transf_cfg($otCfg, $opt_list);
-    $guiObj->opt_cfg=$otCfg;
-		
+	
 		$templateCfg = templateConfiguration('tcNew');
 		$guiObj->template=$templateCfg->default_template;
 		return $guiObj;    
@@ -870,9 +858,9 @@ class testcaseCommands
 
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
 		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
-        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
-    	$templateCfg = templateConfiguration('tcStepEdit');
-  		$guiObj->template=$templateCfg->default_template;
+    $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
+    $templateCfg = templateConfiguration('tcStepEdit');
+  	$guiObj->template=$templateCfg->default_template;
 		return $guiObj;
 	}
 	
@@ -891,6 +879,7 @@ class testcaseCommands
    	$guiObj->has_been_executed = $argsObj->has_been_executed;
 		$guiObj->steps_results_layout = $this->cfg->spec->steps_results_layout;
 
+    $guiObj->user_feedback = isset($userFeedback['msg']) ? $userFeedback['msg'] : '';
     if($userFeedback['status_ok'])
 		{
       $guiObj->user_feedback = '';
@@ -901,10 +890,6 @@ class testcaseCommands
 
 			$this->tcaseMgr->cfield_mgr->design_values_to_db($request,$argsObj->tcversion_id,$cf_map);
       $guiObj->attachments[$argsObj->tcase_id] = $this->tcaseMgr->getAttachmentInfos($argsObj->tcase_id);
-		}
-		else
-		{
-      $guiObj->user_feedback = $userFeedback['msg'];
 		}
 
     $viewer_args['refreshTree'] = $guiObj->refreshTree;
@@ -944,6 +929,26 @@ class testcaseCommands
     $widget->optionTransferJSObject = json_encode($inputNames);
     
     return array($widget->optionTransfer,$widget->optionTransferJSObject);
+  }
+
+
+	function doCreateNewVersion(&$argsObj,$oWebEditorKeys,$userInput)
+	{
+  	
+    $guiObj = $this->initGuiBean($argsObj);
+  	
+
+  	$viewer_args['action'] = "do_update";
+  	$viewer_args['refreshTree'] = !tlTreeMenu::REFRESH_GUI;
+  	$viewer_args['user_feedback'] = '';
+  	$viewer_args['msg_result'] = '';
+  	$op = $this->tcaseMgr->create_new_version($args->tcase_id,$args->user_id,$args->tcversion_id);
+  	if ($op['msg'] == "ok")
+  	{
+  		$viewer_args['user_feedback'] = sprintf(lang_get('tc_new_version'),$op['version']);
+  		$viewer_args['msg_result'] = 'ok';
+  	}
+  	$this->show($argsObj,$userInput);					         
   }
 
 } // end class  

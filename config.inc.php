@@ -22,6 +22,7 @@
  * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
+ * 20121104 - franciscom - TICKET - new config option custom_execution_types
  **/
 
 /* [INITIALIZATION] - DO NOT CHANGE THE SECTION */
@@ -40,6 +41,7 @@ $tlCfg->spec_cfg = new stdClass();
 $tlCfg->exec_cfg = new stdClass();
 $tlCfg->exec_cfg->view_mode = new stdClass();
 $tlCfg->exec_cfg->exec_mode = new stdClass();
+$tlCfg->custom_execution_types = null;
 
 $tlCfg->gui = new stdClass();
 $tlCfg->gui->custom_fields = new stdClass();

@@ -11,7 +11,7 @@
  *
  * @internal revisions
  * @since 2.0
- * 
+ * 20121104 - franciscom - TICKET 5321: Test Case Execution Types - Possibility to add custom values 
  */
 
 /** related functionality */
@@ -146,8 +146,17 @@ class testcase extends tlObjectWithAttachments
 	*/
 	static function get_execution_types()
 	{
-		  return array(self::EXECUTION_TYPE_MANUAL => lang_get('manual'),
-                   self::EXECUTION_TYPE_AUTO => lang_get('automated'));
+	  $stdSet = array(self::EXECUTION_TYPE_MANUAL => lang_get('manual'),
+                    self::EXECUTION_TYPE_AUTO => lang_get('automated'));
+    
+    if( !is_null($customSet = config_get('custom_execution_types')) )
+    {
+      foreach($customSet as $code => $lbl)
+      {
+        $stdSet[$code] = lang_get($lbl);
+      }    
+    }
+    return $stdSet;                    
 	}
 
 
@@ -4403,15 +4412,15 @@ class testcase extends tlObjectWithAttachments
 	/**
 	 * 
  	 *
-     */
+   */
 	function buildDirectWebLink($base_href,$id,$tproject_id=null)
 	{
-	    list($external_id,$prefix,$glue,$tc_number) = $this->getExternalID($id,$tproject_id);
+    list($external_id,$prefix,$glue,$tc_number) = $this->getExternalID($id,$tproject_id);
 
 		$dl = $base_href . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . 
 		      '&item=testcase&id=' . urlencode($external_id);
-        return $dl;
-    }
+    return $dl;
+  }
 
   /**
 	 * 

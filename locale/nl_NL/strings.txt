@@ -121,10 +121,10 @@ $TLS_months	= "maanden";
 $TLS_monitor	= "Monitor";
 
 $TLS_name = "Naam";
-$TLS_navigator_add_remove_tcase_to_tplan	= "Add/Remove Test Cases";
-$TLS_navigator_tc_exec_assignment = "Execution assignment";
+$TLS_navigator_add_remove_tcase_to_tplan	= "Testgevallen Toevoegen / Verwijderen";
+$TLS_navigator_tc_exec_assignment = "Toekennen uitvoering";
 $TLS_navigator_test_urgency = "Test Case urgency assignment";
-$TLS_navigator_update_linked_tcversions = "Update Linked Test Case Versions";
+$TLS_navigator_update_linked_tcversions = "Gewijzigde Testgeval versies bijwerken";
 $TLS_needed = "Needed";
 $TLS_not_aplicable = "n.v.t.";
 $TLS_nobody = "Niemand";
@@ -237,7 +237,7 @@ $TLS_btn_new_revision = "Nieuwe revisie creëren";
 $TLS_btn_ok = "OK";
 $TLS_btn_print = "Afdrukken";
 $TLS_btn_print_view = "View afdrukken";
-$TLS_btn_save = "Bewaar";
+$TLS_btn_save = "Opslaan";
 $TLS_btn_unassign = "Niet toekennen";
 $TLS_btn_uncheck = "Uncheck";
 $TLS_btn_update = "Bijwerken";
@@ -704,7 +704,7 @@ $TLS_was_success = " was succesvol ";
 $TLS_logical_and = "En";
 $TLS_logical_or = "Of";
 $TLS_btn_apply_filter = $TLS_btn_apply;
-$TLS_btn_reset_filters = "Reset Filters";
+$TLS_btn_reset_filters = " Reset Filters ";
 $TLS_caption_nav_filters = "Filters";
 $TLS_caption_nav_settings = "Instellingen";
 $TLS_current_build = "Huidige build";
@@ -729,13 +729,13 @@ $TLS_req_spec_type = "Req. Spec. Type";
 $TLS_btn_hide_cf = "Verberg Gebruikersvelden";
 $TLS_btn_show_cf = "Toon Gebruikersvelden";
 $TLS_btn_export_testplan_tree = 'Exporteer Testplan';
-$TLS_expand_tree = "Alles uitvouwen";
-$TLS_collapse_tree = "Alles samenvouwen";
+$TLS_expand_tree = " Alles uitvouwen ";
+$TLS_collapse_tree = " Alles samenvouwen ";
 
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;
-$TLS_btn_apply_filter = "Pas filter toe";
+$TLS_btn_apply_filter = " Pas filter toe ";
 $TLS_btn_update_menu = "Update menu";
 $TLS_caption_nav_filter_settings = "Navigatie Filter & Instellingen";
 $TLS_current_build = "Huidige oplevering";
@@ -766,7 +766,7 @@ $TLS_show_only_active = "Toon metrieken alleen voor actieve Testplannen";
 // ----- gui/templates/newest_tcversions.tpl -----
 $TLS_linked_version = "Gekoppelde versie";
 $TLS_newest_version = "Nieuwste aanwezige actieve versie";
-$TLS_title_newest_tcversions = "Nieuwste versies of gekoppelde Testgevallen";
+$TLS_title_newest_tcversions = "Nieuwste versies van gekoppelde Testgevallen";
 $TLS_no_newest_version_of_linked_tcversions = "Alle gekoppelde Testgeval Versies zijn huidig";
 
 
@@ -1358,46 +1358,46 @@ $TLS_session_inactivity_timeout_at = "Session idle timeout at";
 
 // ----- gui/templates/planAddTC_m1.tpl -----
 $TLS_add_tc = "Toevoegen";
-$TLS_adding_tc = "adding";
-$TLS_removal_tc = "removal";
-$TLS_added_on_date = "Added on date";
-$TLS_info_added_on_date = "Date when Test Case was added to Test Plan";
-$TLS_empty_tc_summary = "<i>Test Case Summary is empty</i>";
+$TLS_adding_tc = "toevoegen";
+$TLS_removal_tc = "verwijderen";
+$TLS_added_on_date = "Toegevoegd op datum";
+$TLS_info_added_on_date = "Datum wanneer Testgeval aan Testplan werd toegevoegd";
+$TLS_empty_tc_summary = "<i>Testgeval Samenvatting is leeg</i>";
 $TLS_add_remove_selected_tc_hint = "Operatie zal worden toegepast op ALLE Test suites";
 $TLS_btn_add_remove_selected_tc = "Voeg toe / Verwijder geselecteerde";
 $TLS_btn_add_selected_tc = "Voeg geselecteerde toe";
-$TLS_btn_save_exec_order = "Save order";
-$TLS_btn_save_custom_fields ="Save custom fields";
-$TLS_btn_save_platform ="Save platform";
-$TLS_check_uncheck_all_tc = "Check/uncheck all Test Cases";
-$TLS_check_uncheck_all_tc_for = "Check/uncheck all Test Cases for";
-$TLS_check_uncheck_tc_with_platform = "Check/uncheck Test Cases with Platform";
-$TLS_for = "for";
+$TLS_btn_save_exec_order = "Volgorde opslaan";
+$TLS_btn_save_custom_fields = "Gebruikersvelden opslaan";
+$TLS_btn_save_platform = "Platform opslaan";
+$TLS_check_uncheck_all_tc = "Alle Testgevallen aan/uitvinken";
+$TLS_check_uncheck_all_tc_for = "Alle Testgevallen aan/uitvinken voor";
+$TLS_check_uncheck_tc_with_platform = "Testgevallen met Platform aan/uitvinken";
+$TLS_for = "voor";
 $TLS_check_uncheck_tc = "Alle Testgevallen in de Test Suite.";
-$TLS_check_uncheck_all_checkboxes = "check/uncheck all";
-$TLS_check_uncheck_all_checkboxes_for_add = "check/uncheck all (for add)";
-$TLS_check_uncheck_all_checkboxes_for_rm = "check/uncheck all (for remove)";
-$TLS_executed_can_not_be_removed = "Executed test cases can not be removed.";
-$TLS_execution_order = "Execution order";
+$TLS_check_uncheck_all_checkboxes = "alles aan/uitvinken";
+$TLS_check_uncheck_all_checkboxes_for_add = "alles aan/uitvinken (voor toevoegen)";
+$TLS_check_uncheck_all_checkboxes_for_rm = "alles aan/uitvinken (voor verwijderen)";
+$TLS_executed_can_not_be_removed = "Uitgevoerde Testgevallen kunnen niet worden verwijderd.";
+$TLS_execution_order = "Volgorde van uitvoering";
 $TLS_select_all_to_add = "Select/deselect all Test Cases to add";
 $TLS_select_all_to_remove = "Select/deselect all Test Cases to remove";
-$TLS_tester_assignment_on_add = "Assign to user on add";
-$TLS_build_to_assign_on_add = "on build";
+$TLS_tester_assignment_on_add = "Bij toevoegen ken toe aan gebruiker ";
+$TLS_build_to_assign_on_add = "voor Oplevering";
 
 $TLS_has_been_executed = "is uitgevoerd";
 $TLS_inactive_testcase = "inactief";
 $TLS_no_testcase_available = "Geen Testgeval beschikbaar";
 $TLS_note_keyword_filter = "Testgevallen zijn gefilterd aan de hand van steekwoorden";
 $TLS_remove_tc = "Verwijder";
-$TLS_show_tcase_spec = "Show Test Case specification";
+$TLS_show_tcase_spec = "Toon Testgeval specificatie";
 $TLS_th_test_case = "Testgevallen";
 $TLS_title_add_remove_test_to_plan = "Voeg toe/Verwijder Testgevallen van/naar Testplan";
 $TLS_title_add_test_to_plan = "Voeg Testgevallen toe aan Testplan";
 $TLS_warning_add_remove_selected_tc = "Waarschuwing! Weet u zeker dat u de geselecteerde Testgevallen uit het Testplan wil verwijderen?";
-$TLS_warning_remove_executed = "You are going to remove Test Cases from this Test Plan. \\n" .
-		                       "Some Test Cases have been executed. \\n" .
-				       "With this action you will delete ALL execution results.\\n" .
-					"Are you sure ?";
+$TLS_warning_remove_executed = "U gaat Testgevallen verwijderen van dit Testplan.  \\n" .
+		                       "Sommige Testgevallen zijn uitgevoerd. \\n" .
+				       "Hiermee verwijdert u ALLE tesresultaten. \\n" .
+					"Weet u het zeker?";
 
 
 // ----- gui/templates/planAddTCNavigator.tpl -----
@@ -1407,7 +1407,7 @@ $TLS_keywords_filter_help = "You can use OR/AND filtering";
 
 // ----- gui/templates/planTCNavigator.tpl -----
 $TLS_btn_update_all_testcases_to_latest_version = "Update all Test Cases to latest version";
-$TLS_btn_bulk_update_to_latest_version = "Bulk Update to latest version";
+$TLS_btn_bulk_update_to_latest_version = " Massa bijwerking naar laatste versie ";
 $TLS_caption_nav_filters = "Filters";
 
 
@@ -1420,13 +1420,14 @@ $TLS_tr_th_risk = "Risiko/Belang";
 
 
 // ----- gui/templates/planUpdateTC.tpl -----
-$TLS_btn_update_testplan_tcversions = "Update Test Plan";
+$TLS_btn_update_testplan_tcversions = "Testplan bijwerken";
 $TLS_update_to_version = "Update to version";
-$TLS_update_all_testcase_versions = "Update ALL Linked Test Case Versions";
+$TLS_update_all_testcase_versions = "Alle Testgevallen Bijwerken";
 $TLS_update_testcase_versions = "Update Linked Test Case Versions";
 $TLS_no_testcase_checked = "There are no checked Test Cases. Nothing will be done";
 $TLS_tplan_updated = "Test Plan was updated";
-$TLS_update2latest = "<p>The whole set of Test Cases linked to Test Plan will updated to latest version.</p>";
+$TLS_update2latest = "<p>Alle Testgevallen die bij het Testplan horen worden bijgewerkt tot de nieuwste versie.
+	Vink de Testgevallen uit waar bijwerken niet gewenst is.</p>";
 $TLS_noupdateneeded="All Test Cases are already updated to the latest version";
 
 
@@ -1687,14 +1688,14 @@ $TLS_platform_imported = "Platform %s geïmporteerd";
 
 
 // ----- gui/templates/platformsAssign.tpl -----
-$TLS_platform_assignment_no_testplan = "There is no Test Plan selected.";
-$TLS_menu_assign_platform_to_testplan = "Assign to Test Plan";
+$TLS_platform_assignment_no_testplan = "Er is geen Testplan geselecteerd.";
+$TLS_menu_assign_platform_to_testplan = "Toekennen aan Testplan";
 $TLS_title_platforms = "Platforms";
-$TLS_available_platforms = "Available platforms";
-$TLS_assigned_platforms = "Assigned platforms";
-$TLS_add_remove_platforms = "Add / Remove Platforms to Test Plan: %s";
-$TLS_platform_linked_count = " (Used in %s testcases)";
-$TLS_platform_unlink_warning_title = "Platform is in use";
+$TLS_available_platforms = "Beschikbare platforms";
+$TLS_assigned_platforms = "Toegekende platforms";
+$TLS_add_remove_platforms = "Platforms toekennen aan / verwijderen van Testplan: %s";
+$TLS_platform_linked_count = " (Gebruikt in %s Testgevallen)";
+$TLS_platform_unlink_warning_title = "Platform is in gebruik";
 $TLS_platform_unlink_warning_message = "The selected platform(s) are being used and cannot be removed." .
                                        "<br/><br/>To remove the platform you must first remove all Test " .
                                        "Cases assigned to this platform.";
@@ -1954,15 +1955,15 @@ $TLS_wrong_results_import_format = "Wrong XML Results file (see documentation)";
 
 
 // ----- gui/templates/plan/setUrgency.tpl -----
-$TLS_title_plan_urgency = "Test urgency for the Test suite";
-$TLS_th_urgency = "Urgency";
-$TLS_label_set_urgency_ts = "Set all Test Suite urgency: ";
-$TLS_btn_set_urgency_tc = "Set urgency for individual testcases";
-$TLS_urgency_description = "Urgency value affects priority of test cases " .
-		"for execution and reporting. Medium test urgency is default value.";
-$TLS_feedback_urgency_fail = "Test urgency update fails! See event log for details.";
-$TLS_feedback_urgency_ok = "Test urgency was modified.";
-$TLS_testsuite_is_empty = 'Test suite has no test cases. Nothing can be done';
+$TLS_title_plan_urgency = "Test urgentie voor Test Suite";
+$TLS_th_urgency = "Urgentie";
+$TLS_label_set_urgency_ts = "Urgentie instellen voor hele Test Suite: ";
+$TLS_btn_set_urgency_tc = "Urgentie instellen voor individuele Testgevallen";
+$TLS_urgency_description = "Urgentie heeft invloed op prioriteit Testgevallen " .
+	"voor uitvoering en rapportage. 'Midden' is de default waarde.";
+$TLS_feedback_urgency_fail = "Test urgentie bijwerken niet gelukt. Zie event log voor details.";
+$TLS_feedback_urgency_ok = "Test urgentie is gewijzigd.";
+$TLS_testsuite_is_empty = 'Deze Test Suite heeft geen Testgevallen.';
 
 
 // ----- gui/templates/printDocOptions.tpl -----
@@ -1988,36 +1989,36 @@ $TLS_no_tc_spec_av = "Geen Test Specificatie beschikbaar!";
 
 
 // ----- gui/templates/tc_exec_assignment.tpl -----
-$TLS_all_platforms = "All platforms";
-$TLS_assign_to = "Assign to";
+$TLS_all_platforms = "Alle platforms";
+$TLS_assign_to = "Toekennen aan ";
 $TLS_btn_do = "Doe";
-$TLS_btn_update_selected_tc = "Bewaar";
-$TLS_can_not_execute = " (No execution right)";
-$TLS_check_uncheck_children_checkboxes = "Toggle all test case selections (incluing children test suites)";
+$TLS_btn_update_selected_tc = "Opslaan";
+$TLS_can_not_execute = " (Geen rechten om uit te voeren)";
+$TLS_check_uncheck_children_checkboxes = "Alle Testgeval selecties omschakelen (inclusief dochter Test Suites)";
 $TLS_title_tc_exec_assignment = "Toekennen van Testgevallen uitvoer taken voor testplan ";
 $TLS_user = "Gebruiker";
 $TLS_user_bulk_assignment = "Bulk gebruikerstoekenning";
 
 
 // ----- tc_exec_assignment.php -----
-$TLS_mail_subject_testcase_assigned = 'Test Link - Test Case Assignment - Test Plan';
-$TLS_mail_subject_testcase_assignment_removed = 'Test Link - Test Case Assignment REMOVED - Test Plan';
-$TLS_mail_testcase_assigned = "Following Test Cases has been assigned to you %s by %s <br /><br />";
-$TLS_mail_testcase_assignment_removed = "%s - Your following Test Cases assigments AS BEEN REMOVED  by %s <br /><br />";
-$TLS_send_mail_to_tester = "Send mail notification to tester";
+$TLS_mail_subject_testcase_assigned = 'TestLink - Testgeval Toekenning - Testplan';
+$TLS_mail_subject_testcase_assignment_removed = 'TestLink - Testgeval Toekenning VERWIJDERD - Testplan';
+$TLS_mail_testcase_assigned = "Volgende Testgevallen zijn aan u toegekend %s door %s <br /><br />";
+$TLS_mail_testcase_assignment_removed = "%s - Uw volgende Testgeval toekenningen ZIJN VERWIJDERD door %s <br /><br />";
+$TLS_send_mail_to_tester = "E-mail notificatie aan tester sturen";
 
 
 // ----- gui/templates/tc_exec_unassign_all.tpl -----
-$TLS_btn_remove_all_tester_assignments = "Unassign all testers from selected Build";
+$TLS_btn_remove_all_tester_assignments = "Alle test toekenningen verwijderen van Oplevering";
 
 
 // ----- gui/templates/tc_exec_unassign_all.php -----
-$TLS_number_of_assignments_per_build = "There are %d execution assignments for Build %s";
-$TLS_unassign_all_tcs_warning_msg = "If you click the Yes-Button, all tester assignments will be removed from the Build %s.";
-$TLS_unassign_all_tcs_msgbox_title = "Really remove all tester assignments?";
-$TLS_unassigned_all_tcs_msg = "All tester assignments have been deleted from the Build %s.";
-$TLS_no_testers_assigned_to_build  = "There are no testers assigned to Test Cases in the Build %s.";
-$TLS_remove_all_tester_assignments_title = "Remove all tester assignments";
+$TLS_number_of_assignments_per_build = "Er zijn %d uitvoeringstoekenningen voor Oplevering %s";
+$TLS_unassign_all_tcs_warning_msg = "Als u Ja klikt, worden alle tester toekeninngen verwijderd van Oplevering %s.";
+$TLS_unassign_all_tcs_msgbox_title = "Echt alle tester toekenningen verwijderen?";
+$TLS_unassigned_all_tcs_msg = "Alle tester toekenningen zijn verwijderd van Oplevering %s.";
+$TLS_no_testers_assigned_to_build  = "Er zijn geen testers toegekend aan Testgevallen in Oplevering %s.";
+$TLS_remove_all_tester_assignments_title = "Verwijder alle tester toekenningen";
 
 
 // ----- gui/templates/testSetNavigator.tpl -----
@@ -2521,15 +2522,14 @@ $TLS_warning_duplicate_tplan_name = "Er bestaat al een Testplan met deze naam. K
 
 
 // ----- lib/platforms/platformsAssign.php -----
-$TLS_unknown_platform="Warning!<br>" .
-		                  " In this Test Plan there are Test Case versions without platform assignment. " .
-				  " This probably means that you worked on this Test Plan before " .
-				  " assigning platforms.<br>" .
-				  " After you have assigned platforms to this Test Plan you MUST " .
-				  " go to the 'add/remove Test Cases' feature to assign the right platform " .
-				  " to your linked Test Cases.<br>".
-				  " To simplify your work, if you now assign here ONE platform to a Test Plan " .
-				  " without platforms, all linked Test Cases will be updated with this platform. ";
+$TLS_unknown_platform="Waarschuwing!<br /><br />" .
+	"In dit Testplan zijn er Testgeval versies zonder toekenning aan een Platform. " .
+	"Dit betekent waarschijnlijk dat u op dit Testplan heeft gewerkt voordat u platforms " . 
+	"heeft toegekend. <br /><br />" .
+	"Nadat u platforms aan dit Testplan heeft toegekend MOET u naar 'Testgevallen toevoegen / verwijderen' " .
+	"gaan om het juiste platform naar uw Testgevallen toe te kennen. " .
+	"Om dit eenvoudiger te maken, als u nu ÉÉN platform toekent aan een Testplan zonder platforms, " .
+	"worden alle toegekende Testgevallen bijgewerkt met dit Platform. ";
 
 
 // ----- lib/results/printDocOptions.php -----

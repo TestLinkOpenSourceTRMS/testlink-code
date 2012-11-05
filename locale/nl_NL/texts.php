@@ -44,7 +44,7 @@ andersom. Deze koppeling ondersteunt controle van de dekking van Requirements do
 en identificeert welke Requirements succesvol werden vervuld tijdens testen.
 Deze analyse kan bevestigen dat aan alle verwachtingen is voldaan.</p>
 
-<h2>Werkmethode</h2>
+<h2>Werkwijze</h2>
 <p> Als u bezig bent met werkzaamheden kunt u terugkeren naar dit uitleg door op de naam van het 
 Testproject bovenaan de boomstructuur links te klikken.</p>
 <ol>
@@ -163,7 +163,7 @@ $TLS_htmltext['printTestSpec'] 			= "<h2>Doel</h2>
 <p>Hier kunt u een document genereren &ndash; bijvoorbeeld om af te drukken of te e-mailen &ndash; met 
 de Testgevallen in een Test Suite, of alle Testgevallen in een Testproject.</p> 
 
-<h2>Werkmethode</h2>
+<h2>Werkwijze</h2>
 <ol>
 		<li>Selecteer de onderdelen die u wilt meenemen in het paneel linksboven.</li>
 		<li>Gebruik de 'Toon als' drop-box in het navigatiepaneel om te kiezen tussen
@@ -222,7 +222,7 @@ $TLS_htmltext['printReqSpec'] = "<h2>Doel</h2>
 <p>Hier kunt u een document genereren &ndash; bijvoorbeeld om af te drukken of te e-mailen &ndash; met 
 de Requirements in een Requirements Specificatie, of alle Requirements in een Testproject.</p> 
 
-<h2>Werkmethode</h2>
+<h2>Werkwijze</h2>
 <ol>
 		<li>Selecteer de onderdelen die u wilt meenemen in het paneel linksboven.</li>
 		<li>Gebruik de 'Toon als' drop-box in het navigatiepaneel om te kiezen tussen
@@ -268,7 +268,7 @@ $TLS_htmltext['executeTest'] 		= "<h2>Doel</h2>
 <p>Hier kunt u Testgevallen uitvoeren: een testresultaat opgeven voor een Testgeval voor
 een bepaalde Oplevering.</p>
 
-<h2>Werkmethode</h2>
+<h2>Werkwijze</h2>
 
 <ol>
 	<li>Tenminste één Oplevering moet gedefinieerd zijn voor het Testplan.</li>
@@ -358,65 +358,79 @@ gegevens wordt export naar Excel aanbevolen.</p>
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planAddTC']	= "Add / Remove Test Cases to Test Plan"; // testSetAdd
-$TLS_htmltext['planAddTC'] 			= "<h2>Purpose:</h2>
-<p>Allows user (with lead level permissions) to add Test Cases to, or remove them from, a Test Plan.</p>
+$TLS_htmltext_title['planAddTC']	= "Testgevallen Toevoegen Aan / Verwijderen Van Testplan"; // testSetAdd
+$TLS_htmltext['planAddTC'] 			= "<h2>Doel</h2>
+	<p>Op deze pagina kan een gebruiker (met testleider rechten) Testgevallen toevoegen aan,
+	of verwijderen van, een Testplan.</p>
 
-<h2>To add or remove Test Cases:</h2>
+<h2>Werkwijze</h2>
 <ol>
-	<li>Click on a Test Suite to see all of its child Test Suites and Test Cases.</li>
-	<li>When you have selected the required Test Cases click the 'Add / Remove Selected' button. 
-		Note: it is not possible to add the same Test Case multiple times.</li>
-</ol>";
-
-// ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['tc_exec_assignment']	= "Assign Testers to test execution";
-$TLS_htmltext['tc_exec_assignment'] 		= "<h2>Purpose</h2>
-<p>This page allows test leaders to assign users to particular Test Cases within the Test Plan.</p>
-
-<h2>Get Started</h2>
-<ol>
-	<li>Choose a Test Case or Test Suite to test.</li>
-	<li>Select a planned tester.</li>
-	<li>Click the 'Save' button to submit assignment.</li>
-	<li>Open the execution page to verify the assignment. You can set up a filter for users.</li>
-</ol>";
-
-// ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planUpdateTC']	= "Update Test Cases in the Test Plan";
-$TLS_htmltext['planUpdateTC'] 		= "<h2>Purpose</h2>
-<p>This page allows the updating of a Test Case to a newer (different) version if a Test
-Specification is changed. It often happens that some functionality is clarified during testing. " .
-		" The user modifies the Test Specification, but the changes need to propagate to the Test Plan too. </p>
-
-<h2>Get Started</h2>
-<ol>
-	<li>Choose a Test Case or Test Suite to update.</li>
-	<li>Choose a new version from the combo-box menu for a particular Test Case.</li>
-	<li>Click the 'Update Test plan' button to submit changes.</li>
-	<li>To verify: open the execution page and view the header of the Test Case(s).</li>
-</ol>";
-
-
-// ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['test_urgency']	= "Specify tests with high or low urgency";
-$TLS_htmltext['test_urgency'] 		= "<h2>Purpose</h2>
-<p>TestLink allows setting the urgency of a Test Suite to affect the test priority of Test Cases. 
-		Test priority depends on both Importance of Test Cases and Urgency defined in 
-		the Test Plan. The Test Leader should specify a set of Test Cases that should be tested
-		first. This helps to ensure that testing will cover the most important tests
-		when under time pressure.</p>
-
-<h2>Get Started</h2>
-<ol>
-	<li>Choose a Test Suite in the navigation panel on the left side of the page.</li>
-	<li>Choose an urgency level (high, medium or low). Medium is the default. You can
-	decrease priority for untouched parts of product and increase for components with
-	significant changes.</li>
-	<li>Click the 'Save' button to submit changes.</li>
+	<li>Klik op een Test Suite om alle dochter Test Suites en Testgevallen te zien.</li>
+	<li>Klik op de gewenste Testgevallen en dan op de 'Voeg toe / Verwijder geselecteerde' knop.
+		Het is niet mogelijk om een Testgeval meerdere keer toe te voegen aan een Testplan.</li>
 </ol>
-<p><i>For example, a Test Case with a High importance in a Test suite with Low urgency " .
-		"will be Medium priority.</i>";
+";
+
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['tc_exec_assignment']	= "Testers toekennen voor test uitvoering";
+$TLS_htmltext['tc_exec_assignment'] 		= "<h2>Doel</h2>
+<p>Op deze pagina kunnen testleiders testers toekennen aan Testgevallen binnen een bepaald Testplan.
+U kunt steeds naar deze pagina terugkeren door op het Testproject te klikken, bovenaan de 
+boomstructuur. </p>
+
+<h2>Werkwijze</h2>
+<ol>
+	<li>Kies een Test Suite of Testgeval in de boomstructuur.</li>
+	<li>Kies een tester in de selectielijst naast het Testgeval.</li>
+	<li>Klik de 'Opslaan' knop bovenaan om de Testgevallen toe te kennen</li>
+</ol>
+
+<h2>Bulk toewijzing</h2>
+<ol>
+	<li>Kies een Test Suite in de boomstructuur.</li>
+	<li>Selecteer de gewenste Testgevallen. Gebruik desgewenst de 'alles aan/uitvinken' optie bovenaan.</li>
+	<li>Selecteer de gewenste tester bovenaan ('Bulk gebruikerstoekenning').</li>
+	<li>Klik de 'doe' knop naast de naam van de tester.</li>
+	<li>Klik de 'Opslaan' knop bovenaan om de Testgevallen toe te kennen</li>
+</ol>
+";
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['planUpdateTC']	= "Testgeval versies bijwerken in het Testplan";
+$TLS_htmltext['planUpdateTC'] 		= "<h2>Doel</h2>
+	<p>Hier kunt u een Testgeval bijwerken tot een andere (meestal nieuwe) versie, als een 
+	Testspecificatie gewijzigd is. Het komt vaak voor dat functionaliteit wordt gewijzigd,
+	of een Testgeval wordt gecorrigeerd. Deze wijzigingen moeten worden doorgevoerd in het
+	relevante Testplan (of Testplannen). </p>
+
+<h2>Werkwijze</h2>
+<ol>
+	<li>In de boomstructuur, kies een Testgeval of Test Suite om bij te werken.</li>
+	<li>Kies een andere versie uit de selectielijst voor elk Testgeval waar dat
+	gewenst is.</li>
+	<li>Klik de 'Testplan bijwerken' knop onderaan.</li>
+</ol>";
+
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['test_urgency']	= "Testen specificeren met hoge of lage prioriteit";
+$TLS_htmltext['test_urgency'] 		= "<h2>Doel</h2>
+<p>Met TestLink kunt u de urgentie van een Testgeval instellen. Samen met het belang definieert
+die de prioriteit van een Testgeval. Bij voorbeeld: een Testgeval met hoog belang in een Test Suite
+met lage urgentie zal prioriteit 'midden' krijgen.</p> 
+
+<p>U kunt bijvoorbeeld een lagere urgentie instellen voor
+delen die in deze release niet zijn gewijzigd en hoge urgentie voor delen met vele wijzigingen.
+Dit helpt om te zorgen dat de meest belangrijke testen worden uitgevoerd als men in tijdsnood zit.</p>
+
+<h2>Werkwijze</h2>
+<ol>
+	<li>Kies een Test Suite in de boomstructuur links.</li>
+	<li>Kies een urgentie niveau (hoog, midden, laag) Midden is de default.</li>
+	<li>Klik de 'Opslaan' knop.</li>
+</ol>
+";
 
 
 // ------------------------------------------------------------------------------------------

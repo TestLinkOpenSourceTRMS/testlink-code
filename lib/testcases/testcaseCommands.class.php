@@ -204,6 +204,7 @@ class testcaseCommands
 		$templateCfg = templateConfiguration('tcNew');
 		$guiObj->template = $templateCfg->default_template;
 		
+		new dBug($guiObj);
     return $guiObj;
 	}
 

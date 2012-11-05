@@ -33,15 +33,15 @@ class testproject extends tlObjectWithAttachments
 	var $db;
 	var $tree_manager;
 	var $cfield_mgr;
+	var $cfg;
 
-    // Node Types (NT)
-    var $nt2exclude=array('testplan' => 'exclude_me',
-	                      'requirement_spec'=> 'exclude_me',
+
+  // Node Types (NT)
+  var $nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me',
 	                      'requirement'=> 'exclude_me');
 
 
-    var $nt2exclude_children=array('testcase' => 'exclude_my_children',
-							       'requirement_spec'=> 'exclude_my_children');
+  var $nt2exclude_children=array('testcase' => 'exclude_my_children','requirement_spec'=> 'exclude_my_children');
 
 	/** 
 	 * Class constructor
@@ -53,6 +53,15 @@ class testproject extends tlObjectWithAttachments
 		$this->db = &$db;
 		$this->tree_manager = new tree($this->db);
 		$this->cfield_mgr = new cfield_mgr($this->db);
+
+    $this->cfg = new stdClass();
+    $this->cfg->testcase = config_get('testcase_cfg');
+		$this->cfg->results = config_get('results');
+
+		$this->cfg->nodeTypeCode = $this->tree_manager->get_available_node_types();
+		$this->cfg->nodeCodeType = array_flip($this->cfg->nodeTypeCode);	
+	
+		
 		tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
     $this->object_table = $this->tables['testprojects'];
 	}
@@ -2837,6 +2846,155 @@ private function copy_cfields_assignments($source_id, $target_id)
     return $sql;
   }
 
+
+
+	/**
+	 * Filter out the testcases that don't have the given value 
+	 * in their custom field(s) from the tree.
+	 * Recursive function.
+	 * 
+   * Important Notice on logic (see section Apply Query To Filter): 
+   * CF are linked to Test case versions.
+   * When there are multiple versions of a TC, then row count of filtering query,
+   * can be larger than the number of custom fields with the correct value,
+   * if we consider ALL TEST CASE VERSIONS.
+   * 
+   * Example: 
+   * Custom field "color", domain: red,blue,green. Default value => empty.
+   * Custom field "status" domain: draft,ready,review,rework. Default value => empty.
+   * 
+   * TC Version 1: color=red, status=empty
+   * TC Version 2: color=red, status=empty
+   * TC Version 3: color=red, status=ready
+   * TC Version 4: color=red, status=ready
+   * 
+   * Filter by color GREEN and status READY, then $rows looks like this: Array ( [0] => red, [1] => red )
+   * => count($rows) returns 2, which matches the number of custom fields we want to filter by.
+   * So TC seems OK, but instead is HAS TO BE EXCLUDED.
+   * That is wrong, because TC matches only one of the fields we were filtering by!
+   *   
+   *	 
+	 *
+	 * @author Andreas Simon
+	 * @since 1.9
+	 * 
+	 * @param array &$tcaseSet reference to test case set/tree to filter
+	 * @param array &$cfSet reference to selected custom field information
+	 * 
+	 * @return array $tcase_tree filtered tree structure
+	 * 
+	 * @internal revisions
+	 * 
+	 */
+	function filterByCFValues(&$tcaseSet, &$cfSet,$tcversionActiveAttr) 
+	{
+		static $debugMsg;
+		static $cfQty = 0;
+    static $sqlSet;
+
+		if(!$debugMsg)
+		{
+			$debugMsg = 'Function: ' . __FUNCTION__;
+			$cfQty = count($cfSet);
+      $sqlSet = array();
+      
+      $activeClause = " AND TCVX.active = ";
+      if( $tcversionActiveAttr == tlTestCaseFilterControl::ONLY_INACTIVE_TESTCASES )
+      {
+          $activeClause .= "0";
+      }
+      else
+      {
+          $activeClause .= "1";
+      }
+      $sqlSet['glaiv'] = " /* get latest TC version ID considering Active/Inactive Status */ " .
+                         " SELECT MAX(TCVX.id) AS tcv_id, NHTCVX.parent_id AS tc_id " .
+                         " FROM {$this->tables['tcversions']} TCVX " .
+                         " JOIN {$this->tables['nodes_hierarchy']} NHTCVX " .
+                         " ON NHTCVX.id = TCVX.id {$activeClause} " .
+                         " WHERE NHTCVX.parent_id = ";
+		}
+
+		$rows = null;
+		
+		// if we delete a node, numeric indexes of array do have missing numbers ('holes'),
+		// which causes problems in later loop constructs in other functions that 
+		// assume numeric keys in these arrays without 'holes' -> crashes JS tree!
+		// so reindex is needed to fix the array indexes.
+		$doReindex = false;
+
+		foreach($tcaseSet as $key => $node) 
+		{
+			if ($node['node_type_id'] == $this->cfg->nodeTypeCode['testsuite']) 
+			{
+				$doDel = true;
+				if (isset($node['childNodes']) && is_array($node['childNodes'])) 
+				{
+					$tcaseSet[$key]['childNodes'] = $this->filterByCFValues($tcaseSet[$key]['childNodes'],$cfSet,
+					                                                        $tcversionActiveAttr);
+					
+					// remove if it is empty after coming back from recursion
+					$doDel = (count($tcaseSet[$key]['childNodes']) == 0);
+				} 
+				if ($doDel) 
+				{
+					unset($tcaseSet[$key]);
+					$doReindex = true;
+				}			
+			} 
+			else if ($node['node_type_id'] == $this->cfg->nodeTypeCode['testcase']) 
+			{
+				$doDel = true;
+				$auxSQL = $sqlSet['glaiv'] . intval($node['id']) ." GROUP BY NHTCVX.parent_id ";
+        $sql = " /* $debugMsg */ SELECT CFD.value " .
+               " FROM {$this->tables['cfield_design_values']} CFD " .
+               " JOIN ($auxSQL) LAIV ON LAIV.tcv_id = CFD.node_id " .
+               " WHERE 0=0 ";
+
+				if( isset($cfSet) ) 
+				{	
+					$cf_sql = '';
+					$sqlOR = '';
+					foreach ($cfSet as $cf_id => $cf_value) 
+					{
+						$cf_sql .= $sqlOR;
+
+						if (is_array($cf_value)) 
+						{
+							$sqlAND = '';
+							foreach ($cf_value as $value) 
+							{
+								$cf_sql .= $sqlAND . "( CFD.value LIKE '%{$value}%' AND CFD.field_id = {$cf_id} )";
+								$sqlAND = " AND ";
+							}
+						} 
+						else 
+						{
+							$cf_sql .= " ( CFD.value LIKE '%{$cf_value}%' AND CFD.field_id = {$cf_id} ) ";
+						}
+						$sqlOR = " OR ";
+					}
+					$sql .=  " AND ({$cf_sql}) ";
+				}
+	
+				$rows = $this->db->fetchColumnsIntoArray($sql,'value');
+				
+				// if there exist as many rows as custom fields to be filtered by tc DOES MEET the criteria
+				if ((count($rows) != $cfQty)) 
+				{
+					unset($tcaseSet[$key]);
+					$doReindex = true;
+				}
+			}
+		}
+		
+		if ($doReindex) 
+		{
+			$tcaseSet = array_values($tcaseSet);
+		}
+		
+		return $tcaseSet;
+	}
 
 } // end class
 ?>

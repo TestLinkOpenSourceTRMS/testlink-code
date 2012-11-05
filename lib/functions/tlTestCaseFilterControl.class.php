@@ -1632,7 +1632,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 		                                                 'selected' => $build_selection));
 
 		// init menu for result selection by function from exec.inc.php
-		$this->filters[$key][$result_key]['items'] = createResultsMenu();
+		$this->filters[$key][$result_key]['items'] = testcase::createExecutionResultsMenu();
 		$this->filters[$key][$result_key]['items'][$any_result_key] = $this->option_strings['any'];
 
 		// init menu for filter method selection
@@ -1839,8 +1839,8 @@ class tlTestCaseFilterControl extends tlFilterControl
     //echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::Start!!!' . current($chronos);
     //reset($chronos);	
   
-    list($ajaxTree->tree_menu, $testcases_to_show) = execTree($this->db,$gui->menuUrl,
-                                                              $this->args->testproject_id,
+    list($ajaxTree->tree_menu, $testcases_to_show) = $this->treeMenuMgr->execTree($this->db,$gui->menuUrl,
+                                                                                  $this->args->testproject_id,
                                                               $this->args->testproject_name,
                                                               $this->args->testplan_id,
                                                               $this->args->testplan_name,

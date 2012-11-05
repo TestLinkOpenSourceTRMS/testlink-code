@@ -11,7 +11,6 @@
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once('exec.inc.php');
 require_once("specview.php");
 require_once("web_editor.php");
 
@@ -77,7 +76,7 @@ if(!is_null($linked_tcversions))
 
   if ($args->doDelete)
   {
-    delete_execution($db,$args->exec_to_delete);
+    $mgr->tcase->deleteExecution($args->exec_to_delete);
   }
 
   if($args->level == 'testcase')

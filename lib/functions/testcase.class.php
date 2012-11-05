@@ -15,8 +15,8 @@
  */
 
 /** related functionality */
-require_once( dirname(__FILE__) . '/requirement_mgr.class.php' );
-require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
+// require_once( dirname(__FILE__) . '/requirement_mgr.class.php' );
+// require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
 require_once( dirname(__FILE__) . '/users.inc.php' );
 
 /** list of supported format for Test case import/export */
@@ -93,6 +93,9 @@ class testcase extends tlObjectWithAttachments
     $this->cfg = new stdClass();
     $this->cfg->testcase = config_get('testcase_cfg');
 		$this->cfg->results = config_get('results');
+
+		$this->cfg->nodeTypeCode = $this->tree_manager->get_available_node_types();
+		$this->cfg->nodeCodeType = array_flip($this->cfg->nodeTypeCode);	
 
 		// ATTENTION:
 		// second argument is used to set $this->attachmentTableName,property that this calls
@@ -3734,8 +3737,10 @@ class testcase extends tlObjectWithAttachments
 	}
 	
 	/**
-     * given an executio id delete execution and related data.
+     * given an execution id delete execution and related data.
      *
+     * @TODO delete attachment
+
      */
     function deleteExecution($executionID)
     {
@@ -5694,10 +5699,6 @@ class testcase extends tlObjectWithAttachments
   	}
   }
 
-
-
-
-
   static function createExecutionResultsMenu()
   {
   	$cfg = config_get('results');
@@ -5856,6 +5857,6 @@ class testcase extends tlObjectWithAttachments
 
 		return $signature;        
 	}
-  
+ 
 } // end class
 ?>

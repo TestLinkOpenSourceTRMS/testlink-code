@@ -18,10 +18,6 @@
  *
  **/
 
-/** related functionality */
-require_once( dirname(__FILE__) . '/tree.class.php' );
-require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
-
 /**
  * class to coordinate and manage Test Plans
  * @package 	TestLink
@@ -47,6 +43,7 @@ class testplan extends tlObjectWithAttachments
 	var $assignment_mgr;
 	var $cfield_mgr;
 	var $tcase_mgr;
+	var $cfg;
    
 	var $assignment_types;
 	var $assignment_status;
@@ -67,7 +64,7 @@ class testplan extends tlObjectWithAttachments
 	function __construct(&$db)
 	{
     $this->db = &$db;
-	  $this->tree_manager = New tree($this->db);
+	  $this->tree_manager = new tree($this->db);
 		$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
 		$this->node_types_id_descr=array_flip($this->node_types_descr_id);
       
@@ -78,6 +75,11 @@ class testplan extends tlObjectWithAttachments
     $this->cfield_mgr = new cfield_mgr($this->db);
     $this->tcase_mgr = New testcase($this->db);
 		$this->platform_mgr = new tlPlatform($this->db);
+
+		$this->cfg->results = config_get('results');
+		$this->cfg->status_not_run = $this->cfg->results['status_code']['not_run'];
+
+
    	
 	  tlObjectWithAttachments::__construct($this->db,'testplans');
 	}
@@ -90,6 +92,8 @@ class testplan extends tlObjectWithAttachments
 	{
 	    return $this->import_file_types;
 	}
+
+
 
 	/**
 	 * creates a tesplan on Database, for a testproject.
@@ -698,8 +702,6 @@ class testplan extends tlObjectWithAttachments
 		$last_exec_subquery .= " WHERE testplan_id={$id} " . 
 					           " GROUP BY tcversion_id,testplan_id {$groupByPlatform} {$groupByBuild} )";
            
-		$resultsCfg = config_get('results');
-		$status_not_run=$resultsCfg['status_code']['not_run'];
 		$sql_subquery='';
 		
 		// franciscom
@@ -760,16 +762,10 @@ class testplan extends tlObjectWithAttachments
 			}
 		}
 
-		// 20110317
 		// not run && build_active_status = 'active', need special logic		
-		//
 		if(!is_null($my['filters']['exec_status']) )
 		{
-			// $executions['filter'] = '';
-			// $notrun['filter'] = null;
-			// $otherexec['filter'] = null;
-			
-			$notRunPresent = array_search($status_not_run,$my['filters']['exec_status']); 
+			$notRunPresent = array_search($this->cfg->status_not_run,$my['filters']['exec_status']); 
 			if($notRunPresent !== false)
 			{
 				$notrun['filter'] = " E.status IS NULL ";
@@ -905,7 +901,7 @@ class testplan extends tlObjectWithAttachments
 	    // 20110317 - 150 years 'Unita Italia'
 	    if( is_null($my['options']['forced_exec_status']) )
 		{
-			$sql .=	 " COALESCE(E.status,'" . $status_not_run . "') AS exec_status, ";
+			$sql .=	 " COALESCE(E.status,'" . $this->cfg->status_not_run . "') AS exec_status, ";
 		}
 		else
 		{
@@ -2954,7 +2950,7 @@ class testplan extends tlObjectWithAttachments
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
 		$node_types=$this->tree_manager->get_available_node_types();
-		$resultsCfg = config_get('results');
+		// $resultsCfg = config_get('results');
 		
 		$num_exec = count($buildSet);
 		$build_in = implode(",", $buildSet);
@@ -3027,7 +3023,7 @@ class testplan extends tlObjectWithAttachments
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
 		$node_types=$this->tree_manager->get_available_node_types();
-		$resultsCfg = config_get('results');
+		// $resultsCfg = config_get('results');
 
 		$build_in = implode(",", $buildSet);
 		$status_in = implode("','", (array)$status);
@@ -3288,11 +3284,9 @@ class testplan extends tlObjectWithAttachments
 	public function getNotExecutedLinkedTCVersionsDetailed($id,$filters=null,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$resultsCfg = config_get('results');
-		$status_not_run=$resultsCfg['status_code']['not_run'];
-        $executions_join = "";
+    $executions_join = "";
 
-        $my['filters'] = array('build_id' => 0,'platform_id' => null);
+    $my['filters'] = array('build_id' => 0,'platform_id' => null);
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
 
         $my['options'] = array('group_by_platform_tcversion' => false);
@@ -3328,7 +3322,7 @@ class testplan extends tlObjectWithAttachments
         }
 
 		$sql = "/* {$debugMsg} */ ";
-		$sql .= "SELECT COALESCE(E.status,'" . $status_not_run . "') AS exec_status, " .
+		$sql .= "SELECT COALESCE(E.status,'" . $this->cfg->status_not_run . "') AS exec_status, " .
 		        $build_fields .
 		        " PLAT.name AS platform_name," . 
 		        " NODE_TCASE.parent_id AS testsuite_id, NODE_TCASE.name AS name, NODE_TCASE.id AS tc_id," .
@@ -3401,7 +3395,7 @@ class testplan extends tlObjectWithAttachments
 	public function getStatusForReports()
 	{
 		// This will be used to create dynamically counters if user add new status
-		$resultsCfg = config_get('results');
+		// $resultsCfg = config_get('results');
 		foreach( $resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
 		{
 			$code_verbose[$resultsCfg['status_code'][$tc_status_verbose]] = $tc_status_verbose;
@@ -4381,6 +4375,75 @@ class testplan extends tlObjectWithAttachments
   	}
   	return $effective_role;
   }
+
+
+  function updateExecutionNotes($execID,$notes)
+  {
+      $sql = "UPDATE {$this->tables['executions']} " .
+             "SET notes = '" . $this->db->prepare_string($notes) . "' " .
+             "WHERE id = {$execID}";
+      return $this->db->exec_query($sql) ? tl::OK : tl::ERROR;     
+  }
+
+
+  function writeExecutionBug($exec_id,$bug_id,$just_delete = false)
+  {
+  	// Instead of Check if record exists before inserting, do delete + insert
+  	$prep_bug_id = $this->db->prepare_string($bug_id);
+  	
+  	$sql = "DELETE FROM {$this->tables['execution_bugs']} WHERE execution_id={$exec_id} " .
+  		     "AND bug_id='" . $prep_bug_id ."'";
+  	$result = $this->db->exec_query($sql);
+  	
+  	if(!$just_delete)
+  	{
+  		$sql = " INSERT INTO {$this->tables['execution_bugs']} (execution_id,bug_id) " .
+  			     " VALUES({$exec_id},'" . $prep_bug_id . "')";
+  		$result = $this->db->exec_query($sql);  	     
+  	}
+  	
+  	return $result ? 1 : 0;
+  }
+
+  /**
+   * get data about bug from external tool
+   * 
+   * @param resource &$db reference to database handler
+   * @param object &$bug_interface reference to instance of bugTracker class
+   * @param integer $execution_id Identifier of execution record
+   * 
+   * @return array list of 'bug_id' with values: 'build_name' and 'link_to_bts'
+   */
+  function getBugsForExec(&$bug_interface,$execution_id)
+  {
+  	$bug_list=array();
+  	$sql = " SELECT execution_id,bug_id,builds.name AS build_name " .
+  		     " FROM {$this->tables['execution_bugs']} EB" .
+  		     " JOIN {$this->tables['executions']} E ON E.id = EB.execution_id " .
+  		     " JOIN {$this->tables['builds']} B ON B.id = E.build_id ".
+  		     " WHERE EB.execution_id = " . intval($execution_id) .
+  		     " ORDER BY B.name,EB.bug_id";
+  	$map = $this->db->get_recordset($sql);
+  	if( !is_null($map) && is_object($bug_interface))
+  	{  	
+  		foreach($map as $elem)
+  		{
+  			$bug_list[$elem['bug_id']]['link_to_bts'] = $bug_interface->buildViewBugLink($elem['bug_id'],GET_BUG_SUMMARY);
+  			$bug_list[$elem['bug_id']]['build_name'] = $elem['build_name'];
+  		}
+  	}
+  	
+  	return $bug_list;
+  }
+
+  function getExecution($execution_id)
+  {
+  	$sql = "SELECT * FROM {$this->tables['executions']} WHERE id=" . intval($execution_id);
+  	$rs = $this->db->get_recordset($sql);
+  	return $rs;
+  }
+
+
 
 
 } // end class testplan

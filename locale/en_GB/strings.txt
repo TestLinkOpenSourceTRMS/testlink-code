@@ -85,6 +85,7 @@ $TLS_import = "Import";
 $TLS_importance	= "Importance";
 $TLS_imported = "Imported";
 $TLS_important_notice = "Important Notice";
+$TLS_inactive = "Inactive";
 $TLS_keyword = "Keyword";
 $TLS_log_message = "Log message";
 $TLS_mandatory = "Mandatory fields";
@@ -109,6 +110,7 @@ $TLS_open_on_new_window = "open on new window";
 
 $TLS_priority	= "Priority";
 $TLS_project = "Project";
+$TLS_private = "Private";
 $TLS_public = "Public";
 $TLS_requirement = "Requirement";
 $TLS_req_monitoring = "Requirement Monitoring";

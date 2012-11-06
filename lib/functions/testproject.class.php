@@ -315,11 +315,8 @@ public function get_by_prefix($prefix, $addClause = null)
 args:[order_by]: default " ORDER BY nodes_hierarchy.name " -> testproject name
 
 rev:
-    20090409 - amitkhullar- added active parameter
-    20071104 - franciscom - added order_by
 
 */
-// function get_all($order_by=" ORDER BY nodes_hierarchy.name ",$active=null )
 function get_all($filters=null,$options=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -2996,5 +2993,28 @@ private function copy_cfields_assignments($source_id, $target_id)
 		return $tcaseSet;
 	}
 
+
+  function toggleAttribute($id,$attr)
+  {
+    $sql = " SELECT {$attr} FROM {$this->tables['testprojects']} WHERE id = " . intval($id);
+    $rs = $this->db->get_recordset($sql);
+    $new = ($rs[0][$attr] == 1) ? 0 : 1;
+    
+    $sql = " UPDATE {$this->tables['testprojects']} SET {$attr} =  {$new} " . 
+           " WHERE id = " . intval($id);
+    $rs = $this->db->get_recordset($sql);
+    
+  }
+
+  function toggleActive($id)
+  { 
+    $this->toggleAttribute($id,'active');
+  }                                      
+
+  function togglePublic($id)
+  { 
+    $this->toggleAttribute($id,'is_public');
+  }  
+  
 } // end class
 ?>

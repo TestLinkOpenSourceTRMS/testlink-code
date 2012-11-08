@@ -32,8 +32,8 @@ function load_notes(panel,exec_id)
 </script>
 </head>
 
-{assign var="attachment_model" value=$gui->exec_cfg->att_model}
-{assign var="my_colspan" value=$attachment_model->num_cols+2}
+{$attachment_model = $gui->exec_cfg->att_model}
+{$my_colspan = $attachment_model->num_cols+2}
 
 <body onUnload="storeWindowSize('execHistoryPopup')">
 {if $gui->main_descr != ''}
@@ -43,13 +43,12 @@ function load_notes(panel,exec_id)
 <div class="workBack">
 	{if $gui->warning_msg == ''}
 		<table cellspacing="0" class="exec_history">
-			{* Table Header *} 
 			<tr>
 				<th style="text-align:left">{$labels.date_time_run}</th>
 				<th style="text-align:left">{$labels.testplan}</th>
 				<th style="text-align:left">{$labels.build}</th>
 				{if $gui->displayPlatformCol}
-					{assign var="my_colspan" value=$my_colspan+1}
+					{$my_colspan = $my_colspan+1}
 					<th style="text-align:left">{$labels.platform}</th>
 				{/if}
 				<th style="text-align:left">{$labels.test_exec_by}</th>
@@ -58,13 +57,11 @@ function load_notes(panel,exec_id)
 				<th style="text-align:left"><nobr>{$labels.run_mode}</nobr></th>
 			</tr>
 		
-			{* Table data *}
 		 	{foreach item=tcv_exec_set from=$gui->execSet}
 		 		{foreach item=tcv_exec from=$tcv_exec_set}
 					{cycle values='#eeeeee,#d0d0d0' assign="bg_color"}
 					<tr style="border-top:1px solid black; background-color: {$bg_color}">
 						<td>
-							{* function openExecEditWindow(exec_id,tcversion_id,tplan_id,tproject_id) *}
 							{if $gui->user_is_admin}
 								<img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" style="vertical-align:middle" 
 								     title="{$labels.edit_execution}" onclick="javascript: openExecEditWindow(
@@ -85,7 +82,7 @@ function load_notes(panel,exec_id)
 						<td title="{$tcv_exec.tester_first_name|escape} {$tcv_exec.tester_last_name|escape}">
 						{$tcv_exec.tester_login|escape}
 						</td>
-						{assign var="tc_status_code" value=$tcv_exec.status}
+						{$tc_status_code = $tcv_exec.status}
 						<td class="{$tlCfg->results.code_status.$tc_status_code}" style="text-align:center">
 						    {localize_tc_status s=$tcv_exec.status}
 						</td>

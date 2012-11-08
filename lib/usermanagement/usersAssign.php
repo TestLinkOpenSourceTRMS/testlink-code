@@ -9,18 +9,13 @@
  * Assign Test plans user roles do not allow Test Project selection,
  * then to change Test Project user need to use main Test Project Combo
  * 
- * @package 	TestLink
- * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersAssign.php,v 1.32.2.3 2010/12/02 06:42:04 franciscom Exp $
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @copyright   2005-2012, TestLink community
+ * @filesource  usersAssign.php
+ * @link 		    http://www.teamst.org/index.php
  *
- * @internal Revisions:
- *	20101202 - franciscom - BUGID 4065
- *	20101112 - franciscom - getTestPlanEffectiveRoles() fixed typo error -> errors on event viewer
- *  20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
- *  20100930 - franciscom - BUGID 2344: Private test project
- *	20100313 - erikeloff - BUGID 3271 - show only active users on assign to project/test plan
- *	20091129 - franciscom - ISSUE 2554 - colouring
+ * @internal revisions
+ * @since 1.9.5
  *
  */
 require_once('../../config.inc.php');
@@ -73,7 +68,7 @@ switch($args->featureType)
     break;
     
     case "testplan":
-      	$gui->highlight->assign_users_tplan = 1;
+      $gui->highlight->assign_users_tplan = 1;
     	$gui->roles_updated = lang_get("test_plan_user_roles_updated");
     	$gui->not_for_you = lang_get("testplan_roles_assign_disabled");
     	$assignRolesFor = $args->featureType;
@@ -111,14 +106,12 @@ switch($assignRolesFor)
     break;
         
     case 'testplan':
-        $info = getTestPlanEffectiveRoles($db,$tplanMgr,$tprojectMgr,$args,$gui->users);
-
-		// 20101202 - franciscom - BUGID 4065
-		if( is_null($info) )
-		{
-			$gui->user_feedback = lang_get('no_test_plans_available');
-		}
-        list($gui->userFeatureRoles,$gui->features,$gui->featureID)=$info;
+      $info = getTestPlanEffectiveRoles($db,$tplanMgr,$tprojectMgr,$args,$gui->users);
+		  if( is_null($info) )
+		  {
+			  $gui->user_feedback = lang_get('no_test_plans_available');
+		  }
+      list($gui->userFeatureRoles,$gui->features,$gui->featureID)=$info;
     break;
 
 }
@@ -126,8 +119,7 @@ switch($assignRolesFor)
 $gui->grants = getGrantsForUserMgmt($db,$args->user,$target->testprojectID,-1);
 if(is_null($gui->features) || count($gui->features) == 0)
 {
-    $gui->features = null;
-	// 20101202 - franciscom - BUGID 4065
+  $gui->features = null;
 	if( $gui->user_feedback == '' )
 	{
 		$gui->user_feedback = $gui->not_for_you;
@@ -185,7 +177,7 @@ function checkRights(&$db,&$user)
     $answers->role_management = $user->hasRight($db,"role_management");
     
     // Two checks needed:
-    // First on current test without using test plan rights
+    // First on current test project without using test plan rights
     // if this fails then check again adding current test plan
     $answers->testplan_user_role_assignment = $user->hasRight($db,"testplan_user_role_assignment",$args->testprojectID,-1);
     if($answers->testplan_user_role_assignment != "yes")
@@ -255,23 +247,25 @@ function checkRightsForUpdate(&$dbHandler,&$user,$testprojectID,$featureType,$fe
  */
 function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
 {
-    $features = null;
+  $features = null;
 	$gui_cfg = config_get('gui');
 	$order_by = $gui_cfg->tprojects_combo_order_by;
 
-    // Accessible means user has a role on test project
+  // Accessible means user has a role on test project
 	$testprojects = $objMgr->get_accessible_for_user($argsObj->userID,'array_of_map',$order_by);
+	
+	
 	
 	// Another more restrictive filter has to be applied, related to what we want to do
 	// user has to be right to manage roles on test project 
-	if($argsObj->user->hasRight($dbHandler,"mgt_users"))
+  	if($argsObj->user->hasRight($dbHandler,"mgt_users"))
 	{
 		$features = $testprojects;
 	}
 	else
 	{
-	    $loop2do = sizeof($testprojects);
-        for($idx = 0; $idx < $loop2do; $idx++)
+	  $loop2do = sizeof($testprojects);
+    for($idx = 0; $idx < $loop2do; $idx++)
 		{
 		    $answer = $argsObj->user->hasRight($dbHandler,"testproject_user_role_assignment",$testprojects[$idx]['id'],-1);
 			if($answer == "yes")
@@ -321,32 +315,47 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
 /**
  * getTestPlanEffectiveRoles
  *
- * 20101202 - franciscom - BUGID 4065
  */
 function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj,&$users)
 {
 	$features = array();
 	$activeTestplans = $tprojectMgr->get_all_testplans($argsObj->testprojectID, array('plan_status' => 1));
+
+  
 	
 	$ret = null;
 	$status_ok = !is_null($activeTestplans);
 	if($status_ok)
 	{
-        // we want to change map key, from testplan id to a sequential index
-        // to maintain old logic
-	    $activeTestplans = array_values($activeTestplans);
+  	$myAccessibleSet = $argsObj->user->getAccessibleTestPlans($dbHandler,$argsObj->testprojectID,null,
+	                                                            array('output' =>'map'));
+	                                                            
+    // we want to change map key, from testplan id to a sequential index
+    // to maintain old logic
+    $activeKeys = array_keys($activeTestplans);
+    $myKeys = array_keys((array)$myAccessibleSet);
+	  $key2remove = array_intersect_key($activeKeys,$myKeys);
+    if( !is_null($key2remove) )
+    {
+      foreach($key2remove as $target)
+      {
+        unset($activeTestplans[$target]);
+      }
+    }
     
+	  $activeTestplans = array_values($activeTestplans);
+	  
+  
 		if($argsObj->user->hasRight($dbHandler,"mgt_users"))
 		{
 			$features = $activeTestplans;
 		}
 		else
 		{
-		    $loop2do = sizeof($activeTestplans);
+		  $loop2do = sizeof($activeTestplans);
 			for($idx = 0; $idx < $loop2do; $idx++)
 			{
-			    // Humm!!, think we need to check testplan_user_role_assignment and not
-			    // "testplan_planning"
+        // Humm!!, think we need to check testplan_user_role_assignment and not "testplan_planning"
 				if($argsObj->user->hasRight($dbHandler,"testplan_user_role_assignment",null,$activeTestplans[$idx]['id']) == "yes")
 				{
 					$features[] = $activeTestplans[$idx];

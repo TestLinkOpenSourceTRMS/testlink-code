@@ -2,21 +2,11 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
- * Filename $RCSfile: navBar.php,v $
- *
- * @version $Revision: 1.54 $
- * @modified $Date: 2010/10/28 06:40:14 $ $Author: mx-julian $
+ * @filesource  navBar.php
  *
  * This file manages the navigation bar. 
  *
- * rev :
- *       20101028 - Julian - BUGID 3950 - use config parameter to dynamically set input size
-                                          of quick tc search
- *       20090404 - franciscom - adjust size of test case input using len of tcase prefix
- *       20080504 - franciscom - add code based on contribution by Eugenia Drosdezki
- *                               get files present on docs directory, and pass to template.
- *
- *       20070505 - franciscom - use of role_separator configuration
+ * internal revisions
  *
 **/
 require_once('../../config.inc.php');
@@ -52,7 +42,7 @@ $gui->TestPlanCount = 0;
 if ($gui->tprojectID)
 {
 	$testPlanSet = $user->getAccessibleTestPlans($db,$gui->tprojectID);
-    $gui->TestPlanCount = sizeof($testPlanSet);
+  $gui->TestPlanCount = sizeof($testPlanSet);
 
 	$tplanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
     if( !is_null($tplanID) )
@@ -130,13 +120,9 @@ function getGrants(&$db)
 
 function init_args()
 {
-	$iParams = array(
-			"testproject" => array(tlInputParameter::INT_N),
-		);
-
+	$iParams = array("testproject" => array(tlInputParameter::INT_N));
 	$args = new stdClass();
 	$pParams = G_PARAMS($iParams,$args);
-
 	return $args;
 }
 ?>

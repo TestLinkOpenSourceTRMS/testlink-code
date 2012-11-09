@@ -257,7 +257,7 @@ class tlExecTreeMenu extends tlObjectWithDB
     $my = array();
     $my['options'] = array('recursive' => true,'remove_empty_nodes_of_type' => $this->cfg->nodeTypeCode['testsuite'],
                            'order_cfg' => array("type" =>'exec_order',"tplan_id" => $context->tplan_id,
-                           'hideTestCases' => $options['hideTestCases']);
+                                                'hideTestCases' => $options['hideTestCases']));
     
     $my['filters'] = array('exclude_node_types' => 
                            array('testplan' => 'bye','requirement_spec'=> 'bye','requirement'=> 'bye'),

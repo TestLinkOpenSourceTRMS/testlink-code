@@ -198,6 +198,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 	private $testplan_mgr = null;          
 	
 	private $treeMenuMgr = null;
+	private $execTreeMenuMgr = null;
 	
 	/**
 	 * This array contains all possible filters.
@@ -339,6 +340,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 		$this->initTreeOptions($this->mode);  
 		
 		$this->treeMenuMgr = new tlTreeMenu($this->db);
+		$this->execTreeMenuMgr = new tlExecTreeMenu($this->db);
 		
 		// delete any filter settings that may be left from previous calls in session
 		$this->delete_own_session_data();
@@ -629,7 +631,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 	public function set_testcases_to_show($value = null) 
 	{
 		// update active_filters
-		if (!is_null($value)) {
+		if (!is_null($value)) 
+		{
 			$this->active_filters['testcases_to_show'] = $value;
 		}
 		
@@ -1838,17 +1841,15 @@ class tlTestCaseFilterControl extends tlFilterControl
     //$chronos[] = $tstart = microtime(true);
     //echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::Start!!!' . current($chronos);
     //reset($chronos);	
-  
-    list($ajaxTree->tree_menu, $testcases_to_show) = $this->treeMenuMgr->execTree($this->db,$gui->menuUrl,
-                                                                                  $this->args->testproject_id,
-                                                              $this->args->testproject_name,
-                                                              $this->args->testplan_id,
-                                                              $this->args->testplan_name,
-                                                              $filters,$opt_etree);
-  	//$chronos[] = microtime(true); $tnow = end($chronos); $tprev = prev($chronos);
-  	//$t_elapsed = number_format( $tnow - $tprev, 4);
-  	//echo '<br> ' . basename(__FILE__) . ' Elapsed (sec):' . $t_elapsed;
-  
+    $context = new stdClass();
+    $context->tproject_id = $this->args->testproject_id;
+    $context->tproject_name = $this->args->testproject_name;
+    $context->tplan_id = $this->args->testplan_id;
+    $context->tplan_name = $this->args->testplan_name;
+
+    
+    list($ajaxTree->tree_menu, $testcases_to_show) = $this->execTreeMenuMgr->execTree($gui->menuUrl,$context,
+                                                                                      $filters,$opt_etree);
     $this->set_testcases_to_show($testcases_to_show);
 
 		$ajaxTree->root_node = $ajaxTree->tree_menu->rootnode;

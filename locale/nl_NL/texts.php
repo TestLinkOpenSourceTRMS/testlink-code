@@ -67,7 +67,7 @@ $TLS_htmltext['editTc'] 		= "<p>Een Testgeval is de fundamentele eenheid van tes
 	uitvoering krijgt het het resultaat 'geslaagd' of 'gefaald'. In TestLink kunt u Testgevallen 
 	organiseren in Test Suites. Deze kunnen hiërarchisch worden genest in andere Test Suites. </p>
 	<p>Op deze <i>Testspecificatie</i> pagina kunt u alle 
-	<i>Test Suites</i> and <i>Testgevallen</i> bekijken en bewerken. 
+	<i>Test Suites</i> en <i>Testgevallen</i> bekijken en bewerken. 
 	Versies van Testgevallen worden ondersteund, en alle vorige versies zijn beschikbaar en kunnen hier 
 	bekeken en beheerd worden.</p>
 		

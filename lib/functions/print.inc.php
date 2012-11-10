@@ -9,8 +9,8 @@
  *
  * @package 	TestLink
  * @author		Martin Havlat <havlat@users.sourceforge.net>
- * @copyright 	2007-2011, TestLink community 
- * @uses 		printDocument.php
+ * @copyright 2007-2012, TestLink community 
+ * @uses 		  printDocument.php
  *
  *
  * @internal development notes
@@ -38,18 +38,11 @@
  * Another choice: TL must round individual times before doing sum.
  * 
  * @internal revisions
+ * 20121104 - franciscom - TICKET 5321: Test Case Execution Types - Possibility to add custom values
  * 20121017 - asimon - TICKET 5288 - print priority when printing test plan
- * 20110903 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
- *
- *
  */ 
 require_once("exec.inc.php");  /** needed because we use get_bugs_for_exec() */
 require_once("lang_api.php");
-if (config_get('interface_bugs') != 'NO')
-{
-  require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' .
-               DIRECTORY_SEPARATOR . 'int_bugtracking.php');
-}
 
 /**
  * render a requirement as HTML code for printing
@@ -69,15 +62,6 @@ if (config_get('interface_bugs') != 'NO')
  *
  * @internal revisions
  *
- * 20110306 - franciscom - 	BUGID 4273: Option to print single requirement 
- *							added logic to manage revision number
- *							layout changed to show revision on new row
- *
- * 20110305 - franciscom - 	BUGID 4273: Option to print single requirement 
- *							added logic to manage version id
- *
- * 20110305 - franciscom -	BUGID 4273: Option to print single requirement
- *							enhancements on info displayed
  */
 function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tprojectID) 
 {
@@ -91,7 +75,7 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 	static $req_cfg;
 	static $req_spec_cfg;
 	static $decodeReq;
-    static $force = null;
+  static $force = null;
 	
 	if (!$req_mgr) 
 	{
@@ -109,12 +93,12 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 		                
 		$labels = init_labels($labels);
 	    
-	    $decodeReq = array();
-	    $decodeReq['status'] = init_labels($req_cfg->status_labels);
-	    $decodeReq['type'] = init_labels($req_cfg->type_labels);
+    $decodeReq = array();
+	  $decodeReq['status'] = init_labels($req_cfg->status_labels);
+	  $decodeReq['type'] = init_labels($req_cfg->type_labels);
 	    
 	    
-	    $force['displayVersion'] = isset($options['displayVersion']) ? $options['displayVersion'] : false;
+	  $force['displayVersion'] = isset($options['displayVersion']) ? $options['displayVersion'] : false;
 		$force['displayLastEdit'] = isset($options['displayLastEdit']) ? $options['displayLastEdit'] : false;
     
 	    
@@ -150,14 +134,14 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 
 	$name =  htmlspecialchars($req["req_doc_id"] . $title_separator . $req['title']);
 
-	// 20110308 - asimon - change table style in case of single req printing to not be indented
 	$table_style = "";
-	if (isset($options['docType']) && $options['docType'] == SINGLE_REQ) {
+	if (isset($options['docType']) && $options['docType'] == SINGLE_REQ) 
+	{
 		$table_style = "style=\"margin-left: 0;\"";
 	}
 
-    $output = "<table class=\"req\" $table_style><tr><th colspan=\"$tableColspan\">" .
-              "<span class=\"label\">{$labels['requirement']}:</span> " . $name . "</th></tr>\n"; 
+  $output = "<table class=\"req\" $table_style><tr><th colspan=\"$tableColspan\">" .
+            "<span class=\"label\">{$labels['requirement']}:</span> " . $name . "</th></tr>\n"; 
 	
 	if( $force['displayVersion'] )
 	{
@@ -180,31 +164,30 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 
 	if ($options['req_author']) 
 	{
-		$output .= 	'<tr><td valign="top">' . 
-		         	'<span class="label">'.$labels['author'].':</span></td>' .
-        		 	'<td>' . htmlspecialchars(gendocGetUserName($db, $req['author_id']));
+		$output .= '<tr><td valign="top">' . 
+		         	 '<span class="label">'.$labels['author'].':</span></td>' .
+        		 	 '<td>' . htmlspecialchars(gendocGetUserName($db, $req['author_id']));
 
 		if(isset($options['displayDates']) && $options['displayDates'])
 		{
 			$dummy = null;
-        	$output .= ' - ' . localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$req['creation_ts']);
+      $output .= ' - ' . localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$req['creation_ts']);
 		}
 		$output .= "</td></tr>\n";
 
 		if ($req['modifier_id'] > 0) 
 		{
 			// add updater if available and differs from author OR forced
-			if (1 || $force['displayLastEdit'] || ($req['modifier_id'] != $req['modifier_id']) )
+			if($force['displayLastEdit'] || ($req['modifier_id'] != $req['modifier_id']) )
 			{
-				$output .= 	'<tr><td valign="top">' . 
-		    	     	 	'<span class="label">'. $labels['last_edit'] . ':</span></td>' .
-						 	'<td>' . htmlspecialchars(gendocGetUserName($db, $req['modifier_id']));
+				$output .= '<tr><td valign="top">' . 
+		    	     	 	 '<span class="label">'. $labels['last_edit'] . ':</span></td>' .
+						 	     '<td>' . htmlspecialchars(gendocGetUserName($db, $req['modifier_id']));
         					 	
 				if(isset($options['displayDates']) && $options['displayDates'])
 				{
 					$dummy = null;
-					$output .= ' - ' . localize_dateOrTimeStamp(null,$dummy,'timestamp_format',
-																$req['modification_ts']);
+					$output .= ' - ' . localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$req['modification_ts']);
 				}	
 				$output .= "</td></tr>\n";
 			}	
@@ -236,8 +219,8 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
     			   "</span></td>" . "<td>$coverage</td></tr>";
 	} 
 	
-	if ($options['req_scope']) {
-		// 20110530 - Julian - removed scope label
+	if ($options['req_scope']) 
+	{
 		$output .= "<tr><td colspan=\"$tableColspan\"> <br/>" . $req['scope'] . "</td></tr>";
 	}
 		
@@ -281,7 +264,6 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
 			           
 			foreach ($req_coverage as $tc) 
 			{
-				// TICKET 4716 - Improper encoding of test case title
 				$output .= htmlspecialchars($tc['tc_external_id'] . $title_separator . $tc['name']) . "<br/>";
 			}
 			           
@@ -326,7 +308,8 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
  * 
  * @return string $output HTML Code
  */
-function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $level, $tprojectID) {
+function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $level, $tprojectID) 
+{
 	static $tableColspan;
 	static $firstColWidth;
 	static $labels;
@@ -340,7 +323,8 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 	$output = '';
 	$level = ($level > 0) ? $level : 1;
 	
-	if (!$req_spec_mgr) {
+	if (!$req_spec_mgr) 
+	{
 		$req_spec_cfg = config_get('req_spec_cfg');
 		$firstColWidth = '20%';
 		$tableColspan = 2;
@@ -358,7 +342,6 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 		$nodeTypes = array_flip($tplan_mgr->tree_manager->get_available_node_types());
 	}
 
-	// TICKET 4661
 	switch($nodeTypes[$node['node_type_id']])
 	{
 		case 'requirement_spec_revision':
@@ -377,35 +360,30 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 	} 
 	$name = htmlspecialchars($spec['doc_id'] . $title_separator . $spec['title']);
 	
-	$docHeadingNumbering = '';
-	if ($options['headerNumbering']) {
-		$docHeadingNumbering = "$tocPrefix. ";
-	}
-	
-	// 20110530 - Julian - added page-break before each req spec
-	//                   - use doclevel class for req spec headings
-	
-	if($options['docType'] != SINGLE_REQSPEC) {
+	$docHeadingNumbering = $options['headerNumbering'] ? "$tocPrefix. " : '';
+	if($options['docType'] != SINGLE_REQSPEC) 
+	{
 		$output = '<p style="page-break-before: always"></p>';
 	}
 	$output .= "<table class=\"req_spec\"><tr><th colspan=\"$tableColspan\">" .
 	          "<h{$level} class=\"doclevel\"> <span class=\"label\">{$docHeadingNumbering}{$labels['requirements_spec']}:</span> " .
- 			  $name . "</th></tr></h{$level}>\n";
+ 	$name . "</th></tr></h{$level}>\n";
  		
 	if ($options['toc'])
 	{
 		$spacing = ($level == 2) ? "<br>" : "";
 	 	$options['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10*$level).'px;">' .
-				'<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . $name . "</a></p></b>\n";
+				                   '<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . 
+				                   $name . "</a></p></b>\n";
 		$output .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
 	}
 
-	// TICKET 4661
 	$output .=  '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
 	            $labels['revision'] . "</span></td><td> " . 
 	            $spec['revision'] . "</td></tr>\n";
 	
-	if ($options['req_spec_author']) {
+	if ($options['req_spec_author']) 
+	{
 		// get author name for node
 		$author = tlUser::getById($db, $spec['author_id']);
 		$whois = (is_null($author)) ? lang_get('undefined') : $author->getDisplayName();
@@ -430,21 +408,24 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 		$output .= "</td></tr>";
 	}
 	
-	if ($options['req_spec_overwritten_count_reqs']) {
+	if ($options['req_spec_overwritten_count_reqs']) 
+	{
 		$current = $req_spec_mgr->get_requirements_count($spec['id']);
 		$expected = $spec['total_req'];
-    	$coverage = $labels['not_aplicable'] . " ($current/0)";
-    	if ($expected) {
-    		$percentage = round(100 / $expected * $current, 2);
+    $coverage = $labels['not_aplicable'] . " ($current/0)";
+    if ($expected) 
+    {
+    	$percentage = round(100 / $expected * $current, 2);
 			$coverage = "{$percentage}% ({$current}/{$expected})";
-    	}
+    }
 		
 		$output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
 		           $labels['overwritten_count'] . " (" . $labels['coverage'] . ")</span></td>" .
 		           "<td>" . $coverage . "</td></tr>";
 	}
 
-	if ($options['req_spec_scope']) {
+	if ($options['req_spec_scope']) 
+	{
 		$output .= "<tr><td colspan=\"$tableColspan\">" . $spec['scope'] . "</td></tr>";
 	}
 	
@@ -459,8 +440,7 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
 				$value = htmlspecialchars($cf['value']);
 				
 				$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . 
-				           $cflabel . "</span></td>" .
-				           "<td>$value</td></tr>";
+				           $cflabel . "</span></td>" . "<td>$value</td></tr>";
 			}
 		}
 	}
@@ -488,8 +468,9 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
  * @return string $output HTML Code
  */
 function renderReqSpecTreeForPrinting(&$db, &$node, &$options,
-                                       $tocPrefix, $rsCnt, $level, $user_id,
-                                       $tplan_id = 0, $tprojectID = 0) {
+                                      $tocPrefix, $rsCnt, $level, $user_id,
+                                      $tplan_id = 0, $tprojectID = 0) 
+{
 	
 	static $tree_mgr;
 	static $map_id_descr;
@@ -572,26 +553,28 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options,
  */
 function renderHTMLHeader($title,$base_href,$doc_type)
 {
-	// BUGID 3424
 	$themeDir = config_get('theme_dir');
 	$docCfg = config_get('document_generator');
 	
-	// BUGID 4644 - different css files for test spec docs and req docs
 	$cssFile = $base_href . $themeDir;
-	switch ($doc_type) {
+	switch ($doc_type) 
+	{
 		case DOC_TEST_SPEC:
 		case DOC_TEST_PLAN:
 		case DOC_TEST_REPORT:
 		case SINGLE_TESTCASE:
 			$cssFile .= $docCfg->css_template;
 		break;
+
 		case DOC_REQ_SPEC:
 		case SINGLE_REQ:
 		case SINGLE_REQSPEC:
 			$cssFile .= $docCfg->requirement_css_template;
 		break;
+
 		default:
 			$cssFile .= $docCfg->css_template;
+		break;
 	}
 
 	$output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
@@ -748,9 +731,12 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$options,
 		break;
 
 		case 'testcase':
-			// BUGID 3459 - added $platform_id
-			$code .= renderTestCaseForPrinting($db, $node, $options, $level,
-			                                   $tplan_id, $tcPrefix, $tprojectID, $platform_id);
+		  $context = new stdClass();
+		  $context->tproject_id = $tprojectID;
+		  $context->tplan_id = $tplan_id;
+		  $context->platform_id = $platform_id;
+		  $context->tcase_prefix = $tcPrefix;
+			$code .= renderTestCaseForPrinting($db, $node, $options, $level,$context);
 	    break;
 	}
 	
@@ -839,78 +825,61 @@ function gendocGetUserName(&$db, $userId)
  *
  * @internal revisions
  * 20121017 - asimon - TICKET 5288 - print priority when printing test plan
- * 20110304 - franciscom - BUGID 4286: Option to print single test case
- *						   added missing info
- *						   version number, creation date, modifier+date
- *						   test case execution type, importance
- *						   STEP execution type, importance
- *	
- * 20100920 - franciscom - changed key on $cfieldFormatting
- * 20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
- * 20100724 - asimon - BUGID 3459 - added platform ID
- * 20100723 - asimon - BUGID 3451 and related finally solved
- * 20090517 - havlatm - fixed execution layot; added tester name
- * 20080819 - franciscom - removed mysql only code
- * 20071014 - franciscom - display test case version
- * 20070509 - franciscom - added Contribution
  */
-function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 0,
-                                   $prefix = null, $tprojectID = 0, $platform_id = 0)
+function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $context)
 {
 	
-    static $req_mgr;
+  static $req_mgr;
 	static $tc_mgr;
-    // TICKET 5288 - print priority when printing test plan
-    static $tplan_urgency;
+  static $tplan_urgency;
 	static $labels;
 	static $tcase_prefix;
-    static $userMap = array();
-    static $cfg;
-    static $locationFilters;
-    static $tables = null;
-    static $force = null;
+  static $userMap = array();
+  static $cfg;
+  static $locationFilters;
+  static $tables = null;
+  static $force = null;
     
 	$code = null;
 	$tcInfo = null;
-    $tcResultInfo = null;
-    $tcase_pieces = null;
-    $id = $node['id'];
+  $tcResultInfo = null;
+  $tcase_pieces = null;
+  $id = $node['id'];
+                         
+  // init static elements
+  // tplan_id = 0,
+  // $prefix = null, $tprojectID = 0, $platform_id = 0)
+  if (!$tables)
+  {
+  	$tables = tlDBObject::getDBTables(array('executions','builds'));
+ 	  $tc_mgr = new testcase($db);
+    $tplan_urgency = new testPlanUrgency($db);
+ 	  list($cfg,$labels) = initRenderTestCaseCfg($tc_mgr);
 
-    // init static elements
-    if (!$tables)
-    {
-    	$tables = tlDBObject::getDBTables(array('executions','builds'));
- 	    $tc_mgr = new testcase($db);
-        // TICKET 5288 - print priority when printing test plan
-        $tplan_urgency = new testPlanUrgency($db);
- 	    list($cfg,$labels) = initRenderTestCaseCfg($tc_mgr);
-
-	    if(!is_null($prefix))
-	    {
-	        $tcase_prefix = $prefix;
-	    }
-	    else
-	    {
-	    	list($tcase_prefix,$dummy) = $tc_mgr->getPrefix($id);
-	    }
-	    $tcase_prefix .= $cfg['testcase']->glue_character;
-
-		$force['displayVersion'] = isset($options['displayVersion']) ? $options['displayVersion'] : false;
-		$force['displayLastEdit'] = isset($options['displayLastEdit']) ? $options['displayLastEdit'] : false;
-		
-	}
+	  if(!is_null($context->prefix))
+	  {
+	      $tcase_prefix = $context->prefix;
+	  }
+	  else
+	  {
+	  	list($tcase_prefix,$dummy) = $tc_mgr->getPrefix($id);
+	  }
+	  $tcase_prefix .= $cfg['testcase']->glue_character;
+	  $force['displayVersion'] = isset($options['displayVersion']) ? $options['displayVersion'] : false;
+	  $force['displayLastEdit'] = isset($options['displayLastEdit']) ? $options['displayLastEdit'] : false;
+  }
 
 	$cspan = ' colspan = "' . ($cfg['tableColspan']-1) . '" ';
 	$cfieldFormatting = array('label_css_style' => '',  'add_table' => false, 'value_css_style' => $cspan );
 
 	$versionID = isset($node['tcversion_id']) ? intval($node['tcversion_id']) : testcase::LATEST_VERSION;
-    $tcInfo = $tc_mgr->get_by_id($id,$versionID);
+  $tcInfo = $tc_mgr->get_by_id($id,$versionID);
     
-    if ($tcInfo)
-    {
-    	$tcInfo = $tcInfo[0];
-    }
-    $external_id = $tcase_prefix . $tcInfo['tc_external_id'];
+  if ($tcInfo)
+  {
+  	$tcInfo = $tcInfo[0];
+  }
+  $external_id = $tcase_prefix . $tcInfo['tc_external_id'];
 	$name = htmlspecialchars($node['name']);
 
 	// ----- BUGID 3451 and related ---------------------------------------
@@ -921,23 +890,20 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
 	
 	// This still does not change the fact that this marked SQL statement below
 	// should be removed and replaced by existing functions.
-	// ----- BUGID 3451 and related ---------------------------------------
-	
-  	$cfields = array('specScope' => null, 'execScope' => null);
+ 	$cfields = array('specScope' => null, 'execScope' => null);
 
   	// get custom fields that has specification scope
-  	if ($options['cfields'])
+  if ($options['cfields'])
 	{
 		if (!$locationFilters)
 		{
-        	$locationFilters = $tc_mgr->buildCFLocationMap();
-        }	
-     	foreach($locationFilters as $fkey => $fvalue)
+      $locationFilters = $tc_mgr->buildCFLocationMap();
+    }	
+    foreach($locationFilters as $fkey => $fvalue)
 		{ 
-			// BUGID 3431 - Custom Field values at Test Case VERSION Level
 			$cfields['specScope'][$fkey] = 
-					$tc_mgr->html_table_of_custom_field_values($id,'design',$fvalue,null,$tplan_id,
-			                                                   $tprojectID,$cfieldFormatting,$tcInfo['id']);             
+					$tc_mgr->html_table_of_custom_field_values($id,'design',$fvalue,null,$context->tplan_id,
+			                                               $context->tproject_id,$cfieldFormatting,$tcInfo['id']);             
 		}           
 	}
 
@@ -947,51 +913,54 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
 	 * Need to get CF with execution scope
 	 */
 	$exec_info = null;
-	$bGetExecutions = false;
-	if ($options["docType"] != DOC_TEST_SPEC)
+	$getExecutions = false;
+	if($options["docType"] != DOC_TEST_SPEC && $options["docType"] != SINGLE_TESTCASE)
 	{
-		$bGetExecutions = ($options['cfields'] || $options['passfail']);
+		$getExecutions = ($options['cfields'] || $options['passfail']);
 	}
 	
-	if ($bGetExecutions)
+	if($getExecutions)
 	{
 		$sql =  " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
 		        " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
 		        " B.name AS build_name " .
-		        " FROM {$tables['executions']} E, {$tables['builds']} B" .
-		        " WHERE E.build_id= B.id " . 
-		        " AND E.tcversion_id = {$versionID} " .
-		        " AND E.testplan_id = {$tplan_id} " .
-		        " AND E.platform_id = {$platform_id} " .
-		  		" ORDER BY execution_id DESC";
+		        " FROM {$tables['executions']} E " .
+		        " JOIN {$tables['builds']} B ON E.build_id= B.id " . 
+		        " WHERE E.tcversion_id = {$versionID} " .
+		        " AND E.testplan_id = {$context->tplan_id} " .
+		        " AND E.platform_id = {$context->platform_id} " .
+		  		  " ORDER BY execution_id DESC";
+		echo $sql;
+		  		  
 		$exec_info = $db->get_recordset($sql,null,1);
 	}
+
 	// Added condition for the display on/off of the custom fields on test cases.
-    if ($options['cfields'] && !is_null($exec_info))
-    {
-    	$execution_id = $exec_info[0]['execution_id'];
-        $cfields['execScope'] = $tc_mgr->html_table_of_custom_field_values($versionID,'execution',null,
-                                                                           $execution_id, $tplan_id,
-                                                                           $tprojectID,$cfieldFormatting);
-    }
+  if ($options['cfields'] && !is_null($exec_info))
+  {
+  	$execution_id = $exec_info[0]['execution_id'];
+    $cfields['execScope'] = $tc_mgr->html_table_of_custom_field_values($versionID,'execution',null,
+                                                                       $execution_id, $context->tplan_id,
+                                                                       $context->tproject_id,$cfieldFormatting);
+  }
 	  
 	if ($options['toc'])
 	{
 		$options['tocCode'] .= '<p style="padding-left: ' . 
-	                                     (15*$level).'px;"><a href="#' . prefixToHTMLID('tc'.$id) . '">' .
-	       	                             $name . '</a></p>';
+                           (15*$level).'px;"><a href="#' . prefixToHTMLID('tc'.$id) . '">' .
+                           $name . '</a></p>';
 		$code .= '<a name="' . prefixToHTMLID('tc'.$id) . '"></a>';
 	}
     
-	// 20110308 - asimon - change table style in case of single TC printing to not be indented
 	$table_style = "";
-	if (isset($options['docType']) && $options['docType'] == SINGLE_TESTCASE) {
+	if (isset($options['docType']) && $options['docType'] == SINGLE_TESTCASE) 
+	{
 		$table_style = 'style="margin-left: 0;"';
 	}
 	
  	$code .= '<p>&nbsp;</p><div> <table class="tc" width="90%" ' . $table_style . '>';
  	$code .= '<tr><th colspan="' . $cfg['tableColspan'] . '">' . $labels['test_case'] . " " . 
- 			htmlspecialchars($external_id) . ": " . $name;
+ 			     htmlspecialchars($external_id) . ": " . $name;
 
 	// add test case version 
 	$version_number = isset($node['version']) ? $node['version'] : $tcInfo['version'];
@@ -1013,7 +982,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
 		if(isset($options['displayDates']) && $options['displayDates'])
 		{
 			$dummy = null;
-        	$code .= ' - ' . localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$tcInfo['creation_ts']);
+      $code .= ' - ' . localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$tcInfo['creation_ts']);
 		}
 		$code .= "</td></tr>\n";
 		
@@ -1024,7 +993,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
 			{
 				$code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
 		    	     	 '<span class="label">'. $labels['last_edit'] . ':</span></td>' .
-						 '<td colspan="' .  ($cfg['tableColspan']-1) . '">' . 
+						     '<td colspan="' .  ($cfg['tableColspan']-1) . '">' . 
         				 gendocGetUserName($db, $tcInfo['updater_id']);
         					 	
 				if(isset($options['displayDates']) && $options['displayDates'])
@@ -1035,88 +1004,104 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
 				$code .= "</td></tr>\n";
 			}	
 		}
-  	}
+  }
 
-    if ($options['body'] || $options['summary'])
-    {
-        $tcase_pieces = array('summary');
-    }
+  if ($options['body'] || $options['summary'])
+  {
+    $tcase_pieces = array('summary');
+  }
     
-    if ($options['body'])
-    {
-        $tcase_pieces[] = 'preconditions';
-        $tcase_pieces[] = 'steps';
-    }
+  if ($options['body'])
+  {
+      $tcase_pieces[] = 'preconditions';
+      $tcase_pieces[] = 'steps';
+  }
     
-    if(!is_null($tcase_pieces))
-    {
-    	// Multiple Test Case Steps Feature
-        foreach($tcase_pieces as $key)
-        {
-            if( $key == 'steps' )
-            {
-            	if( isset($cfields['specScope']['before_steps_results']) )
-            	{
-        		 	$code .= $cfields['specScope']['before_steps_results'];    
-                }
-                if ($tcInfo[$key] != '')
-                {
-            		$code .= '<tr>' .
-            		         '<td><span class="label">' . $labels['step_number'] .':</span></td>' .
-            		         '<td><span class="label">' . $labels['step_actions'] .':</span></td>' .
-            		         '<td><span class="label">' . $labels['expected_results'] .':</span></td></tr>';
-                	
-                	$loop2do = count($tcInfo[$key]);
-                	for($ydx=0 ; $ydx < $loop2do; $ydx++)
-                	{
-            			$code .= '<tr>' .
-            			         '<td width="5">' .  $tcInfo[$key][$ydx]['step_number'] . '</td>' .
-            			         '<td>' .  $tcInfo[$key][$ydx]['actions'] . '</td>' .
-            			         '<td>' .  $tcInfo[$key][$ydx]['expected_results'] . '</td>' .
-            				     '</tr>';
-                	}
+  if(!is_null($tcase_pieces))
+  {
+  	// Multiple Test Case Steps Feature
+      foreach($tcase_pieces as $key)
+      {
+          if( $key == 'steps' )
+          {
+          	if( isset($cfields['specScope']['before_steps_results']) )
+          	{
+      		 	$code .= $cfields['specScope']['before_steps_results'];    
+              }
+              if ($tcInfo[$key] != '')
+              {
+          		$code .= '<tr>' .
+          		         '<td><span class="label">' . $labels['step_number'] .':</span></td>' .
+          		         '<td><span class="label">' . $labels['step_actions'] .':</span></td>' .
+          		         '<td><span class="label">' . $labels['expected_results'] .':</span></td></tr>';
+              	
+              	$loop2do = count($tcInfo[$key]);
+              	for($ydx=0 ; $ydx < $loop2do; $ydx++)
+              	{
+          			$code .= '<tr>' .
+          			         '<td width="5">' .  $tcInfo[$key][$ydx]['step_number'] . '</td>' .
+          			         '<td>' .  $tcInfo[$key][$ydx]['actions'] . '</td>' .
+          			         '<td>' .  $tcInfo[$key][$ydx]['expected_results'] . '</td>' .
+          				     '</tr>';
+              	}
 
-                }
-                
-            }
-        	else
-        	{
-        		// disable the field if it's empty
-        		if ($tcInfo[$key] != '')
-        		{
-            		$code .= '<tr><td colspan="' .  $cfg['tableColspan'] . '"><span class="label">' . $labels[$key] .
-            	         ':</span><br />' .  $tcInfo[$key] . "</td></tr>";
-            	}
-            }         
-        }
-    }
+              }
+              
+          }
+      	else
+      	{
+      		// disable the field if it's empty
+      		if ($tcInfo[$key] != '')
+      		{
+          		$code .= '<tr><td colspan="' .  $cfg['tableColspan'] . '"><span class="label">' . $labels[$key] .
+          	         ':</span><br />' .  $tcInfo[$key] . "</td></tr>";
+          	}
+          }         
+      }
+  }
 
-	// 20110304 - franciscom - BUGID 4286: Option to print single test case
 	$code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
-		     '<span class="label">'.$labels['execution_type'].':</span></td>' .
+		       '<span class="label">'.$labels['execution_type'].':</span></td>' .
         	 '<td colspan="' .  ($cfg['tableColspan']-1) . '">';
 
-    switch ($tcInfo['execution_type'])
-    {
-    	case TESTCASE_EXECUTION_TYPE_AUTO:
-			$code .= $labels['execution_type_auto'];	    		
-    	break;
+  switch ($tcInfo['execution_type'])
+  {
+  	case testcase::EXECUTION_TYPE_AUTO:
+  		$code .= $labels['execution_type_auto'];	    		
+  	break;
 
-    	case TESTCASE_EXECUTION_TYPE_MANUAL:
-		default:
-			$code .= $labels['execution_type_manual'];	    		
-    	break;
-    }
+  	case testcase::EXECUTION_TYPE_MANUAL:
+  		$code .= $labels['execution_type_manual'];	    		
+  	break;
+    
+    default:
+  		$code .= lang_get('execution_type_custom_' . $tcInfo['execution_type']);	    		
+  	break;
+  }
 	$code .= "</td></tr>\n";
 
 	if( isset($options['importance']) && $options['importance'] )
-    {
+  {
 		$code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
 			     '<span class="label">'.$labels['importance'].':</span></td>' .
         		 '<td colspan="' .  ($cfg['tableColspan']-1) . '">' .
 				 $cfg['importance'][$tcInfo['importance']];
 		$code .= "</td></tr>\n";
-    }
+  }
+
+  // 
+	$code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
+		       '<span class="label">'.$labels['status'].':</span></td>' .
+      		 '<td colspan="' .  ($cfg['tableColspan']-1) . '">' .
+			     $cfg['text_status_labels'][$tcInfo['status']];
+	$code .= "</td></tr>\n";
+	$code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
+		       '<span class="label">'.$labels['estimated_execution_duration'].':</span></td>' .
+      		 '<td colspan="' .  ($cfg['tableColspan']-1) . '">' .
+			     $tcInfo['estimated_execution_duration'];
+	$code .= "</td></tr>\n";
+
+
 
     // TICKET 5288 - print priority when printing test plan
     if (isset($options['priority']) && $options['priority'])
@@ -1330,7 +1315,7 @@ function renderTestPlanForPrinting(&$db, &$node, $item_type, &$options, $tocPref
  */
 function renderTestDuration($statistics)
 {
-    $output = '';
+  $output = '';
 	$estimated_string = '';
 	$real_string = '';
 	$bEstimatedTimeAvailable = isset($statistics['estimated_execution']);
@@ -1427,28 +1412,32 @@ function initRenderTestCaseCfg(&$tcaseMgr)
 	$config['gui'] = config_get('gui');
 	$config['testcase'] = config_get('testcase_cfg');
 	$config['results'] = config_get('results');
+  $config['text_status_labels'] = config_get('text_status_labels');
 
     
-    foreach($config['results']['code_status'] as $key => $value)
-    {
-        $config['status_labels'][$key] = 
-        	"check your \$tlCfg->results['status_label'] configuration ";
-        if( isset($config['results']['status_label'][$value]) )
-        {
-            $config['status_labels'][$key] = lang_get($config['results']['status_label'][$value]);
-        }    
-    }
+  foreach($config['results']['code_status'] as $key => $value)
+  {
+      $config['status_labels'][$key] = 
+      	"check your \$tlCfg->results['status_label'] configuration ";
+      if( isset($config['results']['status_label'][$value]) )
+      {
+          $config['status_labels'][$key] = lang_get($config['results']['status_label'][$value]);
+      }    
+  }
 
-    // 20100306 - contribution by romans
-	// BUGID 0003235: Printing Out Test Report Shows empty Column Headers for "Steps" and "Step Actions"
-    // TICKET 5288 - print priority when printing test plan
-    $labelsKeys=array('last_exec_result', 'title_execution_notes', 'none', 'reqs','author', 'summary',
-                      'steps', 'expected_results','build', 'test_case', 'keywords','version', 
-                      'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions',
-                      'step_number', 'step_actions', 'last_edit', 'created_on', 'execution_type',
-                      'execution_type_manual','execution_type_auto','importance',
-                      'high_importance','medium_importance','low_importance',
-                      'priority', 'high_priority','medium_priority','low_priority');
+  foreach($config['text_status_labels'] as $key => $lbl)
+  {
+    $config['text_status_labels'][$key] = lang_get($lbl);
+  }
+
+  $labelsKeys=array('last_exec_result', 'title_execution_notes', 'none', 'reqs','author', 'summary',
+                    'steps', 'expected_results','build', 'test_case', 'keywords','version', 
+                    'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions',
+                    'step_number', 'step_actions', 'last_edit', 'created_on', 'execution_type',
+                    'execution_type_manual','execution_type_auto','importance',
+                    'high_importance','medium_importance','low_importance','status',
+                    'estimated_execution_duration',
+                    'priority', 'high_priority','medium_priority','low_priority');
                       
     $labelsQty=count($labelsKeys);         
     for($idx=0; $idx < $labelsQty; $idx++)
@@ -1457,8 +1446,8 @@ function initRenderTestCaseCfg(&$tcaseMgr)
     }
     
     $config['importance'] = array(HIGH => $labels['high_importance'],
-    							  MEDIUM => $labels['medium_importance'],
-    							  LOW => $labels['low_importance']);
+    							                MEDIUM => $labels['medium_importance'],
+    							                LOW => $labels['low_importance']);
 
     // TICKET 5288 - print priority when printing test plan
     $config['priority'] = array(HIGH => $labels['high_priority'],

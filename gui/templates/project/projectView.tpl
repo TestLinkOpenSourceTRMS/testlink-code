@@ -7,26 +7,25 @@ Development hint:
 some variables smarty and javascript are created on the inc_*.tpl files.
 
 @internal revisions
-20100930 - franciscom - BUGID 2344: Private test project
-20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 *}
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{* Configure Actions *}
 {$contextID=$gui->contextTprojectID}
 {$managerURL="lib/project/projectEdit.php"}
 {$deleteAction="$managerURL?doAction=doDelete&contextTprojectID=$contextID&tprojectID="}
 {$editAction="$managerURL?doAction=edit&contextTprojectID=$contextID&tprojectID="}
 {$createAction="$managerURL?doAction=create&contextTprojectID=$contextID"}
+{$toggleActive="$managerURL?doAction=toggleActive&contextTprojectID="}
+{$togglePublic="$managerURL?doAction=togglePublic&contextTprojectID="}
 
 {lang_get s='popup_product_delete' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
 
 {lang_get var="labels" 
 		s='title_testproject_management,testproject_txt_empty_list,tcase_id_prefix,
-		th_name,th_notes,testproject_alt_edit,testproject_alt_active,
-		th_requirement_feature,testproject_alt_delete,btn_create,public,
+		th_name,th_notes,testproject_alt_edit,testproject_alt_active,inactive,
+		th_requirement_feature,testproject_alt_delete,btn_create,public,private,
 		testproject_alt_requirement_feature,th_active,th_delete,th_id'}
 
 
@@ -56,6 +55,9 @@ var target_action=fRoot+'{$deleteAction}';
 {if $gui->tprojects == ''}
 	{$labels.testproject_txt_empty_list}
 {else}
+  <form method="post" id="projectView" name="projectView" action="{$managerURL}">
+  <input type="hidden" name="doAction" id="doAction" value="">
+  <input type="hidden" name="contextTprojectID" id="contextTprojectID" value="">
 	<table id="item_view" class="simple_tableruler sortable">
 		<tr>
 			<th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_name}</th>
@@ -95,17 +97,20 @@ var target_action=fRoot+'{$deleteAction}';
 			</td>
 			<td class="clickable_icon">
 				{if $testproject.active}
-  					<img style="border:none" title="{$labels.testproject_alt_active}"
-  				       alt="{$labels.testproject_alt_active}" src="{$tlImages.checked}"/>
+  					<input type="image" style="border:none" title="{$labels.testproject_alt_active}"
+  					       onClick = "doAction.value='toggleActive',contextTprojectID.value={$testproject.id}"
+  				         alt="{$labels.testproject_alt_active}" src="{$tlImages.checked}"/>
   				{else}
-  					&nbsp;
+			      <a href="{$toggleActive}{$testproject.id}" title="{$labels.inactive}">&nbsp;</a>
   				{/if}
 			</td>
 			<td class="clickable_icon">
 				{if $testproject.is_public}
-  					<img style="border:none"  title="{$labels.public}" alt="{$labels.public}" src="{$tlImages.checked}" />
+  					<input type="image" style="border:none"  title="{$labels.public}" alt="{$labels.public}" 
+  					       onClick = "doAction.value='togglePublic',contextTprojectID.value={$testproject.id}"
+  					       src="{$tlImages.checked}" />
   				{else}
-  					&nbsp;
+			      <a href="{$togglePublic}{$testproject.id}" title="{$labels.private}">&nbsp;</a>
   				{/if}
 			</td>
 			{if $gui->canManage == "yes"}
@@ -121,7 +126,7 @@ var target_action=fRoot+'{$deleteAction}';
 		{/foreach}
 
 	</table>
-
+  </form>
 {/if}
 </div>
 

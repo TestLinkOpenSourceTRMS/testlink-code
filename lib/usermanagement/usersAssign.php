@@ -314,6 +314,19 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
 	$status_ok = !is_null($activeTestplans);
 	if($status_ok)
 	{
+    $myAccessibleSet = $argsObj->user->getAccessibleTestPlans($dbHandler,$argsObj->testprojectID,null,
+	                                                            array('output' =>'map'));	  
+	  $myKeys = array_keys((array)$myAccessibleSet);
+    $activeKeys = array_keys($activeTestplans);
+	  $key2remove = array_intersect_key($activeKeys,$myKeys);
+    if( !is_null($key2remove) )
+	  {
+	    foreach($key2remove as $target)
+	    {
+	      unset($activeTestplans[$target]);
+	    }
+	  }
+	                                                            
     // we want to change map key, from testplan id to a sequential index to maintain old logic
     $activeTestplans = array_values($activeTestplans);
     

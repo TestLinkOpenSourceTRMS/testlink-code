@@ -18,10 +18,6 @@
  *
  **/
 
-/** related functionality */
-require_once( dirname(__FILE__) . '/tree.class.php' );
-require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
-
 /**
  * class to coordinate and manage Test Plans
  * @package 	TestLink
@@ -47,6 +43,7 @@ class testplan extends tlObjectWithAttachments
 	var $assignment_mgr;
 	var $cfield_mgr;
 	var $tcase_mgr;
+	var $cfg;
    
 	var $assignment_types;
 	var $assignment_status;
@@ -58,6 +55,10 @@ class testplan extends tlObjectWithAttachments
 	var $node_types_id_descr;
 
 	var $import_file_types = array("XML" => "XML"); // array("XML" => "XML", "XLS" => "XLS" );
+
+	// Nodes to exclude when do test plan tree traversal
+  var $nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
+  var $nt2exclude_children=array('testcase' => 'exclude_my_children','requirement_spec'=> 'exclude_my_children');
 	
 	/**
 	 * testplan class constructor
@@ -67,7 +68,7 @@ class testplan extends tlObjectWithAttachments
 	function __construct(&$db)
 	{
     $this->db = &$db;
-	  $this->tree_manager = New tree($this->db);
+	  $this->tree_manager = new tree($this->db);
 		$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
 		$this->node_types_id_descr=array_flip($this->node_types_descr_id);
       
@@ -76,8 +77,12 @@ class testplan extends tlObjectWithAttachments
 	  $this->assignment_status = $this->assignment_mgr->get_available_status();
 
     $this->cfield_mgr = new cfield_mgr($this->db);
-    $this->tcase_mgr = New testcase($this->db);
+    $this->tcase_mgr = new testcase($this->db);
 		$this->platform_mgr = new tlPlatform($this->db);
+
+		$this->cfg = new stdClass();
+		$this->cfg->results = config_get('results');
+		$this->cfg->status_not_run = $this->cfg->results['status_code']['not_run'];
    	
 	  tlObjectWithAttachments::__construct($this->db,'testplans');
 	}
@@ -90,6 +95,8 @@ class testplan extends tlObjectWithAttachments
 	{
 	    return $this->import_file_types;
 	}
+
+
 
 	/**
 	 * creates a tesplan on Database, for a testproject.
@@ -698,8 +705,6 @@ class testplan extends tlObjectWithAttachments
 		$last_exec_subquery .= " WHERE testplan_id={$id} " . 
 					           " GROUP BY tcversion_id,testplan_id {$groupByPlatform} {$groupByBuild} )";
            
-		$resultsCfg = config_get('results');
-		$status_not_run=$resultsCfg['status_code']['not_run'];
 		$sql_subquery='';
 		
 		// franciscom
@@ -760,16 +765,10 @@ class testplan extends tlObjectWithAttachments
 			}
 		}
 
-		// 20110317
 		// not run && build_active_status = 'active', need special logic		
-		//
 		if(!is_null($my['filters']['exec_status']) )
 		{
-			// $executions['filter'] = '';
-			// $notrun['filter'] = null;
-			// $otherexec['filter'] = null;
-			
-			$notRunPresent = array_search($status_not_run,$my['filters']['exec_status']); 
+			$notRunPresent = array_search($this->cfg->status_not_run,$my['filters']['exec_status']); 
 			if($notRunPresent !== false)
 			{
 				$notrun['filter'] = " E.status IS NULL ";
@@ -905,7 +904,7 @@ class testplan extends tlObjectWithAttachments
 	    // 20110317 - 150 years 'Unita Italia'
 	    if( is_null($my['options']['forced_exec_status']) )
 		{
-			$sql .=	 " COALESCE(E.status,'" . $status_not_run . "') AS exec_status, ";
+			$sql .=	 " COALESCE(E.status,'" . $this->cfg->status_not_run . "') AS exec_status, ";
 		}
 		else
 		{
@@ -1967,21 +1966,21 @@ class testplan extends tlObjectWithAttachments
 		$id     : test plan id.
 	    returns: returns flat list of names of test suites (including nest test suites)  No particular Order.
 	*/
-	function get_testsuites($id)
+	function get_testsuites($id,$options = null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-		// BUGID 0002776
-		$sql = " /* $debugMsg */ SELECT NHTSUITE.name, NHTSUITE.id, NHTSUITE.parent_id" . 
-			   " FROM {$this->tables['testplan_tcversions']}  TPTCV, {$this->tables['nodes_hierarchy']}  NHTCV, " .
-			   " {$this->tables['nodes_hierarchy']} NHTCASE, {$this->tables['nodes_hierarchy']} NHTSUITE " . 
-			   " WHERE TPTCV.tcversion_id = NHTCV.id " .
-			   " AND NHTCV.parent_id = NHTCASE.id " .
-			   " AND NHTCASE.parent_id = NHTSUITE.id " .
-			   " AND TPTCV.testplan_id = " . $id . " " .
-			   " GROUP BY NHTSUITE.name,NHTSUITE.id,NHTSUITE.parent_id " .
-			   " ORDER BY NHTSUITE.name" ;
-		
+		$opt = array_merge(array('output' => 'std'), (array)$options);
+    $safe_id = intval($id);
+		$sql = " /* $debugMsg */ /* Get direct PARENT Test Suite for Test Case */ " .
+		       " SELECT NHTSUITE.name, NHTSUITE.id, NHTSUITE.parent_id " . 
+			     " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+			     " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCV.tcversion_id " .
+			     " JOIN {$this->tables['nodes_hierarchy']} NHTCASE ON NHTCASE.id = NHTCV.parent_id " . 
+			     " JOIN {$this->tables['nodes_hierarchy']} NHTSUITE ON NHTSUITE.id = NHTCASE.parent_id " . 
+			     " WHERE TPTCV.testplan_id = " . $safe_id . " " .
+			     " GROUP BY NHTSUITE.name,NHTSUITE.id,NHTSUITE.parent_id " .
+			     " ORDER BY NHTSUITE.name" ;
 		$recordset = $this->db->get_recordset($sql);
 		
 		// Now the recordset contains testsuites that have child test cases.
@@ -2006,6 +2005,16 @@ class testplan extends tlObjectWithAttachments
 		
 		// Needs to be alphabetical based upon name attribute 
 		usort($finalset, array("testplan", "compare_name"));
+		
+		if($opt['output'] == 'smarty_html_options')
+		{
+		  $dummy = null;
+		  foreach($finalset as $elem )
+		  {
+		    $dummy[$elem['id']] = $elem['name'];
+		  }
+		  $finalset = $dummy; 
+		}
 		return $finalset;
 	}
 
@@ -2029,13 +2038,12 @@ class testplan extends tlObjectWithAttachments
 	/*
 	 function: get_parenttestsuites
 	
-	Used by get_testsuites
+	 @used-by get_testsuites()
 	 
-	Recursive function used to get all the parent test suites of potentially testcase free testsuites.
-	If passed node id isn't the product then it's merged into result set.
+	 Recursive function used to get all the parent test suites of potentially testcase free testsuites.
+	 If passed node id isn't the test project (ROOT NODE) then it's merged into result set.
 	
-	  args :
-		$id     : $id of potential testsuite
+	  args: $id of potential testsuite
 	  
 	  returns: an array of all testsuite ancestors of $id
 	 */
@@ -2043,22 +2051,19 @@ class testplan extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-	    $sql = " /* $debugMsg */ SELECT name, id, parent_id " .
+	  $sql = " /* $debugMsg */ SELECT name, id, parent_id " .
 		       "FROM {$this->tables['nodes_hierarchy']}  NH " .
 		       "WHERE NH.node_type_id <> {$this->node_types_descr_id['testproject']} " .
 		       "AND NH.id = " . $id;
-		    
-	    $recordset = $this->db->get_recordset($sql);
-	    $myarray = array();
-	    if (count($recordset) > 0)
-	    {        
-		    // 20100611 - franciscom
-		    // $myarray = array(array('name'=>$recordset[0]['name'], 'id'=>$recordset[0]['id']));
-		    $myarray = array($recordset[0]);
-		    $myarray = array_merge($myarray, $this->get_parenttestsuites($recordset[0]['parent_id'])); 
-	    }
-	    
-	    return $myarray;            
+		  
+	  $recordset = $this->db->get_recordset($sql);
+	  $myarray = array();
+	  if (count($recordset) > 0)
+	  {        
+		  $myarray = array($recordset[0]);
+		  $myarray = array_merge($myarray, $this->get_parenttestsuites($recordset[0]['parent_id'])); 
+	  }
+	  return $myarray;            
 	}
 
 
@@ -2954,7 +2959,7 @@ class testplan extends tlObjectWithAttachments
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
 		$node_types=$this->tree_manager->get_available_node_types();
-		$resultsCfg = config_get('results');
+		// $resultsCfg = config_get('results');
 		
 		$num_exec = count($buildSet);
 		$build_in = implode(",", $buildSet);
@@ -3027,7 +3032,7 @@ class testplan extends tlObjectWithAttachments
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
 		$node_types=$this->tree_manager->get_available_node_types();
-		$resultsCfg = config_get('results');
+		// $resultsCfg = config_get('results');
 
 		$build_in = implode(",", $buildSet);
 		$status_in = implode("','", (array)$status);
@@ -3288,11 +3293,9 @@ class testplan extends tlObjectWithAttachments
 	public function getNotExecutedLinkedTCVersionsDetailed($id,$filters=null,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$resultsCfg = config_get('results');
-		$status_not_run=$resultsCfg['status_code']['not_run'];
-        $executions_join = "";
+    $executions_join = "";
 
-        $my['filters'] = array('build_id' => 0,'platform_id' => null);
+    $my['filters'] = array('build_id' => 0,'platform_id' => null);
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
 
         $my['options'] = array('group_by_platform_tcversion' => false);
@@ -3328,7 +3331,7 @@ class testplan extends tlObjectWithAttachments
         }
 
 		$sql = "/* {$debugMsg} */ ";
-		$sql .= "SELECT COALESCE(E.status,'" . $status_not_run . "') AS exec_status, " .
+		$sql .= "SELECT COALESCE(E.status,'" . $this->cfg->status_not_run . "') AS exec_status, " .
 		        $build_fields .
 		        " PLAT.name AS platform_name," . 
 		        " NODE_TCASE.parent_id AS testsuite_id, NODE_TCASE.name AS name, NODE_TCASE.id AS tc_id," .
@@ -3401,7 +3404,7 @@ class testplan extends tlObjectWithAttachments
 	public function getStatusForReports()
 	{
 		// This will be used to create dynamically counters if user add new status
-		$resultsCfg = config_get('results');
+		// $resultsCfg = config_get('results');
 		foreach( $resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
 		{
 			$code_verbose[$resultsCfg['status_code'][$tc_status_verbose]] = $tc_status_verbose;
@@ -4381,6 +4384,622 @@ class testplan extends tlObjectWithAttachments
   	}
   	return $effective_role;
   }
+
+
+  function updateExecutionNotes($execID,$notes)
+  {
+      $sql = "UPDATE {$this->tables['executions']} " .
+             "SET notes = '" . $this->db->prepare_string($notes) . "' " .
+             "WHERE id = {$execID}";
+      return $this->db->exec_query($sql) ? tl::OK : tl::ERROR;     
+  }
+
+
+  function writeExecutionBug($exec_id,$bug_id,$just_delete = false)
+  {
+  	// Instead of Check if record exists before inserting, do delete + insert
+  	$prep_bug_id = $this->db->prepare_string($bug_id);
+  	
+  	$sql = "DELETE FROM {$this->tables['execution_bugs']} WHERE execution_id={$exec_id} " .
+  		     "AND bug_id='" . $prep_bug_id ."'";
+  	$result = $this->db->exec_query($sql);
+  	
+  	if(!$just_delete)
+  	{
+  		$sql = " INSERT INTO {$this->tables['execution_bugs']} (execution_id,bug_id) " .
+  			     " VALUES({$exec_id},'" . $prep_bug_id . "')";
+  		$result = $this->db->exec_query($sql);  	     
+  	}
+  	
+  	return $result ? 1 : 0;
+  }
+
+  /**
+   * get data about bug from external tool
+   * 
+   * @param resource &$db reference to database handler
+   * @param object &$bug_interface reference to instance of bugTracker class
+   * @param integer $execution_id Identifier of execution record
+   * 
+   * @return array list of 'bug_id' with values: 'build_name' and 'link_to_bts'
+   */
+  function getBugsForExec(&$bug_interface,$execution_id)
+  {
+  	$bug_list=array();
+  	$sql = " SELECT execution_id,bug_id,builds.name AS build_name " .
+  		     " FROM {$this->tables['execution_bugs']} EB" .
+  		     " JOIN {$this->tables['executions']} E ON E.id = EB.execution_id " .
+  		     " JOIN {$this->tables['builds']} B ON B.id = E.build_id ".
+  		     " WHERE EB.execution_id = " . intval($execution_id) .
+  		     " ORDER BY B.name,EB.bug_id";
+  	$map = $this->db->get_recordset($sql);
+  	if( !is_null($map) && is_object($bug_interface))
+  	{  	
+  		foreach($map as $elem)
+  		{
+  			$bug_list[$elem['bug_id']]['link_to_bts'] = $bug_interface->buildViewBugLink($elem['bug_id'],GET_BUG_SUMMARY);
+  			$bug_list[$elem['bug_id']]['build_name'] = $elem['build_name'];
+  		}
+  	}
+  	
+  	return $bug_list;
+  }
+
+  function getExecution($execution_id)
+  {
+  	$sql = "SELECT * FROM {$this->tables['executions']} WHERE id=" . intval($execution_id);
+  	$rs = $this->db->get_recordset($sql);
+  	return $rs;
+  }
+
+	/**
+	 * getSkeleton
+	 * 
+	 * get structure with Test suites and Test Cases
+	 * Filters that act on test cases work on attributes that are common to all
+	 * test cases versions: test case name
+	 *
+	 * Development Note:
+	 * Due to the tree structure is not so easy to try to do as much as filter as
+	 * possibile using SQL.
+	 *
+	 *
+	 * @return
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 *
+	 */
+	function getSkeleton($id,$tprojectID,$filters=null,$options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$items = array();
+	  $my['options'] = array('recursive' => false, 'exclude_testcases' => false, 
+	  						           'remove_empty_branches' => false);
+	  						   
+	 	$my['filters'] = array('exclude_node_types' => $this->nt2exclude,
+	 	                       'exclude_children_of' => $this->nt2exclude_children,
+	 	                       'exclude_branches' => null,
+	 	                       'testcase_name' => null,'testcase_id' => null,
+	 	                       'execution_type' => null, 
+	 	                       'platform_id' => null,
+	 	                       'additionalWhereClause' => null);      
+	 
+		$my['filters'] = array_merge($my['filters'], (array)$filters);
+		$my['options'] = array_merge($my['options'], (array)$options);
+	 
+    if( $my['options']['exclude_testcases'] )
+	  {
+			$my['filters']['exclude_node_types']['testcase']='exclude me';
+		}
+		
+		// transform some of our options/filters on something the 'worker' will understand
+		// when user has request filter by test case name, we do not want to display empty branches
+	
+		// If we have choose any type of filter, we need to force remove empty test suites
+		//
+		if( !is_null($my['filters']['testcase_name']) || !is_null($my['filters']['testcase_id']) ||
+			  !is_null($my['filters']['execution_type']) || !is_null($my['filters']['exclude_branches']) ||
+			  !is_null($my['filters']['platform_id']) ||
+			  $my['options']['remove_empty_branches'] )
+		{
+			$my['options']['remove_empty_nodes_of_type'] = 'testsuite';
+		}
+		
+    $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
+		$qnum = $this->$method2call($id,$tprojectID,$items,$my['filters'],$my['options']);
+	 	return $items;
+	}
+
+	/**
+	 *
+	 * 
+	 * @return
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 *
+	 */
+	function _get_subtree_rec($tplan_id,$node_id,&$pnode,$filters = null, $options = null)
+	{
+		static $qnum;
+		static $my;
+		static $exclude_branches;
+		static $exclude_children_of;
+		static $node_types;
+		static $tcaseFilter;
+		static $tcversionFilter;
+		static $pltaformFilter;
+	
+		static $childFilterOn;
+		static $staticSql;
+		static $debugMsg;
+		
+		if (!$my)
+		{
+			$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+      $qnum=0;
+			$node_types = array_flip($this->tree_manager->get_available_node_types());
+	    $my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
+	    					   	         'additionalWhereClause' => '', 'testcase_name' => null,
+	    					   	         'platform_id' => null,
+	    					   	         'testcase_id' => null,'active_testcase' => false);
+	                           
+	    $my['options'] = array('remove_empty_nodes_of_type' => null);
+	
+			$my['filters'] = array_merge($my['filters'], (array)$filters);
+			$my['options'] = array_merge($my['options'], (array)$options);
+	
+			$exclude_branches = $my['filters']['exclude_branches'];
+			$exclude_children_of = $my['filters']['exclude_children_of'];	
+	
+	
+			$tcaseFilter['name'] = !is_null($my['filters']['testcase_name']);
+			$tcaseFilter['id'] = !is_null($my['filters']['testcase_id']);
+			
+			$tcaseFilter['is_active'] = !is_null($my['filters']['active_testcase']) && $my['filters']['active_testcase'];
+			$tcaseFilter['enabled'] = $tcaseFilter['name'] || $tcaseFilter['id'] || $tcaseFilter['is_active'];
+	
+	
+			$tcversionFilter['execution_type'] = !is_null($my['filters']['execution_type']);
+			$tcversionFilter['enabled'] = $tcversionFilter['execution_type'];
+	
+			$childFilterOn = $tcaseFilter['enabled'] || $tcversionFilter['enabled'];
+			
+		
+	
+			if( !is_null($my['options']['remove_empty_nodes_of_type']) )
+			{
+				// this way I can manage code or description			
+				if( !is_numeric($my['options']['remove_empty_nodes_of_type']) )
+				{
+					$my['options']['remove_empty_nodes_of_type'] = 
+								  $this->tree_manager->node_descr_id[$my['options']['remove_empty_nodes_of_type']];
+				}
+			}
+	
+	
+			$platformFilter = "";
+			if( !is_null($my['filters']['platform_id']) && $my['filters']['platform_id'] > 0 )
+			{
+				$platformFilter = " AND T.platform_id = " . intval($my['filters']['platform_id']) ;
+			}
+	
+			// Create invariant sql sentences
+			$staticSql[0] = " /* $debugMsg - Get ONLY TestSuites */ " .
+						 	        " SELECT NHTS.node_order AS spec_order," . 
+				     	 	      " NHTS.node_order AS node_order, NHTS.id, NHTS.parent_id," . 
+				     	 	      " NHTS.name, NHTS.node_type_id, 0 AS tcversion_id " .
+				     	 	      " FROM {$this->tables['nodes_hierarchy']} NHTS" .
+				     	 	      " WHERE NHTS.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} " .
+				     	 	      " AND NHTS.parent_id = ";
+				     	
+			$staticSql[1] =	" /* $debugMsg - Get ONLY Test Cases with version linked to (testplan,platform) */ " .
+				     	 	      " SELECT NHTC.node_order AS spec_order, " .
+      				     	 	"        TPTCV.node_order AS node_order, NHTC.id, NHTC.parent_id, " .
+      				     	 	"        NHTC.name, NHTC.node_type_id, TPTCV.tcversion_id " .
+      				     	 	" FROM {$this->tables['nodes_hierarchy']} NHTC " .
+      						 	  " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
+      				     	 	" JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTCV.id " .
+      				     	 	" WHERE NHTC.node_type_id = {$this->tree_manager->node_descr_id['testcase']} " .
+				     	 	      " AND TPTCV.testplan_id = " . intval($tplan_id) . " {$platformFilter} " .
+				     	 	      " AND NHTC.parent_id = ";	
+		
+		} // End init static area
+		
+		$target = intval($node_id);
+		$sql = $staticSql[0] . $target . " UNION " . $staticSql[1] . $target;
+		
+		if( $tcaseFilter['enabled'] )
+		{
+			foreach($tcaseFilter as $key => $apply)
+			{
+				if( $apply )
+				{
+					switch($key)
+					{
+						case 'name':
+              $sql .= " AND NHTC.name LIKE '%{$my['filters']['testcase_name']}%' ";
+						break;
+						
+						case 'id':
+              $sql .= " AND NHTC.id = {$my['filters']['testcase_id']} ";
+						break;
+					}
+				}
+			}
+		}
+		
+		$sql .= " ORDER BY node_order,id";
+		
+		$rs = $this->db->fetchRowsIntoMap($sql,'id');
+		if( count($rs) == 0 )
+		{
+			return $qnum;
+		}
+	
+	 	foreach($rs as $row)
+	 	{
+			if(!isset($exclude_branches[$row['id']]))
+			{  
+				$node = $row + 
+				        array('node_type' => $this->tree_manager->node_types[$row['node_type_id']],
+				              'node_table' => $this->tree_manager->node_tables_by['id'][$row['node_type_id']]);
+				$node['childNodes'] = null;
+				
+				if($node['node_table'] == 'testcases')
+				{
+					$node['leaf'] = true; 
+					$node['external_id'] = '';
+				}			
+				
+				// why we use exclude_children_of ?
+		    // 1. Sometimes we don't want the children if the parent is a testcase,
+		    //    due to the version management
+		    //
+		    if(!isset($exclude_children_of[$node_types[$row['node_type_id']]]))
+		    {
+		      // Keep walking (Johny Walker Whisky)
+		      $this->_get_subtree_rec($tplan_id,$row['id'],$node,$my['filters'],$my['options']);
+        }
+	
+	         
+				// Have added this logic, because when export test plan will be developed
+				// having a test spec tree where test suites that do not contribute to test plan
+				// are pruned/removed is very important, to avoid additional processing
+				//		        
+				// If node has no childNodes, we check if this kind of node without children
+				// can be removed.
+				//
+			  $doRemove = is_null($node['childNodes']) && 
+			        	    ($node['node_type_id'] == $my['options']['remove_empty_nodes_of_type']);
+			  if(!$doRemove)
+			  {
+		  	  $pnode['childNodes'][] = $node;
+		  	}	
+			} // if(!isset($exclude_branches[$rowID]))
+		}
+		
+		return $qnum;
+	}
+
+	// This method is intended to return minimal data useful 
+	// to create Execution Tree.
+	// Status on Latest execution on Build,Platform is needed
+	// 
+	// @param int $id test plan id
+	// @param mixed $filters
+	// @param mixed $options	
+	// 
+	// [tcase_id]: default null => get any testcase
+	//             numeric      => just get info for this testcase
+	// 
+	// 
+	// [keyword_id]: default 0 => do not filter by keyword id
+	//               numeric/array()   => filter by keyword id
+	// 
+	// 
+	// [assigned_to]: default NULL => do not filter by user assign.
+	//                array() with user id to be used on filter
+	//                IMPORTANT NOTICE: this argument is affected by
+	// 			      [assigned_on_build]	               
+	// 
+	// [build_id]: default 0 or null => do not filter by build id
+	//             numeric 			 => filter by build id
+	// 
+	// 
+	// [cf_hash]: default null => do not filter by Custom Fields values
+	//
+	//
+	// [urgencyImportance] : filter only Tc's with certain (urgency*importance)-value 
+	//
+	// [tsuites_id]: default null.
+	//               If present only tcversions that are children of this testsuites
+	//               will be included
+	//              
+	// [exec_type] default null -> all types. 
+	// [platform_id]              
+	//		 	
+	// @used-by
+	// 
+	function getLinkedForExecTree($id,$filters=null,$options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$safe['tplan_id'] = intval($id);
+		$my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
+	    
+		if(	$my['filters']['build_id'] <= 0 )
+		{
+			// CRASH IMMEDIATELY
+			throw new Exception( $debugMsg . " Can NOT WORK with \$my['filters']['build_id'] <= 0");
+		}
+		
+		if( !$my['green_light'] ) 
+		{
+			// No query has to be run, because we know in advance that we are
+			// going to get NO RECORDS
+			return null;	
+		}
+
+		$platform4EE = " ";
+		if( !is_null($my['filters']['platform_id']) )
+		{
+			$platform4EE = " AND EE.platform_id = " . intval($my['filters']['platform_id']);
+		}
+	
+		$sqlLEBBP = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id," .
+					      " MAX(EE.id) AS id " .
+				  	    " FROM {$this->tables['executions']} EE " . 
+				   	    " WHERE EE.testplan_id = " . $safe['tplan_id'] . 
+					      " AND EE.build_id = " . intval($my['filters']['build_id']) .
+					      $platform4EE .
+					      " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
+
+
+
+		// adding tcversion on output can be useful for Filter on Custom Field values,
+		// because we are saving values at TCVERSION LEVEL
+		//	
+		$union['not_run'] = "/* {$debugMsg} sqlUnion - not run */" .
+							" SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,TCV.version," .
+							// $fullEIDClause .
+							" TCV.tc_external_id AS external_id, " .
+							" COALESCE(E.status,'" . $this->cfg->status_not_run . "') AS exec_status " .
+							
+			   				" FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
+			   				" JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
+			   				" JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
+			   				" JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+							$my['join']['ua'] .
+							$my['join']['keywords'] .
+							" LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
+							
+							" /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
+							" LEFT OUTER JOIN ({$sqlLEBBP}) AS LEBBP " .
+							" ON  LEBBP.testplan_id = TPTCV.testplan_id " .
+							" AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
+							" AND LEBBP.platform_id = TPTCV.platform_id " .
+							" AND LEBBP.testplan_id = " . $safe['tplan_id'] .
+							" LEFT OUTER JOIN {$this->tables['executions']} E " .
+							" ON  E.tcversion_id = TPTCV.tcversion_id " .
+							" AND E.testplan_id = TPTCV.testplan_id " .
+							" AND E.platform_id = TPTCV.platform_id " .
+							" AND E.build_id = " . $my['filters']['build_id'] .
+
+							" WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
+							$my['where']['where'] .
+							" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
+							" AND E.id IS NULL AND LEBBP.id IS NULL";
+
+
+		$union['exec'] = "/* {$debugMsg} sqlUnion - executions */" . 
+							" SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,TCV.version," .
+							// $fullEIDClause .
+							" TCV.tc_external_id AS external_id, " .
+							" COALESCE(E.status,'" . $this->cfg->status_not_run . "') AS exec_status " .
+							
+			   				" FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
+			   				" JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
+			   				" JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
+			   				" JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+							$my['join']['ua'] .
+							$my['join']['keywords'] .
+							" LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
+							
+							" JOIN ({$sqlLEBBP}) AS LEBBP " .
+							" ON  LEBBP.testplan_id = TPTCV.testplan_id " .
+							" AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
+							" AND LEBBP.platform_id = TPTCV.platform_id " .
+							" AND LEBBP.testplan_id = " . $safe['tplan_id'] .
+							" JOIN {$this->tables['executions']} E " .
+							" ON  E.id = LEBBP.id " .  // TICKET 5191	
+							" AND E.tcversion_id = TPTCV.tcversion_id " .
+							" AND E.testplan_id = TPTCV.testplan_id " .
+							" AND E.platform_id = TPTCV.platform_id " .
+							" AND E.build_id = " . $my['filters']['build_id'] .
+
+							" WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
+							$my['where']['where'];
+
+		return $union;
+	}
+
+
+	/*
+	 *
+	 * @used-by getLinkedForExecTree(),getLinkedForTesterAssignmentTree(), getLinkedTCVersionsSQL()
+	 *						
+	 *
+	 * @internal revisions
+	 * @since 1.9.4
+	 */
+	function initGetLinkedForTree($tplanID,$filtersCfg,$optionsCfg)
+	{
+
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $dummy = array('exec_type','tc_id','builds','keywords','executions','platforms');
+
+		$ic['join'] = array();
+		$ic['join']['ua'] = '';
+
+		$ic['where'] = array();
+		$ic['where']['where'] = '';
+		$ic['where']['platforms'] = '';
+
+		$ic['green_light'] = true;
+    $ic['filters'] = array('tcase_id' => null, 'keyword_id' => 0,
+                           'assigned_to' => null, 'exec_status' => null,
+                           'build_id' => 0, 'cf_hash' => null,
+                           'urgencyImportance' => null, 'tsuites_id' => null,
+                           'platform_id' => null, 'exec_type' => null,
+                           'tcase_name' => null);
+
+    $ic['options'] = array('hideTestCases' => 0, 'include_unassigned' => false, 'allow_empty_build' => 0);
+		$ic['filters'] = array_merge($ic['filters'], (array)$filtersCfg);
+		$ic['options'] = array_merge($ic['options'], (array)$optionsCfg);
+
+
+		$ic['filters']['build_id'] = intval($ic['filters']['build_id']);
+		
+		// This NEVER HAPPENS for Execution Tree, but if we want to reuse
+		// this method for Tester Assignment Tree, we need to add this check
+		if( !is_null($ic['filters']['platform_id']) && $ic['filters']['platform_id'] > 0)
+		{
+			$ic['filters']['platform_id'] = intval($ic['filters']['platform_id']);
+			$ic['where']['platforms'] = " AND TPTCV.platform_id = {$ic['filters']['platform_id']} ";
+		}
+		
+		
+    $ic['where']['where'] .= $ic['where']['platforms'];
+
+		$dk = 'exec_type';
+		if( !is_null($ic['filters'][$dk]) )
+		{
+			$ic['where'][$dk]= " AND TCV.execution_type IN (" . 
+			                   implode(",",(array)$ic['filters'][$dk]) . " ) ";     
+	    	$ic['where']['where'] .= $ic['where'][$dk];
+		}
+
+		$dk = 'tcase_id';
+		if (!is_null($ic['filters'][$dk]) )
+		{
+			if( is_array($ic['filters'][$dk]) )
+			{
+				$ic['where'][$dk] = " AND NH_TCV.parent_id IN (" . implode(',',$ic['filters'][$dk]) . ")";          	
+			}
+			else if ($ic['filters'][$dk] > 0)
+			{
+				$ic['where'][$dk] = " AND NH_TCV.parent_id = " . intval($ic['filters'][$dk]);
+			}
+			else
+			{
+				// Best Option on this situation will be signal that query will fail =>
+				// NO SENSE run the query
+				$ic['green_light'] = false;
+			}
+	    	$ic['where']['where'] .= $ic['where'][$dk];
+		}
+
+		if (!is_null($ic['filters']['tsuites_id']))
+		{
+			$dummy = (array)$ic['filters']['tsuites_id'];
+			$ic['where']['where'] .= " AND NH_TCASE.parent_id IN (" . implode(',',$dummy) . ")";
+		}
+
+		if (!is_null($ic['filters']['urgencyImportance']))
+		{
+			$ic['where']['where'] .= $this->helper_urgency_sql($ic['filters']['urgencyImportance']);
+		}
+
+
+		if( !is_null($ic['filters']['keyword_id']) )
+		{    
+			
+			list($ic['join']['keywords'],$ic['where']['keywords']) = 
+				$this->helper_keywords_sql($ic['filters']['keyword_id'],array('output' => 'array'));
+
+
+			$ic['where']['where'] .= $ic['where']['keywords']; // **** // CHECK THIS CAN BE NON OK
+		}
+
+                              
+		// If special user id TL_USER_ANYBODY is present in set of user id,
+		// we will DO NOT FILTER by user ID
+		if( !is_null($ic['filters']['assigned_to']) && 
+		    !in_array(TL_USER_ANYBODY,(array)$ic['filters']['assigned_to']) )
+		{  
+
+			list($ic['join']['ua'],$ic['where']['ua']) = 
+				$this->helper_assigned_to_sql($ic['filters']['assigned_to'],$ic['options'],
+											  $ic['filters']['build_id']);						
+
+			$ic['where']['where'] .= $ic['where']['ua']; 
+		}
+		
+		
+		if( isset($ic['options']['assigned_on_build']) && !is_null($ic['options']['assigned_on_build']) )
+		{
+			$ic['join']['ua'] = " LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
+				   				" ON UA.feature_id = TPTCV.id " . 
+				    			" AND UA.build_id = " . $ic['options']['assigned_on_build'] . 
+				    			" AND UA.type = {$this->execTaskCode} ";
+		}
+
+
+		if( !is_null($ic['filters']['tcase_name']) && 
+			($dummy = trim($ic['filters']['tcase_name'])) != ''	)
+		{
+			$ic['where']['where'] .= " AND NH_TCASE.name LIKE '%{$dummy}%' "; 
+		}
+                               
+                               
+		if (!is_null($ic['filters']['exec_status']))
+		{
+			$dummy = (array)$ic['filters']['exec_status'];
+			$ic['where']['where'] .= " AND E.status IN ('" . implode("','",$dummy) . "')";
+		}
+                      
+    return $ic;                       
+	}                              
+
+	/**
+	 * 
+ 	 * 
+ 	 */
+	function helper_keywords_sql($filter,$options=null)
+	{
+		
+		$sql = array('filter' => '', 'join' => '');
+
+		if( is_array($filter) )
+		{
+			// 0 -> no keyword, remove 
+			if( $filter[0] == 0 )
+			{
+				array_shift($filter);
+			}
+			
+			if(count($filter))
+			{
+				$sql['filter'] = " AND TK.keyword_id IN (" . implode(',',$filter) . ")";          	
+			}  
+		}
+		else if($filter > 0)
+		{
+			$sql['filter'] = " AND TK.keyword_id = {$filter} ";
+		}
+		
+		if( $sql['filter'] != '' )
+		{
+			$sql['join'] = " JOIN {$this->tables['testcase_keywords']} TK ON TK.testcase_id = NH_TCV.parent_id ";
+		}
+
+		$ret = is_null($options) ? $sql : array($sql['join'],$sql['filter']);
+		return $ret;
+	}
+
+
 
 
 } // end class testplan

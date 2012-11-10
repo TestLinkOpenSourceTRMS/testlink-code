@@ -14,21 +14,15 @@ Purpose: smarty template - edit test specification: test case
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_ext_js.tpl"}
 
-<script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 <script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
 <script language="javascript" src="gui/javascript/tcase_utils.js" type="text/javascript"></script>
 
-{assign var="opt_cfg" value=$gui->opt_cfg}
-<script type="text/javascript" language="JavaScript">
-var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
-{$opt_cfg->js_ot_name}.saveRemovedLeftOptions("{$opt_cfg->js_ot_name}_removedLeft");
-{$opt_cfg->js_ot_name}.saveRemovedRightOptions("{$opt_cfg->js_ot_name}_removedRight");
-{$opt_cfg->js_ot_name}.saveAddedLeftOptions("{$opt_cfg->js_ot_name}_addedLeft");
-{$opt_cfg->js_ot_name}.saveAddedRightOptions("{$opt_cfg->js_ot_name}_addedRight");
-{$opt_cfg->js_ot_name}.saveNewLeftOptions("{$opt_cfg->js_ot_name}_newLeft");
-{$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
+<script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
+<script language="JavaScript" type="text/javascript">
+var {$gui->optionTransfer->jsName} = setUpOptionTransferEngine('{$gui->optionTransferJSObject}');
 </script>
+
 
 <script type="text/javascript">
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title|escape:'javascript'}";
@@ -76,7 +70,7 @@ function validateForm(the_form)
 {/if}
 </head>
 
-<body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('testcase_name')">
+<body onLoad="{$gui->optionTransfer->jsName}.init(document.forms[0]);focusInputField('testcase_name')">
 {config_load file="input_dimensions.conf" section="tcNew"}
 <h1 class="title">{$labels.title_edit_tc}{$smarty.const.TITLE_SEP}{$gui->tc.name|escape}
 	{$smarty.const.TITLE_SEP_TYPE3}{$labels.version} {$gui->tc.version}</h1> 
@@ -90,14 +84,13 @@ function validateForm(the_form)
 
 <form method="post" action="lib/testcases/tcEdit.php" name="tc_edit"
       onSubmit="return validateForm(this);">
-
 	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 	<input type="hidden" name="testsuite_id" id="testsuite_id" value="{$gui->tc.testsuite_id}" />
 	<input type="hidden" name="testcase_id" id="testcase_id" value="{$gui->tc.testcase_id}" />
 	<input type="hidden" name="tcversion_id" value="{$gui->tc.id}" />
 	<input type="hidden" name="version" value="{$gui->tc.version}" />
 	<input type="hidden" name="doAction" value="" />
-  	<input type="hidden" name="show_mode" value="{$gui->show_mode}" />
+  <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 	
 	{* when save or cancel is pressed do not show modification warning *}
 	<div class="groupBtn">

@@ -24,16 +24,12 @@ $cfg = getCfg();
 testlinkInitPage($db);
 $optionTransferName = 'ot';
 
-echo __FILE__;
-
 $tcase_mgr = new testcase($db);
 $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 
-new dBug($_REQUEST);
-
-$args = init_args($cfg,$tproject_mgr);
+$args = init_args($db,$cfg,$tproject_mgr);
 require_once(require_web_editor($cfg->webEditorCfg['type']));
 
 $commandMgr = new testcaseCommands($db,$_SESSION['currentUser'],$args->tproject_id);
@@ -57,10 +53,12 @@ $doRender = false;
 $edit_steps = false;
 
 $pfn = $args->doAction;
+
 switch($args->doAction)
 {
   case "doUpdate":
   case "doAdd2testplan":
+  case "doCreateNewVersion":
     $op = $commandMgr->$pfn($args,$_REQUEST);
   break;
 	
@@ -90,7 +88,7 @@ switch($args->doAction)
 
 if( $doRender )
 {
-	renderGui($args,$gui,$op,$templateCfg,$cfg,$edit_steps);
+	renderGui($args,$gui,$op,$commandMgr->getTemplateCfg(),$cfg,$edit_steps);
 	exit();
 }
 
@@ -226,32 +224,6 @@ else if($args->do_copy)
   $identity->version_id = $args->tcversion_id;
 	$tcase_mgr->show($smarty,$gui,$identity);
 }
-else if($args->do_create_new_version)
-{
-	// used to implement go back 
-	$gui->loadOnCancelURL = buildLoadOnCancelURL($args);
-
-	$user_feedback = '';
-	$show_newTC_form = 0;
-	$msg = lang_get('error_tc_add');
-	$op = $tcase_mgr->create_new_version($args->tcase_id,$args->user_id,$args->tcversion_id);
-	if ($op['msg'] == "ok")
-	{
-		$user_feedback = sprintf(lang_get('tc_new_version'),$op['version']);
-		$msg = 'ok';
-	}
-
-	$viewer_args['action'] = "do_update";
-	$viewer_args['refreshTree'] = DONT_REFRESH;
-	$viewer_args['msg_result'] = $msg;
-	$viewer_args['user_feedback'] = $user_feedback;
-
-	$identity = new stdClass();
-	$identity->tproject_id = $args->tproject_id;
-	$identity->id = $args->tcase_id;
-	$identity->version_id = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
-	$tcase_mgr->show($smarty,$gui,$identity);					         
-}
 else if($args->do_activate_this || $args->do_deactivate_this)
 {
 	$gui->loadOnCancelURL = buildLoadOnCancelURL($args);
@@ -333,42 +305,61 @@ if ($show_newTC_form)
   @internal revisions
 	
 */
-function init_args(&$cfgObj,&$tprojectMgr)
+function init_args(&$dbHandler,&$cfgObj,&$tprojectMgr)
 {
-  $tc_importance_default = config_get('testcase_importance_default');
-  
   $_REQUEST = strings_stripSlashes($_REQUEST);
   
+  $args = new stdClass();
+	$args->basehref = $_SESSION['basehref'];
+  $args->user_id = $_SESSION['userID'];
+
+  $args->tproject_id = intval($_REQUEST['tproject_id']);
+
   $args->user = $_SESSION['currentUser'];
+	$args->userGrants = new stdClass();
+	$args->userGrants->mgt_modify_tc = $args->user->hasRight($dbHandler,'mgt_modify_tc',$args->tproject_id);
+	$args->userGrants->mgt_view_req = $args->user->hasRight($dbHandler,"mgt_view_req",$args->tproject_id);
+	$args->userGrants->testplan_planning = $args->user->hasRight($dbHandler,"testplan_planning",$args->tproject_id);
+
+  $args->exec_type = isset($_REQUEST['exec_type']) ? $_REQUEST['exec_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
+  $args->importance = isset($_REQUEST['importance']) ? $_REQUEST['importance'] : config_get('testcase_importance_default');
+  $args->name = isset($_REQUEST['testcase_name']) ? $_REQUEST['testcase_name'] : null;
   
-  $id2get = array('tsuiteID' => 'tsuiteID','tcase_id' => 'testcase_id','tcversion_id' => 'tcversion_id');
+  $k2null = array('summary','preconditions','steps','expected_results','step_set','tcaseSteps','goback_url');
+  foreach($k2null as $key)
+  {
+    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;
+  }
+
+
+  $id2get = array('tcase_id' => 'testcase_id','tcversion_id' => 'tcversion_id',
+                  'new_container_id' => 'new_container', 'old_container_id' => 'old_container',
+                  'has_been_executed' => 'has_been_executed', 'step_number' => 'step_number',
+                  'step_id' => 'step_id');
   foreach($id2get as $prop => $input)
   {
     $args->$prop = isset($_REQUEST[$input]) ? intval($_REQUEST[$input]) : 0;
   }
-  
-  new dBug($args);
-  
-  $args->name = isset($_REQUEST['testcase_name']) ? $_REQUEST['testcase_name'] : null;
-  
-  // Normally Rich Web Editors	
-  $args->summary = isset($_REQUEST['summary']) ? $_REQUEST['summary'] : null;
-  $args->preconditions = isset($_REQUEST['preconditions']) ? $_REQUEST['preconditions'] : null;
-  $args->steps = isset($_REQUEST['steps']) ? $_REQUEST['steps'] : null;
-  $args->expected_results = isset($_REQUEST['expected_results']) ? $_REQUEST['expected_results'] : null;
-  
-  $args->new_container_id = isset($_REQUEST['new_container']) ? intval($_REQUEST['new_container']) : 0;
-  $args->old_container_id = isset($_REQUEST['old_container']) ? intval($_REQUEST['old_container']) : 0;
-  $args->has_been_executed = isset($_REQUEST['has_been_executed']) ? intval($_REQUEST['has_been_executed']) : 0;
-  $args->exec_type = isset($_REQUEST['exec_type']) ? $_REQUEST['exec_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
-  $args->importance = isset($_REQUEST['importance']) ? $_REQUEST['importance'] : $tc_importance_default;
-  
+
+  $id2get = array('tsuiteID' => array('tsuiteID','testsuite_id'));
+  foreach($id2get as $prop => $inputSet)
+  {
+    $args->$prop = 0;
+    foreach($inputSet as $input)
+    {
+      if( isset($_REQUEST[$input]) )
+      {
+        $args->$prop = intval($_REQUEST[$input]);
+        break;
+      }
+    }
+  }
   
   $dummy = getConfigAndLabels('testCaseStatus','code');
   $args->tcStatusCfg['status_code'] = $dummy['cfg'];
   $args->tcStatusCfg['code_label'] = $dummy['lbl'];
   $args->tc_status = isset($_REQUEST['tc_status']) ? intval($_REQUEST['tc_status']) : 
-  $args->tcStatusCfg['status_code']['draft'];
+                     $args->tcStatusCfg['status_code']['draft'];
 
 	$dk = 'estimated_execution_duration';
   $args->$dk = trim(isset($_REQUEST[$dk]) ? $_REQUEST[$dk] : '');
@@ -385,9 +376,8 @@ function init_args(&$cfgObj,&$tprojectMgr)
 		}
 	}
 	
-   
 	$key2loop = array('move_copy_tc','delete_tc_version','do_move','do_copy',
-					          'do_create_new_version','do_delete_tc_version');
+					          'do_create_new_version','do_delete_tc_version','stay_here');
 	foreach($key2loop as $key)
 	{
 		$args->$key = isset($_REQUEST[$key]) ? 1 : 0;
@@ -400,38 +390,22 @@ function init_args(&$cfgObj,&$tprojectMgr)
   $key2loop=array("keyword_assignments","requirement_assignments");
   foreach($key2loop as $key)
   {
-     $args->copy[$key]=isset($_REQUEST[$key])?true:false;    
+     $args->copy[$key]=isset($_REQUEST[$key]) ? true : false;    
   }    
   
   $args->show_mode = (isset($_REQUEST['show_mode']) && $_REQUEST['show_mode'] != '') ? $_REQUEST['show_mode'] : null;
 
-  // Multiple Test Case Steps Feature
-	$args->step_number = isset($_REQUEST['step_number']) ? intval($_REQUEST['step_number']) : 0;
-	$args->step_id = isset($_REQUEST['step_id']) ? intval($_REQUEST['step_id']) : 0;
-	$args->step_set = isset($_REQUEST['step_set']) ? $_REQUEST['step_set'] : null;
-	$args->tcaseSteps = isset($_REQUEST['tcaseSteps']) ? $_REQUEST['tcaseSteps'] : null;
 
-  $args->tproject_id = intval($_REQUEST['tproject_id']);
-
-	$args->opt_requirements = null;
-	$args->automationEnabled = 0;
-	$args->requirementsEnabled = 0;
-	$args->testPriorityEnabled = 0;
-	
 	$dummy = $tprojectMgr->get_by_id($args->tproject_id);
 	$args->opt_requirements = $dummy['opt']->requirementsEnabled;
 	$args->requirementsEnabled = $dummy['opt']->requirementsEnabled;
 	$args->automationEnabled = $dummy['opt']->automationEnabled;
 	$args->testPriorityEnabled = $dummy['opt']->testPriorityEnabled;
 
-	$args->basehref = $_SESSION['basehref'];
-  $args->user_id = $_SESSION['userID'];
     
   // TABBED BROWSING
-  $args->refreshTree = testproject::getUserChoice($args->tproject_id, 
-    												array('tcaseTreeRefreshOnAction','edit_mode'));
+  $args->refreshTree = testproject::getUserChoice($args->tproject_id,array('tcaseTreeRefreshOnAction','edit_mode'));
     
-  $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 
 	$action2check = array("editStep" => true,"createStep" => true, "doCreateStep" => true,
 						            "doUpdateStep" => true, "doInsertStep" => true);
@@ -440,13 +414,8 @@ function init_args(&$cfgObj,&$tprojectMgr)
 		$cfgObj->webEditorCfg = getWebEditorCfg('steps_design');	
 	}   
 
-	$args->stay_here = isset($_REQUEST['stay_here']) ? 1 : 0;
+  $args->assigned_keyword_list = isset($_REQUEST['assigned_keyword_list'])? $_REQUEST['assigned_keyword_list'] : "";
 
-  $userObj = &$_SESSION['currentUser'];
-	$args->userGrants = new stdClass();
-	$args->userGrants->mgt_modify_tc = $userObj->hasRight($db,'mgt_modify_tc',$args->tproject_id);
-	$args->userGrants->mgt_view_req = $userObj->hasRight($db,"mgt_view_req",$args->tproject_id);
-	$args->userGrants->testplan_planning = $userObj->hasRight($db,"testplan_planning",$args->tproject_id);
 
   return $args;
 }

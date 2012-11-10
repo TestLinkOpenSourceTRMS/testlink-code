@@ -82,7 +82,15 @@ switch(($pfn = $args->doAction))
     	$gui->user_feedback = $op->msg;
     	$gui->reloadType = $op->reloadType;
     	$gui->contextTprojectID = $op->contextTprojectID;
-      break;
+    break;
+    
+    case 'toggleActive':
+    case 'togglePublic':
+    	$status_ok = true;
+    	$gui->user_feedback = '';
+    	$method = $args->doAction;
+      $tprojectMgr->$method($gui->contextTprojectID);
+    break;
 }
 
 
@@ -106,6 +114,8 @@ switch($args->doAction)
     case "doCreate":
     case "doDelete":
     case "doUpdate":
+    case "toggleActive":
+    case "togglePublic":
         $gui->tprojects = $tprojectMgr->get_accessible_for_user($args->userID,'array_of_map');
 
         // Context Need to be updated using first test project on set

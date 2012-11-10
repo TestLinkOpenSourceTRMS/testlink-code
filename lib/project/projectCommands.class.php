@@ -184,7 +184,8 @@ class projectCommands
     // used to set value of: $guiObj->operation
     //
     $actionOperation = array('create' => 'doCreate', 'doCreate' => 'doCreate',
-                             'edit' => 'doUpdate','delete' => 'doDelete', 'doDelete' => '');
+                             'edit' => 'doUpdate','delete' => 'doDelete', 
+                             'doDelete' => '', 'toggleActive' => '');
 
     // Need to document
     $key2work = 'initWebEditorFromTemplate';
@@ -210,6 +211,7 @@ class projectCommands
 
     	    case "doCreate":
     	    case "doDelete":
+    	    case "toggleActive":
   				  $initWebEditorFromTemplate = false;
   				  $of->Value = $argsObj->$key;
   			  break;
@@ -234,7 +236,7 @@ class projectCommands
     } // foreach
     
  
-// -.....................
+    echo $argsObj->doAction;
     switch($argsObj->doAction)
     {
         case "edit":
@@ -242,6 +244,7 @@ class projectCommands
         case "delete":
    	    case "doCreate":
         case "doDelete":
+        case "toggleActive":
             $renderType = 'template';
             
             // Document !!!!

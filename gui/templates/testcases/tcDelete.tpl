@@ -4,12 +4,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - delete test case in test specification
 
 @internal revisions
-20100908 - franciscom - improvements on platform name display
-20100808 - franciscom - typo error refresh_tree -> refreshTree
 *}
 {lang_get var="labels"
           s='btn_yes_iw2del,btn_no,th_version,th_linked_to_tplan,title_delete_testcases,
-             th_executed,question_del_tc,platform'}
+             th_executed,platform,btn_cancel,question_del_tc'}
 {include file="inc_head.tpl"}
 
 <body>
@@ -49,14 +47,12 @@ Purpose: smarty template - delete test case in test specification
     {/if}
 
     {if $gui->delete_enabled}
-    
-	  <p>{$labels.question_del_tc}</p>
 	  <form method="post" 
 	        action="lib/testcases/tcEdit.php?tproject_id={$gui->tproject_id}&testcase_id={$gui->testcase_id}&tcversion_id={$gui->tcversion_id}">
 	  	<input type="submit" id="do_delete" name="do_delete" value="{$labels.btn_yes_iw2del}" />
 	  	<input type="button" name="cancel_delete"
 	  	       onclick='javascript: location.href=fRoot+"lib/testcases/archiveData.php?tproject_id={$gui->tproject_id}&version_id=undefined&edit=testcase&id={$gui->testcase_id}";'
-	  	       value="{$labels.btn_no}" />
+	  	       value="{$labels.btn_cancel}" />
 	  </form>
     {/if}
   

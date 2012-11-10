@@ -35,6 +35,9 @@
  *
  * @internal revisions
  * @since 2.0
+ * 
+ * 20121110 - franciscom - TICKET 5341: Top Level Test Suite Filter - Display only test suites present on Test plan
+ *
  *
  */
 
@@ -195,7 +198,10 @@ class tlTestCaseFilterControl extends tlFilterControl
 	 * Initialized not in constructor, only on first use to save resources.
 	 * @var testplan
 	 */
-	private $testplan_mgr = null;
+	private $testplan_mgr = null;          
+	
+	private $treeMenuMgr = null;
+	private $execTreeMenuMgr = null;
 	
 	/**
 	 * This array contains all possible filters.
@@ -252,8 +258,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 	                                                          'filter_keywords',
 	                                                          'filter_priority',
 	                                                          'filter_execution_type',
-		                                                      // enabled user filter when assigning testcases
-		                                                      'filter_assigned_user',
+		                                                         // enabled user filter when assigning testcases
+		                                                        'filter_assigned_user',
 	                                                          'filter_custom_fields',
 	                                                          'filter_result'),
 	                                     'plan_add_mode' => array('filter_tc_id',
@@ -334,11 +340,15 @@ class tlTestCaseFilterControl extends tlFilterControl
     // Constructor will launch common methods, calling method defined IN THIS CLASS
 		parent::__construct($dbHandler);
 
-		$this->initTreeOptions($this->mode);
+		$this->initTreeOptions($this->mode);  
+		
+		$this->treeMenuMgr = new tlTreeMenu($this->db);
+		$this->execTreeMenuMgr = new tlExecTreeMenu($this->db);
 		
 		// delete any filter settings that may be left from previous calls in session
 		$this->delete_own_session_data();
 		$this->delete_old_session_data();
+		
 		
 		$this->save_session_data();
 	}
@@ -505,10 +515,6 @@ class tlTestCaseFilterControl extends tlFilterControl
 		if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') 
 		{
 			$this->settings['setting_build'] = false;
-		}
-	
-		if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') 
-		{
 			$this->settings['setting_platform'] = false;
 		}
 		
@@ -625,7 +631,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 	public function set_testcases_to_show($value = null) 
 	{
 		// update active_filters
-		if (!is_null($value)) {
+		if (!is_null($value)) 
+		{
 			$this->active_filters['testcases_to_show'] = $value;
 		}
 		
@@ -825,7 +832,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 		switch ($this->mode) 
 		{
 			case 'plan_mode':
-			  $gui->ajaxTree = $this->buildTreePlanMo->menuUrlde($gui->menuUrl);
+			  $gui->ajaxTree = $this->buildTreePlanMode($gui->menuUrl);
 			break;
 			
 			case 'edit_mode':
@@ -942,28 +949,22 @@ class tlTestCaseFilterControl extends tlFilterControl
 	private function init_setting_testplan() 
 	{
 
-		if (is_null($this->testplan_mgr)) {
+		if (is_null($this->testplan_mgr)) 
+		{
 			$this->testplan_mgr = new testplan($this->db);
 		}
 		
 		$key = 'setting_testplan';
 		$testplans = $this->user->getAccessibleTestPlans($this->db, $this->args->testproject_id);
 
-		if (isset($_SESSION['testplanID']) && $_SESSION['testplanID'] != $this->args->{$key}) {
-			// testplan was changed, we need to reset all filters
-			// --> they were chosen for another testplan, not this one!
+    // On 2.0 and UP WE DO NOT USE SESSION ANY MORE
+		if($this->args->useHasChangedTestPlan) 
+		{
 			$this->args->reset_filters = true;
-
-			// check if user is allowed to set chosen testplan before changing
-			foreach ($testplans as $plan) {
-				if ($plan['id'] == $this->args->{$key}) {
-					setSessionTestPlan($plan);
-				}
-			}
 		}
 
 		// now load info from session
-		$info = $this->testplan_mgr->get_by_id($_SESSION['testplanID']);
+		$info = $this->testplan_mgr->get_by_id($this->args->testplan_id);
 		$this->args->testplan_name = $info['name'];
 		$this->args->testplan_id = $info['id'];
 		$this->args->{$key} = $info['id'];
@@ -989,13 +990,13 @@ class tlTestCaseFilterControl extends tlFilterControl
 				$this->settings[$key]['items'][$plan['id']] = $plan['name'];
 			}
 		}
-	} // end of method
+	} 
 
 	/**
 	 * 
 	 * 
 	 * 20120825 - franciscom - TICKET 5176: Possibility to filter by Platform
-	 *						   according mode we need to add [Any] option
+	 *						             according mode we need to add [Any] option
 	 *
 	 */
 	private function init_setting_platform() 
@@ -1106,18 +1107,34 @@ class tlTestCaseFilterControl extends tlFilterControl
 
 	/**
 	 * 
-	 * 
+	 * @internal revisions
+	 * 20121110 - TICKET 5341
 	 */
 	private function init_filter_toplevel_testsuite() 
 	{
-		if (!$this->testproject_mgr) 
-		{
-			$this->testproject_mgr = new testproject($this->db);
-		}
+	  switch($this->mode)
+	  {
+	    case 'edit_mode':
+	    default:
+    		if (!$this->testproject_mgr) 
+    		{
+    			$this->testproject_mgr = new testproject($this->db);
+    		}
+    		$itemSet = $this->testproject_mgr->get_first_level_test_suites($this->args->testproject_id,
+    		                                                               'smarty_html_options');
+	    break;
+	    
+	    case 'execution_mode':
+    		if (!$this->testplan_mgr) 
+    		{
+    			$this->testplan_mgr = new testplan($this->db);
+    		}
+    		$itemSet = $this->testplan_mgr->get_testsuites($this->args->testplan_id,array('output' => 'smarty_html_options'));	 
+	    break;
+	      
+	  }
+
 		$key = 'filter_toplevel_testsuite';
-		$first_level_suites = $this->testproject_mgr->get_first_level_test_suites($this->args->testproject_id,
-		                                                                          'smarty_html_options');
-		
 		$selection = $this->args->{$key};
 		if (!$selection || $this->args->reset_filters) 
 		{
@@ -1130,18 +1147,17 @@ class tlTestCaseFilterControl extends tlFilterControl
 		
 		// this filter should only be visible if there are any top level testsuites
 		$this->filters[$key] = null;
-		if ($first_level_suites) 
+		if($itemSet) 
 		{			
-			$this->filters[$key] = array('items' => array(0 => ''),
-			                             'selected' => $selection,
+			$this->filters[$key] = array('items' => array(0 => ''),'selected' => $selection,
 			                             'exclude_branches' => array());
 		
-			foreach ($first_level_suites as $suite_id => $suite_name) 
+			foreach($itemSet as $id => $name) 
 			{
-				$this->filters[$key]['items'][$suite_id] = $suite_name;
-				if ($selection && $suite_id != $selection) 
+				$this->filters[$key]['items'][$id] = $name;
+				if ($selection && $id != $selection) 
 				{
-					$this->filters[$key]['exclude_branches'][$suite_id] = 'exclude_me';
+					$this->filters[$key]['exclude_branches'][$id] = 'exclude_me';
 				}
 			}
 			
@@ -1628,7 +1644,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 		                                                 'selected' => $build_selection));
 
 		// init menu for result selection by function from exec.inc.php
-		$this->filters[$key][$result_key]['items'] = createResultsMenu();
+		$this->filters[$key][$result_key]['items'] = testcase::createExecutionResultsMenu();
 		$this->filters[$key][$result_key]['items'][$any_result_key] = $this->option_strings['any'];
 
 		// init menu for filter method selection
@@ -1671,9 +1687,9 @@ class tlTestCaseFilterControl extends tlFilterControl
 	private function initTreeOptions()
 	{
 		$this->treeOpt['plan_mode'] = new stdClass();
-		$this->treeOpt['plan_mode']->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
-		$this->treeOpt['plan_mode']->useColours = COLOR_BY_TC_STATUS_OFF;
-		$this->treeOpt['plan_mode']->testcases_colouring_by_selected_build = DISABLED;
+		$this->treeOpt['plan_mode']->useCounters = false;
+		$this->treeOpt['plan_mode']->useColours = false;
+		$this->treeOpt['plan_mode']->testcases_colouring_by_selected_build = false;
 		$this->treeOpt['plan_mode']->absolute_last_execution = true;  // hmm  probably useless
 		
 	}
@@ -1750,15 +1766,16 @@ class tlTestCaseFilterControl extends tlFilterControl
       $ajaxTree->dragDrop->useBeforeMoveNode = false;
 		}
 		
-		new dBug($this->args);
     if ($this->do_filtering) 
 		{
 
-			$options = array('forPrinting' => NOT_FOR_PRINTING,'hideTestCases' => SHOW_TESTCASES,
-						           'tc_action_enabled' => DO_ON_TESTCASE_CLICK,'exclude_branches' => null);
-			$ajaxTree->tree_menu = generateTestSpecTree($this->db, $this->args->testproject_id,
-					                                        $this->args->testproject_name,
-					                                        $guiObj->menuUrl, $filters, $options);
+			$options = array('forPrinting' => false, 'hideTestCases' => false,
+						           'tc_action_enabled' => true,'exclude_branches' => null);
+			
+	    $env = new stdClass();
+	    $env->tproject_id = $this->args->testproject_id;
+	    $env->tproject_name = $this->args->testproject_name;
+			$ajaxTree->tree_menu = $this->treeMenuMgr->generateTestSpecTree($env,$guiObj->menuUrl,$filters,$options);
 					
 			$ajaxTree->root_node = $ajaxTree->tree_menu->rootnode;
 			$ajaxTree->children = $ajaxTree->tree_menu->menustring ? $ajaxTree->tree_menu->menustring : "[]";
@@ -1767,8 +1784,6 @@ class tlTestCaseFilterControl extends tlFilterControl
 		{
       $ajaxTree->loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
 					  					    "tproject_id={$this->args->testproject_id}&" .
-					  					    "tplan_id={$this->args->testplan_id}&" .
-                          "root_node={$this->args->testproject_id}&" .
                           "tcprefix=" . urlencode($guiObj->tc_prefix);
       
       $tcase_qty = $this->testproject_mgr->count_testcases($this->args->testproject_id);
@@ -1790,10 +1805,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 		$ajaxTree->cookiePrefix = "add_remove_tc_tplan_id_{$filters['setting_testplan']}_";
 		if ($this->do_filtering)
 		{
-      $options = array('forPrinting' => NOT_FOR_PRINTING,
-					             'hideTestCases' => HIDE_TESTCASES,
-					             'tc_action_enabled' => ACTION_TESTCASE_DISABLE,
-					             'viewType' => 'testSpecTreeForTestPlan');
+      $options = array('forPrinting' => false,'hideTestCases' => true,
+					             'tc_action_enabled' => false,'viewType' => 'testSpecTreeForTestPlan');
 			$ajaxTree->tree_menu = generateTestSpecTree($this->db,$this->args->testproject_id,
 					                                        $this->args->testproject_name,
 					                                        $guiObj->menuUrl,$filters,$options);
@@ -1829,22 +1842,18 @@ class tlTestCaseFilterControl extends tlFilterControl
   	$opt_etree->useColours = new stdClass();
   	$opt_etree->useColours->testcases = $exec_cfg->enable_tree_testcases_colouring;
     $opt_etree->useColours->counters =	$exec_cfg->enable_tree_counters_colouring;
-    $opt_etree->testcases_colouring_by_selected_build =	$exec_cfg->testcases_colouring_by_selected_build; 
+    $opt_etree->testcases_colouring_by_selected_build =	$exec_cfg->testcases_colouring_by_selected_build;
+    $opt_etree->tc_action_enabled = true; 
   
-    //$chronos[] = $tstart = microtime(true);
-    //echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::Start!!!' . current($chronos);
-    //reset($chronos);	
-  
-    list($ajaxTree->tree_menu, $testcases_to_show) = execTree($this->db,$gui->menuUrl,
-                                                              $this->args->testproject_id,
-                                                              $this->args->testproject_name,
-                                                              $this->args->testplan_id,
-                                                              $this->args->testplan_name,
-                                                              $filters,$opt_etree);
-  	//$chronos[] = microtime(true); $tnow = end($chronos); $tprev = prev($chronos);
-  	//$t_elapsed = number_format( $tnow - $tprev, 4);
-  	//echo '<br> ' . basename(__FILE__) . ' Elapsed (sec):' . $t_elapsed;
-  
+    $context = new stdClass();
+    $context->tproject_id = $this->args->testproject_id;
+    $context->tproject_name = $this->args->testproject_name;
+    $context->tplan_id = $this->args->testplan_id;
+    $context->tplan_name = $this->args->testplan_name;
+
+    $ajaxTree = new stdClass();    
+    list($ajaxTree->tree_menu, $testcases_to_show) = $this->execTreeMenuMgr->execTree($gui->menuUrl,$context,
+                                                                                      $filters,$opt_etree);
     $this->set_testcases_to_show($testcases_to_show);
 
 		$ajaxTree->root_node = $ajaxTree->tree_menu->rootnode;

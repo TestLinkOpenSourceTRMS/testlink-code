@@ -102,7 +102,6 @@ viewer for test case in test specification
       {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
     {/if} 
     
-    {* 20110319 - BUGID 4322: New Option to block delete of executed test cases *}
     {if isset($args_tcase_cfg)}
 		{if $args_tcase_cfg->can_delete_executed == 1}
       		{$delete_enabled=1} 
@@ -124,8 +123,10 @@ viewer for test case in test specification
 	  <form style="display: inline;" id="topControls" name="topControls" 
 	  		method="post" action="lib/testcases/tcEdit.php">
 	  <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+    <input type="hidden" name="testsuite_id" id="testsuite_id" value="{$args_testcase.testsuite_id}" />
 	  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 	  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+	  
 	  <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
 	  <input type="hidden" name="doAction" value="" />
 	  <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
@@ -157,7 +158,8 @@ viewer for test case in test specification
 	  {/if}
 
 	 	{if $args_can_do->create_new_version == "yes"}
-  		<input type="submit" name="do_create_new_version"   value="{$tcView_viewer_labels.btn_new_version}" />
+  		<input type="submit" name="do_create_new_version" 
+  		       onclick="doAction.value='doCreateNewVersion'" value="{$tcView_viewer_labels.btn_new_version}" />
 	  {/if}
 
 	
@@ -188,14 +190,10 @@ viewer for test case in test specification
 	<span>
 	<form style="display: inline;" id="tcexport" name="tcexport" method="post" action="{$exportTestCaseAction}" >
 		<input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+    <input type="hidden" name="testsuite_id" id="testsuite_id" value="{$args_testcase.testsuite_id}" />
 		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 		<input type="submit" name="export_tc" value="{$tcView_viewer_labels.btn_export}" />
-		{* 20071102 - franciscom *}
-		{*
-		<input type="button" name="tstButton" value="{$tcView_viewer_labels.btn_execute_automatic_testcase}"
-		       onclick="javascript: startExecution({$args_testcase.testcase_id},'testcase');" />
-		*}
 	</form>
 	</span>
 {/if} {* user can edit *}
@@ -205,7 +203,7 @@ viewer for test case in test specification
 	{if $args_testcase.version > 1}
 	  <form style="display: inline;" id="version_compare" name="version_compare" 
 	  		method="post" action="lib/testcases/tcCompareVersions.php">
-	 		<input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+	 		  <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
 	  		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 	  		<input type="submit" name="compare_versions" value="{$tcView_viewer_labels.btn_compare_versions}" />
 	  </form>
@@ -215,7 +213,6 @@ viewer for test case in test specification
 		<input type="button" onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id});"
 		       value="{$tcView_viewer_labels.btn_show_exec_history}" />
 	</span>
-	{* 20110304 - franciscom - BUGID 4286: Option to print single test case  *}
 	<span>
 	<form style="display: inline;" id="tcprint" name="tcprint" method="post" action="" >
 		<input type="button" name="tcPrinterFriendly" value="{$tcView_viewer_labels.btn_print_view}" 
@@ -272,6 +269,7 @@ function launchInsertStep(step_id)
 
 <form id="stepsControls" name="stepsControls" method="post" action="lib/testcases/tcEdit.php">
   <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+    <input type="hidden" name="testsuite_id" id="testsuite_id" value="{$args_testcase.testsuite_id}" />
   <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
   <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 
@@ -286,7 +284,7 @@ function launchInsertStep(step_id)
 		{include file="testcases/inc_tcbody.tpl" 
              inc_tcbody_close_table=false
              inc_tcbody_testcase=$args_testcase
-		     inc_tcbody_show_title=$args_show_title
+		         inc_tcbody_show_title=$args_show_title
              inc_tcbody_tableColspan=$tableColspan
              inc_tcbody_labels=$tcView_viewer_labels
              inc_tcbody_author_userinfo=$author_userinfo
@@ -408,7 +406,6 @@ function launchInsertStep(step_id)
           <td style="width:10%;text-align:center;">{$version_info.version}</td>
           <td>{$version_info.tplan_name|escape}</td>
           <td>
-          {* BUGID 3181 *}
           {if $version_info.platform_id > 0}
             {$gui->platforms[$version_info.platform_id]|escape}
           {/if}          

@@ -11,12 +11,12 @@
  *
  * @internal revisions
  * @since 2.0
- * 
+ * 20121104 - franciscom - TICKET 5321: Test Case Execution Types - Possibility to add custom values 
  */
 
 /** related functionality */
-require_once( dirname(__FILE__) . '/requirement_mgr.class.php' );
-require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
+// require_once( dirname(__FILE__) . '/requirement_mgr.class.php' );
+// require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
 require_once( dirname(__FILE__) . '/users.inc.php' );
 
 /** list of supported format for Test case import/export */
@@ -94,6 +94,9 @@ class testcase extends tlObjectWithAttachments
     $this->cfg->testcase = config_get('testcase_cfg');
 		$this->cfg->results = config_get('results');
 
+		$this->cfg->nodeTypeCode = $this->tree_manager->get_available_node_types();
+		$this->cfg->nodeCodeType = array_flip($this->cfg->nodeTypeCode);	
+
 		// ATTENTION:
 		// second argument is used to set $this->attachmentTableName,property that this calls
 		// get from his parent
@@ -146,8 +149,17 @@ class testcase extends tlObjectWithAttachments
 	*/
 	static function get_execution_types()
 	{
-		  return array(self::EXECUTION_TYPE_MANUAL => lang_get('manual'),
-                   self::EXECUTION_TYPE_AUTO => lang_get('automated'));
+	  $stdSet = array(self::EXECUTION_TYPE_MANUAL => lang_get('manual'),
+                    self::EXECUTION_TYPE_AUTO => lang_get('automated'));
+    
+    if( !is_null($customSet = config_get('custom_execution_types')) )
+    {
+      foreach($customSet as $code => $lbl)
+      {
+        $stdSet[$code] = lang_get($lbl);
+      }    
+    }
+    return $stdSet;                    
 	}
 
 
@@ -627,9 +639,6 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function show(&$smarty,$guiObj,$identity,$grants)
 	{
-
-		$req_mgr = new requirement_mgr($this->db);
-
     $env_tproject_id = $identity->tproject_id;
     $id = $identity->id;
     $version_id = isset($identity->version_id) ? $identity->version_id : self::ALL_VERSIONS;
@@ -641,6 +650,7 @@ class testcase extends tlObjectWithAttachments
 
 		if($status_ok)
 	  {
+		  $req_mgr = new requirement_mgr($this->db);
 	    $path2root = $this->tree_manager->get_path($idSet[0]);
 	    $gui->tproject_id = $path2root[0]['parent_id'];
 	    $info = $this->tproject_mgr->get_by_id($gui->tproject_id);
@@ -707,9 +717,6 @@ class testcase extends tlObjectWithAttachments
           list($gui->attach[$tc_id]->infoSet,$gui->attach[$tc_id]->gui) = $this->buildAttachSetup($tc_id);
           $gui->attach[$tc_id]->gui->display=TRUE;
           $gui->attach[$tc_id]->enabled = $gui->attach[$tc_id]->gui->enabled;
-
-          new dBug($gui->attach);
-		  		
 		  		$tc_array[0]['tc_external_id'] = $tcasePrefix . $tc_array[0]['tc_external_id'];
 
 		  		// get the status quo of execution and links of tc versions
@@ -786,12 +793,9 @@ class testcase extends tlObjectWithAttachments
 		unset($userid_array['']);
     $this->initShowGuiActions(&$gui);
 		$gui->users = tlUser::getByIDs($this->db,array_keys($userid_array),'id');
-		
-		echo __METHOD__ . '<br>';
-		new dBug($gui);
 		$smarty->assign('gui',$gui);
     $dummy = templateConfiguration('tcView');
-		$smarty->display($smarty->tlTemplateCfg->template_dir . $dummy->default_template);
+  	$smarty->display($dummy->template_dir . $dummy->default_template);
 	}
 	
 
@@ -887,13 +891,13 @@ class testcase extends tlObjectWithAttachments
 
 		$gui->tcExportAction = "lib/testcases/tcExport.php?tproject_id=$gui->tproject_id&show_mode=$gui->show_mode";
 		$gui->tcViewAction = "lib/testcases/archiveData.php?tproject_id={$gui->tproject_id}" . 
-							 "&show_mode=$gui->show_mode&tcase_id=";
+							           "&show_mode=$gui->show_mode&tcase_id=";
 
 		$gui->printTestCaseAction = "lib/testcases/tcPrint.php?tproject_id=$gui->tproject_id&show_mode=$gui->show_mode";
 
 
 		$gui->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id={$gui->tproject_id} " .
-						 		 ' target="mainframe" class="bold" title="' . lang_get('menu_manage_keywords') . '"';
+						 		             ' target="mainframe" class="bold" title="' . lang_get('menu_manage_keywords') . '"';
 
 
 		$gui->reqSpecMgmtHREF = "lib/general/frmWorkArea.php?tproject_id={$gui->tproject_id}&feature=reqSpecMgmt";
@@ -3733,8 +3737,10 @@ class testcase extends tlObjectWithAttachments
 	}
 	
 	/**
-     * given an executio id delete execution and related data.
+     * given an execution id delete execution and related data.
      *
+     * @TODO delete attachment
+
      */
     function deleteExecution($executionID)
     {
@@ -4411,15 +4417,15 @@ class testcase extends tlObjectWithAttachments
 	/**
 	 * 
  	 *
-     */
+   */
 	function buildDirectWebLink($base_href,$id,$tproject_id=null)
 	{
-	    list($external_id,$prefix,$glue,$tc_number) = $this->getExternalID($id,$tproject_id);
+    list($external_id,$prefix,$glue,$tc_number) = $this->getExternalID($id,$tproject_id);
 
 		$dl = $base_href . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . 
 		      '&item=testcase&id=' . urlencode($external_id);
-        return $dl;
-    }
+    return $dl;
+  }
 
   /**
 	 * 
@@ -5693,10 +5699,6 @@ class testcase extends tlObjectWithAttachments
   	}
   }
 
-
-
-
-
   static function createExecutionResultsMenu()
   {
   	$cfg = config_get('results');
@@ -5855,6 +5857,6 @@ class testcase extends tlObjectWithAttachments
 
 		return $signature;        
 	}
-  
+ 
 } // end class
 ?>

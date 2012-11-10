@@ -33,7 +33,6 @@
  */
 abstract class tlFilterControl extends tlObjectWithDB 
 {
-
 	/**
 	 * Label (and name) for the button to enable simple filter mode. 
 	 * @var string
@@ -231,10 +230,10 @@ abstract class tlFilterControl extends tlObjectWithDB
 	 * Destructor: deletes all member object which have to be deleted after use.
 	 * 
 	 */
-	public function __destruct() {
-		// delete member objects
+	public function __destruct() 
+	{
 		unset($this->testproject_mgr);
-	} // end of method
+	}
 	
 	/**
 	 * Reads the configuration from the configuration file, which is not dependent on type of objects in tree.
@@ -279,10 +278,19 @@ abstract class tlFilterControl extends tlObjectWithDB
 			$msg = "Class: " . __CLASS__ . " - Method: " . __FUNCTION__ . " :: Test project ID <= 0 ";
 			throw new Exception($msg);
 		}
+
     $tree_mgr = new tree($this->db);
     $dummy = $tree_mgr->get_node_hierarchy_info($this->args->testproject_id);
-    unset($tree_mgr);
     $this->args->testproject_name = $dummy['name'];
+
+    $this->args->testplan_name = '';
+    if( ($this->args->testplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0) )
+    {
+      $dummy = $tree_mgr->get_node_hierarchy_info($this->args->testplan_id);
+      $this->args->testplan_name = $dummy['name'];
+    }
+    unset($tree_mgr);
+
 
 		$params = array();
 		$params['setting_refresh_tree_on_action'] =	array("POST", tlInputParameter::CB_BOOL);
@@ -336,5 +344,5 @@ abstract class tlFilterControl extends tlObjectWithDB
 	 * @return object $tree_menu Tree object for display of JavaScript tree menu.
 	 */
 	public abstract function build_tree_menu(&$gui);
-} // end of class
+} 
 ?>

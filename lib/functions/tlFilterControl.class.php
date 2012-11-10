@@ -278,10 +278,19 @@ abstract class tlFilterControl extends tlObjectWithDB
 			$msg = "Class: " . __CLASS__ . " - Method: " . __FUNCTION__ . " :: Test project ID <= 0 ";
 			throw new Exception($msg);
 		}
+
     $tree_mgr = new tree($this->db);
     $dummy = $tree_mgr->get_node_hierarchy_info($this->args->testproject_id);
-    unset($tree_mgr);
     $this->args->testproject_name = $dummy['name'];
+
+    $this->args->testplan_name = '';
+    if( ($this->args->testplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0) )
+    {
+      $dummy = $tree_mgr->get_node_hierarchy_info($this->args->testplan_id);
+      $this->args->testplan_name = $dummy['name'];
+    }
+    unset($tree_mgr);
+
 
 		$params = array();
 		$params['setting_refresh_tree_on_action'] =	array("POST", tlInputParameter::CB_BOOL);

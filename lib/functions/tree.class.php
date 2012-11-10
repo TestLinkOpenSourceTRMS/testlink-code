@@ -18,6 +18,10 @@
 class tree extends tlObject
 {
 
+	const ROOT_NODE_TYPE_ID = 1;
+	const ROOT_NODE_PARENT_ID = NULL;
+
+
 	// ORDER IS CRITIC
 	// configurable values - pseudoconstants
 	var $node_types = array( 1 => 'testproject','testsuite',
@@ -32,19 +36,18 @@ class tree extends tlObject
 	                              null,null,null);
 	                              
 	var $node_descr_id = array();
+
+	var $node_tables_by = array('id' => array(),
+								              'name' => array('testproject' => 'testprojects','testsuite' => 'testsuites',
+                             		              'testplan' => 'testplans',
+                             		              'testcase' => 'testcases','tcversion' => 'tcversions',
+                             		              'requirement_spec' =>'req_specs',
+                             		              'requirement_spec_revision' => 'req_specs_revisions',
+                             		              'requirement' => 'requirements','req_version' => 'req_versions'));
+
 	
-	var $node_tables = array('testproject' => 'testprojects',
-                             'testsuite' => 'testsuites',
-                             'testplan' => 'testplans',
-                             'testcase' => 'testcases',
-                             'tcversion' => 'tcversions',
-                             'requirement_spec' =>'req_specs',
-                             'requirement' => 'requirements',  
-                             'req_version' => 'req_versions',
-                             'requirement_spec_revision' => 'req_specs_revisions');
-  
-	var $ROOT_NODE_TYPE_ID = 1;
-	var $ROOT_NODE_PARENT_ID = NULL;
+	var $node_tables;
+	
 
 	/** @var resource database handler */
 	var $db;
@@ -59,6 +62,12 @@ class tree extends tlObject
 		$this->db = &$db;
 		$this->node_descr_id = array_flip($this->node_types);
     $this->object_table = $this->tables['nodes_hierarchy'];
+
+    $this->node_tables = $this->node_tables_by['name'];
+		foreach($this->node_tables_by['name'] as $key => $tbl)
+		{
+			$this->node_tables_by['id'][$this->node_descr_id[$key]] = $tbl;
+		}
 	}
 
   /**
@@ -89,7 +98,7 @@ class tree extends tlObject
 	 */
 	function new_root_node($name = '') 
 	{
-		$this->new_node(null,$this->ROOT_NODE_TYPE_ID,$name,1);
+		$this->new_node(null,self::ROOT_NODE_TYPE_ID,$name,1);
 		return $this->db->insert_id($this->object_table);
 	}
 

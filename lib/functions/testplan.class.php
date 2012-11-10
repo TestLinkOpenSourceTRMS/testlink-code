@@ -55,6 +55,10 @@ class testplan extends tlObjectWithAttachments
 	var $node_types_id_descr;
 
 	var $import_file_types = array("XML" => "XML"); // array("XML" => "XML", "XLS" => "XLS" );
+
+	// Nodes to exclude when do test plan tree traversal
+  var $nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
+  var $nt2exclude_children=array('testcase' => 'exclude_my_children','requirement_spec'=> 'exclude_my_children');
 	
 	/**
 	 * testplan class constructor
@@ -73,13 +77,12 @@ class testplan extends tlObjectWithAttachments
 	  $this->assignment_status = $this->assignment_mgr->get_available_status();
 
     $this->cfield_mgr = new cfield_mgr($this->db);
-    $this->tcase_mgr = New testcase($this->db);
+    $this->tcase_mgr = new testcase($this->db);
 		$this->platform_mgr = new tlPlatform($this->db);
 
+		$this->cfg = new stdClass();
 		$this->cfg->results = config_get('results');
 		$this->cfg->status_not_run = $this->cfg->results['status_code']['not_run'];
-
-
    	
 	  tlObjectWithAttachments::__construct($this->db,'testplans');
 	}
@@ -1963,21 +1966,21 @@ class testplan extends tlObjectWithAttachments
 		$id     : test plan id.
 	    returns: returns flat list of names of test suites (including nest test suites)  No particular Order.
 	*/
-	function get_testsuites($id)
+	function get_testsuites($id,$options = null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-		// BUGID 0002776
-		$sql = " /* $debugMsg */ SELECT NHTSUITE.name, NHTSUITE.id, NHTSUITE.parent_id" . 
-			   " FROM {$this->tables['testplan_tcversions']}  TPTCV, {$this->tables['nodes_hierarchy']}  NHTCV, " .
-			   " {$this->tables['nodes_hierarchy']} NHTCASE, {$this->tables['nodes_hierarchy']} NHTSUITE " . 
-			   " WHERE TPTCV.tcversion_id = NHTCV.id " .
-			   " AND NHTCV.parent_id = NHTCASE.id " .
-			   " AND NHTCASE.parent_id = NHTSUITE.id " .
-			   " AND TPTCV.testplan_id = " . $id . " " .
-			   " GROUP BY NHTSUITE.name,NHTSUITE.id,NHTSUITE.parent_id " .
-			   " ORDER BY NHTSUITE.name" ;
-		
+		$opt = array_merge(array('output' => 'std'), (array)$options);
+    $safe_id = intval($id);
+		$sql = " /* $debugMsg */ /* Get direct PARENT Test Suite for Test Case */ " .
+		       " SELECT NHTSUITE.name, NHTSUITE.id, NHTSUITE.parent_id " . 
+			     " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+			     " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCV.tcversion_id " .
+			     " JOIN {$this->tables['nodes_hierarchy']} NHTCASE ON NHTCASE.id = NHTCV.parent_id " . 
+			     " JOIN {$this->tables['nodes_hierarchy']} NHTSUITE ON NHTSUITE.id = NHTCASE.parent_id " . 
+			     " WHERE TPTCV.testplan_id = " . $safe_id . " " .
+			     " GROUP BY NHTSUITE.name,NHTSUITE.id,NHTSUITE.parent_id " .
+			     " ORDER BY NHTSUITE.name" ;
 		$recordset = $this->db->get_recordset($sql);
 		
 		// Now the recordset contains testsuites that have child test cases.
@@ -2002,6 +2005,16 @@ class testplan extends tlObjectWithAttachments
 		
 		// Needs to be alphabetical based upon name attribute 
 		usort($finalset, array("testplan", "compare_name"));
+		
+		if($opt['output'] == 'smarty_html_options')
+		{
+		  $dummy = null;
+		  foreach($finalset as $elem )
+		  {
+		    $dummy[$elem['id']] = $elem['name'];
+		  }
+		  $finalset = $dummy; 
+		}
 		return $finalset;
 	}
 
@@ -2025,13 +2038,12 @@ class testplan extends tlObjectWithAttachments
 	/*
 	 function: get_parenttestsuites
 	
-	Used by get_testsuites
+	 @used-by get_testsuites()
 	 
-	Recursive function used to get all the parent test suites of potentially testcase free testsuites.
-	If passed node id isn't the product then it's merged into result set.
+	 Recursive function used to get all the parent test suites of potentially testcase free testsuites.
+	 If passed node id isn't the test project (ROOT NODE) then it's merged into result set.
 	
-	  args :
-		$id     : $id of potential testsuite
+	  args: $id of potential testsuite
 	  
 	  returns: an array of all testsuite ancestors of $id
 	 */
@@ -2039,22 +2051,19 @@ class testplan extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-	    $sql = " /* $debugMsg */ SELECT name, id, parent_id " .
+	  $sql = " /* $debugMsg */ SELECT name, id, parent_id " .
 		       "FROM {$this->tables['nodes_hierarchy']}  NH " .
 		       "WHERE NH.node_type_id <> {$this->node_types_descr_id['testproject']} " .
 		       "AND NH.id = " . $id;
-		    
-	    $recordset = $this->db->get_recordset($sql);
-	    $myarray = array();
-	    if (count($recordset) > 0)
-	    {        
-		    // 20100611 - franciscom
-		    // $myarray = array(array('name'=>$recordset[0]['name'], 'id'=>$recordset[0]['id']));
-		    $myarray = array($recordset[0]);
-		    $myarray = array_merge($myarray, $this->get_parenttestsuites($recordset[0]['parent_id'])); 
-	    }
-	    
-	    return $myarray;            
+		  
+	  $recordset = $this->db->get_recordset($sql);
+	  $myarray = array();
+	  if (count($recordset) > 0)
+	  {        
+		  $myarray = array($recordset[0]);
+		  $myarray = array_merge($myarray, $this->get_parenttestsuites($recordset[0]['parent_id'])); 
+	  }
+	  return $myarray;            
 	}
 
 
@@ -4642,7 +4651,6 @@ class testplan extends tlObjectWithAttachments
 				if($node['node_table'] == 'testcases')
 				{
 					$node['leaf'] = true; 
-					// $node['external_id'] = isset($highlander[$row['id']]) ? $highlander[$row['id']]['external_id'] : '';
 					$node['external_id'] = '';
 				}			
 				
@@ -4713,6 +4721,8 @@ class testplan extends tlObjectWithAttachments
 	// [exec_type] default null -> all types. 
 	// [platform_id]              
 	//		 	
+	// @used-by
+	// 
 	function getLinkedForExecTree($id,$filters=null,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -4755,7 +4765,7 @@ class testplan extends tlObjectWithAttachments
 							" SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,TCV.version," .
 							// $fullEIDClause .
 							" TCV.tc_external_id AS external_id, " .
-							" COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
+							" COALESCE(E.status,'" . $this->cfg->status_not_run . "') AS exec_status " .
 							
 			   				" FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
 			   				" JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
@@ -4787,7 +4797,7 @@ class testplan extends tlObjectWithAttachments
 							" SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,TCV.version," .
 							// $fullEIDClause .
 							" TCV.tc_external_id AS external_id, " .
-							" COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
+							" COALESCE(E.status,'" . $this->cfg->status_not_run . "') AS exec_status " .
 							
 			   				" FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
 			   				" JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .

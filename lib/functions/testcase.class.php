@@ -649,8 +649,6 @@ class testcase extends tlObjectWithAttachments
     $gui->grants = $grants;
 		$gui->testcase_other_versions = array();
 
-    new dBug($gui->grants);
-    
 		if($status_ok)
 	  {
 		  $req_mgr = new requirement_mgr($this->db);
@@ -698,101 +696,99 @@ class testcase extends tlObjectWithAttachments
     $userid_array = array();
     if($status_ok && sizeof($idSet))
 	  {
-	    	$cfx = 0;
-		  	$allTCKeywords = $this->getKeywords($idSet,null,'testcase_id',' ORDER BY keyword ASC ');
-		  	$allReqs = $req_mgr->get_all_for_tcase($idSet);
-		  	
-		  	$tcStatus2exclude = config_get('tplanDesign')->hideTestCaseWithStatusIn;
-		  	foreach($idSet as $key => $tc_id)
-		  	{
-		  		$tc_array = $this->get_by_id($tc_id,$version_id);
-		  		if (!$tc_array)
-		  		{
-		  			continue;
-		  		}
-		  		
-          $gui->attach[$tc_id] = new stdClass();
-          $gui->attach[$tc_id]->itemID = $tc_id;
-          $gui->attach[$tc_id]->dbTable = $this->attachmentTableName;
+      $cfx = 0;
+      $allTCKeywords = $this->getKeywords($idSet,null,'testcase_id',' ORDER BY keyword ASC ');
+      $allReqs = $req_mgr->get_all_for_tcase($idSet);
       
-          $gui->attach[$tc_id]->infoSet = null;
-          $gui->attach[$tc_id]->gui = null;
-          list($gui->attach[$tc_id]->infoSet,$gui->attach[$tc_id]->gui) = $this->buildAttachSetup($tc_id);
-          $gui->attach[$tc_id]->gui->display=TRUE;
-          $gui->attach[$tc_id]->enabled = $gui->attach[$tc_id]->gui->enabled;
-		  		$tc_array[0]['tc_external_id'] = $tcasePrefix . $tc_array[0]['tc_external_id'];
+      $tcStatus2exclude = config_get('tplanDesign')->hideTestCaseWithStatusIn;
+      foreach($idSet as $key => $tc_id)
+      {
+		    $tc_array = $this->get_by_id($tc_id,$version_id);
+		    if (!$tc_array)
+		    {
+		    	continue;
+		    }
+		    
+        $gui->attach[$tc_id] = new stdClass();
+        $gui->attach[$tc_id]->itemID = $tc_id;
+        $gui->attach[$tc_id]->dbTable = $this->attachmentTableName;
+        
+        $gui->attach[$tc_id]->infoSet = null;
+        $gui->attach[$tc_id]->gui = null;
+        list($gui->attach[$tc_id]->infoSet,$gui->attach[$tc_id]->gui) = $this->buildAttachSetup($tc_id);
+        $gui->attach[$tc_id]->gui->display=TRUE;
+        $gui->attach[$tc_id]->enabled = $gui->attach[$tc_id]->gui->enabled;
+		    $tc_array[0]['tc_external_id'] = $tcasePrefix . $tc_array[0]['tc_external_id'];
 
-		  		// get the status quo of execution and links of tc versions
-		  		// $gui->status_quo_map[] = $this->get_versions_status_quo($tc_id);
-				  $gui->status_quo[] = $this->get_versions_status_quo($tc_id);
-		  		$gui->linked_versions[] = $this->get_linked_versions($tc_id);
-		  		$gui->keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
-		  		$tc_current = $tc_array[0];
+		  	// get the status quo of execution and links of tc versions
+		  	// $gui->status_quo_map[] = $this->get_versions_status_quo($tc_id);
+				$gui->status_quo[] = $this->get_versions_status_quo($tc_id);
+		  	$gui->linked_versions[] = $this->get_linked_versions($tc_id);
+		  	$gui->keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
+		  	$tc_current = $tc_array[0];
 		  		
-		  		// add new attribute
-		  		// enabledOnTestPlanDesign
-		  		$tc_current['enabledOnTestPlanDesign'] = !isset($tcStatus2exclude[$tc_current['status']]);
-		  		
-		  		$tcversion_id_current = $tc_current['id']; 
-		  		$gui->tc_current_version[] = array($tc_current);
-		  		
-		  		//Get UserID and Updater ID for current Version
-		  		$userid_array[$tc_current['author_id']] = null;
-		  		$userid_array[$tc_current['updater_id']] = null;
+		  	// add new attribute
+		  	// enabledOnTestPlanDesign
+		  	$tc_current['enabledOnTestPlanDesign'] = !isset($tcStatus2exclude[$tc_current['status']]);
+		  	
+		  	$tcversion_id_current = $tc_current['id']; 
+		  	$gui->tc_current_version[] = array($tc_current);
+		  	
+		  	//Get UserID and Updater ID for current Version
+		  	$userid_array[$tc_current['author_id']] = null;
+		  	$userid_array[$tc_current['updater_id']] = null;
 
-	        $cfPlaces = $this->buildCFLocationMap();
-      		foreach($cfPlaces as $locationKey => $locationFilter)
-		  		{ 
-		  			$gui->cf_current_version[$cfx][$locationKey] = 
-		  			$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
-		  			                                         null,null,$gui->tproject_id,null,$tcversion_id_current);
-		  		}	
+	      $cfPlaces = $this->buildCFLocationMap();
+      	foreach($cfPlaces as $locationKey => $locationFilter)
+		  	{ 
+		  		$gui->cf_current_version[$cfx][$locationKey] = 
+		  		$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
+		  		                                         null,null,$gui->tproject_id,null,$tcversion_id_current);
+		  	}	
   			
 	    
-				  // Other versions (if exists)	    
-		  		if(count($tc_array) > 1)
-		  		{
-		  			$gui->testcase_other_versions[] = array_slice($tc_array,1);
-					  $target_idx = count($gui->testcase_other_versions) - 1;
-					  $loop2do = count($gui->testcase_other_versions[$target_idx]);
-					  for($qdx=0; $qdx < $loop2do; $qdx++)
-					  {
-						  $tcRef = &$gui->testcase_other_versions[$target_idx][$qdx];
-						  $tcRef['enabledOnTestPlanDesign'] = !isset($tcStatus2exclude[$tcRef['status']]);
-						  $target_tcversion = $tcRef['id'];
-	      			foreach($cfPlaces as $locationKey => $locationFilter)
-		  				{ 
-		  					$gui->cf_other_versions[$cfx][$qdx][$locationKey] = 
-		  					$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
-		  				 	                                         null,null,$gui->tproject_id,null,$target_tcversion);
-		  				}	
-					  }
+				// Other versions (if exists)	    
+		  	if(count($tc_array) > 1)
+		  	{
+		  		$gui->testcase_other_versions[] = array_slice($tc_array,1);
+				  $target_idx = count($gui->testcase_other_versions) - 1;
+				  $loop2do = count($gui->testcase_other_versions[$target_idx]);
+				  for($qdx=0; $qdx < $loop2do; $qdx++)
+				  {
+					  $tcRef = &$gui->testcase_other_versions[$target_idx][$qdx];
+					  $tcRef['enabledOnTestPlanDesign'] = !isset($tcStatus2exclude[$tcRef['status']]);
+					  $target_tcversion = $tcRef['id'];
+	      		foreach($cfPlaces as $locationKey => $locationFilter)
+		  			{ 
+		  				$gui->cf_other_versions[$cfx][$qdx][$locationKey] = 
+		  				$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
+		  			 	                                         null,null,$gui->tproject_id,null,$target_tcversion);
+		  			}	
+				  }
+		  	}
+		  	else
+		  	{
+		  		$gui->testcase_other_versions[] = null;
+		  		$gui->cf_other_versions[$cfx]=null;
+		  	}	
+		  	$cfx++;
+
+		  	// Get author and updater id for each version
+		  	// @TODO - franciscom - explain magic ZERO
+		  	if ($gui->testcase_other_versions[0])
+		  	{
+		  		foreach($gui->testcase_other_versions[0] as $key => $version)
+		  		{				
+		  				$userid_array[$version['author_id']] = null;
+		  				$userid_array[$version['updater_id']] = null;				
 		  		}
-		  		else
-		  		{
-		  			$gui->testcase_other_versions[] = null;
-		  			$gui->cf_other_versions[$cfx]=null;
-		  		}	
-		  		$cfx++;
+		  	}
+		  	$tcReqs = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
+		  	$gui->arrReqs[] = $tcReqs;
 
-		  		// Get author and updater id for each version
-		  		// @TODO - franciscom - explain magic ZERO
-		  		if ($gui->testcase_other_versions[0])
-		  		{
-		  			foreach($gui->testcase_other_versions[0] as $key => $version)
-		  			{				
-		  	  			$userid_array[$version['author_id']] = null;
-		  	  			$userid_array[$version['updater_id']] = null;				
-		  			}
-		  		}
-		  		$tcReqs = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
-		  		$gui->arrReqs[] = $tcReqs;
+		  } // foreach($a_id as $key => $tc_id)
+	  } // if (sizeof($a_id))
 
-		  	} // foreach($a_id as $key => $tc_id)
-	    } // if (sizeof($a_id))
-
-		
-		new dBug($gui->grants);
 		
     // Removing duplicate and NULL id's
 		unset($userid_array['']);

@@ -5,10 +5,10 @@
  * 
  * Classes for serialized interfaces
  *
- * @package 	TestLink
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: int_serialization.php,v 1.9 2009/08/24 19:18:45 schlundus Exp $
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @copyright 	2005-2012, TestLink community 
+ * @filesource  int_serialization.php,v 1.9 2009/08/24 19:18:45 schlundus Exp $
+ * @link 		    http://www.teamst.org/index.php
  * 
  * @TODO example of using
  *

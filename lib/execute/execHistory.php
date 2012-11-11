@@ -21,7 +21,7 @@ $gui->execSet = $tcase_mgr->getExecutionSet($args->tcase_id);
 
 if( !is_null($gui->execSet) )
 {
-  $gui->execSet = testcase::addExecIcons($gui->execSet,$smarty->tpl_vars['tlImages']);
+  $gui->execSet = testcase::addExecIcons($gui->execSet,$smarty->tlImages);
 }
 
 

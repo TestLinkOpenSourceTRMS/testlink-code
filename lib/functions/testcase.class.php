@@ -5835,7 +5835,6 @@ class testcase extends tlObjectWithAttachments
   static function addExecIcons($execSet,$stdImages,$mode='std')
   {
     $key = key($execSet);
-    
     // need to fo this mess, because in some contexts where this method is used
     // execSet[$key] is NOT an array.
     if($mode != 'std')
@@ -5866,7 +5865,7 @@ class testcase extends tlObjectWithAttachments
           $item['execution_run_type_label'] = lang_get($target);
         break;
       }
-    }
+    }                        
     return $execSet;
   }
 } // end class

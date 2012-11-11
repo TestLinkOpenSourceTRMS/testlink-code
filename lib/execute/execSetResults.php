@@ -104,7 +104,7 @@ if(!is_null($linked_tcversions))
   }
   // Important Notice: $tcase_id and $tcversions_id, can be ARRAYS when user enable bulk execution
   $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$mgr->tcase,
-                                         $smarty->tpl_vars['tlImages']);
+                                         $smarty->tlImages);
     
   $gui->map_last_exec_any_build = null;
   $gui->other_execs=null;
@@ -132,7 +132,7 @@ if(!is_null($linked_tcversions))
     	
     $gui->req_details = $mgr->req->get_all_for_tcase($tcase_id);
     $gui->other_execs = getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$mgr->tcase,
-                                           $smarty->tpl_vars['tlImages']);
+                                           $smarty->tlImages);
     // Get attachment,bugs, etc
     if(!is_null($gui->other_execs))
     {
@@ -168,8 +168,8 @@ if(!is_null($linked_tcversions))
 
 
 // Removing duplicate and NULL id's
-$gui->users = builGuiUsers($userid_array);
-buildGuiTSuiteInfo($db,$_REQUEST,$mgr,$tcase_id,$args->tproject_id);
+$gui->users = builGuiUsers($db,$userid_array);
+buildGuiTSuiteInfo($db,$_REQUEST,$mgr,$gui,$tcase_id,$args->tproject_id);
 
 // Bulk is possible when test suite is selected (and is allowed in config)
 $gui->can_use_bulk_op = ($args->level == 'testsuite');
@@ -361,10 +361,10 @@ function get_ts_name_details(&$db,$tcase_id)
   returns: 
 
 */
-function buildGuiTSuiteInfo(&$db,&$request_hash,$mgrPool,$tcase_id,$tproject_id)
+function buildGuiTSuiteInfo(&$db,&$request_hash,$mgrPool,&$guiObj,$tcase_id,$tproject_id)
 {
   $fpath = $mgrPool->tcase->get_full_path_verbose($tcase_id, array('output_format' => 'id_name'));
-  $gui->tsuite_info = get_ts_name_details($db,$tcase_id);
+  $guiObj->tsuite_info = get_ts_name_details($db,$tcase_id);
   foreach($fpath as $key => $value)
   {
       unset($value['name'][0]);  // Remove test project info
@@ -376,10 +376,10 @@ function buildGuiTSuiteInfo(&$db,&$request_hash,$mgrPool,$tcase_id,$tproject_id)
       	// Encoding did not work properly
       	$str .= htmlspecialchars($elem,ENT_QUOTES) . '</a>';
       }
-      $gui->tsuite_info[$key]['tsuite_name']=$str;  
+      $guiObj->tsuite_info[$key]['tsuite_name']=$str;  
   }
   
-	if(!is_null($gui->tsuite_info))
+	if(!is_null($guiObj->tsuite_info))
   {
     $cookieKey = 'TL_execSetResults_tsdetails_view_status';
 		$exec_cfg = config_get('exec_cfg');
@@ -389,7 +389,7 @@ function buildGuiTSuiteInfo(&$db,&$request_hash,$mgrPool,$tcase_id,$tproject_id)
     $a_tsval=array();
     
     $tsuite_mgr = new testsuite($db);
-    foreach($tsuite_info as $key => $elem)
+    foreach($guiObj->tsuite_info as $key => $elem)
     {
       $main_k = 'tsdetails_view_status_' . $key;
     	$a_tsvw[] = $main_k;
@@ -419,16 +419,16 @@ function buildGuiTSuiteInfo(&$db,&$request_hash,$mgrPool,$tcase_id,$tproject_id)
     	{
         $cached_cf[$tsuite_id] = $tsuite_mgr->html_table_of_custom_field_values($tsuite_id,'design',null,$tproject_id);
     	}
-    	$gui->ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
+    	$guiObj->ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
     }
     if( count($a_tsval) > 0 )
     {
 			setcookie($cookieKey,$a_tsval[0],TL_COOKIE_KEEPTIME, '/');
     }
     	
-    $gui->tsd_div_id_list = implode(",",$a_ts);
-    $gui->tsd_hidden_id_list = implode(",",$a_tsvw);
-    $gui->tsd_val_for_hidden_list = implode(",",$a_tsval);
+    $guiObj->tsd_div_id_list = implode(",",$a_ts);
+    $guiObj->tsd_hidden_id_list = implode(",",$a_tsvw);
+    $guiObj->tsd_val_for_hidden_list = implode(",",$a_tsval);
 	}
 
 }  

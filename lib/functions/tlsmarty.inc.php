@@ -208,70 +208,70 @@ class TLSmarty extends Smarty
         
     // Images
     // add in alpha order please
-    $tlImages = array('api_info' => TL_THEME_IMG_DIR . "brick.png",
-                      'bullet' => TL_THEME_IMG_DIR . "slide_gripper.gif",
-                      'bugMgmt' => TL_THEME_IMG_DIR . "bug1.gif",
-                      'bugMgmtGreyed' => TL_THEME_IMG_DIR . "bug1_greyed.gif",
-                      'calendar' => TL_THEME_IMG_DIR . "calendar.gif",
-                      'checked' => TL_THEME_IMG_DIR . "apply_f2_16.png",
-                      'date' => TL_THEME_IMG_DIR . "date.png",
-                      'delete' => TL_THEME_IMG_DIR . "trash.png",
-                      'delete_disabled' => TL_THEME_IMG_DIR . "trash_greyed.png",
-                      'demo_mode' => TL_THEME_IMG_DIR . "emoticon_tongue.png",
-    				          'direct_link' => TL_THEME_IMG_DIR . "world_link.png",
-    				          'disconnect' => TL_THEME_IMG_DIR . 'disconnect.png',
-    				          'edit' => TL_THEME_IMG_DIR . "icon_edit.png",
-    				          'edit_type2' => TL_THEME_IMG_DIR . "edit_icon.png",
-                      'exec_order' => TL_THEME_IMG_DIR . 'timeline_marker.png',
-                      'executed' => TL_THEME_IMG_DIR . 'lightning.png',
-                      'export' => TL_THEME_IMG_DIR . "export.png",
-                      'export_import' => TL_THEME_IMG_DIR . "export_import.png",
-				              'event_info' => TL_THEME_IMG_DIR . "question.gif",
-				              'favicon' => TL_THEME_IMG_DIR . "favicon.ico",
-                      'history' => TL_THEME_IMG_DIR . "history.png",
-                      'history_small' => TL_THEME_IMG_DIR . "history_small.png",
-                      'lock' => TL_THEME_IMG_DIR . "lock.png",
-                      'log_message' => TL_THEME_IMG_DIR . "history.png",
-                      'log_message_small' => TL_THEME_IMG_DIR . "history_small.png",
-                      'note_edit' => TL_THEME_IMG_DIR . "note_edit.png",
-                      'note_edit_greyed' => TL_THEME_IMG_DIR . "note_edit_greyed.png",
-                      'import' => TL_THEME_IMG_DIR . "door_in.png",
-    				          'info' => TL_THEME_IMG_DIR . "question.gif",
-                      'insert_step' => TL_THEME_IMG_DIR . "insert_step.png",
-                      'reorder' => TL_THEME_IMG_DIR . "arrow_switch.png",
-                      'search' => TL_THEME_IMG_DIR . "magnifier.png",
-                      'sort' => TL_THEME_IMG_DIR . "sort_hint.png",
-                      'toggle_all' => TL_THEME_IMG_DIR . "toggle_all.gif",
-                      'allToRight' => TL_THEME_IMG_DIR . 'ico_all_r.gif',
-                      'leftToRight' => TL_THEME_IMG_DIR . 'ico_l2r.gif',
-                      'rightToLeft' => TL_THEME_IMG_DIR . 'ico_r2l.gif',
-                      'allToLeft' => TL_THEME_IMG_DIR . 'ico_all_l.gif',
-                      'attachMgmt' => TL_THEME_IMG_DIR . 'upload_16.png',
-                      'attachMgmtGreyed' => TL_THEME_IMG_DIR . 'upload_16_greyed.png',
-                      'manualExec' => TL_THEME_IMG_DIR . 'user.png',
-                      'automatedExec' => TL_THEME_IMG_DIR . 'bullet_wrench.png',
-                      'show' => TL_THEME_IMG_DIR . 'plus.gif'
-                      );
+    $this->tlImages = array('api_info' => TL_THEME_IMG_DIR . "brick.png",
+                            'bullet' => TL_THEME_IMG_DIR . "slide_gripper.gif",
+                            'bugMgmt' => TL_THEME_IMG_DIR . "bug1.gif",
+                            'bugMgmtGreyed' => TL_THEME_IMG_DIR . "bug1_greyed.gif",
+                            'calendar' => TL_THEME_IMG_DIR . "calendar.gif",
+                            'checked' => TL_THEME_IMG_DIR . "apply_f2_16.png",
+                            'date' => TL_THEME_IMG_DIR . "date.png",
+                            'delete' => TL_THEME_IMG_DIR . "trash.png",
+                            'delete_disabled' => TL_THEME_IMG_DIR . "trash_greyed.png",
+                            'demo_mode' => TL_THEME_IMG_DIR . "emoticon_tongue.png",
+    				                'direct_link' => TL_THEME_IMG_DIR . "world_link.png",
+    				                'disconnect' => TL_THEME_IMG_DIR . 'disconnect.png',
+    				                'edit' => TL_THEME_IMG_DIR . "icon_edit.png",
+    				                'edit_type2' => TL_THEME_IMG_DIR . "edit_icon.png",
+                            'exec_order' => TL_THEME_IMG_DIR . 'timeline_marker.png',
+                            'executed' => TL_THEME_IMG_DIR . 'lightning.png',
+                            'export' => TL_THEME_IMG_DIR . "export.png",
+                            'export_import' => TL_THEME_IMG_DIR . "export_import.png",
+				                    'event_info' => TL_THEME_IMG_DIR . "question.gif",
+				                    'favicon' => TL_THEME_IMG_DIR . "favicon.ico",
+                            'history' => TL_THEME_IMG_DIR . "history.png",
+                            'history_small' => TL_THEME_IMG_DIR . "history_small.png",
+                            'lock' => TL_THEME_IMG_DIR . "lock.png",
+                            'log_message' => TL_THEME_IMG_DIR . "history.png",
+                            'log_message_small' => TL_THEME_IMG_DIR . "history_small.png",
+                            'note_edit' => TL_THEME_IMG_DIR . "note_edit.png",
+                            'note_edit_greyed' => TL_THEME_IMG_DIR . "note_edit_greyed.png",
+                            'import' => TL_THEME_IMG_DIR . "door_in.png",
+    				                'info' => TL_THEME_IMG_DIR . "question.gif",
+                            'insert_step' => TL_THEME_IMG_DIR . "insert_step.png",
+                            'reorder' => TL_THEME_IMG_DIR . "arrow_switch.png",
+                            'search' => TL_THEME_IMG_DIR . "magnifier.png",
+                            'sort' => TL_THEME_IMG_DIR . "sort_hint.png",
+                            'toggle_all' => TL_THEME_IMG_DIR . "toggle_all.gif",
+                            'allToRight' => TL_THEME_IMG_DIR . 'ico_all_r.gif',
+                            'leftToRight' => TL_THEME_IMG_DIR . 'ico_l2r.gif',
+                            'rightToLeft' => TL_THEME_IMG_DIR . 'ico_r2l.gif',
+                            'allToLeft' => TL_THEME_IMG_DIR . 'ico_all_l.gif',
+                            'attachMgmt' => TL_THEME_IMG_DIR . 'upload_16.png',
+                            'attachMgmtGreyed' => TL_THEME_IMG_DIR . 'upload_16_greyed.png',
+                            'manualExec' => TL_THEME_IMG_DIR . 'user.png',
+                            'automatedExec' => TL_THEME_IMG_DIR . 'bullet_wrench.png',
+                            'show' => TL_THEME_IMG_DIR . 'plus.gif'
+                            );
 
     $msg = lang_get('show_hide_api_info');
-    $tlImages['toggle_api_info'] =  "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
-    								" onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
-    								" src=\"{$tlImages['api_info']}\" align=\"left\" />";
+    $this->tlImages['toggle_api_info'] =  "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
+    								                      " onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
+    								                      " src=\"{$this->tlImages['api_info']}\" align=\"left\" />";
 
     $msg = lang_get('show_hide_direct_link');
-    $tlImages['toggle_direct_link'] = "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
-    						  		  " onclick=\"showHideByClass('div','direct_link');event.stopPropagation();\" " .
-    						  		  " src=\"{$tlImages['direct_link']}\" align=\"left\" />";
+    $this->tlImages['toggle_direct_link'] = "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
+    						  		                      " onclick=\"showHideByClass('div','direct_link');event.stopPropagation();\" " .
+    						  		                      " src=\"{$this->tlImages['direct_link']}\" align=\"left\" />";
 
     // Some useful values for Sort Table Engine
-    $tlImages['sort_hint'] = '';
+    $this->tlImages['sort_hint'] = '';
     switch (TL_SORT_TABLE_ENGINE)
     {
         case 'kryogenix.org':
             $sort_table_by_column = lang_get('sort_table_by_column');
-            $tlImages['sort_hint'] = "<img title=\"{$sort_table_by_column}\" " .
-            						 " alt=\"{$sort_table_by_column}\" " .
-            						 " src=\"{$tlImages['sort']}\" align=\"left\" />";
+            $this->tlImages['sort_hint'] = "<img title=\"{$sort_table_by_column}\" " .
+            						                   " alt=\"{$sort_table_by_column}\" " .
+            						                   " src=\"{$this->tlImages['sort']}\" align=\"left\" />";
             
             $this->assign("noSortableColumnClass","sorttable_nosort");
         break;
@@ -291,7 +291,7 @@ class TLSmarty extends Smarty
 
 
 		// Do not move!!!
-    $this->assign("tlImages",$tlImages);
+    $this->assign("tlImages",$this->tlImages);
     
     // Register functions
     $this->registerPlugin("function","lang_get", "lang_get_smarty");

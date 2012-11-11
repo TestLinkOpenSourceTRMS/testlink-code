@@ -2883,7 +2883,7 @@ class testplan extends tlObjectWithAttachments
 				
 				if( is_null($platformID) )
 				{
-					throw new Exception(__FUNCTION_ . ' When you pass $execIDSet an YOU NEED TO PROVIDE a platform ID');
+					throw new Exception(__FUNCTION__ . ' When you pass $execIDSet an YOU NEED TO PROVIDE a platform ID');
 				}	
 				$targetSet[$platformID] = $execIDSet;
 			}

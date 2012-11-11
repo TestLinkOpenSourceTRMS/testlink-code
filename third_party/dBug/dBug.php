@@ -262,7 +262,7 @@ class dBug {
 			$arrObjVars=get_object_vars($var);
 			foreach($arrObjVars as $key=>$value) {
 
-				$value=(!is_object($value) && !is_array($value) && trim($value)=="") ? "[empty string]" : $value;
+				$value = (!is_object($value) && !is_array($value) && !is_resource($value) && trim($value)=="") ? "[empty string]" : $value;
 				$this->makeTDHeader("object",$key);
 				
 				//check for recursion

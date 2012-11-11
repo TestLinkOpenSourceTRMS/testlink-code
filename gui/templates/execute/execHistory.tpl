@@ -93,7 +93,7 @@ function load_notes(panel,exec_id)
 						<img src="{$smarty.const.TL_THEME_IMG_DIR}/user.png" title="{$labels.execution_type_manual}"
 						     style="border:none" />
 						{else}
-						<img src="{$smarty.const.TL_THEME_IMG_DIR}/bullet_wrench.png" title="{$labels.execution_type_auto}"
+						<img src="{$tlImages->automatedExec}" title="{$labels.execution_type_auto}"
 						     style="border:none" />
 						{/if}
 						</td>

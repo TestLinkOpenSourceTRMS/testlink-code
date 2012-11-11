@@ -8,24 +8,30 @@
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once('exec.inc.php');
+// require_once('exec.inc.php');
 require_once("web_editor.php");
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
+$smarty = new TLSmarty();
 $tcase_mgr = new testcase($db);
 $args = init_args();
-$gui = new stdClass();
-$gui->exec_cfg = config_get('exec_cfg');
+$gui = initializeGui($args);
+$gui->execSet = $tcase_mgr->getExecutionSet($args->tcase_id);
+
+if( !is_null($gui->execSet) )
+{
+  $gui->execSet = testcase::addExecIcons($gui->execSet,$smarty->get_template_vars('tlImages'));
+}
 
 
 $node['basic'] = $tcase_mgr->tree_manager->get_node_hierarchy_info($args->tcase_id); 
 $node['specific'] = $tcase_mgr->getExternalID($args->tcase_id); 
 $idCard = $node['specific'][0] . ' : ' . $node['basic']['name'];
 
-$gui->execSet = $tcase_mgr->getExecutionSet($args->tcase_id);
-
+new dBug($gui->execSet);
+die();
 
 
 $gui->warning_msg = (!is_null($gui->execSet)) ? '' : lang_get('tcase_never_executed');
@@ -60,7 +66,6 @@ $gui->displayPlatformCol = !is_null($gui->execPlatformSet) ? 1 : 0;
 
 $gui->main_descr = lang_get('execution_history');
 $gui->detailed_descr = lang_get('test_case') . ' ' . $idCard;
-$smarty = new TLSmarty();
 $smarty->assign('gui',$gui);  
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
@@ -123,6 +128,16 @@ function getCustomFields(&$tcaseMgr,&$execSet)
 	}
 	return $cf;
 }
+
+
+function initializeGui($argsObj)
+{
+  $gui = new stdClass();
+  $gui->exec_cfg = config_get('exec_cfg');
+  return $gui;
+}
+
+
 
 // @TODO 20121104 - NEEDS REFACTORING
 function getAttachments(&$dbHandler,&$execSet)

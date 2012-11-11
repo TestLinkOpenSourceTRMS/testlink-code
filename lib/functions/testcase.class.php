@@ -2249,7 +2249,7 @@ class testcase extends tlObjectWithAttachments
 	        $where_clause .= " AND TTCV.tplan_id = {$tplan_id} "; 
 	    }    
 	    $sqlx .= $where_clause; 
-		$version_id = $this->db->fetchRowsIntoMap($sqlx,'version');	// DEBUG // new dBug($version_id);
+      $version_id = $this->db->fetchRowsIntoMap($sqlx,'version');	// DEBUG // new dBug($version_id);
 		
 	    $sql = "/* $debugMsg */ " .
 			   " SELECT DISTINCT NH.parent_id AS tcase_id, NH.id AS tcversion_id, " .
@@ -3124,18 +3124,6 @@ class testcase extends tlObjectWithAttachments
 	     $executions_join .= " AND e.status IS NOT NULL ";
 	  }
 	
-	  // 20090517 - to manage deleted users i need to change:
-	  //            users.id AS tester_id => e.tester_id AS tester_id
-	  // 20090214 - franciscom - we need tcversions.execution_type and executions.execution_type
-	  // 20090208 - franciscom
-	  //            found bug due to use of tcversions.*, because field execution_type
-	  //            exist on both execution and tcversion table.
-	  //            At least with Postgres tcversions.execution_type was used always
-	  //
-	  // 20080103 - franciscom - added execution_type in recordset
-	  // 20060921 - franciscom -
-	  // added NHB.parent_id  to get same order as in the navigator tree
-	  //
 	  $sql= "/* $debugMsg */ SELECT e.id AS execution_id, " .
    			" COALESCE(e.status,'{$status_not_run}') AS status, " .
 	        " e.execution_type AS execution_run_type," .
@@ -5176,13 +5164,8 @@ class testcase extends tlObjectWithAttachments
 			   " AND NHB.node_type_id = {$this->node_types_descr_id['testcase_version']} " .
 			   " AND NHA.parent_id={$parent_id} {$criteria}";
 	
-		echo $sql;
 		$rs = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
-	    if( is_null($rs) || count($rs) == 0 )
-	    {
-	        $rs=null;   
-	    }
-	    return $rs;
+	  return ((is_null($rs) || count($rs) == 0) ? null : $rs);
 	}
 	
 
@@ -5194,24 +5177,23 @@ class testcase extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-	    $my['filters'] = array('version_id' => null,'tplan_id' => null,'platform_id' => null, 'build_id' => null); 	
-	    $my['filters'] = array_merge($my['filters'], (array)$filters);
+    $my['filters'] = array('version_id' => null,'tplan_id' => null,'platform_id' => null, 'build_id' => null); 	
+	  $my['filters'] = array_merge($my['filters'], (array)$filters);
 
-	    $my['options'] = array('exec_id_order' => 'DESC'); 	
-	    $my['options'] = array_merge($my['options'], (array)$options);
+	  $my['options'] = array('exec_id_order' => 'DESC', 'addExecTypeIcon' => false); 	
+	  $my['options'] = array_merge($my['options'], (array)$options);
 		
 		$filterKeys = array('build_id','platform_id','tplan_id');
-        foreach($filterKeys as $key)
-        {
-        	$filterBy[$key] = '';
-        	if( !is_null($my['filters'][$key]) )
-        	{
-        		$itemSet = implode(',', (array)$$key);
-        		$filterBy[$key] = " AND e.{$key} IN ({$itemSet}) ";
-        	}
-        }
+    foreach($filterKeys as $key)
+    {
+    	$filterBy[$key] = '';
+    	if( !is_null($my['filters'][$key]) )
+    	{
+    		$itemSet = implode(',', (array)$$key);
+    		$filterBy[$key] = " AND e.{$key} IN ({$itemSet}) ";
+    	}
+    }
 	
-		// --------------------------------------------------------------------
 		if( is_array($id) )
 		{
 			$tcid_list = implode(",",$id);
@@ -5221,33 +5203,19 @@ class testcase extends tlObjectWithAttachments
 		{
 			$where_clause = " WHERE NHTCV.parent_id = {$id} ";
 		}
-	
-		// if( is_array($version_id) )
-		// {
-		//     $versionid_list = implode(",",$version_id);
-		//     $where_clause  .= " AND tcversions.id IN ({$versionid_list}) ";
-		// }
-		// else
-		// {
-		// 		if($version_id != self::ALL_VERSIONS)
-		// 		{
-		// 			$where_clause  .= " AND tcversions.id = {$version_id} ";
-		// 		}
-		// }
-	
 
-	  $sql="/* $debugMsg */ SELECT NHTC.name,NHTCV.parent_id AS testcase_id, tcversions.*,
+	  $sql= "/* $debugMsg */ SELECT NHTC.name,NHTCV.parent_id AS testcase_id, tcversions.*,
 			    users.login AS tester_login,
 			    users.first AS tester_first_name,
 			    users.last AS tester_last_name,
-				e.tester_id AS tester_id,
+				  e.tester_id AS tester_id,
 			    e.id AS execution_id, e.status,e.tcversion_number,
 			    e.notes AS execution_notes, e.execution_ts, e.execution_type AS execution_run_type,
 			    e.build_id AS build_id,
 			    b.name AS build_name, b.active AS build_is_active, b.is_open AS build_is_open,
-   			    e.platform_id,p.name AS platform_name,
-   			    e.testplan_id,NHTPLAN.name AS testplan_name
-		    FROM {$this->tables['nodes_hierarchy']} NHTCV
+   			  e.platform_id,p.name AS platform_name,
+   			  e.testplan_id,NHTPLAN.name AS testplan_name
+		      FROM {$this->tables['nodes_hierarchy']} NHTCV
 	        JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTCV.parent_id = NHTC.id
 	        JOIN {$this->tables['tcversions']} tcversions ON NHTCV.id = tcversions.id
 	        JOIN {$this->tables['executions']} e ON NHTCV.id = e.tcversion_id
@@ -5261,13 +5229,9 @@ class testcase extends tlObjectWithAttachments
 	        $where_clause " .
 	        " ORDER BY execution_id {$my['options']['exec_id_order']}";
 
-	        // " ORDER BY NHTCV.node_order ASC, NHTCV.parent_id ASC, execution_id {$my['options']['exec_id_order']}";
-	
-
-	
 	  // echo $sql;
-	  $recordset = $this->db->fetchArrayRowsIntoMap($sql,'id');
-	  return($recordset ? $recordset : null);
+	  $rs = $this->db->fetchArrayRowsIntoMap($sql,'id');
+    return $rs;
 	}
 
 
@@ -5727,7 +5691,6 @@ class testcase extends tlObjectWithAttachments
 	function getLatestExecSingleContext($identity,$execContext,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$status_not_run = $this->cfg->results['status_code']['not_run'];
 		
 		$my = array('opt' => array('output' => 'full'));
 		$my['opt'] = array_merge($my['opt'],(array)$options);
@@ -5741,6 +5704,13 @@ class testcase extends tlObjectWithAttachments
 		{
 			$ele = intval($ele);
 		}
+		
+		if($safeContext['build_id'] <= 0)
+		{
+			// CRASH IMMEDIATELY
+			throw new Exception( $debugMsg . " Can NOT WORK with \$safeContext['build_id'] <= 0");
+		}
+		
 		
 		// we have to manage following situations
 		// 1. we do not know test case version id.
@@ -5769,6 +5739,7 @@ class testcase extends tlObjectWithAttachments
     				  ' GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id ,EE.build_id ';
 		
 		$out = null;
+		$status_not_run = $this->cfg->results['status_code']['not_run'];
 		switch($my['opt']['output'])
 		{
 			case 'exec_id':
@@ -5778,43 +5749,44 @@ class testcase extends tlObjectWithAttachments
 		
 			case 'full':
 			default:
-				  $sql= "/* $debugMsg */ SELECT E.id AS execution_id, " .
-			   			  " COALESCE(E.status,'{$status_not_run}') AS status, E.execution_type AS execution_run_type," .
-				        " NHTC.name, NHTC.id AS testcase_id, NHTC.parent_id AS tsuite_id," .
-				        " TCV.id AS tcversion_id,TCV.tc_external_id,TCV.version,TCV.summary," .
-				        " TCV.preconditions,TCV.importance,TCV.author_id," .
-				        " TCV.creation_ts,TCV.updater_id,TCV.modification_ts,TCV.active," .
-				        " TCV.is_open,TCV.execution_type," .
-				        " U.login AS tester_login,U.first AS tester_first_name," .
-    						" U.last AS tester_last_name, E.tester_id AS tester_id," .
-    						" E.notes AS execution_notes, E.execution_ts, E.build_id,E.tcversion_number," .
-    						" B.name AS build_name, B.active AS build_is_active, B.is_open AS build_is_open," .
-				        " COALESCE(PLATF.id,0) AS platform_id,PLATF.name AS platform_name, TPTCV.id AS feature_id " .
-  					    " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
-	  				    " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTCV.id" .
-				        " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
-				        " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
-						
-		    				" LEFT OUTER JOIN ({$sqlLEX}) AS LEX " .
-				    		" ON  LEX.testplan_id = TPTCV.testplan_id " .
-    						" AND LEX.platform_id = TPTCV.platform_id " .
-    						" AND LEX.tcversion_id = TPTCV.tcversion_id " .
-    						" AND LEX.build_id = {$safeContext['build_id']} " .
-    			
-    						" LEFT OUTER JOIN {$this->tables['executions']} E " . 
-    						" ON E.id = LEX.id " .
-			
-				        " JOIN {$this->tables['builds']} B ON B.id = {$safeContext['build_id']} " .
-				        " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = E.tester_id " .
-		   	        " LEFT OUTER JOIN {$this->tables['platforms']} PLATF ON PLATF.id = {$safeContext['platform_id']} " .
-    						" WHERE TPTCV.testplan_id = {$safeContext['tplan_id']} " .
-		    				" AND TPTCV.platform_id = {$safeContext['platform_id']} " .
-				    		$addWhere .
-						    " AND (E.build_id = {$safeContext['build_id']} OR E.build_id IS NULL)";
-						
-    						// using database::CUMULATIVE is just a trick to return data structure
-		    				// that will be liked on execSetResults.php
-				    		$out = $this->db->fetchRowsIntoMap($sql,'testcase_id',database::CUMULATIVE);
+        $sql= "/* $debugMsg */ SELECT E.id AS execution_id, " .
+        		  " COALESCE(E.status,'{$status_not_run}') AS status, E.execution_type AS execution_run_type," .
+              " NHTC.name, NHTC.id AS testcase_id, NHTC.parent_id AS tsuite_id," .
+              " TCV.id AS tcversion_id,TCV.tc_external_id,TCV.version,TCV.summary," .
+              " TCV.preconditions,TCV.importance,TCV.author_id," .
+              " TCV.creation_ts,TCV.updater_id,TCV.modification_ts,TCV.active," .
+              " TCV.is_open,TCV.execution_type," .
+              " U.login AS tester_login,U.first AS tester_first_name," .
+        			" U.last AS tester_last_name, E.tester_id AS tester_id," .
+        			" E.notes AS execution_notes, E.execution_ts, E.build_id,E.tcversion_number," .
+        			" B.name AS build_name, B.active AS build_is_active, B.is_open AS build_is_open," .
+              " COALESCE(PLATF.id,0) AS platform_id,PLATF.name AS platform_name, TPTCV.id AS feature_id " .
+        	    " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
+        	    " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTCV.id" .
+              " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+              " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+        	
+        			" LEFT OUTER JOIN ({$sqlLEX}) AS LEX " .
+          		" ON  LEX.testplan_id = TPTCV.testplan_id " .
+        			" AND LEX.platform_id = TPTCV.platform_id " .
+        			" AND LEX.tcversion_id = TPTCV.tcversion_id " .
+        			" AND LEX.build_id = {$safeContext['build_id']} " .
+        
+        			" LEFT OUTER JOIN {$this->tables['executions']} E " . 
+        			" ON E.id = LEX.id " .
+        
+              " JOIN {$this->tables['builds']} B ON B.id = {$safeContext['build_id']} " .
+              " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = E.tester_id " .
+              " LEFT OUTER JOIN {$this->tables['platforms']} PLATF ON PLATF.id = {$safeContext['platform_id']} " .
+        			" WHERE TPTCV.testplan_id = {$safeContext['tplan_id']} " .
+        			" AND TPTCV.platform_id = {$safeContext['platform_id']} " .
+          		$addWhere .
+        	    " AND (E.build_id = {$safeContext['build_id']} OR E.build_id IS NULL)";
+        	
+        	
+        			// using database::CUMULATIVE is just a trick to return data structure
+        			// that will be liked on execSetResults.php
+          		$out = $this->db->fetchRowsIntoMap($sql,'testcase_id',database::CUMULATIVE);
 			break;
 		}
 		return $out;	
@@ -5822,9 +5794,9 @@ class testcase extends tlObjectWithAttachments
 
   // wrappers  
   // just a wrapper that can be useful sometimes
-  function get_full_path_verbose($id)
+  function get_full_path_verbose($id,$opt = null)
   {
-    return $this->tree_manager->get_full_path_verbose($id);
+    return $this->tree_manager->get_full_path_verbose($id,$opt);
   }
   
   function getTestSuiteID($id)
@@ -5857,6 +5829,44 @@ class testcase extends tlObjectWithAttachments
 
 		return $signature;        
 	}
- 
+
+
+  static function addExecIcons($execSet,$stdImages,$mode='std')
+  {
+    $key = key($execSet);
+    
+    // need to fo this mess, because in some contexts where this method is used
+    // execSet[$key] is NOT an array.
+    if($mode != 'std')
+    {
+      $zeroing[0] = &$execSet[$key];
+    }
+    else
+    {
+      $zeroing = &$execSet[$key];
+    }
+    foreach($zeroing as &$item)
+    {
+      switch($item['execution_run_type'])
+      {
+        case testcase::EXECUTION_TYPE_MANUAL:
+          $item['execution_run_type_icon'] = $stdImages['manualExec'];
+          $item['execution_run_type_label'] = lang_get('execution_type_manual');
+        break;
+        
+        case testcase::EXECUTION_TYPE_AUTO:
+          $item['execution_run_type_icon'] = $stdImages['automatedExec'];
+          $item['execution_run_type_label'] = lang_get('execution_type_auto');
+        break;
+        
+        default:
+          $target = 'execution_type_custom_' . $item['execution_run_type'] . '.png';        
+          $item['execution_run_type_icon'] = TL_THEME_IMG_DIR . $target; 
+          $item['execution_run_type_label'] = lang_get($target);
+        break;
+      }
+    }
+    return $execSet;
+  }
 } // end class
 ?>

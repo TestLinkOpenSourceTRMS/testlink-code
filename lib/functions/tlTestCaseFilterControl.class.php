@@ -1439,7 +1439,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 			{
 				$this->active_filters[$key][$user_key] = $user_key;
 			}
-			$this->active_filters[$unassigned_key] = $this->filters[$key][$unassigned_key];
+			$this->active_filters[$unaKey] = $this->filters[$key][$unaKey];
 		}
 	} 
 

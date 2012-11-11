@@ -5,7 +5,7 @@ Purpose: smarty template - show tests to add results
 
 @internal revisions
 *}
-{$attachment_model = $cfg->exec_cfg->att_model}
+{$attachment_model = $gui->cfg->exec_cfg->att_model}
 {$title_sep = $smarty.const.TITLE_SEP}
 {$title_sep_type3 =$smarty.const.TITLE_SEP_TYPE3}
 
@@ -295,7 +295,7 @@ Ext.onReady(function() {
         {$att_download_only =false}
         {$enable_custom_fields =true}
         {$draw_submit_button =true}
-        {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
+        {if $gui->cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
             {$div_id ='bulk_controls'}
             {include file="inc_show_hide_mgmt.tpl"
                      show_hide_container_title = $labels.bulk_tc_status_management
@@ -317,7 +317,7 @@ Ext.onReady(function() {
     	{/if}
 
 
-      {if !($cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op)}
+      {if !($gui->cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op)}
           <hr />
           <div class="groupBtn">
     	    	  <input type="button" name="print" id="print" value="{$labels.btn_print}"
@@ -341,7 +341,7 @@ Ext.onReady(function() {
       <hr />
 	{/if}
 
-  {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
+  {if $gui->cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
       <div>
       <br />
       <input type="button" id="do_export_testcases" name="do_export_testcases"  value="{$labels.btn_export_testcases}"
@@ -373,7 +373,7 @@ Ext.onReady(function() {
         <td>{$tsuite_info[$tc_id].tsuite_name}</td>{* <td>&nbsp;</td> *}
         <td>
         <a href="javascript:openTCaseWindow({$gui->tproject_id},{$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')" title="{$labels.show_tcase_spec}">
-        {$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape}::{$labels.version}: {$tc_exec.version}::{$tc_exec.name|escape}
+        {$gui->tcasePrefix|escape}{$gui->cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape}::{$labels.version}: {$tc_exec.version}::{$tc_exec.name|escape}
         </a>
         </td>
         <td class="{$tlCfg->results.code_status[$tc_exec.status]}">
@@ -388,7 +388,7 @@ Ext.onReady(function() {
       </table>
       </div>
   {else}
-    {include file="execute/inc_exec_show_tc_exec.tpl"}
+    {include file="execute/execShowTestCaseExec.inc.tpl"}
     {if isset($gui->refreshTree) && $gui->refreshTree} {$tlRefreshTreeJS} {/if}
   {/if}
   

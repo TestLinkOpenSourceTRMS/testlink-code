@@ -73,7 +73,8 @@ if ($args->featureID && $args->doUpdate && $featureMgr)
 // --------------------------------------------------------------------------
 // Important: 
 // Must be done here after having done update, to get current information
-$gui->users = tlUser::getAll($db,"WHERE active=1",null,null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+$gui->users = tlUser::getUserSet($db,array('where' => 'WHERE active=1'));
+
 checkSessionValid($db);
 $args->user = $_SESSION['currentUser'];
 // --------------------------------------------------------------------------

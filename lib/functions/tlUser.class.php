@@ -957,18 +957,15 @@ class tlUser extends tlDBObject
 		return $users ? $users : null;
 	}
 
-	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,
-	                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	static public function getUserSet(&$db,$options = null)
 	{
+    $opt = array('where' => '', 'orderBy' => " ORDER BY login ", 'detailLevel' => self::TLOBJ_O_GET_DETAIL_FULL);
+    $opt = array_merge($opt, (array)$options);
+    
 		$tables = tlObject::getDBTables('users');
-		$sql = " SELECT id FROM {$tables['users']} ";
-		if (!is_null($whereClause))
-		{
-			$sql .= ' '.$whereClause;
-	    }
-		$sql .= is_null($orderBy) ? " ORDER BY login " : $orderBy;
-		
-		return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
+		$sql = " SELECT id FROM {$tables['users']} {$opt['where']} {$opt['orderBy']} ";
+
+		return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$opt['detailLevel']);
 	}
 
 	/** 
@@ -1235,7 +1232,7 @@ class tlUser extends tlDBObject
   	return $msg;
   }
 
-
+  
   function setUserSession(&$db)
   {
   	// tLog('setUserSession: $user=' . $user . ' $id='.$id.' $roleID='.$roleID.' $email='.$email.' $locale='.$locale);
@@ -1248,22 +1245,78 @@ class tlUser extends tlDBObject
   }
 
 
-  static function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = null, $active_filter = null,$users = null)
+  static function getUsersForHtmlOptions(&$db,$whereClause = null,$users2add = null,$active = null,$users = null)
   {
   	$users_map = null;
   	if (!$users)
   	{
-  		$sqlWhere = $whereClause;
-  		if(!is_null($active_filter))
-  		{
-  			$whereClause .= ' AND active =' . ($active_filter > 0 ? 1 : 0) . ' ';
-  		}
-  		$users = tlUser::getAll($db,$sqlWhere,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+      $gaOpt = array();
+  		$gaOpt['detailLevel'] = tlUser::TLOBJ_O_GET_DETAIL_MINIMUM;
+  
+      $gaOpt['where'] = $whereClause;
+      $op = ' AND ';
+      if( is_null($gaOpt['where']) )
+      {
+        $gaOpt['where'] = '';
+        $op = ' WHERE ';
+      }
+  		$gaOpt['where'] = (!is_null($active) ? ( $op . ' active =' . ($active > 0 ? 1 : 0) . ' ') : ''); 
+  		$users = tlUser::getUserSet($db,$gaOpt);
   	}
-    
-  	return tlUser::buildUserMap($users,!is_null($additional_users),$additional_users);
+  	return tlUser::buildUserMap($users,!is_null($users2add),$users2add);
   }
+ 
+  static function getTestersForHtmlOptions(&$dbHandler, $tplan,$tproject,$users = null, 
+                                           $testers2add = null,$activeStatus = 'active')
+  {
+    $orOperand = false;
+    $activeTarget = 1;
+    $gaOpt['where'] = ' ';
+    switch ($activeStatus)
+    {
+      case 'any':
+        $orOperand = true;
+        $gaOpt['where'] = ' ';
+      break;
+           
+      case 'inactive':
+  		  $gaOpt['where'] = ' WHERE active = 0 ';
+  		  $activeTarget = 0;
+      break;
+      
+      case 'active':
+      default:
+  		  $gaOpt['where'] = ' WHERE active = 1 ';
+  		  $activeTarget = 1;
+      break;
+    }
 
+  	if (!$users)
+  	{
+      $gaOpt = array();
+  		$gaOpt['detailLevel'] = tlUser::TLOBJ_O_GET_DETAIL_MINIMUM;
+  		$users = tlUser::getUserSet($dbHandler,$gaOpt);
+  	}
+    $users_roles = tlUser::getTestPlanEffectiveRoleForUserSet($tplan,$tproject,$users);
+    $userFilter = array();
+    foreach($users_roles as $keyUserID => $roleInfo)
+    {
+    	// Assign test case to test project fails for PRIVATE TEST PROJECT (tested with admin user)
+    	if( is_object($roleInfo['effective_role']) )
+    	{
+          // Because we can receive users from outside, we do noy know if the set is
+          // in line with the $activeStatus argument.
+          // That's why we do (what can be seems a superfluos) a check on isActive;
+        	if( $roleInfo['effective_role']->hasRight('testplan_execute') && 
+        	    ($orOperand || $roleInfo['user']->isActive == $activeTarget) )
+        	{
+        	    
+        	     $userFilter[$keyUserID] = $roleInfo['user'];
+        	}
+        }   
+    }
+  	return tlUser::buildUserMap($userFilter,true,$testers2add);
+  }
 
   /*
     function: buildUserMap
@@ -1336,7 +1389,6 @@ class tlUser extends tlDBObject
   {
     $effective_role = array();
 	  $effective_role = tlUser::getTestProjectEffectiveRoleForUserSet($tproject,$userSet);
-  
   	foreach($effective_role as $user_id => $row)
   	{
   		$isInherited = 1;
@@ -1366,6 +1418,12 @@ class tlUser extends tlDBObject
 
   static function helperTestProjectEffectiveRole($tproject,$userSet)
   {
+    if( is_null($userSet) ) 
+    {
+			throw new Exception(__METHOD__ . ' user set CAN NOT BE EMPTY');
+    }
+
+
     $effective_role = array();
 		foreach($userSet as $id => $user)
 		{
@@ -1455,43 +1513,21 @@ class tlUser extends tlDBObject
       return $grants;
   }
 
-  static function getTestersForHtmlOptions($tplan,$tproject,$users = null, 
-                                           $additional_testers = null,$activeStatus = 'active')
-  {
-    $orOperand = false;
-    $activeTarget = 1;
-    switch ($activeStatus)
-    {
-        case 'any':
-            $orOperand = true;
-        break;
-        
-        case 'inactive':
-            $activeTarget = 0;
-    	break;
-        
-        case 'active':
-        default:
-  	  break;
-    }
-    $users_roles = tlUser::getTestPlanEffectiveRoleForUserSet($tplan,$tproject,$users);
-    $userFilter = array();
-    foreach($users_roles as $keyUserID => $roleInfo)
-    {
-    	// Assign test case to test project fails for PRIVATE TEST PROJECT (tested with admin user)
-    	if( is_object($roleInfo['effective_role']) )
-    	{
-        	if( $roleInfo['effective_role']->hasRight('testplan_execute') && 
-        	    ($orOperand || $roleInfo['user']->isActive == $activeTarget) )
-        	{
-        	    
-        	     $userFilter[$keyUserID] = $roleInfo['user'];
-        	}
-        }   
-    }
-  	return tlUser::buildUserMap($userFilter,true,$additional_testers);
-  }
 
+  // Just to avoid issues with iDBSerialization
+	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,
+	                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	{
+		// $tables = tlObject::getDBTables('users');
+		// $sql = " SELECT id FROM {$tables['users']} ";
+		// if (!is_null($whereClause))
+		// {
+		// 	$sql .= ' '.$whereClause;
+	  //   }
+		// $sql .= is_null($orderBy) ? " ORDER BY login " : $orderBy;
+		// 
+		// return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
+	}
 
 }
 ?>

@@ -1577,8 +1577,11 @@ $TLS_execution_type_short_descr = 'Execution';
 $TLS_tcversion_is_inactive_msg = "This version is INACTIVE; it is not available to be included in a Test Plan";
 $TLS_system_blocks_delete_executed_tc = "System configuration blocks deletion of executed versions";
 $TLS_system_blocks_delete_executed_tc_when = "System configuration blocks deletion of Test Case when " .
-											 "there are executed versions";
+											 											 "there are executed versions";
 
+$TLS_no_right_to_delete_executed_tc = "You do not have right to delete executed versions";
+$TLS_no_right_to_delete_executed_tc_when = "You do not have right to delete a Test Case when " .
+											 										 "there are executed versions";
 
 
 // ----- gui/templates/planRemoveTC_m1.tpl -----

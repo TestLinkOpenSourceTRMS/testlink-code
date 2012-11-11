@@ -646,8 +646,11 @@ class testcase extends tlObjectWithAttachments
 	  $status_ok = $idSet[0] > 0 ? 1 : 0;
 
     $gui = $this->initShowGui($guiObj,$grants);
+    $gui->grants = $grants;
 		$gui->testcase_other_versions = array();
 
+    new dBug($gui->grants);
+    
 		if($status_ok)
 	  {
 		  $req_mgr = new requirement_mgr($this->db);
@@ -788,6 +791,8 @@ class testcase extends tlObjectWithAttachments
 		  	} // foreach($a_id as $key => $tc_id)
 	    } // if (sizeof($a_id))
 
+		
+		new dBug($gui->grants);
 		
     // Removing duplicate and NULL id's
 		unset($userid_array['']);

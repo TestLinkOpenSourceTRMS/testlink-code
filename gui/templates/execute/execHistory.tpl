@@ -11,9 +11,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {include file="inc_head.tpl" openHead='yes'}
 {include file="inc_ext_js.tpl"}
 
-{* 	Initialize note panels. 
-	The array panel_init_functions is filled with init functions (see below)
-	or inc_exec_show_tc_exec.tpl and executed from onReady below *}
+{* Initialize note panels. 
+	 The array panel_init_functions is filled with init functions (see below)
+	 or inc_exec_show_tc_exec.tpl and executed from onReady below *}
 <script>
 {literal}
 panel_init_functions = new Array();
@@ -63,7 +63,7 @@ function load_notes(panel,exec_id)
 					<tr style="border-top:1px solid black; background-color: {$bg_color}">
 						<td>
 							{if $gui->user_is_admin}
-								<img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" style="vertical-align:middle" 
+								<img src="{$tlImages.note_edit}" style="vertical-align:middle" 
 								     title="{$labels.edit_execution}" onclick="javascript: openExecEditWindow(
 								     {$tcv_exec.execution_id},{$tcv_exec.id},{$tcv_exec.testplan_id},{$gui->tproject_id});">
 							{/if}
@@ -73,7 +73,7 @@ function load_notes(panel,exec_id)
 						<td>
 						{*
 						{if !$tcv_exec.build_is_open}
-							<img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{$labels.closed_build}">
+							<img src="{$tlImages.lock}" title="{$labels.closed_build}">
 						{/if}
 						*}
 						{$tcv_exec.build_name|escape}
@@ -89,13 +89,8 @@ function load_notes(panel,exec_id)
 						<td  style="text-align:center">{$tcv_exec.tcversion_number}</td>
 		
 						<td class="icon_cell" align="center">
-						{if $tcv_exec.execution_run_type == $smarty.const.TESTCASE_EXECUTION_TYPE_MANUAL}
-						<img src="{$smarty.const.TL_THEME_IMG_DIR}/user.png" title="{$labels.execution_type_manual}"
+						<img src="{$tcv_exec.execution_run_type_icon}" title="{$tcv_exec.execution_run_type_label}"
 						     style="border:none" />
-						{else}
-						<img src="{$tlImages->automatedExec}" title="{$labels.execution_type_auto}"
-						     style="border:none" />
-						{/if}
 						</td>
 					</tr>
 		
@@ -133,8 +128,11 @@ function load_notes(panel,exec_id)
 					<tr style="background-color: {$bg_color}">
 					<td colspan="{$my_colspan}">
 						{if isset($gui->cfexec[$tcv_exec.execution_id])}
+							{*
 							{assign var="cf_value_info" value=$gui->cfexec[$tcv_exec.execution_id]}
 							{$cf_value_info}
+							*}
+							{$gui->cfexec[$tcv_exec.execution_id]}
 						{/if}	
 					</td>
 					</tr>

@@ -88,7 +88,7 @@ viewer for test case in test specification
   {$active_status_op_enabled=1}
   {$has_been_executed=0}
   {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
-  {lang_get s='system_blocks_delete_executed_tc' var="warning_delete_msg"}
+  {lang_get s='no_right_to_delete_executed_tc' var="warning_delete_msg"}
 
   {if $args_status_quo == null || $args_status_quo[$args_testcase.id].executed == null}
       {$edit_enabled=1}
@@ -96,32 +96,27 @@ viewer for test case in test specification
       {$warning_edit_msg=""}
       {$warning_delete_msg=""}
   {else} 
-    {if isset($args_tcase_cfg) && $args_tcase_cfg->can_edit_executed == 1}
+    {if $gui->grants->testproject_edit_executed_testcases}
       {$edit_enabled=1} 
       {$has_been_executed=1} 
       {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
     {/if} 
     
-    {if isset($args_tcase_cfg)}
-		{if $args_tcase_cfg->can_delete_executed == 1}
-      		{$delete_enabled=1} 
-      		{$has_been_executed=1} 
-      		{$warning_delete_msg=""}
-    	{else}
-  			{if ($args_can_do->delete_testcase == "yes" &&  
-  				 $args_can_delete_testcase == "yes") ||
-  				($args_can_do->delete_version == "yes" && 
-  				 $args_can_delete_version == "yes")}
-				{lang_get s='system_blocks_delete_executed_tc' var="warning_delete_msg"}
-    		{/if}  
+		{if $gui->grants->testproject_delete_executed_testcases}
+      {$delete_enabled=1} 
+      {$has_been_executed=1} 
+      {$warning_delete_msg=""}
+    {else}
+  		{if ($args_can_do->delete_testcase == "yes" && $args_can_delete_testcase == "yes") ||
+  			   ($args_can_do->delete_version == "yes" && $args_can_delete_version == "yes")}
+				  {lang_get s='no_right_to_delete_executed_tc' var="warning_delete_msg"}
     	{/if}  
-    {/if} 
-    
+    {/if}  
   {/if}
 
 	<span style="float: left">
 	  <form style="display: inline;" id="topControls" name="topControls" 
-	  		method="post" action="lib/testcases/tcEdit.php">
+	  		  method="post" action="lib/testcases/tcEdit.php">
 	  <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
     <input type="hidden" name="testsuite_id" id="testsuite_id" value="{$args_testcase.testsuite_id}" />
 	  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
@@ -138,8 +133,9 @@ viewer for test case in test specification
 	 	           onclick="doAction.value='edit';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_edit}" />
 	  {/if}
 	
-	  {* Double condition because for test case versions WE DO NOT DISPLAY this
-	     button, using $args_can_delete_testcase='no'
+	  {* 
+	  Double condition because for test case versions WE DO NOT DISPLAY this
+	  button, using $args_can_delete_testcase='no'
 	  *}
 		{if $delete_enabled && $args_can_do->delete_testcase == "yes" &&  $args_can_delete_testcase == "yes"}
 			<input type="submit" name="delete_tc" value="{$tcView_viewer_labels.btn_delete}" />
@@ -178,8 +174,7 @@ viewer for test case in test specification
 	                           value="{lang_get s=$act_deact_value}" />
 	  {/if}
 
-  {if $args_can_do->add2tplan == "yes" && $args_has_testplans && 
-  	  $args_testcase.enabledOnTestPlanDesign}
+  {if $args_can_do->add2tplan == "yes" && $args_has_testplans && $args_testcase.enabledOnTestPlanDesign}
   <input type="button" id="addTc2Tplan_{$args_testcase.id}"  name="addTc2Tplan_{$args_testcase.id}" 
          value="{$tcView_viewer_labels.btn_add_to_testplans}" onclick="location='{$hrefAddTc2Tplan}'" />
 
@@ -222,8 +217,6 @@ viewer for test case in test specification
 	</span>
 </div> {* class="groupBtn" *}
 <br/><br/>
-
-
 
 {* --------------------------------------------------------------------------------------- *}
   {if $args_testcase.active eq 0}
@@ -269,7 +262,7 @@ function launchInsertStep(step_id)
 
 <form id="stepsControls" name="stepsControls" method="post" action="lib/testcases/tcEdit.php">
   <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
-    <input type="hidden" name="testsuite_id" id="testsuite_id" value="{$args_testcase.testsuite_id}" />
+  <input type="hidden" name="testsuite_id" id="testsuite_id" value="{$args_testcase.testsuite_id}" />
   <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
   <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 

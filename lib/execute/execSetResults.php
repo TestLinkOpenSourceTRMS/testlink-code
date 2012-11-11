@@ -104,7 +104,7 @@ if(!is_null($linked_tcversions))
   }
   // Important Notice: $tcase_id and $tcversions_id, can be ARRAYS when user enable bulk execution
   $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$mgr->tcase,
-                                         $smarty->get_template_vars('tlImages'));
+                                         $smarty->tpl_vars['tlImages']);
     
   $gui->map_last_exec_any_build = null;
   $gui->other_execs=null;
@@ -132,7 +132,7 @@ if(!is_null($linked_tcversions))
     	
     $gui->req_details = $mgr->req->get_all_for_tcase($tcase_id);
     $gui->other_execs = getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$mgr->tcase,
-                                           $smarty->get_template_vars('tlImages'));
+                                           $smarty->tpl_vars['tlImages']);
     // Get attachment,bugs, etc
     if(!is_null($gui->other_execs))
     {

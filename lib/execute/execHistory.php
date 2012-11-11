@@ -8,7 +8,6 @@
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
-// require_once('exec.inc.php');
 require_once("web_editor.php");
 
 testlinkInitPage($db);
@@ -22,7 +21,7 @@ $gui->execSet = $tcase_mgr->getExecutionSet($args->tcase_id);
 
 if( !is_null($gui->execSet) )
 {
-  $gui->execSet = testcase::addExecIcons($gui->execSet,$smarty->get_template_vars('tlImages'));
+  $gui->execSet = testcase::addExecIcons($gui->execSet,$smarty->tpl_vars['tlImages']);
 }
 
 
@@ -30,17 +29,9 @@ $node['basic'] = $tcase_mgr->tree_manager->get_node_hierarchy_info($args->tcase_
 $node['specific'] = $tcase_mgr->getExternalID($args->tcase_id); 
 $idCard = $node['specific'][0] . ' : ' . $node['basic']['name'];
 
-new dBug($gui->execSet);
-die();
-
-
 $gui->warning_msg = (!is_null($gui->execSet)) ? '' : lang_get('tcase_never_executed');
 $gui->user_is_admin = ($_SESSION['currentUser']->globalRole->name=='admin') ? true : false;
-$gui->tproject_id = isset($_REQUEST['testprojectID']) ? intval($_REQUEST['testprojectID']) : 0;
 
-$gui->execPlatformSet = null;
-$gui->cfexec = null;
-$gui->attachments = null;
 
 if(!is_null($gui->execSet) )
 {
@@ -57,14 +48,12 @@ if(!is_null($gui->execSet) )
 	
 	// get custom fields brute force => do not check if this call is needed
 	$gui->cfexec = getCustomFields($tcase_mgr,$gui->execSet);
-	$gui->attachments = getAttachments($db,$gui->execSet);
+	$gui->attachments = null; //getAttachments($db,$gui->execSet);
 	
 }
 
-// new dBug($gui);
 $gui->displayPlatformCol = !is_null($gui->execPlatformSet) ? 1 : 0;
 
-$gui->main_descr = lang_get('execution_history');
 $gui->detailed_descr = lang_get('test_case') . ' ' . $idCard;
 $smarty->assign('gui',$gui);  
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
@@ -133,7 +122,13 @@ function getCustomFields(&$tcaseMgr,&$execSet)
 function initializeGui($argsObj)
 {
   $gui = new stdClass();
+
+  $gui->main_descr = lang_get('execution_history');
+  $gui->execPlatformSet = null;
+  $gui->cfexec = null;
+  $gui->attachments = null;
   $gui->exec_cfg = config_get('exec_cfg');
+  $gui->tproject_id = isset($_REQUEST['testprojectID']) ? intval($_REQUEST['testprojectID']) : 0;
   return $gui;
 }
 

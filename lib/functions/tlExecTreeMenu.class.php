@@ -23,13 +23,17 @@ class tlExecTreeMenu extends tlObjectWithDB
   var $cfg;
   var $tplan_mgr;
   var $tproject_mgr;
+  var $context;
+  var $menuUrl;
+  var $testCasePrefix;
   
- 	public function __construct(&$dbHandler) 
+ 	public function __construct(&$dbHandler,$context = null, $menuUrl = null) 
 	{
 		$this->db = $dbHandler;
   	$this->tplan_mgr = new testplan($dbHandler);
   	$this->tproject_mgr = new testproject($dbHandler);
 
+    $this->context = $context;
     $this->cfg = new stdClass();
   	$this->cfg->tcaseNodeType = $this->tplan_mgr->tree_manager->node_descr_id['testcase'];
 
@@ -42,17 +46,17 @@ class tlExecTreeMenu extends tlObjectWithDB
 	  
   }
 
-  function execTree(&$menuUrl,$context,$objFilters,$objOptions) 
+
+  function execTree($objFilters,$objOptions) 
   {
    	$chronos[] = microtime(true);
+  	$this->testCasePrefix = $this->tproject_mgr->getTestCasePrefix($this->context->tproject_id) . $this->cfg->glueChar;
   	$menuString = null;
-  	list($my,$filters,$options,$colorBySelectedBuild) = $this->initExecTree($context,$objFilters,$objOptions);
+  	list($my,$filters,$options,$colorBySelectedBuild) = $this->initExecTree($objFilters,$objOptions);
  	      
-    $test_spec = $this->tplan_mgr->getSkeleton($context->tplan_id,$context->tproject_id,$my['filters'],$my['options']);
-  	$test_spec['name'] = $context->tproject_name . " / " . $context->tplan_name;  // To be discussed
-  	$test_spec['id'] = $context->tproject_id;
-  	$test_spec['node_type_id'] = $this->cfg->nodeTypeCode['testproject'];
-  	$test_spec['node_type'] = 'testproject';
+    $test_spec = $this->tplan_mgr->getSkeleton($this->context->tplan_id,$this->context->tproject_id,
+                                               $my['filters'],$my['options']);
+    $this->completeTestSpec($test_spec);
 
   	$map_node_tccount = array();
   	$tplan_tcases = null;
@@ -72,7 +76,7 @@ class tlExecTreeMenu extends tlObjectWithDB
   			//
   			// WE NEED TO ADD FILTERING on CUSTOM FIELD VALUES, WE HAVE NOT REFACTORED THIS YET.
   			//
-  			if( !is_null($sql2do = $this->tplan_mgr->getLinkedForExecTree($context->tplan_id,$filters,$options)) )
+  			if( !is_null($sql2do = $this->tplan_mgr->getLinkedForExecTree($this->context->tplan_id,$filters,$options)) )
   			{
   				$kmethod = "fetchRowsIntoMap";
   				if( is_array($sql2do) )
@@ -108,7 +112,7 @@ class tlExecTreeMenu extends tlObjectWithDB
   		$targetExecStatus = (array)(isset($objFilters->filter_result_result) ? $objFilters->filter_result_result : null);
   		if( !is_null($targetExecStatus) && (!in_array($this->cfg->results['status_code']['all'], $targetExecStatus)) ) 
   		{
-  			$this->applyStatusFilters($context->tplan_id,$tplan_tcases,$objFilters);       
+  			$this->applyStatusFilters($tplan_tcases,$objFilters);       
   		}
   		
   		if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes']))
@@ -129,8 +133,7 @@ class tlExecTreeMenu extends tlObjectWithDB
   		}
   	
   		$keys = array_keys($tplan_tcases);
-  		$tcPrefix = $this->tproject_mgr->getTestCasePrefix($context->tproject_id) . $this->cfg->glueChar;
-  		$menuString = $this->renderExecTreeNode(1,$test_spec,$tplan_tcases,$menuUrl,$tcPrefix,$options);
+  		$menuString = $this->renderExecTreeNode(1,$test_spec,$tplan_tcases,$options);
   	}  // if($test_spec)
   	
 
@@ -168,7 +171,7 @@ class tlExecTreeMenu extends tlObjectWithDB
    * @since 1.9.4
    *
    */
-  function initExecTree($context,$filtersObj,$optionsObj)
+  function initExecTree($filtersObj,$optionsObj)
   {
   	$filters = array();
   	$options = array();
@@ -255,7 +258,7 @@ class tlExecTreeMenu extends tlObjectWithDB
     //
     $my = array();
     $my['options'] = array('recursive' => true,'remove_empty_nodes_of_type' => $this->cfg->nodeTypeCode['testsuite'],
-                           'order_cfg' => array("type" =>'exec_order',"tplan_id" => $context->tplan_id,
+                           'order_cfg' => array("type" =>'exec_order',"tplan_id" => $this->context->tplan_id,
                                                 'hideTestCases' => $options['hideTestCases']));
     
     $my['filters'] = array('exclude_node_types' => 
@@ -410,7 +413,7 @@ class tlExecTreeMenu extends tlObjectWithDB
   
   
   
-  function applyStatusFilters($tplan_id,&$items2filter,&$fobj)
+  private function applyStatusFilters(&$items2filter,&$fobj)
   {
   	$fm = config_get('execution_filter_methods');
   	$methods = $fm['status_code'];
@@ -446,7 +449,7 @@ class tlExecTreeMenu extends tlObjectWithDB
   			$fobj->filter_result_build = $fobj->setting_build;
   		}
   		
-  		$items = $ffn[$f_method]($tplan_mgr, $items2filter, $tplan_id, $fobj);
+  		$items = $ffn[$f_method]($tplan_mgr, $items2filter, $this->context->tplan_id, $fobj);
   	}
   
   	return $filter_done ? $items : $items2filter; 
@@ -459,7 +462,7 @@ class tlExecTreeMenu extends tlObjectWithDB
    *
    * @internal revisions:
    */
-  function testPlanTree(&$menuUrl,$context,$objFilters,$objOptions) 
+  function testPlanTree($objFilters,$objOptions) 
   {
   	$debugMsg = ' - Method: ' . __FUNCTION__;
    	$chronos[] = $tstart = microtime(true);
@@ -467,18 +470,13 @@ class tlExecTreeMenu extends tlObjectWithDB
 
   	$menuString = null;
   	$tplan_tcases = null;
-  
-  	$tcase_prefix = $this->tproject_mgr->getTestCasePrefix($context->tproject_id) . $this->cfg->glueChar;
-  	list($my,$filters,$options,$colorBySelectedBuild) = $this->initExecTree($context,$objFilters,$objOptions);
+  	list($my,$filters,$options,$colorBySelectedBuild) = $this->initExecTree($objFilters,$objOptions);
   	
-    $test_spec = $this->tplan_mgr->getSkeleton($context->tplan_id,$context->tproject_id,$my['filters'],$my['options']);
+    $test_spec = $this->tplan_mgr->getSkeleton($this->context->tplan_id,$this->context->tproject_id,$my['filters'],$my['options']);
 
-  	$test_spec['name'] = $context->tproject_name . " / " . $context->tplan_name;  // To be discussed
-  	$test_spec['id'] = $context->tproject_id;
-  	$test_spec['node_type_id'] = $this->cfg->nodeTypeCode['testproject'];
-  	$test_spec['node_type'] = 'testproject';
+    $this->completeTestSpec($test_spec);
+
   	$map_node_tccount = array();
-  	
   	$tplan_tcases = null;
     $apply_other_filters=true;
   	if($test_spec)
@@ -497,7 +495,7 @@ class tlExecTreeMenu extends tlObjectWithDB
   			// WE NEED TO ADD FILTERING on CUSTOM FIELD VALUES, WE HAVE NOT REFACTORED
   			// THIS YET.
   			//
-  			if( !is_null($sql2do = $this->tplan_mgr->{$objOptions->getTreeMethod}($context->tplan_id,$filters,$options)) )
+  			if( !is_null($sql2do = $this->tplan_mgr->{$objOptions->getTreeMethod}($this->context->tplan_id,$filters,$options)) )
   			{
   				if( is_array($sql2do) )
   				{				
@@ -533,7 +531,7 @@ class tlExecTreeMenu extends tlObjectWithDB
   		$targetExecStatus = (array)(isset($objFilters->filter_result_result) ? $objFilters->filter_result_result : null);
   		if( !is_null($targetExecStatus) && (!in_array($resultsCfg['status_code']['all'], $targetExecStatus)) ) 
   		{
-  			$this->applyStatusFilters($context->tplan_id,$tplan_tcases,$objFilters);
+  			$this->applyStatusFilters($tplan_tcases,$objFilters);
   		}
   
       if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes']))
@@ -554,7 +552,7 @@ class tlExecTreeMenu extends tlObjectWithDB
   		}
   	
   		$keys = array_keys($tplan_tcases);
-  		$menuString = $this->renderExecTreeNode(1,$test_spec,$tplan_tcases,1,$menuUrl,$tcase_prefix,$options);
+  		$menuString = $this->renderExecTreeNode(1,$test_spec,$tplan_tcases,1,$options);
   		//                                        false,
   		//                                        $useCounters,$useColors,
   		//	                                      $show_testsuite_contents);
@@ -599,7 +597,7 @@ class tlExecTreeMenu extends tlObjectWithDB
    * @return datatype description
    * 
    */
-  function renderExecTreeNode($level,&$node,&$tcase_node,$linkto,$testCasePrefix,$opt)
+  private function renderExecTreeNode($level,&$node,&$tcase_node,$opt)
   {
   	static $l18n;	
   	static $pf;	
@@ -657,11 +655,11 @@ class tlExecTreeMenu extends tlObjectWithDB
   
   			$status_code = $tcase_node[$node['id']]['exec_status'];
   			$node['text'] = "<span {$cssClasses[$status_code]} " . '  title="' .  $l18n[$status_code] . 
-  					 		'" alt="' . $l18n[$status_code] . '">';
+  					 		        '" alt="' . $l18n[$status_code] . '">';
   			
   			if($this->cfg->showTestCaseID)
   			{
-  				$node['text'] .= "<b>" . htmlspecialchars($testCasePrefix . $node['external_id']) . "</b>:";
+  				$node['text'] .= "<b>" . htmlspecialchars($this->testCasePrefix . $node['external_id']) . "</b>:";
   			} 
   			$node['text'] .= "{$name}</span>";
   		break;
@@ -672,7 +670,9 @@ class tlExecTreeMenu extends tlObjectWithDB
   	}
   	
   	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
-  	$node['href'] = is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$versionID})";
+  	$node['href'] = is_null($pfn)? '' : 
+  	                "javascript:{$pfn}({$this->context->tproject_id},{$this->context->tplan_id}," .
+  	                "{$node['id']},{$versionID})";
   
   	
   	if( isset($tcase_node[$node['id']]) )
@@ -690,11 +690,19 @@ class tlExecTreeMenu extends tlObjectWithDB
   			{
   				continue;
   			}
-  			$menuString .= $this->renderExecTreeNode($level+1,$node['childNodes'][$idx],$tcase_node,
-  			                                         $linkto,$testCasePrefix,$opt);
+  			$menuString .= $this->renderExecTreeNode($level+1,$node['childNodes'][$idx],$tcase_node,$opt);
   		}
   	}
   	return $menuString;
   }
+
+  private function completeTestSpec(&$target)
+  {
+    $target['name'] = $this->context->tproject_name . " / " . $this->context->tplan_name;  // To be discussed
+  	$target['id'] = $this->context->tproject_id;
+  	$target['node_type'] = 'testproject';
+  	$target['node_type_id'] = $this->cfg->nodeTypeCode[$target['node_type']];
+  }
+
 }   
 ?>

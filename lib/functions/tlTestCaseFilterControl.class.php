@@ -1373,7 +1373,6 @@ class tlTestCaseFilterControl extends tlFilterControl
 
 
 		$key = 'filter_assigned_user';
-		$unassigned_key = 'filter_assigned_user_include_unassigned';
 		$tplan_id = $this->settings['setting_testplan']['selected'];
 
 		// set selection to default (any), only change if value is sent by user and reset is not requested
@@ -1389,66 +1388,60 @@ class tlTestCaseFilterControl extends tlFilterControl
 
 		$tproject_info = $this->testproject_mgr->get_by_id($this->args->testproject_id);
 		$tplan_info = $this->testplan_mgr->get_by_id($tplan_id);
-
-		$all_testers = tlUser::getTestersForHtmlOptions($tplan_info, $tproject_info, null,
+		$all_testers = tlUser::getTestersForHtmlOptions($this->db,$tplan_info, $tproject_info, null,
 			                                              array(TL_USER_ANYBODY => $this->option_strings['any'],
           			                                          TL_USER_NOBODY => $this->option_strings['none'],
 			                                                    TL_USER_SOMEBODY => $this->option_strings['somebody']),
 			                                              'any');
 		$visible_testers = $all_testers;
 		
-		// in execution mode the rights of the user have to be regarded
+		// in execution mode the rights of the user have to be considered
 		if ($this->mode == 'execution_mode') 
 		{
 			$role = $this->user->getEffectiveRole($this->db, $this->args->testproject_id, $tplan_id);
 			
 			$simple_tester_roles = array_flip($this->configuration->exec_cfg->simple_tester_roles);
-			
-			// check the user's rights to see what he may do
 			$right_to_execute = $role->hasRight('testplan_execute');
 			$right_to_manage = $role->hasRight('testplan_planning');
-			
-			$simple = false;
-			if (isset($simple_tester_roles[$role->dbID]) || ($right_to_execute && !$right_to_manage)) {
-				// user is only simple tester and may not see/execute everything
-				$simple = true;
-			}
+
+			$simple = (isset($simple_tester_roles[$role->dbID]) || ($right_to_execute && !$right_to_manage)); 
 
 			$view_mode = $simple ? $this->configuration->exec_cfg->view_mode->tester : 'all';
-			
-			if ($view_mode != 'all') {
+			if ($view_mode != 'all') 
+			{
 				$visible_testers = (array)$this->user->getDisplayName();
 				$selection = (array)$this->user->dbID;
 			}
 
 			// re-enable option "user_filter_default"
-			if (!$selection && $this->configuration->exec_cfg->user_filter_default == 'logged_user') {
+			if (!$selection && $this->configuration->exec_cfg->user_filter_default == 'logged_user') 
+			{
 				$selection = (array)$this->user->dbID;
 			}
 		}
 		
-		$this->filters[$key] = array('items' => $visible_testers,
-		                             'selected' => $selection,
-		                             $unassigned_key => $this->args->{$unassigned_key});
+		$unaKey = 'filter_assigned_user_include_unassigned';
+		$this->filters[$key] = array('items' => $visible_testers,'selected' => $selection, $unaKey => $this->args->{$unaKey});
 		
 		// which value shall be passed to tree generation class?
-		
-		if ((is_array($selection) && in_array(TL_USER_ANYBODY, $selection))
-		|| ($selection == TL_USER_ANYBODY)) {
+		if ((is_array($selection) && in_array(TL_USER_ANYBODY, $selection)) || ($selection == TL_USER_ANYBODY)) 
+		{
 			// delete user assignment filter if "any user" is part of the selection
 			$this->active_filters[$key] = null;
-			$this->active_filters[$unassigned_key] = 0;
+			$this->active_filters[$unaKey] = 0;
 		}
 		
-		if (is_array($selection)) {
+		if (is_array($selection)) 
+		{
 			// get keys of the array as values
 			$this->active_filters[$key] = array_flip($selection);
-			foreach ($this->active_filters[$key] as $user_key => $user_value) {
+			foreach ($this->active_filters[$key] as $user_key => $user_value) 
+			{
 				$this->active_filters[$key][$user_key] = $user_key;
 			}
 			$this->active_filters[$unassigned_key] = $this->filters[$key][$unassigned_key];
 		}
-	} // end of method
+	} 
 
 
 
@@ -1845,15 +1838,15 @@ class tlTestCaseFilterControl extends tlFilterControl
     $opt_etree->testcases_colouring_by_selected_build =	$exec_cfg->testcases_colouring_by_selected_build;
     $opt_etree->tc_action_enabled = true; 
   
-    $context = new stdClass();
-    $context->tproject_id = $this->args->testproject_id;
-    $context->tproject_name = $this->args->testproject_name;
-    $context->tplan_id = $this->args->testplan_id;
-    $context->tplan_name = $this->args->testplan_name;
+    $this->execTreeMenuMgr->context = new stdClass();
+    $this->execTreeMenuMgr->context->tproject_id = $this->args->testproject_id;
+    $this->execTreeMenuMgr->context->tproject_name = $this->args->testproject_name;
+    $this->execTreeMenuMgr->context->tplan_id = $this->args->testplan_id;
+    $this->execTreeMenuMgr->context->tplan_name = $this->args->testplan_name;
+    $this->execTreeMenuMgr->menuUrl = $gui->menuUrl;
 
     $ajaxTree = new stdClass();    
-    list($ajaxTree->tree_menu, $testcases_to_show) = $this->execTreeMenuMgr->execTree($gui->menuUrl,$context,
-                                                                                      $filters,$opt_etree);
+    list($ajaxTree->tree_menu, $testcases_to_show) = $this->execTreeMenuMgr->execTree($filters,$opt_etree);
     $this->set_testcases_to_show($testcases_to_show);
 
 		$ajaxTree->root_node = $ajaxTree->tree_menu->rootnode;

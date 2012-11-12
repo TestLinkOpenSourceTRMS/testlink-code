@@ -3,32 +3,29 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @package 	TestLink
- * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: firstLogin.php,v 1.35 2010/10/02 14:01:38 franciscom Exp $
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @copyright   2004-2009, TestLink community 
+ * @filesource 	firstLogin.php
+ * @link 		    http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
  * 
- *	20101002 - franciscom - BUGID 3828: TL19RC1 - User self signup - Too many warnings in event log.
- *	20090927 - franciscom - added feature: 
- *                          send mail notification to users with administrator role, 
- *                          when user creates her/his acccount.
  * 
  */
 require_once('config.inc.php');
 require_once('common.php');
-require_once('users.inc.php');
 require_once('email_api.php');
 
 $templateCfg = templateConfiguration();
 if (!config_get('user_self_signup'))
 {
 	$smarty = new TLSmarty();
-	$smarty->assign('title', lang_get('fatal_page_title'));
-	$smarty->assign('content', lang_get('error_self_signup_disabled'));
-	$smarty->assign('link_to_op', "login.php");
-	$smarty->assign('hint_text', lang_get('link_back_to_login'));
+	$gui = new stdClass();
+	$gui->title = lang_get('fatal_page_title');
+	$gui->content = lang_get('error_self_signup_disabled');
+	$gui->hint_text = lang_get('link_back_to_login');
+	$gui->link_to_op = "login.php";
+	$smarty->assign('gui', $gui);
 	$smarty->display('workAreaSimple.tpl');
 	exit();
 }

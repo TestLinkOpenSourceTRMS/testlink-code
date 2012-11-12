@@ -376,12 +376,12 @@ class tlTestCaseFilterControl extends tlFilterControl
 	protected function read_config() 
 	{
 		parent::read_config();
-		$this->configuration = config_get('tree_filter_cfg')->testcases->{$this->mode};
-		$this->configuration->exec_cfg = config_get('exec_cfg');
-		$this->configuration->tc_cfg = config_get('testcase_cfg');
+		$this->cfg = config_get('tree_filter_cfg')->testcases->{$this->mode};
+		$this->cfg->exec_cfg = config_get('exec_cfg');
+		$this->cfg->tc_cfg = config_get('testcase_cfg');
 		
-		$this->filter_mode_choice_enabled = (isset($this->configuration->advanced_filter_mode_choice) && 
-    		                                 $this->configuration->advanced_filter_mode_choice == ENABLED); 
+		$this->filter_mode_choice_enabled = (isset($this->cfg->advanced_filter_mode_choice) && 
+    		                                 $this->cfg->advanced_filter_mode_choice == ENABLED); 
 	}
 
 	/**
@@ -528,8 +528,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 
 	/**
 	 * Initialize all filters. 
-	 * I'm double checking here with loaded configuration _and_ additional array
-	 * $mode_filter_mapping, set according to defined mode, because this can avoid errors in case
+	 * I'm double checking here with loaded configuration AND additional array $mode_filter_mapping, 
+	 * set according to defined mode, because this can avoid errors in case
 	 * when users try to enable a filter in config that doesn't exist for a mode.
 	 * Effect: Only existing and implemented filters can be activated in config file.
 	 */
@@ -549,13 +549,12 @@ class tlTestCaseFilterControl extends tlFilterControl
 
 		// iterate through all filters and activate the needed ones
 		$this->display_filters = false;
-
 		foreach ($this->all_filters as $name => $info) 
 		{
 			$init_method = "init_$name";
 			if (in_array($name, $this->mode_filter_mapping[$this->mode]) &&
-				method_exists($this, $init_method) && $this->configuration->{$name} == ENABLED &&
-				$this->configuration->show_filters == ENABLED) 
+				method_exists($this, $init_method) && $this->cfg->{$name} == ENABLED &&
+				$this->cfg->show_filters == ENABLED) 
 			{
 				$this->$init_method();
 
@@ -827,7 +826,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 		}
 		
     $gui->tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id) .
-                      $this->configuration->tc_cfg->glue_character;
+                      $this->cfg->tc_cfg->glue_character;
 		$filters = $this->get_active_filters();
 		switch ($this->mode) 
 		{
@@ -848,7 +847,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 				// No lazy loading here.
 				// Filtering is always done in execution mode, no matter if user enters data or not,
 				// since the user should usually never see the whole tree here.
-	  		$filters->show_testsuite_contents = $this->configuration->exec_cfg->show_testsuite_contents;
+	  		$filters->show_testsuite_contents = $this->cfg->exec_cfg->show_testsuite_contents;
 	      $gui->ajaxTree = $this->buildTreeExecutionMode($gui,$filters);
 			break;
 		}
@@ -1070,7 +1069,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 		}
 		
 		$tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id) .
-		             $this->configuration->tc_cfg->glue_character;
+		             $this->cfg->tc_cfg->glue_character;
 		
 		if (!$selection || $selection == $tc_prefix || $this->args->reset_filters) {
 			$selection = null;
@@ -1175,7 +1174,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 	 * 
 	 * 
 	 */
-	private function init_filter_keywords() {
+	private function init_filter_keywords() 
+	{
 		$key = 'filter_keywords';
 		$type = 'filter_keywords_filter_type';
 		$this->filters[$key] = false;
@@ -1400,13 +1400,13 @@ class tlTestCaseFilterControl extends tlFilterControl
 		{
 			$role = $this->user->getEffectiveRole($this->db, $this->args->testproject_id, $tplan_id);
 			
-			$simple_tester_roles = array_flip($this->configuration->exec_cfg->simple_tester_roles);
+			$simple_tester_roles = array_flip($this->cfg->exec_cfg->simple_tester_roles);
 			$right_to_execute = $role->hasRight('testplan_execute');
 			$right_to_manage = $role->hasRight('testplan_planning');
 
 			$simple = (isset($simple_tester_roles[$role->dbID]) || ($right_to_execute && !$right_to_manage)); 
 
-			$view_mode = $simple ? $this->configuration->exec_cfg->view_mode->tester : 'all';
+			$view_mode = $simple ? $this->cfg->exec_cfg->view_mode->tester : 'all';
 			if ($view_mode != 'all') 
 			{
 				$visible_testers = (array)$this->user->getDisplayName();
@@ -1414,7 +1414,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 			}
 
 			// re-enable option "user_filter_default"
-			if (!$selection && $this->configuration->exec_cfg->user_filter_default == 'logged_user') 
+			if (!$selection && $this->cfg->exec_cfg->user_filter_default == 'logged_user') 
 			{
 				$selection = (array)$this->user->dbID;
 			}
@@ -1571,12 +1571,12 @@ class tlTestCaseFilterControl extends tlFilterControl
 		}
 		$tplan_id = $this->settings['setting_testplan']['selected'];
 
-		$this->configuration->results = config_get('results');
+		$this->cfg->results = config_get('results');
 
 		// determine, which config to load and use for filter methods - depends on mode!
 		$cfg = ($this->mode == 'execution_mode') ? 
 		       'execution_filter_methods' : 'execution_assignment_filter_methods';
-		$this->configuration->filter_methods = config_get($cfg);
+		$this->cfg->filter_methods = config_get($cfg);
 
 		//
 		// CRITIC - Differences bewteen this configuration and
@@ -1592,11 +1592,11 @@ class tlTestCaseFilterControl extends tlFilterControl
 		$js_key_to_select = 0;
 		if ($this->mode == 'execution_mode') 
 		{
-			$js_key_to_select = $this->configuration->filter_methods['status_code']['current_build'];
+			$js_key_to_select = $this->cfg->filter_methods['status_code']['current_build'];
 		} 
 		else if ($this->mode == 'plan_mode') 
 		{
-			$js_key_to_select = $this->configuration->filter_methods['status_code']['specific_build'];
+			$js_key_to_select = $this->cfg->filter_methods['status_code']['specific_build'];
 		}
 		
 		// values selected by user
@@ -1605,8 +1605,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 		$build_selection = $this->args->$build_key;
 
 		// default values
-		$default_filter_method = $this->configuration->filter_methods['default_type'];
-		$any_result_key = $this->configuration->results['status_code']['all'];
+		$default_filter_method = $this->cfg->filter_methods['default_type'];
+		$any_result_key = $this->cfg->results['status_code']['all'];
 		$newest_build_id = $this->testplan_mgr->get_max_build_id($tplan_id, testplan::GET_ACTIVE_BUILD);
 
 		if (is_null($method_selection)) 
@@ -1641,11 +1641,11 @@ class tlTestCaseFilterControl extends tlFilterControl
 		$this->filters[$key][$result_key]['items'][$any_result_key] = $this->option_strings['any'];
 
 		// init menu for filter method selection
-		foreach ($this->configuration->filter_methods['status_code'] as $statusname => $statusshortcut) 
+		foreach ($this->cfg->filter_methods['status_code'] as $statusname => $statusshortcut) 
 		{
-			$code = $this->configuration->filter_methods['status_code'][$statusname];
+			$code = $this->cfg->filter_methods['status_code'][$statusname];
 			$this->filters[$key][$method_key]['items'][$code] =
-				lang_get($this->configuration->filter_methods['status_label'][$statusname]);
+				lang_get($this->cfg->filter_methods['status_label'][$statusname]);
 		}
 		
 		// init menu for build selection
@@ -1828,7 +1828,7 @@ class tlTestCaseFilterControl extends tlFilterControl
   {
   	$filters->hide_testcases = false;
   
-    $exec_cfg = &$this->configuration->exec_cfg;
+    $exec_cfg = &$this->cfg->exec_cfg;
   	$opt_etree = new stdClass();
   	$opt_etree->useCounters = $exec_cfg->enable_tree_testcase_counters;
   

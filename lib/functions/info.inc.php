@@ -5,14 +5,14 @@
  *
  * Functions for GUI support
  * 
- * @package 	TestLink
- * @author 		Martin Havlat
+ * @package 	  TestLink
+ * @author 		  Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: info.inc.php,v 1.9 2010/05/15 11:11:51 franciscom Exp $
- * @link 		http://www.teamst.org/index.php
- * @uses 		common.php
+ * @filesource  info.inc.php,v 1.9 2010/05/15 11:11:51 franciscom Exp $
+ * @link 		    http://www.teamst.org/index.php
+ * @uses 		    common.php
  *
- * @internal Revisions:
+ * @internal revisions
  * 
  */
 
@@ -29,10 +29,13 @@ require_once("../functions/email_api.php");
 function displayInfo($title, $message)
 {
 	$smarty = new TLSmarty;
-	$smarty->assign('title', $title);
-	$smarty->assign('content', $message);
-	$smarty->display('workAreaSimple.tpl');
+  $gui = new stdClass();
+	$gui->title = $title;
+	$gui->content = $message;
 
+	$gui->hint_text = $gui->link_to_op = '';
+	$smarty->assign('gui',$gui);
+	$smarty->display('workAreaSimple.tpl');
 	exit();
 }
 ?>

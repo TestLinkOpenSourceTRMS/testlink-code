@@ -27,8 +27,12 @@ $op = doDBConnect($db);
 if (!$op['status'])
 {
 	$smarty = new TLSmarty();
-	$smarty->assign('title', lang_get('fatal_page_title'));
-	$smarty->assign('content', $op['dbms_msg']);
+	$gui = new stdClass()
+	$gui->title = lang_get('fatal_page_title');
+	$gui->content = $op['dbms_msg'];
+	$gui->hint_text = $gui->link_to_op = '';
+	
+	$smarty->assign('gui',$gui);
 	$smarty->display('workAreaSimple.tpl'); 
 	tLog('Connection fail page shown.','ERROR'); 
 	exit();

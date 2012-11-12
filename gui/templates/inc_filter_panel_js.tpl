@@ -15,7 +15,7 @@
  *}
 
 <script>
-{if $control->filters.filter_assigned_user.active}
+{if !is_null($control->filters.filter_assigned_user)}
 	/**
 	 * Used to disable the "include unassigned testcases" checkbox when anything else 
 	 * but a username is selected in "assigned to" select box.
@@ -30,7 +30,7 @@
 	 * @param str_option_somebody string value somebody
 	 */
 	function triggerAssignedBox(filter_assigned_to_id, include_unassigned_id,
-								str_option_any, str_option_none, str_option_somebody) 
+								              str_option_any, str_option_none, str_option_somebody) 
 	{
 		var __FUNCTION__ = 'triggerAssignedBox';
 		var filter_assigned_to = document.getElementById(filter_assigned_to_id);
@@ -47,7 +47,7 @@
 	}
 {/if}
 
-{if $control->filters.filter_result.active}
+{if !is_null($control->filters.filter_result)}
 	/**
 	 * If filter method ("filter on...") selection is set to "specific build",
 	 * enable build selector, otherwise disable it.
@@ -104,7 +104,7 @@
  */
 function filter_panel_body_onload()
 {
-	{if $control->filters.filter_result.active}
+	{if $control->filters.filter_result}
 		{if $control->filters.filter_result.filter_result_build.items|@count == 1}
 			triggerFilterMethodSelector('filter_result_method',
 										{$control->filters.filter_result.filter_result_method.js_selection});
@@ -113,7 +113,7 @@ function filter_panel_body_onload()
 		                    {$control->cfg->filter_methods.status_code.specific_build});
 	{/if}
 	
-	{if $control->filters.filter_assigned_user.active}
+	{if $control->filters.filter_assigned_user}
 		triggerAssignedBox('filter_assigned_user','filter_assigned_user_include_unassigned',
 		                   '{$control->option_strings.any}','{$control->option_strings.none}',
 		                   '{$control->option_strings.somebody}');
@@ -123,7 +123,7 @@ function filter_panel_body_onload()
 </head>
 
 {* only add "onload" to <body> if we need these filtering capabilities *}
-{if $control->filters.filter_result.active || $control->filters.filter_assigned_user.active}
+{if $control->filters.filter_result || $control->filters.filter_assigned_user}
 	<body onload="javascript:filter_panel_body_onload();">
 {else}
 	<body>

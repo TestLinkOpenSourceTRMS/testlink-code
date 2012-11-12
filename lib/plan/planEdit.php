@@ -6,16 +6,13 @@
  * Manages test plans
  *
  * @filesource	planEdit.php
- * @package 	TestLink
- * @author 		TestLink community
- * @copyright 	2007-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author 		  TestLink community
+ * @copyright 	2007-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
  *
  * @internal revisions
- * 20101012 - franciscom - html_table_of_custom_field_inputs() interface changes
- *						   BUGID 3891: Do not lose Custom Field values if test plan can not be created due to duplicated name	
- * 20100602 - franciscom - BUGID 3485: "Create from existing Test Plan" always copies builds
  *
  **/
 
@@ -42,8 +39,12 @@ checkRights($db,$_SESSION['currentUser'],$args);
 
 if (!$args->tproject_id)
 {
-	$smarty->assign('title', lang_get('fatal_page_title'));
-	$smarty->assign('content', lang_get('error_no_testprojects_present'));
+  $gui = new stdClass();
+	$gui->title = lang_get('fatal_page_title');
+	$gui->content = lang_get('error_no_testprojects_present');
+	$gui->hint_text = $gui->link_to_op = '';
+
+	$smarty->assign('gui',$gui);
 	$smarty->display('workAreaSimple.tpl');
 	exit();
 }

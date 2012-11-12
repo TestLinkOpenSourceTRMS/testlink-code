@@ -13,7 +13,6 @@
  * @author Andreas Simon
  * @internal revisions
  *}
-
 {lang_get var=labels s='caption_nav_settings, caption_nav_filters, platform, test_plan,
                         build,filter_tcID,filter_on,filter_result,
                         btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,
@@ -309,7 +308,7 @@
 
 
 	{* result filtering parts *}
-	{if $control->filters.filter_result.active}
+	{if $control->filters.filter_result}
 
 		<tr><td>&nbsp;</td></tr> {* empty row for a little separation *}
 
@@ -334,7 +333,7 @@
 				<td>
 				  	<select name="filter_result_method" id="filter_result_method"
 				  		      onchange="javascript: triggerBuildChooser('filter_result_build_row',
-						                                                'filter_result_method',
+						                                                  'filter_result_method',
 						      {$control->cfg->filter_methods.status_code.specific_build});">
 					{html_options options=$control->filters.filter_result.filter_result_method.items
 					              selected=$control->filters.filter_result.filter_result_method.selected}

@@ -6,18 +6,18 @@
  * Execution Navigator Widget
  *
  * @filesource	execNavigator.php
- * @package 	TestLink
- * @copyright 	2007-2011, TestLink community
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @copyright 	2007-2012, TestLink community
+ * @link 		    http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
  *
  **/
 
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once("users.inc.php");
-require_once('exec.inc.php');
+// require_once("users.inc.php");
+// require_once('exec.inc.php');
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
@@ -29,12 +29,12 @@ new dBug($control);
 $gui->title = sprintf($gui->title,$control->args->testplan_name);
 
 $smarty = new TLSmarty();
-
 $smarty->assign('gui',$gui);
 $smarty->assign('control', $control);
 $smarty->assign('menuUrl',$gui->menuUrl);
 $smarty->assign('args', $gui->args);
 
+echo ($templateCfg->template_dir . $templateCfg->default_template);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 

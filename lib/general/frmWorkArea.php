@@ -75,11 +75,10 @@ if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'
 	// Check if for test project selected at least a test plan exist (BUGID 623)
 	if( $args->tplan_id > 0 )
 	{
-		// 20101013 - asimon - if execution is wanted, check for open builds
 		$open = ($showFeature == 'executeTest') ? true : null;
-  		validateBuildAvailability($db,$args->tplan_id,$args->tproject_id, $open);
+  	validateBuildAvailability($db,$args->tplan_id,$args->tproject_id, $open);
 	}
-  	else
+  else
 	{
   		redirect("../plan/planView.php?tproject_id={$args->tproject_id}");
 		exit();
@@ -123,27 +122,28 @@ function validateBuildAvailability(&$db,$tplanID, $tprojectID, $open)
 	
 	if (!$tplanMrg->getNumberOfBuilds($tplanID, $open, $open))
 	{	           
-		$message = '<p>' . lang_get('no_build_warning_part1') . "<b> " . htmlspecialchars($tpName) . "</b>";
-		
-		$link_to_op = '';
-		$hint_text = '';
-		if($_SESSION['currentUser']->hasRight($db,"testplan_create_build",$tproject_id,$tplan_id) == 'yes')
+	  $info = $tplanMrg->get_by_id($tplanID);
+
+  	$gui = new stdClass();
+  	$gui->link_to_op = "login.php";
+		$gui->content = '<p>' . lang_get('no_build_warning_part1') . "<b> " . htmlspecialchars($info['name']) . "</b>";
+		$gui->link_to_op = '';
+		$gui->hint_text = '';
+		if($_SESSION['currentUser']->hasRight($db,"testplan_create_build",$tprojectID,$tplanID) == 'yes')
 		{	
 			// final url will be composed adding to $basehref 
 			// (one TL variable available on smarty templates) to $link_to_op
-			$link_to_op = "lib/plan/buildEdit.php?tproject_id=$tprojectID&tplan_id=$tplanID&do_action=create";
-			$hint_text = lang_get('create_a_build');
+			$gui->link_to_op = "lib/plan/buildEdit.php?tproject_id=$tprojectID&tplan_id=$tplanID&do_action=create";
+			$gui->hint_text = lang_get('create_a_build');
 		}  
-  		else
-  		{
-     		$message .= '</p><p>' . lang_get('no_build_warning_part2') . '</p>';
-  		}
+    else
+  	{
+      $gui->content .= '</p><p>' . lang_get('no_build_warning_part2') . '</p>';
+  	}
   		
 		// show info and exit
 		$smarty = new TLSmarty;
-		$smarty->assign('content', $message);
-		$smarty->assign('link_to_op', $link_to_op);
-		$smarty->assign('hint_text', $hint_text);
+  	$smarty->assign('gui', $gui);
 		$smarty->display('workAreaSimple.tpl');
 		exit();
 	}

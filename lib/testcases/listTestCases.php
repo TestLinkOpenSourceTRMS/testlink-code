@@ -17,11 +17,13 @@
  */
 require_once('../../config.inc.php');
 require_once("common.php");
-require_once("treeMenu.inc.php");
+// require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $control = new tlTestCaseFilterControl($db, 'edit_mode');
+
+new dBug($control);
 
 $gui = initializeGui($db, $control);
 $control->build_tree_menu($gui);

@@ -98,7 +98,7 @@ abstract class tlFilterControl extends tlObjectWithDB
 	 * holds the configuration that will be read from config file
 	 * @var stdClass
 	 */
-	public $configuration = null;
+	public $cfg = null;
 
 	/**
 	 * holds the user input read from request
@@ -118,7 +118,7 @@ abstract class tlFilterControl extends tlObjectWithDB
 	 * to the underlying tree filter functions to set the values which are to be filtered.
 	 * @var array
 	 */
-	protected $active_filters = array();
+	public $active_filters = array();
 	
 	/**
 	 * will hold the configuration about settings (which ones are to be shown) and their values

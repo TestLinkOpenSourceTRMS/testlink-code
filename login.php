@@ -27,7 +27,7 @@ $op = doDBConnect($db);
 if (!$op['status'])
 {
 	$smarty = new TLSmarty();
-	$gui = new stdClass()
+	$gui = new stdClass();
 	$gui->title = lang_get('fatal_page_title');
 	$gui->content = $op['dbms_msg'];
 	$gui->hint_text = $gui->link_to_op = '';

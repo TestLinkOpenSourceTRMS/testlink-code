@@ -988,7 +988,26 @@ function processTestCase($tcase,&$guiObj,&$argsObj,$linked_tcversions,&$mgrPool)
   $guiObj->tcAttachments[$tcase_id] = $mgrPool->tcase->getAttachmentInfos($tcase_id);
 
   $tsuiteID = $mgrPool->tcase->getTestSuiteID($tcase_id);  
-	$guiObj->tSuiteAttachments[$tsuiteID] = $mgrPool->tsuite->getAttachmentInfos($tsuiteID);
+	// $guiObj->tSuiteAttachments[$tsuiteID] = $mgrPool->tsuite->getAttachmentInfos($tsuiteID);
+	$dummy = $mgrPool->tsuite->getAttachmentInfos($tsuiteID);
+  new dBug($dummy);
+
+  // --------------------------------------------------
+  $attach = new stdClass();
+  $attach->itemID = $tsuiteID;
+  $attach->dbTable = $mgrPool->tsuite->getAttachmentTableName();
+  $attach->infoSet = null;
+  $attach->gui = null;
+  list($attach->infoSet,$attach->gui) = $mgrPool->tsuite->buildAttachSetup($attach->itemID);
+  $attach->gui->display = $attach->gui->downloadOnly = true;
+  
+  $attach->enabled = $attach->gui->enabled;
+  $guiObj->tSuiteAttachments[$tsuiteID] = $attach;
+  new dBug($attach);
+  
+  
+  // -----------------------------------------------------------------  
+
 
   $locationFilters = testcase::buildCFLocationMap();
 	foreach($locationFilters as $locationKey => $filterValue)

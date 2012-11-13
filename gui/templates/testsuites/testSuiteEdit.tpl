@@ -7,14 +7,17 @@ Purpose: smarty template - edit test specification: test suites
 @since 2.0
 
 *}
-{lang_get var="labels"
-          s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,cancel,warning,warning_required_cf,
-             warning_unsaved,comp_name,details'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$editorType}
+{lang_get var="labels"
+          s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,cancel,warning,warning_required_cf,
+             warning_unsaved,comp_name,details'}
+
+{include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_ext_js.tpl"}
+
+<script language="JavaScript" src="gui/javascript/cfield_validation.js" type="text/javascript"></script>
 
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
@@ -39,7 +42,7 @@ function validateForm(f)
   {
   	return false;
   }
- 
+  
   return true;
 }
 </script>
@@ -62,20 +65,21 @@ function validateForm(f)
 	                                                   mdcArgsDetails = "{$gui->midAirCollisionMsg.details}" }
   {/if}
   <h1 class="title">{$labels.title_edit_level} {lang_get s=$gui->containerType}</h1> 
-	<form method="post" action="lib/testsuites/testSuiteEdit.php>
+	<form method="post" action="lib/testsuites/testSuiteEdit.php"
 	      name="container_edit" id="container_edit"
         onSubmit="javascript:return validateForm(this);">
 	
 	<div>
 		<input type="hidden" name="testsuiteID" id="testsuiteID" value="{$gui->id}">
 	  <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}"> 
+		<input type="hidden" name="midAirCollisionTimeStamp" id="midAirCollisionTimeStamp" 
+		                     value = "{$gui->tsuite.modification_ts}">       
+
 		<input type="submit" name="update_testsuite" value="{$labels.btn_save}" 
 		       onclick="show_modified_warning = false;" />
 		<input type="button" name="go_back" value="{$labels.cancel}" 
 		       onclick="javascript: show_modified_warning = false; history.back();"/>
 		       
-		<input type="hidden" name="midAirCollisionTimeStamp" id="midAirCollisionTimeStamp" 
-		                     value = "{$gui->tsuite.modification_ts}"       
 	</div>
   {include file="testsuites/testSuiteViewerRW.inc.tpl"}
   {if $gui->cf != ""} {* Custom fields *}

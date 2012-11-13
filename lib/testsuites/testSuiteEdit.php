@@ -339,6 +339,7 @@ function init_args(&$treeMgr)
   {
      $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
   }
+  $args->id = $args->testsuiteID;
   
   // hmmm IMHO depends on action
   // Would like to remove
@@ -1112,6 +1113,7 @@ function initializeGui(&$dbHand,&$argsObj)
 
   $guiObj->grants = new stdClass();
   $guiObj->grants->mgt_modify_tc = $argsObj->userObj->hasRight($dbHand,'mgt_modify_tc',$argsObj->tproject_id);
+  $guiObj->id = $argsObj->id;
   return $guiObj;
 }
 
@@ -1135,6 +1137,7 @@ function renderTestSuiteForManagement(&$tplEngine,&$argsObj,&$guiObj,&$tsuiteMgr
 
   $editorsObj = initWebEditors();
   
+  echo __FUNCTION__ . '<br>';
   new dBug($guiObj);
 	$tsuiteMgr->viewer_edit_new($tplEngine,$guiObj,$argsObj->action,$context,$editorsObj,null,$userInput);
 }

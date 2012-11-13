@@ -59,16 +59,14 @@ var import_xml_results="{$labels.import_xml_results}";
 <script language="JavaScript" type="text/javascript">
 function load_notes(panel,exec_id)
 {
-  // 20100129 - BUGID 3113 - franciscom   -  solved ONLY for  $webeditorType == 'none'
+  // BUGID 3113 - solved ONLY for  $webeditorType == 'none'
   var url2load=fRoot+'lib/execute/getExecNotes.php?readonly=1&exec_id=' + exec_id;
   panel.load({ url:url2load });
 }
 </script>
 
 <script language="JavaScript" type="text/javascript">
-/*
-Set value for a group of combo (have same prefix).
-*/
+/* Set value for a group of combo (have same prefix). */
 function set_combo_group(formid,combo_id_prefix,value_to_assign)
 {
   var f=document.getElementById(formid);
@@ -196,13 +194,12 @@ Ext.onReady(function() {
               show_hide('build_notes','{$build_notes_view_memory_id}',{$gui->bn_view_status});
               show_hide('bulk_controls','{$bulk_controls_view_memory_id}',{$gui->bc_view_status});
               show_hide('platform_notes','{$platform_notes_view_memory_id}',{$gui->platform_notes_view_status});
-              multiple_show_hide('{$tsd_div_id_list}','{$tsd_hidden_id_list}',
-                                 '{$tsd_val_for_hidden_list}');
+              multiple_show_hide('{$gui->tsd_div_id_list}','{$gui->tsd_hidden_id_list}',
+                                 '{$gui->tsd_val_for_hidden_list}');
               {if $round_enabled}Nifty('div.exec_additional_info');{/if}
               {if #ROUND_TC_SPEC#}Nifty('div.exec_test_spec');{/if}
               {if #ROUND_EXEC_HISTORY#}Nifty('div.exec_history');{/if}
               {if #ROUND_TC_TITLE#}Nifty('div.exec_tc_title');{/if}"
-      {* 20101008 - asimon - BUGID 3311 *}
       onUnload="storeWindowSize('TCExecPopup')">
 
 <h1 class="title">

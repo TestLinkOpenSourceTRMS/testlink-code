@@ -5,10 +5,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 functions to validate custom field contents
 
 regular expressions was taken from: 
-    Really easy field validation with Prototype
-    http://tetlaw.id.au/view/javascript/really-easy-field-validation
-    Andrew Tetlaw
-    Version 1.5.4.1 (2007-01-05)
+
+Really easy field validation with Prototype
+http://tetlaw.id.au/view/javascript/really-easy-field-validation
+Andrew Tetlaw
+Version 1.5.4.1 (2007-01-05)
    
 IMPORTANT
 Needs EXT-JS due to use of trim()
@@ -17,10 +18,6 @@ Global Dependencies:  cfChecks,cfMessages
                       declared and initialized in inc_jsCfieldsValidation.tpl   
     
 @internal revisions
-20111016 - franciscom - improvements on validateCustomFields() for numeric & float types
-						trim() done before test, this way I can accept empty and full of blanks
-						as empty
-20110910 - franciscom - code improvement thanks to firefox+firebug - avoid use of undefined var
 */
 
 /*
@@ -68,44 +65,41 @@ function validateCustomFields(cfields_inputs)
 		var elemName = cfields_inputs[idx].name;		
 		var elemID = cfields_inputs[idx].id;		
 		
-    	var nameParts=elemName.split("_");
+    var nameParts=elemName.split("_");
 		var cfield_type=custom_field_types[nameParts[CFIELD_TYPE_IDX]];
 		var cfield_value=cfields_inputs[idx].value;
 		
 		switch(cfield_type)
 		{
-		    case 'string':
-		        checkStatus.status_ok=true;
-		    break; 
+			case 'string':
+				checkStatus.status_ok=true;
+		  break; 
 		
-		    case 'numeric':
-            checkStatus.status_ok=!/[^\d]/.test(cfield_value.trim());
-		    break; 
+			case 'numeric':
+      	checkStatus.status_ok=!/[^\d]/.test(cfield_value.trim());
+		  break; 
 
-		    case 'float':
-            checkStatus.status_ok=(!isNaN(cfield_value) && !/^\s+$/.test(cfield_value.trim()));
-		    break; 
+		  case 'float':
+      	checkStatus.status_ok=(!isNaN(cfield_value) && !/^\s+$/.test(cfield_value.trim()));
+		  break; 
 		    
-		    case 'email':
+		  case 'email':
 		    // mail empty is ok
-            var doNextCheck=!((cfield_value == null) || (cfield_value.length == 0));
-            if(doNextCheck)
-            {		    
-                checkStatus.status_ok=cfChecks.email.test(cfield_value);
-            }    
-		    break; 
+        var doNextCheck=!((cfield_value == null) || (cfield_value.length == 0));
+        if(doNextCheck)
+        {		    
+        	checkStatus.status_ok=cfChecks.email.test(cfield_value);
+        }    
+		  break; 
 		    
-		    case 'text area':
+			case 'text area':
 				// check qty of characters
-		        checkStatus.status_ok=true;
-            	if( cfChecks.textarea_length > 0 )
-            	{
-              		checkStatus.status_ok=(cfield_value.length <= cfChecks.textarea_length );
-            	}
-		    break; 
-		    
-		    
-		    
+		    checkStatus.status_ok=true;
+        if( cfChecks.textarea_length > 0 )
+        {
+        	checkStatus.status_ok=(cfield_value.length <= cfChecks.textarea_length );
+        }
+		  break; 
 		} /* end switch */
 		
 		if( !checkStatus.status_ok )
@@ -226,7 +220,6 @@ function checkRequiredCustomFields(cfields_inputs)
 			cachedStatus[elemName] = {status_ok: true, msg_id: null, cfield_label: null};
 	    }
 
-		// ========================================================================================    
 		if(pivot != elemName)
 		{
 			  if( !cachedStatus[pivot].status_ok )
@@ -242,8 +235,6 @@ function checkRequiredCustomFields(cfields_inputs)
 		      pivot = elemName;
 		      
 		}
-		// ========================================================================================    
-    
 	} /* end for */
 	
 	return checkStatus;
@@ -252,32 +243,31 @@ function checkRequiredCustomFields(cfields_inputs)
 
 /**
   function: checkCustomFields
-  			all html elements INSIDE container OID provided (normally will be a DIV ID) with one of
-  			following characteristics
-  			
-  			is an input OR is a textarea OR is a select
-  			
-  			will be considered Custom Fields.
 
-  			Then for each custom field, do check (get class name) to understand if is a REQUIRED field.
-            IMPORTANT NOTICE: At first check failure, processing is aborted
-
-			If REQUIRED CHECK is passed FOR ALL custom fields, then a new loop is done to do this time
-			validation on Custom Field value.
-			Again -> IMPORTANT NOTICE: At first check failure, processing is aborted
-
-
-  ******************************************************************************
   Global Dependencies:  cfChecks,cfMessages 
                         declared and initialized in inc_jsCfieldsValidation.tpl   
-  ******************************************************************************
+
+
+	all html elements INSIDE container OID provided (normally will be a DIV ID) with one of
+	following characteristics
+	
+	is an input OR is a textarea OR is a select
+	
+	will be considered Custom Fields.
+	
+	Then for each custom field, do check (get class name) to understand if is a REQUIRED field.
+	IMPORTANT NOTICE: At first check failure, processing is aborted
+	
+	If REQUIRED CHECK is passed FOR ALL custom fields, then a new loop is done to do this time
+	validation on Custom Field value.
+	Again -> IMPORTANT NOTICE: At first check failure, processing is aborted
  
   returns: object -> obj.status_ok: true if all check passed
                      obj.msg_id: not used, maintained for compatobility with validateCustomFields()
                                  
                      obj.cfield_label: label of offending custom field, used on user's feedback
                      
- */
+*/
 function checkCustomFields(cfContainerOID,alertBoxTitle,reqCFWarningMsg)
 {
  	var tags4required = new Array("input","textarea","select");
@@ -300,28 +290,25 @@ function checkCustomFields(cfContainerOID,alertBoxTitle,reqCFWarningMsg)
 		cfieldSet = matrioska.getElementsByTagName(tags4required[tdx]);
 		checkOp = checkRequiredCustomFields(cfieldSet);
 		if(!checkOp.status_ok)
-	  	{
-	    	alert_message(alertBoxTitle,reqCFWarningMsg.replace(/%s/, checkOp.cfield_label));
-	    	return false;
+	  {
+	  	alert_message(alertBoxTitle,reqCFWarningMsg.replace(/%s/, checkOp.cfield_label));
+	    return false;
 		}
 	}
 
-	// ----------------------------------------------------------------------------------------
 	// Checks on validity (example email value, integer,etc) custom field values, 
-	//
 	for(tdx=0; tdx < tags4validate.length; tdx++) 
 	{ 
 		cfieldSet = matrioska.getElementsByTagName(tags4validate[tdx]);
-   		checkOp = validateCustomFields(cfieldSet);
+   	checkOp = validateCustomFields(cfieldSet);
 
 		if(!checkOp.status_ok)
-	  	{
-	    	var msg = cfMessages[checkOp.msg_id];
-	    	alert_message(alertBoxTitle,msg.replace(/%s/, checkOp.cfield_label));
-	    	return false;
+	  {
+	  	var msg = cfMessages[checkOp.msg_id];
+	    alert_message(alertBoxTitle,msg.replace(/%s/, checkOp.cfield_label));
+	    return false;
 		}
 	}
-	// ----------------------------------------------------------------------------------------
 	
 	return true;
 }

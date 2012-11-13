@@ -380,18 +380,17 @@ class testsuite extends tlObjectWithAttachments
     $gui = is_null($guiObj) ? new stdClass() : $guiObj;
     $gui->id = $identity->id;
     $gui->cf = '';
+
+    $common = 'tproject_id=' . $identity->tproject_id . '&tsuiteID=' . $identity->id;
+    $import = $smarty->baseHREF . 'lib/testcases/tcImport.php?';
+    $export = $smarty->baseHREF . 'lib/testcases/tcExport.php?';
+    
     $gui->actions = new stdClass();
-    $gui->actions->importTestSuite = $smarty->baseHREF . 'lib/testcases/tcImport.php?tproject_id=' . $identity->id .
-                                     '&tsuiteID=' . $identity->parent_id . '&type=testsuite';
+    $gui->actions->importTestSuite = $import . $common . '&type=testsuite';
+    $gui->actions->exportTestSuite = $export . $common . '&type=testsuite';
 
-    $gui->actions->exportTestSuite = $smarty->baseHREF . 'lib/testcases/tcExport.php?tproject_id=' . $identity->id .
-                                     '&tsuiteID=' . $identity->parent_id . '&type=testsuite';
-
-    $gui->actions->importTestCases = $smarty->baseHREF . 'lib/testcases/tcImport.php?tproject_id=' . $identity->id .
-                                     '&tsuiteID=' . $identity->parent_id . '&type=testcase';
-                                     
-    $gui->actions->exportTestCases = $smarty->baseHREF . 'lib/testcases/tcExport.php?tproject_id=' . $identity->id .
-                                     '&tsuiteID=' . $identity->parent_id . '&type=testcase';
+    $gui->actions->importTestCases = $import . $common . '&type=testcase';
+    $gui->actions->exportTestCases = $export . $common .  '&type=testcase';
     
     $gui->sqlResult = '';
     $gui->sqlAction = '';
@@ -427,7 +426,7 @@ class testsuite extends tlObjectWithAttachments
     list($gui->attach->infoSet,$gui->attach->gui) = $this->buildAttachSetup($identity->id,$my['options']);
     $gui->attach->gui->display=TRUE;
     $gui->attach->enabled = $gui->attach->gui->enabled;
-    
+
     $gui->tproject_id = $identity->tproject_id;
     
     $gui->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id=$identity->tproject_id " .
@@ -546,6 +545,7 @@ class testsuite extends tlObjectWithAttachments
       $smarty->assign($key, $of->CreateHTML());
     }
     
+    echo __METHOD__ . '<br>';
     new dBug($gui);
     $smarty->assign('gui',$gui); 
     $smarty->display($tpl);

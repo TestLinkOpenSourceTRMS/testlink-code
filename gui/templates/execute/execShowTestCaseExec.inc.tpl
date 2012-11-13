@@ -6,126 +6,128 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 *}	
 {foreach item=tc_exec from=$gui->map_last_exec}
 
-    {$tc_id = $tc_exec.testcase_id}
-	  {$tcversion_id = $tc_exec.id}
-	  {* IMPORTANT:
-	               Here we use version_number, which is related to tcversion_id SPECIFICATION.
-	               When we need to display executed version number, we use tcversion_number
-	  *}
-	  {$version_number = $tc_exec.version}
+  {$tc_id = $tc_exec.testcase_id}
+  {$tcversion_id = $tc_exec.id}
+  {* IMPORTANT:
+               Here we use version_number, which is related to tcversion_id SPECIFICATION.
+               When we need to display executed version number, we use tcversion_number
+  *}
+  {$version_number = $tc_exec.version}
+  
+  <input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_id}' />
+  <input type='hidden' name='version_number[{$tcversion_id}]' value='{$version_number}' />
+
+  {lang_get s='th_testsuite' var='container_title'}
+  {$div_id = "tsdetails_$tc_id"}
+  {$memstatus_id = "tsdetails_view_status_$tc_id"}
+  {$ts_name = $gui->tsuite_info[$tc_id].tsuite_name}
+  {$container_title = "$container_title$title_sep$ts_name"}
+
+  {include file="inc_show_hide_mgmt.tpl"
+           show_hide_container_title=$container_title
+           show_hide_container_id=$div_id
+           show_hide_container_draw=false
+           show_hide_container_class='exec_additional_info'
+           show_hide_container_view_status_id=$memstatus_id}
+
+  <div id="{$div_id}" name="{$div_id}" class="exec_additional_info">
+  <br />
+  <div class="exec_testsuite_details" style="width:95%;">
+  <span class="legend_container">{$labels.details}</span><br />
+	{$gui->tsuite_info[$tc_id].details}
+	</div>
+
+	{if $gui->ts_cf_smarty[$tc_id] != ''}
+	  <br />
+	  <div class="custom_field_container" style="border-color:black;width:95%;">
+     {$ts_cf_smarty[$tc_id]}
+    </div>
+	{/if}
+
+  {if $gui->tSuiteAttachments != null && $gui->tSuiteAttachments[$tc_exec.tsuite_id] != null}
+    <br />
+	  {include file="inc_attachments.tpl" attach=$gui->tSuiteAttachments[$tc_exec.tsuite_id]}
 	  
-		<input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_id}' />
-		<input type='hidden' name='version_number[{$tcversion_id}]' value='{$version_number}' />
-
-    {* ------------------------------------------------------------------------------------ *}
-    {lang_get s='th_testsuite' var='container_title'}
-    {$div_id = "tsdetails_$tc_id"}
-    {$memstatus_id = "tsdetails_view_status_$tc_id"}
-    {$ts_name = $gui->tsuite_info[$tc_id].tsuite_name}
-    {$container_title = "$container_title$title_sep$ts_name"}
-
-    {include file="inc_show_hide_mgmt.tpl"
-             show_hide_container_title=$container_title
-             show_hide_container_id=$div_id
-             show_hide_container_draw=false
-             show_hide_container_class='exec_additional_info'
-             show_hide_container_view_status_id=$memstatus_id}
-
-		<div id="{$div_id}" name="{$div_id}" class="exec_additional_info">
-      <br />
-      <div class="exec_testsuite_details" style="width:95%;">
-      <span class="legend_container">{$labels.details}</span><br />
-		  {$gui->tsuite_info[$tc_id].details}
-		  </div>
-
-		  {if $gui->ts_cf_smarty[$tc_id] != ''}
-		    <br />
-		    <div class="custom_field_container" style="border-color:black;width:95%;">
-         {$ts_cf_smarty[$tc_id]}
-        </div>
-		  {/if}
-
-  		{if $gui->tSuiteAttachments != null && $gui->tSuiteAttachments[$tc_exec.tsuite_id] != null}
-  		  <br />
-		    {include file="inc_attachments.tpl" 
-		             attach_tableName = "nodes_hierarchy" 
-		             attach_downloadOnly = true
-			        	 attach_attachmentInfos = $gui->tSuiteAttachments[$tc_exec.tsuite_id]
-			        	 attach_inheritStyle=1
-			        	 attach_tableClassName="none"
-				         attach_tableStyles="background-color:#ffffcc;width:100%"}
-	    {/if}
-	    <br />
-    </div>
+    {* 
+	  {include file="inc_attachments.tpl" 
+	           attach_tableName = "nodes_hierarchy" 
+	           attach_downloadOnly = true
+	        	 attach_attachmentInfos = $gui->tSuiteAttachments[$tc_exec.tsuite_id]
+	        	 attach_inheritStyle=1
+	        	 attach_tableClassName="none"
+		         attach_tableStyles="background-color:#ffffcc;width:100%"}
+		*}         
+	{/if}
+  <br />
+  </div>
 
 
-		<div class="exec_tc_title">
-		{if $gui->grants->edit_testcase}
-		<a href="javascript:openTCaseWindow({$gui->tproject_id},{$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')">
-		<img src="{$tlImages.note_edit}"  title="{$labels.show_tcase_spec}">
-		</a>
-		{/if}
-		
-    {$labels.title_test_case}&nbsp;{$labels.th_test_case_id}{$gui->tcasePrefix|escape}{$gui->cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape} :: {$labels.version}: {$tc_exec.version}
-		<br />
-		    {$tc_exec.name|escape}<br />
-		    {if $tc_exec.assigned_user == ''}
-		      {$labels.has_no_assignment}
-		    {else}
-          {$labels.assigned_to}{$title_sep}{$tc_exec.assigned_user|escape}
-        {/if}
-    </div>
+	<div class="exec_tc_title">
+	{if $gui->grants->edit_testcase}
+	<a href="javascript:openTCaseWindow({$gui->tproject_id},{$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')">
+	<img src="{$tlImages.note_edit}"  title="{$labels.show_tcase_spec}">
+	</a>
+	{/if}
+	
+  {$labels.title_test_case}&nbsp;{$labels.th_test_case_id}{$gui->tcasePrefix|escape}{$gui->cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape} :: {$labels.version}: {$tc_exec.version}
+	<br />
+	{$tc_exec.name|escape}<br />
+	{if $tc_exec.assigned_user == ''}
+	  {$labels.has_no_assignment}
+	{else}
+    {$labels.assigned_to}{$title_sep}{$tc_exec.assigned_user|escape}
+  {/if}
+  </div>
 
- 		{if $gui->cfg->exec_cfg->show_last_exec_any_build}
-   		{$abs_last_exec = $gui->map_last_exec_any_build.$tcversion_id}
- 		  {$my_build_name = $abs_last_exec.build_name|escape}
- 		  {$show_current_build = 1}
-    {/if}
-    {$exec_build_title = "$build_title $title_sep $my_build_name"}
+ 	{if $gui->cfg->exec_cfg->show_last_exec_any_build}
+  	{$abs_last_exec = $gui->map_last_exec_any_build.$tcversion_id}
+ 	  {$my_build_name = $abs_last_exec.build_name|escape}
+ 	  {$show_current_build = 1}
+  {/if}
+  {$exec_build_title = "$build_title $title_sep $my_build_name"}
 
 
-		<div id="execution_history" class="exec_history">
-  		<div class="exec_history_title">
-  		{if $gui->history_on}
-  		    {$labels.execution_history} {$title_sep_type3}
-  		    {if !$gui->cfg->exec_cfg->show_history_all_builds}
-  		      {$exec_build_title}
-  		    {/if}
-  		{else}
-  			  {$labels.last_execution}
-  			  {if $show_current_build} {$labels.exec_any_build} {/if}
-  			  {$title_sep_type3} {$exec_build_title}
-  		{/if}
-  		</div>
+	<div id="execution_history" class="exec_history">
+  	<div class="exec_history_title">
+  	{if $gui->history_on}
+  	  {$labels.execution_history} {$title_sep_type3}
+  	  {if !$gui->cfg->exec_cfg->show_history_all_builds}
+  	    {$exec_build_title}
+  	  {/if}
+  	{else}
+  		{$labels.last_execution}
+  		{if $show_current_build} {$labels.exec_any_build} {/if}
+  		{$title_sep_type3} {$exec_build_title}
+  	{/if}
+  	</div>
 
 		{* The very last execution for any build of this test plan *}
 		{if $gui->cfg->exec_cfg->show_last_exec_any_build && $gui->history_on==0}
-        {if $abs_last_exec.status != '' and $abs_last_exec.status != $tlCfg->results.status_code.not_run}
-			    {$status_code = $abs_last_exec.status}
-     			<div class="{$tlCfg->results.code_status.$status_code}">
-     			{$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
-     			{$title_sep_type3}
-     			{$labels.test_exec_by} {$title_sep} 
-  				{if isset($gui->users[$abs_last_exec.tester_id])}
-  				  {$gui->users[$abs_last_exec.tester_id]->getDisplayName()|escape}
-  				{else}
-  				  {$deletedTester = $abs_last_exec.tester_id}
-            {$deletedUserString = $labels.deleted_user|replace:"%s":$deletedTester}
-            {$deletedUserString}
-  				{/if}  
-     			{$title_sep_type3}
-     			{$labels.build}{$title_sep} {$abs_last_exec.build_name|escape}
-     			{$title_sep_type3}
-     			{$labels.exec_status} {$title_sep} {localize_tc_status s=$status_code}
-     			</div>
-
+      {if $abs_last_exec.status != '' and $abs_last_exec.status != $tlCfg->results.status_code.not_run}
+			  {$status_code = $abs_last_exec.status}
+     	  <div class="{$tlCfg->results.code_status.$status_code}">
+     	  {$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
+     	  {$title_sep_type3}
+     	  {$labels.test_exec_by} {$title_sep} 
+  		  {if isset($gui->users[$abs_last_exec.tester_id])}
+  		    {$gui->users[$abs_last_exec.tester_id]->getDisplayName()|escape}
   		  {else}
-    		   <div class="not_run">{$labels.test_status_not_run}</div>
-    			   {$labels.tc_not_tested_yet}
-   		  {/if}
+  		    {$deletedTester = $abs_last_exec.tester_id}
+          {$deletedUserString = $labels.deleted_user|replace:"%s":$deletedTester}
+          {$deletedUserString}
+  		  {/if}  
+     	  {$title_sep_type3}
+     	  {$labels.build}{$title_sep} {$abs_last_exec.build_name|escape}
+     	  {$title_sep_type3}
+     	  {$labels.exec_status} {$title_sep} {localize_tc_status s=$status_code}
+     	  </div>
+
+      {else}
+        <div class="not_run">{$labels.test_status_not_run}</div>
+    		{$labels.tc_not_tested_yet}
+   		{/if}
     {/if}
 
-    {* -------------------------------------------------------------------------------------------------- *}
     {if $gui->other_execs.$tcversion_id}
       {$my_colspan = $attachment_model->num_cols}
       {if $gui->history_on == 0 && $show_current_build}
@@ -171,23 +173,22 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         {$my_colspan = $my_colspan+2}
 			 </tr>
 
-			{* ----------------------------------------------------------------------------------- *}
 			{foreach item=tc_old_exec from=$gui->other_execs.$tcversion_id}
   	    {$tc_status_code = $tc_old_exec.status}
 			  {cycle values='#eeeeee,#d0d0d0' assign="bg_color"}
-			<tr style="border-top:1px solid black; background-color: {$bg_color}">
+			  <tr style="border-top:1px solid black; background-color: {$bg_color}">
   			  <td>
           {* Check also that Build is Open *}
   			  {if $gui->grants->edit_exec_notes && $tc_old_exec.build_is_open}
   		      <img src="{$tlImages.note_edit}" style="vertical-align:middle" 
   		           title="{$labels.edit_execution}" onclick="javascript: openExecEditWindow(
   		           {$tc_old_exec.execution_id},{$tc_old_exec.id},{$gui->tplan_id},{$gui->tproject_id});">
-  		      {else}
-  		         {if $gui->grants->edit_exec_notes}
-  		            <img src="{$tlImages.note_edit_greyed}" 
-  		                 style="vertical-align:middle" title="{$labels.closed_build}">
-  		         {/if}
- 			  {/if}
+  		    {else}
+  		      {if $gui->grants->edit_exec_notes}
+  		        <img src="{$tlImages.note_edit_greyed}" 
+  		             style="vertical-align:middle" title="{$labels.closed_build}">
+  		      {/if}
+ 			    {/if}
   			  {localize_timestamp ts=$tc_old_exec.execution_ts}
   			  </td>
 				  {if $gui->showBuildColumn}
@@ -307,20 +308,14 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 			<tr style="background-color: {$bg_color}">
   			<td colspan="{$my_colspan}">
   				{$execID = $tc_old_exec.execution_id}
-  				{*
-  				  {$cf_value_info = $gui->other_exec_cfields[$execID]}
-            {$cf_value_info}
-          *}
           {$gui->other_exec_cfields[$execID]}
   			</td>
-  			</tr>
-
-
+  		</tr>
 
 			{* Attachments *}
 			<tr style="background-color: {$bg_color}">
   			<td colspan="{$my_colspan}">
-  				{assign var="execID" value=$tc_old_exec.execution_id}
+  				{$execID = $tc_old_exec.execution_id}
 
   				{assign var="attach_info" value=$gui->attachments[$execID]}
   				{include file="inc_attachments.tpl"
@@ -341,14 +336,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 		    <tr style="background-color: {$bg_color}">
    			<td colspan="{$my_colspan}">
    				{include file="inc_show_bug_table.tpl" bugs_map=$gui->bugs[$execID]
-   			         can_delete = $tc_old_exec.build_is_open exec_id=$execID}
+   			           can_delete = $tc_old_exec.build_is_open exec_id=$execID}
    			</td>
    		</tr>
    		{/if}
 		{/foreach}
-			{* ----------------------------------------------------------------------------------- *}
-
-			</table>
+		</table>
 		{/if}
   </div>
 
@@ -380,6 +373,4 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
  	  {/if}
 	<hr />
 	</div>
-  {* ----------------------------------------------------------------------------------- *}
-
-	{/foreach}
+{/foreach}

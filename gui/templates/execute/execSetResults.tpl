@@ -4,11 +4,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	execSetResults.tpl
 @internal smarty template - show tests to add results
 @internal revisions
-@since 1.9.4
-20120820 - franciscom - TICKET 4904: integrate with ITS on test project basis
-20120623 - franciscom - TICKET 4981: When bulk executing test cases, 
-						inactivity of test cases is not taken into account
-
+@since 1.9.5
+20121114 - franciscom - TICKET 5344: BULK EXECUTION - Tester A can execute test case that assigned to Tester B
 *}
 {assign var="attachment_model" value=$cfg->exec_cfg->att_model}
 {assign var="title_sep"  value=$smarty.const.TITLE_SEP}
@@ -421,11 +418,15 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	        <td class="{$tlCfg->results.code_status[$tc_exec.status]}">
 	        {$gui->execStatusValues[$tc_exec.status]}
 	        </td>
-	   			<td><select name="status[{$tcversion_id}]" id="status_{$tcversion_id}">
+	   			<td>
+	   			    {if $tc_exec.can_be_executed}
+	   			    <select name="status[{$tcversion_id}]" id="status_{$tcversion_id}">
 					    {html_options options=$gui->execStatusValues}
-					</select>
-				   </td>
-	        </tr>
+					    </select>
+					    {else}
+					      &nbsp;
+					    {/if}
+				  </td>	        </tr>
 	    {/if}   {* Design only if test case version we want to execute is ACTIVE *}   
       {/foreach}
       </table>

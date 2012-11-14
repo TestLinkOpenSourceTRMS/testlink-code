@@ -6,10 +6,10 @@
  * Manager for assignment activities
  *
  * @filesource  assignment_mgr.class.php
- * @package 	TestLink
- * @author 		Francisco Mancardi
+ * @package 	  TestLink
+ * @author 		  Francisco Mancardi
  * @copyright 	2007-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @link 		    http://www.teamst.org/index.php
  * 
  * @internal revisions:
  */
@@ -380,5 +380,27 @@ class assignment_mgr extends tlObjectWithDB
 	    
 		return $rs;
 	}
+
+
+	function getUsersByFeatureBuild($featureSet,$buildID,$assignmentType)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$rs = null;
+		
+		if(is_null($assignmentType) || !is_numeric($assignmentType) )
+		{
+		  throw new Exception(__METHOD__ . ' assignmentType can not be NULL or not numeric ');  
+		}
+		$sql = 	"/* $debugMsg */ ".
+				    " SELECT UA.user_id,UA.feature_id ".
+				    " FROM {$this->tables['user_assignments']} UA " .
+				    " WHERE UA.build_id = " . intval($buildID) . 
+				    " AND UA.feature_id IN(" . implode(",",(array)$featureSet)  . " )" . 		   
+				    " AND type = " . intval($assignmentType);
+				    
+	  $rs = $this->db->fetchRowsIntoMap($sql,'feature_id');
+		return $rs;
+  }
+   
 }
 ?>

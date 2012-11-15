@@ -3534,5 +3534,6 @@ $TLS_collision_detected_choices = 'You have following choices:<br>' .
 								  'b. Throw	away your changes, and go to see item current data.<br>';
 
 $TLS_attach_linked_to = ' linked to ';
+$TLS_bts_project_does_not_exist = 'Project %s does not exists on Issue Tracker System';
 // ----- END ------------------------------------------------------------------
 ?>

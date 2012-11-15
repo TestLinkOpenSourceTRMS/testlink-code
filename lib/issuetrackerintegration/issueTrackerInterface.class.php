@@ -50,7 +50,7 @@ abstract class issueTrackerInterface
 	 **/
 	function __construct($type,$config)
 	{
-	    $this->tlCharSet = config_get('charset');
+	  $this->tlCharSet = config_get('charset');
 		$this->setCfg($config);
 
 		// useful only for integration via DB
@@ -59,7 +59,7 @@ abstract class issueTrackerInterface
 			$this->cfg->dbcharset = $this->tlCharSet;
 	 	}
 
-	    $this->connect();
+	  $this->connect();
 	}
 
 	/**

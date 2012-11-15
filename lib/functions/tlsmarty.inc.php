@@ -31,8 +31,15 @@ To use a different version of Sencha (Old EXT-JS) that provided with TL
 */
 if( !defined('TL_EXTJS_RELATIVE_PATH') )
 {
-    define('TL_EXTJS_RELATIVE_PATH','third_party/ext-js' );
+  define('TL_EXTJS_RELATIVE_PATH','third_party/ext-js' );
 }
+
+if(!defined('TL_USE_LOG4JAVASCRIPT') )
+{
+  define('TL_USE_LOG4JAVASCRIPT',0);
+}
+
+
 
 /** @TODO martin: refactore + describe 
  * The next two functions was moved here from common.php */

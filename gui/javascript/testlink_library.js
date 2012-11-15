@@ -26,7 +26,6 @@
 // @internal revisions
 // 20111123 - franciscom - TICKET 4814: bug deletion may fails if bugID string contains special characters
 // 20111105 - franciscom - TICKET 4796: Test Case reuse - Quick & Dirty Approach  - openTCW()
-
 /*
   function: focusInputField
 
@@ -139,9 +138,13 @@ function ST(tproject_id,tplan_id,id,version)
 {
   var _FUNCTION_NAME_='ST';
   var action_url=fRoot+menuUrl+"?tproject_id=" +tproject_id + "&tplan_id=" + tplan_id + 
-  				 "&version_id="+version+"&level=testcase&id="+id+args;
-  				 
-  // alert(_FUNCTION_NAME_ + " " +action_url);
+  				 			 "&version_id="+version+"&level=testcase&id="+id+args;
+
+	if (typeof log4javascript == 'object')
+	{
+		var log4jsLogger = log4javascript.getDefaultLogger();
+  	log4jsLogger.info(_FUNCTION_NAME_ + " " +action_url);
+  }
   parent.workframe.location = action_url;
 }
 

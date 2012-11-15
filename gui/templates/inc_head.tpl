@@ -33,6 +33,10 @@ Critic Smarty Global Variables expected
 	<style media="print" type="text/css">@import "{$basehref}{$smarty.const.TL_PRINT_CSS}";</style>
 
 {* ----- load javascripts libraries -------------------------------------------------- *} 
+	{if $smarty.const.TL_USE_LOG4JAVASCRIPT}
+  <script type="text/javascript" src="{$basehref}third_party/log4javascript/log4javascript.js"></script>
+	{/if}
+
 	<script type="text/javascript" src="{$basehref}gui/javascript/testlink_library.js" language="javascript"></script>
 	<script type="text/javascript" src="{$basehref}gui/javascript/test_automation.js" language="javascript"></script>
 	<script type="text/javascript" src="{$basehref}third_party/prototype/prototype.js" language="javascript"></script>
@@ -51,6 +55,9 @@ Critic Smarty Global Variables expected
 	<script type="text/javascript" src="{$basehref}gui/javascript/sorttable.js" 
 		language="javascript"></script>
 	{/if}
+
+  
+
 
 	<script type="text/javascript" language="javascript">
 	<!--

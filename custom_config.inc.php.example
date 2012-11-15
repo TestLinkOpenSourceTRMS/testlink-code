@@ -29,6 +29,12 @@
 // Uncomment this if you want dBug() display info
 // define('DBUG_ON',1);
 //
+// For info: http://log4javascript.org
+// if( !defined('TL_USE_LOG4JAVASCRIPT') )
+// {
+//    define('TL_USE_LOG4JAVASCRIPT',1);
+// }
+//
 // To use a different version of ADODB that provided with TL, use a similar bunch of lines
 // on custom_config.inc.php
 // if( !defined('TL_ADODB_RELATIVE_PATH') )

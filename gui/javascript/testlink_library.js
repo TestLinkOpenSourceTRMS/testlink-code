@@ -114,19 +114,6 @@ function open_popup(page)
 	return true;
 }
 
-// BUGID 2684: not needed anymore
-// middle window (information, TC)
-//function open_top(page)
-//{
-//  var windowCfg="left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes," + 
-//                "toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no," +
-//                "width=600,height=400";
-//  
-//	window.open(page, "_blank", windowCfg);
-//	return true;
-//}
-
-
 // test specification related functions
 /*
   function: ST
@@ -202,18 +189,6 @@ function EP(id)
 	parent.workframe.location = action_url;
 }
 
-///*
-//function: PL
-//          printing of Test Plan for BUGID 3049
-//args: id
-//*/
-//function PL(id)
-//{
-//	var _FUNCTION_NAME_="PL";
-//	var action_url = fRoot + 'lib/testcases/archiveData.php?edit=testplan&level=testplan&id=' + id;
-//	parent.workframe.location = action_url;
-//}
-
 /*
   function: Edit Test Suite or launch print
 
@@ -222,7 +197,6 @@ function EP(id)
   returns:
 
   rev :
-        20070218 - franciscom
 */
 function ETS(id)
 {
@@ -548,11 +522,13 @@ function tree_getCheckBox(id)
 	return null;
 }
 
-
-function open_bug_add_window(tproject_id,exec_id)
+// @internal revisions
+// @since 1.9.5
+// 20121115 - franciscom - interface changes
+function open_bug_add_window(tproject_id,tcversion_id,exec_id)
 {
-	window.open(fRoot+"lib/execute/bugAdd.php?tproject_id=" + tproject_id + "&exec_id="+exec_id,"bug_add",
-	            "width=510,height=270,resizable=yes,dependent=yes");
+	window.open(fRoot+"lib/execute/bugAdd.php?tcversion_id="+tcversion_id +"&tproject_id=" + tproject_id + "&exec_id="+exec_id,
+							"bug_add","width=510,height=270,resizable=yes,dependent=yes");
 }
 
 function bug_dialog()

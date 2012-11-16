@@ -21,6 +21,7 @@ rev :
 <div class="workBack">
 	<form action="lib/execute/bugAdd.php" method="post">
 		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
+		{if $gui->automaticMode == false}
 	  	<p>
 			<a style="font-weight:normal" target="_blank" href="{$gui->createIssueURL}">
 			{lang_get s='link_bts_create_bug'}({$gui->issueTrackerVerboseID|escape})</a>
@@ -28,8 +29,11 @@ rev :
 	  	<p class="label">{$gui->issueTrackerVerboseType|escape} {lang_get s='bug_id'}
   	 		<input type="text" id="bug_id" name="bug_id" size="{#BUGID_SIZE#}" maxlength="{$gui->bugIDMaxLength}"/>
 		</p>	
+		{/if}
 		<div class="groupBtn">
+     {if $gui->automaticMode == false}
 			<input type="submit" value="{lang_get s='btn_add_bug'}" onclick="return dialog_onSubmit(bug_dialog)" />
+     {/if} 
 			<input type="button" value="{lang_get s='btn_close'}" onclick="window.close()" />
 		</div>
 	</form>

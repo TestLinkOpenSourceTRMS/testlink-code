@@ -100,7 +100,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 			// $this->cfg is a simpleXML Object, then seems very conservative and safe
 			// to cast properties BEFORE using it.
 			$this->createAPIClient();
-	       	$this->connected = true;
+	    $this->connected = true;
 			// var_dump($this->APIClient);
 			//echo '<br><br><b>END</b> ' . __METHOD__ . '<br><br>';
 			
@@ -224,9 +224,6 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
         if(($status_ok = $this->checkBugIDSyntax($issueID)))
         {
             $issue = $this->getIssue($issueID);
-            
-            var_dump($issue);
-            die();
             $status_ok = is_object($issue) && !is_null($issue);
         }
         return $status_ok;
@@ -271,5 +268,46 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 					
 		return $template;
   	}
+  	
+  	
+  	function getAccessibleProducts()
+  	{
+  		$issue = null;
+  		$args = array(array('login' => (string)$this->cfg->username, 
+  							          'password' => (string)$this->cfg->password,'remember' => 1));
+  
+  		$resp = array();
+  		$method = 'User.login';
+  		$resp[$method] = $this->APIClient->call($method, $args);
+  		
+  		$method = 'Product.get_accessible_products';
+  		$itemSet = $this->APIClient->call($method);
+  		
+  		$method = 'User.logout';
+  		$resp[$method] = $this->APIClient->call($method);
+      
+      return $itemSet; 	  
+  	}
+
+  	function getProduct($id)
+  	{
+  		$issue = null;
+  		$args = array(array('login' => (string)$this->cfg->username, 
+  							          'password' => (string)$this->cfg->password,'remember' => 1));
+  
+  		$resp = array();
+  		$method = 'User.login';
+  		$resp[$method] = $this->APIClient->call($method, $args);
+  		
+  		$method = 'Product.get';
+		  $args = array(array('ids' => array(intval($id))));
+  		$itemSet = $this->APIClient->call($method,$args);
+  		
+  		$method = 'User.logout';
+  		$resp[$method] = $this->APIClient->call($method);
+      
+      return $itemSet; 	  
+  	}
+
 }
 ?>

@@ -276,7 +276,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   	      	  {/if}
 				
     			{if $gui->issueTrackerIntegrationOn && $tc_old_exec.build_is_open}
-       		  	<td align="center"><a href="javascript:open_bug_add_window({$gui->tproject_id},{$tc_old_exec.execution_id})">
+       		  	<td align="center">
+       		  	  <a href="javascript:open_bug_add_window({$gui->tproject_id},{$tc_old_exec.id},{$tc_old_exec.execution_id})">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bug1.gif" title="{$labels.img_title_bug_mgmt}"
       			         style="border:none" /></a>
                 </td>

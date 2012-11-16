@@ -350,5 +350,43 @@ class mantissoapInterface extends issueTrackerInterface
   }
 
 
+  public function addIssue($summary,$description)
+	{
+	  static $client;
+	  $ret = array('id' => -1,'msg' => '');
+	  if (!$this->isConnected())
+	  {
+	  return $ret;
+	  }
+	  
+	  if(is_null($client))
+	  {
+	    $dummy = $this->getClient();
+	    $client = $dummy['client'];
+	  }
+	  $safe = new stdClass();
+	  $safe->username = (string)$this->cfg->username;
+	  $safe->password = (string)$this->cfg->password;
+	  $safe->project = (string)$this->cfg->project;
+	
+	  $mpid = $client->mc_project_get_id_from_name($safe->username,$safe->password,$safe->project);
+	  if( $mpid > 0)
+	  {
+	    $issue = array('summary' => $summary,'description' => $description,'project' => array('id' => $mpid));
+	
+    	// check category
+	    $nameCode = $client->mc_project_get_categories($safe->username,$safe->password,$mpid);
+	    $codeName = array_flip($nameCode);
+	    $target = (property_exists($this->cfg,'category')) ? (string)$this->cfg->category : null;
+	    $issue['category'] = (is_null($target) || !isset($nameCode[$target])) ? current($nameCode) : $target;
+	    $ret['id'] = $client->mc_issue_add($safe->username,$safe->password,$issue);
+	
+	  }
+	  else
+	  {
+	    $ret['msg'] = sprintf(lang_get('bts_project_does_not_exist'),(string)$this->cfg->project);
+	  }
+	  return $ret;
+	}   
 }
 ?>

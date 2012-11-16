@@ -16,6 +16,7 @@ Zend_Loader_Autoloader::getInstance();
 class bugzillaxmlrpcInterface extends issueTrackerInterface
 {
     private $APIClient;
+    private $issueDefaults;
 
 	/**
 	 * Construct and connect to BTS.
@@ -28,10 +29,10 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 		$this->interfaceViaDB = false;
 		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
 		
-	    $this->setCfg($config);
+	  $this->setCfg($config);
 		$this->completeCfg();
-	    $this->connect();
-	    $this->guiCfg = array('use_decoration' => true); // add [] on summary
+	  $this->connect();
+	  $this->guiCfg = array('use_decoration' => true); // add [] on summary
 	}
 
 
@@ -47,20 +48,28 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 	function completeCfg()
 	{
 		$base = trim($this->cfg->uribase,"/") . '/'; // be sure no double // at end
-	    if( !property_exists($this->cfg,'urixmlrpc') )
-	    {
+	  if( !property_exists($this->cfg,'urixmlrpc') )
+	  {
 	    	$this->cfg->urixmlrpc = $base . 'xmlrpc.cgi';
 		}
 
-	    if( !property_exists($this->cfg,'uriview') )
-	    {
+	  if( !property_exists($this->cfg,'uriview') )
+	  {
 	    	$this->cfg->uriview = $base . 'show_bug.cgi?id=';
 		}
 	    
-	    if( !property_exists($this->cfg,'uricreate') )
-	    {
+	  if( !property_exists($this->cfg,'uricreate') )
+	  {
 	    	$this->cfg->uricreate = $base;
-		}	    
+		}
+		
+		$this->issueDefaults = array('version' => 'unspecified', 'severity' => 'Trivial',
+		                             'op_sys' => 'All', 'priority' => 'Normal','platform' => "All",);
+    foreach($this->issueDefaults as $prop => $default)
+    {
+  	  $this->cfg->$prop = (string)(property_exists($this->cfg,$prop) ? $this->cfg->$prop : $default);
+    }		
+			    
 	}
 
 	/**
@@ -93,29 +102,25 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
      **/
     function connect()
     {
-    	// echo __METHOD__ . '<br><br>';
-		try
-		{
-			// CRITIC NOTICE for developers
-			// $this->cfg is a simpleXML Object, then seems very conservative and safe
-			// to cast properties BEFORE using it.
-			$this->createAPIClient();
-	    $this->connected = true;
-			// var_dump($this->APIClient);
-			//echo '<br><br><b>END</b> ' . __METHOD__ . '<br><br>';
-			
-        }
-		catch(Exception $e)
-		{
-			$logDetails = '';
-			foreach(array('uribase','apikey') as $v)
-			{
-				$logDetails .= "$v={$this->cfg->$v} / "; 
-			}
-			$logDetails = trim($logDetails,'/ ');
-			$this->connected = false;
-            tLog(__METHOD__ . " [$logDetails] " . $e->getMessage(), 'ERROR');
-		}
+  		try
+  		{
+  			// CRITIC NOTICE for developers
+  			// $this->cfg is a simpleXML Object, then seems very conservative and safe
+  			// to cast properties BEFORE using it.
+  			$this->createAPIClient();
+  	    $this->connected = true;
+      }
+  		catch(Exception $e)
+  		{
+  			$logDetails = '';
+  			foreach(array('uribase','apikey') as $v)
+  			{
+  				$logDetails .= "$v={$this->cfg->$v} / "; 
+  			}
+  			$logDetails = trim($logDetails,'/ ');
+  			$this->connected = false;
+              tLog(__METHOD__ . " [$logDetails] " . $e->getMessage(), 'ERROR');
+  		}
     }
 
     /**
@@ -307,6 +312,71 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
   		$resp[$method] = $this->APIClient->call($method);
       
       return $itemSet; 	  
+  	}
+
+    // good info from:
+    // http://petehowe.co.uk/2010/example-of-calling-the-bugzilla-api-using-php-zend-framework/
+    //
+    // From BUGZILLA DOCS
+    //
+    // Returns
+    // A hash with one element, id. This is the id of the newly-filed bug.
+    // 
+    // Errors
+    // 
+    // 51 (Invalid Object)
+    //     The component you specified is not valid for this Product.
+    // 
+    // 103 (Invalid Alias)
+    //     The alias you specified is invalid for some reason. See the error message for more details.
+    //
+    // 104 (Invalid Field)
+    //     One of the drop-down fields has an invalid value, or a value entered in a text field is too long. 
+    //     The error message will have more detail.
+    //
+    // 105 (Invalid Component)
+    //     You didn't specify a component.
+    //
+    // 106 (Invalid Product)
+    //     Either you didn't specify a product, this product doesn't exist, or you don't have permission 
+    //     to enter bugs in this product.
+    //
+    // 107 (Invalid Summary)
+    //     You didn't specify a summary for the bug.
+    //
+    // 504 (Invalid User)
+    //     Either the QA Contact, Assignee, or CC lists have some invalid user in them. 
+    //     The error message will have more details.
+    // 
+    
+    
+  	function addIssue($summary,$description)
+  	{
+  		$issue = null;
+  		$args = array(array('login' => (string)$this->cfg->username, 
+  							          'password' => (string)$this->cfg->password,'remember' => 1));
+  
+  		$resp = array();
+  		$method = 'User.login';
+  		$resp[$method] = $this->APIClient->call($method, $args);
+  		
+  		$method = 'Bug.create';
+		  $issue = array('product' => (string)$this->cfg->product,
+                     'component' => (string)$this->cfg->component,
+                     'summary' => $summary,
+                     'description' => $description);
+    
+      foreach($this->issueDefaults as $prop => $default)
+      {
+        $issue[$prop] = (string)$this->cfg->$prop;
+      }
+		  $args = array($issue);
+  		$ret = $this->APIClient->call($method,$args);
+
+  		$method = 'User.logout';
+  		$resp[$method] = $this->APIClient->call($method);
+      
+      return $ret; 	  
   	}
 
 }

@@ -16,7 +16,7 @@ rev :
 	{include file="inc_help.tpl" helptopic="hlp_btsIntegration" show_help_icon=true}
 </h1>
 
-{include file="inc_update.tpl" user_feedback=$msg}
+{include file="inc_update.tpl" user_feedback=$gui->msg}
 
 <div class="workBack">
 	<form action="lib/execute/bugAdd.php" method="post">

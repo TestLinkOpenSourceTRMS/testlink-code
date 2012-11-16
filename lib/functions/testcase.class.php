@@ -36,19 +36,19 @@ $g_tcFormatStrings = array ("XML" => lang_get('the_format_tc_xml_import'));
  */
 class testcase extends tlObjectWithAttachments
 {
-    const AUTOMATIC_ID=0;
-    const DEFAULT_ORDER=0;
-    const ALL_VERSIONS=0;
-    const LATEST_VERSION=-1;
-    const AUDIT_OFF=0;
-    const AUDIT_ON=1;
-    const CHECK_DUPLICATE_NAME=1;
-    const DONT_CHECK_DUPLICATE_NAME=0;
-    const ENABLED=1;
-    const ALL_TESTPLANS=null;
-    const ANY_BUILD=null;
-    const GET_NO_EXEC=1; 
-    const ANY_PLATFORM=null;
+  const AUTOMATIC_ID=0;
+  const DEFAULT_ORDER=0;
+  const ALL_VERSIONS=0;
+  const LATEST_VERSION=-1;
+  const AUDIT_OFF=0;
+  const AUDIT_ON=1;
+  const CHECK_DUPLICATE_NAME=1;
+  const DONT_CHECK_DUPLICATE_NAME=0;
+  const ENABLED=1;
+  const ALL_TESTPLANS=null;
+  const ANY_BUILD=null;
+  const GET_NO_EXEC=1; 
+  const ANY_PLATFORM=null;
 	const NOXMLHEADER=true;    
         
     
@@ -70,7 +70,8 @@ class testcase extends tlObjectWithAttachments
 	var $import_file_types = array("XML" => "XML", "XLS" => "XLS" );
 	var $export_file_types = array("XML" => "XML");
 	var $execution_types = array();
-
+  var $cfg;
+  
 	/**
 	 * testplan class constructor
 	 * 
@@ -95,6 +96,10 @@ class testcase extends tlObjectWithAttachments
 		$this->execution_types = array(TESTCASE_EXECUTION_TYPE_MANUAL => lang_get('manual'),
                                        TESTCASE_EXECUTION_TYPE_AUTO => lang_get('automated'));
 
+
+    $this->cfg = new stdClass();
+    $this->cfg->testcase = config_get('testcase_cfg');
+    
 		// ATTENTION:
 		// second argument is used to set $this->attachmentTableName,property that this calls
 		// get from his parent
@@ -1608,31 +1613,31 @@ class testcase extends tlObjectWithAttachments
 		{
 			case 'minimun':
 			default:
-				$fields2get = " TCV.id, TCV.version, TCV.tc_external_id ";
+				$fields2get = " TCV.id, TCV.version, TCV.tc_external_id,NH_TC.name ";
 			break;		
 
 			case 'full':
 			default:
-				$fields2get = " TCV.* ";
+				$fields2get = " TCV.*,NH_TC.name ";
 			break;		
 		}
 		
 		
 		$sql = "/* $debugMsg */ SELECT MAX(version) AS version " .
-		       " FROM {$this->tables['tcversions']} TCV," .
-		       " {$this->tables['nodes_hierarchy']} NH WHERE ".
-		       " NH.id = TCV.id ".
-		       " AND NH.parent_id = {$id} ";
+		       " FROM {$this->tables['tcversions']} TCV " .
+		       " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TCV.id ".
+		       " WHERE NH_TCV.parent_id = {$id} ";
 	
 		$max_version = $this->db->fetchFirstRowSingleColumn($sql,'version');
-	
+	  
 		$tcInfo = null;
 		if ($max_version)
 		{
-			$sql = "SELECT {$fields2get}  FROM {$this->tables['tcversions']} TCV," .
-			       " {$this->tables['nodes_hierarchy']} NH ".
-			       " WHERE TCV.version = {$max_version} AND NH.id = TCV.id".
-				   " AND NH.parent_id = {$id}";
+			$sql = " SELECT {$fields2get} FROM {$this->tables['tcversions']} TCV " .
+			       " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TCV.id ".
+			       " JOIN {$this->tables['nodes_hierarchy']} NH_TC ON NH_TC.id = NH_TCV.parent_id ".
+  		       " WHERE TCV.version = {$max_version} ".
+				     " AND NH_TCV.parent_id = {$id}";
 	
 			$tcInfo = $this->db->fetchFirstRow($sql);
 		}
@@ -5680,7 +5685,61 @@ class testcase extends tlObjectWithAttachments
 		return $out;	
 	}	
 
+	function getExecution($execID,$tcversionID)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	  $sql = "/* $debugMsg */ SELECT NHTC.name,NHTCV.parent_id AS testcase_id, NHTCV.id AS tcversion_id, " .
+	  		   " TCV.*, " .
+			     " U.login AS tester_login, U.first AS tester_first_name, U.last AS tester_last_name," .
+			     " E.tester_id AS tester_id,E.id AS execution_id, E.status,E.tcversion_number," .
+			     " E.notes AS execution_notes, E.execution_ts, E.execution_type AS execution_run_type," .
+			     " E.build_id AS build_id, B.name AS build_name, B.active AS build_is_active, " .
+			     " B.is_open AS build_is_open,E.platform_id, PLATF.name AS platform_name," .
+   			   " E.testplan_id,NHTPLAN.name AS testplan_name,TPTCV.id AS feature_id " . 
+		       " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
+	         " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+	         " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id  " .
+           " JOIN {$this->tables['executions']} E " . 
+	         " ON E.tcversion_id = NHTCV.id " .
+			     " /* To get build name */ " .
+	         " JOIN {$this->tables['builds']} B ON B.id=E.build_id " .
+			     " /* To get test plan name */ " .
+	         " JOIN {$this->tables['nodes_hierarchy']} NHTPLAN ON NHTPLAN.id = E.testplan_id " .
+	         " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+	         " ON  TPTCV.testplan_id = E.testplan_id " .
+	         " AND TPTCV.tcversion_id = E.tcversion_id " .
+	         " AND TPTCV.platform_id = E.platform_id " .
+	         " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = E.tester_id " .
+	         " LEFT OUTER JOIN {$this->tables['platforms']} PLATF ON PLATF.id = E.platform_id  " .
+	         " WHERE E.id = " . intval($execID) . " AND E.tcversion_id = " . intval($tcversionID);
+	  $rs = $this->db->get_recordset($sql);
+	  return ($rs ? $rs : null);
+	}
 	
+
+
+	public function getAuditSignature($context,$options = null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		// we need:
+		// Test Case External ID
+		// Test Case Name
+		// Test Case Path
+		// What about test case version ID ? => only if argument provided
+		// 
+	  $pathInfo = $this->tree_manager->get_full_path_verbose($context->id,array('output_format' => 'id_name'));
+	  $pathInfo = current($pathInfo);
+	  $path = '/' . implode('/',$pathInfo['name']) . '/';
+	  $tcase_prefix = $this->getPrefix($context->id, $pathInfo['node_id'][0]);
+		$info = $this->get_last_version_info($context->id, array('output' => 'medium')); 
+    $signature = $path . $tcase_prefix[0] . $this->cfg->testcase->glue_character . 
+                 $info['tc_external_id'] . ':' . $info['name'];
+
+		return $signature;        
+	}
+
+
 	
 } // end class
 ?>

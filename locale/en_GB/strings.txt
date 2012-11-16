@@ -3483,5 +3483,14 @@ $TLS_req_does_not_exist = "Requirement does not exist anymore.";
 
 // resultsByTesterPerBuild.php
 $TLS_no_open_builds = 'There are no open builds';
+
+$TLS_bts_project_does_not_exist = 'Project %s does not exists on Issue Tracker System';
+
+$TLS_execution_ts_iso = " Executed ON (ISO FORMAT): %s";
+$TLS_issue_generated_description = "Execution ID: %s \n Tester: %s Test Plan: %s \n";
+$TLS_issue_build = " Build: %s \n";
+$TLS_issue_platform = " Platform: %s \n";
+$TLS_issue_exec_result = " Execution Status: %s \n";
+
 // ----- END ------------------------------------------------------------------
 ?>

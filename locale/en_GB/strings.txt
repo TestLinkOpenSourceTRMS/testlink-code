@@ -3495,6 +3495,6 @@ $TLS_issue_generated_description = "Execution ID: %s \n Tester: %s \n Test Plan:
 $TLS_issue_build = " Build: %s \n";
 $TLS_issue_platform = " Platform: %s \n";
 $TLS_issue_exec_result = " Execution Status: %s \n";
-
+$TLS_jira_bug_created = "JIRA Issue Created (summary:%s) on project with key:%s";
 // ----- END ------------------------------------------------------------------
 ?>

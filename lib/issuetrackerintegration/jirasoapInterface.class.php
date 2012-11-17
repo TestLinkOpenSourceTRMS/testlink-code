@@ -26,6 +26,7 @@ class jirasoapInterface extends issueTrackerInterface
 	protected $labels = array('duedate' => 'its_duedate_with_separator');
 	
 	private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
+  private $issueDefaults;
 	
 	/**
 	 * Construct and connect to BTS.
@@ -54,20 +55,26 @@ class jirasoapInterface extends issueTrackerInterface
 	function completeCfg()
 	{
 		$base = trim($this->cfg->uribase,"/") . '/' ;
-	    if( !property_exists($this->cfg,'uriwsdl') )
-	    {
+	  if( !property_exists($this->cfg,'uriwsdl') )
+	  {
 	    	$this->cfg->uriwsdl = $base . 'rpc/soap/jirasoapservice-v2?wsdl';
 		}
 		
-	    if( !property_exists($this->cfg,'uriview') )
-	    {
+	  if( !property_exists($this->cfg,'uriview') )
+	  {
 	    	$this->cfg->uriview = $base . 'browse/';
 		}
 	    
-	    if( !property_exists($this->cfg,'uricreate') )
-	    {
+	  if( !property_exists($this->cfg,'uricreate') )
+	  {
 	    	$this->cfg->uricreate = $base . 'secure/CreateIssue!default.jspa';
 		}	    
+
+		$this->issueDefaults = array('issuetype' => 1);
+    foreach($this->issueDefaults as $prop => $default)
+    {
+  	  $this->cfg->$prop = (string)(property_exists($this->cfg,$prop) ? $this->cfg->$prop : $default);
+    }		
 	}
 
 
@@ -191,13 +198,13 @@ class jirasoapInterface extends issueTrackerInterface
 			try
 			{
 				$this->APIClient = $op['client'];
-            	$this->authToken = $this->APIClient->login($this->cfg->username, $this->cfg->password);
-            	$statusSet = $op['client']->getStatuses($this->authToken);
-	            foreach ($statusSet as $key => $pair)
-    	        {
-        	    	$this->statusDomain[$pair->name]=$pair->id;
-            	}
-            	$this->l18n = init_labels($this->labels);
+        $this->authToken = $this->APIClient->login($this->cfg->username, $this->cfg->password);
+        $statusSet = $op['client']->getStatuses($this->authToken);
+	      foreach ($statusSet as $key => $pair)
+    	  {
+        	$this->statusDomain[$pair->name]=$pair->id;
+        }
+        $this->l18n = init_labels($this->labels);
 			}
 			catch (SoapFault $f)
 			{
@@ -336,5 +343,32 @@ class jirasoapInterface extends issueTrackerInterface
     return $ret;
   }
 
+
+  // useful info
+  // https://github.com/ricardocasares/jira-soap-api
+  //
+  // CRITIC ISSUE TYPE IS MANDATORY.
+  //
+  public function addIssue($summary,$description)
+	{
+    try
+    {
+  		$issue = array('project' => (string)$this->cfg->projectkey,
+                     'type' => (int)$this->cfg->issuetype,
+                     'summary' => $summary,
+                     'description' => $description);
+
+      $op = $this->APIClient->createIssue($this->authToken, $issue);
+      $ret = array('id' => $op->key, 
+                   'msg' => sprintf(lang_get('jira_bug_created'),$summary,$issue['project']));
+    }
+    catch (Exception $e)
+    {
+      $msg = "Create JIRA Ticket FAILURE => " . $e->getMessage();
+      tLog($msg, 'WARNING');
+      $ret = array('id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+    }
+    return $ret;
+	}  
 }
 ?>

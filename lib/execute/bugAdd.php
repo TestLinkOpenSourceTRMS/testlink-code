@@ -21,7 +21,6 @@ list($its,$issueT) = itsProcess($db,$args,$gui);
 
 if(!$gui->tlCanCreateIssue || $args->user_action == 'link')
 {
-  $gui->msg = "";
   if(!is_null($issueT) && $args->bug_id != "")
   {
   	$l18n = init_labels(array("error_wrong_BugID_format" => null,"error_bug_does_not_exist_on_bts" => null));
@@ -109,6 +108,10 @@ function addIssue($dbHandler,$argsObj,$itsObj)
   		$msg = lang_get("bug_added");
   		logAuditEvent(TLS("audit_executionbug_added",$rs['id']),"CREATE",$argsObj->exec_id,"executions");
   	}
+  }
+  else
+  {
+    $msg = $rs['msg'];
   }
   return array($automaticMode,$msg);
 }

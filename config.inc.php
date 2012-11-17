@@ -1414,6 +1414,9 @@ define ('TL_DEFAULT_LOCALE', $tlCfg->default_language);
 /** Revered list of Test Case execution results */
 $tlCfg->results['code_status'] = array_flip($tlCfg->results['status_code']);
 
+// Enable CSRF global protection
+$tlCfg->csrf_filter_enabled = TRUE;
+
 // --------------------------------------------------------------------------------------
 /** Converted and derived variables (Users should not modify this section) */
 define('REFRESH_SPEC_TREE',$tlCfg->spec_cfg->automatic_tree_refresh ? 1 : 0);

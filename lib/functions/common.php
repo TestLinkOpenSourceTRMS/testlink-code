@@ -61,7 +61,8 @@ require_once('tlsmarty.inc.php');
 // Needed to avoid problems with Smarty 3
 spl_autoload_register('tlAutoload');
 
-
+/** CSRF security functions. */
+require_once("csrf.php");
 
 /** Input data validation */
 require_once("inputparameter.inc.php");

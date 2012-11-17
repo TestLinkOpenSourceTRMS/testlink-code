@@ -309,6 +309,11 @@ class TLSmarty extends Smarty
         
         $this->register_modifier("basename","basename");
         $this->register_modifier("dirname","dirname");
+        
+        // Call to smarty filter that adds a CSRF filter to all form elements
+        if(isset($tlCfg->csrf_filter_enabled) && $tlCfg->csrf_filter_enabled === TRUE && function_exists('smarty_csrf_filter')) {
+            $this->register_outputfilter('smarty_csrf_filter');
+        }
     
     } // end of function TLSmarty()
 

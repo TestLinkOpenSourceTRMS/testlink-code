@@ -36,7 +36,6 @@ $gui = init_gui($db,$args);
 // if these checks fail => we will redirect to login screen with some message
 doBlockingChecks($db,$gui);
 
-$l18n = init_labels(array('invalid_security_token' => null));
 switch($args->action) 
 {
 	case 'doLogin':

@@ -66,7 +66,7 @@ $init_opt_transfer = null;
 
 $dummy = ($sortCriteria = config_get('testcase_reorder_by')) == 'NAME' ? '_alpha' : '_externalid';
 $lbl2init = array('warning_empty_testsuite_name' => null,'string_contains_bad_chars' => null,
-                'container_title_testsuite' => null,'invalid_security_token' => null,
+                'container_title_testsuite' => null,
                 'btn_reorder_testcases' => 'btn_reorder_testcases' . $dummy);
 $l18n = init_labels($lbl2init);
 

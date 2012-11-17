@@ -6,13 +6,8 @@
  *
  * @internal revisions
  *
- * @since 1.9.4
- * 20120616 - franciscom - processTestSuite() refactoring
- * 20120219 - franciscom - TICKET 4904: integrate with ITS on test project basis
- * 20111230 - franciscom - TICKET 4854: Save and Next - Issues with display CF for test plan design - always EMPTY	
- *	
- * 20110820 - franciscom - TICKET 4714: retrieve big amount of useless data
- * 20110622 - asimon - TICKET 4600: Blocked execution of testcases
+ * @since 1.9.5
+ *
  *
 **/
 require_once('../../config.inc.php');
@@ -48,6 +43,7 @@ if($info['issue_tracker_enabled'])
 {
 	$it_mgr = new tlIssueTracker($db);
 	$its = $it_mgr->getInterfaceObject($args->tproject_id);
+  $issueT = $it_mgr->getLinkedTo($args->tproject_id);
 	unset($it_mgr);
 }	
 
@@ -61,12 +57,15 @@ $attachmentRepository = tlAttachmentRepository::create($db);
 $req_mgr = new requirement_mgr($db);
 
 $gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr);
-$gui->issueTrackerIntegrationOn = false;
+$gui->issueTrackerIntegrationOn = $gui->tlCanCreateIssue = false;
 if($info['issue_tracker_enabled'])
 {
 	if(!is_null($its) && $its->isConnected())
 	{
 		$gui->issueTrackerIntegrationOn = true;
+		$gui->accessToIssueTracker = lang_get('link_bts_create_bug') . "({$issueT['issuetracker_name']})";	
+		$gui->createIssueURL = $its->getEnterBugURL();
+	  $gui->tlCanCreateIssue = method_exists($its,'addIssue');
 	}
 	else
 	{

@@ -128,7 +128,6 @@ function refreshLastUpdate (last_update) {
 
 <h2>{lang_get s="title_personal_data"}</h2>
 <form method="post" action="{$action_mgmt}"	onsubmit="return validatePersonalData(this)">
-    {$form_security_field}
 	<input type="hidden" name="doAction" value="editUser" />
 	<table class="common" width="50%">
 		<tr>
@@ -187,7 +186,6 @@ function refreshLastUpdate (last_update) {
 {if $external_password_mgmt eq 0}
 	<form name="changePass" method="post" action="{$action_mgmt}"
 		onsubmit="return checkPasswords('oldpassword','newpassword','newpassword_check');">
-		{$form_security_field}
 		<input type="hidden" name="doAction" value="changePassword" />
 		<table class="common">
 			<tr><th>{$labels.th_old_passwd}</th>
@@ -217,7 +215,6 @@ function refreshLastUpdate (last_update) {
 <h2>{lang_get s="title_api_interface"}</h2>
 <div>
 	<form name="genApi" method="post" action="{$action_mgmt}">
-	    {$form_security_field}
 		<input type="hidden" name="doAction" value="genAPIKey" />
 		<p>{$labels.user_api_key} = {$user->userApiKey|escape}</p>
 		<div class="groupBtn">

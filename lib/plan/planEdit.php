@@ -24,7 +24,6 @@ require_once("common.php");
 require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('testplan');
 require_once(require_web_editor($editorCfg['type']));
-require_once("form_api.php");
 
 testlinkInitPage($db,false,false,"checkRights");
 
@@ -100,40 +99,33 @@ switch($args->do_action)
 		$template = 'planEdit.tpl';
 		$status_ok = false;
 		
-		if(FALSE === form_security_validate())
+		if(!$name_exists || $name_id_rel_ok)
 		{
-		    $gui->user_feedback = lang_get('invalid_security_token');
-		} 
-		else 
-		{
-    		if(!$name_exists || $name_id_rel_ok)
-    		{
-    			if(!$tplan_mgr->update($args->tplan_id,$args->testplan_name,$args->notes,
-    			                       $args->active,$args->is_public))
-    			{
-    				$gui->user_feedback = lang_get('update_tp_failed1'). $gui->testplan_name . 
-    				                      lang_get('update_tp_failed2').": " . $db->error_msg() . "<br />";
-    			}
-    			else
-    			{
-    				logAuditEvent(TLS("audit_testplan_saved",$args->tproject_name,$args->testplan_name),"SAVE",
-    				                  $args->tplan_id,"testplans");
-    				$cf_map = $tplan_mgr->get_linked_cfields_at_design($args->tplan_id);
-    				$tplan_mgr->cfield_mgr->design_values_to_db($_REQUEST,$args->tplan_id,$cf_map);
-    
-    				if(isset($_SESSION['testplanID']) && ($args->tplan_id == $_SESSION['testplanID']))
-    				{
-    					$_SESSION['testplanName'] = $args->testplan_name;
-                    }
-    				$status_ok = true;
-    				$template = null;
-    			}
-    		}
-    		else
-    		{
-    			$gui->user_feedback = lang_get("warning_duplicate_tplan_name");
-            }
+			if(!$tplan_mgr->update($args->tplan_id,$args->testplan_name,$args->notes,
+			                       $args->active,$args->is_public))
+			{
+				$gui->user_feedback = lang_get('update_tp_failed1'). $gui->testplan_name . 
+				                      lang_get('update_tp_failed2').": " . $db->error_msg() . "<br />";
+			}
+			else
+			{
+				logAuditEvent(TLS("audit_testplan_saved",$args->tproject_name,$args->testplan_name),"SAVE",
+				                  $args->tplan_id,"testplans");
+				$cf_map = $tplan_mgr->get_linked_cfields_at_design($args->tplan_id);
+				$tplan_mgr->cfield_mgr->design_values_to_db($_REQUEST,$args->tplan_id,$cf_map);
+
+				if(isset($_SESSION['testplanID']) && ($args->tplan_id == $_SESSION['testplanID']))
+				{
+					$_SESSION['testplanName'] = $args->testplan_name;
+                }
+				$status_ok = true;
+				$template = null;
+			}
 		}
+		else
+		{
+			$gui->user_feedback = lang_get("warning_duplicate_tplan_name");
+        }
     
 		if(!$status_ok)
 		{
@@ -152,51 +144,44 @@ switch($args->do_action)
 		$gui->is_active = ($args->active == 'on') ? 1 :0 ;
 		$gui->is_public = ($args->is_public == 'on') ? 1 :0 ;
 		
-		if(FALSE === form_security_validate())
+		if(!$name_exists)
 		{
-		    $gui->user_feedback = lang_get('invalid_security_token');
-		} 
-		else 
-		{
-    		if(!$name_exists)
-    		{
-    			$new_tplan_id = $tplan_mgr->create($args->testplan_name,$args->notes,
-    			                                   $args->tproject_id,$args->active,$args->is_public);
-    			if ($new_tplan_id == 0)
-    			{
-    				$gui->user_feedback = $db->error_msg();
-    			}
-    			else
-    			{
-    				logAuditEvent(TLS("audit_testplan_created",$args->tproject_name,$args->testplan_name),
-    				              "CREATED",$new_tplan_id,"testplans");
-    				$cf_map = $tplan_mgr->get_linked_cfields_at_design($new_tplan_id,$args->tproject_id);
-    				$tplan_mgr->cfield_mgr->design_values_to_db($_REQUEST,$new_tplan_id,$cf_map);
-    
-    				$status_ok = true;
-    				$template = null;
-    				$gui->user_feedback ='';
-    
-    				if($args->rights == 'on')
-    				{
-    					$result = insertTestPlanUserRight($db,$new_tplan_id,$args->user_id);
-                    }
-                    
-    				if($args->copy)
-    				{
-    					// BUGID 3485: "Create from existing Test Plan" always copies builds
-    					$options = array('items2copy' => $args->copy_options,'copy_assigned_to' => $args->copy_assigned_to,
-    									 'tcversion_type' => $args->tcversion_type);
-    					$tplan_mgr->copy_as($args->source_tplanid, $new_tplan_id,$args->testplan_name,
-    										$args->tproject_id,$args->user_id,$options);
-    				}
-    			}
-    		}
-    		else
-    		{
-    			$gui->user_feedback = lang_get("warning_duplicate_tplan_name");
-            }
+			$new_tplan_id = $tplan_mgr->create($args->testplan_name,$args->notes,
+			                                   $args->tproject_id,$args->active,$args->is_public);
+			if ($new_tplan_id == 0)
+			{
+				$gui->user_feedback = $db->error_msg();
+			}
+			else
+			{
+				logAuditEvent(TLS("audit_testplan_created",$args->tproject_name,$args->testplan_name),
+				              "CREATED",$new_tplan_id,"testplans");
+				$cf_map = $tplan_mgr->get_linked_cfields_at_design($new_tplan_id,$args->tproject_id);
+				$tplan_mgr->cfield_mgr->design_values_to_db($_REQUEST,$new_tplan_id,$cf_map);
+
+				$status_ok = true;
+				$template = null;
+				$gui->user_feedback ='';
+
+				if($args->rights == 'on')
+				{
+					$result = insertTestPlanUserRight($db,$new_tplan_id,$args->user_id);
+                }
+                
+				if($args->copy)
+				{
+					// BUGID 3485: "Create from existing Test Plan" always copies builds
+					$options = array('items2copy' => $args->copy_options,'copy_assigned_to' => $args->copy_assigned_to,
+									 'tcversion_type' => $args->tcversion_type);
+					$tplan_mgr->copy_as($args->source_tplanid, $new_tplan_id,$args->testplan_name,
+										$args->tproject_id,$args->user_id,$options);
+				}
+			}
 		}
+		else
+		{
+			$gui->user_feedback = lang_get("warning_duplicate_tplan_name");
+        }
     
 		if(!$status_ok)
 		{
@@ -216,7 +201,6 @@ switch($args->do_action)
         $do_display=true;
         $template = is_null($template) ? 'planView.tpl' : $template;
         $gui->tplans = $tproject_mgr->get_all_testplans($args->tproject_id);
-        $gui->form_security_field = form_security_field();
         $gui->drawPlatformQtyColumn = false;
 
 		if( !is_null($gui->tplans) )
@@ -245,7 +229,6 @@ switch($args->do_action)
         $do_display=true;
         $template = is_null($template) ? 'planEdit.tpl' : $template;
       	$gui->notes=$of->CreateHTML();
-        $gui->form_security_field = form_security_field();
 		break;
 }
 

@@ -23,7 +23,6 @@ checkConfiguration();
 require_once('config.inc.php');
 require_once('common.php');
 require_once('doAuthorize.php');
-require_once('form_api.php');
 
 $templateCfg = templateConfiguration();
 $doRenderLoginScreen = false;
@@ -42,23 +41,14 @@ switch($args->action)
 {
 	case 'doLogin':
 	case 'ajaxlogin':
-	     if(FALSE === form_security_validate()) 
-	     {
-	        $gui->note = $l18n['invalid_security_token'];
-	        $doAuthPostProcess = false;
-	        $doRenderLoginScreen = true;
-	     } 
-	     else 
-	     {
-    		 doSessionStart(true);
-    		 
-    		 // When doing ajax login we need to skip control regarding session already open
-    		 // that we use when doing normal login.
-    		 // If we do not proceed this way we will enter an infinite loop
-    	 	 $options = array('doSessionExistsCheck' => ($args->action=='doLogin'));
-    	 	 $op = doAuthorize($db,$args->login,$args->pwd,$options);
-    		 $doAuthPostProcess = true;
-	     }
+		 doSessionStart(true);
+		 
+		 // When doing ajax login we need to skip control regarding session already open
+		 // that we use when doing normal login.
+		 // If we do not proceed this way we will enter an infinite loop
+	 	 $options = array('doSessionExistsCheck' => ($args->action=='doLogin'));
+	 	 $op = doAuthorize($db,$args->login,$args->pwd,$options);
+		 $doAuthPostProcess = true;
 		 break;
 
 	case 'ajaxcheck':
@@ -86,7 +76,6 @@ if( $doAuthPostProcess )
 
 if( $doRenderLoginScreen ) 
 {
-    $gui->form_security_field = form_security_field();
 	renderLoginScreen($gui);
 }
 

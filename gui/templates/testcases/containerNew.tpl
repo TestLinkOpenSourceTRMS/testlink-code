@@ -113,7 +113,6 @@ function validateForm(f)
 	      name="container_new" id="container_new"
         onSubmit="javascript:return validateForm(this);">
 
-    {$gui->form_security_field}
 	<div style="font-weight: bold;">
 		<div>
 		  {* BUGID 628: Name edit � Invalid action parameter/other behaviours if �Enter� pressed. *}

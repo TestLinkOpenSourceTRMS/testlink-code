@@ -81,7 +81,6 @@ return true;
 		<form name="edit_testproject" id="edit_testproject"
 		      method="post" action="{$managerURL}"
 		      onSubmit="javascript:return validateForm(this);">
-        {$gui->form_security_field}
 		<table id="item_view" class="common" style="width:100%; padding:3px;">
 
 			{if $gui->tprojectID eq 0}

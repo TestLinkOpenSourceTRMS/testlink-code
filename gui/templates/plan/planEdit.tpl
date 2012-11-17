@@ -119,7 +119,6 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 	<form method="post" name="testplan_mgmt" id="testplan_mgmt"
 	      action="lib/plan/planEdit.php?action={$form_action}"
 	      onSubmit="javascript:return validateForm(this);">
-    {$gui->form_security_field}
 	<input type="hidden" id="tplan_id" name="tplan_id" value="{$gui->tplan_id}" />
 	<table class="common" width="80%">
 

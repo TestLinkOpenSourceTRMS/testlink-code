@@ -77,7 +77,6 @@ function validateForm(f)
 	</h2>
 	<form method="post" id="create_build" name="create_build" 
 	      action="{$managerURL}" onSubmit="javascript:return validateForm(this);">
-    {$gui->form_security_field}
 	<table class="common" style="width:80%">
 		<tr>
 			<th style="background:none;">{$labels.enter_build}</th>

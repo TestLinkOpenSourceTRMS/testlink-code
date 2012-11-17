@@ -2,13 +2,12 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	inc_exec_show_tc_exec.tpl
 @internal revisions
-@since 1.9.4
-20120808 - franciscom - TICKET 5128: $tlCfg->exec_cfg->can_delete_execution need to be limited.
-20120707 - franciscom - TICKET 5084: Rendering KO when history on and exec status is NOT RUN
+@since 1.9.5
+20121117 - franciscom - TICKET 5350: Bug Tracking Integration - Create Issue with JUST ONE CLICK
 *}	
  	{foreach item=tc_exec from=$gui->map_last_exec}
 
-      {assign var="tc_id" value=$tc_exec.testcase_id}
+    {assign var="tc_id" value=$tc_exec.testcase_id}
 	  {assign var="tcversion_id" value=$tc_exec.id}
 	  {* IMPORTANT:
 	               Here we use version_number, which is related to tcversion_id SPECIFICATION.
@@ -119,6 +118,13 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   			  {$title_sep_type3} {$exec_build_title}
   		{/if}
   		</div>
+
+    {* NUEVO *}
+		{if $gui->issueTrackerIntegrationOn}
+		  <p/>
+			<a style="font-weight:normal" target="_blank" href="{$gui->createIssueURL}">
+			{$gui->accessToIssueTracker|escape}</a>
+		{/if}
 
 		{* The very last execution for any build of this test plan *}
 		{if $cfg->exec_cfg->show_last_exec_any_build && $gui->history_on == 0}
@@ -275,19 +281,25 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 				{/if}
   	      	  {/if}
 				
-    			{if $gui->issueTrackerIntegrationOn && $tc_old_exec.build_is_open}
-       		  	<td align="center">
-       		  	  <a href="javascript:open_bug_add_window({$gui->tproject_id},{$tc_old_exec.id},{$tc_old_exec.execution_id})">
-      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bug1.gif" title="{$labels.img_title_bug_mgmt}"
-      			         style="border:none" /></a>
-                </td>
-                {else}
-                	{if $gui->issueTrackerIntegrationOn}
-                		<td align="center">
-							<img src="{$smarty.const.TL_THEME_IMG_DIR}/bug1_greyed.gif" title="{$labels.closed_build}">
-						</td>
-                	{/if}
-          		{/if}
+    			{if $gui->issueTrackerIntegrationOn}
+       		  <td align="center">
+       		  {if $tc_old_exec.build_is_open}
+       		    <a href="javascript:open_bug_add_window({$gui->tproject_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},'link')">
+       		    <img src="{$tlImages.bug_link_tl_to_bts}" title="{$labels.bug_link_tl_to_bts}" style="border:none" /></a>
+       		    &nbsp;&nbsp;
+              {if $gui->tlCanCreateIssue}
+       		  	  <a href="javascript:open_bug_add_window({$gui->tproject_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},'create')">
+      			    <img src="{$tlImages.bug_create_into_bts}" title="{$labels.bug_create_into_bts}" style="border:none" /></a>
+              {/if}
+       		  {else}
+       		    <img src="{$tlImages.bug_link_tl_to_bts_disabled}" title="{$labels.bug_link_tl_to_bts}" style="border:none" /></a>
+       		    &nbsp;&nbsp;
+              {if $gui->tlCanCreateIssue}
+       		  	  <img src="{$tlImages.bug_create_into_bts_disabled}" title="{$labels.bug_create_into_bts}" style="border:none" /></a>
+              {/if}
+            {/if} 
+       		  </td>
+          {/if}
 
 				{* TICKET 3587, 5128 *}
     			{* if $gui->grants->delete_execution && $tc_old_exec.build_is_open *}

@@ -1,9 +1,6 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: bugAdd.tpl,v 1.10 2010/06/24 17:25:53 asimon83 Exp $ *}
-{* Purpose: smarty template - the template for the attachment upload dialog 
-
-rev :
-     20070304 - franciscom - refactoring 
+{*
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+@filesource bugAdd.tpl
 *}
 {include file="inc_head.tpl"}
 
@@ -17,11 +14,10 @@ rev :
 </h1>
 
 {include file="inc_update.tpl" user_feedback=$gui->msg}
-
 <div class="workBack">
 	<form action="lib/execute/bugAdd.php" method="post">
 		<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
-		{if $gui->automaticMode == false}
+		{if $gui->user_action == 'link'}
 	  	<p>
 			<a style="font-weight:normal" target="_blank" href="{$gui->createIssueURL}">
 			{lang_get s='link_bts_create_bug'}({$gui->issueTrackerVerboseID|escape})</a>
@@ -31,12 +27,12 @@ rev :
 		</p>	
 		{/if}
 		<div class="groupBtn">
-     {if $gui->automaticMode == false}
+     {if $gui->user_action == 'link'}
 			<input type="submit" value="{lang_get s='btn_add_bug'}" onclick="return dialog_onSubmit(bug_dialog)" />
      {/if} 
 			<input type="button" value="{lang_get s='btn_close'}" onclick="window.close()" />
 		</div>
-	</form>
+ 	</form>
 </div>
 
 </body>

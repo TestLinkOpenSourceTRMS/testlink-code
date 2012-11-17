@@ -11,44 +11,15 @@
 require_once('../../config.inc.php');
 require_once('common.php');
 
-
 require_once('exec.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
+$gui = initializeGui($args);
+list($its,$issueT) = itsProcess($db,$args,$gui);
 
-$gui = new stdClass();
-$gui->bugIDMaxLength = 0;
-$gui->createIssueURL = null;
-$gui->issueTrackerVerboseID = '';
-$gui->issueTrackerVerboseType = '';
-$gui->tproject_id = $args->tproject_id;
-$gui->automaticMode = false;
-
-$its = null;
-$tprojectMgr = new testproject($db);
-$info = $tprojectMgr->get_by_id($args->tproject_id);
-if($info['issue_tracker_enabled'])
-{
-	$it_mgr = new tlIssueTracker($db);
-	$issueT = $it_mgr->getLinkedTo($args->tproject_id);
-	if( !is_null($issueT) )
-	{
-		$its = $it_mgr->getInterfaceObject($args->tproject_id);
-		$gui->issueTrackerVerboseType = $issueT['verboseType'];
-		$gui->issueTrackerVerboseID = $issueT['issuetracker_name'];
-		$gui->bugIDMaxLength = $its->getBugIDMaxLength();
-		$gui->createIssueURL = $its->getEnterBugURL();
-
-    if( method_exists($its,'addIssue') ) 
-    {
-      $gui->automaticMode = addIssue($db,$args,$its);
-    }
-	}
-}	
-
-if(!$gui->automaticMode)
+if(!$gui->tlCanCreateIssue || $args->user_action == 'link')
 {
   $gui->msg = "";
   if(!is_null($issueT) && $args->bug_id != "")
@@ -83,7 +54,8 @@ function init_args()
 	$iParams = array("exec_id" => array("GET",tlInputParameter::INT_N),
 		               "bug_id" => array("POST",tlInputParameter::STRING_N),
 		               "tproject_id" => array("REQUEST",tlInputParameter::INT_N),
-		               "tcversion_id" => array("REQUEST",tlInputParameter::INT_N));
+		               "tcversion_id" => array("REQUEST",tlInputParameter::INT_N),
+		               "user_action" => array("REQUEST",tlInputParameter::STRING_N));
 		             
 		             
 	$args = new stdClass();
@@ -102,10 +74,8 @@ function init_args()
 function addIssue($dbHandler,$argsObj,$itsObj)
 {
   $automaticMode = false;             
-
+  $msg = '';
 	$resultsCfg = config_get('results');                      
-	// $resultsCfg['status_code']['not_run'];  
-
   $tcaseMgr = new testcase($dbHandler);
   $dummy = $tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->tcversion_id);
   $auditSign = $tcaseMgr->getAuditSignature((object)array('id' => $dummy['parent_id'])); 
@@ -140,9 +110,47 @@ function addIssue($dbHandler,$argsObj,$itsObj)
   		logAuditEvent(TLS("audit_executionbug_added",$rs['id']),"CREATE",$argsObj->exec_id,"executions");
   	}
   }
-  return $automaticMode;
+  return array($automaticMode,$msg);
 }
 
+function initializeGui($argsObj)
+{
+  $gui = new stdClass();
+  $gui->bugIDMaxLength = 0;
+  $gui->createIssueURL = null;
+  $gui->issueTrackerVerboseID = '';
+  $gui->issueTrackerVerboseType = '';
+  $gui->tproject_id = $argsObj->tproject_id;
+  $gui->tlCanCreateIssue = false;
+  $gui->user_action = $argsObj->user_action;
+  return $gui;
+}
+
+function itsProcess(&$dbHandler,$argsObj,&$guiObj)
+{
+  $its = null;
+  $tprojectMgr = new testproject($dbHandler);
+  $info = $tprojectMgr->get_by_id($argsObj->tproject_id);
+  if($info['issue_tracker_enabled'])
+  {
+  	$it_mgr = new tlIssueTracker($dbHandler);
+  	$issueT = $it_mgr->getLinkedTo($argsObj->tproject_id);
+  	if( !is_null($issueT) )
+  	{
+  		$its = $it_mgr->getInterfaceObject($argsObj->tproject_id);
+  		$guiObj->issueTrackerVerboseType = $issueT['verboseType'];
+  		$guiObj->issueTrackerVerboseID = $issueT['issuetracker_name'];
+  		$guiObj->bugIDMaxLength = $its->getBugIDMaxLength();
+  		$guiObj->createIssueURL = $its->getEnterBugURL();
+  
+      if( method_exists($its,'addIssue') && ($argsObj->user_action == 'create') )
+      {
+        list($guiObj->tlCanCreateIssue,$guiObj->msg) = addIssue($dbHandler,$argsObj,$its);
+      }
+  	}
+  }	
+  return array($its,$issueT); 
+}
 
 
 

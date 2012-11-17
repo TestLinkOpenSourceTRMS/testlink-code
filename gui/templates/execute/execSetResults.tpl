@@ -5,6 +5,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @internal smarty template - show tests to add results
 @internal revisions
 @since 1.9.5
+20121117 - franciscom - TICKET 5350: Bug Tracking Integration - Create Issue with JUST ONE CLICK
 20121114 - franciscom - TICKET 5344: BULK EXECUTION - Tester A can execute test case that assigned to Tester B
 *}
 {assign var="attachment_model" value=$cfg->exec_cfg->att_model}
@@ -35,6 +36,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
 	deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution, 
 	btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,
+  bug_link_tl_to_bts,bug_create_into_bts,
 	preconditions,platform,platform_description,exec_not_run_result_note,remoteExecFeeback'}
 
 
@@ -449,8 +451,6 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	{/if}
 	
     {include file="execute/inc_exec_show_tc_exec.tpl"}
-
-    {* 20090419 - BUGID 2364 - franciscom*}
     {if isset($gui->refreshTree) && $gui->refreshTree}
 	    {include file="inc_refreshTreeWithFilters.tpl"}
 	    {*include file="inc_refreshTree.tpl"*}

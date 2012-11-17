@@ -525,10 +525,12 @@ function tree_getCheckBox(id)
 // @internal revisions
 // @since 1.9.5
 // 20121115 - franciscom - interface changes
-function open_bug_add_window(tproject_id,tcversion_id,exec_id)
+function open_bug_add_window(tproject_id,tcversion_id,exec_id,user_action)
 {
-	window.open(fRoot+"lib/execute/bugAdd.php?tcversion_id="+tcversion_id +"&tproject_id=" + tproject_id + "&exec_id="+exec_id,
-							"bug_add","width=510,height=270,resizable=yes,dependent=yes");
+	link2launch = "lib/execute/bugAdd.php?user_action=" + user_action + "&tcversion_id="+tcversion_id +
+								"&tproject_id=" + tproject_id + "&exec_id="+exec_id;
+									
+	window.open(fRoot+link2launch,"bug_add","width=510,height=270,resizable=yes,dependent=yes");
 }
 
 function bug_dialog()

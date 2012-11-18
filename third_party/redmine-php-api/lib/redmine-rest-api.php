@@ -26,13 +26,10 @@ class redmine
 	public $apiKey = '';
 	
 	/**
-	 * Curl interface with FB specific settings
+	 * Curl interface with FugB specific settings
 	 * @var string 
 	 */
 	public $curl = '';
-	
-	private $headers = array();
-	
 	
 	/**
 	 * Constructor
@@ -62,10 +59,7 @@ class redmine
 	 */
 	public function initCurl() 
 	{
-		// Let's be nice and let them know we are out here
-		$agent = "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; " .
-		         "TestLink simple redmine API )";
-		
+		$agent = "TestLink 1.9.5";
 		try
 		{
 			$this->curl = curl_init();
@@ -76,10 +70,12 @@ class redmine
 		}
 		
 		// set the agent, forwarding, and turn off ssl checking
-		curl_setopt_array($this->curl, 
-						  array(CURLOPT_USERAGENT => $agent,CURLOPT_VERBOSE => 0,CURLOPT_FOLLOWLOCATION => TRUE,
-		    					CURLOPT_RETURNTRANSFER => TRUE,CURLOPT_AUTOREFERER => TRUE,
-		    					CURLOPT_SSL_VERIFYPEER => FALSE));
+		curl_setopt_array($this->curl,array(CURLOPT_USERAGENT => $agent,
+						                            CURLOPT_VERBOSE => 0,
+						                            CURLOPT_FOLLOWLOCATION => TRUE,
+		    					                      CURLOPT_RETURNTRANSFER => TRUE,
+		    					                      CURLOPT_AUTOREFERER => TRUE,
+		    					                      CURLOPT_SSL_VERIFYPEER => FALSE));
 	}
 
 
@@ -89,43 +85,10 @@ class redmine
 	 */
 	function getIssue($issueID)
 	{
-		/* 
-		 Strange thing, if I comment following block using JUST //,
-		 when running script I've got unexpected $end error!!!
-		*/  
-		/*
-		//  Example of what we get as content
-		//  <?xml version="1.0" encoding="UTF-8"?>
-		// 	<issue>
-		// 		<id>3</id>
-		// 		<project name="tl-project-002" id="2"/>
-		// 		<tracker name="Bug" id="1"/>
-		// 		<status name="New" id="1"/>
-		// 		<priority name="Immediate" id="7"/>
-		// 		<author name="Redmine Admin" id="2"/>
-		// 		<subject>BUG ON tl-project-002</subject>
-		// 		<description>Is a BUG IMMEDIATE</description>
-		// 		<start_date>2012-03-31</start_date>
-		// 		<due_date/>
-		// 		<done_ratio>0</done_ratio>
-		// 		<estimated_hours/>
-		// 		<spent_hours>0.0</spent_hours>
-		// 		<created_on>2012-03-31T10:49:44+02:00</created_on>
-		// 		<updated_on>2012-03-31T10:49:44+02:00</updated_on>
-		// 	</issue>
-		// 	
-		// 	This is returned as a simpleXMLObject
-		// 	(int)$xx->id
-		// 	(string)$xx->project['name']
-		// 	(int)$xx->project['id']
-		*/
-	    $item = $this->_get("/issues/$issueID.xml?key=$this->apiKey");
+	  $item = $this->_get("/issues/$issueID.xml");    
 		$ret = is_object($item) ? $item : null;
 		return $ret;
 	}	
-
-
-
 
 	/**
 	 * 
@@ -133,9 +96,19 @@ class redmine
 	 */
 	function getIssues($filters=null)
 	{
-	    $items = $this->_get("/issues.xml?key=$this->apiKey");
+	    $items = $this->_get("/issues.xml");
 	    return $items;
 	}	
+
+
+  // with the help of http://tspycher.com/2011/03/using-the-redmine-api-with-php/
+  // public function addIssue($summary, $description)
+  public function addIssueFromSimpleXML($issueXmlObj)
+  {
+    $op = $this->_request_xml('POST',"/issues.xml",$issueXmlObj->asXML());
+    return $op;
+  }
+
 
 
 
@@ -179,7 +152,7 @@ class redmine
 	}
 
   
-   /** 
+ /** 
 	*
 	* @internal notice
 	* copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
@@ -187,6 +160,30 @@ class redmine
 	protected function _request($method, $cmd, $body = NULL, $ignoreStatusCode = 0) 
 	{
 		curl_setopt($this->curl, CURLOPT_URL, $this->url . $cmd);
+
+    // Following Info From http://www.redmine.org/projects/redmine/wiki/Rest_api
+    // Authentication
+    // Most of the time, the API requires authentication. 
+    // To enable the API-style authentication, you have to check Enable REST API in 
+    // Administration -> Settings -> Authentication. 
+    //
+    // Then, authentication can be done in 2 different ways:
+    // 1. using your regular login/password via HTTP Basic authentication.
+    // 2. using your API key which is a handy way to avoid putting a password in a script. 
+    //    The API key may be attached to each request in one of the following way:
+    //    2.1 passed in as a "key" parameter
+    //    2.2 passed in as a username with a random password via HTTP Basic authentication
+    //    2.3 passed in as a "X-Redmine-API-Key" HTTP header (added in Redmine 1.1.0)
+    // You can find your API key on your account page ( /my/account ) when logged in, 
+    // on the right-hand pane of the default layout.
+    // Code From http://tspycher.com/2011/03/using-the-redmine-api-with-php/
+    if(!isset($this->apiKey)) 
+    {
+		  throw new exception(__METHOD__ . " Can not work without redmine apiKey");
+		}		  
+		curl_setopt($this->curl, CURLOPT_USERPWD, $this->apiKey . ":" . $this->apiKey);
+		curl_setopt($this->curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+
 		
 		// added after some connection issues
 		// CRITIC:
@@ -197,15 +194,18 @@ class redmine
 		//
 		curl_setopt($this->curl, CURLOPT_DNS_USE_GLOBAL_CACHE, false );
 		curl_setopt($this->curl, CURLOPT_DNS_CACHE_TIMEOUT, 2 );
+	
 		
-		
-		$headers = $this->headers;
 		if ($method == 'PUT' || $method == 'POST') 
 		{
-		  $headers[CURLOPT_HTTPHEADER][] = 'Content-Type: application/xml; charset=UTF-8';
-		  $headers[CURLOPT_HTTPHEADER][] = 'Content-Length: '. mb_strlen($body);
+		  // Got this info from http://tspycher.com/2011/03/using-the-redmine-api-with-php/
+		  // For TL I'have added charset=UTF-8, following code I've found on other REST API example
+			curl_setopt($this->curl, CURLOPT_HEADER, 0); 
+			curl_setopt($this->curl, CURLOPT_HTTPHEADER, 
+			                         array("Content-Type: text/xml; charset=UTF-8", 
+			                               "Content-length: " . mb_strlen($body))); 
 		}
-		
+
 		switch ($method) 
 		{
 		  case 'GET':
@@ -251,11 +251,10 @@ class redmine
 		$content = curl_exec($this->curl);
 		$response = curl_getinfo($this->curl);
 		$curlError =  curl_error($this->curl);
-
 		$httpCode = (int)$response['http_code'];
 		if ($httpCode != 200 && $httpCode != 201 && $httpCode != $ignoreStatusCode) 
 		{
-		  throw new exception(__METHOD__ . "url:$url - response:$response - content: $content");
+		  throw new exception(__METHOD__ . "url:$this->url - response:$response - content: $content");
 		}
 		
 		$rr = array('content' => $content,'response' => $response,'curlError' => $curlError);

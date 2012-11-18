@@ -3496,5 +3496,6 @@ $TLS_issue_build = " Build: %s \n";
 $TLS_issue_platform = " Platform: %s \n";
 $TLS_issue_exec_result = " Execution Status: %s \n";
 $TLS_jira_bug_created = "JIRA Issue Created (summary:%s) on project with key:%s";
+$TLS_redmine_bug_created = "REDMINE Issue Created (summary:%s) on project with identifier:%s";
 // ----- END ------------------------------------------------------------------
 ?>

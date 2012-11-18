@@ -9,18 +9,61 @@ require_once '../../../third_party/redmine-php-api/lib/redmine-rest-api.php';
 // $username = 'tl';
 // $password = 'redmine2012';
 
-$site = array(array('url' => 'http://192.168.1.174','apiKey' => 'e6f1cbed7469528389554cffcb0e5aa4e0fa0bc8'),
+//$site = array(array('url' => 'http://192.168.1.174','apiKey' => 'e6f1cbed7469528389554cffcb0e5aa4e0fa0bc8'),
+// $site = array(array('url' => 'http://192.168.1.2','apiKey' => 'e6f1cbed7469528389554cffcb0e5aa4e0fa0bc8'),
+
+$site = array(array('url' => 'http://192.168.1.74','apiKey' => 'e6f1cbed7469528389554cffcb0e5aa4e0fa0bc8'),
 			  array('url' => 'http://tl.m.redmine.org', 'apiKey' => 'b956de40bf8baf6af7344b759cd9471832f33922'));
-			  
+
+// e6f1cbed7469528389554cffcb0e5aa4e0fa0bc8
+// curl -v -H "Content-Type: application/xml" -X POST --data "@issue.xml" -H "X-Redmine-API-Key: e6f1cbed7469528389554cffcb0e5aa4e0fa0bc8" http://192.168.1.2/issues.xml
 
 $red = new redmine($site[0]['url'],$site[0]['apiKey']);
 $issueObj = $red->getIssue(3);
+
+var_dump($issueObj);
+die();
 
 echo '<br>';
 echo 'Summary(SUBJECT):' .(string)$issueObj->subject . '<br>';
 echo 'Status: Name/ID' . (string)$issueObj->status['name'] . '/' . (int)$issueObj->status['id'] . '<br>';
 echo '<br><hr><pre>';
 echo '</pre>';
+
+
+$xml = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');  
+$xml->addChild('subject', htmlentities('TEST SUBJECT'));
+$xml->addChild('project_id', 'tl-rest');
+$xml->addChild('tracker_id', 1);
+$red->addIssueFromSimpleXML($xml);
+
+/*
+What you get when things work ok
+<?xml version="1.0" encoding="UTF-8"?>
+<issue>
+  <id>11</id>
+  <project name="git-helloworld" id="1"/>
+  <tracker name="Bug" id="1"/>
+  <status name="New" id="1"/>
+  <priority name="Normal" id="4"/>
+  <author name="Redmine Admin" id="1"/>
+  <subject>API TEST FMAN</subject>
+  <description></description>
+  <start_date>2012-11-18</start_date>
+  <due_date></due_date>
+  <done_ratio>0</done_ratio>
+  <estimated_hours></estimated_hours>
+  <spent_hours>0.0</spent_hours>
+  <created_on>Sun Nov 18 10:26:02 +0000 2012</created_on>
+  <updated_on>Sun Nov 18 10:26:02 +0000 2012</updated_on>
+  <relations>
+  </relations>
+</issue>
+
+
+
+
+*/
 
 die();
 

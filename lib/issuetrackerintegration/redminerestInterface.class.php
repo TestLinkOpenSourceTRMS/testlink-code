@@ -13,7 +13,8 @@
 require_once(TL_ABS_PATH . "/third_party/redmine-php-api/lib/redmine-rest-api.php");
 class redminerestInterface extends issueTrackerInterface
 {
-    private $APIClient;
+  private $APIClient;
+  private $issueDefaults;
 
 	/**
 	 * Construct and connect to BTS.
@@ -26,9 +27,9 @@ class redminerestInterface extends issueTrackerInterface
 		$this->interfaceViaDB = false;
 		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
 		
-	    $this->setCfg($config);
+	  $this->setCfg($config);
 		$this->completeCfg();
-	    $this->connect();
+	  $this->connect();
 	}
 
 
@@ -44,15 +45,22 @@ class redminerestInterface extends issueTrackerInterface
 	function completeCfg()
 	{
 		$base = trim($this->cfg->uribase,"/") . '/'; // be sure no double // at end
-	    if( !property_exists($this->cfg,'uriview') )
-	    {
-	    	$this->cfg->uriview = $base . 'issues/show/';
+	  if( !property_exists($this->cfg,'uriview') )
+	  {
+      $this->cfg->uriview = $base . 'issues/show/';
 		}
 	    
-	    if( !property_exists($this->cfg,'uricreate') )
-	    {
-	    	$this->cfg->uricreate = $base;
+	  if( !property_exists($this->cfg,'uricreate') )
+	  {
+      $this->cfg->uricreate = $base;
 		}	    
+
+		$this->issueDefaults = array('trackerid' => 1);
+    foreach($this->issueDefaults as $prop => $default)
+    {
+  	  $this->cfg->$prop = (string)(property_exists($this->cfg,$prop) ? $this->cfg->$prop : $default);
+    }		
+
 	}
 
 	/**
@@ -85,14 +93,14 @@ class redminerestInterface extends issueTrackerInterface
      **/
     function connect()
     {
-		try
-		{
-			// CRITIC NOTICE for developers
-			// $this->cfg is a simpleXML Object, then seems very conservative and safe
-			// to cast properties BEFORE using it.
-			$this->APIClient = new redmine((string)trim($this->cfg->uribase),(string)trim($this->cfg->apikey));
-	       	$this->connected = true;
-        }
+		  try
+		  {
+			  // CRITIC NOTICE for developers
+			  // $this->cfg is a simpleXML Object, then seems very conservative and safe
+			  // to cast properties BEFORE using it.
+			  $this->APIClient = new redmine((string)trim($this->cfg->uribase),(string)trim($this->cfg->apikey));
+	      $this->connected = true;
+      }
 		catch(Exception $e)
 		{
 			$logDetails = '';
@@ -124,7 +132,7 @@ class redminerestInterface extends issueTrackerInterface
 	{
 		if (!$this->isConnected())
 		{
-            tLog(__METHOD__ . '/Not Connected ', 'ERROR');
+      tLog(__METHOD__ . '/Not Connected ', 'ERROR');
 			return false;
 		}
 		
@@ -135,11 +143,13 @@ class redminerestInterface extends issueTrackerInterface
 			if( !is_null($xmlObj) && is_object($xmlObj))
 			{
 				$issue = new stdClass();
-		        $issue->IDHTMLString = "<b>{$issueID} : </b>";
+		    $issue->IDHTMLString = "<b>{$issueID} : </b>";
 				$issue->statusCode = (string)$xmlObj->status['id'];
 				$issue->statusVerbose = (string)$xmlObj->status['name'];;
 				$issue->statusHTMLString = "[$issue->statusVerbose] ";
 				$issue->summary = $issue->summaryHTMLString = (string)$xmlObj->subject;
+				$issue->redmineProject = array('name' => (string)$xmlObj->project['name'], 
+				                               'id' => (int)$xmlObj->project['id'] );
 			}
 		}
 		catch(Exception $e)
@@ -205,21 +215,62 @@ class redminerestInterface extends issueTrackerInterface
         return $status_ok;
     }
 
+    public function addIssue($summary,$description)
+  	{
+  	  // Check mandatory info
+  	  if( !property_exists($this->cfg,'projectidentifier') )
+  	  {
+  	    throw new exception(__METHOD__ . " project identifier is MANDATORY");
+  	  }
+  	  
+      try
+      {
+        // needs json or xml
+        $issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
+    		$issueXmlObj->addChild('subject', htmlentities($summary));
+    		$issueXmlObj->addChild('description', htmlentities($description));
+    		$issueXmlObj->addChild('project_id', (string)$this->cfg->projectidentifier);
+    		$issueXmlObj->addChild('tracker_id', (string)$this->cfg->trackerid);
+    		// $issueXmlObj->addChild('priority_id', $priority_id);
+    		// $issueXmlObj->addChild('category_id', $category_id);
+ 
+        $op = $this->APIClient->addIssueFromSimpleXML($issueXmlObj);
+        $ret = array('id' => (string)$op->id, 
+                     'msg' => sprintf(lang_get('redmine_bug_created'),$summary,
+                                      $issueXmlObj->projectidentifier));
+      }
+      catch (Exception $e)
+      {
+        $msg = "Create REDMINE Ticket FAILURE => " . $e->getMessage();
+        tLog($msg, 'WARNING');
+        $ret = array('id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+      }
+      return $ret;
+  	}  
+
+
+
+
+
+    
+
 
 
     /**
      *
      * @author francisco.mancardi@gmail.com>
      **/
-	public static function getCfgTemplate()
+	  public static function getCfgTemplate()
   	{
   	
   		// http://tl.m.remine.org
 		$template = "<!-- Template " . __CLASS__ . " -->\n" .
-					"<issuetracker>\n" .
-					"<apikey>REDMINE API KEY</apikey>\n" .
-					"<uribase>http://tl.m.remine.org</uribase>\n" .
-					"</issuetracker>\n";
+					      "<issuetracker>\n" .
+					      "<apikey>REDMINE API KEY</apikey>\n" .
+					      "<uribase>http://tl.m.remine.org</uribase>\n" .
+					      "<!-- Project Identifier is NEEDED ONLY if you want to create issues from TL -->\n" . 
+					      "<projectidentifier>REDMINE PROJECT IDENTIFIER</projectidentifier>\n" .
+					      "</issuetracker>\n";
 		return $template;
   	}
 }

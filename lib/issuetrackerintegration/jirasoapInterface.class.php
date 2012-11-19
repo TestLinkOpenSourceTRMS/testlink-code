@@ -14,7 +14,7 @@
  *
  * @internal revisions
  * @since 1.9.5
- * 20121020 - franciscom - TICKET 5290: DoesnÂ´t show description of bugs from BTS (JIRA)
+ * 20121020 - franciscom - TICKET 5290: Doesn´t show description of bugs from BTS (JIRA)
 **/
 class jirasoapInterface extends issueTrackerInterface
 {
@@ -166,7 +166,7 @@ class jirasoapInterface extends issueTrackerInterface
     }
 
     /**
-	 * @param string issueID
+	   * @param string issueID
      *
      * @return bool true if issue exists on BTS
      **/

@@ -6,15 +6,15 @@
  * @author Francisco Mancardi
  *
  * @internal IMPORTANT NOTICE
- *			 we use issueID on methods signature, to make clear that this ID 
- *			 is HOW issue in identified on Issue Tracker System, 
- *			 not how is identified internally at DB	level on TestLink
+ * we use issueID on methods signature, to make clear that this ID 
+ * is HOW issue in identified on Issue Tracker System, 
+ * not how is identified internally at DB	level on TestLink
  *
- *			 Third Party Code: https://github.com/chadhutchins/fogbugz-php-api	
+ * Third Party Code: https://github.com/chadhutchins/fogbugz-php-api	
  *
  * @internal revisions
- * @since 1.9.4
- * 20120324 - franciscom - TICKET 4904: integrate with ITS on test project basis 
+ * @since 1.9.5
+ * 20121119 - franciscom - TICKET 
 **/
 require_once(TL_ABS_PATH . "/third_party/fogbugz-php-api/lib/api.php");
 class fogbugzrestInterface extends issueTrackerInterface
@@ -30,9 +30,10 @@ class fogbugzrestInterface extends issueTrackerInterface
 	function __construct($type,$config)
 	{
 		$this->interfaceViaDB = false;
-	    $this->setCfg($config);
+		$this->methodOpt = array('buildViewBugLink' => array('addSummary' => true, 'colorByStatus' => true));
+	  $this->setCfg($config);
 		$this->completeCfg();
-	    $this->connect();
+	  $this->connect();
 	}
 
 
@@ -48,15 +49,17 @@ class fogbugzrestInterface extends issueTrackerInterface
 	function completeCfg()
 	{
 		$base = trim($this->cfg->uribase,"/") . '/'; // be sure no double // at end
-	    if( !property_exists($this->cfg,'uriview') )
-	    {
+	  if( !property_exists($this->cfg,'uriview') )
+	  {
 	    	$this->cfg->uriview = $base . 'default.asp?command=view&pg=pgEditBug&ixbug=';
 		}
 	    
-	    if( !property_exists($this->cfg,'uricreate') )
-	    {
+	  if( !property_exists($this->cfg,'uricreate') )
+	  {
 	    	$this->cfg->uricreate = $base . 'default.asp?command=new&pg=pgEditBug';
-		}	    
+		}
+		
+			    
 	}
 
 	/**
@@ -72,7 +75,7 @@ class fogbugzrestInterface extends issueTrackerInterface
     /**
      * checks id for validity
      *
-	 * @param string issueID
+	   * @param string issueID
      *
      * @return bool returns true if the bugid has the right format, false else
      **/
@@ -95,10 +98,10 @@ class fogbugzrestInterface extends issueTrackerInterface
 			// $this->cfg is a simpleXML Object, then seems very conservative and safe
 			// to cast properties BEFORE using it.
 			$this->APIClient = new FogBugz((string)trim($this->cfg->username),(string)trim($this->cfg->password),
-										   (string)trim($this->cfg->uribase));
-	       	$this->APIClient->logon();
-	       	$this->connected = true;
-        }
+										                 (string)trim($this->cfg->uribase));
+	    $this->APIClient->logon();
+	    $this->connected = true;
+    }
 		catch(Exception $e)
 		{
 			$logDetails = '';
@@ -108,7 +111,7 @@ class fogbugzrestInterface extends issueTrackerInterface
 			}
 			$logDetails = trim($logDetails,'/ ');
 			$this->connected = false;
-            tLog(__METHOD__ . " [$logDetails] " . $e->getMessage(), 'ERROR');
+      tLog(__METHOD__ . " [$logDetails] " . $e->getMessage(), 'ERROR');
 		}
     }
 
@@ -129,19 +132,20 @@ class fogbugzrestInterface extends issueTrackerInterface
 	public function getIssue($issueID)
 	{
 		if (!$this->isConnected())
-		{
-            tLog(__METHOD__ . '/Not Connected ', 'ERROR');
+		{              
+		  $msg = __METHOD__ . ' Not Connected ';
+      tLog($msg,'ERROR');
 			return false;
 		}
 		
 		try
 		{
 			$target = array('q' => intval($issueID), 'cols' => 'sTitle,sStatus');
-			$xml = $this->APIClient->search($target);
+		  $xml = $this->APIClient->search($target); 
 			if( !is_null($xml) && is_object($xml) )
 			{
 				$issue = new stdClass();
-		        $issue->IDHTMLString = "<b>{$issueID} : </b>";
+		    $issue->IDHTMLString = "<b>{$issueID} : </b>";
 				$issue->statusCode = (string)$xml->cases->case->sStatus;
 				$issue->statusVerbose = $issue->statusCode;
 				$issue->statusHTMLString = "[$issue->statusCode] ";
@@ -150,7 +154,8 @@ class fogbugzrestInterface extends issueTrackerInterface
 		}
 		catch(Exception $e)
 		{
-			tLog(__METHOD__ . '/' . $e->getMessage(),'ERROR');
+		  $msg = __METHOD__ . '/' . $e->getMessage();
+			tLog($msg,'ERROR');
 			$issue = null;
 		}	
 		return $issue;		
@@ -180,7 +185,7 @@ class fogbugzrestInterface extends issueTrackerInterface
 	 **/
 	function getIssueStatusVerbose($issueID)
 	{
-        return $this->getIssueStatusCode($issueID);
+    return $this->getIssueStatusCode($issueID);
 	}
 
 	/**
@@ -192,26 +197,73 @@ class fogbugzrestInterface extends issueTrackerInterface
 	 **/
 	function getIssueSummaryHTMLString($issueID)
 	{
-        $issue = $this->getIssue($issueID);
+    $issue = $this->getIssue($issueID);
 		return (!is_null($issue) && is_object($issue)) ? $issue->summaryHTMLString : null;
 	}
 
+  /**
+	 * @param string issueID
+   *
+   * @return bool true if issue exists on BTS
+   **/
+  function checkBugIDExistence($issueID)
+  {                                          
+      if(($status_ok = $this->checkBugIDSyntax($issueID)))
+      {                         
+          $issue = $this->getIssue($issueID);       
+          $status_ok = !is_null($issue) && is_object($issue);
+      }
+      return $status_ok;
+  }
 
-    /**
-     *
-     * @author francisco.mancardi@gmail.com>
-     **/
+
+
+  public function addIssue($summary,$description)
+	{
+    try
+    {
+      $projectName = (string)$this->cfg->project; 
+  		$issue = array('sProject' => htmlentities($projectName),
+                     'sTitle' => htmlentities($summary),
+                     'sEvent' => htmlentities($description));
+
+      // just for the record APIClient->NAME OF FogBugz command
+      $op = $this->APIClient->new($issue);
+      // echo '<br>' . __METHOD__ . '<br>';
+      // echo '<pre>'; var_dump((string)$op->case['ixBug']);echo '</pre>';
+      
+      
+      $ret = array('id' => (string)$op->case['ixBug'], 
+                   'msg' => sprintf(lang_get('fogbugz_bug_created'),$summary,$projectName));
+    }
+    catch (Exception $e)
+    {
+      $msg = "Create FOGBUGZ Ticket FAILURE => " . $e->getMessage();
+      tLog($msg, 'WARNING');
+      $ret = array('id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+    }
+    return $ret;
+	}  
+
+
+
+  /**
+   *
+   * @author francisco.mancardi@gmail.com>
+   **/
 	public static function getCfgTemplate()
-  	{
+  {
   	
-  		// https://testlink.fogbugz.com/fogbugz/default.asp?pg=pgEditBug&command=view&ixbug=
+  	// https://testlink.fogbugz.com/fogbugz/default.asp?pg=pgEditBug&command=view&ixbug=
 		$template = "<!-- Template " . __CLASS__ . " -->\n" .
-					"<issuetracker>\n" .
-					"<username>FOGBUGZ LOGIN NAME</username>\n" .
-					"<password>FOGBUGZ PASSWORD</password>\n" .
-					"<uribase>https://testlink.fogbugz.com</uribase>\n" .
-					"</issuetracker>\n";
+					      "<issuetracker>\n" .
+					      "<username>FOGBUGZ LOGIN NAME</username>\n" .
+					      "<password>FOGBUGZ PASSWORD</password>\n" .
+					      "<uribase>https://testlink.fogbugz.com</uribase>\n" .
+					      "<!-- use following attributes if you want to create issues from TestLink -->\n" .
+					      "<project>FOGBUGZ PROJECT NAME</project>\n" .
+					      "</issuetracker>\n";
 		return $template;
-  	}
+  }
 }
 ?>

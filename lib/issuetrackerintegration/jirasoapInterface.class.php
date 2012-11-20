@@ -359,14 +359,14 @@ class jirasoapInterface extends issueTrackerInterface
                      'description' => $description);
 
       $op = $this->APIClient->createIssue($this->authToken, $issue);
-      $ret = array('id' => $op->key, 
+      $ret = array('status_ok' => true, 'id' => $op->key, 
                    'msg' => sprintf(lang_get('jira_bug_created'),$summary,$issue['project']));
     }
     catch (Exception $e)
     {
       $msg = "Create JIRA Ticket FAILURE => " . $e->getMessage();
       tLog($msg, 'WARNING');
-      $ret = array('id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+      $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
     }
     return $ret;
 	}  

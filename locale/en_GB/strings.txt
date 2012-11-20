@@ -3498,5 +3498,8 @@ $TLS_issue_exec_result = " Execution Status: %s \n";
 $TLS_jira_bug_created = "JIRA Issue Created (summary:%s) on project with key:%s";
 $TLS_redmine_bug_created = "REDMINE Issue Created (summary:%s) on project with identifier:%s";
 $TLS_fogbugz_bug_created = "FOGBUGZ Issue Created (summary:%s) on project:%s";
+$TLS_youtrack_bug_created = "YOUTRACK Issue Created (summary:%s) on project with id:%s";
+$TLS_mantis_bug_created = "MANTIS Issue Created (summary:%s) on project with key:%s";
+$TLS_bugzilla_bug_created = "BUGZILLA Issue Created (summary:%s) on product:%s";
 // ----- END ------------------------------------------------------------------
 ?>

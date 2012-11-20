@@ -6,27 +6,30 @@
  * @author Francisco Mancardi
  *
  * @internal IMPORTANT NOTICE
- *			 we use issueID on methods signature, to make clear that this ID 
- *			 is HOW issue in identified on Issue Tracker System, 
- *			 not how is identified internally at DB	level on TestLink
+ * we use issueID on methods signature, to make clear that this ID 
+ * is HOW issue in identified on Issue Tracker System, 
+ * not how is identified internally at DB	level on TestLink
  *
  * @internal IMPORTANT NOTICE
- *			 1. based on contribution by jetbrains.com, but refactored to use
- *				https://github.com/jan0sch/YouTrack-Client-PHP-Library
- *				to improve/fix things that were not clear on jetbrains contribution.
+ * 1. based on contribution by jetbrains.com, but refactored to use
+ *		https://github.com/jan0sch/YouTrack-Client-PHP-Library
+ *		to improve/fix things that were not clear on jetbrains contribution.
  *
- *			 2. http://curl.haxx.se/libcurl/php/examples/callbacks.html	
- *				provided very useful simple curl php usage examples
+ * 2. http://curl.haxx.se/libcurl/php/examples/callbacks.html	
+ *		provided very useful simple curl php usage examples
  *
  * @internal revisions
- * @since 1.9.4
- * 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis 
+ * @since 1.9.5
+ * 
 **/
 require_once(TL_ABS_PATH . "/third_party/youtrackclient/src/youtrackclient.php");
 
 class youtrackrestInterface extends issueTrackerInterface
 {
-    private $APIClient;
+  private $APIClient;
+  private $issueDefaults;
+  private $issueTemplate;
+  
 
 	/**
 	 * Construct and connect to BTS.
@@ -37,9 +40,10 @@ class youtrackrestInterface extends issueTrackerInterface
 	function __construct($type,$config)
 	{
 		$this->interfaceViaDB = false;
-	    $this->setCfg($config);
-	    $this->completeCfg();
-	    $this->connect();
+		$this->methodOpt = array('buildViewBugLink' => array('addSummary' => true, 'colorByStatus' => true));
+	  $this->setCfg($config);
+	  $this->completeCfg();
+	  $this->connect();
 	}
 
 	/**
@@ -118,7 +122,7 @@ class youtrackrestInterface extends issueTrackerInterface
 			$issue = $this->APIClient->get_issue($issueID);		
 			if( !is_null($issue) && is_object($issue) )
 			{
-	            $issue->IDHTMLString = "<b>{$issueID} : </b>";
+	      $issue->IDHTMLString = "<b>{$issueID} : </b>";
 				$issue->statusCode = $issue->State;
 				$issue->statusVerbose = $issue->statusCode;
 				$issue->statusHTMLString = "[$issue->statusCode] ";
@@ -185,8 +189,10 @@ class youtrackrestInterface extends issueTrackerInterface
 					"<username>YOUTRACK LOGIN NAME</username>\n" .
 					"<password>YOUTRACK PASSWORD</password>\n" .
 					"<!-- IMPORTANT NOTICE --->\n" .
-					"<!-- uribase CAN NOT END with / --->\n" .
+					"<!-- uribase CAN NOT END with / -->\n" .
 					"<uribase>http://testlink.myjetbrains.com/youtrack</uribase>\n".
+					"<!-- Configure project if you want to Add issues from TestLink -->\n" .
+					"<project>YOUTRACK PROJECT ID</project>\n".
 					"</issuetracker>\n";
 		return $template;
   	}
@@ -207,22 +213,28 @@ class youtrackrestInterface extends issueTrackerInterface
 		$this->cfg->uribase = trim((string)$this->cfg->uribase,"/");
 
 		$base =  $this->cfg->uribase . '/';
-	    /*
-	    if( !property_exists($this->cfg,'urirest') )
-	    {
-	    	$this->cfg->urirest = $base . 'rest/';
-		}
-		*/
-		
-	    if( !property_exists($this->cfg,'uriview') )
-	    {
+	  if( !property_exists($this->cfg,'uriview') )
+	  {
 	    	$this->cfg->uriview = $base . 'issue/';
 		}
 	    
-	    if( !property_exists($this->cfg,'uricreate') )
-	    {
+	  if( !property_exists($this->cfg,'uricreate') )
+	  {
 	    	$this->cfg->uricreate = $base . 'dashboard#newissue=yes';
-		}	    
+		}
+		
+		$this->issueTemplate = array();
+		$this->issueDefaults = array('assignee' => '', 'priority' => '', 'type' => '', 
+		                             'subsystem' => '', 'state' => '', 'affectsversion' => '', 
+		                             'fixedversion' => '', 'fixedinbuild' => '');
+    foreach($this->issueDefaults as $prop => $default)
+    {
+  	  $this->cfg->$prop = (string)(property_exists($this->cfg,$prop) ? $this->cfg->$prop : $default);
+  	  $this->issueTemplate[$prop] = $this->cfg->$prop;
+    }		
+
+		
+			    
 	}
   
     /**
@@ -239,6 +251,31 @@ class youtrackrestInterface extends issueTrackerInterface
         }
         return $status_ok;
     }
+
+  public function addIssue($summary,$description)
+	{
+    try
+    {
+      $issue = $this->issueTemplate;
+      $op = $this->APIClient->create_issue((string)$this->cfg->project, $issue['assignee'], 
+                                           $summary, $description, $issue['priority'], 
+                                           $issue['type'], $issue['subsystem'], $issue['state'], 
+                                           $issue['affectsversion'], 
+                                           $issue['fixedversion'], $issue['fixedinbuild']);
+      
+      $ret = array('status_ok' => true, 'id' => (string)$op->id, 
+                   'msg' => sprintf(lang_get('youtrack_bug_created'),$summary,(string)$this->cfg->project));
+    }
+    catch (Exception $e)
+    {
+      $msg = "Create YOUTRACK Ticket FAILURE => " . $e->getMessage();
+      tLog($msg, 'WARNING');
+      $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+    }
+    return $ret;
+	}  
+
+
   	
 }
 ?>

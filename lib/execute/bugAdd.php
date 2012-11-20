@@ -5,8 +5,8 @@
  *
  * @filesource	bugAdd.php
  * @internal revisions
- * @since 1.9.4
- * 20120219 - franciscom - TICKET 4904: integrate with ITS on test project basis
+ * @since 1.9.5
+ * 
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -72,7 +72,7 @@ function init_args()
 
 function addIssue($dbHandler,$argsObj,$itsObj)
 {
-  $automaticMode = false;             
+  $opOK = false;             
   $msg = '';
 	$resultsCfg = config_get('results');                      
   $tcaseMgr = new testcase($dbHandler);
@@ -99,13 +99,12 @@ function addIssue($dbHandler,$argsObj,$itsObj)
                         $exec['statusVerbose'] . "\n\n" . $exec['execution_notes'];
   
   $rs = $itsObj->addIssue($auditSign . ' - ' . sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']),$signature);  
-  
-  if($rs['id'] > 0)
-  {
-    $automaticMode = true;
+  if($rs['status_ok'])
+  {                   
+    $msg = $rs['msg'];
+    $opOK = true;
   	if (write_execution_bug($dbHandler,$argsObj->exec_id, $rs['id']))
   	{
-  		$msg = lang_get("bug_added");
   		logAuditEvent(TLS("audit_executionbug_added",$rs['id']),"CREATE",$argsObj->exec_id,"executions");
   	}
   }
@@ -113,7 +112,7 @@ function addIssue($dbHandler,$argsObj,$itsObj)
   {
     $msg = $rs['msg'];
   }
-  return array($automaticMode,$msg);
+  return array($opOK,$msg);
 }
 
 function initializeGui($argsObj)
@@ -151,7 +150,7 @@ function itsProcess(&$dbHandler,$argsObj,&$guiObj)
         list($guiObj->tlCanCreateIssue,$guiObj->msg) = addIssue($dbHandler,$argsObj,$its);
       }
   	}
-  }	
+  }	              
   return array($its,$issueT); 
 }
 

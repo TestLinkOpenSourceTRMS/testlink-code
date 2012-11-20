@@ -353,10 +353,10 @@ class mantissoapInterface extends issueTrackerInterface
   public function addIssue($summary,$description)
 	{
 	  static $client;
-	  $ret = array('id' => -1,'msg' => '');
+	  $ret = array('status_ok' => false, 'id' => -1,'msg' => '');
 	  if (!$this->isConnected())
 	  {
-	  return $ret;
+	    return $ret;
 	  }
 	  
 	  if(is_null($client))
@@ -380,6 +380,8 @@ class mantissoapInterface extends issueTrackerInterface
 	    $target = (property_exists($this->cfg,'category')) ? (string)$this->cfg->category : null;
 	    $issue['category'] = (is_null($target) || !isset($nameCode[$target])) ? current($nameCode) : $target;
 	    $ret['id'] = $client->mc_issue_add($safe->username,$safe->password,$issue);
+	    $ret['status_ok'] = true;
+	    $ret['msg'] = sprintf(lang_get('mantis_bug_created'),$summary,$safe->project);
 	
 	  }
 	  else

@@ -233,14 +233,14 @@ class fogbugzrestInterface extends issueTrackerInterface
       // echo '<pre>'; var_dump((string)$op->case['ixBug']);echo '</pre>';
       
       
-      $ret = array('id' => (string)$op->case['ixBug'], 
+      $ret = array('status_ok' => true, 'id' => (string)$op->case['ixBug'], 
                    'msg' => sprintf(lang_get('fogbugz_bug_created'),$summary,$projectName));
     }
     catch (Exception $e)
     {
       $msg = "Create FOGBUGZ Ticket FAILURE => " . $e->getMessage();
       tLog($msg, 'WARNING');
-      $ret = array('id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+      $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
     }
     return $ret;
 	}  

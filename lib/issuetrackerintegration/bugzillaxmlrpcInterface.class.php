@@ -371,12 +371,22 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
         $issue[$prop] = (string)$this->cfg->$prop;
       }
 		  $args = array($issue);
-  		$ret = $this->APIClient->call($method,$args);
-
+  		$op = $this->APIClient->call($method,$args);
+      if( ($op['status_ok'] = ($op['id'] > 0)) )
+      {
+        $op['msg'] = sprintf(lang_get('bugzilla_bug_created'),$summary,$issue['product']);
+      }
+      else
+      {
+        $msg = "Create BUGZILLA Ticket FAILURE ";
+        $op= array('status_ok' => false, 'id' => -1, 
+                   'msg' => $msg . ' - serialized issue:' . serialize($issue));
+        tLog($msg, 'WARNING');
+      }
+      
   		$method = 'User.logout';
   		$resp[$method] = $this->APIClient->call($method);
-      
-      return $ret; 	  
+      return $op; 	  
   	}
 
 }

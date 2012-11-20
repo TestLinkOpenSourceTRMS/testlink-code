@@ -235,25 +235,18 @@ class redminerestInterface extends issueTrackerInterface
     		// $issueXmlObj->addChild('category_id', $category_id);
  
         $op = $this->APIClient->addIssueFromSimpleXML($issueXmlObj);
-        $ret = array('id' => (string)$op->id, 
+        $ret = array('status_ok' => true, 'id' => (string)$op->id, 
                      'msg' => sprintf(lang_get('redmine_bug_created'),$summary,
-                                      $issueXmlObj->projectidentifier));
+                                      $issueXmlObj->project_id));
       }
       catch (Exception $e)
       {
         $msg = "Create REDMINE Ticket FAILURE => " . $e->getMessage();
         tLog($msg, 'WARNING');
-        $ret = array('id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+        $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
       }
       return $ret;
   	}  
-
-
-
-
-
-    
-
 
 
     /**

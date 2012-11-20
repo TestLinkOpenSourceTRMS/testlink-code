@@ -148,13 +148,14 @@ function write_execution_bug(&$db,$exec_id, $bug_id,$just_delete=false)
 	$prep_bug_id = $db->prepare_string($bug_id);
 	
 	$sql = "DELETE FROM {$execution_bugs} WHERE execution_id={$exec_id} " .
-		   "AND bug_id='" . $prep_bug_id ."'";
+		     "AND bug_id='" . $prep_bug_id ."'";
 	$result = $db->exec_query($sql);
+	
 	
 	if(!$just_delete)
 	{
 		$sql = "INSERT INTO {$execution_bugs} (execution_id,bug_id) " .
-			   "VALUES({$exec_id},'" . $prep_bug_id . "')";
+			     "VALUES({$exec_id},'" . $prep_bug_id . "')";
 		$result = $db->exec_query($sql);  	     
 	}
 	

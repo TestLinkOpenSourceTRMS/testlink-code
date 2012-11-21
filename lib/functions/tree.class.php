@@ -1176,14 +1176,13 @@ class tree extends tlObject
 	    
 	    if( !is_null($options) )
 	    {
-			// not a good solution, but Quick & Dirty
-	        $path_format = isset($options['path_format']) ? $options['path_format'] : $path_format;
-			if(	!isset($options['path_format']) )
-			{
-	        	$path_format = isset($options['include_starting_point']) ? 'points' : $path_format;
-			}
-
-	        $output_format = isset($options['output_format']) ? $options['output_format'] : $output_format;
+  			// not a good solution, but Quick & Dirty
+  	    $path_format = isset($options['path_format']) ? $options['path_format'] : $path_format;
+  			if(	!isset($options['path_format']) )
+  			{
+          $path_format = isset($options['include_starting_point']) ? 'points' : $path_format;
+  			}
+        $output_format = isset($options['output_format']) ? $options['output_format'] : $output_format;
 	    }
 	    
 	    // according to count($items) we will try to optimize, sorry for magic number
@@ -1191,32 +1190,33 @@ class tree extends tlObject
 	    {
 	    	$xitems = array_flip((array)$items);
 	    	$xsql = " SELECT parent_id,id " . 
-	    			" FROM {$this->tables['nodes_hierarchy']} " . 
-	    			" WHERE id IN (" . implode(',',array_keys($xitems)) . ")";
+	    			    " FROM {$this->tables['nodes_hierarchy']} " . 
+	    			    " WHERE id IN (" . implode(',',array_keys($xitems)) . ")";
 
-			$xmen = $this->db->fetchRowsIntoMap($xsql,'parent_id',database::CUMULATIVE);
-			$all_nodes = array();			
+			  $xmen = $this->db->fetchRowsIntoMap($xsql,'parent_id',database::CUMULATIVE);
+			  $all_nodes = array();			
 		    foreach($xmen as $parent_id => &$children)
 		    {
 		    	$paty = $this->get_path($parent_id,$goto_root,$path_format);
-				$paty[] = $parent_id;
+				  $paty[] = $parent_id;
 				
-				$all_nodes = array_merge($all_nodes,$paty);
+				  $all_nodes = array_merge($all_nodes,$paty);
 		    	foreach($children as &$item)
 		    	{
 		    		 $path_to[$item['id']]['name'] = $stairway2heaven[$item['id']] = $paty;
 		    		 $all_nodes[] = $item['id'];	
 		    	}
 		    }
-			unset($xmen);
+			  unset($xmen);
 	    }
 	    else
 	    {
+	      //new dBug($items);
 		    foreach((array)$items as $item_id)
 		    {
-		        $stairway2heaven[$item_id] = $this->get_path($item_id,$goto_root,$path_format);
-				$path_to[$item_id]['name'] = $stairway2heaven[$item_id];
-		        $all_nodes = array_merge($all_nodes,(array)$path_to[$item_id]['name']);
+		      $stairway2heaven[$item_id] = $this->get_path($item_id,$goto_root,$path_format);
+				  $path_to[$item_id]['name'] = $stairway2heaven[$item_id];
+		      $all_nodes = array_merge($all_nodes,(array)$path_to[$item_id]['name']);
 		    }
 	    }
 	    

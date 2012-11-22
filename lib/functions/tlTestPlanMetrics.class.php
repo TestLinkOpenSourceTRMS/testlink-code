@@ -400,7 +400,7 @@ class tlTestPlanMetrics extends testplan
 	{
 	  $renderObj = null;
 		$code_verbose = $this->getStatusForReports();
-	  $labels = $this->resultsCfg['status_label'];
+	  $labels = $this->resultsCfg['status_lhelperBuildSQLExecCountersabel'];
 	    
 		$metrics = $this->getExecCountersByBuildExecStatus($id);
 	  if( !is_null($metrics) )
@@ -1777,7 +1777,6 @@ class tlTestPlanMetrics extends testplan
 							" LEFT OUTER JOIN {$this->tables['executions']} E " .
 							" ON  E.tcversion_id = TPTCV.tcversion_id " .
 							" AND E.testplan_id = TPTCV.testplan_id " .
-							" AND E.platform_id = TPTCV.platform_id " .
 							" AND E.platform_id = TPTCV.platform_id " .
 							$builds->joinAdd;
 		

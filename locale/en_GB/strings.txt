@@ -2730,8 +2730,7 @@ $TLS_not_run_any_platform_no_platforms = "There are no platforms linked to this 
 // ----- lib/results/testPlanWithCF----
 $TLS_link_report_tplans_with_cf = "Test Plan with Custom Field info";
 $TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
-$TLS_no_linked_tplan_cf = "There are no test cases where a custom field " .
-                          "was set while adding to the test plan";
+$TLS_no_linked_tplan_cf = "There are no test cases on this test plan, with custom fields ENABLED ON Test Plan Design";
 $TLS_info_testPlanWithCF = "This Report shows all test cases with any custom field " .
                            "set while adding test cases to test plan.";
 

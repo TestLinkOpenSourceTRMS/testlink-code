@@ -9,21 +9,23 @@
  * For a test plan, list test cases with Execution Custom Field Data
  *
  * @internal revisions
- * @since 1.9.4
+ * @since 1.9.5
+ * 20121124 - franciscom - TICKET 5316: "Test Cases with Custom Fields set on Execute" - 
+ *                                      Report NOT DISPLAYED if CUSTOM FIELD NAME contains DOT
  */
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
 
+$smarty = new TLSmarty();
+$imgSet = $smarty->getImages(); 
+
 $templateCfg = templateConfiguration();
 $charset = config_get('charset');
 $labels = init_labels(array('design' => null, 'execution' => null, 'no_linked_tc_cf' => null,
                             'execution_history' => null));
 
-$history_img = TL_THEME_IMG_DIR . "history_small.png";
-$exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
-$edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $tcase_mgr = new testcase($db);
 $args = init_args($db);
@@ -31,8 +33,8 @@ $gui = initializeGui($db,$args);
 
 if( $args->doIt )
 {
-   	// Get executions with custom field values
-   	buildResultSet($db,$gui,$args->tproject_id,$args->tplan_id);
+  // Get executions with custom field values
+  buildResultSet($db,$gui,$args->tproject_id,$args->tplan_id);
 
 	// Create column headers
 	$columns = getColumnsDefinition($args->showPlatforms,$gui->cfields,$args->platforms);
@@ -50,26 +52,22 @@ if( $args->doIt )
 
 		// create linked icons
 		$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$item['tcase_id']});\">" .
-		                     "<img title=\"{$labels['execution_history']}\" src=\"{$history_img}\" /></a> ";
+		                     "<img title=\"{$labels['execution_history']}\" src=\"{$imgSet['history_small']}\" /></a> ";
 		
 		$exec_link = "<a href=\"javascript:openExecutionWindow(" .
 		             "{$item['tcase_id']}, {$item['tcversion_id']}, {$item['builds_id']}, " .
 		             "{$args->tplan_id}, {$item['platform_id']});\">" .
-		             "<img title=\"{$labels['execution']}\" src=\"{$exec_img}\" /></a> ";
+		             "<img title=\"{$labels['execution']}\" src=\"{$imgSet['exec_icon']}\" /></a> ";
 
 		$edit_link = "<a href=\"javascript:openTCEditWindow({$item['tcase_id']});\">" .
-					 "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
+					 "<img title=\"{$labels['design']}\" src=\"{$imgSet['edit_icon']}\" /></a> ";
 
-		$tcaseName = buildExternalIdString($gui->tcasePrefix, $item['tc_external_id']) .
-					 ' : ' . $item['tcase_name'];
+		$tcaseName = buildExternalIdString($gui->tcasePrefix, $item['tc_external_id']) . ' : ' . $item['tcase_name'];
 
 		$tcLink = "<!-- " . sprintf("%010d", $item['tc_external_id']) . " -->" . $exec_history_link .
 		          $exec_link . $edit_link . $tcaseName;
 		$rowData[] = $tcLink;
 
-		//$rowData[] = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' . $item['tcase_id'] . '">' .
-		//			 buildExternalIdString($gui->tcasePrefix, $item['tc_external_id']) .
-		//			 ' : ' . $item['tcase_name'] . '</a>';
 		$rowData[] = $item['tcversion_number'];
 		if ($args->showPlatforms)
 		{
@@ -116,7 +114,8 @@ if( $args->doIt )
 		}
 	}
 
-	if (count($matrixData) > 0) {
+	if (count($matrixData) > 0) 
+	{
 		$table = new tlExtTable($columns, $matrixData, 'tl_table_tc_with_cf');
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
 
@@ -242,7 +241,7 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
     //              CFNAME2 => value
     $guiObj->resultSet = array();
 
-	if(!is_null($cf_map))
+	  if(!is_null($cf_map))
     {
         foreach($cf_map as $exec_id => $exec_info)
         {
@@ -297,10 +296,13 @@ function getColumnsDefinition($showPlatforms,$customFields,$platforms)
 	foreach ($customFields as $cfield)
 	{
 		// if custom field is time for computing execution time do not waste space
-		$dummy = array('title' => $cfield['label'], 'col_id' => 'id_cf_' . $cfield['name']);
-		if($cfield['name'] == 'CF_EXEC_TIME') {
+		$dummy = array('title' => $cfield['label'], 'col_id' => 'id_cf_' . $cfield['id']);
+		if($cfield['name'] == 'CF_EXEC_TIME') 
+		{
 			$dummy['width'] = 20;
-		} else {
+		} 
+		else
+		{
 			$dummy['type'] = 'text';
 		}
 		$colDef[] = $dummy;

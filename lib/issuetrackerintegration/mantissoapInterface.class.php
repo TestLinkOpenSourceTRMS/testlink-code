@@ -5,6 +5,7 @@
  * @filesource	mantissoapInterface.class.php
  * @author Francisco Mancardi
  * @since 1.9.4
+ *
  * @internal revisions
 **/
 class mantissoapInterface extends issueTrackerInterface

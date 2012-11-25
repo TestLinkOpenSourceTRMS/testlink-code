@@ -13,6 +13,8 @@
  *			 not how is identified internally at DB	level on TestLink
  *
  * @internal revisions
+ * @since 1.9.5
+ * 20121020 - franciscom - TICKET 5290: Doesn´t show description of bugs from BTS (JIRA)
 **/
 class jirasoapInterface extends issueTrackerInterface
 {
@@ -24,6 +26,7 @@ class jirasoapInterface extends issueTrackerInterface
 	protected $labels = array('duedate' => 'its_duedate_with_separator');
 	
 	private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
+  private $issueDefaults;
 	
 	/**
 	 * Construct and connect to BTS.
@@ -34,6 +37,7 @@ class jirasoapInterface extends issueTrackerInterface
 	function __construct($type,$config)
 	{
 		$this->interfaceViaDB = false;
+	  $this->methodOpt = array('buildViewBugLink' => array('addSummary' => true, 'colorByStatus' => true));
 	  $this->setCfg($config);
 		$this->completeCfg();
 	  $this->connect();
@@ -65,6 +69,12 @@ class jirasoapInterface extends issueTrackerInterface
 	  {
 	    	$this->cfg->uricreate = $base . 'secure/CreateIssue!default.jspa';
 		}	    
+
+		$this->issueDefaults = array('issuetype' => 1);
+    foreach($this->issueDefaults as $prop => $default)
+    {
+  	  $this->cfg->$prop = (string)(property_exists($this->cfg,$prop) ? $this->cfg->$prop : $default);
+    }		
 	}
 
 
@@ -93,7 +103,7 @@ class jirasoapInterface extends issueTrackerInterface
 	 **/
 	function getIssueStatusVerbose($issueID)
 	{
-    $issue = $this->getIssue($issueID);
+        $issue = $this->getIssue($issueID);
 		return (!is_null($issue) && is_object($issue))? $issue->statusVerbose : false;
 	}
 	
@@ -104,120 +114,121 @@ class jirasoapInterface extends issueTrackerInterface
 	 * 
 	 * @return string returns the bug summary if bug is found, else null
 	 **/
-  function getIssueSummary($issueID)
-  {
-    $issue = $this->getIssue($issueID);
-	  return (!is_null($issue) && is_object($issue))? $issue->summary : null;
-  }
-	
-  /**
-   * @internal precondition: TestLink has to be connected to Jira 
-   *
-   * @param string issueID
-   *
-   **/
-  function getIssue($issueID)
-  {
-    $issue = null;
-    try
+    function getIssueSummary($issueID)
     {
-      $issue = $this->APIClient->getIssue($this->authToken, $issueID);
+        $issue = $this->getIssue($issueID);
+		return (!is_null($issue) && is_object($issue))? $issue->summary : null;
+    }
+	
+    /**
+     * @internal precondition: TestLink has to be connected to Jira 
+     *
+	 * @param string issueID
+     *
+     **/
+    function getIssue($issueID)
+    {
+    	$issue = null;
+        try
+        {
+            $issue = $this->APIClient->getIssue($this->authToken, $issueID);
+            
 			if(!is_null($issue) && is_object($issue))
 			{
-        // We are going to have a set of standard properties
-	      $issue->IDHTMLString = "<b>{$issueID} : </b>";
-	      $issue->statusCode = $issue->status;
-	      $issue->statusVerbose = array_search($issue->statusCode, $this->statusDomain);
+            	// We are going to have a set of standard properties
+	            $issue->IDHTMLString = "<b>{$issueID} : </b>";
+	            $issue->statusCode = $issue->status;
+	            $issue->statusVerbose = array_search($issue->statusCode, $this->statusDomain);
 				$issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusCode);
 				$issue->summaryHTMLString = $this->buildSummaryHTMLString($issue);
 			}
-    }
-    catch (Exception $e)
-    {
-      tLog("JIRA Ticket ID $issueID - " . $e->getMessage(), 'WARNING');
+        }
+        catch (Exception $e)
+        {
+         	tLog("JIRA Ticket ID $issueID - " . $e->getMessage(), 'WARNING');
 			$issue = null;
-    }
+        }
         
-    return $issue;
-  }
+        return $issue;
+    }
 
 
-  /**
-   * checks id for validity
-   *
-   * @param string issueID
-   *
-   * @return bool returns true if the bugid has the right format, false else
-   **/
-  function checkBugIDSyntax($issueID)
-  {
-    return $this->checkBugIDSyntaxString($issueID);
-  }
-
-  /**
+    /**
+     * checks id for validity
+     *
 	 * @param string issueID
-   *
-   * @return bool true if issue exists on BTS
-   **/
-  function checkBugIDExistence($issueID)
-  {
-    if(($status_ok = $this->checkBugIDSyntax($issueID)))
+     *
+     * @return bool returns true if the bugid has the right format, false else
+     **/
+    function checkBugIDSyntax($issueID)
     {
-      $issue = $this->getIssue($issueID);
-      $status_ok = !is_null($issue) && is_object($issue);
+    	return $this->checkBugIDSyntaxString($issueID);
     }
-    return $status_ok;
-  }
 
-  /**
-   * establishes connection to the bugtracking system
-   *
-   * @return bool returns true if the soap connection was established and the
-   * wsdl could be downloaded, false else
-   *
-   **/
-  function connect()
-  {
-    $this->interfaceViaDB = false;
-    $op = $this->getClient(array('log' => true));
-    if( ($this->connected = $op['connected']) )
-    { 
-    	// OK, we have got WSDL => server is up and we can do SOAP calls, but now we need 
-    	// to do a simple call with user/password only to understand if we are really connected
-    	try
-    	{
-    		$this->APIClient = $op['client'];
-            	$this->authToken = $this->APIClient->login($this->cfg->username, $this->cfg->password);
-            	$statusSet = $op['client']->getStatuses($this->authToken);
-              foreach ($statusSet as $key => $pair)
-    	        {
-        	    	$this->statusDomain[$pair->name]=$pair->id;
-            	}
-            	$this->l18n = init_labels($this->labels);
-    	}
-    	catch (SoapFault $f)
-    	{
-    		$this->connected = false;
-    		tLog(__CLASS_ . " - SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})","ERROR");
-    	}
+    /**
+	   * @param string issueID
+     *
+     * @return bool true if issue exists on BTS
+     **/
+    function checkBugIDExistence($issueID)
+    {
+        if(($status_ok = $this->checkBugIDSyntax($issueID)))
+        {
+            $issue = $this->getIssue($issueID);
+            $status_ok = !is_null($issue) && is_object($issue);
+        }
+        return $status_ok;
     }
-    return $this->connected;
-  }
 
-  /**
-   * 
-   *
-   **/
+    /**
+     * establishes connection to the bugtracking system
+     *
+     * @return bool returns true if the soap connection was established and the
+     * wsdl could be downloaded, false else
+     *
+     **/
+    function connect()
+    {
+		$this->interfaceViaDB = false;
+		$op = $this->getClient(array('log' => true));
+		if( ($this->connected = $op['connected']) )
+		{ 
+			// OK, we have got WSDL => server is up and we can do SOAP calls, but now we need 
+			// to do a simple call with user/password only to understand if we are really connected
+			try
+			{
+				$this->APIClient = $op['client'];
+        $this->authToken = $this->APIClient->login($this->cfg->username, $this->cfg->password);
+        $statusSet = $op['client']->getStatuses($this->authToken);
+	      foreach ($statusSet as $key => $pair)
+    	  {
+        	$this->statusDomain[$pair->name]=$pair->id;
+        }
+        $this->l18n = init_labels($this->labels);
+			}
+			catch (SoapFault $f)
+			{
+				$this->connected = false;
+				tLog(__CLASS_ . " - SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})","ERROR");
+			}
+		}
+        return $this->connected;
+    }
+
+    /**
+     * 
+     *
+     **/
 	function isConnected()
 	{
 		return $this->connected;
 	}
 
 
-  /**
-   * 
-   *
-   **/
+    /**
+     * 
+     *
+     **/
 	function getClient($opt=null)
 	{
 		// IMPORTANT NOTICE - 2012-01-06 - If you are using XDEBUG, Soap Fault will not work
@@ -251,51 +262,51 @@ class jirasoapInterface extends issueTrackerInterface
 
 
 
-  /**
-   *
-   * @author francisco.mancardi@gmail.com>
-   **/
-  private function helperParseDate($date2parse)
-  {
-  	$ret = null;
-    if (!is_null($date2parse))
+    /**
+     *
+     * @author francisco.mancardi@gmail.com>
+     **/
+    private function helperParseDate($date2parse)
     {
-      $ret = date_parse($date2parse);
-      $ret = ((gmmktime(0, 0, 0, $ret['month'], $ret['day'], $ret['year'])));
-      $ret = $this->l18n['duedate'] . gmstrftime("%d %b %Y",($ret));
+    	$ret = null;
+        if (!is_null($date2parse))
+        {
+            $ret = date_parse($date2parse);
+            $ret = ((gmmktime(0, 0, 0, $ret['month'], $ret['day'], $ret['year'])));
+            $ret = $this->l18n['duedate'] . gmstrftime("%d %b %Y",($ret));
+        }
+        return $ret ;
     }
-    return $ret ;
-  }
 
 
 
-  /**
-   *
-   * @author francisco.mancardi@gmail.com>
-   **/
+    /**
+     *
+     * @author francisco.mancardi@gmail.com>
+     **/
 	public static function getCfgTemplate()
-  {
+  	{
 		$template = "<!-- Template " . __CLASS__ . " -->\n" .
-					      "<issuetracker>\n" .
-					      "<username>JIRA LOGIN NAME</username>\n" .
-					      "<password>JIRA PASSWORD</password>\n" .
-					      "<uribase>http://testlink.atlassian.net/</uribase>\n" .
-					      "<uriwsdl>http://testlink.atlassian.net/rpc/soap/jirasoapservice-v2?wsdl</uriwsdl>\n" .
-					      "<uriview>testlink.atlassian.net/browse/</uriview>\n" .
-					      "<uricreate>testlink.atlassian.net/secure/CreateIssue!default.jspa</uricreate>\n" .
-					      "</issuetracker>\n";
+					"<issuetracker>\n" .
+					"<username>JIRA LOGIN NAME</username>\n" .
+					"<password>JIRA PASSWORD</password>\n" .
+					"<uribase>http://testlink.atlassian.net/</uribase>\n" .
+					"<uriwsdl>http://testlink.atlassian.net/rpc/soap/jirasoapservice-v2?wsdl</uriwsdl>\n" .
+					"<uriview>testlink.atlassian.net/browse/</uriview>\n" .
+					"<uricreate>testlink.atlassian.net/secure/CreateIssue!default.jspa</uricreate>\n" .
+					"</issuetracker>\n";
 		return $template;
-  }
+  	}
 
  	
-  /**
-   *
-   * @author francisco.mancardi@gmail.com>
-   **/
+    /**
+     *
+     * @author francisco.mancardi@gmail.com>
+     **/
 	public function getStatusDomain()
-  {
+  	{
 		return $this->statusDomain;
-  }
+  	}
 
 	/**
 	 *
@@ -304,32 +315,60 @@ class jirasoapInterface extends issueTrackerInterface
 	{
 		$str = array_search($statusCode, $this->statusDomain);
 		if (strcasecmp($str, 'closed') == 0 || strcasecmp($str, 'resolved') == 0 )
-    {
-      $str = "<del>" . $str . "</del>";
-    }
-    return "[{$str}] ";
+        {
+                $str = "<del>" . $str . "</del>";
+        }
+        return "[{$str}] ";
 	}
 
 	/**
 	 *
 	 **/
-  function buildSummaryHTMLString($issue)
-  {
-    $summary = $issue->summary;
-    $strDueDate = $this->helperParseDate($issue->duedate);
-    if( !is_null($strDueDate) )
-    { 
-     	$summary .= "<b> [$strDueDate] </b> ";
+    function buildSummaryHTMLString($issue)
+    {
+		$summary = $issue->summary;
+        $strDueDate = $this->helperParseDate($issue->duedate);
+        if( !is_null($strDueDate) )
+        { 
+        	$summary .= "<b> [$strDueDate] </b> ";
+        }
+        return $summary;
     }
-    return $summary;
-  }
 
   public static function checkEnv()
+  {
+    $ret = array();
+    $ret['status'] = extension_loaded('soap');
+    $ret['msg'] = $ret['status'] ? 'OK' : 'You need to enable SOAP extension';
+    return $ret;
+  }
+
+
+  // useful info
+  // https://github.com/ricardocasares/jira-soap-api
+  //
+  // CRITIC ISSUE TYPE IS MANDATORY.
+  //
+  public function addIssue($summary,$description)
 	{
-	  $ret = array();
-	  $ret['status'] = extension_loaded('soap');
-	  $ret['msg'] = $ret['status'] ? 'OK' : 'You need to enable SOAP extension';
-	  return $ret;
-	}
+    try
+    {
+  		$issue = array('project' => (string)$this->cfg->projectkey,
+                     'type' => (int)$this->cfg->issuetype,
+                     'summary' => $summary,
+                     'description' => $description);
+
+      $op = $this->APIClient->createIssue($this->authToken, $issue);
+      $ret = array('status_ok' => true, 'id' => $op->key, 
+                   'msg' => sprintf(lang_get('jira_bug_created'),$summary,$issue['project']));
+    }
+    catch (Exception $e)
+    {
+      $msg = "Create JIRA Ticket FAILURE => " . $e->getMessage();
+      tLog($msg, 'WARNING');
+      $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+    }
+    return $ret;
+	}  
 }
 ?>

@@ -400,7 +400,7 @@ class tlTestPlanMetrics extends testplan
 	{
 	  $renderObj = null;
 		$code_verbose = $this->getStatusForReports();
-	  $labels = $this->resultsCfg['status_lhelperBuildSQLExecCountersabel'];
+	  $labels = $this->resultsCfg['status_label'];
 	    
 		$metrics = $this->getExecCountersByBuildExecStatus($id);
 	  if( !is_null($metrics) )

@@ -7,15 +7,14 @@
  * Generate documentation Test report based on Test plan data.
  *
  * @filesource 	printDocument.php
- * @author 		Martin Havlat
+ * @author 		  Martin Havlat
  * @copyright 	2007-2012, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @link 		    http://www.teamst.org/index.php
  *
  *
  * @internal revisions
- * @since 1.9.4
+ * @since 1.9.5
  * 20121017 - asimon - TICKET 5288 - print importance/priority when printing test specification/plan
- * 20111007 - franciscom - TICKET 4766: Requirements Report - Display Revision and Version
  *
  */
 require_once('../../config.inc.php');
@@ -201,10 +200,9 @@ switch ($doc_info->type)
 			if ($printingOptions['metrics'])
 			{
 				$doc_data->statistics['estimated_execution'] = getStatsEstimatedExecTime($tplan_mgr,
-																				 		 $items2use,$args->tplan_id);
+																				 		                                     $items2use,$args->tplan_id);
          		
-				$doc_data->statistics['real_execution'] = getStatsRealExecTime(	$tplan_mgr,
-																			 	$items2use,$args->tplan_id,$decode);
+				$doc_data->statistics['real_execution'] = getStatsRealExecTime($tplan_mgr,$items2use,$args->tplan_id,$decode);
 
  			} // if ($printingOptions['metrics'])
     break;

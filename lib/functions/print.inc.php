@@ -14,9 +14,8 @@
  *
  *
  * @internal revisions
- * @since 1.9.4
+ * @since 1.9.5
  * 20121017 - asimon - TICKET 5288 - print priority when printing test plan
- * 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
  *
  */ 
 
@@ -680,10 +679,6 @@ function renderSimpleChapter($title, $content)
   args :
   returns:
 
-  rev :
-       20100723 - asimon - BUGID 3459 - $added platform_id
-       20070509 - franciscom - added $tplan_id in order to refactor and
-                               add contribution BUGID
 */
 function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$options,
                                        $tocPrefix,$tcCnt,$level,$user_id,
@@ -715,7 +710,6 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$options,
 	            	$code .= '<p>' . $cfields . '</p>';
 	       		}
 		    }
-			// platform changes - $code .= renderTOC($options);
 		break;
 
 		case 'testsuite':
@@ -725,7 +719,6 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$options,
 		break;
 
 		case 'testcase':
-			// BUGID 3459 - added $platform_id
 			$code .= renderTestCaseForPrinting($db, $node, $options, $level,
 			                                   $tplan_id, $tcPrefix, $tprojectID, $platform_id);
 	    break;
@@ -750,7 +743,6 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$options,
 			{
 			    $tsCnt++;
 			}
-			// BUGID 3459 - added $platform_id
 			$code .= renderTestSpecTreeForPrinting($db, $current, $item_type, $options,
 			                                       $tocPrefix, $tsCnt, $level+1, $user_id,
 			                                       $tplan_id, $tcPrefix, $tprojectID, $platform_id);
@@ -1226,8 +1218,6 @@ function renderTOC(&$options)
   args :
   returns:
   
-  rev: 20090329 - franciscom - added ALWAYS Custom Fields
-       20081207 - franciscom - refactoring using static to decrease exec time.
 */
 function renderTestSuiteNodeForPrinting(&$db,&$node,&$options,$tocPrefix,$level,$tplan_id,$tproject_id)
 {
@@ -1256,6 +1246,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$options,$tocPrefix,$level,
 	$docHeadingLevel = ($docHeadingLevel > 6) ? 6 : $docHeadingLevel;
  	$code .= "<h{$docHeadingLevel} class='doclevel'>" . $docHeadingNumbering . $labels['test_suite'] .
  			$title_separator . $name . "</h{$docHeadingLevel}>\n";
+
 
 	// ----- get Test Suite text -----------------
 	if ($options['header'])
@@ -1296,7 +1287,6 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$options,$tocPrefix,$level,
   returns:
   
   @internal revisions:
-     20100723 - asimon - BUGID 3459: added $platform_id
 */
 function renderTestPlanForPrinting(&$db, &$node, $item_type, &$options, $tocPrefix,
                                    $tcCnt, $level, $user_id, $tplan_id, $tprojectID, $platform_id)
@@ -1305,8 +1295,8 @@ function renderTestPlanForPrinting(&$db, &$node, $item_type, &$options, $tocPref
 	$tProjectMgr = new testproject($db);
 	$tcPrefix = $tProjectMgr->getTestCasePrefix($tprojectID);
 	$code =  renderTestSpecTreeForPrinting($db, $node, $item_type, $options,
-                                           $tocPrefix, $tcCnt, $level, $user_id,
-                                           $tplan_id, $tcPrefix, $tprojectID, $platform_id);
+                                         $tocPrefix, $tcCnt, $level, $user_id,
+                                         $tplan_id, $tcPrefix, $tprojectID, $platform_id);
 	return $code;
 }
 

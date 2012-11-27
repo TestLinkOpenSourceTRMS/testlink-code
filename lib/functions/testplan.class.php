@@ -6,16 +6,17 @@
  * Manages test plan operations and related items like Custom fields, 
  * Builds, Custom fields, etc
  *
- * @filesource	testplan.class.php
- * @package 	TestLink
- * @author 		franciscom
- * @copyright 	2007-2012, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @filesource  testplan.class.php
+ * @package 	  TestLink
+ * @author 		  franciscom
+ * @copyright   2007-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  *
  *
  * @internal revisions
  * 
  * @since 1.9.5
+ * 20121127 - franciscom - TICKET 5332: Generating Test Report with "Metric' causes DB error
  * 20121008 - franciscom - TICKET 5256
  * 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
  * 
@@ -2452,7 +2453,7 @@ class testplan extends tlObjectWithAttachments
 			}       
 			
 			$sql .= " AS SUM_VALUE FROM {$this->tables['cfield_design_values']} CFDV " .
-					" WHERE CFDV.field_id={$cfield_id} ";
+					    " WHERE CFDV.field_id={$cfield_id} ";
 
 			if( is_null($itemSet) )
 			{
@@ -2534,7 +2535,6 @@ class testplan extends tlObjectWithAttachments
 	
 	  rev: 
 	  @internal revision
-	  20120115 - franciscom - BUGID 4171
 	*/
 	function get_execution_time($id,$execIDSet=null,$platformID=null)
 	{
@@ -2566,24 +2566,25 @@ class testplan extends tlObjectWithAttachments
 				$sql="SELECT SUM(CAST(value AS NUMERIC)) ";
 			}        
 			$sql .= " AS SUM_VALUE FROM {$this->tables['cfield_execution_values']} CFEV " .
-					" WHERE CFEV.field_id={$cfield_id} " .
-					" AND testplan_id={$id} ";
+					    " WHERE CFEV.field_id={$cfield_id} " .
+					    " AND testplan_id={$id} ";
 			// ----------------------------------------------------------------------------
 						
 			if( is_null($execIDSet) )
 			{
-				// we will compute time for ALL linked and executed test cases,
-				// just for LAST executed TCVERSION
-				// mapOfMap -> secondary key Platform ID
-				$options = array('only_executed' => true, 'output' => 'mapOfMap');
 				
 				$filters = null;
 				if( !is_null($platformID) )
 				{	 
 					$filters = array('platform_id' => $platformID);
 				}
-				$executed = $this->get_linked_tcversions($id,$filters,$options); 
-				if( ($status_ok=!is_null($executed)) )
+				
+				// we will compute time for ALL linked and executed test cases,
+				// BUT USING ONLY TIME SPEND for LAST executed TCVERSION
+				// $options = array('only_executed' => true, 'output' => 'mapOfMap');
+				$options = array('addExecInfo' => true);
+				$executed = $this->getLTCVNewGeneration($id,$filters,$options); 
+				if( ($status_ok = !is_null($executed)) )
 				{
 					$tc2loop = array_keys($executed);
 					foreach($tc2loop as $tcase_id)
@@ -2598,7 +2599,6 @@ class testplan extends tlObjectWithAttachments
 			}
 			else
 			{
-				// 20110115 - franciscom
 				// If user has passed in a set of exec id, we assume that
 				// he has make a good work, i.e. if he/she wanted just analize 
 				// executions for just a PLATFORM he/she has filtered BEFORE
@@ -6072,9 +6072,10 @@ class testplan extends tlObjectWithAttachments
 	public function getLTCVNewGeneration($id,$filters=null,$options=null)
 	{
 		$debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
-        $my = array('filters' => array(),'options' => array('allow_empty_build' => 1,
-        													'accessKeyType' => 'tcase+platform',
-        													'includeNotRun' => true));
+        $my = array('filters' => array(),
+                    'options' => array('allow_empty_build' => 1,
+        													     'accessKeyType' => 'tcase+platform',
+        													     'includeNotRun' => true));
         $amk = array('filters','options');
         foreach($amk as $mk)
         {
@@ -6131,7 +6132,7 @@ class testplan extends tlObjectWithAttachments
 		$my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
     
 	    $mop = array('options' => array('addExecInfo' => false,'specViewFields' => false, 
-	    								'assigned_on_build' => null, 'testSuiteInfo' => false));
+	    						                    'assigned_on_build' => null, 'testSuiteInfo' => false));
 	    $my['options'] = array_merge($mop['options'],$my['options']);
 	    
 		if(	($my['options']['allow_empty_build'] == 0) && $my['filters']['build_id'] <= 0 )

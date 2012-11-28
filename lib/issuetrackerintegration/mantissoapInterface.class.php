@@ -237,22 +237,25 @@ class mantissoapInterface extends issueTrackerInterface
 	 * 
 	 **/
 	public static function getCfgTemplate()
-  	{
+  {
 		$template = "<!-- Template " . __CLASS__ . " -->\n" .
-					"<issuetracker>\n" .
-					"<username>MANTIS LOGIN NAME</username>\n" .
-					"<password>MANTIS PASSWORD</password>\n" .
-					"<uribase>http://www.mantisbt.org/</uribase>\n" .
-					"<!-- IMPORTANT NOTICE --->\n" .
-					"<!-- You Do not need to configure uriwsdl,uriview,uricreate  -->\n" .
-					"<!-- if you have done Mantis standard installation -->\n" .
-					"<!-- In this situation DO NOT COPY these config lines -->\n" .
-					"<uriwsdl>http://www.mantisbt.org/api/soap/mantisconnect.php?wsdl</uriwsdl>\n" .
-					"<uriview>http://www.mantisbt.org/view.php?id=</uriview>\n" .
-					"<uricreate>http://www.mantisbt.org/</uricreate>\n" .
-					"</issuetracker>\n";
+					      "<issuetracker>\n" .
+					      "<username>MANTIS LOGIN NAME</username>\n" .
+					      "<password>MANTIS PASSWORD</password>\n" .
+					      "<uribase>http://www.mantisbt.org/</uribase>\n" .
+					      "<!-- IMPORTANT NOTICE --->\n" .
+					      "<!-- You Do not need to configure uriwsdl,uriview,uricreate  -->\n" .
+					      "<!-- if you have done Mantis standard installation -->\n" .
+					      "<!-- In this situation DO NOT COPY these config lines -->\n" .
+					      "<uriwsdl>http://www.mantisbt.org/api/soap/mantisconnect.php?wsdl</uriwsdl>\n" .
+					      "<uriview>http://www.mantisbt.org/view.php?id=</uriview>\n" .
+					      "<uricreate>http://www.mantisbt.org/</uricreate>\n" .
+	              "<!-- Configure This if you want be able TO CREATE ISSUES -->\n" .
+                "<project>MANTIS PROJECT NAME</project>\n" .
+                "<category>MANTIS CATEGORY NAME</category>\n" .
+				        "</issuetracker>\n";
 		return $template;
-  	}
+  }
 
 	/**
 	 *
@@ -266,19 +269,19 @@ class mantissoapInterface extends issueTrackerInterface
 	function completeCfg()
 	{
 		$base = trim($this->cfg->uribase,"/") . '/' ;
-	    if( !property_exists($this->cfg,'uriwsdl') )
-	    {
-	    	$this->cfg->uriwsdl = $base . 'api/soap/mantisconnect.php?wsdl';
+	  if( !property_exists($this->cfg,'uriwsdl') )
+	  {
+      $this->cfg->uriwsdl = $base . 'api/soap/mantisconnect.php?wsdl';
 		}
 		
-	    if( !property_exists($this->cfg,'uriview') )
-	    {
-	    	$this->cfg->uriview = $base . 'view.php?id=';
+	  if( !property_exists($this->cfg,'uriview') )
+	  {
+	  	$this->cfg->uriview = $base . 'view.php?id=';
 		}
 	    
-	    if( !property_exists($this->cfg,'uricreate') )
-	    {
-	    	$this->cfg->uricreate = $base;
+	  if( !property_exists($this->cfg,'uricreate') )
+	  {
+	  	$this->cfg->uricreate = $base;
 		}	    
 	}
 

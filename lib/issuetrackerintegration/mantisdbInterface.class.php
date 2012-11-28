@@ -6,8 +6,8 @@
  * @since 1.9.4
  *
  * @internal revision
- * 20120915 - franciscom - TICKET 5227: [Mantisbt integration] Allow Configuration of Custom Statuses via XML
- *                         new methods setStatusCfg(),getCodeStatus(),getStatusColor()
+ * @since 1.9.5
+ *
 **/
 class mantisdbInterface extends issueTrackerInterface
 {
@@ -37,19 +37,15 @@ class mantisdbInterface extends issueTrackerInterface
 	 **/
 	function __construct($type,$config)
 	{
-	    parent::__construct($type,$config);
-
+	  parent::__construct($type,$config);
 		$this->interfaceViaDB = true;
 		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);
 	  $this->guiCfg = array('use_decoration' => true);
-	  
 	  if( property_exists($this->cfg, 'statuscfg') )
 	  {
 	    $this->setStatusCfg();
 	  }
-
 	}
-
 
 	
 	/**
@@ -82,53 +78,33 @@ class mantisdbInterface extends issueTrackerInterface
 		$issue = null;
 		if( !is_null($rs) )	
 		{
-	        $issue = new stdClass();
+			$issueOnMantisDB = current($rs);
+	    $issue = new stdClass();
 			$issue->IDHTMLString = "<b>{$id} : </b>";
-			$issue->statusCode = $rs[$id]['status']; 
-			
+			$issue->summaryHTMLString = $issueOnMantisDB['summary'];
+			$issue->statusCode = $issueOnMantisDB['status']; 
 			if( isset($this->code_status[$issue->statusCode]) )
 			{
-			  	$issue->statusVerbose = $this->code_status[$issue->statusCode];
+			  $issue->statusVerbose = $this->code_status[$issue->statusCode];
 			}
 			else
 			{
 				// give info to user on Event Viewer
 				$msg = lang_get('MANTIS_status_not_configured');
-				$msg = sprintf($msg,$rs['status']);
+				$msg = sprintf($msg,$issueOnMantisDB['status']);
 				logWarningEvent($msg,"MANTIS INTEGRATION");
 				$issue->statusVerbose = 'custom_undefined_on_tl';
 			}	
-	
 
 			$issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusVerbose);
 			$issue->statusColor = isset($this->status_color[$issue->statusVerbose]) ? 
-								  $this->status_color[$issue->statusVerbose] : 'white';
+			$this->status_color[$issue->statusVerbose] : 'white';
 	
-			$issue->summaryHTMLString = $rs[$id]['summary'];
 		}
 		return $issue;	
 	}
 
 
-	//function getIssueSet($id)
-	//{
-	//	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	//	if (!$this->isConnected())
-	//	{
-	//		return false;
-	//	}
-    //            
-    //    $idSet = (array)$id;
-    //    foreach($idSet as $itemID)           
-    //    {
-    //    	// sanitize
-    //    	$idSet = intval($itemID);
-    //    }
-    //                            
-	//	$query = "/* $debugMsg */ SELECT status,summary FROM mantis_bug_table " .
-	//	         " WHERE id IN (" . $implode(',',$idSet) . ")";
-	//}
-    //
 	
 	/**
 	 * Returns the status of the bug with the given id
@@ -143,7 +119,7 @@ class mantisdbInterface extends issueTrackerInterface
 			return false;
 		}
 		$issue = $this->getIssue($id);
-	    return (!is_null($issue) && $issue) ? $issue->statusVerbose : null;
+	  return (!is_null($issue) && $issue) ? $issue->statusVerbose : null;
 	}
 
  
@@ -159,38 +135,38 @@ class mantisdbInterface extends issueTrackerInterface
 		$result = $this->dbConnection->exec_query($query);
 		if ($result && ($this->dbConnection->num_rows($result) == 1))
 		{
-      		$status_ok = 1;    
-    	}
+      $status_ok = 1;    
+    }
 		return $status_ok;
 	}	
 	
 
 	function buildViewBugLink($bugID,$addSummary = false)
-  	{
-      $linkVerbose = parent::buildViewBugLink($bugID, $addSummary);
-      $status = $this->getBugStatus($bugID);
-      $color = isset($this->status_color[$status]) ? $this->status_color[$status] : 'white';
-      $title = lang_get('access_to_bts');  
-      return "<div  title=\"{$title}\" style=\"display: inline; background: $color;\">$linkVerbose</div>";
-  	}
+  {
+    $linkVerbose = parent::buildViewBugLink($bugID, $addSummary);
+    $status = $this->getBugStatus($bugID);
+    $color = isset($this->status_color[$status]) ? $this->status_color[$status] : 'white';
+    $title = lang_get('access_to_bts');  
+    return "<div  title=\"{$title}\" style=\"display: inline; background: $color;\">$linkVerbose</div>";
+  }
 
 
-    /**
-     * checks id for validity
-     *
+  /**
+   * checks id for validity
+   *
 	 * @param string issueID
-     *
-     * @return bool returns true if the bugid has the right format, false else
-     **/
-    function checkBugIDSyntax($issueID)
-    {
-    	return $this->checkBugIDSyntaxNumeric($issueID);
-    }
+   *
+   * @return bool returns true if the bugid has the right format, false else
+   **/
+  function checkBugIDSyntax($issueID)
+  {
+    return $this->checkBugIDSyntaxNumeric($issueID);
+  }
 
-    /**
-     *
-     *
-     **/
+  /**
+   *
+   *
+   **/
 	function buildStatusHTMLString($statusVerbose)
 	{
 		$str = '';
@@ -213,37 +189,37 @@ class mantisdbInterface extends issueTrackerInterface
 
 
 	function getMyInterface()
-  	{
-		return $this->cfg->interfacePHP;
-  	}
+  {
+	  return $this->cfg->interfacePHP;
+  }
 
 
 
 	public static function getCfgTemplate()
-  	{
+  {
   	
 		$template = "<!-- Template " . __CLASS__ . " -->\n" .
-					"<issuetracker>\n" .
-					"<dbhost>DATABASE SERVER NAME</dbhost>\n" .
-					"<dbname>DATABASE NAME</dbname>\n" .
-					"<dbtype>mysql</dbtype>\n" .
-					"<dbuser>USER</dbuser>\n" .
-					"<dbpassword>PASSWORD</dbpassword>\n" .
-					"<uriview>http://localhost:8080/development/mantisbt-1.2.5/view.php?id=</uriview>\n" .
-					"<uricreate>http://localhost:8080/development/mantisbt-1.2.5/</uricreate>\n" .
-          "<!-- Optional -->\n" .
-          "<statuscfg>\n" .
-          "<status><code>10</code><verbose>new</verbose><color>#ffa0a0</color></status>\n" .
-          "<status><code>20</code><verbose>feedback</verbose><color>#ff50a8</color></status>\n" .
-          "<status><code>30</code><verbose>acknowledged</verbose><color>#ffd850</color></status>\n" .
-          "<status><code>40</code><verbose>confirmed</verbose><color>#ffffb0</color></status>\n" .
-          "<status><code>50</code><verbose>assigned</verbose><color>#c8c8ff</color></status>\n" .
-          "<status><code>80</code><verbose>resolved</verbose><color>#cceedd</color></status>\n" .
-          "<status><code>90</code><verbose>closed</verbose><color>#e8e8e8</color></status>\n" .
-          "</statuscfg>\n" . 
-					"</issuetracker>\n";
+					      "<issuetracker>\n" .
+					      "<dbhost>DATABASE SERVER NAME</dbhost>\n" .
+					      "<dbname>DATABASE NAME</dbname>\n" .
+					      "<dbtype>mysql</dbtype>\n" .
+					      "<dbuser>USER</dbuser>\n" .
+					      "<dbpassword>PASSWORD</dbpassword>\n" .
+					      "<uriview>http://localhost:8080/development/mantisbt-1.2.5/view.php?id=</uriview>\n" .
+					      "<uricreate>http://localhost:8080/development/mantisbt-1.2.5/</uricreate>\n" .
+                "<!-- Optional -->\n" .
+                "<statuscfg>\n" .
+                "<status><code>10</code><verbose>new</verbose><color>#ffa0a0</color></status>\n" .
+                "<status><code>20</code><verbose>feedback</verbose><color>#ff50a8</color></status>\n" .
+                "<status><code>30</code><verbose>acknowledged</verbose><color>#ffd850</color></status>\n" .
+                "<status><code>40</code><verbose>confirmed</verbose><color>#ffffb0</color></status>\n" .
+                "<status><code>50</code><verbose>assigned</verbose><color>#c8c8ff</color></status>\n" .
+                "<status><code>80</code><verbose>resolved</verbose><color>#cceedd</color></status>\n" .
+                "<status><code>90</code><verbose>closed</verbose><color>#e8e8e8</color></status>\n" .
+                "</statuscfg>\n" . 
+  				      "</issuetracker>\n";
 		return $template;
-  	}
+  }
 
   public function setStatusCfg()
   {

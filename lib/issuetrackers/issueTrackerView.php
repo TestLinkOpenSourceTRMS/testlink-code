@@ -26,6 +26,10 @@ $gui->items = $issueTrackerMgr->getAll(array('output' => 'add_link_count', 'chec
 $gui->canManage = $args->currentUser->hasRight($db,"issuetracker_management");
 $gui->user_feedback = $args->user_feedback;
 
+if($args->id > 0)
+{
+  $gui->items[$args->id]['connection_status'] = $issueTrackerMgr->checkConnection($args->id) ? 'ok' : 'ko'; 
+}
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -38,6 +42,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args()
 {
+  new dBug($_REQUEST);
 	$args = new stdClass();
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 
@@ -58,6 +63,7 @@ function init_args()
 	// 	unset($_SESSION['issueTrackerView.user_feedback']);
 	// }
 
+  $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 	return $args;
 }
 

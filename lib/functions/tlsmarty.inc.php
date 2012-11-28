@@ -7,20 +7,19 @@
  * The class is loaded via common.php to all pages.
  * 
  * @filesource	tlsmarty.inc.php
- * @package 	TestLink
- * @author 		Martin Havlat
+ * @package 	  TestLink
+ * @author 		  Martin Havlat
  * @copyright 	2005-2012, TestLink community 
- * @link 		http://www.teamst.org/index.php
- * @link 		http://www.smarty.net/ 
+ * @link 		    http://www.teamst.org/index.php
+ * @link 		    http://www.smarty.net/ 
  *
  * @internal revisions
- * @since 1.9.4
- * 20110816 - franciscom - TICKET 4703: Req. Spec. View - display log message 
+ * @since 1.9.5
  *
  */
 
 define('SMARTY_DIR', TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty'.  
-	            DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR);
+	     DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR);
 define('SMARTY_CORE_DIR', SMARTY_DIR . 'internals' . DIRECTORY_SEPARATOR);
 
 /** include parent extrenal component */
@@ -250,6 +249,8 @@ class TLSmarty extends Smarty
                                 'calendar' => TL_THEME_IMG_DIR . 'calendar.gif',
                                 'checked' => TL_THEME_IMG_DIR . 'apply_f2_16.png',
                                 'clear' => TL_THEME_IMG_DIR . 'trash.png',
+                                'check_ok' => TL_THEME_IMG_DIR . 'lightbulb.png',
+                                'check_ko' => TL_THEME_IMG_DIR . 'link_error.png',
                                 'delete' => TL_THEME_IMG_DIR . 'trash.png',
                                 'demo_mode' => TL_THEME_IMG_DIR . 'emoticon_tongue.png',
                                 'delete_disabled' => TL_THEME_IMG_DIR . 'trash_greyed.png',
@@ -271,7 +272,8 @@ class TLSmarty extends Smarty
                                 'reorder' => TL_THEME_IMG_DIR . 'arrow_switch.png',
                                 'sort' => TL_THEME_IMG_DIR . 'sort_hint.png',
                                 'toggle_all' => TL_THEME_IMG_DIR .'toggle_all.gif',
-                                'bullet' => TL_THEME_IMG_DIR . 'slide_gripper.gif');
+                                'bullet' => TL_THEME_IMG_DIR . 'slide_gripper.gif',
+                                'wrench' => TL_THEME_IMG_DIR . 'wrench.png');
 
         $msg = lang_get('show_hide_api_info');
         $this->tlImages['toggle_api_info'] =  "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .

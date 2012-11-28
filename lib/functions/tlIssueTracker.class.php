@@ -32,30 +32,28 @@ class tlIssueTracker extends tlObject
 	// if you need to add a new item start on 200, to avoid crash with standard ID
 	// 	
 	var $systems = array( 1 =>	array('type' => 'bugzilla', 'api' => 'xmlrpc', 'enabled' => true, 'order' => -1),
-						  2 =>	array('type' => 'bugzilla', 'api' => 'db', 'enabled' => true, 'order' => -1),
-						  3	=>	array('type' => 'mantis', 'api' =>'soap', 'enabled' => true, 'order' => -1),
-						  4	=>	array('type' => 'mantis', 'api' =>'db', 'enabled' => true, 'order' => -1),
-						  5	=>	array('type' => 'jira', 'api' =>'soap', 'enabled' => true, 'order' => -1),
-						  6	=>	array('type' => 'jira', 'api' =>'db', 'enabled' => true, 'order' => -1),
-						  8 =>	array('type' => 'fogbugz','api' =>'rest','enabled' => true, 'order' => -1),
-						  9 =>	array('type' => 'fogbugz','api' =>'db','enabled' => true, 'order' => -1),
-						 10 =>	array('type' => 'gforge','api' =>'soap','enabled' => true, 'order' => -1),
-						 11 =>	array('type' => 'gforge','api' =>'db','enabled' => true, 'order' => -1),
-					     12 =>	array('type' => 'eventum','api' =>'db', 'enabled' => true, 'order' => -1),
-						 13 =>	array('type' => 'polarion', 'api' =>'soap', 'enabled' => true, 'order' => -1),
-						 14 =>	array('type' => 'youtrack','api' =>'rest','enabled' => true, 'order' => -1),
-						 15 =>	array('type' => 'redmine','api' =>'rest','enabled' => true, 'order' => -1),
-						 16 =>	array('type' => 'redmine','api' =>'db','enabled' => true, 'order' => -1),
-						 17 =>	array('type' => 'seapine','api' =>'soap','enabled' => true, 'order' => -1),
-						 18 =>	array('type' => 'seapine','api' =>'db','enabled' => true, 'order' => -1),
-						 19 =>	array('type' => 'trac','api' =>'xmlrpc','enabled' => true, 'order' => -1),
-						 20	=>	array('type' => 'trackplus','api' =>'soap','enabled' => true, 'order' => -1),
-						 21	=>	array('type' => 'trackplus','api' =>'db','enabled' => true, 'order' => -1));
-	
-	
+						            2 =>	array('type' => 'bugzilla', 'api' => 'db', 'enabled' => true, 'order' => -1),
+          						  3	=>	array('type' => 'mantis', 'api' =>'soap', 'enabled' => true, 'order' => -1),
+          						  4	=>	array('type' => 'mantis', 'api' =>'db', 'enabled' => true, 'order' => -1),
+          						  5	=>	array('type' => 'jira', 'api' =>'soap', 'enabled' => true, 'order' => -1),
+          						  6	=>	array('type' => 'jira', 'api' =>'db', 'enabled' => true, 'order' => -1),
+          						  8 =>	array('type' => 'fogbugz','api' =>'rest','enabled' => true, 'order' => -1),
+          						  9 =>	array('type' => 'fogbugz','api' =>'db','enabled' => true, 'order' => -1),
+          						 10 =>	array('type' => 'gforge','api' =>'soap','enabled' => true, 'order' => -1),
+          						 11 =>	array('type' => 'gforge','api' =>'db','enabled' => true, 'order' => -1),
+          					   12 =>	array('type' => 'eventum','api' =>'db', 'enabled' => true, 'order' => -1),
+          						 13 =>	array('type' => 'polarion', 'api' =>'soap', 'enabled' => true, 'order' => -1),
+          						 14 =>	array('type' => 'youtrack','api' =>'rest','enabled' => true, 'order' => -1),
+          						 15 =>	array('type' => 'redmine','api' =>'rest','enabled' => true, 'order' => -1),
+          						 16 =>	array('type' => 'redmine','api' =>'db','enabled' => true, 'order' => -1),
+          						 17 =>	array('type' => 'seapine','api' =>'soap','enabled' => true, 'order' => -1),
+          						 18 =>	array('type' => 'seapine','api' =>'db','enabled' => true, 'order' => -1),
+          						 19 =>	array('type' => 'trac','api' =>'xmlrpc','enabled' => true, 'order' => -1),
+          						 20	=>	array('type' => 'trackplus','api' =>'soap','enabled' => true, 'order' => -1),
+          						 21	=>	array('type' => 'trackplus','api' =>'db','enabled' => true, 'order' => -1));
 	
     
-    var $entitySpec = array('name' => 'string','cfg' => 'string','type' => 'int');
+  var $entitySpec = array('name' => 'string','cfg' => 'string','type' => 'int');
     
 	/**
 	 * Class constructor
@@ -288,7 +286,7 @@ class tlIssueTracker extends tlObject
 	function getByID($id, $options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	    return $this->getByAttr(array('key' => 'id', 'value' => $id),$options);
+    return $this->getByAttr(array('key' => 'id', 'value' => $id),$options);
 	}
 
 
@@ -549,6 +547,7 @@ class tlIssueTracker extends tlObject
 				$item['type_descr'] = $this->types[$item['type']];
         $item['env_check_ok'] = true;
         $item['env_check_msg'] = '';
+        $item['connection_status'] = '';
          
   			if( $my['options']['checkEnv'] )
 	  		{
@@ -622,6 +621,19 @@ class tlIssueTracker extends tlObject
 		return 	$its;
 	
 	}
+
+	/*
+	 *
+   *
+	 */
+	function checkConnection($its)
+	{
+	  $xx = $this->getByID($its);
+	  $class2create = $xx['implementation'];
+	  $its = new $class2create($xx['type'],$xx['cfg']);
+    return $its->isConnected();
+	}
+
 
 
 	//function unlinkBadBoys($id)

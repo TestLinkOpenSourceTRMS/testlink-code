@@ -11,7 +11,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 {lang_get var='labels'
           s='th_issuetracker,th_issuetracker_type,th_delete,th_description,menu_assign_kw_to_tc,
-          	 btn_create,alt_delete,th_issuetracker_env'}
+          	 btn_create,alt_delete,th_issuetracker_env,check_bts_connection,bts_check_ok,bts_check_ko'}
 
 {lang_get s='warning_delete' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
@@ -43,12 +43,26 @@ var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&i
 		<tr>
 			<td>
 				{if $gui->canManage != ""}
+					<a href="lib/issuetrackers/issueTrackerView.php?id={$item_def.id}">
+					  <img src="{$tlImages.wrench}" title="{$labels.check_bts_connection}">
+					</a>
+          {if $item_def.connection_status == "ok"}
+					  <img src="{$tlImages.check_ok}" title="{$labels.bts_check_ok}">
+				  {elseif $item_def.connection_status == "ko"}
+					  <img src="{$tlImages.check_ko}" title="{$labels.bts_check_ko}">
+				  {else}
+				    &nbsp;
+				  {/if}
+				{/if}
+
+				{if $gui->canManage != ""}
 					<a href="lib/issuetrackers/issueTrackerEdit.php?doAction=edit&amp;id={$item_def.id}">
 				{/if}
 				{$item_def.name|escape}
 				{if $gui->canManage != ""}
 					</a>
 				{/if}
+
 			</td>
 			<td>{$item_def.type_descr|escape}</td>
 			<td class="clickable_icon">{$item_def.env_check_msg|escape}</td>

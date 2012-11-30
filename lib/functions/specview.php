@@ -195,7 +195,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 		// key: test case version id
 		// value: index inside $out, where parent test suite of test case version id is located.
 		//             
-      	list($a_tcid,$a_tsuite_idx,$tsuite_tcqty,$out) = buildSkeleton($id,$name,$cfg,$test_spec,$platforms);
+    list($a_tcid,$a_tsuite_idx,$tsuite_tcqty,$out) = buildSkeleton($id,$name,$cfg,$test_spec,$platforms);
 	} 
 
 
@@ -324,10 +324,10 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
 	//
 	// TICKET 5176: Possibility to filter by Platform
 	$filters = array('keyword_id' => $argsObj->keyword_id, 'platform_id' => null);
-    if( property_exists($argsObj,'control_panel') && intval($argsObj->control_panel['setting_platform']) > 0 )
-    {
+  if( property_exists($argsObj,'control_panel') && intval($argsObj->control_panel['setting_platform']) > 0 )
+  {
  		$filters['platform_id'] = intval($argsObj->control_panel['setting_platform']);
-    } 				 
+  } 				 
 	
 	if( isset($options['assigned_on_build']) && $options['assigned_on_build'] > 0)
 	{
@@ -350,15 +350,16 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
 		// unset($tsuite_mgr);
 	}
 	
+	// $opx = array('addExecInfo' => true, 'specViewFields' => true,'addPriority' => true) +   (array)$options;
 	$opx = array('addExecInfo' => true, 'specViewFields' => true) +   (array)$options;
 	$tplan_tcases = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $opx);
 
 	if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
 	{
 		$filteredSet = $tcaseMgr->filterByKeyword(array_keys($tplan_tcases),
-			                                    $argsObj->keyword_id,$argsObj->keywordsFilterType);
+			                                        $argsObj->keyword_id,$argsObj->keywordsFilterType);
 		
-	    $filters = array('tcase_id' => array_keys($filteredSet));
+	  $filters = array('tcase_id' => array_keys($filteredSet));
 		$tplan_tcases = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $opx);
 	}
 	
@@ -390,7 +391,7 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
 	
 	$my = array();  // some sort of local scope
 	$my['filters'] = array('keywordsFilter' => null, 'testcaseFilter' => null,
-						   'assignedToFilter' => null,'executionTypeFilter' => null);
+						             'assignedToFilter' => null,'executionTypeFilter' => null);
 	$my['filters'] = array_merge($my['filters'], (array)$filters);
 
 	$my['options'] = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
@@ -404,7 +405,7 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
 	if(!is_null($my['filters']['keywordsFilter']) && !is_null($my['filters']['keywordsFilter']->items))
 	{ 
 		$keywordsTestCases = $tprojectMgr->get_keywords_tcases($argsObj->tproject_id,$my['filters']['keywordsFilter']->items,
-															   $my['filters']['keywordsFilter']->type);
+															                             $my['filters']['keywordsFilter']->type);
 		$testCaseSet = array_keys($keywordsTestCases);
 	}
 
@@ -423,8 +424,7 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
 	
 	$testCaseSet = !is_null($testCaseSet) ? array_combine($testCaseSet, $testCaseSet) : null;
 	$genSpecFilters = array('keywords' => $argsObj->keyword_id, 'testcases' => $testCaseSet,
-							'exec_type' => $my['filters']['executionTypeFilter'],
-							'cfields' => null);
+							            'exec_type' => $my['filters']['executionTypeFilter'],'cfields' => null);
 							
 	if( isset($my['filters']['cfieldsFilter']) )
 	{
@@ -432,7 +432,7 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
 	}						
 							
 	$out = gen_spec_view($dbHandler, 'testplan', $argsObj->tplan_id, $argsObj->id, $tsuite_data['name'],
-		                 $tplan_linked_tcversions, null, $genSpecFilters, $my['options']);
+		                   $tplan_linked_tcversions, null, $genSpecFilters, $my['options']);
 
 	return $out;
 }
@@ -850,7 +850,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 	$out[$idx]['linked_testcase_qty'] = 0;
 	$out[$idx]['linked_ts'] = null;                                          
 	$out[$idx]['linked_by'] = 0;                                          
-    $out[$idx]['priority'] = 0;
+  $out[$idx]['priority'] = 0;
 
 	$the_level = $out[0]['level']+1;
 	$idx++;
@@ -897,8 +897,8 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 				$outRef['feature_id'] = null; //0;
 				$outRef['linked_by'] = null; //0;
 				$outRef['linked_ts'] = null;
-			    $outRef['priority'] = 0;
-			    $outRef['platforms'] = $platforms;
+			  $outRef['priority'] = 0;
+			  $outRef['platforms'] = $platforms;
 			    // $outRef['importance'] = 0;
 			}
 			$out[$parent_idx]['testcase_qty']++;
@@ -991,7 +991,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
  */
 function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_items)
 {
-    $optionalIntegerFields = array('user_id', 'feature_id','linked_by');
+  $optionalIntegerFields = array('user_id', 'feature_id','linked_by');
 	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 	$pivot_id=-1;
 	
@@ -1007,11 +1007,10 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
 		}
 		$parent_idx = $a_tsuite_idx[$tc_id];
 		
-    	// Reference to make code reading more human friendly				
+   	// Reference to make code reading more human friendly				
 		$outRef = &$out[$parent_idx]['testcases'][$tc_id];
 		
 		
-		// 20120409
 		// Is not clear (need explanation) why we process in this part ONLY ACTIVE
 		// also we need to explain !is_null($out[$parent_idx])
 		//

@@ -3,14 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @package 	TestLink
- * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
+ * @package 	  TestLink
+ * @author 		  Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2012, TestLink community 
  * @filesource	tc_exec_assignment.php
- * @link 		http://www.teamst.org/index.php
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
- * 20120825 - franciscom - TICKET 5176: Possibility to filter by Platform
  * 
  */
          
@@ -23,6 +22,7 @@ require_once("specview.php");
 // Time tracking - $chronos[] = microtime(true);$tnow = end($chronos);
 testlinkInitPage($db,false,false,"checkRights");
 
+// echo __FILE__;die();
 $tree_mgr = new tree($db); 
 $tplan_mgr = new testplan($db); 
 $tcase_mgr = new testcase($db); 
@@ -55,9 +55,9 @@ if(!is_null($args->doAction))
 		$open = $status_map['open']['id'];
 		$db_now = $db->db_now();
 
-        $features2 = array( 'upd' => array(), 'ins' => array(), 'del' => array());
-	    $method2call = array( 'upd' => 'update', 'ins' => 'assign', 'del' => 'delete_by_feature_id_and_build_id');
-	    $called = array( 'upd' => false, 'ins' => false, 'del' => false);
+    $features2 = array( 'upd' => array(), 'ins' => array(), 'del' => array());
+	  $method2call = array( 'upd' => 'update', 'ins' => 'assign', 'del' => 'delete_by_feature_id_and_build_id');
+	  $called = array( 'upd' => false, 'ins' => false, 'del' => false);
 
 		foreach($args->achecked_tc as $key_tc => $platform_tcversion)
 		{
@@ -68,10 +68,10 @@ if(!is_null($args->doAction))
 				{
 					if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
 					{
-            	        // Do only if tester has changed
+            // Do only if tester has changed
 					    if( $args->has_prev_assignment[$key_tc][$platform_id] != $args->tester_for_tcid[$key_tc][$platform_id])
 					    {
-				            $op='upd';
+				        $op='upd';
 						    $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
 						    $features2[$op][$feature_id]['type'] = $task_test_execution;
 						    $features2[$op][$feature_id]['status'] = $open;
@@ -137,16 +137,14 @@ switch($args->level)
 {
 	case 'testcase':
 		// build the data need to call gen_spec_view
-        $xx=$tcase_mgr->getPathLayered(array($args->id));
-        $yy = array_keys($xx);  // done to silence warning on end()
-        $tsuite_data['id'] = end($yy);
-        $tsuite_data['name'] = $xx[$tsuite_data['id']]['value']; 
+    $xx=$tcase_mgr->getPathLayered(array($args->id));
+    $yy = array_keys($xx);  // done to silence warning on end()
+    $tsuite_data['id'] = end($yy);
+    $tsuite_data['name'] = $xx[$tsuite_data['id']]['value']; 
         
-        // TICKET 5176
 		$xx = $tplan_mgr->getLinkInfo($args->tplan_id,$args->id,$args->control_panel['setting_platform'],
-									 array('output' => 'assignment_info',
-									       'build4assignment' => $args->build_id));
-        $linked_items[$args->id] = $xx;
+									                array('output' => 'assignment_info','build4assignment' => $args->build_id));
+    $linked_items[$args->id] = $xx;
 		$opt = array('write_button_only_if_linked' => 1, 'user_assignments_per_build' => $args->build_id);
 		$filters = array('keywords' => $keywordsFilter->items);
 
@@ -155,7 +153,7 @@ switch($args->level)
 		//Die();
 		
 		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-						        $linked_items,null,$filters,$opt);
+						                $linked_items,null,$filters,$opt);
 		
 		// index 0 contains data for the parent test suite of this test case, 
 		// other elements are not needed.
@@ -173,12 +171,13 @@ switch($args->level)
 		$filters['cfieldsFilter'] = $args->control_panel['filter_custom_fields'];
 		
 		// $opt = array('user_assignments_per_build' => $args->build_id);
-		$opt = array('assigned_on_build' => $args->build_id);
+		$opt = array('assigned_on_build' => $args->build_id, 'addPriority' => true);
 		$filters += $opt;
 
-        // TICKET 5176
 		// platform filter is generated inside getFilteredSpecView() using $args->control_panel['setting_platform'];
 		$out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
+    //new dBug($out);
+    //die();
 		break;
 
 	default:

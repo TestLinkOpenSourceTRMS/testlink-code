@@ -6073,7 +6073,7 @@ class testplan extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
         $my = array('filters' => array(),
-                    'options' => array('allow_empty_build' => 1,
+                    'options' => array('allow_empty_build' => 1,'addPriority' => false,
         													     'accessKeyType' => 'tcase+platform',
         													     'includeNotRun' => true));
         $amk = array('filters','options');
@@ -6131,9 +6131,10 @@ class testplan extends tlObjectWithAttachments
 		$safe['tplan_id'] = intval($id);
 		$my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
     
-	    $mop = array('options' => array('addExecInfo' => false,'specViewFields' => false, 
-	    						                    'assigned_on_build' => null, 'testSuiteInfo' => false));
-	    $my['options'] = array_merge($mop['options'],$my['options']);
+	  $mop = array('options' => array('addExecInfo' => false,'specViewFields' => false, 
+	   						                    'assigned_on_build' => null, 'testSuiteInfo' => false,
+	   						                    'addPriority' => false));
+	  $my['options'] = array_merge($mop['options'],$my['options']);
 	    
 		if(	($my['options']['allow_empty_build'] == 0) && $my['filters']['build_id'] <= 0 )
 		{
@@ -6148,7 +6149,7 @@ class testplan extends tlObjectWithAttachments
 		}
 
 		$buildClause = array('lex' => (' AND EE.build_id = ' . $my['filters']['build_id']), 
-							 'exec_join' => (" AND E.build_id = " . $my['filters']['build_id']));
+							           'exec_join' => (" AND E.build_id = " . $my['filters']['build_id']));
 		if( $my['options']['allow_empty_build'] && $my['filters']['build_id'] <= 0 )
 		{
 			$buildClause = array('lex' => '','exec_join' => '');
@@ -6159,11 +6160,11 @@ class testplan extends tlObjectWithAttachments
 		// Need to understand if will create side effects.
 		//
 		$sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id," .
-				  " MAX(EE.id) AS id " .
-				  " FROM {$this->tables['executions']} EE " . 
-				  " WHERE EE.testplan_id = " . $safe['tplan_id'] . 
-				  $buildClause['lex'] .
-				  " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
+				      " MAX(EE.id) AS id " .
+				      " FROM {$this->tables['executions']} EE " . 
+				      " WHERE EE.testplan_id = " . $safe['tplan_id'] . 
+				      $buildClause['lex'] .
+				      " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
 		
 		// -------------------------------------------------------------------------------------
 		// adding tcversion on output can be useful for Filter on Custom Field values,
@@ -6178,14 +6179,15 @@ class testplan extends tlObjectWithAttachments
 		// 				" TCV.summary, TCV.preconditions,TPTCV.id AS feature_id," .
 		// 				" TPTCV.platform_id,PLAT.name AS platform_name,TPTCV.node_order AS execution_order,".
 		// 				" COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status ";
-        // 
-        // $fullEID = $this->helperConcatTCasePrefix($safe['tplan_id']);
+    // 
+    // $fullEID = $this->helperConcatTCasePrefix($safe['tplan_id']);
 		$commonFields = " SELECT NH_TCASE.id AS tcase_id,NH_TCASE.id AS tc_id,TPTCV.tcversion_id,TCV.version," .
-		 				" TCV.tc_external_id AS external_id, TCV.execution_type," .
-		 				" TPTCV.id AS feature_id," .
-		 				" TPTCV.platform_id,PLAT.name AS platform_name,TPTCV.node_order AS execution_order,".
-		 				" COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status, " .
-    					$this->helperConcatTCasePrefix($safe['tplan_id']) . "  AS full_external_id ";
+		 				        " TCV.tc_external_id AS external_id, TCV.execution_type," .
+		 				        " TPTCV.id AS feature_id," .
+		 				        ($my['options']['addPriority'] ? "(TPTCV.urgency * TCV.importance) AS priority," : '') .
+        		 				" TPTCV.platform_id,PLAT.name AS platform_name,TPTCV.node_order AS execution_order,".
+        		 				" COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status, " .
+          					$this->helperConcatTCasePrefix($safe['tplan_id']) . "  AS full_external_id ";
 
 		// used on tester assignment feature when working at test suite level
 		if( !is_null($my['options']['assigned_on_build']) )
@@ -6201,7 +6203,7 @@ class testplan extends tlObjectWithAttachments
 		if($my['options']['specViewFields'])
 		{
 			$commonFields .= ",NH_TCASE.name,TPTCV.creation_ts AS linked_ts,TPTCV.author_id AS linked_by" .
-							 ",NH_TCASE.parent_id AS testsuite_id"; 	
+							         ",NH_TCASE.parent_id AS testsuite_id"; 	
 		}
 		
 		$my['join']['tsuites'] = '';
@@ -6209,62 +6211,61 @@ class testplan extends tlObjectWithAttachments
 		{
 			$commonFields .= ",NH_TSUITE.name AS tsuite_name ";
 			$my['join']['tsuites'] = " JOIN {$this->tables['nodes_hierarchy']} NH_TSUITE " . 
-									 " ON NH_TSUITE.id = NH_TCASE.parent_id ";
+									             " ON NH_TSUITE.id = NH_TCASE.parent_id ";
 		}
 		
 		
 		$union['not_run'] = "/* {$debugMsg} sqlUnion - not run */" . $commonFields .
-			   				" FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
-			   				" JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
-			   				" JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
-			   				" JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
-			   				$my['join']['tsuites'] .
-							$my['join']['ua'] .
-							$my['join']['keywords'] .
+			   				        " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
+			   				        " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
+			   				        " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
+			   				        " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+			   				        $my['join']['tsuites'] .
+							          $my['join']['ua'] .
+							          $my['join']['keywords'] .
 							
-			   				" LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
-							" /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
-							" LEFT OUTER JOIN ({$sqlLEX}) AS LEX " .
-							" ON  LEX.testplan_id = TPTCV.testplan_id " .
-							" AND LEX.platform_id = TPTCV.platform_id " .   // TICKET 5182
-							" AND LEX.tcversion_id = TPTCV.tcversion_id " .
-							" AND LEX.testplan_id = " . $safe['tplan_id'] .
-							" LEFT OUTER JOIN {$this->tables['executions']} E " .
-							" ON  E.tcversion_id = TPTCV.tcversion_id " .
-							" AND E.testplan_id = TPTCV.testplan_id " .
-							" AND E.platform_id = TPTCV.platform_id " .
-				  			$buildClause['exec_join'] .
+        			   				" LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
+				          			" /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
+          							" LEFT OUTER JOIN ({$sqlLEX}) AS LEX " .
+          							" ON  LEX.testplan_id = TPTCV.testplan_id " .
+          							" AND LEX.platform_id = TPTCV.platform_id " .   // TICKET 5182
+          							" AND LEX.tcversion_id = TPTCV.tcversion_id " .
+          							" AND LEX.testplan_id = " . $safe['tplan_id'] .
+          							" LEFT OUTER JOIN {$this->tables['executions']} E " .
+          							" ON  E.tcversion_id = TPTCV.tcversion_id " .
+          							" AND E.testplan_id = TPTCV.testplan_id " .
+          							" AND E.platform_id = TPTCV.platform_id " .
+          			  			$buildClause['exec_join'] .
 
-							" WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . ' ' .
-							$my['where']['where'] .
-							" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
-							" AND E.id IS NULL AND LEX.id IS NULL";
-
+					          		" WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . ' ' .
+							          $my['where']['where'] .
+          							" /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
+          							" AND E.id IS NULL AND LEX.id IS NULL";
+          
 
 		$union['exec'] = "/* {$debugMsg} sqlUnion - executions */" . $commonFields . 
-							
-		   				 " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
-			   			 " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
-			   			 " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
-			   			 " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
-			   		     " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
-		   				 $my['join']['tsuites'] .
-						 $my['join']['ua'] .
-						 $my['join']['keywords'] .
+      		   				 " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
+      			   			 " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
+      			   			 " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
+      			   			 " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+    			   		     " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
+      		   				 $my['join']['tsuites'] .
+        						 $my['join']['ua'] .
+    	    					 $my['join']['keywords'] .
 						 
-						 " JOIN ({$sqlLEX}) AS LEX " .
-						 " ON  LEX.testplan_id = TPTCV.testplan_id " .
-						 " AND LEX.platform_id = TPTCV.platform_id " .    // TICKET 5182
-						 " AND LEX.tcversion_id = TPTCV.tcversion_id " .
-						 " AND LEX.testplan_id = " . $safe['tplan_id'] .
-						 " JOIN {$this->tables['executions']} E " .
-						 " ON  E.tcversion_id = TPTCV.tcversion_id " .
-						 " AND E.testplan_id = TPTCV.testplan_id " .
-						 " AND E.platform_id = TPTCV.platform_id " .
-						 $buildClause['exec_join'] .
+        						 " JOIN ({$sqlLEX}) AS LEX " .
+        						 " ON  LEX.testplan_id = TPTCV.testplan_id " .
+        						 " AND LEX.platform_id = TPTCV.platform_id " .    // TICKET 5182
+        						 " AND LEX.tcversion_id = TPTCV.tcversion_id " .
+        						 " AND LEX.testplan_id = " . $safe['tplan_id'] .
+        						 " JOIN {$this->tables['executions']} E " .
+        						 " ON  E.tcversion_id = TPTCV.tcversion_id " .
+        						 " AND E.testplan_id = TPTCV.testplan_id " .
+        						 " AND E.platform_id = TPTCV.platform_id " .
+        						 $buildClause['exec_join'] .
                          
-						 " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . ' ' .
-						 $my['where']['where'];
+         						 " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . ' ' .
+         						 $my['where']['where'];
 
 		return $union;
 	}

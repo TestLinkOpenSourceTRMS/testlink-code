@@ -11,30 +11,15 @@
  * a feature specific code because of performance and readability reasons
  *
  * @filesource	common.php
- * @package 	TestLink
- * @author 		Martin Havlat, Chad Rosen
- * @copyright 	2005,2011 TestLink community 
- * @link 		http://www.teamst.org/index.php
- * @since 		TestLink 1.5
+ * @package 	  TestLink
+ * @author 		  Martin Havlat, Chad Rosen
+ * @copyright 	2005,2012 TestLink community 
+ * @link 		    http://www.teamst.org/index.php
+ * @since 		  TestLink 1.5
  *
  * @internal revisions
- * @since 1.9.4
- *  20111120 - franciscom - TICKET 4813: doDBConnect() - user feedback improvements
+ * @since 1.9.5
  *
- * @since 1.9.3
- *  20110415 - Julian - BUGID 4418: Clean up priority usage within Testlink
- *                                  -> priority_to_level() uses urgencyImportance
- *  20101028 - asimon - BUGID 3951: Status and Type for requirements are not saved
- *  20101025 - Julian - BUGID 3930 - added function split_localized_date()
- *                                 - simplified function is_valid_date()
- *  20101022 - asimon - BUGID 3716: added is_valid_date()
- *	20100904 - eloff - BUGID 3740 - redirect to destination after login
- * 	20100714 - asimon - BUGID 3601: show req spec link only when req mgmt is enabled
- *	20100616 - eloff - config_get: log warning when requested option does not exist
- * 	20100310 - franciscom - changes to make code compatible with smarty 3
- * 	20100207 - havlatm - cleanup
- * 	20100124 - eloff - added $redirect parameter to checkSessionValid()
- * 	20100124 - eloff - BUGID 3012 - added buildExternalIdString()
  */
 
 /** core and parenthal classes */
@@ -227,18 +212,18 @@ function checkSessionValid(&$db, $redirect=true)
 	}
 	if (!$isValidSession && $redirect)
 	{
-	    tLog('Invalid session from ' . $_SERVER["REMOTE_ADDR"] . '. Redirected to login page.', 'INFO');
+    tLog('Invalid session from ' . $_SERVER["REMOTE_ADDR"] . '. Redirected to login page.', 'INFO');
 		
 		$fName = "login.php";
-        $baseDir = dirname($_SERVER['SCRIPT_FILENAME']);
+    $baseDir = dirname($_SERVER['SCRIPT_FILENAME']);
         
-        while(!file_exists($baseDir . DIRECTORY_SEPARATOR . $fName))
-        {
+    while(!file_exists($baseDir . DIRECTORY_SEPARATOR . $fName))
+    {
             $fName = "../" . $fName;
-        }
+    }
 		$destination = "&destination=" . urlencode($_SERVER['REQUEST_URI']);
-        redirect($fName . "?note=expired" . $destination,"top.location");
-        exit();
+    redirect($fName . "?note=expired" . $destination,"top.location");
+    exit();
 	}
 	return $isValidSession;
 }
@@ -422,7 +407,7 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
 	if ($initProject)
 	{
 		initProject($db,$_REQUEST);
-    }
+  }
    
 	// used to disable the attachment feature if there are problems with repository path
 	/** @TODO this check should not be done anytime but on login and using */

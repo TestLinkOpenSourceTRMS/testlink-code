@@ -233,10 +233,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	                                                          'filter_testcase_name',
 	                                                          'filter_toplevel_testsuite',
 	                                                          'filter_keywords',
-                                                              // TICKET 4353: added active/inactive filter
-                                                              'filter_active_inactive',
-                                                              // TICKET 4217: added importance filter
-                                                              'filter_importance',
+                                                            'filter_active_inactive',
+                                                            'filter_importance',
 	                                                          'filter_execution_type',
 	                                                          'filter_custom_fields'),
 	                                     'execution_mode' => array('filter_tc_id',
@@ -857,6 +855,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		
 		$tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id);
 					
+		// echo __METHOD__ . '::' . $this->mode . '<br>';			
 		switch ($this->mode) 
 		{
 			
@@ -932,6 +931,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				
 				if ($this->do_filtering) 
 				{
+				  
                     // TICKET 4353: added active/inactive filter
                     $ignore_inactive_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
                     $ignore_active_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
@@ -1669,16 +1669,15 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}
 	} // end of method
 
-	private function init_filter_custom_fields() {
+	private function init_filter_custom_fields() 
+	{
 		$key = 'filter_custom_fields';
 		$no_warning = true;
 		
-		// BUGID 3930
 		global $g_locales_date_format;
 		$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
 		$date_format = str_replace('%', '', $g_locales_date_format[$locale]);
 		
-		// BUGID 3566: show/hide CF
 		$collapsed = isset($_SESSION['cf_filter_collapsed']) ? $_SESSION['cf_filter_collapsed'] : 0;
 		$collapsed = isset($_REQUEST['btn_toggle_cf']) ? !$collapsed : $collapsed;
 		$_SESSION['cf_filter_collapsed'] = $collapsed;	

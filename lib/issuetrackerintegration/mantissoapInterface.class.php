@@ -36,11 +36,11 @@ class mantissoapInterface extends issueTrackerInterface
 		$this->interfaceViaDB = false;
 		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);
 
-	    $this->setCfg($config);
+	  $this->setCfg($config);
 		$this->completeCfg();
-	    $this->connect();
+	  $this->connect();
 	    
-	    $this->guiCfg = array('use_decoration' => true);
+	  $this->guiCfg = array('use_decoration' => true);
 	}
 
 	

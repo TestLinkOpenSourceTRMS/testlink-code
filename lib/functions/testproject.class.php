@@ -4,25 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource	testproject.class.php
- * @package 	TestLink
- * @author 		franciscom
+ * @package 	  TestLink
+ * @author 		  franciscom
  * @copyright 	2005-2012, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.4
+ * @since 1.9.5
  * 20121010 - asimon - TICKET 4217: added filter for importance
- * 20120913 - asimon - TICKET 5228: Filter use on test spec causes "undefined index" warning in event log
- *                                  for every test case with no active version
- * 20120831 - franciscom - TICKET 5190: Copy Test projects - tester assignments to testplan+build are not copied
- * 20120506 - franciscom - get_accessible_for_user() global coupling removed
- * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
- * 20120219 - franciscom - TICKET 4904: integrate with ITS on test project basis
- * 20120212 - franciscom - new method  getTCasesFilteredByKeywords()
- * 20120205 - franciscom - new methods _get_subtree_rec(), getTestSpec()
- * 20110817 - franciscom - TICKET 4360
- * 20110817 - franciscom - added missed user_id on copy_requirements() call
- * 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
  *
  **/
 
@@ -481,29 +470,41 @@ args:
      [order_by]: default: ORDER BY name
 
 @internal revisions
-@since 1.9.4
+@since 1.9.5
 
 */
-function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER BY name ")
+function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER BY name ",$add_issuetracker = false)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-    $items = array();
+  $items = array();
 	$safe_user_id = intval($user_id);
 
-    // Get default role
-    $sql = "/* $debugMsg */ SELECT id,role_id FROM {$this->tables['users']} where id=" . $safe_user_id;
-    $user_info = $this->db->get_recordset($sql);
+  // Get default role
+  $sql = "/* $debugMsg */ SELECT id,role_id FROM {$this->tables['users']} where id=" . $safe_user_id;
+  $user_info = $this->db->get_recordset($sql);
 	$role_id = intval($user_info[0]['role_id']);
 
-	$sql =  " /* $debugMsg */ SELECT nodes_hierarchy.name,testprojects.* " .
- 	        " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy " .
- 	        " JOIN {$this->object_table} testprojects ON nodes_hierarchy.id=testprojects.id " .
-	        " LEFT OUTER JOIN {$this->tables['user_testproject_roles']} user_testproject_roles " .
-		    " ON testprojects.id = user_testproject_roles.testproject_id " .
-		    " AND user_testproject_roles.user_id =" . $safe_user_id . " WHERE 1=1 ";
-
+  $itsql = '';
+  $itf = '';
+	if($add_issuetracker)
+	{
+	  $itsql = " LEFT OUTER JOIN {$this->tables['testproject_issuetracker']} AS TIT " .
+	           " ON TIT.testproject_id  = testprojects.id " .
+	           " LEFT OUTER JOIN {$this->tables['issuetrackers']} AS ITMD " .
+	           " ON ITMD.id = TIT.issuetracker_id ";     
+    $itf = ",ITMD.name AS itname,ITMD.type AS ittype";
+	}	      
+  
+	$sql = " /* $debugMsg */ SELECT nodes_hierarchy.name,testprojects.* {$itf}" .
+ 	       " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy " .
+ 	       " JOIN {$this->object_table} testprojects ON nodes_hierarchy.id=testprojects.id " .
+	       " LEFT OUTER JOIN {$this->tables['user_testproject_roles']} user_testproject_roles " .
+		     " ON testprojects.id = user_testproject_roles.testproject_id " .
+		     " AND user_testproject_roles.user_id =" . $safe_user_id . $itsql .
+         " WHERE 1=1 ";
 	
+	//echo $sql;
 	// Private test project feature
 	if( $role_id != TL_ROLES_ADMIN )
 	{
@@ -522,8 +523,6 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
     	}
 	}
 
-	// this is global coupling => BAD
-	// if (has_rights($this->db,'mgt_modify_product') != 'yes')
 	$userObj = tlUser::getByID($this->db,$safe_user_id,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
 	if ($userObj->hasRight($this->db,'mgt_modify_product') != 'yes')
 	{
@@ -533,43 +532,43 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
     
 	$sql .= $order_by;
 
-    if($output_type == 'array_of_map')
+  if($output_type == 'array_of_map')
 	{
-	    $items = $this->db->get_recordset($sql);
+	  $items = $this->db->get_recordset($sql);
 		$this->parseTestProjectRecordset($items);
-	    $do_post_process=0;
+	  $do_post_process=0;
 	}
 	else
 	{
-	    $arrTemp = $this->db->fetchRowsIntoMap($sql,'id');
-	    $do_post_process=1;
-	}
-
+	  $arrTemp = $this->db->fetchRowsIntoMap($sql,'id');
+	  $do_post_process=1;
+	}    
 	
+		
 	if ($do_post_process && sizeof($arrTemp))
 	{
-        switch ($output_type)
-	    {
-	         case 'map':
-	    	   foreach($arrTemp as $id => $row)
-	    	   {
-	    		   $noteActive = '';
-	    		   if (!$row['active'])
-	    		   {
-	    			   $noteActive = TL_INACTIVE_MARKUP;
-	    		   }
-	    		   $items[$id] = $noteActive . $row['name'];
-	    	   }
-	    	   break;
-        
-	         case 'map_of_map':
-	    	   foreach($arrTemp as $id => $row)
-	    	   {
-	    		   $items[$id] = array('name' => $row['name'],'active' => $row['active']);
-	    	   }
-	    	   break;
-	    }
-	    unset($arrTemp);
+    switch ($output_type)
+	  {
+	    case 'map':
+	  	foreach($arrTemp as $id => $row)
+	  	{
+	  	  $noteActive = '';
+	  	  if (!$row['active'])
+	  	  {
+	  	   $noteActive = TL_INACTIVE_MARKUP;
+	  	  }
+	  	  $items[$id] = $noteActive . $row['name'];
+	  	}
+	  	break;
+      
+	    case 'map_of_map':
+	  	foreach($arrTemp as $id => $row)
+	  	{
+	  	  $items[$id] = array('name' => $row['name'],'active' => $row['active']);
+	  	}
+	  	break;
+	  }
+	  unset($arrTemp);
 	}
 
 	return $items;
@@ -2594,7 +2593,8 @@ function getTestSpec($id,$filters=null,$options=null)
 		$my['options']['remove_empty_nodes_of_type'] = 'testsuite';
 	}
 	
-    $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
+  $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
+  echo __METHOD__ . '::' . $method2call . '<br>';
 	$qnum = $this->$method2call($id,$items,$my['filters'],$my['options']);
  	return $items;
 }
@@ -2624,16 +2624,15 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 	
 	if (!$my)
 	{
-	  	$qnum=0;
-
+	  $qnum=0;
 		$node_types = array_flip($this->tree_manager->get_available_node_types());
         
-        // TICKET 4217: added filter for importance
-    	$my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
+    // TICKET 4217: added filter for importance
+    $my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
     					   	   'additionalWhereClause' => '', 'testcase_name' => null,
     					   	   'testcase_id' => null,'active_testcase' => false, 'importance' => null);
                            
-    	$my['options'] = array('remove_empty_nodes_of_type' => null);
+    $my['options'] = array('remove_empty_nodes_of_type' => null);
 
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
 		$my['options'] = array_merge($my['options'], (array)$options);
@@ -2648,9 +2647,11 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 		$tcaseFilter['is_active'] = !is_null($my['filters']['active_testcase']) && $my['filters']['active_testcase'];
 		$tcaseFilter['enabled'] = $tcaseFilter['name'] || $tcaseFilter['id'] || $tcaseFilter['is_active'];
 
-        // TICKET 4217: added filter for importance
+
+    
+    // TICKET 4217: added filter for importance
 		$tcversionFilter['execution_type'] = !is_null($my['filters']['execution_type']);
-        $tcversionFilter['importance'] = !is_null($my['filters']['importance']);
+    $tcversionFilter['importance'] = !is_null($my['filters']['importance']);
 		$tcversionFilter['enabled'] = $tcversionFilter['execution_type'] || $tcversionFilter['importance'];
 
 		$childFilterOn = $tcaseFilter['enabled'] || $tcversionFilter['enabled'];
@@ -2670,13 +2671,14 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 		// Create invariant sql sentences
 		$tfields = "NH.id, NH.parent_id, NH.name, NH.node_type_id, NH.node_order, '' AS external_id ";
 		$staticSql = " SELECT DISTINCT {$tfields} " .
-				     " FROM {$this->tables['nodes_hierarchy']} NH ";
+				         " FROM {$this->tables['nodes_hierarchy']} NH ";
 		
 	}
+  new dBug($tcaseFilter);
 
 	$sql =	$staticSql . " WHERE NH.parent_id = {$node_id} " .
-			" AND (" .
-            	"      NH.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} " .
+			    " AND (" .
+          "      NH.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} " .
 	    		" 	   OR (NH.node_type_id = {$this->tree_manager->node_descr_id['testcase']} ";
 	
 	if( $tcaseFilter['enabled'] )
@@ -2703,6 +2705,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 	
 	
 	// Approach Change - get all 
+	echo $sql;
 	
 	$rs = $this->db->fetchRowsIntoMap($sql,'id');
 	if( count($rs) == 0 )
@@ -2724,18 +2727,18 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 	{
 		$filterOnTC = false;
 		$glav = " /* Get LATEST ACTIVE tcversion ID */ " .  
-				" SELECT MAX(TCVX.id) AS tcversion_id, NHTCX.parent_id AS tc_id " .
-				" FROM {$this->tables['tcversions']} TCVX " . 
-				" JOIN {$this->tables['nodes_hierarchy']} NHTCX " .
-				" ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
-				" WHERE NHTCX.parent_id IN (" . implode($tclist,',') . ")" .
-				" GROUP BY NHTCX.parent_id,TCVX.tc_external_id  ";
+				    " SELECT MAX(TCVX.id) AS tcversion_id, NHTCX.parent_id AS tc_id " .
+				    " FROM {$this->tables['tcversions']} TCVX " . 
+				    " JOIN {$this->tables['nodes_hierarchy']} NHTCX " .
+				    " ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
+				    " WHERE NHTCX.parent_id IN (" . implode($tclist,',') . ")" .
+				    " GROUP BY NHTCX.parent_id,TCVX.tc_external_id  ";
 
-		$ssx = 	" /* Get LATEST ACTIVE tcversion MAIN ATTRIBUTES */ " .
-				" SELECT TCV.id AS tcversion_id, TCV.tc_external_id AS external_id, SQ.tc_id " .
-		   		" FROM {$this->tables['tcversions']} TCV " . 
-		   		" JOIN ( $glav ) SQ " .
-		   		" ON TCV.id = SQ.tcversion_id ";
+		$ssx = " /* Get LATEST ACTIVE tcversion MAIN ATTRIBUTES */ " .
+				   " SELECT TCV.id AS tcversion_id, TCV.tc_external_id AS external_id, SQ.tc_id " .
+		   		 " FROM {$this->tables['tcversions']} TCV " . 
+		   		 " JOIN ( $glav ) SQ " .
+		   		 " ON TCV.id = SQ.tcversion_id ";
 
 
 		// We can add here keyword filtering if exist ?
@@ -2766,7 +2769,9 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 			}	
 		}		
 		
+		new dBug($ssx);
 		$highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
+		new dBug($highlander);
 		if( $filterOnTC )
 		{
 			$ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;
@@ -2778,6 +2783,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 				}
 			}
 		}
+		
 	}
 	
  	foreach($rs as $row)
@@ -2789,8 +2795,8 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 			if($node['node_table'] == 'testcases')
 			{
 				$node['leaf'] = true; 
-                // TICKET 5228: Filter use on test spec causes "undefined index" warning in event log
-                //              for every test case with no active version
+        // TICKET 5228: Filter use on test spec causes "undefined index" warning in event log
+        //              for every test case with no active version
 				$node['external_id'] = isset($highlander[$row['id']]) ? $highlander[$row['id']]['external_id'] : null;
 			}			
 			

@@ -242,6 +242,7 @@ class TLSmarty extends Smarty
         // -----------------------------------------------------------------------------
         // Images
         $this->tlImages = array('api_info' => TL_THEME_IMG_DIR . 'brick.png',
+                                'active' => TL_THEME_IMG_DIR . 'flag_green.png',
                                 'bug_link_tl_to_bts' => TL_THEME_IMG_DIR . 'bug_link_famfamfam.png',
                                 'bug_create_into_bts' => TL_THEME_IMG_DIR . 'bug_add_famfamfam.png',
                                 'bug_link_tl_to_bts_disabled' => TL_THEME_IMG_DIR . 'bug_link_disabled_famfamfam.png',
@@ -264,6 +265,7 @@ class TLSmarty extends Smarty
                                 'execution_order' => TL_THEME_IMG_DIR . 'timeline_marker.png',
                                 'history' => TL_THEME_IMG_DIR . 'history.png',
                                 'history_small' => TL_THEME_IMG_DIR . 'history_small.png',
+                                'inactive' => TL_THEME_IMG_DIR . 'flag_yellow.png',
                                 'log_message' => TL_THEME_IMG_DIR . 'history.png',
                                 'log_message_small' => TL_THEME_IMG_DIR . 'history_small.png',
                                 'import' => TL_THEME_IMG_DIR . 'door_in.png',

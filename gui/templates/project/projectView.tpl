@@ -6,12 +6,9 @@ Purpose: smarty template - edit / delete Test Plan
 Development hint:
      some variables smarty and javascript are created on the inc_*.tpl files.
 
-Rev :
-    20100930 - franciscom - BUGID 2344: Private test project
-    20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-    20080805 - franciscom - api config refactoring
-    20080116 - franciscom - added option to show/hide id useful for API
-
+@internal revisions
+@since 1.9.5
+20121201 - franciscom - 5385: test project list - add information about issue tracker
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -29,7 +26,8 @@ Rev :
 		s='title_testproject_management,testproject_txt_empty_list,tcase_id_prefix,
 		th_name,th_notes,testproject_alt_edit,testproject_alt_active,
 		th_requirement_feature,testproject_alt_delete,btn_create,public,
-		testproject_alt_requirement_feature,th_active,th_delete,th_id'}
+		testproject_alt_requirement_feature,th_active,th_delete,th_id,
+		th_issuetracker'}
 
 
 {include file="inc_head.tpl" openHead="yes" enableTableSorting="yes"}
@@ -63,6 +61,7 @@ var del_action=fRoot+'{$deleteAction}';
 			<th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_name}</th>
 			<th class="{$noSortableColumnClass}">{$labels.th_notes}</th>
 			<th>{$tlImages.sort_hint}{$labels.tcase_id_prefix}</th>
+			<th>{$tlImages.sort_hint}{$labels.th_issuetracker}</th>
 			<th class="{$noSortableColumnClass}">{$labels.th_requirement_feature}</th>
 			<th class="icon_cell">{$labels.th_active}</th>
 			<th class="icon_cell">{$labels.public}</th>
@@ -87,6 +86,11 @@ var del_action=fRoot+'{$deleteAction}';
 			<td width="10%">
 				{$testproject.prefix|escape}
 			</td>
+			
+			<td width="10%">
+				{$testproject.itstatusImg} &nbsp; {$testproject.itname|escape} 
+			</td>
+			
 			<td class="clickable_icon">
 				{if $testproject.opt->requirementsEnabled}
   					<img style="border:none" title="{$labels.testproject_alt_requirement_feature}"

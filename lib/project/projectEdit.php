@@ -108,11 +108,32 @@ switch($args->doAction)
     case "doCreate":
     case "doDelete":
     case "doUpdate":
-        $gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map',
-                                                                 " ORDER BY nodes_hierarchy.name ");
 
-		$gui->doAction = $reloadType;
-        $template= is_null($template) ? 'projectView.tpl' : $template;
+		    $gui->doAction = $reloadType;
+        $addIssueTracker = is_null($template);
+        $template = is_null($template) ? 'projectView.tpl' : $template;
+
+        $gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map',
+                                                                 " ORDER BY nodes_hierarchy.name ",$addIssueTracker);
+
+        if($addIssueTracker)
+        {
+          $imgSet = $smarty->getImages();
+          $loop2do = count($gui->tprojects);
+          $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));
+          for($idx=0; $idx < $loop2do; $idx++)
+          {
+            $gui->tprojects[$idx]['itstatusImg'] = '';
+            if($gui->tprojects[$idx]['itname'] != '')
+            {
+              $ak = ($gui->tprojects[$idx]['issue_tracker_enabled']) ? 'active' : 'inactive';
+              $gui->tprojects[$idx]['itstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
+                                                     ' alt="' . $labels[$ak . '_integration'] . '" ' .
+           				                                   ' src="' . $imgSet[$ak] . '"/>';
+            } 
+          }
+        }
+        
         $smarty->assign('gui',$gui);
         $smarty->display($templateCfg->template_dir . $template);
     break;
@@ -357,8 +378,6 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
         	$tprojectMgr->activate($argsObj->tprojectID,$argsObj->active);
         	$tprojectMgr->setIssueTrackerEnabled($argsObj->tprojectID,$argsObj->issue_tracker_enabled);
 		   	$itMgr = new tlIssueTracker($tprojectMgr->db);
-		   	
-		   	new dBug($argsObj);
 		   	
 			if( ($doLink = $argsObj->issue_tracker_id > 0)  )
 			{

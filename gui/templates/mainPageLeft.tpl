@@ -200,7 +200,7 @@
 		{/if}
 
 
-		{if $gui->grants.issuetracker_management}
+		{if $gui->grants.issuetracker_management || $gui->grants.issuetracker_view}
 			<br />
 	  		<img src="{$tlImages.bullet}" />
 			<a href="lib/issuetrackers/issueTrackerView.php">{$labels.href_issuetracker_management}</a>

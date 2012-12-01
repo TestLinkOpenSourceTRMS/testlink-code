@@ -14,8 +14,8 @@
  * There is also some javascript that handles the form information.
  *
  * @internal revisions
- * @since 1.9.4
- * 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis	
+ * @since 1.9.5
+ * 
  **/
 
 require_once('../../config.inc.php');
@@ -59,23 +59,24 @@ $gui->grants['keywords_view'] = $currentUser->hasRight($db,"mgt_view_key");
 $gui->grants['keywords_edit'] = $currentUser->hasRight($db,"mgt_modify_key");
 $gui->grants['platform_management'] = $currentUser->hasRight($db,"platform_management");
 $gui->grants['issuetracker_management'] = $currentUser->hasRight($db,"issuetracker_management");
+$gui->grants['issuetracker_view'] = $currentUser->hasRight($db,"issuetracker_view");
 
 $gui->grants['configuration'] = $currentUser->hasRight($db,"system_configuraton");
 $gui->grants['usergroups'] = $currentUser->hasRight($db,"mgt_view_usergroups");
 $gui->grants['view_tc'] = $currentUser->hasRight($db,"mgt_view_tc");
-$gui->grants['project_inventory_view'] = ($_SESSION['testprojectOptions']->inventoryEnabled 
-	&& ($currentUser->hasRight($db,"project_inventory_view") == 'yes')) ? 1 : 0;
+$gui->grants['project_inventory_view'] = ($_SESSION['testprojectOptions']->inventoryEnabled && 
+                                          ($currentUser->hasRight($db,"project_inventory_view") == 'yes')) ? 1 : 0;
 $gui->grants['modify_tc'] = null; 
 $gui->hasTestCases = false;
 
 if($gui->grants['view_tc'])
 { 
-    $gui->grants['modify_tc'] = $currentUser->hasRight($db,"mgt_modify_tc"); 
+  $gui->grants['modify_tc'] = $currentUser->hasRight($db,"mgt_modify_tc"); 
 	$gui->hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
 }
 
-$smarty->assign('opt_requirements', isset($_SESSION['testprojectOptions']->requirementsEnabled) 
-		? $_SESSION['testprojectOptions']->requirementsEnabled : null); 
+$smarty->assign('opt_requirements', isset($_SESSION['testprojectOptions']->requirementsEnabled) ? 
+                                    $_SESSION['testprojectOptions']->requirementsEnabled : null); 
 
 // ----- Test Plan Section --------------------------------------------------------------
 /** 

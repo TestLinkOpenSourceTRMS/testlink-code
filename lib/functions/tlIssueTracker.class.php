@@ -612,14 +612,22 @@ class tlIssueTracker extends tlObject
 	{
 		$its = null;
 		$issueT = $this->getLinkedTo($tprojectID);
-		if( !is_null($issueT)  )
-		{
-			$itd = $this->getByID($issueT['issuetracker_id']);
-			$iname = $itd['implementation'];
-			$its = new $iname($itd['implementation'],$itd['cfg']);
-		}
-		return 	$its;
-	
+    
+    try
+    {
+  		if( !is_null($issueT)  )
+  		{
+  			$itd = $this->getByID($issueT['issuetracker_id']);
+  			$iname = $itd['implementation'];
+  			$its = new $iname($itd['implementation'],$itd['cfg']);
+  		}
+  		return 	$its;
+	  }
+    catch (Exception $e)
+    {
+      echo('Probably there is some PHP Config issue regarding extension<b>');
+      echo($e->getMessage().'<pre>'.$e->getTraceAsString().'</pre>');   
+    }
 	}
 
 	/*

@@ -30,15 +30,15 @@ class issueTrackerCommands
 
 	function __construct(&$dbHandler)
 	{
-	    $this->db=$dbHandler;
-	    $this->issueTrackerMgr = new tlIssueTracker($dbHandler);
-	    $this->entitySpec = $this->issueTrackerMgr->getEntitySpec();
+	  $this->db=$dbHandler;
+	  $this->issueTrackerMgr = new tlIssueTracker($dbHandler);
+	  $this->entitySpec = $this->issueTrackerMgr->getEntitySpec();
 
-        $this->grants=new stdClass();
-        $this->grants->canManage = false; 
+    $this->grants=new stdClass();
+    $this->grants->canManage = false; 
 
-		$this->guiOpWhiteList = array_flip(array('create','edit','delete','doCreate','doUpdate','doDelete'));
-
+		$this->guiOpWhiteList = array_flip(array('checkConnection','create','edit','delete','doCreate',
+		                                         'doUpdate','doDelete'));
 	}
 
 	function setTemplateCfg($cfg)
@@ -196,18 +196,18 @@ class issueTrackerCommands
 		$op = $this->issueTrackerMgr->update($it);
 		if( $op['status_ok'] )
 		{
-        	$guiObj->main_descr = '';
-		    $guiObj->action_descr = '';
-          	$guiObj->template = "issueTrackerView.php";
+      $guiObj->main_descr = '';
+		  $guiObj->action_descr = '';
+      $guiObj->template = "issueTrackerView.php";
 		}
 		else
 		{
-      		$guiObj->user_feedback['message'] = $op['msg'];
+      $guiObj->user_feedback['message'] = $op['msg'];
 			$guiObj->template = null;
 		}
 		
-        return $guiObj;
-    }  
+    return $guiObj;
+  }  
 
   /**
    * 
@@ -233,11 +233,25 @@ class issueTrackerCommands
  		//$_SESSION['issueTrackerView.user_feedback'] = $msg;
 
  		$guiObj->action = 'doDelete';
-        $guiObj->template = "issueTrackerView.php?";
+    $guiObj->template = "issueTrackerView.php?";
 
 		return $guiObj;
 	}
 
+
+	function checkConnection(&$argsObj,$request)
+	{
+    $guiObj = $this->initGuiBean($argsObj,__FUNCTION__);
+	  
+	  $xx = $this->issueTrackerMgr->getByID($argsObj->id);
+	  $class2create = $xx['implementation'];
+	  $its = new $class2create($xx['type'],$xx['cfg']);
+
+    
+	  $guiObj->template = "issueTrackerView.php?";
+    $guiObj->connectionStatus = $its->isConnected() ? 'ok' : 'ko';
+		return $guiObj;
+  }
 
 
 	

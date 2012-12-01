@@ -21,8 +21,7 @@
  * =============================================================================
  *
  * @internal revisions
- * @since 1.9.4
- * 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis 
+ * @since 1.9.5
 **/
 require_once(TL_ABS_PATH . "/lib/functions/database.class.php");
 require_once(TL_ABS_PATH . "/lib/functions/lang_api.php");
@@ -50,16 +49,21 @@ abstract class issueTrackerInterface
 	 **/
 	function __construct($type,$config)
 	{
-	    $this->tlCharSet = config_get('charset');
-		$this->setCfg($config);
-
-		// useful only for integration via DB
-		if( !property_exists($this->cfg,'dbcharset') )
-		{
-			$this->cfg->dbcharset = $this->tlCharSet;
-	 	}
-
-	    $this->connect();
+	  $this->tlCharSet = config_get('charset');
+		
+		if( $this->setCfg($config) )
+    {
+  		// useful only for integration via DB
+  		if( !property_exists($this->cfg,'dbcharset') )
+  		{
+  			$this->cfg->dbcharset = $this->tlCharSet;
+  	 	}
+  	  $this->connect();
+	  }
+	  else
+	  {
+	    $this->connected = false;
+	  }
 	}
 
 	/**
@@ -75,6 +79,9 @@ abstract class issueTrackerInterface
 	 **/
 	function setCfg($xmlString)
 	{
+	  $msg = null;
+	  $signature = 'Source:' . __METHOD__;
+
 		$xmlCfg = "<?xml version='1.0'?> " . $xmlString;
 		libxml_use_internal_errors(true);
 		try 
@@ -82,18 +89,20 @@ abstract class issueTrackerInterface
   		$this->cfg = simplexml_load_string($xmlCfg);
   		if (!$this->cfg) 
   		{
-      		echo "Failure loading XML STRING\n";
-      		foreach(libxml_get_errors() as $error) 
-      		{
-          		echo "\t", $error->message;
-      		}
+  		  $msg = $signature . " - Failure loading XML STRING\n";
+      	foreach(libxml_get_errors() as $error) 
+      	{
+       		$msg .= "\t" . $error->message;
+      	}
   		}
     }
     catch(Exception $e)
     {
-      echo "Exception loading XML STRING\n";
-      echo 'Message: ' .$e->getMessage();
+      $msg = $signature . " - Exception loading XML STRING\n";
+      $msg .= 'Message: ' .$e->getMessage();
     }
+    
+    return is_null($msg);
 	}
 
 	/**

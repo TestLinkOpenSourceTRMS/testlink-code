@@ -1210,5 +1210,17 @@ class tlUser extends tlDBObject
 		return $this->securityCookie;
 	}
 
+
+	static public function getByAPIKey(&$dbHandler,$value)
+	{
+		$tables = tlObject::getDBTables('users');
+    $target = $dbHandler->prepare_string($value);
+    $sql = "SELECT * FROM {$tables['users']} WHERE script_key='{$target}'";
+
+    $rs = $dbHandler->fetchRowsIntoMap($sql, "id");
+    return $rs;
+	}
+
+
 }
 ?>

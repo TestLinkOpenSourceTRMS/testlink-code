@@ -538,6 +538,12 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 		$this->parseTestProjectRecordset($items);
 	  $do_post_process=0;
 	}
+  elseif($output_type == 'map_of_map_full')
+  {
+	  $items = $this->db->fetchRowsIntoMap($sql,'id');
+		$this->parseTestProjectRecordset($items);
+	  $do_post_process=0;
+  }
 	else
 	{
 	  $arrTemp = $this->db->fetchRowsIntoMap($sql,'id');
@@ -566,7 +572,7 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 	  	{
 	  	  $items[$id] = array('name' => $row['name'],'active' => $row['active']);
 	  	}
-	  	break;
+	  	break;       
 	  }
 	  unset($arrTemp);
 	}

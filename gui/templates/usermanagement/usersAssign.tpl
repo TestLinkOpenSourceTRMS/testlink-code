@@ -106,11 +106,11 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 	<div>
 		<table border='0'>
     	{if $gui->featureType == 'testproject'}
-    		<tr><td class="labelHolder">{$labels.TestProject}</td><td>&nbsp;</td>
+    		<tr><td class="labelHolder">{$labels.TestProject}{$gui->accessTypeImg}</td><td>&nbsp;</td>
     	{else}
     		<tr><td class="labelHolder">{$labels.TestProject}{$smarty.const.TITLE_SEP}</td><td>{$gui->tproject_name|escape}</td></tr>
     		<tr>
-				<td class="labelHolder">{$labels.TestPlan}</td>
+				<td class="labelHolder">{$labels.TestPlan}{$gui->accessTypeImg}</td>
     	{/if}
 		    	<td>
 		        <select id="featureSel" onchange="changeFeature('{$gui->featureType}')">

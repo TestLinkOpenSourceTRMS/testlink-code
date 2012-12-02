@@ -22,35 +22,19 @@ require_once('../../config.inc.php');
 require_once('users.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 
+$smarty = new TLSmarty();
 $templateCfg = templateConfiguration();
 
 $assignRolesFor = null;
 $featureMgr = null;
 $userFeatureRoles = null;
 $doInitGui = true;
-$guiCfg = config_get('gui');
 
 $tprojectMgr = new testproject($db);
 $tplanMgr = new testplan($db);
 
 $args = init_args();
-
-$gui = new stdClass();
-$gui->highlight = initialize_tabsmenu();
-$gui->user_feedback = '';
-$gui->no_features = '';
-$gui->roles_updated = '';
-$gui->tproject_name = $args->testprojectName;
-$gui->optRights = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
-$gui->features = null;
-$gui->featureType = $args->featureType;
-$gui->featureID = null;
-
-$gui->role_colour = null;
-if($guiCfg->usersAssignGlobalRoleColoring == ENABLED) 
-{
-	$gui->role_colour = tlRole::getRoleColourCfg($db);
-}
+$gui = initializeGui($db,$args);
 
 $target = new stdClass();
 $target->testprojectID = null;
@@ -89,6 +73,7 @@ if ($args->featureID && $args->doUpdate && $featureMgr)
     	}
     }
 }
+
 // --------------------------------------------------------------------------
 // Important: 
 // Must be done here after having done update, to get current information
@@ -116,7 +101,9 @@ switch($assignRolesFor)
 
 }
 
+
 $gui->grants = getGrantsForUserMgmt($db,$args->user,$target->testprojectID,-1);
+$gui->accessTypeImg = '';
 if(is_null($gui->features) || count($gui->features) == 0)
 {
   $gui->features = null;
@@ -125,8 +112,14 @@ if(is_null($gui->features) || count($gui->features) == 0)
 		$gui->user_feedback = $gui->not_for_you;
 	}
 }
+else
+{
+  $accessKey = $gui->features[$gui->featureID]['is_public'] ? 'public' : 'private';
+  $imgSet = $smarty->getImages();
+  $gui->accessTypeImg = '<img src="' . $imgSet[$accessKey] . '" title="' . lang_get('access_' . $accessKey) . '" >';
+}
 
-$smarty = new TLSmarty();
+
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
@@ -252,25 +245,26 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
 	$order_by = $gui_cfg->tprojects_combo_order_by;
 
   // Accessible means user has a role on test project
-	$testprojects = $objMgr->get_accessible_for_user($argsObj->userID,'array_of_map',$order_by);
-	
-	
-	
+	$testprojects = $objMgr->get_accessible_for_user($argsObj->userID,'map_of_map_full',$order_by);
+ 	
 	// Another more restrictive filter has to be applied, related to what we want to do
 	// user has to be right to manage roles on test project 
-  	if($argsObj->user->hasRight($dbHandler,"mgt_users"))
+  if($argsObj->user->hasRight($dbHandler,"mgt_users"))
 	{
 		$features = $testprojects;
 	}
 	else
 	{
-	  $loop2do = sizeof($testprojects);
-    for($idx = 0; $idx < $loop2do; $idx++)
+	  // $loop2do = sizeof($testprojects);
+    // for($idx = 0; $idx < $loop2do; $idx++)
+    $features = array();
+    $key2loop = array_keys($testprojects);
+    foreach($key2loop as $idx)
 		{
-		    $answer = $argsObj->user->hasRight($dbHandler,"testproject_user_role_assignment",$testprojects[$idx]['id'],-1);
+		  $answer = $argsObj->user->hasRight($dbHandler,"testproject_user_role_assignment",$testprojects[$idx]['id'],-1);
 			if($answer == "yes")
 			{
-				$features[] = $testprojects[$idx];
+				$features[$idx] = $testprojects[$idx];
 			}	
 		}
 	}
@@ -285,14 +279,17 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
 		}
 		else if (sizeof($features))
 		{
-			$argsObj->featureID = $features[0]['id'];
+		  $xx = current($features);
+			$argsObj->featureID = $xx['id'];
 		}	
 	}
 	
 	// get private/public status for feature2check
-	$loop2do = sizeof($testprojects);
 	$featureIsPublic = 1;
-	for($ppx=0; $ppx < $loop2do; $ppx++)
+	// $loop2do = sizeof($testprojects);
+	// for($ppx=0; $ppx < $loop2do; $ppx++)
+	$key2loop = array_keys($testprojects);
+  foreach($key2loop as $ppx)
 	{
 		if( $testprojects[$ppx]['id'] == $argsObj->featureID )
 		{
@@ -305,8 +302,8 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
 	{
 		$user->readTestProjectRoles($dbHandler,$argsObj->featureID);
 	}
-	$effectiveRoles = get_tproject_effective_role($dbHandler,array('id' => $argsObj->featureID, 'is_public' => $featureIsPublic),
-												  null,$users);
+	$effectiveRoles = get_tproject_effective_role($dbHandler,array('id' => $argsObj->featureID, 
+	                                                               'is_public' => $featureIsPublic),null,$users);
 	return array($effectiveRoles,$features,$argsObj->featureID);
 }
 
@@ -321,8 +318,7 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
 	$features = array();
 	$activeTestplans = $tprojectMgr->get_all_testplans($argsObj->testprojectID, array('plan_status' => 1));
 
-  
-	
+ 	
 	$ret = null;
 	$status_ok = !is_null($activeTestplans);
 	if($status_ok)
@@ -330,12 +326,16 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
   	$myAccessibleSet = $argsObj->user->getAccessibleTestPlans($dbHandler,$argsObj->testprojectID,null,
 	                                                            array('output' =>'map'));
 	                                                            
+
+    new dBug($myAccessibleSet);
+   
     // we want to change map key, from testplan id to a sequential index
     // to maintain old logic
     $activeKeys = array_keys($activeTestplans);
     $myKeys = array_keys((array)$myAccessibleSet);
-	  $key2remove = array_intersect_key($activeKeys,$myKeys);
-    if( !is_null($key2remove) )
+	//  $key2remove_intersect = array_intersect($activeKeys,$myKeys);
+	  $key2remove = $key2remove_diff = array_diff($activeKeys,$myKeys);
+     if( !is_null($key2remove) )
     {
       foreach($key2remove as $target)
       {
@@ -343,8 +343,9 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
       }
     }
     
-	  $activeTestplans = array_values($activeTestplans);
-	  
+	  // $activeTestplans = array_values($activeTestplans);
+    new dBug($activeTestplans);  
+    	  
   
 		if($argsObj->user->hasRight($dbHandler,"mgt_users"))
 		{
@@ -352,13 +353,17 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
 		}
 		else
 		{
-		  $loop2do = sizeof($activeTestplans);
-			for($idx = 0; $idx < $loop2do; $idx++)
+		  //$loop2do = sizeof($activeTestplans);
+			//for($idx = 0; $idx < $loop2do; $idx++)
+			$features = array();
+		  $key2loop = array_keys($activeTestplans);
+			foreach($key2loop as $idx)
 			{
         // Humm!!, think we need to check testplan_user_role_assignment and not "testplan_planning"
-				if($argsObj->user->hasRight($dbHandler,"testplan_user_role_assignment",null,$activeTestplans[$idx]['id']) == "yes")
+				if($argsObj->user->hasRight($dbHandler,"testplan_user_role_assignment",null,
+				                            $activeTestplans[$idx]['id']) == "yes")
 				{
-					$features[] = $activeTestplans[$idx];
+					$features[$idx] = $activeTestplans[$idx];
 				}	
 			}
 		}
@@ -370,8 +375,10 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
 			{
 				if ($argsObj->testplanID)
 				{
-				    $loop2do = sizeof($features);
-					for($idx = 0; $idx < $loop2do; $idx++)
+				  // $loop2do = sizeof($features);
+					// for($idx = 0; $idx < $loop2do; $idx++)
+					$key2loop = array_keys($features);
+					foreach($key2loop as $idx)
 					{
 						if ($argsObj->testplanID == $features[$idx]['id'])
 						{
@@ -381,7 +388,8 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
 				}
 				if (!$argsObj->featureID)
 				{
-					$argsObj->featureID = $features[0]['id'];
+				  $xx = current($features);
+					$argsObj->featureID = $xx['id'];
 				}	
 			}
 		}
@@ -391,7 +399,6 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
 			$user->readTestPlanRoles($dbHandler,$argsObj->featureID);
 		}
     	
-		// 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
 		$tproject_info = $tprojectMgr->get_by_id($argsObj->testprojectID);
     	
 		$effectiveRoles = get_tplan_effective_role($dbHandler,$argsObj->featureID,$tproject_info,null,$users);
@@ -412,4 +419,28 @@ function doUpdate(&$dbHandler,&$argsObj,&$featureMgr)
 		}	
 	}
 }
+
+function initializeGui(&$dbHandler,$argsObj)
+{
+  $gui = new stdClass();
+  
+  $gui->highlight = initialize_tabsmenu();
+  $gui->user_feedback = '';
+  $gui->no_features = '';
+  $gui->roles_updated = '';
+  $gui->tproject_name = $argsObj->testprojectName;
+  $gui->featureType = $argsObj->featureType;
+  $gui->optRights = tlRole::getAll($dbHandler,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+  $gui->features = null;
+  $gui->featureID = null;
+  $gui->role_colour = null;
+
+  $guiCfg = config_get('gui');
+  if($guiCfg->usersAssignGlobalRoleColoring == ENABLED) 
+  {
+  	$gui->role_colour = tlRole::getRoleColourCfg($dbHandler);
+  }
+  return $gui;
+}
+
 ?>

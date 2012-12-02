@@ -37,20 +37,12 @@
  * 
  *
  * @internal revisions
- * @since 1.9.4
- *	20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis
- * 	20111029 - franciscom - TICKET 4786: Add right to allow UNFREEZE a requirement
- *
- * @since 1.9.?	 
- *	20101112 - franciscom - BUGID 4006: get_tplan_effective_role() fixed bad variable usage -> error on event viewer
- *	20101111 - franciscom - BUGID 4006: test plan is_public
- *	20100930 - franciscom - BUGID 2344: Private test project
- *	20100307 - franciscom - removed wrong right due to copy/paste BUGID 3249
- *	20100220 - franciscom - added inventory rights
- *  20090425 - franciscom - BUGID 2417 - new right for test projects
- *  20081030 - franciscom - added new rights -> system
- *  20070901 - franciscom - BUGID 1016
- *  20070819 - franciscom - added get_tplan_effective_role(), get_tproject_effective_role()
+ * @since 1.9.5
+ * 20121202 - franciscom - TICKET 5323: Assign Test Plan roles: Displayed user roles are not identical 
+ *                                      with stored user roles.
+ *                         TICKET 5326: Make private test plans invisible in Test Plan Management for users who 
+ *                                      have no rights for these test plans
+ *                                     
  */
 
 /** localization support */ 
@@ -323,7 +315,7 @@ function get_tplan_effective_role(&$db,$tplan_id,$tproject,$user_id = null,$user
 	$tplan_mgr = new testplan($db);
 	$tplan = $tplan_mgr->get_by_id($tplan_id);
 	unset($tplan_mgr);
-	
+
 	$effective_role = get_tproject_effective_role($db,$tproject,$user_id,$users);
 	foreach($effective_role as $user_id => $row)
 	{
@@ -331,23 +323,19 @@ function get_tplan_effective_role(&$db,$tplan_id,$tproject,$user_id = null,$user
 		$effective_role[$user_id]['uplayer_role_id'] = $effective_role[$user_id]['effective_role_id'];
 		$effective_role[$user_id]['uplayer_is_inherited'] = $effective_role[$user_id]['is_inherited'];
 		
-		// BUGID 4006 
-		// Manage administrator exception
+		// Manage administrator exception DO NOT ENTER HERE
 		if( ($row['user']->globalRoleID != TL_ROLES_ADMIN) && !$tplan['is_public'])
 		{
-				$isInherited = $tproject['is_public'];
-				$effectiveRoleID = TL_ROLES_NO_RIGHTS;
-				$effectiveRole = '<no rights>';
+				$isInherited = 0;
+				$effective_role[$user_id]['effective_role_id'] = TL_ROLES_NO_RIGHTS;
+				$effective_role[$user_id]['effective_role'] = '<no rights>';
 		}
-		// ---------------------------------------------------------------------------
-		
 		if(isset($row['user']->tplanRoles[$tplan_id]))
 		{
 			$isInherited = 0;
 			$effective_role[$user_id]['effective_role_id'] = $row['user']->tplanRoles[$tplan_id]->dbID;  
 			$effective_role[$user_id]['effective_role'] = $row['user']->tplanRoles[$tplan_id];
 		}
-
 		$effective_role[$user_id]['is_inherited'] = $isInherited;
 	}
 	return $effective_role;

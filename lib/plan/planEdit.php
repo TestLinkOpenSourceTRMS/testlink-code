@@ -162,19 +162,28 @@ switch($args->do_action)
 				$status_ok = true;
 				$template = null;
 				$gui->user_feedback ='';
-
-				if($args->rights == 'on')
+        
+        // 20121202 this seems to be DEAD CODE because can not find insertTestPlanUserRight
+				// if($args->rights == 'on')
+				// {
+				// 	$result = insertTestPlanUserRight($db,$new_tplan_id,$args->user_id);
+        // }
+        
+				if(!$args->is_public)
 				{
-					$result = insertTestPlanUserRight($db,$new_tplan_id,$args->user_id);
-                }
+				  $effectiveRole = $args->user->getEffectiveRole($db,$args->tproject_id,null);
+					$tplan_mgr->addUserRole($args->user_id,$new_tplan_id,$effectiveRole->dbID);
+        }
+        
+        
                 
 				if($args->copy)
 				{
 					// BUGID 3485: "Create from existing Test Plan" always copies builds
 					$options = array('items2copy' => $args->copy_options,'copy_assigned_to' => $args->copy_assigned_to,
-									 'tcversion_type' => $args->tcversion_type);
+									         'tcversion_type' => $args->tcversion_type);
 					$tplan_mgr->copy_as($args->source_tplanid, $new_tplan_id,$args->testplan_name,
-										$args->tproject_id,$args->user_id,$options);
+										          $args->tproject_id,$args->user_id,$options);
 				}
 			}
 		}
@@ -200,7 +209,8 @@ switch($args->do_action)
    case "list":
         $do_display=true;
         $template = is_null($template) ? 'planView.tpl' : $template;
-        $gui->tplans = $tproject_mgr->get_all_testplans($args->tproject_id);
+        // $gui->tplans = $tproject_mgr->get_all_testplans($args->tproject_id);
+        $gui->tplans = $args->user->getAccessibleTestPlans($db,$args->tproject_id,null,array('output' =>'mapfull'));
         $gui->drawPlatformQtyColumn = false;
 
 		if( !is_null($gui->tplans) )
@@ -279,8 +289,8 @@ function init_args($request_hash)
 
 	$args->copy_options=array();
 	$boolean_keys = array('copy_tcases' => 0,'copy_priorities' => 0,
-                          'copy_milestones' => 0, 'copy_user_roles' => 0, 
-                          'copy_builds' => 0, 'copy_platforms_links' => 0,
+                        'copy_milestones' => 0, 'copy_user_roles' => 0, 
+                        'copy_builds' => 0, 'copy_platforms_links' => 0,
 	                      'copy_attachments' => 0);
 
 	foreach($boolean_keys as $key => $value)
@@ -293,6 +303,7 @@ function init_args($request_hash)
 	$args->tproject_id = $session_hash['testprojectID'];
 	$args->tproject_name = $session_hash['testprojectName'];
 	$args->user_id = $session_hash['userID'];
+	$args->user = $session_hash['currentUser'];
 
 	return $args;
 }
@@ -312,7 +323,6 @@ function checkRights(&$db,&$user)
  */
 function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
 {
-    // 20101108 - kinow - BUGID 3987: Add attachments to a Test Plan
     $tplan_mgr = new testplan($dbHandler);
     
     $guiObj = new stdClass();
@@ -330,11 +340,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
     $guiObj->user_feedback = '';               
     
     $guiObj->grants = new stdClass();  
-    $guiObj->grants->testplan_create = $_SESSION['currentUser']->hasRight($dbHandler,"mgt_testplan_create");
-    $guiObj->grants->mgt_view_events = $_SESSION['currentUser']->hasRight($dbHandler,"mgt_view_events");
+    $guiObj->grants->testplan_create = $argsObj->user->hasRight($dbHandler,"mgt_testplan_create",$argsObj->tproject_id);
+    $guiObj->grants->mgt_view_events = $argsObj->user->hasRight($dbHandler,"mgt_view_events");
     $guiObj->notes = '';
     
-    // 20101108 - kinow - BUGID 3987: Add attachments to a Test Plan
     $guiObj->attachments[$guiObj->tplan_id] = getAttachmentInfosFrom($tplan_mgr,$guiObj->tplan_id);
     $guiObj->attachmentTableName = $tplan_mgr->getAttachmentTableName();
     

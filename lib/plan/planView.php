@@ -5,8 +5,9 @@
  *
  * @filesource	planView.php
  * @internal revisions
- * @since 1.9.4
- * 20120728 - franciscom - TICKET 5115: [FEATURE] - Test Plan list view - add test case qty, and platforms qty
+ * @since 1.9.5
+ * 20121202 - franciscom - TICKET 5386: Test Plan management - user can manage Private Test plan 
+ *                                      where she/he has no role assigned
  */
 require_once('../../config.inc.php');
 require_once("common.php");
@@ -15,21 +16,11 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 
 $args=init_args();
-
-$gui = new stdClass();
-$gui->tproject_id = $args->tproject_id;
-$gui->tplans = null;
-$gui->user_feedback = '';
-$gui->grants = new stdClass();
-$gui->grants->testplan_create=has_rights($db,"mgt_testplan_create");
-$gui->main_descr = lang_get('testplan_title_tp_management'). " - " . 
-                   lang_get('testproject') . ' ' . $args->tproject_name;
-
-
+$gui = initializeGui($db,$args);
 if($args->tproject_id)
 {
 	$tproject_mgr = new testproject($db);
-	$gui->tplans = $tproject_mgr->get_all_testplans($args->tproject_id);
+  $gui->tplans = $args->user->getAccessibleTestPlans($db,$args->tproject_id,null,array('output' =>'mapfull'));
 	$gui->drawPlatformQtyColumn = false;
 	
 	if( !is_null($gui->tplans) )
@@ -71,8 +62,24 @@ function init_args()
     $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0 ;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? trim($_SESSION['testprojectName']) : '' ;
 
+    $args->user = $_SESSION['currentUser'];
     return $args;
 }
+
+function initializeGui(&$dbHandler,$argsObj)
+{
+  $gui = new stdClass();
+  $gui->tproject_id = $argsObj->tproject_id;
+  $gui->tplans = null;
+  $gui->user_feedback = '';
+  $gui->grants = new stdClass();
+  $gui->grants->testplan_create = $argsObj->user->hasRight($dbHandler,"mgt_testplan_create",$argsObj->tproject_id);
+  $gui->main_descr = lang_get('testplan_title_tp_management'). " - " . 
+                     lang_get('testproject') . ' ' . $argsObj->tproject_name;
+
+  return $gui;
+}
+
 
 /**
  * checkRights

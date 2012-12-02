@@ -845,21 +845,27 @@ class tlUser extends tlDBObject
      *
      * @return array if 0 accessible test plans => null
      *
-     * @internal Revisions
-     * 20101111 - franciscom - BUGID 4006 test plan is_public
+     * @internal revisions
+     * 
      */
 	function getAccessibleTestPlans(&$db,$testprojectID,$testplanID=null, $options=null)
 	{
 		$debugTag = 'Class:' .  __CLASS__ . '- Method:' . __FUNCTION__ . '-';
 		
 		$my['options'] = array( 'output' => null, 'active' => ACTIVE);
-	    $my['options'] = array_merge($my['options'], (array)$options);
+	  $my['options'] = array_merge($my['options'], (array)$options);
 		
 		$fields2get = ' NH.id, NH.name, TPLAN.is_public, COALESCE(USER_TPLAN_ROLES.testplan_id,0) AS has_role';
 		if( $my['options']['output'] != 'combo' )
 		{
 			$fields2get .= ' ,TPLAN.active, 0 AS selected ';
 		}
+		
+		if( $my['options']['output'] == 'mapfull' )
+		{
+			$fields2get .= ' ,TPLAN.notes, TPLAN.testproject_id ';
+    }		
+		
 		$sql = " /* $debugTag */  SELECT {$fields2get} " .
 		       " FROM {$this->tables['nodes_hierarchy']} NH" .
 		       " JOIN {$this->tables['testplans']} TPLAN ON NH.id=TPLAN.id  " .
@@ -868,22 +874,20 @@ class tlUser extends tlDBObject
 		       " AND USER_TPLAN_ROLES.user_id = $this->dbID WHERE " .
 		       " testproject_id = {$testprojectID} AND ";
 		
-		if (!is_null($my['options']['active'])) {
+		if (!is_null($my['options']['active'])) 
+		{
 			$sql .= " active = {$my['options']['active']} AND ";
 		}
 	
-	  	if (!is_null($testplanID))
-	  	{
-			$sql .= " NH.id = {$testplanID} AND ";
-	  	}
+	  if (!is_null($testplanID))
+	  {
+		  $sql .= " NH.id = {$testplanID} AND ";
+	  }
 		
 		$globalNoRights = ($this->globalRoleID == TL_ROLES_NO_RIGHTS);
 		$projectNoRights = 0;
 		$analyseGlobalRole = 1;
 		
-		// 20100704 - franciscom
-		// BUGID 3526
-		// 
 		// If user has a role for $testprojectID, then we DO NOT HAVE to check for globalRole
 		// if( ($analyseGlobalRole = isset($this->tprojectRoles[$testprojectID]->dbID)) )
 		// {
@@ -902,21 +906,22 @@ class tlUser extends tlDBObject
 		//
 		// Other situation: he/she has been created with role without rights ($globalNoRights)
 		//
-	  	if( $projectNoRights || ($analyseGlobalRole && $globalNoRights))
-	  	{
-	  	  $sql .= "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NO_RIGHTS.")";
-	  	}	
-	  	else
-	  	{
-	  		// in this situation, do we are hineriting role from testprojectID ?	
-	  	  	$sql .= "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
-	  	}
+	  if( $projectNoRights || ($analyseGlobalRole && $globalNoRights))
+	  {
+	    $sql .= "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NO_RIGHTS.")";
+	  }	
+	  else
+	  {
+	  	// in this situation, do we are inheriting role from testprojectID ?	
+	    	$sql .= "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
+	  }
 			
 		$sql .= " ORDER BY name";
 		$numericIndex = false;
 		switch($my['options']['output'])
 		{
 			case 'map':
+			case 'mapfull':
 				$testPlanSet = $db->fetchRowsIntoMap($sql,'id');
 			break;
 			
@@ -929,12 +934,17 @@ class tlUser extends tlDBObject
 				$numericIndex = true;
 			break;
 		}
-
-		// BUGID 4006 - test plan is_public
-		// Admin exception		
+                                           
+                                           
+    // new dBug($testPlanSet);
+                                               
+		// Admin exception
+		// new dBug()		
 		if( $this->globalRoleID != TL_ROLES_ADMIN && count($testPlanSet) > 0 )
 		{
+		  // echo __LINE__;
 			$doReindex = false;
+			
 			foreach($testPlanSet as $idx => $item)
 			{
 				if( $item['is_public'] == 0 && $item['has_role'] == 0 )
@@ -943,6 +953,8 @@ class tlUser extends tlDBObject
 					$doReindex = true;
 				} 				
 			}
+      // new dBug($testPlanSet);
+        
 			if( $doReindex && $numericIndex)
 			{
 				$testPlanSet = array_values($testPlanSet);

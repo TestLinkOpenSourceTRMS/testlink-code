@@ -874,6 +874,7 @@ class tlUser extends tlDBObject
 		       " AND USER_TPLAN_ROLES.user_id = $this->dbID WHERE " .
 		       " testproject_id = {$testprojectID} AND ";
 		
+		
 		if (!is_null($my['options']['active'])) 
 		{
 			$sql .= " active = {$my['options']['active']} AND ";
@@ -889,11 +890,6 @@ class tlUser extends tlDBObject
 		$analyseGlobalRole = 1;
 		
 		// If user has a role for $testprojectID, then we DO NOT HAVE to check for globalRole
-		// if( ($analyseGlobalRole = isset($this->tprojectRoles[$testprojectID]->dbID)) )
-		// {
-		// 	$projectNoRights = ($this->tprojectRoles[$testprojectID]->dbID == TL_ROLES_NO_RIGHTS); 
-		// }
-		// Looking to the code on 1.8.5, seems this has been introduced on some refactoring
 		if( isset($this->tprojectRoles[$testprojectID]->dbID) )
 		{
 			$analyseGlobalRole = 0;
@@ -915,7 +911,8 @@ class tlUser extends tlDBObject
 	  	// in this situation, do we are inheriting role from testprojectID ?	
 	    	$sql .= "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
 	  }
-			
+		
+		// new dBug($sql);	
 		$sql .= " ORDER BY name";
 		$numericIndex = false;
 		switch($my['options']['output'])
@@ -926,7 +923,8 @@ class tlUser extends tlDBObject
 			break;
 			
 			case 'combo':
-				$testPlanSet = $db->fetchColumnsIntoMap($sql,'id','name');
+				// $testPlanSet = $db->fetchColumnsIntoMap($sql,'id','name');
+				$testPlanSet = $db->fetchRowsIntoMap($sql,'id');
 			break;
 			
 			default:
@@ -935,16 +933,10 @@ class tlUser extends tlDBObject
 			break;
 		}
                                            
-                                           
-    // new dBug($testPlanSet);
-                                               
 		// Admin exception
-		// new dBug()		
 		if( $this->globalRoleID != TL_ROLES_ADMIN && count($testPlanSet) > 0 )
 		{
-		  // echo __LINE__;
 			$doReindex = false;
-			
 			foreach($testPlanSet as $idx => $item)
 			{
 				if( $item['is_public'] == 0 && $item['has_role'] == 0 )
@@ -953,8 +945,15 @@ class tlUser extends tlDBObject
 					$doReindex = true;
 				} 				
 			}
-      // new dBug($testPlanSet);
-        
+			if($my['options']['output'] == 'combo')
+			{
+  			foreach($testPlanSet as $idx => $item)
+  			{
+          $dummy[$idx] = $item['name'];
+  			}
+        $testPlanSet = $dummy;
+			}
+			
 			if( $doReindex && $numericIndex)
 			{
 				$testPlanSet = array_values($testPlanSet);

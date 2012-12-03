@@ -68,11 +68,20 @@ if($gui->do_report['status_ok'])
 	                                                 $tlCfg->reports_formats[$args->format]);
 }
 
-// BUGID 3370
 // get All test Plans for combobox
 $filters = array('plan_status' => $args->show_only_active_tplans ? 1 : null);
 $options = array('outputType' => 'forHMLSelect');
 $gui->tplans = $tproject_mgr->get_all_testplans($args->tproject_id,$filters,$options);
+
+
+$activeAttr = $args->show_only_active_tplans ? 1 : null;
+$gui->tplans = $args->user->getAccessibleTestPlans($db,$args->tproject_id,null,
+	                                                 array('output' =>'combo', 'active' => $activeAttr));
+	                                                            
+// new dBug($gui->tplans);
+// new dBug($gui->tplansX);
+
+
 
 
 $smarty = new TLSmarty();
@@ -87,10 +96,9 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args()
 {
-	// BUGID 3370
 	$iParams = array("format" => array(tlInputParameter::INT_N),
-					 "tplan_id" => array(tlInputParameter::INT_N),
-					 "show_inactive_tplans" => array(tlInputParameter::CB_BOOL));
+					         "tplan_id" => array(tlInputParameter::INT_N),
+					         "show_inactive_tplans" => array(tlInputParameter::CB_BOOL));
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
 	
@@ -109,12 +117,13 @@ function init_args()
 	$_SESSION['resultsNavigator_format'] = $args->format;
 	
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-   	$args->userID = $_SESSION['userID'];
-    $args->optReqs = $_SESSION['testprojectOptions']->requirementsEnabled;
-    $args->checked_show_inactive_tplans = $args->show_inactive_tplans ? 'checked="checked"' : 0;
-    $args->show_only_active_tplans = !$args->show_inactive_tplans;
+  $args->userID = $_SESSION['userID'];
+  $args->user = $_SESSION['currentUser'];
+  $args->optReqs = $_SESSION['testprojectOptions']->requirementsEnabled;
+  $args->checked_show_inactive_tplans = $args->show_inactive_tplans ? 'checked="checked"' : 0;
+  $args->show_only_active_tplans = !$args->show_inactive_tplans;
     
-    return $args;
+  return $args;
 }
 
 /**

@@ -32,6 +32,8 @@ if($gui->tprojectID > 0)
     $gui->searchSize = tlStringLen($gui->tcasePrefix) + $gui_cfg->dynamic_quick_tcase_search_input_size;
 }
 
+define('DBUG_ON',1);
+
 $user = $_SESSION['currentUser'];
 $userID = $user->dbID;
 
@@ -39,7 +41,15 @@ $gui->TestProjects = $tproject_mgr->get_accessible_for_user($userID,'map',$tlCfg
 $gui->TestProjectCount = sizeof($gui->TestProjects);
 $gui->TestPlanCount = 0; 
 
-if ($gui->tprojectID)
+$tprojectQty = $tproject_mgr->getItemCount();
+if($gui->TestProjectCount == 0 && $tprojectQty > 0)
+{
+  // User rights configurations does not allow access to ANY test project
+  $_SESSION['testprojectTopMenu'] = '';
+  $gui->tprojectID = 0;
+}
+
+if($gui->tprojectID)
 {
 	$testPlanSet = $user->getAccessibleTestPlans($db,$gui->tprojectID);
   $gui->TestPlanCount = sizeof($testPlanSet);
@@ -108,13 +118,12 @@ $smarty->display('navBar.tpl');
 
 
 /**
- * @todo havlatm: project rights should be get from $_SESSION
+ * 
  */
 function getGrants(&$db)
 {
     $grants = new stdClass();
     $grants->view_testcase_spec = has_rights($db,"mgt_view_tc");
-    
     return $grants;  
 }
 

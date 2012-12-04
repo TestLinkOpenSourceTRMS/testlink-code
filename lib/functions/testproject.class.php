@@ -386,12 +386,8 @@ public function get_by_prefix($prefix, $addClause = null)
 
 args:[order_by]: default " ORDER BY nodes_hierarchy.name " -> testproject name
 
-rev:
-    20090409 - amitkhullar- added active parameter
-    20071104 - franciscom - added order_by
 
 */
-// function get_all($order_by=" ORDER BY nodes_hierarchy.name ",$active=null )
 function get_all($filters=null,$options=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -405,7 +401,6 @@ function get_all($filters=null,$options=null)
 	$my['options'] = array_merge($my['options'], (array)$options);
     
 	
-	
 	$sql = "/* $debugMsg */ SELECT testprojects.*, nodes_hierarchy.name ".
 	       " FROM {$this->object_table} testprojects, " .
 	       " {$this->tables['nodes_hierarchy']} nodes_hierarchy ".
@@ -415,6 +410,7 @@ function get_all($filters=null,$options=null)
 	{
 		$sql .= " AND active=" . intval($my['filters']['active']) . " ";
 	}
+
 	if( !is_null($my['options']['order_by']) )
 	{
 	  $sql .= $my['options']['order_by'];
@@ -2933,6 +2929,17 @@ function setIssueTrackerEnabled($id,$value)
 		   " WHERE id =" . intval($id); 	
 	$ret = $this->db->exec_query($sql);
 }
+
+
+function getItemCount()
+{
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	$sql = "/* $debugMsg */ " .
+		     " SELECT COUNT(0) AS qty FROM {$this->object_table} ";
+	$ret = $this->db->get_recordset($sql);
+	return $ret[0]['qty'];
+}
+
 
 
 } // end class

@@ -11,24 +11,8 @@
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revision
- * @since 1.9.4
- *  20111029 - franciscom - TICKET 4786: Add right to allow UNFREEZE a requirement
+ * @since 1.9.5
  *
- * @since 1.9.3
- *  20110607 - Julian - BUGID 3953 - Checkbox to decide whether to create another requirement or not
- *	20101210 - franciscom - BUGID 4056 - Req. Revisioning
- *  20100915 - Julian - BUGID 3777 - Allow to insert last req doc id when creating requirement
- *  20100811 - asimon - fixed two warnings because of undefined variables in template
- *  20100808 - aismon - added logic to refresh filtered tree on action
- *  20100319 - asimon - BUGID 3307 - set coverage to 0 if null, to avoid database errors with null value
- * 	                    BUGID 1748, requirement relations
- *  20100303 - asimon - bugfix, changed max length of req_doc_id in init_args() to 64 from 32
- *  					--> TODO why aren't the constants used here instead of magic numbers?
- *  20100205 - asimon - added requirement freezing
- *	20091217 - franciscom - added type management 
- *	20091202 - franciscom - fixed bug on webeditor value init.
- *	20080827 - franciscom - BUGID 1692
- *	20080411 - franciscom - BUGID 1476
  *
 **/
 require_once("../../config.inc.php");
@@ -69,30 +53,31 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg,$db);
  */
 function init_args()
 {
+  $reqTitleSize = config_get('field_size')->requirement_title;
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
-					 "req_spec_id" => array(tlInputParameter::INT_N),
-					 "containerID" => array(tlInputParameter::INT_N),
-					 "reqDocId" => array(tlInputParameter::STRING_N,0,64), 
-					 "req_title" => array(tlInputParameter::STRING_N,0,100),
-					 "scope" => array(tlInputParameter::STRING_N),
-					 "reqStatus" => array(tlInputParameter::STRING_N,0,1),
-					 "reqType" => array(tlInputParameter::STRING_N,0,1),
-					 "countReq" => array(tlInputParameter::INT_N),
-					 "expected_coverage" => array(tlInputParameter::INT_N),
-					 "doAction" => array(tlInputParameter::STRING_N,0,20),
-					 "req_id_cbox" => array(tlInputParameter::ARRAY_INT),
-			 		 "itemSet" => array(tlInputParameter::ARRAY_INT),
-					 "testcase_count" => array(tlInputParameter::ARRAY_INT),
-					 "req_version_id" => array(tlInputParameter::INT_N),
-					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL),
-					 "relation_id" => array(tlInputParameter::INT_N),
-					 "relation_source_req_id" => array(tlInputParameter::INT_N),
-					 "relation_type" => array(tlInputParameter::STRING_N),
-					 "relation_destination_req_doc_id" => array(tlInputParameter::STRING_N,0,64),
-					 "relation_destination_testproject_id" => array(tlInputParameter::INT_N),
-					 "save_rev" => array(tlInputParameter::INT_N),
-					 "do_save" => array(tlInputParameter::INT_N),
-					 "log_message" => array(tlInputParameter::STRING_N));
+        					 "req_spec_id" => array(tlInputParameter::INT_N),
+        					 "containerID" => array(tlInputParameter::INT_N),
+        					 "reqDocId" => array(tlInputParameter::STRING_N,0,64), 
+        					 "req_title" => array(tlInputParameter::STRING_N,0,$reqTitleSize),
+        					 "scope" => array(tlInputParameter::STRING_N),
+        					 "reqStatus" => array(tlInputParameter::STRING_N,0,1),
+        					 "reqType" => array(tlInputParameter::STRING_N,0,1),
+        					 "countReq" => array(tlInputParameter::INT_N),
+        					 "expected_coverage" => array(tlInputParameter::INT_N),
+        					 "doAction" => array(tlInputParameter::STRING_N,0,20),
+        					 "req_id_cbox" => array(tlInputParameter::ARRAY_INT),
+        			 		 "itemSet" => array(tlInputParameter::ARRAY_INT),
+        					 "testcase_count" => array(tlInputParameter::ARRAY_INT),
+        					 "req_version_id" => array(tlInputParameter::INT_N),
+        					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL),
+        					 "relation_id" => array(tlInputParameter::INT_N),
+        					 "relation_source_req_id" => array(tlInputParameter::INT_N),
+        					 "relation_type" => array(tlInputParameter::STRING_N),
+        					 "relation_destination_req_doc_id" => array(tlInputParameter::STRING_N,0,64),
+        					 "relation_destination_testproject_id" => array(tlInputParameter::INT_N),
+        					 "save_rev" => array(tlInputParameter::INT_N),
+        					 "do_save" => array(tlInputParameter::INT_N),
+        					 "log_message" => array(tlInputParameter::STRING_N));
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);

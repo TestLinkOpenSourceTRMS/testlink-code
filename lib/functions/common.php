@@ -1063,6 +1063,7 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
   	$userObj->readFromDB($dbHandler);
   	$_SESSION['currentUser'] = $userObj;
   	$_SESSION['userID'] = $userObj->dbID;
+  	$_SESSION['locale'] = $userObj->locale;
 
 	  if(!is_null($rightsCheck))
 	  {

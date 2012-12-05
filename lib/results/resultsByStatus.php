@@ -13,10 +13,9 @@
  *
  *
  * @internal revisions
- * @since 1.9.4
+ * @since 1.9.5
  * 
  */
-
 require('../../config.inc.php');
 require_once('common.php');
 require_once('displayMgr.php');
@@ -31,18 +30,16 @@ require_once('exec.inc.php'); // used for bug string lookup
 //$mem['usage'][] = memory_get_usage(true); $mem['peak'][] = memory_get_peak_usage(true);
 
 
-testlinkInitPage($db,true,false,"checkRights");
-
 $templateCfg = templateConfiguration();
 $resultsCfg = config_get('results');
 $statusCode = $resultsCfg['status_code'];
+$args = init_args($db,$statusCode);
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 $tcase_mgr = new testcase($db);
 $metricsMgr = new tlTestPlanMetrics($db);
 
-$args = init_args($statusCode);
 $gui = initializeGui($statusCode,$args,$tplan_mgr);
 
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
@@ -284,18 +281,35 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
  * 
  *
  */
-function init_args($statusCode)
+function init_args(&$dbHandler,$statusCode)
 {
-    $iParams = array("format" => array(tlInputParameter::INT_N),
-		             "tplan_id" => array(tlInputParameter::INT_N),
-    	             "type" => array(tlInputParameter::STRING_N,0,1));
+    $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
+                     "tproject_id" => array(tlInputParameter::INT_N), 
+		                 "tplan_id" => array(tlInputParameter::INT_N),
+                     "format" => array(tlInputParameter::INT_N),
+    	               "type" => array(tlInputParameter::STRING_N,0,1));
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
+
+
+  if( !is_null($args->apikey) )
+  {
+    $cerbero = new stdClass();
+    $cerbero->args = new stdClass();
+    $cerbero->args->tproject_id = $args->tproject_id;
+    $cerbero->args->tplan_id = $args->tplan_id;
+    $cerbero->args->getAccessAttr = true;
+    $cerbero->method = 'checkRights';
+    setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);  
+  }
+  else
+  {
+    testlinkInitPage($dbHandler,true,false,"checkRights");  
+	  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+  }
 	
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 	$args->user = $_SESSION['currentUser'];
 	$args->basehref = $_SESSION['basehref'];
-
 	return $args;
 }
 
@@ -340,14 +354,21 @@ function initializeGui($statusCode,&$argsObj,&$tplanMgr)
 
 	$guiObj->buildSet = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id);
     
-    return $guiObj;    
+  return $guiObj;    
 }
 
 
 
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$user,$context = null)
 {
-	return $user->hasRight($db,'testplan_metrics');
+  if(is_null($context))
+  {
+    $context = new stdClass();
+    $context->tproject_id = $context->tplan_id = null;
+    $context->getAccessAttr = false; 
+  }
+  $check = $user->hasRight($db,'testplan_metrics',$context->tproject_id,$context->tplan_id,$context->getAccessAttr);
+	return $check;
 }
 
 
@@ -514,5 +535,4 @@ function getWarning($targetStatus,$statusCfg)
 	}
 	return $msg;
 }	
-
 ?>

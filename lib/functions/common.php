@@ -379,15 +379,16 @@ function initProject(&$db,$hash_user_sel)
  * @param string $userRightsCheckFunction (optional) name of function used to check user right needed
  *													 to execute the page
  */
-function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,$userRightsCheckFunction = null)
+function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
+                          $userRightsCheckFunction = null, $onFailureGoToLogin = false)
 {
+	static $pageStatistics = null;
+
 	doSessionStart();
 	setPaths();
 	set_dt_formats();
-	
 	doDBConnect($db);
 	
-	static $pageStatistics = null;
 	if (!$pageStatistics && (config_get('log_level') == 'EXTENDED'))
 	{
 		$pageStatistics = new tlPageStatistics($db);
@@ -400,7 +401,7 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
 	
 	if ($userRightsCheckFunction)
 	{
-		checkUserRightsFor($db,$userRightsCheckFunction);
+		checkUserRightsFor($db,$userRightsCheckFunction,$onFailureGoToLogin);
 	}
 		
 	// adjust Product and Test Plan to $_SESSION
@@ -884,26 +885,45 @@ function split_localized_date($timestamp,$dateFormat) {
  * 
  *
  */
-function checkUserRightsFor(&$db,$pfn)
+function checkUserRightsFor(&$db,$pfn,$onFailureGoToLogin=false)
 {
 	$script = basename($_SERVER['PHP_SELF']);
 	$currentUser = $_SESSION['currentUser'];
-	$bExit = false;
+	$doExit = false;
 	$action = null;
-	if (!$pfn($db,$currentUser,$action))
+
+	$m2call = $pfn;
+	$arguments = null;
+	if( is_object($pfn) )
+	{
+	  $m2call = $pfn->method;
+	  $arguments = $pfn->args;
+	}
+	
+	
+	if (!$m2call($db,$currentUser,$arguments,$action))
 	{
 		if (!$action)
 		{
 			$action = "any";
 		}
 		logAuditEvent(TLS("audit_security_user_right_missing",$currentUser->login,$script,$action),
-					  $action,$currentUser->dbID,"users");
-		$bExit = true;
+					        $action,$currentUser->dbID,"users");
+		$doExit = true;
 	}
-	if ($bExit)
+	
+	if($doExit)
 	{  	
 		$myURL = $_SESSION['basehref'];
-	  	redirect($myURL,"top.location");
+	  if($onFailureGoToLogin)
+	  {
+	    unset($_SESSION['currentUser']);
+      redirect($myURL ."login.php");
+	  }
+	  else
+	  { 	
+	    redirect($myURL,"top.location");
+	  }
 		exit();
 	}
 }
@@ -1019,5 +1039,35 @@ function displayMemUsage($msg='')
 	ob_flush();flush();
 	echo "memory:" . memory_get_usage() . " - PEAK -> " . memory_get_peak_usage() .'<br>';
 	ob_flush();flush();
+}
+
+
+function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null)
+{
+  $my = array('opt' => array('setPaths' => false,'clearSession' => false));
+  $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+  if($my['opt']['clearSession'])
+  {
+    $_SESSION = null;
+  }
+
+	doSessionStart($my['opt']['setPaths']);
+	set_dt_formats();
+	doDBConnect($dbHandler);
+  $user = tlUser::getByAPIKey($dbHandler,$apikey);
+  if( count($user) == 1 )
+  {
+  	$_SESSION['lastActivity'] = time();
+  	$userObj = new tlUser(key($user));
+  	$userObj->readFromDB($dbHandler);
+  	$_SESSION['currentUser'] = $userObj;
+  	$_SESSION['userID'] = $userObj->dbID;
+
+	  if(!is_null($rightsCheck))
+	  {
+		  checkUserRightsFor($dbHandler,$rightsCheck,true);
+	  }
+	}
 }
 ?>

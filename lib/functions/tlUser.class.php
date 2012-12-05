@@ -9,13 +9,8 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
- * @since 1.9.4
- * 20120623 - franciscom - 	getNames() interface and logic changes
- * 20110815 - franciscom - 	TICKET 4342 - fixing missing update of cookie_string when password changes.
- *							
- * 20110813 - franciscom - 	TICKET 4342 - new methods from Mantisbt
- * 							added securityCookie property
- * 20110325 - franciscom - BUGID 4062 - hasRight() caused by bad access to $_SESSION
+ * @since 1.9.5
+ * 20121205 - franciscom - changes to hasRight() fo the direct link feature
  */
  
 /**
@@ -744,14 +739,14 @@ class tlUser extends tlDBObject
 
 
 	/**
-     * check right on effective role for user, using test project and test plan,
-     * means that check right on effective role.
-     *
-     * @return string|null 'yes' or null
+   * check right on effective role for user, using test project and test plan,
+   * means that check right on effective role.
+   *
+   * @return string|null 'yes' or null
 	 *
 	 * @internal revisions
-     */
-	function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
+   */
+	function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null,$getAccess=false)
 	{
 		global $g_propRights_global;
 		global $g_propRights_product;
@@ -769,8 +764,6 @@ class tlUser extends tlDBObject
 		}
 		else
 		{
-			//@TODO schlundus, should not be there
-			// 20090726 - franciscom -> yes must be moved ASAP
 			$testPlanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
 		}
 		
@@ -782,8 +775,18 @@ class tlUser extends tlDBObject
 		}
 		else
 		{
-			//@TODO schlundus, should not be there
 			$testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+		}
+		
+		$accessPublic = null;
+		if($getAccess)
+		{
+		  $mgr = new testproject($db);
+		  $accessPublic['tproject'] = $mgr->getPublicAttr($testprojectID);
+	    unset($mgr);
+		  $mgr = new testplan($db);
+		  $accessPublic['tplan'] = $mgr->getPublicAttr($testPlanID);
+      unset($mgr);
 		}
 		
 		$allRights = $globalRights;
@@ -805,6 +808,14 @@ class tlUser extends tlDBObject
 			propagateRights($globalRights,$g_propRights_global,$testProjectRights);
 			$allRights = $testProjectRights;
 		}
+		else
+		{
+		  if(!is_null($accessPublic) && $accessPublic['tproject'] == 0)
+		  {
+		    return false;      
+		  }  
+		}
+    
 		
 		/* if $tplanID == -1 we dont check rights at tp level! */
 		if (isset($userTestPlanRoles[$testPlanID]))
@@ -821,7 +832,15 @@ class tlUser extends tlDBObject
 			propagateRights($allRights,$g_propRights_product,$testPlanRights);
 			$allRights = $testPlanRights;
 		}
+		else
+		{
+		  if(!is_null($accessPublic) && $accessPublic['tplan'] == 0)
+		  {
+		    return false;      
+		  }  
+		}
 		
+
 		return checkForRights($allRights,$roleQuestion);
 	}
 
@@ -1231,7 +1250,5 @@ class tlUser extends tlDBObject
     $rs = $dbHandler->fetchRowsIntoMap($sql, "id");
     return $rs;
 	}
-
-
 }
 ?>

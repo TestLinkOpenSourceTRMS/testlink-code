@@ -65,6 +65,11 @@ class tree extends tlObject
 	 */
 	function __construct(&$db) 
 	{
+		if( !is_object($db) )
+		{
+      	  $msg = __METHOD__ . ' :: FATAL Error $db IS NOT AN Object';
+      	  throw new Exception($msg);
+		}
    		parent::__construct();
 		$this->db = &$db;
         $this->object_table = $this->tables['nodes_hierarchy'];

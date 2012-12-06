@@ -23,7 +23,7 @@ if($args->tproject_id)
   $gui->tplans = $args->user->getAccessibleTestPlans($db,$args->tproject_id,null,array('output' =>'mapfull'));
 	$gui->drawPlatformQtyColumn = false;
 	
-	if( !is_null($gui->tplans) )
+	if( !is_null($gui->tplans) && count($gui->tplans) > 0 )
 	{
 		// do this test project has platform definitions ?
 		$tplan_mgr = new testplan($db);

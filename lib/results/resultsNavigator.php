@@ -10,7 +10,7 @@
  * 
  *
  * @internal revisions
- * @since 1.9.4
+ * @since 1.9.5
  * 
  **/
 require('../../config.inc.php');
@@ -19,19 +19,8 @@ require_once('reports.class.php');
 testlinkInitPage($db,true,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-
 $args = init_args();
-$gui = new stdClass();
-$gui->workframe = $_SESSION['basehref'] . "lib/general/staticPage.php?key=showMetrics";
-$gui->do_report = array('status_ok' => 1, 'msg' => '');
-$gui->tplan_id = $args->tplan_id;
-$gui->tproject_id = $args->tproject_id;
-$gui->checked_show_inactive_tplans = $args->checked_show_inactive_tplans;
-
-
-$tproject_mgr = new testproject($db);
-$btsEnabled = $tproject_mgr->isIssueTrackerEnabled($gui->tproject_id);
-
+$gui = initializeGui($db,$args);
 $reports_mgr = new tlReports($db, $gui->tplan_id);
 
 // -----------------------------------------------------------------------------
@@ -60,28 +49,12 @@ if( $build_count == 0)
 // -----------------------------------------------------------------------------
 // get navigation data
 $gui->menuItems = array();
-$gui->tplans = array();
 if($gui->do_report['status_ok'])
 {
 	// create a list or reports
-	$gui->menuItems = $reports_mgr->get_list_reports($btsEnabled,$args->optReqs, 
+	$gui->menuItems = $reports_mgr->get_list_reports($gui->btsEnabled,$args->optReqs, 
 	                                                 $tlCfg->reports_formats[$args->format]);
 }
-
-// get All test Plans for combobox
-$filters = array('plan_status' => $args->show_only_active_tplans ? 1 : null);
-$options = array('outputType' => 'forHMLSelect');
-$gui->tplans = $tproject_mgr->get_all_testplans($args->tproject_id,$filters,$options);
-
-
-$activeAttr = $args->show_only_active_tplans ? 1 : null;
-$gui->tplans = $args->user->getAccessibleTestPlans($db,$args->tproject_id,null,
-	                                                 array('output' =>'combo', 'active' => $activeAttr));
-	                                                            
-// new dBug($gui->tplans);
-// new dBug($gui->tplansX);
-
-
 
 
 $smarty = new TLSmarty();
@@ -125,6 +98,29 @@ function init_args()
     
   return $args;
 }
+
+function initializeGui(&$dbHandler,$argsObj)
+{
+  $gui = new stdClass();
+  
+  $gui->workframe = $_SESSION['basehref'] . "lib/general/staticPage.php?key=showMetrics";
+  $gui->do_report = array('status_ok' => 1, 'msg' => '');
+  $gui->tplan_id = $argsObj->tplan_id;
+  $gui->tproject_id = $argsObj->tproject_id;
+  $gui->checked_show_inactive_tplans = $argsObj->checked_show_inactive_tplans;
+  
+  $tproject_mgr = new testproject($dbHandler);
+  $gui->btsEnabled = $tproject_mgr->isIssueTrackerEnabled($gui->tproject_id);
+
+  // get Accessible Test Plans for combobox
+  $activeAttr = $argsObj->show_only_active_tplans ? 1 : null;
+  $gui->tplans = $argsObj->user->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,null,
+	                                                      array('output' =>'combo', 'active' => $activeAttr));
+  
+  return $gui;
+}
+
+
 
 /**
  * 

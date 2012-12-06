@@ -874,12 +874,9 @@ class tlUser extends tlDBObject
 		$my['options'] = array( 'output' => null, 'active' => ACTIVE);
 	  $my['options'] = array_merge($my['options'], (array)$options);
 		
-		$fields2get = ' NH.id, NH.name, TPLAN.is_public, COALESCE(USER_TPLAN_ROLES.testplan_id,0) AS has_role';
-		if( $my['options']['output'] != 'combo' )
-		{
-			$fields2get .= ' ,TPLAN.active, 0 AS selected ';
-		}
-		
+		$fields2get = ' NH.id, NH.name, TPLAN.is_public, COALESCE(USER_TPLAN_ROLES.testplan_id,0) AS has_role' .
+		              ' ,TPLAN.active, 0 AS selected ';
+
 		if( $my['options']['output'] == 'mapfull' )
 		{
 			$fields2get .= ' ,TPLAN.notes, TPLAN.testproject_id ';
@@ -942,7 +939,6 @@ class tlUser extends tlDBObject
 			break;
 			
 			case 'combo':
-				// $testPlanSet = $db->fetchColumnsIntoMap($sql,'id','name');
 				$testPlanSet = $db->fetchRowsIntoMap($sql,'id');
 			break;
 			
@@ -953,9 +949,9 @@ class tlUser extends tlDBObject
 		}
                                            
 		// Admin exception
+		$doReindex = false;
 		if( $this->globalRoleID != TL_ROLES_ADMIN && count($testPlanSet) > 0 )
 		{
-			$doReindex = false;
 			foreach($testPlanSet as $idx => $item)
 			{
 				if( $item['is_public'] == 0 && $item['has_role'] == 0 )
@@ -964,21 +960,20 @@ class tlUser extends tlDBObject
 					$doReindex = true;
 				} 				
 			}
-			if($my['options']['output'] == 'combo')
-			{
-  			foreach($testPlanSet as $idx => $item)
-  			{
-          $dummy[$idx] = $item['name'];
-  			}
-        $testPlanSet = $dummy;
-			}
-			
-			if( $doReindex && $numericIndex)
-			{
-				$testPlanSet = array_values($testPlanSet);
-			}
 		} 
 		
+		if($my['options']['output'] == 'combo')
+		{
+  		foreach($testPlanSet as $idx => $item)
+  		{
+        $dummy[$idx] = $item['name'];
+  		}
+      $testPlanSet = $dummy;
+		}
+		if( $doReindex && $numericIndex)
+		{
+			$testPlanSet = array_values($testPlanSet);
+		}
 		return $testPlanSet;
 	}
 

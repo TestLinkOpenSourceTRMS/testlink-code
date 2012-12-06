@@ -1,5 +1,5 @@
 ===============================================================
-                    TestLink 1.9.4 (Prague Bugfix 4) - Read me
+                    TestLink 1.9.5 (Prague Bugfix 5) - Read me
 ===============================================================
 
 Contents
@@ -10,6 +10,8 @@ Contents
 5. Upgrade and Migration
 6. TestLink Team 
 7. Bug Reports and Feedback
+8. Supporting our work
+9. Regarding forum usage www.teamst.org
 
 
 1. Introduction
@@ -60,7 +62,7 @@ A wide variety of reports provide information on what has been done and what sti
 2. Release notes
 ===============================================================
 
-This release contains bugfixes for 1.9.3
+This release contains bugfixes for 1.9.4
    
 See CHANGELOG file for detailed list of issues fixed.
 
@@ -70,12 +72,12 @@ See CHANGELOG file for detailed list of issues fixed.
 
 Server environment should consists from:
 - web-server: Apache 1.2 , 2.x
-- PHP 5.2, 5.3
+- PHP 5.3
 - DBMS: MySQL 5.x , Postgres 8.x,9.x , MS-SQL 2005/2008
 
 Supported client web-browsers: 
-- Firefox 3 - 10
-- Internet Explorer 6.x, 7.x, 8.x
+- Firefox 10 - 17
+- Internet Explorer 8.x, 9.x
 - Chrome   
 
 
@@ -128,6 +130,11 @@ http://mantis.testlink.org/view.php?id=4906
 
 You should also need to configure write access for logging, upload and template directories.
 
+*** FCKEDITOR UPLOAD ****
+Give a look to:
+http://www.teamst.org/forum/viewtopic.php?f=22&t=7098&sid=f4012a67d921cf5a2322c52fc38f21d6
+
+
 
 3. Launch web based installer
 We will create the necessary database tables and a basic configuration
@@ -140,7 +147,7 @@ Check Installation manual and TestLink forum if you meet a problem.
 5. Upgrade and Migration
 ===============================================================
 When accessing Installer page you will found ONLY NEW INSTALLATION OPTION
-Migration HAS TO BE DONE MANUALLY => read below (- Upgrade from 1.9.3 to 1.9.4 )
+Migration HAS TO BE DONE MANUALLY => read below (- Upgrade from 1.9.3 to 1.9.4/5 )
 
  Steps
  - Make a Backup of your current database.
@@ -166,7 +173,7 @@ Migration HAS TO BE DONE MANUALLY => read below (- Upgrade from 1.9.3 to 1.9.4 )
    
  Always before login, after an upgrade/migration clear browser cookies.
 
-- Upgrade from 1.9.3 to 1.9.4
+- Upgrade from 1.9.3 to 1.9.4/5
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
 a) Execute install/sql/alter_tables/1.9.4/<your_db>/DB1.4/step1/db_schema_update.sql
 b) Execute install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/stepZ/z_final_step.sql
@@ -181,12 +188,14 @@ This list comprise people that has helped
 
 --- Most Active on this release
 * Francisco Mancardi - Project lead, builds, core developer, contributors code reviewer
-* Julian Krien - Leader of testlink-qa group effort on 1.9.1,1.9.2,1.9.3
+* Maradana Amardeep - Leader of testlink-qa group effort on 1.9.5
 
 --- Contributors and developers active  ---
 * Bruno de Paula Kinoshita - some work on API, CSRF, Turn Key Linux
+* Andreas Simon
 
 --- Contributors and developers active on older releases ---
+* Julian Krien - Leader of testlink-qa group effort on 1.9.1,1.9.2,1.9.3
 * Andreas Simon
 * Erik Eloff
 * Martin Havlat - Project lead, builds, infrastructure, developer
@@ -276,6 +285,22 @@ You can follow us on twitter => http://twitter.com/#!/TLOpenSource
 Useful mails: testlink.forum@gmail.com, testlink.helpme@gmail.com
 
 
+8. Supporting our work
+===============================================================
 
+if you find TestLinl useful, think about a donation to support our work.
+contact testlink.forum@gmail.com
+
+
+9. Regarding forum usage www.teamst.org
+===============================================================
+
+PLEASE: read this short hints before you write a topic:
+
+:!: Use search forum before you add a new question.
+:!: Did you search User or Installation manual before?
+:!: Don't use the forum as a Bug Tracker - use http://mantis.testlink.org/login_page.php. 
+	  Bug issues report done here will be DELETED
+:!: Consider that some issues are related to Apache, browser or database instead of TestLink. Use google at first. 
 
       

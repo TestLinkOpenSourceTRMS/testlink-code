@@ -3,6 +3,42 @@
    TestLink  Change-log
 *******************************************************************************
 
+TestLink - 1.9.5 (2012 Q4 - bug fixing) (Scheduled For Release 2012-12-10)
+================================================================================
+
+- 0005350: [Bug Tracking Systems Integration] Bug Tracking Integration - Create Issue with JUST ONE CLICK (fman) - resolved.
+- 0005347: [Bug Tracking System - Mantis Integration] Mantis SOAP INTERFACE - Create Issue from TestLink (fman) - resolved.
+- 0005349: [Bug Tracking System - Bugzilla Integration] Bugzilla XMLRPC INTERFACE - Create Issue from TestLink (fman) - resolved.
+- 0005351: [Bug Tracking System - Mantis Integration] JIRA SOAP INTERFACE - Create Issue from TestLink (fman) - resolved.
+- 0005356: [Bug Tracking System - FogBugz Integration] FOGBUGZ REST INTERFACE - Create Issue from TestLink (fman) - resolved.
+- 0005358: [Bug Tracking System - Youtrack Integration] YOUTRACK REST INTERFACE - Create Issue from TestLink (fman) - resolved.
+- 0005375: [Bug Tracking Systems Integration] Issue Tracker List - add option to check connection status (fman) - resolved.
+- 0005386: [Users and Rights] Test Plan management - user can manage Private Test plan where she/he has no role assigned (fman) - resolved.
+- 0005385: [Test Project Management] test project list - add information about issue tracker (fman) - resolved.
+- 0005383: [Issue Tracker management] Issue Tracker List - CheckRights do not check for issue management right (fman) - resolved.
+- 0005384: [Issue Tracker management] User with only issuetracker view right CAN NOT ACCESS issue tracker list from MAIN PAGE (fman) - resolved.
+- 0005382: [Assign Test Case Execution] Priority is not shown in folder view when assigning test cases (fman) - resolved.
+- 0005316: [Reports] "Test Cases with Custom Fields set on Execute" - Report NOT DISPLAYED if CUSTOM FIELD NAME contains DOT (fman) - resolved.
+- 0005352: [Bug Tracking System - Redmine Integration] REDMINE REST INTERFACE - Create Issue from TestLink (fman) - resolved.
+- 0005359: [User Interface General] FCKEditor doesn't load in Firefox 17 (fman) - resolved.
+- 0005344: [Assign Test Case Execution] BULK EXECUTION - Tester A can execute test case that assigned to Tester B (fman) - resolved.
+- 0004998: [New Feature] Test spec: Filter to display ONLY Active testcases (asimon) - resolved.
+- 0005304: [Export/Import] import of simple XML results file fails : external_id is not recognized (fman) - resolved.
+- 0005301: [Issue Tracker management] Wrong bracket (fman) - resolved.
+- 0005293: [Reports] (JIRA Integration) - Bugs per Test Case do not display bug summary. (fman) - resolved.
+- 0005290: [Bug Tracking Systems Integration] Doesn´t show description of bugs from BTS (JIRA) (fman) - resolved.
+- 0005257: [Import results XML format] Testcase exported for id/external id not able to import same for result update (fman) - resolved.
+- 0005294: [Test Plan - Add/Remove Test Cases] It is not possible to remove an inactive tc version from a testplan with platforms (asimon) - resolved.
+- 0005288: [Reports] Print importance/priority when printing test spec/plan (asimon) - resolved.
+- 0005284: [Assign Test Case Execution] Filtering by the value of custom fields is not working on tester assignment (asimon) - resolved.
+- 0005272: [Reports] General Test Plan Metrics / Overall Build Status / Not Run is not for build but global. (fman) - resolved.
+- 0005270: [Test Plan - Add/Remove Test Cases] Doesn't show Lightning icon in executed test case (fman) - resolved.
+- 0005256: [Reports] Test Report - Test plan WITH PLATFORMS - Tree menu only show "Not Run" test case count in "Document options" page (fman) - resolved.
+- 0005265: [Test Specification] Test case search displays only the first version of all test cases (asimon) - resolved.
+- 0005332: [Reports] Generating Test Report with "Metric' causes DB error (kinow) - closed.
+- 0005281: [Bug Tracking Systems Integration] On list view add check to environment (example SOAP ext is enabled?) and display status (fman) - closed.
+
+
 TestLink - 1.9.4 (2012 Q3 - bug fixing) (Scheduled For Release 2012-09-02)
 ================================================================================
 - 0004904: [Bug Tracking Systems Integration] integrate with ITS on test project basis (fman) - work in progress.

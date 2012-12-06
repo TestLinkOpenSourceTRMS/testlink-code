@@ -18,6 +18,7 @@ require_once('common.php');
 require_once('reports.class.php');
 testlinkInitPage($db,true,false,"checkRights");
 
+$smarty = new TLSmarty();
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($db,$args);
@@ -52,12 +53,16 @@ $gui->menuItems = array();
 if($gui->do_report['status_ok'])
 {
 	// create a list or reports
-	$gui->menuItems = $reports_mgr->get_list_reports($gui->btsEnabled,$args->optReqs, 
+	$context = new stdClass();
+	$context->tproject_id = $args->tproject_id;
+	$context->tplan_id = $args->tplan_id;
+	$context->apikey = $_SESSION['currentUser']->userApiKey;
+	$context->imgSet = $smarty->getImages();
+	$gui->menuItems = $reports_mgr->get_list_reports($context,$gui->btsEnabled,$args->optReqs, 
 	                                                 $tlCfg->reports_formats[$args->format]);
 }
 
 
-$smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->assign('arrReportTypes', localize_array($tlCfg->reports_formats));
 $smarty->assign('selectedReportType', $args->format);

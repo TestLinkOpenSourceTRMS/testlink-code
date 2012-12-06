@@ -9,14 +9,15 @@
  *   
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reports.class.php,v 1.11 2009/07/17 08:36:45 franciscom Exp $
- * @link 		http://www.teamst.org/index.php
- * @uses 		config.inc.php
- * @uses		common.php
+ * @copyright 2005-2012, TestLink community 
+ * @version   reports.class.php
+ * @link 		  http://www.teamst.org/index.php
+ * @uses 		  config.inc.php
+ * @uses		  common.php
  *
- * @internal Revisions:
- *	20090618 - franciscom - BUGID 0002621 
+ * @internal revisions
+ * @since 1.9.5
+ *
  **/
 
 /** report specific configuration; navigator list definition */ 
@@ -61,35 +62,48 @@ class tlReports extends tlObjectWithDB
 	/** 
 	 * Function returns array with input for reports navigator
 	 * 
+	 * @param object $context
 	 * @param boolean $bug_interface_enabled
 	 * @param boolean $req_mgmt_enabled
 	 * @param integer $format format identifier
 	 * 
 	 * @return array of array - described for array $g_reports_list in const.inc.php
 	 **/
-	public function get_list_reports($bug_interface_enabled, $req_mgmt_enabled, $format)
+	public function get_list_reports($context,$bug_interface_enabled, $req_mgmt_enabled, $format)
 	{
 		$reportList = config_get('reports_list');
 		$items = array();
 
-		foreach ($reportList as &$reportItem) {
+    $toggleMsg = lang_get('show_hide_direct_link');
+
+    $xdx = 0;
+		foreach ($reportList as &$reportItem) 
+		{
 
 			// check validity of report		
 			if (($reportItem['enabled'] == 'all') || 
-				(($reportItem['enabled'] == 'req') && $req_mgmt_enabled) ||
+				  (($reportItem['enabled'] == 'req') && $req_mgmt_enabled) ||
 			    (($reportItem['enabled'] == 'bts') && $bug_interface_enabled)) 
 			{
-				// check format availability
 				if (strpos(",".$reportItem['format'],$format) > 0)
 				{
-					// prepare for $GET params
-					if (stristr($reportItem['url'], "?")) {
-						$reportUrl = $reportItem['url'].'&';
-					} else {
-						$reportUrl = $reportItem['url'].'?';
-					}
-					
-    				$items[] = array('name' => lang_get($reportItem['title']), 'href' => $reportUrl);
+					$reportUrl = $reportItem['url'] . ( stristr($reportItem['url'], "?") ? '&' : '?');
+    			$items[] = array('name' => lang_get($reportItem['title']), 'href' => $reportUrl,
+    			                 'directLink' => 
+    			                 sprintf($reportItem['type'],$_SESSION['basehref'],
+    			                         $context->apikey,$context->tproject_id,$context->tplan_id));
+		
+		      $dl = $items[$xdx]['directLink']; 
+		      $mask = '<img class="clickable" title="%s" alt="%s" ' .
+        					' onclick="showHideByClass(' . "'div','%s');event.stopPropagation();" . '" ' .
+        					' src="' . $context->imgSet['direct_link'] . '" align="left" />';
+
+	        $divClass = 'direct_link_' . $xdx;        
+		      $items[$xdx]['toggle'] = sprintf($mask,$toggleMsg,$toggleMsg,$divClass);
+		      $items[$xdx]['directLinkDiv'] = '<div class="' . $divClass . '" ' .
+		                                      "style='display:none;border:1px solid;background-color:yellow;'>" . 
+		                                      '<a href="' . $dl .'" target="_blank">' . $dl . '</a><br></div>';
+		      $xdx++;
 				}
 			}
 		}

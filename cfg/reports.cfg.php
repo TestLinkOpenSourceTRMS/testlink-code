@@ -83,7 +83,8 @@ $tlCfg->reports_list['test_report'] = array(
 	'title' => 'link_report_test_report',
 	'url' => 'lib/results/printDocOptions.php?type='.DOC_TEST_REPORT,
 	'enabled' => 'all',
-	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=testreport',
+	'directLink' => '',
+	// 'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=testreport',
 	'format' => 'format_html,format_odt,format_msword'
 );
 
@@ -167,6 +168,7 @@ $tlCfg->reports_list['results_requirements'] = array(
 	'title' => 'link_report_reqs_coverage',
 	'url' => 'lib/results/resultsReqs.php',
 	'enabled' => 'req',
+	'directLink' => '',
 	'format' => 'format_html'
 );
 
@@ -183,6 +185,7 @@ $tlCfg->reports_list['list_problems'] = array(
 	'title' => 'link_report_total_bugs',
 	'url' => 'lib/results/resultsBugs.php',
 	'enabled' => 'bts',
+	'directLink' => '',
 	'format' => 'format_html'
 );
 $tlCfg->reports_list['tcases_with_cf'] = array( 

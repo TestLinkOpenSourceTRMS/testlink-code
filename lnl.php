@@ -74,6 +74,12 @@ switch($userCount)
                  "&type=n&format=0";
   			$what2launch = "lib/results/resultsByStatus.php?apikey=$args->apikey{$param}";
       break;
+
+      case 'blockedtestcases':
+        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
+                 "&type=b&format=0";
+  			$what2launch = "lib/results/resultsByStatus.php?apikey=$args->apikey{$param}";
+      break;
     }  
   
     if(!is_null($what2launch))

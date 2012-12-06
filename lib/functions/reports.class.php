@@ -90,7 +90,7 @@ class tlReports extends tlObjectWithDB
 					$reportUrl = $reportItem['url'] . ( stristr($reportItem['url'], "?") ? '&' : '?');
     			$items[] = array('name' => lang_get($reportItem['title']), 'href' => $reportUrl,
     			                 'directLink' => 
-    			                 sprintf($reportItem['type'],$_SESSION['basehref'],
+    			                 sprintf($reportItem['directLink'],$_SESSION['basehref'],
     			                         $context->apikey,$context->tproject_id,$context->tplan_id));
 		
 		      $dl = $items[$xdx]['directLink']; 

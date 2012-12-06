@@ -9,9 +9,10 @@
  * SCOPE: Definition of report/metrics menu 
  * 
  * @internal revisions
- * @since 1.9.4
+ * @since 1.9.5
  *
- * *********************************************************************************** */
+ * 
+ */
 
 /** type of documents */
 define('DOC_TEST_SPEC', 'testspec');
@@ -75,34 +76,35 @@ $tlCfg->reports_file_extension = array(
 $tlCfg->reports_list['test_plan'] = array( 
 	'title' => 'link_report_test_plan',
 	'url' => 'lib/results/printDocOptions.php?type='.DOC_TEST_PLAN,
-	'enabled' => 'all',
+	'enabled' => 'all', 'directLink' => '',
 	'format' => 'format_html,format_odt,format_msword'
 );
 $tlCfg->reports_list['test_report'] = array( 
 	'title' => 'link_report_test_report',
 	'url' => 'lib/results/printDocOptions.php?type='.DOC_TEST_REPORT,
 	'enabled' => 'all',
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=testreport',
 	'format' => 'format_html,format_odt,format_msword'
 );
 
 $tlCfg->reports_list['metrics_tp_general'] = array( 
 	'title' => 'link_report_general_tp_metrics',
 	'url' => 'lib/results/resultsGeneral.php',
-	'enabled' => 'all',
+	'enabled' => 'all', 'directLink' => '',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
 
 $tlCfg->reports_list['results_by_tester_per_build'] = array( 
 	'title' => 'link_report_by_tester_per_build',
 	'url' => 'lib/results/resultsByTesterPerBuild.php',
-	'enabled' => 'all',
+	'enabled' => 'all', 'directLink' => '',
 	'format' => 'format_html'
 );
 
 $tlCfg->reports_list['assigned_tc_overview'] = array( 
 	'title' => 'link_assigned_tc_overview',
 	'url' => 'lib/testcases/tcAssignedToUser.php?show_all_users=1&show_inactive_and_closed=1',
-	'enabled' => 'all',
+	'enabled' => 'all', 'directLink' => '',
 	'format' => 'format_html'
 );
 
@@ -110,31 +112,34 @@ $tlCfg->reports_list['assigned_tc_overview'] = array(
 //$tlCfg->reports_list['results_custom_query'] = array( 
 //	'title' => 'link_report_metrics_more_builds',
 //	'url' => 'lib/results/resultsMoreBuildsGUI.php',
-//	'enabled' => 'all',
+//	'enabled' => 'all', 'directLink' => '',
 //	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 //);
 $tlCfg->reports_list['results_matrix'] = array( 
 	'title' => 'link_report_test',
 	'url' => 'lib/results/resultsTC.php',
-	'enabled' => 'all',
+	'enabled' => 'all', 'directLink' => '',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
 $tlCfg->reports_list['list_tc_failed'] = array( 
 	'title' => 'link_report_failed',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['failed'],
-	'enabled' => 'all',
+	'enabled' => 'all', 
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=failedtestcases',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
 $tlCfg->reports_list['list_tc_blocked'] = array( 
 	'title' => 'link_report_blocked_tcs',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['blocked'],
-	'enabled' => 'all',
+	'enabled' => 'all', 
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=blockedtestcases',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
 $tlCfg->reports_list['list_tc_norun'] = array( 
 	'title' => 'link_report_not_run',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['not_run'],
-	'enabled' => 'all',
+	'enabled' => 'all', 
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=notruntestcases',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
 
@@ -142,20 +147,20 @@ $tlCfg->reports_list['list_tc_norun'] = array(
 // $tlCfg->reports_list['list_tc_notrunanyplatform'] = array(
 // 	'title' => 'link_report_not_run_any_platform',
 // 	'url' => 'lib/results/tcNotRunAnyPlatform.php',
-// 	'enabled' => 'all',
+// 	'enabled' => 'all', 'directLink' => '',
 // 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 // );
 
 $tlCfg->reports_list['tcases_without_tester'] = array(
 	'title' => 'link_report_tcases_without_tester',
 	'url' => 'lib/results/testCasesWithoutTester.php',
-	'enabled' => 'all',
+	'enabled' => 'all', 'directLink' => '',
 	'format' => 'format_html'
 );
 $tlCfg->reports_list['charts_basic'] = array( 
 	'title' => 'link_charts',
 	'url' => 'lib/results/charts.php',
-	'enabled' => 'all',
+	'enabled' => 'all', 'directLink' => '',
 	'format' => 'format_html'
 );
 $tlCfg->reports_list['results_requirements'] = array( 
@@ -183,20 +188,20 @@ $tlCfg->reports_list['list_problems'] = array(
 $tlCfg->reports_list['tcases_with_cf'] = array( 
 	'title' => 'link_report_tcases_with_cf',
 	'url' => 'lib/results/testCasesWithCF.php',
-	'enabled' => 'all',
+	'enabled' => 'all', 'directLink' => '',
 	'format' => 'format_html'
 );
 $tlCfg->reports_list['tplan_with_cf'] = array( 
 	'title' => 'link_report_tplans_with_cf',
 	'url' => 'lib/results/testPlanWithCF.php',
-	'enabled' => 'all',
+	'enabled' => 'all', 'directLink' => '',
 	'format' => 'format_html'
 );
 
 $tlCfg->reports_list['free_tcases'] = array( 
 'title' => 'link_report_free_testcases_on_testproject',
 'url' => 'lib/results/freeTestCases.php',
-'enabled' => 'all',
+'enabled' => 'all', 'directLink' => '',
 'format' => 'format_html'
 );
    
@@ -204,7 +209,7 @@ $tlCfg->reports_list['free_tcases'] = array(
 // $tlCfg->reports_list['test_cases_created_per_user'] = array(
 // 'title' => 'link_report_test_cases_created_per_user',
 // 'url' => 'lib/results/tcCreatedPerUserGUI.php',
-// 'enabled' => 'all',
+// 'enabled' => 'all', 'directLink' => '',
 // 'format' => 'format_html'
 // );
 

@@ -6,16 +6,13 @@
  * Manages test plans
  *
  * @package 	TestLink
- * @author 		
- * @copyright 	2007-2012, TestLink community 
- * @version    	CVS: $Id: planEdit.php,v 1.56 2010/10/12 19:58:59 franciscom Exp $
- * @link 		http://www.teamst.org/index.php
+ * @copyright 2007-2012, TestLink community 
+ * @version   planEdit.php
+ * @link 		  http://www.teamst.org/index.php
  *
  *
  * @internal revisions
- * @since 1.9.4
- * 20120812 - kinow - TICKET 3987: Added option to copy attachments when copying a test plan 
- * 20120731 - kinow - TICKET 4977: CSRF token
+ * @since 1.9.5
  *
  **/
 
@@ -179,7 +176,6 @@ switch($args->do_action)
                 
 				if($args->copy)
 				{
-					// BUGID 3485: "Create from existing Test Plan" always copies builds
 					$options = array('items2copy' => $args->copy_options,'copy_assigned_to' => $args->copy_assigned_to,
 									         'tcversion_type' => $args->tcversion_type);
 					$tplan_mgr->copy_as($args->source_tplanid, $new_tplan_id,$args->testplan_name,
@@ -190,7 +186,7 @@ switch($args->do_action)
 		else
 		{
 			$gui->user_feedback = lang_get("warning_duplicate_tplan_name");
-        }
+    }
     
 		if(!$status_ok)
 		{
@@ -209,7 +205,6 @@ switch($args->do_action)
    case "list":
         $do_display=true;
         $template = is_null($template) ? 'planView.tpl' : $template;
-        // $gui->tplans = $tproject_mgr->get_all_testplans($args->tproject_id);
         $gui->tplans = $args->user->getAccessibleTestPlans($db,$args->tproject_id,null,array('output' =>'mapfull'));
         $gui->drawPlatformQtyColumn = false;
 
@@ -328,7 +323,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
     $guiObj = new stdClass();
     $guiObj->tproject_id = $argsObj->tproject_id; 
     $guiObj->editorType = $editorCfg['type'];
-    $guiObj->tplans = $tprojectMgr->get_all_testplans($argsObj->tproject_id);
+    $guiObj->tplans = $argsObj->user->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,
+                                                             null,array('output' =>'mapfull'));
     $guiObj->tproject_name = $argsObj->tproject_name;
     $guiObj->main_descr = lang_get('testplan_title_tp_management'). " - " .
                          lang_get('testproject') . ' ' . $argsObj->tproject_name;

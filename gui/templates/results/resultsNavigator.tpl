@@ -73,12 +73,17 @@ function pre_submit()
 {* Build href menu *}
 {if $gui->do_report.status_ok}
   {foreach from=$gui->menuItems item=menu}
-    <span><img src="{$tlImages.bullet}" />
-        {* BUGID 4009 *}
-	    <a href="{$menu.href}format={$selectedReportType}&amp;tplan_id={$gui->tplan_id}
+    <span>
+ 	       {if $menu.directLink != ''}
+  	       {$menu.toggle} 
+	       {else}
+	        <img src="{$tlImages.bullet}" />
+	       {/if}
+    	    <a href="{$menu.href}format={$selectedReportType}&amp;tplan_id={$gui->tplan_id}
 	             {if $gui->checked_show_inactive_tplans}&amp;show_inactive_tplans=1{/if}" 
-	       target="workframe">{$menu.name}</a></span><br />
-  
+	       target="workframe">{$menu.name}</a>
+	       </span><br />
+ 	       {$menu.directLinkDiv}
   {/foreach}
 {else}
   {$gui->do_report.msg}

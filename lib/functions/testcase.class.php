@@ -67,7 +67,7 @@ class testcase extends tlObjectWithAttachments
 
 	var $cfield_mgr;
 
-	var $import_file_types = array("XML" => "XML", "XLS" => "XLS" );
+	var $import_file_types = array("XML" => "XML");
 	var $export_file_types = array("XML" => "XML");
 	var $execution_types = array();
   var $cfg;

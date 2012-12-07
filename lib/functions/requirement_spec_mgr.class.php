@@ -705,7 +705,7 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
   	$title=trim($title);
     $the_title=$this->db->prepare_string($title);
   	$sql = "/* $debugMsg */ " .
-  		   " SELECT RSPEC.id,testproject_id,RSPEC,doc_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
+  		     " SELECT RSPEC.id,testproject_id,RSPEC.doc_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
            " RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
            " RSPEC.modification_ts,NH.name AS title " .
   	       " FROM {$this->object_table} RSPEC, {$this->tables['nodes_hierarchy']} NH";

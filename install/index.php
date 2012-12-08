@@ -6,16 +6,10 @@
  * Navigation for installation scripts
  *
  * @package 	TestLink
- * @copyright 	2007, TestLink community
- * @version    	CVS: $Id: index.php,v 1.17.6.3 2011/01/15 18:50:40 franciscom Exp $
+ * @copyright 2007,2012 TestLink community
+ * @version   index.php
  *
- * @internal Revisions:
- *	20110115 - franciscom - update message to 1.9.1
- *  20091103 - havlatm - Total GUI redesign
- *  20091003 - franciscom - removed option to upgrade/migrate from 1.6.x and 1.7.x
- *	20090127 - franciscom - removed upgrade block
- *	20080120 - franciscom - added link to README
- *	20080103 - franciscom - minor adjustments on link descriptions
+ * @internal revisions
  */
 
 require_once("../cfg/const.inc.php");
@@ -40,9 +34,9 @@ $_SESSION['testlink_version'] = TL_VERSION;
     TestLink <?php echo $_SESSION['testlink_version'] ?> Installation</h1>
 <div class="tlLiner">&nbsp;</div>
 <div class="tlStory">
-		<p>You are installing TestLink 1.9.4 </p>
-		<p><b>Migration from 1.9.3 to 1.9.4 has to be done MANUALLY.</b></p> 
-		<p>Please read Section on README file or go to www.teamst.org (Forum: TestLink 1.9.4 News,changes, etc) </p>
+		<p>You are installing TestLink 1.9.5 </p>
+		<p><b>Migration from 1.9.3 to 1.9.5 has to be done MANUALLY.</b></p> 
+		<p>Please read Section on README file or go to www.teamst.org (Forum: TestLink 1.9.5 News,changes, etc) </p>
 		<p>Open <a target="_blank" href="../docs/testlink_installation_manual.pdf">Installation manual</a>
 		for more information or troubleshooting. You could also look at
 		<a href="../README">README</a> or <a href="../CHANGELOG">Changes Log</a>.

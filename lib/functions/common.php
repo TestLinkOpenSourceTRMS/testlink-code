@@ -78,11 +78,21 @@ function tlAutoload($class_name)
     
 	if (isset($tlClasses[$classFileName]))
 	{
-    	$len = tlStringLen($classFileName) - $tlClassPrefixLen;
+    $len = tlStringLen($classFileName) - $tlClassPrefixLen;
 		$classFileName = strtolower(tlSubstr($classFileName,$tlClassPrefixLen,$len));
 	}
-	 
-	require_once $classFileName . '.class.php';
+  
+  // fix provided by BitNami for:
+  // Reason: We had a problem integrating TestLink with other apps. 
+  // You can reproduce it installing ThinkUp and TestLink applications in the same stack.  
+  try 
+  {
+    include_once $classFileName . '.class.php';
+  } 
+  catch (Exception $e)
+  {
+  }	 
+	
 }
 
 

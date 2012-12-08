@@ -101,11 +101,19 @@ function init_args(&$dbHandler)
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 	$args = new stdClass();
 
-	$iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
-	                 "tproject_id" => array(tlInputParameter::INT_N),
-	                 "tplan_id" => array(tlInputParameter::INT_N),
-	                 "level" => array(tlInputParameter::STRING_N,0,16),
-	                 "type" => array(tlInputParameter::STRING_N,0,20));  
+  try
+  {
+  	$iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
+  	                 "tproject_id" => array(tlInputParameter::INT_N),
+  	                 "tplan_id" => array(tlInputParameter::INT_N),
+  	                 "level" => array(tlInputParameter::STRING_N,0,16),
+  	                 "type" => array(tlInputParameter::STRING_N,0,20));  
+	}
+  catch (Exception $e)  
+  {  
+    echo $e->getMessage();
+    exit();
+  }
 	                 
 	R_PARAMS($iParams,$args);
   setUpEnvForRemoteAccess($dbHandler,$args->apikey,null,array('setPaths' => true,'clearSession' => true));

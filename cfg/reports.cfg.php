@@ -164,7 +164,8 @@ $tlCfg->reports_list['tcases_without_tester'] = array(
 $tlCfg->reports_list['charts_basic'] = array( 
 	'title' => 'link_charts',
 	'url' => 'lib/results/charts.php',
-	'enabled' => 'all', 'directLink' => '',
+	'enabled' => 'all', 
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=charts_basic',
 	'format' => 'format_html'
 );
 $tlCfg->reports_list['results_requirements'] = array( 

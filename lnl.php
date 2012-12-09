@@ -88,12 +88,16 @@ switch($userCount)
   			$what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
       break;
       
+      case 'charts_basic':
+        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&format=0";
+  			$what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
+      break;
+      
+      
       default:
         echo 'ABORTING - UNKNOWN TYPE:' . $args->type;
         die(); 
       break;
-      
-// http://localhost:8080/development/gitrepo/tlcode/lib/results/resultsByTesterPerBuild.php?format=0&tplan_id=10      
     }  
   
     if(!is_null($what2launch))

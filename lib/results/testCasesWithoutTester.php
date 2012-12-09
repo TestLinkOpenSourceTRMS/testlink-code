@@ -8,7 +8,7 @@
  * For a test plan, list test cases that HAS NOT BEEN RUN AND HAS NO TESTER ASSIGNED
  *
  * @internal revisions
- * @since 1.9.4
+ * @since 1.9.6
  *
  */
 require_once("../../config.inc.php");
@@ -26,17 +26,7 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $tplan_mgr = new testplan($db);
 $args = init_args($tplan_mgr);
-
-$gui = new stdClass();
-$gui->pageTitle = lang_get('caption_testCasesWithoutTester');
-$gui->warning_msg = '';
-$gui->tproject_name = $args->tproject_name;
-$gui->tplan_name = $args->tplan_name;
-
-$testPriorityEnabled = $_SESSION['testprojectOptions']->testPriorityEnabled;
-
-$labels = init_labels(array('design' => null, 'execution' => null, 'execution_history' => null,
-						    'match_count' => null));
+$gui = initializeGui($db,$args);
 
 // create it here, in order to be able to get tlImages
 $smarty = new TLSmarty();
@@ -50,15 +40,13 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 
 	$metricsMgr = new tlTestPlanMetrics($db);
 	$metrics = $metricsMgr->getNotRunWoTesterAssigned($args->tplan_id,null,null,
-													  array('output' => 'array', 'ignoreBuild' => true));
-
-	//New dBug($metrics); die();
+													                          array('output' => 'array', 'ignoreBuild' => true));
 
 	if(($gui->row_qty = count($metrics)) > 0)
 	{
 		$msg_key = '';
-		$links = featureLinks($labels,$smarty->_tpl_vars['tlImages']);
-		$gui->pageTitle .= " - " . $labels['match_count'] . ":" . $gui->row_qty;
+		$links = featureLinks($gui->labels,$smarty->_tpl_vars['tlImages']);
+		$gui->pageTitle .= " - " . $gui->labels['match_count'] . ":" . $gui->row_qty;
 
 
 		if ($args->show_platforms)
@@ -93,7 +81,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 				$row[] = $platformCache[$item['platform_id']]['name'];
 			}
 
-			if($testPriorityEnabled)
+			if($gui->opt->testPriorityEnabled)
 			{
 				// THIS HAS TO BE REFACTORED, because we can no do lot of calls
 				// because performance will be BAD
@@ -105,7 +93,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 		}
 
 		$gui->tableSet[] = buildTable($data, $args->tproject_id, $args->show_platforms,
-									  $testPriorityEnabled);
+									                $gui->opt->testPriorityEnabled);
 	}
 }
 
@@ -164,29 +152,28 @@ function buildTable($data, $tproject_id, $show_platforms, $priorityMgmtEnabled)
 function init_args(&$tplan_mgr)
 {
 	$iParams = array("format" => array(tlInputParameter::INT_N),
-					 "tplan_id" => array(tlInputParameter::INT_N));
+					         "tplan_id" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
     
-    $args->show_platforms = false;
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
-    $args->tplan_name = '';
-    if(!$args->tplan_id)
-    {
-        $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
-    }
-    
-    if($args->tplan_id > 0)
-    {
-		$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
-		$args->tplan_name = $tplan_info['name'];  
-		$args->show_platforms = $tplan_mgr->hasLinkedPlatforms($args->tplan_id);
+  $args->show_platforms = false;
+  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
-    }
-    
-    return $args;
+  $args->tplan_name = '';
+  if(!$args->tplan_id)
+  {
+      $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+  }
+  
+  if($args->tplan_id > 0)
+  {
+  	$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+  	$args->tplan_name = $tplan_info['name'];  
+  	$args->show_platforms = $tplan_mgr->hasLinkedPlatforms($args->tplan_id);
+  }
+ 
+  return $args;
 }
 
 
@@ -210,6 +197,24 @@ function featureLinks($lbl,$img)
 	return $links;
 }
 
+function initializeGui(&$dbHandler,&$argsObj)
+{
+  $gui = new stdClass();
+  $gui->pageTitle = lang_get('caption_testCasesWithoutTester');
+  $gui->warning_msg = '';
+  $gui->tplan_name = $argsObj->tplan_name;
+  
+  $mgr = new testproject($dbHandler);
+  $dummy = $mgr->get_by_id($argsObj->tproject_id);
+
+  $gui->tproject_name = $argsObj->tproject_name = $dummy['name'];
+  
+  $gui->options = new stdClass();
+  $gui->options->testPriorityEnabled = $dummy['opt']->testPriorityEnabled;
+  $gui->labels = init_labels(array('design' => null, 'execution' => null, 'execution_history' => null,
+				 	                         'match_count' => null));
+  return $gui;
+}
 
 
 

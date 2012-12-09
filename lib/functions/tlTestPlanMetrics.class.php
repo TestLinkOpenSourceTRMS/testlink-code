@@ -12,10 +12,7 @@
  * @uses		    common.php 
  *
  * @internal revisions
- * @since 1.9.5                         
- * 20121121 - franciscom - TICKET 5353: Not run count on General Test Plan Metrics is wrong
- * 20121008 - franciscom - TICKET 5272: General Test Plan Metrics/Overall Build Status/Not Run is not for build 
- *                                      but global.
+ * @since 1.9.6                         
  **/
 
 
@@ -55,21 +52,21 @@ class tlTestPlanMetrics extends testplan
 		$this->resultsCfg = config_get('results');
 		$this->testCaseCfg = config_get('testcase_cfg');
 
-  		$this->db = $db;
-  		parent::__construct($db);
+  	$this->db = $db;
+  	parent::__construct($db);
 
-  		$this->map_tc_status = $this->resultsCfg['status_code'];
+  	$this->map_tc_status = $this->resultsCfg['status_code'];
     
-    	// This will be used to create dynamically counters if user add new status
-    	foreach( $this->resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
-    	{
-      		$this->tc_status_for_statistics[$tc_status_verbose] = $this->map_tc_status[$tc_status_verbose];
-    	}
-    	if( !isset($this->resultsCfg['status_label_for_exec_ui']['not_run']) )
-    	{
-      		$this->tc_status_for_statistics['not_run'] = $this->map_tc_status['not_run'];  
-    	}
-    	// $this->notRunStatusCode = $this->tc_status_for_statistics['not_run'];
+    // This will be used to create dynamically counters if user add new status
+    foreach( $this->resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
+    {
+    		$this->tc_status_for_statistics[$tc_status_verbose] = $this->map_tc_status[$tc_status_verbose];
+    }
+    if( !isset($this->resultsCfg['status_label_for_exec_ui']['not_run']) )
+    {
+    		$this->tc_status_for_statistics['not_run'] = $this->map_tc_status['not_run'];  
+    }
+    // $this->notRunStatusCode = $this->tc_status_for_statistics['not_run'];
     	
 		$this->statusCode = array_flip(array_keys($this->resultsCfg['status_label_for_exec_ui']));
 		foreach($this->statusCode as $key => $dummy)
@@ -2147,17 +2144,21 @@ class tlTestPlanMetrics extends testplan
 				" AND A_E.status IS NULL " .
 				" AND A_UA.user_id IS NULL ";
 
-		// TICKET 5166: Test Cases without Tester Assignment - MSSQL				
-		if( DB_TYPE == 'mssql' )
-		{		
-			$sqlc .= " GROUP BY A_NHTCV.parent_id " .
-					 " HAVING count(0) = " . intval($buildsCfg['count']) ; 
-		}
-		else
-		{
-			$sqlc .= " GROUP BY tcase_id " .
-				" HAVING TESTER_COUNTER = " . intval($buildsCfg['count']) ; 
-		}
+
+    // http://stackoverflow.com/questions/7511064/postresql-aliases-column-and-having
+    //
+		//if( DB_TYPE == 'mssql' )
+		//{		
+		//	$sqlc .= " GROUP BY tcase_id " .
+		//		       " HAVING TESTER_COUNTER = " . intval($buildsCfg['count']) ; 
+		//}
+		//else
+		//{
+		//	$sqlc .= " GROUP BY A_NHTCV.parent_id " .
+		//			     " HAVING count(0) = " . intval($buildsCfg['count']) ; 
+		//}
+    $sqlc .= " GROUP BY A_NHTCV.parent_id " .                      
+		         " HAVING count(0) = " . intval($buildsCfg['count']) ; 
 		
 		// new dBug($sqlc);
 		
@@ -2209,16 +2210,17 @@ class tlTestPlanMetrics extends testplan
 		switch($my['opt']['output'])
 		{
 			case 'array':
-        		$dummy = (array)$this->db->get_recordset($sql);              
+        $dummy = $this->db->get_recordset($sql);  
+                    
 			break;
 
 			case 'map':
 			default:
-				$keyColumns = array('tsuite_id','tcase_id','platform_id','build_id');
-        		$dummy = (array)$this->db->fetchRowsIntoMap4l($sql,$keyColumns);              
+        $keyColumns = array('tsuite_id','tcase_id','platform_id','build_id');
+        $dummy = $this->db->fetchRowsIntoMap4l($sql,$keyColumns);              
 			break;
 		}
-		return $dummy;
+		return (array)$dummy;
 	}
 
 

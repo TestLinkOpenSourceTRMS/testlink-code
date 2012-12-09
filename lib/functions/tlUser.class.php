@@ -4,13 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource	tlUser.class.php
- * @package 	TestLink
+ * @package 	  TestLink
  * @copyright 	2007-2012, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @link 		    http://www.teamst.org/index.php
  *
- * @internal revisions:
- * @since 1.9.5
- * 20121205 - franciscom - changes to hasRight() fo the direct link feature
+ * @internal revisions
+ * @since 1.9.6
  */
  
 /**
@@ -1059,8 +1058,9 @@ class tlUser extends tlDBObject
 	{
 		$booleanVal = intval($value) > 0 ? 1 : 0;
 		$sql = " UPDATE {$this->tables['users']} SET active = {$booleanVal} " .
-			   " WHERE id = " . $this->dbID;
+			     " WHERE id = " . $this->dbID;
 		$result = $db->exec_query($sql);
+		return tl::OK;
 	}
 
 

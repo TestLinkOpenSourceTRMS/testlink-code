@@ -99,7 +99,8 @@ $tlCfg->reports_list['metrics_tp_general'] = array(
 $tlCfg->reports_list['results_by_tester_per_build'] = array( 
 	'title' => 'link_report_by_tester_per_build',
 	'url' => 'lib/results/resultsByTesterPerBuild.php',
-	'enabled' => 'all', 'directLink' => '',
+	'enabled' => 'all', 
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0&type=results_by_tester_per_build',
 	'format' => 'format_html'
 );
 

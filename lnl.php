@@ -26,6 +26,7 @@ require_once('common.php');
 $args = init_args($db);
 $user = tlUser::getByAPIKey($db,$args->apikey);
 $userCount = count($user);
+new dBug($args);
 
 switch($userCount)
 {
@@ -37,6 +38,7 @@ switch($userCount)
     $reportCfg = config_get('reports_list');
     $what2launch = null; 
     $cfg = isset($reportCfg[$args->type]) ? $reportCfg[$args->type] : null;
+    
     switch($args->type)
     {
       case 'metricsdashboard':
@@ -80,10 +82,18 @@ switch($userCount)
         $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}";
   			$what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
       break;
+
+      case 'results_by_tester_per_build';
+        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&format=0";
+  			$what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
+      break;
       
+      default:
+        echo 'ABORTING - UNKNOWN TYPE:' . $args->type;
+        die(); 
+      break;
       
-http://localhost:8080/development/gitrepo/tlcode/lib/results/resultsTC.php?format=0&tplan_id=10      
-      
+// http://localhost:8080/development/gitrepo/tlcode/lib/results/resultsByTesterPerBuild.php?format=0&tplan_id=10      
     }  
   
     if(!is_null($what2launch))
@@ -107,17 +117,20 @@ function init_args(&$dbHandler)
 
   try
   {
+    // ATTENTION - give a look to $tlCfg->reports_list
+    $typeSize = 30;
   	$iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
   	                 "tproject_id" => array(tlInputParameter::INT_N),
   	                 "tplan_id" => array(tlInputParameter::INT_N),
   	                 "level" => array(tlInputParameter::STRING_N,0,16),
-  	                 "type" => array(tlInputParameter::STRING_N,0,20));  
+  	                 "type" => array(tlInputParameter::STRING_N,0,$typeSize));  
 	}
   catch (Exception $e)  
   {  
     echo $e->getMessage();
     exit();
   }
+
 	                
 	R_PARAMS($iParams,$args);
   setUpEnvForRemoteAccess($dbHandler,$args->apikey,null,array('setPaths' => true,'clearSession' => true));

@@ -1,33 +1,28 @@
 <?php
 /**
- * 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	resultsByTesterPerBuild.php
- * @package TestLink
- * @author Andreas Simon
- * @copyright 2010 - 2012 TestLink community
+ * @package     TestLink
+ * @author      Andreas Simon
+ * @copyright   2010 - 2012 TestLink community
  *
  * Lists results and progress by tester per build.
  * 
  * @internal revisions
- * @since 1.9.4
- * 20120430 - franciscom - TICKET 4992: Reports - Results by Tester per Build - refactoring
+ * @since 1.9.6
  *
  */
 
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
-testlinkInitPage($db,false,false,"checkRights");
-
 $templateCfg = templateConfiguration();
-$tproject_mgr = new testproject($db);
-$tplan_mgr = new testplan($db);
+
+list($args,$tproject_mgr,$tplan_mgr) = init_args($db);
 $user = new tlUser($db);
 
-$args = init_args($tproject_mgr, $tplan_mgr);
 $gui = init_gui($args);
 $charset = config_get('charset');
 
@@ -144,16 +139,35 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * @param resource &$tproject_mgr reference to testproject manager
  * @return array $args array with user input information
  */
-function init_args(&$tproject_mgr, &$tplan_mgr) 
+function init_args(&$dbHandler)
 {
-	$iParams = array("format" => array(tlInputParameter::INT_N),
-		             "tplan_id" => array(tlInputParameter::INT_N));
+  $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
+                   "tproject_id" => array(tlInputParameter::INT_N), 
+	                 "tplan_id" => array(tlInputParameter::INT_N),
+                   "format" => array(tlInputParameter::INT_N),
+                   "show_closed_builds" => array(tlInputParameter::CB_BOOL),
+                   "show_closed_builds_hidden" => array(tlInputParameter::CB_BOOL));
 
 	$args = new stdClass();
-	R_PARAMS($iParams,$args);
-    
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	
+	$pParams = R_PARAMS($iParams,$args);
+  if( !is_null($args->apikey) )
+  {
+    $cerbero = new stdClass();
+    $cerbero->args = new stdClass();
+    $cerbero->args->tproject_id = $args->tproject_id;
+    $cerbero->args->tplan_id = $args->tplan_id;
+    $cerbero->args->getAccessAttr = true;
+    $cerbero->method = 'checkRights';
+    setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);  
+  }
+  else
+  {
+    testlinkInitPage($dbHandler,false,false,"checkRights");  
+	  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+  }
+
+  $tproject_mgr = new testproject($dbHandler);
+  $tplan_mgr = new testplan($dbHandler);
 	if($args->tproject_id > 0) 
 	{
 		$args->tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
@@ -164,27 +178,24 @@ function init_args(&$tproject_mgr, &$tplan_mgr)
 	if ($args->tplan_id > 0) 
 	{
 		$args->tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
-		
 	}
 	
-	$selection = false;
-    $show_closed_builds = isset($_REQUEST['show_closed_builds']) ? true : false;
-	$show_closed_builds_hidden = isset($_REQUEST['show_closed_builds_hidden']) ? true : false;
-	if ($show_closed_builds) 
-	{
-		$selection = true;
-	} 
-	else if ($show_closed_builds_hidden) 
-	{
-		$selection = false;
-	} 
-	else if (isset($_SESSION['reports_show_closed_builds'])) 
-	{
-		$selection = $_SESSION['reports_show_closed_builds'];
-	}
-	$args->show_closed_builds = $_SESSION['reports_show_closed_builds'] = $selection;
-	
-	return $args;
+ 	$selection = false;
+  if($args->show_closed_builds) 
+  {
+  	$selection = true;
+  } 
+  else if ($args->show_closed_builds_hidden) 
+  {
+  	$selection = false;
+  } 
+  else if (isset($_SESSION['reports_show_closed_builds'])) 
+  {
+  	$selection = $_SESSION['reports_show_closed_builds'];
+  }
+  $args->show_closed_builds = $_SESSION['reports_show_closed_builds'] = $selection;
+
+	return array($args,$tproject_mgr,$tplan_mgr);
 }
 
 
@@ -203,7 +214,6 @@ function init_gui(&$argsObj)
 	$gui->tproject_name = $argsObj->tproject_name;
 	$gui->tplan_name = $argsObj->tplan_info['name'];
 	$gui->show_closed_builds = $argsObj->show_closed_builds;
-	
 	return $gui;
 }
 
@@ -243,8 +253,16 @@ function getTableHeader($statusCfg)
 /*
  * rights check function for testlinkInitPage()
  */
-function checkRights(&$db, &$user)
+function checkRights(&$db,&$user,$context = null)
 {
-	return $user->hasRight($db,'testplan_metrics');
+  if(is_null($context))
+  {
+    $context = new stdClass();
+    $context->tproject_id = $context->tplan_id = null;
+    $context->getAccessAttr = false; 
+  }
+
+  $check = $user->hasRight($db,'testplan_metrics',$context->tproject_id,$context->tplan_id,$context->getAccessAttr);
+  return $check;
 }
 ?>

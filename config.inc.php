@@ -22,20 +22,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.4
- *  20121010 - asimon - TICKET 4353: added filter for active/inactive test cases
- *  20121010 - asimon - TICKET 4217: added importance filter on test specification
- *  20120818 - franciscom - TICKET 5152 - changes in custom css management
- *  20120817 - franciscom - Changes on $tlCfg->log_path and $g_repositoryPath due to SECURITY VULNERABILITY
- * 	20120812 - franciscom - TICKET 5138: Possibility to have a mail logger: new config option tl_installation_id
- *	20120707 - franciscom - TICKET 5083: Refactoring - logger.class.php -> $tlCfg->loggerFilter
- *	20120108 - franciscom - TICKET 4821: Bugzilla integration via XMLRPC (BUGZILLAXMLRPC)
- *	20120107 - franciscom - TICKET 4857: Add SOAP integration for Mantis (MANTISSOAP)
- *	20111217 - franciscom - $tlCfg->validation_cfg->user_login_valid_regex updated using mantisbt 1.2.5
- *	20111210 - franciscom - TICKET 4711: Apache Webserver - SSL Client Certificate Authentication (Single Sign-on?)
- *	20111127 - franciscom - demo mode - new config option demoSpecialUsers
- *	20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server
- *
+ * @since 1.9.6
  *
  **/
 

@@ -4,8 +4,7 @@
  Purpose: smarty template - main page / site map                 
                                                                  
  @internal revisions
- @since 1.9.4
- 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis	
+ @since 1.9.6
 *}
 {lang_get var='labels' s='title_product_mgmt,href_tproject_management,href_admin_modules,
                           href_assign_user_roles,href_cfields_management,

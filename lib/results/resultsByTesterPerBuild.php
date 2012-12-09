@@ -136,7 +136,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 /**
  * initialize user input
  * 
- * @param resource &$tproject_mgr reference to testproject manager
+ * @param resource dbHandler
  * @return array $args array with user input information
  */
 function init_args(&$dbHandler)

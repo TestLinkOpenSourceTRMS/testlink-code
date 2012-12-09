@@ -5,18 +5,15 @@
  *
  * Allows editing a user
  *
- * @package 	TestLink
- * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersEdit.php,v 1.41.2.2 2011/01/10 15:38:59 asimon83 Exp $
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @copyright 	2005-2012, TestLink community
+ * @filesource  usersEdit.php,v 1.41.2.2 2011/01/10 15:38:59 asimon83 Exp $
+ * @link 		    http://www.teamst.org/index.php
  *
- * @internal Revisions:
- *	20101010 - franciscom - BUGID 3872: Admin should be able to set a new password for users
- *	20100502 - franciscom - BUGID 3417
+ * @internal revisions
  *
  */
 require_once('../../config.inc.php');
-require_once('testproject.class.php');
 require_once('users.inc.php');
 require_once('email_api.php');
 require_once('Zend/Validate/Hostname.php');
@@ -33,8 +30,8 @@ $op->user_feedback = '';
 $highlight = initialize_tabsmenu();
 
 $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
-                       'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
-                       'resetPassword' => 'doUpdate');
+                         'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
+                         'resetPassword' => 'doUpdate');
 
 switch($args->doAction)
 {

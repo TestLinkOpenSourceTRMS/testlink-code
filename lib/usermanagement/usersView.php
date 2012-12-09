@@ -5,16 +5,15 @@
  *
  * Shows all users
  *
- * @package 	TestLink
- * @author 		-
+ * @package 	  TestLink
+ * @author 		  -
  * @copyright 	2007-2012, TestLink community 
  * @filesource	usersView.php
- * @link 		http://www.teamst.org/index.php
+ * @link 		    http://www.teamst.org/index.php
  *
  *
  * @internal revisions
- * @since 1.9.4
- * 20111127 - franciscom - use of demoSpecialUsers                          
+ * @since 1.9.6
  */
 require_once("../../config.inc.php");
 require_once("users.inc.php");
@@ -55,7 +54,7 @@ switch($args->operation)
 		if ($sqlResult != tl::OK)
 		{
 			$user_feedback = lang_get('error_user_not_disabled');
-	    }
+    }
 		
 		$orderBy->type = $args->user_order_by;
 		$orderBy->dir = $args->order_by_dir;

@@ -64,26 +64,26 @@ class redminerestInterface extends issueTrackerInterface
 	}
 
 	/**
-     * useful for testing 
-     *
-     *
-     **/
+   * useful for testing 
+   *
+   *
+   **/
 	function getAPIClient()
 	{
 		return $this->APIClient;
 	}
 
-    /**
-     * checks id for validity
-     *
-	 * @param string issueID
-     *
-     * @return bool returns true if the bugid has the right format, false else
-     **/
-    function checkBugIDSyntax($issueID)
-    {
-        return $this->checkBugIDSyntaxNumeric($issueID);
-    }
+  /**
+   * checks id for validity
+   *
+   * @param string issueID
+   *
+   * @return bool returns true if the bugid has the right format, false else
+   **/
+  function checkBugIDSyntax($issueID)
+  {
+    return $this->checkBugIDSyntaxNumeric($issueID);
+  }
 
     /**
      * establishes connection to the bugtracking system
@@ -124,10 +124,10 @@ class redminerestInterface extends issueTrackerInterface
 	}
 
 
-    /**
-     * 
-     *
-     **/
+  /**
+   * 
+   *
+   **/
 	public function getIssue($issueID)
 	{
 		if (!$this->isConnected())
@@ -200,71 +200,71 @@ class redminerestInterface extends issueTrackerInterface
         return $issue->summaryHTMLString;
 	}
 
-    /**
+  /**
 	 * @param string issueID
-     *
-     * @return bool true if issue exists on BTS
-     **/
-    function checkBugIDExistence($issueID)
+   *
+   * @return bool true if issue exists on BTS
+   **/
+  function checkBugIDExistence($issueID)
+  {
+    if(($status_ok = $this->checkBugIDSyntax($issueID)))
     {
-        if(($status_ok = $this->checkBugIDSyntax($issueID)))
-        {
-            $issue = $this->getIssue($issueID);
-            $status_ok = is_object($issue) && !is_null($issue);
-        }
-        return $status_ok;
+        $issue = $this->getIssue($issueID);
+        $status_ok = is_object($issue) && !is_null($issue);
     }
+    return $status_ok;
+  }
 
-    public function addIssue($summary,$description)
-  	{
+  public function addIssue($summary,$description)
+  {
   	  // Check mandatory info
   	  if( !property_exists($this->cfg,'projectidentifier') )
   	  {
   	    throw new exception(__METHOD__ . " project identifier is MANDATORY");
   	  }
   	  
-      try
-      {
-        // needs json or xml
-        $issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
-    		$issueXmlObj->addChild('subject', htmlentities($summary));
-    		$issueXmlObj->addChild('description', htmlentities($description));
-    		$issueXmlObj->addChild('project_id', (string)$this->cfg->projectidentifier);
-    		$issueXmlObj->addChild('tracker_id', (string)$this->cfg->trackerid);
-    		// $issueXmlObj->addChild('priority_id', $priority_id);
-    		// $issueXmlObj->addChild('category_id', $category_id);
+     try
+     {
+       // needs json or xml
+       $issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
+   		$issueXmlObj->addChild('subject', htmlentities($summary));
+   		$issueXmlObj->addChild('description', htmlentities($description));
+   		$issueXmlObj->addChild('project_id', (string)$this->cfg->projectidentifier);
+   		$issueXmlObj->addChild('tracker_id', (string)$this->cfg->trackerid);
+   		// $issueXmlObj->addChild('priority_id', $priority_id);
+   		// $issueXmlObj->addChild('category_id', $category_id);
  
-        $op = $this->APIClient->addIssueFromSimpleXML($issueXmlObj);
-        $ret = array('status_ok' => true, 'id' => (string)$op->id, 
-                     'msg' => sprintf(lang_get('redmine_bug_created'),$summary,
-                                      $issueXmlObj->project_id));
-      }
-      catch (Exception $e)
-      {
-        $msg = "Create REDMINE Ticket FAILURE => " . $e->getMessage();
-        tLog($msg, 'WARNING');
-        $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
-      }
-      return $ret;
-  	}  
+       $op = $this->APIClient->addIssueFromSimpleXML($issueXmlObj);
+       $ret = array('status_ok' => true, 'id' => (string)$op->id, 
+                    'msg' => sprintf(lang_get('redmine_bug_created'),$summary,
+                                     $issueXmlObj->project_id));
+     }
+     catch (Exception $e)
+     {
+       $msg = "Create REDMINE Ticket FAILURE => " . $e->getMessage();
+       tLog($msg, 'WARNING');
+       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+     }
+     return $ret;
+  }  
 
 
-    /**
-     *
-     * @author francisco.mancardi@gmail.com>
-     **/
-	  public static function getCfgTemplate()
-  	{
-  	
-  		// http://tl.m.remine.org
-		$template = "<!-- Template " . __CLASS__ . " -->\n" .
-					      "<issuetracker>\n" .
-					      "<apikey>REDMINE API KEY</apikey>\n" .
-					      "<uribase>http://tl.m.remine.org</uribase>\n" .
-					      "<!-- Project Identifier is NEEDED ONLY if you want to create issues from TL -->\n" . 
-					      "<projectidentifier>REDMINE PROJECT IDENTIFIER</projectidentifier>\n" .
-					      "</issuetracker>\n";
-		return $template;
-  	}
+  /**
+   *
+   * @author francisco.mancardi@gmail.com>
+   **/
+	public static function getCfgTemplate()
+  {
+  
+  	// http://tl.m.remine.org
+    $template = "<!-- Template " . __CLASS__ . " -->\n" .
+				        "<issuetracker>\n" .
+				        "<apikey>REDMINE API KEY</apikey>\n" .
+				        "<uribase>http://tl.m.remine.org</uribase>\n" .
+				        "<!-- Project Identifier is NEEDED ONLY if you want to create issues from TL -->\n" . 
+				        "<projectidentifier>REDMINE PROJECT IDENTIFIER</projectidentifier>\n" .
+				        "</issuetracker>\n";
+	  return $template;
+  }
 }
 ?>

@@ -26,8 +26,6 @@ require_once('common.php');
 $args = init_args($db);
 $user = tlUser::getByAPIKey($db,$args->apikey);
 $userCount = count($user);
-new dBug($args);
-
 switch($userCount)
 {
   case 0:
@@ -39,6 +37,9 @@ switch($userCount)
     $what2launch = null; 
     $cfg = isset($reportCfg[$args->type]) ? $reportCfg[$args->type] : null;
     
+    //new dBug($args);
+    //die();
+    
     switch($args->type)
     {
       case 'metricsdashboard':
@@ -48,12 +49,19 @@ switch($userCount)
 
 
       case 'test_report':
-        $param = "&type={$args->type}" .
+        $param = "&type={$args->type}&level=testproject" .
                  "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
                  "&header=y&summary=y&toc=y&body=y&passfail=y&cfields=y&metrics=y&author=y" .
                  "&requirement=y&keyword=y&notes=y&headerNumbering=y&format=0";
-  			$what2launch = "lib/results/printDocument.php?apikey=$args->apikey{$param}";
-      
+        $what2launch = "lib/results/printDocument.php?apikey=$args->apikey{$param}";         
+      break;
+
+      case 'test_plan':
+        $param = "&type={$args->type}&level=testproject" .
+                 "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
+                 "&header=y&summary=y&toc=y&body=y&passfail=y&cfields=y&metrics=y&author=y" .
+                 "&requirement=y&keyword=y&notes=y&headerNumbering=y&format=0";
+        $what2launch = "lib/results/printDocument.php?apikey=$args->apikey{$param}";         
       break;
       
       case 'testspec':
@@ -61,7 +69,7 @@ switch($userCount)
                  "&tproject_id={$args->tproject_id}" .
                  "&header=y&summary=y&toc=y&body=y&cfields=y&author=y".
                  "&requirement=y&keyword=y&headerNumbering=y&format=0";    
-  			$what2launch = "lib/results/printDocument.php?apikey=$args->apikey{$param}";
+  			$what2launch = $cfg['url'] . "?apikey=$args->apikey{$param}";
       break;
       
       

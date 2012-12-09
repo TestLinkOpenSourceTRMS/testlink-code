@@ -76,15 +76,15 @@ $tlCfg->reports_file_extension = array(
 $tlCfg->reports_list['test_plan'] = array( 
 	'title' => 'link_report_test_plan',
 	'url' => 'lib/results/printDocOptions.php?type='.DOC_TEST_PLAN,
-	'enabled' => 'all', 'directLink' => '',
+	'enabled' => 'all',
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=test_plan',
 	'format' => 'format_html,format_odt,format_msword'
 );
 $tlCfg->reports_list['test_report'] = array( 
 	'title' => 'link_report_test_report',
 	'url' => 'lib/results/printDocOptions.php?type='.DOC_TEST_REPORT,
 	'enabled' => 'all',
-	'directLink' => '',
-	// 'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=test_report',
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=test_report',
 	'format' => 'format_html,format_odt,format_msword'
 );
 

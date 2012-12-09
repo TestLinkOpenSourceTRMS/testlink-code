@@ -13,8 +13,8 @@
  *
  *
  * @internal revisions
- * @since 1.9.5
- * 20121017 - asimon - TICKET 5288 - print importance/priority when printing test specification/plan
+ * @since 1.9.6
+ * 
  *
  */
 require_once('../../config.inc.php');
@@ -30,13 +30,10 @@ $docText = '';
 $topText = '';
 $doc_data = new stdClass(); // gather content and tests related data
 
-testlinkInitPage($db);
-$tproject = new testproject($db);
-$tree_manager = &$tproject->tree_manager;
+list($args,$tproject_mgr,$decode) = init_args($db);
+$tree_manager = &$tproject_mgr->tree_manager;
+list($doc_info,$my) = initEnv($db,$args,$tproject_mgr,$args->user_id);
 
-$args = init_args();
-$decode = getDecode($tree_manager);
-list($doc_info,$my) = initEnv($db,$args,$tproject,$_SESSION['userID']);
 $printingOptions = initPrintOpt($_REQUEST,$doc_info);
 
 $subtree = $tree_manager->get_subtree($args->itemID,$my['filters'],$my['options']);
@@ -49,35 +46,33 @@ switch ($doc_info->type)
 		switch($doc_info->content_range)
 		{
 			case 'reqspec':
-    	      	$spec_mgr = new requirement_spec_mgr($db);
-    	  	    $spec = $spec_mgr->get_by_id($args->itemID);
-    	  	    unset($spec_mgr);
-    	  	    
-    	  	    $spec['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
-    	  	    $spec['node_type_id'] = $decode['node_descr_id']['requirement_spec'];
+        $spec_mgr = new requirement_spec_mgr($db);
+    	  $spec = $spec_mgr->get_by_id($args->itemID);
+    	  unset($spec_mgr);
+    	  
+    	  $spec['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
+    	  $spec['node_type_id'] = $decode['node_descr_id']['requirement_spec'];
     	  	    
 				unset($treeForPlatform[0]['childNodes']);
 				$treeForPlatform[0]['childNodes'][0] = &$spec;
 
 				$doc_info->title = htmlspecialchars($args->tproject_name . 
-    	  	                                        $tlCfg->gui_title_separator_2 . $spec['title']);  	               
-
+    	                                      $tlCfg->gui_title_separator_2 . $spec['title']);  	               
 			break;    
-    	} // $doc_info->content_range
+    } // $doc_info->content_range
 	break;
 		
-    case DOC_TEST_SPEC:
-        // TICKET 5288 - print importance when printing test specification
-        $printingOptions['importance'] = $doc_info->test_priority_enabled;
+  case DOC_TEST_SPEC:
+    $printingOptions['importance'] = $doc_info->test_priority_enabled;
 
 		switch($doc_info->content_range)
 		{
 			case 'testsuite':
-    	      	$tsuite = new testsuite($db);
-    	  	    $tInfo = $tsuite->get_by_id($args->itemID);
-    	  	    $tInfo['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
+    	  $tsuite = new testsuite($db);
+    	  $tInfo = $tsuite->get_by_id($args->itemID);
+    	  $tInfo['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
     
-    	  	    $treeForPlatform[0]['childNodes'] = array($tInfo);
+    	  $treeForPlatform[0]['childNodes'] = array($tInfo);
 
 				$doc_info->title = htmlspecialchars(isset($tInfo['name']) ? $args->tproject_name .
     	  	      	               $tlCfg->gui_title_separator_2.$tInfo['name'] : $args->tproject_name);
@@ -88,37 +83,33 @@ switch ($doc_info->type)
     case DOC_TEST_PLAN:
     case DOC_TEST_REPORT:
 			$tplan_mgr = new testplan($db);
-		    $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
-		    $doc_info->testplan_name = htmlspecialchars($tplan_info['name']);
-		    $doc_info->testplan_scope = $tplan_info['notes'];
-		    $doc_info->title = $doc_info->testplan_name;
+		  $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+		  $doc_info->testplan_name = htmlspecialchars($tplan_info['name']);
+		  $doc_info->testplan_scope = $tplan_info['notes'];
+		  $doc_info->title = $doc_info->testplan_name;
 
-            $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
-            $platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);   
+      $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
+      $platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);   
 			$items2use = null;
 			$execid_filter = null;
 			$executed_qty = 0;
 			$treeForPlatform = array();
-
-            // TICKET 5288 - print priority when printing test plan
-            $printingOptions['priority'] = $doc_info->test_priority_enabled;
-
+      $printingOptions['priority'] = $doc_info->test_priority_enabled;
+      
 			switch($doc_info->content_range)
 			{
 				case 'testproject':
 			
 					// displayMemUsage('BEFORE LOOP ON PLATFORMS');
 					$linkedBy = array();
-    	   	    	
-    	   	    	// Prepare Node -> pn
-                    $pnFilters = null;
+          $pnFilters = null;
                       
-                    // due to Platforms we need to use 'viewType' => 'executionTree',
-                    // if not we get ALWAYS the same set of test cases linked to test plan
-                    // for each platform -> WRONG 
-                    $pnOptions =  array('hideTestCases' => 0, 'showTestCaseID' => 1,
-                    					'viewType' => 'executionTree',
-		            					'getExternalTestCaseID' => 0, 'ignoreInactiveTestCases' => 0);
+          // due to Platforms we need to use 'viewType' => 'executionTree',
+          // if not we get ALWAYS the same set of test cases linked to test plan
+          // for each platform -> WRONG 
+          $pnOptions =  array('hideTestCases' => 0, 'showTestCaseID' => 1,
+          					          'viewType' => 'executionTree',
+		      			              'getExternalTestCaseID' => 0, 'ignoreInactiveTestCases' => 0);
 
 					foreach ($platforms as $platform_id => $platform_name)
 					{
@@ -203,8 +194,7 @@ switch ($doc_info->type)
 																				 		                                     $items2use,$args->tplan_id);
          		
 				$doc_data->statistics['real_execution'] = getStatsRealExecTime($tplan_mgr,$items2use,$args->tplan_id,$decode);
-
- 			} // if ($printingOptions['metrics'])
+ 			}
     break;
 }
 
@@ -292,24 +282,73 @@ echo $docText;
 
 /** 
  * Process input data
- * @return singleton list of input parameters 
+ * 
  **/
-function init_args()
+function init_args(&$dbHandler)
 {
+  $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
+                   "tproject_id" => array(tlInputParameter::INT_N), 
+	                 "tplan_id" => array(tlInputParameter::INT_N),  
+	                 "docTestPlanId" => array(tlInputParameter::INT_N),  
+	                 "id" => array(tlInputParameter::INT_N),
+	                 "type" => array(tlInputParameter::STRING_N,0,15),
+                   "format" => array(tlInputParameter::INT_N),
+                   "level" => array(tlInputParameter::STRING_N,0,32));
+
 	$args = new stdClass();
-	$args->doc_type = $_REQUEST['type'];
-	$args->level = isset($_REQUEST['level']) ?  $_REQUEST['level'] : null;
-	$args->format = isset($_REQUEST['format']) ? $_REQUEST['format'] : null;
-	$args->itemID = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
-	$args->tplan_id = isset($_REQUEST['docTestPlanId']) ? $_REQUEST['docTestPlanId'] : 0;
-	
-	
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
+	$pParams = R_PARAMS($iParams,$args);
+
+  // really UGLY HACK
+  $typeDomain = array('test_plan' => 'testplan','test_report' => 'testreport');
+  $args->type = isset($typeDomain[$args->type]) ? $typeDomain[$args->type] : $args->type;
+  
+  if( !is_null($args->apikey) )
+  {
+    $cerbero = new stdClass();
+    $cerbero->args = new stdClass();
+    $cerbero->args->tproject_id = $args->tproject_id;
+    $cerbero->args->tplan_id = $args->tplan_id;
+    $cerbero->args->getAccessAttr = true;
+    $cerbero->method = 'checkRights';
+    setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);  
+
+    $args->itemID = $args->tproject_id;
+  }
+  else
+  {
+    testlinkInitPage($dbHandler,false,false,"checkRights");  
+	  
+	  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+	  $args->tplan_id = isset($_REQUEST['docTestPlanId']) ? intval($_REQUEST['docTestPlanId']) : 0;
+    $args->itemID = $args->id;
+  }
+
+  $tproject_mgr = new testproject($dbHandler);
+
+	if($args->tproject_id > 0) 
+	{
+		$dummy = $tproject_mgr->get_by_id($args->tproject_id);
+		$args->tproject_name = $dummy['name'];
+	}
+  else
+  {
+  	$msg = __FILE__ . '::' . __FUNCTION__ . " :: Invalid Test Project ID ({$args->tproject_id})";
+  	throw new Exception($msg);
+  }
+
+  $args->doc_type = $args->type;
 	$args->user_id = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
 
 
-	return $args;
+  $resultsCfg = config_get('results');
+	$dcd = array();
+	$dcd['node_descr_id'] = $tproject_mgr->tree_manager->get_available_node_types();
+	$dcd['node_id_descr'] = array_flip($dcd['node_descr_id']);
+
+	$dcd['status_descr_code'] = $resultsCfg['status_code'];
+	$dcd['status_code_descr'] = array_flip($dcd['status_descr_code']);
+
+	return array($args,$tproject_mgr,$dcd);
 }
 
 
@@ -362,7 +401,7 @@ function getDecode(&$treeMgr)
 /** 
  * 
  * @internal revisions:
- * 20121017 - TICKET 5288 - print importance/priority when printing test specification/plan
+ * 
  **/
 function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
 {
@@ -547,4 +586,19 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$tplanID,$decode)
 }
 
 
+/*
+ * rights check function for testlinkInitPage()
+ */
+function checkRights(&$db,&$user,$context = null)
+{
+  if(is_null($context))
+  {
+    $context = new stdClass();
+    $context->tproject_id = $context->tplan_id = null;
+    $context->getAccessAttr = false; 
+  }
+
+  $check = $user->hasRight($db,'testplan_metrics',$context->tproject_id,$context->tplan_id,$context->getAccessAttr);
+  return $check;
+}
 ?>

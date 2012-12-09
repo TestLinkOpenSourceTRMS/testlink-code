@@ -1302,31 +1302,29 @@ function renderTestPlanForPrinting(&$db, &$node, $item_type, &$options, $tocPref
 
 
 /** 
- * Render HTML for estimated and real execute duration 
- * based on contribution (BUGID 1670)
+ * Render HTML for estimated and real execute duration based on contribution
  * 
  * @param array_of_strings $statistics
  * @return string HTML code
  */
 function renderTestDuration($statistics)
 {
-    $output = '';
+  $output = '';
 	$estimated_string = '';
 	$real_string = '';
-	$bEstimatedTimeAvailable = isset($statistics['estimated_execution']);
-	$bRealTimeAvailable = isset($statistics['real_execution']);
+	$bEstimatedTimeAvailable = isset($statistics['estimated_execution']) && !is_null($statistics['estimated_execution']);
+	$bRealTimeAvailable = isset($statistics['real_execution']) && $is_null($statistics['real_execution']);
     
 	if( $bEstimatedTimeAvailable || $bRealTimeAvailable)
 	{ 
-	    $output = "<div>\n";
-	    
+	  $output = "<div>\n";
 		if($bEstimatedTimeAvailable) 
 		{
 			$estimated_minutes = $statistics['estimated_execution']['minutes'];
 	    	$tcase_qty = $statistics['estimated_execution']['tcase_qty'];
 		         
-    	   	if($estimated_minutes > 60)
-    	   	{
+    	if($estimated_minutes > 60)
+    	{
 				$estimated_string = lang_get('estimated_time_hours') . round($estimated_minutes/60,2) ;
 			}
 			else
@@ -1381,9 +1379,12 @@ function renderEOF()
  */
 function buildTestPlanMetrics($statistics)
 {
-    $output = '<h1 class="doclevel">'.lang_get('title_nav_results')."</h1>\n";
-    $output .= renderTestDuration($statistics);
-    
+  $output ='';
+  $dummy = renderTestDuration($statistics);
+  if($dummy != '')
+  {      
+    $output = '<h1 class="doclevel">'.lang_get('title_nav_results')."</h1>\n" . $dummy;
+  }
 	return $output;	
 }
 

@@ -120,8 +120,7 @@ function init_args(&$dbHandler)
                    "format" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
-	$pParams = G_PARAMS($iParams,$args);
-
+	$pParams = R_PARAMS($iParams,$args);
   if( !is_null($args->apikey) )
   {
     $cerbero = new stdClass();

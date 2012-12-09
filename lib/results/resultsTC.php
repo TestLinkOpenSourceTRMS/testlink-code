@@ -1,21 +1,15 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.79 2010/11/01 17:14:48 franciscom Exp $ 
 *
-* @author	Martin Havlat <havlat@users.sourceforge.net>
-* @author 	Chad Rosen
+* @filesource resultsTC.php
+* @author	    Martin Havlat <havlat@users.sourceforge.net>
+* @author     Chad Rosen
 * 
 * Show Test Report by individual test case.
 *
 * @internal revisios
-* @since 1.9.4
-* 20120513 - franciscom - TICKET 5016: Reports - Test result matrix - Refactoring
-*
-* @since 1.9.3
-* 20110512 - Julian - BUGID 4451 - remove version tag from not run test cases as the shown version
-*                                  is only taken from previous build and might not be right
-* 20110329 - Julian - BUGID 4341 - added "Last Execution" column
+* @since 1.9.6
 *
 */
 require('../../config.inc.php');
@@ -24,14 +18,12 @@ require_once('displayMgr.php');
 require_once('exttable.class.php');
 
 $timerOn = microtime(true);   // will be used to compute elapsed time
-testlinkInitPage($db,false,false,"checkRights");
-
 $templateCfg = templateConfiguration();
 
+$args = init_args($db);
 $metricsMgr = new tlTestPlanMetrics($db);
 $tplan_mgr  = &$metricsMgr; // displayMemUsage('START' . __FILE__);
 
-$args = init_args();
 list($gui,$tproject_info,$labels,$cfg) = initializeGui($db,$args,$tplan_mgr);
 
 $tprojectOpt = $_SESSION['testprojectOptions'];
@@ -69,7 +61,7 @@ if( !is_null($metrics) )
 {
 	// invariant pieces	=> avoid wasting time on loops
 	$dlink = '<a href="' . str_replace(" ", "%20", $args->basehref) . 'linkto.php?tprojectPrefix=' . 
-			 urlencode($tproject_info['prefix']) . '&item=testcase&id=';	
+			     urlencode($tproject_info['prefix']) . '&item=testcase&id=';	
 
 	$hist_img_tag = '<img title="' . $labels['history'] . '"' . ' src="' . $gui->img->history . '" /></a> ';
 	$edit_img_tag = '<img title="' . $labels['design'] . '"' . ' src="' . $gui->img->edit . '" /></a> ';
@@ -95,14 +87,14 @@ if( !is_null($metrics) )
 			
 				// -----------------------------------------------------------------------------------				
 				// build HTML Links
-			    $name = htmlspecialchars("{$external_id}:{$rf[$top]['name']}",ENT_QUOTES);
+			  $name = htmlspecialchars("{$external_id}:{$rf[$top]['name']}",ENT_QUOTES);
 				if($args->format == FORMAT_HTML)
 				{
 					$rows[$cols['link']] = "<!-- " . sprintf("%010d", $rf[$top]['external_id']) . " -->" .  
-										   "<a href=\"javascript:openExecHistoryWindow({$tcaseID});\">" .
-				                		   $hist_img_tag .
-										   "<a href=\"javascript:openTCEditWindow({$tcaseID});\">" .
-				                		   $edit_img_tag . $name;
+										             "<a href=\"javascript:openExecHistoryWindow({$tcaseID});\">" .
+				                		     $hist_img_tag .
+										             "<a href=\"javascript:openTCEditWindow({$tcaseID});\">" .
+				                		     $edit_img_tag . $name;
 				}
 				else
 				{
@@ -115,7 +107,7 @@ if( !is_null($metrics) )
 					$rows[$cols['platform']] = $gui->platforms[$platformID];
 				}
 
-				if($tprojectOpt->testPriorityEnabled) 
+				if($gui->options->testPriorityEnabled) 
 				{
 					// is better to use code to do reorder instead of localized string ???
 					$rows[$cols['priority']] = $rf[$top]['priority_level'];
@@ -185,7 +177,7 @@ unset($metrics);
 unset($latestExecution);
 
 // displayMemUsage('Before buildMatrix()');
-$gui->tableSet[] =  buildMatrix($gui, $args, $last_build, $tprojectOpt);
+$gui->tableSet[] =  buildMatrix($gui, $args, $last_build);
 // displayMemUsage('AFTER buildMatrix()');
 
 $timerOff = microtime(true);
@@ -199,27 +191,61 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
  * 
  *
  */
-function init_args()
+function init_args(&$dbHandler)
 {
-	$iParams = array("format" => array(tlInputParameter::INT_N),
-		             "tplan_id" => array(tlInputParameter::INT_N));
+  $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
+                   "tproject_id" => array(tlInputParameter::INT_N), 
+	                 "tplan_id" => array(tlInputParameter::INT_N),
+                   "format" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
+  if( !is_null($args->apikey) )
+  {
+    $cerbero = new stdClass();
+    $cerbero->args = new stdClass();
+    $cerbero->args->tproject_id = $args->tproject_id;
+    $cerbero->args->tplan_id = $args->tplan_id;
+    $cerbero->args->getAccessAttr = true;
+    $cerbero->method = 'checkRights';
+    setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);  
+  }
+  else
+  {
+    testlinkInitPage($dbHandler,false,false,"checkRights");  
+	  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+  }
+
+  if($args->tproject_id <= 0)
+  {
+  	$msg = __FILE__ . '::' . __FUNCTION__ . " :: Invalid Test Project ID ({$args->tproject_id})";
+  	throw new Exception($msg);
+  }
+
+	$args->user = $_SESSION['currentUser'];
 	$args->basehref = $_SESSION['basehref'];
 	
-    return $args;
+  return $args;
 }
 
 /**
  * 
  *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$user,$context = null)
 {
-	return $user->hasRight($db,'testplan_metrics');
+  if(is_null($context))
+  {
+    $context = new stdClass();
+    $context->tproject_id = $context->tplan_id = null;
+    $context->getAccessAttr = false; 
+  }
+
+  $check = $user->hasRight($db,'testplan_metrics',$context->tproject_id,$context->tplan_id,$context->getAccessAttr);
+  return $check;
 }
+
 
 /**
  * Builds ext-js rich table to display matrix results
@@ -228,7 +254,7 @@ function checkRights(&$db,&$user)
  * return tlExtTable
  *
  */
-function buildMatrix(&$guiObj,&$argsObj,$latestBuildID,$options)
+function buildMatrix(&$guiObj,&$argsObj,$latestBuildID)
 {
 	$columns = array(array('title_key' => 'title_test_suite_name', 'width' => 100),
 	                 array('title_key' => 'title_test_case_title', 'width' => 150));
@@ -244,7 +270,7 @@ function buildMatrix(&$guiObj,&$argsObj,$latestBuildID,$options)
 						   'filterOptions' => $guiObj->platforms);
 		$group_name = $lbl['platform'];
 	}
-	if($options->testPriorityEnabled) 
+	if($guiObj->options->testPriorityEnabled) 
 	{
 		$columns[] = array('title_key' => 'priority', 'type' => 'priority', 'width' => 40);
 	}
@@ -272,7 +298,7 @@ function buildMatrix(&$guiObj,&$argsObj,$latestBuildID,$options)
 		$matrix->setGroupByColumnName($group_name);
 		$matrix->sortDirection = 'DESC';
 
-		if($options->testPriorityEnabled) 
+		if($guiObj->options->testPriorityEnabled) 
 		{
 			$matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer', 'filter' => 'Priority'));
 			$matrix->setSortByColumnName($lbl['priority']);
@@ -338,6 +364,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
 
 	$tproject_mgr = new testproject($dbHandler);
 	$tproject_info = $tproject_mgr->get_by_id($argsObj->tproject_id);
+	$guiObj->options = new stdClass();
+	$guiObj->options->testPriorityEnabled = $tproject_info['opt']->testPriorityEnabled;
 	unset($tproject_mgr); 
 
 	$tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);

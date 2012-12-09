@@ -84,7 +84,7 @@ $tlCfg->reports_list['test_report'] = array(
 	'url' => 'lib/results/printDocOptions.php?type='.DOC_TEST_REPORT,
 	'enabled' => 'all',
 	'directLink' => '',
-	// 'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=testreport',
+	// 'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=test_report',
 	'format' => 'format_html,format_odt,format_msword'
 );
 
@@ -92,7 +92,7 @@ $tlCfg->reports_list['metrics_tp_general'] = array(
 	'title' => 'link_report_general_tp_metrics',
 	'url' => 'lib/results/resultsGeneral.php',
 	'enabled' => 'all', 
-	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0&type=resultsgeneral',
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0&type=metrics_tp_general',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
 
@@ -120,28 +120,29 @@ $tlCfg->reports_list['assigned_tc_overview'] = array(
 $tlCfg->reports_list['results_matrix'] = array( 
 	'title' => 'link_report_test',
 	'url' => 'lib/results/resultsTC.php',
-	'enabled' => 'all', 'directLink' => '',
+	'enabled' => 'all', 
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=results_matrix',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
 $tlCfg->reports_list['list_tc_failed'] = array( 
 	'title' => 'link_report_failed',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['failed'],
 	'enabled' => 'all', 
-	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=failedtestcases',
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_failed',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
 $tlCfg->reports_list['list_tc_blocked'] = array( 
 	'title' => 'link_report_blocked_tcs',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['blocked'],
 	'enabled' => 'all', 
-	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=blockedtestcases',
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_blocked',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
 $tlCfg->reports_list['list_tc_norun'] = array( 
 	'title' => 'link_report_not_run',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['not_run'],
 	'enabled' => 'all', 
-	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=notruntestcases',
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_norun',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
 

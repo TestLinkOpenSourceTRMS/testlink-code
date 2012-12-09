@@ -36,9 +36,16 @@ switch($userCount)
   case 1:
     $reportCfg = config_get('reports_list');
     $what2launch = null; 
+    $cfg = isset($reportCfg[$args->type]) ? $reportCfg[$args->type] : null;
     switch($args->type)
     {
-      case 'testreport':
+      case 'metricsdashboard':
+        $param =  "&tproject_id={$args->tproject_id}";
+  			$what2launch = "lib/results/metricsDashboard.php?apikey=$args->apikey{$param}";
+      break;
+
+
+      case 'test_report':
         $param = "&type={$args->type}" .
                  "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
                  "&header=y&summary=y&toc=y&body=y&passfail=y&cfields=y&metrics=y&author=y" .
@@ -55,36 +62,27 @@ switch($userCount)
   			$what2launch = "lib/results/printDocument.php?apikey=$args->apikey{$param}";
       break;
       
-      case 'metricsdashboard':
-        $param =  "&tproject_id={$args->tproject_id}";
-  			$what2launch = "lib/results/metricsDashboard.php?apikey=$args->apikey{$param}";
-      break;
       
-      case 'resultsgeneral':
-        $cfg = $reportCfg['metrics_tp_general'];
+      case 'metrics_tp_general':
         $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
                  "&format=0";
   			$what2launch = $cfg['url'] . "?apikey=$args->apikey{$param}";
       break;
   
-      case 'failedtestcases':
-        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
-                 "&type=f&format=0";
-  			$what2launch = "lib/results/resultsByStatus.php?apikey=$args->apikey{$param}";
-      break;
-  
-      case 'notruntestcases':
-        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
-                 "&type=n&format=0";
-  			$what2launch = "lib/results/resultsByStatus.php?apikey=$args->apikey{$param}";
-      break;
-
-      case 'blockedtestcases':
-        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
-                 "&type=b&format=0";
-  			$what2launch = "lib/results/resultsByStatus.php?apikey=$args->apikey{$param}";
+      case 'list_tc_failed':
+      case 'list_tc_blocked':
+      case 'list_tc_norun':
+        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&format=0";
+  			$what2launch = $cfg['url'] ."&apikey=$args->apikey{$param}";
       break;
       
+      case 'results_matrix';
+        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}";
+  			$what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
+      break;
+      
+      
+http://localhost:8080/development/gitrepo/tlcode/lib/results/resultsTC.php?format=0&tplan_id=10      
       
     }  
   

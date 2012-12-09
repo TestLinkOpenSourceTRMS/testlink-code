@@ -5,8 +5,7 @@ show Test Results and Metrics
 @filesource	resultsTC.tpl
 
 @internal revisions
-@since 1.9.4 
-20120513 - franciscom - added elapsed time - TICKET 5016: Reports - Test result matrix - Refactoring
+@since 1.9.6 
 *}
 
 {lang_get var="labels"

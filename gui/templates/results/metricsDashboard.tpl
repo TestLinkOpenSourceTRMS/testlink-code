@@ -1,16 +1,7 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metricsDashboard.tpl,v 1.19 2010/10/17 17:44:24 mx-julian Exp $     
+ @filesource  metricsDashboard.tpl
  Purpose: smarty template - main page / site map                 
-
- rev:
-  20110303 - Julian - added more information to test project report
-  20101014 - Julian - BUGID 3893 - Extended metrics dashboard
-  20101012 - Julian - show "show metrics only for active test plans" checkbox even if there is no resultset. 
-                      This is required if there are no active test plans at all
-  20100917 - Julian - BUGID 3724 - checkbox to show all/active test plans
-                                 - use of exttable
-  20090919 - franciscom - added plaftorm information
 *}
 {lang_get var="labels"
           s="generated_by_TestLink_on,testproject,test_plan,platform,show_only_active,
@@ -48,6 +39,9 @@ Ext.onReady(function() {ldelim}
 <body>
 <h1 class="title">{$labels.testproject} {$smarty.const.TITLE_SEP} {$gui->tproject_name|escape}</h1>
 <div class="workBack">
+{$tlImages.toggle_direct_link} &nbsp;<br>
+<div class="direct_link" style='display:none'>
+<a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a><p></div>
 
 <p><form method="post">
 <input type="checkbox" name="show_only_active" value="show_only_active"
@@ -56,6 +50,9 @@ Ext.onReady(function() {ldelim}
 <input type="hidden"
        name="show_only_active_hidden"
        value="{$gui->show_only_active}" />
+
+
+
 </form></p><br/>
 
 {if $gui->warning_msg == ''}

@@ -20,11 +20,13 @@
 
 // some session and settings stuff from original index.php 
 require_once('config.inc.php');
+require_once('./cfg/reports.cfg.php');
 require_once('common.php');
 
 $args = init_args($db);
 $user = tlUser::getByAPIKey($db,$args->apikey);
 $userCount = count($user);
+
 switch($userCount)
 {
   case 0:
@@ -32,6 +34,7 @@ switch($userCount)
   break;
 
   case 1:
+    $reportCfg = config_get('reports_list');
     $what2launch = null; 
     switch($args->type)
     {
@@ -58,9 +61,10 @@ switch($userCount)
       break;
       
       case 'resultsgeneral':
+        $cfg = $reportCfg['metrics_tp_general'];
         $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
                  "&format=0";
-  			$what2launch = "lib/results/resultsGeneral.php?apikey=$args->apikey{$param}";
+  			$what2launch = $cfg['url'] . "?apikey=$args->apikey{$param}";
       break;
   
       case 'failedtestcases':
@@ -80,6 +84,8 @@ switch($userCount)
                  "&type=b&format=0";
   			$what2launch = "lib/results/resultsByStatus.php?apikey=$args->apikey{$param}";
       break;
+      
+      
     }  
   
     if(!is_null($what2launch))
@@ -114,7 +120,7 @@ function init_args(&$dbHandler)
     echo $e->getMessage();
     exit();
   }
-	                 
+	                
 	R_PARAMS($iParams,$args);
   setUpEnvForRemoteAccess($dbHandler,$args->apikey,null,array('setPaths' => true,'clearSession' => true));
   return $args;

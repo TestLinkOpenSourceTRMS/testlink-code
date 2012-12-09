@@ -4,26 +4,26 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	metricsDashboard.php
- * @package 	TestLink
+ * @package 	  TestLink
  * @copyright 	2007-2012, TestLink community 
- * @author franciscom
+ * @author      franciscom
  *
  * @internal revisions
- * @since 1.9.5
- * 20121004 - franciscom - TICKET 5267: Metrics Dashboard. Test Project Progress display "0" for Passed/Failed/Blocked
- * 20120907 - asimon - TICKET 5212: removed debug output "getMetrics" that was shown above the normal page header
+ * @since 1.9.6
  *
  **/
 require('../../config.inc.php');
 require_once('common.php');
 require_once('exttable.class.php');
-testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 
-$args = init_args();
+//testlinkInitPage($db,false,false,"checkRights");
+$args = init_args($db);
+
 $gui = new stdClass();
 $gui->tproject_name = $args->tproject_name;
 $gui->show_only_active = $args->show_only_active;
+$gui->direct_link = $args->direct_link;
 
 $result_cfg = config_get('results');
 $show_all_status_details = config_get('metrics_dashboard')->show_test_plan_status;
@@ -346,27 +346,66 @@ function getColumnsDefinition($showPlatforms, $statusLbl, $labels, $platforms)
 	return $colDef;
 }
 
-function init_args()
+function init_args(&$dbHandler)
 {
 	$args = new stdClass();
 
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
-	$args->currentUserID = $_SESSION['currentUser']->dbID;
+  $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
+                   "tproject_id" => array(tlInputParameter::INT_N), 
+		               "tplan_id" => array(tlInputParameter::INT_N),
+                   "show_only_active" => array(tlInputParameter::CB_BOOL),
+                   "show_only_active_hidden" => array(tlInputParameter::CB_BOOL));
 
-	$show_only_active = isset($_REQUEST['show_only_active']) ? true : false;
-	$show_only_active_hidden = isset($_REQUEST['show_only_active_hidden']) ? true : false;
-	if ($show_only_active) {
+	R_PARAMS($iParams,$args);
+  if( !is_null($args->apikey) )
+  {
+    $args->show_only_active = true;
+    $cerbero = new stdClass();
+    $cerbero->args = new stdClass();
+    $cerbero->args->tproject_id = $args->tproject_id;
+    $cerbero->args->tplan_id = $args->tplan_id;
+    $cerbero->args->getAccessAttr = true;
+    $cerbero->method = 'checkRights';
+    setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);  
+  }
+  else
+  {
+    testlinkInitPage($dbHandler,false,false,"checkRights");  
+	  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+ }
+  
+  if($args->tproject_id <= 0)
+  {
+  	$msg = __FILE__ . '::' . __FUNCTION__ . " :: Invalid Test Project ID ({$args->tproject_id})";
+  	throw new Exception($msg);
+  }
+	$mgr = new tree($dbHandler);
+	$dummy = $mgr->get_node_hierarchy_info($args->tproject_id);
+	$args->tproject_name = $dummy['name'];
+
+  $args->user = $_SESSION['currentUser'];
+	$args->currentUserID = $args->user->dbID;
+  $args->direct_link = $_SESSION['basehref'] . "lib/results/metricsDashboard.php?" .
+                       "apikey={$args->user->userApiKey}&tproject_id={$args->tproject_id}";
+
+	if ($args->show_only_active) 
+	{
 		$selection = true;
-	} else if ($show_only_active_hidden) {
+	} 
+	else if ($args->show_only_active_hidden) 
+	{
 		$selection = false;
-	} else if (isset($_SESSION['show_only_active'])) {
+	} 
+	else if (isset($_SESSION['show_only_active'])) 
+	{
 		$selection = $_SESSION['show_only_active'];
-	} else {
+	} 
+	else 
+	{
 		$selection = true;
 	}
 	$args->show_only_active = $_SESSION['show_only_active'] = $selection;
-
+  
 	return $args;
 }
 
@@ -383,14 +422,29 @@ function collectTestProjectMetrics($tplanMetrics,$cfg)
 	{
 		$mm[$status_verbose]['value'] = getPercentage($tplanMetrics['total'][$status_verbose], 
 	                                                  $tplanMetrics['total']['active'], $cfg['round_precision']);
-	    $mm[$status_verbose]['label_key'] = $label_key;
+	  $mm[$status_verbose]['label_key'] = $label_key;
 	}
 	return $mm;
 }
 
 
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$user,$context = null)
 {
-	return ($user->hasRight($db,'testplan_metrics') || $user->hasRight($db,'testplan_execute'));
+  if(is_null($context))
+  {
+    $context = new stdClass();
+    $context->tproject_id = $context->tplan_id = null;
+    $context->getAccessAttr = false; 
+  }
+
+  $checkOrMode = array('testplan_metrics','testplan_execute');
+  foreach($checkOrMode as $right)
+  {
+    if( $user->hasRight($db,$right,$context->tproject_id,$context->tplan_id,$context->getAccessAttr) )
+    {
+      return true;  
+    }
+  }  
+  return false;
 }
 ?>

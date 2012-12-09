@@ -91,7 +91,8 @@ $tlCfg->reports_list['test_report'] = array(
 $tlCfg->reports_list['metrics_tp_general'] = array( 
 	'title' => 'link_report_general_tp_metrics',
 	'url' => 'lib/results/resultsGeneral.php',
-	'enabled' => 'all', 'directLink' => '',
+	'enabled' => 'all', 
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0&type=resultsgeneral',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
 

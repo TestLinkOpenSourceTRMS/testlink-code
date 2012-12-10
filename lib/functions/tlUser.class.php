@@ -974,8 +974,9 @@ class tlUser extends tlDBObject
 	{
 		$booleanVal = intval($value) > 0 ? 1 : 0;
 		$sql = " UPDATE {$this->tables['users']} SET active = {$booleanVal} " .
-			   " WHERE id = " . $this->dbID;
+			     " WHERE id = " . $this->dbID;
 		$result = $db->exec_query($sql);
+		return tl::OK;
 	}
 
 

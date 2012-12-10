@@ -6,15 +6,15 @@
  * Functions for execution feature (add test results) 
  * Legacy code (party covered by classes now)
  *
- * @package 	TestLink
- * @author 		Martin Havlat
+ * @package 	  TestLink
+ * @author 		  Martin Havlat
  * @copyright 	2005-2012, TestLink community 
  * @filesource	exec.inc.php
- * @link 		http://www.teamst.org/index.php
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.4
- * 20120721 - franciscom - TICKET 05104: Audit message for BUG delete needs more info (improvement)
+ * @since 1.9.6
+ * 
  *
  **/
 
@@ -170,7 +170,7 @@ function write_execution_bug(&$db,$exec_id, $bug_id,$just_delete=false)
  * @param object &$bug_interface reference to instance of bugTracker class
  * @param integer $execution_id Identifier of execution record
  * 
- * @return array list of 'bug_id' with values: 'build_name' and 'link_to_bts'
+ * @return array list of 'bug_id' with values: build_name,link_to_bts,isResolved
  */
 function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
 {
@@ -182,20 +182,23 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
 	{
 		
 		$sql = 	"/* $debugMsg */ SELECT execution_id,bug_id,builds.name AS build_name " .
-				"FROM {$tables['execution_bugs']}, {$tables['executions']} executions, " .
-				" {$tables['builds']} builds ".
-				" WHERE execution_id = {$execution_id} " .
-				" AND   execution_id = executions.id " .
-				" AND   executions.build_id = builds.id " .
-				" ORDER BY builds.name,bug_id";
+    				"FROM {$tables['execution_bugs']}, {$tables['executions']} executions, " .
+    				" {$tables['builds']} builds ".
+    				" WHERE execution_id = {$execution_id} " .
+    				" AND   execution_id = executions.id " .
+    				" AND   executions.build_id = builds.id " .
+    				" ORDER BY builds.name,bug_id";
 
 		$map = $db->get_recordset($sql);
 		if( !is_null($map) )
 		{  	
 			foreach($map as $elem)
 			{
-				$bug_list[$elem['bug_id']]['link_to_bts'] = $bug_interface->buildViewBugLink($elem['bug_id'],true);
+			  $dummy = $bug_interface->buildViewBugLink($elem['bug_id'],true);
+				$bug_list[$elem['bug_id']]['link_to_bts'] = $dummy->link;
+				$bug_list[$elem['bug_id']]['isResolved'] = $dummy->isResolved;
 				$bug_list[$elem['bug_id']]['build_name'] = $elem['build_name'];
+				unset($dummy);
 			}
 		}
 	}

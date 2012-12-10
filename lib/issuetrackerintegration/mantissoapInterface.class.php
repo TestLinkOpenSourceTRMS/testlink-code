@@ -24,7 +24,8 @@ class mantissoapInterface extends issueTrackerInterface
 	
 	private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
 	private $guiCfg = array();
-	private $resolvedStatus;
+	
+	var $defaultResolvedStatus;
 
 	/**
 	 * Construct and connect to BTS.
@@ -36,6 +37,10 @@ class mantissoapInterface extends issueTrackerInterface
 	{
 		$this->interfaceViaDB = false;
 		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);
+
+    $this->defaultResolvedStatus = array();
+    $this->defaultResolvedStatus[] = array('code' => 80, 'verbose' => 'resolved');
+    $this->defaultResolvedStatus[] = array('code' => 90, 'verbose' => 'closed');
 
 	  $this->setCfg($config);
 		$this->completeCfg();
@@ -201,10 +206,7 @@ class mantissoapInterface extends issueTrackerInterface
 					$this->status_color[$issue->statusVerbose] : 'white';
 
 					$issue->summaryHTMLString = $issue->summary;
-					
-					
-					// $issue->isResolved = 
-					
+					$issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
         }
 			}
 		}
@@ -403,31 +405,5 @@ class mantissoapInterface extends issueTrackerInterface
 	  }
 	  return $ret;
 	}
-	
-	public function setResolvedStatusCfg()
-  {
-    if( property_exists($this->cfg,'resolvedstatus') )
-    {
-      $statusCfg = (array)$this->cfg->resolvedstatus;
-    }
-    else
-    {
-      $statusCfg['status'] = array();
-      $statusCfg['status'][] = array('code' => 80, 'verbose' => 'resolved');
-      $statusCfg['status'][] = array('code' => 90, 'verbose' => 'closed');
-    }
-    $this->resolvedStatus = new stdClass();
-    foreach($statusCfg['status'] as $cfx)
-    {
-      $e = (array)$cfx;
-      $this->resolvedStatus->byCode[$e['code']] = $e['verbose'];
-    }
-    $this->resolvedStatus->byName = array_flip($this->resolvedStatus->byCode);
-  }
-  
-	public function getResolvedStatusCfg()
-  {
-    return $this->resolvedStatus;
-  }
-} //
+}
 ?>

@@ -44,7 +44,12 @@ if( $its->isConnected() )
 {
 	echo '<b>Connected !</br></b>';
 	
-	echo '<b>get resolved status configuration !</br></b>';
+	echo '<b>get resolved status configuration</br></b>';
 	new dBug($its->getResolvedStatusCfg());
+	
+	echo '<b>get issue </br></b>';
+	new dBug($its->getIssue(102575));
+	new dBug($its->getIssue(102529));
+	
 }
 ?>

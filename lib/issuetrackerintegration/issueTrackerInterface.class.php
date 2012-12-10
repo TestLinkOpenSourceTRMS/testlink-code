@@ -21,7 +21,9 @@
  * =============================================================================
  *
  * @internal revisions
- * @since 1.9.5
+ * @since 1.9.6
+ * 20121210 - franciscom - buildViewBugLink() return type changed
+ *
 **/
 require_once(TL_ABS_PATH . "/lib/functions/database.class.php");
 require_once(TL_ABS_PATH . "/lib/functions/lang_api.php");
@@ -38,6 +40,7 @@ abstract class issueTrackerInterface
 	var $dbMsg = '';
 	var $connected = false;
 	var $interfaceViaDB = false;  // useful for connect/disconnect methods
+	var $resolvedStatus;
 
 	var $methodOpt = array('buildViewBugLink' => array('addSummary' => false, 'colorByStatus' => false));
 	
@@ -320,7 +323,11 @@ abstract class issueTrackerInterface
       		$title = lang_get('access_to_bts');  
       		$link = "<div  title=\"{$title}\" style=\"display: inline; background: $issue->statusColor;\">$link</div>";
 		}
-		return $link;
+		
+		$ret = new stdClass();
+		$ret->link = $link;
+		$ret->isResolved = $issue->isResolved;
+		return $ret;
 	}
 
 	/**
@@ -420,6 +427,31 @@ abstract class issueTrackerInterface
     $ret['msg'] = 'OK';
     return $ret;
   }
+
+
+	public function setResolvedStatusCfg()
+  {
+    if( property_exists($this->cfg,'resolvedstatus') )
+    {
+      $statusCfg = (array)$this->cfg->resolvedstatus;
+    }
+    else
+    {
+      $statusCfg['status'] = $this->defaultResolvedStatus;
+    }
+    $this->resolvedStatus = new stdClass();
+    foreach($statusCfg['status'] as $cfx)
+    {
+      $e = (array)$cfx;
+      $this->resolvedStatus->byCode[$e['code']] = $e['verbose'];
+    }
+    $this->resolvedStatus->byName = array_flip($this->resolvedStatus->byCode);
+  }
   
+	public function getResolvedStatusCfg()
+  {
+    return $this->resolvedStatus;
+  }
+ 
 }
 ?>

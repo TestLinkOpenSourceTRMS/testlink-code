@@ -7,7 +7,7 @@
  * @author kevinlevy
  * 
  * @internal revisions
- * @since 1.9.4
+ * @since 1.9.6
  * 
  * 
  */
@@ -58,9 +58,9 @@ unset($tproject_mgr);
 //$options = array('output' => 'array', 'only_executed' => true, 'details' => 'full');
 // $execSet = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters, $options);
 $execSet = $metricsMgr->getLTCVNewGeneration($args->tplan_id,null,
-											 array('addExecInfo' => true, 'accessKeyType' => 'index',
-											 	   'specViewFields' => true, 'testSuiteInfo' => true,
-											 	   'includeNotRun' => false));
+											                       array('addExecInfo' => true, 'accessKeyType' => 'index',
+											 	                           'specViewFields' => true, 'testSuiteInfo' => true,
+											 	                           'includeNotRun' => false));
 
 $testcase_bugs = array();
 $mine = array();
@@ -84,7 +84,7 @@ foreach ($execSet as $execution)
 			$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tc_id});\">" .
 			                     "<img title=\"" . $l18n['execution_history'] ."\" src=\"{$img['history']}\" /></a> ";
 			$edit_link = "<a href=\"javascript:openTCEditWindow({$tc_id});\">" .
-						 "<img title=\"" . $l18n['design'] . "\" src=\"{$img['edit']}\" /></a> ";
+						       "<img title=\"" . $l18n['design'] . "\" src=\"{$img['edit']}\" /></a> ";
 			$tc_name = "<!-- " . sprintf("%010d", $execution['external_id']) . " -->" . $exec_history_link .
 			           $edit_link . $tc_name;
 
@@ -178,18 +178,21 @@ function buildBugString(&$db,$execID,&$bugInterface,&$openBugsArray,&$resolvedBu
 		{
 			foreach($bugs as $bugID => $bugInfo)
 			{
-				if ((!strpos($bugInfo['link_to_bts'],"<del>")) && 
-				    (!strpos($bugInfo['link_to_bts'],"</del>")))
-				{
-					if (!in_array($bugID, $openBugsArray))
+		
+		    if($bugInfo['isResolved'])
+		    {
+  				if(!in_array($bugID, $resolvedBugsArray))
+  				{
+  					$resolvedBugsArray[] = $bugID;
+  			  } 
+		    } 
+		    else
+		    {
+					if(!in_array($bugID, $openBugsArray))
 					{
 						$openBugsArray[] = $bugID;
 					}
-				}
-				else if (!in_array($bugID, $resolvedBugsArray))
-				{
-					$resolvedBugsArray[] = $bugID;
-			   	} 
+		    }
 				$bugUrls[] = $bugInfo['link_to_bts'];
 			}
 		}

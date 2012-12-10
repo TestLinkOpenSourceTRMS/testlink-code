@@ -101,7 +101,6 @@ class redminerestInterface extends issueTrackerInterface
    **/
   function connect()
   {
-    echo __CLASS__ . '<br>';
     try
     {
   	  // CRITIC NOTICE for developers

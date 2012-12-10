@@ -14,16 +14,17 @@ class mantissoapInterface extends issueTrackerInterface
 {
 	// Copied from mantis configuration
 	private $status_color = array('new'          => '#ffa0a0', # red,
-                                  'feedback'     => '#ff50a8', # purple
-                                  'acknowledged' => '#ffd850', # orange
-                                  'confirmed'    => '#ffffb0', # yellow
-                                  'assigned'     => '#c8c8ff', # blue
-                                  'resolved'     => '#cceedd', # buish-green
-                                  'closed'       => '#e8e8e8'); # light gray
+                                'feedback'     => '#ff50a8', # purple
+                                'acknowledged' => '#ffd850', # orange
+                                'confirmed'    => '#ffffb0', # yellow
+                                'assigned'     => '#c8c8ff', # blue
+                                'resolved'     => '#cceedd', # buish-green
+                                'closed'       => '#e8e8e8'); # light gray
 	
 	
 	private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
 	private $guiCfg = array();
+	private $resolvedStatus;
 
 	/**
 	 * Construct and connect to BTS.
@@ -38,8 +39,8 @@ class mantissoapInterface extends issueTrackerInterface
 
 	  $this->setCfg($config);
 		$this->completeCfg();
+		$this->setResolvedStatusCfg();
 	  $this->connect();
-	    
 	  $this->guiCfg = array('use_decoration' => true);
 	}
 
@@ -58,32 +59,32 @@ class mantissoapInterface extends issueTrackerInterface
 	}
 	
 	
-    /**
-     * establishes the soap connection to the bugtracking system
-     *
-     * @return bool returns true if the soap connection was established and the
-     * wsdl could be downloaded, false else
-     *
-     **/
-    function connect()
-    {
-		$op = $this->getClient(array('log' => true));
-		if( ($this->connected = $op['connected']) )
-		{ 
-			// OK, we have got WSDL => server is up and we can do SOAP calls, but now we need 
-			// to do a simple call with user/password only to understand if we are really connected
-			try
-			{
-				$x = $op['client']->mc_enum_status($this->cfg->username,$this->cfg->password);
-			}
-			catch (SoapFault $f)
-			{
-				$this->connected = false;
-				tLog("SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})","ERROR");
-			}
-		}
-        return $this->connected;
+  /**
+   * establishes the soap connection to the bugtracking system
+   *
+   * @return bool returns true if the soap connection was established and the
+   * wsdl could be downloaded, false else
+   *
+   **/
+  function connect()
+  {
+    $op = $this->getClient(array('log' => true));
+    if( ($this->connected = $op['connected']) )
+    { 
+    	// OK, we have got WSDL => server is up and we can do SOAP calls, but now we need 
+    	// to do a simple call with user/password only to understand if we are really connected
+    	try
+    	{
+    		$x = $op['client']->mc_enum_status($this->cfg->username,$this->cfg->password);
+    	}
+    	catch (SoapFault $f)
+    	{
+    		$this->connected = false;
+    		tLog("SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})","ERROR");
+    	}
     }
+    return $this->connected;
+  }
 
 
     /**
@@ -120,7 +121,7 @@ class mantissoapInterface extends issueTrackerInterface
 		return $res;
 	}	
 	
-  	/**
+  /**
 	 * checks is bug id is present on BTS
 	 * 
 	 * @return integer returns 1 if the bug with the given id exists 
@@ -197,10 +198,14 @@ class mantissoapInterface extends issueTrackerInterface
 					$issue->statusVerbose = $issue->status->name; 
 					$issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusVerbose);
 					$issue->statusColor = isset($this->status_color[$issue->statusVerbose]) ? 
-										  $this->status_color[$issue->statusVerbose] : 'white';
+					$this->status_color[$issue->statusVerbose] : 'white';
 
 					$issue->summaryHTMLString = $issue->summary;
-                }
+					
+					
+					// $issue->isResolved = 
+					
+        }
 			}
 		}
 		catch (SoapFault $f) 
@@ -253,6 +258,11 @@ class mantissoapInterface extends issueTrackerInterface
 	              "<!-- Configure This if you want be able TO CREATE ISSUES -->\n" .
                 "<project>MANTIS PROJECT NAME</project>\n" .
                 "<category>MANTIS CATEGORY NAME</category>\n" .
+	              "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
+                "<resolvedstatus>\n" .
+                "<status><code>80</code><verbose>resolved</verbose></status>\n" .
+                "<status><code>90</code><verbose>closed</verbose></status>\n" .
+                "</resolvedstatus>\n" .
 				        "</issuetracker>\n";
 		return $template;
   }
@@ -392,6 +402,32 @@ class mantissoapInterface extends issueTrackerInterface
 	    $ret['msg'] = sprintf(lang_get('bts_project_does_not_exist'),(string)$this->cfg->project);
 	  }
 	  return $ret;
-	}   
-}
+	}
+	
+	public function setResolvedStatusCfg()
+  {
+    if( property_exists($this->cfg,'resolvedstatus') )
+    {
+      $statusCfg = (array)$this->cfg->resolvedstatus;
+    }
+    else
+    {
+      $statusCfg['status'] = array();
+      $statusCfg['status'][] = array('code' => 80, 'verbose' => 'resolved');
+      $statusCfg['status'][] = array('code' => 90, 'verbose' => 'closed');
+    }
+    $this->resolvedStatus = new stdClass();
+    foreach($statusCfg['status'] as $cfx)
+    {
+      $e = (array)$cfx;
+      $this->resolvedStatus->byCode[$e['code']] = $e['verbose'];
+    }
+    $this->resolvedStatus->byName = array_flip($this->resolvedStatus->byCode);
+  }
+  
+	public function getResolvedStatusCfg()
+  {
+    return $this->resolvedStatus;
+  }
+} //
 ?>

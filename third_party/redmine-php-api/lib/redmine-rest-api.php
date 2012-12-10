@@ -109,6 +109,18 @@ class redmine
     return $op;
   }
 
+	public function getProjects() 
+	{                        
+	  $items = $this->_get("/projects.xml");
+	  return $items;
+	}                                                   
+
+	public function getIssueStatuses() 
+	{                        
+	  $items = $this->_get("/issue_statuses.xml");
+	  return $items;
+	}                                                   
+
 
 
 

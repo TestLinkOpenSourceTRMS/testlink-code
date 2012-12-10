@@ -7,14 +7,17 @@
  *
  *
  * @internal revisions
- * @since 1.9.4
- * 20120324 - franciscom - TICKET 4904: integrate with ITS on test project basis 
+ * @since 1.9.6
+ * 20121210 - franciscom - doing right test to understand if we are connected to redmine 
+ *
 **/
 require_once(TL_ABS_PATH . "/third_party/redmine-php-api/lib/redmine-rest-api.php");
 class redminerestInterface extends issueTrackerInterface
 {
   private $APIClient;
   private $issueDefaults;
+
+	var $defaultResolvedStatus;
 
 	/**
 	 * Construct and connect to BTS.
@@ -26,9 +29,14 @@ class redminerestInterface extends issueTrackerInterface
 	{
 		$this->interfaceViaDB = false;
 		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
+
+    $this->defaultResolvedStatus = array();
+    $this->defaultResolvedStatus[] = array('code' => 3, 'verbose' => 'resolved');
+    $this->defaultResolvedStatus[] = array('code' => 5, 'verbose' => 'closed');
 		
 	  $this->setCfg($config);
 		$this->completeCfg();
+		$this->setResolvedStatusCfg();
 	  $this->connect();
 	}
 
@@ -85,39 +93,57 @@ class redminerestInterface extends issueTrackerInterface
     return $this->checkBugIDSyntaxNumeric($issueID);
   }
 
-    /**
-     * establishes connection to the bugtracking system
-     *
-     * @return bool 
-     *
-     **/
-    function connect()
+  /**
+   * establishes connection to the bugtracking system
+   *
+   * @return bool 
+   *
+   **/
+  function connect()
+  {
+    echo __CLASS__ . '<br>';
+    try
     {
-		  try
-		  {
-			  // CRITIC NOTICE for developers
-			  // $this->cfg is a simpleXML Object, then seems very conservative and safe
-			  // to cast properties BEFORE using it.
-			  $this->APIClient = new redmine((string)trim($this->cfg->uribase),(string)trim($this->cfg->apikey));
-	      $this->connected = true;
-      }
-		catch(Exception $e)
-		{
-			$logDetails = '';
-			foreach(array('uribase','apikey') as $v)
-			{
-				$logDetails .= "$v={$this->cfg->$v} / "; 
-			}
-			$logDetails = trim($logDetails,'/ ');
-			$this->connected = false;
-            tLog(__METHOD__ . " [$logDetails] " . $e->getMessage(), 'ERROR');
-		}
-    }
+  	  // CRITIC NOTICE for developers
+  	  // $this->cfg is a simpleXML Object, then seems very conservative and safe
+  	  // to cast properties BEFORE using it.
+  	  $this->APIClient = new redmine((string)trim($this->cfg->uribase),(string)trim($this->cfg->apikey));
 
-    /**
-     * 
-     *
-     **/
+      // to undestand if connection is OK, I will ask for projects.
+      // I've tried to ask for users but get always ERROR from redmine (not able to understand why).
+      try
+      {
+        $items = $this->APIClient->getProjects();
+        $this->connected = !is_null($items);
+        unset($items);
+      }
+      catch(Exception $e)
+      {
+        $processCatch = true;
+      }
+    }
+  	catch(Exception $e)
+  	{
+  	  $processCatch = true;
+  	}
+  	
+  	if($processCatch)
+  	{
+  		$logDetails = '';
+  		foreach(array('uribase','apikey') as $v)
+  		{
+  			$logDetails .= "$v={$this->cfg->$v} / "; 
+  		}
+  		$logDetails = trim($logDetails,'/ ');
+  		$this->connected = false;
+      tLog(__METHOD__ . " [$logDetails] " . $e->getMessage(), 'ERROR');
+  	}
+  }
+
+  /**
+   * 
+   *
+   **/
 	function isConnected()
 	{
 		return $this->connected;
@@ -150,6 +176,8 @@ class redminerestInterface extends issueTrackerInterface
 				$issue->summary = $issue->summaryHTMLString = (string)$xmlObj->subject;
 				$issue->redmineProject = array('name' => (string)$xmlObj->project['name'], 
 				                               'id' => (int)$xmlObj->project['id'] );
+				                               
+				$issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
 			}
 		}
 		catch(Exception $e)
@@ -255,14 +283,17 @@ class redminerestInterface extends issueTrackerInterface
    **/
 	public static function getCfgTemplate()
   {
-  
-  	// http://tl.m.remine.org
     $template = "<!-- Template " . __CLASS__ . " -->\n" .
 				        "<issuetracker>\n" .
 				        "<apikey>REDMINE API KEY</apikey>\n" .
 				        "<uribase>http://tl.m.remine.org</uribase>\n" .
 				        "<!-- Project Identifier is NEEDED ONLY if you want to create issues from TL -->\n" . 
 				        "<projectidentifier>REDMINE PROJECT IDENTIFIER</projectidentifier>\n" .
+	              "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
+                "<resolvedstatus>\n" .
+                "<status><code>3</code><verbose>Resolved</verbose></status>\n" .
+                "<status><code>5</code><verbose>Closed</verbose></status>\n" .
+                "</resolvedstatus>\n" .
 				        "</issuetracker>\n";
 	  return $template;
   }

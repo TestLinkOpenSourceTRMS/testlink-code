@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
  * @filesource	test.redmineInterface.class.php
- * @author		Francisco Mancardi
+ * @author		  Francisco Mancardi
  *
  * @internal revisions
  *
@@ -14,14 +14,15 @@ require_once('common.php');
 $it_mgr = new tlIssueTracker($db);
 $itt = $it_mgr->getTypes();
 
+// 192.168.1.174
 $cfg = "<issuetracker>\n" .
-		   "<apikey>e6f1cbed7469528389554cffcb0e5aa4e0fa0bc8</apikey>\n" .
+		   "<apikey>AAe6f1cbed7469528389554cffcb0e5aa4e0fa0bc8</apikey>\n" .
 		   "<projectidentifier>public01</projectidentifier>\n" .
-		   "<uribase>http://192.168.1.174/</uribase>\n" .
+		   "<uribase>http://192.168.1.2/</uribase>\n" .
 		   "</issuetracker>\n";
 
 echo '<hr><br>';
-echo "<b>Testing  BST Integration - redminerestInterface </b>";
+echo "<b>Testing  Issue Tracker Integration - redminerestInterface </b>";
 echo '<hr><br>';
 echo "Configuration settings<br>";
 echo "<pre><xmp>" . $cfg . "</xmp></pre>";
@@ -33,6 +34,7 @@ $user = 'admin';
 $its[$user] = new redminerestInterface(15,$cfg);
 
 echo 'Connection OK?<br>';
+var_dump($its[$user]->isConnected());
 if( $its[$user]->isConnected() )
 {
 
@@ -41,6 +43,13 @@ if( $its[$user]->isConnected() )
   echo '<pre>';
   var_dump($xx);
   echo '</pre>';
+
+  echo 'Try To Get ISSUE FROM PUBLIC PROJECT with ADMIN <br>';
+  $xx = $its[$user]->getIssue(26);
+  echo '<pre>';
+  var_dump($xx);
+  echo '</pre>';
+
 
   echo 'Try To Get ISSUE FROM PPRIVATE PROJECT with ADMIN <br>';
   $xx = $its[$user]->getIssue(3);

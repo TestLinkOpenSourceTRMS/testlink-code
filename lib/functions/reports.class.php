@@ -75,7 +75,9 @@ class tlReports extends tlObjectWithDB
 		$items = array();
 
     $toggleMsg = lang_get('show_hide_direct_link');
-
+    $canNotCreateDirectLink = lang_get('can_not_create_direct_link');
+    $apiKeyIsValid = (strlen(trim($context->apikey)) == 32); // I'm sorry for MAGIC
+    
     $xdx = 0;
 		foreach ($reportList as &$reportItem) 
 		{
@@ -88,11 +90,23 @@ class tlReports extends tlObjectWithDB
 				if (strpos(",".$reportItem['format'],$format) > 0)
 				{
 					$reportUrl = $reportItem['url'] . ( stristr($reportItem['url'], "?") ? '&' : '?');
-    			$items[] = array('name' => lang_get($reportItem['title']), 'href' => $reportUrl,
-    			                 'directLink' => 
-    			                 sprintf($reportItem['directLink'],$_SESSION['basehref'],
-    			                         $context->apikey,$context->tproject_id,$context->tplan_id));
-		
+    			$items[$xdx] = array('name' => lang_get($reportItem['title']), 'href' => $reportUrl,
+    			                     'directLink' => '');
+
+    			if(trim($reportItem['directLink']) != '')
+    			{                     
+    			  if($apiKeyIsValid)
+    			  {
+              $items[$xdx]['directLink'] = sprintf($reportItem['directLink'],$_SESSION['basehref'],
+        			                                     $context->apikey,$context->tproject_id,$context->tplan_id);
+      			}                                     
+            else
+            {
+              $items[$xdx]['directLink'] = $canNotCreateDirectLink;
+            }
+		      }
+		      
+
 		      $dl = $items[$xdx]['directLink']; 
 		      $mask = '<img class="clickable" title="%s" alt="%s" ' .
         					' onclick="showHideByClass(' . "'div','%s');event.stopPropagation();" . '" ' .

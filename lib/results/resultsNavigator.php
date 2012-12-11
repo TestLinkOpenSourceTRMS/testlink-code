@@ -6,7 +6,7 @@
  * Scope: Launcher for Test Results and Metrics.
  *
  * @filesource	resultsNavigator.php
- * @author		Martin Havlat <havlat@users.sourceforge.net>
+ * @author      Martin Havlat <havlat@users.sourceforge.net>
  * 
  *
  * @internal revisions
@@ -59,11 +59,8 @@ if($gui->do_report['status_ok'])
 	$context->tplan_id = $args->tplan_id;
 	$context->apikey = $_SESSION['currentUser']->userApiKey;
 	$context->imgSet = $smarty->getImages();
-	new dBug($context->imgSet);
 	$gui->menuItems = $reports_mgr->get_list_reports($context,$gui->btsEnabled,$args->optReqs, 
 	                                                 $tlCfg->reports_formats[$args->format]);
-
-  new dBug($gui->menuItems);
 }
 
 

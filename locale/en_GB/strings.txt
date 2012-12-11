@@ -3508,5 +3508,7 @@ $TLS_bugzilla_bug_created = "BUGZILLA Issue Created (summary:%s) on product:%s";
 $TLS_bts_check_ok = "Connection is OK";
 $TLS_bts_check_ko = "Connection is KO, check configuration";
 $TLS_check_bts_connection = "Check connection";
+
+$TLS_can_not_create_direct_link = 'You do not have a TestLink API KEY, direct link can not be generated';
 // ----- END ------------------------------------------------------------------
 ?>

@@ -14,7 +14,7 @@
  *
  * @internal revisions
  * @since 1.9.5
- * 20121020 - franciscom - TICKET 5290: Doesn´t show description of bugs from BTS (JIRA)
+ * 20121020 - franciscom - TICKET 5290: Doesnï¿½t show description of bugs from BTS (JIRA)
 **/
 class jirasoapInterface extends issueTrackerInterface
 {
@@ -27,6 +27,8 @@ class jirasoapInterface extends issueTrackerInterface
 	
 	private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
   private $issueDefaults;
+
+	var $defaultResolvedStatus;
 	
 	/**
 	 * Construct and connect to BTS.
@@ -38,9 +40,14 @@ class jirasoapInterface extends issueTrackerInterface
 	{
 		$this->interfaceViaDB = false;
 	  $this->methodOpt = array('buildViewBugLink' => array('addSummary' => true, 'colorByStatus' => true));
+
 	  $this->setCfg($config);
 		$this->completeCfg();
 	  $this->connect();
+	  $this->guiCfg = array('use_decoration' => true);
+
+    // Attention has to be done AFTER CONNECT, because we need info setted there
+	  $this->setResolvedStatusCfg();  
 	}
 
 	/**
@@ -103,7 +110,7 @@ class jirasoapInterface extends issueTrackerInterface
 	 **/
 	function getIssueStatusVerbose($issueID)
 	{
-        $issue = $this->getIssue($issueID);
+    $issue = $this->getIssue($issueID);
 		return (!is_null($issue) && is_object($issue))? $issue->statusVerbose : false;
 	}
 	
@@ -114,43 +121,45 @@ class jirasoapInterface extends issueTrackerInterface
 	 * 
 	 * @return string returns the bug summary if bug is found, else null
 	 **/
-    function getIssueSummary($issueID)
-    {
-        $issue = $this->getIssue($issueID);
-		return (!is_null($issue) && is_object($issue))? $issue->summary : null;
-    }
+  function getIssueSummary($issueID)
+  {
+    $issue = $this->getIssue($issueID);
+    return (!is_null($issue) && is_object($issue))? $issue->summary : null;
+  }
 	
-    /**
-     * @internal precondition: TestLink has to be connected to Jira 
-     *
+  /**
+   * @internal precondition: TestLink has to be connected to Jira 
+   *
 	 * @param string issueID
-     *
-     **/
-    function getIssue($issueID)
+   *
+   **/
+  function getIssue($issueID)
+  {
+    $issue = null;
+    try
     {
-    	$issue = null;
-        try
-        {
-            $issue = $this->APIClient->getIssue($this->authToken, $issueID);
-            
-			if(!is_null($issue) && is_object($issue))
-			{
-            	// We are going to have a set of standard properties
-	            $issue->IDHTMLString = "<b>{$issueID} : </b>";
-	            $issue->statusCode = $issue->status;
-	            $issue->statusVerbose = array_search($issue->statusCode, $this->statusDomain);
-				$issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusCode);
-				$issue->summaryHTMLString = $this->buildSummaryHTMLString($issue);
-			}
-        }
-        catch (Exception $e)
-        {
-         	tLog("JIRA Ticket ID $issueID - " . $e->getMessage(), 'WARNING');
-			$issue = null;
-        }
+      $issue = $this->APIClient->getIssue($this->authToken, $issueID);
         
-        return $issue;
+	    if(!is_null($issue) && is_object($issue))
+	    {
+        // We are going to have a set of standard properties
+	      $issue->IDHTMLString = "<b>{$issueID} : </b>";
+	      $issue->statusCode = $issue->status;
+	      $issue->statusVerbose = array_search($issue->statusCode, $this->statusDomain);
+	    	$issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusCode);
+	    	$issue->summaryHTMLString = $this->buildSummaryHTMLString($issue);
+	    	$issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
+
+	    }
+    } 
+    catch (Exception $e)
+    {
+   	  tLog("JIRA Ticket ID $issueID - " . $e->getMessage(), 'WARNING');
+      $issue = null;
     }
+  
+    return $issue;
+  }
 
 
     /**
@@ -203,6 +212,13 @@ class jirasoapInterface extends issueTrackerInterface
 	      foreach ($statusSet as $key => $pair)
     	  {
         	$this->statusDomain[$pair->name]=$pair->id;
+        }
+        
+        $this->defaultResolvedStatus = array();
+        $itemSet = array('Resolved','Closed'); // Unfortunately case is important
+        foreach($itemSet as $st)
+        {
+          $this->defaultResolvedStatus[] = array('code' => $this->statusDomain[$st], 'verbose' => $st);  
         }
         $this->l18n = init_labels($this->labels);
 			}
@@ -285,55 +301,60 @@ class jirasoapInterface extends issueTrackerInterface
      * @author francisco.mancardi@gmail.com>
      **/
 	public static function getCfgTemplate()
-  	{
+  {
 		$template = "<!-- Template " . __CLASS__ . " -->\n" .
-					"<issuetracker>\n" .
-					"<username>JIRA LOGIN NAME</username>\n" .
-					"<password>JIRA PASSWORD</password>\n" .
-					"<uribase>http://testlink.atlassian.net/</uribase>\n" .
-					"<uriwsdl>http://testlink.atlassian.net/rpc/soap/jirasoapservice-v2?wsdl</uriwsdl>\n" .
-					"<uriview>testlink.atlassian.net/browse/</uriview>\n" .
-					"<uricreate>testlink.atlassian.net/secure/CreateIssue!default.jspa</uricreate>\n" .
-					"</issuetracker>\n";
+					      "<issuetracker>\n" .
+					      "<username>JIRA LOGIN NAME</username>\n" .
+					      "<password>JIRA PASSWORD</password>\n" .
+					      "<uribase>http://testlink.atlassian.net/</uribase>\n" .
+					      "<uriwsdl>http://testlink.atlassian.net/rpc/soap/jirasoapservice-v2?wsdl</uriwsdl>\n" .
+					      "<uriview>testlink.atlassian.net/browse/</uriview>\n" .
+					      "<uricreate>testlink.atlassian.net/secure/CreateIssue!default.jspa</uricreate>\n" .
+	              "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
+                "<resolvedstatus>\n" .
+                "<status><code>80</code><verbose>resolved</verbose></status>\n" .
+                "<status><code>90</code><verbose>closed</verbose></status>\n" .
+                "</resolvedstatus>\n" .
+					      "</issuetracker>\n";
 		return $template;
-  	}
+  }
 
  	
-    /**
-     *
-     * @author francisco.mancardi@gmail.com>
-     **/
+  /**
+   *
+   * @author francisco.mancardi@gmail.com>
+   **/
 	public function getStatusDomain()
-  	{
+  {
 		return $this->statusDomain;
-  	}
+  }
 
 	/**
 	 *
 	 **/
 	function buildStatusHTMLString($statusCode)
 	{
-		$str = array_search($statusCode, $this->statusDomain);
-		if (strcasecmp($str, 'closed') == 0 || strcasecmp($str, 'resolved') == 0 )
-        {
-                $str = "<del>" . $str . "</del>";
-        }
-        return "[{$str}] ";
+		$str = array_search($statusCode, $this->statusDomain);   
+		if($this->guiCfg['use_decoration'])
+		{
+			$str = "[" . $str . "] ";	
+		}
+		return $str;
 	}
 
 	/**
 	 *
 	 **/
-    function buildSummaryHTMLString($issue)
-    {
-		$summary = $issue->summary;
-        $strDueDate = $this->helperParseDate($issue->duedate);
-        if( !is_null($strDueDate) )
-        { 
-        	$summary .= "<b> [$strDueDate] </b> ";
-        }
-        return $summary;
+  function buildSummaryHTMLString($issue)
+  {
+    $summary = $issue->summary;
+    $strDueDate = $this->helperParseDate($issue->duedate);
+    if( !is_null($strDueDate) )
+    { 
+    	$summary .= "<b> [$strDueDate] </b> ";
     }
+    return $summary;
+  }
 
   public static function checkEnv()
   {
@@ -370,5 +391,27 @@ class jirasoapInterface extends issueTrackerInterface
     }
     return $ret;
 	}  
+
+
+	public function setResolvedStatusCfg()
+  {
+    if( property_exists($this->cfg,'resolvedstatus') )
+    {
+      $statusCfg = (array)$this->cfg->resolvedstatus;
+    }
+    else
+    {
+      $statusCfg['status'] = $this->defaultResolvedStatus;
+    }
+    $this->resolvedStatus = new stdClass();
+    foreach($statusCfg['status'] as $cfx)
+    {
+      $e = (array)$cfx;
+      $this->resolvedStatus->byCode[$e['code']] = $e['verbose'];
+    }
+    $this->resolvedStatus->byName = array_flip($this->resolvedStatus->byCode);
+  }
+
+
 }
 ?>

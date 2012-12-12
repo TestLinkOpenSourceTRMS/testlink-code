@@ -44,6 +44,10 @@ var_dump($its->isConnected());
 
 if( $its->isConnected() )
 {
+  echo 'Get Issue Summary<br>';
+	var_dump($its->getIssue('ZOFF-15'));
+  echo '<br>';
+
 	// echo '<b>Connected !</br></b>';
 	// echo '<pre>';
 	// var_dump($its->getStatusDomain());

@@ -27,6 +27,7 @@ class mantisdbInterface extends issueTrackerInterface
                                  'resolved'     => '#cceedd', # buish-green
                                  'closed'       => '#e8e8e8'); # light gray
 
+	var $defaultResolvedStatus;
 
 
 	/**
@@ -37,8 +38,16 @@ class mantisdbInterface extends issueTrackerInterface
 	 **/
 	function __construct($type,$config)
 	{
+    
 	  parent::__construct($type,$config);
+	  
 		$this->interfaceViaDB = true;
+    $this->defaultResolvedStatus = array();
+    $this->defaultResolvedStatus[] = array('code' => 80, 'verbose' => 'resolved');
+    $this->defaultResolvedStatus[] = array('code' => 90, 'verbose' => 'closed');
+		
+		$this->setResolvedStatusCfg();
+		
 		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);
 	  $this->guiCfg = array('use_decoration' => true);
 	  if( property_exists($this->cfg, 'statuscfg') )
@@ -83,6 +92,8 @@ class mantisdbInterface extends issueTrackerInterface
 			$issue->IDHTMLString = "<b>{$id} : </b>";
 			$issue->summaryHTMLString = $issueOnMantisDB['summary'];
 			$issue->statusCode = $issueOnMantisDB['status']; 
+			$issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
+
 			if( isset($this->code_status[$issue->statusCode]) )
 			{
 			  $issue->statusVerbose = $this->code_status[$issue->statusCode];
@@ -99,7 +110,7 @@ class mantisdbInterface extends issueTrackerInterface
 			$issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusVerbose);
 			$issue->statusColor = isset($this->status_color[$issue->statusVerbose]) ? 
 			$this->status_color[$issue->statusVerbose] : 'white';
-	
+			
 		}
 		return $issue;	
 	}
@@ -217,6 +228,12 @@ class mantisdbInterface extends issueTrackerInterface
                 "<status><code>80</code><verbose>resolved</verbose><color>#cceedd</color></status>\n" .
                 "<status><code>90</code><verbose>closed</verbose><color>#e8e8e8</color></status>\n" .
                 "</statuscfg>\n" . 
+	              "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
+                "<resolvedstatus>\n" .
+                "<status><code>80</code><verbose>resolved</verbose></status>\n" .
+                "<status><code>90</code><verbose>closed</verbose></status>\n" .
+                "</resolvedstatus>\n" .
+				        "</issuetracker>\n";
   				      "</issuetracker>\n";
 		return $template;
   }

@@ -13,8 +13,9 @@
  *			 not how is identified internally at DB	level on TestLink
  *
  * @internal revisions
- * @since 1.9.5
- * 20121020 - franciscom - TICKET 5290: Doesn�t show description of bugs from BTS (JIRA)
+ * @since 1.9.6
+ * 20121215 - franciscom - use new support object with common method for JIRA (DB,SOAP)
+ *
 **/
 class jirasoapInterface extends issueTrackerInterface
 {
@@ -29,6 +30,7 @@ class jirasoapInterface extends issueTrackerInterface
   private $issueDefaults;
 
 	var $defaultResolvedStatus;
+	var $support;
 	
 	/**
 	 * Construct and connect to BTS.
@@ -39,6 +41,10 @@ class jirasoapInterface extends issueTrackerInterface
 	function __construct($type,$config)
 	{
 		$this->interfaceViaDB = false;
+
+    $this->support = new jiraCommons();
+    $this->support->guiCfg = array('use_decoration' => true);
+
 	  $this->methodOpt = array('buildViewBugLink' => array('addSummary' => true, 'colorByStatus' => true));
 
 	  $this->setCfg($config);
@@ -48,6 +54,7 @@ class jirasoapInterface extends issueTrackerInterface
 
     // Attention has to be done AFTER CONNECT, because we need info setted there
 	  $this->setResolvedStatusCfg();  
+
 	}
 
 	/**
@@ -83,49 +90,7 @@ class jirasoapInterface extends issueTrackerInterface
   	  $this->cfg->$prop = (string)(property_exists($this->cfg,$prop) ? $this->cfg->$prop : $default);
     }		
 	}
-
-
-	/**
-	 * status code (integer) for issueID 
-	 *
-	 * 
-	 * @param string issueID
-	 *
-	 * @return 
-	 **/
-	public function getIssueStatusCode($issueID)
-	{
-		$issue = $this->getIssue($issueID);
-		return (!is_null($issue) && is_object($issue))? $issue->statusCode : false;
-	}
-
-		
-	/**
-	 * Returns status in a readable form (HTML context) for the bug with the given id
-	 *
-	 * @param string issueID
-	 * 
-	 * @return string 
-	 *
-	 **/
-	function getIssueStatusVerbose($issueID)
-	{
-    $issue = $this->getIssue($issueID);
-		return (!is_null($issue) && is_object($issue))? $issue->statusVerbose : false;
-	}
 	
-	
-	/**
-	 *
-	 * @param string issueID
-	 * 
-	 * @return string returns the bug summary if bug is found, else null
-	 **/
-  function getIssueSummary($issueID)
-  {
-    $issue = $this->getIssue($issueID);
-    return (!is_null($issue) && is_object($issue))? $issue->summary : null;
-  }
 	
   /**
    * @internal precondition: TestLink has to be connected to Jira 
@@ -146,8 +111,8 @@ class jirasoapInterface extends issueTrackerInterface
 	      $issue->IDHTMLString = "<b>{$issueID} : </b>";
 	      $issue->statusCode = $issue->status;
 	      $issue->statusVerbose = array_search($issue->statusCode, $this->statusDomain);
-	    	$issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusCode);
-	    	$issue->summaryHTMLString = $this->buildSummaryHTMLString($issue);
+			  $issue->statusHTMLString = $this->support->buildStatusHTMLString($issue->statusVerbose);
+	    	$issue->summaryHTMLString = $this->support->buildSummaryHTMLString($issue);
 	    	$issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
 
 	    }
@@ -174,77 +139,58 @@ class jirasoapInterface extends issueTrackerInterface
     	return $this->checkBugIDSyntaxString($issueID);
     }
 
-    /**
-	   * @param string issueID
-     *
-     * @return bool true if issue exists on BTS
-     **/
-    function checkBugIDExistence($issueID)
-    {
-        if(($status_ok = $this->checkBugIDSyntax($issueID)))
-        {
-            $issue = $this->getIssue($issueID);
-            $status_ok = !is_null($issue) && is_object($issue);
-        }
-        return $status_ok;
-    }
 
-    /**
-     * establishes connection to the bugtracking system
-     *
-     * @return bool returns true if the soap connection was established and the
-     * wsdl could be downloaded, false else
-     *
-     **/
-    function connect()
-    {
-		$this->interfaceViaDB = false;
-		$op = $this->getClient(array('log' => true));
-		if( ($this->connected = $op['connected']) )
-		{ 
-			// OK, we have got WSDL => server is up and we can do SOAP calls, but now we need 
-			// to do a simple call with user/password only to understand if we are really connected
-			try
-			{
-				$this->APIClient = $op['client'];
+  /**
+   * establishes connection to the bugtracking system
+   *
+   * @return bool returns true if the soap connection was established and the
+   * wsdl could be downloaded, false else
+   *
+   **/
+  function connect()
+  {
+    $this->interfaceViaDB = false;
+    $op = $this->getClient(array('log' => true));
+    if( ($this->connected = $op['connected']) )
+    { 
+    	// OK, we have got WSDL => server is up and we can do SOAP calls, but now we need 
+    	// to do a simple call with user/password only to understand if we are really connected
+    	try
+    	{
+    		$this->APIClient = $op['client'];
         $this->authToken = $this->APIClient->login($this->cfg->username, $this->cfg->password);
         $statusSet = $op['client']->getStatuses($this->authToken);
-	      foreach ($statusSet as $key => $pair)
+        foreach ($statusSet as $key => $pair)
     	  {
         	$this->statusDomain[$pair->name]=$pair->id;
         }
         
-        $this->defaultResolvedStatus = array();
-        $itemSet = array('Resolved','Closed'); // Unfortunately case is important
-        foreach($itemSet as $st)
-        {
-          $this->defaultResolvedStatus[] = array('code' => $this->statusDomain[$st], 'verbose' => $st);  
-        }
+        $this->defaultResolvedStatus = $this->support->initDefaultResolvedStatus($this->statusDomain);
         $this->l18n = init_labels($this->labels);
-			}
-			catch (SoapFault $f)
-			{
-				$this->connected = false;
-				tLog(__CLASS_ . " - SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})","ERROR");
-			}
-		}
-        return $this->connected;
+    	}
+    	catch (SoapFault $f)
+    	{
+    		$this->connected = false;
+    		tLog(__CLASS__ . " - SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})","ERROR");
+    	}
     }
-
-    /**
-     * 
-     *
-     **/
+    return $this->connected;
+  }
+  
+  /**
+   * 
+   *
+   **/
 	function isConnected()
 	{
 		return $this->connected;
 	}
 
 
-    /**
-     * 
-     *
-     **/
+  /**
+   * 
+   *
+   **/
 	function getClient($opt=null)
 	{
 		// IMPORTANT NOTICE - 2012-01-06 - If you are using XDEBUG, Soap Fault will not work
@@ -275,31 +221,10 @@ class jirasoapInterface extends issueTrackerInterface
 		return $res;
 	}	
 
-
-
-
-    /**
-     *
-     * @author francisco.mancardi@gmail.com>
-     **/
-    private function helperParseDate($date2parse)
-    {
-    	$ret = null;
-        if (!is_null($date2parse))
-        {
-            $ret = date_parse($date2parse);
-            $ret = ((gmmktime(0, 0, 0, $ret['month'], $ret['day'], $ret['year'])));
-            $ret = $this->l18n['duedate'] . gmstrftime("%d %b %Y",($ret));
-        }
-        return $ret ;
-    }
-
-
-
-    /**
-     *
-     * @author francisco.mancardi@gmail.com>
-     **/
+  /**
+   *
+   * @author francisco.mancardi@gmail.com>
+   **/
 	public static function getCfgTemplate()
   {
 		$template = "<!-- Template " . __CLASS__ . " -->\n" .
@@ -312,8 +237,8 @@ class jirasoapInterface extends issueTrackerInterface
 					      "<uricreate>testlink.atlassian.net/secure/CreateIssue!default.jspa</uricreate>\n" .
 	              "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
                 "<resolvedstatus>\n" .
-                "<status><code>80</code><verbose>resolved</verbose></status>\n" .
-                "<status><code>90</code><verbose>closed</verbose></status>\n" .
+                "<status><code>5</code><verbose>Resolved</verbose></status>\n" .
+                "<status><code>6</code><verbose>Closed</verbose></status>\n" .
                 "</resolvedstatus>\n" .
 					      "</issuetracker>\n";
 		return $template;
@@ -327,33 +252,6 @@ class jirasoapInterface extends issueTrackerInterface
 	public function getStatusDomain()
   {
 		return $this->statusDomain;
-  }
-
-	/**
-	 *
-	 **/
-	function buildStatusHTMLString($statusCode)
-	{
-		$str = array_search($statusCode, $this->statusDomain);   
-		if($this->guiCfg['use_decoration'])
-		{
-			$str = "[" . $str . "] ";	
-		}
-		return $str;
-	}
-
-	/**
-	 *
-	 **/
-  function buildSummaryHTMLString($issue)
-  {
-    $summary = $issue->summary;
-    $strDueDate = $this->helperParseDate($issue->duedate);
-    if( !is_null($strDueDate) )
-    { 
-    	$summary .= "<b> [$strDueDate] </b> ";
-    }
-    return $summary;
   }
 
   public static function checkEnv()

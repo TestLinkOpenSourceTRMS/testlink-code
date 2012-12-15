@@ -4,14 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource 	tlIssueTracker.php
- * @package 	TestLink
- * @author 		franciscom
+ * @package 	  TestLink
+ * @author 		  franciscom
  * @copyright 	2012, TestLink community
- * @link 		http://www.teamst.org/index.php
+ * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.5
- * 20121012 - franciscom - TICKET 5281: On list view add check to environment (example SOAP ext is enabled?) 
+ * @since 1.9.6
  *
 **/
 
@@ -641,25 +640,5 @@ class tlIssueTracker extends tlObject
 	  $its = new $class2create($xx['type'],$xx['cfg']);
     return $its->isConnected();
 	}
-
-
-
-	//function unlinkBadBoys($id)
-	//{
-	//	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    //
-	//	if(is_null($id))
-	//	{
-	//		return;
-    //    }
-    //    
-    //    // Get links
-    //    $dummy = 
-	//	$sql = "/* $debugMsg */ DELETE FROM {$this->tables['testproject_issuetracker']} " .
-	//		   	   " WHERE testproject_id = " . intval($tprojectID) . 
-	//		   	   " AND issuetracker_id = " . intval($id);
-	//	$this->db->exec_query($sql);
-	//}
-
 } // end class
 ?>

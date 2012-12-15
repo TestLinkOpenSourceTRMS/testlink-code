@@ -22,6 +22,7 @@
  *
  * @internal revisions
  * @since 1.9.6
+ * 20121215 - franciscom - some common methods moves here
  * 20121210 - franciscom - buildViewBugLink() return type changed
  *
 **/
@@ -145,7 +146,7 @@ abstract class issueTrackerInterface
 			return false;
 		}
        
-        $this->cfg->dbtype = strtolower((string)$this->cfg->dbtype);
+    $this->cfg->dbtype = strtolower((string)$this->cfg->dbtype);
 		$this->dbConnection = new database($this->cfg->dbtype);
 		$result = $this->dbConnection->connect(false, $this->cfg->dbhost,$this->cfg->dbuser,
 											   $this->cfg->dbpassword, $this->cfg->dbname);
@@ -154,7 +155,7 @@ abstract class issueTrackerInterface
 		{
 			$this->dbConnection = null;
 			$connection_args = "(interface: - Host:$this->cfg->dbhost - " . 
-							   "DBName: $this->cfg->dbname - User: $this->cfg->dbuser) "; 
+							           "DBName: $this->cfg->dbname - User: $this->cfg->dbuser) "; 
 			$msg = sprintf(lang_get('BTS_connect_to_database_fails'),$connection_args);
 			tLog($msg  . $result['dbms_msg'], 'ERROR');
 		}
@@ -358,66 +359,53 @@ abstract class issueTrackerInterface
 
 	
 	/**
-	 * overload this to return the status of the bug with the given id
-	 * this function is not directly called by TestLink.
+	 * status code (always integer??) for issueID 
 	 *
-	 * @param mixed issueID
+	 * @param issueID  according to BTS can be number or string
 	 *
-	 * @return any returns the status of the given bug, or false if the bug
-	 *			was not found
+	 * @return 
 	 **/
 	public function getIssueStatusCode($issueID)
 	{
-		return false;
+		$issue = $this->getIssue($issueID);
+		return (!is_null($issue) && is_object($issue))? $issue->statusCode : false;
 	}
 
+
 	/**
-	 * overload this to return the status in a readable form for the bug with the given id
-	 * This function is not directly called by TestLink
+	 * Returns status in a readable form (HTML context) for the bug with the given id
 	 *
-	 * @param mixed issueID
-	 *
-	 * @return any returns the status (in a readable form) of the given bug, or false
-	 * 			if the bug is not found
+	 * @param issueID  according to BTS can be number or string
+	 * 
+	 * @return string 
 	 *
 	 **/
 	function getIssueStatusVerbose($issueID)
 	{
-		return '';
+    $issue = $this->getIssue($issueID);
+		return (!is_null($issue) && is_object($issue))? $issue->statusVerbose : false;
 	}
+	
 
 
 	/**
-	 * default implementation for fetching the bug summary from the
-	 * bugtracking system
 	 *
-	 * @param int id the bug id
-	 *
-	 * @return string returns the bug summary (if bug is found), or ''
-	 *
+	 * @param issueID  according to BTS can be number or string
+	 * 
+	 * @return string returns the bug summary if bug is found, else null
 	 **/
-	function getIssueSummaryString($issueID)
-	{
-		return '';
-	}
-
-   /**
-	* checks if bug id is present on BTS
-	* Function has to be overloaded on child classes
-	*
-	* @return bool
-	**/
-	function checkBugIDExistence($issueID)
-	{
-        throw new RuntimeException(__METHOD__ . "Not implemented - YOU must implement it in YOUR interface Class");
-	}
+  function getIssueSummary($issueID)
+  {
+    $issue = $this->getIssue($issueID);
+    return (!is_null($issue) && is_object($issue))? $issue->summary : null;
+  }
 
 
 	// How to Force Extending class to define this STATIC method ?
 	// KO abstract public static function getCfgTemplate();
 	public static function getCfgTemplate() 
 	{
-        throw new RuntimeException("Unimplemented - YOU must implement it in YOUR interface Class");
+    throw new RuntimeException("Unimplemented - YOU must implement it in YOUR interface Class");
   }
 
   public static function checkEnv()
@@ -452,6 +440,38 @@ abstract class issueTrackerInterface
   {
     return $this->resolvedStatus;
   }
+ 
+	/**
+	 * Returns the status of the bug with the given id
+	 * this function is not directly called by TestLink. 
+	 *
+	 * @return string returns the status of the given bug (if found in the db), or false else
+	 **/
+	function getBugStatus($id)
+	{
+		if (!$this->isConnected())
+		{
+			return false;
+		}
+		$issue = $this->getIssue($id);
+	  return (!is_null($issue) && $issue) ? $issue->statusVerbose : null;
+	}
+
+  /**
+   * @param issueID (can be number of string according to specific BTS)
+   *
+   * @return bool true if issue exists on BTS
+   **/
+  function checkBugIDExistence($issueID)
+  {
+    if(($status_ok = $this->checkBugIDSyntax($issueID)))
+    {
+        $issue = $this->getIssue($issueID);
+        $status_ok = !is_null($issue) && is_object($issue);
+    }
+    return $status_ok;
+  }
+
  
 }
 ?>

@@ -5,15 +5,13 @@
  *
  * link/unlink test cases to a test plan
  *
+ * @package 	  TestLink
  * @filesource	planAddTC.php
- * @package 	TestLink
- * @copyright 	2007-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @copyright 	2007-2012, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
  * 
  * @internal revisions
- * @since 1.9.4
- * 20110817 - franciscom - TICKET 4704,4708
- *
+ * @since 1.9.6
  *
  **/
 
@@ -47,90 +45,91 @@ if(is_array($args->keyword_id))
 $do_display = 0;
 switch($args->item_level)
 {
-    case 'testsuite':
-		$do_display = 1;
-		break;
-
-    case 'testproject':
-	    show_instructions('planAddTC');
-	    exit();
-	    break;
+  case 'testsuite':
+    $do_display = 1;
+  break;
+  
+  case 'testproject':
+    show_instructions('planAddTC');
+    exit();
+  break;
 }
 
 switch($args->doAction)
 {
     case 'doAddRemove':
 		// Remember:  checkboxes exist only if are checked
+		  $gui->itemQty = count($args->testcases2add);
+		  
 	    if(!is_null($args->testcases2add))
 	    {
 	    	// items_to_link structure:
 	    	// key: test case id , value: map 
 	    	//                            key: platform_id value: test case VERSION ID
 		    $items_to_link = null;
-            foreach ($args->testcases2add as $tcase_id => $info) 
+        foreach ($args->testcases2add as $tcase_id => $info) 
+        {
+          foreach ($info as $platform_id => $tcase_id) 
+          {
+            // $items_to_link[$tcase_id][$platform_id] = $args->tcversion_for_tcid[$tcase_id];
+            if( isset($args->tcversion_for_tcid[$tcase_id]) )
             {
-                foreach ($info as $platform_id => $tcase_id) 
-                {
-                    // $items_to_link[$tcase_id][$platform_id] = $args->tcversion_for_tcid[$tcase_id];
-                    if( isset($args->tcversion_for_tcid[$tcase_id]) )
-                    {
-                    	$tcversion_id = $args->tcversion_for_tcid[$tcase_id];
-                    }
-                    else
-                    {
-                    	$tcversion_id = $args->linkedVersion[$tcase_id];
-                    }
-                    $items_to_link['tcversion'][$tcase_id] = $tcversion_id;
-                    $items_to_link['platform'][$platform_id] = $platform_id;
-                    $items_to_link['items'][$tcase_id][$platform_id] = $tcversion_id;
-                }
+            	$tcversion_id = $args->tcversion_for_tcid[$tcase_id];
             }
+            else
+            {
+            	$tcversion_id = $args->linkedVersion[$tcase_id];
+            }
+            $items_to_link['tcversion'][$tcase_id] = $tcversion_id;
+            $items_to_link['platform'][$platform_id] = $platform_id;
+            $items_to_link['items'][$tcase_id][$platform_id] = $tcversion_id;
+          }
+        }
            
-		    $linked_features=$tplan_mgr->link_tcversions($args->tplan_id,$items_to_link,$args->userID);
-		    if( $args->testerID > 0 )
-		    {
-		    	$features2add = null;
-				$status_map = $tplan_mgr->assignment_mgr->get_available_status();
-		        $types_map = $tplan_mgr->assignment_mgr->get_available_types();
-		        $db_now = $db->db_now();
-                $tcversion_tcase = array_flip($items_to_link['tcversion']);
+        $linked_features=$tplan_mgr->link_tcversions($args->tplan_id,$items_to_link,$args->userID);
+        if( $args->testerID > 0 )
+        {
+          $features2add = null;
+          $status_map = $tplan_mgr->assignment_mgr->get_available_status();
+          $types_map = $tplan_mgr->assignment_mgr->get_available_types();
+          $db_now = $db->db_now();
+          $tcversion_tcase = array_flip($items_to_link['tcversion']);
                 
-                $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
-                $platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
+          $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
+          $platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
                 
-		    	foreach($linked_features as $platform_id => $tcversion_info)
-		    	{
-		    		foreach($tcversion_info as $tcversion_id => $feature_id)
-		    		{
-		    			$features2['add'][$feature_id]['user_id'] = $args->testerID;
-						$features2['add'][$feature_id]['type'] = $types_map['testcase_execution']['id'];
-						$features2['add'][$feature_id]['status'] = $status_map['open']['id'];
-						$features2['add'][$feature_id]['assigner_id'] = $args->userID;
-						$features2['add'][$feature_id]['tcase_id'] = $tcversion_tcase[$tcversion_id];
-						$features2['add'][$feature_id]['tcversion_id'] = $tcversion_id;
-					    $features2['add'][$feature_id]['creation_ts'] = $db_now;
-					    $features2['add'][$feature_id]['platform_name'] = $platformSet[$platform_id];
-					    $features2['add'][$feature_id]['build_id'] = $args->build_id;
-					}
-            	}
-
-    			foreach($features2 as $key => $values)
-    			{
-			       	$tplan_mgr->assignment_mgr->assign($values);
-    				$called[$key]=true;
-    			}
-				if($args->send_mail)
-				{
-				    foreach($called as $ope => $ope_status)
-				    {
-        		    	if($ope_status)
-        		    	{
-        		        	send_mail_to_testers($db,$tcase_mgr,$gui,$args,$features2['add'],$ope);     
-				        }
-				    }
-				}	// if($args->send_mail)
-
-		    }
+          foreach($linked_features as $platform_id => $tcversion_info)
+          {
+          	foreach($tcversion_info as $tcversion_id => $feature_id)
+          	{
+              $features2['add'][$feature_id]['user_id'] = $args->testerID;
+              $features2['add'][$feature_id]['type'] = $types_map['testcase_execution']['id'];
+          	  $features2['add'][$feature_id]['status'] = $status_map['open']['id'];
+          	  $features2['add'][$feature_id]['assigner_id'] = $args->userID;
+          	  $features2['add'][$feature_id]['tcase_id'] = $tcversion_tcase[$tcversion_id];
+          	  $features2['add'][$feature_id]['tcversion_id'] = $tcversion_id;
+              $features2['add'][$feature_id]['creation_ts'] = $db_now;
+              $features2['add'][$feature_id]['platform_name'] = $platformSet[$platform_id];
+              $features2['add'][$feature_id]['build_id'] = $args->build_id;
+            }
+          }
+        
+          foreach($features2 as $key => $values)
+          {
+            $tplan_mgr->assignment_mgr->assign($values);
+         	  $called[$key]=true;
+          }
+          if($args->send_mail)
+          {
+            foreach($called as $ope => $ope_status)
+            {
+              if($ope_status)
+              {
+                send_mail_to_testers($db,$tcase_mgr,$gui,$args,$features2['add'],$ope);     
+              }
+            }
+          }	// if($args->send_mail)
+        }
 	    }
 
 	    if(!is_null($args->testcases2remove))
@@ -465,7 +464,6 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui->pageTitle = lang_get('test_plan') . $title_separator . $gui->testPlanName;
     $gui->refreshTree = $argsObj->refreshTree;
 
-	// 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
     $tproject_mgr = new testproject($dbHandler);
     $tproject_info = $tproject_mgr->get_by_id($argsObj->tproject_id);
 

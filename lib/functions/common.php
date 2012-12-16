@@ -847,47 +847,32 @@ function is_valid_date($timestamp, $dateFormat) {
  * Returns array containing date pieces for a given timestamp according to dateFormat
  */
 
-function split_localized_date($timestamp,$dateFormat) {
-	
-	$splitChar = ".";
-	if (strpos($timestamp,"-") !== false) {
-		$splitChar = "-";
-	} 
-	if (strpos($timestamp,"/") !== false) {
-		$splitChar = "/";
-	}
-	
-	// strip splitchar
-	$strippedDateFormat = str_replace($splitChar,"",$dateFormat);
-	// strip %
-	$strippedDateFormat = str_replace("%","",$strippedDateFormat);
-	
-	// put each char of strippedDateFormat into an Array Element
-	$dateFormatArray = preg_split('//', $strippedDateFormat, -1, PREG_SPLIT_NO_EMPTY);
-	
-	// cut timestamp in pieces
-    $date_pieces = explode($splitChar,$timestamp);
-    
-    $ok_pieces_qty = 3;
-	$date_array = array();
-    if( count($date_pieces) == $ok_pieces_qty ) {
-    
-		foreach ($dateFormatArray as $key => $char) {
-			switch ($char) {
-				case "Y":
-					$date_array['year'] = $date_pieces[$key];
-					break;
-				case "m":
-					$date_array['month'] = $date_pieces[$key];
-					break;
-				case "d":
-					$date_array['day'] = $date_pieces[$key];
-					break;					
-			}
-		}
+function split_localized_date($timestamp,$dateFormat) 
+{
+  $needle = array(".","-","/","%");
+  foreach($needle as $target)
+  {
+    if (strpos($timestamp,$target) !== false) 
+    {
+      $splitChar = $target;
+      break;
     }
-    
-    return $date_array;
+  }
+  // put each char of strippedDateFormat into an Array Element
+  $strippedDateFormat = str_replace($needle,"",$dateFormat);
+  $format = preg_split('//', $strippedDateFormat, -1, PREG_SPLIT_NO_EMPTY);
+
+  $pieces = explode($splitChar,$timestamp);
+  $result = array();
+  if( count($pieces) == 3 )  // MAGIC ALLOWED 
+  {
+    $k2t = array('Y' => 'year', 'm' => 'month', 'd' => 'day');
+    foreach ($format as $idx => $access) 
+    {
+      $result[$k2t[$access]] = $pieces[$idx];
+    }
+  }
+  return $result;
 }
 
 

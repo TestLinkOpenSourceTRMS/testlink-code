@@ -3,15 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @filesource	testproject.class.php
- * @package 	  TestLink
- * @author 		  franciscom
- * @copyright 	2005-2012, TestLink community 
- * @link 		    http://www.teamst.org/index.php
+ * @filesource  testproject.class.php
+ * @package     TestLink
+ * @author      franciscom
+ * @copyright   2005-2012, TestLink community 
+ * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.5
- * 20121010 - asimon - TICKET 4217: added filter for importance
+ * @since 1.9.6
+ * 20121216 - franciscom - getTestCasesCreatedByUser()
  *
  **/
 
@@ -36,28 +36,24 @@ class testproject extends tlObjectWithAttachments
 	var $tree_manager;
 	var $cfield_mgr;
 
-    // Node Types (NT)
-    var $nt2exclude=array('testplan' => 'exclude_me',
-	                      'requirement_spec'=> 'exclude_me',
-	                      'requirement'=> 'exclude_me');
+  // Node Types (NT)
+  var $nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
 
+  var $nt2exclude_children=array('testcase' => 'exclude_my_children','requirement_spec'=> 'exclude_my_children');
 
-    var $nt2exclude_children=array('testcase' => 'exclude_my_children',
-							       'requirement_spec'=> 'exclude_my_children');
-
-	/** 
-	 * Class constructor
-	 * 
-	 * @param resource &$db reference to database handler
-	 */
-	function __construct(&$db)
-	{
-		$this->db = &$db;
-		$this->tree_manager = new tree($this->db);
-		$this->cfield_mgr=new cfield_mgr($this->db);
-		tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
-        $this->object_table = $this->tables['testprojects'];
-	}
+  /** 
+   * Class constructor
+   * 
+   * @param resource &$db reference to database handler
+   */
+  function __construct(&$db)
+  {
+    $this->db = &$db;
+    $this->tree_manager = new tree($this->db);
+    $this->cfield_mgr=new cfield_mgr($this->db);
+    tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
+    $this->object_table = $this->tables['testprojects'];
+  }
 
 
 /**
@@ -1792,7 +1788,7 @@ function setPublicStatus($id,$status)
 		}
 		
 		$sql = "/* $debugMsg */  SELECT id,node_type_id from {$this->tables['nodes_hierarchy']} " .
-			   " WHERE parent_id IN ({$idList})";
+           " WHERE parent_id IN ({$idList})";
 		$sql .= " AND node_type_id IN ({$tcNodeTypeID},{$tsuiteNodeTypeID}) "; 
 		
 		$result = $this->db->exec_query($sql);
@@ -1806,9 +1802,9 @@ function setPublicStatus($id,$status)
 					if( $use_array )
 					{
 						$sql = " SELECT DISTINCT NH.parent_id, TCV.tc_external_id " . 
-							   " FROM {$this->tables['nodes_hierarchy']} NH " .
-							   " JOIN  {$this->tables['tcversions']} TCV ON TCV.id = NH.id " .
-							   " WHERE NH.parent_id = {$row['id']} ";
+                   " FROM {$this->tables['nodes_hierarchy']} NH " .
+							     " JOIN  {$this->tables['tcversions']} TCV ON TCV.id = NH.id " .
+							     " WHERE NH.parent_id = {$row['id']} ";
 						
 						$rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
 						$tcIDs[$row['id']] = $rs[$row['id']]['tc_external_id'];
@@ -1820,7 +1816,6 @@ function setPublicStatus($id,$status)
 				}
 				else
 				{
-					// 20101030	
 					$suiteIDs[] = $row['id'];
 				}
 			}
@@ -2949,6 +2944,69 @@ function getPublicAttr($id)
 	$ret = $this->db->get_recordset($sql);
 	return $ret[0]['is_public'];
 }
+
+
+
+
+	/**
+	 * Gets test cases created per user. 
+	 * The test cases are restricted to a test project. 
+	 * 
+	 * Optional values may be passed in the options array.
+	 * 
+	 * @param integer $user_id User ID
+	 * @param integer $tproject_id Test Project ID
+	 * @param mixed $options Optional array of options
+	 * @return mixed Array of test cases created per user
+	 */
+  function getTestCasesCreatedByUser($id,$user_id,$options=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+      
+    $opt = array('startTime' => null, 'endTime' => null);
+    $opt = array_merge($opt,(array)$options);
+    $safe = array('user_id' => intval($user_id), 'tproject_id' => intval($id));
+    
+    $cfg = config_get('testcase_cfg');
+    $eid = $this->db->db->concat('TPROJ.prefix',"'{$cfg->glue_character}'",'TCV.tc_external_id');
+    
+    // 
+    $target = array();
+	  $this->get_all_testcases_id($id,$target);
+    $itemQty = count($target);
+    
+    $rs = null;
+    if($itemQty > 0)
+    {
+
+      $sql = " /* $debugMsg */ SELECT TPROJ.id AS tproject_id, TCV.id AS tcversion_id," .
+             " TCV.version, {$eid} AS external_id, NHTC.id  AS tcase_id, NHTC.name AS tcase_name, ". 
+             " TCV.creation_ts, TCV.modification_ts, " . 
+             " U.first  AS first_name, U.last AS last_name, U.login, ".
+             " TCV.importance " .
+             " FROM {$this->tables['testprojects']} TPROJ,{$this->tables['nodes_hierarchy']} NHTC " .
+             " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
+             " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " . 
+             " JOIN {$this->tables['users']} U ON U.id = TCV.author_id " .
+             " WHERE TPROJ.id = {$safe['tproject_id']} " .
+             " AND NHTC.id IN (" . implode(',', $target) . ")";
+      
+      if($user_id !== 0) 
+      {               
+        $sql .= " AND U.id = {$safe['user_id']}";
+      }                                        
+      if( !is_null($opt['startTime']) ) 
+      {
+        $sql .= " AND TCV.creation_ts >= '{$opt['startTime']}'";
+      }
+      if( !is_null($opt['endTime']) ) 
+      {
+        $sql .= " AND TCV.creation_ts <= '{$opt['endTime']}'";
+      }
+      $rs = $this->db->get_recordset($sql);
+    }
+    return $rs;
+  }	
 
 
 } // end class

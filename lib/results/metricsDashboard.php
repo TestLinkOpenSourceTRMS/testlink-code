@@ -352,11 +352,11 @@ function init_args(&$dbHandler)
 
   $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
                    "tproject_id" => array(tlInputParameter::INT_N), 
-		               "tplan_id" => array(tlInputParameter::INT_N),
+                   "tplan_id" => array(tlInputParameter::INT_N),
                    "show_only_active" => array(tlInputParameter::CB_BOOL),
                    "show_only_active_hidden" => array(tlInputParameter::CB_BOOL));
 
-	R_PARAMS($iParams,$args);
+  R_PARAMS($iParams,$args);
   if( !is_null($args->apikey) )
   {
     $args->show_only_active = true;

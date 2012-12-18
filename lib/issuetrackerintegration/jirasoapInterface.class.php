@@ -235,6 +235,9 @@ class jirasoapInterface extends issueTrackerInterface
 					      "<uriwsdl>http://testlink.atlassian.net/rpc/soap/jirasoapservice-v2?wsdl</uriwsdl>\n" .
 					      "<uriview>testlink.atlassian.net/browse/</uriview>\n" .
 					      "<uricreate>testlink.atlassian.net/secure/CreateIssue!default.jspa</uricreate>\n" .
+	              "<!-- Configure This if you want be able TO CREATE ISSUES -->\n" .
+                "<projectkey>JIRA PROJECT KEY</projectkey>\n" .
+                "<issuetype>JIRA ISSUE TYPE</issuetype>\n" .
 	              "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
                 "<resolvedstatus>\n" .
                 "<status><code>5</code><verbose>Resolved</verbose></status>\n" .

@@ -2,13 +2,13 @@
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* @filesource resultsTC.php
-* @author	    Martin Havlat <havlat@users.sourceforge.net>
-* @author     Chad Rosen
+* @filesource   resultsTC.php
+* @author       Martin Havlat <havlat@users.sourceforge.net>
+* @author       Chad Rosen
 * 
 * Show Test Report by individual test case.
 *
-* @internal revisios
+* @internal revisions
 * @since 1.9.6
 *
 */
@@ -128,7 +128,7 @@ if( !is_null($metrics) )
 						                   "<img title=\"{$labels['execution']}\" src=\"{$gui->img->exec}\" /></a> ";
 					}
 					$r4build['text'] .= $labels[$rf[$buildID]['status']] .
-								  		sprintf($labels['versionTag'],$rf[$buildID]['version']);
+                              sprintf($labels['versionTag'],$rf[$buildID]['version']);
 
 					$r4build['value'] = $rf[$buildID]['status'];
 					$r4build['cssClass'] = $gui->map_status_css[$rf[$buildID]['status']];
@@ -178,6 +178,7 @@ unset($latestExecution);
 
 // displayMemUsage('Before buildMatrix()');
 $gui->tableSet[] =  buildMatrix($gui, $args, $last_build);
+// new dBug($gui->tableSet);
 // displayMemUsage('AFTER buildMatrix()');
 
 $timerOff = microtime(true);
@@ -267,7 +268,7 @@ function buildMatrix(&$guiObj,&$argsObj,$latestBuildID)
 	if(!is_null($guiObj->platforms))
 	{
 		$columns[] = array('title_key' => 'platform', 'width' => 60, 'filter' => 'list', 
-						   'filterOptions' => $guiObj->platforms);
+                       'filterOptions' => $guiObj->platforms);
 		$group_name = $lbl['platform'];
 	}
 	if($guiObj->options->testPriorityEnabled) 
@@ -298,11 +299,13 @@ function buildMatrix(&$guiObj,&$argsObj,$latestBuildID)
 		$matrix->setGroupByColumnName($group_name);
 		$matrix->sortDirection = 'DESC';
 
-		if($guiObj->options->testPriorityEnabled) 
-		{
-			$matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer', 'filter' => 'Priority'));
-			$matrix->setSortByColumnName($lbl['priority']);
-		} 
+    if($guiObj->options->testPriorityEnabled) 
+    {
+      // Developer Note:
+      // To understand 'filter' => 'Priority' => see exttable.class.php => buildColumns()
+      $matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer', 'filter' => 'Priority'));
+      $matrix->setSortByColumnName($lbl['priority']);
+    } 
 		else 
 		{
 			$matrix->setSortByColumnName($lbl['title_test_case_title']);

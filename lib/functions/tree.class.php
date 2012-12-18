@@ -3,17 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource	tree.class.php
- * @package 	TestLink
- * @author		Francisco Mancardi
- * @copyright 	2005-2012, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @filesource  tree.class.php
+ * @package     TestLink
+ * @author      Francisco Mancardi
+ * @copyright   2005-2012, TestLink community 
+ * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.4
- * 20120528 - franciscom - get_full_path_verbose() algorithm improved for high item qty
- * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
- * 						   _get_subtree() new option: output
+ * @since 1.9.6
  *
  */
 
@@ -1158,18 +1155,11 @@ class tree extends tlObject
 	  	return $qnum;
 	}
 
-	/*
-	  function: get_full_path_verbose
-	
-	  args:
-	  
-	  returns: 
-	
-		@internal Revisions
-		20101120 - franciscom - when path can not be found instead of null, 
-								anyway a map will be returned, with key=itemID value=NULL
-			
-	*/
+	/**
+   * function: get_full_path_verbose
+   * when path can not be found instead of null, anyway a map will be returned, with key=itemID value=NULL
+   * @internal revisions
+   **/
 	function get_full_path_verbose(&$items,$options=null)
 	{
     	$debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
@@ -1225,11 +1215,11 @@ class tree extends tlObject
 		    }
 	    }
 	    
-	    $status_ok = (!is_null($all_nodes) && count($all_nodes) > 0);
-        if( $status_ok )
-        { 
-	        // get only different items, to get descriptions
-	    	$unique_nodes=implode(',',array_unique($all_nodes));
+      $status_ok = (!is_null($all_nodes) && count($all_nodes) > 0);
+      if( $status_ok )
+      { 
+        // get only different items, to get descriptions
+        $unique_nodes=implode(',',array_unique($all_nodes));
 
 	    	$sql="/* $debugMsg */ " . 
 	    	     " SELECT id,name FROM {$this->tables['nodes_hierarchy']}  WHERE id IN ({$unique_nodes})"; 
@@ -1237,11 +1227,11 @@ class tree extends tlObject
 	    	
 	    	foreach($path_to as $key => $elem)
 	    	{
-	    	     foreach($elem['name'] as $idx => $node_id)
-	    	     {
-	   	     		$path_to[$key]['name'][$idx]=$decode[$node_id]['name'];
-	   	     		$path_to[$key]['node_id'][$idx]=$node_id;
-	    	     }
+          foreach($elem['name'] as $idx => $node_id)
+	    	  {
+            $path_to[$key]['name'][$idx]=$decode[$node_id]['name'];
+	   	      $path_to[$key]['node_id'][$idx]=$node_id;
+	    	  }
 	    	}
 	    	unset($decode);
 	    }  

@@ -3,11 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @package	TestLink
- * @author 	Erik Eloff
+ * @package TestLink
+ * @author  Erik Eloff
  * @copyright 2009,2012 TestLink community 
- * @filesource exttable.class.php
- * @link http://www.teamst.org
+ * @filesource  exttable.class.php
+ * @link  http://www.teamst.org
  * @since 1.9
  *
  * @internal revisions
@@ -57,7 +57,7 @@ class tlExtTable extends tlTable
 	 */
 	
 	public $title = null;
-	
+
 	public $width = null;
 	
 	public $height = 500;
@@ -151,7 +151,7 @@ class tlExtTable extends tlTable
 	}
 
 	/**
-	 * Adds behaivour for type that will be available to custom rendering and/or sorting
+	 * Adds behaviour for type that will be available to custom rendering and/or sorting
 	 *
 	 * By adding a behaivour for new type you must also make sure that the related JS-function exists.
 	 * For example if you add the type "color", you also need to create a
@@ -201,53 +201,66 @@ class tlExtTable extends tlTable
 		$n_columns = sizeof($this->columns);
 		$options = array('width','hidden','groupable','hideable');
 
-		for ($i=0; $i<$n_columns; $i++) {
+		for ($i=0; $i<$n_columns; $i++) 
+		{
 			$column = $this->columns[$i];
 			$s .= "{header: \"{$column['title']}\", dataIndex: '{$column['col_id']}'";
 			
-			// filter is set, but no filterOptions
-			if (isset($column['filter']) && !isset($column['filterOptions'])) {
-				$s .= ",filter: {type: '{$column['filter']}'}";
-			} else if (isset($column['filter']) && isset($column['filterOptions'])) {
-				// filter and filterOptions is set
-				// for example list filter needs options
-				$s .= ",filter: {type: '{$column['filter']}',options: ['";
-				$s .= implode("','",$column['filterOptions']);
-				$s .= "']}";
+			//var_dump($column);
+			if (isset($column['filter']))
+			{
+			  if( isset($column['filterOptions']) )
+			  {
+  				// filter and filterOptions is set
+  				// for example list filter needs options
+  				$s .= ",filter: {type: '{$column['filter']}',options: ['";
+  				$s .= implode("','",$column['filterOptions']);
+  				$s .= "']}";
+			  }
+			  else
+			  {
+				  $s .= ",filter: {type: '{$column['filter']}'}";
+			  }
 			} 
-			else if (isset($column['type']) && isset($this->customBehaviour[$column['type']]['filter'])) {
+			else if (isset($column['type']) && isset($this->customBehaviour[$column['type']]['filter'])) 
+			{
 				// do not define a filter in this case. Special filters are applied later
-			} else {
+			} 
+			else 
+			{
 				// if no filter is specified use string filter
 				// string filter is the most "basic" filter
 				$s .= ",filter: {type: 'string'}";
 			}
 
-            foreach($options as $opt_str)
-            {
-				if (isset($column[$opt_str])) {
+      foreach($options as $opt_str)
+      {
+				if (isset($column[$opt_str])) 
+				{
 					$s .= ",$opt_str: {$column[$opt_str]}";
 				}
 			}
 
-			if( isset($column['type']) && isset($this->customBehaviour[$column['type']]))
-			{
-				// BUGID 4125
-				$customBehaviour = $this->customBehaviour[$column['type']];
-				if (isset($customBehaviour['filter']) && $customBehaviour['filter'] == 'Status')
-				{
-					$s .= ",filter: " . $this->buildStatusFilterOptions();
-				}
-				if (isset($customBehaviour['filter']) && $customBehaviour['filter'] == 'Priority')
-				{
-					$s .= ",filter: " . $this->buildPriorityFilterOptions();
-				}
-				if (isset($customBehaviour['render']) )
-				{
-					// Attach a custom renderer
-					$s .= ",renderer: {$customBehaviour['render']}";
-				}
-			}
+    if( isset($column['type']) && isset($this->customBehaviour[$column['type']]))
+    {
+      $customBehaviour = $this->customBehaviour[$column['type']];
+      $filterSet = array('Status','Priority','Importance');
+      foreach($filterSet as $target)
+      {
+        if (isset($customBehaviour['filter']) && $customBehaviour['filter'] == $target)
+        {
+          $method = 'build' . $target . 'FilterOptions';
+          $s .= ",filter: " . $this->$method();
+        }
+      } 
+     
+      
+      if (isset($customBehaviour['render']) )
+      {
+        // Attach a custom renderer
+        $s .= ",renderer: {$customBehaviour['render']}";
+      }
+    }
 
 			$sortable = 'true';
 			if(isset($column['sortable'])){
@@ -294,43 +307,51 @@ class tlExtTable extends tlTable
 
 	}
 
-	/**
-	 * Build a JS assoc array to translate status and priorities codes to
-	 * localized strings. This is done in JS because we need the short codes
-	 * when sorting the table. The codes are translated to text only when
-	 * rendering.
-	 *
-	 * What will happen if user add new status ?????
-	 *
-	 * @return string status_code_label = new Array();
-	 *                status_code_label.f = 'Failed';
-	 *                status_code_label.b = 'Blocked';
-	 *                status_code_label.p = 'Passed';
-	 *                status_code_label.n = 'Not Run';
-	 *                prio_code_label = new Array();
-	 *                prio_code_label[3] = 'High';
-	 *                prio_code_label[2] = 'Medium';
-	 *                prio_code_label[1] = 'Low';
-	 */
-	function buildCodeLabels()
-	{
-		$resultsCfg = config_get('results');
-		$s = "status_code_label = new Array();\n";
-        		
-		foreach ($resultsCfg["status_label"] as $status => $label)
-		{
-			$code = $resultsCfg['status_code'][$status];
-		    // echo 'code:' . $code . '<br>';
-			$s .= "status_code_label.$code = '" . lang_get($label) . "';\n";
-		}
+  /**
+   * Build a JS assoc array to translate status and priorities codes to
+   * localized strings. This is done in JS because we need the short codes
+   * when sorting the table. The codes are translated to text only when
+   * rendering.
+   *
+   * What will happen if user add new status ?????
+   *
+   * @return string status_code_label = new Array();
+   *                status_code_label.f = 'Failed';
+   *                status_code_label.b = 'Blocked';
+   *                status_code_label.p = 'Passed';
+   *                status_code_label.n = 'Not Run';
+   *                prio_code_label = new Array();
+   *                prio_code_label[3] = 'High';
+   *                prio_code_label[2] = 'Medium';
+   *                prio_code_label[1] = 'Low';
+   */
+  function buildCodeLabels()
+  {
+    $cfg = config_get('results');
+    $s = "status_code_label = new Array();\n";
+    foreach ($cfg["status_label"] as $status => $label)
+    {
+      $code = $cfg['status_code'][$status];
+      $s .= "status_code_label.$code = '" . lang_get($label) . "';\n";
+    }
+    
+    $cfg = config_get('urgency');
+    $s .= "prio_code_label = new Array();\n";
+    foreach ($cfg['code_label'] as $code => $label) 
+    {
+      $s .= "prio_code_label[$code] = '" . lang_get($label) . "';\n";
+    } 
+    
+    $cfg = config_get('importance');
+    $s .= "importance_code_label = new Array();\n";
+    foreach ($cfg['code_label'] as $code => $label) 
+    {
+      $s .= "importance_code_label[$code] = '" . lang_get($label) . "';\n";
+    } 
 
-		$urgencyCfg = config_get('urgency');
-		$s .= "prio_code_label = new Array();\n";
-		foreach ($urgencyCfg['code_label'] as $prio => $label) {
-			$s .= "prio_code_label[$prio] = '" . lang_get($label) . "';\n";
-		}
-		return $s;
-	}
+    
+    return $s;
+  }
 
 	/**
 	 * Outputs all js that is needed to render the table. This inlcludes
@@ -346,23 +367,24 @@ class tlExtTable extends tlTable
 		return $s;
 	}
 
-	/**
-	 * Outputs all js that is common.
-	 */
-	public function renderCommonGlobals()
-	{
-		$s = '<script type="text/javascript">'. "\n\n";
-		$s .= $this->buildCodeLabels() . "\n\n";
-		$s .= $this->buildCfg() . "\n\n";
-		$s .= "var store = new Array()\n\n";
-		$s .= "var grid = new Array()\n\n";
-		$s .= "var tableData = new Array()\n\n";
-		$s .= "var fields = new Array()\n\n";
-		$s .= "var columnData = new Array()\n\n";
-		$s .= '</script>' . "\n\n";
-
-		return $s;
-	}
+  /**
+   * Outputs all js that is common.
+   */
+  public function renderCommonGlobals()
+  {
+    $s = '<script type="text/javascript">'. "\n\n";
+    $s .= $this->buildCodeLabels() . "\n\n";
+    $s .= $this->buildCfg() . "\n\n";
+    $s .= "var store = new Array()\n\n";
+    $s .= "var grid = new Array()\n\n";
+    $s .= "var tableData = new Array()\n\n";
+    $s .= "var fields = new Array()\n\n";
+    $s .= "var columnData = new Array()\n\n";
+    // $s .= "alert(importance_code_label);";
+    $s .= '</script>' . "\n\n";
+    
+    return $s;
+  }
 
 
 	/**
@@ -454,7 +476,8 @@ class tlExtTable extends tlTable
 		$this->sortByColumn = $this->columns[$idx]['col_id'];
 	}
 
-	function buildStatusFilterOptions() {
+	function buildStatusFilterOptions() 
+	{
 		$resultsCfg = config_get('results');
 		$statuses = array();
 		foreach ($resultsCfg["status_label"] as $status => $label) {
@@ -464,12 +487,34 @@ class tlExtTable extends tlTable
 		return "{type: 'Status', options: " . json_encode($statuses) . "}";
 	}
 	
-	function buildPriorityFilterOptions() {
-		$urgencyCfg = config_get('urgency');
-		$priorities = array();
-		foreach ($urgencyCfg['code_label'] as $prio => $label) {
-			$priorities[] = array("$prio", lang_get($label));
-		}
-		return "{type: 'Priority', options: " . json_encode($priorities) . "}";
-	}
+	
+  // CRITIC
+  // a companion method has to exists on ext_extensions.js or rendering will fail.
+  // Ext.ux.grid.filter.PriorityFilter()
+  function buildPriorityFilterOptions() 
+  {
+    $cfg = config_get('urgency');
+    $items = array();
+    foreach ($cfg['code_label'] as $code => $label) 
+    {
+      $items[] = array("$code", lang_get($label));
+    }
+    return "{type: 'Priority', options: " . json_encode($items) . "}";
+  }
+
+  // CRITIC
+  // a companion method has to exists on ext_extensions.js or rendering will fail.
+  // Ext.ux.grid.filter.ImportanceFilter()
+  function buildImportanceFilterOptions() 
+  {
+    $cfg = config_get('importance');
+    $items = array();
+    foreach ($cfg['code_label'] as $code => $label) 
+    {
+      $items[] = array("$code", lang_get($label));
+    }
+    return "{type: 'Importance', options: " . json_encode($items) . "}";
+  }
+
+
 }

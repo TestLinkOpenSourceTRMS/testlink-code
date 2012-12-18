@@ -31,9 +31,6 @@ if($gui->tprojectID > 0)
                         
     $gui->searchSize = tlStringLen($gui->tcasePrefix) + $gui_cfg->dynamic_quick_tcase_search_input_size;
 }
-
-define('DBUG_ON',1);
-
 $user = $_SESSION['currentUser'];
 $userID = $user->dbID;
 

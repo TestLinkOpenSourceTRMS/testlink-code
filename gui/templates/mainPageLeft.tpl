@@ -11,7 +11,7 @@
                           href_cfields_tproject_assign,href_keywords_manage,
                           title_user_mgmt,href_user_management,
                           href_roles_management,title_requirements,
-                          href_req_spec,href_req_assign,
+                          href_req_spec,href_req_assign,link_report_test_cases_created_per_user,
                           title_test_spec,href_edit_tc,href_browse_tc,href_search_tc,
                           href_search_req, href_search_req_spec,href_inventory,
                           href_platform_management, href_inventory_management,
@@ -281,9 +281,12 @@
 	  {/if}
   		
   	 {if $gui->grants.modify_tc eq "yes"}
-          <br />
-  		  <img src="{$tlImages.bullet}" />
-          <a href="{$gui->launcher}?feature=printTestSpec">{$labels.href_print_tc}</a>
+        <br />
+        <img src="{$tlImages.bullet}" />
+        <a href="{$gui->launcher}?feature=printTestSpec">{$labels.href_print_tc}</a>
+        <br />
+        <img src="{$tlImages.bullet}" />
+        <a href="lib/results/tcCreatedPerUserOnTestProject.php?do_action=uinput&tproject_id={$gui->testprojectID}">{$labels.link_report_test_cases_created_per_user}</a>
   	 {/if}
 
 	  

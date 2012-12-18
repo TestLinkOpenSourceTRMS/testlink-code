@@ -583,11 +583,9 @@ $tlCfg->priority_levels = array(
 ); */
 
 /** @var array importance levels */
-$tlCfg->importance_levels = array( 
-	HIGH => 3,
-	MEDIUM => 2,
-	LOW => 1
-);
+$tlCfg->importance_levels = array(HIGH => 3,MEDIUM => 2,LOW => 1);
+$tlCfg->importance['code_label'] = array(HIGH => 'high',MEDIUM => 'medium',LOW => 'low');
+
 
 /** @var integer Default Test case Importance offered in GUI */
 $tlCfg->testcase_importance_default = MEDIUM;
@@ -601,11 +599,7 @@ $tlCfg->testcase_urgency_default = MEDIUM;
  * value: id to use with lang_get() to get the string, from strings.txt (or custom_strings.txt)
  * @since 1.8 
  */
-$tlCfg->urgency['code_label'] = array(
-	HIGH => 'urgency_high',
-	MEDIUM => 'urgency_medium',
-	LOW => 'urgency_low'
-);
+$tlCfg->urgency['code_label'] = array(HIGH => 'urgency_high',MEDIUM => 'urgency_medium',LOW => 'urgency_low');
 
 
 // --------------------------------------------------------------------------------------

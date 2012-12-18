@@ -91,6 +91,7 @@ $tlCfg->charset = 'UTF-8';
  **/
 $tlCfg->gui_separator_open =  '[';
 $tlCfg->gui_separator_close = ']';
+$tlCfg->gui_room = '[ %s ]';
 
 /** @var string Title separators are used when componing an title using several strings */
 $tlCfg->gui_title_separator_1 = ' : '; // object : name (Test Specification : My best product)

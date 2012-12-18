@@ -527,10 +527,9 @@ function tree_getCheckBox(id)
 // 20121115 - franciscom - interface changes
 function open_bug_add_window(tproject_id,tcversion_id,exec_id,user_action)
 {
-	link2launch = "lib/execute/bugAdd.php?user_action=" + user_action + "&tcversion_id="+tcversion_id +
-								"&tproject_id=" + tproject_id + "&exec_id="+exec_id;
-									
-	window.open(fRoot+link2launch,"bug_add","width=510,height=270,resizable=yes,dependent=yes");
+  link2launch = "lib/execute/bugAdd.php?user_action=" + user_action + "&tcversion_id="+tcversion_id +
+                "&tproject_id=" + tproject_id + "&exec_id="+exec_id;
+  window.open(fRoot+link2launch,"bug_add","width=510,height=270,resizable=yes,dependent=yes");
 }
 
 function bug_dialog()
@@ -689,25 +688,24 @@ function openAssignmentOverviewWindow(user_id, build_id, tplan_id) {
  * @author Andreas Simon
  * @param tc_id
  */
-function openTCEditWindow(tc_id) {
-	var url = "lib/testcases/archiveData.php?edit=testcase&id=" + tc_id;
-
-	// 20101008 - asimon - BUGID 3311
-	var width = getCookie("TCEditPopupWidth");
-	var height = getCookie("TCEditPopupHeight");
-	
-	if (width == null)
-	{
-		var width = "800";
-	}
-
-	if (height == null)
-	{
-		var height = "600";
-	}
-	
-	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
-	window.open(fRoot+url, '_blank', windowCfg);
+function openTCEditWindow(tcase_id,tcversion_id) 
+{
+  var url = "lib/testcases/archiveData.php?edit=testcase&id=" + tcase_id + "&tcversion_id=" + tcversion_id;
+  var width = getCookie("TCEditPopupWidth");
+  var height = getCookie("TCEditPopupHeight");
+  
+  if (width == null)
+  {
+    var width = "800";
+  }
+  
+  if (height == null)
+  {
+    var height = "600";
+  }
+  
+  var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+  window.open(fRoot+url, '_blank', windowCfg);
 }
 
 

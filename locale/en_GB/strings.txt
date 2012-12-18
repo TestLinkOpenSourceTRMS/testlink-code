@@ -162,6 +162,9 @@ $TLS_show_calender = "Show Calender";
 $TLS_clear_date = "Clear Date";
 $TLS_unfreeze = "Unfreeze";
 
+$TLS_low  = "Low";
+$TLS_high = "High";
+$TLS_medium = "Medium";
 
 // Actions (used wide)
 $TLS_add = "add";

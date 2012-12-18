@@ -2974,11 +2974,10 @@ function getPublicAttr($id)
     $target = array();
 	  $this->get_all_testcases_id($id,$target);
     $itemQty = count($target);
-    
+   
     $rs = null;
     if($itemQty > 0)
     {
-
       $sql = " /* $debugMsg */ SELECT TPROJ.id AS tproject_id, TCV.id AS tcversion_id," .
              " TCV.version, {$eid} AS external_id, NHTC.id  AS tcase_id, NHTC.name AS tcase_name, ". 
              " TCV.creation_ts, TCV.modification_ts, " . 
@@ -3003,7 +3002,21 @@ function getPublicAttr($id)
       {
         $sql .= " AND TCV.creation_ts <= '{$opt['endTime']}'";
       }
-      $rs = $this->db->get_recordset($sql);
+      
+      $rs = $this->db->fetchRowsIntoMap($sql,'tcase_id',database::CUMULATIVE);
+      if( !is_null($rs) )
+      {
+        $k2g = array_keys($rs);
+        $path_info = $this->tree_manager->get_full_path_verbose($k2g,array('output_format' => 'path_as_string'));
+        foreach($k2g as $tgx)
+        {
+          $rx = array_keys($rs[$tgx]);
+          foreach($rx as $ex)
+          {
+            $rs[$tgx][$ex]['path'] = $path_info[$tgx];
+          }  
+        }
+      }
     }
     return $rs;
   }	

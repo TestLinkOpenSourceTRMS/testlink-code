@@ -1,40 +1,11 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.49.2.2 2011/01/13 17:57:19 mx-julian Exp $
+
 Purpose: rendering of Ext Js table
 
-@internal Revisions:
-	 20110113 - Julian - BUGID 4169 - minor syntax error causing problems on IE6
-	 20101116 - Julian - Localized Menu Item for GridFilters
-	 20101022 - Julian - BUGID 3979 - Use grid filters for exttables
-	 20101018 - eloff - Refactor export/collapse button
-	                             show all columns button
-	                             restore to default state
-	                             refresh button
-	 20100828 - eloff - Refactored the rendering of status
-	 20100826 - eloff - BUGID 3714 - Use JsonCookieProvider
-	 20100826 - Julian - fixed multisort feature for multiple tables
-	                   - added checks if table state is stored
-	 20100825 - eloff - Fix toolbars if multiple tables are rendered
-	 20100824 - Julian - added refresh toolbar button
-	                   - added function to remove multisort buttons
-	 20100823 - Julian - quoted tableID as it is a string and no integer value
-	                   - toolbar button to expand/collapse groups changed to not
-	                     use toggleAllGroups() function anymore as this function
-	                     did expand collapsed but also collapse expanded groups
-	 20100819 - Julian - MultiSort (BUGID 3694), showGroupItemsCount
-	 20100818 - Julian - use toolbar object to generate toolbar
-	 20100817 - Julian - toolbar items configurable, hideGroupedColumn
-	 20100816 - Eloff - allow text selection in wrapped columns
-	 20100816 - Julian - added function to allow column wrap (multiple lines per cell)
-	 20100816 - asimon - enable sorting of ExtJS table by a default column
-	 20100719 - Eloff - Update due to changes in tlExtTable
-	 20100719 - Julian - Replaced lables for toolbar items with more general ones
-	 20100716 - Eloff - Add toolbar and make panel stateful
-	 20100716 - Eloff - Allow grouping on any column
-	 20100715 - Eloff - Add grouping on first column
-	 20090710 - Eloff - Added comment to explain magic numbers
-	 20090709 - Eloff - Initial commit
+@filesource inc_ext_table.tpl
+@author  Erik Eloff
+@internal revisions
 *}
 
 
@@ -46,8 +17,8 @@ Purpose: rendering of Ext Js table
  @url http://extjs.com/deploy/dev/examples/grid/array-grid.html
 *}
 {lang_get var="labels" s="expand_collapse_groups, show_all_columns,
-	show_all_columns_tooltip, default_state, multisort, multisort_tooltip,
-	multisort_button_tooltip, button_refresh, btn_reset_filters, caption_nav_filters"}
+                          show_all_columns_tooltip, default_state, multisort, multisort_tooltip,
+                          multisort_button_tooltip, button_refresh, btn_reset_filters, caption_nav_filters"}
 {literal}
 <script type="text/javascript" src="gui/javascript/ext_extensions.js" language="javascript"></script>
 <script type="text/javascript">
@@ -83,8 +54,14 @@ function statusCompare(item)
 
 function priorityRenderer(val)
 {
-	return prio_code_label[val];
+  return prio_code_label[val];
 }
+
+function importanceRenderer(val)
+{
+  return importance_code_label[val];
+}
+
 
 function columnWrap(val){
     return '<div style="white-space:normal !important; -moz-user-select: text; -webkit-user-select: text;">'+ val +'</div>';

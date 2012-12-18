@@ -2591,7 +2591,6 @@ function getTestSpec($id,$filters=null,$options=null)
 	}
 	
   $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
-  echo __METHOD__ . '::' . $method2call . '<br>';
 	$qnum = $this->$method2call($id,$items,$my['filters'],$my['options']);
  	return $items;
 }

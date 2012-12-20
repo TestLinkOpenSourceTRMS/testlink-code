@@ -3,15 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @filesource $RCSfile: reqViewRevision.php,v $
- * @version $Revision: 1.2.2.3 $
- * @modified $Date: 2010/12/12 10:18:40 $ by $Author: franciscom $
+ * @filesource reqViewRevision.php
  * @author francisco.mancardi@gmail.com
  * 
  *
  * @internal revision
- * @since 1.9.4
- * 20110818 - franciscom - TICKET 4702: Requirement View - display log message
+ * @since 1.9.6
+ * 
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -19,7 +17,8 @@ require_once('attachments.inc.php');
 require_once('requirements.inc.php');
 require_once('users.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
-
+   
+  
 $templateCfg = templateConfiguration();
 
 $args = init_args();

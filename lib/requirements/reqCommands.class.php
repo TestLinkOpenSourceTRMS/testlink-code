@@ -9,26 +9,8 @@
  * web command experiment
  * @internal revision
  *
- * @since 1.9.4
- *  20111029 - franciscom - TICKET 4786: Add right to allow UNFREEZE a requirement
+ * @since 1.9.6
  *	
- * @since 1.9.3
- *  20110607 - Julian - BUGID 3953 - Checkbox to decide whether to create another requirement or not
- *  20110602 - franciscom - TICKET 4536: Tree is not refreshed after editing Requirement
- *	20101210 - franciscom - BUGID 4056: Requirement Revisioning
- *  20101008 - asimon - BUGID 3311
- *  20101006 - asimon - BUGID 3854
- *	20101003 - franciscom - BUGID 3834: Create version source <>1 - Bad content used.
- *  20101001 - asimon - custom fields do not lose entered values on errors
- *	20100906 - franciscom - BUGID 2877 -  Custom Fields linked to Req versions
- *	20100719 - franciscom - BUGID 3327 - manage duplicated DOC ID when creating, without loosing filled-in data
- * 	20100323 - asimon - BUGID 3312 - fixed audit log message when freezing a req version
- *  20100319 - asimon - BUGID 3307 - set coverage to 0 if null, to avoid database errors with null value
- *                      BUGID 1748 - added doAddRelation() and doDeleteRelation() for req relations
- *  20100205 - asimon - added doFreezeVersion()
- *	20091217 - franciscom - added reqTypeDomain
- *	20091216 - franciscom - create_tc_from_requirement() interface changes 
- *	20081213 - franciscom - fixed minor bug on doCreate()
  */
 
 class reqCommands
@@ -239,20 +221,17 @@ class reqCommands
 			logAuditEvent(TLS("audit_requirement_created",$argsObj->reqDocId),"CREATE",$ret['id'],"requirements");
 			$obj->user_feedback = sprintf(lang_get('req_created'),$argsObj->reqDocId,$argsObj->title);
 
-			// BUGID 2877 -  Custom Fields linked to Req versions 
-			// $cf_map = $this->reqMgr->get_linked_cfields(null,$argsObj->tproject_id);
 			$cf_map = $this->reqMgr->get_linked_cfields(null,null,$argsObj->tproject_id);
-
-			// BUGID 2877 -  Custom Fields linked to Req versions 
-			// $this->reqMgr->values_to_db($request,$ret['id'],$cf_map);
 			$this->reqMgr->values_to_db($request,$ret['version_id'],$cf_map);
-			// BUGID 3952 - on Create stay here like Mantis does
-			if($argsObj->stay_here) {	 
+			if($argsObj->stay_here) 
+			{	 
   				$obj->template = 'reqEdit.tpl';
-			} else {
+			} 
+			else 
+			{
 				$obj->template = "reqView.php?refreshTree={$argsObj->refreshTree}&requirement_id={$ret['id']}";
 			}
-  			$obj->req_id = $ret['id'];
+  		$obj->req_id = $ret['id'];
 			$argsObj->scope = '';
 		}
 		else
@@ -300,7 +279,6 @@ class reqCommands
 		$obj->suggest_revision = false;	    
 
 	    $createRev = false;
-	    // new dBug($argsObj);
 	    if($diff['force'] && !$argsObj->do_save)
 	    {
 	    	$obj->prompt_for_log = true;
@@ -594,11 +572,11 @@ class reqCommands
 	function doCreateVersion(&$argsObj,$request)
 	{
 		$ret = $this->reqMgr->create_new_version($argsObj->req_id,$argsObj->user_id,
-												 $argsObj->req_version_id,$argsObj->log_message);
+												                     $argsObj->req_version_id,$argsObj->log_message);
 		$obj = $this->initGuiBean();
 		$obj->user_feedback = $ret['msg'];
-       	$obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
-      	$obj->req = null;
+    $obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
+    $obj->req = null;
 		$obj->req_id = $argsObj->req_id;
 		return $obj;	
 	}

@@ -2122,7 +2122,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	
 	  args : $id: requirement id
 	         $user_id: who is doing this operation.
-			 $reqVersionID = default null => use last version as source 
+			     $reqVersionID = default null => use last version as source 
 	
 	  returns:
 	          map:  id: node id of created tcversion
@@ -2130,38 +2130,38 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	                msg
 	
 	  @internal revisions
-	  20101003 - franciscom - BUGID 3834: Create version source <>1 - Bad content used. 
 	*/
 	function create_new_version($id,$user_id,$reqVersionID=null,$log_msg=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	
 		// get a new id
-	  	$version_id = $this->tree_mgr->new_node($id,$this->node_types_descr_id['requirement_version']);
+	  $version_id = $this->tree_mgr->new_node($id,$this->node_types_descr_id['requirement_version']);
 	  
-	  	// Needed to get higher version NUMBER, to generata new VERSION NUMBER
-	  	// $sourceVersionInfo =  $this->get_last_version_info($id);
-	  	$sourceVersionInfo =  $this->get_last_child_info($id);
-	  	$newVersionNumber = $sourceVersionInfo['version']+1; 
+	  // Needed to get higher version NUMBER, to generata new VERSION NUMBER
+	  $sourceVersionInfo =  $this->get_last_child_info($id,  array('child_type' => 'version'));
+	  if( is_null($sourceVersionInfo) )
+	  {
+	    throw new Exception($debugMsg . ' $this->get_last_child_info() RETURNED NULL !!! - WRONG - Open Issue on mantis.testlink.org');
+	  }
+	  $newVersionNumber = $sourceVersionInfo['version']+1; 
 
-	  	$ret = array();
-	  	$ret['id'] = $version_id;
-	  	$ret['version'] = $newVersionNumber;
-	  	$ret['msg'] = 'ok';
-      	
-	  	$sourceVersionID = is_null($reqVersionID) ? $sourceVersionInfo['id'] : $reqVersionID;
-      	
-	  	// BUGID 2877 - Custom Fields linked to Requirement Versions
-	  	$this->copy_version($id,$sourceVersionID,$version_id,$newVersionNumber,$user_id);
+	  $ret = array();
+	  $ret['id'] = $version_id;
+	  $ret['version'] = $newVersionNumber;
+	  $ret['msg'] = 'ok';
+  	
+	  $sourceVersionID = is_null($reqVersionID) ? $sourceVersionInfo['id'] : $reqVersionID;
+	  $this->copy_version($id,$sourceVersionID,$version_id,$newVersionNumber,$user_id);
+	  
+	  // need to update log message in new created version
+	  $sql = 	"/* $debugMsg */ " .
+	  		" UPDATE {$this->tables['req_versions']} " .
+	  		" SET log_message = '" . $this->db->prepare_string($log_msg) . "'" .
+	  		" WHERE id={$version_id}";
+	  $this->db->exec_query($sql);		
 	  	
-	  	// need to update log message in new created version
-	  	$sql = 	"/* $debugMsg */ " .
-	  			" UPDATE {$this->tables['req_versions']} " .
-	  			" SET log_message = '" . $this->db->prepare_string($log_msg) . "'" .
-	  			" WHERE id={$version_id}";
-	  	$this->db->exec_query($sql);		
-	  		
-	  	return $ret;
+	  return $ret;
 	}
 
 
@@ -2627,7 +2627,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 		
 		$info = null;
 		$target_cfg = array('version' => array('table' => 'req_versions', 'field' => 'version'), 
-							'revision' => array('table'=> 'req_revisions', 'field' => 'revision'));
+							          'revision' => array('table'=> 'req_revisions', 'field' => 'revision'));
 
 		$child_type = $my['options']['child_type'];  // just for readability 
 		$table = $target_cfg[$child_type]['table'];
@@ -2638,8 +2638,9 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 		       " {$this->tables['nodes_hierarchy']} NH WHERE ".
 		       " NH.id = CHILD.id ".
 		       " AND NH.parent_id = {$id} ";
-
+    
 		$max_verbose = $this->db->fetchFirstRowSingleColumn($sql,$field);
+		
 		if ($max_verbose >= 0)
 		{
 			$sql = "/* $debugMsg */ SELECT ";
@@ -2756,13 +2757,13 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$my['options'] = array('output' => "map", 'decode_user' => false);
-    	$my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array_merge($my['options'], (array)$options);
 
 		// 
 		// Why can I use these common fields ?
 		// explain better
 		$common_fields = " REQV.id AS version_id, REQV.version,REQV.creation_ts, REQV.author_id, " .
-						 " REQV.modification_ts, REQV.modifier_id ";
+						         " REQV.modification_ts, REQV.modifier_id ";
 						 
 		// needs a double coalesce not too elegant but...		
 		
@@ -2775,19 +2776,22 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 				" WHERE NH_REQV.parent_id = {$id} ";
 				
 		$rs = $this->db->get_recordset($sql);
+
+    // new dBug($rs);
+    
 		$sql = 	"/* $debugMsg */" .
     			" SELECT REQV.id AS version_id, REQV.version," .
     			"		 REQV.creation_ts, REQV.author_id, " .
-				"		 REQV.modification_ts, REQV.modifier_id, " . 
+				  "		 REQV.modification_ts, REQV.modifier_id, " . 
     					 self::NO_REVISION . " AS revision_id, " .
     			" 		 REQV.revision, REQV.scope, " .
     			" 		 REQV.status,REQV.type,REQV.expected_coverage,NH_REQ.name, REQ.req_doc_id, " .
     			" COALESCE(REQV.log_message,'') AS log_message" .
     			" FROM {$this->tables['req_versions']}  REQV " .
-				" JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
-				" JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
-				" JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
-				" WHERE NH_REQV.parent_id = {$id} ";
+				  " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
+				  " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+				  " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+				  " WHERE NH_REQV.parent_id = {$id} ";
 				
 		if( $rs[0]['qta_rev'] > 0 )
 		{		
@@ -2800,23 +2804,24 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 			// In this situation this is NOT A PROBLEM (because we will not have dups)
 			//
 			$sql .=	" UNION ALL ( " .
-    				" SELECT REQV.id AS version_id, REQV.version, " .
-    				"		 REQRV.creation_ts, REQRV.author_id, " .
-					"		 REQRV.modification_ts, REQRV.modifier_id, " . 
-					"		 REQRV.id AS revision_id, " .
-					"		 REQRV.revision,REQRV.scope,REQRV.status,REQRV.type, " .
-    				"		 REQRV.expected_coverage,REQRV.name,REQRV.req_doc_id, " .
-    				"		 COALESCE(REQRV.log_message,'') as log_message" .
-					" FROM {$this->tables['req_versions']} REQV " .
-					" JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
-					" JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
-					" JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
-					" JOIN {$this->tables['req_revisions']} REQRV " .
-					" ON REQRV.parent_id = REQV.id " . 
-					" WHERE NH_REQV.parent_id = {$id} " .
-					" ) " .
-					" ORDER BY version_id DESC,version DESC,revision DESC ";
+    				  " SELECT REQV.id AS version_id, REQV.version, " .
+    				  "		 REQRV.creation_ts, REQRV.author_id, " .
+					    "		 REQRV.modification_ts, REQRV.modifier_id, " . 
+					    "		 REQRV.id AS revision_id, " .
+					    "		 REQRV.revision,REQRV.scope,REQRV.status,REQRV.type, " .
+    				  "		 REQRV.expected_coverage,REQRV.name,REQRV.req_doc_id, " .
+    				  "		 COALESCE(REQRV.log_message,'') as log_message" .
+					    " FROM {$this->tables['req_versions']} REQV " .
+    					" JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
+    					" JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+    					" JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+    					" JOIN {$this->tables['req_revisions']} REQRV " .
+    					" ON REQRV.parent_id = REQV.id " . 
+    					" WHERE NH_REQV.parent_id = {$id} " .
+    					" ) " .
+    					" ORDER BY version_id DESC,version DESC,revision DESC ";
 		}
+    // new dBug($sql);
 		
 		switch($my['options']['output'])
 		{
@@ -3150,7 +3155,6 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 		if( !isset($context['tproject_id']) )
 		{
 			throw new Exception($debugMsg . ' : $context[\'tproject_id\'] is needed');
-
 		}
 
 		$where = "WHERE RSPEC.testproject_id = " . intval($context['tproject_id']);

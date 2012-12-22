@@ -15,10 +15,9 @@
  *
  * @internal revisions
  * 
- * @since 1.9.5
- * 20121127 - franciscom - TICKET 5332: Generating Test Report with "Metric' causes DB error
- * 20121008 - franciscom - TICKET 5256
- * 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
+ * @since 1.9.6
+ * 20121222 - franciscom - TICKET 5425: Access TO EXECUTION FROM 'Test Case Assigned to me' - 
+ *                         Issues with Save and move to next" returns to the same case
  * 
  **/
 
@@ -1764,7 +1763,7 @@ class testplan extends tlObjectWithAttachments
 	  
 	  returns: an integer indicating the result of the comparison
 	 */
-	private function compare_name($a, $b)
+	static private function compare_name($a, $b)
 	{
 	    return strcasecmp($a['name'], $b['name']);
 	}
@@ -2609,7 +2608,7 @@ class testplan extends tlObjectWithAttachments
 				
 				if( is_null($platformID) )
 				{
-					throw new Exception(__FUNCTION_ . ' When you pass $execIDSet an YOU NEED TO PROVIDE a platform ID');
+					throw new Exception(__FUNCTION__ . ' When you pass $execIDSet an YOU NEED TO PROVIDE a platform ID');
 				}	
 				$targetSet[$platformID] = $execIDSet;
 			}
@@ -3062,54 +3061,79 @@ class testplan extends tlObjectWithAttachments
 
 
 
-	/**
-	 * getTestCaseSiblings()
-	 *
-	 * @internal revisions
-	 * 20100520 - franciscom - missed platform_id piece on join
-	 */
-	function getTestCaseSiblings($id,$tcversion_id,$platform_id)
-	{
-		$sql = 	" SELECT NHTSET.name as testcase_name,NHTSET.id AS testcase_id , NHTCVSET.id AS tcversion_id," .
-        		" NHTC.parent_id AS testsuite_id, " .
-        		" TPTCVX.id AS feature_id, TPTCVX.node_order " .
-				" from {$this->tables['testplan_tcversions']} TPTCVMAIN " .
-				" JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCVMAIN.tcversion_id " . 
-				" JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " . 
-				" JOIN {$this->tables['nodes_hierarchy']} NHTSET ON NHTSET.parent_id = NHTC.parent_id " .
-				" JOIN {$this->tables['nodes_hierarchy']} NHTCVSET ON NHTCVSET.parent_id = NHTSET.id " .
-				" JOIN {$this->tables['testplan_tcversions']} TPTCVX " . 
-				" ON TPTCVX.tcversion_id = NHTCVSET.id " .
-				" AND TPTCVX.testplan_id = TPTCVMAIN.testplan_id " .
-				" AND TPTCVX.platform_id = TPTCVMAIN.platform_id " .
-				" WHERE TPTCVMAIN.testplan_id = {$id} AND TPTCVMAIN.tcversion_id = {$tcversion_id} " .
-				" AND TPTCVMAIN.platform_id = {$platform_id} " .
-				" ORDER BY node_order,testcase_name ";
-		$siblings = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
-		return $siblings;
-	}
+  /**
+   * getTestCaseSiblings()
+   *
+   * @internal revisions
+   */
+  function getTestCaseSiblings($id,$tcversion_id,$platform_id,$opt=null)
+  {                                                                    
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $my['opt'] = array('assigned_to' => null);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
 
+    $sql = " SELECT NHTSET.name as testcase_name,NHTSET.id AS testcase_id , NHTCVSET.id AS tcversion_id," .
+           " NHTC.parent_id AS testsuite_id, " .
+           " TPTCVX.id AS feature_id, TPTCVX.node_order " .
+           " from {$this->tables['testplan_tcversions']} TPTCVMAIN " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCVMAIN.tcversion_id " . 
+           " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " . 
+           " JOIN {$this->tables['nodes_hierarchy']} NHTSET ON NHTSET.parent_id = NHTC.parent_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCVSET ON NHTCVSET.parent_id = NHTSET.id " .
+           " JOIN {$this->tables['testplan_tcversions']} TPTCVX " . 
+           " ON TPTCVX.tcversion_id = NHTCVSET.id " .
+           " AND TPTCVX.testplan_id = TPTCVMAIN.testplan_id " .
+           " AND TPTCVX.platform_id = TPTCVMAIN.platform_id ";
+           
+    if( !is_null($my['opt']['assigned_to']) )
+    {
+      $user_id = intval($my['opt']['assigned_to']['user_id']);
+      $build_id = intval($my['opt']['assigned_to']['build_id']);
 
-	/**
-	 * getTestCaseNextSibling()
-	 *
-	 */
-	function getTestCaseNextSibling($id,$tcversion_id,$platform_id)
-	{
-		$sibling = null;
-    	$brothers_and_sisters = $this->getTestCaseSiblings($id,$tcversion_id,$platform_id);
-    	$tcversionSet = array_keys($brothers_and_sisters);
-    	$elemQty = count($tcversionSet);
-    	$dummy = array_flip($tcversionSet);
-        $pos = $dummy[$tcversion_id]+1;
-        $sibling_tcversion = $pos < $elemQty ? $tcversionSet[$pos] : 0;
-        if( $sibling_tcversion > 0 )
-        {
-        	$sibling = array('tcase_id' => $brothers_and_sisters[$sibling_tcversion]['testcase_id'],
-        	                 'tcversion_id' => $sibling_tcversion);
-        }
-        return $sibling;
+      $addJoin = " /* Analise user assignment to get sibling */ " .
+                 " JOIN {$this->tables['user_assignments']} UAMAIN " .
+                 " ON UAMAIN.feature_id = TPTCVMAIN.id " . 
+                 " AND UAMAIN.build_id = " . $build_id . 
+                 " AND UAMAIN.user_id = " . $user_id . 
+                 " AND UAMAIN.type = {$this->execTaskCode} " .
+                 " JOIN {$this->tables['user_assignments']} UAX " .
+                 " ON UAX.feature_id = TPTCVX.id " . 
+                 " AND UAX.build_id = " . $build_id . 
+                 " AND UAX.user_id = " . $user_id . 
+                 " AND UAX.type = {$this->execTaskCode} ";
+      $sql .= $addJoin;
+      
     }
+    
+    $sql .= " WHERE TPTCVMAIN.testplan_id = {$id} AND TPTCVMAIN.tcversion_id = {$tcversion_id} " .
+            " AND TPTCVMAIN.platform_id = {$platform_id} " .
+            " ORDER BY node_order,testcase_name ";
+    
+    $siblings = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
+    return $siblings;
+  }
+
+
+  /**
+   * getTestCaseNextSibling()
+   *
+   */
+  function getTestCaseNextSibling($id,$tcversion_id,$platform_id,$opt=null)
+  {
+    $sibling = null;
+    $brothers_and_sisters = $this->getTestCaseSiblings($id,$tcversion_id,$platform_id,$opt);
+    $tcversionSet = array_keys($brothers_and_sisters);
+    $elemQty = count($tcversionSet);
+    $dummy = array_flip($tcversionSet);
+    $pos = $dummy[$tcversion_id]+1;  
+    $sibling_tcversion = $pos < $elemQty ? $tcversionSet[$pos] : 0;
+    if( $sibling_tcversion > 0 )
+    {
+      	$sibling = array('tcase_id' => $brothers_and_sisters[$sibling_tcversion]['testcase_id'],
+      	                 'tcversion_id' => $sibling_tcversion);
+    }
+    return $sibling;
+  }
 
     /**
      * Convert a given urgency and importance to a priority level using
@@ -4575,8 +4599,6 @@ class testplan extends tlObjectWithAttachments
 			unset($statusList[$dummy[$this->notRunStatusCode]]);
 		}
 
-		// new dBug($notRunHits,array('label' => __METHOD__));
-		
 		$statusInClause = implode("','",$statusList);
 		$sql = 	" /* $debugMsg */ " .
 				" SELECT NHTCV.parent_id AS tcase_id" .
@@ -4881,8 +4903,6 @@ class testplan extends tlObjectWithAttachments
 			tLog(__METHOD__ . ":: \$tplan_mgr->$getHitsNotRunMethod", 'DEBUG');
 			$hits['notRun'] = (array)$this->$getHitsNotRunMethod($id,$buildSet);	
 			unset($statusSetLocal[$dummy[$this->notRunStatusCode]]);
-			
-			//New dBug($hits);
 		}
 		
 		if( ($get['otherStatus']=(count($statusSetLocal) > 0)) )

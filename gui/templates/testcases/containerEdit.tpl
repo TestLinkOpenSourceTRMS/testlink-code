@@ -5,6 +5,9 @@ Edit test specification: containers
 
 @filesource	containerEdit.tpl
 @internal revisions
+@since 1.9.6
+20121222 - franciscom - TICKET 5439 - added logic to check for session expiration and request login again
+
 *}
 {lang_get var="labels"
           s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,cancel,warning,
@@ -15,6 +18,7 @@ Edit test specification: containers
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
 
+<script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
 var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
@@ -29,7 +33,6 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 {literal}
 <script type="text/javascript">
 {/literal}
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_container_name = "{$labels.warning_empty_testsuite_name|escape:'javascript'}";
 {literal}
@@ -64,8 +67,11 @@ function validateForm(f)
 	      	return false;
 		}
 	}
-  
-  return true;
+  // 20121222 - franciscom 
+  // Found minor issue, if submit is done with input of type submit, the php script
+  // will not receive it
+  // 
+  return Ext.ux.requireSessionAndSubmit(f);
 }
 </script>
 {/literal}
@@ -91,8 +97,9 @@ function validateForm(f)
         onSubmit="javascript:return validateForm(this);">
 	
 	<div>
+		<input type="hidden" name="doAction" value="" />
 		<input type="submit" name="update_testsuite" value="{$labels.btn_save}" 
-		       onclick="show_modified_warning = false;" />
+		       onclick="show_modified_warning = false; doAction.value='update_testsuite'" />
 		<input type="button" name="go_back" value="{$labels.cancel}" 
 		       onclick="javascript: show_modified_warning = false; history.back();"/>
 	</div>

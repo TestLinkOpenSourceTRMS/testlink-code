@@ -3,15 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource	containerEdit.php
- * @package 	TestLink
- * @author 		Martin Havlat
- * @copyright 	2005-2012, TestLink community
- * @link 		http://www.teamst.org/index.php
+ * @filesource  containerEdit.php
+ * @package     TestLink
+ * @author      Martin Havlat
+ * @copyright   2005-2012, TestLink community
+ * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.4
- * 20120721 - franciscom - TICKET 5103: Copy Test Suite - user feedback always said ...
+ * @since 1.9.6
+ * 20121222 - franciscom - TICKET 5439: login on timeout when editing TEST SUITES to avoid data loss not working
+ * 
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -57,7 +58,7 @@ $a_actions = array ('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite
                 'reorder_testsuites_alpha' => 0, 'reorder_testproject_testsuites_alpha' => 0);
 
 $a_init_opt_transfer=array('edit_testsuite' => 1,'new_testsuite'  => 1,'add_testsuite'  => 1,
-                'update_testsuite' => 1);
+                           'update_testsuite' => 1);
 
 $the_tpl = null;
 $action = null;
@@ -66,31 +67,38 @@ $init_opt_transfer = null;
 
 $dummy = ($sortCriteria = config_get('testcase_reorder_by')) == 'NAME' ? '_alpha' : '_externalid';
 $lbl2init = array('warning_empty_testsuite_name' => null,'string_contains_bad_chars' => null,
-                'container_title_testsuite' => null,
-                'btn_reorder_testcases' => 'btn_reorder_testcases' . $dummy);
+                  'container_title_testsuite' => null,
+                  'btn_reorder_testcases' => 'btn_reorder_testcases' . $dummy);
 $l18n = init_labels($lbl2init);
+
+// 20121222 -franciscom
+// Need this trick because current implementation of Ext.ux.requireSessionAndSubmit()
+// discards the original submit button
+if( isset($_REQUEST['doAction']) )
+{
+  $_POST[$_REQUEST['doAction']] = $_REQUEST['doAction'];
+}
 
 foreach ($a_actions as $the_key => $the_val)
 {
-    if (isset($_POST[$the_key]) )
-    {
-        $the_tpl = isset($a_tpl[$the_key]) ? $a_tpl[$the_key] : null;
-        $init_opt_transfer = isset($a_init_opt_transfer[$the_key])?1:0;
-
-        $action = $the_key;
-        $get_c_data = $the_val;
-        $level = 'testsuite';
-        break;
-    }
+  if (isset($_POST[$the_key]) )
+  {
+    $the_tpl = isset($a_tpl[$the_key]) ? $a_tpl[$the_key] : null;
+    $init_opt_transfer = isset($a_init_opt_transfer[$the_key])?1:0;
+  
+    $action = $the_key;
+    $get_c_data = $the_val;
+    $level = 'testsuite';
+    break;
+  }
 }
-
 
 $smarty->assign('level', $level);
 $smarty->assign('page_title',lang_get('container_title_' . $level));
 
 if($init_opt_transfer)
 {
-    $opt_cfg = initializeOptionTransfer($tproject_mgr,$tsuite_mgr,$args,$action);
+  $opt_cfg = initializeOptionTransfer($tproject_mgr,$tsuite_mgr,$args,$action);
 }
 // create  web editor objects
 list($oWebEditor,$webEditorHtmlNames,$webEditorTemplateKey)=initWebEditors($a_keys,$level,$editorCfg);
@@ -881,12 +889,10 @@ function initWebEditors($webEditorKeys,$containerType,$editorCfg)
     switch($containerType)
     {
         case 'testsuite':
-            // $cfg=config_get('testsuite_template');
             $itemTemplateKey='testsuite_template';
             break;
 
         default:
-            //$cfg=null;
             $itemTemplateKey=null;
             break;
     }

@@ -249,10 +249,10 @@ Ext.ux.TableToolbar = Ext.extend(Ext.Toolbar, {
  * before submitting a form.
  *
  * Needed to avoid data loss if session has timed out in background.
- * It operates by making an ajax call to login.php?action=ajaxcheck and gets a
- * response whether the session is still valid or not. If the session is valid
- * submit the form. Otherwise show a login form in a popup to let the user
- * renew the session before submitting.
+ * It operates by making an ajax call to login.php?action=ajaxcheck and 
+ * gets a response whether the session is still valid or not. 
+ * If the session is valid submit the form. 
+ * Otherwise show a login form in a popup to let the user renew the session before submitting.
  *
  * Usage:
  * function validateForm(my_form) {

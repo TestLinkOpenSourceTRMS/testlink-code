@@ -2,32 +2,10 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
- * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.29.2.1 $
- * @modified $Date: 2010/11/16 09:49:07 $  $Author: asimon83 $
+ * @filesource  tcAssignedToUser.php
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
- * @internal revisions:
- *  20101116 - asimon - BUGID 4009: "Test Case Assignment Overview" did not show assignments in some situations
- *  20101019 - Julian - use different exttable_id for different reports
- *  20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                      table state independent from localization
- *  20101013 - asimon - disable "show also closed builds" checkbox when a specific build is selected
- *  20101012 - Julian - added html comment to properly sort by test case column
- *  20101004 - asimon - BUGID 3824: added checkbox do display closed builds
- *  20100927 - asimon - added mouseover information for the exec and edit icons
- *  20100922 - asimon - removed testcase link, replaced by linked icons for editing and execution
- *  20100922 - Julian - BUGID 3714 - refactored default grouping and sorting
- *  20100906 - asimon -  BUGID 3749
- *  20100826 - Julian - removed redundant version indication
- *  20100825 - Julian - make table collapsible if more than 1 table is shown
- *  20100825 - eloff - BUGID 3711 - Hide platform if not used
- *  20100823 - asimon - refactoring: $table_id
- *  20100822 - franciscom - refactoring - getColumnsDefinition()
- *  20100816 - asimon - if priority is enabled, enable default sorting by that column
- *  20100802 - asimon - BUGID 3647, filtering by build
- *  20100731 - asimon - heavy refactoring, modified to include more parameters and flexibility,
- *                      changed table to ExtJS format
+ * @internal revisions
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -35,182 +13,98 @@ require_once("exttable.class.php");
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-$user = new tlUser($db);
-$names = $user->getNames($db);
 
-$results_config = config_get('results');
+$smarty = new TLSmarty();
+$imgSet = $smarty->getImages();
 
-$args=init_args();
-if ($args->user_id > 0) {
-	$args->user_name = $names[$args->user_id]['login'];
-}
+$args = init_args($db);
+$gui = initializeGui($db,$args);
+$statusGui = getStatusGuiCfg();
 
-$tcase_mgr = new testcase($db);
-$tproject_mgr = new testproject($db);
-$tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
-unset($tproject_mgr);
-
-$gui=new stdClass();
-//20101013 - asimon - disable "show also closed builds" checkbox when a specific build is selected
-$gui->show_build_selector = ($args->build_id == 0);
-$gui->glueChar = config_get('testcase_cfg')->glue_character;
-$gui->tproject_name = $tproject_info['name'];
-$gui->warning_msg = '';
-$gui->tableSet = null;
-$gui->show_closed_builds = $args->show_closed_builds;
-
-$history_img = TL_THEME_IMG_DIR . "history_small.png";
-$exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
-$edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
-
-$tplan_mgr = new testplan($db);
-
-$l18n = init_labels(array('tcversion_indicator' => null,'goto_testspec' => null, 'version' => null, 
-						  'testplan' => null, 'assigned_tc_overview' => null,'testcases_assigned_to_user' => null,
-                           'design' => null, 'execution' => null, 'execution_history' => null));
-
-if ($args->show_all_users) {
-	$gui->pageTitle=sprintf($l18n['assigned_tc_overview'], $gui->tproject_name);
-} else {
-	$gui->pageTitle=sprintf($l18n['testcases_assigned_to_user'],$gui->tproject_name, $args->user_name);
-}
-
-$priority = array(LOW => lang_get('low_priority'),MEDIUM => lang_get('medium_priority'),HIGH => lang_get('high_priority'));
-
-$map_status_code = $results_config['status_code'];
-$map_code_status = $results_config['code_status'];
-$map_status_label = $results_config['status_label'];
-$map_statuscode_css = array();
-foreach($map_code_status as $code => $status) {
-	if (isset($map_status_label[$status])) {
-		$label = $map_status_label[$status];
-		$map_statuscode_css[$code] = array();
-		$map_statuscode_css[$code]['translation'] = lang_get($label);
-		$map_statuscode_css[$code]['css_class'] = $map_code_status[$code] . '_text';
-	}
-}
 
 // Get all test cases assigned to user without filtering by execution status
 $options = new stdClass();
 $options->mode = 'full_path';
-
-$filters = array();
-
-// if opened by click on username from page "results by user per build", show all testplans
-//if (!$args->show_inactive_and_closed) {
-//	//BUGID 3575: show only assigned test cases for ACTIVE test plans
-//	$filters['tplan_status'] = 'active';
-//	// BUGID 3749
-//	$filters['build_status'] = 'open';
-//}
-
-$filters['tplan_status'] = 'active';
-
-// BUGID 4009
-if ($args->show_inactive_tplans) {
-	$filters['tplan_status'] = 'all';
-}
-
-if ($args->show_closed_builds) {
-	$filters['build_status'] = 'all';
-} else {
-	$filters['build_status'] = 'open';
-}
-
-// BUGID 3647
-if ($args->build_id) {
-	$filters['build_id'] = $args->build_id;
-	
-	// if build_id is set, show assignments regardless of build and tplan status
-	$filters['build_status'] = 'all';
-	$filters['tplan_status'] = 'all';
-}
-
+$filters = initFilters($args);
 $tplan_param = ($args->tplan_id) ? array($args->tplan_id) : testcase::ALL_TESTPLANS;
-$gui->resultSet=$tcase_mgr->get_assigned_to_user($args->user_id, $args->tproject_id,
-                                                 $tplan_param, $options, $filters);
+
+$tcase_mgr = new testcase($db);
+$gui->resultSet = $tcase_mgr->get_assigned_to_user($args->user_id, $args->tproject_id,
+                                                   $tplan_param, $options, $filters);
 
 $doIt = !is_null($gui->resultSet);
 if( $doIt )
-{	
-	$tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy'));
+{   
+  $tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy'));
+  $tplanSet=array_keys($gui->resultSet);
+  $sql="SELECT name,id FROM {$tables['nodes_hierarchy']} " .
+       "WHERE id IN (" . implode(',',$tplanSet) . ")";
+  $gui->tplanNames=$db->fetchRowsIntoMap($sql,'id');
+  $optColumns = array('user' => $args->show_user_column, 'priority' => $args->priority_enabled);
 
-    $tplanSet=array_keys($gui->resultSet);
-    $sql="SELECT name,id FROM {$tables['nodes_hierarchy']} " .
-         "WHERE id IN (" . implode(',',$tplanSet) . ")";
-    $gui->tplanNames=$db->fetchRowsIntoMap($sql,'id');
+  $whoiam = $args->show_all_users ? 'tcAssignedToUser': 'tcAssignedToMe';
 
-	$optColumns = array('user' => $args->show_user_column, 'priority' => $args->priority_enabled);
+  foreach ($gui->resultSet as $tplan_id => $tcase_set) 
+  {
+    list($columns,$sortByColumn,$show_platforms) = getColumnsDefinition($db,$tplan_id,$optColumns);
+    
+    $rows = array();
+    foreach ($tcase_set as $tcase_platform) 
+    {
+      foreach ($tcase_platform as $tcase) {
+      	$current_row = array();
+      	$tcase_id = $tcase['testcase_id'];
+      	$tcversion_id = $tcase['tcversion_id'];
+      	
+      	if ($args->show_user_column) 
+      	{
+      		$current_row[] = htmlspecialchars($args->userSet[$tcase['user_id']]['login']);
+      	}
+      
+      	$current_row[] = htmlspecialchars($tcase['build_name']);
+      	$current_row[] = htmlspecialchars($tcase['tcase_full_path']);
 
-	foreach ($gui->resultSet as $tplan_id => $tcase_set) {
+        // create linked icons
+        $exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tcase_id});\">" .
+                             "<img title=\"{$gui->l18n['execution_history']}\" src=\"{$imgSet['history_small']}\" /></a> ";
+        
+        $exec_link = "<a href=\"javascript:openExecutionWindow(" .
+                     "{$tcase_id},{$tcversion_id},{$tcase['build_id']}," .
+                     "{$tcase['testplan_id']},{$tcase['platform_id']},'{$whoiam}');\">" .
+                     "<img title=\"{$gui->l18n['execution']}\" src=\"{$imgSet['exec_icon']}\" /></a> ";
+        
+        $edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id});\">" .
+                     "<img title=\"{$gui->l18n['design']}\" src=\"{$imgSet['edit_icon']}\" /></a> ";
+        
+        $current_row[] = "<!-- " . sprintf("%010d", $tcase['tc_external_id']) . " -->" . $exec_history_link .
+                         $exec_link . $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . 
+                         $tcase['tc_external_id'] . " : " . htmlspecialchars($tcase['name']) .
+                         sprintf($gui->l18n['tcversion_indicator'],$tcase['version']);
 
-		$show_platforms = !is_null($tplan_mgr->getPlatforms($tplan_id));
-		$getOpt = array('outputFormat' => 'map');
-		$platforms = $tplan_mgr->getPlatforms($tplan_id,$getOpt);
-		list($columns, $sortByColumn) = getColumnsDefinition($optColumns, $show_platforms,$platforms);
-		$rows = array();
-
-		foreach ($tcase_set as $tcase_platform) {
-			foreach ($tcase_platform as $tcase) {
-				$current_row = array();
-				$tcase_id = $tcase['testcase_id'];
-				$tcversion_id = $tcase['tcversion_id'];
-				
-				if ($args->show_user_column) {
-					$current_row[] = htmlspecialchars($names[$tcase['user_id']]['login']);
-				}
-		
-				$current_row[] = htmlspecialchars($tcase['build_name']);
-				$current_row[] = htmlspecialchars($tcase['tcase_full_path']);
-
-				// create linked icons
-				
-				$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tcase_id});\">" .
-				                     "<img title=\"{$l18n['execution_history']}\" src=\"{$history_img}\" /></a> ";
-				
-				$exec_link = "<a href=\"javascript:openExecutionWindow(" .
-				             "{$tcase_id},{$tcversion_id},{$tcase['build_id']}," .
-				             "{$tcase['testplan_id']},{$tcase['platform_id']});\">" .
-						     "<img title=\"{$l18n['execution']}\" src=\"{$exec_img}\" /></a> ";
-
-				$edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id});\">" .
-				             "<img title=\"{$l18n['design']}\" src=\"{$edit_img}\" /></a> ";
-				
-				$current_row[] = "<!-- " . sprintf("%010d", $tcase['tc_external_id']) . " -->" . $exec_history_link .
-				                 $exec_link . $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . 
-				                 $tcase['tc_external_id'] . " : " . htmlspecialchars($tcase['name']) .
-				        		 sprintf($l18n['tcversion_indicator'],$tcase['version']);
-
-				if ($show_platforms)
-				{
-					$current_row[] = htmlspecialchars($tcase['platform_name']);
-				}
-				
-				if ($args->priority_enabled) {
-					
-					//BUGID 4418 - clean up priority usage
-					$current_row[] = "<!-- " . $tcase['priority'] . " -->" . $priority[priority_to_level($tcase['priority'])];
-				}
-				
-				$last_execution = $tcase_mgr->get_last_execution($tcase_id, $tcversion_id, $tplan_id, 
-				                                                 $tcase['build_id'], 
-				                                                 $tcase['platform_id']);
-				$status = $last_execution[$tcversion_id]['status'];
-				if (!$status) {
-					$status = $map_status_code['not_run'];
-				}
-				
-				$current_row[] = array (
-					"value" => $status,
-					"text" => $map_statuscode_css[$status]['translation'],
-					"cssClass" => $map_statuscode_css[$status]['css_class']
-				);
-				
-				$current_row[] = htmlspecialchars($tcase['creation_ts']) . 
-				                 " (" . get_date_diff($tcase['creation_ts']) . ")";
-				
-				// add this row to the others
-				$rows[] = $current_row;
+        if ($show_platforms)
+        {
+          $current_row[] = htmlspecialchars($tcase['platform_name']);
+        }
+        
+        if ($args->priority_enabled) 
+        {
+          $current_row[] = "<!-- " . $tcase['priority'] . " -->" . $gui->priority[priority_to_level($tcase['priority'])];
+        }
+        
+        $last_execution = $tcase_mgr->get_last_execution($tcase_id, $tcversion_id, $tplan_id, 
+                                                         $tcase['build_id'], 
+                                                         $tcase['platform_id']);
+        $status = $last_execution[$tcversion_id]['status'];
+        if (!$status) 
+        {
+          $status = $statusGui->status_code['not_run'];
+        }
+        $current_row[] = $statusGui->definition[$status];
+                              
+        $current_row[] = htmlspecialchars($tcase['creation_ts']) . 
+                         " (" . get_date_diff($tcase['creation_ts']) . ")";
+        
+        $rows[] = $current_row;
 			}
 		}
 		
@@ -231,7 +125,7 @@ if( $doIt )
 		$table_id .= $tplan_id;
 		
 		$matrix = new tlExtTable($columns, $rows, $table_id);
-		$matrix->title = $l18n['testplan'] . ": " . htmlspecialchars($gui->tplanNames[$tplan_id]['name']);
+		$matrix->title = $gui->l18n['testplan'] . ": " . htmlspecialchars($gui->tplanNames[$tplan_id]['name']);
 		
 		// default grouping by first column, which is user for overview, build otherwise
 		$matrix->setGroupByColumnName(lang_get($columns[0]['title_key']));
@@ -253,7 +147,6 @@ if( $doIt )
 	}
 }
 
-$smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
@@ -284,42 +177,58 @@ function get_date_diff($date) {
  * 
  * @return object of stdClass
  *
- * @since 20090131 - franciscom
- * 
- * @internal revisions:
- *  20100731 - asimon - additional arguments show_all_users and show_inactive_and_closed
+ * @internal revisions
  */
-function init_args()
+function init_args(&$dbHandler)
 {
-    $_REQUEST=strings_stripSlashes($_REQUEST);
-    $args = new stdClass();
-    
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
-    if( $args->tproject_id == 0)
-    {
-        $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    }
+  $_REQUEST=strings_stripSlashes($_REQUEST);
+  $args = new stdClass();
+  
+  $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
+  if( $args->tproject_id == 0)
+  {
+      $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  }  
+  if( $args->tproject_id == 0)
+  {
+    throw new Exception(__FILE__ . ' Can not work without Test project ID => Aborting');
+  }
+  $mgr = new testproject($dbHandler);
+  $info = $mgr->get_by_id($args->tproject_id);
+  $args->tproject_name = $info['name'];
+  $args->testprojectOptions = $info['opt'];
+  unset($info);
 
-    $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
-	$args->build_id = isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id']) ? 
-	                  $_REQUEST['build_id'] : 0;
-
-	// BUGID 4009
-	$args->show_inactive_tplans = isset($_REQUEST['show_inactive_tplans']) ? true : false;
-	                  
-	// $args->show_all_users = isset($_REQUEST['show_all_users']) && $_REQUEST['show_all_users'] =! 0 ? true : false;
-	$args->show_all_users = (isset($_REQUEST['show_all_users']) && $_REQUEST['show_all_users'] =! 0);
-	$args->show_user_column = $args->show_all_users; 
-
-    $args->user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : 0;
+  // $userSet = $userObj->getNames($dbHandler);
+  $args->user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : 0;
+  if( $args->user_id != 0)
+  {
+    $args->user = new tlUser($args->user_id);
+  }
+  else 
+  {
+    $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     if( $args->user_id == 0)
     {
-        $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-        $args->user_name = $_SESSION['currentUser']->login;
-    }	
+      throw new Exception(__FILE__ . ' Can not work without User ID => Aborting');
+    }
+    $args->user = $_SESSION['currentUser'];
+  }	
+  $args->user_name = $args->user->login;
+  $args->userSet =  $args->user->getNames($dbHandler);                  
 
-	// BUGID 3824
-    $show_closed_builds = isset($_REQUEST['show_closed_builds']) ? true : false;
+  
+                  
+  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
+  $args->build_id = isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id']) ? $_REQUEST['build_id'] : 0;
+
+
+  $args->show_inactive_tplans = isset($_REQUEST['show_inactive_tplans']) ? true : false;
+  $args->show_all_users = (isset($_REQUEST['show_all_users']) && $_REQUEST['show_all_users'] =! 0);
+  $args->show_user_column = $args->show_all_users; 
+
+
+  $show_closed_builds = isset($_REQUEST['show_closed_builds']) ? true : false;
 	$show_closed_builds_hidden = isset($_REQUEST['show_closed_builds_hidden']) ? true : false;
 	if ($show_closed_builds) {
 		$selection = true;
@@ -351,47 +260,129 @@ function init_args()
  * get Columns definition for table to display
  *
  */
-function getColumnsDefinition($optionalColumns, $show_platforms, $platforms)
+function getColumnsDefinition($dbHandler,$tplan_id,$optionalColumns)
 {
-  	static $labels;
-	if( is_null($labels) )
-	{
-		$lbl2get = array('build' => null,'testsuite' => null,'testcase' => null,'platform' => null,
-		       			 'user' => null, 'priority' => null,'status' => null, 'version' => null, 'due_since' => null);
-		$labels = init_labels($lbl2get);
-	}
+  static $labels;
+  static $tplan_mgr;
+  if( is_null($labels) )
+  {
+    $tplan_mgr = new testplan($dbHandler);
 
-	$colDef = array();
-	// sort by test suite per default
-	$sortByCol = $labels['testsuite'];
-	
-	// user column is only shown for assignment overview
-	if ($optionalColumns['user']) 
-	{
-		$colDef[] = array('title_key' => 'user', 'width' => 80);
-		// for assignment overview sort by build
-		$sortByCol = $labels['build'];
-	}
-	
-	$colDef[] = array('title_key' => 'build', 'width' => 80);
-	$colDef[] = array('title_key' => 'testsuite', 'width' => 130);
-	$colDef[] = array('title_key' => 'testcase', 'width' => 130);
-	if ($show_platforms)
-	{
-		$colDef[] = array('title_key' => 'platform', 'width' => 50, 'filter' => 'list', 'filterOptions' => $platforms);
-	}
-	
-	// 20100816 - asimon - if priority is enabled, enable default sorting by that column
-	if ($optionalColumns['priority']) 
-	{
-	  	$sortByCol = $labels['priority'];
-	  	$prios_for_filter = array(lang_get('low_priority'),lang_get('medium_priority'),lang_get('high_priority'));
-		$colDef[] = array('title_key' => 'priority', 'width' => 50, 'filter' => 'ListSimpleMatch', 'filterOptions' => $prios_for_filter);
-	}
-	
-	$colDef[] = array('title_key' => 'status', 'width' => 50, 'type' => 'status');
-	$colDef[] = array('title_key' => 'due_since', 'width' => 100);
+    $lbl2get = array('build' => null,'testsuite' => null,'testcase' => null,'platform' => null,
+                     'user' => null, 'priority' => null,'status' => null, 'version' => null, 
+                     'low_priority' => null,'medium_priority' => null,'high_priority' => null,
+                     'due_since' => null);
+    $labels = init_labels($lbl2get);
+  }
 
-	return array($colDef, $sortByCol);
+  $colDef = array();
+  $sortByCol = $labels['testsuite'];
+  
+  // user column is only shown for assignment overview
+  if ($optionalColumns['user']) 
+  {
+    $colDef[] = array('title_key' => 'user', 'width' => 80);
+    $sortByCol = $labels['build'];
+  }
+  
+  $colDef[] = array('title_key' => 'build', 'width' => 80);
+  $colDef[] = array('title_key' => 'testsuite', 'width' => 130);
+  $colDef[] = array('title_key' => 'testcase', 'width' => 130);
+
+  $platforms = $tplan_mgr->getPlatforms($tplan_id,array('outputFormat' => 'map'));
+  if( ($show_plat = !is_null($platforms)) )
+  {
+    $colDef[] = array('title_key' => 'platform', 'width' => 50, 'filter' => 'list', 'filterOptions' => $platforms);
+  }
+  
+  if ($optionalColumns['priority']) 
+  {
+    $sortByCol = $labels['priority'];
+    $colDef[] = array('title_key' => 'priority', 'width' => 50, 'filter' => 'ListSimpleMatch', 
+                      'filterOptions' => array($labels['low_priority'],$labels['medium_priority'],$labels['high_priority']));
+  }
+  
+  $colDef[] = array('title_key' => 'status', 'width' => 50, 'type' => 'status');
+  $colDef[] = array('title_key' => 'due_since', 'width' => 100);
+  
+  return array($colDef, $sortByCol, $show_plat);
+}
+
+
+function initializeGui(&$dbHandler,$argsObj)
+{
+  $gui = new stdClass();
+  $gui->tproject_name = $argsObj->tproject_name;
+
+  // disable "show also closed builds" checkbox when a specific build is selected
+  $gui->show_build_selector = ($argsObj->build_id == 0);
+  $gui->show_closed_builds = $argsObj->show_closed_builds;
+
+  $gui->glueChar = config_get('testcase_cfg')->glue_character;
+  $gui->warning_msg = '';
+  $gui->tableSet = null;
+  $gui->l18n = init_labels(array('tcversion_indicator' => null,'goto_testspec' => null, 'version' => null, 
+                                 'testplan' => null, 'assigned_tc_overview' => null,
+                                 'testcases_assigned_to_user' => null,
+                                 'low_priority' => null,'medium_priority' => null,'high_priority' => null,
+                                 'design' => null, 'execution' => null, 'execution_history' => null));
+
+  $gui->priority = array(LOW => $gui->l18n['low_priority'],MEDIUM => $gui->l18n['medium_priority'],
+                         HIGH => $gui->l18n['high_priority']);
+
+  if ($argsObj->show_all_users) 
+  {
+    $gui->pageTitle=sprintf($gui->l18n['assigned_tc_overview'], $gui->tproject_name);
+  } 
+  else 
+  {
+    $gui->pageTitle=sprintf($gui->l18n['testcases_assigned_to_user'],$gui->tproject_name, $argsObj->user_name);
+  }
+
+  return $gui;  
+}
+
+
+function initFilters($argsObj)
+{
+  $filters = array();
+  
+  $filters['tplan_status'] = $argsObj->show_inactive_tplans ? 'all' : 'active';
+  $filters['build_status'] = $argsObj->show_closed_builds ? 'all' : 'open';
+  
+  if ($argsObj->build_id) 
+  {
+    $filters['build_id'] = $argsObj->build_id;
+    
+    // show assignments regardless of build and tplan status
+    $filters['build_status'] = 'all';
+    $filters['tplan_status'] = 'all';
+  }
+  return $filters;
+}
+
+function getStatusGuiCfg()
+{
+  $cfg = config_get('results');
+
+  $ret = new stdClass();
+  $ret->status_code = $cfg['status_code'];
+  $ret->code_css = array();
+  $ret->definition = array();
+  
+  foreach($cfg['code_status'] as $code => $status) 
+  {
+    if (isset($cfg['status_label'][$status])) 
+    {
+      $label = $cfg['status_label'][$status];
+      $ret->code_css[$code] = array();
+      $ret->code_css[$code]['translation'] = lang_get($label);
+      $ret->code_css[$code]['css_class'] = $cfg['code_status'][$code] . '_text';
+      $ret->definition[$code] = array("value" => $code,
+                                      "text" => $ret->code_css[$code]['translation'],
+                                      "cssClass" => $ret->code_css[$code]['css_class']);
+    }
+  }
+  return $ret;
 }
 ?>

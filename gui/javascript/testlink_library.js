@@ -718,30 +718,28 @@ function openTCEditWindow(tcase_id,tcversion_id)
  * @param tplan_id
  * @param platform_id
  */
-function openExecutionWindow(tc_id, tcversion_id, build_id, tplan_id, platform_id) {
-	var url = "lib/execute/execSetResults.php?" +
-	          "version_id=" + tcversion_id +
-	          "&level=testcase&id=" + tc_id +
-	          "&tplan_id=" + tplan_id +
-	          "&setting_build=" + build_id +
-	          "&setting_platform=" + platform_id;
-
-	// 20101008 - asimon - BUGID 3311
-	var width = getCookie("TCExecPopupWidth");
-	var height = getCookie("TCExecPopupHeight");
-
-	if (width == null)
-	{
-		var width = "800";
-	}
-
-	if (height == null)
-	{
-		var height = "600";
-	}
-	
-	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
-	window.open(fRoot+url, '_blank', windowCfg);
+function openExecutionWindow(tc_id, tcversion_id, build_id, tplan_id, platform_id, whoiam) 
+{
+  var url = "lib/execute/execSetResults.php?" + "version_id=" + tcversion_id +
+            "&level=testcase&id=" + tc_id + "&tplan_id=" + tplan_id +
+            "&setting_build=" + build_id + "&setting_platform=" + platform_id +
+            "&caller=" + whoiam;
+  
+  var width = getCookie("TCExecPopupWidth");
+  var height = getCookie("TCExecPopupHeight");
+  
+  if (width == null)
+  {
+    var width = "800";
+  }
+  
+  if (height == null)
+  {
+    var height = "600";
+  }
+  
+  var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+  window.open(fRoot+url, '_blank', windowCfg);
 }
 
 

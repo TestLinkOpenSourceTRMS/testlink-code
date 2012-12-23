@@ -17,20 +17,15 @@ require_once('common.php');
 require_once('displayMgr.php');
 
 $timerOn = microtime(true);
-
 $templateCfg = templateConfiguration();
-$arrDataSuite = array();
 
 $args = init_args($db);
-
 $tplan_mgr = new testplan($db);
-$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $gui = initializeGui($db,$args,$tplan_mgr);
-$gui->tplan_name = $tplan_info['name'];
-
 $mailCfg = buildMailCfg($gui);
 $metricsMgr = new tlTestPlanMetrics($db);
 $dummy = $metricsMgr->getStatusTotalsByTopLevelTestSuiteForRender($args->tplan_id);
+
 if(is_null($dummy))
 {
 	// no test cases -> no report
@@ -195,6 +190,9 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr)
   $gui->testprojectOptions = new stdClass();
   $gui->testprojectOptions->testPriorityEnabled = $dummy['opt']->testPriorityEnabled;
   $gui->tproject_name = $dummy['name'];
+
+  $info = $tplanMgr->get_by_id($args->tplan_id);
+  $gui->tplan_name = $info['name'];
 
   $gui->platformSet = $tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'map'));
   if( is_null($gui->platformSet) )

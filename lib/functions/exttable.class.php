@@ -335,6 +335,10 @@ class tlExtTable extends tlTable
       $s .= "status_code_label.$code = '" . lang_get($label) . "';\n";
     }
     
+    // 20121223 - franciscom - 
+    // do not understand why this is working because priorities are computed
+    // urgency => test plan attribute * importance => test spec attribute
+    // See $tlCfg->urgencyImportance
     $cfg = config_get('urgency');
     $s .= "prio_code_label = new Array();\n";
     foreach ($cfg['code_label'] as $code => $label) 

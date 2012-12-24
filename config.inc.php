@@ -1294,10 +1294,9 @@ $tlCfg->html_valid_tags_single_line = 'i, b, u, em';
 
 /**
  * Defines the threshold values for filtering TC by a priority according to the formula
- *  ui 		=>	(urgency*importance)
- *  LOW 	=> all Tc's with ui < LOW_Threshold
- *  HIGH 	=> all Tc's with ui >= HIGH_Threshold
- *  MEDIUM  => all Tc's with ui >= LOW_Threshold AND ui < HIGH_Threshold
+ * LOW 	=> all Tc's with (urgency*importance) < LOW_Threshold
+ * HIGH 	=> all Tc's with (urgency*importance) >= HIGH_Threshold
+ * MEDIUM  => all Tc's with (urgency*importance) >= LOW_Threshold AND (urgency*importance) < HIGH_Threshold
  */
 $tlCfg->urgencyImportance = new stdClass();
 $tlCfg->urgencyImportance->threshold['low'] = 3;

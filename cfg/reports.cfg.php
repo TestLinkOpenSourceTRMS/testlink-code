@@ -9,7 +9,7 @@
  * SCOPE: Definition of report/metrics menu 
  * 
  * @internal revisions
- * @since 1.9.5
+ * @since 1.9.6
  *
  * 
  */
@@ -123,7 +123,7 @@ $tlCfg->reports_list['results_matrix'] = array(
 	'url' => 'lib/results/resultsTC.php',
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=results_matrix',
-	'format' => 'format_html,format_ods,format_xls,format_mail_html'
+	'format' => 'format_html,format_ods,format_mail_html'
 );
 $tlCfg->reports_list['list_tc_failed'] = array( 
 	'title' => 'link_report_failed',
@@ -211,14 +211,7 @@ $tlCfg->reports_list['free_tcases'] = array(
 'enabled' => 'all', 'directLink' => '',
 'format' => 'format_html'
 );
-   
-// not will be available on 1.9.4   
-// $tlCfg->reports_list['test_cases_created_per_user'] = array(
-// 'title' => 'link_report_test_cases_created_per_user',
-// 'url' => 'lib/results/tcCreatedPerUserGUI.php',
-// 'enabled' => 'all', 'directLink' => '',
-// 'format' => 'format_html'
-// );
+
 
 clearstatcache();
 $f2inc = TL_ABS_PATH . 'cfg/custom_reports.cfg.php';

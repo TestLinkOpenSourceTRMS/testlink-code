@@ -618,13 +618,16 @@ function is_blank( $p_var )
  * @param string $content the content which should be downloaded
  * @param string $fileName the filename
  **/
-function downloadContentsToFile($content,$fileName)
+function downloadContentsToFile($content,$fileName,$opt=null)
 {
+  $my = array();
+  $my['opt'] = array('Content-Type' => 'text/plain');
+  $my['opt'] = array_merge($my['opt'], (array)$opt);
 	$charSet = config_get('charset');
 
 	ob_get_clean();
 	header('Pragma: public' );
-	header('Content-Type: text/plain; charset='. $charSet . '; name=' . $fileName );
+	header('Content-Type: ' . $my['opt']['Content-Type'] . "; charset={$charSet}; name={$fileName}" );
 	header('Content-Transfer-Encoding: BASE64;' );
 	header('Content-Disposition: attachment; filename="' . $fileName .'"');
 	echo $content;

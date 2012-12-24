@@ -570,17 +570,8 @@ define( 'ERROR_LDAP_UPDATE_FAILED',				1402 );
 define( 'ERROR_LDAP_USER_NOT_FOUND',			1403 );
 define( 'ERROR_LDAP_BIND_FAILED',				1404 );
 
-
 // --------------------------------------------------------------------------------------
 /* [Priority, Urgency, Importance] */
-
-/** @deprecated 1.9.3 use urgencyImportance instead
-    @var array descriptionPriority is computed as Importance x Urgency
-$tlCfg->priority_levels = array( 
-	HIGH => 6, // high priority include 6 and more
-	MEDIUM => 3,
-	LOW => 1
-); */
 
 /** @var array importance levels */
 $tlCfg->importance_levels = array(HIGH => 3,MEDIUM => 2,LOW => 1);

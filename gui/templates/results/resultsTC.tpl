@@ -11,7 +11,7 @@ show Test Results and Metrics
 {lang_get var="labels"
           s="title,date,printed_by,title_test_suite_name,platform,
              title_test_case_title,version,generated_by_TestLink_on, priority,
-             info_resultsTC_report,elapsed_seconds"}
+             info_resultsTC_report,elapsed_seconds,export_as_spreadsheet"}
 
 {include file="inc_head.tpl" openHead="yes"}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
@@ -30,7 +30,13 @@ show Test Results and Metrics
 <body>
 
 {if $gui->printDate == ''}
-<h1 class="title">{$gui->title|escape}</h1>
+<form name="resultsTC" id="resultsTC" METHOD="POST"
+      action="lib/results/resultsTC.php?format=3&tplan_id={$gui->tplan_id}&tproject_id={$gui->tproject_id}">
+<h1 class="title">{$gui->title|escape}
+  <input type="image" name="exportSpreadSheet" id="exportSpreadSheet" 
+         src="{$tlImages.export_excel}" title="{$labels.export_as_spreadsheet}">
+</form>
+</h1>
 
 {else}{* print data to excel *}
 <table style="font-size: larger;font-weight: bold;">
@@ -53,7 +59,7 @@ show Test Results and Metrics
 {/foreach}
 
 <br />
-  <p class="italic">{$labels.info_resultsTC_report}</p>
+<p class="italic">{$labels.info_resultsTC_report}</p>
 <br />
 
 {$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}

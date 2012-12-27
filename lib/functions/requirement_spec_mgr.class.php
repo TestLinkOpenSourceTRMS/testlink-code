@@ -1367,178 +1367,164 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id)
   */
 function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$options=null)
 {
-	static $req_mgr;
-	static $labels;
-    static $missingCfMsg;
-	static $linkedCF;
-	static $messages;
-	static $doProcessCF = false;
-	
-	// init static items
-	if( is_null($labels) )
-	{
-		$labels = array('import_req_spec_created' => '', 'import_req_spec_skipped' => '',
-						'import_req_spec_updated' => '', 'import_req_spec_ancestor_skipped' => '',
-						'import_req_created' => '','import_req_skipped' =>'', 'import_req_updated' => '');
-		foreach($labels as $key => $dummy)
-		{
-			$labels[$key] = lang_get($key);
-		}
-
-		$messages = array();
-  		$messages['cf_warning'] = lang_get('no_cf_defined_can_not_import');
-  		$messages['cfield'] = lang_get('cf_value_not_imported_missing_cf_on_testproject');
-
-    	$linkedCF = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,null,
-    															 	'requirement_spec',null,'name');
-		$doProcessCF = true;
-	}
-	
-	$user_feedback = null;
-    $copy_reqspec = null;
-    $copy_req = null;
-	$getOptions = array('output' => 'minimun');
-	$my['options'] = array('skipFrozenReq' => true);
-	$my['options'] = array_merge($my['options'], (array)$options);
-
-	// echo __CLASS__ . ' ' . __FUNCTION__;
-	// new dBug($options);
-	// new dBug($my['options']);
-
-	$items = $this->xmlToMapReqSpec($xml);
-    
-    $has_filters = !is_null($filters);
-    if($has_filters)
+  static $req_mgr;
+  static $labels;
+  static $missingCfMsg;
+  static $linkedCF;
+  static $messages;
+  static $doProcessCF = false;
+  
+  // init static items
+  if( is_null($labels) )
+  {
+    $labels = array('import_req_spec_created' => '', 'import_req_spec_skipped' => '',
+                    'import_req_spec_updated' => '', 'import_req_spec_ancestor_skipped' => '',
+                    'import_req_created' => '','import_req_skipped' =>'', 'import_req_updated' => '');
+    foreach($labels as $key => $dummy)
     {
-        if(!is_null($filters['requirements']))
-        {
-            foreach($filters['requirements'] as $reqspec_pos => $requirements_pos)
-            {
-                $copy_req[$reqspec_pos] = is_null($requirements_pos) ? null : array_keys($requirements_pos);
-            }
-        }
+      $labels[$key] = lang_get($key);
     }
-   
-    $loop2do = count($items);
-    $container_id[0] = (is_null($parent_id) || $parent_id == 0) ? $tproject_id : $parent_id;
-
-	// items is an array of req. specs
-	$skip_level = -1;
-    for($idx = 0;$idx < $loop2do; $idx++)
+    
+    $messages = array();
+    $messages['cf_warning'] = lang_get('no_cf_defined_can_not_import');
+    $messages['cfield'] = lang_get('cf_value_not_imported_missing_cf_on_testproject');
+    
+    $linkedCF = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,null,
+                                                                'requirement_spec',null,'name');
+    $doProcessCF = true;       
+    $req_mgr =  new requirement_mgr($this->db);
+  }
+  
+  $user_feedback = null;
+  $copy_reqspec = null;
+  $copy_req = null;
+  $getOptions = array('output' => 'minimun');
+  $my['options'] = array('skipFrozenReq' => true);
+  $my['options'] = array_merge($my['options'], (array)$options);
+  
+  $items = $this->xmlToMapReqSpec($xml);
+    
+  $has_filters = !is_null($filters);
+  if($has_filters)
+  {
+    if(!is_null($filters['requirements']))
     {
-        $rspec = $items[$idx]['req_spec'];
-        $depth = $rspec['level'];
-        if( $skip_level > 0 && $depth >= $skip_level)
+      foreach($filters['requirements'] as $reqspec_pos => $requirements_pos)
+      {
+          $copy_req[$reqspec_pos] = is_null($requirements_pos) ? null : array_keys($requirements_pos);
+      }
+    }
+  }
+  
+  new dBug($items);
+   
+  $loop2do = count($items);
+  $container_id[0] = (is_null($parent_id) || $parent_id == 0) ? $tproject_id : $parent_id;
+  
+  // items is an array of req. specs
+  $skip_level = -1;
+  for($idx = 0;$idx < $loop2do; $idx++)
+  {
+    $rspec = $items[$idx]['req_spec'];
+    $depth = $rspec['level'];
+    if( $skip_level > 0 && $depth >= $skip_level)
+    {
+      $msgID = 'import_req_spec_ancestor_skipped';
+      $user_feedback[] = array('doc_id' => $rspec['doc_id'],'title' => $rspec['title'],
+                               'import_status' => sprintf($labels[$msgID],$rspec['doc_id']));
+      continue;
+    }
+    $req_spec_order = isset($rspec['node_order']) ? $rspec['node_order'] : 0;
+    
+    // Check if req spec with same DOCID exists, inside container_id
+    // If there is a hit
+    //    We will go in update 
+    // If Check fails, need to repeat check on WHOLE Testproject.
+    // If now there is a HIT we can not import this branch
+    // If Check fails => we can import creating a new one.
+    //
+    // Important thing:
+    // Working in this way, i.e. doing check while walking the structure to import
+    // we can end importing struct with 'holes'.
+    //
+    $check_in_container = $this->getByDocID($rspec['doc_id'],$tproject_id,$container_id[$depth],$getOptions);
+    new dBug($check_in_container);
+    
+    $skip_level = $depth + 1;
+    $result['status_ok'] = 0;
+    $msgID = 'import_req_spec_skipped';
+    
+    if(is_null($check_in_container))
+    {
+      $check_in_tproject = $this->getByDocID($rspec['doc_id'],$tproject_id,null,$getOptions);
+      if(is_null($check_in_tproject))
+      {
+        $msgID = 'import_req_spec_created';
+        $result = $this->create($tproject_id,$container_id[$depth],$rspec['doc_id'],$rspec['title'],
+                                $rspec['scope'],$rspec['total_req'],$author_id,$rspec['type'],$req_spec_order);
+      }
+    }
+    else
+    {
+      $msgID = 'import_req_spec_updated';
+      $reqSpecID = key($check_in_container);
+      $item = array('id' => $reqSpecID, 'name' => $rspec['title'],'doc_id' => $rspec['doc_id'], 
+                    'scope' => $rspec['scope'],'total_req' => $rspec['total_req'],'modifier_id' => $author_id, 
+                    'type' => $rspec['type'],'node_order' => $req_spec_order); 
+      $result = $this->update($item);
+      $result['id'] = $reqSpecID;
+    }
+    $user_feedback[] = array('doc_id' => $rspec['doc_id'],'title' => $rspec['title'],
+                             'import_status' => sprintf($labels[$msgID],$rspec['doc_id']));
+    new dBug($user_feedback);
+  
+    if( $result['status_ok'] && $doProcessCF && isset($rspec['custom_fields']) && !is_null($rspec['custom_fields']) )
+    {
+      $cf2insert = null;
+      foreach($rspec['custom_fields'] as $cfname => $cfvalue)
+      {
+        $cfname = trim($cfname);
+        if( isset($linkedCF[$cfname]) )
         {
-        	$msgID = 'import_req_spec_ancestor_skipped';
-        	$user_feedback[] = array('doc_id' => $rspec['doc_id'],'title' => $rspec['title'],
-        							 'import_status' => sprintf($labels[$msgID],$rspec['doc_id']));
-        	continue;
-        }
-        
-        $req_spec_order = isset($rspec['node_order']) ? $rspec['node_order'] : 0;
-		
-		// 20100320 - 
-		// Check if req spec with same DOCID exists, inside container_id
-		// If there is a hit
-		//	  We will go in update 
-		// If Check fails, need to repeat check on WHOLE Testproject.
-		// If now there is a HIT we can not import this branch
-		// If Check fails => we can import creating a new one.
-		//
-		// Important thing:
-		// Working in this way, i.e. doing check while walking the structure to import
-		// we can end importing struct with 'holes'.
-		//
- 		$check_in_container = $this->getByDocID($rspec['doc_id'],$tproject_id,$container_id[$depth],$getOptions);
-		$skip_level = $depth + 1;
-		$result['status_ok'] = 0;
-   		$msgID = 'import_req_spec_skipped';
-		
-     	if(is_null($check_in_container))
-		{
-			$check_in_tproject = $this->getByDocID($rspec['doc_id'],$tproject_id,null,$getOptions);
-			if(is_null($check_in_tproject))
-			{
-        		$msgID = 'import_req_spec_created';
-        		$result = $this->create($tproject_id,$container_id[$depth],$rspec['doc_id'],$rspec['title'],
-            		                    $rspec['scope'],$rspec['total_req'],$author_id,$rspec['type'],$req_spec_order);
-        	}
+          $cf2insert[$linkedCF[$cfname]['id']]=array('type_id' => $linkedCF[$cfname]['type'],'cf_value' => $cfvalue);
         }
         else
         {
-        	$msgID = 'import_req_spec_updated';
-		    $reqSpecID = key($check_in_container);
-			// $result = $this->update($reqSpecID,$rspec['doc_id'],$rspec['title'],$rspec['scope'],
-			//						$rspec['total_req'],$author_id,$rspec['type'],$req_spec_order);
-
-			// TICKET 4661
-			$item = array('id' => $reqSpecID, 'name' => $rspec['title'], 
-						  'doc_id' => $rspec['doc_id'], 'scope' => $rspec['scope'],
-						  'total_req' => $rspec['total_req'],'modifier_id' => $author_id, 
-						  'type' => $rspec['type'],'node_order' => $req_spec_order); 
-			$result = $this->update($item);
-       		$result['id'] = $reqSpecID;
+          if( !isset($missingCfMsg[$cfname]) )
+          {
+            $missingCfMsg[$cfname] = sprintf($messages['cfield'],$cfname,$labels['requirement']);
+          }
+          $user_feedback[] = array('doc_id' => $rspec['docid'],'title' => $rspec['title'], 
+                                   'import_status' => $missingCfMsg[$cfname]);
         }
-        $user_feedback[] = array('doc_id' => $rspec['doc_id'],'title' => $rspec['title'],
-                                 'import_status' => sprintf($labels[$msgID],$rspec['doc_id']));
-
-
-        if( $result['status_ok'] && $doProcessCF && 
-        	isset($rspec['custom_fields']) && !is_null($rspec['custom_fields']) )
-        {	
-    			$cf2insert = null;
-    			foreach($rspec['custom_fields'] as $cfname => $cfvalue)
-    			{
-    				$cfname = trim($cfname);
-    		   		if( isset($linkedCF[$cfname]) )
-    		   		{
-    		       		$cf2insert[$linkedCF[$cfname]['id']]=array('type_id' => $linkedCF[$cfname]['type'],
-    		                                                        'cf_value' => $cfvalue);         
-    		   		}
-    		   		else
-    		   		{
-    		       		if( !isset($missingCfMsg[$cfname]) )
-    		       		{
-    		           		$missingCfMsg[$cfname] = sprintf($messages['cfield'],$cfname,$labels['requirement']);
-    		       		}
-    					$user_feedback[] = array('doc_id' => $rspec['docid'],'title' => $rspec['title'], 
-    						 	                 'import_status' => $missingCfMsg[$cfname]);
-    		   		}
-    			}  
- 				if( !is_null($cf2insert) )
- 				{
-    				$this->cfield_mgr->design_values_to_db($cf2insert,$result['id'],null,'simple');
-    			}	
-		}
+      }  
+      if( !is_null($cf2insert) )
+      {
+        $this->cfield_mgr->design_values_to_db($cf2insert,$result['id'],null,'simple');
+      }
+    }
         
         
-        if($result['status_ok'])
+    if($result['status_ok'])
+    {
+      $skip_level = -1;
+      $container_id[$depth+1] = ($reqSpecID = $result['id']); 
+      $reqSet = $items[$idx]['requirements'];
+      $create_req = (!$has_filters || isset($copy_req[$idx])) && !is_null($reqSet);
+      if($create_req)
+      {
+        $items_qty = isset($copy_req[$idx]) ? count($copy_req[$idx]) : count($reqSet);
+        $keys2insert = isset($copy_req[$idx]) ? $copy_req[$idx] : array_keys($reqSet);
+        for($jdx = 0;$jdx < $items_qty; $jdx++)
         {
-        	$skip_level = -1;
-            $container_id[$depth+1] = ($reqSpecID = $result['id']); 
-            $reqSet = $items[$idx]['requirements'];
-            $create_req = (!$has_filters || isset($copy_req[$idx])) && !is_null($reqSet);
-            if($create_req)
-            {
-    			if(is_null($req_mgr))
-    			{
-    				$req_mgr =  new requirement_mgr($this->db);
-    			}
-                
-                $items_qty = isset($copy_req[$idx]) ? count($copy_req[$idx]) : count($reqSet);
-                $keys2insert = isset($copy_req[$idx]) ? $copy_req[$idx] : array_keys($reqSet);
-                for($jdx = 0;$jdx < $items_qty; $jdx++)
-                {
-                    $req = $reqSet[$keys2insert[$jdx]];
-                    $dummy = $req_mgr->createFromMap($req,$tproject_id,$reqSpecID,$author_id,
-                    								 null,$my['options']);
-					$user_feedback = array_merge($user_feedback,$dummy);
-                } 
-            }  // if($create_req)   
-        } // if($result['status_ok'])
-    }    
-    return $user_feedback;
+          $req = $reqSet[$keys2insert[$jdx]];
+          $dummy = $req_mgr->createFromMap($req,$tproject_id,$reqSpecID,$author_id, null,$my['options']);
+          $user_feedback = array_merge($user_feedback,$dummy);
+        } 
+      }  // if($create_req)   
+    } // if($result['status_ok'])
+  }    
+  return $user_feedback;
 }
 
 

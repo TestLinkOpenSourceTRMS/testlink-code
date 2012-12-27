@@ -3,22 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource	requirement_spec_mgr.class.php
- * @author Francisco Mancardi
+ * @filesource  requirement_spec_mgr.class.php
+ * @author      Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
- * @internal revision
- *
- * @since 1.9.4
- * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
- * 20110818 - franciscom - getByDocID() - fix SQL with bad MAX()
- * 20110817 - franciscom - TICKET 4360
- * 20110817 - franciscom - 	get_all_in_testproject() issue due to TICKET 4661
- *							get_by_title() issues with SCOPE and other fields moved to
- *							req revisions table.
- *	
- * 20110812 - franciscom - TICKET 4661: Req. Spec Revisions
+ * @internal revisions
+ * @since 1.9.6
  * 
  */
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
@@ -196,7 +187,6 @@ function get_by_id($id,$options=null)
 	$my['options'] = array('output' => 'full');       
 	$my['options'] = array_merge($my['options'], (array)$options);
        
-    // new dBug($my['options']);   
        
     // First Step get ID of LATEST revision   
 	$info = $this->get_last_child_info($id,array('output' => 'credentials') );       
@@ -1416,8 +1406,6 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
     }
   }
   
-  new dBug($items);
-   
   $loop2do = count($items);
   $container_id[0] = (is_null($parent_id) || $parent_id == 0) ? $tproject_id : $parent_id;
   
@@ -1448,7 +1436,6 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
     // we can end importing struct with 'holes'.
     //
     $check_in_container = $this->getByDocID($rspec['doc_id'],$tproject_id,$container_id[$depth],$getOptions);
-    new dBug($check_in_container);
     
     $skip_level = $depth + 1;
     $result['status_ok'] = 0;
@@ -1476,7 +1463,6 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
     }
     $user_feedback[] = array('doc_id' => $rspec['doc_id'],'title' => $rspec['title'],
                              'import_status' => sprintf($labels[$msgID],$rspec['doc_id']));
-    new dBug($user_feedback);
   
     if( $result['status_ok'] && $doProcessCF && isset($rspec['custom_fields']) && !is_null($rspec['custom_fields']) )
     {
@@ -1882,7 +1868,6 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 		$val2add = '';
 		$fields2insert = 'parent_id,id,revision,status,doc_id,name,scope,type,log_message';
 
-		// echo __FUNCTION__;new dBug($item);
 		
 		foreach($optActorPairs as $main => $sec)
 		{

@@ -343,6 +343,10 @@ $tlCfg->temp_dir = TL_ABS_PATH . 'gui' . DIRECTORY_SEPARATOR . 'templates_c' . D
 //                          $tlCfg->theme_dir . 'images/company_logo.png" />';
 $tlCfg->company_logo = 'company_logo.png';
 
+$tlCfg->logo_login = 'tl-logo-transparent-25.png';
+$tlCfg->logo_navbar = 'tl-solo-logo-transparent-25.png';
+
+
 /** Login page could show an informational text */
 $tlCfg->login_info = ''; // Empty by default
 
@@ -544,18 +548,14 @@ $tlCfg->metrics_dashboard->show_test_plan_status = false;
  * Leave text values empty if you would like to hide parameters.
  */
 $tlCfg->document_generator->company_name = 'TestLink Community [configure $tlCfg->document_generator->company_name]';
-$tlCfg->document_generator->company_copyright = '2009 &copy; TestLink Community';
+$tlCfg->document_generator->company_copyright = '2012 &copy; TestLink Community';
 $tlCfg->document_generator->confidential_msg = '';
 
 // Logo for generated documents
-$tlCfg->document_generator->company_logo = 'company_logo.png';
+$tlCfg->document_generator->company_logo = $tlCfg->logo_login;
 $tlCfg->document_generator->company_logo_height = '53';
 
 /** CSS used in printed html documents */
-
-// BUGID 3424
-// $tlCfg->document_generator->css_template = $tlCfg->theme_dir . 'css/tl_documents.css';
-// CSS file for Test Specification Document, Test Plan Report, Test Report and Test Case Print View
 $tlCfg->document_generator->css_template = 'css/tl_documents.css';
 
 // CSS file for Requirement Specification Document, Requirement and Requirement Spec Print View

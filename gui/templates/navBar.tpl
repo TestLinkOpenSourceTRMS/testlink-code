@@ -20,8 +20,7 @@ title bar + menu
 <body style="min-width: 800px;">
 <div style="float:left; height: 100%;">
 	<a href="index.php" target="_parent">
-	<img alt="Company logo"	title="logo" style="width: 115px; height: 53px;" 
-	src="{$smarty.const.TL_THEME_IMG_DIR}{$tlCfg->company_logo}" /></a>
+	<img alt="Company logo"	title="logo" src="{$smarty.const.TL_THEME_IMG_DIR}{$tlCfg->logo_navbar}" /></a>
 </div>
 	
 <div class="menu_title">

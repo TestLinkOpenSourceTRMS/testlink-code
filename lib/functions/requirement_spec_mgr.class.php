@@ -10,7 +10,7 @@
  *
  * @internal revisions
  * @since 1.9.6
- * 
+ * 20121228 - franciscom - TICKET 5442: Deleting a req spec, leaves record on nodes hierachy regarding req spec revision 
  */
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
 require_once( dirname(__FILE__) . '/requirements.inc.php' );
@@ -31,7 +31,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   var $node_types_id_descr;
   var $attachmentTableName;
   var $field_size;
-
+  var $req_mgr;
 
   /*
     contructor
@@ -41,23 +41,23 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     returns: instance of requirement_spec_mgr
 
   */
-	function __construct(&$db)
-	{
-		$this->db = &$db;
-		$this->cfield_mgr = new cfield_mgr($this->db);
-		$this->tree_mgr =  new tree($this->db);
+  function __construct(&$db)
+  {
+    $this->db = &$db;
+    $this->cfield_mgr = new cfield_mgr($this->db);
+    $this->tree_mgr =  new tree($this->db);
+    $this->req_mgr = new requirement_mgr($this->db);
 
-		$this->node_types_descr_id = $this->tree_mgr->get_available_node_types();
-		$this->node_types_id_descr = array_flip($this->node_types_descr_id);
-		$this->my_node_type = $this->node_types_descr_id['requirement_spec'];
+    $this->node_types_descr_id = $this->tree_mgr->get_available_node_types();
+    $this->node_types_id_descr = array_flip($this->node_types_descr_id);
+    $this->my_node_type = $this->node_types_descr_id['requirement_spec'];
 
-        $this->attachmentTableName = 'req_specs';
-		tlObjectWithAttachments::__construct($this->db,$this->attachmentTableName);
-	    $this->object_table=$this->tables['req_specs'];
+    $this->attachmentTableName = 'req_specs';
+    tlObjectWithAttachments::__construct($this->db,$this->attachmentTableName);
+    $this->object_table=$this->tables['req_specs'];
 
- 		$this->field_size = config_get('field_size');
-
-	}
+    $this->field_size = config_get('field_size');
+  }
 
 	/*
 	  function: get_export_file_types
@@ -269,43 +269,39 @@ function get_by_id($id,$options=null)
  */
 function get_coverage($id)
 {
-	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $req_mgr = new requirement_mgr($this->db);
-    // $statusFilter = " AND status IN('" . strtoupper(VALID_REQ)."','".VALID_REQ."') ";
-    // $order_by = " ORDER BY req_doc_id,title";
-	$output = array( 'covered' => array(), 'uncovered' => array(),'nottestable' => array());
+  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  $output = array( 'covered' => array(), 'uncovered' => array(),'nottestable' => array());
 
-    // function get_requirements($id, $range = 'all', $testcase_id = null, $options=null, $filters = null)
-    $getOptions = array('order_by' => " ORDER BY req_doc_id,title");
-	$getFilters = array('status' => VALID_REQ);
-	$validReq = $this->get_requirements($id,'all',null,$getOptions,$getFilters);
-	
-	// get not-testable requirements
-	$getFilters = array('status' => NON_TESTABLE_REQ);
-    $output['nottestable'] = $this->get_requirements($id,'all',null,$getOptions,$getFilters);   
+  // function get_requirements($id, $range = 'all', $testcase_id = null, $options=null, $filters = null)
+  $getOptions = array('order_by' => " ORDER BY req_doc_id,title");
+  $getFilters = array('status' => VALID_REQ);
+  $validReq = $this->get_requirements($id,'all',null,$getOptions,$getFilters);
+  
+  // get not-testable requirements
+  $getFilters = array('status' => NON_TESTABLE_REQ);
+  $output['nottestable'] = $this->get_requirements($id,'all',null,$getOptions,$getFilters);   
+
+  // get coverage
+  if (sizeof($validReq))
+  {
+    foreach ($validReq as $req)
+    {
+      // collect TC for REQ
+      $arrCoverage = $this->req_mgr->get_coverage($req['id']);
       
-       
-	// get coverage
-	if (sizeof($validReq))
-	{
-		foreach ($validReq as $req)
-		{
-			// collect TC for REQ
-			$arrCoverage = $req_mgr->get_coverage($req['id']);
-
-			if (count($arrCoverage) > 0) 
-			{
-				// add information about coverage
-				$req['coverage'] = $arrCoverage;
-				$output['covered'][] = $req;
-			} 
-			else 
-			{
-				$output['uncovered'][] = $req;
-			}
-		}
-	}
-	return $output;
+      if (count($arrCoverage) > 0) 
+      {
+        // add information about coverage
+        $req['coverage'] = $arrCoverage;
+        $output['covered'][] = $req;
+      } 
+      else 
+      {
+        $output['uncovered'][] = $req;
+      }
+    }
+  }
+  return $output;
 }
 
 
@@ -318,35 +314,33 @@ function get_coverage($id)
  */
 function get_metrics($id)
 {
-	$output = array('notTestable' => 0, 'total' => 0, 'covered' => 0, 'uncovered' => 0);
-	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	$getFilters = array('status' => NON_TESTABLE_REQ);
-    $output['notTestable'] = $this->get_requirements_count($id,'all',null,$getFilters);
+  $output = array('notTestable' => 0, 'total' => 0, 'covered' => 0, 'uncovered' => 0);
+  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  $getFilters = array('status' => NON_TESTABLE_REQ);
+  $output['notTestable'] = $this->get_requirements_count($id,'all',null,$getFilters);
 
-	$sql = "/* $debugMsg */ SELECT count(0) AS cnt FROM {$this->tables['requirements']} WHERE srs_id={$id}";
-	$output['total'] = $this->db->fetchFirstRowSingleColumn($sql,'cnt');
+  $sql = "/* $debugMsg */ SELECT count(0) AS cnt FROM {$this->tables['requirements']} WHERE srs_id={$id}";
+  $output['total'] = $this->db->fetchFirstRowSingleColumn($sql,'cnt');
 
-    //
-	$sql = "/* $debugMsg */ SELECT total_req FROM {$this->object_table} WHERE id={$id}";
-	$output['expectedTotal'] = $this->db->fetchFirstRowSingleColumn($sql,'total_req');
-	if ($output['expectedTotal'] == 0)
-	{
-		$output['expectedTotal'] = $output['total'];
-	}
-	
-	$sql = "/* $debugMsg */ SELECT DISTINCT REQ.id " .
-	       " FROM {$this->tables['requirements']} REQ " .
-	       " JOIN {$this->tables['req_coverage']} REQ_COV ON REQ.id=REQ_COV.req_id" .
-	       " WHERE REQ.srs_id={$id} " ;
-		   
-	$rs = $this->db->get_recordset($sql);
-	if (!is_null($rs))
-	{
-		$output['covered'] = count($rs);
-	}
-	$output['uncovered'] = $output['expectedTotal'] - $output['total'];
-
-	return $output;
+  $sql = "/* $debugMsg */ SELECT total_req FROM {$this->object_table} WHERE id={$id}";
+  $output['expectedTotal'] = $this->db->fetchFirstRowSingleColumn($sql,'total_req');
+  if ($output['expectedTotal'] == 0)
+  {
+    $output['expectedTotal'] = $output['total'];
+  }
+  
+  $sql = "/* $debugMsg */ SELECT DISTINCT REQ.id " .
+         " FROM {$this->tables['requirements']} REQ " .
+         " JOIN {$this->tables['req_coverage']} REQ_COV ON REQ.id=REQ_COV.req_id" .
+         " WHERE REQ.srs_id={$id} " ;
+  $rs = $this->db->get_recordset($sql);
+  if (!is_null($rs))
+  {
+    $output['covered'] = count($rs);
+  }
+  $output['uncovered'] = $output['expectedTotal'] - $output['total'];
+  
+  return $output;
 }
 
   /*
@@ -505,50 +499,55 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
 
   */
 function delete($id)
-{
-    $req_mgr = new requirement_mgr($this->db);
-	
-	// ATTENTION: CF linked to REVISION 
-	// Delete Custom fields
-	$this->cfield_mgr->remove_all_design_values_from_node($id);
-	$result = $this->attachmentRepository->deleteAttachmentsFor($id,"req_specs");
+{   
+  
+  // ATTENTION: CF linked to REVISION 
+  $this->cfield_mgr->remove_all_design_values_from_node($id);
+  $result = $this->attachmentRepository->deleteAttachmentsFor($id,"req_specs");
+  
+  // delete requirements (one type req spec children) with all related data
+  // coverage, attachments, custom fields, etc
+  $requirements_info = $this->get_requirements($id);
+  if(!is_null($requirements_info))
+  {
+    $items = null;
+    foreach($requirements_info as $req)
+    {
+      $items[] = $req["id"];
+    }
+    $this->req_mgr->delete($items);
+  }
+  
+  // delete revisions
+  $sqlx = array();
+  $sqlx[] = "DELETE FROM {$this->tables['req_specs_revisions']} WHERE parent_id = {$id}";
+  $sqlx[] = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE parent_id = {$id}";
+  foreach($sqlx as $sql)
+  {
+    $result = $this->db->exec_query($sql);
+  }
 
-	// delete requirements (one type req spec children) with all related data
-	// coverage, attachments, custom fields, etc
-	$requirements_info = $this->get_requirements($id);
-	if(!is_null($requirements_info))
-	{
-		$items = null;
-		foreach($requirements_info as $req)
-		{
-			$items[] = $req["id"];
-		}
-		$req_mgr->delete($items);
-	}
-	
-	// TICKET 4661
-	// delete revisions
-	$sql = "DELETE FROM {$this->tables['req_specs_revisions']} WHERE parent_id = {$id}";
-	$result = $this->db->exec_query($sql);
-		  
-	// delete specification itself
-	$sql = "DELETE FROM {$this->object_table} WHERE id = {$id}";
-	$result = $this->db->exec_query($sql);
-	
-	$sql = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$id}";
-	$result = $this->db->exec_query($sql);
+  // delete specification itself
+  $sqlx = array();
+  $sqlx[] = "DELETE FROM {$this->object_table} WHERE id = {$id}";
+  $sqlx[] = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$id}";
+  foreach($sqlx as $sql)
+  {
+    $result = $this->db->exec_query($sql);
+  }
 
-	if($result)
-	{
-		$result = 'ok';
-	}
-	else
-	{
-		$result = 'The DELETE SRS request fails.';
-	}
-
-	return $result;
-} // function end
+  // This is a poor implementation (fman 20121228) 
+  if($result)
+  {
+    $result = 'ok';
+  }
+  else
+  {
+    $result = 'The DELETE SRS request fails.';
+  }
+  
+  return $result;
+}
 
 
 /**
@@ -558,9 +557,8 @@ function delete($id)
  */
 function delete_deep($id)
 {
-	// BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
-    $this->tree_mgr->delete_subtree_objects($id,$id,'',array('requirement' => 'exclude_my_children'));
-    $this->delete($id);
+  $this->tree_mgr->delete_subtree_objects($id,$id,'',array('requirement' => 'exclude_my_children'));
+  $this->delete($id);
 }
 
 
@@ -585,15 +583,14 @@ function delete_deep($id)
 // 
 function get_requirements($id, $range = 'all', $testcase_id = null, $options=null, $filters = null)
 {
-	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $req_mgr = new requirement_mgr($this->db);
-	$my['options'] = array( 'order_by' => " ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id", 
-	                        'output' => 'standard');
-	$my['options'] = array_merge($my['options'], (array)$options);
+  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  $my['options'] = array( 'order_by' => " ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id", 
+                          'output' => 'standard');
+  $my['options'] = array_merge($my['options'], (array)$options);
 
-    // null => do not filter
-	$my['filters'] = array('status' => null, 'type' => null);
-    $my['filters'] = array_merge($my['filters'], (array)$filters);
+  // null => do not filter
+  $my['filters'] = array('status' => null, 'type' => null);
+  $my['filters'] = array_merge($my['filters'], (array)$filters);
 
     switch($my['options']['output'])
     {
@@ -610,7 +607,7 @@ function get_requirements($id, $range = 'all', $testcase_id = null, $options=nul
 	
 	$sql = '';
 	$tcase_filter = '';
-    // First Step - get only req info
+  // First Step - get only req info
 	$sql = "/* $debugMsg */ SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ ";
 	switch($range)
 	{
@@ -645,7 +642,7 @@ function get_requirements($id, $range = 'all', $testcase_id = null, $options=nul
 	    {
 			$getOptions = array('order_by' => $my['options']['order_by']);
 		}
-		$rs = $req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']);	    	
+		$rs = $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']);	    	
         
         switch($my['options']['output'])
         {
@@ -957,8 +954,7 @@ function getReqTree($id)
  */
 function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 {
-	static $req_mgr;
-	 
+
 	// manage missing keys
 	$optionsForExport=array('RECURSIVE' => true);
 	foreach($optionsForExport as $key => $value)
@@ -996,11 +992,7 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 	    	}
 	    	else if ($cNode['node_table'] == 'requirements')
 	    	{
-	    	  	if( is_null($req_mgr) )
-	    	  	{
-	    	      $req_mgr = new requirement_mgr($this->db);
-	    		}
-	    		$xmlData .= $req_mgr->exportReqToXML($cNode['id'],$tproject_id);
+          $xmlData .= $this->req_mgr->exportReqToXML($cNode['id'],$tproject_id);
 	    	}
 	    }
 	}    
@@ -1055,8 +1047,7 @@ function xmlToMapReqSpec($xml_item,$level=0)
 {
     static $iterations=0;
     static $mapped;
-    static $req_mgr;
-    
+
     // Attention: following PHP Manual SimpleXML documentation, Please remember to cast
     //            before using data from $xml,
     if( is_null($xml_item) )
@@ -1099,14 +1090,10 @@ function xmlToMapReqSpec($xml_item,$level=0)
     // Process children
     if( property_exists($xml_item,'requirement') )	              
     {
-        if( is_null($req_mgr) )
-        {
-            $req_mgr = new requirement_mgr($this->db);
-        }
         $loop2do=count($xml_item->requirement);
         for($idx=0; $idx <= $loop2do; $idx++)
         {
-            $xml_req=$req_mgr->xmlToMapRequirement($xml_item->requirement[$idx]);
+            $xml_req=$this->req_mgr->xmlToMapRequirement($xml_item->requirement[$idx]);
             if(!is_null($xml_req))
             { 
                 $fdx=count($mapped)-1;
@@ -1357,7 +1344,6 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id)
   */
 function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$options=null)
 {
-  static $req_mgr;
   static $labels;
   static $missingCfMsg;
   static $linkedCF;
@@ -1382,7 +1368,6 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
     $linkedCF = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,null,
                                                                 'requirement_spec',null,'name');
     $doProcessCF = true;       
-    $req_mgr =  new requirement_mgr($this->db);
   }
   
   $user_feedback = null;
@@ -1504,7 +1489,7 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
         for($jdx = 0;$jdx < $items_qty; $jdx++)
         {
           $req = $reqSet[$keys2insert[$jdx]];
-          $dummy = $req_mgr->createFromMap($req,$tproject_id,$reqSpecID,$author_id, null,$my['options']);
+          $dummy = $this->req_mgr->createFromMap($req,$tproject_id,$reqSpecID,$author_id, null,$my['options']);
           $user_feedback = array_merge($user_feedback,$dummy);
         } 
       }  // if($create_req)   

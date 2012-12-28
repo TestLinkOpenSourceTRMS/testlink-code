@@ -34,9 +34,9 @@ $_SESSION['testlink_version'] = TL_VERSION;
     TestLink <?php echo $_SESSION['testlink_version'] ?> Installation</h1>
 <div class="tlLiner">&nbsp;</div>
 <div class="tlStory">
-		<p>You are installing TestLink 1.9.5 </p>
-		<p><b>Migration from 1.9.3 to 1.9.5 has to be done MANUALLY.</b></p> 
-		<p>Please read Section on README file or go to www.teamst.org (Forum: TestLink 1.9.5 News,changes, etc) </p>
+		<p>You are installing TestLink <?php echo $_SESSION['testlink_version'] ?> </p>
+		<p><b>Migration from 1.9.3 to <?php echo $_SESSION['testlink_version'] ?> has to be done MANUALLY.</b></p> 
+		<p>Please read Section on README file or go to www.teamst.org (Forum: TestLink 1.9.4 and greater News,changes, etc) </p>
 		<p>Open <a target="_blank" href="../docs/testlink_installation_manual.pdf">Installation manual</a>
 		for more information or troubleshooting. You could also look at
 		<a href="../README">README</a> or <a href="../CHANGELOG">Changes Log</a>.

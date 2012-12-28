@@ -12,8 +12,7 @@
  * @copyright 	2009,2012 TestLink community 
  *
  * @internal revisions
- * @since 1.9.4
- * 20120817 - franciscom - include config & common to use config_get() 
+ * @since 1.9.6
  **/
 require_once('..' . DIRECTORY_SEPARATOR . 'config.inc.php');
 require_once('..' . DIRECTORY_SEPARATOR . 'lib'. DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'common.php');

@@ -6,23 +6,17 @@
  * Check configuration and system 
  * Using: Installer, sysinfo.php and Login
  * 
- * @filesource	configCheck.php
- * @package 	TestLink
- * @author 		Martin Havlat
- * @copyright 	2007-2012, TestLink community 
- * @link 		http://www.teamst.org/index.php
- * @see			sysinfo.php
+ * @filesource  configCheck.php
+ * @package     TestLink
+ * @author      Martin Havlat
+ * @copyright   2007-2012, TestLink community 
+ * @link        http://www.teamst.org/index.php
+ * @see         sysinfo.php
  *
  * @internal revisions
- * @since 1.9.4
- *	20120823 - franciscom - TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for 
- *										 PHP on WINDOWS version 5.3 and higher
- *	20120817 - franciscom - changes in check_dir_permissions()	
- * 	20120411 - franciscom - TICKET 4969: Add Setting to Force HTTPS
- * 	20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
+ * @since 1.9.6
  *
  **/
-// ---------------------------------------------------------------------------------------------------
 
 /**
  * get home URL
@@ -897,32 +891,35 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
  */
 function check_dir_permissions(&$errCounter)
 {
-	$dirs_to_check = array('gui' . DIRECTORY_SEPARATOR . 'templates_c' => null, 
-						   'logs' => 'log_path','upload_area' => 'repositoryPath');
+  $dirs_to_check = array('gui' . DIRECTORY_SEPARATOR . 'templates_c' => null, 
+                         'logs' => 'log_path','upload_area' => 'repositoryPath');
 
-	$final_msg = '';
-	$msg_ko = "<td><span class='tab-error'>Failed!</span></td></tr>";
-	$msg_ok = "<td><span class='tab-success'>OK</span></td></tr>";
-	$checked_path_base = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
+  $final_msg = '';
+  $msg_ko = "<td><span class='tab-error'>Failed!</span></td></tr>";
+  $msg_ok = "<td><span class='tab-success'>OK</span></td></tr>";
+  $checked_path_base = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
 
-  	$final_msg .= "<tr><td>For security reason we suggest that directories tagged with [S]" .
-  				  " on following messages, will be made UNREACHEABLE from browser</td>";
+  $final_msg .= "<tr><td>For security reasons we suggest that directories tagged with [S]" .
+                " on following messages, will be made UNREACHEABLE from browser.<br>" .
+                "<span class='tab-success'>Give a look to README file, section 'Installation & SECURITY' " . 
+                " to understand how to change the defaults.</span>" .
+                "</td>";
 
-	foreach ($dirs_to_check as $the_d => $how) 
-	{
-  		if( is_null($how) )
-  		{
-  			// Correct relative path for installer.
-			$needsLock = '';
-			$the_d = $checked_path_base . DIRECTORY_SEPARATOR . $the_d;
-		}
-		else
-		{
-			$needsLock = '[S] ';
-			$the_d = config_get($how);	
-		}
-		
-  		$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists <b>{$needsLock}</b<</td>";
+  foreach ($dirs_to_check as $the_d => $how) 
+  {
+    if( is_null($how) )
+    {
+      // Correct relative path for installer.
+      $needsLock = '';
+      $the_d = $checked_path_base . DIRECTORY_SEPARATOR . $the_d;
+    }
+    else
+    {
+      $needsLock = '[S] ';
+      $the_d = config_get($how);	
+    }
+    
+    $final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists <b>{$needsLock}</b<</td>";
   
 		if(!file_exists($the_d)) 
 		{

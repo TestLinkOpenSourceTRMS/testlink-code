@@ -6,17 +6,14 @@
  * create or update TestLink database 
  * 
  * @filesource  installNewDB.php
- * @package 	TestLink
- * @author 		Francisco Mancardi
- * @copyright 	2008,2011 TestLink community
- * @copyright 	inspired by
- * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
+ * @package     TestLink
+ * @author      Francisco Mancardi
+ * @copyright   2008,2012 TestLink community
+ * @copyright   inspired by
+ *              Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
  *
  * @internal revisions
- * @since 1.9.4
- * 20120209 - franciscom - TICKET 4914: Create View - tcversions_last_active - new function drop_views()
- * 20120129 - franciscom - TICKET
- * 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
+ * @since 1.9.6
  * 
  **/
 

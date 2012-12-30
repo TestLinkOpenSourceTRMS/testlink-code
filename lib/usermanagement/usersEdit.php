@@ -23,8 +23,6 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $args = init_args();
 
-$passwordSendMethod = config_get('password_reset_send_method');
-
 $op = new stdClass();
 $op->user_feedback = '';
 $highlight = initialize_tabsmenu();
@@ -59,6 +57,7 @@ switch($args->doAction)
 		$highlight->edit_user = 1;
 		$user = new tlUser($args->user_id);
 		$user->readFromDB($db);
+		$passwordSendMethod = config_get('password_reset_send_method');
 		$op = createNewPassword($db,$args,$user,$passwordSendMethod);
 		break;
 	
@@ -91,6 +90,7 @@ renderGui($smarty,$args,$templateCfg);
  */
 function init_args()
 {
+	$_REQUEST=strings_stripSlashes($_REQUEST);
 	$iParams = array(
 			"delete" => array(tlInputParameter::INT_N),
 			"user" => array(tlInputParameter::INT_N),
@@ -109,10 +109,7 @@ function init_args()
 	);
 
 	$args = new stdClass();
-  	R_PARAMS($iParams,$args);
- 	
-  	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
+  R_PARAMS($iParams,$args);
 
 	return $args;
 }

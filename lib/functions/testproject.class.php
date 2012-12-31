@@ -313,8 +313,8 @@ protected function getTestProject($condition = null, $opt=null)
 	if (!is_null($condition) )
 	{
 		$sql .= " AND " . $condition;
-    }
-    
+  }
+  
 	$rs = $this->db->get_recordset($sql);
 	if($doParse)
 	{
@@ -332,7 +332,7 @@ protected function getTestProject($condition = null, $opt=null)
  * 
  * @return array map with test project info; null if query fails
  */
-public function get_by_name($name, $addClause = null)
+public function get_by_name($name, $addClause = null, $opt=null)
 {
 	$condition = "nodes_hierarchy.name='" . $this->db->prepare_string($name) . "'";
 	$condition .= is_null($addClause) ? '' : " AND {$addClause} ";
@@ -2701,8 +2701,6 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 	
 	
 	// Approach Change - get all 
-	echo $sql;
-	
 	$rs = $this->db->fetchRowsIntoMap($sql,'id');
 	if( count($rs) == 0 )
 	{

@@ -80,7 +80,7 @@ if ($args->tprojectID)
    	    }
    	    
         $tcase_mgr = new testcase ($db);
-        $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase)
+        $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase);
         $filter['by_tc_id'] = " AND NH_TCV.parent_id = {$tcaseID} ";
     }
     else

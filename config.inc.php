@@ -344,7 +344,7 @@ $tlCfg->temp_dir = TL_ABS_PATH . 'gui' . DIRECTORY_SEPARATOR . 'templates_c' . D
 $tlCfg->company_logo = 'company_logo.png';
 
 $tlCfg->logo_login = 'tl-logo-transparent-25.png';
-$tlCfg->logo_navbar = 'tl-solo-logo-transparent-25.png';
+$tlCfg->logo_navbar = 'tl-logo-transparent-12.5.png';
 
 
 /** Login page could show an informational text */

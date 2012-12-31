@@ -2151,19 +2151,17 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    }
 		elseif ($this->_isTestCaseExternalIDPresent())
 		{
-            $fromExternal = true;
-			$tcaseExternalID = $this->args[self::$testCaseExternalIDParamName]; 
-		    $tcaseCfg=config_get('testcase_cfg');
-		    $glueCharacter=$tcaseCfg->glue_character;
-		    $tcaseID=$this->tcaseMgr->getInternalID($tcaseExternalID,$glueCharacter);
-            $status = $tcaseID > 0 ? true : false;
-            
-            //Invalid TestCase ID
-            if( !$status )
-            {
-              	$my_errors[] = new IXR_Error(INVALID_TESTCASE_EXTERNAL_ID, 
-                                             sprintf($messagePrefix . INVALID_TESTCASE_EXTERNAL_ID_STR,$tcaseExternalID));                  
-            }
+      $fromExternal = true;
+      $tcaseExternalID = $this->args[self::$testCaseExternalIDParamName]; 
+      $tcaseID = $this->tcaseMgr->getInternalID($tcaseExternalID);
+      $status = $tcaseID > 0 ? true : false;
+      
+      //Invalid TestCase ID
+      if( !$status )
+      {
+        	$my_errors[] = new IXR_Error(INVALID_TESTCASE_EXTERNAL_ID, 
+                                       sprintf($messagePrefix . INVALID_TESTCASE_EXTERNAL_ID_STR,$tcaseExternalID));                  
+      }
 		}
 	    if( $status )
 	    {

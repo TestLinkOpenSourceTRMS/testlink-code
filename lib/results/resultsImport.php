@@ -625,108 +625,101 @@ function init_args(&$dbHandler)
            tester_id: tester_id if controls OK  
            msg -> array with localized messages  
 
-  @internal revisions:
-  20100926 - franciscom - BUGID 3751: New attribute "execution type" makes old XML import files incompatible
-  						  Passed $execValues BY REFERENCE to allow change of execution type if needed	
+  @internal revisions
 */
 function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,&$execValues,&$columnDef)
 {
-	$tables = tlObjectWithDB::getDBTables(array('users','execution_bugs'));
-
-    $checks=array('status_ok' => false, 'tcase_id' => 0, 'tester_id' => 0, 'msg' => array()); 
-	
-	$tcase_id=$execValues['tcase_id'];
-	$tcase_external_id=trim($execValues['tcase_external_id']);
-		
-    // external_id has precedence over internal id
-    $using_external_id = ($tcase_external_id != "");
-    if($using_external_id)
+  $tables = tlObjectWithDB::getDBTables(array('users','execution_bugs'));
+  $checks=array('status_ok' => false, 'tcase_id' => 0, 'tester_id' => 0, 'msg' => array()); 
+  $tcase_id=$execValues['tcase_id'];
+  $tcase_external_id=trim($execValues['tcase_external_id']);
+  $using_external_id = ($tcase_external_id != ""); // external_id has precedence over internal id
+  if($using_external_id)
+  {
+    // need to get internal id  
+    $checks['tcase_id'] = $tcase_mgr->getInternalID($tcase_external_id);
+    $checks['status_ok'] = intval($checks['tcase_id']) > 0 ? true : false;
+    if(!$checks['status_ok'])
     {
-        // need to get internal id  
-        
-        $checks['tcase_id'] = $tcase_mgr->getInternalID($tcase_external_id,$tcaseCfg->glue_character);
-        $checks['status_ok'] = intval($checks['tcase_id']) > 0 ? true : false;
-        if(!$checks['status_ok'])
-        {
-           $checks['msg'][]=sprintf(lang_get('tcase_external_id_do_not_exists'),$tcase_external_id); 
-        }
+       $checks['msg'][]=sprintf(lang_get('tcase_external_id_do_not_exists'),$tcase_external_id); 
+    }
+  }
+  else
+  {
+    // before using internal id, I want to check it's a number  
+    $checks['tcase_id'] = $tcase_id;
+    $checks['status_ok'] = intval($checks['tcase_id']) > 0 ? true : false;
+    if(!$checks['status_ok'])
+    {
+      $checks['msg'][]=sprintf(lang_get('tcase_id_is_not_number'),$tcase_id); 
+    }
+  }
+  if($checks['status_ok'])
+  {
+    // useful for user feedback 
+    $identity=$using_external_id ? $tcase_external_id : $checks['tcase_id']; 
+  }
+ 
+  if($checks['status_ok'] && $execValues['timestamp'] != '' )
+  {
+    $checks['status_ok']=isValidISODateTime($execValues['timestamp']);
+    if(!$checks['status_ok'])
+    {
+      $checks['msg'][]=sprintf(lang_get('invalid_execution_timestamp'),$identity,$execValues['timestamp']); 
+    }
+  }
+
+  if($checks['status_ok'] && $execValues['tester'] != '' )
+  {
+    $sql = "SELECT id,login FROM {$tables['users']} WHERE login ='" . 
+    $db->prepare_string($execValues['tester']) . "'";
+    $userInfo=$db->get_recordset($sql);
+      
+    if(!is_null($userInfo) && isset($userInfo[0]['id']) )
+    {
+      $checks['tester_id']=$userInfo[0]['id'];
     }
     else
     {
-       // before using internal id, I want to check it's a number  
-       $checks['tcase_id'] = $tcase_id;
-       $checks['status_ok'] = intval($checks['tcase_id']) > 0 ? true : false;
-       if(!$checks['status_ok'])
-       {
-           $checks['msg'][]=sprintf(lang_get('tcase_id_is_not_number'),$tcase_id); 
-       }          
+      $checks['status_ok']=false;
+      $checks['msg'][]=sprintf(lang_get('invalid_tester'),$identity,$execValues['tester']); 
     }
-    if($checks['status_ok'])
-    {
-        // useful for user feedback 
-        $identity=$using_external_id ? $tcase_external_id : $checks['tcase_id']; 
-    }
- 
-    if($checks['status_ok'] && $execValues['timestamp'] != '' )
-    {
-        $checks['status_ok']=isValidISODateTime($execValues['timestamp']);
-        if(!$checks['status_ok'])
-        {
-           $checks['msg'][]=sprintf(lang_get('invalid_execution_timestamp'),$identity,$execValues['timestamp']); 
-        }              
-    }
-
-    if($checks['status_ok'] && $execValues['tester'] != '' )
-    {
-		$sql = "SELECT id,login FROM {$tables['users']} WHERE login ='" . 
-		       $db->prepare_string($execValues['tester']) . "'";
-		$userInfo=$db->get_recordset($sql);
-		  
-		if(!is_null($userInfo) && isset($userInfo[0]['id']) )
-		{
-		    $checks['tester_id']=$userInfo[0]['id'];
-		}
-		else
-		{
-		    $checks['status_ok']=false;
-		    $checks['msg'][]=sprintf(lang_get('invalid_tester'),$identity,$execValues['tester']); 
-		}
-    }
+  }
     
-	$execValues['bug_id'] = isset($execValues['bug_id']) ? $execValues['bug_id'] : null;
-    if($checks['status_ok'] && !is_null($execValues['bug_id']) && is_array($execValues['bug_id']) )
+  $execValues['bug_id'] = isset($execValues['bug_id']) ? $execValues['bug_id'] : null;
+  if($checks['status_ok'] && !is_null($execValues['bug_id']) && is_array($execValues['bug_id']) )
+  {
+    foreach($execValues['bug_id'] as $bug_id )
     {
-    	foreach($execValues['bug_id'] as $bug_id )
-    	{
-			if( ($field_len = strlen(trim($bug_id))) > $columnDef['bug_id']->max_length )
-			{
-			    $checks['msg'][]=sprintf(lang_get('bug_id_invalid_len'),$field_len,$columnDef['bug_id']->max_length); 
-			    $checks['status_ok']=false;
-			    break;
-			}
-		}
-	}
-	
-    if($checks['status_ok'] && isset($execValues['execution_type']) )
+    if( ($field_len = strlen(trim($bug_id))) > $columnDef['bug_id']->max_length )
     {
-    	$execValues['execution_type'] = intval($execValues['execution_type']); 
-		$execDomain = $tcase_mgr->get_execution_types();
-		if( $execValues['execution_type'] == 0 )
-		{
-			$execValues['execution_type'] = TESTCASE_EXECUTION_TYPE_MANUAL;
-			// right now this is useless, but may be in future can be used, then I choose to leave it.
-			$checks['msg'][]=sprintf(lang_get('missing_exec_type'),
-			                         $execValues['execution_type'],$execDomain[$execValues['execution_type']]);
-		}
-		else
-		{
-			$checks['status_ok'] = isset($execDomain[$execValues['execution_type']]);
-			if( !$checks['status_ok'] )
-			{
-				$checks['msg'][]=sprintf(lang_get('invalid_exec_type'),$execValues['execution_type']);
-			}
-		}
-	}
-    return $checks;
+      $checks['msg'][]=sprintf(lang_get('bug_id_invalid_len'),$field_len,$columnDef['bug_id']->max_length); 
+      $checks['status_ok']=false;
+      break;
+    }
+  }
+  }
+  
+  if($checks['status_ok'] && isset($execValues['execution_type']) )
+  {
+    $execValues['execution_type'] = intval($execValues['execution_type']); 
+    $execDomain = $tcase_mgr->get_execution_types();
+    if( $execValues['execution_type'] == 0 )
+    {
+      $execValues['execution_type'] = TESTCASE_EXECUTION_TYPE_MANUAL;
+      // right now this is useless, but may be in future can be used, then I choose to leave it.
+      $checks['msg'][]=sprintf(lang_get('missing_exec_type'),
+                               $execValues['execution_type'],$execDomain[$execValues['execution_type']]);
+    }
+    else
+    {
+      $checks['status_ok'] = isset($execDomain[$execValues['execution_type']]);
+      if( !$checks['status_ok'] )
+      {
+        $checks['msg'][]=sprintf(lang_get('invalid_exec_type'),$execValues['execution_type']);
+      }
+    }
+  }
+  return $checks;
 }
 ?>

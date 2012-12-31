@@ -11,7 +11,7 @@ rev:
 {lang_get var="labels"
           s='file_type,view_file_format_doc,local_file,
              max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
-             duplicate_criteria,action_for_duplicates,
+             duplicate_criteria,action_for_duplicates,testcase,
              action_on_duplicated_name,warning,btn_cancel,title_imp_tc_data'}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
@@ -74,9 +74,10 @@ rev:
 	</div>
 </form>
 {else}
-	{foreach item=result from=$gui->resultMap}
-		{$labels.title_imp_tc_data} : <b>{$result[0]|escape}</b> : {$result[1]|escape}<br />
-	{/foreach}
+  {foreach item=result from=$gui->resultMap}
+    {$labels.testcase} : <b>{$result[0]|escape}</b> : {$result[1]|escape}<br>
+  {/foreach}
+
   {include file="inc_refreshTree.tpl"}
 {/if}
 
@@ -86,9 +87,7 @@ rev:
 
 {if $gui->file_check.status_ok eq 0}
   <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
   alert_message("{$labels.warning|escape:'javascript'}","{$gui->file_check.msg|escape:'javascript'}");
-  // alert("{$gui->file_check.msg}");
   </script>
 {/if}  
 

@@ -3,22 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource 	testcase.class.php
- * @package 	TestLink
- * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2005-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @filesource  testcase.class.php
+ * @package     TestLink
+ * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
+ * @copyright   2005-2012, TestLink community 
+ * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.4
- * 20120831 - franciscom - TICKET 5133: Test cases - possibility to have step expected result reuse, as exists for step action
- * 20120822 - franciscom - TICKET 5159: importing duplicate test suites
- * 20120819 - franciscom - TICKET 4937: Test Cases EXTERNAL ID is Auto genarated, no matter is provided on XML
- *						   create() changed
- *	 
- * 20111106 - franciscom - TICKET 4797: Test case step reuse - renderGhostSteps()
- * 20110817 - franciscom - TICKET 4708: When adding testcases to test plan, filtering by execution type does not work.
- *
+ * @since 1.9.6
+ * 20121231 - franciscom - getInternalID() interface changes
  */
 
 /** related functionality */
@@ -1413,28 +1406,14 @@ class testcase extends tlObjectWithAttachments
 		{
 	    	$path2root=$this->tree_manager->get_path($id);
 	    	$root=$path2root[0]['parent_id'];
-	    }
-	    $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($root);
-	    return array($tcasePrefix,$root);
+	  }
+	  $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($root);
+	  return array($tcasePrefix,$root);
 	}
 	
 	
 	
 	
-	/*
-	  function: get_testproject
-	            Given a testcase id get node id of testproject to which testcase belongs.
-	  args :id: testcase id
-	
-	  returns: testproject id
-	  
-	
-	*/
-	function get_testproject($id)
-	{
-	  $a_path = $this->tree_manager->get_path($id);
-	  return ($a_path[0]['parent_id']);
-	}
 	
 	/*
 
@@ -1664,7 +1643,6 @@ class testcase extends tlObjectWithAttachments
 	  		20080119 - franciscom - tc_external_id management
 	
 	*/
-	// // BUGID 3431
 	function copy_tcversion($id,$from_tcversion_id,$to_tcversion_id,$as_version_number,$user_id)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -2389,87 +2367,106 @@ class testcase extends tlObjectWithAttachments
 	// -------------------------------------------------------------------------------
 	
 	
-	/**
-	 * @param string stringID external test case ID
-	 *      a string on the form XXXXXGNN where:
-	 *          XXXXX: test case prefix, exists one for each test project
-	 *          G: glue character
-	 *          NN: test case number (generated using testprojects.tc_counter field)
-	 *
-	 * @return internal id (node id in nodes_hierarchy)
-	 *		   0 -> test case prefix OK, but external id does not exists
-	 *		   -1 -> test case prefix KO
-	 *
-	 * 20080818 - franciscom - Dev Note
-	 * I'm a feeling regarding performance of this function.
-	 * Surelly adding a new column to tcversions (prefix) will simplify a lot this function.
-	 * Other choice (that I refuse to implement time ago) is to add prefix field
-	 * as a new nodes_hierarchy column.
-	 * This must be discussed with dev team if we got performance bottleneck trying
-	 * to get internal id from external one.
-	 *
-	 * @internal Revisions:
-	 * 20091229 - eloff - BUGID 3021 fixed error when tc prefix contains glue character
-	 * 20090608 - franciscom - fixed error on management of numeric part (externalID)
-	 * 20080126 - franciscom - BUGID 1313
-	 */
-	function getInternalID($stringID,$glueCharacter = null)
-	{
-		$internalID = 0;
+  /**
+   * @param string stringID external test case ID
+   *        a string on the form XXXXXGNN where:
+   *        XXXXX: test case prefix, exists one for each test project
+   *        G: glue character
+   *        NN: test case number (generated using testprojects.tc_counter field)
+   *
+   * @return internal id (node id in nodes_hierarchy)
+   *         0 -> test case prefix OK, but external id does not exists
+   *         1 -> test case prefix KO
+   *
+   * 20080818 - franciscom - Dev Note
+   * I'm a feeling regarding performance of this function.
+   * Surelly adding a new column to tcversions (prefix) will simplify a lot this function.
+   * Other choice (that I refuse to implement time ago) is to add prefix field
+   * as a new nodes_hierarchy column.
+   * This must be discussed with dev team if we got performance bottleneck trying
+   * to get internal id from external one.
+   *
+   * @internal revisions
+   */
+  function getInternalID($stringID,$opt = null)
+  {          
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $internalID = 0;
+    $my['opt'] = array('glue' => $this->cfg->testcase->glue_character, 
+                       'tproject_id' => null);
+    $my['opt'] = array_merge($my['opt'], (array)$opt);
 
-		if (is_null($glueCharacter))
-		{
-			$cfg = config_get('testcase_cfg');
-			$glueCharacter = $cfg->glue_character;
-		}
-		
-		// Find the last glue char
-		$gluePos = strrpos($stringID, $glueCharacter);
-		$status_ok = ($gluePos !== false);
-		if($status_ok)
-		{
-			$internalID = -1;
-			$rawTestCasePrefix = substr($stringID, 0, $gluePos);
-			$rawExternalID = substr($stringID, $gluePos+1);
-			$externalID = is_numeric($rawExternalID) ?  intval($rawExternalID) : 0;
-	
-			// Check first if Test Project prefix is valid, if not abort
-			$testCasePrefix = $this->db->prepare_string($rawTestCasePrefix);
-	      	$sql = 	"SELECT id  FROM {$this->tables['testprojects']} " .
-	           		"WHERE prefix = '" . $testCasePrefix . "'";
-			$tproject_info = $this->db->get_recordset($sql);
-			$status_ok = !is_null($tproject_info);
-		}
-		
-		if( $status_ok )
-		{
-			$internalID = 0;
-			
-			// get all test cases with requested external ID on all test projects.
-			// we do not have way to work only on one test project.
-			$sql = "SELECT DISTINCT NH.parent_id AS tcase_id" .
-	               " FROM {$this->tables['tcversions']} TCV, {$this->tables['nodes_hierarchy']} NH" .
-	               " WHERE TCV.id = NH.id " .
-	               " AND  TCV.tc_external_id = {$externalID}";
-	
-			$testCases = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-			if(!is_null($testCases))
-			{
-				$tproject_id = $tproject_info[0]['id'];
-				foreach($testCases as $tcaseID => $value)
-				{
-	        		$path2root = $this->tree_manager->get_path($tcaseID);
-					if($tproject_id == $path2root[0]['parent_id'])
-					{
-	          			$internalID = $tcaseID;
-						break;
-	        		}
-	      		}	
-			}
-		}
-
-		return $internalID;
-	}
+    $status_ok = false;
+                      
+    // When using this method on a context where caller certifies that
+    // test project is OK, we will skip this check.
+    $tproject_id = $my['opt']['tproject_id'];
+    
+    // Find the last glue char
+    $gluePos = strrpos($stringID, $my['opt']['glue']);
+    $isFullExternal = ($gluePos !== false);
+    if($isFullExternal)
+    {
+      $rawTestCasePrefix = substr($stringID, 0, $gluePos);
+      $rawExternalID = substr($stringID, $gluePos+1);
+      $externalID = is_numeric($rawExternalID) ?  intval($rawExternalID) : 0;
+    }
+    else
+    {
+      $status_ok = (($externalID = intval($stringID)) > 0);
+    }
+    
+    if( is_null($tproject_id) )
+    {  
+      $status_ok = false;                
+      if($isFullExternal)
+      {
+        // Check first if Test Project prefix is valid, if not abort
+        $testCasePrefix = $this->db->prepare_string($rawTestCasePrefix);
+        $sql = "SELECT id  FROM {$this->tables['testprojects']} " .
+               "WHERE prefix = '" . $testCasePrefix . "'";
+        $tproject_info = $this->db->get_recordset($sql);
+        if( $status_ok = !is_null($tproject_info) )
+        {
+          $tproject_id = $tproject_info[0]['id'];
+        }  
+      }
+      else
+      {
+        throw new Exception(__METHOD__ . 
+                           ' EXCEPTION: When using just numeric part of External ID, test project ID, is mandatory');  
+      }
+    }
+    
+    if( $status_ok )
+    {
+      $internalID = 0;
+      
+      // get all test cases with requested external ID on all test projects.
+      // we do not have way to work only on one test project.
+      $sql = " SELECT DISTINCT NHTCV.parent_id AS tcase_id" .
+             " FROM {$this->tables['tcversions']} TCV " .
+             " JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
+             " ON TCV.id = NHTCV.id " .
+             " WHERE  TCV.tc_external_id = {$externalID}";
+    
+      $testCases = $this->db->fetchRowsIntoMap($sql,'tcase_id');
+      if(!is_null($testCases))
+      {
+        foreach($testCases as $tcaseID => $value)
+        {
+          $path2root = $this->tree_manager->get_path($tcaseID);
+          if($tproject_id == $path2root[0]['parent_id'])
+          {
+            $internalID = $tcaseID;
+            break;
+          }
+        }
+      }
+    }
+    
+    return $internalID;
+  }
 	
 	/*
 	  function: filterByKeyword
@@ -3416,18 +3413,7 @@ class testcase extends tlObjectWithAttachments
 	 *                              default is test case). 
 	 *                        value:
 	 *                         
-	 * @since 20090131 - franciscom
-	 *
 	 * @internal revision
-	 *  20100906 - asimon -  BUGID 3749
-	 *  20100813 - asimon - deactivated last slash on full path
-	 *                      to remove it from test suite name in "tc assigned to user" tables
-	 *  20100802 - asimon - 3647
-	 *  20100731 - asimon - added option to load assignments for all users,
-	 *                      added user_id, build_id, platform_id to SELECT part of statement
-	 *  20100722 - asimon - BUGID 3406 - modified statement to get build name
-	 *  20100712 - asimon - inserted missing semicolon
-	 *	20100708 - franciscom - BUGID 3575 - add plaftorm in output set
 	 */
 	function get_assigned_to_user($user_id,$tproject_id,$tplan_id=null,$options=null, $filters=null)
 	{
@@ -3832,7 +3818,6 @@ class testcase extends tlObjectWithAttachments
 	       20070302 - check for $id not null, is not enough, need to check is > 0
 	
 	*/
-	// BUGID 3431
 	function get_linked_cfields_at_design($id,$tcversion_id,$parent_id=null,$filters=null,$tproject_id = null)
 	{
 		if (!$tproject_id)
@@ -3848,29 +3833,42 @@ class testcase extends tlObjectWithAttachments
 	
 	
 	
-	/*
-	  function: getTestProjectFromTestCase
-	
-	  args: id: testcase id
-	        [parent_id]: node id of parent testsuite of testcase.
-	                     need to understand to which testproject the testcase belongs.
-	                     this information is vital, to get the linked custom fields.
-	                     Presence /absence of this value changes starting point
-	                     on procedure to build tree path to get testproject id.
-	
-	                     null -> use testcase_id as starting point.
-	                     !is_null -> use this value as starting point.
-	*/
-	function getTestProjectFromTestCase($id,$parent_id)
-	{
-		$the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
-		$path_len = count($the_path);
-		$tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
-		
-		return $tproject_id;
-	}
+  /*
+    function: getTestProjectFromTestCase
+  
+    args: id: testcase id
+          [parent_id]: node id of parent testsuite of testcase.
+                       need to understand to which testproject the testcase belongs.
+                       this information is vital, to get the linked custom fields.
+                       Presence /absence of this value changes starting point
+                       on procedure to build tree path to get testproject id.
+  
+                       null -> use testcase_id as starting point.
+                       !is_null -> use this value as starting point.
+  */
+  function getTestProjectFromTestCase($id,$parent_id)
+  {
+    $the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
+    $path_len = count($the_path);
+    $tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
+    
+    return $tproject_id;
+  }
 
-		
+  /*
+    function: get_testproject
+              Given a testcase id get node id of testproject to which testcase belongs.
+    args :id: testcase id
+  
+    returns: testproject id
+  */
+  function get_testproject($id)
+  {
+    $a_path = $this->tree_manager->get_path($id);
+    return ($a_path[0]['parent_id']);
+  }
+
+  
 	/*
 	  function: html_table_of_custom_field_inputs
 	            Return html code, implementing a table with custom fields labels
@@ -4268,7 +4266,6 @@ class testcase extends tlObjectWithAttachments
 	      display_order
 	
 	
-	BUGID 3431 NO CHANGE - because ONLY ONE VERSION CAN BE LINKED to test plan
 	*/
 	function get_linked_cfields_at_testplan_design($id,$parent_id=null,$filters=null,
 	                                               $link_id=null,$testplan_id=null,$tproject_id = null)
@@ -4301,78 +4298,78 @@ class testcase extends tlObjectWithAttachments
     }
 	
 	
-	/**
-	 * given a set of test cases, will return a map with 
-	 * test suites name that form test case path to root test suite.
-	 *
-	 *                  example:
-	 *
-	 *                  communication devices [ID 4]
-	 *                      |__ Subspace channels [ID 20]
-	 *                             |
-	 *                             |__ TestCase100
-	 *                             |  
-	 *                             |__ short range devices [ID 21]
-	 *	                                    |__ TestCase1
-	 *                                      |__ TestCase2
-     *
-     * if test case set: TestCase100,TestCase1
-     *
-     *   4  Communications
-     *  20 	Communications/Subspace channels
-     *  21 	Communications/Subspace channels/short range devices
-     *                
-     *                
-	 * returns map with key: test suite id
-	 *                  value: test suite path to root
-	 *
-	 *
-	 */
-	function getPathLayered($tcaseSet)
-	{
-		$xtree=null;
-		foreach($tcaseSet as $item)
-    	{
-			$path_info = $this->tree_manager->get_path($item); 
-    		$testcase = end($path_info);
-    		
-    		// This check is useful when you have several test cases with same parent test suite
-    		if( !isset($xtree[$testcase['parent_id']]['value']) )
-    		{
-    			$level=0;
-				foreach($path_info as $elem)
-				{
-                    $level++;
-					$prefix = isset($xtree[$elem['parent_id']]['value']) ? ($xtree[$elem['parent_id']]['value'] . '/') : '';
-					if( $elem['node_table'] == 'testsuites' )
-					{
-						$xtree[$elem['id']]['value'] = $prefix . $elem['name'];
-						$xtree[$elem['id']]['level']=$level;
-					}	
-				}
-			}
-		}	
-		return $xtree;
-	} // getPathLayered($tcaseSet)
+  /**
+   * given a set of test cases, will return a map with 
+   * test suites name that form test case path to root test suite.
+   *
+   *                  example:
+   *
+   *                  communication devices [ID 4]
+   *                      |__ Subspace channels [ID 20]
+   *                             |
+   *                             |__ TestCase100
+   *                             |  
+   *                             |__ short range devices [ID 21]
+   *	                                    |__ TestCase1
+   *                                      |__ TestCase2
+   *
+   * if test case set: TestCase100,TestCase1
+   *
+   *   4  Communications
+   *  20 	Communications/Subspace channels
+   *  21 	Communications/Subspace channels/short range devices
+   *                
+   *                
+   * returns map with key: test suite id
+   *                  value: test suite path to root
+   *
+   *
+   */
+  function getPathLayered($tcaseSet)
+  {
+    $xtree=null;
+    foreach($tcaseSet as $item)
+    {
+      $path_info = $this->tree_manager->get_path($item); 
+      $testcase = end($path_info);
+
+      // This check is useful when you have several test cases with same parent test suite
+      if( !isset($xtree[$testcase['parent_id']]['value']) )
+      {
+        $level=0;
+        foreach($path_info as $elem)
+        {
+          $level++;
+          $prefix = isset($xtree[$elem['parent_id']]['value']) ? ($xtree[$elem['parent_id']]['value'] . '/') : '';
+          if( $elem['node_table'] == 'testsuites' )
+          {
+            $xtree[$elem['id']]['value'] = $prefix . $elem['name'];
+            $xtree[$elem['id']]['level']=$level;
+          }
+        }
+      }
+    }
+    return $xtree;
+  } // getPathLayered($tcaseSet)
 
 
 
-    /**
-	 * 
- 	 *
- 	 */
-	function getPathTopSuite($tcaseSet)
-	{
-		$xtmas=null;
-		foreach($tcaseSet as $item)
-    	{
-			$path_info = $this->tree_manager->get_path($item); 
-    		$top = current($path_info);
-    		$xtmas[$item] = array( 'name' => $top['name'], 'id' => $top['id']);
-		}	
-		return $xtmas;
-	} // getPathTopSuite($tcaseSet)
-	
+  /**
+   * 
+   *
+   */
+  function getPathTopSuite($tcaseSet)
+  {
+    $xtmas=null;
+    foreach($tcaseSet as $item)
+    {
+      $path_info = $this->tree_manager->get_path($item); 
+      $top = current($path_info);
+      $xtmas[$item] = array( 'name' => $top['name'], 'id' => $top['id']);
+    }
+    return $xtmas;
+  } // getPathTopSuite($tcaseSet)
+  
 	
 	
     /*
@@ -4414,23 +4411,23 @@ class testcase extends tlObjectWithAttachments
 	    return $retval;
 	}
 	
-	/**
-	 * 
- 	 *
-     */
-	function buildDirectWebLink($base_href,$id,$tproject_id=null)
-	{
-	    list($external_id,$prefix,$glue,$tc_number) = $this->getExternalID($id,$tproject_id);
+  /**
+   * 
+   *
+   */
+  function buildDirectWebLink($base_href,$id,$tproject_id=null)
+  {
+    list($external_id,$prefix,$glue,$tc_number) = $this->getExternalID($id,$tproject_id);
 
-		$dl = $base_href . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . 
-		      '&item=testcase&id=' . urlencode($external_id);
-        return $dl;
-    }
+    $dl = $base_href . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . 
+          '&item=testcase&id=' . urlencode($external_id);
+    return $dl;
+  }
 
-    /**
-	 * 
- 	 *
-     */
+  /**
+   * 
+   *
+   */
 	function getExternalID($id,$tproject_id=null,$prefix=null)
 	{
 		static $cfg;
@@ -4696,24 +4693,24 @@ class testcase extends tlObjectWithAttachments
 	function get_by_external($external_id, $parent_id,$filters=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	    $recordset = null;
-	    
-	    $my = array();
-	    $my['filters'] = array('version' => null);
-	    $my['filters'] = array_merge($my['filters'], (array)$filters);
+    $recordset = null;
+    
+    $my = array();
+    $my['filters'] = array('version' => null);
+    $my['filters'] = array_merge($my['filters'], (array)$filters);
 	    
 		$sql = "/* $debugMsg */ " . 	    
-	           " SELECT DISTINCT NH_TCASE.id,NH_TCASE.name,NH_TCASE_PARENT.id AS parent_id," .
-	           " NH_TCASE_PARENT.name AS tsuite_name, TCV.tc_external_id " .
-			   " FROM {$this->tables['nodes_hierarchy']} NH_TCASE, " .
-			   " {$this->tables['nodes_hierarchy']} NH_TCASE_PARENT, " .
-			   " {$this->tables['nodes_hierarchy']} NH_TCVERSIONS," .
-			   " {$this->tables['tcversions']}  TCV  " .
-			   " WHERE NH_TCVERSIONS.id=TCV.id " .
-			   " AND NH_TCVERSIONS.parent_id=NH_TCASE.id " .
-			   " AND NH_TCASE_PARENT.id=NH_TCASE.parent_id " .
-			   " AND NH_TCASE.node_type_id = {$this->my_node_type} " .
-			   " AND TCV.tc_external_id=$external_id ";
+	         " SELECT DISTINCT NH_TCASE.id,NH_TCASE.name,NH_TCASE_PARENT.id AS parent_id," .
+	         " NH_TCASE_PARENT.name AS tsuite_name, TCV.tc_external_id " .
+           " FROM {$this->tables['nodes_hierarchy']} NH_TCASE, " .
+           " {$this->tables['nodes_hierarchy']} NH_TCASE_PARENT, " .
+           " {$this->tables['nodes_hierarchy']} NH_TCVERSIONS," .
+           " {$this->tables['tcversions']}  TCV  " .
+           " WHERE NH_TCVERSIONS.id=TCV.id " .
+           " AND NH_TCVERSIONS.parent_id=NH_TCASE.id " .
+           " AND NH_TCASE_PARENT.id=NH_TCASE.parent_id " .
+           " AND NH_TCASE.node_type_id = {$this->my_node_type} " .
+           " AND TCV.tc_external_id=$external_id ";
 
 		$add_filters = ' ';
 		foreach($my['filters'] as $field => $value)
@@ -4731,7 +4728,7 @@ class testcase extends tlObjectWithAttachments
 		$sql .= $add_filters;
 		$sql .= " AND NH_TCASE_PARENT.id = {$parent_id}" ;
 		$recordset = $this->db->fetchRowsIntoMap($sql,'id');
-	    return $recordset;
+	  return $recordset;
 	}
 
 
@@ -5739,7 +5736,10 @@ class testcase extends tlObjectWithAttachments
 		return $signature;        
 	}
 
-
-	
+  public function getTestSuite($id)
+  {
+    $dummy = $this->tree_manager->get_node_hierarchy_info($id);
+    return $dummy['parent_id'];
+  }
 } // end class
 ?>

@@ -2858,7 +2858,7 @@ $TLS_same_internalID = 'has same Internal ID';
 $TLS_same_externalID = 'has same External ID'; // (only applicable to Test Cases)';
 $TLS_same_name = 'has same name';
 $TLS_duplicate_criteria = "Consider Test Case as duplicate if";
-
+$TLS_hit_with_same_external_ID = "Can not be imported - You are hitting an existent Test Case with SAME EXTERNAL ID:";
 
 // ----- lib/testcases/tcexport.php -----
 $TLS_no_testcases_to_export = "There are no Test Cases to export";

@@ -620,8 +620,6 @@ class testcase extends tlObjectWithAttachments
 		$the_tpl = config_get('tpl');
 		$my_template = isset($the_tpl['tcView']) ? $the_tpl['tcView'] : 'tcView.tpl'; 
 
-		$tcase_cfg = config_get('testcase_cfg');
-	
 		$req_mgr = new requirement_mgr($this->db);
 
 		$tc_other_versions = array();
@@ -727,7 +725,7 @@ class testcase extends tlObjectWithAttachments
 					$gui->can_do->add2tplan = 'no';
 				}
 
-				$tcasePrefix .= $tcase_cfg->glue_character;
+				$tcasePrefix .= $this->cfg->testcase->glue_character;
 		   	}
 	    }
 	    
@@ -821,7 +819,7 @@ class testcase extends tlObjectWithAttachments
 		$gui->action = $viewer_defaults['action'];
 		$gui->user_feedback = $viewer_defaults['user_feedback'];
 		$gui->execution_types = $this->execution_types;
-		$gui->tcase_cfg = $tcase_cfg;
+		$gui->tcase_cfg = $this->cfg->testcase;
 		$gui->users = tlUser::getByIDs($this->db,$passeduserarray,'id');
 		$gui->status_quo = $status_quo_map;
 		$gui->testcase_other_versions = $tc_other_versions;
@@ -2409,13 +2407,12 @@ class testcase extends tlObjectWithAttachments
     {
       $rawTestCasePrefix = substr($stringID, 0, $gluePos);
       $rawExternalID = substr($stringID, $gluePos+1);
-      $externalID = is_numeric($rawExternalID) ?  intval($rawExternalID) : 0;
+      $status_ok = ($externalID = is_numeric($rawExternalID) ?  intval($rawExternalID) : 0) > 0;
     }
     else
     {
       $status_ok = (($externalID = intval($stringID)) > 0);
     }
-    
     if( is_null($tproject_id) )
     {  
       $status_ok = false;                
@@ -2437,7 +2434,7 @@ class testcase extends tlObjectWithAttachments
                            ' EXCEPTION: When using just numeric part of External ID, test project ID, is mandatory');  
       }
     }
-    
+
     if( $status_ok )
     {
       $internalID = 0;
@@ -3163,17 +3160,6 @@ class testcase extends tlObjectWithAttachments
 			
 	  returns:
 	
-	  rev:
-	   20101009	 - franciscom - better checks on $optExport
-	   20101009 - franciscom - BUGID 3868: Importing exported XML results - custom fields have unexpected NEW LINES		
-	   20100926 - franciscom - manage tcase_id not present, to allow export using 
-	   						   tcversion id as target
-	   						   
-	   20100908 - franciscom - testcase::LATEST_VERSION has problems
-	   20100315 - amitkhullar - Added options for Requirements and CFields for Export.
-	   20100105 - franciscom - added execution_type, importance
-	   20090204 - franciscom - added export of node_order
-	   20080206 - franciscom - added externalid
 	
 	*/
 	function exportTestCaseDataToXML($tcase_id,$tcversion_id,$tproject_id=null,
@@ -4430,31 +4416,24 @@ class testcase extends tlObjectWithAttachments
    */
 	function getExternalID($id,$tproject_id=null,$prefix=null)
 	{
-		static $cfg;
 		static $root;
 		static $tcase_prefix;
 		
-		if( is_null($cfg) )
-		{
-			$cfg = config_get('testcase_cfg');
-		}
-       	
 		if( is_null($prefix) )
 		{
 			if( is_null($root) ||  ($root != $tproject_id) )
 			{
-       			list($tcase_prefix,$root) = $this->getPrefix($id,$tproject_id);
-       		}	
+        list($tcase_prefix,$root) = $this->getPrefix($id,$tproject_id);
+      }	
 		}
 		else
 		{
 			$tcase_prefix = $prefix;
 		}
 		$info = $this->get_last_version_info($id, array('output' => 'minimun'));
-        $external = $info['tc_external_id'];
-        //BUGID - 3776
-       	$identity = $tcase_prefix . $cfg->glue_character . $external;
-		return array($identity,$tcase_prefix,$cfg->glue_character,$external);
+    $external = $info['tc_external_id'];
+   	$identity = $tcase_prefix . $this->cfg->testcase->glue_character . $external;
+		return array($identity,$tcase_prefix,$this->cfg->testcase->glue_character,$external);
 	}
 
 
@@ -5482,9 +5461,6 @@ class testcase extends tlObjectWithAttachments
 			$ele = intval($ele);
 		}
 		
-		//new dBug($safeIdentity);
-		//new dBug($safeContext);
-		
 		// we have to manage following situations
 		// 1. we do not know test case version id.
 		if($safeIdentity['version_id'] > 0)
@@ -5741,5 +5717,7 @@ class testcase extends tlObjectWithAttachments
     $dummy = $this->tree_manager->get_node_hierarchy_info($id);
     return $dummy['parent_id'];
   }
+
+
 } // end class
 ?>

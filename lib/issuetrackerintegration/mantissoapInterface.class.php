@@ -12,20 +12,20 @@
 **/
 class mantissoapInterface extends issueTrackerInterface
 {
-	// Copied from mantis configuration
-	private $status_color = array('new'          => '#ffa0a0', # red,
+  // Copied from mantis configuration
+  private $status_color = array('new'          => '#ffa0a0', # red,
                                 'feedback'     => '#ff50a8', # purple
                                 'acknowledged' => '#ffd850', # orange
                                 'confirmed'    => '#ffffb0', # yellow
                                 'assigned'     => '#c8c8ff', # blue
                                 'resolved'     => '#cceedd', # buish-green
                                 'closed'       => '#e8e8e8'); # light gray
-	
-	
-	private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
-	private $guiCfg = array();
-	
-	var $defaultResolvedStatus;
+  
+  
+  private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
+  // private $guiCfg = array();
+  
+  var $defaultResolvedStatus;
 
 	/**
 	 * Construct and connect to BTS.
@@ -33,21 +33,21 @@ class mantissoapInterface extends issueTrackerInterface
 	 * @param str $type (see tlIssueTracker.class.php $systems property)
 	 * @param xml $cfg
 	 **/
-	function __construct($type,$config)
-	{
-		$this->interfaceViaDB = false;
-		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);
-
+  function __construct($type,$config)
+  {
+    $this->interfaceViaDB = false;
+    $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);
+    
     $this->defaultResolvedStatus = array();
     $this->defaultResolvedStatus[] = array('code' => 80, 'verbose' => 'resolved');
     $this->defaultResolvedStatus[] = array('code' => 90, 'verbose' => 'closed');
-
-	  $this->setCfg($config);
-		$this->completeCfg();
-		$this->setResolvedStatusCfg();
-	  $this->connect();
-	  $this->guiCfg = array('use_decoration' => true);
-	}
+    
+    $this->setCfg($config);
+    $this->completeCfg();
+    $this->setResolvedStatusCfg();
+    $this->connect();
+    $this->guiCfg = array('use_decoration' => true);
+  }
 
 	
 	/**
@@ -315,25 +315,25 @@ class mantissoapInterface extends issueTrackerInterface
      *
      *
      **/
-	function buildStatusHTMLString($statusVerbose)
-	{
-		$str = '';
-		if ($statusVerbose !== false)
-		{
-			// status values depends on your mantis configuration at config_inc.php in $g_status_enum_string, 
-			// below is the default:
-			//'10:new,20:feedback,30:acknowledged,40:confirmed,50:assigned,80:resolved,90:closed'
-			// With this replace if user configure status on mantis with blank we do not have problems
-			//
-			$tlStatus = str_replace(" ", "_", $statusVerbose);
-			$str = lang_get('issue_status_' . $tlStatus);
-			if($this->guiCfg['use_decoration'])
-			{
-				$str = "[" . $str . "] ";	
-			}
-		}
-		return $str;
-	}
+  function buildStatusHTMLString($statusVerbose)
+  {
+    $str = '';
+    if ($statusVerbose !== false)
+    {
+      // status values depends on your mantis configuration at config_inc.php in $g_status_enum_string, 
+      // below is the default:
+      //'10:new,20:feedback,30:acknowledged,40:confirmed,50:assigned,80:resolved,90:closed'
+      // With this replace if user configure status on mantis with blank we do not have problems
+      //
+      $tlStatus = str_replace(" ", "_", $statusVerbose);
+      $str = lang_get('issue_status_' . $tlStatus);
+      if($this->guiCfg['use_decoration'])
+      {
+        $str = "[" . $str . "] ";	
+      }
+    }
+    return $str;
+  }
 
   public function setStatusCfg()
   {

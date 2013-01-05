@@ -4,17 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 viewer for requirement
 
 @internal revisions
-@since 1.9.4
-20111029 - franciscom - TICKET 4786: Add right to allow UNFREEZE a requirement
-20110817 - franciscom - TICKET 4702: Requirement View - display log message - image added
-20110816 - franciscom - TICKET 4702: Requirement View - display log message
-
-@since 1.9.3
-20110530 - asimon - BUGID 4298: added functionality for direct links to open specific requirement versions
-20110308 - asimon - BUGID 4273: backported printing of single req from master
-20101127 - franciscom - BUGID 4056: Requirement Revisioning
-20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
-20101111 - asimon - replaced openTCaseWindow() by openTCEditWindow() to save popup size
+@since 1.9.6
 *}
 {lang_get var="labels"
           s="requirement_spec,Requirements,scope,status,type,expected_coverage,  
@@ -22,7 +12,8 @@ viewer for requirement
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
              testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
              revision,btn_view_history,btn_new_revision,btn_print_view,specific_direct_link,
-             design,execution_history,btn_unfreeze_this_version"}
+             design,execution_history,btn_unfreeze_this_version,addLinkToTestCase,btn_save,
+             removeLinkToTestCase,title_test_case"}
 
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
 {assign var="hrefReqSpecMgmt" value=$basehref$hrefReqSpecMgmt}
@@ -35,16 +26,16 @@ viewer for requirement
 {assign var="req_version_id" value=$args_req.version_id}
 
 {if $args_show_title }
-    {if isset($args_tproject_name) && $args_tproject_name != ''}
-     <h2>{$labels.testproject} {$args_tproject_name|escape} </h2>
-    {/if}
-    {if $args_req_spec_name != ''}
-     <h2>{$labels.req_spec} {$args_req_spec_name|escape} </h2>
-    {/if}
-	  <h2>{$tlImages.toggle_direct_link} &nbsp; {$labels.title_test_case} {$args_req.title|escape} </h2>
-	  <div class="direct_link" style='display:none'>
-		  <a href="{$gui->direct_link}&version={$args_req.version}" target="_blank">{$labels.specific_direct_link}</a><br/>
-	  </div>
+  {if isset($args_tproject_name) && $args_tproject_name != ''}
+    <h2>{$labels.testproject} {$args_tproject_name|escape} </h2>
+  {/if}
+  {if isset($args_reqspec_name) && $args_reqspec_name != ''}
+    <h2>{$labels.req_spec} {$args_reqspec_name|escape} </h2>
+  {/if}
+  <h2>{$tlImages.toggle_direct_link} &nbsp; {$labels.title_test_case} {$args_req.title|escape} </h2>
+  <div class="direct_link" style='display:none'>
+    <a href="{$gui->direct_link}&version={$args_req.version}" target="_blank">{$labels.specific_direct_link}</a><br/>
+  </div>
 {/if}
 {assign var="warning_edit_msg" value=""}
 
@@ -173,25 +164,53 @@ viewer for requirement
 		</td>
 	</tr>
 	<td>
-	  <fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.coverage}</legend>
-	  {if $args_req_coverage != ''}
-	  {section name=row loop=$args_req_coverage}
-	    <span>
-	    <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
-	         onclick="javascript:openExecHistoryWindow({$args_req_coverage[row].id});"
-	         title="{$labels.execution_history}" />
-	    <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-	         onclick="javascript:openTCaseWindow({$args_req_coverage[row].id});"
-	         title="{$labels.design}" />
-	    {$args_gui->tcasePrefix|escape}{$args_gui->glueChar}{$args_req_coverage[row].tc_external_id}{$args_gui->pieceSep}{$args_req_coverage[row].name|escape}
-	    </span><br />
-	   {sectionelse}
-	  <span>{$labels.req_msg_notestcase}</span>
-	  {/section}
-	  {/if}
-	  
+    <fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.coverage}</legend>
+    {if $gui->user_feedback != ''}
+      <img class="clickable" src="{$tlImages.warning}"/>
+      {$gui->user_feedback}<br><p>
+    {/if}
+    
+    {if $args_req_coverage != ''}
+      <form style="display: inline;" id="reqRemoveTestCase_{$req_version_id}" name="reqRemoveTestCase_{$req_version_id}" 
+            action="lib/requirements/reqEdit.php" method="post">
+        <input type="hidden" id="rtRID" name="requirement_id" value="{$args_req.id}" />
+        <input type="hidden" id="rtRVID" name="req_version_id" value="{$args_req.version_id}" />
+        <input type="hidden" id="rtAction" name="doAction" value="removeTestCase" />
+        <input type="hidden" id="rtTCID" name="tcaseIdentity" value="" />
+
+      {section name=row loop=$args_req_coverage}
+        <span>
+        <input type="image"  class="clickable" src="{$tlImages.disconnect_small}" 
+               title="{$labels.removeLinkToTestCase}" onClick="tcaseIdentity.value={$args_req_coverage[row].id}">
+        <img class="clickable" src="{$tlImages.history_small}"
+             onclick="javascript:openExecHistoryWindow({$args_req_coverage[row].id});"
+             title="{$labels.execution_history}" />
+        <img class="clickable" src="{$tlImages.edit_icon}"
+             onclick="javascript:openTCaseWindow({$args_req_coverage[row].id});"
+             title="{$labels.design}" />
+        {$args_gui->tcasePrefix|escape}{$args_gui->glueChar}{$args_req_coverage[row].tc_external_id}{$args_gui->pieceSep}{$args_req_coverage[row].name|escape}
+        </span><br />
+      {/section}
+      </form>
+    {/if}
+    <form style="display: inline;" id="reqAddTestCase_{$req_version_id}" name="reqAddTestCase_{$req_version_id}" 
+          action="lib/requirements/reqEdit.php" method="post">
+      <input type="hidden" id="atRID" name="requirement_id" value="{$args_req.id}" />
+      <input type="hidden" id="atRVID" name="req_version_id" value="{$args_req.version_id}" />
+      <input type="hidden" id="atAction" name="doAction" value="addTestCase" />
+    
+      <img class="clickable" src="{$tlImages.add}" onclick="javascript:toogleShowHide('addTestCase');"
+           title="{$labels.addLinkToTestCase}" /> 
+           
+      <div id="addTestCase"  name="addTestCase" style="display:none;">
+        <input type="input" name="tcaseIdentity" value=" " >
+        <input type="submit" name="sex" value="{$labels.btn_save}"/>
+      </div>
+    </form>   
+
+    	  
 	  </fieldset>
-			</td>
+		</td>
 	 </tr>
 	<tr>
 			<td>&nbsp;</td>

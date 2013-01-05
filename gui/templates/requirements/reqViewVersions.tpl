@@ -1,16 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	reqViewVersions.tpl
+@filesource reqViewVersions.tpl
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 @internal revisions
-@since 1.9.4
-20120111 - franciscom - TICKET 4862: Users rights on requirements are bypassed 
-								     with interproject requirements relations
-								     
-20110816 - franciscom - TICKET 4702: Requirement View - display log message
-
+@since 1.9.6
 *}
 
 {lang_get s='warning_delete_requirement' var="warning_msg" }
@@ -62,13 +57,13 @@ Ext.onReady(function(){
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 function delete_req(btn, text, o_id)
 { 
-	var my_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement_id=';
+  var my_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement_id=';
   if( btn == 'yes' )
   {
     my_action = my_action+o_id;
-	  window.location=my_action;
-	}
-}					
+    window.location=my_action;
+  }
+}
 
 /**
  * 
@@ -263,31 +258,31 @@ var pF_unfreeze_req_version = unfreeze_req_version;
     <a href="{$gui->direct_link}" target="_blank">{$labels.current_direct_link}</a><br/>
     <a href="{$gui->direct_link}&version={$gui->current_version[idx][0].version}" target="_blank">{$labels.specific_direct_link}</a><br/>
     </div>
-    
-		{include file="$this_template_dir/reqViewVersionsViewer.tpl" 
-		         args_req_coverage=$gui->req_coverage
-		         args_req=$gui->current_version[idx][0] 
-		         args_gui=$gui
-		         args_grants=$gui->grants 
-		         args_can_copy=true
-		         args_can_delete_req=true
-		         args_can_delete_version=$my_delete_version
-		         args_frozen_version=$frozen_version
-		         args_show_version=true
-		         args_show_title=$gui->show_title
-		         args_cf=$gui->cfields_current_version[idx] 
-		         args_tproject_name=$gui->tproject_name
-		         args_reqspec_name=$gui->current_version[idx][0]['req_spec_title']}		
-		
-		{assign var="downloadOnly" value=false}
-		{if $gui->grants->req_mgmt != 'yes'}
-			{assign var="downloadOnly" value=true}
-		{/if}
-		
-		{if !isset($loadOnCancelURL)}
- 	      {assign var="loadOnCancelURL" value=""}
-    {/if} 
-		         
+
+  {include file="$this_template_dir/reqViewVersionsViewer.tpl" 
+           args_req_coverage=$gui->req_coverage
+           args_req=$gui->current_version[idx][0] 
+           args_gui=$gui
+           args_grants=$gui->grants 
+           args_can_copy=true
+           args_can_delete_req=true
+           args_can_delete_version=$my_delete_version
+           args_frozen_version=$frozen_version
+           args_show_version=true
+           args_show_title=$gui->show_title
+           args_cf=$gui->cfields_current_version[idx] 
+           args_tproject_name=$gui->tproject_name
+           args_reqspec_name=$gui->current_version[idx][0]['req_spec_title']}
+  
+  {assign var="downloadOnly" value=false}
+  {if $gui->grants->req_mgmt != 'yes'}
+    {assign var="downloadOnly" value=true}
+  {/if}
+  
+  {if !isset($loadOnCancelURL)}
+      {assign var="loadOnCancelURL" value=""}
+  {/if} 
+           
 	{* BUGID 1748 - req relations *}
 	{if $gui->req_cfg->relations->enable} {* show this part only if relation feature is enabled *}
 	

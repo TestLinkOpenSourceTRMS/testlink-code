@@ -313,7 +313,8 @@ function showOrHideElement(oid,hide)
     if (!obj)
     {
     	return;
-    }
+    }                  
+    
   	if(hide)
   	{
   		displayValue = "none";
@@ -1564,3 +1565,24 @@ function openTCW(tcase_external_id,version_number)
 	// second parameter(window name) with spaces caused bug on IE
 	window.open(fRoot+feature_url,__FUNCTION__,windowCfg);
 }
+
+
+function toogleShowHide(oid)
+{
+  var obj = document.getElementById(oid);
+  
+  if (!obj)
+  {
+  	return;
+  }                  
+  
+  if(obj.style.display == 'none')
+  {
+    obj.style.display = '';
+  }
+  else
+  {
+    obj.style.display = 'none';
+  }
+}
+

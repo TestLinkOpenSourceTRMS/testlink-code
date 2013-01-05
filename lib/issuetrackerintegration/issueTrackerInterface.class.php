@@ -31,44 +31,45 @@ require_once(TL_ABS_PATH . "/lib/functions/lang_api.php");
 
 abstract class issueTrackerInterface
 {
-	// members to store the bugtracking information.
-	// Values are set in the actual subclasses
-	var $cfg = null;  // simpleXML object
-	var $tlCharSet = null;
-
-	// private vars don't touch
-	var $dbConnection = null;  // usable only if interface is done via direct DB access.
-	var $dbMsg = '';
-	var $connected = false;
-	var $interfaceViaDB = false;  // useful for connect/disconnect methods
-	var $resolvedStatus;
-
-	var $methodOpt = array('buildViewBugLink' => array('addSummary' => false, 'colorByStatus' => false));
-	
-	/**
-	 * Construct and connect to BTS.
-	 * Can be overloaded in specialized class
-	 *
-	 * @param str $type (see tlIssueTracker.class.php $systems property)
-	 **/
-	function __construct($type,$config)
-	{
-	  $this->tlCharSet = config_get('charset');
-		
-		if( $this->setCfg($config) )
+  // members to store the bugtracking information.
+  // Values are set in the actual subclasses
+  var $cfg = null;  // simpleXML object
+  var $tlCharSet = null;
+  
+  // private vars don't touch
+  var $dbConnection = null;  // usable only if interface is done via direct DB access.
+  var $dbMsg = '';
+  var $connected = false;
+  var $interfaceViaDB = false;  // useful for connect/disconnect methods
+  var $resolvedStatus;
+  
+  var $methodOpt = array('buildViewBugLink' => array('addSummary' => false, 'colorByStatus' => false));
+  private $guiCfg = array();
+  
+  /**
+   * Construct and connect to BTS.
+   * Can be overloaded in specialized class
+   *
+   * @param str $type (see tlIssueTracker.class.php $systems property)
+   **/
+  function __construct($type,$config)
+  {
+    $this->tlCharSet = config_get('charset');
+    $this->guiCfg = array('use_decoration' => true); // add [] on summary and statusHTMLString
+    if( $this->setCfg($config) )
     {
-  		// useful only for integration via DB
-  		if( !property_exists($this->cfg,'dbcharset') )
-  		{
-  			$this->cfg->dbcharset = $this->tlCharSet;
-  	 	}
-  	  $this->connect();
-	  }
-	  else
-	  {
-	    $this->connected = false;
-	  }
-	}
+      // useful only for integration via DB
+      if( !property_exists($this->cfg,'dbcharset') )
+      {
+      $this->cfg->dbcharset = $this->tlCharSet;
+      }
+      $this->connect();
+    }
+    else
+    {
+      $this->connected = false;
+    }
+  }
 
 	/**
 	 *
@@ -470,6 +471,16 @@ abstract class issueTrackerInterface
         $status_ok = !is_null($issue) && is_object($issue);
     }
     return $status_ok;
+  }
+
+  function buildStatusHTMLString($statusCode)
+  {
+    $str = $statusCode;
+    if($this->guiCfg['use_decoration'])
+    {
+    	$str = "[" . $str . "] ";	
+    }
+    return $str;
   }
 
  

@@ -14,20 +14,30 @@
 class bugzilladbInterface extends issueTrackerInterface
 {
 
-	/**
-	 * Construct and connect to BTS.
-	 *
-	 * @param str $type (see tlIssueTracker.class.php $systems property)
-	 * @param xml $cfg
-	 **/
-	function __construct($type,$config)
-	{
-	    parent::__construct($type,$config);
-		$this->interfaceViaDB = true;
-	    $this->guiCfg = array('use_decoration' => true); // add [] on summary
-   		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
+  /**
+   * Construct and connect to BTS.
+   *
+   * @param str $type (see tlIssueTracker.class.php $systems property)
+   * @param xml $cfg
+   **/
+  function __construct($type,$config)
+  {
+    parent::__construct($type,$config); 
 
-	}
+    // For bugzilla status code is not important.
+    // Design Choice make it equal to verbose. Important bugzilla uses UPPERCASE 
+    $this->defaultResolvedStatus = array();
+    $this->defaultResolvedStatus[] = array('code' => 'RESOLVED', 'verbose' => 'RESOLVED');
+    $this->defaultResolvedStatus[] = array('code' => 'VERIFIED', 'verbose' => 'VERIFIED');
+    $this->defaultResolvedStatus[] = array('code' => 'CLOSED', 'verbose' => 'CLOSED');
+		
+		$this->setResolvedStatusCfg();
+    
+    
+    $this->interfaceViaDB = true;
+    $this->guiCfg = array('use_decoration' => true); // add [] on summary
+    $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
+  }
 
 
 
@@ -54,6 +64,9 @@ class bugzilladbInterface extends issueTrackerInterface
 			$this->status_color[$issue->statusVerbose] : 'white';
 	
 			$issue->summaryHTMLString = $rs[$id]['summary'];
+      $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
+
+			
 		}
 		return $issue;	
 	}
@@ -77,33 +90,7 @@ class bugzilladbInterface extends issueTrackerInterface
 	}
 	
 	
-	/**
-	 * Returns the status in a readable form (HTML context) for the bug with the given id
-	 *
-	 * @param int id the bug id
-	 * 
-	 * @return string returns the status (in a readable form) of the given bug 
-	 *
-	 **/
-	function buildStatusHTMLString($id)
-	{
-		$status = $this->getBugStatus($id);
-		
-		//if the bug wasn't found the status is null and we simply display the bugID
-		$str = htmlspecialchars($id);
-		if (!is_null($status))
-		{
-			//strike through all bugs that have a resolved, verified, or closed status.. 
-			if('RESOLVED' == $status || 'VERIFIED' == $status || 'CLOSED' == $status)
-			{
-				$str = "<del>" . htmlspecialchars($id). "</del>";
-			}
-		}
-		return $str;
-	}
-
-
-  	/**
+ 	/**
 	 * checks is bug id is present on BTS
 	 * 
 	 * @return integer returns 1 if the bug with the given id exists 

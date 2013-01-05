@@ -3,17 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * @package     TestLink
  * @filesource  requirement_mgr.class.php
- * @package    TestLink
  * @author      Francisco Mancardi <francisco.mancardi@gmail.com>
- * @copyright   2007-2012, TestLink community 
+ * @copyright   2007-2013, TestLink community 
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * @internal revisions:
  * @since 1.9.6
- *
+ * 20130105 - franciscom - get_coverage() added order by
  */
 
 // Needed to use extends tlObjectWithAttachments, If not present autoload fails.
@@ -200,15 +200,13 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
     }
     }
 
-    // 20110331 - BUGID 4366
-    // added -1 AS revision_id to make some process easier 
-  
+   // added -1 AS revision_id to make some process easier 
   $sql = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
-       " REQV.scope,REQV.status,REQV.type,REQV.active," . 
-           " REQV.is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
-           " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
-           " REQV.modification_ts,REQV.revision, -1 AS revision_id, " .
-           " NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+         " REQV.scope,REQV.status,REQV.type,REQV.active," . 
+         " REQV.is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
+         " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
+         " REQV.modification_ts,REQV.revision, -1 AS revision_id, " .
+         " NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
          " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
          " FROM {$this->object_table} REQ " .
          " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
@@ -293,8 +291,6 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
              id -> id of new requirement.
 
   @internal revision
-  20091202 - franciscom -  added contribution by asimon83/mx-julian 
-
   */
 function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
                 $status = TL_REQ_STATUS_VALID, $type = TL_REQ_TYPE_INFO,
@@ -634,32 +630,32 @@ function get_coverage($id,$context=null)
 {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
-    $safe_id = intval($id);
+  $safe_id = intval($id);
   $common = array();
   
   $common['fields'] = " SELECT DISTINCT NH_TC.id,NH_TC.name,TCV.tc_external_id " .
-                   " FROM {$this->tables['nodes_hierarchy']} NH_TC " .
-                   " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id=NH_TC.id " .
-                   " JOIN {$this->tables['tcversions']} TCV ON TCV.id=NH_TCV.id " .
-                   " JOIN {$this->tables['req_coverage']} RC ON RC.testcase_id = NH_TC.id ";
-    $common['where'] = " WHERE RC.req_id={$safe_id} ";
+                      " FROM {$this->tables['nodes_hierarchy']} NH_TC " .
+                      " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id=NH_TC.id " .
+                      " JOIN {$this->tables['tcversions']} TCV ON TCV.id=NH_TCV.id " .
+                      " JOIN {$this->tables['req_coverage']} RC ON RC.testcase_id = NH_TC.id ";
+  $common['where'] = " WHERE RC.req_id={$safe_id} ";
 
-    if(is_null($context))
-    {
-      $sql = "/* $debugMsg - Static Coverage */ " . $common['fields'] . $common['where'];
-    }
-    else
-    {
-      
-      $sql = "/* $debugMsg - Dynamic Coverage */ " . 
-           $common['fields'] .  
-             " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NH_TCV.id " .
+  if(is_null($context))
+  {
+    $sql = "/* $debugMsg - Static Coverage */ " . $common['fields'] . $common['where'];
+  }
+  else
+  {
+    
+    $sql = "/* $debugMsg - Dynamic Coverage */ " . $common['fields'] .  
+           " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NH_TCV.id " .
            $common['where'] .  
            " AND TPTCV.testplan_id = " . intval($context['tplan_id']) .
            " AND TPTCV.platform_id = " . intval($context['platform_id']);
-    }
-    
-    return $this->db->get_recordset($sql);
+  }
+  $sql .=  "ORDER BY tc_external_id ";
+
+  return $this->db->get_recordset($sql);
 }
 
 
@@ -957,48 +953,45 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
           testcase_id
 
     returns: 1/0
-    
-    rev:  20090401 - franciscom - BUGID 2316 - refactored
-
   */
   function assign_to_tcase($req_id,$testcase_id)
   {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $output = 0;
     if($testcase_id && $req_id)
     {
-        $items = (array)$req_id;
-        $in_clause = implode(",",$items);
+      $items = (array)$req_id;
+      $in_clause = implode(",",$items);
       $sql = " /* $debugMsg */ SELECT req_id,testcase_id FROM {$this->tables['req_coverage']} " .
              " WHERE req_id IN ({$in_clause}) AND testcase_id = {$testcase_id}";
-       $coverage = $this->db->fetchRowsIntoMap($sql,'req_id');
-         
-        $loop2do=count($items);
-         for($idx=0; $idx < $loop2do; $idx++)
-         {
-             if( is_null($coverage) || !isset($coverage[$items[$idx]]) )
-             {
-                 $sql = "INSERT INTO {$this->tables['req_coverage']} (req_id,testcase_id) " .
-                      "VALUES ({$items[$idx]},{$testcase_id})";
-                 $result = $this->db->exec_query($sql);
-               if ($this->db->affected_rows() == 1)
-               {
-                  $output = 1;
-                   $tcInfo = $this->tree_mgr->get_node_hierarchy_info($testcase_id);
-                  $reqInfo = $this->tree_mgr->get_node_hierarchy_info($items[$idx]);
-                  if($tcInfo && $reqInfo)
-                  {
-                    logAuditEvent(TLS("audit_req_assigned_tc",$reqInfo['name'],$tcInfo['name']),
-                                  "ASSIGN",$this->object_table);
-                }                  
-               }
-             }    
-            else
+      $coverage = $this->db->fetchRowsIntoMap($sql,'req_id');
+        
+      $loop2do=count($items);
+      for($idx=0; $idx < $loop2do; $idx++)
+      {
+          if( is_null($coverage) || !isset($coverage[$items[$idx]]) )
+          {
+            $sql = "INSERT INTO {$this->tables['req_coverage']} (req_id,testcase_id) " .
+                   "VALUES ({$items[$idx]},{$testcase_id})";
+            $result = $this->db->exec_query($sql);
+            if ($this->db->affected_rows() == 1)
             {
-                $output = 1;
-            }    
+              $output = 1;
+              $tcInfo = $this->tree_mgr->get_node_hierarchy_info($testcase_id);
+              $reqInfo = $this->tree_mgr->get_node_hierarchy_info($items[$idx]);
+              if($tcInfo && $reqInfo)
+              {
+                logAuditEvent(TLS("audit_req_assigned_tc",$reqInfo['name'],$tcInfo['name']),
+                              "ASSIGN",$this->object_table);
+              }                 
+            }
+          }    
+         else
+         {
+           $output = 1;
          }
+      }
     }
     return $output;
   }
@@ -1918,14 +1911,14 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
         {
           // Seems that when we call this function during Test Project Copy
           // we do not use this piece
-              $linked_items = $this->get_coverage($id);
-                if( !is_null($linked_items) )
-                {
-                  foreach($linked_items as $value)
-                  {
-                    $this->assign_to_tcase($new_item['id'],$value['id']);
-                  }
-                }              
+          $linked_items = $this->get_coverage($id);
+          if( !is_null($linked_items) )
+          {
+            foreach($linked_items as $value)
+            {
+              $this->assign_to_tcase($new_item['id'],$value['id']);
+            }
+          }              
         }
       }
     }

@@ -269,6 +269,8 @@ $TLS_reqspec_created_automatic_log = "Requirement Specification Created";
 
 $TLS_elapsed_seconds = 'Processing time (seconds)'; 
 
+$TLS_addLinkToTestCase = 'Add link to test case';
+$TLS_removeLinkToTestCase = 'Remove test case link';
 
 // ----- unsorted (TODO move) -------------------------------------
 $TLS_problems_loading_xml_content = "Unable to load XML data, Check your file.";
@@ -3514,5 +3516,9 @@ $TLS_bts_check_ko = "Connection is KO, check configuration";
 $TLS_check_bts_connection = "Check connection";
 
 $TLS_can_not_create_direct_link = 'You do not have a TestLink API KEY, direct link can not be generated';
+
+$TLS_seems_to_belong_to_other_tproject = "Attention! - Test case have prefix %s that is different than expected prefix %s";
+$TLS_provide_full_external_tcase_id = "Attention! - You need to provide FULL test case id: %s%sNUMBER";
+$TLS_tcase_doesnot_exist = "Attention!! - Can not find test case identified by %s";
 // ----- END ------------------------------------------------------------------
 ?>

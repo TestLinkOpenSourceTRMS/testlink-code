@@ -524,12 +524,8 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
         }
   
         $children_rs=$this->db->fetchRowsIntoMap($sql,'id');
-            $children = array_keys($children_rs); 
+        $children = array_keys($children_rs); 
 
-      // BUGID 2877 - Custom Fields linked to Requirement Versions
-        // Delete Custom fields
-        // $this->cfield_mgr->remove_all_design_values_from_node($id);
-        
         // delete dependencies with test specification
         $sql = "DELETE FROM {$this->tables['req_coverage']} " . $where_clause_coverage;
         $result = $this->db->exec_query($sql);
@@ -1012,8 +1008,8 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
   {
     $output = 0;
     $sql = " DELETE FROM {$this->tables['req_coverage']} " .
-         " WHERE req_id={$req_id} " .
-         " AND testcase_id={$testcase_id}";
+           " WHERE req_id={$req_id} " .
+           " AND testcase_id={$testcase_id}";
   
     $result = $this->db->exec_query($sql);
   

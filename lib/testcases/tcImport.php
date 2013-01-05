@@ -271,14 +271,12 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $exec_type = isset($tc['execution_type']) ? $tc['execution_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
     $importance = isset($tc['importance']) ? $tc['importance'] : MEDIUM;    
 
-    // TICKET 4937: Test Cases EXTERNAL ID is Auto genarated, no matter is provided on XML
     $externalid = $tc['externalid'];
     if( intval($externalid) <= 0 )
     {
       $externalid = null;
     }
     
-    // TICKET 4963: Test case / Tes suite XML format, new element to set author
     $personID = $userID;
     if( !is_null($tc['author_login']) )
     {
@@ -342,52 +340,50 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
         break;
     
         
-          }
+      }
 
-          if( !is_null($info) )
-          {
-            $tcase_qty = count($info);
-           switch($tcase_qty)
-           {
-               case 1:
-                 $doCreate=false;
-                 $tcase_id = key($info); 
-                     $last_version = $tcase_mgr->get_last_version_info($tcase_id,$getVersionOpt);
-                     $tcversion_id = $last_version['id'];
-                     $ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
-                                               $preconditions,$steps,$personID,$kwIDs,
-                                               $node_order,$exec_type,$importance);
+      if( !is_null($info) )
+      {
+        $tcase_qty = count($info);
+       switch($tcase_qty)
+       {
+           case 1:
+             $doCreate=false;
+             $tcase_id = key($info); 
+             $last_version = $tcase_mgr->get_last_version_info($tcase_id,$getVersionOpt);
+             $tcversion_id = $last_version['id'];
+             $ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
+                                       $preconditions,$steps,$personID,$kwIDs,
+                                       $node_order,$exec_type,$importance);
 
-            $ret['id'] = $tcase_id;
-            $ret['tcversion_id'] = $tcversion_id;
-                     $resultMap[] = array($name,$messages['already_exists_updated']);
-
-                 break;
-               
-               case 0:
-                 $doCreate=true; 
-               break;
-               
-               default:
-                   $doCreate=false; 
-               break;
-           }
+             $ret['id'] = $tcase_id;
+             $ret['tcversion_id'] = $tcversion_id;
+             $resultMap[] = array($name,$messages['already_exists_updated']);
+           break;
+           
+           case 0:
+             $doCreate=true; 
+           break;
+           
+           default:
+               $doCreate=false; 
+           break;
        }
-
-    }
+     }
+   }
     
     if( $doCreate )
     {
       // Want to block creation of with existent EXTERNAL ID, if containers ARE DIFFERENT.
-      $info = $tcase_mgr->getInternalID($externalid, array('tproject_id' => $tproject_id));
-      if( !is_null($info) )
+      $item_id = intval($tcase_mgr->getInternalID($externalid, array('tproject_id' => $tproject_id)));
+      if( $item_id > 0)
       {
         // who is his parent ?
-        $owner = $tcase_mgr->getTestSuite($info);  
+        $owner = $tcase_mgr->getTestSuite($item_id);  
         if( $owner != $container_id)
         { 
           // Get full path of existent Test Cases
-          $stain = $tcase_mgr->tree_manager->get_path($info,null, 'name');
+          $stain = $tcase_mgr->tree_manager->get_path($item_id,null, 'name');
           $n = count($stain);         
           $stain[$n-1] = $tcasePrefix . config_get('testcase_cfg')->glue_character . $externalid . ':' . $stain[$n-1];
           $stain = implode('/',$stain);
@@ -850,8 +846,6 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
   static $doCF;
   
   $resultMap = array();
-    
-  // $callCounter++;
   if(is_null($tsuiteXML) )
   {
     $myself = __FUNCTION__;
@@ -870,8 +864,8 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
             
 
     // getItemsFromSimpleXMLObj() first argument must be an array
-        $dummy = getItemsFromSimpleXMLObj(array($xml),$tsuiteXML);
-        $tsuite = current($dummy); 
+    $dummy = getItemsFromSimpleXMLObj(array($xml),$tsuiteXML);
+    $tsuite = current($dummy); 
     $tsuiteID = $parentID;  // hmmm, not clear
 
     if ($tsuite['name'] != "")
@@ -886,8 +880,8 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
       }
       else
       {
-        $ret = $tsuiteMgr->update(($tsuite['id'] = $info[0]['id']),
-                      $tsuite['name'],$tsuite['details'],null,$tsuite['node_order']);
+        $ret = $tsuiteMgr->update(($tsuite['id'] = $info[0]['id']),$tsuite['name'],$tsuite['details'],
+                                  null,$tsuite['node_order']);
         
       }
       unset($dummy);
@@ -929,7 +923,7 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
       switch($target->getName())
       {
         case 'testcase':
-            // getTestCaseSetFromSimpleXMLObj() first argument must be an array
+          // getTestCaseSetFromSimpleXMLObj() first argument must be an array
           $tcData = getTestCaseSetFromSimpleXMLObj(array($target));
           $resultMap = array_merge($resultMap,
                        saveImportedTCData($dbHandler,$tcData,$tproject_id,

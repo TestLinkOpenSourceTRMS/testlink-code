@@ -14,15 +14,15 @@ class jiraCommons
 {
 
   protected $statusDomain = array();
-	protected $l18n;
-	protected $labels = array('duedate' => 'its_duedate_with_separator');
-	
-	var $defaultResolvedStatus;
+  protected $l18n;
+  protected $labels = array('duedate' => 'its_duedate_with_separator');
+  
+  var $defaultResolvedStatus;
   var $guiCfg;
-	
+  
 
   /**
-	 * @param string issueID
+   * @param string issueID
    *
    * @return bool true if issue exists on BTS
    **/
@@ -42,7 +42,7 @@ class jiraCommons
    **/
   private function helperParseDate($date2parse)
   {
-  	$ret = null;
+    $ret = null;
     if (!is_null($date2parse))
     {
         $ret = date_parse($date2parse);
@@ -51,23 +51,23 @@ class jiraCommons
     }
     return $ret ;
   }
- 	
-	/**
-	 *
-	 **/
-	function buildStatusHTMLString($statusCode)
-	{
-		$str = $statusCode;
-		if($this->guiCfg['use_decoration'])
-		{
-			$str = "[" . $str . "] ";	
-		}
-		return $str;
-	}
 
-	/**
-	 *
-	 **/
+  /**
+   *
+   **/
+  function buildStatusHTMLString($statusCode)
+  {
+    $str = $statusCode;
+    if($this->guiCfg['use_decoration'])
+    {
+      $str = "[" . $str . "] ";	
+    }
+    return $str;
+  }
+
+  /**
+   *
+   **/
   function buildSummaryHTMLString($issue)
   {
     $summary = $issue->summary;

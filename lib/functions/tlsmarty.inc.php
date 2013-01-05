@@ -299,12 +299,15 @@ class TLSmarty extends Smarty
 
   static function getImageSet()
   {
-    $dummy = array('api_info' => TL_THEME_IMG_DIR . 'brick.png',
+    $dummy = array(
+                   'add' => TL_THEME_IMG_DIR . 'add.png',
                    'active' => TL_THEME_IMG_DIR . 'flag_green.png',
+                   'api_info' => TL_THEME_IMG_DIR . 'brick.png',
                    'bug_link_tl_to_bts' => TL_THEME_IMG_DIR . 'bug_link_famfamfam.png',
                    'bug_create_into_bts' => TL_THEME_IMG_DIR . 'bug_add_famfamfam.png',
                    'bug_link_tl_to_bts_disabled' => TL_THEME_IMG_DIR . 'bug_link_disabled_famfamfam.png',
                    'bug_create_into_bts_disabled' => TL_THEME_IMG_DIR . 'bug_add_disabled_famfamfam.png',
+                   'bullet' => TL_THEME_IMG_DIR . 'slide_gripper.gif',
                    'calendar' => TL_THEME_IMG_DIR . 'calendar.gif',
                    'checked' => TL_THEME_IMG_DIR . 'apply_f2_16.png',
                    'clear' => TL_THEME_IMG_DIR . 'trash.png',
@@ -313,9 +316,11 @@ class TLSmarty extends Smarty
                    'delete' => TL_THEME_IMG_DIR . 'trash.png',
                    'demo_mode' => TL_THEME_IMG_DIR . 'emoticon_tongue.png',
                    'delete_disabled' => TL_THEME_IMG_DIR . 'trash_greyed.png',
-    				       'direct_link' => TL_THEME_IMG_DIR . 'world_link.png',
-    				       'edit' => TL_THEME_IMG_DIR . 'icon_edit.png',
-    				       'edit_icon' => TL_THEME_IMG_DIR . 'edit_icon.png',
+                   'disconnect' => TL_THEME_IMG_DIR . 'disconnect.png',
+                   'disconnect_small' => TL_THEME_IMG_DIR . 'disconnect_small.png',
+                   'direct_link' => TL_THEME_IMG_DIR . 'world_link.png',
+                   'edit' => TL_THEME_IMG_DIR . 'icon_edit.png',
+                   'edit_icon' => TL_THEME_IMG_DIR . 'edit_icon.png',
                    'export' => TL_THEME_IMG_DIR . 'export.png',
                    'export_import' => TL_THEME_IMG_DIR . 'export_import.png',
                    'executed' => TL_THEME_IMG_DIR . 'lightning.png',
@@ -335,7 +340,7 @@ class TLSmarty extends Smarty
                    'reorder' => TL_THEME_IMG_DIR . 'arrow_switch.png',
                    'sort' => TL_THEME_IMG_DIR . 'sort_hint.png',
                    'toggle_all' => TL_THEME_IMG_DIR .'toggle_all.gif',
-                   'bullet' => TL_THEME_IMG_DIR . 'slide_gripper.gif',
+                   'warning' => TL_THEME_IMG_DIR . 'error_triangle.png',
                    'wrench' => TL_THEME_IMG_DIR . 'wrench.png');
                      
     return $dummy;

@@ -33,6 +33,15 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 		$this->completeCfg();
 	  $this->connect();
 	  $this->guiCfg = array('use_decoration' => true); // add [] on summary
+
+    // For bugzilla status code is not important.
+    // Design Choice make it equal to verbose. Important bugzilla uses UPPERCASE 
+    $this->defaultResolvedStatus = array();
+    $this->defaultResolvedStatus[] = array('code' => 'RESOLVED', 'verbose' => 'RESOLVED');
+    $this->defaultResolvedStatus[] = array('code' => 'VERIFIED', 'verbose' => 'VERIFIED');
+    $this->defaultResolvedStatus[] = array('code' => 'CLOSED', 'verbose' => 'CLOSED');
+		
+		$this->setResolvedStatusCfg();
 	}
 
 
@@ -160,11 +169,10 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 		{
 			$issue = new stdClass();
 		  $issue->IDHTMLString = "<b>{$issueID} : </b>";
-			
-			$issue->statusCode = 0;
-			$issue->statusVerbose = $resp['Bug.get']['bugs'][0]['status'];
-			$issue->statusHTMLString = "[$issue->statusVerbose] ";
+			$issue->statusCode = $issue->statusVerbose = $resp['Bug.get']['bugs'][0]['status'];
+      $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
 
+			$issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusVerbose);
 			$issue->summary = $issue->summaryHTMLString = $resp['Bug.get']['bugs'][0]['summary'];
 		}
     else
@@ -198,7 +206,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 	 **/
 	function getIssueStatusVerbose($issueID)
 	{
-        return $this->getIssueStatusCode($issueID);
+    return $this->getIssueStatusCode($issueID);
 	}
 
 	/**

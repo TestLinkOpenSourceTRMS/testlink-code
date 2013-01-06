@@ -13,27 +13,7 @@
  * @author Andreas Simon
  * @internal revisions
  *
- * @since 1.9.4
- *  20121010 - asimon - TICKET 4353: added filter for active/inactive test cases
- *  20121010 - asimon - TICKET 4217: added importance filter on test specification
- *  20120926 - asimon - TICKET 5251: only use validateForm() to validate result filter 
- *                                   when result filter is actually enabled
- *  20111031 - franciscom - TICKET 4788: Test Case Execution - 
- *							Give feedback when filter combination 'Result' + 'on' can not be used
- *
- * @since 1.9.3
- *  20110222 - asimon - BUGID 4253: enable filter method selector before submitting 
- *                                  the form so its value doesn't get lost
- *  20101121 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
- *  20101101 - franciscom - openExportTestPlan() interface changes
- *  20101009 - franciscom - fixed error viewer warning
- *  20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
- *  20100811 - asimon - BUGID 3566: show/hide CF
- *  20100810 - asimon - added TC ID filter for Test Cases
- *  20100808 - asimon - additional fields for requirement filtering
- *  20100709 - asimon - BUGID 3406: changes to unassign button
- *  20100610 - asimon - first implementation of filter control class hierarchy
- *  20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+ * @since 1.9.6
  *}
 
 {lang_get var=labels s='caption_nav_settings, caption_nav_filters, platform, test_plan,
@@ -235,7 +215,7 @@
 		{/if}
 
         {* TICKET 4353: added filter for active/inactive test cases *}
-        {if $control->filters.filter_active_inactive}
+        {if isset($control->filters.filter_active_inactive) && $control->filters.filter_active_inactive}
             <tr>
                 <td>{$labels.filter_active_inactive}</td>
                 <td>

@@ -7,16 +7,13 @@
 /** 
  * Error codes for the TestlinkXMLRPCServer
  * 
- * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
- * @package 	TestlinkAPI
+ * @author    Asiel Brumfield <asielb@users.sourceforge.net>
+ * @package   TestlinkAPI
  * @link      http://testlink.org/api/
  *
- * rev: 
- *		20100918 - franciscom - BUGID 1890
- *		20090420 - franciscom - BUGID 2158
- *      20090304 - franciscom - BUGID 2191
- *      20080518 - franciscom - TestLink Development team - www.teamst.org
- *      suppress log for missing localization strings.
+ * @internal revisions
+ * @since 1.9.6
+ * 
  */
  
  /**
@@ -324,6 +321,11 @@ define('REQ_KO', 11003);
 define('REQ_KO_STR', lang_get('API_REQ_KO',null,1));
 
 
+/**
+ * 12000 level - Platforms
+ */
+define('PLATFORMNAME_ALREADY_EXISTS',12000);
+define('PLATFORMNAME_ALREADY_EXISTS_STR', lang_get('API_PLATFORMNAME_ALREADY_EXISTS',null,1));
 
 
 

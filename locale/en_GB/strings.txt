@@ -3127,7 +3127,10 @@ $TLS_API_ATTACH_INVALID_FK = "Invalid Foreign Key ID[%s] Table[%s]";
 $TLS_API_ATTACH_INVALID_ATTACHMENT = "Invalid attachment info parameters: FILE_NAME [%s] CONTENT_SIZE [%s]";
 
 $TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES = "There are no custom fields usable at design time linked" . 
-											      " to test cases on this test project ";
+                                                  " to test cases on this test project ";
+
+
+$TLS_API_PLATFORMNAME_ALREADY_EXISTS = "Platform name (%s) already exists (id:%s)";
 
 
 $TLS_NODEID_INVALID_DATA_TYPE_STR = "Invalid Data Type - Node ID can be Array of positive Integer, or Positive Integer";

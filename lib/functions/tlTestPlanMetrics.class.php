@@ -12,7 +12,8 @@
  * @uses        common.php 
  *
  * @internal revisions
- * @since 1.9.6                         
+ * @since 1.9.6         
+ * 20130107 - franciscom - TICKET 5457: Incorrect data in "Report by tester per build"                 
  **/
 
 
@@ -956,16 +957,14 @@ class tlTestPlanMetrics extends testplan
   }
 
   /**
-   *
    * @internal revisions
    *
-   * @since 1.9.4            
-   * 20120817 - franciscom - found issue, UNION NOT NEEDED
-   * 20120430 - franciscom - 
+   * @since 1.9.6
+   * 20130107 - franciscom - TICKET 5457: Incorrect data in "Report by tester per build"
    */
   function getExecCountersByBuildUAExecStatus($id, $filters=null, $opt=null)
   {
-    //echo 'QD - <b><br>' . __FUNCTION__ . '</b><br>';
+    // echo 'QD - <b><br>' . __FUNCTION__ . '</b><br>';
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $safe_id = intval($id);
     list($my,$builds,$sqlStm) = $this->helperGetExecCounters($safe_id, $filters, $opt);
@@ -978,40 +977,48 @@ class tlTestPlanMetrics extends testplan
     // 20120817 - franciscom -
     // I'm not to happy with DISTINCT I've added to do this work.
     // Do not understand why i get multiple identical records
+    //
+    // 20130107 - Think I've got the issue:
+    // was the missing clause     
+    // " AND UA.feature_id = TPTCV.id AND UA.build_id = LEBBP.build_id " .
     $sqlUnionBU  =  "/* {$debugMsg} */" . 
-            " SELECT DISTINCT UA.user_id, UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " .
-            " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
-            " FROM {$this->tables['testplan_tcversions']} TPTCV " .
-            " JOIN {$this->tables['user_assignments']} UA " .
-            " ON UA.feature_id = TPTCV.id " .
-            " AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
-
-            " LEFT OUTER JOIN ({$sqlLEBBP}) AS LEBBP " .
-            " ON  LEBBP.testplan_id = TPTCV.testplan_id " .
-            " AND LEBBP.platform_id = TPTCV.platform_id " .
-            " AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
-            " AND LEBBP.testplan_id = " . $safe_id .
-
-            " LEFT OUTER JOIN {$this->tables['executions']} E " .
-            " ON  E.build_id = UA.build_id " .
-            " AND E.testplan_id = TPTCV.testplan_id " .
-            " AND E.platform_id = TPTCV.platform_id " .
-            " AND E.tcversion_id = TPTCV.tcversion_id " .
-            " AND E.id = LEBBP.id " . // TICKET 5192
-            " WHERE TPTCV.testplan_id=" . $safe_id .
-            " AND UA.build_id IN ({$builds->inClause}) " ;
+                    " SELECT DISTINCT UA.user_id, UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " .
+                    " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
+                    " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+                    " JOIN {$this->tables['user_assignments']} UA " .
+                    " ON UA.feature_id = TPTCV.id " .
+                    " AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
+                    
+                    " /* LEFT OUTER in order to get NOT RUN */ " .
+                    " LEFT OUTER JOIN ({$sqlLEBBP}) AS LEBBP " .
+                    " ON  LEBBP.testplan_id = TPTCV.testplan_id " .
+                    " AND LEBBP.platform_id = TPTCV.platform_id " .
+                    " AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
+                    " AND LEBBP.testplan_id = " . $safe_id .      
+                    
+                    " /* Without this piece we are including results for features without tester */ ".
+                    " AND UA.feature_id = TPTCV.id AND UA.build_id = LEBBP.build_id " .
+                    
+                    " LEFT OUTER JOIN {$this->tables['executions']} E " .
+                    " ON  E.build_id = UA.build_id " .
+                    " AND E.testplan_id = TPTCV.testplan_id " .
+                    " AND E.platform_id = TPTCV.platform_id " .
+                    " AND E.tcversion_id = TPTCV.tcversion_id " .
+                    " AND E.id = LEBBP.id " . // TICKET 5192
+                    " WHERE TPTCV.testplan_id=" . $safe_id .
+                    " AND UA.build_id IN ({$builds->inClause}) " ;
   
     // echo 'QD - <b>' . $sqlUnionBU . '</b><br>';
     // die();
     $sql =  " /* {$debugMsg} */" .
-         " SELECT user_id, build_id,status, count(0) AS exec_qty " .
-         " FROM ($sqlUnionBU) AS SQBU " .
-         " GROUP BY user_id,build_id,status ";
+            " SELECT user_id, build_id,status, count(0) AS exec_qty " .
+            " FROM ($sqlUnionBU) AS SQBU " .
+            " GROUP BY user_id,build_id,status ";
            
     //Echo 'QD - <br><b>' . __FUNCTION__ . '</b><br>'; 
-    //Echo 'QD - ' . $sql . '<br>';
+    //echo 'QD - ' . $sql . '<br>';
     $keyColumns = array('build_id','user_id','status');
-        $exec['with_tester'] = (array)$this->db->fetchRowsIntoMap3l($sql,$keyColumns);              
+    $exec['with_tester'] = (array)$this->db->fetchRowsIntoMap3l($sql,$keyColumns);              
 
     $totals = array();
     foreach($exec as &$topLevelElem)
@@ -1052,22 +1059,21 @@ class tlTestPlanMetrics extends testplan
    * @see resultsByTesterPerBuild.php
    * @internal revisions
    *
-   * @since 1.9.4
-   * 20120430 - franciscom - 
+   * @since 1.9.6
    */
   function getStatusTotalsByBuildUAForRender($id,$opt=null)
   {
     $my = array('opt' => array('processClosedBuilds' => true));
     $my['opt'] = array_merge($my['opt'],(array)$opt);
     
-       $renderObj = null;
+    $renderObj = null;
     $code_verbose = $this->getStatusForReports();
-      $labels = $this->resultsCfg['status_label'];
+    $labels = $this->resultsCfg['status_label'];
     $metrics = $this->getExecCountersByBuildUAExecStatus($id,null,$my['opt']);
     
-       if( !is_null($metrics) )
-       {
-         $renderObj = new stdClass();
+    if( !is_null($metrics) )
+    {
+      $renderObj = new stdClass();
       $topItemSet = array_keys($metrics['with_tester']);
       $renderObj->info = array();  
       $out = &$renderObj->info;

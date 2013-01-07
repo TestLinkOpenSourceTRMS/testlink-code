@@ -7,7 +7,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.5
+ * @since 1.9.6
  * 
 **/
 require_once('Zend/Loader/Autoloader.php');
@@ -18,119 +18,118 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
     private $APIClient;
     private $issueDefaults;
 
-	/**
-	 * Construct and connect to BTS.
-	 *
-	 * @param str $type (see tlIssueTracker.class.php $systems property)
-	 * @param xml $cfg
-	 **/
-	function __construct($type,$config)
-	{
-		$this->interfaceViaDB = false;
-		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
-		
-	  $this->setCfg($config);
-		$this->completeCfg();
-	  $this->connect();
-	  $this->guiCfg = array('use_decoration' => true); // add [] on summary
-
+  /**
+   * Construct and connect to BTS.
+   *
+   * @param str $type (see tlIssueTracker.class.php $systems property)
+   * @param xml $cfg
+   **/
+  function __construct($type,$config)
+  {
+    $this->interfaceViaDB = false;
+    $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
+    
+    $this->setCfg($config);
+    $this->completeCfg();
+    $this->connect();
+    $this->guiCfg = array('use_decoration' => true); // add [] on summary
+    
     // For bugzilla status code is not important.
     // Design Choice make it equal to verbose. Important bugzilla uses UPPERCASE 
     $this->defaultResolvedStatus = array();
     $this->defaultResolvedStatus[] = array('code' => 'RESOLVED', 'verbose' => 'RESOLVED');
     $this->defaultResolvedStatus[] = array('code' => 'VERIFIED', 'verbose' => 'VERIFIED');
     $this->defaultResolvedStatus[] = array('code' => 'CLOSED', 'verbose' => 'CLOSED');
-		
-		$this->setResolvedStatusCfg();
-	}
+    
+    $this->setResolvedStatusCfg();
+  }
 
 
-	/**
-	 *
-	 * check for configuration attributes than can be provided on
-	 * user configuration, but that can be considered standard.
-	 * If they are MISSING we will use 'these carved on the stone values' 
-	 * in order	to simplify configuration.
-	 * 
-	 *
-	 **/
-	function completeCfg()
-	{
-		$base = trim($this->cfg->uribase,"/") . '/'; // be sure no double // at end
-	  if( !property_exists($this->cfg,'urixmlrpc') )
-	  {
-	    	$this->cfg->urixmlrpc = $base . 'xmlrpc.cgi';
-		}
+  /**
+   *
+   * check for configuration attributes than can be provided on
+   * user configuration, but that can be considered standard.
+   * If they are MISSING we will use 'these carved on the stone values' 
+   * in order	to simplify configuration.
+   * 
+   *
+   **/
+  function completeCfg()
+  {
+    $base = trim($this->cfg->uribase,"/") . '/'; // be sure no double // at end
+    if( !property_exists($this->cfg,'urixmlrpc') )
+    {
+      $this->cfg->urixmlrpc = $base . 'xmlrpc.cgi';
+    }
 
-	  if( !property_exists($this->cfg,'uriview') )
-	  {
-	    	$this->cfg->uriview = $base . 'show_bug.cgi?id=';
-		}
-	    
-	  if( !property_exists($this->cfg,'uricreate') )
-	  {
-	    	$this->cfg->uricreate = $base;
-		}
-		
-		$this->issueDefaults = array('version' => 'unspecified', 'severity' => 'Trivial',
-		                             'op_sys' => 'All', 'priority' => 'Normal','platform' => "All",);
+    if( !property_exists($this->cfg,'uriview') )
+    {
+      $this->cfg->uriview = $base . 'show_bug.cgi?id=';
+    }
+      
+    if( !property_exists($this->cfg,'uricreate') )
+    {
+      $this->cfg->uricreate = $base;
+    }
+    
+    $this->issueDefaults = array('version' => 'unspecified', 'severity' => 'Trivial',
+                                 'op_sys' => 'All', 'priority' => 'Normal','platform' => "All",);
     foreach($this->issueDefaults as $prop => $default)
     {
-  	  $this->cfg->$prop = (string)(property_exists($this->cfg,$prop) ? $this->cfg->$prop : $default);
-    }		
-			    
-	}
-
-	/**
-     * useful for testing 
-     *
-     *
-     **/
-	function getAPIClient()
-	{
-		return $this->APIClient;
-	}
-
-    /**
-     * checks id for validity
-     *
-	 * @param string issueID
-     *
-     * @return bool returns true if the bugid has the right format, false else
-     **/
-    function checkBugIDSyntax($issueID)
-    {
-        return $this->checkBugIDSyntaxNumeric($issueID);
+      $this->cfg->$prop = (string)(property_exists($this->cfg,$prop) ? $this->cfg->$prop : $default);
     }
+  }
 
-    /**
-     * establishes connection to the bugtracking system
-     *
-     * @return bool 
-     *
-     **/
-    function connect()
+  /**
+   * useful for testing 
+   *
+   *
+   **/
+  function getAPIClient()
+  {
+    return $this->APIClient;
+  }
+
+  /**
+   * checks id for validity
+   *
+   * @param string issueID
+   *
+   * @return bool returns true if the bugid has the right format, false else
+   **/
+  function checkBugIDSyntax($issueID)
+  {
+      return $this->checkBugIDSyntaxNumeric($issueID);
+  }
+
+  /**
+   * establishes connection to the bugtracking system
+   *
+   * @return bool 
+   *
+   **/
+  function connect()
+  {
+    try
     {
-  		try
-  		{
-  			// CRITIC NOTICE for developers
-  			// $this->cfg is a simpleXML Object, then seems very conservative and safe
-  			// to cast properties BEFORE using it.
-  			$this->createAPIClient();
-  	    $this->connected = true;
+      // CRITIC NOTICE for developers
+      // $this->cfg is a simpleXML Object, then seems very conservative and safe
+      // to cast properties BEFORE using it.
+      $this->createAPIClient();
+      $this->connected = true;
+    }
+    catch(Exception $e)
+    {
+      $logDetails = '';
+      foreach(array('uribase','apikey') as $v)
+      {
+        $logDetails .= "$v={$this->cfg->$v} / "; 
       }
-  		catch(Exception $e)
-  		{
-  			$logDetails = '';
-  			foreach(array('uribase','apikey') as $v)
-  			{
-  				$logDetails .= "$v={$this->cfg->$v} / "; 
-  			}
-  			$logDetails = trim($logDetails,'/ ');
-  			$this->connected = false;
-              tLog(__METHOD__ . " [$logDetails] " . $e->getMessage(), 'ERROR');
-  		}
+      $logDetails = trim($logDetails,'/ ');
+      $this->connected = false;
+      tLog(__METHOD__ . " [$logDetails] " . $e->getMessage(), 'ERROR');
     }
+  }
 
     /**
      * 
@@ -270,57 +269,68 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
      *
      * @author francisco.mancardi@gmail.com>
      **/
-	public static function getCfgTemplate()
-  	{
-		$template = "<!-- Template " . __CLASS__ . " -->\n" .
-					"<issuetracker>\n" .
-					"<username>USERNAME</username>\n" .
-					"<password>PASSWORD</password>\n" .
-					"<uribase>http://bugzilla.mozilla.org/</uribase>\n" .
-					"</issuetracker>\n";					
-					
-		return $template;
-  	}
-  	
-  	
-  	function getAccessibleProducts()
-  	{
-  		$issue = null;
-  		$args = array(array('login' => (string)$this->cfg->username, 
-  							          'password' => (string)$this->cfg->password,'remember' => 1));
+  public static function getCfgTemplate()
+  {
+    $template = "<!-- Template " . __CLASS__ . " -->\n" .
+                "<issuetracker>\n" .
+                "<username>USERNAME</username>\n" .
+                "<password>PASSWORD</password>\n" .
+                "<uribase>http://bugzilla.mozilla.org/</uribase>\n" .
+                "<!-- In order to create issues from TestLink, you need to provide this MANDATORY info -->\n".
+                "<product>BUGZILLA PRODUCT</product>\n" .					
+                "<component>BUGZILLA PRODUCT</component>\n" .
+                "<!-- This can be adjusted according Bugzilla installation. -->\n".
+                "<!-- COMMENTED SECTION \n" .
+                " There are defaults defined in bugzillaxmlrpcInterface.class.php. \n".
+                "<version>unspecified</version>\n" .
+                "<severity>Trivial</severity>\n" .
+                "<op_sys>All</op_sys>\n" .
+                "<priority>Normal</priority>\n" .
+                "<platform>All</platform> --> \n".
+                "</issuetracker>\n";
+                
+    return $template;
+  }
   
-  		$resp = array();
-  		$method = 'User.login';
-  		$resp[$method] = $this->APIClient->call($method, $args);
-  		
-  		$method = 'Product.get_accessible_products';
-  		$itemSet = $this->APIClient->call($method);
-  		
-  		$method = 'User.logout';
-  		$resp[$method] = $this->APIClient->call($method);
-      
-      return $itemSet; 	  
-  	}
+  
+  function getAccessibleProducts()
+  {
+    $issue = null;
+    $args = array(array('login' => (string)$this->cfg->username, 
+                        'password' => (string)$this->cfg->password,'remember' => 1));
+    
+    $resp = array();
+    $method = 'User.login';
+    $resp[$method] = $this->APIClient->call($method, $args);
+    
+    $method = 'Product.get_accessible_products';
+    $itemSet = $this->APIClient->call($method);
+    
+    $method = 'User.logout';
+    $resp[$method] = $this->APIClient->call($method);
+    
+    return $itemSet;
+  }
 
-  	function getProduct($id)
-  	{
-  		$issue = null;
-  		$args = array(array('login' => (string)$this->cfg->username, 
-  							          'password' => (string)$this->cfg->password,'remember' => 1));
-  
-  		$resp = array();
-  		$method = 'User.login';
-  		$resp[$method] = $this->APIClient->call($method, $args);
-  		
-  		$method = 'Product.get';
-		  $args = array(array('ids' => array(intval($id))));
-  		$itemSet = $this->APIClient->call($method,$args);
-  		
-  		$method = 'User.logout';
-  		$resp[$method] = $this->APIClient->call($method);
-      
-      return $itemSet; 	  
-  	}
+  function getProduct($id)
+  {
+    $issue = null;
+    $args = array(array('login' => (string)$this->cfg->username, 
+                        'password' => (string)$this->cfg->password,'remember' => 1));
+    
+    $resp = array();
+    $method = 'User.login';
+    $resp[$method] = $this->APIClient->call($method, $args);
+    
+    $method = 'Product.get';
+    $args = array(array('ids' => array(intval($id))));
+    $itemSet = $this->APIClient->call($method,$args);
+    
+    $method = 'User.logout';
+    $resp[$method] = $this->APIClient->call($method);
+    
+    return $itemSet; 	  
+  }
 
     // good info from:
     // http://petehowe.co.uk/2010/example-of-calling-the-bugzilla-api-using-php-zend-framework/
@@ -358,44 +368,45 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
     // 
     
     
-  	function addIssue($summary,$description)
-  	{
-  		$issue = null;
-  		$args = array(array('login' => (string)$this->cfg->username, 
-  							          'password' => (string)$this->cfg->password,'remember' => 1));
-  
-  		$resp = array();
-  		$method = 'User.login';
-  		$resp[$method] = $this->APIClient->call($method, $args);
-  		
-  		$method = 'Bug.create';
-		  $issue = array('product' => (string)$this->cfg->product,
-                     'component' => (string)$this->cfg->component,
-                     'summary' => $summary,
-                     'description' => $description);
+  function addIssue($summary,$description)
+  {
+    $issue = null;
+    $args = array(array('login' => (string)$this->cfg->username, 
+                        'password' => (string)$this->cfg->password,'remember' => 1));
     
-      foreach($this->issueDefaults as $prop => $default)
-      {
-        $issue[$prop] = (string)$this->cfg->$prop;
-      }
-		  $args = array($issue);
-  		$op = $this->APIClient->call($method,$args);
-      if( ($op['status_ok'] = ($op['id'] > 0)) )
-      {
-        $op['msg'] = sprintf(lang_get('bugzilla_bug_created'),$summary,$issue['product']);
-      }
-      else
-      {
-        $msg = "Create BUGZILLA Ticket FAILURE ";
-        $op= array('status_ok' => false, 'id' => -1, 
-                   'msg' => $msg . ' - serialized issue:' . serialize($issue));
-        tLog($msg, 'WARNING');
-      }
+    $resp = array();
+    $method = 'User.login';
+    $resp[$method] = $this->APIClient->call($method, $args);
+    
+    $method = 'Bug.create';
+    $issue = array('product' => (string)$this->cfg->product,
+                   'component' => (string)$this->cfg->component,
+                   'summary' => $summary,
+                   'description' => $description);
+    
+    foreach($this->issueDefaults as $prop => $default)
+    {
+      $issue[$prop] = (string)$this->cfg->$prop;
+    }
+    
+    $args = array($issue);
+    $op = $this->APIClient->call($method,$args);
+    if( ($op['status_ok'] = ($op['id'] > 0)) )
+    {
+      $op['msg'] = sprintf(lang_get('bugzilla_bug_created'),$summary,$issue['product']);
+    }
+    else
+    {
+      $msg = "Create BUGZILLA Ticket FAILURE ";
+      $op= array('status_ok' => false, 'id' => -1, 
+                 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+      tLog($msg, 'WARNING');
+    }
       
-  		$method = 'User.logout';
-  		$resp[$method] = $this->APIClient->call($method);
-      return $op; 	  
-  	}
+    $method = 'User.logout';
+    $resp[$method] = $this->APIClient->call($method);
+    return $op; 	  
+  }
 
 }
 ?>

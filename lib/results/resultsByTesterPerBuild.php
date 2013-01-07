@@ -44,7 +44,7 @@ if( $openBuildsQty <= 0 )
 $metricsMgr = new tlTestPlanMetrics($db);
 $statusCfg = $metricsMgr->getStatusConfig();
 $metrics = $metricsMgr->getStatusTotalsByBuildUAForRender($args->tplan_id,
-														  array('processClosedBuilds' => $args->show_closed_builds));
+                                                          array('processClosedBuilds' => $args->show_closed_builds));
 $matrix = $metrics->info;
 
 
@@ -57,20 +57,20 @@ $names = $user->getNames($db);
 $build_statistics = array();
 foreach($matrix as $build_id => $build_execution_map) 
 {
-	$build_statistics[$build_id]['total'] = 0;
-	$build_statistics[$build_id]['executed'] = 0;
-	foreach ($build_execution_map as $user_id => $statistics) 
-	{
-		// total assigned test cases
-		$build_statistics[$build_id]['total'] += $statistics['total'];
-	
-		// total executed testcases
-		$executed = $statistics['total'] - $statistics['not_run']['count']; 
-		$build_statistics[$build_id]['executed'] += $executed;
-	}
-	// build progress
-	$build_statistics[$build_id]['progress'] = round($build_statistics[$build_id]['executed'] / 
-													 $build_statistics[$build_id]['total'] * 100,2);
+  $build_statistics[$build_id]['total'] = 0;
+  $build_statistics[$build_id]['executed'] = 0;
+  foreach ($build_execution_map as $user_id => $statistics) 
+  {
+    // total assigned test cases
+    $build_statistics[$build_id]['total'] += $statistics['total'];
+    
+    // total executed testcases
+    $executed = $statistics['total'] - $statistics['not_run']['count']; 
+    $build_statistics[$build_id]['executed'] += $executed;
+  }
+  // build progress
+  $build_statistics[$build_id]['progress'] = round($build_statistics[$build_id]['executed'] / 
+                                                   $build_statistics[$build_id]['total'] * 100,2);
 }
 
 // build the content of the table
@@ -78,36 +78,35 @@ $rows = array();
 
 foreach ($matrix as $build_id => $build_execution_map) 
 {
-	foreach ($build_execution_map as $user_id => $statistics) 
-	{
-		$current_row = array();
-		
-		// add build name to row including Progress
-		$current_row[] = $build_set[$build_id]['name'] . " - " . lang_get('progress_absolute') . 
-		                 " {$build_statistics[$build_id]['progress']}%";
-		
-		// add username and link it to tcAssignedToUser.php
-		// $username = $names[$user_id]['login'];
-		$name = "<a href=\"javascript:openAssignmentOverviewWindow(" .
-			    "{$user_id}, {$build_id}, {$args->tplan_id});\">{$names[$user_id]['login']}</a>";
-		$current_row[] = $name;
-		
-		// total count of testcases assigned to this user on this build
-		$current_row[] = $statistics['total'];
-		
-		// add count and percentage for each possible status
-		foreach ($statusCfg as $status => $code) 
-		{
-			$current_row[] = $statistics[$status]['count'];
-			
-			$current_row[] = $statistics[$status]['percentage'];
-		}
-		
-		$current_row[] = $statistics['progress'];
-		
-		// add this row to the others
-		$rows[] = $current_row;
-	}
+  foreach ($build_execution_map as $user_id => $statistics) 
+  {
+    $current_row = array();
+    
+    // add build name to row including Progress
+    $current_row[] = $build_set[$build_id]['name'] . " - " . lang_get('progress_absolute') . 
+                     " {$build_statistics[$build_id]['progress']}%";
+    
+    // add username and link it to tcAssignedToUser.php
+    // $username = $names[$user_id]['login'];
+    $name = "<a href=\"javascript:openAssignmentOverviewWindow(" .
+            "{$user_id}, {$build_id}, {$args->tplan_id});\">{$names[$user_id]['login']}</a>";
+    $current_row[] = $name;
+    
+    // total count of testcases assigned to this user on this build
+    $current_row[] = $statistics['total'];
+    
+    // add count and percentage for each possible status
+    foreach ($statusCfg as $status => $code) 
+    {
+      $current_row[] = $statistics[$status]['count'];
+      $current_row[] = $statistics[$status]['percentage'];
+    }
+    
+    $current_row[] = $statistics['progress'];
+    
+    // add this row to the others
+    $rows[] = $current_row;
+  }
 }
 
 $columns = getTableHeader($statusCfg);

@@ -394,14 +394,14 @@ class tlReqMgrSystem extends tlObject
         
         if( is_null($statusQuo) )
         {
-      $sql = "/* $debugMsg */ INSERT INTO {$this->tables['testproject_issuetracker']} " .
-           " (testproject_id,issuetracker_id) " .
+      $sql = "/* $debugMsg */ INSERT INTO {$this->tables['testproject_reqmgrsystem']} " .
+           " (testproject_id,reqmgrsystem_id) " .
            " VALUES(" . intval($tprojectID) . "," . intval($id) . ")";
     }
     else
     {
-      $sql = "/* $debugMsg */ UPDATE {$this->tables['testproject_issuetracker']} " .
-           " SET issuetracker_id = " . intval($id) .
+      $sql = "/* $debugMsg */ UPDATE {$this->tables['testproject_reqmgrsystem']} " .
+           " SET reqmgrsystem_id = " . intval($id) .
            " WHERE testproject_id = " . intval($tprojectID);
     }
     $this->db->exec_query($sql);
@@ -420,9 +420,9 @@ class tlReqMgrSystem extends tlObject
     {
       return;
         }
-    $sql = "/* $debugMsg */ DELETE FROM {$this->tables['testproject_issuetracker']} " .
+    $sql = "/* $debugMsg */ DELETE FROM {$this->tables['testproject_reqmgrsystem']} " .
               " WHERE testproject_id = " . intval($tprojectID) . 
-              " AND issuetracker_id = " . intval($id);
+              " AND reqmgrsystem_id = " . intval($id);
     $this->db->exec_query($sql);
   }
 
@@ -446,10 +446,10 @@ class tlReqMgrSystem extends tlObject
 
     $sql = "/* $debugMsg */ " .
          " SELECT TPIT.testproject_id, NHTPR.name AS testproject_name " .
-         " FROM {$this->tables['testproject_issuetracker']} TPIT" .
+         " FROM {$this->tables['testproject_reqmgrsystem']} TPMGR" .
          " LEFT OUTER JOIN {$this->tables['nodes_hierarchy']} NHTPR " .
-         " ON NHTPR.id = TPIT.testproject_id " . 
-         " WHERE TPIT.issuetracker_id = " . intval($id);
+         " ON NHTPR.id = TPMGR.testproject_id " . 
+         " WHERE TPMGR.reqmgrsystem_id = " . intval($id);
     
     if($my['opt']['getDeadLinks'])
     {
@@ -471,8 +471,8 @@ class tlReqMgrSystem extends tlObject
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
     $sql = "/* $debugMsg */ " .
-         " SELECT TPIT.testproject_id, NHTPR.name AS testproject_name, TPIT.issuetracker_id " .
-         " FROM {$this->tables['testproject_issuetracker']} TPIT" .
+         " SELECT TPIT.testproject_id, NHTPR.name AS testproject_name, TPIT.reqmgrsystem_id " .
+         " FROM {$this->tables['testproject_reqmgrsystem']} TPIT" .
          " LEFT OUTER JOIN {$this->tables['nodes_hierarchy']} NHTPR " .
          " ON NHTPR.id = TPIT.testproject_id ";
          
@@ -510,9 +510,10 @@ class tlReqMgrSystem extends tlObject
       {
         $sql = "/* debugMsg */ SELECT COUNT(0) AS lcount, ITD.id";
         $sql .= " FROM {$this->tables['reqmgrsystems']} ITD " .
-                " JOIN {$this->tables['testproject_issuetracker']} " .
-                " ON issuetracker_id = ITD.id " .
+                " JOIN {$this->tables['testproject_reqmgrsystem']} " .
+                " ON reqmgrsystem_id = ITD.id " .
                 " GROUP BY ITD.id ";
+        echo $sql;        
         $lc = $this->db->fetchRowsIntoMap($sql,'id');
       }
     
@@ -564,12 +565,12 @@ class tlReqMgrSystem extends tlObject
         }
     $sql = "/* $debugMsg */ " .
          " SELECT TPIT.testproject_id, NHTPR.name AS testproject_name, " .
-         " TPIT.issuetracker_id,ITRK.name AS issuetracker_name, ITRK.type" .
-         " FROM {$this->tables['testproject_issuetracker']} TPIT" .
+         " TPIT.reqmgrsystem_id,ITRK.name AS reqmgrsystem_name, ITRK.type" .
+         " FROM {$this->tables['testproject_reqmgrsystem']} TPIT" .
          " JOIN {$this->tables['nodes_hierarchy']} NHTPR " .
          " ON NHTPR.id = TPIT.testproject_id " . 
          " JOIN {$this->tables['reqmgrsystems']} ITRK " .
-         " ON ITRK.id = TPIT.issuetracker_id " . 
+         " ON ITRK.id = TPIT.reqmgrsystem_id " . 
          " WHERE TPIT.testproject_id = " . intval($tprojectID);
          
     $ret = $this->db->get_recordset($sql);
@@ -596,7 +597,7 @@ class tlReqMgrSystem extends tlObject
     {
       if( !is_null($system)  )
       {
-        $itd = $this->getByID($system['issuetracker_id']);
+        $itd = $this->getByID($system['reqmgrsystem_id']);
         $iname = $itd['implementation'];
         $its = new $iname($itd['implementation'],$itd['cfg']);
       }

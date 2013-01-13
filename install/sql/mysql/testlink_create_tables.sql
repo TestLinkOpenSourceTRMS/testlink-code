@@ -477,6 +477,7 @@ CREATE TABLE /*prefix*/testprojects (
   `tc_counter` int(10) unsigned NOT NULL default '0',
   `is_public` tinyint(1) NOT NULL default '1',
   `issue_tracker_enabled` tinyint(1) NOT NULL default '0',
+  `reqmgr_integration_enabled` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY /*prefix*/testprojects_id_active (`id`,`active`),
   UNIQUE KEY /*prefix*/testprojects_prefix (`prefix`)
@@ -647,6 +648,28 @@ CREATE TABLE /*prefix*/testproject_issuetracker
   `issuetracker_id` int(10) unsigned NOT NULL,
   UNIQUE KEY /*prefix*/testproject_issuetracker_uidx1 (`testproject_id`)
 ) DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE /*prefix*/reqmgrsystems
+(
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL,
+  `type` int(10) default 0,
+  `cfg` text,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY /*prefix*/reqmgrsystems_uidx1 (`name`)
+) DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE /*prefix*/testproject_reqmgrsystem
+(
+  `testproject_id` int(10) unsigned NOT NULL,
+  `reqmgrsystem_id` int(10) unsigned NOT NULL,
+  UNIQUE KEY /*prefix*/testproject_reqmgrsystem_uidx1 (`testproject_id`)
+) DEFAULT CHARSET=utf8;
+
+
+
 
 
 # ----------------------------------------------------------------------------------

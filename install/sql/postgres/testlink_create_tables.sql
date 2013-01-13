@@ -757,7 +757,7 @@ CREATE UNIQUE INDEX /*prefix*/reqmgrsystems_uidx1 ON /*prefix*/reqmgrsystems ("n
 CREATE TABLE /*prefix*/testproject_reqmgrsystem
 (
   "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
-  "reqmgr_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/reqmgrsystems (id)
+  "reqmgrsystem_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/reqmgrsystems (id)
 );
 CREATE UNIQUE INDEX /*prefix*/testproject_reqmgrsystem_uidx1 ON /*prefix*/testproject_reqmgrsystem ("testproject_id");
 

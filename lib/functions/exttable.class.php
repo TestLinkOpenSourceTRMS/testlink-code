@@ -563,6 +563,11 @@ class tlExtTable extends tlTable
 
   function getDisableUserJS()
   {
+    static $l18n;
+    if(is_null($l18n))
+    {
+      $l18n = init_labels(array('warning_disable_user' => null,'disable' => null));  
+    }
 
     $js = "{xtype: 'actioncolumn',width: 50, hideable: false,sortable: false,groupable: false," .
           " items: [{tooltip: 'hhh'," .

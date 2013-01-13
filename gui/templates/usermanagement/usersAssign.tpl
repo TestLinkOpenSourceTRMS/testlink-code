@@ -145,19 +145,6 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 		  </td>
 			</tr>
 
-    	{if $gui->featureType == 'testproject'}
-   		<tr>
-   		<td class="labelHolder">{$labels.show_only_authorized_users}</td><td>&nbsp;</td>
-      <td> 
-          <input name="show_only_authorized_users" id="show_only_authorized_users" 
-                  type="checkbox" {$checked_hide_inactive_users} 
-           value="on" onclick="toggleRowByClass('show_only_authorized_users','not_authorized_user','none','table-row')">
-      </td>
-			</tr>
-
-    	{/if}
-
-
 		</table>
     </div>
     

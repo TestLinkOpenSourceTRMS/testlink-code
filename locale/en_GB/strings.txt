@@ -3531,12 +3531,16 @@ $TLS_provide_full_external_tcase_id = "Attention! - You need to provide FULL tes
 $TLS_tcase_doesnot_exist = "Attention!! - Can not find test case identified by %s";
 
 // reqMgrSystemView.tpl
-$TLS_th_remgrsystem = 'Req. Management System';
-$TLS_th_issuetracker_type = 'Type';
-$TLS_th_issuetracker_env = 'Environment';
-$TLS_warning_empty_issuetracker_name = "Req. Management System name cannot be empty!";
-$TLS_warning_empty_issuetracker_type = "Req. Management System type cannot be empty!";
-
+$TLS_th_reqmgrsystem = 'Req. Management System';
+$TLS_th_reqmgrsystem_type = 'Type';
+$TLS_th_reqmgrsystem_env = 'Environment';
+$TLS_warning_empty_reqmgrsystem_name = "Req. Management System name cannot be empty!";
+$TLS_warning_empty_reqmgrsystem_type = "Req. Management System type cannot be empty!";
+$TLS_reqmgrsystem_show_cfg_example = 'Show configuration example';
+$TLS_reqmgrsystem_cfg_example = 'Configuration example';
+$TLS_reqmgrsystem_check_ok = "Connection is OK";
+$TLS_reqmgrsystem_check_ko = "Connection is KO, check configuration";
+$TLS_check_reqmgrsystem_connection = "Check connection";
 
 // ----- END ------------------------------------------------------------------
 ?>

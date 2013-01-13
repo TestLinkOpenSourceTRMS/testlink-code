@@ -47,11 +47,11 @@ class tlReqMgrSystem extends tlObject
 
 
 
-    /**
+  /**
    * @return hash
    * 
    * 
-     */
+   */
   function getSystems($opt=null)
   {
     $my = array('options' => null);
@@ -528,9 +528,12 @@ class tlReqMgrSystem extends tlObject
         if( $my['options']['checkEnv'] )
         {
            $impl = $this->getImplementationForType($item['type']);
-           $dummy = $impl::checkEnv();
-           $item['env_check_ok'] = $dummy['status'];
-           $item['env_check_msg'] = $dummy['msg'];
+           if( method_exists($impl,'checkEnv') )
+           {
+             $dummy = $impl::checkEnv();
+             $item['env_check_ok'] = $dummy['status'];
+             $item['env_check_msg'] = $dummy['msg'];
+           }
         }
 
         

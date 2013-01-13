@@ -3,9 +3,9 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource	reqMgrSystemView.php
+ * @filesource  reqMgrSystemView.php
  *
- * @author	francisco.mancardi@gmail.com
+ * @author  francisco.mancardi@gmail.com
  * @internal revisions
  * 
  * @since 1.9.6
@@ -30,8 +30,6 @@ if($args->id > 0)
   $gui->items[$args->id]['connection_status'] = $mgr->checkConnection($args->id) ? 'ok' : 'ko'; 
 }
 
-new dBug($gui);
-
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
@@ -52,23 +50,23 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args()
 {
-	$args = new stdClass();
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+  $args = new stdClass();
+  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 
-	if( $args->tproject_id == 0 )
-	{
-		$args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_SESSION['tproject_id']) : 0;
-	}
-	$args->currentUser = $_SESSION['currentUser']; 
-	
-	$args->user_feedback = array('type' => '', 'message' => '');
+  if( $args->tproject_id == 0 )
+  {
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_SESSION['tproject_id']) : 0;
+  }
+  $args->currentUser = $_SESSION['currentUser']; 
+  
+  $args->user_feedback = array('type' => '', 'message' => '');
   $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
-	return $args;
+  return $args;
 }
 
 
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,"reqmgrsystem_view") || $user->hasRight($db,"reqmgrsystem_management");
+  return $user->hasRight($db,"reqmgrsystem_view") || $user->hasRight($db,"reqmgrsystem_management");
 }
 ?>

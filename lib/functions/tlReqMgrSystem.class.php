@@ -445,7 +445,7 @@ class tlReqMgrSystem extends tlObject
 
 
     $sql = "/* $debugMsg */ " .
-         " SELECT TPIT.testproject_id, NHTPR.name AS testproject_name " .
+         " SELECT TPMGR.testproject_id, NHTPR.name AS testproject_name " .
          " FROM {$this->tables['testproject_reqmgrsystem']} TPMGR" .
          " LEFT OUTER JOIN {$this->tables['nodes_hierarchy']} NHTPR " .
          " ON NHTPR.id = TPMGR.testproject_id " . 
@@ -455,7 +455,7 @@ class tlReqMgrSystem extends tlObject
     {
       $sql .= ' AND NHTPR.id IS NULL AND NHTPR.name IS NULL ';  
     }
-         
+
     $ret = $this->db->fetchRowsIntoMap($sql,'testproject_id');
     return $ret;
   }
@@ -513,7 +513,6 @@ class tlReqMgrSystem extends tlObject
                 " JOIN {$this->tables['testproject_reqmgrsystem']} " .
                 " ON reqmgrsystem_id = ITD.id " .
                 " GROUP BY ITD.id ";
-        echo $sql;        
         $lc = $this->db->fetchRowsIntoMap($sql,'id');
       }
     

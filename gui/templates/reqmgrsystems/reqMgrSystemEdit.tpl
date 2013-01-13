@@ -71,7 +71,7 @@ function displayCfgExample(oid,displayOID)
   <div class="action_descr">{$gui->action_descr|escape}
     {if $gui->mgt_view_events eq "yes" && $gui->item.id > 0}
       <img style="margin-left:5px;" class="clickable" src="{$tlImages.info}"
-         onclick="showEventHistoryFor('{$gui->item.id}','issuetrackers')" 
+         onclick="showEventHistoryFor('{$gui->item.id}','reqmrgsystems')" 
          alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
   {/if}
   
@@ -81,7 +81,7 @@ function displayCfgExample(oid,displayOID)
     <form name="edit" method="post" action="{$edit_url}" onSubmit="javascript:return validateForm(this);">
     <table class="common" style="width:50%">
       <tr>
-        <th>{$labels.th_issuetracker}</th>
+        <th>{$labels.th_reqmgrsystem}</th>
         <td><input type="text" name="name" id="name"  
                    size="{#REQMGRSYSTEM_NAME_SIZE#}" maxlength="{#REQMGRSYSTEM_NAME_MAXLEN#}" 
                    value="{$gui->item.name|escape}" />

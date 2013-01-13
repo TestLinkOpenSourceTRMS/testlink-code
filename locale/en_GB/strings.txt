@@ -3541,6 +3541,9 @@ $TLS_reqmgrsystem_cfg_example = 'Configuration example';
 $TLS_reqmgrsystem_check_ok = "Connection is OK";
 $TLS_reqmgrsystem_check_ko = "Connection is KO, check configuration";
 $TLS_check_reqmgrsystem_connection = "Check connection";
+$TLS_reqmgrsystem_management = "Req. Management System Management";
 
+// reqMgrSystemCommands.class.php
+$TLS_reqmgrsystem_deleted = "Req. Management System %s% has been deleted";
 // ----- END ------------------------------------------------------------------
 ?>

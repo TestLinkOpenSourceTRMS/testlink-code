@@ -19,7 +19,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'lib/reqmgrsystems/reqMgrSystem.php?doAction=doDelete&id=';
+var del_action=fRoot+'lib/reqmgrsystems/reqMgrSystemEdit.php?doAction=doDelete&id=';
 </script>
  
 </head>

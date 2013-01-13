@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- @filesource	mainPageLeft.tpl
+ @filesource  mainPageLeft.tpl
  Purpose: smarty template - main page / site map                 
                                                                  
  @internal revisions
@@ -16,7 +16,8 @@
                           href_search_req, href_search_req_spec,href_inventory,
                           href_platform_management, href_inventory_management,
                           href_print_tc,href_keywords_assign, href_req_overview,
-                          href_print_req, title_documentation,href_issuetracker_management'}
+                          href_print_req, title_documentation,href_issuetracker_management,
+                          href_reqmgrsystem_management'}
 
 {assign var="menuLayout" value=$tlCfg->gui->layoutMainPageLeft}
 {assign var="display_left_block_1" value=false}
@@ -25,7 +26,7 @@
 {assign var="display_left_block_4" value=false}
 {assign var="display_left_block_5" value=true}
 {if $gui->testprojectID && 
-	    ($gui->grants.project_edit == "yes" || $gui->grants.tproject_user_role_assignment == "yes" ||
+      ($gui->grants.project_edit == "yes" || $gui->grants.tproject_user_role_assignment == "yes" ||
        $gui->grants.cfield_management == "yes" || $gui->grants.keywords_view == "yes")}
     {assign var="display_left_block_1" value=true}
 
@@ -135,7 +136,7 @@
                                 renderTo: {/literal}'menu_left_block_{$menuLayout.general}'{literal},
                                 width:'100%'
                                 });
-	}
+  }
     {/literal}
     </script>
 
@@ -147,88 +148,93 @@
   <div id="menu_left_block_4"></div><br />
   <div id="menu_left_block_5"></div><br />
   
-	{if $display_left_block_1}
+  {if $display_left_block_1}
     <div id='testproject_topics'>
-	  {if $gui->grants.project_edit == "yes"}
-  		<img src="{$tlImages.bullet}" />
+    {if $gui->grants.project_edit == "yes"}
+      <img src="{$tlImages.bullet}" />
         <a href="lib/project/projectView.php">{$labels.href_tproject_management}</a>
     {/if}
 
     {* 
-	  {if $gui->grants.configuration == "yes"}
+    {if $gui->grants.configuration == "yes"}
         <br />
-   		<img src="{$tlImages.bullet}" />
+       <img src="{$tlImages.bullet}" />
         <a href="lib/admin/modules.php">{$labels.href_admin_modules}</a>
       {/if} 
     *}
     
-	  {if $gui->grants.tproject_user_role_assignment == "yes"}
+    {if $gui->grants.tproject_user_role_assignment == "yes"}
         <br />
-  		<img src="{$tlImages.bullet}" />
+      <img src="{$tlImages.bullet}" />
         <a href="lib/usermanagement/usersAssign.php?featureType=testproject&amp;featureID={$gui->testprojectID}">{$labels.href_assign_user_roles}</a>
-	  {/if}
+    {/if}
 
       {if $gui->grants.cfield_management == "yes"}
-	      	<br />
-	      	<img src="{$tlImages.bullet}" />
-          	<a href="lib/cfields/cfieldsView.php">{$labels.href_cfields_management}</a>
-			<br />
-         	<img src="{$tlImages.bullet}" />
+          <br />
+          <img src="{$tlImages.bullet}" />
+            <a href="lib/cfields/cfieldsView.php">{$labels.href_cfields_management}</a>
+      <br />
+           <img src="{$tlImages.bullet}" />
             <a href="lib/cfields/cfieldsTprojectAssign.php">{$labels.href_cfields_tproject_assign}</a>
       {/if}
-	  
-	  {* --- keywords management ---  *}
-	  {if $gui->grants.keywords_view == "yes"}
-			<br />
-	  		<img src="{$tlImages.bullet}" />
-	        <a href="lib/keywords/keywordsView.php">{$labels.href_keywords_manage}</a>
-	  {/if} {* view_keys_rights *}
-	  
- 		{* --- platforms management ---  *}
-		{if $gui->grants.platform_management == "yes"}
-			<br />
-	  		<img src="{$tlImages.bullet}" />
-			<a href="lib/platforms/platformsView.php">{$labels.href_platform_management}</a>
-		{/if}
+    
+    {* --- keywords management ---  *}
+    {if $gui->grants.keywords_view == "yes"}
+      <br />
+        <img src="{$tlImages.bullet}" />
+          <a href="lib/keywords/keywordsView.php">{$labels.href_keywords_manage}</a>
+    {/if} {* view_keys_rights *}
+    
+     {* --- platforms management ---  *}
+    {if $gui->grants.platform_management == "yes"}
+      <br />
+        <img src="{$tlImages.bullet}" />
+      <a href="lib/platforms/platformsView.php">{$labels.href_platform_management}</a>
+    {/if}
 
- 		{* --- inventory view ---  *}
-		{if $gui->grants.project_inventory_view}
-			<br />
-	  		<img src="{$tlImages.bullet}" />
-			<a href="lib/inventory/inventoryView.php">{$labels.href_inventory}</a>
-		{/if}
+     {* --- inventory view ---  *}
+    {if $gui->grants.project_inventory_view}
+      <br />
+        <img src="{$tlImages.bullet}" />
+      <a href="lib/inventory/inventoryView.php">{$labels.href_inventory}</a>
+    {/if}
 
 
-		{if $gui->grants.issuetracker_management || $gui->grants.issuetracker_view}
-			<br />
-	  		<img src="{$tlImages.bullet}" />
-			<a href="lib/issuetrackers/issueTrackerView.php">{$labels.href_issuetracker_management}</a>
-		{/if}
-	  
+    {if $gui->grants.issuetracker_management || $gui->grants.issuetracker_view}
+      <br />
+        <img src="{$tlImages.bullet}" />
+      <a href="lib/issuetrackers/issueTrackerView.php">{$labels.href_issuetracker_management}</a>
+    {/if}
+    
+    {if $gui->grants.reqmgrsystem_management || $gui->grants.reqmgrsystem_view}
+      <br />
+        <img src="{$tlImages.bullet}" />
+      <a href="lib/reqmgrsystems/reqMgrSystemView.php">{$labels.href_reqmgrsystem_management}</a>
+    {/if}
     </div>
-	{/if}
+  {/if}
   {* ---------------------------------------------------------------------------------------- *}
 
 
   {* ------------------------------------------------- *}
-	{if $display_left_block_2}
+  {if $display_left_block_2}
     <div id='usermanagement_topics'>
-  		<img src="{$tlImages.bullet}" />
+      <img src="{$tlImages.bullet}" />
         <a href="lib/usermanagement/usersView.php">{$labels.href_user_management}</a>
         <br />
-  		<img src="{$tlImages.bullet}" />
+      <img src="{$tlImages.bullet}" />
         <a href="lib/usermanagement/rolesView.php">{$labels.href_roles_management}</a>
     </div>
-	{/if}
+  {/if}
   {* ------------------------------------------------- *}
 
 
   {* ---------------------------------------------------------------------------------------- *}
- 	{if $display_left_block_3}
+   {if $display_left_block_3}
     <div id="requirements_topics" >
       {if $gui->grants.reqs_view == "yes"}
 
-  		<img src="{$tlImages.bullet}" />
+      <img src="{$tlImages.bullet}" />
         <a href="{$gui->launcher}?feature=reqSpecMgmt">{$labels.href_req_spec}</a><br/>
         <img src="{$tlImages.bullet}" />
         <a href="lib/requirements/reqOverview.php">{$labels.href_req_overview}</a><br/>
@@ -238,75 +244,75 @@
         <img src="{$tlImages.bullet}" />
         <a href="{$gui->launcher}?feature=searchReqSpec">{$labels.href_search_req_spec}</a>
         
-	   	{/if}
-	   	
-		{if $gui->grants.reqs_edit == "yes"}
-			<br />
-  		<img src="{$tlImages.bullet}" />
-       		<a href="lib/general/frmWorkArea.php?feature=assignReqs">{$labels.href_req_assign}</a>
+       {/if}
+       
+    {if $gui->grants.reqs_edit == "yes"}
+      <br />
+      <img src="{$tlImages.bullet}" />
+           <a href="lib/general/frmWorkArea.php?feature=assignReqs">{$labels.href_req_assign}</a>
 
-  	        <br />
-  		<img src="{$tlImages.bullet}" />
-          	<a href="{$gui->launcher}?feature=printReqSpec">{$labels.href_print_req}</a>
-  		 {/if}
+            <br />
+      <img src="{$tlImages.bullet}" />
+            <a href="{$gui->launcher}?feature=printReqSpec">{$labels.href_print_req}</a>
+       {/if}
     </div>
   {/if}
   {* ---------------------------------------------------------------------------------------- *}
 
 
   {* ---------------------------------------------------------------------------------------- *}
- 	{if $display_left_block_4}
+   {if $display_left_block_4}
       <div id="testspecification_topics" >
-  		<img src="{$tlImages.bullet}" />
-  		<a href="{$gui->launcher}?feature=editTc">
-    		{if $gui->grants.modify_tc eq "yes"}
-  	      {lang_get s='href_edit_tc'}
-  	   {else}
-  	      {lang_get s='href_browse_tc'}
-  	   {/if}
-  	  </a>
+      <img src="{$tlImages.bullet}" />
+      <a href="{$gui->launcher}?feature=editTc">
+        {if $gui->grants.modify_tc eq "yes"}
+          {lang_get s='href_edit_tc'}
+       {else}
+          {lang_get s='href_browse_tc'}
+       {/if}
+      </a>
       {if $gui->hasTestCases}
       <br />
-  		<img src="{$tlImages.bullet}" />
+      <img src="{$tlImages.bullet}" />
           <a href="{$gui->launcher}?feature=searchTc">{$labels.href_search_tc}</a>
       {/if}    
-  		
-	  {* --- keywords management ---  *}
-	  {if $gui->grants.keywords_view == "yes"}
-	    {if $gui->grants.keywords_edit == "yes"}
-	        <br />
-  			<img src="{$tlImages.bullet}" />
-        	<a href="{$gui->launcher}?feature=keywordsAssign">{$labels.href_keywords_assign}</a>
-		  {/if}
-	  {/if}
-  		
-  	 {if $gui->grants.modify_tc eq "yes"}
+      
+    {* --- keywords management ---  *}
+    {if $gui->grants.keywords_view == "yes"}
+      {if $gui->grants.keywords_edit == "yes"}
+          <br />
+        <img src="{$tlImages.bullet}" />
+          <a href="{$gui->launcher}?feature=keywordsAssign">{$labels.href_keywords_assign}</a>
+      {/if}
+    {/if}
+      
+     {if $gui->grants.modify_tc eq "yes"}
         <br />
         <img src="{$tlImages.bullet}" />
         <a href="{$gui->launcher}?feature=printTestSpec">{$labels.href_print_tc}</a>
         <br />
         <img src="{$tlImages.bullet}" />
         <a href="lib/results/tcCreatedPerUserOnTestProject.php?do_action=uinput&tproject_id={$gui->testprojectID}">{$labels.link_report_test_cases_created_per_user}</a>
-  	 {/if}
+     {/if}
 
-	  
+    
     </div>
   {/if}
 
     <div id='testlink_application'>
-  		<img src="{$tlImages.bullet}" />
-		<form style="display:inline;">
-    	<select class="menu_combo" style="font-weight:normal;" name="docs" size="1"
-            	onchange="javascript:get_docs(this.form.docs.options[this.form.docs.selectedIndex].value, 
-            	'{$basehref}');" >
-        	<option value="leer"> -{lang_get s='access_doc'}-</option>
-        	{if $gui->docs}
+      <img src="{$tlImages.bullet}" />
+    <form style="display:inline;">
+      <select class="menu_combo" style="font-weight:normal;" name="docs" size="1"
+              onchange="javascript:get_docs(this.form.docs.options[this.form.docs.selectedIndex].value, 
+              '{$basehref}');" >
+          <option value="leer"> -{lang_get s='access_doc'}-</option>
+          {if $gui->docs}
             {foreach from=$gui->docs item=doc}
                 <option value="{$doc}">{$doc}</option>
             {/foreach}
-        	{/if}
-    	</select>
-		</form>
+          {/if}
+      </select>
+    </form>
     </div>
 
 

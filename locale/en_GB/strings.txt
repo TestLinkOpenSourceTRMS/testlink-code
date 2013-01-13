@@ -1087,6 +1087,7 @@ $TLS_th_user_rights = "User";
 $TLS_title_user_mgmt = "User Management";
 $TLS_warning_empty_role_name = "Please give a name to Role";
 $TLS_warning_modify_role = "Really modify the role?";
+$TLS_th_reqmgrsystem_rights = 'Req. Management System';
 
 
 
@@ -2172,6 +2173,7 @@ $TLS_href_plan_define_priority = "Test Plan priority";
 $TLS_href_my_testcase_assignments="Test Cases Assigned to Me";
 $TLS_href_platform_management = "Platform Management";
 $TLS_href_issuetracker_management = "Issue Tracker Management";
+$TLS_href_reqmgrsystem_management = "Req. Management System Management";
 
 
 // ----- contribution by asimon for req/reqspec search BUGID 2976 -----
@@ -2319,6 +2321,10 @@ $TLS_desc_events_mgt = "Event management";
 
 $TLS_desc_issuetrackers_view = "Issue Tracker view (read only access)";
 $TLS_desc_issuetrackers_management = "Issue Tracker Management";
+$TLS_desc_reqmgrsystems_view = "Req. Management System view (read only access)";
+$TLS_desc_reqmgrsystems_management = "Req. Management System Management";
+
+
 
 $TLS_desc_mgt_unfreeze_req = "Unfreeze requirement";
 $TLS_desc_mgt_modify_key = "Keyword management";
@@ -3523,5 +3529,14 @@ $TLS_can_not_create_direct_link = 'You do not have a TestLink API KEY, direct li
 $TLS_seems_to_belong_to_other_tproject = "Attention! - Test case have prefix %s that is different than expected prefix %s";
 $TLS_provide_full_external_tcase_id = "Attention! - You need to provide FULL test case id: %s%sNUMBER";
 $TLS_tcase_doesnot_exist = "Attention!! - Can not find test case identified by %s";
+
+// reqMgrSystemView.tpl
+$TLS_th_remgrsystem = 'Req. Management System';
+$TLS_th_issuetracker_type = 'Type';
+$TLS_th_issuetracker_env = 'Environment';
+$TLS_warning_empty_issuetracker_name = "Req. Management System name cannot be empty!";
+$TLS_warning_empty_issuetracker_type = "Req. Management System type cannot be empty!";
+
+
 // ----- END ------------------------------------------------------------------
 ?>

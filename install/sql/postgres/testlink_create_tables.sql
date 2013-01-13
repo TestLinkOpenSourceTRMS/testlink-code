@@ -268,6 +268,7 @@ CREATE TABLE /*prefix*/testprojects(
   "tc_counter" int NOT NULL default '0',
   "is_public" INT2 NOT NULL DEFAULT '1',
   "issue_tracker_enabled" INT2 NOT NULL DEFAULT '0',
+  "reqmgr_integration_enabled" INT2 NOT NULL DEFAULT '0',
   PRIMARY KEY ("id")
 ); 
 CREATE UNIQUE INDEX /*prefix*/testprojects_uidx1 ON /*prefix*/testprojects ("prefix");
@@ -740,6 +741,26 @@ CREATE TABLE /*prefix*/testproject_issuetracker
   "issuetracker_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/issuetrackers (id)
 );
 CREATE UNIQUE INDEX /*prefix*/testproject_issuetracker_uidx1 ON /*prefix*/testproject_issuetracker ("testproject_id");
+
+
+
+CREATE TABLE /*prefix*/reqmgrsystems
+(
+  "id" BIGSERIAL NOT NULL ,
+  "name" VARCHAR(100) NOT NULL,
+  "type" INTEGER NOT NULL DEFAULT '0',
+  "cfg" TEXT,
+  PRIMARY KEY  ("id")
+);
+CREATE UNIQUE INDEX /*prefix*/reqmgrsystems_uidx1 ON /*prefix*/reqmgrsystems ("name");
+
+CREATE TABLE /*prefix*/testproject_reqmgrsystem
+(
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
+  "reqmgr_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/reqmgrsystems (id)
+);
+CREATE UNIQUE INDEX /*prefix*/testproject_reqmgrsystem_uidx1 ON /*prefix*/testproject_reqmgrsystem ("testproject_id");
+
 
 --
 -- TICKET 4914: Create View - tcversions_last_active

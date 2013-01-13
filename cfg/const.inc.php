@@ -6,11 +6,11 @@
  * Global Constants used throughout TestLink 
  * The script is included via config.inc.php
  * 
- * @filesource	const.inc.php
- * @package 	TestLink
- * @author 		Martin Havlat
- * @copyright 	2007-2012, TestLink community 
- * @see 		config.inc.php
+ * @filesource  const.inc.php
+ * @package     TestLink
+ * @author      Martin Havlat
+ * @copyright   2007-2013, TestLink community 
+ * @see         config.inc.php
  *
  * @internal revisions
  * No revisions logged here but each parameter must be described!
@@ -37,12 +37,13 @@ if (!defined('TL_ABS_PATH'))
 
 /** Setting up the global include path for testlink */
 ini_set('include_path',
-		ini_get('include_path') . PATH_SEPARATOR . '.' . PATH_SEPARATOR . 
-		TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR  . PATH_SEPARATOR .
-		TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'issuetrackerintegration' . DIRECTORY_SEPARATOR);
+    ini_get('include_path') . PATH_SEPARATOR . '.' . PATH_SEPARATOR . 
+    TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR  . PATH_SEPARATOR .
+    TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'issuetrackerintegration' . DIRECTORY_SEPARATOR . PATH_SEPARATOR .
+    TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'reqmgrsystemintegration' . DIRECTORY_SEPARATOR);
 
 ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . 
-        TL_ABS_PATH . 'third_party' . DIRECTORY_SEPARATOR);
+         TL_ABS_PATH . 'third_party' . DIRECTORY_SEPARATOR);
 
 /** Localization directory base */
 define('TL_LOCALE_PATH', TL_ABS_PATH . 'locale/');
@@ -57,24 +58,24 @@ define('PHPMAILER_METHOD_SENDMAIL', 1);
 define('PHPMAILER_METHOD_SMTP', 2);
 
 /** Descriptive constant names (actually true/false) */
-define('ENABLED', 	1 );
-define('DISABLED', 	0 );
-define('ON',		1 );
-define('OFF',		0 );
-define('ACTIVE',	1 );
-define('INACTIVE',	0 );
-define('OPEN',		1 );
-define('CLOSED',	0 );
-define('OK',		1 );
-define('ERROR',		0 );
+define('ENABLED',   1 );
+define('DISABLED',   0 );
+define('ON',    1 );
+define('OFF',    0 );
+define('ACTIVE',  1 );
+define('INACTIVE',  0 );
+define('OPEN',    1 );
+define('CLOSED',  0 );
+define('OK',    1 );
+define('ERROR',    0 );
 
 /** More Descriptive constant names */
-define('HIGH',		3 );
-define('MEDIUM', 	2 );
-define('LOW', 		1 );
+define('HIGH',    3 );
+define('MEDIUM',   2 );
+define('LOW',     1 );
 
 /** user for notes - see BUGID 0002469: $tlCfg->exec_cfg->expand_collapse 
-	very important do not change values, logic depends on values*/
+  very important do not change values, logic depends on values*/
 define('LAST_USER_CHOICE',2);
 define('COLLAPSE', 0);
 define('EXPAND',1 );
@@ -183,7 +184,7 @@ define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
  * 
  * @internal Francisco: DISAGREE, if we want give user possibility to reconfigure
  *                 how we can do this with CSS 
- * 		Havlatm: User can create own theme with own colours
+ *     Havlatm: User can create own theme with own colours
  **/
 define('TL_STYLE_FOR_ADDED_TC', 'background-color:yellow;');
 
@@ -209,9 +210,9 @@ define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
 $g_tpl = array();
  
 // Example 
-// $g_tpl = array('tcView'	=> 'custom_tcView.tpl',
-// 	              'tcSearchView' => 'myOwnTCSearchView.tpl',
-// 	              'tcEdit' => 'tcEdit_ultraCool.tpl');
+// $g_tpl = array('tcView'  => 'custom_tcView.tpl',
+//                 'tcSearchView' => 'myOwnTCSearchView.tpl',
+//                 'tcEdit' => 'tcEdit_ultraCool.tpl');
 
 // needed for drap and drop feature
 define('TL_DRAG_DROP_DIR', 'gui/drag_and_drop/');
@@ -367,13 +368,13 @@ $att_model_m2->show_upload_column = true;
  * Do not do localisation here, i.e do not change "passed" by your national language.
  */ 
 $tlCfg->results['status_code'] = array (
-	'failed'        => 'f',
-	'blocked'       => 'b',
-	'passed'        => 'p',
-	'not_run'       => 'n',
-	'not_available' => 'x',
-	'unknown'       => 'u',
-	'all'           => 'a'
+  'failed'        => 'f',
+  'blocked'       => 'b',
+  'passed'        => 'p',
+  'not_run'       => 'n',
+  'not_available' => 'x',
+  'unknown'       => 'u',
+  'all'           => 'a'
 ); 
 
 
@@ -386,17 +387,17 @@ $tlCfg->results['status_code'] = array (
  * 
  * @example use the next code to get localized string of a status
  * <code>
- *		$results_cfg = config_get('results');
- *		lang_get($results_cfg['status_label']["passed"]);
+ *    $results_cfg = config_get('results');
+ *    lang_get($results_cfg['status_label']["passed"]);
  * </code>        
  */
 $tlCfg->results['status_label'] = array('not_run' => 'test_status_not_run',
-										'passed' => 'test_status_passed',
-										'failed' => 'test_status_failed',
-										'blocked'=> 'test_status_blocked',
-    									'all' => 'test_status_all_status',
-    									'not_available' => 'test_status_not_available',
-										'unknown' => 'test_status_unknown');
+                    'passed' => 'test_status_passed',
+                    'failed' => 'test_status_failed',
+                    'blocked'=> 'test_status_blocked',
+                      'all' => 'test_status_all_status',
+                      'not_available' => 'test_status_not_available',
+                    'unknown' => 'test_status_unknown');
 
 // Is RIGHT to have this configuration DIFFERENT from $tlCfg->results['status_label'],
 // because you must choose to not allow some of previous status be available
@@ -416,9 +417,9 @@ $tlCfg->results['status_label'] = array('not_run' => 'test_status_not_run',
 //          used to localize the strings.
 //
 $tlCfg->results['status_label_for_exec_ui'] = array('not_run' => 'test_status_not_run',
-													'passed'  => 'test_status_passed',
-													'failed'  => 'test_status_failed',
-													'blocked' => 'test_status_blocked');
+                          'passed'  => 'test_status_passed',
+                          'failed'  => 'test_status_failed',
+                          'blocked' => 'test_status_blocked');
 
 /** 
  * Selected execution result by default. Values is key from $tlCfg->results['status_label']
@@ -431,7 +432,7 @@ $tlCfg->results['default_status'] = 'not_run';
  * Colours should be compiant with definition in CSS 
  **/
 $tlCfg->results['charts']['status_colour'] = array('not_run' => '000000','passed'  => '006400',
-												   'failed'  => 'B22222','blocked' => '00008B');
+                           'failed'  => 'B22222','blocked' => '00008B');
 
 /*
  * arrays for new filter types (BUGID 2455, BUGID 3026)
@@ -499,24 +500,24 @@ define('TL_LAST_SYSTEM_ROLE', 9);
 // If you don't want use colouring then configure in this way
 // $g_role_colour = array ( );
 $g_role_colour = array ( 
-	'admin'         => 'white',
-	'tester'        => 'wheat',
-	'leader'        => 'acqua',
-	'senior tester' => '#FFA',
-	'guest'         => 'pink',
-	'test designer' => 'cyan',
-	'<no rights>'   => 'grey',
-	'<inherited>'   => 'seashell' 
+  'admin'         => 'white',
+  'tester'        => 'wheat',
+  'leader'        => 'acqua',
+  'senior tester' => '#FFA',
+  'guest'         => 'pink',
+  'test designer' => 'cyan',
+  '<no rights>'   => 'grey',
+  '<inherited>'   => 'seashell' 
 );
 
 
 // --------------------------------------------------------------------------------------
 /** LDAP authentication errors */
-define( 'ERROR_LDAP_AUTH_FAILED',				1400 );
-define( 'ERROR_LDAP_SERVER_CONNECT_FAILED',		1401 );
-define( 'ERROR_LDAP_UPDATE_FAILED',				1402 );
-define( 'ERROR_LDAP_USER_NOT_FOUND',			1403 );
-define( 'ERROR_LDAP_BIND_FAILED',				1404 );
+define( 'ERROR_LDAP_AUTH_FAILED',        1400 );
+define( 'ERROR_LDAP_SERVER_CONNECT_FAILED',    1401 );
+define( 'ERROR_LDAP_UPDATE_FAILED',        1402 );
+define( 'ERROR_LDAP_USER_NOT_FOUND',      1403 );
+define( 'ERROR_LDAP_BIND_FAILED',        1404 );
 
 // --------------------------------------------------------------------------------------
 /* [Priority, Urgency, Importance] */
@@ -549,28 +550,28 @@ $tlCfg->urgency['code_label'] = array(HIGH => 'urgency_high',MEDIUM => 'urgency_
  * @since 2.0 
  */
 /** Review status: design phase; data are not available for review or using */ 
-define('TL_REVIEW_STATUS_DRAFT', 	1);
+define('TL_REVIEW_STATUS_DRAFT',   1);
 
 /** Review status: data was reviewed and are available for using */
-define('TL_REVIEW_STATUS_FINAL', 	2);
+define('TL_REVIEW_STATUS_FINAL',   2);
 
 /** Review status: data wait for review */ 
-define('TL_REVIEW_STATUS_REVIEW', 	3);
+define('TL_REVIEW_STATUS_REVIEW',   3);
 
 /** Review status: data are not applicable for using (not listed in reports and lists) */ 
 define('TL_REVIEW_STATUS_OBSOLETE', 4); 
-define('TL_REVIEW_STATUS_FUTURE', 	5); 
+define('TL_REVIEW_STATUS_FUTURE',   5); 
 
 /** 
  * @var array localization identifiers for review states
  * @since 2.0 
  **/
 $tlCfg->text_status_labels = array(
-		TL_REVIEW_STATUS_DRAFT => 'review_status_draft', 
-		TL_REVIEW_STATUS_FINAL => 'review_status_final', 
-		TL_REVIEW_STATUS_REVIEW => 'review_status_review',
-		TL_REVIEW_STATUS_OBSOLETE => 'review_status_obsolete', 
-		TL_REVIEW_STATUS_FUTURE => 'review_status_future');
+    TL_REVIEW_STATUS_DRAFT => 'review_status_draft', 
+    TL_REVIEW_STATUS_FINAL => 'review_status_final', 
+    TL_REVIEW_STATUS_REVIEW => 'review_status_review',
+    TL_REVIEW_STATUS_OBSOLETE => 'review_status_obsolete', 
+    TL_REVIEW_STATUS_FUTURE => 'review_status_future');
 
 /** 
  * @deprecated 1.9
@@ -578,7 +579,7 @@ $tlCfg->text_status_labels = array(
  * TL_REQ_STATUS_NOT_TESTABLE -> TL_REQ_TYPE_INFO
  * TL_REQ_STATUS_VALID -> TL_REQ_TYPE_FEATURE
  **/
-define('TL_REQ_STATUS_VALID', 		'V');
+define('TL_REQ_STATUS_VALID',     'V');
 define('TL_REQ_STATUS_NOT_TESTABLE','N');
 define('TL_REQ_STATUS_DRAFT','D');
 define('TL_REQ_STATUS_REVIEW','R');
@@ -590,19 +591,19 @@ define('TL_REQ_STATUS_OBSOLETE','O');
 // key: status; value: text label
 $tlCfg->req_cfg = new stdClass();
 $tlCfg->req_cfg->status_labels = array(TL_REQ_STATUS_DRAFT => 'req_status_draft',
-					                   TL_REQ_STATUS_REVIEW => 'req_status_review',
-					                   TL_REQ_STATUS_REWORK => 'req_status_rework',
-					                   TL_REQ_STATUS_FINISH => 'req_status_finish',
-					                   TL_REQ_STATUS_IMPLEMENTED => 'req_status_implemented',
-					                   TL_REQ_STATUS_VALID => 'review_status_valid', 
-					                   TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable',
-					                   TL_REQ_STATUS_OBSOLETE => 'req_status_obsolete');
+                             TL_REQ_STATUS_REVIEW => 'req_status_review',
+                             TL_REQ_STATUS_REWORK => 'req_status_rework',
+                             TL_REQ_STATUS_FINISH => 'req_status_finish',
+                             TL_REQ_STATUS_IMPLEMENTED => 'req_status_implemented',
+                             TL_REQ_STATUS_VALID => 'review_status_valid', 
+                             TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable',
+                             TL_REQ_STATUS_OBSOLETE => 'req_status_obsolete');
 
 /** 
  * Types of requirements (with respect to standards)
  * <ul>
  * <li><b>Info</b> -informational character, project and user documentation.
- * 		The type is not testable = not used for testing logic (except metrics).</li>
+ *     The type is not testable = not used for testing logic (except metrics).</li>
  * <li><b>Feature</b> - valid and testable functional definition (default selection)</li>
  * <li><b>Use case</b></li>
  * <li><b>Interface</b> - user interface, communication protocols</li>
@@ -630,15 +631,15 @@ define('TL_REQ_TYPE_SYSTEM_FUNCTION','7');
  * @since TestLink 1.9
  **/
 $tlCfg->req_cfg->type_labels = array(
-		TL_REQ_TYPE_INFO => 'req_type_info', 
-		TL_REQ_TYPE_FEATURE => 'req_type_feature',
-		TL_REQ_TYPE_USE_CASE => 'req_type_use_case', 
-		TL_REQ_TYPE_INTERFACE => 'req_type_interface', 
-		TL_REQ_TYPE_NON_FUNCTIONAL => 'req_type_non_functional', 
-		TL_REQ_TYPE_CONSTRAIN => 'req_type_constrain',
-		TL_REQ_TYPE_SYSTEM_FUNCTION => 'req_type_system_function');
+    TL_REQ_TYPE_INFO => 'req_type_info', 
+    TL_REQ_TYPE_FEATURE => 'req_type_feature',
+    TL_REQ_TYPE_USE_CASE => 'req_type_use_case', 
+    TL_REQ_TYPE_INTERFACE => 'req_type_interface', 
+    TL_REQ_TYPE_NON_FUNCTIONAL => 'req_type_non_functional', 
+    TL_REQ_TYPE_CONSTRAIN => 'req_type_constrain',
+    TL_REQ_TYPE_SYSTEM_FUNCTION => 'req_type_system_function');
 
-		
+    
 
 /** 
  * All possible types of requirement relations (BUGID 1748).
@@ -675,31 +676,31 @@ define('TL_REQ_REL_TYPE_RESERVED_6', 9);
  * Form has to be like this:
  * 
  * $tlCfg->req_cfg->rel_type_labels = array(
- *		RELATIONNAME => array(
- *			'source' => 'SOURCE_LOCALIZATION_KEY',
- *			'destination' => 'DESTINATION_LOCALIZATION_KEY'),
- *		...
+ *    RELATIONNAME => array(
+ *      'source' => 'SOURCE_LOCALIZATION_KEY',
+ *      'destination' => 'DESTINATION_LOCALIZATION_KEY'),
+ *    ...
  * 
  * @since TestLink 1.9
  **/
 $tlCfg->req_cfg->rel_type_labels = array(
-	TL_REQ_REL_TYPE_PARENT_CHILD => array(
-		'source' => 'req_rel_is_parent_of',
-		'destination' => 'req_rel_is_child_of'),
-	TL_REQ_REL_TYPE_BLOCKS_DEPENDS => array(
-		'source' => 'req_rel_blocks',
-		'destination' => 'req_rel_depends'),
-	TL_REQ_REL_TYPE_RELATED => array( // this is a flat relation, so strings are identical
-		'source' => 'req_rel_is_related_to',
-		'destination' => 'req_rel_is_related_to')
-	);
+  TL_REQ_REL_TYPE_PARENT_CHILD => array(
+    'source' => 'req_rel_is_parent_of',
+    'destination' => 'req_rel_is_child_of'),
+  TL_REQ_REL_TYPE_BLOCKS_DEPENDS => array(
+    'source' => 'req_rel_blocks',
+    'destination' => 'req_rel_depends'),
+  TL_REQ_REL_TYPE_RELATED => array( // this is a flat relation, so strings are identical
+    'source' => 'req_rel_is_related_to',
+    'destination' => 'req_rel_is_related_to')
+  );
 
 
 
 $tlCfg->req_cfg->rel_type_description = array(TL_REQ_REL_TYPE_PARENT_CHILD => 'parent_child',
-	                                          TL_REQ_REL_TYPE_BLOCKS_DEPENDS => 'blocks_depends',
-	                                          TL_REQ_REL_TYPE_RELATED => 'related_to');
-	
+                                            TL_REQ_REL_TYPE_BLOCKS_DEPENDS => 'blocks_depends',
+                                            TL_REQ_REL_TYPE_RELATED => 'related_to');
+  
 
 /** 
  * @var array controls is expected_coverage must be requested at user interface.
@@ -734,9 +735,9 @@ define('TL_REQ_SPEC_TYPE_SYSTEM_REQ_SPEC', '3');
 
 $tlCfg->req_spec_cfg = new stdClass();
 $tlCfg->req_spec_cfg->type_labels = array(
-		TL_REQ_SPEC_TYPE_SECTION => 'req_spec_type_section', 
-		TL_REQ_SPEC_TYPE_USER_REQ_SPEC => 'req_spec_type_user_req_spec',
-		TL_REQ_SPEC_TYPE_SYSTEM_REQ_SPEC => 'req_spec_type_system_req_spec');
+    TL_REQ_SPEC_TYPE_SECTION => 'req_spec_type_section', 
+    TL_REQ_SPEC_TYPE_USER_REQ_SPEC => 'req_spec_type_user_req_spec',
+    TL_REQ_SPEC_TYPE_SYSTEM_REQ_SPEC => 'req_spec_type_system_req_spec');
 
 
 /**
@@ -760,13 +761,13 @@ define('VALID_REQ', 'v');
 //  * </ul>
 //  */
 // $tlCfg->gui->custom_fields->sizes = array( 
-// 	'string' => 50,
-// 	'numeric'=> 10,
-// 	'float'  => 10,
-// 	'email'  => 50,
-// 	'list'   => 1,
-// 	'multiselection list' => 5,
-// 	'text area' => array('cols' => 40, 'rows' => 6)
+//   'string' => 50,
+//   'numeric'=> 10,
+//   'float'  => 10,
+//   'email'  => 50,
+//   'list'   => 1,
+//   'multiselection list' => 5,
+//   'text area' => array('cols' => 40, 'rows' => 6)
 // );
 
 
@@ -804,11 +805,11 @@ $tlCfg->gui->custom_fields->time_format = 'H:i:s';
  * @since TestLink version 2.0 
  **/
 $tlCfg->review_types = array(1 => 'undefined',
-	                         2 => 'typo', 
-	                         3 => 'recommendation', 
-	                         4 => 'question', 
-	                         5 => 'unclear', 
-	                         6 => 'major problem'
+                           2 => 'typo', 
+                           3 => 'recommendation', 
+                           4 => 'question', 
+                           5 => 'unclear', 
+                           6 => 'major problem'
 );
 
 /**
@@ -826,83 +827,83 @@ $tlCfg->review_types = array(1 => 'undefined',
  * @since TestLink version 1.9 
  */
 $tlCfg->guiTopMenu[1] = array(
-		'label' => 'home',
-		'url' => 'index.php',
-		'right' => null,
-		'condition'=>'',
-		'shortcut'=>'h',
-		'target'=>'_parent'
+    'label' => 'home',
+    'url' => 'index.php',
+    'right' => null,
+    'condition'=>'',
+    'shortcut'=>'h',
+    'target'=>'_parent'
 );
 $tlCfg->guiTopMenu[2] = array(
-		'label' => 'title_requirements',
-		'url' => 'lib/general/frmWorkArea.php?feature=reqSpecMgmt',
-		'right' => 'mgt_view_req',
-		'condition'=>'ReqMgmtEnabled',
-		'shortcut'=>'r',
-		'target'=>'mainframe'
+    'label' => 'title_requirements',
+    'url' => 'lib/general/frmWorkArea.php?feature=reqSpecMgmt',
+    'right' => 'mgt_view_req',
+    'condition'=>'ReqMgmtEnabled',
+    'shortcut'=>'r',
+    'target'=>'mainframe'
 ); 
 $tlCfg->guiTopMenu[3] = array(
-		'label' => 'title_specification',
-		'url' => 'lib/general/frmWorkArea.php?feature=editTc',
-		'right' => 'mgt_view_tc',
-		'condition'=>'',
-		'shortcut'=>'t',
-		'target'=>'mainframe'
+    'label' => 'title_specification',
+    'url' => 'lib/general/frmWorkArea.php?feature=editTc',
+    'right' => 'mgt_view_tc',
+    'condition'=>'',
+    'shortcut'=>'t',
+    'target'=>'mainframe'
 ); 
 $tlCfg->guiTopMenu[4] = array(
-		'label' => 'title_execute',
-		'url' => 'lib/general/frmWorkArea.php?feature=executeTest',
-		'right' => 'testplan_execute',
-		'condition'=>'TestPlanAvailable',
-		'shortcut'=>'e',
-		'target'=>'mainframe'
+    'label' => 'title_execute',
+    'url' => 'lib/general/frmWorkArea.php?feature=executeTest',
+    'right' => 'testplan_execute',
+    'condition'=>'TestPlanAvailable',
+    'shortcut'=>'e',
+    'target'=>'mainframe'
 ); 
 $tlCfg->guiTopMenu[5] = array(
-		'label' => 'title_results',
-		'url' => 'lib/general/frmWorkArea.php?feature=showMetrics',
-		'right' => 'testplan_metrics',
-		'condition'=>'TestPlanAvailable',
-		'shortcut'=>'r',
-		'target'=>'mainframe'
+    'label' => 'title_results',
+    'url' => 'lib/general/frmWorkArea.php?feature=showMetrics',
+    'right' => 'testplan_metrics',
+    'condition'=>'TestPlanAvailable',
+    'shortcut'=>'r',
+    'target'=>'mainframe'
 ); 
 $tlCfg->guiTopMenu[6] = array(
-		'label' => 'title_admin',
-		'url' => 'lib/usermanagement/usersView.php',
-		'right' => 'mgt_users',
-		'condition'=>'',
-		'shortcut'=>'u',
-		'target'=>'mainframe'
+    'label' => 'title_admin',
+    'url' => 'lib/usermanagement/usersView.php',
+    'right' => 'mgt_users',
+    'condition'=>'',
+    'shortcut'=>'u',
+    'target'=>'mainframe'
 ); 
 $tlCfg->guiTopMenu[7] = array(
-		'label' => 'title_events',
-		'url' => 'lib/events/eventviewer.php',
-		'right' => 'events_mgt',
-		'condition'=>'',
-		'shortcut'=>'v',
-		'target'=>'mainframe'
+    'label' => 'title_events',
+    'url' => 'lib/events/eventviewer.php',
+    'right' => 'events_mgt',
+    'condition'=>'',
+    'shortcut'=>'v',
+    'target'=>'mainframe'
 ); 
 
 
-define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');
+define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',  'docs/tl-file-formats.pdf');
 
 
 // Configure Charts dimension
 $tlCfg->results['charts']['dimensions'] = 
-	array('topLevelSuitesBarChart'  => array('chartTitle' => 'results_top_level_suites',
-											 'XSize' => 900,'YSize' => 400,'beginX' => 40, 'beginY' => 100,
-											 'legendXAngle' => 35 ),
-	      'keywordBarChart'  => array('chartTitle' => 'results_by_keyword',
-							 		  'XSize' => 900,'YSize' => 400,'beginX' => 40, 'beginY' => 100,
-									  'legendXAngle' => 25 ),
-	      'ownerBarChart'  => array('chartTitle' => 'results_by_tester',
-							 		  'XSize' => 900,'YSize' => 400,'beginX' => 40, 'beginY' => 100,
-									  'legendXAngle' => 35 ),
-	      'overallPieChart'  => array('chartTitle' => 'results_by_tester',
-							 		  'XSize' => 400,'YSize' => 400,'radius' => 150, 'legendX' => 10, 'legendY' => 15 ),
-	      'platformPieChart'  => array('chartTitle' => 'results_by_tester',
-							 		  'XSize' => 400,'YSize' => 400,'radius' => 150, 'legendX' => 10, 'legendY' => 15 )
-	);							
-	
-		
+  array('topLevelSuitesBarChart'  => array('chartTitle' => 'results_top_level_suites',
+                       'XSize' => 900,'YSize' => 400,'beginX' => 40, 'beginY' => 100,
+                       'legendXAngle' => 35 ),
+        'keywordBarChart'  => array('chartTitle' => 'results_by_keyword',
+                     'XSize' => 900,'YSize' => 400,'beginX' => 40, 'beginY' => 100,
+                    'legendXAngle' => 25 ),
+        'ownerBarChart'  => array('chartTitle' => 'results_by_tester',
+                     'XSize' => 900,'YSize' => 400,'beginX' => 40, 'beginY' => 100,
+                    'legendXAngle' => 35 ),
+        'overallPieChart'  => array('chartTitle' => 'results_by_tester',
+                     'XSize' => 400,'YSize' => 400,'radius' => 150, 'legendX' => 10, 'legendY' => 15 ),
+        'platformPieChart'  => array('chartTitle' => 'results_by_tester',
+                     'XSize' => 400,'YSize' => 400,'radius' => 150, 'legendX' => 10, 'legendY' => 15 )
+  );              
+  
+    
 // ----- END ----------------------------------------------------------------------------
 ?>

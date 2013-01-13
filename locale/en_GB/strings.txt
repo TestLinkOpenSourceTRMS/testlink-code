@@ -1509,6 +1509,9 @@ $TLS_testproject_enable_priority = 'Enable Testing Priority';
 $TLS_testproject_enable_requirements = 'Enable Requirements feature';
 $TLS_testproject_issue_tracker_integration = 'Issue Tracker Integration';
 $TLS_issue_tracker = 'Issue Tracker';
+$TLS_testproject_reqmgr_integration = 'Req. Mgmt. System Integration';
+$TLS_reqmgrsystem = 'Req. Management System';
+$TLS_no_rms_defined = ' >> There are no Req. Management Systems defined <<';
 
 
 $TLS_info_failed_loc_prod = 'Failed to localize the Test Project.';

@@ -111,9 +111,11 @@ switch($args->doAction)
         $addIssueTracker = $addReqMgrSystem = is_null($template);
         $template = is_null($template) ? 'projectView.tpl' : $template;
 
-        $gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map',
-                                                                 " ORDER BY nodes_hierarchy.name ",$addIssueTracker);
+        $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY nodes_hierarchy.name ",
+                     'add_issuetracker' => $addIssueTracker, 'add_reqmgrsystem' => $addReqMgrSystem);
+        $gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,$opt);
 
+        new dBug($gui->tprojects);
         if($addIssueTracker)
         {
           $imgSet = $smarty->getImages();

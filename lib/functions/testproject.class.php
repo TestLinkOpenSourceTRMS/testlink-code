@@ -465,10 +465,16 @@ args:
 @since 1.9.5
 
 */
-function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER BY name ",$add_issuetracker = false)
+// function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER BY name ",$add_issuetracker = false)
+function get_accessible_for_user($user_id,$opt = null)
 {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
+  $my = array();
+  $my['opt'] = array('output' => 'map', 'order_by' => ' ORDER BY name ',
+                     'add_issuetracker' => false, 'add_reqmgrsystem' => false);
+  $my['opt'] = array_merge($my['opt'],(array)$opt);
+  
+                     
   $items = array();
   $safe_user_id = intval($user_id);
 
@@ -479,7 +485,7 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 
   $itsql = '';
   $itf = '';
-  if($add_issuetracker)
+  if($my['opt']['add_issuetracker'])
   {
     $itsql = " LEFT OUTER JOIN {$this->tables['testproject_issuetracker']} AS TIT " .
              " ON TIT.testproject_id  = testprojects.id " .
@@ -487,13 +493,26 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
              " ON ITMD.id = TIT.issuetracker_id ";     
     $itf = ",ITMD.name AS itname,ITMD.type AS ittype";
   }        
+
+  $rmssql = '';
+  $rmsf = '';
+  if($my['opt']['add_reqmgrsystem'])
+  {
+    $rmssql = " LEFT OUTER JOIN {$this->tables['testproject_reqmgrsystem']} AS TRMS " .
+              " ON TRMS.testproject_id  = testprojects.id " .
+              " LEFT OUTER JOIN {$this->tables['reqmgrsystems']} AS RMSMD " .
+              " ON RMSMD.id = TRMS.reqmgrsystem_id ";     
+    $rmsf =   ",RMSMD.name AS rmsname,RMSMD.type AS rmstype";
+  }        
+
+
   
-  $sql = " /* $debugMsg */ SELECT nodes_hierarchy.name,testprojects.* {$itf}" .
-          " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy " .
-          " JOIN {$this->object_table} testprojects ON nodes_hierarchy.id=testprojects.id " .
+  $sql = " /* $debugMsg */ SELECT nodes_hierarchy.name,testprojects.* {$itf} {$rmsf} " .
+         " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy " .
+         " JOIN {$this->object_table} testprojects ON nodes_hierarchy.id=testprojects.id " .
          " LEFT OUTER JOIN {$this->tables['user_testproject_roles']} user_testproject_roles " .
          " ON testprojects.id = user_testproject_roles.testproject_id " .
-         " AND user_testproject_roles.user_id =" . $safe_user_id . $itsql .
+         " AND user_testproject_roles.user_id =" . $safe_user_id . $itsql . $rmssql .
          " WHERE 1=1 ";
   
   //echo $sql;
@@ -505,47 +524,47 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
       $sql .=  " AND "; 
       $sql_public = " ( is_public = 1 AND (role_id IS NULL OR role_id != " . TL_ROLES_NO_RIGHTS. ") )";
       $sql_private = " ( is_public = 0 AND role_id != " . TL_ROLES_NO_RIGHTS. ") ";
-      
       $sql .= " ( {$sql_public}  OR {$sql_private} ) ";
     }
     else
     {
       // User need specific role
       $sql .=  " AND (role_id IS NOT NULL AND role_id != ".TL_ROLES_NO_RIGHTS.")";
-      }
+    }
   }
 
   $userObj = tlUser::getByID($this->db,$safe_user_id,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
   if ($userObj->hasRight($this->db,'mgt_modify_product') != 'yes')
   {
     $sql .= " AND active=1 ";
-    }
-    unset($userObj);
+  }
+  unset($userObj);
     
-  $sql .= $order_by;
+  $sql .= $my['opt']['order_by'];
+               
+  switch($my['opt']['output'])
+  {
+    case 'array_of_map':
+      $items = $this->db->get_recordset($sql);
+      $this->parseTestProjectRecordset($items);
+      $do_post_process=0;
+    break;
 
-  if($output_type == 'array_of_map')
-  {
-    $items = $this->db->get_recordset($sql);
-    $this->parseTestProjectRecordset($items);
-    $do_post_process=0;
+    case 'map_of_map_full':
+      $items = $this->db->fetchRowsIntoMap($sql,'id');
+      $this->parseTestProjectRecordset($items);
+      $do_post_process=0;
+    break;
+
+    default:
+      $arrTemp = $this->db->fetchRowsIntoMap($sql,'id');
+      $do_post_process=1;
+    break;
   }
-  elseif($output_type == 'map_of_map_full')
-  {
-    $items = $this->db->fetchRowsIntoMap($sql,'id');
-    $this->parseTestProjectRecordset($items);
-    $do_post_process=0;
-  }
-  else
-  {
-    $arrTemp = $this->db->fetchRowsIntoMap($sql,'id');
-    $do_post_process=1;
-  }    
-  
     
   if ($do_post_process && sizeof($arrTemp))
   {
-    switch ($output_type)
+    switch ($my['opt']['output'])
     {
       case 'map':
       foreach($arrTemp as $id => $row)

@@ -34,7 +34,7 @@ $user = $_SESSION['currentUser'];
 $testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 $testplanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
 
-$accessibleItems = $tproject_mgr->get_accessible_for_user($user->dbID,'map');
+$accessibleItems = $tproject_mgr->get_accessible_for_user($user->dbID,array('output' => 'map'));
 $tprojectQty = $tproject_mgr->getItemCount();
 $userIsBlindFolded = (is_null($accessibleItems) || count($accessibleItems) == 0) && $tprojectQty > 0;
 if($userIsBlindFolded)

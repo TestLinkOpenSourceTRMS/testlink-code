@@ -34,7 +34,11 @@ if($gui->tprojectID > 0)
 $user = $_SESSION['currentUser'];
 $userID = $user->dbID;
 
-$gui->TestProjects = $tproject_mgr->get_accessible_for_user($userID,'map',$tlCfg->gui->tprojects_combo_order_by);
+// $gui->TestProjects = $tproject_mgr->get_accessible_for_user($userID,'map',$tlCfg->gui->tprojects_combo_order_by);
+$gui->TestProjects = $tproject_mgr->get_accessible_for_user($userID,
+                                                            array('output' => 'map',
+                                                                  'order_by' => $tlCfg->gui->tprojects_combo_order_by));
+
 $gui->TestProjectCount = sizeof($gui->TestProjects);
 $gui->TestPlanCount = 0; 
 

@@ -31,7 +31,9 @@ $gui->doAction = $args->doAction;
 $gui->canManage = has_rights($db,"mgt_modify_product");
 
 $tproject_mgr = new testproject($db);
-$gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map', " ORDER BY name ",true);
+$opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY name ", 'add_issuetracker' => true,
+             'add_reqmgrsystem' => true);
+$gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,$opt);
 
 $loop2do = count($gui->tprojects);
 $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));

@@ -1537,7 +1537,7 @@ $TLS_popup_product_delete = 'Warning! This action deletes irrevocable all Test P
                             'You can also use to deactivate instead of delete.\\n' .
                             'Recommendation: Execute a dump of database at first.\\n' .
                             'Are you sure to delete the Test Project?';
-
+$TLS_th_reqmgrsystem_short = 'Req. Mgmt. System';
 
 // ----- gui/templates/reqAssign.tpl -----
 $TLS_please_select_a_req = "Please select a requirement";

@@ -151,7 +151,6 @@ switch($args->doAction)
         }
         
         
-        
         $smarty->assign('gui',$gui);
         $smarty->display($templateCfg->template_dir . $template);
     break;

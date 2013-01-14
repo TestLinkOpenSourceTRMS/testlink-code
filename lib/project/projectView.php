@@ -45,7 +45,16 @@ for($idx=0; $idx < $loop2do; $idx++)
     $ak = ($gui->tprojects[$idx]['issue_tracker_enabled']) ? 'active' : 'inactive';
     $gui->tprojects[$idx]['itstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
                                            ' alt="' . $labels[$ak . '_integration'] . '" ' .
- 				                                   ' src="' . $imgSet[$ak] . '"/>';
+                                           ' src="' . $imgSet[$ak] . '"/>';
+  } 
+  
+  $gui->tprojects[$idx]['rmsstatusImg'] = '';
+  if($gui->tprojects[$idx]['rmsname'] != '')
+  {
+    $ak = ($gui->tprojects[$idx]['reqmgr_integration_enabled']) ? 'active' : 'inactive';
+    $gui->tprojects[$idx]['rmsstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
+                                            ' alt="' . $labels[$ak . '_integration'] . '" ' .
+                                            ' src="' . $imgSet[$ak] . '"/>';
   } 
 }
 

@@ -35,14 +35,13 @@ function init_args()
 {
   $iParams = array("req_spec_id" => array(tlInputParameter::INT_N),
                    "refreshTree" => array(tlInputParameter::INT_N) );
-    $args = new stdClass();
-    R_PARAMS($iParams,$args);
-    $args->refreshTree = intval($args->refreshTree);
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
-    
-    
-    return $args;
+  $args = new stdClass();
+  R_PARAMS($iParams,$args);
+  $args->refreshTree = intval($args->refreshTree);
+  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+  
+  return $args;
 }
 
 /**
@@ -54,6 +53,7 @@ function initialize_gui(&$dbHandler,&$argsObj)
   $req_spec_mgr = new requirement_spec_mgr($dbHandler);
   $tproject_mgr = new testproject($dbHandler);
   $commandMgr = new reqSpecCommands($dbHandler,$argsObj->tproject_id);
+                            
   
   $gui = $commandMgr->initGuiBean();
   $gui->refreshTree = $argsObj->refreshTree;
@@ -93,8 +93,14 @@ function initialize_gui(&$dbHandler,&$argsObj)
   $gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . 
                       '&item=reqspec&id=' . urlencode($gui->req_spec['doc_id']);
 
-
-    return $gui;
+  $gui->btn_import_req_spec = '';
+  $gui->reqMgrSystemEnabled = 0;
+  if( !is_null($reqMgrSystem = $commandMgr->getReqMgrSystem()) )
+  {
+    $gui->btn_import_req_spec = sprintf(lang_get('importViaAPI'),$reqMgrSystem['reqmgrsystem_name']);
+    $gui->reqMgrSystemEnabled = 1;
+  }
+  return $gui;
 }
 
 

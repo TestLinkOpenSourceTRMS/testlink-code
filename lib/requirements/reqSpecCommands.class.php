@@ -48,14 +48,18 @@ class reqSpecCommands
       $this->reqMgrSystem = $sysmgr->getLinkedTo($tproject_id);
       unset($sysmgr);
     }
-    
-    
   }
 
   function setAuditContext($auditContext)
   {
-      $this->auditContext=$auditContext;
+    $this->auditContext=$auditContext;
   }
+
+  function getReqMgrSystem()
+  {
+    return $this->reqMgrSystem;
+  }
+
 
   /**
    * common properties needed on gui

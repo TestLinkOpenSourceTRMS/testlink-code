@@ -105,8 +105,10 @@ abstract class reqMgrSystemInterface
   }
 
 
-
-
+  function isConnected()    
+  {                         
+    return $this->connected;
+  }                         
 
 
   // ===========================================================  

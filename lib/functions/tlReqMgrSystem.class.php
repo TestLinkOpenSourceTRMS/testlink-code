@@ -613,11 +613,11 @@ class tlReqMgrSystem extends tlObject
    *
    *
    */
-  function checkConnection($system)
+  function checkConnection($systemID)
   {
-    $xx = $this->getByID($system);
+    $xx = $this->getByID($systemID);
     $class2create = $xx['implementation'];
-    $its = new $class2create($xx['type'],$xx['cfg']);
+    $system = new $class2create($xx['type'],$xx['cfg']);
     return $system->isConnected();
   }
 } // end class

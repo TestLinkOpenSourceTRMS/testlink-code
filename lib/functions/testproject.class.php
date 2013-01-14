@@ -3081,6 +3081,10 @@ function getPublicAttr($id)
     $this->setOneZeroField($id,'reqmgr_integration_enabled',0);
   }
 
+  function setReqMgrIntegrationEnabled($id,$value)
+  {
+    $this->setOneZeroField($id,'reqmgr_integration_enabled',$value);
+  }
 
   /**
    *

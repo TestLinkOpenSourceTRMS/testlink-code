@@ -114,8 +114,6 @@ switch($args->doAction)
         $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY nodes_hierarchy.name ",
                      'add_issuetracker' => $addIssueTracker, 'add_reqmgrsystem' => $addReqMgrSystem);
         $gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,$opt);
-
-        new dBug($gui->tprojects);
         if($addIssueTracker)
         {
           $imgSet = $smarty->getImages();
@@ -197,7 +195,7 @@ switch($args->doAction)
  */
 function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 {
-    $args = new stdClass();
+  $args = new stdClass();
   $request_hash = strings_stripSlashes($request_hash);
   
   $nullable_keys = array('tprojectName','color','notes','doAction','tcasePrefix');
@@ -214,14 +212,16 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 
   // get input from the project edit/create page
   $checkbox_keys = array('is_public' => 0,'active' => 0,'optReq' => 0,
-               'optPriority' => 0,'optAutomation' => 0,
-               'optInventory' => 0, 'issue_tracker_enabled' => 0);
+                         'optPriority' => 0,'optAutomation' => 0,
+                         'optInventory' => 0, 'issue_tracker_enabled' => 0,
+                         'reqmgr_integration_enabled' => 0);
   foreach ($checkbox_keys as $key => $value)
   {
     $args->$key = isset($request_hash[$key]) ? 1 : $value;
   }
 
   $args->issue_tracker_id = isset($request_hash['issue_tracker_id']) ? intval($request_hash['issue_tracker_id']) : 0;
+  $args->reqmgrsystem_id = isset($request_hash['reqmgrsystem_id']) ? intval($request_hash['reqmgrsystem_id']) : 0;
 
   if($args->doAction != 'doUpdate' && $args->doAction != 'doCreate')
   {
@@ -232,11 +232,20 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 
       $args->issue_tracker_enabled = intval($the_data['issue_tracker_enabled']);  
       $args->issue_tracker_id = 0;
-         $itMgr = new tlIssueTracker($tprojectMgr->db);
+      $itMgr = new tlIssueTracker($tprojectMgr->db);
       $issueT = $itMgr->getLinkedTo($args->tprojectID);
       if( !is_null($issueT)  )
       {
         $args->issue_tracker_id = $issueT['issuetracker_id'];
+      }
+
+      $args->reqmgr_integration_enabled = intval($the_data['reqmgr_integration_enabled']);  
+      $args->reqmgrsystem_id = 0;
+      $mgr = new tlReqMgrSystem($tprojectMgr->db);
+      $et = $mgr->getLinkedTo($args->tprojectID);
+      if( !is_null($et)  )
+      {
+        $args->reqmgrsystem_id = $et['reqmgrsystem_id'];
       }
 
       if ($args->doAction == 'doDelete')
@@ -256,6 +265,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
   $args->userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
   $args->testprojects = null;
   $args->projectOptions = prepareOptions($args);
+
   return $args;
 }
 
@@ -390,34 +400,50 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
    if($op->status_ok)
    {
       $options = prepareOptions($argsObj);
-        if( $tprojectMgr->update($argsObj->tprojectID,trim($argsObj->tprojectName),
-                     $argsObj->color, $argsObj->notes, $options, $argsObj->active,
-                     $argsObj->tcasePrefix, $argsObj->is_public) )
-        {
-          $op->msg = '';
-          $tprojectMgr->activate($argsObj->tprojectID,$argsObj->active);
-          $tprojectMgr->setIssueTrackerEnabled($argsObj->tprojectID,$argsObj->issue_tracker_enabled);
-         $itMgr = new tlIssueTracker($tprojectMgr->db);
-         
-      if( ($doLink = $argsObj->issue_tracker_id > 0)  )
+      if( $tprojectMgr->update($argsObj->tprojectID,trim($argsObj->tprojectName),
+                               $argsObj->color, $argsObj->notes, $options, $argsObj->active,
+                               $argsObj->tcasePrefix, $argsObj->is_public) )
       {
-        $itMgr->link($argsObj->issue_tracker_id,$argsObj->tprojectID);
-      }
-          else
-          {
-        $issueT = $itMgr->getLinkedTo($argsObj->tprojectID);
-        if( !is_null($issueT) )
+        $op->msg = '';
+        $tprojectMgr->activate($argsObj->tprojectID,$argsObj->active);
+      
+        $tprojectMgr->setIssueTrackerEnabled($argsObj->tprojectID,$argsObj->issue_tracker_enabled);
+        $itMgr = new tlIssueTracker($tprojectMgr->db);
+        if( ($doLink = $argsObj->issue_tracker_id > 0)  )
         {
-          $itMgr->unlink($issueT['issuetracker_id'],$issueT['testproject_id']);
-        }  
-          } 
-          
-          logAuditEvent(TLS("audit_testproject_saved",$argsObj->tprojectName),"UPDATE",$argsObj->tprojectID,"testprojects");
+          $itMgr->link($argsObj->issue_tracker_id,$argsObj->tprojectID);
         }
         else
         {
-          $op->status_ok=0;
-        }  
+          $issueT = $itMgr->getLinkedTo($argsObj->tprojectID);
+          if( !is_null($issueT) )
+          {
+            $itMgr->unlink($issueT['issuetracker_id'],$issueT['testproject_id']);
+          }  
+        } 
+
+        $tprojectMgr->setReqMgrIntegrationEnabled($argsObj->tprojectID,$argsObj->reqmgr_integration_enabled);
+        $mgr = new tlReqMgrSystem($tprojectMgr->db);
+        if( ($doLink = $argsObj->reqmgrsystem_id > 0)  )
+        {
+          $mgr->link($argsObj->reqmgrsystem_id,$argsObj->tprojectID);
+        }
+        else
+        {
+          $et = $mgr->getLinkedTo($argsObj->tprojectID);
+          if( !is_null($et) )
+          {
+            $mgr->unlink($et['reqmgrsystem_id'],$et['testproject_id']);
+          }  
+        } 
+      
+          
+        logAuditEvent(TLS("audit_testproject_saved",$argsObj->tprojectName),"UPDATE",$argsObj->tprojectID,"testprojects");
+      }
+      else
+      {
+        $op->status_ok=0;
+      }  
   }
     if($op->status_ok)
   {

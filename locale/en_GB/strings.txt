@@ -217,6 +217,7 @@ $TLS_btn_upload = "Upload";
 $TLS_btn_advanced_filters = "Advanced Filters";
 $TLS_btn_simple_filters = "Simple Filters";
 $TLS_btn_reorder_steps = "Reorder Steps";
+$TLS_btn_resequence_steps = "Resequence Steps";
 $TLS_btn_view_history = "View history";
 
 

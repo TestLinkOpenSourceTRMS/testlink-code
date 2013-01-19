@@ -37,10 +37,6 @@
 # 
 # ---------------------------------------------------------------------------------------
 # @internal revisions
-# @since 1.9.4
-# 20120209 - franciscom - TICKET 4914: Create View - tcversions_last_active
-# 20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server
-# 20110810 - franciscom - Requirement Specification Revisions feature
 #
 # ---------------------------------------------------------------------------------------
 
@@ -288,24 +284,6 @@ CREATE TABLE /*prefix*/req_coverage (
   KEY /*prefix*/req_testcase (`req_id`,`testcase_id`)
 ) DEFAULT CHARSET=utf8 COMMENT='relation test case ** requirements';
 
-
-## CREATE TABLE /*prefix*/req_specs (
-##   `id` int(10) unsigned NOT NULL,
-##   `testproject_id` int(10) unsigned NOT NULL,
-##   `doc_id` varchar(64) NOT NULL,
-##   `scope` text,
-##   `total_req` int(10) NOT NULL default '0',
-##   `type` char(1) default 'n',
-##   `author_id` int(10) unsigned default NULL,
-##    creation_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-##   `modifier_id` int(10) unsigned default NULL,
-##   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-##   PRIMARY KEY  (`id`),
-##   KEY /*prefix*/testproject_id (`testproject_id`),
-##   UNIQUE KEY /*prefix*/req_spec_uk1(`doc_id`,`testproject_id`)
-## ) DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
-
-# TICKET 4661
 CREATE TABLE /*prefix*/req_specs (
   `id` int(10) unsigned NOT NULL,
   `testproject_id` int(10) unsigned NOT NULL,
@@ -314,10 +292,6 @@ CREATE TABLE /*prefix*/req_specs (
   KEY /*prefix*/testproject_id (`testproject_id`),
   UNIQUE KEY /*prefix*/req_spec_uk1(`doc_id`,`testproject_id`)
 ) DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
-
-
-
-
 
 CREATE TABLE /*prefix*/requirements (
   `id` int(10) unsigned NOT NULL,

@@ -13,7 +13,7 @@
 --  -----------------------------------------------------------------------------------
 
 --  Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.5','Test Link 1.9.4',GETDATE());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.6','Test Link 1.9.6',GETDATE());
 
 --  Node types -
 SET IDENTITY_INSERT /*prefix*/node_types ON
@@ -75,6 +75,8 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (29,'keyword_assignment');
 INSERT INTO /*prefix*/rights (id,description) VALUES (30,'mgt_unfreeze_req');
 INSERT INTO /*prefix*/rights (id,description) VALUES (31,'issuetracker_management');
 INSERT INTO /*prefix*/rights (id,description) VALUES (32,'issuetracker_view');
+INSERT INTO /*prefix*/rights (id,description) VALUES (31,'reqmgrsystem_management');
+INSERT INTO /*prefix*/rights (id,description) VALUES (32,'reqmgrsystem_view');
 
 
 
@@ -111,6 +113,8 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,31);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,32);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,33);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,34);
 
 
 --  Rights for guest role

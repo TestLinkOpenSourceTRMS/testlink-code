@@ -11,7 +11,7 @@
 
 
 --  Database version -
-INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 1.5',now(),'TestLink 1.9.4');
+INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 1.6',now(),'TestLink 1.9.6');
 
 
 --  Node types -

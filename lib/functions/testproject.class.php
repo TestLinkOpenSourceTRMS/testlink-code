@@ -11,6 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.6
+ * 20130120 - franciscom - delete() missing deletes
  * 20121216 - franciscom - getTestCasesCreatedByUser()
  *
  **/
@@ -1636,7 +1637,7 @@ function setPublicStatus($id,$status)
     $reqspec_mgr = new requirement_spec_mgr($this->db);
     
 
-        //    
+    //    
     // Notes on delete related to Foreing Keys
     // All link tables has to be deleted first
     //
@@ -1645,12 +1646,12 @@ function setPublicStatus($id,$status)
     // testplan_tcversions
     // testplan_platforms
     // object_keywords
-        // user_assignments
+    // user_assignments
     // builds
     // milestones
     //
     // testplans
-        // keywords    
+    // keywords    
     // platforms 
     // attachtments
     // testcases
@@ -1661,7 +1662,6 @@ function setPublicStatus($id,$status)
     $this->deleteKeywords($id);
     $this->deleteAttachments($id);
     
-    // 20110817
     $reqSpecSet=$reqspec_mgr->get_all_id_in_testproject($id);
     if( !is_null($reqSpecSet) && count($reqSpecSet) > 0 )
     {
@@ -1687,8 +1687,8 @@ function setPublicStatus($id,$status)
     
     $a_sql[] = array("/* $debugMsg */ UPDATE {$this->tables['users']}  " . 
                      " SET default_testproject_id = NULL " .
-                   " WHERE default_testproject_id = {$id}",
-                   'info_resetting_default_project_fails');
+                     " WHERE default_testproject_id = {$id}",
+                     'info_resetting_default_project_fails');
 
 
     $inventory_mgr = new tlInventory($id,$this->db);
@@ -1721,6 +1721,13 @@ function setPublicStatus($id,$status)
       $error .= lang_get('info_deleting_project_roles_fails');
     }
     
+    $xSQL = array('testproject_issuetracker','testproject_reqmgrsystem');
+    foreach($xSQL as $target)
+    {
+      $sql = "/* $debugMsg */ DELETE FROM " . $this->tables[$target] .
+             " WHERE testproject_id = " . intval($id);                 
+      $result = $this->db->exec_query($sql);
+    }
 
     // ---------------------------------------------------------------------------------------
     // delete product itself and items directly related to it like:

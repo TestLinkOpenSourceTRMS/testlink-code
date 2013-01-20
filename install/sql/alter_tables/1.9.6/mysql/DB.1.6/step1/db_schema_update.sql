@@ -38,7 +38,7 @@ CREATE TABLE /*prefix*/testproject_reqmgrsystem
 (
   `testproject_id` int(10) unsigned NOT NULL,
   `reqmgrsystem_id` int(10) unsigned NOT NULL,
-  UNIQUE KEY /*prefix*/testproject_reqmgrsystem_uidx1 (`testproject_id`)
+  PRIMARY KEY (`testproject_id`)
 ) DEFAULT CHARSET=utf8;
 
 

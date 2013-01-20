@@ -13,11 +13,7 @@
  * USE SEMICOLONS ONLY to signal END of SQL Statements.
  *
  * @internal revisions
- * @since 1.9.4
- * 20120430 - franciscom - issue trackers tables
- * 20120211 - franciscom - new views
- * 20110815 - franciscom - improvements on cookie_string generation (after Julian indications)
- * 20110808 - franciscom - manual migration from 1.9.1 (DB 1.4) to 1.9.4 (DB 1.5)
+ * @since 1.9.6
  */
 
 # ==============================================================================
@@ -27,6 +23,25 @@
 
 /* testprojects */
 ALTER TABLE /*prefix*/testprojects ADD COLUMN reqmgr_integration_enabled tinyint(1) NOT NULL default '0' AFTER issue_tracker_enabled;
+
+
+CREATE TABLE /*prefix*/testproject_issuetracker
+(
+  `testproject_id` int(10) unsigned NOT NULL,
+  `issuetracker_id` int(10) unsigned NOT NULL,
+  UNIQUE KEY /*prefix*/testproject_issuetracker_uidx1 (`testproject_id`)
+) DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE /*prefix*/reqmgrsystems
+(
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL,
+  `type` int(10) default 0,
+  `cfg` text,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY /*prefix*/reqmgrsystems_uidx1 (`name`)
+) DEFAULT CHARSET=utf8;
 
 
 

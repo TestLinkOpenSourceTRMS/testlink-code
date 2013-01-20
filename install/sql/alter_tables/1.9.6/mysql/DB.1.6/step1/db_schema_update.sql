@@ -24,15 +24,6 @@
 /* testprojects */
 ALTER TABLE /*prefix*/testprojects ADD COLUMN reqmgr_integration_enabled tinyint(1) NOT NULL default '0' AFTER issue_tracker_enabled;
 
-
-CREATE TABLE /*prefix*/testproject_issuetracker
-(
-  `testproject_id` int(10) unsigned NOT NULL,
-  `issuetracker_id` int(10) unsigned NOT NULL,
-  UNIQUE KEY /*prefix*/testproject_issuetracker_uidx1 (`testproject_id`)
-) DEFAULT CHARSET=utf8;
-
-
 CREATE TABLE /*prefix*/reqmgrsystems
 (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -41,6 +32,13 @@ CREATE TABLE /*prefix*/reqmgrsystems
   `cfg` text,
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/reqmgrsystems_uidx1 (`name`)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE /*prefix*/testproject_reqmgrsystem
+(
+  `testproject_id` int(10) unsigned NOT NULL,
+  `reqmgrsystem_id` int(10) unsigned NOT NULL,
+  UNIQUE KEY /*prefix*/testproject_reqmgrsystem_uidx1 (`testproject_id`)
 ) DEFAULT CHARSET=utf8;
 
 

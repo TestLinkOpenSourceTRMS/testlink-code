@@ -692,10 +692,17 @@ class tlEventManager extends tlObjectWithDB
     // Unfortunately MSSQL (and may be other DBMS) has a limit in amount of elements present
     // on this kind of clause, and this causes an issue.
     // To be fair it would be very difficult to catch this error while testing (at least IMHO).
-    $subsql = " SELECT id FROM {$this->tables['transactions']} t " .
-              " WHERE (SELECT COUNT(0) FROM {$this->tables['events']} e WHERE e.transaction_id = t.id) = 0";
+    //
+    // While testing with MySQL another issue was found.
+    // MySQL does not allow the table you're deleting from be used in a subquery for the condition.
+    // 
+    // Solution was found on:
+    // http://stackoverflow.com/questions/4471277/mysql-delete-from-with-subquery-as-condition
+    //
+    $subsql = " SELECT id FROM ( SELECT id FROM {$this->tables['transactions']} t " .
+              " WHERE (SELECT COUNT(0) FROM {$this->tables['events']} e WHERE e.transaction_id = t.id) = 0) XX";
     $query = " DELETE FROM {$this->tables['transactions']} WHERE id IN ( {$subsql} )";
-    $this->db->exec_query($query);                           
+    $this->db->exec_query($query);  
   }
 }
 

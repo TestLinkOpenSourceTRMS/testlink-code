@@ -147,7 +147,9 @@ Check Installation manual and TestLink forum if you meet a problem.
 5. Upgrade and Migration
 ===============================================================
 When accessing Installer page you will found ONLY NEW INSTALLATION OPTION
-Migration HAS TO BE DONE MANUALLY => read below (- Upgrade from 1.9.3 to 1.9.4/5 )
+Migration HAS TO BE DONE MANUALLY => read below 
+- Upgrade from 1.9.3   to 1.9.4/5
+- Upgrade from 1.9.4/5 to 1.9.6
 
  Steps
  - Make a Backup of your current database.
@@ -175,11 +177,20 @@ Migration HAS TO BE DONE MANUALLY => read below (- Upgrade from 1.9.3 to 1.9.4/5
 
 - Upgrade from 1.9.3 to 1.9.4/5
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
-a) Execute install/sql/alter_tables/1.9.4/<your_db>/DB1.4/step1/db_schema_update.sql
+a) Execute install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/step1/db_schema_update.sql
 b) Execute install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/stepZ/z_final_step.sql
 
 Hint: When using MySQL Query Browser make sure you are not using a single command execution. 
       (open script or use special script tab to execute the whole script at once)
+
+- Upgrade from 1.9.4/5 to 1.9.6
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+a) Execute install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/stepZ/z_final_step.sql
+
+Hint: When using MySQL Query Browser make sure you are not using a single command execution. 
+      (open script or use special script tab to execute the whole script at once)
+
 
 6. TestLink Team 
 ===============================================================

@@ -150,6 +150,7 @@ When accessing Installer page you will found ONLY NEW INSTALLATION OPTION
 Migration HAS TO BE DONE MANUALLY => read below 
 - Upgrade from 1.9.3   to 1.9.4/5
 - Upgrade from 1.9.4/5 to 1.9.6
+- Migration from other releases that 1.9.3
 
  Steps
  - Make a Backup of your current database.
@@ -190,6 +191,20 @@ b) Execute install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/stepZ/z_final_step.sq
 
 Hint: When using MySQL Query Browser make sure you are not using a single command execution. 
       (open script or use special script tab to execute the whole script at once)
+
+
+
+Migration from other releases that 1.9.3
+
+You have always have to migrate one by one to each version that is newer that yours.
+Extreme example Migration from 1.7.4
+
+1.7.4 => 1.7.5 => 1.8.1 => 1.8.2 => 1.8.3 => 1.8.4 => 1.8.5 => 1.9.0 
+1.9.0 => 1.9.1 => 1.9.2 => 1.9.3 => 1.9.4 => 1.9.5 => 1.9.6
+
+You have to read carefully README and instructions provided by installer.
+Sometimes version changes do not require actions on DB structure or data. 
+
 
 
 6. TestLink Team 

@@ -852,6 +852,12 @@ function is_valid_date($timestamp, $dateFormat) {
 
 function split_localized_date($timestamp,$dateFormat) 
 {
+  if(strlen(trim($timestamp)) == 0)
+  {
+    return null;
+  }
+  
+  $splitChar = null;
   $needle = array(".","-","/","%");
   foreach($needle as $target)
   {
@@ -864,7 +870,6 @@ function split_localized_date($timestamp,$dateFormat)
   // put each char of strippedDateFormat into an Array Element
   $strippedDateFormat = str_replace($needle,"",$dateFormat);
   $format = preg_split('//', $strippedDateFormat, -1, PREG_SPLIT_NO_EMPTY);
-
   $pieces = explode($splitChar,$timestamp);
   $result = array();
   if( count($pieces) == 3 )  // MAGIC ALLOWED 

@@ -6,12 +6,13 @@
  * Scope: control test specification import
  *
  * @filesource  tcImport.php
- * @package   TestLink
- * @copyright   2007-2012, TestLink community 
- * @link     http://www.teamst.org/index.php
+ * @package     TestLink
+ * @copyright   2007-2013, TestLink community 
+ * @link        http://www.teamst.org/index.php
  * 
  * @internal revisions
- * @since 1.9.6    
+ * @since 1.9.6   
+ * 20130123 - franciscom - 5491: DB Access Error when import test case XML with CF 
  */
 require('../../config.inc.php');
 require_once('common.php');
@@ -373,9 +374,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
    }
     
     if( $doCreate )
-    {
+    {           
       // Want to block creation of with existent EXTERNAL ID, if containers ARE DIFFERENT.
-      $item_id = intval($tcase_mgr->getInternalID($externalid, array('tproject_id' => $tproject_id)));
+      $item_id = intval($tcase_mgr->getInternalID($externalid, array('tproject_id' => $tproject_id)));   
       if( $item_id > 0)
       {
         // who is his parent ?
@@ -391,7 +392,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
           $resultMap[] = array($name,$messages['hit_with_same_external_ID'] . $stain);
           $doCreate = false;
         }
-      }
+      }        
     }
     if( $doCreate )
     {     
@@ -413,23 +414,23 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     // Else Import CF data
     //   
     $hasCustomFieldsInfo = (isset($tc['customfields']) && !is_null($tc['customfields']));
-    if($hasCustomFieldsInfo)
-    {
-        if($tprojectHas['customFields'])
-        {                         
-            $msg = processCustomFields(  $tcase_mgr,$name,$ret['id'],$ret['tcversion_id'],$tc['customfields'],
-                          $linkedCustomFields,$feedbackMsg);
-            if( !is_null($msg) )
-            {
-                $resultMap = array_merge($resultMap,$msg);
-            }
-        }
-        else
+    if($hasCustomFieldsInfo &&  !is_null($ret))
+    {                
+      if($tprojectHas['customFields'])
+      {                         
+        $msg = processCustomFields($tcase_mgr,$name,$ret['id'],$ret['tcversion_id'],$tc['customfields'],
+                                   $linkedCustomFields,$feedbackMsg);
+        if( !is_null($msg) )
         {
-              // Can not import Custom Fields Values, give feedback
-              $msg[]=array($name,$messages['cf_warning']);
-              $resultMap = array_merge($resultMap,$msg);          
+            $resultMap = array_merge($resultMap,$msg);
         }
+      }
+      else
+      {
+        // Can not import Custom Fields Values, give feedback
+        $msg[]=array($name,$messages['cf_warning']);
+        $resultMap = array_merge($resultMap,$msg);          
+      }
     }
     
     // BUGID - 20090205 - franciscom
@@ -592,8 +593,9 @@ function processCustomFields(&$tcaseMgr,$tcaseName,$tcaseId,$tcversionId,$cfValu
            $resultMsg[] = array($tcaseName,$missingCfMsg[$value['name']]); 
        }
     }  
-    //
-    // BUGID 3431 - Custom Field values at Test Case VERSION Level
+    
+    new dBug($cf2insert);
+    new dBug($tcversionId);
     $tcaseMgr->cfield_mgr->design_values_to_db($cf2insert,$tcversionId,null,'simple');
     return $resultMsg;
 }

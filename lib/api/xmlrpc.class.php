@@ -1437,7 +1437,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     {
       return $this->errors;
     }
-    }
+  }
   
   /**
    * Gets a list of test plans within a project
@@ -4054,9 +4054,9 @@ public function getTestCase($args)
      * @access public
      */
   public function getTestPlanPlatforms($args)
-    {
+  {
       $operation=__FUNCTION__;
-        $msg_prefix="({$operation}) - ";
+      $msg_prefix="({$operation}) - ";
       $this->_setArgs($args);  
     $status_ok = false;
     $items = null;
@@ -5413,6 +5413,32 @@ protected function createAttachmentTempFile()
   } 
 
 
+  public function getProjectPlatforms($args)
+  {
+    $messagePrefix="(" .__FUNCTION__ . ") - ";
+        
+    $this->_setArgs($args);
+    $checkFunctions = array('authenticate','checkTestProjectID');       
+    $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);       
+  
+    if($status_ok)
+    {
+      $testProjectID = $this->args[self::$testProjectIDParamName];
+      if( is_null($this->platformMgr) )
+      {
+        $this->platformMgr = new tlPlatform($this->dbObj,$testProjectID);
+      }
+      $itemSet = $this->platformMgr->getAllAsMap('name','allinfo');
+      return $itemSet;
+    }
+    else
+    {
+      return $this->errors;
+    } 
+  }
+
+
+
   private function helperGetTestProjectByName($msgPrefix = '')
   {                           
     $ret = array('status_ok' => true, 'info' => null);
@@ -5458,6 +5484,7 @@ protected function createAttachmentTempFile()
                             'tl.getProjects' => 'this:getProjects',
                             'tl.getTestProjectByName' => 'this:getTestProjectByName',
                             'tl.getTestPlanByName' => 'this:getTestPlanByName',
+                            'tl.getProjectPlatforms' => 'this:getProjectPlatforms',
                             'tl.getProjectTestPlans' => 'this:getProjectTestPlans',
                             'tl.getTestPlanPlatforms' => 'this:getTestPlanPlatforms',
                             'tl.getTotalsForTestPlan' => 'this:getTotalsForTestPlan',

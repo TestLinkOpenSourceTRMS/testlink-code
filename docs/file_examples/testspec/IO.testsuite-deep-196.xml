@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Storage IO" >
+<node_order><![CDATA[0]]></node_order>
+<details><![CDATA[Test only
+]]> 
+</details>
+<testcase internalid="3" name="SSD-1">
+	<node_order><![CDATA[0]]></node_order>
+	<externalid><![CDATA[464]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+<steps>
+<step>
+	<step_number><![CDATA[1]]></step_number>
+	<actions><![CDATA[Test only]]></actions>
+	<expectedresults><![CDATA[Test only]]></expectedresults>
+	<execution_type><![CDATA[1]]></execution_type>
+</step>
+</steps>
+<custom_fields>
+	<custom_field>
+		<name><![CDATA[CF_ATTEND_TIME]]></name>
+		<value><![CDATA[]]></value>
+	</custom_field>	<custom_field>
+		<name><![CDATA[CF_UNATTEND_TIME]]></name>
+		<value><![CDATA[]]></value>
+	</custom_field>
+</custom_fields></testcase>
+
+<testcase internalid="6" name="SSD-2">
+	<node_order><![CDATA[0]]></node_order>
+	<externalid><![CDATA[465]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+<steps>
+<step>
+	<step_number><![CDATA[1]]></step_number>
+	<actions><![CDATA[Test only]]></actions>
+	<expectedresults><![CDATA[Test only]]></expectedresults>
+	<execution_type><![CDATA[1]]></execution_type>
+</step>
+</steps>
+<custom_fields>
+	<custom_field>
+		<name><![CDATA[CF_ATTEND_TIME]]></name>
+		<value><![CDATA[]]></value>
+	</custom_field>	<custom_field>
+		<name><![CDATA[CF_UNATTEND_TIME]]></name>
+		<value><![CDATA[]]></value>
+	</custom_field>
+</custom_fields></testcase>
+</testsuite>

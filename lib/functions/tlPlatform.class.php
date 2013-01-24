@@ -415,4 +415,16 @@ class tlPlatform extends tlObjectWithDB
     return ($this->db->fetchRowsIntoMap($sql,'tproject_id'));        
   }
 
+  public function belongsToTestProject($id,$tproject_id = null)
+  {
+    $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . '*/ ';
+    $pid = intval(is_null($tproject_id) ? $this->tproject_id : $tproject_id);
+    
+    $sql = " SELECT id FROM {$this->tables['platforms']} " .
+           " WHERE id = " . intval($id) . " AND testproject_id=" . $pid;
+    $dummy =  $this->db->fetchRowsIntoMap($sql,'id');
+    return isset($dummy['id']);
+  }  
+  
+
 }

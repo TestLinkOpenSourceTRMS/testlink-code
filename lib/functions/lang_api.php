@@ -3,10 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource	lang_api.php
- * @package 	TestLink
- * @copyright 	2005-2012, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @filesource  lang_api.php
+ * @package     TestLink
+ * @copyright   2005-2013, TestLink community 
+ * @link        http://www.teamst.org/index.php
  *
  * @internal thanks
  * The functionality is based on Mantis BTS project code 
@@ -42,82 +42,82 @@ $g_lang_overrides = array();
  */
 function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
 {
-	if ($p_string == '' || is_null($p_string))
-	{
-		return $p_string;
-	}
-	
-	$t_lang = $p_lang;
-	if (null === $t_lang)
-	{
-		$t_lang = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
-	}
-	
-	lang_ensure_loaded($t_lang);
-	global $g_lang_strings;
-	
-	$loc_str = null;
-	$missingL18N = false;
-	$englishSolutionFound = false;
-	
-	if (isset($g_lang_strings[$t_lang][$p_string]))
-	{
-		$loc_str = $g_lang_strings[$t_lang][$p_string];
-	}
-	else
-	{
-		if( $t_lang != 'en_GB' )
-		{
-			// force load of english strings
-			lang_ensure_loaded('en_GB');
-		}
-		if(isset($g_lang_strings['en_GB'][$p_string]))
-		{
-			$missingL18N = true;
-			$englishSolutionFound = true;
-			$loc_str = $g_lang_strings['en_GB'][$p_string];
-		}
-	}
-	
-	
-	$the_str = $loc_str;
-	$missingL18N = is_null($loc_str) || $missingL18N;
-	
-	if (!is_null($loc_str))
-	{
-		$stringFileCharset = "ISO-8859-1";
-		if (isset($g_lang_strings[$t_lang]['STRINGFILE_CHARSET']))
-			$stringFileCharset = $g_lang_strings[$t_lang]['STRINGFILE_CHARSET'];
-			
-		if ($stringFileCharset != TL_TPL_CHARSET)
-			$the_str = iconv($stringFileCharset,TL_TPL_CHARSET,$loc_str);
-	}
-	
-	if( $missingL18N ) 
-	{
-		// if( $t_lang != 'en_GB' )
-		// {
-		// 	// force load of english strings
-		// 	lang_ensure_loaded('en_GB');
-		// }
-		
-		if(!$bDontFireEvents)
-		{
-			// 20100823 - franciscom
-			// When testing with a user with locale = italian, found
-			// 1. missing localized string was replaced with version present on english strings
-			// 2. no log written to event viewer
-			// 3. detected a call to lang_get() with language en_GB
-			//
-			$msg = sprintf("string '%s' is not localized for locale '%s'",$p_string,$t_lang);
-			logWarningEvent($msg,"LOCALIZATION");
-		}
-		if( !$englishSolutionFound )
-		{
-			$the_str = TL_LOCALIZE_TAG .$p_string;
-		}
-	}
-	return $the_str;
+  if ($p_string == '' || is_null($p_string))
+  {
+    return $p_string;
+  }
+  
+  $t_lang = $p_lang;
+  if (null === $t_lang)
+  {
+    $t_lang = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
+  }
+  
+  lang_ensure_loaded($t_lang);
+  global $g_lang_strings;
+  
+  $loc_str = null;
+  $missingL18N = false;
+  $englishSolutionFound = false;
+  
+  if (isset($g_lang_strings[$t_lang][$p_string]))
+  {
+    $loc_str = $g_lang_strings[$t_lang][$p_string];
+  }
+  else
+  {
+    if( $t_lang != 'en_GB' )
+    {
+      // force load of english strings
+      lang_ensure_loaded('en_GB');
+    }
+    if(isset($g_lang_strings['en_GB'][$p_string]))
+    {
+      $missingL18N = true;
+      $englishSolutionFound = true;
+      $loc_str = $g_lang_strings['en_GB'][$p_string];
+    }
+  }
+  
+  
+  $the_str = $loc_str;
+  $missingL18N = is_null($loc_str) || $missingL18N;
+  
+  if (!is_null($loc_str))
+  {
+    $stringFileCharset = "ISO-8859-1";
+    if (isset($g_lang_strings[$t_lang]['STRINGFILE_CHARSET']))
+      $stringFileCharset = $g_lang_strings[$t_lang]['STRINGFILE_CHARSET'];
+      
+    if ($stringFileCharset != TL_TPL_CHARSET)
+      $the_str = iconv($stringFileCharset,TL_TPL_CHARSET,$loc_str);
+  }
+  
+  if( $missingL18N ) 
+  {
+    // if( $t_lang != 'en_GB' )
+    // {
+    //   // force load of english strings
+    //   lang_ensure_loaded('en_GB');
+    // }
+    
+    if(!$bDontFireEvents)
+    {
+      // 20100823 - franciscom
+      // When testing with a user with locale = italian, found
+      // 1. missing localized string was replaced with version present on english strings
+      // 2. no log written to event viewer
+      // 3. detected a call to lang_get() with language en_GB
+      //
+      $msg = sprintf("string '%s' is not localized for locale '%s'",$p_string,$t_lang);
+      logWarningEvent($msg,"LOCALIZATION");
+    }
+    if( !$englishSolutionFound )
+    {
+      $the_str = TL_LOCALIZE_TAG .$p_string;
+    }
+  }
+  return $the_str;
 }
 
 
@@ -130,13 +130,13 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
  */
 function langGetFormated( $text_key, $modifier )
 {
-	$text_localized = lang_get($text_key);
-	if (strpos($text_localized, TL_LOCALIZE_TAG) == 0)
-	{
-		$text_localized = sprintf($text_localized, $modifier);
-	}
-	
-	return $text_localized;
+  $text_localized = lang_get($text_key);
+  if (strpos($text_localized, TL_LOCALIZE_TAG) == 0)
+  {
+    $text_localized = sprintf($text_localized, $modifier);
+  }
+  
+  return $text_localized;
 }
 
 
@@ -170,31 +170,31 @@ function langGetFormated( $text_key, $modifier )
  * to $params['var`]
  */
 function lang_get_smarty($params, &$smarty)
-	{
-	$myLocale=isset($params['locale']) ? $params['locale'] : null;
-	if(	isset($params['var']) )
-	{
-		$labels2translate=explode(',',$params['s']);
-		if( count($labels2translate) == 1)
-		{
-			$myLabels=lang_get($params['s'], $myLocale);
-		}
-		else
-		{
-			$myLabels=array();
-			foreach($labels2translate as $str)
-			{
-				$str2search=trim($str);
-				$myLabels[$str2search]=lang_get($str2search, $myLocale);
-			}
-		}
-		$smarty->assign($params['var'], $myLabels);
-	}
-	else
-	{
-		$the_ret = lang_get($params['s'], $myLocale);
-		return $the_ret;
-	}
+  {
+  $myLocale=isset($params['locale']) ? $params['locale'] : null;
+  if(  isset($params['var']) )
+  {
+    $labels2translate=explode(',',$params['s']);
+    if( count($labels2translate) == 1)
+    {
+      $myLabels=lang_get($params['s'], $myLocale);
+    }
+    else
+    {
+      $myLabels=array();
+      foreach($labels2translate as $str)
+      {
+        $str2search=trim($str);
+        $myLabels[$str2search]=lang_get($str2search, $myLocale);
+      }
+    }
+    $smarty->assign($params['var'], $myLabels);
+  }
+  else
+  {
+    $the_ret = lang_get($params['s'], $myLocale);
+    return $the_ret;
+  }
 }
 
 
@@ -203,52 +203,52 @@ function lang_get_smarty($params, &$smarty)
  * to be used by lang_get
  */
 function lang_load( $p_lang ) {
-	global $g_lang_strings, $g_active_language;
-	global $TLS_STRINGFILE_CHARSET;
+  global $g_lang_strings, $g_active_language;
+  global $TLS_STRINGFILE_CHARSET;
 
-	$g_active_language  = $p_lang;
+  $g_active_language  = $p_lang;
 
-	if ( isset( $g_lang_strings[ $p_lang ] ) ) {
-		return;
-	}
+  if ( isset( $g_lang_strings[ $p_lang ] ) ) {
+    return;
+  }
 
-	$t_lang_dir_base = TL_ABS_PATH . 'locale' . DIRECTORY_SEPARATOR;
-	$lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'strings.txt';
-	if (file_exists($lang_resource_path))
-	{
-		require($lang_resource_path);
-	}
-	else
-	{
-		require($t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'strings.txt');
+  $t_lang_dir_base = TL_ABS_PATH . 'locale' . DIRECTORY_SEPARATOR;
+  $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'strings.txt';
+  if (file_exists($lang_resource_path))
+  {
+    require($lang_resource_path);
+  }
+  else
+  {
+    require($t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'strings.txt');
     }
     
-	$lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'description.php';
-	if (file_exists($lang_resource_path))
-	{
-		require($lang_resource_path );
-	}
-	else
-	{
-		require($t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'description.php');
+  $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'description.php';
+  if (file_exists($lang_resource_path))
+  {
+    require($lang_resource_path );
+  }
+  else
+  {
+    require($t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'description.php');
     }
     
-	// Allow overriding strings declared in the language file.
-	// custom_strings_inc.php can use $g_active_language
-	$lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'custom_strings.txt';
-	if (file_exists( $lang_resource_path ) ) {
-	     require_once( $lang_resource_path );
-	}
+  // Allow overriding strings declared in the language file.
+  // custom_strings_inc.php can use $g_active_language
+  $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'custom_strings.txt';
+  if (file_exists( $lang_resource_path ) ) {
+       require_once( $lang_resource_path );
+  }
 
-	$t_vars = get_defined_vars();
-	foreach( array_keys($t_vars) as $t_var ) 
-	{
-		$t_lang_var = preg_replace( '/^TLS_/', '', $t_var );
-		if ( $t_lang_var != $t_var) 
-		{
-			$g_lang_strings[$p_lang][$t_lang_var] = $$t_var;
-		}
-	}
+  $t_vars = get_defined_vars();
+  foreach( array_keys($t_vars) as $t_var ) 
+  {
+    $t_lang_var = preg_replace( '/^TLS_/', '', $t_var );
+    if ( $t_lang_var != $t_var) 
+    {
+      $g_lang_strings[$p_lang][$t_lang_var] = $$t_var;
+    }
+  }
 }
 
 
@@ -256,11 +256,11 @@ function lang_load( $p_lang ) {
  * Ensures that a language file has been loaded
  */
 function lang_ensure_loaded( $p_lang ) {
-	global $g_lang_strings;
+  global $g_lang_strings;
 
-	if ( !isset( $g_lang_strings[ $p_lang ] ) ) {
-		lang_load( $p_lang );
-	}
+  if ( !isset( $g_lang_strings[ $p_lang ] ) ) {
+    lang_load( $p_lang );
+  }
 }
 
 
@@ -272,11 +272,11 @@ function lang_ensure_loaded( $p_lang ) {
  **/
 function localize_array( $input_array ) {
 
-	foreach ($input_array as &$value) {
-    	$value = lang_get($value);
-	}
+  foreach ($input_array as &$value) {
+      $value = lang_get($value);
+  }
 
-	return $input_array;
+  return $input_array;
 }
 
 
@@ -284,9 +284,9 @@ function localize_array( $input_array ) {
  * Translate array of TLS keys to array of localized labels
  * 
  * @param array $map_code_label map 
- *			 key=code
+ *       key=code
  *           value: string_to_translate, that can be found in strings.txt
- *			 if is_null(value), then key will be used as string_to_translate 
+ *       if is_null(value), then key will be used as string_to_translate 
  *
  * @return array  map key=code
  *             value: lang_get(string_to_translate)
@@ -295,12 +295,12 @@ function localize_array( $input_array ) {
  */
 function init_labels($label2translate)
 {
-	$ret = array();
-	foreach($label2translate as $key => $label)
-	{
-		$ret[$key] = is_null($label) ? lang_get($key) : lang_get($label);
-	}
-	return $ret;
+  $ret = array();
+  foreach($label2translate as $key => $label)
+  {
+    $ret[$key] = is_null($label) ? lang_get($key) : lang_get($label);
+  }
+  return $ret;
 }
 
 
@@ -320,7 +320,7 @@ function init_labels($label2translate)
  */
 function localize_date_smarty($params, &$smarty)
 {
-	return localize_dateOrTimeStamp($params,$smarty,'date_format',$params['d']);
+  return localize_dateOrTimeStamp($params,$smarty,'date_format',$params['d']);
 }
 
 
@@ -330,7 +330,7 @@ function localize_date_smarty($params, &$smarty)
  */
 function localize_timestamp_smarty($params, &$smarty)
 {
-	return localize_dateOrTimeStamp($params,$smarty,'timestamp_format',$params['ts']);
+  return localize_dateOrTimeStamp($params,$smarty,'timestamp_format',$params['ts']);
 }
 
 
@@ -341,26 +341,38 @@ function localize_timestamp_smarty($params, &$smarty)
  * @param $what: give info about what kind of value is contained in value.
  *              possible values: timestamp_format || date_format
  * @param $value: must be a date or time stamp in ISO format
+ *                since TestLink 1.9.6
+ *                also this format (that seems to be generated by MSSQL PHP drivers)
+ *                is supported  YYYY-MM-DDTHH:MM:SSZ
  * 
  * @return string localized date or time
+ *
+ * @internal revisions
+ * @since 1.9.6
+ * 20130202 - franciscom - TICKET 
  */
 function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
 {
-	// to supress E_STRICT messages
-	setlocale(LC_ALL, TL_DEFAULT_LOCALE);
+  // to supress E_STRICT messages
+  setlocale(LC_ALL, TL_DEFAULT_LOCALE);
 
-	$format = config_get($what);
-	if (!is_numeric($value))
-	{
-		$value = strtotime($value);
-	}
-	
-	$retVal = strftime($format, $value);
-	if(isset($params['var']))
-	{
-		$smarty->assign($params['var'],$retVal);
-	}
-	return $retVal;
+  $format = config_get($what);
+  if (!is_numeric($value))
+  {
+    // in order to manage without error what seems to be 
+    // a MSSQL PHP Drivers format
+    // YYYY-MM-DDTHH:MM:SSZ
+    //
+    $value = trim(str_replace(array('T','Z'), ' ',$value));
+    $value = strtotime($value);
+  }
+  
+  $retVal = strftime($format, $value);
+  if(isset($params['var']))
+  {
+    $smarty->assign($params['var'],$retVal);
+  }
+  return $retVal;
 }
 
 ?>

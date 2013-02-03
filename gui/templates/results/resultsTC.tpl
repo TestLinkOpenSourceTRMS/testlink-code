@@ -6,6 +6,7 @@ show Test Results and Metrics
 
 @internal revisions
 @since 1.9.6 
+20130203 - franciscom - TICKET 0005516
 *}
 
 {lang_get var="labels"
@@ -33,6 +34,9 @@ show Test Results and Metrics
 <form name="resultsTC" id="resultsTC" METHOD="POST"
       action="lib/results/resultsTC.php?format=3&tplan_id={$gui->tplan_id}&tproject_id={$gui->tproject_id}">
 <h1 class="title">{$gui->title|escape}
+  {if $gui->apikey != ''}
+  <input type="hidden" name="apikey" id="apikey" value="{$gui->apikey}">
+  {/if}
   <input type="image" name="exportSpreadSheet" id="exportSpreadSheet" 
          src="{$tlImages.export_excel}" title="{$labels.export_as_spreadsheet}">
 </form>

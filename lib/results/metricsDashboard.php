@@ -358,6 +358,7 @@ function init_args(&$dbHandler)
                    "show_only_active_hidden" => array(tlInputParameter::CB_BOOL));
 
   R_PARAMS($iParams,$args);
+  
   if( !is_null($args->apikey) )
   {
     $args->show_only_active = true;
@@ -373,7 +374,7 @@ function init_args(&$dbHandler)
   {
     testlinkInitPage($dbHandler,false,false,"checkRights");  
 	  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
- }
+  }
   
   if($args->tproject_id <= 0)
   {
@@ -391,7 +392,7 @@ function init_args(&$dbHandler)
   $args->direct_link_ok = true;
   if( strlen(trim($args->user->userApiKey)) == 32)
   {
-    $args->direct_link = $_SESSION['basehref'] . "lib/results/metricsDashboard.php?" .
+    $args->direct_link = $_SESSION['basehref'] . "lnl.php?type=metricsdashboard&" .
                          "apikey={$args->user->userApiKey}&tproject_id={$args->tproject_id}";
   }
   else
@@ -448,7 +449,6 @@ function checkRights(&$db,&$user,$context = null)
     $context->tproject_id = $context->tplan_id = null;
     $context->getAccessAttr = false; 
   }
-
   $checkOrMode = array('testplan_metrics','testplan_execute');
   foreach($checkOrMode as $right)
   {

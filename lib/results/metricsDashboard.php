@@ -24,6 +24,7 @@ $gui = new stdClass();
 $gui->tproject_name = $args->tproject_name;
 $gui->show_only_active = $args->show_only_active;
 $gui->direct_link = $args->direct_link;
+$gui->direct_link_ok = $args->direct_link_ok;
 
 $result_cfg = config_get('results');
 $show_all_status_details = config_get('metrics_dashboard')->show_test_plan_status;
@@ -385,8 +386,19 @@ function init_args(&$dbHandler)
 
   $args->user = $_SESSION['currentUser'];
 	$args->currentUserID = $args->user->dbID;
-  $args->direct_link = $_SESSION['basehref'] . "lib/results/metricsDashboard.php?" .
-                       "apikey={$args->user->userApiKey}&tproject_id={$args->tproject_id}";
+  
+  // I'm sorry for MAGIC
+  $args->direct_link_ok = true;
+  if( strlen(trim($args->user->userApiKey)) == 32)
+  {
+    $args->direct_link = $_SESSION['basehref'] . "lib/results/metricsDashboard.php?" .
+                         "apikey={$args->user->userApiKey}&tproject_id={$args->tproject_id}";
+  }
+  else
+  {
+    $args->direct_link_ok = false;
+    $args->direct_link = lang_get('can_not_create_direct_link');
+  }  
 
 	if ($args->show_only_active) 
 	{

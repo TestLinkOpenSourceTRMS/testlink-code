@@ -1068,6 +1068,29 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
   	$_SESSION['userID'] = $userObj->dbID;
   	$_SESSION['locale'] = $userObj->locale;
 
+    // if user do this:
+    // 1. login to test link
+    // 2. get direct link and open in new tab or new window while still logged 
+    // 3. logout
+    // If user refresh tab / window open on (2), because on (3) we destroyed
+    // session we have loose basehref, and we are not able to recreate it.
+    // Without basehref we are not able to get CSS, JS, etc.
+    // In this situation we destroy session, this way user is forced to login
+    // again in one of two ways
+    // a. using the direct link
+    // b. using traditional login
+    // In both way we assure that behaivour will be OK.
+    //
+    if(!isset($_SESSION['basehref']))
+    {
+      session_unset();
+      session_destroy();
+      redirect($rightsCheck->redirect_target);
+      exit();
+    }  
+ 
+
+
 	  if(!is_null($rightsCheck))
 	  {
 		  checkUserRightsFor($dbHandler,$rightsCheck,true);

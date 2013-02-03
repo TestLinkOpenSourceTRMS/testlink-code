@@ -250,7 +250,9 @@ function init_args(&$dbHandler)
     $cerbero->args->tplan_id = $args->tplan_id;
     $cerbero->args->getAccessAttr = true;
     $cerbero->method = 'checkRights';
+    $cerbero->redirect_target = "../../login.php?note=logout";
     setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);  
+ 
   }
   else
   {

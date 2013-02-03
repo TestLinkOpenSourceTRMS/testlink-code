@@ -361,6 +361,7 @@ function init_args(&$dbHandler)
   
   if( !is_null($args->apikey) )
   {
+  
     $args->show_only_active = true;
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
@@ -368,7 +369,28 @@ function init_args(&$dbHandler)
     $cerbero->args->tplan_id = $args->tplan_id;
     $cerbero->args->getAccessAttr = true;
     $cerbero->method = 'checkRights';
-    setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);  
+    setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
+
+    // if user do this:
+    // 1. login to test link
+    // 2. get direct link and open in new tab or new window while still logged 
+    // 3. logout
+    // If user refresh tab / window open on (2), because on (3) we destroyed
+    // session we have loose basehref, and we are not able to recreate it.
+    // Without basehref we are not able to get CSS, JS, etc.
+    // In this situation we destroy session, this way user is forced to login
+    // again in one of two ways
+    // a. using the direct link
+    // b. using traditional login
+    // In both way we assure that behaivour will be OK.
+    //
+    if(!isset($_SESSION['basehref']))
+    {
+      session_unset();
+      session_destroy();
+      redirect("../../login.php?note=logout");
+      exit();
+    }  
   }
   else
   {

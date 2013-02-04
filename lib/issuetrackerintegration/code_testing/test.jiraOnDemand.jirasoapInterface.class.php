@@ -45,7 +45,7 @@ var_dump($its->isConnected());
 if( $its->isConnected() )
 {
   echo 'Get Issue Summary<br>';
-	var_dump($its->getIssue('ZOFF-15'));
+	var_dump($its->getIssue('ZOFF-25'));
   echo '<br>';
 
 	// echo '<b>Connected !</br></b>';
@@ -62,11 +62,11 @@ if( $its->isConnected() )
 // I watched C-beams glitter in the dark near the Tannhauser gate. 
 // All those moments will be lost in time... like tears in rain... Time to die. 	
 //
-	//$issue = array('project' => 'ZOFF','summary' => 'My Firts ISSUE VIA API',
-  //               'description' => 'Do Androids Dream of Electric Sheep?',
-  //               'type' => 1);
-	// $zorro = $its->addIssue($issue);
-	// var_dump($zorro);
+  $issue = array('project' => 'ZOFF','summary' => 'My Firts ISSUE VIA API',
+                 'description' => 'Do Androids Dream of Electric Sheep?',
+                 'type' => 1, 'components' => array( array('id' => '10100'), array('id' => '10101')));
+ $zorro = $its->addIssueFromArray($issue);
+ var_dump($zorro);
 
 
 	/*

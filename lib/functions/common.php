@@ -1085,7 +1085,16 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
     {
       session_unset();
       session_destroy();
-      redirect($rightsCheck->redirect_target);
+      if(property_exists($rightsCheck, 'redirect_target') && !is_null($rightsCheck->redirect_target))
+      {
+      	redirect($rightsCheck->redirect_target);	
+      }	
+      else
+      {
+      	// best guess for all features that live on ./lib/results/
+      	redirect("../../login.php?note=logout");	
+      }	
+      	
       exit();
     }  
  

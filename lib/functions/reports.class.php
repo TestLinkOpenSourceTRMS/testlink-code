@@ -69,7 +69,7 @@ class tlReports extends tlObjectWithDB
 	 * 
 	 * @return array of array - described for array $g_reports_list in const.inc.php
 	 **/
-	public function get_list_reports($context,$bug_interface_enabled, $req_mgmt_enabled, $format)
+   public function get_list_reports($context,$bug_interface_enabled, $req_mgmt_enabled, $format)
 	{
 		$reportList = config_get('reports_list');
 		$items = array();
@@ -79,8 +79,8 @@ class tlReports extends tlObjectWithDB
     $apiKeyIsValid = (strlen(trim($context->apikey)) == 32); // I'm sorry for MAGIC
     
     $xdx = 0;
-		foreach ($reportList as &$reportItem) 
-		{
+    foreach ($reportList as &$reportItem) 
+    {
 
 			// check validity of report		
 			if (($reportItem['enabled'] == 'all') || 

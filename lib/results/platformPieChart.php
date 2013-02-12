@@ -3,15 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource	platformPieChart.php
- * @package 	TestLink
- * @author 		franciscom
- * @copyright 	2005-2012, TestLink community
- * @copyright 	
- * @link 		http://www.teamst.org/index.php
+ * @filesource  platformPieChart.php
+ * @package     TestLink
+ * @author      franciscom
+ * @copyright   2005-2013, TestLink community
+ * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.4
+ * @since 1.9.6
+ * 20130123 - franciscom - TICKET 5481: Error in pie chart for platforms without testcases
  *
 **/
 require_once('../../config.inc.php');
@@ -26,7 +26,23 @@ $chart_cfg = $resultsCfg['charts']['dimensions']['platformPieChart'];
 $args = init_args();
 $metricsMgr = new tlTestPlanMetrics($db);
 $dummy = $metricsMgr->getStatusTotalsByPlatformForRender($args->tplan_id);
-$totals = $dummy->info[$args->platform_id]['details'];
+
+// if platform has no test case assigned $dummy->info[$args->platform_id] does not exists
+if( isset($dummy->info[$args->platform_id]) )
+{
+  $totals = $dummy->info[$args->platform_id]['details'];
+}
+else
+{
+  // create empty set
+  $status = $metricsMgr->getStatusForReports();
+  foreach($status as $statusVerbose)
+  {
+    $totals[$statusVerbose] = array('qty' => 0, 'percentage' => 0);
+  }
+  unset($status);
+}
+
 unset($dummy);
 unset($metricsMgr);
 
@@ -40,8 +56,8 @@ foreach($totals as $key => $value)
     $labels[] = lang_get($resultsCfg['status_label'][$key]) . " ($value)";
     if( isset($resultsCfg['charts']['status_colour'][$key]) )
     {
-    	$series_color[] = $resultsCfg['charts']['status_colour'][$key];
-    }	
+      $series_color[] = $resultsCfg['charts']['status_colour'][$key];
+    }  
 }
 
 // Dataset definition    
@@ -84,7 +100,7 @@ $Test->Stroke();
 
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,'testplan_metrics');
+  return $user->hasRight($db,'testplan_metrics');
 }
 
 

@@ -787,7 +787,6 @@ class tlUser extends tlDBObject
       $accessPublic['tplan'] = $mgr->getPublicAttr($testPlanID);
       unset($mgr);
     }
-    
     $allRights = $globalRights;
       
     $userTestProjectRoles = $this->tprojectRoles;
@@ -814,32 +813,31 @@ class tlUser extends tlDBObject
         return false;      
       }  
     }
-    
-    
-    /* if $tplanID == -1 we dont check rights at tp level! */
-    if (isset($userTestPlanRoles[$testPlanID]))
-    {
-      $userTestPlanRights = (array) $userTestPlanRoles[$testPlanID]->rights;
-      $testPlanRights = array();
-      foreach($userTestPlanRights as $right)
-      {
-        $testPlanRights[] = $right->name;
-      }
-      //subtract test projects rights    
-      $testPlanRights = array_diff($testPlanRights,array_keys($g_propRights_product));
-      
-      propagateRights($allRights,$g_propRights_product,$testPlanRights);
-      $allRights = $testPlanRights;
-    }
-    else
-    {
-      if(!is_null($accessPublic) && $accessPublic['tplan'] == 0)
-      {
-        return false;      
-      }  
-    }
-    
 
+    if( $testPlanID > 0)
+    {
+      if (isset($userTestPlanRoles[$testPlanID]))
+      {
+        $userTestPlanRights = (array) $userTestPlanRoles[$testPlanID]->rights;
+        $testPlanRights = array();
+        foreach($userTestPlanRights as $right)
+        {
+          $testPlanRights[] = $right->name;
+        }
+        //subtract test projects rights    
+        $testPlanRights = array_diff($testPlanRights,array_keys($g_propRights_product));
+        
+        propagateRights($allRights,$g_propRights_product,$testPlanRights);
+        $allRights = $testPlanRights;
+      }
+      else
+      {
+        if(!is_null($accessPublic) && $accessPublic['tplan'] == 0)
+        {
+          return false;      
+        }  
+      }
+    }
     return checkForRights($allRights,$roleQuestion);
   }
 

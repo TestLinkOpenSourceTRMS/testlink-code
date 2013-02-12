@@ -28,10 +28,11 @@ class jirasoapInterface extends issueTrackerInterface
 	
 	private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
   private $issueDefaults;
+  private $issueAttr = null;
 
 	var $defaultResolvedStatus;
 	var $support;
-	
+
 	/**
 	 * Construct and connect to BTS.
 	 *
@@ -68,6 +69,8 @@ class jirasoapInterface extends issueTrackerInterface
 	 **/
 	function completeCfg()
 	{
+    var_dump($this->cfg);
+
 		$base = trim($this->cfg->uribase,"/") . '/' ;
 	  if( !property_exists($this->cfg,'uriwsdl') )
 	  {
@@ -84,11 +87,41 @@ class jirasoapInterface extends issueTrackerInterface
 	    	$this->cfg->uricreate = $base . 'secure/CreateIssue!default.jspa';
 		}	    
 
-		$this->issueDefaults = array('issuetype' => 1);
+
+    if( property_exists($this->cfg,'attributes') )
+    {
+      $attr = get_object_vars($this->cfg->attributes);
+      foreach ($attr as $name => $elem) 
+      {
+        $name = (string)$name;
+        if( is_object($elem) )
+        {
+           $elem = get_object_vars($elem);
+           $cc = current($elem);
+           $kk = key($elem); 
+           foreach($cc as $value)
+           {
+              $this->issueAttr[$name][] = array($kk => (string)$value); 
+           }
+        } 
+        else
+        {
+          $this->issueAttr[$name] = (string)$elem;     
+        } 
+      }
+    }     
+
+    $this->issueDefaults = array('issuetype' => 1);
     foreach($this->issueDefaults as $prop => $default)
     {
-  	  $this->cfg->$prop = (string)(property_exists($this->cfg,$prop) ? $this->cfg->$prop : $default);
-    }		
+      if(!isset($this->issueAttr[$prop]))
+      {
+        $this->issueAttr[$prop] = $default;
+      }  
+      // $this->cfg->$prop = (string)(property_exists($this->cfg,$prop) ? $this->cfg->$prop : $default);
+    }   
+
+
 	}
 	
 	
@@ -238,6 +271,8 @@ class jirasoapInterface extends issueTrackerInterface
 	              "<!-- Configure This if you want be able TO CREATE ISSUES -->\n" .
                 "<projectkey>JIRA PROJECT KEY</projectkey>\n" .
                 "<issuetype>JIRA ISSUE TYPE</issuetype>\n" .
+                "<!-- Configure This if you need to provide other attributes -->\n" .
+                "<!-- <attributes><components><id>10100</id><id>10101</id></components></attributes>  -->\n" .
 	              "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
                 "<resolvedstatus>\n" .
                 "<status><code>5</code><verbose>Resolved</verbose></status>\n" .
@@ -280,6 +315,10 @@ class jirasoapInterface extends issueTrackerInterface
                      'summary' => $summary,
                      'description' => $description);
 
+      if(!is_null($this->issueAttr))
+      {
+        $issue = array_merge($issue,$this->issueAttr);
+      }  
       $op = $this->APIClient->createIssue($this->authToken, $issue);
       $ret = array('status_ok' => true, 'id' => $op->key, 
                    'msg' => sprintf(lang_get('jira_bug_created'),$summary,$issue['project']));
@@ -312,6 +351,24 @@ class jirasoapInterface extends issueTrackerInterface
     }
     $this->resolvedStatus->byName = array_flip($this->resolvedStatus->byCode);
   }
+
+  public function addIssueFromArray($issue)
+  {
+    try
+    {
+
+      $op = $this->APIClient->createIssue($this->authToken, $issue);
+      $ret = array('status_ok' => true, 'id' => $op->key, 
+                   'msg' => sprintf(lang_get('jira_bug_created'),$summary,$issue['project']));
+    }
+    catch (Exception $e)
+    {
+      $msg = "Create JIRA Ticket FAILURE => " . $e->getMessage();
+      tLog($msg, 'WARNING');
+      $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+    }
+    return $ret;
+  }  
 
 
 }

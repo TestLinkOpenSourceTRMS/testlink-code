@@ -22,6 +22,10 @@ $cfg =  "<issuetracker>\n" .
 		"<uriwsdl>http://testlink.atlassian.net/rpc/soap/jirasoapservice-v2?wsdl</uriwsdl>\n" .
 		"<uriview>http://testlink.atlassian.net/browse/</uriview>\n" .
 		"<uricreate>http://testlink.atlassian.net/secure/CreateIssue!default.jspa</uricreate>\n" .
+        "<projectkey>ZOFF</projectkey>\n" .
+        "<issuetype>1</issuetype>\n" .
+		"<attributes><components><id>10100</id><id>10101</id></components>\n" .
+		"</attributes>\n" .
 		"</issuetracker>\n";
 
 echo '<hr><br>';
@@ -45,7 +49,7 @@ var_dump($its->isConnected());
 if( $its->isConnected() )
 {
   echo 'Get Issue Summary<br>';
-	var_dump($its->getIssue('ZOFF-15'));
+	var_dump($its->getIssue('ZOFF-25'));
   echo '<br>';
 
 	// echo '<b>Connected !</br></b>';
@@ -62,11 +66,16 @@ if( $its->isConnected() )
 // I watched C-beams glitter in the dark near the Tannhauser gate. 
 // All those moments will be lost in time... like tears in rain... Time to die. 	
 //
-	//$issue = array('project' => 'ZOFF','summary' => 'My Firts ISSUE VIA API',
+  //$issue = array('project' => 'ZOFF','summary' => 'My Firts ISSUE VIA API',
   //               'description' => 'Do Androids Dream of Electric Sheep?',
-  //               'type' => 1);
-	// $zorro = $its->addIssue($issue);
-	// var_dump($zorro);
+  //               'type' => 1, 'components' => array( array('id' => '10100'), array('id' => '10101')));
+  // $zorro = $its->addIssueFromArray($issue);
+  // var_dump($zorro);
+  $issue = array('summary' => 'Issue Via API 2013-02-04','description' => 'Do Androids Dream of Electric Sheep?');
+  //               'type' => 1, 'components' => array( array('id' => '10100'), array('id' => '10101')));
+  
+  $zorro = $its->addIssue($issue['summary'],$issue['description']);
+  var_dump($zorro);
 
 
 	/*

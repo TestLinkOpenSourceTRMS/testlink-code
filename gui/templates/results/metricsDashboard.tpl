@@ -39,10 +39,14 @@ Ext.onReady(function() {ldelim}
 <body>
 <h1 class="title">{$labels.testproject} {$smarty.const.TITLE_SEP} {$gui->tproject_name|escape}</h1>
 <div class="workBack">
-{$tlImages.toggle_direct_link} &nbsp;<br>
+{$tlImages.toggle_direct_link} &nbsp;&nbsp;
 <div class="direct_link" style='display:none'>
-<a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a><p></div>
-
+{if $gui->direct_link_ok}  
+  <a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a>
+{else}
+  {$gui->direct_link}
+{/if}
+</div>
 <p><form method="post">
 <input type="checkbox" name="show_only_active" value="show_only_active"
        {if $gui->show_only_active} checked="checked" {/if}

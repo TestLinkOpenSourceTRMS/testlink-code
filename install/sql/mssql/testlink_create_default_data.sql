@@ -75,8 +75,8 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (29,'keyword_assignment');
 INSERT INTO /*prefix*/rights (id,description) VALUES (30,'mgt_unfreeze_req');
 INSERT INTO /*prefix*/rights (id,description) VALUES (31,'issuetracker_management');
 INSERT INTO /*prefix*/rights (id,description) VALUES (32,'issuetracker_view');
-INSERT INTO /*prefix*/rights (id,description) VALUES (31,'reqmgrsystem_management');
-INSERT INTO /*prefix*/rights (id,description) VALUES (32,'reqmgrsystem_view');
+INSERT INTO /*prefix*/rights (id,description) VALUES (33,'reqmgrsystem_management');
+INSERT INTO /*prefix*/rights (id,description) VALUES (34,'reqmgrsystem_view');
 
 
 

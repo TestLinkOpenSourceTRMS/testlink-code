@@ -10,6 +10,7 @@
 *
 * @internal revisions
 * @since 1.9.6
+* 20130203 - franciscom - TICKET 5516
 * 20121224 - franciscom - TICKET 5440: Test result matrix - add export on spreadsheet format
 */
 require('../../config.inc.php');
@@ -238,16 +239,20 @@ function init_args(&$dbHandler)
 
   $args = new stdClass();
   R_PARAMS($iParams,$args);
+  //var_dump($args);
 
   if( !is_null($args->apikey) )
   {
+    //var_dump($args);
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
     $cerbero->args->tproject_id = $args->tproject_id;
     $cerbero->args->tplan_id = $args->tplan_id;
     $cerbero->args->getAccessAttr = true;
     $cerbero->method = 'checkRights';
+    $cerbero->redirect_target = "../../login.php?note=logout";
     setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);  
+ 
   }
   else
   {
@@ -403,6 +408,9 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
 
   $guiObj->tproject_id = $argsObj->tproject_id;
   $guiObj->tplan_id = $argsObj->tplan_id;
+
+  // 20130203
+  $guiObj->apikey = $argsObj->apikey;
 
 
   $tproject_mgr = new testproject($dbHandler);

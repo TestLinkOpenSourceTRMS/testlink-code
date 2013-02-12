@@ -24,6 +24,7 @@ $gui = new stdClass();
 $gui->tproject_name = $args->tproject_name;
 $gui->show_only_active = $args->show_only_active;
 $gui->direct_link = $args->direct_link;
+$gui->direct_link_ok = $args->direct_link_ok;
 
 $result_cfg = config_get('results');
 $show_all_status_details = config_get('metrics_dashboard')->show_test_plan_status;
@@ -357,8 +358,10 @@ function init_args(&$dbHandler)
                    "show_only_active_hidden" => array(tlInputParameter::CB_BOOL));
 
   R_PARAMS($iParams,$args);
+  
   if( !is_null($args->apikey) )
   {
+  
     $args->show_only_active = true;
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
@@ -366,13 +369,15 @@ function init_args(&$dbHandler)
     $cerbero->args->tplan_id = $args->tplan_id;
     $cerbero->args->getAccessAttr = true;
     $cerbero->method = 'checkRights';
-    setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);  
+    $cerbero->redirect_target = "../../login.php?note=logout";
+    setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
+
   }
   else
   {
     testlinkInitPage($dbHandler,false,false,"checkRights");  
 	  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
- }
+  }
   
   if($args->tproject_id <= 0)
   {
@@ -385,8 +390,19 @@ function init_args(&$dbHandler)
 
   $args->user = $_SESSION['currentUser'];
 	$args->currentUserID = $args->user->dbID;
-  $args->direct_link = $_SESSION['basehref'] . "lib/results/metricsDashboard.php?" .
-                       "apikey={$args->user->userApiKey}&tproject_id={$args->tproject_id}";
+  
+  // I'm sorry for MAGIC
+  $args->direct_link_ok = true;
+  if( strlen(trim($args->user->userApiKey)) == 32)
+  {
+    $args->direct_link = $_SESSION['basehref'] . "lnl.php?type=metricsdashboard&" .
+                         "apikey={$args->user->userApiKey}&tproject_id={$args->tproject_id}";
+  }
+  else
+  {
+    $args->direct_link_ok = false;
+    $args->direct_link = lang_get('can_not_create_direct_link');
+  }  
 
 	if ($args->show_only_active) 
 	{
@@ -436,7 +452,6 @@ function checkRights(&$db,&$user,$context = null)
     $context->tproject_id = $context->tplan_id = null;
     $context->getAccessAttr = false; 
   }
-
   $checkOrMode = array('testplan_metrics','testplan_execute');
   foreach($checkOrMode as $right)
   {

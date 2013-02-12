@@ -6,14 +6,14 @@
  * Manages test plans
  *
  * @package 	TestLink
- * @copyright 2007-2012, TestLink community 
+ * @copyright 2007-2013, TestLink community 
  * @version   planEdit.php
  * @link 		  http://www.teamst.org/index.php
  *
  *
  * @internal revisions
- * @since 1.9.5
- *
+ * @since 1.9.6
+ * 20130212 - franciscom - TICKET 5518: error message while trying to activate existing inactive Test Plans.
  **/
 
 require_once('../../config.inc.php');
@@ -205,7 +205,8 @@ switch($args->do_action)
    case "list":
         $do_display=true;
         $template = is_null($template) ? 'planView.tpl' : $template;
-        $gui->tplans = $args->user->getAccessibleTestPlans($db,$args->tproject_id,null,array('output' =>'mapfull'));
+        $gui->tplans = $args->user->getAccessibleTestPlans($db,$args->tproject_id,null,
+                                                           array('output' =>'mapfull','active' => null));
         $gui->drawPlatformQtyColumn = false;
 
 		if( !is_null($gui->tplans) )
@@ -324,7 +325,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
     $guiObj->tproject_id = $argsObj->tproject_id; 
     $guiObj->editorType = $editorCfg['type'];
     $guiObj->tplans = $argsObj->user->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,
-                                                             null,array('output' =>'mapfull'));
+                                                             null,array('output' =>'mapfull','active' => null));
     $guiObj->tproject_name = $argsObj->tproject_name;
     $guiObj->main_descr = lang_get('testplan_title_tp_management'). " - " .
                          lang_get('testproject') . ' ' . $argsObj->tproject_name;
@@ -342,6 +343,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
     
     $guiObj->attachments[$guiObj->tplan_id] = getAttachmentInfosFrom($tplan_mgr,$guiObj->tplan_id);
     $guiObj->attachmentTableName = $tplan_mgr->getAttachmentTableName();
+    
     
     return $guiObj;
 }

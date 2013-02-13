@@ -106,8 +106,12 @@ abstract class issueTrackerInterface
       $msg = $signature . " - Exception loading XML STRING\n";
       $msg .= 'Message: ' .$e->getMessage();
     }
-    
-    return is_null($msg);
+
+    if( !($retval = is_null($msg)) )
+    {
+      tLog(__METHOD__ . $msg, 'ERROR');  
+    }  
+    return $retval;
 	}
 
 	/**

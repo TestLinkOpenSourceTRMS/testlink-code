@@ -19,7 +19,7 @@
  *		provided very useful simple curl php usage examples
  *
  * @internal revisions
- * @since 1.9.5
+ * @since 1.9.6
  * 
 **/
 require_once(TL_ABS_PATH . "/third_party/youtrackclient/src/youtrackclient.php");
@@ -41,16 +41,19 @@ class youtrackrestInterface extends issueTrackerInterface
 	{
 		$this->interfaceViaDB = false;
 		$this->methodOpt = array('buildViewBugLink' => array('addSummary' => true, 'colorByStatus' => true));
-	  $this->setCfg($config);
-	  $this->completeCfg();
-	  $this->connect();
+    $this->connected = false;
+	  if( $this->setCfg($config) )
+    {  
+      $this->completeCfg();
+      $this->connect();
+    }  
 	}
 
 	/**
-     * useful for testing 
-     *
-     *
-     **/
+   * useful for testing 
+   *
+   *
+   **/
 	function getAPIClient()
 	{
 		return $this->APIClient;
@@ -59,7 +62,7 @@ class youtrackrestInterface extends issueTrackerInterface
     /**
      * checks id for validity
      *
-	 * @param string issueID
+	   * @param string issueID
      *
      * @return bool returns true if the bugid has the right format, false else
      **/
@@ -76,24 +79,17 @@ class youtrackrestInterface extends issueTrackerInterface
      **/
     function connect()
     {
-		try
-		{
-			$this->APIClient = new \YouTrack\Connection($this->cfg->uribase, 
-														$this->cfg->username, $this->cfg->password);
-			
-			// echo __METHOD__ . '<br>';
-			// foreach(array('uribase','username','password') as $dk)
-			// {
-			//	echo "$dk =>" . (string) $this->cfg->$dk . '<br>';
-			// }
-			
-	       	$this->connected = true;
-        }
-		catch(Exception $e)
-		{
-			$this->connected = false;
-            tLog(__METHOD__ . $e->getMessage(), 'ERROR');
-		}
+		  try
+		  {
+        $this->APIClient = new \YouTrack\Connection($this->cfg->uribase, 
+														                        $this->cfg->username, $this->cfg->password);
+	      $this->connected = true;
+      }
+		  catch(Exception $e)
+		  {
+        $this->connected = false;
+        tLog(__METHOD__ . $e->getMessage(), 'ERROR');
+		  }
     }
 
     /**

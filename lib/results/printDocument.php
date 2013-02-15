@@ -14,7 +14,7 @@
  *
  * @internal revisions
  * @since 1.9.6
- * 
+ * 20130215 - franciscom - TICKET 5519: Unassigned test cases to a platform show up in "test plan report"
  *
  */
 require_once('../../config.inc.php');
@@ -117,23 +117,23 @@ switch ($doc_info->type)
           foreach ($platforms as $platform_id => $platform_name)
           {
             $filters = array('platform_id' => $platform_id);  
-                     $linkedBy[$platform_id] = $tplan_mgr->getLinkedStaticView($args->tplan_id,$filters);
+            $linkedBy[$platform_id] = $tplan_mgr->getLinkedStaticView($args->tplan_id,$filters);
                     
-                     // IMPORTANTE NOTE:
-                     // We are in a loop and we use tree on prepareNode, that changes it,
-                     // then we can not use anymore a reference BUT WE NEED A COPY.
-                     $tree2work = $subtree;
-                     if (!$linkedBy[$platform_id])
-                     {
-                     $tree2work['childNodes'] = null;
-                     }
+            // IMPORTANT NOTE:
+            // We are in a loop and we use tree on prepareNode, that changes it,
+            // then we can not use anymore a reference BUT WE NEED A COPY.
+            $tree2work = $subtree;
+            if (!$linkedBy[$platform_id])
+            {
+              $tree2work['childNodes'] = null;
+            }
 
-                     $dummy4reference = null;
-                     prepareNode($db,$tree2work,$decode,$dummy4reference,$dummy4reference,
-                           $linkedBy[$platform_id],$pnFilters,$pnOptions);
-                     $treeForPlatform[$platform_id] = $tree2work; 
-                 }              
-              break;
+            $dummy4reference = null;
+            prepareNode($db,$tree2work,$decode,$dummy4reference,$dummy4reference,
+            $linkedBy[$platform_id],$pnFilters,$pnOptions);
+            $treeForPlatform[$platform_id] = $tree2work; 
+          }
+          break;
              
         case 'testsuite':
           $linkedBy = array();
@@ -188,17 +188,16 @@ switch ($doc_info->type)
                         $pnOptions =  array('hideTestCases' => 0);
                         $pnOptions = array_merge($pnOptions, $my['options']['prepareNode']);
             $dummy4reference = null;
-            prepareNode($db,$tInfo,$decode,$dummy4reference,$dummy4reference,
-                        $linkedBy[$platform_id],$pnFilters,$pnOptions);
+            $treeForPlatform[$platform_id]['childNodes'] = array();
+            if(!is_null($linkedBy[$platform_id]))
+            {
+              prepareNode($db,$tInfo,$decode,$dummy4reference,$dummy4reference,
+                          $linkedBy[$platform_id],$pnFilters,$pnOptions);
             
-            $treeForPlatform[$platform_id]['childNodes'] = array($tInfo);   
+              $treeForPlatform[$platform_id]['childNodes'] = array($tInfo);   
+            }
           }
           $items2use->realExecTime = $linkedBy;
-          
-          new dBug($items2use->realExecTime);
-          
-          // $items2use = $linkedBy;
-
         break;
       }  // switch($doc_info->content_range)
          
@@ -233,7 +232,7 @@ if ($treeForPlatform)
 {
   foreach ($treeForPlatform as $platform_id => $tree2work)            
   {
-    if($tree2work)
+    if(sizeof($tree2work['childNodes']) > 0)
     {
       $tree2work['name'] = $args->tproject_name;
       $tree2work['id'] = $args->tproject_id;

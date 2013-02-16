@@ -6,6 +6,7 @@ Purpose: view requirement with version management
 
 @internal revisions
 @since 1.9.6
+20130416 - franciscom - TICKET 5532: Specification: How to manage Frozen Req
 *}
 
 {lang_get s='warning_delete_requirement' var="warning_msg" }
@@ -275,7 +276,7 @@ var pF_unfreeze_req_version = unfreeze_req_version;
            args_reqspec_name=$gui->current_version[idx][0]['req_spec_title']}
   
   {assign var="downloadOnly" value=false}
-  {if $gui->grants->req_mgmt != 'yes'}
+  {if $gui->grants->req_mgmt != 'yes' || $frozen_version}
     {assign var="downloadOnly" value=true}
   {/if}
   
@@ -284,7 +285,7 @@ var pF_unfreeze_req_version = unfreeze_req_version;
   {/if} 
            
 	{* BUGID 1748 - req relations *}
-	{if $gui->req_cfg->relations->enable} {* show this part only if relation feature is enabled *}
+	{if $gui->req_cfg->relations->enable && !$frozen_version} {* show this part only if relation feature is enabled *}
 	
 		{* form to enter a new relation *}
 		<form method="post" action="lib/requirements/reqEdit.php" 

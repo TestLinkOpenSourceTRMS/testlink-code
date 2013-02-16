@@ -5,6 +5,7 @@ viewer for requirement
 
 @internal revisions
 @since 1.9.6
+20130416 - franciscom - TICKET 5532: Specification: How to manage Frozen Req
 *}
 {lang_get var="labels"
           s="requirement_spec,Requirements,scope,status,type,expected_coverage,  
@@ -193,6 +194,7 @@ viewer for requirement
       {/section}
       </form>
     {/if}
+    {if is_null($args_frozen_version) || !$args_frozen_version}
     <form style="display: inline;" id="reqAddTestCase_{$req_version_id}" name="reqAddTestCase_{$req_version_id}" 
           action="lib/requirements/reqEdit.php" method="post">
       <input type="hidden" id="atRID" name="requirement_id" value="{$args_req.id}" />
@@ -207,7 +209,7 @@ viewer for requirement
         <input type="submit" name="sex" value="{$labels.btn_save}"/>
       </div>
     </form>   
-
+    {/if}
     	  
 	  </fieldset>
 		</td>

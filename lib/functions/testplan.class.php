@@ -8,14 +8,18 @@
  *
  * @filesource  testplan.class.php
  * @package     TestLink
- * @author       franciscom
- * @copyright   2007-2012, TestLink community 
- * @link         http://www.teamst.org/index.php
+ * @author      franciscom
+ * @copyright   2007-2013, TestLink community 
+ * @link        http://www.teamst.org/index.php
  *
  *
  * @internal revisions
  * 
  * @since 1.9.6
+ * 20130416 - franciscom - TICKET 5524: Creating build using test case user assignment from existing build. 
+ *                         Newest build is not selected by default.
+ *                         get_builds_for_html_options() interface and logic changes.
+ *
  * 20121222 - franciscom - TICKET 5425: Access TO EXECUTION FROM 'Test Case Assigned to me' - 
  *                         Issues with Save and move to next" returns to the same case
  * 
@@ -1633,22 +1637,22 @@ class testplan extends tlObjectWithAttachments
           $id     : test plan id.
           [active]: default:null -> all, 1 -> active, 0 -> inactive BUILDS
           [open]  : default:null -> all, 1 -> open  , 0 -> closed/completed BUILDS
+          [opt]
   
     returns:
   
     rev :
-          20070129 - franciscom - order to ASC
-          20070120 - franciscom
-          added active, open
   */
-  function get_builds_for_html_options($id,$active=null,$open=null)
+  function get_builds_for_html_options($id,$active=null,$open=null,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $my = array();
+    $my['opt'] = array('orderByDir' => null);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
 
     $sql = " /* $debugMsg */ SELECT id, name " .
-      " FROM {$this->tables['builds']} WHERE testplan_id = {$id} ";
+           " FROM {$this->tables['builds']} WHERE testplan_id = {$id} ";
     
-    // 20070120 - franciscom
     if( !is_null($active) )
     {
       $sql .= " AND active=" . intval($active) . " ";
@@ -1658,12 +1662,18 @@ class testplan extends tlObjectWithAttachments
       $sql .= " AND is_open=" . intval($open) . " ";
     }
     
-    $sql .= " ORDER BY name ASC";
+    $orderClause = " ORDER BY name ASC";
+    if( !is_null($my['opt']['orderByDir']) )
+    {
+      $xx = explode(':',$my['opt']['orderByDir']);
+      $orderClause = 'ORDER BY ' . $xx[0] . ' ' . $xx[1];
+    }  
+    $sql .= $orderClause;
     
-    
-    // BUGID
     $recordset=$this->db->fetchColumnsIntoMap($sql,'id','name');
-    if( !is_null($recordset) )
+
+    // we will apply natsort only if order by name was requested
+    if( !is_null($recordset) && stripos($orderClause, 'name') !== FALSE)
     {
       natsort($recordset);
     }

@@ -13,7 +13,9 @@
  *
  * @internal revisions:
  * @since 1.9.6
+ * 20130416 - franciscom - TICKET 5528: Importing a requirement with CF fails after the first time
  * 20130105 - franciscom - get_coverage() added order by
+ * 
  */
 
 // Needed to use extends tlObjectWithAttachments, If not present autoload fails.
@@ -385,15 +387,15 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
-    $result['status_ok'] = 1;
-    $result['msg'] = 'ok';
+  $result['status_ok'] = 1;
+  $result['msg'] = 'ok';
     
-    $db_now = $this->db->db_now();
+  $db_now = $this->db->db_now();
    
-    // get SRSid, needed to do controls
-    $rs=$this->get_by_id($id,$version_id);
-    $req = $rs[0];
-    $srs_id=$req['srs_id'];
+  // get SRSid, needed to do controls
+  $rs=$this->get_by_id($id,$version_id);
+  $req = $rs[0];
+  $srs_id=$req['srs_id'];
     
     // try to avoid function calls when data is available on caller
   $tproject_id = is_null($tproject_id) ? $this->tree_mgr->getTreeRoot($srs_id): $tproject_id;
@@ -405,9 +407,9 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
     
   $reqdoc_id=trim_and_limit($reqdoc_id,$this->fieldSize->req_docid);
   $title=trim_and_limit($title,$this->fieldSize->req_title);
-    $chk=$this->check_basic_data($srs_id,$tproject_id,$title,$reqdoc_id,$id);
+  $chk=$this->check_basic_data($srs_id,$tproject_id,$title,$reqdoc_id,$id);
 
-    if($chk['status_ok'] || $skip_controls)
+  if($chk['status_ok'] || $skip_controls)
   {
     if( $create_revision )
     {  
@@ -1319,6 +1321,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
   static $doProcessCF = false;
   static $debugMsg;
   static $getByAttributeOpt;
+  static $getLastChildInfoOpt;  // TICKET 5528: Importing a requirement with CF fails after the first time
   
   if(is_null($linkedCF) )
   {
@@ -1326,7 +1329,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     $fieldSize = config_get('field_size');
     
     $linkedCF = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,null,
-                                   'requirement',null,'name');
+                                                                'requirement',null,'name');
     $doProcessCF = true;
 
     $messages = array();
@@ -1420,14 +1423,15 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     $last_version = $this->get_last_child_info($reqID,$getLastChildInfoOpt);
     $msgID = 'frozen_req_unable_to_import';
     $status_ok = false;
+
     if( $last_version['is_open'] == 1 || !$my['options']['skipFrozenReq'])
     {
       switch($my['options']['actionOnHit'])
       {
         case 'update_last_version':
           $result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
-                        $author_id,$req['status'],$req['type'],$req['expected_coverage'],
-                        $req['node_order']);
+                                  $author_id,$req['status'],$req['type'],$req['expected_coverage'],
+                                  $req['node_order']);
           
           $status_ok = ($result['status_ok'] == 1);
           if( $status_ok)

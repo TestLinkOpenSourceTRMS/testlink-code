@@ -12,7 +12,7 @@
  * 
  * @internal revisions
  * @since 1.9.6
- *
+ * 20130216 - franciscom - TICKET 5529: Filters are not applied to the 'Add Test Cases to Test Plan' list
  **/
 
 require_once('../../config.inc.php');
@@ -309,7 +309,7 @@ function init_args()
 	$args->feature2fix = isset($_REQUEST['feature2fix']) ? $_REQUEST['feature2fix'] : null;
 	$args->userID = $_SESSION['currentUser']->dbID;
 	$args->testerID = isset($_REQUEST['testerID']) ? intval($_REQUEST['testerID']) : 0;
-    $args->send_mail = isset($_REQUEST['send_mail']) ? $_REQUEST['send_mail'] : false;
+  $args->send_mail = isset($_REQUEST['send_mail']) ? $_REQUEST['send_mail'] : false;
 
 	// For more information about the data accessed in session here, see the comment
 	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
@@ -321,13 +321,13 @@ function init_args()
 	$args->control_panel = $session_data;
 	
 	$getFromSession = !is_null($session_data);
-	$booleankeys = array('refreshTree' => 'setting_refresh_tree_on_action','importance' => 'filter_priority',
-						 'executionType' => 'filter_execution_type');
+	$booleankeys = array('refreshTree' => 'setting_refresh_tree_on_action','importance' => 'filter_importance',
+						           'executionType' => 'filter_execution_type');
 
-    foreach($booleankeys as $key => $value)
-    {
-    	$args->$key = ($getFromSession && isset($session_data[$value])) ? $session_data[$value] : 0;
-    }						 
+  foreach($booleankeys as $key => $value)
+  {
+    $args->$key = ($getFromSession && isset($session_data[$value])) ? $session_data[$value] : 0;
+  }						 
 	$args->importance = ($args->importance > 0) ? $args->importance : null;
 
 

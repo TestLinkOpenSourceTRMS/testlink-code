@@ -3727,57 +3727,6 @@ class testplan extends tlObjectWithAttachments
       return $qnum;
     }
   
-      /// create list with test cases nodes
-    //$tclist = null;
-    //$ks = array_keys($rs);
-    //foreach($ks as $ikey)
-    //{
-    //  if( $rs[$ikey]['node_type_id'] == $this->tree_manager->node_descr_id['testcase'] )
-    //  {
-    //    $tclist[$rs[$ikey]['id']] = $rs[$ikey]['id'];
-    //  }
-    //}    
-    //
-    //if( !is_null($tclist) )
-    //{
-    //  $filterOnTC = false;
-    //  $glav = " /* Get LATEST ACTIVE tcversion ID */ " .  
-    //      " SELECT MAX(TCVX.id) AS tcversion_id, NHTCX.parent_id AS tc_id " .
-    //      " FROM {$this->tables['tcversions']} TCVX " . 
-    //      " JOIN {$this->tables['nodes_hierarchy']} NHTCX " .
-    //      " ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
-    //      " WHERE NHTCX.parent_id IN (" . implode($tclist,',') . ")" .
-    //      " GROUP BY NHTCX.parent_id,TCVX.tc_external_id  ";
-      //
-    //  $ssx =   " /* Get LATEST ACTIVE tcversion MAIN ATTRIBUTES */ " .
-    //      " SELECT TCV.id AS tcversion_id, TCV.tc_external_id AS external_id, SQ.tc_id " .
-    //         " FROM {$this->tables['tcversions']} TCV " . 
-    //         " JOIN ( $glav ) SQ " .
-    //         " ON TCV.id = SQ.tcversion_id ";
-      //
-    //  if( $tcversionFilter['enabled'] || $tcaseFilter['is_active'] )
-    //  {
-    //    if( $tcversionFilter['execution_type'] )
-    //    {
-    //      $ssx .= " /* Filter LATEST ACTIVE tcversion */ " .
-    //          " WHERE TCV.execution_type = " . $my['filters']['execution_type'];
-    //      $filterOnTC = true;
-    //    }  
-    //  }
-    //  
-    //  $highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
-    //  if( $filterOnTC )
-    //  {
-    //    $ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;
-    //    if( count($ky) > 0 )
-    //    {
-    //      foreach($ky as $tcase)
-    //      {
-    //        unset($rs[$tcase]);            
-    //      }
-    //    }
-    //  }
-    //}
 
      foreach($rs as $row)
      {

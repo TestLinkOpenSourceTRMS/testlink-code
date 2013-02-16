@@ -2696,7 +2696,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
                  " FROM {$this->tables['nodes_hierarchy']} NH ";
     
   }
-  new dBug($tcaseFilter);
+  // new dBug($tcaseFilter);
 
   $sql =  $staticSql . " WHERE NH.parent_id = {$node_id} " .
           " AND (" .
@@ -2789,9 +2789,9 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
       }  
     }    
     
-    new dBug($ssx);
+    // new dBug($ssx);
     $highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
-    new dBug($highlander);
+    // new dBug($highlander);
     if( $filterOnTC )
     {
       $ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;

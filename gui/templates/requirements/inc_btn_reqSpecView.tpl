@@ -30,7 +30,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       
   {if $gui->grants->req_mgmt == "yes"}
     {if $gui->btn_import_req_spec == ''}
-      {assign var="btnImportReqSpec" value="$labels.btn_import_req_spec"}
+      {assign var="btnImportReqSpec" value=$labels.btn_import_req_spec}
     {else}
       {assign var="btnImportReqSpec" value=$gui->btn_import_req_spec}
     {/if}

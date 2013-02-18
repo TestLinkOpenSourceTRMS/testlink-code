@@ -146,8 +146,8 @@ CREATE TABLE /*prefix*/object_keywords (
 
 CREATE TABLE /*prefix*/custom_fields (
   id int IDENTITY(1,1) NOT NULL,
-  name char(64)  NOT NULL default '',
-  label char(64)  NOT NULL default '',
+  name varchar(64)  NOT NULL default '',
+  label varchar(64)  NOT NULL default '',
   type smallint NOT NULL default '',
   possible_values varchar(4000)  NOT NULL default '',
   default_value varchar(4000)  NOT NULL default '',
@@ -470,10 +470,10 @@ CREATE TABLE /*prefix*/req_versions(
 --- Test Link 1.9.1
 CREATE TABLE /*prefix*/req_revisions(
   parent_id int NOT NULL,
-    id int NOT NULL,
+  id int NOT NULL,
   revision INTEGER NOT NULL DEFAULT '1',
-    req_doc_id varchar(64) NULL,
-    name varchar(100) NULL,
+  req_doc_id varchar(64) NULL,
+  name varchar(100) NULL,
   scope nvarchar(max)  NULL DEFAULT NULL,
   status CHAR(1) NOT NULL DEFAULT 'V',
   type CHAR(1) NULL DEFAULT NULL,
@@ -482,9 +482,9 @@ CREATE TABLE /*prefix*/req_revisions(
   expected_coverage INT NOT NULL DEFAULT 1,
   log_message nvarchar(max)  NULL DEFAULT NULL,
   author_id INT NULL DEFAULT NULL,
-    creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_revisions_creation_ts DEFAULT (getdate()),
+  creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_revisions_creation_ts DEFAULT (getdate()),
   modifier_id INT NULL DEFAULT NULL,
-    modification_ts datetime NULL,
+  modification_ts datetime NULL,
   CONSTRAINT /*prefix*/PK_req_revisions PRIMARY KEY CLUSTERED
   (
       id

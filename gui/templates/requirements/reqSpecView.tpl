@@ -7,9 +7,7 @@ Purpose: view a requirement specification
 @author: Martin Havlat
 
 @internal revisions
-@since 1.9.4
-20110817 - franciscom - TICKET 4703: Req. Spec. View - display log message 
-20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
+@since 1.9.6
 *}
 
 {lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,

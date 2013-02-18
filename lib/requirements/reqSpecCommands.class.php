@@ -9,6 +9,7 @@
  *
  * 
  *  @internal revisions
+ *  @since 1.9.6 
  */
 class reqSpecCommands
 {
@@ -188,14 +189,13 @@ class reqSpecCommands
   {
     // echo __CLASS__ . '.' . __FUNCTION__ . '()<br>';
   
-        $guiObj = $this->initGuiBean(); 
-
+    $guiObj = $this->initGuiBean(); 
     $guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
     $guiObj->action_descr = lang_get('create_req_spec');
     $guiObj->submit_button_label=$this->submit_button_label;
-        $guiObj->template = $this->defaultTemplate;
-        $guiObj->req_spec_id=null;
-        $guiObj->req_spec_doc_id=null;
+    $guiObj->template = $this->defaultTemplate;
+    $guiObj->req_spec_id=null;
+    $guiObj->req_spec_doc_id=null;
     $guiObj->req_spec_title=null;
     $guiObj->total_req_counter=null;
 
@@ -203,26 +203,23 @@ class reqSpecCommands
                                         $request);
     // manage new order
     $order = 0;
-      $nt2exclude = array('testplan' => 'exclude_me','testsuite'=> 'exclude_me',
-                          'testcase'=> 'exclude_me');
-      $siblings = $this->treeMgr->get_children($argsObj->parentID,$nt2exclude);
-      if( !is_null($siblings) )
-      {
-        $dummy = end($siblings);
-        $order = $dummy['node_order']+1;
-      }
+    $nt2exclude = array('testplan' => 'exclude_me','testsuite'=> 'exclude_me',
+                        'testcase'=> 'exclude_me');
+    $siblings = $this->treeMgr->get_children($argsObj->parentID,$nt2exclude);
+    if( !is_null($siblings) )
+    {
+      $dummy = end($siblings);
+      $order = $dummy['node_order']+1;
+    }
       
     $ret = $this->reqSpecMgr->create($argsObj->tproject_id,$argsObj->parentID,
                                      $argsObj->doc_id,$argsObj->title,$argsObj->scope,
                                      $argsObj->countReq,$argsObj->user_id,$argsObj->reqSpecType,$order);
 
     $guiObj->user_feedback = $ret['msg'];
-    
-    // new dBug($ret);
-    
     if($ret['status_ok'])
     {
-        $argsObj->scope = "";
+      $argsObj->scope = "";
       $guiObj->user_feedback = sprintf(lang_get('req_spec_created'),$argsObj->title);
       $idCard = array('tproject_id' => $argsObj->tproject_id);
       $cf_map = $this->reqSpecMgr->get_linked_cfields($idCard);
@@ -232,12 +229,12 @@ class reqSpecCommands
                     "CREATE",$ret['id'],"req_specs");
     }
     else
-        {
-          $guiObj->req_spec_doc_id=$argsObj->doc_id;
-          $guiObj->req_spec_title=$argsObj->title;
-          $guiObj->total_req_counter=$argsObj->countReq;
-        }
-        return $guiObj;  
+    {
+      $guiObj->req_spec_doc_id=$argsObj->doc_id;
+      $guiObj->req_spec_title=$argsObj->title;
+      $guiObj->total_req_counter=$argsObj->countReq;
+    }
+    return $guiObj;  
   }
 
 
@@ -417,34 +414,36 @@ class reqSpecCommands
   */
   function copyRequirements(&$argsObj,$options=null)
   {
-        $obj = $this->initGuiBean(); 
+    $obj = $this->initGuiBean(); 
     $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
     
-      $my['options'] = array( 'get_items' => true);
-      $my['options'] = array_merge($my['options'], (array)$options);
-      if( $my['options']['get_items'] )
-      {
-        $obj->items = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id,'all',null,
-                                                          $this->getRequirementsOptions);
+    $my['options'] = array( 'get_items' => true);
+    $my['options'] = array_merge($my['options'], (array)$options);
+    if( $my['options']['get_items'] )
+    {
+      $obj->items = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id,'all',null,
+                                                        $this->getRequirementsOptions);
     }
     $obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
     $obj->action_descr = lang_get('copy_several_reqs');
-        $obj->template = 'reqCopy.tpl';
+    $obj->template = 'reqCopy.tpl';
     $obj->containers = null;
     $obj->page2call = 'lib/requirements/reqSpecEdit.php';
     $obj->array_of_msg = '';
-      $obj->doActionButton = 'doCopyRequirements';
-      $obj->req_spec_id = $argsObj->req_spec_id;
+    $obj->doActionButton = 'doCopyRequirements';
+    $obj->req_spec_id = $argsObj->req_spec_id;
   
-        $exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
-                                'testcase'=> 'exclude_me','requirement' => 'exclude_me');
+    $exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
+                              'testcase' => 'exclude_me','requirement' => 'exclude_me',
+                              'requirement_spec_revision' => 'exclude_me');
         
-     $my['filters'] = array('exclude_node_types' => $exclude_node_types);
-      $subtree = $this->treeMgr->get_subtree($argsObj->tproject_id,$my['filters']);
-     if(count($subtree))
+    $my['filters'] = array('exclude_node_types' => $exclude_node_types);
+
+    $subtree = $this->treeMgr->get_subtree($argsObj->tproject_id,$my['filters']);
+    if(count($subtree))
     {
       $obj->containers = $this->treeMgr->createHierarchyMap($subtree);
-        }
+    }
     return $obj;
   }
 

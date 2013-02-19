@@ -22,7 +22,7 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-$commandMgr = new reqSpecCommands($db);
+$commandMgr = new reqSpecCommands($db,$args->tproject_id);
 
 $gui = initialize_gui($db,$args,$req_cfg,$commandMgr);
 

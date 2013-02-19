@@ -32,6 +32,8 @@ class tree extends tlObject
                                 'testcase',null,'testplan',
                                 'requirement_spec_mgr','requirement_mgr',null,
                                 null,null,null);
+
+  var $nodeWithoutClass = null;
                                 
   var $node_descr_id = array();
   
@@ -78,6 +80,10 @@ class tree extends tlObject
     {
       $this->node_tables_by['id'][$this->node_descr_id[$key]] = $tbl;
     }
+
+    $nodeCodeId = array_flip($this->node_types);  
+    $this->nodeWithoutClass[$nodeCodeId['requirement_spec_revision']] = 'deleted when reqspec is deleted';
+
     
   }
 
@@ -1362,7 +1368,6 @@ class tree extends tlObject
    * 
    * ATTENTION: subtree root node ($node_id?? or root_id?) IS NOT DELETED.
    *
-   * BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
    */
   function delete_subtree_objects($root_id,$node_id,$additionalWhereClause = '',$exclude_children_of = null,
                                   $exclude_branches = null)
@@ -1374,8 +1379,7 @@ class tree extends tlObject
     }
     
     $sql = "/* $debugMsg */ SELECT NH.* FROM {$this->object_table} NH " .
-         " WHERE NH.parent_id = {$node_id} {$additionalWhereClause} ";
-    
+           " WHERE NH.parent_id = {$node_id} {$additionalWhereClause} ";
     $rs = $this->db->get_recordset($sql);
     if( !is_null($rs) )
     {
@@ -1385,7 +1389,6 @@ class tree extends tlObject
         $nodeTypeID = $row['node_type_id'];
         $nodeType = $this->node_types[$nodeTypeID];
         $nodeClassName = $this->class_name[$nodeTypeID];
-        
         if(!isset($exclude_branches[$rowID]))
         {  
           // Basically we use this because:
@@ -1396,14 +1399,11 @@ class tree extends tlObject
           //
           if(!isset($exclude_children_of[$nodeType]) && !isset($exclude_branches[$rowID]))
           {
-            // file_put_contents('c:\delete_subtree_objects', 'rowid:' . $rowID . "nodeType: $nodeType\n", FILE_APPEND);                            
-            
             // 20100918 - franciscom
             // I'm paying not having commented this well
             // Why I've set root_id to null ?
             // doing this when traversing a tree, containers under level of subtree root
             // will not be deleted => and this seems to be wrong.
-            // BUGID 3790
             $this->delete_subtree_objects($root_id,$rowID,$additionalWhereClause,$exclude_children_of,$exclude_branches);
           }
           else
@@ -1411,10 +1411,19 @@ class tree extends tlObject
             // For us in this method context this node is a leaf => just delete
             if( !is_null($nodeClassName) )
             { 
-              // file_put_contents('c:\delete_subtree_objects', $nodeClassName  & ' ' & $rowID, FILE_APPEND);                            
               $item_mgr = new $nodeClassName($this->db);
               $item_mgr->delete($rowID);        
             }
+            else if (isset($this->nodeWithoutClass[$nodeTypeID]))
+            {
+              // it's ok
+              // echo '<br> it is ok:' . $this->nodeWithoutClass[$node_info[0]['node_type_id']] . '<br>';
+            }  
+            else
+            {
+              // need to signal error - TO BE DONE
+              // echo '<br>AUCH!!!';
+            } 
           }
         } // if(!isset($exclude_branches[$rowID]))
       } //while
@@ -1433,7 +1442,7 @@ class tree extends tlObject
       if( count($children) == 0 )
       {
         $sql2 = "/* $debugMsg */ SELECT NH.* FROM {$this->object_table} NH " .
-              " WHERE NH.id = {$node_id}";
+                " WHERE NH.id = {$node_id}";
         $node_info = $this->db->get_recordset($sql2);
         if( isset($this->class_name[$node_info[0]['node_type_id']]) )
         {
@@ -1444,9 +1453,15 @@ class tree extends tlObject
             $item_mgr->delete($node_id);        
           }
         }   
-        else
+        else if (isset($this->nodeWithoutClass[$node_info[0]['node_type_id']]))
+        {
+          // it's ok
+          // echo '<br> it is ok:' . $this->nodeWithoutClass[$node_info[0]['node_type_id']] . '<br>';
+        }  
+        else 
         {
           // need to signal error - TO BE DONE
+          // echo '<br>AUCH!!!';
         }
       }        
     }  // if( $node_id != $root_id )

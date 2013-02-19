@@ -10,6 +10,8 @@
  *
  * @internal revisions
  * @since 1.9.6
+ * 20130219 - franciscom - TICKET 5528: Importing a requirement with CF fails after the first time
+ *                         delete_deep() changes
  * 20121228 - franciscom - TICKET 5442: Deleting a req spec, leaves record on nodes hierachy regarding req spec revision 
  */
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
@@ -557,7 +559,8 @@ function delete($id)
  */
 function delete_deep($id)
 {
-  $this->tree_mgr->delete_subtree_objects($id,$id,'',array('requirement' => 'exclude_my_children'));
+  $exclusion =  ' AND NH.node_type_id <> ' . intval($this->node_types_descr_id['requirement_spec_revision']);
+  $this->tree_mgr->delete_subtree_objects($id,$id,$exclusion,array('requirement' => 'exclude_my_children'));
   $this->delete($id);
 }
 

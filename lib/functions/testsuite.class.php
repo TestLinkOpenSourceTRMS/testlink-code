@@ -10,14 +10,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.4
- * 20120623 - franciscom -	TICKET 5070: Import Test suite with Custom fields - Custom fields are not imported
- *							exportTestSuiteDataToXML() generated wrong XML
- *							get_linked_cfields_at_design() interface changes
- *
- * 20110824 - franciscom - get_branch() new method
- * 20110820 - franciscom - get_children() interface changes
- * 20110806 - franciscom - TICKET 4692
+ * @since 1.9.6
  *
  */
 
@@ -900,9 +893,6 @@ class testsuite extends tlObjectWithAttachments
 		         keyword
 		         notes
 	  
-	  rev : 
-	        20070116 - franciscom - BUGID 543
-	
 	*/
 	function getKeywords($id,$kw_id = null)
 	{

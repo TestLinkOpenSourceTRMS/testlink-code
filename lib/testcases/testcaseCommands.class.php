@@ -14,6 +14,7 @@
  *
  * @internal revisions
  * @since 1.9.6
+ * 20130221 - franciscom - TICKET 5536: Create Test Case in Test suite that has keywords, manage automatic inheritance
  **/
 
 class testcaseCommands
@@ -114,29 +115,37 @@ class testcaseCommands
    */
   function create(&$argsObj,&$otCfg,$oWebEditorKeys)
   {
-      $guiObj = $this->initGuiBean($argsObj);
-      $guiObj->initWebEditorFromTemplate = true;
+    $parentKeywords = array();
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->initWebEditorFromTemplate = true;
       
-    $importance_default = config_get('testcase_importance_default');
-    
-      $tc_default=array('id' => 0, 'name' => '', 'importance' => $importance_default,
-                          'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL);
-
-        $guiObj->containerID = $argsObj->container_id;
+    $guiObj->containerID = $argsObj->container_id;
     if($argsObj->container_id > 0)
     {
       $pnode_info = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->container_id);
       $node_descr = array_flip($this->tcaseMgr->tree_manager->get_available_node_types());
       $guiObj->parent_info['name'] = $pnode_info['name'];
       $guiObj->parent_info['description'] = lang_get($node_descr[$pnode_info['node_type_id']]);
+
+      // get keywords
+      $tsuiteMgr = new testsuite($this->db);      
+      $parentKeywords = $tsuiteMgr->getKeywords($argsObj->container_id);  
     }
-        $sep_1 = config_get('gui_title_separator_1');
-        $sep_2 = config_get('gui_title_separator_2'); 
-        $guiObj->main_descr = $guiObj->parent_info['description'] . $sep_1 . $guiObj->parent_info['name'] . 
-                              $sep_2 . lang_get('title_new_tc');
+    $sep_1 = config_get('gui_title_separator_1');
+    $sep_2 = config_get('gui_title_separator_2'); 
+    $guiObj->main_descr = $guiObj->parent_info['description'] . $sep_1 . $guiObj->parent_info['name'] . 
+                          $sep_2 . lang_get('title_new_tc');
       
-      $otCfg->to->map = array();
-      keywords_opt_transf_cfg($otCfg,'');
+    $otCfg->to->map = array();
+    keywords_opt_transf_cfg($otCfg,implode(',',array_keys($parentKeywords)));
+
+    $guiObj->tc=array('id' => 0, 'name' => '', 'importance' => config_get('testcase_importance_default'),
+                      'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL);
+
+    $guiObj->opt_cfg=$otCfg;
+    $templateCfg = templateConfiguration('tcNew');
+    $guiObj->template=$templateCfg->default_template;
+
 
     $cfPlaces = $this->tcaseMgr->buildCFLocationMap();
     foreach($cfPlaces as $locationKey => $locationFilter)
@@ -145,10 +154,6 @@ class testcaseCommands
       $this->tcaseMgr->html_table_of_custom_field_inputs(null,null,'design','',null,null,
                                                          $argsObj->testproject_id,$locationFilter, $_REQUEST);
     }  
-    $guiObj->tc=$tc_default;
-    $guiObj->opt_cfg=$otCfg;
-    $templateCfg = templateConfiguration('tcNew');
-    $guiObj->template=$templateCfg->default_template;
     return $guiObj;
   }
 
@@ -170,6 +175,7 @@ class testcaseCommands
       $dummy = end($siblings);
       $new_order = $dummy['node_order']+1;
     }
+
     $options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
                      'action_on_duplicate_name' => 'block');
     $tcase = $this->tcaseMgr->create($argsObj->container_id,$argsObj->name,$argsObj->summary,$argsObj->preconditions,

@@ -121,8 +121,8 @@ function validateForm(f)
 	 </div>
 	<br></br>
 	<div>
-		<input type="submit" name="update_testsuite" value="{$labels.btn_save}"
-		       onclick="show_modified_warning = false;" />
+		<input type="submit" name="update_testsuite" id="update_testsuite_bottom" value="{$labels.btn_save}" 
+		       onclick="show_modified_warning = false; doAction.value='update_testsuite'" />
 		<input type="button" name="go_back" value="{$labels.cancel}" 
 		       onclick="javascript: show_modified_warning = false; history.back();"/>
 	</div>

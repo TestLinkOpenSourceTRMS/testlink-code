@@ -709,13 +709,13 @@ class TestlinkXMLRPCServer extends IXR_Server
    */         
   protected function _isParamPresent($pname,$messagePrefix='',$setError=false)
   {
-      $status_ok=(isset($this->args[$pname]) ? true : false);
-      if(!$status_ok && $setError)
-      {
-          $msg = $messagePrefix . sprintf(MISSING_REQUIRED_PARAMETER_STR,$pname);
-          $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
-        }
-        return $status_ok;
+    $status_ok=(isset($this->args[$pname]) ? true : false);
+    if(!$status_ok && $setError)
+    {
+      $msg = $messagePrefix . sprintf(MISSING_REQUIRED_PARAMETER_STR,$pname);
+      $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
+    }
+    return $status_ok;
   }
 
     /**
@@ -5437,6 +5437,100 @@ protected function createAttachmentTempFile()
     } 
   }
 
+  /**
+   * addPlatformToTestPlan 
+   * 
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param int $args["testplanid"]
+   * @param map $args["platformname"]
+   * @return mixed $resultInfo
+   * @internal revisions
+   */
+  public function addPlatformToTestPlan($args)
+  {
+    return $this->platformLinkOp($args,'link',"(" .__FUNCTION__ . ") - ");
+
+  }
+
+  /**
+   * removePlatformFromTestPlan 
+   * 
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param int $args["testplanid"]
+   * @param map $args["platformname"]
+   * @return mixed $resultInfo
+   * @internal revisions
+   */
+  public function removePlatformFromTestPlan($args)
+  {
+    return $this->platformLinkOp($args,'unlink',"(" .__FUNCTION__ . ") - ");
+
+  }
+
+
+  private function platformLinkOp($args,$op,$messagePrefix)
+  {
+    $this->_setArgs($args);
+    $checkFunctions = array('authenticate','checkTestPlanID');       
+    $status_ok = $this->_runChecks($checkFunctions,$messagePrefix) &&     
+                 $this->_isParamPresent(self::$platformNameParamName,$messagePrefix,self::SET_ERROR);
+    if($status_ok)
+    {
+      $testPlanID = $this->args[self::$testPlanIDParamName];
+      
+      // get Test project ID in order to check that requested Platform
+      // belong to same test project that test plan
+      $dummy = $this->tplanMgr->get_by_id($testPlanID);
+      $$testProjectID = $dummy['testproject_id'];
+      
+      if( is_null($this->platformMgr) )
+      {
+        $this->platformMgr = new tlPlatform($this->dbObj,$testProjectID);
+      }
+      $platName = $this->args[self::$platformNameParamName];
+      $platform = $this->platformMgr->getByName($platName);
+      if(is_null($platform))
+      {
+        $status_ok = false;
+         $msg = $messagePrefix . sprintf(PLATFORM_NAME_DOESNOT_EXIST_STR,$platName);
+         $this->errors[] = new IXR_Error(PLATFORM_NAME_DOESNOT_EXIST, $msg);              
+       }  
+    } 
+   
+    if($status_ok)
+    {
+      $linkExists = $this->platformMgr->isLinkedToTestplan($platform['id'],$testPlanID);
+      $ret = array('operation' => $op, 'msg' => 'nothing to do', 'linkStatus' => $linkExists);
+      switch($op)
+      {
+        case 'link':
+          if(!$linkExists)
+          {
+            $this->platformMgr->linkToTestplan($platform['id'],$testPlanID);
+            $ret['msg'] = 'link done';
+          }  
+        break;
+   
+        case 'unlink':
+          if($linkExists)
+          {
+            $this->platformMgr->unlinkFromTestplan($platform['id'],$testPlanID);     
+            $ret['msg'] = 'unlink done';
+          }  
+        break;
+      } 
+      return $ret; 
+    }
+   
+    if(!$tatus_ok)
+    {
+      return $this->errors;
+    } 
+  }
+
+
 
 
   private function helperGetTestProjectByName($msgPrefix = '')
@@ -5480,6 +5574,8 @@ protected function createAttachmentTempFile()
                             'tl.uploadAttachment' => 'this:uploadAttachment',
                             'tl.assignRequirements' => 'this:assignRequirements',     
                             'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
+                            'tl.addPlatformToTestPlan' => 'this:addPlatformToTestPlan',
+                            'tl.removePlatformFromTestPlan' => 'this:removePlatformFromTestPlan',
                             'tl.getExecCountersByBuild' => 'this:getExecCountersByBuild',
                             'tl.getProjects' => 'this:getProjects',
                             'tl.getTestProjectByName' => 'this:getTestProjectByName',

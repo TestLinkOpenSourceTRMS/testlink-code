@@ -103,6 +103,10 @@ define('NODEID_INVALID_DATA_TYPE', 234);
 define('NODEID_INVALID_DATA_TYPE_STR', lang_get('API_NODEID_INVALID_DATA_TYPE',null,1));
 
 
+define('PLATFORM_NAME_DOESNOT_EXIST', 235);
+define('PLATFORM_NAME_DOESNOT_EXIST_STR', lang_get('API_PLATFORM_NAME_DOESNOT_EXIST',null,1));
+
+
 /**
  * 2000 level - authentication errors
  */

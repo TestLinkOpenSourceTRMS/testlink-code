@@ -3146,6 +3146,7 @@ $TLS_API_PLATFORMNAME_ALREADY_EXISTS = "Platform name (%s) already exists (id:%s
 
 $TLS_NODEID_INVALID_DATA_TYPE_STR = "Invalid Data Type - Node ID can be Array of positive Integer, or Positive Integer";
 
+$TLS_API_PLATFORM_NAME_DOESNOT_EXIST = "Platform name (%s) does not exist";;
 
 
 

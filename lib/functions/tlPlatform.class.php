@@ -89,10 +89,23 @@ class tlPlatform extends tlObjectWithDB
   public function getByID($id)
   {
     $sql =  " SELECT id, name, notes " .
-        " FROM {$this->tables['platforms']} " .
-        " WHERE id = " . intval($id);
+            " FROM {$this->tables['platforms']} " .
+            " WHERE id = " . intval($id);
     return $this->db->fetchFirstRow($sql);
   }
+
+
+  public function getByName($name)
+  {
+    $val = trim($name);
+    $sql =  " SELECT id, name, notes " .
+            " FROM {$this->tables['platforms']} " .
+            " WHERE name = '" . $this->db->prepare_string($val) . "'";
+    $ret = $this->db->fetchFirstRow($sql);
+    return is_array($ret) ? $ret : null;        
+  }
+
+
   
   /**
    * Gets all info of a platform
@@ -425,6 +438,17 @@ class tlPlatform extends tlObjectWithDB
     $dummy =  $this->db->fetchRowsIntoMap($sql,'id');
     return isset($dummy['id']);
   }  
+
+  public function isLinkedToTestplan($id,$testplan_id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $sql = " SELECT platform_id FROM {$this->tables['testplan_platforms']} " .
+           " WHERE testplan_id = " . intval($testplan_id) .
+           " AND platform_id = " . intval($id);
+    $rs = $this->db->fetchRowsIntoMap($sql,'platform_id');
+    return !is_null($rs);
+  }
+
   
 
 }

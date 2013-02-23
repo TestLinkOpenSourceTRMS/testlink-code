@@ -5516,12 +5516,27 @@ protected function createAttachmentTempFile()
         case 'unlink':
           if($linkExists)
           {
-            $this->platformMgr->unlinkFromTestplan($platform['id'],$testPlanID);     
-            $ret['msg'] = 'unlink done';
+            // If there are test case versions linked to test plan, that use
+            // this platform, operation (as happens on GUI) can not be done
+            $hits = $this->tplanMgr->countLinkedTCVersionsByPlatform($testPlanID,(array)$platform['id']); 
+            if($hits[$platform['id']]['qty'] == 0)
+            {  
+              $this->platformMgr->unlinkFromTestplan($platform['id'],$testPlanID);     
+              $ret['msg'] = 'unlink done';
+            }
+            else
+            {
+              $status_ok = false;
+              $msg = $messagePrefix . sprintf(PLATFORM_REMOVETC_NEEDED_BEFORE_UNLINK_STR,$platName,$hits[$platform['id']]['qty']);
+              $this->errors[] = new IXR_Error(PLATFORM_REMOVETC_NEEDED_BEFORE_UNLINK, $msg);              
+            }  
           }  
         break;
       } 
-      return $ret; 
+      if($status_ok)
+      {
+        return $ret;   
+      }  
     }
    
     if(!$tatus_ok)

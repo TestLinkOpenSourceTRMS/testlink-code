@@ -5,16 +5,13 @@
  *
  * Platform link/unlink from a test plan
  * 
- * @package 	TestLink
- * @author 		eloff
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsAssign.php,v 1.11 2010/02/11 19:22:35 franciscom Exp $
- * @link 		http://www.teamst.org/index.php
+ * @package     TestLink
+ * @author      eloff
+ * @copyright   2005-2013, TestLink community 
+ * @filesource  platformsAssign.php
+ * @link 		    http://www.teamst.org/index.php
  * 
- * @internal Revisions:
- *  20091201 - Eloff - added function init_option_panels
- *	20090822 - franciscom - added logic to give warning to user when adding platforms
- *							to a test plan that has 0 platforms, but has linked test cases.
+ * @internal revisions
  *
  **/
 require_once("../../config.inc.php");

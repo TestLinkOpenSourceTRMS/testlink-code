@@ -11,15 +11,13 @@
  * @filesource	execTreeMenu.inc.php
  * @package 	TestLink
  * @author 		Francisco Mancardi
- * @copyright 	2012, TestLink community 
+ * @copyright 	2013, TestLink community 
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal revisions
- * @since 1.9.4
- * 20121015 - asimon - TICKET 5284: Filtering by the value of custom fields is not working on tester assignment
- * 20120921 - asimon - TICKET 5229: Filtering by the value of custom fields is not working on test execution
- * 20120816 - franciscom - TICKET 4905: Test Case Tester Assignment - filters dont work properly for 'Assigned to' Field
+ * @since 1.9.6
+ * 20130226 - franciscom - TICKET 5284: Filtering by the value of custom fields is not working on tester assignment
  */
 
 /**
@@ -714,9 +712,10 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 			//Die();
 			if( !is_null($sql2do = $tplan_mgr->{$objOptions->getTreeMethod}($tplan_id,$filters,$options)) )
 			{
+				$doPinBall = false;
 				if( is_array($sql2do) )
 				{				
-					if( $filters['keyword_filter_type'] == 'And')
+					if( ($doPinBall = $filters['keyword_filter_type'] == 'And') )
 					{ 
 						$kmethod = "fetchRowsIntoMapAddRC";
 						$unionClause = " UNION ALL ";
@@ -733,10 +732,26 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 					$kmethod = "fetchRowsIntoMap";
 					$sql2run = $sql2do;
 				}
-				
-				//New dBug($sql2run);
-				$tplan_tcases = $setTestCaseStatus = $dbHandler->$kmethod($sql2run,'tcase_id');
-				
+				// $tplan_tcases = $setTestCaseStatus = $dbHandler->$kmethod($sql2run,'tcase_id');
+				$tplan_tcases = $dbHandler->$kmethod($sql2run,'tcase_id');
+
+				// 20130226 - special processing
+				if($doPinBall && !is_null($tplan_tcases))
+				{
+					$kwc = count($filters['keyword_id']);
+					$ak = array_keys($tplan_tcases);
+					$mx = null;
+					foreach($ak as $tk)
+					{
+						if($tplan_tcases[$tk]['recordcount'] == $kwc)
+						{
+							$mx[$tk] = $tplan_tcases[$tk];
+						}	
+					}	
+					$tplan_tcases = null;
+					$tplan_tcases = $mx;
+				}	
+				$setTestCaseStatus = $tplan_tcases;
 			}
 									
 		 	// Take Time

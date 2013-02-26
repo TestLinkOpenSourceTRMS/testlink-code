@@ -6,15 +6,14 @@
  * @filesource	specview.php
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2004-2012, TestLink community 
+ * @copyright 	2004-2013, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.4
- * 20120825 - franciscom - TICKET 5176: Possibility to filter by Platform
- * 20111230 - franciscom - refactoring to use current() instead of fixed access to element with index 0
- * 20110824 - franciscom - fixed issue using get_branch()	
- * 20110820 - franciscom - TICKET 4710 - getFilteredLinkedVersions()	
+ * @since 1.9.6
+ * 20130226 - franciscom - TICKET 5538: Keyword "And/Or" options are not filtering tree/test suite contents 
+ *										correctly when multiple keywords are selected
+ *						   getFilteredSpecView()	
  **/ 
 
 /**
@@ -182,6 +181,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 	
 	
 	$test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
+
 	$platforms = getPlatforms($db,$tproject_id,$testplan_id);
 	$idx = 0;
 	$a_tcid = array();
@@ -311,7 +311,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
  * 
  *
  * @internal revisions
- * @since 1.9.4
+ * @since 1.9.
  *
  */
 function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr, $options = null)
@@ -322,7 +322,6 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
 	// Multiple step algoritm to apply keyword filter on type=AND
 	// get_*_tcversions filters by keyword ALWAYS in OR mode.
 	//
-	// TICKET 5176: Possibility to filter by Platform
 	$filters = array('keyword_id' => $argsObj->keyword_id, 'platform_id' => null);
   if( property_exists($argsObj,'control_panel') && intval($argsObj->control_panel['setting_platform']) > 0 )
   {
@@ -402,29 +401,42 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
 
 	// With these pieces we implement the AND type of keyword filter.
 	$testCaseSet = null;
+	$tryNextFilter = true;
+	$filterApplied = false;
 	if(!is_null($my['filters']['keywordsFilter']) && !is_null($my['filters']['keywordsFilter']->items))
 	{ 
 		$keywordsTestCases = $tprojectMgr->get_keywords_tcases($argsObj->tproject_id,$my['filters']['keywordsFilter']->items,
 															                             $my['filters']['keywordsFilter']->type);
-		$testCaseSet = array_keys($keywordsTestCases);
+
+		$testCaseSet = array_keys((array)$keywordsTestCases);
+		$tryNextFilter = !is_null($testCaseSet);
+		$filterApplied = true;
 	}
 
-	if( !is_null($my['filters']['testcaseFilter']) )
+	if( $tryNextFilter && !is_null($my['filters']['testcaseFilter']))
 	{
-		if (is_null($testCaseSet) )
+		$filterApplied = true;
+		if( is_null($testCaseSet) )
 		{
 			$testCaseSet = $my['filters']['testcaseFilter'];
 		}
 		else
 		{
-			$testCaseSet = array_intersect($testCaseSet, array($my['filters']['testcaseFilter']));
+			// wrong use of array() instead of (array)
+			$testCaseSet = array_intersect($testCaseSet, (array)$my['filters']['testcaseFilter']);
 		}
 	}
-	
-	
+
+	// when $testCaseSet is null because we have applied filters => we do not need to call other
+	// method because we know we are going to get NOTHING
 	$testCaseSet = !is_null($testCaseSet) ? array_combine($testCaseSet, $testCaseSet) : null;
+	if($filterApplied && is_null($testCaseSet))
+	{
+		return null;
+	}	
+
 	$genSpecFilters = array('keywords' => $argsObj->keyword_id, 'testcases' => $testCaseSet,
-							            'exec_type' => $my['filters']['executionTypeFilter'],'cfields' => null);
+							'exec_type' => $my['filters']['executionTypeFilter'],'cfields' => null);
 							
 	if( isset($my['filters']['cfieldsFilter']) )
 	{
@@ -432,7 +444,7 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
 	}						
 							
 	$out = gen_spec_view($dbHandler, 'testplan', $argsObj->tplan_id, $argsObj->id, $tsuite_data['name'],
-		                   $tplan_linked_tcversions, null, $genSpecFilters, $my['options']);
+		                 $tplan_linked_tcversions, null, $genSpecFilters, $my['options']);
 
 	return $out;
 }
@@ -477,13 +489,13 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
  */
 function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContainerId,$nodeId,$specViewType,$filters)
 {
-	
 	$applyFilters = false;
 	$testCaseSet = null;
 	$tck_map = null;
 	$tobj_mgr = new testproject($dbHandler);
 	$test_spec = $tobj_mgr->get_subtree($nodeId);
-	
+
+
 	$key2loop = null;
 	$useAllowed = false;
 	
@@ -526,6 +538,9 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 		}
 		$tck_map = $tobj_mgr->get_keywords_tcases($masterContainerId,$filters['keyword_id']);
 	}  
+
+
+
 
 	if( $applyFilters )
 	{

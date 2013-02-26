@@ -4,12 +4,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @package    TestLink
- * @author     Andreas Simon
- * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlFilterControl.class.php,v 1.8 2010/10/07 17:42:56 franciscom Exp $
- * @link       http://www.teamst.org/index.php
- * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlFilterControl.class.php?view=markup
+ * @package    	TestLink
+ * @author     	Andreas Simon
+ * @copyright  	2006-2013, TestLink community
+ * @filesource	tlFilterControl.class.php
+ * @link       	http://www.teamst.org/index.php
  *
  * This class holds common logic to be used at GUI level to manage a common set of settings and filters.
  * It is used when filters or subviews of the test case or requirement tree are needed.
@@ -17,18 +16,8 @@
  * which hold specific changes for each of these object types.
  * Main class is abstract because it shall not be used/instantiated directly.
  *
- * @internal Revisions:
+ * @internal revisions
  *
- * 20110621 - asimon - changed access of field active_filters from private to protected because of some IDE warnings
- *                     as well as some phpDoc comments
- * 20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
- * 20100808 - asimon - little changes for first implementation of requirement filtering
- * 20100803 - asimon - corrected error in parameter initializing in init_args()
- * 20100628 - asimon - removal of constants
- * 20100624 - asimon - CVS merge (experimental branch to HEAD)
- * 20100503 - asimon - start of implementation of filter panel class hierarchy
- *                     to simplify/generalize filter panel handling
- *                     for test cases and requirements
  */
 
 /**

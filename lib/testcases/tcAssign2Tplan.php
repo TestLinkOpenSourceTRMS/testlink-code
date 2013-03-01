@@ -207,6 +207,7 @@ function init_args()
 {
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
+    // if any piece of context is missing => we will display nothing instead of crashing WORK TO BE DONE
 	$args = new stdClass();
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
 	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];

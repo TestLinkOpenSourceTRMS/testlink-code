@@ -42,8 +42,6 @@ $oWebEditor = createWebEditors($args->basehref,$cfg->webEditorCfg,$testCaseEdito
 
 $sqlResult = "";
 $init_inputs = true;
-$show_newTC_form = 0;
-
 $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
 $gui = initializeGui($db,$args,$cfg,$tcase_mgr);
 
@@ -259,46 +257,6 @@ else if($args->do_activate_this || $args->do_deactivate_this)
 }
 
 // --------------------------------------------------------------------------
-if ($show_newTC_form)
-{
-  
-  // BUGID 2163 - Create test case with same title, after submit, all data lost 
-   $tc_default=array('id' => 0, 'name' => '');
-   $tc_default['importance'] = $init_inputs ? $tlCfg->testcase_importance_default : $args->importance;
-   $tc_default['execution_type'] = $init_inputs ? TESTCASE_EXECUTION_TYPE_MANUAL : $args->exec_type;
-   foreach ($oWebEditor->cfg as $key => $value)
-   {
-    $of = &$oWebEditor->editor[$key];
-    $rows = $oWebEditor->cfg[$key]['rows'];
-    $cols = $oWebEditor->cfg[$key]['cols'];
-    if( $init_inputs)
-    {
-      $of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');
-    }
-    else
-    {
-      $of->Value = $args->$key;
-    }
-    $smarty->assign($key, $of->CreateHTML($rows,$cols));
-  }
-
-
-  $filters=$tcase_mgr->buildCFLocationMap();
-  foreach($filters as $locationKey => $locationFilter)
-  { 
-    $cf_smarty[$locationKey] = 
-    $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,$args->container_id,'design','',
-                                                  null,null,null,$locationFilter);
-  }
-  $gui->cf = $cf_smarty;
-  $gui->tc = $tc_default;
-  $gui->containerID = $args->container_id;
-  $smarty->assign('gui',$gui);
-
-  $templateCfg = templateConfiguration('tcNew');
-  $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-}
-
 
 
 /*

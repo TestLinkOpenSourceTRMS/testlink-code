@@ -137,7 +137,7 @@ class testcaseCommands
                           $sep_2 . lang_get('title_new_tc');
       
     $otCfg->to->map = array();
-    keywords_opt_transf_cfg($otCfg,implode(',',array_keys($parentKeywords)));
+    keywords_opt_transf_cfg($otCfg,implode(',',array_keys((array)$parentKeywords)));
 
     $guiObj->tc=array('id' => 0, 'name' => '', 'importance' => config_get('testcase_importance_default'),
                       'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL);

@@ -114,8 +114,7 @@ if ($args->compare_selected_versions) {
 
 		//are there any changes? then display! if not, nothing to show here
 		if ($gui->diff[$key]["count"] > 0) {
-			$gui->diff[$key]["message"] = sprintf($labels["num_changes"], $localized_key, 
-											$diff_array[$key]["count"]);
+			$gui->diff[$key]["message"] = sprintf($labels["num_changes"], $localized_key,$gui->diff[$key]["count"]);
 		} else {
 			$gui->diff[$key]["message"] = sprintf($labels["no_changes"], $localized_key);
 		}

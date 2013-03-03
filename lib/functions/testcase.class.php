@@ -5719,5 +5719,19 @@ class testcase extends tlObjectWithAttachments
   }
 
 
+	function getIdCardByStepID($step_id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = "/* $debugMsg */ " . 
+		       " SELECT NH_TCV.parent_id AS tcase_id, NH_STEPS.parent_id AS tcversion_id" .
+		       " FROM {$this->tables['nodes_hierarchy']} NH_STEPS " .
+		       " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = NH_STEPS.parent_id "	.
+		       " WHERE NH_STEPS.id = " . intval($step_id);
+		$rs = $this->db->get_recordset($sql);
+		return is_null($rs) ? $rs : $rs[0];
+	}
+
+
+
 } // end class
 ?>

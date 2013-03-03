@@ -54,12 +54,17 @@ function keywords_opt_transf_cfg(&$opt_cfg, $right_list)
 	$opt_cfg->size = 8;
 	$opt_cfg->style = "width: 98%;";
 
+	$opt_cfg->js_events = new stdClass();
 	$opt_cfg->js_events->all_right_click = "";
 	$opt_cfg->js_events->left2right_click = "";
 	$opt_cfg->js_events->right2left_click = "";
 	$opt_cfg->js_events->all_left_click = "";
+
+	if( is_null($opt_cfg->from))
+	{
+		$opt_cfg->from = new stdClass();
+	}	
 	$opt_cfg->from->name = "from_select_box";
-	
 	$opt_cfg->from->id_field = 'id';
 	$opt_cfg->from->desc_field = 'keyword';
 	$opt_cfg->from->desc_glue = " ";
@@ -68,6 +73,10 @@ function keywords_opt_transf_cfg(&$opt_cfg, $right_list)
 	$opt_cfg->from->show_id_in_desc = true;
 	$opt_cfg->from->js_events->ondblclick = "";
 	
+	if( is_null($opt_cfg->to))
+	{
+		$opt_cfg->to = new stdClass();
+	}	
 	$opt_cfg->to->name = "to_select_box";
 	$opt_cfg->to->show_id_in_desc = true;
 	$opt_cfg->to->id_field = 'id';

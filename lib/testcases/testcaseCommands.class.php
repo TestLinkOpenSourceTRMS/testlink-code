@@ -92,9 +92,20 @@ class testcaseCommands
 
   function initTestCaseBasicInfo(&$argsObj,&$guiObj)
   {
-    $tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
-                        null,array('output' => 'full_without_steps'));
-    $external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
+
+    $greenCard = array('tcase_id' => $argsObj->tcase_id, 'tcversion_id' => $argsObj->tcversion_id);
+    foreach($greenCard as $ky)
+    {
+      if($ky == 0)
+      {
+        $greenCard = $this->tcaseMgr->getIdCardByStepID($argsObj->step_id);   
+        break;
+      }  
+    }
+    $tcaseInfo = $this->tcaseMgr->get_by_id($greenCard['tcase_id'],$greenCard['tcversion_id'],null,array('output' => 'full_without_steps'));
+
+
+    $external = $this->tcaseMgr->getExternalID($greenCard['tcase_id'],$argsObj->testproject_id);
     $tcaseInfo[0]['tc_external_id'] = $external[0];
     $guiObj->testcase = $tcaseInfo[0];
     $guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
@@ -113,7 +124,7 @@ class testcaseCommands
    * 
    *
    */
-  function create(&$argsObj,&$otCfg,$oWebEditorKeys)
+  function create(&$argsObj,&$otCfg)
   {
     $parentKeywords = array();
     $guiObj = $this->initGuiBean($argsObj);
@@ -136,6 +147,7 @@ class testcaseCommands
     $guiObj->main_descr = $guiObj->parent_info['description'] . $sep_1 . $guiObj->parent_info['name'] . 
                           $sep_2 . lang_get('title_new_tc');
       
+    
     $otCfg->to->map = array();
     keywords_opt_transf_cfg($otCfg,implode(',',array_keys((array)$parentKeywords)));
 
@@ -481,7 +493,7 @@ class testcaseCommands
      */
   function createStep(&$argsObj,$request)
   {
-      $guiObj = $this->initGuiBean($argsObj);
+    $guiObj = $this->initGuiBean($argsObj);
 
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
     $guiObj->main_descr = sprintf(lang_get('create_step'), $guiObj->testcase['tc_external_id'] . ':' . 
@@ -562,28 +574,28 @@ class testcaseCommands
      */
   function editStep(&$argsObj,$request)
   {
-      $guiObj = $this->initGuiBean($argsObj);
+    $guiObj = $this->initGuiBean($argsObj);
     $guiObj->user_feedback = '';
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
 
     $stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
         
-        $oWebEditorKeys = array('steps' => 'actions', 'expected_results' => 'expected_results');
-      foreach($oWebEditorKeys as $key => $field)
-       {
-          $argsObj->$key = $stepInfo[$field];
-          $guiObj->$key = $stepInfo[$field];
-      }
+    $oWebEditorKeys = array('steps' => 'actions', 'expected_results' => 'expected_results');
+    foreach($oWebEditorKeys as $key => $field)
+    {
+      $argsObj->$key = $stepInfo[$field];
+      $guiObj->$key = $stepInfo[$field];
+    }
 
     $guiObj->main_descr = sprintf(lang_get('edit_step_number_x'),$stepInfo['step_number'],
-                    $guiObj->testcase['tc_external_id'] . ':' . 
-                    $guiObj->testcase['name'], $guiObj->testcase['version']); 
+                          $guiObj->testcase['tc_external_id'] . ':' . 
+                          $guiObj->testcase['name'], $guiObj->testcase['version']); 
 
     $guiObj->tcase_id = $argsObj->tcase_id;
     $guiObj->tcversion_id = $argsObj->tcversion_id;
     $guiObj->step_id = $argsObj->step_id;
     $guiObj->step_exec_type = $stepInfo['execution_type'];
-    $guiObj->step_number = $stepInfo['step_number']; // BUGID 3326: Editing a test step: execution type always "Manual"
+    $guiObj->step_number = $stepInfo['step_number'];
 
     // Get all existent steps
     $guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
@@ -604,18 +616,18 @@ class testcaseCommands
      */
   function doUpdateStep(&$argsObj,$request)
   {
-      $guiObj = $this->initGuiBean($argsObj);
+    $guiObj = $this->initGuiBean($argsObj);
     $guiObj->user_feedback = '';
     
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
 
     $stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
     $guiObj->main_descr = sprintf(lang_get('edit_step_number_x'),$stepInfo['step_number'],
-                    $guiObj->testcase['tc_external_id'] . ':' . 
-                    $guiObj->testcase['name'], $guiObj->testcase['version']); 
+                          $guiObj->testcase['tc_external_id'] . ':' . 
+                          $guiObj->testcase['name'], $guiObj->testcase['version']); 
 
-        $op = $this->tcaseMgr->update_step($argsObj->step_id,$argsObj->step_number,$argsObj->steps,
-                                           $argsObj->expected_results,$argsObj->exec_type);    
+    $op = $this->tcaseMgr->update_step($argsObj->step_id,$argsObj->step_number,$argsObj->steps,
+                                       $argsObj->expected_results,$argsObj->exec_type);    
 
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
@@ -656,7 +668,7 @@ class testcaseCommands
    */
   function doDeleteStep(&$argsObj,$request)
   {
-    $guiObj = $this->initGuiBean($argsObj); // BUGID 3493
+    $guiObj = $this->initGuiBean($argsObj);
 
     $viewer_args=array();
     $guiObj->refreshTree = 0;

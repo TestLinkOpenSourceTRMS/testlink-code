@@ -38,9 +38,6 @@ $commandMgr = new testcaseCommands($db);
 $commandMgr->setTemplateCfg(templateConfiguration());
 
 $testCaseEditorKeys = array('summary' => 'summary','preconditions' => 'preconditions');
-$oWebEditor = createWebEditors($args->basehref,$cfg->webEditorCfg,$testCaseEditorKeys);
-
-$sqlResult = "";
 $init_inputs = true;
 $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
 $gui = initializeGui($db,$args,$cfg,$tcase_mgr);
@@ -58,6 +55,34 @@ if($args->do_activate_this)
 
 $doRender = false;
 $pfn = $args->doAction;
+
+$testCaseEditorKeys = null;
+switch($args->doAction)
+{
+
+  case "create":  
+  case "edit":  
+  case "doCreate":  
+    $testCaseEditorKeys = array('summary' => 'summary','preconditions' => 'preconditions');
+  break;
+    
+
+  case "createStep":
+  case "editStep":
+  case "doCreateStep":
+  case "doCopyStep":
+  case "doUpdateStep":
+  case "doDeleteStep":
+  case "doReorderSteps":
+  case "doInsertStep":
+  case "doResequenceSteps":
+    $testCaseEditorKeys = array('steps' => 'steps', 'expected_results' => 'expected_results');
+
+  break;
+
+}
+
+
 switch($args->doAction)
 {
   case "doUpdate":
@@ -65,14 +90,14 @@ switch($args->doAction)
     $op = $commandMgr->$pfn($args,$_REQUEST);
   break;
 
-  case "edit":  
   case "create":  
+  case "edit":  
   case "doCreate":  
-    $oWebEditorKeys = array_keys($oWebEditor->cfg);
-    $op = $commandMgr->$pfn($args,$opt_cfg,$oWebEditorKeys,$_REQUEST);
+    $op = $commandMgr->$pfn($args,$opt_cfg,array_keys($testCaseEditorKeys),$_REQUEST);
     $doRender = true;
   break;
     
+
   case "delete":  
   case "doDelete":  
   case "createStep":
@@ -92,7 +117,7 @@ switch($args->doAction)
 
 if( $doRender )
 {
-  renderGui($args,$gui,$op,$templateCfg,$cfg);
+  renderGui($args,$gui,$op,$templateCfg,$cfg,$testCaseEditorKeys);
   exit();
 }
 
@@ -513,7 +538,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
  *
  * BUGID 3359
  */
-function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
+function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
 {
     $smartyObj = new TLSmarty();
     
@@ -541,10 +566,10 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
   
   $key2work = 'initWebEditorFromTemplate';
   $initWebEditorFromTemplate = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
-   $key2work = 'cleanUpWebEditor';
+  $key2work = 'cleanUpWebEditor';
   $cleanUpWebEditor = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
 
-    $oWebEditor = createWebEditors($argsObj->basehref,$cfgObj->webEditorCfg); 
+  $oWebEditor = createWebEditors($argsObj->basehref,$cfgObj->webEditorCfg,$editorKeys); 
   foreach ($oWebEditor->cfg as $key => $value)
    {
      $of = &$oWebEditor->editor[$key];

@@ -418,12 +418,15 @@ $tlCfg->dashboard_precision = 2;
  * Every element is a mp with this configuration keys:
  *
  * 'type':
- *        'fckeditor'
- *        'tinymce'
+ *        'fckeditor'  ==> will be deprecated in future versions
+ *				'ckeditor'
+ *        'tinymce'    ==> will be deprecated in future versions
  *        'none' -> use plain text area input field
- * 'toolbar': only applicable for type = 'fckeditor'
+ * 'toolbar': only applicable for type = 'fckeditor', 'ckeditor'
  *			name of ToolbarSet  (See: http://docs.fckeditor.net/ for more information about ToolbarSets)
  * 			TestLink stores own definitions in <testlink_dir>/cfg/tl_fckeditor_config.js
+ * 			TestLink stores own definitions in <testlink_dir>/cfg/tl_ckeditor_config.js
+ *
  * 'configFile': only applicable for type = 'fckeditor'
  * 			See: http://docs.fckeditor.net/ for more information about CustomConfigurationsPath
  * 'height': the height in px for FCKEditor
@@ -454,11 +457,26 @@ $tlCfg->dashboard_precision = 2;
  *
  * Hint: After doing configuration changes, clean you Browser's cookies and cache
  */
+/*
 $tlCfg->gui->text_editor = array();
 $tlCfg->gui->text_editor['all'] = array('type' => 'fckeditor',
                                     	'toolbar' => 'tl_default',
                                     	'configFile' => 'cfg/tl_fckeditor_config.js',);
 $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
+*/
+
+$tlCfg->gui->text_editor = array();
+$tlCfg->gui->text_editor['all'] = array('type' => 'ckeditor','toolbar' => 'Testlink',
+                                    		'configFile' => 'cfg/tl_ckeditor_config.js',
+                                        'height' => 300);
+
+// mini toolbar for test case steps edit
+$tlCfg->gui->text_editor['steps_design'] = array('type' => 'ckeditor','toolbar' => 'TestlinkMini',
+                                    	           'configFile' => 'cfg/tl_ckeditor_config.js',
+                                                 'height' => 200);
+
+$tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
+
 
 /** User can choose order of menu areas */
 $tlCfg->gui->layoutMainPageLeft = array( 'testProject' => 1, 'userAdministration' => 2 ,

@@ -3,16 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: reqExport.php,v $
- *
- * @version $Revision: 1.10 $
- * @modified $Date: 2010/03/21 19:28:34 $ by $Author: franciscom $
+ * @filesource	reqExport.php
  *
  * Allows users to export requirements.
  *
- * 20100321 - franciscom - manage export of :
- *			               req. spec => full tree or branch (new to 1.9)
- *                         child (direct children) requirements inside a req. spec
 **/
 require_once("../../config.inc.php");
 require_once("csv.inc.php");

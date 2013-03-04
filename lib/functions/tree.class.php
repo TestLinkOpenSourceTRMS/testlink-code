@@ -22,6 +22,7 @@ class tree extends tlObject
 
   // ORDER IS CRITIC
   // configurable values - pseudoconstants
+  // VERBOSE description do not map 100% contents of node_types table
   var $node_types = array( 1 => 'testproject','testsuite',
                                 'testcase','tcversion','testplan',
                                 'requirement_spec','requirement','req_version',
@@ -38,17 +39,19 @@ class tree extends tlObject
   var $node_descr_id = array();
   
 
+  // Order here means NOTHING
   var $node_tables_by = array('id' => array(),
                 'name' =>
                   array('testproject' => 'testprojects',
-                                   'testsuite' => 'testsuites',
-                                   'testplan' => 'testplans',
-                                   'testcase' => 'testcases',
-                                   'tcversion' => 'tcversions',
-                                   'requirement_spec' =>'req_specs',
-                                   'requirement' => 'requirements',  
-                                   'req_version' => 'req_versions',
-                                   'requirement_spec_revision' => 'req_specs_revisions'));
+                        'testsuite' => 'testsuites',
+                        'testplan' => 'testplans',
+                        'testcase' => 'testcases',
+                        'tcversion' => 'tcversions',
+                        'requirement_spec' =>'req_specs',
+                        'requirement' => 'requirements',  
+                        'req_version' => 'req_versions',
+                        'req_revision' => 'req_versions',
+                        'requirement_spec_revision' => 'req_specs_revisions'));
   
   var $node_tables;
     

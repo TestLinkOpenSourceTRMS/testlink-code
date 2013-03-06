@@ -21,7 +21,8 @@
  * @internal revisions
  *
  * @since 1.9.6
- *
+ * 20130306 - franciscom - TICKET 5541: BULK Execution - When "Result" filter is used, no test cases 
+ *                                      show up in the right pane when user clicks on the test suite. 
  *
 **/
 require_once('../../config.inc.php');
@@ -281,7 +282,12 @@ if ($userid_array)
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id);
 
 // Bulk is possible when test suite is selected (and is allowed in config)
-$gui->can_use_bulk_op = ($args->level == 'testsuite');
+if( $gui->can_use_bulk_op = ($args->level == 'testsuite') )
+{
+  $xx = current($gui->execution_time_cfields);
+  $gui->execution_time_cfields = null;
+  $gui->execution_time_cfields[0] = $xx;
+}  
 initWebEditors($gui,$cfg,$_SESSION['basehref']);
 
 // To silence smarty errors
@@ -290,10 +296,6 @@ $smarty->assign('test_automation_enabled',0);
 $smarty->assign('cfg',$cfg);
 $smarty->assign('users',tlUser::getByIDs($db,$userSet,'id'));
 $smarty->assign('gui',$gui);
-
-
-// $smarty->assign('g_bugInterface', $g_bugInterface);
-
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /*
@@ -315,7 +317,6 @@ function init_args(&$dbHandler,$cfgObj)
   $mode = 'execution_mode';
   $form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
   $session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
-  
   
   $args->caller = isset($_REQUEST['caller']) ? $_REQUEST['caller'] : 'exec_feature';
 
@@ -365,12 +366,16 @@ function init_args(&$dbHandler,$cfgObj)
     }
     else
     {
+      // 20130306 - franciscom
+      // This (without the strlen() check) generated issue 5541: When "Result" filter is used ...
+      // at least when result DIFFERENT that NOT RUN is used on filter
+      //
       // 20120616 - franciscom
       // some strange thing to investigate, seems that userialize is invoked
       // under the hood when getting data from $_REQUEST, then this piece
       // of code not only will be useless BUT WRONG, because will try
       // to unserialize something that IS NOT SERIALIZED!!!!
-      if(is_string($args->filter_status))
+      if(is_string($args->filter_status) && strlen($args->filter_status) > 1)
       {
         $args->filter_status = unserialize($args->filter_status);
       }
@@ -576,8 +581,16 @@ function get_ts_name_details(&$db,$tcase_id)
 */
 function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tcase_id,$tproject_id)
 {
-  $fpath=$tree_mgr->get_full_path_verbose($tcase_id, array('output_format' => 'id_name'));
+  if( ($safeTCaseID = intval($tcase_id)) <= 0)
+  {
+    // hmm, no good
+    return;
+  }  
+
+
+  $fpath = $tree_mgr->get_full_path_verbose($tcase_id, array('output_format' => 'id_name'));
   $tsuite_info = get_ts_name_details($db,$tcase_id);
+
   foreach($fpath as $key => $value)
   {
       unset($value['name'][0]);  // Remove test plan name
@@ -595,7 +608,7 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
   
   // --------------------------------------------------------------------------------
   if(!is_null($tsuite_info))
-    {
+  {
         $cookieKey = 'TL_execSetResults_tsdetails_view_status';
     $exec_cfg = config_get('exec_cfg');
 
@@ -1230,6 +1243,9 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
                 $tcaseMgr->html_table_of_custom_field_inputs($tcase_id,null,'execution',"_{$tcase_id}",null,
                                                              null,$argsObj->tproject_id);
     }
+
+    // new dBug($guiObj->execution_time_cfields);
+
     $tc_info=$treeMgr->get_node_hierarchy_info($tcase_id);
   $guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
                                                                        'nodes_hierarchy',true,1);
@@ -1560,11 +1576,10 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
              'group_by_build' => 'add_build',
              'last_execution' => !$historyOn);
     
-    if(is_null($argsObj->filter_status) || in_array($cfgObj->tc_status['not_run'],$argsObj->filter_status))
+    if(is_null($argsObj->filter_status) || in_array($cfgObj->tc_status['not_run'],(array)$argsObj->filter_status))
     {
         $options['only_executed'] = false;
     }
-
 
     // args->tsuites_id: is only used when user click on a test suite.
     //                   probably is used only when bulk execution is enabled.
@@ -1578,13 +1593,12 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
     // $args->platform_id: needed to get execution status info
     // $args->build_id: needed to get execution status info
     //
-    $basic_filters = array('tcase_id' => $argsObj->tc_id, 'platform_id' => $argsObj->platform_id,
-                 'build_id' => $argsObj->build_id);
+    $basic_filters = array('tcase_id' => $argsObj->tc_id, 'platform_id' => $argsObj->platform_id,'build_id' => $argsObj->build_id);
     
     // This filters are useful when bulk execution is enabled, 
     // and user do click on a test suite on execution tree.
     $bulk_filters = array('keyword_id' => $argsObj->keyword_id,'assigned_to' => $argsObj->filter_assigned_to, 
-                  'exec_status' => $argsObj->filter_status,'cf_hash' => $argsObj->cf_selected,
+                          'exec_status' => $argsObj->filter_status,'cf_hash' => $argsObj->cf_selected,
                           'tsuites_id' => $argsObj->tsuite_id,
                           'assigned_on_build' => $argsObj->build_id);
     
@@ -1626,7 +1640,7 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
       if(!is_null($tex))
       {
         foreach($tex as $xkey => $xvalue)
-             {
+        {
               $itemSet->tcase_id[]=$xkey;
               $itemSet->tcversion_id[]=$xvalue['tcversion_id'];
              }  

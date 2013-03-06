@@ -16,7 +16,10 @@
  * @internal revisions
  * 
  * @since 1.9.6
- * 20130416 - franciscom - TICKET 5524: Creating build using test case user assignment from existing build. 
+ *
+ * 20130306 - franciscom - TICKET 5541: BULK Execution - When "Result" filter is used, no test cases 
+ *                                      show up in the right pane when user clicks on the test suite.
+ * 20130216 - franciscom - TICKET 5524: Creating build using test case user assignment from existing build. 
  *                         Newest build is not selected by default.
  *                         get_builds_for_html_options() interface and logic changes.
  *
@@ -90,28 +93,28 @@ class testplan extends tlObjectWithAttachments
    */
   function __construct(&$db)
   {
-      $this->db = &$db;
-      $this->tree_manager = new tree($this->db);
+    $this->db = &$db;
+    $this->tree_manager = new tree($this->db);
     $this->node_types_descr_id=$this->tree_manager->get_available_node_types();
     $this->node_types_id_descr=array_flip($this->node_types_descr_id);
       
-      $this->assignment_mgr = new assignment_mgr($this->db);
-      $this->assignment_types = $this->assignment_mgr->get_available_types();
-      $this->assignment_status = $this->assignment_mgr->get_available_status();
+    $this->assignment_mgr = new assignment_mgr($this->db);
+    $this->assignment_types = $this->assignment_mgr->get_available_types();
+    $this->assignment_status = $this->assignment_mgr->get_available_status();
 
-      $this->cfield_mgr = new cfield_mgr($this->db);
-      $this->tcase_mgr = New testcase($this->db);
+    $this->cfield_mgr = new cfield_mgr($this->db);
+    $this->tcase_mgr = New testcase($this->db);
     $this->platform_mgr = new tlPlatform($this->db);
      
-       $this->resultsCfg = config_get('results');
+    $this->resultsCfg = config_get('results');
     $this->tcaseCfg = config_get('testcase_cfg');
 
        
        // special values used too many times
-       $this->notRunStatusCode = $this->resultsCfg['status_code']['not_run'];
-      $this->execTaskCode = intval($this->assignment_types['testcase_execution']['id']);
+    $this->notRunStatusCode = $this->resultsCfg['status_code']['not_run'];
+    $this->execTaskCode = intval($this->assignment_types['testcase_execution']['id']);
 
-      tlObjectWithAttachments::__construct($this->db,'testplans');
+    tlObjectWithAttachments::__construct($this->db,'testplans');
   }
 
   /**
@@ -5551,7 +5554,7 @@ class testplan extends tlObjectWithAttachments
               " AND E.build_id = " . $my['filters']['build_id'] .
 
               " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
-              $my['where']['where'] .
+              $my['where']['not_run'] .
               " /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
               " AND E.id IS NULL AND LEBBP.id IS NULL";
 
@@ -5595,13 +5598,14 @@ class testplan extends tlObjectWithAttachments
    *            
    *
    * @internal revisions
-   * @since 1.9.4
+   * @since 1.9.6
+   * 20130306 - filter on exec status when setted to NOT RUN was wrong
    */
   function initGetLinkedForTree($tplanID,$filtersCfg,$optionsCfg)
   {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $dummy = array('exec_type','tc_id','builds','keywords','executions','platforms');
+    $dummy = array('exec_type','tc_id','builds','keywords','executions','platforms');
 
     $ic['join'] = array();
     $ic['join']['ua'] = '';
@@ -5609,16 +5613,17 @@ class testplan extends tlObjectWithAttachments
     $ic['where'] = array();
     $ic['where']['where'] = '';
     $ic['where']['platforms'] = '';
+    $ic['where']['not_run'] = '';
 
     $ic['green_light'] = true;
-        $ic['filters'] = array('tcase_id' => null, 'keyword_id' => 0,
-                               'assigned_to' => null, 'exec_status' => null,
-                               'build_id' => 0, 'cf_hash' => null,
-                               'urgencyImportance' => null, 'tsuites_id' => null,
-                               'platform_id' => null, 'exec_type' => null,
-                               'tcase_name' => null);
+    $ic['filters'] = array('tcase_id' => null, 'keyword_id' => 0,
+                           'assigned_to' => null, 'exec_status' => null,
+                           'build_id' => 0, 'cf_hash' => null,
+                           'urgencyImportance' => null, 'tsuites_id' => null,
+                           'platform_id' => null, 'exec_type' => null,
+                           'tcase_name' => null);
 
-        $ic['options'] = array('hideTestCases' => 0, 'include_unassigned' => false, 'allow_empty_build' => 0);
+    $ic['options'] = array('hideTestCases' => 0, 'include_unassigned' => false, 'allow_empty_build' => 0);
     $ic['filters'] = array_merge($ic['filters'], (array)$filtersCfg);
     $ic['options'] = array_merge($ic['options'], (array)$optionsCfg);
 
@@ -5628,23 +5633,21 @@ class testplan extends tlObjectWithAttachments
     // This NEVER HAPPENS for Execution Tree, but if we want to reuse
     // this method for Tester Assignment Tree, we need to add this check
     //
-    // TICKET 5176: Possibility to filter by Platform
     if( !is_null($ic['filters']['platform_id']) && $ic['filters']['platform_id'] > 0)
-    // if( !is_null($ic['filters']['platform_id']) )
     {
       $ic['filters']['platform_id'] = intval($ic['filters']['platform_id']);
       $ic['where']['platforms'] = " AND TPTCV.platform_id = {$ic['filters']['platform_id']} ";
     }
     
     
-      $ic['where']['where'] .= $ic['where']['platforms'];
+    $ic['where']['where'] .= $ic['where']['platforms'];
 
     $dk = 'exec_type';
     if( !is_null($ic['filters'][$dk]) )
     {
       $ic['where'][$dk]= " AND TCV.execution_type IN (" . 
                          implode(",",(array)$ic['filters'][$dk]) . " ) ";     
-        $ic['where']['where'] .= $ic['where'][$dk];
+      $ic['where']['where'] .= $ic['where'][$dk];
     }
 
     $dk = 'tcase_id';
@@ -5664,7 +5667,7 @@ class testplan extends tlObjectWithAttachments
         // NO SENSE run the query
         $ic['green_light'] = false;
       }
-        $ic['where']['where'] .= $ic['where'][$dk];
+      $ic['where']['where'] .= $ic['where'][$dk];
     }
 
     if (!is_null($ic['filters']['tsuites_id']))
@@ -5707,9 +5710,9 @@ class testplan extends tlObjectWithAttachments
     if( isset($ic['options']['assigned_on_build']) && !is_null($ic['options']['assigned_on_build']) )
     {
       $ic['join']['ua'] = " LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
-                   " ON UA.feature_id = TPTCV.id " . 
-                  " AND UA.build_id = " . $ic['options']['assigned_on_build'] . 
-                  " AND UA.type = {$this->execTaskCode} ";
+                          " ON UA.feature_id = TPTCV.id " . 
+                          " AND UA.build_id = " . $ic['options']['assigned_on_build'] . 
+                          " AND UA.type = {$this->execTaskCode} ";
     }
 
 
@@ -5719,14 +5722,29 @@ class testplan extends tlObjectWithAttachments
       $ic['where']['where'] .= " AND NH_TCASE.name LIKE '%{$dummy}%' "; 
     }
                                
-                               
+
+    // Position on code flow is CRITIC
     if (!is_null($ic['filters']['exec_status']))
     {
+      $ic['where']['not_run'] = $ic['where']['where'];
       $dummy = (array)$ic['filters']['exec_status'];
+
       $ic['where']['where'] .= " AND E.status IN ('" . implode("','",$dummy) . "')";
+
+      if( in_array($this->notRunStatusCode,$dummy) )
+      {
+        $ic['where']['not_run'] .=  ' AND E.status IS NULL ';
+      } 
+      else
+      {
+        $ic['where']['not_run'] = $ic['where']['where'];
+      } 
     }
+
+    // do always
+
                       
-        return $ic;                       
+    return $ic;                       
   }                              
 
 

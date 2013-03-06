@@ -481,15 +481,16 @@ class reqCommands
     $obj->items = array($req);
     $obj->main_descr = lang_get('req') . TITLE_SEP . $req['title'];
     $obj->action_descr = lang_get('copy_one_req');
-        $obj->template = 'reqCopy.tpl';
+    $obj->template = 'reqCopy.tpl';
     $obj->containers = null;
     $obj->page2call = 'lib/requirements/reqEdit.php';
     $obj->array_of_msg = '';
     $obj->doActionButton = 'doCopy';
-      $obj->req_spec_id = $argsObj->req_spec_id;
+    $obj->req_spec_id = $argsObj->req_spec_id;
   
-        $exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
-                                'testcase'=> 'exclude_me','requirement' => 'exclude_me');
+    $exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
+                              'testcase'=> 'exclude_me','requirement' => 'exclude_me',
+                              'requirement_spec_revision'=> 'exclude_me');
         
      $my['filters'] = array('exclude_node_types' => $exclude_node_types);
       $subtree = $this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,$my['filters']);

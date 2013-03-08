@@ -7,17 +7,6 @@
  * This script provides the get_rights and has_rights functions for
  * verifying user level permissions.
  *
- * Default Role definition (1.6 version and UP):
- *
- * 'guest'   - testplan_metrics, mgt_view_tc, mgt_view_key
- * 'tester' - testplan_execute, testplan_metrics
- * 'senior tester'   - testplan_execute, testplan_metrics, mgt_view_tc, mgt_modify_tc, mgt_view_key
- * 'lead'   - testplan_execute, testplan_create_build, testplan_metrics, testplan_planning, testplan_assign_rights,
- *        mgt_view_tc, mgt_modify_tc, mgt_view_key, mgt_modify_key
- * 'admin'   - testplan_execute, testplan_create_build, testplan_metrics, testplan_planning, testplan_assign_rights,
- *        mgt_view_tc, mgt_modify_tc, mgt_view_key, mgt_modify_key,
- *        mgt_modify_product, mgt_users
- *
  * @filesource  roles.inc.php
  * @package     TestLink
  * @author      Martin Havlat, Chad Rosen
@@ -62,7 +51,7 @@ function init_global_rights_maps()
   global $g_rights_system;
   global $g_rights_platforms;
   global $g_rights_issuetrackers;
-  global $g_rights_reqmgrsystems;
+  // global $g_rights_reqmgrsystems;
 
   global $g_propRights_global;
   global $g_propRights_product;
@@ -104,8 +93,8 @@ function init_global_rights_maps()
                                   "issuetracker_management" => lang_get('desc_issuetrackers_management'));
 
 
-  $g_rights_reqmgrsystems = array("reqmgrsystem_view" => lang_get('desc_reqmgrsystems_view'),
-                                  "reqmgrsystem_management" => lang_get('desc_reqmgrsystems_management'));
+  // $g_rights_reqmgrsystems = array("reqmgrsystem_view" => lang_get('desc_reqmgrsystems_view'),
+  //                                 "reqmgrsystem_management" => lang_get('desc_reqmgrsystems_management'));
 
 
   // Global means test project independent.

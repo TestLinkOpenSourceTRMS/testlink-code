@@ -173,7 +173,7 @@ function getRightsCfg()
     $cfg->system_mgmt = config_get('rights_system');
     $cfg->platform_mgmt = config_get('rights_platforms');
     $cfg->issuetracker_mgmt = config_get('rights_issuetrackers');
-    $cfg->reqmgrsystem_mgmt = config_get('rights_reqmgrsystems');
+    // $cfg->reqmgrsystem_mgmt = config_get('rights_reqmgrsystems');
     return $cfg;
 }
 

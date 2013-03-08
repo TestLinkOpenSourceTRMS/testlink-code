@@ -156,6 +156,7 @@ function validateForm(f)
               {/foreach}
             </fieldset>
           </td>
+          {* 
           <td>
           <fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_reqmgrsystem_rights}</legend>
               {foreach from=$gui->rightsCfg->reqmgrsystem_mgmt item=id key=k}
@@ -163,6 +164,7 @@ function validateForm(f)
               {/foreach}
             </fieldset>
           </td>
+          *}
         </tr>
 
       </table>

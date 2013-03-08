@@ -4,7 +4,7 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	mainPage.php
- * @author Martin Havlat
+ * @author      Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
  *
@@ -14,7 +14,6 @@
  * There is also some javascript that handles the form information.
  *
  * @internal revisions
- * @since 1.9.5
  * 
  **/
 

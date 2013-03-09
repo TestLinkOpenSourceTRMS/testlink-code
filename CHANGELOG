@@ -3,6 +3,71 @@
    TestLink  Change-log
 *******************************************************************************
 
+
+TestLink - 1.9.6 (2013 Q1 - bug fixing) (Scheduled For Release 2013-03-10) 
+==========================================================================
+
+- 0005440: NEW FEATURE [Reports] Test result matrix - add export on spreadsheet format (fman) - resolved.
+- 0005532: NEW FEATURE [Requirement Management] Specification: How to manage Frozen Req (fman) - resolved.
+- 0005446: NEW FEATURE [Users and Rights] User List - convert GUI to EXT-JS grid (fman) - resolved.
+- 0005537: NEW FEATURE [TL API] API - removePlatformFromTestPlan() (fman) - resolved.
+- 0005494: NEW FEATURE [TL API] API - addPlatformToTestPlan() (fman) - resolved.
+- 0005497: NEW FEATURE [TL API] API - getProjectPlatforms() (fman) - resolved.
+- 0005467: NEW FEATURE [Third party components] Integration of ckeditor 3.x (fman) - resolved.
+- 0005536: NEW FEATURE [Test Specification] Create Test Case in Test suite that has keywords, manage automatic inheritance (fman) - resolved.
+- 0005480: NEW FEATURE [Test Specification] Possibility to renumber steps to remove 'holes' created due to step delete. (fman) - resolved.
+- 0005452: NEW FEATURE [Requirement Management] Requirement View feature - add quick test case link / unlink (fman) - resolved.
+- 0005409: NEW FEATURE [Reports] Results by Tester per Build - direct link without login (fman) - resolved.
+- 0005408: NEW FEATURE [Reports] Test result matrix - direct link without login (fman) - resolved.
+- 0005411: NEW FEATURE [Reports] Charts - direct link without login (fman) - resolved.
+- 0005407: NEW FEATURE [Reports] General Test Plan Metrics - direct link without login (fman) - resolved.
+- 0005405: NEW FEATURE [Reports] metrics dashboard - direct link without login (fman) - resolved.
+
+- 0005485: [Database General] SQL Scripts for manual upgrade from 1.9.4 / 1.9.5 to 1.9.6 (fman) - resolved.
+
+- 0005523: [Requirement Management] Attachments to a frozen requirement can be deleted (fman) - resolved.
+- 0005541: [Test Execute - Filters] BULK Execution - When "Result" filter is used, no test cases show up in the right pane when user clicks on the test suite. (fman) - resolved.
+- 0005432: [Filters] Debug output when filtering on test specification page (fman) - resolved.
+- 0005533: [Requirement Management] Duplicates of Requirement Spec item on the dropdown list when copy requirements (fman) - resolved.
+- 0005538: [Assign Test Case Execution] Keyword "And/Or" options are not filtering tree/test suite contents correctly when multiple keywords are selected. (fman) - resolved.
+- 0005528: [Import Requirements - XML format] Importing a requirement with CF fails after the first time (fman) - resolved.
+- 0005287: [Test Plan - Assign Test Case Execution] Test Case Tree not available on right pane after multiple Keywords are used for filtering (fman) - resolved.
+- 0005076: [Test Execute] Unable to execute a test once Testlink has been integrated with FogBugz (fman) - resolved.
+- 0005529: [Test Plan - Add/Remove Test Cases] Filters are not applied to the 'Add Test Cases to Test Plan' list (fman) - resolved.
+- 0005524: [General] Creating build using test case user assignment from existing build. Newest build is not selected by default. (fman) - resolved.
+- 0005519: [Reports] Unassigned test cases to a platform show up in "test plan report" (fman) - resolved.
+- 0005464: [Database MS-SQL] DB Access error after deleting events from Event view (SQL server 2008) (fman) - resolved.
+- 0005520: [Test Plan Management] Deactivating a testplan renders any access to it impossible (fman) - resolved.
+- 0005518: [Test Plan Management] error message while trying to activate existing inactive Test Plans. (fman) - resolved.
+- 0005517: [Bug Tracking System - JIRA Integration] Create Issue (SOAP) fails due to required attributes (not managed yet on TestLink) (fman) - resolved.
+- 0005505: [Metrics Dashboard] 1.9.6 (2013 Q1): If the API Key is missing due to configuration or not user generated place an appropriate error message (fman) - resolved.
+- 0005503: [Reports] DB Access Error during reporting with EXEC_TIME custom fields (MSSQL, CF, Reports) (fman) - resolved.
+- 0005481: [Charts] Error in pie chart for platforms without testcases (fman) - resolved.
+- 0005454: [Bug Tracking System - Bugzilla Integration] [Bugzilla XML-RPC]: Add Bug & Create Issue, both are not working. (fman) - resolved.
+- 0005486: [Test Project Management] Deleting Test project do not delete testproject_issuetracker association (fman) - resolved.
+- 0005476: [Test Specification] Direct link to testcase where TC ID prefix contains an '&' (the ampersand symbol), does not link (fman) - resolved.
+- 0005460: [Reports] CF_EXEC_TIME - Execution time does not show in reports for test suite. (fman) - resolved.
+- 0005457: [Reports] Incorrect data in "Report by tester per build" (fman) - resolved.
+- 0005465: [Test Plan Management] Inactive test plan are not displayed on Test management (fman) - resolved.
+- 0005425: [Test Execute - 'Save and move to next'] Access TO EXECUTION FROM 'Test Case Assigned to me' - Issues with Save and move to next" returns to the same case (fman) - resolved.
+- 0005401: [Reports] Closed redmine issues are not considered Resolved in TestLink (fman) - resolved.
+- 0005453: [Reports - Failed/Blocked Test Cases] Test Case with and WITHOUT tester assignment and computed - Help said ONLY WITH ASSIGNMENT (fman) - resolved.
+- 0005451: [Reports] Test Plan WITH 2 or more PLATFORMS - Test Cases Without Tester Assignment provide wrong result (fman) - resolved.
+- 0005444: [Localization] Localization files for es_ES (fman) - resolved.
+- 0005404: [Filters] Test Specification Test case Filters does not show all slected test id (fman) - resolved.
+- 0005309: [Export/Import] Test case summary and Test case ID getting duplicated->import the Test specification XML file inside subtree (fman) - resolved.
+- 0005442: [Requirement Management] Deleting a req spec, leaves record on nodes hierachy regarding req spec revision (fman) - resolved.
+- 0005439: [Test Specification] login on timeout when editing TEST SUITES to avoid data loss not working (fman) - resolved.
+- 0005433: [User Interface General] "BUG Management" links not displayed in Firefox v17.0.1 (fman) - resolved.
+- 0005427: [Bug Tracking System - JIRA Integration] There is no 'jiradbInterface' class anymore available ? (fman) - resolved.
+- 0005410: [Reports] Test Cases without Tester Assignment - Crash (fman) - resolved.
+- 0005407: [Reports] General Test Plan Metrics - direct link without login (fman) - resolved.
+- 0005405: [Reports] metrics dashboard - direct link without login (fman) - resolved.
+- 0005491: [Export/Import] DB Access Error when import test case XML with CF (fman) - closed.
+
+53 of 53 issue(s) resolved.
+
+
 TestLink - 1.9.5 (2012 Q4 - bug fixing) (Scheduled For Release 2012-12-10)
 ================================================================================
 

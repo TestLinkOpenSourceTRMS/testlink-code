@@ -61,7 +61,7 @@ var del_action=fRoot+'{$deleteAction}';
       <th class="{$noSortableColumnClass}">{$labels.th_notes}</th>
       <th>{$tlImages.sort_hint}{$labels.tcase_id_prefix}</th>
       <th>{$tlImages.sort_hint}{$labels.th_issuetracker}</th>
-      <th>{$tlImages.sort_hint}{$labels.th_reqmgrsystem_short}</th>
+      {* <th>{$tlImages.sort_hint}{$labels.th_reqmgrsystem_short}</th> *}
       <th class="{$noSortableColumnClass}">{$labels.th_requirement_feature}</th>
       <th class="icon_cell">{$labels.th_active}</th>
       <th class="icon_cell">{$labels.public}</th>
@@ -90,10 +90,11 @@ var del_action=fRoot+'{$deleteAction}';
       <td width="10%">
         {$testproject.itstatusImg} &nbsp; {$testproject.itname|escape} 
       </td>
+      {*
       <td width="10%">
         {$testproject.rmsstatusImg} &nbsp; {$testproject.rmsname|escape} 
       </td>
-      
+      *}
       <td class="clickable_icon">
         {if $testproject.opt->requirementsEnabled}
             <img style="border:none" title="{$labels.testproject_alt_requirement_feature}"

@@ -188,6 +188,7 @@ return true;
           </td>
           </tr>
 
+      {*
       <tr>
         <td>{$labels.testproject_reqmgr_integration}</td><td></td>
       </tr>                         
@@ -221,7 +222,7 @@ return true;
           </td>
       </tr>
       {/if}  
-
+      *}
 
       <tr>
         <td>{$labels.availability}</td><td></td>

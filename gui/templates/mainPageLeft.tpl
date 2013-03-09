@@ -206,11 +206,13 @@
       <a href="lib/issuetrackers/issueTrackerView.php">{$labels.href_issuetracker_management}</a>
     {/if}
     
+    {* 
     {if $gui->grants.reqmgrsystem_management || $gui->grants.reqmgrsystem_view}
       <br />
         <img src="{$tlImages.bullet}" />
       <a href="lib/reqmgrsystems/reqMgrSystemView.php">{$labels.href_reqmgrsystem_management}</a>
     {/if}
+    *}
     </div>
   {/if}
   {* ---------------------------------------------------------------------------------------- *}

@@ -76,7 +76,7 @@ Server environment should consists from:
 - DBMS: MySQL 5.x , Postgres 8.x,9.x , MS-SQL 2005/2008
 
 Supported client web-browsers: 
-- Firefox 10 - 17
+- Firefox 10 - 19
 - Internet Explorer 8.x, 9.x
 - Chrome   
 
@@ -214,13 +214,10 @@ This list comprise people that has helped
 
 --- Most Active on this release
 * Francisco Mancardi - Project lead, builds, core developer, contributors code reviewer
-* Maradana Amardeep - Leader of testlink-qa group effort on 1.9.5
-
---- Contributors and developers active  ---
-* Bruno de Paula Kinoshita - some work on API, CSRF, Turn Key Linux
-* Andreas Simon
 
 --- Contributors and developers active on older releases ---
+* Maradana Amardeep - Leader of testlink-qa group effort on 1.9.5
+* Bruno de Paula Kinoshita - some work on API, CSRF, Turn Key Linux
 * Julian Krien - Leader of testlink-qa group effort on 1.9.1,1.9.2,1.9.3
 * Andreas Simon
 * Erik Eloff

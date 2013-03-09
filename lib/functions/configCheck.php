@@ -423,7 +423,7 @@ function checkForRepositoryDir($the_dir)
  */
 function checkSchemaVersion(&$db)
 {
-  $result = array('status' => tl::ERROR, 'msg' => null);
+  $result = array('status' => tl::ERROR, 'msg' => null, 'kill_session' => true);
   $last_version = TL_LAST_DB_VERSION; 
   $db_version_table= DB_TABLE_PREFIX . 'db_version';
   
@@ -481,6 +481,7 @@ function checkSchemaVersion(&$db)
 
     case $last_version:
       $result['status'] = tl::OK;
+      $result['kill_session'] = 'false';
     break;
     
     default:

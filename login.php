@@ -8,13 +8,10 @@
  * @filesource	login.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2006,2012 TestLink community 
+ * @copyright 	2006,2013 TestLink community 
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal revisions
- * @since 1.9.4
- *  20120703 - kinow - TICKET 4977 - CSRF - Advisory ID: HTB23088
- *  20111210 - franciscom - TICKET 4813: doDBConnect() - user feedback improvements
  *							
  **/
 
@@ -186,6 +183,17 @@ function doBlockingChecks(&$dbHandler,&$guiObj)
 	if( $op['status'] < tl::OK ) 
 	{
 		// Houston we have a problem
+		// This check to kill session was added to avoid following situation
+		// TestLink 1.9.5 installed
+		// Install TestLink 1.9.6 in another folder, pointing to same OLD DB
+		// you logged in TL 1.9.5 => session is created
+		// you try to login to 1.9.6, you get the Update DB Schema message but
+		// anyway because a LIVE AND VALID session you are allowed to login => BAD
+		if(isset($op['kill_session']) && $op['kill_session'])
+		{
+			session_unset();
+    	session_destroy();
+		}	
 		$guiObj->note = $op['msg'];
 		renderLoginScreen($guiObj);
 	}

@@ -9,11 +9,6 @@
  * @link http://www.teamst.org/index.php*
  *
  * @internal revisions
- * @since 1.9.4
- * 20111210 - franciscom -	TICKET 4711: Apache Webserver - SSL Client Certificate Authentication (Single Sign-on?) 
- *							minor change needed when $redir2login == true
- *	
- * 20110813 - franciscom - 	TICKET 4342: Security problem with multiple Testlink installations on the same server
  *
 **/
 require_once('lib/functions/configCheck.php');

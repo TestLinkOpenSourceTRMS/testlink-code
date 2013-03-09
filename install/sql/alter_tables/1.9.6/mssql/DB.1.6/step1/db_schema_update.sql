@@ -65,8 +65,6 @@ SET IDENTITY_INSERT /*prefix*/rights OFF;
 
 
 /* update rights on admin role */
-SET IDENTITY_INSERT /*prefix*/role_rights ON;
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,33);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,34);
-SET IDENTITY_INSERT /*prefix*/role_rights OFF;
 /* ----- END ----- */

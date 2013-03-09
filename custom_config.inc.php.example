@@ -26,6 +26,20 @@
 //
 // *******************************************************************************
 //
+// This configuration has been created to solve:
+// http://itsecuritysolutions.org/2012-08-13-TestLink-1.9.3-multiple-vulnerabilities/
+// Give a look to:
+// http://mantis.testlink.org/view.php?id=5147
+// http://mantis.testlink.org/view.php?id=5148
+// http://mantis.testlink.org/view.php?id=4977
+// http://mantis.testlink.org/view.php?id=4906
+// 
+// You need to be certain that these folders have correct permissions in order
+// to allow the user/daemon used to run the webserver service/daemon read/write access.
+//
+// $tlCfg->log_path = '/var/testlink-ga-testlink-code/logs/'; /* unix example */
+// $g_repositoryPath = '/var/testlink-ga-testlink-code/upload_area/';  /* unix example */
+//
 // Uncomment this if you want dBug() display info
 // define('DBUG_ON',1);
 //

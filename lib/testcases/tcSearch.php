@@ -10,13 +10,12 @@
  * @filesource	tcSearch.php
  * @package 	TestLink
  * @author 		TestLink community
- * @copyright 	2007-2011, TestLink community 
+ * @copyright 	2007-2013, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
- *	@since 1.9.4
- *  20110706 - Julian - BUGID 4652 - Added link to execution history
+ *	@since 1.9.7
  *
  **/
 require_once("../../config.inc.php");
@@ -31,7 +30,7 @@ $tproject_mgr = new testproject($db);
 
 $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
-$args = init_args($date_format_cfg);
+list($args,$filter) = init_args($date_format_cfg);
 
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 $history_icon = TL_THEME_IMG_DIR . "history_small.png";
@@ -42,47 +41,38 @@ $map = null;
 if ($args->tprojectID)
 {
 	$tables = tlObjectWithDB::getDBTables(array('cfield_design_values','nodes_hierarchy',
-								                'requirements','req_coverage','tcsteps',
-								                'testcase_keywords','tcversions'));
+								                							'requirements','req_coverage','tcsteps',
+								                							'testcase_keywords','tcversions'));
 								                
-    $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
-    $gui->tcasePrefix .= $tcase_cfg->glue_character;
+  $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
+  $gui->tcasePrefix .= $tcase_cfg->glue_character;
 
-    $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '');
-    $filter = null;
+  $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '');
+  $filter = null;
 	$tcaseID = null;
-    
-    if($args->creation_date_from)
-    {
-        $filter['by_creation_date_from'] = " AND TCV.creation_ts >= '{$args->creation_date_from}' ";
-	}
 
-    if($args->creation_date_to)
-    {
-        $filter['by_creation_date_to'] = " AND TCV.creation_ts <= '{$args->creation_date_to}' ";
-	}
-	
-    if($args->modification_date_from)
-    {
-        $filter['by_modification_date_from'] = " AND TCV.modification_ts >= '{$args->modification_date_from}' ";
-	}
-
-    if($args->modification_date_to)
-    {
-        $filter['by_modification_date_to'] = " AND TCV.modification_ts <= '{$args->modification_date_to}' ";
-	}
+  $k2w = array('name' => 'NH_TC', 'summary' => 'TCV', 'preconditions' => 'TCV');
+  foreach($k2w as $kf => $alias)
+  {
+	  if($args->$kf != "")
+	  {
+	    $args->$kf =  $db->prepare_string($args->$kf);
+	    $filter[$kf] = " AND {$alias}.{$kf} like '%{$args->$kf}%' ";
+	  }
+  }	
     
-    if($args->targetTestCase != "" && strcmp($args->targetTestCase,$gui->tcasePrefix) != 0)
-    {
+   
+  if($args->targetTestCase != "" && strcmp($args->targetTestCase,$gui->tcasePrefix) != 0)
+  {
      	if (strpos($args->targetTestCase,$tcase_cfg->glue_character) === false)
      	{
     		$args->targetTestCase = $gui->tcasePrefix . $args->targetTestCase;
-   	    }
+   	  }
    	    
-        $tcase_mgr = new testcase ($db);
-        $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase);
-        $filter['by_tc_id'] = " AND NH_TCV.parent_id = {$tcaseID} ";
-    }
+      $tcase_mgr = new testcase ($db);
+      $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase);
+      $filter['by_tc_id'] = " AND NH_TCV.parent_id = {$tcaseID} ";
+  }
     else
     {
         $tproject_mgr->get_all_testcases_id($args->tprojectID,$a_tcid);
@@ -100,24 +90,6 @@ if ($args->tprojectID)
         
     }
     
-    if($args->name != "")
-    {
-        $args->name =  $db->prepare_string($args->name);
-        $filter['by_name'] = " AND NH_TC.name like '%{$args->name}%' ";
-    }
-    
-    if($args->summary != "")
-    {
-        $args->summary = $db->prepare_string($args->summary);
-        $filter['by_summary'] = " AND TCV.summary like '%{$args->summary}%' ";
-    }    
-
-    if($args->preconditions != "")
-    {
-        $args->preconditions = $db->prepare_string($args->preconditions);
-        $filter['by_preconditions'] = " AND TCV.preconditions like '%{$args->preconditions}%' ";
-    }    
-    
     if($args->steps != "")
     {
         $args->steps = $db->prepare_string($args->steps);
@@ -126,8 +98,8 @@ if ($args->tprojectID)
     
     if($args->expected_results != "")
     {
-		$args->expected_results = $db->prepare_string($args->expected_results);
-        $filter['by_expected_results'] = " AND TCSTEPS.expected_results like '%{$args->expected_results}%' ";	
+			$args->expected_results = $db->prepare_string($args->expected_results);
+      $filter['by_expected_results'] = " AND TCSTEPS.expected_results like '%{$args->expected_results}%' ";	
     }    
     
     if($args->custom_field_id > 0)
@@ -135,7 +107,6 @@ if ($args->tprojectID)
         $args->custom_field_id = $db->prepare_string($args->custom_field_id);
         $args->custom_field_value = $db->prepare_string($args->custom_field_value);
         $from['by_custom_field']= " JOIN {$tables['cfield_design_values']} CFD " .
-                                  //BUGID 2877 - Custom Fields linked to TC versions
                                   " ON CFD.node_id=NH_TCV.id ";
         $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
                                      " AND CFD.value like '%{$args->custom_field_value}%' ";
@@ -154,7 +125,7 @@ if ($args->tprojectID)
    	if( $args->importance > 0)
     {
         $filter['importance'] = " AND TCV.importance = {$args->importance} ";
-	}  
+		}  
     
     $sqlFields = " SELECT NH_TC.id AS testcase_id,NH_TC.name,TCV.id AS tcversion_id," .
                  " TCV.summary, TCV.version, TCV.tc_external_id "; 
@@ -179,6 +150,7 @@ if ($args->tprojectID)
     	$applyFilters = false;
     	$gui->warning_msg = $tcaseID == 0 ? lang_get('testcase_does_not_exists') : lang_get('prefix_does_not_exists');
     }
+
     if( $applyFilters )
     {      
     	if ($filter)
@@ -193,26 +165,28 @@ if ($args->tprojectID)
     	{
     		if ($gui->row_qty <= $tcase_cfg->search->max_qty_for_display)
     		{
-    	        $sql = $sqlFields . $sqlPart2;
+    	    $sql = $sqlFields . $sqlPart2;
     			$map = $db->fetchRowsIntoMap($sql,'testcase_id');	
+				}
+				else
+				{
+					$gui->warning_msg = lang_get('too_wide_search_criteria');
+				}	
 			}
-			else
-			{
-				$gui->warning_msg = lang_get('too_wide_search_criteria');
-			}	
-		}
-	}
+	  }
 }
 
 $smarty = new TLSmarty();
+
+$gui->pageTitle .= " - " . lang_get('match_count') . " : " . $gui->row_qty;
 if($gui->row_qty > 0)
 {	
 	if ($map)
 	{
 		$tcase_mgr = new testcase($db);   
-	    $tcase_set = array_keys($map);
-	    $options = array('output_format' => 'path_as_string');
-	    $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set, $options);
+	  $tcase_set = array_keys($map);
+	  $options = array('output_format' => 'path_as_string');
+	  $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set, $options);
 		$gui->resultSet = $map;
 	}
 }
@@ -222,12 +196,11 @@ else
 }
 
 $table = buildExtTable($gui, $charset, $edit_icon, $history_icon);
-
-if (!is_null($table)) {
+if (!is_null($table)) 
+{
 	$gui->tableSet[] = $table;
 }
 
-$gui->pageTitle .= " - " . lang_get('match_count') . " : " . $gui->row_qty;
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
@@ -235,9 +208,11 @@ $smarty->display($templateCfg->template_dir . $tpl);
  * 
  *
  */
-function buildExtTable($gui, $charset, $edit_icon, $history_icon) {
+function buildExtTable($gui, $charset, $edit_icon, $history_icon) 
+{
 	$table = null;
-	if(count($gui->resultSet) > 0) {
+	if(count($gui->resultSet) > 0) 
+	{
 		$labels = array('test_suite' => lang_get('test_suite'), 'test_case' => lang_get('test_case'));
 		$columns = array();
 		
@@ -249,7 +224,8 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon) {
 		
 		$titleSeperator = config_get('gui_title_separator_1');
 		
-		foreach($gui->resultSet as $result) {
+		foreach($gui->resultSet as $result) 
+		{
 			$rowData = array();
 			$rowData[] = htmlentities($gui->path_info[$result['testcase_id']], ENT_QUOTES, $charset);
 			
@@ -260,7 +236,7 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon) {
 						 "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
 			$tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . $titleSeperator .
 			             htmlentities($result['name'], ENT_QUOTES, $charset);
-		    $tcLink = $history_link . $edit_link . $tcaseName;
+		  $tcLink = $history_link . $edit_link . $tcaseName;
 			$rowData[] = $tcLink;
 
 			$matrixData[] = $rowData;
@@ -278,8 +254,6 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon) {
 		$table->toolbarShowAllColumnsButton = false;
 		
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
-		
-		// dont save settings for this table
 		$table->storeTableState = false;
 	}
 	return($table);
@@ -293,78 +267,57 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon) {
 function init_args($dateFormat)
 {
 	$args = new stdClass();
-	
-	// BUGID 3716
 	$iParams = array("keyword_id" => array(tlInputParameter::INT_N),
-			         "version" => array(tlInputParameter::INT_N,999),
-					 "custom_field_id" => array(tlInputParameter::INT_N),
-					 "name" => array(tlInputParameter::STRING_N,0,50),
-					 "summary" => array(tlInputParameter::STRING_N,0,50),
-					 "steps" => array(tlInputParameter::STRING_N,0,50),
-					 "expected_results" => array(tlInputParameter::STRING_N,0,50),
-					 "custom_field_value" => array(tlInputParameter::STRING_N,0,20),
-					 "targetTestCase" => array(tlInputParameter::STRING_N,0,30),
-					 "preconditions" => array(tlInputParameter::STRING_N,0,50),
-					 "requirement_doc_id" => array(tlInputParameter::STRING_N,0,32),
-					 "importance" => array(tlInputParameter::INT_N),
-					 "creation_date_from" => array(tlInputParameter::STRING_N),
-					 "creation_date_to" => array(tlInputParameter::STRING_N),
+									 "version" => array(tlInputParameter::INT_N,999),
+					 				 "custom_field_id" => array(tlInputParameter::INT_N),
+								   "name" => array(tlInputParameter::STRING_N,0,50),
+								   "summary" => array(tlInputParameter::STRING_N,0,50),
+								   "steps" => array(tlInputParameter::STRING_N,0,50),
+								   "expected_results" => array(tlInputParameter::STRING_N,0,50),
+								   "custom_field_value" => array(tlInputParameter::STRING_N,0,20),
+								   "targetTestCase" => array(tlInputParameter::STRING_N,0,30),
+								   "preconditions" => array(tlInputParameter::STRING_N,0,50),
+								   "requirement_doc_id" => array(tlInputParameter::STRING_N,0,32),
+								   "importance" => array(tlInputParameter::INT_N),
+								   "creation_date_from" => array(tlInputParameter::STRING_N),
+								   "creation_date_to" => array(tlInputParameter::STRING_N),
 	                 "modification_date_from" => array(tlInputParameter::STRING_N),
-					 "modification_date_to" => array(tlInputParameter::STRING_N));
+					 				 "modification_date_to" => array(tlInputParameter::STRING_N));
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
 
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-    $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
-	// BUGID 3716
 	// convert "creation date from" to iso format for database usage
-    if (isset($args->creation_date_from) && $args->creation_date_from != '') {
-		$date_array = split_localized_date($args->creation_date_from, $dateFormat);
-		if ($date_array != null) {
-			// set date in iso format
-			$args->creation_date_from = $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
+  $k2w = array('creation_date_from' => '','creation_date_to' => " 23:59:59",
+  						 'modification_date_from' => '', 'modification_date_to' => " 23:59:59");
+
+
+  $k2f = array('creation_date_from' => ' creation_ts >= ',
+  						 'creation_date_to' => 'creation_ts <= ',
+  						 'modification_date_from' => ' modification_ts >= ', 
+  						 'modification_date_to' => ' modification_ts =< ');
+
+
+  $filter = null;
+  foreach($k2w as $key => $value)
+  {
+	  if (isset($args->$key) && $args->$key != '') 
+	  {
+			$da = split_localized_date($args->$key, $dateFormat);
+			if ($da != null) 
+			{
+				$args->$key = $da['year'] . "-" . $da['month'] . "-" . $da['day'] . $value; // set date in iso format
+				$filter[$key] = " AND TCV.{$k2f[$key]} '{$args->$key}' ";
+			}
 		}
-	}
-	
-	// convert "creation date to" to iso format for database usage
-    if (isset($args->creation_date_to) && $args->creation_date_to != '') {
-		$date_array = split_localized_date($args->creation_date_to, $dateFormat);
-		if ($date_array != null) {
-			// set date in iso format
-			// date to means end of selected day -> add 23:59:59 to selected date
-			$args->creation_date_to = $date_array['year'] . "-" . $date_array['month'] . "-" .
-			                          $date_array['day'] . " 23:59:59";
-		}
-	}
-	
-	// convert "modification date from" to iso format for database usage
-    if (isset($args->modification_date_from) && $args->modification_date_from != '') {
-		$date_array = split_localized_date($args->modification_date_from, $dateFormat);
-		if ($date_array != null) {
-			// set date in iso format
-			$args->modification_date_from= $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
-		}
-	}
-	
-	//$args->modification_date_to = strtotime($args->modification_date_to);
-	// convert "creation date to" to iso format for database usage
-    if (isset($args->modification_date_to) && $args->modification_date_to != '') {
-		$date_array = split_localized_date($args->modification_date_to, $dateFormat);
-		if ($date_array != null) {
-			// set date in iso format
-			// date to means end of selected day -> add 23:59:59 to selected date
-			$args->modification_date_to = $date_array['year'] . "-" . $date_array['month'] . "-" .
-			                          $date_array['day'] . " 23:59:59";
-		}
-	}
-    
-	new dBug($args);
-    return $args;
+  }	
+
+  return array($args,$filter);
 }
 
 

@@ -1,11 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcSearchForm.tpl,v 1.21 2010/10/26 13:11:34 mx-julian Exp $
+@filesource tcSearchForm.tpl
 Purpose: show form for search through test cases in test specification
 
 @internal revisions
-@since 1.9.4
-20111218 - franciscom - added new user hints
+@since 1.9.7
+
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -75,7 +75,6 @@ Purpose: show form for search through test cases in test specification
 		<tr>
 			<td>{$labels.creation_date_from}</td>
 			<td>
-				{* BUGID 3716 *}
                 <input type="text" 
                        name="creation_date_from" id="creation_date_from" 
 				       value="{$gui->creation_date_from}" 
@@ -90,7 +89,6 @@ Purpose: show form for search through test cases in test specification
 		<tr>
 			<td>{$labels.creation_date_to}</td>
 			<td>
-				{* BUGID 3716 *}
            	    <input type="text" 
                        name="creation_date_to" id="creation_date_to" 
 				       value="{$gui->creation_date_to}" 

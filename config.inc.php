@@ -22,7 +22,7 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.7
  *
  **/
 
@@ -39,6 +39,14 @@ $tlCfg->spec_cfg = new stdClass();
 $tlCfg->exec_cfg = new stdClass();
 $tlCfg->exec_cfg->view_mode = new stdClass();
 $tlCfg->exec_cfg->exec_mode = new stdClass();
+
+// allow to define additional execution types other than 
+// defined in testcase.class.php
+// array(code => lblkey)
+// code int value > latest standard execution code defined.
+// lblkey => key to be used on lang_get() call.
+// 
+$tlCfg->custom_execution_types = null;
 
 $tlCfg->gui = new stdClass();
 $tlCfg->gui->custom_fields = new stdClass();

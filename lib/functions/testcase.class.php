@@ -6,12 +6,11 @@
  * @filesource  testcase.class.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2012, TestLink community 
+ * @copyright   2005-2013, TestLink community 
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.6
- * 20121231 - franciscom - getInternalID() interface changes
+ * @since 1.9.7
  */
 
 /** related functionality */
@@ -43,6 +42,9 @@ class testcase extends tlObjectWithAttachments
   const GET_NO_EXEC=1; 
   const ANY_PLATFORM=null;
 	const NOXMLHEADER=true;    
+	const EXECUTION_TYPE_MANUAL = 1;
+  const EXECUTION_TYPE_AUTO = 2;
+
         
     
 	/** @var database handler */
@@ -86,9 +88,7 @@ class testcase extends tlObjectWithAttachments
 
 		$this->cfield_mgr = new cfield_mgr($this->db);
 
-		$this->execution_types = array(TESTCASE_EXECUTION_TYPE_MANUAL => lang_get('manual'),
-                                       TESTCASE_EXECUTION_TYPE_AUTO => lang_get('automated'));
-
+		$this->execution_types = $this->getExecutionTypes();
 
     $this->cfg = new stdClass();
     $this->cfg->testcase = config_get('testcase_cfg');
@@ -98,6 +98,25 @@ class testcase extends tlObjectWithAttachments
 		// get from his parent
 		parent::__construct($this->db,"nodes_hierarchy");
 	}
+
+
+
+	static function getExecutionTypes()
+	{
+	  $stdSet = array(self::EXECUTION_TYPE_MANUAL => lang_get('manual'),
+                    self::EXECUTION_TYPE_AUTO => lang_get('automated'));
+   
+    if( !is_null($customSet = config_get('custom_execution_types')) )
+    {
+      foreach($customSet as $code => $lbl)
+      {
+        $stdSet[$code] = lang_get($lbl);
+      }    
+    }
+    return $stdSet;                    
+	}
+
+
 
 
 	/*

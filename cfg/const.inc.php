@@ -22,7 +22,7 @@
 
 /** TestLink Release version (MUST BE changed before the release day) */
 define('TL_FACE_DIR', 'prague'); 
-define('TL_VERSION', 'Development Prague 1.9.6 (Direct Links)'); 
+define('TL_VERSION', 'Development Prague 1.9.7 (Q2 2013 Fixes)'); 
 
 /** Last Database version that is used to give users feedback about necesssary upgrades
  * if you set this parameter also upgrade lib/functions/configCheck.php - checkSchemaVersion() */

@@ -79,6 +79,11 @@ INSERT INTO /*prefix*/rights  (id,description) VALUES (31,'issuetracker_manageme
 INSERT INTO /*prefix*/rights  (id,description) VALUES (32,'issuetracker_view');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (33,'reqmgrsystem_management');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (34,'reqmgrsystem_view');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (35,'exec_edit_notes');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (36,'exec_delete');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (37,'testplan_unlink_executed_testcases');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (38,'testproject_delete_executed_testcases');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (39,'testproject_edit_executed_testcases');
 
 
 # Rights for Administrator role
@@ -114,6 +119,11 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,31);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,32);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,33);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,34);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,35);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,36);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,37);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,38);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,39);
 
 # Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3 );

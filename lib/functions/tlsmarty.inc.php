@@ -332,6 +332,7 @@ class TLSmarty extends Smarty
                    'inactive' => TL_THEME_IMG_DIR . 'flag_yellow.png',
                    'log_message' => TL_THEME_IMG_DIR . 'history.png',
                    'log_message_small' => TL_THEME_IMG_DIR . 'history_small.png',
+                   'magnifier' => TL_THEME_IMG_DIR . 'magnifier.png',
                    'import' => TL_THEME_IMG_DIR . 'door_in.png',
                    'info' => TL_THEME_IMG_DIR . 'question.gif',
                    'insert_step' => TL_THEME_IMG_DIR . 'insert_step.png',

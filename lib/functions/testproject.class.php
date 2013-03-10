@@ -6,14 +6,12 @@
  * @filesource  testproject.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2005-2012, TestLink community 
+ * @copyright   2005-2013, TestLink community 
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.6
- * 20130120 - franciscom - delete() missing deletes
- * 20121216 - franciscom - getTestCasesCreatedByUser()
- *
+ * @since 1.9.7
+ * 20130310 - franciscom - new method getByChildID()
  **/
 
 /** related functions */ 
@@ -3109,6 +3107,13 @@ function getPublicAttr($id)
          " SET {$field} = " . (intval($value) > 0 ? 1 : 0) .
          " WHERE id =" . intval($id);   
     $ret = $this->db->exec_query($sql);
+  }
+
+
+  function getByChildID($child)
+  {
+    $path = $this->tree_manager->get_path($child);
+    return $this->get_by_id(intval($path[0]['parent_id']));
   }
 
 } // end class

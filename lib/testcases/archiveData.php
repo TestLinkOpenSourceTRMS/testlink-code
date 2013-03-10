@@ -6,11 +6,19 @@
  *  @author       Martin Havlat
  * 
  *  Allows you to show test suites, test cases.
- *  Normally launched from tree navigator.
- *  Also called when search option on Navigation Bar is used
+ *
+ *  USE CASES
+ *  1. Launched from tree navigator on Test Specification feature.
+ *     On this Use Case, test project is setted using SESSION value
+ *     or (in next versions) using value passed on call.
+ *
+ *  2. Search option on Navigation Bar.
+ *     In this Use Case, user can try to search for test cases that DO NOT BELONG
+ *     to current setted Test Project.
+ *     System try to get Test Project analising user provided data (test case identification)
  *
  *  @internal revision
- *  @since 1.9.6
+ *  @since 1.9.7
  */
 
 require_once('../../config.inc.php');
@@ -27,6 +35,7 @@ $args = init_args($db,$viewerArgs,$cfg);
 $gui = new stdClass();
 $gui->page_title = lang_get('container_title_' . $args->feature);
 $gui->user_feedback = '';
+
 
 
 // User right at test project level has to be done
@@ -71,9 +80,16 @@ switch($args->feature)
     $gui->steps_results_layout = $cfg['spec']->steps_results_layout;
     $gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
 
-    // we use $args->targetTestCase, to understand if this script has been called from a test case search
-    if(!is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)
+    if( ($args->caller == 'navBar') && !is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)
     {
+      // I've added $args->caller, in order to make clear the logic, because some actions need to be done ONLY
+      // when we have arrived to this script because user has requested a search from navBar.
+      // Before we have trusted the existence of certain variables (do not think this old kind of approach is good).
+      //
+      // why strcmp($args->targetTestCase,$args->tcasePrefix) ?
+      // because in navBar targetTestCase is initialized with testcase prefix to provide some help to user
+      // then if user request search without adding nothing, we will not be able to search.
+      // From navBar we want to allow ONLY to search for ONE and ONLY ONE test case ID.
       $viewerArgs['show_title'] = 'no';
       $viewerArgs['display_testproject'] = 1;
       $viewerArgs['display_parent_testsuite'] = 1;
@@ -141,7 +157,7 @@ switch($args->feature)
   default:
     tLog('Argument "edit" has invalid value: ' . $args->feature , 'ERROR');
     trigger_error($_SESSION['currentUser']->login.'> Argument "edit" has invalid value.', E_USER_ERROR);
-    break;
+  break;
 }
 
 /**
@@ -150,6 +166,8 @@ switch($args->feature)
  */
 function init_args(&$dbHandler,&$viewerCfg,$cfgObj)
 {
+  $_REQUEST=strings_stripSlashes($_REQUEST);
+
   $iParams = array("edit" => array(tlInputParameter::STRING_N,0,50),
                    "id" => array(tlInputParameter::INT_N),
                    "tcase_id" => array(tlInputParameter::INT_N),
@@ -159,106 +177,113 @@ function init_args(&$dbHandler,&$viewerCfg,$cfgObj)
                    "show_mode" => array(tlInputParameter::STRING_N,0,50),
                    "tcasePrefix" => array(tlInputParameter::STRING_N,0,16),
                    "tcaseExternalID" => array(tlInputParameter::STRING_N,0,16),
-                   "tcaseVersionNumber" => array(tlInputParameter::INT_N));               
+                   "tcaseVersionNumber" => array(tlInputParameter::INT_N),
+                   "caller" => array(tlInputParameter::STRING_N,0,10));               
 
   $args = new stdClass();
   R_PARAMS($iParams,$args);
-  $_REQUEST=strings_stripSlashes($_REQUEST);
 
-  // For more information about the data accessed in session here, see the comment
-  // in the file header of lib/functions/tlTestCaseFilterControl.class.php.
-  $form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-  $mode = 'edit_mode';
-  $session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
-                  ? $_SESSION[$mode][$form_token] : null;
-  
-  $args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
-                         $session_data['setting_refresh_tree_on_action'] : 0;
-  
+  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
   $args->feature = $args->edit;
   $args->tcaseTestProject = null;
 
-  $tprojectMgr = new testproject($dbHandler);
-  $tcaseMgr = new testcase($dbHandler);
 
+  // For more information about the data accessed in session here, see the comment
+  // in the file header of lib/functions/tlTestCaseFilterControl.class.php.
+  $args->refreshTree = getSettingFromFormNameSpace('edit_mode','setting_refresh_tree_on_action');
 
-    // For lazy users that do not provide test case external id as PREFIX-NN, but just NN
-    // we try to help adding $args->tcasePrefix, that we can get on call
-    // need to understand in what situation call provides this argument
-  $tcasePrefix = $args->tcasePrefix;
-  if (strpos($args->targetTestCase,$cfgObj['testcase']->glue_character) === false)
+  // Try to understan how this script was called.
+  switch($args->caller)
   {
-    $args->targetTestCase = $args->tcasePrefix . $args->targetTestCase;
-  }
+    case 'navBar':
+      systemWideTestCaseSearch($dbHandler,$args,$cfgObj['testcase']->glue_character);
+    break;
 
-
-  // TICKET 4842: Test Case search - add check of user rights when trying to access test case 
-  $verboseTCID = strlen($args->tcaseExternalID) > 0 ? $args->tcaseExternalID : null;
-  if( is_null($verboseTCID) )
-  {
-    $verboseTCID = strlen($args->targetTestCase) > 0  ? $args->targetTestCase : null;
-  }
-  
-  if( !is_null($verboseTCID) )
-  {
-    // parse to get JUST prefix
-    $gluePos = strrpos($verboseTCID, $cfgObj['testcase']->glue_character); // Find the last glue char
-    $status_ok = ($gluePos !== false);
-    if($status_ok)
-    {
-      $tcasePrefix = substr($verboseTCID, 0, $gluePos);
-    }
-    
-    $args->tcaseTestProject = $tprojectMgr->get_by_prefix($tcasePrefix);
-        
-    $args->tcase_id = $tcaseMgr->getInternalID($verboseTCID);
-    $tcinfo = $tcaseMgr->get_basic_info($args->tcase_id,array('number' => $args->tcaseVersionNumber));
-    if(!is_null($tcinfo))
-    {
-      $args->tcversion_id = $tcinfo[0]['tcversion_id'];
-    }
-  }
-    else
-    {
-       if (!$args->tcversion_id)
-       {
-          $args->tcversion_id = testcase::ALL_VERSIONS;
+    default:
+      if (!$args->tcversion_id)
+      {
+        $args->tcversion_id = testcase::ALL_VERSIONS;
       }
-    }
+    break;
 
-    // used to manage goback  
-    if(intval($args->tcase_id) > 0)
-    {
-      $args->feature = 'testcase';
-      $args->id = intval($args->tcase_id);
-    }
+  }
+
+
+  // used to manage goback  
+  if(intval($args->tcase_id) > 0)
+  {
+    $args->feature = 'testcase';
+    $args->id = intval($args->tcase_id);
+  }
     
-     switch($args->feature)
-    {
-    case 'testsuite':
+  switch($args->feature)
+  {
+      case 'testsuite':
           $_SESSION['setting_refresh_tree_on_action'] = ($args->refreshTree) ? 1 : 0;
-          break;
-     
-        case 'testcase':
-      $args->id = is_null($args->id) ? 0 : $args->id;
-      $viewerCfg = array('action' => '', 'msg_result' => '','user_feedback' => '');
-      $viewerCfg['disable_edit'] = 0;
-            $viewerCfg['refreshTree'] = 0;
-            
-            if( is_null($args->tcaseTestProject) )
-            {
-              $id = $tcaseMgr->get_testproject($args->id);
-              $args->tcaseTestProject = $tprojectMgr->get_by_id($id);
-            }
       break;
+     
+      case 'testcase':
+        $viewerCfg = array('action' => '', 'msg_result' => '','user_feedback' => '');
+        $viewerCfg['disable_edit'] = 0;
+        $viewerCfg['refreshTree'] = 0;
+            
+        $args->id = is_null($args->id) ? 0 : $args->id;
+        if( is_null($args->tcaseTestProject) && $args->id > 0 )
+        {
+          $tprojectMgr = new testproject($dbHandler);
+          $args->tcaseTestProject = $tprojectMgr->getByChildID($args->id);
+        }
+      break;
+  }
+  return $args;
+}
+
+
+function systemWideTestCaseSearch(&$dbHandler,&$argsObj,$glue)
+{
+
+  // Attention: 
+  // this algorithm has potential flaw (IMHO) because we can find the glue character
+  // in situation where it's role is not this.
+  // Anyway i will work on this in the future (if I've time)
+  //
+  if (strpos($argsObj->targetTestCase,$glue) === false)
+  {
+    // We suppose user was lazy enough to do not provide prefix,
+    // then we will try to help him/her
+    $argsObj->targetTestCase = $argsObj->tcasePrefix . $argsObj->targetTestCase;
+  }
+
+  if( !is_null($argsObj->targetTestCase) )
+  {
+    // parse to get JUST prefix, find the last glue char.
+    // This useful because from navBar, user can request search of test cases that belongs
+    // to test project DIFFERENT to test project setted in environment
+    if( ($gluePos = strrpos($argsObj->targetTestCase, $glue)) !== false)
+    {
+      $tcasePrefix = substr($argsObj->targetTestCase, 0, $gluePos);
     }
-    
-     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
+    $tprojectMgr = new testproject($dbHandler);
+    $argsObj->tcaseTestProject = $tprojectMgr->get_by_prefix($tcasePrefix);
+        
+    $tcaseMgr = new testcase($dbHandler);
+    $argsObj->tcase_id = $tcaseMgr->getInternalID($argsObj->targetTestCase);
+    $dummy = $tcaseMgr->get_basic_info($argsObj->tcase_id,array('number' => $argsObj->tcaseVersionNumber));
+    if(!is_null($dummy))
+    {
+      $argsObj->tcversion_id = $dummy[0]['tcversion_id'];
+    }
+  }
+}
 
-  unset($tcaseMgr);
-  unset($tprojectMgr);
-    return $args;
+function getSettingFromFormNameSpace($mode,$setting)
+{
+  $form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+  $sd = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
+  
+  $rtSetting = isset($sd[$setting]) ? $sd[$setting] : 0;
+  return $rtSetting;
 }
 ?>

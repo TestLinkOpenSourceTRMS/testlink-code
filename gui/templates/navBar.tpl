@@ -57,11 +57,11 @@ title bar + menu
 		<input style="font-size: 80%; position:relative; top:-1px;" type="text" size="{$gui->searchSize}"
 		       title="{$labels.search_testcase}" name="targetTestCase" value="{$gui->tcasePrefix}" />
 
-    	{* Give a hint to archiveData, will make logic simpler to understand *}
-		<input type="hidden" id="caller" name="caller" value="navBar" />
-
     	{* useful to avoid a call to method to get test case prefix in called page *}
 		<input type="hidden" id="tcasePrefix" name="tcasePrefix" value="{$gui->tcasePrefix}" />
+
+    	{* Give a hint to archiveData, will make logic simpler to understand *}
+		<input type="hidden" id="caller" name="caller" value="navBar" />
 		<img src="{$tlImages.magnifier}"
 		     title="{$labels.search_testcase}" alt="{$labels.search_testcase}"
 		     onclick="document.getElementById('searchTC').submit()" class="clickable" 

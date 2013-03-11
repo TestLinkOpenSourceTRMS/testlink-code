@@ -69,8 +69,6 @@ class jirasoapInterface extends issueTrackerInterface
 	 **/
 	function completeCfg()
 	{
-    var_dump($this->cfg);
-
 		$base = trim($this->cfg->uribase,"/") . '/' ;
 	  if( !property_exists($this->cfg,'uriwsdl') )
 	  {

@@ -6,6 +6,8 @@
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions
+ * @1.9.7
+ * 20130311 - franciscom - integer input are sanitized
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -184,10 +186,10 @@ function init_args(&$dbHandler)
   $_REQUEST=strings_stripSlashes($_REQUEST);
   $args = new stdClass();
   
-  $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
+  $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
   if( $args->tproject_id == 0)
   {
-      $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+      $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }  
   if( $args->tproject_id == 0)
   {
@@ -200,14 +202,14 @@ function init_args(&$dbHandler)
   unset($info);
 
   // $userSet = $userObj->getNames($dbHandler);
-  $args->user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : 0;
+  $args->user_id = isset($_REQUEST['user_id']) ? intval($_REQUEST['user_id']) : 0;
   if( $args->user_id != 0)
   {
     $args->user = new tlUser($args->user_id);
   }
   else 
   {
-    $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+    $args->user_id = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
     if( $args->user_id == 0)
     {
       throw new Exception(__FILE__ . ' Can not work without User ID => Aborting');
@@ -219,36 +221,52 @@ function init_args(&$dbHandler)
 
   
                   
-  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
-  $args->build_id = isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id']) ? $_REQUEST['build_id'] : 0;
+  $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+  $args->build_id = isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
 
 
   $args->show_inactive_tplans = isset($_REQUEST['show_inactive_tplans']) ? true : false;
-  $args->show_all_users = (isset($_REQUEST['show_all_users']) && $_REQUEST['show_all_users'] =! 0);
+
+  $args->show_all_users = false;
+  if(isset($_REQUEST['show_all_users']))
+  {
+    $args->show_all_users = (intval($_REQUEST['show_all_users']) == 1);
+  }
+  // $args->show_all_users = (isset($_REQUEST['show_all_users']) && (intval($_REQUEST['show_all_users'])) =! 0);
   $args->show_user_column = $args->show_all_users; 
 
 
   $show_closed_builds = isset($_REQUEST['show_closed_builds']) ? true : false;
 	$show_closed_builds_hidden = isset($_REQUEST['show_closed_builds_hidden']) ? true : false;
-	if ($show_closed_builds) {
+	if ($show_closed_builds) 
+  {
 		$selection = true;
-	} else if ($show_closed_builds_hidden) {
+	} 
+  else if ($show_closed_builds_hidden) 
+  {
 		$selection = false;
-	} else if (isset($_SESSION['show_closed_builds'])) {
-		$selection = $_SESSION['show_closed_builds'];
-	} else {
+	} 
+  else if (isset($_SESSION['show_closed_builds'])) 
+  {
+		$selection = intval($_SESSION['show_closed_builds']);
+	} 
+  else 
+  {
 		$selection = false;
 	}
 	$args->show_closed_builds = $_SESSION['show_closed_builds'] = $selection;
 
-	if ($args->show_all_users) {
+	if ($args->show_all_users) 
+  {
 		$args->user_id = TL_USER_ANYBODY;
 	}
 	
-	
-	$args->show_inactive_and_closed = isset($_REQUEST['show_inactive_and_closed']) 
-	                                  && $_REQUEST['show_inactive_and_closed'] =! 0 ? 
-	                                  true : false;
+  $args->show_inactive_and_closed = false;	
+  if( isset($_REQUEST['show_inactive_and_closed']) )
+  {
+    $args->show_inactive_and_closed = (intval($_REQUEST['show_inactive_and_closed']) != 0);
+  }
+
 
 	$args->priority_enabled = $_SESSION['testprojectOptions']->testPriorityEnabled ? true : false;
 	

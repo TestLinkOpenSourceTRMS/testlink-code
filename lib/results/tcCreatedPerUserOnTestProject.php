@@ -21,6 +21,9 @@
  * Generates report of test cases created per user within a project. 
  * 
  * @internal revisions
+ * @since 1.9.7
+ * 20130314 - franciscom - TICKET 5562: Test Cases created per User - toolbar refresh button
+ *                                                                   breaks filter behaivour
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -186,7 +189,12 @@ function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj)
     $matrix->showToolbar = true;
     $matrix->toolbarExpandCollapseGroupsButton = true;
     $matrix->toolbarShowAllColumnsButton = true;
-    
+
+    // TICKET 5562: Test Cases created per User - toolbar refresh button breaks filter behaivour
+    $matrix->toolbarDefaultStateButton = false;
+    $matrix->toolbarRefreshButton = false;
+
+
     $matrix->setSortByColumnName($sortByColumn);
     $matrix->sortDirection = 'DESC';
     

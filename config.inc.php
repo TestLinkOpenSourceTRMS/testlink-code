@@ -290,6 +290,15 @@ $tlCfg->authentication['ldap_bind_dn'] = ''; // Left empty for anonymous LDAP bi
 $tlCfg->authentication['ldap_bind_passwd'] = ''; // Left empty for anonymous LDAP binding
 $tlCfg->authentication['ldap_tls'] = false; // true -> use tls
 
+// Follows Mantisbt idea.
+// True if user does not exist on DB, but can be get from LDAP, 
+// the user will be created AUTOMATICALLY with default user role.
+// Create user with data get (name,surname,email) from LDAP
+$tlCfg->authentication['ldap_automatic_user_creation'] = false;
+$tlCfg->authentication['ldap_realname_field'] = '';
+
+
+
 /** Enable/disable Users to create accounts on login page */
 $tlCfg->user_self_signup = TRUE;
 

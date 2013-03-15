@@ -8,16 +8,12 @@
  * @filesource	doAuthorize.php
  * @package 	TestLink
  * @author 		Chad Rosen, Martin Havlat
- * @copyright 	2003-2011, TestLink community 
+ * @copyright 	2003-2013, TestLink community 
  * @link 		http://www.teamst.org/
  *
  *
  * @internal revisions
- * @since 1.9.4
- * 20111210 - franciscom - TICKET 4711: Apache Webserver - SSL Client Certificate Authentication (Single Sign-on?)
- *						   new function doSSOClientCertificate()
- * 20111127 - franciscom - doAuthorize() interface changed
- * 20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server
+ * @since 1.9.7
  */
 
 /** TBD */ 
@@ -49,16 +45,13 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
 		if ($login_exists)
 		{
 			$password_check = auth_does_password_match($user,$pwd);
-			
-			// This is right way to go, we provide better message
 			if(!$password_check->status_ok)
 			{
-				$result = array('status' => tl::ERROR, 'msg' => $password_check->msg);
+				$result = array('status' => tl::ERROR, 'msg' => null);
 			}
 			
 			if ($password_check->status_ok && $user->isActive)
 			{
-				// TICKET 4342 
 				// Need to do set COOKIE following Mantis model
 				$auth_cookie_name = config_get('auth_cookie');
 				$expireOnBrowserClose=false;

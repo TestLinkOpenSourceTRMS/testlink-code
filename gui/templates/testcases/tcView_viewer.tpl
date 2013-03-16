@@ -81,7 +81,7 @@ viewer for test case in test specification
   {assign var="edit_enabled" value=0}
   {assign var="delete_enabled" value=0}
 
-  {* 20070628 - franciscom - Seems logical you can disable some you have executed before *}
+  {* Seems logical you can disable some you have executed before *}
   {assign var="active_status_op_enabled" value=1}
   {assign var="has_been_executed" value=0}
   {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
@@ -99,7 +99,6 @@ viewer for test case in test specification
       {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
     {/if} 
     
-    {* 20110319 - BUGID 4322: New Option to block delete of executed test cases *}
     {if isset($args_tcase_cfg)}
       {if $args_tcase_cfg->can_delete_executed == 1}
         {assign var="delete_enabled" value=1} 
@@ -353,7 +352,7 @@ function launchInsertStep(step_id)
         </table>
   </div>
 
-  {if $gui->opt_requirements == TRUE && $gui->view_req_rights == "yes"}
+  {if $gui->requirementsEnabled == TRUE && $gui->view_req_rights == "yes"}
   <div {$addInfoDivStyle}>
     <table cellpadding="0" cellspacing="0" style="font-size:100%;">
              <tr>

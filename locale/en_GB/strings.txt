@@ -3556,5 +3556,14 @@ $TLS_reqmgrsystem_management = "Req. Management System Management";
 
 // reqMgrSystemCommands.class.php
 $TLS_reqmgrsystem_deleted = "Req. Management System %s% has been deleted";
+
+
+$TLS_testCaseStatus_draft = 'Draft';
+$TLS_testCaseStatus_readyForReview = 'Ready for review';
+$TLS_testCaseStatus_reviewInProgress = 'Review in progress';
+$TLS_testCaseStatus_rework = 'Rework';
+$TLS_testCaseStatus_obsolete = 'Obsolete';
+$TLS_testCaseStatus_future = 'Future';
+$TLS_testCaseStatus_final = 'Final';		
 // ----- END ------------------------------------------------------------------
 ?>

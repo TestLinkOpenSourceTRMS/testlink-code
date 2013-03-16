@@ -25,17 +25,13 @@ require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 
-$templateCfg = templateConfiguration();
-$viewerArgs = null;
+$smarty = new TLSmarty();
+$smarty->tlTemplateCfg = $templateCfg = templateConfiguration();
+
 $cfg = array('testcase' => config_get('testcase_cfg'),'testcase_reorder_by' => config_get('testcase_reorder_by'),
              'spec' => config_get('spec_cfg'));
-$smarty = new TLSmarty();
 
-$args = init_args($db,$viewerArgs,$cfg);
-$gui = new stdClass();
-$gui->page_title = lang_get('container_title_' . $args->feature);
-$gui->user_feedback = '';
-
+list($args,$gui,$grants) = initializeEnv($db);
 
 
 // User right at test project level has to be done
@@ -49,10 +45,6 @@ switch($args->feature)
   case 'testsuite':
     $item_mgr = new $args->feature($db);
     $gui->id = $args->id;
-    
-    $lblkey = $cfg['testcase_reorder_by'] == 'NAME' ? '_alpha' : '_externalid';
-    $gui->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
-
     if($args->feature == 'testproject')
     {
       $gui->id = $args->id = $args->tproject_id;
@@ -67,92 +59,8 @@ switch($args->feature)
     break;
     
   case 'testcase':
-    $path_info = null;
-    $get_path_info = false;
-    $item_mgr = new testcase($db);
-    $viewerArgs['refresh_tree'] = 'no';
-
-    $gui->platforms = null;
-    $gui->tableColspan = 5;
-    $gui->loadOnCancelURL = '';
-    $gui->attachments = null;
-    $gui->direct_link = null;
-    $gui->steps_results_layout = $cfg['spec']->steps_results_layout;
-    $gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
-
-    if( ($args->caller == 'navBar') && !is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)
-    {
-      // I've added $args->caller, in order to make clear the logic, because some actions need to be done ONLY
-      // when we have arrived to this script because user has requested a search from navBar.
-      // Before we have trusted the existence of certain variables (do not think this old kind of approach is good).
-      //
-      // why strcmp($args->targetTestCase,$args->tcasePrefix) ?
-      // because in navBar targetTestCase is initialized with testcase prefix to provide some help to user
-      // then if user request search without adding nothing, we will not be able to search.
-      // From navBar we want to allow ONLY to search for ONE and ONLY ONE test case ID.
-      $viewerArgs['show_title'] = 'no';
-      $viewerArgs['display_testproject'] = 1;
-      $viewerArgs['display_parent_testsuite'] = 1;
-      $args->id = $item_mgr->getInternalID($args->targetTestCase);
-      if( !($get_path_info = ($args->id > 0)) )
-      {
-        $gui->warning_msg = $args->id == 0 ? lang_get('testcase_does_not_exists') : lang_get('prefix_does_not_exists');
-      }
-      $args->tcversion_id = testcase::ALL_VERSIONS;
-    }
-
-    if( $args->id > 0 )
-    {
-      // Get Test Project in order to check user rights
-      if( !is_null($args->tcaseTestProject) )
-      {
-        $check = null;
-        $grant2check = array('mgt_view_tc','mgt_modify_tc');
-        foreach($grant2check as $grant)
-        {
-            $grantlbl['desc_' . $grant] = null;
-            $check = $_SESSION['currentUser']->hasRight($db,$grant,$args->tcaseTestProject['id']);
-            if( !is_null($check) )
-            {
-              break;
-            }
-        }
-
-        if( is_null($check) )
-        {
-          $grantLabels = init_labels($grantlbl);
-          $logtext = lang_get('access_denied_feedback');
-          foreach($grantLabels as $lbl)
-          {
-            $logtext .= "'" . $lbl . "',";
-          }
-          $logtext = trim($logtext,",");
-          
-          $smarty->assign('title', lang_get('access_denied'));
-          $smarty->assign('content', $logtext);
-          $smarty->assign('link_to_op', null);
-          $smarty->display('workAreaSimple.tpl'); 
-          exit();
-        }
-      }
-    }
-
-    if( $args->id > 0 )
-    {
-      if( $get_path_info || $args->show_path )
-      {
-          $path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
-      }
-      
-      $platform_mgr = new tlPlatform($db,$args->tproject_id);
-      $gui->platforms = $platform_mgr->getAllAsMap();
-      $gui->attachments[$args->id] = getAttachmentInfosFrom($item_mgr,$args->id);
-      $gui->direct_link = $item_mgr->buildDirectWebLink($_SESSION['basehref'],$args->id);
-    }
-    $gui->id = $args->id;
-    $item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id,$args->tcversion_id,
-                    $viewerArgs,$path_info,$args->show_mode);
-    break;
+    processTestCase($db,$smarty,$args,$gui,$grants,$cfg);
+  break;
 
   default:
     tLog('Argument "edit" has invalid value: ' . $args->feature , 'ERROR');
@@ -164,7 +72,7 @@ switch($args->feature)
  * 
  *
  */
-function init_args(&$dbHandler,&$viewerCfg,$cfgObj)
+function init_args(&$dbHandler)
 {
   $_REQUEST=strings_stripSlashes($_REQUEST);
 
@@ -183,10 +91,19 @@ function init_args(&$dbHandler,&$viewerCfg,$cfgObj)
   $args = new stdClass();
   R_PARAMS($iParams,$args);
 
+  $tprojectMgr = new testproject($dbHandler);
+  
+  $cfg = config_get('testcase_cfg');
   $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
   $args->feature = $args->edit;
   $args->tcaseTestProject = null;
+
+  $args->automationEnabled = 0;
+  $args->requirementsEnabled = 0;
+  $args->testPriorityEnabled = 0;
+  $args->tcasePrefix = trim($args->tcasePrefix);
+
 
 
   // For more information about the data accessed in session here, see the comment
@@ -197,7 +114,7 @@ function init_args(&$dbHandler,&$viewerCfg,$cfgObj)
   switch($args->caller)
   {
     case 'navBar':
-      systemWideTestCaseSearch($dbHandler,$args,$cfgObj['testcase']->glue_character);
+      systemWideTestCaseSearch($dbHandler,$args,$cfg->glue_character);
     break;
 
     default:
@@ -231,13 +148,67 @@ function init_args(&$dbHandler,&$viewerCfg,$cfgObj)
         $args->id = is_null($args->id) ? 0 : $args->id;
         if( is_null($args->tcaseTestProject) && $args->id > 0 )
         {
-          $tprojectMgr = new testproject($dbHandler);
           $args->tcaseTestProject = $tprojectMgr->getByChildID($args->id);
         }
       break;
   }
+
+  if(is_null($args->tcaseTestProject))
+  {  
+    $args->tcaseTestProject = $tprojectMgr->get_by_id($args->tproject_id);
+  }
+  $args->requirementsEnabled = $args->tcaseTestProject['opt']->requirementsEnabled;
+  $args->automationEnabled = $args->tcaseTestProject['opt']->automationEnabled;
+  $args->testPriorityEnabled = $args->tcaseTestProject['opt']->testPriorityEnabled;
+
   return $args;
 }
+
+
+
+/**
+ * 
+ *
+ */
+function initializeEnv($dbHandler)
+{
+  $args = init_args($dbHandler);
+
+  $gui = new stdClass();
+
+  $grant2check = array('mgt_modify_tc','mgt_view_req','testplan_planning','mgt_modify_product',
+                       'testproject_edit_executed_testcases','testproject_delete_executed_testcases');
+  $grants = new stdClass();
+  foreach($grant2check as $right)
+  {
+      $grants->$right = $_SESSION['currentUser']->hasRight($dbHandler,$right,$args->tproject_id);
+      $gui->$right = $grants->$right;
+  }
+  
+  $gui->tproject_id = $args->tproject_id;
+  $gui->page_title = lang_get('container_title_' . $args->feature);
+  $gui->requirementsEnabled = $args->requirementsEnabled; 
+  $gui->automationEnabled = $args->automationEnabled; 
+  $gui->testPriorityEnabled = $args->testPriorityEnabled;
+  $gui->show_mode = $args->show_mode;
+  $lblkey = config_get('testcase_reorder_by') == 'NAME' ? '_alpha' : '_externalid';
+  $gui->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
+
+
+  // has sense only when we work on test case
+  $gui->platforms = null;
+  $gui->tableColspan = 5;
+  $gui->loadOnCancelURL = '';
+  $gui->attachments = null;
+  $gui->direct_link = null;
+  $gui->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
+  $gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
+  $gui->viewerArgs = array('action' => '', 'msg_result' => '','user_feedback' => '', 'disable_edit' => 0,
+                           'refreshTree' => 0);
+
+  return array($args,$gui,$grants);
+}
+
 
 
 function systemWideTestCaseSearch(&$dbHandler,&$argsObj,$glue)
@@ -286,4 +257,66 @@ function getSettingFromFormNameSpace($mode,$setting)
   $rtSetting = isset($sd[$setting]) ? $sd[$setting] : 0;
   return $rtSetting;
 }
+
+
+function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
+{
+  $get_path_info = false;
+  $item_mgr = new testcase($dbHandler);
+
+  $gui->viewerArgs['refresh_tree'] = 'no';
+  $gui->path_info = null;
+  $gui->platforms = null;
+  $gui->tableColspan = 5;
+  $gui->loadOnCancelURL = '';
+  $gui->attachments = null;
+  $gui->direct_link = null;
+  $gui->steps_results_layout = $cfg['spec']->steps_results_layout;
+  $gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
+
+  if( ($args->caller == 'navBar') && !is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)
+  {
+    $args->id = $item_mgr->getInternalID($args->targetTestCase);
+    $args->tcversion_id = testcase::ALL_VERSIONS;
+
+    // I've added $args->caller, in order to make clear the logic, because some actions need to be done ONLY
+    // when we have arrived to this script because user has requested a search from navBar.
+    // Before we have trusted the existence of certain variables (do not think this old kind of approach is good).
+    //
+    // why strcmp($args->targetTestCase,$args->tcasePrefix) ?
+    // because in navBar targetTestCase is initialized with testcase prefix to provide some help to user
+    // then if user request search without adding nothing, we will not be able to search.
+    // From navBar we want to allow ONLY to search for ONE and ONLY ONE test case ID.
+    $gui->viewerArgs['show_title'] = 'no';
+    $gui->viewerArgs['display_testproject'] = 1;
+    $gui->viewerArgs['display_parent_testsuite'] = 1;
+    if( !($get_path_info = ($args->id > 0)) )
+    {
+      $gui->warning_msg = $args->id == 0 ? lang_get('testcase_does_not_exists') : lang_get('prefix_does_not_exists');
+    }
+  }
+
+  if( $args->id > 0 )
+  {
+    if( $get_path_info || $args->show_path )
+    {
+        $gui->path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
+    }
+    $platform_mgr = new tlPlatform($dbHandler,$args->tproject_id);
+    $gui->platforms = $platform_mgr->getAllAsMap();
+    $gui->attachments[$args->id] = getAttachmentInfosFrom($item_mgr,$args->id);
+    $gui->direct_link = $item_mgr->buildDirectWebLink($_SESSION['basehref'],$args->id);
+  }
+  
+  $gui->id = $args->id;
+
+  $identity = new stdClass();
+  $identity->id = $args->id;
+  $identity->tproject_id = $args->tproject_id;
+  $identity->version_id = $args->tcversion_id;
+
+  $item_mgr->show($tplEngine,$gui,$identity,$grants);
+  exit();
+}
+
 ?>

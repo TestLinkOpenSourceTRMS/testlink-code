@@ -578,276 +578,136 @@ class testcase extends tlObjectWithAttachments
 	
 	
 	/**
-	 * Show Test Case logic
+	 * Show Test Case
 	 * 
-	 * @param object $smarty reference to smarty object (controls viewer).
-	 * @param integer $id Test case unique identifier
-	 * @param integer $version_id (optional) you can work on ONE test case version, 
-	 * 				or on ALL; default: ALL
 	 * 
 	 * @internal
-	
-	        [viewer_args]: map with keys
-	                       action
-	                       msg_result
-	                       refresh_tree: controls if tree view is refreshed after every operation.
-	                                     default: yes
-	                       user_feedback
-	                       disable_edit: used to overwrite user rights
-	                                        default: 0 -> no
 	
 	  returns:
 	
 	  rev :
-	       20090215 - franciscom - added info about links to test plans
-	       
-	       20081114 - franciscom -
-	       added arguments and options that are useful when this method is
-	       used to display test case search results.
-	       path_info: map: key: testcase id
-	                       value: array with path to test case, where:
-	                              element 0 -> test project name
-	                              other elements test suites name
-	       
-	       new options on viewer_args: hilite_testcase_name,show_match_count
-	       
-	       20070930 - franciscom - REQ - BUGID 1078
-	       added disable_edit argument
 	
 	*/
-	function show(&$smarty,$guiObj,$template_dir,$id,$version_id = self::ALL_VERSIONS,
-	              $viewer_args = null,$path_info=null,$mode=null)
+
+	
+       
+	// function show(&$smarty,$guiObj,$template_dir,$id,$version_id = self::ALL_VERSIONS,
+	//              $viewer_args = null,$path_info=null,$mode=null)
+	
+	function show(&$smarty,$guiObj,$identity,$grants)
 	{
 
-	    $status_ok = 1;
-	
-	    $gui = is_null($guiObj) ? new stdClass() : $guiObj;
-	    $gui->parentTestSuiteName='';
-	    $gui->path_info=$path_info;
-		$gui->tprojectName='';
-	    $gui->linked_versions=null;
-		$gui->tc_current_version = array();
-	    $gui->bodyOnLoad="";
-	    $gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
-	    $gui->submitCode="";
-	    $gui->dialogName = '';
-	    $gui->platforms = null;
-		$gui->tableColspan = 5; // sorry magic related to table to display steps
-		$gui->opt_requirements = false;
-	
-		$gui_cfg = config_get('gui');
-		$the_tpl = config_get('tpl');
-		$my_template = isset($the_tpl['tcView']) ? $the_tpl['tcView'] : 'tcView.tpl'; 
+    $env_tproject_id = $identity->tproject_id;
+    $id = $identity->id;
+    $version_id = isset($identity->version_id) ? $identity->version_id : self::ALL_VERSIONS;
+	  $idSet = is_array($id) ? $id : (array)$id;
+	  $status_ok = $idSet[0] > 0 ? 1 : 0;
+		
+		$gui = $this->initShowGui($guiObj,$grants,$idSet[0]);
 
-		$req_mgr = new requirement_mgr($this->db);
-
-		$tc_other_versions = array();
-		$status_quo_map = array();
-		$keywords_map = array();
-		$arrReqs = array();
-	    $userid_array = array();
-
-	    
-	    // 20090718 - franciscom
-	    $cf_smarty = null;
-	    $formatOptions=null;
-        $cfPlaces = $this->buildCFLocationMap();
-	    if( !is_null($mode) && $mode=='editOnExec' )
-	    {
-	        // refers to two javascript functions present in testlink_library.js
-	        // and logic used to refresh both frames when user call this
-	        // method to edit a test case while executing it.
-	        $gui->dialogName='tcview_dialog';
-	        $gui->bodyOnLoad="dialog_onLoad($gui->dialogName)";
-	        $gui->bodyOnUnload="dialog_onUnload($gui->dialogName)";
-	        $gui->submitCode="return dialog_onSubmit($gui->dialogName)";
-	    }
-	
-	    $viewer_defaults=array('title' => lang_get('title_test_case'),'show_title' => 'no',
-	                           'action' => '', 'msg_result' => '','user_feedback' => '',
-	                           'refreshTree' => 1, 'disable_edit' => 0,
-	                           'display_testproject' => 0,'display_parent_testsuite' => 0,
-	                           'hilite_testcase_name' => 0,'show_match_count' => 0);
-	
-	    if( !is_null($viewer_args) && is_array($viewer_args) )
-	    {
-	        foreach($viewer_defaults as $key => $value)
-	        {
-	            if(isset($viewer_args[$key]) )
-	            {
-	                  $viewer_defaults[$key]=$viewer_args[$key];
-	            }
-	        }
-	    }
-	 
-	    $gui->show_title=$viewer_defaults['show_title'];
-	    $gui->display_testcase_path=!is_null($path_info);
-	    $gui->hilite_testcase_name=$viewer_defaults['hilite_testcase_name'];
-	    $gui->pageTitle=$viewer_defaults['title'];
-	    $gui->show_match_count=$viewer_defaults['show_match_count'];
-	    if($gui->show_match_count && $gui->display_testcase_path )
-	    {
-	        $gui->match_count=count($path_info);  
-	    }
-	
-	    if( $viewer_defaults['disable_edit'] == 1 || has_rights($this->db,"mgt_modify_tc") == false)
-	    {
-	        $mode = 'editDisabled';
-	    }
-	    $gui->show_mode = $mode;
-	    $gui->can_do = $this->getShowViewerActions($mode);
-	    
-		if(is_array($id))
-		{
-			$a_id = $id;
-		}
-		else
-		{
-		    $status_ok = $id > 0 ? 1 : 0;
-			$a_id = array($id);
-		}
+	  $userIDSet = array();
 		if($status_ok)
+	  {
+	    // Add To Testplan button will be disabled if the testcase doesn't belong to the current selected testproject
+	    // $gui->can_do->add2tplan = 'no';
+      if($env_tproject_id == $gui->tproject_id)
 	    {
-	        $path2root = $this->tree_manager->get_path($a_id[0]);
-	        $tproject_id = $path2root[0]['parent_id'];
-	        $info = $this->tproject_mgr->get_by_id($tproject_id);
-			$gui->opt_requirements = $info['opt']->requirementsEnabled;
-			
-			$platformMgr = new tlPlatform($this->db,$tproject_id);
-	        $gui->platforms = $platformMgr->getAllAsMap();
-	        
-	        $testplans = $this->tproject_mgr->get_all_testplans($tproject_id,array('plan_status' =>1) );
-	        $gui->has_testplans = !is_null($testplans) && count($testplans) > 0 ? 1 : 0;
-	        
-	        if( $viewer_defaults['display_testproject'] )
-	        {
-	            $gui->tprojectName=$info['name'];
-	        }
-	    
-	        if( $viewer_defaults['display_parent_testsuite'] )
-	        {
-	            $parent_idx = count($path2root)-2;
-	            $gui->parentTestSuiteName = $path2root[$parent_idx]['name'];
-	        }
-	    
-	        $tcasePrefix = $this->tproject_mgr->getTestCasePrefix($tproject_id);
-	        if(trim($tcasePrefix) != "")
-	        {
-	        	// Add To Testplan button will be disabled if the testcase doesn't belong to the current selected testproject
-	        	// $gui->can_do->add2tplan = 'no';
-	        	if ($_SESSION['testprojectPrefix'] == $tcasePrefix)
-	        	{
-		    		$gui->can_do->add2tplan = $gui->can_do->add2tplan == 'yes' ? has_rights($this->db,"testplan_planning") : 'no';
-				}
-				else
-				{
-					$gui->can_do->add2tplan = 'no';
-				}
+		  	$gui->can_do->add2tplan = ($gui->can_do->add2tplan == 'yes') ? $grants->testplan_planning : 'no';
+			}
+			else
+			{
+				$gui->can_do->add2tplan = 'no';
+			}
+	  }  
+	  
 
-				$tcasePrefix .= $this->cfg->testcase->glue_character;
-		   	}
-	    }
-	    
-	    if($status_ok && sizeof($a_id))
-	    {
-	    	$cfx=0;
-	    	$cf_current_version = null;
-	    	$cf_other_versions = null;
-		  	$allTCKeywords = $this->getKeywords($a_id,null,'testcase_id',' ORDER BY keyword ASC ');
-		  	$allReqs = $req_mgr->get_all_for_tcase($a_id);
-		  	foreach($a_id as $key => $tc_id)
+	  if($status_ok && sizeof($idSet))
+	  {
+	    	$cfx = 0;
+				
+    		$cfPlaces = $this->buildCFLocationMap();
+				$req_mgr = new requirement_mgr($this->db);
+		  	$allReqs = $req_mgr->get_all_for_tcase($idSet);
+		  	$allTCKeywords = $this->getKeywords($idSet,null,'testcase_id',' ORDER BY keyword ASC ');
+
+		  	foreach($idSet as $key => $tc_id)
 		  	{
-		  		$tc_array = $this->get_by_id($tc_id,$version_id);
-		  		if (!$tc_array)
+		  		// using $version_id has sense only when we are working on ONE SPECIFIC Test Case
+		  		// if we are working on a set of test cases $version_id will be ALL VERSIONS
+		  		if(!$tc_array = $this->get_by_id($tc_id,$version_id))
 		  		{
 		  			continue;
 		  		}
 		  		
-		  		$tc_array[0]['tc_external_id'] = $tcasePrefix . $tc_array[0]['tc_external_id'];
+		  		$tc_array[0]['tc_external_id'] = $gui->tcasePrefix . $tc_array[0]['tc_external_id'];
 
-		  		// get the status quo of execution and links of tc versions
-		  		$status_quo_map[] = $this->get_versions_status_quo($tc_id);
-
+		  		// status quo of execution and links of tc versions
+		  		$gui->status_quo[] = $this->get_versions_status_quo($tc_id);
 		  		$gui->linked_versions[] = $this->get_linked_versions($tc_id);
-		  		$keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
+		  		$gui->keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
+
 		  		$tc_current = $tc_array[0];
-		  		$tcversion_id_current = $tc_array[0]['id']; 
 		  		$gui->tc_current_version[] = array($tc_current);
 		  		
-		  		//Get UserID and Updater ID for current Version
-		  		$userid_array[$tc_current['author_id']] = null;
-		  		$userid_array[$tc_current['updater_id']] = null;
+		  		// Get UserID and Updater ID for current Version
+		  		$userIDSet[$tc_current['author_id']] = null;
+		  		$userIDSet[$tc_current['updater_id']] = null;
 	    
-	      		foreach($cfPlaces as $locationKey => $locationFilter)
+	      	foreach($cfPlaces as $locationKey => $locationFilter)
 		  		{ 
-		  			$cf_current_version[$cfx][$locationKey] = 
+		  			$gui->cf_current_version[$cfx][$locationKey] = 
 		  				$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
-		  			 	                                         null,null,$tproject_id,null,$tcversion_id_current);
+		  			 	                                         null,null,$gui->tproject_id,null,$tc_current['id']);
 		  		}	
   			
 	    
 				// Other versions (if exists)	    
-		  		if(count($tc_array) > 1)
-		  		{
-		  			$tc_other_versions[] = array_slice($tc_array,1);
-					$target_idx = count($tc_other_versions) - 1;
-					$loop2do = count($tc_other_versions[$target_idx]);
+		  	if(count($tc_array) > 1)
+		  	{
+		  		$gui->testcase_other_versions[] = array_slice($tc_array,1);
+					$target_idx = count($gui->testcase_other_versions) - 1;
+					$loop2do = count($gui->testcase_other_versions[$target_idx]);
 					for($qdx=0; $qdx < $loop2do; $qdx++)
 					{
-						$target_tcversion = $tc_other_versions[$target_idx][$qdx]['id'];
-	  foreach($cfPlaces as $locationKey => $locationFilter)
-		  				{ 
-		  					$cf_other_versions[$cfx][$qdx][$locationKey] = 
+						$target_tcversion = $gui->testcase_other_versions[$target_idx][$qdx]['id'];
+	  				foreach($cfPlaces as $locationKey => $locationFilter)
+		  			{ 
+		  				$gui->cf_other_versions[$cfx][$qdx][$locationKey] = 
 		  						$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
-		  					 	                                         null,null,$tproject_id,null,$target_tcversion);
-		  				}	
+		  					 	                                         null,null,$gui->tproject_id,null,$target_tcversion);
+		  			}	
 					}
 		  		}
 		  		else
 		  		{
-		  			$tc_other_versions[] = null;
-		  			$cf_other_versions[$cfx]=null;
+		  			$gui->testcase_other_versions[] = null;
+		  			$gui->cf_other_versions[$cfx]=null;
 		  		}	
 		  		$cfx++;
 		  		
 		  		// Get author and updater id for each version
-		  		if ($tc_other_versions[0])
+		  		if ($gui->testcase_other_versions[0])
 		  		{
-		  			foreach($tc_other_versions[0] as $key => $version)
+		  			foreach($gui->testcase_other_versions[0] as $key => $version)
 		  			{				
-		  	  			$userid_array[$version['author_id']] = null;
-		  	  			$userid_array[$version['updater_id']] = null;				
+		  	  			$userIDSet[$version['author_id']] = null;
+		  	  			$userIDSet[$version['updater_id']] = null;				
 		  			}
 		  		}
-		  		$tcReqs = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
-		  		$arrReqs[] = $tcReqs;
+		  		$gui->arrReqs[] = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
 
-		  	} // foreach($a_id as $key => $tc_id)
-	    } // if (sizeof($a_id))
+		  	} 
+	    } 
 
-	    // Removing duplicate and NULL id's
-		unset($userid_array['']);
-		$passeduserarray = array_keys($userid_array);
-
-
+	  // Removing duplicate and NULL id's
+		unset($userIDSet['']);
+		$gui->users = tlUser::getByIDs($this->db,array_keys($userIDSet),'id');
 		$gui->cf = null;
-		$gui->cf_current_version = $cf_current_version;
-		$gui->cf_other_versions = $cf_other_versions;
-		$gui->refreshTree = isset($gui->refreshTree) ? $gui->refreshTree : $viewer_defaults['refreshTree'];
-		$gui->sqlResult = $viewer_defaults['msg_result'];
-		$gui->action = $viewer_defaults['action'];
-		$gui->user_feedback = $viewer_defaults['user_feedback'];
-		$gui->execution_types = $this->execution_types;
-		$gui->tcase_cfg = $this->cfg->testcase;
-		$gui->users = tlUser::getByIDs($this->db,$passeduserarray,'id');
-		$gui->status_quo = $status_quo_map;
-		$gui->testcase_other_versions = $tc_other_versions;
-		$gui->arrReqs = $arrReqs;
-		$gui->view_req_rights =  has_rights($this->db,"mgt_view_req");
-		$gui->keywords_map = $keywords_map;
 
+    $this->initShowGuiActions($gui);
+		$tplCfg = templateConfiguration('tcView');
 		$smarty->assign('gui',$gui);
-		$smarty->display($template_dir . $my_template);
+		$smarty->display($tplCfg->template_dir . $tplCfg->default_template);
 	}
 	
 	
@@ -5750,6 +5610,138 @@ class testcase extends tlObjectWithAttachments
 		return is_null($rs) ? $rs : $rs[0];
 	}
 
+
+
+  private function initShowGui($guiObj,$grantsObj,$id)
+  {	  
+	  $goo = is_null($guiObj) ? new stdClass() : $guiObj;
+
+		$goo->execution_types = $this->execution_types;
+		$goo->tcase_cfg = $this->cfg->testcase;
+		$goo->view_req_rights = $grantsObj->mgt_view_req;
+
+	  $goo->parentTestSuiteName = '';
+		$goo->tprojectName = '';
+	  $goo->submitCode = "";
+	  $goo->dialogName = '';
+	  $goo->bodyOnLoad = "";
+	  $goo->bodyOnUnload = "storeWindowSize('TCEditPopup')";
+
+		$goo->tableColspan = 5; // sorry magic related to table to display steps
+
+		$goo->tc_current_version = array();
+		$goo->status_quo = array();
+		$goo->keywords_map = array();
+		$goo->arrReqs = array();
+
+		$goo->cf_current_version = null;
+		$goo->cf_other_versions = null;
+	  $goo->linked_versions=null;
+	  $goo->platforms = null;
+
+	  $viewer_defaults = array('title' => lang_get('title_test_case'),'show_title' => 'no',
+	                           'action' => '', 'msg_result' => '','user_feedback' => '',
+	                           'refreshTree' => 1, 'disable_edit' => 0,
+	                           'display_testproject' => 0,'display_parent_testsuite' => 0,
+	                           'hilite_testcase_name' => 0,'show_match_count' => 0);
+	
+    $viewer_defaults = array_merge($viewer_defaults, (array)$guiObj->viewerArgs);
+
+	  $goo->display_testproject = $viewer_defaults['display_testproject'];
+	  $goo->display_parent_testsuite = $viewer_defaults['display_parent_testsuite'];
+	  $goo->show_title = $viewer_defaults['show_title'];
+	  $goo->hilite_testcase_name = $viewer_defaults['hilite_testcase_name'];
+		$goo->action = $viewer_defaults['action'];
+		$goo->user_feedback = $viewer_defaults['user_feedback'];
+
+	  $goo->pageTitle = $viewer_defaults['title'];
+	  $goo->display_testcase_path = !is_null($goo->path_info);
+	  $goo->show_match_count = $viewer_defaults['show_match_count'];
+ 	  if($goo->show_match_count && $goo->display_testcase_path )
+	  {
+		  $goo->pageTitle .= '-' . lang_get('match_count') . ':' . ($goo->match_count = count($goo->path_info));
+	  }
+		
+		$goo->refreshTree = isset($goo->refreshTree) ? $goo->refreshTree : $viewer_defaults['refreshTree'];
+		$goo->sqlResult = $viewer_defaults['msg_result'];
+
+
+    // fine grain control of operations
+	  if( $viewer_defaults['disable_edit'] == 1 || ($grantsObj->mgt_modify_tc == false) )
+	  {
+	        $goo->show_mode = 'editDisabled';
+	  }
+    else if( !is_null($goo->show_mode) && $goo->show_mode == 'editOnExec' )
+	  {
+	    // refers to two javascript functions present in testlink_library.js
+	    // and logic used to refresh both frames when user call this
+	    // method to edit a test case while executing it.
+	    $goo->dialogName='tcview_dialog';
+	    $goo->bodyOnLoad="dialog_onLoad($gui->dialogName)";
+	    $goo->bodyOnUnload="dialog_onUnload($gui->dialogName)";
+	    $goo->submitCode="return dialog_onSubmit($gui->dialogName)";
+	  }
+
+		$dummy = getConfigAndLabels('testCaseStatus','code');
+		$goo->domainTCStatus = $dummy['lbl'];
+
+    $goo->can_do = $this->getShowViewerActions($goo->show_mode);
+
+
+	  $path2root = $this->tree_manager->get_path($id);
+	  $goo->tproject_id = $path2root[0]['parent_id'];
+	  $info = $this->tproject_mgr->get_by_id($goo->tproject_id);
+		$goo->requirementsEnabled = $info['opt']->requirementsEnabled;
+
+	  if( $goo->display_testproject )
+	  {
+	  	$goo->tprojectName = $info['name'];
+	  }
+	    
+	  if( $goo->display_parent_testsuite )
+	  {
+	    $parent = count($path2root)-2;
+	    $goo->parentTestSuiteName = $path2root[$parent]['name'];
+	  }
+
+    
+    $testplans = $this->tproject_mgr->get_all_testplans($goo->tproject_id,array('plan_status' =>1) );
+	  $goo->has_testplans = !is_null($testplans) && count($testplans) > 0 ? 1 : 0;
+	
+
+		$platformMgr = new tlPlatform($this->db,$goo->tproject_id);
+	  $goo->platforms = $platformMgr->getAllAsMap();
+
+	  $goo->tcasePrefix = $this->tproject_mgr->getTestCasePrefix($goo->tproject_id) . $this->cfg->testcase->glue_character;
+	  return $goo;
+	}
+
+
+  private function initShowGuiActions(&$gui)
+  {
+  
+		$gui->deleteStepAction = "lib/testcases/tcEdit.php?tproject_id=$gui->tproject_id&show_mode=$gui->show_mode" . 
+								             "&doAction=doDeleteStep&step_id=";
+
+		$gui->tcExportAction = "lib/testcases/tcExport.php?tproject_id=$gui->tproject_id&show_mode=$gui->show_mode";
+		$gui->tcViewAction = "lib/testcases/archiveData.php?tproject_id={$gui->tproject_id}" . 
+							           "&show_mode=$gui->show_mode&tcase_id=";
+
+		$gui->printTestCaseAction = "lib/testcases/tcPrint.php?tproject_id=$gui->tproject_id&show_mode=$gui->show_mode";
+
+
+		$gui->keywordsViewHREF = "lib/keywords/keywordsView.php?tproject_id={$gui->tproject_id} " .
+						 		             ' target="mainframe" class="bold" title="' . lang_get('menu_manage_keywords') . '"';
+
+
+		$gui->reqSpecMgmtHREF = "lib/general/frmWorkArea.php?tproject_id={$gui->tproject_id}&feature=reqSpecMgmt";
+		$gui->reqMgmtHREF = "lib/requirements/reqView.php?tproject_id={$gui->tproject_id}" . 
+							          "&showReqSpecTitle=1&requirement_id=";
+		
+		$gui->addTc2TplanHREF = "lib/testcases/tcAssign2Tplan.php?tproject_id={$gui->tproject_id}";
+
+  
+  }
 
 
 } // end class

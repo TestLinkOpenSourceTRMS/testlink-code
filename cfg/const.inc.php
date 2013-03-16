@@ -904,6 +904,9 @@ $tlCfg->results['charts']['dimensions'] =
                      'XSize' => 400,'YSize' => 400,'radius' => 150, 'legendX' => 10, 'legendY' => 15 )
   );              
   
-    
+// if you need to define new one, start on 20 please.
+$tlCfg->testCaseStatus = array( 'draft' => 1, 'readyForReview' => 2, 
+                                'reviewInProgress' => 3, 'rework' => 4, 
+                                'obsolete' => 5, 'future' => 6, 'final' => 7 );   
 // ----- END ----------------------------------------------------------------------------
 ?>

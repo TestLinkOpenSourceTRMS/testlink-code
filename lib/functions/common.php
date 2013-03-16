@@ -18,7 +18,7 @@
  * @since 		  TestLink 1.5
  *
  * @internal revisions
- * @since 1.9.5
+ * @since 1.9.7
  *
  */
 
@@ -53,7 +53,7 @@ require_once("csrf.php");
 require_once("inputparameter.inc.php");
 
 /** @TODO use the next include only if it is used -> must be removed */
-require_once("testproject.class.php"); 
+// require_once("testproject.class.php"); 
 require_once("treeMenu.inc.php");
 require_once("exec_cfield_mgr.class.php");
 
@@ -68,7 +68,6 @@ function tlAutoload($class_name)
 	$tlClassPrefixLen = 2;
 	$classFileName = $class_name;
 
-	// 20120108 - franciscom - 
 	// this way Zend_Loader_Autoloader will take care of these classes.
 	// Needed in order to make work bugzillaxmlrpc interface
 	if( strstr($class_name,'Zend_') !== FALSE )
@@ -1105,5 +1104,60 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
 		  checkUserRightsFor($dbHandler,$rightsCheck,true);
 	  }
 	}
+}
+
+
+
+/*
+	returns map with config values and strings translated (using lang_get()) 
+	to be used on user interface  for a Test link configuration option that 
+	is structure in this way:
+  	config_option = array( string_value => any_value, ...)
+
+  	All this works if TL_ strings defined on strings.txt follows this naming standard.  
+
+  	For a config option like:
+  	$tlCfg->workflowStatus=array('draft' => 1, 'review' => 2);
+ 
+
+  	will exists:  $TL_workflowStatus_draft='...';
+    	          	$TL_workflowStatus_review='...';
+
+  	@param string configKey: valus used on call to standard test link
+                           	 method to get configuration option
+
+  	@param string accessMode: two values allowed 'key', 'code'
+                              indicates how the returned map must be indexed.
+
+                              'key' => will be indexed by string                          
+                                       value that is key of config option
+
+                              'code' => will be indexed by value of config option         
+
+  @example
+
+   $tlCfg->workflowStatus=array('draft' => 1, 'review' => 2);
+   $i18nlabels = getLabels('workflowStatus','key');
+   array_keys($i18nlabels) will return array('draft','review');
+ 
+
+   $tlCfg->workflowStatus=array('draft' => 1, 'review' => 2);
+   $i18nlabels = getLabels('workflowStatus','code');
+   array_keys($i18nlabels) will return array(1,2);
+
+   @internal revisions
+   @since 1.9.7
+*/
+
+function getConfigAndLabels($configKey,$accessMode='key')
+{
+	$stringKeyCode = config_get($configKey);
+	$labels=null;
+	foreach( $stringKeyCode as $accessKey => $code )
+	{
+		$index = ($accessMode == 'key') ? $accessKey : $code;
+		$labels[$index] = lang_get($configKey . '_' . $accessKey);
+	}
+	return array('cfg' => $stringKeyCode, 'lbl' => $labels); 
 }
 ?>

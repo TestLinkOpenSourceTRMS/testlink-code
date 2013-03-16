@@ -13,8 +13,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.6
- * 20130221 - franciscom - TICKET 5536: Create Test Case in Test suite that has keywords, manage automatic inheritance
+ * @since 1.9.7
  **/
 
 class testcaseCommands
@@ -25,13 +24,22 @@ class testcaseCommands
   private $execution_types;
   private $grants;
 
-  function __construct(&$db)
+  function __construct(&$db,&$userObj,$tproject_id)
   {
-    $this->db=$db;
+    
+    $this->db = $db;
     $this->tcaseMgr = new testcase($db);
     $this->execution_types = $this->tcaseMgr->get_execution_types();
-    $this->grants=new stdClass();
-    $this->grants->requirement_mgmt=has_rights($db,"mgt_modify_req"); 
+    $this->grants = new stdClass();
+
+    $g2c = array('mgt_modify_tc','mgt_view_req','testplan_planning',
+                 'testproject_delete_executed_testcases','testproject_edit_executed_testcases');
+    foreach($g2c as $grant)
+    {
+      $this->grants->$grant = $userObj->hasRight($db,$grant,$tproject_id);
+    }
+    $this->grants->requirement_mgmt = $userObj->hasRight($db,"mgt_modify_req",$tproject_id) ||
+                                      $userObj->hasRight($db,"req_tcase_link_management",$tproject_id);
   }
 
   function setTemplateCfg($cfg)
@@ -53,19 +61,22 @@ class testcaseCommands
     $obj->direct_link = null;
     $obj->execution_types = $this->execution_types;
 
+
     $obj->grants = $this->grants;
     $obj->has_been_executed = false;
     $obj->initWebEditorFromTemplate = false;
 
     $obj->main_descr = '';
     $obj->name = '';
-    $obj->refreshTree=0;
+    $obj->path_info = null;
+    $obj->refreshTree = 0;
     $obj->sqlResult = '';
     $obj->step_id = -1;
     $obj->step_set = '';
     $obj->steps = '';
     $obj->tableColspan = 5;
     $obj->tcase_id = property_exists($argsObj,'tcase_id') ? $argsObj->tcase_id : -1;
+    $obj->viewerArgs = null;
 
     $p2check = 'goback_url';
     $obj->$p2check = '';
@@ -283,16 +294,15 @@ class testcaseCommands
     returns: 
 
   */
-    function doUpdate(&$argsObj,$request)
+  function doUpdate(&$argsObj,$request)
   {
-        $ret = $this->tcaseMgr->update($argsObj->tcase_id, $argsObj->tcversion_id, $argsObj->name, 
+    $ret = $this->tcaseMgr->update($argsObj->tcase_id, $argsObj->tcversion_id, $argsObj->name, 
                                    $argsObj->summary, $argsObj->preconditions, $argsObj->tcaseSteps, 
                                    $argsObj->user_id, $argsObj->assigned_keywords_list,
                                    testcase::DEFAULT_ORDER, $argsObj->exec_type, $argsObj->importance);
 
     $this->show($argsObj,$request,$ret);
- 
-        return $guiObj;
+    return $guiObj;
   }  
 
 
@@ -302,35 +312,40 @@ class testcaseCommands
    */
   function doAdd2testplan(&$argsObj,$request)
   {
-        $smartyObj = new TLSmarty();
-        $smartyObj->assign('attachments',null);
-      $guiObj = $this->initGuiBean($argsObj);
-
-        $viewer_args=array();
-        $tplan_mgr = new testplan($this->db);
-        
-         $guiObj->refreshTree = $argsObj->refreshTree? 1 : 0;
-        $item2link = null;
-        // $request['add2tplanid']
-        // main key: testplan id
-        // sec key : platform_id
-        if( isset($request['add2tplanid']) )
+    $smartyObj = new TLSmarty();
+    $smartyObj->assign('attachments',null);
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->refreshTree = $argsObj->refreshTree? 1 : 0;
+ 
+    $tplan_mgr = new testplan($this->db);
+   
+    // $request['add2tplanid']
+    // main key: testplan id
+    // sec key : platform_id
+    $item2link = null;
+    if( isset($request['add2tplanid']) )
+    {
+      foreach($request['add2tplanid'] as $tplan_id => $platformSet)
+      {
+        foreach($platformSet as $platform_id => $dummy)
         {
-            foreach($request['add2tplanid'] as $tplan_id => $platformSet)
-            {
-              foreach($platformSet as $platform_id => $dummy)
-              {
-                $item2link = null;
-                    $item2link['tcversion'][$argsObj->tcase_id] = $argsObj->tcversion_id;
-                    $item2link['platform'][$platform_id] = $platform_id;
-                    $item2link['items'][$argsObj->tcase_id][$platform_id] = $argsObj->tcversion_id;
-                  $tplan_mgr->link_tcversions($tplan_id,$item2link,$argsObj->user_id);  
-                }
-            }
-            $this->tcaseMgr->show($smartyObj,$guiObj, $this->templateCfg->template_dir,
-                                $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args);
+          $item2link = null;
+          $item2link['tcversion'][$argsObj->tcase_id] = $argsObj->tcversion_id;
+          $item2link['platform'][$platform_id] = $platform_id;
+          $item2link['items'][$argsObj->tcase_id][$platform_id] = $argsObj->tcversion_id;
+          $tplan_mgr->link_tcversions($tplan_id,$item2link,$argsObj->user_id);  
         }
-        return $guiObj;
+      }
+            
+      $identity = new stdClass();
+      $identity->tproject_id = $argsObj->tproject_id;
+      $identity->id = $argsObj->tcase_id;
+      $identity->version_id = $argsObj->tcversion_id;
+      
+      $this->tcaseMgr->show($smartyObj,$guiObj,$identity,$this->grants); 
+      exit();
+    }
+    return $guiObj;
   }
 
   /**
@@ -339,22 +354,6 @@ class testcaseCommands
    */
   function add2testplan(&$argsObj,$request)
   {
-      // $smartyObj = new TLSmarty();
-      // $guiObj=new stdClass();
-      // $viewer_args=array();
-      // $tplan_mgr = new testplan($this->db);
-      // 
-       // $guiObj->refresh_tree=$argsObj->do_refresh?"yes":"no";
-      // 
-      // $item2link[$argsObj->tcase_id]=$argsObj->tcversion_id;
-      // foreach($request['add2tplanid'] as $tplan_id => $value)
-      // {
-      //     $tplan_mgr->link_tcversions($tplan_id,$item2link);  
-      // }
-      // $this->tcaseMgr->show($smartyObj,$this->templateCfg->template_dir,
-      //                       $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args);
-      // 
-      // return $guiObj;
   }
 
 
@@ -670,7 +669,7 @@ class testcaseCommands
   {
     $guiObj = $this->initGuiBean($argsObj);
 
-    $viewer_args=array();
+    $guiObj->viewerArgs=array();
     $guiObj->refreshTree = 0;
     $step_node = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->step_id);
     $tcversion_node = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($step_node['parent_id']);
@@ -861,32 +860,37 @@ class testcaseCommands
   function show(&$argsObj,$request,$userFeedback)
   {
     $smartyObj = new TLSmarty();
-    $viewer_args=array();
     $guiObj = $this->initGuiBean($argsObj);
+
+    $guiObj->viewerArgs=array();
     $guiObj->refreshTree = ($argsObj->refreshTree && $userFeedback['status_ok']) ? 1 : 0;
     $guiObj->has_been_executed = $argsObj->has_been_executed;
     $guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
-
+    $guiObj->user_feedback = '';
     
     if($userFeedback['status_ok'])
     {
       $guiObj->user_feedback = '';
       $ENABLED = 1;
-      $NO_FILTERS = null;
       $cf_map = $this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->testproject_id,
-                                                                          $ENABLED,$NO_FILTERS,'testcase') ;
+                                                                          $ENABLED,null,'testcase') ;
       $this->tcaseMgr->cfield_mgr->design_values_to_db($request,$argsObj->tcversion_id,$cf_map);
       $guiObj->attachments[$argsObj->tcase_id] = getAttachmentInfosFrom($this->tcaseMgr,$argsObj->tcase_id);
     }
     else
     {
-      $guiObj->user_feedback = $userFeedback['msg'];
+      $guiObj->viewerArgs['user_feedback'] = $guiObj->user_feedback = $userFeedback['msg'];
     }
 
-    $viewer_args['refreshTree'] = $guiObj->refreshTree;
-    $viewer_args['user_feedback'] = $guiObj->user_feedback;
-    $this->tcaseMgr->show($smartyObj,$guiObj, $this->templateCfg->template_dir, $argsObj->tcase_id,
-                          $argsObj->tcversion_id,$viewer_args,null,$argsObj->show_mode);
+    $guiObj->viewerArgs['refreshTree'] = $guiObj->refreshTree;
+    $guiObj->viewerArgs['user_feedback'] = $guiObj->user_feedback;
+
+    $identity = new stdClass();
+    $identity->tproject_id = $argsObj->tproject_id;
+    $identity->id = $argsObj->tcase_id;
+    $identity->version_id = $argsObj->tcversion_id;
+
+    $this->tcaseMgr->show($smartyObj,$guiObj,$identity,$this->grants); 
     exit();  
   }
 

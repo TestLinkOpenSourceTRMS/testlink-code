@@ -13,7 +13,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.7
  *
  **/
 require_once("../../config.inc.php");
@@ -34,7 +34,7 @@ $tsuite_mgr = new testsuite($db);
 
 $templateCfg = templateConfiguration('tcEdit');
 
-$commandMgr = new testcaseCommands($db);
+$commandMgr = new testcaseCommands($db,$args->user,$args->tproject_id);
 $commandMgr->setTemplateCfg(templateConfiguration());
 
 $testCaseEditorKeys = array('summary' => 'summary','preconditions' => 'preconditions');
@@ -258,7 +258,6 @@ else if($args->do_create_new_version)
   $viewer_args['user_feedback'] = $user_feedback;
   
   // used to implement go back ??
-  // 20090419 - BUGID - 
   $gui->loadOnCancelURL = $_SESSION['basehref'] . 
                           '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id .
                           "&show_mode={$args->show_mode}";
@@ -361,18 +360,19 @@ function init_args(&$cfgObj,$otName)
   
         
   // from session
-  $args->testproject_id = $_SESSION['testprojectID'];
-  $args->user_id = $_SESSION['userID'];
-  $args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? $_SESSION['setting_refresh_tree_on_action'] : 0;
+  $args->testproject_id = $args->tproject_id = intval($_SESSION['testprojectID']);
+  $args->user_id = intval($_SESSION['userID']);
+  $args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? intval($_SESSION['setting_refresh_tree_on_action']) : 0;
     
   $args->opt_requirements = null;
   if( isset($_SESSION['testprojectOptions']) )
   {
     $args->opt_requirements = $_SESSION['testprojectOptions']->requirementsEnabled;
+    $args->requirementsEnabled = $_SESSION['testprojectOptions']->requirementsEnabled;
   } 
 
   $args->basehref = $_SESSION['basehref'];
-  $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
+  $args->goback_url = isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 
 
   $action2check = array("editStep" => true,"createStep" => true, "doCreateStep" => true,
@@ -384,6 +384,8 @@ function init_args(&$cfgObj,$otName)
 
   $args->stay_here = isset($_REQUEST['stay_here']) ? 1 : 0;
 
+
+  $args->user = $_SESSION['currentUser'];
   return $args;
 }
 

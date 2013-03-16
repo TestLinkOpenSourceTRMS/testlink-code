@@ -56,6 +56,8 @@ $tlCfg->validation_cfg = new stdClass();
 $tlCfg->custom_fields = new stdClass();
 $tlCfg->req_spec_cfg = new stdClass();
 $tlCfg->diffEngine = new stdClass();
+$tlCfg->tplanDesign = new stdClass();
+
 
 /** @uses database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
@@ -1243,6 +1245,12 @@ $tlCfg->tree_filter_cfg->requirements->advanced_filter_mode_choice = ENABLED;
 // DISABLED -> The tree will not be updated automatically, but  the user can update it manually.
 //             On graphical user interface any user will is able to change this setting.
 $tlCfg->tree_filter_cfg->requirements->automatic_tree_refresh = ENABLED;
+
+
+
+/* [Assign test cases to test plan] */
+$tlCfg->tplanDesign->hideTestCaseWithStatusIn = array($tlCfg->testCaseStatus['obsolete'] => 'obsolete',
+													  $tlCfg->testCaseStatus['future'] => 'future' );
 
 // ----------------------------------------------------------------------------
 /* [MISC FUNCTIONALITY] */

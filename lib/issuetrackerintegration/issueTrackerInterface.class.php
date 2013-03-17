@@ -267,7 +267,6 @@ abstract class issueTrackerInterface
 	 **/
 	function buildViewBugLink($issueID, $opt=null)
 	{
-		// $my['opt'] = array('addSummary' => false, 'colorByStatus' => false);
 		$my['opt'] = $this->methodOpt[__FUNCTION__];
 		$my['opt'] = array_merge($my['opt'],(array)$opt);
 		
@@ -284,11 +283,11 @@ abstract class issueTrackerInterface
 		$useIconv = property_exists($this->cfg,'dbcharset');
 		if($useIconv)
 		{
-				$link .= iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$issue->IDHTMLString);
+			$link .= iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$issue->IDHTMLString);
 		}
 		else
 		{
-				$link .= $issue->IDHTMLString;
+			$link .= $issue->IDHTMLString;
 		}
 		
 		if (!is_null($issue->statusHTMLString))

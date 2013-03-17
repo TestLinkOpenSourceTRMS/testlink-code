@@ -6,7 +6,9 @@
  * @since 1.9.4
  *
  * @internal revision
- * @since 1.9.5
+ * @since 1.9.7
+ * 20130317 - franciscom - TICKET 5565: Integration Via Database - 
+ *                         Information about bug is not displayed on table, on execution feature
  *
 **/
 class mantisdbInterface extends issueTrackerInterface
@@ -41,7 +43,7 @@ class mantisdbInterface extends issueTrackerInterface
     
 	  parent::__construct($type,$config);
 	  
-		$this->interfaceViaDB = true;
+	  $this->interfaceViaDB = true;
     $this->defaultResolvedStatus = array();
     $this->defaultResolvedStatus[] = array('code' => 80, 'verbose' => 'resolved');
     $this->defaultResolvedStatus[] = array('code' => 90, 'verbose' => 'closed');
@@ -67,7 +69,7 @@ class mantisdbInterface extends issueTrackerInterface
 	 **/
 	function buildViewBugURL($id)
 	{
-		return $this->cfg->uriview.urlencode($id);
+	  return $this->cfg->uriview . urlencode($id);
 	}
 
 	/**
@@ -151,17 +153,6 @@ class mantisdbInterface extends issueTrackerInterface
 		return $status_ok;
 	}	
 	
-
-	function buildViewBugLink($bugID,$addSummary = false)
-  {
-    $linkVerbose = parent::buildViewBugLink($bugID, $addSummary);
-    $status = $this->getBugStatus($bugID);
-    $color = isset($this->status_color[$status]) ? $this->status_color[$status] : 'white';
-    $title = lang_get('access_to_bts');  
-    return "<div  title=\"{$title}\" style=\"display: inline; background: $color;\">$linkVerbose</div>";
-  }
-
-
   /**
    * checks id for validity
    *

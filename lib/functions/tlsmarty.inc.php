@@ -300,8 +300,8 @@ class TLSmarty extends Smarty
   static function getImageSet()
   {
     $dummy = array(
-                   'add' => TL_THEME_IMG_DIR . 'add.png',
                    'active' => TL_THEME_IMG_DIR . 'flag_green.png',
+                   'add' => TL_THEME_IMG_DIR . 'add.png',
                    'api_info' => TL_THEME_IMG_DIR . 'brick.png',
                    'bug_link_tl_to_bts' => TL_THEME_IMG_DIR . 'bug_link_famfamfam.png',
                    'bug_create_into_bts' => TL_THEME_IMG_DIR . 'bug_add_famfamfam.png',
@@ -341,7 +341,10 @@ class TLSmarty extends Smarty
                    'reorder' => TL_THEME_IMG_DIR . 'arrow_switch.png',
                    'resequence' => TL_THEME_IMG_DIR . 'control_equalizer.png',
                    'sort' => TL_THEME_IMG_DIR . 'sort_hint.png',
+                   'testcase_execution_type_automatic' => TL_THEME_IMG_DIR . 'bullet_wrench.png',
+                   'testcase_execution_type_manual' => TL_THEME_IMG_DIR . 'user.png',
                    'toggle_all' => TL_THEME_IMG_DIR .'toggle_all.gif',
+                   'user' => TL_THEME_IMG_DIR . 'user.png',
                    'warning' => TL_THEME_IMG_DIR . 'error_triangle.png',
                    'wrench' => TL_THEME_IMG_DIR . 'wrench.png');
                      

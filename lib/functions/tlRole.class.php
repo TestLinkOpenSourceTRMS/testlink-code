@@ -4,18 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @package 	TestLink
- * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: tlRole.class.php,v 1.4 2009/11/29 16:24:43 franciscom Exp $
+ * @copyright 	2004-2013, TestLink community 
+ * @filesource	tlRole.class.php
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
+ * @internal revisions
  * 
- *	20091129 - franciscom - new method getRoleColourCfg() used by contribution
- *	20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
- *	20090101 - franciscom - writeToDB() problems with Postgres
- *                          due to wrong table name in insert_id() call.
- * 
- * @TODO Improve description  
  */
 
 /**
@@ -53,7 +47,7 @@ class tlRole extends tlDBObject
 	const ROLE_O_SEARCH_BYNAME = 2;
 	const TLOBJ_O_GET_DETAIL_RIGHTS = 1;
 
-	//some error code
+	// some error code
 	const E_DBERROR = -2;	
 	const E_NAMELENGTH = -3;
 	const E_NAMEALREADYEXISTS = -4;
@@ -123,33 +117,42 @@ class tlRole extends tlDBObject
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		if ($this->readFromCache() >= tl::OK)
+    {  
 			return tl::OK;
-
+    }
+      
 		$this->_clean($options);
-
 		$getFullDetails = ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_RIGHTS);
 		$sql = "SELECT a.id AS role_id,a.description AS role_desc, a.notes ";
 		if ($getFullDetails)
-			$sql .= " ,c.id AS right_id,c.description ";
+    {
+      $sql .= " ,c.id AS right_id,c.description ";
+    }  
 		
 		$sql .= " FROM {$this->object_table} a ";
 		
 		if ($getFullDetails)
 		{
 			$sql .= " LEFT OUTER JOIN {$this->tables['role_rights']} b ON a.id = b.role_id " . 
-			          " LEFT OUTER JOIN {$this->tables['rights']}  c ON b.right_id = c.id ";
+			        " LEFT OUTER JOIN {$this->tables['rights']}  c ON b.right_id = c.id ";
 		}
 		
 		$clauses = null;
 		if ($options & self::ROLE_O_SEARCH_BYNAME)
+    {  
 			$clauses[] = "a.description = '".$db->prepare_string($this->name)."'";
-
+    }
+      
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
+    {  
 			$clauses[] = "a.id = {$this->dbID}";		
+		}
 		
-		if ($clauses)
+    if ($clauses)
+    {  
 			$sql .= " WHERE " . implode(" AND ",$clauses);
-		
+		}
+
 		$rightInfo = $db->get_recordset($sql);			 
 		if ($rightInfo)
 		{
@@ -158,12 +161,17 @@ class tlRole extends tlDBObject
 			$this->description = $rightInfo[0]['notes'];
 
 			if ($getFullDetails)
-				$this->rights = $this->buildRightsArray($rightInfo);
+      {
+        $this->rights = $this->buildRightsArray($rightInfo);
+      }  
 		}
+
 		$readSucceeded = $rightInfo ? tl::OK : tl::ERROR;
 		if ($readSucceeded >= tl::OK)
+    {  
 			$this->addToCache();
-		
+		}
+
 		return $readSucceeded;
 	}
 
@@ -196,15 +204,19 @@ class tlRole extends tlDBObject
 			{
 				$sql = "INSERT INTO {$this->object_table} (description,notes) " .
 				       " VALUES ('".$db->prepare_string($this->name)."',".
-					   "'" . $db->prepare_string($this->description)."')";
+					     "'" . $db->prepare_string($this->description)."')";
 				$result = $db->exec_query($sql);	
 				if($result)
+        {  
 					$this->dbID = $db->insert_id($this->object_table);
+        }  
 			}
 			
 			$result = $result ? tl::OK : self::E_DBERROR;
 			if ($result >= tl::OK)
+      {  
 				$result = $this->addRightsToDB($db);
+      }  
 		}
 		
 		return $result;
@@ -221,9 +233,11 @@ class tlRole extends tlDBObject
 		$result = tl::OK;
 		if (!sizeof($this->rights))
 			$result = self::E_EMPTYROLE;
-		if ($result >= tl::OK)
+		
+    if ($result >= tl::OK)
 			$result = self::checkRoleName($this->name);
-		if ($result >= tl::OK)
+		
+    if ($result >= tl::OK)
 			$result = self::doesRoleExist($db,$this->name,$this->dbID) ? self::E_NAMEALREADYEXISTS : tl::OK;
 		
 		return $result;
@@ -237,8 +251,9 @@ class tlRole extends tlDBObject
 		$role = new tlRole();
 		$role->name = $name;
 		if ($role->readFromDB($db,self::ROLE_O_SEARCH_BYNAME) >= tl::OK && $role->dbID != $id)
+    {  
 			return $role->dbID;
-
+    }  
 		return null;
 	}
 	

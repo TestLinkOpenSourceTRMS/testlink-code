@@ -4,9 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	execSetResults.tpl
 @internal smarty template - show tests to add results
 @internal revisions
-@since 1.9.5
-20121117 - franciscom - TICKET 5350: Bug Tracking Integration - Create Issue with JUST ONE CLICK
-20121114 - franciscom - TICKET 5344: BULK EXECUTION - Tester A can execute test case that assigned to Tester B
+@since 1.9.7
 *}
 {assign var="attachment_model" value=$cfg->exec_cfg->att_model}
 {assign var="title_sep"  value=$smarty.const.TITLE_SEP}

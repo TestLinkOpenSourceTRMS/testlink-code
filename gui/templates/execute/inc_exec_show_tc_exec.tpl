@@ -2,8 +2,7 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	inc_exec_show_tc_exec.tpl
 @internal revisions
-@since 1.9.5
-20121117 - franciscom - TICKET 5350: Bug Tracking Integration - Create Issue with JUST ONE CLICK
+@since 1.9.7
 *}	
  	{foreach item=tc_exec from=$gui->map_last_exec}
 
@@ -307,23 +306,23 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	       		  	<td align="center">
     	         	<a href="javascript:confirm_and_submit(msg,'execSetResults','exec_to_delete',
              	                                       {$tc_old_exec.execution_id},'do_delete',1);">
-      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" title="{$labels.img_title_delete_execution}"
+      			    <img src="{$tlImages.delete}" title="{$labels.img_title_delete_execution}"
       			         style="border:none" /></a>
       			 </td>
       			{else}
-      				{if $can_delete_execution}
+      				{if $can_delete_exec}
       					<td align="center">
-      						<img src="{$smarty.const.TL_THEME_IMG_DIR}/trash_greyed.png" title="{$labels.closed_build}">
+      						<img src="{$tlImages.delete_disabled}" title="{$labels.closed_build}">
       					</td>
       				{/if}
           		{/if}
 
        		<td class="icon_cell" align="center">
        		  {if $tc_old_exec.execution_run_type == $smarty.const.TESTCASE_EXECUTION_TYPE_MANUAL}
-      		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/user.png" title="{$labels.execution_type_manual}"
+      		    <img src="{$tlImages.testcase_execution_type_manual}" title="{$labels.execution_type_manual}"
       		            style="border:none" />
        		  {else}
-      		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bullet_wrench.png" title="{$labels.execution_type_auto}"
+      		    <img src="{$tlImages.testcase_execution_type_automatic}" title="{$labels.execution_type_auto}"
       		            style="border:none" />
        		  {/if}
           </td>
@@ -333,10 +332,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   			</tr>
  			  {if $tc_old_exec.execution_notes neq ""}
   			<script>
-		{*  BUGID 3522
-		Initialize panel if notes exists. There might be multiple note panels
-		visible at the same time, so we need to collect those init functions in
-		an array and execute them from Ext.onReady(). See execSetResults.tpl *}
+		{* Initialize panel if notes exists. There might be multiple note panels
+		   visible at the same time, so we need to collect those init functions in
+		   an array and execute them from Ext.onReady(). See execSetResults.tpl *}
         {literal}
         var panel_init = function(){
             var p = new Ext.Panel({

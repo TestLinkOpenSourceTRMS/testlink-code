@@ -6,7 +6,7 @@
  * @filesource  rolesEdit.php
  *
  * @internal revisions 
- * @since 1.9.6
+ * @since 1.9.7
  * 
 **/
 require_once("../../config.inc.php");
@@ -26,27 +26,31 @@ $op = initialize_op();
 
 $owebeditor = web_editor('notes',$args->basehref,$editorCfg) ;
 $owebeditor->Value = getItemTemplateContents('role_template', $owebeditor->InstanceName, null);
-$canManage = has_rights($db,"role_management") ? true : false;
+$canManage = $args->user->hasRight($db,"role_management") ? true : false;
+
+echo __FILE__;
 
 switch($args->doAction)
 {
   case 'create':
-    break;
+  break;
 
   case 'edit':
-      $op->role = tlRole::getByID($db,$args->roleid);
-    break;
+    $op->role = tlRole::getByID($db,$args->roleid);
+  break;
 
   case 'doCreate':
   case 'doUpdate':
+    echo $args->doAction;
     if($canManage)
-      {
-          $op = doOperation($db,$args,$args->doAction);
-          $templateCfg->template = $op->template;
-        }
-    break;
+    {
+      $op = doOperation($db,$args,$args->doAction);
+      $templateCfg->template = $op->template;
+    }
+  break;
+  
   default:
-    break;
+  break;
 }
 
 $gui = complete_gui($db,$gui,$args,$op->role,$owebeditor);
@@ -60,29 +64,30 @@ renderGui($smarty,$args,$templateCfg);
 
 function init_args()
 {
-  $iParams = array(
-      "rolename" => array("POST",tlInputParameter::STRING_N,0,100),
-      "roleid" => array("REQUEST",tlInputParameter::INT_N),
-      "doAction" => array("REQUEST",tlInputParameter::STRING_N,0,100),
-      "notes" => array("POST",tlInputParameter::STRING_N),
-      "grant" => array("POST",tlInputParameter::ARRAY_STRING_N),
-    );
+  $_REQUEST = strings_stripSlashes($_REQUEST);
+
+  $iParams = array("rolename" => array("POST",tlInputParameter::STRING_N,0,100),
+                   "roleid" => array("REQUEST",tlInputParameter::INT_N),
+                   "doAction" => array("REQUEST",tlInputParameter::STRING_N,0,100),
+                   "notes" => array("POST",tlInputParameter::STRING_N),
+                   "grant" => array("POST",tlInputParameter::ARRAY_STRING_N));
 
   $args = new stdClass();
   $pParams = I_PARAMS($iParams,$args);
-  $_REQUEST=strings_stripSlashes($_REQUEST);
   $args->basehref = $_SESSION['basehref'];
   
+  $args->user = $_SESSION['currentUser'];
   return $args;
 }
 
 
 function doOperation(&$dbHandler,$argsObj,$operation)
 {
+
   $rights = implode("','",array_keys($argsObj->grant));
 
   $op = new stdClass();
-   $op->role = new tlRole();
+  $op->role = new tlRole();
   $op->role->rights = tlRight::getAll($dbHandler,"WHERE description IN ('{$rights}')");
   $op->role->name = $argsObj->rolename;
   $op->role->description = $argsObj->notes;
@@ -96,15 +101,15 @@ function doOperation(&$dbHandler,$argsObj,$operation)
     $auditCfg = null;
     switch($operation)
     {
-        case 'doCreate':
+      case 'doCreate':
         $auditCfg['msg'] = "audit_role_created";
         $auditCfg['activity'] = "CREATE";
-        break;
+      break;
   
       case 'doUpdate':
-            $auditCfg['msg'] = "audit_role_saved";
+        $auditCfg['msg'] = "audit_role_saved";
         $auditCfg['activity'] = "SAVE";
-        break;
+      break;
     }
     
     logAuditEvent(TLS($auditCfg['msg'],$argsObj->rolename),$auditCfg['activity'],$op->role->dbID,"roles");
@@ -124,31 +129,31 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
     $doRender = false;
     switch($argsObj->doAction)
     {
-    case "edit":
-        case "create":
-          $doRender = true;
+      case "edit":
+      case "create":
+        $doRender = true;
         $tpl = $templateCfg->default_template;
-        break;
+      break;
 
-    case "doCreate":
-        case "doUpdate":
-          if(!is_null($templateCfg->template))
-          {
-              $doRender = true;
-              $tpl = $templateCfg->template;
-          }
-          else
-          {
-           header("Location: rolesView.php");
+      case "doCreate":
+      case "doUpdate":
+        if(!is_null($templateCfg->template))
+        {
+          $doRender = true;
+          $tpl = $templateCfg->template;
+        }
+        else
+        {
+          header("Location: rolesView.php");
           exit();
-          }
-        break;
-  }
+        }
+      break;
+    }
 
     if($doRender)
     {
-    $smartyObj->display($templateCfg->template_dir . $tpl);
-  }
+      $smartyObj->display($templateCfg->template_dir . $tpl);
+    }
 }
 
 
@@ -173,7 +178,9 @@ function getRightsCfg()
     $cfg->system_mgmt = config_get('rights_system');
     $cfg->platform_mgmt = config_get('rights_platforms');
     $cfg->issuetracker_mgmt = config_get('rights_issuetrackers');
+    $cfg->execution = config_get('rights_executions');
     // $cfg->reqmgrsystem_mgmt = config_get('rights_reqmgrsystems');
+
     return $cfg;
 }
 

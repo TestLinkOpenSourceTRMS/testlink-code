@@ -4,7 +4,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - create/edit user role
 
 @internal revisions
-@since 1.9.6
+@since 1.9.7
+20130317 - franciscom - config options transformed in rights
 *}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
@@ -20,7 +21,7 @@ Purpose: smarty template - create/edit user role
              title_user_mgmt,caption_define_role,th_mgttc_rights,th_req_rights,
              th_product_rights,th_user_rights,th_kw_rights,th_cf_rights,th_system_rights,
              th_platform_rights,demo_update_role_disabled,th_issuetracker_rights,
-             th_reqmgrsystem_rights,
+             th_reqmgrsystem_rights,th_execution_rights,
              th_rolename,th_tp_rights,btn_cancel'}
              
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
@@ -156,6 +157,13 @@ function validateForm(f)
               {/foreach}
             </fieldset>
           </td>
+          <td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_execution_rights}</legend>
+              {foreach from=$gui->rightsCfg->execution item=id key=k}
+              <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
+              {/foreach}
+            </fieldset>
+          </td>
+
           {* 
           <td>
           <fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_reqmgrsystem_rights}</legend>

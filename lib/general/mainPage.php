@@ -14,7 +14,9 @@
  * There is also some javascript that handles the form information.
  *
  * @internal revisions
- * 
+ * @since 1.9.7
+ * 20130317 - franciscom - transform config options into rights
+ *
  **/
 
 require_once('../../config.inc.php');
@@ -173,7 +175,10 @@ function getUserDocumentation()
 function getGrants($dbHandler,$user,$forceToNo=false)
 {
   // User has test project rights
-  // This talks about Default/Global 
+  // This talks about Default/Global
+  //
+  // key: more or less verbose
+  // value: string present on rights table
   $right2check = array('project_edit' => 'mgt_modify_product',
                        'reqs_view' => "mgt_view_req", 
                        'reqs_edit' => "mgt_modify_req",
@@ -188,16 +193,18 @@ function getGrants($dbHandler,$user,$forceToNo=false)
                        'usergroups' => "mgt_view_usergroups",
                        'view_tc' => "mgt_view_tc",
                        'project_inventory_view' => 'project_inventory_view',
-                       'modify_tc' => 'mgt_modify_tc');
-
-  if($forceToNo)
-  {
+                       'modify_tc' => 'mgt_modify_tc',
+                       'exec_edit_notes' => 'exec_edit_notes', 'exec_delete' => 'exec_delete',
+                       'testplan_unlink_executed_testcases' => 'testplan_unlink_executed_testcases',
+                       'testproject_delete_executed_testcases' => 'testproject_delete_executed_testcases');
+ if($forceToNo)
+ {
     $grants = array_fill_keys(array_keys($right2check), 'no');
     return $grants;      
-  }  
+ }  
   
   
-  $grants['project_edit'] = $user->hasRight($dbHandler,$right2check['project_edit']); 
+ $grants['project_edit'] = $user->hasRight($dbHandler,$right2check['project_edit']); 
 
   /** redirect admin to create testproject if not found */
   if ($grants['project_edit'] && !isset($_SESSION['testprojectID']))

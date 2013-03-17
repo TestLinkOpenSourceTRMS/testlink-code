@@ -33,12 +33,12 @@ $gui->edit_enabled = config_get('exec_cfg')->edit_notes;
 $owebeditor = web_editor('notes',$args->basehref,$editorCfg);
 switch ($args->doAction)
 {
-    case 'edit':
-	    break;
+  case 'edit':
+	break;
         
-    case 'doUpdate':
-	    doUpdate($db,$args,$tcase_mgr,$_REQUEST);
-   		break;  
+  case 'doUpdate':
+    doUpdate($db,$args,$tcase_mgr,$_REQUEST);
+  break;  
 }
 $map = get_execution($db,$args->exec_id);
 $owebeditor->Value = $map[0]['notes'];
@@ -63,22 +63,22 @@ function doUpdate(&$db,&$args,&$tcaseMgr,&$request)
 
 function init_args()
 {
+  // Take care of proper escaping when magic_quotes_gpc is enabled
+  $_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$iParams = array("exec_id" => array(tlInputParameter::INT_N),
-		             "doAction" => array(tlInputParameter::STRING_N,0,100),
+		               "doAction" => array(tlInputParameter::STRING_N,0,100),
    		             "notes" => array(tlInputParameter::STRING_N),
-					 "tcversion_id" => array(tlInputParameter::INT_N),
-					 "tplan_id" => array(tlInputParameter::INT_N),
-					 "tproject_id" => array(tlInputParameter::INT_N));
+					         "tcversion_id" => array(tlInputParameter::INT_N),
+					         "tplan_id" => array(tlInputParameter::INT_N),
+					         "tproject_id" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
-    R_PARAMS($iParams,$args);
+  R_PARAMS($iParams,$args);
     
-    $args->basehref = $_SESSION['basehref'];
-    
-    // Take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
+  $args->basehref = $_SESSION['basehref'];
 	
-    return $args; 
+  return $args; 
 }
 
 
@@ -92,11 +92,14 @@ function init_args()
  */
 function checkRights(&$db,&$user)
 {
+  /*
 	$execCfg = config_get('exec_cfg');
 	if ($execCfg->edit_notes != 1)
 	{
 		return false;	
 	}	
-	return $user->hasRight($db,"testplan_execute");
+  */
+  // 20130317 - franciscom
+	return $user->hasRight($db,"testplan_execute") && $user->hasRight($db,"exec_edit_notes");
 }
 ?>

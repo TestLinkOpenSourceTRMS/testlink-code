@@ -616,9 +616,6 @@ $tlCfg->document_generator->tc_version_enabled = FALSE;
 // DISABLED -> disable
 $tlCfg->exec_cfg->enable_test_automation = DISABLED;
 
-// 1 -> user can edit execution notes, on old executions (Attention: user must have test case execution right)
-// DISABLED -> no edit allowed [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->edit_notes = DISABLED;
 
 // ASCending   -> last execution at bottom
 // DESCending  -> last execution on top      [STANDARD BEHAVIOUR]
@@ -645,9 +642,6 @@ $tlCfg->exec_cfg->show_history_all_platforms = FALSE;
 // $att_model_m2 ->  hides upload button and title
 $tlCfg->exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
 
-// ENABLED -> User can delete an execution result
-// DISABLED -> User can not.  [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->can_delete_execution = DISABLED;
 
 // ENABLED -> test cases will be coloured according to test case status
 $tlCfg->exec_cfg->enable_tree_testcases_colouring = ENABLED;

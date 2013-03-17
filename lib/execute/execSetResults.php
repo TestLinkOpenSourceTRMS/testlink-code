@@ -20,9 +20,7 @@
  * 
  * @internal revisions
  *
- * @since 1.9.6
- * 20130306 - franciscom - TICKET 5541: BULK Execution - When "Result" filter is used, no test cases 
- *                                      show up in the right pane when user clicks on the test suite. 
+ * @since 1.9.7
  *
 **/
 require_once('../../config.inc.php');
@@ -1052,8 +1050,8 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
     // IMPORTANT NOTICE - TICKET 5128
     // If is TRUE we will need also to analize, test case by test case
     // these settings:
-  //           $tlCfg->exec_cfg->exec_mode->tester
-  //          $tlCfg->exec_cfg->simple_tester_roles       
+    //           $tlCfg->exec_cfg->exec_mode->tester
+    //          $tlCfg->exec_cfg->simple_tester_roles       
     //
     // Why ?
     // Because if a tester can execute ONLY test cases assigned to him, this also
@@ -1064,15 +1062,17 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
     //
     // These checks can not be done here
     //
-    // may be in the future this can be converted to a role right
-    $grants->delete_execution = $exec_cfg->can_delete_execution;
+    // TICKET 5310: Execution Config - convert options into rights
+    $grants->delete_execution = $userObj->hasRight($dbHandler,"exec_delete",$tproject_id,$tplan_id);
+  
     
-    
-    // may be in the future this can be converted to a role right
     // Important:
     // Execution right must be present to consider this configuration option.
-    $grants->edit_exec_notes = $grants->execute && $exec_cfg->edit_notes;
+    // $grants->edit_exec_notes = $grants->execute && $exec_cfg->edit_notes;
+    $grants->edit_exec_notes = $grants->execute && 
+                               $userObj->hasRight($dbHandler,"exec_edit_notes",$tproject_id,$tplan_id);
     
+
     $grants->edit_testcase = $userObj->hasRight($dbHandler,"mgt_modify_tc",$tproject_id,$tplan_id);
     $grants->edit_testcase = $grants->edit_testcase=="yes" ? 1 : 0;
     return $grants;

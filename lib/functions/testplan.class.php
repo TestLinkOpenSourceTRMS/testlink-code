@@ -15,16 +15,8 @@
  *
  * @internal revisions
  * 
- * @since 1.9.6
- *
- * 20130306 - franciscom - TICKET 5541: BULK Execution - When "Result" filter is used, no test cases 
- *                                      show up in the right pane when user clicks on the test suite.
- * 20130216 - franciscom - TICKET 5524: Creating build using test case user assignment from existing build. 
- *                         Newest build is not selected by default.
- *                         get_builds_for_html_options() interface and logic changes.
- *
- * 20121222 - franciscom - TICKET 5425: Access TO EXECUTION FROM 'Test Case Assigned to me' - 
- *                         Issues with Save and move to next" returns to the same case
+ * @since 1.9.7
+ * 20130318 - franciscom - TICKET 5566: "Assigned to" does not work in "test execution" page
  * 
  **/
 
@@ -5598,12 +5590,12 @@ class testplan extends tlObjectWithAttachments
    *            
    *
    * @internal revisions
-   * @since 1.9.6
-   * 20130306 - filter on exec status when setted to NOT RUN was wrong
+   * @since 1.9.7
+   * 20130318 - franciscom - TICKET 5566: "Assigned to" does not work in "test execution" page
+   * 20130306 - franciscom - filter on exec status when setted to NOT RUN was wrong
    */
   function initGetLinkedForTree($tplanID,$filtersCfg,$optionsCfg)
   {
-
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $dummy = array('exec_type','tc_id','builds','keywords','executions','platforms');
 
@@ -5698,12 +5690,15 @@ class testplan extends tlObjectWithAttachments
     if( !is_null($ic['filters']['assigned_to']) && 
         !in_array(TL_USER_ANYBODY,(array)$ic['filters']['assigned_to']) )
     {  
-
       list($ic['join']['ua'],$ic['where']['ua']) = 
         $this->helper_assigned_to_sql($ic['filters']['assigned_to'],$ic['options'],
                         $ic['filters']['build_id']);            
 
       $ic['where']['where'] .= $ic['where']['ua']; 
+
+      // TICKET 5566: "Assigned to" does not work in "test execution" page
+      $ic['where']['not_run'] .= $ic['where']['ua'];  
+
     }
     
     

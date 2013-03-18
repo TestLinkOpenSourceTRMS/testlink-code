@@ -6,7 +6,7 @@
  * @filesource tlTestCaseFilterControl.class.php
  * @package    TestLink
  * @author     Andreas Simon
- * @copyright  2006-2012, TestLink community
+ * @copyright  2006-2013, TestLink community
  * @link       http://www.teamst.org/index.php
  * 
  *
@@ -34,8 +34,7 @@
  *    --> assign requirements
  *
  * @internal revisions
- * @since 1.9.5
- * 201210xx - asimon - TICKET 4217: added importance filter on test specification
+ * @since 1.9.7
  *
  */
 
@@ -845,8 +844,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}
 		
 		$tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id);
-					
-		// echo __METHOD__ . '::' . $this->mode . '<br>';			
+
 		switch ($this->mode) 
 		{
 			
@@ -885,13 +883,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 					
 				}
 				
-				
 				list($tree_menu, $testcases_to_show) = testPlanTree($this->db,$gui->menuUrl,
-		                                                			$this->args->testproject_id,
-		                                                       	    $this->args->testproject_name,
-		                                                       	    $this->args->testplan_id,
-		                                                       	    $this->args->testplan_name,
-		                                                       	    $filters,$opt_etree);
+		                                                			  $this->args->testproject_id,
+		                                                       	$this->args->testproject_name,
+		                                                       	$this->args->testplan_id,
+		                                                       	$this->args->testplan_name,
+		                                                       	$filters,$opt_etree);
 				
 				$this->set_testcases_to_show($testcases_to_show);
 				
@@ -967,12 +964,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			break;
 			
 			case 'plan_add_mode':
-				// BUGID 4613 - improved cookiePrefix - tree in plan_add_mode is only used for
-				//              add/removed test cases features and shows all test cases defined
-				//              within test project, but as test cases are added to a specified
-				//              test plan -> store state for each test plan
-				// BUGID 4625 - usage of wrong values in $this->args->xyz for cookiePrefix
-				//              instead of correct values in $filters->setting_xyz
+				// improved cookiePrefix - 
+        // tree in plan_add_mode is only used for add/removed test cases features 
+        // and shows all test cases defined within test project, 
+        // but as test cases are added to a specified test plan -> store state for each test plan
+				// 
+        // usage of wrong values in $this->args->xyz for cookiePrefix instead of correct 
+        // values in $filters->setting_xyz
 				$cookie_prefix = "add_remove_tc_tplan_id_{$filters['setting_testplan']}_";
 				
 				if ($this->do_filtering)
@@ -1039,23 +1037,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				//$chronos[] = $tstart = microtime(true);
 				//echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::Start!!!' . current($chronos);
 				//reset($chronos);	
-
-				$style='1.9.4';
-				switch ($style)
-				{				
-				
-				case '1.9.3':
-				list($tree_menu, $testcases_to_show) = generateExecTree($this->db,$gui->menuUrl,
-				                                                        $this->args->testproject_id,
-				                                                        $this->args->testproject_name,
-				                                                        $this->args->testplan_id,
-				                                                        $this->args->testplan_name,
-				                                                        $filters,$opt_etree);
-				                                                        
-				                                                        
-				break;
-					
-				case '1.9.4':
 				list($tree_menu, $testcases_to_show) = execTree($this->db,$gui->menuUrl,
 				                                                $this->args->testproject_id,
 				                                                $this->args->testproject_name,
@@ -1063,9 +1044,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				                                                $this->args->testplan_name,
 				                                                $filters,$opt_etree);
 				
-				break;
-
-				}
 				//$chronos[] = microtime(true); $tnow = end($chronos); $tprev = prev($chronos);
 				//$t_elapsed = number_format( $tnow - $tprev, 4);
 				//echo '<br> ' . basename(__FILE__) . ' Elapsed (sec):' . $t_elapsed;

@@ -16,6 +16,7 @@
  * @internal revisions
  * 
  * @since 1.9.7
+ * 20130318 - franciscom - TICKET 5572: Filter by Platforms - Wrong test case state count in test plan execution
  * 20130318 - franciscom - TICKET 5566: "Assigned to" does not work in "test execution" page
  * 
  **/
@@ -5499,7 +5500,6 @@ class testplan extends tlObjectWithAttachments
       return null;  
     }
 
-    // 20121008 - TICKET 5256
     $platform4EE = " ";
     if( !is_null($my['filters']['platform_id']) )
     {
@@ -5525,10 +5525,10 @@ class testplan extends tlObjectWithAttachments
               " TCV.tc_external_id AS external_id, " .
               " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
               
-                 " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
-                 " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
-                 " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
-                 " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+              " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
+              " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
+              " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
+              " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
               $my['join']['ua'] .
               $my['join']['keywords'] .
               " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
@@ -5557,10 +5557,10 @@ class testplan extends tlObjectWithAttachments
               " TCV.tc_external_id AS external_id, " .
               " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
               
-                 " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
-                 " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
-                 " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
-                 " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+              " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
+              " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
+              " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
+              " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
               $my['join']['ua'] .
               $my['join']['keywords'] .
               " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
@@ -5591,6 +5591,7 @@ class testplan extends tlObjectWithAttachments
    *
    * @internal revisions
    * @since 1.9.7
+   * 20130318 - franciscom - TICKET 5572: Filter by Platforms - Wrong test case state count in test plan execution
    * 20130318 - franciscom - TICKET 5566: "Assigned to" does not work in "test execution" page
    * 20130306 - franciscom - filter on exec status when setted to NOT RUN was wrong
    */
@@ -5697,7 +5698,7 @@ class testplan extends tlObjectWithAttachments
       $ic['where']['where'] .= $ic['where']['ua']; 
 
       // TICKET 5566: "Assigned to" does not work in "test execution" page
-      $ic['where']['not_run'] .= $ic['where']['ua'];  
+      // $ic['where']['not_run'] .= $ic['where']['ua'];  
 
     }
     
@@ -5718,10 +5719,21 @@ class testplan extends tlObjectWithAttachments
     }
                                
 
+    // I've made the choice to create the not_run key, to manage the not_run part
+    // of UNION on getLinkedForExecTree().
+    //
+    // ATTENTION:
+    // on other methods getLinkedForTesterAssignmentTree(), getLinkedTCVersionsSQL()
+    // Still is used $ic['where']['where'] on BOTH components of UNION
+    //     
+    // TICKET 5566: "Assigned to" does not work in "test execution" page
+    // TICKET 5572: Filter by Platforms - Wrong test case state count in test plan execution
+    $ic['where']['not_run'] = $ic['where']['where'];
+
     // Position on code flow is CRITIC
     if (!is_null($ic['filters']['exec_status']))
     {
-      $ic['where']['not_run'] = $ic['where']['where'];
+      // $ic['where']['not_run'] = $ic['where']['where'];
       $dummy = (array)$ic['filters']['exec_status'];
 
       $ic['where']['where'] .= " AND E.status IN ('" . implode("','",$dummy) . "')";
@@ -5735,6 +5747,7 @@ class testplan extends tlObjectWithAttachments
         $ic['where']['not_run'] = $ic['where']['where'];
       } 
     }
+
 
     // do always
 

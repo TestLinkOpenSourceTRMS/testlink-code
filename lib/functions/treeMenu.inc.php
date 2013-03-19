@@ -5,24 +5,16 @@
  *  
  * functions related to tree menu building for test specification and test execution.
  * 
- * @filesource	treeMenu.inc.php
- * @package 	TestLink
- * @author 		Martin Havlat
- * @copyright 	2005-2012, TestLink community 
- * @link 		http://www.teamst.org/index.php
- * @uses 		config.inc.php
+ * @filesource  treeMenu.inc.php
+ * @package     TestLink
+ * @author      Martin Havlat
+ * @copyright 	2005-2013, TestLink community 
+ * @link 		    http://www.teamst.org/index.php
+ * @uses 		    config.inc.php
  *
  * @internal revisions
- * @since 1.9.4
- * 20121010 - asimon - TICKET 4217: added filter for importance
- * 20121010 - asimon - TICKET 4496: Add filter for active/inactive Test Cases on Add/remove Test Cases
- * 20121010 - asimon - TICKET 4353: added active/inactive filter
- * 20120913 - asimon - TICKET 5186: Filtering by the value of custom fields on test specification is not working
- * 20120607 - franciscom - 	somework to be able to generate tree used on Test Report, and Test Plan Report
- * 20120415 - franciscom - 	filter_by_same_status_for_all_builds() => filterStatusSetAllActiveBuilds()
- * 20120205 - franciscom - 	remove deprecated method
- * 20110115 - franciscom -	work on extjs_renderExecTreeNodeOnOpen() and related functions
- *							trying to improve performance
+ * @since 1.9.7
+ * 20130319 - franciscom - TICKET 5573: test cases assign to platform A show up in "test plan report" for All platforms
  *
  */
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
@@ -265,13 +257,13 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
  *
  *
  * tplan_tcases: map with testcase versions linked to test plan. 
- *               due to the multiples uses of this function, null has to meanings
+ *               due to the multiples uses of this function, null has several meanings
  *
  *         		 When we want to build a Test Project specification tree,
  *         		 WE SET it to NULL, because we are not interested in a test plan.
  *         		 
  *         		 When we want to build a Test execution tree, we dont set it deliverately
- *         		 to null, but null can be the result of NO tcversion linked.
+ *         		 to null, but null can be the result of NO tcversion linked => EMPTY TEST PLAN
  *
  *
  * 20081220 - franciscom - status can be an array with multple values, to do OR search.
@@ -308,28 +300,27 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
  *         'not run'
  *
  * @internal revisions
- * 20121010 - asimon - TICKET 4496: added inactive testcase filter
  */
 function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = null,
                      &$tplan_tcases = null,$filters=null, $options=null)
 {
-	
 	static $status_descr_list;
 	static $debugMsg;
-    static $tables;
-    static $my;
-    static $enabledFiltersOn;
-    static $activeVersionClause;
-    static $filterOnTCVersionAttribute;
-    static $filtersApplied;
-    static $users2filter;
-    static $results2filter;
+  static $tables;
+  static $my;
+  static $enabledFiltersOn;
+  static $activeVersionClause;
+  static $filterOnTCVersionAttribute;
+  static $filtersApplied;
+  static $users2filter;
+  static $results2filter;
+  static $testPlanIsNotEmpty;
 
-    $tpNode = null;
+  $tpNode = null;
 	if (!$tables)
 	{
-  	    $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
-        $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
+  	$debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
+    $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
 
 		$status_descr_list = array_keys($decoding_info['status_descr_code']);
 		$status_descr_list[] = 'testcase_count';
@@ -371,6 +362,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		$results2filter = isset($my['filters']['filter_result_result']) ?
 		                  		$my['filters']['filter_result_result'] : null;
 		
+
+		$testPlanIsNotEmpty = (!is_null($tplan_tcases) && count($tplan_tcases) > 0); 
 	}
 		
 	// $tcase_counters = array('testcase_count' => 0);
@@ -385,11 +378,18 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 
 	if($node_type == 'testcase')
 	{
-		if( ($enabledFiltersOn['keywords'] && !isset($tck_map[$node['id']])) ||
-			($enabledFiltersOn['testcase_name'] && 
-				 stripos($node['name'], $my['filters']['filter_testcase_name']) === FALSE)  ||
-			($enabledFiltersOn['testcase_id'] && ($node['id'] != $my['filters']['filter_tc_id']) ) 
-		  ) 	
+
+    // TICKET 
+    // ABSOLUTELY First implicit filter to be applied when test plan is not empty.
+    // is our test case present on Test Spec linked to Test Plan ?
+    if( $testPlanIsNotEmpty && !isset($tplan_tcases[$node['id']]))
+    {
+      $node = null;
+    }  
+		else if( ($enabledFiltersOn['keywords'] && !isset($tck_map[$node['id']])) ||
+			       ($enabledFiltersOn['testcase_name'] &&  
+              stripos($node['name'], $my['filters']['filter_testcase_name']) === FALSE)  ||
+			       ($enabledFiltersOn['testcase_id'] && ($node['id'] != $my['filters']['filter_tc_id'])) ) 	
 		{
 			unset($tplan_tcases[$node['id']]);
 			$node = null;
@@ -512,7 +512,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		
 		// -------------------------------------------------------------------
 		if ($node && ($my['options']['viewType']=='testSpecTree' || 
-					  $my['options']['viewType'] =='testSpecTreeForTestPlan') )
+				$my['options']['viewType'] =='testSpecTreeForTestPlan') )
 		{
 			$sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
 			       " SELECT COALESCE(MAX(TCV.id),0) AS targetid, TCV.tc_external_id AS external_id" .
@@ -2358,12 +2358,9 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
 		}
 
         // node must be destroyed if empty had we have using filtering conditions
-		if( $filtersApplied && 
-			!$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
+		if( $filtersApplied && !$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
 		{
-			// echo 'ne';
 			$node = null;
-			// unset($node);
 		}
 	}
 	else if ($node_type == 'testsuite')
@@ -2371,8 +2368,8 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
 		// does this means is an empty test suite ??? - franciscom 20080328
 		$map_node_tccount[$node['id']] = array(	'testcount' => 0,'name' => $node['name']);
 	
-        // If is an EMPTY Test suite and we have added filtering conditions,
-        // We will destroy it.
+    // If is an EMPTY Test suite and we have added filtering conditions,
+    // We will destroy it.
 		if( $filtersApplied )
 		{
 			$node = null;

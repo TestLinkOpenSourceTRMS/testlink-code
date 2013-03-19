@@ -8,13 +8,12 @@
  *
  * @filesource  printDocument.php
  * @author      Martin Havlat
- * @copyright   2007-2012, TestLink community 
+ * @copyright   2007-2013, TestLink community 
  * @link        http://www.teamst.org/index.php
  *
  *
  * @internal revisions
- * @since 1.9.6
- * 20130215 - franciscom - TICKET 5519: Unassigned test cases to a platform show up in "test plan report"
+ * @since 1.9.7
  *
  */
 require_once('../../config.inc.php');
@@ -182,11 +181,10 @@ switch ($doc_info->type)
                 $items2use->estimatedExecTime[$platform_id][] = $linkedBy[$platform_id][$rdx]['tcversion_id'];
               }    
             }
-                     
             // Prepare Node -> pn
             $pnFilters = null;
-                        $pnOptions =  array('hideTestCases' => 0);
-                        $pnOptions = array_merge($pnOptions, $my['options']['prepareNode']);
+            $pnOptions =  array('hideTestCases' => 0);
+            $pnOptions = array_merge($pnOptions, (array)$my['options']['prepareNode']);
             $dummy4reference = null;
             $treeForPlatform[$platform_id]['childNodes'] = array();
             if(!is_null($linkedBy[$platform_id]))

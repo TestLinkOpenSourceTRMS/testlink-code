@@ -11,8 +11,7 @@
  * 
  * 
  * internal revisions
- * @since 1.9.4
- * 20120810 - franciscom - TICKET 5127: Requirements based report - refactoring 
+ * @since 1.9.7
  */
 
 require_once("../../config.inc.php");
@@ -24,7 +23,7 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 
 $smarty = new TLSmarty();
-$images = $smarty->getImages();
+
 
 $tproject_mgr = new testproject($db);
 $tplan_mgr = new testplan($db);
@@ -40,7 +39,17 @@ list($req_spec_type_labels,$req_type_labels,$status_labels,$labels) = setUpLabel
 list($results_cfg,$status_code_map,$code_status_map,$eval_status_map) = setUpReqStatusCfg();
 
 $args = init_args($tproject_mgr,$tplan_mgr,$req_cfg);
+
+$images = $smarty->getImages();
 $gui = init_gui($args,$tplan_mgr);
+$i2u = array('edit_icon','exec_icon','history_small');
+foreach($i2u as $ik)
+{
+	$images[$ik] = $gui->baseHref . $images[$ik]; 
+}	
+
+
+
 
 $reqContext = array('tproject_id' => $args->tproject_id, 'tplan_id' => $args->tplan_id, 
 					'platform_id' => $args->platform);
@@ -80,7 +89,6 @@ if(count($req_spec_map))
 	foreach ($req_spec_map as $req_spec_id => $req_spec_info) 
 	{
 		$req_spec_map[$req_spec_id]['req_counters'] = array('total' => 0);
-		
 		foreach ($req_spec_info['requirements'] as $req_id => $req_info) 
 		{
 			$req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters'] = array('total' => 0);
@@ -88,7 +96,7 @@ if(count($req_spec_map))
 			// add coverage for more detailed evaluation
 			$req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters']['expected_coverage'] = 
 				$req_spec_map[$req_spec_id]['requirements'][$req_id]['expected_coverage'];
-			
+		
 			foreach ($req_info['linked_testcases'] as $key => $tc_info) 
 			{
 				$tc_id = $tc_info['id'];
@@ -108,6 +116,7 @@ if(count($req_spec_map))
 				}
 			}
 			
+
 			// evaluate this requirement by configured coverage algorithm
 			$eval = evaluate_req($status_code_map, $req_cfg->coverageStatusAlgorithm,
 			                     $req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters']);
@@ -188,8 +197,9 @@ if (count($req_spec_map))
 			$single_row[] = htmlentities($path, ENT_QUOTES, $charset) . $req_spec_description;
 			
 			// create the linked title to display
-			$edit_link = "<a href=\"javascript:openLinkedReqWindow(" . $req_id . ")\">" .
-						 "<img title=\"{$labels['requirement']}\" src=\"{$images['edit_icon']}\" /></a> ";
+			$edit_link = '<a href="javascript:openLinkedReqWindow(' . $req_id . ')>' .
+						 "
+						 <img title=\"{$labels['requirement']}\" src=\"{$images['edit_icon']}\" /></a> ";
 
 		    $single_row[] = $edit_link .
 		    				htmlentities($req_info['req_doc_id'], ENT_QUOTES, $charset) . $title_sep . 
@@ -320,21 +330,19 @@ if (count($req_spec_map))
 		}
 	}
 	
-	// create table object
-	$matrix = new tlExtTable($columns, $rows, 'tl_table_results_reqs');
+   	$matrix = new tlExtTable($columns, $rows, 'tl_table_results_reqs');
 	$matrix->title = $gui->pageTitle;
 	
 	// group by Req Spec and hide that column
 	$matrix->setGroupByColumnName($labels['req_spec_short']);
 	
-	// sort descending by progress percentage
 	$matrix->setSortByColumnName($labels['progress']);
 	$matrix->sortDirection = 'DESC';
 	
-	//show long text content in multiple lines
+	// show long text content in multiple lines
 	$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
 	
-	//define toolbar
+	// define toolbar
 	$matrix->toolbarShowAllColumnsButton = true;
 	$matrix->showGroupItemsCount = false;
 	
@@ -563,6 +571,7 @@ function init_gui(&$argsObj,&$tplanMgr)
 	$dummy = $tplanMgr->get_by_id($argsObj->tplan_id);
 	$gui->tplan_name = $dummy['name'];
 
+	$gui->baseHref = $_SESSION['basehref'];
 	return $gui;
 }
 

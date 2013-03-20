@@ -11,7 +11,8 @@
  * @since       1.9
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.7
+ * 20130320 - franciscom - TICKET 5577: Requirements based Report is empty (buildColumns())
  * 
  **/
 
@@ -215,11 +216,19 @@ class tlExtTable extends tlTable
     for ($i=0; $i<$n_columns; $i++) 
     {
       $column = $this->columns[$i];
-      if(isset($column['hidden']))
+
+      // new dBug($column);
+      // Because sometimes a column can be made HIDDEN but used to generate a group
+      // (this happens in the requirements based report), if we remove ths column
+      // only checking for 'hidden' attribute, we will generate an issue
+      //
+      $isGroupable = isset($column['groupable']) ? $column['groupable'] : false;
+	  if( (isset($column['hidden']) && $column['hidden']) && !$isGroupable )
       {
-        continue;  // just an experiment
+      	continue;  // just an experiment
       }
       
+
       if( isset($column['tlType']) )
       {
         switch($column['tlType'])

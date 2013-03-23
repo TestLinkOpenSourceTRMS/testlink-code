@@ -90,8 +90,8 @@ class testcase extends tlObjectWithAttachments
 
 		$this->execution_types = $this->getExecutionTypes();
 
-    $this->cfg = new stdClass();
-    $this->cfg->testcase = config_get('testcase_cfg');
+    	$this->cfg = new stdClass();
+    	$this->cfg->testcase = config_get('testcase_cfg');
     
 		// ATTENTION:
 		// second argument is used to set $this->attachmentTableName,property that this calls
@@ -603,7 +603,7 @@ class testcase extends tlObjectWithAttachments
 	  $idSet = is_array($id) ? $id : (array)$id;
 	  $status_ok = $idSet[0] > 0 ? 1 : 0;
 		
-		$gui = $this->initShowGui($guiObj,$grants,$idSet[0]);
+     $gui = $this->initShowGui($guiObj,$grants,$idSet[0]);
 
 	  $userIDSet = array();
 		if($status_ok)
@@ -5616,6 +5616,12 @@ class testcase extends tlObjectWithAttachments
 
 		$goo->execution_types = $this->execution_types;
 		$goo->tcase_cfg = $this->cfg->testcase;
+
+    // some config options have been migrated to rights
+    // In order to refactor less code, we will remap to OLD config options present on config file.
+    $goo->tcase_cfg->can_edit_executed = $grantsObj->testproject_edit_executed_testcases == 'yes' ? 1 : 0;
+    $goo->tcase_cfg->can_delete_executed = $grantsObj->testproject_delete_executed_testcases == 'yes' ? 1 : 0;
+
 		$goo->view_req_rights = $grantsObj->mgt_view_req;
 
 	  $goo->parentTestSuiteName = '';

@@ -527,8 +527,13 @@ $TLS_th_link_exec_status = "Link and execution status";
 $TLS_testsuite_successfully_deleted = "The Test Suite was successfully deleted";
 $TLS_no_links = "No dependent data.";
 $TLS_linked_and_executed = "Test case was added into a Test Plan and has results.";
+
+// $TLS_system_blocks_tsuite_delete_due_to_exec_tc = 
+//  "Test suite can not be deleted, because system configuration blocks delete of executed test cases";
+
 $TLS_system_blocks_tsuite_delete_due_to_exec_tc = 
-  "Test suite can not be deleted, because system configuration blocks delete of executed test cases";
+	"Test suite can not be deleted, because it contains one or more executed test cases " .
+	"and your role has no right to delete executed test cases";
 
 
 // ----- gui/templates/containerNew.tpl -----
@@ -1588,8 +1593,12 @@ $TLS_deactivate_this_tcversion = "Deactivate this version";
 $TLS_execution_type = 'Execution type';
 $TLS_execution_type_short_descr = 'Execution';
 $TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not available to be included in a test plan";
-$TLS_system_blocks_delete_executed_tc = "System configuration blocks delete of executed versions";
-$TLS_system_blocks_delete_executed_tc_when = "System configuration blocks delete of test case when there are executed versions";
+// $TLS_system_blocks_delete_executed_tc = "System configuration blocks delete of executed versions";
+// $TLS_system_blocks_delete_executed_tc_when = "System configuration blocks delete of test case when there are executed versions";
+
+$TLS_no_right_to_delete_executed_tc = "Your role has no right to delete executed test cases or test case versions";
+$TLS_system_blocks_delete_executed_tc = $TLS_no_right_to_delete_executed_tc;
+$TLS_system_blocks_delete_executed_tc_when = $TLS_no_right_to_delete_executed_tc;
 
 
 // ----- gui/templates/planRemoveTC_m1.tpl -----

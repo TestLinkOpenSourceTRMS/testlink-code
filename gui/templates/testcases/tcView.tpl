@@ -3,18 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: tcView.tpl,v 1.45.2.1 2010/12/06 08:20:59 asimon83 Exp $
 Purpose: smarty template - view test case in test specification
 
-rev:
-    20101202 - asimon - BUGID 4067: refresh tree problems
-    20101017 - franciscom - image access refactored (tlImages)
-    20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
-                            use of: $gui->cf_current_version, $gui->cf_other_versions
-    20100814 - franciscom - improvement on user feecback when no record found.
-    20100315 - franciscom - fixed refresh tree issue 
-    20100106 - franciscom - Multiple Test Case Steps Feature
-    20090418 - franciscom - BUGID 2364 
-    20090414 - franciscom - BUGID 2378
-    20090308 - franciscom - added args_can_do
-    20090215 - franciscom - BUGID - show info about links to test plans
+@internal revisions
 *}
 
 {config_load file="input_dimensions.conf"}

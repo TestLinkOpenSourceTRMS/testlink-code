@@ -733,19 +733,10 @@ $tlCfg->spec_cfg->show_tsuite_filter = ENABLED;
 $tlCfg->spec_cfg->automatic_tree_refresh = ENABLED;
 
 
-// ENABLED -> user can edit executed tc versions
-// DISABLED -> editing of executed tc versions is blocked.  [STANDARD BEHAVIOUR]
-$tlCfg->testcase_cfg->can_edit_executed = DISABLED;
 
 // ENABLED -> user can removed from a testplan executed tc versions. [STANDARD BEHAVIOUR]
 // DISABLED -> user can NOT remove from a testplan executed tc versions.
 $tlCfg->testcase_cfg->can_remove_executed = ENABLED;
-
-
-// ENABLED -> user can DELETE a TEST CASE that has been executed. 
-// DISABLED -> [STANDARD BEHAVIOUR]
-// IMPORTANT: this is valid for any role => admin is also under this law.
-$tlCfg->testcase_cfg->can_delete_executed = DISABLED;
 
 
 // To avoid perfomance problems on search test case feature,

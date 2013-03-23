@@ -640,8 +640,7 @@ function get_subtree($id,$filters=null,$opt=null)
  * @param type $action [default = 'update']
  * @param type $modded_item_id [default = 0]
  *
- * @internal revision
- * 20101030 - francisco - BUGID 3937: No information when exporting all test suites when no test suites exists   
+ * @internal revisions
  *
  **/
 function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
@@ -657,21 +656,31 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
     $gui->sqlResult = $sqlResult;
   }
 
+  $p2ow = array('refreshTree' => false, 'user_feedback' => '');
+  foreach($p2ow as $prop => $value)
+  {
+    if( !property_exists($gui,$prop) )
+    {
+      $gui->$prop = $value;
+    }
+  }
+
+
   $gui->container_data = $this->get_by_id($id);
-   $gui->moddedItem = $gui->container_data;
-   $gui->level = 'testproject';
-   $gui->page_title = lang_get('testproject');
+  $gui->moddedItem = $gui->container_data;
+  $gui->level = 'testproject';
+  $gui->page_title = lang_get('testproject');
   $gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
-    $gui->attachmentInfos = getAttachmentInfosFrom($this,$id);
+  $gui->attachmentInfos = getAttachmentInfosFrom($this,$id);
    
-  // BUGID 3937: No information when exporting all test suites when no test suites exists   
-   $exclusion = array( 'testcase', 'me', 'testplan' => 'me', 'requirement_spec' => 'me');
-   $gui->canDoExport = count($this->tree_manager->get_children($id,$exclusion)) > 0;
+  
+  $exclusion = array( 'testcase', 'me', 'testplan' => 'me', 'requirement_spec' => 'me');
+  $gui->canDoExport = count($this->tree_manager->get_children($id,$exclusion)) > 0;
   if ($modded_item_id)
   {
     $gui->moddedItem = $this->get_by_id($modded_item_id);
   }
-    $smarty->assign('gui', $gui);  
+  $smarty->assign('gui', $gui);  
   $smarty->display($template_dir . 'containerView.tpl');
 }
 

@@ -2330,6 +2330,8 @@ $TLS_desc_issuetrackers_view = "Issue Tracker view (read only access)";
 $TLS_desc_issuetrackers_management = "Issue Tracker Management";
 $TLS_desc_reqmgrsystems_view = "Req. Management System view (read only access)";
 $TLS_desc_reqmgrsystems_management = "Req. Management System Management";
+$TLS_desc_req_tcase_link_management = "Requirement-Test Case Assignment";
+$TLS_desc_keyword_assignment = "Keyword Assignment";
 
 
 

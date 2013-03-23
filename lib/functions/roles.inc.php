@@ -14,7 +14,7 @@
  * 
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.7
  *                                     
  */
 
@@ -60,58 +60,81 @@ function init_global_rights_maps()
   
 
   // @since 1.9.7
-  $g_rights_executions = array('exec_edit_notes' => lang_get('right_exec_edit_notes'), 
-                               'exec_delete' => lang_get('right_exec_delete'));
+  $l18nCfg = array('desc_testplan_execute' => null,'desc_testplan_create_build' => null,
+                   'desc_testplan_metrics' => null,'desc_testplan_planning' => null,
+                   'desc_user_role_assignment' => null,'desc_mgt_view_tc' => null,
+                   'desc_mgt_modify_tc'  => null,'mgt_testplan_create' => null,
+                   'desc_mgt_view_key' => null,'desc_mgt_modify_key' => null,
+                   'desc_keyword_assignment' => null,'desc_mgt_view_req' => null,
+                   'desc_mgt_modify_req' => null,'desc_req_tcase_link_management' => null,
+                   'desc_mgt_modify_product' => null,'desc_project_inventory_management' => null,
+                   'desc_project_inventory_view' => null,
+                   'desc_cfield_view' => null,'desc_cfield_management' => null,
+                   'desc_platforms_view' => null,'desc_platforms_management' => null,
+                   'desc_issuetrackers_view' => null,'desc_issuetrackers_management' => null,
+                   'desc_mgt_modify_users' => null,'desc_role_management' => null,
+                   'desc_user_role_assignment' => null,
+                   'desc_mgt_view_events' => null, 'desc_events_mgt' => null,
+                   'desc_mgt_unfreeze_req' => null,
+                   'right_exec_edit_notes' => null, 'right_exec_delete' => null,
+                   'right_testplan_unlink_executed_testcases' => null, 
+                   'right_testproject_delete_executed_testcases' => null,
+                   'right_testproject_edit_executed_testcases' => null);
+
+  $l18n = init_labels($l18nCfg);
+
+  $g_rights_executions = array('exec_edit_notes' => $l18n['right_exec_edit_notes'], 
+                               'exec_delete' => $l18n['right_exec_delete']);
 
 
-  $g_rights_tp = array("testplan_execute" => lang_get('desc_testplan_execute'),
-                       "testplan_create_build" => lang_get('desc_testplan_create_build'),
-                       "testplan_metrics" => lang_get('desc_testplan_metrics'),
-                       "testplan_planning" => lang_get('desc_testplan_planning'),
-                       "testplan_user_role_assignment" => lang_get('desc_user_role_assignment'));
+  $g_rights_tp = array("testplan_execute" => $l18n['desc_testplan_execute'],
+                       "testplan_create_build" => $l18n['desc_testplan_create_build'],
+                       "testplan_metrics" => $l18n['desc_testplan_metrics'],
+                       "testplan_planning" => $l18n['desc_testplan_planning'],
+                       "testplan_user_role_assignment" => $l18n['desc_user_role_assignment'],
+                       "testplan_unlink_executed_testcases" => $l18n['right_testplan_unlink_executed_testcases']);
             
-  $g_rights_mgttc = array("mgt_view_tc" => lang_get('desc_mgt_view_tc'),
-                          "mgt_modify_tc" => lang_get('desc_mgt_modify_tc'),
-                          "mgt_testplan_create" => lang_get('mgt_testplan_create'));
+  $g_rights_mgttc = array("mgt_view_tc" => $l18n['desc_mgt_view_tc'],
+                          "mgt_modify_tc" => $l18n['desc_mgt_modify_tc'],
+                          "mgt_testplan_create" => $l18n['mgt_testplan_create'],
+                          "testproject_delete_executed_testcases" => $l18n['right_testproject_delete_executed_testcases'],
+                          "testproject_edit_executed_testcases" => $l18n['right_testproject_edit_executed_testcases']);
+  
+  $g_rights_kw = array("mgt_view_key" => $l18n['desc_mgt_view_key'],
+                       "mgt_modify_key" => $l18n['desc_mgt_modify_key']);
+  
+  $g_rights_req = array("mgt_view_req" => $l18n['desc_mgt_view_req'],
+                        "mgt_modify_req" => $l18n['desc_mgt_modify_req'],
+                        "mgt_unfreeze_req" => $l18n['desc_mgt_unfreeze_req']);
+  
+  $g_rights_product = array("mgt_modify_product" => $l18n['desc_mgt_modify_product'],
+                            "project_inventory_management" => $l18n['desc_project_inventory_management'],
+                            "project_inventory_view" => $l18n['desc_project_inventory_view'] );            
+  
+  $g_rights_cf = array("cfield_view" => $l18n['desc_cfield_view'],
+                       "cfield_management" => $l18n['desc_cfield_management']);
+  
+  
+  $g_rights_platforms = array("platform_view" => $l18n['desc_platforms_view'],
+                              "platform_management" => $l18n['desc_platforms_management']);
+
+  $g_rights_issuetrackers = array("issuetracker_view" => $l18n['desc_issuetrackers_view'],
+                                  "issuetracker_management" => $l18n['desc_issuetrackers_management']);
 
 
-
-  
-  $g_rights_kw = array("mgt_view_key" => lang_get('desc_mgt_view_key'),
-                       "mgt_modify_key" => lang_get('desc_mgt_modify_key'));
-  
-  $g_rights_req = array("mgt_view_req" => lang_get('desc_mgt_view_req'),
-                        "mgt_modify_req" => lang_get('desc_mgt_modify_req'),
-                        "mgt_unfreeze_req" => lang_get('desc_mgt_unfreeze_req'));
-  
-  $g_rights_product = array("mgt_modify_product" => lang_get('desc_mgt_modify_product'),
-                            "project_inventory_management" => lang_get('desc_project_inventory_management'),
-                            "project_inventory_view" => lang_get('desc_project_inventory_view') );            
-  
-  $g_rights_cf = array("cfield_view" => lang_get('desc_cfield_view'),
-                       "cfield_management" => lang_get('desc_cfield_management'));
-  
-  
-  $g_rights_platforms = array("platform_view" => lang_get('desc_platforms_view'),
-                              "platform_management" => lang_get('desc_platforms_management'));
-
-  $g_rights_issuetrackers = array("issuetracker_view" => lang_get('desc_issuetrackers_view'),
-                                  "issuetracker_management" => lang_get('desc_issuetrackers_management'));
-
-
-  // $g_rights_reqmgrsystems = array("reqmgrsystem_view" => lang_get('desc_reqmgrsystems_view'),
-  //                                 "reqmgrsystem_management" => lang_get('desc_reqmgrsystems_management'));
+  // $g_rights_reqmgrsystems = array("reqmgrsystem_view" => $l18n['desc_reqmgrsystems_view'],
+  //                                 "reqmgrsystem_management" => $l18n['desc_reqmgrsystems_management']);
 
 
   // Global means test project independent.
-  $g_rights_users_global = array("mgt_users" => lang_get('desc_mgt_modify_users'),
-                                 "role_management" => lang_get('desc_role_management'),
-                                 "user_role_assignment" => lang_get('desc_user_role_assignment')); 
+  $g_rights_users_global = array("mgt_users" => $l18n['desc_mgt_modify_users'],
+                                 "role_management" => $l18n['desc_role_management'],
+                                 "user_role_assignment" => $l18n['desc_user_role_assignment']); 
   
   $g_rights_users = $g_rights_users_global;
               
-  $g_rights_system = array ("mgt_view_events" => lang_get('desc_mgt_view_events'),
-                            "events_mgt" => lang_get('desc_events_mgt'));
+  $g_rights_system = array ("mgt_view_events" => $l18n['desc_mgt_view_events'],
+                            "events_mgt" => $l18n['desc_events_mgt']);
 
 
               

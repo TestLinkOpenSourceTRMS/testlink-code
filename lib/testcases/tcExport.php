@@ -8,9 +8,7 @@
  * Scope: test case and test suites export
  * 
  * @internal revisions
- * @since 1.9.4
- * 20120205 - franciscom - TICKET 4907: Test Case / Test Suite export - suggested filename improvements
- *
+ * @since 1.9.7
  * 
  */
 require_once("../../config.inc.php");
@@ -106,17 +104,15 @@ if ($args->doExport)
 {
 	if( is_null($tcase_mgr) )
 	{
-		$tcase_mgr = new testcase($db);
+	  $tcase_mgr = new testcase($db);
 	}
 	$tsuite_mgr = new testsuite($db);
 	
-	$optExport = array('REQS' => $args->exportReqs, 'CFIELDS' => $args->exportCFields,
-	                   'KEYWORDS' => $args->exportKeywords, 'RECURSIVE' => $args->useRecursion);
 	$pfn = null;
 	switch($args->exportType)
 	{
 		case 'XML':
-		    $pfn = 'exportTestSuiteDataToXML';
+		  $pfn = 'exportTestSuiteDataToXML';
 			if ($exporting_just_one_tc)
 			{
 				$pfn = 'exportTestCaseDataToXML';
@@ -127,13 +123,13 @@ if ($args->doExport)
 	{
 		if ($exporting_just_one_tc)
 		{
-			$optExport['ROOTELEM'] = "<testcases>{{XMLCODE}}</testcases>";
-			$content = $tcase_mgr->$pfn($args->tcase_id,$args->tcversion_id,$args->tproject_id,null,$optExport);
+			$args->optExport['ROOTELEM'] = "<testcases>{{XMLCODE}}</testcases>";
+			$content = $tcase_mgr->$pfn($args->tcase_id,$args->tcversion_id,$args->tproject_id,null,$args->optExport);
 		}	
 		else
 		{
 			$content = TL_XMLEXPORT_HEADER;
-			$content .= $tsuite_mgr->$pfn($args->container_id,$args->tproject_id,$optExport);
+			$content .= $tsuite_mgr->$pfn($args->container_id,$args->tproject_id,$args->optExport);
 		}
 			
 		downloadContentsToFile($content,$gui->export_filename);
@@ -179,19 +175,29 @@ function init_args()
     
     $args = new stdClass();
     $args->doExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
+
+
+    $args->useRecursion = isset($_REQUEST['useRecursion']) ? $_REQUEST['useRecursion'] : false;
     $args->exportReqs = isset($_REQUEST['exportReqs']) ? 1 : 0;
     $args->exportCFields = isset($_REQUEST['exportCFields']) ? 1 : 0;
     $args->exportKeywords = isset($_REQUEST['exportKeywords']) ? 1 : 0;
+    $args->exportTestCaseExternalID = isset($_REQUEST['exportTestCaseExternalID']) ? 1 : 0;
+
+    $args->optExport = array('REQS' => $args->exportReqs, 'CFIELDS' => $args->exportCFields,
+                             'KEYWORDS' => $args->exportKeywords, 
+                             'EXTERNALID' => $args->exportTestCaseExternalID,
+                             'RECURSIVE' => $args->useRecursion);
+
+
+
     $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
     $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
     $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
     $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
-    $args->useRecursion = isset($_REQUEST['useRecursion']) ? $_REQUEST['useRecursion'] : false;
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = $_SESSION['testprojectName'];
     $args->export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
 
-	// 20100315 - franciscom
     $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 
     return $args;

@@ -4,15 +4,14 @@ $Id: tcExport.tpl,v 1.14 2010/11/06 11:42:47 amkhullar Exp $
 
 test case export initial page 
 
-Revisions:
-20100315 - franciscom - improvements on goback management
-20100315 - amitkhullar - Added checkboxes options for Requirements and CFields for Export.
-20091122 - franciscom - refacoting to use alert_message()
+@internal revisions
+@since 1.9.7
 
-* ----------------------------------------------------------------- *}
+*}
+
 {lang_get var="labels" 
           s='export_filename,warning_empty_filename,file_type,warning,export_cfields,title_req_export,
-             view_file_format_doc,export_with_keywords,btn_export,btn_cancel'} 
+             view_file_format_doc,export_with_keywords,btn_export,export_tcase_external_id,btn_cancel'} 
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -20,7 +19,6 @@ Revisions:
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
 {literal}
@@ -67,6 +65,15 @@ function validateForm(f)
 	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{lang_get s="view_file_format_doc"}</a>
   	</td>
   	</tr>
+    <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    </tr>   
+    
+    <tr>
+    <td>{$labels.export_tcase_external_id}</td>
+    <td><input type="checkbox" name="exportTestCaseExternalID" id="exportTestCaseExternalID" value="1" checked /></td>
+    </tr>   
     <tr>
     <td>{$labels.title_req_export}</td>
     <td><input type="checkbox" name="exportReqs" value="1" checked /></td>

@@ -6,11 +6,11 @@
  * @filesource	testsuite.class.php
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 	2005-2012, TestLink community 
+ * @copyright 	2005-2013, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.7
  *
  */
 
@@ -24,33 +24,35 @@ require_once( dirname(__FILE__) . '/files.inc.php');
  */
 class testsuite extends tlObjectWithAttachments
 {
-    const NODE_TYPE_FILTER_OFF=null;
-    const CHECK_DUPLICATE_NAME=1;
-    const DONT_CHECK_DUPLICATE_NAME=0;
-    const DEFAULT_ORDER=0;
-    const USE_RECURSIVE_MODE = 1;
+  const NODE_TYPE_FILTER_OFF=null;
+  const CHECK_DUPLICATE_NAME=1;
+  const DONT_CHECK_DUPLICATE_NAME=0;
+  const DEFAULT_ORDER=0;
+  const USE_RECURSIVE_MODE = 1;
   
+
+  private $object_table;
+
 	/** @var database handler */
  	var $db;
 	var $tree_manager;
 	var $node_types_descr_id;
 	var $node_types_id_descr;
 	var $my_node_type;
-    var $cfield_mgr;
+  var $cfield_mgr;
 
-	private $object_table;
 
-    var $import_file_types = array("XML" => "XML");
-    var $export_file_types = array("XML" => "XML");
+  var $import_file_types = array("XML" => "XML");
+  var $export_file_types = array("XML" => "XML");
  
-    // Node Types (NT)
-    var $nt2exclude=array('testplan' => 'exclude_me',
+  // Node Types (NT)
+  var $nt2exclude=array('testplan' => 'exclude_me',
 	                      'requirement_spec'=> 'exclude_me',
 	                      'requirement'=> 'exclude_me');
 													                        
 
-    var $nt2exclude_children=array('testcase' => 'exclude_my_children',
-							       'requirement_spec'=> 'exclude_my_children');
+  var $nt2exclude_children=array('testcase' => 'exclude_my_children',
+	    				                   'requirement_spec'=> 'exclude_my_children');
 
 	/**
 	 * testplan class constructor
@@ -398,9 +400,10 @@ class testsuite extends tlObjectWithAttachments
 		$gui = is_null($guiObj) ? new stdClass() : $guiObj;
 		
 		$gui->cf = '';
-	    $gui->sqlResult = '';
+	  $gui->sqlResult = '';
 		$gui->sqlAction = '';
 		
+
 		$p2ow = array('refreshTree' => false, 'user_feedback' => '');
 		foreach($p2ow as $prop => $value)
 		{
@@ -410,15 +413,15 @@ class testsuite extends tlObjectWithAttachments
 			}
 		}
 
-        // After test suite edit, display of Test suite do not have upload button enabled for attachment
-  	    $my['options'] = array('show_mode' => 'readwrite'); 	
-	    $my['options'] = array_merge($my['options'], (array)$options);
+    // After test suite edit, display of Test suite do not have upload button enabled for attachment
+  	$my['options'] = array('show_mode' => 'readwrite'); 	
+	  $my['options'] = array_merge($my['options'], (array)$options);
 
-        $gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc");
-        if($my['options']['show_mode'] == 'readonly')
-        {  	    
+    $gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc");
+    if($my['options']['show_mode'] == 'readonly')
+    {  	    
 			$gui->modify_tc_rights = 'no';
-	    }
+	  }
 	    
 		if($sqlResult)
 		{ 

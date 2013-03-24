@@ -29,6 +29,7 @@ $owebeditor->Value = getItemTemplateContents('role_template', $owebeditor->Insta
 $canManage = $args->user->hasRight($db,"role_management") ? true : false;
 
 echo __FILE__;
+echo $args->doAction;
 
 switch($args->doAction)
 {
@@ -41,14 +42,14 @@ switch($args->doAction)
 
   case 'doCreate':
   case 'doUpdate':
-    echo $args->doAction;
+  case 'duplicate':
     if($canManage)
     {
       $op = doOperation($db,$args,$args->doAction);
       $templateCfg->template = $op->template;
     }
   break;
-  
+
   default:
   break;
 }
@@ -84,16 +85,31 @@ function init_args()
 function doOperation(&$dbHandler,$argsObj,$operation)
 {
 
-  $rights = implode("','",array_keys($argsObj->grant));
-
   $op = new stdClass();
   $op->role = new tlRole();
-  $op->role->rights = tlRight::getAll($dbHandler,"WHERE description IN ('{$rights}')");
-  $op->role->name = $argsObj->rolename;
-  $op->role->description = $argsObj->notes;
-  $op->role->dbID = $argsObj->roleid;
   $op->userFeedback = null;
   $op->template = 'rolesEdit.tpl';
+
+  switch($operation)
+  {
+
+    case 'doCreate':
+    case 'doUpdate':
+      $rights = implode("','",array_keys($argsObj->grant));
+      $op->role->rights = tlRight::getAll($dbHandler,"WHERE description IN ('{$rights}')");
+      $op->role->name = $argsObj->rolename;
+      $op->role->description = $argsObj->notes;
+      $op->role->dbID = $argsObj->roleid;
+    break;
+
+    case 'duplicate':
+      $op->role = tlRole::getByID($dbHandler,$argsObj->roleid);
+      $op->role->dbID = null;
+      $op->role->name = generateUniqueName($op->role->name);
+
+    break;
+  }
+
 
   $result = $op->role->writeToDB($dbHandler);
   if ($result >= tl::OK)
@@ -102,6 +118,7 @@ function doOperation(&$dbHandler,$argsObj,$operation)
     switch($operation)
     {
       case 'doCreate':
+      case 'duplicate':
         $auditCfg['msg'] = "audit_role_created";
         $auditCfg['activity'] = "CREATE";
       break;
@@ -112,7 +129,7 @@ function doOperation(&$dbHandler,$argsObj,$operation)
       break;
     }
     
-    logAuditEvent(TLS($auditCfg['msg'],$argsObj->rolename),$auditCfg['activity'],$op->role->dbID,"roles");
+    logAuditEvent(TLS($auditCfg['msg'],$op->role->name),$auditCfg['activity'],$op->role->dbID,"roles");
     $op->template = null;
   }
   else
@@ -148,6 +165,11 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
           exit();
         }
       break;
+
+      case "duplicate":
+        header("Location: rolesView.php");
+        exit();
+      break;   
     }
 
     if($doRender)
@@ -210,10 +232,12 @@ function initialize_op()
 function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
 {
   $actionCfg['operation'] = array('create' => 'doCreate', 'edit' => 'doUpdate',
-                                'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate');
+                                  'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
+                                  'duplicate' => 'duplicate');
 
   $actionCfg['highlight'] = array('create' => 'create_role', 'edit' => 'edit_role',
-                                'doCreate' => 'create_role', 'doUpdate' => 'edit_role');
+                                  'doCreate' => 'create_role', 'doUpdate' => 'edit_role',
+                                  'duplicate' => 'create_role');
 
 
   $guiObj->highlight->$actionCfg['highlight'][$argsObj->doAction] = 1;
@@ -250,6 +274,13 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
 
     $guiObj->notes = $webEditorObj->CreateHTML();
     return $guiObj;
+}
+
+function generateUniqueName($s)
+{
+  // sorry for the magic, but anyway user has to edit role to provide desired name
+  // IMHO this quick & dirty solution is OK
+  return substr($s . ' - Copy - ' . substr(sha1(rand()), 0, 50),0,100);
 }
 
 function checkRights(&$db,&$user)

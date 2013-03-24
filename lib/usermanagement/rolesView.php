@@ -3,10 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: rolesView.php,v $
+ * @filesource	rolesView.php
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/08/26 19:10:28 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -31,12 +29,14 @@ switch ($args->doAction)
 			$affectedUsers = $role->getAllUsersWithRole($db);
 			$doDelete = (sizeof($affectedUsers) == 0);
 		}
-		break;
+	break;
 
 	case 'confirmDelete':
 		$doDelete = 1;
-		break;
+	break;
+
 }
+
 $userFeedback = null;
 if($doDelete)
 {
@@ -65,17 +65,15 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args()
 {
-	$iParams = array(
-			"roleid" => array(tlInputParameter::INT_N),
-			"doAction" => array(tlInputParameter::STRING_N,0,100),
-		);
+	$iParams = array("roleid" => array(tlInputParameter::INT_N),
+			             "doAction" => array(tlInputParameter::STRING_N,0,100));
 
 	$args = new stdClass();
 	$pParams = R_PARAMS($iParams,$args);
     
 	$args->currentUser = $_SESSION['currentUser'];
 	
-    return $args;
+  return $args;
 }
 
 

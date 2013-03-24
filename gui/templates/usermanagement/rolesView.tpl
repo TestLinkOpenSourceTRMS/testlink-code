@@ -3,21 +3,19 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: rolesView.tpl,v 1.17 2010/10/17 09:46:37 franciscom Exp $
 Purpose: smarty template - View defined roles
 
-rev:
-     20080109 - franciscom - table sorting feature
-     20070921 - franciscom - BUGID - added strip_tags|strip to notes
-     20070829 - jbarchibald
-      -  bug 1000  - Testplan User Role Assignments
+@internal revisions
+@since 1.9.7
 
 *}
 {assign var="roleActionMgr" value="lib/usermanagement/rolesEdit.php"}
 {assign var="createRoleAction" value="$roleActionMgr?doAction=create"}
 {assign var="editRoleAction" value="$roleActionMgr?doAction=edit&amp;roleid="}
+{assign var="duplicateRoleAction" value="$roleActionMgr?doAction=duplicate&amp;roleid="}
 
 {lang_get var="labels"
           s="btn_create,title_user_mgmt,title_roles,delete_role,caption_possible_affected_users,
-             warning_users_will_be_reset,btn_confirm_delete,btn_cancel,no_roles,
-             th_roles,th_role_description,th_delete,alt_edit_role,alt_delete_role,N_A"}
+             warning_users_will_be_reset,btn_confirm_delete,btn_cancel,no_roles,th_duplicate_role,
+             th_roles,th_role_description,th_delete,alt_edit_role,alt_delete_role,N_A,duplicate_role"}
 
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -71,11 +69,12 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 		{$labels.no_roles}
 	{else}
 		{* data table *}
-		<table class="common sortable" width="50%">
+		<table class="common sortable" width="70%">
 			<tr>
 				<th width="30%">{$tlImages.sort_hint}{$labels.th_roles}</th>
 				<th class="{$noSortableColumnClass}">{$labels.th_role_description}</th>
-				<th class="{$noSortableColumnClass}">{$labels.th_delete}</th>
+				<th class="icon_cell">{$labels.th_delete}</th>
+				<th class="icon_cell">{$labels.th_duplicate_role}</th>
 			</tr>
 			{foreach from=$roles item=role}
 			{if $role->dbID neq $smarty.const.TL_ROLES_INHERITED}
@@ -101,11 +100,17 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 		  				            alt="{$labels.alt_delete_role}"
 		 					            onclick="delete_confirmation({$role->dbID},'{$role->getDisplayName()|escape:'javascript'|escape}',
 		 					                                         '{$del_msgbox_title}','{$warning_msg}');"
-		  				            src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
-					{else}
-						{$labels.N_A}
+		  				            src="{$tlImages.delete}"/>
 					{/if}
 				</td>
+
+				<td>
+          <a href="{$duplicateRoleAction}{$role->dbID}">
+          <img style="border:none;cursor: pointer;" title="{$labels.duplicate_role}" alt="{$labels.duplicate_role}"
+               src="{$tlImages.duplicate}"/>
+          </a>
+				</td>
+
 			</tr>
 			{/if}
 			{/foreach}

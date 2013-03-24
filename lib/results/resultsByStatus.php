@@ -8,12 +8,12 @@
  *
  * @filesource  resultsByStatus.php
  * @package     TestLink
- * @copyright   2007-2012, TestLink community 
+ * @copyright   2007-2013, TestLink community 
  * @link        http://www.teamst.org/index.php
  *
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.7
  * 
  */
 require('../../config.inc.php');
@@ -90,13 +90,21 @@ if( $args->type == $statusCode['not_run'] )
 else
 {
   $gui->info_msg = lang_get('info_' . $resultsCfg['code_status'][$args->type] .'_tc_report');
+
+  /*
   $metrics = $metricsMgr->getExecutionsByStatus($args->tplan_id,$args->type,null,
                                                 array('output' => 'array', 'getOnlyAssigned' => true));
+  */
+  $metrics = $metricsMgr->getExecutionsByStatus($args->tplan_id,$args->type,null,
+                                                array('output' => 'mapByExecID', 'getOnlyAssigned' => true));
+
   $notesAccessKey = 'execution_notes';
   $userAccessKey='tester_id';
 
   $gui->bugs_msg = $labels['th_bugs_not_linked'];
 }
+
+$cfOnExec = $cfSet = null;
 
 // done here in order to get some config about images
 $smarty = new TLSmarty();
@@ -114,7 +122,20 @@ if( !is_null($metrics) and count($metrics) > 0 )
 
   $links = featureLinks($labels,$smarty->_tpl_vars['tlImages']);
   $odx = 0;
-  foreach($metrics as &$exec)
+
+  if( $args->type != $statusCode['not_run'] )
+  {
+    // get Custom fields definition to understand columns to be added
+    $cfSet = $tcase_mgr->cfield_mgr->get_linked_cfields_at_execution($args->tproject_id,true,'testcase');
+    $execSet = array_keys($metrics);
+
+
+    // go for Custom fields values of all executions on ONE SHOT!
+    $cfOnExec = $tcase_mgr->cfield_mgr->get_linked_cfields_at_execution($args->tproject_id,true,'testcase',null,$execSet);
+  }
+
+
+  foreach($metrics as $execID => &$exec)
   {  
     // --------------------------------------------------------------------------------------------
     // do some decode work, using caches
@@ -123,8 +144,8 @@ if( !is_null($metrics) and count($metrics) > 0 )
       $dummy = $tcase_mgr->getPathLayered(array($exec['tcase_id']));  
       $pathCache[$exec['tcase_id']] = $dummy[$exec['tsuite_id']]['value'];
       $levelCache[$exec['tcase_id']] = $dummy[$exec['tsuite_id']]['level'];
-          $ky = current(array_keys($dummy)); 
-          $topCache[$exec['tcase_id']] = $ky;
+      $ky = current(array_keys($dummy)); 
+      $topCache[$exec['tcase_id']] = $ky;
     }
     
     // --------------------------------------------------------------------------
@@ -144,7 +165,7 @@ if( !is_null($metrics) and count($metrics) > 0 )
       foreach($bugSet as $bug) 
       {
         $bugString .= $bug['link_to_bts'] . '<br/>';
-       }
+      }
     }
       // --------------------------------------------------------------------------
     
@@ -157,11 +178,13 @@ if( !is_null($metrics) and count($metrics) > 0 )
     // suiteName
     // testTitle   CCA-15708: RSRSR-150
     // testVersion   1
-    // buildName   2.0
-    // platformName XXXX
+    // platformName XXXX     <<< ONlY is platforms have been used on Test plan under analisys
+    // buildName   2.0  <<< At least when platforms ARE NOT USED, 
+    //                  <<< BY DEFAULT build is not displayed as column but used to group results.
+    //  
     // testerName   yyyyyy
     // localizedTS   2012-04-25 12:14:55   <<<< ONLY if executed
-    // notes   [empty string]
+    // notes   [empty string]  (execution notes)
     // bugString   [empty string]        <<<< ONLY if executed 
   
     $out[$odx]['suiteName'] =  $pathCache[$exec['tcase_id']];
@@ -170,17 +193,17 @@ if( !is_null($metrics) and count($metrics) > 0 )
     if($args->format != FORMAT_HTML )
     {
       $out[$odx]['testTitle'] = '<a href="' . $urlSafeString['basehref'] . 
-                    'linkto.php?tprojectPrefix=' . 
-                          $urlSafeString['tprojectPrefix'] . '&item=testcase&id=' . 
-                          urlencode($exec['full_external_id']) .'">' .
-                          $exec['full_external_id'] . ':' . $exec['name'] . '</a>';
+                                'linkto.php?tprojectPrefix=' . 
+                                $urlSafeString['tprojectPrefix'] . '&item=testcase&id=' . 
+                                urlencode($exec['full_external_id']) .'">' .
+                                $exec['full_external_id'] . ':' . $exec['name'] . '</a>';
     }
     else
     {
-        $out[$odx]['testTitle'] = "<!-- " . sprintf("%010d", $exec['external_id']) . " -->";
+      $out[$odx]['testTitle'] = "<!-- " . sprintf("%010d", $exec['external_id']) . " -->";
       $out[$odx]['testTitle'] .= sprintf($links['full'],
-                         $exec['tcase_id'],$exec['tcase_id'],$exec['tcversion_id'],
-                             $exec['build_id'],$args->tplan_id,$exec['platform_id'],$exec['tcase_id']);
+                                 $exec['tcase_id'],$exec['tcase_id'],$exec['tcversion_id'],
+                                 $exec['build_id'],$args->tplan_id,$exec['platform_id'],$exec['tcase_id']);
       $out[$odx]['testTitle'] .= $exec['full_external_id'] . ':' . $exec['name'] . '</a>';
     }
     // --------------------------------------------------------------------------------------------
@@ -224,10 +247,27 @@ if( !is_null($metrics) and count($metrics) > 0 )
 
     if( $args->type != $statusCode['not_run'] )
     {
+      if(!is_null($cfSet))
+      {
+
+        // 20130324 - Need to document how important is value of second index on  $out[$odx][SECOND INDEX] 
+        foreach($cfSet as $cfID => $cfValue)
+        {
+          if(isset($cfOnExec[$execID][$cfID]) && !is_null($cfOnExec[$execID][$cfID]))
+          {  
+            $out[$odx][$cfID] = $tcase_mgr->cfield_mgr->string_custom_field_value($cfOnExec[$execID][$cfID],null);
+          }  
+          else
+          {
+            $out[$odx][$cfID] = '';
+          }  
+        }  
+      }  
+
       $out[$odx]['bugString'] = $bugString;
     }
   
-         $odx++;
+    $odx++;
   }
   $gui->dataSet = $out;
   unset($out);
@@ -254,7 +294,7 @@ $tableOptions = array('status_not_run' => ($args->type == $statusCode['not_run']
                       'format' => $args->format,
                       'show_platforms' => $gui->show_platforms);
 
-$gui->tableSet[] = buildMatrix($gui->dataSet, $args, $tableOptions ,$gui->platformSet);
+$gui->tableSet[] = buildMatrix($gui->dataSet, $args, $tableOptions ,$gui->platformSet,$cfSet);
 
 // Time tracking
 //$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
@@ -396,7 +436,7 @@ function buildMailCfg(&$guiObj)
  * return tlExtTable
  *
  */
-function buildMatrix($dataSet, &$args, $options = array(), $platforms)
+function buildMatrix($dataSet, &$args, $options = array(), $platforms,$customFieldColumns=null)
 {
   $default_options = array('bugInterfaceOn' => false,'show_platforms' => false,
                'status_not_run' => false,'format' => FORMAT_HTML);
@@ -427,6 +467,16 @@ function buildMatrix($dataSet, &$args, $options = array(), $platforms)
     $columns[] = array('title_key' => 'th_run_by', 'width' => 60);
     $columns[] = array('title_key' => 'th_date', 'width' => 60);
     $columns[] = array('title_key' => 'title_execution_notes', 'width' => 150, 'type' => 'text');
+
+    // 20130325
+    if(!is_null($customFieldColumns))
+    {
+      foreach($customFieldColumns as $id => $def)
+      {
+        $columns[] = array('title' => $def['label'], 'width' => 60);
+      }  
+    }  
+
     if ($options['bugInterfaceOn'])
     {
       $columns[] = array('title_key' => 'th_bugs', 'type' => 'text');

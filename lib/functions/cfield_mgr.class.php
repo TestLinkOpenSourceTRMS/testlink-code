@@ -1387,18 +1387,18 @@ function name_is_unique($id,$name)
 		$t_value = isset($p_field_def[$p_value_field]) ? $p_field_def[$p_value_field] : null;
 		$t_custom_field_value = htmlspecialchars($t_value);
 
-		switch ($this->custom_field_types[$p_field_def['type']])
-  		{
+		switch ($this->custom_field_types[intval($p_field_def['type'])])
+  	{
 			case 'email':
 				return "<a href=\"mailto:$t_custom_field_value\">$t_custom_field_value</a>";
-				break;
+			break;
 
 			case 'enum':
 			case 'list':
 			case 'multiselection list':
 			case 'checkbox':
 				return str_replace( '|', ', ', $t_custom_field_value );
-				break;
+			break;
 
 			case 'date':
 				if ($t_custom_field_value != null)
@@ -1408,36 +1408,38 @@ function name_is_unique($id,$name)
 				  $xdate=date( $t_date_format, $t_custom_field_value);
 					return  $xdate;
 				}
-				break ;
+			break ;
 
 			case 'datetime':
 				if ($t_custom_field_value != null)
 				{
-				    // must remove %
-				    // $t_date_format=str_replace("%","",config_get( 'timestamp_format'));
-                    // $datetime_format=$t_date_format;
-                    $t_date_format=str_replace("%","",config_get( 'date_format'));
-                    $cfg=config_get('gui');
-                    $datetime_format=$t_date_format . " " .$cfg->custom_fields->time_format;
-                    $xdate=date( $datetime_format, $t_custom_field_value);
+				  // must remove %
+				  // $t_date_format=str_replace("%","",config_get( 'timestamp_format'));
+          // $datetime_format=$t_date_format;
+          $t_date_format=str_replace("%","",config_get( 'date_format'));
+          $cfg=config_get('gui');
+          $datetime_format=$t_date_format . " " .$cfg->custom_fields->time_format;
+          $xdate=date( $datetime_format, $t_custom_field_value);
 					return  $xdate;
 				}
-				break ;
+			break ;
 
 
 		  case 'text area':
-                if ($t_custom_field_value != null)
-			    {
-					return nl2br($t_custom_field_value);
-                }
-        break;
+        if ($t_custom_field_value != null)
+        {
+				  return nl2br($t_custom_field_value);
+        }
+      break;
+
+      case 'string':
+        return string_display_links( $t_custom_field_value );
+      break;
 
 			default:
-			  // 20071027 - franciscom
-			  // This code manages URLs
+        // done this way in order to be able to debug if needed
 				return string_display_links( $t_custom_field_value );
-
-				// return($t_custom_field_value);
+      break; 
 		}
 	}
 
@@ -1504,20 +1506,28 @@ function name_is_unique($id,$name)
     if( !is_null($node_type) )
     {
    		$hash_descr_id = $this->tree_manager->get_available_node_types();
-        $node_type_id=$hash_descr_id[$node_type];
+      $node_type_id=$hash_descr_id[$node_type];
 
-        $additional_join  .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
-                               " AND CFNT.node_type_id={$node_type_id} ";
+      $additional_join  .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
+                           " AND CFNT.node_type_id={$node_type_id} ";
     }
     
     if( !is_null($node_id) && !is_null($execution_id) && !is_null($testplan_id) )
     {
         $additional_values .= ",CFEV.value AS value,CFEV.tcversion_id AS node_id";
         $additional_join .= " LEFT OUTER JOIN {$this->tables['cfield_execution_values']} CFEV ON CFEV.field_id=CF.id " .
-                            " AND CFEV.tcversion_id={$node_id} " .
-                            " AND CFEV.execution_id={$execution_id} " .
-                            " AND CFEV.testplan_id={$testplan_id} ";
+                            " AND CFEV.tcversion_id=" . intval($node_id) . " " .
+                            " AND CFEV.execution_id=" . intval($execution_id) . " " .
+                            " AND CFEV.testplan_id=" . intval($testplan_id) . " ";
     }
+    else if(!is_null($execution_id))
+    {
+      $access_key = 'execution_id';
+      $fetchMethod='fetchMapRowsIntoMap';
+      $additional_values .= ',CFEV.value AS value, CFEV.execution_id ';
+      $additional_join .= " LEFT OUTER JOIN {$this->tables['cfield_execution_values']} CFEV ON CFEV.field_id=CF.id " .
+                          " AND CFEV.execution_id IN (" . implode(',', $execution_id) . ") ";
+    }  
     else
     {
         // This piece is useful for report implementation done by: Amit Khullar - amkhullar@gmail.com
@@ -1573,7 +1583,18 @@ function name_is_unique($id,$name)
            " AND CF.enable_on_execution={$enabled} " .
            " AND CF.show_on_execution=1 {$additional_filter} {$order_clause} ";
    
-    $map = $this->db->$fetchMethod($sql,$access_key);
+    switch ($fetchMethod) 
+    {
+      case 'fetchArrayRowsIntoMap':
+      case 'fetchRowsIntoMap':
+        $map = $this->db->$fetchMethod($sql,$access_key);
+      break;
+      
+      case 'fetchMapRowsIntoMap':
+        $map = $this->db->$fetchMethod($sql,$access_key,'id');
+      break;
+    }
+    
     return $map;
   }
 

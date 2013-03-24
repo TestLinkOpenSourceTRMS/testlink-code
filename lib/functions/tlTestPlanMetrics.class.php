@@ -12,8 +12,7 @@
  * @uses        common.php 
  *
  * @internal revisions
- * @since 1.9.6         
- * 20130107 - franciscom - TICKET 5457: Incorrect data in "Report by tester per build"                 
+ * @since 1.9.7                    
  **/
 
 
@@ -1993,8 +1992,13 @@ class tlTestPlanMetrics extends testplan
     switch($my['opt']['output'])
     {
       case 'array':
-            $dummy = (array)$this->db->get_recordset($sql);              
+        $dummy = (array)$this->db->get_recordset($sql);              
       break;
+
+      case 'mapByExecID':
+        $dummy = (array)$this->db->fetchRowsIntoMap($sql,'executions_id');              
+      break;
+
 
       case 'map':
       default:

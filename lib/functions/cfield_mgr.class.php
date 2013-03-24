@@ -1530,14 +1530,13 @@ function name_is_unique($id,$name)
     }  
     else
     {
-        // This piece is useful for report implementation done by: Amit Khullar - amkhullar@gmail.com
         if( !is_null($testplan_id) )
         {
-            $base_values ='';
+          $base_values = '';
 
-			// MSSQL BLOCKING error on Report "Test Cases with Execution Details" due to reserved word EXEC
-            // asimon - 20100930 - added platform id to statement
-            $additional_values .= ",CF.name,CF.label,CF.id,CFEV.value AS value,CFEV.tcversion_id AS node_id," .
+			    // MSSQL BLOCKING error on Report "Test Cases with Execution Details" due to reserved word EXEC
+          // asimon - 20100930 - added platform id to statement
+            $additional_values .= ",CF.type,CF.name,CF.label,CF.id,CFEV.value AS value,CFEV.tcversion_id AS node_id," .
                                   "EXECU.id AS exec_id, EXECU.tcversion_id,EXECU.tcversion_number," .
                                   "EXECU.execution_ts,EXECU.status AS exec_status,EXECU.notes AS exec_notes, " .
                                   "NHB.id AS tcase_id, NHB.name AS tcase_name, TCV.tc_external_id, " .

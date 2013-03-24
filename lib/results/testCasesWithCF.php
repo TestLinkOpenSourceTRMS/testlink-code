@@ -9,9 +9,7 @@
  * For a test plan, list test cases with Execution Custom Field Data
  *
  * @internal revisions
- * @since 1.9.5
- * 20121124 - franciscom - TICKET 5316: "Test Cases with Custom Fields set on Execute" - 
- *                                      Report NOT DISPLAYED if CUSTOM FIELD NAME contains DOT
+ * @since 1.9.7
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -79,11 +77,6 @@ if( $args->doIt )
 		// use html comment to be able to sort table by timestamp and not by link
 		// only link is visible in table but comment is used for sorting
 		$dummy = null;
-//		$rowData[] = "<!--{$item['execution_ts']}--><a href=\"lib/execute/execSetResults.php?" .
-//					 "level=testcase&build_id={$item['builds_id']}&id={$item['tcase_id']}" .
-//					 "&version_id={$item['tcversion_id']}&tplan_id={$gui->tplan_id}\">" .
-//					 localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $item['execution_ts']) . '</a>';
-
 		$rowData[] = "<!--{$item['execution_ts']}-->" .
 		             localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $item['execution_ts']);
 
@@ -232,8 +225,7 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
     	}
 	}
 
-    $cf_map = $cfieldMgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',
-                                                          null,null,$tplan_id,'exec_id');
+    $cf_map = $cfieldMgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',null,null,$tplan_id,'exec_id');
      
     // need to transform in structure that allow easy display
     // Every row is an execution with exec data plus a column that contains following map:
@@ -241,7 +233,7 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
     //              CFNAME2 => value
     $guiObj->resultSet = array();
 
-	  if(!is_null($cf_map))
+	if(!is_null($cf_map))
     {
         foreach($cf_map as $exec_id => $exec_info)
         {
@@ -257,7 +249,7 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
             $guiObj->resultSet[$exec_id] += $cf_place_holder;
             foreach($exec_info as $cfield_data)
             {
-                $guiObj->resultSet[$exec_id]['cfields'][$cfield_data['name']]=$cfield_data['value'];
+                $guiObj->resultSet[$exec_id]['cfields'][$cfield_data['name']] = $cfieldMgr->string_custom_field_value($cfield_data,null);
             }
         }
     }
@@ -296,6 +288,9 @@ function getColumnsDefinition($showPlatforms,$customFields,$platforms)
 	foreach ($customFields as $cfield)
 	{
 		// if custom field is time for computing execution time do not waste space
+		// $cfield['id'] is used instead of $cfield['name'] to fix the issue regarding dot on CF name
+		// 20130324 - need to understand if col_id is really needed
+		//
 		$dummy = array('title' => $cfield['label'], 'col_id' => 'id_cf_' . $cfield['id']);
 		if($cfield['name'] == 'CF_EXEC_TIME') 
 		{

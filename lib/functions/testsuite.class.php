@@ -1022,7 +1022,10 @@ class testsuite extends tlObjectWithAttachments
 	  
 	  returns: 
 	  
-	  rev: 
+	  @internal revisions
+	  @since 1.9.7
+	  20130327 - franciscom - TICKET 5592: keywords or custom fields are not imported on test suites	
+
 	  TICKET 5070: Custom fields are not imported
 	*/
 	function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array())
@@ -1061,7 +1064,7 @@ class testsuite extends tlObjectWithAttachments
 		    }
 	        $xmlTC = "<testsuite name=\"" . htmlspecialchars($tsuiteData['name']). '" >' .
 	                 "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" .
-		             "<details><![CDATA[{$tsuiteData['details']}]]> \n{$kwXML}{$cfXML}</details>";
+		             "<details><![CDATA[{$tsuiteData['details']}]]></details> \n{$kwXML}{$cfXML}";
 		}
 		else
 		{

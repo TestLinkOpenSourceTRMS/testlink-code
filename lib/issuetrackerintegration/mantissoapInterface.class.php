@@ -27,6 +27,9 @@ class mantissoapInterface extends issueTrackerInterface
   
   var $defaultResolvedStatus;
 
+  // field is nvarchar(128) at least on 1.2.14
+  var $summaryLengthLimit = 120;
+
 	/**
 	 * Construct and connect to BTS.
 	 *
@@ -387,8 +390,10 @@ class mantissoapInterface extends issueTrackerInterface
 	  $mpid = $client->mc_project_get_id_from_name($safe->username,$safe->password,$safe->project);
 	  if( $mpid > 0)
 	  {
-	    $issue = array('summary' => $summary,'description' => $description,'project' => array('id' => $mpid));
-	
+
+      $safeSummary = (strlen($summary) > $this->summaryLengthLimit) ? '...' . substr($summary, -($this->summaryLengthLimit)) : $summary;
+      $issue = array('summary' => $safeSummary,'description' => $description,'project' => array('id' => $mpid));
+
     	// check category
 	    $nameCode = $client->mc_project_get_categories($safe->username,$safe->password,$mpid);
 	    $codeName = array_flip($nameCode);
@@ -396,7 +401,7 @@ class mantissoapInterface extends issueTrackerInterface
 	    $issue['category'] = (is_null($target) || !isset($nameCode[$target])) ? current($nameCode) : $target;
 	    $ret['id'] = $client->mc_issue_add($safe->username,$safe->password,$issue);
 	    $ret['status_ok'] = true;
-	    $ret['msg'] = sprintf(lang_get('mantis_bug_created'),$summary,$safe->project);
+	    $ret['msg'] = sprintf(lang_get('mantis_bug_created'), $safeSummary,$safe->project);
 	
 	  }
 	  else

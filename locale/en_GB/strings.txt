@@ -1736,6 +1736,7 @@ $TLS_info_resultsTC_report = "This report shows the last test case execution res
 
 // ----- gui/templates/resultsByStatus.tpl -----
 $TLS_th_bugs = "Bugs";
+$TLS_th_bugs_id_summary = "Bugs (ID : Summary)";
 $TLS_th_date = "Date";
 $TLS_th_run_by = "Run by";
 $TLS_th_bugs_not_linked = "Total no. of Test Cases with missing/linked Bugs:";

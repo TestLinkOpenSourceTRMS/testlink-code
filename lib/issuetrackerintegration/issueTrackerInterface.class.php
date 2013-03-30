@@ -269,7 +269,7 @@ abstract class issueTrackerInterface
 	{
 		$my['opt'] = $this->methodOpt[__FUNCTION__];
 		$my['opt'] = array_merge($my['opt'],(array)$opt);
-		
+
 		$link = "<a href='" . $this->buildViewBugURL($issueID) . "' target='_blank'>";
 
 		$issue = $this->getIssue($issueID);
@@ -332,7 +332,15 @@ abstract class issueTrackerInterface
 		$ret = new stdClass();
 		$ret->link = $link;
 		$ret->isResolved = $issue->isResolved;
-		return $ret;
+
+		if( isset($my['opt']['raw']) && !is_null(isset($my['opt']['raw'])) )
+		{
+			foreach($my['opt']['raw'] as $attr)
+      {
+        $ret->$attr = $issue->$attr;
+      }  
+		}
+	  return $ret;
 	}
 
 	/**

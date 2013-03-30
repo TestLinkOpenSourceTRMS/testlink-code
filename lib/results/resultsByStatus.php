@@ -17,11 +17,18 @@
  * 
  */
 require('../../config.inc.php');
+require_once('../../third_party/codeplex/PHPExcel.php');   // Must be included BEFORE common.php
 require_once('common.php');
 require_once('displayMgr.php');
 require_once('users.inc.php');
 require_once('exttable.class.php');
 require_once('exec.inc.php'); // used for bug string lookup
+
+// IMPORTANT NOTICE/WARNING about XLS generation
+// Seams that \n are not liked 
+// http://stackoverflow.com/questions/5960242/how-to-make-new-lines-in-a-cell-using-phpexcel
+//
+
 
 // Time tracking
 //$tstart = microtime(true);
@@ -82,6 +89,7 @@ $gui->info_msg = '';
 $gui->bugs_msg = '';
 if( $args->type == $statusCode['not_run'] )
 {
+  $gui->notRunReport = true;
   $gui->info_msg = $labels['info_notrun_tc_report'];
   $metrics = $metricsMgr->getNotRunWithTesterAssigned($args->tplan_id,null,array('output' => 'array'));
   $notesAccessKey = 'summary';
@@ -89,6 +97,7 @@ if( $args->type == $statusCode['not_run'] )
 }
 else
 {
+  $gui->notRunReport = false;
   $gui->info_msg = lang_get('info_' . $resultsCfg['code_status'][$args->type] .'_tc_report');
 
   /*
@@ -148,28 +157,7 @@ if( !is_null($metrics) and count($metrics) > 0 )
       $topCache[$exec['tcase_id']] = $ky;
     }
     
-    // --------------------------------------------------------------------------
-    // Bug processing. 
-    // Remember that bugs are linked to executions NOT test case.
-    // When using Platforms a Test Case can have multiple executions
-    // (N on each platform).
-    // --------------------------------------------------------------------------
-    $bugString = '';
-    if($gui->bugInterfaceOn && $exec['status'] != $statusCode['not_run']) 
-    {
-      $bugSet = get_bugs_for_exec($db, $its, $exec['executions_id']);
-      if (count($bugSet) == 0) 
-      {
-        $gui->without_bugs_counter += 1;
-      }
-      foreach($bugSet as $bug) 
-      {
-        $bugString .= $bug['link_to_bts'] . '<br/>';
-      }
-    }
-      // --------------------------------------------------------------------------
-    
-    
+   
     // --------------------------------------------------------------------------------------------
 
     // IMPORTANT NOTICE:
@@ -190,23 +178,33 @@ if( !is_null($metrics) and count($metrics) > 0 )
     $out[$odx]['suiteName'] =  $pathCache[$exec['tcase_id']];
 
     // --------------------------------------------------------------------------------------------
-    if($args->format != FORMAT_HTML )
+    $zipper = '';
+    switch($args->format)
     {
-      $out[$odx]['testTitle'] = '<a href="' . $urlSafeString['basehref'] . 
-                                'linkto.php?tprojectPrefix=' . 
-                                $urlSafeString['tprojectPrefix'] . '&item=testcase&id=' . 
-                                urlencode($exec['full_external_id']) .'">' .
-                                $exec['full_external_id'] . ':' . $exec['name'] . '</a>';
+      case FORMAT_HTML:
+        $out[$odx]['testTitle'] = "<!-- " . sprintf("%010d", $exec['external_id']) . " -->";
+        $out[$odx]['testTitle'] .= sprintf($links['full'],
+                                   $exec['tcase_id'],$exec['tcase_id'],$exec['tcversion_id'],
+                                   $exec['build_id'],$args->tplan_id,$exec['platform_id'],$exec['tcase_id']);
+        $zipper = '</a>';
+      break;
+
+      case FORMAT_XLS:
+        $out[$odx]['testTitle'] = '';
+      break;
+
+      default:
+        $out[$odx]['testTitle'] = '<a href="' . $urlSafeString['basehref'] . 
+                                  'linkto.php?tprojectPrefix=' . 
+                                  $urlSafeString['tprojectPrefix'] . '&item=testcase&id=' . 
+                                  urlencode($exec['full_external_id']) .'">';
+        $zipper = '</a>';
+      break;
+
     }
-    else
-    {
-      $out[$odx]['testTitle'] = "<!-- " . sprintf("%010d", $exec['external_id']) . " -->";
-      $out[$odx]['testTitle'] .= sprintf($links['full'],
-                                 $exec['tcase_id'],$exec['tcase_id'],$exec['tcversion_id'],
-                                 $exec['build_id'],$args->tplan_id,$exec['platform_id'],$exec['tcase_id']);
-      $out[$odx]['testTitle'] .= $exec['full_external_id'] . ':' . $exec['name'] . '</a>';
-    }
-    // --------------------------------------------------------------------------------------------
+
+    // See IMPORTANT NOTICE/WARNING about XLS generation
+    $out[$odx]['testTitle'] .= $exec['full_external_id'] . ':' . $exec['name'] . $zipper;
 
     $out[$odx]['testVersion'] =  $exec['tcversion_number'];
     
@@ -264,9 +262,42 @@ if( !is_null($metrics) and count($metrics) > 0 )
         }  
       }  
 
+      // --------------------------------------------------------------------------
+      // Bug processing. 
+      // Remember that bugs are linked to executions NOT test case.
+      // When using Platforms a Test Case can have multiple executions
+      // (N on each platform).
+      // --------------------------------------------------------------------------
+      $bugString = '';
+      if($gui->bugInterfaceOn && $exec['status'] != $statusCode['not_run']) 
+      {
+        $bugSet = get_bugs_for_exec($db, $its, $exec['executions_id'],array('id','summary'));
+        if (count($bugSet) == 0) 
+        {
+          $gui->without_bugs_counter += 1;
+        }
+
+        switch($args->format)
+        {
+          case FORMAT_XLS:
+            // See IMPORTANT NOTICE/WARNING about XLS generation
+            foreach($bugSet as $bug) 
+            {
+              $bugString .= $bug['id'] . ':' . $bug['summary'] . "\r";
+            }
+          break;  
+
+          default:
+            foreach($bugSet as $bug) 
+            {
+              $bugString .= $bug['link_to_bts'] . '<br/>';
+            }
+          break;
+        }
+        unset($bugSet);    
+      }
       $out[$odx]['bugString'] = $bugString;
     }
-  
     $odx++;
   }
   $gui->dataSet = $out;
@@ -278,6 +309,7 @@ else
 }  
 
 
+// new dBug($gui->dataSet);
 
 // Time tracking
 //$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
@@ -289,12 +321,26 @@ else
 //echo '<br>' . __FUNCTION__ . ' Mem:' . end($mem['usage']) . ' Peak:' . end($mem['peak']) .'<br>';
 
 
-$tableOptions = array('status_not_run' => ($args->type == $statusCode['not_run']),
-                      'bugInterfaceOn' => $gui->bugInterfaceOn,
-                      'format' => $args->format,
-                      'show_platforms' => $gui->show_platforms);
 
-$gui->tableSet[] = buildMatrix($gui->dataSet, $args, $tableOptions ,$gui->platformSet,$cfSet);
+
+switch($args->format)
+{
+  case FORMAT_XLS:
+    createSpreadsheet($gui,$args,$cfSet);
+  break;  
+
+  default:
+    $tableOptions = array('status_not_run' => ($args->type == $statusCode['not_run']),
+                          'bugInterfaceOn' => $gui->bugInterfaceOn,
+                          'format' => $args->format,
+                          'show_platforms' => $gui->show_platforms);
+
+    $gui->tableSet[] = buildMatrix($gui->dataSet, $args, $tableOptions ,$gui->platformSet,$cfSet);
+  break;
+} 
+
+
+
 
 // Time tracking
 //$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
@@ -361,6 +407,8 @@ function init_args(&$dbHandler,$statusCode)
 function initializeGui($statusCode,&$argsObj,&$tplanMgr)
 {
     $guiObj = new stdClass();
+    $guiObj->tproject_id = $argsObj->tproject_id; 
+    $guiObj->tplan_id = $argsObj->tplan_id; 
     
     // Count for the Failed Issues whose bugs have to be raised/not linked. 
     $guiObj->without_bugs_counter = 0; 
@@ -439,11 +487,11 @@ function buildMailCfg(&$guiObj)
 function buildMatrix($dataSet, &$args, $options = array(), $platforms,$customFieldColumns=null)
 {
   $default_options = array('bugInterfaceOn' => false,'show_platforms' => false,
-               'status_not_run' => false,'format' => FORMAT_HTML);
+                           'status_not_run' => false,'format' => FORMAT_HTML);
   $options = array_merge($default_options, $options);
 
   $l18n = init_labels(array('assigned_to' => null,'platform' => null, 'th_date' => null,
-                  'th_build' => null));
+                            'th_build' => null));
 
 
 
@@ -479,7 +527,7 @@ function buildMatrix($dataSet, &$args, $options = array(), $platforms,$customFie
 
     if ($options['bugInterfaceOn'])
     {
-      $columns[] = array('title_key' => 'th_bugs', 'type' => 'text');
+      $columns[] = array('title_key' => 'th_bugs_id_summary', 'type' => 'text');
     }
   }
 
@@ -585,5 +633,175 @@ function getWarning($targetStatus,$statusCfg)
     }
   }
   return $msg;
-}  
+} 
+
+
+function createSpreadsheet($gui,$args,$customFieldColumns=null)
+{
+  $lbl = init_labels(array('title_test_suite_name' => null,'platform' => null,'build' => null,'th_bugs_id_summary' => null,
+                           'title_test_case_title' => null,'version'  => null,
+                           'testproject' => null,'generated_by_TestLink_on' => null,'testplan' => null,
+                           'title_execution_notes' => null, 'th_date' => null, 'th_run_by' => null,
+                           'assigned_to' => null,'summary' => null));
+
+
+  $cellRange = range('A','Z');
+
+  $styleReportContext = array('font' => array('bold' => true));
+  $styleDataHeader = array('font' => array('bold' => true),
+                           'borders' => array('outline' => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                              'vertical' => array('style' => PHPExcel_Style_Border::BORDER_THIN)),
+                           'fill' => array('type' => PHPExcel_Style_Fill::FILL_SOLID,
+                                           'startcolor' => array( 'argb' => 'FF9999FF'))
+                           );
+
+
+  $dummy = '';
+  $lines2write = array(array($gui->title,''),
+                       array($lbl['testproject'],$gui->tproject_name),
+                       array($lbl['testplan'],$gui->tplan_name),
+                       array($lbl['generated_by_TestLink_on'],
+                       localize_dateOrTimeStamp(null,$dummy,'timestamp_format',time())));
+
+  $objPHPExcel = new PHPExcel();
+  $cellArea = "A1:"; 
+  foreach($lines2write as $zdx => $fields)
+  {
+    $cdx = $zdx+1;
+    $objPHPExcel->setActiveSheetIndex(0)->setCellValue("A{$cdx}", current($fields))
+                ->setCellValue("B{$cdx}", end($fields));
+  }
+  $cellArea .= "A{$cdx}";
+  $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($styleReportContext); 
+
+  // Step 2
+  // data is organized with following columns$dataHeader[]
+  // Test suite
+  // Test case
+  // Version
+  // Build
+  // [Platform]
+  // Tester
+  // Date 
+  // Execution notes
+  // [Custom Field ENABLED ON EXEC 1]
+  // [Custom Field ENABLED ON EXEC 1]
+  // [Custom Field ENABLED ON EXEC 1]
+  // [bugString]   only if bugtracking integration exists for this test project
+
+  // This is HOW gui->dataSet is organized
+  // THIS IS CRITIC ??
+  //
+  // suiteName   Issue Tracker Management
+  // testTitle   PTRJ-76:Create issue tracker - no conflict
+  // testVersion   1
+  // buildName   1.0
+  // testerName  admin
+  // localizedTS   2013-03-28 20:15:06
+  // notes   [empty string]
+  // bugString   [empty string]  
+
+  //
+  $dataHeader = array($lbl['title_test_suite_name'],$lbl['title_test_case_title'],$lbl['version'],$lbl['build']);
+
+  if( $showPlatforms = (property_exists($gui,'platforms') && !is_null($gui->platforms)) )
+  {
+    $dataHeader[] = $lbl['platform'];
+  }
+
+  if( $gui->notRunReport )
+  {
+    $dataHeader[] = $lbl['assigned_to'];
+    $dataHeader[] = $lbl['summary'];
+  }
+  else
+  {
+    $dataHeader[] = $lbl['th_run_by'];
+    $dataHeader[] = $lbl['th_date'];
+    $dataHeader[] = $lbl['title_execution_notes'];
+  }
+
+  //new dBug($gui->dataSet);
+  //die();
+
+
+  if(!is_null($customFieldColumns))
+  {
+    foreach($customFieldColumns as $id => $def)
+    {
+      $dataHeader[] = array('title' => $def['label'], 'width' => 60);
+    }  
+  }  
+
+  // ATTENTION logic regarding NOT RUN IS MISSING
+  // For not run this column and also columns regarding CF on exec are not displayed
+  if( $gui->bugInterfaceOn && !$gui->notRunReport)  
+  {
+    $dataHeader[] = $lbl['th_bugs_id_summary'];
+  }  
+
+  $startingRow = count($lines2write) + 2; // MAGIC
+  $cellArea = "A{$startingRow}:";
+  foreach($dataHeader as $zdx => $field)
+  {
+    $cellID = $cellRange[$zdx] . $startingRow; 
+    $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID, $field);
+    $cellAreaEnd = $cellRange[$zdx];
+  }
+  $cellArea .= "{$cellAreaEnd}{$startingRow}";
+  $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($styleDataHeader);  
+
+
+  // Now process data  
+  $startingRow++;
+  $qta_loops = count($gui->dataSet);
+  for($idx = 0; $idx < $qta_loops; $idx++)
+  {
+    $line2write = $gui->dataSet[$idx];
+    $colCounter = 0; 
+    foreach($gui->dataSet[$idx] as $ldx => $field)
+    {
+      if( $ldx != 'bugString' || ($ldx == 'bugString' && $gui->bugInterfaceOn) )
+      {  
+        $cellID = $cellRange[$colCounter] . $startingRow; 
+        $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID, html_entity_decode($field) );
+        $colCounter++;
+      }
+      
+      // May be same processing can be applied to execution otes
+      if(($ldx == 'bugString' && $gui->bugInterfaceOn))
+      {
+        // To manage new line
+        // http://stackoverflow.com/questions/5960242/how-to-make-new-lines-in-a-cell-using-phpexcel
+        $objPHPExcel->setActiveSheetIndex(0)->getStyle($cellID)->getAlignment()->setWrapText(true);  
+        // $objPHPExcel->setActiveSheetIndex(0)->getRowDimension($startingRow)->setRowHeight(-1); 
+        // http://stackoverflow.com/questions/6054444/how-to-set-auto-height-in-phpexcel
+      }  
+    }
+    // $colQty = count($line2write);
+    $cellEnd = $cellRange[$colCounter-1] . $startingRow;
+    $startingRow++;
+  }
+  
+  // Final step
+  $objPHPExcel->setActiveSheetIndex(0);
+  $settings = array();
+  $settings['Excel2007'] = array('ext' => '.xlsx', 
+                                 'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  $settings['Excel5'] = array('ext' => '.xls', 
+                              'Content-Type' => 'application/vnd.ms-excel');
+  
+  $xlsType = 'Excel5';                               
+  $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, $xlsType);
+  
+  $tmpfname = tempnam(config_get('temp_dir'),"resultsTC.tmp");
+  $objWriter->save($tmpfname);
+  
+  $content = file_get_contents($tmpfname);
+  unlink($tmpfname);
+  $f2d = 'resultsByStatus_'. $gui->tproject_name . '_' . $gui->tplan_name . $settings[$xlsType]['ext'];
+  downloadContentsToFile($content,$f2d,array('Content-Type' =>  $settings[$xlsType]['Content-Type']));
+  exit();
+}
+
 ?>

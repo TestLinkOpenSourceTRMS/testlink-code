@@ -172,7 +172,7 @@ function write_execution_bug(&$db,$exec_id, $bug_id,$just_delete=false)
  * 
  * @return array list of 'bug_id' with values: build_name,link_to_bts,isResolved
  */
-function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
+function get_bugs_for_exec(&$db,&$bug_interface,$execution_id,$raw = null)
 {
 	$tables = tlObjectWithDB::getDBTables(array('executions','execution_bugs','builds'));
 	$bug_list=array();
@@ -192,12 +192,22 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
 		$map = $db->get_recordset($sql);
 		if( !is_null($map) )
 		{  	
+			$opt['raw'] = $raw;
+			$addAttr = !is_null($raw);
 			foreach($map as $elem)
 			{
-			  $dummy = $bug_interface->buildViewBugLink($elem['bug_id'],true);
+		  	$dummy = $bug_interface->buildViewBugLink($elem['bug_id'],$opt);
 				$bug_list[$elem['bug_id']]['link_to_bts'] = $dummy->link;
-				$bug_list[$elem['bug_id']]['isResolved'] = $dummy->isResolved;
 				$bug_list[$elem['bug_id']]['build_name'] = $elem['build_name'];
+				$bug_list[$elem['bug_id']]['isResolved'] = $dummy->isResolved;
+				// $bug_list[$elem['bug_id']] = array_merge($bug_list[$elem['bug_id']],(array)$dummy);				
+				if($addAttr)
+				{
+					foreach($raw as $kj)
+					{
+            $bug_list[$elem['bug_id']][$kj] = $dummy->$kj;
+          }	
+				}				
 				unset($dummy);
 			}
 		}

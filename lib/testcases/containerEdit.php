@@ -200,7 +200,7 @@ switch($action)
 
 
     case 'do_move_tcase_set':
-        moveTestCases($smarty,$template_dir,$tsuite_mgr,$tree_mgr,$args);
+        moveTestCases($smarty,$template_dir,$tsuite_mgr,$tree_mgr,$args,$l18n);
         break;
 
     case 'do_copy_tcase_set':
@@ -862,7 +862,7 @@ args:
 returns: -
 
 */
-function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
+function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj,$lbl)
 {
     if(sizeof($argsObj->tcaseSet) > 0)
     {
@@ -873,8 +873,9 @@ function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
         $guiObj = new stdClass();
         $guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
         $guiObj->id = $argsObj->objectID;
-        // BUGID 3669
         $guiObj->refreshTree = true;
+        $guiObj->btn_reorder_testcases = $lbl['btn_reorder_testcases'];
+
         $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,null,$user_feedback);
     }
 }

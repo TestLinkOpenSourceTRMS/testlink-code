@@ -1293,33 +1293,30 @@ class testcase extends tlObjectWithAttachments
 	
 	
 	/*
-
 	@internal revisions
-	20110413 - franciscom - BUGID 4404 - set author_id = user doing copy
-	20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
-							added option 'preserve_external_id'	
 	*/
 	function copy_to($id,$parent_id,$user_id,$options=null,$mappings=null)
 	{
-	    $newTCObj = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok', 'mappings' => null);
-	    $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
-	                            'action_on_duplicate_name' => 'generate_new', 
-	                            'copy_also' => null, 'preserve_external_id' => false);
+    $newTCObj = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok', 'mappings' => null);
+	  $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
+	                          'action_on_duplicate_name' => 'generate_new', 
+	                          'copy_also' => null, 'preserve_external_id' => false,
+                            'renderGhostSteps' => false);
 
 
-        // needed when Test Case is copied to a DIFFERENT Test Project,
-        // added during Test Project COPY Feature implementation
-        $my['mappings']['keywords'] = null;
-        $my['mappings']['requirements'] = null;
+    // needed when Test Case is copied to a DIFFERENT Test Project,
+    // added during Test Project COPY Feature implementation
+    $my['mappings']['keywords'] = null;
+    $my['mappings']['requirements'] = null;
 
-	    $my['mappings'] = array_merge($my['mappings'], (array)$mappings);
-	    $my['options'] = array_merge($my['options'], (array)$options);
+	  $my['mappings'] = array_merge($my['mappings'], (array)$mappings);
+	  $my['options'] = array_merge($my['options'], (array)$options);
 	
 		
-	    if( is_null($my['options']['copy_also']) )
-	    {
-	        $my['options']['copy_also'] = array('keyword_assignments' => true,'requirement_assignments' => true);   
-	    }
+	  if( is_null($my['options']['copy_also']) )
+	  {
+      $my['options']['copy_also'] = array('keyword_assignments' => true,'requirement_assignments' => true);   
+	  }
 	    
 		$tcase_info = $this->get_by_id($id);
 		if ($tcase_info)
@@ -1329,13 +1326,13 @@ class testcase extends tlObjectWithAttachments
 	                                             $my['options']);
 			if($newTCObj['status_ok'])
 			{
-		        $ret['status_ok']=1;
-		        $newTCObj['mappings'][$id] = $newTCObj['id'];
-		        $externalID = $newTCObj['external_id'];
-		        if( $my['options']['preserve_external_id'] )
-		        {
-		        	$externalID = $tcase_info[0]['tc_external_id'];
-		        }
+		    $ret['status_ok']=1;
+		    $newTCObj['mappings'][$id] = $newTCObj['id'];
+		    $externalID = $newTCObj['external_id'];
+		    if( $my['options']['preserve_external_id'] )
+		    {
+		      $externalID = $tcase_info[0]['tc_external_id'];
+		    }
 		        
 	 			foreach($tcase_info as $tcversion)
 				{
@@ -1353,29 +1350,27 @@ class testcase extends tlObjectWithAttachments
 					                              $user_id,$tcversion['execution_type'],
 					                              $tcversion['importance']);
 					
-	    			if( $op['status_ok'] )
-	    			{
-	$newTCObj['mappings'][$tcversion['id']] = $op['id'];
+	    		if( $op['status_ok'] )
+	    		{
+              $newTCObj['mappings'][$tcversion['id']] = $op['id'];
 
-						// ATTENTION:  NEED TO UNDERSTAND HOW TO MANAGE COPY TO OTHER TEST PROJECTS
-						// 
-						// BUGID 3431
-						$this->copy_cfields_design_values(array('id' => $id, 'tcversion_id' => $tcversion['id']),
-						  								  array('id' => $newTCObj['id'], 'tcversion_id' => $op['id']));
+						  // ATTENTION:  NEED TO UNDERSTAND HOW TO MANAGE COPY TO OTHER TEST PROJECTS
+						  $this->copy_cfields_design_values(array('id' => $id, 'tcversion_id' => $tcversion['id']),
+						  								                  array('id' => $newTCObj['id'], 'tcversion_id' => $op['id']));
 
 	
-	// Need to get all steps
-	$stepsSet = $this->get_steps($tcversion['id']);
-	$to_tcversion_id = $op['id'];
-	if( !is_null($stepsSet) )
-	{
-		foreach($stepsSet as $key => $step)
-		{
-    		$op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
-    		                         $step['expected_results'],$step['execution_type']);			
-		}
-	}
-					}                       
+            	// Need to get all steps
+            	$stepsSet = $this->get_steps($tcversion['id'],0,$my['options']);
+            	$to_tcversion_id = $op['id'];
+            	if( !is_null($stepsSet) )
+            	{
+            		foreach($stepsSet as $key => $step)
+            		{
+                		$op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
+                		                         $step['expected_results'],$step['execution_type']);			
+            		}
+            	}
+					 }                       
 				}
 				
 				// Conditional copies
@@ -1391,7 +1386,7 @@ class testcase extends tlObjectWithAttachments
 					$this->copyReqAssignmentTo($id,$newTCObj['id'],$my['mappings']['requirements']);
 				}
 				
-	            $this->copy_attachments($id,$newTCObj['id']);
+	       $this->copy_attachments($id,$newTCObj['id']);
 			}
 		}
 		
@@ -4392,8 +4387,8 @@ class testcase extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-	    $my['options'] = array( 'fields2get' => '*', 'accessKey' => null);
-	    $my['options'] = array_merge($my['options'], (array)$options);
+	  $my['options'] = array( 'fields2get' => '*', 'accessKey' => null, 'renderGhostSteps' => true);
+	  $my['options'] = array_merge($my['options'], (array)$options);
 		
 		$step_filter = $step_number > 0 ? " AND step_number = {$step_number} " : "";
 		$safe_tcversion_id = $this->db->prepare_int($tcversion_id);
@@ -4415,7 +4410,7 @@ class testcase extends tlObjectWithAttachments
 		}
 
 		// TICKET 4797: Test case step reuse		
-		if(!is_null($result))
+		if(!is_null($result) && $my['options']['renderGhostSteps'])
 		{
 			$this->renderGhostSteps($result);
 		}

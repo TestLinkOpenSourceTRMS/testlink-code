@@ -5,7 +5,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 
 *}
-{include file="inc_head.tpl" editorType=$gui->editorType}
+{include file="inc_head.tpl" openHead='yes' editorType=$gui->editorType}
+{include file="inc_ext_js.tpl"}
+</head>
+
 <body onUnload="storeWindowSize('ExecEditPopup')">
 <h1 class="title">{lang_get s='title_execution_notes'}</h1>
 <div class="workBack">

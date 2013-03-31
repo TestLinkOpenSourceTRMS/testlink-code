@@ -117,6 +117,14 @@ function init_args(&$dbHandler)
       systemWideTestCaseSearch($dbHandler,$args,$cfg->glue_character);
     break;
 
+    case 'openTCW':
+      // all data come in
+      // tcaseExternalID   DOM-22
+      // tcaseVersionNumber  1
+      $args->targetTestCase = $args->tcaseExternalID; // trick for systemWideTestCaseSearch
+      systemWideTestCaseSearch($dbHandler,$args,$cfg->glue_character);
+    break;
+
     default:
       if (!$args->tcversion_id)
       {

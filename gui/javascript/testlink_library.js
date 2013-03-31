@@ -1548,7 +1548,7 @@ function openTCW(tcase_external_id,version_number)
 	var height = getCookie("TCEditPopupHeight");
 	var feature_url = "lib/testcases/archiveData.php";
 
-	feature_url +=	"?allow_edit=0&show_mode=editDisabled"+"&edit=testcase&tcaseExternalID="+tcase_external_id+
+	feature_url +=	"?caller=openTCW&allow_edit=0&show_mode=editDisabled"+"&edit=testcase&tcaseExternalID="+tcase_external_id+
 					"&tcaseVersionNumber="+version_number;
 
 	if (width == null)

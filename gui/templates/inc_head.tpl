@@ -8,17 +8,8 @@ Critic Smarty Global Variables expected
 
 editorType: used to understand if code for tinymce need to be loaded 
 
-rev :
-     20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
-     20090801 - franciscom - moved include of prototype.js here because
-                             is not anymore included on EXT-JS distribution
-                             
-     20080326 - franciscom - restored $testproject_coloring logic
-     20080109 - franciscom - added sort table engine management
-     20071201 - franciscom - tinymce support
 *}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-     "DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset={$pageCharset}" />

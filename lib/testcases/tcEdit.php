@@ -187,6 +187,7 @@ else if($args->move_copy_tc)
   $gui->array_container = $the_xx;
   $gui->testcase_id = $args->tcase_id;
   $gui->name = $tc_info[0]['name'];
+
   
   $smarty->assign('gui', $gui);
   $templateCfg = templateConfiguration('tcMove');
@@ -533,6 +534,8 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
   $guiObj->user_feedback = '';
   $guiObj->stay_here = $argsObj->stay_here;
   $guiObj->steps_results_layout = $cfgObj->spec->steps_results_layout;
+  $guiObj->btn_reorder_testcases = lang_get('btn_reorder_testcases_externalid');
+
   
   $guiObj->loadOnCancelURL = $_SESSION['basehref'] . 
                              "/lib/testcases/archiveData.php?edit=testcase&id=" . $argsObj->tcase_id .

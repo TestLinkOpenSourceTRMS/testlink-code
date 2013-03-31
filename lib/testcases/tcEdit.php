@@ -222,6 +222,7 @@ else if($args->do_copy)
     $container_info = $tree_mgr->get_node_hierarchy_info($args->new_container_id);
     $container_path = $tree_mgr->get_path($args->new_container_id);
     $path = '';
+
     foreach($container_path as $key => $value)
     {
      $path .= $value['name'] . $ts_sep;
@@ -231,12 +232,27 @@ else if($args->do_copy)
   }
 
   $gui->refreshTree = $args->refreshTree;
-  $viewer_args['action'] = $action_result;
-  $viewer_args['refreshTree']=$args->refreshTree? 1 : 0;
-  $viewer_args['msg_result'] = $msg;
-  $viewer_args['user_feedback'] = $user_feedback;
-  $tcase_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->tcase_id,
-                   $args->tcversion_id,$viewer_args,null, $args->show_mode);
+  $gui->viewerArgs['action'] = $action_result;
+  $gui->viewerArgs['refreshTree']=$args->refreshTree? 1 : 0;
+  $gui->viewerArgs['msg_result'] = $msg;
+  $gui->viewerArgs['user_feedback'] = $user_feedback;
+  $gui->path_info = null;
+
+  $grant2check = array('mgt_modify_tc','mgt_view_req','testplan_planning','mgt_modify_product',
+                       'testproject_edit_executed_testcases','testproject_delete_executed_testcases');
+  $grants = new stdClass();
+  foreach($grant2check as $right)
+  {
+      $grants->$right = $_SESSION['currentUser']->hasRight($dbHandler,$right,$args->tproject_id);
+      $gui->$right = $grants->$right;
+  }
+
+  $identity = new stdClass();
+  $identity->id = $args->tcase_id;
+  $identity->tproject_id = $args->tproject_id;
+  $identity->version_id = $args->tcversion_id;
+
+  $tcase_mgr->show($smarty,$gui,$identity,$grants);
 
 }
 else if($args->do_create_new_version)

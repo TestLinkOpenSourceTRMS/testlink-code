@@ -238,21 +238,12 @@ else if($args->do_copy)
   $gui->viewerArgs['user_feedback'] = $user_feedback;
   $gui->path_info = null;
 
-  $grant2check = array('mgt_modify_tc','mgt_view_req','testplan_planning','mgt_modify_product',
-                       'testproject_edit_executed_testcases','testproject_delete_executed_testcases');
-  $grants = new stdClass();
-  foreach($grant2check as $right)
-  {
-      $grants->$right = $_SESSION['currentUser']->hasRight($dbHandler,$right,$args->tproject_id);
-      $gui->$right = $grants->$right;
-  }
-
   $identity = new stdClass();
   $identity->id = $args->tcase_id;
   $identity->tproject_id = $args->tproject_id;
   $identity->version_id = $args->tcversion_id;
 
-  $tcase_mgr->show($smarty,$gui,$identity,$grants);
+  $tcase_mgr->show($smarty,$gui,$identity,$gui->grants);
 
 }
 else if($args->do_create_new_version)
@@ -268,19 +259,24 @@ else if($args->do_create_new_version)
     $msg = 'ok';
   }
 
-  $viewer_args['action'] = $action_result;
-  $viewer_args['refreshTree'] = DONT_REFRESH;
-  $viewer_args['msg_result'] = $msg;
-  $viewer_args['user_feedback'] = $user_feedback;
+  $gui->viewerArgs['action'] = $action_result;
+  $gui->viewerArgs['refreshTree'] = DONT_REFRESH;
+  $gui->viewerArgs['msg_result'] = $msg;
+  $gui->viewerArgs['user_feedback'] = $user_feedback;
+  $gui->path_info = null;
   
   // used to implement go back ??
   $gui->loadOnCancelURL = $_SESSION['basehref'] . 
                           '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id .
                           "&show_mode={$args->show_mode}";
   
-  $testcase_version = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
-  $tcase_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->tcase_id,$testcase_version, 
-                   $viewer_args,null, $args->show_mode);
+  $identity = new stdClass();
+  $identity->id = $args->tcase_id;
+  $identity->tproject_id = $args->tproject_id;
+  $identity->version_id = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
+ 
+  $tcase_mgr->show($smarty,$gui,$identity,$gui->grants);
+
 }
 else if($args->do_activate_this || $args->do_deactivate_this)
 {
@@ -289,11 +285,17 @@ else if($args->do_activate_this || $args->do_deactivate_this)
                           "&show_mode={$args->show_mode}";
   
   $tcase_mgr->update_active_status($args->tcase_id, $args->tcversion_id, $active_status);
-  $viewer_args['action'] = $action_result;
-  $viewer_args['refreshTree']=DONT_REFRESH;
+  $gui->viewerArgs['action'] = $action_result;
+  $gui->viewerArgs['refreshTree']=DONT_REFRESH;
+  $gui->path_info = null;
   
-  $tcase_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->tcase_id,
-                   testcase::ALL_VERSIONS,$viewer_args,null, $args->show_mode);
+  $identity = new stdClass();
+  $identity->id = $args->tcase_id;
+  $identity->tproject_id = $args->tproject_id;
+  $identity->version_id = testcase::ALL_VERSIONS;
+ 
+  $tcase_mgr->show($smarty,$gui,$identity,$gui->grants);
+
 }
 
 // --------------------------------------------------------------------------
@@ -525,8 +527,8 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
   $guiObj->opt_requirements = $argsObj->opt_requirements; 
   $guiObj->action_on_duplicated_name = 'generate_new';
   $guiObj->show_mode = $argsObj->show_mode;
-    $guiObj->has_been_executed = $argsObj->has_been_executed;
-    $guiObj->attachments = null;
+  $guiObj->has_been_executed = $argsObj->has_been_executed;
+  $guiObj->attachments = null;
   $guiObj->parent_info = null;
   $guiObj->user_feedback = '';
   $guiObj->stay_here = $argsObj->stay_here;
@@ -548,6 +550,16 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
                              $argsObj->testproject_id);
 
   
+
+  $grant2check = array('mgt_modify_tc','mgt_view_req','testplan_planning','mgt_modify_product',
+                       'testproject_edit_executed_testcases','testproject_delete_executed_testcases');
+  $guiObj->grants = new stdClass();
+  foreach($grant2check as $right)
+  {
+      $guiObj->$right = $guiObj->grants->$right = $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id);
+  }
+
+
   return $guiObj;
 }
 

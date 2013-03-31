@@ -1,28 +1,9 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_js.tpl,v 1.16 2010/11/06 14:12:52 mx-julian Exp $
+@filesource inc_ext_js.tpl
 Purpose: include files for:
          Ext JS Library - Copyright(c) 2006-2007, Ext JS, LLC.
          licensing@extjs.com - http://www.extjs.com/license
-
-
-rev :
-     20101106 - Julian - BUGID 3979 - Use grid filters for exttables
-     20101022 - Julian - BUGID 3924 - Localization of ExtJS Components
-     20100927 - franciscom - added new ext-js extension TableGrid.js
-     20100621 - eloff - BUGID 3523 - refactor to remove smarty deprecated {php}
-                                     use guard_header_smarty() instead
-     20100620 - franciscom - reset.css has changed on new extjs distribution to reset-min.css
-     20100614 - eloff - BUGID 3523 - prevent loading ext-js more than once
-     20090730 - francisco.mancardi@gruppotesi.com
-     refactored to use ext-js 3.0
-     
-     20071008 - franciscom - include prototype.js support
-*}
-
-{* BUGID 3924 - set ext locale according to chosen locale of user.
-   default locale is "en"
-   last change: 20101022
 *}
 
 {assign var="ext_lang" value="en"}
@@ -75,11 +56,6 @@ rev :
   <link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/ux/gridfilters/css/RangeMenu.css" />
   
   {if $css_only == 0}
-      {*
-      not useful
-      <script type="text/javascript" src="{$basehref}{$ext_location}/adapter/prototype/prototype.js" language="javascript"></script>
-      <script type="text/javascript" src="{$basehref}{$ext_location}/adapter/prototype/ext-prototype-adapter.js" language="javascript"></script>
-      *}
       <script type="text/javascript" src="{$basehref}{$ext_location}/adapter/ext/ext-base.js" language="javascript"></script>
       <script type="text/javascript" src="{$basehref}{$ext_location}/ext-all.js" language="javascript"></script>
       
@@ -101,7 +77,7 @@ rev :
       <script type="text/javascript" src="{$basehref}{$ext_location}/ux/gridfilters/filter/BooleanFilter.js" language="javascript"></script>
       
       
-      {* BUGID 3924 - Localization of ExtJS Components *}
+      {* Localization of ExtJS Components *}
       <script type="text/javascript" src="{$basehref}{$ext_location}/src/locale/ext-lang-{$ext_lang}.js" language="javascript"></script>
   
       {* 20100927 - franciscom - convert HTML table in ext-js grid *}

@@ -6,8 +6,8 @@
  * @filesource	editExecution.php
  *
  * Edit an execution notes and custom fields
- * @since 1.9.4
- * 20120802 - franciscom - TICKET 5121: Link to test case execution edit page is invalid  
+ * @since 1.9.7
+ * 
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -18,17 +18,10 @@ $editorCfg = getWebEditorCfg('execution');
 require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db,false,false,"checkRights");
-$gui = new stdClass();
-
 $templateCfg = templateConfiguration();
 $tcase_mgr = new testcase($db);
-$args = init_args();
-$gui->exec_id = $args->exec_id;
-$gui->tcversion_id = $args->tcversion_id;
-$gui->tplan_id = $args->tplan_id;
-$gui->tproject_id = $args->tproject_id;
-$gui->edit_enabled = config_get('exec_cfg')->edit_notes;
 
+$args = init_args();
 
 $owebeditor = web_editor('notes',$args->basehref,$editorCfg);
 switch ($args->doAction)
@@ -42,9 +35,9 @@ switch ($args->doAction)
 }
 $map = get_execution($db,$args->exec_id);
 $owebeditor->Value = $map[0]['notes'];
-$gui->cfields_exec = $tcase_mgr->html_table_of_custom_field_inputs($args->tcversion_id,null,'execution','_cf',
-                                                                   $args->exec_id,$args->tplan_id,$args->tproject_id);
 
+// order on script is critic 
+$gui = initializeGui($args,$tcase_mgr);
 $gui->notes = $owebeditor->CreateHTML();
 $gui->editorType = $editorCfg['type'];
 
@@ -58,7 +51,7 @@ function doUpdate(&$db,&$args,&$tcaseMgr,&$request)
  	updateExecutionNotes($db,$args->exec_id,$args->notes);
     
  	$cfield_mgr = new cfield_mgr($db);
-    $cfield_mgr->execution_values_to_db($request,$args->tcversion_id,$args->exec_id,$args->tplan_id);
+  $cfield_mgr->execution_values_to_db($request,$args->tcversion_id,$args->exec_id,$args->tplan_id);
 }
 
 function init_args()
@@ -77,10 +70,24 @@ function init_args()
   R_PARAMS($iParams,$args);
     
   $args->basehref = $_SESSION['basehref'];
-	
+  $args->user = $_SESSION['currentUser'];
+
   return $args; 
 }
 
+
+function initializeGui(&$argsObj,&$tcaseMgr)
+{
+  $guiObj = new stdClass();
+  $guiObj->exec_id = $argsObj->exec_id;
+  $guiObj->tcversion_id = $argsObj->tcversion_id;
+  $guiObj->tplan_id = $argsObj->tplan_id;
+  $guiObj->tproject_id = $argsObj->tproject_id;
+  $guiObj->edit_enabled = $argsObj->user->hasRight($db,"exec_edit_notes") == 'yes' ? 1 : 0;
+  $guiObj->cfields_exec = $tcaseMgr->html_table_of_custom_field_inputs($argsObj->tcversion_id,null,'execution','_cf',
+                                                                       $argsObj->exec_id,$argsObj->tplan_id,$argsObj->tproject_id);
+  return $guiObj;
+}
 
 /**
  * Checks the user rights for viewing the page
@@ -92,14 +99,6 @@ function init_args()
  */
 function checkRights(&$db,&$user)
 {
-  /*
-	$execCfg = config_get('exec_cfg');
-	if ($execCfg->edit_notes != 1)
-	{
-		return false;	
-	}	
-  */
-  // 20130317 - franciscom
 	return $user->hasRight($db,"testplan_execute") && $user->hasRight($db,"exec_edit_notes");
 }
 ?>

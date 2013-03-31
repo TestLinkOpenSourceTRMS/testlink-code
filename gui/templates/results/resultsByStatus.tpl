@@ -60,6 +60,7 @@ show Test Results by Status
 	{/if}
 
 
+  <p class="italic">{$gui->report_context|escape}</p>
 	<p class="italic">{$gui->info_msg|escape}</p>
 	<br />
 	{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}

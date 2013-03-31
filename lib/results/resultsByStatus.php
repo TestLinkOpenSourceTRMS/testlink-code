@@ -71,6 +71,7 @@ if($info['issue_tracker_enabled'])
 
 $labels = init_labels(array('deleted_user' => null, 'design' => null, 'execution' => null,
                             'execution_history' => null,'nobody' => null,
+                            'info_only_with_tester_assignment'  => null,
                             'th_bugs_not_linked' => null,'info_notrun_tc_report' => null));
 
 $gui->tplan_name = $tplan_info['name'];
@@ -85,6 +86,7 @@ $mailCfg = buildMailCfg($gui);
 //echo '<br>' . __FUNCTION__ . ' Elapsed relative (sec):' . $t_elapsed . ' Elapsed ABSOLUTE (sec):' . $t_elapsed_abs .'<br>';
 //reset($chronos);  
 
+$gui->report_context = $labels['info_only_with_tester_assignment'];
 $gui->info_msg = '';
 $gui->bugs_msg = '';
 if( $args->type == $statusCode['not_run'] )
@@ -308,9 +310,6 @@ else
     $gui->warning_msg = getWarning($args->type,$statusCode);
 }  
 
-
-// new dBug($gui->dataSet);
-
 // Time tracking
 //$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
 //$t_elapsed_abs = number_format( $tnow - $tstart, 4);
@@ -319,9 +318,6 @@ else
 //reset($chronos);  
 //$mem['usage'][] = memory_get_usage(true); $mem['peak'][] = memory_get_peak_usage(true);
 //echo '<br>' . __FUNCTION__ . ' Mem:' . end($mem['usage']) . ' Peak:' . end($mem['peak']) .'<br>';
-
-
-
 
 switch($args->format)
 {
@@ -409,7 +405,8 @@ function initializeGui($statusCode,&$argsObj,&$tplanMgr)
     $guiObj = new stdClass();
     $guiObj->tproject_id = $argsObj->tproject_id; 
     $guiObj->tplan_id = $argsObj->tplan_id; 
-    
+    $guiObj->apikey = $argsObj->apikey;
+
     // Count for the Failed Issues whose bugs have to be raised/not linked. 
     $guiObj->without_bugs_counter = 0; 
     $guiObj->dataSet = null;
@@ -661,7 +658,8 @@ function createSpreadsheet($gui,$args,$customFieldColumns=null)
                        array($lbl['testproject'],$gui->tproject_name),
                        array($lbl['testplan'],$gui->tplan_name),
                        array($lbl['generated_by_TestLink_on'],
-                       localize_dateOrTimeStamp(null,$dummy,'timestamp_format',time())));
+                             localize_dateOrTimeStamp(null,$dummy,'timestamp_format',time())),
+                       array($gui->report_context,''));
 
   $objPHPExcel = new PHPExcel();
   $cellArea = "A1:"; 
@@ -679,8 +677,8 @@ function createSpreadsheet($gui,$args,$customFieldColumns=null)
   // Test suite
   // Test case
   // Version
-  // Build
   // [Platform]
+  // Build
   // Tester
   // Date 
   // Execution notes
@@ -695,6 +693,7 @@ function createSpreadsheet($gui,$args,$customFieldColumns=null)
   // suiteName   Issue Tracker Management
   // testTitle   PTRJ-76:Create issue tracker - no conflict
   // testVersion   1
+  // [platformName]
   // buildName   1.0
   // testerName  admin
   // localizedTS   2013-03-28 20:15:06
@@ -702,12 +701,14 @@ function createSpreadsheet($gui,$args,$customFieldColumns=null)
   // bugString   [empty string]  
 
   //
-  $dataHeader = array($lbl['title_test_suite_name'],$lbl['title_test_case_title'],$lbl['version'],$lbl['build']);
+  $dataHeader = array($lbl['title_test_suite_name'],$lbl['title_test_case_title'],$lbl['version']);
 
-  if( $showPlatforms = (property_exists($gui,'platforms') && !is_null($gui->platforms)) )
+  if( $showPlatforms = (property_exists($gui,'platformSet') && !is_null($gui->platformSet)) )
   {
     $dataHeader[] = $lbl['platform'];
   }
+
+  $dataHeader[] = $lbl['build'];
 
   if( $gui->notRunReport )
   {
@@ -721,17 +722,17 @@ function createSpreadsheet($gui,$args,$customFieldColumns=null)
     $dataHeader[] = $lbl['title_execution_notes'];
   }
 
-  //new dBug($gui->dataSet);
-  //die();
-
 
   if(!is_null($customFieldColumns))
   {
     foreach($customFieldColumns as $id => $def)
     {
-      $dataHeader[] = array('title' => $def['label'], 'width' => 60);
+      $dataHeader[] = $def['label'];
     }  
   }  
+
+  //new dBug($customFieldColumns);
+  //die();
 
   // ATTENTION logic regarding NOT RUN IS MISSING
   // For not run this column and also columns regarding CF on exec are not displayed
@@ -751,6 +752,10 @@ function createSpreadsheet($gui,$args,$customFieldColumns=null)
   $cellArea .= "{$cellAreaEnd}{$startingRow}";
   $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($styleDataHeader);  
 
+
+
+
+  // new dBug($gui->dataSet);  die();
 
   // Now process data  
   $startingRow++;

@@ -1719,7 +1719,7 @@ $TLS_info_bugs_per_tc_report = "This report shows all bugs linked to test cases 
 
 // ----- gui/templates/resultsTC.tpl -----
 $TLS_info_resultsTC_report = "This report shows the last test case execution result for each build, " .
-               "analizing test cases <b>with and without tester assignment.</b> <br />" .
+                             "analizing test cases <b>with and without tester assignment.</b> <br />" .
                              "<br /><b>Example:</b><br />Test Case has been executed in this order: " .
                              "<br />Build 1.0 - Passed; Build 1.0 - Failed<br />-> Last Result  for Build 1.0 " .
                              "is Failed because second execution overrides older results.<br /><br />" .
@@ -1739,14 +1739,19 @@ $TLS_th_bugs = "Bugs";
 $TLS_th_bugs_id_summary = "Bugs (ID : Summary)";
 $TLS_th_date = "Date";
 $TLS_th_run_by = "Run by";
-$TLS_th_bugs_not_linked = "Total no. of Test Cases with missing/linked Bugs:";
+$TLS_th_bugs_not_linked = "Total number of Test Cases without bug assignment:";
 $TLS_th_assigned_to = "Assigned To";
+
+$TLS_info_only_with_tester_assignment = "Attention: This report considers ONLY test cases with tester assignment ";
+
 $TLS_info_failed_tc_report = "This report shows all test cases for each build " .
                              "and each platform (if used for this test plan), " .
                              "whose last execution result is \"failed\".";
+
 $TLS_info_blocked_tc_report = "This report shows all test cases for each build " .
                               "and each platform (if used for this test plan), " .
                               "whose last execution result is \"blocked\".";
+
 $TLS_info_notrun_tc_report = "This report shows all test cases that have not been executed " .
                              "for any build within this test plan";
 $TLS_no_blocked = "There are no blocked test cases";

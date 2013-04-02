@@ -14,7 +14,7 @@ file="inc_head.tpl" title="TestLink - Login" openHead='yes'}
 		<p>
 			<img alt="Company logo" title="logo"
 				style="width: 115px; height: 53px;"
-				src="{$smarty.const.TL_THEME_IMG_DIR}{$tlCfg->company_logo}" /> <br />TestLink
+				src="{$smarty.const.TL_THEME_IMG_DIR}{$tlCfg->logo_login}" /> <br />TestLink
 			{$tlVersion|escape}
 		</p>
 	</div>

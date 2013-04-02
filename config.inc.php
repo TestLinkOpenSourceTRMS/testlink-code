@@ -272,8 +272,6 @@ $tlCfg->authentication['method'] = 'MD5';
 /**
  * Single Sign On authentication
  * This will be used with $tlCfg->authentication['method']
- * 
- * TICKET 4711	
  */
 $tlCfg->authentication['SSO_enabled'] = false; 
 $tlCfg->authentication['SSO_method'] = 'CLIENT_CERTIFICATE';
@@ -362,10 +360,6 @@ $tlCfg->theme_dir = 'gui/themes/default/';
 $tlCfg->temp_dir = TL_ABS_PATH . 'gui' . DIRECTORY_SEPARATOR . 'templates_c' . DIRECTORY_SEPARATOR;
 
 /** Company logo (used by navigation bar and login page page) */
-//$tlCfg->company_logo = '<img alt="TestLink" title="TestLink" style="width: 115px; height: 53px;" src="' .
-//                          $tlCfg->theme_dir . 'images/company_logo.png" />';
-$tlCfg->company_logo = 'company_logo.png';
-
 $tlCfg->logo_login = 'tl-logo-transparent-25.png';
 $tlCfg->logo_navbar = 'tl-logo-transparent-12.5.png';
 
@@ -733,12 +727,6 @@ $tlCfg->spec_cfg->show_tsuite_filter = ENABLED;
 $tlCfg->spec_cfg->automatic_tree_refresh = ENABLED;
 
 
-
-// ENABLED -> user can removed from a testplan executed tc versions. [STANDARD BEHAVIOUR]
-// DISABLED -> user can NOT remove from a testplan executed tc versions.
-$tlCfg->testcase_cfg->can_remove_executed = ENABLED;
-
-
 // To avoid perfomance problems on search test case feature,
 // we can decide when to inform user that results can not be displayed
 // due to too many results.
@@ -802,9 +790,6 @@ $tlCfg->testsuite_template->details = new stdClass();
 $tlCfg->testsuite_template->details->type = 'none';
 $tlCfg->testsuite_template->details->value = '';
 
-
-// Contribution - Julian (Refactore)
-// BUGID 0002968,0002961,0002962,0002963
 $tlCfg->project_template = new stdClass();
 $tlCfg->project_template->notes  = new stdClass();
 $tlCfg->project_template->notes->type = 'none';
@@ -901,14 +886,12 @@ $g_attachments->action_on_save_empty_title = 'none';
 // 'show_label' -> the value of $g_attachments->access_string will be used .
 $g_attachments->action_on_display_empty_title = 'show_icon';
 
-// martin: @TODO use an image file only
-
-// BUGID 3424  - need to be moved AFTER include of custom_config
+// need to be moved AFTER include of custom_config
 //
 // $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
 $g_attachments->access_string = "[*]";
 
-// Set display order of uploaded files - BUGID 1086
+// Set display order of uploaded files 
 $g_attachments->order_by = " ORDER BY date_added DESC ";
 
 
@@ -1465,7 +1448,7 @@ $g_role_replace_for_deleted_roles = $tlCfg->default_roleid;
 
 
 /**
-BUGID 0000086: Using "|" in the testsuite name causes malformed URLs
+Using "|" in the testsuite name causes malformed URLs
 regexp used to check for chars not allowed in:
 test project, test suite and testcase names.
 @TODO martin: encode harm characters @see http://cz.php.net/urlencode (and remove the parameter)

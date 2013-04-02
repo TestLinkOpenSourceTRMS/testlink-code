@@ -14,8 +14,6 @@
  *
  *
  * @internal revisions
- * @since 1.9.5
- * 20121017 - asimon - TICKET 5288 - print priority when printing test plan
  *
  */ 
 
@@ -539,11 +537,9 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options,
  */
 function renderHTMLHeader($title,$base_href,$doc_type)
 {
-  // BUGID 3424
   $themeDir = config_get('theme_dir');
   $docCfg = config_get('document_generator');
   
-  // BUGID 4644 - different css files for test spec docs and req docs
   $cssFile = $base_href . $themeDir;
   switch ($doc_type) {
     case DOC_TEST_SPEC:
@@ -609,7 +605,6 @@ function renderFirstPage($doc_info)
       $height = "height=\"{$docCfg->company_logo_height}\"";
     }
     
-    // BUGID 3804 - contribution
     $output .= '<p style="text-align: center;"><img alt="TestLink logo" ' .
                   'title="configure using $tlCfg->document_generator->company_logo" ' . $height .
                   ' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo . '" />';
@@ -798,45 +793,29 @@ function gendocGetUserName(&$db, $userId)
  * @return string generated html code
  *
  * @internal revisions
- * 20121017 - asimon - TICKET 5288 - print priority when printing test plan
- * 20110304 - franciscom - BUGID 4286: Option to print single test case
- *               added missing info
- *               version number, creation date, modifier+date
- *               test case execution type, importance
- *               STEP execution type, importance
- *  
- * 20100920 - franciscom - changed key on $cfieldFormatting
- * 20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
- * 20100724 - asimon - BUGID 3459 - added platform ID
- * 20100723 - asimon - BUGID 3451 and related finally solved
- * 20090517 - havlatm - fixed execution layot; added tester name
- * 20080819 - franciscom - removed mysql only code
- * 20071014 - franciscom - display test case version
- * 20070509 - franciscom - added Contribution
  */
 function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 0,
                                    $prefix = null, $tprojectID = 0, $platform_id = 0)
 {
   
-    static $req_mgr;
+  static $req_mgr;
   static $tc_mgr;
-    // TICKET 5288 - print priority when printing test plan
-    static $tplan_urgency;
+  static $tplan_urgency;
   static $labels;
   static $tcase_prefix;
-    static $userMap = array();
-    static $cfg;
-    static $locationFilters;
-    static $tables = null;
-    static $force = null;
-    static $bugInterfaceOn = false;
-    static $its;
+  static $userMap = array();
+  static $cfg;
+  static $locationFilters;
+  static $tables = null;
+  static $force = null;
+  static $bugInterfaceOn = false;
+  static $its;
     
   $code = null;
   $tcInfo = null;
-    $tcResultInfo = null;
-    $tcase_pieces = null;
-    $id = $node['id'];
+  $tcResultInfo = null;
+  $tcase_pieces = null;
+  $id = $node['id'];
 
     // init static elements
     if (!$tables)
@@ -1412,9 +1391,6 @@ function initRenderTestCaseCfg(&$tcaseMgr)
         }    
     }
 
-    // 20100306 - contribution by romans
-  // BUGID 0003235: Printing Out Test Report Shows empty Column Headers for "Steps" and "Step Actions"
-    // TICKET 5288 - print priority when printing test plan
     $labelsKeys=array('last_exec_result', 'title_execution_notes', 'none', 'reqs','author', 'summary',
                       'steps', 'expected_results','build', 'test_case', 'keywords','version', 
                       'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions',
@@ -1482,7 +1458,6 @@ function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan
 
   if( !is_null($its) ) 
   {
-      // amitkhullar-BUGID 2207 - Code to Display linked bugs to a TC in Test Report
     $bugs = get_bugs_for_exec($dbHandler,$its,$exec_info[0]['execution_id']);
     if ($bugs) 
     {

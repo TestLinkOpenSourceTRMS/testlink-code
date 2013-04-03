@@ -3080,12 +3080,13 @@ class testplan extends tlObjectWithAttachments
 
     $sql = " SELECT NHTSET.name as testcase_name,NHTSET.id AS testcase_id , NHTCVSET.id AS tcversion_id," .
            " NHTC.parent_id AS testsuite_id, " .
-           " TPTCVX.id AS feature_id, TPTCVX.node_order " .
+           " TPTCVX.id AS feature_id, TPTCVX.node_order, TCV.tc_external_id " .
            " from {$this->tables['testplan_tcversions']} TPTCVMAIN " .
            " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCVMAIN.tcversion_id " . 
            " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " . 
            " JOIN {$this->tables['nodes_hierarchy']} NHTSET ON NHTSET.parent_id = NHTC.parent_id " .
            " JOIN {$this->tables['nodes_hierarchy']} NHTCVSET ON NHTCVSET.parent_id = NHTSET.id " .
+           " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCVSET.id " .
            " JOIN {$this->tables['testplan_tcversions']} TPTCVX " . 
            " ON TPTCVX.tcversion_id = NHTCVSET.id " .
            " AND TPTCVX.testplan_id = TPTCVMAIN.testplan_id " .
@@ -3113,7 +3114,9 @@ class testplan extends tlObjectWithAttachments
     
     $sql .= " WHERE TPTCVMAIN.testplan_id = {$id} AND TPTCVMAIN.tcversion_id = {$tcversion_id} " .
             " AND TPTCVMAIN.platform_id = {$platform_id} " .
-            " ORDER BY node_order,testcase_name ";
+            " ORDER BY node_order,tc_external_id ";
+
+    // " ORDER BY node_order,external_id,testcase_name ";
     
     $siblings = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
     return $siblings;

@@ -11,8 +11,8 @@
  * @link        http://www.teamst.org/index.php
  * 
  * @internal revisions
- * @since 1.9.6   
- * 20130123 - franciscom - 5491: DB Access Error when import test case XML with CF 
+ * @since 1.9.7
+ *
  */
 require('../../config.inc.php');
 require_once('common.php');
@@ -266,7 +266,12 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $name = $tc['name'];
     $summary = $tc['summary'];
     $steps = $tc['steps'];
-    $node_order = isset($tc['node_order']) ? intval($tc['node_order']) : testcase::DEFAULT_ORDER;
+
+    // I've changed value to use when order has not been provided 
+    // from testcase:DEFAULT_ORDER to a counter, because with original solution
+    // an issue arise with 'save execution and go next'
+    // if use has not provided order I think is OK TestLink make any choice.
+    $node_order = isset($tc['node_order']) ? intval($tc['node_order']) : ($idx+1);
     $internalid = $tc['internalid'];
     $preconditions = $tc['preconditions'];
     $exec_type = isset($tc['execution_type']) ? $tc['execution_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;

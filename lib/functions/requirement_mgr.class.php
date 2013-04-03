@@ -12,10 +12,6 @@
  * Requirements are children of a requirement specification (requirements container)
  *
  * @internal revisions:
- * @since 1.9.6
- * 20130416 - franciscom - TICKET 5528: Importing a requirement with CF fails after the first time
- * 20130105 - franciscom - get_coverage() added order by
- * 
  */
 
 // Needed to use extends tlObjectWithAttachments, If not present autoload fails.
@@ -45,10 +41,10 @@ class requirement_mgr extends tlObjectWithAttachments
   var $internal_links;
   
   
-    const AUTOMATIC_ID=0;
-    const ALL_VERSIONS=0;
-    const LATEST_VERSION=-1;
-    const NO_REVISION=-1;
+  const AUTOMATIC_ID=0;
+  const ALL_VERSIONS=0;
+  const LATEST_VERSION=-1;
+  const NO_REVISION=-1;
     
 
 
@@ -140,36 +136,36 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   static $debugMsg;
   static $userCache;  // key: user id, value: display name
   static $lables;
-    static $user_keys;
+  static $user_keys;
 
   if(!$debugMsg)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $labels['undefined'] = lang_get('undefined');
-        $user_keys = array('author' => 'author_id', 'modifier' => 'modifier_id');
+    $labels['undefined'] = lang_get('undefined');
+    $user_keys = array('author' => 'author_id', 'modifier' => 'modifier_id');
   }
   
   
   $my['options'] = array('order_by' => " ORDER BY REQV.version DESC ");
-    $my['options'] = array_merge($my['options'], (array)$options);
+  $my['options'] = array_merge($my['options'], (array)$options);
 
     // null => do not filter
   $my['filters'] = array('status' => null, 'type' => null);
-    $my['filters'] = array_merge($my['filters'], (array)$filters);
+  $my['filters'] = array_merge($my['filters'], (array)$filters);
 
   $filter_clause = '';
-    $dummy[]='';  // trick to make implode() work
-    foreach( $my['filters'] as $field2filter => $value)
+  $dummy[]='';  // trick to make implode() work
+  foreach( $my['filters'] as $field2filter => $value)
+  {
+    if( !is_null($value) )
     {
-      if( !is_null($value) )
-      {
-        $dummy[] = " {$field2filter} = '{$value}' ";
-      }
+      $dummy[] = " {$field2filter} = '{$value}' ";
     }
-    if( count($dummy) > 1)
-    {
-      $filter_clause = implode(" AND ",$dummy);
-    }
+  }
+  if( count($dummy) > 1)
+  {
+    $filter_clause = implode(" AND ",$dummy);
+  }
 
   $where_clause = " WHERE NH_REQV.parent_id ";
   if( ($id_is_array=is_array($id)) )
@@ -183,24 +179,24 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   
   if(is_array($version_id))
   {
-      $versionid_list = implode(",",$version_id);
-      $where_clause .= " AND REQV.id IN ({$versionid_list}) ";
+    $versionid_list = implode(",",$version_id);
+    $where_clause .= " AND REQV.id IN ({$versionid_list}) ";
   }
   else
   {
     if( is_null($version_id) )
     {
-        // search by "human" version number
-        $where_clause .= " AND REQV.version = {$version_number} ";
+      // search by "human" version number
+      $where_clause .= " AND REQV.version = {$version_number} ";
     }
     else 
     {
-        if($version_id != self::ALL_VERSIONS && $version_id != self::LATEST_VERSION)
-        {
-          $where_clause .= " AND REQV.id = {$version_id} ";
-        }
+      if($version_id != self::ALL_VERSIONS && $version_id != self::LATEST_VERSION)
+      {
+        $where_clause .= " AND REQV.id = {$version_id} ";
+      }
     }
-    }
+  }
 
    // added -1 AS revision_id to make some process easier 
   $sql = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
@@ -216,7 +212,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
          " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .  
          " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
          " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
-           $where_clause . $filter_clause . $my['options']['order_by'];
+         $where_clause . $filter_clause . $my['options']['order_by'];
 
 
   if ($version_id != self::LATEST_VERSION)
@@ -225,13 +221,13 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   }
   else
   {
-      // But, how performance wise can be do this, 
-      // instead of using MAX(version) and a group by? 
-      //           
-      // if $id was a list then this will return something USELESS
-      //           
-      if( !$id_is_array )
-      {         
+    // But, how performance wise can be do this, 
+    // instead of using MAX(version) and a group by? 
+    //           
+    // if $id was a list then this will return something USELESS
+    //           
+    if( !$id_is_array )
+    {         
       $recordset = array($this->db->fetchFirstRow($sql));
     }  
     else
@@ -240,37 +236,37 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
     }
   }
 
-    $rs = null;
-    if(!is_null($recordset))
+  $rs = null;
+  if(!is_null($recordset))
+  {
+    // Decode users
+    $rs = $recordset;
+    $key2loop = array_keys($recordset);
+    foreach( $key2loop as $key )
     {
-        // Decode users
-        $rs = $recordset;
-        $key2loop = array_keys($recordset);
-        foreach( $key2loop as $key )
+      foreach( $user_keys as $ukey => $userid_field)
+      {
+        $rs[$key][$ukey] = '';
+        if(trim($rs[$key][$userid_field]) != "")
         {
-          foreach( $user_keys as $ukey => $userid_field)
+          if( !isset($userCache[$rs[$key][$userid_field]]) )
           {
-            $rs[$key][$ukey] = '';
-            if(trim($rs[$key][$userid_field]) != "")
-            {
-              if( !isset($userCache[$rs[$key][$userid_field]]) )
-              {
-                $user = tlUser::getByID($this->db,$rs[$key][$userid_field]);
-                $rs[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
-                $userCache[$rs[$key][$userid_field]] = $rs[$key][$ukey];
+            $user = tlUser::getByID($this->db,$rs[$key][$userid_field]);
+            $rs[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
+            $userCache[$rs[$key][$userid_field]] = $rs[$key][$ukey];
             unset($user);
-              }
-              else
-              {
-                $rs[$key][$ukey] = $userCache[$rs[$key][$userid_field]];
-              }
-            }
-          }  
+          }
+          else
+          {
+            $rs[$key][$ukey] = $userCache[$rs[$key][$userid_field]];
+          }
         }
-    }    
-    unset($recordset);
-    unset($my);
-    unset($dummy);
+      }  
+    }
+  }    
+  unset($recordset);
+  unset($my);
+  unset($dummy);
   return $rs;
 }
 
@@ -1606,16 +1602,13 @@ function get_linked_cfields($id,$child_id,$parent_id=null)
   returns: html string
 
 
-  @internal revisions:
-    20101011 - franciscom - BUGID 3886: CF Types validation 
-    20101001 - asimon - extended to not lose entered custom field values on errors
-
+  @internal revisions
 */
 function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name_suffix='', $input_values = null)
 {
-    $cf_map = $this->get_linked_cfields($id,$version_id,$parent_id,$name_suffix);
+  $cf_map = $this->get_linked_cfields($id,$version_id,$parent_id,$name_suffix);
   $cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
-    return $cf_smarty;
+  return $cf_smarty;
 }
 
 
@@ -2264,7 +2257,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
     $relations = array();
     $relations['num_relations'] = 0;
-      $relations['req'] = current($this->get_by_id($id));
+    $relations['req'] = current($this->get_by_id($id));
     $relations['relations'] = array();
 
     $tproject_mgr = new testproject($this->db);

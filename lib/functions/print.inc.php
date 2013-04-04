@@ -535,7 +535,7 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options,
  * 
  * @return string html data
  */
-function renderHTMLHeader($title,$base_href,$doc_type)
+function renderHTMLHeader($title,$base_href,$doc_type,$jsSet=null)
 {
   $themeDir = config_get('theme_dir');
   $docCfg = config_get('document_generator');
@@ -548,28 +548,41 @@ function renderHTMLHeader($title,$base_href,$doc_type)
     case SINGLE_TESTCASE:
       $cssFile .= $docCfg->css_template;
     break;
+
     case DOC_REQ_SPEC:
     case SINGLE_REQ:
     case SINGLE_REQSPEC:
       $cssFile .= $docCfg->requirement_css_template;
     break;
+    
     default:
       $cssFile .= $docCfg->css_template;
+    break;  
   }
 
   $output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
   $output .= "<html>\n<head>\n";
   $output .= '<meta http-equiv="Content-Type" content="text/html; charset=' . config_get('charset') . '">';
   $output .= '<title>' . htmlspecialchars($title). "</title>\n";
-  // $output .= '<link type="text/css" rel="stylesheet" href="'. $base_href . $docCfg->css_template ."\" />\n";
   $output .= '<link type="text/css" rel="stylesheet" href="'. $cssFile ."\" />\n";
   
   // way to add CSS directly to the exported file (not used - test required)
-    // $docCss = file_get_contents(TL_ABS_PATH . $docCfg->css_template);
-    // $output .= '<style type="text/css" media="all">'."\n<!--\n".$docCss."\n-->\n</style>\n";
+  // $docCss = file_get_contents(TL_ABS_PATH . $docCfg->css_template);
+  // $output .= '<style type="text/css" media="all">'."\n<!--\n".$docCss."\n-->\n</style>\n";
   $output .= '<style type="text/css" media="print">.notprintable { display:none;}</style>';
-  $output .= "\n</head>\n";
 
+  if(!is_null($jsSet))
+  {  
+    foreach($jsSet as $js)
+    {
+      $output .= "\n" . '<script type="text/javascript" src="' . $base_href . $js . '"';
+      $output .= ' language="javascript"></script>' . "\n";   
+      $output .= '<script type="text/javascript" language="javascript">' . 
+                 "<!-- var fRoot = '" . $base_href . "'; -->" . '</script>' . "\n";   
+    }  
+  }
+
+  $output .= "\n</head>\n";
   return $output;
 }
 
@@ -817,24 +830,23 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
   $tcase_pieces = null;
   $id = $node['id'];
 
-    // init static elements
-    if (!$tables)
-    {
-      $tables = tlDBObject::getDBTables(array('executions','builds'));
-       $tc_mgr = new testcase($db);
-        // TICKET 5288 - print priority when printing test plan
-        $tplan_urgency = new testPlanUrgency($db);
-       list($cfg,$labels) = initRenderTestCaseCfg($tc_mgr);
+  // init static elements
+  if (!$tables)
+  {
+    $tables = tlDBObject::getDBTables(array('executions','builds'));
+    $tc_mgr = new testcase($db);
+    $tplan_urgency = new testPlanUrgency($db);
+    list($cfg,$labels) = initRenderTestCaseCfg($tc_mgr);
 
-      if(!is_null($prefix))
-      {
-          $tcase_prefix = $prefix;
-      }
-      else
-      {
-        list($tcase_prefix,$dummy) = $tc_mgr->getPrefix($id);
-      }
-      $tcase_prefix .= $cfg['testcase']->glue_character;
+    if(!is_null($prefix))
+    {
+      $tcase_prefix = $prefix;
+    }
+    else
+    {
+      list($tcase_prefix,$dummy) = $tc_mgr->getPrefix($id);
+    }
+    $tcase_prefix .= $cfg['testcase']->glue_character;
 
     $force['displayVersion'] = isset($options['displayVersion']) ? $options['displayVersion'] : false;
     $force['displayLastEdit'] = isset($options['displayLastEdit']) ? $options['displayLastEdit'] : false;
@@ -858,13 +870,13 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
   $cfieldFormatting = array('label_css_style' => '',  'add_table' => false, 'value_css_style' => $cspan );
 
   $versionID = isset($node['tcversion_id']) ? intval($node['tcversion_id']) : testcase::LATEST_VERSION;
-    $tcInfo = $tc_mgr->get_by_id($id,$versionID);
+  $tcInfo = $tc_mgr->get_by_id($id,$versionID,null,array('renderGhost' => true));
     
-    if ($tcInfo)
-    {
+  if ($tcInfo)
+  {
       $tcInfo = $tcInfo[0];
-    }
-    $external_id = $tcase_prefix . $tcInfo['tc_external_id'];
+  }
+  $external_id = $tcase_prefix . $tcInfo['tc_external_id'];
   $name = htmlspecialchars($node['name']);
 
   // ----- BUGID 3451 and related ---------------------------------------

@@ -634,7 +634,7 @@ class testcase extends tlObjectWithAttachments
 		  	{
 		  		// using $version_id has sense only when we are working on ONE SPECIFIC Test Case
 		  		// if we are working on a set of test cases $version_id will be ALL VERSIONS
-		  		if(!$tc_array = $this->get_by_id($tc_id,$version_id))
+		  		if(!$tc_array = $this->get_by_id($tc_id,$version_id,null,array('renderGhost' => true)))
 		  		{
 		  			continue;
 		  		}
@@ -1298,10 +1298,10 @@ class testcase extends tlObjectWithAttachments
 	function copy_to($id,$parent_id,$user_id,$options=null,$mappings=null)
 	{
     $newTCObj = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok', 'mappings' => null);
-	  $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
-	                          'action_on_duplicate_name' => 'generate_new', 
-	                          'copy_also' => null, 'preserve_external_id' => false,
-                            'renderGhostSteps' => false);
+	  $my['options'] = array('check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
+	                         'action_on_duplicate_name' => 'generate_new', 
+	                         'copy_also' => null, 'preserve_external_id' => false,
+                           'renderGhostSteps' => false);
 
 
     // needed when Test Case is copied to a DIFFERENT Test Project,
@@ -1693,18 +1693,18 @@ class testcase extends tlObjectWithAttachments
 	function get_by_id($id,$version_id = self::ALL_VERSIONS, $filters = null, $options=null)
 	{
 
-	    $my['filters'] = array( 'active_status' => 'ALL', 'open_status' => 'ALL', 'version_number' => 1);
-	    $my['filters'] = array_merge($my['filters'], (array)$filters);
+    $my['filters'] = array('active_status' => 'ALL', 'open_status' => 'ALL', 'version_number' => 1);
+    $my['filters'] = array_merge($my['filters'], (array)$filters);
 
-	    $my['options'] = array( 'output' => 'full', 'access_key' => 'tcversion_id', 'order_by' => null);
-	    $my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array('output' => 'full', 'access_key' => 'tcversion_id', 
+                           'order_by' => null, 'renderGhost' => false);
+    $my['options'] = array_merge($my['options'], (array)$options);
 
 		$tcid_list = null;
 		$where_clause = '';
 		$active_filter = '';
 		$versionSQLOp = ' AND ';
 		
-
 		if( ($accessByVersionID = is_null($id) && !is_null($version_id)) )
 		{
 			$versionSQLOp = ' WHERE ';
@@ -1726,26 +1726,25 @@ class testcase extends tlObjectWithAttachments
 		}
 		else
 		{
-		    // 20090521 - franciscom - search by human version number
-		    if( is_null($version_id) )
-		    {
+      if( is_null($version_id) )
+	    {
 		    	// when tcase ID has not been provided this can not be used
 		    	// will not do any check => leave it CRASH
 		        $where_clause .= " AND TCV.version = {$my['filters']['version_number']} ";
-		    }
-		    else 
+	    }
+	    else 
+	    {
+		    if($version_id != self::ALL_VERSIONS && $version_id != self::LATEST_VERSION)
 		    {
-			    if($version_id != self::ALL_VERSIONS && $version_id != self::LATEST_VERSION)
-			    {
-			    	$where_clause .= $versionSQLOp .  " TCV.id = {$version_id} ";
-			    }
-	        }
+		    	$where_clause .= $versionSQLOp .  " TCV.id = {$version_id} ";
+		    }
+	    }
 	        
-			$active_status = strtoupper($my['filters']['active_status']);
-		  	if($active_status != 'ALL')
-		  	{
-		    	$active_filter =' AND TCV.active=' . ($active_status=='ACTIVE' ? 1 : 0) . ' ';
-	    	}
+      $active_status = strtoupper($my['filters']['active_status']);
+	  	if($active_status != 'ALL')
+	  	{
+	    	$active_filter =' AND TCV.active=' . ($active_status=='ACTIVE' ? 1 : 0) . ' ';
+	   	}
 		}
 	
 		switch($my['options']['output'])
@@ -1823,15 +1822,13 @@ class testcase extends tlObjectWithAttachments
 	    // Control improvements
 		if( !$version_id_is_array && $version_id == self::LATEST_VERSION)
 		{
-		    // 20090413 - franciscom - 
-		    // But, how performance wise can be do this, instead of using MAX(version)
-		    // and a group by? 
-		    //           
-		    // 20100309 - franciscom - 
-		    // if $id was a list then this will return something USELESS
-		    //           
-		    if( is_null($tcid_list) )
-		    {         
+	    // But, how performance wise can be do this, instead of using MAX(version)
+	    // and a group by? 
+	    //           
+	    // if $id was a list then this will return something USELESS
+	    //           
+	    if( is_null($tcid_list) )
+	    {         
 				$recordset = array($this->db->fetchFirstRow($sql));
 			}	
 			else
@@ -1843,18 +1840,30 @@ class testcase extends tlObjectWithAttachments
 		else
 		{
 			$recordset = $this->db->get_recordset($sql);
-	    }
+	  }
 	
-	    // Multiple Test Case Steps
-	    if( !is_null($recordset) && $my['options']['output'] == 'full')
-	    {
-	  		$key2loop = array_keys($recordset);
-	  		foreach( $key2loop as $accessKey)
-	  		{	
-	  			$step_set = $this->get_steps($recordset[$accessKey]['id']);
-	  			$recordset[$accessKey]['steps'] = $step_set;
-	  		} 
-	    }
+    // 20130404 - ghost on preconditions and summary
+    if( !is_null($recordset) && $my['options']['renderGhost'] )
+    {
+      $key2loop = array_keys($recordset);
+      foreach( $key2loop as $accessKey)
+      { 
+        $this->renderGhost($recordset[$accessKey]);
+      } 
+      reset($recordset);
+    }
+
+
+	  // Multiple Test Case Steps
+	  if( !is_null($recordset) && $my['options']['output'] == 'full')
+	  {
+	 		$key2loop = array_keys($recordset);
+	 		foreach( $key2loop as $accessKey)
+	 		{	
+	 			$step_set = $this->get_steps($recordset[$accessKey]['id']);
+	 			$recordset[$accessKey]['steps'] = $step_set;
+	 		} 
+	  }
 		return ($recordset ? $recordset : null);
 	}
 	
@@ -4409,7 +4418,6 @@ class testcase extends tlObjectWithAttachments
 			$result = $this->db->fetchRowsIntoMap($sql,$my['options']['accessKey']);
 		}
 
-		// TICKET 4797: Test case step reuse		
 		if(!is_null($result) && $my['options']['renderGhostSteps'])
 		{
 			$this->renderGhostSteps($result);
@@ -5103,7 +5111,6 @@ class testcase extends tlObjectWithAttachments
 
 	/**
 	 *
-	 * 20120831 - franciscom - TICKET 5133
 	 */
 	function renderGhostSteps(&$steps2render)
 	{
@@ -5741,6 +5748,66 @@ class testcase extends tlObjectWithAttachments
 
   
   }
+
+
+	/**
+	 *
+	 * 20130404
+	 */
+	function renderGhost(&$item2render)
+	{
+    // Javascript instead of javascript, because CKeditor sometimes complains
+    $href = '<a href="Javascript:openTCW(\'%s\',%s);">%s:%s [version:%s] (link)</a>';
+		$tlBeginMark = '[ghost]';
+		$tlEndMark = '[/ghost]';
+		$key2check = array('summary','preconditions');
+		
+		// I've discovered that working with Web Rich Editor generates 
+		// some additional not wanted entities, that disturb a lot
+		// when trying to use json_decode().
+		// Hope this set is enough.
+		$replaceSet = array($tlEndMark, '</p>', '<p>','&nbsp;');
+		$rse = &$item2render;
+		foreach($key2check as $item_key)
+		{
+    	$start = strpos($rse[$item_key],$tlBeginMark);
+			$ghost = $rse[$item_key];
+			if($start > 0)
+			{
+				$xx = explode($tlBeginMark,$rse[$item_key]);
+				$xx2do = count($xx);
+				$ghost = '';
+				for($xdx=0; $xdx < $xx2do; $xdx++)
+				{
+					if(strpos($xx[$xdx],$tlEndMark) > 0)
+					{
+						$dx = trim(str_replace($replaceSet,'',$xx[$xdx]));
+
+            // trick to convert to array  
+						$dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
+						$dx = json_decode($dx,true);
+
+						if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
+						{
+							$fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
+							if(!is_null($fi))
+							{
+								// will get test case title to generate following string
+                // "Reference to Test Case EXTERNAL ID - TITLE (version X)"
+								//$stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
+                $vn = intval($dx['Version']);
+								$ghost .= sprintf($href,$dx['TestCase'],$vn,$dx['TestCase'],$fi[0]['name'],$vn);
+							}
+						}	
+					}
+				}
+			}
+			if($ghost != '')
+			{
+				$rse[$item_key] = $ghost;
+			}
+		} 					
+	}		
 
 
 } // end class

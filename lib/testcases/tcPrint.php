@@ -6,13 +6,10 @@
  * @internal	filename: tcPrint.php 
  * @package 	TestLink
  * @author		Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright 	2005-2011, TestLink community 
+ * @copyright 	2005-2013, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected testcase versions with each other.
- *
- * @internal revisions:
- * 20110305 - franciscom - BUGID 4286: Option to print single test case
  */
 
 require_once("../../config.inc.php");
@@ -49,7 +46,9 @@ $level = 0;
 $tplanID = 0;
 $prefix = null;
 $text2print = '';
-$text2print .= renderHTMLHeader($gui->page_title,$_SESSION['basehref'],SINGLE_TESTCASE);
+$text2print .= renderHTMLHeader($gui->page_title,$_SESSION['basehref'],
+								SINGLE_TESTCASE,array('gui/javascript/testlink_library.js'));
+
 $text2print .= renderTestCaseForPrinting($db,$node,$printingOptions, 
 										 $level,$tplanID,$prefix,$args->tproject_id);
 

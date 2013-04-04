@@ -8,21 +8,11 @@
  * @filesource	requirements.inc.php
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2007-2012, TestLink community 
+ * @copyright 	2007-2013, TestLink community 
  * @link 		http://www.teamst.org/index.php
  *
- * @internal Revisions:
- * @since 1.9.4
- * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
- *
- * @since 1.9.3
- * 20110525 - Julian - req_link_replace() - BUGID 4487 - allow to specify requirement version 
- * for internal links
+ * @internal revisions
  */
-
-/** inlude basic functions for printing Test Specification document */
-//require_once("print.inc.php"); //TODO is this needed here anymore after removal of render functions?
-
 
 /**
  * exportReqDataToXML

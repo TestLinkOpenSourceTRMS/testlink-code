@@ -6,12 +6,11 @@
  * @filesource  containerEdit.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2005-2012, TestLink community
+ * @copyright   2005-2013, TestLink community
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.6
- * 20121222 - franciscom - TICKET 5439: login on timeout when editing TEST SUITES to avoid data loss not working
+ * @since 1.9.7
  * 
  */
 require_once("../../config.inc.php");
@@ -35,7 +34,7 @@ $level = null;
 $opt_cfg=new stdClass();
 $opt_cfg->js_ot_name = 'ot';
 
-$args = init_args($opt_cfg);
+$args = init_args($db,$opt_cfg);
 
 $gui_cfg = config_get('gui');
 $smarty = new TLSmarty();
@@ -371,14 +370,18 @@ args :
 returns:
 
 */
-function init_args($optionTransferCfg)
+function init_args(&$dbHandler,$optionTransferCfg)
 {
    	$args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
-    $args->tprojectID = $_SESSION['testprojectID'];
+    $args->tprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
     $args->tprojectName = $_SESSION['testprojectName'];
-    $args->userID = $_SESSION['userID'];
+    $args->userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
+
+    $args->user = $_SESSION['currentUser'];
+    $args->grants = new stdClass();
+    $args->grants->delete_executed_testcases = $args->user->hasRight($dbHandler,'testproject_delete_executed_testcases',$args->tprojectID);
 
     $keys2loop=array('nodes_order' => null, 'tcaseSet' => null,
                     'target_position' => 'bottom', 'doAction' => '');
@@ -408,7 +411,6 @@ function init_args($optionTransferCfg)
         $args->containerID = $args->tprojectID;
     }
 
-    // BUGID 3669
     $args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ?
     $_SESSION['setting_refresh_tree_on_action'] : 0;
 
@@ -482,12 +484,12 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
             $map_msg = build_del_testsuite_warning_msg($treeMgr,$tcaseMgr,$testcases,$argsObj->testsuiteID);
             if( in_array('linked_and_executed', (array)$map_msg['link_msg']) )
             {
-                $can_delete = $testcase_cfg->can_delete_executed;
+                $can_delete = $argsObj->grants->delete_executed_testcases;
             }
         }
 
         $system_message = '';
-        if(!$can_delete && !$testcase_cfg->can_delete_executed)
+        if(!$can_delete && !$argsObj->grants->delete_executed_testcases)
         {
             $system_message = lang_get('system_blocks_tsuite_delete_due_to_exec_tc');
         }
@@ -923,7 +925,7 @@ returns: -
 20110402 - franciscom - BUGID 4322: New Option to block delete of executed test cases.
 */
 function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&$tsuiteMgr,
-                &$tcaseMgr,$argsObj,$feedback = null)
+                               &$tcaseMgr,$argsObj,$feedback = null)
 {
 
     $guiObj = new stdClass();
@@ -960,7 +962,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
             // key level 3 : Platform ID
             $getOptions = array('addExecIndicator' => true);
             $dummy = $tcaseMgr->get_exec_status($child['id'],null,$getOptions);
-            $child['draw_check'] = $testcase_cfg->can_delete_executed || (!$dummy['executed']);
+            $child['draw_check'] = $argsObj->grants->delete_executed_testcases || (!$dummy['executed']);
 
             $hasExecutedTC = $hasExecutedTC || $dummy['executed'];
             unset($dummy['executed']);
@@ -1015,7 +1017,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
         $guiObj->user_feedback = is_null($guiObj->user_feedback) ? lang_get('no_testcases_available') : $guiObj->user_feedback;
     }
 
-    if(!$testcase_cfg->can_delete_executed && $hasExecutedTC)
+    if(!$argsObj->grants->delete_executed_testcases && $hasExecutedTC)
     {
         $guiObj->system_message = lang_get('system_blocks_delete_executed_tc');
     }

@@ -164,6 +164,14 @@ $TLS_show_calender = "Show Calender";
 $TLS_clear_date = "Clear Date";
 $TLS_unfreeze = "Unfreeze";
 
+$TLS_issue_additional_information = 'Additonal information';
+$TLS_issue_description = 'Description';
+$TLS_issue_issue = 'Issue/Task';
+$TLS_issue_steps_to_reproduce = 'Steps to reproduce';
+$TLS_issue_summary = 'Summary';
+$TLS_issue_target_version = 'Target vesion';
+
+
 $TLS_low  = "Low";
 $TLS_high = "High";
 $TLS_medium = "Medium";
@@ -609,6 +617,7 @@ $TLS_alt_del_testsuite = "Delete this Test Suite with all children (Test Suites 
 $TLS_alt_edit_testsuite = "Modify this Test Suite data and title";
 $TLS_alt_move_cp_testsuite = "Move or copy this Test Suite to another Test Project";
 $TLS_alt_move_cp_testcases = "Move/Copy Test Cases";
+$TLS_btn_create_from_issue_xml = "Create From Issues (XML)";
 $TLS_btn_del_testsuite = "Delete";
 $TLS_btn_del_testsuites_bulk = "Delete Test Suites Bulk";
 $TLS_btn_edit_testsuite = $TLS_btn_edit;

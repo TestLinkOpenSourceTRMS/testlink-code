@@ -3,6 +3,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	treebyloader.js
 
 Created using EXT JS examples.
+Ext JS Forums > Ext JS General Forums > Ext: Examples and Extras > Saving tree state example
+
 This code has following features:
 
 - tree will created using a tree loader code, that get tree information
@@ -24,14 +26,7 @@ Ext.ux.tree.RemoteTreePanel by Saki - ver.: 1.0
 Author: franciscom - 20080525
 
 @internal revisions
-20101121 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
-20100908 - franciscom - work on CTRL+Drag&Drop for copy (just started)
-20100603 - franciscom - added context menu logic to solve partially 
-           				BUGID 2408: Relation between internal testcaseid,testplanid,...
-               
-20080831 - franciscom - added beforemovenode() logic
-    
-Ext JS Forums > Ext JS General Forums > Ext: Examples and Extras > Saving tree state example
+
 */
 
 
@@ -112,7 +107,9 @@ function checkCtrlKey(dropEventObject)
   
   returns: true -> movement can be made.
 
-  rev: 20091208 - franciscom - using new node attribute forbidden_parent in logic
+  @internal revisions
+  @since 1.9.7
+  20130407 - franciscom - added config for testcase, testsuite
 */
 function checkMovement(newparent,node,oldparentid,newparentid,nodeorder)
 {
@@ -122,13 +119,21 @@ function checkMovement(newparent,node,oldparentid,newparentid,nodeorder)
     
     switch(node_type)
     {
-        case 'requirement':
-        case 'requirement_spec':
-            if( node.attributes.forbidden_parent == newparent_node_type )
-            {                                                            
-              status=false;                                              
-            }                                                            
-        break;
+      case 'requirement':
+      case 'requirement_spec':
+        if( node.attributes.forbidden_parent == newparent_node_type )
+        {                                                            
+          status=false;                                              
+        }                                                            
+      break;
+
+      case 'testcase':
+      case 'testsuite':
+        if( node.attributes.forbidden_parent == newparent_node_type )
+        {                                                            
+          status=false;                                              
+        }                                                            
+      break;
     }
     return status;
 }
@@ -424,7 +429,6 @@ Ext.onReady(function(){
     });                                          
     
     
-    // 20080831 - franciscom
     // Class Ext.tree.TreePanel - event
     // Want to avoid some movements like:
     // A requirement CAN NOT BE direct child of test project

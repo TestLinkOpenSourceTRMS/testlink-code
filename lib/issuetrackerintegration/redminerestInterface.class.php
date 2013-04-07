@@ -7,8 +7,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.6
- * 20121210 - franciscom - doing right test to understand if we are connected to redmine 
+ * @since 1.9.7
  *
 **/
 require_once(TL_ABS_PATH . "/third_party/redmine-php-api/lib/redmine-rest-api.php");
@@ -16,6 +15,7 @@ class redminerestInterface extends issueTrackerInterface
 {
   private $APIClient;
   private $issueDefaults;
+  private $issueAttr = null;
 
 	var $defaultResolvedStatus;
 
@@ -63,12 +63,46 @@ class redminerestInterface extends issueTrackerInterface
       $this->cfg->uricreate = $base;
 		}	    
 
+    if( property_exists($this->cfg,'attributes') )
+    {
+      $attr = get_object_vars($this->cfg->attributes);
+      foreach ($attr as $name => $elem) 
+      {
+        $name = (string)$name;
+        if( is_object($elem) )
+        {
+           $elem = get_object_vars($elem);
+           $cc = current($elem);
+           $kk = key($elem); 
+           foreach($cc as $value)
+           {
+              $this->issueAttr[$name][] = array($kk => (string)$value); 
+           }
+        } 
+        else
+        {
+          $this->issueAttr[$name] = (string)$elem;     
+        } 
+      }
+    }     
+
+
 		$this->issueDefaults = array('trackerid' => 1);
+    
+    /*
     foreach($this->issueDefaults as $prop => $default)
     {
   	  $this->cfg->$prop = (string)(property_exists($this->cfg,$prop) ? $this->cfg->$prop : $default);
     }		
+    */
 
+    foreach($this->issueDefaults as $prop => $default)
+    {
+      if(!isset($this->issueAttr[$prop]))
+      {
+        $this->issueAttr[$prop] = $default;
+      }  
+    }   
 	}
 
 	/**
@@ -162,10 +196,12 @@ class redminerestInterface extends issueTrackerInterface
 		}
 		
 		$issue = null;
-		try
+    echo __METHOD__;
+    try
 		{
 			$xmlObj = $this->APIClient->getIssue((int)$issueID);
-			if( !is_null($xmlObj) && is_object($xmlObj))
+    	
+      if( !is_null($xmlObj) && is_object($xmlObj))
 			{
 				$issue = new stdClass();
 		    $issue->IDHTMLString = "<b>{$issueID} : </b>";
@@ -177,6 +213,9 @@ class redminerestInterface extends issueTrackerInterface
 				                               'id' => (int)$xmlObj->project['id'] );
 				                               
 				$issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
+
+        var_dump($xmlObj);
+        // die('BEFORE RET');
 			}
 		}
 		catch(Exception $e)
@@ -211,7 +250,7 @@ class redminerestInterface extends issueTrackerInterface
 	 **/
 	function getIssueStatusVerbose($issueID)
 	{
-        return $this->getIssueStatusCode($issueID);
+    return $this->getIssueStatusCode($issueID);
 	}
 
 	/**
@@ -223,8 +262,8 @@ class redminerestInterface extends issueTrackerInterface
 	 **/
 	function getIssueSummaryHTMLString($issueID)
 	{
-        $issue = $this->getIssue($issueID);
-        return $issue->summaryHTMLString;
+    $issue = $this->getIssue($issueID);
+    return $issue->summaryHTMLString;
 	}
 
   /**
@@ -244,6 +283,21 @@ class redminerestInterface extends issueTrackerInterface
 
   public function addIssue($summary,$description)
   {
+    // From Redmine API documentation (@20130406)
+    // Parameters:
+    //
+    // issue - A hash of the issue attributes:
+    // project_id
+    // tracker_id
+    // status_id
+    // subject
+    // description
+    // category_id
+    // assigned_to_id - ID of the user to assign the issue to (currently no mechanism to assign by name)
+    // parent_issue_id - ID of the parent issue
+    // custom_fields - See Custom fields
+    // watcher_user_ids - Array of user ids to add as watchers (since 2.3.0)
+
   	  // Check mandatory info
   	  if( !property_exists($this->cfg,'projectidentifier') )
   	  {
@@ -253,15 +307,31 @@ class redminerestInterface extends issueTrackerInterface
      try
      {
        // needs json or xml
-       $issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
+      $issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
    		$issueXmlObj->addChild('subject', htmlentities($summary));
    		$issueXmlObj->addChild('description', htmlentities($description));
    		$issueXmlObj->addChild('project_id', (string)$this->cfg->projectidentifier);
    		$issueXmlObj->addChild('tracker_id', (string)$this->cfg->trackerid);
+
+      // http://www.redmine.org/issues/6843
+      // "Target version" is the new display name for this property, 
+      // but it's still named fixed_version internally and thus in the API.
+      // $issueXmlObj->addChild('fixed_version_id', (string)2);
+
+      if(!is_null($this->issueAttr))
+      {
+        foreach($this->issueAttr as $ka => $kv)
+        {
+          // will treat everything as simple strings
+          $issueXmlObj->addChild($ka, (string)$kv);
+        }  
+      }  
+
    		// $issueXmlObj->addChild('priority_id', $priority_id);
    		// $issueXmlObj->addChild('category_id', $category_id);
  
        $op = $this->APIClient->addIssueFromSimpleXML($issueXmlObj);
+       var_dump($op);
        $ret = array('status_ok' => true, 'id' => (string)$op->id, 
                     'msg' => sprintf(lang_get('redmine_bug_created'),$summary,
                                      $issueXmlObj->project_id));
@@ -288,6 +358,8 @@ class redminerestInterface extends issueTrackerInterface
 				        "<uribase>http://tl.m.remine.org</uribase>\n" .
 				        "<!-- Project Identifier is NEEDED ONLY if you want to create issues from TL -->\n" . 
 				        "<projectidentifier>REDMINE PROJECT IDENTIFIER</projectidentifier>\n" .
+                "<!-- Configure This if you need to provide other attributes -->\n" .
+                "<!-- <attributes><targetversion>10100<targetversion></attributes>  -->\n" .
 	              "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
                 "<resolvedstatus>\n" .
                 "<status><code>3</code><verbose>Resolved</verbose></status>\n" .

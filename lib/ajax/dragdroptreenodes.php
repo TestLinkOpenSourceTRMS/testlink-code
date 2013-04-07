@@ -1,14 +1,12 @@
 <?php
 /** 
-* 	TestLink Open Source Project - http://testlink.sourceforge.net/
+* TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: dragdroptreenodes.php,v 1.2 2009/12/08 14:43:05 franciscom Exp $
-* 	@author 	Francisco Mancardi
+* @filesource dragdroptreenodes.php
+* @author 	  Francisco Mancardi
 * 
-*   manage drag and drop on test project tree
+* manage drag and drop on test project tree
 *
-*   rev: 20080605 - franciscom
-*        
 */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -30,20 +28,15 @@ switch($args->doAction)
     break;
 }
 
-
-
-
 function init_args()
 {
-    $args=new stdClass();
+  $args=new stdClass();
     
-    $key2loop=array('nodeid','newparentid','doAction',
-                    'top_or_bottom','nodeorder','nodelist');
-    
-    foreach($key2loop as $key)
-    {
-        $args->$key=isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;   
-    }
-    return $args;
+  $key2loop=array('nodeid','newparentid','doAction','top_or_bottom','nodeorder','nodelist');
+  foreach($key2loop as $key)
+  {
+    $args->$key=isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;   
+  }
+  return $args;
 }
 ?>                                                                                              

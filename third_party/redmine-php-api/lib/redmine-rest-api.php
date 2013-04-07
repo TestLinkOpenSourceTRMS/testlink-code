@@ -7,6 +7,9 @@
  * @author   Francisco Mancardi <francisco.mancardi@gmail.com>
  * @created  20120339
  * @link     http://gitorious.org/testlink-ga/testlink-code
+ *
+ * @internal revisions
+ * 20130607 - franciscom - Added TIMEOUT on CURL 
  */
 
 /**
@@ -70,11 +73,13 @@ class redmine
 		}
 		
 		// set the agent, forwarding, and turn off ssl checking
+    // Timeout in Seconds
 		curl_setopt_array($this->curl,array(CURLOPT_USERAGENT => $agent,
 						                            CURLOPT_VERBOSE => 0,
 						                            CURLOPT_FOLLOWLOCATION => TRUE,
 		    					                      CURLOPT_RETURNTRANSFER => TRUE,
 		    					                      CURLOPT_AUTOREFERER => TRUE,
+                                        CURLOPT_TIMEOUT => 30,
 		    					                      CURLOPT_SSL_VERIFYPEER => FALSE));
 	}
 
@@ -135,7 +140,7 @@ class redmine
 	 **/
 	protected function _get($url) 
 	{
-	    return $this->_request_xml('GET', $url);
+    	return $this->_request_xml('GET', $url);
 	}
 
 
@@ -151,7 +156,7 @@ class redmine
 		$response = $r['response'];
 		$content = trim($r['content']);
 		$ret = ($content != '' ? $content : null);
-		
+  
 		if(!is_null($ret) && !empty($response['content_type'])) 
 		{
 		 if(	preg_match('/application\/xml/', $response['content_type']) || 

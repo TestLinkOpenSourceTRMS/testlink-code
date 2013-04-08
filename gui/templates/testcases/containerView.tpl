@@ -5,8 +5,7 @@ View test specification containers
 
 @filesource	containerView.tpl
 @internal revisions
-@since 1.9.4
-20120721 - franciscom - TICKET 5103: Copy Test Suite - user feedback always said ...
+@since 1.9.7
 *}
 
 {lang_get var='labels' 
@@ -18,7 +17,7 @@ View test specification containers
 	           btn_reorder_testcases_externalid,btn_reorder_testsuites_alpha,
 	           btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
 	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name,
-	           testsuite_operations, testcase_operations'}
+	           testsuite_operations, testcase_operations,btn_create_from_issue_xml'}
 
 {assign var="container_id" value=$gui->container_data.id}
 {assign var="tcImportAction"
@@ -30,6 +29,11 @@ View test specification containers
         value="lib/testcases/tcExport.php?containerID=$container_id"}
 {assign var="exportTestCasesAction"  value="$basehref$tcExportAction"}
 {assign var="tsuiteExportAction" value="$basehref$tcExportAction&amp;useRecursion=1"}
+
+{assign var="tcMantisXMLAction"
+        value="lib/testcases/tcCreateFromIssueMantisXML.php?containerID=$container_id"}
+{assign var="createTCFromIssueMantisXMLAction"  value="$basehref$tcMantisXMLAction"}
+
 
 {include file="inc_head.tpl" openHead="yes"}
 {assign var="ext_location" value=$smarty.const.TL_EXTJS_RELATIVE_PATH}
@@ -157,6 +161,7 @@ View test specification containers
 		<form method="post" action="lib/testcases/tcEdit.php">
 			<input type="button" onclick="location='{$importTestCasesAction}'" value="{$labels.btn_import_tc}" />
 			<input type="button" onclick="location='{$exportTestCasesAction}'" value="{$labels.btn_export_tc}" />
+      <input type="button" onclick="location='{$createTCFromIssueMantisXMLAction}'" value="{$labels.btn_create_from_issue_xml}" />
 		</form>
 
 		</fieldset>

@@ -819,7 +819,6 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
   // custom Property that will be accessed by EXT-JS using node.attributes
   $node['testlink_node_name'] = $name;
   $node['testlink_node_type'] = $node_type;
-  die('__LINE__');
 
   switch($node_type)
   {
@@ -978,8 +977,6 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
   // custom Property that will be accessed by EXT-JS using node.attributes
   $node['testlink_node_name'] = $name;
   $node['testlink_node_type'] = $node_type;
-  echo __METHOD__;
-  die('__LINE__');
 
   switch($node_type)
   {
@@ -1888,8 +1885,6 @@ function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype
   $node['testlink_node_type'] = $node_type;
   $node['forbidden_parent'] = $forbidden_parents[$node_type];
   $node['testlink_node_name'] = $node['text'];
-    die('__LINE__');
-
   
   switch ($node_type) {
     case 'testproject':     

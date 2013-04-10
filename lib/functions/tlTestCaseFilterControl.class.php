@@ -522,13 +522,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
     if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') 
     {
       $this->settings['setting_build'] = false;
+      $this->settings['setting_platform'] = false;
     }
   
     // TICKET 5176: Possibility to filter by Platform - changes in 'plan_mode'  
-    if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') 
-    {
-      $this->settings['setting_platform'] = false;
-    }
+    //if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') 
+    //{
+    //  $this->settings['setting_platform'] = false;
+    //}
     
     
     // if at least one active setting is left to display, switch settings panel on
@@ -624,12 +625,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
           // these features are generating an exec tree,
           // they need the filters as a stdClass object
           $value = (object)$this->active_filters;
-          break;
+        break;
         
         default:
           // otherwise simply return the array as-is
           $value = $this->active_filters;
-          break;
+        break;
       }
     }
     
@@ -1816,6 +1817,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
 
     if (is_null($result_selection) || $this->args->reset_filters) 
+    // if ($this->args->reset_filters)
     {
       // no selection yet or filter reset requested
       $result_selection = $any_result_key;
@@ -1854,15 +1856,18 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $this->testplan_mgr->get_builds_for_html_options($tplan_id, testplan::GET_ACTIVE_BUILD);
     
     // if "any" is selected, nullify the active filters
-    if ((is_array($result_selection) && in_array($any_result_key, $result_selection))
-    || $result_selection == $any_result_key) {
+    if ((is_array($result_selection) && in_array($any_result_key, $result_selection)) || 
+        $result_selection == $any_result_key) {
       $this->active_filters[$result_key] = null;
       $this->active_filters[$method_key] = null;
       $this->active_filters[$build_key] = null;
       $this->filters[$key][$result_key]['selected'] = $any_result_key;
-      $this->filters[$key][$method_key]['selected'] = $default_filter_method;
-      $this->filters[$key][$build_key]['selected'] = $newest_build_id;
-    } else {
+    
+      // TICKET 0005627
+      // $this->filters[$key][$method_key]['selected'] = $default_filter_method;
+      // $this->filters[$key][$build_key]['selected'] = $newest_build_id;
+    } 
+    else {
       $this->active_filters[$result_key] = $result_selection;
       $this->active_filters[$method_key] = $method_selection;
       $this->active_filters[$build_key] = $build_selection;

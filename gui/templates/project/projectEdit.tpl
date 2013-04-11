@@ -98,21 +98,21 @@ return true;
        {/if}
       {/if}
       <tr>
-        <td>{$labels.name} *</td>
-        <td><input type="text" name="tprojectName" size="{#TESTPROJECT_NAME_SIZE#}"
+        <td><label for="tprojectName">{$labels.name} *</label></td>
+        <td><input type="text" name="tprojectName" id="tprojectName" size="{#TESTPROJECT_NAME_SIZE#}"
             value="{$gui->tprojectName|escape}" maxlength="{#TESTPROJECT_NAME_MAXLEN#}" />
             {include file="error_icon.tpl" field="tprojectName"}
         </td>
       </tr>
       <tr>
-        <td>{$labels.testproject_prefix} *</td>
-        <td><input type="text" name="tcasePrefix" size="{#TESTCASE_PREFIX_SIZE#}"
+        <td><label for="tcasePrefix">{$labels.testproject_prefix} *</label></td>
+        <td><input type="text" name="tcasePrefix" id="tcasePrefix" size="{#TESTCASE_PREFIX_SIZE#}"
                    value="{$gui->tcasePrefix|escape}" maxlength="{#TESTCASE_PREFIX_MAXLEN#}" />
             {include file="error_icon.tpl" field="tcasePrefix"}
         </td>
       </tr>
       <tr>
-        <td>{$labels.testproject_description}</td>
+        <td><label for="">{$labels.testproject_description}</label></td>
         <td style="width:80%">{$notes}</td>
       </tr>
       {if $gui_cfg->testproject_coloring neq 'none'}
@@ -134,30 +134,30 @@ return true;
       </tr>
       <tr>
         <td></td><td>
-            <input type="checkbox" name="optReq" 
+            <input type="checkbox" name="optReq" id="optReq" 
                 {if $gui->projectOptions->requirementsEnabled} checked="checked"  {/if} />
-          {$labels.testproject_enable_requirements}
+          <label for="optReq">{$labels.testproject_enable_requirements}</label>
         </td>
       </tr>
       <tr>
         <td></td><td>
-          <input type="checkbox" name="optPriority" 
+          <input type="checkbox" name="optPriority" id="optPriority" 
               {if $gui->projectOptions->testPriorityEnabled} checked="checked"  {/if} />
-          {$labels.testproject_enable_priority}
+          <label for="optPriority">{$labels.testproject_enable_priority}</label>
         </td>
       </tr>
       <tr>
         <td></td><td>
-          <input type="checkbox" name="optAutomation" 
+          <input type="checkbox" name="optAutomation" id="optAutomation" 
                 {if $gui->projectOptions->automationEnabled} checked="checked" {/if} />
-          {$labels.testproject_enable_automation}
+          <label for="optAutomation">{$labels.testproject_enable_automation}</label>
         </td>
       </tr>
       <tr>
         <td></td><td>
-          <input type="checkbox" name="optInventory" 
+          <input type="checkbox" name="optInventory" id="optInventory" 
                 {if $gui->projectOptions->inventoryEnabled} checked="checked" {/if} />
-          {$labels.testproject_enable_inventory}
+          <label for="optInventory">{$labels.testproject_enable_inventory}</label>
         </td>
       </tr>
 
@@ -169,13 +169,13 @@ return true;
         <td>
             <input type="checkbox" id="issue_tracker_enabled"
                  name="issue_tracker_enabled" {if $gui->issue_tracker_enabled == 1} checked="checked" {/if} />
-            {$labels.th_active}
+            <label for="issue_tracker_enabled">{$labels.th_active}</label>
           </td>
           </tr>
       <tr>
         <td></td>
         <td>
-            {$labels.issue_tracker}
+            <label for="issue_tracker_id">{$labels.issue_tracker}</label>
            <select name="issue_tracker_id" id="issue_tracker_id">
            <option value="0">&nbsp;</option>
            {foreach item=issue_tracker from=$gui->issueTrackers}
@@ -203,13 +203,13 @@ return true;
         <td>
           <input type="checkbox" id="reqmgr_integration_enabled"
                  name="reqmgr_integration_enabled" {if $gui->reqmgr_integration_enabled == 1} checked="checked" {/if} />
-            {$labels.th_active}
+            <label for="reqmgr_integration_enabled">{$labels.th_active}</label>
           </td>
       </tr>
       <tr>
         <td></td>
         <td>
-            {$labels.reqmgrsystem}
+            <label for="reqmgrsystem_id">{$labels.reqmgrsystem}</label>
              <select name="reqmgrsystem_id" id="reqmgrsystem_id">
              <option value="0">&nbsp;</option>
              {foreach item=rms from=$gui->reqMgrSystems}
@@ -229,15 +229,15 @@ return true;
       </tr>
       <tr>
         <td></td><td>
-            <input type="checkbox" name="active" {if $gui->active eq 1} checked="checked" {/if} />
-            {$labels.th_active}
+            <input type="checkbox" name="active" id="active" {if $gui->active eq 1} checked="checked" {/if} />
+            <label for="active">{$labels.th_active}</label>
           </td>
           </tr>
 
       <tr>
         <td></td><td>
-            <input type="checkbox" name="is_public" {if $gui->is_public eq 1} checked="checked"  {/if} />
-            {$labels.public}
+            <input type="checkbox" name="is_public" id="is_public" {if $gui->is_public eq 1} checked="checked"  {/if} />
+            <label for="is_public">{$labels.public}</label>
           </td>
           </tr>
       <tr><td cols="2">

@@ -503,6 +503,7 @@ $TLS_tc_updated = "Test Case %s was successfully updated";
 $TLS_tc_update_failed = "Update of Test Case %s failed!";
 $TLS_tc_version_deleted = "Test Case %s version %d was successfully deleted";
 $TLS_assign_requirements = "Assign Requirements";
+$TLS_link_unlink_requirements = "Link/Unlink Requirements";
 
 
 // ----- tcexecute.php -----

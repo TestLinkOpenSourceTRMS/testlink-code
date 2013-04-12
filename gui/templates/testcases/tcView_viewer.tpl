@@ -15,7 +15,7 @@ viewer for test case in test specification
              execution_type_short_descr,delete_step,show_hide_reorder,
              test_plan,platform,insert_step,btn_print,btn_print_view,
              execution_type,test_importance,none,preconditions,btn_compare_versions,
-             requirement,btn_show_exec_history,btn_resequence_steps"}
+             requirement,btn_show_exec_history,btn_resequence_steps,link_unlink_requirements"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -183,11 +183,6 @@ viewer for test case in test specification
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
     <input type="submit" name="export_tc" value="{$tcView_viewer_labels.btn_export}" />
-    {* 20071102 - franciscom *}
-    {*
-    <input type="button" name="tstButton" value="{$tcView_viewer_labels.btn_execute_automatic_testcase}"
-           onclick="javascript: startExecution({$args_testcase.testcase_id},'testcase');" />
-    *}
   </form>
   </span>
 {/if} {* user can edit *}
@@ -352,17 +347,22 @@ function launchInsertStep(step_id)
         </table>
   </div>
 
-  {if $gui->requirementsEnabled == TRUE && $gui->view_req_rights == "yes"}
+  {if $gui->requirementsEnabled == TRUE && ($gui->view_req_rights == "yes" || $gui->requirement_mgmt) }
   <div {$addInfoDivStyle}>
     <table cellpadding="0" cellspacing="0" style="font-size:100%;">
              <tr>
                <td colspan="{$tableColspan}" style="vertical-align:text-top;"><span><a title="{$tcView_viewer_labels.requirement_spec}" href="{$hrefReqSpecMgmt}"
-              target="mainframe" class="bold">{$tcView_viewer_labels.Requirements}</a>
+               target="mainframe" class="bold">{$tcView_viewer_labels.Requirements}</a>
+              {if $gui->requirement_mgmt}
+                <img class="clickable" src="{$tlImages.item_link}"
+                     onclick="javascript:openReqWindow({$args_testcase.testcase_id});"
+                     title="{$tcView_viewer_labels.link_unlink_requirements}" />
+              {/if}
               : &nbsp;</span>
-              </td>
+             </td>
               <td>
               {section name=item loop=$args_reqs}
-                <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+                <img class="clickable" src="{$tlImages.edit}"
                      onclick="javascript:openLinkedReqWindow({$args_reqs[item].id});"
                      title="{$tcView_viewer_labels.requirement}" />
                 {$gsmarty_gui->role_separator_open}{$args_reqs[item].req_spec_title|escape}{$gsmarty_gui->role_separator_close}

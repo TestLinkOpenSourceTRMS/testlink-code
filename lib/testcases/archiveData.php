@@ -185,6 +185,7 @@ function initializeEnv($dbHandler)
   $gui = new stdClass();
 
   $grant2check = array('mgt_modify_tc','mgt_view_req','testplan_planning','mgt_modify_product',
+                       'mgt_modify_req', 
                        'testproject_edit_executed_testcases','testproject_delete_executed_testcases');
   $grants = new stdClass();
   foreach($grant2check as $right)

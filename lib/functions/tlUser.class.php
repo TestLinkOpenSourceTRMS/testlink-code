@@ -640,8 +640,8 @@ class tlUser extends tlDBObject
   protected function getUserNamesWithTestPlanRole(&$db)
   {
     $sql = "SELECT DISTINCT id FROM {$this->tables['users']} users," . 
-             " {$this->tables['user_testplan_roles']} user_testplan_roles " .
-             " WHERE  users.id = user_testplan_roles.user_id";
+           " {$this->tables['user_testplan_roles']} user_testplan_roles " .
+           " WHERE  users.id = user_testplan_roles.user_id";
     $sql .= " AND user_testplan_roles.role_id = {$this->dbID}";
     $idSet = $db->fetchColumnsIntoArray($sql,"id");
     
@@ -871,8 +871,8 @@ class tlUser extends tlDBObject
     $my['options'] = array( 'output' => null, 'active' => ACTIVE);
     $my['options'] = array_merge($my['options'], (array)$options);
     
-    $fields2get = ' NH.id, NH.name, TPLAN.is_public, COALESCE(USER_TPLAN_ROLES.testplan_id,0) AS has_role' .
-                  ' ,TPLAN.active, 0 AS selected ';
+    $fields2get = ' NH.id, NH.name, TPLAN.is_public, COALESCE(USER_TPLAN_ROLES.testplan_id,0) AS has_role, ' .
+                  ' USER_TPLAN_ROLES.role_id AS user_testplan_role, TPLAN.active, 0 AS selected ';
 
     if( $my['options']['output'] == 'mapfull' )
     {
@@ -884,8 +884,8 @@ class tlUser extends tlDBObject
            " JOIN {$this->tables['testplans']} TPLAN ON NH.id=TPLAN.id  " .
            " LEFT OUTER JOIN {$this->tables['user_testplan_roles']} USER_TPLAN_ROLES" .
            " ON TPLAN.id = USER_TPLAN_ROLES.testplan_id " .
-           " AND USER_TPLAN_ROLES.user_id = $this->dbID WHERE " .
-           " testproject_id = {$testprojectID} AND ";
+           " AND USER_TPLAN_ROLES.user_id = $this->dbID " .
+           " WHERE testproject_id = {$testprojectID} AND ";
     
     
     if (!is_null($my['options']['active'])) 
@@ -917,12 +917,12 @@ class tlUser extends tlDBObject
     //
     if( $projectNoRights || ($analyseGlobalRole && $globalNoRights))
     {
-      $sql .= "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NO_RIGHTS.")";
+      $sql .= "(USER_TPLAN_ROLES.role_id IS NOT NULL AND USER_TPLAN_ROLES.role_id != " . TL_ROLES_NO_RIGHTS .")";
     }  
     else
     {
       // in this situation, do we are inheriting role from testprojectID ?  
-        $sql .= "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
+      $sql .= "(USER_TPLAN_ROLES.role_id IS NULL OR USER_TPLAN_ROLES.role_id != " . TL_ROLES_NO_RIGHTS .")";
     }
     
     // new dBug($sql);  
@@ -1231,6 +1231,24 @@ class tlUser extends tlDBObject
   public function getSecurityCookie()
   {
     return $this->securityCookie;
+  }
+
+  static function hasRoleOnTestProject(&$dbHandler,$id,$tprojectID)
+  {
+    $tables = tlObject::getDBTables('user_testproject_roles');
+    $sql = " SELECT user_id FROM {$tables['user_testproject_roles']} " .
+           ' WHERE testproject_id=' . intval($tprojectID) . ' AND user_id=' . intval($id);
+    $rs = $dbHandler->fetchRowsIntoMap($sql, "user_id");
+    return !is_null($rs);
+  }
+
+  static function hasRoleOnTestPlan(&$dbHandler,$id,$tplanID)
+  {
+    $tables = tlObject::getDBTables('user_testplan_roles');
+    $sql = " SELECT user_id FROM {$tables['user_testplan_roles']} " .
+           ' WHERE testplan_id=' . intval($tplanID) . ' AND user_id=' . intval($id);
+    $rs = $dbHandler->fetchRowsIntoMap($sql, "user_id");
+    return !is_null($rs);
   }
 
 

@@ -481,8 +481,17 @@ function init_args(&$dbHandler,$cfgObj)
     $args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
                          ? $session_data['setting_refresh_tree_on_action'] : 0;
   
-  $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
-  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
+
+  // TICKET 5630: Test Results by direct link ...
+  $args->tplan_id = intval(isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID']);
+  $args->tproject_id = intval(isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID']);
+  if($args->tproject_id <= 0)
+  {
+    $tree_mgr = new tree($dbHandler);
+    $dm = $tree_mgr->get_node_hierarchy_info($args->tplan_id);
+    $args->tproject_id = $dm['parent_id']; 
+  }
+
   $args->user = $_SESSION['currentUser'];
   $args->user_id = $args->user->dbID;
 

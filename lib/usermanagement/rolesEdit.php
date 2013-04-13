@@ -21,15 +21,12 @@ testlinkInitPage($db,false,false,"checkRights");
 init_global_rights_maps();
 $templateCfg = templateConfiguration();
 $args = init_args();
-$gui = initialize_gui($editorCfg['type']);
+$gui = initialize_gui($args,$editorCfg['type']);
 $op = initialize_op();
 
 $owebeditor = web_editor('notes',$args->basehref,$editorCfg) ;
 $owebeditor->Value = getItemTemplateContents('role_template', $owebeditor->InstanceName, null);
 $canManage = $args->user->hasRight($db,"role_management") ? true : false;
-
-echo __FILE__;
-echo $args->doAction;
 
 switch($args->doAction)
 {
@@ -55,7 +52,6 @@ switch($args->doAction)
 }
 
 $gui = complete_gui($db,$gui,$args,$op->role,$owebeditor);
-
 $gui->userFeedback = $op->userFeedback;
 
 $smarty = new TLSmarty();
@@ -76,8 +72,8 @@ function init_args()
   $args = new stdClass();
   $pParams = I_PARAMS($iParams,$args);
   $args->basehref = $_SESSION['basehref'];
-  
   $args->user = $_SESSION['currentUser'];
+
   return $args;
 }
 
@@ -207,7 +203,7 @@ function getRightsCfg()
 }
 
 
-function initialize_gui($editorType)
+function initialize_gui(&$argsObj,$editorType)
 {
     $gui = new stdClass();
     $gui->checkboxStatus = null;
@@ -215,6 +211,7 @@ function initialize_gui($editorType)
     $gui->affectedUsers = null;
     $gui->highlight = initialize_tabsmenu();
     $gui->editorType = $editorType;
+    $gui->roleCanBeEdited = ($argsObj->roleid != TL_ROLES_ADMIN);
 
     return $gui;
 }
@@ -246,34 +243,36 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
   $guiObj->grants = getGrantsForUserMgmt($dbHandler,$_SESSION['currentUser']);
   $guiObj->rightsCfg = getRightsCfg();
   $guiObj->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
-      
+  
+  $guiObj->disabledAttr = $guiObj->roleCanBeEdited ? ' ' : ' disabled="disabled" '; 
+
   // Create status for all checkboxes and set to unchecked
   foreach($guiObj->rightsCfg as $grantDetails)
   {
     foreach($grantDetails as $grantCode => $grantDescription)
     {
-      $guiObj->checkboxStatus[$grantCode] = "";
+      $guiObj->checkboxStatus[$grantCode] = "" . $guiObj->disabledAttr;
     }
   }
 
-    if($roleObj->dbID)
-    {
-      $webEditorObj->Value = $roleObj->description;
+  if($roleObj->dbID)
+  {
+    $webEditorObj->Value = $roleObj->description;
 
-      // build checked attribute for checkboxes
-      if(sizeof($roleObj->rights))
+    // build checked attribute for checkboxes
+    if(sizeof($roleObj->rights))
+    {
+      foreach($roleObj->rights as $key => $right)
       {
-          foreach($roleObj->rights as $key => $right)
-          {
-            $guiObj->checkboxStatus[$right->name] = "checked=\"checked\"";
-          }
+        $guiObj->checkboxStatus[$right->name] = ' checked="checked" ' . $guiObj->disabledAttr;
       }
+    }
       //get all users which are affected by changing the role definition
     $guiObj->affectedUsers = $roleObj->getAllUsersWithRole($dbHandler);
-    }
+  }
 
-    $guiObj->notes = $webEditorObj->CreateHTML();
-    return $guiObj;
+  $guiObj->notes = $webEditorObj->CreateHTML();
+  return $guiObj;
 }
 
 function generateUniqueName($s)

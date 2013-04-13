@@ -483,7 +483,8 @@ define('TL_USER_SOMEBODY', -2); //new user for new filtertypes in 2455 & 3026
 define('TL_NO_USER', TL_USER_NOBODY);
 define('TL_USER_ANYBODY', 0);
 
-/** must be changes if codes are changed in roles table */
+/** Follows CODES present in roles table - DO NOT CHANGE ON ANY CIRCUNSTANCE */
+define('TL_ROLES_MANAGER', 1);
 define('TL_ROLES_ADMIN', 8);
 define('TL_ROLES_TESTER', 7);
 define('TL_ROLES_GUEST', 5);

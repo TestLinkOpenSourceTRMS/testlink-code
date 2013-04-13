@@ -81,7 +81,7 @@ function validateForm(f)
       {/if}
     </th></tr>
     <tr><td>
-         <input type="text" name="rolename"
+         <input type="text" name="rolename" {$gui->disabledAttr}
                 size="{#ROLENAME_SIZE#}" maxlength="{#ROLENAME_MAXLEN#}" value="{$gui->role->name|escape}"/>
           {include file="error_icon.tpl" field="rolename"}
         </td></tr>
@@ -197,10 +197,12 @@ function validateForm(f)
 
     
     {if $submitEnabled}
-    <input type="hidden" name="doAction" value="{$gui->operation}" />
-    <input type="submit" name="role_mgmt" value="{$labels.btn_save}"
-             {if $gui->role != null && $gui->affectedUsers neq null} onClick="return modifyRoles_warning()"{/if}
-    />
+      {if $gui->roleCanBeEdited}
+        <input type="hidden" name="doAction" value="{$gui->operation}" />
+        <input type="submit" name="role_mgmt" value="{$labels.btn_save}"
+               {if $gui->role != null && $gui->affectedUsers neq null} onClick="return modifyRoles_warning()"{/if}
+        />
+      {/if}    
     {else}
       {$labels.demo_update_role_disabled}<br>
     {/if}

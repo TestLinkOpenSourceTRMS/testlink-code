@@ -87,16 +87,16 @@ function init_global_rights_maps()
                                'exec_delete' => $l18n['right_exec_delete']);
 
 
-  $g_rights_tp = array("testplan_execute" => $l18n['desc_testplan_execute'],
+  $g_rights_tp = array("mgt_testplan_create" => $l18n['mgt_testplan_create'],
                        "testplan_create_build" => $l18n['desc_testplan_create_build'],
-                       "testplan_metrics" => $l18n['desc_testplan_metrics'],
                        "testplan_planning" => $l18n['desc_testplan_planning'],
+                       "testplan_execute" => $l18n['desc_testplan_execute'],
+                       "testplan_metrics" => $l18n['desc_testplan_metrics'],
                        "testplan_user_role_assignment" => $l18n['desc_user_role_assignment'],
                        "testplan_unlink_executed_testcases" => $l18n['right_testplan_unlink_executed_testcases']);
             
   $g_rights_mgttc = array("mgt_view_tc" => $l18n['desc_mgt_view_tc'],
                           "mgt_modify_tc" => $l18n['desc_mgt_modify_tc'],
-                          "mgt_testplan_create" => $l18n['mgt_testplan_create'],
                           "testproject_delete_executed_testcases" => $l18n['right_testproject_delete_executed_testcases'],
                           "testproject_edit_executed_testcases" => $l18n['right_testproject_edit_executed_testcases']);
   

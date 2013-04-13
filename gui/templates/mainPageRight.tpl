@@ -1,15 +1,9 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.25 2010/10/30 07:49:48 franciscom Exp $
- Purpose: smarty template - main page / site map
-
- rev :
-       20100825 - Julian - removed <p> tags from "test execution" and "test plan contents"
-                           blocks to eliminate unused space
-                         - blocks are not draggable anymore
-       20090807 - franciscom - platform feature
-       20090131 - franciscom - new link to access to test cases assigned to logged user
-       20081228 - franciscom - new feature user can choose vertical order of link groups
+ @filesource mainPageRight.tpl
+ main page right side
+ @internal revisions
+ 
 *}
 {lang_get var="labels"
           s="current_test_plan,ok,testplan_role,msg_no_rights_for_tp,

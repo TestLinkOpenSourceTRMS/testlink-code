@@ -461,10 +461,9 @@ args:
      [order_by]: default: ORDER BY name
 
 @internal revisions
-@since 1.9.5
+@since 1.9.7
 
 */
-// function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER BY name ",$add_issuetracker = false)
 function get_accessible_for_user($user_id,$opt = null)
 {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -477,17 +476,17 @@ function get_accessible_for_user($user_id,$opt = null)
   $items = array();
   $safe_user_id = intval($user_id);
 
-  // Get default role
+  // Get default/global role
   $sql = "/* $debugMsg */ SELECT id,role_id FROM {$this->tables['users']} where id=" . $safe_user_id;
   $user_info = $this->db->get_recordset($sql);
-  $role_id = intval($user_info[0]['role_id']);
+  $globalRoleID = intval($user_info[0]['role_id']);
 
   $itsql = '';
   $itf = '';
   if($my['opt']['add_issuetracker'])
   {
     $itsql = " LEFT OUTER JOIN {$this->tables['testproject_issuetracker']} AS TIT " .
-             " ON TIT.testproject_id  = testprojects.id " .
+             " ON TIT.testproject_id  = TPROJ.id " .
              " LEFT OUTER JOIN {$this->tables['issuetrackers']} AS ITMD " .
              " ON ITMD.id = TIT.issuetracker_id ";     
     $itf = ",ITMD.name AS itname,ITMD.type AS ittype";
@@ -498,7 +497,7 @@ function get_accessible_for_user($user_id,$opt = null)
   if($my['opt']['add_reqmgrsystem'])
   {
     $rmssql = " LEFT OUTER JOIN {$this->tables['testproject_reqmgrsystem']} AS TRMS " .
-              " ON TRMS.testproject_id  = testprojects.id " .
+              " ON TRMS.testproject_id  = TPROJ.id " .
               " LEFT OUTER JOIN {$this->tables['reqmgrsystems']} AS RMSMD " .
               " ON RMSMD.id = TRMS.reqmgrsystem_id ";     
     $rmsf =   ",RMSMD.name AS rmsname,RMSMD.type AS rmstype";
@@ -506,40 +505,43 @@ function get_accessible_for_user($user_id,$opt = null)
 
 
   
-  $sql = " /* $debugMsg */ SELECT nodes_hierarchy.name,testprojects.* {$itf} {$rmsf} " .
-         " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy " .
-         " JOIN {$this->object_table} testprojects ON nodes_hierarchy.id=testprojects.id " .
-         " LEFT OUTER JOIN {$this->tables['user_testproject_roles']} user_testproject_roles " .
-         " ON testprojects.id = user_testproject_roles.testproject_id " .
-         " AND user_testproject_roles.user_id =" . $safe_user_id . $itsql . $rmssql .
+  $sql = " /* $debugMsg */ SELECT NHTPROJ.name,TPROJ.*, " .
+         " COALESCE(UTR.role_id,U.role_id) AS effective_role " .
+         " {$itf} {$rmsf} " .
+         " FROM {$this->tables['nodes_hierarchy']} NHTPROJ " .
+         " JOIN {$this->object_table} TPROJ ON NHTPROJ.id=TPROJ.id " .
+         " JOIN {$this->tables['users']} U ON U.id = {$safe_user_id} " .
+         " LEFT OUTER JOIN {$this->tables['user_testproject_roles']} UTR " .
+         " ON TPROJ.id = UTR.testproject_id " .
+         " AND UTR.user_id =" . $safe_user_id . $itsql . $rmssql .
          " WHERE 1=1 ";
   
   //echo $sql;
   // Private test project feature
-  if( $role_id != TL_ROLES_ADMIN )
+  if( $globalRoleID != TL_ROLES_ADMIN )
   {
-    if ($role_id != TL_ROLES_NO_RIGHTS)
+    if ($globalRoleID != TL_ROLES_NO_RIGHTS)
     {
       $sql .=  " AND "; 
-      $sql_public = " ( is_public = 1 AND (role_id IS NULL OR role_id != " . TL_ROLES_NO_RIGHTS. ") )";
-      $sql_private = " ( is_public = 0 AND role_id != " . TL_ROLES_NO_RIGHTS. ") ";
+      $sql_public = " ( TPROJ.is_public = 1 AND (UTR.role_id IS NULL OR UTR.role_id != " . TL_ROLES_NO_RIGHTS. ") )";
+      $sql_private = " ( TPROJ.is_public = 0 AND UTR.role_id != " . TL_ROLES_NO_RIGHTS. ") ";
       $sql .= " ( {$sql_public}  OR {$sql_private} ) ";
     }
     else
     {
-      // User need specific role
-      $sql .=  " AND (role_id IS NOT NULL AND role_id != ".TL_ROLES_NO_RIGHTS.")";
+      // User needs specific role
+      $sql .=  " AND (UTR.role_id IS NOT NULL AND UTR.role_id != ".TL_ROLES_NO_RIGHTS.")";
     }
   }
 
   $userObj = tlUser::getByID($this->db,$safe_user_id,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
   if ($userObj->hasRight($this->db,'mgt_modify_product') != 'yes')
   {
-    $sql .= " AND active=1 ";
+    $sql .= " AND TPROJ.active=1 ";
   }
   unset($userObj);
     
-  $sql .= $my['opt']['order_by'];
+  $sql .= str_replace('nodes_hierarchy','NHTPROJ',$my['opt']['order_by']);
                
   switch($my['opt']['output'])
   {
@@ -1605,7 +1607,7 @@ function setPublicStatus($id,$status)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__; 
     $query = "/* debugMsg*/ INSERT INTO {$this->tables['user_testproject_roles']} " .
-         " (user_id,testproject_id,role_id) VALUES ({$userID},{$tproject_id},{$roleID})";
+             " (user_id,testproject_id,role_id) VALUES ({$userID},{$tproject_id},{$roleID})";
     if($this->db->exec_query($query))
     {
       $testProject = $this->get_by_id($tproject_id);
@@ -1614,7 +1616,7 @@ function setPublicStatus($id,$status)
       if ($user && $testProject && $role)
       {
         logAuditEvent(TLS("audit_users_roles_added_testproject",$user->getDisplayName(),
-          $testProject['name'],$role->name),"ASSIGN",$tproject_id,"testprojects");
+                      $testProject['name'],$role->name),"ASSIGN",$tproject_id,"testprojects");
       }
       unset($user);
       unset($role);

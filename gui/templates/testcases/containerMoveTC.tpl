@@ -5,13 +5,7 @@ Purpose:
         Allow user to choose testcases inside the choosen testsuite,
         to copy or move.
 
-rev :
-     20100314 - franciscom - added feedback when op ok (used when copy test cases)
-                             and logic to refresh left side tree 
-     20090425 - franciscom - BUGID 2422 - add checbox for bulk operation
-     20080329 - contributed by Eugenia Drosdezki
-                refactored by franciscom
-
+@internal revisions
 *}
 {lang_get var='labels'
           s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,
@@ -27,9 +21,9 @@ rev :
 {literal}
 <script type="text/javascript">
 {/literal}
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 {literal}
+
 /*
   function: check_action_precondition
 
@@ -81,7 +75,6 @@ function check_action_precondition(container_id,action,msg)
 			<input type="checkbox" name="copyKeywords" checked="checked" value="1" />
 			{$labels.copy_keywords}
 		</p>
-
 		{* need to do JS checks*}
     {* used as memory for the check/uncheck all checkbox javascript logic *}
     <input type="hidden" name="add_value_memory"  id="add_value_memory"  value="0" />

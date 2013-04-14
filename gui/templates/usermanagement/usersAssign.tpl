@@ -84,18 +84,16 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 {assign var="grants" value=$gui->grants}
 
 {include file="usermanagement/tabsmenu.tpl"}
-
-
 <div class="workBack">
 
-  {include file="inc_update.tpl" result=$result item="$gui->featureType" action="$action" user_feedback=$gui->user_feedback}
+{include file="inc_update.tpl" result=$result item="$gui->featureType" action="$action" user_feedback=$gui->user_feedback}
 
-
-{* 20070227 - franciscom
-   Because this page can be reloaded due to a test project change done by
-   user on navBar.tpl, if method of form below is post we don't get
-   during refresh feature, and then we have a bad refresh on page getting a bug.
+{* 
+Because this page can be reloaded due to a test project change done by
+user on navBar.tpl, if method of form below is post we don't get
+during refresh feature, and then we have a bad refresh on page getting a bug.
 *}
+
 {if $gui->features neq ''}
 <form method="post" action="{$umgmt}/usersAssign.php"
 	{if $tlCfg->demoMode}

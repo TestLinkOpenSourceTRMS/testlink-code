@@ -7,12 +7,11 @@
  *
  * @package 	  TestLink
  * @filesource	planAddTC.php
- * @copyright 	2007-2012, TestLink community 
+ * @copyright 	2007-2013, TestLink community 
  * @link 		    http://www.teamst.org/index.php
  * 
  * @internal revisions
- * @since 1.9.6
- * 20130216 - franciscom - TICKET 5529: Filters are not applied to the 'Add Test Cases to Test Plan' list
+ * @since 1.9.7
  **/
 
 require_once('../../config.inc.php');
@@ -291,12 +290,17 @@ function init_args()
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
 	$args = new stdClass();
-	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
+
+  $args->user = isset($_SESSION['currentUser']) ? $_SESSION['currentUser'] : 0;
+  $args->userID = intval($args->user->dbID);
+
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : intval($_SESSION['testplanID']);
+  $args->tproject_id = intval($_SESSION['testprojectID']);
+  $args->tproject_name = $_SESSION['testprojectName'];
+
 	$args->object_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 	$args->item_level = isset($_REQUEST['edit']) ? trim($_REQUEST['edit']) : null;
 	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : "default";
-	$args->tproject_id = $_SESSION['testprojectID'];
-	$args->tproject_name = $_SESSION['testprojectName'];
 	$args->testcases2add = isset($_REQUEST['achecked_tc']) ? $_REQUEST['achecked_tc'] : null;
 	$args->tcversion_for_tcid = isset($_REQUEST['tcversion_for_tcid']) ? $_REQUEST['tcversion_for_tcid'] : null;
 	$args->testcases2remove = isset($_REQUEST['remove_checked_tc']) ? $_REQUEST['remove_checked_tc'] : null;
@@ -307,7 +311,6 @@ function init_args()
 	$args->linkedWithCF = isset($_REQUEST['linked_with_cf']) ? $_REQUEST['linked_with_cf'] : null;
 	
 	$args->feature2fix = isset($_REQUEST['feature2fix']) ? $_REQUEST['feature2fix'] : null;
-	$args->userID = $_SESSION['currentUser']->dbID;
 	$args->testerID = isset($_REQUEST['testerID']) ? intval($_REQUEST['testerID']) : 0;
   $args->send_mail = isset($_REQUEST['send_mail']) ? $_REQUEST['send_mail'] : false;
 
@@ -437,8 +440,10 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui = new stdClass();
     $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->testCasePrefix .= $tcase_cfg->glue_character;
-    
-    $gui->can_remove_executed_testcases=$tcase_cfg->can_remove_executed;
+
+    $gui->can_remove_executed_testcases = $argsObj->user->hasRight($dbHandler,
+                                                                   "testplan_unlink_executed_testcases",
+                                                                   $argsObj->tproject_id,$argsObj->tplan_id);
 
     $tprojectInfo = $tcaseMgr->tproject_mgr->get_by_id($argsObj->tproject_id);
     $gui->priorityEnabled = $tprojectInfo['opt']->testPriorityEnabled;

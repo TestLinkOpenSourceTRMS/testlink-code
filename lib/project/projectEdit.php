@@ -13,7 +13,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.7
  *
  */
 
@@ -300,7 +300,7 @@ function doCreate($argsObj,&$tprojectMgr)
   $op->template = null;
   $op->msg = '';
   $op->id = 0;
-    $op->reloadType = 'none';
+  $op->reloadType = 'none';
   
   $check_op = crossChecks($argsObj,$tprojectMgr);
   foreach($key2get as $key)
@@ -310,11 +310,10 @@ function doCreate($argsObj,&$tprojectMgr)
 
   if($op->status_ok)
   {
-      $options = prepareOptions($argsObj);
+    $options = prepareOptions($argsObj);
           
     $new_id = $tprojectMgr->create($argsObj->tprojectName, $argsObj->color,$options, $argsObj->notes, 
-                     $argsObj->active, $argsObj->tcasePrefix,
-                     $argsObj->is_public);
+                                   $argsObj->active, $argsObj->tcasePrefix,$argsObj->is_public);
                                    
     if (!$new_id)
     {
@@ -340,14 +339,21 @@ function doCreate($argsObj,&$tprojectMgr)
       { 
         $itMgr->link($argsObj->issue_tracker_id,$new_id);
       }
-      
+  
+      // TICKET 5634
+      if( !$argsObj->is_public)
+      {
+        // Need to add specific role on test project in order to not make
+        // it invisible for me!!!
+        $tprojectMgr->addUserRole($argsObj->userID,$new_id,$argsObj->user->globalRole->dbID);
+      }  
     }
   }
 
   if( $op->status_ok )
   {
-      logAuditEvent(TLS("audit_testproject_created",$argsObj->tprojectName),"CREATE",$op->id,"testprojects");
-      $op->reloadType = 'reloadNavBar'; // BUGID 3048
+    logAuditEvent(TLS("audit_testproject_created",$argsObj->tprojectName),"CREATE",$op->id,"testprojects");
+    $op->reloadType = 'reloadNavBar';
       
     if($argsObj->copy_from_tproject_id > 0)
     {
@@ -363,7 +369,7 @@ function doCreate($argsObj,&$tprojectMgr)
     $op->ui->caption = lang_get('caption_new_tproject');
   }
 
-    return $op;
+  return $op;
 }
 
 /*
@@ -376,73 +382,82 @@ function doCreate($argsObj,&$tprojectMgr)
 */
 function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
 {
-  
-    $key2get = array('status_ok','msg');
+  $key2get = array('status_ok','msg');
 
-    $op = new stdClass();
-    $op->ui = new stdClass();
+  $op = new stdClass();
+  $op->ui = new stdClass();
+  $op->status_ok = 0;
+  $op->msg = '';
+  $op->template = null;
+  $op->reloadType = 'none';
 
-    $op->status_ok = 0;
-    $op->msg = '';
-    $op->template = null;
-    $op->reloadType = 'none';
+  $oldObjData = $tprojectMgr->get_by_id($argsObj->tprojectID);
+  $op->oldName = $oldObjData['name'];
 
-    $oldObjData = $tprojectMgr->get_by_id($argsObj->tprojectID);
-    $op->oldName = $oldObjData['name'];
+  $check_op = crossChecks($argsObj,$tprojectMgr);
+  foreach($key2get as $key)
+  {
+    $op->$key=$check_op[$key];
+  }
 
-    $check_op = crossChecks($argsObj,$tprojectMgr);
-    foreach($key2get as $key)
+  if($op->status_ok)
+  {
+    $options = prepareOptions($argsObj);
+    if( $tprojectMgr->update($argsObj->tprojectID,trim($argsObj->tprojectName),
+                             $argsObj->color, $argsObj->notes, $options, $argsObj->active,
+                             $argsObj->tcasePrefix, $argsObj->is_public) )
     {
-        $op->$key=$check_op[$key];
-    }
-
-   if($op->status_ok)
-   {
-      $options = prepareOptions($argsObj);
-      if( $tprojectMgr->update($argsObj->tprojectID,trim($argsObj->tprojectName),
-                               $argsObj->color, $argsObj->notes, $options, $argsObj->active,
-                               $argsObj->tcasePrefix, $argsObj->is_public) )
+      $op->msg = '';
+      $tprojectMgr->activate($argsObj->tprojectID,$argsObj->active);
+      
+      $tprojectMgr->setIssueTrackerEnabled($argsObj->tprojectID,$argsObj->issue_tracker_enabled);
+      $itMgr = new tlIssueTracker($tprojectMgr->db);
+      if( ($doLink = $argsObj->issue_tracker_id > 0)  )
       {
-        $op->msg = '';
-        $tprojectMgr->activate($argsObj->tprojectID,$argsObj->active);
-      
-        $tprojectMgr->setIssueTrackerEnabled($argsObj->tprojectID,$argsObj->issue_tracker_enabled);
-        $itMgr = new tlIssueTracker($tprojectMgr->db);
-        if( ($doLink = $argsObj->issue_tracker_id > 0)  )
-        {
-          $itMgr->link($argsObj->issue_tracker_id,$argsObj->tprojectID);
-        }
-        else
-        {
-          $issueT = $itMgr->getLinkedTo($argsObj->tprojectID);
-          if( !is_null($issueT) )
-          {
-            $itMgr->unlink($issueT['issuetracker_id'],$issueT['testproject_id']);
-          }  
-        } 
-
-        $tprojectMgr->setReqMgrIntegrationEnabled($argsObj->tprojectID,$argsObj->reqmgr_integration_enabled);
-        $mgr = new tlReqMgrSystem($tprojectMgr->db);
-        if( ($doLink = $argsObj->reqmgrsystem_id > 0)  )
-        {
-          $mgr->link($argsObj->reqmgrsystem_id,$argsObj->tprojectID);
-        }
-        else
-        {
-          $et = $mgr->getLinkedTo($argsObj->tprojectID);
-          if( !is_null($et) )
-          {
-            $mgr->unlink($et['reqmgrsystem_id'],$et['testproject_id']);
-          }  
-        } 
-      
-          
-        logAuditEvent(TLS("audit_testproject_saved",$argsObj->tprojectName),"UPDATE",$argsObj->tprojectID,"testprojects");
+        $itMgr->link($argsObj->issue_tracker_id,$argsObj->tprojectID);
       }
       else
       {
-        $op->status_ok=0;
+        $issueT = $itMgr->getLinkedTo($argsObj->tprojectID);
+        if( !is_null($issueT) )
+        {
+          $itMgr->unlink($issueT['issuetracker_id'],$issueT['testproject_id']);
+        }  
+      } 
+
+      $tprojectMgr->setReqMgrIntegrationEnabled($argsObj->tprojectID,$argsObj->reqmgr_integration_enabled);
+      $mgr = new tlReqMgrSystem($tprojectMgr->db);
+      if( ($doLink = $argsObj->reqmgrsystem_id > 0)  )
+      {
+        $mgr->link($argsObj->reqmgrsystem_id,$argsObj->tprojectID);
+      }
+      else
+      {
+        $et = $mgr->getLinkedTo($argsObj->tprojectID);
+        if( !is_null($et) )
+        {
+          $mgr->unlink($et['reqmgrsystem_id'],$et['testproject_id']);
+        }  
+      } 
+      
+
+      // TICKET 5634
+      if( !$argsObj->is_public)
+      {
+        // does user have an SPECIFIC role on Test Project ?
+        // if answer is yes => do nothing
+        if(!tlUser::hasRoleOnTestProject($tprojectMgr->db,$argsObj->userID,$argsObj->tprojectID))
+        {  
+            $tprojectMgr->addUserRole($argsObj->userID,$argsObj->tprojectID,$argsObj->user->globalRole->dbID);
+        }  
       }  
+          
+      logAuditEvent(TLS("audit_testproject_saved",$argsObj->tprojectName),"UPDATE",$argsObj->tprojectID,"testprojects");
+    }
+    else
+    {
+      $op->status_ok=0;
+    }  
   }
     if($op->status_ok)
   {

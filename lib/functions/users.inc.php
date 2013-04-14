@@ -441,6 +441,14 @@ function getGrantsForUserMgmt(&$dbHandler,&$userObj,$tprojectID=null,$tplanID=nu
     $grants = new stdClass();
     $grants->user_mgmt = $userObj->hasRight($dbHandler,"mgt_users");
     $grants->role_mgmt = $userObj->hasRight($dbHandler,"role_management");
+
+    // in order to assign DEFAULT role to user, due to current implementation
+    // you need to access all user data => we request you can do mgt_users.
+    // A question arise:
+    // how user_role_assignment right has to be understood ?
+    // how it is used ? where ?
+    // $grants->user_role_assignment = $userObj->hasRight($dbHandler,"user_role_assignment");
+
     $grants->tproject_user_role_assignment = "no";
     $grants->tplan_user_role_assignment = "no";
     

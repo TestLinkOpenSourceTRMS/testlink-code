@@ -1211,56 +1211,56 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
 {     
 
   
-    // IMPORTANT due  to platform feature
-    // every element on linked_tcversions will be an array.
-    $cf_filters=array('show_on_execution' => 1); 
-    $locationFilters=$tcaseMgr->buildCFLocationMap();
-    $guiObj->design_time_cfields='';
-    $guiObj->testplan_design_time_cfields='';
-    
-    $tcase_id = isset($tcase['tcase_id']) ? $tcase['tcase_id'] : $argsObj->id;
+  // IMPORTANT due  to platform feature
+  // every element on linked_tcversions will be an array.
+  $cf_filters=array('show_on_execution' => 1); 
+  $locationFilters=$tcaseMgr->buildCFLocationMap();
+  $guiObj->design_time_cfields='';
+  $guiObj->testplan_design_time_cfields='';
+  
+  $tcase_id = isset($tcase['tcase_id']) ? $tcase['tcase_id'] : $argsObj->id;
 
-    // Development Notice:
-    // accessing a FIXED index like in:
-    //
-    // $items_to_exec[$tcase_id] = $linked_tcversions[$tcase_id][0]['tcversion_id'];    
-    // $link_id = $linked_tcversions[$tcase_id][0]['feature_id'];
+  // Development Notice:
+  // accessing a FIXED index like in:
   //
-    // Because we want to access FIRTS element is better to use current.
-    //
-    $target = current(current($tcv));
-    $items_to_exec[$tcase_id] = $target['tcversion_id'];    
-    $link_id = $target['feature_id'];
-    $tcversion_id = isset($tcase['tcversion_id']) ? $tcase['tcversion_id'] : $items_to_exec[$tcase_id];
+  // $items_to_exec[$tcase_id] = $linked_tcversions[$tcase_id][0]['tcversion_id'];    
+  // $link_id = $linked_tcversions[$tcase_id][0]['feature_id'];
+  //
+  // Because we want to access FIRTS element is better to use current.
+  //
+  $target = current(current($tcv));
+  $items_to_exec[$tcase_id] = $target['tcversion_id'];    
+  $link_id = $target['feature_id'];
+  $tcversion_id = isset($tcase['tcversion_id']) ? $tcase['tcversion_id'] : $items_to_exec[$tcase_id];
     
-    $guiObj->tcAttachments[$tcase_id] = getAttachmentInfos($docRepository,$tcase_id,'nodes_hierarchy',1);
+  $guiObj->tcAttachments[$tcase_id] = getAttachmentInfos($docRepository,$tcase_id,'nodes_hierarchy',1);
   foreach($locationFilters as $locationKey => $filterValue)
   {
     $finalFilters=$cf_filters+$filterValue;
-      $guiObj->design_time_cfields[$tcase_id][$locationKey] = 
-               $tcaseMgr->html_table_of_custom_field_values($tcase_id,'design',$finalFilters,null,null,
-                                       $argsObj->tproject_id,null,$tcversion_id);
+    $guiObj->design_time_cfields[$tcase_id][$locationKey] = 
+      $tcaseMgr->html_table_of_custom_field_values($tcase_id,'design',$finalFilters,null,null,
+                                                   $argsObj->tproject_id,null,$tcversion_id);
       
-      $guiObj->testplan_design_time_cfields[$tcase_id] = 
-               $tcaseMgr->html_table_of_custom_field_values($tcversion_id,'testplan_design',$cf_filters,
-                                                            null,null,$argsObj->tproject_id,null,$link_id);
-    }
+    $guiObj->testplan_design_time_cfields[$tcase_id] = 
+      $tcaseMgr->html_table_of_custom_field_values($tcversion_id,'testplan_design',$cf_filters,
+                                                   null,null,$argsObj->tproject_id,null,$link_id);
+  }
 
-    if($guiObj->grants->execute)
-    {
-       $guiObj->execution_time_cfields[$tcase_id] = 
-                $tcaseMgr->html_table_of_custom_field_inputs($tcase_id,null,'execution',"_{$tcase_id}",null,
-                                                             null,$argsObj->tproject_id);
-    }
+  if($guiObj->grants->execute)
+  {
+    $guiObj->execution_time_cfields[$tcase_id] = 
+      $tcaseMgr->html_table_of_custom_field_inputs($tcase_id,null,'execution',"_{$tcase_id}",null,
+                                                   null,$argsObj->tproject_id);
+  }
 
     // new dBug($guiObj->execution_time_cfields);
 
-    $tc_info=$treeMgr->get_node_hierarchy_info($tcase_id);
+  $tc_info=$treeMgr->get_node_hierarchy_info($tcase_id);
   $guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
                                                                        'nodes_hierarchy',true,1);
 
 
-    return array($tcase_id,$tcversion_id);
+  return array($tcase_id,$tcversion_id);
 }
 
 
@@ -1278,25 +1278,25 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
 function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tcaseMgr)
 {      
   $options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
-    $last_exec = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
-                                               $argsObj->build_id,$argsObj->platform_id,$options);
+  $last_exec = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
+                                             $argsObj->build_id,$argsObj->platform_id,$options);
     
-    if( !is_null($last_exec) )
-    {
-        $last_exec=setTesterAssignment($dbHandler,$last_exec,$tcaseMgr,
-                                       $argsObj->tplan_id,$argsObj->platform_id, $argsObj->build_id);
+  if( !is_null($last_exec) )
+  {
+    $last_exec=setTesterAssignment($dbHandler,$last_exec,$tcaseMgr,
+                                   $argsObj->tplan_id,$argsObj->platform_id, $argsObj->build_id);
         
-        // Warning: setCanExecute() must be called AFTER setTesterAssignment()  
-        $can_execute = $guiObj->grants->execute && ($guiObj->build_is_open);
-        $last_exec = setCanExecute($last_exec,$guiObj->exec_mode,$can_execute,$argsObj->user_id);
-    }
+    // Warning: setCanExecute() must be called AFTER setTesterAssignment()  
+    $can_execute = $guiObj->grants->execute && ($guiObj->build_is_open);
+    $last_exec = setCanExecute($last_exec,$guiObj->exec_mode,$can_execute,$argsObj->user_id);
+  }
     
     // Reorder executions to mantaing correct visualization order.
-    if( is_array($tcversion_id) )
-    {
-      $last_exec = reorderExecutions($tcversion_id,$last_exec);
-    }
-    return $last_exec;
+  if( is_array($tcversion_id) )
+  {
+    $last_exec = reorderExecutions($tcversion_id,$last_exec);
+  }
+  return $last_exec;
 }
 
 

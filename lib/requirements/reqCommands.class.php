@@ -8,7 +8,7 @@
  * 
  * web command experiment
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.7
  *  
  */
 
@@ -492,12 +492,13 @@ class reqCommands
                               'testcase'=> 'exclude_me','requirement' => 'exclude_me',
                               'requirement_spec_revision'=> 'exclude_me');
         
-     $my['filters'] = array('exclude_node_types' => $exclude_node_types);
-      $subtree = $this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,$my['filters']);
-     if(count($subtree))
+    $my['filters'] = array('exclude_node_types' => $exclude_node_types);
+    $my['options']['order_cfg']['type'] = $my['options']['output'] = 'rspec';
+    $subtree = $this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,$my['filters'],$my['options']);
+    if(count($subtree))
     {
-      $obj->containers = $this->reqMgr->tree_mgr->createHierarchyMap($subtree);
-        }
+      $obj->containers = $this->reqMgr->tree_mgr->createHierarchyMap($subtree,'dotted',array('field' => 'doc_id','format' => '%s:'));
+    }
     return $obj;
   }
 

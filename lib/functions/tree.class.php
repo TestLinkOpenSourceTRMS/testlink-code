@@ -6,11 +6,11 @@
  * @filesource  tree.class.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2005-2012, TestLink community 
+ * @copyright   2005-2013, TestLink community 
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.7
  *
  */
 
@@ -811,12 +811,11 @@ class tree extends tlObject
   */
   function get_subtree($node_id,$filters=null,$options=null)
   {
-        $my['filters'] = array('exclude_node_types' => null, 'exclude_children_of' => null,
-                             'exclude_branches' => null,'additionalWhereClause' => '', 'family' => null);
+    $my['filters'] = array('exclude_node_types' => null, 'exclude_children_of' => null,
+                           'exclude_branches' => null,'additionalWhereClause' => '', 'family' => null);
                                
-        $my['options'] = array('recursive' => false, 'order_cfg' => array("type" =>'spec_order'), 
-                     'output' => 'essential', 'key_type' => 'std',
-                     'addJoin' => '', 'addFields' => '');
+    $my['options'] = array('recursive' => false, 'order_cfg' => array("type" =>'spec_order'), 
+                           'output' => 'essential', 'key_type' => 'std', 'addJoin' => '', 'addFields' => '');
   
     // Cast to array to handle $options = null
     $my['filters'] = array_merge($my['filters'], (array)$filters);
@@ -825,20 +824,20 @@ class tree extends tlObject
     $the_subtree = array();
        
     // Generate NOT IN CLAUSE to exclude some node types
-     // $not_in_clause = $my['filters']['additionalWhereClause'];
-     if(!is_null($my['filters']['exclude_node_types']))
-      {
-        $exclude = array();
+    // $not_in_clause = $my['filters']['additionalWhereClause'];
+    if(!is_null($my['filters']['exclude_node_types']))
+    {
+      $exclude = array();
       foreach($my['filters']['exclude_node_types'] as $the_key => $elem)
-        {
-            $exclude[] = $this->node_descr_id[$the_key];
-        }
-        $my['filters']['additionalWhereClause'] .= " AND node_type_id NOT IN (" . implode(",",$exclude) . ")";
+      {
+        $exclude[] = $this->node_descr_id[$the_key];
       }
+      $my['filters']['additionalWhereClause'] .= " AND node_type_id NOT IN (" . implode(",",$exclude) . ")";
+    }
   
-      $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
-     $qnum = $this->$method2call($node_id,$the_subtree,$my['filters'],$my['options']);
-     return $the_subtree;
+    $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
+    $qnum = $this->$method2call($node_id,$the_subtree,$my['filters'],$my['options']);
+    return $the_subtree;
   }
   
   
@@ -847,34 +846,34 @@ class tree extends tlObject
     static $my;
     if(!$my)
     {
-          $my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
-                       'additionalWhereClause' => '', 'family' => null);
+      $my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
+                             'additionalWhereClause' => '', 'family' => null);
                                  
-          $my['options'] = array('order_cfg' => array("type" =>'spec_order'),
-                       'output' => 'full', 'key_type' => 'std',
-                       'addJoin' => '', 'addFields' => '');
+      $my['options'] = array('order_cfg' => array("type" =>'spec_order'),
+                             'output' => 'full', 'key_type' => 'std',
+                             'addJoin' => '', 'addFields' => '');
   
     }
     // Cast to array to handle $options = null
     $my['filters'] = array_merge($my['filters'], (array)$filters);
     $my['options'] = array_merge($my['options'], (array)$options);
        
-      switch($my['options']['order_cfg']['type'])
-      {
-          case 'spec_order':
-          $sql = " SELECT id,name,parent_id,node_type_id,node_order {$my['options']['addFields']}" .
+    switch($my['options']['order_cfg']['type'])
+    {
+      case 'spec_order':
+        $sql = " SELECT id,name,parent_id,node_type_id,node_order {$my['options']['addFields']}" .
                " FROM {$this->object_table} {$my['options']['addJoin']} " .
-                 " WHERE parent_id = {$node_id} {$my['filters']['additionalWhereClause']}" .
-             " ORDER BY node_order,id";
-          break;
+               " WHERE parent_id = {$node_id} {$my['filters']['additionalWhereClause']}" .
+               " ORDER BY node_order,id";
+        break;
 
-          case 'rspec':
+        case 'rspec':
           $sql = " SELECT OBT.id,name,parent_id,node_type_id,node_order,RSPEC.doc_id " .
-               " FROM {$this->object_table} AS OBT " .
-               " JOIN {$this->tables['req_specs']} AS RSPEC ON RSPEC.id = OBT.id " .
+                 " FROM {$this->object_table} AS OBT " .
+                 " JOIN {$this->tables['req_specs']} AS RSPEC ON RSPEC.id = OBT.id " .
                  " WHERE parent_id = {$node_id} {$my['filters']['additionalWhereClause']}" .
-             " ORDER BY node_order,OBT.id";
-          break;
+                 " ORDER BY node_order,OBT.id";
+      break;
 
           
       case 'exec_order':
@@ -1512,17 +1511,18 @@ class tree extends tlObject
                                10   array(name =>  'TS2', level   => 2)
 
   */
-  function createHierarchyMap($array2map,$mode='dotted')
+  function createHierarchyMap($array2map,$mode='dotted',$field2add=null)
   {
     $hmap=array();
     $the_level = 1;
     $level = array();
-      $pivot = $array2map[0];
+    $pivot = $array2map[0];
+    $addField = !is_null($field2add);
+    $mode = is_null($mode) ? 'dotted' : $mode;
 
     foreach($array2map as $elem)
     {
       $current = $elem;
-
       if ($pivot['id'] == $current['parent_id'])
       {
         $the_level++;
@@ -1535,12 +1535,18 @@ class tree extends tlObject
 
       switch($mode)
       {
-          case 'dotted':
-          $hmap[$current['id']] = str_repeat('.',$the_level) . $current['name'];
-          break;
+        case 'dotted':
+          $hmap[$current['id']] = str_repeat('.',$the_level);
+          if($addField)
+          {
+            $hmap[$current['id']] .= sprintf($field2add['format'],$current[$field2add['field']]);
+          }  
+          $hmap[$current['id']] .= $current['name'];
+        break;
 
           case 'array':
-          $hmap[$current['id']] = array('name' => $current['name'], 'level' =>$the_level);
+            $str = ($addField ? $current[$field2add] : '') . $current['name']; 
+            $hmap[$current['id']] = array('name' => $str, 'level' => $the_level);
           break;
       }
 
@@ -1549,7 +1555,7 @@ class tree extends tlObject
       $pivot=$elem;
     }
     
-      return $hmap;
+    return $hmap;
   }
 
   /**

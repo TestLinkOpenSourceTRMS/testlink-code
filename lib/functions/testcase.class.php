@@ -2853,10 +2853,10 @@ class testcase extends tlObjectWithAttachments
         }
     $where_clause_1 = '';
     $where_clause_2 = '';
-        $add_columns='';
-      $add_groupby='';
-        $cumulativeMode=0;
-        $group_by = '';
+    $add_columns='';
+    $add_groupby='';
+    $cumulativeMode=0;
+    $group_by = '';
         
     // getNoExecutions: 1 -> if testcase/version_id has not been executed return anyway
     //                       standard return structure.
@@ -2870,10 +2870,10 @@ class testcase extends tlObjectWithAttachments
     //                    GROUP BY must be done BY tcversion_id,build_id
     //   
     $localOptions=array('getNoExecutions' => 0, 'groupByBuild' => 0, 'getSteps' => 1);
-        if(!is_null($options) && is_array($options))
-        {
-          $localOptions=array_merge($localOptions,$options);    
-        }
+    if(!is_null($options) && is_array($options))
+    {
+      $localOptions=array_merge($localOptions,$options);    
+    }
     if( is_array($id) )
     {
       $tcid_list = implode(",",$id);
@@ -2889,7 +2889,6 @@ class testcase extends tlObjectWithAttachments
         $versionid_list = implode(",",$version_id);
         $where_clause_1 = $where_clause . " AND NHA.id IN ({$versionid_list}) ";
         $where_clause_2 = $where_clause . " AND tcversions.id IN ({$versionid_list}) ";
-  
     }
     else
     {
@@ -2902,69 +2901,64 @@ class testcase extends tlObjectWithAttachments
     
     // This logic (is mine - franciscom) must be detailed better!!!!!
     $group_by = ' GROUP BY tcversion_id ';
-        $add_fields = ', e.tcversion_id AS tcversion_id';
-        if( $localOptions['groupByBuild'] )
-        {
-          $add_fields .= ', e.build_id';
-          $group_by .= ', e.build_id';
-            $cumulativeMode = 1;
+    $add_fields = ', e.tcversion_id AS tcversion_id';
+    if( $localOptions['groupByBuild'] )
+    {
+      $add_fields .= ', e.build_id';
+      $group_by .= ', e.build_id';
+      $cumulativeMode = 1;
         
-        // Hummm!!! I do not understand why this can be needed
-        $where_clause_1 = $where_clause;
-        $where_clause_2 = $where_clause;
-        }
+      // Hummm!!! I do not understand why this can be needed
+      $where_clause_1 = $where_clause;
+      $where_clause_2 = $where_clause;
+    }
 
-    // $group_by .= $localOptions['groupByBuild'] ? $add_groupby : ''; 
-    // $group_by = $set_group_by ? ' GROUP BY tcversion_id ' : '';
-    // $group_by = ($group_by == '' && $add_groupby != '') ? ' GROUP BY ' : $group_by;  
-    
+   
     // we may be need to remove tcversion filter ($set_group_by==false)
     // $add_field = $set_group_by ? ', e.tcversion_id AS tcversion_id' : '';
-        // $add_field = $localOptions['groupByBuild'] ? '' : ', e.tcversion_id AS tcversion_id';
-      // $where_clause_1 = $localOptions['groupByBuild'] ? $where_clause :  $where_clause_1;
-      // $where_clause_2 = $localOptions['groupByBuild'] ? $where_clause : $where_clause_2;
-      
-        // get list of max exec id, to be used filter in next query
-        // Here we can get:
-        // a) one record for each tcversion_id (ignoring build)
-        // b) one record for each tcversion_id,build
-        //
+    // $add_field = $localOptions['groupByBuild'] ? '' : ', e.tcversion_id AS tcversion_id';
+    // $where_clause_1 = $localOptions['groupByBuild'] ? $where_clause :  $where_clause_1;
+    // $where_clause_2 = $localOptions['groupByBuild'] ? $where_clause : $where_clause_2;
+     
+    // get list of max exec id, to be used filter in next query
+    // Here we can get:
+    // a) one record for each tcversion_id (ignoring build)
+    // b) one record for each tcversion_id,build
+    //
 
     // 20101212 - franciscom - may be not the best logic but ...        
-      $where_clause_1 = ($where_clause_1 == '') ? $where_clause : $where_clause_1;
-      $where_clause_2 = ($where_clause_2 == '') ? $where_clause : $where_clause_2;
+    $where_clause_1 = ($where_clause_1 == '') ? $where_clause : $where_clause_1;
+    $where_clause_2 = ($where_clause_2 == '') ? $where_clause : $where_clause_2;
 
-      $sql="/* $debugMsg */ " . 
-           " SELECT COALESCE(MAX(e.id),0) AS execution_id {$add_fields}" .
+    $sql="/* $debugMsg */ " . 
+         " SELECT COALESCE(MAX(e.id),0) AS execution_id {$add_fields}" .
          " FROM {$this->tables['nodes_hierarchy']} NHA " .
-           " JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id AND e.testplan_id = {$tplan_id} " .
-           " {$filterBy['build_id']} {$filterBy['platform_id']}" .
-           " AND e.status IS NOT NULL " .
-           " $where_clause_1 {$group_by}";
+         " JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id AND e.testplan_id = {$tplan_id} " .
+         " {$filterBy['build_id']} {$filterBy['platform_id']}" .
+         " AND e.status IS NOT NULL " .
+         " $where_clause_1 {$group_by}";
        
-      //echo $sql; 
-        // 20090716 - order of columns changed
-      $recordset = $this->db->fetchColumnsIntoMap($sql,'execution_id','tcversion_id');
-      $and_exec_id='';
-      if( !is_null($recordset) && count($recordset) > 0)
+    $recordset = $this->db->fetchColumnsIntoMap($sql,'execution_id','tcversion_id');
+    $and_exec_id='';
+    if( !is_null($recordset) && count($recordset) > 0)
+    {
+      $the_list = implode(",", array_keys($recordset));
+      if($the_list != '')
       {
-        $the_list = implode(",", array_keys($recordset));
-        if($the_list != '')
+        if( count($recordset) > 1 )
         {
-          if( count($recordset) > 1 )
-          {
-            $and_exec_id = " AND e.id IN ($the_list) ";
-          }
-          else
-          {
-            $and_exec_id = " AND e.id = $the_list ";
-          }
+          $and_exec_id = " AND e.id IN ($the_list) ";
+        }
+        else
+        {
+          $and_exec_id = " AND e.id = $the_list ";
         }
       }
+    }
       
-      $executions_join=" JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id " .
-                       " AND e.testplan_id = {$tplan_id} {$and_exec_id} {$filterBy['build_id']} " .
-                       " {$filterBy['platform_id']} ";
+    $executions_join=" JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id " .
+                     " AND e.testplan_id = {$tplan_id} {$and_exec_id} {$filterBy['build_id']} " .
+                     " {$filterBy['platform_id']} ";
                      
     if( $localOptions['getNoExecutions'] )
     {
@@ -2976,20 +2970,9 @@ class testcase extends tlObjectWithAttachments
        $executions_join .= " AND e.status IS NOT NULL ";
     }
   
-    // 20090517 - to manage deleted users i need to change:
-    //            users.id AS tester_id => e.tester_id AS tester_id
-    // 20090214 - franciscom - we need tcversions.execution_type and executions.execution_type
-    // 20090208 - franciscom
-    //            found bug due to use of tcversions.*, because field execution_type
-    //            exist on both execution and tcversion table.
-    //            At least with Postgres tcversions.execution_type was used always
-    //
-    // 20080103 - franciscom - added execution_type in recordset
-    // 20060921 - franciscom -
-    // added NHB.parent_id  to get same order as in the navigator tree
     //
     $sql= "/* $debugMsg */ SELECT e.id AS execution_id, " .
-        " COALESCE(e.status,'{$status_not_run}') AS status, " .
+          " COALESCE(e.status,'{$status_not_run}') AS status, " .
           " e.execution_type AS execution_run_type," .
           " NHB.name,NHA.parent_id AS testcase_id, NHB.parent_id AS tsuite_id," .
           " tcversions.id,tcversions.tc_external_id,tcversions.version,tcversions.summary," .
@@ -2998,36 +2981,47 @@ class testcase extends tlObjectWithAttachments
           " tcversions.creation_ts,tcversions.updater_id,tcversions.modification_ts,tcversions.active," .
           " tcversions.is_open,tcversions.execution_type," .
           " users.login AS tester_login,users.first AS tester_first_name," .
-      " users.last AS tester_last_name, e.tester_id AS tester_id," .
-      " e.notes AS execution_notes, e.execution_ts, e.build_id,e.tcversion_number," .
-      " builds.name AS build_name, builds.active AS build_is_active, builds.is_open AS build_is_open," .
+          " users.last AS tester_last_name, e.tester_id AS tester_id," .
+          " e.notes AS execution_notes, e.execution_ts, e.build_id,e.tcversion_number," .
+          " builds.name AS build_name, builds.active AS build_is_active, builds.is_open AS build_is_open," .
           " e.platform_id,p.name AS platform_name" .
-        " FROM {$this->tables['nodes_hierarchy']} NHA" .
+          " FROM {$this->tables['nodes_hierarchy']} NHA" .
           " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id" .
           " JOIN {$this->tables['tcversions']} tcversions ON NHA.id = tcversions.id" .
           " {$executions_join}" .
           " LEFT OUTER JOIN {$this->tables['builds']} builds ON builds.id = e.build_id" .
           "                 AND builds.testplan_id = {$tplan_id}" .
           " LEFT OUTER JOIN {$this->tables['users']} users ON users.id = e.tester_id " .
-            " LEFT OUTER JOIN {$this->tables['platforms']} p ON p.id = e.platform_id" .
+          " LEFT OUTER JOIN {$this->tables['platforms']} p ON p.id = e.platform_id" .
           " $where_clause_2" .
           " ORDER BY NHB.parent_id ASC, NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
       
     $recordset = $this->db->fetchRowsIntoMap($sql,'id',$cumulativeMode);
     
-      //echo __FUNCTION__ . '::' . $sql . '<br>';
-      // Multiple Test Case Steps Feature
-      if( !is_null($recordset) && $localOptions['getSteps'] )
+    // Multiple Test Case Steps Feature
+    if( !is_null($recordset) && $localOptions['getSteps'] )
+    {
+      $itemSet = array_keys($recordset);
+      foreach( $itemSet as $sdx)
       {
-          $itemSet = array_keys($recordset);
-        foreach( $itemSet as $sdx)
-        {
-          $step_set = $this->get_steps($recordset[$sdx]['id']);
-          $recordset[$sdx]['steps'] = $step_set;
-        } 
+        $step_set = $this->get_steps($recordset[$sdx]['id']);
+        $recordset[$sdx]['steps'] = $step_set;
+      } 
 
-      }
-      return($recordset ? $recordset : null);
+    }
+
+    // ghost Test Case processing in summary & preconditions
+    if(!is_null($recordset))
+    {
+      $key2loop = array_keys($recordset);
+      foreach( $key2loop as $accessKey)
+      { 
+        $this->renderGhost($recordset[$accessKey]);
+      } 
+      reset($recordset);
+    }  
+
+    return($recordset ? $recordset : null);
   }
   
   
@@ -5755,7 +5749,8 @@ class testcase extends tlObjectWithAttachments
   function renderGhost(&$item2render)
   {
     // Javascript instead of javascript, because CKeditor sometimes complains
-    $href = '<a href="Javascript:openTCW(\'%s\',%s);">%s:%s [version:%s] (link)</a>';
+    $versionTag = '[version:%s]';
+    $href = '<a href="Javascript:openTCW(\'%s\',%s);">%s:%s' . " $versionTag (link)</a>";
     $tlBeginMark = '[ghost]';
     $tlEndMark = '[/ghost]';
     $key2check = array('summary','preconditions');
@@ -5794,6 +5789,7 @@ class testcase extends tlObjectWithAttachments
                 // "Reference to Test Case EXTERNAL ID - TITLE (version X)"
                 //$stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
                 $vn = intval($dx['Version']);
+                $vn = ($vn == 0) ? 'Latest' : $vn;
                 $ghost .= sprintf($href,$dx['TestCase'],$vn,$dx['TestCase'],$fi[0]['name'],$vn);
               }
             } 

@@ -4,12 +4,10 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource  reqSpecCommands.class.php
- * @author Francisco Mancardi
- * web command experiment
- *
+ * @author      Francisco Mancardi
  * 
  *  @internal revisions
- *  @since 1.9.6 
+ *  @since 1.9.7
  */
 class reqSpecCommands
 {
@@ -438,11 +436,11 @@ class reqSpecCommands
                               'requirement_spec_revision' => 'exclude_me');
         
     $my['filters'] = array('exclude_node_types' => $exclude_node_types);
-
-    $subtree = $this->treeMgr->get_subtree($argsObj->tproject_id,$my['filters']);
+    $my['options']['order_cfg']['type'] = $my['options']['output'] = 'rspec';
+    $subtree = $this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,$my['filters'],$my['options']);
     if(count($subtree))
     {
-      $obj->containers = $this->treeMgr->createHierarchyMap($subtree);
+      $obj->containers = $this->reqMgr->tree_mgr->createHierarchyMap($subtree,'dotted',array('field' => 'doc_id','format' => '%s:'));
     }
     return $obj;
   }
@@ -453,37 +451,36 @@ class reqSpecCommands
      */
   function doCopyRequirements(&$argsObj)
   {
-        $obj = $this->initGuiBean(); 
-     $obj = $this->copyRequirements($argsObj, array( 'get_items' => false));
-        $obj->req = null;
-       $obj->req_spec_id = $argsObj->req_spec_id;
+    $obj = $this->initGuiBean(); 
+    $obj = $this->copyRequirements($argsObj, array( 'get_items' => false));
+    $obj->req = null;
+    $obj->req_spec_id = $argsObj->req_spec_id;
+    $obj->array_of_msg = '';
        
-        $copyOptions = array('copy_also' => 
-                             array('testcase_assignment' => $argsObj->copy_testcase_assignment));
+    $copyOptions = array('copy_also' => array('testcase_assignment' => $argsObj->copy_testcase_assignment));
         
-      $obj->array_of_msg = '';
-        foreach($argsObj->itemSet as $itemID)
-        {
+    foreach($argsObj->itemSet as $itemID)
+    {
       $ret = $this->reqMgr->copy_to($itemID,$argsObj->containerID,$argsObj->user_id,
                                     $argsObj->tproject_id,$copyOptions);
       $obj->user_feedback = $ret['msg'];
       if($ret['status_ok'])
       {
         $new_req = $this->reqMgr->get_by_id($ret['id'],requirement_mgr::LATEST_VERSION);
-          $source_req = $this->reqMgr->get_by_id($itemID,requirement_mgr::LATEST_VERSION);
+        $source_req = $this->reqMgr->get_by_id($itemID,requirement_mgr::LATEST_VERSION);
         $new_req = $new_req[0];
         $source_req = $source_req[0];
 
-          $logMsg = TLS("audit_requirement_copy",$new_req['req_doc_id'],$source_req['req_doc_id']);
+        $logMsg = TLS("audit_requirement_copy",$new_req['req_doc_id'],$source_req['req_doc_id']);
         logAuditEvent($logMsg,"COPY",$ret['id'],"requirements");
         $obj->user_feedback = $logMsg; // sprintf(lang_get('req_created'), $new_req['req_doc_id']);
-          $obj->template = 'reqCopy.tpl';
-          $obj->req_id = $ret['id'];
-            $obj->array_of_msg[] = $logMsg;  
+        $obj->template = 'reqCopy.tpl';
+        $obj->req_id = $ret['id'];
+        $obj->array_of_msg[] = $logMsg;  
       }
     }
     $obj->items = $this->reqSpecMgr->get_requirements($obj->req_spec_id,
-                                                         'all',null,$this->getRequirementsOptions);
+                                                      'all',null,$this->getRequirementsOptions);
     
     return $obj;  
   }

@@ -87,8 +87,11 @@ switch ($doc_info->type)
       $doc_info->testplan_scope = $tplan_info['notes'];
       $doc_info->title = $doc_info->testplan_name;
 
-      $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
+      // Changed to get ALL platform attributes.
+      $getOpt = array('outputFormat' => 'mapAccessByID', 'addIfNull' => true);
       $platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);   
+      $platformIDSet = array_keys($platforms);
+
       $items2use = new stdClass();
       $items2use->estimatedExecTime = null;
       $items2use->realExecTime = null;
@@ -113,7 +116,8 @@ switch ($doc_info->type)
                               'viewType' => 'executionTree',
                               'getExternalTestCaseID' => 0, 'ignoreInactiveTestCases' => 0);
 
-          foreach ($platforms as $platform_id => $platform_name)
+          // foreach ($platforms as $platform_id => $platform_attr)
+          foreach($platformIDSet as $platform_id)  
           {
             $filters = array('platform_id' => $platform_id);  
             $linkedBy[$platform_id] = $tplan_mgr->getLinkedStaticView($args->tplan_id,$filters);
@@ -151,7 +155,8 @@ switch ($doc_info->type)
           $doc_info->title = htmlspecialchars(isset($tInfo['name']) ? $tInfo['name'] : $doc_info->testplan_name);
           
           $filters = array( 'tsuites_id' => $branch_tsuites);
-          foreach ($platforms as $platform_id => $platform_name)
+          // foreach ($platforms as $platform_id => $platform_attr)
+          foreach($platformIDSet as $platform_id)  
           {
             // IMPORTANTE NOTICE:
             // This need to be initialized on each iteration because prepareNode() make changes on it.
@@ -258,8 +263,7 @@ if ($treeForPlatform)
           $tocPrefix++;
           if ($showPlatforms)
           {
-            $docText .= renderPlatformHeading($tocPrefix, $platform_id, $platforms[$platform_id], 
-                                              $printingOptions);
+            $docText .= renderPlatformHeading($tocPrefix,$platforms[$platform_id],$printingOptions);
           }
           $docText .= renderTestPlanForPrinting($db, $tree2work, $doc_info->content_range, 
                                                 $printingOptions, $tocPrefix, 0, 1, $args->user_id,

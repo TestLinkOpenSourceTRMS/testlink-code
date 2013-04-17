@@ -14,6 +14,7 @@
  *
  *
  * @internal revisions
+ * @since 1.9.7
  *
  */ 
 
@@ -1493,13 +1494,19 @@ function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan
  * Render HTML header for a given platform. 
  * Also adds code to $options['tocCode']
  */
-function renderPlatformHeading($tocPrefix, $platform_id, $platform_name, &$options)
+function renderPlatformHeading($tocPrefix, $platform,&$options)
 {
-  $platformLabel = lang_get('platform');
-  $platform_name = htmlspecialchars($platform_name);
-  $options['tocCode'] .= '<p><a href="#' . prefixToHTMLID($tocPrefix) . '">' .
-                                 $platformLabel . ':' . $platform_name . '</a></p>';
-  return '<h1 class="doclevel" id="' . prefixToHTMLID($tocPrefix) . "\">$tocPrefix $platformLabel: $platform_name</h1>";
+  $lbl = lang_get('platform');
+  $name = htmlspecialchars($platform['name']);
+  $options['tocCode'] .= '<p>&nbsp;</p><b><p><a href="#' . prefixToHTMLID($tocPrefix) . '">' . "$tocPrefix. $lbl" . ':' . $name . '</a></p></b>';
+  
+  $out = '<h1 class="doclevel" id="' . prefixToHTMLID($tocPrefix) . "\">$tocPrefix. $lbl: $name</h1>";
+  // platform description is enabled with test plan description option settings
+  if ($options['testplan'])
+  {
+    $out .= '<div class="txtlevel">' .$platform['notes'] . "</div>\n <br/>";
+  }
+  return $out;
 }
 
 

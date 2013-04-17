@@ -323,15 +323,15 @@ class tlPlatform extends tlObjectWithDB
     // mapAccessByID => map access key: id
     // mapAccessByName => map access key: name
     $my['options'] = array('outputFormat' => 'array', 'orderBy' => ' ORDER BY name ');
-      $my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array_merge($my['options'], (array)$options);
     
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $rs = null;
     $sql = "/* $debugMsg */ SELECT P.id, P.name, P.notes " .
-         " FROM {$this->tables['platforms']} P " .
-         " JOIN {$this->tables['testplan_platforms']} TP " .
-         " ON P.id = TP.platform_id " .
-         " WHERE  TP.testplan_id = {$testplanID} {$my['options']['orderBy']}";
+           " FROM {$this->tables['platforms']} P " .
+           " JOIN {$this->tables['testplan_platforms']} TP " .
+           " ON P.id = TP.platform_id " .
+           " WHERE  TP.testplan_id = {$testplanID} {$my['options']['orderBy']}";
     
     switch($my['options']['outputFormat'])
     {
@@ -360,10 +360,10 @@ class tlPlatform extends tlObjectWithDB
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $sql =  "/* $debugMsg */ SELECT P.id, P.name " .
-        " FROM {$this->tables['platforms']} P " .
-        " JOIN {$this->tables['testplan_platforms']} TP " .
-        " ON P.id = TP.platform_id " .
-        " WHERE  TP.testplan_id = {$testplanID} {$orderBy}";
+            " FROM {$this->tables['platforms']} P " .
+            " JOIN {$this->tables['testplan_platforms']} TP " .
+            " ON P.id = TP.platform_id " .
+            " WHERE  TP.testplan_id = {$testplanID} {$orderBy}";
     return $this->db->fetchColumnsIntoMap($sql, 'id', 'name');
   }
 

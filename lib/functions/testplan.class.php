@@ -2832,32 +2832,32 @@ class testplan extends tlObjectWithAttachments
       $this->attachmentRepository->copyAttachments($source_id,$target_id,$this->attachmentTableName);
   }
 
-    /**
+  /**
    * 
-    *
-    * outputFormat: 
-    *        'array',
-    *        'map', 
-    *        'mapAccessByID' => map access key: id
+   *
+   * outputFormat: 
+   *        'array',
+   *        'map', 
+   *        'mapAccessByID' => map access key: id
    *        'mapAccessByName' => map access key: name
    *
-   * 20100711 - franciscom - BUGID 3564
-    */
+   */
     function getPlatforms($id,$options=null)
     {
-        $my['options'] = array('outputFormat' => 'array', 'outputDetails' => 'full', 'addIfNull' => false);
+      $my['options'] = array('outputFormat' => 'array', 'outputDetails' => 'full', 'addIfNull' => false);
       $my['options'] = array_merge($my['options'], (array)$options);
-        switch($my['options']['outputFormat'])
-        {
-          case 'map':
-            $platforms = $this->platform_mgr->getLinkedToTestplanAsMap($id);
-          break;
+      
+      switch($my['options']['outputFormat'])
+      {
+        case 'map':
+          $platforms = $this->platform_mgr->getLinkedToTestplanAsMap($id);
+        break;
           
-          default:
-            $opt = array('outputFormat' => $my['options']['outputFormat']);
-            $platforms = $this->platform_mgr->getLinkedToTestplan($id,$opt);
-          break;
-        }   
+        default:
+          $opt = array('outputFormat' => $my['options']['outputFormat']);
+          $platforms = $this->platform_mgr->getLinkedToTestplan($id,$opt);
+        break;
+      }   
       
       if( !is_null($platforms) )
       {
@@ -2876,10 +2876,9 @@ class testplan extends tlObjectWithAttachments
         
       }
       else if( $my['options']['addIfNull'] )
-    {
-        // else if( $my['options']['addIfNull'] && is_null($platforms) )
-      $platforms = array( 0 => '');
-    }
+      {
+        $platforms = array( 0 => '');
+      }
       return $platforms; 
     }
 

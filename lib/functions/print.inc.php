@@ -943,9 +943,10 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
     
   if ($options['toc'])
   {
-    $options['tocCode'] .= '<p style="padding-left: ' . 
+    // EXTERNAL ID added
+	 $options['tocCode'] .= '<p style="padding-left: ' . 
                                        (15*$level).'px;"><a href="#' . prefixToHTMLID('tc'.$id) . '">' .
-                                        $name . '</a></p>';
+                                        htmlspecialchars($external_id) . ": ". $name . '</a></p>';	
     $code .= '<a name="' . prefixToHTMLID('tc'.$id) . '"></a>';
   }
     

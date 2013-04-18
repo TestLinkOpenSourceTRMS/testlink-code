@@ -15,11 +15,11 @@ $method='getTestCasesForTestPlan';
 $test_num=1;
 $unitTestDescription="Test {$test_num} - {$method}";
 
-$tplan_id = 96315;
+$tplan_id = intval($_REQUEST['id']); //96315;
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]='524993143f974f97903f5565a783594b';
 $args["testplanid"]=$tplan_id;
-$args["executiontype"]=2;
+// $args["executiontype"]=2;
 $additionalInfo='';
 
 $debug=true;

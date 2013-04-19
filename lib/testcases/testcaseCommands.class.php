@@ -113,6 +113,8 @@ class testcaseCommands
         break;
       }  
     }
+
+    new dBug($greenCard);
     $tcaseInfo = $this->tcaseMgr->get_by_id($greenCard['tcase_id'],$greenCard['tcversion_id'],null,array('output' => 'full_without_steps'));
 
 
@@ -672,18 +674,19 @@ class testcaseCommands
     $guiObj->viewerArgs=array();
     $guiObj->refreshTree = 0;
     $step_node = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->step_id);
+
     $tcversion_node = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($step_node['parent_id']);
-    $tcversion_id = $step_node['parent_id'];
-    $tcase_id = $tcversion_node['parent_id'];
+    $argsObj->tcversion_id = $step_node['parent_id'];
+    $argsObj->tcase_id = $tcversion_node['parent_id'];
     
-    $guiObj->template="archiveData.php?version_id={$tcversion_id}&" . 
-                      "edit=testcase&id={$tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template="archiveData.php?version_id={$argsObj->tcversion_id}&" . 
+                      "edit=testcase&id={$argsObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
     $guiObj->user_feedback = '';
     $op = $this->tcaseMgr->delete_step_by_id($argsObj->step_id);
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
-    $this->initTestCaseBasicInfo($argsObj,$guiObj);
 
+    $this->initTestCaseBasicInfo($argsObj,$guiObj);
     return $guiObj;
   }
 

@@ -3602,5 +3602,12 @@ $TLS_testCaseStatus_rework = 'Rework';
 $TLS_testCaseStatus_obsolete = 'Obsolete';
 $TLS_testCaseStatus_future = 'Future';
 $TLS_testCaseStatus_final = 'Final';		
+
+// printDocument.php
+$TLS_report_test_plan_design = 'Test Plan Design Report';	
+$TLS_report_test_plan_execution = 'Test Plan Execution Report';	
+$TLS_execution_time_metrics = 'Execution time metrics';	
+
+
 // ----- END ------------------------------------------------------------------
 ?>

@@ -4,16 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource printDocOptions.php
- * @author 	Martin Havlat
+ * @author  Martin Havlat
  * 
  *  Settings for generated documents
- * 	- Structure of a document 
- *	- It builds the javascript tree that allow the user select a required part 
- *		Test specification/ Test plan.
+ *  - Structure of a document 
+ *  - It builds the javascript tree that allow the user select a required part 
+ *    Test specification/ Test plan.
  *
  * @internal revisions
- * @since 1.9.4
- * 20111007 - franciscom - TICKET 4766: Requirements Report - Display Revision and Version
+ * @since 1.9.7
  *
  */
 require_once("../../config.inc.php");
@@ -30,20 +29,20 @@ $arrCheckboxes = init_checkboxes($args);
 $workPath = 'lib/results/printDocument.php';
 switch($args->doc_type)
 {
-	case 'testplan':
-	case 'testreport':
-	$addTestPlanID = true;
-	break;
-	
-	default:
-	$addTestPlanID = false;
-	break;
+  case 'testplan':
+  case 'testreport':
+    $addTestPlanID = true;
+  break;
+  
+  default:
+    $addTestPlanID = false;
+  break;
 }
 
 $getArguments = "&type=" . $args->doc_type; 
-
-if ($addTestPlanID) {
-	$getArguments .= '&docTestPlanId=' . $args->tplan_id;
+if ($addTestPlanID) 
+{
+  $getArguments .= '&docTestPlanId=' . $args->tplan_id;
 }
 
 // generate tree
@@ -51,86 +50,81 @@ $tree = null;
 $additionalArgs = '';
 switch($args->doc_type) 
 {
-    case 'testspec':
-	case 'reqspec':
-	break;
+  case 'testspec':
+  case 'reqspec':
+  break;
 
-    case 'testplan':
-    case 'testreport':
-		$tplan_mgr = new testplan($db);
-		$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
-		$testplan_name = htmlspecialchars($tplan_info['name']);
-		$latestBuild = $tplan_mgr->get_max_build_id($args->tplan_id);
-	      
-		$filters = new stdClass();
-  	  	$additionalInfo = new stdClass();
-        
-  	  	// ----- BUGID 3451 and related ---------------------------------------
-  	  	// Notice: these variables were wrong since the changes to filtering system,
-  	  	// but they did not cause the bug responsible for 3451.
-  	  	// See print.inc.php for the real solution!
-  	  	
-		// Set of filters Off
-  	  	$filters->filter_keywords = null;
-  	  	$filters->filter_keywords_filter_type = null;
-  	  	$filters->filter_tc_id = null;
-  	  	$filters->filter_assigned_user = null;
-  	  	$filters->filter_result_result = null;
-  	  	$filters->filter_custom_fields = null;
-  	  	$filters->setting_platform = null;
-  	  	
-  	  	$filters->filter_result_build = $latestBuild;
-  	  	$filters->hide_testcases = HIDE_TESTCASES;
-  	  	$filters->filter_assigned_user_include_unassigned = true;
-  	  	$filters->show_testsuite_contents = true;
-  	  	
-  	  	$additionalInfo->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
-  	  	$additionalInfo->useColours = COLOR_BY_TC_STATUS_OFF;
-        
-        /*
-        list($treeContents, $additionalArgs) = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
-				                                                $args->tplan_id,$testplan_name,$filters,$additionalInfo);
-        */
-        
-		$filters = new stdClass();
-		$filters->build_id = $latestBuild;
-
-		$opt_etree = new stdClass();
-		$opt_etree->hideTestCases = HIDE_TESTCASES;
-		$opt_etree->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
-		
-		$opt_etree->useColours = new stdClass();
-		$opt_etree->useColours->testcases = COLOR_BY_TC_STATUS_OFF;
-		$opt_etree->useColours->counters =	COLOR_BY_TC_STATUS_OFF;
-	    
-		list($treeContents, $testcases_to_show) = execTree($db,$workPath,
-				                                        $args->tproject_id,
-				                                        $args->tproject_name,
-				                                        $args->tplan_id,
-				                                        $testplan_name,
-				                                        $filters,$opt_etree);
+  case 'testplan':
+  case 'testreport':
+  $tplan_mgr = new testplan($db);
+  $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+  $testplan_name = htmlspecialchars($tplan_info['name']);
+  $latestBuild = $tplan_mgr->get_max_build_id($args->tplan_id);
       
-      	$tree = $treeContents->menustring;
-      	$gui->ajaxTree = new stdClass();
-      	$gui->ajaxTree->root_node = $treeContents->rootnode;
+  $filters = new stdClass();
+  $additionalInfo = new stdClass();
+      
+  // ----- BUGID 3451 and related ---------------------------------------
+  // Notice: these variables were wrong since the changes to filtering system,
+  // but they did not cause the bug responsible for 3451.
+  // See print.inc.php for the real solution!
+     
+  // Set of filters Off
+  $filters->filter_keywords = null;
+  $filters->filter_keywords_filter_type = null;
+  $filters->filter_tc_id = null;
+  $filters->filter_assigned_user = null;
+  $filters->filter_result_result = null;
+  $filters->filter_custom_fields = null;
+  $filters->setting_platform = null;
+  
+  $filters->filter_result_build = $latestBuild;
+  $filters->hide_testcases = HIDE_TESTCASES;
+  $filters->filter_assigned_user_include_unassigned = true;
+  $filters->show_testsuite_contents = true;
+        
+  $additionalInfo->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
+  $additionalInfo->useColours = COLOR_BY_TC_STATUS_OFF;
+      
+      
+  $filters = new stdClass();
+  $filters->build_id = $latestBuild;
+
+  $opt_etree = new stdClass();
+    $opt_etree->hideTestCases = HIDE_TESTCASES;
+    $opt_etree->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
+    
+    $opt_etree->useColours = new stdClass();
+    $opt_etree->useColours->testcases = COLOR_BY_TC_STATUS_OFF;
+    $opt_etree->useColours->counters =  COLOR_BY_TC_STATUS_OFF;
+      
+    list($treeContents, $testcases_to_show) = execTree($db,$workPath,
+                                                $args->tproject_id,
+                                                $args->tproject_name,
+                                                $args->tplan_id,
+                                                $testplan_name,
+                                                $filters,$opt_etree);
+      
+        $tree = $treeContents->menustring;
+        $gui->ajaxTree = new stdClass();
+        $gui->ajaxTree->root_node = $treeContents->rootnode;
         $gui->ajaxTree->children = $treeContents->menustring;
         $gui->ajaxTree->loadFromChildren = true;
         // improved cookie prefix for test plan report and test report
         $report = $args->doc_type == "testplan" ? "test_plan_report" : "test_report";
         $gui->ajaxTree->cookiePrefix .= "{$report}_tplan_id_{$args->tplan_id}_";
         
-      	break;
+        break;
 
     default:
-		tLog("Argument _REQUEST['type'] has invalid value", 'ERROR');
-		exit();
-    	break;
+    tLog("Argument _REQUEST['type'] has invalid value", 'ERROR');
+    exit();
+      break;
 }
 
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
-$smarty->assign('arrCheckboxes', $arrCheckboxes);
 $smarty->assign('selFormat', $args->format);
 $smarty->assign('docType', $args->doc_type);
 $smarty->assign('docTestPlanId', $args->tplan_id);
@@ -148,15 +142,15 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args()
 {
-	$args = new stdClass();
-	$iParams = array("tplan_id" => array(tlInputParameter::INT_N),
-			         "format" => array(tlInputParameter::INT_N,999),
-					 "type" => array(tlInputParameter::STRING_N,0,100));	
-		
-	R_PARAMS($iParams,$args);
-	
-	//@TODO schlundus, rename request param to type
-	$args->doc_type = $args->type;
+  $args = new stdClass();
+  $iParams = array("tplan_id" => array(tlInputParameter::INT_N),
+               "format" => array(tlInputParameter::INT_N,999),
+           "type" => array(tlInputParameter::STRING_N,0,100));  
+    
+  R_PARAMS($iParams,$args);
+  
+  //@TODO schlundus, rename request param to type
+  $args->doc_type = $args->type;
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
@@ -172,7 +166,7 @@ function init_args()
  * in call to Template Engine.
  *
  * @param class pointer args: object containing User Input and some session values
- * 		TBD structure
+ *    TBD structure
  * 
  * ?     tprojectMgr: test project manager object.
  * ?     treeDragDropEnabled: true/false. Controls Tree drag and drop behaivor.
@@ -205,60 +199,64 @@ function initializeGui(&$db,$args)
     
     switch($args->doc_type)
     {
-    	// BUGID 3067
-    	case 'reqspec':
-    		$gui->tree_title = lang_get('title_req_print_navigator');
+      // BUGID 3067
+      case 'reqspec':
+        $gui->tree_title = lang_get('title_req_print_navigator');
             
-           	$gui->ajaxTree->loader =  $args->basehref . 'lib/ajax/getrequirementnodes.php?' .
+            $gui->ajaxTree->loader =  $args->basehref . 'lib/ajax/getrequirementnodes.php?' .
                                    "root_node={$args->tproject_id}&" .
                                    "show_children=0&operation=print";
-	        
-	       	$gui->ajaxTree->loadFromChildren = 0;
-	       	$gui->ajaxTree->root_node->href = "javascript:TPROJECT_PTP_RS({$args->tproject_id})";
-           	$gui->ajaxTree->root_node->id = $args->tproject_id;
+          
+          $gui->ajaxTree->loadFromChildren = 0;
+          $gui->ajaxTree->root_node->href = "javascript:TPROJECT_PTP_RS({$args->tproject_id})";
+            $gui->ajaxTree->root_node->id = $args->tproject_id;
 
             $req_qty = $tprojectMgr->count_all_requirements($args->tproject_id);
             $gui->ajaxTree->root_node->name = htmlspecialchars($args->tproject_name) . " ($req_qty)";
             $gui->ajaxTree->cookiePrefix .= "tproject_id_" . $gui->ajaxTree->root_node->id . "_" ;
-	        $gui->mainTitle = lang_get('requirement_specification_report');
-    	break;
-    	// end BUGID 3067
-    	
-		case 'testspec':
-			$gui->tree_title = lang_get('title_tc_print_navigator');
+          $gui->mainTitle = lang_get('requirement_specification_report');
+      break;
+      // end BUGID 3067
+      
+    case 'testspec':
+      $gui->tree_title = lang_get('title_tc_print_navigator');
             
-           	$gui->ajaxTree->loader =  $args->basehref . 'lib/ajax/gettprojectnodes.php?' .
+            $gui->ajaxTree->loader =  $args->basehref . 'lib/ajax/gettprojectnodes.php?' .
                                    "root_node={$args->tproject_id}&" .
                                    "show_tcases=0&operation=print&" .
                                    "tcprefix=". urlencode($tcasePrefix.$tcaseCfg->glue_character) ."}";
-	          
-	       	$gui->ajaxTree->loadFromChildren = 0;
-	       	$gui->ajaxTree->root_node->href = "javascript:TPROJECT_PTP({$args->tproject_id})";
-           	$gui->ajaxTree->root_node->id = $args->tproject_id;
+            
+          $gui->ajaxTree->loadFromChildren = 0;
+          $gui->ajaxTree->root_node->href = "javascript:TPROJECT_PTP({$args->tproject_id})";
+            $gui->ajaxTree->root_node->id = $args->tproject_id;
 
             $tcase_qty = $tprojectMgr->count_testcases($args->tproject_id);
             $gui->ajaxTree->root_node->name = htmlspecialchars($args->tproject_name) . " ($tcase_qty)";
             $gui->ajaxTree->cookiePrefix .= "tproject_id_" . $gui->ajaxTree->root_node->id . "_" ;
-	        $gui->mainTitle = lang_get('testspecification_report');
-	    break;
-	    
-	    case 'testreport':
-	        $gui->mainTitle = lang_get('test_report');
-	    break;
-	      
-        case 'testplan':
-	          $gui->tree_title = lang_get('title_tp_print_navigator');
-	          $gui->ajaxTree->loadFromChildren = 1;
-	          $gui->ajaxTree->loader = '';
-	          $gui->mainTitle = lang_get('test_plan');
-	    break;
+          $gui->mainTitle = lang_get('testspecification_report');
+      break;
+      
+      case 'testreport':
+          $gui->mainTitle = lang_get('test_report');
+      break;
+        
+      case 'testplan':
+        $gui->tree_title = lang_get('title_tp_print_navigator');
+        $gui->ajaxTree->loadFromChildren = 1;
+        $gui->ajaxTree->loader = '';
+        $gui->mainTitle = lang_get('test_plan');
+      break;
     }
     $gui->mainTitle .=  ' - ' . lang_get('doc_opt_title');
 
     
     $gui->outputFormat = array(FORMAT_HTML => lang_get('format_html'), 
-	                           FORMAT_ODT => lang_get('format_odt'), 
-	                           FORMAT_MSWORD => lang_get('format_msword'));
+                             FORMAT_ODT => lang_get('format_odt'), 
+                             FORMAT_MSWORD => lang_get('format_msword'));
+
+
+    $gui->outputOptions = init_checkboxes($args);
+
     return $gui;  
 }
 
@@ -273,64 +271,65 @@ function initializeGui(&$db,$args)
  * 
  * @return array $arrCheckboxes
  */
-function init_checkboxes(&$args) {
-	
-	// Important Notice:
-	// If you want to add or remove elements in this array, you must also update
-	// $printingOptions in printDocument.php and tree_getPrintPreferences() in testlink_library.js
-	
-	$arrCheckboxes = array();
-	
-	// these are the options which are always needed, type-specific ones follow below in switch
-	$arrCheckboxes[] = array( 'value' => 'toc','description' => 'opt_show_toc', 'checked' => 'n');
-	$arrCheckboxes[] = array( 'value' => 'headerNumbering','description' => 'opt_show_hdrNumbering','checked' => 'n');
-	
-	switch($args->doc_type) 
-	{
-		case 'reqspec':
-			$key2init= array('req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
-						     'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
-							 'req_type','req_cf','req_relations','req_linked_tcs','req_coverage','displayVersion');
+function init_checkboxes(&$args) 
+{
+  
+  // Important Notice:
+  // If you want to add or remove elements in this array, you must also update
+  // $printingOptions in printDocument.php and tree_getPrintPreferences() in testlink_library.js
+  
+  $arrCheckboxes = array();
+  
+  // these are the options which are always needed, type-specific ones follow below in switch
+  $arrCheckboxes[] = array( 'value' => 'toc','description' => 'opt_show_toc', 'checked' => 'n');
+  $arrCheckboxes[] = array( 'value' => 'headerNumbering','description' => 'opt_show_hdrNumbering','checked' => 'n');
+  
+  switch($args->doc_type) 
+  {
+    case 'reqspec':
+      $key2init= array('req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
+                 'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
+               'req_type','req_cf','req_relations','req_linked_tcs','req_coverage','displayVersion');
 
-			$key2init2yes = array('req_spec_scope' => 'y','req_scope' => 'y');
-			foreach($key2init as $key)
-			{
-				$checked = isset($key2init2yes[$key]) ? $key2init2yes[$key] : 'n';
-				$arrCheckboxes[] = array('value' => $key,'description' => 'opt_' . $key, 'checked' => $checked);
-			} 
-		break;
-		
-		default:
-			$arrCheckboxes[] = array('value' => 'header','description' => 'opt_show_suite_txt','checked' => 'n');
-			$arrCheckboxes[] = array('value' => 'summary','description' => 'opt_show_tc_summary','checked' => 'y');
-			$arrCheckboxes[] = array('value' => 'body','description' => 'opt_show_tc_body','checked' => 'n');
-			$arrCheckboxes[] = array('value' => 'author','description' => 'opt_show_tc_author','checked' => 'n');
-			$arrCheckboxes[] = array('value' => 'keyword','description' => 'opt_show_tc_keys','checked' => 'n');
-			$arrCheckboxes[] = array('value' => 'cfields','description' => 'opt_show_cfields','checked' => 'n');
+      $key2init2yes = array('req_spec_scope' => 'y','req_scope' => 'y');
+      foreach($key2init as $key)
+      {
+        $checked = isset($key2init2yes[$key]) ? $key2init2yes[$key] : 'n';
+        $arrCheckboxes[] = array('value' => $key,'description' => 'opt_' . $key, 'checked' => $checked);
+      } 
+    break;
+    
+    default:
+      $arrCheckboxes[] = array('value' => 'header','description' => 'opt_show_suite_txt','checked' => 'n');
+      $arrCheckboxes[] = array('value' => 'summary','description' => 'opt_show_tc_summary','checked' => 'y');
+      $arrCheckboxes[] = array('value' => 'body','description' => 'opt_show_tc_body','checked' => 'n');
+      $arrCheckboxes[] = array('value' => 'author','description' => 'opt_show_tc_author','checked' => 'n');
+      $arrCheckboxes[] = array('value' => 'keyword','description' => 'opt_show_tc_keys','checked' => 'n');
+      $arrCheckboxes[] = array('value' => 'cfields','description' => 'opt_show_cfields','checked' => 'n');
 
-			if($args->testprojectOptReqs) 
-			{
-				$arrCheckboxes[] = array( 'value' => 'requirement','description' => 'opt_show_tc_reqs','checked' => 'n');
-			}
+      if($args->testprojectOptReqs) 
+      {
+        $arrCheckboxes[] = array( 'value' => 'requirement','description' => 'opt_show_tc_reqs','checked' => 'n');
+      }
 
-			if($args->doc_type == 'testplan') 
-			{
-				$arrCheckboxes[] = array( 'value' => 'testplan','description' => 'opt_show_tplan_txt','checked' => 'n');
-			} 
-			else if ($args->doc_type == 'testreport')	
-			{
-				$arrCheckboxes[] = array('value' => 'notes', 'description' => 'opt_show_tc_notes',	'checked' => 'n');
-				$arrCheckboxes[] = array( 'value' => 'passfail','description' => 'opt_show_passfail','checked' => 'y');
-				$arrCheckboxes[] = array( 'value' => 'metrics','description' => 'opt_show_metrics','checked' => 'n');
-			}
-		break;		
-	}
+      //if($args->doc_type == 'testplan') 
+      //{
+      //  $arrCheckboxes[] = array( 'value' => 'testplan','description' => 'opt_show_tplan_txt','checked' => 'n');
+      //} 
+      if ($args->doc_type == 'testreport') 
+      {
+        $arrCheckboxes[] = array('value' => 'notes', 'description' => 'opt_show_tc_notes',  'checked' => 'n');
+        $arrCheckboxes[] = array( 'value' => 'passfail','description' => 'opt_show_passfail','checked' => 'y');
+        $arrCheckboxes[] = array( 'value' => 'metrics','description' => 'opt_show_metrics','checked' => 'n');
+      }
+    break;    
+  }
 
-	foreach ($arrCheckboxes as $key => $elem) 
-	{
-		$arrCheckboxes[$key]['description'] = lang_get($elem['description']);
-	}
-	
-	return $arrCheckboxes;
+  foreach ($arrCheckboxes as $key => $elem) 
+  {
+    $arrCheckboxes[$key]['description'] = lang_get($elem['description']);
+  }
+  
+  return $arrCheckboxes;
 }
 ?>

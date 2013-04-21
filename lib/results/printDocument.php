@@ -77,154 +77,57 @@ switch ($doc_info->type)
                            $tlCfg->gui_title_separator_2.$tInfo['name'] : $args->tproject_name);
       break;    
     }
-    break;
+  break;
     
-    case DOC_TEST_PLAN:
-    case DOC_TEST_REPORT:
-      $tplan_mgr = new testplan($db);
-      $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
-      $doc_info->testplan_name = htmlspecialchars($tplan_info['name']);
-      $doc_info->testplan_scope = $tplan_info['notes'];
-      $doc_info->title = $doc_info->testplan_name;
+  case DOC_TEST_PLAN:
+  case DOC_TEST_REPORT:
+    $tplan_mgr = new testplan($db);
+    $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+    $doc_info->testplan_name = htmlspecialchars($tplan_info['name']);
+    $doc_info->testplan_scope = $tplan_info['notes'];
+    $doc_info->title = $doc_info->testplan_name;
 
-      // Changed to get ALL platform attributes.
-      $getOpt = array('outputFormat' => 'mapAccessByID', 'addIfNull' => true);
-      $platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);   
-      $platformIDSet = array_keys($platforms);
+    // Changed to get ALL platform attributes.
+    $getOpt = array('outputFormat' => 'mapAccessByID', 'addIfNull' => true);
+    $platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);   
+    $platformIDSet = array_keys($platforms);
 
-      $items2use = new stdClass();
-      $items2use->estimatedExecTime = null;
-      $items2use->realExecTime = null;
-      // $items2use = null;
-      $execid_filter = null;
-      $executed_qty = 0;
-      $treeForPlatform = array();
-      $printingOptions['priority'] = $doc_info->test_priority_enabled;
+    $printingOptions['priority'] = $doc_info->test_priority_enabled;
+    $items2use = (object) array('estimatedExecTime' => null,'realExecTime' => null);
+    $treeForPlatform = array();
       
-      switch($doc_info->content_range)
-      {
-        case 'testproject':
-      
-          // displayMemUsage('BEFORE LOOP ON PLATFORMS');
-          $linkedBy = array();
-          $pnFilters = null;
-                      
-          // due to Platforms we need to use 'viewType' => 'executionTree',
-          // if not we get ALWAYS the same set of test cases linked to test plan
-          // for each platform -> WRONG 
-          $pnOptions =  array('hideTestCases' => 0, 'showTestCaseID' => 1,
-                              'viewType' => 'executionTree',
-                              'getExternalTestCaseID' => 0, 'ignoreInactiveTestCases' => 0);
-
-          // foreach ($platforms as $platform_id => $platform_attr)
-          foreach($platformIDSet as $platform_id)  
-          {
-            $filters = array('platform_id' => $platform_id);  
-            $linkedBy[$platform_id] = $tplan_mgr->getLinkedStaticView($args->tplan_id,$filters);
-                    
-            // IMPORTANT NOTE:
-            // We are in a loop and we use tree on prepareNode, that changes it,
-            // then we can not use anymore a reference BUT WE NEED A COPY.
-            $tree2work = $subtree;
-            if (!$linkedBy[$platform_id])
-            {
-              $tree2work['childNodes'] = null;
-            }
-
-            $dummy4reference = null;
-            prepareNode($db,$tree2work,$decode,$dummy4reference,$dummy4reference,
-            $linkedBy[$platform_id],$pnFilters,$pnOptions);
-            $treeForPlatform[$platform_id] = $tree2work; 
-          }
-          break;
+    switch($doc_info->content_range)
+    {
+      case 'testproject':
+        $treeForPlatform = buildContentForTestPlan($db,$subtree,$args->tplan_id,$platformIDSet,$decode,$tplan_mgr);
+      break;
              
-        case 'testsuite':
-          $linkedBy = array();
-          $branch_tsuites = null;
-
-          $tsuite = new testsuite($db);
-          $tInfo = $tsuite->get_by_id($args->itemID);
-          $tInfo['node_type_id'] = $decode['node_descr_id']['testsuite'];
-          $children_tsuites = $tree_manager->get_subtree_list($args->itemID,$decode['node_descr_id']['testsuite']);
-          if( !is_null($children_tsuites) and trim($children_tsuites) != "")
-          {
-            $branch_tsuites = explode(',',$children_tsuites);
-          }
-          $branch_tsuites[]=$args->itemID;
-          
-          $doc_info->title = htmlspecialchars(isset($tInfo['name']) ? $tInfo['name'] : $doc_info->testplan_name);
-          
-          $filters = array( 'tsuites_id' => $branch_tsuites);
-          // foreach ($platforms as $platform_id => $platform_attr)
-          foreach($platformIDSet as $platform_id)  
-          {
-            // IMPORTANTE NOTICE:
-            // This need to be initialized on each iteration because prepareNode() make changes on it.
-            $tInfo['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
-            
-            $filters['platform_id'] = $platform_id;
-            $items2use->estimatedExecTime[$platform_id] = null;      
-            $items2use->realExecTime[$platform_id] = null;
-            
-            // TODO
-            //$linkedBy[$platform_id] = $tplan_mgr->getLinkedStaticView($args->tplan_id, $filters); 
-            $avalon = $tplan_mgr->getLTCVNewGeneration($args->tplan_id, $filters, array('addExecInfo' => true)); 
-            $k2l = array_keys($avalon);
-            foreach($k2l as $key)
-            {
-              $linkedBy[$platform_id][$key] = $avalon[$key][$platform_id];
-            } 
-          
-            // After architecture changes on how CF design values for Test Cases are
-            // managed, we need the test case version ID and not test case ID
-            // In addition if we loop over Platforms we need to save this set each time!!!
-            $items2loop = !is_null($linkedBy[$platform_id]) ? array_keys($linkedBy[$platform_id]) : null;
-            if( !is_null($items2loop) )
-            { 
-              foreach($items2loop as $rdx)
-              {  
-                $items2use->estimatedExecTime[$platform_id][] = $linkedBy[$platform_id][$rdx]['tcversion_id'];
-              }    
-            }
-            // Prepare Node -> pn
-            $pnFilters = null;
-            $pnOptions =  array('hideTestCases' => 0);
-            $pnOptions = array_merge($pnOptions, (array)$my['options']['prepareNode']);
-            $dummy4reference = null;
-            $treeForPlatform[$platform_id]['childNodes'] = array();
-            if(!is_null($linkedBy[$platform_id]))
-            {
-              prepareNode($db,$tInfo,$decode,$dummy4reference,$dummy4reference,
-                          $linkedBy[$platform_id],$pnFilters,$pnOptions);
-            
-              $treeForPlatform[$platform_id]['childNodes'] = array($tInfo);   
-            }
-          }
-          $items2use->realExecTime = $linkedBy;
-        break;
-      }  // switch($doc_info->content_range)
+      case 'testsuite':
+        list($treeForPlatform,$items2use) = buildContentForTestPlanBranch($db,$subtree,$args->itemID,$args->tplan_id,
+                                                                          $platformIDSet,$doc_info,$decode,$tplan_mgr,
+                                                                          $my['options']['prepareNode']);
+      break;
+    }
          
-      // Create list of execution id, that will be used to compute execution time if
-      // CF_EXEC_TIME custom field exists and is linked to current testproject
-      $doc_data->statistics = null;                                            
-      if ($printingOptions['metrics'])
-      {
-        $doc_data->statistics['estimated_execution'] = getStatsEstimatedExecTime($tplan_mgr,
-                                                                                 $items2use->estimatedExecTime,
-                                                                                 $args->tplan_id);
-        $doc_data->statistics['real_execution'] = getStatsRealExecTime($tplan_mgr,$items2use->realExecTime,
-                                                                       $args->tplan_id,$decode);
-      }
-    break;
+    // Create list of execution id, that will be used to compute execution time if
+    // CF_EXEC_TIME custom field exists and is linked to current testproject
+    $doc_data->statistics = null;                                            
+    if ($printingOptions['metrics'])
+    {
+      $doc_data->statistics = buildStatistics($items2use,$args->tplan_id,$decode,$tplan_mgr);
+    }
+  break;
 }
 
 
 // ----- rendering logic -----
-$topText = renderHTMLHeader($doc_info->type.' '.$doc_info->title,$_SESSION['basehref'],$doc_info->type);
+$topText = renderHTMLHeader($doc_info->type . ' ' . $doc_info->title,$_SESSION['basehref'],$doc_info->type);
 $topText .= renderFirstPage($doc_info);
 
 // Init table of content (TOC) data
-renderTOC($printingOptions);
+renderTOC($printingOptions);  // @TODO check if is really useful
+
+
 $tocPrefix = null;
 if( ($showPlatforms = !isset($treeForPlatform[0]) ? true : false) )
 {
@@ -233,6 +136,23 @@ if( ($showPlatforms = !isset($treeForPlatform[0]) ? true : false) )
 
 if ($treeForPlatform)
 {
+  // Things that have to be printed just once
+  // 
+  switch ($doc_info->type)
+  {
+    case DOC_TEST_PLAN:
+    case DOC_TEST_REPORT:
+      $docText .= renderTestProjectItem($doc_info);
+      $docText .= renderTestPlanItem($doc_info);
+      $cfieldFormatting=array('table_css_style' => 'class="cf"');
+      if ($printingOptions['cfields'])
+      {
+        $cfields = $tplan_mgr->html_table_of_custom_field_values($args->tplan_id,'design',null,$cfieldFormatting);
+        $docText .= '<p>' . $cfields . '</p>';
+      }
+    break;        
+  }
+
   foreach ($treeForPlatform as $platform_id => $tree2work)            
   {
     if(sizeof($tree2work['childNodes']) > 0)
@@ -250,25 +170,23 @@ if ($treeForPlatform)
         case DOC_TEST_SPEC:
           $docText .= renderSimpleChapter(lang_get('scope'), $doc_info->tproject_scope);
           $docText .= renderTestSpecTreeForPrinting($db, $tree2work, $doc_info->content_range,
-                      $printingOptions, null, 0, 1, $args->user_id,0,null,$args->tproject_id,$platform_id);
+                                                    $printingOptions, null, 0, 1, $args->user_id,0,null,
+                                                    $args->tproject_id,$platform_id);
         break;
       
         case DOC_TEST_PLAN:
-          if ($printingOptions['testplan'])
-          {
-            $docText .= renderSimpleChapter(lang_get('scope'), $doc_info->testplan_scope);
-          }
-            
         case DOC_TEST_REPORT:
           $tocPrefix++;
           if ($showPlatforms)
           {
+            $printingOptions['showPlatformNotes'] = true;
             $docText .= renderPlatformHeading($tocPrefix,$platforms[$platform_id],$printingOptions);
           }
           $docText .= renderTestPlanForPrinting($db, $tree2work, $doc_info->content_range, 
                                                 $printingOptions, $tocPrefix, 0, 1, $args->user_id,
                                                 $args->tplan_id, $args->tproject_id, $platform_id);
 
+          
           if (($doc_info->type == DOC_TEST_REPORT) && ($printingOptions['metrics']))
           {
             $docText .= buildTestPlanMetrics($doc_data->statistics,$platform_id);
@@ -428,16 +346,16 @@ function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
   $my = array();
   $doc = new stdClass(); 
 
-  $my['options'] = array(  'recursive' => true, 'prepareNode' => null,
-              'order_cfg' => array("type" =>'spec_order') );
-  $my['filters'] = array(  'exclude_node_types' =>  array(  'testplan'=>'exclude me', 
-                                                          'requirement_spec'=>'exclude me', 
-                                                'requirement'=>'exclude me'),
-              'exclude_children_of' => array(  'testcase'=>'exclude my children',
-                                                          'requirement_spec'=> 'exclude my children'));     
+  $my['options'] = array('recursive' => true, 'prepareNode' => null,
+                         'order_cfg' => array("type" =>'spec_order') );
+  $my['filters'] = array('exclude_node_types' =>  array('testplan'=>'exclude me', 
+                                                        'requirement_spec'=>'exclude me', 
+                                                        'requirement'=>'exclude me'),
+                         'exclude_children_of' => array('testcase'=>'exclude my children',
+                                                        'requirement_spec'=> 'exclude my children'));     
 
-  $lblKey  = array(DOC_TEST_SPEC => 'title_test_spec', DOC_TEST_PLAN => 'test_plan',
-          DOC_TEST_REPORT => 'test_report', DOC_REQ_SPEC => 'req_spec');
+  $lblKey  = array(DOC_TEST_SPEC => 'title_test_spec', DOC_TEST_PLAN => 'report_test_plan_design',
+                   DOC_TEST_REPORT => 'report_test_plan_execution', DOC_REQ_SPEC => 'req_spec');
 
 
   $doc->content_range = $argsObj->level;
@@ -495,10 +413,10 @@ function getStatsEstimatedExecTime(&$tplanMgr,&$items2use,$tplanID)
 {
 
   $min = array();
-   $stat = null;        
+  $stat = null;        
   if( is_null($items2use) )
   {
-    // will work on all test cases present on Test Project.
+    // will work on all test cases present on Test Plan.
     // these IDs will be searched inside get_estimated_execution_time()
     $min = $tplanMgr->get_estimated_execution_time($tplanID);
   }
@@ -518,7 +436,7 @@ function getStatsEstimatedExecTime(&$tplanMgr,&$items2use,$tplanID)
       }
     }    
   }
-  
+
   if ($min['totalMinutes'] != "0")
   {
     $stat['minutes'] = $min['totalMinutes']; 
@@ -529,8 +447,7 @@ function getStatsEstimatedExecTime(&$tplanMgr,&$items2use,$tplanID)
       $stat['platform'][$platformID] = $elem;      
     }  
   }
-  
-   return $stat;        
+  return $stat;        
 }
 
 
@@ -544,7 +461,6 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$tplanID,$decode)
   $stat = null;
   $executed_qty = 0;
   $items2use = array();
-  
   
   if( count($lastExecBy) > 0 )
   {
@@ -587,9 +503,8 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$tplanID,$decode)
     $min = $tplanMgr->get_execution_time($tplanID);
   }
 
-  // ----------------------------------------------------------
   // Arrange data for caller
-  if ($min['totalMinutes'] != "0")
+  if ($min['totalMinutes'] != 0)
   {
     $stat['minutes'] = $min['totalMinutes']; 
     $stat['tcase_qty'] = $min['totalTestCases']; 
@@ -599,10 +514,128 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$tplanID,$decode)
       $stat['platform'][$platformID] = $elem;      
     }  
   }
-  // ----------------------------------------------------------
-
   return $stat;        
 }
+
+
+function buildContentForTestPlan(&$dbHandler,$itemsTree,$tplanID,$platformIDSet,$decode,&$tplanMgr)
+{
+  // displayMemUsage('BEFORE LOOP ON PLATFORMS');
+  $linkedBy = array();
+  $pnFilters = null;
+  $contentByPlatform = array();
+
+
+  // due to Platforms we need to use 'viewType' => 'executionTree',
+  // if not we get ALWAYS the same set of test cases linked to test plan
+  // for each platform -> WRONG 
+  $pnOptions =  array('hideTestCases' => 0, 'showTestCaseID' => 1,
+                      'viewType' => 'executionTree',
+                      'getExternalTestCaseID' => 0, 'ignoreInactiveTestCases' => 0);
+  
+  foreach($platformIDSet as $platform_id)  
+  {
+    $filters = array('platform_id' => $platform_id);  
+    $linkedBy[$platform_id] = $tplanMgr->getLinkedStaticView($tplanID,$filters);
+
+    // IMPORTANT NOTE:
+    // We are in a loop and we use tree on prepareNode, that changes it,
+    // then we can not use anymore a reference BUT WE NEED A COPY.
+    $tree2work = $itemsTree;
+    if (!$linkedBy[$platform_id])
+    {
+      $tree2work['childNodes'] = null;
+    }
+  
+    $dummy4reference = null;
+    prepareNode($dbHandler,$tree2work,$decode,$dummy4reference,$dummy4reference,
+                $linkedBy[$platform_id],$pnFilters,$pnOptions);
+  
+    $contentByPlatform[$platform_id] = $tree2work; 
+  }
+  return $contentByPlatform;
+}
+
+
+function buildContentForTestPlanBranch(&$dbHandler,$itemsTree,$branchRoot,$tplanID,$platformIDSet,
+                                       &$docInfo,$decode,&$tplanMgr,$options=null)
+{
+  $linkedBy = array();
+  $branch_tsuites = null;
+  $contentByPlatform = array();  
+
+  $pnOptions = array('hideTestCases' => 0);
+  $pnOptions = array_merge($pnOptions, (array)$options);
+
+
+  $tsuite = new testsuite($dbHandler);
+  $tInfo = $tsuite->get_by_id($branchRoot);
+  $tInfo['node_type_id'] = $decode['node_descr_id']['testsuite'];
+  $docInfo->title = htmlspecialchars(isset($tInfo['name']) ? $tInfo['name'] : $docInfo->testplan_name);
+
+  $children_tsuites = $tsuite->tree_manager->get_subtree_list($branchRoot,$decode['node_descr_id']['testsuite']);
+  if( !is_null($children_tsuites) and trim($children_tsuites) != "")
+  {
+    $branch_tsuites = explode(',',$children_tsuites);
+  }
+  $branch_tsuites[]=$branchRoot;
+
+  $metrics = (object) array('estimatedExecTime' => null,'realExecTime' => null);
+  $filters = array( 'tsuites_id' => $branch_tsuites);
+  foreach($platformIDSet as $platform_id)  
+  {
+    // IMPORTANTE NOTICE:
+    // This need to be initialized on each iteration because prepareNode() make changes on it.
+    $tInfo['childNodes'] = isset($itemsTree['childNodes']) ? $itemsTree['childNodes'] : null;
+    
+    $filters['platform_id'] = $platform_id;
+    $metrics->estimatedExecTime[$platform_id] = null;      
+    $metrics->realExecTime[$platform_id] = null;
+    
+    $avalon = $tplanMgr->getLTCVNewGeneration($tplanID, $filters, array('addExecInfo' => true)); 
+    $k2l = array_keys($avalon);
+    foreach($k2l as $key)
+    {
+      $linkedBy[$platform_id][$key] = $avalon[$key][$platform_id];
+    } 
+  
+    // After architecture changes on how CF design values for Test Cases are
+    // managed, we need the test case version ID and not test case ID
+    // In addition if we loop over Platforms we need to save this set each time!!!
+    $items2loop = !is_null($linkedBy[$platform_id]) ? array_keys($linkedBy[$platform_id]) : null;
+    if( !is_null($items2loop) )
+    { 
+      foreach($items2loop as $rdx)
+      {  
+        $metrics->estimatedExecTime[$platform_id][] = $linkedBy[$platform_id][$rdx]['tcversion_id'];
+      }    
+    }
+
+    // Prepare Node -> pn
+    $pnFilters = null;
+    $dummy4reference = null;
+    $contentByPlatform[$platform_id]['childNodes'] = array();
+    if(!is_null($linkedBy[$platform_id]))
+    {
+      prepareNode($dbHandler,$tInfo,$decode,$dummy4reference,$dummy4reference,
+                  $linkedBy[$platform_id],$pnFilters,$pnOptions);
+    
+      $contentByPlatform[$platform_id]['childNodes'] = array($tInfo);   
+    }
+  }
+  $metrics->realExecTime = $linkedBy;
+  return array($contentByPlatform,$metrics);
+}    
+
+
+function buildStatistics($items,$tplanID,$decode,$tplanMgr)
+{
+  $stats = array();
+  $stats['estimated_execution'] = getStatsEstimatedExecTime($tplanMgr,$items->estimatedExecTime,$tplanID);
+  $stats['real_execution'] = getStatsRealExecTime($tplanMgr,$items->realExecTime,$tplanID,$decode);
+  return $stats;
+}
+
 
 
 /*

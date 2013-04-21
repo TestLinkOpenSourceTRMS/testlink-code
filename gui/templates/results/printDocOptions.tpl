@@ -18,30 +18,30 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     {/literal}
     
     <script type="text/javascript">
-	    treeCfg.root_name = '{$gui->ajaxTree->root_node->name|escape:'javascript'}';
-	    treeCfg.root_id = {$gui->ajaxTree->root_node->id};
-	    treeCfg.root_href = '{$gui->ajaxTree->root_node->href}';
-	    treeCfg.children = {$gui->ajaxTree->children}
-	    treeCfg.cookiePrefix = '{$gui->ajaxTree->cookiePrefix}';
+      treeCfg.root_name = '{$gui->ajaxTree->root_node->name|escape:'javascript'}';
+      treeCfg.root_id = {$gui->ajaxTree->root_node->id};
+      treeCfg.root_href = '{$gui->ajaxTree->root_node->href}';
+      treeCfg.children = {$gui->ajaxTree->children}
+      treeCfg.cookiePrefix = '{$gui->ajaxTree->cookiePrefix}';
     </script>
 
     <script type="text/javascript" src='gui/javascript/execTree.js'></script>
 {else}
     {literal}
     <script type="text/javascript">
-    	treeCfg = {tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
+      treeCfg = {tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                loader:"", enableDD:false, dragDropBackEndUrl:''};
     </script>
     {/literal}
     
     <script type="text/javascript">
-		treeCfg.loader = '{$gui->ajaxTree->loader}';
-		treeCfg.root_name = '{$gui->ajaxTree->root_node->name|escape:'javascript'}';
-		treeCfg.root_id = {$gui->ajaxTree->root_node->id};
-		treeCfg.root_href = '{$gui->ajaxTree->root_node->href}';
-		treeCfg.enableDD = '{$gui->ajaxTree->dragDrop->enabled}';
-		treeCfg.dragDropBackEndUrl = '{$gui->ajaxTree->dragDrop->BackEndUrl}';
-		treeCfg.cookiePrefix = '{$gui->ajaxTree->cookiePrefix}';
+    treeCfg.loader = '{$gui->ajaxTree->loader}';
+    treeCfg.root_name = '{$gui->ajaxTree->root_node->name|escape:'javascript'}';
+    treeCfg.root_id = {$gui->ajaxTree->root_node->id};
+    treeCfg.root_href = '{$gui->ajaxTree->root_node->href}';
+    treeCfg.enableDD = '{$gui->ajaxTree->dragDrop->enabled}';
+    treeCfg.dragDropBackEndUrl = '{$gui->ajaxTree->dragDrop->BackEndUrl}';
+    treeCfg.cookiePrefix = '{$gui->ajaxTree->cookiePrefix}';
     </script>
     <script type="text/javascript" src='gui/javascript/treebyloader.js'></script>
 {/if} 
@@ -55,37 +55,37 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 <form method="GET" id="printDocOptions" name="printDocOptions"
       action="lib/results/printDocument.php?type={$gui->doc_type}">
 
-	<input type="hidden" name="docTestPlanId" value="{$docTestPlanId}" />
-  	<input type="hidden" name="toggle_memory" id="toggle_memory"  value="0" />
+  <input type="hidden" name="docTestPlanId" value="{$docTestPlanId}" />
+    <input type="hidden" name="toggle_memory" id="toggle_memory"  value="0" />
 
-	<table class="smallGrey" id="optionsContainer" name="optionsContainer">
-		{section name=number loop=$arrCheckboxes}
-		<tr>
-			<td>{$arrCheckboxes[number].description}</td>
-			<td>
-				<input type="checkbox" name="{$arrCheckboxes[number].value}" id="cb{$arrCheckboxes[number].value}"
-				{if $arrCheckboxes[number].checked == 'y'}checked="checked"{/if}/>
-			</td>
-		</tr>
-		{/section}
-		<tr>
-		{if $docType == 'testspec' || $docType == 'reqspec'}
-			<td>{$labels.tr_td_show_as}</td>
-			<td>
-				<select id="format" name="format">
-					{html_options options=$gui->outputFormat selected=$selFormat}
-				</select>
-			</td>
-		{else}
-		    <td><input type="hidden" id="format" name="format" value="{$selFormat}" /></td>
-		{/if}
-		</tr>
-		<tr>
-		 <td><input type="button" id="toogleOptions" name="toogleOptions"
-		            onclick='cs_all_checkbox_in_div("optionsContainer","cb","toggle_memory");'
-		            value="{$labels.check_uncheck_all_options}" /> </td>
-		</tr>
-	</table>
+  <table class="smallGrey" id="optionsContainer" name="optionsContainer">
+    {section name=number loop=$gui->outputOptions}
+    <tr>
+      <td>{$gui->outputOptions[number].description}</td>
+      <td>
+        <input type="checkbox" name="{$gui->outputOptions[number].value}" id="cb{$gui->outputOptions[number].value}"
+        {if $gui->outputOptions[number].checked == 'y'}checked="checked"{/if}/>
+      </td>
+    </tr>
+    {/section}
+    <tr>
+    {if $docType == 'testspec' || $docType == 'reqspec'}
+      <td>{$labels.tr_td_show_as}</td>
+      <td>
+        <select id="format" name="format">
+          {html_options options=$gui->outputFormat selected=$selFormat}
+        </select>
+      </td>
+    {else}
+        <td><input type="hidden" id="format" name="format" value="{$selFormat}" /></td>
+    {/if}
+    </tr>
+    <tr>
+     <td><input type="button" id="toogleOptions" name="toogleOptions"
+                onclick='cs_all_checkbox_in_div("optionsContainer","cb","toggle_memory");'
+                value="{$labels.check_uncheck_all_options}" /> </td>
+    </tr>
+  </table>
 </form>
 </div>
 

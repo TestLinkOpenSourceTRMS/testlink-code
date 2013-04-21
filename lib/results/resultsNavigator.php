@@ -50,7 +50,6 @@ if( $build_count == 0)
 // -----------------------------------------------------------------------------
 // get navigation data
 $gui->menuItems = array();
-new dBug($gui->do_report);
 if($gui->do_report['status_ok'])
 {
   // create a list or reports

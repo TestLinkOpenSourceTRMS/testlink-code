@@ -5615,8 +5615,8 @@ class testcase extends tlObjectWithAttachments
     $goo->tcase_cfg->can_edit_executed = $grantsObj->testproject_edit_executed_testcases == 'yes' ? 1 : 0;
     $goo->tcase_cfg->can_delete_executed = $grantsObj->testproject_delete_executed_testcases == 'yes' ? 1 : 0;
 
-    $goo->view_req_rights = $grantsObj->mgt_view_req;
-    $goo->requirement_mgmt = $grantsObj->mgt_modify_req;
+    $goo->view_req_rights = property_exists($grantsObj, 'mgt_view_req') ? $grantsObj->mgt_view_req : 0;
+    $goo->requirement_mgmt = property_exists($grantsObj, 'mgt_modify_req' ) ? $grantsObj->mgt_modify_req : 0;
 
     $goo->parentTestSuiteName = '';
     $goo->tprojectName = '';

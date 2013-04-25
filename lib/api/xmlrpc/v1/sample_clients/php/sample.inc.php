@@ -51,9 +51,9 @@ var DetailController = {
  /** 
   * Need the IXR class for client
   */
-define("THIRD_PARTY_CODE","/../../../../third_party");
-require_once dirname(__FILE__) . THIRD_PARTY_CODE . '/xml-rpc/class-IXR.php';
-require_once dirname(__FILE__) . THIRD_PARTY_CODE . '/dBug/dBug.php';
+define("THIRD_PARTY_CODE","../../../../../../third_party");
+require_once THIRD_PARTY_CODE . '/xml-rpc/class-IXR.php';
+require_once THIRD_PARTY_CODE . '/dBug/dBug.php';
 if( isset($_SERVER['HTTP_REFERER']) )
 {
     $target = $_SERVER['HTTP_REFERER'];
@@ -70,8 +70,8 @@ $server_url=$prefix . $dummy[0] . "xmlrpc.php";
 echo '<h1>Test Link XML-RPC API - PHP Samples </h1><br />';
 
 // substitute your Dev Key Here
-define("DEV_KEY", "CLIENTSAMPLEDEVKEY");
-if( DEV_KEY == "CLIENTSAMPLEDEVKEY" )
+define("DEV_KEY", "dev01");
+if( DEV_KEY == "dev01" )
 {
     echo '<h1>Attention: DEVKEY is still setted to demo value (' . DEV_KEY . ')</h1>';
     echo 'Please check if this VALUE is defined for a user on yout DB Installation<b>';

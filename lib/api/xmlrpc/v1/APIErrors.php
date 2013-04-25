@@ -12,15 +12,14 @@
  * @link      http://testlink.org/api/
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.7
  * 
  */
  
  /**
   * general config file gives us lang_get access
   */
-require_once(dirname(__FILE__) . "/../../config.inc.php");
-require_once dirname(__FILE__) . '/../functions/lang_api.php';
+require_once 'lang_api.php';
 
 /**#@+
  * Constants

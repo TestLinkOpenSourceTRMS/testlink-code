@@ -26,10 +26,10 @@
 /** 
  * IXR is the class used for the XML-RPC server 
  */
-require_once(dirname(__FILE__) . "/../../third_party/xml-rpc/class-IXR.php");
+require_once("../../../../config.inc.php");
+require_once("common.php");
+require_once("xml-rpc/class-IXR.php");
 require_once("api.const.inc.php");
-require_once(dirname(__FILE__) . "/../../config.inc.php");
-require_once(dirname(__FILE__) . "/../functions/common.php");
 require_once("APIErrors.php");
 
 /**

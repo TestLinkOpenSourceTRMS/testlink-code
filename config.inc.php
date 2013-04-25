@@ -284,11 +284,24 @@ $tlCfg->authentication['ldap_server'] = 'localhost';
 $tlCfg->authentication['ldap_port'] = '389';
 $tlCfg->authentication['ldap_version'] = '3'; // could be '2' in some cases
 $tlCfg->authentication['ldap_root_dn'] = 'dc=mycompany,dc=com';
-$tlCfg->authentication['ldap_organization']	= '';    // e.g. '(organizationname=*Traffic)'
-$tlCfg->authentication['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Active Directory
 $tlCfg->authentication['ldap_bind_dn'] = ''; // Left empty for anonymous LDAP binding
 $tlCfg->authentication['ldap_bind_passwd'] = ''; // Left empty for anonymous LDAP binding
 $tlCfg->authentication['ldap_tls'] = false; // true -> use tls
+
+// Following configuration parameters are used to build 
+// ldap filter and ldap attributes used by ldap_search()
+//
+// filter => "(&$t_ldap_organization($t_ldap_uid_field=$t_username))";
+// attributess => array( $t_ldap_uid_field, 'dn' );
+// 
+// This can be used to manage situation like explained on post:
+// ActiveDirectory + users in AD group (http://www.teamst.org)
+// 
+$tlCfg->authentication['ldap_organization']	= ''; // e.g. '(organizationname=*Traffic)'
+$tlCfg->authentication['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Active Directory
+
+
+
 
 // Follows Mantisbt idea.
 // True if user does not exist on DB, but can be get from LDAP, 

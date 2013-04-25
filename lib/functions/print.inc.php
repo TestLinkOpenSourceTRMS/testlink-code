@@ -550,8 +550,8 @@ function renderHTMLHeader($title,$base_href,$doc_type,$jsSet=null)
     break;
 
     case DOC_TEST_SPEC:
-    case DOC_TEST_PLAN:
-    case DOC_TEST_REPORT:
+    case DOC_TEST_PLAN_DESIGN:
+    case DOC_TEST_PLAN_EXECUTION:
     case SINGLE_TESTCASE:
     default:
       $cssFile .= $docCfg->css_template;
@@ -633,7 +633,7 @@ function renderFirstPage($doc_info)
   $output .= '<div class="doc_title" style="text-align:left;margin: auto;">' . '<p>' . 
              lang_get('testproject') . ": " . $doc_info->tproject_name;
 
-  if($doc_info->type == DOC_TEST_PLAN || $doc_info->type == DOC_TEST_REPORT)
+  if($doc_info->type == DOC_TEST_PLAN_DESIGN || $doc_info->type == DOC_TEST_PLAN_EXECUTION)
   {
     $output .= '<br>' . lang_get('testplan') . ": " . $doc_info->testplan_name;
   }  

@@ -79,8 +79,10 @@ switch ($doc_info->type)
     }
   break;
     
-  case DOC_TEST_PLAN:
-  case DOC_TEST_REPORT:
+  case DOC_TEST_PLAN_DESIGN:
+    $printingOptions['metrics'] = true; // FORCE
+  
+  case DOC_TEST_PLAN_EXECUTION:
     $tplan_mgr = new testplan($db);
     $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
     $doc_info->testplan_name = htmlspecialchars($tplan_info['name']);
@@ -114,7 +116,7 @@ switch ($doc_info->type)
     $doc_data->statistics = null;                                            
     if ($printingOptions['metrics'])
     {
-      $doc_data->statistics = buildStatistics($items2use,$args->tplan_id,$decode,$tplan_mgr);
+      $doc_data->statistics = timeStatistics($items2use,$args->tplan_id,$decode,$tplan_mgr);
     }
   break;
 }
@@ -140,8 +142,10 @@ if ($treeForPlatform)
   // 
   switch ($doc_info->type)
   {
-    case DOC_TEST_PLAN:
-    case DOC_TEST_REPORT:
+    case DOC_TEST_PLAN_DESIGN:
+      $printingOptions['metrics'] = true; // FORCED
+
+    case DOC_TEST_PLAN_EXECUTION:
       $docText .= renderTestProjectItem($doc_info);
       $docText .= renderTestPlanItem($doc_info);
       $cfieldFormatting=array('table_css_style' => 'class="cf"');
@@ -174,8 +178,8 @@ if ($treeForPlatform)
                                                     $args->tproject_id,$platform_id);
         break;
       
-        case DOC_TEST_PLAN:
-        case DOC_TEST_REPORT:
+        case DOC_TEST_PLAN_DESIGN:
+        case DOC_TEST_PLAN_EXECUTION:
           $tocPrefix++;
           if ($showPlatforms)
           {
@@ -187,7 +191,8 @@ if ($treeForPlatform)
                                                 $args->tplan_id, $args->tproject_id, $platform_id);
 
           
-          if (($doc_info->type == DOC_TEST_REPORT) && ($printingOptions['metrics']))
+          // if (($doc_info->type == DOC_TEST_PLAN_EXECUTION) && ($printingOptions['metrics']))
+          if( $printingOptions['metrics'] )
           {
             $docText .= buildTestPlanMetrics($doc_data->statistics,$platform_id);
           }  
@@ -354,8 +359,8 @@ function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
                          'exclude_children_of' => array('testcase'=>'exclude my children',
                                                         'requirement_spec'=> 'exclude my children'));     
 
-  $lblKey  = array(DOC_TEST_SPEC => 'title_test_spec', DOC_TEST_PLAN => 'report_test_plan_design',
-                   DOC_TEST_REPORT => 'report_test_plan_execution', DOC_REQ_SPEC => 'req_spec');
+  $lblKey  = array(DOC_TEST_SPEC => 'title_test_spec', DOC_TEST_PLAN_DESIGN => 'report_test_plan_design',
+                   DOC_TEST_PLAN_EXECUTION => 'report_test_plan_execution', DOC_REQ_SPEC => 'req_spec');
 
 
   $doc->content_range = $argsObj->level;
@@ -366,11 +371,11 @@ function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
    
   switch ($doc->type)
   {
-    case DOC_TEST_PLAN: 
+    case DOC_TEST_PLAN_DESIGN: 
       $my['options']['order_cfg'] = array("type" =>'exec_order',"tplan_id" => $argsObj->tplan_id);
       break;
     
-    case DOC_TEST_REPORT: 
+    case DOC_TEST_PLAN_EXECUTION: 
       $my['options']['order_cfg'] = array("type" =>'exec_order',                      
                         "tplan_id" => $argsObj->tplan_id);
       $my['options']['prepareNode'] = array('viewType' => 'executionTree');                        
@@ -628,7 +633,7 @@ function buildContentForTestPlanBranch(&$dbHandler,$itemsTree,$branchRoot,$tplan
 }    
 
 
-function buildStatistics($items,$tplanID,$decode,$tplanMgr)
+function timeStatistics($items,$tplanID,$decode,$tplanMgr)
 {
   $stats = array();
   $stats['estimated_execution'] = getStatsEstimatedExecTime($tplanMgr,$items->estimatedExecTime,$tplanID);

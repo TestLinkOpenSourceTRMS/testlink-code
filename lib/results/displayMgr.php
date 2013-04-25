@@ -36,17 +36,17 @@ function generateHtmlEmail(&$smarty, $template_file, $mailCfg)
 	if($mailCfg->to == "")
 	{
 		$op->status_ok = false;
-  		$op->msg = lang_get("error_sendreport_no_email_credentials");
-  	}
-  	else
-  	{
-		$op = email_send( $mailCfg->from, $mailCfg->to, $mailCfg->subject, $html_report, $mailCfg->cc, false,true);
+  	$op->msg = lang_get("error_sendreport_no_email_credentials");
+  }
+  else
+  {
+    $op = email_send( $mailCfg->from, $mailCfg->to, $mailCfg->subject, $html_report, $mailCfg->cc, false,true);
 
 		if($op->status_ok)
 		{
-			$op->msg = sprintf(lang_get('mail_sent_to'), $mailCfg->to);
+		  $op->msg = sprintf(lang_get('mail_sent_to'), $mailCfg->to);
 		}
-    }
+  }
 	return $op;
 }
 
@@ -87,7 +87,7 @@ function displayReport($template_file, &$smarty, $doc_format, $mailCfg = null)
  * Generate HTML header and send it to browser
  * @param string $format identifier of document format; value must be in $tlCfg->reports_formats
  * @param integer $doc_kind Magic number of document kind; see consts.inc.php for list 
- * 		(for example: DOC_TEST_PLAN)
+ * 		(for example: DOC_TEST_PLAN_DESIGN)
  * @author havlatm
  */
 function flushHttpHeader($format, $doc_kind = 0)
@@ -97,11 +97,25 @@ function flushHttpHeader($format, $doc_kind = 0)
 
 	switch($doc_kind)
 	{
-		case DOC_TEST_SPEC: $kind_acronym = '_test_spec'; break;
-		case DOC_TEST_PLAN: $kind_acronym = '_test_plan'; break;
-		case DOC_TEST_REPORT: $kind_acronym = '_test_report'; break;
-		case DOC_REQ_SPEC: $kind_acronym = '_req_spec'; break;
-		default: $kind_acronym = '';
+		case DOC_TEST_SPEC: 
+			$kind_acronym = '_test_spec'; 
+		break;
+		
+		case DOC_TEST_PLAN_DESIGN: 
+			$kind_acronym = '_test_plan'; 
+    break;
+
+		case DOC_TEST_PLAN_EXECUTION: 
+      $kind_acronym = '_test_report';
+    break;
+		
+    case DOC_REQ_SPEC: 
+      $kind_acronym = '_req_spec'; 
+    break;
+		
+    default: 
+      $kind_acronym = '';
+    break;  
 	}
 	
 	if ($format == FORMAT_MAIL_HTML)
@@ -115,10 +129,10 @@ function flushHttpHeader($format, $doc_kind = 0)
 
 
   header("Content-Description: TestLink - Generated Document");
-  if ($format != FORMAT_HTML)
-	header("Content-Disposition: attachment; filename=$filename");
   header("Content-type: {$reports_applications[$format]}; name='Testlink_$format'");
+  if ($format != FORMAT_HTML)
+  {
+    header("Content-Disposition: attachment; filename=$filename");
+  }  
 	flush();
 }
-
-?>

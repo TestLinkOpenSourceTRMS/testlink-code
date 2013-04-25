@@ -29,8 +29,8 @@ $arrCheckboxes = init_checkboxes($args);
 $workPath = 'lib/results/printDocument.php';
 switch($args->doc_type)
 {
-  case 'testplan':
-  case 'testreport':
+  case DOC_TEST_PLAN_DESIGN:
+  case DOC_TEST_PLAN_EXECUTION:
     $addTestPlanID = true;
   break;
   
@@ -50,12 +50,12 @@ $tree = null;
 $additionalArgs = '';
 switch($args->doc_type) 
 {
-  case 'testspec':
-  case 'reqspec':
+  case DOC_TEST_SPEC:
+  case DOC_REQ_SPEC:
   break;
 
-  case 'testplan':
-  case 'testreport':
+  case DOC_TEST_PLAN_DESIGN:
+  case DOC_TEST_PLAN_EXECUTION:
   $tplan_mgr = new testplan($db);
   $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
   $testplan_name = htmlspecialchars($tplan_info['name']);
@@ -199,8 +199,7 @@ function initializeGui(&$db,$args)
     
     switch($args->doc_type)
     {
-      // BUGID 3067
-      case 'reqspec':
+      case DOC_REQ_SPEC:
         $gui->tree_title = lang_get('title_req_print_navigator');
             
             $gui->ajaxTree->loader =  $args->basehref . 'lib/ajax/getrequirementnodes.php?' .
@@ -216,9 +215,8 @@ function initializeGui(&$db,$args)
             $gui->ajaxTree->cookiePrefix .= "tproject_id_" . $gui->ajaxTree->root_node->id . "_" ;
           $gui->mainTitle = lang_get('requirement_specification_report');
       break;
-      // end BUGID 3067
       
-    case 'testspec':
+    case DOC_TEST_SPEC:
       $gui->tree_title = lang_get('title_tc_print_navigator');
             
             $gui->ajaxTree->loader =  $args->basehref . 'lib/ajax/gettprojectnodes.php?' .
@@ -236,11 +234,11 @@ function initializeGui(&$db,$args)
           $gui->mainTitle = lang_get('testspecification_report');
       break;
       
-      case 'testreport':
+      case DOC_TEST_PLAN_EXECUTION:
           $gui->mainTitle = lang_get('test_report');
       break;
         
-      case 'testplan':
+      case DOC_TEST_PLAN_DESIGN:
         $gui->tree_title = lang_get('title_tp_print_navigator');
         $gui->ajaxTree->loadFromChildren = 1;
         $gui->ajaxTree->loader = '';
@@ -312,11 +310,7 @@ function init_checkboxes(&$args)
         $arrCheckboxes[] = array( 'value' => 'requirement','description' => 'opt_show_tc_reqs','checked' => 'n');
       }
 
-      //if($args->doc_type == 'testplan') 
-      //{
-      //  $arrCheckboxes[] = array( 'value' => 'testplan','description' => 'opt_show_tplan_txt','checked' => 'n');
-      //} 
-      if ($args->doc_type == 'testreport') 
+      if ($args->doc_type == DOC_TEST_PLAN_EXECUTION) 
       {
         $arrCheckboxes[] = array('value' => 'notes', 'description' => 'opt_show_tc_notes',  'checked' => 'n');
         $arrCheckboxes[] = array( 'value' => 'passfail','description' => 'opt_show_passfail','checked' => 'y');

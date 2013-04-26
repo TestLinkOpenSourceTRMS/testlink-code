@@ -975,24 +975,25 @@ class tlTestCaseFilterControl extends tlFilterControl {
         
         if ($this->do_filtering)
         {
-                    // TICKET 4496: added active/inactive filter
-                    $ignore_inactive_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
-                    $ignore_active_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
-                    if ($filters['filter_active_inactive'] == IGNORE_INACTIVE_TESTCASES)
-                    {
-                        $ignore_inactive_testcases = IGNORE_INACTIVE_TESTCASES;
-                    }
-                    if ($filters['filter_active_inactive'] == IGNORE_ACTIVE_TESTCASES)
-                    {
-                        $ignore_active_testcases = IGNORE_ACTIVE_TESTCASES;
-                    }
+          // TICKET 4496: added active/inactive filter
+          // Will be refactored in future versions
+          // $ignore_inactive_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
+          // $ignore_active_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
+          // if ($filters['filter_active_inactive'] == IGNORE_INACTIVE_TESTCASES)
+          // {
+          //   $ignore_inactive_testcases = IGNORE_INACTIVE_TESTCASES;
+          // }
+          // if ($filters['filter_active_inactive'] == IGNORE_ACTIVE_TESTCASES)
+          // {
+          //   $ignore_active_testcases = IGNORE_ACTIVE_TESTCASES;
+          // }
                     
           $options = array('forPrinting' => NOT_FOR_PRINTING,
                            'hideTestCases' => HIDE_TESTCASES,
                            'tc_action_enabled' => ACTION_TESTCASE_DISABLE,
                            'viewType' => 'testSpecTreeForTestPlan',
-                                     'ignore_inactive_testcases' => $ignore_inactive_testcases,
-                                     'ignore_active_testcases' => $ignore_active_testcases);
+                           'ignore_inactive_testcases' => $ignore_inactive_testcases,
+                           'ignore_active_testcases' => $ignore_active_testcases);
       
           $tree_menu = generateTestSpecTree($this->db,
                                             $this->args->testproject_id,

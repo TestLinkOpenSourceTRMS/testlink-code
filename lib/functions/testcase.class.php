@@ -2782,8 +2782,6 @@ class testcase extends tlObjectWithAttachments
           ORDER BY NHA.node_order ASC, NHA.parent_id ASC, execution_id {$my['options']['exec_id_order']}";
   
   
-    //echo __FUNCTION__ . '::' . $sql . '<br>';
-
     $recordset = $this->db->fetchArrayRowsIntoMap($sql,'id');
     return($recordset ? $recordset : null);
   }
@@ -4601,40 +4599,39 @@ class testcase extends tlObjectWithAttachments
   function get_last_active_version($id,$filters=null,$options=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      $recordset = null;
-      $itemSet = implode(',',(array)$id);
+    $recordset = null;
+    $itemSet = implode(',',(array)$id);
 
     $my = array();
-      $my['filters'] = array( 'cfields' => null);
-      $my['filters'] = array_merge($my['filters'], (array)$filters);
+    $my['filters'] = array( 'cfields' => null);
+    $my['filters'] = array_merge($my['filters'], (array)$filters);
 
-      $my['options'] = array( 'max_field' => 'tcversion_id', 'access_key' => 'tcversion_id');
-      $my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array( 'max_field' => 'tcversion_id', 'access_key' => 'tcversion_id');
+    $my['options'] = array_merge($my['options'], (array)$options);
       
       
       
-      switch($my['options']['max_field'])
-      {
-        case 'version':
-          $maxClause = " SELECT MAX(TCV.version) AS version ";
-          $selectClause = " SELECT TCV.version AS version ";
-        break;  
+    switch($my['options']['max_field'])
+    {
+      case 'version':
+        $maxClause = " SELECT MAX(TCV.version) AS version ";
+        $selectClause = " SELECT TCV.version AS version ";
+      break;  
 
-        case 'tcversion_id':
-          $maxClause = " SELECT MAX(TCV.id) AS tcversion_id ";
-          $selectClause = " SELECT TCV.id AS tcversion_id ";
-        break;  
-        
-      }
+      case 'tcversion_id':
+        $maxClause = " SELECT MAX(TCV.id) AS tcversion_id ";
+        $selectClause = " SELECT TCV.id AS tcversion_id ";
+      break;  
+    }
       
     $sql = "/* $debugMsg */ " .       
-         " {$maxClause}, NH_TCVERSION.parent_id AS testcase_id " .
-         " FROM {$this->tables['tcversions']} TCV " .
-         " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
-         " ON NH_TCVERSION.id = TCV.id AND TCV.active=1 " .
-         " AND NH_TCVERSION.parent_id IN ({$itemSet}) " .
-         " GROUP BY NH_TCVERSION.parent_id " .
-         " ORDER BY NH_TCVERSION.parent_id ";
+           " {$maxClause}, NH_TCVERSION.parent_id AS testcase_id " .
+           " FROM {$this->tables['tcversions']} TCV " .
+           " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
+           " ON NH_TCVERSION.id = TCV.id AND TCV.active=1 " .
+           " AND NH_TCVERSION.parent_id IN ({$itemSet}) " .
+           " GROUP BY NH_TCVERSION.parent_id " .
+           " ORDER BY NH_TCVERSION.parent_id ";
 
     // $recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
     // HERE FIXED access keys
@@ -4692,16 +4689,17 @@ class testcase extends tlObjectWithAttachments
         $cfJoin = " JOIN {$this->tables['cfield_design_values']} CFDV ON CFDV.node_id = TCV.id ";
         $cfQuery = " AND ({$cfQuery}) ";
 
+        // new dBug($cfSelect); new dBug($cfJoin); new dBug($cfQuery);
       }
 
       $keySet = implode(',',array_keys($recordset));
       $sql = "/* $debugMsg */ " .       
-           " {$selectClause}, NH_TCVERSION.parent_id AS testcase_id, " .
-           " TCV.version,TCV.execution_type,TCV.importance {$cfSelect} " .
-           " FROM {$this->tables['tcversions']} TCV " .
-           " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
-           " ON NH_TCVERSION.id = TCV.id {$cfJoin} " .
-           " AND NH_TCVERSION.id IN ({$keySet}) {$cfQuery}";
+             " {$selectClause}, NH_TCVERSION.parent_id AS testcase_id, " .
+             " TCV.version,TCV.execution_type,TCV.importance {$cfSelect} " .
+             " FROM {$this->tables['tcversions']} TCV " .
+             " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
+             " ON NH_TCVERSION.id = TCV.id {$cfJoin} " .
+             " AND NH_TCVERSION.id IN ({$keySet}) {$cfQuery}";
 
       $recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key'],database::CUMULATIVE);
 
@@ -4719,6 +4717,7 @@ class testcase extends tlObjectWithAttachments
           {
             if( count($recordset[$key]) < $cfQty)
             {
+              // echo 'REMOVING<br>';
               unset($recordset[$key]); // remove
             }
             else
@@ -4743,7 +4742,7 @@ class testcase extends tlObjectWithAttachments
         }
       }
     }
-      return $recordset;
+    return $recordset;
   }
 
 
@@ -5432,9 +5431,6 @@ class testcase extends tlObjectWithAttachments
     $my['opt'] = array_merge($my['opt'],(array)$options);
     $safeContext = $execContext;
     $safeIdentity = $identity;
-    //new dBug($safeIdentity);
-    //array_walk($safeIdentity,'intval');
-    // array_walk($safeContext,'intval');
     foreach($safeContext as &$ele)
     {
       $ele = intval($ele);
@@ -5443,9 +5439,6 @@ class testcase extends tlObjectWithAttachments
     {
       $ele = intval($ele);
     }
-    
-    //new dBug($safeIdentity);
-    //new dBug($safeContext);
     
     // we have to manage following situations
     // 1. we do not know test case version id.

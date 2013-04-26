@@ -3,11 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @package 	  TestLink
- * @author 		  Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2005-2012, TestLink community 
- * @filesource	tc_exec_assignment.php
- * @link 		    http://www.teamst.org/index.php
+ * @package     TestLink
+ * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
+ * @copyright   2005-2013, TestLink community 
+ * @filesource  tc_exec_assignment.php
+ * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
  * 
@@ -22,7 +22,6 @@ require_once("specview.php");
 // Time tracking - $chronos[] = microtime(true);$tnow = end($chronos);
 testlinkInitPage($db,false,false,"checkRights");
 
-// echo __FILE__;die();
 $tree_mgr = new tree($db); 
 $tplan_mgr = new testplan($db); 
 $tcase_mgr = new testcase($db); 
@@ -42,150 +41,138 @@ if(is_array($args->keyword_id))
 }
 $arrData = array();
 
-//New dBug($args->doAction);
-
 if(!is_null($args->doAction))
 {
-	if(!is_null($args->achecked_tc))
-	{
-		$types_map = $assignment_mgr->get_available_types();
-		$status_map = $assignment_mgr->get_available_status();
+  if(!is_null($args->achecked_tc))
+  {
+    $types_map = $assignment_mgr->get_available_types();
+    $status_map = $assignment_mgr->get_available_status();
 
-		$task_test_execution = $types_map['testcase_execution']['id'];
-		$open = $status_map['open']['id'];
-		$db_now = $db->db_now();
+    $task_test_execution = $types_map['testcase_execution']['id'];
+    $open = $status_map['open']['id'];
+    $db_now = $db->db_now();
 
     $features2 = array( 'upd' => array(), 'ins' => array(), 'del' => array());
-	  $method2call = array( 'upd' => 'update', 'ins' => 'assign', 'del' => 'delete_by_feature_id_and_build_id');
-	  $called = array( 'upd' => false, 'ins' => false, 'del' => false);
+    $method2call = array( 'upd' => 'update', 'ins' => 'assign', 'del' => 'delete_by_feature_id_and_build_id');
+    $called = array( 'upd' => false, 'ins' => false, 'del' => false);
 
-		foreach($args->achecked_tc as $key_tc => $platform_tcversion)
-		{
-			foreach($platform_tcversion as $platform_id => $tcversion_id)
-			{
-				$feature_id = $args->feature_id[$key_tc][$platform_id];
-				if($args->has_prev_assignment[$key_tc][$platform_id] > 0)
-				{
-					if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
-					{
+    foreach($args->achecked_tc as $key_tc => $platform_tcversion)
+    {
+      foreach($platform_tcversion as $platform_id => $tcversion_id)
+      {
+        $feature_id = $args->feature_id[$key_tc][$platform_id];
+        if($args->has_prev_assignment[$key_tc][$platform_id] > 0)
+        {
+          if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
+          {
             // Do only if tester has changed
-					    if( $args->has_prev_assignment[$key_tc][$platform_id] != $args->tester_for_tcid[$key_tc][$platform_id])
-					    {
-				        $op='upd';
-						    $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
-						    $features2[$op][$feature_id]['type'] = $task_test_execution;
-						    $features2[$op][$feature_id]['status'] = $open;
-						    $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
-						    $features2[$op][$feature_id]['tcase_id'] = $key_tc;
-						    $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
-            	            $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];					    
-            	            $features2[$op][$feature_id]['creation_ts'] = $db_now; //BUGID 3346
-            	            $features2[$op][$feature_id]['build_id'] = $args->build_id; // BUGID 3406
-						}
-					} 
-					else
-					{
-            	        $op='del';
-						$features2[$op][$feature_id]['tcase_id'] = $key_tc;
-						$features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
-            	        $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];
-            	        $features2[$op][$feature_id]['build_id'] = $args->build_id; // BUGID 3406					    
-					}	
-				}
-				else if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
-				{
-				    $op='ins';
-					$features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
-					$features2[$op][$feature_id]['type'] = $task_test_execution;
-					$features2[$op][$feature_id]['status'] = $open;
-					$features2[$op][$feature_id]['creation_ts'] = $db_now;
-					$features2[$op][$feature_id]['assigner_id'] = $args->user_id;
-					$features2[$op][$feature_id]['tcase_id'] = $key_tc;
-					$features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
-					$features2[$op][$feature_id]['build_id'] = $args->build_id; // BUGID 3406
-				}
-			}
-			
-		}
-		
-	    foreach($features2 as $key => $values)
-	    {
-	        if( count($features2[$key]) > 0 )
-	        {
-	        	//TLog($method2call[$key],"AUDIT");
-				//Echo $method2call[$key];
-	           	$assignment_mgr->$method2call[$key]($values);
-	           	$called[$key]=true;
-	        }  
-	    }
-				
-		if($args->send_mail)
-		{
-		    foreach($called as $ope => $ope_status)
-		    {
-	            if($ope_status)
-	            {
-	                send_mail_to_testers($db,$tcase_mgr,$gui,$args,$features2[$ope],$ope);     
-		        }
-		    }
-		}	// if($args->send_mail)		
-	}  
+              if( $args->has_prev_assignment[$key_tc][$platform_id] != $args->tester_for_tcid[$key_tc][$platform_id])
+              {
+                $op='upd';
+                $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
+                $features2[$op][$feature_id]['type'] = $task_test_execution;
+                $features2[$op][$feature_id]['status'] = $open;
+                $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
+                $features2[$op][$feature_id]['tcase_id'] = $key_tc;
+                $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
+                          $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];             
+                          $features2[$op][$feature_id]['creation_ts'] = $db_now; //BUGID 3346
+                          $features2[$op][$feature_id]['build_id'] = $args->build_id; // BUGID 3406
+            }
+          } 
+          else
+          {
+                      $op='del';
+            $features2[$op][$feature_id]['tcase_id'] = $key_tc;
+            $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
+                      $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];
+                      $features2[$op][$feature_id]['build_id'] = $args->build_id; // BUGID 3406             
+          } 
+        }
+        else if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
+        {
+            $op='ins';
+          $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
+          $features2[$op][$feature_id]['type'] = $task_test_execution;
+          $features2[$op][$feature_id]['status'] = $open;
+          $features2[$op][$feature_id]['creation_ts'] = $db_now;
+          $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
+          $features2[$op][$feature_id]['tcase_id'] = $key_tc;
+          $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
+          $features2[$op][$feature_id]['build_id'] = $args->build_id; // BUGID 3406
+        }
+      }
+      
+    }
+    
+      foreach($features2 as $key => $values)
+      {
+        if( count($features2[$key]) > 0 )
+        {
+          $assignment_mgr->$method2call[$key]($values);
+          $called[$key]=true;
+        }  
+      }
+        
+    if($args->send_mail)
+    {
+      foreach($called as $ope => $ope_status)
+      {
+        if($ope_status)
+        {
+          send_mail_to_testers($db,$tcase_mgr,$gui,$args,$features2[$ope],$ope);     
+        }
+      }
+    } // if($args->send_mail)   
+  }  
 }
 
 
 switch($args->level)
 {
-	case 'testcase':
-		// build the data need to call gen_spec_view
+  case 'testcase':
+    // build the data need to call gen_spec_view
     $xx=$tcase_mgr->getPathLayered(array($args->id));
     $yy = array_keys($xx);  // done to silence warning on end()
     $tsuite_data['id'] = end($yy);
     $tsuite_data['name'] = $xx[$tsuite_data['id']]['value']; 
         
-		$xx = $tplan_mgr->getLinkInfo($args->tplan_id,$args->id,$args->control_panel['setting_platform'],
-									                array('output' => 'assignment_info','build4assignment' => $args->build_id));
+    $xx = $tplan_mgr->getLinkInfo($args->tplan_id,$args->id,$args->control_panel['setting_platform'],
+                                  array('output' => 'assignment_info','build4assignment' => $args->build_id));
     $linked_items[$args->id] = $xx;
-		$opt = array('write_button_only_if_linked' => 1, 'user_assignments_per_build' => $args->build_id);
-		$filters = array('keywords' => $keywordsFilter->items);
+    $opt = array('write_button_only_if_linked' => 1, 'user_assignments_per_build' => $args->build_id);
+    $filters = array('keywords' => $keywordsFilter->items);
+    
+    $my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
+                            $linked_items,null,$filters,$opt);
+    
+    // index 0 contains data for the parent test suite of this test case, 
+    // other elements are not needed.
+    $out = array();
+    $out['spec_view'][0] = $my_out['spec_view'][0];
+    $out['num_tc'] = 1;
+  break;
+    
+  case 'testsuite':
+    $filters = array();
+    $filters['keywordsFilter'] = $keywordsFilter;
+    $filters['testcaseFilter'] = (isset($args->testcases_to_show)) ? $args->testcases_to_show : null;
+    $filters['assignedToFilter'] = property_exists($args,'filter_assigned_to') ? $args->filter_assigned_to : null;
+    $filters['executionTypeFilter'] = $args->control_panel['filter_execution_type'];
+    $filters['cfieldsFilter'] = $args->control_panel['filter_custom_fields'];
+    
+    // $opt = array('user_assignments_per_build' => $args->build_id);
+    $opt = array('assigned_on_build' => $args->build_id, 'addPriority' => true);
+    $filters += $opt;
 
-		//New dBug($opt);
-		//New dBug($linked_items);
-		//Die();
-		
-		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-						                $linked_items,null,$filters,$opt);
-		
-		// index 0 contains data for the parent test suite of this test case, 
-		// other elements are not needed.
-		$out = array();
-		$out['spec_view'][0] = $my_out['spec_view'][0];
-		$out['num_tc'] = 1;
-		break;
-		
-	case 'testsuite':
-		$filters = array();
-		$filters['keywordsFilter'] = $keywordsFilter;
-		$filters['testcaseFilter'] = (isset($args->testcases_to_show)) ? $args->testcases_to_show : null;
-		$filters['assignedToFilter'] = property_exists($args,'filter_assigned_to') ? $args->filter_assigned_to : null;
-		$filters['executionTypeFilter'] = $args->control_panel['filter_execution_type'];
-		$filters['cfieldsFilter'] = $args->control_panel['filter_custom_fields'];
-		
-		// $opt = array('user_assignments_per_build' => $args->build_id);
-		$opt = array('assigned_on_build' => $args->build_id, 'addPriority' => true);
-		$filters += $opt;
+    // platform filter is generated inside getFilteredSpecView() using $args->control_panel['setting_platform'];
+    $out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
+  break;
 
-		// platform filter is generated inside getFilteredSpecView() using $args->control_panel['setting_platform'];
-		$out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
-    //new dBug($out);
-    //die();
-		break;
-
-	default:
-		show_instructions('tc_exec_assignment');
-		break;
+  default:
+    show_instructions('tc_exec_assignment');
+  break;
 }
-		//new dBug($out);
-		//die(); 
 
 $gui->items = $out['spec_view'];
 
@@ -194,24 +181,17 @@ $gui->items_qty = is_null($gui->items) ? 0 : count($gui->items);
 $gui->has_tc = $out['num_tc'] > 0 ? 1:0;
 $gui->support_array = array_keys($gui->items);
 
-//New dBug($gui);
-//Die();
-
-
 if ($_SESSION['testprojectOptions']->testPriorityEnabled) 
 {
-	$urgencyCfg = config_get('urgency');
-	$gui->priority_labels = init_labels($urgencyCfg["code_label"]);
+  $urgencyCfg = config_get('urgency');
+  $gui->priority_labels = init_labels($urgencyCfg["code_label"]);
 }
 
-//new dBug($gui->items);
-//die();
 // $chronos[] = microtime(true);
 // $tnow = end($chronos); $tprev = prev($chronos);
 // $t_elapsed = number_format( $tnow - $tprev, 4);
 // echo '<br> ' . __FUNCTION__ . ' Elapsed BEFORE RENDERING (sec) (xxx()):' . $t_elapsed .'<br>';
-// reset($chronos);	
-
+// reset($chronos); 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
@@ -220,7 +200,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 // $tnow = end($chronos); $tprev = prev($chronos);
 // $t_elapsed = number_format( $tnow - $tprev, 4);
 // echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (xxx()):' . $t_elapsed .'<br>';
-// reset($chronos);	
+// reset($chronos); 
 
 
 
@@ -234,69 +214,69 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function init_args()
 {
-	  $_REQUEST = strings_stripSlashes($_REQUEST);
-	  $args = new stdClass();
-	  $args->user_id = $_SESSION['userID'];
-	  $args->tproject_id = $_SESSION['testprojectID'];
-	  $args->tproject_name = $_SESSION['testprojectName'];
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+    $args = new stdClass();
+    $args->user_id = $_SESSION['userID'];
+    $args->tproject_id = $_SESSION['testprojectID'];
+    $args->tproject_name = $_SESSION['testprojectName'];
       
-	  $key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
-	    	              'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,
-	    	              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0);
-	  
-	  foreach($key2loop as $key => $value)
-	  {
-	  	$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
-	  }
+    $key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
+                      'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,
+                      'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0);
     
-	
-	// BUGID 3516
-	// For more information about the data accessed in session here, see the comment
-	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
-	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-	$mode = 'plan_mode';
-	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
+    foreach($key2loop as $key => $value)
+    {
+      $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
+    }
+    
+  
+  // BUGID 3516
+  // For more information about the data accessed in session here, see the comment
+  // in the file header of lib/functions/tlTestCaseFilterControl.class.php.
+  $form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+  $mode = 'plan_mode';
+  $session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
 
-	$args->control_panel = $session_data;  // BUGID 3934
-		
-	$key2loop = array('refreshTree' => array('key' => 'setting_refresh_tree_on_action', 'value' => 0),
-					  'filter_assigned_to' => array('key' => 'filter_assigned_user', 'value' => null));
-	
-	foreach($key2loop as $key => $info)
-	{
-		$args->$key = isset($session_data[$info['key']]) ? $session_data[$info['key']] : $info['value']; 
-	}
-	
+  $args->control_panel = $session_data;  // BUGID 3934
+    
+  $key2loop = array('refreshTree' => array('key' => 'setting_refresh_tree_on_action', 'value' => 0),
+            'filter_assigned_to' => array('key' => 'filter_assigned_user', 'value' => null));
+  
+  foreach($key2loop as $key => $info)
+  {
+    $args->$key = isset($session_data[$info['key']]) ? $session_data[$info['key']] : $info['value']; 
+  }
+  
     
     $args->keyword_id = 0;
-	$fk = 'filter_keywords';
-	if (isset($session_data[$fk])) {
-		$args->keyword_id = $session_data[$fk];
-		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
-			$args->keyword_id = $args->keyword_id[0];
-		}
-	}
-	
-	$args->keywordsFilterType = null;
-	$fk = 'filter_keywords_filter_type';
-	if (isset($session_data[$fk])) {
-		$args->keywordsFilterType = $session_data[$fk];
-	}
-	
-	
-	$args->testcases_to_show = null;
-	if (isset($session_data['testcases_to_show'])) {
-		$args->testcases_to_show = $session_data['testcases_to_show'];
-	}
-	
-	// BUGID 3406
-	$args->build_id = isset($session_data['setting_build']) ? $session_data['setting_build'] : 0;
-	$args->tplan_id = isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0;
-	if ($args->tplan_id) {
-		$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
-	}
-		
-	return $args;
+  $fk = 'filter_keywords';
+  if (isset($session_data[$fk])) {
+    $args->keyword_id = $session_data[$fk];
+    if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
+      $args->keyword_id = $args->keyword_id[0];
+    }
+  }
+  
+  $args->keywordsFilterType = null;
+  $fk = 'filter_keywords_filter_type';
+  if (isset($session_data[$fk])) {
+    $args->keywordsFilterType = $session_data[$fk];
+  }
+  
+  
+  $args->testcases_to_show = null;
+  if (isset($session_data['testcases_to_show'])) {
+    $args->testcases_to_show = $session_data['testcases_to_show'];
+  }
+  
+  // BUGID 3406
+  $args->build_id = isset($session_data['setting_build']) ? $session_data['setting_build'] : 0;
+  $args->tplan_id = isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0;
+  if ($args->tplan_id) {
+    $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
+  }
+    
+  return $args;
 }
 
 /*
@@ -309,8 +289,8 @@ function init_args()
 */
 function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
-	$platform_mgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
-	
+  $platform_mgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
+  
     $tcase_cfg = config_get('testcase_cfg');
     $gui = new stdClass();
     $gui->platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
@@ -323,39 +303,39 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui->send_mail_checked = "";
     if($gui->send_mail)
     {
-    	$gui->send_mail_checked = ' checked="checked" ';
+      $gui->send_mail_checked = ' checked="checked" ';
     }
     
     $gui->glueChar=$tcase_cfg->glue_character;
     
     if ($argsObj->level != 'testproject')
     {
-	    $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
-	    $gui->testCasePrefix .= $tcase_cfg->glue_character;
-									  
-	    $gui->keywordsFilterType = $argsObj->keywordsFilterType;
-	
-	    // BUGID 4636
-	    $gui->build_id = $argsObj->build_id;
-	    $gui->tplan_id = $argsObj->tplan_id;
-	    
-	    $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
-	    $gui->testPlanName = $tplan_info['name'];
-	    
-	    // 3406
-	    $build_info = $tplanMgr->get_build_by_id($argsObj->tplan_id, $argsObj->build_id);
-	    $gui->buildName = $build_info['name'];
-	    $gui->main_descr = sprintf(lang_get('title_tc_exec_assignment'), 
-	                               $gui->buildName, $gui->testPlanName);
+      $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
+      $gui->testCasePrefix .= $tcase_cfg->glue_character;
+                    
+      $gui->keywordsFilterType = $argsObj->keywordsFilterType;
+  
+      // BUGID 4636
+      $gui->build_id = $argsObj->build_id;
+      $gui->tplan_id = $argsObj->tplan_id;
+      
+      $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
+      $gui->testPlanName = $tplan_info['name'];
+      
+      // 3406
+      $build_info = $tplanMgr->get_build_by_id($argsObj->tplan_id, $argsObj->build_id);
+      $gui->buildName = $build_info['name'];
+      $gui->main_descr = sprintf(lang_get('title_tc_exec_assignment'), 
+                                 $gui->buildName, $gui->testPlanName);
 
-	    // 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
-	    $tproject_mgr = new testproject($dbHandler);
-	    $tproject_info = $tproject_mgr->get_by_id($argsObj->tproject_id);
+      // 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
+      $tproject_mgr = new testproject($dbHandler);
+      $tproject_info = $tproject_mgr->get_by_id($argsObj->tproject_id);
 
-	    $gui->all_users = tlUser::getAll($dbHandler,null,"id",null);
-	   	$gui->users = getUsersForHtmlOptions($dbHandler,null,null,null,$gui->all_users);
-	   	$gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$tproject_info,$gui->all_users);
-	}
+      $gui->all_users = tlUser::getAll($dbHandler,null,"id",null);
+      $gui->users = getUsersForHtmlOptions($dbHandler,null,null,null,$gui->all_users);
+      $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$tproject_info,$gui->all_users);
+  }
 
     return $gui;
 }
@@ -438,15 +418,15 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
                     $email['body'] .= $flat_path[$tcase_id] . '<br />';  
                 }  
                 $email['body'] .= '<br />' . date(DATE_RFC1123);
-  	            $email_op = email_send($email['from_address'], $email['to_address'], 
-  	            		$email['subject'], $email['body'], '', true, true);
+                $email_op = email_send($email['from_address'], $email['to_address'], 
+                    $email['subject'], $email['body'], '', true, true);
             } // foreach($tester_set as $user_id => $value)
-  	    }                       
+        }                       
     }
 }
 
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,'testplan_planning');
+  return $user->hasRight($db,'testplan_planning');
 }
 ?>

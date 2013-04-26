@@ -944,6 +944,10 @@ class tree extends tlObject
 
           case 'full':
           default:
+            // 20130426 
+            // this choice
+            // 'tcversion_id' => (isset($row['parent_id']) ? $row['parent_id'] : -1),
+            // need to be documented and REVIEWED, because can generate confusion
             $node_list[] = array('id' => $row['id'],
                                  'parent_id' => $row['parent_id'],
                                  'tcversion_id' => (isset($row['parent_id']) ? $row['parent_id'] : -1),

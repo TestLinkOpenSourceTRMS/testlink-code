@@ -169,22 +169,40 @@ class tlRestApi
       $op = array('status' => 'ok', 'message' => 'ok');
       if(is_null($id))
       {
-        $op['item'] = $this->tprojectMgr->get_all();  
+        $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY name ", 'add_issuetracker' => true,
+                     'add_reqmgrsystem' => true);
+        $op['item'] = $this->tprojectMgr->get_accessible_for_user($this->userID,$opt);
       }  
       else
       {
+        $opt = array('output' => 'map','field_set' => 'id', 'format' => 'simple');
+        $zx = $this->tprojectMgr->get_accessible_for_user($this->userID,$opt);
         if( ($safeID = intval($id)) > 0)
         {
-          $op['item'] = $this->tprojectMgr->get_by_id($safeID);  
+          if( isset($zx[$safeID]) )
+          {
+            $op['item'] = $this->tprojectMgr->get_by_id($safeID);  
+          } 
         } 
         else
         {
           // Will consider id = name
-          $safeID = $this->db->prepare_string($id);
-          $op['item'] = $this->tprojectMgr->get_by_name($safeID);   
+          foreach( $zx as $key => $value ) 
+          {
+            if( strcmp($value['name'],$id) == 0 )
+            {
+              $safeID = $this->db->prepare_string($id);
+              $op['item'] = $this->tprojectMgr->get_by_name($safeID);
+              break;   
+            }  
+          }
         } 
       }  
     }
+    else
+    {
+      $op['message'] = 'authetication error';
+    }  
 
     // Developer (silly?) information
     // json_encode() transforms maps in objects.

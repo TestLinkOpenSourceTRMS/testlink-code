@@ -468,8 +468,8 @@ function get_accessible_for_user($user_id,$opt = null)
 {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   $my = array();
-  $my['opt'] = array('output' => 'map', 'order_by' => ' ORDER BY name ',
-                     'add_issuetracker' => false, 'add_reqmgrsystem' => false);
+  $my['opt'] = array('output' => 'map', 'order_by' => ' ORDER BY name ', 'field_set' => 'full',
+                     'format' => 'std', 'add_issuetracker' => false, 'add_reqmgrsystem' => false);
   $my['opt'] = array_merge($my['opt'],(array)$opt);
   
                      
@@ -503,11 +503,19 @@ function get_accessible_for_user($user_id,$opt = null)
     $rmsf =   ",RMSMD.name AS rmsname,RMSMD.type AS rmstype";
   }        
 
+  switch($my['opt']['field_set'])
+  {
+    case 'id':
+      $cols = ' TPROJ.id,NHTPROJ.name ';
+    break;
 
+    case 'full':
+    default:
+      $cols = ' TPROJ.*,NHTPROJ.name,COALESCE(UTR.role_id,U.role_id) AS effective_role ';
+    break;
+  } 
   
-  $sql = " /* $debugMsg */ SELECT NHTPROJ.name,TPROJ.*, " .
-         " COALESCE(UTR.role_id,U.role_id) AS effective_role " .
-         " {$itf} {$rmsf} " .
+  $sql = " /* $debugMsg */ SELECT {$cols} {$itf} {$rmsf} " .
          " FROM {$this->tables['nodes_hierarchy']} NHTPROJ " .
          " JOIN {$this->object_table} TPROJ ON NHTPROJ.id=TPROJ.id " .
          " JOIN {$this->tables['users']} U ON U.id = {$safe_user_id} " .
@@ -516,7 +524,7 @@ function get_accessible_for_user($user_id,$opt = null)
          " AND UTR.user_id =" . $safe_user_id . $itsql . $rmssql .
          " WHERE 1=1 ";
   
-  //echo $sql;
+  // file_put_contents('/tmp/get_accessible_for_user.txt', $sql); 
   // Private test project feature
   if( $globalRoleID != TL_ROLES_ADMIN )
   {
@@ -542,19 +550,24 @@ function get_accessible_for_user($user_id,$opt = null)
   unset($userObj);
     
   $sql .= str_replace('nodes_hierarchy','NHTPROJ',$my['opt']['order_by']);
-               
+  // echo $sql;
+
+  $parseOpt = false;
+  $do_post_process = 0;
   switch($my['opt']['output'])
   {
     case 'array_of_map':
       $items = $this->db->get_recordset($sql);
-      $this->parseTestProjectRecordset($items);
-      $do_post_process=0;
+      $parseOpt = true;
     break;
 
     case 'map_of_map_full':
       $items = $this->db->fetchRowsIntoMap($sql,'id');
-      $this->parseTestProjectRecordset($items);
-      $do_post_process=0;
+      $parseOpt = true;
+    break;
+
+    case 'map':
+      $items = $this->db->fetchRowsIntoMap($sql,'id');
     break;
 
     default:
@@ -563,6 +576,11 @@ function get_accessible_for_user($user_id,$opt = null)
     break;
   }
     
+  if($my['opt']['format'] == 'std' && $parseOpt)
+  {
+    $this->parseTestProjectRecordset($items);
+  }
+
   if ($do_post_process && sizeof($arrTemp))
   {
     switch ($my['opt']['output'])

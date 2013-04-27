@@ -264,8 +264,8 @@ class tlRestApi
       {
         $request = $this->app->request();
         $item = json_decode($request->getBody());
+        $op['id'] = $this->tprojectMgr->create($item,array('doChecks' => true));
         $op = array('status' => 'ok', 'message' => 'ok');
-        $op['id'] = $this->tprojectMgr->create($item);
       } 
       catch (Exception $e) 
       {

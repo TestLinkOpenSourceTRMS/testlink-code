@@ -22,6 +22,36 @@ echo "<pre> testproject - constructor - testproject(&\$db)";echo "</pre>";
 $tproject_mgr=new testproject($db);
 new dBug($tproject_mgr);
 
+$item = new stdClass();
+$item->name = 'CRASH';
+$item->notes = " Created doing test ";
+$item->color = '';
+$item->options = new stdClass();
+//$item->options->requirement_mgmt = 1;
+//$item->options->priority_mgmt = 1;
+//$item->options->automated_execution = 1;
+$item->active=1;
+$item->is_public=1;
+$item->prefix = 'TPX :: ';
+
+try
+{
+  $id = $tproject_mgr->create($item, array('doChecks' => true));
+}
+catch (Exception $e) 
+{
+  echo 'Caught exception: ',  $e->getMessage(), "\n";
+}
+die();
+
+
+// new dBug($_SESSION);
+
+$xx=$tproject_mgr->get_accessible_for_user(1,
+                       array('output' => 'map','field_set' => 'id', 'format' => 'simple'));
+new dBug($xx);
+die();
+
 // create()
 // function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)
 $notes = " Created doing test ";

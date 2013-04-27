@@ -26,7 +26,7 @@ $unitTestDescription="Test {$test_num} - {$method}() ::: ";
 $prefix = 'AXECX';
 
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testcaseprefix"] = $prefix . $test_num;
 $args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
 

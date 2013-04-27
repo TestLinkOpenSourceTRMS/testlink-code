@@ -3,10 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: custom_config.inc.php.example,v $
- *
- * @version $Revision: 1.9 $
- * @modified $Date: 2011/02/10 22:42:33 $ by $Author: franciscom $
+ * @filesource	custom_config.inc.php.example
+ * @author      franciscom
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink DEFINED BY USERS.
@@ -40,8 +38,15 @@
 // $tlCfg->log_path = '/var/testlink-ga-testlink-code/logs/'; /* unix example */
 // $g_repositoryPath = '/var/testlink-ga-testlink-code/upload_area/';  /* unix example */
 //
-// Uncomment this if you want dBug() display info
+// 
+// ********************************************************************************************
+// Uncomment this if you want:
+// 1. dBug() display info
+// 2. debug_print_backtrace() on database.class.php
+//    instead of debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)
 // define('DBUG_ON',1);
+//
+// ********************************************************************************************
 //
 // Example of Logger config
 // After this config:

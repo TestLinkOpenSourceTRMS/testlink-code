@@ -18,10 +18,6 @@
  * https://github.com/educoder/pest/blob/master/examples/intouch_example.php
  * http://stackoverflow.com/questions/9772933/rest-api-request-body-as-json-or-plain-post-data
  *
- *
- *
- *
- *
  * @internal revisions 
  */
 
@@ -103,6 +99,7 @@ class tlRestApi
     // $this->app->get('/testprojects/:id/testplans/', array($this,'getTestProjectTestPlans'));
     // $this->app->get('/testplans/:id', array($this,'getTestPlan'));
 
+    $this->app->post('/testprojects', array($this,'createTestProject'));
 
 
     $this->db = new database(DB_TYPE);
@@ -210,6 +207,9 @@ class tlRestApi
   }
 
 
+
+
+
   public function getLatestBuildForTestPlan($id)
   {
     $operation=__FUNCTION__;
@@ -241,11 +241,43 @@ class tlRestApi
   }
 
 
-
-
-
-
-
+// ==============================================
+  /**
+   * 
+   *        $item->name               
+   *        $item->prefix
+   *        $item->notes
+   *        $item->active
+   *        $item->public
+   *        $item->options
+   *        $item->options->requirementsEnabled
+   *        $item->options->testPriorityEnabled
+   *        $item->options->automationEnabled
+   *        $item->options->inventoryEnabled
+   */
+  public function createTestProject()
+  {
+    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
+    if($this->authenticate())
+    {
+      try 
+      {
+        $request = $this->app->request();
+        $item = json_decode($request->getBody());
+        $op = array('status' => 'ok', 'message' => 'ok');
+        $op['id'] = $this->tprojectMgr->create($item);
+      } 
+      catch (Exception $e) 
+      {
+        $op['message'] = $e->getMessage();   
+      }
+    }  
+    else
+    {
+      $op['message'] = 'authetication error';
+    }  
+    echo json_encode($op);
+  }
 
 
 

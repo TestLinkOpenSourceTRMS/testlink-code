@@ -73,40 +73,79 @@ class testproject extends tlObjectWithAttachments
  * @internal revisions
  * 
  */
-function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)
+// function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)
+function create($item,$opt=null)
 {
-  // Create Node and get the id
-  $root_node_id = $this->tree_manager->new_root_node($name);
-  $tcprefix = $this->formatTcPrefix($tcasePrefix);
-  $serOptions = serialize($options);
+  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  $my['opt'] = array('doChecks' => false, 'setSessionProject' => true);
+  $my['opt'] = array_merge($my['opt'],(array)$opt);
+  
+  $serOptions = serialize($item->options);
 
+  try 
+  {
+    $tcPrefix = $this->formatTcPrefix($item->prefix); // will truncate prefix is len() > limit
+
+    // mandatory checks
+    if(strlen($item->name)==0)
+    {
+      throw new Exception('Empty name is not allowed');      
+    }  
+   
+    if($my['opt']['doChecks'])
+    {
+      $check = $this->checkNameSintax($item->name);
+      if($check['status_ok'])
+      {  
+        $check = $this->checkNameExistence($item->name);
+      }
+      if($check['status_ok'])
+      {  
+        $check = $this->checkTestCasePrefixExistence($tcPrefix);
+      }
+
+      if(!$check['status_ok'])
+      {
+        throw new Exception($check['msg']);  
+      }  
+    }
+  }   
+  catch (Exception $e) 
+  {
+    throw $e;  // rethrow
+  }
+
+
+  // Create Node and get the id
+  $id = $this->tree_manager->new_root_node($item->name);
   $sql = " INSERT INTO {$this->object_table} (id,color," .
          " options,notes,active,is_public,prefix) " .
-         " VALUES (" . $root_node_id . ", '" .
-                       $this->db->prepare_string($color) . "','" .
+         " VALUES (" . $id . ", '" .
+                       $this->db->prepare_string($item->color) . "','" .
                        $serOptions . "','" .
-                     $this->db->prepare_string($notes) . "'," .
-                     $active . "," . $is_public . ",'" .
-                     $this->db->prepare_string($tcprefix) . "')";
+                       $this->db->prepare_string($item->notes) . "'," .
+                       $item->active . "," . $item->is_public . ",'" .
+                       $this->db->prepare_string($tcPrefix) . "')";
   $result = $this->db->exec_query($sql);
 
+  $auditMsg = 'Test project: ' . $item->name; 
   if ($result)
   {
-    tLog('The new testproject '.$name.' was succesfully created.', 'INFO');
+    tLog($auditMsg . ' was succesfully created.', 'INFO');
     
     // set project to session if not defined (the first project) or update the current
-    if (!isset($_SESSION['testprojectID']))
+    if (!isset($_SESSION['testprojectID']) && $my['opt']['setSessionProject'])
     {
-      $this->setSessionProject($root_node_id);
+      $this->setSessionProject($id);
     }
   }
   else
   {
-    tLog('The new testproject '.$name.' was not created.', 'INFO');
-    $root_node_id = 0;
+    tLog($auditMsg . ' was not created.', 'INFO');
+    $id = 0;
   }
 
-  return($root_node_id);
+  return $id;
 }
 
 /**
@@ -843,14 +882,14 @@ function count_testcases($id)
    **/
   function checkNameExistence($name,$id=0)
   {
-       $check_op['msg'] = '';
+    $check_op['msg'] = '';
     $check_op['status_ok'] = 1;
        
-        if($this->get_by_name($name,"testprojects.id <> {$id}") )
-        {
-          $check_op['msg'] = sprintf(lang_get('error_product_name_duplicate'),$name);
-        $check_op['status_ok'] = 0;
-        }
+    if($this->get_by_name($name,"testprojects.id <> {$id}") )
+    {
+      $check_op['msg'] = sprintf(lang_get('error_product_name_duplicate'),$name);
+      $check_op['status_ok'] = 0;
+    }
     return $check_op;
   }
 
@@ -860,21 +899,19 @@ function count_testcases($id)
    **/
   function checkTestCasePrefixExistence($prefix,$id=0)
   {
-       $check_op['msg'] = '';
-       $check_op['status_ok'] = 1;
-  
-      $sql = " SELECT id FROM {$this->object_table} " .
-              " WHERE prefix='" . $this->db->prepare_string($prefix) . "'";
-         " AND id <> {$id}";
+    $check_op = array('msg' => '', 'status_ok' => 1);
+    $sql = " SELECT id FROM {$this->object_table} " .
+           " WHERE prefix='" . $this->db->prepare_string($prefix) . "'";
+           " AND id <> {$id}";
 
-      $rs = $this->db->get_recordset($sql);
-      if(!is_null($rs))
-      {
-          $check_op['msg'] = sprintf(lang_get('error_tcase_prefix_exists'),$prefix);
-          $check_op['status_ok'] = 0;
-      }
+    $rs = $this->db->get_recordset($sql);
+    if(!is_null($rs))
+    {
+      $check_op['msg'] = sprintf(lang_get('error_tcase_prefix_exists'),$prefix);
+      $check_op['status_ok'] = 0;
+    }
       
-      return $check_op;
+    return $check_op;
   }
 
 
@@ -896,12 +933,17 @@ function count_testcases($id)
   /** @TODO add description */
   function formatTcPrefix($str)
   {
-      // limit tcasePrefix len.
-      $fstr = trim($str);
-      if(tlStringLen($fstr) > self::TESTCASE_PREFIX_MAXLEN)
-      {
-      $tcprefix = substr($fstr,self::TESTCASE_PREFIX_MAXLEN);
-      }
+    $fstr = trim($str);
+    if(tlStringLen($fstr) == 0)
+    {
+      throw new Exception('Empty prefix is not allowed');      
+    } 
+
+    // limit tcasePrefix len.
+    if(tlStringLen($fstr) > self::TESTCASE_PREFIX_MAXLEN)
+    {
+      $fstr = substr($fstr,self::TESTCASE_PREFIX_MAXLEN);
+    }
     return $fstr;
   }
 

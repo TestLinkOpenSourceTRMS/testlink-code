@@ -20,7 +20,8 @@
  * 
  *
  * @internal revisions 
- * @since 1.9.6             
+ * @since 1.9.7
+ * 20130427 - franciscom - testproject->create() interface changes
  */
 
 /** 
@@ -1560,17 +1561,18 @@ class TestlinkXMLRPCServer extends IXR_Server
    */
   public function createTestProject($args)
   {
-      $this->_setArgs($args);
-      $msg_prefix="(" . __FUNCTION__ . ") - ";
-      $checkRequestMethod='_check' . ucfirst(__FUNCTION__) . 'Request';
+    $this->_setArgs($args);
+    $msg_prefix="(" . __FUNCTION__ . ") - ";
+    $checkRequestMethod='_check' . ucfirst(__FUNCTION__) . 'Request';
   
-      if( $this->$checkRequestMethod($msg_prefix) && $this->userHasRight("mgt_modify_product"))
-      {
-        $options = new stdClass();
-        $options->requirementsEnabled = 1;
-        $options->testPriorityEnabled = 1;
-        $options->automationEnabled = 1;
-        $options->inventoryEnabled = 1;
+    if( $this->$checkRequestMethod($msg_prefix) && $this->userHasRight("mgt_modify_product"))
+    {
+      $item = new stdClass();
+      $item->options = new stdClass();
+      $item->options->requirementsEnabled = 1;
+      $item->options->testPriorityEnabled = 1;
+      $item->options->automationEnabled = 1;
+      $item->options->inventoryEnabled = 1;
 
       if( $this->_isParamPresent(self::$optionsParamName,$messagePrefix) )
       {
@@ -1580,41 +1582,42 @@ class TestlinkXMLRPCServer extends IXR_Server
         {
           foreach($dummy as $key => $value)
           {
-            $options->$key = $value > 0 ? 1 : 0;
+            $item->options->$key = $value > 0 ? 1 : 0;
           }
         }
       }
 
       // other optional parameters (not of complex type)
-            // key 2 check with default value is parameter is missing
-            $keys2check = array(self::$activeParamName => 1,self::$publicParamName => 1,
-                                self::$noteParamName => '');
-          foreach($keys2check as $key => $value)
-          {
-              $optional[$key]=$this->_isParamPresent($key) ? trim($this->args[$key]) : $value;
-          }
-
-          $name = htmlspecialchars($this->args[self::$testProjectNameParamName]);
-            $prefix = htmlspecialchars($this->args[self::$testCasePrefixParamName]);
-
-            $notes = htmlspecialchars($optional[self::$noteParamName]);
-            $active = $optional[self::$activeParamName];
-            $public = $optional[self::$publicParamName];
-      
-            $active = $active > 0 ? 1 : 0;
-          $public = $public > 0 ? 1 : 0;
-      
-          $info=$this->tprojectMgr->create($name,'',$options,$notes,$active,$prefix,$public);
-        $resultInfo = array();
-        $resultInfo[]= array("operation" => __FUNCTION__,
-                          "additionalInfo" => null,
-                          "status" => true, "id" => $info, "message" => GENERAL_SUCCESS_STR);
-          return $resultInfo;
-      }
-      else
+      // key 2 check with default value is parameter is missing
+      $keys2check = array(self::$activeParamName => 1,self::$publicParamName => 1,
+                          self::$noteParamName => '');
+      foreach($keys2check as $key => $value)
       {
-          return $this->errors;
-      }    
+        $optional[$key]=$this->_isParamPresent($key) ? trim($this->args[$key]) : $value;
+      }
+
+      $item->name = htmlspecialchars($this->args[self::$testProjectNameParamName]);
+      $item->prefix = htmlspecialchars($this->args[self::$testCasePrefixParamName]);
+
+      $item->notes = htmlspecialchars($optional[self::$noteParamName]);
+      $item->active = ($optional[self::$activeParamName] > 0) ? 1 : 0;
+      $item->is_public = ($optional[self::$publicParamName] > 0) ? 1 : 0;
+      $item->color = '';
+      
+      // $info=$this->tprojectMgr->create($name,'',$options,$notes,$active,$prefix,$public);
+            
+      $info=$this->tprojectMgr->create($item);
+
+      $resultInfo = array();
+      $resultInfo[]= array("operation" => __FUNCTION__,
+                               "additionalInfo" => null,
+                               "status" => true, "id" => $info, "message" => GENERAL_SUCCESS_STR);
+      return $resultInfo;
+    }
+    else
+    {
+      return $this->errors;
+    }    
       
   }
   

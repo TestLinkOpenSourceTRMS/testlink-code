@@ -310,14 +310,29 @@ function doCreate($argsObj,&$tprojectMgr)
 
   if($op->status_ok)
   {
-    $options = prepareOptions($argsObj);
-          
-    $new_id = $tprojectMgr->create($argsObj->tprojectName, $argsObj->color,$options, $argsObj->notes, 
-                                   $argsObj->active, $argsObj->tcasePrefix,$argsObj->is_public);
-                                   
-    if (!$new_id)
+    try 
     {
-      $op->msg = lang_get('refer_to_log');
+      $shazam = false;    
+      $item = $argsObj;
+      $item->name = $argsObj->tprojectName;
+      $item->prefix = $argsObj->tcasePrefix;
+      $item->options = prepareOptions($argsObj);
+      $new_id = $tprojectMgr->create($item, array('doChecks' => true, 'setSessionProject' => true));            
+    } 
+    catch (Exception $e) 
+    {
+      $new_id = -1;
+      $op->status_ok = false;       
+      $op->msg = $e->getMessage();
+      $shazam = true;    
+    }
+                                   
+    if ($new_id <= 0)
+    {
+      if(!$shazam)
+      { 
+        $op->msg = lang_get('refer_to_log');
+      } 
     }
     else
     {
@@ -340,7 +355,6 @@ function doCreate($argsObj,&$tprojectMgr)
         $itMgr->link($argsObj->issue_tracker_id,$new_id);
       }
   
-      // TICKET 5634
       if( !$argsObj->is_public)
       {
         // Need to add specific role on test project in order to not make
@@ -569,8 +583,8 @@ function crossChecks($argsObj,&$tprojectMgr)
 */
 function create(&$argsObj,&$tprojectMgr)
 {
-    $argsObj->active = 1;
-    $argsObj->is_public = 1;
+  $argsObj->active = 1;
+  $argsObj->is_public = 1;
 
   $gui = new stdClass();
   $gui->doActionValue = 'doCreate';
@@ -578,7 +592,7 @@ function create(&$argsObj,&$tprojectMgr)
   $gui->caption = lang_get('caption_new_tproject');
 
   $gui->testprojects = $tprojectMgr->get_all(null,array('access_key' => 'id'));
-    return $gui;
+  return $gui;
 }
 
 

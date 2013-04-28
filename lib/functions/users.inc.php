@@ -60,12 +60,11 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 	$tproject_mgr = new testproject($db);
 
 	$gui_cfg = config_get('gui');
-	$opt = array('output' => 'map', 'order_by' => $gui_cfg->tprojects_combo_order_by);
+	$opt = array('output' => 'map_name_with_inactive_mark', 'order_by' => $gui_cfg->tprojects_combo_order_by);
 	$arrProducts = $tproject_mgr->get_accessible_for_user($id,$opt);
 
-	 // 20051208 - JBA - added to set the lastProduct the user has selected before logging off.
-  $tproject_cookie = 'TL_lastTestProjectForUserID_'. $id;
-  if (isset($_COOKIE[$tproject_cookie]))
+  	$tproject_cookie = 'TL_lastTestProjectForUserID_'. $id;
+  	if (isset($_COOKIE[$tproject_cookie]))
 	{
 		  if (isset($arrProducts[$_COOKIE[$tproject_cookie]]) && $arrProducts[$_COOKIE[$tproject_cookie]])
       {

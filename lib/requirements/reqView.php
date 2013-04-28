@@ -195,7 +195,7 @@ function checkRights(&$dbHandler,&$user)
  */
 function initTestprojectSelect($userID, $tprojectID, &$tprojectMgr) 
 {
-  $opt = array('output' => 'map', 'order_by' => config_get('gui')->tprojects_combo_order_by);  
+  $opt = array('output' => 'map_name_with_inactive_mark', 'order_by' => config_get('gui')->tprojects_combo_order_by);  
   $testprojects = $tprojectMgr->get_accessible_for_user($userID,$opt);
   $htmlSelect = array('items' => $testprojects, 'selected' => $tprojectID);
   return $htmlSelect;

@@ -609,6 +609,7 @@ function get_accessible_for_user($user_id,$opt = null)
       $items = $this->db->fetchRowsIntoMap($sql,'id');
     break;
 
+    case 'map_with_inactive_mark':
     default:
       $arrTemp = $this->db->fetchRowsIntoMap($sql,'id');
       $do_post_process=1;
@@ -624,7 +625,7 @@ function get_accessible_for_user($user_id,$opt = null)
   {
     switch ($my['opt']['output'])
     {
-      case 'map':
+      case 'map_name_with_inactive_mark':
       foreach($arrTemp as $id => $row)
       {
         $noteActive = '';

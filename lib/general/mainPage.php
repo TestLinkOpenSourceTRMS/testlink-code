@@ -35,7 +35,7 @@ $user = $_SESSION['currentUser'];
 $testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 $testplanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
 
-$accessibleItems = $tproject_mgr->get_accessible_for_user($user->dbID,array('output' => 'map'));
+$accessibleItems = $tproject_mgr->get_accessible_for_user($user->dbID,array('output' => 'map_name_with_inactive_mark'));
 $tprojectQty = $tproject_mgr->getItemCount();
 $userIsBlindFolded = (is_null($accessibleItems) || count($accessibleItems) == 0) && $tprojectQty > 0;
 if($userIsBlindFolded)
@@ -128,13 +128,6 @@ $gui->securityNotes = getSecurityNotes($db);
 $gui->testprojectID = $testprojectID;
 $gui->testplanID = $testplanID;
 $gui->docs = getUserDocumentation();
-
-// if( $userIsBlindFolded = (is_null($accessibleItems) || count($accessibleItems) == 0))
-// {
-//   $target = array_keys($gui->grants);
-//   $gui->grants = array_fill_keys($target,'no');
-// }
-
 
 $smarty->assign('opt_requirements', isset($_SESSION['testprojectOptions']->requirementsEnabled) ? 
                                     $_SESSION['testprojectOptions']->requirementsEnabled : null); 

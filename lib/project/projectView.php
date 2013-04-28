@@ -28,7 +28,7 @@ $args = init_args();
 
 $gui = new stdClass();
 $gui->doAction = $args->doAction;
-$gui->canManage = has_rights($db,"mgt_modify_product");
+$gui->canManage = $args->user->hasRight($db,"mgt_modify_product");
 
 $tproject_mgr = new testproject($db);
 $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY name ", 'add_issuetracker' => true,
@@ -79,8 +79,9 @@ function init_args()
    $args = new stdClass();
    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0 ;
    $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : 'list' ;
-   $args->userID =isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-    
+   $args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+   
+   $args->user = isset($_SESSION['currentUser']) ? $_SESSION['currentUser'] : null; 
    return $args;  
 }
 

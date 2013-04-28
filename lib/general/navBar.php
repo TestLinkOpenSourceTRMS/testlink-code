@@ -39,8 +39,6 @@ $gui->TestProjects = $tproject_mgr->get_accessible_for_user($userID,
                                                                   'order_by' => $tlCfg->gui->tprojects_combo_order_by));
 
 
-new dBug($gui->TestProjects);
-
 $gui->TestProjectCount = sizeof($gui->TestProjects);
 $gui->TestPlanCount = 0; 
 

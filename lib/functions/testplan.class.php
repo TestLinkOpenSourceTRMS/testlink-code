@@ -286,13 +286,19 @@ class testplan extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $my = array();
-    $my['opt'] = array('output' => 'full');
+    $my['opt'] = array('output' => 'full','active' => null, 'testPlanFields' => '');
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
     
     $safe_id = intval($id);
     switch($my['opt']['output'])
     {
+      case 'testPlanFields':
+        $sql = "/* $debugMsg */ " .
+               " SELECT {$my['opt']['testPlanFields']} FROM {$this->tables['testplans']} " .
+               " WHERE id = " . $safe_id;
+      break;
+
       case 'minimun':
             $sql =   "/* $debugMsg */ " .
                 " SELECT NH_TPLAN.name,NH_TPROJ.id AS tproject_id, NH_TPROJ.name AS tproject_name" .
@@ -312,8 +318,14 @@ class testplan extends tlObjectWithAttachments
       break;  
     
     }
-    $recordset = $this->db->get_recordset($sql);
-    return($recordset ? $recordset[0] : null);
+
+    if(!is_null($my['opt']['active']))
+    {
+      $sql .= " AND active=" . (intval($my['opt']['active']) > 0 ? 1 : 0) . " ";
+    }
+
+    $rs = $this->db->get_recordset($sql);
+    return ($rs ? $rs[0] : null);
   }
 
 
@@ -1833,14 +1845,28 @@ class testplan extends tlObjectWithAttachments
     rev :
     20101101 - franciscom - added closed_on_date
   */
-  function get_builds($id,$active=null,$open=null)
+  function get_builds($id,$active=null,$open=null,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
+    $my['opt'] = array('fields' => 
+                       'id,testplan_id, name, notes, active, is_open,release_date,closed_on_date',
+                       'orderBy' => "  ORDER BY name ASC",
+                       'buildID' => null);
+
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    // REST API DEBUG echo json_encode(array($debugMsg,$my['opt']));
+
     $sql = " /* $debugMsg */ " . 
-         " SELECT id,testplan_id, name, notes, active, is_open,release_date,closed_on_date " .
+         " SELECT {$my['opt']['fields']} " .
          " FROM {$this->tables['builds']} WHERE testplan_id = {$id} " ;
     
+    if( !is_null($my['opt']['buildID']) )
+    {
+      $sql .= " AND id=" . intval($my['opt']['buildID']) . " ";
+    }
+
     if( !is_null($active) )
     {
       $sql .= " AND active=" . intval($active) . " ";
@@ -1850,16 +1876,17 @@ class testplan extends tlObjectWithAttachments
       $sql .= " AND is_open=" . intval($open) . " ";
     }
     
-    $sql .= "  ORDER BY name ASC";
+    $sql .= ($doOrderBy = !is_null($my['opt']['orderBy'])) ? $my['opt']['orderBy'] : '';
     
-    $recordset = $this->db->fetchRowsIntoMap($sql,'id');
-    
-    if( !is_null($recordset) )
+    $rs = $this->db->fetchRowsIntoMap($sql,'id');
+    if( !is_null($rs) && $doOrderBy)
     {
-      $recordset = $this->_natsort_builds($recordset);
+      // 20130428
+      // I would like to understand why the ORDER BY clause is not enough 
+      $rs = $this->_natsort_builds($rs);
     }
     
-    return $recordset;
+    return $rs;
   }
 
 
@@ -6289,6 +6316,71 @@ class testplan extends tlObjectWithAttachments
     $ret = $this->db->get_recordset($sql);
     return $ret[0]['is_public'];
   }
+
+
+
+  function getBuildByCriteria($id, $criteria, $filters=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $my['opt'] = array('active' => null, 'open' => null);
+    $my['opt'] = array_merge($my['opt'],(array)$options);
+
+
+    switch($criteria)
+    {
+      case 'maxID':
+        $sql = " /* $debugMsg */ " . 
+               " SELECT MAX(id) AS id,testplan_id, name, notes, active, is_open," .
+               " release_date,closed_on_date " .
+               " FROM {$this->tables['builds']} WHERE testplan_id = {$id} " ;
+      break;
+    }
+
+    if(!is_null($my['opt']['active']))
+    {
+      $sql .= " AND active = " . intval($my['opt']['active']) . " ";
+    }
+    if( !is_null($my['opt']['open']) )
+    {
+      $sql .= " AND is_open = " . intval($my['opt']['open']) . " ";
+    }
+    
+    $rs = $this->db->get_recordset($sql);
+    
+    return $rs;
+  }
+
+
+  function writeExecution($ex)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $execNotes = $this->db->prepare_string($ex->notes);
+    if(property_exists($ex, 'executionTimeStampISO'))
+    {
+      $execTS = "'" . $ex->executionTimeStampISO . "'";
+    } 
+    else
+    {
+      $execTS = $this->db->db_now();
+    }  
+
+    $sql = "/* {$debugMsg} */ " .
+           "INSERT INTO {$this->tables['executions']} " .
+           " (testplan_id, platform_id, build_id, " .
+           "  tcversion_id, tcversion_number, status, " .
+           "  tester_id, execution_ts, execution_type, notes) " .
+           " VALUES(" .
+           "  {$ex->testPlanID},{$ex->platformID},{$ex->buildID}," .
+           "  {$ex->testCaseVersionID}, {$ex->testCaseVersionNumber},'{$ex->statusCode}'," .
+           "  {$ex->testerID},{$execTS}, {$ex->executionType}, '{$execNotes}')";
+
+    $this->db->exec_query($sql);
+    return $this->db->insert_id($this->tables['executions']);    
+  }
+
+
 
 } // end class testplan
 

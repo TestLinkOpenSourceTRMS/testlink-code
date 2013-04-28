@@ -18,6 +18,12 @@
  * https://github.com/educoder/pest/blob/master/examples/intouch_example.php
  * http://stackoverflow.com/questions/9772933/rest-api-request-body-as-json-or-plain-post-data
  *
+ * http://phptrycatch.blogspot.it/
+ * http://nitschinger.at/A-primer-on-PHP-exceptions
+ *
+
+ *
+ *
  * @internal revisions 
  */
 
@@ -100,6 +106,7 @@ class tlRestApi
     // $this->app->get('/testplans/:id', array($this,'getTestPlan'));
 
     $this->app->post('/testprojects', array($this,'createTestProject'));
+    $this->app->post('/executions', array($this,'createTestCaseExecution'));
 
 
     $this->db = new database(DB_TYPE);
@@ -124,7 +131,7 @@ class tlRestApi
     
     if( isset($this->statusCode['not_run']) )
     {
-        unset($this->statusCode['not_run']);  
+      unset($this->statusCode['not_run']);  
     }   
     $this->codeStatus=array_flip($this->statusCode);
   }  
@@ -279,6 +286,193 @@ class tlRestApi
     echo json_encode($op);
   }
 
+
+
+  /**
+   *
+   * Request Body
+   *
+   * $ex->testPlanID
+   * $ex->buildID
+   * $ex->platformID
+   * $ex->testCaseExternalID
+   * $ex->notes
+   * $ex->statusCode
+   *
+   *
+   * Checks to be done
+   * 
+   * A. User right & Test plan existence
+   * user has right to execute on target Test plan?
+   * this means also that: Test plan ID exists ?
+   *   
+   * B. Build
+   * does Build ID exist on target Test plan ?
+   * is Build enable to execution ?
+   *
+   * C. Platform
+   * do we need a platform ID in order to execute ?
+   * is a platform present on provided data ?
+   * does this platform belong to target Test plan ?
+   *
+   * D. Test case identity
+   * is target Test case part of Test plan ?
+   *
+   *
+   * Z. Other mandatory information
+   * We are not going to check for other mandatory info
+   * like: mandatory custom fields. (if we will be able in future to manage it)
+   *
+   * 
+   */
+  public function createTestCaseExecution()
+  {
+    $op = array('status' => ' ko', 'message' => 'ko', 'id' => -1);  
+    if($this->authenticate())
+    {
+      try 
+      {
+        $request = $this->app->request();
+        $ex = json_decode($request->getBody());
+        $util = $this->checkExecutionEnvironment($ex);
+
+        // If we are here this means we can write execution status!!!
+        $ex->testerID = $this->userID;
+        foreach($util as $prop => $value)
+        {
+          $ex->$prop = $value;
+        }  
+        $op = array('status' => 'ok', 'message' => 'ok');
+        $op['id'] = $this->tplanMgr->writeExecution($ex);
+      } 
+      catch (Exception $e) 
+      {
+        $op['message'] = $e->getMessage();   
+      }
+    }  
+    else
+    {
+      $op['message'] = 'authetication error';
+    }  
+    echo json_encode($op);
+  }
+
+
+  private function checkExecutionEnvironment($ex)
+  {
+    // throw new Exception($message, $code, $previous);
+
+    // Test plan ID exists and is ACTIVE    
+    $msg = 'invalid Test plan ID';
+    $getOpt = array('output' => 'testPlanFields','active' => 1,
+                 'testPlanFields' => 'id,testproject_id,is_public');
+    $status_ok = !is_null($testPlan=$this->tplanMgr->get_by_id($ex->testPlanID,$getOpt));
+    
+    if($status_ok)
+    {
+      // user has right to execute on Test plan ID
+      // hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null,$getAccess=false)
+      $msg = 'user has no right to execute';
+      $status_ok = $this->user->hasRight($this->db,'testplan_execute',
+                                         $testPlan['testproject_id'],$ex->testPlanID,true); 
+    }  
+
+    if($status_ok)
+    {
+      // Check if couple (buildID,testPlanID) is valid
+      $msg = '(buildID,testPlanID) couple is not valid';
+      $getOpt = array('fields' => 'id,active,is_open', 'buildID' => $ex->buildID, 'orderBy' => null);
+      $status_ok = !is_null($build = $this->tplanMgr->get_builds($ex->testPlanID,null,null,$getOpt));
+
+      if($status_ok)
+      {
+        // now check is execution can be done againts this build
+        $msg = 'Build is not active and/or closed => execution can not be done';
+        $status_ok = $build[$ex->buildID]['active'] && $build[$ex->buildID]['is_open'];
+      }  
+    }  
+
+    if($status_ok)
+    {
+      // Get Test plan platforms
+      $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => false);
+      $platformSet = $this->tplanMgr->getPlatforms($ex->testPlanID,$getOpt);
+
+      if( !($hasPlatforms = !is_null($platformSet)) && $ex->platformID !=0)
+      {
+        $status_ok = false;
+        $msg = 'You can not execute against a platform, because Test plan has no platforms';
+      }  
+
+      if($status_ok)
+      {
+        if($hasPlatforms)
+        {  
+          if($ex->platformID == 0)
+          {
+            $status_ok = false;
+            $msg = 'Test plan has platforms, you need to provide one in order to execute';
+          }
+          else if (!isset($platformSet[$ex->platformID]))
+          {
+            $status_ok = false;
+            $msg = '(platform,test plan) couple is not valid';
+          }  
+        }
+      }  
+    } 
+
+    if($status_ok)
+    {
+      // Test case check
+      $msg = 'Test case does not exist';
+
+      $tcaseID = $this->tcaseMgr->getInternalID($ex->testCaseExternalID);
+      $status_ok = ($tcaseID > 0);
+      if( $status_ok = ($tcaseID > 0) )
+      {
+        $msg = 'Test case doesn not belong to right test project';
+        $testCaseTestProject = $this->tcaseMgr->getTestProjectFromTestCase($tcaseID,0);
+        $status_ok = ($testCaseTestProject == $testPlan['testproject_id']);
+      }  
+      if($status_ok)
+      {
+        // Does this test case is linked to test plan ?
+        $msg = 'Test case is not linked to (test plan,platform) => can not be executed';
+        $getFilters = array('testplan_id' => $ex->testPlanID, 'platform_id' => $ex->platformID);
+        $getOpt = array('output' => 'simple');
+        $links = $this->tcaseMgr->get_linked_versions($tcaseID,$getFilters,$getOpt);
+        $status_ok = !is_null($links);
+      }  
+    }  
+    if($status_ok)
+    {
+      // status code is OK ?
+      $msg = 'not run status is not a valid execution status (can not be written to DB)';
+      $status_ok = ($ex->statusCode != 'n');  // Sorry for the MAGIC;
+
+      if($status_ok)
+      {
+        $msg = 'Requested execution status is not configured on TestLink';
+        $status_ok = isset($this->codeStatus[$ex->statusCode]);
+      }  
+    }  
+
+    if($status_ok)
+    {
+      $ret = new stdClass();
+      $ret->testProjectID = $testPlan['testproject_id'];
+      $ret->testCaseVersionID = key($links);
+      $ret->testCaseVersionNumber = $links[$ret->testCaseVersionID][$ex->testPlanID][$ex->platformID]['version'];
+    }
+      
+    if(!$status_ok)
+    {
+      throw new Exception($msg);
+    }  
+    return $ret;
+  }
+ 
 
 
 } // class end

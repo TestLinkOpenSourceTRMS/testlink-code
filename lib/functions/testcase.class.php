@@ -959,10 +959,15 @@ class testcase extends tlObjectWithAttachments
                                         active status
   
     args : id: testcase id
-           [exec_status]: default: ALL, range: ALL,EXECUTED,NOT_EXECUTED
-           [active_status]: default: ALL, range: ALL,ACTIVE,INACTIVE
-           [tplan_id]
+           [filters] 
+            [exec_status]: default: ALL, range: ALL,EXECUTED,NOT_EXECUTED
+            [active_status]: default: ALL, range: ALL,ACTIVE,INACTIVE
+            [tplan_id]
+            [platform_id]
   
+           [options]
+            [output] 'full', 'nosteps', 'simple' (no info about steps)
+    
       returns: map.
              key: version id
              value: map with following structure:
@@ -989,13 +994,13 @@ class testcase extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
     $my['filters'] = array( 'exec_status' => "ALL", 'active_status' => 'ALL',
-                'tplan_id' => null, 'platform_id' => null);
-      $my['filters'] = array_merge($my['filters'], (array)$filters);
+                            'tplan_id' => null, 'platform_id' => null);
+    $my['filters'] = array_merge($my['filters'], (array)$filters);
 
-    // 'output' => 'full', 'nosteps', 'minimal'
+    // 'output' => 'full', 'nosteps', 'simple' (no info about steps)
     // 
     $my['options'] = array('output' => "full");
-      $my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array_merge($my['options'], (array)$options);
 
 
     $exec_status = strtoupper($my['filters']['exec_status']);
@@ -1016,7 +1021,7 @@ class testcase extends tlObjectWithAttachments
       case 'full':
       case 'nosteps':
       $fields2get .=  'layout,summary,preconditions,tcversions.author_id,tcversions.creation_ts,' .
-              'tcversions.updater_id,tcversions.modification_ts,';
+                      'tcversions.updater_id,tcversions.modification_ts,';
       break;
       
       case 'simple':

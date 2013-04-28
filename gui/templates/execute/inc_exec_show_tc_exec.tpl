@@ -89,19 +89,20 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         {/if}
     </div>
 
-   	{assign var="drawNotRun" value=0}
+  {assign var="drawNotRun" value=0}
  	{if $cfg->exec_cfg->show_last_exec_any_build}
-   		{assign var="abs_last_exec" value=$gui->map_last_exec_any_build.$tcversion_id}
+  
+   	{assign var="abs_last_exec" value=$gui->map_last_exec_any_build.$tcversion_id}
  		{assign var="my_build_name" value=$abs_last_exec.build_name|escape}
  		{assign var="show_current_build" value=1}
  		
  		{* this happens when test case has been never run *}
  		{if $my_build_name == ''}
  			{assign var="my_build_name" value=$gui->build_name|escape}
-   			{assign var="drawNotRun" value=1}
+   		{assign var="drawNotRun" value=1}
  		{/if}
-    {/if}
-    {assign var="exec_build_title" value="$build_title $title_sep $my_build_name"}
+  {/if}
+  {assign var="exec_build_title" value="$build_title $title_sep $my_build_name"}
 
 
 		<div id="execution_history" class="exec_history">
@@ -167,7 +168,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       {if $gui->history_on == 0 && $show_current_build}
    		   <div class="exec_history_title">
   			    {$labels.last_execution} {$labels.exec_current_build}
-  			    {$title_sep_type3} {$exec_build_title}
+  			    {$title_sep_type3} {$build_title} {$title_sep} {$gui->build_name|escape}
   			 </div>
 		  {/if}
 

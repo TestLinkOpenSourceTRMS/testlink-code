@@ -99,8 +99,9 @@ class tlRestApi
     });
 
 
-    $this->app->get('/whoAmI', array($this,'whoAmI'));
-    $this->app->get('/testprojects', array($this,'getProjects'));
+    $this->app->get('/whoAmI', array($this,'authenticate'), array($this,'whoAmI'));
+    $this->app->get('/testprojects', array($this,'authenticate'), array($this,'getProjects'));
+
     $this->app->get('/testprojects/:id', array($this,'getProjects'));
     // $this->app->get('/testprojects/:id/testplans/', array($this,'getTestProjectTestPlans'));
     // $this->app->get('/testplans/:id', array($this,'getTestPlan'));
@@ -138,8 +139,10 @@ class tlRestApi
 
 
 
-  function authenticate($apiKey=null)
+  // function authenticate($apiKey=null)
+  function authenticate(\Slim\Route $route)
   {
+    $apiKey = null;
     if(is_null($apiKey))
     {  
       $request = $this->app->request();
@@ -154,6 +157,13 @@ class tlRestApi
     {
       $this->user = tlUser::getByID($this->db,$this->userID);  
     }  
+    else
+    {
+      $this->app->status(400);
+      echo json_encode(array('status' => 'ko', 'message' => 'authentication error'));  
+      $this->app->stop();
+    }  
+
     return $ok;
   }
 
@@ -167,85 +177,44 @@ class tlRestApi
 
   public function getProjects($id=null)
   {
-    $op = array('status' => 'ko', 'message' => 'ko', 'item' => null);  
-    if($this->authenticate())
+    $op = array('status' => 'ok', 'message' => 'ok');
+    if(is_null($id))
     {
-      $op = array('status' => 'ok', 'message' => 'ok');
-      if(is_null($id))
-      {
-        $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY name ", 'add_issuetracker' => true,
-                     'add_reqmgrsystem' => true);
-        $op['item'] = $this->tprojectMgr->get_accessible_for_user($this->userID,$opt);
-      }  
-      else
-      {
-        $opt = array('output' => 'map','field_set' => 'id', 'format' => 'simple');
-        $zx = $this->tprojectMgr->get_accessible_for_user($this->userID,$opt);
-        if( ($safeID = intval($id)) > 0)
-        {
-          if( isset($zx[$safeID]) )
-          {
-            $op['item'] = $this->tprojectMgr->get_by_id($safeID);  
-          } 
-        } 
-        else
-        {
-          // Will consider id = name
-          foreach( $zx as $key => $value ) 
-          {
-            if( strcmp($value['name'],$id) == 0 )
-            {
-              $safeID = $this->db->prepare_string($id);
-              $op['item'] = $this->tprojectMgr->get_by_name($safeID);
-              break;   
-            }  
-          }
-        } 
-      }  
-    }
+      $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY name ", 'add_issuetracker' => true,
+                   'add_reqmgrsystem' => true);
+      $op['item'] = $this->tprojectMgr->get_accessible_for_user($this->userID,$opt);
+    }  
     else
     {
-      $op['message'] = 'authetication error';
-    }  
-
+      $opt = array('output' => 'map','field_set' => 'id', 'format' => 'simple');
+      $zx = $this->tprojectMgr->get_accessible_for_user($this->userID,$opt);
+      if( ($safeID = intval($id)) > 0)
+      {
+        if( isset($zx[$safeID]) )
+        {
+          $op['item'] = $this->tprojectMgr->get_by_id($safeID);  
+        } 
+      } 
+      else
+      {
+        // Will consider id = name
+        foreach( $zx as $key => $value ) 
+        {
+          if( strcmp($value['name'],$id) == 0 )
+          {
+            $safeID = $this->db->prepare_string($id);
+            $op['item'] = $this->tprojectMgr->get_by_name($safeID);
+            break;   
+          }  
+        }
+      } 
+    } 
     // Developer (silly?) information
     // json_encode() transforms maps in objects.
     echo json_encode($op);
   }
 
 
-
-
-
-  public function getLatestBuildForTestPlan($id)
-  {
-    $operation=__FUNCTION__;
-    $msg_prefix="({$operation}) - ";
-    $status_ok=true;
-
-
-    $checkFunctions = array('authenticate','checkTestPlanID');       
-    $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
-
-    if( $status_ok )
-    {
-      $build_id = $this->tplanMgr->get_max_build_id($id);
-     
-      if( ($status_ok=$build_id > 0) )
-      {
-          $builds = $this->tplanMgr->get_builds($testPlanID);  
-          $build_info = $builds[$build_id];
-      }
-      else
-      {
-          $tplan_info=$this->tplanMgr->get_by_id($testPlanID);
-          $msg = $msg_prefix . sprintf(TPLAN_HAS_NO_BUILDS_STR,$tplan_info['name'],$tplan_info['id']);
-          $this->errors[] = new IXR_Error(TPLAN_HAS_NO_BUILDS,$msg);
-      }
-    }
-    
-    return $status_ok ? $build_info : $this->errors;
-  }
 
 
 // ==============================================
@@ -265,24 +234,17 @@ class tlRestApi
   public function createTestProject()
   {
     $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
-    if($this->authenticate())
+    try 
     {
-      try 
-      {
-        $request = $this->app->request();
-        $item = json_decode($request->getBody());
-        $op['id'] = $this->tprojectMgr->create($item,array('doChecks' => true));
-        $op = array('status' => 'ok', 'message' => 'ok');
-      } 
-      catch (Exception $e) 
-      {
-        $op['message'] = $e->getMessage();   
-      }
-    }  
-    else
+      $request = $this->app->request();
+      $item = json_decode($request->getBody());
+      $op['id'] = $this->tprojectMgr->create($item,array('doChecks' => true));
+      $op = array('status' => 'ok', 'message' => 'ok');
+    } 
+    catch (Exception $e) 
     {
-      $op['message'] = 'authetication error';
-    }  
+      $op['message'] = $e->getMessage();   
+    }
     echo json_encode($op);
   }
 
@@ -328,36 +290,33 @@ class tlRestApi
   public function createTestCaseExecution()
   {
     $op = array('status' => ' ko', 'message' => 'ko', 'id' => -1);  
-    if($this->authenticate())
+    try 
     {
-      try 
-      {
-        $request = $this->app->request();
-        $ex = json_decode($request->getBody());
-        $util = $this->checkExecutionEnvironment($ex);
+      $request = $this->app->request();
+      $ex = json_decode($request->getBody());
+      $util = $this->checkExecutionEnvironment($ex);
 
-        // If we are here this means we can write execution status!!!
-        $ex->testerID = $this->userID;
-        foreach($util as $prop => $value)
-        {
-          $ex->$prop = $value;
-        }  
-        $op = array('status' => 'ok', 'message' => 'ok');
-        $op['id'] = $this->tplanMgr->writeExecution($ex);
-      } 
-      catch (Exception $e) 
+      // If we are here this means we can write execution status!!!
+      $ex->testerID = $this->userID;
+      foreach($util as $prop => $value)
       {
-        $op['message'] = $e->getMessage();   
-      }
-    }  
-    else
+        $ex->$prop = $value;
+      }  
+      $op = array('status' => 'ok', 'message' => 'ok');
+      $op['id'] = $this->tplanMgr->writeExecution($ex);
+    } 
+    catch (Exception $e) 
     {
-      $op['message'] = 'authetication error';
-    }  
+      $op['message'] = $e->getMessage();   
+    }
     echo json_encode($op);
   }
 
 
+
+  //
+  // Support methods
+  //
   private function checkExecutionEnvironment($ex)
   {
     // throw new Exception($message, $code, $previous);

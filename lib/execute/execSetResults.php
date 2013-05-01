@@ -290,6 +290,8 @@ initWebEditors($gui,$cfg,$_SESSION['basehref']);
 
 // To silence smarty errors
 //  future must be initialized in a right way
+// new dBug($gui);
+
 $smarty->assign('test_automation_enabled',0);
 $smarty->assign('cfg',$cfg);
 $smarty->assign('users',tlUser::getByIDs($db,$userSet,'id'));
@@ -311,43 +313,30 @@ function init_args(&$dbHandler,$cfgObj)
 {
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
-  
-  $mode = 'execution_mode';
-  $form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-  $session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
-  
-  $args->caller = isset($_REQUEST['caller']) ? $_REQUEST['caller'] : 'exec_feature';
 
+
+  // Settings and Filters that we put on session to create some 
+  // sort of persistent scope, because we have had issues when passing this info
+  // using GET mode (size limits)
+  //
+  // we get info about build_id, platform_id, etc ...
+  getSettingsAndFilters($args);
+
+  manageCookies($args,$cfgObj);
+
+ 
+  $args->user = $_SESSION['currentUser'];
+  $args->user_id = $args->user->dbID;
+
+  $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+
+  $args->caller = isset($_REQUEST['caller']) ? $_REQUEST['caller'] : 'exec_feature';
+  $args->cf_selected = isset($_REQUEST['cfields']) ? unserialize($_REQUEST['cfields']) : null;
   $args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
   $args->doDelete = isset($_REQUEST['do_delete']) ? $_REQUEST['do_delete'] : 0;
-  $args->cf_selected = isset($_REQUEST['cfields']) ? unserialize($_REQUEST['cfields']) : null;
   
   // can be a list, will arrive via form POST
   $args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;  
-  
-  $key2null = array('filter_status' => 'filter_result_result','filter_assigned_to' => 'filter_assigned_user', 
-                    'build_id' => 'setting_build', 'platform_id' => 'setting_platform');
-  
-  foreach($key2null as $key => $sessionKey)
-  {
-    $args->$key = isset($session_data[$sessionKey]) ? $session_data[$sessionKey] : null;
-    
-    // let this page be functional withouth a form token too (when called from testcases assigned to me)
-    if (is_null($args->$key)) 
-    {
-      $args->$key = isset($_REQUEST[$sessionKey]) ? $_REQUEST[$sessionKey] : null;
-    }
-  }
-  
-  if (is_null($args->build_id)) 
-  {
-    $args->build_id = (isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id'])) ? $_REQUEST['build_id'] : 0;
-  }
-
-  if (is_null($args->platform_id)) 
-  {
-    $args->platform_id = (isset($_REQUEST['platform_id']) && is_numeric($_REQUEST['platform_id'])) ? $_REQUEST['platform_id'] : 0;
-  }
 
   $key2loop = array('level' => '','status' => null, 'do_bulk_save' => 0, 'save_results' => 0, 'save_and_next' => 0);
   foreach($key2loop as $key => $value)
@@ -355,92 +344,50 @@ function init_args(&$dbHandler,$cfgObj)
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
   }
 
-    // See details on: "When nullify filter_status - 20080504" in this file
-    if( $args->level == 'testcase' || is_null($args->filter_status) || 
-       (!is_array($args->filter_status) && trim($args->filter_status)=='')
-      )
-    {
-        $args->filter_status = null;  
-    }
-    else
-    {
-      // 20130306 - franciscom
-      // This (without the strlen() check) generated issue 5541: When "Result" filter is used ...
-      // at least when result DIFFERENT that NOT RUN is used on filter
-      //
-      // 20120616 - franciscom
-      // some strange thing to investigate, seems that userialize is invoked
-      // under the hood when getting data from $_REQUEST, then this piece
-      // of code not only will be useless BUT WRONG, because will try
-      // to unserialize something that IS NOT SERIALIZED!!!!
-      if(is_string($args->filter_status) && strlen($args->filter_status) > 1)
-      {
-        $args->filter_status = unserialize($args->filter_status);
-      }
-    }
-
-    $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
-    $cookiePrefix = 'TL_execSetResults_';
-      
-    // IMPORTANT: logic for test suite notes CAN NOT BE IMPLEMENTED HERE
-    //            see smarty_assign_tsuite_info() in this file.  
-    $key4cookies = array('tpn_view_status' => 'testplan_notes','bn_view_status' => 'build_description',
-                         'platform_notes_view_status' => 'platform_description');
-    
-  $key2loop = array('id' => 0, 'exec_to_delete' => 0, 'version_id' => 0, 'tpn_view_status' => 0, 
-            'bn_view_status' => 0, 'bc_view_status' => 1,'platform_notes_view_status' => 0);
-  
-  foreach($key4cookies as $key => $cfgKey)
+  // See details on: "When nullify filter_status - 20080504" in this file
+  if( $args->level == 'testcase' || is_null($args->filter_status) || 
+      (!is_array($args->filter_status) && trim($args->filter_status)=='')
+    )
   {
-    $cookieKey = $cookiePrefix . $key;
-    if( !isset($_REQUEST[$key]) )
-    {
-      // First time we are entered here => we can need to understand how to proceed
-        switch($cfgObj->exec_cfg->expand_collapse->$cfgKey )
-        {
-          case LAST_USER_CHOICE:
-          if (isset($_COOKIE[$cookieKey]) ) 
-            {
-              $key2loop[$key] = $_COOKIE[$cookieKey];
-          }
-        break;  
-
-        default:
-          $key2loop[$key] = $cfgObj->exec_cfg->expand_collapse->$cfgKey;
-        break;
-        } 
-    }
-    }
-                        
-  foreach($key2loop as $key => $value)
+    $args->filter_status = null;  
+  }
+  else
   {
-     $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
-        if( isset($key4cookies[$key]) )
+    // 20130306 - franciscom
+    // This (without the strlen() check) generated issue 5541: When "Result" filter is used ...
+    // at least when result DIFFERENT that NOT RUN is used on filter
+    //
+    // 20120616 - franciscom
+    // some strange thing to investigate, seems that userialize is invoked
+    // under the hood when getting data from $_REQUEST, then this piece
+    // of code not only will be useless BUT WRONG, because will try
+    // to unserialize something that IS NOT SERIALIZED!!!!
+    if(is_string($args->filter_status) && strlen($args->filter_status) > 1)
     {
-      setcookie($cookiePrefix . $key,$args->$key,TL_COOKIE_KEEPTIME, '/');
+      $args->filter_status = unserialize($args->filter_status);
     }
   }
+  
 
-    switch($args->level)
-    {
-        case 'testcase':
-          $args->tc_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
-          if( !is_null($args->tc_versions) )
-          {
-            $args->tc_id = current($args->tc_versions);
-            $args->id = $args->tc_id;
-            $args->version_id = key($args->tc_versions);
-          } 
-          $args->tsuite_id = null;
-        break;
-          
-        case 'testsuite':
-          $args->tsuite_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
-          $args->tc_id = null;
-        break;
-    }
+  switch($args->level)
+  {
+    case 'testcase':
+      $args->tc_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
+      if( !is_null($args->tc_versions) )
+      {
+        $args->tc_id = current($args->tc_versions);
+        $args->id = $args->tc_id;
+        $args->version_id = key($args->tc_versions);
+      } 
+      $args->tsuite_id = null;
+    break;
+      
+    case 'testsuite':
+      $args->tsuite_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
+      $args->tc_id = null;
+    break;
+  }
     
-  $args->testcases_to_show = isset($session_data['testcases_to_show']) ? $session_data['testcases_to_show'] : null;
   
   $args->tsuitesInBranch = null; 
   if( !is_null($args->tsuite_id) )
@@ -457,30 +404,6 @@ function init_args(&$dbHandler,$cfgObj)
     unset($tsuite_mgr);
   }
 
-  $args->keyword_id = 0;
-  if (isset($session_data['filter_keywords'])) 
-  {
-    $args->keyword_id = $session_data['filter_keywords'];
-    if (is_array($args->keyword_id) && count($args->keyword_id) == 1) 
-    {
-      $args->keyword_id = $args->keyword_id[0];
-    }
-  }
-  
-  $args->keywordsFilterType = null;
-  if (isset($session_data['filter_keywords_filter_type'])) 
-  {
-    $args->keywordsFilterType = $session_data['filter_keywords_filter_type'];
-  }
-    
-    // Checkbox
-    $tgk = 'filter_assigned_user_include_unassigned';
-    $args->include_unassigned = isset($session_data[$tgk]) && ($session_data[$tgk] != 0 ? 1 : 0);
-  
-  
-    $args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
-                         ? $session_data['setting_refresh_tree_on_action'] : 0;
-  
 
   // TICKET 5630: Test Results by direct link ...
   $args->tplan_id = intval(isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID']);
@@ -492,11 +415,10 @@ function init_args(&$dbHandler,$cfgObj)
     $args->tproject_id = $dm['parent_id']; 
   }
 
-  $args->user = $_SESSION['currentUser'];
-  $args->user_id = $args->user->dbID;
-
   return $args;
 }
+
+
 
 
 /*
@@ -1277,7 +1199,11 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
 */
 function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tcaseMgr)
 {      
+  // echo __FUNCTION__;  new dBug($tcase_id);
+
   $options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
+
+
   $last_exec = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
                                              $argsObj->build_id,$argsObj->platform_id,$options);
     
@@ -1371,7 +1297,6 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$testSet,
     $tsuite_mgr=new testsuite($dbHandler); 
     $tsuite_data = $tsuite_mgr->get_by_id($argsObj->id);
  
-    // ---------------------------------------------------------------------------------
     // Get the path for every test case, grouping test cases that have same parent.
     $testCaseQty = count($testSet->tcase_id);
     if( $testCaseQty > 0 )
@@ -1521,6 +1446,9 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
   $ltcv = null;
   $idCard = null;
   $itemSet = null;
+
+  // new dBug($argsObj);
+
   if( !is_null($identity) )
   {
     $idCard = $identity;  
@@ -1530,12 +1458,12 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
     $idCard = array('id' => $argsObj->tc_id, 'version_id' => $argsObj->version_id);
   }
   
+  // new dBug($idCard); echo "<br>";
 
   if( !is_null($idCard) )
   {
-    $execContext = array('tplan_id' => $argsObj->tplan_id,
-               'platform_id' => $argsObj->platform_id,
-               'build_id' => $argsObj->build_id);    
+    $execContext = array('tplan_id' => $argsObj->tplan_id,'platform_id' => $argsObj->platform_id,
+                         'build_id' => $argsObj->build_id);    
 
     $ltcv = null;
     if($historyOn)
@@ -1581,9 +1509,9 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
     // 
     
     $options = array('only_executed' => true, 'output' => $historyOn ? 'mapOfArray' : 'mapOfMap',
-             'include_unassigned' => $argsObj->include_unassigned,
-             'group_by_build' => 'add_build',
-             'last_execution' => !$historyOn);
+                     'include_unassigned' => $argsObj->include_unassigned,
+                     'group_by_build' => 'add_build',
+                     'last_execution' => !$historyOn);
     
     if(is_null($argsObj->filter_status) || in_array($cfgObj->tc_status['not_run'],(array)$argsObj->filter_status))
     {
@@ -1606,9 +1534,12 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
     
     // This filters are useful when bulk execution is enabled, 
     // and user do click on a test suite on execution tree.
+
+    // new dBug($argsObj);
     $bulk_filters = array('keyword_id' => $argsObj->keyword_id,'assigned_to' => $argsObj->filter_assigned_to, 
                           'exec_status' => $argsObj->filter_status,'cf_hash' => $argsObj->cf_selected,
                           'tsuites_id' => $argsObj->tsuite_id,
+                          'exec_type' => $argsObj->execution_type,
                           'assigned_on_build' => $argsObj->build_id);
     
     // CRITIC / IMPORTANT 
@@ -1619,6 +1550,9 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
     // in order to allow use how he / she wants to work.
     //
     $filters = array_merge($basic_filters,$bulk_filters);
+
+    // new dBug($filters);
+
     if( !is_null($sql2do = $tplanMgr->getLinkedForExecTree($argsObj->tplan_id,$filters,$options)) )
     {
       if( is_array($sql2do) )
@@ -1650,14 +1584,14 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
       {
         foreach($tex as $xkey => $xvalue)
         {
-              $itemSet->tcase_id[]=$xkey;
-              $itemSet->tcversion_id[]=$xvalue['tcversion_id'];
-             }  
+          $itemSet->tcase_id[]=$xkey;
+          $itemSet->tcversion_id[]=$xvalue['tcversion_id'];
+        }  
       }
     }
   }
              
-    return array($ltcv,$itemSet);         
+  return array($ltcv,$itemSet);         
 }
 
 
@@ -1685,5 +1619,128 @@ function initWebEditors(&$guiObj,$cfgObj,$baseHREF)
   }
 }
 
+
+
+
+/**
+ *  get info from ... 
+ *
+ */
+function getSettingsAndFilters(&$argsObj)
+{
+  $mode = 'execution_mode';
+  $form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+  $sf = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
+ 
+  $argsObj->testcases_to_show = isset($sf['testcases_to_show']) ? $sf['testcases_to_show'] : null;
+
+ 
+  // just for better readability
+  $filters = array('filter_status' => 'filter_result_result','filter_assigned_to' => 'filter_assigned_user',
+                   'execution_type' => 'filter_execution_type');
+  $settings = array('build_id' => 'setting_build', 'platform_id' => 'setting_platform');
+
+  $key2null = array_merge($filters,$settings);
+  
+
+  $isNumeric = array('build_id' => 0, 'platform_id' => 0);
+  
+  foreach($key2null as $key => $sfKey)
+  {
+    $argsObj->$key = isset($sf[$sfKey]) ? $sf[$sfKey] : null;
+    if (is_null($argsObj->$key)) 
+    {
+      // let's this page be functional withouth a form token too 
+      // (when called from testcases assigned to me)
+      $argsObj->$key = isset($_REQUEST[$sfKey]) ? $_REQUEST[$sfKey] : null;
+    }
+    
+    if(isset($isNumeric[$key]))
+    {
+      $argsObj->$key = intval($argsObj->$key);              
+    }  
+  }
+
+
+  // keywords filter
+  $argsObj->keyword_id = 0;
+  if (isset($sf['filter_keywords'])) 
+  {
+    $argsObj->keyword_id = $sf['filter_keywords'];
+    if (is_array($argsObj->keyword_id) && count($argsObj->keyword_id) == 1) 
+    {
+      $argsObj->keyword_id = $argsObj->keyword_id[0];
+    }
+  }
+  
+  $argsObj->keywordsFilterType = null;
+  if (isset($sf['filter_keywords_filter_type'])) 
+  {
+    $argsObj->keywordsFilterType = $sf['filter_keywords_filter_type'];
+  }
+
+
+
+
+
+  $argsObj->refreshTree = isset($sf['setting_refresh_tree_on_action']) ? 
+                          $sf['setting_refresh_tree_on_action'] : 0;
+
+  // Checkbox
+  $tgk = 'filter_assigned_user_include_unassigned';
+  $argsObj->include_unassigned = isset($sf[$tgk]) && ($sf[$tgk] != 0 ? 1 : 0);
+
+
+}
+
+
+
+/**
+ *  get info from cookies and also set values on cookies
+ *
+ */
+function manageCookies(&$argsObj,$cfgObj)
+{
+  $cookiePrefix = 'TL_execSetResults_';
+      
+  // IMPORTANT: logic for test suite notes CAN NOT BE IMPLEMENTED HERE
+  //            see smarty_assign_tsuite_info() in this file.  
+  $key4cookies = array('tpn_view_status' => 'testplan_notes','bn_view_status' => 'build_description',
+                       'platform_notes_view_status' => 'platform_description');
+    
+  $key2loop = array('id' => 0, 'exec_to_delete' => 0, 'version_id' => 0, 'tpn_view_status' => 0, 
+                    'bn_view_status' => 0, 'bc_view_status' => 1,'platform_notes_view_status' => 0);
+
+  foreach($key4cookies as $key => $cfgKey)
+  {
+    $cookieKey = $cookiePrefix . $key;
+    if( !isset($_REQUEST[$key]) )
+    {
+      // First time we are entered here => we can need to understand how to proceed
+        switch($cfgObj->exec_cfg->expand_collapse->$cfgKey )
+        {
+          case LAST_USER_CHOICE:
+          if (isset($_COOKIE[$cookieKey]) ) 
+          {
+            $key2loop[$key] = $_COOKIE[$cookieKey];
+          }
+          break;  
+
+          default:
+            $key2loop[$key] = $cfgObj->exec_cfg->expand_collapse->$cfgKey;
+          break;
+        } 
+    }
+  }
+                        
+  foreach($key2loop as $key => $value)
+  {
+    $argsObj->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
+    if( isset($key4cookies[$key]) )
+    {
+      setcookie($cookiePrefix . $key,$argsObj->$key,TL_COOKIE_KEEPTIME, '/');
+    }
+  }
+}  
 
 ?>

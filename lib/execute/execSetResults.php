@@ -1540,6 +1540,7 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
                           'exec_status' => $argsObj->filter_status,'cf_hash' => $argsObj->cf_selected,
                           'tsuites_id' => $argsObj->tsuite_id,
                           'exec_type' => $argsObj->execution_type,
+                          'urgencyImportance' => $argsObj->priority, 
                           'assigned_on_build' => $argsObj->build_id);
     
     // CRITIC / IMPORTANT 
@@ -1631,13 +1632,13 @@ function getSettingsAndFilters(&$argsObj)
   $mode = 'execution_mode';
   $form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
   $sf = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
- 
+
   $argsObj->testcases_to_show = isset($sf['testcases_to_show']) ? $sf['testcases_to_show'] : null;
 
  
   // just for better readability
   $filters = array('filter_status' => 'filter_result_result','filter_assigned_to' => 'filter_assigned_user',
-                   'execution_type' => 'filter_execution_type');
+                   'execution_type' => 'filter_execution_type', 'priority' => 'filter_priority');
   $settings = array('build_id' => 'setting_build', 'platform_id' => 'setting_platform');
 
   $key2null = array_merge($filters,$settings);

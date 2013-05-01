@@ -323,15 +323,12 @@ function init_args(&$dbHandler,$cfgObj)
   getSettingsAndFilters($args);
 
   manageCookies($args,$cfgObj);
-
  
   $args->user = $_SESSION['currentUser'];
   $args->user_id = $args->user->dbID;
-
   $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 
   $args->caller = isset($_REQUEST['caller']) ? $_REQUEST['caller'] : 'exec_feature';
-  $args->cf_selected = isset($_REQUEST['cfields']) ? unserialize($_REQUEST['cfields']) : null;
   $args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
   $args->doDelete = isset($_REQUEST['do_delete']) ? $_REQUEST['do_delete'] : 0;
   
@@ -1439,7 +1436,10 @@ function launchRemoteExec(&$dbHandler,&$argsObj,$tcasePrefix,&$tplanMgr,&$tcaseM
 
 
 
-
+/**
+ * @use testplan->filterByCustomFields
+ *
+ */
 function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identity=null)
 {          
   
@@ -1536,13 +1536,17 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
     // and user do click on a test suite on execution tree.
 
     // new dBug($argsObj);
+    // seems to be useless => 'cf_hash' => $argsObj->filter_cfields,
+    // need to review $tplanMgr->getLinkedForExecTree
+    //
     $bulk_filters = array('keyword_id' => $argsObj->keyword_id,'assigned_to' => $argsObj->filter_assigned_to, 
-                          'exec_status' => $argsObj->filter_status,'cf_hash' => $argsObj->cf_selected,
+                          'exec_status' => $argsObj->filter_status,
                           'tsuites_id' => $argsObj->tsuite_id,
+                          'assigned_on_build' => $argsObj->build_id,
                           'exec_type' => $argsObj->execution_type,
-                          'urgencyImportance' => $argsObj->priority, 
-                          'assigned_on_build' => $argsObj->build_id);
-    
+                          'urgencyImportance' => $argsObj->priority);
+
+      
     // CRITIC / IMPORTANT 
     // With BULK Operation enabled, we prefer to display Test cases tha are ONLY DIRECT CHILDREN
     // of test suite id => we do not do deep walk.
@@ -1551,9 +1555,6 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
     // in order to allow use how he / she wants to work.
     //
     $filters = array_merge($basic_filters,$bulk_filters);
-
-    // new dBug($filters);
-
     if( !is_null($sql2do = $tplanMgr->getLinkedForExecTree($argsObj->tplan_id,$filters,$options)) )
     {
       if( is_array($sql2do) )
@@ -1583,6 +1584,11 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
       $ltcv = $tex = $tcaseMgr->db->$kmethod($sql2run,'tcase_id');
       if(!is_null($tex))
       {
+        if(!is_null($argsObj->filter_cfields))
+        {
+          $tex = $tplanMgr->filterByCustomFields($tex,$argsObj->filter_cfields);  
+        }  
+
         foreach($tex as $xkey => $xvalue)
         {
           $itemSet->tcase_id[]=$xkey;
@@ -1635,17 +1641,15 @@ function getSettingsAndFilters(&$argsObj)
 
   $argsObj->testcases_to_show = isset($sf['testcases_to_show']) ? $sf['testcases_to_show'] : null;
 
- 
   // just for better readability
   $filters = array('filter_status' => 'filter_result_result','filter_assigned_to' => 'filter_assigned_user',
-                   'execution_type' => 'filter_execution_type', 'priority' => 'filter_priority');
+                   'execution_type' => 'filter_execution_type', 'priority' => 'filter_priority',
+                   'filter_cfields' => 'filter_custom_fields');
   $settings = array('build_id' => 'setting_build', 'platform_id' => 'setting_platform');
 
   $key2null = array_merge($filters,$settings);
   
-
   $isNumeric = array('build_id' => 0, 'platform_id' => 0);
-  
   foreach($key2null as $key => $sfKey)
   {
     $argsObj->$key = isset($sf[$sfKey]) ? $sf[$sfKey] : null;

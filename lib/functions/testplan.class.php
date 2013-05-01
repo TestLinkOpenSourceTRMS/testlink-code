@@ -2326,25 +2326,27 @@ class testplan extends tlObjectWithAttachments
 
 
   /*
-    function: filter_cf_selection
+    function: filterByCustomFields
   
+    @used by getLinkedItems() in file execSetResults.php
+    
     args :
-          $tp_tcs - this comes from get_linked_tcversion
+          $tp_tcs - key: test case ID
+                    value: map with keys tcase_id,tcversion_id,...
+
           $cf_hash [cf_id] = value of cfields to filter by.
   
     returns: array filtered by selected custom fields.
   
     @internal revisions
-    20110326 - franciscom - added some logic to avoid issues if cfvalue is ''
     
   */
-  function filter_cf_selection($tp_tcs, $cf_hash)
+  // function filter_cf_selection($tp_tcs, $cf_hash) 20130501
+  function filterByCustomFields($tp_tcs, $cf_hash)  
   {
     $new_tp_tcs = null;
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
-    // BUGID 3809 - Radio button based Custom Fields not working    
-    // BUGID 3995 Custom Field Filters not working properly since the cf_hash is array  
     $or_clause = '';
     $cf_query = '';
     $ignored = 0;
@@ -2398,18 +2400,17 @@ class testplan extends tlObjectWithAttachments
         $doFilter = true;
       }  
     }
-        $cf_qty = count($cf_hash) - $ignored;                                      
-        $doIt = !$doFilter;
+    $cf_qty = count($cf_hash) - $ignored;                                      
+    $doIt = !$doFilter;
     foreach ($tp_tcs as $tc_id => $tc_value)
     {
       if( $doFilter )
       {
-        // BUGID 2877 - Custom Fields linked to TC versions
         $sql = " /* $debugMsg */ SELECT CFD.value FROM {$this->tables['cfield_design_values']} CFD," .
-             " {$this->tables['nodes_hierarchy']} NH" .
-             " WHERE CFD.node_id = NH.id " .
-             " AND NH.parent_id = {$tc_value['tc_id']} " .
-             " {$cf_query} ";
+               " {$this->tables['nodes_hierarchy']} NH" .
+               " WHERE CFD.node_id = NH.id " .
+               " AND NH.parent_id = {$tc_value['tcase_id']} " .
+               " {$cf_query} ";
 
         $rows = $this->db->fetchColumnsIntoArray($sql,'value'); //BUGID 4115
       

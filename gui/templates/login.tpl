@@ -34,10 +34,10 @@ window.onload=function()
 		<input type="hidden" name="reqURI" value="{$gui->reqURI|escape:'url'}"/>
 		<input type="hidden" name="destination" value="{$gui->destination|escape:'url'}"/>
   		<p class="label">{$labels.login_name}<br />
-			<input type="text" name="tl_login" id="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" />
+			<input type="text" name="tl_login" id="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" required />
 		</p>
   		<p class="label">{$labels.password}<br />
-			<input type="password" name="tl_password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" />
+			<input type="password" name="tl_password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" required />
 		</p>
 		<input type="submit" name="login_submit" value="{$labels.btn_login}" />
 	{/if}

@@ -702,8 +702,8 @@ function createSpreadsheet($gui,$args,$customFieldColumns=null)
 
   //
   $dataHeader = array($lbl['title_test_suite_name'],$lbl['title_test_case_title'],$lbl['version']);
-
-  if( $showPlatforms = (property_exists($gui,'platformSet') && !is_null($gui->platformSet)) )
+  if( $showPlatforms = ( property_exists($gui,'platformSet') && !is_null($gui->platformSet) && 
+                         !isset($gui->platformSet[0])) )
   {
     $dataHeader[] = $lbl['platform'];
   }

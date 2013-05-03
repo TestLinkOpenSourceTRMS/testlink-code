@@ -12,8 +12,8 @@
  *
  *
  * @internal revisions
- * @since 1.9.6
- * 20130212 - franciscom - TICKET 5518: error message while trying to activate existing inactive Test Plans.
+ * @since 1.9.7
+ * 20130503 - franciscom - TICKET 5683: DB Access Error while creating a copy of a PRIVATE testplan
  **/
 
 require_once('../../config.inc.php');
@@ -172,13 +172,7 @@ switch($args->do_action)
         $template = null;
         $gui->user_feedback ='';
 
-        // CRITIC  
-        if(!$args->is_public)
-        {
-          $effectiveRole = $args->user->getEffectiveRole($db,$args->tproject_id,null);
-          $tplan_mgr->addUserRole($args->user_id,$new_tplan_id,$effectiveRole->dbID);
-        }
-                
+        // Operations Order is CRITIC  
         if($args->copy)
         {
           $options = array('items2copy' => $args->copy_options,'copy_assigned_to' => $args->copy_assigned_to,
@@ -186,6 +180,19 @@ switch($args->do_action)
           $tplan_mgr->copy_as($args->source_tplanid, $new_tplan_id,$args->testplan_name,
                               $args->tproject_id,$args->user_id,$options);
         }
+
+        if(!$args->is_public)
+        {
+          // does user have an SPECIFIC role on TestPlan ?
+          // if answer is yes => do nothing
+          if(!tlUser::hasRoleOnTestPlan($db,$args->user_id,$new_tplan_id))
+          {  
+            $effectiveRole = $args->user->getEffectiveRole($db,$args->tproject_id,null);
+            $tplan_mgr->addUserRole($args->user_id,$new_tplan_id,$effectiveRole->dbID);
+          }  
+        }
+        // End critic block
+
       }
     }
     else

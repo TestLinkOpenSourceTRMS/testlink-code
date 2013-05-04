@@ -1339,17 +1339,18 @@ $TLS_keywords = "Keywords";
 
 // ----- gui/templates/navBar.tpl -----
 $TLS_access_doc = "Choose Document";
-$TLS_home = "Project";
+$TLS_home = "Desktop";
 $TLS_link_logout = "Logout";
 $TLS_product = "Test Project";
 $TLS_product_role = "Test Project role ";
 $TLS_search_testcase = "Search Test Case by ID";
 $TLS_title_edit_personal_data = "My Settings";
-$TLS_title_admin = "User Management";
+$TLS_title_admin = "Users/Roles";
 $TLS_title_events = "Events";
 $TLS_title_execute = "Test Execution";
 $TLS_title_results = "Test Reports";
 $TLS_title_specification = "Test Specification";
+$TLS_title_requirements = "Requirements";
 $TLS_session_inactivity_timeout_at = "Session idle timeout at";
 
 
@@ -2201,7 +2202,6 @@ $TLS_href_search_tc = "Search Test Cases";
 $TLS_href_tproject_management = "Test Project Management";
 $TLS_href_user_management = "User Management";
 $TLS_href_admin_modules = "System Configuration";
-$TLS_title_requirements = "Requirement Specification";
 $TLS_title_test_spec = "Test Specification";
 $TLS_title_documentation = "Documentation";
 $TLS_title_product_mgmt = "Test Project";

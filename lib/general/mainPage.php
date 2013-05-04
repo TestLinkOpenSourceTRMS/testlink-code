@@ -15,6 +15,8 @@
  *
  * @internal revisions
  * @since 1.9.7
+ * 20130504 - franciscom - TICKET 5690: TestLink Desktop / Main page semplification - 
+ *                                      User and role management removed
  * 20130317 - franciscom - transform config options into rights
  *
  **/
@@ -104,8 +106,7 @@ if ($testplanID && isset($currentUser->tplanRoles[$testplanID]))
 }
 
 $rights2check = array('testplan_execute','testplan_create_build','testplan_metrics','testplan_planning',
-                      'testplan_user_role_assignment','mgt_testplan_create','mgt_users',
-                      'cfield_view', 'cfield_management');
+                      'testplan_user_role_assignment','mgt_testplan_create','cfield_view', 'cfield_management');
 
 foreach($rights2check as $key => $the_right)
 {

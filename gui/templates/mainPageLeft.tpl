@@ -4,7 +4,7 @@
  Purpose: smarty template - main page / site map                 
                                                                  
  @internal revisions
- @since 1.9.6
+ @since 1.9.7
 *}
 {lang_get var='labels' s='title_product_mgmt,href_tproject_management,href_admin_modules,
                           href_assign_user_roles,href_cfields_management,
@@ -48,31 +48,6 @@
      }
     {/literal}
     </script>
-{/if}
-
-
-{if $gui->grants.mgt_users == "yes"}
-    {assign var="display_left_block_2" value=true}
-
-    <script type="text/javascript">
-    {literal}
-    function display_left_block_2()
-    {
-        var p1 = new Ext.Panel({
-                                title: {/literal}'{$labels.title_user_mgmt}'{literal},
-                                collapsible:false,
-                                collapsed: false,
-                                draggable: false,
-                                contentEl: 'usermanagement_topics',
-                                baseCls: 'x-tl-panel',
-                                bodyStyle: "background:#c8dce8;padding:3px;",
-                                renderTo: {/literal}'menu_left_block_{$menuLayout.userAdministration}'{literal},
-                                width:'100%'
-                                });
-     }
-    {/literal}
-    </script>
-
 {/if}
 
 {if $gui->testprojectID && $opt_requirements == TRUE && ($gui->grants.reqs_view == "yes" || $gui->grants.reqs_edit == "yes")}

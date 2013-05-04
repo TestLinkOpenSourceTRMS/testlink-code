@@ -107,6 +107,8 @@ $TLS_public = "Public";
 $TLS_private = "Private";
 $TLS_access_public = "Public";
 $TLS_access_private = "Private - User need specific role assignment";
+
+$TLS_required = "Required";
 $TLS_requirement = "Requirement";
 $TLS_req_monitoring = "Requirement Monitoring";
 $TLS_req_short = "Req.";

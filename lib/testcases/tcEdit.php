@@ -77,7 +77,6 @@ switch($args->doAction)
   case "doInsertStep":
   case "doResequenceSteps":
     $testCaseEditorKeys = array('steps' => 'steps', 'expected_results' => 'expected_results');
-
   break;
 
 }
@@ -109,6 +108,7 @@ switch($args->doAction)
   case "doReorderSteps":
   case "doInsertStep":
   case "doResequenceSteps":
+  case "setImportance":
     $op = $commandMgr->$pfn($args,$_REQUEST);
     $doRender = true;
   break;
@@ -569,7 +569,6 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
 /**
  * manage GUI rendering
  *
- * BUGID 3359
  */
 function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
 {
@@ -594,9 +593,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
                              'doCopyStep' => 'doUpdateStep',
                              'editStep' => 'doUpdateStep', 'doUpdateStep' => 'doUpdateStep',  
                              'doDeleteStep' => '', 'doReorderSteps' => '','doResequenceSteps' => '',
-                             'doInsertStep' => 'doUpdateStep');
+                             'doInsertStep' => 'doUpdateStep','setImportance' => '');
 
-  
   $key2work = 'initWebEditorFromTemplate';
   $initWebEditorFromTemplate = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
   $key2work = 'cleanUpWebEditor';
@@ -604,38 +602,39 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
 
   $oWebEditor = createWebEditors($argsObj->basehref,$cfgObj->webEditorCfg,$editorKeys); 
   foreach ($oWebEditor->cfg as $key => $value)
-   {
-     $of = &$oWebEditor->editor[$key];
-     $rows = $oWebEditor->cfg[$key]['rows'];
-     $cols = $oWebEditor->cfg[$key]['cols'];
+  {
+    $of = &$oWebEditor->editor[$key];
+    $rows = $oWebEditor->cfg[$key]['rows'];
+    $cols = $oWebEditor->cfg[$key]['cols'];
+    
     switch($argsObj->doAction)
-     {
-         case "edit":
-         case "delete":
-         case "editStep":
-         $initWebEditorFromTemplate = false;
-         $of->Value = $argsObj->$key;
-       break;
+    {
+      case "edit":
+      case "delete":
+      case "editStep":
+        $initWebEditorFromTemplate = false;
+        $of->Value = $argsObj->$key;
+      break;
 
-         case "doCreate":
-         case "doDelete":
-         case "doCopyStep":
-         case "doUpdateStep":
-         $initWebEditorFromTemplate = false;
-         $of->Value = $argsObj->$key;
-       break;
+      case "doCreate":
+      case "doDelete":
+      case "doCopyStep":
+      case "doUpdateStep":
+        $initWebEditorFromTemplate = false;
+        $of->Value = $argsObj->$key;
+      break;
        
-         case "create":
+      case "create":
       case "doCreateStep":
-       case "doInsertStep":
-       default:  
-         $initWebEditorFromTemplate = true;
-       break;
-     }
-        $guiObj->operation = $actionOperation[$argsObj->doAction];
+      case "doInsertStep":
+      default:  
+        $initWebEditorFromTemplate = true;
+      break;
+    }
+    $guiObj->operation = $actionOperation[$argsObj->doAction];
   
-     if(  $initWebEditorFromTemplate )
-     {
+    if(  $initWebEditorFromTemplate )
+    {
       $of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');  
     }
     else if( $cleanUpWebEditor )
@@ -668,6 +667,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
         case "doCopyStep":
         case "doInsertStep":
         case "doResequenceSteps":
+        case "setImportance":
             $renderType = 'template';
             
             // Document this !!!!

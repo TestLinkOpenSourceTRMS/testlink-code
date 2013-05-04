@@ -5801,6 +5801,19 @@ class testcase extends tlObjectWithAttachments
     }           
   }   
 
+  /**
+   *
+   *
+   *
+   */
+  function setImportance($tcversionID,$value)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $sql = " UPDATE {$this->tables['tcversions']} " .
+           " SET importance=" . $this->db->prepare_int($value) . 
+           " WHERE id = " . $this->db->prepare_int($tcversionID); 
+    $this->db->exec_query($sql);
+  }
 
 } // end class
 ?>

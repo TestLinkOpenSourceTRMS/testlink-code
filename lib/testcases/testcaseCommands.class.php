@@ -114,7 +114,6 @@ class testcaseCommands
       }  
     }
 
-    new dBug($greenCard);
     $tcaseInfo = $this->tcaseMgr->get_by_id($greenCard['tcase_id'],$greenCard['tcversion_id'],null,array('output' => 'full_without_steps'));
 
 
@@ -854,6 +853,30 @@ class testcaseCommands
   }
 
 
+  /**
+   *
+   *
+   *
+   */
+  function setImportance(&$argsObj,$request)
+  {
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->user_feedback = '';
+    $guiObj->step_exec_type = $argsObj->exec_type;
+    $guiObj->tcversion_id = $argsObj->tcversion_id;
+
+    $this->initTestCaseBasicInfo($argsObj,$guiObj);
+
+    $this->tcaseMgr->setImportance($argsObj->tcversion_id,$argsObj->importance);
+    $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
+
+    // set up for rendering
+    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+
+    $guiObj->user_feedback = '';
+    return $guiObj;
+  }
 
   
   /**

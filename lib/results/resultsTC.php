@@ -9,9 +9,7 @@
 * Show Test Report by individual test case.
 *
 * @internal revisions
-* @since 1.9.6
-* 20130203 - franciscom - TICKET 5516
-* 20121224 - franciscom - TICKET 5440: Test result matrix - add export on spreadsheet format
+* @since 1.9.7
 */
 require('../../config.inc.php');
 require_once('../../third_party/codeplex/PHPExcel.php');   // Must be included BEFORE common.php
@@ -166,7 +164,8 @@ if( !is_null($metrics) )
           {
             $execOnLastBuild = $r4build;  
           }              
-          
+
+          // why we do special reasoning on NOT RUN ???
           if( ($latestExecution[$platformID][$tcaseID]['status'] == $cfg['results']['status_code']['not_run']) ||
               ( ($latestExecution[$platformID][$tcaseID]['build_id'] == $buildID) &&                             
                 ($latestExecution[$platformID][$tcaseID]['id'] == $rf[$buildID]['executions_id']) ) 
@@ -175,7 +174,6 @@ if( !is_null($metrics) )
             $lexec = $r4build;
           }
         }
-        unset($r4build);
 
         // Ok, now the specials
         // If configured, add column with Exec result on Latest Created Build
@@ -193,6 +191,7 @@ if( !is_null($metrics) )
         $rows[] = $lexec;
        
         $gui->matrix[] = $rows;
+        unset($r4build);
         unset($rows);
         unset($buildExecStatus);
       } // $platformSet
@@ -200,7 +199,6 @@ if( !is_null($metrics) )
     }  // $tcaseSet
   
   } // $tsuiteSet
-  // new dBug($gui->matrix);
 }  
 unset($metrics);
 unset($latestExecution);
@@ -212,13 +210,9 @@ switch($args->format)
   break;  
 
   default:
-  // displayMemUsage('Before buildMatrix()');
   $gui->tableSet[] =  buildMatrix($gui, $args, $last_build);
   break;
 } 
-
-// new dBug($gui->tableSet);
-// displayMemUsage('AFTER buildMatrix()');
 
 $timerOff = microtime(true);
 $gui->elapsed_time = round($timerOff - $timerOn,2);
@@ -459,6 +453,10 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
   return array($guiObj,$tproject_info,$l18n,$cfg);
 }
 
+/**
+ *
+ *
+ */
 function createSpreadsheet($gui,$args,$latestBuildID)
 {
   $lbl = init_labels(array('title_test_suite_name' => null,'platform' => null,'priority' => null,
@@ -493,12 +491,16 @@ function createSpreadsheet($gui,$args,$latestBuildID)
   $cellArea .= "A{$cdx}";
   $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($styleReportContext);	
 
+
   // Step 2
   // data is organized with following columns$dataHeader[]
   // Test suite
   // Test case
   // [Platform]
-  // Priority
+  // Priority   ===>  Just discovered that we have choosen to make this column
+  //                  displayabled or not according test project configuration
+  //                  IMHO has no sense work without priority
+  // 
   // Exec result on Build 1
   // Exec result on Build 2
   // ...
@@ -512,15 +514,22 @@ function createSpreadsheet($gui,$args,$latestBuildID)
   {
     $dataHeader[] = $lbl['platform'];
   }
-  $dataHeader[] = $lbl['priority'];
 
+  if($gui->options->testPriorityEnabled)
+  {  
+    $dataHeader[] = $lbl['priority'];
+  }
 
   foreach($gui->buildInfoSet as $key => $value)
   {
     $dataHeader[] = $value['name'];
   }
+  
   // Now the magic
-  $dataHeader[] = $lbl['result_on_last_build'];
+  if( $gui->matrixCfg->buildColumns['showStatusLastExecuted'] )
+  {  
+    $dataHeader[] = $lbl['result_on_last_build'];
+  }
   $dataHeader[] = $lbl['last_execution'];
 
   $startingRow = count($lines2write) + 2; // MAGIC
@@ -536,17 +545,15 @@ function createSpreadsheet($gui,$args,$latestBuildID)
   $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($styleDataHeader);	
   
   $startingRow++;
+  
   $qta_loops = count($gui->matrix);
   for($idx = 0; $idx < $qta_loops; $idx++)
   {
-    $line2write = $gui->matrix[$idx];
 		foreach($gui->matrix[$idx] as $ldx => $field)
 		{
 			$cellID = $cellRange[$ldx] . $startingRow; 
 			$objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID, $field);
 		}
-		$colQty = count($line2write);
-		$cellEnd = $cellRange[$colQty-1] . $startingRow;
 		$startingRow++;
   }
 

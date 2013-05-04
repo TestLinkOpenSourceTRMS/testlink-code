@@ -19,7 +19,7 @@ doSessionStart();
 
 unset($_SESSION['basehref']);  // will be very interesting understand why we do this
 setPaths();
-$args = init_args();
+list($args,$gui) = initEnv();
 
 //verify the session during a work
 $redir2login = true;
@@ -62,14 +62,16 @@ if($redir2login)
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('title', lang_get('main_page_title'));
-$smarty->assign('titleframe', 'lib/general/navBar.php');
-$smarty->assign('mainframe', $args->reqURI);
+
+$smarty->assign('gui', $gui);
 $smarty->display('main.tpl');
 
 
-
-function init_args()
+/**
+ *
+ *
+ */
+function initEnv()
 {
 	$iParams = array("reqURI" => array(tlInputParameter::STRING_N,0,4000));
 	$pParams = G_PARAMS($iParams);
@@ -77,6 +79,11 @@ function init_args()
 	$args = new stdClass();
 	$args->reqURI = ($pParams["reqURI"] != '') ? $pParams["reqURI"] : 'lib/general/mainPage.php';
 	
-	return $args;
+	$gui = new stdClass();
+	$gui->title = lang_get('main_page_title');
+	$gui->titleframe = 'lib/general/navBar.php';
+	$gui->mainframe = $args->reqURI;
+
+	return array($args,$gui);
 }
 ?>

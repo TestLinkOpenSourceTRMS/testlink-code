@@ -37,8 +37,7 @@
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * since 1.9.6
- * 20130119 - franciscom - TICKET 5476
+ * @since 1.9.7
  */
 
 // use output buffer to prevent headers/data from being sent before 
@@ -58,7 +57,6 @@ require_once('users.inc.php');
 testlinkInitPage($db, true);
 
 $smarty = new TLSmarty();
-$smarty->assign('title', lang_get('main_page_title'));
 
 // display outer or inner frame?
 if (!isset($_GET['load'])) 
@@ -77,9 +75,13 @@ if (!isset($_GET['load']))
   $anchor = isset($_GET['anchor']) ? '&anchor=' . $_GET['anchor'] : "";
   $version = isset($_GET['version']) ? "&version=" . $_GET['version'] : '';
   $new_link = $item . $id . $version . $tprojectPrefix . '&load' . $anchor;
-  
-  $smarty->assign('titleframe', 'lib/general/navBar.php');
-  $smarty->assign('mainframe', 'linkto.php?' . $new_link);
+ 
+  $gui = new stdClas();
+  $gui->title = lang_get('main_page_title');
+  $gui->titleframe = 'lib/general/navBar.php';
+  $gui->mainframe = 'linkto.php?' . $new_link;
+
+  $smarty->assign('gui', $gui);
   $smarty->display('main.tpl');
 } 
 else 
@@ -148,6 +150,7 @@ else
     // add anchor to URL
     $url = $jump_to['url'] . $anchor;
 
+    $smarty->assign('title', lang_get('main_page_title'));
     $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
     $smarty->assign('workframe', $url);
     $smarty->assign('treeframe', $itemCode[$item]);

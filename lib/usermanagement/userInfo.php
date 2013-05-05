@@ -5,11 +5,11 @@
  *
  * Displays the users' information and allows users to change their passwords and user info.
  *
- * @filesource	userInfo.php
- * @package 	TestLink
- * @author 		-
- * @copyright 	2007-2012, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @filesource  userInfo.php
+ * @package   TestLink
+ * @author    -
+ * @copyright   2007-2012, TestLink community 
+ * @link    http://www.teamst.org/index.php
  *
  *
  * @internal revisions
@@ -18,8 +18,6 @@
  */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
-require_once('../../lib/api/APIKey.php');
-
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
@@ -37,36 +35,36 @@ $update_title_bar = 0;
 $doUpdate = false;
 switch($args->doAction)
 {
-    case 'editUser':
-		$doUpdate = true;
-		foreach($args->user as $key => $value)
-		{
-			$user->$key = $value;
-		}
-		$op->status = tl::OK;
-		$op->auditMsg = "audit_user_saved";
-		$op->user_feedback = lang_get('result_user_changed');
-		$update_title_bar = 1;
-    	break;
+  case 'editUser':
+    $doUpdate = true;
+    foreach($args->user as $key => $value)
+    {
+      $user->$key = $value;
+    }
+    $op->status = tl::OK;
+    $op->auditMsg = "audit_user_saved";
+    $op->user_feedback = lang_get('result_user_changed');
+    $update_title_bar = 1;
+  reak;
 
-    case 'changePassword':
-	    $op = changePassword($args,$user);
-	    $doUpdate = ($op->status >= tl::OK);
-	    break;
+  case 'changePassword':
+    $op = changePassword($args,$user);
+    $doUpdate = ($op->status >= tl::OK);
+  break;
 
-    case 'genAPIKey':
-	    $op = generateAPIKey($args,$user);
-	    break;
+  case 'genAPIKey':
+    $op = generateAPIKey($args,$user);
+  break;
 }
 
 if($doUpdate)
 {
-	$op->status = $user->writeToDB($db);
-	if ($op->status >= tl::OK) 
-	{
-		logAuditEvent(TLS($op->auditMsg,$user->login),"SAVE",$user->dbID,"users");
-		$_SESSION['currentUser'] = $user;
-		setUserSession($db,$user->login, $args->userID, $user->globalRoleID, $user->emailAddress, $user->locale);
+  $op->status = $user->writeToDB($db);
+  if ($op->status >= tl::OK) 
+  {
+    logAuditEvent(TLS($op->auditMsg,$user->login),"SAVE",$user->dbID,"users");
+    $_SESSION['currentUser'] = $user;
+    setUserSession($db,$user->login, $args->userID, $user->globalRoleID, $user->emailAddress, $user->locale);
     }
 }
 
@@ -76,14 +74,14 @@ $loginHistory->ok = $g_tlLogger->getAuditEventsFor($args->userID,"users","LOGIN"
 
 if ($op->status != tl::OK && empty($op->user_feedback))
 {
-	$op->user_feedback = getUserErrorMessage($op->status);
+  $op->user_feedback = getUserErrorMessage($op->status);
 }
 $user->readFromDB($db);
 
 // set a string if not generated key yet
 if (null == $user->userApiKey)
 {
-	$user->userApiKey = TLS('none');
+  $user->userApiKey = TLS('none');
 }
 
 $smarty = new TLSmarty();
@@ -99,29 +97,29 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
-	$iParams = array("firstName" => array("POST",tlInputParameter::STRING_N,0,30),
-			         "lastName" => array("REQUEST",tlInputParameter::STRING_N,0,30),
-			         "emailAddress" => array("REQUEST",tlInputParameter::STRING_N,0,100),
-			         "locale" => array("POST",tlInputParameter::STRING_N,0,10),
-			         "oldpassword" => array("POST",tlInputParameter::STRING_N,0,32),
-			         "newpassword" => array("POST",tlInputParameter::STRING_N,0,32),
-			         "doAction" => array("POST",tlInputParameter::STRING_N,0,15,null,'checkDoAction'), 
-	                 "userinfo_token" => array(tlInputParameter::STRING_N, 0, 255));
+  $iParams = array("firstName" => array("POST",tlInputParameter::STRING_N,0,30),
+               "lastName" => array("REQUEST",tlInputParameter::STRING_N,0,30),
+               "emailAddress" => array("REQUEST",tlInputParameter::STRING_N,0,100),
+               "locale" => array("POST",tlInputParameter::STRING_N,0,10),
+               "oldpassword" => array("POST",tlInputParameter::STRING_N,0,32),
+               "newpassword" => array("POST",tlInputParameter::STRING_N,0,32),
+               "doAction" => array("POST",tlInputParameter::STRING_N,0,15,null,'checkDoAction'), 
+                   "userinfo_token" => array(tlInputParameter::STRING_N, 0, 255));
 
-	$pParams = I_PARAMS($iParams);
-	
-	$args = new stdClass();
+  $pParams = I_PARAMS($iParams);
+  
+  $args = new stdClass();
     $args->user = new stdClass();
- 	$args->user->firstName = $pParams["firstName"];
-	$args->user->lastName = $pParams["lastName"];
-	$args->user->emailAddress = $pParams["emailAddress"];
-	$args->user->locale = $pParams["locale"];
-	$args->oldpassword = $pParams["oldpassword"];
-	$args->newpassword = $pParams["newpassword"];
-	$args->doAction = $pParams["doAction"];
-	$args->userinfo_token = $pParams["userinfo_token"];
+  $args->user->firstName = $pParams["firstName"];
+  $args->user->lastName = $pParams["lastName"];
+  $args->user->emailAddress = $pParams["emailAddress"];
+  $args->user->locale = $pParams["locale"];
+  $args->oldpassword = $pParams["oldpassword"];
+  $args->newpassword = $pParams["newpassword"];
+  $args->doAction = $pParams["doAction"];
+  $args->userinfo_token = $pParams["userinfo_token"];
 
-	$args->userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0;
+  $args->userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0;
         
     return $args;
 }
@@ -139,32 +137,33 @@ function init_args()
 */
 function changePassword(&$argsObj,&$userMgr)
 {
-	$op = new stdClass();
-    $op->status = $userMgr->comparePassword($argsObj->oldpassword);
-    $op->user_feedback = '';
-    $op->auditMsg = '';
-	if ($op->status == tl::OK)
-	{
-		$userMgr->setPassword($argsObj->newpassword);
-		$op->user_feedback = lang_get('result_password_changed');
-		$op->auditMsg = "audit_user_pwd_saved";
-	}
-    return $op;
+  $op = new stdClass();
+  $op->status = $userMgr->comparePassword($argsObj->oldpassword);
+  $op->user_feedback = '';
+  $op->auditMsg = '';
+  if ($op->status == tl::OK)
+  {
+    $userMgr->setPassword($argsObj->newpassword);
+    $op->user_feedback = lang_get('result_password_changed');
+    $op->auditMsg = "audit_user_pwd_saved";
+  }
+  return $op;
 }
 
 
 function generateAPIKey(&$argsObj,&$user)
 {
-	$op = new stdClass();
+  $op = new stdClass();
     $op->status = tl::OK;
     $op->user_feedback = null;
-    if ($user) {
-	    $APIKey = new APIKey();
-	    if ($APIKey->addKeyForUser($argsObj->userID) < tl::OK)
-		{
-			logAuditEvent(TLS("audit_user_apikey_set",$user->login),"CREATE",$user->login,"users");
-			$op->user_feedback = lang_get('result_apikey_create_ok');
-		}
+    if ($user) 
+    {
+      $APIKey = new APIKey();
+      if ($APIKey->addKeyForUser($argsObj->userID) < tl::OK)
+      {
+        logAuditEvent(TLS("audit_user_apikey_set",$user->login),"CREATE",$user->login,"users");
+        $op->user_feedback = lang_get('result_apikey_create_ok');
+      }
     }
     return $op;
 }
@@ -175,9 +174,9 @@ function generateAPIKey(&$argsObj,&$user)
  */
 function checkDoAction($input)
 {
-	$domain = array_flip(array('editUser','changePassword','genAPIKey'));
-	$status_ok = isset($domain[$input]) ? true : false;
-	return $status_ok;
+  $domain = array_flip(array('editUser','changePassword','genAPIKey'));
+  $status_ok = isset($domain[$input]) ? true : false;
+  return $status_ok;
 }
 
 ?>

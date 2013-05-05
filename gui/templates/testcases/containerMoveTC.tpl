@@ -10,7 +10,7 @@ Purpose:
 {lang_get var='labels'
           s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,
              check_uncheck_all_checkboxes,warning,execution_history,design,
-             choose_target,copy_keywords,btn_move,btn_cp'}
+             choose_target,copy_keywords,btn_move,btn_cp,summary'}
 
 {lang_get s='select_at_least_one_testcase' var="check_msg"}
 
@@ -87,6 +87,7 @@ function check_action_precondition(container_id,action,msg)
                     title="{$labels.check_uncheck_all_checkboxes}" />
 			    </th>
           <th>{$labels.th_test_case}</th>
+          <th>{$labels.summary}</th>
           </tr>
           
         {foreach from=$testcases key=rowid item=tcinfo}
@@ -102,6 +103,9 @@ function check_action_precondition(container_id,action,msg)
                          onclick="javascript:openTCaseWindow({$tcinfo.tcid});"
                          title="{$labels.design}" />
                     {$tcprefix|escape}{$tcinfo.tcexternalid|escape}{$gsmarty_gui->title_separator_1}{$tcinfo.tcname|escape}
+                </td>
+                <td style="width:60%;">
+                  {$tcinfo.summary}
                 </td>
             </tr>
         {/foreach}

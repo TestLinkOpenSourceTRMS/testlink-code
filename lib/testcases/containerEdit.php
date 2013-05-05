@@ -779,17 +779,38 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$ar
     // Accessing this keys on Smarty template using UPPER CASE fails.
     // Solution: have changed case on Smarty to lower case.
     //
-    $sql = "SELECT NHA.id AS tcid, NHA.name AS tcname, NHA.node_order AS tcorder," .
-                    " MAX(TCV.version) AS tclastversion, TCV.tc_external_id AS tcexternalid" .
-                    " FROM {$tables['nodes_hierarchy']} NHA, {$tables['nodes_hierarchy']}  NHB, " .
-                    " {$tables['node_types']} NT, {$tables['tcversions']}  TCV " .
-                    " WHERE NHB.parent_id=NHA.id " .
-                    " AND TCV.id=NHB.id AND NHA.node_type_id = NT.id AND NT.description='testcase'" .
-                    " AND NHA.parent_id={$containerID} " .
-                    " GROUP BY NHA.id,NHA.name,NHA.node_order,TCV.tc_external_id " .
-                    " ORDER BY TCORDER,TCNAME";
 
-    $children = $dbHandler->get_recordset($sql);
+    // $sql = "SELECT NHA.id AS tcid, NHA.name AS tcname, NHA.node_order AS tcorder," .
+    //        " MAX(TCV.version) AS tclastversion, TCV.tc_external_id AS tcexternalid" .
+    //        " FROM {$tables['nodes_hierarchy']} NHA, {$tables['nodes_hierarchy']}  NHB, " .
+    //        " {$tables['node_types']} NT, {$tables['tcversions']}  TCV " .
+    //        " WHERE NHB.parent_id=NHA.id " .
+    //        " AND TCV.id=NHB.id AND NHA.node_type_id = NT.id AND NT.description='testcase'" .
+    //        " AND NHA.parent_id={$containerID} " .
+    //        " GROUP BY NHA.id,NHA.name,NHA.node_order,TCV.tc_external_id ";
+
+    // $orderClause = " ORDER BY TCORDER,TCNAME";
+
+    // $sql .= $orderClause;
+    // $children = $dbHandler->get_recordset($sql);
+
+    $sqlA = " SELECT MAX(TCV.version) AS lvnum, NHTC.node_order, NHTC.name, NHTC.id, TCV.tc_external_id AS tcexternalid" .
+            " FROM {$tables['nodes_hierarchy']} NHTC " .
+            " JOIN {$tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
+            " JOIN {$tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+            " JOIN {$tables['node_types']} NT ON NT.id = NHTC.node_type_id AND NT.description='testcase'" .
+            " WHERE NHTC.parent_id = {$containerID} " .
+            " GROUP BY NHTC.id,TCV.tc_external_id,NHTC.name,NHTC.node_order ";
+
+    $sqlB = " SELECT SQLA.id AS tcid, SQLA.name AS tcname,SQLA.node_order AS tcorder, SQLA.tcexternalid," . 
+            " MTCV.summary FROM ($sqlA) SQLA " .
+            " JOIN {$tables['nodes_hierarchy']} MNHTCV ON MNHTCV.parent_id = SQLA.id " .
+            " JOIN {$tables['tcversions']} MTCV ON MTCV.id = MNHTCV.id AND MTCV.version = SQLA.lvnum";
+    $orderClause = " ORDER BY TCORDER,TCNAME";        
+
+    // $childA = $dbHandler->get_recordset($sqlA);
+    // $setB = $dbHandler->get_recordset($sqlB . $orderClause);
+    $children = $dbHandler->get_recordset($sqlB . $orderClause);
 
     // check if operation can be done
     $user_feedback = $feedback;

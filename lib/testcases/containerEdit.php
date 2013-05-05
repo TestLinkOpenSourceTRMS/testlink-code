@@ -372,7 +372,7 @@ returns:
 */
 function init_args(&$dbHandler,$optionTransferCfg)
 {
-   	$args = new stdClass();
+    $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
     $args->tprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
@@ -522,7 +522,7 @@ revision:
 when creating action on duplicate is setted to BLOCK without using
 config_get('action_on_duplicate_name').
 This is because this config option has to be used ONLY when copying/moving not when creating.
-	
+  
 20091206 - franciscom - new items are created as last element of tree branch
 
 */
@@ -849,30 +849,32 @@ returns: -
 */
 function copyTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$tcaseMgr,$argsObj)
 {
-    $op = array('refreshTree' => false, 'userfeedback' => '');
-    if( ($qty=sizeof($argsObj->tcaseSet)) > 0)
+  $op = array('refreshTree' => false, 'userfeedback' => '');
+  if( ($qty=sizeof($argsObj->tcaseSet)) > 0)
+  {
+    $msg_id = $qty == 1 ? 'one_testcase_copied' : 'testcase_set_copied';
+    $op['userfeedback'] = sprintf(lang_get($msg_id),$qty);
+
+    $copyOpt = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
+                     'action_on_duplicate_name' => config_get('action_on_duplicate_name'));
+    $copyOpt['copy_also'] = array('keyword_assignments' => $argsObj->copyKeywords);
+
+    $copy_op =array();
+    foreach($argsObj->tcaseSet as $key => $tcaseid)
     {
-        $msg_id = $qty == 1 ? 'one_testcase_copied' : 'testcase_set_copied';
-        $op['userfeedback'] = sprintf(lang_get($msg_id),$qty);
-
-        $check_names_for_duplicates_cfg = config_get('check_names_for_duplicates');
-        $action_on_duplicate_name_cfg = config_get('action_on_duplicate_name');
-
-        foreach($argsObj->tcaseSet as $key => $tcaseid)
-        {
-            $copy_op = $tcaseMgr->copy_to($tcaseid, $argsObj->containerID, $argsObj->userID,
-                            $argsObj->copyKeywords,$check_names_for_duplicates_cfg,
-                            $action_on_duplicate_name_cfg);
-        }
-
-        $guiObj = new stdClass();
-        $guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
-        $guiObj->id = $argsObj->objectID;
-        $guiObj->refreshTree = true;
-        // $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID);
-        $op['refreshTree'] = true;
+      $copy_op[$tcaseid] = $tcaseMgr->copy_to($tcaseid, $argsObj->containerID, $argsObj->userID, $copyOpt);
     }
-    return $op;
+    // new dBug($copy_op);
+
+    // we are not providing too much feedback !!!
+
+    $guiObj = new stdClass();
+    $guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
+    $guiObj->id = $argsObj->objectID;
+    $guiObj->refreshTree = true;
+    $op['refreshTree'] = true;
+  }
+  return $op;
 }
 
 
@@ -977,7 +979,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
         {
             $external = $tcaseMgr->getExternalID($child['id'],null,$tcasePrefix);
             $child['external_id'] = $external[0];
-            	
+              
             // key level 1 : Test Case Version ID
             // key level 2 : Test Plan  ID
             // key level 3 : Platform ID

@@ -7,13 +7,13 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2012, TestLink community 
+ * @copyright   2012,2013 TestLink community 
  * @filesource  usersViewNew.php
  * @link        http://www.teamst.org/index.php
  *
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.7
  */
 require_once("../../config.inc.php");            
 require_once('exttable.class.php');
@@ -228,6 +228,31 @@ function getAllUsersForGrid(&$dbHandler)
          " JOIN {$tables['roles']} R ON U.role_id = R.id  ORDER BY U.login ";
   $users = $dbHandler->get_recordset($sql);
 
+
+  // Still need to understand why, but with MSSQL we use on ADODB 
+  // fetch mode = ADODB_FETCH_BOTH, this generates numeric AND literal keys
+  // on row maps => for each column on result set we get to elements on row map.
+  // example 0,handle,1,first, and so on.
+  // This drives crazy EXT-JS grid 
+  if(!is_null($users) && $dbHandler->dbType == 'mssql')
+  {
+    $clean = array();
+    foreach($users as $row)
+    {
+      $cr = array();
+      $elem = array_keys($row);
+      foreach($elem as $accessKey)
+      {
+        if(!is_numeric($accessKey))
+        {
+          $cr[$accessKey] = $row[$accessKey];
+        }
+      }
+      $clean[] = $cr;
+    }
+    $users = $clean;
+  }
+ 
 	if( config_get('demoMode') )
 	{
   	$loop2do = count($users);

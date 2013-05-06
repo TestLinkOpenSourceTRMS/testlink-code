@@ -1,30 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.35.2.6 2011/02/11 07:51:12 mx-julian Exp $ 
+@filesource tcStepEdit.tpl
 Purpose: create/edit test case step
 
-rev:
-	20110901 - amitkhullar - BUGID 3583 - horizintal row between test case steps
-	20110217 - Julian - BUGID 3737, 4002, 4250 - Cancel Button was not working properly
-	20110209 - Julian - BUGID 4230 - removed old code to set focus on step
-	20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
-	20110112 - Julian - BUGID 3901 - Scroll window to step implemented for vertical layout and
-	                                 newly added steps
-	20110111 - Julian - Improved modified warning message when navigating away without saving
-	20110106 - franciscom - BUGID 4136 - missing implementation on BUGID 3241
-	                                   layout was not used on CREATE
-	20101016 - franciscom - added id to table rows with step data 
-             BUGID 3901: Edit Test Case STEP - scroll window to show selected step
-	20100621 - eloff - BUGID 3241 - Implement vertical layout
-	20100529 - franciscom - BUGID 3493 - using escape:'url'
-	20100403 - franciscom - added create step button while editing existent step
-	                        BUGID 3359 - copy test case step
-	20100327 - franciscom - improvements on goback logic
-	20100125 - franciscom - fixed bug on checks on existence of step number
-	20100124 - eloff - BUGID 3088 - Check valid session before submit
-	20100123 - franciscom - checks on existence of step number
-	20100111 - eloff - BUGID 2036 - Check modified content before exit
-
+@internal revisions
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
@@ -36,7 +15,6 @@ rev:
 {assign var="tcversion_id" value=$gui->tcversion_id}
 
 {* Used on several operations to implement goback *}
-{* BUGID 3493 - added show_mode*}
 {assign var="showMode" value=$gui->show_mode} 
 
 {assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id&show_mode=$showMode"}
@@ -49,7 +27,7 @@ rev:
 {lang_get var="labels"
           s="warning_step_number_already_exists,warning,warning_step_number,
              expected_results,step_actions,step_number_verbose,btn_cancel,btn_create_step,
-             btn_copy_step,btn_save,cancel,warning_unsaved,step_number,execution_type_short_descr,
+             btn_create,btn_cp,btn_copy_step,btn_save,cancel,warning_unsaved,step_number,execution_type_short_descr,
              title_created,version,by,summary,preconditions,title_last_mod"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
@@ -57,7 +35,6 @@ rev:
 
 <script type="text/javascript" src="gui/javascript/ext_extensions.js" language="javascript"></script>
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
 var warning_step_number = "{$labels.warning_step_number|escape:'javascript'}";
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_step_number_already_exists = "{$labels.warning_step_number_already_exists|escape:'javascript'}";
@@ -153,7 +130,7 @@ DEBUG: $gui->action: {$gui->action} <br>
 		{include file="testcases/inc_tcbody.tpl" 
              inc_tcbody_close_table=true
              inc_tcbody_testcase=$gui->testcase
-		         inc_tcbody_show_title="yes"
+		     inc_tcbody_show_title="yes"
              inc_tcbody_tableColspan=2
              inc_tcbody_labels=$labels
              inc_tcbody_author_userinfo=$gui->authorObj
@@ -197,24 +174,39 @@ DEBUG: $gui->action: {$gui->action} <br>
   
   {* this means we have steps to display *}
   {if $gui->tcaseSteps != ''}
-  
-    {* BUGID 3583 - Amit - horizintal row between test case steps *}
     {assign var=rowCount value=$gui->tcaseSteps|@count} 
     {assign var=row value=0}
     
    	{foreach from=$gui->tcaseSteps item=step_info}
   	  <tr id="step_row_{$step_info.step_number}">
       {if $step_info.step_number == $gui->step_number}
-		    <td style="text-align:left;">{$gui->step_number}</td>
-  		  <td>{$steps}</td>
+		  <td style="text-align:left;">{$gui->step_number}
+  		  <td>{$steps}
+			<div class="groupBtn">
+				<input id="do_update_step" type="submit" name="do_update_step" 
+				       onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" 
+				       value="{$labels.btn_save}" />
+
+		    {if $gui->operation == 'doUpdateStep'}
+				  <input id="do_copy_step" type="submit" name="do_copy_step" 
+				         onclick="doAction.value='doCopyStep'" value="{$labels.btn_cp}" />
+		    {/if}
+
+		  	<input type="button" name="cancel" value="{$labels.btn_cancel}"
+		    	     {if $gui->goback_url != ''}  onclick="show_modified_warning=false; location='{$gui->goback_url}';"
+		    	     {else}  onclick="show_modified_warning=false; javascript:history.back();" {/if} />
+			</div>	
+  	
+
+  		  </td>
   		  <td>{$expected_results}</td>
 		    {if $session['testprojectOptions']->automationEnabled}
 		    <td>
 		    	<select name="exec_type" onchange="content_modified = true">
         	  	{html_options options=$gui->execution_types selected=$gui->step_exec_type}
 	        </select>
-      	</td>
-      	{/if}
+      		</td>
+      		{/if}
       {else}
         <td style="text-align:left;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
   	  	<td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
@@ -223,8 +215,7 @@ DEBUG: $gui->action: {$gui->action} <br>
   	  	  <td><a href="{$hrefEditStep}{$step_info.id}">{$gui->execution_types[$step_info.execution_type]}</a></td>
   	  	{/if}  
       {/if}
-		{* BUGID 3583 - Amit - horizintal row between test case steps *}
-		{assign var=rCount value=$row+$step_info.step_number}
+	  {assign var=rCount value=$row+$step_info.step_number}
 		{if ($rCount < $rowCount) && ($rowCount>=1)}
 			<tr width="100%">
 				{if $session['testprojectOptions']->automationEnabled}
@@ -239,7 +230,9 @@ DEBUG: $gui->action: {$gui->action} <br>
   	  </tr>
     {/foreach}
   {/if}
-  {else} {* Vertical layout *}
+  {else} 
+
+  {* Vertical layout *}
 		{foreach from=$gui->tcaseSteps item=step_info}
 			<tr id="step_row_{$step_info.step_number}">
 				<th width="20">{$args_labels.step_number} {$step_info.step_number}</th>

@@ -395,7 +395,8 @@ function init_args(&$cfgObj,$otName)
 
 
   $action2check = array("editStep" => true,"createStep" => true, "doCreateStep" => true,
-                        "doUpdateStep" => true, "doInsertStep" => true);
+                        "doUpdateStep" => true, "doInsertStep" => true, "doCopyStep" => true);
+  
   if( isset($action2check[$args->doAction]) )
   {
     $cfgObj->webEditorCfg = getWebEditorCfg('steps_design');  

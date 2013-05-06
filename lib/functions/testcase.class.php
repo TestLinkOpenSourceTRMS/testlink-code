@@ -600,7 +600,7 @@ class testcase extends tlObjectWithAttachments
     $idSet = is_array($id) ? $id : (array)$id;
     $status_ok = $idSet[0] > 0 ? 1 : 0;
     
-     $gui = $this->initShowGui($guiObj,$grants,$idSet[0]);
+    $gui = $this->initShowGui($guiObj,$grants,$idSet[0]);
 
     $userIDSet = array();
     if($status_ok)
@@ -5109,6 +5109,7 @@ class testcase extends tlObjectWithAttachments
    */
   function renderGhostSteps(&$steps2render)
   {
+    $warningRenderException = lang_get('unable_to_render_ghost');
     $loop2do = count($steps2render);
     $tlBeginMark = '[ghost]';
     $tlEndMark = '[/ghost]';
@@ -5135,20 +5136,27 @@ class testcase extends tlObjectWithAttachments
           $ghost = '';
           for($xdx=0; $xdx < $xx2do; $xdx++)
           {
-            if(strpos($xx[$xdx],$tlEndMark) > 0)
+            try
             {
-              $dx = trim(str_replace($replaceSet,'',$xx[$xdx]));
-              $dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
-              $dx = json_decode($dx,true);
-              if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
+              if(strpos($xx[$xdx],$tlEndMark) > 0)
               {
-                $fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
-                if(!is_null($fi))
+                $dx = trim(str_replace($replaceSet,'',$xx[$xdx]));
+                $dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
+                $dx = json_decode($dx,true);
+                if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
                 {
-                  $stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
-                  $ghost .= $stx[0][$item_key];
-                }
-              } 
+                  $fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
+                  if(!is_null($fi))
+                  {
+                    $stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
+                    $ghost .= $stx[0][$item_key];
+                  }
+                } 
+              }
+            }
+            catch (Exception $e)
+            {
+              $ghost .= $warningRenderException . $rse[$gdx][$item_key];
             }
           }
         }
@@ -5778,19 +5786,26 @@ class testcase extends tlObjectWithAttachments
             $dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
             $dx = json_decode($dx,true);
 
-            if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
+            try
             {
-              $fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
-              if(!is_null($fi))
+              if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
               {
-                // will get test case title to generate following string
-                // "Reference to Test Case EXTERNAL ID - TITLE (version X)"
-                //$stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
-                $vn = intval($dx['Version']);
-                $vn = ($vn == 0) ? 'Latest' : $vn;
-                $ghost .= sprintf($href,$dx['TestCase'],$vn,$dx['TestCase'],$fi[0]['name'],$vn);
+                $fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
+                if(!is_null($fi))
+                {
+                  // will get test case title to generate following string
+                  // "Reference to Test Case EXTERNAL ID - TITLE (version X)"
+                  //$stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
+                  $vn = intval($dx['Version']);
+                  $vn = ($vn == 0) ? 'Latest' : $vn;
+                  $ghost .= sprintf($href,$dx['TestCase'],$vn,$dx['TestCase'],$fi[0]['name'],$vn);
+                }
               }
             } 
+            catch (Exception $e)
+            {
+              $ghost .= $rse[$item_key];
+            }
           }
         }
       }

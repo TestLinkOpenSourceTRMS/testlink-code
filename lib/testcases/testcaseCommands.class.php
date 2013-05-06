@@ -620,8 +620,16 @@ class testcaseCommands
     $guiObj->user_feedback = '';
     
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
+    try
+    {
+      $stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
+    }
+    catch (Exception $e)
+    {
+      echo $e->getMessage();
+    }
 
-    $stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
+
     $guiObj->main_descr = sprintf(lang_get('edit_step_number_x'),$stepInfo['step_number'],
                           $guiObj->testcase['tc_external_id'] . ':' . 
                           $guiObj->testcase['name'], $guiObj->testcase['version']); 
@@ -637,9 +645,7 @@ class testcaseCommands
     $guiObj->step_number = $stepInfo['step_number'];
     $guiObj->step_exec_type = $argsObj->exec_type;
     
-    // 20100403
-    // Want to remain on same screen till user choose to cancel => go away
-    // BUGID 3441
+
     $guiObj = $this->editStep($argsObj,$request);  
     return $guiObj;
   }

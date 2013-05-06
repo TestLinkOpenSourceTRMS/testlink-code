@@ -59,7 +59,14 @@ switch($args->feature)
     break;
     
   case 'testcase':
-    processTestCase($db,$smarty,$args,$gui,$grants,$cfg);
+    try
+    {
+      processTestCase($db,$smarty,$args,$gui,$grants,$cfg);
+    }
+    catch (Exception $e)
+    {
+      echo $e->getMessage();
+    }
   break;
 
   default:
@@ -324,7 +331,14 @@ function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
   $identity->tproject_id = $args->tproject_id;
   $identity->version_id = $args->tcversion_id;
 
-  $item_mgr->show($tplEngine,$gui,$identity,$grants);
+  try
+  {
+    $item_mgr->show($tplEngine,$gui,$identity,$grants);
+  }
+  catch (Exception $e)
+  {
+    echo $e->getMessage();
+  }
   exit();
 }
 

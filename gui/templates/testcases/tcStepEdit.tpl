@@ -180,7 +180,7 @@ DEBUG: $gui->action: {$gui->action} <br>
    	{foreach from=$gui->tcaseSteps item=step_info}
   	  <tr id="step_row_{$step_info.step_number}">
       {if $step_info.step_number == $gui->step_number}
-		  <td style="text-align:left;">{$gui->step_number}
+		  <td style="text-align:left;">{$gui->step_number}</td>
   		  <td>{$steps}
 			<div class="groupBtn">
 				<input id="do_update_step" type="submit" name="do_update_step" 

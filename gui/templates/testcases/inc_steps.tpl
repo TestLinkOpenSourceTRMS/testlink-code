@@ -15,21 +15,25 @@ Author : eloff, 2010
 *}
 {lang_get var="inc_steps_labels" 
           s="show_hide_reorder, step_number, step_actions,expected_results, 
-             execution_type_short_descr,delete_step,insert_step"}
+             execution_type_short_descr,delete_step,insert_step,show_ghost_string"}
 {lang_get s='warning_delete_step' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
 
 {if $layout == 'horizontal'}
   <tr>
-    <th width="25px"><nobr>
+    <th width="40px"><nobr>
     {if $edit_enabled && $steps != ''}
       <img class="clickable" src="{$tlImages.reorder}" align="left"
            title="{$inc_steps_labels.show_hide_reorder}"
            onclick="showHideByClass('span','order_info');">
+      <img class="clickable" src="{$tlImages.ghost_item}" align="left"
+           title="{$inc_steps_labels.show_ghost_string}"
+           onclick="showHideByClass('tr','ghost');">
     {/if}
     {$inc_steps_labels.step_number}
     </th>
-    <th>{$inc_steps_labels.step_actions}</th>
+    <th>{$inc_steps_labels.step_actions}
+    </th>
     <th>{$inc_steps_labels.expected_results}</th>
     {if $session['testprojectOptions']->automationEnabled}
     <th width="25">{$inc_steps_labels.execution_type_short_descr}</th>
@@ -54,7 +58,8 @@ Author : eloff, 2010
       {include file="error_icon.tpl" field="step_number"}
       </span>{$step_info.step_number}
     </td>
-    <td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$step_info.actions}</td>
+    <td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$step_info.actions}
+    </td>
     <td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$step_info.expected_results}</td>
     {if $session['testprojectOptions']->automationEnabled}
     <td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$gui->execution_types[$step_info.execution_type]}</td>
@@ -77,7 +82,9 @@ Author : eloff, 2010
     </td>
     
     {/if}
-    {* BUGID 3583 - Amit - horizintal row between test case steps *}
+    
+  </tr>
+  <tr class='ghost' style='display:none'><td></td><td>{$step_info.ghost_action}</td><td>{$step_info.ghost_result}</td></tr>    
     {assign var=rCount value=$row+$step_info.step_number}
     {if ($rCount < $rowCount) && ($rowCount>=1)}
       <tr width="100%">
@@ -90,7 +97,6 @@ Author : eloff, 2010
         </td>
       </tr>
     {/if}
-  </tr>
   {/foreach}
 {else}
   {* Vertical layout *}

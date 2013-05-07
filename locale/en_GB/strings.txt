@@ -71,6 +71,7 @@ $TLS_export = "Export";
 $TLS_export_as_spreadsheet = "Export Data as spreadsheet";
 $TLS_file_type = 'File type';
 $TLS_filter_mode_and = 'Attention: Filter fields works in AND mode';
+$TLS_show_ghost_string = 'Show ghost string';
 $TLS_goto_testspec = 'Open test case specification';
 $TLS_help = "Help";
 $TLS_hour = "Hour";

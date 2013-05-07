@@ -9,12 +9,12 @@
  * @filesource	tlsmarty.inc.php
  * @package 	  TestLink
  * @author 		  Martin Havlat
- * @copyright 	2005-2012, TestLink community 
+ * @copyright 	2005-2013, TestLink community 
  * @link 		    http://www.teamst.org/index.php
  * @link 		    http://www.smarty.net/ 
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.7
  *
  */
 
@@ -329,6 +329,7 @@ class TLSmarty extends Smarty
                    'exec_icon' => TL_THEME_IMG_DIR . 'exec_icon.png',
                    'execution_order' => TL_THEME_IMG_DIR . 'timeline_marker.png',
                    'export_excel' => TL_THEME_IMG_DIR . 'page_excel.png',
+                   'ghost_item' => TL_THEME_IMG_DIR . 'ghost16x16.png',
                    'history' => TL_THEME_IMG_DIR . 'history.png',
                    'history_small' => TL_THEME_IMG_DIR . 'history_small.png',
                    'inactive' => TL_THEME_IMG_DIR . 'flag_yellow.png',

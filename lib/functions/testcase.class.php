@@ -631,7 +631,8 @@ class testcase extends tlObjectWithAttachments
         {
           // using $version_id has sense only when we are working on ONE SPECIFIC Test Case
           // if we are working on a set of test cases $version_id will be ALL VERSIONS
-          if(!$tc_array = $this->get_by_id($tc_id,$version_id,null,array('renderGhost' => true)))
+          if(!$tc_array = $this->get_by_id($tc_id,$version_id,null,
+                                           array('renderGhost' => true, 'withGhostString' => true)))
           {
             continue;
           }
@@ -1699,7 +1700,7 @@ class testcase extends tlObjectWithAttachments
     $my['filters'] = array_merge($my['filters'], (array)$filters);
 
     $my['options'] = array('output' => 'full', 'access_key' => 'tcversion_id', 
-                           'order_by' => null, 'renderGhost' => false);
+                           'order_by' => null, 'renderGhost' => false, 'withGhostString' => false);
     $my['options'] = array_merge($my['options'], (array)$options);
 
     $tcid_list = null;
@@ -1863,6 +1864,21 @@ class testcase extends tlObjectWithAttachments
       foreach( $key2loop as $accessKey)
       { 
         $step_set = $this->get_steps($recordset[$accessKey]['id']);
+        if($my['options']['withGhostString'])
+        {
+          // need to get test case prefix test project info
+          $pfx = $this->getPrefix($id);
+          $pfx = $pfx[0] . $this->cfg->testcase->glue_character . $recordset[$accessKey]['tc_external_id'];
+
+          $k2l = array_keys($step_set);
+          foreach($k2l as $kx)
+          {
+            $step_set[$kx]['ghost_action'] = "[ghost]\"Step\":{$step_set[$kx]['step_number']}," . 
+                                             '"TestCase"' .':"' . $pfx . '",' . 
+                                             "\"version\":{$recordset[$accessKey]['version']}[/ghost]"; 
+            $step_set[$kx]['ghost_result'] = $step_set[$kx]['ghost_action'];                                 
+          }  
+        }  
         $recordset[$accessKey]['steps'] = $step_set;
       } 
     }

@@ -1304,7 +1304,7 @@ class testcase extends tlObjectWithAttachments
     $my['options'] = array('check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
                            'action_on_duplicate_name' => 'generate_new', 
                            'copy_also' => null, 'preserve_external_id' => false,
-                           'renderGhostSteps' => false);
+                           'renderGhostSteps' => false, 'stepAsGhost' => false);
 
 
     // needed when Test Case is copied to a DIFFERENT Test Project,
@@ -1326,7 +1326,7 @@ class testcase extends tlObjectWithAttachments
     {
       $newTCObj = $this->create_tcase_only($parent_id,$tcase_info[0]['name'],
                                            $tcase_info[0]['node_order'],self::AUTOMATIC_ID,
-                                               $my['options']);
+                                           $my['options']);
       if($newTCObj['status_ok'])
       {
         $ret['status_ok']=1;
@@ -1363,15 +1363,36 @@ class testcase extends tlObjectWithAttachments
 
   
               // Need to get all steps
+              // if($my['options']['stepAsGhost'])
+              // {
+                //$my['options']['fields2get'] = 'step_number,execution_type'; 
+              //}  
               $stepsSet = $this->get_steps($tcversion['id'],0,$my['options']);
+
               $to_tcversion_id = $op['id'];
               if( !is_null($stepsSet) )
               {
-                foreach($stepsSet as $key => $step)
-                {
+                // not elegant but ...
+                //if($my['options']['stepAsGhost'])
+                //{
+                //  foreach($stepsSet as $key => $step)
+                //  { 
+                //    $act = "[ghost]\"Step\":{$step['step_number']}," . 
+                //           '"TestCase"' .':"' . $pfx . '",' . 
+                //           "\"version\":{$recordset[$accessKey]['version']}[/ghost]"; 
+                //    $op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
+                //                             $step['expected_results'],$step['execution_type']);      
+                //  }
+                // }
+                //else
+                //{  
+                  foreach($stepsSet as $key => $step)
+                  {
                     $op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
                                              $step['expected_results'],$step['execution_type']);      
-                }
+                  }
+                //}
+
               }
            }                       
         }

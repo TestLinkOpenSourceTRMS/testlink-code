@@ -202,6 +202,7 @@ $TLS_btn_cancel  = "Cancel";
 $TLS_btn_check   = "Check";
 $TLS_btn_close   = "Close";
 $TLS_btn_cp = "Copy";
+$TLS_btn_copy_ghost_zone = "Copy (ghost steps)";
 $TLS_btn_copy_step = "Copy step";
 $TLS_btn_create = "Create";
 $TLS_btn_create_step = "Create step";

@@ -1009,11 +1009,11 @@ class testcase extends tlObjectWithAttachments
       $tplan_id = $my['filters']['tplan_id'];
       $platform_id = $my['filters']['platform_id'];
 
-      $active_filter='';
+    $active_filter='';
     if($active_status !='ALL')
     {
       $active_filter=' AND tcversions.active=' . $active_status=='ACTIVE' ? 1 : 0;
-      }
+    }
   
     $fields2get = 'tc_external_id,version,status,importance,active, is_open,execution_type,';
             
@@ -1320,8 +1320,9 @@ class testcase extends tlObjectWithAttachments
     {
       $my['options']['copy_also'] = array('keyword_assignments' => true,'requirement_assignments' => true);   
     }
-      
-    $tcase_info = $this->get_by_id($id);
+
+    $tcVersionID = $my['options']['stepAsGhost'] ? self::LATEST_VERSION : self::ALL_VERSIONS;
+    $tcase_info = $this->get_by_id($id,$tcVersionID);
     if ($tcase_info)
     {
       $newTCObj = $this->create_tcase_only($parent_id,$tcase_info[0]['name'],
@@ -1363,36 +1364,33 @@ class testcase extends tlObjectWithAttachments
 
   
               // Need to get all steps
-              // if($my['options']['stepAsGhost'])
-              // {
-                //$my['options']['fields2get'] = 'step_number,execution_type'; 
-              //}  
               $stepsSet = $this->get_steps($tcversion['id'],0,$my['options']);
 
               $to_tcversion_id = $op['id'];
               if( !is_null($stepsSet) )
               {
                 // not elegant but ...
-                //if($my['options']['stepAsGhost'])
-                //{
-                //  foreach($stepsSet as $key => $step)
-                //  { 
-                //    $act = "[ghost]\"Step\":{$step['step_number']}," . 
-                //           '"TestCase"' .':"' . $pfx . '",' . 
-                //           "\"version\":{$recordset[$accessKey]['version']}[/ghost]"; 
-                //    $op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
-                //                             $step['expected_results'],$step['execution_type']);      
-                //  }
-                // }
-                //else
-                //{  
+                if($my['options']['stepAsGhost'])
+                {
+                  $pfx = $this->getPrefix($id);
+                  $pfx = $pfx[0] . $this->cfg->testcase->glue_character . $tcversion['tc_external_id'];
+                  foreach($stepsSet as $key => $step)
+                  { 
+                    $act = "[ghost]\"Step\":{$step['step_number']}," . 
+                           '"TestCase"' .':"' . $pfx . '",' . 
+                           "\"Version\":{$tcversion['version']}[/ghost]"; 
+                    $op = $this->create_step($to_tcversion_id,$step['step_number'],$act,$act,
+                                             $step['execution_type']);      
+                  }
+                }
+                else
+                {  
                   foreach($stepsSet as $key => $step)
                   {
                     $op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
                                              $step['expected_results'],$step['execution_type']);      
                   }
-                //}
-
+                }
               }
            }                       
         }
@@ -1518,11 +1516,11 @@ class testcase extends tlObjectWithAttachments
     }
 
     // Multiple Test Case Steps Feature
-      if( !is_null($tcInfo) && $my['options']['get_steps'] )
-      {
-        $step_set = $this->get_steps($tcInfo['id']);
-        $tcInfo['steps'] = $step_set;
-      }
+    if( !is_null($tcInfo) && $my['options']['get_steps'] )
+    {
+      $step_set = $this->get_steps($tcInfo['id']);
+      $tcInfo['steps'] = $step_set;
+    }
     return $tcInfo;
   }
   
@@ -1561,16 +1559,16 @@ class testcase extends tlObjectWithAttachments
                         array('id' => $id, 'tcversion_id' => $to_tcversion_id));
     
       
-      // Need to get all steps
-      $stepsSet = $this->get_steps($from_tcversion_id);
+    // Need to get all steps
+    $stepsSet = $this->get_steps($from_tcversion_id);
     if( !is_null($stepsSet) && count($stepsSet) > 0)
     {
-        foreach($stepsSet as $key => $step)
-        {
-            $op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
-                                     $step['expected_results'],$step['execution_type']);      
-        }
+      foreach($stepsSet as $key => $step)
+      {
+        $op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
+                                 $step['expected_results'],$step['execution_type']);      
       }
+    }
   }
   
   
@@ -1891,12 +1889,12 @@ class testcase extends tlObjectWithAttachments
           $pfx = $this->getPrefix($id);
           $pfx = $pfx[0] . $this->cfg->testcase->glue_character . $recordset[$accessKey]['tc_external_id'];
 
-          $k2l = array_keys($step_set);
+          $k2l = array_keys((array)$step_set);
           foreach($k2l as $kx)
           {
             $step_set[$kx]['ghost_action'] = "[ghost]\"Step\":{$step_set[$kx]['step_number']}," . 
                                              '"TestCase"' .':"' . $pfx . '",' . 
-                                             "\"version\":{$recordset[$accessKey]['version']}[/ghost]"; 
+                                             "\"Version\":{$recordset[$accessKey]['version']}[/ghost]"; 
             $step_set[$kx]['ghost_result'] = $step_set[$kx]['ghost_action'];                                 
           }  
         }  
@@ -4394,11 +4392,11 @@ class testcase extends tlObjectWithAttachments
                          $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      $ret = array();
+    $ret = array();
       
-      // defensive programming
-      $dummy = $this->db->prepare_int($execution_type);
-        $dummy = (isset($this->execution_types[$dummy])) ? $dummy : TESTCASE_EXECUTION_TYPE_MANUAL;
+    // defensive programming
+    $dummy = $this->db->prepare_int($execution_type);
+    $dummy = (isset($this->execution_types[$dummy])) ? $dummy : TESTCASE_EXECUTION_TYPE_MANUAL;
       
     $item_id = $this->tree_manager->new_node($tcversion_id,$this->node_types_descr_id['testcase_step']);
     $sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcsteps']} " .
@@ -4410,9 +4408,9 @@ class testcase extends tlObjectWithAttachments
     $ret = array('msg' => 'ok', 'id' => $item_id, 'status_ok' => 1, 'sql' => $sql);
     if (!$result)
     {
-          $ret['msg'] = $this->db->error_msg();
-        $ret['status_ok']=0;
-        $ret['id']=-1;
+      $ret['msg'] = $this->db->error_msg();
+      $ret['status_ok']=0;
+      $ret['id']=-1;
     }
     return $ret;
   }
@@ -4456,6 +4454,36 @@ class testcase extends tlObjectWithAttachments
     
     return $result;
   }
+
+  private function getStepsSimple($tcversion_id,$step_number=0,$options=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $my['options'] = array( 'fields2get' => '*', 'accessKey' => null, 'renderGhostSteps' => true);
+    $my['options'] = array_merge($my['options'], (array)$options);
+    
+    $step_filter = $step_number > 0 ? " AND step_number = {$step_number} " : "";
+    $safe_tcversion_id = $this->db->prepare_int($tcversion_id);
+    
+    $sql = "/* $debugMsg */ " . 
+           " SELECT TCSTEPS.{$my['options']['fields2get']} " .
+           " FROM {$this->tables['tcsteps']} TCSTEPS " .
+           " JOIN {$this->tables['nodes_hierarchy']} NH_STEPS " .
+           " ON NH_STEPS.id = TCSTEPS.id " . 
+           " WHERE NH_STEPS.parent_id = {$safe_tcversion_id} {$step_filter} ORDER BY step_number";
+
+    if( is_null($my['options']['accessKey']) )
+    {
+      $result = $this->db->get_recordset($sql);
+    }
+    else
+    {
+      $result = $this->db->fetchRowsIntoMap($sql,$my['options']['accessKey']);
+    }
+    return $result;
+  }
+
+
 
   /**
      * 
@@ -4869,10 +4897,10 @@ class testcase extends tlObjectWithAttachments
     // Remember we are using (at least on Postgres FK => we need to delete in a precise order
 
     $stepSet = $this->get_steps($tcversion_id,0,array('fields2get' => 'id', 'accessKey' => 'id'));        
-      if( count($stepSet) > 0 )
-      {
+    if( count($stepSet) > 0 )
+    {
       $this->delete_step_by_id(array_keys($stepSet));
-      }
+    }
 
     // Now insert steps
     $loop2do = count($steps);
@@ -5148,6 +5176,7 @@ class testcase extends tlObjectWithAttachments
   {
     $warningRenderException = lang_get('unable_to_render_ghost');
     $loop2do = count($steps2render);
+
     $tlBeginMark = '[ghost]';
     $tlEndMark = '[/ghost]';
     $key2check = array('actions','expected_results');
@@ -5163,19 +5192,22 @@ class testcase extends tlObjectWithAttachments
     {
       foreach($key2check as $item_key)
       {
+        $deghosted = false;
         $start = strpos($rse[$gdx][$item_key],$tlBeginMark);
         $ghost = $rse[$gdx][$item_key];
-      
-        if($start > 0)
+
+        if($start !== FALSE)
         {
           $xx = explode($tlBeginMark,$rse[$gdx][$item_key]);
           $xx2do = count($xx);
           $ghost = '';
+          $deghosted = false;
+
           for($xdx=0; $xdx < $xx2do; $xdx++)
           {
             try
             {
-              if(strpos($xx[$xdx],$tlEndMark) > 0)
+              if(strpos($xx[$xdx],$tlEndMark) !== FALSE)
               {
                 $dx = trim(str_replace($replaceSet,'',$xx[$xdx]));
                 $dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
@@ -5185,7 +5217,10 @@ class testcase extends tlObjectWithAttachments
                   $fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
                   if(!is_null($fi))
                   {
+                    // $stx = $this->getStepsSimple($fi[0]['tcversion_id'],$dx['Step']);
                     $stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
+                    
+                    $deghosted = true;
                     $ghost .= $stx[0][$item_key];
                   }
                 } 
@@ -5193,14 +5228,17 @@ class testcase extends tlObjectWithAttachments
             }
             catch (Exception $e)
             {
+              $deghosted = true;
               $ghost .= $warningRenderException . $rse[$gdx][$item_key];
             }
           }
-        }
-        if($ghost != '')
+        } // $start
+
+        if($deghosted)
         {
           $rse[$gdx][$item_key] = $ghost;
         }
+
       }           
     }
   }   
@@ -5786,7 +5824,7 @@ class testcase extends tlObjectWithAttachments
 
 
   /**
-   *
+   * render Ghost Test Case
    * 20130404
    */
   function renderGhost(&$item2render)
@@ -5808,14 +5846,14 @@ class testcase extends tlObjectWithAttachments
     {
       $start = strpos($rse[$item_key],$tlBeginMark);
       $ghost = $rse[$item_key];
-      if($start > 0)
+      if($start !== FALSE)
       {
         $xx = explode($tlBeginMark,$rse[$item_key]);
         $xx2do = count($xx);
         $ghost = '';
         for($xdx=0; $xdx < $xx2do; $xdx++)
         {
-          if(strpos($xx[$xdx],$tlEndMark) > 0)
+          if(strpos($xx[$xdx],$tlEndMark) !== FALSE)
           {
             $dx = trim(str_replace($replaceSet,'',$xx[$xdx]));
 
@@ -5832,7 +5870,6 @@ class testcase extends tlObjectWithAttachments
                 {
                   // will get test case title to generate following string
                   // "Reference to Test Case EXTERNAL ID - TITLE (version X)"
-                  //$stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
                   $vn = intval($dx['Version']);
                   $vn = ($vn == 0) ? 'Latest' : $vn;
                   $ghost .= sprintf($href,$dx['TestCase'],$vn,$dx['TestCase'],$fi[0]['name'],$vn);

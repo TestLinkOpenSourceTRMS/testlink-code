@@ -45,16 +45,17 @@ $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
                 'delete_testsuite' => 'containerDelete.tpl',
                 'move_testcases_viewer' => 'containerMoveTC.tpl',
                 'do_copy_tcase_set' => 'containerMoveTC.tpl',
+                'do_copy_tcase_set_ghost' => 'containerMoveTC.tpl',
                 'delete_testcases' =>  'containerDeleteTC.tpl',
                 'do_delete_testcases' =>  'containerDeleteTC.tpl');
 
-$a_actions = array ('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite' => 0,'do_move' => 0,
-                'do_copy' => 0,'reorder_testsuites' => 1,'do_testsuite_reorder' => 0,
-                'add_testsuite' => 1,'move_testsuite_viewer' => 0,'update_testsuite' => 1,
-                'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,
-                'do_copy_tcase_set' => 0, 'del_testsuites_bulk' => 0,
-                'delete_testcases' => 0,'do_delete_testcases' => 0, 'reorder_testcases' => 0,
-                'reorder_testsuites_alpha' => 0, 'reorder_testproject_testsuites_alpha' => 0);
+$a_actions = array('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite' => 0,'do_move' => 0,
+                   'do_copy' => 0,'reorder_testsuites' => 1,'do_testsuite_reorder' => 0,
+                   'add_testsuite' => 1,'move_testsuite_viewer' => 0,'update_testsuite' => 1,
+                   'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,
+                   'do_copy_tcase_set' => 0, 'do_copy_tcase_set_ghost' => 0, 'del_testsuites_bulk' => 0,
+                   'delete_testcases' => 0,'do_delete_testcases' => 0, 'reorder_testcases' => 0,
+                   'reorder_testsuites_alpha' => 0, 'reorder_testproject_testsuites_alpha' => 0);
 
 $a_init_opt_transfer=array('edit_testsuite' => 1,'new_testsuite'  => 1,'add_testsuite'  => 1,
                            'update_testsuite' => 1);
@@ -203,10 +204,13 @@ switch($action)
         break;
 
     case 'do_copy_tcase_set':
-        $op = copyTestCases($smarty,$template_dir,$tsuite_mgr,$tcase_mgr,$args);
-        $refreshTree = $op['refreshTree'];
-        moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,$op['userfeedback']);
-        break;
+    case 'do_copy_tcase_set_ghost':
+      $args->stepAsGhost = ($action == 'do_copy_tcase_set_ghost');
+      $op = copyTestCases($smarty,$template_dir,$tsuite_mgr,$tcase_mgr,$args);
+
+      $refreshTree = $op['refreshTree'];
+      moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,$op['userfeedback']);
+      break;
 
 
     case 'delete_testcases':
@@ -856,7 +860,8 @@ function copyTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$tcaseMgr,$argsObj
     $op['userfeedback'] = sprintf(lang_get($msg_id),$qty);
 
     $copyOpt = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
-                     'action_on_duplicate_name' => config_get('action_on_duplicate_name'));
+                     'action_on_duplicate_name' => config_get('action_on_duplicate_name'),
+                     'stepAsGhost' => $argsObj->stepAsGhost);
     $copyOpt['copy_also'] = array('keyword_assignments' => $argsObj->copyKeywords);
 
     $copy_op =array();

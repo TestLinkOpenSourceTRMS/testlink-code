@@ -6,11 +6,12 @@ Purpose:
         to copy or move.
 
 @internal revisions
+@since 1.9.7
 *}
 {lang_get var='labels'
           s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,
              check_uncheck_all_checkboxes,warning,execution_history,design,
-             choose_target,copy_keywords,btn_move,btn_cp,summary'}
+             choose_target,copy_keywords,btn_move,btn_cp,summary,btn_copy_ghost_zone'}
 
 {lang_get s='select_at_least_one_testcase' var="check_msg"}
 
@@ -118,6 +119,9 @@ function check_action_precondition(container_id,action,msg)
 
 			<input type="submit" name="do_copy_tcase_set" value="{$labels.btn_cp}"
 			       onclick="return check_action_precondition('move_copy_checkboxes','copy','{$check_msg}');"  />
+
+      <input type="submit" name="do_copy_tcase_set_ghost" value="{$labels.btn_copy_ghost_zone}"
+             onclick="return check_action_precondition('move_copy_checkboxes','copy','{$check_msg}');"  />
 
 			<input type="hidden" name="old_containerID" value="{$old_containerID}" />
 		</div>

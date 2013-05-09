@@ -202,14 +202,15 @@ else if($args->do_move)
   $gui->refreshTree = $args->refreshTree;
   $tsuite_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->old_container_id);
 }
-else if($args->do_copy)
+else if($args->do_copy || $args->do_copy_ghost_zone)
 {
+  $args->stepAsGhost = $args->do_copy_ghost_zone;
   $user_feedback='';
   $msg = '';
   $action_result = 'copied';
   $options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
                    'action_on_duplicate_name' => config_get('action_on_duplicate_name'),
-                   'copy_also' => $args->copy);
+                   'copy_also' => $args->copy, 'stepAsGhost' => $args->do_copy_ghost_zone);
   
   $result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,$options);
   $msg = $result['msg'];
@@ -351,7 +352,7 @@ function init_args(&$cfgObj,$otName)
   }
 
    
-  $key2loop = array('move_copy_tc','delete_tc_version','do_move','do_copy',
+  $key2loop = array('move_copy_tc','delete_tc_version','do_move','do_copy','do_copy_ghost_zone',
                     'do_create_new_version','do_delete_tc_version');
   foreach($key2loop as $key)
   {

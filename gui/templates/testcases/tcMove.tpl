@@ -11,7 +11,7 @@ rev: 20090401 - franciscom - BUGID 2316 - copy options
 
 {lang_get var="labels"
           s="test_case,title_mv_cp_tc,inst_move,inst_copy,inst_copy_move_warning,
-             copy_requirement_assignments,copy_keyword_assignments,
+             copy_requirement_assignments,copy_keyword_assignments,btn_copy_ghost_zone,
              choose_container,as_first_testcase,as_last_testcase,btn_mv,btn_cp"}
 <body>
 <h1 class="title">{$labels.test_case}{$smarty.const.TITLE_SEP}{$gui->name|escape}</h1>
@@ -53,6 +53,7 @@ rev: 20090401 - franciscom - BUGID 2316 - copy options
 			  <input id="do_move" type="submit" name="do_move" value="{$labels.btn_mv}" />
 			{/if}
 			<input id="do_copy" type="submit" name="do_copy" value="{$labels.btn_cp}" />
+      <input id="do_copy_ghost_zone" type="submit" name="do_copy_ghost_zone" value="{$labels.btn_copy_ghost_zone}" />
 			<input type="hidden" name="old_container" value="{$gui->old_container}" />
 	</div>
 

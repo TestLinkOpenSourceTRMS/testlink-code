@@ -1643,10 +1643,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
   {
     $key = 'filter_custom_fields';
     $no_warning = true;
-    
-    global $g_locales_date_format;
+
     $locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
-    $date_format = str_replace('%', '', $g_locales_date_format[$locale]);
+    $localesDateFormat = config_get('locales_date_format');
+    $date_format = str_replace('%', '', $localesDateFormat[$locale]);
     
     $collapsed = isset($_SESSION['cf_filter_collapsed']) ? $_SESSION['cf_filter_collapsed'] : 0;
     $collapsed = isset($_REQUEST['btn_toggle_cf']) ? !$collapsed : $collapsed;

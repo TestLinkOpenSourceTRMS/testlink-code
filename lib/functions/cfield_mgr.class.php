@@ -1744,24 +1744,17 @@ function name_is_unique($id,$name)
                           'cf_value' => value)
 
     rev: 
-		20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
-		20080816 - franciscom
-         - added code to manange user defined (and code developed) Custom Fields.
-           Important: solution is a mix of own ideas and Mantis 1.2.0a1 approach
-         - added logic to manage datetime custom field type.  
   */
   function _build_cfield($hash,$cf_map)
   {
-  	// BUGID 3930
-	global $g_locales_date_format;
-	$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
-	$date_format = str_replace('%', '', $g_locales_date_format[$locale]);
+    $localesDateFormat = config_get('locales_date_format');
+  
+    $locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
+	  $date_format = str_replace('%', '', $localesDateFormat[$locale]);
   	
     // carved in the stone
-    $html_date_input_suffix = array('input' => true,
-                                    'hour' => true,
-                                    'minute' => true,
-                                    'second' => true);
+    $html_date_input_suffix = array('input' => true,'hour' => true,
+                                    'minute' => true,'second' => true);
 
     $cf_prefix=$this->name_prefix;
     $len_cfp = tlStringLen($cf_prefix);

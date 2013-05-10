@@ -441,22 +441,22 @@ class tlRequirementFilterControl extends tlFilterControl {
 		$this->active_filters[$key] = $selection;
 	} // end of method
 	
-	private function init_filter_custom_fields() {
+	private function init_filter_custom_fields() 
+	{
 		$key = 'filter_custom_fields';
 		$no_warning = true;
 		
-		// BUGID 3930
-		global $g_locales_date_format;
 		$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
-		$date_format = str_replace('%', '', $g_locales_date_format[$locale]);
+		$localesDateFormat = config_get('locales_date_format');
+		$date_format = str_replace('%', '', $localesDateFormat[$locale]);
 		
-		// BUGID 3566: show/hide CF
 		$collapsed = isset($_SESSION['cf_filter_collapsed']) ? $_SESSION['cf_filter_collapsed'] : 0;
 		$collapsed = isset($_REQUEST['btn_toggle_cf']) ? !$collapsed : $collapsed;
 		$_SESSION['cf_filter_collapsed'] = $collapsed;	
 		$btn_label = $collapsed ? lang_get('btn_show_cf') : lang_get('btn_hide_cf');
 		
-		if (!$this->req_mgr) {
+		if (!$this->req_mgr) 
+		{
 			$this->req_mgr = new requirement_mgr($this->db);
 		}
 		

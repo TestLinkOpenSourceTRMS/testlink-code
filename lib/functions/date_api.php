@@ -7,25 +7,13 @@
  *
  * @package 	TestLink
  * @author 		franciscom; Piece copied form Mantis and adapted to TestLink needs
- * @copyright 	2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
+ * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: date_api.php,v 1.11 2010/10/26 13:57:45 mx-julian Exp $
+ * @filesource  date_api.php
  * @link 		http://www.teamst.org/
  *
- * @internal Revisions:
+ * @internal revisions
  *  
- *  20101026 - asimon - clear hour,minute,second for datetime custom field with quick date delete button
- *  20101026 - Julian - no validation for date and datetime custom field
- *                      -> no manual input - input only via datepicker
- *  20101026 - asimon - BUGID 3930: changing date format according to given locale
- *  20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
- *	20100405 - franciscom - fixed problems found while trying to solve BUGID 3295
- *							some logic on create_range_option_list() was not clear
- *							and may be has never worked ok !!!.
- *							added BLANK option also for time.
- *
- *	20080816 - franciscom
- *	added code to manage datetime Custom Fields (Mantis contribution on 2005)
  *       
  */
  
@@ -132,33 +120,30 @@ function create_year_range_option_list( $p_year = 0, $p_start = 0, $p_end = 0)
 
 
 // Added contribution (done on mantis) to manage datetime
-/** used in cfield_mgr.class.php only 
-20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface*/
+/** used in cfield_mgr.class.php */
 function create_date_selection_set( $p_name, $p_format, $p_date=0, 
                                     $p_default_disable=false, $p_allow_blank=false, 
                                     $show_on_filters=false)
 {
-	// BUGID 3930
-	global $g_locales_date_format;
+	$localeDateFormat = config_get('locales_date_format');
+
 	$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
-	$date_format = $g_locales_date_format[$locale];
-	$date_format_without_percent = str_replace('%', '', $g_locales_date_format[$locale]);
+	$date_format = $localeDateFormat[$locale];
+	$date_format_without_percent = str_replace('%', '', $date_format);
 	
 	// if calender shall be shown on filter position has to be fixed to fully display
 	$calender_div_position = ($show_on_filters) ? "fixed" : "absolute";
 	
 	$str_out='';
 	$t_chars = preg_split('//', $p_format, -1, PREG_SPLIT_NO_EMPTY) ;
-	if ( $p_date != 0 ) {
-		// 20080816 - $t_date = preg_split('/-/', date( 'Y-m-d', $p_date), -1, PREG_SPLIT_NO_EMPTY) ;
-		$t_date = preg_split('/-| |:/', date('Y-m-d H:i:s', $p_date), -1, PREG_SPLIT_NO_EMPTY) ;
-	} else {
-		// 20080816 -  $t_date = array( 0, 0, 0 );
-		// 20100405 - think is WRONG use valid value (0) for time
-		// $t_date = array( 0, 0, 0, 0, 0, 0 );
-		$t_date = array(-1, -1, -1, -1, -1, -1);
+	if ( $p_date != 0 ) 
+	{
+	  $t_date = preg_split('/-| |:/', date('Y-m-d H:i:s', $p_date), -1, PREG_SPLIT_NO_EMPTY) ;
+	} 
+	else 
+	{
+	  $t_date = array(-1, -1, -1, -1, -1, -1);
 	}
-	//$t_date = $p_date;
 	$t_disable = '' ;
 	if ( $p_default_disable == true ) {
 		$t_disable = 'disabled' ;

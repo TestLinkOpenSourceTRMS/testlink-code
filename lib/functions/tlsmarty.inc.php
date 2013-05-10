@@ -101,9 +101,6 @@ class TLSmarty extends Smarty
   function TLSmarty()
   {
     global $tlCfg;
-    global $g_locales_html_select_date_field_order;
-    global $g_locales_date_format;
-    global $g_locales_timestamp_format;
     
     parent::__construct();
     $this->template_dir = TL_ABS_PATH . 'gui/templates/';
@@ -229,15 +226,15 @@ class TLSmarty extends Smarty
     			  ' title="' . lang_get('menu_manage_keywords') . '"');
     
     $this->assign('gsmarty_html_select_date_field_order',
-                  $g_locales_html_select_date_field_order[$my_locale]);
+                  $tlCfg->locales_html_select_date_field_order[$my_locale]);
                   
-    $this->assign('gsmarty_date_format',$g_locales_date_format[$my_locale]);
+    $this->assign('gsmarty_date_format',$tlCfg->locales_date_format[$my_locale]);
     
     // add smarty variable to be able to set localized date format on datepicker
     $this->assign('gsmarty_datepicker_format',
-                  str_replace('%','',$g_locales_date_format[$my_locale]));
+                  str_replace('%','',$tlCfg->locales_date_format[$my_locale]));
                   
-    $this->assign('gsmarty_timestamp_format',$g_locales_timestamp_format[$my_locale]);
+    $this->assign('gsmarty_timestamp_format',$tlCfg->locales_timestamp_format[$my_locale]);
     
     // -----------------------------------------------------------------------------
     // Images

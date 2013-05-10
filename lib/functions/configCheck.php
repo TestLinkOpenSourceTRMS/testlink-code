@@ -93,15 +93,17 @@ function get_home_url($opt)
 /** check language acceptance by web client */
 function checkServerLanguageSettings($defaultLanguage)
 {
-  global $g_locales;
   $language = $defaultLanguage;
 
   // check for !== false because getenv() returns false on error
   $serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
   if(false !== $serverLanguage)
   {
-    if (array_key_exists($serverLanguage,$g_locales))
+    $localeSet = config_get('locales');
+    if (array_key_exists($serverLanguage,$localeSet))
+    {
       $language = $serverLanguage;
+    }  
   }
 
   return ($language);

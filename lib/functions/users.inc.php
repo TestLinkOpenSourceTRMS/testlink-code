@@ -54,7 +54,7 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 	if (!is_null($locale))
 	{
 		$_SESSION['locale'] = $locale;
-		set_dt_formats();
+		setDateTimeFormats($locale);
 	}
 
 	$tproject_mgr = new testproject($db);

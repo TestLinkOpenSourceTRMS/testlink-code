@@ -264,53 +264,55 @@ $g_field_size->bug_id = 16;
  */
 define('TL_LOCALIZE_TAG','LOCALIZE: ');
 
+/** @var string Default format of date */
+$tlCfg->date_format ='%d/%m/%Y';
+
+/** @var string Default format of datetime */
+$tlCfg->timestamp_format = '%d/%m/%Y %H:%M:%S';
+
+
 /** 
  * @var array List of supported localizations (used in user preferences to choose one)
- * DEV: Mantain the alphabetical order when adding new locales. Also check inc.ext_js_tpl
- *      to set localization for ExtJS Components.
+ * DEV: Please Maintain the alphabetical order when adding new locales. 
+ *      Also check inc.ext_js_tpl to set localization for ExtJS Components.
  **/
-// 
-$g_locales = array('cs_CZ' => 'Czech','de_DE' => 'German','en_GB' => 'English (wide/UK)','en_US' => 'English (US)',
-                   'es_AR' => 'Spanish (Argentine)','es_ES' => 'Spanish','fi_FI' => 'Finnish','fr_FR' => 'Fran&ccedil;ais',
-                   'id_ID' => 'Indonesian','it_IT' => 'Italian','ja_JP' => 'Japanese','ko_KR' => 'Korean','nl_NL' => 'Dutch',
-                   'pl_PL' => 'Polski','pt_BR' => 'Portuguese (Brazil)','ru_RU' => 'Russian','zh_CN' => 'Chinese Simplified');
+$tlCfg->locales = array('cs_CZ' => 'Czech','de_DE' => 'German','en_GB' => 'English (wide/UK)',
+                        'en_US' => 'English (US)','es_AR' => 'Spanish (Argentine)',
+                        'es_ES' => 'Spanish','fi_FI' => 'Finnish','fr_FR' => 'Fran&ccedil;ais',
+                        'id_ID' => 'Indonesian','it_IT' => 'Italian','ja_JP' => 'Japanese',
+                        'ko_KR' => 'Korean','nl_NL' => 'Dutch','pl_PL' => 'Polski',
+                        'pt_BR' => 'Portuguese (Brazil)','ru_RU' => 'Russian','zh_CN' => 'Chinese Simplified');
 
 /** 
  * Format of date - see strftime() in PHP manual
- * NOTE: setting according local is done in testlinkInitPage() using set_dt_formats()
+ * NOTE: setting according local is done in testlinkInitPage() using setDateTimeFormats()
  */
-
-/** @var string Default format of date */
-$g_date_format ='%d/%m/%Y';
-
-/** @var string Default format of datetime */
-$g_timestamp_format = '%d/%m/%Y %H:%M:%S';
-
 /** @var array Localized format of date */
-$g_locales_date_format = array('cs_CZ' => '%d.%m.%Y','de_DE' => '%d.%m.%Y','en_GB' => '%d/%m/%Y','en_US' => '%m/%d/%Y',
-                               'es_AR' => '%d/%m/%Y','es_ES' => '%d/%m/%Y','fi_FI' => '%d/%m/%Y','fr_FR' => '%d/%m/%Y',
-                               'id_ID' => '%d/%m/%Y','it_IT' => '%d/%m/%Y','ja_JP' => '%Y/%m/%d','ko_KR' => '%Y/%m/%d',
-                               'nl_NL' => '%d-%m-%Y','pl_PL' => '%d.%m.%Y','pt_BR' => '%d/%m/%Y','ru_RU' => '%d/%m/%Y',
-                               'zh_CN' => '%Y-%m-%d'); 
+$tlCfg->locales_date_format = array('cs_CZ' => '%d.%m.%Y','de_DE' => '%d.%m.%Y','en_GB' => '%d/%m/%Y',
+                                    'en_US' => '%m/%d/%Y','es_AR' => '%d/%m/%Y','es_ES' => '%d/%m/%Y',
+                                    'fi_FI' => '%d/%m/%Y','fr_FR' => '%d/%m/%Y','id_ID' => '%d/%m/%Y',
+                                    'it_IT' => '%d/%m/%Y','ja_JP' => '%Y/%m/%d','ko_KR' => '%Y/%m/%d',
+                                    'nl_NL' => '%d-%m-%Y','pl_PL' => '%d.%m.%Y','pt_BR' => '%d/%m/%Y',
+                                    'ru_RU' => '%d/%m/%Y','zh_CN' => '%Y-%m-%d'); 
 
 /** @var array Localized format of full timestamp */
-$g_locales_timestamp_format = array('cs_CZ' => '%d.%m.%Y %H:%M:%S','de_DE' => '%d.%m.%Y %H:%M:%S',
-                                    'en_GB' => '%d/%m/%Y %H:%M:%S','en_US' => '%m/%d/%Y %H:%M:%S',
-                                    'es_AR' => '%d/%m/%Y %H:%M:%S','es_ES' => '%d/%m/%Y %H:%M:%S',
-                                    'fi_FI' => '%d/%m/%Y %H:%M:%S','fr_FR' => '%d/%m/%Y %H:%M:%S',
-                                    'id_ID' => '%d/%m/%Y %H:%M:%S','it_IT' => '%d/%m/%Y %H:%M:%S',
-                                    'ja_JP' => '%Y/%m/%d %H:%M:%S','ko_KR' => '%Y/%m/%d %H:%M:%S',
-                                    'nl_NL' => '%d-%m-%Y %H:%M:%S','pl_PL' => '%d.%m.%Y %H:%M:%S',
-                                    'pt_BR' => '%d/%m/%Y %H:%M:%S','ru_RU' => '%d/%m/%Y %H:%M:%S',
-                                    'zh_CN' => '%Y-%m-%d %H:%M:%S'); 
+$tlCfg->locales_timestamp_format = array('cs_CZ' => '%d.%m.%Y %H:%M:%S','de_DE' => '%d.%m.%Y %H:%M:%S',
+                                         'en_GB' => '%d/%m/%Y %H:%M:%S','en_US' => '%m/%d/%Y %H:%M:%S',
+                                         'es_AR' => '%d/%m/%Y %H:%M:%S','es_ES' => '%d/%m/%Y %H:%M:%S',
+                                         'fi_FI' => '%d/%m/%Y %H:%M:%S','fr_FR' => '%d/%m/%Y %H:%M:%S',
+                                         'id_ID' => '%d/%m/%Y %H:%M:%S','it_IT' => '%d/%m/%Y %H:%M:%S',
+                                         'ja_JP' => '%Y/%m/%d %H:%M:%S','ko_KR' => '%Y/%m/%d %H:%M:%S',
+                                         'nl_NL' => '%d-%m-%Y %H:%M:%S','pl_PL' => '%d.%m.%Y %H:%M:%S',
+                                         'pt_BR' => '%d/%m/%Y %H:%M:%S','ru_RU' => '%d/%m/%Y %H:%M:%S',
+                                         'zh_CN' => '%Y-%m-%d %H:%M:%S'); 
 
 /** @var array localized date format for smarty templates (html_select_date function) 
  * deprecated since use of datepicker */
-$g_locales_html_select_date_field_order = array('cs_CZ' => 'dmY','de_DE' => 'dmY','en_GB' => 'dmY',
-                                                'en_US' => 'mdY','es_AR' => 'dmY','es_ES' => 'dmY','fi_FI' => 'dmY',
-                                                'fr_FR' => 'dmY','id_ID' => 'dmY','it_IT' => 'dmY','ja_JP' => 'Ymd',
-                                                'ko_KR' => 'Ymd','nl_NL' => 'dmY','pl_PL' => 'dmY','pt_BR' => 'dmY',
-                                                'ru_RU' => 'dmY','zh_CN' => 'Ymd'); 
+$tlCfg->locales_html_select_date_field_order = array('cs_CZ' => 'dmY','de_DE' => 'dmY','en_GB' => 'dmY',
+                                                     'en_US' => 'mdY','es_AR' => 'dmY','es_ES' => 'dmY','fi_FI' => 'dmY',
+                                                     'fr_FR' => 'dmY','id_ID' => 'dmY','it_IT' => 'dmY','ja_JP' => 'Ymd',
+                                                     'ko_KR' => 'Ymd','nl_NL' => 'dmY','pl_PL' => 'dmY','pt_BR' => 'dmY',
+                                                     'ru_RU' => 'dmY','zh_CN' => 'Ymd'); 
 
 
 

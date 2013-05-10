@@ -11,11 +11,11 @@
  * a feature specific code because of performance and readability reasons
  *
  * @filesource	common.php
- * @package 	  TestLink
- * @author 		  Martin Havlat, Chad Rosen
- * @copyright 	2005,2012 TestLink community 
- * @link 		    http://www.teamst.org/index.php
- * @since 		  TestLink 1.5
+ * @package 	TestLink
+ * @author 	    TestLink community
+ * @Copyright   2005,2013 TestLink community 
+ * @link 	    http://www.teamst.org/index.php
+ * @since 		1.5
  *
  * @internal revisions
  * @since 1.9.7
@@ -395,7 +395,10 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
 
 	doSessionStart();
 	setPaths();
-	set_dt_formats();
+	if( isset($_SESSION['locale']) && !is_null($_SESSION['locale']) )
+	{
+      setDateTimeFormats($_SESSION['locale']);
+	}	
 	doDBConnect($db);
 	
 	if (!$pageStatistics && (config_get('log_level') == 'EXTENDED'))
@@ -529,27 +532,6 @@ function check_string($str2check, $regexp_forbidden_chars)
 		}
 	}
 	return $status_ok;
-}
-
-
-function set_dt_formats()
-{
-	global $g_date_format;
-	global $g_timestamp_format;
-	global $g_locales_date_format;
-	global $g_locales_timestamp_format;
-
-	if(isset($_SESSION['locale']))
-	{
-		if($g_locales_date_format[$_SESSION['locale']])
-		{
-			$g_date_format = $g_locales_date_format[$_SESSION['locale']];
-		}
-		if($g_locales_timestamp_format[$_SESSION['locale']])
-		{
-			$g_timestamp_format = $g_locales_timestamp_format[$_SESSION['locale']];
-		}
-	}
 }
 
 
@@ -1054,9 +1036,13 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
     $_SESSION = null;
   }
 
-	doSessionStart($my['opt']['setPaths']);
-	set_dt_formats();
-	doDBConnect($dbHandler);
+  doSessionStart($my['opt']['setPaths']);
+  if( isset($_SESSION['locale']) && !is_null($_SESSION['locale']) )
+  {
+    setDateTimeFormats($_SESSION['locale']);
+  }	
+  doDBConnect($dbHandler);
+
   $user = tlUser::getByAPIKey($dbHandler,$apikey);
   if( count($user) == 1 )
   {
@@ -1159,5 +1145,21 @@ function getConfigAndLabels($configKey,$accessMode='key')
 		$labels[$index] = lang_get($configKey . '_' . $accessKey);
 	}
 	return array('cfg' => $stringKeyCode, 'lbl' => $labels); 
+}
+
+
+function setDateTimeFormats($locale)
+{
+  global $tlCfg;
+
+  if($tlCfg->locales_date_format[$locale])
+  {
+    $tlCfg->date_format = $tlCfg->locales_date_format[$locale];
+  }
+
+  if($tlCfg->locales_timestamp_format[$locale])
+  {
+    $tlCfg->timestamp_format = $tlCfg->locales_timestamp_format[$locale];
+  }
 }
 ?>

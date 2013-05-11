@@ -64,7 +64,7 @@ class dBug {
     // function dBug($var,$forceType="",$bCollapsed=false) {
 	function dBug($var,$options=null) {
 		
-		if( !defined('DBUG_ON') ) return; // >>----> Bye!
+		if( !defined('DBUG_ON') && !isset($_REQUEST['DBUG_ON'])) return; // >>----> Bye!
 
         $my['options'] = array('forceType' => '', 'collapsed' => true, 'label'=> '');
    	    $my['options'] = array_merge($my['options'], (array)$options);

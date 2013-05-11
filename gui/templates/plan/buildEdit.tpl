@@ -4,22 +4,7 @@ $Id: buildEdit.tpl,v 1.22 2010/11/06 11:42:47 amkhullar Exp $
 
 Purpose: smarty template - Add new build and show existing
 
-Rev:
-    20120731 - kinow - TICKET 4977: CSRF token
-    20101025 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
-    20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
-    20100820 - franciscom - refactored to use only $gui as interface from php code
-    20100707 - asimon - BUGID 3406: addition of items for copying user
-                        assignments from other builds
-    
-    20080217 - franciscom
-    Problems with history.goback, using call to view builds on goback
-    
-    20071216 - franciscom
-    user feedback using ext_js
-    
-    20070214 - franciscom 
-    BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed. 
+@internal revisions
 
 *}
 {assign var="managerURL" value="lib/plan/buildEdit.php"}
@@ -38,7 +23,6 @@ Rev:
 {literal}
 <script type="text/javascript">
 {/literal}
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_build_name = "{$labels.warning_empty_build_name|escape:'javascript'}";
 {literal}
@@ -82,7 +66,7 @@ function validateForm(f)
 			<th style="background:none;">{$labels.enter_build}</th>
 			<td><input type="text" name="build_name" id="build_name" 
 			           maxlength="{#BUILD_NAME_MAXLEN#}" 
-			           value="{$gui->build_name|escape}" size="{#BUILD_NAME_SIZE#}"/>
+			           value="{$gui->build_name|escape}" size="{#BUILD_NAME_SIZE#}" required />
 			  				{include file="error_icon.tpl" field="build_name"}
 			</td>
 		</tr>

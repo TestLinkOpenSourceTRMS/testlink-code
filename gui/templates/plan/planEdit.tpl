@@ -3,17 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: planEdit.tpl,v 1.17 2010/11/06 11:42:47 amkhullar Exp $
 
 Purpose: smarty template - create Test Plan
-Revisions:
-20120812 - kinow - TICKET 3987: Hide form to upload attachments during test plan creation
-20101108 - kinow - TICKET 3987: Add attachments to a Test Plan
-20120731 - kinow - TICKET 4977: CSRF token
-20101012 - franciscom - BUGID 3892: CF Types validation
-20090513 - franciscom - added is_public
-
-20070214 - franciscom -
-BUGID 628: Name edit � Invalid action parameter/other behaviours if �Enter� pressed
-Bug confirmed on IE
-
+@internal revisions
 *}
 
 {lang_get var="labels"
@@ -29,7 +19,6 @@ Bug confirmed on IE
 {literal}
 <script type="text/javascript">
 {/literal}
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_tp_name = "{$labels.warning_empty_tp_name|escape:'javascript'}";
 {literal}
@@ -126,7 +115,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 			<td><input type="text" name="testplan_name"
 			           size="{#TESTPLAN_NAME_SIZE#}"
 			           maxlength="{#TESTPLAN_NAME_MAXLEN#}"
-			           value="{$gui->testplan_name|escape}"/>
+			           value="{$gui->testplan_name|escape}" required />
   				{include file="error_icon.tpl" field="testplan_name"}
 			</td>
 		</tr>

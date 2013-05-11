@@ -45,7 +45,7 @@ switch($args->doAction)
     $op->auditMsg = "audit_user_saved";
     $op->user_feedback = lang_get('result_user_changed');
     $update_title_bar = 1;
-  reak;
+  break;
 
   case 'changePassword':
     $op = changePassword($args,$user);

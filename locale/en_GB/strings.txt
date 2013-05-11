@@ -3289,6 +3289,10 @@ $TLS_audit_all_events_deleted = "User '{%1}' deleted all events";
 $TLS_audit_events_with_level_deleted = "User '{%1}' deleted events with level: {%2}";
 
 
+$TLS_audit_security_user_right_missing = "User '{%1}' has insufficient rights for '{%3}' action on '{%2}'. Exit forced";
+$TLS_audit_security_no_environment = "Use of '{%1}' requires environment (test project id) and is not set. Exit forced";
+
+
 // ----- eventviewer.php -----
 $TLS_th_loglevel = "Log level";
 $TLS_th_timestamp = "Timestamp";

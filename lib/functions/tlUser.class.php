@@ -1261,5 +1261,44 @@ class tlUser extends tlDBObject
     $rs = $dbHandler->fetchRowsIntoMap($sql, "id");
     return $rs;
   }
+
+  /**
+   * @use _SESSION
+   * 
+   */
+  function checkGUISecurityClearance(&$dbHandler,$context,$rightsToCheck,$checkMode)
+  {
+    $doExit = false;
+    $action = 'any';
+    $myContext = array('tproject_id' => 0, 'tplan_id' => 0);
+    $myContext = array_merge($myContext, $context);
+
+    if( $doExit = (is_null($myContext) || $myContext['tproject_id'] == 0) )
+    {
+      logAuditEvent(TLS("audit_security_no_environment",$myContext['script']), $action,$this->dbID,"users");
+    }
+     
+    if( !$doExit )
+    {
+      foreach($rightsToCheck as $verboseRight)
+      {
+        $status = $this->hasRight($dbHandler,$verboseRight,$myContext['tproject_id'],$myContext['tplan_id']);
+    
+        if( ($doExit = !$status) && ($checkMode == 'and'))
+        { 
+          $action = 'any';
+          logAuditEvent(TLS("audit_security_user_right_missing",$this->login,$myContext['script'],$action),
+                        $action,$this->dbID,"users");
+          break;
+        }
+      }
+    }
+    if ($doExit)
+    {   
+      redirect($_SESSION['basehref'],"top.location");
+      exit();
+    }
+  }
+
+
 }
-?>

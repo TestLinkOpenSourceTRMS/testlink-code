@@ -127,7 +127,7 @@ switch($args->doAction)
               $ak = ($gui->tprojects[$idx]['issue_tracker_enabled']) ? 'active' : 'inactive';
               $gui->tprojects[$idx]['itstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
                                                      ' alt="' . $labels[$ak . '_integration'] . '" ' .
-                                                      ' src="' . $imgSet[$ak] . '"/>';
+                                                     ' src="' . $imgSet[$ak] . '"/>';
             } 
           }
         }
@@ -158,27 +158,30 @@ switch($args->doAction)
 
     case "ErrorOnAction":
     default:
-        if( $args->doAction != "edit" && $args->doAction != "ErrorOnAction")
-        {
+      if( $args->doAction != "edit" && $args->doAction != "ErrorOnAction")
+      {
         $of->Value = getItemTemplateContents('project_template', $of->InstanceName, $args->notes);
-        }
-        else
-        {
-          $of->Value = $args->notes;
-        }
-        
-        foreach($ui as $prop => $value)
-        {
-            $smarty->assign($prop,$value);
-        }
-        $smarty->assign('gui', $args);
-        $smarty->assign('notes', $of->CreateHTML());
-        $smarty->assign('user_feedback', $user_feedback);
-        $smarty->assign('feedback_type', $feedback_type);
-        $smarty->display($templateCfg->template_dir . $template);
+      }
+      else
+      {
+        $of->Value = $args->notes;
+      }
+      
+      foreach($ui as $prop => $value)
+      {
+        $smarty->assign($prop,$value);
+      }
+
+      $smarty->assign('gui', $args);
+      $smarty->assign('notes', $of->CreateHTML());
+      $smarty->assign('user_feedback', $user_feedback);
+      $smarty->assign('feedback_type', $feedback_type);
+      $smarty->display($templateCfg->template_dir . $template);
     break;
 
 }
+
+
 
 /**
  * INITialize page ARGuments, using the $_REQUEST and $_SESSION

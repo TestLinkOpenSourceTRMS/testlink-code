@@ -6,7 +6,7 @@
  * @filesource  projectEdit.tpl
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.7
  *
  *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
@@ -20,11 +20,11 @@
   s='show_event_history,th_active,cancel,info_failed_loc_prod,invalid_query,
   create_from_existent_tproject,opt_no,caption_edit_tproject,caption_new_tproject,name,
   title_testproject_management,testproject_enable_priority, testproject_enable_automation,
-    public,testproject_color,testproject_alt_color,testproject_enable_requirements,
-    testproject_enable_inventory,testproject_features,testproject_description,
-    testproject_prefix,availability,mandatory,warning,warning_empty_tcase_prefix,
-    warning_empty_tproject_name,testproject_issue_tracker_integration,issue_tracker,
-    testproject_reqmgr_integration,reqmgrsystem,no_rms_defined'}
+  public,testproject_color,testproject_alt_color,testproject_enable_requirements,
+  testproject_enable_inventory,testproject_features,testproject_description,
+  testproject_prefix,availability,mandatory,warning,warning_empty_tcase_prefix,
+  warning_empty_tproject_name,testproject_issue_tracker_integration,issue_tracker,
+  testproject_reqmgr_integration,reqmgrsystem,no_rms_defined,no_issuetracker_defined'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
@@ -100,14 +100,14 @@ return true;
       <tr>
         <td>{$labels.name} *</td>
         <td><input type="text" name="tprojectName" size="{#TESTPROJECT_NAME_SIZE#}"
-            value="{$gui->tprojectName|escape}" maxlength="{#TESTPROJECT_NAME_MAXLEN#}" />
+            value="{$gui->tprojectName|escape}" maxlength="{#TESTPROJECT_NAME_MAXLEN#}" required />
             {include file="error_icon.tpl" field="tprojectName"}
         </td>
       </tr>
       <tr>
         <td>{$labels.testproject_prefix} *</td>
         <td><input type="text" name="tcasePrefix" size="{#TESTCASE_PREFIX_SIZE#}"
-                   value="{$gui->tcasePrefix|escape}" maxlength="{#TESTCASE_PREFIX_MAXLEN#}" />
+                   value="{$gui->tcasePrefix|escape}" maxlength="{#TESTCASE_PREFIX_MAXLEN#}" required />
             {include file="error_icon.tpl" field="tcasePrefix"}
         </td>
       </tr>
@@ -164,30 +164,37 @@ return true;
       <tr>
         <td>{$labels.testproject_issue_tracker_integration}</td><td></td>
       </tr>
-      <tr>
-        <td></td>
-        <td>
+      {if $gui->issueTrackers == ''}
+        <tr>
+          <td></td>
+          <td>{$labels.no_issuetracker_defined}</td>
+        </tr>
+      {else}
+        <tr>
+          <td></td>
+          <td>
             <input type="checkbox" id="issue_tracker_enabled"
-                 name="issue_tracker_enabled" {if $gui->issue_tracker_enabled == 1} checked="checked" {/if} />
+                   name="issue_tracker_enabled" {if $gui->issue_tracker_enabled == 1} checked="checked" {/if} />
             {$labels.th_active}
           </td>
-          </tr>
-      <tr>
-        <td></td>
-        <td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
             {$labels.issue_tracker}
-           <select name="issue_tracker_id" id="issue_tracker_id">
-           <option value="0">&nbsp;</option>
-           {foreach item=issue_tracker from=$gui->issueTrackers}
-             <option value="{$issue_tracker.id}" 
-               {if $issue_tracker.id == $gui->issue_tracker_id} selected {/if} 
-             >
-             {$issue_tracker.verbose|escape}</option>
-           {/foreach}
-           </select>
+             <select name="issue_tracker_id" id="issue_tracker_id">
+             <option value="0">&nbsp;</option>
+             {foreach item=issue_tracker from=$gui->issueTrackers}
+               <option value="{$issue_tracker.id}" 
+                 {if $issue_tracker.id == $gui->issue_tracker_id} selected {/if} 
+               >
+               {$issue_tracker.verbose|escape}</option>
+             {/foreach}
+             </select>
           </td>
-          </tr>
-
+        </tr>
+      {/if}
+         
       {*
       <tr>
         <td>{$labels.testproject_reqmgr_integration}</td><td></td>

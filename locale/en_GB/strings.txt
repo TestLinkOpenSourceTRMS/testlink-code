@@ -1536,6 +1536,7 @@ $TLS_issue_tracker = 'Issue Tracker';
 $TLS_testproject_reqmgr_integration = 'Req. Mgmt. System Integration';
 $TLS_reqmgrsystem = 'Req. Management System';
 $TLS_no_rms_defined = ' >> There are no Req. Management Systems defined <<';
+$TLS_no_issuetracker_defined = ' >> There are no Issue Tracker Systems defined <<';
 
 
 $TLS_info_failed_loc_prod = 'Failed to localize the Test Project.';

@@ -4,25 +4,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - create / edit a req  
 @internal revisions
 
-@since 1.9.3
-20110607 - Julian - BUGID 3953: Checkbox to decide whether to create another requirement or not
-20110304 - asimon - added help icon with a description of some of the "new" features
-20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
-20110110 - Julian - BUGID 4153: Warning message when navigating away from changed requirement without saving
-20110106 - Julian - BUGID 4152: do not set focus on req doc id if log message window is shown
-20101212 - franciscom - BUGID 4056: Requirement Revisioning
-20101130 - Julian - BUGID 4063: "Save" and "Cancel" Button at the top of the page
-20101124 - Julian - BUGID 4049: Ajax login on timeout for requirements to avoid data loss
-20101011 - franciscom - BUGID 3886: CF Types validation
-20101006 - asimon - BUGID 3854
-20100915 - Julian - BUGID 3777: Allow to insert last req doc id when creating requirement
-20100808 - asimon - added logic to refresh filtered tree on changes
-20100502 - franciscom - BUGID 3413: removed debug info
-20100319 - asimon - BUGID 1748: added logic to add and remove requirement relations
-20091231 - franciscom - added logic to display and check expected coverage
-                        attribute based on req type, with configuration
-                        managed using $tlCfg->req_cfg->type_expected_coverage
-
 *}
 {* ------------------------------------------------------------------------- *}
 
@@ -320,7 +301,7 @@ function insert_last_doc_id()
   	
 	<div><input type="text" name="reqDocId" id="reqDocId"
   		        size="{#REQ_DOCID_SIZE#}" maxlength="{#REQ_DOCID_MAXLEN#}"
-  		        value="{$gui->req.req_doc_id|escape}" />
+  		        value="{$gui->req.req_doc_id|escape}" required />
   				{include file="error_icon.tpl" field="reqDocId"}
   				
   				{* BUGID 3777 *}
@@ -337,7 +318,7 @@ function insert_last_doc_id()
  	<div class="labelHolder"> <label for="req_title">{$labels.title}</label></div>
   	<div><input type="text" name="req_title" id="req_title"
   		        size="{#REQ_TITLE_SIZE#}" maxlength="{#REQ_TITLE_MAXLEN#}"
-  		        value="{$gui->req.title|escape}" />
+  		        value="{$gui->req.title|escape}" required />
   		    {include file="error_icon.tpl" field="req_title"}
  	 </div>
   	<br />
@@ -382,7 +363,7 @@ function insert_last_doc_id()
   	
   		<input type="text" name="expected_coverage" id="expected_coverage"
   		        size="{#REQ_EXPECTED_COVERAGE_SIZE#}" maxlength="{#REQ_EXPECTED_COVERAGE_MAXLEN#}"
-  		        value="{$coverage_to_display}" />
+  		        value="{$coverage_to_display}" required />
   		{include file="error_icon.tpl" field="expected_coverage"}
   	
  		</div>

@@ -4,7 +4,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - create a new req document
 
 @internal revisions
-20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
 
 *}
 {* ------------------------------------------------------------------------- *}
@@ -158,7 +157,7 @@ function validateForm(f)
   	</div>
 	  <div><input type="text" name="doc_id" id="doc_id"
   		        size="{#REQSPEC_DOCID_SIZE#}" maxlength="{#REQSPEC_DOCID_MAXLEN#}"
-  		        value="{$gui->req_spec.doc_id|escape}" />
+  		        value="{$gui->req_spec.doc_id|escape}" required />
   				{include file="error_icon.tpl" field="doc_id"}
   	</div>
 	
@@ -173,7 +172,7 @@ function validateForm(f)
 		    <input type="text" id="title" name="title"
 		           size="{#REQ_SPEC_TITLE_SIZE#}"
 				   maxlength="{#REQ_SPEC_TITLE_MAXLEN#}"
-		           value="{$gui->req_spec.title|escape}" />
+		           value="{$gui->req_spec.title|escape}" required />
 		  	{include file="error_icon.tpl" field="req_spec_title"}
 	   	</div>
 	   	<br />

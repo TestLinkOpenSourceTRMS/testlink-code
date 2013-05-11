@@ -22,20 +22,7 @@ of columns present on custom fields tables.
 This is done to simplify logic.
 
 
-rev :
-		 20110108 - franciscom - BUGID 4000
-     20100829 - franciscom - BUGID 3707 - Things that works with Firefox, 
-                                          BUT NOT with Chrome and Internet Explorer
-                                          added body on load event, to initialize when
-                                          accessing in edit mode.
-
-     20100121 - franciscom - BUGID - layout change
-     20090524 - franciscom - Refactoring to have a better picture on User Interface of
-                             Custom Field application area usage
-     20090503 - franciscom - BUGID 2425
-     20090408 - franciscom - BUGID 2352 - removed delete block.
-                             BUGID 2359 - display test projects where custom field is assigned
-     20080810 - franciscom - BUGID 1650 (REQ)
+@internal revisions
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -369,7 +356,7 @@ function initShowOnExec(id_master,show_on_cfg)
 			<td><input type="text" name="cf_name"
 			                       size="{#CFIELD_NAME_SIZE#}"
 			                       maxlength="{#CFIELD_NAME_MAXLEN#}"
-    			 value="{$gui->cfield.name|escape}" />
+    			 value="{$gui->cfield.name|escape}" required />
            {include file="error_icon.tpl" field="cf_name"}
     	</td>
 		</tr>
@@ -378,7 +365,7 @@ function initShowOnExec(id_master,show_on_cfg)
 			<td><input type="text" name="cf_label"
 			                       size="{#CFIELD_LABEL_SIZE#}"
 			                       maxlength="{#CFIELD_LABEL_MAXLEN#}"
-			           value="{$gui->cfield.label|escape}"/>
+			           value="{$gui->cfield.label|escape}" required />
 		           {include file="error_icon.tpl" field="cf_label"}
     	</td>
 	  </tr>

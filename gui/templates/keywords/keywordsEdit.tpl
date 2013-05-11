@@ -51,7 +51,7 @@ function validateForm(f)
   			<th>{lang_get s='th_keyword'}</th>
   			<td><input type="text" name="keyword" 
   			           size="{#KEYWORD_SIZE#}" maxlength="{#KEYWORD_MAXLEN#}" 
-  				         value="{$keyword|escape}" />
+  				         value="{$keyword|escape}" required />
 			  		{include file="error_icon.tpl" field="keyword"}
 			  </td>				
   		</tr>

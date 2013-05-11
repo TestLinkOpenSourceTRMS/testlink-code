@@ -12,7 +12,7 @@ Contents
 7. Bug Reports and Feedback
 8. Supporting our work
 9. Regarding forum usage www.teamst.org
-
+10. Changes regarding 1.9.6
 
 1. Introduction
 ===============================================================
@@ -327,3 +327,8 @@ PLEASE: read this short hints before you write a topic:
 :!: Consider that some issues are related to Apache, browser or database instead of TestLink. Use google at first. 
 
       
+10. Changes regarding 1.9.6      
+===============================================================
+
+10.1 Admin role can not be edit anymore
+

@@ -82,7 +82,7 @@ function validateForm(f)
     </th></tr>
     <tr><td>
          <input type="text" name="rolename" {$gui->disabledAttr}
-                size="{#ROLENAME_SIZE#}" maxlength="{#ROLENAME_MAXLEN#}" value="{$gui->role->name|escape}"/>
+                size="{#ROLENAME_SIZE#}" maxlength="{#ROLENAME_MAXLEN#}" value="{$gui->role->name|escape}" required />
           {include file="error_icon.tpl" field="rolename"}
         </td></tr>
     <tr><th>{$labels.th_rights}</th></tr>

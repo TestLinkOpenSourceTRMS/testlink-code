@@ -3,8 +3,7 @@ Testlink: smarty template -
 @filesource	usersEdit.tpl
 
 @internal revisions
-@since 1.9.4
-20111127 - franciscom - demoMode behaviour changes
+@since 1.9.7
 *}
 
 {config_load file="input_dimensions.conf" section='login'}
@@ -26,7 +25,6 @@ Testlink: smarty template -
 {literal}
 <script type="text/javascript">
 {/literal}
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_login      = "{$labels.warning_empty_login|escape:'javascript'}";
 var warning_empty_first_name = "{$labels.warning_empty_first_name|escape:'javascript'}";
@@ -164,20 +162,20 @@ function validateForm(f,check_password)
 		<tr>
 			<th style="background:none;">{$labels.th_login}</th>
 			<td><input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}"
-			{$user_login_readonly} value="{$userData->login|escape}" />
+			{$user_login_readonly} value="{$userData->login|escape}" required />
       {include file="error_icon.tpl" field="login"}
 			 </td>
 		</tr>
 		<tr>
 			<th style="background:none;">{$labels.th_first_name}</th>
 			<td><input type="text" name="firstName" value="{$userData->firstName|escape}"
-			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
+			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" required />
 			     {include file="error_icon.tpl" field="firstName"}
 			</td></tr>
 		<tr>
 			<th style="background:none;">{$labels.th_last_name}</th>
 			<td><input type="text" name="lastName" value="{$userData->lastName|escape}"
-			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
+			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" required />
  			     {include file="error_icon.tpl" field="lastName"}
 			     </td>
 		</tr>
@@ -188,7 +186,7 @@ function validateForm(f,check_password)
  			      <th style="background:none;">{$labels.th_password}</th>
 		        <td><input type="password" id="password" name="password"
 		                   size="{#PASSWD_SIZE#}"
-		                   maxlength="{#PASSWD_SIZE#}" />
+		                   maxlength="{#PASSWD_SIZE#}" required />
 		            {include file="error_icon.tpl" field="password"}
 		        </td>
 		      {/if}
@@ -199,7 +197,7 @@ function validateForm(f,check_password)
 		<tr>
 			<th style="background:none;">{$labels.th_email}</th>
 			<td><input type="text" id="email" name="emailAddress" value="{$userData->emailAddress|escape}"
-			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" />
+			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" required />
           {include file="error_icon.tpl" field="emailAddress"}
 			</td>
 		</tr>

@@ -250,111 +250,111 @@ class testcase extends tlObjectWithAttachments
     $dummy = config_get('field_size');
     $name_max_len = $dummy->testcase_name;
     $name = trim($name);
-        $originalNameLen = tlStringLen($name);
+    $originalNameLen = tlStringLen($name);
 
-        $getOptions = array();
+    $getOptions = array();
     $ret = array('id' => -1,'external_id' => 0, 'status_ok' => 1,'msg' => 'ok', 
                  'new_name' => '', 'version_number' => 1, 'has_duplicate' => false);
 
-      $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME, 
-                              'action_on_duplicate_name' => 'generate_new',
-                              'external_id' => null); 
+    $my['options'] = array('check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME, 
+                           'action_on_duplicate_name' => 'generate_new',
+                           'external_id' => null); 
                               
-      $my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array_merge($my['options'], (array)$options);
        
-      $doCreate=true;
+    $doCreate=true;
     if ($my['options']['check_duplicate_name'])
     {
       $algo_cfg = config_get('testcase_cfg')->duplicated_name_algorithm;
       $getOptions['check_criteria'] = ($algo_cfg->type == 'counterSuffix') ? 'like' : '='; 
       $getOptions['access_key'] = ($algo_cfg->type == 'counterSuffix') ? 'name' : 'id'; 
-          $itemSet = $this->getDuplicatesByName($name,$parent_id,$getOptions);  
+      $itemSet = $this->getDuplicatesByName($name,$parent_id,$getOptions);  
           
       if( !is_null($itemSet) && ($siblingQty=count($itemSet)) > 0 )
       {
-          $ret['has_duplicate'] = true;
+        $ret['has_duplicate'] = true;
         switch($my['options']['action_on_duplicate_name'])
         {
             case 'block':
-                  $doCreate=false;
+              $doCreate=false;
               $ret['status_ok'] = 0;
               $ret['msg'] = sprintf(lang_get('testcase_name_already_exists'),$name);
             break;
             
             case 'generate_new':
-                $doCreate=true;
+              $doCreate=true;
                 
-                // TICKET 5159: importing duplicate test suites
-                // Need to force use of generated External ID 
-                // (this seems the best alternative)
-                $my['options']['external_id'] = null; 
+              // TICKET 5159: importing duplicate test suites
+              // Need to force use of generated External ID 
+              // (this seems the best alternative)
+              $my['options']['external_id'] = null; 
                 
-                  switch($algo_cfg->type)
+              switch($algo_cfg->type)
+              {
+                case 'stringPrefix':
+                  $name = $algo_cfg->text . " " . $name ;
+                  $final_len = strlen($name);
+                  if( $final_len > $name_max_len)
                   {
-                    case 'stringPrefix':
-                      $name = $algo_cfg->text . " " . $name ;
-                      $final_len = strlen($name);
-                      if( $final_len > $name_max_len)
-                      {
-                        $name = substr($name,0,$name_max_len);
-                      }
-                    break;
+                    $name = substr($name,0,$name_max_len);
+                  }
+                break;
                     
-                    case 'counterSuffix':
-                        $mask =  !is_null($algo_cfg->text) ? $algo_cfg->text : '#%s';
-                            $nameSet = array_flip(array_keys($itemSet));
+                case 'counterSuffix':
+                  $mask =  !is_null($algo_cfg->text) ? $algo_cfg->text : '#%s';
+                  $nameSet = array_flip(array_keys($itemSet));
                             
-                            // 20110109 - franciscom
-                            // does not understand why I've choosen time ago
-                            // to increment $siblingQty before using it
-                            // This way if TC X exists on target parent
-                            // I will create TC X [2] insteand of TC X [1]
-                            // Anyway right now I will not change.
-                      $target = $name . ($suffix = sprintf($mask,++$siblingQty));
-                      $final_len = strlen($target);
-                      if( $final_len > $name_max_len)
-                      {
-                        $target = substr($target,strlen($suffix),$name_max_len);
-                      }
+                  // 20110109 - franciscom
+                  // does not understand why I've choosen time ago
+                  // to increment $siblingQty before using it
+                  // This way if TC X exists on target parent
+                  // I will create TC X [2] insteand of TC X [1]
+                  // Anyway right now I will not change.
+                  $target = $name . ($suffix = sprintf($mask,++$siblingQty));
+                  $final_len = strlen($target);
+                  if( $final_len > $name_max_len)
+                  {
+                    $target = substr($target,strlen($suffix),$name_max_len);
+                  }
                                 
-                                // Need to recheck if new generated name does not crash with existent name
-                                // why? Suppose you have created:
-                    // TC [1]
-                    // TC [2]
-                    // TC [3]
-                    // Then you delete TC [2].
-                    // When I got siblings  il will got 2 siblings, if I create new progressive using next,
-                    // it will be 3 => I will get duplicated name.
-                    while( isset($nameSet[$target]) )
-                    {
+                  // Need to recheck if new generated name does not crash with existent name
+                  // why? Suppose you have created:
+                  // TC [1]
+                  // TC [2]
+                  // TC [3]
+                  // Then you delete TC [2].
+                  // When I got siblings  il will got 2 siblings, if I create new progressive using next,
+                  // it will be 3 => I will get duplicated name.
+                  while( isset($nameSet[$target]) )
+                  {
                     $target = $name . ($suffix = sprintf($mask,++$siblingQty));
                     $final_len = strlen($target);
                     if( $final_len > $name_max_len)
                     {
-                        $target = substr($target,strlen($suffix),$name_max_len);
+                      $target = substr($target,strlen($suffix),$name_max_len);
                     }
-                    }
-                                $name = $target;
-                    break;
-                  } 
+                  }
+                  $name = $target;
+                break;
+              } 
             
-                $ret['status_ok'] = 1;
-            $ret['new_name'] = $name;
-            $ret['msg'] = sprintf(lang_get('created_with_title'),$name);
+              $ret['status_ok'] = 1;
+              $ret['new_name'] = $name;
+              $ret['msg'] = sprintf(lang_get('created_with_title'),$name);
             break;
                 
             case 'create_new_version':
-                $doCreate=false;
+              $doCreate=false;
                 
-                // If we found more that one with same name and same parent,
-                // will take the first one.
-                $xx = current($itemSet);
-                      $ret['id'] = $xx['id'];            
-                    $ret['external_id']=$xx['tc_external_id'];
-                $ret['status_ok'] = 1;
-            $ret['new_name'] = $name;
-                  $ret['version_number'] = -1;
-            $ret['msg'] = lang_get('create_new_version');
+              // If we found more that one with same name and same parent,
+              // will take the first one.
+              $xx = current($itemSet);
+              $ret['id'] = $xx['id'];            
+              $ret['external_id']=$xx['tc_external_id'];
+              $ret['status_ok'] = 1;
+              $ret['new_name'] = $name;
+              $ret['version_number'] = -1;
+              $ret['msg'] = lang_get('create_new_version');
             break;
             
             default:
@@ -372,25 +372,29 @@ class testcase extends tlObjectWithAttachments
       $safeLenName = tlSubStr($name, 0, $name_max_len);
       
       // Get tproject id
-      $path2root=$this->tree_manager->get_path($parent_id);
-      $tproject_id=$path2root[0]['parent_id'];
+      $path2root = $this->tree_manager->get_path($parent_id);
+      $tproject_id = $path2root[0]['parent_id'];
       
-      // counter need to be increased anyway
-      $tcaseNumber = $this->tproject_mgr->generateTestCaseNumber($tproject_id);
       $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$safeLenName,$order,$id);
       $ret['id'] = $tcase_id;
       
       // TICKET 5159: importing duplicate test suites
       // TICKET 4937: Test Cases EXTERNAL ID is Auto genarated, no matter is provided on XML
-      $ret['external_id'] = is_null($my['options']['external_id']) ? $tcaseNumber : $my['options']['external_id'];
+      if( is_null($my['options']['external_id']) )
+      {
+        $ret['external_id'] = $this->tproject_mgr->generateTestCaseNumber($tproject_id);
+      }  
+      else
+      {
+        $ret['external_id'] = $my['options']['external_id'];
+        $this->tproject_mgr->setTestCaseCounter($tproject_id,$my['options']['external_id']);
+      }  
       
-    if( !$ret['has_duplicate'] && ($originalNameLen > $name_max_len) )
-    {
-      $ret['new_name'] = $safeLenName;
-      $ret['msg'] = sprintf(lang_get('testcase_name_length_exceeded'),$originalNameLen,$name_max_len);
-    }
-    
-
+      if( !$ret['has_duplicate'] && ($originalNameLen > $name_max_len) )
+      {
+        $ret['new_name'] = $safeLenName;
+        $ret['msg'] = sprintf(lang_get('testcase_name_length_exceeded'),$originalNameLen,$name_max_len);
+      }
     }
   
     return $ret;

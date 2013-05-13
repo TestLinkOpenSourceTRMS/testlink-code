@@ -975,7 +975,7 @@ function count_testcases($id)
     
     $ret=null;
     $sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
-      " SET tc_counter=tc_counter+1 WHERE id = {$id}";
+           " SET tc_counter=tc_counter+1 WHERE id = {$id}";
     $recordset = $this->db->exec_query($sql);
     
     $sql = " SELECT tc_counter  FROM {$this->object_table}  WHERE id = {$id}";
@@ -983,6 +983,29 @@ function count_testcases($id)
     $ret=$recordset[0]['tc_counter'];
     return ($ret);
   }
+
+  /**
+   *
+   *
+   */
+  function setTestCaseCounter($id,$value,$force=false)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    
+    $safeValue = intval($value);
+    $ret=null;
+    $sql = " /* $debugMsg */ UPDATE {$this->object_table} " .
+           ' SET tc_counter=' . $safeValue . 
+           ' WHERE id =' . intval($id);
+
+    if(!$force)
+    {
+      $sql .= ' AND tc_counter < ' . $safeValue;
+    }       
+    $rs = $this->db->exec_query($sql);
+  }
+
+
 
 /** 
  * @param integer $id test project ID

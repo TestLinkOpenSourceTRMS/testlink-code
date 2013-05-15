@@ -88,8 +88,8 @@ class testplan extends tlObjectWithAttachments
   {
     $this->db = &$db;
     $this->tree_manager = new tree($this->db);
-    $this->node_types_descr_id=$this->tree_manager->get_available_node_types();
-    $this->node_types_id_descr=array_flip($this->node_types_descr_id);
+    $this->node_types_descr_id = $this->tree_manager->get_available_node_types();
+    $this->node_types_id_descr = array_flip($this->node_types_descr_id);
       
     $this->assignment_mgr = new assignment_mgr($this->db);
     $this->assignment_types = $this->assignment_mgr->get_available_types();
@@ -152,6 +152,78 @@ class testplan extends tlObjectWithAttachments
     }
 
     return $id;
+  }
+
+
+  /**
+   *
+   */
+  function createFromObject($item,$opt=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $my['opt'] = array('doChecks' => false, 'setSessionProject' => true);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    try 
+    {
+      // mandatory checks
+      if(strlen($item->name)==0)
+      {
+        throw new Exception('Empty name is not allowed');      
+      }  
+    
+      // what checks need to be done ?
+      // 1. test project exist
+      $pinfo = $this->tree_manager->get_node_hierarchy_info($item->testProjectID);
+      if(is_null($pinfo) || $this->node_types_id_descr[$pinfo['node_type_id']] != 'testproject')
+      {
+        throw new Exception('Test project ID does not exist');      
+      }  
+
+      // 2. there is NO other test plan on test project with same name
+      $name = trim($item->name);
+      $op = $this->checkNameExistence($name,$item->testProjectID);
+      if(!$op['status_ok'])
+      {
+        throw new Exception('Test plan name is already in use on Test project');      
+      }  
+    }   
+    catch (Exception $e) 
+    {
+      throw $e;  // rethrow
+    }
+
+    // seems OK => go
+    $active_status = intval($item->active) > 0 ? 1 : 0;
+    $public_status = intval($item->is_public) > 0 ? 1 : 0;
+
+    $id = $this->tree_manager->new_node($item->testProjectID,$this->node_types_descr_id['testplan'],$name);
+    $sql = "/* $debugMsg */ " . 
+           " INSERT INTO {$this->tables['testplans']} (id,notes,testproject_id,active,is_public) " .
+           " VALUES ( {$id} " . ", '" . $this->db->prepare_string($item->notes) . "'," . 
+             $item->testProjectID . "," . $active_status . "," . $public_status . ")";
+    $result = $this->db->exec_query($sql);
+    $id = 0;
+    return $result ? $id : 0;
+  }
+
+
+  /**
+   * Checks is there is another test plan inside test project 
+   * with different id but same name
+   *
+   **/
+  function checkNameExistence($name,$tprojectID,$id=0)
+  {
+    $check_op['msg'] = '';
+    $check_op['status_ok'] = 1;
+       
+    if($this->get_by_name($name,intval($tprojectID), array('id' => intval($id))) )
+    {
+      $check_op['msg'] = sprintf(lang_get('error_product_name_duplicate'),$name);
+      $check_op['status_ok'] = 0;
+    }
+    return $check_op;
   }
 
 
@@ -235,10 +307,10 @@ class testplan extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $my = array();
-    $my['opt'] = array('output' => 'full');
+    $my['opt'] = array('output' => 'full', 'id' => 0);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
-        $sql = "/* $debugMsg */ ";
+    $sql = "/* $debugMsg */ ";
 
     switch($my['opt']['output'])
     {
@@ -253,15 +325,21 @@ class testplan extends tlObjectWithAttachments
     }
 
     $sql .= " FROM {$this->tables['testplans']} testplans, " .
-          " {$this->tables['nodes_hierarchy']} NH" .
-          " WHERE testplans.id = NH.id " .
-        " AND NH.name = '" . $this->db->prepare_string($name) . "'";
+            " {$this->tables['nodes_hierarchy']} NH" .
+            " WHERE testplans.id = NH.id " .
+            " AND NH.name = '" . $this->db->prepare_string($name) . "'";
         
     if( ($safe_id = intval($tproject_id)) > 0 )
     {
       $sql .= " AND NH.parent_id={$safe_id} ";
     }
-  
+    
+    // useful when trying to check for duplicates ?
+    if( ($my['opt']['id'] = intval($my['opt']['id'])) > 0)
+    {
+      $sql .= " AND testplans.id != {$my['opt']['id']} ";
+    }  
+
     $rs = $this->db->get_recordset($sql);
     return($rs);
   }

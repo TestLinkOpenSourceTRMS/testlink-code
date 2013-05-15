@@ -108,6 +108,7 @@ class tlRestApi
 
     $this->app->post('/testprojects', array($this,'createTestProject'));
     $this->app->post('/executions', array($this,'createTestCaseExecution'));
+    $this->app->post('/testplans', array($this,'createTestPlan'));
 
 
     $this->db = new database(DB_TYPE);
@@ -175,6 +176,9 @@ class tlRestApi
   }
   
 
+  /**
+   *
+   */
   public function getProjects($id=null)
   {
     $op = array('status' => 'ok', 'message' => 'ok');
@@ -432,6 +436,32 @@ class tlRestApi
     return $ret;
   }
  
+
+
+  /**
+   * 'name'
+   * 'tprojectID'
+   * 'notes'
+   * 'is_active'
+   * 'is_public'
+   *
+   */
+  public function createTestPlan()
+  {
+    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
+    try 
+    {
+      $request = $this->app->request();
+      $item = json_decode($request->getBody());
+      $op = array('status' => 'ok', 'message' => 'ok');
+      $op['id'] = $this->tplanMgr->createFromObject($item,array('doChecks' => true));
+    } 
+    catch (Exception $e) 
+    {
+      $op['message'] = $e->getMessage();   
+    }
+    echo json_encode($op);
+  }
 
 
 } // class end

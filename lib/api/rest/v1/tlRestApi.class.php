@@ -109,6 +109,7 @@ class tlRestApi
     $this->app->post('/testprojects', array($this,'createTestProject'));
     $this->app->post('/executions', array($this,'createTestCaseExecution'));
     $this->app->post('/testplans', array($this,'createTestPlan'));
+    $this->app->post('/testplans/:id', array($this,'updateTestPlan'));
 
 
     $this->db = new database(DB_TYPE);
@@ -440,9 +441,9 @@ class tlRestApi
 
   /**
    * 'name'
-   * 'tprojectID'
+   * 'testProjectID'
    * 'notes'
-   * 'is_active'
+   * 'active'
    * 'is_public'
    *
    */
@@ -462,6 +463,35 @@ class tlRestApi
     }
     echo json_encode($op);
   }
+
+  /**
+   * 'name'
+   * 'testProjectID'
+   * 'notes'
+   * 'active'
+   * 'is_public'
+   *
+   */
+  public function updateTestPlan($id)
+  {
+    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
+    try 
+    {
+      $op = array('status' => 'ok', 'message' => 'ok');
+
+      $request = $this->app->request();
+      $item = json_decode($request->getBody());
+      $item->id = $id;
+      $op['id'] = $this->tplanMgr->updateFromObject($item);
+    } 
+    catch (Exception $e) 
+    {
+      $op['message'] = $e->getMessage();   
+    }
+    echo json_encode($op);
+  }
+
+
 
 
 } // class end

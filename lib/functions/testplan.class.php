@@ -209,6 +209,89 @@ class testplan extends tlObjectWithAttachments
 
 
   /**
+   *
+   */
+  function updateFromObject($item,$opt=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $my['opt'] = array('doChecks' => false, 'setSessionProject' => true);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    if( !property_exists($item, 'id') )
+    {
+      throw new Exception('Test plan ID is missing');      
+    }  
+
+    if( ($safeID = intval($item->id)) == 0 )
+    {
+      throw new Exception('Test plan ID 0 is not allowed');      
+    }  
+
+    $pinfo = $this->get_by_id($safeID, array( 'output' => 'minimun'));
+
+    if(is_null($pinfo))
+    {
+      throw new Exception('Test plan ID does not exist');      
+    }  
+
+    $attr = array();
+    $upd = '';
+    try 
+    {
+
+      if( property_exists($item, 'name') )
+      {
+        $name = trim($item->name);
+        if(strlen($name)==0)
+        {
+          throw new Exception('Empty name is not allowed');      
+        }  
+      
+        // 1. NO other test plan on test project with same name
+        $op = $this->checkNameExistence($name,$pinfo['testproject_id'],$safeID);
+        if(!$op['status_ok'])
+        {
+          throw new Exception('Test plan name is already in use on Test project');      
+        }  
+      
+        $sql = "/* $debugMsg */ " .
+               " UPDATE {$this->tables['nodes_hierarchy']} " .
+               " SET name='" . $this->db->prepare_string($name) . "'" .
+               " WHERE id={$safeID}";
+        $result = $this->db->exec_query($sql);
+      }  
+
+      if( property_exists($item, 'notes') )
+      {
+        $upd = ($upd != '' ? ',' : '') . " notes = '" . $this->db->prepare_string($item->notes) . "' ";
+      }
+
+      $intAttr = array('active','is_public');
+      foreach($intAttr as $key)
+      {
+        if( property_exists($item, $key) )
+        {
+          $upd = ($upd != '' ? ',' : '') . $key . ' = ' . (intval($item->$key) > 0 ? 1 : 0);
+        }
+      }  
+
+      if($upd != '')
+      {
+        $sql = " UPDATE {$this->tables['testplans']} " .
+               " SET {$upd} WHERE id=" . $safeID;
+        $result = $this->db->exec_query($sql);
+      }  
+    }   
+    catch (Exception $e) 
+    {
+      throw $e;  // rethrow
+    }
+    return $safeID;
+  }
+
+
+
+  /**
    * Checks is there is another test plan inside test project 
    * with different id but same name
    *

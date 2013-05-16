@@ -203,7 +203,6 @@ class testplan extends tlObjectWithAttachments
            " VALUES ( {$id} " . ", '" . $this->db->prepare_string($item->notes) . "'," . 
              $item->testProjectID . "," . $active_status . "," . $public_status . ")";
     $result = $this->db->exec_query($sql);
-    $id = 0;
     return $result ? $id : 0;
   }
 

@@ -647,7 +647,7 @@ function get_coverage($id,$context=null)
            " AND TPTCV.testplan_id = " . intval($context['tplan_id']) .
            " AND TPTCV.platform_id = " . intval($context['platform_id']);
   }
-  $sql .=  "ORDER BY tc_external_id ";
+  $sql .=  " ORDER BY tc_external_id ";
 
   return $this->db->get_recordset($sql);
 }

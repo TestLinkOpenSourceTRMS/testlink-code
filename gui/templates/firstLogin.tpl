@@ -3,7 +3,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: firstLogin.tpl,v 1.2 2010/10/02 14:01:39 franciscom Exp $
 Purpose: smarty template - first login
 
-20101002 - franciscom - BUGID 3828: TL19RC1 - User self signup - Too many warnings in event log.
 *}
 {include file="inc_head.tpl" title="TestLink - New Account" openHead='yes'}
 
@@ -17,7 +16,6 @@ Purpose: smarty template - first login
 window.onload=function(){
  Nifty("div#login_div","big");
  Nifty("div.messages","normal");
- // set focus on login text box
  focusInputField('login');
 }
 </script>
@@ -35,21 +33,25 @@ window.onload=function(){
 
 	<p class="label">{$labels.login_name}<br />
 	<input type="text" name="login" id="login" 
-	       size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" value="{$gui->login|escape}"/></p>
+	       size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" value="{$gui->login|escape}" required /></p>
 
   {if $gui->external_password_mgmt eq 0}
   	<p class="label">{$labels.password}<br />
-  	<input type="password" name="password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></p>
+  	<input type="password" name="password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" required /></p>
   	<p class="label">{$labels.password_again}<br />
-  	<input type="password" name="password2" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></p>
+  	<input type="password" name="password2" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" required /></p>
   {/if}
   
 	<p class="label">{$labels.first_name}<br />
-	<input type="text" name="firstName" size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" value="{$gui->firstName|escape}"/></p>
+	<input type="text" name="firstName" size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" 
+	       value="{$gui->firstName|escape}" required /></p>
 	<p class="label">{$labels.last_name}<br />
-	<input type="text" name="lastName" size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" value="{$gui->lastName|escape}"/></p>
+	<input type="text" name="lastName" size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" 
+		value="{$gui->lastName|escape}" required /></p>
+
 	<p class="label">{$labels.e_mail}<br />
-	<input type="text" name="email" size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" value="{$gui->email|escape}"/></p>
+	<input type="text" name="email" size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" 
+	       value="{$gui->email|escape}" required /></p>
 
   {if $gui->external_password_mgmt eq 1}
      <p>{$labels.password_mgmt_is_external}<p>

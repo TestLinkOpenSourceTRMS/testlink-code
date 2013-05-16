@@ -51,6 +51,7 @@ class tlRestApi
 
   protected $tcaseMgr =  null;
   protected $tprojectMgr = null;
+  protected $tsuiteMgr = null;
   protected $tplanMgr = null;
   protected $tplanMetricsMgr = null;
   protected $reqSpecMgr = null;
@@ -111,6 +112,8 @@ class tlRestApi
     $this->app->post('/testplans', array($this,'createTestPlan'));
     $this->app->post('/testplans/:id', array($this,'updateTestPlan'));
 
+    $this->app->post('/testsuites', array($this,'createTestSuite'));
+
 
     $this->db = new database(DB_TYPE);
     $this->db->db->SetFetchMode(ADODB_FETCH_ASSOC);
@@ -119,6 +122,8 @@ class tlRestApi
 
     $this->tcaseMgr=new testcase($this->db);
     $this->tprojectMgr=new testproject($this->db);
+    $this->tsuiteMgr=new testsuite($this->db);
+
     $this->tplanMgr=new testplan($this->db);
     $this->tplanMetricsMgr=new tlTestPlanMetrics($this->db);
     $this->reqSpecMgr=new requirement_spec_mgr($this->db);
@@ -492,6 +497,29 @@ class tlRestApi
   }
 
 
+  /**
+   * 'name'
+   * 'testProjectID'
+   * 'parentID'
+   * 'notes'
+   * 'order'
+   */
+  public function createTestSuite()
+  {
+    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
+    try 
+    {
+      $request = $this->app->request();
+      $item = json_decode($request->getBody());
+      $op = array('status' => 'ok', 'message' => 'ok');
+      $op['id'] = $this->tsuiteMgr->createFromObject($item,array('doChecks' => true));
+    } 
+    catch (Exception $e) 
+    {
+      $op['message'] = $e->getMessage();   
+    }
+    echo json_encode($op);
+  }
 
 
 } // class end

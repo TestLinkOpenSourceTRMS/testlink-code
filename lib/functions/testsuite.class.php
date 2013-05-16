@@ -4,10 +4,10 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource  testsuite.class.php
- * @package   TestLink
- * @author    franciscom
+ * @package     TestLink
+ * @author      franciscom
  * @copyright   2005-2013, TestLink community 
- * @link    http://www.teamst.org/index.php
+ * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
  * @since 1.9.7
@@ -134,11 +134,10 @@ class testsuite extends tlObjectWithAttachments
     {
       $cfg = array();
       $cfg['prefix_name_for_copy'] = config_get('prefix_name_for_copy');
-        $cfg['node_order'] = config_get('treemenu_default_testsuite_order');
+      $cfg['node_order'] = config_get('treemenu_default_testsuite_order');
         
-        $l18n = array();
-        $l18n['component_name_already_exists'] = lang_get('component_name_already_exists');
-        
+      $l18n = array();
+      $l18n['component_name_already_exists'] = lang_get('component_name_already_exists');
     }
     
     if( is_null($order) )
@@ -152,11 +151,11 @@ class testsuite extends tlObjectWithAttachments
     
     $name = trim($name);
     $ret = array('status_ok' => 1, 'id' => 0, 'msg' => 'ok', 
-           'name' => '', 'name_changed' => false);
+                 'name' => '', 'name_changed' => false);
   
     if ($check_duplicate_name)
     {
-          $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,null,$parent_id);
+      $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,null,$parent_id);
       if( $check['status'] == 1)
       {
         if ($action_on_duplicate_name == 'block')
@@ -171,8 +170,8 @@ class testsuite extends tlObjectWithAttachments
           { 
             $desired_name = $name;      
             $name = $ret['name'] = $cfg['prefix_name_for_copy'] . " " . $desired_name ;      
-              $ret['msg'] = sprintf(lang_get('created_with_new_name'),$name,$desired_name);
-              $ret['name_changed'] = true;
+            $ret['msg'] = sprintf(lang_get('created_with_new_name'),$name,$desired_name);
+            $ret['name_changed'] = true;
           }
         }
       }       
@@ -183,8 +182,8 @@ class testsuite extends tlObjectWithAttachments
       // get a new id
       $tsuite_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,
                                                  $name,$node_order);
-      $sql = "INSERT INTO {$this->tables['testsuites']} (id,details) " .
-           " VALUES ({$tsuite_id},'" . $this->db->prepare_string($details) . "')";
+      $sql = " INSERT INTO {$this->tables['testsuites']} (id,details) " .
+             " VALUES ({$tsuite_id},'" . $this->db->prepare_string($details) . "')";
                    
       $result = $this->db->exec_query($sql);
       if ($result)
@@ -263,11 +262,11 @@ class testsuite extends tlObjectWithAttachments
    */
   function delete($id)
   {
-      $tcase_mgr = New testcase($this->db);
+    $tcase_mgr = New testcase($this->db);
     $tsuite_info = $this->get_by_id($id);
   
-      $testcases=$this->get_children_testcases($id);
-      if (!is_null($testcases))
+    $testcases=$this->get_children_testcases($id);
+    if (!is_null($testcases))
     {
       foreach($testcases as $the_key => $elem)
       {
@@ -275,17 +274,16 @@ class testsuite extends tlObjectWithAttachments
       }
     }  
       
-      // What about keywords ???
-      $this->cfield_mgr->remove_all_design_values_from_node($id);
-      $this->deleteAttachments($id);  //inherited
-      $this->deleteKeywords($id);
+    // What about keywords ???
+    $this->cfield_mgr->remove_all_design_values_from_node($id);
+    $this->deleteAttachments($id);  //inherited
+    $this->deleteKeywords($id);
       
-      $sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
-      $result = $this->db->exec_query($sql);
+    $sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
+    $result = $this->db->exec_query($sql);
       
-      $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id={$id}";
-      $result = $this->db->exec_query($sql);
-  
+    $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id={$id}";
+    $result = $this->db->exec_query($sql);
   }
   
   
@@ -301,25 +299,49 @@ class testsuite extends tlObjectWithAttachments
              details
              name: testsuite name
   
-    @internal Revisions
-    20100904 - added parent_id
-    20100602 - BUGID 3498 
+    @internal revisions
   */
-  function get_by_name($name, $parent_id=null)
+  function get_by_name($name, $parent_id=null, $opt=null)
   {
-    $sql = " SELECT TS.*, NH.name, NH.parent_id " .
-         " FROM {$this->tables['testsuites']} TS " .
-         " JOIN {$this->tables['nodes_hierarchy']} NH " .
-         " ON NH.id = TS.id " .
-         " WHERE NH.name = '" . $this->db->prepare_string($name) . "'";
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $my = array();
+    $my['opt'] = array('output' => 'full', 'id' => 0);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    $sql = "/* $debugMsg */ ";
+
+    switch($my['opt']['output'])
+    {
+      case 'minimun':
+        $sql .= " SELECT TS.id, NH.name, ";
+      break;
+      
+      case 'full':
+      default:
+        $sql .= " SELECT TS.*, NH.name, ";
+      break;
+    }
+
+    $sql .= " NH.parent_id " .
+            " FROM {$this->tables['testsuites']} TS " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH " .
+            " ON NH.id = TS.id " .
+            " WHERE NH.name = '" . $this->db->prepare_string($name) . "'";
     
     if( !is_null($parent_id) )
     {
       $sql .= " AND NH.parent_id = " . $this->db->prepare_int($parent_id);  
     }
+
+    // useful when trying to check for duplicates ?
+    if( ($my['opt']['id'] = intval($my['opt']['id'])) > 0)
+    {
+      $sql .= " AND TS.id != {$my['opt']['id']} ";
+    }  
+
     
-    $recordset = $this->db->get_recordset($sql);
-    return $recordset;
+    $rs = $this->db->get_recordset($sql);
+    return $rs;
   }
   
   /*
@@ -1370,10 +1392,99 @@ class testsuite extends tlObjectWithAttachments
   function get_branch($id)
   {
     $branch = $this->tree_manager->get_subtree_list($id,$this->my_node_type);
-      return $branch;
+    return $branch;
+  }
+
+
+  /**
+   *
+   * 'name'
+   * 'testProjectID'
+   * 'parentID'
+   * 'notes'
+   *
+   */
+  function createFromObject($item,$opt=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $my['opt'] = array('doChecks' => false, 'setSessionProject' => true);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    define('DBUG_ON',1);
+    try 
+    {
+      // mandatory checks
+      if(strlen($item->name)==0)
+      {
+        throw new Exception('Empty name is not allowed');      
+      }  
+    
+      // what checks need to be done ?
+      // 1. test project exist
+      $pinfo = $this->tree_manager->get_node_hierarchy_info($item->testProjectID);
+      if(is_null($pinfo) || $this->node_types_id_descr[$pinfo['node_type_id']] != 'testproject')
+      {
+        throw new Exception('Test project ID does not exist');      
+      }  
+
+      // 2. parentID exists and its node type can be:
+      //    testproject,testsuite
+      // 
+      $pinfo = $this->tree_manager->get_node_hierarchy_info($item->parentID);
+      if(is_null($pinfo))
+      {
+        throw new Exception('Parent ID does not exist');      
+      }  
+
+      if($this->node_types_id_descr[$pinfo['node_type_id']] != 'testproject' && 
+         $this->node_types_id_descr[$pinfo['node_type_id']] != 'testsuite'
+        )
+      {
+        throw new Exception('Node Type for Parent ID is not valid');      
+      }  
+
+
+      // 3. there is NO other test suite children of parent id node with same name
+      $name = trim($item->name);
+      $op = $this->checkNameExistence($name,$item->parentID);
+      if(!$op['status_ok'])
+      {
+        throw new Exception('Test suite name is already in use at same level');      
+      }  
+    }   
+    catch (Exception $e) 
+    {
+      throw $e;  // rethrow
+    }
+
+    $id = $this->tree_manager->new_node($item->parentID,$this->my_node_type,
+                                        $name,intval($item->order));
+
+    $sql = " INSERT INTO {$this->tables['testsuites']} (id,details) " .
+           " VALUES ({$id},'" . $this->db->prepare_string($item->notes) . "')";
+
+    $result = $this->db->exec_query($sql);       
+    return $result ? $id : 0;
+  }
+
+  /**
+   * Checks is there is another test plan inside test project 
+   * with different id but same name
+   *
+   **/
+  function checkNameExistence($name,$parentID,$id=0)
+  {
+    $check_op['msg'] = '';
+    $check_op['status_ok'] = 1;
+       
+    $getOpt = array('output' => 'minimun', 'id' => intval($id));  
+    if( $this->get_by_name( $name,intval($parentID), $getOpt) )
+    {
+      $check_op['msg'] = sprintf(lang_get('error_product_name_duplicate'),$name);
+      $check_op['status_ok'] = 0;
+    }
+    return $check_op;
   }
 
 
 } // end class
-
-?>

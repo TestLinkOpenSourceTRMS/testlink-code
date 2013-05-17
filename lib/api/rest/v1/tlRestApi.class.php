@@ -113,6 +113,7 @@ class tlRestApi
     $this->app->post('/testplans/:id', array($this,'updateTestPlan'));
 
     $this->app->post('/testsuites', array($this,'createTestSuite'));
+    $this->app->post('/testcases', array($this,'createTestCase'));
 
 
     $this->db = new database(DB_TYPE);
@@ -334,7 +335,7 @@ class tlRestApi
     // Test plan ID exists and is ACTIVE    
     $msg = 'invalid Test plan ID';
     $getOpt = array('output' => 'testPlanFields','active' => 1,
-                 'testPlanFields' => 'id,testproject_id,is_public');
+                    'testPlanFields' => 'id,testproject_id,is_public');
     $status_ok = !is_null($testPlan=$this->tplanMgr->get_by_id($ex->testPlanID,$getOpt));
     
     if($status_ok)
@@ -520,6 +521,117 @@ class tlRestApi
     }
     echo json_encode($op);
   }
+
+  /**
+   * "name"
+   * "testSuiteID"
+   * "testProjectID"
+   * "authorLogin"
+   * "authorID"
+   * "summary"
+   * "preconditions"
+   * "importance" - see const.inc.php for domain
+   * "executionType"  - see ... for domain
+   * "order"
+   *
+   * "estimatedExecutionDuration"  // to be implemented
+   */
+  public function createTestCase()
+  {
+    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
+    try 
+    {
+      $request = $this->app->request();
+      $item = json_decode($request->getBody());
+      $op = array('status' => 'ok', 'message' => 'ok');
+
+      // default management
+      $this->createTestCaseDefaultManagement($item);
+
+      $this->checkRelatives($item->testProjectID,$item->testSuiteID);
+
+      $ou = $this->tcaseMgr->createFromObject($item);
+      if( ($op['id']=$ou['id']) <= 0)
+      {
+        $op['status'] = 'ko';
+        $op['message'] = $ou['msg'];
+      }
+
+    } 
+    catch (Exception $e) 
+    {
+      $op['message'] = $e->getMessage();   
+    }
+    echo json_encode($op);
+  }
+
+  /**
+   *
+   *
+   */ 
+  private function getUserID($login)
+  {
+
+
+  }
+
+  /**
+   *
+   *
+   */ 
+  private function createTestCaseDefaultManagement(&$obj)
+  {
+    if(property_exists($obj, 'authorLogin'))
+    {
+      $obj->authorID = $this->getUserID($obj->authorLogin);
+      if( $obj->authorID <= 0 )
+      {
+        // will use user that do the call ?
+      }  
+    }  
+
+    if(!property_exists($obj, 'steps'))
+    {
+      $obj->steps = null;
+    }
+  }
+
+
+  /**
+   *
+   *
+   */ 
+  private function checkRelatives($testProjectID,$testSuiteID)
+  {
+    if($testProjectID <= 0)
+    {
+      throw new Exception("Test Project ID is invalid (<=0)");
+    }  
+
+    if($testSuiteID <= 0)
+    {
+      throw new Exception("Test Suite ID is invalid (<=0)");
+    }  
+
+    $pinfo = $this->tprojectMgr->get_by_id($testProjectID);
+    if( is_null($pinfo) )
+    {
+      throw new Exception("Test Project ID is invalid (does not exist)");
+    }  
+
+    $pinfo = $this->tsuiteMgr->get_by_id($testSuiteID);
+    if( is_null($pinfo) )
+    {
+      throw new Exception("Test Suite ID is invalid (does not exist)");
+    }  
+
+
+    if( $testProjectID != $this->tsuiteMgr->getTestProjectFromTestSuite($testSuiteID,$testSuiteID) )
+    {
+      throw new Exception("Test Suite does not belong to Test Project ID");
+    }  
+  }
+
 
 
 } // class end

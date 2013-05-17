@@ -90,8 +90,8 @@ class testcase extends tlObjectWithAttachments
 
     $this->execution_types = $this->getExecutionTypes();
 
-      $this->cfg = new stdClass();
-      $this->cfg->testcase = config_get('testcase_cfg');
+    $this->cfg = new stdClass();
+    $this->cfg->testcase = config_get('testcase_cfg');
     
     // ATTENTION:
     // second argument is used to set $this->attachmentTableName,property that this calls
@@ -169,6 +169,22 @@ class testcase extends tlObjectWithAttachments
 
 
   /**
+   *  just a wrapper
+   * 
+   */ 
+  function createFromObject($item)
+  {
+
+    $options = array('check_duplicate_name' => self::CHECK_DUPLICATE_NAME, 
+                     'action_on_duplicate_name' => 'block');
+
+    $ret = $this->create($item->testSuiteID,$item->name,$item->summary,$item->preconditions,
+                         $item->steps,$item->authorID,'',$item->order,self::AUTOMATIC_ID,
+                         $item->executionType,$item->importance,$options);
+    return $ret;
+  }
+
+  /**
    * create a test case
    *
    * @internal revisions
@@ -177,16 +193,17 @@ class testcase extends tlObjectWithAttachments
    */
   function create($parent_id,$name,$summary,$preconditions,$steps,$author_id,
                   $keywords_id='',$tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
-                    $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
-                    $importance=2,$options=null)
+                  $execution_type = TESTCASE_EXECUTION_TYPE_MANUAL,
+                  $importance=2,$options=null)
   {
     $status_ok = 1;
 
-      $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME, 
-                              'action_on_duplicate_name' => 'generate_new');
-      $my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME, 
+                            'action_on_duplicate_name' => 'generate_new');
+    $my['options'] = array_merge($my['options'], (array)$options);
     
     $ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id,$my['options']);
+
     if($ret["status_ok"])
     {
       if(trim($keywords_id) != "")

@@ -223,7 +223,6 @@ class testcase extends tlObjectWithAttachments
         $version_number = $last_version_info['version']+1;
         $ret['msg'] = sprintf($ret['msg'],$version_number);       
         
-        // BUGID 2204
         $ret['version_number']=$version_number;
       }
       // Multiple Test Case Steps Feature
@@ -425,10 +424,7 @@ class testcase extends tlObjectWithAttachments
     returns:
   
     rev: 
-         20100821 - franciscom - BUGID 3696 - test case step execution type ignored 
-         20100106 - franciscom - Multiple Test Case Steps Feature
-         20080113 - franciscom - interface changes added tc_ext_id
-  
+ 
   */
   function create_tcversion($id,$tc_ext_id,$version,$summary,$preconditions,$steps,
                             $author_id,$execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
@@ -438,10 +434,10 @@ class testcase extends tlObjectWithAttachments
     $sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcversions']} " .
            " (id,tc_external_id,version,summary,preconditions," . 
            "author_id,creation_ts,execution_type,importance) " . 
-             " VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .
-             $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($preconditions) . "'," . 
-             $this->db->prepare_int($author_id) . "," . $this->db->db_now() . 
-             ", {$execution_type},{$importance} )";
+           " VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .
+           $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($preconditions) . "'," . 
+           $this->db->prepare_int($author_id) . "," . $this->db->db_now() . 
+           ", {$execution_type},{$importance} )";
     
     $result = $this->db->exec_query($sql);
     $ret['msg']='ok';
@@ -452,18 +448,28 @@ class testcase extends tlObjectWithAttachments
     {
       $steps2create = count($steps);
       $op['status_ok'] = 1;
+
+      // need to this to manage call to this method for REST API.
+      // 
+      $stepIsObject =  is_object($steps[0]);
+
       for($jdx=0 ; ($jdx < $steps2create && $op['status_ok']); $jdx++)
       {
+        if($stepIsObject)
+        {
+          $steps[$jdx] = (array)$steps[$jdx];
+        }  
+
         $op = $this->create_step($tcase_version_id,$steps[$jdx]['step_number'],$steps[$jdx]['actions'],
-                     $steps[$jdx]['expected_results'],$steps[$jdx]['execution_type']);
+                                 $steps[$jdx]['expected_results'],$steps[$jdx]['execution_type']);
       }  
     }
   
     if (!$result)
     {
       $ret['msg'] = $this->db->error_msg();
-        $ret['status_ok']=0;
-        $ret['id']=-1;
+      $ret['status_ok']=0;
+      $ret['id']=-1;
     }
   
     return $ret;

@@ -10,7 +10,7 @@ viewer for test case in test specification
              btn_edit,btn_delete,btn_mv_cp,btn_del_this_version,btn_new_version,
              btn_export,btn_execute_automatic_testcase,version,testplan_usage,
              testproject,testsuite,title_test_case,summary,steps,btn_add_to_testplans,
-             title_last_mod,title_created,by,expected_results,keywords,
+             title_last_mod,title_created,by,expected_results,keywords,goto_execute,
              btn_create_step,step_number,btn_reorder_steps,step_actions,hint_new_sibling,
              execution_type_short_descr,delete_step,show_hide_reorder,btn_new_sibling,
              test_plan,platform,insert_step,btn_print,btn_print_view,hint_new_version,
@@ -54,6 +54,9 @@ viewer for test case in test specification
 {assign var="exportTestCaseAction" value="$basehref$tcExportAction"}
 
 {assign var="printTestCaseAction" value="lib/testcases/tcPrint.php?show_mode=$showMode"}
+
+{assign var="execFeatureAction" value="lib/general/frmWorkArea.php?feature=executeTest"}
+
 
 
 {assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
@@ -421,18 +424,25 @@ function launchInsertStep(step_id)
     <table class="simple sortable">
     <th>{$tcView_viewer_labels.version}</th>
     <th>{$tlImages.sort_hint}{$tcView_viewer_labels.test_plan}</th>
-    <th>{$tlImages.sort_hint}{$tcView_viewer_labels.platform}</th>
+    {if $gui->platforms != null}
+      <th>{$tlImages.sort_hint}{$tcView_viewer_labels.platform}</th>
+    {/if}
     {foreach from=$args_linked_versions item=link2tplan_platform}
       {foreach from=$link2tplan_platform item=link2platform key=tplan_id}
         {foreach from=$link2platform item=version_info}
           <tr>
           <td style="width:10%;text-align:center;">{$version_info.version}</td>
-          <td>{$version_info.tplan_name|escape}</td>
-          <td>
-          {if $version_info.platform_id > 0}
-            {$gui->platforms[$version_info.platform_id]|escape}
-          {/if}          
+          <td>{$version_info.tplan_name|escape}
+              <a href="{$execFeatureAction}" target="_parent" ><img class="clickable" src="{$tlImages.execute}" 
+                             title="{$tcView_viewer_labels.goto_execute}" /></a>
           </td>
+          {if $gui->platforms != null}
+            <td>
+            {if $version_info.platform_id > 0}
+              {$gui->platforms[$version_info.platform_id]|escape}
+            {/if}          
+            </td>
+          {/if}
           </tr>
         {/foreach}
       {/foreach}

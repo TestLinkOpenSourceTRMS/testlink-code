@@ -647,45 +647,44 @@ class testcase extends tlObjectWithAttachments
 
     if($status_ok && sizeof($idSet))
     {
-        $cfx = 0;
-        
-        $cfPlaces = $this->buildCFLocationMap();
-        $req_mgr = new requirement_mgr($this->db);
-        $allReqs = $req_mgr->get_all_for_tcase($idSet);
-        $allTCKeywords = $this->getKeywords($idSet,null,'testcase_id',' ORDER BY keyword ASC ');
+      $cfx = 0;
+      
+      $cfPlaces = $this->buildCFLocationMap();
+      $req_mgr = new requirement_mgr($this->db);
+      $allReqs = $req_mgr->get_all_for_tcase($idSet);
+      $allTCKeywords = $this->getKeywords($idSet,null,'testcase_id',' ORDER BY keyword ASC ');
 
-        foreach($idSet as $key => $tc_id)
+      foreach($idSet as $key => $tc_id)
+      {
+        // using $version_id has sense only when we are working on ONE SPECIFIC Test Case
+        // if we are working on a set of test cases $version_id will be ALL VERSIONS
+        if(!$tc_array = $this->get_by_id($tc_id,$version_id,null,
+                                         array('renderGhost' => true, 'withGhostString' => true)))
         {
-          // using $version_id has sense only when we are working on ONE SPECIFIC Test Case
-          // if we are working on a set of test cases $version_id will be ALL VERSIONS
-          if(!$tc_array = $this->get_by_id($tc_id,$version_id,null,
-                                           array('renderGhost' => true, 'withGhostString' => true)))
-          {
-            continue;
-          }
-          
-          $tc_array[0]['tc_external_id'] = $gui->tcasePrefix . $tc_array[0]['tc_external_id'];
-
-          // status quo of execution and links of tc versions
-          $gui->status_quo[] = $this->get_versions_status_quo($tc_id);
-          $gui->linked_versions[] = $this->get_linked_versions($tc_id);
-          $gui->keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
-
-          $tc_current = $tc_array[0];
-          $gui->tc_current_version[] = array($tc_current);
-          
-          // Get UserID and Updater ID for current Version
-          $userIDSet[$tc_current['author_id']] = null;
-          $userIDSet[$tc_current['updater_id']] = null;
-      
-          foreach($cfPlaces as $locationKey => $locationFilter)
-          { 
-            $gui->cf_current_version[$cfx][$locationKey] = 
-              $this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
-                                                       null,null,$gui->tproject_id,null,$tc_current['id']);
-          } 
+          continue;
+        }
         
+        $tc_array[0]['tc_external_id'] = $gui->tcasePrefix . $tc_array[0]['tc_external_id'];
+
+        // status quo of execution and links of tc versions
+        $gui->status_quo[] = $this->get_versions_status_quo($tc_id);
+        $gui->linked_versions[] = $this->get_linked_versions($tc_id);
+        $gui->keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
+
+        $tc_current = $tc_array[0];
+        $gui->tc_current_version[] = array($tc_current);
+        
+        // Get UserID and Updater ID for current Version
+        $userIDSet[$tc_current['author_id']] = null;
+        $userIDSet[$tc_current['updater_id']] = null;
       
+        foreach($cfPlaces as $locationKey => $locationFilter)
+        { 
+          $gui->cf_current_version[$cfx][$locationKey] = 
+            $this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
+                                                     null,null,$gui->tproject_id,null,$tc_current['id']);
+        } 
+            
         // Other versions (if exists)     
         if(count($tc_array) > 1)
         {
@@ -729,6 +728,7 @@ class testcase extends tlObjectWithAttachments
     $gui->users = tlUser::getByIDs($this->db,array_keys($userIDSet),'id');
     $gui->cf = null;
 
+      
     $this->initShowGuiActions($gui);
     $tplCfg = templateConfiguration('tcView');
     $smarty->assign('gui',$gui);
@@ -1801,10 +1801,10 @@ class testcase extends tlObjectWithAttachments
       case 'full':
       case 'full_without_steps':
         $sql = "SELECT UA.login AS updater_login,UB.login AS author_login,
-              NHTC.name,NHTC.node_order,NHTC.parent_id AS testsuite_id,
-              NHTCV.parent_id AS testcase_id, TCV.*,
-              UB.first AS author_first_name,UB.last AS author_last_name,
-              UA.first AS updater_first_name,UA.last AS updater_last_name
+                NHTC.name,NHTC.node_order,NHTC.parent_id AS testsuite_id,
+                NHTCV.parent_id AS testcase_id, TCV.*,
+                UB.first AS author_first_name,UB.last AS author_last_name,
+                UA.first AS updater_first_name,UA.last AS updater_last_name
                 FROM {$this->tables['nodes_hierarchy']} NHTCV
                 JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTCV.parent_id = NHTC.id
                 JOIN {$this->tables['tcversions']} TCV ON NHTCV.id = TCV.id
@@ -4321,16 +4321,15 @@ class testcase extends tlObjectWithAttachments
         {
           foreach($recordset as $value)
           {
-              $dummy = $this->tree_manager->get_full_path_verbose($value['id']);
-                $sx = implode($pathSeparator,current($dummy)) . $pathSeparator . $tcaseName;
-                if( strcmp($pathName,$sx ) == 0 )
-                {
-                  
-                  $retval = $value;
-                  break;
-                }
+            $dummy = $this->tree_manager->get_full_path_verbose($value['id']);
+            $sx = implode($pathSeparator,current($dummy)) . $pathSeparator . $tcaseName;
+            if( strcmp($pathName,$sx ) == 0 )
+            {
+              $retval = $value;
+              break;
+            }
           }
-      }
+        }
       return $retval;
   }
   

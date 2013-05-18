@@ -7,7 +7,7 @@
  @since 1.9.7
 *}
 {lang_get var='labels' s='title_product_mgmt,href_tproject_management,href_admin_modules,
-                          href_assign_user_roles,href_cfields_management,
+                          href_assign_user_roles,href_cfields_management,system_config,
                           href_cfields_tproject_assign,href_keywords_manage,
                           title_user_mgmt,href_user_management,
                           href_roles_management,title_requirements,
@@ -25,6 +25,7 @@
 {assign var="display_left_block_3" value=false}
 {assign var="display_left_block_4" value=false}
 {assign var="display_left_block_5" value=true}
+
 {if $gui->testprojectID && 
       ($gui->grants.project_edit == "yes" || $gui->grants.tproject_user_role_assignment == "yes" ||
        $gui->grants.cfield_management == "yes" || $gui->grants.keywords_view == "yes")}
@@ -49,6 +50,33 @@
     {/literal}
     </script>
 {/if}
+
+
+{if $gui->testprojectID && 
+   ($gui->grants.cfield_management == "yes" || $gui->grants.issuetracker_management || $gui->grants.issuetracker_view)}
+   {assign var="display_left_block_2" value=true}
+
+    <script  type="text/javascript">
+    {literal}
+    function display_left_block_2()
+    {
+        var p1 = new Ext.Panel({
+                                title: {/literal}'{$labels.system_config}'{literal},
+                                collapsible:false,
+                                collapsed: false,
+                                draggable: false,
+                                contentEl: 'system_topics',
+                                baseCls: 'x-tl-panel',
+                                bodyStyle: "background:#c8dce8;padding:3px;",
+                                renderTo: {/literal}'menu_left_block_2'{literal},
+                                width:'100%'
+                                });
+     }
+    {/literal}
+    </script>
+{/if}
+
+
 
 {if $gui->testprojectID && $opt_requirements == TRUE && ($gui->grants.reqs_view == "yes" || $gui->grants.reqs_edit == "yes")}
     {assign var="display_left_block_3" value=true}
@@ -117,8 +145,8 @@
 
 <div class="vertical_menu" style="float: left">
   {* ---------------------------------------------------------------------------------------- *}
-  <div id='menu_left_block_1'></div><br />
   <div id='menu_left_block_2'></div><br />
+  <div id='menu_left_block_1'></div><br />
   <div id="menu_left_block_3"></div><br />
   <div id="menu_left_block_4"></div><br />
   <div id="menu_left_block_5"></div><br />
@@ -129,14 +157,6 @@
       <img src="{$tlImages.bullet}" />
         <a href="lib/project/projectView.php">{$labels.href_tproject_management}</a>
     {/if}
-
-    {* 
-    {if $gui->grants.configuration == "yes"}
-        <br />
-       <img src="{$tlImages.bullet}" />
-        <a href="lib/admin/modules.php">{$labels.href_admin_modules}</a>
-      {/if} 
-    *}
     
     {if $gui->grants.tproject_user_role_assignment == "yes"}
         <br />
@@ -146,9 +166,6 @@
 
       {if $gui->grants.cfield_management == "yes"}
           <br />
-          <img src="{$tlImages.bullet}" />
-            <a href="lib/cfields/cfieldsView.php">{$labels.href_cfields_management}</a>
-      <br />
            <img src="{$tlImages.bullet}" />
             <a href="lib/cfields/cfieldsTprojectAssign.php">{$labels.href_cfields_tproject_assign}</a>
       {/if}
@@ -173,21 +190,6 @@
         <img src="{$tlImages.bullet}" />
       <a href="lib/inventory/inventoryView.php">{$labels.href_inventory}</a>
     {/if}
-
-
-    {if $gui->grants.issuetracker_management || $gui->grants.issuetracker_view}
-      <br />
-        <img src="{$tlImages.bullet}" />
-      <a href="lib/issuetrackers/issueTrackerView.php">{$labels.href_issuetracker_management}</a>
-    {/if}
-    
-    {* 
-    {if $gui->grants.reqmgrsystem_management || $gui->grants.reqmgrsystem_view}
-      <br />
-        <img src="{$tlImages.bullet}" />
-      <a href="lib/reqmgrsystems/reqMgrSystemView.php">{$labels.href_reqmgrsystem_management}</a>
-    {/if}
-    *}
     </div>
   {/if}
   {* ---------------------------------------------------------------------------------------- *}
@@ -195,12 +197,17 @@
 
   {* ------------------------------------------------- *}
   {if $display_left_block_2}
-    <div id='usermanagement_topics'>
-      <img src="{$tlImages.bullet}" />
-        <a href="lib/usermanagement/usersView.php">{$labels.href_user_management}</a>
-        <br />
-      <img src="{$tlImages.bullet}" />
-        <a href="lib/usermanagement/rolesView.php">{$labels.href_roles_management}</a>
+    <div id='system_topics'>
+    {if $gui->grants.cfield_management == "yes"}
+          <img src="{$tlImages.bullet}" />
+            <a href="lib/cfields/cfieldsView.php">{$labels.href_cfields_management}</a>
+   {/if}
+    
+   {if $gui->grants.issuetracker_management || $gui->grants.issuetracker_view}
+      <br />
+        <img src="{$tlImages.bullet}" />
+      <a href="lib/issuetrackers/issueTrackerView.php">{$labels.href_issuetracker_management}</a>
+    {/if}
     </div>
   {/if}
   {* ------------------------------------------------- *}

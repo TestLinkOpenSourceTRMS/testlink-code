@@ -217,7 +217,7 @@ $TLS_btn_import = "Import";
 $TLS_btn_monitor   = "Monitor";
 $TLS_btn_move = "Move";
 $TLS_btn_no = "No";
-$TLS_btn_new_revision = "Create a new revision";
+$TLS_btn_new_revision = "New revision";
 $TLS_btn_ok = "Ok";
 $TLS_btn_print = "Print";
 $TLS_btn_print_view = "Print view";
@@ -1604,14 +1604,17 @@ $TLS_Requirements = "Requirements";
 $TLS_btn_del_this_version = "Delete this version";
 $TLS_btn_execute_automatic_testcase = "Execute automatic test case";
 $TLS_btn_mv_cp = "Move / Copy";
-$TLS_btn_new_version = "Create a new version";
+$TLS_btn_new_version = "New version";
+$TLS_btn_new_sibling = "New sibling";
+$TLS_hint_new_sibling = "Create another test case under current Test Suite";
+$TLS_hint_new_version = "Create a new version";
+
 $TLS_can_not_edit_tc = "You can not edit this version because it has been executed";
 $TLS_deactivate_this_tcversion = "Deactivate this version";
 $TLS_execution_type = 'Execution type';
 $TLS_execution_type_short_descr = 'Execution';
 $TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not available to be included in a test plan";
-// $TLS_system_blocks_delete_executed_tc = "System configuration blocks delete of executed versions";
-// $TLS_system_blocks_delete_executed_tc_when = "System configuration blocks delete of test case when there are executed versions";
+
 
 $TLS_no_right_to_delete_executed_tc = "Your role has no right to delete executed test cases or test case versions";
 $TLS_system_blocks_delete_executed_tc = $TLS_no_right_to_delete_executed_tc;
@@ -2708,7 +2711,6 @@ $TLS_same_title = 'has same title';
 
 $TLS_update_last_requirement_version='Update data on Latest version';
 $TLS_create_new_requirement_version='Create a new version';
-// $TLS_generate_new_requirement='Create a new requirement with different title and DOC ID';
 
 $TLS_duplicate_req_criteria = "Consider Requirement as duplicate if";
 

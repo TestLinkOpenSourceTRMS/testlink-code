@@ -11,9 +11,9 @@ viewer for test case in test specification
              btn_export,btn_execute_automatic_testcase,version,testplan_usage,
              testproject,testsuite,title_test_case,summary,steps,btn_add_to_testplans,
              title_last_mod,title_created,by,expected_results,keywords,
-             btn_create_step,step_number,btn_reorder_steps,step_actions,
-             execution_type_short_descr,delete_step,show_hide_reorder,
-             test_plan,platform,insert_step,btn_print,btn_print_view,
+             btn_create_step,step_number,btn_reorder_steps,step_actions,hint_new_sibling,
+             execution_type_short_descr,delete_step,show_hide_reorder,btn_new_sibling,
+             test_plan,platform,insert_step,btn_print,btn_print_view,hint_new_version,
              execution_type,test_importance,none,preconditions,btn_compare_versions,
              requirement,btn_show_exec_history,btn_resequence_steps,link_unlink_requirements"}
 
@@ -76,6 +76,9 @@ viewer for test case in test specification
 {assign var="warning_delete_msg" value=""}
 
 <div style="display: inline;" class="groupBtn">
+
+  
+
 {if $args_can_do->edit == "yes"}
 
   {assign var="edit_enabled" value=0}
@@ -116,7 +119,6 @@ viewer for test case in test specification
     
   {/if}
 
-  <span style="float: left">
     <form style="display: inline;" id="topControls" name="topControls" method="post" action="lib/testcases/tcEdit.php">
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
@@ -125,34 +127,64 @@ viewer for test case in test specification
     <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 
 
-    {assign var="go_newline" value=""}
     {if $edit_enabled}
          <input type="submit" name="edit_tc" 
                 onclick="doAction.value='edit';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_edit}" />
     {/if}
   
-    {* Double condition because for test case versions WE DO NOT DISPLAY this
-         button, using $args_can_delete_testcase='no'
+    {* Double condition because for test case versions WE DO NOT DISPLAY this  button, using $args_can_delete_testcase='no'
       *}
     {if $delete_enabled && $args_can_do->delete_testcase == "yes" &&  $args_can_delete_testcase == "yes"}
       <input type="submit" name="delete_tc" value="{$tcView_viewer_labels.btn_delete}" />
     {/if}
   
-    {* Double condition because for test case versions WE DO NOT DISPLAY this
-       button, using $args_can_move_copy='no'
+    {* Double condition because for test case versions WE DO NOT DISPLAY this  button, using $args_can_move_copy='no'
     *}
     {if $args_can_do->copy == "yes" && $args_can_move_copy == "yes"}
          <input type="submit" name="move_copy_tc"   value="{$tcView_viewer_labels.btn_mv_cp}" />
-         {assign var="go_newline" value="<br />"}
     {/if}
-  
+
+    {if $edit_enabled}
+        <input type="hidden" name="containerID" value="{$args_testcase.testsuite_id}" />
+        <input type="submit" name="new_tc" title="{$tcView_viewer_labels.hint_new_sibling}"
+               onclick="doAction.value='create';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_new_sibling}" />
+    {/if}
+
+    </form>
+
+  <span>
+  <form style="display: inline;" id="tcexport" name="tcexport" method="post" action="{$exportTestCaseAction}" >
+    <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
+    <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+    <input type="submit" name="export_tc" value="{$tcView_viewer_labels.btn_export}" />
+  </form>
+  </span>
+
+  <span>
+  <form style="display: inline;" id="tcprint" name="tcprint" method="post" action="" >
+    <input type="button" name="tcPrinterFriendly" value="{$tcView_viewer_labels.btn_print_view}" 
+           onclick="javascript:openPrintPreview('tc',{$args_testcase.testcase_id},{$args_testcase.id},null,
+                                                '{$printTestCaseAction}');"/>
+  </form>
+  </span>
+
+    <form style="display: inline;" id="versionControls" name="versionControls" method="post" action="lib/testcases/tcEdit.php">
+    <input type="hidden" name="testcase_id" id="versionControls_testcase_id" value="{$args_testcase.testcase_id}" />
+    <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+    <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
+    <input type="hidden" name="doAction" value="" />
+    <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
+
+
+    {if $args_can_do->create_new_version == "yes"}
+      <input type="submit" name="do_create_new_version" title="{$tcView_viewer_labels.hint_new_version}" 
+             value="{$tcView_viewer_labels.btn_new_version}" />
+    {/if}
+
     {if $delete_enabled && $args_can_do->delete_version == "yes" && $args_can_delete_version == "yes"}
        <input type="submit" name="delete_tc_version" value="{$tcView_viewer_labels.btn_del_this_version}" />
     {/if}
 
-     {if $args_can_do->create_new_version == "yes"}
-      <input type="submit" name="do_create_new_version"   value="{$tcView_viewer_labels.btn_new_version}" />
-    {/if}
 
   
     {* --------------------------------------------------------------------------------------- *}
@@ -170,22 +202,20 @@ viewer for test case in test specification
                              value="{lang_get s=$act_deact_value}" />
     {/if}
 
+  </form>
+{/if} {* user can edit *}
+
   {if $args_can_do->add2tplan == "yes" && $args_has_testplans}
-  <input type="button" id="addTc2Tplan_{$args_testcase.id}"  name="addTc2Tplan_{$args_testcase.id}" 
-         value="{$tcView_viewer_labels.btn_add_to_testplans}" onclick="location='{$hrefAddTc2Tplan}'" />
+  <span>
+  <form style="display: inline;" id="addToTestPlans" name="addToTestPlans" method="post" action="">
+    <input type="hidden" name="testcase_id" id="versionControls_testcase_id" value="{$args_testcase.testcase_id}" />
+    <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+    <input type="button" id="addTc2Tplan_{$args_testcase.id}"  name="addTc2Tplan_{$args_testcase.id}" 
+           value="{$tcView_viewer_labels.btn_add_to_testplans}" onclick="location='{$hrefAddTc2Tplan}'" />
+  </form>         
+  </span>
 
   {/if}
-  </form>
-  </span>
-
-  <span>
-  <form style="display: inline;" id="tcexport" name="tcexport" method="post" action="{$exportTestCaseAction}" >
-    <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
-    <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-    <input type="submit" name="export_tc" value="{$tcView_viewer_labels.btn_export}" />
-  </form>
-  </span>
-{/if} {* user can edit *}
 
   <span>
   {* compare versions *}
@@ -200,14 +230,7 @@ viewer for test case in test specification
     <input type="button" onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id});"
            value="{$tcView_viewer_labels.btn_show_exec_history}" />
   </span>
-  {* 20110304 - franciscom - BUGID 4286: Option to print single test case  *}
-  <span>
-  <form style="display: inline;" id="tcprint" name="tcprint" method="post" action="" >
-    <input type="button" name="tcPrinterFriendly" value="{$tcView_viewer_labels.btn_print_view}" 
-           onclick="javascript:openPrintPreview('tc',{$args_testcase.testcase_id},{$args_testcase.id},null,
-                                                '{$printTestCaseAction}');"/>
-  </form>
-  </span>
+
   </div> {* class="groupBtn" *}
 <br/><br/>
 

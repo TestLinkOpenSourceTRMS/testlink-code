@@ -7,77 +7,78 @@
 TestLink - 1.9.7 (2013 Q2 - bug fixing) (Scheduled For Release 2013-06-10) 
 ==========================================================================
 
-- 0005587: NEW FEATURE [Users and Rights] Duplicate/Copy Role feature
-- 0005650: NEW FEATURE Test Plan Design Report, Test Plan Execution Report refactoring
-- 0005633: NEW FEATURE [Roles] Critic system roles will be not editable from GUI anymore
-- 0005613: NEW FEATURE Redmine Create issue from Testlink - Allow setting of issues attributes through XML configuration.
+- 5587: NEW FEATURE [Users and Rights] Duplicate/Copy Role feature
+- 5650: NEW FEATURE Test Plan Design Report, Test Plan Execution Report refactoring
+- 5633: NEW FEATURE [Roles] Critic system roles will be not editable from GUI anymore
+- 5613: NEW FEATURE Redmine Create issue from Testlink - Allow setting of issues attributes through XML configuration.
 
-- 0005611: NEW FEATURE [Test Specification Import] Create Test Cases from Mantis standard XML export format.
-- 0005322: NEW FEATURE [Test Specification] Link to another test case via ID within TestLink.
-- 0005600: NEW FEATURE [Reports - Failed/Blocked Test Cases] Reports - Failed/Blocked/NotRun - Export in spreadsheet format.
+- 5611: NEW FEATURE [Test Specification Import] Create Test Cases from Mantis standard XML export format.
+- 5322: NEW FEATURE [Test Specification] Link to another test case via ID within TestLink.
+- 5600: NEW FEATURE [Reports - Failed/Blocked Test Cases] Reports - Failed/Blocked/NotRun - Export in spreadsheet format.
 
-- 0005588: NEW FEATURE [Reports - Failed/Blocked Test Cases] 
-           Add Custom Fields (only for test cases) used on EXECUTION to the report.
+- 5588: NEW FEATURE [Reports - Failed/Blocked Test Cases] 
+        Add Custom Fields (only for test cases) used on EXECUTION to the report.
 
-- 0005612: NEW FEATURE contribution : some minor issues and some enhancements in Test Plan Report 
-                                      for multiplatforms testplan
+- 5612: NEW FEATURE contribution : some minor issues and some enhancements in Test Plan Report 
+                                   for multiplatforms testplan
 
+- 5722: NEW FEATURE [Test Specification] Add a button to 'Add Another Test Case' ...
 
-- 0005660: [API - XMLRPC] XMLRPC API - directory layout changes
+- 5660: [API - XMLRPC] XMLRPC API - directory layout changes
 
-- 0005599: [Test Execute] "Save and move to next" worked unexpectedly within a test suite after 
+- 5599: [Test Execute] "Save and move to next" worked unexpectedly within a test suite after 
                           test case IMPORT from XML without ORDER attribute
 
-- 0005667: [Test Execute - Filters] Filter by custom or non-custom field reflects on tree but not after 
+- 5667: [Test Execute - Filters] Filter by custom or non-custom field reflects on tree but not after 
 	                                selecting a test suite in Test Execution mode
 
-- 0005674: [Test Execute - Filters] Test Case Execute - BULK MODE - Priority filter is OK on tree but 
+- 5674: [Test Execute - Filters] Test Case Execute - BULK MODE - Priority filter is OK on tree but 
                                     ignored on generation of right pane content
 
-- 0005673: [Test Execute - Filters] Test Case Execute - BULK MODE - Execution type filter is OK on tree but 
+- 5673: [Test Execute - Filters] Test Case Execute - BULK MODE - Execution type filter is OK on tree but 
 		                            ignored on generation of right pane content
 
-- 0005641: [Test Execute] ghost syntax for test case reuse is IGNORED on Test execute feature
-- 0005572: [Test Execute - Filters] Filter by Platforms - Wrong test case state count in test plan execution
-- 0005665: [Test Project Management] testproject class - method create() - interface changes + more features
-- 0005580: [Filters] Filters has no effect in Test Execution when same sets of test cases are assigned by Platform
-- 0005493: [Bug Tracking System - Mantis Integration] Mantis bug not visible - Integration via Database
-- 0005607: [Database MS-SQL] DB Access Error while deleting a test step in a testcase
-- 0005631: [Migration/Upgrade Testlink] Deleting a test step throws DB Access Error
-- 0005634: [Roles] User changes Test Project access from public to private, Test Project banishs from Test project view
-- 0005637: [Roles] User CREATES Test Project with access private, Test Project banishs from Test project view
-- 0005635: [Roles] User change Test PLAN access from public to private, Test PLAN disappears from Test PLAN view.
-- 0005627: [Test Plan - Assign Test Case Execution] Filter by build, when filter by result is ANY, always gets newest build.
-- 0005616: [Requirement to Test Case Assignment] Inconsistent assignment to requirement if test case is executed.
-- 0005632: [Bug Tracking Systems Integration] Issue tracker with blank config - issueTrackerView.php returns blank page
-- 0005614: [Test Specification] Test case Drag & Drop allows a Test case become children of Test Project - Wrong
-- 0005602: [Test Specification] Test Case Copy when step contains [ghost] - Value is copied instead of reference.
-- 0005601: [Test Execute - Edit notes & Custom Fields] Custom Fields of date type can not be edited - calendar is broken.
-- 0005645: [API - XMLRPC] XMLRPC api call getTestCasesForTestPlan() does not return tcase_name.
-- 0005586: [Test Specification Export] Test Specification Export - Add new option to DO NOT EXPORT Test Case External ID
-- 0005417: [Reports] Closed/Resolved issues are not considered Resolved AND THEN NOT COUNTED in TestLink
-- 0005573: [Reports] test cases assign to platform A show up in "test plan report" for All platforms
-- 0005577: [Reports] Requirements based Report is empty.
-- 0005566: [Test Execute - Filters] "Assigned to" does not work in "test execution" page.
-- 0005564: [User Interface General] When login name is ok but password is ko, feedback message is 'ok'.
+- 5641: [Test Execute] ghost syntax for test case reuse is IGNORED on Test execute feature
+- 5572: [Test Execute - Filters] Filter by Platforms - Wrong test case state count in test plan execution
+- 5665: [Test Project Management] testproject class - method create() - interface changes + more features
+- 5580: [Filters] Filters has no effect in Test Execution when same sets of test cases are assigned by Platform
+- 5493: [Bug Tracking System - Mantis Integration] Mantis bug not visible - Integration via Database
+- 5607: [Database MS-SQL] DB Access Error while deleting a test step in a testcase
+- 5631: [Migration/Upgrade Testlink] Deleting a test step throws DB Access Error
+- 5634: [Roles] User changes Test Project access from public to private, Test Project banishs from Test project view
+- 5637: [Roles] User CREATES Test Project with access private, Test Project banishs from Test project view
+- 5635: [Roles] User change Test PLAN access from public to private, Test PLAN disappears from Test PLAN view.
+- 5627: [Test Plan - Assign Test Case Execution] Filter by build, when filter by result is ANY, always gets newest build.
+- 5616: [Requirement to Test Case Assignment] Inconsistent assignment to requirement if test case is executed.
+- 5632: [Bug Tracking Systems Integration] Issue tracker with blank config - issueTrackerView.php returns blank page
+- 5614: [Test Specification] Test case Drag & Drop allows a Test case become children of Test Project - Wrong
+- 5602: [Test Specification] Test Case Copy when step contains [ghost] - Value is copied instead of reference.
+- 5601: [Test Execute - Edit notes & Custom Fields] Custom Fields of date type can not be edited - calendar is broken.
+- 5645: [API - XMLRPC] XMLRPC api call getTestCasesForTestPlan() does not return tcase_name.
+- 5586: [Test Specification Export] Test Specification Export - Add new option to DO NOT EXPORT Test Case External ID
+- 5417: [Reports] Closed/Resolved issues are not considered Resolved AND THEN NOT COUNTED in TestLink
+- 5573: [Reports] test cases assign to platform A show up in "test plan report" for All platforms
+- 5577: [Reports] Requirements based Report is empty.
+- 5566: [Test Execute - Filters] "Assigned to" does not work in "test execution" page.
+- 5564: [User Interface General] When login name is ok but password is ko, feedback message is 'ok'.
 
-- 0005638: [Requirement Management] Combo box content when copying requirements and 
+- 5638: [Requirement Management] Combo box content when copying requirements and 
                                     there are duplicated req. spec with different parent
 
-- 0005592: [Test Specification Export] 
+- 5592: [Test Specification Export] 
            keywords or custom fields are not imported on test suites element with an XML file exported from TL.
 
-- 0005596: [Bug Tracking System - Mantis Integration] 
+- 5596: [Bug Tracking System - Mantis Integration] 
            Mantis Bug generation from testlink fails if bug description 
            is larger  than mantis permitted bug summary section. (I.E This Box)
 
-- 0005589: [Report - Test Cases with Custom Fields set on Execution] 
+- 5589: [Report - Test Cases with Custom Fields set on Execution] 
 	       Values for Custom Fields of type date and datetime are not formatted.
 
-- 0005565: [Bug Tracking System - Mantis Integration] 
+- 5565: [Bug Tracking System - Mantis Integration] 
            Integration Via Database - Information about bug is not displayed on table, on execution feature.
 
-- 0005562: [Reports - Test Cases Created x user] 
+- 5562: [Reports - Test Cases Created x user] 
            Test Cases created per User - toolbar refresh button breaks filter behaivour.
 
 

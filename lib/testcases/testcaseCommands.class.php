@@ -247,8 +247,6 @@ class testcaseCommands
   }
 
 
-
-
   /*
     function: edit (Test Case)
   
@@ -523,9 +521,8 @@ class testcaseCommands
   /**
    * doCreateStep
    *
-   * 20100927 - franciscom - BUGID 3810
    */
-  function doCreateStep(&$argsObj,$request)
+  function doCreateStep(&$argsObj,$request,$doAndExit=false)
   {
     $guiObj = $this->initGuiBean($argsObj);
     $guiObj->user_feedback = '';
@@ -542,8 +539,10 @@ class testcaseCommands
     $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$new_step,
                                        $argsObj->steps,$argsObj->expected_results,$argsObj->exec_type);  
                               
+    $guiObj->doExit = false;
     if( $op['status_ok'] )
     {
+      $guiObj->doExit = $doAndExit;
       $guiObj->user_feedback = sprintf(lang_get('step_number_x_created'),$argsObj->step_number);
       $guiObj->step_exec_type = $guiObj->testcase['execution_type'];  // BUGID 3810
       $guiObj->cleanUpWebEditor = true;
@@ -551,27 +550,53 @@ class testcaseCommands
       $this->initTestCaseBasicInfo($argsObj,$guiObj);
     }  
 
-    $guiObj->action = __FUNCTION__;
+    if(!$guiObj->doExit)
+    {  
+      $guiObj->action = __FUNCTION__;
 
-    // Get all existent steps
-    $guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
-    $max_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
-    $max_step++;;
-    $guiObj->step_number = $max_step;
+      // Get all existent steps
+      $guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
+      $max_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
+      $max_step++;;
+      $guiObj->step_number = $max_step;
 
-    $guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
-    $guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
-    $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
+      $guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
+      $guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
+      $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
 
-    $templateCfg = templateConfiguration('tcStepEdit');
-    $guiObj->template=$templateCfg->default_template;
+      $templateCfg = templateConfiguration('tcStepEdit');
+      $guiObj->template=$templateCfg->default_template;
+    }
     return $guiObj;
   }
 
   /**
-      * editStep
-     *
-     */
+   * doCreateStepAndExit
+   *
+   */
+  function doCreateStepAndExit(&$argsObj,$request)
+  {
+    $guiObj = $this->doCreateStep($argsObj,$request,true);
+
+    if($guiObj->doExit)
+    {
+      // when working on step, refreshing tree is nonsense
+      $argsObj->refreshTree = 0;
+      $this->show($argsObj,$request,array('status_ok' => true));
+    }
+    else
+    {
+      return $guiObj;
+    }  
+  }
+
+
+
+
+  /**
+   * editStep
+   *
+   */
   function editStep(&$argsObj,$request)
   {
     $guiObj = $this->initGuiBean($argsObj);
@@ -605,15 +630,15 @@ class testcaseCommands
 
     $templateCfg = templateConfiguration('tcStepEdit');
     $guiObj->template=$templateCfg->default_template;
-        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
+    $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
         
     return $guiObj;
   }
 
   /**
-      * doUpdateStep
-     *
-     */
+   * doUpdateStep
+   *
+   */
   function doUpdateStep(&$argsObj,$request)
   {
     $guiObj = $this->initGuiBean($argsObj);
@@ -650,6 +675,19 @@ class testcaseCommands
     return $guiObj;
   }
 
+  /**
+   * doUpdateStepAndExit
+   *
+   */
+  function doUpdateStepAndExit(&$argsObj,$request)
+  {
+    $this->doUpdateStep($argsObj,$request);
+
+    // when working on step, refreshing tree is nonsense
+    $argsObj->refreshTree = 0;
+    $this->show($argsObj,$request,array('status_ok' => true));
+  }
+  
 
   /**
    * doReorderSteps

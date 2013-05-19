@@ -223,6 +223,7 @@ $TLS_btn_ok = "Ok";
 $TLS_btn_print = "Print";
 $TLS_btn_print_view = "Print view";
 $TLS_btn_save = "Save";
+$TLS_btn_save_and_exit = "Save & exit";
 $TLS_btn_unassign = "Unassign";
 $TLS_btn_uncheck = "Uncheck";
 $TLS_btn_update = "Update";

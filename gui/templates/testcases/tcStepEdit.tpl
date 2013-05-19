@@ -25,7 +25,7 @@ Purpose: create/edit test case step
 {assign var="hrefEditStep"  value="$basehref$module$url_args"}
 
 {lang_get var="labels"
-          s="warning_step_number_already_exists,warning,warning_step_number,
+          s="warning_step_number_already_exists,warning,warning_step_number,btn_save_and_exit,
              expected_results,step_actions,step_number_verbose,btn_cancel,btn_create_step,
              btn_create,btn_cp,btn_copy_step,btn_save,cancel,warning_unsaved,step_number,execution_type_short_descr,
              title_created,version,by,summary,preconditions,title_last_mod"}
@@ -142,7 +142,12 @@ DEBUG: $gui->action: {$gui->action} <br>
 	{* when save or cancel is pressed do not show modification warning *}
 	<div class="groupBtn">
 		<input id="do_update_step" type="submit" name="do_update_step" 
-		       onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
+		       onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" 
+		       value="{$labels.btn_save}" />
+
+		<input id="do_update_step_and_exit" type="submit" name="do_update_step_and_exit" 
+		       onclick="show_modified_warning=false; doAction.value='{$gui->operation}AndExit'" 
+		       value="{$labels.btn_save_and_exit}" />
 
     {if $gui->operation == 'doUpdateStep'}
 		  <input id="do_create_step" type="submit" name="do_create_step" 
@@ -186,6 +191,10 @@ DEBUG: $gui->action: {$gui->action} <br>
 				<input id="do_update_step" type="submit" name="do_update_step" 
 				       onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" 
 				       value="{$labels.btn_save}" />
+
+				<input id="do_update_step_and_exit" type="submit" name="do_update_stepand_exit" 
+				       onclick="show_modified_warning=false; doAction.value='{$gui->operation}AndExit'" 
+				       value="{$labels.btn_save_and_exit}" />
 
 		    {if $gui->operation == 'doUpdateStep'}
 				  <input id="do_copy_step" type="submit" name="do_copy_step" 
@@ -327,6 +336,10 @@ DEBUG: $gui->action: {$gui->action} <br>
 	<div class="groupBtn">
 		<input id="do_update_step" type="submit" name="do_update_step" 
 		       onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
+
+		<input id="do_update_step_and_exit" type="submit" name="do_update_step_and_exit" 
+		       onclick="show_modified_warning=false; doAction.value='{$gui->operation}AndExit'" 
+		       value="{$labels.btn_save_and_exit}" />
 
     {if $gui->operation == 'doUpdateStep'}
 		  <input id="do_create_step" type="submit" name="do_create_step" 

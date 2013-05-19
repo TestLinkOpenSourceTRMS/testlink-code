@@ -57,6 +57,9 @@ $doRender = false;
 $pfn = $args->doAction;
 
 $testCaseEditorKeys = null;
+
+// new dBug($args->doAction);
+
 switch($args->doAction)
 {
 
@@ -70,8 +73,10 @@ switch($args->doAction)
   case "createStep":
   case "editStep":
   case "doCreateStep":
+  case "doCreateStepAndExit":
   case "doCopyStep":
   case "doUpdateStep":
+  case "doUpdateStepAndExit":
   case "doDeleteStep":
   case "doReorderSteps":
   case "doInsertStep":
@@ -102,8 +107,10 @@ switch($args->doAction)
   case "createStep":
   case "editStep":
   case "doCreateStep":
+  case "doCreateStepAndExit":
   case "doCopyStep":
   case "doUpdateStep":
+  case "doUpdateStepAndExit":
   case "doDeleteStep":
   case "doReorderSteps":
   case "doInsertStep":

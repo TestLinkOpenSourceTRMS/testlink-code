@@ -8,21 +8,28 @@ TestLink - 1.9.7 (2013 Q2 - bug fixing) (Scheduled For Release 2013-06-10)
 ==========================================================================
 
 - 5587: NEW FEATURE [Users and Rights] Duplicate/Copy Role feature
-- 5650: NEW FEATURE Test Plan Design Report, Test Plan Execution Report refactoring
 - 5633: NEW FEATURE [Roles] Critic system roles will be not editable from GUI anymore
+
+- 5650: NEW FEATURE Test Plan Design Report, Test Plan Execution Report refactoring
 - 5613: NEW FEATURE Redmine Create issue from Testlink - Allow setting of issues attributes through XML configuration.
 
 - 5611: NEW FEATURE [Test Specification Import] Create Test Cases from Mantis standard XML export format.
-- 5322: NEW FEATURE [Test Specification] Link to another test case via ID within TestLink.
-- 5600: NEW FEATURE [Reports - Failed/Blocked Test Cases] Reports - Failed/Blocked/NotRun - Export in spreadsheet format.
 
+- 5600: NEW FEATURE [Reports - Failed/Blocked Test Cases] Reports - Failed/Blocked/NotRun - Export in spreadsheet format.
 - 5588: NEW FEATURE [Reports - Failed/Blocked Test Cases] 
         Add Custom Fields (only for test cases) used on EXECUTION to the report.
 
 - 5612: NEW FEATURE contribution : some minor issues and some enhancements in Test Plan Report 
                                    for multiplatforms testplan
 
+- 5322: NEW FEATURE [Test Specification] Link to another test case via ID within TestLink.
 - 5722: NEW FEATURE [Test Specification] Add a button to 'Add Another Test Case' ...
+- 5724: NEW FEATURE [Test Specification] add option for quick access to execute feature
+- 5725: NEW FEATURE [Test Spec. - Test Case Steps] Test Case Step - Create / Modify - Add new button 'Save & Exit'
+
+- 5723: NEW FEATURE [GUI] Move system wide operations under a new section
+
+
 
 - 5660: [API - XMLRPC] XMLRPC API - directory layout changes
 

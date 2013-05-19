@@ -24,11 +24,10 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20130221 - mazin - Translation for Portuguese (pt_BR) version 1.9.5
  * 20111117 - pravato - Translation for Portuguese (pt_BR)
  * 20100409 - eloff - BUGID 3050 - Update execution help text
  **/
-
-
 // printFilter.html
 $TLS_hlp_generateDocOptions = "<h2>Opções para a geração do documento</h2>
 
@@ -48,11 +47,13 @@ incluem: Resumo, Passos, Resultados Esperados, e Palavras-chave</p>
 no entanto, eles não podem filtrar informações do Resumo do Caso de Teste através do Corpo de um Caso de Teste. 
 O resumo do Caso de Teste foi apenas parcialmente separado do corpo do Caso de Teste a fim de apoiar a visualização 
 do Título com um breve resumo e a ausência de Passos, Resultados Esperados, 
-e Palavras-chave. Se um usuário decidir ver o corpo do Caso de Teste, o Resumo do Caso de Teste será sempre incluído.</p>
+e Palavras-chave. Se um usuário decidir ver o corpo do Caso de Teste, o Resumo do Caso de Teste 
+será sempre incluído.</p>
 
 <p><b>Tabela de Conteúdo:</b> O TestLink insere uma lista com todos os títulos com seus links internos checados.</p>
 
-<p><b>Formatos de Saída:</b> Existem várias possibilidades: HTML, OpenOffice Writer, OpenOffice Calc, Excel, Word ou por E-mail (HTML).</p>";
+<p><b>Formatos de Saída:</b> Existem várias possibilidades: HTML, OpenOffice Writer, OpenOffice Calc, Excel, 
+Word ou por E-mail (HTML).</p>";
 
 // testPlan.html
 $TLS_hlp_testPlan = "<h2>Plano de Teste</h2>
@@ -69,9 +70,10 @@ acompanhar os resultados da sua execução dos Caso de Teste.</p>
 <h2>Gerenciamento do Plano de Teste</h2>
 <p>Esta seção, somente acessível aos líderes, permite que os usuários possam administrar os planos de teste. 
 A administração de planos de teste envolve a criação/edição/exclusão de planos, acréscimo/edição 
-/exclusão/atualização dos casos de teste dos planos, criando versões, bem como definindo quem pode ver qual plano.<br />
-Usuários com permissão de líder poderão também definir a prioridade/risco e a 
-propriedade das suites de caso de teste (categorias) e criar marcos de teste.</p> 
+/exclusão/atualização dos casos de teste dos planos, criando versões, bem como definindo quem pode 
+ver qual plano.<br />
+Usuários com permissão de líder poderão também definir a prioridade/risco e a propriedade das 
+suites de caso de teste (categorias) e criar marcos de teste.</p> 
 
 <p>Nota: É possível que os usuários não possam ver uma lista suspensa que contenha os planos de teste. 
 Nesta situação, todos os links (exceto para os líderes ativos) serão desvinculados. Se você 
@@ -157,9 +159,8 @@ $TLS_hlp_executeFilter = "<h2>Configurações</h2>
 a plataforma (se disponível) para ser executado.</p>
 
 <h3>Plano de Teste</h3>
-<p>Você pode escolher o Plano de Teste necessário. De acordo com o plano de teste 
-escolhido, as apropriadas builds serão exibidas. Depois de escolher um plano de 
-teste, os filtros serão reiniciados.</p>
+<p>Você pode escolher o Plano de Teste necessário. De acordo com o plano de teste escolhido, as apropriadas 
+builds serão exibidas. Depois de escolher um plano de teste, os filtros serão reiniciados.</p>
 
 <h3>Plataformas</h3>
 <p>Se o recurso de plataformas é usado, você deve selecionar a plataforma apropriada antes da execução.</p>
@@ -168,7 +169,8 @@ teste, os filtros serão reiniciados.</p>
 <p>Você pode escolher o Build em que deseja executar os Casos de Teste.</p>
 
 <h2>Filtros</h2>
-<p>Através dos Filtros é possível diminuir o conjunto de Casos de Teste exibidos. Selecione 
+<p>Filtros proporcionam a oportunidade de influenciar ainda mais o conjunto de casos de teste mostrados.
+Através dos Filtros é possível diminuir o conjunto de Casos de Teste exibidos. Selecione 
 os filtros desejados e clique no botão \"Aplicar\".</p>
 
 <p>Os Filtros Avançados permitem que você especifique um conjunto de valores para filtros aplicáveis 

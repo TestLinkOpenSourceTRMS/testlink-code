@@ -167,13 +167,11 @@ ou todos os casos de teste de um Projeto de Teste ou Plano de Teste.</p>
 <li>
 <p>Selecione os campos dos casos de teste que você deseja exibir, e então clique em um Caso de Teste, 
 Suíte de Teste, ou Projeto de Teste. Uma página pronta para impressão será exibida.</p>
-
 </li>
 <li><p>Use a drop-box \"Mostrar Como\" no painel de navegação para especificar se você quer 
 a informação exibida como HTML, como documento do Open Office Writer ou num documento do Microsoft Word. 
 Veja <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 '{$locale}');\">Ajuda</span> para maiores informações.</p>
-'{$locale}');\">help</span> for more information.</p>
 </li>
 <li><p>Use a funcionalidade de impressão do seu browser para imprimir a informação presente.<br />
  <i>Nota: Certifique-se de imprimir somente o frame direito.</i></p>
@@ -190,7 +188,6 @@ $TLS_htmltext['reqSpecMgmt'] 			= "<p>Você pode gerenciar documentos de Especif
 <p>Requisitos estão agrupados por <b>documentos de Especificação de Requisitos </b>, os quais estão relacionados ao 
 Projeto de Teste.<br /> O TestLink não suporta (ainda) versões para Especificação de Requisitos 
 e também Requisitos. Logo, a versão do documento deve ser inserida após o <b>Título</b> da Especificação.
-and Requirements itself. So, a document version should be added after a Specification <b>Title</b>.
 Um usuário pode inserir uma descrição simples ou notas no campo <b>Escopo</b>.</p> 
 
 <p><b><a name='total_count'>Sobrescrever o contador de Requisitos</a></b> serve para 
@@ -199,7 +196,6 @@ O valor <b>0</b> significa que o contador de requisitos atual é utilizado
 para métricas.</p>
 <p><i>E.g. SRS inclui 200 requisitos, mas somente 50 são adicionados ao Plano de Teste. A cobertura de testes é de 
 25% (se todos estes requisitos forem testados).</i></p>
-coverage is 25% (assuming the 50 added requirements will actually be tested).</i></p>
 
 <h2><a name='req'>Requisitos</a></h2>
 

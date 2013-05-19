@@ -234,6 +234,7 @@ $TLS_btn_simple_filters = "Simple Filters";
 $TLS_btn_reorder_steps = "Reorder Steps";
 $TLS_btn_resequence_steps = "Resequence Steps";
 $TLS_btn_view_history = "View history";
+$TLS_btn_testcases_table_view = 'Test Cases table view';
 
 
 // Status (used wide)

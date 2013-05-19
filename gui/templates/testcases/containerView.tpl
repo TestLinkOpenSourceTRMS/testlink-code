@@ -12,7 +12,7 @@ View test specification containers
           s='th_product_name,edit_testproject_basic_data,th_notes,test_suite,details,none,
              keywords,alt_del_testsuite, alt_edit_testsuite, alt_move_cp_testcases, alt_move_cp_testsuite, 
              btn_new_testsuite, btn_reorder,btn_execute_automatic_testcases,
-	           btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,
+	           btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,btn_testcases_table_view,
 	           btn_del_testsuites_bulk,btn_delete_testcases,btn_reorder_testcases_alpha,
 	           btn_reorder_testcases_externalid,btn_reorder_testsuites_alpha,
 	           btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
@@ -130,8 +130,13 @@ View test specification containers
 				     title="{$labels.alt_move_cp_testsuite}" />
 			<input type="submit" name="delete_testsuite" value="{$labels.btn_del_testsuite}"
 				     title="{$labels.alt_del_testsuite}" />
-		  <input type="submit" name="reorder_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
-				     title="{$labels.btn_reorder_testsuites_alpha}" />
+		    <input type="submit" name="reorder_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
+				   title="{$labels.btn_reorder_testsuites_alpha}" />
+			
+			<input type="submit" name="testcases_table_view" value="{$labels.btn_testcases_table_view}"
+			       title="{$labels.btn_testcases_table_view}" />
+
+
 
 			<input type="button" onclick="location='{$importToTSuiteAction}'" value="{$labels.btn_import_testsuite}" />
 			<input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_testsuite}" />

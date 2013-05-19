@@ -44,6 +44,7 @@ $a_keys['testsuite'] = array('details');
 $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
                 'delete_testsuite' => 'containerDelete.tpl',
                 'move_testcases_viewer' => 'containerMoveTC.tpl',
+                'testcases_table_view' => 'containerMoveTC.tpl',
                 'do_copy_tcase_set' => 'containerMoveTC.tpl',
                 'do_copy_tcase_set_ghost' => 'containerMoveTC.tpl',
                 'delete_testcases' =>  'containerDeleteTC.tpl',
@@ -52,7 +53,7 @@ $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
 $a_actions = array('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite' => 0,'do_move' => 0,
                    'do_copy' => 0,'reorder_testsuites' => 1,'do_testsuite_reorder' => 0,
                    'add_testsuite' => 1,'move_testsuite_viewer' => 0,'update_testsuite' => 1,
-                   'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,
+                   'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,'testcases_table_view' => 0,
                    'do_copy_tcase_set' => 0, 'do_copy_tcase_set_ghost' => 0, 'del_testsuites_bulk' => 0,
                    'delete_testcases' => 0,'do_delete_testcases' => 0, 'reorder_testcases' => 0,
                    'reorder_testsuites_alpha' => 0, 'reorder_testproject_testsuites_alpha' => 0);
@@ -92,6 +93,9 @@ foreach ($a_actions as $the_key => $the_val)
     break;
   }
 }
+
+$args->action = $action;
+
 
 $smarty->assign('level', $level);
 $smarty->assign('page_title',lang_get('container_title_' . $level));
@@ -143,13 +147,14 @@ switch($action)
         break;
 
     case 'move_testcases_viewer':
-        moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args);
-        break;
+    case 'testcases_table_view':
+      moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args);
+    break;
 
     case 'reorder_testsuites':
-        $ret = reorderTestSuiteViewer($smarty,$tree_mgr,$args);
-        $level = is_null($ret) ? $level : $ret;
-        break;
+      $ret = reorderTestSuiteViewer($smarty,$tree_mgr,$args);
+      $level = is_null($ret) ? $level : $ret;
+    break;
 
     case 'do_move':
         moveTestSuite($smarty,$template_dir,$tproject_mgr,$args);
@@ -828,6 +833,8 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$ar
         $op_ok = false;
         $user_feedback = lang_get('no_testcases_available_or_tsuite');
     }
+
+    $smartyObj->assign('testCasesTableView', ($argsObj->action == 'testcases_table_view') );
 
     $smartyObj->assign('op_ok', $op_ok);
     $smartyObj->assign('user_feedback', $user_feedback);

@@ -711,13 +711,11 @@ img.arrow {
 	height: 		9px;
 }
 
-/* 20070826 - franciscom */
 div.exec_history {
 	background:		#FFF;
 	padding: 		0px 3px;
 }
 
-/* 20060328 - franciscom - I must to comment this better later :( */
 span.type1 {
 	background:		#059;
 	border: 		1px solid black;
@@ -728,8 +726,7 @@ span.type1 {
 	text-align: 	left;
 }
 
-/* 20060820 - franciscom - moved here from tl_login.css */
-/* used as title in login pages */
+
 div.fullpage_head {
 	text-align: 	center;
 	width: 			100%;
@@ -761,7 +758,7 @@ div.forms {
 	font-weight: bold;
 }
 
-/* 20070826 - added padding to allow good effect with Nifty */
+/* added padding to allow good effect with Nifty */
 div.exec_history_title {
 	font-weight:	bold;
 	padding: 		2px;
@@ -789,6 +786,33 @@ div.exec_test_spec {
 	color: 			black;
 	padding: 		12px;
 }
+
+
+div.login_title {
+	text-align: 	center;
+	width: 			50%;
+	background: 	#CDE;
+	margin: 		0px;
+	padding: 		5px 0px;
+	font-weight : 	bold;
+	font-variant : 	small-caps;
+	letter-spacing: 5px;
+}
+
+div.login_form {
+	text-align: 	left;
+	width: 			30%;
+	margin: 		35%;
+	margin-top: 	60px;
+	background: 	#CDE;
+	padding: 		30px;
+	border: 		1px;
+}
+
+
+
+
+
 
 .custom_field_container {
   border: thin solid white;

@@ -23,7 +23,7 @@ window.onload=function()
 </head>
 <body>
 
-<div class="forms" id="login_div">
+<div class="login_form" id="login_div">
   {include file="inc_login_title.tpl"}
 
   <form method="post" name="login_form" action="login.php">

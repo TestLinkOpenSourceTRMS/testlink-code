@@ -26,6 +26,7 @@ TestLink - 1.9.7 (2013 Q2 - bug fixing) (Scheduled For Release 2013-06-10)
 - 5722: NEW FEATURE [Test Specification] Add a button to 'Add Another Test Case' ...
 - 5724: NEW FEATURE [Test Specification] add option for quick access to execute feature
 - 5725: NEW FEATURE [Test Spec. - Test Case Steps] Test Case Step - Create / Modify - Add new button 'Save & Exit'
+- 3900: NEW FEATURE  save- create step- copy step -cancel bar should be locked when editing a step in a test case
 
 - 5723: NEW FEATURE [GUI] Move system wide operations under a new section
 

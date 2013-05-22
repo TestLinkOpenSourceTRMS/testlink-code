@@ -22,7 +22,7 @@
 
 /** TestLink Release version (MUST BE changed before the release day) */
 define('TL_FACE_DIR', 'prague'); 
-define('TL_VERSION', '1.9.7 (Ghost)'); 
+define('TL_VERSION', 'Development 1.9.8 (Lobizon)'); 
 
 /** Last Database version that is used to give users feedback about necesssary upgrades
  * if you set this parameter also upgrade lib/functions/configCheck.php - checkSchemaVersion() */

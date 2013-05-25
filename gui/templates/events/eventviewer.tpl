@@ -3,11 +3,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: eventviewer.tpl,v 1.35 2010/10/26 13:11:34 mx-julian Exp $
 
 Event Viewer
-20101026 - Julian - Localized dateformat for datepicker
-20101009 - Julian - endDate and startDate fields are now readonly. onClick opens Calender
-20101008 - Julian - Show Calender in foreground, added second div for endDate Cal
-                  - BUGID 3871 - use exttable for event viewer
-20100508 - franciscom - BUGID 3445
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -24,7 +19,7 @@ Event Viewer
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {assign var=tableID value=$matrix->tableID}
+  {assign var="tableID" value=$matrix->tableID}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
@@ -182,7 +177,7 @@ fieldset
 				
 		{if $gui->warning_msg == ''}
 		    {foreach from=$gui->tableSet key=idx item=matrix}
-		       {assign var=tableID value=table_$idx}
+		       {assign var="tableID" value="table_$idx"}
 		       {$matrix->renderBodySection($tableID)}
 		    {/foreach}
 		    <br />

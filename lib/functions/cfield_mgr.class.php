@@ -503,9 +503,6 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
          $additional_filter .
          " ORDER BY display_order,CF.id ";
 
-  	// echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
-	
     $map = $this->db->fetchRowsIntoMap($sql,$access_key);
     return($map);
   }
@@ -935,12 +932,11 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
              key: custom field id
 
     internal revision:
-		20090717 - franciscom - added location to result recordset
   */
   function get_linked_to_testproject($tproject_id,$active=null)
   {
     $sql="SELECT CF.*,NT.description AS node_description,NT.id AS node_type_id, " .
-         "       CFTP.display_order, CFTP.active, CFTP.location " .
+         "       CFTP.display_order, CFTP.active, CFTP.location,CFTP.required " .
          " FROM {$this->object_table} CF, " .
          "      {$this->tables['cfield_testprojects']} CFTP, " .
          "      {$this->tables['cfield_node_types']} CFNT, " .
@@ -954,14 +950,14 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     {
       $sql .= " AND CFTP.active={$active} ";
     }
-    //$sql .= " ORDER BY display_order, CF.name";
-    // BUGID 3555
-   $sql .= " ORDER BY NT.description,CF.enable_on_design desc, " .
-            "CF.enable_on_execution desc, " .
-                "CF.enable_on_testplan_design desc,".
-                "CFTP.display_order, CF.name";
+
+    $sql .= " ORDER BY NT.description,CF.enable_on_design desc, " .
+            " CF.enable_on_execution desc, " .
+            " CF.enable_on_testplan_design desc,".
+            " CFTP.display_order, CF.name";
+    
     $map = $this->db->fetchRowsIntoMap($sql,'id');
-    return($map);
+    return $map;
   }
 
 
@@ -1016,13 +1012,13 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   */
 	function set_active_for_testproject($tproject_id,$cfield_ids,$active_val)
 	{
-  		if(is_null($cfield_ids))
-  		{
+  	if(is_null($cfield_ids))
+  	{
 			return;
 		}
 		
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    	$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
+    $tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
 		$auditMsg = $active_val ? "audit_cfield_activated" : "audit_cfield_deactivated";
 		foreach($cfield_ids as $field_id)
 		{
@@ -1043,7 +1039,46 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		}
 	} //function end
 
+
+  /**
+   *
+   */ 
+  function setRequired($tproject_id,$cfieldSet,$val)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    if(is_null($cfieldSet))
+    {
+      return;
+    }
+    
+    $safe = new stdClass();
+    $safe->tproject_id = intval($tproject_id);
+    $safe->val = (intval($val) > 0) ? 1 : 0;
+
+    $info = $this->tree_manager->get_node_hierarchy_info($safe->tproject_id);
+    $auditMsg = $active_val ? "audit_cfield_required" : "audit_cfield_not_required";
+    foreach($cfieldSet as $field_id)
+    {
+      $sql = "/* $debugMsg */ UPDATE {$this->tables['cfield_testprojects']} " .
+           " SET required=" . $safe->val .
+           " WHERE testproject_id=" . $safe->tproject_id .
+           " AND field_id={$field_id}";
+
+      if ($this->db->exec_query($sql))
+      {
+        $cf = $this->get_by_id($field_id);
+        if($cf)
+        {
+          logAuditEvent(TLS($auditMsg,$cf[$field_id]['name'],$info['name']),
+                        "SAVE",$safe->tproject_id,"testprojects");
+        }                       
+      }
+    }
+  } //function end
  
+
+
   /**
    * unlink_from_testproject
    * remove custom field links from target test project
@@ -2184,7 +2219,6 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
 	{
 	  foreach($cfield as $field_id => $type_and_value)
 	  {
-	  	// echo "DEBUG: \$field_id:$field_id - \$link_id:$link_id<br>";
 	    $value = $type_and_value['cf_value'];
 
 	    // do I need to update or insert this value?
@@ -2200,10 +2234,8 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
 	    }
 	
 	    $safe_value=$this->db->prepare_string($value);
-	    // BUGID 3989
 	    if($this->db->num_rows( $result ) > 0 && $value != "")
 	    {
-	
 	      $sql = "UPDATE {$this->tables['cfield_testplan_design_values']} " .
 	             " SET value='{$safe_value}' " .
 			     " WHERE field_id={$field_id} AND	link_id={$link_id}";

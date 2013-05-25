@@ -185,28 +185,44 @@ class tree extends tlObject
     returns: 
 
   */
-  function get_node_hierarchy_info($node_id,$parent_id = null)
+  function get_node_hierarchy_info($node_id,$parent_id = null,$opt=null)
   {
-      $sql = "SELECT id,name,parent_id,node_type_id,node_order " . 
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $my['opt'] = array('nodeTypeID' => null, 'nodeType' => null);
+    $my['opt'] = array_merge($my['opt'], (array)$opt);
+
+    $sql = "SELECT id,name,parent_id,node_type_id,node_order " . 
            "FROM {$this->object_table} WHERE id";
       
-      $result=null;
+    $result=null;
       
-      if( is_array($node_id) )
+    if( is_array($node_id) )
+    {
+      $sql .= " IN (" . implode(",",$node_id) . ") ";
+      $result=$this->db->fetchRowsIntoMap($sql,'id');    
+    }
+    else
+    {
+      $sql .= "= " . intval($node_id);
+      if( !is_null($parent_id) )
       {
-          $sql .= " IN (" . implode(",",$node_id) . ") ";
-            $result=$this->db->fetchRowsIntoMap($sql,'id');    
+        $sql .= " AND parent_id=" . intval($parent_id);  
       }
-      else
+
+      if( !is_null($opt['nodeTypeID']) )
       {
-          $sql .= "= " . intval($node_id);
-          if( !is_null($parent_id) )
-          {
-            $sql .= " AND parent_id=" . intval($parent_id);  
-          }
+        $sql .= " AND node_type_id=" . intval($opt['nodeTypeID']);  
+      }  
+
+      if( !is_null($opt['nodeType']) )
+      {
+        $sql .= " AND node_type_id=" . intval($this->node_descr_id[$opt['nodeType']]);  
+      }  
+
       $rs = $this->db->get_recordset($sql);
       $result = !is_null($rs) ? $rs[0] : null;
-      } 
+    } 
     return $result;
   }
 

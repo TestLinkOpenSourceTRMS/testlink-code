@@ -3,12 +3,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: cfieldsTprojectAssign.tpl,v 1.9 2010/10/05 06:50:21 amkhullar Exp $
 Purpose: management Custom fields assignment to a test project
 
-rev :
-     20101005 - amitkhullar - BUGID 3848 - enable link on Unassigned Custom Field
-     20100121 - franciscom - added more information for users
-     20090717 - franciscom - location management
-     20070527 - franciscom - added check/uncheck all logic
-     20070515 - franciscom - BUGID 0000852 
+@internal revisions
+@since 1.9.8
 
 *}
 {include file="inc_head.tpl" openHead="yes"}
@@ -18,12 +14,12 @@ rev :
 {lang_get var="labels" 
           s='name,label,display_order,location,cfields_active,testproject,btn_assign,
              cfields_tproject_assign,title_assigned_cfields,check_uncheck_all_checkboxes,
-             available_on,type,
-             manage_cfield,btn_unassign,btn_cfields_active_mgmt,btn_cfields_display_order,
+             available_on,type,required,
+             manage_cfield,btn_unassign,btn_cfields_boolean_mgmt,btn_cfields_display_order,
              btn_cfields_display_attr,title_available_cfields'}
 
 <body>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">
@@ -55,6 +51,7 @@ rev :
       		<th width="15%">{$labels.display_order}</th>
       		<th width="15%">{$labels.location}</th>
       		<th width="5%">{$labels.cfields_active}</th>
+          <th width="5%">{$labels.required}</th>
       	</tr>
       	{foreach key=cf_id item=cf from=$gui->my_cf}
       	<tr>
@@ -71,7 +68,7 @@ rev :
       		           size="{#DISPLAY_ORDER_SIZE#}" maxlength="{#DISPLAY_ORDER_MAXLEN#}" /></td>
       		           
       		<td>
-      		{* 20090718 - franciscom - location will NOT apply to EXEC only CF *}
+      		{* location will NOT apply to EXEC only CF *}
       		{if $cf.node_description == 'testcase' && $cf.enable_on_execution ==0}
 			  	<select name="location[{$cf.id}]">
 			  	  {html_options options=$gui->locations selected=$cf.location}
@@ -80,11 +77,17 @@ rev :
       		&nbsp;
       		{/if}
       		</td>
-      		           
+
       		<td><input type="checkbox" name="active_cfield[{$cf.id}]" 
       		                           {if $cf.active eq 1} checked="checked" {/if} /> 
       		    <input type="hidden" name="hidden_active_cfield[{$cf.id}]"  value="{$cf.active}" /> 
       		</td>
+
+          <td><input type="checkbox" name="required_cfield[{$cf.id}]" 
+                                     {if $cf.required eq 1} checked="checked" {/if} /> 
+              <input type="hidden" name="hidden_required_cfield[{$cf.id}]"  value="{$cf.required}" /> 
+          </td>
+
       	</tr>
       	{/foreach}
       </table>
@@ -96,7 +99,7 @@ rev :
     		<input type="submit" name="doUnassign" value="{$labels.btn_unassign}" 
     		                     onclick="doAction.value=this.name"/>
     		                     
-    		<input type="submit" name="doActiveMgmt" value="{$labels.btn_cfields_active_mgmt}"
+    		<input type="submit" name="doBooleanMgmt" value="{$labels.btn_cfields_boolean_mgmt}"
     		                     onclick="doAction.value=this.name"/>
 
     		<input type="submit" name="doReorder" value="{$labels.btn_cfields_display_attr}" 

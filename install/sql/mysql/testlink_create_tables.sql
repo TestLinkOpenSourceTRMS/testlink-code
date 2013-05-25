@@ -123,6 +123,7 @@ CREATE TABLE /*prefix*/cfield_testprojects (
   `display_order` smallint(5) unsigned NOT NULL default '1',
   `location` smallint(5) unsigned NOT NULL default '1',
   `active` tinyint(1) NOT NULL default '1',
+  `required` tinyint(1) NOT NULL default '0',
   `required_on_design` tinyint(1) NOT NULL default '0',
   `required_on_execution` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`field_id`,`testproject_id`)

@@ -1188,6 +1188,7 @@ $TLS_title_req_import_to = "Import requirements to document";
 
 
 // ----- gui/templates/cfields_tproject_assign.tpl -----
+$TLS_btn_cfields_boolean_mgmt = "Update active and required";
 $TLS_btn_cfields_active_mgmt = "Update active status";
 $TLS_btn_cfields_display_order = "Save display order";
 $TLS_btn_cfields_display_attr = "Save display order and location";

@@ -375,7 +375,6 @@ function initShowOnExec(id_master,show_on_cfg)
 			  {if $gui->cfield_is_used} {* Type CAN NOT BE CHANGED *}
 			    {assign var="idx" value=$gui->cfield.node_type_id}
 			    {$gui->cfieldCfg->cf_allowed_nodes.$idx}
-			    {hidden_cf_node_type_id}
 			    <input type="hidden" id="combo_cf_node_type_id"
 			           value={$gui->cfield.node_type_id} name="cf_node_type_id" />
 			  {else}

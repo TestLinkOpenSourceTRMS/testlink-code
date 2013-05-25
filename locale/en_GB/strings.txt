@@ -656,14 +656,23 @@ $TLS_th_testplan_name = "Test Plan Name";
 $TLS_assigned_to_testprojects = "Assigned to Test Projects";
 $TLS_available_on = "Available for";
 $TLS_custom_field = "Custom field";
+$TLS_context_design = "test specification";
+$TLS_context_exec = "test execution";
+$TLS_context_testplan_design = "test plan design";
+
 $TLS_enable_on_design = "Enable on <br />test specification";
 $TLS_enable_on_exec = "Enable on <br />test execution";
 $TLS_enable_on_testplan_design = "Enable on <br />test plan design";
+$TLS_enabled_on_context = "Enabled on Context";
+
+
 $TLS_label = "Label";
 $TLS_popup_delete_custom_field = "Are you sure you want to delete the custom field?";
 $TLS_possible_values = "Possible values";
 $TLS_show_on_design = "Display on <br />test specification";
 $TLS_show_on_exec = "Display on <br />test execution";
+$TLS_display_on_exec = "Display on execution";
+
 $TLS_show_on_testplan_design = "Display on <br />test plan design";
 $TLS_testcase = $TLS_test_case;
 $TLS_title_cfields_mgmt = "Custom fields";

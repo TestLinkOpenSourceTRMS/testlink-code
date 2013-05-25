@@ -3,16 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @package 	TestLink
- * @author 		franciscom
+ * @package 	  TestLink
+ * @author 		  franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.96.2.9 2011/02/10 21:25:25 franciscom Exp $
- * @link 		http://www.teamst.org/index.php
+ * @filesource  cfield_mgr.class.php
+ * @link 		    http://www.teamst.org/index.php
  *
- * @internal Revisions:
- * @since 1.9.4
- * 20111230 - franciscom - string_custom_field_value() - fixed warning on event viewer
+ * @internal revisions:
+ * @since 1.9.8
  *
 **/
 
@@ -874,8 +873,17 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
              key: custom field id
 
   */
-  function get_all($id2exclude=null)
+  function get_all($id2exclude=null,$opt=null)
   {
+    static $lbl;
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    if(!$lbl)
+    {
+      $lbl = init_labels(array('context_design' => null,'context_exec' => null,
+                               'context_testplan_design' => null));
+    } 
+
     $not_in_clause="";
     if( !is_null($id2exclude) )
     {
@@ -889,9 +897,30 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
          " AND NT.id=CFNT.node_type_id " .
          $not_in_clause .
          " ORDER BY CF.name";
-    // $map = $this->db->fetchArrayRowsIntoMap($sql,'id');
+
     $map = $this->db->fetchRowsIntoMap($sql,'id');
-    return($map);
+    if(!is_null($map) && !is_null($opt))
+    {  
+      $k2l = array_keys($map);
+      foreach($k2l as $key)
+      {
+        $map[$key]['enabled_on_context'] = '';
+        if($map[$key]['enable_on_design'])
+        {
+          $map[$key]['enabled_on_context'] = $lbl['context_design'];
+        }  
+        else if($map[$key]['enable_on_execution'])
+        {
+          $map[$key]['enabled_on_context'] = $lbl['context_exec'];
+        }  
+        else if($map[$key]['enable_on_testplan_design'])
+        {
+          $map[$key]['enabled_on_context'] = $lbl['context_testplan_design'];
+        }  
+      }
+    }
+
+    return $map;
   }
 
   /*

@@ -304,8 +304,18 @@ class redminerestInterface extends issueTrackerInterface
      {
        // needs json or xml
       $issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
-   		$issueXmlObj->addChild('subject', htmlentities($summary));
-   		$issueXmlObj->addChild('description', htmlentities($description));
+
+      // according with user report is better to use htmlspecialchars
+      // 5703: Create issue with Portuguese characters produces mangled text
+      //
+   		// $issueXmlObj->addChild('subject', htmlentities($summary));
+   		// $issueXmlObj->addChild('description', htmlentities($description));
+
+      // limit size to redmine max => 255 ?
+
+      $issueXmlObj->addChild('subject', substr(htmlspecialchars($summary),0,255) );
+      $issueXmlObj->addChild('description', htmlspecialchars($description));
+
    		$issueXmlObj->addChild('project_id', (string)$this->cfg->projectidentifier);
    		$issueXmlObj->addChild('tracker_id', (string)$this->cfg->trackerid);
 
@@ -322,15 +332,9 @@ class redminerestInterface extends issueTrackerInterface
           $issueXmlObj->addChild($ka, (string)$kv);
         }  
       }  
-
-   		// $issueXmlObj->addChild('priority_id', $priority_id);
-   		// $issueXmlObj->addChild('category_id', $category_id);
- 
-       $op = $this->APIClient->addIssueFromSimpleXML($issueXmlObj);
-       var_dump($op);
-       $ret = array('status_ok' => true, 'id' => (string)$op->id, 
-                    'msg' => sprintf(lang_get('redmine_bug_created'),$summary,
-                                     $issueXmlObj->project_id));
+      $op = $this->APIClient->addIssueFromSimpleXML($issueXmlObj);
+      $ret = array('status_ok' => true, 'id' => (string)$op->id, 
+                   'msg' => sprintf(lang_get('redmine_bug_created'),$summary,$issueXmlObj->project_id));
      }
      catch (Exception $e)
      {

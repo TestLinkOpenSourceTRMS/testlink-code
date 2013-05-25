@@ -312,7 +312,6 @@ class redminerestInterface extends issueTrackerInterface
    		// $issueXmlObj->addChild('description', htmlentities($description));
 
       // limit size to redmine max => 255 ?
-
       $issueXmlObj->addChild('subject', substr(htmlspecialchars($summary),0,255) );
       $issueXmlObj->addChild('description', htmlspecialchars($description));
 

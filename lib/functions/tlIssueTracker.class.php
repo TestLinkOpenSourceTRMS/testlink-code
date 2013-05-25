@@ -49,7 +49,7 @@ class tlIssueTracker extends tlObject
                        16 =>  array('type' => 'redmine','api' =>'db','enabled' => false, 'order' => -1),
                        17 =>  array('type' => 'seapine','api' =>'soap','enabled' => false, 'order' => -1),
                        18 =>  array('type' => 'seapine','api' =>'db','enabled' => false, 'order' => -1),
-                       19 =>  array('type' => 'trac','api' =>'xmlrpc','enabled' => false, 'order' => -1),
+                       19 =>  array('type' => 'trac','api' =>'xmlrpc','enabled' => true, 'order' => -1),
                        20 =>  array('type' => 'trackplus','api' =>'soap','enabled' => false, 'order' => -1),
                        21 =>  array('type' => 'trackplus','api' =>'db','enabled' => false, 'order' => -1));
   

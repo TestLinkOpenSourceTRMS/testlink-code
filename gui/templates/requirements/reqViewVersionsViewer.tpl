@@ -4,8 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 viewer for requirement
 
 @internal revisions
-@since 1.9.6
-20130416 - franciscom - TICKET 5532: Specification: How to manage Frozen Req
+@since 1.9.8
 *}
 {lang_get var="labels"
           s="requirement_spec,Requirements,scope,status,type,expected_coverage,  
@@ -17,14 +16,14 @@ viewer for requirement
              removeLinkToTestCase,title_test_case"}
 
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
-{assign var="hrefReqSpecMgmt" value=$basehref$hrefReqSpecMgmt}
+{assign var="hrefReqSpecMgmt" value="$basehref$hrefReqSpecMgmt"}
 
 {assign var="hrefReqMgmt" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
-{assign var="hrefReqMgmt" value=$basehref$hrefReqMgmt}
+{assign var="hrefReqMgmt" value="$basehref$hrefReqMgmt"}
 
 {assign var="module" value='lib/requirements/'}
-{assign var="req_id" value=$args_req.id}
-{assign var="req_version_id" value=$args_req.version_id}
+{assign var="req_id" value="$args_req.id"}
+{assign var="req_version_id" value="$args_req.version_id"}
 
 {if $args_show_title }
   {if isset($args_tproject_name) && $args_tproject_name != ''}

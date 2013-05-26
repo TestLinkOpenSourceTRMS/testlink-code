@@ -185,12 +185,12 @@ class tree extends tlObject
     returns: 
 
   */
-  function get_node_hierarchy_info($node_id,$parent_id = null,$opt=null)
+  function get_node_hierarchy_info($node_id,$parent_id = null,$options=null)
   {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $my['opt'] = array('nodeTypeID' => null, 'nodeType' => null);
-    $my['opt'] = array_merge($my['opt'], (array)$opt);
+    $opt = array('nodeTypeID' => null, 'nodeType' => null);
+    $opt = array_merge($opt, (array)$options);
 
     $sql = "SELECT id,name,parent_id,node_type_id,node_order " . 
            "FROM {$this->object_table} WHERE id";

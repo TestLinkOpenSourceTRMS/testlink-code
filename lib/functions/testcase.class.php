@@ -3747,8 +3747,7 @@ class testcase extends tlObjectWithAttachments
     {
       $tproject_id = $this->getTestProjectFromTestCase($id,$parent_id);
     }
-    
-    // BUGID 3431 - NEED CHANGE
+
     $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,
                                                               self::ENABLED,$filters,'testcase',$tcversion_id);
     return $cf_map;
@@ -3862,32 +3861,29 @@ class testcase extends tlObjectWithAttachments
                                              $tproject_id = null,$filters=null, $input_values = null)
   {
     $cf_smarty = '';
-  
-      // BUGID 1650
-      $cf_scope=trim($scope);
-      $method_name='get_linked_cfields_at_' . $cf_scope;
+    $cf_scope=trim($scope);
+    $method_name='get_linked_cfields_at_' . $cf_scope;
     
-      switch($cf_scope)
-      {
-          case 'testplan_design':
-              $cf_map = $this->$method_name($id,$parent_id,null,$link_id,null,$tproject_id);    
-          break;
+    switch($cf_scope)
+    {
+      case 'testplan_design':
+        $cf_map = $this->$method_name($id,$parent_id,null,$link_id,null,$tproject_id);    
+      break;
       
-          case 'design':
-        // BUGID 3431 - 
-            $cf_map = $this->$method_name($id,$link_id,$parent_id,$filters,$tproject_id);    
-          break;
+      case 'design':
+        $cf_map = $this->$method_name($id,$link_id,$parent_id,$filters,$tproject_id);    
+      break;
             
-          case 'execution':
-              $cf_map = $this->$method_name($id,$parent_id,null,$link_id,$tplan_id,$tproject_id);    
-          break;
+      case 'execution':
+        $cf_map = $this->$method_name($id,$parent_id,null,$link_id,$tplan_id,$tproject_id);    
+      break;
             
-      }
+    }
     
     if(!is_null($cf_map))
     {
       $cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
-        }
+    }
     return $cf_smarty;
   }
   
@@ -3967,10 +3963,10 @@ class testcase extends tlObjectWithAttachments
     $label_css_style = ' class="labelHolder" ';
     $value_css_style = ' ';
 
-      $add_table=true;
-      $table_style='';
-      if( !is_null($formatOptions) )
-      {
+    $add_table=true;
+    $table_style='';
+    if( !is_null($formatOptions) )
+    {
       $label_css_style = isset($formatOptions['label_css_style']) ? 
                      $formatOptions['label_css_style'] : $label_css_style;
       $value_css_style = isset($formatOptions['value_css_style']) ? 
@@ -3978,53 +3974,49 @@ class testcase extends tlObjectWithAttachments
 
           $add_table=isset($formatOptions['add_table']) ? $formatOptions['add_table'] : true;
           $table_style=isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
-      } 
+    } 
     
     $cf_smarty = '';
     
     $location=null; // no filter
-        $filterKey='location';
-        if( isset($filters[$filterKey]) && !is_null($filters[$filterKey]) )
-        {
-            $location = $filters[$filterKey];
-        }
+    $filterKey='location';
+    if( isset($filters[$filterKey]) && !is_null($filters[$filterKey]) )
+    {
+      $location = $filters[$filterKey];
+    }
 
-      switch($scope)
-      {
-          case 'design':
-            // BUGID 3431
-              $cf_map = $this->get_linked_cfields_at_design($id,$link_id,null,$filters,$tproject_id);
-          break;
+    switch($scope)
+    {
+      case 'design':
+        $cf_map = $this->get_linked_cfields_at_design($id,$link_id,null,$filters,$tproject_id);
+      break;
       
-          case 'testplan_design':
-              $cf_map = $this->get_linked_cfields_at_testplan_design($id,null,$filters,$link_id,
-                                                                     $testplan_id,$tproject_id);
-          break;
+      case 'testplan_design':
+        $cf_map = $this->get_linked_cfields_at_testplan_design($id,null,$filters,$link_id,
+                                                               $testplan_id,$tproject_id);
+      break;
       
-          case 'execution':
-              $cf_map = $this->get_linked_cfields_at_execution($id,null,$filters,$execution_id,
-                                                               $testplan_id,$tproject_id,$location);
-          break;
-      }   
-         
-      // BUGID 3989
-      $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
+      case 'execution':
+        $cf_map = $this->get_linked_cfields_at_execution($id,null,$filters,$execution_id,
+                                                         $testplan_id,$tproject_id,$location);
+      break;
+    }   
+    $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
       
     if(!is_null($cf_map))
     {
       foreach($cf_map as $cf_id => $cf_info)
       {
         // if user has assigned a value, then node_id is not null
-        // BUGID 3989
         if(isset($cf_info['node_id']) || $show_cf)
         {
-                  // true => do not create input in audit log
-                  $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
+          // true => do not create input in audit log
+          $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
   
           $cf_smarty .= "<tr><td {$label_css_style}> " .  htmlspecialchars($label) . ":</td>" . 
-                  "<td {$value_css_style}>" .
-                  $this->cfield_mgr->string_custom_field_value($cf_info,$id) .
-                  "</td></tr>\n";
+                        "<td {$value_css_style}>" .
+                        $this->cfield_mgr->string_custom_field_value($cf_info,$id) .
+                        "</td></tr>\n";
         }
       }
   
@@ -4116,7 +4108,6 @@ class testcase extends tlObjectWithAttachments
     returns: -
   
   
-  BUGID 3431 NEEDE CHANGE -> from_id -> from tcversion id 
   */
   function copy_cfields_design_values($source,$destination)
   {

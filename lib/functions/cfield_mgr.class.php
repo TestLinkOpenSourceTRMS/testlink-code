@@ -10,8 +10,9 @@
  * @filesource  cfield_mgr.class.php
  * @link 		    http://www.teamst.org/index.php
  *
- * @internal revisions:
+ * @internal revisions
  * @since 1.9.8
+ * 20130523 - franciscom - string_custom_field_input() interface changes
  *
 **/
 
@@ -24,10 +25,10 @@ require_once(dirname(__FILE__) . '/string_api.php');
 $cf_files=glob( TL_ABS_PATH . "custom/cf_*.php");
 if( count($cf_files) > 0 )
 {
-    foreach($cf_files as $inc)
-    {
-        require_once($inc);  
-    }   
+  foreach($cf_files as $inc)
+  {
+    require_once($inc);  
+  }   
 }
 
 
@@ -37,19 +38,19 @@ if( count($cf_files) > 0 )
  */
 class cfield_mgr extends tlObject
 {
-    const DEFAULT_INPUT_SIZE = 50;
-    const MULTISELECTIONLIST_WINDOW_SIZE = 5;
-    const LISTBOX_WINDOW_SIZE = 5;
-    const TEXTAREA_MAX_SIZE = 255;
+  const DEFAULT_INPUT_SIZE = 50;
+  const MULTISELECTIONLIST_WINDOW_SIZE = 5;
+  const LISTBOX_WINDOW_SIZE = 5;
+  const TEXTAREA_MAX_SIZE = 255;
 
-    // EDIT HERE IF YOU CUSTOMIZE YOUR DB
-    /** for text area custom field  40 x 6 -> 240 chars <= 255 chars table field size */
-    const TEXTAREA_DEFAULT_COLS = 70;
-    const TEXTAREA_DEFAULT_ROWS = 4;
+  // EDIT HERE IF YOU CUSTOMIZE YOUR DB
+  /** for text area custom field  40 x 6 -> 240 chars <= 255 chars table field size */
+  const TEXTAREA_DEFAULT_COLS = 70;
+  const TEXTAREA_DEFAULT_ROWS = 4;
 
-    const CF_ENABLED = 1;
-    const ENABLED = 1;
-    const DISABLED = 0;
+  const CF_ENABLED = 1;
+  const ENABLED = 1;
+  const DISABLED = 0;
     
 	/** @var resource the database handler */
 	var $db;
@@ -57,42 +58,43 @@ class cfield_mgr extends tlObject
 	/** @var object tree class */
 	var $tree_manager;
 
-    /**
-     *  @var array $application_areas
-     * Holds string keys used on this object and pages that manages CF,
-     * identifying in what areas/features something will be done
-     * 'execution' => mainly on test execution pages,
-     *                identifies TL features/pages to record test results
-     * 'design'    => test suites, test cases creation
-     *                identifies TL features/pages to create test specification
-     * 'testplan_design' => link test cases to test plan (assign testcase option)
-     * 
-     * IMPORTANT: this values are used as access keys in several properties of this object.
-     *            then if you add one here, remember to update other properties.
-     */
-    var $application_areas = array('execution','design','testplan_design');
+  /**
+   *  @var array $application_areas
+   * Holds string keys used on this object and pages that manages CF,
+   * identifying in what areas/features something will be done
+   * 'execution' => mainly on test execution pages,
+   *                identifies TL features/pages to record test results
+   * 'design'    => test suites, test cases creation
+   *                identifies TL features/pages to create test specification
+   * 'testplan_design' => link test cases to test plan (assign testcase option)
+   * 
+   * IMPORTANT: this values are used as access keys in several properties of this object.
+   *            then if you add one here, remember to update other properties.
+   */
+  var $application_areas = array('execution','design','testplan_design');
 
 	/**
 	 * @var array Define type of custom fields managed.
 	 * Values will be displayed in "Custom Field Type" combo box when
 	 * users create custom fields. No localization is applied
-	 */ 
-    // 20080809 - franciscom
-    // Added specific type for test automation related custom fields.
-    // Start at code 500
-    var $custom_field_types = array(0=>'string',
-                                    1=>'numeric',
-                                    2=>'float',
-                                    4=>'email',
-                                    5=>'checkbox',
-                                    6=>'list',
-                                    7=>'multiselection list',
-                                    8=>'date',
-                                    9=>'radio',
-                                    10=>'datetime',
-		  					        20=>'text area',
-							        500=>'script',
-							        501=>'server');
+	 *
+   *
+   * Added specific type for test automation related custom fields.
+   * Start at code 500
+   */ 
+  var $custom_field_types = array(0=>'string',
+                                  1=>'numeric',
+                                  2=>'float',
+                                  4=>'email',
+                                  5=>'checkbox',
+                                  6=>'list',
+                                  7=>'multiselection list',
+                                  8=>'date',
+                                  9=>'radio',
+                                  10=>'datetime',
+		  					                  20=>'text area',
+							                    500=>'script',
+							                    501=>'server');
 
     /** 
      * @var array Configures for what type of CF "POSSIBLE_VALUES" field need to be manage at GUI level
@@ -110,8 +112,8 @@ class cfield_mgr extends tlObject
                                      'radio' => 1,
                                      'datetime' =>0,
                                      'text area' => 0,
-    							     'script'=> 0,
-    							     'server' => 0);
+    							                   'script'=> 0,
+    							                   'server' => 0);
     
     /**  @var array only the types listed here can have custom fields */
     var $node_types = array('testsuite','testplan','testcase','requirement_spec','requirement');
@@ -138,7 +140,7 @@ class cfield_mgr extends tlObject
     var $locations = array( 'testcase' => 
                             array( 1 => 'standard_location', 2 => 'before_steps_results'));
 
-    // 20090523 - changes in configuration
+    // changes in configuration
     //
     // Needed to manage user interface, when creating Custom Fields.
     // When user choose a item type (test case, etc), a javascript logic
@@ -146,7 +148,6 @@ class cfield_mgr extends tlObject
     //
     // 0 => combo will not displayed
     //
-    // BUGID 3707,3708
     // May be need a review, because after the changes, seems a little bit silly.
     var $enable_on_cfg = array(	'execution' => array('testsuite' => 0,
                                                     'testplan'  => 0,
@@ -208,7 +209,7 @@ class cfield_mgr extends tlObject
 	 */
 	function __construct(&$db)
 	{
-   		parent::__construct();
+   	parent::__construct();
 
 		$this->db = &$db;
 		$this->tree_manager = new tree($this->db);
@@ -216,43 +217,46 @@ class cfield_mgr extends tlObject
 		$cfConfig = config_get('custom_fields');
 		$this->sizes = $cfConfig->sizes;
 		
-        if( property_exists($cfConfig,'types') && 
-		    !is_null($cfConfig->types) )
+
+
+    if( property_exists($cfConfig,'types') && !is_null($cfConfig->types) )
 		{
-		    $this->custom_field_types +=$cfConfig->types;
-		    ksort($this->custom_field_types);
+		  $this->custom_field_types +=$cfConfig->types;
+		  ksort($this->custom_field_types);
 		}
     
-        if( property_exists($cfConfig,'possible_values_cfg') && 
+    if( property_exists($cfConfig,'possible_values_cfg') && 
 		    !is_null($cfConfig->possible_values_cfg) )
 		{
-		    $this->possible_values_cfg +=$cfConfig->possible_values_cfg;
+		  $this->possible_values_cfg +=$cfConfig->possible_values_cfg;
 		}
-        $this->object_table=$this->tables["custom_fields"];
+    $this->object_table=$this->tables["custom_fields"];
 
-        $this->max_length_value = $cfConfig->max_length;
-        $this->max_length_possible_values = $this->max_length_value;
+    $this->max_length_value = $cfConfig->max_length;
+    $this->max_length_possible_values = $this->max_length_value;
 	}
 
-    function getSizeLimit()
-    {
-        return $this->max_length_value;    
-    }
+
+  function getSizeLimit()
+  {
+    return $this->max_length_value;    
+  }
+
 
 	function get_application_areas()
 	{
-        return($this->application_areas);
-    }
+    return($this->application_areas);
+  }
 
-    /**
-	 * @return hash with available locatipons
+  /**
+   * @return hash with available locatipons
 	 * 
 	 * 
-     */
+   */
 	function getLocations()
 	{
-        return($this->locations);
-    }
+    return($this->locations);
+  }
 
 
 	/**
@@ -534,42 +538,30 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     returns: html string
 
     rev :
-         20110120 - Julian - BUGID 4164 - lists and multiselection lists do not use more space than
-                                          necessary anymore
-         20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
-         20080816 - franciscom
-         added code to manange user defined (and code developed) Custom Fields.
-         Important: solution is a mix of own ideas and Mantis 1.2.0a1 approach
-
-         20071006 - francisco.mancardi@gruppotesi.com
-         Added field_size argument
-
-         20070104 - franciscom - added 'multiselection list'
-
   */
-	function string_custom_field_input($p_field_def,$name_suffix='',$field_size=0,$show_on_filters=false)
+	function string_custom_field_input($p_field_def,$opt = null)
 	{
+    $options = array('name_suffix' => '', 'field_size' => 0, 'show_on_filters' => false);
+    $options = array_merge($options,(array)$opt);
+    extract($options);
 
 		$str_out='';
-		// $t_id = $p_field_def['id'];
-		// $t_type = $p_field_def['type'];
-    	// $input_name = "{$this->name_prefix}{$t_type}_{$t_id}{$name_suffix}";
 
-	  	$t_custom_field_value = $p_field_def['default_value'];
-	  	if( isset($p_field_def['value']) )
+	  $t_custom_field_value = $p_field_def['default_value'];
+	  if( isset($p_field_def['value']) )
 		{
 		  $t_custom_field_value = $p_field_def['value'];
 		}
 
-    	$verbose_type=trim($this->custom_field_types[$p_field_def['type']]);
-  		$t_custom_field_value = htmlspecialchars( $t_custom_field_value );
-    	$input_name = $this->buildHTMLInputName($p_field_def,$name_suffix);
-    	$size = isset($this->sizes[$verbose_type]) ? intval($this->sizes[$verbose_type]) : 0;
+    $verbose_type=trim($this->custom_field_types[$p_field_def['type']]);
+  	$t_custom_field_value = htmlspecialchars( $t_custom_field_value );
+    $input_name = $this->buildHTMLInputName($p_field_def,$name_suffix);
+    $size = isset($this->sizes[$verbose_type]) ? intval($this->sizes[$verbose_type]) : 0;
     	
-    	if( $field_size > 0)
-    	{
-    	  $size=$field_size;
-    	}
+    if( $field_size > 0)
+    {
+    	$size=$field_size;
+    }
         
 		switch ($verbose_type)
 		{
@@ -577,45 +569,42 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   		case 'multiselection list':
    			$t_values = explode( '|', $p_field_def['possible_values']);
    			$t_values_count = count($t_values);
-        	if( $verbose_type == 'list' )
-        	{
-        	   // get maximum allowed window size for lists
-        	   $window_size = intval($size) > 1 ? $size : self::LISTBOX_WINDOW_SIZE;
-        	   
-        	   $t_multiple=' ';
-        	   
-        	   // 20100701 - asimon - removed single space in next line, 
-        	   // it was causing errors in field names on HTML because it somehow gets replaced
-        	   // by an underscore somwhere and then the field name doesn't match anymore
-        	   //$t_name_suffix=' ';
-        	   $t_name_suffix='';
-        	}
-        	else
-        	{
-        	   // get maximum allowed window size for mutliselection lists
-        	   $window_size = intval($size) > 1 ? $size : self::MULTISELECTIONLIST_WINDOW_SIZE;
-        	   $t_name_suffix='[]';
-        	   $t_multiple=' multiple="multiple" ';
-        	}
+       	if( $verbose_type == 'list' )
+       	{
+        	// get maximum allowed window size for lists
+        	$window_size = intval($size) > 1 ? $size : self::LISTBOX_WINDOW_SIZE;
+        	$t_multiple=' ';
+      	  $t_name_suffix='';
+       	}
+       	else
+       	{
+          // get maximum allowed window size for mutliselection lists
+        	$window_size = intval($size) > 1 ? $size : self::MULTISELECTIONLIST_WINDOW_SIZE;
+        	$t_name_suffix='[]';
+        	$t_multiple=' multiple="multiple" ';
+       	}
         	
-        	// BUGID 4164 lists and multiselection lists do not use more space than necessary
-        	// set the list size to the number of possible values of custom field
-            // but respect the maximum window size
-        	$t_list_size = $t_values_count;
+        // set the list size to the number of possible values of custom field
+        // but respect the maximum window size
+       	$t_list_size = $t_values_count;
 		    if($t_list_size > $window_size)
-        	{
-        	   $t_list_size=$window_size;
-        	}
+       	{
+          $t_list_size=$window_size;
+        }
         	
-        	$html_identity=$input_name . $t_name_suffix;
+        $html_identity=$input_name . $t_name_suffix;
   			$str_out .="<select name=\"{$html_identity}\" id=\"{$input_name}\" {$t_multiple}";
   			$str_out .= ' size="' . $t_list_size . '">';
         	
   			$t_selected_values = explode( '|', $t_custom_field_value );
-   			foreach( $t_values as $t_option ) {
-  				if( in_array( $t_option, $t_selected_values ) ) {
+   			foreach( $t_values as $t_option ) 
+        {
+  				if( in_array( $t_option, $t_selected_values ) ) 
+          {
    					$str_out .='<option value="' . $t_option . '" selected> ' . $t_option . '</option>';
-   				} else {
+   				} 
+          else 
+          {
    					$str_out .='<option value="' . $t_option . '">' . $t_option . '</option>';
    				}
    			}
@@ -624,19 +613,19 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
 		case 'checkbox':
 			$t_values = explode( '|', $p_field_def['possible_values']);
-        	$t_checked_values = explode( '|', $t_custom_field_value );
+      $t_checked_values = explode( '|', $t_custom_field_value );
 			foreach( $t_values as $t_option )
 			{
 				$str_out .= '<input type="checkbox" name="' . $input_name . '[]"' . " id=\"{$input_name}\"";
 				
-				// 20100218 - franciscom - added check $t_option != '' to make check box start NOT CHECKED
+				// added check $t_option != '' to make check box start NOT CHECKED
 				if( $t_option != '' && in_array($t_option, $t_checked_values) )
 				{
-					  $str_out .= ' value="' . $t_option . '" checked="checked">&nbsp;' . $t_option . '&nbsp;&nbsp;';
+					$str_out .= ' value="' . $t_option . '" checked="checked">&nbsp;' . $t_option . '&nbsp;&nbsp;';
 				}
 				else
 				{
-					  $str_out .= ' value="' . $t_option . '">&nbsp;' . $t_option . '&nbsp;&nbsp;';
+					$str_out .= ' value="' . $t_option . '">&nbsp;' . $t_option . '&nbsp;&nbsp;';
 				}
 				
 			}
@@ -646,7 +635,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   		case 'email':
   		case 'float':
   		case 'numeric':
-			$str_out .= $this->string_input_string($p_field_def,$input_name,$t_custom_field_value,$size);
+			 $str_out .= $this->string_input_string($p_field_def,$input_name,$t_custom_field_value,$size);
 			break ;
 
 		case 'text area':
@@ -2406,7 +2395,7 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
          based on Mantis 1.2.0a1 code
          
   */
-  function string_input_radio($p_field_def, $p_input_name, $p_custom_field_value) 
+  private function string_input_radio($p_field_def, $p_input_name, $p_custom_field_value) 
   {
     $str_out='';
     $t_values = explode( '|', $p_field_def['possible_values']);                                        
@@ -2472,23 +2461,24 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
 
     returns: html string
   
-    rev: 20080817 - franciscom
          
   */
-  function string_input_string($p_field_def, $p_input_name, $p_custom_field_value, $p_size) 
+  private function string_input_string($p_field_def, $p_input_name, $p_custom_field_value, $p_size) 
   {
-  	$str_out='';
+
+    // $required = $p_field_def['required'] ? ' class="required" ' : ' class="" ';
+    $str_out='';
     $size = intval($p_size) > 0 ? $p_size : self::DEFAULT_INPUT_SIZE;
   	$str_out .= "<input type=\"text\" name=\"{$p_input_name}\" id=\"{$p_input_name}\" size=\"{$size}\" ";
-	if( 0 < $p_field_def['length_max'] )
-	{
-	  $str_out .= ' maxlength="' . $p_field_def['length_max'] . '"';
-	}
-	else
-	{
-	   $str_out .= ' maxlength="255"';
-	}
-	$str_out .= ' value="' . $p_custom_field_value .'"></input>';
+  	if( 0 < $p_field_def['length_max'] )
+  	{
+  	  $str_out .= ' maxlength="' . $p_field_def['length_max'] . '"';
+  	}
+  	else
+  	{
+  	   $str_out .= ' maxlength="255"';
+  	}
+  	$str_out .= ' value="' . $p_custom_field_value .'"></input>';
     return $str_out;
   }               
 
@@ -2652,36 +2642,36 @@ function buildHTMLInputName($cf,$name_suffix)
 function html_table_inputs($cfields_map,$name_suffix='',$input_values=null)
 {
 	$cf_smarty = '';
-    if(!is_null($cfields_map))
-    {
+  $getOpt = array('name_suffix' => $name_suffix);
+
+  if(!is_null($cfields_map))
+  {
 		$cf_map = $this->getValuesFromUserInput($cfields_map,$name_suffix,$input_values);
-    	$NO_WARNING_IF_MISSING=true;
-    	$cf_smarty = "<table>";
-    	foreach($cf_map as $cf_id => $cf_info)
-    	{
-            $label=str_replace(TL_LOCALIZE_TAG,'',
-                               lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
+    $NO_WARNING_IF_MISSING=true;
+    $cf_smarty = "<table>";
+    foreach($cf_map as $cf_id => $cf_info)
+    {
+      $label=str_replace(TL_LOCALIZE_TAG,'',
+                         lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
 
 
-	     	// IMPORTANT NOTICE
-	     	// assigning an ID with this format is CRITIC to Javascript logic used
-	     	// to validate input data filled by user according to CF type
+      // IMPORTANT NOTICE
+	    // assigning an ID with this format is CRITIC to Javascript logic used
+	    // to validate input data filled by user according to CF type
 			// extract input html id
 			// Want to give an html id to <td> used as labelHolder, to use it in Javascript
 			// logic to validate CF content
-			$cf_html_string = $this->string_custom_field_input($cf_info,$name_suffix);
-			$dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
-	     	$td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
-    		$cf_smarty .= "<tr><td class=\"labelHolder\" {$td_label_id}>" . htmlspecialchars($label) . ":</td><td>" .
-    			          $this->string_custom_field_input($cf_info,$name_suffix) .
-    					  "</td></tr>\n";
-    	}
-    	$cf_smarty .= "</table>";
+			$cf_html_string = $this->string_custom_field_input($cf_info,$getOpt);
+			
+      $dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
+	    $td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
+
+    	$cf_smarty .= "<tr><td class=\"labelHolder\" {$td_label_id}>" . htmlspecialchars($label) . ":</td><td>" .
+    			          $this->string_custom_field_input($cf_info,$getOpt) . "</td></tr>\n";
     }
-    return $cf_smarty;
-
-	
-
+    $cf_smarty .= "</table>";
+  }
+  return $cf_smarty;
 }
 
 

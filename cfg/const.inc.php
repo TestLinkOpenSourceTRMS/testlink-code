@@ -94,6 +94,8 @@ define('TP_STATUS_ACTIVE', 1);
 define('DO_LANG_GET',1 );
 define('DONT_DO_LANG_GET',0 );
 
+define('LANG_GET_NO_WARNING',true);
+
 define('DSN', FALSE);  // for method connect() of database.class
 define('ANY_BUILD', null);
 define('GET_NO_EXEC', 1);

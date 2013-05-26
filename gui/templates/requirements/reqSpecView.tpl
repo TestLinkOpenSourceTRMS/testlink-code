@@ -7,7 +7,7 @@ Purpose: view a requirement specification
 @author: Martin Havlat
 
 @internal revisions
-@since 1.9.6
+@since 1.9.8
 *}
 
 {lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,
@@ -147,7 +147,7 @@ Purpose: view a requirement specification
    <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
    {/if}
 {if $gui->req_spec.id}
-{include file="$buttons_template" args_reqspec_id=$reqSpecID}
+{include file="requirements/$buttons_template" args_reqspec_id=$reqSpecID}
 <table class="simple">
 	<tr>
 		<th>{$gui->main_descr|escape}</th>

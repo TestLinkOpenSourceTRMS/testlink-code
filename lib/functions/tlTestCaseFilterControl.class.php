@@ -34,9 +34,11 @@
  *    --> assign requirements
  *
  * @internal revisions
- * @since 1.9.7
- *
- */
+ * @since 1.9.8
+ * 20130526 - franciscom - init_filter_custom_fields() moved to tlFilterControl class
+ *                         new method   protected function getCustomFields()
+ *                         some changes in visibility => IMHO is better if we use protected
+*/
 
 /*
  * --------------------------------------------------------
@@ -182,7 +184,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
    * Initialized not in constructor, only on first use to save resources.
    * @var exec_cf_mgr
    */
-  private $cfield_mgr = null;
+  //public $cfield_mgr = null;
   
   /**
    * Testplan manager object.
@@ -321,7 +323,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
    * @param database $dbHandler
    * @param string $mode can be edit_mode/execution_mode/plan_mode/plan_add_mode, depending on usage
    */
-  public function __construct(&$dbHandler, $mode = 'edit_mode') {
+  public function __construct(&$dbHandler, $mode = 'edit_mode') 
+  {
 
     // set mode to define further actions before calling parent constructor
     $this->mode = array_key_exists($mode,$this->mode_filter_mapping) ? $mode : 'edit_mode';
@@ -331,6 +334,11 @@ class tlTestCaseFilterControl extends tlFilterControl {
     // and does all the remaining necessary method calls,
     // so no further method call is required here for initialization.
     parent::__construct($dbHandler);
+    $this->cfield_mgr = new cfield_mgr($this->db);
+
+    // moved here from parent::__constructor() to be certain that 
+    // all required objects has been created
+    $this->init_filters();
 
     $this->initTreeOptions($this->mode);
     
@@ -1639,129 +1647,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
   } // end of method
 
-  private function init_filter_custom_fields() 
-  {
-    $key = 'filter_custom_fields';
-    $no_warning = true;
 
-    $locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
-    $localesDateFormat = config_get('locales_date_format');
-    $date_format = str_replace('%', '', $localesDateFormat[$locale]);
-    
-    $collapsed = isset($_SESSION['cf_filter_collapsed']) ? $_SESSION['cf_filter_collapsed'] : 0;
-    $collapsed = isset($_REQUEST['btn_toggle_cf']) ? !$collapsed : $collapsed;
-    $_SESSION['cf_filter_collapsed'] = $collapsed;  
-    $btn_label = $collapsed ? lang_get('btn_show_cf') : lang_get('btn_hide_cf');
-    
-    if (!$this->cfield_mgr) {
-      $this->cfield_mgr = new cfield_mgr($this->db, $this->args->testproject_id);
-    }
-    
-    $cfields = $this->cfield_mgr->get_linked_cfields_at_design($this->args->testproject_id, 1, null, 'testcase');
-    $cf_prefix = $this->cfield_mgr->name_prefix;
-    $cf_html_code = "";
-    $selection = array();
-    
-    $this->filters[$key] = false;
-    $this->active_filters[$key] = null;
-
-    if (!is_null($cfields)) 
-    {
-      // display and compute only when custom fields are in use
-      foreach ($cfields as $cf_id => $cf) 
-      {
-        // has a value been selected?
-        $id = $cf['id'];
-        $type = $cf['type'];
-        $verbose_type = trim($this->cfield_mgr->custom_field_types[$type]);
-        $cf_input_name = "{$cf_prefix}{$type}_{$id}";
-        
-        
-        // BUGID 3716
-        // custom fields on test spec did not retain value after apply
-        // IMPORTANT/CRITIC issue:  trim() on array makes array = null !!!
-        //
-        $value = isset($_REQUEST[$cf_input_name]) ? $_REQUEST[$cf_input_name] : null;
-
-        if ($this->args->reset_filters) 
-        {
-          $value = null;
-        }
-        else
-        {
-          // BUGID 3884: added filtering for datetime custom fields
-          if ($verbose_type == 'datetime') {
-            // if cf is a date field, convert the three given values to unixtime format
-            if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != ''
-            && isset($_REQUEST[$cf_input_name . '_hour']) && $_REQUEST[$cf_input_name . '_hour'] != ''
-            && isset($_REQUEST[$cf_input_name . '_minute']) && $_REQUEST[$cf_input_name . '_minute'] != ''
-            && isset($_REQUEST[$cf_input_name . '_second']) && $_REQUEST[$cf_input_name . '_second'] != '') {
-              $date = $_REQUEST[$cf_input_name . '_input'];
-              $hour = $_REQUEST[$cf_input_name . '_hour'];
-              $minute = $_REQUEST[$cf_input_name . '_minute'];
-              $second = $_REQUEST[$cf_input_name . '_second'];
-                  
-              $date_array = split_localized_date($date, $date_format);
-              $value = mktime($hour, $minute, $second, $date_array['month'], $date_array['day'], $date_array['year']);
-            }
-          }
-                  
-          if ($verbose_type == 'date') {
-            // if cf is a date field, convert the three given values to unixtime format
-            // BUGID 3883: only set values if different from 0
-            if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != '') {
-              $date = $_REQUEST[$cf_input_name . '_input'];           
-              $date_array = split_localized_date($date, $date_format);
-              $value = mktime(0, 0, 0, $date_array['month'], $date_array['day'], $date_array['year']);
-            }
-          }
-        }
-
-
-        
-        $value2display = $value;
-        if (!is_null($value2display) && is_array($value2display))
-        {
-          $value2display = implode("|", $value2display);
-        }
-        else 
-        {
-          $value = trim($value);
-          $value2display = $value;
-        }
-        $cf['value'] = $value2display;
-
-        if (!is_null($value) && $value !='') 
-        {
-          $this->do_filtering = true;
-          $selection[$id] = $value;
-        }
-
-        $label = str_replace(TL_LOCALIZE_TAG, '', lang_get($cf['label'], null, $no_warning));
-
-        $cf_size = self::CF_INPUT_SIZE;
-        // set special size for list inputs
-        if ($verbose_type == 'list' || $verbose_type == 'multiselection list') {
-          $cf_size = 3;
-        }
-        
-        // don't show textarea inputs here, they are too large for filterpanel
-        if ($verbose_type != 'text area') {
-          $cf_html_code .= '<tr class="cfRow"><td>' . htmlspecialchars($label) . '</td><td>' .
-                           $this->cfield_mgr->string_custom_field_input($cf, '', $cf_size, true) .
-                           '</td></tr>';
-        }
-      }
-
-      // BUGID 3566: show/hide CF
-      $this->filters[$key] = array('items' => $cf_html_code, 
-                                   'btn_label' => $btn_label, 
-                                   'collapsed' => $collapsed);
-      $this->active_filters[$key] = count($selection) ? $selection : null;
-    }
-  } // end of method
-
-
+  /**
+   *
+   */ 
   private function init_filter_result() 
   {
     $result_key = 'filter_result_result';
@@ -1858,17 +1747,15 @@ class tlTestCaseFilterControl extends tlFilterControl {
     
     // if "any" is selected, nullify the active filters
     if ((is_array($result_selection) && in_array($any_result_key, $result_selection)) || 
-        $result_selection == $any_result_key) {
+        $result_selection == $any_result_key) 
+    {
       $this->active_filters[$result_key] = null;
       $this->active_filters[$method_key] = null;
       $this->active_filters[$build_key] = null;
       $this->filters[$key][$result_key]['selected'] = $any_result_key;
-    
-      // TICKET 0005627
-      // $this->filters[$key][$method_key]['selected'] = $default_filter_method;
-      // $this->filters[$key][$build_key]['selected'] = $newest_build_id;
     } 
-    else {
+    else 
+    {
       $this->active_filters[$result_key] = $result_selection;
       $this->active_filters[$method_key] = $method_selection;
       $this->active_filters[$build_key] = $build_selection;
@@ -1891,5 +1778,17 @@ class tlTestCaseFilterControl extends tlFilterControl {
     
   }
   
-} // end of class tlTestCaseFilterControl
-?>
+  /**
+   *
+   */ 
+  protected function getCustomFields()
+  {
+    if (!$this->cfield_mgr) 
+    {
+      $this->cfield_mgr = new cfield_mgr($this->db);
+    }
+    $cfields = $this->cfield_mgr->get_linked_cfields_at_design($this->args->testproject_id, 1, null, 'testcase');
+    return $cfields;
+  }
+
+}

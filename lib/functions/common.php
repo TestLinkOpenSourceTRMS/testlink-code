@@ -55,7 +55,10 @@ require_once("inputparameter.inc.php");
 /** @TODO use the next include only if it is used -> must be removed */
 // require_once("testproject.class.php"); 
 require_once("treeMenu.inc.php");
-require_once("exec_cfield_mgr.class.php");
+
+
+// 20130526 checks need to be done in order to understand if this class is really needed
+require_once("exec_cfield_mgr.class.php");   
 
 /**
  * Automatic loader for PHP classes

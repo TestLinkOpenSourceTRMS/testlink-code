@@ -2,7 +2,7 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	inc_exec_show_tc_exec.tpl
 @internal revisions
-@since 1.9.7
+@since 1.9.8
 *}	
  	{foreach item=tc_exec from=$gui->map_last_exec}
 
@@ -19,12 +19,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
     {* ------------------------------------------------------------------------------------ *}
     {lang_get s='th_testsuite' var='container_title'}
-    {assign var="div_id" value=tsdetails_$tc_id}
-    {assign var="memstatus_id" value=tsdetails_view_status_$tc_id}
+    {assign var="div_id" value="tsdetails_$tc_id"}
+    {assign var="memstatus_id" value="tsdetails_view_status_$tc_id"}
     {assign var="ts_name"  value=$tsuite_info[$tc_id].tsuite_name}
     {assign var="container_title" value="$container_title$title_sep$ts_name"}
 
-	{* TICKET 5128,5129,5130 *}
 	{assign var="can_delete_exec" value=0}
 	{assign var="can_edit_exec_notes" value=$gui->grants->edit_exec_notes}
 	{assign var="can_manage_attachments" value=$gsmarty_attachments->enabled}

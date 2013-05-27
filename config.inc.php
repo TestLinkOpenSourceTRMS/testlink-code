@@ -17,12 +17,12 @@
  * It saves your changes for the next upgrade in one extra file.
  *
  * @filesource  config.inc.php
- * @package   TestLink
+ * @package     TestLink
  * @copyright   2005-2013, TestLink community
- * @link    http://www.teamst.org/index.php
+ * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.8
  *
  **/
 
@@ -1463,12 +1463,13 @@ $g_role_replace_for_deleted_roles = $tlCfg->default_roleid;
 
 
 /**
-Using "|" in the testsuite name causes malformed URLs
-regexp used to check for chars not allowed in:
-test project, test suite and testcase names.
-@TODO martin: encode harm characters @see http://cz.php.net/urlencode (and remove the parameter)
-*/
-// now is preg pattern
+ * Using "|" in the testsuite name causes malformed URLs
+ * regexp used to check for chars not allowed in:
+ * test project, test suite and testcase names.
+ * @TODO martin: encode harm characters @see http://cz.php.net/urlencode (and remove the parameter)
+ *
+ * now is preg pattern
+ */
 $g_ereg_forbidden = "/[|]/i";
 
 
@@ -1490,4 +1491,3 @@ $tlCfg->gui->title_separator_2 =  $tlCfg->gui_title_separator_2;
 $tlCfg->gui->role_separator_open =  $tlCfg->gui_separator_open;
 $tlCfg->gui->role_separator_close = $tlCfg->gui_separator_close;
 // ----- END OF FILE --------------------------------------------------------------------
-?>

@@ -76,7 +76,7 @@ if (!isset($_GET['load']))
   $version = isset($_GET['version']) ? "&version=" . $_GET['version'] : '';
   $new_link = $item . $id . $version . $tprojectPrefix . '&load' . $anchor;
  
-  $gui = new stdClas();
+  $gui = new stdClass();
   $gui->title = lang_get('main_page_title');
   $gui->titleframe = 'lib/general/navBar.php';
   $gui->mainframe = 'linkto.php?' . $new_link;

@@ -197,7 +197,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   static $reqSpecSet;
   static $getVersionOpt;
   static $userObj;
-  
+  static $tcasePrefix;
+
   if (!$tcData)
   {
     return;

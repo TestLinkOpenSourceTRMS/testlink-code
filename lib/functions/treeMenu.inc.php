@@ -1173,7 +1173,8 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
             
       $passed = (count($rows) == count($cf_hash)) ? true : false;
       // now delete node if no match was found
-      if (!$passed) {
+      if (!$passed) 
+      {
         unset($tcase_tree[$key]);
         $node_deleted = true;
       }
@@ -1412,20 +1413,20 @@ function filter_not_run_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters
  */
 function buildKeywordsFilter($keywordsId,&$guiObj)
 {
-    $keywordsFilter = null;
+  $keywordsFilter = null;
     
-    if(!is_null($keywordsId))
+  if(!is_null($keywordsId))
+  {
+    $items = array_flip((array)$keywordsId);
+    if(!isset($items[0]))
     {
-        $items = array_flip((array)$keywordsId);
-        if(!isset($items[0]))
-        {
-            $keywordsFilter = new stdClass();
-            $keywordsFilter->items = $keywordsId;
-            $keywordsFilter->type = isset($guiObj->keywordsFilterTypes) ? $guiObj->keywordsFilterTypes->selected: 'OR';
-        }
+      $keywordsFilter = new stdClass();
+      $keywordsFilter->items = $keywordsId;
+      $keywordsFilter->type = isset($guiObj->keywordsFilterTypes) ? $guiObj->keywordsFilterTypes->selected: 'OR';
     }
+  }
     
-    return $keywordsFilter;
+  return $keywordsFilter;
 }
 
 
@@ -2099,16 +2100,16 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
       }
     
       $pnFilters = array('keywords' => $my['filters']['filter_keywords'],
-                 'keywords_filter_type' => $my['filters']['filter_keywords_filter_type']);
-        // TICKET 4353 - added active/inactive filter
-    $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'],
-                           'ignoreInactiveTestCases' => $my['options']['ignore_inactive_testcases'],
-                           'ignoreActiveTestCases' => $my['options']['ignore_active_testcases']);
+                         'keywords_filter_type' => $my['filters']['filter_keywords_filter_type']);
+
+      $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'],
+                         'ignoreInactiveTestCases' => $my['options']['ignore_inactive_testcases'],
+                         'ignoreActiveTestCases' => $my['options']['ignore_active_testcases']);
     
     // Important/CRITIC: 
     // prepareTestSpecNode() will make changes to $test_spec like filtering by test case keywords.
     $testcase_counters = prepareTestSpecNode($db, $tproject_mgr,$tproject_id,$test_spec,$map_node_tccount,
-                         $pnFilters,$pnOptions);
+                                             $pnFilters,$pnOptions);
 
     //$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
     //$t_elapsed = number_format( $tnow - $tprev, 4);
@@ -2250,19 +2251,19 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
     
   static $status_descr_list;
   static $debugMsg;
-    static $tables;
-    static $my;
-    static $filtersApplied;
+  static $tables;
+  static $my;
+  static $filtersApplied;
   static $decoding_info;
   static $tcFilterByKeywords;
   static $doFilterOn;
 
   if (!$tables)
   {
-        $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
-        $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
+    $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
+    $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
     $decoding_info = array('node_id_descr' => 
-                 array_flip($tprojectMgr->tree_manager->get_available_node_types()));
+                           array_flip($tprojectMgr->tree_manager->get_available_node_types()));
     $my = array();
     $my['options'] = array('hideTestCases' => 0);
     $my['filters'] = array('keywords' => null);
@@ -2273,7 +2274,7 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
     if( ($doFilterOn['keywords'] = !is_null($my['filters']['keywords'])) )
     {
       $tcFilterByKeywords = $tprojectMgr->getTCasesFilteredByKeywords($tprojectID,$my['filters']['keywords'],
-                                              $my['filters']['keywords_filter_type']);
+                                                                      $my['filters']['keywords_filter_type']);
       if( is_null($tcFilterByKeywords) )
       {
         // tree will be empty

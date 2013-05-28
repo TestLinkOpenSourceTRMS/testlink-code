@@ -2949,31 +2949,45 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
  *
  *
  * @internal revisions
- * @since 1.9.4
- *
+ * @since 1.9.8
+ * 20130528 - franciscom - -1 => WITHOUT KEYWORDS
+ * 
  */
 function getTCasesFilteredByKeywords($testproject_id, $keyword_id=0, $keyword_filter_type='Or')
 {
-    $keyword_filter = " keyword_id IN (" . implode(',',(array)$keyword_id) . ")";            
+  $keySet = (array)$keyword_id;
+  if(in_array(-1,$keySet))
+  {  
+    // get all test cases present on test project
+    $tcaseSet = array();
+    $this->get_all_testcases_id($testproject_id,$tcaseSet);
+    $sql = " /* WITHOUT KEYWORDS */ " . 
+           " SELECT NHTC.id AS testcase_id FROM {$this->tables['nodes_hierarchy']} NHTC " .  
+           " WHERE NHTC.id IN (" . implode(',',$tcaseSet) . ") AND NOT EXISTS " .
+           " (SELECT 1 FROM {$this->tables['testcase_keywords']} TCK WHERE TCK.testcase_id = NHTC.id) ";
+  }
+  else
+  {  
+    $keyword_filter = " keyword_id IN (" . implode(',',$keySet) . ")";            
     if($keyword_filter_type == 'And')
     {
-      $sql =  " /* Filter Type = AND */ " .
-        " SELECT FOXDOG.testcase_id FROM " .
-        " ( SELECT COUNT(testcase_id) AS HITS,testcase_id " .
-        "   FROM {$this->tables['testcase_keywords']} " .
-        "   WHERE {$keyword_filter} " .
-        "   GROUP BY testcase_id ) AS FOXDOG " . 
-        " WHERE FOXDOG.HITS = " . count($keyword_id );
+      $sql = " /* Filter Type = AND */ " .
+             " SELECT FOXDOG.testcase_id FROM " .
+             " ( SELECT COUNT(testcase_id) AS HITS,testcase_id " .
+             "   FROM {$this->tables['testcase_keywords']} " .
+             "   WHERE {$keyword_filter} " .
+             "   GROUP BY testcase_id ) AS FOXDOG " . 
+             " WHERE FOXDOG.HITS = " . count($keyword_id );
     }    
-  else
-  {
-    $sql =  " /* Filter Type = OR */ " .
-        " SELECT testcase_id " .
-            " FROM {$this->tables['testcase_keywords']} " .
-        " WHERE {$keyword_filter} ";
+    else
+    {
+      $sql = " /* Filter Type = OR */ " .
+             " SELECT testcase_id " .
+             " FROM {$this->tables['testcase_keywords']} " .
+             " WHERE {$keyword_filter} ";
+    }
   }
   $hits = $this->db->fetchRowsIntoMap($sql,'testcase_id');
-
   return($hits);
 }
 

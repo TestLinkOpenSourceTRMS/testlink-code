@@ -931,15 +931,17 @@ class tlTestCaseFilterControl extends tlFilterControl {
           // TICKET 4353: added active/inactive filter
           $ignore_inactive_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
           $ignore_active_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
-          if ($filters['filter_active_inactive'] == IGNORE_INACTIVE_TESTCASES)
-          {
-              $ignore_inactive_testcases = IGNORE_INACTIVE_TESTCASES;
-          }
-          if ($filters['filter_active_inactive'] == IGNORE_ACTIVE_TESTCASES)
-          {
-              $ignore_active_testcases = IGNORE_ACTIVE_TESTCASES;
-          }
-                    
+          if(isset($filters['filter_active_inactive']))
+          {  
+            if ($filters['filter_active_inactive'] == IGNORE_INACTIVE_TESTCASES)
+            {
+                $ignore_inactive_testcases = IGNORE_INACTIVE_TESTCASES;
+            }
+            if ($filters['filter_active_inactive'] == IGNORE_ACTIVE_TESTCASES)
+            {
+                $ignore_active_testcases = IGNORE_ACTIVE_TESTCASES;
+            }
+          }          
           $options = array('forPrinting' => NOT_FOR_PRINTING,
                            'hideTestCases' => SHOW_TESTCASES,
                            'tc_action_enabled' => DO_ON_TESTCASE_CLICK,
@@ -1395,7 +1397,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
    * 
    * 
    */
-  private function init_filter_keywords() {
+  private function init_filter_keywords() 
+  {
     $key = 'filter_keywords';
     $type = 'filter_keywords_filter_type';
     $this->filters[$key] = false;
@@ -1404,41 +1407,49 @@ class tlTestCaseFilterControl extends tlFilterControl {
     switch ($this->mode) 
     {
       case 'edit_mode':
-      case 'plan_add_mode':   // BUGID 3822
+      case 'plan_add_mode':
         // we need the keywords for the whole testproject
-        if (!$this->testproject_mgr) {
+        if (!$this->testproject_mgr) 
+        {
           $this->testproject_mgr = new testproject($this->db);
         }
         $keywords = $this->testproject_mgr->get_keywords_map($this->args->testproject_id);
-        break;
+      break;
 
       default:
         // otherwise (not in edit mode), we want only keywords assigned to testplan
-        if (!$this->testplan_mgr) {
+        if (!$this->testplan_mgr) 
+        {
           $this->testplan_mgr = new testplan($this->db);
         }
         $tplan_id = $this->settings['setting_testplan']['selected'];
         $keywords = $this->testplan_mgr->get_keywords_map($tplan_id, ' ORDER BY keyword ');
-        break;
+      break;
     }
 
     $selection = $this->args->{$key};
     $type_selection = $this->args->{$type};
     
     // are there any keywords?
-    if (!is_null($keywords) && count($keywords)) {
+    if (!is_null($keywords) && count($keywords)) 
+    {
       $this->filters[$key] = array();
 
-      if (!$selection || !$type_selection || $this->args->reset_filters) {
+      if (!$selection || !$type_selection || $this->args->reset_filters) 
+      {
         // default values for filter reset
         $selection = null;
         $type_selection = 'Or';
-      } else {
+      } 
+      else 
+      {
         $this->do_filtering = true;
       }
       
       // data for the keywords themselves
-      $this->filters[$key]['items'] = array($this->option_strings['any']) + $keywords;
+      $this->filters[$key]['items'] = array(-1 => $this->option_strings['without_keywords'], 
+                                             0 => $this->option_strings['any']) + $keywords;
+
       $this->filters[$key]['selected'] = $selection;
       $this->filters[$key]['size'] = min(count($this->filters[$key]['items']),
                                          self::ADVANCED_FILTER_ITEM_QUANTITY);
@@ -1452,73 +1463,93 @@ class tlTestCaseFilterControl extends tlFilterControl {
     
     // set the active value to filter
     // delete keyword filter if "any" (0) is part of the selection - regardless of filter mode
-    if (is_array($this->filters[$key]['selected'])
-    && in_array(0, $this->filters[$key]['selected'])) {
+    if (is_array($this->filters[$key]['selected']) && in_array(0, $this->filters[$key]['selected'])) 
+    {
       $this->active_filters[$key] = null;
-    } else {
+    } 
+    else 
+    {
       $this->active_filters[$key] = $this->filters[$key]['selected'];
     }
     $this->active_filters[$type] = $selection ? $type_selection : null;
   } // end of method
 
     // TICKET 4353: added active/inactive filter
-    private function init_filter_active_inactive() {
-        $key = 'filter_active_inactive';
+  private function init_filter_active_inactive() 
+  {
+    $key = 'filter_active_inactive';
         
-        $items = array(DO_NOT_FILTER_INACTIVE_TESTCASES => $this->option_strings['any'],
-                       IGNORE_INACTIVE_TESTCASES => lang_get('show_only_active_testcases'),
-                       IGNORE_ACTIVE_TESTCASES => lang_get('show_only_inactive_testcases'));
+    $items = array(DO_NOT_FILTER_INACTIVE_TESTCASES => $this->option_strings['any'],
+                   IGNORE_INACTIVE_TESTCASES => lang_get('show_only_active_testcases'),
+                   IGNORE_ACTIVE_TESTCASES => lang_get('show_only_inactive_testcases'));
         
-        $selection = $this->args->{$key};
+    $selection = $this->args->{$key};
         
-        if (!$selection || $this->args->reset_filters) {
-            $selection = null;
-        } else {
-            $this->do_filtering = true;
-        }
-
-        $this->filters[$key] = array('items' => $items, 'selected' => $selection);
-        $this->active_filters[$key] = $selection;
+    if (!$selection || $this->args->reset_filters) 
+    {
+      $selection = null;
+    } 
+    else 
+    {
+      $this->do_filtering = true;
     }
-    
-    // TICKET 4217: added importance filter
-    private function init_filter_importance() {
-        // This is a special case of filter: the menu items don't get initialized here,
-        // they are available as a global smarty variable. So the only thing to be managed
-        // here is the selection by user.
 
+    $this->filters[$key] = array('items' => $items, 'selected' => $selection);
+    $this->active_filters[$key] = $selection;
+  }
+    
+
+    /**
+     *
+     * This is a special case of filter: the menu items don't get initialized here,
+     * they are available as a global smarty variable. So the only thing to be managed
+     * here is the selection by user.
+     */
+    private function init_filter_importance() 
+    {
+        // show this filter only if test priority management is enabled
         $key = 'filter_importance';
         $this->active_filters[$key] = null;
         $this->filters[$key] = false;
 
-        // show this filter only if test priority management is enabled
-        if (!$this->testproject_mgr) {
+        if (!$this->testproject_mgr) 
+        {
             $this->testproject_mgr = new testproject($this->db);
         }
         $tp_info = $this->testproject_mgr->get_by_id($this->args->testproject_id);
         $enabled = $tp_info['opt']->testPriorityEnabled;
 
-        if ($enabled) {
-            // default value and filter reset
-            $selection = $this->args->{$key};
-            if (!$selection || $this->args->reset_filters) {
-                $selection = null;
-            } else {
-                $this->do_filtering = true;
-            }
+        if ($enabled) 
+        {
+          $selection = $this->args->{$key};
+          if (!$selection || $this->args->reset_filters) 
+          {
+            $selection = null;
+          } 
+          else 
+          {
+            $this->do_filtering = true;
+          }
 
-            $this->filters[$key] = array('selected' => $selection);
-            $this->active_filters[$key] = $selection;
+          $this->filters[$key] = array('selected' => $selection);
+          $this->active_filters[$key] = $selection;
         }
     }
-    
-  private function init_filter_priority() {
+  
+
+  /**
+   *
+   *
+   */  
+  private function init_filter_priority() 
+  {
     // This is a special case of filter: the menu items don't get initialized here,
     // they are available as a global smarty variable. So the only thing to be managed
     // here is the selection by user.
     $key = 'filter_priority';
     
-    if (!$this->testproject_mgr) {
+    if (!$this->testproject_mgr) 
+    {
       $this->testproject_mgr = new testproject($this->db);
     }
     
@@ -1528,13 +1559,15 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $this->active_filters[$key] = null;
     $this->filters[$key] = false;
     
-    // BUGID 3910: show filter only if test priority management is enabled
-    if ($enabled) {
-      // default value and filter reset
+    if ($enabled) 
+    {
       $selection = $this->args->{$key};
-      if (!$selection || $this->args->reset_filters) {
+      if (!$selection || $this->args->reset_filters) 
+      {
         $selection = null;
-      } else {
+      } 
+      else 
+      {
         $this->do_filtering = true;
       }
   
@@ -1560,15 +1593,19 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $this->filters[$key] = array('items' => array(), 'selected' => $selection);
 
     // load available execution types
-    $this->filters[$key]['items'] = $this->tc_mgr->get_execution_types();
     // add "any" string to these types at index 0 as default selection
+    $this->filters[$key]['items'] = $this->tc_mgr->get_execution_types();
     $this->filters[$key]['items'] = array(0 => $this->option_strings['any'])
                                           + $this->filters[$key]['items'];
     
     $this->active_filters[$key] = $selection;
   } // end of method
 
-  private function init_filter_assigned_user() {
+  /**
+   *
+   */
+  private function init_filter_assigned_user() 
+  {
     if (!$this->testproject_mgr) {
       $this->testproject_mgr = new testproject($this->db);
     }

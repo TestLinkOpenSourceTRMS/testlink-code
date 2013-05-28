@@ -270,6 +270,7 @@ abstract class tlFilterControl extends tlObjectWithDB
     $this->option_strings['any'] = $gui_open . lang_get('any') . $gui_close;
     $this->option_strings['none'] = $gui_open . lang_get('nobody') . $gui_close;
     $this->option_strings['somebody'] = $gui_open . lang_get('filter_somebody') . $gui_close;
+    $this->option_strings['without_keywords'] = $gui_open . lang_get('without_keywords') . $gui_close;
 
     return tl::OK;
   } // end of method

@@ -714,8 +714,9 @@ function renderTreeNode($level,&$node,$hash_id_descr,
   // custom Property that will be accessed by EXT-JS using node.attributes
   $node['testlink_node_name'] = filterString($node['name']);
   $node['testlink_node_type'] = $hash_id_descr[$node['node_type_id']];
-  $node['forbidden_parent'] = $forbidden_parents[$node['node_type_id']];
-  
+  // $node['forbidden_parent'] = $forbidden_parents[$node['node_type_id']];
+  $node['forbidden_parent'] = $forbidden_parents[$node['testlink_node_type']];
+
   $testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0; 
   $pfn = $f2call[$node['testlink_node_type']];
   

@@ -11,8 +11,8 @@ Purpose: show form for search through test cases in test specification
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels" 
-          s='title_search_tcs,caption_search_form,th_tcid,th_tcversion,
-             th_title,summary,steps,expected_results,keyword,custom_field,
+          s='title_search_tcs,caption_search_form,th_tcid,th_tcversion,edited_by,
+             th_title,summary,steps,expected_results,keyword,custom_field,created_by,
              search_type_like,preconditions,filter_mode_and,test_importance,search_prefix_ignored,
              creation_date_from,creation_date_to,modification_date_from,modification_date_to,
              custom_field_value,btn_find,requirement_document_id,show_calender,clear_date'}
@@ -50,6 +50,16 @@ Purpose: show form for search through test cases in test specification
 		<tr>
 			<td>{$labels.th_title}</td>
 			<td><input type="text" name="name" size="{#TCNAME_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" /></td>
+		</tr>
+		<tr>
+			<td>{$labels.created_by}</td>
+			<td><input type="text" name="created_by" id="created_by"  
+				       size="{#AUTHOR_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" /></td>
+		</tr>
+		<tr>
+			<td>{$labels.edited_by}</td>
+			<td><input type="text" name="edited_by" id ="edited_by" 
+				       size="{#AUTHOR_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" /></td>
 		</tr>
 		<tr>
 			<td>{$labels.summary}</td>

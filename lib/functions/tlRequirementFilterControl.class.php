@@ -50,7 +50,7 @@ class tlRequirementFilterControl extends tlFilterControl
                                'filter_coverage' => array("POST", tlInputParameter::INT_N),
                                'filter_relation' => array("POST", tlInputParameter::ARRAY_STRING_N),
                                'filter_tc_id' => array("POST", tlInputParameter::STRING_N),
-                               'filter_custom_fields' => null);
+                               'filter_custom_fields' => null, 'filter_result' => false);
   
   /**
    * This array contains all possible settings. It is used as a helper

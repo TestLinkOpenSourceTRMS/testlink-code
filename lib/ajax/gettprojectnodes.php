@@ -41,7 +41,7 @@ $operation = isset($_REQUEST['operation']) ? $_REQUEST['operation']: 'manage';
 
 // for debug - file_put_contents('d:\request.txt', serialize($_REQUEST));                            
 $nodes = display_children($db,$root_node,$node,$filter_node,$tcprefix,$show_tcases,$operation);
-file_put_contents('/tmp/gettp.txt',serialize($nodes));
+// file_put_contents('/tmp/gettp.txt',serialize($nodes));
 echo json_encode($nodes);
 
 function display_children($dbHandler,$root_node,$parent,$filter_node,

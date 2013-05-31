@@ -13,7 +13,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.8
  **/
 
 class testcaseCommands
@@ -201,7 +201,10 @@ class testcaseCommands
     }
 
     $options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
-                     'action_on_duplicate_name' => 'block');
+                     'action_on_duplicate_name' => 'block',
+                     'status' => $argsObj->tc_status,
+                     'estimatedExecDuration' => $argsObj->estimated_execution_duration);
+
     $tcase = $this->tcaseMgr->create($argsObj->container_id,$argsObj->name,$argsObj->summary,$argsObj->preconditions,
                                      $argsObj->tcaseSteps,$argsObj->user_id,$argsObj->assigned_keywords_list,
                                      $new_order,testcase::AUTOMATIC_ID,
@@ -295,10 +298,14 @@ class testcaseCommands
   */
   function doUpdate(&$argsObj,$request)
   {
+    $options = array('status' => $argsObj->tc_status,
+                     'estimatedExecDuration' => $argsObj->estimated_execution_duration);
+    
     $ret = $this->tcaseMgr->update($argsObj->tcase_id, $argsObj->tcversion_id, $argsObj->name, 
                                    $argsObj->summary, $argsObj->preconditions, $argsObj->tcaseSteps, 
                                    $argsObj->user_id, $argsObj->assigned_keywords_list,
-                                   testcase::DEFAULT_ORDER, $argsObj->exec_type, $argsObj->importance);
+                                   testcase::DEFAULT_ORDER, $argsObj->exec_type, 
+                                   $argsObj->importance,$options);
 
     $this->show($argsObj,$request,$ret);
     return $guiObj;
@@ -364,13 +371,12 @@ class testcaseCommands
    */
   function delete(&$argsObj,$request)
   {
-      $guiObj = $this->initGuiBean($argsObj);
-     $guiObj->delete_message = '';
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->delete_message = '';
     $cfg = config_get('testcase_cfg');
 
-    // TICKET 4322
-     $guiObj->exec_status_quo = $this->tcaseMgr->get_exec_status($argsObj->tcase_id,null, 
-                                   array('addExecIndicator' => true));
+    $guiObj->exec_status_quo = $this->tcaseMgr->get_exec_status($argsObj->tcase_id,null, 
+                                                                array('addExecIndicator' => true));
 
     $guiObj->delete_enabled = 1;
     if( $guiObj->exec_status_quo['executed'] && !$cfg->can_delete_executed )

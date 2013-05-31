@@ -13,7 +13,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.8
  *
  **/
 require_once("../../config.inc.php");
@@ -124,6 +124,7 @@ switch($args->doAction)
 
 if( $doRender )
 {
+  // new dBug($gui);
   renderGui($args,$gui,$op,$templateCfg,$cfg,$testCaseEditorKeys);
   exit();
 }
@@ -413,6 +414,16 @@ function init_args(&$cfgObj,$otName)
   $args->stay_here = isset($_REQUEST['stay_here']) ? 1 : 0;
 
 
+  $dummy = getConfigAndLabels('testCaseStatus','code');
+  $args->tcStatusCfg['status_code'] = $dummy['cfg'];
+  $args->tcStatusCfg['code_label'] = $dummy['lbl'];
+  $args->tc_status = isset($_REQUEST['tc_status']) ? intval($_REQUEST['tc_status']) : 
+                     $args->tcStatusCfg['status_code']['draft'];
+  
+  $dk = 'estimated_execution_duration';
+  $args->$dk = trim(isset($_REQUEST[$dk]) ? $_REQUEST[$dk] : '');
+
+
   $args->user = $_SESSION['currentUser'];
   return $args;
 }
@@ -559,8 +570,9 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
   }
   
   $guiObj->direct_link = $tcaseMgr->buildDirectWebLink($_SESSION['basehref'],$argsObj->tcase_id,
-                             $argsObj->testproject_id);
+                                                       $argsObj->testproject_id);
 
+  $guiObj->domainTCStatus = $argsObj->tcStatusCfg['code_label'];
   
 
   $grant2check = array('mgt_modify_tc','mgt_view_req','testplan_planning','mgt_modify_product',
@@ -653,15 +665,15 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
     $smartyObj->assign($key, $of->CreateHTML($rows,$cols));
   }
       
-  // manage tree refresh - BUGID 3579
-    switch($argsObj->doAction) {
-        case "doDelete":
-          $guiObj->refreshTree = $argsObj->refreshTree;
-     break;
-    }
+  switch($argsObj->doAction) 
+  {
+    case "doDelete":
+      $guiObj->refreshTree = $argsObj->refreshTree;
+    break;
+  }
 
-    switch($argsObj->doAction)
-    {
+  switch($argsObj->doAction)
+  {
         case "edit":
         case "create":
         case "delete":
@@ -689,7 +701,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
             
             $tplDir = (!isset($opObj->template_dir)  || is_null($opObj->template_dir)) ? $templateCfg->template_dir : $opObj->template_dir;
             $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
-            
+
             $pos = strpos($tpl, '.php');
             if($pos === false)
             {

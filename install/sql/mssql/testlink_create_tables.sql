@@ -528,8 +528,8 @@ CREATE TABLE /*prefix*/tcversions (
   version smallint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_version DEFAULT ((1)),
   layout INT NOT NULL DEFAULT '1',
   status int NOT NULL DEFAULT ((1)),
-    summary nvarchar(max)   NULL,
-    preconditions nvarchar(max)  NULL,
+  summary nvarchar(max)   NULL,
+  preconditions nvarchar(max)  NULL,
   importance tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_importance DEFAULT ((2)),
   author_id int NULL,
   creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_tcversions_creation_ts DEFAULT (getdate()),
@@ -538,6 +538,7 @@ CREATE TABLE /*prefix*/tcversions (
   active tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_active DEFAULT ((1)),
   is_open tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_open DEFAULT ((1)),
   execution_type tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_execution_type DEFAULT ((1)),
+  estimated_exec_duration NULL decimal(6,2),
  CONSTRAINT /*prefix*/PK_tcversions PRIMARY KEY CLUSTERED 
 (
   id ASC

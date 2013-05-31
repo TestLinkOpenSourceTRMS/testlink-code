@@ -3,19 +3,14 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: tcEdit_New_viewer.tpl,v 1.27 2010/10/11 18:11:29 franciscom Exp $
 Purpose: smarty template - create new testcase
 
-@internal Revisions:
-  20101011 - franciscom - equalizing ID for DIV that function as CF container
-  20101010 - franciscom - refactoring of BUGID 3062 -> call to checkTCaseDuplicateName() without global coupling
-	20100306 - eloff - BUGID 3062 - Check for duplicate name via JAXA using checkTCaseDuplicateName()
-	20090831 - franciscom - preconditions
-	20090718 - franciscom - added management of custom field location
-	20061231 - franciscom - viewer for tcEdit.tpl and tcNew.tpl
+@internal revisions
+ 
 *}
 
 {* ---------------------------------------------------------------- *}
 {lang_get var='labels' 
           s='tc_title,alt_add_tc_name,summary,steps,expected_results,
-             preconditions,
+             preconditions,status,estimated_execution_duration,
              execution_type,test_importance,tc_keywords,assign_requirements'}
 
 {* Steps and results Layout management *}
@@ -72,14 +67,6 @@ Purpose: smarty template - create new testcase
 	  {/if}
 		{$layout1}
 
-{* Multiple Test Case Steps Feature                              *}   
-{* <div class="labelHolder">{$labels.steps}</div>                *}
-{* <div>{$steps}</div>                                           *}
-{* {$layout2}                                                    *} 
-{* <div class="labelHolder">{$labels.expected_results}</div>     *}
-{* <div>{$expected_results}</div>                                *} 
-{* {$layout3}                                                    *}
-
 		{if $session['testprojectOptions']->automationEnabled}
 			<div class="labelHolder">{$labels.execution_type}
 			<select name="exec_type" onchange="content_modified = true">
@@ -96,10 +83,25 @@ Purpose: smarty template - create new testcase
 	    	</select>
 			</div>
 		{/if}
-    	
+
+  		<div>
+		<span class="labelHolder">{$labels.status}</span>
+		<select name="tc_status" id="tc_status" 
+				onchange="content_modified = true">
+		{html_options options=$gui->domainTCStatus selected=$gui->tc.status}
+		</select>
+		</div>
+		<div>
+		<span class="labelHolder">{$labels.estimated_execution_duration}</span>
+		<input type="text" name="estimated_execution_duration" id="estimated_execution_duration"
+			   size="{#EXEC_DURATION_SIZE#}" maxlength="{#EXEC_DURATION_MAXLEN#}"
+			   title="{$labels.estimated_execution_duration}" 
+			   value={$gui->tc.estimated_exec_duration}>
+		</div>
+  	
     </div>
 
-	{* Custom fields - with standard location - 20090718 - franciscom *}
+	{* Custom fields - with standard location  *}
 	{if $gui->cf.standard_location neq ""}
 	     <br/>
 	     <div id="cfields_design_time" class="custom_field_container">

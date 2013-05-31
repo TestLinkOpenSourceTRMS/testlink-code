@@ -132,6 +132,7 @@ CREATE TABLE /*prefix*/tcversions(
   "active" INT2 NOT NULL DEFAULT '1',
   "is_open" INT2 NOT NULL DEFAULT '1',
   "execution_type" INT2 NOT NULL DEFAULT '1',
+  "estimated_exec_duration" numeric(6,2) NULL,
   PRIMARY KEY ("id")
 ); 
 

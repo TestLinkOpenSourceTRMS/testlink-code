@@ -15,6 +15,7 @@ viewer for test case in test specification
              execution_type_short_descr,delete_step,show_hide_reorder,btn_new_sibling,
              test_plan,platform,insert_step,btn_print,btn_print_view,hint_new_version,
              execution_type,test_importance,none,preconditions,btn_compare_versions,
+             estimated_execution_duration,status,
              requirement,btn_show_exec_history,btn_resequence_steps,link_unlink_requirements"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
@@ -361,8 +362,18 @@ function launchInsertStep(step_id)
    </form>
    </div>
 {/if}
+  <div {$addInfoDivStyle}>
+    <span class="labelHolder">{$tcView_viewer_labels.status} {$smarty.const.TITLE_SEP}</span>
+    {$gui->domainTCStatus[$args_testcase.status]}
+  </div>
 
-  {* 20090718 - franciscom *}
+   <div {$addInfoDivStyle}>
+    <span class="labelHolder">{$tcView_viewer_labels.estimated_execution_duration} {$smarty.const.TITLE_SEP}</span>
+    {$args_testcase.estimated_exec_duration}
+  </div>
+
+
+
   {if $args_cf.standard_location neq ''}
   <div {$addInfoDivStyle}>
         <div id="cfields_design_time" class="custom_field_container">{$args_cf.standard_location}</div>

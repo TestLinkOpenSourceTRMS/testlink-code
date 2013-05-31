@@ -69,6 +69,8 @@ $TLS_doc_id_short = "Doc ID";
 $TLS_destination_top = "Destination position top";
 $TLS_destination_bottom = "Destination position bottom";
 $TLS_error = "Error";
+$TLS_estimated_execution_duration = "Estimated exec. duration (min)";
+$TLS_execution_duration = "Execution duration (min)";
 $TLS_export = "Export";
 $TLS_export_as_spreadsheet = "Export Data as spreadsheet";
 $TLS_file_type = 'File type';
@@ -1600,6 +1602,7 @@ $TLS_warning_editing_executed_step = "Warning! This Test Case Step has been exec
 $TLS_warning_editing_executed_tc = "Warning! This Test Case version has been executed.";
 $TLS_warning_delete_executed_tc = "Warning! This Test Case version has been executed.";
 $TLS_warning_unsaved = "You will lose any unsaved changes!";
+$TLS_warning_estimated_execution_duration_format = "Estimated execution duration accepts only numeric or float values";
 
 
 

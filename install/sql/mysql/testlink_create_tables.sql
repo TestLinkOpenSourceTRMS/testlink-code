@@ -389,6 +389,7 @@ CREATE TABLE /*prefix*/tcversions (
   `active` tinyint(1) NOT NULL default '1',
   `is_open` tinyint(1) NOT NULL default '1',
   `execution_type` tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
+  `estimated_exec_duration` decimal(6,2) NULL COMMENT 'NULL will be considered as NO DATA Provided by user',
   PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8;
 

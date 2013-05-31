@@ -7,7 +7,7 @@ Purpose: smarty template - edit test specification: test case
 *}
 
 {lang_get var="labels"
-          s="warning,warning_empty_tc_title,btn_save,
+          s="warning,warning_empty_tc_title,btn_save,warning_estimated_execution_duration_format,
              version,title_edit_tc,cancel,warning_unsaved"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
@@ -30,9 +30,10 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 </script>
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title|escape:'javascript'}";
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_estimated_execution_duration_format = "{$labels.warning_estimated_execution_duration_format|escape:'javascript'}";
+
 
 {literal}        
 /**
@@ -49,6 +50,14 @@ function validateForm(the_form)
 		selectField(the_form,'testcase_name');
 		return false;
 	}
+
+	var val2check = the_form.estimated_execution_duration.value;
+	if( isNaN(val2check) || /^\s+$/.test(val2check.trim()))
+	{
+		alert_message(alert_box_title,warning_estimated_execution_duration_format);
+		return false;
+	}
+
 	var cf_designTime = document.getElementById('cfields_design_time');
 	if (cf_designTime)
  	{

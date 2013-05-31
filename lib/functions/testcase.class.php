@@ -10,7 +10,7 @@
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.8
  */
 
 /** related functionality */
@@ -176,7 +176,9 @@ class testcase extends tlObjectWithAttachments
   {
 
     $options = array('check_duplicate_name' => self::CHECK_DUPLICATE_NAME, 
-                     'action_on_duplicate_name' => 'block');
+                     'action_on_duplicate_name' => 'block',
+                     'estimatedExecDuration' => $item->estimatedExecDuration,
+                     'status' => $item->status);
 
     $ret = $this->create($item->testSuiteID,$item->name,$item->summary,$item->preconditions,
                          $item->steps,$item->authorID,'',$item->order,self::AUTOMATIC_ID,
@@ -188,8 +190,6 @@ class testcase extends tlObjectWithAttachments
    * create a test case
    *
    * @internal revisions
-   *
-   * 20100905 - franciscom - added new key on ret value 'tcversion_id';
    */
   function create($parent_id,$name,$summary,$preconditions,$steps,$author_id,
                   $keywords_id='',$tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
@@ -199,10 +199,15 @@ class testcase extends tlObjectWithAttachments
     $status_ok = 1;
 
     $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME, 
-                            'action_on_duplicate_name' => 'generate_new');
+                            'action_on_duplicate_name' => 'generate_new',
+                            'estimatedExecDuration' => null,
+                            'status' => null);
+
     $my['options'] = array_merge($my['options'], (array)$options);
     
     $ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id,$my['options']);
+
+    $ix = new stdClass();
 
     if($ret["status_ok"])
     {
@@ -212,7 +217,7 @@ class testcase extends tlObjectWithAttachments
         $this->addKeywords($ret['id'],$a_keywords);
       }
       
-      $version_number = 1;
+      $ix->version = 1;
       if(isset($ret['version_number']) && $ret['version_number'] < 0)
       {
         // We are in the special situation we are only creating a new version,
@@ -220,15 +225,31 @@ class testcase extends tlObjectWithAttachments
         // I do not use create_new_version() because it does a copy ot last version
         // and do not allow to set new values in different fields while doing this operation.
         $last_version_info = $this->get_last_version_info($ret['id'],array('output' => 'minimun'));
-        $version_number = $last_version_info['version']+1;
-        $ret['msg'] = sprintf($ret['msg'],$version_number);       
-        
-        $ret['version_number']=$version_number;
+
+        $ix->version = $last_version_info['version']+1;
+        $ret['msg'] = sprintf($ret['msg'],$ix->version);       
+        $ret['version_number'] = $ix->version;
       }
-      // Multiple Test Case Steps Feature
-      $op = $this->create_tcversion($ret['id'],$ret['external_id'],$version_number,$summary,
-                                    $preconditions,$steps,$author_id,$execution_type,$importance);
       
+      // Multiple Test Case Steps Feature
+      // $op = $this->create_tcversion($ret['id'],$ret['external_id'],$version_number,$summary,
+      //                              $preconditions,$steps,$author_id,$execution_type,$importance);
+      
+      $ix->id = $ret['id'];
+      $ix->externalID = $ret['external_id'];
+      $ix->summary = $summary;
+      $ix->preconditions = $preconditions;
+      $ix->steps = $steps;
+      $ix->authorID = $author_id;
+      $ix->executionType = $execution_type;
+      $ix->importance = $importance;
+      $ix->status = $my['options']['status'];
+      $ix->estimatedExecDuration = $my['options']['estimatedExecDuration'];
+
+      $op = $this->createVersion($ix);
+
+
+
       $ret['msg'] = $op['status_ok'] ? $ret['msg'] : $op['msg'];
       $ret['tcversion_id'] = $op['status_ok'] ? $op['id'] : -1;
     }
@@ -415,6 +436,22 @@ class testcase extends tlObjectWithAttachments
   
     return $ret;
   }
+
+
+ /**
+  *
+  */ 
+ function xcreateVersion($item)
+ {
+    // function create_tcversion($id,$tc_ext_id,$version,$summary,$preconditions,$steps,
+    //                        $author_id,$execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
+  
+    return $this->create_tcversion($item->id,$item->externalID,$item->version,$item->summary,
+                                   $item->preconditions,$item->steps,$item->authorID,
+                                   $item->executionType,$item->importance,
+                                   $item->estimatedExecDuration);
+
+ }
   
   /*
     function: create_tcversion
@@ -426,42 +463,70 @@ class testcase extends tlObjectWithAttachments
     rev: 
  
   */
-  function create_tcversion($id,$tc_ext_id,$version,$summary,$preconditions,$steps,
-                            $author_id,$execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
-  {
+ 
+
+  // function create_tcversion($id,$tc_ext_id,$version,$summary,$preconditions,$steps,
+  //                          $author_id,$execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
+  //                          $importance=2,$status=null,$estimatedExecDuration=null)
+  // {
+ private function createVersion($item)
+ {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $tcase_version_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
+    $tcase_version_id = $this->tree_manager->new_node($item->id,$this->node_types_descr_id['testcase_version']);
+
     $sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcversions']} " .
            " (id,tc_external_id,version,summary,preconditions," . 
-           "author_id,creation_ts,execution_type,importance) " . 
-           " VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .
-           $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($preconditions) . "'," . 
-           $this->db->prepare_int($author_id) . "," . $this->db->db_now() . 
-           ", {$execution_type},{$importance} )";
-    
+           "  author_id,creation_ts,execution_type,importance ";
+
+    $sqlValues = " VALUES({$tcase_version_id},{$item->externalID},{$item->version},'" .
+                 $this->db->prepare_string($item->summary) . "','" . 
+                 $this->db->prepare_string($item->preconditions) . "'," . 
+                 $this->db->prepare_int($item->authorID) . "," . $this->db->db_now() . 
+                 ", {$item->executionType},{$item->importance} ";
+
+
+    if( !is_null($item->status) )
+    {
+      $wf = intval($item->status);
+      $sql .= ',status';
+      $sqlValues .= ",{$wf}";
+    }
+
+    if( !is_null($item->estimatedExecDuration) )    
+    {
+      $v = trim($item->estimatedExecDuration);
+      if($v != '')
+      {
+        $sql .= ", estimated_exec_duration";
+        $sqlValues .= "," . floatval($v);
+      }
+    }
+      
+    $sql .= " )" . $sqlValues . " )";
+
+
     $result = $this->db->exec_query($sql);
     $ret['msg']='ok';
     $ret['id']=$tcase_version_id;
     $ret['status_ok']=1;
 
-    if ($result && ( !is_null($steps) && is_array($steps) ) )
+    if ($result && ( !is_null($item->steps) && is_array($item->steps) ) )
     {
-      $steps2create = count($steps);
+      $steps2create = count($item->steps);
       $op['status_ok'] = 1;
 
       // need to this to manage call to this method for REST API.
-      // 
       $stepIsObject =  is_object($steps[0]);
-
       for($jdx=0 ; ($jdx < $steps2create && $op['status_ok']); $jdx++)
       {
         if($stepIsObject)
         {
-          $steps[$jdx] = (array)$steps[$jdx];
+          $item->steps[$jdx] = (array)$item->steps[$jdx];
         }  
 
-        $op = $this->create_step($tcase_version_id,$steps[$jdx]['step_number'],$steps[$jdx]['actions'],
-                                 $steps[$jdx]['expected_results'],$steps[$jdx]['execution_type']);
+        $op = $this->create_step($tcase_version_id,$item->steps[$jdx]['step_number'],
+                                 $item->steps[$jdx]['actions'],$item->steps[$jdx]['expected_results'],
+                                 $item->steps[$jdx]['execution_type']);
       }  
     }
   
@@ -759,11 +824,16 @@ class testcase extends tlObjectWithAttachments
    */
   function update($id,$tcversion_id,$name,$summary,$preconditions,$steps,
                   $user_id,$keywords_id='',$tc_order=self::DEFAULT_ORDER,
-                  $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
+                  $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2,
+                  $attr=null)
   {
     $ret['status_ok'] = 1;
     $ret['msg'] = '';
-    
+
+    $attrib = array('status' => null, 'estimatedExecDuration' => null);
+    $attrib = array_merge($attrib,(array)$attr);
+
+
     tLog("TC UPDATE ID=($id): exec_type=$execution_type importance=$importance");
     
     // Check if new name will be create a duplicate testcase under same parent
@@ -779,40 +849,54 @@ class testcase extends tlObjectWithAttachments
     {    
       $sql=array();
       $sql[] = " UPDATE {$this->tables['nodes_hierarchy']} SET name='" .
-           $this->db->prepare_string($name) . "' WHERE id= {$id}";
+               $this->db->prepare_string($name) . "' WHERE id= {$id}";
     
-      // test case version 
-      // BUGID - 3849
-        $sql[] = " UPDATE {$this->tables['tcversions']} " .
-                 " SET summary='" . $this->db->prepare_string($summary) . "'," .
-             " updater_id=" . $this->db->prepare_int($user_id) . ", " .
-             " modification_ts = " . $this->db->db_now() . "," .
-             " execution_type=" . $this->db->prepare_int($execution_type) . ", " . 
-             " importance=" . $this->db->prepare_int($importance) . "," .
-             " preconditions='" . $this->db->prepare_string($preconditions) . "' " .
-             " WHERE id = " . $this->db->prepare_int($tcversion_id); 
+      $dummy = " UPDATE {$this->tables['tcversions']} " .
+               " SET summary='" . $this->db->prepare_string($summary) . "'," .
+               " updater_id=" . $this->db->prepare_int($user_id) . ", " .
+               " modification_ts = " . $this->db->db_now() . "," .
+               " execution_type=" . $this->db->prepare_int($execution_type) . ", " . 
+               " importance=" . $this->db->prepare_int($importance) . "," .
+               " preconditions='" . $this->db->prepare_string($preconditions) . "' ";
+
+
+      if( !is_null($attrib['status']) )    
+      {
+        $dummy .= ", status=" . intval($attrib['status']); 
+      }
+      
+      if( !is_null($attrib['estimatedExecDuration']) )    
+      {
+        $dummy .= ", estimated_exec_duration=";
+        $v = trim($attrib['estimatedExecDuration']);
+        
+        $dummy .= ($v == '') ? "NULL" : floatval($v);
+      }
+
+      $dummy .= " WHERE id = " . $this->db->prepare_int($tcversion_id); 
+      $sql[] = $dummy;
+
     
       foreach($sql as $stm)
       {
-          $result = $this->db->exec_query($stm);
-          if( !$result )
-          {
+        $result = $this->db->exec_query($stm);
+        if( !$result )
+        {
           $ret['status_ok'] = 0;
           $ret['msg'] = $this->db->error_msg;
           break;
-          }
+        }
       }
         
-        // BUGID 3634 - missing update.
-        if( $ret['status_ok'] && !is_null($steps) )
-        {
-          $this->update_tcversion_steps($tcversion_id,$steps);
-        }
+      if( $ret['status_ok'] && !is_null($steps) )
+      {
+        $this->update_tcversion_steps($tcversion_id,$steps);
+      }
         
       if( $ret['status_ok'] )
-        {      
-           $this->updateKeywordAssignment($id,$keywords_id);
-        }
+      {      
+        $this->updateKeywordAssignment($id,$keywords_id);
+      }
     }
         
     return $ret;
@@ -1355,32 +1439,36 @@ class testcase extends tlObjectWithAttachments
       $newTCObj = $this->create_tcase_only($parent_id,$tcase_info[0]['name'],
                                            $tcase_info[0]['node_order'],self::AUTOMATIC_ID,
                                            $my['options']);
+      $ix = new stdClass();
+      $ix->authorID = $user_id;
+      $ix->status = null;
+      $ix->steps = null;
+
       if($newTCObj['status_ok'])
       {
         $ret['status_ok']=1;
         $newTCObj['mappings'][$id] = $newTCObj['id'];
-        $externalID = $newTCObj['external_id'];
+
+        $ix->id = $newTCObj['id'];
+        $ix->externalID = $newTCObj['external_id'];
         if( $my['options']['preserve_external_id'] )
         {
-          $externalID = $tcase_info[0]['tc_external_id'];
+          $ix->externalID = $tcase_info[0]['tc_external_id'];
         }
             
         foreach($tcase_info as $tcversion)
         {
           
-          // BUGID 4374: When copying a project, external TC ID is not preserved
-          // 20100221 - franciscom - 
           // IMPORTANT NOTICE:
           // In order to implement COPY to another test project, WE CAN NOT ASK
           // to method create_tcversion() to create inside itself THE STEPS.
           // Passing NULL as steps we instruct create_tcversion() TO DO NOT CREATE STEPS
-          // 
-          // BUGID 4404 - $tcversion['author_id'] -> user_id
-          $op = $this->create_tcversion($newTCObj['id'],$externalID,$tcversion['version'],
-                                        $tcversion['summary'],$tcversion['preconditions'],null,
-                                        $user_id,$tcversion['execution_type'],
-                                        $tcversion['importance']);
-          
+          $ix->summary = $tcversion['summary'];
+          $ix->preconditions = $tcversion['preconditions'];
+          $ix->executionType = $tcversion['execution_type'];
+          $ix->importance = $tcversion['importance'];
+          $op = $this->createVersion($ix);
+
           if( $op['status_ok'] )
           {
               $newTCObj['mappings'][$tcversion['id']] = $op['id'];
@@ -4775,8 +4863,6 @@ class testcase extends tlObjectWithAttachments
         $cfSelect = ", CFDV.field_id, CFDV.value ";
         $cfJoin = " JOIN {$this->tables['cfield_design_values']} CFDV ON CFDV.node_id = TCV.id ";
         $cfQuery = " AND ({$cfQuery}) ";
-
-        // new dBug($cfSelect); new dBug($cfJoin); new dBug($cfQuery);
       }
 
       $keySet = implode(',',array_keys($recordset));
@@ -5505,7 +5591,6 @@ class testcase extends tlObjectWithAttachments
             $addWhere .
             " AND (E.build_id = {$safeContext['build_id']} OR E.build_id IS NULL)";
             
-            //new dBug($sql);
             // using database::CUMULATIVE is just a trick to return data structure
             // that will be liked on execSetResults.php
             $out = $this->db->fetchRowsIntoMap($sql,'testcase_id',database::CUMULATIVE);
@@ -5765,7 +5850,7 @@ class testcase extends tlObjectWithAttachments
     // fine grain control of operations
     if( $viewer_defaults['disable_edit'] == 1 || ($grantsObj->mgt_modify_tc == false) )
     {
-          $goo->show_mode = 'editDisabled';
+      $goo->show_mode = 'editDisabled';
     }
     else if( !is_null($goo->show_mode) && $goo->show_mode == 'editOnExec' )
     {

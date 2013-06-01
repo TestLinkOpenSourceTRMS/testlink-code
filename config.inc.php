@@ -493,13 +493,13 @@ $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 
 $tlCfg->gui->text_editor = array();
 $tlCfg->gui->text_editor['all'] = array('type' => 'ckeditor','toolbar' => 'Testlink',
-                                      'configFile' => 'cfg/tl_ckeditor_config.js',
-                                        'height' => 300);
+                                        'configFile' => 'cfg/tl_ckeditor_config.js',
+                                        'height' => 150);
 
 // mini toolbar for test case steps edit
 $tlCfg->gui->text_editor['steps_design'] = array('type' => 'ckeditor','toolbar' => 'TestlinkMini',
-                                               'configFile' => 'cfg/tl_ckeditor_config.js',
-                                                 'height' => 200);
+                                                 'configFile' => 'cfg/tl_ckeditor_config.js',
+                                                 'height' => 100);
 
 $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 

@@ -2629,6 +2629,9 @@ class testplan extends tlObjectWithAttachments
       $cfield_id=key($cf_info);
     }
     
+
+
+
     if( $status_ok)
     {
       $tcVersionIDSet = array();
@@ -2731,10 +2734,104 @@ class testplan extends tlObjectWithAttachments
   */
   function get_execution_time($id,$execIDSet=null,$platformID=null)
   {
+    // check if cf exist and is assigned and active intest plan parent (TEST PROJECT)
+    $pinfo = $this->tree_manager->get_node_hierarchy_info($id);
+    $cf_info = $this->cfield_mgr->get_linked_to_testproject($pinfo['parent_id'],1,array('name' => 'CF_EXEC_TIME'));
+    if( is_null($cf_info) )
+    {
+      return $this->getExecutionTime($id,$execIDSet,$platformID);
+    }  
+    else
+    {
+      return $this->getExecutionTimeFromCF($id,$execIDSet,$platformID);
+    } 
+  }
+
+
+  /**
+   *
+   */ 
+  function getExecutionTime($id,$execIDSet=null,$platformID=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $total_time = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
+    $targetSet = array();
+
+    $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
+    $platformSet = array_keys($this->getPlatforms($id,$getOpt));
+
+
+    if( is_null($execIDSet) )
+    {
+      $filters = null;
+      if( !is_null($platformID) )
+      {   
+        $filters = array('platform_id' => $platformID);
+      }
+        
+      // we will compute time for ALL linked and executed test cases,
+      // BUT USING ONLY TIME SPEND for LAST executed TCVERSION
+      $options = array('addExecInfo' => true);
+      $executed = $this->getLTCVNewGeneration($id,$filters,$options); 
+
+      if( ($status_ok = !is_null($executed)) )
+      {
+        $tc2loop = array_keys($executed);
+        foreach($tc2loop as $tcase_id)
+        {
+          $p2loop = array_keys($executed[$tcase_id]);
+          foreach($p2loop as $platf_id)
+          {
+            $targetSet[$platf_id][]=array('id' => $executed[$tcase_id][$platf_id]['exec_id'],
+                                          'duration' => $executed[$tcase_id][$platf_id]['execution_duration']);
+          }  
+        }    
+      }
+    }  
+    else
+    {
+      // If user has passed in a set of exec id, we assume that
+      // he has make a good work, i.e. if he/she wanted just analize 
+      // executions for just a PLATFORM he/she has filtered BEFORE
+      // passing in input to this method the item set.
+      // Then we will IGNORE value of argument platformID to avoid
+      // run a second (and probably useless query).
+      // We will use platformID JUST as index for output result
+      if( is_null($platformID) )
+      {
+          throw new Exception(__FUNCTION__ . ' When you pass $execIDSet an YOU NEED TO PROVIDE a platform ID');
+      }  
+      $targetSet[$platformID] = $this->getExecutionDurationForSet($execIDSet);
+    }  
+
+    foreach($targetSet as $platfID => $itemSet)
+    {  
+      $total_time['platform'][$platfID]['minutes'] = 0;
+      $total_time['platform'][$platfID]['tcase_qty'] = count($itemSet);
+      foreach($itemSet as $dx)
+      {
+        if(!is_null($dx['duration']))
+        {  
+          $total_time['platform'][$platfID]['minutes'] += $dx['duration'];
+        }  
+      }  
+
+      $total_time['totalMinutes'] += $total_time['platform'][$platfID]['minutes'];
+      $total_time['totalTestCases'] += $total_time['platform'][$platfID]['tcase_qty'];
+    }
+    return $total_time;
+  }    
+
+
+  /**
+   *
+   */ 
+  function getExecutionTimeFromCF($id,$execIDSet=null,$platformID=null)
+  {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $total_time = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
     $targetSet = array();
-    
     $cf_info = $this->cfield_mgr->get_by_name('CF_EXEC_TIME');
     
     // CF exists ?
@@ -2743,6 +2840,7 @@ class testplan extends tlObjectWithAttachments
       $cfield_id=key($cf_info);
     }
     
+
     if( $status_ok)
     {
       $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
@@ -2762,7 +2860,7 @@ class testplan extends tlObjectWithAttachments
               " WHERE CFEV.field_id={$cfield_id} " .
               " AND testplan_id={$id} ";
       // ----------------------------------------------------------------------------
-            
+     
       if( is_null($execIDSet) )
       {
         
@@ -2777,6 +2875,9 @@ class testplan extends tlObjectWithAttachments
         // $options = array('only_executed' => true, 'output' => 'mapOfMap');
         $options = array('addExecInfo' => true);
         $executed = $this->getLTCVNewGeneration($id,$filters,$options); 
+
+        new dBug($executed);
+
         if( ($status_ok = !is_null($executed)) )
         {
           $tc2loop = array_keys($executed);
@@ -2814,6 +2915,9 @@ class testplan extends tlObjectWithAttachments
       // we can found SOME LIMITS on number of elements on IN CLAUSE
       //
       $estimated = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
+
+      new dBug($targetSet);
+
       foreach($targetSet as $platfID => $items)
       {  
         $sql2exec = $sql . " AND execution_id IN (" . implode(',',$items) . ")";
@@ -6385,6 +6489,7 @@ class testplan extends tlObjectWithAttachments
                      ($my['options']['addPriority'] ? "(TPTCV.urgency * TCV.importance) AS priority," : '') .
                      " TPTCV.platform_id,PLAT.name AS platform_name,TPTCV.node_order AS execution_order,".
                      " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status, " .
+                     " E.execution_duration, " .
                     $this->helperConcatTCasePrefix($safe['tplan_id']) . "  AS full_external_id ";
 
     // used on tester assignment feature when working at test suite level
@@ -6540,6 +6645,20 @@ class testplan extends tlObjectWithAttachments
     $this->db->exec_query($sql);
     return $this->db->insert_id($this->tables['executions']);    
   }
+
+/**
+ *
+ */
+function getExecutionDurationForSet($execIDSet)
+{
+  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  $sql = "/* $debugMsg */ " .
+         "SELECT E.id, E.execution_duration AS duration ".
+         "FROM {$this->tables['executions']} E " .
+         "WHERE id IN (" . implode(',',$execIDSet) . ')';
+  return $this->db->get_recordset($sql);       
+}
+
 
 
 

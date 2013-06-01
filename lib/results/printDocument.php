@@ -553,6 +553,9 @@ function buildContentForTestPlan(&$dbHandler,$itemsTree,$tplanID,$platformIDSet,
     }
   
     $dummy4reference = null;
+
+    // new dBug($tree2work);
+
     prepareNode($dbHandler,$tree2work,$decode,$dummy4reference,$dummy4reference,
                 $linkedBy[$platform_id],$pnFilters,$pnOptions);
   
@@ -561,7 +564,9 @@ function buildContentForTestPlan(&$dbHandler,$itemsTree,$tplanID,$platformIDSet,
   return $contentByPlatform;
 }
 
-
+/**
+ *
+ */
 function buildContentForTestPlanBranch(&$dbHandler,$itemsTree,$branchRoot,$tplanID,$platformIDSet,
                                        &$docInfo,$decode,&$tplanMgr,$options=null)
 {
@@ -632,7 +637,9 @@ function buildContentForTestPlanBranch(&$dbHandler,$itemsTree,$branchRoot,$tplan
   return array($contentByPlatform,$metrics);
 }    
 
-
+/**
+ *
+ */
 function timeStatistics($items,$tplanID,$decode,$tplanMgr)
 {
   $stats = array();

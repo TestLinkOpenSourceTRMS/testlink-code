@@ -14,7 +14,8 @@
  *
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.8
+ * 20130601 - franciscom - refactoring to use new column execution_duration
  *
  */ 
 
@@ -924,7 +925,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
   {
     $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
            " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
-           " B.name AS build_name " .
+           " B.name AS build_name,E.execution_duration " .
            " FROM {$tables['executions']} E, {$tables['builds']} B" .
            " WHERE E.build_id= B.id " . 
            " AND E.tcversion_id = {$versionID} " .
@@ -1408,7 +1409,7 @@ function initRenderTestCaseCfg(&$tcaseMgr)
                       'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions',
                       'step_number', 'step_actions', 'last_edit', 'created_on', 'execution_type',
                       'execution_type_manual','execution_type_auto','importance',
-                      'high_importance','medium_importance','low_importance',
+                      'high_importance','medium_importance','low_importance','execution_duration',
                       'priority', 'high_priority','medium_priority','low_priority');
                       
     $labelsQty=count($labelsKeys);         
@@ -1455,12 +1456,15 @@ function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan
   }
       
   $out .= '<tr><td width="20%" valign="top">' .
-      '<span class="label">' . $labels['last_exec_result'] . ':</span></td>' .
-      '<td '  .$td_colspan . '><b>' . $testStatus . "</b></td></tr>\n" .
-        '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
-        '<td '  .$td_colspan . '>' . htmlspecialchars($exec_info[0]['build_name']) . "</b></td></tr>\n" .
-        '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['tester'] .'</td>' . 
-        '<td '  .$td_colspan . '>' . $testerNameCache[$exec_info[0]['tester_id']] . "</b></td></tr>\n";
+          '<span class="label">' . $labels['last_exec_result'] . ':</span></td>' .
+          '<td '  .$td_colspan . '><b>' . $testStatus . "</b></td></tr>\n" .
+          '<tr><td width="20%">' .
+          '<span class="label">' . $labels['execution_duration'] . ':</span></td>' .
+          '<td '  .$td_colspan . '><b>' . $exec_info[0]['execution_duration'] . "</b></td></tr>\n" .
+          '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
+          '<td '  .$td_colspan . '>' . htmlspecialchars($exec_info[0]['build_name']) . "</b></td></tr>\n" .
+          '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['tester'] .'</td>' . 
+          '<td '  .$td_colspan . '>' . $testerNameCache[$exec_info[0]['tester_id']] . "</b></td></tr>\n";
 
     if ($executionNotes != '') // show exection notes is not empty
     {

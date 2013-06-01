@@ -430,7 +430,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   function get_linked_cfields_at_design($tproject_id,$enabled,$filters=null,
                                         $node_type=null,$node_id=null,$access_key='id')
   {
-	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   	
     $additional_join="";
     $additional_values="";
@@ -911,8 +911,14 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
     internal revision:
   */
-  function get_linked_to_testproject($tproject_id,$active=null)
+  function get_linked_to_testproject($tproject_id,$active=null,$opt=null)
   {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $options = array('name' => null);
+    $options = array_merge($options,(array)$opt);
+
+
     $sql="SELECT CF.*,NT.description AS node_description,NT.id AS node_type_id, " .
          "       CFTP.display_order, CFTP.active, CFTP.location,CFTP.required " .
          " FROM {$this->object_table} CF, " .
@@ -927,6 +933,11 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     if( !is_null($active) )
     {
       $sql .= " AND CFTP.active={$active} ";
+    }
+
+    if( !is_null($options['name']) )
+    {
+      $sql .= " AND CF.name='" . $this->db->prepare_string($options['name']) . "'";
     }
 
     $sql .= " ORDER BY NT.description,CF.enable_on_design desc, " .

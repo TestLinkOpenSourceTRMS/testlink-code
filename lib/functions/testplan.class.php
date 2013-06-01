@@ -735,22 +735,35 @@ class testplan extends tlObjectWithAttachments
   }
 
   /**
-   * @internal revisions:
+   * @internal revisions
    * 
    */
-  function get_linked_tcvid($id,$platformID)
+  function get_linked_tcvid($id,$platformID,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $sql = " /* $debugMsg */ ". 
-         " SELECT tcversion_id FROM {$this->tables['testplan_tcversions']} " .
-         " WHERE testplan_id = " . intval($id) . 
-         " AND platform_id = " . intval($platformID) ;
-         
-    $linked_items = $this->db->fetchRowsIntoMap($sql,'tcversion_id');           
-    return $linked_items;
+    $options = array('addEstimatedExecDuration' => false);
+    $options = array_merge($options,(array)$opt);
+
+    $sql = " /* $debugMsg */ " . 
+           " SELECT tcversion_id " . 
+           ($options['addEstimatedExecDuration'] ? ",TCV.estimated_exec_duration" : '') . 
+           " FROM {$this->tables['testplan_tcversions']} ";
+
+    if($options['addEstimatedExecDuration'])
+    {
+      $sql .= " JOIN {$this->tables['tcversions']} TCV ON TCV.id = tcversion_id ";
+    }  
+    $sql .= " WHERE testplan_id = " . intval($id) . " AND platform_id = " . intval($platformID) ;
+
+    $items = $this->db->fetchRowsIntoMap($sql,'tcversion_id');           
+    return $items;
   }
 
 
+  /**
+   *
+   *
+   */ 
   function getLinkedCount($id)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -2585,9 +2598,12 @@ class testplan extends tlObjectWithAttachments
     return ($new_tp_tcs);
   }
 
+
+
+
+
   /*
     function: get_estimated_execution_time
-              Created after a contributed code (BUGID 1670)
   
               Takes all testcases linked to testplan and computes
               SUM of values assigned AT DESIGN TIME to customa field
@@ -2614,10 +2630,100 @@ class testplan extends tlObjectWithAttachments
                         Another think to consider is:
                         After platform addition we need to consider all platforms
                         
-                             
-         20080820 - franciscom
   */
   function get_estimated_execution_time($id,$itemSet=null,$platformID=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $estimated = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
+
+    // check if cf exist and is assigned and active intest plan parent (TEST PROJECT)
+    $pinfo = $this->tree_manager->get_node_hierarchy_info($id);
+    $cf_info = $this->cfield_mgr->get_linked_to_testproject($pinfo['parent_id'],1,array('name' => 'CF_ESTIMATED_EXEC_TIME'));
+    if( is_null($cf_info) )
+    {
+      return $this->getEstimatedExecutionTime($id,$itemSet,$platformID);
+    }  
+    else
+    {
+      return $this->getEstimatedExecutionTimeFromCF($id,$itemSet,$platformID);
+    } 
+
+  } 
+
+  /**
+   *
+   */
+  function getEstimatedExecutionTime($id,$itemSet=null,$platformID=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $estimated = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
+
+    $tcVersionIDSet = array();
+    $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
+    $platformSet = array_keys($this->getPlatforms($id,$getOpt));
+
+    if( is_null($itemSet) )
+    {
+      // we need to loop over all linked PLATFORMS (if any)
+      $tcVersionIDSet = array();
+      foreach($platformSet as $platfID)
+      {
+        if(is_null($platformID) || $platformID == $platfID )
+        { 
+          $linkedItems = $this->get_linked_tcvid($id,$platfID,array('addEstimatedExecDuration' => true));  
+          if( (!is_null($linkedItems)) )
+          {
+            $tcVersionIDSet[$platfID]= $linkedItems;
+          }
+        }  
+      }
+    }
+    else
+    {
+      // Important NOTICE
+      // we can found SOME LIMITS on number of elements on IN CLAUSE
+      // need to make as many set as platforms linked to test plan
+      $sql4tplantcv = " /* $debugMsg */ SELECT tcversion_id, platform_id,TCV.estimated_exec_duration " .
+                      " FROM {$this->tables['testplan_tcversions']} " .
+                      " JOIN {$this->tables['tcversions']} TCV ON TCV.id = tcversion_id " .
+                      " WHERE testplan_id=" . intval($id)  .
+                      " AND tcversion_id IN (" . implode(',',$itemSet) . ")";
+      if( !is_null($platformID) )
+      {
+        $sql4tplantcv .= " AND platform_id= " . intval($platformID);
+      }        
+      
+      $rs = $this->db->fetchRowsIntoMap($sql4tplantcv,'platform_id',database::CUMULATIVE);
+      foreach($rs as $platfID => $elem)
+      {
+        $tcVersionIDSet[$platfID] = $elem;    
+      }  
+    }
+
+    $estimated = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
+    foreach($tcVersionIDSet as $platfID => $items)
+    {  
+      $estimated['platform'][$platfID]['minutes'] = 0;
+      $estimated['platform'][$platfID]['tcase_qty'] = count($items);
+      foreach($items as $dx)
+      {
+        if(!is_null($dx['estimated_exec_duration']))
+        {  
+          $estimated['platform'][$platfID]['minutes'] += $dx['estimated_exec_duration'];
+        }  
+      }  
+      $estimated['totalMinutes'] += $estimated['platform'][$platfID]['minutes'];
+      $estimated['totalTestCases'] += $estimated['platform'][$platfID]['tcase_qty'];
+    }  
+
+    return $estimated;
+  }
+
+
+  /**
+   *
+   */
+  function getEstimatedExecutionTimeFromCF($id,$itemSet=null,$platformID=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $estimated = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
@@ -2628,9 +2734,6 @@ class testplan extends tlObjectWithAttachments
     {
       $cfield_id=key($cf_info);
     }
-    
-
-
 
     if( $status_ok)
     {

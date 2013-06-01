@@ -1075,6 +1075,12 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
   }
   $code .= "</td></tr>\n";
 
+  // 
+  $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
+             '<span class="label">'. $labels['estimated_execution_duration'].':</span></td>' .
+             '<td colspan="' .  ($cfg['tableColspan']-1) . '">' .  $tcInfo['estimated_exec_duration'];
+  $code .= "</td></tr>\n";
+
   if( isset($options['importance']) && $options['importance'] )
   {
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
@@ -1099,7 +1105,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
              '<td colspan="' .  ($cfg['tableColspan']-1) . '">' . $cfg['priority'][$prio];
     $code .= "</td></tr>\n";
   }
-  
+
   // Spacer
   $code .= '<tr><td colspan="' .  $cfg['tableColspan'] . '">' . "</td></tr>";
   $code .= $cfields['specScope']['standard_location'] . $cfields['execScope'];
@@ -1409,6 +1415,7 @@ function initRenderTestCaseCfg(&$tcaseMgr)
                       'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions',
                       'step_number', 'step_actions', 'last_edit', 'created_on', 'execution_type',
                       'execution_type_manual','execution_type_auto','importance',
+                      'estimated_execution_duration',
                       'high_importance','medium_importance','low_importance','execution_duration',
                       'priority', 'high_priority','medium_priority','low_priority');
                       

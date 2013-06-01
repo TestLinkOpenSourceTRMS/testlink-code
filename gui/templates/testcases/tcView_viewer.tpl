@@ -244,6 +244,7 @@ viewer for test case in test specification
   {if $args_testcase.active eq 0}
     <div class="messages" align="center">{$tcView_viewer_labels.tcversion_is_inactive_msg}</div>
   {/if}
+  
    {if $warning_edit_msg != ""}
        <div class="messages" align="center">
          {$warning_edit_msg|escape}<br>
@@ -362,10 +363,24 @@ function launchInsertStep(step_id)
    </form>
    </div>
 {/if}
+
   <div {$addInfoDivStyle}>
+   <form id="statusForm" name="statusForm" method="post" action="lib/testcases/tcEdit.php">
+    <input type="hidden" name="doAction" id="doAction" value="setStatus">
+    <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
+    <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+
     <span class="labelHolder">{$tcView_viewer_labels.status} {$smarty.const.TITLE_SEP}</span>
-    {$gui->domainTCStatus[$args_testcase.status]}
+    {if $edit_enabled}
+    <select name="status" onchange="statusForm.submit()">
+      {html_options options=$gui->domainTCStatus selected=$args_testcase.status}
+    </select>
+    {else}
+      {$gui->domainTCStatus[$args_testcase.status]}
+    {/if}
+   </form>
   </div>
+
 
    <div {$addInfoDivStyle}>
     <span class="labelHolder">{$tcView_viewer_labels.estimated_execution_duration} {$smarty.const.TITLE_SEP}</span>

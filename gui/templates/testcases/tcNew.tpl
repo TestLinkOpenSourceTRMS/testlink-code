@@ -2,23 +2,7 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: tcNew.tpl,v 1.18.2.3 2011/01/14 14:39:04 asimon83 Exp $
 Purpose: smarty template - create new testcase
-
-20110607 - Julian - BUGID 3952 - stay here like Mantis does
-20110114 - asimon - simplified checking for editor type by usage of $editorType
-20110111 - Julian - Improved modified warning message when navigating away without saving
-20101202 - asimon - BUGID 4067: Tree refreshes after every action taken in Test Specification when update tree is disabled
-20101011 - franciscom - BUGID 3874 - custom fields type validation
-20101010 - franciscom - BUGID 3062 - Check for duplicate name via AJAX call - checkTCaseDuplicateName()
-                        need to add input for testcase_id, to make checkTCaseDuplicateName() work OK
-                        because edit and new test case are managed using common smarty template
-                        then can not have TWO different calls to checkTCaseDuplicateName()
-                        added testsuite_id for same logic
-
-20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
-20100103 - franciscom - refactoring to use $gui
-20091122 - franciscom - refactoring to use ext-js alert
-20070214 - franciscom - BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed.
- ----------------------------------------------------------------- *}
+*}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -138,22 +122,21 @@ function validateForm(f)
 
 
 	<div class="groupBtn">
-	    {* BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed. *}
 			<input type="hidden" id="do_create"  name="do_create" value="do_create" />
 			<input type="submit" id="do_create_button"  name="do_create_button" value="{$labels.btn_create}" 
 			       onclick="show_modified_warning=false;" />
 			<input type="button" name="go_back" value="{$labels.cancel}" 
 			       onclick="javascript: show_modified_warning=false; history.back();"/>
-	</div>
-	<div class="groupBtn">
-	<input type="checkbox" id="stay_here"  name="stay_here" 
-	       {if $gui->stay_here} checked="checked" {/if}/>{$labels.stay_here_tc}
+
+     <input type="checkbox" id="stay_here"  name="stay_here" 
+         {if $gui->stay_here} checked="checked" {/if}/> {$labels.stay_here_tc}
+
+
 	</div>
 
 	{include file="testcases/tcEdit_New_viewer.tpl"}
 
 	<div class="groupBtn">
-	    {* BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed. *}
 			<input type="hidden" id="do_create_2"  name="do_create" value="do_create" />
 			<input type="submit" id="do_create_button_2"  name="do_create_button" value="{$labels.btn_create}" 
 			       onclick="show_modified_warning=false;" />

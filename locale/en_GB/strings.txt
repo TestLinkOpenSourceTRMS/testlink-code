@@ -71,6 +71,8 @@ $TLS_destination_bottom = "Destination position bottom";
 $TLS_error = "Error";
 $TLS_estimated_execution_duration = "Estimated exec. duration (min)";
 $TLS_execution_duration = "Execution duration (min)";
+$TLS_execution_duration_short = "Exec (min)";
+
 $TLS_export = "Export";
 $TLS_export_as_spreadsheet = "Export Data as spreadsheet";
 $TLS_file_type = 'File type';

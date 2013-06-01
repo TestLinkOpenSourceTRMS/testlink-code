@@ -123,6 +123,7 @@ CREATE TABLE /*prefix*/cfield_testprojects (
   display_order smallint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_display_order DEFAULT ((1)),
   active tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_active DEFAULT ((1)),
   location tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_location DEFAULT ((1)),
+  required tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required DEFAULT ((0)),
   required_on_design tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required_on_design DEFAULT ((0)),
   required_on_execution tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required_on_execution DEFAULT ((0)),
  CONSTRAINT /*prefix*/PK_cfield_testprojects PRIMARY KEY CLUSTERED 
@@ -227,6 +228,7 @@ CREATE TABLE /*prefix*/executions (
   tcversion_number smallint NOT NULL CONSTRAINT /*prefix*/DF_executions_tcversion_number DEFAULT ((1)),
   platform_id int NOT NULL CONSTRAINT /*prefix*/DF_executions_platform_id DEFAULT ((0)),
   execution_type tinyint NOT NULL CONSTRAINT /*prefix*/DF_executions_execution_type DEFAULT ((1)),
+  execution_duration NULL decimal(6,2),
   notes nvarchar(max)   NULL CONSTRAINT /*prefix*/DF_executions_notes DEFAULT (NULL),
  CONSTRAINT /*prefix*/PK_executions PRIMARY KEY CLUSTERED 
 (

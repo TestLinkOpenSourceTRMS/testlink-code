@@ -2983,10 +2983,9 @@ class testcase extends tlObjectWithAttachments
                     build_is_open
   
      rev:
-         20101212 - franciscom - internal bug get_last_execution() empty where clause -> do not use $id
-                       this bug seems to AFFECT ONLY API CALLS
-                       added new options getSteps
-  
+
+    @internal revisions
+    20130601 - franciscom - added estimated_exec_duration, status with alias wkfstatus on recordset  
   */
   function get_last_execution($id,$version_id,$tplan_id,$build_id,$platform_id,$options=null)
   {
@@ -3126,13 +3125,14 @@ class testcase extends tlObjectWithAttachments
     //
     $sql= "/* $debugMsg */ SELECT e.id AS execution_id, " .
           " COALESCE(e.status,'{$status_not_run}') AS status, " .
-          " e.execution_type AS execution_run_type," .
+          " e.execution_type AS execution_run_type,e.execution_duration, " .
           " NHB.name,NHA.parent_id AS testcase_id, NHB.parent_id AS tsuite_id," .
           " tcversions.id,tcversions.tc_external_id,tcversions.version,tcversions.summary," .
           " tcversions.preconditions," .
           " tcversions.importance,tcversions.author_id," .
           " tcversions.creation_ts,tcversions.updater_id,tcversions.modification_ts,tcversions.active," .
           " tcversions.is_open,tcversions.execution_type," .
+          " tcversions.estimated_exec_duration,tcversions.status AS wkfstatus," .
           " users.login AS tester_login,users.first AS tester_first_name," .
           " users.last AS tester_last_name, e.tester_id AS tester_id," .
           " e.notes AS execution_notes, e.execution_ts, e.build_id,e.tcversion_number," .
@@ -5169,6 +5169,7 @@ class testcase extends tlObjectWithAttachments
        " U.login AS tester_login, U.first AS tester_first_name, U.last AS tester_last_name," .
        " E.tester_id AS tester_id,E.id AS execution_id, E.status,E.tcversion_number," .
        " E.notes AS execution_notes, E.execution_ts, E.execution_type AS execution_run_type," .
+       " E.execution_duration," .
        " E.build_id AS build_id, B.name AS build_name, B.active AS build_is_active, " .
        " B.is_open AS build_is_open,E.platform_id, PLATF.name AS platform_name," .
          " E.testplan_id,NHTPLAN.name AS testplan_name,TPTCV.id AS feature_id " . 

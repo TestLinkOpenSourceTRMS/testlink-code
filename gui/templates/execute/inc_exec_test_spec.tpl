@@ -4,15 +4,6 @@ $Id: inc_exec_test_spec.tpl,v 1.22.2.1 2010/11/18 15:17:45 mx-julian Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
-Rev:
-    20101024 - Julian - BUGID 3928 - Custom fields before steps not using complete width of table
-    20100917 - amitkhullar - BUGID 3780
-	20100802 - amitkhullar - Moved the Design time Custom Fields before Exec CF. 
-    20100621 - eloff - BUGID 3241 - Implement vertical layout
-    20100105 - franciscom - Test Case Steps
-    20090901 - franciscom - preconditions + exec_cfg->steps_results_layout
-    20090718 - franciscom - added design time custom field location management
-    20090526 - franciscom - added testplan_design custom field management
 *}	
     {assign var="tableColspan" value="4"}
 
@@ -57,20 +48,29 @@ Rev:
 		<tr>
 			<th colspan="{$tableColspan}" class="title">{$args_labels.preconditions}</th>
 		</tr>
+
 		<tr>
 			<td colspan="{$tableColspan}">{$args_tc_exec.preconditions}</td>
 		</tr>
 
 		<tr>
-      		<td colspan="{$tableColspan}">{$args_labels.execution_type}
-			                {$smarty.const.TITLE_SEP}
+			<td colspan="{$tableColspan}">&nbsp;</td>
+		</tr>
+
+		<tr>
+      		<td colspan="{$tableColspan}"><b>{$args_labels.execution_type}
+			                {$smarty.const.TITLE_SEP}</b>
 			                {$args_execution_types[$args_tc_exec.execution_type]}</td>
 		</tr>
 
-		{* 20090718 - franciscom - CF location management*}
-    {if $args_design_time_cf[$testcase_id].before_steps_results != ''}
 		<tr>
-			{* 20101024 - BUGID 3928 *}
+      		<td colspan="{$tableColspan}"><b>{$args_labels.estimated_execution_duration}{$smarty.const.TITLE_SEP}</b>
+      			{$args_tc_exec.estimated_exec_duration}
+      		</td>
+		</tr>
+
+    	{if $args_design_time_cf[$testcase_id].before_steps_results != ''}
+		<tr>
         	<td colspan="{$tableColspan}"> {$args_design_time_cf[$testcase_id].before_steps_results}</td>
 		</tr>
 		{/if}

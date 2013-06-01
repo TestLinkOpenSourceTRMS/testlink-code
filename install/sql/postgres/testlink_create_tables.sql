@@ -202,6 +202,7 @@ CREATE TABLE /*prefix*/executions(
   "tcversion_number" INTEGER NOT NULL DEFAULT '1',
   "platform_id" BIGINT NOT NULL DEFAULT '0',
   "execution_type" INT2 NOT NULL DEFAULT '1',
+  "execution_duration" numeric(6,2) NULL,
   "notes" TEXT NULL DEFAULT NULL,
   PRIMARY KEY ("id")
 ); 

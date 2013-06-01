@@ -292,10 +292,13 @@ initWebEditors($gui,$cfg,$_SESSION['basehref']);
 //  future must be initialized in a right way
 // new dBug($gui);
 
+
+new dBug($gui);
+
 $smarty->assign('test_automation_enabled',0);
+$smarty->assign('gui',$gui);
 $smarty->assign('cfg',$cfg);
 $smarty->assign('users',tlUser::getByIDs($db,$userSet,'id'));
-$smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /*

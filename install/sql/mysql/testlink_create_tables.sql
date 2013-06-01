@@ -203,6 +203,7 @@ CREATE TABLE /*prefix*/executions (
   tcversion_number smallint(5) unsigned NOT NULL default '1',
   platform_id int(10) unsigned NOT NULL default '0',
   execution_type tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
+  execution_duration decimal(6,2) NULL COMMENT 'NULL will be considered as NO DATA Provided by user',
   notes text,
   PRIMARY KEY  (id),
   KEY /*prefix*/executions_idx1(testplan_id,tcversion_id,platform_id,build_id),

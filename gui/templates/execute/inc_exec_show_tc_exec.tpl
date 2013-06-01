@@ -178,6 +178,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 				{if $gui->history_on == 0 || $cfg->exec_cfg->show_history_all_builds}
 				  <th style="text-align:left">{$labels.build}</th>
 				{/if}
+
 				{if $gui->has_platforms && 
 				    ($gui->history_on == 0 || $cfg->exec_cfg->show_history_all_platforms)}
 					{assign var="my_colspan" value=$my_colspan+1}
@@ -185,11 +186,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 				{/if}
 				<th style="text-align:left">{$labels.test_exec_by}</th>
 				<th style="text-align:center">{$labels.exec_status}</th>
-				<th style="text-align:center">{$labels.testcaseversion}</th>
+        <th style="text-align:right" title="{$labels.execution_duration}">{$labels.execution_duration_short}</th>
+        <th style="text-align:center" title="{$labels.testcaseversion}">{$labels.version}</th>
 				
 				{* show attachments column even if all builds are closed *}
 				{if $attachment_model->show_upload_column && $can_manage_attachments}
-						<th style="text-align:center">{$labels.attachment_mgmt}</th>
+						<th style="text-align:center">&nbsp;</th>
 				{else}		
             {assign var="my_colspan" value=$my_colspan-1}
         {/if}
@@ -199,9 +201,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
 
-		{* TICKET 5128 $gui->grants->delete_execution *}
 		{if $can_delete_exec}
-          <th style="text-align:left">{$labels.delete}</th>
+          <th style="text-align:left">&nbsp;</th>
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
 
@@ -260,6 +261,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	               version number used when this execution was recorded.
       	  *}
 
+          <td style="text-align:right">{$tc_old_exec.execution_duration}</td>
+
   				<td  style="text-align:center">{$tc_old_exec.tcversion_number}</td>
 
 		  {* adjusted if statement to show executions properly if execution history was configured *}
@@ -300,7 +303,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
        		  </td>
           {/if}
 
-				{* TICKET 3587, 5128 *}
     			{* if $gui->grants->delete_execution && $tc_old_exec.build_is_open *}
     			{if $can_delete_exec && $tc_old_exec.build_is_open}
 	       		  	<td align="center">
@@ -422,6 +424,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              args_tcAttachments=$gui->tcAttachments
 	           args_req_details=$gui->req_details
 	           args_cfg=$cfg}
+
     {if $tc_exec.can_be_executed}
       {include file="execute/inc_exec_controls.tpl"
                args_save_type='single'
@@ -430,6 +433,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
                args_webeditor=$gui->exec_notes_editors[$tc_id]
                args_labels=$labels}
 	  {/if}
+
+    XXXXX
+
  	  {if $tc_exec.active eq 0}
  	   <h1 class="title"><center>{$labels.testcase_version_is_inactive_on_exec}</center></h1>
  	  {/if}

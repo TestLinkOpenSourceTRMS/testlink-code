@@ -24,6 +24,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,
 	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,
 	execution_type_short_descr,expected_results,testcase_customfields,
+  estimated_execution_duration,version,
 	last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
 	test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
 	attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,
@@ -34,7 +35,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
 	deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution, 
 	btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,
-  bug_link_tl_to_bts,bug_create_into_bts,
+  bug_link_tl_to_bts,bug_create_into_bts,execution_duration,execution_duration_short,
 	preconditions,platform,platform_description,exec_not_run_result_note,remoteExecFeeback'}
 
 
@@ -390,19 +391,20 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
  	    <table class="mainTable-x" width="100%">
  	    <tr>
- 	    <th>{$labels.th_testsuite}</th><th>{$labels.title_test_case}</th>
- 	    <th>{$labels.exec_status}</th><th>{$labels.test_exec_result}</th>
+ 	    <th>{$labels.th_testsuite}</th>
+      <th>{$labels.title_test_case}</th>
+ 	    <th>{$labels.exec_status}</th>
+      <th>{$labels.test_exec_result}</th>
  	    </tr>
  	    {foreach item=tc_exec from=$gui->map_last_exec name="tcSet"}
-      	  {if $tc_exec.active == 1}	 {* TICKET 4981 *}
-
+      	  {if $tc_exec.active == 1}
             {assign var="tc_id" value=$tc_exec.testcase_id}
-	        {assign var="tcversion_id" value=$tc_exec.id}
-	        {* IMPORTANT:
-	           Here we use version_number, which is related to tcversion_id SPECIFICATION.
-	           When we need to display executed version number, we use tcversion_number
-	        *}
-	        {assign var="version_number" value=$tc_exec.version}
+	          {assign var="tcversion_id" value=$tc_exec.id}
+	          {* IMPORTANT:
+	             Here we use version_number, which is related to tcversion_id SPECIFICATION.
+	             When we need to display executed version number, we use tcversion_number
+	          *}
+	          {assign var="version_number" value=$tc_exec.version}
 	      
 	    	<input type="hidden" id="tc_version_{$tcversion_id}" name="tc_version[{$tcversion_id}]" value='{$tc_id}' />
 	    	<input type="hidden" id="version_number_{$tcversion_id}" name="version_number[{$tcversion_id}]" value='{$version_number}' />
@@ -447,7 +449,6 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 		{/if}
 		<p>
 	{/if}
-	
     {include file="execute/inc_exec_show_tc_exec.tpl"}
     {if isset($gui->refreshTree) && $gui->refreshTree}
 	    {include file="inc_refreshTreeWithFilters.tpl"}

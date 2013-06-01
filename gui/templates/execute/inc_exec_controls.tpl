@@ -5,8 +5,6 @@ Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
 Rev: 
-  20101225 - franciscom - fixed event viewer warning due to typo error
-  BUGID 3479: Bulk Execution - Custom Fields Bulk Assignment
 *}	
       {assign var="ResultsStatusCode" value=$tlCfg->results.status_code}
       {if $args_save_type == 'bulk'}
@@ -38,7 +36,11 @@ Rev:
     							    {/if} /> &nbsp;{lang_get s=$locale_status}<br />
     					  {/foreach}		
     					  <br />		
-    		 			
+                {$labels.execution_duration}
+                <input type="text" name="execution_duration" id="execution_duration"
+                       size="{#EXEC_DURATION_SIZE#}" maxlength="{#EXEC_DURATION_MAXLEN#}">  		 			
+                <br />
+                <br />    
     		 			  {if $args_save_type == 'single'}
     		 			      <input type="submit" name="save_results[{$args_tcversion_id}]" 
     		 			            {$args_input_enable_mgmt}

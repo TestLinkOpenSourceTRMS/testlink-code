@@ -346,7 +346,9 @@ function launchInsertStep(step_id)
 
 {if $session['testprojectOptions']->testPriorityEnabled}
    <div {$addInfoDivStyle}>
-   <form id="importanceForm" name="importanceForm" method="post" action="lib/testcases/tcEdit.php">
+   <form id="importanceForm" name="importanceForm" method="post" 
+         action="lib/testcases/tcEdit.php" onsubmit="alert('fff');">
+
     <input type="hidden" name="doAction" id="doAction" value="setImportance">
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
@@ -354,7 +356,7 @@ function launchInsertStep(step_id)
     <span class="labelHolder">{$tcView_viewer_labels.test_importance} {$smarty.const.TITLE_SEP}</span>
     
     {if $edit_enabled}
-    <select name="importance" onchange="importanceForm.submit()">
+    <select name="importance" onchange="document.getElementById('importanceForm').submit();" >
           {html_options options=$gsmarty_option_importance selected=$args_testcase.importance}
     </select>
     {else}
@@ -365,14 +367,14 @@ function launchInsertStep(step_id)
 {/if}
 
   <div {$addInfoDivStyle}>
-   <form id="statusForm" name="statusForm" method="post" action="lib/testcases/tcEdit.php">
+   <form id="statusForm" name="statusForm" id="statusForm" method="post" action="lib/testcases/tcEdit.php">
     <input type="hidden" name="doAction" id="doAction" value="setStatus">
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 
     <span class="labelHolder">{$tcView_viewer_labels.status} {$smarty.const.TITLE_SEP}</span>
     {if $edit_enabled}
-    <select name="status" onchange="statusForm.submit()">
+    <select name="status" id="status" onchange="document.getElementById('statusForm').submit();">
       {html_options options=$gui->domainTCStatus selected=$args_testcase.status}
     </select>
     {else}

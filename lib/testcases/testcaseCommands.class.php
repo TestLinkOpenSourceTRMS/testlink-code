@@ -98,9 +98,8 @@ class testcaseCommands
    
   /**
    * initialize common test case information, useful when working on steps
-    *
-    */
-
+   *
+   */
   function initTestCaseBasicInfo(&$argsObj,&$guiObj)
   {
 
@@ -163,8 +162,9 @@ class testcaseCommands
     $otCfg->to->map = array();
     keywords_opt_transf_cfg($otCfg,implode(',',array_keys((array)$parentKeywords)));
 
-    $guiObj->tc=array('id' => 0, 'name' => '', 'importance' => config_get('testcase_importance_default'),
-                      'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL);
+    $guiObj->tc = array('id' => 0, 'name' => '', 'importance' => config_get('testcase_importance_default'),
+                        'status' => null, 'estimated_exec_duration' => null, 
+                        'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL);
 
     $guiObj->opt_cfg=$otCfg;
     $templateCfg = templateConfiguration('tcNew');

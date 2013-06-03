@@ -12,7 +12,7 @@ assign REQ to one test case
              req_title_assigned,check_uncheck_all_checkboxes,
              req_msg_norequirement,btn_unassign,req_title_unassigned,
              check_uncheck_all_checkboxes,req_msg_norequirement,btn_assign,
-             requirement"}
+             req_doc_id,req,scope,assigned_by,timestamp,requirement"}
           
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -32,22 +32,6 @@ function check_action_precondition(form_id,action)
 	}
 	return true;
 }
-
-// Ext.onReady(function()
-// {
-//   // Convert combo idSRS	  
-//   var idx=0;
-//   var gridSet = new Array();
-//   var converted = new Ext.form.ComboBox({
-//    typeAhead: true,
-//    triggerAction: 'all',
-//    transform:'idSRS',
-//    width:135,
-//    forceSelection:true
-//  });
-// 
-// 	alert('AISA');
-// });
 {/literal}
 </script>
 </head>
@@ -90,9 +74,11 @@ function check_action_precondition(form_id,action)
       		             onclick='cs_all_checkbox_in_div("div_assigned_req","assigned_req","memory_assigned_req");'
       		             title="{$labels.check_uncheck_all_checkboxes}" />
       		</th>
-    		<th>{lang_get s="req_doc_id"}</th>
-    		<th>{lang_get s="req"}</th>
-    		<th>{lang_get s="scope"}</th>
+    		<th>{$labels.req_doc_id}</th>
+    		<th>{$labels.req}</th>
+    		<th>{$labels.scope}</th>
+        <th>{$labels.assigned_by}</th>
+        <th>{$labels.timestamp}</th>
     	</tr>
     	{section name=row loop=$gui->arrAssignedReq}
     	<tr>
@@ -102,6 +88,8 @@ function check_action_precondition(form_id,action)
     		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrAssignedReq[row].id}">
     			{$gui->arrAssignedReq[row].title|escape}</a></span></td>
     		<td>{$gui->arrAssignedReq[row].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
+        <td>{$gui->arrAssignedReq[row].coverageAuthor}</td>
+        <td>{localize_timestamp ts=$gui->arrAssignedReq[row].coverageTS}</td>
     	</tr>
     	{sectionelse}
     	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement}</span></td></tr>

@@ -283,6 +283,10 @@ CREATE TABLE /*prefix*/platforms (
 CREATE TABLE /*prefix*/req_coverage (
   `req_id` int(10) NOT NULL,
   `testcase_id` int(10) NOT NULL,
+  `author_id` int(10) unsigned default NULL,
+  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `review_requester_id` int(10) unsigned default NULL,
+  `review_request_ts` TIMESTAMP NULL DEFAULT NULL,
   KEY /*prefix*/req_testcase (`req_id`,`testcase_id`)
 ) DEFAULT CHARSET=utf8 COMMENT='relation test case ** requirements';
 

@@ -500,7 +500,11 @@ CREATE TABLE /*prefix*/req_versions(
 --
 CREATE TABLE /*prefix*/req_coverage(  
   "req_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/requirements (id) ON DELETE CASCADE,
-  "testcase_id" INTEGER NOT NULL DEFAULT '0'
+  "testcase_id" INTEGER NOT NULL DEFAULT '0',
+  "author_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+  "review_requester_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+  "review_request_ts" TIMESTAMP NULL DEFAULT NULL
 ); 
 CREATE INDEX /*prefix*/req_coverage_req_testcase ON /*prefix*/req_coverage ("req_id","testcase_id");
 

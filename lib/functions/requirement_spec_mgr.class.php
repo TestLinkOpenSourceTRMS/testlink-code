@@ -581,9 +581,6 @@ function delete_deep($id)
 
     rev: 20080830 - franciscom - changed to get node_order from nodes hierarchy table
   */
-// function get_requirements($id, $range = 'all', $testcase_id = null,
-//                           $order_by=" ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id")
-// 
 function get_requirements($id, $range = 'all', $testcase_id = null, $options=null, $filters = null)
 {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -595,40 +592,46 @@ function get_requirements($id, $range = 'all', $testcase_id = null, $options=nul
   $my['filters'] = array('status' => null, 'type' => null);
   $my['filters'] = array_merge($my['filters'], (array)$filters);
 
-    switch($my['options']['output'])
-    {
-	    case 'count':
-	       	$rs = 0;	   
-	    break;
+  switch($my['options']['output'])
+  {
+	  case 'count':
+	   	$rs = 0;	   
+	  break;
 
-    	case 'standard':
-    	default;
+  	case 'standard':
+   	default:
 			$rs = null;
-	    break;
-    }
+	  break;
+  }
 
 	
-	$sql = '';
 	$tcase_filter = '';
+  
   // First Step - get only req info
 	$sql = "/* $debugMsg */ SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ ";
+  $addFields = '';
 	switch($range)
 	{
 		case 'all';
-			break;
+		break;
 
 		case 'assigned':
+      // $addFields = " ,U.login, REQ_COV.creation_ts";
 			$sql .= " JOIN {$this->tables['req_coverage']} REQ_COV ON REQ_COV.req_id=NH_REQ.id ";
-			if(!is_null($testcase_id))
-			{       
-		    	$tcase_filter = " AND REQ_COV.testcase_id={$testcase_id}";
-	  		}
-	  		break;
+      if(!is_null($testcase_id))
+      {       
+        $tcase_filter = " AND REQ_COV.testcase_id={$testcase_id}";
+      }
+      // $sql .= " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = REQ_COV.author_id ";
+	 	break;
 	}
+
+  $sql = sprintf($sql,$addFields);
+
 	$sql .= " WHERE NH_REQ.parent_id={$id} " .
 	        " AND NH_REQ.node_type_id = {$this->node_types_descr_id['requirement']} {$tcase_filter}";
 	$itemSet = $this->db->fetchRowsIntoMap($sql,'id');
-   
+
 	if( !is_null($itemSet) )
 	{
 		$reqSet = array_keys($itemSet);
@@ -638,27 +641,26 @@ function get_requirements($id, $range = 'all', $testcase_id = null, $options=nul
 		       " GROUP BY NH_REQV.parent_id ";
 
 		$latestVersionSet = $this->db->fetchRowsIntoMap($sql,'version_id');
-	    $reqVersionSet = array_keys($latestVersionSet);
+	  $reqVersionSet = array_keys($latestVersionSet);
 
-	    $getOptions = null;
-	    if( !is_null($my['options']['order_by']) )
-	    {
+	  $getOptions = null;
+	  if( !is_null($my['options']['order_by']) )
+	  {
 			$getOptions = array('order_by' => $my['options']['order_by']);
 		}
+
 		$rs = $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']);	    	
-        
-        switch($my['options']['output'])
-        {
-        	case 'standard':
-		    break;
+    switch($my['options']['output'])
+    {
+     	case 'standard':
+		  break;
 		    
-		    case 'count':
-		       	$rs = !is_null($rs) ? count($rs) : 0;	   
-		    break;
+		  case 'count':
+		   	$rs = !is_null($rs) ? count($rs) : 0;	   
+		  break;
 		}
 	}
 	return $rs;
-	
 }
 
 
@@ -883,8 +885,8 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
   {
   	// filters => array('status' => NON_TESTABLE_REQ, 'type' => 'X');
   	$options = array('output' => 'count');
-	$count = $this->get_requirements($id,$range,$testcase_id,$options,$filters);
-	return $count;
+	  $count = $this->get_requirements($id,$range,$testcase_id,$options,$filters);
+	  return $count;
   }
 
 
@@ -2208,6 +2210,9 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	}	
 
 
+  /**
+   *
+   */
 	function get_all_id_in_testproject($tproject_id)
 	{
 	   	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -2215,6 +2220,28 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 		       " SELECT RSPEC.id FROM {$this->object_table} RSPEC WHERE testproject_id={$tproject_id}";
 		return $this->db->get_recordset($sql);
 	}
+
+
+  /**
+   *
+   */
+  function getAssignedCoverage($id,$options=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $my['options'] = array( 'order_by' => " ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id", 
+                            'output' => 'standard');
+    $my['options'] = array_merge($my['options'], (array)$options);
+
+ 
+    $sql = "/* $debugMsg */ SELECT NH_REQ.id,U.login, REQ_COV.creation_ts " .
+           " FROM {$this->tables['nodes_hierarchy']} NH_REQ " .
+           " JOIN {$this->tables['req_coverage']} REQ_COV ON REQ_COV.req_id=NH_REQ.id " .
+           " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = REQ_COV.author_id ";
+    $sql .= " WHERE NH_REQ.parent_id={$id} " .
+          " AND NH_REQ.node_type_id = {$this->node_types_descr_id['requirement']}";
+    $itemSet = $this->db->fetchRowsIntoMap($sql,'id');
+    return $itemSet;
+  }
 
 
 } // class end

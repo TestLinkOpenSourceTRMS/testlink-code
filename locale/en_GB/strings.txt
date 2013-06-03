@@ -46,6 +46,7 @@ $TLS_asc = "Ascending";
 $TLS_any = "Any";
 $TLS_all = "All";
 $TLS_alt_delete = "delete";
+$TLS_assigned_by = "Assigned by";
 $TLS_attribute = "Attribute";
 $TLS_attributes = "Attributes";
 $TLS_custom_fields = "Custom Fields";

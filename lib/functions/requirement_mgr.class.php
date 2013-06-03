@@ -627,21 +627,26 @@ function get_coverage($id,$context=null)
   $safe_id = intval($id);
   $common = array();
   
-  $common['fields'] = " SELECT DISTINCT NH_TC.id,NH_TC.name,TCV.tc_external_id " .
-                      " FROM {$this->tables['nodes_hierarchy']} NH_TC " .
-                      " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id=NH_TC.id " .
-                      " JOIN {$this->tables['tcversions']} TCV ON TCV.id=NH_TCV.id " .
-                      " JOIN {$this->tables['req_coverage']} RC ON RC.testcase_id = NH_TC.id ";
+  $common['join'] = " FROM {$this->tables['nodes_hierarchy']} NH_TC " .
+                    " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id=NH_TC.id " .
+                    " JOIN {$this->tables['tcversions']} TCV ON TCV.id=NH_TCV.id " .
+                    " JOIN {$this->tables['req_coverage']} RC ON RC.testcase_id = NH_TC.id ";
   $common['where'] = " WHERE RC.req_id={$safe_id} ";
 
   if(is_null($context))
   {
-    $sql = "/* $debugMsg - Static Coverage */ " . $common['fields'] . $common['where'];
+    $sql = "/* $debugMsg - Static Coverage */ " . 
+           " SELECT NH_TC.id,NH_TC.name,TCV.tc_external_id,U.login,RC.creation_ts" .
+           $common['join'] . 
+           " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = RC.author_id " .
+           $common['where'];
   }
   else
   {
     
-    $sql = "/* $debugMsg - Dynamic Coverage */ " . $common['fields'] .  
+    $sql = "/* $debugMsg - Dynamic Coverage */ " . 
+           " SELECT DISTINCT NH_TC.id,NH_TC.name,TCV.tc_external_id" .
+           $common['join'] .  
            " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NH_TCV.id " .
            $common['where'] .  
            " AND TPTCV.testplan_id = " . intval($context['tplan_id']) .
@@ -948,11 +953,12 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
 
     returns: 1/0
   */
-  function assign_to_tcase($req_id,$testcase_id)
+  function assign_to_tcase($req_id,$testcase_id,$author_id)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $output = 0;
+    $now = $this->db->db_now();
     if($testcase_id && $req_id)
     {
       $items = (array)$req_id;
@@ -962,29 +968,29 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
       $coverage = $this->db->fetchRowsIntoMap($sql,'req_id');
         
       $loop2do=count($items);
+      $tcInfo = $this->tree_mgr->get_node_hierarchy_info($testcase_id);
       for($idx=0; $idx < $loop2do; $idx++)
       {
-          if( is_null($coverage) || !isset($coverage[$items[$idx]]) )
+        if( is_null($coverage) || !isset($coverage[$items[$idx]]) )
+        {
+          $sql = "INSERT INTO {$this->tables['req_coverage']} (req_id,testcase_id,author_id,creation_ts) " .
+                 "VALUES ({$items[$idx]},{$testcase_id},{$author_id},{$now})";
+          $result = $this->db->exec_query($sql);
+          if ($this->db->affected_rows() == 1)
           {
-            $sql = "INSERT INTO {$this->tables['req_coverage']} (req_id,testcase_id) " .
-                   "VALUES ({$items[$idx]},{$testcase_id})";
-            $result = $this->db->exec_query($sql);
-            if ($this->db->affected_rows() == 1)
+            $output = 1;
+            $reqInfo = $this->tree_mgr->get_node_hierarchy_info($items[$idx]);
+            if($tcInfo && $reqInfo)
             {
-              $output = 1;
-              $tcInfo = $this->tree_mgr->get_node_hierarchy_info($testcase_id);
-              $reqInfo = $this->tree_mgr->get_node_hierarchy_info($items[$idx]);
-              if($tcInfo && $reqInfo)
-              {
-                logAuditEvent(TLS("audit_req_assigned_tc",$reqInfo['name'],$tcInfo['name']),
-                              "ASSIGN",$this->object_table);
-              }                 
-            }
-          }    
-         else
-         {
-           $output = 1;
-         }
+              logAuditEvent(TLS("audit_req_assigned_tc",$reqInfo['name'],$tcInfo['name']),
+                                "ASSIGN",$this->object_table);
+            }                 
+          }
+        }    
+        else
+        {
+          $output = 1;
+        }
       }
     }
     return $output;

@@ -953,6 +953,56 @@ class testcaseCommands
     return $guiObj;
   }
 
+  /**
+   *
+   *
+   *
+   */
+  function setExecutionType(&$argsObj,$request)
+  {
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->user_feedback = '';
+    $guiObj->step_exec_type = $argsObj->exec_type;
+    $guiObj->tcversion_id = $argsObj->tcversion_id;
+
+    $this->initTestCaseBasicInfo($argsObj,$guiObj);
+
+    $this->tcaseMgr->setExecutionType($argsObj->tcversion_id,$argsObj->exec_type);
+    $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
+
+    // set up for rendering
+    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+
+    $guiObj->user_feedback = '';
+    return $guiObj;
+  }
+
+  /**
+   *
+   *
+   *
+   */
+  function setEstimatedExecDuration(&$argsObj,$request)
+  {
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->user_feedback = '';
+    $guiObj->step_exec_type = $argsObj->exec_type;
+    $guiObj->tcversion_id = $argsObj->tcversion_id;
+
+    $this->initTestCaseBasicInfo($argsObj,$guiObj);
+
+    $this->tcaseMgr->setEstimatedExecDuration($argsObj->tcversion_id,$argsObj->estimatedExecDuration);
+    $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
+
+    // set up for rendering
+    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+
+    $guiObj->user_feedback = '';
+    return $guiObj;
+  }
+
 
   
   /**

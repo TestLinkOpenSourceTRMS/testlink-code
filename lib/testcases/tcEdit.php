@@ -57,9 +57,6 @@ $doRender = false;
 $pfn = $args->doAction;
 
 $testCaseEditorKeys = null;
-
-// new dBug($args->doAction);
-
 switch($args->doAction)
 {
 
@@ -117,6 +114,8 @@ switch($args->doAction)
   case "doResequenceSteps":
   case "setImportance":
   case "setStatus":
+  case "setExecutionType":
+  case "setEstimatedExecDuration":
     $op = $commandMgr->$pfn($args,$_REQUEST);
     $doRender = true;
   break;
@@ -346,8 +345,11 @@ function init_args(&$cfgObj,$otName)
   $args->has_been_executed = isset($_REQUEST['has_been_executed']) ? intval($_REQUEST['has_been_executed']) : 0;
   $args->exec_type = isset($_REQUEST['exec_type']) ? $_REQUEST['exec_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
   $args->importance = isset($_REQUEST['importance']) ? $_REQUEST['importance'] : $tc_importance_default;
-
   $args->status = isset($_REQUEST['status']) ? $_REQUEST['status'] : 1; // sorry for the magic
+
+  $args->estimatedExecDuration = isset($_REQUEST['estimated_execution_duration']) ? 
+                                 $_REQUEST['estimated_execution_duration'] : null;
+
   
   $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : '';
 
@@ -617,7 +619,9 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
                              'doCopyStep' => 'doUpdateStep',
                              'editStep' => 'doUpdateStep', 'doUpdateStep' => 'doUpdateStep',  
                              'doDeleteStep' => '', 'doReorderSteps' => '','doResequenceSteps' => '',
-                             'doInsertStep' => 'doUpdateStep','setImportance' => '','setStatus' => '');
+                             'doInsertStep' => 'doUpdateStep',
+                             'setImportance' => '','setStatus' => '',
+                             'setExecutionType' => '', "setEstimatedExecDuration" => '');
 
   $key2work = 'initWebEditorFromTemplate';
   $initWebEditorFromTemplate = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
@@ -693,6 +697,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
         case "doResequenceSteps":
         case "setImportance":
         case "setStatus":
+        case "setExecutionType":
+        case "setEstimatedExecDuration":
             $renderType = 'template';
             
             // Document this !!!!

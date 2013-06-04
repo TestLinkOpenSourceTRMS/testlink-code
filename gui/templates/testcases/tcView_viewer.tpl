@@ -15,7 +15,7 @@ viewer for test case in test specification
              execution_type_short_descr,delete_step,show_hide_reorder,btn_new_sibling,
              test_plan,platform,insert_step,btn_print,btn_print_view,hint_new_version,
              execution_type,test_importance,none,preconditions,btn_compare_versions,
-             estimated_execution_duration,status,
+             estimated_execution_duration,status,btn_save,estimated_execution_duration_short,
              requirement,btn_show_exec_history,btn_resequence_steps,link_unlink_requirements"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
@@ -333,70 +333,16 @@ function launchInsertStep(step_id)
 </div>
 </form>
 
-{if $session['testprojectOptions']->automationEnabled}
-  <div {$addInfoDivStyle}>
-    <span class="labelHolder">{$tcView_viewer_labels.execution_type} {$smarty.const.TITLE_SEP}</span>
-    {if isset($gui->execution_types[$args_testcase.execution_type])}
-      {$gui->execution_types[$args_testcase.execution_type]}
-    {else}
-      Unknown execution type code: {$args_testcase.execution_type}
-    {/if}  
-  </div>
-{/if}
-
-{if $session['testprojectOptions']->testPriorityEnabled}
-   <div {$addInfoDivStyle}>
-   <form id="importanceForm" name="importanceForm" method="post" 
-         action="lib/testcases/tcEdit.php" onsubmit="alert('fff');">
-
-    <input type="hidden" name="doAction" id="doAction" value="setImportance">
-    <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
-    <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-    
-    <span class="labelHolder">{$tcView_viewer_labels.test_importance} {$smarty.const.TITLE_SEP}</span>
-    
-    {if $edit_enabled}
-    <select name="importance" onchange="document.getElementById('importanceForm').submit();" >
-          {html_options options=$gsmarty_option_importance selected=$args_testcase.importance}
-    </select>
-    {else}
-      {$gsmarty_option_importance[$args_testcase.importance]}
-    {/if}
-   </form>
-   </div>
-{/if}
-
-  <div {$addInfoDivStyle}>
-   <form id="statusForm" name="statusForm" id="statusForm" method="post" action="lib/testcases/tcEdit.php">
-    <input type="hidden" name="doAction" id="doAction" value="setStatus">
-    <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
-    <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-
-    <span class="labelHolder">{$tcView_viewer_labels.status} {$smarty.const.TITLE_SEP}</span>
-    {if $edit_enabled}
-    <select name="status" id="status" onchange="document.getElementById('statusForm').submit();">
-      {html_options options=$gui->domainTCStatus selected=$args_testcase.status}
-    </select>
-    {else}
-      {$gui->domainTCStatus[$args_testcase.status]}
-    {/if}
-   </form>
-  </div>
+{include file="testcases/attributesLinearForViewer.inc.tpl"} 
 
 
-   <div {$addInfoDivStyle}>
-    <span class="labelHolder">{$tcView_viewer_labels.estimated_execution_duration} {$smarty.const.TITLE_SEP}</span>
-    {$args_testcase.estimated_exec_duration}
-  </div>
-
-
-
-  {if $args_cf.standard_location neq ''}
+{if $args_cf.standard_location neq ''}
   <div {$addInfoDivStyle}>
         <div id="cfields_design_time" class="custom_field_container">{$args_cf.standard_location}</div>
   </div>
   {/if}
 
+  <p>
   <div {$addInfoDivStyle}>
     <table cellpadding="0" cellspacing="0" style="font-size:100%;">
           <tr>

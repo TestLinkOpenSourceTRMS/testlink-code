@@ -5468,7 +5468,10 @@ class testcase extends tlObjectWithAttachments
       return $rs;
   } 
   
-  
+  /**
+   *
+   *
+   */  
   function setExecutionType($tcversionID,$value)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -5484,14 +5487,32 @@ class testcase extends tlObjectWithAttachments
         $execType = TESTCASE_EXECUTION_TYPE_MANUAL;        
       break;
     }
-    $sql =  "/* $debugMsg */ " . 
-        " UPDATE {$this->tables['tcversions']} " .
-            " SET execution_type=" . $this->db->prepare_int($execType) .  
-          " WHERE id = " . $this->db->prepare_int($tcversionID); 
+    $sql = "/* $debugMsg */ " . 
+           " UPDATE {$this->tables['tcversions']} " .
+           " SET execution_type=" . $this->db->prepare_int($execType) .  
+           " WHERE id = " . $this->db->prepare_int($tcversionID); 
     $this->db->exec_query($sql);
     return array($value,$execType,$sql);
   }
 
+
+  /**
+   *
+   *
+   */  
+  function setEstimatedExecDuration($tcversionID,$value)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $safe = trim($value);
+    $safe = is_numeric($safe) ? $safe : null;
+
+    $sql = "/* $debugMsg */ " . 
+           " UPDATE {$this->tables['tcversions']} " .
+           " SET estimated_exec_duration=" . ((is_null($safe) || $safe == '') ? 'NULL' : $safe) .  
+           " WHERE id = " . $this->db->prepare_int($tcversionID); 
+    $this->db->exec_query($sql);
+    return array($value,$safe,$sql);
+  }
 
   
 

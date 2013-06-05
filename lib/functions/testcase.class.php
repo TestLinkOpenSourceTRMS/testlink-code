@@ -719,6 +719,7 @@ class testcase extends tlObjectWithAttachments
       $allReqs = $req_mgr->get_all_for_tcase($idSet);
       $allTCKeywords = $this->getKeywords($idSet,null,'testcase_id',' ORDER BY keyword ASC ');
 
+      $ovx = 0;
       foreach($idSet as $key => $tc_id)
       {
         // using $version_id has sense only when we are working on ONE SPECIFIC Test Case
@@ -729,7 +730,10 @@ class testcase extends tlObjectWithAttachments
           continue;
         }
         
+
         $tc_array[0]['tc_external_id'] = $gui->tcasePrefix . $tc_array[0]['tc_external_id'];
+        $tc_array[0]['ghost'] = '[ghost]"TestCase":"' . $tc_array[0]['tc_external_id'] . '","Version":"' .
+                                $tc_array[0]['version'] . '"[/ghost]';
 
         // status quo of execution and links of tc versions
         $gui->status_quo[] = $this->get_versions_status_quo($tc_id);
@@ -756,8 +760,12 @@ class testcase extends tlObjectWithAttachments
           $gui->testcase_other_versions[] = array_slice($tc_array,1);
           $target_idx = count($gui->testcase_other_versions) - 1;
           $loop2do = count($gui->testcase_other_versions[$target_idx]);
+          
+          $ref = &$gui->testcase_other_versions[$target_idx];
           for($qdx=0; $qdx < $loop2do; $qdx++)
           {
+            $ref[$qdx]['ghost'] = '[ghost]"TestCase":"' . $tc_array[0]['tc_external_id'] . '","Version":"' .
+                                  $ref[$qdx]['version'] . '"[/ghost]';
             $target_tcversion = $gui->testcase_other_versions[$target_idx][$qdx]['id'];
             foreach($cfPlaces as $locationKey => $locationFilter)
             { 
@@ -766,24 +774,24 @@ class testcase extends tlObjectWithAttachments
                                                            null,null,$gui->tproject_id,null,$target_tcversion);
             } 
           }
-          }
-          else
-          {
-            $gui->testcase_other_versions[] = null;
-            $gui->cf_other_versions[$cfx]=null;
-          } 
-          $cfx++;
+        }
+        else
+        {
+          $gui->testcase_other_versions[] = null;
+          $gui->cf_other_versions[$cfx]=null;
+        } 
+        $cfx++;
           
-          // Get author and updater id for each version
-          if ($gui->testcase_other_versions[0])
-          {
-            foreach($gui->testcase_other_versions[0] as $key => $version)
-            {       
-                $userIDSet[$version['author_id']] = null;
-                $userIDSet[$version['updater_id']] = null;        
-            }
+        // Get author and updater id for each version
+        if ($gui->testcase_other_versions[0])
+        {
+          foreach($gui->testcase_other_versions[0] as $key => $version)
+          {       
+            $userIDSet[$version['author_id']] = null;
+            $userIDSet[$version['updater_id']] = null;        
           }
-          $gui->arrReqs[] = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
+        }
+        $gui->arrReqs[] = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
 
         } 
       } 
@@ -793,7 +801,6 @@ class testcase extends tlObjectWithAttachments
     $gui->users = tlUser::getByIDs($this->db,array_keys($userIDSet),'id');
     $gui->cf = null;
 
-      
     $this->initShowGuiActions($gui);
     $tplCfg = templateConfiguration('tcView');
     $smarty->assign('gui',$gui);
@@ -5955,7 +5962,7 @@ class testcase extends tlObjectWithAttachments
   {
     // Javascript instead of javascript, because CKeditor sometimes complains
     $versionTag = '[version:%s]';
-    $href = '<a href="Javascript:openTCW(\'%s\',%s);">%s:%s' . " $versionTag (link)</a>";
+    $href = '<a href="Javascript:openTCW(\'%s\',%s);">%s:%s' . " $versionTag (link)<p></a>";
     $tlBeginMark = '[ghost]';
     $tlEndMark = '[/ghost]';
     $key2check = array('summary','preconditions');
@@ -5964,12 +5971,15 @@ class testcase extends tlObjectWithAttachments
     // some additional not wanted entities, that disturb a lot
     // when trying to use json_decode().
     // Hope this set is enough.
-    $replaceSet = array($tlEndMark, '</p>', '<p>','&nbsp;');
+    // 20130605 - after algorithm change, this seems useless
+    //$replaceSet = array($tlEndMark, '</p>', '<p>','&nbsp;');
+
     $rse = &$item2render;
     foreach($key2check as $item_key)
     {
       $start = strpos($rse[$item_key],$tlBeginMark);
       $ghost = $rse[$item_key];
+
       if($start !== FALSE)
       {
         $xx = explode($tlBeginMark,$rse[$item_key]);
@@ -5977,34 +5987,50 @@ class testcase extends tlObjectWithAttachments
         $ghost = '';
         for($xdx=0; $xdx < $xx2do; $xdx++)
         {
-          if(strpos($xx[$xdx],$tlEndMark) !== FALSE)
+          if( strpos($xx[$xdx],$tlEndMark) !== FALSE)
           {
-            $dx = trim(str_replace($replaceSet,'',$xx[$xdx]));
-
-            // trick to convert to array  
-            $dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
-            $dx = json_decode($dx,true);
-
-            try
+            // $dx = trim(str_replace($replaceSet,'',$xx[$xdx]));
+            $yy = explode($tlEndMark,$xx[$xdx]);
+            if( ($elc = count($yy)) > 0)
             {
-              if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
+              $dx = $yy[0];
+
+              // trick to convert to array  
+              $dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
+              $dx = json_decode($dx,true);
+      
+              try
               {
-                $fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
-                if(!is_null($fi))
+                if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
                 {
-                  // will get test case title to generate following string
-                  // "Reference to Test Case EXTERNAL ID - TITLE (version X)"
-                  $vn = intval($dx['Version']);
-                  $vn = ($vn == 0) ? 'Latest' : $vn;
-                  $ghost .= sprintf($href,$dx['TestCase'],$vn,$dx['TestCase'],$fi[0]['name'],$vn);
+                  $fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
+                  if(!is_null($fi))
+                  {
+                    // will get test case title to generate following string
+                    // "Reference to Test Case EXTERNAL ID - TITLE (version X)"
+                    $vn = intval($dx['Version']);
+                    $vn = ($vn == 0) ? 'Latest' : $vn;
+                    $ghost .= sprintf($href,$dx['TestCase'],$vn,$dx['TestCase'],$fi[0]['name'],$vn);
+                  }
                 }
+
+                $lim = $elc-1;
+                for($cpx=1; $cpx <= $lim; $cpx++) 
+                {
+                  $ghost .= $yy[$cpx];
+                }  
+              } 
+              catch (Exception $e)
+              {
+                $ghost .= $rse[$item_key];
               }
-            } 
-            catch (Exception $e)
-            {
-              $ghost .= $rse[$item_key];
-            }
+            }  
+
           }
+          else
+          {
+            $ghost .= $xx[$xdx];
+          }  
         }
       }
       if($ghost != '')
@@ -6041,5 +6067,4 @@ class testcase extends tlObjectWithAttachments
            " WHERE id = " . $this->db->prepare_int($tcversionID); 
     $this->db->exec_query($sql);
   }
-
-} // end class
+}  

@@ -15,6 +15,7 @@ viewer for test case in test specification
              execution_type_short_descr,delete_step,show_hide_reorder,btn_new_sibling,
              test_plan,platform,insert_step,btn_print,btn_print_view,hint_new_version,
              execution_type,test_importance,none,preconditions,btn_compare_versions,
+             show_ghost_string,
              estimated_execution_duration,status,btn_save,estimated_execution_duration_short,
              requirement,btn_show_exec_history,btn_resequence_steps,link_unlink_requirements"}
 
@@ -293,7 +294,6 @@ function launchInsertStep(step_id)
   <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
   <input type="hidden" id="stepsControls_step_id" name="step_id" value="0" />
   <input type="hidden" id="stepsControls_show_mode" name="show_mode" value="{$gui->show_mode}" />
-
 
     {include file="testcases/inc_tcbody.tpl" 
              inc_tcbody_close_table=false

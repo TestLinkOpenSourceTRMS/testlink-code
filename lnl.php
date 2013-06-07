@@ -110,8 +110,9 @@ switch($userCount)
   
     if(!is_null($what2launch))
     {
-    		redirect(TL_BASE_HREF . $what2launch);
-  			exit();
+      // file_put_contents('/tmp/lnl.txt',TL_BASE_HREF . $what2launch);
+    	redirect(TL_BASE_HREF . $what2launch);
+  		exit();
     }
   break;
   

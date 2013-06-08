@@ -1,35 +1,22 @@
 {* 
-   TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.25.2.4 2010/12/06 16:05:45 asimon83 Exp $ 
-   Purpose: smarty template - show test specification tree menu 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+@filesource tcTree.tpl
+Purpose: smarty template - show test specification tree menu 
 
-rev: 
-  20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
-  20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
-  20100809 - franciscom - BUGID 0003664 -  treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
-
-  20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
-                      them with new included template inc_tc_filter_panel.tpl,
-                      also added filtering by custom fields
-  20091210 - franciscom - exec type filter 
-  20080831 - franciscom - treeCfg
-                          manage testlink_node_type, useBeforeMoveNode
-  20080805 - franciscom - BUGID 1656
+@internal revisions
 *}
 {lang_get var="labels"
           s="caption_nav_filter_settings,testsuite,do_auto_update,keywords_filter_help,
              button_update_tree,no_tc_spec_av,keyword,execution_type"}
 
 
-    {include file="inc_head.tpl" openHead="yes"}
-    {include file="inc_ext_js.tpl" bResetEXTCss=1}
+{include file="inc_head.tpl" openHead="yes"}
+{include file="inc_ext_js.tpl" bResetEXTCss=1}
 
-	{* BUGID 3301 *}
-	{* Ext Collapsible Panel *}
+{* Ext Collapsible Panel *}
 	<script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
 	{literal}
 	<script type="text/javascript">
-	// BUGID 4077
 		treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
 		            loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
 		Ext.onReady(function() {
@@ -58,7 +45,6 @@ rev:
     {if $gui->ajaxTree->loader == ''}
         {literal}
         <script type="text/javascript">
-        // BUGID 4077
         treeCfg = {tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                    loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
         </script>
@@ -100,7 +86,6 @@ rev:
     {/if}
 
 
-{* BUGID 3301 - js include file for simpler code, filter refactoring/redesign *}
 {include file='inc_filter_panel_js.tpl'}
 
 {* 
@@ -111,13 +96,8 @@ rev:
 
 <h1 class="title">{$gui->treeHeader}</h1>
 
-{* BUGID 3301: include file for filter panel *}
 {include file='inc_filter_panel.tpl'}
-
-{* BUGID 4042 *}
 {include file="inc_tree_control.tpl"}
-
-{* BUGID 4077 *}
 <div id="tree_div" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 
 </body>

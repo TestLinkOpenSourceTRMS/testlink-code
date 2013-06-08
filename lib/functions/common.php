@@ -10,12 +10,12 @@
  * Note: this file must uses only globally used functionality and cannot include 
  * a feature specific code because of performance and readability reasons
  *
- * @filesource	common.php
- * @package 	TestLink
- * @author 	    TestLink community
+ * @filesource  common.php
+ * @package   TestLink
+ * @author      TestLink community
  * @Copyright   2005,2013 TestLink community 
- * @link 	    http://www.teamst.org/index.php
- * @since 		1.5
+ * @link      http://www.teamst.org/index.php
+ * @since     1.5
  *
  * @internal revisions
  * @since 1.9.7
@@ -66,23 +66,23 @@ require_once("exec_cfield_mgr.class.php");
  */
 function tlAutoload($class_name) 
 {
-	// exceptions
-	$tlClasses = null;
-	$tlClassPrefixLen = 2;
-	$classFileName = $class_name;
+  // exceptions
+  $tlClasses = null;
+  $tlClassPrefixLen = 2;
+  $classFileName = $class_name;
 
-	// this way Zend_Loader_Autoloader will take care of these classes.
-	// Needed in order to make work bugzillaxmlrpc interface
-	if( strstr($class_name,'Zend_') !== FALSE )
-	{
-		return false;
-	}
+  // this way Zend_Loader_Autoloader will take care of these classes.
+  // Needed in order to make work bugzillaxmlrpc interface
+  if( strstr($class_name,'Zend_') !== FALSE )
+  {
+    return false;
+  }
     
-	if (isset($tlClasses[$classFileName]))
-	{
+  if (isset($tlClasses[$classFileName]))
+  {
     $len = tlStringLen($classFileName) - $tlClassPrefixLen;
-		$classFileName = strtolower(tlSubstr($classFileName,$tlClassPrefixLen,$len));
-	}
+    $classFileName = strtolower(tlSubstr($classFileName,$tlClassPrefixLen,$len));
+  }
   
   // fix provided by BitNami for:
   // Reason: We had a problem integrating TestLink with other apps. 
@@ -93,8 +93,8 @@ function tlAutoload($class_name)
   } 
   catch (Exception $e)
   {
-  }	 
-	
+  }  
+  
 }
 
 
@@ -116,50 +116,50 @@ $db = 0;
  */
 function doDBConnect(&$db,$onErrorExit=false)
 {
-	global $g_tlLogger;
-	
-	$charSet = config_get('charset');
-	$result = array('status' => 1, 'dbms_msg' => 'ok');
+  global $g_tlLogger;
+  
+  $charSet = config_get('charset');
+  $result = array('status' => 1, 'dbms_msg' => 'ok');
 
-	$db = new database(DB_TYPE);
-	$result = $db->connect(DSN, DB_HOST, DB_USER, DB_PASS, DB_NAME);
+  $db = new database(DB_TYPE);
+  $result = $db->connect(DSN, DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
-	if (!$result['status'])
-	{
-		echo $result['dbms_msg'];
-		$result['status'] = 0;
-		$search = array('<b>','</b>','<br>');
-		$replace = array('',''," :: ");
-		$logtext = ' Connect to database <b>' . DB_NAME . '</b> on Host <b>' . DB_HOST . '</b> fails <br>';
-		$logtext .= 'DBMS Error Message: ' . $result['dbms_msg'];
-		
-		$logmsg  = $logtext . ($onErrorExit ? '<br>Redirection to connection fail screen.' : '');
-		tLog(str_replace($search,$replace,$logmsg), 'ERROR');
-		if( $onErrorExit )
-		{
-			$smarty = new TLSmarty();
-			$smarty->assign('title', lang_get('fatal_page_title'));
-			$smarty->assign('content', $logtext);
-			$smarty->assign('link_to_op', null);
-			$smarty->display('workAreaSimple.tpl'); 
-			exit();
-		}
-	}
-	else
-	{
-		if((DB_TYPE == 'mysql') && ($charSet == 'UTF-8'))
-		{
-			$db->exec_query("SET CHARACTER SET utf8");
-			$db->exec_query("SET collation_connection = 'utf8_general_ci'");
-		}
-	}
-	
-	// if we establish a DB connection, we reopen the session, 
-	// to attach the db connection
-	$g_tlLogger->endTransaction();
-	$g_tlLogger->startTransaction();
-	
-	return $result;
+  if (!$result['status'])
+  {
+    echo $result['dbms_msg'];
+    $result['status'] = 0;
+    $search = array('<b>','</b>','<br>');
+    $replace = array('',''," :: ");
+    $logtext = ' Connect to database <b>' . DB_NAME . '</b> on Host <b>' . DB_HOST . '</b> fails <br>';
+    $logtext .= 'DBMS Error Message: ' . $result['dbms_msg'];
+    
+    $logmsg  = $logtext . ($onErrorExit ? '<br>Redirection to connection fail screen.' : '');
+    tLog(str_replace($search,$replace,$logmsg), 'ERROR');
+    if( $onErrorExit )
+    {
+      $smarty = new TLSmarty();
+      $smarty->assign('title', lang_get('fatal_page_title'));
+      $smarty->assign('content', $logtext);
+      $smarty->assign('link_to_op', null);
+      $smarty->display('workAreaSimple.tpl'); 
+      exit();
+    }
+  }
+  else
+  {
+    if((DB_TYPE == 'mysql') && ($charSet == 'UTF-8'))
+    {
+      $db->exec_query("SET CHARACTER SET utf8");
+      $db->exec_query("SET collation_connection = 'utf8_general_ci'");
+    }
+  }
+  
+  // if we establish a DB connection, we reopen the session, 
+  // to attach the db connection
+  $g_tlLogger->endTransaction();
+  $g_tlLogger->startTransaction();
+  
+  return $result;
 }
 
 
@@ -171,20 +171,20 @@ function doDBConnect(&$db,$onErrorExit=false)
  */
 function setSessionTestPlan($tplan_info)
 {
-	if ($tplan_info)
-	{
-		$_SESSION['testplanID'] = $tplan_info['id'];
-		$_SESSION['testplanName'] = $tplan_info['name'];
-		// Save testplan id for next session
-		setcookie('TL_lastTestPlanForUserID_' . 1, $tplan_info['id'], TL_COOKIE_KEEPTIME, '/');
+  if ($tplan_info)
+  {
+    $_SESSION['testplanID'] = $tplan_info['id'];
+    $_SESSION['testplanName'] = $tplan_info['name'];
+    // Save testplan id for next session
+    setcookie('TL_lastTestPlanForUserID_' . 1, $tplan_info['id'], TL_COOKIE_KEEPTIME, '/');
 
-		tLog("Test Plan was adjusted to '" . $tplan_info['name'] . "' ID(" . $tplan_info['id'] . ')', 'INFO');
-	}
-	else
-	{
-		unset($_SESSION['testplanID']);
-		unset($_SESSION['testplanName']);
-	}
+    tLog("Test Plan was adjusted to '" . $tplan_info['name'] . "' ID(" . $tplan_info['id'] . ')', 'INFO');
+  }
+  else
+  {
+    unset($_SESSION['testplanID']);
+    unset($_SESSION['testplanName']);
+  }
 }
 
 
@@ -194,10 +194,10 @@ function setSessionTestPlan($tplan_info)
  */
 function setPaths()
 {
-	if (!isset($_SESSION['basehref']))
-	{
-		$_SESSION['basehref'] = get_home_url(array('force_https' => config_get('force_https')));
-	}	
+  if (!isset($_SESSION['basehref']))
+  {
+    $_SESSION['basehref'] = get_home_url(array('force_https' => config_get('force_https')));
+  } 
 }
 
 
@@ -209,35 +209,35 @@ function setPaths()
  **/
 function checkSessionValid(&$db, $redirect=true)
 {
-	$isValidSession = false;
-	if (isset($_SESSION['userID']) && $_SESSION['userID'] > 0)
-	{
-		$now = time();
-		if (($now - $_SESSION['lastActivity']) <= (config_get("sessionInactivityTimeout") * 60))
-		{
-			$_SESSION['lastActivity'] = $now;
-			$user = new tlUser($_SESSION['userID']);
-			$user->readFromDB($db);
-			$_SESSION['currentUser'] = $user;
-			$isValidSession = true;
-		}
-	}
-	if (!$isValidSession && $redirect)
-	{
+  $isValidSession = false;
+  if (isset($_SESSION['userID']) && $_SESSION['userID'] > 0)
+  {
+    $now = time();
+    if (($now - $_SESSION['lastActivity']) <= (config_get("sessionInactivityTimeout") * 60))
+    {
+      $_SESSION['lastActivity'] = $now;
+      $user = new tlUser($_SESSION['userID']);
+      $user->readFromDB($db);
+      $_SESSION['currentUser'] = $user;
+      $isValidSession = true;
+    }
+  }
+  if (!$isValidSession && $redirect)
+  {
     tLog('Invalid session from ' . $_SERVER["REMOTE_ADDR"] . '. Redirected to login page.', 'INFO');
-		
-		$fName = "login.php";
+    
+    $fName = "login.php";
     $baseDir = dirname($_SERVER['SCRIPT_FILENAME']);
         
     while(!file_exists($baseDir . DIRECTORY_SEPARATOR . $fName))
     {
             $fName = "../" . $fName;
     }
-		$destination = "&destination=" . urlencode($_SERVER['REQUEST_URI']);
+    $destination = "&destination=" . urlencode($_SERVER['REQUEST_URI']);
     redirect($fName . "?note=expired" . $destination,"top.location");
     exit();
-	}
-	return $isValidSession;
+  }
+  return $isValidSession;
 }
 
 
@@ -246,17 +246,17 @@ function checkSessionValid(&$db, $redirect=true)
  */
 function doSessionStart($setPaths=false)
 {
-	session_set_cookie_params(99999);
-	if(!isset($_SESSION))
-	{
-		session_start();
-	}
-	
-	if($setPaths)
-	{
-		unset($_SESSION['basehref']);
-		setPaths();
-	}
+  session_set_cookie_params(99999);
+  if(!isset($_SESSION))
+  {
+    session_start();
+  }
+  
+  if($setPaths)
+  {
+    unset($_SESSION['basehref']);
+    setPaths();
+  }
 }
 
 
@@ -271,33 +271,33 @@ function doSessionStart($setPaths=false)
  */
 function initTopMenu(&$db)
 {
-	$_SESSION['testprojectTopMenu'] = '';
-	$guiTopMenu = config_get('guiTopMenu');
+  $_SESSION['testprojectTopMenu'] = '';
+  $guiTopMenu = config_get('guiTopMenu');
 
-	// check if Project is available
-	if (isset($_SESSION['testprojectID']) && $_SESSION['testprojectID'] > 0)
-	{
-		$idx = 1;	
-    	foreach ($guiTopMenu as $element)
-		{
-			// check if Test Plan is available
-			if ((!isset($element['condition'])) || ($element['condition'] == '') ||
-				(($element['condition'] == 'TestPlanAvailable') && 
-				  isset($_SESSION['testplanID']) && $_SESSION['testplanID'] > 0) ||
-				(($element['condition'] == 'ReqMgmtEnabled') && 
-				  isset($_SESSION['testprojectOptions']->requirementsEnabled) && 
-				    $_SESSION['testprojectOptions']->requirementsEnabled))
-			{
-				// (is_null($element['right']) => no right needed => display always
-				if (is_null($element['right']) || has_rights($db,$element['right']) == "yes")
-				{
-					$_SESSION['testprojectTopMenu'] .= "<a href='{$element['url']}' " .
-						"target='{$element['target']}' accesskey='{$element['shortcut']}'" .
-	     				"tabindex=''" . $idx++ . "''>" . lang_get($element['label'])."</a> | ";
-				}
-			}
-		}
-	}
+  // check if Project is available
+  if (isset($_SESSION['testprojectID']) && $_SESSION['testprojectID'] > 0)
+  {
+    $idx = 1; 
+      foreach ($guiTopMenu as $element)
+    {
+      // check if Test Plan is available
+      if ((!isset($element['condition'])) || ($element['condition'] == '') ||
+        (($element['condition'] == 'TestPlanAvailable') && 
+          isset($_SESSION['testplanID']) && $_SESSION['testplanID'] > 0) ||
+        (($element['condition'] == 'ReqMgmtEnabled') && 
+          isset($_SESSION['testprojectOptions']->requirementsEnabled) && 
+            $_SESSION['testprojectOptions']->requirementsEnabled))
+      {
+        // (is_null($element['right']) => no right needed => display always
+        if (is_null($element['right']) || has_rights($db,$element['right']) == "yes")
+        {
+          $_SESSION['testprojectTopMenu'] .= "<a href='{$element['url']}' " .
+            "target='{$element['target']}' accesskey='{$element['shortcut']}'" .
+              "tabindex=''" . $idx++ . "''>" . lang_get($element['label'])."</a> | ";
+        }
+      }
+    }
+  }
 }
 
 
@@ -313,66 +313,66 @@ function initTopMenu(&$db)
  * 
  * @uses initMenu() 
  * @internal Revisions:
- * 	20091111 - havlatm - menu generation added, name changed (from upd_session_tplan_tproject)
- *	20090726 - franciscom - getAccessibleTestPlans() now is method on user class
+ *  20091111 - havlatm - menu generation added, name changed (from upd_session_tplan_tproject)
+ *  20090726 - franciscom - getAccessibleTestPlans() now is method on user class
  **/
 function initProject(&$db,$hash_user_sel)
 {
-	$tproject = new testproject($db);
-	$user_sel = array("tplan_id" => 0, "tproject_id" => 0 );
-	$user_sel["tproject_id"] = isset($hash_user_sel['testproject']) ? intval($hash_user_sel['testproject']) : 0;
-	$user_sel["tplan_id"] = isset($hash_user_sel['testplan']) ? intval($hash_user_sel['testplan']) : 0;
+  $tproject = new testproject($db);
+  $user_sel = array("tplan_id" => 0, "tproject_id" => 0 );
+  $user_sel["tproject_id"] = isset($hash_user_sel['testproject']) ? intval($hash_user_sel['testproject']) : 0;
+  $user_sel["tplan_id"] = isset($hash_user_sel['testplan']) ? intval($hash_user_sel['testplan']) : 0;
 
-	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
-	// test project is Test Plan container, then we start checking the container
-	if( $user_sel["tproject_id"] != 0 )
-	{
-		$tproject_id = $user_sel["tproject_id"];
-	}
-	// We need to do checks before updating the SESSION to cover the case that not defined but exists
-	if (!$tproject_id)
-	{
-		$all_tprojects = $tproject->get_all();
-		if ($all_tprojects)
-		{
-			$tproject_data = $all_tprojects[0];
-			$tproject_id = $tproject_data['id'];
-		}
-	}
-	$tproject->setSessionProject($tproject_id);
-	
-	// set a Test Plan
-	// Refresh test project id after call to setSessionProject
-	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
-	// Now we need to validate the TestPlan
-	// dolezalz, havlatm: added remember the last selection by cookie
-	$cookieName = "TL_user${_SESSION['userID']}_proj${tproject_id}_testPlanId";
-	if($user_sel["tplan_id"] != 0)
-	{
-		$tplan_id = $user_sel["tplan_id"];
-		setcookie($cookieName, $tplan_id, time()+60*60*24*90, '/');
-	} elseif (isset($_COOKIE[$cookieName])) {
-		$tplan_id = intval($_COOKIE[$cookieName]);
-	}
-  
-	// check if the specific combination of testprojectid and testplanid is valid
-	$tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id,$tplan_id);
-	if(is_null($tplan_data))
-	{
-		// Need to get first accessible test plan for user, if any exists.
-		$tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id);
+  // test project is Test Plan container, then we start checking the container
+  if( $user_sel["tproject_id"] != 0 )
+  {
+    $tproject_id = $user_sel["tproject_id"];
+  }
+  // We need to do checks before updating the SESSION to cover the case that not defined but exists
+  if (!$tproject_id)
+  {
+    $all_tprojects = $tproject->get_all();
+    if ($all_tprojects)
+    {
+      $tproject_data = $all_tprojects[0];
+      $tproject_id = $tproject_data['id'];
     }
-	
-	if(!is_null($tplan_data))
-	{
-		$tplan_data = $tplan_data[0];
-		setSessionTestPlan($tplan_data);
-	}
-	
-	// initialize structure of top menu for the user and the project
-	initTopMenu($db);
+  }
+  $tproject->setSessionProject($tproject_id);
+  
+  // set a Test Plan
+  // Refresh test project id after call to setSessionProject
+  $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
+  // Now we need to validate the TestPlan
+  // dolezalz, havlatm: added remember the last selection by cookie
+  $cookieName = "TL_user${_SESSION['userID']}_proj${tproject_id}_testPlanId";
+  if($user_sel["tplan_id"] != 0)
+  {
+    $tplan_id = $user_sel["tplan_id"];
+    setcookie($cookieName, $tplan_id, time()+60*60*24*90, '/');
+  } elseif (isset($_COOKIE[$cookieName])) {
+    $tplan_id = intval($_COOKIE[$cookieName]);
+  }
+  
+  // check if the specific combination of testprojectid and testplanid is valid
+  $tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id,$tplan_id);
+  if(is_null($tplan_data))
+  {
+    // Need to get first accessible test plan for user, if any exists.
+    $tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id);
+    }
+  
+  if(!is_null($tplan_data))
+  {
+    $tplan_data = $tplan_data[0];
+    setSessionTestPlan($tplan_data);
+  }
+  
+  // initialize structure of top menu for the user and the project
+  initTopMenu($db);
    
 }
 
@@ -386,60 +386,60 @@ function initProject(&$db,$hash_user_sel)
  * 
  * @param integer $db DB connection identifier
  * @param boolean $initProject (optional) Set true if adjustment of Test Project or  
- *										  Test Plan is required; default is FALSE
+ *                      Test Plan is required; default is FALSE
  * @param boolean $dontCheckSession (optional) Set to true if no session should be started
  * @param string $userRightsCheckFunction (optional) name of function used to check user right needed
- *													 to execute the page
+ *                           to execute the page
  */
 function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
                           $userRightsCheckFunction = null, $onFailureGoToLogin = false)
 {
-	static $pageStatistics = null;
+  static $pageStatistics = null;
 
-	doSessionStart();
-	setPaths();
-	if( isset($_SESSION['locale']) && !is_null($_SESSION['locale']) )
-	{
-      setDateTimeFormats($_SESSION['locale']);
-	}	
-	doDBConnect($db);
-	
-	if (!$pageStatistics && (config_get('log_level') == 'EXTENDED'))
-	{
-		$pageStatistics = new tlPageStatistics($db);
-	}
-	
-	if (!$dontCheckSession)
-	{
-		checkSessionValid($db);
-	}
-	
-	if ($userRightsCheckFunction)
-	{
-		checkUserRightsFor($db,$userRightsCheckFunction,$onFailureGoToLogin);
-	}
-		
-	// adjust Product and Test Plan to $_SESSION
-	if ($initProject)
-	{
-		initProject($db,$_REQUEST);
+  doSessionStart();
+  setPaths();
+  if( isset($_SESSION['locale']) && !is_null($_SESSION['locale']) )
+  {
+    setDateTimeFormats($_SESSION['locale']);
+  } 
+  doDBConnect($db);
+  
+  if (!$pageStatistics && (config_get('log_level') == 'EXTENDED'))
+  {
+    $pageStatistics = new tlPageStatistics($db);
+  }
+  
+  if (!$dontCheckSession)
+  {
+    checkSessionValid($db);
+  }
+  
+  if ($userRightsCheckFunction)
+  {
+    checkUserRightsFor($db,$userRightsCheckFunction,$onFailureGoToLogin);
+  }
+    
+  // adjust Product and Test Plan to $_SESSION
+  if ($initProject)
+  {
+    initProject($db,$_REQUEST);
   }
    
-	// used to disable the attachment feature if there are problems with repository path
-	/** @TODO this check should not be done anytime but on login and using */
-	global $g_repositoryType;
-	global $g_attachments;
-	global $g_repositoryPath;
-	$g_attachments->disabled_msg = "";
-	if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
-	{
-	  $ret = checkForRepositoryDir($g_repositoryPath);
-	  if(!$ret['status_ok'])
-	  {
-		  $g_attachments->enabled = FALSE;
-		  $g_attachments->disabled_msg = $ret['msg'];
-	  }
-	}
+  // used to disable the attachment feature if there are problems with repository path
+  /** @TODO this check should not be done anytime but on login and using */
+  global $g_repositoryType;
+  global $g_attachments;
+  global $g_repositoryPath;
+  $g_attachments->disabled_msg = "";
+  if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
+  {
+    $ret = checkForRepositoryDir($g_repositoryPath);
+    if(!$ret['status_ok'])
+    {
+      $g_attachments->enabled = FALSE;
+      $g_attachments->disabled_msg = $ret['msg'];
+    }
+  }
 }
 
 
@@ -448,15 +448,15 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
  *
  * @param   string   URL of required page
  * @param   string   Browser location - use for redirection or refresh of another frame
- * 					 Default: 'location'
+ *           Default: 'location'
  */
 function redirect($path, $level = 'location')
 {
-	echo "<html><head></head><body>";
-	echo "<script type='text/javascript'>";
-	echo "$level.href='$path';";
-	echo "</script></body></html>";
-	exit;
+  echo "<html><head></head><body>";
+  echo "<script type='text/javascript'>";
+  echo "$level.href='$path';";
+  echo "</script></body></html>";
+  exit;
 }
 
 
@@ -468,48 +468,56 @@ function redirect($path, $level = 'location')
  */
 function strings_stripSlashes($parameter,$bGPC = true)
 {
-	if ($bGPC && !ini_get('magic_quotes_gpc'))
-		return $parameter;
+  if ($bGPC && !ini_get('magic_quotes_gpc'))
+  { 
+    return $parameter;
+  }
 
-	if (is_array($parameter))
-	{
-		$retParameter = null;
-		if (sizeof($parameter))
-		{
-			foreach($parameter as $key=>$value)
-			{
-				if (is_array($value))
-					$retParameter[$key] = strings_stripSlashes($value,$bGPC);
-				else
-					$retParameter[$key] = stripslashes($value);
-			}
-		}
-		return $retParameter;
-	}
-	else
-		return stripslashes($parameter);
+  if (is_array($parameter))
+  {
+    $retParameter = null;
+    if (sizeof($parameter))
+    {
+      foreach($parameter as $key=>$value)
+      {
+        if (is_array($value))
+        {  
+          $retParameter[$key] = strings_stripSlashes($value,$bGPC);
+        }
+        else
+        {  
+          $retParameter[$key] = stripslashes($value);
+        }  
+      }
+    }
+    return $retParameter;
+  }
+  else
+  {  
+    return stripslashes($parameter);
+  }  
 }
 
 
 function to_boolean($alt_boolean)
 {
-	$the_val = 1;
+  $the_val = 1;
 
-	if (is_numeric($alt_boolean) && !intval($alt_boolean))
-	{
-		$the_val = 0;
-	}
-	else
-	{
-		$a_bool	= array ("on" => 1, "y" => 1, "off" => 0, "n" => 0);
-		$alt_boolean = strtolower($alt_boolean);
-		if(isset($a_bool[$alt_boolean]))
-		{
-			$the_val = $a_bool[$alt_boolean];
-		}
-	}
+  if (is_numeric($alt_boolean) && !intval($alt_boolean))
+  {
+    $the_val = 0;
+  }
+  else
+  {
+    $a_bool = array ("on" => 1, "y" => 1, "off" => 0, "n" => 0);
+    $alt_boolean = strtolower($alt_boolean);
+    if(isset($a_bool[$alt_boolean]))
+    {
+      $the_val = $a_bool[$alt_boolean];
+    }
+  }
 
-	return $the_val;
+  return $the_val;
 }
 
 
@@ -525,16 +533,16 @@ function to_boolean($alt_boolean)
  */
 function check_string($str2check, $regexp_forbidden_chars)
 {
-	$status_ok = 1;
+  $status_ok = 1;
 
-	if( $regexp_forbidden_chars != '' && !is_null($regexp_forbidden_chars))
-	{
-		if (preg_match($regexp_forbidden_chars, $str2check))
-		{
-			$status_ok=0;
-		}
-	}
-	return $status_ok;
+  if( $regexp_forbidden_chars != '' && !is_null($regexp_forbidden_chars))
+  {
+    if (preg_match($regexp_forbidden_chars, $str2check))
+    {
+      $status_ok=0;
+    }
+  }
+  return $status_ok;
 }
 
 
@@ -548,35 +556,35 @@ function check_string($str2check, $regexp_forbidden_chars)
  */
 function config_get($config_id)
 {
-	$t_value = '';  
-	$t_found = false;  
-	$logInfo = array('msg' => "config option not available: {$config_id}", 'level' => 'WARNING');
-	if(!$t_found)
-	{
-		$my = "g_" . $config_id;
-		if( ($t_found = isset($GLOBALS[$my])) )
-		{
-			$t_value = $GLOBALS[$my];
-		}
-		else
-		{
-			$cfg = $GLOBALS['tlCfg'];
-			if( ($t_found = property_exists($cfg,$config_id)) )
-			{
-				$t_value = $cfg->$config_id;
-			}
-		}
-		
-		if( $t_found )
-		{
-			$logInfo['msg'] = "config option: {$config_id} is " . 
-							  ((is_object($t_value) || is_array($t_value)) ? serialize($t_value) : $t_value);
-			$logInfo['level'] = 'INFO';
-		}
-	}
-	
-	tLog($logInfo['msg'],$logInfo['level']);
-	return $t_value;
+  $t_value = '';  
+  $t_found = false;  
+  $logInfo = array('msg' => "config option not available: {$config_id}", 'level' => 'WARNING');
+  if(!$t_found)
+  {
+    $my = "g_" . $config_id;
+    if( ($t_found = isset($GLOBALS[$my])) )
+    {
+      $t_value = $GLOBALS[$my];
+    }
+    else
+    {
+      $cfg = $GLOBALS['tlCfg'];
+      if( ($t_found = property_exists($cfg,$config_id)) )
+      {
+        $t_value = $cfg->$config_id;
+      }
+    }
+    
+    if( $t_found )
+    {
+      $logInfo['msg'] = "config option: {$config_id} is " . 
+                ((is_object($t_value) || is_array($t_value)) ? serialize($t_value) : $t_value);
+      $logInfo['level'] = 'INFO';
+    }
+  }
+  
+  tLog($logInfo['msg'],$logInfo['level']);
+  return $t_value;
 }
 
 
@@ -587,12 +595,12 @@ function config_get($config_id)
  */ 
 function is_blank( $p_var ) 
 {
-	$p_var = trim( $p_var );
-	$str_len = strlen( $p_var );
-	if ( 0 == $str_len ) {
-		return true;
-	}
-	return false;
+  $p_var = trim( $p_var );
+  $str_len = strlen( $p_var );
+  if ( 0 == $str_len ) {
+    return true;
+  }
+  return false;
 }
 
 
@@ -607,14 +615,14 @@ function downloadContentsToFile($content,$fileName,$opt=null)
   $my = array();
   $my['opt'] = array('Content-Type' => 'text/plain');
   $my['opt'] = array_merge($my['opt'], (array)$opt);
-	$charSet = config_get('charset');
+  $charSet = config_get('charset');
 
-	ob_get_clean();
-	header('Pragma: public' );
-	header('Content-Type: ' . $my['opt']['Content-Type'] . "; charset={$charSet}; name={$fileName}" );
-	header('Content-Transfer-Encoding: BASE64;' );
-	header('Content-Disposition: attachment; filename="' . $fileName .'"');
-	echo $content;
+  ob_get_clean();
+  header('Pragma: public' );
+  header('Content-Type: ' . $my['opt']['Content-Type'] . "; charset={$charSet}; name={$fileName}" );
+  header('Content-Transfer-Encoding: BASE64;' );
+  header('Content-Disposition: attachment; filename="' . $fileName .'"');
+  echo $content;
 }
 
 
@@ -637,15 +645,15 @@ function microtime_float()
  * @return integer HIGH, MEDUIM or LOW
  */
 function priority_to_level($priority) {
-	$urgencyImportance = config_get('urgencyImportance');
-	
-	if ($priority >= $urgencyImportance->threshold['high']) {
-		return HIGH;
-	} else if ($priority < $urgencyImportance->threshold['low']) {
-		return LOW;
-	} else {
-		return MEDIUM;
-	}
+  $urgencyImportance = config_get('urgencyImportance');
+  
+  if ($priority >= $urgencyImportance->threshold['high']) {
+    return HIGH;
+  } else if ($priority < $urgencyImportance->threshold['low']) {
+    return LOW;
+  } else {
+    return MEDIUM;
+  }
 }
 
 
@@ -655,28 +663,28 @@ function priority_to_level($priority) {
  * @author Copyright (C) 2000 - 2004  Mantis Team, Kenzaburo Ito
  */
 function ini_get_bool( $p_name ) {
-	$result = ini_get( $p_name );
+  $result = ini_get( $p_name );
 
-	if ( is_string( $result ) ) {
-		switch ( $result ) {
-			case 'off':
-			case 'false':
-			case 'no':
-			case 'none':
-			case '':
-			case '0':
-				return false;
-				break;
-			case 'on':
-			case 'true':
-			case 'yes':
-			case '1':
-				return true;
-				break;
-		}
-	} else {
-		return (bool)$result;
-	}
+  if ( is_string( $result ) ) {
+    switch ( $result ) {
+      case 'off':
+      case 'false':
+      case 'no':
+      case 'none':
+      case '':
+      case '0':
+        return false;
+        break;
+      case 'on':
+      case 'true':
+      case 'yes':
+      case '1':
+        return true;
+        break;
+    }
+  } else {
+    return (bool)$result;
+  }
 }
 
 
@@ -692,12 +700,12 @@ function ini_get_bool( $p_name ) {
  */
 function trim_and_limit($s, $len = 100)
 {
-	$s = trim($s);
-	if (tlStringLen($s) > $len) {
-		$s = tlSubStr($s, 0, $len);
-	}
+  $s = trim($s);
+  if (tlStringLen($s) > $len) {
+    $s = tlSubStr($s, 0, $len);
+  }
 
-	return $s;
+  return $s;
 }
 
 
@@ -710,10 +718,10 @@ function transform_nodes_order($nodes_order,$node_to_exclude=null)
 
   foreach($fa as $key => $value)
   {
-	// $value= X-Y
-	$fb = explode('-',$value);
+  // $value= X-Y
+  $fb = explode('-',$value);
 
-	if( is_null($node_to_exclude) || $fb[0] != $node_to_exclude)
+  if( is_null($node_to_exclude) || $fb[0] != $node_to_exclude)
   {
      $nodes_id[]=$fb[0];
   }
@@ -731,24 +739,24 @@ function transform_nodes_order($nodes_order,$node_to_exclude=null)
  */
 function getFileUploadErrorMessage($fInfo)
 {
-	$msg = null;
-	if (isset($fInfo['error']))
-	{
-		switch($fInfo['error'])
-		{
-			case UPLOAD_ERR_INI_SIZE:
-				$msg = lang_get('error_file_size_larger_than_maximum_size_check_php_ini');
-				break;
-			case UPLOAD_ERR_FORM_SIZE:
-				$msg = lang_get('error_file_size_larger_than_maximum_size');
-				break;
-			case UPLOAD_ERR_PARTIAL:
-			case UPLOAD_ERR_NO_FILE:
-				$msg = lang_get('error_file_upload');
-				break;
-		}
-	}
-	return $msg;
+  $msg = null;
+  if (isset($fInfo['error']))
+  {
+    switch($fInfo['error'])
+    {
+      case UPLOAD_ERR_INI_SIZE:
+        $msg = lang_get('error_file_size_larger_than_maximum_size_check_php_ini');
+        break;
+      case UPLOAD_ERR_FORM_SIZE:
+        $msg = lang_get('error_file_size_larger_than_maximum_size');
+        break;
+      case UPLOAD_ERR_PARTIAL:
+      case UPLOAD_ERR_NO_FILE:
+        $msg = lang_get('error_file_upload');
+        break;
+    }
+  }
+  return $msg;
 }
 
 
@@ -765,7 +773,7 @@ function show_instructions($key, $refreshTree=0)
     {
         $myURL .= "&refreshTree=1";  
     }
-  	redirect($myURL);
+    redirect($myURL);
 }
 
 
@@ -774,14 +782,14 @@ function show_instructions($key, $refreshTree=0)
  */
 function templateConfiguration($template2get=null)
 {
-	$custom_templates = config_get('tpl');
-	$access_key = $template2get;
-	if( is_null($access_key) )
-	{
-		$access_key = str_replace('.php','',basename($_SERVER['SCRIPT_NAME']));
-	}
-	
-	$path_parts=explode("/",dirname($_SERVER['SCRIPT_NAME']));
+  $custom_templates = config_get('tpl');
+  $access_key = $template2get;
+  if( is_null($access_key) )
+  {
+    $access_key = str_replace('.php','',basename($_SERVER['SCRIPT_NAME']));
+  }
+  
+  $path_parts=explode("/",dirname($_SERVER['SCRIPT_NAME']));
     $last_part=array_pop($path_parts);
     $tcfg = new stdClass();
     $tcfg->template_dir = "{$last_part}/";
@@ -820,14 +828,14 @@ function isValidISODateTime($ISODateTime)
  *
  */
 function is_valid_date($timestamp, $dateFormat) {
-	$date_array = split_localized_date($timestamp,$dateFormat);
-	
-	$status_ok = false;
-	if ($date_array != null) {
-		$status_ok = checkdate($date_array['month'],$date_array['day'],$date_array['year']);
-	}
-	
-	return $status_ok;
+  $date_array = split_localized_date($timestamp,$dateFormat);
+  
+  $status_ok = false;
+  if ($date_array != null) {
+    $status_ok = checkdate($date_array['month'],$date_array['day'],$date_array['year']);
+  }
+  
+  return $status_ok;
 }
 
 /**
@@ -874,73 +882,73 @@ function split_localized_date($timestamp,$dateFormat)
  */
 function checkUserRightsFor(&$db,$pfn,$onFailureGoToLogin=false)
 {
-	$script = basename($_SERVER['PHP_SELF']);
-	$currentUser = $_SESSION['currentUser'];
-	$doExit = false;
-	$action = null;
+  $script = basename($_SERVER['PHP_SELF']);
+  $currentUser = $_SESSION['currentUser'];
+  $doExit = false;
+  $action = null;
 
-	$m2call = $pfn;
-	$arguments = null;
-	if( is_object($pfn) )
-	{
-	  $m2call = $pfn->method;
-	  $arguments = $pfn->args;
-	}
-	
-	
-	if (!$m2call($db,$currentUser,$arguments,$action))
-	{
-		if (!$action)
-		{
-			$action = "any";
-		}
-		logAuditEvent(TLS("audit_security_user_right_missing",$currentUser->login,$script,$action),
-					        $action,$currentUser->dbID,"users");
-		$doExit = true;
-	}
-	
-	if($doExit)
-	{  	
-		$myURL = $_SESSION['basehref'];
-	  if($onFailureGoToLogin)
-	  {
-	    unset($_SESSION['currentUser']);
+  $m2call = $pfn;
+  $arguments = null;
+  if( is_object($pfn) )
+  {
+    $m2call = $pfn->method;
+    $arguments = $pfn->args;
+  }
+  
+  
+  if (!$m2call($db,$currentUser,$arguments,$action))
+  {
+    if (!$action)
+    {
+      $action = "any";
+    }
+    logAuditEvent(TLS("audit_security_user_right_missing",$currentUser->login,$script,$action),
+                  $action,$currentUser->dbID,"users");
+    $doExit = true;
+  }
+  
+  if($doExit)
+  {   
+    $myURL = $_SESSION['basehref'];
+    if($onFailureGoToLogin)
+    {
+      unset($_SESSION['currentUser']);
       redirect($myURL ."login.php");
-	  }
-	  else
-	  { 	
-	    redirect($myURL,"top.location");
-	  }
-		exit();
-	}
+    }
+    else
+    {   
+      redirect($myURL,"top.location");
+    }
+    exit();
+  }
 }
 
 
 function tlStringLen($str)
 {
-	$charset = config_get('charset');	
-	$nLen = iconv_strlen($str,$charset);
-	if ($nLen === false)
-	{
-		throw new Exception("Invalid UTF-8 Data detected!");
-	}
-	return $nLen; 
+  $charset = config_get('charset'); 
+  $nLen = iconv_strlen($str,$charset);
+  if ($nLen === false)
+  {
+    throw new Exception("Invalid UTF-8 Data detected!");
+  }
+  return $nLen; 
 }
 
 
 function tlSubStr($str,$start,$length = null)
 {
-	$charset = config_get('charset');
-	if ($length === null)
-	{
-		$length = iconv_strlen($str,$charset);
-	}	
-	// BUGID 3951: replaced iconv_substr() by mb_substr()
-	$function_call = "mb_substr";
-	if (function_exists('iconv_substr') && version_compare(PHP_VERSION, '5.2.0') >= 0) {
-		$function_call = "iconv_substr";
-	}
-	return $function_call($str,$start,$length,$charset);
+  $charset = config_get('charset');
+  if ($length === null)
+  {
+    $length = iconv_strlen($str,$charset);
+  } 
+  // BUGID 3951: replaced iconv_substr() by mb_substr()
+  $function_call = "mb_substr";
+  if (function_exists('iconv_substr') && version_compare(PHP_VERSION, '5.2.0') >= 0) {
+    $function_call = "iconv_substr";
+  }
+  return $function_call($str,$start,$length,$charset);
 }
 
 /**
@@ -970,29 +978,29 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
     {
       if (property_exists($editorTemplate, $webEditorName)) 
       {
-      	switch($editorTemplate->$webEditorName->type)
-      	{
-      		case 'string':
-      			$value = $editorTemplate->$webEditorName->value;
-      			break;
-      			 
-      		case 'string_id':
-      			$value = lang_get($editorTemplate->$webEditorName->value);
-      			break;
-      			 
-      		case 'file':
-      			$value = getFileContents($editorTemplate->$webEditorName->value);
-				if (is_null($value))
-				{
-					$value = lang_get('problems_trying_to_access_template') . 
-					         " {$editorTemplate->$webEditorName->value} ";
-				}	
-      			break;
-      			 
-      		default:
-      			$value = '';
-      			break;
-      	}
+        switch($editorTemplate->$webEditorName->type)
+        {
+          case 'string':
+            $value = $editorTemplate->$webEditorName->value;
+            break;
+             
+          case 'string_id':
+            $value = lang_get($editorTemplate->$webEditorName->value);
+            break;
+             
+          case 'file':
+            $value = getFileContents($editorTemplate->$webEditorName->value);
+        if (is_null($value))
+        {
+          $value = lang_get('problems_trying_to_access_template') . 
+                   " {$editorTemplate->$webEditorName->value} ";
+        } 
+            break;
+             
+          default:
+            $value = '';
+            break;
+        }
       }
     }
     return $value; 
@@ -1007,11 +1015,11 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
  */
 function buildExternalIdString($testCasePrefix, $external_id)
 {
-	static $glueChar;
-	if (!$glueChar) {
-		$glueChar = config_get('testcase_cfg')->glue_character;
-	}
-	return $testCasePrefix . $glueChar . $external_id;
+  static $glueChar;
+  if (!$glueChar) {
+    $glueChar = config_get('testcase_cfg')->glue_character;
+  }
+  return $testCasePrefix . $glueChar . $external_id;
 
 }
 
@@ -1021,11 +1029,11 @@ function buildExternalIdString($testCasePrefix, $external_id)
  */
 function displayMemUsage($msg='')
 {
-	$dx = date('l jS \of F Y h:i:s A');
-	echo "<br>{$msg} :: <b>{$dx}</b> <br>"; 			
-	ob_flush();flush();
-	echo "memory:" . memory_get_usage() . " - PEAK -> " . memory_get_peak_usage() .'<br>';
-	ob_flush();flush();
+  $dx = date('l jS \of F Y h:i:s A');
+  echo "<br>{$msg} :: <b>{$dx}</b> <br>";       
+  ob_flush();flush();
+  echo "memory:" . memory_get_usage() . " - PEAK -> " . memory_get_peak_usage() .'<br>';
+  ob_flush();flush();
 }
 
 
@@ -1043,18 +1051,18 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
   if( isset($_SESSION['locale']) && !is_null($_SESSION['locale']) )
   {
     setDateTimeFormats($_SESSION['locale']);
-  }	
+  } 
   doDBConnect($dbHandler);
 
   $user = tlUser::getByAPIKey($dbHandler,$apikey);
   if( count($user) == 1 )
   {
-  	$_SESSION['lastActivity'] = time();
-  	$userObj = new tlUser(key($user));
-  	$userObj->readFromDB($dbHandler);
-  	$_SESSION['currentUser'] = $userObj;
-  	$_SESSION['userID'] = $userObj->dbID;
-  	$_SESSION['locale'] = $userObj->locale;
+    $_SESSION['lastActivity'] = time();
+    $userObj = new tlUser(key($user));
+    $userObj->readFromDB($dbHandler);
+    $_SESSION['currentUser'] = $userObj;
+    $_SESSION['userID'] = $userObj->dbID;
+    $_SESSION['locale'] = $userObj->locale;
 
     // if user do this:
     // 1. login to test link
@@ -1075,47 +1083,47 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
       session_destroy();
       if(property_exists($rightsCheck, 'redirect_target') && !is_null($rightsCheck->redirect_target))
       {
-      	redirect($rightsCheck->redirect_target);	
-      }	
+        redirect($rightsCheck->redirect_target);  
+      } 
       else
       {
-      	// best guess for all features that live on ./lib/results/
-      	redirect("../../login.php?note=logout");	
-      }	
-      	
+        // best guess for all features that live on ./lib/results/
+        redirect("../../login.php?note=logout");  
+      } 
+        
       exit();
     }  
  
 
 
-	  if(!is_null($rightsCheck))
-	  {
-		  checkUserRightsFor($dbHandler,$rightsCheck,true);
-	  }
-	}
+    if(!is_null($rightsCheck))
+    {
+      checkUserRightsFor($dbHandler,$rightsCheck,true);
+    }
+  }
 }
 
 
 
 /*
-	returns map with config values and strings translated (using lang_get()) 
-	to be used on user interface  for a Test link configuration option that 
-	is structure in this way:
-  	config_option = array( string_value => any_value, ...)
+  returns map with config values and strings translated (using lang_get()) 
+  to be used on user interface  for a Test link configuration option that 
+  is structure in this way:
+    config_option = array( string_value => any_value, ...)
 
-  	All this works if TL_ strings defined on strings.txt follows this naming standard.  
+    All this works if TL_ strings defined on strings.txt follows this naming standard.  
 
-  	For a config option like:
-  	$tlCfg->workflowStatus=array('draft' => 1, 'review' => 2);
+    For a config option like:
+    $tlCfg->workflowStatus=array('draft' => 1, 'review' => 2);
  
 
-  	will exists:  $TL_workflowStatus_draft='...';
-    	          	$TL_workflowStatus_review='...';
+    will exists:  $TL_workflowStatus_draft='...';
+                  $TL_workflowStatus_review='...';
 
-  	@param string configKey: valus used on call to standard test link
-                           	 method to get configuration option
+    @param string configKey: valus used on call to standard test link
+                             method to get configuration option
 
-  	@param string accessMode: two values allowed 'key', 'code'
+    @param string accessMode: two values allowed 'key', 'code'
                               indicates how the returned map must be indexed.
 
                               'key' => will be indexed by string                          
@@ -1140,14 +1148,14 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
 
 function getConfigAndLabels($configKey,$accessMode='key')
 {
-	$stringKeyCode = config_get($configKey);
-	$labels=null;
-	foreach( $stringKeyCode as $accessKey => $code )
-	{
-		$index = ($accessMode == 'key') ? $accessKey : $code;
-		$labels[$index] = lang_get($configKey . '_' . $accessKey);
-	}
-	return array('cfg' => $stringKeyCode, 'lbl' => $labels); 
+  $stringKeyCode = config_get($configKey);
+  $labels=null;
+  foreach( $stringKeyCode as $accessKey => $code )
+  {
+    $index = ($accessMode == 'key') ? $accessKey : $code;
+    $labels[$index] = lang_get($configKey . '_' . $accessKey);
+  }
+  return array('cfg' => $stringKeyCode, 'lbl' => $labels); 
 }
 
 

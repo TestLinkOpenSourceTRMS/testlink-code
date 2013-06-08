@@ -54,9 +54,19 @@ if($redir2login)
   //
   // When TL undertand that session exists but has expired
   // is OK to call login with expired indication, but is not this case
+  //
+  // Dev Notes:
+  // may be we are going to login.php and it will call us again!
   redirect(TL_BASE_HREF ."login.php");
   exit;
 }
+
+
+// We arrive to these lines only if we are logged in
+// 
+// Calling testlinkInitPage() I'm doing what we do on navBar.php
+// navBar.php is called via main.tpl
+// testlinkInitPage($db,('initProject' == 'initProject'));
 
 $tplEngine = new TLSmarty();
 $tplEngine->assign('gui', $gui);

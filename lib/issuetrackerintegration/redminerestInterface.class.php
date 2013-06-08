@@ -55,7 +55,9 @@ class redminerestInterface extends issueTrackerInterface
 		$base = trim($this->cfg->uribase,"/") . '/'; // be sure no double // at end
 	  if( !property_exists($this->cfg,'uriview') )
 	  {
-      $this->cfg->uriview = $base . 'issues/show/';
+      // $this->cfg->uriview = $base . 'issues/show/'; // seems this is good only for redmine 1
+      // $this->cfg->uriview = $base . 'issues/show/'; // seems this is good only for redmine 2
+      $this->cfg->uriview = $base . 'issues/'; // seems this is good only for redmine 1
 		}
 	    
 	  if( !property_exists($this->cfg,'uricreate') )
@@ -355,6 +357,7 @@ class redminerestInterface extends issueTrackerInterface
 				        "<issuetracker>\n" .
 				        "<apikey>REDMINE API KEY</apikey>\n" .
 				        "<uribase>http://tl.m.remine.org</uribase>\n" .
+                "<uriview>http://tl.m.remine.org/issues/</uriview> <!-- for Redmine 1.x add show/ --> \n" .
 				        "<!-- Project Identifier is NEEDED ONLY if you want to create issues from TL -->\n" . 
 				        "<projectidentifier>REDMINE PROJECT IDENTIFIER</projectidentifier>\n" .
                 "<!-- Configure This if you need to provide other attributes -->\n" .

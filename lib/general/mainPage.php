@@ -120,6 +120,7 @@ if( $currentUser->hasRight($db,"testproject_user_role_assignment",$testprojectID
     $gui->grants['tproject_user_role_assignment'] = "yes";
 }
 
+
 $gui->url = array('metrics_dashboard' => 'lib/results/metricsDashboard.php',
                   'testcase_assignments' => 'lib/testcases/tcAssignedToUser.php');
 $gui->launcher = 'lib/general/frmWorkArea.php';
@@ -142,28 +143,26 @@ $smarty->display('mainPage.tpl');
  */
 function getUserDocumentation()
 {
-    $target_dir = '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'docs';
-    $documents = null;
+  $target_dir = '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'docs';
+  $documents = null;
     
-    if ($handle = opendir($target_dir)) 
+  if ($handle = opendir($target_dir)) 
+  {
+    while (false !== ($file = readdir($handle))) 
     {
-        while (false !== ($file = readdir($handle))) 
+      clearstatcache();
+      if (($file != ".") && ($file != "..")) 
+      {
+        if (is_file($target_dir . DIRECTORY_SEPARATOR . $file))
         {
-            clearstatcache();
-            if (($file != ".") && ($file != "..")) 
-            {
-               if (is_file($target_dir . DIRECTORY_SEPARATOR . $file))
-               {
-                   $documents[] = $file;
-               }    
-            }
-        }
-        closedir($handle);
+          $documents[] = $file;
+        }    
+      }
     }
-    return $documents;
+    closedir($handle);
+  }
+  return $documents;
 }
-
-
 
 
 function getGrants($dbHandler,$user,$forceToNo=false)
@@ -186,6 +185,7 @@ function getGrants($dbHandler,$user,$forceToNo=false)
                        'configuration' => "system_configuraton",
                        'usergroups' => "mgt_view_usergroups",
                        'view_tc' => "mgt_view_tc",
+                       'view_testcase_spec' => "mgt_view_tc",
                        'project_inventory_view' => 'project_inventory_view',
                        'modify_tc' => 'mgt_modify_tc',
                        'exec_edit_notes' => 'exec_edit_notes', 'exec_delete' => 'exec_delete',

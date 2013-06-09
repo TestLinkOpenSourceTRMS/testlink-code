@@ -492,7 +492,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
     if($doLog)
     {
-      tLog('Mode:' . $this->mode . ' - Wrong or missing GET argument: feature', 'ERROR');
+      tLog( __CLASS__ . ' :: Mode:' . $this->mode . ' - Wrong or missing GET argument: feature', 'ERROR');
       exit();
     }
   } // end of method

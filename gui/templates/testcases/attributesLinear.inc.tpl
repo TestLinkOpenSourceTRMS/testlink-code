@@ -13,7 +13,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 </span>
 
 {if $session['testprojectOptions']->testPriorityEnabled}
-  <span class="labelHolder" style="margin-left:20px;">{$labels.test_importance}</span>
+  <span class="labelHolder" style="margin-left:20px;">{$labels.importance}</span>
   <span>
   <select name="importance" onchange="content_modified = true">
     {html_options options=$gsmarty_option_importance selected=$gui->tc.importance}

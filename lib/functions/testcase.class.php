@@ -438,21 +438,6 @@ class testcase extends tlObjectWithAttachments
   }
 
 
- /**
-  *
-  */ 
- function xcreateVersion($item)
- {
-    // function create_tcversion($id,$tc_ext_id,$version,$summary,$preconditions,$steps,
-    //                        $author_id,$execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
-  
-    return $this->create_tcversion($item->id,$item->externalID,$item->version,$item->summary,
-                                   $item->preconditions,$item->steps,$item->authorID,
-                                   $item->executionType,$item->importance,
-                                   $item->estimatedExecDuration);
-
- }
-  
   /*
     function: create_tcversion
   
@@ -463,12 +448,6 @@ class testcase extends tlObjectWithAttachments
     rev: 
  
   */
- 
-
-  // function create_tcversion($id,$tc_ext_id,$version,$summary,$preconditions,$steps,
-  //                          $author_id,$execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
-  //                          $importance=2,$status=null,$estimatedExecDuration=null)
-  // {
  private function createVersion($item)
  {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -506,6 +485,7 @@ class testcase extends tlObjectWithAttachments
 
 
     $result = $this->db->exec_query($sql);
+
     $ret['msg']='ok';
     $ret['id']=$tcase_version_id;
     $ret['status_ok']=1;
@@ -1474,6 +1454,10 @@ class testcase extends tlObjectWithAttachments
           $ix->preconditions = $tcversion['preconditions'];
           $ix->executionType = $tcversion['execution_type'];
           $ix->importance = $tcversion['importance'];
+          $ix->version = $tcversion['version'];
+          $ix->status = $tcversion['status'];
+          $ix->estimatedExecDuration = $tcversion['estimated_exec_duration'];
+
           $op = $this->createVersion($ix);
 
           if( $op['status_ok'] )

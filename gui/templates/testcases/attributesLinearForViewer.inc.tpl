@@ -32,7 +32,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
     
-  <span class="labelHolder" style="margin-left:20px;">{$tcView_viewer_labels.test_importance}{$smarty.const.TITLE_SEP}</span>
+  <span class="labelHolder" style="margin-left:20px;">{$tcView_viewer_labels.importance}{$smarty.const.TITLE_SEP}</span>
     {if $edit_enabled}
     <select name="importance" onchange="document.getElementById('importanceForm').submit();" >
           {html_options options=$gsmarty_option_importance selected=$args_testcase.importance}

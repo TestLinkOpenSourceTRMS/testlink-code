@@ -10,7 +10,7 @@ Purpose: smarty template - create new testcase
 {* ---------------------------------------------------------------- *}
 {lang_get var='labels' 
           s='tc_title,alt_add_tc_name,summary,steps,expected_results,
-             preconditions,status,estimated_execution_duration,
+             preconditions,status,estimated_execution_duration,importance,
              execution_type,test_importance,tc_keywords,assign_requirements'}
 
 {* Steps and results Layout management *}

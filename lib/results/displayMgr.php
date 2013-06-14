@@ -132,11 +132,10 @@ function flushHttpHeader($format, $doc_kind = 0)
 
   
   $contentType = isset($reports_applications[$format]) ? $reports_applications[$format] : 'text/html';
-  $contentType .= (is_null($format) || $format=='') ? '' : ("; name='Testlink_" . $format ."'}") ;
+  $contentType .= (is_null($format) || $format=='') ? '' : ("; name='Testlink_" . $format ."'") ;
   header("Content-type: {$contentType}");
   header("Content-Description: TestLink - Generated Document (see " . __FUNCTION__ . ")" );
-
-  if( (!is_null($format) && $format=='') && $format != FORMAT_HTML )
+  if( (!is_null($format) && $format != '') && $format != FORMAT_HTML )
   {
     header("Content-Disposition: attachment; filename=$filename");
   }  

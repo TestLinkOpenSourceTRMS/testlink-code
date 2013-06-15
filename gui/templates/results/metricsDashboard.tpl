@@ -19,10 +19,10 @@
   {$matrix->renderHeadSection()}
 {/foreach}
 
-{assign var=tplan_metric value=$gui->tplan_metrics}
+{assign var="tplan_metric" value="$gui->tplan_metrics"}
 <script type="text/javascript">
 Ext.onReady(function() {ldelim}
-	{foreach key=key item=value from=$gui->project_metrics}
+	{foreach key="key" item="value" from="$gui->project_metrics"}
     new Ext.ProgressBar({ldelim}
         text:'&nbsp;&nbsp;{lang_get s=$value.label_key}: {$value.value}% [{$tplan_metric.total.$key}/{$tplan_metric.total.active}]',
         width:'400',
@@ -75,7 +75,7 @@ Ext.onReady(function() {ldelim}
 	<h2>{$labels.test_plan_progress}</h2>
 	<br />
 	{foreach from=$gui->tableSet key=idx item=matrix}
-		{assign var=tableID value=table_$idx}
+		{assign var="tableID" value="table_$idx"}
    		{$matrix->renderBodySection($tableID)}
 	{/foreach}
 	<br />

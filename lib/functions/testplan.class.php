@@ -15,9 +15,7 @@
  *
  * @internal revisions
  * 
- * @since 1.9.7
- * 20130318 - franciscom - TICKET 5572: Filter by Platforms - Wrong test case state count in test plan execution
- * 20130318 - franciscom - TICKET 5566: "Assigned to" does not work in "test execution" page
+ * @since 1.9.8
  * 
  **/
 
@@ -3084,6 +3082,10 @@ class testplan extends tlObjectWithAttachments
    */
   function get_same_status_for_build_set($id, $buildSet, $status, $platformID=NULL)
   {
+    // On Postgresql 
+    // An output column’s name can be used to refer to the column’s value in ORDER BY and GROUP BY clauses, 
+    // but not in the WHERE or HAVING clauses; there you must write out the expression instead.
+
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $node_types = $this->tree_manager->get_available_node_types();
@@ -3123,7 +3125,7 @@ class testplan extends tlObjectWithAttachments
          " AND EE.status IN ('" . $status . "') AND NH.node_type_id={$node_types['testcase_version']} " .
          " AND SQ1.last_exec_id=EE.id AND SQ1.tcversion_id=NH.id " .
          " GROUP BY status,SQ1.tcversion_id,NH.parent_id" .
-         " HAVING count(EE.status)= {$num_exec} " ;
+         " HAVING COUNT(EE.status)= {$num_exec} " ;
     
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
     
@@ -4188,6 +4190,9 @@ class testplan extends tlObjectWithAttachments
    */
   function getNotRunAllBuildsForPlatform($id,$platformID,$buildSet=null) 
   {
+    // On Postgresql 
+    // An output column’s name can be used to refer to the column’s value in ORDER BY and GROUP BY clauses, 
+    // but not in the WHERE or HAVING clauses; there you must write out the expression instead.
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     list($safe_id,$buildsCfg,$sqlLEBBP) = $this->helperGetHits($id,$platformID,$buildSet);
     
@@ -4209,7 +4214,7 @@ class testplan extends tlObjectWithAttachments
         " AND TPTCV.platform_id " . $safe_id['platform'] .
         " AND E.status IS NULL " .
         " GROUP BY tcase_id " .
-        " HAVING COUNTER = " . intval($buildsCfg['count']) ; 
+        " HAVING COUNT(0) = " . intval($buildsCfg['count']) ; 
         
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
     return $recordset;
@@ -4317,6 +4322,10 @@ class testplan extends tlObjectWithAttachments
    */
   function getHitsSingleStatusFull($id,$platformID,$status,$buildSet=null) 
   {
+    // On Postgresql 
+    // An output column’s name can be used to refer to the column’s value in ORDER BY and GROUP BY clauses, 
+    // but not in the WHERE or HAVING clauses; there you must write out the expression instead.
+
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     list($safe_id,$buildsCfg,$sqlLEBBP) = $this->helperGetHits($id,$platformID,$buildSet);
 
@@ -4351,7 +4360,7 @@ class testplan extends tlObjectWithAttachments
         " AND E.build_id IN ({$buildsCfg['inClause']}) " .
         " AND E.status ='" .$this->db->prepare_string($status) . "'" .
         " GROUP BY tcase_id" .
-        " HAVING COUNTER = " . intval($buildsCfg['count']) ; 
+        " HAVING COUNT(0) = " . intval($buildsCfg['count']) ; 
 
     unset($safe_id,$buildsCfg,$sqlLEBBP);
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
@@ -4376,6 +4385,10 @@ class testplan extends tlObjectWithAttachments
    */
   function getHitsNotRunFullOnPlatform($id,$platformID,$buildSet=null) 
   {
+    // On Postgresql 
+    // An output column’s name can be used to refer to the column’s value in ORDER BY and GROUP BY clauses, 
+    // but not in the WHERE or HAVING clauses; there you must write out the expression instead.
+
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     list($safe_id,$buildsCfg,$sqlLEBBP) = $this->helperGetHits($id,$platformID,$buildSet);
     
@@ -4399,7 +4412,7 @@ class testplan extends tlObjectWithAttachments
         " AND TPTCV.platform_id = " . $safe_id['platform']  .  
         " AND E.status IS NULL " .
         " GROUP BY tcase_id " .
-        " HAVING COUNTER = " . intval($buildsCfg['count']) ; 
+        " HAVING COUNT(0) = " . intval($buildsCfg['count']) ; 
 
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
     return $recordset;
@@ -4465,6 +4478,11 @@ class testplan extends tlObjectWithAttachments
    */
   function getHitsStatusSetFullOnPlatform($id,$platformID,$statusSet,$buildSet=null) 
   {
+
+    // On Postgresql 
+    // An output column’s name can be used to refer to the column’s value in ORDER BY and GROUP BY clauses, 
+    // but not in the WHERE or HAVING clauses; there you must write out the expression instead.
+
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
     list($safe_id,$buildsCfg,$sqlLEBBP) = $this->helperGetHits($id,$platformID,$buildSet);
@@ -4514,7 +4532,7 @@ class testplan extends tlObjectWithAttachments
         " AND E.build_id IN ({$buildsCfg['inClause']}) " .
         " AND E.status IN ('{$statusInClause}')" .
         " GROUP BY tcase_id" .
-        " HAVING COUNTER = " . $countTarget ; 
+        " HAVING COUNT(0) = " . $countTarget ; 
 
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
     return $recordset;
@@ -4727,6 +4745,11 @@ class testplan extends tlObjectWithAttachments
    */
   function getHitsSameStatusFullALOP($id,$statusSet,$buildSet=null)
   {
+    // On Postgresql 
+    // An output column’s name can be used to refer to the column’s value in ORDER BY and GROUP BY clauses, 
+    // but not in the WHERE or HAVING clauses; there you must write out the expression instead.
+
+
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     list($safe_id,$buildsCfg,$sqlLEX) = $this->helperGetHits($id,null,$buildSet,
@@ -4760,7 +4783,7 @@ class testplan extends tlObjectWithAttachments
                 " WHERE TPTCV.testplan_id = " . $safe_id['tplan']  .
                 " AND E.status IS NULL " .
                 " GROUP BY tcase_id " .
-                " HAVING COUNTER = " . intval($buildsCfg['count']) ;
+                " HAVING COUNT(0) = " . intval($buildsCfg['count']) ;
 
             $hits['notRun'] = $this->db->fetchRowsIntoMap($notRunSQL,'tcase_id');
 
@@ -4814,7 +4837,7 @@ class testplan extends tlObjectWithAttachments
                     " AND E.status IN ('{$statusInClause}')" .
                     " ) SQX " .
                     " GROUP BY tcase_id " .
-                    " HAVING COUNTER = " . $countTarget ;
+                    " HAVING COUNT(0) = " . $countTarget ;
     
             $hits['otherStatus'] = $this->db->fetchRowsIntoMap($otherStatusSQL,'tcase_id');
         }

@@ -5,12 +5,7 @@
  * Purpose: List requirements with (or without) Custom Fields Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
- * revisions:
- * 20100823 - asimon - replaced "onchange" in form by "onclick" to get
- *                     it working in IE too
- * 20100821 - asimon - replaced "show all versions" button by checkbox as requested per e-mail
- * 20100310 - asimon - refactoring
- * 20100309 - asimon - initial commit
+ * @internal revisions
  *
  *}
 
@@ -22,7 +17,7 @@
 {include file="inc_head.tpl" openHead="yes"}
 
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-	{assign var=tableID value=table_$idx}
+	{assign var=tableID value="table_$idx"}
 	{if $smarty.foreach.initializer.first}
 		{$matrix->renderCommonGlobals()}
 		{if $matrix instanceof tlExtTable}
@@ -88,7 +83,7 @@ Ext.onReady(function(){
 	</form></p><br/>
 	
 	{foreach from=$gui->tableSet key=idx item=matrix}
-		{assign var=tableID value=table_$idx}
+		{assign var=tableID value="table_$idx"}
    		{$matrix->renderBodySection($tableID)}
 	{/foreach}
 	

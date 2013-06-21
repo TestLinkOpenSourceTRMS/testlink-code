@@ -479,84 +479,105 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 
 
   @internal revisions
-  20101127 - franciscom - req_revisions table
-  20100907 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions 
+  20130621 - check if we are deleting the only existent version, in this case
+             we need to delete the requirement.
+
   */
   function delete($id,$version_id = self::ALL_VERSIONS)
-   {
-     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-     $children = null;
-    $where_clause_coverage = '';
-      $where_clause_this = '';
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $children = null;
+
+    $where = array('coverage' => '','this' => '', 'iam_parent' => '');
     $deleteAll = false;
-      $result = null;
-      $doIt = true;
-      
-      if(is_array($id))
-      {
+    $result = null;
+    $doIt = true;
+    $kaboom = false;
+
+    if(is_array($id))
+    {
     
-        $id_list = implode(',',$id);
-        $where_clause_coverage = " WHERE req_id IN ({$id_list})";
-        $where_clause_this = " WHERE id IN ({$id_list})";
-      }
-      else
-      {
-        $where_clause_coverage = " WHERE req_id = {$id}";
-        $where_clause_this = " WHERE id = {$id}";
-      }
+      $id_list = implode(',',$id);
+      $where['coverage'] = " WHERE req_id IN ({$id_list})";
+      $where['this'] = " WHERE id IN ({$id_list})";
+      $where['iam_parent'] = " WHERE parent_id IN ({$id_list})";
+    }
+    else
+    {
+      $safeID = intval($id);
+      $where['coverage'] = " WHERE req_id = " . $safeID;
+      $where['this'] = " WHERE id = " . $safeID;
+      $where['iam_parent'] = " WHERE parent_id = " . $safeID;
+    }
     
     // When deleting only one version, we need to check if we need to delete  requirement also.
     $children[] = $version_id;
-      if( $version_id == self::ALL_VERSIONS)
-      {
-       $deleteAll = true;
+    if( $version_id == self::ALL_VERSIONS)
+    {
+      $deleteAll = true;
+    
       // I'm trying to speedup the next deletes
-        $sql="SELECT NH.id FROM {$this->tables['nodes_hierarchy']} NH WHERE NH.parent_id ";
-        if( is_array($id) )
-        {
-            $sql .=  " IN (" .implode(',',$id) . ") ";
-        }
-        else
-        {
-            $sql .= "  = {$id} ";
-        }
+      $sql="SELECT NH.id FROM {$this->tables['nodes_hierarchy']} NH WHERE NH.parent_id ";
+      if( is_array($id) )
+      {
+        $sql .=  " IN (" .implode(',',$id) . ") ";
+      }
+      else
+      {
+        $sql .= "  = {$id} ";
+      }
   
-        $children_rs=$this->db->fetchRowsIntoMap($sql,'id');
-        $children = array_keys($children_rs); 
+      $children_rs=$this->db->fetchRowsIntoMap($sql,'id');
+      $children = array_keys($children_rs); 
 
-        // delete dependencies with test specification
-        $sql = "DELETE FROM {$this->tables['req_coverage']} " . $where_clause_coverage;
-        $result = $this->db->exec_query($sql);
+      // delete dependencies with test specification
+      $sql = "DELETE FROM {$this->tables['req_coverage']} " . $where['coverage'];
+      $result = $this->db->exec_query($sql);
 
-       // also delete relations to other requirements
-       // Issue due to FK
-       // 
-       if ($result)
-       {
+      // also delete relations to other requirements
+      // Issue due to FK
+      // 
+      if ($result)
+      {
         $this->delete_all_relations($id);
       }
 
       if ($result)
-        {
-          $doIt = true;
-          $the_ids = is_array($id) ? $id : array($id);
+      {
+        $doIt = true;
+        $the_ids = is_array($id) ? $id : array($id);
         foreach($the_ids as $key => $value)
         {
           $result = $this->attachmentRepository->deleteAttachmentsFor($value,$this->attachmentTableName);
         }
-        }
-      }        
+      }
+    }        
 
-        // Delete version info
-      if( $doIt )
+    // Delete version info
+    if( $doIt )
+    {
+
+      // How many versions are there? we will delete req also for all with COUNT(0) == 1
+      $sql = "SELECT COUNT(0) AS VQTY, parent_id FROM {$this->tables['nodes_hierarchy']} " . 
+             $where['iam_parent'];
+      $rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
+      foreach($rs as $el)
       {
+        if($el['VQTY'] == 1)
+        {
+          $target[] = $el['parent_id'];
+        }  
+      }  
+      if( ($kaboom = !is_null($target)) )
+      {
+        $where['this'] = " WHERE id IN (" . implode(',',$target) . ")";
+      }  
+
 
       $implosion = implode(',',$children);
-
-      // ------------------------------------------------------------------------------------------  
-      // 20101127 - franciscom - BUGID 
-        $sql = "/* $debugMsg */ SELECT id from {$this->tables['nodes_hierarchy']} " .
-                  " WHERE parent_id IN ( {$implosion} ) ";
+      $sql = "/* $debugMsg */ SELECT id from {$this->tables['nodes_hierarchy']} " .
+             " WHERE parent_id IN ( {$implosion} ) ";
+             
       $revisionSet = $this->db->fetchRowsIntoMap($sql,'id');
       if( !is_null($revisionSet) )
       {
@@ -568,33 +589,34 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
           $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE parent_id IN ( {$implosion} ) ";
           $result = $this->db->exec_query($sql);
       }
-      // ------------------------------------------------------------------------------------------
+      $this->cfield_mgr->remove_all_design_values_from_node((array)$children);
 
+      $where['children'] = " WHERE id IN ( {$implosion} ) ";
 
-        // BUGID 2877 - Custom Fields linked to Requirement Versions                    
-        $this->cfield_mgr->remove_all_design_values_from_node((array)$children);
-        
-        $where_clause_children = " WHERE id IN ( {$implosion} ) ";
-        $sql = "DELETE FROM {$this->tables['req_versions']} " . $where_clause_children;
-        $result = $this->db->exec_query($sql);
+      $sql = "DELETE FROM {$this->tables['req_versions']} " . $where['children'];
+      $result = $this->db->exec_query($sql);
           
-        $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " . $where_clause_children;
-        $result = $this->db->exec_query($sql);
+      $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " . $where['children'];
+      $result = $this->db->exec_query($sql);
+
+
     } 
 
-    if( $deleteAll && $result)
+    $kaboom = $kaboom || ($deleteAll && $result);
+    if( $kaboom )
     {
-        $sql = "DELETE FROM {$this->object_table} " . $where_clause_this;
-        $result = $this->db->exec_query($sql);
+      $sql = "DELETE FROM {$this->object_table} " . $where['this'];
+      $result = $this->db->exec_query($sql);
 
-        $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " . $where_clause_this;
-        $result = $this->db->exec_query($sql);
-        
+      $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " . $where['this'];
+      $result = $this->db->exec_query($sql);
     }
   
-      $result = (!$result) ? lang_get('error_deleting_req') : 'ok';
-      return $result;
+    $result = (!$result) ? lang_get('error_deleting_req') : 'ok';
+    return $result;
   }
+
+
 
 
 /** collect coverage of Requirement

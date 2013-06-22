@@ -9,10 +9,7 @@
  * Manager for requirement specification (requirement container)
  *
  * @internal revisions
- * @since 1.9.6
- * 20130219 - franciscom - TICKET 5528: Importing a requirement with CF fails after the first time
- *                         delete_deep() changes
- * 20121228 - franciscom - TICKET 5442: Deleting a req spec, leaves record on nodes hierachy regarding req spec revision 
+ * @since 1.9.8
  */
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
 require_once( dirname(__FILE__) . '/requirements.inc.php' );
@@ -399,8 +396,6 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
              revision_id -> useful when user request create new revision on update
 
   */
-  // function update($id,$doc_id,$title, $scope, $countReq,$user_id,
-  //				  $type = TL_REQ_SPEC_TYPE_FEATURE,$node_order = null)
   function update($item,$options=null)
   {
   	
@@ -409,17 +404,17 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
 		$my['options'] = array_merge($my['options'], (array)$options);
 
 		$title=trim_and_limit($item['name']);
-    	$doc_id=trim_and_limit($item['doc_id']);
+   	$doc_id=trim_and_limit($item['doc_id']);
      
-    	$path=$this->tree_mgr->get_path($item['id']); 
-    	$tproject_id = $path[0]['parent_id'];
-    	$last_idx=count($path)-1;
-    	$parent_id = $last_idx==0 ? null : $path[$last_idx]['parent_id'];
-    	$chk=$this->check_main_data($title,$doc_id,$path[0]['parent_id'],$parent_id,$item['id']);
+   	$path=$this->tree_mgr->get_path($item['id']); 
+   	$tproject_id = $path[0]['parent_id'];
+   	$last_idx=count($path)-1;
+   	$parent_id = $last_idx==0 ? null : $path[$last_idx]['parent_id'];
+   	$chk=$this->check_main_data($title,$doc_id,$path[0]['parent_id'],$parent_id,$item['id']);
     
     
-    	if ($chk['status_ok'] || $my['options']['skip_controls'])
-    	{
+   	if ($chk['status_ok'] || $my['options']['skip_controls'])
+   	{
 			if( config_get('internal_links')->enable  ) 
 			{
 				$item['scope'] = req_link_replace($this->db, $item['scope'], $tproject_id);
@@ -433,50 +428,50 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
 			else
 			{
 				// missing piece, need to update all fields on last revision
-				$cnr = $this->update_revision($item);
+    		$cnr = $this->update_revision($item);
 			}
     		
-		    $db_now = $this->db->db_now();
-    	    $sql = " UPDATE {$this->object_table} " .
-    	           " SET doc_id='" . $this->db->prepare_string($doc_id) . "' " .
-				   " WHERE id={$item['id']}";
+	    $db_now = $this->db->db_now();
+ 	    $sql = " UPDATE {$this->object_table} " .
+ 	           " SET doc_id='" . $this->db->prepare_string($doc_id) . "' " .
+				     " WHERE id={$item['id']}";
 
-    	    if (!$this->db->exec_query($sql))
+    	if (!$this->db->exec_query($sql))
 			{
-    	        $result['msg']=lang_get('error_updating_reqspec');
-  		        $result['status_ok'] = 0;
-		    }
+    	  $result['msg']=lang_get('error_updating_reqspec');
+  		  $result['status_ok'] = 0;
+		  }
 		    
-    	    if( $result['status_ok'] )
-    	    {
-  		        // need to update node on tree
-    	        $sql = " UPDATE {$this->tables['nodes_hierarchy']} " .
-  		    	       " SET name='" . $this->db->prepare_string($title) . "'";
+    	if( $result['status_ok'] )
+    	{
+  		  // need to update node on tree
+    	  $sql = " UPDATE {$this->tables['nodes_hierarchy']} " .
+  			       " SET name='" . $this->db->prepare_string($title) . "'";
 				if(isset($item['node_order']) &&  !is_null($item['node_order']) )
 				{
 					$sql .= ",node_order=" . intval($item['node_order']);
 				}       
-  		    	$sql .= " WHERE id={$item['id']}";
+  		 	$sql .= " WHERE id={$item['id']}";
     	    
-    	    	// echo __FUNCTION__ . '::' .  $sql . '<br>';
-  		    	if (!$this->db->exec_query($sql))
-  		    	{
-  		    		$result['msg']=lang_get('error_updating_reqspec');
-    	    	    $result['status_ok'] = 0;
-  		        }
-		    }
+    	 	// echo __FUNCTION__ . '::' .  $sql . '<br>';
+  		 	if (!$this->db->exec_query($sql))
+  		 	{
+  		 		$result['msg']=lang_get('error_updating_reqspec');
+    	    $result['status_ok'] = 0;
+  		  }
+		  }
 		    
-		    if( $result['status_ok'] && !is_null($cnr))
-    	    {
-    	    	$result['revision_id'] = $cnr['id'];
-  		    }
-    	}    
+		  if( $result['status_ok'] && !is_null($cnr))
+    	{
+    	 	$result['revision_id'] = $cnr['id'];
+  		}
+    }    
 		else
 		{
-		    $result['status_ok']=$chk['status_ok'];
-		    $result['msg']=$chk['msg'];
+		  $result['status_ok']=$chk['status_ok'];
+		  $result['msg']=$chk['msg'];
 		}
-    	return $result;
+    return $result;
 }
 
 
@@ -1448,12 +1443,13 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
       $item = array('id' => $reqSpecID, 'name' => $rspec['title'],'doc_id' => $rspec['doc_id'], 
                     'scope' => $rspec['scope'],'total_req' => $rspec['total_req'],'modifier_id' => $author_id, 
                     'type' => $rspec['type'],'node_order' => $req_spec_order); 
+
+      // ATTENTION update return key => revision_id, because CF values are saved at REVISION LEVEL
       $result = $this->update($item);
       $result['id'] = $reqSpecID;
     }
     $user_feedback[] = array('doc_id' => $rspec['doc_id'],'title' => $rspec['title'],
                              'import_status' => sprintf($labels[$msgID],$rspec['doc_id']));
-  
     if( $result['status_ok'] && $doProcessCF && isset($rspec['custom_fields']) && !is_null($rspec['custom_fields']) )
     {
       $cf2insert = null;
@@ -1476,7 +1472,7 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
       }  
       if( !is_null($cf2insert) )
       {
-        $this->cfield_mgr->design_values_to_db($cf2insert,$result['id'],null,'simple');
+        $this->cfield_mgr->design_values_to_db($cf2insert,$result['revision_id'],null,'simple');
       }
     }
         
@@ -2193,20 +2189,21 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 		{
 			// will go to update LATEST
 			$info = $this->get_last_child_info($item['id'],array('output' => 'credentials'));       
-    		$targetID = $info['id'];
+    	$targetID = $info['id'];
 		} 
 		else
 		{
 			$targetID = $item['revision_id'];
 		}
 		
-		$sql = 	'/* $debugMsg */' .
-				" UPDATE {$this->tables['req_specs_revisions']} " .
-				" SET scope = '" . $this->db->prepare_string($item['scope']) . "', " .
-				"     modifier_id = " . $item['modifier_id'] . ", " .
-				"     modification_ts = " . $this->db->db_now() . 	
-				" WHERE id={$targetID} ";
-		$ret = $this->db->exec_query($sql);
+		$sql = '/* $debugMsg */' .
+				   " UPDATE {$this->tables['req_specs_revisions']} " .
+				   " SET scope = '" . $this->db->prepare_string($item['scope']) . "', " .
+				   "     modifier_id = " . $item['modifier_id'] . ", " .
+				   "     modification_ts = " . $this->db->db_now() . 	
+				   " WHERE id={$targetID} ";
+		$stat = $this->db->exec_query($sql);
+    return array('id' => $targetID);
 	}	
 
 

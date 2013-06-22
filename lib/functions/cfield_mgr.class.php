@@ -12,6 +12,7 @@
  *
  * @internal revisions
  * @since 1.9.8
+ * 20130622 - franciscom - minor refactoring on design_values_to_db()
  * 20130523 - franciscom - string_custom_field_input() interface changes
  *                         added required field in output record set:
  *                         get_linked_cfields_at_design()
@@ -732,15 +733,10 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
 
     rev:
-         20070525 - franciscom - added [hash_type], to reuse this method on
-                                 class testcase method copy_cfields_design_values()
-         20070501 - franciscom - limiting lenght of value before writting
-         20070105 - franciscom - added $cf_map
-         20070104 - franciscom - need to manage multiselection in a different way
   */
   function design_values_to_db($hash,$node_id,$cf_map=null,$hash_type=null)
   {
-	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     if( is_null($hash) && is_null($cf_map) )
     {
        return;
@@ -753,6 +749,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     {
       $cfield=$hash;
     }
+
     if( !is_null($cfield) )
     {
       foreach($cfield as $field_id => $type_and_value)
@@ -761,7 +758,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
         // do I need to update or insert this value?
         $sql = "/* $debugMsg */ SELECT value FROM {$this->tables['cfield_design_values']} " .
-    		   " WHERE field_id={$field_id} AND	node_id={$node_id}";
+    		       " WHERE field_id={$field_id} AND	node_id={$node_id}";
 
         $result = $this->db->exec_query($sql);
 
@@ -770,34 +767,36 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         {
            $value = substr($value,0,$this->max_length_value);
         }
+        
 
-        $safe_value=$this->db->prepare_string($value);
-        if($this->db->num_rows($result) > 0 && $value != "")
+        $safe_value = $this->db->prepare_string($value);
+        $rowCount = $this->db->num_rows($result); 
+        if( $rowCount > 0 ) 
         {
-
-          $sql = "/* $debugMsg */ UPDATE {$this->tables['cfield_design_values']} " .
-                 " SET value='{$safe_value}' " .
-    	         " WHERE field_id={$field_id} AND	node_id={$node_id}";
-		  
+          if( $value != "" )
+          {
+            $sql = "/* $debugMsg */ UPDATE {$this->tables['cfield_design_values']} " .
+                   " SET value='{$safe_value}' ";
+          }  
+          else
+          {
+            // bye, bye record
+            $sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_design_values']} ";
+          }  
+          $sql .=  " WHERE field_id={$field_id} AND node_id={$node_id}";
           $this->db->exec_query($sql);
         }
-        else if ($this->db->num_rows( $result ) == 0 && $value != "")
+        else if ($rowCount == 0 && $value != "")
         {
-          	# Remark got from Mantis code:
+          # Remark got from Mantis code:
   		    # Always store the value, even if it's the dafault value
   		    # This is important, as the definitions might change but the
   		    #  values stored with a bug must not change
   		    $sql = "/* $debugMsg */ INSERT INTO {$this->tables['cfield_design_values']} " .
-  				   " ( field_id, node_id, value ) " .
-  				   " VALUES	( {$field_id}, {$node_id}, '{$safe_value}' )";
+  				       " ( field_id, node_id, value ) " .
+  				       " VALUES	( {$field_id}, {$node_id}, '{$safe_value}' )";
   		    $this->db->exec_query($sql);
         } 
-        else if ($this->db->num_rows( $result ) > 0 && $value == "") 
-        {
-  			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_design_values']} " .
-  				   " WHERE field_id={$field_id} AND	node_id={$node_id}";
-  			$this->db->exec_query($sql);
-  		}
       } //foreach($cfield
     } //if( !is_null($cfield) )
 

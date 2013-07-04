@@ -24,6 +24,8 @@ class testcaseCommands
   private $execution_types;
   private $grants;
 
+  const UPDATECFONDB = true;
+
   function __construct(&$db,&$userObj,$tproject_id)
   {
     
@@ -279,12 +281,12 @@ class testcaseCommands
                                                            $argsObj->tcversion_id,null,null,$locationFilter);
     }  
     
-       $templateCfg = templateConfiguration('tcEdit');
+    $templateCfg = templateConfiguration('tcEdit');
     $guiObj->cf = $cf_smarty;
-      $guiObj->tc=$tc_data[0];
-      $guiObj->opt_cfg=$otCfg;
+    $guiObj->tc=$tc_data[0];
+    $guiObj->opt_cfg=$otCfg;
     $guiObj->template=$templateCfg->default_template;
-      return $guiObj;
+    return $guiObj;
   }
 
 
@@ -512,13 +514,13 @@ class testcaseCommands
 
     $guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
     $guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
-        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
+    $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
         
-       // Get all existent steps
+    // Get all existent steps
     $guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
         
-      $templateCfg = templateConfiguration('tcStepEdit');
-      $guiObj->template=$templateCfg->default_template;
+    $templateCfg = templateConfiguration('tcStepEdit');
+    $guiObj->template=$templateCfg->default_template;
     $guiObj->action = __FUNCTION__;
     
     return $guiObj;
@@ -550,7 +552,7 @@ class testcaseCommands
     {
       $guiObj->doExit = $doAndExit;
       $guiObj->user_feedback = sprintf(lang_get('step_number_x_created'),$argsObj->step_number);
-      $guiObj->step_exec_type = $guiObj->testcase['execution_type'];  // BUGID 3810
+      $guiObj->step_exec_type = $guiObj->testcase['execution_type'];
       $guiObj->cleanUpWebEditor = true;
       $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
       $this->initTestCaseBasicInfo($argsObj,$guiObj);
@@ -583,12 +585,12 @@ class testcaseCommands
   function doCreateStepAndExit(&$argsObj,$request)
   {
     $guiObj = $this->doCreateStep($argsObj,$request,true);
-
     if($guiObj->doExit)
     {
       // when working on step, refreshing tree is nonsense
       $argsObj->refreshTree = 0;
-      $this->show($argsObj,$request,array('status_ok' => true));
+      $this->show($argsObj,$request,array('status_ok' => true),!self::UPDATECFONDB);
+      exit();
     }
     else
     {
@@ -691,7 +693,7 @@ class testcaseCommands
 
     // when working on step, refreshing tree is nonsense
     $argsObj->refreshTree = 0;
-    $this->show($argsObj,$request,array('status_ok' => true));
+    $this->show($argsObj,$request,array('status_ok' => true),!self::UPDATECFONDB);
   }
   
 
@@ -1009,7 +1011,7 @@ class testcaseCommands
    * 
    *
    */
-  function show(&$argsObj,$request,$userFeedback)
+  function show(&$argsObj,$request,$userFeedback,$updateCFOnDB=true)
   {
     $smartyObj = new TLSmarty();
     $guiObj = $this->initGuiBean($argsObj);
@@ -1023,10 +1025,13 @@ class testcaseCommands
     if($userFeedback['status_ok'])
     {
       $guiObj->user_feedback = '';
-      $ENABLED = 1;
-      $cf_map = $this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->testproject_id,
-                                                                          $ENABLED,null,'testcase') ;
-      $this->tcaseMgr->cfield_mgr->design_values_to_db($request,$argsObj->tcversion_id,$cf_map);
+      if($updateCFOnDB)
+      {  
+        $cf_map = $this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->testproject_id,
+                                                                            1,null,'testcase') ;
+        $this->tcaseMgr->cfield_mgr->design_values_to_db($request,$argsObj->tcversion_id,$cf_map);
+      }
+
       $guiObj->attachments[$argsObj->tcase_id] = getAttachmentInfosFrom($this->tcaseMgr,$argsObj->tcase_id);
     }
     else

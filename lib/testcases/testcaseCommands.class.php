@@ -115,12 +115,18 @@ class testcaseCommands
       }  
     }
 
-    $tcaseInfo = $this->tcaseMgr->get_by_id($greenCard['tcase_id'],$greenCard['tcversion_id'],null,array('output' => 'full_without_steps'));
+    $tcaseInfo = $this->tcaseMgr->get_by_id($greenCard['tcase_id'],$greenCard['tcversion_id'],null,
+                                            array('output' => 'full_without_steps'));
 
 
     $external = $this->tcaseMgr->getExternalID($greenCard['tcase_id'],$argsObj->testproject_id);
     $tcaseInfo[0]['tc_external_id'] = $external[0];
     $guiObj->testcase = $tcaseInfo[0];
+
+    if(!isset($guiObj->testcase['ghost']))
+    {
+      $guiObj->testcase['ghost'] = null;  
+    }  
     $guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
     $guiObj->updaterObj = null;
     if( !is_null($guiObj->testcase['updater_id']) )

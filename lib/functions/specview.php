@@ -4,13 +4,16 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  specview.php
- * @package   TestLink
- * @author    Francisco Mancardi (francisco.mancardi@gmail.com)
+ * @package     TestLink
+ * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright   2004-2013, TestLink community 
- * @link    http://www.teamst.org/index.php
+ * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.8
+ *
+ * 20130706 - franciscom - TICKET 5788: test case execution order not working on RIGHT PANE
+ *
  * 
  **/ 
 
@@ -169,7 +172,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 
   $key2map = array('keyword_id' => 'keywords', 'tcase_id' => 'testcases', 
                    'execution_type' => 'exec_type', 'importance' => 'importance',
-                 'cfields' => 'cfields','tcase_name' => 'tcase_name' );
+                   'cfields' => 'cfields','tcase_name' => 'tcase_name' );
 
   $pfFilters = array('tcase_node_type_id' => $hash_descr_id['testcase']);
   foreach($key2map as $tk => $fk)
@@ -179,6 +182,10 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   
   
   $test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
+
+
+  // new dBug($test_spec);
+  // die();
 
   $platforms = getPlatforms($db,$tproject_id,$testplan_id);
   $idx = 0;
@@ -345,6 +352,7 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
   }
   
   // $opx = array('addExecInfo' => true, 'specViewFields' => true,'addPriority' => true) +   (array)$options;
+  // $opx = array('addExecInfo' => true, 'specViewFields' => true, 'orderBy' => ' execution_order ') +   (array)$options;
   $opx = array('addExecInfo' => true, 'specViewFields' => true) +   (array)$options;
   $tplan_tcases = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $opx);
 
@@ -356,7 +364,6 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
     $filters = array('tcase_id' => array_keys($filteredSet));
     $tplan_tcases = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $opx);
   }
-  
   return $tplan_tcases; 
 }
 
@@ -439,6 +446,9 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
     $genSpecFilters['cfields'] = $my['filters']['cfieldsFilter'];
   }           
               
+  // new dBug($tplan_linked_tcversions);
+  // die();
+
   $out = gen_spec_view($dbHandler, 'testplan', $argsObj->tplan_id, $argsObj->id, $tsuite_data['name'],
                        $tplan_linked_tcversions, null, $genSpecFilters, $my['options']);
 
@@ -488,7 +498,17 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
   $testCaseSet = null;
   $tck_map = null;
   $tobj_mgr = new testproject($dbHandler);
-  $test_spec = $tobj_mgr->get_subtree($nodeId);
+
+  // TICKET 5788: test case execution order not working on RIGHT PANE
+  // 20130706 - We can try with 'order_cfg'
+  $opt = null; 
+  if($specViewType =='testplan')
+  {
+    $opt['order_cfg']=array("type" =>'exec_order', 'tplan_id' => $masterContainerId);  
+  }
+  $test_spec = $tobj_mgr->get_subtree($nodeId,null,$opt);
+
+  // new dBug($test_spec);
 
   $key2loop = null;
   $useAllowed = false;

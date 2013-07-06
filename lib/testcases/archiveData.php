@@ -18,7 +18,7 @@
  *     System try to get Test Project analising user provided data (test case identification)
  *
  *  @internal revision
- *  @since 1.9.7
+ *  @since 1.9.8
  */
 
 require_once('../../config.inc.php');
@@ -32,7 +32,6 @@ $cfg = array('testcase' => config_get('testcase_cfg'),'testcase_reorder_by' => c
              'spec' => config_get('spec_cfg'));
 
 list($args,$gui,$grants) = initializeEnv($db);
-
 
 // User right at test project level has to be done
 // Because this script can be called requesting an item that CAN BELONG
@@ -254,7 +253,7 @@ function systemWideTestCaseSearch(&$dbHandler,&$argsObj,$glue)
 
     $tprojectMgr = new testproject($dbHandler);
     $argsObj->tcaseTestProject = $tprojectMgr->get_by_prefix($tcasePrefix);
-        
+
     $tcaseMgr = new testcase($dbHandler);
     $argsObj->tcase_id = $tcaseMgr->getInternalID($argsObj->targetTestCase);
     $dummy = $tcaseMgr->get_basic_info($argsObj->tcase_id,array('number' => $argsObj->tcaseVersionNumber));
@@ -274,7 +273,10 @@ function getSettingFromFormNameSpace($mode,$setting)
   return $rtSetting;
 }
 
-
+/**
+ *
+ *
+ */ 
 function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
 {
   $get_path_info = false;
@@ -312,6 +314,7 @@ function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
     }
   }
 
+  // because we can arrive here from a User Search Request, if args->id == 0 => nothing found
   if( $args->id > 0 )
   {
     if( $get_path_info || $args->show_path )
@@ -322,24 +325,31 @@ function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
     $gui->platforms = $platform_mgr->getAllAsMap();
     $gui->attachments[$args->id] = getAttachmentInfosFrom($item_mgr,$args->id);
     $gui->direct_link = $item_mgr->buildDirectWebLink($_SESSION['basehref'],$args->id);
-  }
-  
-  $gui->id = $args->id;
 
-  $identity = new stdClass();
-  $identity->id = $args->id;
-  $identity->tproject_id = $args->tproject_id;
-  $identity->version_id = $args->tcversion_id;
 
-  try
-  {
-    $item_mgr->show($tplEngine,$gui,$identity,$grants);
+    $gui->id = $args->id;
+
+    $identity = new stdClass();
+    $identity->id = $args->id;
+    $identity->tproject_id = $args->tproject_id;
+    $identity->version_id = $args->tcversion_id;
+
+    try
+    {
+      $item_mgr->show($tplEngine,$gui,$identity,$grants);
+    }
+    catch (Exception $e)
+    {
+      echo $e->getMessage();
+    }
+    exit();
   }
-  catch (Exception $e)
+  else 
   {
-    echo $e->getMessage();
-  }
-  exit();
+    $templateCfg = templateConfiguration();
+    $xbm = new stdClass();
+    $xbm->warning_msg=lang_get('no_records_found');
+    $tplEngine->assign('gui',$xbm);
+    $tplEngine->display($templateCfg->template_dir . 'tcSearchResults.tpl');
+  }  
 }
-
-?>

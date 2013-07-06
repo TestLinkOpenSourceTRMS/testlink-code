@@ -2977,7 +2977,7 @@ class testplan extends tlObjectWithAttachments
         $options = array('addExecInfo' => true);
         $executed = $this->getLTCVNewGeneration($id,$filters,$options); 
 
-        new dBug($executed);
+        // new dBug($executed);
 
         if( ($status_ok = !is_null($executed)) )
         {
@@ -3718,9 +3718,9 @@ class testplan extends tlObjectWithAttachments
       $order_cfg['platform_id'] = $context['platform_id'];
     }
     $my['options']=array('recursive' => true, 'order_cfg' => $order_cfg,
-               'remove_empty_nodes_of_type' => $this->tree_manager->node_descr_id['testsuite']);
-     $my['filters'] = array('exclude_node_types' => $nt2exclude,'exclude_children_of' => $nt2exclude_children);
-      $tplan_spec = $this->tree_manager->get_subtree($context['tproject_id'],$my['filters'],$my['options']);
+                         'remove_empty_nodes_of_type' => $this->tree_manager->node_descr_id['testsuite']);
+    $my['filters'] = array('exclude_node_types' => $nt2exclude,'exclude_children_of' => $nt2exclude_children);
+    $tplan_spec = $this->tree_manager->get_subtree($context['tproject_id'],$my['filters'],$my['options']);
 
     // -----------------------------------------------------------------------------------------------------
     // Generate test project info 
@@ -3966,7 +3966,7 @@ class testplan extends tlObjectWithAttachments
     $items = array();
   
       $my['options'] = array('recursive' => false, 'exclude_testcases' => false, 
-                   'remove_empty_branches' => false);
+                             'remove_empty_branches' => false);
                    
      $my['filters'] = array('exclude_node_types' => $this->nt2exclude,
                             'exclude_children_of' => $this->nt2exclude_children,
@@ -3997,9 +3997,9 @@ class testplan extends tlObjectWithAttachments
       $my['options']['remove_empty_nodes_of_type'] = 'testsuite';
     }
     
-      $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
+    $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
     $qnum = $this->$method2call($id,$tprojectID,$items,$my['filters'],$my['options']);
-     return $items;
+    return $items;
   }
   
   
@@ -4032,14 +4032,14 @@ class testplan extends tlObjectWithAttachments
     {
       $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-        $qnum=0;
+      $qnum=0;
       $node_types = array_flip($this->tree_manager->get_available_node_types());
-        $my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
-                        'additionalWhereClause' => '', 'testcase_name' => null,
-                        'platform_id' => null,
-                        'testcase_id' => null,'active_testcase' => false);
+      $my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
+                             'additionalWhereClause' => '', 'testcase_name' => null,
+                             'platform_id' => null,
+                             'testcase_id' => null,'active_testcase' => false);
                              
-        $my['options'] = array('remove_empty_nodes_of_type' => null);
+      $my['options'] = array('remove_empty_nodes_of_type' => null);
   
       $my['filters'] = array_merge($my['filters'], (array)$filters);
       $my['options'] = array_merge($my['options'], (array)$options);
@@ -6500,7 +6500,7 @@ class testplan extends tlObjectWithAttachments
     $my = array('filters' => array(),
                 'options' => array('allow_empty_build' => 1,'addPriority' => false,
                                    'accessKeyType' => 'tcase+platform',
-                                   'includeNotRun' => true));
+                                   'includeNotRun' => true, 'orderBy' => null));
     $amk = array('filters','options');
     foreach($amk as $mk)
     {
@@ -6523,7 +6523,13 @@ class testplan extends tlObjectWithAttachments
         $sql2run = $sql2do;
       }
 
-      // echo ($sql2run);  die();
+      // added when trying to fix: 
+      // TICKET 5788: test case execution order not working on RIGHT PANE
+      // Anyway this did not help
+      if( !is_null($my['options']['orderBy']) )
+      {  
+        $sql2run = " SELECT * FROM ($sql2run) XX ORDER BY " . $my['options']['orderBy'];
+      }
 
       switch($my['options']['accessKeyType'])
       {

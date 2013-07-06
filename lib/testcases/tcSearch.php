@@ -25,15 +25,14 @@ testlinkInitPage($db);
 $date_format_cfg = config_get('date_format');
 
 $templateCfg = templateConfiguration();
+$smarty = new TLSmarty();
+
 $tpl = 'tcSearchResults.tpl';
 $tproject_mgr = new testproject($db);
 
 $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
 list($args,$filter) = init_args($date_format_cfg);
-
-$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
-$history_icon = TL_THEME_IMG_DIR . "history_small.png";
 
 $gui = initializeGui($args);
 $map = null;
@@ -194,7 +193,6 @@ if ($args->tprojectID)
   }
 }
 
-$smarty = new TLSmarty();
 
 $gui->pageTitle .= " - " . lang_get('match_count') . " : " . $gui->row_qty;
 if($gui->row_qty > 0)
@@ -213,7 +211,8 @@ else
   $gui->warning_msg=lang_get('no_records_found');
 }
 
-$table = buildExtTable($gui, $charset, $edit_icon, $history_icon);
+$img = $smarty->getImages();
+$table = buildExtTable($gui, $charset, $img['edit_icon'], $img['history_small']);
 if (!is_null($table)) 
 {
   $gui->tableSet[] = $table;
@@ -362,7 +361,5 @@ function initializeGui(&$argsObj)
   $gui->tc_current_version = null;
   $gui->row_qty = 0;
   
-    return $gui;
+  return $gui;
 }
-
-?>

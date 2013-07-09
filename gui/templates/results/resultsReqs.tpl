@@ -8,7 +8,7 @@ Author : Martin Havlat
 
 
 @internal revisions
-@since 1.9.4
+@since 1.9.8
 
 *}
 {lang_get var='labels'
@@ -20,7 +20,7 @@ Author : Martin Havlat
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-	{assign var=tableID value=table_$idx}
+	{assign var=tableID value="table_$idx"}
 	{if $smarty.foreach.initializer.first}
 		{$matrix->renderCommonGlobals()}
 		{if $matrix instanceof tlExtTable}
@@ -114,7 +114,7 @@ Ext.onReady(function() {ldelim}
 	<h2>{$labels.title_resultsReqs}</h2>
 	<br />
 	{foreach from=$gui->tableSet key=idx item=matrix}
-		{assign var=tableID value=table_$idx}
+		{assign var=tableID value="table_$idx"}
    		{$matrix->renderBodySection($tableID)}
 	{/foreach}
 	

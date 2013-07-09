@@ -3,11 +3,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: testCasesWithCF.tpl,v 1.11 2010/09/21 13:51:30 mx-julian Exp $
 
 Purpose: For a test plan, list test cases with Custom Fields at Execution
-
-rev:  
- 20100719 - eloff - Use tlExtTable
- 20100303 - asimon - made table ext js sortable
- 
 *}
 
 {lang_get var="labels" 
@@ -35,7 +30,7 @@ rev:
 	{include file="inc_result_tproject_tplan.tpl" 
 		arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}
 	{foreach from=$gui->tableSet key=idx item=matrix}
-		{assign var=tableID value=table_$idx}
+		{assign var=tableID value="table_$idx"}
    		{$matrix->renderBodySection($tableID)}
 	{/foreach}
 	<br />

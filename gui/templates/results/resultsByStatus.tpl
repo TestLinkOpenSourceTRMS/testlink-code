@@ -5,7 +5,7 @@ show Test Results by Status
 
 @filesource	resultsByStatus.tpl
 @internal revisions
-@since 1.9.7
+@since 1.9.8
 *}
 
 {lang_get var='labels' 
@@ -49,7 +49,7 @@ show Test Results by Status
 
 {if $gui->warning_msg == ''}
 	{foreach from=$gui->tableSet key=idx item=matrix}
-		{assign var=tableID value=table_$idx}
+		{assign var=tableID value="table_$idx"}
    		{$matrix->renderBodySection($tableID)}
 	{/foreach}
 	<br />

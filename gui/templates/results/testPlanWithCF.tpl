@@ -4,8 +4,7 @@ $Id: testPlanWithCF.tpl,v 1.5 2010/09/21 13:44:32 mx-julian Exp $
 
 Purpose: For a test plan, list test cases with Custom Fields at Execution
 
-rev:
-  20100921 - Julian - BUGID 3797 - use exttable
+
 *}
 
 {lang_get var="labels" 
@@ -33,7 +32,7 @@ rev:
     {include file="inc_result_tproject_tplan.tpl" 
          arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}	
     {foreach from=$gui->tableSet key=idx item=matrix}
-       {assign var=tableID value=table_$idx}
+       {assign var=tableID value="table_$idx"}
        {$matrix->renderBodySection($tableID)}
     {/foreach}
     <br />

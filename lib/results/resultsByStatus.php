@@ -131,7 +131,7 @@ if( !is_null($metrics) and count($metrics) > 0 )
   $pathCache = $topCache = $levelCache = null;
   $nameCache = initNameCache($gui);
 
-  $links = featureLinks($labels,$smarty->_tpl_vars['tlImages']);
+  $links = featureLinks($labels,$smarty->getImages());
   $odx = 0;
 
   if( $args->type != $statusCode['not_run'] )

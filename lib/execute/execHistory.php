@@ -45,9 +45,8 @@ $testPlanSet = $args->user->getAccessibleTestPlans($db,$gui->tproject_id);
 $filters['testplan_id'] = null;
 foreach($testPlanSet as $rx)
 {
-  $filters['testplan_id'] = $rx[id];
+  $filters['testplan_id'][] = $rx[id];
 }
-
 $gui->execSet = $tcase_mgr->getExecutionSet($args->tcase_id,null,$filters);
 
 $gui->warning_msg = (!is_null($gui->execSet)) ? '' : lang_get('tcase_never_executed');

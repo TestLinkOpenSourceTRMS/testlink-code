@@ -216,7 +216,8 @@ if($do_display)
   // I need to apply this filters on a second step or this filters will not work
   // Need to check what I've done
   // 
-  $tplan_linked_tcversions = getFilteredLinkedVersions($db,$args,$tplan_mgr,$tcase_mgr);
+  // TICKET 5807: Unable to filter by Importance
+  $tplan_linked_tcversions = getFilteredLinkedVersions($db,$args,$tplan_mgr,$tcase_mgr,array('addImportance' => true));
 
   // Add Test Cases to Test plan - Right pane does not honor custom field filter
   $testCaseSet = $args->control_panel['filter_tc_id'];   
@@ -249,19 +250,19 @@ if($do_display)
                        $tplan_linked_tcversions,null,$filters,$opt);
   
     
-    $gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
+  $gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
   $gui->items = $out['spec_view'];
   $gui->has_linked_items = $out['has_linked_items'];
   $gui->add_custom_fields = $opt['add_custom_fields'];
-    $gui->drawSavePlatformsButton = false;
-    $gui->drawSaveCFieldsButton = false;
+  $gui->drawSavePlatformsButton = false;
+  $gui->drawSaveCFieldsButton = false;
 
-    if( !is_null($gui->items) )
-    {
+  if( !is_null($gui->items) )
+  {
     initDrawSaveButtons($gui);
-    }
+  }
     
-    // This has to be done ONLY AFTER has all data needed => after gen_spec_view() call
+  // This has to be done ONLY AFTER has all data needed => after gen_spec_view() call
   setAdditionalGuiData($gui);
 
   // refresh tree only when action is done

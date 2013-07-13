@@ -2976,9 +2976,6 @@ class testplan extends tlObjectWithAttachments
         // $options = array('only_executed' => true, 'output' => 'mapOfMap');
         $options = array('addExecInfo' => true);
         $executed = $this->getLTCVNewGeneration($id,$filters,$options); 
-
-        // new dBug($executed);
-
         if( ($status_ok = !is_null($executed)) )
         {
           $tc2loop = array_keys($executed);
@@ -3016,9 +3013,6 @@ class testplan extends tlObjectWithAttachments
       // we can found SOME LIMITS on number of elements on IN CLAUSE
       //
       $estimated = array('platform' => array(), 'totalMinutes' => 0, 'totalTestCases' => 0);
-
-      new dBug($targetSet);
-
       foreach($targetSet as $platfID => $items)
       {  
         $sql2exec = $sql . " AND execution_id IN (" . implode(',',$items) . ")";
@@ -6319,19 +6313,19 @@ class testplan extends tlObjectWithAttachments
 
 
 
-    function getLinkInfo($id,$tcase_id,$platform_id=null,$opt=null)
-    {
+  function getLinkInfo($id,$tcase_id,$platform_id=null,$opt=null)
+  {
     $debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
-      $safe_id = array('tplan_id' => 0, 'platform_id' => 0, 'tcase_id' => 0);
-      $safe_id['tplan_id'] = intval($id);
-      $safe_id['tcase_id'] = intval($tcase_id);
+    $safe_id = array('tplan_id' => 0, 'platform_id' => 0, 'tcase_id' => 0);
+    $safe_id['tplan_id'] = intval($id);
+    $safe_id['tcase_id'] = intval($tcase_id);
       
-      // check and die?
-      $my = array('opt' => array('output' => 'version_info','tproject_id' => null,
-                     'build4assignment' => null, 'collapse' => false));
-      $my['opt'] = array_merge($my['opt'],(array)$opt);
+    // check and die?
+    $my = array('opt' => array('output' => 'version_info','tproject_id' => null,
+                'build4assignment' => null, 'collapse' => false));
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
       
-      $sql = "/* $debugMsg */ " .
+    $sql = "/* $debugMsg */ " .
            " SELECT TCV.id AS tcversion_id,TCV.version %%needle%% " .
            " FROM {$this->tables['testplan_tcversions']} TPTCV " .  
            " JOIN {$this->tables['tcversions']} TCV " .
@@ -6339,19 +6333,19 @@ class testplan extends tlObjectWithAttachments
            " JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
            " ON NHTCV.id = TPTCV.tcversion_id ";
            
-      $more_cols = ' ';    
+    $more_cols = ' ';    
     switch($my['opt']['output'])
     {
       case 'tcase_info':
-          if(is_null($my['opt']['tproject_id']))
-          {
-            $dummy = $this->tree_manager->get_node_hierarchy_info($safe_id['tplan_id']);
-            $my['opt']['tproject_id'] = $dummy['parent_id'];
-          }
+        if(is_null($my['opt']['tproject_id']))
+        {
+          $dummy = $this->tree_manager->get_node_hierarchy_info($safe_id['tplan_id']);
+          $my['opt']['tproject_id'] = $dummy['parent_id'];
+        }
         $pp = $this->tcase_mgr->getPrefix($safe_id['tcase_id'],$my['opt']['tproject_id']);
-          $prefix = $pp[0] . $this->tcaseCfg->glue_character;
-             $more_cols = ', NHTC.name, NHTC.id AS tc_id, ' .
-                    $this->db->db->concat("'{$prefix}'",'TCV.tc_external_id') .
+        $prefix = $pp[0] . $this->tcaseCfg->glue_character;
+        $more_cols = ', NHTC.name, NHTC.id AS tc_id, ' .
+                     $this->db->db->concat("'{$prefix}'",'TCV.tc_external_id') .
                     ' AS full_external_id ';
                     
         $sql .= " JOIN {$this->tables['nodes_hierarchy']} NHTC " .
@@ -6500,6 +6494,7 @@ class testplan extends tlObjectWithAttachments
     $my = array('filters' => array(),
                 'options' => array('allow_empty_build' => 1,'addPriority' => false,
                                    'accessKeyType' => 'tcase+platform',
+                                   'addImportance' => false,
                                    'includeNotRun' => true, 'orderBy' => null));
     $amk = array('filters','options');
     foreach($amk as $mk)
@@ -6555,9 +6550,10 @@ class testplan extends tlObjectWithAttachments
   /**
    * 
    * @used-by testplan::getLTCVNewGeneration()
-   * @internal revisions
-   * @since 1.9.4
    * 
+   * @internal revisions
+   * @since 1.9.8
+   * 20130713 - franciscom - added importance management on output recordset
    */
   function getLinkedTCVersionsSQL($id,$filters=null,$options=null)
   {
@@ -6567,7 +6563,7 @@ class testplan extends tlObjectWithAttachments
     
     $mop = array('options' => array('addExecInfo' => false,'specViewFields' => false, 
                                     'assigned_on_build' => null, 'testSuiteInfo' => false,
-                                    'addPriority' => false));
+                                    'addPriority' => false,'addImportance' => false));
     $my['options'] = array_merge($mop['options'],$my['options']);
       
     if(  ($my['options']['allow_empty_build'] == 0) && $my['filters']['build_id'] <= 0 )
@@ -6622,6 +6618,7 @@ class testplan extends tlObjectWithAttachments
                      " TPTCV.platform_id,PLAT.name AS platform_name,TPTCV.node_order AS execution_order,".
                      " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status, " .
                      " E.execution_duration, " .
+                     ($my['options']['addImportance'] ? " TCV.importance," : '') .
                     $this->helperConcatTCasePrefix($safe['tplan_id']) . "  AS full_external_id ";
 
     // used on tester assignment feature when working at test suite level

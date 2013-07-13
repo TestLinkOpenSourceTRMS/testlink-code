@@ -7,8 +7,6 @@ Purpose: generate a list of Test Cases linked to Test Plan
 @filesource	planUpdateTC.tpl,v 1.15 2010/11/06 11:42:47 amkhullar Exp $
 @author		franciscom
 @internal revisions
-20120409 - franciscom - TICKET 4888: Unable to update test plan with last version of testcase
-
 *}
 {lang_get var='labels'
           s='no_testcase_available,test_plan,update_testcase_versions,
@@ -72,7 +70,7 @@ function validateForm(f)
   	{foreach from=$gui->items item=ts}
   	  {assign var="item_number" value=$item_number+1}
   	  {assign var="ts_id" value=$ts.testsuite.id}
-  	  {assign var="div_id" value=div_$ts_id}
+  	  {assign var="div_id" value="div_$ts_id"}
   	
   	  <div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
   	    <h3 class="testlink">

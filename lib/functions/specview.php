@@ -183,10 +183,6 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   
   $test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
 
-
-  // new dBug($test_spec);
-  // die();
-
   $platforms = getPlatforms($db,$tproject_id,$testplan_id);
   $idx = 0;
   $a_tcid = array();
@@ -313,8 +309,8 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
  * 
  *
  * @internal revisions
- * @since 1.9.
- *
+ * @since 1.9.8
+ * 
  */
 function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr, $options = null)
 {
@@ -348,7 +344,6 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
     $xx = $tsuite_mgr->get_branch($itemID);
     $xx .= ($xx == '') ? $itemID : ',' . $itemID;
     $filters['tsuites_id'] = explode(',',$xx);
-    // unset($tsuite_mgr);
   }
   
   // $opx = array('addExecInfo' => true, 'specViewFields' => true,'addPriority' => true) +   (array)$options;
@@ -446,9 +441,6 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
     $genSpecFilters['cfields'] = $my['filters']['cfieldsFilter'];
   }           
               
-  // new dBug($tplan_linked_tcversions);
-  // die();
-
   $out = gen_spec_view($dbHandler, 'testplan', $argsObj->tplan_id, $argsObj->id, $tsuite_data['name'],
                        $tplan_linked_tcversions, null, $genSpecFilters, $my['options']);
 
@@ -536,7 +528,8 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
     $testCaseSet = is_array($filters['tcase_id']) ? $filters['tcase_id'] : array($filters['tcase_id']);
   }
   
-  if(!is_array($filters['keyword_id']) ) {
+  if(!is_array($filters['keyword_id']) ) 
+  {
     $filters['keyword_id'] = array($filters['keyword_id']);
   }
 
@@ -551,9 +544,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
     }
     $tck_map = $tobj_mgr->get_keywords_tcases($masterContainerId,$filters['keyword_id']);
   }  
-
-
-
 
   if( $applyFilters )
   {
@@ -582,7 +572,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
         unset($itemSet[$key]);
       }
     }
-
     if( count($itemSet) > 0 && 
       ($useFilter['execution_type'] || $useFilter['importance'] || $useFilter['cfields']) )
     {
@@ -650,12 +639,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
           // a first clean will not be bad, ok may be we are going to do more 
           // loops that needed, but think logic will be more clear 
           // (at least @20130426 is a little bit confusing ;) )
-
-          //new dBug($test_spec);
-          //new dBug($itemSet);
-          //new dBug($tcversionSet);
-          //new dBug($tcidSet);
-
           foreach($targetSet as $idx => $key)
           {
             // echo '<br> $key:' . $key . 'KKK' . $tcversionSet[$key]['testcase_id'] . '<br>';

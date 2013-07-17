@@ -5102,24 +5102,24 @@ class testcase extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     // IMPORTANT NOTICE: keys are field names of executions tables
-      $my['filters'] = array('tcversion_id' => null,'testplan_id' => null,
-                   'platform_id' => null, 'build_id' => null);  
-      $my['filters'] = array_merge($my['filters'], (array)$filters);
+    $my['filters'] = array('tcversion_id' => null,'testplan_id' => null,
+                           'platform_id' => null, 'build_id' => null);  
+    $my['filters'] = array_merge($my['filters'], (array)$filters);
 
-      $my['options'] = array('exec_id_order' => 'DESC');  
-      $my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array('exec_id_order' => 'DESC');  
+    $my['options'] = array_merge($my['options'], (array)$options);
     
     $filterBy = array();
     $filterKeys = array('build_id','platform_id','testplan_id','tcversion_id');
-        foreach($filterKeys as $fieldName)
-        {
-          $filterBy[$fieldName] = '';
-          if( !is_null($my['filters'][$fieldName]) )
-          {
-            $itemSet = implode(',', (array)($my['filters'][$fieldName]));
-            $filterBy[$fieldName] = " AND E.{$fieldName} IN ({$itemSet}) ";
-          }
-        }
+    foreach($filterKeys as $fieldName)
+    {
+      $filterBy[$fieldName] = '';
+      if( !is_null($my['filters'][$fieldName]) )
+      {
+        $itemSet = implode(',', (array)($my['filters'][$fieldName]));
+        $filterBy[$fieldName] = " AND E.{$fieldName} IN ({$itemSet}) ";
+      }
+    }
   
     
     // --------------------------------------------------------------------
@@ -5163,31 +5163,31 @@ class testcase extends tlObjectWithAttachments
        " E.execution_duration," .
        " E.build_id AS build_id, B.name AS build_name, B.active AS build_is_active, " .
        " B.is_open AS build_is_open,E.platform_id, PLATF.name AS platform_name," .
-         " E.testplan_id,NHTPLAN.name AS testplan_name,TPTCV.id AS feature_id " . 
-         " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
-           " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
-           " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id  " .
+       " E.testplan_id,NHTPLAN.name AS testplan_name,TPTCV.id AS feature_id " . 
+       " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
+       " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+       " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id  " .
 
-           " JOIN {$this->tables['executions']} E " . 
-           " ON E.tcversion_id = NHTCV.id " .
-           $filterBy['testplan_id'] . $filterBy['build_id'] . 
-           $filterBy['platform_id'] . $filterBy['tcversion_id'] .
+       " JOIN {$this->tables['executions']} E " . 
+       " ON E.tcversion_id = NHTCV.id " .
+       $filterBy['testplan_id'] . $filterBy['build_id'] . 
+       $filterBy['platform_id'] . $filterBy['tcversion_id'] .
 
        " /* To get build name */ " .
-           " JOIN {$this->tables['builds']} B ON B.id=E.build_id " .
+       " JOIN {$this->tables['builds']} B ON B.id=E.build_id " .
 
        " /* To get test plan name */ " .
-           // " JOIN {$this->tables['testplans']} TPLAN ON TPLAN.id = E.testplan_id " .
-           " JOIN {$this->tables['nodes_hierarchy']} NHTPLAN ON NHTPLAN.id = E.testplan_id " .
+       // " JOIN {$this->tables['testplans']} TPLAN ON TPLAN.id = E.testplan_id " .
+       " JOIN {$this->tables['nodes_hierarchy']} NHTPLAN ON NHTPLAN.id = E.testplan_id " .
 
-           " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
-           " ON  TPTCV.testplan_id = E.testplan_id " .
-           " AND TPTCV.tcversion_id = E.tcversion_id " .
-           " AND TPTCV.platform_id = E.platform_id " .
-           " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = E.tester_id " .
-           " LEFT OUTER JOIN {$this->tables['platforms']} PLATF ON PLATF.id = E.platform_id  " .
-           $where_clause .
-          " ORDER BY execution_id {$my['options']['exec_id_order']} ";
+       " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+       " ON  TPTCV.testplan_id = E.testplan_id " .
+       " AND TPTCV.tcversion_id = E.tcversion_id " .
+       " AND TPTCV.platform_id = E.platform_id " .
+       " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = E.tester_id " .
+       " LEFT OUTER JOIN {$this->tables['platforms']} PLATF ON PLATF.id = E.platform_id  " .
+       $where_clause .
+       " ORDER BY execution_id {$my['options']['exec_id_order']} ";
 
   
     //echo __FUNCTION__ . '::' . $sql . '<br>';

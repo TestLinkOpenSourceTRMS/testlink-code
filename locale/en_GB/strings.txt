@@ -44,6 +44,8 @@ $TLS_inactive_integration = "Integration Disabled";
 $TLS_actions = "Actions";
 $TLS_asc = "Ascending";
 $TLS_any = "Any";
+$TLS_any_bracketed = "[Any]";
+
 $TLS_all = "All";
 $TLS_alt_delete = "delete";
 $TLS_assigned_by = "Assigned by";
@@ -155,6 +157,8 @@ $TLS_timestamp  = "Timestamp";
 $TLS_timestamp_lastchange  = "Last Change";
 $TLS_title = "Title";
 $TLS_without_keywords = "without keywords";
+$TLS_without_keywords_bracketed = "[Without keywords]";
+
 
 $TLS_warning = "Warning";
 $TLS_warning_delete = "You are going to delete: %s <br /><br /> Are you sure?";

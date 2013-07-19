@@ -84,8 +84,8 @@ if ($args->tprojectID)
     
   if($args->keyword_id)       
   {
-    $from['by_keyword_id'] = " JOIN {$tables['testcase_keywords']} KW ON KW.testcase_id = NH_TC.id ";
-    $filter['by_keyword_id'] = " AND KW.keyword_id = {$args->keyword_id} "; 
+  	 $from['by_keyword_id'] = " JOIN {$tables['testcase_keywords']} KW ON KW.testcase_id = NH_TC.id ";
+     $filter['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id; 
   }
     
   if($args->steps != "")
@@ -146,8 +146,11 @@ if ($args->tprojectID)
   $sqlFields = " SELECT NH_TC.id AS testcase_id,NH_TC.name,TCV.id AS tcversion_id," .
                " TCV.summary, TCV.version, TCV.tc_external_id "; 
     
-  $sqlCount  = "SELECT COUNT(NH_TC.id) ";
-    
+  // Count Test Cases NOT Test Case Versions
+  // ATTENTION:
+  // Keywords are stored AT TEST CASE LEVEL, not test case version.
+  $sqlCount  = "SELECT COUNT(DISTINCT(NH_TC.id)) ";
+
   // search fails if test case has 0 steps - Added LEFT OUTER
   $sqlPart2 = " FROM {$tables['nodes_hierarchy']} NH_TC " .
               " JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TC.id  " .
@@ -235,6 +238,8 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon)
     
     $columns[] = array('title_key' => 'test_suite');
     $columns[] = array('title_key' => 'test_case', 'type' => 'text');
+
+    $columns[] = array('title_key' => 'summary');
   
     // Extract the relevant data and build a matrix
     $matrixData = array();
@@ -248,13 +253,15 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon)
       
       // build test case link
       $history_link = "<a href=\"javascript:openExecHistoryWindow({$result['testcase_id']});\">" .
-             "<img title=\"". lang_get('execution_history') . "\" src=\"{$history_icon}\" /></a> ";
+                      "<img title=\"". lang_get('execution_history') . "\" src=\"{$history_icon}\" /></a> ";
       $edit_link = "<a href=\"javascript:openTCEditWindow({$result['testcase_id']});\">" .
-             "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
-      $tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . $titleSeperator .
+                   "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
+      $tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . 
+                   " [v" . $result['version'] . "]" . $titleSeperator .
                    htmlentities($result['name'], ENT_QUOTES, $charset);
-      $tcLink = $history_link . $edit_link . $tcaseName;
-      $rowData[] = $tcLink;
+
+      $rowData[] = $history_link . $edit_link . $tcaseName;
+      $rowData[] = $result['summary'];
 
       $matrixData[] = $rowData;
     }

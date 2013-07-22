@@ -13,7 +13,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.4
+ * @since 1.9.8
  * 
  */
 require_once('../../config.inc.php');
@@ -32,6 +32,7 @@ $op->user_feedback = null;
 $op->status = tl::OK;
 $update_title_bar = 0;
 
+
 $doUpdate = false;
 switch($args->doAction)
 {
@@ -48,8 +49,9 @@ switch($args->doAction)
   break;
 
   case 'changePassword':
-    $op = changePassword($args,$user);
-    $doUpdate = ($op->status >= tl::OK);
+    $op = changePassword($db,$args,$user);
+    $doUpdate = false;
+    logAuditEvent(TLS($op->auditMsg,$user->login),"SAVE",$user->dbID,"users");
   break;
 
   case 'genAPIKey':
@@ -65,7 +67,7 @@ if($doUpdate)
     logAuditEvent(TLS($op->auditMsg,$user->login),"SAVE",$user->dbID,"users");
     $_SESSION['currentUser'] = $user;
     setUserSession($db,$user->login, $args->userID, $user->globalRoleID, $user->emailAddress, $user->locale);
-    }
+  }
 }
 
 $loginHistory = new stdClass();
@@ -135,7 +137,7 @@ function init_args()
            auditMsg: to be written by logAudid
 
 */
-function changePassword(&$argsObj,&$userMgr)
+function changePassword(&$dbHandler,&$argsObj,&$userMgr)
 {
   $op = new stdClass();
   $op->status = $userMgr->comparePassword($argsObj->oldpassword);
@@ -144,6 +146,7 @@ function changePassword(&$argsObj,&$userMgr)
   if ($op->status == tl::OK)
   {
     $userMgr->setPassword($argsObj->newpassword);
+    $userMgr->writePasswordToDB($dbHandler);
     $op->user_feedback = lang_get('result_password_changed');
     $op->auditMsg = "audit_user_pwd_saved";
   }
@@ -178,5 +181,3 @@ function checkDoAction($input)
   $status_ok = isset($domain[$input]) ? true : false;
   return $status_ok;
 }
-
-?>

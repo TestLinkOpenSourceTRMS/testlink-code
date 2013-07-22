@@ -3,9 +3,7 @@ Testlink: smarty template - Edit own account
 @filesource	userInfo.tpl
 
 @internal revisions
-@since 1.9.4
-20111127 - franciscom - demoMode behaviour changes
-
+@since 1.9.8
 *}
 {assign var="cfg_section" value="login"}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -151,7 +149,7 @@ function refreshLastUpdate (last_update) {
 		<tr>
 			<th>{$labels.th_email}</th>
 			<td><input type="text" name="emailAddress" value="{$user->emailAddress|escape}"
-			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" />
+			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" required />
 						  	 {include file="error_icon.tpl" field="emailAddress"}
 			</td>
 		</tr>
@@ -190,13 +188,13 @@ function refreshLastUpdate (last_update) {
 		<table class="common">
 			<tr><th>{$labels.th_old_passwd}</th>
 				<td><input type="password" name="oldpassword"  id="oldpassword"
-				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
+				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" required /></td></tr>
 			<tr><th>{$labels.th_new_passwd}</th>
 				<td><input type="password" name="newpassword" id="newpassword"
-				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
+				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" required /></td></tr>
 			<tr><th>{$labels.th_new_passwd_again}</th>
 				<td><input type="password" name="newpassword_check" id="newpassword_check"
-				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
+				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" required /></td></tr>
 		</table>
 		<div class="groupBtn">
 		{if $tlCfg->demoMode}

@@ -201,7 +201,7 @@ function buildUserMap($users,$add_options = false, $additional_options=null)
  * @return hash
  *         status: integer result status code
  *         password: new password
- *       msg: error message (if any)  
+ *         msg: error message (if any)  
  */
 function resetPassword(&$db,$userID,$passwordSendMethod='send_password_by_mail')
 {
@@ -212,7 +212,9 @@ function resetPassword(&$db,$userID,$passwordSendMethod='send_password_by_mail')
   if ($retval['status'] >= tl::OK)
   {
     $retval['status'] = tlUser::E_EMAILLENGTH;
-    if ($user->emailAddress != "")
+
+
+    if( trim($user->emailAddress) != "")
     {
       $newPassword = tlUser::generatePassword(8,4); 
       $retval['status'] = $user->setPassword($newPassword);
@@ -259,46 +261,47 @@ function getUserErrorMessage($code)
   switch($code)
   {
     case tl::OK:
-      break;
+    break;
 
     case tlUser::E_LOGINLENGTH:
       $msg = lang_get('error_user_login_length_error');
-      break;
+    break;
 
     case tlUser::E_EMAILLENGTH:
       $msg = lang_get('empty_email_address');
-      break;
+    break;
+
     case tlUser::E_EMAILFORMAT:
       $msg = lang_get('no_good_email_address');
-      break;
+    break;
       
     case tlUser::E_NOTALLOWED:
       $msg = lang_get('user_login_valid_regex');
-      break;
+    break;
 
     case tlUser::E_FIRSTNAMELENGTH:
       $msg = lang_get('empty_first_name');
-      break;
+    break;
 
     case tlUser::E_LOGINALREADYEXISTS:
       $msg = lang_get('user_name_exists');
-      break;
+    break;
 
     case tlUser::E_LASTNAMELENGTH:
       $msg = lang_get('empty_last_name');
-      break;
+    break;
 
     case tlUser::E_PWDEMPTY:
       $msg = lang_get('warning_empty_pwd');
-      break;
+    break;
 
     case tlUser::E_PWDDONTMATCH:
       $msg = lang_get('wrong_old_password');
-      break;
+    break;
 
     case tlUser::S_PWDMGTEXTERNAL :
       $msg = lang_get('password_mgmt_is_external');
-      break;
+    break;
 
     case ERROR:
     case tlUser::E_DBERROR:

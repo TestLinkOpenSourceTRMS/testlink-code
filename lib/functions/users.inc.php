@@ -213,7 +213,6 @@ function resetPassword(&$db,$userID,$passwordSendMethod='send_password_by_mail')
   {
     $retval['status'] = tlUser::E_EMAILLENGTH;
 
-
     if( trim($user->emailAddress) != "")
     {
       $newPassword = tlUser::generatePassword(8,4); 
@@ -243,7 +242,8 @@ function resetPassword(&$db,$userID,$passwordSendMethod='send_password_by_mail')
       }
     }
   }
-  $retval['msg'] = ($retval['msg'] != "") ? $retval['msg'] : getUserErrorMessage($result['status']) ;
+
+  $retval['msg'] = ($retval['msg'] != "") ? $retval['msg'] : getUserErrorMessage($retval['status']) ;
   return $retval;
 }
 

@@ -16,7 +16,7 @@
  * @internal revisions
  * 
  * @since 1.9.8
- * 
+ * 20130729 - franciscom - fixed issues with $tlCfg->exec_cfg->view_mode->tester and exec_cfg->tester
  **/
 
 /** related functionality */
@@ -940,9 +940,9 @@ class testplan extends tlObjectWithAttachments
   {  
     
     $join = " JOIN {$this->tables['user_assignments']} UA " .
-          " ON UA.feature_id = TPTCV.id " . 
-          " AND UA.build_id = " . $build_id . 
-          " AND UA.type = {$this->execTaskCode} ";
+            " ON UA.feature_id = TPTCV.id " . 
+            " AND UA.build_id = " . $build_id . 
+            " AND UA.type = {$this->execTaskCode} ";
     
     // Warning!!!:
     // If special user id TL_USER_NOBODY is present in set of user id
@@ -964,6 +964,8 @@ class testplan extends tlObjectWithAttachments
       $sql = '';
       if( $opt['include_unassigned'] )
       {
+        $join = ' LEFT OUTER ' . $join;  // 20130729
+        
         $sql = "(";
         $sql_unassigned=" OR UA.user_id IS NULL)";
       }
@@ -5900,7 +5902,7 @@ class testplan extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $safe['tplan_id'] = intval($id);
     $my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
-      
+  
     if(  $my['filters']['build_id'] <= 0 )
     {
       // CRASH IMMEDIATELY
@@ -5934,65 +5936,65 @@ class testplan extends tlObjectWithAttachments
     // because we are saving values at TCVERSION LEVEL
     //  
     $union['not_run'] = "/* {$debugMsg} sqlUnion - not run */" .
-              " SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,TCV.version," .
-              // $fullEIDClause .
-              " TCV.tc_external_id AS external_id, " .
-              " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
+                        " SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,TCV.version," .
+                        // $fullEIDClause .
+                        " TCV.tc_external_id AS external_id, " .
+                        " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
+                        
+                        " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
+                        " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
+                        " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
+                        " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+                        $my['join']['ua'] .
+                        $my['join']['keywords'] .
+                        " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
               
-              " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
-              " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
-              " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
-              " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
-              $my['join']['ua'] .
-              $my['join']['keywords'] .
-              " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
-              
-              " /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
-              " LEFT OUTER JOIN ({$sqlLEBBP}) AS LEBBP " .
-              " ON  LEBBP.testplan_id = TPTCV.testplan_id " .
-              " AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
-              " AND LEBBP.platform_id = TPTCV.platform_id " .
-              " AND LEBBP.testplan_id = " . $safe['tplan_id'] .
-              " LEFT OUTER JOIN {$this->tables['executions']} E " .
-              " ON  E.tcversion_id = TPTCV.tcversion_id " .
-              " AND E.testplan_id = TPTCV.testplan_id " .
-              " AND E.platform_id = TPTCV.platform_id " .
-              " AND E.build_id = " . $my['filters']['build_id'] .
+                        " /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
+                        " LEFT OUTER JOIN ({$sqlLEBBP}) AS LEBBP " .
+                        " ON  LEBBP.testplan_id = TPTCV.testplan_id " .
+                        " AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
+                        " AND LEBBP.platform_id = TPTCV.platform_id " .
+                        " AND LEBBP.testplan_id = " . $safe['tplan_id'] .
+                        " LEFT OUTER JOIN {$this->tables['executions']} E " .
+                        " ON  E.tcversion_id = TPTCV.tcversion_id " .
+                        " AND E.testplan_id = TPTCV.testplan_id " .
+                        " AND E.platform_id = TPTCV.platform_id " .
+                        " AND E.build_id = " . $my['filters']['build_id'] .
 
-              " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
-              $my['where']['not_run'] .
-              " /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
-              " AND E.id IS NULL AND LEBBP.id IS NULL";
+                        " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
+                        $my['where']['not_run'] .
+                        " /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
+                        " AND E.id IS NULL AND LEBBP.id IS NULL";
 
 
     $union['exec'] = "/* {$debugMsg} sqlUnion - executions */" . 
-              " SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,TCV.version," .
-              // $fullEIDClause .
-              " TCV.tc_external_id AS external_id, " .
-              " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
-              
-              " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
-              " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
-              " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
-              " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
-              $my['join']['ua'] .
-              $my['join']['keywords'] .
-              " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
-              
-              " JOIN ({$sqlLEBBP}) AS LEBBP " .
-              " ON  LEBBP.testplan_id = TPTCV.testplan_id " .
-              " AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
-              " AND LEBBP.platform_id = TPTCV.platform_id " .
-              " AND LEBBP.testplan_id = " . $safe['tplan_id'] .
-              " JOIN {$this->tables['executions']} E " .
-              " ON  E.id = LEBBP.id " .  // TICKET 5191  
-              " AND E.tcversion_id = TPTCV.tcversion_id " .
-              " AND E.testplan_id = TPTCV.testplan_id " .
-              " AND E.platform_id = TPTCV.platform_id " .
-              " AND E.build_id = " . $my['filters']['build_id'] .
+                     " SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,TCV.version," .
+                     // $fullEIDClause .
+                     " TCV.tc_external_id AS external_id, " .
+                     " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
+                     
+                     " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
+                     " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
+                     " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
+                     " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+                     $my['join']['ua'] .
+                     $my['join']['keywords'] .
+                     " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
+                      
+                     " JOIN ({$sqlLEBBP}) AS LEBBP " .
+                     " ON  LEBBP.testplan_id = TPTCV.testplan_id " .
+                     " AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
+                     " AND LEBBP.platform_id = TPTCV.platform_id " .
+                     " AND LEBBP.testplan_id = " . $safe['tplan_id'] .
+                     " JOIN {$this->tables['executions']} E " .
+                     " ON  E.id = LEBBP.id " .  // TICKET 5191  
+                     " AND E.tcversion_id = TPTCV.tcversion_id " .
+                     " AND E.testplan_id = TPTCV.testplan_id " .
+                     " AND E.platform_id = TPTCV.platform_id " .
+                     " AND E.build_id = " . $my['filters']['build_id'] .
 
-              " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
-              $my['where']['where'];
+                     " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
+                     $my['where']['where'];
 
     return $union;
   }

@@ -266,16 +266,10 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
  *             to null, but null can be the result of NO tcversion linked => EMPTY TEST PLAN
  *
  *
- * 20081220 - franciscom - status can be an array with multple values, to do OR search.
- *
- * 20071014 - franciscom - added version info fro test cases in return data structure.
- *
- * 20061105 - franciscom
+ * status can be an array with multple values, to do OR search.
+ * added version info from test cases in return data structure.
  * ignore_inactive_testcases: useful when building a Test Project Specification tree 
  *                            to be used in the add/link test case to Test Plan.
- *
- *
- * 20061030 - franciscom
  * tck_map: Test Case Keyword map:
  *          null            => no filter
  *          empty map       => filter out ALL test case ALWAYS
@@ -326,13 +320,11 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     $status_descr_list[] = 'testcase_count';
     
     $my = array();
-        // TICKET 4496: added inactive testcase filter
     $my['options'] = array('hideTestCases' => 0, 'showTestCaseID' => 1, 'viewType' => 'testSpecTree',
                            'getExternalTestCaseID' => 1,'ignoreInactiveTestCases' => 0,'ignoreActiveTestCases' => 0);
 
-    // asimon - added importance here because of "undefined" error in event log
-    $my['filters'] = array('status' => null, 'assignedTo' => null, 
-                           'importance' => null, 'executionType' => null,
+    // added importance here because of "undefined" error in event log
+    $my['filters'] = array('status' => null, 'assignedTo' => null, 'importance' => null, 'executionType' => null,
                            'filter_tc_id' => null);
     
     $my['options'] = array_merge($my['options'], (array)$options);
@@ -366,20 +358,11 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     $testPlanIsNotEmpty = (!is_null($tplan_tcases) && count($tplan_tcases) > 0); 
   }
     
-  // $tcase_counters = array('testcase_count' => 0);
-  //foreach($status_descr_code as $status_descr => $status_code)
-  //{
-  //  $tcase_counters[$status_descr]=0;
-  //}
-  // $tcase_counters['testcase_count']=0;
   $tcase_counters = array_fill_keys($status_descr_list, 0);
-  
   $node_type = isset($node['node_type_id']) ? $decoding_info['node_id_descr'][$node['node_type_id']] : null;
 
   if($node_type == 'testcase')
   {
-
-    // TICKET 
     // ABSOLUTELY First implicit filter to be applied when test plan is not empty.
     // is our test case present on Test Spec linked to Test Plan ?
     if( $testPlanIsNotEmpty && !isset($tplan_tcases[$node['id']]))
@@ -401,8 +384,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
         $tpNode = isset($tplan_tcases[$node['id']]) ? $tplan_tcases[$node['id']] : null;
         if( !($delete_node=is_null($tpNode)) )
         {     
-          $delete_node =  !is_null($results2filter) && 
-                  !isset($results2filter[$tpNode['exec_status']]);
+          $delete_node =  !is_null($results2filter) && !isset($results2filter[$tpNode['exec_status']]);
         
           if(!$delete_node && !is_null($users2filter))
           { 

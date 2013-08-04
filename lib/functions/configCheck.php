@@ -38,7 +38,6 @@ function get_home_url($opt)
     $t_protocol = 'https';
   }
   
-  // TICKET 4969: Add Setting to Force HTTPS
   $t_protocol = $opt['force_https'] ? 'https' : $t_protocol;
 
   // $_SERVER['SERVER_PORT'] is not defined in case of php-cgi.exe
@@ -278,7 +277,7 @@ function getSecurityNotes(&$db)
     }  
   }
 
-  // 20070121 - needed when schemas change has been done
+  // Needed when schemas change has been done.
   // This call can be removed when release is stable
   $res = checkSchemaVersion($db);
   $msg = $res['msg'];
@@ -427,7 +426,7 @@ function checkSchemaVersion(&$db)
 {
   $result = array('status' => tl::ERROR, 'msg' => null, 'kill_session' => true);
   $last_version = TL_LAST_DB_VERSION; 
-  $db_version_table= DB_TABLE_PREFIX . 'db_version';
+  $db_version_table = DB_TABLE_PREFIX . 'db_version';
   
   $sql = "SELECT * FROM {$db_version_table} ORDER BY upgrade_ts DESC";
   $res = $db->exec_query($sql,1);  

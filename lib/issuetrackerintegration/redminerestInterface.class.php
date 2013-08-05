@@ -7,7 +7,8 @@
  *
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.8
+ * 20130805 - franciscom - canCreateViaAPI()
  *
 **/
 require_once(TL_ABS_PATH . "/third_party/redmine-php-api/lib/redmine-rest-api.php");
@@ -279,6 +280,9 @@ class redminerestInterface extends issueTrackerInterface
     return $status_ok;
   }
 
+  /**
+   *
+   */
   public function addIssue($summary,$description)
   {
     // From Redmine API documentation (@20130406)
@@ -370,5 +374,14 @@ class redminerestInterface extends issueTrackerInterface
 				        "</issuetracker>\n";
 	  return $template;
   }
+
+ /**
+  *
+  **/
+  function canCreateViaAPI()
+  {
+    return (property_exists($this->cfg, 'projectidentifier'));
+  }
+
+
 }
-?>

@@ -272,5 +272,16 @@ class youtrackrestInterface extends issueTrackerInterface
       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
     }
     return $ret;
-  }  
+  }
+
+
+ /**
+  *
+  **/
+  function canCreateViaAPI()
+  {
+    return (property_exists($this->cfg, 'project'));
+  }
+
+
 }

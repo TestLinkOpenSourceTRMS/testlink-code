@@ -392,7 +392,7 @@ CREATE TABLE /*prefix*/db_version(
 --
 CREATE TABLE /*prefix*/execution_bugs(  
   "execution_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/executions (id) ON DELETE CASCADE,
-  "bug_id" VARCHAR(16) NOT NULL DEFAULT '0',
+  "bug_id" VARCHAR(64) NOT NULL DEFAULT '0',
   PRIMARY KEY ("execution_id","bug_id")
 ); 
 

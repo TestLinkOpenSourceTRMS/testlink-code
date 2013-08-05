@@ -187,7 +187,7 @@ CREATE TABLE /*prefix*/events (
 
 CREATE TABLE /*prefix*/execution_bugs (
   `execution_id` int(10) unsigned NOT NULL default '0',
-  `bug_id` varchar(16) NOT NULL default '0',
+  `bug_id` varchar(64) NOT NULL default '0',
   PRIMARY KEY  (`execution_id`,`bug_id`)
 ) DEFAULT CHARSET=utf8;
 

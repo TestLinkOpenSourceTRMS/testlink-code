@@ -188,7 +188,7 @@ CREATE TABLE /*prefix*/roles (
 
 CREATE TABLE /*prefix*/execution_bugs (
   execution_id int NOT NULL CONSTRAINT /*prefix*/DF_execution_bugs_execution_id DEFAULT ((0)),
-  bug_id varchar(16)  NOT NULL CONSTRAINT /*prefix*/DF_execution_bugs_bug_id DEFAULT ((0)),
+  bug_id varchar(64)  NOT NULL CONSTRAINT /*prefix*/DF_execution_bugs_bug_id DEFAULT ((0)),
  CONSTRAINT /*prefix*/PK_execution_bugs PRIMARY KEY CLUSTERED 
 (
   execution_id ASC,

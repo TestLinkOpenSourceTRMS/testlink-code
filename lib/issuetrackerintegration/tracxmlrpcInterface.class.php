@@ -285,27 +285,27 @@ class tracxmlrpcInterface extends issueTrackerInterface
 
 
 
-    function sendCmd($cmd, $id)
-    {
-      $param = new xmlrpcval(intval($id));
-      $msg = new xmlrpcmsg($cmd);
-      $msg->addParam($param);
+  function sendCmd($cmd, $id)
+  {
+    $param = new xmlrpcval(intval($id));
+    $msg = new xmlrpcmsg($cmd);
+    $msg->addParam($param);
       
-      // Send request with timeout disabled
-      $response = $this->APIClient->send($msg, 0);
-      if (!$response->errno) 
-      {
-        $response = php_xmlrpc_decode($response->val);
+    // Send request with timeout disabled
+    $response = $this->APIClient->send($msg, 0);
+    if (!$response->errno) 
+    {
+      $response = php_xmlrpc_decode($response->val);
       //new dBug($response);
-      } 
-      else 
-      {
-        tLog();
-        $response = false;
-      }
-            
-      return $response;
+    } 
+    else 
+    {
+      tLog();
+      $response = false;
     }
+            
+    return $response;
+  }
 
 
 
@@ -324,4 +324,5 @@ class tracxmlrpcInterface extends issueTrackerInterface
            "</issuetracker>\n";          
     return $tpl;
   }
+
 }

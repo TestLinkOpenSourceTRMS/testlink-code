@@ -3395,5 +3395,21 @@ $TLS_buildMetricsFeedback = $TLS_title_metrics_x_build .
 // execHistory.php
 $TLS_btn_show_exec_history = 'Ausführungshistorie';
 $TLS_tcase_never_executed = 'Dieser Testfall wurde nicht ausgeführt';
+
+
+$TLS_desc_issuetrackers_view = "Lesezugriff auf Issue Tracker";
+$TLS_desc_issuetrackers_management = "Issue Tracker Management";
+$TLS_desc_reqmgrsystems_view = "Lesezugriff auf Anforderungsmanagement";
+$TLS_desc_reqmgrsystems_management = "Anforderungsmanagement";
+$TLS_desc_req_tcase_link_management = "Anforderung-Testfall Zuordnung";
+$TLS_desc_keyword_assignment = "Stichwort Zuordnung";
+
+$TLS_desc_mgt_unfreeze_req = "Anforderung re-aktivieren";
+
+$TLS_right_exec_edit_notes = "Testkommentare ändern";
+$TLS_right_exec_delete = "Ausführung entfernen";
+$TLS_right_testplan_unlink_executed_testcases = "Ausgeführte Testfälle entfernen";
+$TLS_right_testproject_delete_executed_testcases = "Ausgeführte Testfälle löschen";
+$TLS_right_testproject_edit_executed_testcases = "Ausgeführte Testfälle editieren";
 // ----- END ------------------------------------------------------------------
 ?>

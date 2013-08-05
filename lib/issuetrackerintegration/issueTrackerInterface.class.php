@@ -139,10 +139,11 @@ abstract class issueTrackerInterface
    */
   function getBugIDMaxLength()
   {
-    // CRITIC: related to execution_bugs table, you can not make it
-    //       greater WITHOUT changing table structure.  
+    // CRITIC: 
+    // related to execution_bugs table, you can not make it
+    // greater WITHOUT changing table structure.  
     // 
-    return 16;  
+    return 64;  
   }
 
   

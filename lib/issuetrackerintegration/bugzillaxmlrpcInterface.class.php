@@ -7,7 +7,8 @@
  *
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.8
+ * 20130805 - franciscom - canCreateViaAPI()
  * 
 **/
 require_once('Zend/Loader/Autoloader.php');
@@ -408,5 +409,12 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
     return $op; 	  
   }
 
+ /**
+  *
+  **/
+  function canCreateViaAPI()
+  {
+    return (property_exists($this->cfg, 'product') && property_exists($this->cfg, 'component'));
+  }
+
 }
-?>

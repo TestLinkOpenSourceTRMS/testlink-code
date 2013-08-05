@@ -8,7 +8,6 @@
  *
  *
  * @internal revisions
- * 20121020 - franciscom - TICKET 5290: Doesn�t show description of bugs from BTS (JIRA)
 **/
 class jiraCommons
 {
@@ -90,4 +89,3 @@ class jiraCommons
     return $domain;
   }
 }
-?>

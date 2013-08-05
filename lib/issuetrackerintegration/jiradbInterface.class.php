@@ -6,7 +6,8 @@
  * @since 1.9.6
  *
  * @internal revision
- *
+ * @since 1.9.8
+ * 20130805 - franciscom - canCreateViaAPI()
 **/
 class jiradbInterface extends issueTrackerInterface
 {
@@ -171,5 +172,12 @@ class jiradbInterface extends issueTrackerInterface
 				        "</issuetracker>\n";
 		return $template;
   }
+
+ /**
+  *
+  **/
+  function canCreateViaAPI()
+  {
+    return false;
+  }
 }
-?>

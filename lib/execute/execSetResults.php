@@ -78,7 +78,7 @@ if($info['issue_tracker_enabled'])
     $gui->issueTrackerIntegrationOn = true;
     $gui->accessToIssueTracker = lang_get('link_bts_create_bug') . "({$issueT['issuetracker_name']})";  
     $gui->createIssueURL = $its->getEnterBugURL();
-    $gui->tlCanCreateIssue = method_exists($its,'addIssue');
+    $gui->tlCanCreateIssue = method_exists($its,'addIssue') && $its->canCreateViaAPI();
   }
   else
   {

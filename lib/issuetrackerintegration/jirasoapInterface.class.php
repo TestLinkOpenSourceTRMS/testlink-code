@@ -13,8 +13,8 @@
  *			 not how is identified internally at DB	level on TestLink
  *
  * @internal revisions
- * @since 1.9.6
- * 20121215 - franciscom - use new support object with common method for JIRA (DB,SOAP)
+ * @since 1.9.8
+ * 20130805 - franciscom - canCreateViaAPI()
  *
 **/
 class jirasoapInterface extends issueTrackerInterface
@@ -368,6 +368,13 @@ class jirasoapInterface extends issueTrackerInterface
     return $ret;
   }  
 
+ /**
+  *
+  **/
+  function canCreateViaAPI()
+  {
+    return (property_exists($this->cfg, 'projectkey') && 
+            property_exists($this->cfg, 'issuetype'));
+  }
 
 }
-?>

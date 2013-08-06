@@ -11,8 +11,7 @@
  * @copyright   2010,2012 TestLink community 
  *
  * @internal revisions
- * @since 1.9.5
- * 20120928 - franciscom - TICKET 5257: Testcase exported for id/external id not able to import same for result update
+ * @since 1.9.8
  *
  **/
 
@@ -637,21 +636,11 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,&$execValues,&$
   $tcase_external_id=trim($execValues['tcase_external_id']);
   $using_external_id = ($tcase_external_id != ""); // external_id has precedence over internal id
 
-  var_dump($execValues);
-  echo 'XXX' . $using_external_id;
-
   if($using_external_id)
   {
     // need to get internal id  
     $checks['tcase_id'] = $tcase_mgr->getInternalID($tcase_external_id);
     $checks['status_ok'] = intval($checks['tcase_id']) > 0 ? true : false;
-    
-    /*
-    echo 'DDD';
-    var_dump($checks);
-    die();
-    */
-
     if(!$checks['status_ok'])
     {
        $checks['msg'][]=sprintf(lang_get('tcase_external_id_do_not_exists'),$tcase_external_id); 

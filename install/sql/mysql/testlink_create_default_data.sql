@@ -3,21 +3,10 @@
 # SQL script - create default data (rights & admin account)
 #
 # Database Type: MySQL
-# @since 1.9.4
-# 20120220 - franciscom - issuetracker_*
-# 20111029 - franciscom - added new rights.
-#						  IMPORTANT NOTICE: 
-#						  some rights are useless with 1.9.x, because will be implemented on 2.0
-#						  but we need to FILLING the gaps at ID level.	
-#							  
-# 20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server 
-#
-# 20110730 - franciscom - TICKET 4661 - DB version
-# 20110714 - franciscom - TICKET 4661
 # ---------------------------------------------------------------------------------
 
 # Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.6', 'TestLink 1.9.6',CURRENT_TIMESTAMP());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.9.8', 'TestLink 1.9.8',CURRENT_TIMESTAMP());
 
 # Node types -
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (1,'testproject');

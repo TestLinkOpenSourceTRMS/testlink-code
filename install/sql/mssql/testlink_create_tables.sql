@@ -228,7 +228,7 @@ CREATE TABLE /*prefix*/executions (
   tcversion_number smallint NOT NULL CONSTRAINT /*prefix*/DF_executions_tcversion_number DEFAULT ((1)),
   platform_id int NOT NULL CONSTRAINT /*prefix*/DF_executions_platform_id DEFAULT ((0)),
   execution_type tinyint NOT NULL CONSTRAINT /*prefix*/DF_executions_execution_type DEFAULT ((1)),
-  execution_duration NULL decimal(6,2),
+  execution_duration decimal(6,2) NULL,
   notes nvarchar(max)   NULL CONSTRAINT /*prefix*/DF_executions_notes DEFAULT (NULL),
  CONSTRAINT /*prefix*/PK_executions PRIMARY KEY CLUSTERED 
 (
@@ -540,7 +540,7 @@ CREATE TABLE /*prefix*/tcversions (
   active tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_active DEFAULT ((1)),
   is_open tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_open DEFAULT ((1)),
   execution_type tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_execution_type DEFAULT ((1)),
-  estimated_exec_duration NULL decimal(6,2),
+  estimated_exec_duration decimal(6,2) NULL,
  CONSTRAINT /*prefix*/PK_tcversions PRIMARY KEY CLUSTERED 
 (
   id ASC

@@ -20,8 +20,8 @@
  * 
  *
  * @internal revisions 
- * @since 1.9.7
- * 20130427 - franciscom - testproject->create() interface changes
+ * @since 1.9.8
+ * 201300809 - franciscom - getUserByLogin(),getUserByID()
  */
 
 /** 
@@ -188,6 +188,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 
   public static $urgencyParamName = "urgency";
   public static $userParamName = "user";
+  public static $userIDParamName = "userid";
   public static $versionNumberParamName = "version";
 
   
@@ -4058,9 +4059,9 @@ public function getTestCase($args)
      */
   public function getTestPlanPlatforms($args)
   {
-      $operation=__FUNCTION__;
-      $msg_prefix="({$operation}) - ";
-      $this->_setArgs($args);  
+    $operation=__FUNCTION__;
+    $msg_prefix="({$operation}) - ";
+    $this->_setArgs($args);  
     $status_ok = false;
     $items = null;
     
@@ -4142,8 +4143,8 @@ public function getTestCase($args)
   public function doesUserExist($args)
   {
     $operation=__FUNCTION__;
-       $msg_prefix="({$operation}) - ";
-      $this->_setArgs($args);
+    $msg_prefix="({$operation}) - ";
+    $this->_setArgs($args);
             
     $user_id = tlUser::doesUserExist($this->dbObj,$this->args[self::$userParamName]);          
     if( !($status_ok = !is_null($user_id)) )
@@ -5473,6 +5474,105 @@ protected function createAttachmentTempFile()
   }
 
 
+  /**
+   * if everything ok returns an array on just one element with following user data
+   *
+   * firstName,lastName,emailAddress,locale,isActive,defaultTestprojectID,
+   * globalRoleID 
+   * globalRole    array with role info
+   * tprojectRoles array  
+   * tplanRoles    array
+   * login 
+   * dbID
+   * loginRegExp
+   *
+   * ATTENTION: userApiKey will be set to NULL, because is worst that access to user password
+   * 
+   * @param struct $args
+   * @param string $args["devKey"]   
+   * @param string $args["user"]   Login Name   
+   * 
+   * @return mixed $ret
+   * 
+   */
+  public function getUserByLogin($args)
+  {
+    $messagePrefix="(" .__FUNCTION__ . ") - ";
+    $this->_setArgs($args);
+    $checkFunctions = array('authenticate');       
+    $ret = array();
+
+    $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);       
+    if( $status_ok )
+    {
+      $user_id = tlUser::doesUserExist($this->dbObj,$this->args[self::$userParamName]);          
+      if( !($status_ok = !is_null($user_id)) )
+      {  
+        $msg = $msg_prefix . sprintf(NO_USER_BY_THIS_LOGIN_STR,$this->args[self::$userParamName]);
+        $this->errors[] = new IXR_Error(NO_USER_BY_THIS_LOGIN, $msg);  
+      }
+    }
+
+    if( $status_ok )
+    {
+      $user = tlUser::getByID($this->dbObj,$user_id); 
+      $user->userApiKey = null;
+      $ret[] = $user;
+    }    
+
+    return $status_ok ? $ret : $this->errors;
+  }
+
+  /**
+   * if everything ok returns an array on just one element with following user data
+   *
+   * firstName,lastName,emailAddress,locale,isActive,defaultTestprojectID,
+   * globalRoleID 
+   * globalRole    array with role info
+   * tprojectRoles array  
+   * tplanRoles    array
+   * login 
+   * dbID
+   * loginRegExp
+   *
+   * ATTENTION: userApiKey will be set to NULL, because is worst that access to user password
+   * 
+   * @param struct $args
+   * @param string $args["devKey"]   
+   * @param string $args["userid"]   user ID as present on users table, column ID
+   * 
+   * @return mixed $ret
+   * 
+   */
+  public function getUserByID($args)
+  {
+    $messagePrefix="(" .__FUNCTION__ . ") - ";
+    $this->_setArgs($args);
+    $checkFunctions = array('authenticate');       
+    $ret = array();
+
+    $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);       
+    if( $status_ok )
+    {
+      $user = tlUser::getByID($this->dbObj,$this->args[self::$userIDParamName]);  
+      if(is_null($user))
+      {
+        $status_ok = false;
+        $msg = $messagePrefix . sprintf(NO_USER_BY_THIS_ID_STR,$this->args[self::$userIDParamName]);
+        $this->errors[] = new IXR_Error(NO_USER_BY_ID_LOGIN, $msg);        
+      }  
+      else
+      {
+        $user->userApiKey = null;
+        $ret[] = $user;
+      }  
+    }    
+
+    return $status_ok ? $ret : $this->errors;
+  }
+
+
+
   private function platformLinkOp($args,$op,$messagePrefix)
   {
     $this->_setArgs($args);
@@ -5497,9 +5597,9 @@ protected function createAttachmentTempFile()
       if(is_null($platform))
       {
         $status_ok = false;
-         $msg = $messagePrefix . sprintf(PLATFORM_NAME_DOESNOT_EXIST_STR,$platName);
-         $this->errors[] = new IXR_Error(PLATFORM_NAME_DOESNOT_EXIST, $msg);              
-       }  
+        $msg = $messagePrefix . sprintf(PLATFORM_NAME_DOESNOT_EXIST_STR,$platName);
+        $this->errors[] = new IXR_Error(PLATFORM_NAME_DOESNOT_EXIST, $msg);              
+      }  
     } 
    
     if($status_ok)
@@ -5622,6 +5722,8 @@ protected function createAttachmentTempFile()
                             'tl.getTestCase' => 'this:getTestCase',
                             'tl.getFullPath' => 'this:getFullPath',
                             'tl.getTestSuiteByID' => 'this:getTestSuiteByID',
+                            'tl.getUserByLogin' => 'this:getUserByLogin',
+                            'tl.getUserByID' => 'this:getUserByID',
                             'tl.deleteExecution' => 'this:deleteExecution',
                             'tl.doesUserExist' => 'this:doesUserExist',
                             'tl.updateTestCaseCustomFieldDesignValue' => 'this:updateTestCaseCustomFieldDesignValue',

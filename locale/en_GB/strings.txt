@@ -94,6 +94,8 @@ $TLS_importance  = "Importance";
 $TLS_imported = "Imported";
 $TLS_important_notice = "Important Notice";
 $TLS_its_duedate_with_separator = "Due date: ";
+$TLS_hint_mail_for_tester = 'Additional Text to be sent on Notification mail';
+
 $TLS_keyword = "Keyword";
 $TLS_log_message = "Log message";
 $TLS_mandatory = "Mandatory fields";
@@ -2676,6 +2678,7 @@ $TLS_opt_show_tc_keys = "Test Case keywords";
 $TLS_opt_show_cfields  = "Test Case Custom Fields";
 $TLS_opt_show_passfail = "Test results";
 $TLS_opt_show_metrics = "Metrics";
+$TLS_opt_show_only_assigned_to_me = "Only Test Cases Assigned to me";
 $TLS_opt_req_spec_scope = "Requirement Specification Doc. Scope";
 $TLS_opt_req_spec_author = "Requirement Specification Doc. Author";
 $TLS_opt_req_spec_overwritten_count_reqs = "Requirement Specification Doc. Overwritten Count of REQs";
@@ -3144,6 +3147,7 @@ $TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!
 $TLS_API_NO_CUSTOMFIELD_BY_THIS_NAME="Cannot Find Custom Field with name (%s) ";
 
 $TLS_API_NO_USER_BY_THIS_LOGIN = "Cannot Find User Login provided (%s).";
+$TLS_API_NO_USER_BY_THIS_ID = "Cannot Find User with DB ID (%s).";
 $TLS_API_MISSING_REQUIRED_PARAMETER = "Parameter %s is required, but has not been provided";
 
 $TLS_API_INVALID_TESTCASE_VERSION_NUMBER="The required version number does not exist for test case";

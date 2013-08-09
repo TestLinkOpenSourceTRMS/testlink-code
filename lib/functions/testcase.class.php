@@ -496,7 +496,7 @@ class testcase extends tlObjectWithAttachments
       $op['status_ok'] = 1;
 
       // need to this to manage call to this method for REST API.
-      $stepIsObject =  is_object($steps[0]);
+      $stepIsObject =  is_object($item->steps[0]);
       for($jdx=0 ; ($jdx < $steps2create && $op['status_ok']); $jdx++)
       {
         if($stepIsObject)

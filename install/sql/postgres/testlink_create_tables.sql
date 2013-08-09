@@ -281,6 +281,7 @@ CREATE TABLE /*prefix*/cfield_testprojects(
   "display_order" INTEGER NOT NULL default '1',
   "active" INT2 NOT NULL default '1',
   "location" INT2 NOT NULL default '1',
+  "required" INT2 NOT NULL default '0',
   "required_on_design" INT2 NOT NULL default '0',
   "required_on_execution" INT2 NOT NULL default '0',
 

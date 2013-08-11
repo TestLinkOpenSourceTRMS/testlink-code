@@ -448,6 +448,8 @@ class testplan extends tlObjectWithAttachments
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
     
+    // new dBug($my['opt']);
+
     $safe_id = intval($id);
     switch($my['opt']['output'])
     {
@@ -458,11 +460,12 @@ class testplan extends tlObjectWithAttachments
       break;
 
       case 'minimun':
-            $sql =   "/* $debugMsg */ " .
-                " SELECT NH_TPLAN.name,NH_TPROJ.id AS tproject_id, NH_TPROJ.name AS tproject_name" .
+        $sql = "/* $debugMsg */ " .
+               " SELECT NH_TPLAN.name," .
+               " NH_TPROJ.id AS tproject_id, NH_TPROJ.name AS tproject_name,TPROJ.prefix" .
                " FROM {$this->tables['nodes_hierarchy']} NH_TPLAN " .
-               " JOIN {$this->tables['nodes_hierarchy']} NH_TPROJ " .
-               " ON NH_TPROJ.id = NH_TPLAN.parent_id " .
+               " JOIN {$this->tables['nodes_hierarchy']} NH_TPROJ ON NH_TPROJ.id = NH_TPLAN.parent_id " .
+               " JOIN {$this->tables['testprojects']} TPROJ ON TPROJ.ID = NH_TPROJ.id " .
                " WHERE NH_TPLAN.id = " . $safe_id;
       break;
       
@@ -3639,8 +3642,8 @@ class testplan extends tlObjectWithAttachments
 
     $xml_mapping = null;
     $xml_mapping = array("||PLATFORMNAME||" => "platform_name","||EXTERNALID||" => "external_id",              
-               "||NAME||" => "name","||VERSION||" => "version",
-               "||EXECUTION_ORDER||" => "execution_order");
+                         "||NAME||" => "name","||VERSION||" => "version",
+                         "||EXECUTION_ORDER||" => "execution_order");
 
     $mm = $this->getLinkedStaticView($id,null,array('output' => 'array'));
     $linked_testcases = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,('noXMLHeader'=='noXMLHeader'));
@@ -3650,11 +3653,11 @@ class testplan extends tlObjectWithAttachments
     $item_info['linked_testcases'] = $linked_testcases;
     $xml_root = "\n\t<testplan>{{XMLCODE}}\n\t</testplan>";
     $xml_template = "\n\t\t" . "<name><![CDATA[||TESTPLANNAME||]]></name>" . "\n" .
-            "\t\t||LINKED_PLATFORMS||\n" . "\t\t||LINKED_TESTCASES||\n";
+                    "\t\t||LINKED_PLATFORMS||\n" . "\t\t||LINKED_TESTCASES||\n";
 
     $xml_mapping = null;
     $xml_mapping = array("||TESTPLANNAME||" => "name","||LINKED_PLATFORMS||" => "linked_platforms",              
-               "||LINKED_TESTCASES||" => "linked_testcases");
+                         "||LINKED_TESTCASES||" => "linked_testcases");
              
     $xml = exportDataToXML(array($item_info),$xml_root,$xml_template,$xml_mapping);
 
@@ -3734,7 +3737,7 @@ class testplan extends tlObjectWithAttachments
                 "\t\t" . "<internal_id><![CDATA[||TESTPROJECTID||]]></internal_id>" .
                 "\n\t" . "</testproject>";
               
-      $xml_root = "{{XMLCODE}}";          
+    $xml_root = "{{XMLCODE}}";          
     $xml_mapping = null;
     $xml_mapping = array("||TESTPROJECTNAME||" => "name", "||TESTPROJECTID||" => 'id');
     $mm = array();
@@ -3829,8 +3832,8 @@ class testplan extends tlObjectWithAttachments
 
   /**
    * 
-    *
-     */
+   *
+   */
   private function exportTestSuiteDataToXML($container,$tproject_id)
   {
     static $keywordMgr;
@@ -3900,11 +3903,15 @@ class testplan extends tlObjectWithAttachments
     if( isset($container['id']) )
     {
       $xmlTC .= "</testsuite>"; 
-        }
+    }
     return $xmlTC;
   }
 
 
+
+  /**
+   *
+   */
   function getFeatureAssignments($tplan_id,$filters=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -5746,15 +5753,15 @@ class testplan extends tlObjectWithAttachments
     }
 
     $fullEID = $this->helperConcatTCasePrefix($safe_id);
-    $sql =   " SELECT NH_TCASE.parent_id AS testsuite_id, {$fields['tcase']} {$fields['tsuite']} " .
-        " NH_TCV.parent_id AS tc_id, NH_TCASE.node_order AS z, NH_TCASE.name," .
-        " TPTCV.platform_id, PLAT.name as platform_name ,TPTCV.id AS feature_id, " .
-        " TPTCV.tcversion_id AS tcversion_id,  " .
-        " TPTCV.node_order AS execution_order, TPTCV.creation_ts AS linked_ts, " .
-        " TPTCV.author_id AS linked_by,TPTCV.urgency," .
-        " TCV.version AS version, TCV.active, TCV.tc_external_id AS external_id, " .
-        " TCV.execution_type,TCV.importance," .  
-        " $fullEID AS full_external_id";
+    $sql = " SELECT NH_TCASE.parent_id AS testsuite_id, {$fields['tcase']} {$fields['tsuite']} " .
+           " NH_TCV.parent_id AS tc_id, NH_TCASE.node_order AS z, NH_TCASE.name," .
+           " TPTCV.platform_id, PLAT.name as platform_name ,TPTCV.id AS feature_id, " .
+           " TPTCV.tcversion_id AS tcversion_id,  " .
+           " TPTCV.node_order AS execution_order, TPTCV.creation_ts AS linked_ts, " .
+           " TPTCV.author_id AS linked_by,TPTCV.urgency," .
+           " TCV.version AS version, TCV.active, TCV.tc_external_id AS external_id, " .
+           " TCV.execution_type,TCV.importance," .  
+           " $fullEID AS full_external_id";
 
     $dummy = array('exec','priority','ua');
     foreach($dummy as $ki)
@@ -6347,11 +6354,9 @@ class testplan extends tlObjectWithAttachments
         $pp = $this->tcase_mgr->getPrefix($safe_id['tcase_id'],$my['opt']['tproject_id']);
         $prefix = $pp[0] . $this->tcaseCfg->glue_character;
         $more_cols = ', NHTC.name, NHTC.id AS tc_id, ' .
-                     $this->db->db->concat("'{$prefix}'",'TCV.tc_external_id') .
-                    ' AS full_external_id ';
+                     $this->db->db->concat("'{$prefix}'",'TCV.tc_external_id') . ' AS full_external_id ';
                     
-        $sql .= " JOIN {$this->tables['nodes_hierarchy']} NHTC " .
-                 " ON NHTC.id = NHTCV.parent_id ";
+        $sql .= " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id ";
       break;
 
       case 'assignment_info':
@@ -6408,29 +6413,31 @@ class testplan extends tlObjectWithAttachments
 
   /**
    * @used-by printDocument.php
-   *        testplan.class.exportLinkedItemsToXML()
+   *          testplan.class.exportLinkedItemsToXML()
+   *          testplan.class.exportForResultsToXML
    */
   public function getLinkedStaticView($id,$filters=null,$options=null)
   {
     $debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
-        $my = array('filters' => '', 'options' => '');
+    $my = array('filters' => '', 'options' => '');
 
     $my['filters'] = array('platform_id' => null,'tsuites_id' => null);
     $my['filters'] = array_merge($my['filters'],(array)$filters);
 
-    $my['options'] = array('output' => 'map','order_by' => null);
+    $my['options'] = array('output' => 'map','order_by' => null, 'detail' => 'full');
     $my['options'] = array_merge($my['options'],(array)$options);
 
 
     $safe['tplan'] = intval($id);
     $io = $this->tree_manager->get_node_hierarchy_info($safe['tplan']);
-      list($prefix,$garbage) = $this->tcase_mgr->getPrefix(null,$io['parent_id']);
+    list($prefix,$garbage) = $this->tcase_mgr->getPrefix(null,$io['parent_id']);
     unset($io);
+    $prefix .= $this->tcaseCfg->glue_character;
     $feid = $this->db->db->concat("'{$prefix}'",'TCV.tc_external_id');
 
 
-        $addWhere = array('platform' => '','tsuite' => '');
-        $platQty = 0;
+    $addWhere = array('platform' => '','tsuite' => '');
+    $platQty = 0;
     if( !is_null($my['filters']['platform_id']) )
     {
       $dummy = (array)$my['filters']['platform_id'];
@@ -6438,6 +6445,7 @@ class testplan extends tlObjectWithAttachments
       $addWhere['platform'] = 'AND TPTCV.platform_id IN (' . implode(',',$dummy) . ')';
       $platQty = count((array)$my['filters']['platform_id']);    
     }
+
     if( !is_null($my['filters']['tsuites_id']) )
     {
       $dummy = (array)$my['filters']['tsuites_id'];
@@ -6446,25 +6454,39 @@ class testplan extends tlObjectWithAttachments
     }
     
     
-    
-    $sql = "/* $debugMsg */ " .
-           " SELECT NH_TCASE.parent_id AS testsuite_id, NH_TCV.parent_id AS tc_id, " . 
-           " NH_TCASE.node_order AS spec_order, NH_TCASE.name," .
-         " TPTCV.platform_id, PLAT.name as platform_name, TPTCV.id AS feature_id, " .
-         " TPTCV.tcversion_id AS tcversion_id, " .
-         " TPTCV.node_order AS execution_order, TPTCV.urgency," .
-         " TCV.version AS version, TCV.active, TCV.summary," .
-         " TCV.tc_external_id AS external_id, TCV.execution_type,TCV.importance," .  
-         " {$feid} AS full_external_id, (TPTCV.urgency * TCV.importance) AS priority ";
+    switch($my['options']['detail'])
+    {
+      case '4results':
+        $my['options']['output'] = 'array'; // FORCED       
+        // have had some issues with query and ADODB on MySQL if only
+        // $sql = " SELECT NH_TCV.parent_id AS tc_id, {$feid} AS full_external_id,TCV.tc_external_id ";
+        // Need to understand why in future  
+        $sql = "/* $debugMsg */ " .
+               " SELECT NH_TCV.parent_id AS tc_id, TPTCV.platform_id, TPTCV.id AS feature_id, " .
+               " TCV.tc_external_id AS external_id, {$feid} AS full_external_id";
+      break;      
+
+      case 'full':
+      default:
+        $sql = "/* $debugMsg */ " .
+               " SELECT NH_TCASE.parent_id AS testsuite_id, NH_TCV.parent_id AS tc_id, " . 
+               " NH_TCASE.node_order AS spec_order, NH_TCASE.name," .
+               " TPTCV.platform_id, PLAT.name as platform_name, TPTCV.id AS feature_id, " .
+               " TPTCV.tcversion_id AS tcversion_id, " .
+               " TPTCV.node_order AS execution_order, TPTCV.urgency," .
+               " TCV.version AS version, TCV.active, TCV.summary," .
+               " TCV.tc_external_id AS external_id, TCV.execution_type,TCV.importance," .  
+               " {$feid} AS full_external_id, (TPTCV.urgency * TCV.importance) AS priority ";
+      break;      
+    }
 
     $sql .=" FROM {$this->tables['nodes_hierarchy']} NH_TCV " .
-         " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCV.parent_id = NH_TCASE.id " .
-         " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NH_TCV.id " .
-         " JOIN  {$this->tables['tcversions']} TCV ON  TCV.id = NH_TCV.id " .
-         " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id ";
+           " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCV.parent_id = NH_TCASE.id " .
+           " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NH_TCV.id " .
+           " JOIN  {$this->tables['tcversions']} TCV ON  TCV.id = NH_TCV.id " .
+           " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id ";
 
     $sql .= " WHERE TPTCV.testplan_id={$safe['tplan']} {$addWhere['platform']} {$addWhere['tsuite']} ";
-
     switch($my['options']['output'])
     {
       case 'array':
@@ -6790,7 +6812,69 @@ function getExecutionDurationForSet($execIDSet)
   return $this->db->get_recordset($sql);       
 }
 
+  /**
+   *
+   */
+  function exportForResultsToXML($id,$context,$optExport = array())
+  {
+    $filters = null;
+    $item = $this->get_by_id($id,array('output' => 'minimun','caller' => __METHOD__));
 
+    new dBug($item);
+
+    $xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
+                 "<!-- TestLink - www.teamst.org - xml to allow results import -->\n";
+    $xmlString .= "<results>\n";
+    $xmlString .= "\t<testproject name=\"" . htmlspecialchars($item['tproject_name']) . '"' . 
+                  " prefix=\"" . htmlspecialchars($item['prefix']) . '"' . " />\n";
+
+    $xmlString .= "\t<testplan name=\"" . htmlspecialchars($item['name']) . '"' . " />\n";
+
+    if( isset($context['build_id']) &&  $context['build_id'] > 0)
+    {
+      $dummy = $this->get_builds($id);
+      $info = $dummy[$context['build_id']];
+      $xmlString .= "\t<build name=\"" . htmlspecialchars($info['name']) . "\" />\n";
+    }
+
+    // get target platform (if exists)
+    if( $context['platform_id'] > 0)
+    {
+      $info = $this->platform_mgr->getByID($context['platform_id']);
+      $xmlString .= "\t<platform name=\"" . htmlspecialchars($info['name']) . "\" />\n";
+      $filters['platform_id'] = $context['platform_id'];
+    } 
+
+    // <testcase external_id="BB-1" >
+    // <!-- if not present logged user  will be used -->
+    // <!-- tester LOGIN Name -->
+    // <tester>u0113</tester>  
+    // <!-- if not present now() will be used -->
+    // <timestamp>2008-09-08 14:00:00</timestamp>  
+    // <result>p</result>
+    // <notes>functionality works great </notes>
+    // </testcase>
+    $mm = $this->getLinkedStaticView($id,$filters,array('output' => 'array','detail' => '4results'));
+
+
+    $xml_root = null;
+    $xml_template = "\n" . 
+                    "\t<testcase external_id=\"{{FULLEXTERNALID}}\">" . "\n" . 
+                    "\t\t" . "<result>X</result>" . "\n" .
+                    "\t\t" . "<notes>test link rocks </notes>" . "\n" .
+                    "\t\t" . "<tester>put login here</tester>" . "\n" .
+                    "\t\t" . "<!-- if not present now() will be used -->" . "\n" .
+                    "\t\t" . "<timestamp>YYYY-MM-DD HH:MM:SS</timestamp>" . "\n" .  
+                    "\t\t" . "<bug_id>put your bug id here</bug_id>" . "\n" .  
+                    "\t</testcase>" . "\n" . 
+
+    $xml_mapping = null;
+    $xml_mapping = array("{{FULLEXTERNALID}}" => "full_external_id");
+    $linked_testcases = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,('noXMLHeader'=='noXMLHeader'));
+    $zorba = $xmlString .= $linked_testcases . "\n</results>\n";
+
+    return $zorba;
+  }
 
 
 } // end class testplan
@@ -7133,10 +7217,10 @@ class milestone_mgr extends tlObject
       {
         if (($time = strtotime($value)) == -1 || $time === false) 
         {
-                   die (__FUNCTION__ . ' Abort - Invalid date');
-                }
+          die (__FUNCTION__ . ' Abort - Invalid date');
+        }
         $dateFields[]=$varname;  
-            $dateValues[]=" '{$this->db->prepare_string($value)}' ";
+        $dateValues[]=" '{$this->db->prepare_string($value)}' ";
       }
     }
     $additionalFields='';

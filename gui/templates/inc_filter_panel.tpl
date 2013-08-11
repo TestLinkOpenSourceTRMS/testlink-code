@@ -26,7 +26,8 @@
                         btn_bulk_update_to_latest_version, priority, tc_title,
                         custom_field, search_type_like, importance,
                         document_id, req_expected_coverage, title,
-                        status, req_type, req_spec_type, th_tcid, has_relation_type,btn_export_testplan_tree'}
+                        status, req_type, req_spec_type, th_tcid, has_relation_type,
+                        btn_export_testplan_tree,btn_export_testplan_tree_for_results'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
@@ -142,7 +143,14 @@
 	          <input type="button" id="doTestPlanExport" name="doTestPlanExport" value="{$labels.btn_export_testplan_tree}"
          	         onclick="javascript: openExportTestPlan('export_testplan','{$session.testprojectID}',
          	                                                 '{$control->settings.setting_testplan.selected}','{$platformID}',
-         	                                                 '{$control->settings.setting_build.selected}');" />
+         	                                                 '{$control->settings.setting_build.selected}','tree');" />
+
+	          <input type="button" id="doTestPlanExport4Results" name="doTestPlanExport4Results" 
+	                 value="{$labels.btn_export_testplan_tree_for_results}"
+         	         onclick="javascript: openExportTestPlan('export_testplan','{$session.testprojectID}',
+         	                                                 '{$control->settings.setting_testplan.selected}',
+         	                                                 '{$platformID}',
+         	                                                 '{$control->settings.setting_build.selected}','4results');" />
             </td>
 		  		</tr>
 			{/if}

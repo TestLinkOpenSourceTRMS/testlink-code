@@ -744,6 +744,8 @@ $TLS_req_spec_type = "Req. Spec. Type";
 $TLS_btn_hide_cf = "Hide Custom Fields";
 $TLS_btn_show_cf = "Show Custom Fields";
 $TLS_btn_export_testplan_tree = 'Export Test Plan';
+$TLS_btn_export_testplan_tree_for_results = 'Export for results import';
+
 $TLS_expand_tree = "Expand tree";
 $TLS_collapse_tree = "Collapse tree";
 $TLS_filter_active_inactive = "Active/Inactive";

@@ -1,18 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	execNavigator.tpl
+@filesource execNavigator.tpl
 
 @internal revisions
-@since 1.9.4
-20111031 - franciscom - TICKET 4788: Test Case Execution - 
-						Give feedback when filter combination 'Result' + 'on' can not be used
-
-@since 1.9.3
-  20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
-  20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
-  20101101 - franciscom - openExportTestPlan() interface changes
-  20101027 - asimon - BUGID 3946: reqirement specification tree size
-  20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
+@since 1.9.8
 *}
 
 {lang_get var="labels"
@@ -37,40 +28,40 @@ var code_not_run = '{$gui->not_run}';
 
 {literal}
 <script type="text/javascript">
-	  treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
-	              loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
-	  Ext.onReady(function() {
-		Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+    treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
+                loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
+    Ext.onReady(function() {
+    Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 
-		// Use a collapsible panel for filter settings
-		// and place a help icon in ther header
-		var settingsPanel = new Ext.ux.CollapsiblePanel({
-			id: 'tl_exec_filter',
-			applyTo: 'settings_panel',
-			tools: [{
-				id: 'help',
-				handler: function(event, toolEl, panel) {
-					show_help(help_localized_text);
-				}
-			}]
-		});
-		var filtersPanel = new Ext.ux.CollapsiblePanel({
-			id: 'tl_exec_settings',
-			applyTo: 'filter_panel'
-		});
-	});
+    // Use a collapsible panel for filter settings
+    // and place a help icon in ther header
+    var settingsPanel = new Ext.ux.CollapsiblePanel({
+      id: 'tl_exec_filter',
+      applyTo: 'settings_panel',
+      tools: [{
+        id: 'help',
+        handler: function(event, toolEl, panel) {
+          show_help(help_localized_text);
+        }
+      }]
+    });
+    var filtersPanel = new Ext.ux.CollapsiblePanel({
+      id: 'tl_exec_settings',
+      applyTo: 'filter_panel'
+    });
+  });
 
 /**
  * 
  *
  * internal revisions
  */
-function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build_id) 
+function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build_id,mode) 
 {
   args = "tproject_id=" + tproject_id + "&tplan_id=" + tplan_id + "&platform_id=" + platform_id + "&build_id=" + build_id;  
-  args = args + "&exportContent=tree";
+  args = args + "&exportContent=" + mode;
   wref = window.open(fRoot+"lib/plan/planExport.php?"+args,
-	                 windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
+                     windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
   wref.focus();
 }
 
@@ -84,37 +75,37 @@ function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build
  */
 function validateForm(the_form)
 {
-	var filterMethod = document.getElementById('filter_result_method');
-	var execStatus = document.getElementById('filter_result_result');
-	var loop2do = execStatus.length;
-	var idx = 0;
-	var notRunFound = false;
-	var status_ok = true;
+  var filterMethod = document.getElementById('filter_result_method');
+  var execStatus = document.getElementById('filter_result_result');
+  var loop2do = execStatus.length;
+  var idx = 0;
+  var notRunFound = false;
+  var status_ok = true;
 
-	if( filterMethod.value == code_lastest_exec_method)
-	{
-		for(idx=0; idx<loop2do; idx++)
-		{
-			if(execStatus[idx].selected && execStatus[idx].value == code_not_run)
-			{
-				status_ok = false;
-				alert(msg_block_filter_not_run_latest_exec);
-				break;
-			}
-		}
-	}
-	return status_ok;
+  if( filterMethod.value == code_lastest_exec_method)
+  {
+    for(idx=0; idx<loop2do; idx++)
+    {
+      if(execStatus[idx].selected && execStatus[idx].value == code_not_run)
+      {
+        status_ok = false;
+        alert(msg_block_filter_not_run_latest_exec);
+        break;
+      }
+    }
+  }
+  return status_ok;
 }
 </script>
 {/literal}
 
 
 <script type="text/javascript">
-	treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
-	treeCfg.root_id={$gui->ajaxTree->root_node->id};
-	treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
-	treeCfg.children={$gui->ajaxTree->children};
-	treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
+  treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
+  treeCfg.root_id={$gui->ajaxTree->root_node->id};
+  treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
+  treeCfg.children={$gui->ajaxTree->children};
+  treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
 </script>
 
 <script type="text/javascript" src='gui/javascript/execTreeWithMenu.js'></script>
@@ -130,7 +121,7 @@ function validateForm(the_form)
  * Above included file closes <head> tag and opens <body>, so this is not done here.
  *}
 
-	
+  
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {assign var="build_number" value=$control->settings.setting_build.selected}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -152,7 +143,7 @@ function validateForm(the_form)
 
 {*if $gui->src_workframe != ''}
 <script type="text/javascript">
-	parent.workframe.location='{$gui->src_workframe}';
+  parent.workframe.location='{$gui->src_workframe}';
 </script>
 {/if*}
 

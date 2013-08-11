@@ -312,6 +312,10 @@ function saveImportedResultData(&$db,$resultData,$context)
   else if( !is_null($context->tplanName) )
   {
     $dummy = $tplan_mgr->get_by_name($context->tplanName,$context->tprojectID,array('output' => 'minimun'));
+    if( !is_null($dummy) )
+    {
+      $dummy = $dummy[0];
+    }
   }
   
   if( !is_null($dummy) )

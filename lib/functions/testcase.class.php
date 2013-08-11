@@ -5609,8 +5609,6 @@ class testcase extends tlObjectWithAttachments
             $out = $this->db->fetchRowsIntoMap($sql,'testcase_id',database::CUMULATIVE);
       break;
     }
-
-    // new dBug($out);
     return $out;  
   } 
 
@@ -5720,7 +5718,6 @@ class testcase extends tlObjectWithAttachments
       break;
     }
 
-    // new dBug($out);
     return $out;  
   } 
 

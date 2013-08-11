@@ -151,11 +151,10 @@ function importResults(&$db,&$xml,$context)
     //
     $executionContext = $context;
     $contextKeys = array('testproject'  => array('id' => 'tprojectID', 'name' => 'tprojectName'), 
-               'testplan'   => array('id' => 'tplanID', 'name' => 'tplanName'),  
-               'build'    => array('id' => 'buildID', 'name' => 'buildName'),   
-               'platform'   => array('id' => 'platformID', 'name' => 'platformName'));
+                         'testplan'   => array('id' => 'tplanID', 'name' => 'tplanName'),  
+                         'build'    => array('id' => 'buildID', 'name' => 'buildName'),   
+                         'platform'   => array('id' => 'platformID', 'name' => 'platformName'));
     
-
 
     foreach( $contextKeys as $xmlkey => $execElem)
     {
@@ -175,10 +174,9 @@ function importResults(&$db,&$xml,$context)
         }
       }
     }         
-    
+
     $xmlTCExec = $xml->xpath("//testcase");
     $resultData = importExecutionsFromXML($xmlTCExec);
-    
     if ($resultData) 
     {
       $resultMap = saveImportedResultData($db,$resultData,$executionContext);
@@ -210,7 +208,7 @@ function saveImportedResultData(&$db,$resultData,$context)
   
   
   $l18n = array('import_results_tc_not_found' => '' ,'import_results_invalid_result' => '',
-          'tproject_id_not_found' => '', 'import_results_ok' => '');
+                'tproject_id_not_found' => '', 'import_results_ok' => '');
   foreach($l18n as $key => $value)
   {
     $l18n[$key] = lang_get($key);
@@ -219,16 +217,16 @@ function saveImportedResultData(&$db,$resultData,$context)
   // Get Column definitions to get size dinamically instead of create constants
   $columnDef = array();
   $adodbObj = $db->get_dbmgr_object();
-    $columnDef['execution_bugs'] = $adodbObj->MetaColumns($tables['execution_bugs']);
-    $keySet = array_keys($columnDef['execution_bugs']);
-    foreach($keySet as $keyName)
-    {
-      if( ($keylow=strtolower($keyName)) != $keyName )
-      { 
-        $columnDef['execution_bugs'][$keylow] = $columnDef['execution_bugs'][$keyName];
-        unset($columnDef['execution_bugs'][$keyName]);
-      }
-    } 
+  $columnDef['execution_bugs'] = $adodbObj->MetaColumns($tables['execution_bugs']);
+  $keySet = array_keys($columnDef['execution_bugs']);
+  foreach($keySet as $keyName)
+  {
+    if( ($keylow=strtolower($keyName)) != $keyName )
+    { 
+      $columnDef['execution_bugs'][$keylow] = $columnDef['execution_bugs'][$keyName];
+      unset($columnDef['execution_bugs'][$keyName]);
+    }
+  } 
   $user=new tlUser($context->userID);
   $user->readFromDB($db);
   
@@ -275,7 +273,7 @@ function saveImportedResultData(&$db,$resultData,$context)
   }
   else if( !is_null($context->tprojectName) )
   {
-    $dummy = $tproject_mgr->get_by_name($context->tprojectName,array('output' => 'existsByName'));
+    $dummy = $tproject_mgr->get_by_name($context->tprojectName,null,array('output' => 'existsByName'));
   }
 
   $checks['status_ok'] = !is_null($dummy);

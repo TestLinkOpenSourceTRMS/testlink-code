@@ -4881,23 +4881,24 @@ protected function createAttachmentTempFile()
 
 
   /**
-   * createTestCaseSteps
+   * createTestCaseSteps - can be used also for upgrade (see action)
+   * 
+   *
    * @param struct $args
    * @param string $args["devKey"]
    * @param string $args["testcaseexternalid"] optional if you provide $args["testcaseid"]
    * @param string $args["testcaseid"] optional if you provide $args["testcaseexternalid"]
    * @param string $args["version"] - optional if not provided LAST ACTIVE version will be used
-   *                       if all versions are INACTIVE, then latest version
-   *                       will be used.   
+   *                                  if all versions are INACTIVE, then latest version will be used.   
    * @param string $args["action"]
-   *                possible values
-   *                'create','update','push'
-   *                create: if step exist NOTHING WILL BE DONE
-   *                update: if step DOES NOT EXIST will be created
-   *                      else will be updated.
-   *                push: shift down all steps with step number >= step number provided
-   *                    and use provided data to create step number requested.
-   *                    NOT IMPLEMENTED YET  
+   *               possible values
+   *               'create','update','push'
+   *               create: if step exist NOTHING WILL BE DONE
+   *               update: if step DOES NOT EXIST will be created
+   *                       else will be updated.
+   *               push: shift down all steps with step number >= step number provided
+   *                     and use provided data to create step number requested.
+   *                     NOT IMPLEMENTED YET  
    * @param array  $args["steps"]:
    *                each element is a hash with following keys
    *                step_number,actions,expected_results,execution_type
@@ -4909,25 +4910,25 @@ protected function createAttachmentTempFile()
    */
   function createTestCaseSteps($args)
   {
-      $operation=__FUNCTION__;
-       $msg_prefix="({$operation}) - ";
-        $resultInfo=array();
+    $operation=__FUNCTION__;
+    $msg_prefix="({$operation}) - ";
+    $resultInfo=array();
     $useLatestVersion = true;
     $version = -1;
-      $item = null;
-      $stepSet = null;
-      $stepNumbers = null;
+    $item = null;
+    $stepSet = null;
+    $stepNumbers = null;
       
-      $this->_setArgs($args);
-        $checkFunctions = array('authenticate','checkTestCaseIdentity');
-        $status_ok = $this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_modify_tc");
+    $this->_setArgs($args);
+    $checkFunctions = array('authenticate','checkTestCaseIdentity');
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_modify_tc");
 
-        if( $status_ok )
-        {
-          // Important Notice: method checkTestCaseIdentity sets
-          // $this->args[self::$testCaseIDParamName]
-          $tcaseID = $this->args[self::$testCaseIDParamName];
-          $resultInfo[self::$testCaseIDParamName] = $tcaseID;
+    if( $status_ok )
+    {
+      // Important Notice: method checkTestCaseIdentity sets
+      // $this->args[self::$testCaseIDParamName]
+      $tcaseID = $this->args[self::$testCaseIDParamName];
+      $resultInfo[self::$testCaseIDParamName] = $tcaseID;
       $resultInfo['item'] = null;
         
       // if parameter version does not exits or is < 0 
@@ -4967,8 +4968,6 @@ protected function createAttachmentTempFile()
       }
       if( $status_ok)
       {
-        
-        // $resultInfo['steps'] = $this->args[self::$stepsParamName];
         $tcversion_id = $item[0]['tcversion_id'];
         $resultInfo['tcversion_id'] = $tcversion_id;
         $step_id = 0;
@@ -4991,8 +4990,7 @@ protected function createAttachmentTempFile()
         
         foreach($this->args[self::$stepsParamName] as $si)
         {
-          $execution_type = isset($si['execution_type']) ? $si['execution_type'] : 
-                    TESTCASE_EXECUTION_TYPE_MANUAL;
+          $execution_type = isset($si['execution_type']) ? $si['execution_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
           $stepExists = isset($stepSet[$si['step_number']]);
           if($stepExists)
           {
@@ -5022,46 +5020,44 @@ protected function createAttachmentTempFile()
           {
             case 'update':
               $this->tcaseMgr->update_step($step_id,$si['step_number'],$si['actions'],
-                               $si['expected_results'],$execution_type);
+                                           $si['expected_results'],$execution_type);
             break;
 
 
             case 'create':
               $this->tcaseMgr->create_step($tcversion_id,$si['step_number'],$si['actions'],
-                              $si['expected_results'],$execution_type);
+                                           $si['expected_results'],$execution_type);
             break;
             
-              case 'push':
-                // First action renumber existent steps
-                $renumberedSet = null;
-                foreach($stepNumberIDSet as $tsn => $dim)
+            case 'push':
+              // First action renumber existent steps
+              $renumberedSet = null;
+              foreach($stepNumberIDSet as $tsn => $dim)
+              {
+                // echo $tsn;
+                if($tsn < $si['step_number'])
                 {
-                  // echo $tsn;
-                  if($tsn < $si['step_number'])
-                  {
-                     unset($stepNumberIDSet[$tsn]);
-                  } 
-                  else
-                  {
-                    $renumberedSet[$dim] = $tsn+1;
-                  }
+                  unset($stepNumberIDSet[$tsn]);
+                } 
+                else
+                {
+                  $renumberedSet[$dim] = $tsn+1;
                 }
-                // $dummy = array_flip($stepNumberIDSet);
-              // $resultInfo['push'] = array('old' => $stepNumberIDSet, 'new' => $renumberedSet);
+              }
               $this->tcaseMgr->set_step_number($renumberedSet);              
               $this->tcaseMgr->create_step($tcversion_id,$si['step_number'],$si['actions'],
-                              $si['expected_results'],$execution_type);
-              break;
+                                           $si['expected_results'],$execution_type);
+            break;
 
-              case 'skip':
-              default:
-              break;
-            }
+            case 'skip':
+            default:
+            break;
+          }
         }        
         
       }
     }
-        return ($status_ok ? $resultInfo : $this->errors);
+    return ($status_ok ? $resultInfo : $this->errors);
   }
 
 
@@ -5164,70 +5160,66 @@ protected function createAttachmentTempFile()
    * @param string $args["testcaseexternalid"]:  
    * @param string $args["version"]: version number  
    * @param string $args["testprojectid"]: 
-     * @param string $args["customfields"] - optional
-     *               contains an map with key:Custom Field Name, value: value for CF.
-     *               VERY IMPORTANT: value must be formatted in the way it's written to db,
-     *               this is important for types like:
-     *
-     *               DATE: strtotime()
-     *               DATETIME: mktime()
-     *               MULTISELECTION LIST / CHECKBOX / RADIO: se multipli selezione ! come separatore
-     *
-     *
-     *               these custom fields must be configured to be writte during execution.
-     *               If custom field do not meet condition value will not be written
-     *
-     * @return mixed null if everything ok, else array of IXR_Error objects
+   * @param string $args["customfields"] - optional
+   *               contains an map with key:Custom Field Name, value: value for CF.
+   *               VERY IMPORTANT: value must be formatted in the way it's written to db,
+   *               this is important for types like:
+   *
+   *               DATE: strtotime()
+   *               DATETIME: mktime()
+   *               MULTISELECTION LIST / CHECKBOX / RADIO: se multipli selezione ! come separatore
+   *
+   *
+   *               these custom fields must be configured to be writte during execution.
+   *               If custom field do not meet condition value will not be written
+   *
+   * @return mixed null if everything ok, else array of IXR_Error objects
    *         
    * @access public
    */    
-    public function updateTestCaseCustomFieldDesignValue($args)
+  public function updateTestCaseCustomFieldDesignValue($args)
   {
-        $msg_prefix="(" .__FUNCTION__ . ") - ";
+    $msg_prefix="(" .__FUNCTION__ . ") - ";
     $this->_setArgs($args);  
     
-        $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseIdentity',
-                    'checkTestCaseVersionNumber');
-        $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
-      if( $status_ok )
+    $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseIdentity',
+                            'checkTestCaseVersionNumber');
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
+    if( $status_ok )
+    {
+      if(!$this->_isParamPresent(self::$customFieldsParamName) )
       {
-        if(!$this->_isParamPresent(self::$customFieldsParamName) )
-        {
-          $status_ok = false;
-              $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,self::$customFieldsParamName);
-              $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
-        }
+        $status_ok = false;
+        $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,self::$customFieldsParamName);
+        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
       }
+    }
       
-      if( $status_ok )
-      {
+    if( $status_ok )
+    {
       // now check if custom fields are ok
       // For each custom field need to check if:
       // 1. is linked to test project
       // 2. is available for test case at design time
-  
-      // $cfSet = array_keys($args[self::$customFieldsParamName]);
-
-          $cfieldMgr = new cfield_mgr($this->dbObj);
+      $cfieldMgr = new cfield_mgr($this->dbObj);
       
       // Just ENABLED
       $linkedSet = $cfieldMgr->get_linked_cfields_at_design($this->args[self::$testProjectIDParamName],
-                                  cfield_mgr::ENABLED,null,'testcase',
-                                  null,'name');
+                                                            cfield_mgr::ENABLED,null,'testcase',null,'name');
       if( is_null($linkedSet) )
       {
-          $status_ok = false;
-              $msg = NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES_STR;
-              $this->errors[] = new IXR_Error(NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES, $msg);              
+        $status_ok = false;
+        $msg = NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES_STR;
+        $this->errors[] = new IXR_Error(NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES, $msg);              
       }
-      }
+    }
       
       
-      if( $status_ok )
-      {
-        $accessVersionBy['number'] = $this->args[self::$versionNumberParamName];
-        $nodeInfo = $this->tcaseMgr->get_basic_info($this->args[self::$testCaseIDParamName],$accessVersionBy);
-        $cfSet = $args[self::$customFieldsParamName];
+    if( $status_ok )
+    {
+      $accessVersionBy['number'] = $this->args[self::$versionNumberParamName];
+      $nodeInfo = $this->tcaseMgr->get_basic_info($this->args[self::$testCaseIDParamName],$accessVersionBy);
+      $cfSet = $args[self::$customFieldsParamName];
       foreach($cfSet as $cfName => $cfValue)
       {
         // $accessKey = "custom_field_" . $item['id'] . <field_type_id>_<cfield_id>
@@ -5235,14 +5227,14 @@ protected function createAttachmentTempFile()
         $item = $linkedSet[$cfName];
         $accessKey = "custom_field_" . $item['type'] . '_' . $item['id'];
         $hash[$accessKey] = $cfValue;
-          $cfieldMgr->design_values_to_db($hash,$nodeInfo[0]['tcversion_id']);
+        $cfieldMgr->design_values_to_db($hash,$nodeInfo[0]['tcversion_id']);
       }        
-      }
-      else
-      {
-        return $this->errors;
-      }  
     }
+    else
+    {
+        return $this->errors;
+    }  
+  }
 
 
   /**
@@ -5262,41 +5254,42 @@ protected function createAttachmentTempFile()
    *         
    * @access public
    */    
-    public function setTestCaseExecutionType($args)
+  public function setTestCaseExecutionType($args)
   {
-        $msg_prefix="(" .__FUNCTION__ . ") - ";
+    $msg_prefix="(" .__FUNCTION__ . ") - ";
     $this->_setArgs($args);  
     
-        $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseIdentity',
-                    'checkTestCaseVersionNumber');
-        $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
-      if( $status_ok )
+    $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseIdentity',
+                            'checkTestCaseVersionNumber');
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
+    if( $status_ok )
+    {
+      if(!$this->_isParamPresent(self::$executionTypeParamName))
       {
-        if(!$this->_isParamPresent(self::$executionTypeParamName))
-        {
-          $status_ok = false;
-              $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,self::$customFieldsParamName);
-              $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
-        }
+        $status_ok = false;
+        $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,self::$customFieldsParamName);
+        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
       }
+    }
 
     if($status_ok)
     {
       // if value not on domain, will use TESTCASE_EXECUTION_TYPE_MANUAL
-        $accessVersionBy['number'] = $this->args[self::$versionNumberParamName];
-        $nodeInfo = $this->tcaseMgr->get_basic_info($this->args[self::$testCaseIDParamName],$accessVersionBy);
-      $dbg = $this->tcaseMgr->setExecutionType($nodeInfo[0]['tcversion_id'],
-                           $this->args[self::$executionTypeParamName]);
+      $accessVersionBy['number'] = $this->args[self::$versionNumberParamName];
+      $nodeInfo = $this->tcaseMgr->get_basic_info($this->args[self::$testCaseIDParamName],$accessVersionBy);
+      $dbg = $this->tcaseMgr->setExecutionType($nodeInfo[0]['tcversion_id'],$this->args[self::$executionTypeParamName]);
       return array($this->args,$dbg);
     }
-      else
-      {
-        return $this->errors;
-      }  
-    }
+    else
+    {
+      return $this->errors;
+    }  
+  }
 
 
-
+  /**
+   *
+   */
   public function getExecCountersByBuild($args)
   {
     $operation = __FUNCTION__;
@@ -5410,6 +5403,9 @@ protected function createAttachmentTempFile()
   } 
 
 
+  /**
+   *
+   */
   public function getProjectPlatforms($args)
   {
     $messagePrefix="(" .__FUNCTION__ . ") - ";
@@ -5433,6 +5429,7 @@ protected function createAttachmentTempFile()
       return $this->errors;
     } 
   }
+
 
   /**
    * addPlatformToTestPlan 
@@ -5463,7 +5460,6 @@ protected function createAttachmentTempFile()
   public function removePlatformFromTestPlan($args)
   {
     return $this->platformLinkOp($args,'unlink',"(" .__FUNCTION__ . ") - ");
-
   }
 
 
@@ -5565,7 +5561,10 @@ protected function createAttachmentTempFile()
   }
 
 
-
+  /**
+   *
+   *
+   */
   private function platformLinkOp($args,$op,$messagePrefix)
   {
     $this->_setArgs($args);
@@ -5650,7 +5649,7 @@ protected function createAttachmentTempFile()
     * @param string $args["devKey"]
     * @param string $args["testcaseexternalid"] format PREFIX-NUMBER
     * @param int    $args["version"] optional version NUMBER (human readable) 
-    * @param string $args["name"] - optional
+    * @param string $args["testcasename"] - optional
     * @param string $args["summary"] - optional
     * @param string $args["preconditions"] - optional
     * @param array  $args["steps"] - optional
@@ -5739,9 +5738,9 @@ protected function createAttachmentTempFile()
       {
         // if name update requested, it will be first thing to be udpated
         // because if we got duplicate name, we will not do update
-        if(isset($this->args['name']))
+        if(isset($this->args[self::$testCaseNameParamName]))
         {
-          $ret = $this->tcaseMgr->updateName($tcaseID,trim($this->args['name']));
+          $ret = $this->tcaseMgr->updateName($tcaseID,trim($this->args[self::$testCaseNameParamName]));
           if( !($status_ok = $ret['status_ok']) )
           {
             $this->errors[] = new IXR_Error(constant($ret['API_error_code']),$msg_prefix . $ret['msg']); 
@@ -5770,6 +5769,12 @@ protected function createAttachmentTempFile()
       }
     }
 
+
+    if($status_ok)
+    {
+      // if exist proceed with steps actions / expected results update.
+          
+    }
 
     if($status_ok)
     {

@@ -21,6 +21,7 @@
  *
  * @internal revisions 
  * @since 1.9.8
+ * 201300812 - franciscom - updateTestCase()
  * 201300809 - franciscom - getUserByLogin(),getUserByID()
  */
 
@@ -190,6 +191,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $userParamName = "user";
   public static $userIDParamName = "userid";
   public static $versionNumberParamName = "version";
+  public static $estimatedExecDurationParamName = "estimatedexecduration";
 
   
   /**#@-*/
@@ -1820,13 +1822,13 @@ class TestlinkXMLRPCServer extends IXR_Server
       *
       * @param string $args["authorlogin"]: to set test case author
       * @param string $args["summary"]
-      * @param string $args["steps"]
+      * @param array  $args["steps"]
       *
       * @param string $args["preconditions"] - optional
-      * @param string $args["importance"] - optional - see const.inc.php for domain
-      * @param string $args["execution"] - optional - see ... for domain
-      * @param string $args["order'] - optional
-      * @param string $args["internalid"] - optional - do not use
+      * @param int    $args["importance"] - optional - see const.inc.php for domain
+      * @param int    $args["execution"] - optional - see ... for domain
+      * @param int    $args["order'] - optional
+      * @param int    $args["internalid"] - optional - do not use
       * @param string $args["checkduplicatedname"] - optional
       * @param string $args["actiononduplicatedname"] - optional
       *
@@ -1930,15 +1932,6 @@ class TestlinkXMLRPCServer extends IXR_Server
         return ($status_ok ? $resultInfo : $this->errors);
    }  
    
-   /**
-    * Update an existing test case
-    */
-   public function updateTestCase($args)
-   {
-     // TODO: Implement
-   }      
-
-
 
    /**
    * Reports a result for a single test case
@@ -5087,24 +5080,24 @@ protected function createAttachmentTempFile()
    */
   function deleteTestCaseSteps($args)
   {
-      $operation=__FUNCTION__;
-       $msg_prefix="({$operation}) - ";
-        $resultInfo=array();
+    $operation=__FUNCTION__;
+    $msg_prefix="({$operation}) - ";
+    $resultInfo=array();
     $version = -1;
-      $item = null;
-      $stepSet = null;
-      $stepNumberIDSet = null;
+    $item = null;
+    $stepSet = null;
+    $stepNumberIDSet = null;
       
-      $this->_setArgs($args);
-        $checkFunctions = array('authenticate','checkTestCaseIdentity');
-        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_modify_tc");
+    $this->_setArgs($args);
+    $checkFunctions = array('authenticate','checkTestCaseIdentity');
+    $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_modify_tc");
 
-        if( $status_ok )
-        {
-          // Important Notice: method checkTestCaseIdentity sets
-          // $this->args[self::$testCaseIDParamName]
-          $tcaseID = $this->args[self::$testCaseIDParamName];
-          $resultInfo[self::$testCaseIDParamName] = $tcaseID;
+    if( $status_ok )
+    {
+      // Important Notice: method checkTestCaseIdentity sets
+      // $this->args[self::$testCaseIDParamName]
+      $tcaseID = $this->args[self::$testCaseIDParamName];
+      $resultInfo[self::$testCaseIDParamName] = $tcaseID;
       $resultInfo['item'] = null;
         
       // if parameter version does not exits or is < 0 
@@ -5648,6 +5641,147 @@ protected function createAttachmentTempFile()
     } 
   }
 
+   /**
+    * Update an existing test case
+    * Not all test case attributes will be able to be updated using this method
+    * See details below
+    * 
+    * @param struct $args
+    * @param string $args["devKey"]
+    * @param string $args["testcaseexternalid"] format PREFIX-NUMBER
+    * @param int    $args["version"] optional version NUMBER (human readable) 
+    * @param string $args["name"] - optional
+    * @param string $args["summary"] - optional
+    * @param string $args["preconditions"] - optional
+    * @param array  $args["steps"] - optional
+    *               each element is a hash with following keys
+    *               step_number,actions,expected_results,execution_type
+    *
+    * @param int    $args["importance"] - optional - see const.inc.php for domain
+    * @param int    $args["executiontype"] - optional - see ... for domain
+    * @param int    $args["status'] - optional
+    * @param int    $args["estimatedexecduration'] - optional
+    * @param string $args["user'] - login name used as updater - optional
+    *                               if not provided will be set to user that request update
+    */
+   public function updateTestCase($args)
+   {
+    // Check test case identity
+    // Check if user (devkey) has grants to do operation
+    //
+    // Check that configuration allow changes on Test Case
+    // Check that new test case name do not collide with existent one
+
+    // translate args key to column name
+    $updKeys = array("summary" => null,"preconditions" => null,"importance" => null,
+                     "executiontype" => "execution_type",
+                     "status" => null, "estimatedexecduration" => "estimated_exec_duration");
+
+    $resultInfo = array();
+    $operation=__FUNCTION__;
+    $msg_prefix="({$operation}) - ";
+    $debug_info = null;
+
+    $this->_setArgs($args);              
+    $checkFunctions = array('authenticate','checkTestCaseIdentity');
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
+
+    // try to understand who will be the updater
+    if($status_ok)
+    {
+      // user has been provided ?
+      $updaterID = $this->userID;
+      if ($this->_isParamPresent(self::$userParamName))
+      {
+        $updaterID = tlUser::doesUserExist($this->dbObj,$this->args[self::$userParamName]);
+        if ( !($status_ok = !is_null($updaterID)) )
+        {
+          $msg = $msg_prefix . sprintf(NO_USER_BY_THIS_LOGIN_STR,$this->args[self::$userParamName]);
+          $this->errors[] = new IXR_Error(NO_USER_BY_THIS_LOGIN, $msg);
+        }
+      }
+    }  
+    
+    if($status_ok)
+    {
+      // we have got internal test case ID on checkTestCaseIdentity
+      $tcaseID = $this->args[self::$testCaseIDParamName];
+                    
+      // if user has not provided version number, get last version
+      // no matter if active or not
+      if(isset($this->args[self::$versionNumberParamName]))
+      {
+        if( ($status_ok = $this->checkTestCaseVersionNumber()) )
+        {
+          // Check if version number exists for Test Case
+          $ret = $this->checkTestCaseVersionNumberAncestry();
+          if( !($status_ok = $ret['status_ok']) )
+          {
+            $this->errors[] = new IXR_Error($ret['error_code'], $msg_prefix . $ret['error_msg']); 
+          }
+        }
+        if( $status_ok )
+        {
+          $dummy = $this->tcaseMgr->get_basic_info($tcaseID,array('number' => $this->args[self::$versionNumberParamName]));
+          $tcversion_id = $dummy[0]['tcversion_id'];
+        }
+      }
+      else
+      {
+        // get latest version info
+        $dummy = $this->tcaseMgr->get_last_version_info($tcaseID);
+        $dummy['tcversion_id'] = $dummy['id'];
+        $tcversion_id = $dummy['tcversion_id'];
+        $status_ok = true;
+      }
+
+      if($status_ok)
+      {
+        // if name update requested, it will be first thing to be udpated
+        // because if we got duplicate name, we will not do update
+        if(isset($this->args['name']))
+        {
+          $ret = $this->tcaseMgr->updateName($tcaseID,trim($this->args['name']));
+          if( !($status_ok = $ret['status_ok']) )
+          {
+            $this->errors[] = new IXR_Error(constant($ret['API_error_code']),$msg_prefix . $ret['msg']); 
+          }
+        }
+      }
+      
+      if($status_ok)
+      {
+        $fv = null;
+        $fv['updater_id'] = $updaterID;
+        foreach($updKeys as $k2s => $field2update)
+        {
+          if(isset($this->args[$k2s]))
+          {
+            $fv[(is_null($field2update) ? $k2s : $field2update)] = $this->args[$k2s];
+          }
+        }
+        $debug_info = array('sql' => $sql, 'fv' => $fv);
+        
+        if(!is_null($fv))
+        {
+          $sql = $this->tcaseMgr->updateSimpleFields($tcversion_id,$fv);
+          $debug_info = array('sql' => $sql, 'fv' => $fv);
+        }
+      }
+    }
+
+
+    if($status_ok)
+    {
+      $this->args['debug'] = $debug_info;
+      return $this->args;
+    }
+    else
+    {
+      return $this->errors;     
+    }
+    
+   }    
 
 
 
@@ -5727,6 +5861,7 @@ protected function createAttachmentTempFile()
                             'tl.deleteExecution' => 'this:deleteExecution',
                             'tl.doesUserExist' => 'this:doesUserExist',
                             'tl.updateTestCaseCustomFieldDesignValue' => 'this:updateTestCaseCustomFieldDesignValue',
+                            'tl.updateTestCase' => 'this:updateTestCase',
                             'tl.setTestCaseExecutionType' => 'this:setTestCaseExecutionType',
                             'tl.checkDevKey' => 'this:checkDevKey',
                             'tl.about' => 'this:about',

@@ -6048,4 +6048,120 @@ class testcase extends tlObjectWithAttachments
            " WHERE id = " . $this->db->prepare_int($tcversionID); 
     $this->db->exec_query($sql);
   }
+
+
+  /**
+   * updateSimpleFields
+   * used to update fields of type int, string on test case version
+   *
+   * @param int $tcversionID  item ID to update
+   * @param hash  $fieldsValues key DB field to update
+   *              supported fields:
+   *              summary,preconditions,execution_type,importance,status,
+   *              updater_id,estimated_exec_duration
+   *
+   * @internal revisions
+   *
+   */
+  function updateSimpleFields($tcversionID,$fieldsValues)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $fieldsConvertions = array('summary' => 'prepare_string','preconditions' => 'prepare_string',
+                               'execution_type' => 'prepare_int', 'importance' => 'prepare_int',
+                               'status' => 'prepare_int', 'estimated_exec_duration' => null,
+                               'updater_id' => null);
+    $dummy = null;
+    $sql = null;
+    $ddx = 0;
+    foreach($fieldsConvertions as $fkey => $fmethod)
+    {
+      if( isset($fieldsValues[$fkey]) )
+      {
+        $dummy[$ddx] = $fkey . " = ";
+        if( !is_null($fmethod) )
+        {
+          $sep = ($fmethod == 'prepare_string') ? "'" : "";
+          $dummy[$ddx] .= $sep . $this->db->$fmethod($fieldsValues[$fkey]) . $sep; 
+        }
+        else
+        {
+          $dummy[$ddx] .= $fieldsValues[$fkey];
+        }
+        $ddx++;
+      }
+    }
+    if( !is_null($dummy) )
+    {
+      $sqlSET = implode(",",$dummy);
+      $sql = "/* {$debugMsg} */ UPDATE {$this->tables['tcversions']} " .
+             "SET {$sqlSET} WHERE id={$tcversionID}";
+              
+      $this->db->exec_query($sql);
+    }
+    return $sql;
+  }
+
+
+  /**
+   * updateName
+   * check for duplicate name under same parent
+   *
+   * @param int  $id test case id
+   * @param string $name
+   *
+   * @internal revisions
+   *
+   */
+  function updateName($id,$name)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $ret['status_ok'] = true; 
+    $ret['msg'] = 'ok'; 
+    $ret['debug'] = '';
+    $ret['API_error_code'] = 0; 
+
+    $field_size = config_get('field_size');
+    $new_name = trim($name);
+
+    if( ($nl = strlen($new_name)) <= 0 )
+    {
+      $ret['status_ok'] = false; 
+      $ret['API_error_code'] = 'TESTCASE_EMPTY_NAME';
+      $ret['msg'] = lang_get('API_' . $ret['API_error_code']); 
+    }
+
+    if( $ret['status_ok'] && $nl > $field_size->testcase_name)
+    {
+      $ret['status_ok'] = false; 
+      $ret['API_error_code'] = 'TESTCASE_NAME_LEN_EXCEEDED';
+      $ret['msg'] = sprintf(lang_get('API_' . $ret['API_error_code']),$nl,$field_size->testcase_name); 
+    }
+        
+    if( $ret['status_ok'] )
+    {
+      // Go ahead
+      $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$id);
+      $ret['status_ok'] = !$check['status']; 
+      $ret['API_error_code'] = 'TESTCASE_SIBLING_WITH_SAME_NAME_EXISTS';
+      $ret['msg'] = sprintf(lang_get('API_' . $ret['API_error_code']),$name); 
+      $ret['debug'] = ''; 
+    }
+
+    if($ret['status_ok'])
+    {    
+      
+      $rs = $this->tree_manager->get_node_hierarchy_info($id);
+      if( !is_null($rs) && $rs['node_type_id'] == $this->my_node_type)
+      {
+        $sql = "/* {$debugMsg} */ UPDATE {$this->tables['nodes_hierarchy']} " .
+               " SET name='" . $this->db->prepare_string($name) . "' " .
+               " WHERE id= {$id}";
+        $this->db->exec_query($sql);
+        $ret['debug'] = "Old name:{$rs['name']} - new name:{$name}";
+      }
+    }
+    return $ret;
+  }
+
+
 }  

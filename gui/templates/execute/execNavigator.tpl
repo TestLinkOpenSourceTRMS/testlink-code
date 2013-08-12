@@ -53,14 +53,14 @@ var code_not_run = '{$gui->not_run}';
 
 /**
  * 
- *
- * internal revisions
+ * IMPORTANT DEVELOPMENT NOTICE
+ * ATTENTION args is a GLOBAL Javascript variable, then be CAREFULL
  */
 function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build_id,mode) 
 {
-  args = "tproject_id=" + tproject_id + "&tplan_id=" + tplan_id + "&platform_id=" + platform_id + "&build_id=" + build_id;  
-  args = args + "&exportContent=" + mode;
-  wref = window.open(fRoot+"lib/plan/planExport.php?"+args,
+  wargs = "tproject_id=" + tproject_id + "&tplan_id=" + tplan_id + "&platform_id=" + platform_id + "&build_id=" + build_id;  
+  wargs = args + "&exportContent=" + mode;
+  wref = window.open(fRoot+"lib/plan/planExport.php?"+wargs,
                      windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
   wref.focus();
 }

@@ -171,14 +171,15 @@ function checkSubmitForStatus($statusCode)
 
 /**
  * 
- *
+ * IMPORTANT DEVELOPMENT NOTICE
+ * ATTENTION args is a GLOBAL Javascript variable, then be CAREFULL
  */
 function openExportTestCases(windows_title,tsuite_id,tproject_id,tplan_id,build_id,platform_id,tcversion_set) 
 {
-  args = "tsuiteID=" + tsuite_id + "&tprojectID=" + tproject_id + "&tplanID=" + tplan_id; 
-  args += "&buildID=" + build_id + "&platformID=" + platform_id;
-  args += "&tcversionSet=" + tcversion_set;
-	wref = window.open(fRoot+"lib/execute/execExport.php?"+args,
+  wargs = "tsuiteID=" + tsuite_id + "&tprojectID=" + tproject_id + "&tplanID=" + tplan_id; 
+  wargs += "&buildID=" + build_id + "&platformID=" + platform_id;
+  wargs += "&tcversionSet=" + tcversion_set;
+	wref = window.open(fRoot+"lib/execute/execExport.php?"+wargs,
 	                   windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
 	wref.focus();
 }

@@ -15,7 +15,7 @@ require_once 'sample.inc.php';
 show_api_db_sample_msg();
 
 $tcaseQty = 100;
-$tcCounter = 1;
+$tcCounter = 0;
 $method='updateTestCase';
 
 /*
@@ -48,7 +48,8 @@ $args["summary"]='Updated via XML-RPC API';
 $client = new IXR_Client($server_url);
 $client->debug=true;
 
-runTest($client,$method,$args);
+$tcCounter++;
+runTest($client,$method,$args,$tcCounter);
 
 
 // Update Only Summary + Setting updater
@@ -63,7 +64,8 @@ $args["summary"]='Updated via XML-RPC API - by ' . $args["user"];
 $client = new IXR_Client($server_url);
 $client->debug=true;
 
-runTest($client,$method,$args);
+$tcCounter++;
+runTest($client,$method,$args,$tcCounter);
 
 // Trying to Update AN INEXISTENT Version + Only Summary + Setting updater
 $args=array();
@@ -77,7 +79,8 @@ $args["summary"]='Updated via XML-RPC API - by ' . $args["user"];
 $client = new IXR_Client($server_url);
 $client->debug=true;
 
-runTest($client,$method,$args);
+$tcCounter++;
+runTest($client,$method,$args,$tcCounter);
 
 // Update Summary + duration + Setting updater 
 $args=array();
@@ -92,7 +95,9 @@ $args["summary"]='Updated via XML-RPC API - by ' . $args["user"];
 $client = new IXR_Client($server_url);
 $client->debug=true;
 
-runTest($client,$method,$args);
+$tcCounter++;
+runTest($client,$method,$args,$tcCounter);
+
 
 // Update Summary + duration + importance + Setting updater 
 $args=array();
@@ -108,6 +113,40 @@ $args["importance"] = 3;
 $client = new IXR_Client($server_url);
 $client->debug=true;
 
-runTest($client,$method,$args);
+$tcCounter++;
+runTest($client,$method,$args,$tcCounter);
 
+
+// Update creating steps + Setting updater 
+$args=array();
+$args["devKey"]='21232f297a57a5a743894a0e4a801fc3';
+$args["testcaseexternalid"]='IU-5844-5';
+$args["version"]=1;
+$args["user"]='Iasmin';
+$args["summary"]='Updated via XML-RPC API - by ' . $args["user"];
+$args["steps"][]=array('step_number' => 1, 'actions' => 'Start Server', 'expected_results' => 'green light');
+
+
+$client = new IXR_Client($server_url);
+$client->debug=true;
+
+$tcCounter++;
+runTest($client,$method,$args,$tcCounter);
+
+// Update creating steps + Setting updater 
+$args=array();
+$args["devKey"]='21232f297a57a5a743894a0e4a801fc3';
+$args["testcaseexternalid"]='IU-5844-5';
+$args["version"]=1;
+$args["user"]='Iasmin';
+$args["summary"]='Updated via XML-RPC API - by ' . $args["user"];
+$args["steps"][]=array('step_number' => 1, 'actions' => 'Start Server Upd', 'expected_results' => 'green light');
+$args["steps"][]=array('step_number' => 10, 'actions' => 'Start Server NEW', 'expected_results' => 'green light');
+
+
+$client = new IXR_Client($server_url);
+$client->debug=true;
+
+$tcCounter++;
+runTest($client,$method,$args,$tcCounter);
 

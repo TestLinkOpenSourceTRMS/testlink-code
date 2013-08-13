@@ -5773,7 +5773,10 @@ protected function createAttachmentTempFile()
     if($status_ok)
     {
       // if exist proceed with steps actions / expected results update.
-          
+      if ($this->_isParamPresent(self::$stepsParamName) && !is_null($this->args[self::$stepsParamName]))
+      {      
+        $this->tcaseMgr->update_tcversion_steps($tcversion_id,$this->args[self::$stepsParamName]);
+      }    
     }
 
     if($status_ok)

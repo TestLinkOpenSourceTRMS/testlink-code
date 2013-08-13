@@ -1189,6 +1189,7 @@ class testcase extends tlObjectWithAttachments
       $version2loop = array_keys($recordset);
       foreach( $version2loop as $accessKey)
       { 
+        // no options => will renderd Ghost Steps
         $step_set = $this->get_steps($accessKey);
         $tplan2loop = array_keys($recordset[$accessKey]);
         foreach( $tplan2loop as $tplanKey)
@@ -1585,8 +1586,8 @@ class testcase extends tlObjectWithAttachments
   function get_last_version_info($id,$options=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      $my['options'] = array( 'get_steps' => false, 'output' => 'full');
-      $my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array( 'get_steps' => false, 'output' => 'full');
+    $my['options'] = array_merge($my['options'], (array)$options);
     $tcInfo = null;
     switch($my['options']['output'])
     {
@@ -1817,7 +1818,6 @@ class testcase extends tlObjectWithAttachments
   20110312 - franciscom - now id can be null, to allow get just by version id
   
   */
-
   function get_by_id($id,$version_id = self::ALL_VERSIONS, $filters = null, $options=null)
   {
 
@@ -1911,7 +1911,7 @@ class testcase extends tlObjectWithAttachments
         // (see specview.php).
         //                   
         $sql = "SELECT NHTC.name,NHTC.node_order,NHTC.parent_id AS testsuite_id,
-              NHTCV.parent_id AS testcase_id, {$tcversionFields}
+                NHTCV.parent_id AS testcase_id, {$tcversionFields}
                 FROM {$this->tables['nodes_hierarchy']} NHTCV
                 JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTCV.parent_id = NHTC.id
                 JOIN {$this->tables['tcversions']} TCV ON NHTCV.id = TCV.id
@@ -1970,7 +1970,7 @@ class testcase extends tlObjectWithAttachments
       $recordset = $this->db->get_recordset($sql);
     }
   
-    // 20130404 - ghost on preconditions and summary
+    // ghost on preconditions and summary
     if( !is_null($recordset) && $my['options']['renderGhost'] )
     {
       $key2loop = array_keys($recordset);
@@ -1985,10 +1985,12 @@ class testcase extends tlObjectWithAttachments
     // Multiple Test Case Steps
     if( !is_null($recordset) && $my['options']['output'] == 'full')
     {
+      $gsOpt['renderGhostSteps'] = $my['options']['renderGhost'];
+
       $key2loop = array_keys($recordset);
       foreach( $key2loop as $accessKey)
       { 
-        $step_set = $this->get_steps($recordset[$accessKey]['id']);
+        $step_set = $this->get_steps($recordset[$accessKey]['id'],0,$gsOpt);
         if($my['options']['withGhostString'])
         {
           // need to get test case prefix test project info
@@ -3205,7 +3207,6 @@ class testcase extends tlObjectWithAttachments
     
     $tc_data = $this->get_by_id($tcase_id,$tcversion_id);
     $testCaseVersionID = $tc_data[0]['id'];
-    
     if (!$tproject_id)
     {
       $tproject_id = $this->getTestProjectFromTestCase($tcase_id);

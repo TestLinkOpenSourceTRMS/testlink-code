@@ -30,7 +30,7 @@ some smarty and javascript variables are created on the inc_*.tpl files.
           testplan_alt_edit_tp,alt_active_testplan,testplan_alt_delete_tp,public,
           btn_testplan_create,th_id,error_no_testprojects_present,btn_export_import,
           export_import,export,import,export_testplan_links,import_testplan_links,
-          testcase_qty,platform_qty'}
+          testcase_qty,platform_qty,active_click_to_change,inactive_click_to_change'}
 
 
 {lang_get s='warning_delete_testplan' var="warning_msg"}
@@ -62,6 +62,10 @@ var del_action=fRoot+'{$deleteAction}';
 {elseif $gui->tplans eq ''}
 	{$labels.testplan_txt_empty_list}
 {else}
+  <form method="post" id="testPlanView" name="testPlanView" action="{$managerURL}">
+	  <input type="hidden" name="do_action" id="do_action" value="">
+  	<input type="hidden" name="tplan_id" id="tplan_id" value="">
+
 	<table id='item_view'class="simple_tableruler sortable">
 		<thead>
 		<tr>
@@ -103,11 +107,16 @@ var del_action=fRoot+'{$deleteAction}';
 			{/if}	
 
 			<td class="clickable_icon">
-				{if $testplan.active eq 1} 
-  					<img style="border:none" title="{$labels.alt_active_testplan}" alt="{$labels.alt_active_testplan}" 
-  				       src="{$tlImages.checked}"/>
+				{if $testplan.active==1} 
+  					<input type="image" style="border:none" 
+                   title="{$labels.active_click_to_change}" alt="{$labels.active_click_to_change}" 
+                   onClick = "do_action.value='setInactive';tplan_id.value={$testplan.id};"
+  				         src="{$tlImages.on}"/>
   				{else}
-  					&nbsp;        
+  					<input type="image" style="border:none" 
+                 title="{$labels.inactive_click_to_change}" alt="{$labels.inactive_click_to_change}" 
+                 onClick = "do_action.value='setActive';tplan_id.value={$testplan.id};"
+  				       src="{$tlImages.off}"/>
   				{/if}
 			</td>
 			<td class="clickable_icon">
@@ -141,6 +150,7 @@ var del_action=fRoot+'{$deleteAction}';
 		{/foreach}
 		</tbody>
 	</table>
+</form>
 
 {/if}
 </div>

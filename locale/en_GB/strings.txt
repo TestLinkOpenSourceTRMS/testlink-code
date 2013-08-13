@@ -36,6 +36,9 @@ $TLS_STRINGFILE_CHARSET = "UTF-8";
 $TLS_last_update = "English is the default development language and is always up to date";
 
 // ----- General terms (used wide) ----------------------------
+$TLS_active_click_to_change = 'Active (click to set inactive)';
+$TLS_inactive_click_to_change = 'Inactive (click to set active)';
+
 $TLS_type_not_configured = "system message: type not configured";
 $TLS_undefined = "undefined";
 $TLS_active = "Active";
@@ -237,7 +240,9 @@ $TLS_btn_monitor   = "Monitor";
 $TLS_btn_move = "Move";
 $TLS_btn_no = "No";
 $TLS_btn_new_revision = "New revision";
+$TLS_btn_next = "Next";
 $TLS_btn_ok = "Ok";
+$TLS_btn_previous = "Previous";
 $TLS_btn_print = "Print";
 $TLS_btn_print_view = "Print view";
 $TLS_btn_save = "Save";

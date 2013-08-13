@@ -207,6 +207,15 @@ switch($args->do_action)
       $gui->notes=$of->CreateHTML();
     }
     break;
+
+  case 'setActive':
+    $tplan_mgr->setActive($args->tplan_id);
+  break;
+
+  case 'setInactive':
+    $tplan_mgr->setInactive($args->tplan_id);
+  break;
+
 }
 
 switch($args->do_action)
@@ -215,6 +224,8 @@ switch($args->do_action)
    case "do_delete":
    case "do_update":
    case "list":
+   case 'setActive':
+   case 'setInactive':
     $do_display=true;
     $template = is_null($template) ? 'planView.tpl' : $template;
     $gui->tplans = $args->user->getAccessibleTestPlans($db,$args->tproject_id,null,
@@ -244,10 +255,10 @@ switch($args->do_action)
 
    case "edit":
    case "create":
-        $do_display=true;
-        $template = is_null($template) ? 'planEdit.tpl' : $template;
-        $gui->notes=$of->CreateHTML();
-    break;
+     $do_display=true;
+     $template = is_null($template) ? 'planEdit.tpl' : $template;
+     $gui->notes=$of->CreateHTML();
+   break;
 }
 
 if($do_display)

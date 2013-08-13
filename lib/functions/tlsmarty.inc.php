@@ -372,6 +372,8 @@ class TLSmarty extends Smarty
                    'import' => TL_THEME_IMG_DIR . 'door_in.png',
                    'info' => TL_THEME_IMG_DIR . 'question.gif',
                    'insert_step' => TL_THEME_IMG_DIR . 'insert_step.png',
+                   'on' => TL_THEME_IMG_DIR . 'lightbulb.png',
+                   'off' => TL_THEME_IMG_DIR . 'lightbulb_off.png',
                    'public' => TL_THEME_IMG_DIR . 'door_open.png',
                    'private' => TL_THEME_IMG_DIR . 'door.png',
                    'reorder' => TL_THEME_IMG_DIR . 'arrow_switch.png',

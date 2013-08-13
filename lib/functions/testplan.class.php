@@ -3521,15 +3521,33 @@ class testplan extends tlObjectWithAttachments
   /**
    * getTestCaseNextSibling()
    *
+   * @used-by execSetResults.php
+   *
    */
   function getTestCaseNextSibling($id,$tcversion_id,$platform_id,$opt=null)
   {
+    $my['opt'] = array_merge(array('move' => 'forward'),(array)$opt);
+
     $sibling = null;
-    $brothers_and_sisters = $this->getTestCaseSiblings($id,$tcversion_id,$platform_id,$opt);
+    $brothers_and_sisters = $this->getTestCaseSiblings($id,$tcversion_id,$platform_id,$my['opt']);
     $tcversionSet = array_keys($brothers_and_sisters);
     $elemQty = count($tcversionSet);
     $dummy = array_flip($tcversionSet);
-    $pos = $dummy[$tcversion_id]+1;  
+
+    $pos = $dummy[$tcversion_id];  
+    switch($my['opt']['move'])
+    {
+      case 'backward':
+        $pos--;
+        $pos = $pos < 0 ? 0 : $pos;
+      break;
+
+      case 'forward':
+      default:
+        $pos++;
+      break;
+    }
+
     $sibling_tcversion = $pos < $elemQty ? $tcversionSet[$pos] : 0;
     if( $sibling_tcversion > 0 )
     {
@@ -6820,8 +6838,6 @@ function getExecutionDurationForSet($execIDSet)
     $filters = null;
     $item = $this->get_by_id($id,array('output' => 'minimun','caller' => __METHOD__));
 
-    new dBug($item);
-
     $xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
                  "<!-- TestLink - www.teamst.org - xml to allow results import -->\n";
     $xmlString .= "<results>\n";
@@ -6874,6 +6890,27 @@ function getExecutionDurationForSet($execIDSet)
     $zorba = $xmlString .= $linked_testcases . "\n</results>\n";
 
     return $zorba;
+  }
+
+
+  /**
+   *
+   */
+  function setActive($id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $sql = "/* $debugMsg */ " . "UPDATE {$this->tables['testplans']} SET active=1 WHERE id=" . intval($id);
+    $this->db->exec_query($sql); 
+  }
+
+  /**
+   *
+   */
+  function setInactive($id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $sql = "/* $debugMsg */ " . "UPDATE {$this->tables['testplans']} SET active=0 WHERE id=" . intval($id); 
+    $this->db->exec_query($sql); 
   }
 
 

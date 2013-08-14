@@ -9,8 +9,9 @@ users overview
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
 
-{assign var="userActionMgr" value="lib/usermanagement/usersEdit.php"}
-{assign var="createUserAction" value="$userActionMgr?doAction=create"}
+{$userActionMgr="lib/usermanagement/usersEdit.php"}
+{$createUserAction="$userActionMgr?doAction=create"}
+{$exportUsersAction="lib/usermanagement/usersExport.php"}
 
 <script type="text/javascript">
 var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
@@ -49,7 +50,7 @@ var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
              th_role,order_by_role_descr,order_by_role_dir,th_locale,th_active,th_api,th_delete,
              disable,alt_edit_user,Yes,No,alt_delete_user,no_permissions_for_action,btn_create,
              show_inactive_users,hide_inactive_users,alt_disable_user,order_by_login,
-             order_by_login_dir,alt_active_user,demo_special_user"}
+             order_by_login_dir,alt_active_user,demo_special_user,btn_export"}
 
 <body>
 {if $gui->grants->user_mgmt == "yes"}
@@ -67,10 +68,18 @@ var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
     {/foreach}
 
 		<div class="groupBtn">
+		<span style="float:left;">	
 		<form method="post" action="{$createUserAction}" name="launch_create">
 		  <input type="hidden" id="operation" name="operation" value="" />
 		  <input type="submit" name="doCreate"  value="{$labels.btn_create}" />
-  	</form>
+  		</form>
+  	    </span>
+
+  	    <span>
+		<form method="post" action="{$exportUsersAction}" name="launch_export" style="inline;">
+		  <input type="submit" id="export"  name="export" value="{$labels.btn_export}" style="margin-left: 3px;" name="export_cf">
+  		</form>
+  	    </span>
 		</div>
 	</div>
 	

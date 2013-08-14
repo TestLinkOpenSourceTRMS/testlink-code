@@ -2316,81 +2316,80 @@ class TestlinkXMLRPCServer extends IXR_Server
    *         
    * @access public
    */    
-    public function getTestCaseCustomFieldDesignValue($args)
+  public function getTestCaseCustomFieldDesignValue($args)
   {
-        $msg_prefix="(" .__FUNCTION__ . ") - ";
+    $msg_prefix="(" .__FUNCTION__ . ") - ";
     $this->_setArgs($args);  
     
-    // 20101020 - franciscom - added checkTestCaseVersionNumber  
-        $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseIdentity',
-                    'checkTestCaseVersionNumber');
-        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
+    $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseIdentity',
+                            'checkTestCaseVersionNumber');
+    $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
 
-        if( $status_ok )
-        {
-        $status_ok=$this->_isParamPresent(self::$customFieldNameParamName,$msg_prefix,self::SET_ERROR);
-        }
-        
-        
-        if($status_ok)
+    if( $status_ok )
     {
-            $ret = $this->checkTestCaseAncestry();
-            $status_ok = $ret['status_ok'];
-            if( $status_ok )
-            {
-              // Check if version number exists for Test Case
-              $ret = $this->checkTestCaseVersionNumberAncestry();
-              $status_ok = $ret['status_ok'];
-            }
+      $status_ok=$this->_isParamPresent(self::$customFieldNameParamName,$msg_prefix,self::SET_ERROR);
+    }
+        
+        
+    if($status_ok)
+    {
+      $ret = $this->checkTestCaseAncestry();
+      $status_ok = $ret['status_ok'];
+      if( $status_ok )
+      {
+        // Check if version number exists for Test Case
+        $ret = $this->checkTestCaseVersionNumberAncestry();
+        $status_ok = $ret['status_ok'];
+      }
             
-            if($status_ok )
-            {
-                $status_ok=$this->_checkGetTestCaseCustomFieldDesignValueRequest($msg_prefix);
-            }
-            else 
-            {
-                $this->errors[] = new IXR_Error($ret['error_code'], $msg_prefix . $ret['error_msg']); 
-            }           
+      if($status_ok )
+      {
+        $status_ok=$this->_checkGetTestCaseCustomFieldDesignValueRequest($msg_prefix);
+      }
+      else 
+      {
+        $this->errors[] = new IXR_Error($ret['error_code'], $msg_prefix . $ret['error_msg']); 
+      }           
     }
         
     if($status_ok && $this->userHasRight("mgt_view_tc"))
     {
-        $details='value';
-        if( $this->_isParamPresent(self::$detailsParamName) )
-        {
-            $details=$this->args[self::$detailsParamName];  
-        }
+      $details='value';
+      if( $this->_isParamPresent(self::$detailsParamName) )
+      {
+        $details=$this->args[self::$detailsParamName];  
+      }
       
         
-            $cf_name=$this->args[self::$customFieldNameParamName];
-            $tproject_id=$this->args[self::$testProjectIDParamName];
-            $tcase_id=$this->args[self::$testCaseIDParamName];
+      $cf_name=$this->args[self::$customFieldNameParamName];
+      $tproject_id=$this->args[self::$testProjectIDParamName];
+      $tcase_id=$this->args[self::$testCaseIDParamName];
             
-        $cfield_mgr = $this->tprojectMgr->cfield_mgr;
-            $cfinfo = $cfield_mgr->get_by_name($cf_name);
-            $cfield = current($cfinfo);
-            $filters = array('cfield_id' => $cfield['id']);
-            $cfieldSpec = $this->tcaseMgr->get_linked_cfields_at_design($tcase_id,$this->tcVersionID,null,$filters,$tproject_id);
+      $cfield_mgr = $this->tprojectMgr->cfield_mgr;
+      $cfinfo = $cfield_mgr->get_by_name($cf_name);
+      $cfield = current($cfinfo);
+      $filters = array('cfield_id' => $cfield['id']);
+      $cfieldSpec = $this->tcaseMgr->get_linked_cfields_at_design($tcase_id,$this->tcVersionID,null,$filters,$tproject_id);
             
-            switch($details)
-            {
-                case 'full':
-                    $retval = $cfieldSpec[$cfield['id']]; 
-                break;
-                
-                case 'simple':
-                    $retval = array('name' => $cf_name, 'label' => $cfieldSpec[$cfield['id']]['label'], 
-                                    'type' => $cfieldSpec[$cfield['id']]['type'], 
-                                    'value' => $cfieldSpec[$cfield['id']]['value']);
-                break;
-                
-                case 'value':
-                default:
-                    $retval=$cfieldSpec[$cfield['id']]['value'];
-                break;
-                
-            }
-            return $retval;
+      switch($details)
+      {
+        case 'full':
+          $retval = $cfieldSpec[$cfield['id']]; 
+        break;
+           
+        case 'simple':
+          $retval = array('name' => $cf_name, 'label' => $cfieldSpec[$cfield['id']]['label'], 
+                          'type' => $cfieldSpec[$cfield['id']]['type'], 
+                          'value' => $cfieldSpec[$cfield['id']]['value']);
+        break;
+               
+        case 'value':
+        default:
+          $retval=$cfieldSpec[$cfield['id']]['value'];
+        break;
+              
+      }
+      return $retval;
     }
     else
     {
@@ -2596,8 +2595,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 
 
     /**
-   * checks if test case version number is a valid.
-   * Checks is is positive intenger
+   * checks if test case version number is positive integer
    *  
    * @return boolean
    *
@@ -2605,31 +2603,30 @@ class TestlinkXMLRPCServer extends IXR_Server
    */
   protected function checkTestCaseVersionNumber()
   {
-        $status=true;
-        if(!($status=$this->_isParamPresent(self::$versionNumberParamName)))
+    $status=true;
+    if(!($status=$this->_isParamPresent(self::$versionNumberParamName)))
+    {
+      $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,self::$versionNumberParamName);
+      $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
+    }
+    else
+    {
+      $version = $this->args[self::$versionNumberParamName];
+      if( !($status = is_int($version)) )
+      {
+        $msg = sprintf(PARAMETER_NOT_INT_STR,self::$versionNumberParamName,$version);
+        $this->errors[] = new IXR_Error(PARAMETER_NOT_INT, $msg);
+      }
+      else 
+      {
+        if( !($status = ($version > 0)) )
         {
-            $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,self::$versionNumberParamName);
-            $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
+          $msg = sprintf(VERSION_NOT_VALID_STR,$version);
+          $this->errors[] = new IXR_Error(VERSION_NOT_VALID,$msg);
         }
-        else
-        {
-            $version = $this->args[self::$versionNumberParamName];
-            if( !($status = is_int($version)) )
-            {
-              // BUGID 3456
-              $msg = sprintf(PARAMETER_NOT_INT_STR,self::$versionNumberParamName,$version);
-              $this->errors[] = new IXR_Error(PARAMETER_NOT_INT, $msg);
-            }
-            else 
-            {
-                if( !($status = ($version > 0)) )
-                {
-                $msg = sprintf(VERSION_NOT_VALID_STR,$version);
-                    $this->errors[] = new IXR_Error(VERSION_NOT_VALID,$msg);
-                }
-            }
-        }
-        return $status;
+      }
+    }
+    return $status;
   }
 
    /**
@@ -2654,7 +2651,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     $additional_fields='';
     $doDeleteLinks = false;
     $doLink = false;
-        $hasPlatforms = false;
+    $hasPlatforms = false;
     $hasPlatformIDArgs = false;
     $platform_id = 0;
     $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseVersionNumber',
@@ -3465,58 +3462,59 @@ public function getTestCaseAttachments($args)
 */
 public function getTestCase($args)
 {
-    $msg_prefix="(" .__FUNCTION__ . ") - ";
-    $status_ok=true;
-    $this->_setArgs($args);
+  $msg_prefix="(" .__FUNCTION__ . ") - ";
+  $status_ok=true;
+  $this->_setArgs($args);
     
-    $checkFunctions = array('authenticate','checkTestCaseIdentity');       
-    $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_view_tc");       
-    $version_id=testcase::LATEST_VERSION;
-    $version_number=-1;
+  $checkFunctions = array('authenticate','checkTestCaseIdentity');       
+  $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_view_tc");       
+  $version_id=testcase::LATEST_VERSION;
+  $version_number=-1;
 
-    if( $status_ok )
-    {      
-        // check optional arguments
-        if( $this->_isParamPresent(self::$versionNumberParamName) )
-        {
-            if( ($status_ok=$this->checkTestCaseVersionNumber()) )
-            {
-                $version_id=null;
-                $version_number=$this->args[self::$versionNumberParamName];
-            }
-        }
+  if( $status_ok )
+  {      
+    // check optional arguments
+    if( $this->_isParamPresent(self::$versionNumberParamName) )
+    {
+      if( ($status_ok=$this->checkTestCaseVersionNumber()) )
+      {
+        $version_id=null;
+        $version_number=$this->args[self::$versionNumberParamName];
+      }
     }
+  }
     
-    if( $status_ok )
-    {      
-        $testCaseMgr = new testcase($this->dbObj);
-        $id=$this->args[self::$testCaseIDParamName];
+  if( $status_ok )
+  {      
+    $testCaseMgr = new testcase($this->dbObj);
+    $id=$this->args[self::$testCaseIDParamName];
         
-        $result = $testCaseMgr->get_by_id($id,$version_id,'ALL','ALL',$version_number);            
-        if(0 == sizeof($result))
-        {
-            $status_ok=false;
-            $this->errors[] = new IXR_ERROR(NO_TESTCASE_FOUND, 
-                                            $msg_prefix . NO_TESTCASE_FOUND_STR);
-            return $this->errors;
-        }
-        else
-        {
-          if( isset($this->args[self::$testCaseExternalIDParamName]) )
-          {
-            $result[0]['full_tc_external_id']=$this->args[self::$testCaseExternalIDParamName];
-          }
-          else
-          {
-            $dummy = $this->tcaseMgr->getPrefix($id);
-            $result[0]['full_tc_external_id'] = $dummy[0] . config_get('testcase_cfg')->glue_character .
-                              $result[0]['tc_external_id'];
-          }
-          
-        }
-    }
+    // $result = $testCaseMgr->get_by_id($id,$version_id,'ALL','ALL',$version_number);            
+    $filters = array('active_status' => 'ALL', 'open_status' => 'ALL', 'version_number' => $version_number);
 
-    return $status_ok ? $result : $this->errors; 
+    $result = $testCaseMgr->get_by_id($id,$version_id,$filters);            
+    if(0 == sizeof($result))
+    {
+      $status_ok=false;
+      $this->errors[] = new IXR_ERROR(NO_TESTCASE_FOUND,$msg_prefix . NO_TESTCASE_FOUND_STR);
+      return $this->errors;
+    }
+    else
+    {
+      if( isset($this->args[self::$testCaseExternalIDParamName]) )
+      {
+        $result[0]['full_tc_external_id']=$this->args[self::$testCaseExternalIDParamName];
+      }
+      else
+      {
+        $dummy = $this->tcaseMgr->getPrefix($id);
+        $result[0]['full_tc_external_id'] = $dummy[0] . config_get('testcase_cfg')->glue_character .
+                                            $result[0]['tc_external_id'];
+      }
+    }
+  }
+
+  return $status_ok ? $result : $this->errors; 
 }
 
 
@@ -4579,6 +4577,7 @@ protected function createAttachmentTempFile()
 
   /**
    * checks if a test case version number is defined for a test case
+   * if everything is ok $this->tcVersionID will be setted
    *
    * @param string $messagePrefix used to be prepended to error message
    * 
@@ -4589,39 +4588,40 @@ protected function createAttachmentTempFile()
    */
   protected function checkTestCaseVersionNumberAncestry($messagePrefix='')
   {
-      $ret=array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
+    $ret=array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
   
-      $tcase_id = $this->args[self::$testCaseIDParamName];
-      $version_number = $this->args[self::$versionNumberParamName];
+    $tcase_id = $this->args[self::$testCaseIDParamName];
+    $version_number = $this->args[self::$versionNumberParamName];
       
-      $sql = " SELECT TCV.version,TCV.id " . 
-             " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['tcversions']} TCV " .
-             " WHERE NH.parent_id = {$tcase_id} " .
-             " AND TCV.version = {$version_number} " .
-             " AND TCV.id = NH.id ";
+    $sql = " SELECT TCV.version,TCV.id " . 
+           " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['tcversions']} TCV " .
+           " WHERE NH.parent_id = {$tcase_id} " .
+           " AND TCV.version = {$version_number} " .
+           " AND TCV.id = NH.id ";
   
-      $target_tcversion = $this->dbObj->fetchRowsIntoMap($sql,'version');
-      // $xx = "tcase_id:$tcase_id - version_number:$version_number";
-      // file_put_contents('c:\checkTestCaseVersionNumberAncestry.php.xmlrpc', $xx);                            
+    $target_tcversion = $this->dbObj->fetchRowsIntoMap($sql,'version');
+    // $xx = "tcase_id:$tcase_id - version_number:$version_number";
+    // file_put_contents('c:\checkTestCaseVersionNumberAncestry.php.xmlrpc', $xx);                            
       
-      if( !is_null($target_tcversion) && count($target_tcversion) == 1 )
-      {
-        $dummy = current($target_tcversion);
+    if( !is_null($target_tcversion) && count($target_tcversion) == 1 )
+    {
+      $dummy = current($target_tcversion);
       $this->tcVersionID = $dummy['id'];
-      }
-      else
-      {
+    }
+    else
+    {
       $status_ok=false;
-            $tcase_info = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($tcase_id);
+      $tcase_info = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($tcase_id);
       $msg = sprintf(TCASE_VERSION_NUMBER_KO_STR,$version_number,$this->args[self::$testCaseExternalIDParamName],
-               $tcase_info['name']);  
+                     $tcase_info['name']);  
       $ret = array('status_ok' => false, 'error_msg' => $msg , 'error_code' => TCASE_VERSION_NUMBER_KO);                                               
-      }  
+    }  
                       
-      // $xx = "this->tcVersionID:$this->tcVersionID";
-      // file_put_contents('c:\checkTestCaseVersionNumberAncestry.php.xmlrpc', $xx,FILE_APPEND); 
-      return $ret;
-  } // function end
+    // $xx = "this->tcVersionID:$this->tcVersionID";
+    // file_put_contents('c:\checkTestCaseVersionNumberAncestry.php.xmlrpc', $xx,FILE_APPEND); 
+    return $ret;
+  } 
+
 
   /**
    * Helper method to see if the a provided custom field is not empty.

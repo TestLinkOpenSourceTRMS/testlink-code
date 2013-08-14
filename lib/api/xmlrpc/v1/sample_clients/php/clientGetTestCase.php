@@ -16,35 +16,37 @@ require_once 'util.php';
 require_once 'sample.inc.php';
 show_api_db_sample_msg();
 
+$devKey = md5('admin');
 $method='getTestCase';
-$test_num=1;
-$unitTestDescription="Test {$test_num} - {$method}";
+$test_num=0;
 
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=$devKey;
 $args["testcaseexternalid"]='API-2';
 $additionalInfo='';
 
 $debug=true;
+$test_num++;
+$unitTestDescription="Test {$test_num} - {$method}";
 echo $unitTestDescription;
 echo $additionalInfo;
 
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
 
-runTest($client,$method,$args);
+runTest($client,$method,$args,$test_num);
 // ---------------------------------------------------------------------------------
 
-$test_num=2;
-$unitTestDescription="Test {$test_num} - {$method}";
 
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=$devKey;
 $args["testcaseexternalid"]='API-2';
 $args["version"]=1;
 $additionalInfo='';
 
 $debug=true;
+$test_num++;
+$unitTestDescription="Test {$test_num} - {$method}";
 echo $unitTestDescription;
 echo $additionalInfo;
 
@@ -54,16 +56,15 @@ $client->debug=$debug;
 runTest($client,$method,$args);
 // ---------------------------------------------------------------------------------
 
-$test_num=2;
-$unitTestDescription="Test {$test_num} - {$method}";
-
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=$devKey;
 $args["testcaseid"]='1667';
 $args["version"]=1;
 $additionalInfo='';
 
 $debug=true;
+$test_num++;
+$unitTestDescription="Test {$test_num} - {$method}";
 echo $unitTestDescription;
 echo $additionalInfo;
 
@@ -73,5 +74,20 @@ $client->debug=$debug;
 runTest($client,$method,$args);
 // ---------------------------------------------------------------------------------
 
- 	
-?>
+$args=array();
+$args["devKey"]=$devKey;
+$args["testcaseexternalid"]='API-2';
+$args["version"]=3;
+$additionalInfo='';
+
+$debug=true;
+$test_num++;
+$unitTestDescription="Test {$test_num} - {$method}";
+echo $unitTestDescription;
+echo $additionalInfo;
+
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+
+runTest($client,$method,$args);
+// ---------------------------------------------------------------------------------

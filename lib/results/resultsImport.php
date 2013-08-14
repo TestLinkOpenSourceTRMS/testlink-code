@@ -585,35 +585,33 @@ function check_xml_execution_results($fileName)
 function init_args(&$dbHandler)
 {
   $args=new stdClass();
-    $_REQUEST=strings_stripSlashes($_REQUEST);
+  $_REQUEST=strings_stripSlashes($_REQUEST);
 
-    $args->importType=isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
+  $args->importType=isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
 
-  // BUGID 3470
   // Need to use REQUEST because sometimes data arrives on GET and other on POST (has hidden fields)
-    $args->buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : null;
-    $args->platformID = isset($_REQUEST['platformID']) ? intval($_REQUEST['platformID']) : null;
-    $args->tplanID = isset($_REQUEST['tplanID']) ? intval($_REQUEST['tplanID']) : null;
-    $args->tplanID = !is_null($args->tplanID) ? $args->tplanID : $_SESSION['testplanID'];
+  $args->buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : null;
+  $args->platformID = isset($_REQUEST['platformID']) ? intval($_REQUEST['platformID']) : null;
+  $args->tplanID = isset($_REQUEST['tplanID']) ? intval($_REQUEST['tplanID']) : null;
+  $args->tplanID = !is_null($args->tplanID) ? $args->tplanID : $_SESSION['testplanID'];
 
-    $args->tprojectID = isset($_REQUEST['tprojectID']) ? intval($_REQUEST['tprojectID']) : null;
-    if( is_null($args->tprojectID))
-    {
-      $args->tprojectID = $_SESSION['testprojectID'];
+  $args->tprojectID = isset($_REQUEST['tprojectID']) ? intval($_REQUEST['tprojectID']) : null;
+  if( is_null($args->tprojectID))
+  {
+    $args->tprojectID = $_SESSION['testprojectID'];
     $args->testprojectName = $_SESSION['testprojectName'];
-      
-    }
+  }
   else
   {
-      $tproject_mgr = new testproject($dbHandler);
-      $dummy = $tproject_mgr->get_by_id($args->tprojectID);
-      $args->testprojectName = $dummy['name'];
+    $tproject_mgr = new testproject($dbHandler);
+    $dummy = $tproject_mgr->get_by_id($args->tprojectID);
+    $args->testprojectName = $dummy['name'];
   }
     
-    $args->doUpload=isset($_REQUEST['UploadFile']) ? 1 : 0;
-    $args->userID=$_SESSION['userID'];
+  $args->doUpload=isset($_REQUEST['UploadFile']) ? 1 : 0;
+  $args->userID=$_SESSION['userID'];
     
-    return $args;
+  return $args;
 }
 
 /*

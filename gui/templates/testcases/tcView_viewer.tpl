@@ -90,28 +90,28 @@ viewer for test case in test specification
   {assign var="delete_enabled" value=0}
 
   {* Seems logical you can disable some you have executed before *}
-  {assign var="active_status_op_enabled" value=1}
-  {assign var="has_been_executed" value=0}
+  {$active_status_op_enabled=1}
+  {$has_been_executed=0}
   {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
   {lang_get s='system_blocks_delete_executed_tc' var="warning_delete_msg"}
 
   {if $args_status_quo == null || $args_status_quo[$args_testcase.id].executed == null}
-      {assign var="edit_enabled" value=1}
-      {assign var="delete_enabled" value=1}
-      {assign var="warning_edit_msg" value=""}
-      {assign var="warning_delete_msg" value=""}
+      {$edit_enabled=1}
+      {$delete_enabled=1}
+      {$warning_edit_msg=""}
+      {$warning_delete_msg=""}
   {else} 
     {if isset($args_tcase_cfg) && $args_tcase_cfg->can_edit_executed == 1}
-      {assign var="edit_enabled" value=1} 
-      {assign var="has_been_executed"  value=1} 
+      {$edit_enabled=1} 
+      {$has_been_executed=1} 
       {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
     {/if} 
     
     {if isset($args_tcase_cfg)}
       {if $args_tcase_cfg->can_delete_executed == 1}
-        {assign var="delete_enabled" value=1} 
-        {assign var="has_been_executed"  value=1} 
-        {assign var="warning_delete_msg" value=""}
+        {$delete_enabled=1} 
+        {$has_been_executed=1} 
+        {$warning_delete_msg=""}
       {else}
         {if ($args_can_do->delete_testcase == "yes" &&  
             $args_can_delete_testcase == "yes") ||

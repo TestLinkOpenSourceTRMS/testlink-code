@@ -13,7 +13,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.8
  *
  */
 
@@ -39,7 +39,7 @@ $ui->caption = '';
 $ui->main_descr = lang_get('title_testproject_management');
 
 $user_feedback = '';
-$reloadType = 'none';
+$reloadType = 'none';  // domain 'none','reloadNavBar'
 
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
@@ -50,42 +50,53 @@ $status_ok = 1;
 
 switch($args->doAction)
 {
-    case 'create':
-      $template = $templateCfg->default_template;
-      $ui = create($args,$tproject_mgr);
-      $gui->testprojects = $ui->testprojects;
-    break;
+  case 'create':
+    $template = $templateCfg->default_template;
+    $ui = create($args,$tproject_mgr);
+    $gui->testprojects = $ui->testprojects;
+  break;
 
-    case 'edit':
-      $template = $templateCfg->default_template;
-      $ui = edit($args,$tproject_mgr);
-    break;
+  case 'edit':
+    $template = $templateCfg->default_template;
+    $ui = edit($args,$tproject_mgr);
+  break;
 
-    case 'doCreate':
-      $op = doCreate($args,$tproject_mgr);
-      $template= $op->status_ok ?  null : $templateCfg->default_template;
-      $ui = $op->ui;
-      $status_ok = $op->status_ok;
-      $user_feedback = $op->msg;
-      $reloadType = $op->reloadType;
-    break;
+  case 'doCreate':
+    $op = doCreate($args,$tproject_mgr);
+    $template= $op->status_ok ?  null : $templateCfg->default_template;
+    $ui = $op->ui;
+    $status_ok = $op->status_ok;
+    $user_feedback = $op->msg;
+    $reloadType = $op->reloadType;
+  break;
 
-    case 'doUpdate':
-      $op = doUpdate($args,$tproject_mgr,$session_tproject_id);
-      $template= $op->status_ok ?  null : $templateCfg->default_template;
-      $ui = $op->ui;
+  case 'doUpdate':
+    $op = doUpdate($args,$tproject_mgr,$session_tproject_id);
+    $template= $op->status_ok ?  null : $templateCfg->default_template;
+    $ui = $op->ui;
+    $status_ok = $op->status_ok;
+    $user_feedback = $op->msg;
+    $reloadType = $op->reloadType;
+  break;
 
-      $status_ok = $op->status_ok;
-      $user_feedback = $op->msg;
-      $reloadType = $op->reloadType;
-    break;
+  case 'doDelete':
+    $op = doDelete($args,$tproject_mgr,$session_tproject_id);
+    $status_ok = $op->status_ok;
+    $user_feedback = $op->msg;
+    $reloadType = $op->reloadType;
+  break;
 
-    case 'doDelete':
-      $op = doDelete($args,$tproject_mgr,$session_tproject_id);
-      $status_ok = $op->status_ok;
-      $user_feedback = $op->msg;
-      $reloadType = $op->reloadType;
-    break;
+  case 'setActive':
+  case 'setInactive':
+    $m2c = $args->doAction;
+    $tproject_mgr->$m2c($args->tprojectID);
+    $template= null;
+    $ui = new stdClass();
+    $status_ok = 1;
+    $user_feedback = '';
+    $reloadType = 'reloadNavBar';
+  break;
+
 }
 
 $ui->main_descr = lang_get('title_testproject_management');
@@ -106,53 +117,54 @@ switch($args->doAction)
     case "doCreate":
     case "doDelete":
     case "doUpdate":
+    case "setActive":
+    case "setInactive":
+      $gui->doAction = $reloadType;
+      $addIssueTracker = $addReqMgrSystem = is_null($template);
+      $template = is_null($template) ? 'projectView.tpl' : $template;
 
-        $gui->doAction = $reloadType;
-        $addIssueTracker = $addReqMgrSystem = is_null($template);
-        $template = is_null($template) ? 'projectView.tpl' : $template;
-
-        $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY nodes_hierarchy.name ",
-                     'add_issuetracker' => $addIssueTracker, 'add_reqmgrsystem' => $addReqMgrSystem);
-        $gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,$opt);
-        if($addIssueTracker)
+      $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY nodes_hierarchy.name ",
+                   'add_issuetracker' => $addIssueTracker, 'add_reqmgrsystem' => $addReqMgrSystem);
+      $gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,$opt);
+      if($addIssueTracker)
+      {
+        $imgSet = $smarty->getImages();
+        $loop2do = count($gui->tprojects);
+        $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));
+        for($idx=0; $idx < $loop2do; $idx++)
         {
-          $imgSet = $smarty->getImages();
-          $loop2do = count($gui->tprojects);
-          $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));
-          for($idx=0; $idx < $loop2do; $idx++)
+          $gui->tprojects[$idx]['itstatusImg'] = '';
+          if($gui->tprojects[$idx]['itname'] != '')
           {
-            $gui->tprojects[$idx]['itstatusImg'] = '';
-            if($gui->tprojects[$idx]['itname'] != '')
-            {
-              $ak = ($gui->tprojects[$idx]['issue_tracker_enabled']) ? 'active' : 'inactive';
-              $gui->tprojects[$idx]['itstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
-                                                     ' alt="' . $labels[$ak . '_integration'] . '" ' .
-                                                     ' src="' . $imgSet[$ak] . '"/>';
-            } 
-          }
+            $ak = ($gui->tprojects[$idx]['issue_tracker_enabled']) ? 'active' : 'inactive';
+            $gui->tprojects[$idx]['itstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
+                                                   ' alt="' . $labels[$ak . '_integration'] . '" ' .
+                                                   ' src="' . $imgSet[$ak] . '"/>';
+          } 
         }
+      }
         
-        if($addReqMgrSystem)
+      if($addReqMgrSystem)
+      {
+        $imgSet = $smarty->getImages();
+        $loop2do = count($gui->tprojects);
+        $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));
+        for($idx=0; $idx < $loop2do; $idx++)
         {
-          $imgSet = $smarty->getImages();
-          $loop2do = count($gui->tprojects);
-          $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));
-          for($idx=0; $idx < $loop2do; $idx++)
+          $gui->tprojects[$idx]['rmsstatusImg'] = '';
+          if($gui->tprojects[$idx]['rmsname'] != '')
           {
-            $gui->tprojects[$idx]['rmsstatusImg'] = '';
-            if($gui->tprojects[$idx]['rmsname'] != '')
-            {
-              $ak = ($gui->tprojects[$idx]['reqmgr_integration_enabled']) ? 'active' : 'inactive';
-              $gui->tprojects[$idx]['rmsstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
-                                                      ' alt="' . $labels[$ak . '_integration'] . '" ' .
-                                                      ' src="' . $imgSet[$ak] . '"/>';
-            } 
-          }
+            $ak = ($gui->tprojects[$idx]['reqmgr_integration_enabled']) ? 'active' : 'inactive';
+            $gui->tprojects[$idx]['rmsstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
+                                                    ' alt="' . $labels[$ak . '_integration'] . '" ' .
+                                                    ' src="' . $imgSet[$ak] . '"/>';
+          } 
         }
+      }
         
         
-        $smarty->assign('gui',$gui);
-        $smarty->display($templateCfg->template_dir . $template);
+      $smarty->assign('gui',$gui);
+      $smarty->display($templateCfg->template_dir . $template);
     break;
 
 
@@ -664,11 +676,7 @@ function initializeGui(&$dbHandler,$argsObj)
 }
 
 
-
-
-
 function checkRights(&$db,&$user)
 {
   return $user->hasRight($db,'mgt_modify_product');
 }
-?>

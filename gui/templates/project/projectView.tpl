@@ -7,7 +7,7 @@ Development hint:
 some variables smarty and javascript are created on the inc_*.tpl files.
 
 @internal revisions
-@since 1.9.6
+@since 1.9.8
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -26,7 +26,7 @@ some variables smarty and javascript are created on the inc_*.tpl files.
           th_name,th_notes,testproject_alt_edit,testproject_alt_active,
           th_requirement_feature,testproject_alt_delete,btn_create,public,
           testproject_alt_requirement_feature,th_active,th_delete,th_id,
-          th_issuetracker,th_reqmgrsystem_short'}
+          th_issuetracker,th_reqmgrsystem_short,active_click_to_change,inactive_click_to_change'}
 
 
 {include file="inc_head.tpl" openHead="yes" enableTableSorting="yes"}
@@ -55,6 +55,10 @@ var del_action=fRoot+'{$deleteAction}';
 {if $gui->tprojects == ''}
   {$labels.testproject_txt_empty_list}
 {else}
+  <form method="post" id="testProjectView" name="testProjectView" action="{$managerURL}">
+    <input type="hidden" name="doAction" id="doAction" value="">
+    <input type="hidden" name="tprojectID" id="tprojectID" value="">
+
   <table id="item_view" class="simple_tableruler sortable">
     <tr>
       <th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_name}</th>
@@ -105,10 +109,15 @@ var del_action=fRoot+'{$deleteAction}';
       </td>
       <td class="clickable_icon">
         {if $testproject.active}
-            <img style="border:none" title="{$labels.testproject_alt_active}"
-                 alt="{$labels.testproject_alt_active}" src="{$tlImages.checked}"/>
+            <input type="image" style="border:none" 
+                   title="{$labels.active_click_to_change}"  alt="{$labels.active_click_to_change}" 
+                   onClick = "doAction.value='setInactive';tprojectID.value={$testproject.id};"
+                   src="{$tlImages.on}"/>
           {else}
-            &nbsp;
+            <input type="image" style="border:none" 
+                   title="{$labels.inactive_click_to_change}"  alt="{$labels.inactive_click_to_change}" 
+                   onClick = "doAction.value='setActive';tprojectID.value={$testproject.id};"
+                   src="{$tlImages.off}"/>
           {/if}
       </td>
       <td class="clickable_icon">

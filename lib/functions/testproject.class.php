@@ -3219,11 +3219,36 @@ function getPublicAttr($id)
   }
 
 
+  /**
+   *
+   *
+   * @internal revisions
+   * @since 1.9.4
+   *
+   */
   function getByChildID($child)
   {
     $path = $this->tree_manager->get_path($child);
     return $this->get_by_id(intval($path[0]['parent_id']));
   }
 
+  /**
+   * @internal revisions
+   * @since 1.9.8
+   */
+  function setActive($id)
+  {
+    $this->setOneZeroField($id,'active',1);
+  }
+
+  /**
+   * @internal revisions
+   * @since 1.9.8
+   */
+  function setInactive($id)
+  {
+    $this->setOneZeroField($id,'active',0);
+  }
+
+
 } // end class
-?>

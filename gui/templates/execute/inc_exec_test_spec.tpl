@@ -75,15 +75,15 @@ Author : franciscom
 		</tr>
 		{/if}
 
-	{if $args_tc_exec.steps != ''}
+	{if $args_tc_exec.steps != '' && !is_null($args_tc_exec.steps)}
 		{include file="testcases/inc_steps.tpl"
 		         layout=$args_cfg->exec_cfg->steps_results_layout
 		         edit_enabled=false
+		         ghost_control=false
 		         steps=$args_tc_exec.steps}
 	{/if}
   	<tr>
 		  <td colspan="{$tableColspan}">
-		  {* 20090718 - franciscom - CF location management*}
       {if $args_design_time_cf[$testcase_id].standard_location != ''}
 					<div id="cfields_design_time_tcversionid_{$tcversion_id}" class="custom_field_container" 
 					style="background-color:#dddddd;">{$args_design_time_cf[$testcase_id].standard_location}

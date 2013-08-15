@@ -309,6 +309,7 @@ function launchInsertStep(step_id)
   {include file="testcases/inc_steps.tpl"
            layout=$gui->steps_results_layout
            edit_enabled=$edit_enabled
+           ghost_control=true
            steps=$args_testcase.steps}
   {/if}
 </table>

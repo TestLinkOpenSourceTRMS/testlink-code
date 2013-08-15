@@ -22,7 +22,7 @@ Author : eloff, 2010
 {if $layout == 'horizontal'}
   <tr>
     <th width="40px"><nobr>
-    {if $edit_enabled && $steps != ''}
+    {if $edit_enabled && $steps != '' && !is_null($steps)}
       <img class="clickable" src="{$tlImages.reorder}" align="left"
            title="{$inc_steps_labels.show_hide_reorder}"
            onclick="showHideByClass('span','order_info');">
@@ -44,9 +44,9 @@ Author : eloff, 2010
     {/if}
   </tr>
   
-  {assign var=rowCount value=$steps|@count} 
-  {assign var=row value=0}
-  
+  {$rowCount=$steps|@count} 
+  {$row=0}
+
   {foreach from=$steps item=step_info}
   <tr id="step_row_{$step_info.step_number}">
     <td style="text-align:left;">
@@ -84,9 +84,9 @@ Author : eloff, 2010
     {/if}
     
   </tr>
-  {if $step_info != ''}
+    {if $ghost_control}
     <tr class='ghost' style='display:none'><td></td><td>{$step_info.ghost_action}</td><td>{$step_info.ghost_result}</td></tr>    
-  {/if}
+    {/if}
 
     {$rCount=$row+$step_info.step_number}
     {if ($rCount < $rowCount) && ($rowCount>=1)}

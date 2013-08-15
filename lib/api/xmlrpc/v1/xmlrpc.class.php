@@ -226,12 +226,12 @@ class TestlinkXMLRPCServer extends IXR_Server
     $resultsCfg = config_get('results');
     foreach($resultsCfg['status_label_for_exec_ui'] as $key => $label )
     {
-        $this->statusCode[$key]=$resultsCfg['status_code'][$key];  
+      $this->statusCode[$key]=$resultsCfg['status_code'][$key];  
     }
     
     if( isset($this->statusCode['not_run']) )
     {
-        unset($this->statusCode['not_run']);  
+      unset($this->statusCode['not_run']);  
     }   
     $this->codeStatus=array_flip($this->statusCode);
       
@@ -436,20 +436,19 @@ class TestlinkXMLRPCServer extends IXR_Server
    */    
     protected function checkStatus()
     {
-        if( ($status=$this->_isStatusPresent()) )
+      if( ($status=$this->_isStatusPresent()) )
+      {
+        if( !($status=$this->_isStatusValid($this->args[self::$statusParamName])))
         {
-            if( !($status=$this->_isStatusValid($this->args[self::$statusParamName])))
-            {
-              // BUGID 3455
-              $msg = sprintf(INVALID_STATUS_STR,$this->args[self::$statusParamName]);
-              $this->errors[] = new IXR_Error(INVALID_STATUS, $msg);
-            }      
-          }
-          else
-          {
-              $this->errors[] = new IXR_Error(NO_STATUS, NO_STATUS_STR);
-          }
-          return $status;
+          $msg = sprintf(INVALID_STATUS_STR,$this->args[self::$statusParamName]);
+          $this->errors[] = new IXR_Error(INVALID_STATUS, $msg);
+        }      
+      }
+      else
+      {
+        $this->errors[] = new IXR_Error(NO_STATUS, NO_STATUS_STR);
+      }
+      return $status;
     }       
     
   /**

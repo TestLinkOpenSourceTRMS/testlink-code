@@ -11,7 +11,7 @@ Author : eloff, 2010
 @param $edit_enabled Steps links to edit page if true
 
 
-@internal revisions:
+@internal revisions
 *}
 {lang_get var="inc_steps_labels" 
           s="show_hide_reorder, step_number, step_actions,expected_results, 
@@ -84,8 +84,11 @@ Author : eloff, 2010
     {/if}
     
   </tr>
-  <tr class='ghost' style='display:none'><td></td><td>{$step_info.ghost_action}</td><td>{$step_info.ghost_result}</td></tr>    
-    {assign var=rCount value=$row+$step_info.step_number}
+  {if $step_info != ''}
+    <tr class='ghost' style='display:none'><td></td><td>{$step_info.ghost_action}</td><td>{$step_info.ghost_result}</td></tr>    
+  {/if}
+
+    {$rCount=$row+$step_info.step_number}
     {if ($rCount < $rowCount) && ($rowCount>=1)}
       <tr width="100%">
         {if $session['testprojectOptions']->automationEnabled}

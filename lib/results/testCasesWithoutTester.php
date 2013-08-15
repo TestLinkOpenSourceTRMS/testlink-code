@@ -8,7 +8,7 @@
  * For a test plan, list test cases that HAS NOT BEEN RUN AND HAS NO TESTER ASSIGNED
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.8
  *
  */
 require_once("../../config.inc.php");
@@ -45,7 +45,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
   if(($gui->row_qty = count($metrics)) > 0)
   {
     $msg_key = '';
-    $links = featureLinks($gui->labels,$smarty->_tpl_vars['tlImages']);
+    $links = featureLinks($gui->labels,$smarty->getImages());
     $gui->pageTitle .= " - " . $gui->labels['match_count'] . ":" . $gui->row_qty;
 
 

@@ -1328,7 +1328,20 @@ class tlMailLogger extends tlObjectWithDB
  * include php errors, warnings and notices to TestLink log
  * 
  * @internal 
- * rev: 20080504 - franciscom - added xmlrpc.inc,xmlrpcs.inc,xmlrpc_wrappers.inc in exclude set
+ *
+ * Important Notice:
+ * when using Smarty3 on demo.testlink.org, this kind of error started to appear
+ *
+ * Warning: filemtime(): stat failed for /path/to/smarty/cache/3ab50a623e65185c49bf17c63c90cc56070ea85c.one.tpl.php 
+ * in /path/to/smarty/libs/sysplugins/smarty_resource.php
+ * 
+ * According to Smarty documentation: 
+ * This means that your application registered a custom error hander (using set_error_handler()) 
+ * which is not respecting the given $errno as it should. 
+ * If, for whatever reason, this is the desired behaviour of your custom error handler, please call muteExpectedErrors() 
+ * after you've registered your custom error handler. 
+ *
+ * @20130815 my choice is: (strpos($errfile,"Warning: filemtime()") !== false)
  */
 function watchPHPErrors($errno, $errstr, $errfile, $errline)
 {
@@ -1346,18 +1359,23 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
   {
     // suppress some kind of errors
     // strftime(),strtotime(),date()
+    // work in block just to make copy and paste easier
+    // Block 1 - errstr
+    // Block 2 - errfile
+    // 
     if( ($errno == E_NOTICE && strpos($errstr,"unserialize()") !== false) ||
-          ($errno == E_NOTICE && strpos($errstr,"ob_end_clean()") !== false) ||
+        ($errno == E_NOTICE && strpos($errstr,"ob_end_clean()") !== false) ||
         ($errno == E_STRICT && strpos($errstr,"strftime()") !== false) ||
         ($errno == E_STRICT && strpos($errstr,"mktime()") !== false) ||
         ($errno == E_STRICT && strpos($errstr,"date()") !== false) ||
         ($errno == E_STRICT && strpos($errstr,"strtotime()") !== false) ||
-          ($errno == E_STRICT && strpos($errfile,"xmlrpc.inc") !== false) ||
-          ($errno == E_STRICT && strpos($errfile,"xmlrpcs.inc") !== false) ||
-          ($errno == E_STRICT && strpos($errfile,"xmlrpc_wrappers.inc") !== false) ||
-        (strpos($errfile,"Smarty_Compiler.class.php") !== false) ||
-          ($errno == E_NOTICE && strpos($errfile,"Config_File.class.php") !== false)
-        )
+        ($errno == E_WARNING && strpos($errstr,"filemtime") !== false) ||
+        ($errno == E_STRICT && strpos($errfile,"xmlrpc.inc") !== false) ||
+        ($errno == E_STRICT && strpos($errfile,"xmlrpcs.inc") !== false) ||
+        ($errno == E_STRICT && strpos($errfile,"xmlrpc_wrappers.inc") !== false) ||
+        ($errno == E_NOTICE && strpos($errfile,"Config_File.class.php") !== false) ||
+        (strpos($errfile,"Smarty_Compiler.class.php") !== false)
+      )
     {
       return;
     }
@@ -1400,5 +1418,7 @@ if( !is_null(config_get('loggerFilter')) )
 
 $g_tlLogger->startTransaction();
 set_error_handler("watchPHPErrors");
+
+// 20130815 - franciscom
 // --------------------------------------------------------------------------------------
 ?>

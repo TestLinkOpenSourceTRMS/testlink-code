@@ -373,7 +373,8 @@ $TLS_demo_login_message = 'This is a DEMO SITE, use it with respect.' .
                           'Site will be re-installed at randmon intervals WITHOUT warning.' .
                           'All data will be deleted at each install.' .
                           'If you find TestLink useful think about supporting our work.'; 
-
+$TLS_demo_mode_suggested_user='Login as admin';
+$TLS_demo_mode_suggested_password='Use admin as password';
 
 // ----- JAVASCRIPT -----
 // Used on javascript logic to validate Custom Field values

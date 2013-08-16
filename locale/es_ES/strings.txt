@@ -218,6 +218,9 @@ $TLS_btn_advanced_filters = "Filtros Avanzados";
 $TLS_btn_simple_filters = "Filtros Simples"; 
 $TLS_btn_reorder_steps = "Reordenar Pasos";
 $TLS_btn_view_history = "Ver Histórico";
+$TLS_btn_testcases_table_view = "Vista Casos de Test en forma de tabla";
+$TLS_btn_export_testplan_tree_for_results = "Exportar XML para importar resultados";
+$TLS_btn_create_from_issue_xml = "Creación de casos utilizando XML (Formato Mantis)";
 
 
 // Status (used wide)

@@ -1,17 +1,17 @@
 <?php
 /**
- * @filesource	logging.inc.php
- * @package 	TestLink
- * @copyright 	2009,2012 TestLink community 
+ * @filesource  logging.inc.php
+ * @package     TestLink
+ * @copyright   2009,2013 TestLink community 
  *
  *
  * Log messages from the levels ERROR or INFO will be recorded on ???.
  * DEBUG messages will be ignored. 
  * They take the form:
  *
- *    tLog("testing level ERROR", 'ERROR');
- *    tLog("testing level INFO", 'INFO');
- *    tLog("testing level DEBUG");
+ * tLog("testing level ERROR", 'ERROR');
+ * tLog("testing level INFO", 'INFO');
+ * tLog("testing level DEBUG");
  *
  * This will add the following entries to the log:
  *
@@ -20,54 +20,67 @@
  *
  *
  * @internal revisions
- * @author Andreas Morsing : changed to format of log entries
- * @author Andreas Morsing : errors in extended level will be shown in red instead of inlined as comments
+ * 20130816 - franciscom - added management of L18N (Localization) logs, instead of use WARNING for this kind of logs. 
+ *
  */
  
 /*
-	This function fires audit events
+  This function fires audit events
 
-	@param string $message the message which describes the event in a human readable way (best a tlMetaString) is used
-	@param string $activityCode and shorthand activity code describing the event
-	@param int $objectID the id of the object to which the event refers to
-	@param string $objectType the type of the object the event refers to (this should be the name of the database table the objet is stored
+  @param string $message the message which describes the event in a human readable way (best a tlMetaString) is used
+  @param string $activityCode and shorthand activity code describing the event
+  @param int $objectID the id of the object to which the event refers to
+  @param string $objectType the type of the object the event refers to (this should be the name of the database table the objet is stored
 
-	@return int return tl::OK if all is OK, tl::ERROR else
+  @return int return tl::OK if all is OK, tl::ERROR else
 */
 function logAuditEvent($message,$activityCode = null,$objectID = null,$objectType = null)
 {
-	return tLog($message,"AUDIT","GUI",$objectID,$objectType,$activityCode);
+  return tLog($message,"AUDIT","GUI",$objectID,$objectType,$activityCode);
 }
 
+/**
+ *
+ * 
+ */
 function logWarningEvent($message,$activityCode = null,$objectID = null,$objectType = null)
 {
-	return tLog($message,"WARNING","GUI",$objectID,$objectType,$activityCode);
+  return tLog($message,"WARNING","GUI",$objectID,$objectType,$activityCode);
 }
+
+/**
+ *
+ * @since 1.9.8
+ */
+function logL18NWarningEvent($message,$activityCode = null,$objectID = null,$objectType = null)
+{
+  return tLog($message,"L18N","GUI",$objectID,$objectType,$activityCode);
+}
+
 
 function tLog($message, $level = 'DEBUG', $source = "GUI",$objectID = null,$objectType = null, $activityCode = null)
 {
-	global $g_tlLogger;
-	if (!$g_tlLogger)
-	{
-		return tl::ERROR;
-	}
-	$t = $g_tlLogger->getTransaction();
-	if (!$t)
-	{
-		return tl::ERROR;
-	}
+  global $g_tlLogger;
+  if (!$g_tlLogger)
+  {
+    return tl::ERROR;
+  }
+  $t = $g_tlLogger->getTransaction();
+  if (!$t)
+  {
+    return tl::ERROR;
+  }
 
-	if( $level == 'X')
-	{
-		echo '<br> >>> ' . __FUNCTION__  . ':' . $message . '/'. $level .'<br>';
-		$level='ERROR';
-	}
-	
-	// to avoid transforming old code, we check if we have old string-like logLevel or new tlLogger-LogLevel
-	$logLevel = is_string($level) ? tlLogger::$logLevelsStringCode[$level] : $level;
-	$t->add($logLevel,$message,$source,$activityCode,$objectID,$objectType);
-
-	return tl::OK;
+  if( $level == 'X')
+  {
+    echo '<br> >>> ' . __FUNCTION__  . ':' . $message . '/'. $level .'<br>';
+    $level='ERROR';
+  }
+  
+  // to avoid transforming old code, we check if we have old string-like logLevel or new tlLogger-LogLevel
+  $logLevel = is_string($level) ? tlLogger::$logLevelsStringCode[$level] : $level;
+  $t->add($logLevel,$message,$source,$activityCode,$objectID,$objectType);
+  return tl::OK;
 }
 
 /**

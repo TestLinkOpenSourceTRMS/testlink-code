@@ -3359,6 +3359,8 @@ $TLS_log_level_WARNING = "Warning";
 $TLS_log_level_INFO = "Info";
 $TLS_log_level_ERROR = "Error";
 $TLS_log_level_DEBUG = "Debug";
+$TLS_log_level_L18N = "L18N";
+
 $TLS_event_viewer = "Event viewer";
 $TLS_th_session_info = "Session information";
 $TLS_th_sessionID = "Session ID";

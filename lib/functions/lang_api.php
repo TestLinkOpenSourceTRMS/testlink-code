@@ -15,7 +15,9 @@
  *
  *
  * @internal revisions
- * 
+ * @since 1.9.8
+ * 20130816 - franciscom - added management of L18N (Localization) logs, 
+ *                         instead of use WARNING for this kind of logs. 
  *
  **/
 
@@ -87,35 +89,46 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
   {
     $stringFileCharset = "ISO-8859-1";
     if (isset($g_lang_strings[$t_lang]['STRINGFILE_CHARSET']))
-      $stringFileCharset = $g_lang_strings[$t_lang]['STRINGFILE_CHARSET'];
+    {
+      $stringFileCharset = $g_lang_strings[$t_lang]['STRINGFILE_CHARSET'];  
+    }  
+      
       
     if ($stringFileCharset != TL_TPL_CHARSET)
+    {  
       $the_str = iconv($stringFileCharset,TL_TPL_CHARSET,$loc_str);
+    }  
   }
   
   if( $missingL18N ) 
   {
-    // if( $t_lang != 'en_GB' )
-    // {
-    //   // force load of english strings
-    //   lang_ensure_loaded('en_GB');
-    // }
+    if( $englishSolutionFound )
+    {
+      $addMsg = ' - using en_GB';
+    }
+    else
+    {
+      $the_str = TL_LOCALIZE_TAG .$p_string; 
+      $addMsg = '';  
+    }  
     
     if(!$bDontFireEvents)
     {
-      // 20100823 - franciscom
       // When testing with a user with locale = italian, found
       // 1. missing localized string was replaced with version present on english strings
       // 2. no log written to event viewer
       // 3. detected a call to lang_get() with language en_GB
       //
-      $msg = sprintf("string '%s' is not localized for locale '%s'",$p_string,$t_lang);
-      logWarningEvent($msg,"LOCALIZATION");
+
+      // try to report just one per user session
+      if(!isset($_SESSION['missingL18N'][$p_string]))
+      {
+        $msg = sprintf("string '%s' is not localized for locale '%s' {$addMsg}",$p_string,$t_lang);
+        $_SESSION['missingL18N'][$p_string] = $p_string; 
+        logL18NWarningEvent($msg,"LOCALIZATION");
+      }  
     }
-    if( !$englishSolutionFound )
-    {
-      $the_str = TL_LOCALIZE_TAG .$p_string;
-    }
+
   }
   return $the_str;
 }

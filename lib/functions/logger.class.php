@@ -21,8 +21,8 @@
  * @since       1.8
  * 
  * @internal revisions
- * @since 1.9.6
- * 20130119 - franciscom - TICKET 5464: DB Access error after deleting events from Event view (SQL server 2008)
+ * 20130816 - franciscom - added management of L18N (Localization) logs, instead of use WARNING for this kind of logs. 
+ *
  **/
  
 /**
@@ -41,7 +41,7 @@ class tlLogger extends tlObject
    * Log messages will only be displayed if they level is present in 
    * config option array $tlCfg->loggerFilter.
    * Example:
-   *       Configurin on your custom_config.inc.php
+   *       Configuring on your custom_config.inc.php
    *  
    *       $tlCfg->loggerFilter = array('DEBUG','AUDIT','WARNING','ERROR');
    *
@@ -51,10 +51,11 @@ class tlLogger extends tlObject
   const NONE = 0;
   const ERROR = 1;
   const WARNING = 2;
-   const INFO = 4;
+  const INFO = 4;
   const DEBUG = 8;
   const AUDIT = 16;
-
+  const L18N = 32;
+  
 
   /** 
    * @var array logLevels, key log level code, value log level string
@@ -64,11 +65,11 @@ class tlLogger extends tlObject
 
   /** 
    * @var array logLevelsStringCode, key log level string, value log level code  
-     *
-     */
+   *
+   */
   static $logLevelsStringCode = null;
 
-    /** @var boolean to enable/disable loging for all loggers */
+  /** @var boolean to enable/disable loging for all loggers */
   protected $doLogging = true;
 
   // the one and only logger of TesTLink
@@ -83,14 +84,14 @@ class tlLogger extends tlObject
 
 
   protected $eventManager;
-    protected $loggerTypeClass = array('db' => null, 'file' => null, 'mail' => null);
-    protected $loggerTypeDomain;
+  protected $loggerTypeClass = array('db' => null, 'file' => null, 'mail' => null);
+  protected $loggerTypeDomain;
     
   public function __construct(&$db)
   {
     parent::__construct();
 
-        $this->loggerTypeDomain = array_flip(array_keys($this->loggerTypeClass));
+    $this->loggerTypeDomain = array_flip(array_keys($this->loggerTypeClass));
     foreach($this->loggerTypeClass as $id => $className)
     {
       $class2call = $className;
@@ -101,7 +102,9 @@ class tlLogger extends tlObject
       $this->loggers[$id] = new $class2call($db);
     }
     
-    $this->setLogLevelFilter(self::ERROR | self::WARNING | self::AUDIT);
+    // CRITICAL - this controls logLevel that is written to db.
+    // IMHO using this config we will also change what is displayed in Event Viewer GUI
+    $this->setLogLevelFilter(self::ERROR | self::WARNING | self::AUDIT | self::L18N);
     $this->loggers['mail']->setLogLevelFilter(self::ERROR | self::WARNING);
     
     $this->eventManager = tlEventManager::create($db);
@@ -200,7 +203,7 @@ class tlLogger extends tlObject
 
   /**
    * @param verboseForLogger
-   *      map with following keys: 'all' + $this->loggerTypeClass
+   *        map with following keys: 'all' + $this->loggerTypeClass
    * 
    */
   public function setLogLevelFilterFromVerbose($verboseForLogger)
@@ -226,10 +229,10 @@ class tlLogger extends tlObject
         break;
         
         default:
-           if( isset($this->loggerTypeDomain[$loggerType]) )
-           {
+          if( isset($this->loggerTypeDomain[$loggerType]) )
+          {
             $this->loggers[$loggerType]->setLogLevelFilter($filter);  
-           }
+          }
         break;
       }      
     }
@@ -306,21 +309,21 @@ class tlLogger extends tlObject
    * @param resource &$db reference to database handler
    */
   static public function create(&$db)
-    {
-        if (!isset(self::$s_instance))
+  {
+    if (!isset(self::$s_instance))
     {
       // create the logging instance
-      self::$logLevels = array( self::DEBUG => 'DEBUG', self::INFO => 'INFO',
-                        self::WARNING => 'WARNING', self::ERROR => 'ERROR',
-                        self::AUDIT => 'AUDIT');
+      self::$logLevels = array(self::DEBUG => 'DEBUG', self::INFO => 'INFO',
+                               self::WARNING => 'WARNING', self::ERROR => 'ERROR',
+                               self::AUDIT => 'AUDIT',  self::L18N => 'L18N');
 
       self::$logLevelsStringCode = array_flip(self::$logLevels);
 
-            $c = __CLASS__;
-            self::$s_instance = new $c($db);
-        }
-        return self::$s_instance;
+      $c = __CLASS__;
+      self::$s_instance = new $c($db);
     }
+    return self::$s_instance;
+  }
 
 
   /**

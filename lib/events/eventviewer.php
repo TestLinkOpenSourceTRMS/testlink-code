@@ -37,18 +37,18 @@ switch($args->doAction)
       foreach( $args->logLevel as $code )
       {
         $logLevelVerbose[] = $gui->logLevels[$code];  
-        }
-        $logLevelVerbose = implode(',',$logLevelVerbose);
-        logAuditEvent(TLS("audit_events_with_level_deleted",$args->currentUser->login,$logLevelVerbose),"DELETE",null,"events");
       }
+      $logLevelVerbose = implode(',',$logLevelVerbose);
+      logAuditEvent(TLS("audit_events_with_level_deleted",$args->currentUser->login,$logLevelVerbose),"DELETE",null,"events");
+    }
       
-      // reset filters after clearing events
-      $args->logLevel = null;
-      $gui->selectedLogLevels = array();
-      $gui->selectedTesters = array();
-      $gui->startDate = null;
-      $gui->endDate = null;
-    break;
+    // reset filters after clearing events
+    $args->logLevel = null;
+    $gui->selectedLogLevels = array();
+    $gui->selectedTesters = array();
+    $gui->startDate = null;
+    $gui->endDate = null;
+  break;
     
   case 'filter':
   default:
@@ -132,7 +132,8 @@ function initializeGui(&$dbHandler,&$argsObj)
                           tlLogger::ERROR => lang_get("log_level_ERROR"),
                           tlLogger::WARNING => lang_get("log_level_WARNING"),
                           tlLogger::INFO => lang_get("log_level_INFO"),
-                          tlLogger::DEBUG => lang_get("log_level_DEBUG"));
+                          tlLogger::DEBUG => lang_get("log_level_DEBUG"),
+                          tlLogger::L18N => lang_get("log_level_L18N"));
   
   $gui->allusers = tlUser::getAll($dbHandler);   // THIS IS AN OVERKILL because get ALL USER OBJECTS
   $gui->testers = getUsersForHtmlOptions($dbHandler,null,null,true,$gui->allusers);

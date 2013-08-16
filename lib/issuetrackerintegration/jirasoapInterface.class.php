@@ -331,6 +331,9 @@ class jirasoapInterface extends issueTrackerInterface
 	}  
 
 
+  /**
+   *
+   */
 	public function setResolvedStatusCfg()
   {
     if( property_exists($this->cfg,'resolvedstatus') )
@@ -341,7 +344,9 @@ class jirasoapInterface extends issueTrackerInterface
     {
       $statusCfg['status'] = $this->defaultResolvedStatus;
     }
+
     $this->resolvedStatus = new stdClass();
+    $this->resolvedStatus->byCode = array();
     foreach($statusCfg['status'] as $cfx)
     {
       $e = (array)$cfx;
@@ -350,6 +355,9 @@ class jirasoapInterface extends issueTrackerInterface
     $this->resolvedStatus->byName = array_flip($this->resolvedStatus->byCode);
   }
 
+  /**
+   *
+   */
   public function addIssueFromArray($issue)
   {
     try

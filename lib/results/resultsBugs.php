@@ -7,7 +7,7 @@
  * @author kevinlevy
  * 
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.8
  * 
  * 
  */
@@ -34,10 +34,10 @@ $info = $tproject_mgr->get_by_id($args->tproject_id);
 $gui->bugInterfaceOn = $info['issue_tracker_enabled'];
 if($info['issue_tracker_enabled'])
 {
-	$it_mgr = new tlIssueTracker($db);
-	$its = $it_mgr->getInterfaceObject($args->tproject_id);
-	unset($it_mgr);
-}	
+  $it_mgr = new tlIssueTracker($db);
+  $its = $it_mgr->getInterfaceObject($args->tproject_id);
+  unset($it_mgr);
+} 
 
 
 $smarty = new TLSmarty;
@@ -57,10 +57,10 @@ unset($tproject_mgr);
 // $filters = array();
 //$options = array('output' => 'array', 'only_executed' => true, 'details' => 'full');
 // $execSet = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters, $options);
-$execSet = $metricsMgr->getLTCVNewGeneration($args->tplan_id,null,
-											                       array('addExecInfo' => true, 'accessKeyType' => 'index',
-											 	                           'specViewFields' => true, 'testSuiteInfo' => true,
-											 	                           'includeNotRun' => false));
+$execSet = (array)$metricsMgr->getLTCVNewGeneration($args->tplan_id,null,
+                                                    array('addExecInfo' => true, 'accessKeyType' => 'index',
+                                                          'specViewFields' => true, 'testSuiteInfo' => true,
+                                                          'includeNotRun' => false));
 
 $testcase_bugs = array();
 $mine = array();
@@ -68,77 +68,77 @@ $mine = array();
 $l18n = init_labels(array('execution_history' => null,'design' => null,'no_linked_bugs' => null));
 foreach ($execSet as $execution) 
 {
-	$tc_id = $execution['tc_id'];
-	$mine[] = $execution['exec_id'];
-	
-	$bug_urls = buildBugString($db, $execution['exec_id'],$its,  $openBugs, $resolvedBugs);
-	if ($bug_urls)
-	{
-		// First bug found for this tc
-		if (!isset($testcase_bugs[$tc_id])) 
-		{
-			$suiteName = $execution['tsuite_name'];
-			$tc_name = $execution['full_external_id'] . ":" . $execution['name'];
+  $tc_id = $execution['tc_id'];
+  $mine[] = $execution['exec_id'];
+  
+  $bug_urls = buildBugString($db, $execution['exec_id'],$its,  $openBugs, $resolvedBugs);
+  if ($bug_urls)
+  {
+    // First bug found for this tc
+    if (!isset($testcase_bugs[$tc_id])) 
+    {
+      $suiteName = $execution['tsuite_name'];
+      $tc_name = $execution['full_external_id'] . ":" . $execution['name'];
 
-			// add linked icons
-			$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tc_id});\">" .
-			                     "<img title=\"" . $l18n['execution_history'] ."\" src=\"{$img['history']}\" /></a> ";
-			$edit_link = "<a href=\"javascript:openTCEditWindow({$tc_id});\">" .
-						       "<img title=\"" . $l18n['design'] . "\" src=\"{$img['edit']}\" /></a> ";
-			$tc_name = "<!-- " . sprintf("%010d", $execution['external_id']) . " -->" . $exec_history_link .
-			           $edit_link . $tc_name;
+      // add linked icons
+      $exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tc_id});\">" .
+                           "<img title=\"" . $l18n['execution_history'] ."\" src=\"{$img['history']}\" /></a> ";
+      $edit_link = "<a href=\"javascript:openTCEditWindow({$tc_id});\">" .
+                   "<img title=\"" . $l18n['design'] . "\" src=\"{$img['edit']}\" /></a> ";
+      $tc_name = "<!-- " . sprintf("%010d", $execution['external_id']) . " -->" . $exec_history_link .
+                 $edit_link . $tc_name;
 
-			$testcase_bugs[$tc_id] = array($suiteName, $tc_name, array());
-		}
-		foreach ($bug_urls as $url)
-		{
-			if (!in_array($url, $testcase_bugs[$tc_id][2]))
-			{
-				$testcase_bugs[$tc_id][2][] = $url;
-			}
-		}
-	}
+      $testcase_bugs[$tc_id] = array($suiteName, $tc_name, array());
+    }
+    foreach ($bug_urls as $url)
+    {
+      if (!in_array($url, $testcase_bugs[$tc_id][2]))
+      {
+        $testcase_bugs[$tc_id][2][] = $url;
+      }
+    }
+  }
 }
 foreach ($testcase_bugs as &$row)
 {
-	$row[2] = implode("<br/>", $row[2]);
+  $row[2] = implode("<br/>", $row[2]);
 }
 $arrData = array_values($testcase_bugs);
 
 if(count($arrData) > 0) 
 {
-	// Create column headers
-	$columns = getColumnsDefinition();
+  // Create column headers
+  $columns = getColumnsDefinition();
 
-	// Extract the relevant data and build a matrix
-	$matrixData = array();
-	
-	foreach($arrData as $bugs) 
-	{
-		$rowData = array();
-		$rowData[] = $bugs[0];
-		$rowData[] = $bugs[1];
-		$rowData[] = $bugs[2];
-		
-		$matrixData[] = $rowData;
-	}
-	
-	$table = new tlExtTable($columns, $matrixData, 'tl_table_bugs_per_test_case');
-	
-	$table->setGroupByColumnName(lang_get('title_test_suite_name'));
-	
-	$table->setSortByColumnName(lang_get('title_test_case_title'));
-	$table->sortDirection = 'ASC';
-	
-	$table->showToolbar = true;
-	$table->toolbarExpandCollapseGroupsButton = true;
-	$table->toolbarShowAllColumnsButton = true;
-	
-	$gui->tableSet = array($table);
+  // Extract the relevant data and build a matrix
+  $matrixData = array();
+  
+  foreach($arrData as $bugs) 
+  {
+    $rowData = array();
+    $rowData[] = $bugs[0];
+    $rowData[] = $bugs[1];
+    $rowData[] = $bugs[2];
+    
+    $matrixData[] = $rowData;
+  }
+  
+  $table = new tlExtTable($columns, $matrixData, 'tl_table_bugs_per_test_case');
+  
+  $table->setGroupByColumnName(lang_get('title_test_suite_name'));
+  
+  $table->setSortByColumnName(lang_get('title_test_case_title'));
+  $table->sortDirection = 'ASC';
+  
+  $table->showToolbar = true;
+  $table->toolbarExpandCollapseGroupsButton = true;
+  $table->toolbarShowAllColumnsButton = true;
+  
+  $gui->tableSet = array($table);
 } 
 else 
 {
-	$gui->warning_msg = $l18n['no_linked_bugs'];
+  $gui->warning_msg = $l18n['no_linked_bugs'];
 }
 
 $totalOpenBugs = count($openBugs);
@@ -170,34 +170,34 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function buildBugString(&$db,$execID,&$bugInterface,&$openBugsArray,&$resolvedBugsArray)
 {
-	$bugUrls = array();
-	if ($bugInterface)
-	{
-		$bugs = get_bugs_for_exec($db,$bugInterface,$execID);
-		if ($bugs)
-		{
-			foreach($bugs as $bugID => $bugInfo)
-			{
-		
-		    if($bugInfo['isResolved'])
-		    {
-  				if(!in_array($bugID, $resolvedBugsArray))
-  				{
-  					$resolvedBugsArray[] = $bugID;
-  			  } 
-		    } 
-		    else
-		    {
-					if(!in_array($bugID, $openBugsArray))
-					{
-						$openBugsArray[] = $bugID;
-					}
-		    }
-				$bugUrls[] = $bugInfo['link_to_bts'];
-			}
-		}
-	}
-	return $bugUrls;
+  $bugUrls = array();
+  if ($bugInterface)
+  {
+    $bugs = get_bugs_for_exec($db,$bugInterface,$execID);
+    if ($bugs)
+    {
+      foreach($bugs as $bugID => $bugInfo)
+      {
+    
+        if($bugInfo['isResolved'])
+        {
+          if(!in_array($bugID, $resolvedBugsArray))
+          {
+            $resolvedBugsArray[] = $bugID;
+          } 
+        } 
+        else
+        {
+          if(!in_array($bugID, $openBugsArray))
+          {
+            $openBugsArray[] = $bugID;
+          }
+        }
+        $bugUrls[] = $bugInfo['link_to_bts'];
+      }
+    }
+  }
+  return $bugUrls;
 }
 
 /**
@@ -206,13 +206,13 @@ function buildBugString(&$db,$execID,&$bugInterface,&$openBugsArray,&$resolvedBu
  */
 function getColumnsDefinition()
 {
-	$colDef = array();
-	
-	$colDef[] = array('title_key' => 'title_test_suite_name', 'width' => 30, 'type' => 'text');
-	$colDef[] = array('title_key' => 'title_test_case_title', 'width' => 30, 'type' => 'text');
-	$colDef[] = array('title_key' => 'title_test_case_bugs', 'width' => 40, 'type' => 'text');
+  $colDef = array();
+  
+  $colDef[] = array('title_key' => 'title_test_suite_name', 'width' => 30, 'type' => 'text');
+  $colDef[] = array('title_key' => 'title_test_case_title', 'width' => 30, 'type' => 'text');
+  $colDef[] = array('title_key' => 'title_test_case_bugs', 'width' => 40, 'type' => 'text');
 
-	return $colDef;
+  return $colDef;
 }
 
 
@@ -226,19 +226,18 @@ function getColumnsDefinition()
 */
 function init_args()
 {
-	$iParams = array("format" => array(tlInputParameter::INT_N),
-					 "tplan_id" => array(tlInputParameter::INT_N));
-	$args = new stdClass();
-	$pParams = R_PARAMS($iParams,$args);
-	
-	$args->tproject_id = $_SESSION['testprojectID'];
-	$args->user = $_SESSION['currentUser'];
+  $iParams = array("format" => array(tlInputParameter::INT_N),
+                   "tplan_id" => array(tlInputParameter::INT_N));
+  $args = new stdClass();
+  $pParams = R_PARAMS($iParams,$args);
+  
+  $args->tproject_id = $_SESSION['testprojectID'];
+  $args->user = $_SESSION['currentUser'];
 
-	return $args;
+  return $args;
 }
 
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,'testplan_metrics');
+  return $user->hasRight($db,'testplan_metrics');
 }
-?>

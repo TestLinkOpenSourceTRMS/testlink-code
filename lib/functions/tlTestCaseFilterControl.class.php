@@ -997,6 +997,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
           // {
           //   $ignore_active_testcases = IGNORE_ACTIVE_TESTCASES;
           // }
+          // need to be refactored
+          $ignore_inactive_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
+          $ignore_active_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
                     
           $options = array('forPrinting' => NOT_FOR_PRINTING,
                            'hideTestCases' => HIDE_TESTCASES,

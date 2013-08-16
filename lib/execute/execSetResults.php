@@ -133,15 +133,18 @@ if(!is_null($linked_tcversions))
     // Can be DONE JUST ONCE AFTER write results to DB
     // --------------------------------------------------------------------------------------------
     // Results to DB
-    if ($args->save_results || $args->do_bulk_save || $args->save_and_next)
+    if ($args->save_results || $args->do_bulk_save || $args->save_and_next || $args->doMoveNext || $args->doMovePrevious)
     {
       // this has to be done to do not break logic present on write_execution()
       $args->save_results = $args->save_and_next ? $args->save_and_next : $args->save_results;
-      $_REQUEST['save_results'] = $args->save_results;
-      write_execution($db,$args,$_REQUEST);
-        
+      if( $args->save_results )
+      {  
+        $_REQUEST['save_results'] = $args->save_results;
+        write_execution($db,$args,$_REQUEST);
+      }
+
       // Need to re-read to update test case status
-      if ($args->save_and_next) 
+      if ($args->save_and_next || $args->doMoveNext || $args->doMovePrevious) 
       {  
         
         // IMPORTANT DEVELOPMENT NOTICE
@@ -158,16 +161,17 @@ if(!is_null($linked_tcversions))
         // will be simpler).
         $doSingleStep = is_null($args->testcases_to_show);
         $args->testcases_to_show = (array)$args->testcases_to_show;
+        
+        $opt4sibling = array('move' => $args->moveTowards);
         switch ($args->caller)
         {
           case 'tcAssignedToMe':
             $doSingleStep = true;
-            $opt4sibling = array('assigned_to' => 
-                                 array('user_id' => $args->user_id, 'build_id' => $args->build_id));
+            $opt4sibling['assigned_to'] = array('user_id' => $args->user_id, 'build_id' => $args->build_id);
           break;
           
           default:
-            $opt4sibling = null;
+            // $opt4sibling = null;
           break;  
         }
         
@@ -176,7 +180,8 @@ if(!is_null($linked_tcversions))
         { 
           while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $args->testcases_to_show)) 
           {
-            $nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$nextItem['tcversion_id'],$args->platform_id);
+            $nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$nextItem['tcversion_id'],
+                                                           $args->platform_id,$opt4sibling);
           }
         }
       
@@ -290,10 +295,7 @@ initWebEditors($gui,$cfg,$_SESSION['basehref']);
 
 // To silence smarty errors
 //  future must be initialized in a right way
-// new dBug($gui);
-
-
-new dBug($gui);
+// var_dump($gui);
 
 $smarty->assign('test_automation_enabled',0);
 $smarty->assign('gui',$gui);
@@ -327,6 +329,8 @@ function init_args(&$dbHandler,$cfgObj)
 
   manageCookies($args,$cfgObj);
  
+  $args->tc_id = null;
+  $args->tsuite_id = null;
   $args->user = $_SESSION['currentUser'];
   $args->user_id = $args->user->dbID;
   $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
@@ -335,6 +339,10 @@ function init_args(&$dbHandler,$cfgObj)
   $args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
   $args->doDelete = isset($_REQUEST['do_delete']) ? $_REQUEST['do_delete'] : 0;
   
+  $args->doMoveNext = isset($_REQUEST['move2next']) ? $_REQUEST['move2next'] : 0;
+  $args->doMovePrevious = isset($_REQUEST['move2previous']) ? $_REQUEST['move2previous'] : 0;
+  $args->moveTowards = $args->doMoveNext ? 'forward' : ($args->doMovePrevious ? 'backward' : null);
+
   // can be a list, will arrive via form POST
   $args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;  
 

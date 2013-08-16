@@ -60,6 +60,8 @@ $TLS_check_uncheck_all 	= "No seleccionar nada";
 $TLS_check_uncheck_all_for_remove = "Seleccionar todo/nada para borrar";
 $TLS_confirm = "Confirmar";
 $TLS_config= "Configuración";
+$TLS_created_by= "Creado por";
+$TLS_edited_by= "Editado por";
 $TLS_days	= "días";
 $TLS_desc = "descendente";
 $TLS_description		= "Descripción";
@@ -163,7 +165,8 @@ $TLS_platform = "Plataforma";
 $TLS_show_calender = "Ver Calendario";
 $TLS_clear_date = "Borrar fecha";
 $TLS_unfreeze = "Permitir edición";
-
+$TLS_without_keywords = "sin palabras claves";
+$TLS_without_keywords_bracketed = "[sin palabras claves]";
 
 // Actions (used wide)
 $TLS_add 				= "añadir";
@@ -324,6 +327,14 @@ $TLS_demo_update_role_disabled = 'Modo Demo habilitado => Actualización de Rol 
 $TLS_demo_reset_password_disabled = 'Modo Demo habilitado => Reseteo de Contraseña DESHABILITADO';
 $TLS_demo_special_user = "Modo Demo habilitado - el usuario ha sido configurado como especial " .
  						 "(ver config.inc.php demoSpecialUsers)";
+
+$TLS_demo_login_message = 'This is a DEMO SITE, use it with respect.' . 
+                          'Site will be re-installed at randmon intervals WITHOUT warning.' .
+                          'All data will be deleted at each install.' .
+                          'If you find TestLink useful think about supporting our work.'; 
+$TLS_demo_mode_suggested_user='Utilice usuario admin';
+$TLS_demo_mode_suggested_password='Utilice admin como contraseña';
+
 
 // ----- JAVASCRIPT -----
 // Used on javascript logic to validate Custom Field values
@@ -2169,6 +2180,8 @@ $TLS_href_plan_define_priority = "Definir Reglas de Prioridad";
 $TLS_href_my_testcase_assignments="Casos de Prueba asignados a mí";
 $TLS_href_platform_management = "Gestión de Plataformas";
 $TLS_href_issuetracker_management = "Gestión del Gestor de Defectos";
+$TLS_href_reqmgrsystem_management = "Req. Management System Management";
+$TLS_system_config = 'Sistema';
 
 
 // ----- contribution by asimon for req/reqspec search BUGID 2976 -----

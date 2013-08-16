@@ -45,11 +45,13 @@ class mantissoapInterface extends issueTrackerInterface
     $this->defaultResolvedStatus[] = array('code' => 80, 'verbose' => 'resolved');
     $this->defaultResolvedStatus[] = array('code' => 90, 'verbose' => 'closed');
     
-    $this->setCfg($config);
-    $this->completeCfg();
-    $this->setResolvedStatusCfg();
-    $this->connect();
-    $this->guiCfg = array('use_decoration' => true);
+    if( $this->setCfg($config) )
+    {
+      $this->completeCfg();
+      $this->setResolvedStatusCfg();
+      $this->connect();
+      $this->guiCfg = array('use_decoration' => true);
+    }  
   }
 
   

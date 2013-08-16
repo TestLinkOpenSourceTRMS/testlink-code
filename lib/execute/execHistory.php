@@ -41,7 +41,7 @@ $gui->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID
 // 
 
 // Need to get all test plans user is able to access.
-$testPlanSet = $args->user->getAccessibleTestPlans($db,$gui->tproject_id);
+$testPlanSet = (array)$args->user->getAccessibleTestPlans($db,$gui->tproject_id);
 $filters['testplan_id'] = null;
 foreach($testPlanSet as $rx)
 {

@@ -42,20 +42,20 @@ class jirasoapInterface extends issueTrackerInterface
 	function __construct($type,$config)
 	{
 		$this->interfaceViaDB = false;
-
     $this->support = new jiraCommons();
     $this->support->guiCfg = array('use_decoration' => true);
 
 	  $this->methodOpt = array('buildViewBugLink' => array('addSummary' => true, 'colorByStatus' => true));
 
-	  $this->setCfg($config);
-		$this->completeCfg();
-	  $this->connect();
-	  $this->guiCfg = array('use_decoration' => true);
+	  if( $this->setCfg($config) )
+    {
+  		$this->completeCfg();
+	    $this->connect();
+	    $this->guiCfg = array('use_decoration' => true);
 
-    // Attention has to be done AFTER CONNECT, because we need info setted there
-	  $this->setResolvedStatusCfg();  
-
+      // Attention has to be done AFTER CONNECT, because we need info setted there
+	    $this->setResolvedStatusCfg();  
+    }
 	}
 
 	/**

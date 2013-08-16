@@ -61,7 +61,7 @@ abstract class issueTrackerInterface
       // useful only for integration via DB
       if( !property_exists($this->cfg,'dbcharset') )
       {
-      $this->cfg->dbcharset = $this->tlCharSet;
+        $this->cfg->dbcharset = $this->tlCharSet;
       }
       $this->connect();
     }
@@ -96,6 +96,15 @@ abstract class issueTrackerInterface
     $msg = null;
     $signature = 'Source:' . __METHOD__;
 
+    // check for empty string
+    if(strlen(trim($xmlString)) == 0)
+    {
+      // Bye,Bye
+      $msg = " XML Configuration seems to be empty - please check";
+      tLog(__METHOD__ . $msg, 'ERROR');  
+      return false;
+    }
+      
     $xmlCfg = "<?xml version='1.0'?> " . $xmlString;
     libxml_use_internal_errors(true);
     try 

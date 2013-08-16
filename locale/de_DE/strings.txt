@@ -311,6 +311,18 @@ $TLS_prefix_does_not_exists="Testprojekt-Prefix existiert nicht";
 $TLS_testcase_does_not_exists="Testfall existiert nicht";
 $TLS_testcase_name_length_exceeded = 'Originale Länge (%s) > Erlaubte Länge (%s)';
 
+$TLS_demo_create_user_disabled = 'Demo mode enabled => Create User DISABLED';
+$TLS_demo_update_user_disabled = 'Demo mode enabled => Update User DISABLED';
+$TLS_demo_update_role_disabled = 'Demo mode enabled => Update Role DISABLED';
+$TLS_demo_reset_password_disabled = 'Demo mode enabled => Password Reset DISABLED';
+$TLS_demo_special_user = "Demo mode enabled - user has been configured as special (see config.inc.php demoSpecialUsers)";
+$TLS_demo_login_message = 'This is a DEMO SITE, use it with respect.' . 
+                          'Site will be re-installed at randmon intervals WITHOUT warning.' .
+                          'All data will be deleted at each install.' .
+                          'If you find TestLink useful think about supporting our work.'; 
+$TLS_demo_mode_suggested_user='Login as admin';
+$TLS_demo_mode_suggested_password='Use admin as password';
+
 
 
 
@@ -2215,7 +2227,7 @@ $TLS_error_ldap_bind_failed = "LDAP Bindung schlug fehl";
 $TLS_error_ldap_server_connect_failed = "Die Verbindung zum LDAP Server konnte nicht hergestellt werden";
 $TLS_error_ldap_update_failed = "LDAP konnte nicht aktualisiert werden";
 $TLS_error_ldap_user_not_found = "LDAP Benutzer konnte nicht gefunden werden";
-
+$TLS_unknown_authentication_method = "Do not know how to handle %s authentication method";
 
 
 // ----- lib/functions/product.inc.php -----

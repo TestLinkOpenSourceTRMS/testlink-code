@@ -191,7 +191,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr)
   $gui->testprojectOptions->testPriorityEnabled = $dummy['opt']->testPriorityEnabled;
   $gui->tproject_name = $dummy['name'];
 
-  $info = $tplanMgr->get_by_id($args->tplan_id);
+  $info = $tplanMgr->get_by_id($argsObj->tplan_id);
   $gui->tplan_name = $info['name'];
 
   $gui->platformSet = $tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'map'));

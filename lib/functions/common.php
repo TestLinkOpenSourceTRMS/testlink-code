@@ -363,17 +363,16 @@ function initProject(&$db,$hash_user_sel)
   {
     // Need to get first accessible test plan for user, if any exists.
     $tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id);
-    }
+  }
   
-  if(!is_null($tplan_data))
+  if(!is_null($tplan_data) && is_array($tplan_data))
   {
     $tplan_data = $tplan_data[0];
     setSessionTestPlan($tplan_data);
   }
   
   // initialize structure of top menu for the user and the project
-  initTopMenu($db);
-   
+  initTopMenu($db);   
 }
 
 

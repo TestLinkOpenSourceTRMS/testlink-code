@@ -62,19 +62,22 @@ else
 
 	foreach($items2loop as $item)
 	{
-      	if( !is_null($gui->statistics->$item) )
-      	{
-        	// Get labels
-          	$dummy = current($gui->statistics->$item);
-          	foreach($dummy['details'] as $status_verbose => $value)
-          	{
-              $dummy['details'][$status_verbose]['qty'] = 
-              			lang_get($tlCfg->results['status_label'][$status_verbose]);
-            	$dummy['details'][$status_verbose]['percentage'] = "[%]";
-            }
-          	$gui->columnsDefinition->$item = $dummy['details'];
-         }
-         
+    if( !is_null($gui->statistics->$item) )
+    {
+      $gui->columnsDefinition->$item = array();
+      
+     	// Get labels
+     	$dummy = current($gui->statistics->$item);
+     	if(isset($dummy['details']))
+      {  
+        foreach($dummy['details'] as $status_verbose => $value)
+       	{
+          $dummy['details'][$status_verbose]['qty'] = lang_get($tlCfg->results['status_label'][$status_verbose]);
+          $dummy['details'][$status_verbose]['percentage'] = "[%]";
+        }
+        $gui->columnsDefinition->$item = $dummy['details'];
+      }
+    }
   } 
 
  	/* BUILDS REPORT */

@@ -505,7 +505,7 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$tplanID,$decode)
         {  
           $tmp = $tplanMgr->get_execution_time($tplanID,$itemsForPlat,$platID);
           $min['platform'][$platID] = $tmp['platform'][$platID];
-          $min['totalMinutes'] += $tmp['totalMinutes']; 
+          $min['totalMinutes'] += isset($tmp['totalMinutes']) ? $tmp['totalMinutes'] : 0; 
           $min['totalTestCases'] += $tmp['totalTestCases']; 
         }
       } 

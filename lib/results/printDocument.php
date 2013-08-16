@@ -98,10 +98,18 @@ switch ($doc_info->type)
     $items2use = (object) array('estimatedExecTime' => null,'realExecTime' => null);
     $treeForPlatform = array();
       
+    $filters = null;
+//    if( isset($printingOptions['assigned_to_me']) && $printingOptions['assigned_to_me'] )
+//    {
+//      $filters['assignedTo'] = $args->user_id;
+//      $filters['filter_assigned_user'] = true;
+//    }  
+
     switch($doc_info->content_range)
     {
       case 'testproject':
-        $treeForPlatform = buildContentForTestPlan($db,$subtree,$args->tplan_id,$platformIDSet,$decode,$tplan_mgr);
+        $treeForPlatform = buildContentForTestPlan($db,$subtree,$args->tplan_id,$platformIDSet,
+                                                   $decode,$tplan_mgr,$filters);
       break;
              
       case 'testsuite':
@@ -159,7 +167,7 @@ if ($treeForPlatform)
 
   foreach ($treeForPlatform as $platform_id => $tree2work)            
   {
-    if(sizeof($tree2work['childNodes']) > 0)
+    if(isset($tree2work['childNodes']) && sizeof($tree2work['childNodes']) > 0)
     {
       $tree2work['name'] = $args->tproject_name;
       $tree2work['id'] = $args->tproject_id;
@@ -301,14 +309,14 @@ function init_args(&$dbHandler)
 function initPrintOpt(&$UIhash,&$docInfo)
 {
   // Elements in this array must be updated if $arrCheckboxes, in printDocOptions.php is changed.
-  $pOpt = array ( 'toc' => 0,'body' => 0,'summary' => 0, 'header' => 0,'headerNumbering' => 1,
-              'passfail' => 0, 'author' => 0, 'notes' => 0, 'requirement' => 0, 'keyword' => 0, 
-              'cfields' => 0, 'testplan' => 0, 'metrics' => 0,
-              'req_spec_scope' => 0,'req_spec_author' => 0,
-              'req_spec_overwritten_count_reqs' => 0,'req_spec_type' => 0,
-              'req_spec_cf' => 0,'req_scope' => 0,'req_author' => 0,
-              'req_status' => 0,'req_type' => 0,'req_cf' => 0,'req_relations' => 0,
-              'req_linked_tcs' => 0,'req_coverage' => 0,'displayVersion' => 0);
+  $pOpt = array( 'toc' => 0,'body' => 0,'summary' => 0, 'header' => 0,'headerNumbering' => 1,
+                 'passfail' => 0, 'author' => 0, 'notes' => 0, 'requirement' => 0, 'keyword' => 0, 
+                 'cfields' => 0, 'testplan' => 0, 'metrics' => 0, 'assigned_to_me' => 0, 
+                 'req_spec_scope' => 0,'req_spec_author' => 0,
+                 'req_spec_overwritten_count_reqs' => 0,'req_spec_type' => 0,
+                 'req_spec_cf' => 0,'req_scope' => 0,'req_author' => 0,
+                 'req_status' => 0,'req_type' => 0,'req_cf' => 0,'req_relations' => 0,
+                 'req_linked_tcs' => 0,'req_coverage' => 0,'displayVersion' => 0);
   
   foreach($pOpt as $opt => $val)
   {
@@ -523,11 +531,16 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$tplanID,$decode)
 }
 
 
-function buildContentForTestPlan(&$dbHandler,$itemsTree,$tplanID,$platformIDSet,$decode,&$tplanMgr)
+/**
+ *
+ */ 
+function buildContentForTestPlan(&$dbHandler,$itemsTree,$tplanID,$platformIDSet,$decode,&$tplanMgr,$pnFilters=null)
 {
   // displayMemUsage('BEFORE LOOP ON PLATFORMS');
   $linkedBy = array();
-  $pnFilters = null;
+  // $pnFilters = $filters;
+
+  // 'filter_assigned_user'
   $contentByPlatform = array();
 
 

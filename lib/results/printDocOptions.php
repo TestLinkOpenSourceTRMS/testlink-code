@@ -263,6 +263,9 @@ function initializeGui(&$db,$args)
  * Made this a function to simplify handling of differences 
  * between printing for requirements and testcases and to make code more readable.
  * 
+ * ATTENTION if you add somethin here, you need also to work on javascript function
+ * tree_getPrintPreferences()
+ *
  * @author Andreas Simon
  * 
  * @param stdClass $args reference to user input parameters
@@ -285,9 +288,9 @@ function init_checkboxes(&$args)
   switch($args->doc_type) 
   {
     case 'reqspec':
-      $key2init= array('req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
-                 'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
-               'req_type','req_cf','req_relations','req_linked_tcs','req_coverage','displayVersion');
+      $key2init = array('req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
+                        'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
+                        'req_type','req_cf','req_relations','req_linked_tcs','req_coverage','displayVersion');
 
       $key2init2yes = array('req_spec_scope' => 'y','req_scope' => 'y');
       foreach($key2init as $key)
@@ -313,8 +316,9 @@ function init_checkboxes(&$args)
       if ($args->doc_type == DOC_TEST_PLAN_EXECUTION) 
       {
         $arrCheckboxes[] = array('value' => 'notes', 'description' => 'opt_show_tc_notes',  'checked' => 'n');
-        $arrCheckboxes[] = array( 'value' => 'passfail','description' => 'opt_show_passfail','checked' => 'y');
-        $arrCheckboxes[] = array( 'value' => 'metrics','description' => 'opt_show_metrics','checked' => 'n');
+        $arrCheckboxes[] = array('value' => 'passfail','description' => 'opt_show_passfail','checked' => 'y');
+        $arrCheckboxes[] = array('value' => 'metrics','description' => 'opt_show_metrics','checked' => 'n');
+        // $arrCheckboxes[] = array('value' => 'assigned_to_me','description' => 'opt_show_only_assigned_to_me','checked' => 'n');
       }
     break;    
   }

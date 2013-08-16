@@ -46,7 +46,7 @@ if ($args->tprojectID)
   $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
   $gui->tcasePrefix .= $tcase_cfg->glue_character;
 
-  $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '');
+  $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '', 'users' => '');
   $filter = null;
   $tcaseID = null;
 

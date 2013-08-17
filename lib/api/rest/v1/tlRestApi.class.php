@@ -26,6 +26,7 @@
  *
  * @internal revisions 
  * @since 1.9.8
+ * 20130817 - franciscom - TICKET 5865: REST response header should define content-type application/json
  * 20130722 - franciscom - added array($this,'authenticate') on each route
  *                         to launch always automatically the authentication
  */
@@ -95,22 +96,18 @@ class tlRestApi
    */
   public function __construct()
   {    
-  
     // We are following Slim naming convention
     $this->app = new \Slim\Slim();
-    $this->app->get('/who', function () {
-      echo __CLASS__ . ' : Get Route /who';
-    });
+    $this->app->contentType('application/json');
 
+
+    // test route with anonymous function 
+    $this->app->get('/who', function () { echo __CLASS__ . ' : Get Route /who';});
 
     $this->app->get('/whoAmI', array($this,'authenticate'), array($this,'whoAmI'));
     $this->app->get('/testprojects', array($this,'authenticate'), array($this,'getProjects'));
 
     $this->app->get('/testprojects/:id', array($this,'authenticate'), array($this,'getProjects'));
-    // $this->app->get('/testprojects/:id', array($this,'getProjects'));
-
-    // $this->app->get('/testprojects/:id/testplans/', array($this,'getTestProjectTestPlans'));
-    // $this->app->get('/testplans/:id', array($this,'getTestPlan'));
 
     $this->app->post('/testprojects', array($this,'authenticate'), array($this,'createTestProject'));
     $this->app->post('/executions', array($this,'authenticate'), array($this,'createTestCaseExecution'));
@@ -119,6 +116,10 @@ class tlRestApi
 
     $this->app->post('/testsuites', array($this,'authenticate'), array($this,'createTestSuite'));
     $this->app->post('/testcases', array($this,'authenticate'), array($this,'createTestCase'));
+
+    // $this->app->get('/testprojects/:id', array($this,'getProjects'));
+    // $this->app->get('/testprojects/:id/testplans/', array($this,'getTestProjectTestPlans'));
+    // $this->app->get('/testplans/:id', array($this,'getTestPlan'));
 
 
     $this->db = new database(DB_TYPE);
@@ -151,8 +152,9 @@ class tlRestApi
   }  
 
 
-
-  // function authenticate($apiKey=null)
+  /**
+   *
+   */
   function authenticate(\Slim\Route $route)
   {
     $apiKey = null;
@@ -183,6 +185,9 @@ class tlRestApi
 
 
 
+  /**
+   *
+   */
   public function whoAmI()
   {    
     echo json_encode(array('name' => __CLASS__ . ' : Get Route /whoAmI'));
@@ -226,6 +231,7 @@ class tlRestApi
         }
       } 
     } 
+
     // Developer (silly?) information
     // json_encode() transforms maps in objects.
     echo json_encode($op);

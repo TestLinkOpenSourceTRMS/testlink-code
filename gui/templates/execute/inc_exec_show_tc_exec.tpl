@@ -433,9 +433,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
                args_webeditor=$gui->exec_notes_editors[$tc_id]
                args_labels=$labels}
 	  {/if}
-
-    XXXXX
-
  	  {if $tc_exec.active eq 0}
  	   <h1 class="title"><center>{$labels.testcase_version_is_inactive_on_exec}</center></h1>
  	  {/if}

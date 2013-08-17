@@ -348,7 +348,9 @@ function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
   {
     $templateCfg = templateConfiguration();
     $xbm = new stdClass();
-    $xbm->warning_msg=lang_get('no_records_found');
+    $xbm->warning_msg = lang_get('no_records_found');
+    $xbm->pageTitle = lang_get('caption_search_form');
+    $xbm->tableSet = null;
     $tplEngine->assign('gui',$xbm);
     $tplEngine->display($templateCfg->template_dir . 'tcSearchResults.tpl');
   }  

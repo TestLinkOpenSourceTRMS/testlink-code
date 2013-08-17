@@ -3827,10 +3827,10 @@ class testplan extends tlObjectWithAttachments
     // -----------------------------------------------------------------------------------------------------
     // get test plan contents (test suites and test cases)
     $item_info['testsuites'] = null;
-    if( !is_null($tplan_spec) && ($loop2do = count($tplan_spec['childNodes'])) > 0)
+    if( !is_null($tplan_spec) && isset($tplan_spec['childNodes']) && ($loop2do = count($tplan_spec['childNodes'])) > 0)
     {
       $item_info['testsuites'] = '<testsuites>' . $this->exportTestSuiteDataToXML($tplan_spec,$context['tproject_id']) . 
-                     '</testsuites>';
+                                 '</testsuites>';
     } 
     
     $xml_root = "\n\t<testplan>{{XMLCODE}}\n\t</testplan>";

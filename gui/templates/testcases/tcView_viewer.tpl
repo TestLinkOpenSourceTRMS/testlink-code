@@ -23,8 +23,8 @@ viewer for test case in test specification
 {lang_get s='delete' var="del_msgbox_title"}
 
 {* will be useful in future to semplify changes *}
-{assign var="tableColspan" value=$gui->tableColspan} 
-{assign var="addInfoDivStyle" value='style="padding: 5px 3px 4px 10px;"'}
+{$tableColspan=$gui->tableColspan} 
+{$addInfoDivStyle='style="padding: 5px 3px 4px 10px;"'}
 
 
 {assign var="module" value='lib/testcases/'}
@@ -77,18 +77,16 @@ viewer for test case in test specification
     {/if}
 	  <h2>{$tcView_viewer_labels.title_test_case} {$args_testcase.name|escape} </h2>
 {/if}
-{assign var="warning_edit_msg" value=""}
-{assign var="warning_delete_msg" value=""}
+
 
 <div style="display: inline;" class="groupBtn">
-
   
+{$warning_edit_msg=""}
+{$warning_delete_msg=""}
+{$edit_enabled=0}
+{$delete_enabled=0}
 
 {if $args_can_do->edit == "yes"}
-
-  {assign var="edit_enabled" value=0}
-  {assign var="delete_enabled" value=0}
-
   {* Seems logical you can disable some you have executed before *}
   {$active_status_op_enabled=1}
   {$has_been_executed=0}

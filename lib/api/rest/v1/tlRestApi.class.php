@@ -25,6 +25,9 @@
  *
  *
  * @internal revisions 
+ * @since 1.9.8
+ * 20130722 - franciscom - added array($this,'authenticate') on each route
+ *                         to launch always automatically the authentication
  */
 
 require_once('../../../../config.inc.php');
@@ -103,17 +106,19 @@ class tlRestApi
     $this->app->get('/whoAmI', array($this,'authenticate'), array($this,'whoAmI'));
     $this->app->get('/testprojects', array($this,'authenticate'), array($this,'getProjects'));
 
-    $this->app->get('/testprojects/:id', array($this,'getProjects'));
+    $this->app->get('/testprojects/:id', array($this,'authenticate'), array($this,'getProjects'));
+    // $this->app->get('/testprojects/:id', array($this,'getProjects'));
+
     // $this->app->get('/testprojects/:id/testplans/', array($this,'getTestProjectTestPlans'));
     // $this->app->get('/testplans/:id', array($this,'getTestPlan'));
 
-    $this->app->post('/testprojects', array($this,'createTestProject'));
-    $this->app->post('/executions', array($this,'createTestCaseExecution'));
-    $this->app->post('/testplans', array($this,'createTestPlan'));
-    $this->app->post('/testplans/:id', array($this,'updateTestPlan'));
+    $this->app->post('/testprojects', array($this,'authenticate'), array($this,'createTestProject'));
+    $this->app->post('/executions', array($this,'authenticate'), array($this,'createTestCaseExecution'));
+    $this->app->post('/testplans', array($this,'authenticate'), array($this,'createTestPlan'));
+    $this->app->post('/testplans/:id', array($this,'authenticate'), array($this,'updateTestPlan'));
 
-    $this->app->post('/testsuites', array($this,'createTestSuite'));
-    $this->app->post('/testcases', array($this,'createTestCase'));
+    $this->app->post('/testsuites', array($this,'authenticate'), array($this,'createTestSuite'));
+    $this->app->post('/testcases', array($this,'authenticate'), array($this,'createTestCase'));
 
 
     $this->db = new database(DB_TYPE);
@@ -160,6 +165,7 @@ class tlRestApi
     $sql = "SELECT id FROM {$this->tables['users']} " .
            "WHERE script_key='" . $this->db->prepare_string($apiKey) . "'";
 
+    // DEBUG file_put_contents('/tmp/tlRestApi.class.authenticate.txt', $sql);
     $this->userID = $this->db->fetchFirstRowSingleColumn($sql, "id");
     if( ($ok=!is_null($this->userID)) )
     {

@@ -2201,69 +2201,63 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @since 1.9.4
    * 20111226 - franciscom - TICKET 4843: 'getTestCasesForTestPlan' - add support for new argument 'details'
    */
-   public function getTestCasesForTestPlan($args)
-   {
-
-      $operation=__FUNCTION__;
-       $msg_prefix="({$operation}) - ";
-         
-        // Optional parameters that are not mutual exclusive, 
-        // DEFAULT value to use if parameter was not provided
-        $opt=array(self::$testCaseIDParamName => null,
-                   self::$buildIDParamName => null,
-                   self::$keywordIDParamName => null,
-                   self::$executedParamName => null,
-                   self::$assignedToParamName => null,
-                   self::$executeStatusParamName => null,
-                   self::$executionTypeParamName => null,
-                   self::$getStepsInfoParamName => false,
-                   self::$detailsParamName => 'full');
+public function getTestCasesForTestPlan($args)
+{
+  $operation=__FUNCTION__;
+  $msg_prefix="({$operation}) - ";
+        
+  // Optional parameters that are not mutual exclusive, 
+  // DEFAULT value to use if parameter was not provided
+  $opt=array(self::$testCaseIDParamName => null,self::$buildIDParamName => null,
+             self::$keywordIDParamName => null,self::$executedParamName => null,
+             self::$assignedToParamName => null,self::$executeStatusParamName => null,
+             self::$executionTypeParamName => null,self::$getStepsInfoParamName => false,
+             self::$detailsParamName => 'full');
            
-        $optMutualExclusive=array(self::$keywordIDParamName => null,
-                                  self::$keywordNameParamName => null);   
-        $this->_setArgs($args);
-    if(!($this->_checkGetTestCasesForTestPlanRequest($msg_prefix) && $this->userHasRight("mgt_view_tc")) )
-    {
+  $optMutualExclusive=array(self::$keywordIDParamName => null,self::$keywordNameParamName => null);   
+  $this->_setArgs($args);
+  if(!($this->_checkGetTestCasesForTestPlanRequest($msg_prefix) && $this->userHasRight("mgt_view_tc")) )
+  {
       return $this->errors;
-    }
+  }
     
-    $tplanid = $this->args[self::$testPlanIDParamName];
-    $tplanInfo = $this->tplanMgr->tree_manager->get_node_hierarchy_info($tplanid);
+  $tplanid = $this->args[self::$testPlanIDParamName];
+  $tplanInfo = $this->tplanMgr->tree_manager->get_node_hierarchy_info($tplanid);
     
-    foreach($opt as $key => $value)
+  foreach($opt as $key => $value)
+  {
+    if($this->_isParamPresent($key))
     {
-        if($this->_isParamPresent($key))
-        {
-            $opt[$key]=$this->args[$key];      
-        }   
-    }
+      $opt[$key]=$this->args[$key];      
+    }   
+  }
     
-    $keywordSet = $opt[self::$keywordIDParamName];
-    if( is_null($keywordSet) )
+  $keywordSet = $opt[self::$keywordIDParamName];
+  if( is_null($keywordSet) )
+  {
+    $keywordSet = null;
+    $keywordList = $this->getKeywordSet($tplanInfo['parent_id']);
+    if( !is_null($keywordList) )
     {
-      $keywordSet = null;
-          $keywordList = $this->getKeywordSet($tplanInfo['parent_id']);
-          if( !is_null($keywordList) )
-          {
-            $keywordSet = explode(",",$keywordList);
-          }
+      $keywordSet = explode(",",$keywordList);
     }
+  }
 
-        $options = array('executed_only' => $opt[self::$executedParamName], 
-                 'steps_info' => $opt[self::$getStepsInfoParamName],
-                 'details' => $opt[self::$detailsParamName],
-                 'output' => 'mapOfMap' );
+  $options = array('executed_only' => $opt[self::$executedParamName], 
+                   'steps_info' => $opt[self::$getStepsInfoParamName],
+                   'details' => $opt[self::$detailsParamName],
+                   'output' => 'mapOfMap' );
           
-    $filters = array('tcase_id' => $opt[self::$testCaseIDParamName],
+  $filters = array('tcase_id' => $opt[self::$testCaseIDParamName],
                    'keyword_id' => $keywordSet,
                    'assigned_to' => $opt[self::$assignedToParamName],
                    'exec_status' => $opt[self::$executeStatusParamName],
                    'build_id' => $opt[self::$buildIDParamName],
                    'exec_type' => $opt[self::$executionTypeParamName]);
     
-    $recordset = $this->tplanMgr->getLTCVNewGeneration($tplanid,$filters,$options);
-    return $recordset;
-   }
+  $recordset = $this->tplanMgr->getLTCVNewGeneration($tplanid,$filters,$options);
+  return $recordset;
+}
 
 
   /**

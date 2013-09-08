@@ -165,7 +165,8 @@ CREATE TABLE /*prefix*/custom_fields (
 CREATE TABLE /*prefix*/db_version (
   `version` varchar(50) NOT NULL default 'unknown',
   `upgrade_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-  `notes` text
+  `notes` text,
+  PRIMARY KEY  (`version`)
 ) DEFAULT CHARSET=utf8;
 
 

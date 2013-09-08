@@ -17,11 +17,8 @@
 -- ATTENTION: 
 -- 
 -- @internal revisions
--- since 1.9.6
 --                          
 --  -----------------------------------------------------------------------------------
---
---
 --
 CREATE TABLE /*prefix*/transactions (
   id int IDENTITY(1,1) NOT NULL,
@@ -68,7 +65,11 @@ CREATE NONCLUSTERED INDEX /*prefix*/IX_fired_at ON  /*prefix*/events
 CREATE TABLE /*prefix*/db_version (
 version varchar(50)  NOT NULL CONSTRAINT /*prefix*/DF_db_version_version DEFAULT (N'unknown'),
 upgrade_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_db_version_upgrade_ts DEFAULT (getdate()),
-notes nvarchar(max)   NULL
+notes nvarchar(max)   NULL,
+CONSTRAINT /*prefix*/PK_db_version PRIMARY KEY CLUSTERED 
+(
+  version ASC
+) ON [PRIMARY]
 ) ON [PRIMARY];
 
 

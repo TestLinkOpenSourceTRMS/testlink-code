@@ -382,7 +382,8 @@ CREATE TABLE /*prefix*/attachments(  "id" BIGSERIAL NOT NULL ,
 CREATE TABLE /*prefix*/db_version(  
    "version" VARCHAR(50) NOT NULL DEFAULT 'unknown',
    "upgrade_ts" TIMESTAMP NOT NULL DEFAULT now(),
-   "notes" TEXT NULL
+   "notes" TEXT NULL,
+   PRIMARY KEY ("version")
 ); 
 
 

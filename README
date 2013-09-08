@@ -1,5 +1,5 @@
 ===============================================================
-                    TestLink 1.9.7 (Prague Bugfix 7) - Read me
+                    TestLink 1.9.8 (Prague Bugfix 8) - Read me
 ===============================================================
 
 Contents
@@ -12,7 +12,7 @@ Contents
 7. Bug Reports and Feedback
 8. Supporting our work
 9. Regarding forum usage www.teamst.org
-10. Changes regarding 1.9.6
+10. Changes regarding 1.9.6, 1.9.7
 11. Testlink & FreeTest
 
 1. Introduction
@@ -63,8 +63,7 @@ A wide variety of reports provide information on what has been done and what sti
 2. Release notes
 ===============================================================
 
-This release contains bugfixes for 1.9.6
-   
+This release contains bugfixes for 1.9.7
 See CHANGELOG file for detailed list of issues fixed.
 
 
@@ -77,7 +76,7 @@ Server environment should consists from:
 - DBMS: MySQL 5.x , Postgres 8.x,9.x , MS-SQL 2005/2008
 
 Supported client web-browsers: 
-- Firefox 10 - 19
+- Firefox 10 - 23
 - Internet Explorer 8.x, 9.x
 - Chrome   
 
@@ -149,8 +148,9 @@ Check Installation manual and TestLink forum if you meet a problem.
 ===============================================================
 When accessing Installer page you will found ONLY NEW INSTALLATION OPTION
 Migration HAS TO BE DONE MANUALLY => read below 
-- Upgrade from 1.9.3  to 1.9.4/5/6/7
+- Upgrade from 1.9.3  to 1.9.4/5/6/7/8
 - Upgrade from 1.9.4/5 to 1.9.7
+- Upgrade from 1.9.7 to 1.9.8
 - Migration from other releases that 1.9.3
 
  Steps
@@ -177,10 +177,13 @@ Migration HAS TO BE DONE MANUALLY => read below
    
  Always before login, after an upgrade/migration clear browser cookies.
 
-- Upgrade from 1.9.3 to 1.9.4/5/6/7
+- Upgrade from 1.9.3 to 1.9.4/5/6/7/8
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
 a) Execute install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/step1/db_schema_update.sql
 b) Execute install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/stepZ/z_final_step.sql
+
+then give a look to sections: 'Upgrade from 1.9.4/5 to 1.9.7'
+                              'Upgrade from 1.9.7 to 1.9.8'
 
 Hint: When using MySQL Query Browser make sure you are not using a single command execution. 
       (open script or use special script tab to execute the whole script at once)
@@ -189,6 +192,14 @@ Hint: When using MySQL Query Browser make sure you are not using a single comman
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
 a) Execute install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/step1/db_schema_update.sql
 b) Execute install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/stepZ/z_final_step.sql
+
+then give a look to section 'Upgrade from 1.9.7 to 1.9.8'
+
+- Upgrade from 1.9.7 to 1.9.8
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+a) Execute install/sql/alter_tables/1.9.8/<your_db>/DB.1.6/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.8/<your_db>/DB.1.6/stepZ/z_final_step.sql
+
 
 Hint: When using MySQL Query Browser make sure you are not using a single command execution. 
       (open script or use special script tab to execute the whole script at once)
@@ -201,7 +212,7 @@ You have always have to migrate one by one to each version that is newer that yo
 Extreme example Migration from 1.7.4
 
 1.7.4 => 1.7.5 => 1.8.1 => 1.8.2 => 1.8.3 => 1.8.4 => 1.8.5 => 1.9.0 
-1.9.0 => 1.9.1 => 1.9.2 => 1.9.3 => 1.9.4 => 1.9.5 => 1.9.6 => 1.9.7
+1.9.0 => 1.9.1 => 1.9.2 => 1.9.3 => 1.9.4 => 1.9.5 => 1.9.6 => 1.9.7 => 1.9.8
 
 You have to read carefully README and instructions provided by installer.
 Sometimes version changes do not require actions on DB structure or data. 
@@ -328,10 +339,20 @@ PLEASE: read this short hints before you write a topic:
 :!: Consider that some issues are related to Apache, browser or database instead of TestLink. Use google at first. 
 
       
-10. Changes regarding 1.9.6      
+10. Changes regarding 1.9.6,1.9.7      
 ===============================================================
 
+1.9.6
 10.1 Admin role can not be edit anymore
+
+1.9.7
+10.2 Reports do not use anymore Custom fields:
+     CF_ESTIMATED_EXEC_TIME
+     CF_EXEC_TIME
+     
+     Specific columns have been added to tcversions and executions tables.
+10.3 Smarty 3 is the default.
+
 
 11. Testlink & FreeTest
 ===============================================================

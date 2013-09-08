@@ -3,6 +3,62 @@
    TestLink  Change-log
 *******************************************************************************
 
+TestLink - 1.9.8 (2013 Q3 - bug fixing) (Scheduled For Release 2013-09-10)
+==========================================================================
+
+- 0005687: [Database Schema] db_version - add PK on version (fman)
+- 0005885: [Migration/Upgrade Testlink] Provide SQL to migrate values from estimated and actual execution time to new fields (fman)
+- 0005756: [Database Schema] Execution duration (minutes) is part of executions table (fman)
+- 0005688: [Database Schema] cfields_testproject - columns related required feature (fman)
+- 0005680: [Custom fields] Adding Required attribute to Custom field via HTML5 required attribute (fman)
+- 0005755: [Database General] add estimated_exec_duration column to tcversions table (fman)
+- 0005545: [Database Schema] Add fields author_id, creation_ts to req_coverage table. (fman)
+- 0005836: [Test Execute - Filters] Test Execute - include unassigned Test Case checkbox issue (fman)
+- 0005881: [Test Specification] Using Direct links to test cases (linkto.php) doesnt work (fman)
+- 0005866: [API - REST] REST 'GET /testprojects/:id' raise 500 Internal Server Error - due to authentication (fman)
+- 0005865: [API - REST] REST response header should define content-type application/json (fman)
+- 0005859: [Users and Rights] Possibility to export users (fman)
+- 0005848: [API - XMLRPC] API XML-RPC - getUserByLogin(), getUserByID() (fman)
+- 0005857: [API - XMLRPC] getTestCase() method with specified 'version' param always return version 1 (fman)
+- 0005858: [Test Project Management] Usability Improvement - Toggle Active attribute from test project list (fman)
+- 0005856: [Test Plan Management] Usability Improvement - toogle Active/Inactive from test plan list (fman)
+- 0005850: [Import results XML format] Add Option to create XML output file, to make simple import of results (fman)
+- 0005855: [Test Specification Export] Test Spec Export - Ghost in test case steps are replaced with text from source test case step (fman)
+- 0005854: [Test Execute - Export Test Plan] Test Execute - After Export Test Plan some context info is missing and ...
+- 0005800: [Test Spec. - Test Case Steps] TEST CASE STEP - Custom Field Values get deleted when leaving Test Case Step with Save & Exit (fman)
+- 0005746: [Users and Rights] Cannot set new rights after upgrade (fman)
+- 0005763: [Test Specification] Test Case Reuse - Ghost - Possibility to get generated ghost string (fman)
+- 0005840: [Bug Tracking System - JIRA Integration] JIRA SOAP - Add possibility to disable CREATE ISSUE feature via configuration (fman)
+- 0005838: [Localization] Additions to German Localization (fman)
+- 0005837: [Localization] French localization update (fman)
+- 0005749: [Test Specification] got E_WARNING when creating/managing Test cases (fman)
+- 0005808: [Test Execute] Test case versions for executed test cases show new version when updated (fman)
+- 0005812: [Export/Import] Can not be imported - You are hitting an existent Test Case with SAME EXTERNAL ID (fman)
+- 0005804: [Reports - Failed/Blocked Test Cases] Failed Test Cases report shows history on all projects, ignoring Role security (fman)
+- 0005796: [Database MySQL] Search test case or string, using search box on menu bar - Database error (fman)
+- 0005788: [Test Plan - Assign Test Case Execution] test case execution order not working on RIGHT PANE (fman)
+- 0005781: [Requirement Management] "delete this version" in requirement pop-up from "Requirement Overview" breaks requirement overview; 
+- 0005739: [Filters - Test Specification] Test Specification Filters - Add option to filter by 'NO keywords' (fman)
+- 0005787: [Import Requirements - XML format] Custom fields import via XML for Requirement Specification does not work (fman)
+- 0005527: [Filters] search test cases - possibility to search by test author (fman)
+- 0005764: [Reports] Browsers IE - OPERA / Clicking report direct link opens file "Save As" dialog (fman)
+- 0005767: [Bug Tracking System - Redmine Integration] Redmine 2.x - Link access issue (uriview) has changed from 1.x
+- 0005762: [Test Specification] test case view: possibility to change attributes without entering edit mode (fman)
+- 0005760: [Bug Tracking System - Youtrack Integration] Default youtrack template contains comments that break the integration (fman)
+- 0005640: [General] Popup for not saved changes is not shown if using CKEDITOR (fman)
+- 0005734: [Bug Tracking System - Redmine Integration] Cant create new bug - subject is too long (fman)
+- 0005748: [Requirement Management] E_NOTICE when creating/managing Requirements (fman)
+- 0005657: [Test Specification] No alert for not saved changes while editing TestSuite name (fman)
+- 0005730: [Custom fields] Custom fields view - new layout (fman)
+- 0005703: [Bug Tracking System - Redmine Integration] Create issue with Portuguese characters produces mangled text (fman)
+- 0005736: [Bug Tracking System - TRAC Integration] TRAC integration does not appear in the dropdown box (fman)
+- 0005733: [Bug Tracking System - Redmine Integration] Create bug - debug information displayed (fman)
+- 0005770: [Bug Tracking System - JIRA Integration] The issue field (eg JIRA) has limited caracter number (16)? (fman)
+- 0005842: [Import results XML format] import XML results error test case not found (fman)
+- 0005262: [Users and Rights] Default admin's password can not be changed because user doesn't have an email address (fman)
+- 0005807: [Test Plan - Add/Remove Test Cases] Unable to filter by Importance (fman) - closed.
+- 0005219: [Bug Tracking System - TRAC Integration] TRAC Integration says "Bug ID does not exist on BTS!" (fman)
+
 
 TestLink - 1.9.7 (2013 Q2 - bug fixing) (Scheduled For Release 2013-06-10) 
 ==========================================================================

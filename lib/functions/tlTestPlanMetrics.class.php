@@ -12,9 +12,9 @@
  * @uses        common.php 
  *
  * @internal revisions
- * @since 1.9.8
+ * @since 1.9.9
  *
- * 20130713 - franciscom - TICKET 5808: Test case versions for executed test cases show new version when updated                    
+ * 20130909 - franciscom - TICKET 5902: Uncaught exception when doing a Metric Dashboard when no releases are active or open
  **/
 
 
@@ -182,6 +182,8 @@ class tlTestPlanMetrics extends testplan
 
     // get amount of test cases for each execution result + total amount of test cases
     $planMetrics = $this->getExecCountersByExecStatus($tplanID);
+
+
 
     $milestones =  is_null($milestoneSet) ? $this->get_milestones($tplanID) : $milestoneSet;
 
@@ -890,15 +892,19 @@ class tlTestPlanMetrics extends testplan
    *
    * @internal revisions
    *
-   * @since 1.9.4
-   * 20120728 - issue if test plan has no builds defined
-   * 20120512 - franciscom - 
+   * @since 1.9.9
+   *
    */
   function getExecCountersByExecStatus($id, $filters=null, $opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $safe_id = intval($id);  
     list($my,$builds,$sqlStm,$union,$platformSet) = $this->helperBuildSQLExecCounters($id, $filters, $opt);
+    if(count($builds) <= 0 || is_null($builds))
+    {
+      return null;  // >>---> Bye!
+    }  
+
 
     // Latest Executions By Platform (LEBP)
     $add2key = '';
@@ -910,9 +916,9 @@ class tlTestPlanMetrics extends testplan
     $sqlUnionBP  =  $union['not_run' . $add2key]; //echo 'QD - <br>' . $sqlUnionBP . '<br>';
     
     $sql =  " /* {$debugMsg} UNION ALL CLAUSE => INCLUDE Duplicates */" .
-        " SELECT status, count(0) AS exec_qty " .
-        " FROM ($sqlUnionAP UNION ALL $sqlUnionBP ) AS SQPL " .
-        " GROUP BY status ";
+            " SELECT status, count(0) AS exec_qty " .
+            " FROM ($sqlUnionAP UNION ALL $sqlUnionBP ) AS SQPL " .
+            " GROUP BY status ";
 
     $dummy = (array)$this->db->fetchRowsIntoMap($sql,'status');              
 
@@ -1503,7 +1509,16 @@ class tlTestPlanMetrics extends testplan
     
   /** 
    *    
-   *    
+   *  @used-by
+   *  getExecutionsByStatus()
+   *  getNotRunWithTesterAssigned()
+   *  getNotRunWOTesterAssigned()
+   *  getExecCountersByBuildExecStatus()
+   *  getExecCountersByKeywordExecStatus()
+   *  getExecCountersByPriorityExecStatus()
+   *  getExecCountersByBuildUAExecStatus()
+   *  getExecCountersByTestSuiteExecStatus()
+   *   
    *    
    *  @internal revisions
    *  20120728 - franciscom - added emergency exit if build set is empty  
@@ -1658,7 +1673,15 @@ class tlTestPlanMetrics extends testplan
   function helperBuildSQLExecCounters($id, $filters=null, $opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
+    try
+    {
+      list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
+    }
+    catch(Exception $e)
+    {
+      return null;
+    }
+
 
     $safe_id = intval($id);  
     $platformSet = null;

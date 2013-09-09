@@ -5,11 +5,11 @@
  *
  * @filesource  metricsDashboard.php
  * @package     TestLink
- * @copyright   2007-2012, TestLink community 
+ * @copyright   2007-2013, TestLink community 
  * @author      franciscom
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.9
  *
  **/
 require('../../config.inc.php');
@@ -18,13 +18,8 @@ require_once('exttable.class.php');
 $templateCfg = templateConfiguration();
 
 //testlinkInitPage($db,false,false,"checkRights");
-$args = init_args($db);
+list($args,$gui) = initEnv($db);
 
-$gui = new stdClass();
-$gui->tproject_name = $args->tproject_name;
-$gui->show_only_active = $args->show_only_active;
-$gui->direct_link = $args->direct_link;
-$gui->direct_link_ok = $args->direct_link_ok;
 
 $result_cfg = config_get('results');
 $show_all_status_details = config_get('metrics_dashboard')->show_test_plan_status;
@@ -37,7 +32,6 @@ $labels = init_labels(array('overall_progress' => null, 'test_plan' => null, 'pr
 
 list($gui->tplan_metrics,$gui->show_platforms, $platforms) = getMetrics($db,$_SESSION['currentUser'],$args,$result_cfg, $labels);
 
-$gui->warning_msg = $labels['no_testplans_available'];
 
 // new dBug($gui->tplan_metrics);
 if(count($gui->tplan_metrics) > 0) 
@@ -149,17 +143,14 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
- * 
+ *  only active builds has to be used
+ *
  *  @internal revisions
  *
- *  BUGID 4328: Metrics dashboard - only active builds has to be used
+ *  
  */
 function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 {
-  // TICKET 5212: removed debug output "getMetrics" that was shown above the normal page header
-  //echo '<h1>' . __FUNCTION__ . '</h1>';
-  //$chronos[] = microtime(true); $tnow = end($chronos);
-
   $user_id = $args->currentUserID;
   $tproject_id = $args->tproject_id;
   $linked_tcversions = array();
@@ -175,15 +166,10 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 
   // Get count of testcases linked to every testplan
   // Hmm Count active and inactive ?
-
-  // displayMemUsage();
   $linkedItemsQty = $tplan_mgr->count_testcases(array_keys($test_plans),null,array('output' => 'groupByTestPlan'));
   
   
   $metricsMgr = new tlTestPlanMetrics($db);
-  
-  //new dBug($test_plans);
-  //new dBug($result_cfg);
   $show_platforms = false;
   
   $metrics = array('testplans' => null, 'total' => null);
@@ -197,15 +183,15 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
   $codeStatusVerbose = array_flip($result_cfg['status_code']);
   foreach($test_plans as $key => &$dummy)
   {
-
     // We need to know if test plan has builds, if not we can not call any method 
     // that try to get exec info, because you can only execute if you have builds.
-    $buildSet = $tplan_mgr->get_builds($key);
+    //
+    // 20130909 - added active filter
+    $buildSet = $tplan_mgr->get_builds($key,testplan::ACTIVE_BUILDS);
     if( is_null($buildSet) )
     {
       continue;
     }
-
 
     $platformSet = $tplan_mgr->getPlatforms($key);
     if (isset($platformSet)) 
@@ -217,8 +203,8 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
     if( !is_null($platformSet) )
     {
       $neurus = $metricsMgr->getExecCountersByPlatformExecStatus($key,null,
-                                     array('getPlatformSet' => true,
-                                           'getOnlyActiveTCVersions' => true));
+                                                                 array('getPlatformSet' => true,
+                                                                       'getOnlyActiveTCVersions' => true));
                                      
       $mm[$key]['overall']['active'] = $mm[$key]['overall']['executed'] = 0;
       foreach($neurus['with_tester'] as $platform_id => &$pinfo)
@@ -254,7 +240,7 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
     else
     {
       $mm[$key]['overall'] = $metricsMgr->getExecCountersByExecStatus($key,null,
-                                      array('getOnlyActiveTCVersions' => true));
+                                                                      array('getOnlyActiveTCVersions' => true));
 
       $mm[$key]['overall']['active'] = $mm[$key]['overall']['total'];
 
@@ -284,11 +270,6 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
       $mm[$key]['platforms'][0]['platform_name'] = $labels['not_aplicable'];
     } 
   }
-  //displayMemUsage();
-  //$chronos[] = microtime(true);
-  //$tnow = end($chronos);$tprev = prev($chronos);$t_elapsed = number_format( $tnow - $tprev, 4);
-  //echo '<br> ' . __FUNCTION__ . ' Elapsed (sec):' . $t_elapsed .'<br>';
-  //reset($chronos);  
     
   // remove duplicate platform names
   $platformsUnique = array();
@@ -350,9 +331,10 @@ function getColumnsDefinition($showPlatforms, $statusLbl, $labels, $platforms)
   return $colDef;
 }
 
-function init_args(&$dbHandler)
+function initEnv(&$dbHandler)
 {
   $args = new stdClass();
+  $gui = new stdClass();
 
   $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
                    "tproject_id" => array(tlInputParameter::INT_N), 
@@ -425,11 +407,20 @@ function init_args(&$dbHandler)
   }
   $args->show_only_active = $_SESSION['show_only_active'] = $selection;
   
-  return $args;
+
+  $gui->tproject_name = $args->tproject_name;
+  $gui->show_only_active = $args->show_only_active;
+  $gui->direct_link = $args->direct_link;
+  $gui->direct_link_ok = $args->direct_link_ok;
+  $gui->warning_msg = lang_get('no_testplans_available');
+
+  return array($args,$gui);
 }
 
 
-
+/**
+ *
+ */
 function collectTestProjectMetrics($tplanMetrics,$cfg)
 {
   $mm = array();
@@ -446,7 +437,9 @@ function collectTestProjectMetrics($tplanMetrics,$cfg)
   return $mm;
 }
 
-
+/**
+ *
+ */
 function checkRights(&$db,&$user,$context = null)
 {
   if(is_null($context))

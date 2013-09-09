@@ -23,7 +23,7 @@
  *  
  *
  * @internal revisions
- * @since 1.9.8
+ * @since 1.9.9
 **/
 
 // use phpxmlrpc because support HTTPS, while incutio NO.
@@ -284,7 +284,9 @@ class tracxmlrpcInterface extends issueTrackerInterface
   } 
 
 
-
+  /**
+   *
+   */
   function sendCmd($cmd, $id)
   {
     $param = new xmlrpcval(intval($id));
@@ -296,11 +298,10 @@ class tracxmlrpcInterface extends issueTrackerInterface
     if (!$response->errno) 
     {
       $response = php_xmlrpc_decode($response->val);
-      //new dBug($response);
     } 
     else 
     {
-      tLog();
+      tLog(__METHOD__ . (serialize($response)), 'ERROR');
       $response = false;
     }
             

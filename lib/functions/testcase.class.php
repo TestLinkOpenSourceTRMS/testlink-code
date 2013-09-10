@@ -1581,12 +1581,14 @@ class testcase extends tlObjectWithAttachments
              modification_ts
              active
              is_open
-  
+    @internal revisions
+    @since 1.9.9
+    20130910 - added 'active' => values 1,0, null => do not apply filter             
   */
   function get_last_version_info($id,$options=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $my['options'] = array( 'get_steps' => false, 'output' => 'full');
+    $my['options'] = array( 'get_steps' => false, 'output' => 'full','active' => null);
     $my['options'] = array_merge($my['options'], (array)$options);
     $tcInfo = null;
     switch($my['options']['output'])
@@ -1607,6 +1609,11 @@ class testcase extends tlObjectWithAttachments
            " FROM {$this->tables['tcversions']} TCV " .
            " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TCV.id ".
            " WHERE NH_TCV.parent_id = {$id} ";
+
+    if( !is_null($my['options']['active']) )
+    {
+      $sql .= " AND TCV.active=" . (intval($my['options']['active']) > 0 ? 1 : 0);
+    }        
   
     $max_version = $this->db->fetchFirstRowSingleColumn($sql,'version');
     
@@ -5942,9 +5949,14 @@ class testcase extends tlObjectWithAttachments
    */
   function renderGhost(&$item2render)
   {
-    // Javascript instead of javascript, because CKeditor sometimes complains
     $versionTag = '[version:%s]';
-    $href = '<a href="Javascript:openTCW(\'%s\',%s);">%s:%s' . " $versionTag (link)<p></a>";
+    $hint = "(link%s";
+
+    // $href = '<a href="Javascript:openTCW(\'%s\',%s);">%s:%s' . " $versionTag (link)<p></a>";
+
+    // second \'%s\' needed if I want to use Latest as indication, need to understand
+    // Javascript instead of javascript, because CKeditor sometimes complains
+    $href = '<a href="Javascript:openTCW(\'%s\',\'%s\');">%s:%s' . " $versionTag $hint<p></a>";
     $tlBeginMark = '[ghost]';
     $tlEndMark = '[/ghost]';
     $key2check = array('summary','preconditions');
@@ -5991,8 +6003,25 @@ class testcase extends tlObjectWithAttachments
                     // will get test case title to generate following string
                     // "Reference to Test Case EXTERNAL ID - TITLE (version X)"
                     $vn = intval($dx['Version']);
-                    $vn = ($vn == 0) ? 'Latest' : $vn;
-                    $ghost .= sprintf($href,$dx['TestCase'],$vn,$dx['TestCase'],$fi[0]['name'],$vn);
+                    // $vn = ($vn == 0) ? 'Latest' : $vn;
+
+                    // Go for the latest active version
+                    $linkFeedback=")";
+                    $addInfo="";
+                    if($vn == 0)
+                    {
+                      $yy = $this->get_last_version_info($xid,array('output' => 'full','active' => 1));
+                      $linkFeedback=" to Latest ACTIVE Version)";
+                      if(is_null($yy))
+                      {
+                        // seems all versions are inactive, in this situation will get latest
+                        $yy = $this->get_last_version_info($xid,array('output' => 'full'));
+                        $addInfo = " - All versions are inactive!!";  
+                        $linkFeedback=" to Latest Version{$addInfo})";
+                      }  
+                      $vn = $yy['version'];
+                    }  
+                    $ghost .= sprintf($href,$dx['TestCase'],$vn,$dx['TestCase'],$fi[0]['name'],$vn,$linkFeedback);
                   }
                 }
 

@@ -11,7 +11,8 @@
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * @internal revisions:
+ * @internal revisions
+ * 20130910 - franciscom - calls to assign_to_testcase() missing author_id argument
  */
 
 // Needed to use extends tlObjectWithAttachments, If not present autoload fails.
@@ -956,11 +957,11 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
           $output[]=sprintf($labels['tc_created'], $tcase_name);
 
         // create coverage dependency
-        if (!$this->assign_to_tcase($reqData['id'],$tcase['id']) ) 
+        if (!$this->assign_to_tcase($reqData['id'],$tcase['id'],$user_id) ) 
         {
           $output[] = 'Test case: ' . $tcase_name . " was not created";
         }
-        }
+      }
     }
     return $output;
   }
@@ -1837,8 +1838,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
    * @param array $options: map
    *
    * @internal revisions
-   * @since 1.9.4
-   * 20110817 - franciscom - TICKET 4360
+   * @since 1.9.9
    *
    */
   function copy_to($id,$parent_id,$user_id,$tproject_id=null,$options=null)
@@ -1937,7 +1937,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
           {
             foreach($linked_items as $value)
             {
-              $this->assign_to_tcase($new_item['id'],$value['id']);
+              $this->assign_to_tcase($new_item['id'],$value['id'],$user_id);
             }
           }              
         }

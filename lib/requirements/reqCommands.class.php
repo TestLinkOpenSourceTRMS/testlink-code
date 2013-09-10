@@ -8,7 +8,7 @@
  * 
  * web command experiment
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.9
  *  
  */
 
@@ -824,9 +824,12 @@ class reqCommands
     return $obj;
     }
 
+  /**
+   *
+   */ 
   function addTestCase(&$argsObj,$request)
   {
-    //echo __METHOD__;
+
     $obj = $this->initGuiBean();
     $node = $this->reqMgr->tree_mgr->get_node_hierarchy_info($argsObj->req_version_id);
     $dummy = $this->reqMgr->get_by_id($node['parent_id'],$argsObj->req_version_id);
@@ -856,20 +859,16 @@ class reqCommands
       {
         $msg = sprintf(lang_get('seems_to_belong_to_other_tproject'),$rawTestCasePrefix,$argsObj->tcasePrefix);
       }
-      //echo __LINE__ . ' :: status ok:' . $status_ok . '<br>';
     }
-      //echo __LINE__ . ' :: status ok:' . $status_ok . '<br>';
     
     if($status_ok)
     {            
       // IMPORANT NOTICE: audit info is managed on reqMgr method
       $alienMgr = new testcase($this->db);
-      
       $tcase_id = $alienMgr->getInternalID($argsObj->tcaseIdentity,array('tproject_id' => $argsObj->tproject_id)); 
-      //echo __LINE__ . ' :: test case id:' . $tcase_id . '<br>';
       if($tcase_id > 0)
       { 
-        $this->reqMgr->assign_to_tcase($argsObj->req_id,$tcase_id);
+        $this->reqMgr->assign_to_tcase($argsObj->req_id,$tcase_id,intval($argsObj->user_id));
       }
       else
       {
@@ -888,6 +887,9 @@ class reqCommands
     return $obj;
   }
 
+  /**
+   *
+   */
   function removeTestCase(&$argsObj,$request)
   {
     // IMPORANT NOTICE: audit info is managed on reqMgr method

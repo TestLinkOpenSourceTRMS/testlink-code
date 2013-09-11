@@ -5317,12 +5317,24 @@ class testcase extends tlObjectWithAttachments
                 $dx = json_decode($dx,true);
                 if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
                 {
-                  $fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
+                  // Start looking initially just for ACTIVE Test Case Versions
+                  $vn = isset($dx['Version']) ? intval($dx['Version']) : 0;
+                  if($vn == 0)
+                  {
+                    // User wants to follow latest ACTIVE VERSION    
+                    $yy = $this->get_last_version_info($xid,array('output' => 'full','active' => 1));
+                    if(is_null($yy))
+                    {
+                      // seems all versions are inactive, in this situation will get latest
+                      $yy = $this->get_last_version_info($xid,array('output' => 'full'));
+                    }  
+                    $vn = intval($yy['version']);
+                  }  
+
+                  $fi = $this->get_basic_info($xid,array('number' => $vn));
                   if(!is_null($fi))
                   {
-                    // $stx = $this->getStepsSimple($fi[0]['tcversion_id'],$dx['Step']);
                     $stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
-                    
                     $deghosted = true;
                     $ghost .= $stx[0][$item_key];
                   }
@@ -5997,30 +6009,27 @@ class testcase extends tlObjectWithAttachments
               {
                 if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
                 {
-                  $fi = $this->get_basic_info($xid,array('number' => $dx['Version']));
+                  $linkFeedback=")";
+                  $addInfo="";
+                  $vn = isset($dx['Version']) ? intval($dx['Version']) : 0;
+                  if($vn == 0)
+                  {
+                    // User wants to follow latest ACTIVE VERSION    
+                    $yy = $this->get_last_version_info($xid,array('output' => 'full','active' => 1));
+                    $linkFeedback=" to Latest ACTIVE Version)";
+                    if(is_null($yy))
+                    {
+                      // seems all versions are inactive, in this situation will get latest
+                      $yy = $this->get_last_version_info($xid,array('output' => 'full'));
+                      $addInfo = " - All versions are inactive!!";  
+                      $linkFeedback=" to Latest Version{$addInfo})";
+                    }  
+                    $vn = intval($yy['version']);
+                  }  
+
+                  $fi = $this->get_basic_info($xid,array('number' => $vn));
                   if(!is_null($fi))
                   {
-                    // will get test case title to generate following string
-                    // "Reference to Test Case EXTERNAL ID - TITLE (version X)"
-                    $vn = intval($dx['Version']);
-                    // $vn = ($vn == 0) ? 'Latest' : $vn;
-
-                    // Go for the latest active version
-                    $linkFeedback=")";
-                    $addInfo="";
-                    if($vn == 0)
-                    {
-                      $yy = $this->get_last_version_info($xid,array('output' => 'full','active' => 1));
-                      $linkFeedback=" to Latest ACTIVE Version)";
-                      if(is_null($yy))
-                      {
-                        // seems all versions are inactive, in this situation will get latest
-                        $yy = $this->get_last_version_info($xid,array('output' => 'full'));
-                        $addInfo = " - All versions are inactive!!";  
-                        $linkFeedback=" to Latest Version{$addInfo})";
-                      }  
-                      $vn = $yy['version'];
-                    }  
                     $ghost .= sprintf($href,$dx['TestCase'],$vn,$dx['TestCase'],$fi[0]['name'],$vn,$linkFeedback);
                   }
                 }

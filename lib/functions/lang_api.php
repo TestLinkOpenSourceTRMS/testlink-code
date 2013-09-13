@@ -15,10 +15,8 @@
  *
  *
  * @internal revisions
- * @since 1.9.8
- * 20130816 - franciscom - added management of L18N (Localization) logs, 
- *                         instead of use WARNING for this kind of logs. 
- *
+ * @since 1.9.9
+ * 20130913 - franciscom - TICKET 5916: It's impossible to login with browser set to italian language (or other language <> english)
  **/
 
 
@@ -38,9 +36,7 @@ $g_lang_overrides = array();
  * 
  * @param mixed $p_string string or array of string with term keys
  * 
- * @internal Revisions:
- *      20070501 - franciscom - added TL_LOCALIZE_TAG in order to
- *                             improve label management for custom fields
+ * @internal revisions
  */
 function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
 {
@@ -121,7 +117,9 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
       //
 
       // try to report just one per user session
-      if(!isset($_SESSION['missingL18N'][$p_string]))
+      // 20130913 - missing check for $_SESSION existence create a mess with language detection
+      //            via browser
+      if( isset($_SESSION) && !isset($_SESSION['missingL18N'][$p_string]))
       {
         $msg = sprintf("string '%s' is not localized for locale '%s' {$addMsg}",$p_string,$t_lang);
         $_SESSION['missingL18N'][$p_string] = $p_string; 

@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource  firstLogin.php
- * @package   TestLink
+ * @package     TestLink
  * @copyright   2004-2013, TestLink community 
- * @link    http://www.teamst.org/index.php
+ * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.9
+ * 20130914 - franciscom - TICKET 5895: New Account Created notification is sent to wrong destinations
  *
  */
 require_once('config.inc.php');
@@ -53,7 +54,7 @@ if($args->doEditUser)
     }
     if ($result >= tl::OK)
     {
-      mail2admins($db,$user);
+      notifyGlobalAdmins($db,$user);
       logAuditEvent(TLS("audit_users_self_signup",$args->login),"CREATE",$user->dbID,"users");
       redirect(TL_BASE_HREF . "login.php?note=first");
       exit();
@@ -92,28 +93,28 @@ function init_args()
 }
 
 /**
- * send mail to administrators to warn about new user created
+ * send mail to administrators (users that have default role = administrator) 
+ * to warn about new user created.
  *
  */
-function mail2admins(&$dbHandler,&$userObj)
+function notifyGlobalAdmins(&$dbHandler,&$userObj)
 {
   // Get email addresses for all users that have default role = administrator
   $roleMgr = new tlRole(TL_ROLES_ADMIN);
-  $userSet = $roleMgr->getAllUsersWithRole($dbHandler);
+  $userSet = $roleMgr->getUsersWithGlobalRole($dbHandler);
   $mail['subject'] = lang_get('new_account');
   $key2loop = array_keys($userSet);
   foreach($key2loop as $userID)
   {
     $mail['to'][$userID] = $userSet[$userID]->emailAddress; 
-    }
-    // email_api uses ',' as list separator
-    $mail['to'] = implode(',',$mail['to']);
+  }
+  // email_api uses ',' as list separator
+  $mail['to'] = implode(',',$mail['to']);
+  $mail['body'] = lang_get('new_account') . "\n";
+  $mail['body'] .= " user:$userObj->login\n"; 
+  $mail['body'] .= " first name:$userObj->firstName surname:$userObj->lastName\n";
+  $mail['body'] .= " email:{$userObj->emailAddress}\n";
     
-    $mail['body'] = lang_get('new_account') . "\n";
-    $mail['body'] .= " user:$userObj->login\n"; 
-    $mail['body'] .= " first name:$userObj->firstName surname:$userObj->lastName\n";
-    $mail['body'] .= " email:{$userObj->emailAddress}\n";
-    
-    // silence errors
+  // silence errors
   @email_send(config_get('from_email'), $mail['to'], $mail['subject'], $mail['body']);
 }

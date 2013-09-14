@@ -24,10 +24,10 @@ window.onload=function(){
 
 <body>
 {config_load file="input_dimensions.conf" section="login"} {* Constant definitions *}
-{include file="inc_login_title.tpl"}
-
 <div class="forms" id="login_div">
 <div class="messages" style="text-align:center;">{$gui->message}</div>
+
+{include file="inc_login_title.tpl"}
 
 <form method="post" action="firstLogin.php">
 

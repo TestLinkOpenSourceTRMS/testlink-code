@@ -8,20 +8,20 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 some smarty and javascript variables are created on the inc_*.tpl files.
      
 @internal revisions
-@since 1.9.4
-20120728 - franciscom - TICKET 5115: [FEATURE] - Test Plan list view - add test case qty, and platforms qty
+@since 1.9.9
+20130914 - franciscom - TICKET 5907: Links are not click-able in Description fields for Projects Test Plans and Builds
 
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}
-{assign var="managerURL" value="lib/plan/planEdit.php"}
-{assign var="editAction" value="$managerURL?do_action=edit&amp;tplan_id="}
-{assign var="deleteAction" value="$managerURL?do_action=do_delete&tplan_id="}
-{assign var="createAction" value="$managerURL?do_action=create"}
-{assign var="exportAction" value="lib/plan/planExport.php?tplan_id="}
-{assign var="importAction" value="lib/plan/planImport.php?tplan_id="}
+{$managerURL="lib/plan/planEdit.php"}
+{$editAction="$managerURL?do_action=edit&amp;tplan_id="}
+{$deleteAction="$managerURL?do_action=do_delete&tplan_id="}
+{$createAction="$managerURL?do_action=create"}
+{$exportAction="lib/plan/planExport.php?tplan_id="}
+{$importAction="lib/plan/planImport.php?tplan_id="}
 
 
 {lang_get var="labels" 
@@ -95,7 +95,7 @@ var del_action=fRoot+'{$deleteAction}';
  				  </a>
 			</td>
 			<td>
-				{$testplan.notes|strip_tags|strip|truncate:#TESTPLAN_NOTES_TRUNCATE#}
+				{$testplan.notes}
 			</td>
 			<td align="right" style="width:10%;">
 				{$testplan.tcase_qty}

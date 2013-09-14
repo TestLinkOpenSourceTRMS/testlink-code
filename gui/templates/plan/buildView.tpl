@@ -4,20 +4,18 @@ $Id: buildView.tpl,v 1.18 2010/10/17 09:46:37 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
-Rev:
-    20120731 - kinow - TICKET 4977: CSRF token
-    20101017 - franciscom - image access refactored (tlImages)
-    20090509 - franciscom - BUGID - display release_date
-    20070921 - franciscom - BUGID  - added strip_tags|strip to notes
+@internal revisions
+@since 1.9.9
+20130914 - franciscom - TICKET 5907: Links are not click-able in Description fields for Projects Test Plans and Builds
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}
-{assign var="managerURL" value="lib/plan/buildEdit.php"}
-{assign var="editAction" value="$managerURL?do_action=edit&amp;build_id="}
-{assign var="deleteAction" value="$managerURL?do_action=do_delete&build_id="}
-{assign var="createAction" value="$managerURL?do_action=create"}
+{$managerURL="lib/plan/buildEdit.php"}
+{$editAction="$managerURL?do_action=edit&amp;build_id="}
+{$deleteAction="$managerURL?do_action=do_delete&build_id="}
+{$createAction="$managerURL?do_action=create"}
 
 
 {lang_get s='warning_delete_build' var="warning_msg"}
@@ -68,7 +66,7 @@ var del_action=fRoot+'{$deleteAction}';
   					     {/if}    
   					  </a>   
   				</td>
-  				<td>{$build.notes|strip_tags|strip|truncate:#BUILD_NOTES_TRUNCATE_LEN#}</td>
+  				<td>{$build.notes}</td>
   				<td>{if $build.release_date != ''}{localize_date d=$build.release_date}{/if}</td>
   				<td class="clickable_icon">
   				   {if $build.active == 1} 

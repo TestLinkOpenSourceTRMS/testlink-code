@@ -7,7 +7,9 @@ Development hint:
 some variables smarty and javascript are created on the inc_*.tpl files.
 
 @internal revisions
-@since 1.9.8
+@since 1.9.9
+20130914 - franciscom - TICKET 5907: Links are not click-able in Description fields for Projects Test Plans and Builds
+
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -85,7 +87,7 @@ var del_action=fRoot+'{$deleteAction}';
            </a>
       </td>
       <td>
-        {$testproject.notes|strip_tags|strip|truncate:#TESTPROJECT_NOTES_TRUNCATE#}
+        {$testproject.notes}
       </td>
       <td width="10%">
         {$testproject.prefix|escape}

@@ -13,7 +13,8 @@
  *
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.9
+ * 
  */
 require_once("../../config.inc.php");            
 require_once('exttable.class.php');
@@ -133,9 +134,9 @@ function getRoleColourCfg(&$db)
     foreach($roles as $roleObj)
     {
     	if(!isset($role_colour[$roleObj->name]))
-        {
-            $role_colour[$roleObj->name] = '';
-        }
+      {
+        $role_colour[$roleObj->name] = '';
+      }
     }
     return $role_colour;
 }
@@ -183,6 +184,7 @@ function buildMatrix(&$guiObj,&$argsObj)
                                       $guiObj->matrix[$zdx]['user_id'] . '">' . $guiObj->matrix[$zdx]['login'] . "</a>";
   }
  
+
   $matrix = new tlExtTable($columns, $guiObj->matrix, 'tl_users_list');
   
   // => addCustomBehaviour(columnType, );
@@ -216,6 +218,9 @@ function checkUserOrderBy($input)
 	return $status_ok;
 }
 
+/**
+ *
+ */
 function getAllUsersForGrid(&$dbHandler)
 {
   $tables = tlObject::getDBTables(array('users','roles'));
@@ -226,7 +231,16 @@ function getAllUsersForGrid(&$dbHandler)
          " '' AS place_holder,R.id AS role_id,U.id AS user_id,U.login, 0 AS is_special " . 
          " FROM {$tables['users']} U " .
          " JOIN {$tables['roles']} R ON U.role_id = R.id  ORDER BY U.login ";
+
   $users = $dbHandler->get_recordset($sql);
+
+  // because we need to render this on EXT-JS, we have issues with <no rights> role
+  // due to <, then we are going to escape values in description column
+  $loop2do = count($users);
+  for($idx=0; $idx <= $loop2do; $idx++)
+  {
+    $users[$idx]['description'] = htmlentities($users[$idx]['description']);    
+  }  
 
 
   // Still need to understand why, but with MSSQL we use on ADODB 
@@ -261,7 +275,8 @@ function getAllUsersForGrid(&$dbHandler)
 	  {
 		  $users[$idx]['is_special'] = isset($specialK[$users[$idx]['login']]) ? 1 : 0;
 	  }
-  } 
+  }
+
   return $users;
 }
 
@@ -271,4 +286,3 @@ function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'mgt_users');
 }
-?>

@@ -1252,6 +1252,7 @@ $TLS_th_locale = "Locale";
 $TLS_th_login = "Login";
 $TLS_th_role = "Role";
 $TLS_th_api = "API Key";
+
 //$TLS_api_gen_key_action = "generate";
 $TLS_warning_delete_user = "You are going to delete: %s <br /><br /> Are you sure?";
 $TLS_warning_disable_user = "You are going to disable: %s <br /><br /> Are you sure?";
@@ -1260,6 +1261,9 @@ $TLS_order_by_role_dir = "Order by role";
 $TLS_alt_active_user = "Active user";
 $TLS_show_inactive_users = "Show inactive users";
 $TLS_hide_inactive_users = "Hide inactive users";
+
+$TLS_btn_manage_user = "Manage user";
+
 
 // ----- gui/templates/login.tpl -----
 $TLS_btn_login = "Login";
@@ -3020,6 +3024,7 @@ $TLS_invalid_smtp_hostname = 'SMTP Hostname seems to be invalid';
 $TLS_password_cannot_be_reseted_invalid_smtp_hostname = 'Password Reset can not be done. ' .
                                                         'Reason: SMTP Hostname seems to be invalid';
 $TLS_password_cannot_be_reseted_reason = 'Password Reset can not be done. Reason: %s ';
+$TLS_login_does_not_exist = "Login %s does not exist";
 
 
 // ----- lib/usermanagement/rolesedit.php -----

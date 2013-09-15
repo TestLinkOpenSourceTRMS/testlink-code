@@ -240,8 +240,8 @@ class tlUser extends tlDBObject
   {
     $this->_clean($options);
     $sql = "SELECT id,login,password,cookie_string,first,last,email,role_id,locale, " .
-             " login AS fullname, active,default_testproject_id, script_key " .
-             " FROM {$this->object_table}";
+           " login AS fullname, active,default_testproject_id, script_key " .
+           " FROM {$this->object_table}";
     $clauses = null;
 
     if ($options & self::TLOBJ_O_SEARCH_BY_ID)
@@ -599,10 +599,14 @@ class tlUser extends tlDBObject
     $login = trim($login);
     
     if ($login == "" || (tlStringLen($login) > $this->maxLoginLength))
+    {  
       $result = self::E_LOGINLENGTH;
-    else if (!preg_match($this->loginRegExp,$login)) //Only allow a basic set of characters
+    }
+    else if (!preg_match($this->loginRegExp,$login)) 
+    {
+      //Only allow a basic set of characters
       $result = self::E_NOTALLOWED;
-
+    }  
     return $result;
   }
   
@@ -1006,6 +1010,9 @@ class tlUser extends tlDBObject
     return is_blank($last) ? self::E_LASTNAMELENGTH : tl::OK;
   }
   
+  /**
+   *
+   */
   static public function doesUserExist(&$db,$login)
   {
     $user = new tlUser();
@@ -1017,6 +1024,9 @@ class tlUser extends tlDBObject
     return null;
   }
   
+  /**
+   *
+   */
   static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
   {
     return tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);

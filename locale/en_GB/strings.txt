@@ -74,6 +74,8 @@ $TLS_doc_id = "Document ID";
 $TLS_doc_id_short = "Doc ID";
 $TLS_destination_top = "Destination position top";
 $TLS_destination_bottom = "Destination position bottom";
+$TLS_display_author_updater = "Display Author/Updater";
+
 $TLS_error = "Error";
 $TLS_estimated_execution_duration = "Estimated exec. duration (min)";
 $TLS_estimated_execution_duration_short = "Estimated exec. (min)";
@@ -3237,8 +3239,6 @@ $TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES = "There are no custom fields us
 $TLS_API_PLATFORMNAME_ALREADY_EXISTS = "Platform name (%s) already exists (id:%s)";
 
 
-$TLS_NODEID_INVALID_DATA_TYPE_STR = "Invalid Data Type - Node ID can be Array of positive Integer, or Positive Integer";
-
 $TLS_API_PLATFORM_NAME_DOESNOT_EXIST = "Platform name (%s) does not exist";
 
 $TLS_API_PLATFORM_REMOVETC_NEEDED_BEFORE_UNLINK = "Platform (%s) is used by %s test case(s), then cannot be removed." .
@@ -3246,7 +3246,8 @@ $TLS_API_PLATFORM_REMOVETC_NEEDED_BEFORE_UNLINK = "Platform (%s) is used by %s t
                                        			  "test cases assigned to it.";
 
 
-
+$TLS_API_NODEID_INVALID_DATA_TYPE = "Invalid Data Type - Node ID can be Array of Positive Integer, or Positive Integer";
+$TLS_API_TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST = "Test Project Source Name: %s - does not exist";
 
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";

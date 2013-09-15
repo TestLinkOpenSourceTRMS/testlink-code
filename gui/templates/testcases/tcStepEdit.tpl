@@ -27,7 +27,7 @@ Purpose: create/edit test case step
 {lang_get var="labels"
           s="warning_step_number_already_exists,warning,warning_step_number,btn_save_and_exit,
              expected_results,step_actions,step_number_verbose,btn_cancel,btn_create_step,ghost,
-             show_ghost_string,
+             show_ghost_string,display_author_updater,
              btn_create,btn_cp,btn_copy_step,btn_save,cancel,warning_unsaved,step_number,execution_type_short_descr,
              title_created,version,by,summary,preconditions,title_last_mod"}
 

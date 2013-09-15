@@ -330,8 +330,8 @@ class TLSmarty extends Smarty
 
   static function getImageSet()
   {
-    $dummy = array(
-                   'active' => TL_THEME_IMG_DIR . 'flag_green.png',
+    $dummy = array('active' => TL_THEME_IMG_DIR . 'flag_green.png',
+                   'activity' => TL_THEME_IMG_DIR . 'information.png',
                    'add' => TL_THEME_IMG_DIR . 'add.png',
                    'api_info' => TL_THEME_IMG_DIR . 'brick.png',
                    'bug_link_tl_to_bts' => TL_THEME_IMG_DIR . 'bug_link_famfamfam.png',
@@ -364,14 +364,14 @@ class TLSmarty extends Smarty
                    'ghost_item' => TL_THEME_IMG_DIR . 'ghost16x16.png',
                    'history' => TL_THEME_IMG_DIR . 'history.png',
                    'history_small' => TL_THEME_IMG_DIR . 'history_small.png',
+                   'import' => TL_THEME_IMG_DIR . 'door_in.png',
                    'inactive' => TL_THEME_IMG_DIR . 'flag_yellow.png',
+                   'info' => TL_THEME_IMG_DIR . 'question.gif',
+                   'insert_step' => TL_THEME_IMG_DIR . 'insert_step.png',
                    'item_link' => TL_THEME_IMG_DIR . 'folder_link.png',
                    'log_message' => TL_THEME_IMG_DIR . 'history.png',
                    'log_message_small' => TL_THEME_IMG_DIR . 'history_small.png',
                    'magnifier' => TL_THEME_IMG_DIR . 'magnifier.png',
-                   'import' => TL_THEME_IMG_DIR . 'door_in.png',
-                   'info' => TL_THEME_IMG_DIR . 'question.gif',
-                   'insert_step' => TL_THEME_IMG_DIR . 'insert_step.png',
                    'on' => TL_THEME_IMG_DIR . 'lightbulb.png',
                    'off' => TL_THEME_IMG_DIR . 'lightbulb_off.png',
                    'public' => TL_THEME_IMG_DIR . 'door_open.png',

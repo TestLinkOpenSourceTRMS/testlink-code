@@ -15,7 +15,7 @@ viewer for test case in test specification
              execution_type_short_descr,delete_step,show_hide_reorder,btn_new_sibling,
              test_plan,platform,insert_step,btn_print,btn_print_view,hint_new_version,
              execution_type,test_importance,importance,none,preconditions,btn_compare_versions,
-             show_ghost_string,
+             show_ghost_string,display_author_updater,
              estimated_execution_duration,status,btn_save,estimated_execution_duration_short,
              requirement,btn_show_exec_history,btn_resequence_steps,link_unlink_requirements"}
 

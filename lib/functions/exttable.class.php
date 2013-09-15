@@ -88,20 +88,20 @@ class tlExtTable extends tlTable
    */
   public $sortDirection = 'DESC';
 
-    /**
-     * If true shows a toolbar in the table header.
-     */
-    public $showToolbar = true;
+  /**
+   * If true shows a toolbar in the table header.
+   */
+  public $showToolbar = true;
 
-    /**
-     * If true shows "expand/collapse groups" toolbutton in toolbar.
-     */
-    public $toolbarExpandCollapseGroupsButton = true;
+  /**
+   * If true shows "expand/collapse groups" toolbutton in toolbar.
+   */
+  public $toolbarExpandCollapseGroupsButton = true;
     
-    /**
-     * If true shows "show all columns" toolbutton in toolbar.
-     */
-    public $toolbarShowAllColumnsButton = true;
+  /**
+   * If true shows "show all columns" toolbutton in toolbar.
+   */
+  public $toolbarShowAllColumnsButton = true;
 
   /**
    * If true show "reset to default settings" button
@@ -223,7 +223,7 @@ class tlExtTable extends tlTable
       // only checking for 'hidden' attribute, we will generate an issue
       //
       $isGroupable = isset($column['groupable']) ? $column['groupable'] : false;
-	  if( (isset($column['hidden']) && $column['hidden']) && !$isGroupable )
+	    if( (isset($column['hidden']) && $column['hidden']) && !$isGroupable )
       {
       	continue;  // just an experiment
       }

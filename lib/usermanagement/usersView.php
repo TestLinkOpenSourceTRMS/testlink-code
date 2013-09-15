@@ -24,14 +24,9 @@ testlinkInitPage($db,false,false,"checkRights");
 $smarty = new TLSmarty();
 
 $templateCfg = templateConfiguration();
-$args = init_args();
 
-$gui = new stdClass();
-$gui->grants = getGrantsForUserMgmt($db,$args->currentUser);
-$gui->result = null;
-$gui->action = null;
-$gui->user_feedback = '';
-$gui->basehref = $args->basehref; 
+
+list($args,$gui) = initEnv($db);
 
 switch($args->operation)
 {
@@ -75,16 +70,10 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
-/*
-  function: init_args()
-            get info from request and session
-
-  args:
-
-  returns: object
-
-*/
-function init_args()
+/**
+ *
+ */
+function initEnv(&$dbHandler)
 {
   $_REQUEST=strings_stripSlashes($_REQUEST);
 
@@ -96,6 +85,7 @@ function init_args()
   // checkFunction: applys checks via checkFooOrBar() to ensure its either 'foo' or 'bar' 
   // normalization: done via  normFunction() which replaces ',' with '.' 
   // "HelloString3" => array("GET",tlInputParameter::STRING_N,1,15,'checkFooOrBar','normFunction'),
+  //
   $iParams = array("operation" => array(tlInputParameter::STRING_N,0,50),
                    "user" => array(tlInputParameter::INT_N));
   
@@ -108,7 +98,15 @@ function init_args()
   $args->currentUserID = $_SESSION['currentUser']->dbID;
   $args->basehref =  $_SESSION['basehref'];
   
-  return $args;
+
+  $gui = new stdClass();
+  $gui->grants = getGrantsForUserMgmt($dbHandler,$args->currentUser);
+  $gui->result = null;
+  $gui->action = null;
+  $gui->user_feedback = '';
+  $gui->basehref = $args->basehref; 
+
+  return array($args,$gui);
 }
 
 /*

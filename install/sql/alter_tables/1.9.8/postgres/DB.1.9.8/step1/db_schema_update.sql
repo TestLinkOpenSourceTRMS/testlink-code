@@ -25,10 +25,10 @@ ALTER TABLE /*prefix*/cfield_testprojects ADD COLUMN "required" INT2 NOT NULL DE
 
 
 /* tcversions */
-ALTER TABLE /*prefix*/tcversions ADD COLUMN "estimated_exec_duration" number(6,2) NULL;
+ALTER TABLE /*prefix*/tcversions ADD COLUMN "estimated_exec_duration" numeric(6,2) NULL;
 
 /* executions */
-ALTER TABLE /*prefix*/executions ADD COLUMN "execution_duration" number(6,2) NULL;
+ALTER TABLE /*prefix*/executions ADD COLUMN "execution_duration" numeric(6,2) NULL;
 
 
 ALTER TABLE /*prefix*/executions ADD COLUMN "author_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id);

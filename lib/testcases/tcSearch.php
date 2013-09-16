@@ -15,8 +15,8 @@
  *
  *
  *  @internal revisions
- *  @since 1.9.8
- *
+ *  @since 1.9.9
+ *  20130916 - franciscom - TICKET 5922: Filters on creation and modification dates is ignored in test cases search
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -32,6 +32,7 @@ $tproject_mgr = new testproject($db);
 
 $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
+$filter = null;
 list($args,$filter) = init_args($date_format_cfg);
 
 $gui = initializeGui($args);
@@ -47,7 +48,6 @@ if ($args->tprojectID)
   $gui->tcasePrefix .= $tcase_cfg->glue_character;
 
   $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '', 'users' => '');
-  $filter = null;
   $tcaseID = null;
 
   $k2w = array('name' => 'NH_TC', 'summary' => 'TCV', 'preconditions' => 'TCV');
@@ -326,7 +326,7 @@ function init_args($dateFormat)
   $k2f = array('creation_date_from' => ' creation_ts >= ',
                'creation_date_to' => 'creation_ts <= ',
                'modification_date_from' => ' modification_ts >= ', 
-               'modification_date_to' => ' modification_ts =< ');
+               'modification_date_to' => ' modification_ts <= ');
 
 
   $filter = null;

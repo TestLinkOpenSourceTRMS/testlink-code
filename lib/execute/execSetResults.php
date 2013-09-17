@@ -19,8 +19,7 @@
  * will be simpler).
  * 
  * @internal revisions
- *
- * @since 1.9.7
+ * @since 1.9.9
  *
 **/
 require_once('../../config.inc.php');
@@ -111,79 +110,85 @@ if(!is_null($linked_tcversions))
 {
   $items_to_exec = array();
   $_SESSION['s_lastAttachmentInfos'] = null;
-    if($args->level == 'testcase')
-    {
-      // Warning!!! - $gui is passed by reference to be updated inside function
-      $tcase = null;
-        list($tcase_id,$tcversion_id) = processTestCase($tcase,$gui,$args,$cfg,$linked_tcversions,
-                                                        $tree_mgr,$tcase_mgr,$attachmentRepository);
-    }
-    else
-    {
-        processTestSuite($db,$gui,$args,$itemSet,$tree_mgr,$tcase_mgr,$attachmentRepository);
-        $tcase_id = $itemSet->tcase_id;
-        $tcversion_id = $itemSet->tcversion_id;
-    }
+  if($args->level == 'testcase')
+  {
+    // Warning!!! - $gui is passed by reference to be updated inside function
+    $tcase = null;
+    list($tcase_id,$tcversion_id) = processTestCase($tcase,$gui,$args,$cfg,$linked_tcversions,
+                                                    $tree_mgr,$tcase_mgr,$attachmentRepository);
+  }
+  else
+  {
+    processTestSuite($db,$gui,$args,$itemSet,$tree_mgr,$tcase_mgr,$attachmentRepository);
+    $tcase_id = $itemSet->tcase_id;
+    $tcversion_id = $itemSet->tcversion_id;
+  }
 
   // check if value is an array before calling implode to avoid warnings in event log
-     $gui->tcversionSet = is_array($tcversion_id) ? implode(',',$tcversion_id) : $tcversion_id;
+  $gui->tcversionSet = is_array($tcversion_id) ? implode(',',$tcversion_id) : $tcversion_id;
 
-    // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
-    //
-    // Can be DONE JUST ONCE AFTER write results to DB
-    // --------------------------------------------------------------------------------------------
-    // Results to DB
-    if ($args->save_results || $args->do_bulk_save || $args->save_and_next || $args->doMoveNext || $args->doMovePrevious)
-    {
-      // this has to be done to do not break logic present on write_execution()
-      $args->save_results = $args->save_and_next ? $args->save_and_next : $args->save_results;
-      if( $args->save_results )
-      {  
-        $_REQUEST['save_results'] = $args->save_results;
-        write_execution($db,$args,$_REQUEST);
-      }
+  // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
+  //
+  // Can be DONE JUST ONCE AFTER write results to DB
+  // --------------------------------------------------------------------------------------------
+  // Results to DB
+  // 
+  // 20130917 - this implementation regarding save_results is confusing.
+  // why ?
+  // because in some situations args->save_results is a number (0) an in other is an array
+  // with just one element with key => test case version ID executed.
+  //
+  if ($args->save_results || $args->do_bulk_save || $args->save_and_next || $args->doMoveNext || $args->doMovePrevious)
+  {
+    // this has to be done to do not break logic present on write_execution()
+    $args->save_results = $args->save_and_next ? $args->save_and_next : $args->save_results;
+    if( $args->save_results || $args->do_bulk_save)
+    {  
+      $_REQUEST['save_results'] = $args->save_results;
+      write_execution($db,$args,$_REQUEST);
+    }
 
-      // Need to re-read to update test case status
-      if ($args->save_and_next || $args->doMoveNext || $args->doMovePrevious) 
-      {  
+    // Need to re-read to update test case status
+    if ($args->save_and_next || $args->doMoveNext || $args->doMovePrevious) 
+    {  
         
-        // IMPORTANT DEVELOPMENT NOTICE
-        // Normally this script is called from the tree.
-        // Filters and other conditions (example display test cases just assigned to me,etc)
-        // can be applied, creating a set of test cases that can be used.
-        // Due to size restrictions on POST variables this info is transfered via $_SESSION.
-        //
-        // But because we have choosen to add access to this script from other features
-        // we have forgot to populate this info.
-        // This is the reason for several issues.
-        // The approach will be to understand who is the caller and apply different logics
-        // instead of recreate the logic to populate $_SESSION (I think this approach
-        // will be simpler).
-        $doSingleStep = is_null($args->testcases_to_show);
-        $args->testcases_to_show = (array)$args->testcases_to_show;
+      // IMPORTANT DEVELOPMENT NOTICE
+      // Normally this script is called from the tree.
+      // Filters and other conditions (example display test cases just assigned to me,etc)
+      // can be applied, creating a set of test cases that can be used.
+      // Due to size restrictions on POST variables this info is transfered via $_SESSION.
+      //
+      // But because we have choosen to add access to this script from other features
+      // we have forgot to populate this info.
+      // This is the reason for several issues.
+      // The approach will be to understand who is the caller and apply different logics
+      // instead of recreate the logic to populate $_SESSION (I think this approach
+      // will be simpler).
+      $doSingleStep = is_null($args->testcases_to_show);
+      $args->testcases_to_show = (array)$args->testcases_to_show;
         
-        $opt4sibling = array('move' => $args->moveTowards);
-        switch ($args->caller)
-        {
-          case 'tcAssignedToMe':
-            $doSingleStep = true;
-            $opt4sibling['assigned_to'] = array('user_id' => $args->user_id, 'build_id' => $args->build_id);
-          break;
+      $opt4sibling = array('move' => $args->moveTowards);
+      switch ($args->caller)
+      {
+        case 'tcAssignedToMe':
+          $doSingleStep = true;
+          $opt4sibling['assigned_to'] = array('user_id' => $args->user_id, 'build_id' => $args->build_id);
+        break;
           
-          default:
-            // $opt4sibling = null;
-          break;  
+        default:
+          // $opt4sibling = null;
+        break;  
+      }
+      
+      $nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$tcversion_id,$args->platform_id,$opt4sibling);
+      if(!$doSingleStep)
+      { 
+        while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $args->testcases_to_show)) 
+        {
+          $nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$nextItem['tcversion_id'],
+                                                         $args->platform_id,$opt4sibling);
         }
-        
-        $nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$tcversion_id,$args->platform_id,$opt4sibling);
-        if(!$doSingleStep)
-        { 
-          while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $args->testcases_to_show)) 
-          {
-            $nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$nextItem['tcversion_id'],
-                                                           $args->platform_id,$opt4sibling);
-          }
-        }
+      }
       
       if( !is_null($nextItem) )
       {

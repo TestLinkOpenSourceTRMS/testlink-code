@@ -209,11 +209,10 @@ Ext.onReady(function() {
 {*
 IMPORTANT: if you change value, you need to chang init_args() logic on execSetResults.php
 *}
-{assign var="tplan_notes_view_memory_id" value="tpn_view_status"}
-{assign var="build_notes_view_memory_id" value="bn_view_status"}
-{assign var="bulk_controls_view_memory_id" value="bc_view_status"}
-{assign var="platform_notes_view_memory_id" value="platform_notes_view_status"}
-
+{$tplan_notes_view_memory_id="tpn_view_status"}
+{$build_notes_view_memory_id="bn_view_status"}
+{$bulk_controls_view_memory_id="bc_view_status"}
+{$platform_notes_view_memory_id="platform_notes_view_status"}
 
 <body onLoad="show_hide('tplan_notes','{$tplan_notes_view_memory_id}',{$gui->tpn_view_status});
               show_hide('build_notes','{$build_notes_view_memory_id}',{$gui->bn_view_status});
@@ -335,8 +334,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
         {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
             {lang_get s='bulk_tc_status_management' var='container_title'}
-            {assign var="div_id" value='bulk_controls'}
-            {assign var="memstatus_id" value=$bulk_controls_view_memory_id}
+            {$div_id='bulk_controls'}
+            {$memstatus_id="$bulk_controls_view_memory_id"}
             {include file="inc_show_hide_mgmt.tpl"
                      show_hide_container_title=$container_title
                      show_hide_container_id=$div_id

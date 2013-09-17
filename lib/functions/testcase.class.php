@@ -4520,11 +4520,10 @@ class testcase extends tlObjectWithAttachments
   }
 
   /**
-     * 
-     *
-     *  @internal Revisions
-     *  20100821 - franciscom - added options
-     */
+   * 
+   *
+   *  @internal revisions
+   */
   function get_steps($tcversion_id,$step_number=0,$options=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -4559,6 +4558,9 @@ class testcase extends tlObjectWithAttachments
     return $result;
   }
 
+  /**
+   *
+   */
   private function getStepsSimple($tcversion_id,$step_number=0,$options=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -5273,7 +5275,8 @@ class testcase extends tlObjectWithAttachments
 
 
   /**
-   *
+   * 
+   * Solve point to my self
    */
   function renderGhostSteps(&$steps2render)
   {
@@ -5312,33 +5315,49 @@ class testcase extends tlObjectWithAttachments
             {
               if(strpos($xx[$xdx],$tlEndMark) !== FALSE)
               {
-                $dx = trim(str_replace($replaceSet,'',$xx[$xdx]));
-                $dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
+                $ydx = trim(str_replace($replaceSet,'',$xx[$xdx]));
+                $dx = '{' . html_entity_decode(trim($ydx,'\n')) . '}';
                 $dx = json_decode($dx,true);
-                if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
-                {
-                  // Start looking initially just for ACTIVE Test Case Versions
-                  $vn = isset($dx['Version']) ? intval($dx['Version']) : 0;
-                  if($vn == 0)
-                  {
-                    // User wants to follow latest ACTIVE VERSION    
-                    $yy = $this->get_last_version_info($xid,array('output' => 'full','active' => 1));
-                    if(is_null($yy))
-                    {
-                      // seems all versions are inactive, in this situation will get latest
-                      $yy = $this->get_last_version_info($xid,array('output' => 'full'));
-                    }  
-                    $vn = intval($yy['version']);
-                  }  
 
-                  $fi = $this->get_basic_info($xid,array('number' => $vn));
-                  if(!is_null($fi))
+                if(!isset($dx['Step']))
+                {
+                  // seems we have found a ghost test case
+                  $zorro = array('summary' => $tlBeginMark . $ydx . $tlEndMark);
+                  $this->renderGhost($zorro);
+                  $deghosted = true;
+                  $ghost .= $zorro['summary'];                  
+                }  
+                else
+                {
+                  if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
                   {
-                    $stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
-                    $deghosted = true;
-                    $ghost .= $stx[0][$item_key];
-                  }
-                } 
+                    // Start looking initially just for ACTIVE Test Case Versions
+                    $vn = isset($dx['Version']) ? intval($dx['Version']) : 0;
+                    if($vn == 0)
+                    {
+                      // User wants to follow latest ACTIVE VERSION    
+                      $yy = $this->get_last_version_info($xid,array('output' => 'full','active' => 1));
+                      if(is_null($yy))
+                      {
+                        // seems all versions are inactive, in this situation will get latest
+                        $yy = $this->get_last_version_info($xid,array('output' => 'full'));
+                      }  
+                      $vn = intval($yy['version']);
+                    }  
+
+                    $fi = $this->get_basic_info($xid,array('number' => $vn));
+                    if(!is_null($fi))
+                    {
+                      if(intval($dx['Step']) > 0)
+                      {  
+                        $stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
+                        $deghosted = true;
+                        $ghost .= $stx[0][$item_key];
+                      }
+                    }
+                  } 
+
+                }  
               }
             }
             catch (Exception $e)
@@ -5965,7 +5984,6 @@ class testcase extends tlObjectWithAttachments
     $hint = "(link%s";
 
     // $href = '<a href="Javascript:openTCW(\'%s\',%s);">%s:%s' . " $versionTag (link)<p></a>";
-
     // second \'%s\' needed if I want to use Latest as indication, need to understand
     // Javascript instead of javascript, because CKeditor sometimes complains
     $href = '<a href="Javascript:openTCW(\'%s\',\'%s\');">%s:%s' . " $versionTag $hint<p></a>";
@@ -5985,7 +6003,6 @@ class testcase extends tlObjectWithAttachments
     {
       $start = strpos($rse[$item_key],$tlBeginMark);
       $ghost = $rse[$item_key];
-
       if($start !== FALSE)
       {
         $xx = explode($tlBeginMark,$rse[$item_key]);
@@ -5995,7 +6012,6 @@ class testcase extends tlObjectWithAttachments
         {
           if( strpos($xx[$xdx],$tlEndMark) !== FALSE)
           {
-            // $dx = trim(str_replace($replaceSet,'',$xx[$xdx]));
             $yy = explode($tlEndMark,$xx[$xdx]);
             if( ($elc = count($yy)) > 0)
             {
@@ -6004,7 +6020,6 @@ class testcase extends tlObjectWithAttachments
               // trick to convert to array  
               $dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
               $dx = json_decode($dx,true);
-      
               try
               {
                 if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
@@ -6057,7 +6072,7 @@ class testcase extends tlObjectWithAttachments
       {
         $rse[$item_key] = $ghost;
       }
-    }           
+    }       
   }   
 
   /**

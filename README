@@ -197,8 +197,8 @@ then give a look to section 'Upgrade from 1.9.7 to 1.9.8'
 
 - Upgrade from 1.9.7 to 1.9.8
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
-a) Execute install/sql/alter_tables/1.9.8/<your_db>/DB.1.6/step1/db_schema_update.sql
-b) Execute install/sql/alter_tables/1.9.8/<your_db>/DB.1.6/stepZ/z_final_step.sql
+a) Execute install/sql/alter_tables/1.9.8/<your_db>/DB.1.9.8/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.8/<your_db>/DB.1.9.8/stepZ/z_final_step.sql
 
 
 Hint: When using MySQL Query Browser make sure you are not using a single command execution. 

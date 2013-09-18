@@ -3,7 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource execNavigator.tpl
 
 @internal revisions
-@since 1.9.8
+@since 1.9.9
 *}
 
 {lang_get var="labels"
@@ -59,7 +59,7 @@ var code_not_run = '{$gui->not_run}';
 function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build_id,mode) 
 {
   wargs = "tproject_id=" + tproject_id + "&tplan_id=" + tplan_id + "&platform_id=" + platform_id + "&build_id=" + build_id;  
-  wargs = args + "&exportContent=" + mode;
+  wargs = wargs + "&exportContent=" + mode;
   wref = window.open(fRoot+"lib/plan/planExport.php?"+wargs,
                      windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
   wref.focus();

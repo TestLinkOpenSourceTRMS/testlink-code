@@ -6,16 +6,16 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @internal revisions
 @since 1.9.7
 *}
-{assign var="attachment_model" value=$cfg->exec_cfg->att_model}
-{assign var="title_sep"  value=$smarty.const.TITLE_SEP}
-{assign var="title_sep_type3"  value=$smarty.const.TITLE_SEP_TYPE3}
+{$attachment_model=$cfg->exec_cfg->att_model}
+{$title_sep=$smarty.const.TITLE_SEP}
+{$title_sep_type3=$smarty.const.TITLE_SEP_TYPE3}
 
-{assign var="input_enabled_disabled" value="disabled"}
-{assign var="att_download_only" value=true}
-{assign var="enable_custom_fields" value=false}
-{assign var="draw_submit_button" value=false}
+{$input_enabled_disabled="disabled"}
+{$att_download_only=true}
+{$enable_custom_fields=false}
+{$draw_submit_button=false}
 
-{assign var="show_current_build" value=0}
+{$show_current_build=0}
 {lang_get s='build' var='build_title'}
 
 {lang_get 
@@ -40,17 +40,17 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{assign var="exportAction" value="lib/execute/execExport.php?tplan_id="}
+{$exportAction="lib/execute/execExport.php?tplan_id="}
 
 {include file="inc_head.tpl" popup='yes' openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 <script language="JavaScript" src="gui/javascript/radio_utils.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
 {if #ROUND_EXEC_HISTORY# || #ROUND_TC_TITLE# || #ROUND_TC_SPEC#}
-  {assign var="round_enabled" value=1}
+  {$round_enabled=1}
   <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
 {/if}
 
@@ -270,8 +270,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {* Test Plan notes show/hide management                                             *}
   {* -------------------------------------------------------------------------------- *}
   {lang_get s='test_plan_notes' var='container_title'}
-  {assign var="div_id" value='tplan_notes'}
-  {assign var="memstatus_id" value=$tplan_notes_view_memory_id}
+  {$div_id='tplan_notes'}
+  {$memstatus_id=$tplan_notes_view_memory_id}
 
   {include file="inc_show_hide_mgmt.tpl"
            show_hide_container_title=$container_title
@@ -291,8 +291,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {* -------------------------------------------------------------------------------- *}
   {if $gui->platform_info.id > 0}
   {lang_get s='platform_description' var='container_title'}
-  {assign var="div_id" value='platform_notes'}
-  {assign var="memstatus_id" value=$platform_notes_view_memory_id}
+  {$div_id='platform_notes'}
+  {$memstatus_id=$platform_notes_view_memory_id}
 
   {include file="inc_show_hide_mgmt.tpl"
            show_hide_container_title=$container_title
@@ -308,8 +308,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {* Build notes show/hide management                                                 *}
   {* -------------------------------------------------------------------------------- *}
   {lang_get s='builds_notes' var='container_title'}
-  {assign var="div_id" value='build_notes'}
-  {assign var="memstatus_id" value=$build_notes_view_memory_id}
+  {$div_id='build_notes'}
+  {$memstatus_id=$build_notes_view_memory_id}
 
   {include file="inc_show_hide_mgmt.tpl"
            show_hide_container_title=$container_title
@@ -326,10 +326,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
      <div class="messages" style="text-align:center"> {$labels.no_data_available}</div>
   {else}
       {if $gui->grants->execute == 1 and $gui->build_is_open == 1}
-        {assign var="input_enabled_disabled" value=""}
-        {assign var="att_download_only" value=false}
-        {assign var="enable_custom_fields" value=true}
-        {assign var="draw_submit_button" value=true}
+        {$input_enabled_disabled=""}
+        {$att_download_only=false}
+        {$enable_custom_fields=true}
+        {$draw_submit_button=true}
 
 
         {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
@@ -398,13 +398,13 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
  	    </tr>
  	    {foreach item=tc_exec from=$gui->map_last_exec name="tcSet"}
       	  {if $tc_exec.active == 1}
-            {assign var="tc_id" value=$tc_exec.testcase_id}
-	          {assign var="tcversion_id" value=$tc_exec.id}
+            {$tc_id=$tc_exec.testcase_id}
+	          {$tcversion_id=$tc_exec.id}
 	          {* IMPORTANT:
 	             Here we use version_number, which is related to tcversion_id SPECIFICATION.
 	             When we need to display executed version number, we use tcversion_number
 	          *}
-	          {assign var="version_number" value=$tc_exec.version}
+	          {$version_number="$tc_exec.version"}
 	      
 	    	<input type="hidden" id="tc_version_{$tcversion_id}" name="tc_version[{$tcversion_id}]" value='{$tc_id}' />
 	    	<input type="hidden" id="version_number_{$tcversion_id}" name="version_number[{$tcversion_id}]" value='{$version_number}' />

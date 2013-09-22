@@ -23,6 +23,10 @@ INSERT INTO /*prefix*/node_types (id,description) VALUES (8,'requirement_version
 INSERT INTO /*prefix*/node_types (id,description) VALUES (9,'testcase_step');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (10,'requirement_revision');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (11,'requirement_spec_revision');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (12,'build');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (13,'platform');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (14,'user');
+
 
 
 --  Roles -

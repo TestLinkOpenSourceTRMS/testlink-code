@@ -447,7 +447,7 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
  *
  * @param   string   URL of required page
  * @param   string   Browser location - use for redirection or refresh of another frame
- *           Default: 'location'
+ *                   Default: 'location'
  */
 function redirect($path, $level = 'location')
 {
@@ -1172,4 +1172,17 @@ function setDateTimeFormats($locale)
     $tlCfg->timestamp_format = $tlCfg->locales_timestamp_format[$locale];
   }
 }
-?>
+
+/**
+ * windowCloseAndOpenerReload()
+ * will close a popup window and reload caller contents.
+ */
+function windowCloseAndOpenerReload()
+{
+  echo "<html><head></head><body>";
+  echo "<script type='text/javascript'>";
+  echo "window.opener.location.reload(true);";
+  echo "window.close();";
+  echo "</script></body></html>";
+  exit;
+}

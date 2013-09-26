@@ -11,13 +11,8 @@
  * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.8
- * 20130622 - franciscom - minor refactoring on design_values_to_db()
- * 20130523 - franciscom - string_custom_field_input() interface changes
- *                         added required field in output record set:
- *                         get_linked_cfields_at_design()
- *                         get_linked_cfields_at_execution() 
- *                         get_linked_cfields_at_testplan_design()
+ * @since 1.9.9
+ * 20130926 - franciscom - TICKET 5937: (Required) Custom Fields become mandatory in Filters Section
  *
 **/
 
@@ -528,7 +523,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   */
 	function string_custom_field_input($p_field_def,$opt = null)
 	{
-    $options = array('name_suffix' => '', 'field_size' => 0, 'show_on_filters' => false);
+    $options = array('name_suffix' => '', 'field_size' => 0, 'show_on_filters' => false, 'remove_required' => false);
     $options = array_merge($options,(array)$opt);
     extract($options);
 
@@ -545,7 +540,15 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     $input_name = $this->buildHTMLInputName($p_field_def,$name_suffix);
     $size = isset($this->sizes[$verbose_type]) ? intval($this->sizes[$verbose_type]) : 0;
 
-    $required = $p_field_def['required'] ? ' class="required" required ' : ' class="" ';
+    if($options['remove_required'])
+    {
+      $required = ' class="" ';
+    } 
+    else
+    {
+      $required = $p_field_def['required'] ? ' class="required" required ' : ' class="" ';
+    } 
+
     $dateOpt = array('default_disable' => false, 'allow_blank' => true, 'required' => $required,
                      'show_on_filters' => $show_on_filters);
     	
@@ -627,7 +630,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   		case 'email':
   		case 'float':
   		case 'numeric':
-			 $str_out .= $this->string_input_string($p_field_def,$input_name,$cfValue,$size);
+			 $str_out .= $this->string_input_string($p_field_def,$input_name,$cfValue,$size,$options);
 			break ;
 
 		case 'text area':
@@ -699,7 +702,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
       else
       {
         // treat it as an simple string  
-     		$str_out .= $this->string_input_string($p_field_def,$input_name,$cfValue,$size);
+     		$str_out .= $this->string_input_string($p_field_def,$input_name,$cfValue,$size,$options);
       }
     break;
 
@@ -2371,12 +2374,23 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
          based on Mantis 1.2.0a1 code
          
   */
-  private function string_input_radio($p_field_def, $p_input_name, $p_custom_field_value) 
+  private function string_input_radio($p_field_def, $p_input_name, $p_custom_field_value,$opt=null) 
   {
+    $options = array('remove_required' => false);
+    $options = array_merge($options,(array)$opt);
+
     $str_out='';
     $t_values = explode( '|', $p_field_def['possible_values']);                                        
-    $t_checked_values = explode( '|', $p_custom_field_value );     
-    $required = $p_field_def['required'] ? ' class="required" required ' : ' class="" ';
+    $t_checked_values = explode( '|', $p_custom_field_value );  
+
+    if($options['remove_required'])
+    {
+      $required = ' class="" ';
+    } 
+    else
+    {
+      $required = $p_field_def['required'] ? ' class="required" required ' : ' class="" ';
+    } 
 
     foreach( $t_values as $t_option )                                                                  
     {                                                                                                  
@@ -2444,10 +2458,19 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
   
          
   */
-  private function string_input_string($p_field_def, $p_input_name, $p_custom_field_value, $p_size) 
+  private function string_input_string($p_field_def, $p_input_name, $p_custom_field_value, $p_size,$opt=null) 
   {
+    $options = array('remove_required' => false);
+    $options = array_merge($options,(array)$opt);
+    if($options['remove_required'])
+    {
+      $required = ' class="" ';
+    }  
+    else
+    {
+      $required = $p_field_def['required'] ? ' class="required" required ' : ' class="" ';
+    }  
 
-    $required = $p_field_def['required'] ? ' class="required" required ' : ' class="" ';
     $str_out='';
     $size = intval($p_size) > 0 ? $p_size : self::DEFAULT_INPUT_SIZE;
   	$str_out .= "<input type=\"text\" name=\"{$p_input_name}\" id=\"{$p_input_name}\" size=\"{$size}\" {$required} ";

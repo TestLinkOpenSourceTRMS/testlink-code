@@ -17,9 +17,8 @@
  * Main class is abstract because it shall not be used/instantiated directly.
  *
  * @internal revisions
- * @since 1.9.8
- * 20130526 - franciscom - init_filter_custom_fields() moved here from children classes in order
- *                         to avoid code duplication.
+ * @since 1.9.9
+ * 20130926 - franciscom - TICKET 5937: (Required) Custom Fields become mandatory in Filters Section
  *
  */
 
@@ -349,7 +348,7 @@ abstract class tlFilterControl extends tlObjectWithDB
     if (!is_null($cfields)) 
     {
       $cfInputOpt = array('name_suffix' => '', 'field_size' => self::CF_INPUT_SIZE, 
-                          'show_on_filters' => true);
+                          'show_on_filters' => true, 'remove_required' => true);
 
       foreach ($cfields as $cf_id => $cf) 
       {

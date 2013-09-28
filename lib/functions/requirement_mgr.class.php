@@ -12,7 +12,8 @@
  * Requirements are children of a requirement specification (requirements container)
  *
  * @internal revisions
- * 20130910 - franciscom - calls to assign_to_testcase() missing author_id argument
+ * @since 1.9.9
+ * 
  */
 
 // Needed to use extends tlObjectWithAttachments, If not present autoload fails.
@@ -557,10 +558,12 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
     // Delete version info
     if( $doIt )
     {
-
+      // 20130928 - As usual working with MySQL makes easier to be lazy and forget that
+      //            agregate functions need GROUP BY 
       // How many versions are there? we will delete req also for all with COUNT(0) == 1
       $sql = "SELECT COUNT(0) AS VQTY, parent_id FROM {$this->tables['nodes_hierarchy']} " . 
-             $where['iam_parent'];
+             $where['iam_parent'] . ' GROUP BY parent_id';
+
       $rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
       foreach($rs as $el)
       {

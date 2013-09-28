@@ -402,7 +402,11 @@ CREATE NONCLUSTERED INDEX /*prefix*/IX_pid_m_nodeorder ON  /*prefix*/nodes_hiera
 
 CREATE TABLE /*prefix*/req_coverage (
   req_id int NOT NULL,
-  testcase_id int NOT NULL
+  testcase_id int NOT NULL,
+  author_id int NULL,
+  creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_coverage_creation_ts DEFAULT (getdate()),
+  review_requester_id int NULL,
+  review_request_ts datetime NULL 
 ) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_req_testcase ON  /*prefix*/req_coverage 

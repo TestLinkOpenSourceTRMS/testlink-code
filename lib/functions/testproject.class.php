@@ -503,7 +503,7 @@ args:
 @since 1.9.7
 
 */
-function get_accessible_for_user($user_id,$opt = null)
+function get_accessible_for_user($user_id,$opt = null,$filters = null)
 {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   $my = array();
@@ -511,6 +511,10 @@ function get_accessible_for_user($user_id,$opt = null)
                      'format' => 'std', 'add_issuetracker' => false, 'add_reqmgrsystem' => false);
   $my['opt'] = array_merge($my['opt'],(array)$opt);
   
+
+  $my['filters'] = array('name' => null);
+  $my['filters'] = array_merge($my['filters'],(array)$filters);
+
                      
   $items = array();
   $safe_user_id = intval($user_id);
@@ -587,7 +591,28 @@ function get_accessible_for_user($user_id,$opt = null)
     $sql .= " AND TPROJ.active=1 ";
   }
   unset($userObj);
-    
+  
+  // 20130929
+  foreach($my['filters'] as $fname => $fspec)
+  {
+    if(!is_null($fspec))
+    {
+      $sql .= " AND NHTPROJ.$fname";
+      switch($fspec['op'])
+      {
+        case '=':
+          $sql .= "='" . $fspec['value'] ."'";         
+        break;
+
+        case 'like':
+          $sql .= " LIKE '%" . $fspec['value'] ."%'";         
+        break;
+      }
+    }  
+  }  
+
+  // if(!is_null($my['filters']))   echo $sql;
+
   $sql .= str_replace('nodes_hierarchy','NHTPROJ',$my['opt']['order_by']);
   // echo $sql;
 

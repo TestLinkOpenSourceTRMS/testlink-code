@@ -11,23 +11,25 @@ some variables smarty and javascript are created on the inc_*.tpl files.
 20130914 - franciscom - TICKET 5907: Links are not click-able in Description fields for Projects Test Plans and Builds
 
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}
-{assign var="managerURL" value="lib/project/projectEdit.php"}
-{assign var="deleteAction" value="$managerURL?doAction=doDelete&tprojectID="}
-{assign var="editAction" value="$managerURL?doAction=edit&amp;tprojectID="}
-{assign var="createAction" value="$managerURL?doAction=create"}
+{$managerURL="lib/project/projectEdit.php"}
+{$deleteAction="$managerURL?doAction=doDelete&tprojectID="}
+{$editAction="$managerURL?doAction=edit&amp;tprojectID="}
+{$createAction="$managerURL?doAction=create"}
+{$searchAction="lib/project/projectView.php?doAction=search"}
+
 
 {lang_get s='popup_product_delete' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
 
 {lang_get var="labels" 
           s='title_testproject_management,testproject_txt_empty_list,tcase_id_prefix,
-          th_name,th_notes,testproject_alt_edit,testproject_alt_active,
-          th_requirement_feature,testproject_alt_delete,btn_create,public,
-          testproject_alt_requirement_feature,th_active,th_delete,th_id,
+          th_name,th_notes,testproject_alt_edit,testproject_alt_active,btn_search_filter,
+          th_requirement_feature,testproject_alt_delete,btn_create,public,hint_like_search_on_name,
+          testproject_alt_requirement_feature,th_active,th_delete,th_id,btn_reset_filter,
           th_issuetracker,th_reqmgrsystem_short,active_click_to_change,inactive_click_to_change'}
 
 
@@ -45,17 +47,32 @@ var del_action=fRoot+'{$deleteAction}';
 <h1 class="title">{$labels.title_testproject_management}</h1>
 <div class="workBack">
 
-{if $gui->canManage}
 <div class="groupBtn">
-  <form method="post" action="{$createAction}">
-    <input type="submit" name="create" value="{$labels.btn_create}" />
+  <form method="post" action="{$searchAction}" style="display:inline;">
+    <input type="text" id="name" name="name" value="{$gui->name}"  
+           size="{#TESTPROJECT_NAME_SIZE#}" maxlength="{#TESTPROJECT_NAME_MAXLEN#}"
+           placeholder="{$labels.hint_like_search_on_name}" required/>
+    <input type="submit" id="search" name="search" value="{$labels.btn_search_filter}" title="{$labels.hint_like_search_on_name}" />
   </form>
+  <form method="post" action="{$searchAction}" style="display:inline;">
+    <input type="submit" name="resetFilter" value="{$labels.btn_reset_filter}" />
+  </form>
+  &nbsp;&nbsp;&nbsp;
+  {if $gui->canManage}
+  <form method="post" action="{$createAction}" style="display:inline;">
+    <input type="submit" id="create" name="create" value="{$labels.btn_create}" />
+  </form>
+  {/if}
 </div>
-{/if}
+<p>
 
 <div id="testproject_management_list">
 {if $gui->tprojects == ''}
-  {$labels.testproject_txt_empty_list}
+  {if $gui->feedback != ''}
+    {$gui->feedback|escape}
+  {else}
+    {$labels.testproject_txt_empty_list}
+  {/if}
 {else}
   <form method="post" id="testProjectView" name="testProjectView" action="{$managerURL}">
     <input type="hidden" name="doAction" id="doAction" value="">

@@ -13,6 +13,7 @@
  * @uses 		    config.inc.php
  *
  * @internal revisions
+ * @since 1.9.9
  * 20130930 - franciscom - goback_url input parameter removed, to avoid XSS attack
  *
  */
@@ -71,7 +72,7 @@ function initializeGui()
   $guiObj->file_check = array('show_results' => 0, 'status_ok' => 1, 'msg' => 'ok', 'filename' => '');
   $guiObj->importTypes = array('XML' => 'XML');
   $guiObj->importLimitBytes = config_get('import_file_max_size_bytes');
-  $guiObj->max_size_import_file_msg = sprintf(lang_get('max_size_file_msg'), $gui->importLimitBytes/1024);
+  $guiObj->max_size_import_file_msg = sprintf(lang_get('max_size_file_msg'), $guiObj->importLimitBytes/1024);
   return $guiObj;  
 }
 

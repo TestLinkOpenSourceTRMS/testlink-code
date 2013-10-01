@@ -14,8 +14,8 @@
  * @see         sysinfo.php
  *
  * @internal revisions
- * @since 1.9.6
- *
+ * @since 1.9.9
+ * 20131001 - PHP version check changed
  **/
 
 /**
@@ -770,7 +770,8 @@ function checkServerOs()
 function checkPhpVersion(&$errCounter)
 {
   // 5.2 is required because json is used in ext-js component
-  $min_version = '5.2.0'; 
+  // 20131001 - 5.4 to avoid the issue with issuetracker interface
+  $min_version = '5.4.0'; 
   $my_version = phpversion();
 
   // version_compare:
@@ -1060,4 +1061,3 @@ function reportCheckingPermissions(&$errCounter,$installationType='none')
   }
   echo '</table>';
 }
-?>

@@ -4,7 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	execSetResults.tpl
 @internal smarty template - show tests to add results
 @internal revisions
-@since 1.9.7
+@since 1.9.9
 *}
 {$attachment_model=$cfg->exec_cfg->att_model}
 {$title_sep=$smarty.const.TITLE_SEP}
@@ -24,7 +24,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,
 	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,
 	execution_type_short_descr,expected_results,testcase_customfields,
-  estimated_execution_duration,version,
+  estimated_execution_duration,version,btn_save_and_exit,
 	last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
 	test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
 	attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,
@@ -319,9 +319,6 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
            show_hide_container_class='exec_additional_info'
            show_hide_container_html=$gui->build_notes}
   {* -------------------------------------------------------------------------------- *}
-
-
-
   {if $gui->map_last_exec eq ""}
      <div class="messages" style="text-align:center"> {$labels.no_data_available}</div>
   {else}
@@ -350,6 +347,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
                        args_tcversion_id='bulk'
                        args_webeditor=$gui->bulk_exec_notes_editor
                        args_execution_time_cfields=$gui->execution_time_cfields
+                       args_draw_save_and_exit=$gui->draw_save_and_exit
                        args_labels=$labels}
             </div>
         {/if}
@@ -404,7 +402,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	             Here we use version_number, which is related to tcversion_id SPECIFICATION.
 	             When we need to display executed version number, we use tcversion_number
 	          *}
-	          {$version_number="$tc_exec.version"}
+	          {$version_number=$tc_exec.version}
 	      
 	    	<input type="hidden" id="tc_version_{$tcversion_id}" name="tc_version[{$tcversion_id}]" value='{$tc_id}' />
 	    	<input type="hidden" id="version_number_{$tcversion_id}" name="version_number[{$tcversion_id}]" value='{$version_number}' />

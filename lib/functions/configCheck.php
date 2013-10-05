@@ -382,20 +382,20 @@ function checkForRepositoryDir($the_dir)
     /** @TODO verify if it's valid for PHP5 */
     // if( isMSWindowsServer() )
     // {
-        //     $test_dir= $the_dir . '/requirements/';
-        //     if(!is_dir($test_dir))
-        //     {
-        //       // try to make the dir
-        //       $stat = @mkdir($test_dir);
-        //       $ret['status_ok']=$stat;
-        //     }
+    //     $test_dir= $the_dir . '/requirements/';
+    //     if(!is_dir($test_dir))
+    //     {
+    //       // try to make the dir
+    //       $stat = @mkdir($test_dir);
+    //       $ret['status_ok']=$stat;
+    //     }
     // }
     // else
     // {
     //   $ret['status_ok'] = (is_writable($the_dir)) ? true : false; 
-      // }
-        // 20090713 - franciscom - tested on windows XP with PHP 5.2.9 seems OK
-       $ret['status_ok'] = (is_writable($the_dir)) ? true : false; 
+    // }
+    // 20090713 - franciscom - tested on windows XP with PHP 5.2.9 seems OK
+    $ret['status_ok'] = (is_writable($the_dir)) ? true : false; 
 
     if($ret['status_ok']) 
     {
@@ -524,33 +524,33 @@ function checkEmailConfig()
  */
 function check_php_settings(&$errCounter)
 {
-    $max_execution_time_recommended = 120;
-    $max_execution_time = ini_get('max_execution_time');
-    $memory_limit_recommended = 64;
-    $memory_limit = intval(str_ireplace('M','',ini_get('memory_limit')));
+  $max_execution_time_recommended = 120;
+  $max_execution_time = ini_get('max_execution_time');
+  $memory_limit_recommended = 64;
+  $memory_limit = intval(str_ireplace('M','',ini_get('memory_limit')));
 
-    $final_msg = '<tr><td>Checking max. execution time (Parameter max_execution_time)</td>';
-    if($max_execution_time < $max_execution_time_recommended)
-    {
-        $final_msg .=  "<td><span class='tab-warning'>{$max_execution_time} seconds - " .
-                       "We suggest {$max_execution_time_recommended} " .
-                       "seconds in order to manage hundred of test cases (edit php.ini)</span></td>";
-    }
-    else
-    {
-        $final_msg .= '<td><span class="tab-success">OK ('.$max_execution_time.' seconds)</span></td></tr>';
-    }
-    $final_msg .=  "<tr><td>Checking maximal allowed memory (Parameter memory_limit)</td>";
-    if($memory_limit < $memory_limit_recommended)
-    {
-       $final_msg .= "<td><span class='tab-warning'>$memory_limit MegaBytes - " .
-                     "We suggest {$memory_limit_recommended} MB" .
-                     " in order to manage hundred of test cases</span></td></tr>";
-    }
-    else
-    {
-        $final_msg .= '<td><span class="tab-success">OK ('.$memory_limit.' MegaBytes)</span></td></tr>';
-    }
+  $final_msg = '<tr><td>Checking max. execution time (Parameter max_execution_time)</td>';
+  if($max_execution_time < $max_execution_time_recommended)
+  {
+    $final_msg .=  "<td><span class='tab-warning'>{$max_execution_time} seconds - " .
+                   "We suggest {$max_execution_time_recommended} " .
+                   "seconds in order to manage hundred of test cases (edit php.ini)</span></td>";
+  }
+  else
+  {
+    $final_msg .= '<td><span class="tab-success">OK ('.$max_execution_time.' seconds)</span></td></tr>';
+  }
+  $final_msg .=  "<tr><td>Checking maximal allowed memory (Parameter memory_limit)</td>";
+  if($memory_limit < $memory_limit_recommended)
+  {
+    $final_msg .= "<td><span class='tab-warning'>$memory_limit MegaBytes - " .
+                  "We suggest {$memory_limit_recommended} MB" .
+                  " in order to manage hundred of test cases</span></td></tr>";
+  }
+  else
+  {
+    $final_msg .= '<td><span class="tab-success">OK ('.$memory_limit.' MegaBytes)</span></td></tr>';
+  }
   $final_msg .= "<tr><td>Checking if Register Globals is disabled</td>";
   if(ini_get('register_globals')) 
   {
@@ -560,7 +560,7 @@ function check_php_settings(&$errCounter)
   else
   { 
     $final_msg .= "<td><span class='tab-success'>OK</span></td></tr>\n";
-    }
+  }
   return ($final_msg);
 }
 

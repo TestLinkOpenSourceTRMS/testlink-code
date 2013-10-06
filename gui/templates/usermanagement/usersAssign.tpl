@@ -116,7 +116,7 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
 		    	     <option value="{$f.id}" {if $gui->featureID == $f.id} selected="selected" {/if}>
 		    	     {$f.name|escape}</option>
 		    	     {if $gui->featureID == $f.id}
-		    	        {assign var="my_feature_name" value=$f.name}
+		    	        {$my_feature_name=$f.name}
 		    	     {/if}
 		    	   {/foreach}
 		    	   </select>
@@ -127,11 +127,11 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
 			</tr>
    		<tr>
    		<td class="labelHolder">{$labels.set_roles_to}</td>{if $gui->featureType == 'testproject'} <td>&nbsp;</td> {/if}
-      <td> 
+      <td>
         <select name="allUsersRole" id="allUsersRole">
 		      {foreach key=role_id item=role from=$gui->optRights}
 		        <option value="{$role_id}">
-                {$role->getDisplayName()|escape}
+            {$role->getDisplayName()|escape}
 		        </option>
 		      {/foreach}
 			  </select>
@@ -154,27 +154,27 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
     		<th>{$tlImages.sort_hint}{lang_get s="th_roles_$featureVerbose"} ({$my_feature_name|escape})</th>
     	</tr>
     	{foreach from=$gui->users item=user}
-    	    {assign var="globalRoleName" value=$user->globalRole->name}
-    			{assign var=uID value=$user->dbID}
+    	    {$globalRoleName=$user->globalRole->name}
+    			{$uID=$user->dbID}
 
           {* get role name to add to inherited in order to give better information to user *}
-          {assign var="effective_role_id" value=$gui->userFeatureRoles[$uID].effective_role_id}
+          {$effective_role_id=$gui->userFeatureRoles[$uID].effective_role_id}
           {if $gui->userFeatureRoles[$uID].is_inherited == 1}
-            {assign var="ikx" value=$effective_role_id}
+            {$ikx=$effective_role_id}
           {else}
-            {assign var="ikx" value=$gui->userFeatureRoles[$uID].uplayer_role_id}
+            {$ikx=$gui->userFeatureRoles[$uID].uplayer_role_id}
           {/if}
-          {assign var="inherited_role_name" value=$gui->optRights[$ikx]->name}
+          {$inherited_role_name=$gui->optRights[$ikx]->name}
 
-          {assign var="user_row_class" value=''}
+          {$user_row_class=''}
           {if $effective_role_id == $smarty.const.TL_ROLES_NO_RIGHTS}
-            {assign var="user_row_class" value='class="not_authorized_user"'}
+            {$user_row_class='class="not_authorized_user"'}
           {/if}
 
     	<tr {$user_row_class} bgcolor="{cycle values="#eeeeee,#d0d0d0"}">
     		<td {if $gui->role_colour != '' && $gui->role_colour[$globalRoleName] != ''}  		
     		      style="background-color: {$gui->role_colour[$globalRoleName]};" {/if}>
-    		    {$user->getDisplayName()|escape}</td>
+    		    {$user->login|escape} ({$user->firstName|escape} {$user->lastName|escape}) </td>
     		<td>
           <select name="userRole[{$uID}]" id="userRole_{$uID}">
 		      {foreach key=role_id item=role from=$gui->optRights}

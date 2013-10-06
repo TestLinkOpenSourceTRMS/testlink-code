@@ -1342,15 +1342,15 @@ class testsuite extends tlObjectWithAttachments
     $sourceItems = $this->cfield_mgr->getByLinkID($source_id,array('scope' => 'design'));
     if( !is_null($sourceItems) )
     {
-        $sql = "/* $debugMsg */ " . 
-                 " INSERT INTO {$this->tables['cfield_design_values']} " . 
-                 " (field_id,value,node_id) " .
-               " SELECT field_id,value,{$target_id} AS target_id" .
-                 " FROM {$this->tables['cfield_design_values']} " .
-               " WHERE node_id = {$source_id} ";
+      $sql = "/* $debugMsg */ " . 
+             " INSERT INTO {$this->tables['cfield_design_values']} " . 
+             " (field_id,value,node_id) " .
+             " SELECT field_id,value,{$target_id} AS target_id" .
+             " FROM {$this->tables['cfield_design_values']} " .
+             " WHERE node_id = {$source_id} ";
       $this->db->exec_query($sql);
     }
-    }
+  }
 
 
   /**

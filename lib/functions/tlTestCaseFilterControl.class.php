@@ -202,9 +202,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
    * its values are the arrays for the input parser.
    * @var array
    */
-  private $all_filters = array('filter_tc_id' => array("POST", tlInputParameter::STRING_N),
-                               'filter_testcase_name' => array("POST", tlInputParameter::STRING_N),
-                               'filter_toplevel_testsuite' => array("POST", tlInputParameter::STRING_N),
+
+  /* MAGIC NUMBERS are related to field size
+   * filter_tc_id: 0,30 arbitrary
+   *
+   */
+  private $all_filters = array('filter_tc_id' => array("POST", tlInputParameter::STRING_N,0,30),
+                               'filter_testcase_name' => array("POST", tlInputParameter::STRING_N,0,100),
+                               'filter_toplevel_testsuite' => array("POST", tlInputParameter::STRING_N,0,100),
                                'filter_keywords' => array("POST", tlInputParameter::ARRAY_INT),
                                // 'filter_active_inactive' => array("POST", tlInputParameter::INT_N),
                                'filter_importance' => array("POST", tlInputParameter::INT_N),
@@ -424,8 +429,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
         $params[$name] = $info;
       }
     }
-    I_PARAMS($params, $this->args);
 
+    I_PARAMS($params, $this->args);
     $type = 'filter_keywords_filter_type';
     $this->args->{$type} = (isset($_REQUEST[$type])) ? trim($_REQUEST[$type]) : 'Or';
 

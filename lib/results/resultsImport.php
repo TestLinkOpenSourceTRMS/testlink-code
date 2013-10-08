@@ -110,9 +110,7 @@ $gui->resultMap=$resultMap;
 $smarty=new TLSmarty();
 $smarty->assign('gui',$gui);  
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-?>
 
-<?php
 /*
   function: 
 
@@ -255,7 +253,7 @@ function saveImportedResultData(&$db,$resultData,$context)
   // build id:
   //          belongs to target test plan
   //          is open
-    //
+  //
   // platform id:
   //          is linked  to target test plan
   //
@@ -407,73 +405,73 @@ function saveImportedResultData(&$db,$resultData,$context)
       $message = null;
        
 
-        $info_on_case = $tplan_mgr->getLinkInfo($context->tplanID,$tcase_id,$context->platformID);
-        if(is_null($info_on_case))
-        {
-          $message=sprintf($l18n['import_results_tc_not_found'],$tcase_identity);
-        }
-        else if (!$result_is_acceptable) 
-        {
-          $message=sprintf($l18n['import_results_invalid_result'],$tcase_identity,$tcase_exec['result']);
-        } 
-        else 
-        {
-          $info_on_case = current($info_on_case);
-          $tcversion_id = $info_on_case['tcversion_id'];
-          $version = $info_on_case['version'];
-              $notes = $db->prepare_string(trim($notes));
-              
-              // N.B.: db_now() returns an string ready to be used in an SQL insert
-              //       example '2008-09-04', while $tcase_exec["timestamp"] => 2008-09-04
-              //
-              $execution_ts=($tcase_exec['timestamp'] != '') ? "'" . $tcase_exec["timestamp"] . "'": $db->db_now();
+      $info_on_case = $tplan_mgr->getLinkInfo($context->tplanID,$tcase_id,$context->platformID);
+      if(is_null($info_on_case))
+      {
+        $message=sprintf($l18n['import_results_tc_not_found'],$tcase_identity);
+      }
+      else if (!$result_is_acceptable) 
+      {
+        $message=sprintf($l18n['import_results_invalid_result'],$tcase_identity,$tcase_exec['result']);
+      } 
+      else 
+      {
+        $info_on_case = current($info_on_case);
+        $tcversion_id = $info_on_case['tcversion_id'];
+        $version = $info_on_case['version'];
+        $notes = $db->prepare_string(trim($notes));
+             
+        // N.B.: db_now() returns an string ready to be used in an SQL insert
+        //       example '2008-09-04', while $tcase_exec["timestamp"] => 2008-09-04
+        //
+        $execution_ts=($tcase_exec['timestamp'] != '') ? "'" . $tcase_exec["timestamp"] . "'": $db->db_now();
           
-              if($tester_id != 0)
-              {
-                  $tester_name=$tcase_exec['tester'];
-              } 
-              else
-              {
-                  $tester_name=$user->login;
-                  $tester_id=$context->userID;
-              }
+        if($tester_id != 0)
+        {
+          $tester_name=$tcase_exec['tester'];
+        } 
+        else
+        {
+          $tester_name=$user->login;
+          $tester_id=$context->userID;
+        }
 
-              $sql = " /* $debugMsg */ " .
-                   " INSERT INTO {$tables['executions']} (build_id,tester_id,status,testplan_id," .
-                   " tcversion_id,execution_ts,notes,tcversion_number,platform_id,execution_type)" .
-                     " VALUES ({$context->buildID}, {$tester_id},'{$result_code}',{$context->tplanID}, ".
-                     " {$tcversion_id},{$execution_ts},'{$notes}', {$version}, " . 
-                     " {$context->platformID}, {$tcase_exec['execution_type']})";
+        $sql = " /* $debugMsg */ " .
+               " INSERT INTO {$tables['executions']} (build_id,tester_id,status,testplan_id," .
+               " tcversion_id,execution_ts,notes,tcversion_number,platform_id,execution_type)" .
+               " VALUES ({$context->buildID}, {$tester_id},'{$result_code}',{$context->tplanID}, ".
+               " {$tcversion_id},{$execution_ts},'{$notes}', {$version}, " . 
+               " {$context->platformID}, {$tcase_exec['execution_type']})";
               $db->exec_query($sql); 
 
-         if( isset($tcase_exec['bug_id']) && !is_null($tcase_exec['bug_id']) && is_array($tcase_exec['bug_id']) )
+        if( isset($tcase_exec['bug_id']) && !is_null($tcase_exec['bug_id']) && is_array($tcase_exec['bug_id']) )
         { 
           $execution_id = $db->insert_id($tables['executions']);
           foreach($tcase_exec['bug_id'] as $bug_id)
           {
             $bug_id = trim($bug_id);
             $sql = " /* $debugMsg */ " .            
-                 " SELECT execution_id AS check_qty FROM  {$tables['execution_bugs']} " .
-                 " WHERE bug_id = '{$bug_id}' AND execution_id={$execution_id} ";
+                   " SELECT execution_id AS check_qty FROM  {$tables['execution_bugs']} " .
+                   " WHERE bug_id = '{$bug_id}' AND execution_id={$execution_id} ";
             $rs = $db->get_recordset($sql); 
             if( is_null($rs) )
             {
-                    $sql = " /* $debugMsg */ " .
-                         " INSERT INTO {$tables['execution_bugs']} (bug_id,execution_id)" .
-                           " VALUES ('" . $db->prepare_string($bug_id) . "', {$execution_id} )";
+              $sql = " /* $debugMsg */ " .
+                     " INSERT INTO {$tables['execution_bugs']} (bug_id,execution_id)" .
+                     " VALUES ('" . $db->prepare_string($bug_id) . "', {$execution_id} )";
                     $db->exec_query($sql); 
-                  }
-                }
+            }
+          }
         }
-          $message=sprintf($l18n['import_results_ok'],$tcase_identity,$version,$tester_name,
-                           $resulstCfg['code_status'][$result_code],$execution_ts);
+        $message=sprintf($l18n['import_results_ok'],$tcase_identity,$version,$tester_name,
+                         $resulstCfg['code_status'][$result_code],$execution_ts);
 
-        }
+      }
     }
   
-      if( !is_null($message) )
-      {       
-        $resultMap[]=array($message);
+    if( !is_null($message) )
+    {       
+      $resultMap[]=array($message);
     }   
   }
   return $resultMap;
@@ -492,17 +490,17 @@ function importExecutionsFromXML($xmlTCExecSet)
   $execInfoSet=null;
   if($xmlTCExecSet) 
   { 
-      $jdx=0;
-      $exec_qty=sizeof($xmlTCExecSet);
-      for($idx=0; $idx < $exec_qty ; $idx++)
+    $jdx=0;
+    $exec_qty=sizeof($xmlTCExecSet);
+    for($idx=0; $idx < $exec_qty ; $idx++)
+    {
+      $xmlTCExec=$xmlTCExecSet[$idx];
+      $execInfo = importExecutionFromXML($xmlTCExec);
+      if ($execInfo)
       {
-        $xmlTCExec=$xmlTCExecSet[$idx];
-        $execInfo = importExecutionFromXML($xmlTCExec);
-        if ($execInfo)
-        {
-          $execInfoSet[$jdx++]=$execInfo;
-        }
+        $execInfoSet[$jdx++]=$execInfo;
       }
+    }
   }
   return $execInfoSet;
 }
@@ -520,7 +518,7 @@ function importExecutionFromXML(&$xmlTCExec)
   if (!$xmlTCExec)
   {
     return null;
-    }
+  }
     
   $execInfo=array();;
   $execInfo['tcase_id'] = isset($xmlTCExec["id"]) ? (int)$xmlTCExec["id"] : 0;
@@ -530,12 +528,12 @@ function importExecutionFromXML(&$xmlTCExec)
   // seems that no PHP error is generated when trying to access an undefined
   // property. Do not know if will not be better anyway to use property_exists()
   //    
-    $execInfo['tcase_name'] = (string) $xmlTCExec->name;
+  $execInfo['tcase_name'] = (string) $xmlTCExec->name;
   $execInfo['result'] = (string) trim($xmlTCExec->result);
   $execInfo['notes'] = (string) trim($xmlTCExec->notes);
-    $execInfo['timestamp'] = (string) trim($xmlTCExec->timestamp);
-    $execInfo['tester'] = (string) trim($xmlTCExec->tester);
-    $execInfo['execution_type'] = intval((int) trim($xmlTCExec->execution_type)); //BUGID 3543
+  $execInfo['timestamp'] = (string) trim($xmlTCExec->timestamp);
+  $execInfo['tester'] = (string) trim($xmlTCExec->tester);
+  $execInfo['execution_type'] = intval((int) trim($xmlTCExec->execution_type)); //BUGID 3543
 
 
   $bugQty = count($xmlTCExec->bug_id);
@@ -724,4 +722,3 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,&$execValues,&$
   }
   return $checks;
 }
-?>

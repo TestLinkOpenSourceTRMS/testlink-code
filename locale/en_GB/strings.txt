@@ -2699,6 +2699,7 @@ $TLS_opt_show_tc_keys = "Test Case keywords";
 $TLS_opt_show_cfields  = "Test Case Custom Fields";
 $TLS_opt_show_passfail = "Test results";
 $TLS_opt_show_metrics = "Metrics";
+$TLS_opt_show_build_cfields = 'Build Custom Fields';
 $TLS_opt_show_only_assigned_to_me = "Only Test Cases Assigned to me";
 $TLS_opt_req_spec_scope = "Requirement Specification Doc. Scope";
 $TLS_opt_req_spec_author = "Requirement Specification Doc. Author";

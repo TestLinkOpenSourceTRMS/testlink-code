@@ -318,6 +318,11 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
            show_hide_container_draw=true
            show_hide_container_class='exec_additional_info'
            show_hide_container_html=$gui->build_notes}
+
+  
+
+
+
   {* -------------------------------------------------------------------------------- *}
   {if $gui->map_last_exec eq ""}
      <div class="messages" style="text-align:center"> {$labels.no_data_available}</div>
@@ -386,6 +391,11 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     	                                                  {$gui->tplan_id},{$gui->build_id},{$gui->platform_id},
     	                                                  '{$gui->tcversionSet}');" />
 
+
+      {if $tlCfg->exec_cfg->enable_test_automation}
+        <input type="submit" id="execute_cases" name="execute_cases"
+                     value="{$labels.execute_and_save_results}"/>
+      {/if}
 
  	    <table class="mainTable-x" width="100%">
  	    <tr>

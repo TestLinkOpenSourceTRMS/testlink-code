@@ -11,8 +11,31 @@
  * @link    http://www.teamst.org/index.php
  *
  * @internal revisions
+ * @since 1.9.9
+ * 20131013 - franciscom - added simplexml_load_file_wrapper()
+ *                         After user contribution regarding XML External Entity (XXE) Processing Attacks
+ */
+
+
+/**
+ * Use this sample file to test attack (user contribution)
+ * <?xml version='1.0' encoding='UTF-8'?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+ * <platforms>
+ *  <platform>
+ *   <name>&xxe;</name>
+ *  </platform>
+ * </platforms>
  *
  */
+function simplexml_load_file_wrapper($filename)
+{
+  // http://websec.io/2012/08/27/Preventing-XXE-in-PHP.html
+  libxml_disable_entity_loader(true);  
+  $zebra = file_get_contents($filename);
+  $xml = @simplexml_load_string($zebra);
+  return $xml;
+}
+
 
 /**
  * 

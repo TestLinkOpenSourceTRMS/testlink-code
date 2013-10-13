@@ -621,9 +621,9 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
   switch($my['opt']['output'])
   {
     case 'array_of_map':
-      $items = $this->db->get_recordset($sql,null,3,1);
-      $itemsX = $this->db->db->PageExecute($sql, 3, 28);
-      new dBug($itemsX);
+      $items = $this->db->get_recordset($sql); //,null,3,1);
+      //$itemsX = $this->db->db->PageExecute($sql, 3, 28);
+      // new dBug($itemsX);
       $parseOpt = true;
     break;
 

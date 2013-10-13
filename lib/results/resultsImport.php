@@ -122,7 +122,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function importExecutionResultsFromXML(&$db,$fileName,$context)
 { 
   $resultMap=null;
-  $xml = @simplexml_load_file($fileName);
+
+  $xml = @simplexml_load_file_wrapper($fileName);
   if($xml !== FALSE)
   {
     $resultMap = importResults($db,$xml,$context);
@@ -557,8 +558,8 @@ function importExecutionFromXML(&$xmlTCExec)
 function check_xml_execution_results($fileName)
 {
   
-  $file_check=array('status_ok' => 0, 'msg' => 'xml_ko');         
-  $xml = @simplexml_load_file($fileName);
+  $file_check=array('status_ok' => 0, 'msg' => 'xml_ko');     
+  $xml = @simplexml_load_file_wrapper($fileName);
   if($xml !== FALSE)
   {
     $file_check=array('status_ok' => 1, 'msg' => 'ok');         

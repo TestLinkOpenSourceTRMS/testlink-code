@@ -226,7 +226,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 		return $msg;  // >>>-----> Bye
 	}
 	
-	$xml = @simplexml_load_file($targetFile);
+    $xml = @simplexml_load_file_wrapper($targetFile);
 	if($xml !== FALSE)
     {
 		$tcaseMgr = new testcase($dbHandler);

@@ -621,7 +621,9 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
   switch($my['opt']['output'])
   {
     case 'array_of_map':
-      $items = $this->db->get_recordset($sql);
+      $items = $this->db->get_recordset($sql,null,3,1);
+      $itemsX = $this->db->db->PageExecute($sql, 3, 28);
+      new dBug($itemsX);
       $parseOpt = true;
     break;
 
@@ -1242,7 +1244,7 @@ function setPublicStatus($id,$status)
     */
   function importKeywordsFromXMLFile($testproject_id,$fileName)
   {
-    $simpleXMLObj = simplexml_load_file($fileName);
+    $simpleXMLObj = @$this->simplexml_load_file_helper($fileName);
     return $this->importKeywordsFromSimpleXML($testproject_id,$simpleXMLObj);
   }
 
@@ -3273,6 +3275,18 @@ function getPublicAttr($id)
   function setInactive($id)
   {
     $this->setOneZeroField($id,'active',0);
+  }
+
+  /**
+   *
+   */
+  function simplexml_load_file_helper($filename)
+  {
+    // http://websec.io/2012/08/27/Preventing-XXE-in-PHP.html
+    libxml_disable_entity_loader(true);  
+    $zebra = file_get_contents($filename);
+    $xml = @simplexml_load_string($zebra);
+    return $xml;
   }
 
 

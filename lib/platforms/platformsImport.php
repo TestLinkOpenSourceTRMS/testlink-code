@@ -98,7 +98,8 @@ function doImport(&$dbHandler,$testproject_id)
 		$xml = false;
 		if (move_uploaded_file($source, $dest))
 		{
-			$xml = @simplexml_load_file($dest);
+      // http://websec.io/2012/08/27/Preventing-XXE-in-PHP.html
+      $xml = @simplexml_load_file_wrapper($dest);
     }
          
 		if($xml !== FALSE)

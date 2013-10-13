@@ -9,7 +9,8 @@
  * Manager for requirement specification (requirement container)
  *
  * @internal revisions
- * @since 1.9.8
+ * @since 1.9.9
+ * 
  */
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
 require_once( dirname(__FILE__) . '/requirements.inc.php' );
@@ -1027,7 +1028,7 @@ function xmlToReqSpec($source)
           
         case 'file':
             $xml_file = $source->value;
-	          $status_ok=!(($xml_object=@simplexml_load_file($xml_file)) === FALSE);
+	          $status_ok=!(($xml_object=@$this->simplexml_load_file_helper($xml_file)) === FALSE);
         break; 
     }
 
@@ -2240,6 +2241,18 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
     return $itemSet;
   }
 
+/**
+ *
+ */
+function simplexml_load_file_helper($filename)
+{
+  // http://websec.io/2012/08/27/Preventing-XXE-in-PHP.html
+  libxml_disable_entity_loader(true);  
+  $zebra = file_get_contents($filename);
+  $xml = @simplexml_load_string($zebra);
+  return $xml;
+}
+
+
 
 } // class end
-?>

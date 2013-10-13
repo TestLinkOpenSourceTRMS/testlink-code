@@ -121,7 +121,7 @@ function importIssueFromXML(&$db,$fileName,$parentID,$tproject_id,$userID,$optio
   
   if (file_exists($fileName))
   {
-    $xml = @simplexml_load_file($fileName);
+    $xml = @simplexml_load_file_wrapper($fileName);
     if($xml !== FALSE)
     {
       $resultMap = importTestCasesFromIssueSimpleXML($db,$xml,$parentID,$tproject_id,$userID,null,$duplicateLogic);

@@ -16,6 +16,7 @@
  */
 require('../../config.inc.php');
 require_once('common.php');
+require_once('xml.inc.php');
 
 testlinkInitPage($db);
 
@@ -139,7 +140,7 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
   
   if (file_exists($fileName))
   {
-    $xml = @simplexml_load_file($fileName);
+    $xml = @simplexml_load_file_wrapper($fileName);
     if($xml !== FALSE)
     {
       $xmlKeywords = $xml->xpath('//keywords');
@@ -492,7 +493,7 @@ function buildKeywordList($kwMap,$keywords)
 */
 function check_xml_tc_tsuite($fileName,$recursiveMode)
 {
-  $xml = @simplexml_load_file($fileName);
+  $xml = @simplexml_load_file_wrapper($fileName);
   $file_check = array('status_ok' => 0, 'msg' => 'xml_load_ko');          
   if($xml !== FALSE)
   {

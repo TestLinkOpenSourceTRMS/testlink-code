@@ -20,12 +20,12 @@
 /** core functions */
 require_once("common.php");
 
-$authCfg = config_get('authentication');
-if( 'LDAP' == $authCfg['method'] )
-{
-  /** support for LDAP authentication */
-  require_once("ldap_api.php");
-}
+//$authCfg = config_get('authentication');
+//if( 'LDAP' == $authCfg['method'] )
+//{
+//  /** support for LDAP authentication */
+//  require_once("ldap_api.php");
+// }
 
 /**
  * set session data after modification or authorization

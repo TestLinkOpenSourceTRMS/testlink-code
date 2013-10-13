@@ -3,7 +3,9 @@ Testlink: smarty template -
 @filesource usersEdit.tpl
 
 @internal revisions
-@since 1.9.7
+@since 1.9.9
+20131013 - franciscom - TICKET 5972: User Authentication Methods - Allow configuration at user level
+
 *}
 
 {config_load file="input_dimensions.conf" section='login'}
@@ -18,7 +20,7 @@ Testlink: smarty template -
              menu_view_users,menu_define_roles,menu_view_roles,no_good_email_address,
              menu_assign_testproject_roles,warning_empty_last_name,
              menu_assign_testplan_roles,caption_user_details,show_event_history,
-             th_login,th_first_name,th_last_name,th_password,th_email,
+             th_login,th_first_name,th_last_name,th_password,th_email,authentication_method,
              th_role,th_locale,th_active,password_mgmt_is_external,demo_update_user_disabled,
              btn_upd_user_data,btn_add,btn_cancel,button_reset_password,demo_reset_password_disabled'}
 
@@ -237,6 +239,17 @@ function validateForm(f,check_password)
         </select>
       </td>
     </tr>
+
+    <tr>
+      <th style="background:none;">{$labels.authentication_method}</th>
+      <td>
+        {$sel_item=$userData->authentication}
+        <select name="authentication">
+        {html_options options=$gui->auth_method selected=$sel_item}
+        </select>
+      </td>
+    </tr>
+
 
     <tr>
       <th style="background:none;">{$labels.th_active}</th>

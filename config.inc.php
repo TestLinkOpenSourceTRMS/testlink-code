@@ -22,7 +22,9 @@
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.8
+ * @since 1.9.9
+ *
+ * 20131013 - franciscom - TICKET 5972: User Authentication Methods - Allow configuration at user level
  *
  **/
 
@@ -263,15 +265,21 @@ $g_smtp_port = 25;
 
 /**
  * Login authentication method:
- *  'MD5' => use password stored on db
+ *  'MD5' => use password stored on db => will be deprecated and DB used.
+ *  'DB'  => Same as MD5 use password stored on db
  *  'LDAP' => use password from LDAP Server
  */
-$tlCfg->authentication['method'] = 'MD5';
+$tlCfg->authentication['domain'] = array('DB' => 'DB','LDAP' => 'LDAP');
+
+/* Default Authentication method */
+$tlCfg->authentication['method'] = 'DB';
 
 
 /**
  * Single Sign On authentication
- * This will be used with $tlCfg->authentication['method']
+ * This will be used with $tlCfg->authentication['method'] <<= INCOMPLETE COMMENT
+ *
+ * This works with apache webserver
  */
 $tlCfg->authentication['SSO_enabled'] = false; 
 $tlCfg->authentication['SSO_method'] = 'CLIENT_CERTIFICATE';

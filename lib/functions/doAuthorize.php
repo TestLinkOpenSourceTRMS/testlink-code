@@ -6,19 +6,19 @@
  * This file handles the initial authentication for login and creates all user session variables.
  *
  * @filesource  doAuthorize.php
- * @package   TestLink
- * @author    Chad Rosen, Martin Havlat
+ * @package     TestLink
+ * @author      Chad Rosen, Martin Havlat
  * @copyright   2003-2013, TestLink community 
- * @link    http://www.teamst.org/
+ * @link        http://www.teamst.org/
  *
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.9
  */
 
-/** TBD */ 
 require_once("users.inc.php");
 require_once("roles.inc.php");
+require_once("ldap_api.php");
 
 /** 
  * authorization function verifies login & password and set user session data 
@@ -42,6 +42,7 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
     $user = new tlUser();
     $user->login = $login;
     $login_exists = ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) >= tl::OK); 
+
     if ($login_exists)
     {
       $password_check = auth_does_password_match($user,$pwd);
@@ -170,7 +171,20 @@ function auth_does_password_match(&$userObj,$cleartext_password)
   $ret->status_ok = false;
   $ret->msg = sprintf(lang_get('unknown_authentication_method'),$authCfg['method']);
   
-  switch($authCfg['method'])
+  $authMethod = $userObj->authentication;
+  switch($userObj->authentication)
+  {
+    case 'DB':
+    case 'LDAP':
+    break;
+
+    default:
+      $authMethod = $authCfg['method'];
+    break;
+  }
+
+  // switch($authCfg['method'])
+  switch($authMethod)
   {
     case 'LDAP':
       $msg[ERROR_LDAP_AUTH_FAILED] = lang_get('error_ldap_auth_failed');
@@ -185,6 +199,8 @@ function auth_does_password_match(&$userObj,$cleartext_password)
     break;
     
     case 'MD5':
+    case 'DB':
+    default:
       $ret->status_ok = ($userObj->comparePassword($cleartext_password) == tl::OK);
       $ret->msg = 'ok';
     break;

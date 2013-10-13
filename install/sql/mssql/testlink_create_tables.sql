@@ -664,6 +664,7 @@ CREATE TABLE /*prefix*/users (
   active tinyint NOT NULL CONSTRAINT /*prefix*/DF_users_active DEFAULT ((1)),
   script_key varchar (32) NULL,
   cookie_string varchar (64) NOT NULL CONSTRAINT /*prefix*/DF_cookie_string DEFAULT (N''),
+  auth_method varchar (10) NULL,
  CONSTRAINT /*prefix*/PK_users PRIMARY KEY CLUSTERED 
 (
   id ASC

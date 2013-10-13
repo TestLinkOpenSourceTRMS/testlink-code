@@ -12,6 +12,7 @@
  *
  * @internal revisions
  * @since 1.9.9
+ * 20131013 - franciscom - TICKET 5972: User Authentication Methods - Allow configuration at user level
  *
  */
 require_once('../../config.inc.php');
@@ -23,13 +24,9 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
+$gui = initializeGui();
 
-$gui = new stdClass(); 
-$gui->op = new stdClass();
-$gui->op->user_feedback = '';
-$gui->op->status = tl::OK;
 $user = null;
-
 $highlight = initialize_tabsmenu();
 
 $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
@@ -126,6 +123,7 @@ function init_args()
                    "locale" => array(tlInputParameter::STRING_N,0,10),
                    "login" => array(tlInputParameter::STRING_N,0,30),
                    "password" => array(tlInputParameter::STRING_N,0,32),
+                   "authentication" => array(tlInputParameter::STRING_N,0,10),
                    "user_is_active" => array(tlInputParameter::CB_BOOL));
 
   $args = new stdClass();
@@ -216,9 +214,6 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
 
 /**
  * 
- *
- * @internal revisions
- *  20100502 - franciscom - BUGID 3417
  */
 function createNewPassword(&$dbHandler,&$argsObj,&$userObj,$newPasswordSendMethod)
 {
@@ -291,6 +286,7 @@ function initializeUserProperties(&$userObj,&$argsObj)
   $userObj->globalRoleID = $argsObj->rights_id;
   $userObj->locale = $argsObj->locale;
   $userObj->isActive = $argsObj->user_is_active;
+  $userObj->authentication = trim($argsObj->authentication);
 }
 
 function decodeRoleId(&$dbHandler,$roleID)
@@ -333,8 +329,22 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
     }    
 }
 
+
+function initializeGui()
+{
+  $guiObj = new stdClass(); 
+  $guiObj->op = new stdClass();
+  $guiObj->op->user_feedback = '';
+  $guiObj->op->status = tl::OK;
+
+  $authCfg = config_get('authentication');
+  $guiObj->auth_method = array(lang_get('default_auth_method') . "(" . $authCfg['method'] . ")" => '');
+  $guiObj->auth_method += $authCfg['domain'];
+  $guiObj->auth_method = array_flip($guiObj->auth_method);
+  return $guiObj;  
+}
+
 function checkRights(&$db,&$user)
 {
   return $user->hasRight($db,'mgt_users');
 }
-?>

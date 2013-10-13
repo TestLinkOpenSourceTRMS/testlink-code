@@ -513,6 +513,7 @@ CREATE TABLE /*prefix*/users (
   `active` tinyint(1) NOT NULL default '1',
   `script_key` varchar(32) NULL,
   `cookie_string` varchar(64) NOT NULL default '',
+  `auth_method` varchar(10) NULL default '',
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/users_login (`login`),
   UNIQUE KEY /*prefix*/users_cookie_string (`cookie_string`)

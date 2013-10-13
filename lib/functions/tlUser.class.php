@@ -9,7 +9,8 @@
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.9
+ * 20131013 - franciscom - TICKET 5972: User Authentication Methods - Allow configuration at user level
  */
  
 /**
@@ -87,6 +88,9 @@ class tlUser extends tlDBObject
    * @var string the API Key for the user
    */
   public $userApiKey;
+
+
+  public $authentication;
 
   /**
    * @var string the password of the user
@@ -173,6 +177,7 @@ class tlUser extends tlDBObject
     $this->tplanRoles = null;
     $this->userApiKey = null;
     $this->securityCookie = null;
+    $this->authentication = null;
 
     if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
     {
@@ -189,12 +194,22 @@ class tlUser extends tlDBObject
    * Checks if password management is external (like LDAP)...
    * 
    * @return boolean return true if password management is external, else false
-   * @TODO schlundus, should be moved inside a super tl configuration class
    */
   static public function isPasswordMgtExternal()
   {
     $authCfg = config_get('authentication');
-    return ($authCfg['method'] != '' &&  $authCfg['method'] != 'MD5') ? true : false;
+    switch($authCfg['method'])
+    {
+      case 'LDAP':
+        return true;
+      break;
+
+      case 'DB':
+      case 'MD5':
+      default:
+        return false;
+      break;
+    }
   }
   
   /**
@@ -240,7 +255,7 @@ class tlUser extends tlDBObject
   {
     $this->_clean($options);
     $sql = "SELECT id,login,password,cookie_string,first,last,email,role_id,locale, " .
-           " login AS fullname, active,default_testproject_id, script_key " .
+           " login AS fullname, active,default_testproject_id, script_key,auth_method " .
            " FROM {$this->object_table}";
     $clauses = null;
 
@@ -267,6 +282,7 @@ class tlUser extends tlDBObject
       $this->globalRoleID = $info['role_id'];
       $this->userApiKey = $info['script_key'];
       $this->securityCookie = $info['cookie_string'];
+      $this->authentication = $info['auth_method'];
       
       if ($this->globalRoleID)
       {
@@ -343,12 +359,12 @@ class tlUser extends tlDBObject
   public function readTestPlanRoles(&$db,$testPlanID = null)
   {
     $sql = "SELECT testplan_id,role_id " . 
-             " FROM {$this->tables['user_testplan_roles']} user_testplan_roles " .
-             " WHERE user_id = {$this->dbID}";
+           " FROM {$this->tables['user_testplan_roles']} user_testplan_roles " .
+           " WHERE user_id = {$this->dbID}";
     if ($testPlanID)
     {
       $sql .= " AND testplan_id = {$testPlanID}";
-        }
+    }
         
     $allRoles = $db->fetchColumnsIntoMap($sql,'testplan_id','role_id');
     $this->tplanRoles = null;
@@ -386,7 +402,6 @@ class tlUser extends tlDBObject
     $result = $this->checkDetails($db);
     if ($result >= tl::OK)
     {    
-      // TICKET 4342
       $t_cookie_string = $this->auth_generate_unique_cookie_string($db);   
 
       // After addition of cookie_string, and following Mantisbt pattern,
@@ -408,13 +423,14 @@ class tlUser extends tlDBObject
         }    
 
         $sql = "UPDATE {$this->tables['users']} " .
-                  "SET first = '" . $db->prepare_string($this->firstName) . "'" .
-                  ", last = '" .  $db->prepare_string($this->lastName)    . "'" .
-                  ", email = '" . $db->prepare_string($this->emailAddress)   . "'" .
-                ", locale = ". "'" . $db->prepare_string($this->locale) . "'" . 
-                ", password = " . "'" . $db->prepare_string($this->password) . "'" .
-                ", role_id = ". $db->prepare_string($this->globalRoleID) . 
-                ", active = ". $db->prepare_string($this->isActive);
+               "SET first = '" . $db->prepare_string($this->firstName) . "'" .
+               ", last = '" .  $db->prepare_string($this->lastName)    . "'" .
+               ", email = '" . $db->prepare_string($this->emailAddress)   . "'" .
+               ", locale = ". "'" . $db->prepare_string($this->locale) . "'" . 
+               ", password = " . "'" . $db->prepare_string($this->password) . "'" .
+               ", role_id = ". $db->prepare_string($this->globalRoleID) . 
+               ", active = ". $db->prepare_string($this->isActive) . 
+               ", auth_method = ". "'" . $db->prepare_string($this->authentication) . "'";
 
         if(!is_null($t_cookie_string) )
         {        
@@ -426,13 +442,15 @@ class tlUser extends tlDBObject
       else
       {
         $sql = "INSERT INTO {$this->tables['users']} " .
-             " (login,password,cookie_string,first,last,email,role_id,locale,active) " .
+             " (login,password,cookie_string,first,last,email,role_id,locale,active,auth_method) " .
              " VALUES ('" . 
              $db->prepare_string($this->login) . "','" . $db->prepare_string($this->password) . "','" . 
              $db->prepare_string($t_cookie_string) . "','" .
              $db->prepare_string($this->firstName) . "','" . $db->prepare_string($this->lastName) . "','" . 
              $db->prepare_string($this->emailAddress) . "'," . $this->globalRoleID. ",'". 
-             $db->prepare_string($this->locale). "'," . $this->isActive . ")";
+             $db->prepare_string($this->locale). "'," . $this->isActive . "," . 
+             "'" . $db->prepare_string($this->authentication). "'" . ")";
+
         $result = $db->exec_query($sql);
         if($result)
         {
@@ -456,13 +474,13 @@ class tlUser extends tlDBObject
     $sqlSet[] = "DELETE FROM {$this->table['user_assignments']} WHERE user_id = {$this->dbID}";
     $sqlSet[] = "DELETE FROM {$this->table['users']}  WHERE id = {$this->dbID}";
 
-      foreach($sqlSet as $sql)
-      {
+    foreach($sqlSet as $sql)
+    {
       $result = $db->exec_query($sql) ? tl::OK : tl::ERROR;
-        if($result == tl::ERROR) 
-        {
-            break;  
-        }
+      if($result == tl::ERROR) 
+      {
+        break;  
+      }
     }
   
     if ($result == tl::OK)
@@ -510,8 +528,9 @@ class tlUser extends tlDBObject
   protected function encryptPassword($pwd)
   {
     if (self::isPasswordMgtExternal())
+    {  
       return self::S_PWDMGTEXTERNAL;
-
+    }  
     return md5($pwd);
   }
   

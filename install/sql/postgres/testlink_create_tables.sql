@@ -93,7 +93,6 @@ CREATE UNIQUE INDEX /*prefix*/roles_uidx1 ON /*prefix*/roles ("description");
 --
 -- Table structure for table "users"
 --
--- TICKET 4342 - cookie_string
 --
 CREATE TABLE /*prefix*/users(  
   "id" BIGSERIAL NOT NULL ,
@@ -108,6 +107,7 @@ CREATE TABLE /*prefix*/users(
   "active" INT2 NOT NULL DEFAULT '1',
   "script_key" VARCHAR(32) NULL,
   "cookie_string" varchar(64) NOT NULL DEFAULT '', 
+  "auth_method" VARCHAR(10) NULL DEFAULT '', 
   PRIMARY KEY ("id")
 );
 CREATE UNIQUE INDEX /*prefix*/users_uidx1 ON /*prefix*/users ("login");
@@ -763,6 +763,29 @@ CREATE TABLE /*prefix*/testproject_reqmgrsystem
   "reqmgrsystem_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/reqmgrsystems (id) ON DELETE CASCADE,
   PRIMARY KEY ("testproject_id")
 );
+
+
+--
+-- Table structure for table cfield_build_design_values
+--
+CREATE TABLE /*prefix*/cfield_design_values(  
+  "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id) ON DELETE CASCADE,
+  "node_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/builds (id) ON DELETE CASCADE,
+  "value" VARCHAR(4000) NOT NULL DEFAULT '',
+  PRIMARY KEY ("field_id","node_id")
+); 
+CREATE INDEX /*prefix*/IX_cfield_design_values ON /*prefix*/cfield_design_values ("node_id");
+
+
+
+CREATE TABLE /*prefix*/closure
+(
+  "ancestor" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
+  "descendant" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
+  "distance" INTEGER NOT NULL DEFAULT '0',
+  PRIMARY KEY (ancestor, descendant)
+);
+
 
 --
 -- TICKET 4914: Create View - tcversions_last_active

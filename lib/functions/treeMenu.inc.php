@@ -13,8 +13,9 @@
  * @uses        config.inc.php
  *
  * @internal revisions
- * @since 1.9.7
- * 20130319 - franciscom - TICKET 5573: test cases assign to platform A show up in "test plan report" for All platforms
+ * @since 1.9.9
+ * 20131019 - franciscom - generateTestSpecTree() return type changed
+                           generateTestSpecTreeNew() return type changed
  *
  */
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
@@ -47,15 +48,11 @@ function filterString($str)
  *                            the test case will ignored.
  * @param array $exclude_branches map key=node_id
  * 
- * @internal Revisions:
- * 20121010 - asimon - TICKET 4496: Add filter for active/inactive Test Cases on Add/remove Test Cases
- * 20121010 - asimon - TICKET 4353: added active/inactive filter
- * 20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
- * 20100810 - asimon - filtering by testcase ID
- * 20100428 - asimon - BUGID 3301, added filtering by custom fields
+ * @internal revisions
+ * @since 1.9.9
+ * 20131019 - franciscom - return type changed
+ *
  */
- 
- 
 function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
   $chronos[] = microtime(true);
@@ -67,11 +64,10 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
     // TICKET 4353: added active/inactive filter
   $my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0, 
                          'tc_action_enabled' => 1, 'viewType' => 'testSpecTree',
-                           'ignore_inactive_testcases' => null,
-                           'ignore_active_testcases' => null);
+                         'ignore_inactive_testcases' => null,
+                         'ignore_active_testcases' => null);
 
   // testplan => only used if opetions['viewType'] == 'testSpecTreeForTestPlan'
-  
   // 20120205 - franciscom - hmm seems this code is INCOMPLETE
   // may be we can remove ?
   $my['filters'] = array('keywords' => null, 'executionType' => null, 'importance' => null,
@@ -83,10 +79,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   if( $my['options']['viewType'] == 'testSpecTree' )
   {
     $rr = generateTestSpecTreeNew($db,$tproject_id,$tproject_name,$linkto,$filters,$options);
-    //$chronos[] = microtime(true); $tnow = end($chronos);$tprev = prev($chronos);
-    //$t_elapsed = number_format( $tnow - $tprev, 4);
-    //echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
-    //reset($chronos);  
     return $rr;
   }
   
@@ -117,7 +109,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   // This is right way to go.
   // 
   $exclude_branches = isset($filters['filter_toplevel_testsuite']) && 
-            is_array($filters['filter_toplevel_testsuite']) ?
+                      is_array($filters['filter_toplevel_testsuite']) ?
                       $filters['filter_toplevel_testsuite'] : null;
   
   $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
@@ -132,7 +124,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   
   $map_node_tccount=array();
   $tplan_tcs=null;
-  
+  $tc2show = null;
   if($test_spec)
   {
     $tck_map = null;  // means no filter
@@ -151,25 +143,26 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
     // keywords using $tck_map;
     $pnFilters = null;
     $keys2init = array('filter_testcase_name','filter_execution_type','filter_priority','filter_tc_id');
-    foreach ($keys2init as $keyname) {
+    foreach ($keys2init as $keyname) 
+    {
       $pnFilters[$keyname] = isset($my['filters'][$keyname]) ? $my['filters'][$keyname] : null;
     }
       
-      $pnFilters['setting_testplan'] = $my['filters']['setting_testplan'];
-      if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) 
-      {
-        $test_spec['childNodes'] = filter_by_cf_values($db, $test_spec['childNodes'],
+    $pnFilters['setting_testplan'] = $my['filters']['setting_testplan'];
+    if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) 
+    {
+      $test_spec['childNodes'] = filter_by_cf_values($db, $test_spec['childNodes'],
                                  $my['filters']['filter_custom_fields'],$hash_descr_id);
-      }
+    }
     
-        // TICKET 4496: added inactive testcase filter
-      $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'], 
-                 'viewType' => $my['options']['viewType'],  
+    // TICKET 4496: added inactive testcase filter
+    $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'], 
+                       'viewType' => $my['options']['viewType'],  
                        'ignoreInactiveTestCases' => $my['options']['ignore_inactive_testcases'],
-                           'ignoreActiveTestCases' => $my['options']['ignore_active_testcases']);
+                       'ignoreActiveTestCases' => $my['options']['ignore_active_testcases']);
 
     $testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,$tck_map,
-                                   $tplan_tcs,$pnFilters,$pnOptions);
+                                     $tplan_tcs,$pnFilters,$pnOptions);
 
     foreach($testcase_counters as $key => $value)
     {
@@ -178,9 +171,9 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
     
     
     $showTestCaseID = config_get('treemenu_show_testcase_id');
-    $menustring = renderTreeNode(1,$test_spec,$hash_id_descr,
-                               $my['options']['tc_action_enabled'],$linkto,$tcase_prefix,
-                               $my['options']['forPrinting'],$showTestCaseID);
+    $tc2show = renderTreeNode(1,$test_spec,$hash_id_descr,
+                              $my['options']['tc_action_enabled'],$linkto,$tcase_prefix,
+                              $my['options']['forPrinting'],$showTestCaseID);
   }
 
   $menustring ='';
@@ -193,11 +186,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   $treeMenu->rootnode->href = $test_spec['href'];
   
   
-  // Change key ('childNodes')  to the one required by Ext JS tree.
-  if(isset($test_spec['childNodes']))
-  {
-    $menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
-  }
   // 20090328 - franciscom - BUGID 2299
   // More details about problem found on 20090308 and fixed IN WRONG WAY
   // TPROJECT
@@ -229,6 +217,12 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   //
   // Attention: do not know if in other situation this will generate a different bug
   // 
+  // Change key ('childNodes')  to the one required by Ext JS tree.
+  if(isset($test_spec['childNodes']))
+  {
+    $menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
+  }
+
   if(!is_null($menustring))
   {
     // Remove null elements (Ext JS tree do not like it ).
@@ -237,8 +231,9 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
     $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
   }
   $treeMenu->menustring = $menustring; 
-  
-  return $treeMenu;
+
+  $tc2show = !is_null($tc2show) ? explode(",",trim($tc2show,",")) : null;
+  return array('menu' => $treeMenu, 'leaves' => $tc2show);
 }
 
 
@@ -666,7 +661,7 @@ function renderTreeNode($level,&$node,$hash_id_descr,
   static $f2call;
   static $forbidden_parents;
 
-  $menustring='';
+  $testCasesIDList='';
 
   // -------------------------------------------------------------------------------
   // Choice for PERFORMANCE:
@@ -696,7 +691,6 @@ function renderTreeNode($level,&$node,$hash_id_descr,
   // custom Property that will be accessed by EXT-JS using node.attributes
   $node['testlink_node_name'] = filterString($node['name']);
   $node['testlink_node_type'] = $hash_id_descr[$node['node_type_id']];
-  // $node['forbidden_parent'] = $forbidden_parents[$node['node_type_id']];
   $node['forbidden_parent'] = $forbidden_parents[$node['testlink_node_type']];
 
   $testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0; 
@@ -707,7 +701,7 @@ function renderTreeNode($level,&$node,$hash_id_descr,
     case 'testproject':
     case 'testsuite':
       $node['text'] =  $node['testlink_node_name'] . " (" . $testcase_count . ")";
-      break;
+    break;
       
     case 'testcase':
       $node['text'] = "";
@@ -716,7 +710,8 @@ function renderTreeNode($level,&$node,$hash_id_descr,
         $node['text'] .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
       } 
       $node['text'] .= $node['testlink_node_name'];
-      break;
+      $testCasesIDList .= $node['id'] . ',';
+    break;
   } // switch 
 
   $node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
@@ -737,13 +732,13 @@ function renderTreeNode($level,&$node,$hash_id_descr,
       {
         continue;
       }
-      $menustring .= renderTreeNode($level+1,$node['childNodes'][$idx],$hash_id_descr,
-                                  $tc_action_enabled,$linkto,$testCasePrefix,
-                                  $bForPrinting,$showTestCaseID);
+      $testCasesIDList .= renderTreeNode($level+1,$node['childNodes'][$idx],$hash_id_descr,
+                                    $tc_action_enabled,$linkto,$testCasePrefix,
+                                    $bForPrinting,$showTestCaseID);
     }
   }
-  
-  return $menustring;
+
+  return $testCasesIDList;
 }
 
 
@@ -1532,6 +1527,9 @@ function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testpr
   $filtered_map = get_filtered_req_map($db, $testproject_id, $testproject_mgr,
                                        $my['filters'], $my['options']);
   
+
+  new dbug($filtered_map);
+
   $level = 1;
   $req_spec = prepare_reqspec_treenode($db, $level, $req_spec, $filtered_map, $map_id_nodetype,
                                        $map_nodetype_id, $my['filters'], $my['options']);
@@ -2059,10 +2057,6 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
 
   $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
   $test_spec = getTestSpecTree($tproject_id,$tproject_mgr,$filters);
-  //$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
-  //$t_elapsed = number_format( $tnow - $tprev, 4);
-  //echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
-  //reset($chronos);
 
   // Added root node for test specification -> testproject
   $test_spec['name'] = $tproject_name;
@@ -2071,14 +2065,14 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
 
   
   $map_node_tccount=array();
-  $tplan_tcs=null;
+  $tc2show = null;
 
   if($test_spec)
   {
       if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) 
       {
         $test_spec['childNodes'] = filter_by_cf_values($db, $test_spec['childNodes'],
-                                 $my['filters']['filter_custom_fields'],$hash_descr_id);
+                                                       $my['filters']['filter_custom_fields'],$hash_descr_id);
       }
     
       $pnFilters = array('keywords' => $my['filters']['filter_keywords'],
@@ -2111,9 +2105,9 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
     }
 
     $showTestCaseID = config_get('treemenu_show_testcase_id');
-    $menustring = renderTreeNode(1,$test_spec,$hash_id_descr,
-                               $my['options']['tc_action_enabled'],$linkto,$tcase_prefix,
-                               $my['options']['forPrinting'],$showTestCaseID);
+    $tc2show = renderTreeNode(1,$test_spec,$hash_id_descr,
+                              $my['options']['tc_action_enabled'],$linkto,$tcase_prefix,
+                              $my['options']['forPrinting'],$showTestCaseID);
   }
   
   $menustring ='';
@@ -2125,12 +2119,8 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
   $treeMenu->rootnode->position = $test_spec['position'];     
   $treeMenu->rootnode->href = $test_spec['href'];
   
+
   
-  // Change key ('childNodes')  to the one required by Ext JS tree.
-  if(isset($test_spec['childNodes']))
-  {
-    $menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
-  }
   // 20090328 - franciscom - BUGID 2299
   // More details about problem found on 20090308 and fixed IN WRONG WAY
   // TPROJECT
@@ -2162,6 +2152,13 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
   //
   // Attention: do not know if in other situation this will generate a different bug
   // 
+  //
+  // Change key ('childNodes')  to the one required by Ext JS tree.
+  if(isset($test_spec['childNodes']))
+  {
+    $menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
+  }
+
   if(!is_null($menustring))
   {
     // Remove null elements (Ext JS tree do not like it ).
@@ -2170,8 +2167,9 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
     $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
   }
   $treeMenu->menustring = $menustring; 
-  
-  return $treeMenu;
+
+  $tc2show = !is_null($tc2show) ? explode(",",trim($tc2show,",")) : null;
+  return array('menu' => $treeMenu, 'leaves' => $tc2show);
 }
 
 
@@ -2312,7 +2310,9 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
       ($doFilterOn['keywords'] && !isset($tcFilterByKeywords[$node['id']])) )
     {
       $node = null;
-    } else {
+    } 
+    else 
+    {
       // needed to avoid problems when using json_encode with EXTJS
       unset($node['childNodes']);
       $node['leaf']=true;
@@ -2342,7 +2342,7 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
         continue;
       }
 
-            // TICKET 4353: added $db for active/inactive filter
+      // TICKET 4353: added $db for active/inactive filter
       $counters_map = prepareTestSpecNode($db, $tprojectMgr,$tprojectID,$current,$map_node_tccount);
       // new dBug($current);
       

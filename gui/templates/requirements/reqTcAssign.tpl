@@ -42,7 +42,6 @@ function check_action_precondition(form_id,action)
 	{$labels.test_case}{$smarty.const.TITLE_SEP}{$gui->tcTitle|escape}
 	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage" show_help_icon=true}
 </h1>
-
 <div class="workBack">
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 {if $gui->arrReqSpec eq "" }
@@ -50,6 +49,7 @@ function check_action_precondition(form_id,action)
 {else}
   <h2>{$labels.req_title_assign}</h2>
   <form id="SRS_switch" name="SRS_switch" method="post">
+    <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
     <p><span class="labelHolder">{$labels.req_spec}</span>   
   	<select name="idSRS" id="idSRS" onchange="form.submit()">
   		{html_options options=$gui->arrReqSpec selected=$gui->selectedReqSpec}
@@ -61,6 +61,7 @@ function check_action_precondition(form_id,action)
   <h2>{$labels.req_title_assigned}</h2>
   {if $gui->arrAssignedReq ne ""}
     <form id="reqList" method="post">
+    <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
     <div id="div_assigned_req">
  	    {* used as memory for the check/uncheck all checkbox javascript logic *}
        <input type="hidden" name="memory_assigned_req"
@@ -113,6 +114,7 @@ function check_action_precondition(form_id,action)
       <div class="workBack">
       <h2>{$labels.req_title_unassigned}</h2>
       <form id="reqList2" method="post">
+        <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
 
        <div id="div_free_req">
  	     {* used as memory for the check/uncheck all checkbox javascript logic *}

@@ -859,6 +859,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     
     $tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id);
 
+    new dBug($this->mode);
     switch ($this->mode) 
     {
       
@@ -903,9 +904,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                                             $this->args->testplan_id,
                                                             $this->args->testplan_name,
                                                             $filters,$opt_etree);
-        
         $this->set_testcases_to_show($testcases_to_show);
-        
+
         $root_node = $tree_menu->rootnode;
         $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
         
@@ -932,7 +932,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
         
         if ($this->do_filtering) 
         {
-          
           // TICKET 4353: added active/inactive filter
           $ignore_inactive_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
           $ignore_active_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
@@ -954,10 +953,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
                            'ignore_inactive_testcases' => $ignore_inactive_testcases,
                            'ignore_active_testcases' => $ignore_active_testcases);
             
-          $tree_menu = generateTestSpecTree($this->db, $this->args->testproject_id,
-                                            $this->args->testproject_name,
-                                            $gui->menuUrl, $filters, $options);
+          $forrest = generateTestSpecTree($this->db, $this->args->testproject_id,
+                                          $this->args->testproject_name,
+                                          $gui->menuUrl, $filters, $options);
           
+          $this->set_testcases_to_show($forrest['leaves']);
+          new dBug($forrest['leaves']);
+          
+          $tree_menu = $forrest['menu'];  
           $root_node = $tree_menu->rootnode;
           $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
         } 
@@ -1013,13 +1016,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
                            'ignore_inactive_testcases' => $ignore_inactive_testcases,
                            'ignore_active_testcases' => $ignore_active_testcases);
       
-          $tree_menu = generateTestSpecTree($this->db,
-                                            $this->args->testproject_id,
-                                            $this->args->testproject_name,
-                                            $gui->menuUrl,$filters,$options);
+          $forrest = generateTestSpecTree($this->db,
+                                          $this->args->testproject_id,
+                                          $this->args->testproject_name,
+                                          $gui->menuUrl,$filters,$options);
           
+          $tree_menu = $forrest['menu'];  
           $root_node = $tree_menu->rootnode;
-            $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
+          $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
         } 
         else 
         {

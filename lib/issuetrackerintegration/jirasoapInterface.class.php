@@ -92,33 +92,8 @@ class jirasoapInterface extends issueTrackerInterface
 
     if( property_exists($this->cfg,'attributes') )
     {
-      //DEBUG-echo __FUNCTION__ . "::Debug::Step#$step Going To Add attributes <br>";$step++;
-
-      $attr = get_object_vars($this->cfg->attributes);
-      //DEBUG-echo '<pre>';var_dump($attr);echo '</pre>';
-      foreach ($attr as $name => $elem) 
-      {
-        $name = (string)$name;
-        if( is_object($elem) )
-        {
-          $elem = get_object_vars($elem);
-          $cc = (array)current($elem);
-          $kk = key($elem); 
-          //DEBUG-echo "Adding COMPLEX ATTR:$name<br>";print_r(var_dump($elem));
-          //DEBUG-echo "cc<br>";print_r(var_dump($cc));
-          //DEBUG-echo "kk<br>";print_r(var_dump($kk));
-
-          foreach($cc as $value)
-          {
-            $this->issueAttr[$name][] = array($kk => (string)$value); 
-          }
-        } 
-        else
-        {
-          $this->issueAttr[$name] = (string)$elem;     
-          //DEBUG-echo "Added SIMPLE VALUE:$name<br>"; echo '<pre>';var_dump($this->issueAttr[$name]);echo '</pre>';
-        } 
-      }
+      // echo __FUNCTION__ . "::Debug::Step#$step Going To Add attributes <br>";$step++;
+      $this->processAttributes();
     }     
 
     $this->issueDefaults = array('issuetype' => 1);
@@ -130,10 +105,9 @@ class jirasoapInterface extends issueTrackerInterface
       }  
       // $this->cfg->$prop = (string)(property_exists($this->cfg,$prop) ? $this->cfg->$prop : $default);
     }   
-
-
 	}
-	
+
+
 	
   /**
    * @internal precondition: TestLink has to be connected to Jira 
@@ -202,7 +176,7 @@ class jirasoapInterface extends issueTrackerInterface
     	// to do a simple call with user/password only to understand if we are really connected
     	try
     	{
-        // var_dump($this->cfg);
+        var_dump($this->cfg);
 
     		$this->APIClient = $op['client'];
         $this->authToken = $this->APIClient->login($this->cfg->username, $this->cfg->password);
@@ -218,7 +192,9 @@ class jirasoapInterface extends issueTrackerInterface
     	catch (SoapFault $f)
     	{
     		$this->connected = false;
-    		tLog(__CLASS__ . " - SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})","ERROR");
+        $msg = __CLASS__ . " - SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})";
+        // echo $msg;
+    		tLog($msg,"ERROR");
     	}
     }
     return $this->connected;
@@ -403,6 +379,86 @@ class jirasoapInterface extends issueTrackerInterface
   {
     return (property_exists($this->cfg, 'projectkey') && 
             property_exists($this->cfg, 'issuetype'));
+  }
+
+
+
+/**
+  *
+  **/
+  function processAttributes()
+  {
+    $attr = get_object_vars($this->cfg->attributes);
+    foreach ($attr as $name => $elem) 
+    {
+      $name = (string)$name;
+      switch($name)
+      {
+        case 'customFieldValues':
+          $this->getCustomFieldsAttribute($name,$elem);
+        break;
+
+        default:
+          $this->getRelaxedAttribute($name,$elem);
+        break;  
+      }
+    }
+  }
+
+
+ /**
+  *
+  **/
+  function getRelaxedAttribute($name,$elem)
+  {
+    if( is_object($elem) )
+    {
+      $ovars = get_object_vars($elem);
+      $cc = (array)current($ovars);
+      $kk = key($ovars); 
+      foreach($cc as $value)
+      {
+        $this->issueAttr[$name][] = array($kk => (string)$value); 
+      }
+    } 
+    else
+    {
+      $this->issueAttr[$name] = (string)$elem;     
+    } 
+  }
+
+ /**
+  *
+  *
+  **/
+  function getCustomFieldsAttribute($name,$objCFSet)
+  {
+    // loop on fields of a Custom Field
+    // According to JIRA Documentation and some hands on examples
+    // customfieldId, key, values => has to be sent as an array
+    //
+    $elem = get_object_vars($objCFSet);  
+    $elem = $elem['customField'];
+
+    // Because how XML works, when we have ONLY one CF we do not get an array,
+    // but only when we have more.
+    // This forces us to do this kind of processing => cast always to an array,
+    // but paying special attention to complex elements.
+    // Remember we get data from simpleXML processing
+    // 
+    if(is_object($elem))
+    {
+      $elem = array($elem);
+    } 
+
+    foreach ($elem as $item) 
+    {
+      // dev notes
+      // key attribute is not managed yet
+      // may be trim on each $item->values->value will  be good
+      $this->issueAttr[$name][] = array('customfieldId' => trim((string)$item->customfieldId),
+                                        'values' => (array)$item->values->value); 
+    }
   }
 
 }

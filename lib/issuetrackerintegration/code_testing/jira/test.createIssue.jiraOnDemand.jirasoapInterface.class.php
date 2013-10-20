@@ -24,7 +24,7 @@ $cfg =  "<issuetracker>\n" .
 		"<uricreate>http://testlink.atlassian.net/secure/CreateIssue!default.jspa</uricreate>\n" .
         "<projectkey>ZOFF</projectkey>\n" .
         "<issuetype>1</issuetype>\n" .
-		"<attributes><components><id>10100</id></components>\n" .
+		"<attributes><components><id>10100</id><id>10101</id></components>\n" .
 		"</attributes>\n" .
 		"</issuetracker>\n";
 

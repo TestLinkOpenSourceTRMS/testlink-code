@@ -13,7 +13,7 @@
  *			 not how is identified internally at DB	level on TestLink
  *
  * @internal revisions
- * @since 1.9.8
+ * @since 1.9.9
  * 20130805 - franciscom - canCreateViaAPI()
  *
 **/
@@ -46,8 +46,7 @@ class jirasoapInterface extends issueTrackerInterface
     $this->support->guiCfg = array('use_decoration' => true);
 
 	  $this->methodOpt = array('buildViewBugLink' => array('addSummary' => true, 'colorByStatus' => true));
-
-	  if( $this->setCfg($config) )
+    if( $this->setCfg($config) )
     {
   		$this->completeCfg();
 	    $this->connect();
@@ -69,42 +68,55 @@ class jirasoapInterface extends issueTrackerInterface
 	 **/
 	function completeCfg()
 	{
+    $step = 1;  // just for debug
+
 		$base = trim($this->cfg->uribase,"/") . '/' ;
 	  if( !property_exists($this->cfg,'uriwsdl') )
 	  {
-	    	$this->cfg->uriwsdl = $base . 'rpc/soap/jirasoapservice-v2?wsdl';
+      //DEBUG-echo __FUNCTION__ . "::Debug::Step#$step Going To Add uriwsdl <br>";$step++;
+	    $this->cfg->uriwsdl = $base . 'rpc/soap/jirasoapservice-v2?wsdl';
 		}
 		
 	  if( !property_exists($this->cfg,'uriview') )
 	  {
-	    	$this->cfg->uriview = $base . 'browse/';
+      //DEBUG-echo __FUNCTION__ . "::Debug::Step#$step Going To Add uriview <br>";$step++;
+	    $this->cfg->uriview = $base . 'browse/';
 		}
 	    
 	  if( !property_exists($this->cfg,'uricreate') )
 	  {
-	    	$this->cfg->uricreate = $base . 'secure/CreateIssue!default.jspa';
+      //DEBUG-echo __FUNCTION__ . "::Debug::Step#$step Going To Add uricreate <br>";$step++;
+	    $this->cfg->uricreate = $base . 'secure/CreateIssue!default.jspa';
 		}	    
 
 
     if( property_exists($this->cfg,'attributes') )
     {
+      //DEBUG-echo __FUNCTION__ . "::Debug::Step#$step Going To Add attributes <br>";$step++;
+
       $attr = get_object_vars($this->cfg->attributes);
+      //DEBUG-echo '<pre>';var_dump($attr);echo '</pre>';
       foreach ($attr as $name => $elem) 
       {
         $name = (string)$name;
         if( is_object($elem) )
         {
-           $elem = get_object_vars($elem);
-           $cc = current($elem);
-           $kk = key($elem); 
-           foreach($cc as $value)
-           {
-              $this->issueAttr[$name][] = array($kk => (string)$value); 
-           }
+          $elem = get_object_vars($elem);
+          $cc = (array)current($elem);
+          $kk = key($elem); 
+          //DEBUG-echo "Adding COMPLEX ATTR:$name<br>";print_r(var_dump($elem));
+          //DEBUG-echo "cc<br>";print_r(var_dump($cc));
+          //DEBUG-echo "kk<br>";print_r(var_dump($kk));
+
+          foreach($cc as $value)
+          {
+            $this->issueAttr[$name][] = array($kk => (string)$value); 
+          }
         } 
         else
         {
           $this->issueAttr[$name] = (string)$elem;     
+          //DEBUG-echo "Added SIMPLE VALUE:$name<br>"; echo '<pre>';var_dump($this->issueAttr[$name]);echo '</pre>';
         } 
       }
     }     
@@ -182,12 +194,16 @@ class jirasoapInterface extends issueTrackerInterface
   {
     $this->interfaceViaDB = false;
     $op = $this->getClient(array('log' => true));
+    // echo '<br>OP<br>';var_dump($op);
+
     if( ($this->connected = $op['connected']) )
     { 
     	// OK, we have got WSDL => server is up and we can do SOAP calls, but now we need 
     	// to do a simple call with user/password only to understand if we are really connected
     	try
     	{
+        // var_dump($this->cfg);
+
     		$this->APIClient = $op['client'];
         $this->authToken = $this->APIClient->login($this->cfg->username, $this->cfg->password);
         $statusSet = $op['client']->getStatuses($this->authToken);
@@ -313,10 +329,14 @@ class jirasoapInterface extends issueTrackerInterface
                      'summary' => $summary,
                      'description' => $description);
 
+
       if(!is_null($this->issueAttr))
       {
         $issue = array_merge($issue,$this->issueAttr);
       }  
+
+      //DEBUG-echo 'This Will Be Sent to JIRA<br>';echo '<pre>';var_dump($issue);echo '</pre>';
+      
       $op = $this->APIClient->createIssue($this->authToken, $issue);
       $ret = array('status_ok' => true, 'id' => $op->key, 
                    'msg' => sprintf(lang_get('jira_bug_created'),$summary,$issue['project']));

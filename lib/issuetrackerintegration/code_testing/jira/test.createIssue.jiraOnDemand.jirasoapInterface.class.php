@@ -8,7 +8,7 @@
  * @internal revisions
  *
 **/
-require_once('../../../config.inc.php');
+require_once('../../../../config.inc.php');
 require_once('common.php');
 
 $it_mgr = new tlIssueTracker($db);
@@ -24,8 +24,10 @@ $cfg =  "<issuetracker>\n" .
 		"<uricreate>http://testlink.atlassian.net/secure/CreateIssue!default.jspa</uricreate>\n" .
         "<projectkey>ZOFF</projectkey>\n" .
         "<issuetype>1</issuetype>\n" .
+
 		"<attributes><components><id>10100</id><id>10101</id></components>\n" .
 		"</attributes>\n" .
+		
 		"</issuetracker>\n";
 
 echo '<hr><br>';
@@ -42,7 +44,8 @@ var_dump($its->isConnected());
 
 if( $its->isConnected() )
 {
-  $issue = array('summary' => 'Issue Via API 2013-02-04','description' => 'Do Androids Dream of Electric Sheep?');
+  $today = date("Y-m-d H:i:s");	
+  $issue = array('summary' => 'Issue Via API' . $today,'description' => 'Do Androids Dream of Electric Sheep?');
   $zorro = $its->addIssue($issue['summary'],$issue['description']);
   echo '<pre>';
   var_dump($zorro);

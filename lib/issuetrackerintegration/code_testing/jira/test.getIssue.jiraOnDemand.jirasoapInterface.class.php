@@ -8,7 +8,7 @@
  * @internal revisions
  *
 **/
-require_once('../../../config.inc.php');
+require_once('../../../../config.inc.php');
 require_once('common.php');
 
 $it_mgr = new tlIssueTracker($db);
@@ -39,7 +39,8 @@ var_dump($its->isConnected());
 if( $its->isConnected() )
 {
   echo 'Get Issue <br>';
-  $zx = $its->getIssue('ZOFF-112');
+  // $zx = $its->getIssue('ZOFF-112');
+  $zx = $its->getIssue('ZOFF-135');
   echo '<pre>';
   var_dump($zx);
   echo '</pre>';

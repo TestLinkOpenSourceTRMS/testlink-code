@@ -10,7 +10,8 @@
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.8
+ * @since 1.9.9
+ *
  */
 
 /** related functionality */
@@ -5277,6 +5278,8 @@ class testcase extends tlObjectWithAttachments
   /**
    * 
    * Solve point to my self
+   *
+   * <p> </p> added by web rich editor create some layout issues
    */
   function renderGhostSteps(&$steps2render)
   {
@@ -5285,6 +5288,8 @@ class testcase extends tlObjectWithAttachments
 
     $tlBeginMark = '[ghost]';
     $tlEndMark = '[/ghost]';
+    $tlEndMarkLen = strlen($tlEndMark);
+
     $key2check = array('actions','expected_results');
     
     // I've discovered that working with Web Rich Editor generates 
@@ -5292,6 +5297,7 @@ class testcase extends tlObjectWithAttachments
     // when trying to use json_decode().
     // Hope this set is enough.
     $replaceSet = array($tlEndMark, '</p>', '<p>','&nbsp;');
+    $replaceSetWebRichEditor = array('</p>', '<p>','&nbsp;');
     
     $rse = &$steps2render;
     for($gdx=0; $gdx < $loop2do; $gdx++)
@@ -5301,33 +5307,38 @@ class testcase extends tlObjectWithAttachments
         $deghosted = false;
         $start = strpos($rse[$gdx][$item_key],$tlBeginMark);
         $ghost = $rse[$gdx][$item_key];
-
         if($start !== FALSE)
         {
           $xx = explode($tlBeginMark,$rse[$gdx][$item_key]);
           $xx2do = count($xx);
           $ghost = '';
           $deghosted = false;
-
           for($xdx=0; $xdx < $xx2do; $xdx++)
           {
             try
             {
-              if(strpos($xx[$xdx],$tlEndMark) !== FALSE)
+              if( ($cutting_point = strpos($xx[$xdx],$tlEndMark)) !== FALSE)
               {
-                $ydx = trim(str_replace($replaceSet,'',$xx[$xdx]));
-                $dx = '{' . html_entity_decode(trim($ydx,'\n')) . '}';
+                // here I've made a mistake
+                // Look at this situation:
+                //
+                // ** Original String
+                // [ghost]"Step":1,"TestCase":"BABA-1","Version":1[/ghost] RIGHT
+                // 
+                // ** $xx[$xdx]
+                // "Step":1,"TestCase":"BABA-1","Version":1[/ghost] RIGHT
+                // Then $ydx = trim(str_replace($replaceSet,'',$xx[$xdx]));
+                //
+                // WRONG!!! => "Step":1,"TestCase":"BABA-1","Version":1 RIGHT
+                // 
+                // Need to CUT WHERE I have found $tlEndMark
+                //
+                $leftside = trim(substr($xx[$xdx],0,$cutting_point));
+                $rightside = trim(substr($xx[$xdx],$cutting_point+$tlEndMarkLen));
+                $dx = '{' . html_entity_decode(trim($leftside,'\n')) . '}';
                 $dx = json_decode($dx,true);
 
-                if(!isset($dx['Step']))
-                {
-                  // seems we have found a ghost test case
-                  $zorro = array('summary' => $tlBeginMark . $ydx . $tlEndMark);
-                  $this->renderGhost($zorro);
-                  $deghosted = true;
-                  $ghost .= $zorro['summary'];                  
-                }  
-                else
+                if(isset($dx['Step']))
                 {
                   if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
                   {
@@ -5350,15 +5361,27 @@ class testcase extends tlObjectWithAttachments
                     {
                       if(intval($dx['Step']) > 0)
                       {  
-                        $stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
                         $deghosted = true;
-                        $ghost .= $stx[0][$item_key];
+                        $stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
+                        $ghost .= str_replace($replaceSetWebRichEditor,'',$stx[0][$item_key]) . $rightside;
                       }
                     }
                   } 
-
+                }  
+                else
+                {
+                  // seems we have found a ghost test case INSTEAD OF a GHOST test case STEP
+                  // Then I do a trick creating an artificial 'summary' member
+                  $zorro = array('summary' => $tlBeginMark . $leftside . $tlEndMark);
+                  $this->renderGhost($zorro);
+                  $deghosted = true;
+                  $ghost .= $zorro['summary'] . $rightside;                  
                 }  
               }
+              else
+              {
+                $ghost = $xx[$xdx]; // 20131022
+              }  
             }
             catch (Exception $e)
             {

@@ -14,6 +14,7 @@ Contents
 9. Regarding forum usage www.teamst.org
 10. Changes regarding 1.9.6,1.9.7,1.9.8
 11. Testlink & FreeTest
+12. Security
 
 1. Introduction
 ===============================================================
@@ -376,3 +377,7 @@ If you are interested you can get some info on:
 http://www.freetest.net.br
 
 
+12. Security
+===============================================================
+
+We want to thanks xistence (xistence@0x90.nl) for his tests

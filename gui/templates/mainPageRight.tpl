@@ -98,7 +98,7 @@
 <div class="vertical_menu" style="float: right; margin:10px 10px 10px 10px">
 {* ----------------------------------------------------------------------------------- *}
 	{if $gui->num_active_tplans > 0}
-	  <div class="testproject_title">
+	  <div class="">
      {lang_get s='help' var='common_prefix'}
      {lang_get s='test_plan' var="xx_alt"}
      {assign var="text_hint" value="$common_prefix: $xx_alt"}
@@ -106,16 +106,16 @@
               inc_help_alt="$text_hint" inc_help_title="$text_hint"  
               inc_help_style="float: right;vertical-align: top;"}
 
-
+{* |truncate:#TESTPLAN_TRUNCATE_SIZE# *}
  	   <form name="testplanForm" action="lib/general/mainPage.php">
        {if $gui->countPlans > 0}
 		     {$labels.current_test_plan}:<br/>
-		     <select style="z-index:1"  name="testplan" onchange="this.form.submit();">
+		     <select class="chosen-select" name="testplan" onchange="this.form.submit();">
 		     	{section name=tPlan loop=$gui->arrPlans}
 		     		<option value="{$gui->arrPlans[tPlan].id}"
 		     		        {if $gui->arrPlans[tPlan].selected} selected="selected" {/if}
 		     		        title="{$gui->arrPlans[tPlan].name|escape}">
-		     		        {$gui->arrPlans[tPlan].name|truncate:#TESTPLAN_TRUNCATE_SIZE#|escape}
+		     		        {$gui->arrPlans[tPlan].name|escape}
 		     		</option>
 		     	{/section}
 		     </select>
@@ -228,3 +228,8 @@
   {* ------------------------------------------------------------------------------------------ *}
 
 </div>
+<script>
+$( document ).ready(function() {
+$(".chosen-select").chosen({ width: "85%" });
+});
+</script>

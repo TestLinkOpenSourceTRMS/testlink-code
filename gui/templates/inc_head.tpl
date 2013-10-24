@@ -40,6 +40,7 @@ editorType: used to understand if code for tinymce need to be loaded
 	<script type="text/javascript" src="{$basehref}gui/javascript/testlink_library.js" language="javascript"></script>
 	<script type="text/javascript" src="{$basehref}gui/javascript/test_automation.js" language="javascript"></script>
 	<script type="text/javascript" src="{$basehref}third_party/prototype/prototype.js" language="javascript"></script>
+
 	{if $jsValidate == "yes"} 
 	<script type="text/javascript" src="{$basehref}gui/javascript/validate.js" language="javascript"></script>
     {include file="inc_jsCfieldsValidation.tpl"}
@@ -55,6 +56,12 @@ editorType: used to understand if code for tinymce need to be loaded
 	<script type="text/javascript" src="{$basehref}gui/javascript/sorttable.js" 
 		language="javascript"></script>
 	{/if}
+
+
+  	<link rel="stylesheet" href="{$basehref}third_party/chosen/chosen.css">
+	<script type="text/javascript" src="{$basehref}third_party/jquery/jquery-2.0.3.min.js" language="javascript"></script>
+	<script type="text/javascript" src="{$basehref}third_party/chosen/chosen.jquery.js"></script>
+
 
 	<script type="text/javascript" language="javascript">
 	<!--

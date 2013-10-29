@@ -655,12 +655,12 @@ class testcase extends tlObjectWithAttachments
    * 
    * 
    * @internal
-  
-    returns:
-  
-    rev :
-  
-  */
+   *
+   * returns:
+   * 
+   *  rev :
+   * 
+   */
 
   
        
@@ -674,7 +674,7 @@ class testcase extends tlObjectWithAttachments
     $status_ok = $idSet[0] > 0 ? 1 : 0;
     
     $gui = $this->initShowGui($guiObj,$grants,$idSet[0]);
-
+   
     $userIDSet = array();
     if($status_ok)
     {
@@ -5865,13 +5865,17 @@ class testcase extends tlObjectWithAttachments
     $goo->execution_types = $this->execution_types;
     $goo->tcase_cfg = $this->cfg->testcase;
 
+    $goo->requirement_mgmt = property_exists($grantsObj, 'mgt_modify_req' ) ? $grantsObj->mgt_modify_req : null;
+    if( is_null($goo->requirement_mgmt))
+    {
+      $goo->requirement_mgmt = property_exists($grantsObj, 'requirement_mgmt' ) ? $grantsObj->requirement_mgmt : 0;
+    }  
+
     // some config options have been migrated to rights
     // In order to refactor less code, we will remap to OLD config options present on config file.
     $goo->tcase_cfg->can_edit_executed = $grantsObj->testproject_edit_executed_testcases == 'yes' ? 1 : 0;
     $goo->tcase_cfg->can_delete_executed = $grantsObj->testproject_delete_executed_testcases == 'yes' ? 1 : 0;
-
     $goo->view_req_rights = property_exists($grantsObj, 'mgt_view_req') ? $grantsObj->mgt_view_req : 0;
-    $goo->requirement_mgmt = property_exists($grantsObj, 'mgt_modify_req' ) ? $grantsObj->mgt_modify_req : 0;
 
     $goo->parentTestSuiteName = '';
     $goo->tprojectName = '';

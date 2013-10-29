@@ -262,7 +262,23 @@ class jirasoapInterface extends issueTrackerInterface
                 "<projectkey>JIRA PROJECT KEY</projectkey>\n" .
                 "<issuetype>JIRA ISSUE TYPE</issuetype>\n" .
                 "<!-- Configure This if you need to provide other attributes -->\n" .
-                "<!-- <attributes><components><id>10100</id><id>10101</id></components></attributes>  -->\n" .
+                "<!-- \n" .
+                "<attributes>\n" . 
+                "  <components><id>10100</id><id>10101</id></components>\n" .
+                "  <affectsVersions> \n" .
+                "     <version><id>10000</id><archived></archived><released></released></version> -->\n" .
+                "  </affectsVersions> --> \n" .  
+                "  <customFieldValues>\n" . 
+                "    <customField>\n" .
+                "      <customfieldId>customfield_10800</customfieldId>\n" .
+                "      <values><value>111</value></values>\n" .
+                "    </customField>\n" .  
+                "    <customField>\n" .
+                "      <customfieldId>customfield_10900</customfieldId>\n" .
+                "      <values><value>Yamaha Factory Racing</value><value>Ducati</value></values>\n" .
+                "    </customField>\n" .
+                "  </customFieldValues>\n" .
+                "</attributes>  -->\n" .
 	              "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
                 "<resolvedstatus>\n" .
                 "<status><code>5</code><verbose>Resolved</verbose></status>\n" .
@@ -311,7 +327,8 @@ class jirasoapInterface extends issueTrackerInterface
         $issue = array_merge($issue,$this->issueAttr);
       }  
 
-      //DEBUG-echo 'This Will Be Sent to JIRA<br>';echo '<pre>';var_dump($issue);echo '</pre>';
+      //DEBUG-
+      echo 'This Will Be Sent to JIRA<br>';echo '<pre>';var_dump($issue);echo '</pre>';
       
       $op = $this->APIClient->createIssue($this->authToken, $issue);
       $ret = array('status_ok' => true, 'id' => $op->key, 
@@ -398,6 +415,10 @@ class jirasoapInterface extends issueTrackerInterface
           $this->getCustomFieldsAttribute($name,$elem);
         break;
 
+        case 'affectsVersions':
+          $this->getAffectsVersionsAttribute($name,$elem);
+        break;
+
         default:
           $this->getRelaxedAttribute($name,$elem);
         break;  
@@ -461,4 +482,45 @@ class jirasoapInterface extends issueTrackerInterface
     }
   }
 
+
+ /**
+  *
+  * <affectsVersions>
+  *   <version>
+  *     <id>10000</id>
+  *     <archived></archived>
+  *     <released></released>
+  *   </version>
+  *   <version>
+  *     <id>10002</id>
+  *     <archived></archived>
+  *     <released></released>
+  *   </version>
+  * </affectsVersions>  
+  *
+  *
+  **/
+  function getAffectsVersionsAttribute($name,$objItemSet)
+  {
+    $elem = get_object_vars($objItemSet);  
+    $elem = $elem['version'];
+
+    // Because how XML works, when we have ONLY one CF we do not get an array,
+    // but only when we have more.
+    // This forces us to do this kind of processing => cast always to an array,
+    // but paying special attention to complex elements.
+    // Remember we get data from simpleXML processing
+    // 
+    if(is_object($elem))
+    {
+      $elem = array($elem);
+    } 
+
+    foreach ($elem as $item) 
+    {
+      $this->issueAttr[$name][] = array('id' => trim((string)$item->id),
+                                        'archived' => trim((string)$item->archived),
+                                        'released' => trim((string)$item->released)); 
+    }
+  }
 }

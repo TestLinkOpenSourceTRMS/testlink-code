@@ -47,7 +47,10 @@ function displayITSCfgExample(oid,displayOID)
 		},
 		success: function(result, request) {
 			var obj = Ext.util.JSON.decode(result.responseText);
-			$(displayOID).innerHTML = obj['cfg'];
+      // after 
+      // include of jquery and upgrade of prototype
+      // I've started with issues $
+      document.getElementById(displayOID).innerHTML = obj['cfg'];
 		},
 		failure: function (result, request) {
 		}

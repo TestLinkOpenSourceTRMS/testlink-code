@@ -3,7 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource reqAssign.tpl
 assign REQ to one test case
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{$cfg_section=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels"
@@ -21,8 +21,6 @@ assign REQ to one test case
 <script type="text/javascript">
 var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
-{literal}
-
 function check_action_precondition(form_id,action)
 {
 	if(checkbox_count_checked(form_id) <= 0)
@@ -32,15 +30,20 @@ function check_action_precondition(form_id,action)
 	}
 	return true;
 }
-{/literal}
+
+function refreshAndClose() 
+{
+  window.opener.location.reload(true);
+  window.close();
+}
 </script>
 </head>
 
 <body>
 
 <h1 class="title">
-	{$labels.test_case}{$smarty.const.TITLE_SEP}{$gui->tcTitle|escape}
-	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage" show_help_icon=true}
+{$labels.test_case}{$smarty.const.TITLE_SEP}{$gui->tcTitle|escape}
+{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage" show_help_icon=true}
 </h1>
 <div class="workBack">
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
@@ -55,6 +58,14 @@ function check_action_precondition(form_id,action)
   		{html_options options=$gui->arrReqSpec selected=$gui->selectedReqSpec}
   	</select>
   </form>
+{if $gui->showCloseButton}
+  <form name="closeMeTop">
+    <div class="groupBtn">
+      <input type="button" value="{$labels.btn_close}" onclick="refreshAndClose();" />
+    </div>
+  </form>
+{/if}
+
 </div>
 
 <div class="workBack">
@@ -161,7 +172,7 @@ function check_action_precondition(form_id,action)
 {if $gui->showCloseButton}
 	<form name="closeMe">
 		<div class="groupBtn">
-			<input type="button" value="{$labels.btn_close}" onclick="window.close()" />
+			<input type="button" value="{$labels.btn_close}" onclick="refreshAndClose();" />
 		</div>
 	</form>
 {/if}

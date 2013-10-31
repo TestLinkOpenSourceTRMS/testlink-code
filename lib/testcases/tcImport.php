@@ -11,7 +11,7 @@
  * @link        http://www.teamst.org/index.php
  * 
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.9
  *
  */
 require('../../config.inc.php');
@@ -439,30 +439,24 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
       }
     }
     
-    // BUGID - 20090205 - franciscom
-    // Requirements Management
-    // Check if Requirement ...
-    // If Check fails => give message to user.
-    // Else Import 
-    //   
     $hasRequirements=(isset($tc['requirements']) && !is_null($tc['requirements']));
     if($hasRequirements)
     {
-            if( $tprojectHas['reqSpec'] )
-            {
-            $msg = processRequirements($db,$req_mgr,$name,$ret['id'],$tc['requirements'],$reqSpecSet,$feedbackMsg);
-            if( !is_null($msg) )
-            {
-                $resultMap = array_merge($resultMap,$msg);
-            }
-        }
-        else
+      if( $tprojectHas['reqSpec'] )
+      {
+        $msg = processRequirements($db,$req_mgr,$name,$ret['id'],$tc['requirements'],
+                                   $reqSpecSet,$feedbackMsg,$userID);
+        if( !is_null($msg) )
         {
-              $msg[]=array($name,$messages['reqspec_warning']);
-              $resultMap = array_merge($resultMap,$msg);          
+          $resultMap = array_merge($resultMap,$msg);
         }
+      }
+      else
+      {
+        $msg[]=array($name,$messages['reqspec_warning']);
+        $resultMap = array_merge($resultMap,$msg);          
+      }
     }
-    
   }
   return $resultMap;
 }
@@ -613,83 +607,83 @@ function processCustomFields(&$tcaseMgr,$tcaseName,$tcaseId,$tcversionId,$cfValu
  * If everything OK, assign to test case.
  * Else return an array of messages.
  *
- * 20100911 - amitkhullar - BUGID 3764
  */
-function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$reqSpecSet,$messages)
+function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$reqSpecSet,$messages,$userID)
 {
-    static $missingReqMsg;
-    static $missingReqSpecMsg;
-    static $cachedReqSpec;
-    $resultMsg=null;
+  static $missingReqMsg;
+  static $missingReqSpecMsg;
+  static $cachedReqSpec;
+  $resultMsg=null;
   $tables = tlObjectWithDB::getDBTables(array('requirements'));
 
 
-    foreach($tcReq as $ydx => $value)
+  foreach($tcReq as $ydx => $value)
+  {
+    $cachedReqSpec=array();
+    $doit=false;
+    if( ($doit=isset($reqSpecSet[$value['doc_id']])) )
     {
-      $cachedReqSpec=array();
-      $doit=false;
-      if( ($doit=isset($reqSpecSet[$value['doc_id']])) )
+      if( !(isset($cachedReqSpec[$value['req_spec_title']])) )
       {
-          if( !(isset($cachedReqSpec[$value['req_spec_title']])) )
-          {
-              // $cachedReqSpec
-              // key: Requirement Specification Title
-              // value: map with follogin keys
-              //        id => requirement specification id
-              //        req => map with key: requirement document id
-              $cachedReqSpec[$value['req_spec_title']]['id']=$reqSpecSet[$value['doc_id']]['id'];
-              $cachedReqSpec[$value['req_spec_title']]['req']=null;
-          }
+        // $cachedReqSpec
+        // key: Requirement Specification Title
+        // value: map with follogin keys
+        //        id => requirement specification id
+        //        req => map with key: requirement document id
+        $cachedReqSpec[$value['req_spec_title']]['id']=$reqSpecSet[$value['doc_id']]['id'];
+        $cachedReqSpec[$value['req_spec_title']]['req']=null;
       }
+    }
     
-      if($doit)
+    if($doit)
+    {
+      $useit=false;
+      $req_spec_id=$cachedReqSpec[$value['req_spec_title']]['id'];
+    
+      // Check if requirement with desired document id exists on requirement specification.
+      // If not => create message for user feedback.
+      if( !($useit=isset($cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']])) )
       {
-          $useit=false;
-          $req_spec_id=$cachedReqSpec[$value['req_spec_title']]['id'];
-    
-          // Check if requirement with desired document id exists on requirement specification.
-          // If not => create message for user feedback.
-          if( !($useit=isset($cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']])) )
-          {
-              $sql = " SELECT REQ.id from {$tables['requirements']} REQ " .
-                     " WHERE REQ.req_doc_id='{$dbHandler->prepare_string($value['doc_id'])}' " .
-                     " AND REQ.srs_id={$req_spec_id} ";     
+        $sql = " SELECT REQ.id from {$tables['requirements']} REQ " .
+               " WHERE REQ.req_doc_id='{$dbHandler->prepare_string($value['doc_id'])}' " .
+               " AND REQ.srs_id={$req_spec_id} ";     
                    
-              $rsx=$dbHandler->get_recordset($sql);
-              if( $useit=((!is_null($rsx) && count($rsx) > 0) ? true : false) )
-              {
-                $cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']]=$rsx[0]['id'];
-              }  
-          }
+        $rsx=$dbHandler->get_recordset($sql);
+        if( $useit=((!is_null($rsx) && count($rsx) > 0) ? true : false) )
+        {
+          $cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']]=$rsx[0]['id'];
+        }  
+      }
           
           
-          if($useit)
-          {
-              $reqMgr->assign_to_tcase($cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']],$tcaseId);
-          }
-          else
-          {
-              if( !isset($missingReqMsg[$value['doc_id']]) )
-              {
-                  $missingReqMsg[$value['doc_id']]=sprintf($messages['req'],
-                                                       $value['doc_id'],$value['req_spec_title']);  
-              }
-              $resultMsg[] = array($tcaseName,$missingReqMsg[$value['doc_id']]); 
-          }
-      } 
+      if($useit)
+      {
+
+        $reqMgr->assign_to_tcase($cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']],$tcaseId,$userID);
+      }
       else
       {
-          // Requirement Specification not found
-          if( !isset($missingReqSpecMsg[$value['req_spec_title']]) )
-          {
-              $missingReqSpecMsg[$value['req_spec_title']]=sprintf($messages['req_spec'],$value['req_spec_title']);  
-          }
-          $resultMsg[] = array($tcaseName,$missingReqSpecMsg[$value['req_spec_title']]); 
+        if( !isset($missingReqMsg[$value['doc_id']]) )
+        {
+          $missingReqMsg[$value['doc_id']]=sprintf($messages['req'],
+                                                   $value['doc_id'],$value['req_spec_title']);  
+        }
+        $resultMsg[] = array($tcaseName,$missingReqMsg[$value['doc_id']]); 
       }
+    } 
+    else
+    {
+      // Requirement Specification not found
+      if( !isset($missingReqSpecMsg[$value['req_spec_title']]) )
+      {
+        $missingReqSpecMsg[$value['req_spec_title']]=sprintf($messages['req_spec'],$value['req_spec_title']);  
+      }
+      $resultMsg[] = array($tcaseName,$missingReqSpecMsg[$value['req_spec_title']]); 
+    }
       
-    } //foreach
+  } //foreach
      
-    return $resultMsg;
+  return $resultMsg;
 }
 
 

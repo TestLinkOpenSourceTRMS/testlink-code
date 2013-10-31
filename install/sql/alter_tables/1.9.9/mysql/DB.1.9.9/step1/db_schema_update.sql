@@ -22,4 +22,13 @@
 
 /* users */
 ALTER TABLE /*prefix*/users ADD COLUMN auth_method varchar(10) NULL default '' AFTER cookie_string;
+
+
+CREATE TABLE /*prefix*/cfield_build_design_values (
+  `field_id` int(10) NOT NULL default '0',
+  `node_id` int(10) NOT NULL default '0',
+  `value` varchar(4000) NOT NULL default '',
+  PRIMARY KEY  (`field_id`,`node_id`),
+  KEY /*prefix*/idx_cfield_build_design_values (`node_id`)
+) DEFAULT CHARSET=utf8;
 /* ----- END ----- */

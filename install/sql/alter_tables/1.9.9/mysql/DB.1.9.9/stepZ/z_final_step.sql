@@ -20,5 +20,9 @@
 # ATTENTION PLEASE - replace /*prefix*/ with your table prefix if you have any. 
 # ==============================================================================
 
+INSERT INTO /*prefix*/node_types (id,description) VALUES (12,'build');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (13,'platform');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (14,'user');
+
 /* database version update */
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.9.8', 'TestLink 1.9.8',CURRENT_TIMESTAMP());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.9.9', 'TestLink 1.9.9',CURRENT_TIMESTAMP());

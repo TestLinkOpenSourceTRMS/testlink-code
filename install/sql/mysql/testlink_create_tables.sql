@@ -90,6 +90,15 @@ CREATE TABLE /*prefix*/builds (
 ) DEFAULT CHARSET=utf8 COMMENT='Available builds';
 
 
+CREATE TABLE /*prefix*/cfield_build_design_values (
+  `field_id` int(10) NOT NULL default '0',
+  `node_id` int(10) NOT NULL default '0',
+  `value` varchar(4000) NOT NULL default '',
+  PRIMARY KEY  (`field_id`,`node_id`),
+  KEY /*prefix*/idx_cfield_build_design_values (`node_id`)
+) DEFAULT CHARSET=utf8;
+
+
 CREATE TABLE /*prefix*/cfield_design_values (
   `field_id` int(10) NOT NULL default '0',
   `node_id` int(10) NOT NULL default '0',

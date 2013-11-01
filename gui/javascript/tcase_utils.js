@@ -15,7 +15,7 @@
  * ----- Development Notes --------------------------------------------------------------
  *
  * @global variables:
- * 	fRoot  -> url to TestLink installation home
+ *  fRoot  -> url to TestLink installation home
  *
  * @internal revisions:
  * 20101010 - franciscom - creation
@@ -42,20 +42,23 @@
  *
  * returns: -
  */
-function checkTCaseDuplicateName(tcase_id,tcase_name,tsuite_id,warningOID) {
-	Ext.Ajax.request({
-		url: fRoot+'lib/ajax/checkTCaseDuplicateName.php',
-		method: 'GET',
-		params: {
-			name: tcase_name,
-			testcase_id: tcase_id,
-			testsuite_id: tsuite_id
-		},
-		success: function(result, request) {
-			var obj = Ext.util.JSON.decode(result.responseText);
-			$(warningOID).innerHTML = obj['message'];
-		},
-		failure: function (result, request) {
-		}
-	});
+function checkTCaseDuplicateName(tcase_id,tcase_name,tsuite_id,warningOID) 
+{
+  Ext.Ajax.request({
+    url: fRoot+'lib/ajax/checkTCaseDuplicateName.php',
+    method: 'GET',
+    params: {
+      name: tcase_name,
+      testcase_id: tcase_id,
+      testsuite_id: tsuite_id
+    },
+    success: function(result, request) {
+      var obj = Ext.util.JSON.decode(result.responseText);
+      // After upgrading prototype and adding jQuery (to use chosen)
+      // $() does not work anymore
+      document.getElementById(warningOID).innerHTML = obj['message'];
+    },
+    failure: function (result, request) {
+    }
+  });
 }

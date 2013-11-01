@@ -32,8 +32,8 @@ Purpose: smarty template - create new testcase
       maxlength="{#TESTCASE_NAME_MAXLEN#}"
       onchange="content_modified = true"
       onkeypress="content_modified = true"
-      onkeyup="javascript:checkTCaseDuplicateName($('testcase_id').value,$('testcase_name').value,
-                                                  $('testsuite_id').value,'testcase_name_warning')"
+      onkeyup="javascript:checkTCaseDuplicateName(Ext.get('testcase_id').getValue(),Ext.get('testcase_name').getValue(),
+                                                  Ext.get('testsuite_id').getValue(),'testcase_name_warning')"
       {if isset($gui->tc.name)}
            value="{$gui->tc.name|escape}"
       {else}

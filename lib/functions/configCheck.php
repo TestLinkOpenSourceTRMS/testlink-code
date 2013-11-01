@@ -23,6 +23,24 @@
  * 
  * @author adapted from Mantis Bugtracking system
  * @return string URL 
+ *
+ * @internal revision
+ * @since 1.9.9
+ * 
+ * TICKET 0006015 - Webserver: Nginx - https is forced incorrectly
+ * Applying user suggestion after checking how mantisbt act.
+ *
+ * From MantisBT
+ * Make test for HTTPS protocol compliant with PHP documentation
+ * Prior to this, the protocol was considered to be HTTPS when
+ * isset($_SERVER['HTTPS']) is true, while PHP doc[1] states that HTTPS is
+ * "Set to a non-empty value if the script was queried through the HTTPS
+ * protocol" so the test should be !empty($_SERVER['HTTPS']) instead.
+ *
+ * This was causing issues with nginx 1.x with php5fastcgi as
+ * $_SERVER['HTTPS'] is set but empty, thus MantisBT redirects all http
+ * requests to https.
+ *
  */
 function get_home_url($opt)
 {
@@ -33,11 +51,10 @@ function get_home_url($opt)
   {
     $t_protocol= $_SERVER['HTTP_X_FORWARDED_PROTO'];
   }    
-  else if ( isset( $_SERVER['HTTPS'] ) && ( strtolower( $_SERVER['HTTPS'] ) != 'off' ) ) 
+  else if ( !empty($_SERVER['HTTPS']) && (strtolower( $_SERVER['HTTPS']) != 'off') ) 
   {
     $t_protocol = 'https';
   }
-  
   $t_protocol = $opt['force_https'] ? 'https' : $t_protocol;
 
   // $_SERVER['SERVER_PORT'] is not defined in case of php-cgi.exe
@@ -456,29 +473,12 @@ function checkSchemaVersion(&$db)
     case 'DB 1.2':
       $result['msg'] = $upgrade_msg;
     break;
-
+     
     case 'DB 1.3':
-      $result['msg'] = $upgrade_msg;
-      if ($last_version == 'DB 1.4' || $last_version == 'DB 1.5' || $last_version == 'DB 1.6') 
-      {
-        $result['msg'] = $manualop_msg;
-      }
-    break;
-      
     case 'DB 1.4':
-      if ($last_version == 'DB 1.5' || $last_version == 'DB 1.6') 
-      {
-        $result['msg'] = $manualop_msg;
-      }
-    break;
-
     case 'DB 1.5':
-      if ($last_version == 'DB 1.6') 
-      {
-        $result['msg'] = $manualop_msg;
-      }
+      $result['msg'] = $manualop_msg;
     break;
-
 
     case $last_version:
       $result['status'] = tl::OK;

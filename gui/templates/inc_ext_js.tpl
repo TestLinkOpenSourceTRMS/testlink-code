@@ -6,48 +6,48 @@ Purpose: include files for:
          licensing@extjs.com - http://www.extjs.com/license
 *}
 
-{assign var="ext_lang" value="en"}
+{$ext_lang="en"}
 {if $smarty.session.locale == "cs_CZ"}
-  {assign var="ext_lang" value="cs"}
+  {$ext_lang="cs"}
 {elseif $smarty.session.locale == "de_DE"}
-  {assign var="ext_lang" value="de"}
+  {$ext_lang="de"}
 {elseif $smarty.session.locale == "en_GB"}
-  {assign var="ext_lang" value="en_GB"}
+  {$ext_lang="en_GB"}
 {elseif $smarty.session.locale == "en_US"}
-  {assign var="ext_lang" value="en"}
+  {$ext_lang="en"}
 {elseif $smarty.session.locale == "es_AR"}
-  {assign var="ext_lang" value="es"}
+  {$ext_lang="es"}
 {elseif $smarty.session.locale == "es_ES"}
-  {assign var="ext_lang" value="es"}
+  {$ext_lang="es"}
 {elseif $smarty.session.locale == "fi_FI"}
-  {assign var="ext_lang" value="fi"}
+  {$ext_lang="fi"}
 {elseif $smarty.session.locale == "fr_FR"}
-  {assign var="ext_lang" value="fr"}
+  {$ext_lang="fr"}
 {elseif $smarty.session.locale == "id_ID"}
-  {assign var="ext_lang" value="id"}
+  {$ext_lang="id"}
 {elseif $smarty.session.locale == "it_IT"}
-  {assign var="ext_lang" value="it"}
+  {$ext_lang="it"}
 {elseif $smarty.session.locale == "ja_JP"}
-  {assign var="ext_lang" value="ja"}
+  {$ext_lang="ja"}
 {elseif $smarty.session.locale == "ko_KR"}
-  {assign var="ext_lang" value="ko"}
+  {$ext_lang="ko"}
 {elseif $smarty.session.locale == "nl_NL"}
-  {assign var="ext_lang" value="nl"}
+  {$ext_lang="nl"}
 {elseif $smarty.session.locale == "pl_PL"}
-  {assign var="ext_lang" value="pl"}
+  {$ext_lang="pl"}
 {elseif $smarty.session.locale == "pt_BR"}
-  {assign var="ext_lang" value="pt_BR"}
+  {$ext_lang="pt_BR"}
 {elseif $smarty.session.locale == "ru_RU"}
-  {assign var="ext_lang" value="ru"}
+  {$ext_lang="ru"}
 {elseif $smarty.session.locale == "zh_CN"}
-  {assign var="ext_lang" value="zh_CN"}
+  {$ext_lang="zh_CN"}
 {/if}
 
 
 {if guard_header_smarty(__FILE__)}
 
   {assign var="$css_only" value="$css_only|default:0"}
-  {assign var="ext_location" value=$smarty.const.TL_EXTJS_RELATIVE_PATH}
+  {$ext_location=$smarty.const.TL_EXTJS_RELATIVE_PATH}
   {if isset($bResetEXTCss) && $bResetEXTCss}
   	<link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/reset-min.css" />
   {/if}

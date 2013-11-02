@@ -13,7 +13,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.8
+ * @since 1.9.9
  *
  */
 
@@ -529,7 +529,7 @@ function edit(&$argsObj,&$tprojectMgr)
   $argsObj->projectOptions = $tprojectInfo['opt'];
   $argsObj->tcasePrefix = $tprojectInfo['prefix'];
 
-  $k2l = array('color','notes', 'active','is_public','issue_tracker_enabled','reqmgr_integration_enabled');  
+  $k2l = array('color','notes', 'active','is_public','issue_tracker_enabled','reqmgr_integration_enabled','api_key');  
   foreach($k2l as $key)
   {
     $argsObj->$key = $tprojectInfo[$key];

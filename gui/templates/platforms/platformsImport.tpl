@@ -1,9 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: platformsImport.tpl,v 1.4 2010/11/06 11:42:47 amkhullar Exp $
+@filesource platformsImport.tpl
 Purpose: smarty template - manage import of platforms
 
-rev: 
+@internal revisions
+@since 1.9.9
+
 *}
 
 {lang_get var="labels"
@@ -11,31 +13,31 @@ rev:
              max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
              btn_goback,not_imported,warning_empty_filename,imported,btn_cancel'}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{$cfg_section=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
-{literal}
 <script type="text/javascript">
-{/literal}
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
-{literal}
+
+/**
+ * when using HTML5 compatible browser this may be is useless
+ */
 function validateForm(f)
 {
 	if (isWhitespace(f.targetFilename.value)) 
-  	{
-    	alert_message(alert_box_title,warning_empty_filename);
-      	selectField(f, 'targetFilename');
-		return false;
-  	}
+  {
+  	alert_message(alert_box_title,warning_empty_filename);
+    selectField(f, 'targetFilename');
+	  return false;
+  }
 	return true;
 }
 </script>
-{/literal}
 </head>
+
 <body>
 <h1 class="title">{$gui->page_title|escape}</h1>
 <div class="workBack">
@@ -61,13 +63,13 @@ function validateForm(f)
 	  </form>
 {else}
 	<form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}"
-          onsubmit="javascript:return validateForm(this);">
+        onsubmit="javascript:return validateForm(this);">
 		<table>
 		<tr>
 	      	<td>{$labels.file_type}</td>
 	      	<td>
 	      		<select name="importType">
-	            	{html_options options=$gui->importTypes}
+	           	{html_options options=$gui->importTypes}
 	    	    </select>
 	    		<a href="{$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}">{$labels.view_file_format_doc}</a>
 	    	</td>
@@ -76,8 +78,7 @@ function validateForm(f)
     		<td>{$labels.local_file}</td>
     	    <td>
     	    	<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitBytes}" /> 
-    	    	<input type="file" name="targetFilename" value=""
-    	                           size="{#FILENAME_SIZE#}" maxlength="{#FILENAME_MAXLEN#}"/>
+    	    	<input type="file" name="targetFilename" value="" size="{#FILENAME_SIZE#}" maxlength="{#FILENAME_MAXLEN#}"/>
     	    </td>
     	</tr>
     	</table>
@@ -95,9 +96,9 @@ function validateForm(f)
 
 
 {if $gui->file_check.status_ok eq 0}
-    <script>
-    alert_message(alert_box_title,"{$gui->file_check.msg|escape:'javascript'}");
-    </script>
+<script>
+alert_message(alert_box_title,"{$gui->file_check.msg|escape:'javascript'}");
+</script>
 {/if}  
 </div>
 </body>

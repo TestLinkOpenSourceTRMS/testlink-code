@@ -37,6 +37,8 @@ $TLS_last_update = "English is the default development language and is always up
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = 'Active (click to set inactive)';
+$TLS_api_key = 'API Key';
+
 $TLS_inactive_click_to_change = 'Inactive (click to set active)';
 
 $TLS_default_auth_method = "Default";

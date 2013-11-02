@@ -10,8 +10,8 @@
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.7
- * 20130310 - franciscom - new method getByChildID()
+ * @since 1.9.9
+ * 
  **/
 
 /** related functions */ 
@@ -115,17 +115,20 @@ function create($item,$opt=null)
     throw $e;  // rethrow
   }
 
+  // Create API KEY 64 bit long
+  $api_key = md5(rand()) . md5(rand());
 
   // Create Node and get the id
   $id = $this->tree_manager->new_root_node($item->name);
   $sql = " INSERT INTO {$this->object_table} (id,color," .
-         " options,notes,active,is_public,prefix) " .
+         " options,notes,active,is_public,prefix,api_key) " .
          " VALUES (" . $id . ", '" .
                        $this->db->prepare_string($item->color) . "','" .
                        $serOptions . "','" .
                        $this->db->prepare_string($item->notes) . "'," .
                        $item->active . "," . $item->is_public . ",'" .
-                       $this->db->prepare_string($tcPrefix) . "')";
+                       $this->db->prepare_string($tcPrefix) . "','" .
+                       $this->db->prepare_string($api_key) . "')";
   $result = $this->db->exec_query($sql);
 
   $auditMsg = 'Test project: ' . $item->name; 
@@ -408,6 +411,20 @@ public function get_by_prefix($prefix, $addClause = null)
   $condition .= is_null($addClause) ? '' : " AND {$addClause} ";
 
   $result = $this->getTestProject($condition);
+  return $result[0];
+}
+
+
+/**
+ * Get Test project data according to APIKEY
+ * 
+ * @param string 64 chars
+ * @return array map with test project info; null if query fails
+ */
+public function getByAPIKey($apiKey, $opt=null)
+{
+  $condition = "testprojects.api_key='{$apiKey}'";
+  $result = $this->getTestProject($condition,$opt);
   return $result[0];
 }
 
@@ -2396,18 +2413,16 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
   $my['options'] = array('copy_requirements' => 1,'copy_user_roles' => 1,'copy_platforms' => 1);
   $my['options'] = array_merge($my['options'], (array)$options);
 
-  
   // get source test project general info
   $rs_source=$this->get_by_id($id);
   
   if(!is_null($new_name))
   {
     $sql="/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
-       "SET name='" . $this->db->prepare_string(trim($new_name)) . "' " .
-       "WHERE id={$new_id}";
+         "SET name='" . $this->db->prepare_string(trim($new_name)) . "' " .
+         "WHERE id={$new_id}";
     $this->db->exec_query($sql);
   }
-
 
 
   // Copy elements that can be used by other elements
@@ -2435,7 +2450,7 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
   $elements = $this->tree_manager->get_children($id,$filters['exclude_node_types']);
 
   // Copy Test Specification
-    $item_mgr['testsuites'] = new testsuite($this->db);
+  $item_mgr['testsuites'] = new testsuite($this->db);
   $copyTSuiteOpt = array();
   $copyTSuiteOpt['preserve_external_id'] = true;
   $copyTSuiteOpt['copyKeywords'] = 1;
@@ -2460,11 +2475,12 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
   // When copying a project, external TC ID is not preserved  
   // need to update external test case id numerator
   $sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
-      " SET tc_counter = {$rs_source['tc_counter']} " . 
-      " WHERE id = {$new_id}";
+         " SET tc_counter = {$rs_source['tc_counter']} " . 
+         " WHERE id = {$new_id}";
   $recordset = $this->db->exec_query($sql);
 
   
+
 } // end function copy_as
 
 
@@ -2626,7 +2642,7 @@ private function copy_testplans($source_id,$target_id,$user_id,$mappings)
 
       if( $new_id > 0 )
       {
-                // TICKET 5190: Copy Test projects - tester assignments to testplan+build are not copied
+        // TICKET 5190: Copy Test projects - tester assignments to testplan+build are not copied
         $tplanMgr->copy_as($itemID,$new_id,null,$target_id,$user_id,array('copy_assigned_to' => 1),$mappings);
       }                       
     }
@@ -3288,6 +3304,8 @@ function getPublicAttr($id)
     $xml = @simplexml_load_string($zebra);
     return $xml;
   }
+
+
 
 
 } // end class

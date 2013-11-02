@@ -40,7 +40,8 @@ if( $its->isConnected() )
 {
   echo 'Get Issue <br>';
   // $zx = $its->getIssue('ZOFF-112');
-  $zx = $its->getIssue('ZOFF-135');
+  // $zx = $its->getIssue('ZOFF-135');
+  $zx = $its->getIssue('ZOFF-166');
   echo '<pre>';
   var_dump($zx);
   echo '</pre>';

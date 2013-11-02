@@ -23,6 +23,7 @@
 --
 -- 
 --  @internal revisions
+--  @since 1.9.9
 --
 -- Table structure for table "node_types"
 --
@@ -164,9 +165,11 @@ CREATE TABLE /*prefix*/testplans(
   "active" INT2 NOT NULL DEFAULT '1',
   "is_open" INT2 NOT NULL DEFAULT '1',
   "is_public" INT2 NOT NULL DEFAULT '1',
+  "api_key" varchar(64) NOT NULL DEFAULT (MD5(RANDOM()::text) || MD5(RANDOM()::text)),
   PRIMARY KEY ("id")
 ); 
 CREATE INDEX /*prefix*/testplans_testproject_id_active ON /*prefix*/testplans ("testproject_id","active");
+CREATE UNIQUE INDEX /*prefix*/testplans_uidx1 ON /*prefix*/testplans ("api_key");
 
 
 --
@@ -266,9 +269,11 @@ CREATE TABLE /*prefix*/testprojects(
   "is_public" INT2 NOT NULL DEFAULT '1',
   "issue_tracker_enabled" INT2 NOT NULL DEFAULT '0',
   "reqmgr_integration_enabled" INT2 NOT NULL DEFAULT '0',
+  "api_key" varchar(64) NOT NULL DEFAULT (MD5(RANDOM()::text) || MD5(RANDOM()::text)),
   PRIMARY KEY ("id")
 ); 
 CREATE UNIQUE INDEX /*prefix*/testprojects_uidx1 ON /*prefix*/testprojects ("prefix");
+CREATE UNIQUE INDEX /*prefix*/testprojects_uidx2 ON /*prefix*/testprojects ("api_key");
 CREATE INDEX /*prefix*/testprojects_id_active ON /*prefix*/testprojects ("id","active");
 
 --

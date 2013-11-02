@@ -1186,3 +1186,82 @@ function windowCloseAndOpenerReload()
   echo "</script></body></html>";
   exit;
 }
+
+
+/**
+ *
+ */
+function setUpEnvForAnonymousAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null)
+{
+  $my = array('opt' => array('setPaths' => false,'clearSession' => false));
+  $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+  if($my['opt']['clearSession'])
+  {
+    $_SESSION = null;
+  }
+
+  doSessionStart($my['opt']['setPaths']);
+  if( isset($_SESSION['locale']) && !is_null($_SESSION['locale']) )
+  {
+    setDateTimeFormats($_SESSION['locale']);
+  } 
+  doDBConnect($dbHandler);
+
+  if(intval($rightsCheck->args->tplan_id) !=0)
+  {
+    $tplanMgr = new testplan($dbHandler);
+    $item = $tplanMgr->getByAPIKey($apikey);
+  }  
+  else
+  {
+    $tprojectMgr = new testproject($dbHandler);
+    $item = $tprojectMgr->getByAPIKey($apikey);
+  }  
+
+  if( count($item) == 1 )
+  {
+    $_SESSION['lastActivity'] = time();
+    $userObj = new tlUser();
+    $_SESSION['currentUser'] = $userObj;
+    $_SESSION['userID'] = -1;
+    $_SESSION['locale'] = config_get('default_language');
+
+    // if user do this:
+    // 1. login to test link
+    // 2. get direct link and open in new tab or new window while still logged 
+    // 3. logout
+    // If user refresh tab / window open on (2), because on (3) we destroyed
+    // session we have loose basehref, and we are not able to recreate it.
+    // Without basehref we are not able to get CSS, JS, etc.
+    // In this situation we destroy session, this way user is forced to login
+    // again in one of two ways
+    // a. using the direct link
+    // b. using traditional login
+    // In both way we assure that behaivour will be OK.
+    //
+    if(!isset($_SESSION['basehref']))
+    {
+      session_unset();
+      session_destroy();
+      if(property_exists($rightsCheck, 'redirect_target') && !is_null($rightsCheck->redirect_target))
+      {
+        redirect($rightsCheck->redirect_target);  
+      } 
+      else
+      {
+        // best guess for all features that live on ./lib/results/
+        redirect("../../login.php?note=logout");  
+      } 
+        
+      exit();
+    }  
+ 
+
+
+    if(!is_null($rightsCheck))
+    {
+      checkUserRightsFor($dbHandler,$rightsCheck,true);
+    }
+  }
+}

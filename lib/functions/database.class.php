@@ -179,7 +179,7 @@ class database
     {
       $this->nQuery++;
       $t_start = $this->microtime_float();
-      }
+    }
       
     if ( ( $p_limit != -1 ) || ( $p_offset != -1 ) ) {
       $t_result = $this->db->SelectLimit( $p_query, $p_limit, $p_offset );
@@ -743,11 +743,11 @@ class database
 
   /**
    **/
-  function get_recordset($sql,$fetch_mode = null,$limit = -1)
+  function get_recordset($sql,$fetch_mode = null,$limit = -1, $start = -1)
   {
     $output = null;
 
-    $result = $this->exec_query($sql,$limit);
+    $result = $this->exec_query($sql,$limit,$start);
     if ($result)
     {
       while($row = $this->fetch_array($result))

@@ -12,8 +12,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.7
- * 20130503 - franciscom - TICKET 5683: DB Access Error while creating a copy of a PRIVATE testplan
+ * @since 1.9.9
  **/
 
 require_once('../../config.inc.php');
@@ -66,6 +65,7 @@ switch($args->do_action)
       $gui->testplan_name = $tplanInfo['name'];
       $gui->is_active = $tplanInfo['active'];
       $gui->is_public = $tplanInfo['is_public'];
+      $gui->api_key = $tplanInfo['api_key'];
       $gui->tplan_id = $args->tplan_id;
     }
     break;

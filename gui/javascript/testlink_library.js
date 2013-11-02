@@ -500,7 +500,7 @@ function tree_getPrintPreferences()
                 'req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
                 'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
                 'req_type','req_cf','req_relations','req_linked_tcs','req_coverage', 
-                'headerNumbering','displayVersion'];
+                'headerNumbering','displayVersion','build_cfields'];
 
   for (var idx= 0;idx < fields.length;idx++)
   {

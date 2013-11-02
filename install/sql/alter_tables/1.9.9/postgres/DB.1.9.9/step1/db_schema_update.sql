@@ -27,11 +27,31 @@ INSERT INTO /*prefix*/node_types (id,description) VALUES (14,'user');
 --
 -- Table structure for table cfield_build_design_values
 --
-CREATE TABLE /*prefix*/cfield_design_values(  
+CREATE TABLE /*prefix*/cfield_build_design_values(  
   "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id) ON DELETE CASCADE,
   "node_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/builds (id) ON DELETE CASCADE,
   "value" VARCHAR(4000) NOT NULL DEFAULT '',
   PRIMARY KEY ("field_id","node_id")
 ); 
-CREATE INDEX /*prefix*/IX_cfield_design_values ON /*prefix*/cfield_design_values ("node_id");
+CREATE INDEX /*prefix*/IX_cfield_build_design_values ON /*prefix*/cfield_build_design_values ("node_id");
+
+
+--
+-- users 
+--
+ALTER TABLE /*prefix*/users ADD COLUMN  "auth_method" VARCHAR(10) NULL DEFAULT ''; 
+
+--
+-- testprojects 
+--
+ALTER TABLE /*prefix*/testprojects ADD COLUMN "api_key" varchar(64) NOT NULL DEFAULT (MD5(RANDOM()::text) || MD5(RANDOM()::text));
+UPDATE /*prefix*/testprojects SET api_key = (MD5(RANDOM()::text) || MD5(RANDOM()::text));
+CREATE UNIQUE INDEX /*prefix*/testprojects_uidx2 ON /*prefix*/testprojects ("api_key");
+
+--
+-- testplans 
+--
+ALTER TABLE /*prefix*/testplans ADD COLUMN "api_key" varchar(64) NOT NULL DEFAULT (MD5(RANDOM()::text) || MD5(RANDOM()::text));
+UPDATE /*prefix*/testplans SET api_key = (MD5(RANDOM()::text) || MD5(RANDOM()::text));
+CREATE UNIQUE INDEX /*prefix*/testplans_uidx1 ON /*prefix*/testplans ("api_key");
 /* ----- END ----- */

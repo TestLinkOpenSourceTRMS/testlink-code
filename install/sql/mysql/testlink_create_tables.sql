@@ -441,8 +441,10 @@ CREATE TABLE /*prefix*/testplans (
   `active` tinyint(1) NOT NULL default '1',
   `is_open` tinyint(1) NOT NULL default '1',
   `is_public` tinyint(1) NOT NULL default '1',
+  `api_key` varchar(64) NOT NULL default '829a2ded3ed0829a2dedd8ab81dfa2c77e8235bc3ed0d8ab81dfa2c77e8235bc',
   PRIMARY KEY  (`id`),
-  KEY /*prefix*/testplans_testproject_id_active (`testproject_id`,`active`)
+  KEY /*prefix*/testplans_testproject_id_active (`testproject_id`,`active`),
+  UNIQUE KEY /*prefix*/testplans_api_key (`api_key`) 
 ) DEFAULT CHARSET=utf8;
 
 
@@ -469,10 +471,11 @@ CREATE TABLE /*prefix*/testprojects (
   `is_public` tinyint(1) NOT NULL default '1',
   `issue_tracker_enabled` tinyint(1) NOT NULL default '0',
   `reqmgr_integration_enabled` tinyint(1) NOT NULL default '0',
+  `api_key` varchar(64) NOT NULL default '0d8ab81dfa2c77e8235bc829a2ded3edfa2c78235bc829a27eded3ed0d8ab81d',
   PRIMARY KEY  (`id`),
   KEY /*prefix*/testprojects_id_active (`id`,`active`),
-  UNIQUE KEY /*prefix*/testprojects_prefix (`prefix`)
-  
+  UNIQUE KEY /*prefix*/testprojects_prefix (`prefix`),
+  UNIQUE KEY /*prefix*/testprojects_api_key (`api_key`) 
 ) DEFAULT CHARSET=utf8;
 
 
@@ -659,58 +662,4 @@ CREATE TABLE /*prefix*/testproject_reqmgrsystem
   `reqmgrsystem_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`testproject_id`)
 ) DEFAULT CHARSET=utf8;
-
-
-
-
-
-# ----------------------------------------------------------------------------------
-# TICKET 4914: Create View - tcversions_last_active
-# ----------------------------------------------------------------------------------
-CREATE VIEW /*prefix*/tcversions_last_active_bare_bones AS
-(
-	  SELECT NHTCV.parent_id AS tcase_id, max(TCV.id) AS tcversion_id
-	  FROM /*prefix*/nodes_hierarchy NHTCV
-	  JOIN /*prefix*/tcversions TCV ON TCV.id = NHTCV.id
-	  WHERE TCV.active = 1
-	  GROUP BY NHTCV.parent_id, TCV.tc_external_id
-); 
-
-
-CREATE VIEW /*prefix*/tcversions_last_active AS 
-(
-  SELECT TCV.id, TCV.tc_external_id, TCV.version, TCV.layout, TCV.status, 
-  		 TCV.summary, TCV.preconditions, TCV.importance, TCV.author_id, TCV.creation_ts, 
-  		 TCV.updater_id, TCV.modification_ts, TCV.active, TCV.is_open, TCV.execution_type, 
-  		 BB.tcase_id
-  FROM /*prefix*/tcversions TCV
-  JOIN /*prefix*/tcversions_last_active_bare_bones BB
-  ON TCV.id = BB.tcversion_id
-);
-
-
-
-CREATE VIEW /*prefix*/tcases_active AS 
-(
-	SELECT DISTINCT NHTCV.parent_id AS tcase_id, TCV.tc_external_id
-	FROM /*prefix*/nodes_hierarchy NHTCV 
-	JOIN /*prefix*/tcversions TCV ON TCV.id = NHTCV.id 
-	WHERE TCV.active = 1
-);
-
-
-CREATE VIEW /*prefix*/last_executions AS
-(
-	SELECT tcversion_id,testplan_id,platform_id,build_id, MAX(id) AS id 
-	FROM /*prefix*/executions 
-	GROUP by tcversion_id,testplan_id,platform_id,build_id
-); 
-
-CREATE VIEW /*prefix*/last_executions_by_platform AS
-(
-	SELECT E.tcversion_id,E.testplan_id,E.platform_id,MAX(E.id) AS id 
-	FROM /*prefix*/executions E 
-	JOIN /*prefix*/builds B ON B.active = 1	AND B.testplan_id = E.testplan_id  
-	GROUP by tcversion_id,testplan_id,platform_id
-); 
 

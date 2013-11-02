@@ -6,15 +6,15 @@
  * @filesource  projectEdit.tpl
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.9
  *
  *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}
-{assign var="managerURL" value="lib/project/projectEdit.php"}
-{assign var="editAction" value="$managerURL?doAction=edit&tprojectID="}
+{$managerURL="lib/project/projectEdit.php"}
+{$editAction="$managerURL?doAction=edit&tprojectID="}
 
 {lang_get var="labels" 
   s='show_event_history,th_active,cancel,info_failed_loc_prod,invalid_query,
@@ -22,7 +22,7 @@
   title_testproject_management,testproject_enable_priority, testproject_enable_automation,
   public,testproject_color,testproject_alt_color,testproject_enable_requirements,
   testproject_enable_inventory,testproject_features,testproject_description,
-  testproject_prefix,availability,mandatory,warning,warning_empty_tcase_prefix,
+  testproject_prefix,availability,mandatory,warning,warning_empty_tcase_prefix,api_key,
   warning_empty_tproject_name,testproject_issue_tracker_integration,issue_tracker,
   testproject_reqmgr_integration,reqmgrsystem,no_rms_defined,no_issuetracker_defined'}
 
@@ -246,7 +246,17 @@ return true;
             <input type="checkbox" name="is_public" {if $gui->is_public eq 1} checked="checked"  {/if} />
             {$labels.public}
           </td>
-          </tr>
+      </tr>
+      
+      {if $gui->api_key != ''}
+      <tr>
+        <td>{$labels.api_key}</td>
+        <td>{$gui->api_key}</td>
+      </tr>
+      {/if}
+
+
+
       <tr><td cols="2">
         {if $gui->canManage == "yes"}
         <div class="groupBtn">

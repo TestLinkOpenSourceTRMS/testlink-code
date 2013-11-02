@@ -15,8 +15,8 @@
  *
  * @internal revisions
  * 
- * @since 1.9.8
- * 20130729 - franciscom - fixed issues with $tlCfg->exec_cfg->view_mode->tester and exec_cfg->tester
+ * @since 1.9.9
+ * 
  **/
 
 /** related functionality */
@@ -137,11 +137,13 @@ class testplan extends tlObjectWithAttachments
     
     $active_status=intval($is_active) > 0 ? 1 : 0;
     $public_status=intval($is_public) > 0 ? 1 : 0;
-    
+    $api_key = md5(rand()) . md5(rand()); 
+
     $sql = "/* $debugMsg */ " . 
-           " INSERT INTO {$this->tables['testplans']} (id,notes,testproject_id,active,is_public) " .
-         " VALUES ( {$tplan_id} " . ", '" . $this->db->prepare_string($notes) . "'," . 
-         $testproject_id . "," . $active_status . "," . $public_status . ")";
+           " INSERT INTO {$this->tables['testplans']} (id,notes,api_key,testproject_id,active,is_public) " .
+           " VALUES ( {$tplan_id} " . ", '" . $this->db->prepare_string($notes) . "'," .
+           "'" .  $this->db->prepare_string($api_key) . "'," .
+           $testproject_id . "," . $active_status . "," . $public_status . ")";
     $result = $this->db->exec_query($sql);
     $id = 0;
     if ($result)
@@ -194,12 +196,14 @@ class testplan extends tlObjectWithAttachments
     // seems OK => go
     $active_status = intval($item->active) > 0 ? 1 : 0;
     $public_status = intval($item->is_public) > 0 ? 1 : 0;
+    $api_key = md5(rand()) . md5(rand()); 
 
     $id = $this->tree_manager->new_node($item->testProjectID,$this->node_types_descr_id['testplan'],$name);
     $sql = "/* $debugMsg */ " . 
-           " INSERT INTO {$this->tables['testplans']} (id,notes,testproject_id,active,is_public) " .
+           " INSERT INTO {$this->tables['testplans']} (id,notes,api_key,testproject_id,active,is_public) " .
            " VALUES ( {$id} " . ", '" . $this->db->prepare_string($item->notes) . "'," . 
-             $item->testProjectID . "," . $active_status . "," . $public_status . ")";
+             "'" .  $this->db->prepare_string($api_key) . "'," .
+              $item->testProjectID . "," . $active_status . "," . $public_status . ")";
     $result = $this->db->exec_query($sql);
     return $result ? $id : 0;
   }
@@ -6913,6 +6917,19 @@ function getExecutionDurationForSet($execIDSet)
     $this->db->exec_query($sql); 
   }
 
+  /**
+   *
+   */
+  function getByAPIKey($apiKey)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $sql = "/* $debugMsg */ " .
+           " SELECT * FROM {$this->tables['testplans']} WHERE api_key = '{$apiKey}'";
+ 
+    $rs = $this->db->get_recordset($sql);
+    return ($rs ? $rs[0] : null);
+  }
 
 } // end class testplan
 

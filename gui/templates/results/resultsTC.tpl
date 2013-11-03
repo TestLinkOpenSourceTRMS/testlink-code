@@ -10,7 +10,7 @@ show Test Results and Metrics
 *}
 
 {lang_get var="labels"
-          s="title,date,printed_by,title_test_suite_name,platform,
+          s="title,date,printed_by,title_test_suite_name,platform,builds,
              title_test_case_title,version,generated_by_TestLink_on, priority,
              info_resultsTC_report,elapsed_seconds,export_as_spreadsheet"}
 
@@ -52,10 +52,10 @@ show Test Results and Metrics
 
 <div class="workBack">
 {include file="inc_result_tproject_tplan.tpl" 
-         arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}	
+         arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name arg_build_set=$gui->filterFeedback}	
 
 {foreach from=$gui->tableSet key=idx item=matrix}
-  {assign var=tableID value="table_$idx"}
+  {$tableID="table_$idx"}
   {if $idx != 0}
   <h2>{$labels.platform}: {$gui->platforms[$idx]|escape}</h2>
   {/if}

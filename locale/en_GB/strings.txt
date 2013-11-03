@@ -38,6 +38,12 @@ $TLS_last_update = "English is the default development language and is always up
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = 'Active (click to set inactive)';
 $TLS_api_key = 'API Key';
+$TLS_builds = 'Builds';
+$TLS_active_builds = 'Active Builds';
+$TLS_all_active_builds = '[All Active Builds]';
+
+
+
 
 $TLS_inactive_click_to_change = 'Inactive (click to set active)';
 
@@ -134,6 +140,8 @@ $TLS_private = "Private";
 $TLS_access_public = "Public";
 $TLS_access_private = "Private - User need specific role assignment";
 
+$TLS_release_date_start = 'Release Date Start';
+$TLS_release_date_end = 'Release Date End';
 $TLS_required = "Required";
 $TLS_requirement = "Requirement";
 $TLS_req_monitoring = "Requirement Monitoring";
@@ -168,6 +176,9 @@ $TLS_type = "Type";
 $TLS_timestamp  = "Timestamp";
 $TLS_timestamp_lastchange  = "Last Change";
 $TLS_title = "Title";
+$TLS_too_much_data = "Amount of potential data to be generated is too high - please refine your request";
+$TLS_too_much_builds = "You have %s Active Builds, please choose no more than %s";
+
 $TLS_without_keywords = "without keywords";
 $TLS_without_keywords_bracketed = "[Without keywords]";
 
@@ -1811,6 +1822,7 @@ $TLS_info_resultsTC_report = "This report shows the last test case execution res
 
 
 
+
 // ----- gui/templates/resultsByStatus.tpl -----
 $TLS_th_bugs = "Bugs";
 $TLS_th_bugs_id_summary = "Bugs (ID : Summary)";
@@ -2833,6 +2845,8 @@ $TLS_req_rel_is_related_to = "related to";
 
 // ----- lib/results/resultsTC.php -----
 $TLS_title_test_report_all_builds = "Test Report: Results of Test Cases for all Builds";
+$TLS_test_result_matrix_filters = "Test Results Matrix - Filters";
+
 
 
 

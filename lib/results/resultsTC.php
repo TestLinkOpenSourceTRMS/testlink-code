@@ -9,7 +9,7 @@
 * Show Test Report by individual test case.
 *
 * @internal revisions
-* @since 1.9.7
+* @since 1.9.9
 */
 require('../../config.inc.php');
 require_once('../../third_party/codeplex/PHPExcel.php');   // Must be included BEFORE common.php
@@ -22,43 +22,66 @@ $templateCfg = templateConfiguration();
 
 $smarty = new TLSmarty;
 $args = init_args($db);
+
 $metricsMgr = new tlTestPlanMetrics($db);
 $tplan_mgr  = &$metricsMgr; // displayMemUsage('START' . __FILE__);
 
 list($gui,$tproject_info,$labels,$cfg) = initializeGui($db,$args,$smarty->getImages(),$tplan_mgr);
 
 $tprojectOpt = $_SESSION['testprojectOptions'];
-$buildIDSet = null;
 $testCaseCfg = config_get('testcase_cfg');
 $testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
 unset($testCaseCfg);
 
 $mailCfg = buildMailCfg($gui); //displayMemUsage('Before getExecStatusMatrix()');
 
-$execStatus = $metricsMgr->getExecStatusMatrix($args->tplan_id);
-$metrics = $execStatus['metrics'];
-$latestExecution = $execStatus['latestExec']; //displayMemUsage('Before UNSET');
-unset($execStatus); // displayMemUsage('AFTER UNSET');
+// We have faced a performance block due to an environment with
+// 700 Builds and 1300 Test Cases on Test Plan
+// This created a block on NOT RUN QUERY, but anyway will produce an enormous and
+// unmanageable matrix on screen
+//
+// New way to process:
+// ACTIVE Build Qty > 20 => Ask user to select builds he/she wants to use
+// Cell Qty = (ACTIVE Build Qty x Test Cases on Test plan) > 2000 => said user I'm sorry
+//
 
-if ($gui->buildInfoSet)
+if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_action == 'result')
 {
-  $buildIDSet = array_keys($gui->buildInfoSet);
-}
-$last_build = end($buildIDSet);
+  if( is_null($args->build_set) )
+  {
+    $buildIDSet = null;
+    $gui->filterApplied = false;
+    if( !is_null($gui->buildInfoSet) )
+    {
+      $buildIDSet = array_keys($gui->buildInfoSet);
+    }
+  }  
+  else
+  {
+    $buildIDSet = array_keys(array_flip($args->build_set));
+    $gui->filterApplied = true;
+  }  
+  $last_build = end($buildIDSet);
 
-// Every Test suite a row on matrix to display will be created
-// One matrix will be created for every platform that has testcases
-$tcols = array('tsuite', 'link');
-if( ($show_platforms = !is_null($gui->platforms)) )
-{
-  $tcols[] = 'platform';
-}
-$tcols[] = 'priority';
-$cols = array_flip($tcols);
+  $tpl = $templateCfg->default_template;
 
+  $execStatus = $metricsMgr->getExecStatusMatrix($args->tplan_id,array('buildSet' => $buildIDSet));
+  $metrics = $execStatus['metrics'];
+  $latestExecution = $execStatus['latestExec']; //displayMemUsage('Before UNSET');
+  unset($execStatus); // displayMemUsage('AFTER UNSET');
 
-if( !is_null($metrics) )
-{
+  // Every Test suite a row on matrix to display will be created
+  // One matrix will be created for every platform that has testcases
+  $tcols = array('tsuite', 'link');
+  if( ($show_platforms = !is_null($gui->platforms)) )
+  {
+    $tcols[] = 'platform';
+  }
+  $tcols[] = 'priority';
+  $cols = array_flip($tcols);
+
+  if( !is_null($metrics) )
+  {
   // invariant pieces  => avoid wasting time on loops
   $dlink = '<a href="' . str_replace(" ", "%20", $args->basehref) . 'linkto.php?tprojectPrefix=' . 
            urlencode($tproject_info['prefix']) . '&item=testcase&id=';  
@@ -199,26 +222,39 @@ if( !is_null($metrics) )
     }  // $tcaseSet
   
   } // $tsuiteSet
+  }  
+  unset($metrics);
+  unset($latestExecution);
+
+  switch($args->format)
+  {
+    case FORMAT_XLS:
+      createSpreadsheet($gui,$args,$last_build);
+    break;  
+
+    default:
+     $gui->tableSet[] =  buildMatrix($gui, $args, $buildIDSet, $last_build);
+    break;
+  } 
 }  
-unset($metrics);
-unset($latestExecution);
-
-switch($args->format)
+else
 {
-  case FORMAT_XLS:
-    createSpreadsheet($gui,$args,$last_build);
-  break;  
+  // We need to ask user to do a choice
+  $tpl = 'resultsTCLauncher.tpl';
+  $gui->pageTitle = $labels['test_result_matrix_filters'];
+  if($gui->matrixCfg->buildQtyLimit > 0)
+  {  
+    $gui->userFeedback = $labels['too_much_data'] . '<br>' .
+                         sprintf($labels['too_much_builds'],$gui->activeBuildsQty,$gui->matrixCfg->buildQtyLimit);
+  }
+}  
 
-  default:
-  $gui->tableSet[] =  buildMatrix($gui, $args, $last_build);
-  break;
-} 
 
 $timerOff = microtime(true);
 $gui->elapsed_time = round($timerOff - $timerOn,2);
 
 $smarty->assign('gui',$gui);
-displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format, $mailCfg);
+displayReport($templateCfg->template_dir . $tpl, $smarty, $args->format, $mailCfg);
 
 /**
  * 
@@ -229,12 +265,13 @@ function init_args(&$dbHandler)
   $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
                    "tproject_id" => array(tlInputParameter::INT_N), 
                    "tplan_id" => array(tlInputParameter::INT_N),
+                   "do_action" => array(tlInputParameter::STRING_N,5,10),
+                   "build_set" => array(tlInputParameter::ARRAY_INT),
                    "format" => array(tlInputParameter::INT_N));
 
+  
   $args = new stdClass();
   R_PARAMS($iParams,$args);
-  //var_dump($args);
-
   if( !is_null($args->apikey) )
   {
     //var_dump($args);
@@ -259,6 +296,7 @@ function init_args(&$dbHandler)
     $msg = __FILE__ . '::' . __FUNCTION__ . " :: Invalid Test Project ID ({$args->tproject_id})";
     throw new Exception($msg);
   }
+
 
   $args->user = $_SESSION['currentUser'];
   $args->basehref = $_SESSION['basehref'];
@@ -291,7 +329,7 @@ function checkRights(&$db,&$user,$context = null)
  * return tlExtTable
  *
  */
-function buildMatrix(&$guiObj,&$argsObj,$latestBuildID)
+function buildMatrix(&$guiObj,&$argsObj,$buildIDSet,$latestBuildID)
 {
   $columns = array(array('title_key' => 'title_test_suite_name', 'width' => 100),
                    array('title_key' => 'title_test_case_title', 'width' => 150));
@@ -313,7 +351,16 @@ function buildMatrix(&$guiObj,&$argsObj,$latestBuildID)
   }
   
   // --------------------------------------------------------------------
-  $buildSet = $guiObj->buildInfoSet;
+  $guiObj->filterFeedback = null;
+  foreach($buildIDSet as $iix)
+  {
+    $buildSet[] = $guiObj->buildInfoSet[$iix];
+    if($guiObj->filterApplied)
+    {
+      $guiObj->filterFeedback[] = $guiObj->buildInfoSet[$iix]['name'];
+    }
+  }  
+
   if( $guiObj->matrixCfg->buildColumns['showStatusLastExecuted'] )
   {
     $buildSet[] = array('name' => $lbl['result_on_last_build'] . ' ' . $buildSet[$latestBuildID]['name']);
@@ -403,7 +450,6 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
   $guiObj->tproject_id = $argsObj->tproject_id;
   $guiObj->tplan_id = $argsObj->tplan_id;
 
-  // 20130203
   $guiObj->apikey = $argsObj->apikey;
 
 
@@ -419,12 +465,15 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
 
 
   $l18n = init_labels(array('design' => null, 'execution' => null, 'history' => 'execution_history',
+                            'test_result_matrix_filters' => null, 'too_much_data' => null,'too_much_builds' => null,
                             'result_on_last_build' => null, 'versionTag' => 'tcversion_indicator') );
 
   $l18n['not_run']=lang_get($cfg['results']['status_label']['not_run']);
 
 
   $guiObj->buildInfoSet = $tplanMgr->get_builds($argsObj->tplan_id, testplan::ACTIVE_BUILDS); 
+  $guiObj->activeBuildsQty = count($guiObj->buildInfoSet);
+
   $guiObj->matrixCfg  = config_get('resultMatrixReport');
 
   // hmm need to understand if this can be removed

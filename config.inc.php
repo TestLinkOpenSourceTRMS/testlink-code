@@ -77,7 +77,7 @@ require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 
 // ----------------------------------------------------------------------------
 /** @var string used to have (when needed) a possibility to identify different TL instances
-        @since 1.9.4 used on mail subject when mail logger is used
+    @since 1.9.4 used on mail subject when mail logger is used
  */
 $tlCfg->instance_id = 'Main TestLink Instance';
 
@@ -590,9 +590,18 @@ $tlCfg->resultMatrixReport->buildColumns['showStatusLastExecuted'] = true;
 // Show build columns in revers order. The latest build is to the left
 $tlCfg->resultMatrixReport->buildColumns['latestBuildOnLeft'] = false;
 
+// After having got performance and usability issue, a limit on max qty of builds
+// allowed on data extration has been set.
+// Is absolutely arbitrary
+// 
+$tlCfg->resultMatrixReport->buildQtyLimit = 6;
+
+
 // Show all available status details for test plans on metrics dashboard 
 $tlCfg->metrics_dashboard = new stdClass();
 $tlCfg->metrics_dashboard->show_test_plan_status = false;
+
+
 
 
 // ----------------------------------------------------------------------------

@@ -44,12 +44,12 @@ $mailCfg = buildMailCfg($gui); //displayMemUsage('Before getExecStatusMatrix()')
 // ACTIVE Build Qty > 20 => Ask user to select builds he/she wants to use
 // Cell Qty = (ACTIVE Build Qty x Test Cases on Test plan) > 2000 => said user I'm sorry
 //
-
 if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_action == 'result')
 {
   if( is_null($args->build_set) )
   {
     $buildIDSet = null;
+    $gui->buildListForExcel = '';
     $gui->filterApplied = false;
     if( !is_null($gui->buildInfoSet) )
     {
@@ -60,6 +60,7 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
   {
     $buildIDSet = array_keys(array_flip($args->build_set));
     $gui->filterApplied = true;
+    $gui->buildListForExcel = implode(',',$buildIDSet); 
   }  
   $last_build = end($buildIDSet);
 
@@ -229,7 +230,7 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
   switch($args->format)
   {
     case FORMAT_XLS:
-      createSpreadsheet($gui,$args,$last_build);
+      createSpreadsheet($gui,$args,$buildIDSet,$last_build);
     break;  
 
     default:
@@ -267,6 +268,7 @@ function init_args(&$dbHandler)
                    "tplan_id" => array(tlInputParameter::INT_N),
                    "do_action" => array(tlInputParameter::STRING_N,5,10),
                    "build_set" => array(tlInputParameter::ARRAY_INT),
+                   "buildListForExcel" => array(tlInputParameter::STRING_N,0,100),
                    "format" => array(tlInputParameter::INT_N));
 
   
@@ -297,6 +299,16 @@ function init_args(&$dbHandler)
     throw new Exception($msg);
   }
 
+  switch($args->format)
+  {
+    case FORMAT_XLS:
+      if($args->buildListForExcel != '')
+      {  
+        $args->build_set = explode(',',$args->buildListForExcel);
+      }  
+    break;
+  }  
+  
 
   $args->user = $_SESSION['currentUser'];
   $args->basehref = $_SESSION['basehref'];
@@ -506,7 +518,7 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
  *
  *
  */
-function createSpreadsheet($gui,$args,$latestBuildID)
+function createSpreadsheet($gui,$args,$buildIDSet,$latestBuildID)
 {
   $lbl = init_labels(array('title_test_suite_name' => null,'platform' => null,'priority' => null,
                            'result_on_last_build' => null, 'title_test_case_title' => null,
@@ -569,10 +581,23 @@ function createSpreadsheet($gui,$args,$latestBuildID)
     $dataHeader[] = $lbl['priority'];
   }
 
+
+  $gui->filterFeedback = null;
+  foreach($buildIDSet as $iix)
+  {
+    $dataHeader[] = $gui->buildInfoSet[$iix]['name'];
+    if($gui->filterApplied)
+    {
+      $gui->filterFeedback[] = $gui->buildInfoSet[$iix]['name'];
+    }
+  }  
+
+  /*
   foreach($gui->buildInfoSet as $key => $value)
   {
     $dataHeader[] = $value['name'];
   }
+  */
   
   // Now the magic
   if( $gui->matrixCfg->buildColumns['showStatusLastExecuted'] )
@@ -628,4 +653,3 @@ function createSpreadsheet($gui,$args,$latestBuildID)
   downloadContentsToFile($content,$f2d,array('Content-Type' =>  $settings[$xlsType]['Content-Type']));
   exit();
 }
-?>

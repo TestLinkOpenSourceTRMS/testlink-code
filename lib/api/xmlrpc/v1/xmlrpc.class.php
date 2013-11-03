@@ -20,9 +20,8 @@
  * 
  *
  * @internal revisions 
- * @since 1.9.8
- * 201300812 - franciscom - updateTestCase()
- * 201300809 - franciscom - getUserByLogin(),getUserByID()
+ * @since 1.9.9
+ *
  */
 
 /** 
@@ -609,8 +608,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   /**
    * Helper method to see if the buildID provided is valid for testplan
    * 
-   * if build id has not been provided on call, we can use build name if has been
-   * provided.
+   * if build id has not been provided on call, we can use build name if has been provided.
    *
    * This is the only method that should be called directly to check the buildID
    *   
@@ -618,82 +616,80 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @access protected
    *
    * @internal revision
-   * 20100613 - franciscom - BUGID 2845: buildname option in reportTCResult will never be used
    */    
     protected function checkBuildID($msg_prefix)
     {
-        $tplan_id=$this->args[self::$testPlanIDParamName];
-       $status=true;
-       $try_again=false;
+      $tplan_id=$this->args[self::$testPlanIDParamName];
+      $status=true;
+      $try_again=false;
         
-        // First thing is to know is test plan has any build
-        $buildQty = $this->tplanMgr->getNumberOfBuilds($tplan_id);
-        if( $buildQty == 0)
-        {
-      $status = false;
-      $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
-            $msg = $msg_prefix . sprintf(TPLAN_HAS_NO_BUILDS_STR,$tplan_info['name'],$tplan_info['id']);
-            $this->errors[] = new IXR_Error(TPLAN_HAS_NO_BUILDS,$msg);
-        } 
+      // First thing is to know is test plan has any build
+      $buildQty = $this->tplanMgr->getNumberOfBuilds($tplan_id);
+      if( $buildQty == 0)
+      {
+        $status = false;
+        $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
+        $msg = $msg_prefix . sprintf(TPLAN_HAS_NO_BUILDS_STR,$tplan_info['name'],$tplan_info['id']);
+        $this->errors[] = new IXR_Error(TPLAN_HAS_NO_BUILDS,$msg);
+      } 
        
-       if( $status )
-       {
-         if(!$this->_isBuildIDPresent())
-         {
-              $try_again=true;
-        if($this->_isBuildNamePresent())
+      if( $status )
+      {
+        if(!$this->_isBuildIDPresent())
         {
-                     $try_again=false;
-                     $bname = trim($this->args[self::$buildNameParamName]);
-                  $buildInfo=$this->tplanMgr->get_build_by_name($tplan_id,$bname); 
-             
-                  if( is_null($buildInfo) )
-                  {
-                  $msg = $msg_prefix . sprintf(BUILDNAME_DOES_NOT_EXIST_STR,$bname);
-                  $this->errors[] = new IXR_Error(BUILDNAME_DOES_NOT_EXIST,$msg);
-                       $status=false;
-                  }
-                  else
-                  {  
-                      $this->args[self::$buildIDParamName]=$buildInfo['id'];
-                  }
-        }
-      }
-         
-         if($try_again)
-         {
-        // this means we aren't supposed to guess the buildid
-        if(false == $this->checkGuess())       
-        {
-          $this->errors[] = new IXR_Error(BUILDID_NOGUESS, BUILDID_NOGUESS_STR);
-          $this->errors[] = new IXR_Error(NO_BUILDID, NO_BUILDID_STR);        
-              $status=false;
-        }
-        else
-        {
-          $setBuildResult = $this->_setBuildID2Latest();
-          if(false == $setBuildResult)
+          $try_again=true;
+          if($this->_isBuildNamePresent())
           {
-            $this->errors[] = new IXR_Error(NO_BUILD_FOR_TPLANID, NO_BUILD_FOR_TPLANID_STR);
+            $try_again=false;
+            $bname = trim($this->args[self::$buildNameParamName]);
+            $buildInfo=$this->tplanMgr->get_build_by_name($tplan_id,$bname); 
+            if( is_null($buildInfo) )
+            {
+              $msg = $msg_prefix . sprintf(BUILDNAME_DOES_NOT_EXIST_STR,$bname);
+              $this->errors[] = new IXR_Error(BUILDNAME_DOES_NOT_EXIST,$msg);
+              $status=false;
+            }
+            else
+            {  
+              $this->args[self::$buildIDParamName]=$buildInfo['id'];
+            }
+          }
+        }
+         
+        if($try_again)
+        {
+          // this means we aren't supposed to guess the buildid
+          if(false == $this->checkGuess())       
+          {
+            $this->errors[] = new IXR_Error(BUILDID_NOGUESS, BUILDID_NOGUESS_STR);
+            $this->errors[] = new IXR_Error(NO_BUILDID, NO_BUILDID_STR);        
+            $status=false;
+          }
+          else
+          {
+            $setBuildResult = $this->_setBuildID2Latest();
+            if(false == $setBuildResult)
+            {
+              $this->errors[] = new IXR_Error(NO_BUILD_FOR_TPLANID, NO_BUILD_FOR_TPLANID_STR);
+              $status=false;
+            }
+          }
+        }
+         
+        if( $status)
+        {
+          $buildID = $this->dbObj->prepare_int($this->args[self::$buildIDParamName]);
+          $buildInfo=$this->tplanMgr->get_build_by_id($tplan_id,$buildID); 
+          if( is_null($buildInfo) )
+          {
+            $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
+            $msg = sprintf(BAD_BUILD_FOR_TPLAN_STR,$buildID,$tplan_info['name'],$tplan_id);          
+            $this->errors[] = new IXR_Error(BAD_BUILD_FOR_TPLAN, $msg);        
             $status=false;
           }
         }
-         }
-         
-         if( $status)
-         {
-             $buildID = $this->dbObj->prepare_int($this->args[self::$buildIDParamName]);
-            $buildInfo=$this->tplanMgr->get_build_by_id($tplan_id,$buildID); 
-            if( is_null($buildInfo) )
-            {
-                $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
-                $msg = sprintf(BAD_BUILD_FOR_TPLAN_STR,$buildID,$tplan_info['name'],$tplan_id);          
-                $this->errors[] = new IXR_Error(BAD_BUILD_FOR_TPLAN, $msg);        
-                $status=false;
-            }
-          }
-         } 
-    return $status;
+      } 
+      return $status;
     }
      
 
@@ -1199,70 +1195,123 @@ class TestlinkXMLRPCServer extends IXR_Server
   }
   
   /**
-     * Gets the result of LAST EXECUTION for a particular testcase 
-     * on a test plan, but WITHOUT checking for a particular build
-     *
-     * @param struct $args
-     * @param string $args["devKey"]
-     * @param int $args["tplanid"]
-     * @param int $args["testcaseid"]: optional, if does not is present           
-     *                                 testcaseexternalid must be present
-     *
-     * @param int $args["testcaseexternalid"]: optional, if does not is present           
-     *                                         testcaseid must be present
-     *
-     * @return mixed $resultInfo
-     *               if execution found, array with these keys:
-     *               id (execution id),build_id,tester_id,execution_ts,
-     *               status,testplan_id,tcversion_id,tcversion_number,
-     *               execution_type,notes.
-     *
-     *               if test case has not been execute,
-     *               array('id' => -1)
-     *
-     * @access public
-     */
+   * Gets the result of LAST EXECUTION for a particular testcase on a test plan.
+   * If there are no filter criteria regarding platform and build,
+   * result will be get WITHOUT checking for a particular platform and build.
+   *
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param int $args["tplanid"]
+   * @param int $args["testcaseid"]: Pseudo optional.
+   *                                 if does not is present then testcaseexternalid MUST BE present
+   *
+   * @param int $args["testcaseexternalid"]: Pseudo optional.
+   *                                         if does not is present then testcaseid MUST BE present
+   *
+   * @param string $args["platformid"]: optional. 
+   *                                    ONLY if not present, then $args["platformname"] 
+   *                                    will be analized (if exists)
+   *
+   * @param string $args["platformname"]: optional (see $args["platformid"])
+   *
+   * @param int $args["buildid"]: optional
+   *                              ONLY if not present, then $args["buildname"] will be analized (if exists)
+   * 
+   * @param int $args["buildname"] - optional (see $args["buildid"])
+   *
+   *
+   *
+   * @return mixed $resultInfo
+   *               if execution found, array with these keys:
+   *               id (execution id),build_id,tester_id,execution_ts,
+   *               status,testplan_id,tcversion_id,tcversion_number,
+   *               execution_type,notes.
+   *
+   *               if test case has not been execute,
+   *               array('id' => -1)
+   *
+   * @access public
+   */
     public function getLastExecutionResult($args)
     {
       $operation=__FUNCTION__;
-       $msg_prefix="({$operation}) - ";
+      $msg_prefix="({$operation}) - ";
         
-        $this->_setArgs($args);
-        $resultInfo = array();
-        $status_ok=true;
+      $this->_setArgs($args);
+      $resultInfo = array();
+      $status_ok=true;
                 
-        // Checks are done in order
-        $checkFunctions = array('authenticate','checkTestPlanID','checkTestCaseIdentity');
+      // Checks are done in order
+      $checkFunctions = array('authenticate','checkTestPlanID','checkTestCaseIdentity');
 
-        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && 
-                   $this->_checkTCIDAndTPIDValid(null,$msg_prefix) &&
-                   $this->userHasRight("mgt_view_tc");       
+      $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && 
+                 $this->_checkTCIDAndTPIDValid(null,$msg_prefix) &&
+                 $this->userHasRight("mgt_view_tc");       
+
+      $execContext = array('tplan_id' => $this->args[self::$testPlanIDParamName],
+                           'platform_id' => null,'build_id' => null);
+
+      if( $status_ok )
+      {
+        // Now we can check for Optional parameters
+        if($this->_isBuildIDPresent() || $this->_isBuildNamePresent())
+        {
+          if( ($status_ok =  $this->checkBuildID($msg_prefix)) )
+          {
+            $execContext['build_id'] = $this->args[self::$buildIDParamName];  
+          }  
+        }  
 
         if( $status_ok )
         {
-            // get all, then return last
-            $sql = " SELECT * FROM {$this->tables['executions']} " .
-                   " WHERE testplan_id = {$this->args[self::$testPlanIDParamName]} " .
-                   " AND tcversion_id IN (" .
-                   " SELECT id FROM {$this->tables['nodes_hierarchy']} " .
-                   " WHERE parent_id = {$this->args[self::$testCaseIDParamName]})" .
-                   " ORDER BY id DESC";
-                   
-            $result = $this->dbObj->fetchFirstRow($sql);
+          if( $this->_isParamPresent(self::$platformIDParamName,$msg_prefix) ||
+              $this->_isParamPresent(self::$platformNameParamName,$msg_prefix) )
+          {
+            $status_ok = $this->checkPlatformIdentity($this->args[self::$testPlanIDParamName]);
 
-            if(null == $result)
+            if( $status_ok)
             {
-               // has not been executed
-               // execution id = -1 => test case has not been runned.
-               $resultInfo[]=array('id' => -1);
-            } 
-            else
-            {
-               $resultInfo[]=$result;  
-            }
-        }
-        
-        return $status_ok ? $resultInfo : $this->errors;
+              $execContext['platform_id'] = $this->args[self::$platformIDParamName];  
+            }  
+          }  
+        }  
+      }  
+
+      if( $status_ok )
+      {
+
+        $sql = " SELECT MAX(id) AS exec_id FROM {$this->tables['executions']} " .
+               " WHERE testplan_id = {$this->args[self::$testPlanIDParamName]} " .
+               " AND tcversion_id IN (" .
+               " SELECT id FROM {$this->tables['nodes_hierarchy']} " .
+               " WHERE parent_id = {$this->args[self::$testCaseIDParamName]})";
+
+        if(!is_null($execContext['build_id']))
+        {
+          $sql .= " AND build_id = " . intval($execContext['build_id']);
+        }  
+
+        if(!is_null($execContext['platform_id']))
+        {
+          $sql .= " AND platform_id = " . intval($execContext['platform_id']);
+        }  
+
+        $rs = $this->dbObj->fetchRowsIntoMap($sql,'exec_id');
+        if( is_null($rs) )
+        {
+          // has not been executed
+          // execution id = -1 => test case has not been runned.
+          $resultInfo[]=array('id' => -1);
+        }  
+        else
+        {
+          // OK Select * is not a good practice but ...
+          $sql = "SELECT * FROM {$this->tables['executions']} WHERE id=" . key($rs);
+          $resultInfo[] = $this->dbObj->fetchFirstRow($sql);
+        }  
+      }
+      
+      return $status_ok ? $resultInfo : $this->errors;
     }
 
 
@@ -1289,11 +1338,11 @@ class TestlinkXMLRPCServer extends IXR_Server
     if( isset($this->args[self::$platformIDParamName]) )
     {
       $platform_id = $this->args[self::$platformIDParamName];   
-      }
+    }
     
     $notes='';
-        $notes_field="";
-        $notes_value="";  
+    $notes_field="";
+    $notes_value="";  
 
     if($this->_isNotePresent())
     {
@@ -1963,27 +2012,27 @@ class TestlinkXMLRPCServer extends IXR_Server
    *                               explicitly default is true (guess by default)
    *
    * @param string $args["bugid"] - optional
-     *
-     * @param string $args["platformid"] - optional, if not present platformname must be present
+   *
+   * @param string $args["platformid"] - optional, if not present platformname must be present
    * @param string $args["platformname"] - optional, if not present platformid must be present
-     *    
-     *
-     * @param string $args["customfields"] - optional
-     *               contains an map with key:Custom Field Name, value: value for CF.
-     *               VERY IMPORTANT: value must be formatted in the way it's written to db,
-     *               this is important for types like:
-     *
-     *               DATE: strtotime()
-     *               DATETIME: mktime()
-     *               MULTISELECTION LIST / CHECKBOX / RADIO: se multipli selezione ! come separatore
-     *
-     *
-     *               these custom fields must be configured to be writte during execution.
-     *               If custom field do not meet condition value will not be written
-     *
-     * @param boolean $args["overwrite"] - optional, if present and true, then last execution
-     *                for (testcase,testplan,build,platform) will be overwritten.            
-     *
+   *    
+   *
+   * @param string $args["customfields"] - optional
+   *               contains an map with key:Custom Field Name, value: value for CF.
+   *               VERY IMPORTANT: value must be formatted in the way it's written to db,
+   *               this is important for types like:
+   *
+   *               DATE: strtotime()
+   *               DATETIME: mktime()
+   *               MULTISELECTION LIST / CHECKBOX / RADIO: se multipli selezione ! come separatore
+   *
+   *
+   *               these custom fields must be configured to be writte during execution.
+   *               If custom field do not meet condition value will not be written
+   *
+   * @param boolean $args["overwrite"] - optional, if present and true, then last execution
+   *                for (testcase,testplan,build,platform) will be overwritten.            
+   *
    * @return mixed $resultInfo 
    *         [status]  => true/false of success
    *         [id]      => result id or error code
@@ -1997,68 +2046,67 @@ class TestlinkXMLRPCServer extends IXR_Server
   public function reportTCResult($args)
   {    
     $resultInfo = array();
-        $operation=__FUNCTION__;
-      $msg_prefix="({$operation}) - ";
+    $operation=__FUNCTION__;
+    $msg_prefix="({$operation}) - ";
 
     $this->_setArgs($args);              
     $resultInfo[0]["status"] = true;
     
-        $checkFunctions = array('authenticate','checkTestCaseIdentity','checkTestPlanID',
-                                'checkBuildID','checkStatus');
+    $checkFunctions = array('authenticate','checkTestCaseIdentity','checkTestPlanID',
+                            'checkBuildID','checkStatus');
                                 
-        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
+    $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
 
-         if($status_ok)
+    if($status_ok)
     {      
       // This check is needed only if test plan has platforms
-          $platformSet = $this->tplanMgr->getPlatforms($this->args[self::$testPlanIDParamName],
+      $platformSet = $this->tplanMgr->getPlatforms($this->args[self::$testPlanIDParamName],
                                                         array('outputFormat' => 'map'));  
       $targetPlatform = null;
       if( !is_null($platformSet) )
-            {       
-          $status_ok = $this->checkPlatformIdentity($this->args[self::$testPlanIDParamName],
-                                $platformSet,$msg_prefix);
+      {       
+        $status_ok = $this->checkPlatformIdentity($this->args[self::$testPlanIDParamName],
+                                                  $platformSet,$msg_prefix);
         if($status_ok)
         {
           $targetPlatform[$this->args[self::$platformIDParamName]] = $platformSet[$this->args[self::$platformIDParamName]];
         }
-        }
-      $status_ok = $status_ok && $this->_checkTCIDAndTPIDValid($targetPlatform,$msg_prefix);
       }
+      $status_ok = $status_ok && $this->_checkTCIDAndTPIDValid($targetPlatform,$msg_prefix);
+    }
   
     if($status_ok && $this->userHasRight("testplan_execute"))
     {    
       $executionID = 0;  
       $resultInfo[0]["operation"] = $operation;
-          $resultInfo[0]["overwrite"] = false;
-        $resultInfo[0]["status"] = true;
+      $resultInfo[0]["overwrite"] = false;
+      $resultInfo[0]["status"] = true;
       $resultInfo[0]["message"] = GENERAL_SUCCESS_STR;
 
-          if($this->_isParamPresent(self::$overwriteParamName) && $this->args[self::$overwriteParamName])
-          {
-              $executionID = $this->_updateResult();
-              $resultInfo[0]["overwrite"] = true;      
-          }
-          if($executionID == 0)
-            {
-              $executionID = $this->_insertResultToDB();      
-            } 
+      if($this->_isParamPresent(self::$overwriteParamName) && $this->args[self::$overwriteParamName])
+      {
+        $executionID = $this->_updateResult();
+        $resultInfo[0]["overwrite"] = true;      
+      }
+      if($executionID == 0)
+      {
+        $executionID = $this->_insertResultToDB();      
+      } 
 
       $resultInfo[0]["id"] = $executionID;  
       
       // Do we need to insert a bug ?
-          if($this->_isParamPresent(self::$bugIDParamName))
-          {
-            $bugID = $this->args[self::$bugIDParamName];
-          $resultInfo[0]["bugidstatus"] = $this->_insertExecutionBug($executionID, $bugID);
-          }
+      if($this->_isParamPresent(self::$bugIDParamName))
+      {
+        $bugID = $this->args[self::$bugIDParamName];
+        $resultInfo[0]["bugidstatus"] = $this->_insertExecutionBug($executionID, $bugID);
+      }
           
           
-          if($this->_isParamPresent(self::$customFieldsParamName))
-          {
-            $resultInfo[0]["customfieldstatus"] =  
-              $this->_insertCustomFieldExecValues($executionID);   
-          }
+      if($this->_isParamPresent(self::$customFieldsParamName))
+      {
+        $resultInfo[0]["customfieldstatus"] = $this->_insertCustomFieldExecValues($executionID);   
+      }
       return $resultInfo;
     }
     else
@@ -2274,16 +2322,16 @@ public function getTestCasesForTestPlan($args)
     $status = $this->authenticate();
     if($status)
     {
-          $status &=$this->checkTestPlanID($messagePrefix);
+      $status &=$this->checkTestPlanID($messagePrefix);
           
-          if($status && $this->_isTestCaseIDPresent($messagePrefix))
-          {
-              $status &=$this->_checkTCIDAndTPIDValid(null,$messagePrefix);
-          }
-          if($status && $this->_isBuildIDPresent($messagePrefix))  
-          {
-              $status &=$this->checkBuildID($messagePrefix);
-          }
+      if($status && $this->_isTestCaseIDPresent($messagePrefix))
+      {
+        $status &=$this->_checkTCIDAndTPIDValid(null,$messagePrefix);
+      }
+      if($status && $this->_isBuildIDPresent($messagePrefix))  
+      {
+        $status &=$this->checkBuildID($messagePrefix);
+      }
     }
     return $status;
   }
@@ -3916,15 +3964,15 @@ public function getTestCase($args)
     // $build_id = $this->args[self::$buildIDParamName];
 
     $tcversion_id =  $this->tcVersionID;
-      $tcase_id = $this->args[self::$testCaseIDParamName];
+    $tcase_id = $this->args[self::$testCaseIDParamName];
 
     $execContext = array('tplan_id' => $this->args[self::$testPlanIDParamName],
-               'platform_id' => $this->args[self::$platformIDParamName],
-               'build_id' => $this->args[self::$buildIDParamName]);
+                         'platform_id' => $this->args[self::$platformIDParamName],
+                         'build_id' => $this->args[self::$buildIDParamName]);
     
-      $db_now=$this->dbObj->db_now();
+    $db_now=$this->dbObj->db_now();
     
-      if( isset($this->args[self::$platformIDParamName]) )
+    if( isset($this->args[self::$platformIDParamName]) )
     {
       $platform_id = $this->args[self::$platformIDParamName];   
     }
@@ -3933,14 +3981,14 @@ public function getTestCase($args)
     // $options = array('getSteps' => 0);
     // $last_exec = $this->tcaseMgr->get_last_execution($tcase_id,testcase::ALL_VERSIONS,
     //                                                 $testplan_id,$build_id,$platform_id,$options);
-      $opt = array('output' => 'exec_id');
+    $opt = array('output' => 'exec_id');
     $exec_id = $this->tcaseMgr->getLatestExecSingleContext(array('id' => $tcase_id, 'version_id' => null),
-                                  $execContext, $opt);
-      if( !is_null($exec_id) )
-      {
+                                                           $execContext, $opt);
+    if( !is_null($exec_id) )
+    {
       $execution_type = constant("TESTCASE_EXECUTION_TYPE_AUTO");
       $notes = '';
-        $notes_update = '';
+      $notes_update = '';
       
       if($this->_isNotePresent())
       {

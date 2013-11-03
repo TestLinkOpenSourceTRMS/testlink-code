@@ -17,18 +17,72 @@ require_once 'sample.inc.php';
 show_api_db_sample_msg();
 
 $method='getLastExecutionResult';
-$unitTestDescription="Test - {$method}";
+
+// --------------------------------------------------------------------
+$unitTestDescription="Test - {$method} - NO BUILD NO PLATFORM Filters";
 
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]='DEV_KEY';
 // $args["testplanid"]=335;
-$args["testplanid"]=1635;
+// $args["testplanid"]=1635;
 // $args["testcaseexternalid"]='API-2';
-$args["testcaseid"]='1631';
+// $args["testcaseid"]='1631';
+
+// $args["testplanid"]=3;
+$args["testplanid"]=3;
+$args["testcaseexternalid"]='PJH-1';
 
 $debug=true;
 echo $unitTestDescription;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
 runTest($client,$method,$args);
-?>
+// --------------------------------------------------------------------
+
+// --------------------------------------------------------------------
+$args=array();
+$args["devKey"]='DEV_KEY';
+$args["testplanid"]=3;
+$args["testcaseexternalid"]='PJH-1';
+$args["buildid"]=4;
+$unitTestDescription="Test - {$method} - ONLY BUILD ID Filter => " . $args["buildid"];
+
+$debug=true;
+echo $unitTestDescription;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args);
+// --------------------------------------------------------------------
+
+// --------------------------------------------------------------------
+$args=array();
+$args["devKey"]='DEV_KEY';
+$args["testplanid"]=3;
+$args["testcaseexternalid"]='PJH-1';
+$args["buildname"]='1';
+$unitTestDescription="Test - {$method} - ONLY BUILD NAME Filter => " . $args["buildname"];
+
+$debug=true;
+echo $unitTestDescription;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args);
+// --------------------------------------------------------------------
+
+// --------------------------------------------------------------------
+$args=array();
+$args["devKey"]='DEV_KEY';
+$args["testplanid"]=10;
+$args["testcaseexternalid"]='PJH-1';
+// $args["buildname"]='1';
+$args["platformname"]='Ferrari';
+$unitTestDescription="Test - {$method} - ONLY PLATFORM NAME Filter => " . $args["platformname"];
+
+$debug=true;
+echo $unitTestDescription;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args);
+// --------------------------------------------------------------------
+
+

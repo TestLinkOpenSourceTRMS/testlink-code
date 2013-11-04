@@ -6,7 +6,7 @@ Purpose:
         to copy or move.
 
 @internal revisions
-@since 1.9.7
+@since 1.9.9
 *}
 {lang_get var='labels'
           s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,
@@ -19,11 +19,13 @@ Purpose:
 {include file="inc_jsCheckboxes.tpl"}
 {include file="inc_del_onclick.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
+$( document ).ready(function() {
+$(".chosen-select").chosen({ width: "50%", search_contains: true });
+});
+
+
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
-{literal}
 
 /*
   function: check_action_precondition
@@ -47,7 +49,6 @@ function check_action_precondition(container_id,action,msg)
 	}
 }
 </script>
-{/literal}
 </head>
 
 <body>
@@ -71,7 +72,7 @@ function check_action_precondition(container_id,action,msg)
         <br />
       {/if}
   		<p>{$labels.choose_target}:
-  			<select name="containerID" id="containerID">
+  			<select name="containerID" id="containerID" class="chosen-select">
   				  {html_options options=$containers}
   			</select>
   		</p>

@@ -14,8 +14,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.8
- * 20130601 - franciscom - refactoring to use new column execution_duration
+ * @since 1.9.9
  *
  */ 
 
@@ -353,7 +352,7 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
   }
   $output .= "<table class=\"req_spec\"><tr><th colspan=\"$tableColspan\">" .
             "<h{$level} class=\"doclevel\"> <span class=\"label\">{$docHeadingNumbering}{$labels['requirements_spec']}:</span> " .
-         $name . "</th></tr></h{$level}>\n";
+             $name . "</h{$level}></th></tr>\n";
      
   if ($options['toc'])
   {
@@ -815,6 +814,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
   
   static $req_mgr;
   static $tc_mgr;
+  static $build_mgr;
   static $tplan_urgency;
   static $labels;
   static $tcase_prefix;
@@ -825,11 +825,14 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
   static $force = null;
   static $bugInterfaceOn = false;
   static $its;
-    
+  static $buildCfields;  
+
+
   $code = null;
   $tcInfo = null;
   $tcResultInfo = null;
   $tcase_pieces = null;
+
   $id = $node['id'];
 
   // init static elements
@@ -838,6 +841,9 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
     $tables = tlDBObject::getDBTables(array('executions','builds'));
     $tc_mgr = new testcase($db);
     $tplan_urgency = new testPlanUrgency($db);
+    $build_mgr = new build_mgr($db);
+
+
     list($cfg,$labels) = initRenderTestCaseCfg($tc_mgr);
 
     if(!is_null($prefix))
@@ -893,14 +899,15 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
   
     $cfields = array('specScope' => null, 'execScope' => null);
 
-    // get custom fields that has specification scope
-    if ($options['cfields'])
+  // get custom fields that has specification scope
+  if ($options['cfields'])
   {
     if (!$locationFilters)
     {
-          $locationFilters = $tc_mgr->buildCFLocationMap();
-        }  
-       foreach($locationFilters as $fkey => $fvalue)
+      $locationFilters = $tc_mgr->buildCFLocationMap();
+    }  
+  
+    foreach($locationFilters as $fkey => $fvalue)
     { 
       // Custom Field values at Test Case VERSION Level
       $cfields['specScope'][$fkey] = 
@@ -923,6 +930,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
   
   if ($bGetExecutions)
   {
+    
     $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
            " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
            " B.name AS build_name,E.execution_duration " .
@@ -933,7 +941,17 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
            " AND E.platform_id = {$platform_id} " .
            " ORDER BY execution_id DESC";
     $exec_info = $db->get_recordset($sql,null,1);
+    
+    if( !is_null($exec_info) && $options['build_cfields'])
+    {
+      if( !isset($buildCfields[$exec_info[0]['build_id']]) )
+      {
+        $buildCfields[$exec_info[0]['build_id']] = 
+          $build_mgr->html_table_of_custom_field_values($exec_info[0]['build_id'],$tprojectID);
+      }  
+    }  
   }
+
   // Added condition for the display on/off of the custom fields on test cases.
   if ($options['cfields'] && !is_null($exec_info))
   {
@@ -972,6 +990,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
              $cfg['gui']->role_separator_close . '</span>';
   }
   $code .= "</th></tr>\n";
+
 
   if ($options['author'])
   {
@@ -1062,6 +1081,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
            '<span class="label">'.$labels['execution_type'].':</span></td>' .
            '<td colspan="' .  ($cfg['tableColspan']-1) . '">';
 
+
   switch ($tcInfo['execution_type'])
   {
     case TESTCASE_EXECUTION_TYPE_AUTO:
@@ -1090,6 +1110,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
     $code .= "</td></tr>\n";
   }
 
+
   // print priority when printing test plan
   if (isset($options['priority']) && $options['priority'])
   {
@@ -1115,7 +1136,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
   {
     if ($exec_info) 
     {
-      $code .= buildTestExecResults($db,$its,$cfg,$labels,$exec_info,$cfg['tableColspan']-1,$options['notes']);
+      $code .= buildTestExecResults($db,$its,$cfg,$labels,$exec_info,$cfg['tableColspan']-1,$options['notes'],$buildCfields);
     }
     else
     {
@@ -1442,8 +1463,9 @@ function initRenderTestCaseCfg(&$tcaseMgr)
  * 
  *
  */
-function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan,$show_exec_notes = false)
+function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan,$show_exec_notes = false,$buildCF=null)
 {
+  
   static $testerNameCache;
   $out='';
   $testStatus = $cfg['status_labels'][$exec_info[0]['status']];
@@ -1461,7 +1483,7 @@ function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan
   {
     $td_colspan .= ' colspan="' . $colspan . '" '; 
   }
-      
+
   $out .= '<tr><td width="20%" valign="top">' .
           '<span class="label">' . $labels['last_exec_result'] . ':</span></td>' .
           '<td '  .$td_colspan . '><b>' . $testStatus . "</b></td></tr>\n" .
@@ -1469,15 +1491,24 @@ function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan
           '<span class="label">' . $labels['execution_duration'] . ':</span></td>' .
           '<td '  .$td_colspan . '><b>' . $exec_info[0]['execution_duration'] . "</b></td></tr>\n" .
           '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
-          '<td '  .$td_colspan . '>' . htmlspecialchars($exec_info[0]['build_name']) . "</b></td></tr>\n" .
-          '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['tester'] .'</td>' . 
+          '<td '  .$td_colspan . '>' . htmlspecialchars($exec_info[0]['build_name']) . "</b></td></tr>\n";
+
+  // Check if CF exits for this BUILD
+  if(!is_null($buildCF) && isset($buildCF[$exec_info[0]['build_id']]))
+  {
+     $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"></td>' . 
+             '<td '  .$td_colspan . '>' . $buildCF[$exec_info[0]['build_id']] . "</td></tr>\n";
+  }        
+
+
+  $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['tester'] .'</td>' . 
           '<td '  .$td_colspan . '>' . $testerNameCache[$exec_info[0]['tester_id']] . "</b></td></tr>\n";
 
-    if ($executionNotes != '') // show exection notes is not empty
-    {
+  if ($executionNotes != '') // show exection notes is not empty
+  {
     $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">'.$labels['title_execution_notes'] . '</td>' .
           '<td '  .$td_colspan . '>' . nl2br($executionNotes)  . "</td></tr>\n"; 
-    }
+  }
 
   if( !is_null($its) ) 
   {

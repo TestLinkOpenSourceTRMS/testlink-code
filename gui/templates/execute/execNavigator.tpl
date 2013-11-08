@@ -12,8 +12,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              include_unassigned_testcases,priority,caption_nav_filters,caption_nav_settings,
              block_filter_not_run_latest_exec"}       
 
-{* ===================================================================== *}
-
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
@@ -26,7 +24,6 @@ var code_lastest_exec_method = {$gui->lastest_exec_method};
 var code_not_run = '{$gui->not_run}';
 </script>
 
-{literal}
 <script type="text/javascript">
     treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                 loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
@@ -69,9 +66,6 @@ function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build
 
 /**
  * 
- *
- * internal revisions
- * TICKET 4788
  */
 function validateForm(the_form)
 {
@@ -97,55 +91,39 @@ function validateForm(the_form)
   return status_ok;
 }
 </script>
-{/literal}
-
 
 <script type="text/javascript">
-  treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
-  treeCfg.root_id={$gui->ajaxTree->root_node->id};
-  treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
-  treeCfg.children={$gui->ajaxTree->children};
-  treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
+treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
+treeCfg.root_id={$gui->ajaxTree->root_node->id};
+treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
+treeCfg.children={$gui->ajaxTree->children};
+treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
 </script>
 
 <script type="text/javascript" src='gui/javascript/execTreeWithMenu.js'></script>
-
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
-
-
-{* BUGID 3301 - js include file for simpler code, filter refactoring/redesign *}
-{include file='inc_filter_panel_js.tpl'}
 
 {* 
  * !!!!! IMPORTANT !!!!!
- * Above included file closes <head> tag and opens <body>, so this is not done here.
+ * this included file closes <head> tag and opens <body>, so this is not done here.
  *}
+{include file='inc_filter_panel_js.tpl'}
 
   
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
-{assign var="build_number" value=$control->settings.setting_build.selected}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{$build_number=$control->settings.setting_build.selected}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$labels.test_plan}{$tlCfg->gui_title_separator_1} {$control->args->testplan_name|escape}
 {$tlCfg->gui_separator_open}{$labels.build}{$tlCfg->gui_title_separator_1}
 {$control->settings.setting_build.items.$build_number|escape}{$tlCfg->gui_separator_close}</h1>
 
-
-{* BUGID 3301: include file for filter panel *}
 {include file='inc_filter_panel.tpl'}
-
-{* BUGID 4042 *}
 {include file="inc_tree_control.tpl"}
 
-{* ===================================================================== *}
-{* BUGID 4077 *}
 <div id="tree_div" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
-
-{*if $gui->src_workframe != ''}
 <script type="text/javascript">
   parent.workframe.location='{$gui->src_workframe}';
 </script>
-{/if*}
-
 </body>
 </html>

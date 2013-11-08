@@ -1528,7 +1528,7 @@ class tlTestPlanMetrics extends testplan
     $sql = array();
     $my = array();
     $my['opt'] = array('getOnlyAssigned' => false, 'tprojectID' => 0, 
-               'getPlatformSet' => false, 'processClosedBuilds' => true);
+                       'getPlatformSet' => false, 'processClosedBuilds' => true);
     $my['opt'] = array_merge($my['opt'], (array)$opt);
     
     $my['filters'] = array('buildSet' => null);

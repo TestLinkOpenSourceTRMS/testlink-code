@@ -12,6 +12,7 @@ require_once("common.php");
 require_once('requirements.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 
+
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($args);
@@ -33,14 +34,13 @@ switch($args->doAction)
 
     case 'bulkassign':
       // need to check if we have test cases to work on
-      $tsuite_mgr = new testsuite($db);
-      $tcase_set = $tsuite_mgr->get_testcases_deep($args->id,'only_id');
+      $tcase_set = getTargetTestCases($db,$args);
       $bulkCounter = 0;
       $bulkDone = true;
       $args->edit = 'testsuite';
       if( !is_null($tcase_set) && count($tcase_set) > 0 )
       {
-          $bulkCounter = doBulkAssignment($db,$args,$tcase_set);
+        $bulkCounter = doBulkAssignment($db,$args,$tcase_set);
       }
     break;  
 
@@ -93,14 +93,15 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args()
 {
   $iParams = array("id" => array(tlInputParameter::INT_N),
-               "req_id" => array(tlInputParameter::ARRAY_INT),
-               "req" => array(tlInputParameter::INT_N),
-               "showCloseButton" => array(tlInputParameter::STRING_N,0,1),
-               "doAction" => array(tlInputParameter::STRING_N,0,100),
-               "edit" => array(tlInputParameter::STRING_N,0,100),
-               "unassign" => array(tlInputParameter::STRING_N,0,1),
-               "assign" => array(tlInputParameter::STRING_N,0,1),
-               "idSRS" => array(tlInputParameter::INT_N));  
+                   "req_id" => array(tlInputParameter::ARRAY_INT),
+                   "req" => array(tlInputParameter::INT_N),
+                   "showCloseButton" => array(tlInputParameter::STRING_N,0,1),
+                   "doAction" => array(tlInputParameter::STRING_N,0,100),
+                   "edit" => array(tlInputParameter::STRING_N,0,100),
+                   "unassign" => array(tlInputParameter::STRING_N,0,1),
+                   "assign" => array(tlInputParameter::STRING_N,0,1),
+                   "form_token" => array(tlInputParameter::INT_N),
+                   "idSRS" => array(tlInputParameter::INT_N));  
     
   $args = new stdClass();
   R_PARAMS($iParams,$args);
@@ -111,6 +112,14 @@ function init_args()
   $args->idReqSpec = null;
   $args->idReq = $args->req;
   $args->reqIdSet = $args->req_id;
+  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+
+  $args->tcaseSet = null;
+  if(isset($_SESSION['edit_mode'][$args->form_token]['testcases_to_show']))
+  {
+    $args->tcaseSet = $_SESSION['edit_mode'][$args->form_token]['testcases_to_show'];
+  }  
+
   if(is_null($args->doAction))
   {
     $args->doAction = ($args->unassign != "") ? "unassign" : null;
@@ -130,7 +139,6 @@ function init_args()
     $args->idReqSpec = intval($_SESSION['currentSrsId']);
   }
 
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
   
   $args->user = $_SESSION['currentUser'];
   return $args;
@@ -168,8 +176,9 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj)
     $req_spec_mgr = new requirement_spec_mgr($dbHandler);
     $guiObj->requirements =$req_spec_mgr->get_requirements($guiObj->selectedReqSpec);
         
-    $tsuite_mgr = new testsuite($dbHandler);
-    $tcase_set = $tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
+    // $tsuite_mgr = new testsuite($dbHandler);
+    // $tcase_set = $tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
+    $tcase_set = getTargetTestCases($dbHandler,$argsObj);
     $guiObj->tcase_number = count($tcase_set); 
            
     if( $guiObj->tcase_number > 0 )
@@ -201,6 +210,7 @@ function doBulkAssignment(&$dbHandler,&$argsObj,$targetTestCaseSet = null)
       $tsuite_mgr = new testsuite($dbHandler);
       $tcase_set = $tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
     }
+
     if( !is_null($tcase_set) && count($tcase_set) )
     {
       $assignmentCounter = $req_mgr->bulk_assignment($requirements,$tcase_set);
@@ -316,7 +326,6 @@ function processTestCase(&$dbHandler,&$argsObj,&$guiObj)
       }
     }
   } 
-  new dBug($guiObj);
   return $guiObj;
 }
 
@@ -332,12 +341,26 @@ function initializeGui($argsObj)
   
   $guiObj->showCloseButton = $argsObj->showCloseButton;
   $guiObj->selectedReqSpec = $argsObj->idReqSpec;
+  $guiObj->form_token = $argsObj->form_token;
   return $guiObj;
 }
+
+/**
+ *
+ */
+function getTargetTestCases(&$dbHandler,&$argsObj)
+{
+  if(is_null(($items = $argsObj->tcaseSet)))
+  {  
+    $mgr = new testsuite($dbHandler);
+    $items = $mgr->get_testcases_deep($argsObj->id,'only_id');
+  }
+  return $items;
+}
+
 
 
 function checkRights(&$db,&$user)
 {
   return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
 }
-?>

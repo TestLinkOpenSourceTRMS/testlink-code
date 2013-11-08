@@ -115,7 +115,6 @@ function init_args()
   {
     $args->action = 'loginform';
   }
-
   return $args;
 }
 
@@ -134,35 +133,35 @@ function init_gui(&$db,$args)
   $gui->login_disabled = ($gui->external_password_mgmt && !checkForLDAPExtension()) ? 1 : 0;
 
   switch($args->note)
-    {
-      case 'expired':
-        if(!isset($_SESSION))
-        {
-          session_start();
-        }
-        session_unset();
-        session_destroy();
-        $gui->note = lang_get('session_expired');
-        $gui->reqURI = null;
-        break;
+  {
+    case 'expired':
+      if(!isset($_SESSION))
+      {
+        session_start();
+      }
+      session_unset();
+      session_destroy();
+      $gui->note = lang_get('session_expired');
+      $gui->reqURI = null;
+    break;
         
-      case 'first':
-        $gui->note = lang_get('your_first_login');
-        $gui->reqURI = null;
-        break;
+    case 'first':
+      $gui->note = lang_get('your_first_login');
+      $gui->reqURI = null;
+    break;
         
-      case 'lost':
-        $gui->note = lang_get('passwd_lost');
-        $gui->reqURI = null;
-        break;
+    case 'lost':
+      $gui->note = lang_get('passwd_lost');
+      $gui->reqURI = null;
+    break;
         
-      default:
-        $gui->note = lang_get('please_login');
-        break;
-    }
+    default:
+      $gui->note = lang_get('please_login');
+    break;
+  }
   $gui->reqURI = $args->reqURI ? $args->reqURI : $args->preqURI;
   $gui->destination = $args->destination;
-    
+  
   return $gui;
 }
 

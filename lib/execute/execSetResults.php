@@ -703,32 +703,32 @@ function do_remote_execution(&$dbHandler,$context)
   $debugMsg = "File:" . __FILE__ . " Function: " . __FUNCTION__;
   
   $tables = array();
-    $tables['executions'] = DB_TABLE_PREFIX . 'executions';
+  $tables['executions'] = DB_TABLE_PREFIX . 'executions';
 
-    $resultsCfg = config_get('results');
-    $tc_status = $resultsCfg['status_code'];
-    $tree_mgr = new tree($dbHandler);
-    $cfield_mgr = new cfield_mgr($dbHandler);
+  $resultsCfg = config_get('results');
+  $tc_status = $resultsCfg['status_code'];
+  $tree_mgr = new tree($dbHandler);
+  $cfield_mgr = new cfield_mgr($dbHandler);
   
   $ret = null;
   $executionResults = array();
 
   $myResult = array();
-  $sql =   " /* $debugMsg */ INSERT INTO {$tables['executions']} " . 
-      " (testplan_id,platform_id,build_id,tester_id,execution_type," .
-      "  tcversion_id,execution_ts,status,notes) " .
-      " VALUES ({$context['context']['tplan_id']}, " . 
-      "      {$context['context']['platform_id']}, " .
-      "      {$context['context']['build_id']}," .
-      " {$context['context']['user_id']}," . TESTCASE_EXECUTION_TYPE_AUTO . ",";
+  $sql = " /* $debugMsg */ INSERT INTO {$tables['executions']} " . 
+         " (testplan_id,platform_id,build_id,tester_id,execution_type," .
+         "  tcversion_id,execution_ts,status,notes) " .
+         " VALUES ({$context['context']['tplan_id']}, " . 
+         "      {$context['context']['platform_id']}, " .
+         "      {$context['context']['build_id']}," .
+         " {$context['context']['user_id']}," . TESTCASE_EXECUTION_TYPE_AUTO . ",";
 
   // have we got multiple test cases to execute ?
   $target = &$context['target'];
   foreach($target['tc_versions'] as $version_id => $tcase_id)
   {
     $ret[$version_id] = array("verboseID" => null,
-                  "status" => null,"notes" => null,"system" => null,
-                   "scheduled" => null, "timestamp" => null);
+                              "status" => null,"notes" => null,"system" => null,
+                              "scheduled" => null, "timestamp" => null);
 
     $tcaseInfo = $tree_mgr->get_node_hierarchy_info($tcase_id);
     $tcaseInfo['version_id'] = $version_id;
@@ -1139,6 +1139,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->testplan_cfields = $tplanMgr->html_table_of_custom_field_values($argsObj->tplan_id,'design',
                                                                           array('show_on_execution' => 1));
     
+
+    $gui->build_cfields = $buildMgr->html_table_of_custom_field_values($argsObj->build_id,$argsObj->tproject_id,
+                                                                       'design',array('show_on_execution' => 1));
+    
     $gui->history_on = manage_history_on($_REQUEST,$_SESSION,$cfgObj->exec_cfg,
                                          'btn_history_on','btn_history_off','history_on');
     $gui->history_status_btn_name = $gui->history_on ? 'btn_history_off' : 'btn_history_on';
@@ -1466,8 +1470,6 @@ function launchRemoteExec(&$dbHandler,&$argsObj,$tcasePrefix,&$tplanMgr,&$tcaseM
     // Only drawback i see is when remote exec is done on a test suite
     // and amount of feedback can be high, then do not see what can be effect
     // on GUI
-
-
     $execContext = buildExecContext($argsObj,$tcasePrefix,$tplanMgr,$tcaseMgr);
     $feedback = do_remote_execution($dbHandler,$execContext);
     $feedback = current($feedback);

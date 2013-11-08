@@ -31,8 +31,10 @@ show Test Results and Metrics
 <body>
 
 {if $gui->printDate == ''}
+{* +++++++++++++++++++++++++++ *}
+{* Form to launch Excel Export *}
 <form name="resultsTC" id="resultsTC" METHOD="POST"
-      action="lib/results/resultsTC.php?format=3&tplan_id={$gui->tplan_id}&tproject_id={$gui->tproject_id}">
+      action="lib/results/resultsTC.php?format=3&do_action=result&tplan_id={$gui->tplan_id}&tproject_id={$gui->tproject_id}&buildListForExcel={$gui->buildListForExcel}">
 <h1 class="title">{$gui->title|escape}
   {if $gui->apikey != ''}
   <input type="hidden" name="apikey" id="apikey" value="{$gui->apikey}">

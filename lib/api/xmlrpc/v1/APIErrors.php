@@ -12,7 +12,7 @@
  * @link      http://testlink.org/api/
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.9
  * 
  */
  
@@ -260,6 +260,8 @@ define('REQSPEC_TPROJECT_KO_STR',lang_get('API_REQSPEC_TPROJECT_KO',null,1));
 define('TESTPROJECTNAME_DOESNOT_EXIST',7011);
 define('TESTPROJECTNAME_DOESNOT_EXIST_STR',lang_get('API_TESTPROJECTNAME_DOESNOT_EXIST',null,1));
 
+define('TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST',7012);
+define('TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST_STR',lang_get('API_TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST',null,1));
 
 
 /**

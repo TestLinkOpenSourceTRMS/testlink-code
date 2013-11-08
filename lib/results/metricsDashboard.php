@@ -336,7 +336,7 @@ function initEnv(&$dbHandler)
   $args = new stdClass();
   $gui = new stdClass();
 
-  $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
+  $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
                    "tproject_id" => array(tlInputParameter::INT_N), 
                    "tplan_id" => array(tlInputParameter::INT_N),
                    "show_only_active" => array(tlInputParameter::CB_BOOL),
@@ -355,7 +355,14 @@ function initEnv(&$dbHandler)
     $cerbero->args->getAccessAttr = true;
     $cerbero->method = 'checkRights';
     $cerbero->redirect_target = "../../login.php?note=logout";
-    setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
+    if(strlen($args->apikey) == 32)
+    {
+      setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
+    }
+    else
+    {
+      setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
+    }  
 
   }
   else

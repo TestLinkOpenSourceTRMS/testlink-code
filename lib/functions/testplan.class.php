@@ -16,7 +16,6 @@
  * @internal revisions
  * 
  * @since 1.9.9
- * 
  **/
 
 /** related functionality */
@@ -137,6 +136,7 @@ class testplan extends tlObjectWithAttachments
     
     $active_status=intval($is_active) > 0 ? 1 : 0;
     $public_status=intval($is_public) > 0 ? 1 : 0;
+    
     $api_key = md5(rand()) . md5(rand()); 
 
     $sql = "/* $debugMsg */ " . 
@@ -196,7 +196,6 @@ class testplan extends tlObjectWithAttachments
     // seems OK => go
     $active_status = intval($item->active) > 0 ? 1 : 0;
     $public_status = intval($item->is_public) > 0 ? 1 : 0;
-    $api_key = md5(rand()) . md5(rand()); 
 
     $id = $this->tree_manager->new_node($item->testProjectID,$this->node_types_descr_id['testplan'],$name);
     $sql = "/* $debugMsg */ " . 
@@ -2059,12 +2058,15 @@ class testplan extends tlObjectWithAttachments
     $sql .= ($doOrderBy = !is_null($my['opt']['orderBy'])) ? $my['opt']['orderBy'] : '';
     
     $rs = $this->db->fetchRowsIntoMap($sql,'id');
+
     if( !is_null($rs) && $doOrderBy)
     {
       // 20130428
       // I would like to understand why the ORDER BY clause is not enough 
       $rs = $this->_natsort_builds($rs);
     }
+    // new dBug($sql);
+    // die();
     
     return $rs;
   }
@@ -2415,15 +2417,15 @@ class testplan extends tlObjectWithAttachments
   function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',$input_values=null) 
   {
     $cf_smarty='';
-      $method_suffix = $scope=='design' ? $scope : 'execution';
-      $method_name = "get_linked_cfields_at_{$method_suffix}";
-      $cf_map=$this->$method_name($id,$parent_id);
+    $method_suffix = $scope=='design' ? $scope : 'execution';
+    $method_name = "get_linked_cfields_at_{$method_suffix}";
+    $cf_map=$this->$method_name($id,$parent_id);
 
     if(!is_null($cf_map))
     {
       $cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
-        }
-      return($cf_smarty);
+    }
+    return($cf_smarty);
   }
 
 
@@ -2521,7 +2523,6 @@ class testplan extends tlObjectWithAttachments
     @internal revisions
     
   */
-  // function filter_cf_selection($tp_tcs, $cf_hash) 20130501
   function filterByCustomFields($tp_tcs, $cf_hash)  
   {
     $new_tp_tcs = null;
@@ -6917,6 +6918,8 @@ function getExecutionDurationForSet($execIDSet)
     $this->db->exec_query($sql); 
   }
 
+
+
   /**
    *
    */
@@ -6925,11 +6928,13 @@ function getExecutionDurationForSet($execIDSet)
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $sql = "/* $debugMsg */ " .
-           " SELECT * FROM {$this->tables['testplans']} WHERE api_key = '{$apiKey}'";
+           " SELECT * FROM {$this->tables['testplans']} " .
+           " WHERE api_key = '{$apiKey}'";
  
     $rs = $this->db->get_recordset($sql);
     return ($rs ? $rs[0] : null);
   }
+
 
 } // end class testplan
 
@@ -6943,6 +6948,8 @@ class build_mgr extends tlObject
 {
   /** @var database handler */
   var $db;
+  var $cfield_mgr;
+
 
   /** 
    * class constructor 
@@ -6951,8 +6958,9 @@ class build_mgr extends tlObject
    **/
   function build_mgr(&$db)
   {
-       parent::__construct();
+    parent::__construct();
     $this->db = &$db;
+    $this->cfield_mgr = new cfield_mgr($this->db);
   }
 
 
@@ -6976,10 +6984,10 @@ class build_mgr extends tlObject
   {
     $targetDate=trim($release_date);
     $sql = " INSERT INTO {$this->tables['builds']} " .
-      " (testplan_id,name,notes,release_date,active,is_open,creation_ts) " .
-      " VALUES ('". $tplan_id . "','" .
-      $this->db->prepare_string($name) . "','" .
-      $this->db->prepare_string($notes) . "',";
+           " (testplan_id,name,notes,release_date,active,is_open,creation_ts) " .
+           " VALUES ('". $tplan_id . "','" . $this->db->prepare_string($name) . "','" .
+           $this->db->prepare_string($notes) . "',";
+
     if($targetDate == '')
     {
       $sql .= "NULL,";
@@ -6989,11 +6997,9 @@ class build_mgr extends tlObject
       $sql .= "'" . $this->db->prepare_string($targetDate) . "',";
     }
     
-    
     // Important: MySQL do not support default values on datetime columns that are functions
     // that's why we are using db_now().
     $sql .= "{$active},{$open},{$this->db->db_now()})";                        
-    
     
     $new_build_id = 0;
     $result = $this->db->exec_query($sql);
@@ -7027,8 +7033,8 @@ class build_mgr extends tlObject
     $closure_date = '';
     $targetDate=trim($release_date);
     $sql = " UPDATE {$this->tables['builds']} " .
-      " SET name='" . $this->db->prepare_string($name) . "'," .
-      "     notes='" . $this->db->prepare_string($notes) . "'";
+           " SET name='" . $this->db->prepare_string($name) . "'," .
+           "     notes='" . $this->db->prepare_string($notes) . "'";
     
     if($targetDate == '')
     {
@@ -7076,26 +7082,30 @@ class build_mgr extends tlObject
    * @return integer status code
    * 
    * @internal revisions:
-   *  20100716 - asimon - BUGID 3406: delete user assignments with build
+   * @since 1.9.9
+   * 
    */
   function delete($id)
   {
-    // 20090611 - franciscom
-    // Need to be fixed, because execution bugs are not delete
-    
-    $sql = " DELETE FROM {$this->tables['executions']}  " .
-      " WHERE build_id={$id}";
-    
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $safe_id = intval($id);
+    $where = " WHERE build_id={$safe_id}";
+
+    $sql = " DELETE FROM {$this->tables['execution_bugs']} " .
+           " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} {$where}) ";
+    $result = $this->db->exec_query($sql);
+
+    $sql = " DELETE FROM {$this->tables['executions']} {$where}";
+    $result = $this->db->exec_query($sql);
+
+    $sql = " DELETE FROM {$this->tables['user_assignments']}  {$where}";
     $result=$this->db->exec_query($sql);
-    
-    // 3406 - delete user assignments with build
-    $sql = " DELETE FROM {$this->tables['user_assignments']}  " .
-      " WHERE build_id={$id}";    
-    $result=$this->db->exec_query($sql);
-    
-    $sql = " DELETE FROM {$this->tables['builds']} " .
-      " WHERE id={$id}";
-    
+
+    // Custom fields
+    $this->cfield_mgr->remove_all_design_values_from_node($safe_id,'build');
+
+    $sql = " DELETE FROM {$this->tables['builds']} WHERE id={$safe_id}";
     $result=$this->db->exec_query($sql);
     return $result ? 1 : 0;
   }
@@ -7215,6 +7225,139 @@ class build_mgr extends tlObject
 
     $result = $this->db->exec_query($sql);
   }
+
+
+  /**
+   *
+   * NEWNEW
+   */
+  function get_linked_cfields_at_design($id,$tproject_id,$filters=null,$access_key='id') 
+  {
+    $safeID = $id == 0 ? null : intval($id);
+    $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,
+                                                              $filters,'build',$id,$access_key);
+    return $cf_map;
+  }
+
+  /*
+    function: html_table_of_custom_field_inputs
+              
+              
+    args: $id
+          [$parent_id]: need when you call this method during the creation
+                        of a test suite, because the $id will be 0 or null.
+                        
+          [$scope]: 'design','execution'
+          
+    returns: html string
+    
+  */
+  function html_table_of_custom_field_inputs($id,$tproject_id,$scope='design',$name_suffix='',$input_values=null) 
+  {
+    $cf_smarty='';
+    $method_suffix = $scope=='design' ? $scope : 'execution';
+    $method_name = "get_linked_cfields_at_{$method_suffix}";
+    $cf_map=$this->$method_name($id,$tproject_id);
+    if(!is_null($cf_map))
+    {
+      $cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
+    }
+    return($cf_smarty);
+  }
+
+
+  /*
+    function: html_table_of_custom_field_inputs
+              
+              
+    args: $id
+          [$parent_id]: need when you call this method during the creation
+                        of a test suite, because the $id will be 0 or null.
+                        
+          [$scope]: 'design','execution'
+          
+    returns: html string
+    
+  */
+  function html_custom_field_inputs($id,$tproject_id,$scope='design',$name_suffix='',$input_values=null) 
+  {
+    $itemSet='';
+    $method_suffix = $scope=='design' ? $scope : 'execution';
+    $method_name = "get_linked_cfields_at_{$method_suffix}";
+    $cf_map=$this->$method_name($id,$tproject_id);
+    if(!is_null($cf_map))
+    {
+      $itemSet = $this->cfield_mgr->html_inputs($cf_map,$name_suffix,$input_values);
+    }
+    return $itemSet;
+  }
+
+  /*
+    function: html_table_of_custom_field_values
+  
+    args: $id
+          [$scope]: 'design','execution'
+          
+          [$filters]:default: null
+                              
+                             map with keys:
+          
+                             [show_on_execution]: default: null
+                                                  1 -> filter on field show_on_execution=1
+                                                       include ONLY custom fields that can be viewed
+                                                       while user is execution testcases.
+                             
+                                                  0 or null -> don't filter
+  
+    returns: html string
+  
+    rev :
+  */
+  function html_table_of_custom_field_values($id,$tproject_id,$scope='design',$filters=null,$formatOptions=null)
+  {
+    $cf_smarty='';
+    $parent_id=null;
+    $label_css_style=' class="labelHolder" ' ;
+    $value_css_style = ' ';
+
+    $add_table=true;
+    $table_style='';
+    if( !is_null($formatOptions) )
+    {
+      $label_css_style = isset($formatOptions['label_css_style']) ? $formatOptions['label_css_style'] : $label_css_style;
+      $value_css_style = isset($formatOptions['value_css_style']) ? $formatOptions['value_css_style'] : $value_css_style;
+
+      $add_table=isset($formatOptions['add_table']) ? $formatOptions['add_table'] : true;
+      $table_style=isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
+    } 
+    
+    $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
+    $cf_map=$this->get_linked_cfields_at_design($id,$tproject_id,$filters);
+    
+    if( !is_null($cf_map) )
+    {
+      foreach($cf_map as $cf_id => $cf_info)
+      {
+        if(isset($cf_info['node_id']) || $cf_info['node_id'] || $show_cf)
+        {
+          $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
+          $cf_smarty .= "<tr><td {$label_css_style}>" . htmlspecialchars($label) . "</td>" .
+                  "<td {$value_css_style}>" .
+                      $this->cfield_mgr->string_custom_field_value($cf_info,$id) . "</td></tr>\n";
+        }
+      }
+    }
+    
+    if($cf_smarty != '' && $add_table)
+    {
+      $cf_smarty = "<table {$table_style}>" . $cf_smarty . "</table>";
+    }
+
+    return $cf_smarty;
+  }
+
+
+
 
 
 } // end class build_mgr

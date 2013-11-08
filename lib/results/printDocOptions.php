@@ -317,6 +317,7 @@ function init_checkboxes(&$args)
       {
         $arrCheckboxes[] = array('value' => 'notes', 'description' => 'opt_show_tc_notes',  'checked' => 'n');
         $arrCheckboxes[] = array('value' => 'passfail','description' => 'opt_show_passfail','checked' => 'y');
+        $arrCheckboxes[] = array('value' => 'build_cfields','description' => 'opt_show_build_cfields','checked' => 'n');
         $arrCheckboxes[] = array('value' => 'metrics','description' => 'opt_show_metrics','checked' => 'n');
         // $arrCheckboxes[] = array('value' => 'assigned_to_me','description' => 'opt_show_only_assigned_to_me','checked' => 'n');
       }

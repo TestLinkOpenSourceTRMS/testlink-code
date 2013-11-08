@@ -23,7 +23,6 @@ require_once('print.inc.php');
 require_once('displayMgr.php');
 
 // displayMemUsage('START SCRIPT - LINE:' .__LINE__);
-
 $treeForPlatform = null;
 $docText = '';					
 $topText = '';
@@ -312,7 +311,7 @@ function initPrintOpt(&$UIhash,&$docInfo)
   $pOpt = array( 'toc' => 0,'body' => 0,'summary' => 0, 'header' => 0,'headerNumbering' => 1,
                  'passfail' => 0, 'author' => 0, 'notes' => 0, 'requirement' => 0, 'keyword' => 0, 
                  'cfields' => 0, 'testplan' => 0, 'metrics' => 0, 'assigned_to_me' => 0, 
-                 'req_spec_scope' => 0,'req_spec_author' => 0,
+                 'req_spec_scope' => 0,'req_spec_author' => 0,'build_cfields' => 0,
                  'req_spec_overwritten_count_reqs' => 0,'req_spec_type' => 0,
                  'req_spec_cf' => 0,'req_scope' => 0,'req_author' => 0,
                  'req_status' => 0,'req_type' => 0,'req_cf' => 0,'req_relations' => 0,

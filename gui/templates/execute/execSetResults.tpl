@@ -315,13 +315,13 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
            show_hide_container_title=$container_title
            show_hide_container_id=$div_id
            show_hide_container_view_status_id=$memstatus_id
-           show_hide_container_draw=true
-           show_hide_container_class='exec_additional_info'
-           show_hide_container_html=$gui->build_notes}
+           show_hide_container_draw=false
+           show_hide_container_class='exec_additional_info'}
 
-  
-
-
+  <div id="{$div_id}" class="exec_additional_info">
+    {$gui->build_notes}
+    {if $gui->build_cfields != ''} <div id="cfields_build" class="custom_field_container">{$gui->build_cfields}</div>{/if}
+  </div>
 
   {* -------------------------------------------------------------------------------- *}
   {if $gui->map_last_exec eq ""}

@@ -23,16 +23,18 @@ class tree extends tlObject
   // ORDER IS CRITIC
   // configurable values - pseudoconstants
   // VERBOSE description do not map 100% contents of node_types table
+  // Now contains also PSEUDO NODES => build
   var $node_types = array( 1 => 'testproject','testsuite',
                                 'testcase','tcversion','testplan',
                                 'requirement_spec','requirement','req_version',
-                                'testcase_step','req_revision','requirement_spec_revision');
+                                'testcase_step','req_revision','requirement_spec_revision',
+                                'build');
 
   // key: node type id, value: class name
   var $class_name = array( 1 => 'testproject','testsuite',
                                 'testcase',null,'testplan',
                                 'requirement_spec_mgr','requirement_mgr',null,
-                                null,null,null);
+                                null,null,null,null);
 
   var $nodeWithoutClass = null;
                                 
@@ -1321,39 +1323,39 @@ class tree extends tlObject
    *                                
    */
   function nodeNameExists($name,$node_type_id,$id=null,$parent_id=null)
-    {
-      $debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
+  {
+    $debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
     $ret['status'] = 0;
     $ret['msg'] = '';
-        if( is_null($id) && is_null($parent_id) )
-        {
-          $msg = $debugMsg . 'Error on call $id and $parent_id can not be both null';
-          throw new Exception($msg);
-        }          
+    if( is_null($id) && is_null($parent_id) )
+    {
+      $msg = $debugMsg . 'Error on call $id and $parent_id can not be both null';
+      throw new Exception($msg);
+    }          
         
         
-        $additionalFilters = '';
-        $parentNodeID = intval($parent_id);
-        if( !is_null($id) )
-        {
-          // Try to get parent id if not provided on method call.
-          if( is_null($parentNodeID) || $parentNodeID <= 0)
-          {
-            $sql = "/* {$debugMsg} */ " . 
-                   " SELECT parent_id FROM {$this->object_table} NHA " .
+    $additionalFilters = '';
+    $parentNodeID = intval($parent_id);
+    if( !is_null($id) )
+    {
+      // Try to get parent id if not provided on method call.
+      if( is_null($parentNodeID) || $parentNodeID <= 0)
+      {
+        $sql = "/* {$debugMsg} */ " . 
+               " SELECT parent_id FROM {$this->object_table} NHA " .
                " WHERE NHA.id = {$id} ";
-              $rs = $this->db->get_recordset($sql);
-            $parentNodeID = intval($rs[0]['parent_id']);     
+        $rs = $this->db->get_recordset($sql);
+        $parentNodeID = intval($rs[0]['parent_id']);     
             
-          }
-          $additionalFilters = " AND NHA.id <> {$id} ";
-        }    
+      }
+      $additionalFilters = " AND NHA.id <> {$id} ";
+    }    
 
-        if( $parentNodeID <= 0)
-        {
-          $msg = $debugMsg . ' FATAL Error $parentNodeID can not be <= 0';
-          throw new Exception($msg);
-        }          
+    if( $parentNodeID <= 0)
+    {
+      $msg = $debugMsg . ' FATAL Error $parentNodeID can not be <= 0';
+      throw new Exception($msg);
+    }          
         
         
     $sql = "/* {$debugMsg} */ " . 
@@ -1370,7 +1372,7 @@ class tree extends tlObject
     }
       
     return $ret;
-    }
+  }
 
   /**
    * getTreeRoot()

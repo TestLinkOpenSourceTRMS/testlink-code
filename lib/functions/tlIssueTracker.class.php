@@ -10,9 +10,7 @@
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.7
- *
- * 20130412 - franciscom - TICKET 5632: Issue tracker with blank config - issueTrackerView.php returns blank page
+ * @since 1.9.9
  *
 **/
 
@@ -586,7 +584,7 @@ class tlIssueTracker extends tlObject
     if(is_null($tprojectID))
     {
       return;
-        }
+    }
     $sql = "/* $debugMsg */ " .
          " SELECT TPIT.testproject_id, NHTPR.name AS testproject_name, " .
          " TPIT.issuetracker_id,ITRK.name AS issuetracker_name, ITRK.type" .
@@ -646,4 +644,3 @@ class tlIssueTracker extends tlObject
     return $its->isConnected();
   }
 } // end class
-?>

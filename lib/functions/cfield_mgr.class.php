@@ -1273,41 +1273,55 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
   */
 	function create($cf)
-  	{
-		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	    $ret = array('status_ok' => 0, 'id' => 0, 'msg' => 'ko');
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	  $ret = array('status_ok' => 0, 'id' => 0, 'msg' => 'ko');
 	
 		$safecf = $this->sanitize($cf);	
-		
-	    $sql="/* $debugMsg */ INSERT INTO {$this->object_table} " .
-	         " (name,label,type,possible_values, " .
-	         "  show_on_design,enable_on_design, " .
-	         "  show_on_testplan_design,enable_on_testplan_design, " .
-	         "  show_on_execution,enable_on_execution) " .
-	         " VALUES('" . $safecf['name'] . "','" . $safecf['label'] . "'," . 
-	         		intval($safecf['type']) . ",'" . $safecf['possible_values'] . "', " .
-	         "		{$safecf['show_on_design']},{$safecf['enable_on_design']}," .
-	         "		{$safecf['show_on_testplan_design']},{$safecf['enable_on_testplan_design']}," .
-	         "		{$safecf['show_on_execution']},{$safecf['enable_on_execution']})";
-	    $result=$this->db->exec_query($sql);
+    
+    // if CF is for BUILD force enable_on_execution ALWAYS FALSE
+    // Node Verbose Code / Node Code Verbose
+    $nvc = $this->tree_manager->get_available_node_types();
+    $ncv = array_flip($nvc);
+    if($ncv[$safecf['node_type_id']] == 'build')
+    {
+      $safecf['enable_on_design'] = 1;
+      $safecf['enable_on_execution'] = 0;
+    }  
 
-	   	if ($result)
-	  	{
-	  	  // at least for Postgres DBMS table name is needed.
-	  	  $field_id=$this->db->insert_id($this->object_table);
+
+		
+	  $sql="/* $debugMsg */ INSERT INTO {$this->object_table} " .
+	       " (name,label,type,possible_values, " .
+	       "  show_on_design,enable_on_design, " .
+	       "  show_on_testplan_design,enable_on_testplan_design, " .
+	       "  show_on_execution,enable_on_execution) " .
+	       " VALUES('" . $safecf['name'] . "','" . $safecf['label'] . "'," . 
+	   		 intval($safecf['type']) . ",'" . $safecf['possible_values'] . "', " .
+	       "		{$safecf['show_on_design']},{$safecf['enable_on_design']}," .
+	       "		{$safecf['show_on_testplan_design']},{$safecf['enable_on_testplan_design']}," .
+	       "		{$safecf['show_on_execution']},{$safecf['enable_on_execution']})";
+	  $result=$this->db->exec_query($sql);
+
+	  if ($result)
+	  {
+      // at least for Postgres DBMS table name is needed.
+	  	$field_id=$this->db->insert_id($this->object_table);
 	
-	      $sql="/* $debugMsg */ INSERT INTO {$this->tables['cfield_node_types']} " .
-	           " (field_id,node_type_id) " .
-	           " VALUES({$field_id},{$safecf['node_type_id']}) ";
-	      $result=$this->db->exec_query($sql);
-	    }
+	    $sql="/* $debugMsg */ INSERT INTO {$this->tables['cfield_node_types']} " .
+	         " (field_id,node_type_id) " .
+	         " VALUES({$field_id},{$safecf['node_type_id']}) ";
+	    $result=$this->db->exec_query($sql);
+	  }
 	
-	    if ($result)
+	  if ($result)
 		{
-	       $ret = array('status_ok' => 1, 'id' => $field_id, 'msg' => 'ok');
-	    }
-	    return $ret;
-	} //function end
+	    $ret = array('status_ok' => 1, 'id' => $field_id, 'msg' => 'ok');
+	  }
+	  return $ret;
+	} 
+
+
 
 
   /*
@@ -1332,29 +1346,39 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	{
 		$safecf = $this->sanitize($cf);
 
+    // if CF is for BUILD force enable_on_execution ALWAYS FALSE
+    // Node Verbose Code / Node Code Verbose
+    $nvc = $this->tree_manager->get_available_node_types();
+    $ncv = array_flip($nvc);
+    if($ncv[$safecf['node_type_id']] == 'build')
+    {
+      $safecf['enable_on_design'] = 1;
+      $safecf['enable_on_execution'] = 0;
+    }  
+
 		$sql =	"UPDATE {$this->tables['custom_fields']}  " .
-			 	" SET	name='" . $safecf['name'] . "'," . 
-			 	"		label='" . $safecf['label'] . "'," .
-			 	"     	type={$safecf['type']}," .
-			 	"		possible_values='" . $safecf['possible_values'] . "'," .
-			 	"     	show_on_design={$safecf['show_on_design']}," .
-			 	"     	enable_on_design={$safecf['enable_on_design']}," .
-			 	"     	show_on_testplan_design={$safecf['show_on_testplan_design']}," .
-			 	"     	enable_on_testplan_design={$safecf['enable_on_testplan_design']}," .
-			 	"     	show_on_execution={$safecf['show_on_execution']}," .
-			 	"     	enable_on_execution={$safecf['enable_on_execution']}" .
-			 	" WHERE id={$safecf['id']}";
+    			 	" SET	name='" . $safecf['name'] . "'," . 
+    			 	"		label='" . $safecf['label'] . "'," .
+    			 	"     	type={$safecf['type']}," .
+    			 	"		possible_values='" . $safecf['possible_values'] . "'," .
+    			 	"     	show_on_design={$safecf['show_on_design']}," .
+    			 	"     	enable_on_design={$safecf['enable_on_design']}," .
+    			 	"     	show_on_testplan_design={$safecf['show_on_testplan_design']}," .
+    			 	"     	enable_on_testplan_design={$safecf['enable_on_testplan_design']}," .
+    			 	"     	show_on_execution={$safecf['show_on_execution']}," .
+    			 	"     	enable_on_execution={$safecf['enable_on_execution']}" .
+    			 	" WHERE id={$safecf['id']}";
 		$result = $this->db->exec_query($sql);
 
 		if ($result)
 		{
 			$sql = 	"UPDATE {$this->tables['cfield_node_types']} " .
-					" SET node_type_id={$safecf['node_type_id']}" .
-					" WHERE field_id={$safecf['id']}";
+    					" SET node_type_id={$safecf['node_type_id']}" .
+    					" WHERE field_id={$safecf['id']}";
 			$result = $this->db->exec_query($sql);
 		}
 		return $result ? 1 : 0;
-  } //function end
+  }
 
 
   /**
@@ -2776,9 +2800,10 @@ function html_inputs($cfields_map,$name_suffix='',$input_values=null)
       $cf_html_string = $this->string_custom_field_input($cf_info,$getOpt);
       
       $dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
-      $td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
+      $label_id = str_replace('id="', 'id="label_', $dummy[0]);
 
       $inputSet[] = array('label' => htmlspecialchars($label) ,
+                          'label_id' => $label_id,
                           'input' => $this->string_custom_field_input($cf_info,$getOpt));
     }
   }

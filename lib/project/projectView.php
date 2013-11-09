@@ -25,33 +25,9 @@ $templateCfg = templateConfiguration();
 $smarty = new TLSmarty();
 $imgSet = $smarty->getImages();
 $args = init_args();
-
-$gui = new stdClass();
-$gui->doAction = $args->doAction;
-$gui->canManage = $args->user->hasRight($db,"mgt_modify_product");
-$gui->name = is_null($args->name) ? '' : $args->name;
-
-$tproject_mgr = new testproject($db);
-$opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY name ", 'add_issuetracker' => true,
-             'add_reqmgrsystem' => true);
+$gui = initializeGui($db,$args);
 
 
-$filters = null;
-$gui->feedback = '';
-switch($args->doAction)
-{
-  case 'search':
-    $filters = array('name' => array('op' => 'like', 'value' => $args->name));
-    $gui->feedback = lang_get('no_records_found');
-  break;
-
-  case 'list':
-  default:
-  break;
-}
-
-// need to add filters 20130929
-$gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,$opt,$filters);
 $template2launch = $templateCfg->default_template;
 if(!is_null($gui->tprojects) || $args->doAction=='list')
 {  
@@ -114,8 +90,40 @@ function init_args()
   return $args;  
 }
 
+/**
+ * 
+ *
+ */
+function initializeGui(&$dbHandler,&$argsObj)
+{
+  $guiObj = new stdClass();
+  $guiObj->doAction = $argsObj->doAction;
+  $guiObj->canManage = $argsObj->user->hasRight($dbHandler,"mgt_modify_product");
+  $guiObj->name = is_null($argsObj->name) ? '' : $argsObj->name;
+  $guiObj->feedback = '';
+
+  switch($argsObj->doAction)
+  {
+    case 'search':
+      $filters = array('name' => array('op' => 'like', 'value' => $argsObj->name));
+      $guiObj->feedback = lang_get('no_records_found');
+    break;
+
+    case 'list':
+    default:
+      $filters = null;
+    break;
+  }
+
+  $tproject_mgr = new testproject($dbHandler);
+  $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY name ", 'add_issuetracker' => true,
+               'add_reqmgrsystem' => true);
+  $guiObj->tprojects = $tproject_mgr->get_accessible_for_user($argsObj->userID,$opt,$filters);
+  return $guiObj;
+}
+
+
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'mgt_modify_product');
 }
-?>

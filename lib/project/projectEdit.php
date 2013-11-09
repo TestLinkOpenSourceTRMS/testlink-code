@@ -119,15 +119,13 @@ switch($args->doAction)
     case "doUpdate":
     case "setActive":
     case "setInactive":
-      if(is_null($template))
+      if( ($addIssueTracker = $addReqMgrSystem = is_null($template)) )
       {
         $template = 'projectView.tpl';
         $gui->name = '';  // needed after addition of search function on test project view
       }  
 
       $gui->doAction = $reloadType;
-      $addIssueTracker = $addReqMgrSystem = is_null($template);
-
       $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY nodes_hierarchy.name ",
                    'add_issuetracker' => $addIssueTracker, 'add_reqmgrsystem' => $addReqMgrSystem);
       $gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,$opt);

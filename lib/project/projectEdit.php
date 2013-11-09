@@ -217,7 +217,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
   $args = new stdClass();
   $request_hash = strings_stripSlashes($request_hash);
   
-  $nullable_keys = array('tprojectName','color','notes','doAction','tcasePrefix');
+  $nullable_keys = array('tprojectName','color','notes','doAction','tcasePrefix','api_key');
   foreach ($nullable_keys as $value)
   {
     $args->$value = isset($request_hash[$value]) ? trim($request_hash[$value]) : null;

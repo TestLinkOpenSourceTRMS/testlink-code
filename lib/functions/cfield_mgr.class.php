@@ -166,18 +166,21 @@ class cfield_mgr extends tlObject
   var $show_on_cfg=array('execution'=>array('testsuite' => 1,
 	                                          'testplan'  => 1,
 	                                          'testcase'  => 1,
+                                            'build'  => 1,
 	                                          'requirement_spec' => 0,
 	                                          'requirement' => 0 ),
                          'design' => array('testsuite' => 1,
 	                                         'testplan'  => 1,
 	                                         'testcase'  => 1,
+                                           'build'  => 0,
 	                                         'requirement_spec' => 0,
 	                                         'requirement' => 0 ),
                          'testplan_design' => array('testsuite' => 1,
-	                                         'testplan'  => 1,
-	                                         'testcase'  => 1,
-	                                         'requirement_spec' => 0,
-	                                         'requirement' => 0 )
+	                                                  'testplan'  => 1,
+	                                                  'testcase'  => 1,
+                                                    'build'  => 0,
+                                                    'requirement_spec' => 0,
+	                                                  'requirement' => 0 )
 	                                         );
 
     // the name of html input will have the following format

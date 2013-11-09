@@ -858,8 +858,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
     
     $tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id);
-
-    new dBug($this->mode);
     switch ($this->mode) 
     {
       
@@ -958,8 +956,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                           $gui->menuUrl, $filters, $options);
           
           $this->set_testcases_to_show($forrest['leaves']);
-          new dBug($forrest['leaves']);
-          
           $tree_menu = $forrest['menu'];  
           $root_node = $tree_menu->rootnode;
           $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";

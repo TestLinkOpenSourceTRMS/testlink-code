@@ -6,34 +6,34 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 *}	
  	{foreach item=tc_exec from=$gui->map_last_exec}
 
-    {assign var="tc_id" value=$tc_exec.testcase_id}
-	  {assign var="tcversion_id" value=$tc_exec.id}
+    {$tc_id=$tc_exec.testcase_id}
+	  {$tcversion_id=$tc_exec.id}
 	  {* IMPORTANT:
 	               Here we use version_number, which is related to tcversion_id SPECIFICATION.
 	               When we need to display executed version number, we use tcversion_number
 	  *}
-	  {assign var="version_number" value=$tc_exec.version}
+	  {$version_number=$tc_exec.version}
 	  
 		<input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_id}' />
 		<input type='hidden' name='version_number[{$tcversion_id}]' value='{$version_number}' />
 
     {* ------------------------------------------------------------------------------------ *}
     {lang_get s='th_testsuite' var='container_title'}
-    {assign var="div_id" value="tsdetails_$tc_id"}
-    {assign var="memstatus_id" value="tsdetails_view_status_$tc_id"}
-    {assign var="ts_name"  value=$tsuite_info[$tc_id].tsuite_name}
-    {assign var="container_title" value="$container_title$title_sep$ts_name"}
+    {$div_id="tsdetails_$tc_id"}
+    {$memstatus_id="tsdetails_view_status_$tc_id"}
+    {$ts_name=$tsuite_info[$tc_id].tsuite_name}
+    {$container_title="$container_title$title_sep$ts_name"}
 
-	{assign var="can_delete_exec" value=0}
-	{assign var="can_edit_exec_notes" value=$gui->grants->edit_exec_notes}
-	{assign var="can_manage_attachments" value=$gsmarty_attachments->enabled}
+	{$can_delete_exec=0}
+	{$can_edit_exec_notes=$gui->grants->edit_exec_notes}
+	{$can_manage_attachments=$gsmarty_attachments->enabled}
 	{if $tc_exec.can_be_executed}
 		{if $gui->grants->delete_execution}
-			{assign var="can_delete_exec" value=1}
+			{$can_delete_exec=1}
 		{/if}
 	{else}
-		{assign var="can_edit_exec_notes" value=0}
-		{assign var="can_manage_attachments" value=0}
+		{$can_edit_exec_notes=0}
+		{$can_manage_attachments=0}
 	{/if}
 
     {include file="inc_show_hide_mgmt.tpl"
@@ -88,20 +88,20 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         {/if}
     </div>
 
-  {assign var="drawNotRun" value=0}
+  {$drawNotRun=0}
  	{if $cfg->exec_cfg->show_last_exec_any_build}
   
-   	{assign var="abs_last_exec" value=$gui->map_last_exec_any_build.$tcversion_id}
- 		{assign var="my_build_name" value=$abs_last_exec.build_name|escape}
- 		{assign var="show_current_build" value=1}
+   	{$abs_last_exec=$gui->map_last_exec_any_build.$tcversion_id}
+ 		{$my_build_name=$abs_last_exec.build_name|escape}
+ 		{$show_current_build=1}
  		
  		{* this happens when test case has been never run *}
  		{if $my_build_name == ''}
- 			{assign var="my_build_name" value=$gui->build_name|escape}
-   		{assign var="drawNotRun" value=1}
+ 			{$my_build_name=$gui->build_name|escape}
+   		{$drawNotRun=1}
  		{/if}
   {/if}
-  {assign var="exec_build_title" value="$build_title $title_sep $my_build_name"}
+  {$exec_build_title="$build_title $title_sep $my_build_name"}
 
 
 		<div id="execution_history" class="exec_history">
@@ -128,7 +128,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 		{* The very last execution for any build of this test plan *}
 		{if $cfg->exec_cfg->show_last_exec_any_build && $gui->history_on == 0}
            {if $abs_last_exec.status != '' and $abs_last_exec.status != $tlCfg->results.status_code.not_run}
-			    {assign var="status_code" value=$abs_last_exec.status}
+			    {$status_code=$abs_last_exec.status}
      			<div class="{$tlCfg->results.code_status.$status_code}">
      			{$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
      			{$title_sep_type3}
@@ -137,8 +137,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   				{if isset($users[$abs_last_exec.tester_id])}
   				  {$users[$abs_last_exec.tester_id]->getDisplayName()|escape}
   				{else}
-  				  {assign var="deletedTester" value=$abs_last_exec.tester_id}
-            	  {assign var="deletedUserString" value=$labels.deleted_user|replace:"%s":$deletedTester}
+  				  {$deletedTester=$abs_last_exec.tester_id}
+            	  {$deletedUserString=$labels.deleted_user|replace:"%s":$deletedTester}
             	  {$deletedUserString}
   				{/if}  
      			
@@ -148,7 +148,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
      			{$labels.exec_status} {$title_sep} {localize_tc_status s=$status_code}
      			</div>
   		  {else}
-            	{assign var="drawNotRun" value=1}
+          {$drawNotRun=1}
    		  {/if}
      {/if}
 	 
@@ -162,7 +162,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
     {* -------------------------------------------------------------------------------------------------- *}
     {if $gui->other_execs.$tcversion_id}
-      {assign var="my_colspan" value=$attachment_model->num_cols}
+      {$my_colspan=$attachment_model->num_cols}
       
       {if $gui->history_on == 0 && $show_current_build}
    		   <div class="exec_history_title">
@@ -181,7 +181,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 				{if $gui->has_platforms && 
 				    ($gui->history_on == 0 || $cfg->exec_cfg->show_history_all_platforms)}
-					{assign var="my_colspan" value=$my_colspan+1}
+					{$my_colspan=$my_colspan+1}
 				  <th style="text-align:left">{$labels.platform}</th>
 				{/if}
 				<th style="text-align:left">{$labels.test_exec_by}</th>
@@ -193,26 +193,26 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 				{if $attachment_model->show_upload_column && $can_manage_attachments}
 						<th style="text-align:center">&nbsp;</th>
 				{else}		
-            {assign var="my_colspan" value=$my_colspan-1}
+            {$my_colspan=$my_colspan-1}
         {/if}
 
 				{if $gui->issueTrackerIntegrationOn}
           <th style="text-align:left">{$labels.bug_mgmt}</th>
-          {assign var="my_colspan" value=$my_colspan+1}
+          {$my_colspan=$my_colspan+1}
         {/if}
 
 		{if $can_delete_exec}
           <th style="text-align:left">&nbsp;</th>
-          {assign var="my_colspan" value=$my_colspan+1}
+          {$my_colspan=$my_colspan+1}
         {/if}
 
         <th style="text-align:left">{$labels.run_mode}</th>
-        {assign var="my_colspan" value=$my_colspan+2}
+        {$my_colspan=$my_colspan+2}
 			 </tr>
 
 			{* ----------------------------------------------------------------------------------- *}
 			{foreach item=tc_old_exec from=$gui->other_execs.$tcversion_id}
-  	     {assign var="tc_status_code" value=$tc_old_exec.status}
+  	     {$tc_status_code=$tc_old_exec.status}
 			{cycle values='#eeeeee,#d0d0d0' assign="bg_color"}
 			<tr style="border-top:1px solid black; background-color: {$bg_color}">
   			  <td>
@@ -247,8 +247,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   				{if isset($users[$tc_old_exec.tester_id])}
   				  {$users[$tc_old_exec.tester_id]->getDisplayName()|escape}
   				{else}
-  				  {assign var="deletedTester" value=$tc_old_exec.tester_id}
-            {assign var="deletedUserString" value=$labels.deleted_user|replace:"%s":$deletedTester}
+  				  {$deletedTester=$tc_old_exec.tester_id}
+            {$deletedUserString=$labels.deleted_user|replace:"%s":$deletedTester}
             {$deletedUserString}
   				{/if}  
   				</td>
@@ -365,8 +365,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   			{* Custom field values  *}
 			<tr style="background-color: {$bg_color}">
   			<td colspan="{$my_colspan}">
-  				{assign var="execID" value=$tc_old_exec.execution_id}
-  				{assign var="cf_value_info" value=$gui->other_exec_cfields[$execID]}
+  				{$execID=$tc_old_exec.execution_id}
+  				{$cf_value_info=$gui->other_exec_cfields[$execID]}
           {$cf_value_info}
   			</td>
   			</tr>
@@ -376,9 +376,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   			{* Attachments *}
 			<tr style="background-color: {$bg_color}">
   			<td colspan="{$my_colspan}">
-  				{assign var="execID" value=$tc_old_exec.execution_id}
+  				{$execID=$tc_old_exec.execution_id}
 
-  				{assign var="attach_info" value=$gui->attachments[$execID]}
+  				{$attach_info=$gui->attachments[$execID]}
   				{include file="inc_attachments.tpl"
   				         attach_attachmentInfos=$attach_info
   				         attach_id=$execID 

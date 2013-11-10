@@ -110,7 +110,7 @@ CREATE TABLE /*prefix*/testplan_tcversions (
 (
   id ASC
 ) ON [PRIMARY],
- CONSTRAINT /*prefix*/IX_tplan_tcversion UNIQUE NONCLUSTERED 
+CONSTRAINT /*prefix*/IX_tplan_tcversion UNIQUE NONCLUSTERED 
 (
   tcversion_id ASC,
   testplan_id ASC,
@@ -128,10 +128,10 @@ CREATE TABLE /*prefix*/cfield_testprojects (
   required_on_design tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required_on_design DEFAULT ((0)),
   required_on_execution tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required_on_execution DEFAULT ((0)),
  CONSTRAINT /*prefix*/PK_cfield_testprojects PRIMARY KEY CLUSTERED 
-(
+ (
   field_id ASC,
   testproject_id ASC
-) ON [PRIMARY]
+ ) ON [PRIMARY]
 ) ON [PRIMARY];
 
 
@@ -577,10 +577,15 @@ CREATE TABLE /*prefix*/testplans (
   active tinyint NOT NULL CONSTRAINT /*prefix*/DF_testplans_active DEFAULT ((1)),
   is_open tinyint NOT NULL CONSTRAINT /*prefix*/DF_testplans_is_open DEFAULT ((1)),
   is_public tinyint NOT NULL CONSTRAINT /*prefix*/DF_testplans_is_public DEFAULT ((1)),
+  api_key varchar(64) NOT NULL DEFAULT (HashBytes('MD5',CAST(RAND() AS CHAR)) + HashBytes('MD5',CAST(RAND() AS CHAR))),
  CONSTRAINT /*prefix*/PK_testplans PRIMARY KEY CLUSTERED 
-(
+ (
   id ASC
-) ON [PRIMARY]
+ ) ON [PRIMARY],
+ CONSTRAINT /*prefix*/IX_testplans_api_key UNIQUE NONCLUSTERED 
+ (
+    api_key ASC
+ ) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_testproject_id_active ON  /*prefix*/testplans 
@@ -603,6 +608,7 @@ CREATE TABLE /*prefix*/testprojects (
   tc_counter int NOT NULL CONSTRAINT /*prefix*/DF_testprojects_tc_counter DEFAULT ((0)),
   issue_tracker_enabled tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_issue_tracker_enabled DEFAULT ((0)),  
   reqmgr_integration_enabled tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_reqmgr_integration_enabled DEFAULT ((0)),  
+  api_key varchar(64) NOT NULL DEFAULT (HashBytes('MD5',CAST(RAND() AS CHAR)) + HashBytes('MD5',CAST(RAND() AS CHAR))),
   CONSTRAINT /*prefix*/PK_testprojects PRIMARY KEY CLUSTERED 
   (
    id ASC
@@ -610,8 +616,11 @@ CREATE TABLE /*prefix*/testprojects (
   CONSTRAINT /*prefix*/IX_testprojects_prefix UNIQUE  NONCLUSTERED 
   (
     prefix
-  )  ON [PRIMARY] 
-  
+  )  ON [PRIMARY],
+  CONSTRAINT /*prefix*/IX_testprojects_api_key UNIQUE NONCLUSTERED 
+  (
+    api_key ASC
+  ) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_id_active ON  /*prefix*/testprojects 

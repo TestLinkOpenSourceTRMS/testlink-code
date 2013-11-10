@@ -26,13 +26,28 @@
 --    ) 
 -- ==============================================================================
 
+SET IDENTITY_INSERT /*prefix*/node_types ON
+INSERT INTO /*prefix*/node_types (id,description) VALUES (12,'build');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (13,'platform');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (14,'user');
+SET IDENTITY_INSERT /*prefix*/node_types OFF
 
-/* tcversions */
-ALTER TABLE /*prefix*/tcversion ADD estimated_exec_duration NULL decimal(6,2);
+--
+-- users 
+--
+ALTER TABLE /*prefix*/users ADD "auth_method" VARCHAR(10) NULL DEFAULT ''; 
 
-/* executions */
-ALTER TABLE /*prefix*/executions ADD execution_duration NULL decimal(6,2);
+--
+-- testprojects 
+--
+ALTER TABLE /*prefix*/testprojects ADD "api_key" varchar(64) NOT NULL DEFAULT (HashBytes('MD5',CAST(RAND() AS CHAR)) + HashBytes('MD5',CAST(RAND() AS CHAR)));
+UPDATE /*prefix*/testprojects SET api_key = HashBytes('MD5',CAST(RAND() AS CHAR)) + HashBytes('MD5',CAST(RAND() AS CHAR));
+CREATE UNIQUE INDEX /*prefix*/IX_testprojects_api_key ON /*prefix*/testprojects ("api_key");
 
-/* cfield_testprojects */
-ALTER TABLE /*prefix*/cfield_testprojects  ADD required tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required DEFAULT ((0));
+--
+-- testplans 
+--
+ALTER TABLE /*prefix*/testplans ADD "api_key" varchar(64) NOT NULL DEFAULT (HashBytes('MD5',CAST(RAND() AS CHAR)) + HashBytes('MD5',CAST(RAND() AS CHAR)));
+UPDATE /*prefix*/testplans SET api_key = HashBytes('MD5',CAST(RAND() AS CHAR)) + HashBytes('MD5',CAST(RAND() AS CHAR));
+CREATE UNIQUE INDEX /*prefix*/IX_testplans_api_key ON /*prefix*/testplans ("api_key");
 /* ----- END ----- */

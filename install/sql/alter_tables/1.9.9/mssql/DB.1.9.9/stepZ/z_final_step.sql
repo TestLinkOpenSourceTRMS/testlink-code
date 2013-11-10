@@ -21,4 +21,4 @@
 -- ==============================================================================
 
 /* database version update */
-INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 1.9.8',getdate(),'TestLink 1.9.8');
+INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 1.9.9',getdate(),'TestLink 1.9.9');

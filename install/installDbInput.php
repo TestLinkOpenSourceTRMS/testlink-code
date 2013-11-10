@@ -12,8 +12,7 @@
  * @copyright 	2009,2012 TestLink community 
  *
  * @internal revisions
- * @since 1.9.4
- * 20120823 - franciscom - no more support for MSSQL 2000 
+ * @since 1.9.9
  **/
 
 require_once("installUtils.php");
@@ -102,6 +101,7 @@ include 'installHead.inc';
 	</script>
 
 	<form action="installNewDB.php" method="post" name="myForm" onsubmit="return validate()">
+	<?php echo ('<input type="hidden" id="isNew" name="isNew"  value="' . $_SESSION['isNew'] . '"/> '); ?> 		
 
 <?php if(!$_SESSION['isNew']){ ?>
 	

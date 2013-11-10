@@ -50,4 +50,23 @@ CREATE UNIQUE INDEX /*prefix*/IX_testprojects_api_key ON /*prefix*/testprojects 
 ALTER TABLE /*prefix*/testplans ADD "api_key" varchar(64) NOT NULL DEFAULT (HashBytes('MD5',CAST(RAND() AS CHAR)) + HashBytes('MD5',CAST(RAND() AS CHAR)));
 UPDATE /*prefix*/testplans SET api_key = HashBytes('MD5',CAST(RAND() AS CHAR)) + HashBytes('MD5',CAST(RAND() AS CHAR));
 CREATE UNIQUE INDEX /*prefix*/IX_testplans_api_key ON /*prefix*/testplans ("api_key");
+
+
+--
+CREATE TABLE /*prefix*/cfield_build_design_values (
+  field_id int NOT NULL,
+  node_id int NOT NULL CONSTRAINT /*prefix*/DF_cfield_design_values_node_id DEFAULT ((0)),
+  value varchar(4000)  NOT NULL CONSTRAINT /*prefix*/DF_cfield_design_values_value DEFAULT ((0)),
+ CONSTRAINT /*prefix*/PK_cfield_build_design_values PRIMARY KEY CLUSTERED 
+(
+  field_id ASC,
+  node_id ASC
+) ON [PRIMARY]
+) ON [PRIMARY];
+
+CREATE NONCLUSTERED INDEX /*prefix*/IX_cfield_build_design_values ON  /*prefix*/cfield_build_design_values 
+(
+  node_id ASC
+) ON [PRIMARY];
+
 /* ----- END ----- */

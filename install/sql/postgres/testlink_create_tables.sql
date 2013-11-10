@@ -773,13 +773,13 @@ CREATE TABLE /*prefix*/testproject_reqmgrsystem
 --
 -- Table structure for table cfield_build_design_values
 --
-CREATE TABLE /*prefix*/cfield_design_values(  
+CREATE TABLE /*prefix*/cfield_build_design_values(  
   "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id) ON DELETE CASCADE,
   "node_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/builds (id) ON DELETE CASCADE,
   "value" VARCHAR(4000) NOT NULL DEFAULT '',
   PRIMARY KEY ("field_id","node_id")
 ); 
-CREATE INDEX /*prefix*/IX_cfield_design_values ON /*prefix*/cfield_design_values ("node_id");
+CREATE INDEX /*prefix*/IX_cfield_build_design_values ON /*prefix*/cfield_build_design_values ("node_id");
 
 
 

@@ -55,8 +55,8 @@ CREATE UNIQUE INDEX /*prefix*/IX_testplans_api_key ON /*prefix*/testplans ("api_
 --
 CREATE TABLE /*prefix*/cfield_build_design_values (
   field_id int NOT NULL,
-  node_id int NOT NULL CONSTRAINT /*prefix*/DF_cfield_design_values_node_id DEFAULT ((0)),
-  value varchar(4000)  NOT NULL CONSTRAINT /*prefix*/DF_cfield_design_values_value DEFAULT ((0)),
+  node_id int NOT NULL CONSTRAINT /*prefix*/DF_cfield_build_design_values_node_id DEFAULT ((0)),
+  value varchar(4000)  NOT NULL CONSTRAINT /*prefix*/DF_cfield_build_design_values_value DEFAULT ((0)),
  CONSTRAINT /*prefix*/PK_cfield_build_design_values PRIMARY KEY CLUSTERED 
 (
   field_id ASC,

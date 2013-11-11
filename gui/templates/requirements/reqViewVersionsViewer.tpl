@@ -4,7 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 viewer for requirement
 
 @internal revisions
-@since 1.9.8
+@since 1.9.9
 *}
 {lang_get var="labels"
           s="requirement_spec,Requirements,scope,status,type,expected_coverage,  
@@ -15,15 +15,15 @@ viewer for requirement
              design,execution_history,btn_unfreeze_this_version,addLinkToTestCase,btn_save,
              removeLinkToTestCase,title_test_case"}
 
-{assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
-{assign var="hrefReqSpecMgmt" value="$basehref$hrefReqSpecMgmt"}
+{$hrefReqSpecMgmt="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
+{$hrefReqSpecMgmt="$basehref$hrefReqSpecMgmt"}
 
-{assign var="hrefReqMgmt" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
-{assign var="hrefReqMgmt" value="$basehref$hrefReqMgmt"}
+{$hrefReqMgmt="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
+{$hrefReqMgmt="$basehref$hrefReqMgmt"}
 
-{assign var="module" value='lib/requirements/'}
-{assign var="req_id" value="$args_req.id"}
-{assign var="req_version_id" value="$args_req.version_id"}
+{$module='lib/requirements/'}
+{$req_id="$args_req.id"}
+{$req_version_id="$args_req.version_id"}
 
 {if $args_show_title }
   {if isset($args_tproject_name) && $args_tproject_name != ''}
@@ -55,7 +55,7 @@ viewer for requirement
 	  	<input type="submit" name="edit_req" value="{$labels.btn_edit}" onclick="doAction.value='edit'"/>
 	  	{/if}
 	  	
-	  	{* BUGID 4588 - If more than one version is displayed show "Delete" and "Delete this Version" button*}
+	  	{* If more than one version is displayed show "Delete" and "Delete this Version" button*}
 	  	{if $args_can_delete_req && !$gui->version_option}
 	  	<input type="button" name="delete_req" value="{$labels.btn_delete}"
 	  	       onclick="delete_confirmation({$args_req.id},
@@ -63,7 +63,7 @@ viewer for requirement
 	  				                              '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req);"	/>
 	  	{/if}
 	  	
-	  	{* BUGID 4588 - If a single version is displayed do only show "Delete this Version" button *}
+	  	{* If a single version is displayed do only show "Delete this Version" button *}
 	  	{if $args_can_delete_version || $gui->version_option}
 	  	<input type="button" name="delete_req_version" value="{$labels.btn_del_this_version}"
 	  	       onclick="delete_confirmation({$args_req.version_id},
@@ -105,7 +105,7 @@ viewer for requirement
 		</form>
 	{/if}
 
-{* BUGID 4273: Option to print single requirement *}
+{* Option to print single requirement *}
 <form style="display: inline;" method="post" action="" name="reqPrinterFriendly">
 	<input type="button" name="printerFriendly" value="{$labels.btn_print_view}" 
 	       onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},
@@ -119,7 +119,6 @@ viewer for requirement
 <div class="messages" align="center">{$labels.can_not_edit_req}</div>
 {/if}
 
-{*  BUGID 4038 *}
 {* notification message if we display a specific version *}
 {if $gui->version_option > 0}
 <div class="messages" align="center">{$labels.showing_version} {$args_req.version}</div>
@@ -133,9 +132,9 @@ viewer for requirement
   {if $args_show_version}
 	  <tr>
 	    {if $args_req.revision_id gt 0}
-	    	{assign var="tpt" value=$args_req.revision_id}
+	    	{$tpt=$args_req.revision_id}
 	    {else}
-	    	{assign var="tpt" value=$args_req.version_id}
+	    	{$tpt=$args_req.version_id}
 	    {/if}
 	  	<td class="bold" colspan="2" id="tooltip-{$tpt}">{$labels.version}
 	  	{$args_req.version} {$labels.revision} {$args_req.revision}

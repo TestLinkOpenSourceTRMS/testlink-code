@@ -229,27 +229,27 @@ var pF_unfreeze_req_version = unfreeze_req_version;
 {section name=idx loop=$gui->current_version}
 
   {$reqID=$gui->current_version[idx][0].id}
-    {* Current active version *}
-    {if $gui->other_versions[idx] neq null}
-        {$my_delete_version=true}
-    {else}
-        {$my_delete_version=false}
-    {/if}
+  {* Current active version *}
+  {if $gui->other_versions[idx] neq null}
+    {$my_delete_version=true}
+  {else}
+    {$my_delete_version=false}
+  {/if}
   
-    {* is it frozen? *}
-    {if $gui->current_version[idx][0].is_open}
-      {$frozen_version=false}
-    {else}
-      {$frozen_version=true}
-    {/if}
+  {* is it frozen? *}
+  {if $gui->current_version[idx][0].is_open}
+    {$frozen_version=false}
+  {else}
+    {$frozen_version=true}
+  {/if}
   
-    <h2 style="{$my_style}">
-    {$tlImages.toggle_direct_link} &nbsp;
-    {if $gui->display_path}
-        {foreach from=$gui->path_info[$reqID] item=path_part}
-          {$path_part|escape} /
-        {/foreach}
-    {/if}
+  <h2 style="{$my_style}">
+  {$tlImages.toggle_direct_link} &nbsp;
+  {if $gui->display_path}
+      {foreach from=$gui->path_info[$reqID] item=path_part}
+        {$path_part|escape} /
+      {/foreach}
+  {/if}
     {if !$gui->show_title }
       {$gui->current_version[idx][0].req_doc_id|escape}:{$gui->current_version[idx][0].title|escape}</h2>
     {/if}
@@ -414,8 +414,8 @@ var pF_unfreeze_req_version = unfreeze_req_version;
         <div id="vers_{$vid}" class="workBack">
         
         {foreach from=$gui->other_versions[idx] item=my_req key=rdx}
-            {$version_num="$my_req.version"}
-            {$title="$labels.version"}
+            {$version_num=$my_req.version}
+            {$title=$labels.version}
             {$title="$title $version_num"}
             {$div_id="v_$vid"}
             {$sep="_"}
@@ -435,7 +435,6 @@ var pF_unfreeze_req_version = unfreeze_req_version;
                      show_hide_container_class='exec_additional_info'
                      show_hide_container_view_status_id=$memstatus_id}
               <div id="{$div_id}" class="workBack">
-              
               {include file="$this_template_dir/reqViewVersionsViewer.tpl" 
                        args_req_coverage=$gui->req_coverage
                        args_req=$my_req 

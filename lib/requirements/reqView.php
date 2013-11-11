@@ -33,6 +33,7 @@ $gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' .
                     urlencode($prefix) . '&item=req&id=' . urlencode($gui->req['req_doc_id']);
 
 
+new dBug($gui);
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
 

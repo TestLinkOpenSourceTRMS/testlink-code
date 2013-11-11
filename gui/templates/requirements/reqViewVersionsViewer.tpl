@@ -13,7 +13,7 @@ viewer for requirement
              testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
              revision,btn_view_history,btn_new_revision,btn_print_view,specific_direct_link,
              design,execution_history,btn_unfreeze_this_version,addLinkToTestCase,btn_save,
-             removeLinkToTestCase,title_test_case"}
+             removeLinkToTestCase,requirement"}
 
 {$hrefReqSpecMgmt="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
 {$hrefReqSpecMgmt="$basehref$hrefReqSpecMgmt"}
@@ -22,8 +22,9 @@ viewer for requirement
 {$hrefReqMgmt="$basehref$hrefReqMgmt"}
 
 {$module='lib/requirements/'}
-{$req_id="$args_req.id"}
-{$req_version_id="$args_req.version_id"}
+{$req_id=$args_req.id}
+{$req_version_id=$args_req.version_id}
+{$warning_edit_msg=""}
 
 {if $args_show_title }
   {if isset($args_tproject_name) && $args_tproject_name != ''}
@@ -32,13 +33,11 @@ viewer for requirement
   {if isset($args_reqspec_name) && $args_reqspec_name != ''}
     <h2>{$labels.req_spec} {$args_reqspec_name|escape} </h2>
   {/if}
-  <h2>{$tlImages.toggle_direct_link} &nbsp; {$labels.title_test_case} {$args_req.title|escape} </h2>
+  <h2>{$tlImages.toggle_direct_link} &nbsp; {$labels.requirement} {$args_req.title|escape} </h2>
   <div class="direct_link" style='display:none'>
     <a href="{$gui->direct_link}&version={$args_req.version}" target="_blank">{$labels.specific_direct_link}</a><br/>
   </div>
 {/if}
-{assign var="warning_edit_msg" value=""}
-
 <div style="display: inline;" class="groupBtn">
 {if $args_grants->req_mgmt == "yes"}
 	  <form style="display: inline;" id="reqViewF_{$req_version_id}" name="reqViewF_{$req_version_id}" 
@@ -47,7 +46,7 @@ viewer for requirement
 	  	<input type="hidden" name="req_version_id" value="{$args_req.version_id}" />
 	  	<input type="hidden" name="doAction" value="" />
 	  	
-	  	{* IMPORTANT NOTICE: name can not be dynamic becasue PHP uses name not ID *}
+	  	{* IMPORTANT NOTICE: name can not be dynamic because PHP uses name not ID *}
 	  	<input type="hidden" name="log_message" id="log_message_{$req_version_id}" value="" />
 	  	
 	  	
@@ -113,7 +112,6 @@ viewer for requirement
 </form>
   </div> {* class="groupBtn" *}
 <br/><br/>
-
 {* warning message when req is frozen *}
 {if $args_frozen_version neq null}
 <div class="messages" align="center">{$labels.can_not_edit_req}</div>

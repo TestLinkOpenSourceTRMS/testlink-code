@@ -68,7 +68,7 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
                     'coverage' => 'coverage','last_edit' => 'last_edit',
                     'custom_field' => 'custom_field', 'relation_project' => 'relation_project',
                     'related_tcs' => 'related_tcs', 'version' => 'version', 
-                    'revision' => 'revision');
+                    'revision' => 'revision', 'attached_files' => 'attached_files');
                     
     $labels = init_labels($labels);
       
@@ -267,7 +267,27 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
       }
     }
   }
-  
+
+  // TICKET 0006037 - Contribution Refactored
+  $attachSet =  $req_mgr->getAttachmentInfos($req['id']);
+  if (count($attachSet))
+  {
+    $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
+               $labels['attached_files'] . "</span></td><td><ul>";
+    foreach($attachSet as $item)
+    {
+      $fname = "";
+      if ($item['title'])
+      {
+        $fname .=  htmlspecialchars($item['title']) . " : ";
+      }
+      $fname .= htmlspecialchars($item['file_name']);
+      $output .= "<li>$fname</li>";
+    }
+    $output .="</ul></td></tr>";
+  }
+
+
   $output .= "</table><br/>";
 
   return $output;
@@ -288,7 +308,8 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
  * 
  * @return string $output HTML Code
  */
-function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $level, $tprojectID) {
+function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $level, $tprojectID) 
+{
   static $tableColspan;
   static $firstColWidth;
   static $labels;
@@ -310,9 +331,10 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
     $labels = array('requirements_spec' => 'requirements_spec', 
                     'scope' => 'scope', 'type' => 'type', 'author' => 'author',
                     'relations' => 'relations', 'overwritten_count' => 'req_total',
-                    'coverage' => 'coverage','revision' => 'revision',
+                    'coverage' => 'coverage','revision' => 'revision','attached_files' => 'attached_files',
                     'undefined_req_spec_type' => 'undefined_req_spec_type',
                     'custom_field' => 'custom_field', 'not_aplicable' => 'not_aplicable');
+
     $labels = init_labels($labels);
     $reqSpecTypeLabels = init_labels($req_spec_cfg->type_labels);
     $title_separator = config_get('gui_title_separator_1');
@@ -327,14 +349,14 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
       $spec = $req_spec_mgr->getRevisionByID($node['id']);
       $spec_id = $spec['parent_id'];
       $who = array('parent_id' => $spec['parent_id'],'item_id' => $spec['id'],
-               'tproject_id' => $spec['testproject_id']);
+                   'tproject_id' => $spec['testproject_id']);
     break;
     
     case 'requirement_spec':
       $spec = $req_spec_mgr->get_by_id($node['id']);
       $spec_id = $spec['id'];
       $who = array('parent_id' => $spec['id'],'item_id' => $spec['revision_id'],
-               'tproject_id' => $spec['testproject_id']);
+                   'tproject_id' => $spec['testproject_id']);
     break;
   } 
   $name = htmlspecialchars($spec['doc_id'] . $title_separator . $spec['title']);
@@ -344,21 +366,19 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
     $docHeadingNumbering = "$tocPrefix. ";
   }
   
-  // 20110530 - Julian - added page-break before each req spec
-  //                   - use doclevel class for req spec headings
-  
-  if($options['docType'] != SINGLE_REQSPEC) {
+  if($options['docType'] != SINGLE_REQSPEC) 
+  {
     $output = '<p style="page-break-before: always"></p>';
   }
   $output .= "<table class=\"req_spec\"><tr><th colspan=\"$tableColspan\">" .
-            "<h{$level} class=\"doclevel\"> <span class=\"label\">{$docHeadingNumbering}{$labels['requirements_spec']}:</span> " .
+             "<h{$level} class=\"doclevel\"> <span class=\"label\">{$docHeadingNumbering}{$labels['requirements_spec']}:</span> " .
              $name . "</h{$level}></th></tr>\n";
      
   if ($options['toc'])
   {
     $spacing = ($level == 2) ? "<br>" : "";
-     $options['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10*$level).'px;">' .
-        '<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . $name . "</a></p></b>\n";
+    $options['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10*$level).'px;">' .
+                          '<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . $name . "</a></p></b>\n";
     $output .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
   }
   $output .=  '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
@@ -395,11 +415,12 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
   {
     $current = $req_spec_mgr->get_requirements_count($spec_id);   // NEEDS REFACTOR
     $expected = $spec['total_req'];
-      $coverage = $labels['not_aplicable'] . " ($current/0)";
-      if ($expected) {
-        $percentage = round(100 / $expected * $current, 2);
+    $coverage = $labels['not_aplicable'] . " ($current/0)";
+    if ($expected) 
+    {
+      $percentage = round(100 / $expected * $current, 2);
       $coverage = "{$percentage}% ({$current}/{$expected})";
-      }
+    }
     
     $output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
                $labels['overwritten_count'] . " (" . $labels['coverage'] . ")</span></td>" .
@@ -414,12 +435,11 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
   if ($options['req_spec_cf']) 
   {
   
-    // $linked_cf = $req_spec_mgr->get_linked_cfields($spec['id']);
-    //$who = array('parent_id' => $spec['id'],'item_id' => $spec['revision_id'],
-    //       'tproject_id' => $spec['testproject_id']);
     $linked_cf = $req_spec_mgr->get_linked_cfields($who);
-    if ($linked_cf){
-      foreach ($linked_cf as $key => $cf) {
+    if ($linked_cf)
+    {
+      foreach ($linked_cf as $key => $cf) 
+      {
         $cflabel = htmlspecialchars($cf['label']);
         $value = htmlspecialchars($cf['value']);
         
@@ -428,6 +448,25 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
                    "<td>$value</td></tr>";
       }
     }
+  }
+  
+  // TICKET 0006037 - Contribution Refactored
+  $attachSet =  $req_spec_mgr->getAttachmentInfos($spec_id);
+  if (count($attachSet))
+  {
+    $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
+               $labels['attached_files'] . "</span></td><td><ul>";
+    foreach($attachSet as $item)
+    {
+      $fname = "";
+      if ($item['title'])
+      {
+        $fname .=  htmlspecialchars($item['title']) . " : ";
+      }
+      $fname .= htmlspecialchars($item['file_name']);
+      $output .= "<li>$fname</li>";
+    }
+    $output .="</ul></td></tr>";
   }
   
   $output .= "</table><br/>\n";

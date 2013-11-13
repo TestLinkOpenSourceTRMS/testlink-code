@@ -2172,12 +2172,12 @@ class TestlinkXMLRPCServer extends IXR_Server
    */    
     protected function checkTestCaseIdentity($messagePrefix='')
     {
-        // Three Cases - Internal ID, External ID, No Id        
-        $status=true;
-        $tcaseID=0;
-        $my_errors=array();
-    $fromExternal=false;
-    $fromInternal=false;
+      // Three Cases - Internal ID, External ID, No Id        
+      $status=true;
+      $tcaseID=0;
+      $my_errors=array();
+      $fromExternal=false;
+      $fromInternal=false;
 
       if($this->_isTestCaseIDPresent())
       {
@@ -2185,20 +2185,21 @@ class TestlinkXMLRPCServer extends IXR_Server
           $tcaseID = $this->args[self::$testCaseIDParamName];
           $status = true;
       }
-    elseif ($this->_isTestCaseExternalIDPresent())
-    {
-      $fromExternal = true;
-      $tcaseExternalID = $this->args[self::$testCaseExternalIDParamName]; 
-      $tcaseID = $this->tcaseMgr->getInternalID($tcaseExternalID);
-      $status = $tcaseID > 0 ? true : false;
-      
-      //Invalid TestCase ID
-      if( !$status )
+      elseif ($this->_isTestCaseExternalIDPresent())
       {
+        $fromExternal = true;
+        $tcaseExternalID = $this->args[self::$testCaseExternalIDParamName]; 
+        $tcaseID = $this->tcaseMgr->getInternalID($tcaseExternalID);
+        $status = $tcaseID > 0 ? true : false;
+      
+        // Invalid TestCase ID
+        if( !$status )
+        {
           $my_errors[] = new IXR_Error(INVALID_TESTCASE_EXTERNAL_ID, 
                                        sprintf($messagePrefix . INVALID_TESTCASE_EXTERNAL_ID_STR,$tcaseExternalID));                  
+        }
       }
-    }
+
       if( $status )
       {
           $my_errors=null;
@@ -2225,9 +2226,9 @@ class TestlinkXMLRPCServer extends IXR_Server
       
       if (!$status)
       {
-            foreach($my_errors as $error_msg)
+        foreach($my_errors as $error_msg)
         {
-              $this->errors[] = $error_msg; 
+          $this->errors[] = $error_msg; 
         } 
       }
       return $status;

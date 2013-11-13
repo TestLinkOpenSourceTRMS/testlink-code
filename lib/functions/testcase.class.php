@@ -2449,7 +2449,8 @@ class testcase extends tlObjectWithAttachments
     {
       $status_ok = (($externalID = intval($stringID)) > 0);
     }
-    if( is_null($tproject_id) )
+
+    if( $status_ok && is_null($tproject_id) )
     {  
       $status_ok = false;                
       if($isFullExternal)

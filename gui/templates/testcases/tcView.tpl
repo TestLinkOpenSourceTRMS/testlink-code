@@ -11,8 +11,8 @@ Purpose: smarty template - view test case in test specification
           s='no_records_found,other_versions,show_hide_reorder,version,title_test_case,match_count'}
 
 {* Configure Actions *}
-{assign var="showMode" value=$gui->show_mode}
-{assign var="deleteStepAction" value="lib/testcases/tcEdit.php?show_mode=$showMode&doAction=doDeleteStep&step_id="}
+{$showMode=$gui->show_mode}
+{$deleteStepAction="lib/testcases/tcEdit.php?show_mode=$showMode&doAction=doDeleteStep&step_id="}
 
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
@@ -28,15 +28,15 @@ var del_action=fRoot+'{$deleteStepAction}';
 {* need by refresh on upload logic used when this template is called while executing *}
 {if $gui->bodyOnLoad != ''}
 <script language="JavaScript">
-  var {$gui->dialogName} = new std_dialog('&refreshTree');
+var {$gui->dialogName} = new std_dialog('&refreshTree');
 </script>  
 {/if}
 
 </head>
 
-{assign var="my_style" value=""}
+{$my_style=""}
 {if $gui->hilite_testcase_name}
-    {assign var="my_style" value="background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
+  {$my_style="background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
 {/if}
 
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
@@ -48,22 +48,22 @@ var del_action=fRoot+'{$deleteStepAction}';
 
 {if $gui->tc_current_version}
 {section name=idx loop=$gui->tc_current_version}
-  {assign var="tcID" value=$gui->tc_current_version[idx][0].testcase_id}
+  {$tcID=$gui->tc_current_version[idx][0].testcase_id}
 
   {* Current active version *}
   {if $gui->testcase_other_versions[idx] neq null}
-    {assign var="my_delete_version" value="yes"}
+    {$my_delete_version="yes"}
   {else}
-    {assign var="my_delete_version" value="no"}
+    {$my_delete_version="no"}
   {/if}
   
     <h2 style="{$my_style}">
     {$tlImages.toggle_direct_link} &nbsp;
     {if $gui->display_testcase_path}
-        {foreach from=$gui->path_info[$tcID] item=path_part}
-            {$path_part|escape} /
-        {/foreach}
-        {* <br /> *}
+      {foreach from=$gui->path_info[$tcID] item=path_part}
+        {$path_part|escape} /
+      {/foreach}
+      {* <br /> *}
     {/if}
     {if $gui->show_title == 'no'}
       {$gui->tc_current_version[idx][0].tc_external_id|escape}:{$gui->tc_current_version[idx][0].name|escape}</h2>
@@ -92,13 +92,13 @@ var del_action=fRoot+'{$deleteStepAction}';
              args_has_testplans=$gui->has_testplans}
     
     
-    {assign var="bDownloadOnly" value=false}
+    {$bDownloadOnly=false}
     {if $gui->can_do->edit != 'yes'}
-      {assign var="bDownloadOnly" value=true}
+      {$bDownloadOnly=true}
     {/if}
     
     {if !isset($gui->loadOnCancelURL)}
-        {assign var="loadOnCancelURL" value=""}
+      {$loadOnCancelURL=""}
     {/if} 
     
   {include file="inc_attachments.tpl" 
@@ -110,9 +110,9 @@ var del_action=fRoot+'{$deleteStepAction}';
   
   {* Other Versions *}
     {if $gui->testcase_other_versions[idx] neq null}
-        {assign var="vid" value=$gui->tc_current_version[idx][0].id}
-        {assign var="div_id" value="vers_$vid"}
-        {assign var="memstatus_id" value="mem_$div_id"}
+        {$vid=$gui->tc_current_version[idx][0].id}
+        {$div_id="vers_$vid"}
+        {$memstatus_id="mem_$div_id"}
         <br />
         {include file="inc_show_hide_mgmt.tpl" 
                  show_hide_container_title=$labels.other_versions
@@ -124,16 +124,15 @@ var del_action=fRoot+'{$deleteStepAction}';
         <div id="vers_{$vid}" class="workBack">
         
         {foreach from=$gui->testcase_other_versions[idx] item=my_testcase key=tdx}
-
-            {assign var="version_num" value=$my_testcase.version}
-            {assign var="title" value=$labels.version}
-            {assign var="title" value="$title $version_num"}
+          {$version_num=$my_testcase.version}
+          {$title=$labels.version}
+          {$title="$title $version_num"}
             
-            {assign var="sep" value="_"}
-            {assign var="div_id" value="v_$vid"}
-            {assign var="div_id" value="$div_id$sep$version_num"}
-            {assign var="memstatus_id" value="mem_$div_id"}
-            {include file="inc_show_hide_mgmt.tpl" 
+          {$sep="_"}
+          {$div_id="v_$vid"}
+          {$div_id="$div_id$sep$version_num"}
+          {$memstatus_id="mem_$div_id"}
+          {include file="inc_show_hide_mgmt.tpl" 
                      show_hide_container_title=$title
                      show_hide_container_id=$div_id
                      show_hide_container_draw=false

@@ -1396,6 +1396,17 @@ class TestlinkXMLRPCServer extends IXR_Server
   }
 
   /**
+   *
+   * @param -
+   * @return string
+   * @access public
+   */  
+  public function testLinkVersion()
+  {
+    return TL_VERSION_NUMBER;        
+  }
+
+  /**
    * Gives basic information about the API
    *
    * @param struct not used
@@ -5914,6 +5925,7 @@ protected function createAttachmentTempFile()
                             'tl.setTestCaseExecutionType' => 'this:setTestCaseExecutionType',
                             'tl.checkDevKey' => 'this:checkDevKey',
                             'tl.about' => 'this:about',
+                            'tl.testLinkVersion' => 'this:testLinkVersion',
                             'tl.setTestMode' => 'this:setTestMode',
                             'tl.ping' => 'this:sayHello', 
                             'tl.sayHello' => 'this:sayHello',
@@ -5922,4 +5934,3 @@ protected function createAttachmentTempFile()
   }
   
 } // class end
-?>

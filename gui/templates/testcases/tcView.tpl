@@ -21,6 +21,17 @@ Purpose: smarty template - view test case in test specification
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 var del_action=fRoot+'{$deleteStepAction}';
+
+
+function jsCallDeleteFile(btn, text, o_id)
+{ 
+  var my_action='';
+  if( btn == 'yes' )
+  {
+    my_action='{$gui->delAttachmentURL}'+o_id;
+    window.location=my_action;
+  }
+}         
 </script>
 
 {include file="inc_ext_js.tpl" css_only=1}
@@ -101,7 +112,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
       {$loadOnCancelURL=""}
     {/if} 
     
-  {include file="inc_attachments.tpl" 
+  {include file="attachments.inc.tpl" 
            attach_id=$tcID  
            attach_tableName="nodes_hierarchy"
            attach_attachmentInfos=$gui->attachments[$tcID]  

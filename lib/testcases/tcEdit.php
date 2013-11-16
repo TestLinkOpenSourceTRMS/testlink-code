@@ -13,7 +13,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.8
+ * @since 1.9.9
  *
  **/
 require_once("../../config.inc.php");
@@ -120,11 +120,21 @@ switch($args->doAction)
     $doRender = true;
   break;
 
+  case "fileUpload":
+    fileUploadManagement($db,$args->tcase_id,$args->fileTitle,$tcase_mgr->getAttachmentTable());
+    $commandMgr->show($args,$_REQUEST,array('status_ok' => true),false);
+  break;
+
+  case "deleteFile":
+    deleteAttachment($db,$args->file_id);
+    $commandMgr->show($args,$_REQUEST,array('status_ok' => true),false);
+  break;
+
 }
+
 
 if( $doRender )
 {
-  // new dBug($gui);
   renderGui($args,$gui,$op,$templateCfg,$cfg,$testCaseEditorKeys);
   exit();
 }
@@ -329,9 +339,18 @@ function init_args(&$cfgObj,$otName)
   $rightlist_html_name = $otName . "_newRight";
   $args->assigned_keywords_list = isset($_REQUEST[$rightlist_html_name])? $_REQUEST[$rightlist_html_name] : "";
   $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
+  
+  $args->file_id = isset($_REQUEST['file_id']) ? intval($_REQUEST['file_id']) : 0;
+
   $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
+  if($args->tcase_id == 0)
+  {
+    $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : 0;
+  }  
+
   $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
   
+  // $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
   $args->name = isset($_REQUEST['testcase_name']) ? $_REQUEST['testcase_name'] : null;
 
   // Normally Rich Web Editors  
@@ -429,6 +448,7 @@ function init_args(&$cfgObj,$otName)
   $args->$dk = trim(isset($_REQUEST[$dk]) ? $_REQUEST[$dk] : '');
 
 
+  $args->fileTitle = isset($_REQUEST['fileTitle'])? $_REQUEST['fileTitle'] : "";
   $args->user = $_SESSION['currentUser'];
   return $args;
 }
@@ -560,12 +580,16 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
   $guiObj->stay_here = $argsObj->stay_here;
   $guiObj->steps_results_layout = $cfgObj->spec->steps_results_layout;
   $guiObj->btn_reorder_testcases = lang_get('btn_reorder_testcases_externalid');
+  $guiObj->import_limit = TL_REPOSITORY_MAXFILESIZE;
+  $guiObj->msg = '';
 
-  
   $guiObj->loadOnCancelURL = $_SESSION['basehref'] . 
                              "/lib/testcases/archiveData.php?edit=testcase&id=" . $argsObj->tcase_id .
                              "&show_mode={$argsObj->show_mode}";
   
+  $guiObj->fileUploadURL = $_SESSION['basehref'] . $tcaseMgr->getFileUploadRelativeURL($argsObj);
+
+   
   if($argsObj->container_id > 0)
   {
     $pnode_info = $tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->container_id);
@@ -585,7 +609,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
   $guiObj->grants = new stdClass();
   foreach($grant2check as $right)
   {
-      $guiObj->$right = $guiObj->grants->$right = $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id);
+    $guiObj->$right = $guiObj->grants->$right = $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id);
   }
 
 
@@ -726,18 +750,18 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
 
     switch($renderType)
     {
-        case 'template':
-         $smartyObj->assign('gui',$guiObj);
+      case 'template':
+        $smartyObj->assign('gui',$guiObj);
         $smartyObj->display($tpl);
-         break;  
+      break;  
  
-        case 'redirect':
-          header("Location: {$tpl}");
-         exit();
-        break;
+      case 'redirect':
+        header("Location: {$tpl}");
+        exit();
+      break;
 
-        default:
-        break;
+      default:
+      break;
     }
 
 }

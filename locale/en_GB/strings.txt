@@ -2183,6 +2183,7 @@ $TLS_warning_empty_login = "Please enter a login";
 // ----- gui/templates/attachmentupload.tpl -----
 $TLS_attachment_upload_ok = "File uploaded";
 $TLS_enter_attachment_title = "Enter title for the attachment";
+$TLS_attachment_title = "Title/name";
 $TLS_import_was_ok = "The import was ok";
 $TLS_max_size_cvs_file = "Max. size of the file is";
 $TLS_max_size_file_upload = "Max. size of the file is";

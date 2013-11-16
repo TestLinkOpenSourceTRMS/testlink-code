@@ -1021,6 +1021,7 @@ class testcaseCommands
   {
     $smartyObj = new TLSmarty();
     $guiObj = $this->initGuiBean($argsObj);
+    $identity = $this->buildIdentity($argsObj);
 
     $guiObj->viewerArgs=array();
     $guiObj->refreshTree = ($argsObj->refreshTree && $userFeedback['status_ok']) ? 1 : 0;
@@ -1028,17 +1029,17 @@ class testcaseCommands
     $guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
     $guiObj->user_feedback = '';
     
+
     if($userFeedback['status_ok'])
     {
       $guiObj->user_feedback = '';
       if($updateCFOnDB)
       {  
-        $cf_map = $this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->testproject_id,
+        $cf_map = $this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($identity->tproject_id,
                                                                             1,null,'testcase') ;
-        $this->tcaseMgr->cfield_mgr->design_values_to_db($request,$argsObj->tcversion_id,$cf_map);
+        $this->tcaseMgr->cfield_mgr->design_values_to_db($request,$identity->version_id,$cf_map);
       }
-
-      $guiObj->attachments[$argsObj->tcase_id] = getAttachmentInfosFrom($this->tcaseMgr,$argsObj->tcase_id);
+      $guiObj->attachments[$argsObj->tcase_id] = getAttachmentInfosFrom($this->tcaseMgr,$identity->id);
     }
     else
     {
@@ -1048,15 +1049,34 @@ class testcaseCommands
     $guiObj->viewerArgs['refreshTree'] = $guiObj->refreshTree;
     $guiObj->viewerArgs['user_feedback'] = $guiObj->user_feedback;
 
-    $identity = new stdClass();
-    $identity->tproject_id = $argsObj->tproject_id;
-    $identity->id = $argsObj->tcase_id;
-    $identity->version_id = $argsObj->tcversion_id;
-
+  
     $this->tcaseMgr->show($smartyObj,$guiObj,$identity,$this->grants); 
     exit();  
   }
 
+
+  /**
+   *
+   */
+  private function buildIdentity($cred)
+  {
+    $idy= new stdClass();
+    if( property_exists($cred, 'tproject_id') )
+    {
+      $idy->tproject_id = $cred->tproject_id;
+    }
+    else if( property_exists($cred, 'testproject_id'))
+    {
+      $idy->tproject_id = $cred->testproject_id;
+    }  
+    else
+    {
+      throw new Exception(__METHOD__ . ' EXCEPTION: test project ID, is mandatory');  
+    }  
+    $idy->tproject_id = intval($idy->tproject_id);
+    $idy->id = intval($cred->tcase_id);
+    $idy->version_id = $cred->tcversion_id;
+    return $idy;
+  }
   
 } // end class  
-?>

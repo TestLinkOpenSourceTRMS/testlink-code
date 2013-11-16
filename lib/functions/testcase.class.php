@@ -118,7 +118,29 @@ class testcase extends tlObjectWithAttachments
   }
 
 
+  /**
+   *
+   */
+  function getFileUploadRelativeURL($identity)
+  {
+    $url = "lib/testcases/tcEdit.php?doAction=fileUpload&tcase_id=" . intval($identity->tcase_id) .
+           "&tcversion_id=" . intval($identity->tcversion_id) . 
+           "&tproject_id=" . intval($identity->tproject_id); 
 
+    return $url;
+  }
+
+  /**
+   *
+   */
+  function getDeleteAttachmentRelativeURL($identity)
+  {
+    $url = "lib/testcases/tcEdit.php?doAction=deleteFile&tcase_id=" . intval($identity->tcase_id) .
+           "&tcversion_id=" . intval($identity->tcversion_id) . 
+           "&tproject_id=" . intval($identity->tproject_id) . "&file_id=" ; 
+
+    return $url;
+  }
 
   /*
     function: get_export_file_types
@@ -672,8 +694,12 @@ class testcase extends tlObjectWithAttachments
     $version_id = isset($identity->version_id) ? $identity->version_id : self::ALL_VERSIONS;
     $idSet = is_array($id) ? $id : (array)$id;
     $status_ok = $idSet[0] > 0 ? 1 : 0;
-    
-    $gui = $this->initShowGui($guiObj,$grants,$idSet[0]);
+
+    $idCard = new stdClass();
+    $idCard->tcase_id = intval($idSet[0]);
+    $idCard->tcversion_id = $version_id;
+    $idCard->tproject_id = $identity->tproject_id;
+    $gui = $this->initShowGui($guiObj,$grants,$idSet[0],$idCard);
    
     $userIDSet = array();
     if($status_ok)
@@ -784,6 +810,7 @@ class testcase extends tlObjectWithAttachments
 
     $this->initShowGuiActions($gui);
     $tplCfg = templateConfiguration('tcView');
+
     $smarty->assign('gui',$gui);
     $smarty->display($tplCfg->template_dir . $tplCfg->default_template);
   }
@@ -5739,45 +5766,44 @@ class testcase extends tlObjectWithAttachments
     
       case 'full':
       default:
-          $sql= "/* $debugMsg */ SELECT E.id AS execution_id, " .
+        $sql= "/* $debugMsg */ SELECT E.id AS execution_id, " .
               " COALESCE(E.status,'{$status_not_run}') AS status, E.execution_type AS execution_run_type," .
-                " NHTC.name, NHTC.id AS testcase_id, NHTC.parent_id AS tsuite_id," .
-                " TCV.id AS tcversion_id,TCV.tc_external_id,TCV.version,TCV.summary," .
-                " TCV.preconditions,TCV.importance,TCV.author_id," .
-                " TCV.creation_ts,TCV.updater_id,TCV.modification_ts,TCV.active," .
-                " TCV.is_open,TCV.execution_type," .
-                " U.login AS tester_login,U.first AS tester_first_name," .
-            " U.last AS tester_last_name, E.tester_id AS tester_id," .
-            " E.notes AS execution_notes, E.execution_ts, E.build_id,E.tcversion_number," .
-            " B.name AS build_name, B.active AS build_is_active, B.is_open AS build_is_open," .
-                " COALESCE(PLATF.id,0) AS platform_id,PLATF.name AS platform_name, TPTCV.id AS feature_id " .
+              " NHTC.name, NHTC.id AS testcase_id, NHTC.parent_id AS tsuite_id," .
+              " TCV.id AS tcversion_id,TCV.tc_external_id,TCV.version,TCV.summary," .
+              " TCV.preconditions,TCV.importance,TCV.author_id," .
+              " TCV.creation_ts,TCV.updater_id,TCV.modification_ts,TCV.active," .
+              " TCV.is_open,TCV.execution_type," .
+              " U.login AS tester_login,U.first AS tester_first_name," .
+              " U.last AS tester_last_name, E.tester_id AS tester_id," .
+              " E.notes AS execution_notes, E.execution_ts, E.build_id,E.tcversion_number," .
+              " B.name AS build_name, B.active AS build_is_active, B.is_open AS build_is_open," .
+              " COALESCE(PLATF.id,0) AS platform_id,PLATF.name AS platform_name, TPTCV.id AS feature_id " .
               " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
               " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTCV.id" .
-                " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
-                " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
-            
-            " JOIN ({$sqlLEX}) AS LEX " .
-            " ON  LEX.testplan_id = TPTCV.testplan_id " .
-            " AND LEX.platform_id = TPTCV.platform_id " .
-            " AND LEX.tcversion_id = TPTCV.tcversion_id " .
+              " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+              " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+              
+              " JOIN ({$sqlLEX}) AS LEX " .
+              " ON  LEX.testplan_id = TPTCV.testplan_id " .
+              " AND LEX.platform_id = TPTCV.platform_id " .
+              " AND LEX.tcversion_id = TPTCV.tcversion_id " .
+        
+              " JOIN {$this->tables['executions']} E " . 
+              " ON E.id = LEX.id " .
       
-            " JOIN {$this->tables['executions']} E " . 
-            " ON E.id = LEX.id " .
-      
-                " JOIN {$this->tables['builds']} B ON B.id = E.build_id " .
-                " JOIN {$this->tables['users']} U ON U.id = E.tester_id " .
-                  
-                  " /* Left outer on Platforms because Test plan can have NO PLATFORMS */ " .
-                  " LEFT OUTER JOIN {$this->tables['platforms']} PLATF " .
-                  " ON PLATF.id = {$safeContext['platform_id']} " .
-            " WHERE TPTCV.testplan_id = {$safeContext['tplan_id']} " .
-            " AND TPTCV.platform_id = {$safeContext['platform_id']} " .
-            $addWhere;
+              " JOIN {$this->tables['builds']} B ON B.id = E.build_id " .
+              " JOIN {$this->tables['users']} U ON U.id = E.tester_id " .
+                 
+              " /* Left outer on Platforms because Test plan can have NO PLATFORMS */ " .
+              " LEFT OUTER JOIN {$this->tables['platforms']} PLATF " .
+              " ON PLATF.id = {$safeContext['platform_id']} " .
+              " WHERE TPTCV.testplan_id = {$safeContext['tplan_id']} " .
+              " AND TPTCV.platform_id = {$safeContext['platform_id']} " .
+              $addWhere;
             
-            //new dBug($sql);
-            // using database::CUMULATIVE is just a trick to return data structure
-            // that will be liked on execSetResults.php
-            $out = $this->db->fetchRowsIntoMap($sql,'testcase_id',database::CUMULATIVE);
+              // using database::CUMULATIVE is just a trick to return data structure
+              // that will be liked on execSetResults.php
+              $out = $this->db->fetchRowsIntoMap($sql,'testcase_id',database::CUMULATIVE);
       break;
     }
 
@@ -5858,13 +5884,20 @@ class testcase extends tlObjectWithAttachments
   }
 
 
-
-  private function initShowGui($guiObj,$grantsObj,$id)
+  /**
+   *
+   */
+  private function initShowGui($guiObj,$grantsObj,$id,$idCard)
   {   
     $goo = is_null($guiObj) ? new stdClass() : $guiObj;
 
     $goo->execution_types = $this->execution_types;
     $goo->tcase_cfg = $this->cfg->testcase;
+    $goo->import_limit = TL_REPOSITORY_MAXFILESIZE;
+    $goo->msg = '';
+    $goo->fileUploadURL = $_SESSION['basehref'] . $this->getFileUploadRelativeURL($idCard);
+    $goo->delAttachmentURL = $_SESSION['basehref'] . $this->getDeleteAttachmentRelativeURL($idCard);
+
 
     $goo->requirement_mgmt = property_exists($grantsObj, 'mgt_modify_req' ) ? $grantsObj->mgt_modify_req : null;
     if( is_null($goo->requirement_mgmt))
@@ -5896,6 +5929,7 @@ class testcase extends tlObjectWithAttachments
     $goo->cf_other_versions = null;
     $goo->linked_versions=null;
     $goo->platforms = null;
+
 
     $viewer_defaults = array('title' => lang_get('title_test_case'),'show_title' => 'no',
                              'action' => '', 'msg_result' => '','user_feedback' => '',
@@ -5974,7 +6008,9 @@ class testcase extends tlObjectWithAttachments
     return $goo;
   }
 
-
+  /**
+   *
+   */
   private function initShowGuiActions(&$gui)
   {
   
@@ -6243,6 +6279,11 @@ class testcase extends tlObjectWithAttachments
       }
     }
     return $ret;
+  }
+
+  function getAttachmentTable()
+  {
+    return $this->attachmentTableName;
   }
 
 

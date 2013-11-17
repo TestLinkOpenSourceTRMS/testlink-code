@@ -121,7 +121,7 @@ switch($args->doAction)
   break;
 
   case "fileUpload":
-    fileUploadManagement($db,$args->tcase_id,$args->fileTitle,$tcase_mgr->getAttachmentTable());
+    fileUploadManagement($db,$args->tcase_id,$args->fileTitle,$tcase_mgr->getAttachmentTableName());
     $commandMgr->show($args,$_REQUEST,array('status_ok' => true),false);
   break;
 

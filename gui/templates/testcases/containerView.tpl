@@ -5,7 +5,7 @@ View test specification containers
 
 @filesource	containerView.tpl
 @internal revisions
-@since 1.9.7
+@since 1.9.10
 *}
 
 {lang_get var='labels' 
@@ -19,27 +19,39 @@ View test specification containers
 	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name,
 	           testsuite_operations, testcase_operations,btn_create_from_issue_xml'}
 
-{assign var="container_id" value=$gui->container_data.id}
-{assign var="tcImportAction"
-        value="lib/testcases/tcImport.php?containerID=$container_id"}
-{assign var="importToTProjectAction"  value="$basehref$tcImportAction&amp;bIntoProject=1&amp;useRecursion=1&amp;"}
-{assign var="importToTSuiteAction"  value="$basehref$tcImportAction&amp;useRecursion=1"}
-{assign var="importTestCasesAction"  value="$basehref$tcImportAction"}
-{assign var="tcExportAction"
-        value="lib/testcases/tcExport.php?containerID=$container_id"}
-{assign var="exportTestCasesAction"  value="$basehref$tcExportAction"}
-{assign var="tsuiteExportAction" value="$basehref$tcExportAction&amp;useRecursion=1"}
+{$container_id=$gui->container_data.id}
+{$tcImportAction="lib/testcases/tcImport.php?containerID=$container_id"}
+{$importToTProjectAction="$basehref$tcImportAction&amp;bIntoProject=1&amp;useRecursion=1&amp;"}
+{$importToTSuiteAction="$basehref$tcImportAction&amp;useRecursion=1"}
+{$importTestCasesAction="$basehref$tcImportAction"}
+{$tcExportAction="lib/testcases/tcExport.php?containerID=$container_id"}
+{$exportTestCasesAction="$basehref$tcExportAction"}
+{$tsuiteExportAction="$basehref$tcExportAction&amp;useRecursion=1"}
 
-{assign var="tcMantisXMLAction"
-        value="lib/testcases/tcCreateFromIssueMantisXML.php?containerID=$container_id"}
-{assign var="createTCFromIssueMantisXMLAction"  value="$basehref$tcMantisXMLAction"}
+{$tcMantisXMLAction="lib/testcases/tcCreateFromIssueMantisXML.php?containerID=$container_id"}
+{$createTCFromIssueMantisXMLAction="$basehref$tcMantisXMLAction"}
 
 
 {include file="inc_head.tpl" openHead="yes"}
-{assign var="ext_location" value=$smarty.const.TL_EXTJS_RELATIVE_PATH}
+{$ext_location=$smarty.const.TL_EXTJS_RELATIVE_PATH}
 <link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/ext-all.css" />
 
 {include file="inc_del_onclick.tpl" openHead="yes"}
+
+<script type="text/javascript">
+/**
+ * Be Carefull this TRUST on existence of $gui->delAttachmentURL
+ */
+function jsCallDeleteFile(btn, text, o_id)
+{ 
+  var my_action='';
+  if( btn == 'yes' )
+  {
+    my_action='{$gui->delAttachmentURL}'+o_id;
+    window.location=my_action;
+  }
+}        
+</script> 
 </head>
 
 <body>
@@ -49,14 +61,14 @@ View test specification containers
 {include file="inc_update.tpl" result=$gui->sqlResult item=$gui->level
          name=$gui->moddedItem.name refresh=$gui->refreshTree user_feedback=$gui->user_feedback}
 
-{assign var="bDownloadOnly" value=true}
-{assign var="drawReorderButton" value=true}
-{assign var="drawReorderButton" value=false}
+{$bDownloadOnly=true}
+{$drawReorderButton=true}
+{$drawReorderButton=false}
 
 {if $gui->level == 'testproject'}
 
 	{if $gui->modify_tc_rights == 'yes'}
-		{assign var="bDownloadOnly" value=false}
+		{$bDownloadOnly=false}
 
 	<fieldset class="groupBtn">
 	<h2>{$labels.testsuite_operations}</h2>
@@ -176,9 +188,9 @@ View test specification containers
 	{include file="testcases/inc_testsuite_viewer_ro.tpl"}
 
 	{if $gui->modify_tc_rights eq 'yes'}
-		{assign var="bDownloadOnly" value=false}
+		{$bDownloadOnly=false}
 	{/if}
-	{include file="inc_attachments.tpl" 
+	{include file="attachments.inc.tpl" 
 	         attach_attachmentInfos=$gui->attachmentInfos
 	         attach_id=$gui->id attach_tableName="nodes_hierarchy" 
 	         attach_downloadOnly=$bDownloadOnly}
@@ -187,8 +199,7 @@ View test specification containers
 
 </div>
 {if $gui->refreshTree}
-   	{include file="inc_refreshTreeWithFilters.tpl"}
-	{*include file="inc_refreshTree.tpl"*}
+ 	{include file="inc_refreshTreeWithFilters.tpl"}
 {/if}
 </body>
 </html>

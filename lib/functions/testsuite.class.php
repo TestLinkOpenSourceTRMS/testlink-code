@@ -10,7 +10,7 @@
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.10
  *
  */
 
@@ -434,6 +434,13 @@ class testsuite extends tlObjectWithAttachments
         $gui->$prop = $value;
       }
     }
+
+    // attachments management on page
+    $gui->fileUploadURL = $_SESSION['basehref'] . $this->getFileUploadRelativeURL($id);
+    $gui->delAttachmentURL = $_SESSION['basehref'] . $this->getDeleteAttachmentRelativeURL($id);
+    $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
+    $gui->fileUploadMsg = '';
+
 
     // After test suite edit, display of Test suite do not have upload button enabled for attachment
     $my['options'] = array('show_mode' => 'readwrite');   
@@ -1486,5 +1493,26 @@ class testsuite extends tlObjectWithAttachments
     return $check_op;
   }
 
+  /**
+   *
+   * @used-by containerEdit.php, testsuite.class.php.show
+   */
+  function getFileUploadRelativeURL($id)
+  {
+    // I've to use testsuiteID because this is how is name on containerEdit.php
+    $url = "lib/testcases/containerEdit.php?doAction=fileUpload&testsuiteID=" . intval($id);
+    return $url;
+  }
+
+  /**
+   * @used-by containerEdit.php, testsuite.class.php.show
+   */
+  function getDeleteAttachmentRelativeURL($id)
+  {
+    // I've to use testsuiteID because this is how is name on containerEdit.php
+    $url = "lib/testcases/containerEdit.php?doAction=deleteFile&testsuiteID=" . intval($id) .
+           "&file_id=" ; 
+    return $url;
+  }
 
 } // end class

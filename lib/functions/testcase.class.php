@@ -101,7 +101,9 @@ class testcase extends tlObjectWithAttachments
   }
 
 
-
+  /**
+   *
+   */
   static function getExecutionTypes()
   {
     $stdSet = array(self::EXECUTION_TYPE_MANUAL => lang_get('manual'),
@@ -5895,6 +5897,7 @@ class testcase extends tlObjectWithAttachments
     $goo->tcase_cfg = $this->cfg->testcase;
     $goo->import_limit = TL_REPOSITORY_MAXFILESIZE;
     $goo->msg = '';
+    $goo->fileUploadMsg = '';
     $goo->fileUploadURL = $_SESSION['basehref'] . $this->getFileUploadRelativeURL($idCard);
     $goo->delAttachmentURL = $_SESSION['basehref'] . $this->getDeleteAttachmentRelativeURL($idCard);
 

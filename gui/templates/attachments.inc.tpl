@@ -87,8 +87,8 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
              size="{#ATTACHMENT_TITLE_SIZE#}" />
       <input type="submit" value="{$labels.btn_upload_file}"/>
   </form>
-  {if $gui->msg != ''}
-    <p class="bold" style="color:red">{$gui->msg}</p>
+  {if $gui->fileUploadMsg != ''}
+    <p class="bold" style="color:red">{$gui->fileUploadMsg}</p>
   {/if}
 </div>
 {/if}

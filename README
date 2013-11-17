@@ -1,5 +1,5 @@
 ===============================================================
-                    TestLink 1.9.9 (Prague Bugfix 9) - Read me
+         TestLink 1.9.9 (Prague Bugfix 9) - Read me
 ===============================================================
 
 Contents
@@ -82,7 +82,7 @@ http://mantis.testlink.org/view.php?id=5372
 ===============================================================
 
 Server environment should consists from:
-- web-server: Apache 1.2 , 2.x
+- web-server: Apache 2.x
 - PHP > 5.4
 - DBMS: MySQL 5.x , Postgres 8.x,9.x , MS-SQL 2005/2008
 
@@ -206,12 +206,17 @@ a) Execute install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/step1/db_schema_updat
 b) Execute install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/stepZ/z_final_step.sql
 
 then give a look to section 'Upgrade from 1.9.7 to 1.9.8'
+then give a look to section 'Upgrade from 1.9.8 to 1.9.9'
 
 - Upgrade from 1.9.7 to 1.9.8
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
 a) Execute install/sql/alter_tables/1.9.8/<your_db>/DB.1.9.8/step1/db_schema_update.sql
 b) Execute install/sql/alter_tables/1.9.8/<your_db>/DB.1.9.8/stepZ/z_final_step.sql
 
+- Upgrade from 1.9.8 to 1.9.9
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+a) Execute install/sql/alter_tables/1.9.9/<your_db>/DB.1.9.9/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.9/<your_db>/DB.1.9.9/stepZ/z_final_step.sql
 
 Hint: When using MySQL Query Browser make sure you are not using a single command execution. 
       (open script or use special script tab to execute the whole script at once)
@@ -224,7 +229,7 @@ You have always have to migrate one by one to each version that is newer that yo
 Extreme example Migration from 1.7.4
 
 1.7.4 => 1.7.5 => 1.8.1 => 1.8.2 => 1.8.3 => 1.8.4 => 1.8.5 => 1.9.0 
-1.9.0 => 1.9.1 => 1.9.2 => 1.9.3 => 1.9.4 => 1.9.5 => 1.9.6 => 1.9.7 => 1.9.8
+1.9.0 => 1.9.1 => 1.9.2 => 1.9.3 => 1.9.4 => 1.9.5 => 1.9.6 => 1.9.7 => 1.9.8 => 1.9.9
 
 You have to read carefully README and instructions provided by installer.
 Sometimes version changes do not require actions on DB structure or data. 
@@ -238,6 +243,8 @@ This list comprise people that has helped
 
 --- Most Active on this release
 * Francisco Mancardi - Project lead, builds, core developer, contributors code reviewer
+* Asiel Brumfield - Infrastructure
+
 
 --- Contributors and developers active on older releases ---
 * Maradana Amardeep - Leader of testlink-qa group effort on 1.9.5
@@ -319,7 +326,7 @@ This list comprise people that has helped
 ===============================================================
 
 You may contact us at the TestLink forum at 
-http://www.teamst.org/
+http://www.testlink.org/
 
 If you found this software useful for your company please
 post in forum on section "Companies using TestLink".
@@ -339,7 +346,7 @@ if you find TestLinl useful, think about a donation to support our work.
 contact testlink.forum@gmail.com
 
 
-9. Regarding forum usage www.teamst.org
+9. Regarding forum usage forum.testlink.org
 ===============================================================
 
 PLEASE: read this short hints before you write a topic:
@@ -353,6 +360,9 @@ PLEASE: read this short hints before you write a topic:
       
 10. Changes regarding 1.9.6,1.9.7,1.9.8      
 ===============================================================
+
+1.9.9
+User can have two different (mutual exclusive) kind of authentication
 
 1.9.6
 10.1 Admin role can not be edit anymore
@@ -380,4 +390,4 @@ http://www.freetest.net.br
 12. Security
 ===============================================================
 
-We want to thanks xistence (xistence@0x90.nl) for his tests
+We want to thanks xistence (xistence@0x90.nl) for his tests.

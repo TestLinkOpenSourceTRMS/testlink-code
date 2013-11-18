@@ -23,7 +23,7 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-$gui = initializeGui();
+$gui = initializeGui($args);
 
 
 switch($args->doAction)

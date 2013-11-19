@@ -2241,17 +2241,37 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
     return $itemSet;
   }
 
-/**
- *
- */
-function simplexml_load_file_helper($filename)
-{
-  // http://websec.io/2012/08/27/Preventing-XXE-in-PHP.html
-  libxml_disable_entity_loader(true);  
-  $zebra = file_get_contents($filename);
-  $xml = @simplexml_load_string($zebra);
-  return $xml;
-}
+  /**
+   *
+   */
+  function simplexml_load_file_helper($filename)
+  {
+    // http://websec.io/2012/08/27/Preventing-XXE-in-PHP.html
+    libxml_disable_entity_loader(true);  
+    $zebra = file_get_contents($filename);
+    $xml = @simplexml_load_string($zebra);
+    return $xml;
+  }
+
+  /**
+   *
+   * @used-by 
+   */
+  function getFileUploadRelativeURL($id)
+  {
+    $url = "lib/requirements/reqSpecEdit.php?doAction=fileUpload&req_spec_id=" . intval($id);
+    return $url;
+  }
+
+  /**
+   *
+   * @used-by 
+   */
+  function getDeleteAttachmentRelativeURL($id)
+  {
+    $url = "lib/requirements/reqSpecEdit.php?doAction=deleteFile&req_spec_id=" . intval($id) . "&file_id=" ; 
+    return $url;
+  }
 
 
 

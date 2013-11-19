@@ -9,6 +9,7 @@
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revisions
+ * @since 1.9.10
  *
 **/
 require_once("../../config.inc.php");
@@ -38,7 +39,7 @@ function init_args()
   $args = new stdClass();
   R_PARAMS($iParams,$args);
   $args->refreshTree = intval($args->refreshTree);
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
   
   return $args;
@@ -67,7 +68,7 @@ function initialize_gui(&$dbHandler,&$argsObj)
   $gui->req_spec = $req_spec_mgr->get_by_id($argsObj->req_spec_id);
   $gui->revCount = $req_spec_mgr->getRevisionsCount($argsObj->req_spec_id);
   
-  $gui->req_spec_id = $argsObj->req_spec_id;
+  $gui->req_spec_id = intval($argsObj->req_spec_id);
   $gui->parentID = $argsObj->req_spec_id;
 
   $gui->req_spec_revision_id = $gui->req_spec['revision_id'];
@@ -93,6 +94,13 @@ function initialize_gui(&$dbHandler,&$argsObj)
   $gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . 
                       '&item=reqspec&id=' . urlencode($gui->req_spec['doc_id']);
 
+
+  $gui->fileUploadURL = $_SESSION['basehref'] . $req_spec_mgr->getFileUploadRelativeURL($gui->req_spec_id);
+  $gui->delAttachmentURL = $_SESSION['basehref'] . $req_spec_mgr->getDeleteAttachmentRelativeURL($gui->req_spec_id);
+  $gui->fileUploadMsg = '';
+  $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
+
+
   $gui->btn_import_req_spec = '';
   $gui->reqMgrSystemEnabled = 0;
   if( !is_null($reqMgrSystem = $commandMgr->getReqMgrSystem()) )
@@ -108,4 +116,3 @@ function checkRights(&$db,&$user)
 {
   return $user->hasRight($db,'mgt_view_req');
 }
-?>

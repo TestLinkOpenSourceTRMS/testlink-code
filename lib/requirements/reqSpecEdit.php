@@ -2,12 +2,13 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
- * @filesource	reqSpecEdit.php
- * @author Martin Havlat
+ * @filesource  reqSpecEdit.php
+ * @author      Martin Havlat
  *
  * View existing and create a new req. specification.
  *
  * @internal revisions
+ * @since 1.9.10
  *
  */
 require_once("../../config.inc.php");
@@ -34,7 +35,7 @@ $pFn = $args->doAction;
 $op = null;
 if(method_exists($commandMgr,$pFn))
 {
-	$op = $commandMgr->$pFn($args,$_REQUEST);
+  $op = $commandMgr->$pFn($args,$_REQUEST);
 }
 renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 
@@ -45,43 +46,46 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg);
  */
 function init_args()
 {
-	$args = new stdClass();
+  $args = new stdClass();
 
-	$iParams = array("countReq" => array(tlInputParameter::INT_N,99999),
-			         "req_spec_id" => array(tlInputParameter::INT_N),
-			         "req_spec_revision_id" => array(tlInputParameter::INT_N),
-					 "parentID" => array(tlInputParameter::INT_N),
-					 "doAction" => array(tlInputParameter::STRING_N,0,250),
-					 "title" => array(tlInputParameter::STRING_N,0,100),
-					 "scope" => array(tlInputParameter::STRING_N),
-					 "doc_id" => array(tlInputParameter::STRING_N,1,32),
-					 "nodes_order" => array(tlInputParameter::ARRAY_INT),
-					 "containerID" => array(tlInputParameter::INT_N),
- 			 		 "itemSet" => array(tlInputParameter::ARRAY_INT),
-					 "reqSpecType" => array(tlInputParameter::STRING_N,0,1),
-					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL),
-					 "save_rev" => array(tlInputParameter::INT_N),
-					 "do_save" => array(tlInputParameter::INT_N),
-					 "log_message" => array(tlInputParameter::STRING_N));
+  $iParams = array("countReq" => array(tlInputParameter::INT_N,99999),
+                   "req_spec_id" => array(tlInputParameter::INT_N),
+                   "req_spec_revision_id" => array(tlInputParameter::INT_N),
+                   "parentID" => array(tlInputParameter::INT_N),
+                   "doAction" => array(tlInputParameter::STRING_N,0,250),
+                   "title" => array(tlInputParameter::STRING_N,0,100),
+                   "scope" => array(tlInputParameter::STRING_N),
+                   "doc_id" => array(tlInputParameter::STRING_N,1,32),
+                   "nodes_order" => array(tlInputParameter::ARRAY_INT),
+                   "containerID" => array(tlInputParameter::INT_N),
+                   "itemSet" => array(tlInputParameter::ARRAY_INT),
+                   "reqSpecType" => array(tlInputParameter::STRING_N,0,1),
+                   "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL),
+                   "save_rev" => array(tlInputParameter::INT_N),
+                   "do_save" => array(tlInputParameter::INT_N),
+                   "log_message" => array(tlInputParameter::STRING_N),
+                   "file_id" => array(tlInputParameter::INT_N),
+                   "fileTitle" => array(tlInputParameter::STRING_N,0,100));
 
-	$args = new stdClass();
-	R_PARAMS($iParams,$args);
-	// i guess due to required revison log it is necessary to strip slashes
-	// after R_PARAMS call - at least this fixed the problem
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-	
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
-	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-	$args->basehref = $_SESSION['basehref'];
-	
-	$args->parentID = is_null($args->parentID) ? $args->tproject_id : $args->parentID;
+  $args = new stdClass();
+  R_PARAMS($iParams,$args);
 
-	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action'])
-	                     ? $_SESSION['setting_refresh_tree_on_action'] : 0;
-	
-	$args->countReq = is_null($args->countReq) ? 0 : intval($args->countReq);
-	return $args;
+  // i guess due to required revison log it is necessary to strip slashes
+  // after R_PARAMS call - at least this fixed the problem
+  $_REQUEST=strings_stripSlashes($_REQUEST);
+  
+  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
+  $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+  $args->basehref = $_SESSION['basehref'];
+  
+  $args->parentID = is_null($args->parentID) ? $args->tproject_id : $args->parentID;
+
+  $args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action'])
+                       ? $_SESSION['setting_refresh_tree_on_action'] : 0;
+  
+  $args->countReq = is_null($args->countReq) ? 0 : intval($args->countReq);
+  return $args;
 }
 
 
@@ -91,137 +95,129 @@ function init_args()
  */
 function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 {
-    $smartyObj = new TLSmarty();
-    $renderType = 'none';
-    $tpl = $tpd = null;
+  $smartyObj = new TLSmarty();
+  $renderType = 'none';
+  $tpl = $tpd = null;
 
-    $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
-                             'doDelete' => '', 'doReorder' => '', 'reorder' => '',
-                             'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
-                             'createChild' => 'doCreate', 'copy' => 'doCopy',
-                             'doCopy' => 'doCopy',
-	                         'doFreeze' => 'doFreeze',
-                             'copyRequirements' => 'doCopyRequirements',
-                             'doCopyRequirements' => 'doCopyRequirements',
-                             'doCreateRevision' => 'doCreateRevision');
+  $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
+                           'doDelete' => '', 'doReorder' => '', 'reorder' => '',
+                           'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
+                           'createChild' => 'doCreate', 'copy' => 'doCopy',
+                           'doCopy' => 'doCopy',
+                           'doFreeze' => 'doFreeze',
+                           'copyRequirements' => 'doCopyRequirements',
+                           'doCopyRequirements' => 'doCopyRequirements',
+                           'doCreateRevision' => 'doCreateRevision',
+                           'fileUpload' => '', 'deleteFile' => '');
+  // ------------------------------------------------------------------------------------------------
+  // Web Editor Processing
+  $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
+  switch($argsObj->doAction)
+  {
+    case "edit":
+    case "doCreate":
+      $owebEditor->Value = $argsObj->scope;
+    break;
 
+    case "fileUpload":
+    case "deleteFile":
+    break;
 
-	// ------------------------------------------------------------------------------------------------
-	// Web Editor Processing
-    $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
-	switch($argsObj->doAction)
-    {
-        case "edit":
-        case "doCreate":
-        	$owebEditor->Value = $argsObj->scope;
-        break;
+    default:
+      if($opObj->askForRevision || $opObj->askForLog || !$opObj->action_status_ok) 
+      {
+        $owebEditor->Value = $argsObj->scope;
+      }
+      else
+      {
+        $owebEditor->Value = getItemTemplateContents('req_spec_template',$owebEditor->InstanceName,$argsObj->scope);
+      }                        
+    break;
+  }
+  $guiObj->scope = $owebEditor->CreateHTML();
+  $guiObj->editorType = $editorCfg['type'];  
 
-        default:
-        // TICKET 4661
-        if($opObj->askForRevision || $opObj->askForLog || !$opObj->action_status_ok) 
-		{
-			$owebEditor->Value = $argsObj->scope;
-		}
-		else
-		{
-        	$owebEditor->Value = getItemTemplateContents('req_spec_template',$owebEditor->InstanceName, 
-        												 $argsObj->scope);
-        }												 
-        break;
-    }
-	$guiObj->scope = $owebEditor->CreateHTML();
+  // Tree refresh Processing
+  switch($argsObj->doAction)
+  {
+    case "doCreate":
+    case "doUpdate": 
+    case "doCopyRequirements":
+    case "doCopy":
+    case "doFreeze":
+    case "doDelete":
+      $guiObj->refreshTree = $argsObj->refreshTree;
+    break;
+  }
 
-	// if($opObj->action_status_ok == false){new dBug($guiObj->scope);}
-    $guiObj->editorType = $editorCfg['type'];  
-	// ------------------------------------------------------------------------------------------------
-
-
-	// ------------------------------------------------------------------------------------------------
-	// Tree refresh Processing
-	switch($argsObj->doAction)
-    {
-        case "doCreate":
-	    case "doUpdate": 
-        case "doCopyRequirements":
-        case "doCopy":
-        case "doFreeze":
-        case "doDelete":
-    		$guiObj->refreshTree = $argsObj->refreshTree;
-    	break;
-    }
-	// ------------------------------------------------------------------------------------------------
-
-    
-	// ------------------------------------------------------------------------------------------------
-	// GUI rendering Processing
-    switch($argsObj->doAction)
-    {
-        case "edit":
-        case "create":
-        case "createChild":
-        case "reorder":
-        case "doDelete":
-        case "doReorder":
-	    case "doCreate":
-	    case "doUpdate":
-        case "copyRequirements":
-        case "doCopyRequirements":
-        case "copy":
-        case "doCopy":
-        case "doFreeze":
-        case "doCreateRevision":
-        	$renderType = 'template';
-            $key2loop = get_object_vars($opObj);
+  // GUI rendering Processing
+  switch($argsObj->doAction)
+  {
+    case "edit":
+    case "create":
+    case "createChild":
+    case "reorder":
+    case "doDelete":
+    case "doReorder":
+    case "doCreate":
+    case "doUpdate":
+    case "copyRequirements":
+    case "doCopyRequirements":
+    case "copy":
+    case "doCopy":
+    case "doFreeze":
+    case "doCreateRevision":
+    case "fileUpload":
+    case "deleteFile":
+      $renderType = 'template';
+      $key2loop = get_object_vars($opObj);
             
-            if($opObj->action_status_ok == false)  // TICKET 4661
-            {
-				// Remember that scope normally is a WebRichEditor, and that
-				// we have already processed WebRichEditor
-				// Need to understand if remove of scope key can be done always
-				// no matter action_status_ok
-            	unset($key2loop['scope']);
-            }
-            foreach($key2loop as $key => $value)
-            {
-                $guiObj->$key = $value;
-            }
-       
-       		// if($opObj->action_status_ok == false){new dBug($guiObj);}
-       		
-            $guiObj->operation = $actionOperation[$argsObj->doAction];
-            $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
-            $tpd = isset($key2loop['template_dir']) ? $opObj->template_dir : $templateCfg->template_dir;
+      if($opObj->action_status_ok == false)  // TICKET 4661
+      {
+        // Remember that scope normally is a WebRichEditor, and that
+        // we have already processed WebRichEditor
+        // Need to understand if remove of scope key can be done always
+        // no matter action_status_ok
+        unset($key2loop['scope']);
+      }
+      foreach($key2loop as $key => $value)
+      {
+        $guiObj->$key = $value;
+      }
+      
+      $guiObj->operation = $actionOperation[$argsObj->doAction];
+      $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
+      $tpd = isset($key2loop['template_dir']) ? $opObj->template_dir : $templateCfg->template_dir;
 
-	    	$pos = strpos($tpl, '.php');
-            if($pos === false)
-            {
-            	// $tpl = $templateCfg->template_dir . $tpl;      
-            	$tpl = $tpd . $tpl;
-            }
-            else
-            {
-                $renderType = 'redirect';  
-			}
-    	break;
-    }
+      $pos = strpos($tpl, '.php');
+      if($pos === false)
+      {
+        $tpl = $tpd . $tpl;
+      }
+      else
+      {
+        $renderType = 'redirect';  
+      }
+    break;
+  }
     
-    switch($renderType)
-    {
-        case 'template':
-			$smartyObj->assign('mgt_view_events',has_rights($db,"mgt_view_events"));
- 		    $smartyObj->assign('gui',$guiObj);
-		    $smartyObj->display($tpl);
-        	break;  
+  switch($renderType)
+  {
+    case 'template':
+      $smartyObj->assign('mgt_view_events',has_rights($db,"mgt_view_events"));
+      $smartyObj->assign('gui',$guiObj);
+      $smartyObj->display($tpl);
+    break;  
  
-        case 'redirect':
-		    header("Location: {$tpl}");
-	  		exit();
-        	break;
+    case 'redirect':
+      header("Location: {$tpl}");
+      exit();
+    break;
 
-        default:
-        	echo 'Can not process RENDERING!!!';
-        	break;
-    }
+    default:
+      echo 'Can not process RENDERING!!!';
+    break;
+  }
 }
 
 /**
@@ -230,17 +226,17 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
  */
 function initialize_gui(&$dbHandler, &$argsObj, &$req_cfg, &$commandMgr)
 {
-    $gui = $commandMgr->initGuiBean();
-	$gui->parentID = $argsObj->parentID;
-    $gui->user_feedback = null;
-    $gui->main_descr = null;
-    $gui->action_descr = null;
-    $gui->refreshTree = 0;
-	$gui->external_req_management = ($req_cfg->external_req_management == ENABLED) ? 1 : 0;
-    $gui->grants = new stdClass();
-    $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
+  $gui = $commandMgr->initGuiBean();
+  $gui->parentID = $argsObj->parentID;
+  $gui->user_feedback = null;
+  $gui->main_descr = null;
+  $gui->action_descr = null;
+  $gui->refreshTree = 0;
+  $gui->external_req_management = ($req_cfg->external_req_management == ENABLED) ? 1 : 0;
+  $gui->grants = new stdClass();
+  $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
 
-    return $gui;
+  return $gui;
 }
 
 /**
@@ -249,6 +245,5 @@ function initialize_gui(&$dbHandler, &$argsObj, &$req_cfg, &$commandMgr)
  */
 function checkRights(&$db,&$user)
 {
-	return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
+  return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
 }
-?>

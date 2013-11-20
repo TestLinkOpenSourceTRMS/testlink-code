@@ -23,10 +23,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,
 	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,
 	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,
-	execution_type_short_descr,expected_results,testcase_customfields,
-  estimated_execution_duration,version,btn_save_and_exit,
+	execution_type_short_descr,expected_results,testcase_customfields,builds_notes,
+  estimated_execution_duration,version,btn_save_and_exit,test_plan_notes,
 	last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
 	test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
+  bulk_tc_status_management,
 	attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,
 	img_title_bug_mgmt,img_title_delete_execution,test_exec_summary,title_t_r_on_build,
 	execution_type_manual,execution_type_auto,run_mode,or_unassigned_test_cases,
@@ -90,17 +91,10 @@ function set_combo_group(formid,combo_id_prefix,value_to_assign)
 		}	
 	}
 }
-</script>
 
-
-
-{literal}
-<script type="text/javascript">
-{/literal}
 // Escape all messages (string)
 var alert_box_title="{$labels.warning|escape:'javascript'}";
 var warning_nothing_will_be_saved="{$labels.warning_nothing_will_be_saved|escape:'javascript'}";
-{literal}
 function validateForm(f)
 {
   var status_ok=true;
@@ -176,25 +170,18 @@ function openExportTestCases(windows_title,tsuite_id,tproject_id,tplan_id,build_
 	                   windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
 	wref.focus();
 }
-</script>
-{/literal}
 
 
-
-
-
-{* Initialize note panels. The array panel_init_functions is filled with init
-functions from inc_exec_show_tc_exec.tpl and executed from onReady below *}
-<script>
-{literal}
+{* 
+  Initialize note panels. The array panel_init_functions is filled with init
+  functions from inc_exec_show_tc_exec.tpl and executed from onReady below 
+*}
 panel_init_functions = new Array();
 Ext.onReady(function() {
 	for(var i=0;i<panel_init_functions.length;i++) {
 		panel_init_functions[i]();
 	}
 });
-{/literal}
-
 </script>
 
 
@@ -252,8 +239,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {/if}
 
 
-<form method="post" id="execSetResults" name="execSetResults" 
-      onSubmit="javascript:return validateForm(this);">
+<form method="post" id="execSetResults" name="execSetResults" onSubmit="javascript:return validateForm(this);">
 
   <input type="hidden" id="save_button_clicked"  name="save_button_clicked" value="0" />
   <input type="hidden" id="do_delete"  name="do_delete" value="0" />
@@ -262,12 +248,11 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {* -------------------------------------------------------------------------------- *}
   {* Test Plan notes show/hide management                                             *}
   {* -------------------------------------------------------------------------------- *}
-  {lang_get s='test_plan_notes' var='container_title'}
   {$div_id='tplan_notes'}
   {$memstatus_id=$tplan_notes_view_memory_id}
 
   {include file="inc_show_hide_mgmt.tpl"
-           show_hide_container_title=$container_title
+           show_hide_container_title=$labels.test_plan_notes
            show_hide_container_id=$div_id
            show_hide_container_draw=false
            show_hide_container_class='exec_additional_info'
@@ -283,29 +268,26 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {* Platforms notes show/hide management                                                 *}
   {* -------------------------------------------------------------------------------- *}
   {if $gui->platform_info.id > 0}
-  {lang_get s='platform_description' var='container_title'}
-  {$div_id='platform_notes'}
-  {$memstatus_id=$platform_notes_view_memory_id}
+    {$div_id='platform_notes'}
+    {$memstatus_id=$platform_notes_view_memory_id}
 
-  {include file="inc_show_hide_mgmt.tpl"
-           show_hide_container_title=$container_title
-           show_hide_container_id=$div_id
-           show_hide_container_view_status_id=$memstatus_id
-           show_hide_container_draw=true
-           show_hide_container_class='exec_additional_info'
-           show_hide_container_html=$gui->platform_info.notes}
+    {include file="inc_show_hide_mgmt.tpl"
+             show_hide_container_title=$labels.platform_description
+             show_hide_container_id=$div_id
+             show_hide_container_view_status_id=$memstatus_id
+             show_hide_container_draw=true
+             show_hide_container_class='exec_additional_info'
+             show_hide_container_html=$gui->platform_info.notes}
   {/if}         
   {* -------------------------------------------------------------------------------- *}
 
   {* -------------------------------------------------------------------------------- *}
   {* Build notes show/hide management                                                 *}
   {* -------------------------------------------------------------------------------- *}
-  {lang_get s='builds_notes' var='container_title'}
   {$div_id='build_notes'}
   {$memstatus_id=$build_notes_view_memory_id}
-
   {include file="inc_show_hide_mgmt.tpl"
-           show_hide_container_title=$container_title
+           show_hide_container_title=$labels.builds_notes
            show_hide_container_id=$div_id
            show_hide_container_view_status_id=$memstatus_id
            show_hide_container_draw=false
@@ -328,11 +310,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 
         {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
-            {lang_get s='bulk_tc_status_management' var='container_title'}
             {$div_id='bulk_controls'}
             {$memstatus_id="$bulk_controls_view_memory_id"}
             {include file="inc_show_hide_mgmt.tpl"
-                     show_hide_container_title=$container_title
+                     show_hide_container_title=$labels.bulk_tc_status_management
                      show_hide_container_id=$div_id
                      show_hide_container_draw=false
                      show_hide_container_class='exec_additional_info'

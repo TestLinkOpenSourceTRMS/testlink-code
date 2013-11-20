@@ -62,19 +62,13 @@ var import_xml_results="{$labels.import_xml_results}";
 {include file="inc_del_onclick.tpl"}
 
 <script language="JavaScript" type="text/javascript">
-{literal}
-
 function load_notes(panel,exec_id)
 {
   // solved ONLY for  $webeditorType == 'none'
   var url2load=fRoot+'lib/execute/getExecNotes.php?readonly=1&exec_id=' + exec_id;
-  panel.load({url:url2load});
+  panel.load({ url:url2load });
 }
-{/literal}
-</script>
 
-<script language="JavaScript" type="text/javascript">
-{literal}
 /*
 Set value for a group of combo (have same prefix).
 */
@@ -96,7 +90,6 @@ function set_combo_group(formid,combo_id_prefix,value_to_assign)
 		}	
 	}
 }
-{/literal}
 </script>
 
 

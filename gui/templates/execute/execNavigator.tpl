@@ -3,7 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource execNavigator.tpl
 
 @internal revisions
-@since 1.9.9
+@since 1.9.10
 *}
 
 {lang_get var="labels"
@@ -22,17 +22,15 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 var msg_block_filter_not_run_latest_exec = '{$labels.block_filter_not_run_latest_exec}';
 var code_lastest_exec_method = {$gui->lastest_exec_method};
 var code_not_run = '{$gui->not_run}';
-</script>
 
-<script type="text/javascript">
-    treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
-                loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
-    Ext.onReady(function() {
-    Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
+            loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
+Ext.onReady(function() {
+  Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 
-    // Use a collapsible panel for filter settings
-    // and place a help icon in ther header
-    var settingsPanel = new Ext.ux.CollapsiblePanel({
+  // Use a collapsible panel for filter settings
+  // and place a help icon in ther header
+  var settingsPanel = new Ext.ux.CollapsiblePanel({
       id: 'tl_exec_filter',
       applyTo: 'settings_panel',
       tools: [{
@@ -46,7 +44,7 @@ var code_not_run = '{$gui->not_run}';
       id: 'tl_exec_settings',
       applyTo: 'filter_panel'
     });
-  });
+});
 
 /**
  * 
@@ -66,6 +64,7 @@ function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build
 
 /**
  * 
+ *
  */
 function validateForm(the_form)
 {
@@ -90,9 +89,7 @@ function validateForm(the_form)
   }
   return status_ok;
 }
-</script>
 
-<script type="text/javascript">
 treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
 treeCfg.root_id={$gui->ajaxTree->root_node->id};
 treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
@@ -102,13 +99,12 @@ treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
 
 <script type="text/javascript" src='gui/javascript/execTreeWithMenu.js'></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
+{include file='inc_filter_panel_js.tpl'}
 
 {* 
  * !!!!! IMPORTANT !!!!!
- * this included file closes <head> tag and opens <body>, so this is not done here.
+ * Above included file closes <head> tag and opens <body>, so this is not done here.
  *}
-{include file='inc_filter_panel_js.tpl'}
-
   
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {$build_number=$control->settings.setting_build.selected}
@@ -118,12 +114,9 @@ treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
 {$tlCfg->gui_separator_open}{$labels.build}{$tlCfg->gui_title_separator_1}
 {$control->settings.setting_build.items.$build_number|escape}{$tlCfg->gui_separator_close}</h1>
 
+
 {include file='inc_filter_panel.tpl'}
 {include file="inc_tree_control.tpl"}
-
 <div id="tree_div" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
-<script type="text/javascript">
-  parent.workframe.location='{$gui->src_workframe}';
-</script>
 </body>
 </html>

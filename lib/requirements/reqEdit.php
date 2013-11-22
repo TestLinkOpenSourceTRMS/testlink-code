@@ -9,7 +9,7 @@
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revision
- * @since 1.9.6
+ * @since 1.9.10
  *
  *
 **/
@@ -75,7 +75,9 @@ function init_args(&$dbHandler)
                    "save_rev" => array(tlInputParameter::INT_N),
                    "do_save" => array(tlInputParameter::INT_N),
                    "log_message" => array(tlInputParameter::STRING_N),
-                   "tcaseIdentity" => array(tlInputParameter::STRING_N));
+                   "tcaseIdentity" => array(tlInputParameter::STRING_N),
+                   "file_id" => array(tlInputParameter::INT_N),
+                   "fileTitle" => array(tlInputParameter::STRING_N,0,100));
 
   $args = new stdClass();
   R_PARAMS($iParams,$args);
@@ -134,7 +136,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
                      'doCreateVersion' => 'doCreateVersion','doCreateRevision' => 'doCreateRevision',
                      'doDeleteVersion' => '', 'doFreezeVersion' => 'doFreezeVersion',
                      'doAddRelation' => 'doAddRelation', 'doDeleteRelation' => 'doDeleteRelation',
-                     'doUnfreezeVersion' => 'doUnfreezeVersion');
+                     'doUnfreezeVersion' => 'doUnfreezeVersion',
+                     'fileUpload' => '', 'deleteFile' => '');
 
   $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
   switch($argsObj->doAction)
@@ -142,6 +145,10 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
     case "edit":
     case "doCreate":
       $owebEditor->Value = $argsObj->scope;
+    break;
+
+    case "fileUpload":
+    case "deleteFile":
     break;
 
     default:
@@ -203,11 +210,13 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
     case "doDeleteRelation":
     case "doCreateRevision":
     case "removeTestCase":
+    case "fileUpload":
+    case "deleteFile":
       $renderType = 'template';
       $key2loop = get_object_vars($opObj);
       foreach($key2loop as $key => $value)
       {
-          $guiObj->$key = $value;
+        $guiObj->$key = $value;
       }
 
       // exceptions
@@ -217,6 +226,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
           
       $tplDir = (!isset($opObj->template_dir)  || is_null($opObj->template_dir)) ? $templateCfg->template_dir : $opObj->template_dir;
       $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
+
       $pos = strpos($tpl, '.php');
       if($pos === false)
       {
@@ -257,7 +267,9 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
 function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 {
   $req_spec_mgr = new requirement_spec_mgr($dbHandler);
-  
+
+  // new dBug($argsObj);
+
   $gui = $commandMgr->initGuiBean();
   $gui->req_cfg = config_get('req_cfg');
   

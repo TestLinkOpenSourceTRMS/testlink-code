@@ -8,8 +8,8 @@
  * 
  * Screen to view content of requirement.
  *
- *  @internal revisions
- *  @since 1.9.6
+ * @internal revisions
+ * @since 1.9.10
  *
  */
 require_once('../../config.inc.php');
@@ -27,10 +27,6 @@ $args = init_args();
 $gui = initialize_gui($db,$args,$tproject_mgr);
 $smarty = new TLSmarty();
 
-$prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
-
-$gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . 
-                    urlencode($prefix) . '&item=req&id=' . urlencode($gui->req['req_doc_id']);
 
 
 $smarty->assign('gui',$gui);
@@ -42,23 +38,31 @@ $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
 function init_args()
 {
   $_REQUEST=strings_stripSlashes($_REQUEST);
-  $iParams = array("requirement_id" => array(tlInputParameter::INT_N),
+  $iParams = array("req_id" => array(tlInputParameter::INT_N),
+                   "requirement_id" => array(tlInputParameter::INT_N),
                    "req_version_id" => array(tlInputParameter::INT_N),
                    "showReqSpecTitle" => array(tlInputParameter::INT_N),
                    "refreshTree" => array(tlInputParameter::INT_N),
                    "relation_add_result_msg" => array(tlInputParameter::STRING_N),
                    "user_feedback" => array(tlInputParameter::STRING_N));
-          
+
+  // new dBug($_REQUEST);
+
   $args = new stdClass();
   R_PARAMS($iParams,$args);
 
+  if($args->req_id <= 0)
+  {
+    $args->req_id = $args->requirement_id;
+  }  
+
   $args->refreshTree = intval($args->refreshTree);
-  $args->req_id = $args->requirement_id;
   $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
   $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
   $args->user = $_SESSION['currentUser'];
   $args->userID = $args->user->dbID;
 
+  // new dBug($args);
   return $args;
 }
 
@@ -72,11 +76,14 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr)
   $commandMgr = new reqCommands($dbHandler);
 
   $gui = $commandMgr->initGuiBean();
-  $gui->refreshTree = $argsObj->refreshTree;
   $gui->req_cfg = config_get('req_cfg');
+  $gui->glueChar = config_get('testcase_cfg')->glue_character;
+  $gui->pieceSep = config_get('gui_title_separator_1');
+
+  $gui->refreshTree = $argsObj->refreshTree;
   $gui->tproject_name = $argsObj->tproject_name;
   $gui->req_id = $argsObj->req_id;
-      
+    
   /* if wanted, show only the given version */
   $gui->version_option = ($argsObj->req_version_id) ? $argsObj->req_version_id : requirement_mgr::ALL_VERSIONS;
   $gui->req_versions = $req_mgr->get_by_id($gui->req_id, $gui->version_option);
@@ -103,8 +110,18 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr)
   $gui->grants->unfreeze_req = $argsObj->user->hasRight($dbHandler,"mgt_unfreeze_req",$target_id);
   
   $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
-  $gui->glueChar = config_get('testcase_cfg')->glue_character;
-  $gui->pieceSep = config_get('gui_title_separator_1');
+  
+  $gui->req = current($gui->req_versions);
+  $gui->req_coverage = $req_mgr->get_coverage($gui->req_id);
+  $gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . 
+                      urlencode($gui->tcasePrefix) . '&item=req&id=' . urlencode($gui->req['req_doc_id']);
+
+
+  $gui->fileUploadURL = $_SESSION['basehref'] . $req_mgr->getFileUploadRelativeURL($gui->req_id,$argsObj);
+  $gui->delAttachmentURL = $_SESSION['basehref'] . $req_mgr->getDeleteAttachmentRelativeURL($gui->req_id);
+  $gui->fileUploadMsg = '';
+  $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
+
 
   $gui->log_target = null;
   $loop2do = count($gui->req_versions);
@@ -116,8 +133,6 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr)
   
   $gui->req_has_history = count($req_mgr->get_history($gui->req_id, array('output' => 'array'))) > 1; 
   
-  $gui->req = current($gui->req_versions);
-  $gui->req_coverage = $req_mgr->get_coverage($gui->req_id);
   
   
   // This seems weird but is done to adapt template than can display multiple
@@ -172,6 +187,8 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr)
       $gui->testproject_select = initTestprojectSelect($argsObj->userID, $argsObj->tproject_id,$tproject_mgr);
     }
   }
+
+
 
   $gui->user_feedback = $argsObj->user_feedback;
   return $gui;

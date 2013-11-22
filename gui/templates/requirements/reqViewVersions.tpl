@@ -35,7 +35,6 @@ Purpose: view requirement with version management
 {config_load file="input_dimensions.conf"}
 
 <script type="text/javascript">
-
 // Requirement can not be deleted due to JS error -> label has to be escaped
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var delete_rel_msgbox_msg = '{$delete_rel_msgbox_msg|escape:'javascript'}';
@@ -127,10 +126,12 @@ function validate_req_docid_input(input_id, original_value) {
  * 
  *
  */
-function delete_req_relation(btn, text, req_id, relation_id) {
+function delete_req_relation(btn, text, req_id, relation_id) 
+{
   var my_action=fRoot + 'lib/requirements/reqEdit.php?doAction=doDeleteRelation&requirement_id='
                      + req_id + '&relation_id=' + relation_id;
-  if( btn == 'yes' ) {
+  if( btn == 'yes' ) 
+  {
     window.location=my_action;
   }
 }
@@ -139,7 +140,8 @@ function delete_req_relation(btn, text, req_id, relation_id) {
  * 
  *
  */
-function relation_delete_confirmation(requirement_id, relation_id, title, msg, pFunction) {
+function relation_delete_confirmation(requirement_id, relation_id, title, msg, pFunction) 
+{
   var my_msg = msg.replace('%i',relation_id);
   var safe_title = title.escapeHTML();
   Ext.Msg.confirm(safe_title, my_msg,
@@ -169,7 +171,6 @@ function ask4log(fid_prefix,tid_prefix,idx)
 
 /**
  * 
- * @since 1.9.4
  */
 function tip4log(itemID)
 {
@@ -184,6 +185,20 @@ function tip4log(itemID)
 }
 {/literal}
 
+/**
+ * Be Carefull this TRUST on existence of $gui->delAttachmentURL
+ */
+function jsCallDeleteFile(btn, text, o_id)
+{ 
+  var my_action='';
+  if( btn == 'yes' )
+  {
+    my_action='{$gui->delAttachmentURL}'+o_id;
+    window.location=my_action;
+  }
+}        
+
+
 // **************************************************************************
 // VERY IMPORTANT:
 // needed to make delete_confirmation() understand we are using a function.
@@ -197,11 +212,10 @@ var pF_unfreeze_req_version = unfreeze_req_version;
 </script>
 
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
-
 {* need by refresh on upload logic used when this template is called while executing *}
 {if $gui->bodyOnLoad != ''}
 <script language="JavaScript">
-  var {$gui->dialogName} = new std_dialog('&refreshTree');
+var {$gui->dialogName} = new std_dialog('&refreshTree');
 </script>  
 {/if}
 
@@ -212,7 +226,7 @@ var pF_unfreeze_req_version = unfreeze_req_version;
   {$my_style="background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
 {/if}
 
-{assign var=this_template_dir value=$smarty.template|dirname}
+{$this_template_dir=$smarty.template|dirname}
 
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
 <h1 class="title">{$gui->main_descr|escape}{if isset($gui->show_match_count)} - {$labels.match_count}: {$gui->match_count}{/if}
@@ -281,7 +295,7 @@ var pF_unfreeze_req_version = unfreeze_req_version;
   {if !isset($loadOnCancelURL)}
     {$loadOnCancelURL=""}
   {/if} 
-           
+
   {if $gui->req_cfg->relations->enable && !$frozen_version} {* show this part only if relation feature is enabled *}
   
     {* form to enter a new relation *}
@@ -391,7 +405,7 @@ var pF_unfreeze_req_version = unfreeze_req_version;
   
   {* end req relations *}
          
-  {include file="inc_attachments.tpl" 
+  {include file="attachments.inc.tpl" 
              attach_id=$reqID  
              attach_tableName=$gui->attachmentTableName
              attach_attachmentInfos=$gui->attachments[$reqID]  

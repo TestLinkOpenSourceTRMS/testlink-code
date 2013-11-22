@@ -12,7 +12,7 @@
  * Requirements are children of a requirement specification (requirements container)
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.10
  * 
  */
 
@@ -3163,6 +3163,28 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     return $rs;
   }
 
+  /**
+   *
+   * @used-by 
+   */
+  function getFileUploadRelativeURL($id,$argsObj)
+  {
+    //new dBug($argsObj);
+    $sfid = intval($id);
+    $url = "lib/requirements/reqEdit.php?doAction=fileUpload&requirement_id=" . $sfid . "&req_id=" . $sfid;
+    return $url;
+  }
+
+  /**
+   *
+   * @used-by 
+   */
+  function getDeleteAttachmentRelativeURL($id)
+  {
+    $url = "lib/requirements/reqEdit.php?doAction=deleteFile&requirement_id=" . intval($id) . "&file_id=" ; 
+    return $url;
+  }
+
+
   
 } // class end
-?>

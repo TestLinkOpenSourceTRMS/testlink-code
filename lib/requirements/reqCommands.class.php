@@ -904,7 +904,38 @@ class reqCommands
     return $obj;
   }
 
+  /**
+   *
+   */
+  function fileUpload(&$argsObj,$request)
+  {
+    fileUploadManagement($this->db,$argsObj->req_id,$argsObj->fileTitle,$this->reqMgr->getAttachmentTableName());
+    return $this->initGuiObjForAttachmentOperations($argsObj);
+  }
+
+  /**
+   *
+   */
+  function deleteFile(&$argsObj)
+  {
+    deleteAttachment($this->db,$argsObj->file_id);
+    return $this->initGuiObjForAttachmentOperations($argsObj);
+  }
+
+
+  /**
+   *
+   */
+  private function initGuiObjForAttachmentOperations($argsObj)
+  {
+    $guiObj = new stdClass();
+    $guiObj->main_descr = '';
+    $guiObj->action_descr = '';
+    $guiObj->req_id = $argsObj->req_id;
+    $guiObj->suggest_revision = $guiObj->prompt_for_log = false;
+    $guiObj->template = "reqView.php?refreshTree=0&requirement_id={$argsObj->req_id}";
+    return $guiObj;    
+  }
+
   
 }
-
-?>

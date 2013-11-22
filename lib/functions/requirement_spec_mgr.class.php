@@ -9,7 +9,7 @@
  * Manager for requirement specification (requirement container)
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.10
  * 
  */
 require_once( dirname(__FILE__) . '/attachments.inc.php' );

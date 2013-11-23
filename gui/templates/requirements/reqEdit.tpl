@@ -23,104 +23,102 @@ Purpose: smarty template - create / edit a req
 <script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
-	var warning_empty_req_docid = "{$labels.warning_empty_reqdoc_id|escape:'javascript'}";
-	var warning_empty_req_title = "{$labels.warning_empty_req_title|escape:'javascript'}";
-	var warning_expected_coverage = "{$labels.warning_expected_coverage|escape:'javascript'}";
-	var warning_expected_coverage_range = "{$labels.warning_expected_coverage_range|escape:'javascript'}";
-  var log_box_title = "{$labels.revision_log_title|escape:'javascript'}";
-  var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
-  // var confirm_title = "{$labels.warning|escape:'javascript'}";
-  var confirm_title = "{$labels.warning_suggest_create_revision|escape:'javascript'}";
-  var confirm_text = "{$labels.suggest_create_revision_html}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_req_docid = "{$labels.warning_empty_reqdoc_id|escape:'javascript'}";
+var warning_empty_req_title = "{$labels.warning_empty_req_title|escape:'javascript'}";
+var warning_expected_coverage = "{$labels.warning_expected_coverage|escape:'javascript'}";
+var warning_expected_coverage_range = "{$labels.warning_expected_coverage_range|escape:'javascript'}";
+var log_box_title = "{$labels.revision_log_title|escape:'javascript'}";
+var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
+var confirm_title = "{$labels.warning_suggest_create_revision|escape:'javascript'}";
+var confirm_text = "{$labels.suggest_create_revision_html}";
 
-  // To manage hide/show expected coverage logic, depending of req type
-  var js_expected_coverage_cfg = new Array();
+// To manage hide/show expected coverage logic, depending of req type
+var js_expected_coverage_cfg = new Array();
   
-  // DOM Object ID (oid)
-  // associative array with attributes
-  js_attr_cfg = new Array();
+// DOM Object ID (oid)
+// associative array with attributes
+js_attr_cfg = new Array();
   
-  // Configuration for expected coverage attribute
-  js_attr_cfg['expected_coverage'] = new Array();
-  js_attr_cfg['expected_coverage']['oid'] = new Array();
-  js_attr_cfg['expected_coverage']['oid']['input'] = 'expected_coverage';
-  js_attr_cfg['expected_coverage']['oid']['container'] = 'expected_coverage_container';
+// Configuration for expected coverage attribute
+js_attr_cfg['expected_coverage'] = new Array();
+js_attr_cfg['expected_coverage']['oid'] = new Array();
+js_attr_cfg['expected_coverage']['oid']['input'] = 'expected_coverage';
+js_attr_cfg['expected_coverage']['oid']['container'] = 'expected_coverage_container';
 
-  {foreach from=$gui->attrCfg.expected_coverage key=req_type item=cfg_def}
-    js_attr_cfg['expected_coverage'][{$req_type}]={$cfg_def};
-  {/foreach}
+{foreach from=$gui->attrCfg.expected_coverage key=req_type item=cfg_def}
+  js_attr_cfg['expected_coverage'][{$req_type}]={$cfg_def};
+{/foreach}
 
-  {literal}
-	function validateForm(f,cfg,check_expected_coverage)
+{literal}
+function validateForm(f,cfg,check_expected_coverage)
+{
+	
+	var cf_designTime = document.getElementById('custom_field_container');
+
+	if (isWhitespace(f.reqDocId.value)) 
+  {
+    alert_message(alert_box_title,warning_empty_req_docid);
+		selectField(f, 'reqDocId');
+		return false;
+	}
+	  
+	if (isWhitespace(f.req_title.value)) 
 	{
+		alert_message(alert_box_title,warning_empty_req_title);
+		selectField(f, 'req_title');
+		return false;
+  }
 	
-	 	var cf_designTime = document.getElementById('custom_field_container');
-
-		if (isWhitespace(f.reqDocId.value)) 
+  if (check_expected_coverage)
+  {
+	  if( cfg['expected_coverage'][f.reqType.value] == 1 )
 	  {
-	    alert_message(alert_box_title,warning_empty_req_docid);
-			selectField(f, 'reqDocId');
-			return false;
-		}
-	  
-		if (isWhitespace(f.req_title.value)) 
-		{
-			alert_message(alert_box_title,warning_empty_req_title);
-			selectField(f, 'req_title');
-			return false;
-	  }
-	
-    if (check_expected_coverage)
-    {
-		  if( cfg['expected_coverage'][f.reqType.value] == 1 )
-		  {
-		    value = parseInt(f.expected_coverage.value);
-		    if (isNaN(value))
-		    {
-		    	alert_message(alert_box_title,warning_expected_coverage);
-		    	selectField(f,'expected_coverage');
-		    	return false;
-		    }
-		    else if( value <= 0)
-		    {
-		    	alert_message(alert_box_title,warning_expected_coverage_range);
-		    	selectField(f,'expected_coverage');
-		    	return false;
-		    }
-		  }
-		  else
-		  {
-		    f.expected_coverage.value = 0;
-		  }
-	  }
-	  
-    /* Validation of a limited type of custom fields */
-	  if (cf_designTime)
- 	  {
- 	  	var cfields_container = cf_designTime.getElementsByTagName('input');
- 	  	var cfieldsChecks = validateCustomFields(cfields_container);
-	  	if(!cfieldsChecks.status_ok)
+	    value = parseInt(f.expected_coverage.value);
+	    if (isNaN(value))
 	    {
-	      	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	        alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	        return false;
-	  	}
+	    	alert_message(alert_box_title,warning_expected_coverage);
+	    	selectField(f,'expected_coverage');
+	    	return false;
+	    }
+	    else if( value <= 0)
+	    {
+	    	alert_message(alert_box_title,warning_expected_coverage_range);
+	    	selectField(f,'expected_coverage');
+	    	return false;
+	    }
+	  }
+	  else
+	  {
+	    f.expected_coverage.value = 0;
+	  }
+  }
+	  
+  /* Validation of a limited type of custom fields */
+  if (cf_designTime)
+  {
+  	var cfields_container = cf_designTime.getElementsByTagName('input');
+  	var cfieldsChecks = validateCustomFields(cfields_container);
+  	if(!cfieldsChecks.status_ok)
+    {
+     	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+      return false;
+  	}
     
-      /* Text area needs a special access */
- 	  	cfields_container = cf_designTime.getElementsByTagName('textarea');
- 	  	cfieldsChecks = validateCustomFields(cfields_container);
-	  	if(!cfieldsChecks.status_ok)
-	    {
-	      	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	        alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	        return false;
-	  	}
-	  }
-    if(f.prompt4log.value == 1)
+    /* Text area needs a special access */
+  	cfields_container = cf_designTime.getElementsByTagName('textarea');
+  	cfieldsChecks = validateCustomFields(cfields_container);
+  	if(!cfieldsChecks.status_ok)
     {
-      Ext.Msg.prompt(log_box_title, log_box_text, function(btn, text){
+     	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+      return false;
+  	}
+  }
+  if(f.prompt4log.value == 1)
+  {
+    Ext.Msg.prompt(log_box_title, log_box_text, function(btn, text){
         if (btn == 'ok'){
             f.goaway.value=1;
             f.prompt4log.value=0;

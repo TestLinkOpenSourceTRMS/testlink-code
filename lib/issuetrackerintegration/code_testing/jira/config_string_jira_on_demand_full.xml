@@ -1,0 +1,22 @@
+<issuetracker>
+  <username>testlink.forum</username>
+  <password>forum</password>
+  <uribase>http://testlink.atlassian.net/</uribase>
+  <uriwsdl>http://testlink.atlassian.net/rpc/soap/jirasoapservice-v2?wsdl</uriwsdl>
+  <uriview>http://testlink.atlassian.net/browse/</uriview>
+  <uricreate>http://testlink.atlassian.net/secure/CreateIssue!default.jspa</uricreate>
+  <projectkey>ZOFF</projectkey>
+  <issuetype>1</issuetype>
+  <attributes>
+    <components>
+      <id>10100</id>
+      <id>10101</id>
+    </components>
+    <customFieldValues>
+      <remoteCustomFieldValue>
+        <customFieldID>customfield_10800</customFieldID>
+        <values><value>12</value></values>
+      </remoteCustomFieldValue>
+    </customFieldValues>
+  </attributes>
+</issuetracker>

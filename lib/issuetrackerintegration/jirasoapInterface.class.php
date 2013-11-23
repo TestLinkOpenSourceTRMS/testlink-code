@@ -176,8 +176,6 @@ class jirasoapInterface extends issueTrackerInterface
     	// to do a simple call with user/password only to understand if we are really connected
     	try
     	{
-        var_dump($this->cfg);
-
     		$this->APIClient = $op['client'];
         $this->authToken = $this->APIClient->login($this->cfg->username, $this->cfg->password);
         $statusSet = $op['client']->getStatuses($this->authToken);
@@ -327,8 +325,7 @@ class jirasoapInterface extends issueTrackerInterface
         $issue = array_merge($issue,$this->issueAttr);
       }  
 
-      //DEBUG-
-      echo 'This Will Be Sent to JIRA<br>';echo '<pre>';var_dump($issue);echo '</pre>';
+      //DEBUG-echo 'This Will Be Sent to JIRA<br>';echo '<pre>';var_dump($issue);echo '</pre>';
       
       $op = $this->APIClient->createIssue($this->authToken, $issue);
       $ret = array('status_ok' => true, 'id' => $op->key, 

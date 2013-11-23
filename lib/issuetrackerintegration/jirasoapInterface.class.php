@@ -51,8 +51,11 @@ class jirasoapInterface extends issueTrackerInterface
 	    $this->connect();
 	    $this->guiCfg = array('use_decoration' => true);
 
-      // Attention has to be done AFTER CONNECT, because we need info setted there
-	    $this->setResolvedStatusCfg();  
+      // Attention has to be done AFTER CONNECT OK, because we need info setted there
+      if( $this->isConnected())
+      {  
+        $this->setResolvedStatusCfg();  
+      }  
     }
 	}
 

@@ -27,12 +27,12 @@ class jiraCommons
    **/
   function checkBugIDExistence($issueID)
   {
-      if(($status_ok = $this->checkBugIDSyntax($issueID)))
-      {
-          $issue = $this->getIssue($issueID);
-          $status_ok = !is_null($issue) && is_object($issue);
-      }
-      return $status_ok;
+    if(($status_ok = $this->checkBugIDSyntax($issueID)))
+    {
+      $issue = $this->getIssue($issueID);
+      $status_ok = !is_null($issue) && is_object($issue);
+    }
+    return $status_ok;
   }
 
   /**
@@ -44,9 +44,9 @@ class jiraCommons
     $ret = null;
     if (!is_null($date2parse))
     {
-        $ret = date_parse($date2parse);
-        $ret = ((gmmktime(0, 0, 0, $ret['month'], $ret['day'], $ret['year'])));
-        $ret = $this->l18n['duedate'] . gmstrftime("%d %b %Y",($ret));
+      $ret = date_parse($date2parse);
+      $ret = ((gmmktime(0, 0, 0, $ret['month'], $ret['day'], $ret['year'])));
+      $ret = $this->l18n['duedate'] . gmstrftime("%d %b %Y",($ret));
     }
     return $ret ;
   }
@@ -78,6 +78,9 @@ class jiraCommons
     return $summary;
   }
   
+  /**
+   *
+   **/
   function initDefaultResolvedStatus($statusDomain)
   {          
     $domain = array();

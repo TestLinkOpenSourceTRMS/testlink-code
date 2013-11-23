@@ -8,13 +8,12 @@
  *
  *
  * @internal IMPORTANT NOTICE
- *			 we use issueID on methods signature, to make clear that this ID 
- *			 is HOW issue in identified on Issue Tracker System, 
- *			 not how is identified internally at DB	level on TestLink
+ *           we use issueID on methods signature, to make clear that this ID 
+ *			     is HOW issue in identified on Issue Tracker System, 
+ *			     not how is identified internally at DB	level on TestLink
  *
  * @internal revisions
- * @since 1.9.9
- * 20130805 - franciscom - canCreateViaAPI()
+ * @since 1.9.10
  *
 **/
 class jirasoapInterface extends issueTrackerInterface
@@ -343,6 +342,8 @@ class jirasoapInterface extends issueTrackerInterface
 
   /**
    *
+   * If connection fails $this->defaultResolvedStatus is null
+   *
    */
 	public function setResolvedStatusCfg()
   {
@@ -357,10 +358,13 @@ class jirasoapInterface extends issueTrackerInterface
 
     $this->resolvedStatus = new stdClass();
     $this->resolvedStatus->byCode = array();
-    foreach($statusCfg['status'] as $cfx)
-    {
-      $e = (array)$cfx;
-      $this->resolvedStatus->byCode[$e['code']] = $e['verbose'];
+    if(!is_null($statusCfg['status']))
+    {  
+      foreach($statusCfg['status'] as $cfx)
+      {
+        $e = (array)$cfx;
+        $this->resolvedStatus->byCode[$e['code']] = $e['verbose'];
+      }
     }
     $this->resolvedStatus->byName = array_flip($this->resolvedStatus->byCode);
   }

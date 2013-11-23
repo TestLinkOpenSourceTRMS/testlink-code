@@ -4,6 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 Purpose: smarty template - create Test Plan
 @internal revisions
+@since 1.9.10
 *}
 
 {lang_get var="labels"
@@ -16,12 +17,10 @@ Purpose: smarty template - create Test Plan
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
-{literal}
 <script type="text/javascript">
-{/literal}
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_tp_name = "{$labels.warning_empty_tp_name|escape:'javascript'}";
-{literal}
+
 function validateForm(f)
 {
   var cf_designTime = document.getElementById('custom_field_container');
@@ -54,8 +53,6 @@ function validateForm(f)
         return false;
     }
   }
- 
-  
   return true;
 }
 
@@ -76,8 +73,21 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
     o_container.style.display='';
  }
 }
+
+/**
+ * Be Carefull this TRUST on existence of $gui->delAttachmentURL
+ */
+function jsCallDeleteFile(btn, text, o_id)
+{ 
+  var my_action='';
+  if( btn == 'yes' )
+  {
+    my_action='{$gui->delAttachmentURL}'+o_id;
+    window.location=my_action;
+  }
+}        
 </script>
-{/literal}
+
 </head>
 
 <body>
@@ -199,7 +209,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
   {if $gui->grants->testplan_create eq 'yes'}
     {$downloadOnly=false}
   {/if}
-  {include file="inc_attachments.tpl" 
+  {include file="attachments.inc.tpl" 
                attach_id=$planID
                attach_tableName=$gui->attachmentTableName
                attach_attachmentInfos=$gui->attachments[$planID]  

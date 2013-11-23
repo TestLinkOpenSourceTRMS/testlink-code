@@ -15,7 +15,7 @@
  *
  * @internal revisions
  * 
- * @since 1.9.9
+ * @since 1.9.10
  **/
 
 /** related functionality */
@@ -6933,6 +6933,29 @@ function getExecutionDurationForSet($execIDSet)
  
     $rs = $this->db->get_recordset($sql);
     return ($rs ? $rs[0] : null);
+  }
+
+
+
+  /**
+   *
+   * @used-by planEdit.php
+   */
+  function getFileUploadRelativeURL($id)
+  {
+    // do_action,tplan_id as expected in planEdit.php
+    $url = "lib/plan/planEdit.php?do_action=fileUpload&tplan_id=" . intval($id);
+    return $url;
+  }
+
+  /**
+   * @used-by planEdit.php
+   */
+  function getDeleteAttachmentRelativeURL($id)
+  {
+    // do_action,tplan_id as expected in planEdit.php
+    $url = "lib/plan/planEdit.php?do_action=deleteFile&tplan_id=" . intval($id) . "&file_id=" ; 
+    return $url;
   }
 
 

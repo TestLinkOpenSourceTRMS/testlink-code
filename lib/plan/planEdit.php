@@ -12,7 +12,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.10
  **/
 
 require_once('../../config.inc.php');
@@ -55,20 +55,22 @@ if($args->do_action == "do_create" || $args->do_action == "do_update")
 
 // interface changes to be able to do not loose CF values if some problem arise on User Interface
 $gui->cfields = $tplan_mgr->html_table_of_custom_field_inputs($args->tplan_id,$args->tproject_id,'design','',$_REQUEST);
+
 switch($args->do_action)
 {
+  case 'fileUpload':
+    fileUploadManagement($db,$args->tplan_id,$args->fileTitle,$tplan_mgr->getAttachmentTableName());
+    getItemData($tplan_mgr,$gui,$of,$args->tplan_id,true);
+  break;
+
+  case 'deleteFile':
+    deleteAttachment($db,$args->file_id);
+    getItemData($tplan_mgr,$gui,$of,$args->tplan_id,true);
+  break;
+
   case 'edit':
-    $tplanInfo = $tplan_mgr->get_by_id($args->tplan_id);
-    if (sizeof($tplanInfo))
-    {
-      $of->Value = $tplanInfo['notes'];
-      $gui->testplan_name = $tplanInfo['name'];
-      $gui->is_active = $tplanInfo['active'];
-      $gui->is_public = $tplanInfo['is_public'];
-      $gui->api_key = $tplanInfo['api_key'];
-      $gui->tplan_id = $args->tplan_id;
-    }
-    break;
+    getItemData($tplan_mgr,$gui,$of,$args->tplan_id);
+  break;
 
   case 'do_delete':
     $tplanInfo = $tplan_mgr->get_by_id($args->tplan_id);
@@ -85,7 +87,7 @@ switch($args->do_action)
       $_SESSION['testplanID'] = 0;
       $_SESSION['testplanName'] = null;
     }
-    break;
+  break;
 
   case 'do_update':
     $of->Value = $args->notes;
@@ -142,7 +144,7 @@ switch($args->do_action)
       $gui->tproject_name=$args->tproject_name;
       $gui->notes=$of->CreateHTML();
     }
-    break;
+  break;
 
   case 'do_create':
     $template = 'planEdit.tpl';
@@ -206,7 +208,7 @@ switch($args->do_action)
       $gui->tproject_name=$args->tproject_name;
       $gui->notes=$of->CreateHTML();
     }
-    break;
+  break;
 
   case 'setActive':
     $tplan_mgr->setActive($args->tplan_id);
@@ -220,12 +222,12 @@ switch($args->do_action)
 
 switch($args->do_action)
 {
-   case "do_create":
-   case "do_delete":
-   case "do_update":
-   case "list":
-   case 'setActive':
-   case 'setInactive':
+  case "do_create":
+  case "do_delete":
+  case "do_update":
+  case "list":
+  case 'setActive':
+  case 'setInactive':
     $do_display=true;
     $template = is_null($template) ? 'planView.tpl' : $template;
     $gui->tplans = $args->user->getAccessibleTestPlans($db,$args->tproject_id,null,
@@ -255,6 +257,8 @@ switch($args->do_action)
 
    case "edit":
    case "create":
+   case 'fileUpload':
+   case 'deleteFile':
      $do_display=true;
      $template = is_null($template) ? 'planEdit.tpl' : $template;
      $gui->notes=$of->CreateHTML();
@@ -263,8 +267,8 @@ switch($args->do_action)
 
 if($do_display)
 {
-    $smarty->assign('gui',$gui);
-    $smarty->display($templateCfg->template_dir . $template);
+  $smarty->assign('gui',$gui);
+  $smarty->display($templateCfg->template_dir . $template);
 }
 
 
@@ -296,12 +300,12 @@ function init_args($request_hash)
   foreach($checkboxes_keys as $key => $value)
   {
     $args->$key = isset($request_hash[$key]) ? 1 : 0;
-    }
+  }
 
   $intval_keys = array('copy_from_tplan_id' => 0,'tplan_id' => 0);
   foreach($intval_keys as $key => $value)
   {
-      $args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
+    $args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
   }
   $args->source_tplanid = $args->copy_from_tplan_id;
   $args->copy = ($args->copy_from_tplan_id > 0) ? TRUE : FALSE;
@@ -314,15 +318,21 @@ function init_args($request_hash)
 
   foreach($boolean_keys as $key => $value)
   {
-      $args->copy_options[$key]=isset($request_hash[$key]) ? 1 : 0;
+    $args->copy_options[$key]=isset($request_hash[$key]) ? 1 : 0;
   }
 
   $args->copy_assigned_to = isset($request_hash['copy_assigned_to']) ? 1 : 0;
   $args->tcversion_type = isset($request_hash['tcversion_type']) ? $request_hash['tcversion_type'] : null;
-  $args->tproject_id = $session_hash['testprojectID'];
+  $args->tproject_id = intval($session_hash['testprojectID']);
   $args->tproject_name = $session_hash['testprojectName'];
-  $args->user_id = $session_hash['userID'];
+  $args->user_id = intval($session_hash['userID']);
   $args->user = $session_hash['currentUser'];
+
+
+  // all has to be refactored this way  
+  $iParams = array("file_id" => array(tlInputParameter::INT_N),
+                   "fileTitle" => array(tlInputParameter::STRING_N,0,100));
+  R_PARAMS($iParams,$args);
 
   return $args;
 }
@@ -353,7 +363,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
     $guiObj->main_descr = lang_get('testplan_title_tp_management'). " - " .
                          lang_get('testproject') . ' ' . $argsObj->tproject_name;
     $guiObj->testplan_name = null;
-    $guiObj->tplan_id = $argsObj->tplan_id;
+    $guiObj->tplan_id = intval($argsObj->tplan_id);
     $guiObj->is_active = 0;
     $guiObj->is_public = 0;
     $guiObj->cfields = '';
@@ -367,7 +377,34 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
     $guiObj->attachments[$guiObj->tplan_id] = getAttachmentInfosFrom($tplan_mgr,$guiObj->tplan_id);
     $guiObj->attachmentTableName = $tplan_mgr->getAttachmentTableName();
     
+
+    $guiObj->fileUploadURL = $_SESSION['basehref'] . $tplan_mgr->getFileUploadRelativeURL($guiObj->tplan_id);
+    $guiObj->delAttachmentURL = $_SESSION['basehref'] . $tplan_mgr->getDeleteAttachmentRelativeURL($guiObj->tplan_id);
+
+    $guiObj->fileUploadMsg = '';
+    $guiObj->import_limit = TL_REPOSITORY_MAXFILESIZE;
     
     return $guiObj;
 }
-?>
+
+/**
+ *
+ */
+function getItemData(&$itemMgr,&$guiObj,&$ofObj,$itemID,$updateAttachments=false)
+{
+  $dummy = $itemMgr->get_by_id($itemID);
+  if (sizeof($dummy))
+  {
+    $ofObj->Value = $dummy['notes'];
+    $guiObj->testplan_name = $dummy['name'];
+    $guiObj->is_active = $dummy['active'];
+    $guiObj->is_public = $dummy['is_public'];
+    $guiObj->api_key = $dummy['api_key'];
+    $guiObj->tplan_id = $itemID;
+
+    if($updateAttachments)
+    {  
+      $guiObj->attachments[$guiObj->tplan_id] = getAttachmentInfosFrom($itemMgr,$guiObj->tplan_id);
+    }
+  }
+}

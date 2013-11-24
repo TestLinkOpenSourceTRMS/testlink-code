@@ -52,6 +52,9 @@ Purpose: view a requirement specification
 {$url_args="reqSpecEdit.php?doAction=copy&amp;req_spec_id="}
 {$req_spec_copy_url="$basehref$req_module$url_args$reqSpecID"}
 
+{$url_args="reqCreateFromIssueMantisXML.php?scope=branch&req_spec_id="}
+{$req_create_from_issue_xml_url="$basehref$req_module$url_args$reqSpecID"}
+
 
 {* used on inc_btn_reqSpecView.tpl *}
 {lang_get s='warning_delete_req_spec' var="warning_msg" }

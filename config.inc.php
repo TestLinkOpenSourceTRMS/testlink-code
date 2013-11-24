@@ -269,7 +269,11 @@ $g_smtp_port = 25;
  *  'DB'  => Same as MD5 use password stored on db
  *  'LDAP' => use password from LDAP Server
  */
-$tlCfg->authentication['domain'] = array('DB' => 'DB','LDAP' => 'LDAP');
+$tlCfg->authentication['domain'] = array('DB' => array('description' => 'DB', 'allowPasswordManagement' => true) ,
+										 'LDAP' => array('description' => 'LDAP', 'allowPasswordManagement' => false) );
+
+
+// $tlCfg->authentication['domain'] = array('DB','LDAP')
 
 /* Default Authentication method */
 $tlCfg->authentication['method'] = 'DB';

@@ -337,10 +337,21 @@ function initializeGui()
   $guiObj->op->user_feedback = '';
   $guiObj->op->status = tl::OK;
 
-  $authCfg = config_get('authentication');
-  $guiObj->auth_method = array(lang_get('default_auth_method') . "(" . $authCfg['method'] . ")" => '');
-  $guiObj->auth_method += $authCfg['domain'];
-  $guiObj->auth_method = array_flip($guiObj->auth_method);
+
+
+  $guiObj->authCfg = config_get('authentication');
+  $guiObj->auth_method_opt = array(lang_get('default_auth_method') . 
+                             "(" . $guiObj->authCfg['domain'][$guiObj->authCfg['method']]['description'] . ")" => '');
+
+  $dummy = array_keys($guiObj->authCfg['domain']);
+  foreach($dummy as $xc)
+  {
+    // description => html option value
+    $guiObj->auth_method_opt[$xc] = $xc;  
+  }  
+
+  $guiObj->auth_method_opt = array_flip($guiObj->auth_method_opt);
+
   return $guiObj;  
 }
 

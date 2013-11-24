@@ -24,9 +24,7 @@ Testlink: smarty template -
              th_role,th_locale,th_active,password_mgmt_is_external,demo_update_user_disabled,
              btn_upd_user_data,btn_add,btn_cancel,button_reset_password,demo_reset_password_disabled'}
 
-{literal}
 <script type="text/javascript">
-{/literal}
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_login      = "{$labels.warning_empty_login|escape:'javascript'}";
 var warning_empty_first_name = "{$labels.warning_empty_first_name|escape:'javascript'}";
@@ -37,73 +35,103 @@ var warning_empty_email_address = "{$labels.empty_email_address|escape:'javascri
 var warning_no_good_email_address = "{$labels.no_good_email_address|escape:'javascript'}"; 
 
 
-{literal}
 function validateForm(f,check_password)
 {
-  {/literal}
-   var email_check = {$tlCfg->validation_cfg->user_email_valid_regex_js};
-
-  {literal}
+  var email_check = {$tlCfg->validation_cfg->user_email_valid_regex_js};
   var email_warning;
   var show_email_warning=false;
 
   if (isWhitespace(f.login.value))
   {
-      alert_message(alert_box_title,warning_empty_login);
-      selectField(f, 'login');
-      return false;
+    alert_message(alert_box_title,warning_empty_login);
+    selectField(f, 'login');
+    return false;
   }
 
   if (isWhitespace(f.firstName.value))
   {
-      alert_message(alert_box_title,warning_empty_first_name);
-      selectField(f, 'firstName');
-      return false;
+    alert_message(alert_box_title,warning_empty_first_name);
+    selectField(f, 'firstName');
+    return false;
   }
 
   if (isWhitespace(f.lastName.value))
   {
-      alert_message(alert_box_title,warning_empty_last_name);
-      selectField(f, 'lastName');
-      return false;
+    alert_message(alert_box_title,warning_empty_last_name);
+    selectField(f, 'lastName');
+    return false;
   }
 
   if( check_password )
   {
     if (isWhitespace(f.password.value))
     {
-        alert_message(alert_box_title,warning_empty_pwd);
-        selectField(f, 'password');
-        return false;
+      alert_message(alert_box_title,warning_empty_pwd);
+      selectField(f, 'password');
+      return false;
     }
   }
 
   if (isWhitespace(f.emailAddress.value))
   {
-      show_email_warning=true;
-      email_warning=warning_empty_email_address;
+    show_email_warning=true;
+    email_warning=warning_empty_email_address;
   }
   else 
   { 
-      if(!email_check.test(f.emailAddress.value))
-      {
-          show_email_warning=true;
-          email_warning=warning_no_good_email_address;
-      }
+    if(!email_check.test(f.emailAddress.value))
+    {
+      show_email_warning=true;
+      email_warning=warning_no_good_email_address;
+    }
   }
 
   if( show_email_warning )
   {
-      alert_message(alert_box_title,email_warning);
-      selectField(f, 'emailAddress');
-      return false;
+    alert_message(alert_box_title,email_warning);
+    selectField(f, 'emailAddress');
+    return false;
   }
 
   return true;
 }
+
+/**
+ *
+ */
+function managePasswordInputs(oid,targetSetOID)
+{
+  var source = document.getElementById(oid);
+  var targetOID = targetSetOID.split(",");
+  var len = 0;
+  var idx = 0;
+  var elem = '';
+  var passwordMgmt = [];  // critic because ww want an array
+
+  {foreach key=methodCode item=methodCfg from=$gui->authCfg.domain}
+  passwordMgmt['{$methodCode}']={if $methodCfg.allowPasswordManagement} 1 {else} 0 {/if};
+  {/foreach}
+
+  // Both work ok
+  // alert(source.options[source.selectedIndex].value);
+  // alert(source.value);
+  len=targetOID.length;
+  for(idx=0; idx < len; idx++)
+  {
+    elem = document.getElementById(targetOID[idx]);
+    if(passwordMgmt[source.value])
+    {
+      elem.style.display = '';
+    }  
+    else
+    {
+      elem.style.display = 'none';
+    }  
+  }
+}
 </script>
-{/literal}
-{assign var="ext_location" value=$smarty.const.TL_EXTJS_RELATIVE_PATH}
+
+{$ext_location=$smarty.const.TL_EXTJS_RELATIVE_PATH}
 <link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/ext-all.css" />
 </head>
 
@@ -120,33 +148,40 @@ function validateForm(f,check_password)
 {include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
 
 {if $gui->op->status > 0}
-
   {$user_id=''}
   {$user_login=''}
   {$user_login_readonly=''}
   {$reset_password_enabled=0}
+  {$reset_password_form_style="display:none"}
+  
   {$show_password_field=1}
 
   {if $operation == 'doCreate'}
-     {$check_password=1}
-     {if $userData neq null}
-         {$user_login=$userData->login}
-     {/if}
+    {$check_password=1}
+      {if $userData neq null}
+        {$user_login=$userData->login}
+      {/if}
   {else}
      {$check_password=0}
      {$user_id=$userData->dbID}
      {$user_login=$userData->login}
      {$user_login_readonly='readonly="readonly" disabled="disabled"'}
      {$reset_password_enabled=1}
+     {$reset_password_form_style="display:"}
      {$show_password_field=0}
   {/if}
 
-  {if $external_password_mgmt eq 1}
+
+  {$auth = $userData->authentication}
+  {if $auth == ''}
+    {$auth = $gui->authCfg.method}
+  {/if}  
+  {if $gui->authCfg.domain[$auth].allowPasswordManagement == false}
     {$check_password=0}
     {$reset_password_enabled=0}
+    {$reset_password_form_style="display:none"}
     {$show_password_field=0}
-  {/if}
-
+  {/if}  
 
 
 
@@ -189,16 +224,15 @@ function validateForm(f,check_password)
     </tr>
 
     {if $show_password_field}
-         <tr>
-          {if $external_password_mgmt eq 0}
-            <th style="background:none;">{$labels.th_password}</th>
-            <td><input type="password" id="password" name="password"
-                       size="{#PASSWD_SIZE#}"
-                       maxlength="{#PASSWD_SIZE#}" required />
-                {include file="error_icon.tpl" field="password"}
-            </td>
-          {/if}
-         </tr>
+      <tr id="passwordContainer">
+      {if $external_password_mgmt eq 0}
+        <th style="background:none;">{$labels.th_password}</th>
+        <td><input type="password" id="password" name="password"
+                   size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" required />
+            {include file="error_icon.tpl" field="password"}
+        </td>
+      {/if}
+      </tr>
    {/if}
 
 
@@ -212,9 +246,9 @@ function validateForm(f,check_password)
     <tr>
       <th style="background:none;">{$labels.th_role}</th>
       <td>
-          {$selected_role=$userData->globalRoleID}
+        {$selected_role=$userData->globalRoleID}
         {if $userData->globalRoleID eq 0}
-            {$selected_role=$tlCfg->default_roleid}
+          {$selected_role=$tlCfg->default_roleid}
         {/if}
         <select name="rights_id">
         {foreach key=role_id item=role from=$optRights}
@@ -240,12 +274,12 @@ function validateForm(f,check_password)
       </td>
     </tr>
 
+    {* onChange="managePasswordInputs('authentication','user_reset_password,passwordContainer')"> *}
     <tr>
       <th style="background:none;">{$labels.authentication_method}</th>
       <td>
-        {$sel_item=$userData->authentication}
-        <select name="authentication">
-        {html_options options=$gui->auth_method selected=$sel_item}
+        <select id="authentication" name="authentication"> 
+        {html_options options=$gui->auth_method_opt selected=$userData->authentication}
         </select>
       </td>
     </tr>
@@ -284,9 +318,9 @@ function validateForm(f,check_password)
 </fieldset>
 </form>
 
-{if $reset_password_enabled}
 <br />
-<form method="post" action="lib/usermanagement/usersEdit.php" name="user_reset_password">
+<form method="post" action="lib/usermanagement/usersEdit.php" style="{$reset_password_form_style}" 
+      id="user_reset_password" name="user_reset_password">
   {if $tlCfg->demoMode}
     {$labels.demo_reset_password_disabled}
   {else}
@@ -295,7 +329,6 @@ function validateForm(f,check_password)
     <input type="submit" id="do_reset_password" name="do_reset_password" value="{$labels.button_reset_password}" />
   {/if} 
 </form>
-{/if}
 
 </div>
 

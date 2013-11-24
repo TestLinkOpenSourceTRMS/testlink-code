@@ -24,7 +24,6 @@ $templateCfg = templateConfiguration();
 $req_spec_mgr = new requirement_spec_mgr($db);
 $req_mgr = new requirement_mgr($db);
 
-
 $args = init_args();
 $gui = initializeGui($db,$args,$_SESSION,$req_spec_mgr,$req_mgr);
 switch($args->doAction)
@@ -34,10 +33,13 @@ switch($args->doAction)
       $gui->items = $dummy->items;        
       $gui->file_check = $dummy->file_check;
       $gui->userFeedback = (array)$dummy->userFeedback;
-      if(array_key_exists("syntaxError", $gui->userFeedback) && count($gui->userFeedback['syntaxError']) > 0) {
-          $gui->importResult = lang_get('import_syntax_error');
-      } else {
-          $gui->importResult = lang_get('import_done');
+      if(array_key_exists("syntaxError", $gui->userFeedback) && count($gui->userFeedback['syntaxError']) > 0) 
+      {
+        $gui->importResult = lang_get('import_syntax_error');
+      } 
+      else 
+      {
+        $gui->importResult = lang_get('import_done');
       }
       $gui->refreshTree = $args->refreshTree && $gui->file_check['status_ok'];  
     break;

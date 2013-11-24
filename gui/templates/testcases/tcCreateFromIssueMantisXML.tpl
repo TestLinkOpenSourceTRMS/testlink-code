@@ -11,7 +11,7 @@ Purpose: smarty template - manage import of test cases and test suites
 {lang_get var="labels"
           s='file_type,view_file_format_doc,local_file,
              max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
-             duplicate_criteria,action_for_duplicates,testcase,
+             duplicate_criteria,action_for_duplicates,testcase,testsuite,
              action_on_duplicated_name,warning,btn_cancel,title_imp_tc_data'}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
@@ -22,7 +22,7 @@ Purpose: smarty template - manage import of test cases and test suites
 </head>
 <body>
 
-<h1 class="title">{$gui->container_description}{$smarty.const.TITLE_SEP}{$gui->container_name|escape}</h1>
+<h1 class="title">{$labels.testsuite}{$smarty.const.TITLE_SEP}{$gui->container_name|escape}</h1>
 
 <div class="workBack">
 <h1 class="title">{$gui->import_title}</h1>

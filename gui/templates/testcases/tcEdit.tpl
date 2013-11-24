@@ -18,7 +18,7 @@ Purpose: smarty template - edit test specification: test case
 <script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
 <script language="javascript" src="gui/javascript/tcase_utils.js" type="text/javascript"></script>
 
-{assign var="opt_cfg" value=$gui->opt_cfg}
+{$opt_cfg=$gui->opt_cfg}
 <script type="text/javascript" language="JavaScript">
 var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
 {$opt_cfg->js_ot_name}.saveRemovedLeftOptions("{$opt_cfg->js_ot_name}_removedLeft");
@@ -35,54 +35,51 @@ var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_estimated_execution_duration_format = "{$labels.warning_estimated_execution_duration_format|escape:'javascript'}";
 
 
-{literal}        
 /**
  * validate certain form controls before submitting
  *
  */
 function validateForm(the_form)
 {
-    var status_ok = true;
-	
-	if (isWhitespace(the_form.testcase_name.value))
-	{
-		alert_message(alert_box_title,warning_empty_testcase_name);
-		selectField(the_form,'testcase_name');
-		return false;
-	}
+  var status_ok = true;
+  
+  if (isWhitespace(the_form.testcase_name.value))
+  {
+    alert_message(alert_box_title,warning_empty_testcase_name);
+    selectField(the_form,'testcase_name');
+    return false;
+  }
 
-	var val2check = the_form.estimated_execution_duration.value;
-	if( isNaN(val2check) || /^\s+$/.test(val2check.trim()))
-	{
-		alert_message(alert_box_title,warning_estimated_execution_duration_format);
-		return false;
-	}
+  var val2check = the_form.estimated_execution_duration.value;
+  if( isNaN(val2check) || /^\s+$/.test(val2check.trim()))
+  {
+    alert_message(alert_box_title,warning_estimated_execution_duration_format);
+    return false;
+  }
 
-	var cf_designTime = document.getElementById('cfields_design_time');
-	if (cf_designTime)
- 	{
- 		var cfields_container = cf_designTime.getElementsByTagName('input');
- 		var cfieldsChecks = validateCustomFields(cfields_container);
-		if(!cfieldsChecks.status_ok)
-	  	{
-	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	      	return false;
-		}
+  var cf_designTime = document.getElementById('cfields_design_time');
+  if (cf_designTime)
+  {
+    var cfields_container = cf_designTime.getElementsByTagName('input');
+    var cfieldsChecks = validateCustomFields(cfields_container);
+    if(!cfieldsChecks.status_ok)
+    {
+      var warning_msg = cfMessages[cfieldsChecks.msg_id];
+      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+      return false;
+    }
 
-        // 20090421 - franciscom - BUGID 
- 		cfields_container = cf_designTime.getElementsByTagName('textarea');
- 		cfieldsChecks = validateCustomFields(cfields_container);
-		if(!cfieldsChecks.status_ok)
-	  	{
-	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	      	return false;
-		}
-	}
-	return Ext.ux.requireSessionAndSubmit(the_form);
+    cfields_container = cf_designTime.getElementsByTagName('textarea');
+    cfieldsChecks = validateCustomFields(cfields_container);
+    if(!cfieldsChecks.status_ok)
+    {
+      var warning_msg = cfMessages[cfieldsChecks.msg_id];
+      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+      return false;
+    }
+  }
+  return Ext.ux.requireSessionAndSubmit(the_form);
 }
-{/literal}
 </script>
 
 {if $tlCfg->gui->checkNotSaved}
@@ -97,7 +94,7 @@ function validateForm(the_form)
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('testcase_name')">
 {config_load file="input_dimensions.conf" section="tcNew"}
 <h1 class="title">{$labels.title_edit_tc}{$smarty.const.TITLE_SEP}{$gui->tc.name|escape}
-	{$smarty.const.TITLE_SEP_TYPE3}{$labels.version} {$gui->tc.version}</h1> 
+  {$smarty.const.TITLE_SEP_TYPE3}{$labels.version} {$gui->tc.version}</h1> 
 
 <div class="workBack" style="width:97%;">
 
@@ -109,38 +106,38 @@ function validateForm(the_form)
 <form method="post" action="lib/testcases/tcEdit.php" name="tc_edit"
       onSubmit="return validateForm(this);">
 
-	<input type="hidden" name="testsuite_id" id="testsuite_id" value="{$gui->tc.testsuite_id}" />
-	<input type="hidden" name="testcase_id" id="testcase_id" value="{$gui->tc.testcase_id}" />
-	<input type="hidden" name="tcversion_id" value="{$gui->tc.id}" />
-	<input type="hidden" name="version" value="{$gui->tc.version}" />
-	<input type="hidden" name="doAction" value="" />
+  <input type="hidden" name="testsuite_id" id="testsuite_id" value="{$gui->tc.testsuite_id}" />
+  <input type="hidden" name="testcase_id" id="testcase_id" value="{$gui->tc.testcase_id}" />
+  <input type="hidden" name="tcversion_id" value="{$gui->tc.id}" />
+  <input type="hidden" name="version" value="{$gui->tc.version}" />
+  <input type="hidden" name="doAction" value="" />
   <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
-	
-	{* when save or cancel is pressed do not show modification warning *}
-	<div class="groupBtn">
-		<input id="do_update" type="submit" name="do_update" 
-		       onclick="show_modified_warning=false; doAction.value='doUpdate'" value="{$labels.btn_save}" />
-		
-		<input type="button" name="go_back" value="{$labels.cancel}" 
-		       onclick="show_modified_warning=false; javascript: history.back();"/>
-	</div>	
-	{include file="testcases/tcEdit_New_viewer.tpl"}
-	
-	{* when save or cancel is pressed do not show modification warning *}
-	<div class="groupBtn">
-		<input id="do_update" type="submit" name="do_update" 
-		       onclick="show_modified_warning=false; doAction.value='doUpdate'" value="{$labels.btn_save}" />
-		<input type="button" name="go_back" value="{$labels.cancel}" 
-		       onclick="show_modified_warning=false; javascript: history.back();"/>
-	</div>	
+  
+  {* when save or cancel is pressed do not show modification warning *}
+  <div class="groupBtn">
+    <input id="do_update" type="submit" name="do_update" 
+           onclick="show_modified_warning=false; doAction.value='doUpdate'" value="{$labels.btn_save}" />
+    
+    <input type="button" name="go_back" value="{$labels.cancel}" 
+           onclick="show_modified_warning=false; javascript: history.back();"/>
+  </div>  
+  {include file="testcases/tcEdit_New_viewer.tpl"}
+  
+  {* when save or cancel is pressed do not show modification warning *}
+  <div class="groupBtn">
+    <input id="do_update" type="submit" name="do_update" 
+           onclick="show_modified_warning=false; doAction.value='doUpdate'" value="{$labels.btn_save}" />
+    <input type="button" name="go_back" value="{$labels.cancel}" 
+           onclick="show_modified_warning=false; javascript: history.back();"/>
+  </div>  
 </form>
 
 <script type="text/javascript" defer="1">
-   	document.forms[0].testcase_name.focus();
+    document.forms[0].testcase_name.focus();
 </script>
 
 {if isset($gui->refreshTree) && $gui->refreshTree}
-	{include file="inc_refreshTreeWithFilters.tpl"}
+  {include file="inc_refreshTreeWithFilters.tpl"}
 {/if}
 
 </div>

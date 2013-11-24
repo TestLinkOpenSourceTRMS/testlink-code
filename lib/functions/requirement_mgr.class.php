@@ -1266,12 +1266,12 @@ function exportReqToXML($id,$tproject_id=null)
  */
 function xmlToMapRequirement($xml_item)
 {
-    // Attention: following PHP Manual SimpleXML documentation, Please remember to cast
-    //            before using data from $xml,
-    if( is_null($xml_item) )
-    {
-        return null;      
-    }
+  // Attention: following PHP Manual SimpleXML documentation, Please remember to cast
+  //            before using data from $xml,
+  if( is_null($xml_item) )
+  {
+    return null;      
+  }
         
   $dummy=array();
   foreach($xml_item->attributes() as $key => $value)
@@ -1281,30 +1281,32 @@ function xmlToMapRequirement($xml_item)
   
   $dummy['node_order'] = (int)$xml_item->node_order;
   $dummy['title'] = (string)$xml_item->title;
-    $dummy['docid'] = (string)$xml_item->docid;
-    $dummy['description'] = (string)$xml_item->description;
-    $dummy['status'] = (string)$xml_item->status;
-    $dummy['type'] = (string)$xml_item->type;
-    $dummy['expected_coverage'] = (int)$xml_item->expected_coverage;
+  $dummy['docid'] = (string)$xml_item->docid;
+  $dummy['description'] = (string)$xml_item->description;
+  $dummy['status'] = (string)$xml_item->status;
+  $dummy['type'] = (string)$xml_item->type;
+  $dummy['expected_coverage'] = (int)$xml_item->expected_coverage;
 
-    if( property_exists($xml_item,'custom_fields') )                
+  if( property_exists($xml_item,'custom_fields') )                
+  {
+    $dummy['custom_fields']=array();
+    foreach($xml_item->custom_fields->children() as $key)
     {
-        $dummy['custom_fields']=array();
-        foreach($xml_item->custom_fields->children() as $key)
-        {
-           $dummy['custom_fields'][(string)$key->name]= (string)$key->value;
-        }    
+      $dummy['custom_fields'][(string)$key->name]= (string)$key->value;
+    }    
   }
   return $dummy;
 }
+
+
+
+
 
 
 /**
  * createFromXML
  *
  * @internal revisions
- * 20100908 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
- * 20100904 - franciscom - BUGID 3685: XML Requirements Import Updates Frozen Requirement
  */
 function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$options=null)
 {

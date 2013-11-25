@@ -3,13 +3,14 @@
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
 * @filesource   resultsTC.php
+* @author       Francisco Mancardi <francisco.mancardi@gmail.com>
 * @author       Martin Havlat <havlat@users.sourceforge.net>
 * @author       Chad Rosen
 * 
 * Show Test Report by individual test case.
 *
 * @internal revisions
-* @since 1.9.9
+* @since 1.9.10
 */
 require('../../config.inc.php');
 require_once('../../third_party/codeplex/PHPExcel.php');   // Must be included BEFORE common.php
@@ -119,11 +120,15 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
             $name = htmlspecialchars("{$external_id}:{$rf[$top]['name']}",ENT_QUOTES);
             if($args->format == FORMAT_HTML)
             {
-              $rows[$cols['link']] = "<!-- " . sprintf("%010d", $rf[$top]['external_id']) . " -->" .  
-                                     "<a href=\"javascript:openExecHistoryWindow({$tcaseID});\">" .
-                                     $hist_img_tag .
-                                     "<a href=\"javascript:openTCEditWindow({$tcaseID});\">" .
-                                     $edit_img_tag . $name;
+              $rows[$cols['link']] = "<!-- " . sprintf("%010d", $rf[$top]['external_id']) . " -->";
+              if($args->addOpAccess)
+              {  
+                $rows[$cols['link']] .= "<a href=\"javascript:openExecHistoryWindow({$tcaseID});\">" .
+                                        $hist_img_tag .
+                                        "<a href=\"javascript:openTCEditWindow({$tcaseID});\">" .
+                                        $edit_img_tag; 
+              }                       
+              $rows[$cols['link']] .= $name;
             }
             else
             {
@@ -167,7 +172,7 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
           {
             $r4build['text'] = "";
 
-            if ($args->format == FORMAT_HTML) 
+            if ($args->format == FORMAT_HTML && $args->addOpAccess) 
             {
               $r4build['text'] = "<a href=\"javascript:openExecutionWindow(" .
                                 "{$tcaseID}, {$rf[$buildID]['tcversion_id']}, {$buildID}, " .
@@ -263,7 +268,7 @@ displayReport($templateCfg->template_dir . $tpl, $smarty, $args->format, $mailCf
  */
 function init_args(&$dbHandler)
 {
-  $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
+  $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
                    "tproject_id" => array(tlInputParameter::INT_N), 
                    "tplan_id" => array(tlInputParameter::INT_N),
                    "do_action" => array(tlInputParameter::STRING_N,5,10),
@@ -274,6 +279,8 @@ function init_args(&$dbHandler)
   
   $args = new stdClass();
   R_PARAMS($iParams,$args);
+
+  $args->addOpAccess = true;
   if( !is_null($args->apikey) )
   {
     //var_dump($args);
@@ -281,11 +288,20 @@ function init_args(&$dbHandler)
     $cerbero->args = new stdClass();
     $cerbero->args->tproject_id = $args->tproject_id;
     $cerbero->args->tplan_id = $args->tplan_id;
-    $cerbero->args->getAccessAttr = true;
-    $cerbero->method = 'checkRights';
-    $cerbero->redirect_target = "../../login.php?note=logout";
-    setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);  
- 
+
+    if(strlen($args->apikey) == 32)
+    {
+      $cerbero->args->getAccessAttr = true;
+      $cerbero->method = 'checkRights';
+      $cerbero->redirect_target = "../../login.php?note=logout";
+      setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
+    }
+    else
+    {
+      $args->addOpAccess = false;
+      $cerbero->method = null;
+      setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
+    }  
   }
   else
   {

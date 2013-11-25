@@ -231,7 +231,7 @@ function checkSessionValid(&$db, $redirect=true)
         
     while(!file_exists($baseDir . DIRECTORY_SEPARATOR . $fName))
     {
-            $fName = "../" . $fName;
+      $fName = "../" . $fName;
     }
     $destination = "&destination=" . urlencode($_SERVER['REQUEST_URI']);
     redirect($fName . "?note=expired" . $destination,"top.location");
@@ -745,14 +745,16 @@ function getFileUploadErrorMessage($fInfo)
     {
       case UPLOAD_ERR_INI_SIZE:
         $msg = lang_get('error_file_size_larger_than_maximum_size_check_php_ini');
-        break;
+      break;
+      
       case UPLOAD_ERR_FORM_SIZE:
         $msg = lang_get('error_file_size_larger_than_maximum_size');
-        break;
+      break;
+      
       case UPLOAD_ERR_PARTIAL:
       case UPLOAD_ERR_NO_FILE:
         $msg = lang_get('error_file_upload');
-        break;
+      break;
     }
   }
   return $msg;
@@ -981,24 +983,24 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
         {
           case 'string':
             $value = $editorTemplate->$webEditorName->value;
-            break;
+          break;
              
           case 'string_id':
             $value = lang_get($editorTemplate->$webEditorName->value);
-            break;
+          break;
              
           case 'file':
             $value = getFileContents($editorTemplate->$webEditorName->value);
-        if (is_null($value))
-        {
-          $value = lang_get('problems_trying_to_access_template') . 
-                   " {$editorTemplate->$webEditorName->value} ";
-        } 
-            break;
+            if (is_null($value))
+            {
+              $value = lang_get('problems_trying_to_access_template') . 
+                       " {$editorTemplate->$webEditorName->value} ";
+            } 
+          break;
              
           default:
             $value = '';
-            break;
+          break;
         }
       }
     }
@@ -1035,7 +1037,9 @@ function displayMemUsage($msg='')
   ob_flush();flush();
 }
 
-
+/**
+ *
+ */
 function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null)
 {
   $my = array('opt' => array('setPaths' => false,'clearSession' => false));
@@ -1210,16 +1214,19 @@ function setUpEnvForAnonymousAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=n
 
   if(intval($rightsCheck->args->tplan_id) !=0)
   {
+    file_put_contents('/tmp/setUpEnvForAnonymousAccess.txt','testplan');
     $tplanMgr = new testplan($dbHandler);
     $item = $tplanMgr->getByAPIKey($apikey);
   }  
   else
   {
+    file_put_contents('/tmp/setUpEnvForAnonymousAccess.txt','testproject');
     $tprojectMgr = new testproject($dbHandler);
     $item = $tprojectMgr->getByAPIKey($apikey);
-  }  
+  }
 
-  if( count($item) == 1 )
+  $status_ok = false;
+  if( !is_null($item) )
   {
     $_SESSION['lastActivity'] = time();
     $userObj = new tlUser();
@@ -1242,6 +1249,7 @@ function setUpEnvForAnonymousAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=n
     //
     if(!isset($_SESSION['basehref']))
     {
+      // echo $rightsCheck->redirect_target;
       session_unset();
       session_destroy();
       if(property_exists($rightsCheck, 'redirect_target') && !is_null($rightsCheck->redirect_target))
@@ -1253,15 +1261,15 @@ function setUpEnvForAnonymousAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=n
         // best guess for all features that live on ./lib/results/
         redirect("../../login.php?note=logout");  
       } 
-        
       exit();
     }  
- 
 
-
-    if(!is_null($rightsCheck))
+    if(!is_null($rightsCheck->method))
     {
-      checkUserRightsFor($dbHandler,$rightsCheck,true);
+      checkUserRightsFor($dbHandler,$rightsCheck->method,true);
     }
+    $status_ok = true;
   }
+
+  return $status_ok;
 }

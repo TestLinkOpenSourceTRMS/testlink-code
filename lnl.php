@@ -10,9 +10,9 @@
  * 
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 2012, TestLink community
+ * @copyright 2012,2013 TestLink community
  * @link 		  http://www.teamst.org/index.php
- * @since     1.9.5
+ * @since     1.9.10
  *
  * @internal revisions
  *
@@ -23,23 +23,20 @@ require_once('config.inc.php');
 require_once('./cfg/reports.cfg.php');
 require_once('common.php');
 
-$args = init_args($db);
-$user = tlUser::getByAPIKey($db,$args->apikey);
-$userCount = count($user);
-switch($userCount)
+$args = init_args();
+switch($args->light)
 {
-  case 0:
-    // can not find user 
+  case 'red':
+    // can not find user or item 
   break;
 
-  case 1:
+  case 'green':
     $reportCfg = config_get('reports_list');
     $what2launch = null; 
     $cfg = isset($reportCfg[$args->type]) ? $reportCfg[$args->type] : null;
     
-    //new dBug($args);
-    //die();
-    
+    // new dBug($args);
+    // die();
     switch($args->type)
     {
       case 'metricsdashboard':
@@ -123,7 +120,11 @@ switch($userCount)
 } 
 
 
-function init_args(&$dbHandler)
+
+/**
+ *
+ */
+function init_args()
 {
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 	$args = new stdClass();
@@ -132,7 +133,7 @@ function init_args(&$dbHandler)
   {
     // ATTENTION - give a look to $tlCfg->reports_list
     $typeSize = 30;
-  	$iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
+  	$iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
   	                 "tproject_id" => array(tlInputParameter::INT_N),
   	                 "tplan_id" => array(tlInputParameter::INT_N),
   	                 "level" => array(tlInputParameter::STRING_N,0,16),
@@ -146,7 +147,23 @@ function init_args(&$dbHandler)
 
 	                
 	R_PARAMS($iParams,$args);
-  setUpEnvForRemoteAccess($dbHandler,$args->apikey,null,array('setPaths' => true,'clearSession' => true));
+  $args->light = 'red';
+  $opt = array('setPaths' => true,'clearSession' => true);
+  if(strlen($args->apikey) == 32)
+  {
+    setUpEnvForRemoteAccess($dbHandler,$args->apikey,null,$opt);
+    $user = tlUser::getByAPIKey($dbHandler,$args->apikey);
+    $args->light = (count($user) == 1) ? 'green' : 'red';
+  }
+  else
+  {
+    $kerberos = new stdClass();
+    $kerberos->args = $args;
+    $kerberos->method = null;
+    if( setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$kerberos,$opt) )
+    {
+      $args->light = 'green';
+    }  
+  }  
   return $args;
 }
-?>

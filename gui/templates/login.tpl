@@ -60,7 +60,7 @@ window.onload=function()
   {include file="inc_copyrightnotice.tpl"}
 
   {if $gui->securityNotes}
-      {include file="inc_msg_from_array.tpl" array_of_msg=$gui->securityNotes arg_css_class="messages"}
+    {include file="inc_msg_from_array.tpl" array_of_msg=$gui->securityNotes arg_css_class="messages"}
   {/if}
   
   {if $tlCfg->login_info != ""}

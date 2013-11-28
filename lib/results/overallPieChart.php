@@ -34,12 +34,12 @@ $values = array();
 $labels = array();
 foreach($totals as $key => $value)
 {
-    $values[] = $value;
-    $labels[] = lang_get($resultsCfg['status_label'][$key]) . " ($value)"; 
-    if( isset($resultsCfg['charts']['status_colour'][$key]) )
-    {
-      $series_color[] = $resultsCfg['charts']['status_colour'][$key];
-    } 
+  $values[] = $value;
+  $labels[] = lang_get($resultsCfg['status_label'][$key]) . " ($value)"; 
+  if( isset($resultsCfg['charts']['status_colour'][$key]) )
+  {
+    $series_color[] = $resultsCfg['charts']['status_colour'][$key];
+  } 
 }
 
 // Dataset definition    
@@ -68,8 +68,8 @@ $graph->description = $DataSet->GetDataDescription();
 $Test = new pChart($pChartCfg->XSize,$pChartCfg->YSize);
 foreach($series_color as $key => $hexrgb)
 {
-    $rgb = str_split($hexrgb,2);
-    $Test->setColorPalette($key,hexdec($rgb[0]),hexdec($rgb[1]),hexdec($rgb[2]));  
+  $rgb = str_split($hexrgb,2);
+  $Test->setColorPalette($key,hexdec($rgb[0]),hexdec($rgb[1]),hexdec($rgb[2]));  
 }
  
 // Draw the pie chart   

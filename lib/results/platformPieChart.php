@@ -7,23 +7,21 @@
  * @package     TestLink
  * @author      franciscom
  * @copyright   2005-2013, TestLink community
- * @link        http://www.teamst.org/index.php
+ * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.6
- * 20130123 - franciscom - TICKET 5481: Error in pie chart for platforms without testcases
+ * @since 1.9.10
  *
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
 include("../../third_party/pchart/pChart/pData.class");   
 include("../../third_party/pchart/pChart/pChart.class");   
-testlinkInitPage($db,true,false,"checkRights");
 
 $resultsCfg = config_get('results');
 $chart_cfg = $resultsCfg['charts']['dimensions']['platformPieChart'];
 
-$args = init_args();
+$args = init_args($db);
 $metricsMgr = new tlTestPlanMetrics($db);
 $dummy = $metricsMgr->getStatusTotalsByPlatformForRender($args->tplan_id);
 
@@ -85,8 +83,8 @@ $graph->description = $DataSet->GetDataDescription();
 $Test = new pChart($pChartCfg->XSize,$pChartCfg->YSize);
 foreach($series_color as $key => $hexrgb)
 {
-    $rgb = str_split($hexrgb,2);
-    $Test->setColorPalette($key,hexdec($rgb[0]),hexdec($rgb[1]),hexdec($rgb[2]));  
+  $rgb = str_split($hexrgb,2);
+  $Test->setColorPalette($key,hexdec($rgb[0]),hexdec($rgb[1]),hexdec($rgb[2]));  
 }
  
 // Draw the pie chart   
@@ -108,13 +106,49 @@ function checkRights(&$db,&$user)
  * 
  *
  */
-function init_args()
+function init_args(&$dbHandler)
 {
-    $_REQUEST = strings_stripSlashes($_REQUEST);
-    $args = new stdClass();
-    $args->tplan_id = $_REQUEST['tplan_id'];
-    $args->tproject_id = $_SESSION['testprojectID'];
-    $args->platform_id = $_REQUEST['platform_id'];
-    return $args;
+  //  $_REQUEST = strings_stripSlashes($_REQUEST);
+  //  $args = new stdClass();
+  //  $args->tplan_id = $_REQUEST['tplan_id'];
+  //  $args->tproject_id = $_SESSION['testprojectID'];
+  //  $args->platform_id = $_REQUEST['platform_id'];
+  $iParams = array("apikey" => array(tlInputParameter::STRING_N,0,64),
+                   "platform_id" => array(tlInputParameter::INT_N), 
+                   "tproject_id" => array(tlInputParameter::INT_N), 
+                   "tplan_id" => array(tlInputParameter::INT_N));
+
+  $args = new stdClass();
+  R_PARAMS($iParams,$args);
+
+  if( !is_null($args->apikey) )
+  {
+    $cerbero = new stdClass();
+    $cerbero->args = new stdClass();
+    $cerbero->args->tproject_id = $args->tproject_id;
+    $cerbero->args->tplan_id = $args->tplan_id;
+    
+    if(strlen($args->apikey) == 32)
+    {
+      $cerbero->args->getAccessAttr = true;
+      $cerbero->method = 'checkRights';
+      $cerbero->redirect_target = "../../login.php?note=logout";
+      setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
+    }
+    else
+    {
+      $args->addOpAccess = false;
+      $cerbero->method = null;
+      $cerbero->args->getAccessAttr = false;
+      setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
+    }  
+  }
+  else
+  {
+    testlinkInitPage($dbHandler,true,false,"checkRights");  
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+  }
+  
+
+  return $args;
 }
-?>

@@ -10,7 +10,7 @@
  * 
  *
  * @internal revisions
- * @since 1.9.5
+ * @since 1.9.10
  * 
  **/
 require('../../config.inc.php');
@@ -56,7 +56,13 @@ if($gui->do_report['status_ok'])
   $context = new stdClass();
   $context->tproject_id = $args->tproject_id;
   $context->tplan_id = $args->tplan_id;
-  $context->apikey = $_SESSION['currentUser']->userApiKey;
+
+  // $context->apikey = $_SESSION['currentUser']->userApiKey;
+  $tplan_mgr = new testplan($db);
+  $dmy = $tplan_mgr->get_by_id($context->tplan_id);
+  unset($tplan_mgr);
+
+  $context->apikey = $dmy['api_key'];
   $context->imgSet = $smarty->getImages();
   $gui->menuItems = $reports_mgr->get_list_reports($context,$gui->btsEnabled,$args->optReqs, 
                                                    $tlCfg->reports_formats[$args->format]);

@@ -9,11 +9,11 @@
  * @filesource  resultsByStatus.php
  * @package     TestLink
  * @copyright   2007-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @link        http://www.testlink.org
  *
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.10
  * 
  */
 require('../../config.inc.php');
@@ -122,6 +122,11 @@ $smarty = new TLSmarty();
 if( !is_null($metrics) and count($metrics) > 0 )
 {              
 
+  if($args->addOpAccess)
+  {  
+    $links = featureLinks($labels,$smarty->getImages());
+  }  
+
   $urlSafeString = array();  
   $urlSafeString['tprojectPrefix'] = urlencode($tproject_info['prefix']);
   $urlSafeString['basehref'] = str_replace(" ", "%20", $args->basehref);  
@@ -131,7 +136,6 @@ if( !is_null($metrics) and count($metrics) > 0 )
   $pathCache = $topCache = $levelCache = null;
   $nameCache = initNameCache($gui);
 
-  $links = featureLinks($labels,$smarty->getImages());
   $odx = 0;
 
   if( $args->type != $statusCode['not_run'] )
@@ -185,10 +189,14 @@ if( !is_null($metrics) and count($metrics) > 0 )
     {
       case FORMAT_HTML:
         $out[$odx]['testTitle'] = "<!-- " . sprintf("%010d", $exec['external_id']) . " -->";
-        $out[$odx]['testTitle'] .= sprintf($links['full'],
-                                   $exec['tcase_id'],$exec['tcase_id'],$exec['tcversion_id'],
-                                   $exec['build_id'],$args->tplan_id,$exec['platform_id'],$exec['tcase_id']);
-        $zipper = '</a>';
+        $zipper = '';
+        if($args->addOpAccess)
+        {  
+          $out[$odx]['testTitle'] .= sprintf($links['full'],
+                                     $exec['tcase_id'],$exec['tcase_id'],$exec['tcversion_id'],
+                                     $exec['build_id'],$args->tplan_id,$exec['platform_id'],$exec['tcase_id']);
+          $zipper = '</a>';
+        }
       break;
 
       case FORMAT_XLS:
@@ -366,7 +374,7 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
  */
 function init_args(&$dbHandler,$statusCode)
 {
-    $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
+    $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
                      "tproject_id" => array(tlInputParameter::INT_N), 
                      "tplan_id" => array(tlInputParameter::INT_N),
                      "format" => array(tlInputParameter::INT_N),
@@ -381,9 +389,20 @@ function init_args(&$dbHandler,$statusCode)
     $cerbero->args = new stdClass();
     $cerbero->args->tproject_id = $args->tproject_id;
     $cerbero->args->tplan_id = $args->tplan_id;
-    $cerbero->args->getAccessAttr = true;
-    $cerbero->method = 'checkRights';
-    setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);  
+    
+    if(strlen($args->apikey) == 32)
+    {
+      $cerbero->args->getAccessAttr = true;
+      $cerbero->method = 'checkRights';
+      $cerbero->redirect_target = "../../login.php?note=logout";
+      setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
+    }
+    else
+    {
+      $args->addOpAccess = false;
+      $cerbero->method = null;
+      setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
+    }  
   }
   else
   {
@@ -568,7 +587,9 @@ function buildMatrix($dataSet, &$args, $options = array(), $platforms,$customFie
 }
 
 
-
+/**
+ *
+ */
 function featureLinks($lbl,$img)
 {
   $links = array();
@@ -595,7 +616,9 @@ function featureLinks($lbl,$img)
 }
 
 
-
+/**
+ *
+ */
 function initNameCache($guiObj)
 {
   $safeItems = array('build' => null, 'platform' => null);
@@ -616,7 +639,9 @@ function initNameCache($guiObj)
   return $safeItems;
 }
 
-
+/**
+ *
+ */
 function getWarning($targetStatus,$statusCfg)
 {
   $msg = ''; 
@@ -632,7 +657,9 @@ function getWarning($targetStatus,$statusCfg)
   return $msg;
 } 
 
-
+/**
+ *
+ */
 function createSpreadsheet($gui,$args,$customFieldColumns=null)
 {
   $lbl = init_labels(array('title_test_suite_name' => null,'platform' => null,'build' => null,'th_bugs_id_summary' => null,
@@ -808,5 +835,3 @@ function createSpreadsheet($gui,$args,$customFieldColumns=null)
   downloadContentsToFile($content,$f2d,array('Content-Type' =>  $settings[$xlsType]['Content-Type']));
   exit();
 }
-
-?>

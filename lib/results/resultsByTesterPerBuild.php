@@ -6,12 +6,12 @@
  * @filesource	resultsByTesterPerBuild.php
  * @package     TestLink
  * @author      Andreas Simon
- * @copyright   2010 - 2012 TestLink community
+ * @copyright   2010 - 2013 TestLink community
  *
  * Lists results and progress by tester per build.
  * 
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.10
  *
  */
 
@@ -140,7 +140,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args(&$dbHandler)
 {
-  $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
+  $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
                    "tproject_id" => array(tlInputParameter::INT_N), 
 	                 "tplan_id" => array(tlInputParameter::INT_N),
                    "format" => array(tlInputParameter::INT_N),
@@ -155,9 +155,20 @@ function init_args(&$dbHandler)
     $cerbero->args = new stdClass();
     $cerbero->args->tproject_id = $args->tproject_id;
     $cerbero->args->tplan_id = $args->tplan_id;
-    $cerbero->args->getAccessAttr = true;
-    $cerbero->method = 'checkRights';
-    setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);  
+
+    if(strlen($args->apikey) == 32)
+    {
+      $cerbero->args->getAccessAttr = true;
+      $cerbero->method = 'checkRights';
+      $cerbero->redirect_target = "../../login.php?note=logout";
+      setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
+    }
+    else
+    {
+      $args->addOpAccess = false;
+      $cerbero->method = null;
+      setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
+    }  
   }
   else
   {

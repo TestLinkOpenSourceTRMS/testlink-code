@@ -6,11 +6,11 @@
  * @filesource	charts.php
  * @package 	  TestLink
  * @author 		  Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2005-2012, TestLink community 
+ * @copyright 	2005-2013, TestLink community 
  * @link 		    http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.10
  *
  */
 require_once('../../config.inc.php');
@@ -36,11 +36,11 @@ if($gui->can_use_charts == 'OK')
     
     $pathToScripts = "lib/results/";
     $chartsUrl=new stdClass();
-    $chartsUrl->overallPieChart = $pathToScripts . "overallPieChart.php?tplan_id={$gui->tplan_id}";
-    $chartsUrl->keywordBarChart = $pathToScripts . "keywordBarChart.php?tplan_id={$gui->tplan_id}" .
+    $chartsUrl->overallPieChart = $pathToScripts . "overallPieChart.php?apikey={$args->apikey}&tplan_id={$gui->tplan_id}";
+    $chartsUrl->keywordBarChart = $pathToScripts . "keywordBarChart.php?apikey={$args->apikey}&tplan_id={$gui->tplan_id}" .
     									           "&tproject_id=$args->tproject_id";
     $chartsUrl->topLevelSuitesBarChart = $pathToScripts . 
-    									                   "topLevelSuitesBarChart.php?tplan_id={$gui->tplan_id}" .
+    									                   "topLevelSuitesBarChart.php?apikey={$args->apikey}&tplan_id={$gui->tplan_id}" .
     									                   "&tproject_id=$args->tproject_id";
     
     $platformSet = $tplan_mgr->getPlatforms($gui->tplan_id,array('outputFormat' => 'map'));
@@ -53,7 +53,7 @@ if($gui->can_use_charts == 'OK')
     	{
     	  $description = $l18n['overall_metrics_for_platform'] .  ' ' . $platformSet[$platform_id];
     		$gui->charts[$description] = $pathToScripts . 
-    									 "platformPieChart.php?tplan_id={$gui->tplan_id}&platform_id={$platform_id}";
+    									 "platformPieChart.php?apikey={$args->apikey}&tplan_id={$gui->tplan_id}&platform_id={$platform_id}";
     	}
     }
     
@@ -76,7 +76,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args(&$dbHandler)
 {
-  $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
+  $iParams = array("apikey" => array(tlInputParameter::STRING_N,0,64),
                    "tproject_id" => array(tlInputParameter::INT_N), 
 	                 "tplan_id" => array(tlInputParameter::INT_N),
                    "format" => array(tlInputParameter::INT_N));
@@ -89,9 +89,21 @@ function init_args(&$dbHandler)
     $cerbero->args = new stdClass();
     $cerbero->args->tproject_id = $args->tproject_id;
     $cerbero->args->tplan_id = $args->tplan_id;
-    $cerbero->args->getAccessAttr = true;
-    $cerbero->method = 'checkRights';
-    setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);  
+
+    if(strlen($args->apikey) == 32)
+    {
+      $cerbero->args->getAccessAttr = true;
+      $cerbero->method = 'checkRights';
+      $cerbero->redirect_target = "../../login.php?note=logout";
+      setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
+    }
+    else
+    {
+      $args->addOpAccess = false;
+      $cerbero->method = null;
+      $cerbero->args->getAccessAttr = false;
+      setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
+    }  
   }
   else
   {
@@ -116,6 +128,9 @@ function init_args(&$dbHandler)
 	return array($args,$tproject_mgr,$tplan_mgr);
 }
 
+/**
+ *
+ */
 function initializeGui($argsObj)
 {
   $gui=new stdClass();
@@ -141,4 +156,3 @@ function checkRights(&$db,&$user,$context = null)
   $check = $user->hasRight($db,'testplan_metrics',$context->tproject_id,$context->tplan_id,$context->getAccessAttr);
   return $check;
 }
-?>

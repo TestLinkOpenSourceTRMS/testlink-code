@@ -374,11 +374,11 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
  */
 function init_args(&$dbHandler,$statusCode)
 {
-    $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
-                     "tproject_id" => array(tlInputParameter::INT_N), 
-                     "tplan_id" => array(tlInputParameter::INT_N),
-                     "format" => array(tlInputParameter::INT_N),
-                     "type" => array(tlInputParameter::STRING_N,0,1));
+  $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
+                   "tproject_id" => array(tlInputParameter::INT_N), 
+                   "tplan_id" => array(tlInputParameter::INT_N),
+                   "format" => array(tlInputParameter::INT_N),
+                   "type" => array(tlInputParameter::STRING_N,0,1));
   $args = new stdClass();
   R_PARAMS($iParams,$args);
 

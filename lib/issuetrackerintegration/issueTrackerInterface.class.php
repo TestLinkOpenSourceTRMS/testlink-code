@@ -21,8 +21,7 @@
  * =============================================================================
  *
  * @internal revisions
- * @since 1.9.8
- * 20130805 - franciscom - added method to check if config to create tickets via API is OK.
+ * @since 1.9.10
  *
  *
 **/
@@ -136,9 +135,9 @@ abstract class issueTrackerInterface
    *
    **/
   function getMyInterface()
-    {
+  {
     return $this->cfg->interfacePHP;
-    }
+  }
 
   /**
    * return the maximum length in chars of a issue id
@@ -240,39 +239,38 @@ abstract class issueTrackerInterface
   function checkBugIDSyntaxNumeric($issueID)
   {
     $valid = true;  
-      $forbidden_chars = '/\D/i';  
+    $forbidden_chars = '/\D/i';  
     if (preg_match($forbidden_chars, $issueID))
-      {
+    {
       $valid = false; 
-      }
+    }
     else 
-      {
-        $valid = (intval($issueID) > 0);  
-      }
-
-        return $valid;
+    {
+      $valid = (intval($issueID) > 0);  
+    }
+    return $valid;
   }
 
-    /**
-     * checks id for validity (STRING)
-     *
+  /**
+   * checks id for validity (STRING)
+   *
    * @param string issueID
-     *
-     * @return bool returns true if the bugid has the right format, false else
-     **/
-    function checkBugIDSyntaxString($issueID)
+   *
+   * @return bool returns true if the bugid has the right format, false else
+   **/
+  function checkBugIDSyntaxString($issueID)
+  {
+    $status_ok = !(trim($issueID) == "");
+    if($status_ok)
     {
-        $status_ok = !(trim($issueID) == "");
-        if($status_ok)
-        {
-            $forbidden_chars = '/[!|�%&()\/=?]/';
-            if (preg_match($forbidden_chars, $issueID))
-            {
-                $status_ok = false;
-            }
-        }
-        return $status_ok;
+      $forbidden_chars = '/[!|�%&()\/=?]/';
+      if (preg_match($forbidden_chars, $issueID))
+      {
+        $status_ok = false;
+      }
     }
+    return $status_ok;
+  }
 
 
   /**
@@ -344,8 +342,8 @@ abstract class issueTrackerInterface
 
     if($my['opt']['colorByStatus'] && property_exists($issue,'statusColor') )
     {
-          $title = lang_get('access_to_bts');  
-          $link = "<div  title=\"{$title}\" style=\"display: inline; background: $issue->statusColor;\">$link</div>";
+      $title = lang_get('access_to_bts');  
+      $link = "<div  title=\"{$title}\" style=\"display: inline; background: $issue->statusColor;\">$link</div>";
     }
     
     $ret = new stdClass();
@@ -439,6 +437,9 @@ abstract class issueTrackerInterface
     throw new RuntimeException("Unimplemented - YOU must implement it in YOUR interface Class");
   }
 
+  /**
+   *
+   **/
   public static function checkEnv()
   {
     $ret = array();
@@ -448,6 +449,9 @@ abstract class issueTrackerInterface
   }
 
 
+  /**
+   *
+   **/
   public function setResolvedStatusCfg()
   {
     if( property_exists($this->cfg,'resolvedstatus') )
@@ -467,6 +471,9 @@ abstract class issueTrackerInterface
     $this->resolvedStatus->byName = array_flip($this->resolvedStatus->byCode);
   }
   
+  /**
+   *
+   **/
   public function getResolvedStatusCfg()
   {
     return $this->resolvedStatus;
@@ -503,6 +510,9 @@ abstract class issueTrackerInterface
     return $status_ok;
   }
 
+  /**
+   *
+   **/
   function buildStatusHTMLString($statusCode)
   {
     $str = $statusCode;
@@ -515,4 +525,3 @@ abstract class issueTrackerInterface
 
  
 }
-?>

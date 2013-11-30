@@ -146,17 +146,17 @@ class jirasoapInterface extends issueTrackerInterface
   }
 
 
-    /**
-     * checks id for validity
-     *
+  /**
+   * checks id for validity
+   *
 	 * @param string issueID
-     *
-     * @return bool returns true if the bugid has the right format, false else
-     **/
-    function checkBugIDSyntax($issueID)
-    {
-    	return $this->checkBugIDSyntaxString($issueID);
-    }
+   *
+   * @return bool returns true if the bugid has the right format
+   **/
+  function checkBugIDSyntax($issueID)
+  {
+    return $this->checkBugIDSyntaxString($issueID);
+  }
 
 
   /**

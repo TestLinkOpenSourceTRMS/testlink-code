@@ -7,10 +7,10 @@
  * @package     TestLink
  * @author      franciscom
  * @copyright   2012,2013 TestLink community
- * @link        http://www.teamst.org/index.php
+ * @link        http://testlink.sourceforge.net/
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.10
  *
 **/
 
@@ -36,6 +36,7 @@ class tlIssueTracker extends tlObject
                         4 =>  array('type' => 'mantis', 'api' =>'db', 'enabled' => true, 'order' => -1),
                         5 =>  array('type' => 'jira', 'api' =>'soap', 'enabled' => true, 'order' => -1),
                         6 =>  array('type' => 'jira', 'api' =>'db', 'enabled' => true, 'order' => -1),
+                        7 =>  array('type' => 'jira', 'api' =>'rest', 'enabled' => true, 'order' => -1),
                         8 =>  array('type' => 'fogbugz','api' =>'rest','enabled' => true, 'order' => -1),
                         9 =>  array('type' => 'fogbugz','api' =>'db','enabled' => true, 'order' => -1),
                        10 =>  array('type' => 'gforge','api' =>'soap','enabled' => false, 'order' => -1),

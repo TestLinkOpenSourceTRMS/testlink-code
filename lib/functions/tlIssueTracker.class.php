@@ -156,38 +156,52 @@ class tlIssueTracker extends tlObject
    *
    */
   function create($it)
-    {
+  {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      $ret = array('status_ok' => 0, 'id' => 0, 'msg' => 'name already exists');
-    $safeobj = $this->sanitize($it);  
+    $ret = array('status_ok' => 0, 'id' => 0, 'msg' => 'name already exists');
 
+    // Critic we need to do this before sanitize, because $it is changed
+    $xlmCfg = trim($it->cfg); 
+
+    // allow empty config
+    if(strlen($xlmCfg) > 0)
+    {  
+      $ret = $this->checkXMLCfg($xlmCfg);
+      if(!$ret['status_ok'])
+      {  
+        return $ret;  // >>>---> Bye!
+      }  
+    }
+
+
+    $safeobj = $this->sanitize($it);  
     // empty name is not allowed
     if( is_null($safeobj->name) )
     {
       $ret['msg'] = 'empty name is not allowed';
       return $ret;  // >>>---> Bye!
     }
-      
+
     // need to check if name already exist
     if( is_null($this->getByName($it->name,array('output' => 'id')) ))
     {
       $sql =  "/* debugMsg */ INSERT  INTO {$this->tables['issuetrackers']} " .
-          " (name,cfg,type) " .
-          " VALUES('" . $safeobj->name . "','" . $safeobj->cfg . "',{$safeobj->type})"; 
+              " (name,cfg,type) " .
+              " VALUES('" . $safeobj->name . "','" . $safeobj->cfg . "',{$safeobj->type})"; 
 
-        if( $this->db->exec_query($sql) )
-        {
-          // at least for Postgres DBMS table name is needed.
-            $itemID=$this->db->insert_id($this->tables['issuetrackers']);
-            $ret = array('status_ok' => 1, 'id' => $itemID, 'msg' => 'ok');
-        }
-        else
-        {
-          $ret = array('status_ok' => 0, 'id' => 0, 'msg' => $this->db->error_msg());
-        }
+      if( $this->db->exec_query($sql) )
+      {
+        // at least for Postgres DBMS table name is needed.
+        $itemID=$this->db->insert_id($this->tables['issuetrackers']);
+        $ret = array('status_ok' => 1, 'id' => $itemID, 'msg' => 'ok');
+      }
+      else
+      {
+        $ret = array('status_ok' => 0, 'id' => 0, 'msg' => $this->db->error_msg());
+      }
     }
     
-      return $ret;
+    return $ret;
   }
 
 
@@ -201,25 +215,36 @@ class tlIssueTracker extends tlObject
     $msg['duplicate_name'] = "Update can not be done - name %s already exists for id %s";
     $msg['ok'] = "operation OK for id %s";
 
-    $safeobj = $this->sanitize($it);
-      $ret = array('status_ok' => 1, 'id' => $it->id, 'msg' => '');
+    // Critic we need to do this before sanitize, because $it is changed
+    $xlmCfg = trim($it->cfg); 
 
+    $safeobj = $this->sanitize($it);
+    $ret = array('status_ok' => 1, 'id' => $it->id, 'msg' => '');
+
+    // allow empty config
+    if(strlen($xlmCfg) > 0)
+    {  
+      $ret = $this->checkXMLCfg($xlmCfg);
+    }
 
     // check for duplicate name
-    $info = $this->getByName($safeobj->name);
+    if( $ret['status_ok'] )   
+    {
+      $info = $this->getByName($safeobj->name);
       if( !is_null($info) && ($info['id'] != $it->id) )
       {
         $ret['status_ok'] = 0;
         $ret['msg'] .= sprintf($msg['duplicate_name'], $safeobj->name, $info['id']);
       }
-    
+    }
+
     if( $ret['status_ok'] )   
     {
       $sql =  "UPDATE {$this->tables['issuetrackers']}  " .
-          " SET name = '" . $safeobj->name. "'," . 
-          "   cfg = '" . $safeobj->cfg . "'," .
-          "       type = " . $safeobj->type . 
-          " WHERE id = " . intval($it->id);
+              " SET name = '" . $safeobj->name. "'," . 
+              "     cfg = '" . $safeobj->cfg . "'," .
+              "     type = " . $safeobj->type . 
+              " WHERE id = " . intval($it->id);
       $result = $this->db->exec_query($sql);
       $ret['msg'] .= sprintf($msg['ok'],$it->id);
     
@@ -395,8 +420,8 @@ class tlIssueTracker extends tlObject
     }     
     
     // seems here is better do not touch.
-      $sobj->cfg = $this->db->prepare_string($obj->cfg);
-      $sobj->type = intval($obj->type);
+    $sobj->cfg = $this->db->prepare_string($obj->cfg);
+    $sobj->type = intval($obj->type);
     
     return $sobj;
   } 
@@ -644,4 +669,37 @@ class tlIssueTracker extends tlObject
     $its = new $class2create($xx['type'],$xx['cfg']);
     return $its->isConnected();
   }
+
+  /**
+   *
+   */
+  function checkXMLCfg($xmlString)
+  {
+    $signature = 'Source:' . __METHOD__;
+    $op = array('status_ok' => true, 'msg' => '');
+
+    $xmlCfg = "<?xml version='1.0'?> " . trim($xmlString);
+    libxml_use_internal_errors(true);
+    try 
+    {
+      $cfg = simplexml_load_string($xmlCfg);
+      if (!$cfg) 
+      {
+        $op['status_ok'] = false;
+        $op['msg'] = $signature . " - Failure loading XML STRING\n";
+        foreach(libxml_get_errors() as $error) 
+        {
+          $op['msg'] .= "\t" . $error->message;
+        }
+      }
+    }
+    catch(Exception $e)
+    {
+      $op['status_ok'] = false;
+      $op['msg'] = $signature . " - Exception loading XML STRING\n" . 'Message: ' .$e->getMessage();
+    }
+
+    return $op;
+  }  
+
 } // end class

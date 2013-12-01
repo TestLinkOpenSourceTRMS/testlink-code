@@ -29,7 +29,9 @@ class RestRequest
         $this->contentType       = 'Content-Type: application/json';
 
         if ($this->requestBody !== null || $this->filename !== null)
+        {    
             $this->buildPostBody();
+        }    
     }
 
     public function flush()
@@ -90,10 +92,14 @@ class RestRequest
                 $this->contentType = 'Content-Type: multipart/form-data; boundary='.$boundary;
             }
             else
+            {    
                 $this->requestBody = json_encode($this->requestBody);
+            }    
         }
         else
+        {    
             $this->requestBody = json_encode($data);
+        }    
     }
 
     public function getResponseBody()
@@ -179,4 +185,3 @@ class RestRequest
         }
     }
 }
-?>

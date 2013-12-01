@@ -242,11 +242,53 @@ class jirarestInterface extends issueTrackerInterface
     return $status_ok;
   }
 
+/*
+{
+    "fields": {
+       "project":
+       {
+          "key": "TEST"
+       },
+       "summary": "REST ye merry gentlemen.",
+       "description": "Creating of an issue using project keys and issue type names using the REST API",
+       "issuetype": {
+          "name": "Bug"
+       }
+   }
+}
+*/
+
   /**
    *
    */
   public function addIssue($summary,$description)
   {
+    try
+    {
+      $issue = array('fields' =>
+                     array('project' => array('key' => (string)$this->cfg->projectkey),
+                           'summary' => $summary,
+                           'description' => $description,
+                           'issuetype' => array( 'id' => (int)$this->cfg->issuetype)
+                           ));
+
+
+      if(!is_null($this->issueAttr))
+      {
+        $issue = array_merge($issue,$this->issueAttr);
+      }  
+
+      $op = $this->APIClient->createIssue($this->authToken, $issue);
+      $ret = array('status_ok' => true, 'id' => $op->key, 
+                   'msg' => sprintf(lang_get('jira_bug_created'),$summary,$issue['project']));
+    }
+    catch (Exception $e)
+    {
+      $msg = "Create JIRA Ticket (REST) FAILURE => " . $e->getMessage();
+      tLog($msg, 'WARNING');
+      $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+    }
+    return $ret;
   }  
 
 
@@ -271,13 +313,15 @@ class jirarestInterface extends issueTrackerInterface
 	  return $tpl;
   }
 
- /**
-  *
-  **/
+
+
+  /**
+   *
+   **/
   function canCreateViaAPI()
   {
-    return (property_exists($this->cfg, 'projectidentifier'));
+    return (property_exists($this->cfg, 'projectkey') && 
+            property_exists($this->cfg, 'issuetype'));
   }
-
 
 }

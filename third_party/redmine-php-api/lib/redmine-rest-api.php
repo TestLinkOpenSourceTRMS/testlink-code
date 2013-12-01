@@ -9,7 +9,6 @@
  * @link     http://gitorious.org/testlink-ga/testlink-code
  *
  * @internal revisions
- * 20130607 - franciscom - Added TIMEOUT on CURL 
  */
 
 /**
@@ -62,7 +61,7 @@ class redmine
 	 */
 	public function initCurl() 
 	{
-		$agent = "TestLink 1.9.5";
+		$agent = "TestLink 1.9.10";
 		try
 		{
 			$this->curl = curl_init();
@@ -101,8 +100,8 @@ class redmine
 	 */
 	function getIssues($filters=null)
 	{
-	    $items = $this->_get("/issues.xml");
-	    return $items;
+    $items = $this->_get("/issues.xml");
+    return $items;
 	}	
 
 
@@ -140,7 +139,7 @@ class redmine
 	 **/
 	protected function _get($url) 
 	{
-    	return $this->_request_xml('GET', $url);
+    return $this->_request_xml('GET', $url);
 	}
 
 

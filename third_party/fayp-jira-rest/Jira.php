@@ -177,6 +177,7 @@ class Jira
     /**
      *
      * @param array $issueFields using 'fields' member
+     *
      * Here's an example:
      *
      * $issueFields = array('fields' =>
@@ -195,13 +196,18 @@ class Jira
      *       JIRA+REST+API+Example+-+Discovering+meta-data+for+creating+issues
      *
      *
+     * @return  object reponse body (ATTENTION: can be null if something wrong has happened) 
+     *          properties: id,key,self
+     *          Example:
+     *          {"id":"12505","key":"ZOFF-186","self":"https://testlink.atlassian.net/rest/api/latest/issue/12505"}
+     *
      */
     public function createIssue($issueFields)
     {
         $this->request->openConnect($this->host . 'issue/', 'POST', $issueFields);
         $this->request->execute();
 
-        return $this->request->lastRequestStatus();
+        return json_decode($this->request->getResponseBody());
     }
 
     /**

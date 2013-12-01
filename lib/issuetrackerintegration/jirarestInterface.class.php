@@ -260,6 +260,23 @@ class jirarestInterface extends issueTrackerInterface
 
   /**
    *
+   *
+   * JSON example:
+   *
+   * {
+   *  "fields": {
+   *    "project": {
+   *       "key": "TEST"
+   *    },
+   *    "summary": "REST ye merry gentlemen.",
+   *    "description": "Creating of an issue using project keys and issue type names using the REST API",
+   *    "issuetype": {
+   *       "name": "Bug"
+   *    }
+   *  }
+   * }
+   *
+   *
    */
   public function addIssue($summary,$description)
   {
@@ -278,9 +295,13 @@ class jirarestInterface extends issueTrackerInterface
         $issue = array_merge($issue,$this->issueAttr);
       }  
 
-      $op = $this->APIClient->createIssue($this->authToken, $issue);
-      $ret = array('status_ok' => true, 'id' => $op->key, 
-                   'msg' => sprintf(lang_get('jira_bug_created'),$summary,$issue['project']));
+      $op = $this->APIClient->createIssue($issue);
+      $ret = array('status_ok' => false, 'id' => null, 'msg' => 'ko');
+      if(!is_null($op))
+      {  
+        $ret = array('status_ok' => true, 'id' => $op->key, 
+                     'msg' => sprintf(lang_get('jira_bug_created'),$summary,$issue['fields']['project']['key']));
+      }
     }
     catch (Exception $e)
     {

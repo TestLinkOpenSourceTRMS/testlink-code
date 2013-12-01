@@ -45,8 +45,9 @@ var_dump($its->isConnected());
 
 if( $its->isConnected() )
 {
-  $summary = 'Will try to create via REST';
-  $description = 'I WAS ABLE to create via REST !!!';
+
+  $summary = 'Will try to create via REST RAW';
+  $description = 'I WAS ABLE to create via REST RAW!!!';
   $issue = array('fields' =>
                  array('project' => array('key' => (string)$projectkey),
                        'summary' => $summary,
@@ -55,12 +56,22 @@ if( $its->isConnected() )
                       )
                 );
 
-  $json = json_encode($issue);
-  // $zorro = $its->getAPIClient()->createIssue($json);
   $zorro = $its->getAPIClient()->createIssue($issue);
-  echo 'Test - Create an ISSUE VIA REST<br>'; 
+  echo 'Test - Create an ISSUE VIA REST RAW<br>'; 
   echo '<pre>';
   var_dump($zorro);
   echo '</pre>';
+
+  // ====================================================================
+  $summary = 'Will try to create via REST TestLink Interface';
+  $description = 'I WAS ABLE to create via REST TestLink Interface ****';
+  $zorro = $its->addIssue($summary,$description);
+  echo 'Test - Create an ISSUE VIA REST TestLink Interface<br>'; 
+  echo '<pre>';
+  var_dump($zorro);
+  echo '</pre>';
+
+
+
  
 }

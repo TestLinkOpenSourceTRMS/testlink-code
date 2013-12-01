@@ -25,11 +25,11 @@ This is done to simplify logic.
 @internal revisions
 *}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{$cfg_section=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{assign var="managerURL" value="lib/cfields/cfieldsEdit.php"}
-{assign var="viewAction" value="lib/cfields/cfieldsView.php"}
+{$managerURL="lib/cfields/cfieldsEdit.php"}
+{$viewAction="lib/cfields/cfieldsView.php"}
 
 {lang_get s='warning_delete_cf' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
@@ -49,10 +49,7 @@ This is done to simplify logic.
 var del_action=fRoot+'{$managerURL}'+'?do_action=do_delete&cfield_id=';
 </script>
 
-{literal}
 <script type="text/javascript">
-{/literal}
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_cfield_name = "{$labels.warning_empty_cfield_name|escape:'javascript'}";
 var warning_empty_cfield_label = "{$labels.warning_empty_cfield_label|escape:'javascript'}";
@@ -95,7 +92,6 @@ js_show_on_cfg['testplan_design'] = new Array();  // BUGID 1650 (REQ)
   js_enable_on_cfg['design'][{$node_type}]={$cfg_def};
 {/foreach}
 
-// BUGID 1650 (REQ)
 {foreach key=node_type item=cfg_def from=$gui->cfieldCfg->enable_on_cfg.testplan_design}
   js_enable_on_cfg['testplan_design'][{$node_type}]={$cfg_def};
 {/foreach}
@@ -121,22 +117,20 @@ var js_possible_values_cfg = new Array();
 {/foreach}
 
 
-
-{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.cf_name.value))
   {
-      alert_message(alert_box_title,warning_empty_cfield_name);
-      selectField(f, 'cf_name');
-      return false;
+    alert_message(alert_box_title,warning_empty_cfield_name);
+    selectField(f, 'cf_name');
+    return false;
   }
 
   if (isWhitespace(f.cf_label.value))
   {
-      alert_message(alert_box_title,warning_empty_cfield_label);
-      selectField(f, 'cf_label');
-      return false;
+    alert_message(alert_box_title,warning_empty_cfield_label);
+    selectField(f, 'cf_label');
+    return false;
   }
   return true;
 }
@@ -177,7 +171,6 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
   keys2loop[1]='design';
   keys2loop[2]='testplan_design'; // BUGID 1650 - 20080809 - franciscom
 
-  // 20090524 - franciscom - refactoring
   style_display='';
   for(idx=0;idx < keys2loop.length; idx++)
   {
@@ -318,14 +311,12 @@ function initShowOnExec(id_master,show_on_cfg)
   }
 }
 </script>
-{/literal}
 </head>
 
-{* <body {$body_onload}> *}
 <body onload="configure_cf_attr('combo_cf_node_type_id',js_enable_on_cfg,js_show_on_cfg);">
 
 <h1 class="title">
-  	{$labels.title_cfields_mgmt} 
+ 	{$labels.title_cfields_mgmt} 
 	{include file="inc_help.tpl" helptopic="hlp_customFields" show_help_icon=true}
 </h1>
 
@@ -393,7 +384,7 @@ function initShowOnExec(id_master,show_on_cfg)
 			<th style="background:none;">{$labels.type}</th>
 			<td>
 			  {if $gui->cfield_is_used}
-			    {assign var="idx" value=$gui->cfield.type}
+			    {$idx=$gui->cfield.type}
 			    {$gui->cfield_types.$idx}
 			    <input type="hidden" id="hidden_cf_type"
 			           value={$gui->cfield.type} name="cf_type" />
@@ -410,9 +401,9 @@ function initShowOnExec(id_master,show_on_cfg)
 		</tr>
 
     {if $gui->show_possible_values }
-      {assign var="display_style" value=""}
+      {$display_style=""}
     {else}
-      {assign var="display_style" value="none"}
+      {$display_style="none"}
 		{/if}
 		<tr id="possible_values" style="display:{$display_style};">
 			<th style="background:none;">{$labels.possible_values}</th>

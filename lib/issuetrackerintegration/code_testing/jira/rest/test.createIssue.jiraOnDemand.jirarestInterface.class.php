@@ -2,13 +2,13 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
- * @filesource	test.getIssue.jiraOnDeman.jirarestInterface.class.php
+ * @filesource	test.createIssue.jiraOnDeman.jirarestInterface.class.php
  * @author		Francisco Mancardi
  *
  * @internal revisions
  *
 **/
-require_once('../../../../config.inc.php');
+require_once('../../../../../config.inc.php');
 require_once('common.php');
 
 $it_mgr = new tlIssueTracker($db);
@@ -17,18 +17,19 @@ $itt = $it_mgr->getTypes();
 // http://testlink.atlassian.net/rest/api/latest/user/search/?username=admin
 $username = 'testlink.forum';
 $password = 'forum';
-// $password = '';
 $uribase = 'https://testlink.atlassian.net/';
 $uriapi = 'https://testlink.atlassian.net/rest/api/latest/';
+$projectkey = 'ZOFF';
+
 
 $cfg =  "<issuetracker>\n" .
-		    "<username>{$username}</username>\n" .
-		    "<password>{$password}</password>\n" .
-		    "<uribase>{$uribase}</uribase>\n" .
+        "<username>{$username}</username>\n" .
+        "<password>{$password}</password>\n" .
+        "<uribase>{$uribase}</uribase>\n" .
         "<uriapi>{$uriapi}</uriapi>\n" .
-        "<projectkey>ZOFF</projectkey>\n" .
+        "<projectkey>{$projectkey}</projectkey>\n" .
         "<issuetype>1</issuetype>\n" .
-		    "</issuetracker>\n";
+        "</issuetracker>\n";
 
 echo '<hr><br>';
 echo "<b>Testing  BST Integration - jirarestInterface </b>";
@@ -44,33 +45,22 @@ var_dump($its->isConnected());
 
 if( $its->isConnected() )
 {
-  // Using RAW API
-  
-  /*
-  $api = $its->getAPIClient();
-  $zorro = $its->getAPIClient()->getUser($username);
-  echo 'Test - Get Data about connected user<br>'; 
+  $summary = 'Will try to create via REST';
+  $description = 'I WAS ABLE to create via REST !!!';
+  $issue = array('fields' =>
+                 array('project' => array('key' => (string)$projectkey),
+                       'summary' => $summary,
+                       'description' => $description,
+                       'issuetype' => array( 'id' => 1)
+                      )
+                );
+
+  $json = json_encode($issue);
+  // $zorro = $its->getAPIClient()->createIssue($json);
+  $zorro = $its->getAPIClient()->createIssue($issue);
+  echo 'Test - Create an ISSUE VIA REST<br>'; 
   echo '<pre>';
   var_dump($zorro);
   echo '</pre>';
  
-
-  $targetIssue = 'ZOFF-129';
-  echo 'Test - Get Data about Issue:' . $targetIssue . '<br>'; 
-  $zorro = $its->getAPIClient()->getIssue($targetIssue);
-  echo '<pre>';
-  var_dump($zorro);
-  echo '</pre>';
- */
-
-  $targetIssue = 'ZOFF-129';
-  echo 'Test - USING TL Interface - Get Data about Issue:' . $targetIssue . '<br>'; 
-  $zorro = $its->getIssue($targetIssue);
-  echo '<pre>';
-  var_dump($zorro);
-  echo '</pre>';
-
-
-
-
 }

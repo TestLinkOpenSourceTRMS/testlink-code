@@ -5631,12 +5631,17 @@ protected function createAttachmentTempFile()
       // get Test project ID in order to check that requested Platform
       // belong to same test project that test plan
       $dummy = $this->tplanMgr->get_by_id($testPlanID);
-      $$testProjectID = $dummy['testproject_id'];
+      $testProjectID = $dummy['testproject_id'];
       
       if( is_null($this->platformMgr) )
       {
         $this->platformMgr = new tlPlatform($this->dbObj,$testProjectID);
       }
+      else
+      {
+        // extra protection ?? (20131307)  
+        $this->platformMgr->setTestProjectID($testProjectID); 
+      }  
       $platName = $this->args[self::$platformNameParamName];
       $platform = $this->platformMgr->getByName($platName);
       if(is_null($platform))

@@ -67,16 +67,16 @@ class tlPlatform extends tlObjectWithDB
     else
     {
       $sql = "INSERT INTO {$this->tables['platforms']} " .
-           "(name, testproject_id, notes) " .
-           " VALUES ('" . $this->db->prepare_string($safeName) . 
-           "', $this->tproject_id, '".$this->db->prepare_string($notes)."')";
+             "(name, testproject_id, notes) " .
+             " VALUES ('" . $this->db->prepare_string($safeName) . 
+             "', $this->tproject_id, '".$this->db->prepare_string($notes)."')";
       $result = $this->db->exec_query($sql);
 
-            if( $result )
-            {
+      if( $result )
+      {
         $op['status'] = tl::OK;
         $op['id'] = $this->db->insert_id($this->tables['platforms']);
-            } 
+      } 
     }
     return $op;
   }
@@ -95,12 +95,16 @@ class tlPlatform extends tlObjectWithDB
   }
 
 
+  /**
+   *
+   */
   public function getByName($name)
   {
     $val = trim($name);
     $sql =  " SELECT id, name, notes " .
             " FROM {$this->tables['platforms']} " .
-            " WHERE name = '" . $this->db->prepare_string($val) . "'";
+            " WHERE name = '" . $this->db->prepare_string($val) . "'" .
+            " AND testproject_id = " . intval($this->tproject_id);
     $ret = $this->db->fetchFirstRow($sql);
     return is_array($ret) ? $ret : null;        
   }
